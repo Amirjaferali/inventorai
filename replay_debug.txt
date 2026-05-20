@@ -1,0 +1,108 @@
+============================================================
+Replay Benchmark Runner  v2.1  [scope=scoring-diagnostic]
+============================================================
+Mode            : diagnostic
+SCORING_VERSION : 1.0  (unchanged)
+Variance        : 0%  (deterministic)
+
+Untestable criteria (schema divergence):
+  Gate Engine Utility
+    reason: requires normalized_output['recommendation']['action']
+    status: schema_divergence
+
+TC dataset : 22  |  Fixtures: 22
+
+  FAIL  TC-01  (TC-01)  mismatches=2
+         scores.No Invented Info.passed: expected=True actual=False
+         issues=['HIGH_CONF_NO_LIMITS']
+         weighted_score_testable: expected=73 actual=46
+  FAIL  TC-02  (TC-02)  mismatches=3
+         scores.Schema Compliance.passed: expected=True actual=False
+         issues=['MISSING:recommendation']
+         scores.Confidence Calibration.passed: expected=False actual=True
+         weighted_score_testable: expected=77 actual=64
+  FAIL  TC-03  (TC-03)  mismatches=2
+         scores.Schema Compliance.passed: expected=True actual=False
+         issues=['MISSING:recommendation']
+         weighted_score_testable: expected=78 actual=51
+  FAIL  TC-04  (TC-04)  mismatches=2
+         scores.Schema Compliance.passed: expected=True actual=False
+         issues=['MISSING:recommendation']
+         weighted_score_testable: expected=77 actual=50
+  FAIL  TC-05  (TC-05)  mismatches=1
+         weighted_score_testable: expected=73 actual=64
+  FAIL  TC-06  (TC-06)  mismatches=3
+         scores.Schema Compliance.passed: expected=True actual=False
+         issues=['MISSING:recommendation']
+         scores.Confidence Calibration.passed: expected=False actual=True
+         weighted_score_testable: expected=77 actual=64
+  FAIL  TC-07  (TC-07)  mismatches=1
+         weighted_score_testable: expected=73 actual=64
+  FAIL  TC-08  (TC-08)  mismatches=2
+         scores.Schema Compliance.passed: expected=True actual=False
+         issues=['MISSING:recommendation']
+         weighted_score_testable: expected=78 actual=51
+  SKIP  TC-09  (TC-09)  no_normalized_output
+  SKIP  TC-10  (TC-10)  no_normalized_output
+  FAIL  TC-11  (TC-11)  mismatches=3
+         scores.Schema Compliance.passed: expected=True actual=False
+         issues=['MISSING:recommendation']
+         scores.Confidence Calibration.passed: expected=False actual=True
+         weighted_score_testable: expected=63 actual=50
+  FAIL  TC-12  (TC-12)  mismatches=3
+         scores.Schema Compliance.passed: expected=True actual=False
+         issues=['MISSING:recommendation']
+         scores.Confidence Calibration.passed: expected=False actual=True
+         weighted_score_testable: expected=64 actual=51
+  FAIL  TC-13  (TC-13)  mismatches=3
+         scores.Schema Compliance.passed: expected=True actual=False
+         issues=['MISSING:recommendation']
+         scores.Confidence Calibration.passed: expected=False actual=True
+         weighted_score_testable: expected=77 actual=64
+  FAIL  TC-14  (TC-14)  mismatches=2
+         scores.Schema Compliance.passed: expected=True actual=False
+         issues=['MISSING:recommendation']
+         weighted_score_testable: expected=78 actual=51
+  FAIL  TC-15  (TC-15)  mismatches=2
+         scores.Schema Compliance.passed: expected=True actual=False
+         issues=['MISSING:recommendation']
+         weighted_score_testable: expected=77 actual=50
+  FAIL  TC-16  (TC-16)  mismatches=3
+         scores.Schema Compliance.passed: expected=True actual=False
+         issues=['MISSING:recommendation']
+         scores.Confidence Calibration.passed: expected=False actual=True
+         weighted_score_testable: expected=64 actual=51
+  SKIP  TC-17  (TC-17)  no_normalized_output
+  FAIL  TC-18  (TC-18)  mismatches=1
+         weighted_score_testable: expected=59 actual=50
+  FAIL  TC-19  (TC-19)  mismatches=2
+         scores.Schema Compliance.passed: expected=True actual=False
+         issues=['MISSING:recommendation']
+         weighted_score_testable: expected=77 actual=50
+  FAIL  TC-20  (TC-20)  mismatches=2
+         scores.Schema Compliance.passed: expected=True actual=False
+         issues=['MISSING:recommendation']
+         weighted_score_testable: expected=77 actual=50
+  FAIL  TC-21  (TC-A2)  mismatches=2
+         scores.Schema Compliance.passed: expected=True actual=False
+         issues=['MISSING:recommendation']
+         weighted_score_testable: expected=78 actual=51
+  FAIL  TC-22  (TC-A4)  mismatches=2
+         scores.Schema Compliance.passed: expected=True actual=False
+         issues=['MISSING:recommendation']
+         weighted_score_testable: expected=78 actual=51
+
+============================================================
+SUMMARY  [diagnostic mode]
+============================================================
+  Total    : 22
+  Passed   : 0
+  Failed   : 19
+  Skipped  : 3  (no_normalized_output = transport failures)
+  Variance : 0%
+  Untestable criteria: ['Gate Engine Utility']
+  Reason: scoring parity excluding recommendation.action
+  Root cause: normalize_output.py does not produce recommendation
+  Failed   : TC-01, TC-02, TC-03, TC-04, TC-05, TC-06, TC-07, TC-08, TC-11, TC-12, TC-13, TC-14, TC-15, TC-16, TC-18, TC-19, TC-20, TC-21, TC-22
+
+Report -> tests/replay/replay_report_v2.json
