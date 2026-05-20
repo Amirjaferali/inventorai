@@ -166,3 +166,33 @@ Current investigation focus:
 4. recommendation/action contract divergence
 
 No redesign work is authorized.
+## Reporting Integrity Rules
+
+The replay report is not allowed to infer, reinterpret, suppress, or recompute scoring truth.
+
+The authoritative scoring result is the raw output of:
+
+engine.scoring.score_case()
+
+Any replay reporter, formatter, verifier, or summary script must render this output faithfully.
+
+Forbidden:
+- dropping issues from score_case()
+- converting overall=false into pass
+- hiding failed criteria
+- recomputing pass/fail outside score_case()
+- reporting partial truth as full parity
+- using replay greenness as proof without raw score evidence
+
+Every replay report must include or reference:
+- raw score_case() output
+- weighted_score
+- overall
+- failed criteria
+- issues
+- scoring_version
+- fixture/hash provenance when available
+
+If final replay output disagrees with score_case(), STOP and report:
+
+REPORTING DIVERGENCE DETECTED
