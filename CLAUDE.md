@@ -196,3 +196,33 @@ Every replay report must include or reference:
 If final replay output disagrees with score_case(), STOP and report:
 
 REPORTING DIVERGENCE DETECTED
+
+---
+
+## Active Governance Documents
+
+The following documents were added after the initial governance contract.
+Read them before any code change or architectural decision.
+
+GOVERNANCE_MODEL.md
+  Authority hierarchy (Tiers 1-4), confirmed violations,
+  and remediation steps for replay/provenance issues.
+  Status: ACTIVE
+
+MVP_SCOPE_FREEZE.md
+  Hard boundary on MVP scope.
+  Read this before writing any code.
+  Status: ACTIVE FREEZE
+
+DECISION_PROGRESSION_MODEL.md
+  Proposed architecture for the progression engine.
+  Electronics/electrical domain, LEVEL 0-2 only.
+  Status: PROPOSED — not implemented, not validated
+
+## Document Authority Order
+
+When documents conflict, this order applies:
+1. MVP_SCOPE_FREEZE.md       (hard constraint)
+2. GOVERNANCE_MODEL.md       (authority hierarchy)
+3. CLAUDE.md                 (engineering rules)
+4. DECISION_PROGRESSION_MODEL.md (proposal only)
