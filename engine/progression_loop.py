@@ -140,9 +140,9 @@ def integrate_response(
         if state.known_mechanism is None or quality >= state.known_mechanism.quality:
             state.known_mechanism = evidence
 
-    if gap_type == PHYSICAL_FEASIBILITY or gap_type == BOUNDARY_AMBIGUITY:
-        if state.known_problem is None:
-            state.known_problem = evidence
+    # أي evidence في المراحل المبكرة تُثبت المشكلة ضمنياً
+    if state.known_problem is None:
+        state.known_problem = evidence
 
     # Update gap status
     gap = state.get_gap(gap_type)
@@ -248,10 +248,14 @@ def run_iteration(state: IdeaState, response: str) -> dict:
         if can and state.maturity_level < 2:
             state.maturity_level += 1
         update_direction(state, prev_level)
+        # إذا وصلنا LEVEL 2 — نطلب تعمق في boundary
+        closing_q = None
+        if state.maturity_level == 2:
+            closing_q = "Your mechanism is taking shape. Now state clearly: what does your invention NOT do or NOT cover? Name at least one boundary."
         return {
             "iteration": state.iteration,
             "gap_targeted": None,
-            "question": None,
+            "question": closing_q,
             "transition": "PASS" if can else "WARN",
             "reason": reason,
             "maturity_level": state.maturity_level,
