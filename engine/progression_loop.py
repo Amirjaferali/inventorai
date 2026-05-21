@@ -103,18 +103,64 @@ def get_question(gap_type: str, iterations_open: int) -> str:
 # 3. Integrate response → update gap status
 # ─────────────────────────────────────────────
 
+# Weak-answer patterns that must not advance maturity
+_WEAK_PATTERNS = {
+    "i don't know", "i do not know", "not sure", "no idea",
+    "i don't know", "unknown", "maybe", "n/a", "na",
+    "i have no idea", "i'm not sure", "i am not sure",
+    "something", "somehow", "i don't", "don't know",
+}
+
+# Substance signals: at least one required for REASONED
+_SUBSTANCE_SIGNALS = [
+    # components/devices
+    "sensor", "microcontroller", "arduino", "esp", "raspberry",
+    "motor", "pump", "relay", "led", "display", "battery",
+    "chip", "ic", "resistor", "capacitor", "transistor",
+    "bluetooth", "wifi", "ble", "mqtt", "uart", "i2c", "spi",
+    # actions/signals
+    "reads", "sends", "detects", "measures", "activates",
+    "triggers", "converts", "transmits", "receives", "processes",
+    "samples", "outputs", "controls", "monitors", "calculates",
+    # principles
+    "voltage", "current", "frequency", "analog", "digital",
+    "signal", "threshold", "filter", "protocol", "data",
+    "piezoelectric", "hall", "infrared", "ultrasonic", "capacitive",
+]
+
+
 def assess_response(response: str) -> str:
     """
-    Minimal quality assessment.
-    MVP: length + substance heuristic only.
-    Future: replace with AI-advisory assessment.
+    Quality assessment: weak-answer guard + substance check.
+    MVP: pattern rejection + substance heuristic.
+    Future: replace substance check with AI-advisory assessment.
     """
     r = response.strip()
+    r_lower = r.lower()
+
+    # 1. Reject explicit weak answers regardless of length
+    if r_lower in _WEAK_PATTERNS:
+        return ASSERTED  # stays ASSERTED — will not pass evaluate_transition
+
+    # 2. Reject vague filler phrases (contains weak tokens, no substance)
+    weak_tokens = {"somehow", "something", "technology", "stuff", "things"}
+    substance_tokens = set(_SUBSTANCE_SIGNALS)
+    words = set(r_lower.split())
+    has_weak = bool(words & weak_tokens)
+    has_substance = any(sig in r_lower for sig in _SUBSTANCE_SIGNALS)
+
+    if has_weak and not has_substance:
+        return ASSERTED  # vague filler — no technical substance
+
+    # 3. Short but technically specific answers are valid (e.g. "Hall sensor")
+    if has_substance:
+        return REASONED
+
+    # 4. Length fallback for borderline answers without clear substance signals
     if len(r) < 20:
         return ASSERTED
-    if len(r) < 80:
-        return REASONED
-    return REASONED  # DEMONSTRATED requires external evidence — not in MVP
+    # No substance signals detected — treat as ASSERTED regardless of length
+    return ASSERTED  # DEMONSTRATED requires external evidence — not in MVP
 
 
 def integrate_response(
