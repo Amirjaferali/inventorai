@@ -313,10 +313,19 @@ def run_iteration(state: IdeaState, response: str) -> dict:
             "direction": state.direction,
         }
 
-    # Get question
+    # Get question — AI advisory (G-A) or fallback to domain/generic
     gap = state.get_gap(gap_type)
     iterations_open = gap.iterations_open if gap else 0
-    question = get_question(state.domain, gap_type, iterations_open)
+    from engine.ai_advisor import get_ai_question
+    _ai_context = {
+        "domain": state.domain,
+        "gap_type": gap_type,
+        "idea_summary": getattr(state, 'idea_summary', None),
+        "last_response": response[:200] if response else None,
+        "iteration": state.iteration,
+    }
+    question = get_ai_question(state.domain, gap_type, _ai_context) \
+        or get_question(state.domain, gap_type, iterations_open)
 
     # Integrate response
     transition, reason = integrate_response(state, gap_type, question, response)
