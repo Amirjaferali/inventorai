@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>InventorAI</title>
+<style>body{font-family:sans-serif;max-width:700px;margin:60px auto;padding:0 20px}textarea{width:100%;padding:12px;font-size:16px;border:1px solid #ccc;border-radius:4px}button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:none;border-radius:4px;font-size:16px;cursor:pointer}.error{color:#e74c3c}</style>
+</head>
+<body>
+<h1>InventorAI</h1>
+<p>Describe your invention idea to begin.</p>
+{% if error %}<p class="error">{{ error }}</p>{% endif %}
+<form method="POST" action="/start">
+<textarea name="idea" rows="4" placeholder="e.g. IoT soil moisture sensor using ESP32 and WiFi" required></textarea>
+<br><button type="submit">Start</button>
+</form>
+<p style="color:#888;font-size:13px">Supported: electronics, mechanical, medical device, software.</p>
+</body></html>

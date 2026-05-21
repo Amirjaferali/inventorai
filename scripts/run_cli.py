@@ -55,6 +55,7 @@ def run_cli():
     # Step 4-5: Initialize state
     state = IdeaState(idea_id="cli-session")
     state.domain_signal = domain
+    state.domain = domain
     state.gaps.append(Gap(MECHANISM_COMPLETENESS, OPEN, 0))
 
     print(f"Starting at Level {state.maturity_level}")
@@ -75,7 +76,7 @@ def run_cli():
         if gap_type:
             gap = state.get_gap(gap_type)
             iters_open = gap.iterations_open if gap else 0
-            question = get_question(gap_type, iters_open)
+            question = get_question(state.domain, gap_type, iters_open)
         elif state.maturity_level >= 1:
             question = ("Your mechanism is taking shape. "
                        "Now state clearly: what does your invention "

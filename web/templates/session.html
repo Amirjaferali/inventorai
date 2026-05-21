@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>InventorAI — Session</title>
+<style>body{font-family:sans-serif;max-width:700px;margin:60px auto;padding:0 20px}.meta{background:#f8f9fa;padding:12px;border-radius:4px;margin-bottom:20px;font-size:14px}.question{font-size:18px;margin-bottom:16px;color:#2c3e50}textarea{width:100%;padding:12px;font-size:16px;border:1px solid #ccc;border-radius:4px}button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:none;border-radius:4px;font-size:16px;cursor:pointer}.complete{color:#27ae60;font-weight:bold}</style>
+</head>
+<body>
+<h1>InventorAI</h1>
+<div class="meta">
+<strong>Domain:</strong> {{ state.domain }} &nbsp;|&nbsp;
+<strong>Maturity:</strong> {{ state.maturity_level }} &nbsp;|&nbsp;
+<strong>Iteration:</strong> {{ state.iteration }}
+</div>
+{% if question %}
+<p class="question">{{ question }}</p>
+<form method="POST" action="/session/{{ sid }}">
+<textarea name="response" rows="4" placeholder="Your answer..." required></textarea>
+<br><button type="submit">Submit</button>
+</form>
+{% else %}
+<p class="complete">All gaps addressed.</p>
+<p><a href="/">Start a new idea</a></p>
+{% endif %}
+{% if open_gaps %}
+<p style="font-size:14px;color:#555"><strong>Open gaps:</strong> {% for g in open_gaps %}{{ g.gap_type }}{% if not loop.last %}, {% endif %}{% endfor %}</p>
+{% endif %}
+</body></html>
