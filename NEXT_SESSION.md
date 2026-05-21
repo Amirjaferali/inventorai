@@ -43,3 +43,5 @@ PYEOF
 - لا وثائق معمارية جديدة
 - لا specs جديدة
 - لا وقفات للتحليل
+
+[E] assess_response currently uses _SUBSTANCE_SIGNALS keyword heuristics. This is acceptable for Phase E MVP quality gate, but it is not the final quality model. In Phase G, replace or supplement it with an AI-advisory assessment layer while keeping deterministic gate ownership outside the AI.
