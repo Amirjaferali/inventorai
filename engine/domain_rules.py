@@ -20,12 +20,19 @@ MECHANICAL_SIGNALS = [
 
 def infer_domain(idea_text: str) -> str | None:
     text = idea_text.lower()
-    for signal in ELECTRONICS_SIGNALS:
-        if signal in text:
-            return "electronics_electrical"
-    for signal in MECHANICAL_SIGNALS:
-        if signal in text:
-            return "mechanical"
+    scores = {
+        "electronics_electrical": sum(1 for s in ELECTRONICS_SIGNALS if s in text),
+        "mechanical":             sum(1 for s in MECHANICAL_SIGNALS if s in text),
+        "medical_device":         sum(1 for s in MEDICAL_SIGNALS if s in text),
+    }
+    if max(scores.values()) == 0:
+        return None
+    # Tie-breaker priority: medical_device > electronics_electrical > mechanical
+    priority = ["medical_device", "electronics_electrical", "mechanical"]
+    best_score = max(scores.values())
+    for domain in priority:
+        if scores[domain] == best_score:
+            return domain
     return None
 
 def get_active_rules(domain: str) -> list:
@@ -36,6 +43,12 @@ def get_active_rules(domain: str) -> list:
             "NO_PLATFORM_SPECIFIC_NAMING",
         ]
     if domain == "mechanical":
+        return [
+            "MECHANISM_COMPLETENESS",
+            "PHYSICAL_FEASIBILITY",
+            "BOUNDARY_AMBIGUITY",
+        ]
+    if domain == "medical_device":
         return [
             "MECHANISM_COMPLETENESS",
             "PHYSICAL_FEASIBILITY",
@@ -73,6 +86,39 @@ _DOMAIN_QUESTIONS = {
     "mechanical": MECHANICAL_QUESTIONS,
 }
 
+
+MEDICAL_SIGNALS = [
+    "implantable", "clinical_trial", "patient_monitoring", "diagnosis", "therapeutic",
+    "implant", "wearable", "prosthetic", "surgical", "rehabilitation",
+    "glucose", "insulin", "cardiac", "heart", "pulse", "blood",
+    "monitoring", "biosensor", "catheter", "stent", "orthopedic",
+    "neural", "retinal", "hearing", "respiratory", "drug delivery",
+]
+
+MEDICAL_QUESTIONS = {
+    "MECHANISM_COMPLETENESS": [
+        "Describe specifically how your medical device interacts with the body. "
+        "What biological or physiological process does it target?",
+        "What are the individual components of your device and what does each one do "
+        "in contact with or proximity to the patient?",
+        "If a clinician tried to use your device tomorrow with no further explanation, "
+        "what critical detail about its mechanism would be missing?",
+    ],
+    "PHYSICAL_FEASIBILITY": [
+        "What physical or biological principle does your device rely on? "
+        "(e.g. electrical stimulation, optical sensing, mechanical compression)",
+        "What are the biocompatibility or safety constraints your device must meet "
+        "to operate safely in or on the human body?",
+    ],
+    "BOUNDARY_AMBIGUITY": [
+        "What does your medical device specifically NOT diagnose, treat, or cover? "
+        "State at least one clear clinical boundary.",
+        "Name one existing medical device or approach similar to yours. "
+        "What makes yours different in a specific, clinically meaningful way?",
+    ],
+}
+
+_DOMAIN_QUESTIONS["medical_device"] = MEDICAL_QUESTIONS
 
 def get_domain_question(domain: str, gap_type: str, iterations_open: int) -> str | None:
     """
