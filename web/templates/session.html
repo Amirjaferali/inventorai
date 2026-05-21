@@ -112,7 +112,62 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
   <br><button type="submit">Submit</button>
 </form>
 {% else %}
-<p class="complete">✓ All gaps addressed.</p>
+<div style="background:#e8f5e9;border:1px solid #a5d6a7;border-radius:6px;padding:20px;margin-bottom:20px">
+  <p class="complete">✓ Session Complete</p>
+
+  <table style="width:100%;font-size:14px;border-collapse:collapse;margin-top:12px">
+    <tr>
+      <td style="padding:5px 10px 5px 0;color:#555;width:160px;vertical-align:top"><strong>Domain</strong></td>
+      <td style="padding:5px 0">{{ state.domain if state.domain else '—' }}</td>
+    </tr>
+    <tr>
+      <td style="padding:5px 10px 5px 0;color:#555;vertical-align:top"><strong>Final Maturity</strong></td>
+      <td style="padding:5px 0">{{ state.maturity_level }} / 5</td>
+    </tr>
+    {% if last_result %}
+    <tr>
+      <td style="padding:5px 10px 5px 0;color:#555;vertical-align:top"><strong>Last Transition</strong></td>
+      <td style="padding:5px 0">
+        {% if last_result.transition == 'PASS' %}<span style="background:#e8f5e9;color:#2e7d32;padding:2px 8px;border-radius:3px;font-weight:bold">PASS</span>
+        {% elif last_result.transition == 'WARN' %}<span style="background:#fff3e0;color:#e65100;padding:2px 8px;border-radius:3px;font-weight:bold">WARN</span>
+        {% elif last_result.transition == 'BLOCK' %}<span style="background:#fdecea;color:#c62828;padding:2px 8px;border-radius:3px;font-weight:bold">BLOCK</span>
+        {% else %}{{ last_result.transition if last_result.transition else '—' }}{% endif %}
+      </td>
+    </tr>
+    {% if last_result.reason %}
+    <tr>
+      <td style="padding:5px 10px 5px 0;color:#555;vertical-align:top"><strong>Reason</strong></td>
+      <td style="padding:5px 0">{{ last_result.reason }}</td>
+    </tr>
+    {% endif %}
+    {% if last_result.direction %}
+    <tr>
+      <td style="padding:5px 10px 5px 0;color:#555;vertical-align:top"><strong>Direction</strong></td>
+      <td style="padding:5px 0">{{ last_result.direction }}</td>
+    </tr>
+    {% endif %}
+    {% endif %}
+  </table>
+
+  {% set closed_gaps = state.gaps | selectattr('status', 'equalto', 'CLOSED') | list %}
+  {% if closed_gaps %}
+  <div style="margin-top:14px">
+    <strong style="font-size:13px;color:#2e7d32">Closed Gaps ({{ closed_gaps | length }})</strong>
+    <ul style="margin:6px 0 0 0;padding-left:18px;font-size:13px">
+      {% for g in closed_gaps %}<li>{{ g.gap_type }}</li>{% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  {% if open_gaps %}
+  <div style="margin-top:10px">
+    <strong style="font-size:13px;color:#e65100">Remaining Gaps ({{ open_gaps | length }})</strong>
+    <ul style="margin:6px 0 0 0;padding-left:18px;font-size:13px;color:#555">
+      {% for g in open_gaps %}<li>{{ g.gap_type }}</li>{% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+</div>
 <p><a href="/">Start a new idea</a></p>
 {% endif %}
 
