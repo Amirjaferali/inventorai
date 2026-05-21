@@ -11,11 +11,21 @@ ELECTRONICS_SIGNALS = [
     "ميكروكنترولر", "لوحة", "إلكترونيات"
 ]
 
+MECHANICAL_SIGNALS = [
+    "gear", "hinge", "spring", "clamp", "lever", "pulley",
+    "bearing", "shaft", "linkage", "mechanism",
+    "torque", "friction", "joint", "actuator", "piston",
+    "valve", "bracket", "fastener", "locking",
+]
+
 def infer_domain(idea_text: str) -> str | None:
     text = idea_text.lower()
     for signal in ELECTRONICS_SIGNALS:
         if signal in text:
             return "electronics_electrical"
+    for signal in MECHANICAL_SIGNALS:
+        if signal in text:
+            return "mechanical"
     return None
 
 def get_active_rules(domain: str) -> list:
@@ -24,5 +34,11 @@ def get_active_rules(domain: str) -> list:
             "PHYSICAL_PRINCIPLE_REQUIRED",
             "POWER_ACKNOWLEDGMENT_IF_ENERGY",
             "NO_PLATFORM_SPECIFIC_NAMING",
+        ]
+    if domain == "mechanical":
+        return [
+            "MECHANISM_COMPLETENESS",
+            "PHYSICAL_FEASIBILITY",
+            "BOUNDARY_AMBIGUITY",
         ]
     return []
