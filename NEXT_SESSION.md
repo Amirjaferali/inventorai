@@ -1,51 +1,58 @@
 # InventorAI — Next Session Notes
 
 ## Last Completed Phase
-**Phase F-A — Mechanical Domain (Architecture Proof)**
-Commit: `86dcba5`
+**Phase F-B — Domain-Owned Questions via Registry**
+Commit: `338d85b`
 
 ## Goal
-Add exactly one new domain as architecture proof.
-Prove that a new domain can be added without touching the core progression engine.
+Move question ownership from the progression engine to the domain layer.
+Prove that domain-specific questions can be served without engine branching.
 
 ## Result
-Mechanical domain added in domain layer only.
-progression_loop.py: UNCHANGED — zero diff confirmed.
+Mechanical-specific questions now live in domain_rules.py.
+progression_loop.py change: framework-level delegation only.
+No if domain == ... branching inside progression engine.
+
+## Engine Change (framework-level only)
+- get_question() now accepts domain parameter
+- Delegates to get_domain_question() in domain layer
+- Falls back to generic QUESTIONS if domain returns None
+- Call site updated: get_question(state.domain, gap_type, iterations_open)
+- Zero domain-specific logic added to engine
 
 ## Evidence
-- Mechanical examples: 4/4 PASS
-- Electronics examples: 3/3 PASS
-- Negative examples: 4/4 PASS
+- Mechanical question retrieval: PASS
+- Electronics fallback: PASS
+- Unknown domain fallback: PASS
 - Replay benchmark: 19/22, 0% variance
-- Files changed: engine/domain_rules.py only
-- git diff -- engine/progression_loop.py: empty
+- git diff progression_loop.py: 3 deletions, framework lines only
 
-## Guardrail Confirmed
-New domain added without touching core progression engine.
-Architecture guardrail (Section 4 — Architectural Acceptance Rule) verified in practice.
+## Guardrail Preserved
+Engine requests questions. Domain layer owns questions.
+Architecture guardrail Section 2 and Section 3 confirmed in practice.
 
-## Phase F-B Warning
-Phase F-B must NOT introduce domain-specific branches inside progression_loop.py.
+## Phase F-C Warning
+Phase F-C must prove scalability with a third domain.
+Goal: prove the system is not designed only around mechanical.
 
-If mechanical-specific questions are added, they must come from the domain layer
-or registry, not from hardcoded engine logic.
+Phase F-C success criteria:
+- Third domain added via domain layer only
+- progression_loop.py diff: zero lines changed
+- Domain questions served via existing registry interface
+- Replay benchmark remains 19/22, 0% variance
 
-Forbidden in progression_loop.py:
-    if domain == "mechanical":
-        questions = MECHANICAL_QUESTIONS
-    elif domain == "electronics_electrical":
-        questions = ELECTRONICS_QUESTIONS
-
-Required: questions fetched from domain layer via registry interface.
+If F-C requires any engine change, it must be framework-level
+and requires explicit architecture review before proceeding.
 
 ## Next Phase
-**Phase F-B — Domain-Specific Questions via Domain Layer**
-Goal: mechanical-specific questions served from domain_rules.py or registry.
-progression_loop.py must remain unchanged.
-Success criterion: engine fetches questions generically — domain layer owns them.
+**Phase F-C — Third Domain (Scalability Proof)**
+Recommended: software or chemical domain
+Goal: prove architecture scales to N domains without engine modification.
 
 ## Technical Debt (carried forward)
 - _SUBSTANCE_SIGNALS is keyword-based — acceptable for MVP only.
 - Phase G should replace/supplement with AI-advisory assessment.
 - Deterministic gate ownership must remain outside AI.
 - Keyword-based domain inference is MVP-only (Phase G+ replacement).
+- QUESTIONS bank still lives in progression_loop.py — future refactor
+  should move it to domain layer or generic registry.
