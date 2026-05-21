@@ -6,6 +6,8 @@ DO NOT modify engine behavior from this file.
 """
 
 import sys
+import json
+from engine.summary import build_summary
 sys.path.insert(0, '.')
 
 from engine.idea_state import IdeaState, Gap, MECHANISM_COMPLETENESS, OPEN
@@ -128,6 +130,13 @@ def run_cli():
             print()
             print("─" * 60)
             print(f"MAX ITERATIONS REACHED — Final Level: {state.maturity_level}")
+        summary = build_summary(state)
+        print()
+        print("═" * 60)
+        print("FINAL SUMMARY")
+        print("═" * 60)
+        print(json.dumps(summary, indent=2, default=str))
+        print("═" * 60)
             print("─" * 60)
 
 if __name__ == "__main__":
