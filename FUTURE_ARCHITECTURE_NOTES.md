@@ -150,3 +150,106 @@ Interface must remain stable across all upgrades:
 Document owner: product + architecture
 Review required before: public launch, Phase H start, multi-domain beta.
 These are recommendations, not current requirements.
+
+---
+
+## 5. Sketch / Image-Based Idea Intake
+
+### Status
+Future feature only. No implementation until Phase H+ or Phase I.
+No code changes outside documentation.
+
+### Timing
+Deferred to Phase H+ or Phase I.
+
+Reason: Phase G introduces AI-advisory integration — already a major
+architectural change. Adding image intake simultaneously creates two
+parallel changes and increases stability risk.
+
+Required sequence before image intake:
+    Phase G: AI advisory integration
+    Phase H: Web interface (stable)
+    Phase H+ or I: Image intake (after web interface is stable)
+
+### UX Position
+
+The dashboard should primarily ask the user to describe the idea in text.
+
+    Describe your idea: [text field]
+    Optional: Upload a sketch or image to help describe your idea.
+
+Do NOT present image upload as fully equivalent to text input.
+The optional framing is intentional — image extraction requires an
+additional user review step that text input does not.
+
+### Architecture Boundary
+
+Image intake must be implemented as an input adapter only.
+
+Required contract:
+
+    def extract_from_image(image) -> str:
+        ...
+
+The image layer must return text ONLY.
+
+It must NEVER return:
+    - gap status
+    - maturity level
+    - PASS / BLOCK decision
+    - transition decision
+    - feasibility claim
+    - manufacturability claim
+
+If the function cannot return anything other than str,
+it cannot corrupt progression state regardless of implementation.
+
+### Required Flow
+
+    User uploads image
+        |
+        v
+    extract_from_image(image) -> str   [text draft only]
+        |
+        v
+    User reviews and corrects extracted draft
+        |
+        v
+    Normal text intake
+        |
+        v
+    infer_domain()  [existing]
+        |
+        v
+    run_iteration() [existing progression engine — unchanged]
+
+No shortcut from image analysis into progression state.
+
+### Guardrail
+
+The image extraction layer must never:
+    - close gaps
+    - advance maturity level
+    - issue PASS / BLOCK
+    - bypass deterministic gates
+    - make feasibility or manufacturability claims
+
+### Future Structure
+
+    intake/
+        text_intake.py
+        image_intake.py
+        normalization.py
+
+Both paths must produce the same structured idea string
+consumed by the existing engine. The engine must not know
+or care which intake path was used.
+
+### Architectural Risk
+
+Primary risk: gradual pressure to make image analysis "smarter" —
+i.e. have it close gaps or assess quality directly from the image.
+This would violate deterministic gate ownership.
+
+Mitigation: enforce the str-only return contract at the interface level.
+If image_intake.py can only return str, the risk is structurally prevented.
