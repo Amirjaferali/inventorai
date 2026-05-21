@@ -29,14 +29,16 @@ def start():
     state.domain = domain
     state.domain_signal = domain
     sid = str(uuid.uuid4())
-    SESSION_STORE[sid] = state
+    SESSION_STORE[sid] = {"state": state, "last_result": None}
     return redirect(url_for("show_session", sid=sid))
 
 @app.route("/session/<sid>", methods=["GET"])
 def show_session(sid):
-    state = SESSION_STORE.get(sid)
-    if not state:
+    entry = SESSION_STORE.get(sid)
+    if not entry:
         return redirect(url_for("index"))
+    state = entry["state"]
+    last_result = entry.get("last_result")
     gap_type = select_next_gap(state)
     question = None
     if gap_type:
@@ -44,16 +46,25 @@ def show_session(sid):
         iterations_open = gap.iterations_open if gap else 0
         question = get_question(state.domain, gap_type, iterations_open)
     open_gaps = [g for g in state.gaps if g.status == "OPEN"]
-    return render_template("session.html", sid=sid, state=state, question=question, open_gaps=open_gaps)
+    return render_template("session.html",
+        sid=sid,
+        state=state,
+        question=question,
+        open_gaps=open_gaps,
+        gap_type=gap_type,
+        last_result=last_result,
+    )
 
 @app.route("/session/<sid>", methods=["POST"])
 def submit_answer(sid):
-    state = SESSION_STORE.get(sid)
-    if not state:
+    entry = SESSION_STORE.get(sid)
+    if not entry:
         return redirect(url_for("index"))
+    state = entry["state"]
     response = request.form.get("response", "").strip()
     if response:
-        run_iteration(state, response)
+        result = run_iteration(state, response)
+        entry["last_result"] = result
     return redirect(url_for("show_session", sid=sid))
 
 if __name__ == "__main__":

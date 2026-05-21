@@ -1,26 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
 <head><meta charset="UTF-8"><title>InventorAI — Session</title>
-<style>body{font-family:sans-serif;max-width:700px;margin:60px auto;padding:0 20px}.meta{background:#f8f9fa;padding:12px;border-radius:4px;margin-bottom:20px;font-size:14px}.question{font-size:18px;margin-bottom:16px;color:#2c3e50}textarea{width:100%;padding:12px;font-size:16px;border:1px solid #ccc;border-radius:4px}button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:none;border-radius:4px;font-size:16px;cursor:pointer}.complete{color:#27ae60;font-weight:bold}</style>
+<style>
+body{font-family:sans-serif;max-width:700px;margin:60px auto;padding:0 20px}
+.meta{background:#f8f9fa;padding:12px;border-radius:4px;margin-bottom:20px;font-size:14px}
+.question{font-size:18px;margin-bottom:16px;color:#2c3e50}
+textarea{width:100%;padding:12px;font-size:16px;border:1px solid #ccc;border-radius:4px}
+button{margin-top:10px;padding:10px 24px;background:#2c3e50;color:white;border:none;border-radius:4px;font-size:16px;cursor:pointer}
+.complete{color:#27ae60;font-weight:bold}
+.evidence{background:#fff8e1;border:1px solid #ffe082;border-radius:4px;padding:12px;margin-top:20px;font-size:13px}
+.evidence h3{margin:0 0 10px 0;font-size:14px;color:#f57f17}
+.evidence table{width:100%;border-collapse:collapse}
+.evidence td{padding:4px 8px;vertical-align:top}
+.evidence td:first-child{font-weight:bold;color:#555;width:140px;white-space:nowrap}
+.tag{display:inline-block;background:#e3f2fd;border-radius:3px;padding:2px 6px;margin:2px;font-size:12px}
+.tag-warn{background:#fff3e0;color:#e65100}
+.tag-pass{background:#e8f5e9;color:#2e7d32}
+</style>
 </head>
 <body>
 <h1>InventorAI</h1>
 <div class="meta">
-<strong>Domain:</strong> {{ state.domain }} &nbsp;|&nbsp;
-<strong>Maturity:</strong> {{ state.maturity_level }} &nbsp;|&nbsp;
-<strong>Iteration:</strong> {{ state.iteration }}
+  <strong>Domain:</strong> {{ state.domain }} &nbsp;|&nbsp;
+  <strong>Maturity:</strong> {{ state.maturity_level }} &nbsp;|&nbsp;
+  <strong>Iteration:</strong> {{ state.iteration }}
 </div>
+
 {% if question %}
 <p class="question">{{ question }}</p>
 <form method="POST" action="/session/{{ sid }}">
-<textarea name="response" rows="4" placeholder="Your answer..." required></textarea>
-<br><button type="submit">Submit</button>
+  <textarea name="response" rows="4" placeholder="Your answer..." required></textarea>
+  <br><button type="submit">Submit</button>
 </form>
 {% else %}
 <p class="complete">All gaps addressed.</p>
 <p><a href="/">Start a new idea</a></p>
 {% endif %}
+
 {% if open_gaps %}
 <p style="font-size:14px;color:#555"><strong>Open gaps:</strong> {% for g in open_gaps %}{{ g.gap_type }}{% if not loop.last %}, {% endif %}{% endfor %}</p>
 {% endif %}
+
+{% if last_result %}
+<div class="evidence">
+  <h3>⚙ Evidence Panel</h3>
+  <table>
+    <tr>
+      <td>Targeted Gap</td>
+      <td>{{ last_result.gap_targeted if last_result.gap_targeted else '—' }}</td>
+    </tr>
+    <tr>
+      <td>Transition</td>
+      <td><span class="tag {% if last_result.transition == 'WARN' %}tag-warn{% elif last_result.transition == 'PASS' %}tag-pass{% endif %}">
+        {{ last_result.transition if last_result.transition else '—' }}
+      </span></td>
+    </tr>
+    <tr>
+      <td>Reason</td>
+      <td>{{ last_result.reason if last_result.reason else '—' }}</td>
+    </tr>
+    <tr>
+      <td>Direction</td>
+      <td>{{ last_result.direction if last_result.direction else '—' }}</td>
+    </tr>
+    <tr>
+      <td>Maturity</td>
+      <td>{{ last_result.maturity_level }}</td>
+    </tr>
+  </table>
+</div>
+{% endif %}
+
 </body></html>
