@@ -5,7 +5,7 @@ MVP: 3 rules maximum per MVP_SCOPE_FREEZE.md
 
 ELECTRONICS_SIGNALS = [
     "circuit", "sensor", "voltage", "current", "resistor",
-    "capacitor", "microcontroller", "arduino", "esp32",
+    "capacitor", "microcontroller", "arduino", "esp32", "led",
     "wifi", "bluetooth", "iot", "pcb", "transistor",
     "كهربائي", "دائرة", "مستشعر", "جهد", "تيار",
     "ميكروكنترولر", "لوحة", "إلكترونيات"
