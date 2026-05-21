@@ -42,3 +42,48 @@ def get_active_rules(domain: str) -> list:
             "BOUNDARY_AMBIGUITY",
         ]
     return []
+
+# ------------------------------------
+# Domain-specific question registry
+# ------------------------------------
+
+MECHANICAL_QUESTIONS = {
+    "MECHANISM_COMPLETENESS": [
+        "Describe the physical steps your mechanism takes to achieve its function. "
+        "What moves, connects, or transfers force?",
+        "What are the individual mechanical components and how does each one contribute "
+        "to the overall motion or function?",
+        "If someone tried to build your mechanism tomorrow with no further explanation, "
+        "what physical detail would be missing?",
+    ],
+    "PHYSICAL_FEASIBILITY": [
+        "What physical principle does your mechanism rely on? "
+        "(e.g. leverage, spring tension, gear ratio, friction)",
+        "What are the material or force constraints your mechanism must operate within?",
+    ],
+    "BOUNDARY_AMBIGUITY": [
+        "What does your mechanism specifically NOT do or NOT cover? "
+        "State at least one clear mechanical boundary.",
+        "Name one existing mechanical approach similar to yours. "
+        "What makes yours different in a concrete, physical way?",
+    ],
+}
+
+_DOMAIN_QUESTIONS = {
+    "mechanical": MECHANICAL_QUESTIONS,
+}
+
+
+def get_domain_question(domain: str, gap_type: str, iterations_open: int) -> str | None:
+    """
+    Return a domain-specific question for gap_type, or None to trigger generic fallback.
+    Domain layer owns questions. Engine must not contain domain-specific question logic.
+    """
+    domain_bank = _DOMAIN_QUESTIONS.get(domain)
+    if not domain_bank:
+        return None
+    variants = domain_bank.get(gap_type)
+    if not variants:
+        return None
+    index = min(iterations_open, len(variants) - 1)
+    return variants[index]

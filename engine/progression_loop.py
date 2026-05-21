@@ -89,11 +89,16 @@ QUESTIONS = {
 }
 
 
-def get_question(gap_type: str, iterations_open: int) -> str:
+def get_question(domain: str, gap_type: str, iterations_open: int) -> str:
     """
     Select question for gap_type.
-    Rotates through variants to avoid repetition on stall.
+    Asks domain layer first; falls back to generic questions.
+    Framework-level delegation — no domain-specific logic here.
     """
+    from engine.domain_rules import get_domain_question
+    domain_q = get_domain_question(domain, gap_type, iterations_open)
+    if domain_q:
+        return domain_q
     variants = QUESTIONS[gap_type]
     index = min(iterations_open, len(variants) - 1)
     return variants[index]
@@ -311,7 +316,7 @@ def run_iteration(state: IdeaState, response: str) -> dict:
     # Get question
     gap = state.get_gap(gap_type)
     iterations_open = gap.iterations_open if gap else 0
-    question = get_question(gap_type, iterations_open)
+    question = get_question(state.domain, gap_type, iterations_open)
 
     # Integrate response
     transition, reason = integrate_response(state, gap_type, question, response)
