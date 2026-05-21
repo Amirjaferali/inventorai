@@ -2,30 +2,109 @@
 <html lang="en">
 <head><meta charset="UTF-8"><title>InventorAI — Session</title>
 <style>
-body{font-family:sans-serif;max-width:700px;margin:60px auto;padding:0 20px}
-.meta{background:#f8f9fa;padding:12px;border-radius:4px;margin-bottom:20px;font-size:14px}
-.question{font-size:18px;margin-bottom:16px;color:#2c3e50}
-textarea{width:100%;padding:12px;font-size:16px;border:1px solid #ccc;border-radius:4px}
-button{margin-top:10px;padding:10px 24px;background:#2c3e50;color:white;border:none;border-radius:4px;font-size:16px;cursor:pointer}
-.complete{color:#27ae60;font-weight:bold}
-.evidence{background:#fff8e1;border:1px solid #ffe082;border-radius:4px;padding:12px;margin-top:20px;font-size:13px}
-.evidence h3{margin:0 0 10px 0;font-size:14px;color:#f57f17}
-.evidence table{width:100%;border-collapse:collapse}
-.evidence td{padding:4px 8px;vertical-align:top}
-.evidence td:first-child{font-weight:bold;color:#555;width:140px;white-space:nowrap}
-.tag{display:inline-block;background:#e3f2fd;border-radius:3px;padding:2px 6px;margin:2px;font-size:12px}
-.tag-warn{background:#fff3e0;color:#e65100}
-.tag-pass{background:#e8f5e9;color:#2e7d32}
+body{font-family:sans-serif;max-width:720px;margin:60px auto;padding:0 20px;color:#222}
+h1{color:#2c3e50;margin-bottom:4px}
+.meta{background:#f0f4f8;padding:10px 14px;border-radius:4px;margin-bottom:18px;font-size:13px;color:#444}
+
+/* Progress Bar */
+.progress-section{margin-bottom:20px}
+.progress-label{font-size:13px;color:#555;margin-bottom:4px}
+.progress-track{background:#dde3ea;border-radius:8px;height:14px;width:100%;overflow:hidden}
+.progress-fill{background:#2c3e50;height:14px;border-radius:8px}
+
+/* Gap Board */
+.gap-board{margin-bottom:20px}
+.gap-board h3{font-size:14px;color:#555;margin:0 0 8px 0;text-transform:uppercase;letter-spacing:.5px}
+.gap-row{display:flex;align-items:center;padding:6px 10px;border-radius:4px;margin-bottom:4px;font-size:13px;background:#f8f9fa;border:1px solid #e2e6ea}
+.gap-row.current{background:#fff8e1;border-color:#ffe082;font-weight:bold}
+.gap-row.closed{background:#f0faf0;border-color:#c8e6c9;color:#555}
+.gap-status{width:60px;font-size:11px;padding:2px 6px;border-radius:3px;text-align:center;margin-right:10px;font-weight:bold}
+.status-open{background:#fff3e0;color:#e65100}
+.status-closed{background:#e8f5e9;color:#2e7d32}
+.status-current{background:#fff8e1;color:#f57f17}
+.gap-name{flex:1}
+.current-arrow{margin-left:6px;color:#f57f17}
+
+/* Transition Badge */
+.transition-section{margin-bottom:20px}
+.transition-section h3{font-size:14px;color:#555;margin:0 0 8px 0;text-transform:uppercase;letter-spacing:.5px}
+.badge{display:inline-block;padding:4px 12px;border-radius:4px;font-size:13px;font-weight:bold;margin-right:8px}
+.badge-warn{background:#fff3e0;color:#e65100;border:1px solid #ffcc02}
+.badge-pass{background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7}
+.badge-block{background:#fdecea;color:#c62828;border:1px solid #ef9a9a}
+.badge-none{background:#f0f4f8;color:#555;border:1px solid #ccc}
+.reason-text{font-size:13px;color:#555;margin-top:6px}
+.direction-text{font-size:12px;color:#888;margin-top:4px}
+
+/* Question */
+.question{font-size:18px;margin-bottom:16px;color:#2c3e50;line-height:1.5}
+textarea{width:100%;padding:12px;font-size:15px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box}
+button{margin-top:10px;padding:10px 24px;background:#2c3e50;color:white;border:none;border-radius:4px;font-size:15px;cursor:pointer}
+.complete{color:#27ae60;font-weight:bold;font-size:18px}
+hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
 </style>
 </head>
 <body>
 <h1>InventorAI</h1>
+
 <div class="meta">
-  <strong>Domain:</strong> {{ state.domain }} &nbsp;|&nbsp;
-  <strong>Maturity:</strong> {{ state.maturity_level }} &nbsp;|&nbsp;
+  <strong>Domain:</strong> {{ state.domain if state.domain else '—' }} &nbsp;|&nbsp;
   <strong>Iteration:</strong> {{ state.iteration }}
 </div>
 
+<!-- Progress Bar -->
+<div class="progress-section">
+  <div class="progress-label">Maturity Level: {{ state.maturity_level }} / 5</div>
+  <div class="progress-track">
+    <div class="progress-fill" style="width:{{ (state.maturity_level / 5 * 100)|int }}%"></div>
+  </div>
+</div>
+
+<!-- Gap Status Board -->
+{% if state.gaps %}
+<div class="gap-board">
+  <h3>Gap Journey</h3>
+  {% for g in state.gaps %}
+  <div class="gap-row {% if g.gap_type == gap_type %}current{% elif g.status == 'CLOSED' %}closed{% endif %}">
+    {% if g.gap_type == gap_type %}
+      <span class="gap-status status-current">ACTIVE</span>
+    {% elif g.status == 'CLOSED' %}
+      <span class="gap-status status-closed">CLOSED</span>
+    {% else %}
+      <span class="gap-status status-open">OPEN</span>
+    {% endif %}
+    <span class="gap-name">{{ g.gap_type }}</span>
+    {% if g.gap_type == gap_type %}<span class="current-arrow">◀ current</span>{% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<!-- Last Transition -->
+{% if last_result %}
+<div class="transition-section">
+  <h3>Last Transition</h3>
+  {% if last_result.transition == 'PASS' %}
+    <span class="badge badge-pass">PASS</span>
+  {% elif last_result.transition == 'WARN' %}
+    <span class="badge badge-warn">WARN</span>
+  {% elif last_result.transition == 'BLOCK' %}
+    <span class="badge badge-block">BLOCK</span>
+  {% else %}
+    <span class="badge badge-none">{{ last_result.transition if last_result.transition else '—' }}</span>
+  {% endif %}
+  {% if last_result.reason %}
+  <div class="reason-text">{{ last_result.reason }}</div>
+  {% endif %}
+  {% if last_result.direction %}
+  <div class="direction-text">Direction: {{ last_result.direction }}</div>
+  {% endif %}
+</div>
+{% endif %}
+
+<hr>
+
+<!-- Question or Complete -->
 {% if question %}
 <p class="question">{{ question }}</p>
 <form method="POST" action="/session/{{ sid }}">
@@ -33,42 +112,15 @@ button{margin-top:10px;padding:10px 24px;background:#2c3e50;color:white;border:n
   <br><button type="submit">Submit</button>
 </form>
 {% else %}
-<p class="complete">All gaps addressed.</p>
+<p class="complete">✓ All gaps addressed.</p>
 <p><a href="/">Start a new idea</a></p>
 {% endif %}
 
 {% if open_gaps %}
-<p style="font-size:14px;color:#555"><strong>Open gaps:</strong> {% for g in open_gaps %}{{ g.gap_type }}{% if not loop.last %}, {% endif %}{% endfor %}</p>
-{% endif %}
-
-{% if last_result %}
-<div class="evidence">
-  <h3>⚙ Evidence Panel</h3>
-  <table>
-    <tr>
-      <td>Targeted Gap</td>
-      <td>{{ last_result.gap_targeted if last_result.gap_targeted else '—' }}</td>
-    </tr>
-    <tr>
-      <td>Transition</td>
-      <td><span class="tag {% if last_result.transition == 'WARN' %}tag-warn{% elif last_result.transition == 'PASS' %}tag-pass{% endif %}">
-        {{ last_result.transition if last_result.transition else '—' }}
-      </span></td>
-    </tr>
-    <tr>
-      <td>Reason</td>
-      <td>{{ last_result.reason if last_result.reason else '—' }}</td>
-    </tr>
-    <tr>
-      <td>Direction</td>
-      <td>{{ last_result.direction if last_result.direction else '—' }}</td>
-    </tr>
-    <tr>
-      <td>Maturity</td>
-      <td>{{ last_result.maturity_level }}</td>
-    </tr>
-  </table>
-</div>
+<p style="font-size:13px;color:#888;margin-top:16px">
+  <strong>Open gaps:</strong>
+  {% for g in open_gaps %}{{ g.gap_type }}{% if not loop.last %}, {% endif %}{% endfor %}
+</p>
 {% endif %}
 
 </body></html>
