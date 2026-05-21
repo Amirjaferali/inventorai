@@ -1,58 +1,68 @@
 # InventorAI — Next Session Notes
 
 ## Last Completed Phase
-**Phase F-B — Domain-Owned Questions via Registry**
-Commit: `338d85b`
+**Phase F-C — Medical Device Domain (Scalability Proof)**
+Commit: `3ad2014`
 
 ## Goal
-Move question ownership from the progression engine to the domain layer.
-Prove that domain-specific questions can be served without engine branching.
+Add a structurally different third domain to prove the architecture
+scales beyond electronics and mechanical without engine modification.
 
-## Result
-Mechanical-specific questions now live in domain_rules.py.
-progression_loop.py change: framework-level delegation only.
-No if domain == ... branching inside progression engine.
+## Domain Added
+medical_device — implemented in engine/domain_rules.py only.
 
-## Engine Change (framework-level only)
-- get_question() now accepts domain parameter
-- Delegates to get_domain_question() in domain layer
-- Falls back to generic QUESTIONS if domain returns None
-- Call site updated: get_question(state.domain, gap_type, iterations_open)
-- Zero domain-specific logic added to engine
+## Implementation Details
+- MEDICAL_SIGNALS added to domain_rules.py
+- MEDICAL_QUESTIONS added to domain_rules.py
+- get_active_rules() extended with medical_device branch
+- _DOMAIN_QUESTIONS registry updated with medical_device questions
+- infer_domain() refactored to specificity scoring:
+    scores counted per domain, highest wins
+    tie-breaker: medical_device > electronics_electrical > mechanical
 
 ## Evidence
-- Mechanical question retrieval: PASS
-- Electronics fallback: PASS
-- Unknown domain fallback: PASS
+- Medical examples: 4/4 PASS
+- Electronics examples: 3/3 PASS
+- Mechanical examples: 2/2 PASS
+- Negative examples: 4/4 PASS
+- progression_loop.py: UNCHANGED — zero diff
+- scoring.py: UNCHANGED — zero diff
+- summary.py: UNCHANGED — zero diff
 - Replay benchmark: 19/22, 0% variance
-- git diff progression_loop.py: 3 deletions, framework lines only
+- Files changed: engine/domain_rules.py only
 
-## Guardrail Preserved
-Engine requests questions. Domain layer owns questions.
-Architecture guardrail Section 2 and Section 3 confirmed in practice.
+## Architecture Issue Discovered and Resolved
+Domain conflict: "Non-invasive glucose monitoring sensor" was classified
+as electronics_electrical because "sensor" matched first.
 
-## Phase F-C Warning
-Phase F-C must prove scalability with a third domain.
-Goal: prove the system is not designed only around mechanical.
+Root cause: first-match ordering gave electronics priority over medical.
+Resolution: specificity scoring — domain with most matched signals wins.
+This is domain layer logic only — engine was not touched.
 
-Phase F-C success criteria:
-- Third domain added via domain layer only
-- progression_loop.py diff: zero lines changed
-- Domain questions served via existing registry interface
-- Replay benchmark remains 19/22, 0% variance
+Technical debt noted: keyword-based scoring is MVP-only.
+Future replacement: ML/LLM classifier (Phase G+).
 
-If F-C requires any engine change, it must be framework-level
-and requires explicit architecture review before proceeding.
+## Conclusion
+Three structurally different domains — electronics, mechanical, and
+medical device — now work through the same domain-layer architecture
+without modifying the core engine.
+
+This confirms progression_loop.py is functioning as a framework engine,
+not a domain-specific engine.
+
+The architecture guardrail (Section 4 — Architectural Acceptance Rule)
+has been validated across three independent domain additions.
 
 ## Next Phase
-**Phase F-C — Third Domain (Scalability Proof)**
-Recommended: software or chemical domain
-Goal: prove architecture scales to N domains without engine modification.
+**Phase F-D — Software Domain**
+Goal: prove architecture handles non-physical invention domain.
+Key question: do generic gap types (MECHANISM_COMPLETENESS etc.)
+apply meaningfully to software inventions?
+This may require architectural discussion before implementation.
 
 ## Technical Debt (carried forward)
-- _SUBSTANCE_SIGNALS is keyword-based — acceptable for MVP only.
-- Phase G should replace/supplement with AI-advisory assessment.
-- Deterministic gate ownership must remain outside AI.
-- Keyword-based domain inference is MVP-only (Phase G+ replacement).
-- QUESTIONS bank still lives in progression_loop.py — future refactor
-  should move it to domain layer or generic registry.
+- _SUBSTANCE_SIGNALS keyword-based — Phase G replacement needed
+- Keyword-based domain inference — MVP only
+- QUESTIONS bank still in progression_loop.py — future refactor
+- Specificity scoring is MVP-only — Phase G+ ML/LLM replacement
+- Medical domain: no regulatory/compliance/safety scope — intentional MVP limit
