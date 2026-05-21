@@ -6,9 +6,9 @@ DO NOT modify engine behavior from this file.
 """
 
 import sys
+sys.path.insert(0, '.')
 import json
 from engine.summary import build_summary
-sys.path.insert(0, '.')
 
 from engine.idea_state import IdeaState, Gap, MECHANISM_COMPLETENESS, OPEN
 from engine.progression_loop import run_iteration
@@ -124,6 +124,13 @@ def run_cli():
             for g in state.gaps:
                 print(f"  {g.gap_type}: {g.status}")
             print("─" * 60)
+            summary = build_summary(state)
+            print()
+            print("═" * 60)
+            print("FINAL SUMMARY")
+            print("═" * 60)
+            print(__import__("json").dumps(summary, indent=2, default=str))
+            print("═" * 60)
             break
 
         if i == MAX_ITERATIONS:
@@ -137,7 +144,7 @@ def run_cli():
         print("═" * 60)
         print(json.dumps(summary, indent=2, default=str))
         print("═" * 60)
-            print("─" * 60)
+        print("-" * 60)
 
 if __name__ == "__main__":
     run_cli()
