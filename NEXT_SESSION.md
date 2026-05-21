@@ -1,92 +1,89 @@
 # InventorAI — Next Session Notes
 
-## Last Completed Phase
-**Phase G-A — AI Advisory Layer (Question Generation Only)**
-Commit: `af02e64`
+## Phase G-A — CLOSED
+**AI Advisory Layer (Question Generation Only)**
+Commit: af02e64
 
-## Files Changed in G-A
+### What was built:
+- engine/ai_advisor.py: all AI logic lives here
+- AI_ADVISORY_ENABLED = False by default
+- One call site in progression_loop.py only
+- Fallback chain: AI -> domain questions -> generic questions
+- Benchmark assertion: AI must be disabled during benchmark
 
-### New files:
-- engine/ai_advisor.py — AI advisory layer (all AI logic lives here)
-- scripts/run_replay_benchmark.py — benchmark utility (was untracked, now committed)
+### Evidence:
+- idea_state.py: UNCHANGED
+- scoring.py: UNCHANGED
+- summary.py: UNCHANGED
+- domain_rules.py: UNCHANGED
+- Replay benchmark: 19/22, variance 0%
+- AI authority: question generation only — no gates, no scoring, no progression
 
-### Modified files:
-- engine/progression_loop.py — one call site only (question retrieval)
+---
 
-### Unchanged files (confirmed zero diff):
-- engine/idea_state.py — UNCHANGED
-- engine/scoring.py — UNCHANGED
-- engine/summary.py — UNCHANGED
-- engine/domain_rules.py — UNCHANGED
-- engine/normalize_output.py — UNCHANGED
+## Phase G-B — DEFERRED
+**Reason: ANTHROPIC_API_KEY not found in Codespace environment**
 
-## scripts/run_replay_benchmark.py — Purpose Clarification
+Verified:
+    python3 -c "import os; print(os.environ.get(ANTHROPIC_API_KEY))"
+    Result: NOT FOUND | length: 0
 
-This file existed before G-A but was untracked in git.
-It was committed in G-A because we added one assertion to it:
+Decision:
+- No API key will be added now
+- No secrets or environment changes now
+- G-B deferred until API key is available in environment
 
-    from engine.ai_advisor import AI_ADVISORY_ENABLED
-    assert not AI_ADVISORY_ENABLED, "AI must be disabled during benchmark run"
+When G-B resumes:
+- No changes to progression_loop.py
+- No changes to any engine file except ai_advisor.py
+- Tests in tests/ only
+- API key read from environment only — never stored in repo
+- benchmark must remain: 19/22, variance 0%
+- AI_ADVISORY_ENABLED stays False in production and benchmark
 
-Purpose of the file:
-- Benchmark utility / verification runner
-- Validates deterministic extraction boundary only
-- NOT part of the decision engine
-- NOT part of AI advisory layer
-- Does not contain progression logic, scoring, or gate decisions
+---
 
-## AI Authority — G-A Scope
+## AI Governance — Permanent Rule
+AI authority in this system = question generation only.
 
-AI MAY (in G-A):
-- Generate one contextual question string
+AI MAY: generate contextual question string
+AI MAY NOT:
+- classify domain
+- assess response quality
+- evaluate transitions
+- close gaps
+- issue PASS/BLOCK
+- decide maturity level
+- control progression state
 
-AI MAY NOT (permanently):
-- Decide maturity level
-- Close gaps
-- Issue PASS / BLOCK
-- Control progression state
-- Modify scoring
-- Touch gate decisions
+This rule does not change in G-B or any future phase.
 
-AI_ADVISORY_ENABLED = False by default.
-System works fully without AI. Fallback chain:
-    get_ai_question() -> None
-        -> get_question(domain, gap_type, iterations_open)  [domain layer]
-            -> QUESTIONS[gap_type]  [generic fallback]
+---
 
-## Benchmark Determinism
+## Next: Phase H — Web Interface
+Phase H is independent of G-B.
+G-B deferred does not block Phase H.
 
-Replay benchmark: 19/22 PASS | Failed: 0 | Variance: 0%
-AI assertion verified: AI_ADVISORY_ENABLED = False during benchmark.
-Benchmark is unaffected by AI advisory layer.
+Before Phase H implementation, architecture discussion required:
+- What framework? (Flask, FastAPI, other)
+- Does web layer touch engine directly or via API?
+- How does session state persist across HTTP requests?
+- How does image intake (Phase H+) integrate?
+- What changes in engine files, if any?
 
-## Context Dict (no state changes)
+Phase H must not modify:
+- progression_loop.py (unless framework-level change)
+- scoring.py
+- summary.py
+- domain_rules.py
+- ai_advisor.py
 
-_ai_context built from existing fields only:
-    {
-        domain: state.domain,          # existing field
-        gap_type: gap_type,            # local variable
-        idea_summary: getattr(state, idea_summary, None),  # safe fallback
-        last_response: response[:200], # run_iteration() parameter
-        iteration: state.iteration,    # existing field
-    }
-
-No new fields added to IdeaState.
-No migration required.
-No serialization changes.
-
-## Next Phase: G-B (when ready)
-Options for G-B:
-- Enable AI_ADVISORY_ENABLED and test with real API call
-- Add AI-enhanced domain classification (advisory only)
-- Add AI response quality advisory (no gate authority)
-
-Must discuss before implementing G-B.
-AI boundary (ARCHITECTURE_GUARDRAILS.md Section 6) must be reviewed first.
+---
 
 ## Technical Debt (carried forward)
-- _SUBSTANCE_SIGNALS keyword-based — Phase G replacement needed
+- _SUBSTANCE_SIGNALS keyword-based — Phase G+ replacement
 - Keyword-based domain inference — MVP only
-- QUESTIONS bank still in progression_loop.py — future refactor
-- Software gap taxonomy is subset only — future richer taxonomy
-- AI_ADVISORY_ENABLED = False — needs controlled test environment for G-B
+- QUESTIONS bank in progression_loop.py — future refactor
+- Software gap taxonomy subset only — future richer taxonomy
+- AI_ADVISORY_ENABLED = False — pending G-B when API key available
+- Specificity scoring MVP-only — Phase G+ ML/LLM replacement
