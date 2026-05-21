@@ -33,3 +33,18 @@
 - What triggers MECHANISM_COMPLETENESS to close (CLOSED)?
 - Are the 3 gap types sufficient to differentiate simple vs complex ideas?
 
+
+## Critical Finding — Bias Test
+
+| S-04 | Smart LED voice control | electronics | 1 | 1 | MECHANISM_COMPLETENESS:PARTIAL | NO | BIAS CONFIRMED: answer "I don't know" accepted as valid → Level 1 reached. Engine evaluates answer presence not quality. |
+
+## Root Cause Identified
+engine/progression_loop.py assigns quality=ASSERTED to ANY non-empty text.
+Minimum viable answer threshold does not exist.
+A blank or nonsensical answer advances maturity level.
+
+## Phase E Required Fix
+Add minimum quality gate before maturity advancement:
+- Reject answers under N characters
+- Reject answers matching weak-answer patterns ("I don't know", "not sure", "maybe")
+- Only then allow maturity transition
