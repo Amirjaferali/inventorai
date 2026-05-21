@@ -6,3 +6,30 @@
 
 ## Sessions
 
+
+## Sessions Executed
+
+| session_id | idea_summary | domain_detected | iterations | final_level | open_gap | next_step_useful | observations |
+|------------|--------------|-----------------|------------|-------------|----------|------------------|--------------|
+| S-01 | Smart irrigation sensor WiFi | electronics | 2 | 2 | MECHANISM_COMPLETENESS:PARTIAL | Yes | Engine works end-to-end |
+| S-02 | Wearable HR monitor PPG/BLE | electronics | 2 | 2 | MECHANISM_COMPLETENESS:PARTIAL | Partial | Engine does not evaluate answer quality — detailed mechanism still flagged PARTIAL |
+| S-03 | Plant watering Arduino | electronics | — | — | — | — | STOPPED — same path as S-01/S-02 |
+
+## Findings After 2 Complete Sessions
+
+### Confirmed Working
+- Domain detection: electronics keywords trigger correctly
+- Progression: Level 0 → 1 → 2 in 2 iterations consistently
+- Summary: JSON output correct and complete
+- CLI: stable, no crashes
+
+### Known Weakness Discovered
+- MECHANISM_COMPLETENESS gap remains PARTIAL even after detailed technical answers
+- Engine evaluates presence of answer, not quality or completeness
+- All electronics ideas follow identical 2-iteration path — no differentiation by complexity
+
+### Open Questions for Next Sessions
+- Does a vague/weak answer also reach Level 2 in 2 iterations?
+- What triggers MECHANISM_COMPLETENESS to close (CLOSED)?
+- Are the 3 gap types sufficient to differentiate simple vs complex ideas?
+
