@@ -1,106 +1,92 @@
 # InventorAI — Next Session Notes
 
 ## Last Completed Phase
-**Phase F-D — Software Domain**
-Commit: `9d417aa`
+**Phase G-A — AI Advisory Layer (Question Generation Only)**
+Commit: `af02e64`
 
-## Files Changed
-- engine/domain_rules.py — CHANGED (software domain added)
-- engine/progression_loop.py — UNCHANGED / zero diff
-- engine/scoring.py — UNCHANGED / zero diff
-- engine/summary.py — UNCHANGED / zero diff
+## Files Changed in G-A
 
-## Software Domain Evidence
-Software examples 4/4 PASS:
-- Algorithm for real-time data compression -> software PASS
-- Mobile app for tracking medication schedules -> software PASS
-- API gateway with rate limiting logic -> software PASS
-- Web platform for project management -> software PASS
+### New files:
+- engine/ai_advisor.py — AI advisory layer (all AI logic lives here)
+- scripts/run_replay_benchmark.py — benchmark utility (was untracked, now committed)
 
-Negative examples (no false positives):
-- HR recruitment platform -> None PASS
-- Marketing campaign tool -> None PASS
-- Restaurant menu idea -> None PASS
+### Modified files:
+- engine/progression_loop.py — one call site only (question retrieval)
 
-All existing domains unaffected:
-- Electronics 2/2 PASS
-- Mechanical 1/1 PASS
-- Medical 2/2 PASS
+### Unchanged files (confirmed zero diff):
+- engine/idea_state.py — UNCHANGED
+- engine/scoring.py — UNCHANGED
+- engine/summary.py — UNCHANGED
+- engine/domain_rules.py — UNCHANGED
+- engine/normalize_output.py — UNCHANGED
 
-## Replay Benchmark
-Total: 22 | Passed: 19 | Failed: 0 | Skipped: 3 | Variance: 0%
+## scripts/run_replay_benchmark.py — Purpose Clarification
 
-## Gap Taxonomy Used for Software (MVP subset)
-INCLUDED:
-- MECHANISM_COMPLETENESS (interpreted as: software logic/workflow/algorithm)
-- BOUNDARY_AMBIGUITY (scope and what the system does NOT do)
+This file existed before G-A but was untracked in git.
+It was committed in G-A because we added one assertion to it:
 
-EXCLUDED:
-- PHYSICAL_FEASIBILITY — assumes physical constraints, not applicable to software
+    from engine.ai_advisor import AI_ADVISORY_ENABLED
+    assert not AI_ADVISORY_ENABLED, "AI must be disabled during benchmark run"
 
-This is an MVP interpretation. Future richer taxonomy requires framework review.
+Purpose of the file:
+- Benchmark utility / verification runner
+- Validates deterministic extraction boundary only
+- NOT part of the decision engine
+- NOT part of AI advisory layer
+- Does not contain progression logic, scoring, or gate decisions
 
-## Architectural Note
-Phase F-D proved that a non-physical invention domain (software) was added
-without modifying the core progression engine.
+## AI Authority — G-A Scope
 
-This confirms the framework engine hypothesis:
-progression_loop.py does not need to know domain details.
-Domain behavior — signals, questions, rules, gap subsets — lives entirely
-in the domain layer (domain_rules.py).
+AI MAY (in G-A):
+- Generate one contextual question string
 
-Four structurally different domains now operate through the same engine:
-- electronics_electrical (physical, electronic)
-- mechanical (physical, motion-based)
-- medical_device (biological + physical + regulatory context)
-- software (non-physical, logic-based)
+AI MAY NOT (permanently):
+- Decide maturity level
+- Close gaps
+- Issue PASS / BLOCK
+- Control progression state
+- Modify scoring
+- Touch gate decisions
 
-All added via domain_rules.py only. Engine untouched across all four.
+AI_ADVISORY_ENABLED = False by default.
+System works fully without AI. Fallback chain:
+    get_ai_question() -> None
+        -> get_question(domain, gap_type, iterations_open)  [domain layer]
+            -> QUESTIONS[gap_type]  [generic fallback]
 
-## Phase F — Complete Summary
+## Benchmark Determinism
 
-| Sub-phase | Achievement                          | Engine changed |
-|-----------|--------------------------------------|----------------|
-| F-A       | Mechanical domain — architecture proof | No            |
-| F-B       | Domain-owned questions via registry  | Framework only |
-| F-C       | Medical device + specificity scoring | No             |
-| F-D       | Software + subset gap taxonomy       | No             |
+Replay benchmark: 19/22 PASS | Failed: 0 | Variance: 0%
+AI assertion verified: AI_ADVISORY_ENABLED = False during benchmark.
+Benchmark is unaffected by AI advisory layer.
 
-## Next: Phase G — Architecture Discussion Required
+## Context Dict (no state changes)
 
-Before implementation, Phase G needs architectural clarity:
+_ai_context built from existing fields only:
+    {
+        domain: state.domain,          # existing field
+        gap_type: gap_type,            # local variable
+        idea_summary: getattr(state, idea_summary, None),  # safe fallback
+        last_response: response[:200], # run_iteration() parameter
+        iteration: state.iteration,    # existing field
+    }
 
-GOAL:
-Phase G introduces AI-advisory capabilities.
-AI may advise, classify, summarize, recommend.
-AI may NOT decide maturity, close gaps, issue PASS/BLOCK.
+No new fields added to IdeaState.
+No migration required.
+No serialization changes.
 
-EXPECTED FILES TO CHANGE:
-- engine/progression_loop.py — possible advisory integration point
-- engine/domain_rules.py — possible AI-enhanced classification
-- New file: engine/ai_advisor.py or similar boundary layer
+## Next Phase: G-B (when ready)
+Options for G-B:
+- Enable AI_ADVISORY_ENABLED and test with real API call
+- Add AI-enhanced domain classification (advisory only)
+- Add AI response quality advisory (no gate authority)
 
-FILES THAT MUST NOT CHANGE BEHAVIOR:
-- evaluate_transition() — must remain deterministic
-- integrate_response() — must remain deterministic
-- assess_response() — must remain deterministic
-
-RISKS:
-- AI boundary violation: AI leaking into gate decisions
-- Latency: AI calls slowing progression loop
-- Determinism: AI responses introducing variance in benchmarks
-- Scope creep: Phase G expanding beyond advisory role
-
-MUST DISCUSS BEFORE PHASE G:
-1. What exactly does AI advise on?
-2. Where in the flow does AI advisory fit?
-3. How do we prevent AI from touching gate logic?
-4. How do we test AI advisory without breaking deterministic benchmarks?
+Must discuss before implementing G-B.
+AI boundary (ARCHITECTURE_GUARDRAILS.md Section 6) must be reviewed first.
 
 ## Technical Debt (carried forward)
 - _SUBSTANCE_SIGNALS keyword-based — Phase G replacement needed
-- Keyword-based domain inference — MVP only (Phase G+ ML/LLM)
+- Keyword-based domain inference — MVP only
 - QUESTIONS bank still in progression_loop.py — future refactor
-- Specificity scoring is MVP-only — Phase G+ replacement
 - Software gap taxonomy is subset only — future richer taxonomy
-- Medical domain: no regulatory/compliance/safety scope — MVP limit
+- AI_ADVISORY_ENABLED = False — needs controlled test environment for G-B
