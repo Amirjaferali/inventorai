@@ -24,11 +24,12 @@ def infer_domain(idea_text: str) -> str | None:
         "electronics_electrical": sum(1 for s in ELECTRONICS_SIGNALS if s in text),
         "mechanical":             sum(1 for s in MECHANICAL_SIGNALS if s in text),
         "medical_device":         sum(1 for s in MEDICAL_SIGNALS if s in text),
+        "software":               sum(1 for s in SOFTWARE_SIGNALS if s in text),
     }
     if max(scores.values()) == 0:
         return None
-    # Tie-breaker priority: medical_device > electronics_electrical > mechanical
-    priority = ["medical_device", "electronics_electrical", "mechanical"]
+    # Tie-breaker priority: medical_device > electronics_electrical > mechanical > software
+    priority = ["medical_device", "electronics_electrical", "mechanical", "software"]
     best_score = max(scores.values())
     for domain in priority:
         if scores[domain] == best_score:
@@ -52,6 +53,13 @@ def get_active_rules(domain: str) -> list:
         return [
             "MECHANISM_COMPLETENESS",
             "PHYSICAL_FEASIBILITY",
+            "BOUNDARY_AMBIGUITY",
+        ]
+    if domain == "software":
+        # MVP: PHYSICAL_FEASIBILITY excluded — assumes physical constraints
+        # Future: richer taxonomy requires framework-level review
+        return [
+            "MECHANISM_COMPLETENESS",
             "BOUNDARY_AMBIGUITY",
         ]
     return []
@@ -119,6 +127,44 @@ MEDICAL_QUESTIONS = {
 }
 
 _DOMAIN_QUESTIONS["medical_device"] = MEDICAL_QUESTIONS
+
+# ------------------------------------
+# Software domain
+# MVP interpretation:
+# MECHANISM_COMPLETENESS = software logic/workflow/algorithm
+# PHYSICAL_FEASIBILITY excluded — assumes physical constraints
+# BOUNDARY_AMBIGUITY = scope and what the system does NOT do
+# This is MVP-only. Future richer taxonomy requires framework review.
+# ------------------------------------
+
+SOFTWARE_SIGNALS = [
+    "software", "app", "application", "algorithm", "api",
+    "database", "web", "mobile", "backend",
+    "frontend", "code", "programming", "system", "workflow",
+    "automation", "dashboard", "interface", "data pipeline",
+    "machine learning", "ml model", "neural network",
+]
+
+SOFTWARE_QUESTIONS = {
+    "MECHANISM_COMPLETENESS": [
+        "Describe specifically how your software works. "
+        "What logic, steps, or process does it follow to produce its output?",
+        "What are the individual components or modules of your system "
+        "and what does each one do?",
+        "If a developer tried to build your software tomorrow with no further "
+        "explanation, what critical logic or workflow detail would be missing?",
+    ],
+    "BOUNDARY_AMBIGUITY": [
+        "What does your software specifically NOT do or NOT cover? "
+        "State at least one clear functional boundary.",
+        "Name one existing software solution similar to yours. "
+        "What makes yours different in a specific, concrete way?",
+        "If someone tried to replicate your software by changing only one module, "
+        "would it still be your system? What is the core logic that cannot be replaced?",
+    ],
+}
+
+_DOMAIN_QUESTIONS["software"] = SOFTWARE_QUESTIONS
 
 def get_domain_question(domain: str, gap_type: str, iterations_open: int) -> str | None:
     """
