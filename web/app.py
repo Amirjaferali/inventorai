@@ -40,12 +40,22 @@ def show_session(sid):
         return redirect(url_for("index"))
     state = entry["state"]
     last_result = entry.get("last_result")
+    INTAKE_QUESTION = "Describe your invention in more detail — what specific problem does it solve, and how does it solve it?"
+
     gap_type = select_next_gap(state)
     question = None
     if gap_type:
         gap = state.get_gap(gap_type)
         iterations_open = gap.iterations_open if gap else 0
         question = get_question(state.domain, gap_type, iterations_open)
+    elif (
+        state.maturity_level == 0
+        and len(state.gaps) == 0
+        and last_result is not None
+        and last_result.get("transition") == "WARN"
+        and "not yet established" in (last_result.get("reason") or "")
+    ):
+        question = INTAKE_QUESTION
     open_gaps = [g for g in state.gaps if g.status == "OPEN"]
     return render_template("session.html",
         sid=sid,
