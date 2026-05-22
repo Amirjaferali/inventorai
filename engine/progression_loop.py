@@ -294,10 +294,27 @@ def run_iteration(state: IdeaState, response: str) -> dict:
     # Select gap
     gap_type = select_next_gap(state)
 
+    # Level-0 problem establishment path
+    # Handles initial response when no gaps exist yet (maturity=0)
+    if gap_type is None and state.maturity_level == 0 and response:
+        quality = assess_response(response)
+        evidence = Evidence(
+            content=response,
+            quality=quality,
+            iteration=state.iteration,
+        )
+        if state.known_problem is None or quality > state.known_problem.quality:
+            state.known_problem = evidence
+
     if gap_type is None:
         can, reason = evaluate_transition(state)
         if can and state.maturity_level < 2:
             state.maturity_level += 1
+        # Level-1 gap initialization: open MECHANISM_COMPLETENESS if maturity just reached 1
+        if state.maturity_level == 1 and len(state.gaps) == 0 and state.get_gap(MECHANISM_COMPLETENESS) is None:
+            from engine.idea_state import Gap
+            gap = Gap(gap_type=MECHANISM_COMPLETENESS, status=OPEN, opened_at=state.iteration)
+            state.gaps.append(gap)
         update_direction(state, prev_level)
         # إذا وصلنا LEVEL 2 — نطلب تعمق في boundary
         closing_q = None
