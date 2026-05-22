@@ -29,7 +29,8 @@ def start():
     state.domain = domain
     state.domain_signal = domain
     sid = str(uuid.uuid4())
-    SESSION_STORE[sid] = {"state": state, "last_result": None}
+    initial_result = run_iteration(state, idea_text)
+    SESSION_STORE[sid] = {"state": state, "last_result": initial_result}
     return redirect(url_for("show_session", sid=sid))
 
 @app.route("/session/<sid>", methods=["GET"])
