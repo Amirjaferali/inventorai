@@ -44,11 +44,25 @@ def select_next_gap(state: IdeaState) -> str | None:
     Return the highest-priority OPEN gap_type.
     Returns None if no open gaps exist.
     """
-    open_gaps = {g.gap_type: g for g in state.gaps if g.status == OPEN}
+    open_gaps = {g.gap_type: g for g in state.gaps if g.status in (OPEN, PARTIAL)}
     for gap_type in GAP_PRIORITY:
         if gap_type in open_gaps:
             return gap_type
     return None
+
+
+def _open_next_gap_if_needed(state):
+    """Open the next GAP_PRIORITY gap if no OPEN/PARTIAL gap exists. Returns gap_type or None."""
+    if any(g.status in (OPEN, PARTIAL) for g in state.gaps):
+        return None
+    for next_gap_type in GAP_PRIORITY:
+        if state.get_gap(next_gap_type) is None:
+            from engine.idea_state import Gap
+            gap = Gap(gap_type=next_gap_type, status=OPEN, opened_at=state.iteration)
+            state.gaps.append(gap)
+            return next_gap_type
+    return None
+
 
 
 # ─────────────────────────────────────────────
@@ -118,19 +132,30 @@ _WEAK_PATTERNS = {
 
 # Substance signals: at least one required for REASONED
 _SUBSTANCE_SIGNALS = [
-    # components/devices
+    # components/devices (electronics)
     "sensor", "microcontroller", "arduino", "esp", "raspberry",
     "motor", "pump", "relay", "led", "display", "battery",
     "chip", "ic", "resistor", "capacitor", "transistor",
     "bluetooth", "wifi", "ble", "mqtt", "uart", "i2c", "spi",
-    # actions/signals
+    # actions/signals (electronics)
     "reads", "sends", "detects", "measures", "activates",
     "triggers", "converts", "transmits", "receives", "processes",
     "samples", "outputs", "controls", "monitors", "calculates",
-    # principles
+    # principles (electronics)
     "voltage", "current", "frequency", "analog", "digital",
     "signal", "threshold", "filter", "protocol", "data",
     "piezoelectric", "hall", "infrared", "ultrasonic", "capacitive",
+    # mechanical domain
+    "piston", "spring", "valve", "gear", "lever", "hydraulic",
+    "pneumatic", "pressure", "torque", "compression", "seal",
+    "bearing", "actuator", "mechanism", "force", "friction", "bar",
+    # software domain
+    "algorithm", "parser", "parses", "tokenize", "tokenizes", "token",
+    "ast", "function", "database", "api", "cache", "latency",
+    "encryption", "runtime", "static analysis",
+    # medical domain
+    "electrode", "biosensor", "optical", "tissue", "glucose",
+    "implant", "catheter", "biomarker", "wearable", "pulse",
 ]
 
 
@@ -315,8 +340,41 @@ def run_iteration(state: IdeaState, response: str) -> dict:
             from engine.idea_state import Gap
             gap = Gap(gap_type=MECHANISM_COMPLETENESS, status=OPEN, opened_at=state.iteration)
             state.gaps.append(gap)
+        # GAP_PRIORITY cascade: open next gap when no OPEN/PARTIAL gap exists
+        next_gap_opened = None
+        if len([g for g in state.gaps if g.status in (OPEN, PARTIAL)]) == 0:
+            for next_gap_type in GAP_PRIORITY:
+                if state.get_gap(next_gap_type) is None:
+                    from engine.idea_state import Gap
+                    gap = Gap(gap_type=next_gap_type, status=OPEN, opened_at=state.iteration)
+                    state.gaps.append(gap)
+                    next_gap_opened = next_gap_type
+                    break
         update_direction(state, prev_level)
         # إذا وصلنا LEVEL 2 — نطلب تعمق في boundary
+        # If cascade opened a new gap, generate its question and return
+        if next_gap_opened:
+            new_gap = state.get_gap(next_gap_opened)
+            iterations_open = new_gap.iterations_open if new_gap else 0
+            from engine.ai_advisor import get_ai_question
+            _ai_ctx = {
+                "domain": state.domain,
+                "gap_type": next_gap_opened,
+                "idea_summary": getattr(state, "idea_summary", None),
+                "last_response": None,
+                "iteration": state.iteration,
+            }
+            next_q = get_ai_question(state.domain, next_gap_opened, _ai_ctx) \
+                or get_question(state.domain, next_gap_opened, iterations_open)
+            return {
+                "iteration"     : state.iteration,
+                "gap_targeted"  : next_gap_opened,
+                "question"      : next_q,
+                "transition"    : "PASS" if can else "WARN",
+                "reason"        : reason,
+                "maturity_level": state.maturity_level,
+                "direction"     : state.direction,
+            }
         closing_q = None
         if state.maturity_level == 2:
             closing_q = "Your mechanism is taking shape. Now state clearly: what does your invention NOT do or NOT cover? Name at least one boundary."
@@ -355,6 +413,33 @@ def run_iteration(state: IdeaState, response: str) -> dict:
         reason = t_reason
 
     update_direction(state, prev_level)
+
+    # GAP_PRIORITY cascade — open next gap if none remain
+    next_gap_opened = _open_next_gap_if_needed(state)
+    if next_gap_opened:
+        new_gap = state.get_gap(next_gap_opened)
+        iterations_open = new_gap.iterations_open if new_gap else 0
+        from engine.ai_advisor import get_ai_question
+        ai_ctx = {
+            "domain": state.domain,
+            "gap_type": next_gap_opened,
+            "idea_summary": getattr(state, "idea_summary", None),
+            "last_response": None,
+            "iteration": state.iteration,
+        }
+        next_q = (
+            get_ai_question(state.domain, next_gap_opened, ai_ctx)
+            or get_question(state.domain, next_gap_opened, iterations_open)
+        )
+        return {
+            "iteration": state.iteration,
+            "gap_targeted": next_gap_opened,
+            "question": next_q,
+            "transition": transition,
+            "reason": reason,
+            "maturity_level": state.maturity_level,
+            "direction": state.direction,
+        }
 
     # Log
     log = IterationLog(
