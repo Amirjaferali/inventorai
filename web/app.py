@@ -78,6 +78,7 @@ def submit_answer(sid):
         entry["last_result"] = result
         import sys
         for g in state.gaps:
+                    pass
     return redirect(url_for("show_session", sid=sid))
 
 if __name__ == "__main__":
