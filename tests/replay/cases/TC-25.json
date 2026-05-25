@@ -1,0 +1,100 @@
+{
+  "fixture_id": "F-025",
+  "case_id": "TC-25",
+  "sig": "c3_missing_info:PATH2+c4_confidence:PATH_B",
+  "idea": "منصة تعليمية متخصصة للمبرمجين العرب المبتدئين",
+  "problem": "لا توجد منصة تعليمية عربية متخصصة بجودة عالية للمبتدئين",
+  "adversarial": "none",
+  "exp_sig": [
+    "APPEARS_FEASIBLE"
+  ],
+  "expected": {
+    "overall": false,
+    "failure_type": "scoring_issue",
+    "weighted_score": 72,
+    "scores": {
+      "c1_schema": true,
+      "c2_no_invented": true,
+      "c3_missing_info": false,
+      "c4_confidence": false,
+      "c5_groundedness": true,
+      "c6_gate_utility": true,
+      "c7_restraint": true
+    },
+    "issues": [
+      "ITEM[0]:MISSING:how_to_provide_ar",
+      "ITEM[1]:MISSING:how_to_provide_ar",
+      "ITEM[2]:MISSING:how_to_provide_ar",
+      "MISMATCH:low_conf+feasible_signal"
+    ],
+    "normalized_output": {
+      "schema_version": "1.1",
+      "domain": "GENERAL",
+      "analysis_language": "ar",
+      "idea_summary": "فكرة لمنصة تعليمية متخصصة",
+      "input_assessment": {
+        "sufficient_for_analysis": true,
+        "confidence_level": "LOW",
+        "limiting_factors_ar": [
+          "معلومات غير كافية"
+        ]
+      },
+      "feasibility": {
+        "assessment_possible": true,
+        "feasibility_signal": "APPEARS_FEASIBLE",
+        "signal_basis_ar": "السوق التعليمي ينمو"
+      },
+      "identified_concerns": {
+        "has_concerns": true,
+        "items": [
+          {
+            "basis_ar": "قلق أول",
+            "why_it_matters_ar": "مهم",
+            "severity": "IMPORTANT",
+            "how_to_provide_ar": ""
+          }
+        ]
+      },
+      "missing_information": {
+        "has_critical_gaps": true,
+        "items": [
+          {
+            "item_ar": "الفئة المستهدفة",
+            "why_needed_ar": "ضروري للتصميم",
+            "how_to_provide_ar": ""
+          },
+          {
+            "item_ar": "نموذج الإيرادات",
+            "why_needed_ar": "ضروري للجدوى",
+            "how_to_provide_ar": ""
+          },
+          {
+            "item_ar": "المنافسون",
+            "why_needed_ar": "لفهم السوق",
+            "how_to_provide_ar": ""
+          }
+        ]
+      },
+      "observations": {
+        "apparent_components_ar": [
+          {
+            "component_ar": "منصة ويب",
+            "basis_ar": "ذُكر ضمنياً"
+          }
+        ]
+      },
+      "next_steps_suggestion": {
+        "suggestion_possible": true,
+        "items_ar": [
+          "تحديد الفئة المستهدفة أولاً"
+        ]
+      },
+      "recommendation": {
+        "action": "REQUEST_INFO",
+        "next_steps_ar": "",
+        "rejection_reason_ar": ""
+      },
+      "disclaimer_ar": "هذا تحليل أولي."
+    }
+  }
+}

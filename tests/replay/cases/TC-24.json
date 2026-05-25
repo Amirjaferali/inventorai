@@ -1,0 +1,70 @@
+{
+  "fixture_id": "F-024",
+  "case_id": "TC-24",
+  "sig": "c6_gate_utility:MISSING_next_steps_ar",
+  "idea": "تطبيق لإدارة المهام اليومية بواجهة بسيطة",
+  "problem": "الناس ينسون مهامهم اليومية ولا يجدون أداة بسيطة",
+  "adversarial": "none",
+  "exp_sig": [
+    "APPEARS_FEASIBLE"
+  ],
+  "expected": {
+    "overall": false,
+    "failure_type": "scoring_issue",
+    "weighted_score": 91,
+    "scores": {
+      "c1_schema": true,
+      "c2_no_invented": true,
+      "c3_missing_info": true,
+      "c4_confidence": true,
+      "c5_groundedness": true,
+      "c6_gate_utility": false,
+      "c7_restraint": true
+    },
+    "issues": [
+      "MISSING:next_steps_ar"
+    ],
+    "normalized_output": {
+      "schema_version": "1.1",
+      "domain": "GENERAL",
+      "analysis_language": "ar",
+      "idea_summary": "فكرة لتطبيق إدارة المهام",
+      "input_assessment": {
+        "sufficient_for_analysis": true,
+        "confidence_level": "MEDIUM",
+        "limiting_factors_ar": []
+      },
+      "feasibility": {
+        "assessment_possible": true,
+        "feasibility_signal": "APPEARS_FEASIBLE",
+        "signal_basis_ar": "السوق موجود والتقنية متاحة"
+      },
+      "identified_concerns": {
+        "has_concerns": false,
+        "items": []
+      },
+      "missing_information": {
+        "has_critical_gaps": false,
+        "items": []
+      },
+      "observations": {
+        "apparent_components_ar": [
+          {
+            "component_ar": "واجهة مستخدم",
+            "basis_ar": "ذُكر في الوصف"
+          }
+        ]
+      },
+      "next_steps_suggestion": {
+        "suggestion_possible": true,
+        "items_ar": []
+      },
+      "recommendation": {
+        "action": "PROCEED",
+        "next_steps_ar": "",
+        "rejection_reason_ar": ""
+      },
+      "disclaimer_ar": "هذا تحليل أولي."
+    }
+  }
+}

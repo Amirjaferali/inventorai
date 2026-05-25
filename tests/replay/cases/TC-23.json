@@ -1,0 +1,72 @@
+{
+  "fixture_id": "F-023",
+  "case_id": "TC-23",
+  "sig": "c4_confidence:PATH_A:OVERCONFIDENT_short_input",
+  "idea": "فكرة",
+  "problem": "مشكلة",
+  "adversarial": "none",
+  "exp_sig": [
+    "APPEARS_FEASIBLE"
+  ],
+  "expected": {
+    "overall": false,
+    "failure_type": "scoring_issue",
+    "weighted_score": 86,
+    "scores": {
+      "c1_schema": true,
+      "c2_no_invented": true,
+      "c3_missing_info": true,
+      "c4_confidence": false,
+      "c5_groundedness": true,
+      "c6_gate_utility": true,
+      "c7_restraint": true
+    },
+    "issues": [
+      "OVERCONFIDENT:short_input"
+    ],
+    "normalized_output": {
+      "schema_version": "1.1",
+      "domain": "GENERAL",
+      "analysis_language": "ar",
+      "idea_summary": "فكرة قصيرة",
+      "input_assessment": {
+        "sufficient_for_analysis": true,
+        "confidence_level": "HIGH",
+        "limiting_factors_ar": []
+      },
+      "feasibility": {
+        "assessment_possible": true,
+        "feasibility_signal": "APPEARS_FEASIBLE",
+        "signal_basis_ar": "يبدو ممكناً"
+      },
+      "identified_concerns": {
+        "has_concerns": false,
+        "items": []
+      },
+      "missing_information": {
+        "has_critical_gaps": false,
+        "items": []
+      },
+      "observations": {
+        "apparent_components_ar": [
+          {
+            "component_ar": "مكون",
+            "basis_ar": "أساس واضح"
+          }
+        ]
+      },
+      "next_steps_suggestion": {
+        "suggestion_possible": true,
+        "items_ar": [
+          "خطوة أولى"
+        ]
+      },
+      "recommendation": {
+        "action": "PROCEED",
+        "next_steps_ar": "ابدأ بالتنفيذ",
+        "rejection_reason_ar": ""
+      },
+      "disclaimer_ar": "هذا تحليل أولي."
+    }
+  }
+}

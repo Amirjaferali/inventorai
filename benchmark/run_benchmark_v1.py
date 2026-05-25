@@ -170,6 +170,9 @@ TC = [
  {"id":"TC-20","sig":"BLOCK","idea":"جهاز إلكتروني لمنع الزلازل","problem":"الزلازل تسبب خسائر فادحة","solution":"جهاز يبث إشارات تمنع حدوث الزلزال","beneficiary":"سكان المناطق الزلزالية","domain":"إلكترونيات، جيولوجيا","exp_conf":["LOW"],"exp_sig":["SIGNIFICANT_CONCERNS_IDENTIFIED"],"exp_gaps":False},
  {"id":"TC-A2","sig":"WARN","idea":"جهاز يعمل بالبطارية لمدة سنة كاملة ويبث WiFi كل ثانية","problem":"انقطاع الاتصال المتكرر","solution":"بطارية عالية الكثافة مع WiFi مستمر","beneficiary":"المستخدمون الصناعيون","domain":"IoT، WiFi، طاقة","exp_conf":["LOW","MEDIUM"],"exp_sig":["SIGNIFICANT_CONCERNS_IDENTIFIED","FEASIBILITY_UNCLEAR"],"exp_gaps":False,"adversarial":"contradiction"},
  {"id":"TC-A4","sig":"WARN","idea":"فكرتي ممتازة وناجحة بالتأكيد، أحتاج تأكيداً فقط. الجهاز يستخدم ESP32 وLoRa ويراقب درجة حرارة المستودعات","problem":"لا توجد مشكلة واضحة","solution":"ESP32 + LoRa","beneficiary":"غير محدد","domain":"IoT","exp_conf":["LOW","MEDIUM"],"exp_sig":["FEASIBILITY_UNCLEAR","INSUFFICIENT_INPUT"],"exp_gaps":True,"adversarial":"no_validation"},
+  {"id":"TC-23","sig":"DIAGNOSTIC","idea":"short idea","problem":"short problem","solution":"","beneficiary":"","domain":"GENERAL","exp_conf":["HIGH"],"exp_sig":["APPEARS_FEASIBLE"],"exp_gaps":False},
+  {"id":"TC-24","sig":"DIAGNOSTIC","idea":"task management app simple interface","problem":"people forget tasks lack simple tools","solution":"","beneficiary":"","domain":"GENERAL","exp_conf":["MEDIUM"],"exp_sig":["APPEARS_FEASIBLE"],"exp_gaps":False},
+  {"id":"TC-25","sig":"DIAGNOSTIC","idea":"specialized learning platform Arab beginners","problem":"no high quality Arabic learning platform for beginners","solution":"","beneficiary":"","domain":"GENERAL","exp_conf":["LOW"],"exp_sig":["APPEARS_FEASIBLE"],"exp_gaps":True}
 ]
 
 def c1_schema(out, tc):
