@@ -1,0 +1,280 @@
+{
+  "fixture_id": "TC-21",
+  "case_id": "TC-A2",
+  "sig": "WARN",
+  "input": {
+    "raw_text": "{\"schema_version\":\"1.1\",\"domain\":\"IOT_ELECTRONICS\",\"analysis_language\":\"ar\",\"input_assessment\":{\"sufficient_for_analysis\":true,\"confidence_level\":\"LOW\",\"limiting_factors_ar\":[\"لم يتم تحديد سعة البطارية أو كيمياء الخلايا المستخدمة\",\"لم يتم تحديد معيار WiFi المستخدم 802.11b/g/n/ax\",\"لم يتم توضيح طبيعة البث كل ثانية هل هو إرسال بيانات أم نقطة وصول كاملة\",\"لم يتم تحديد بيئة الاستخدام الصناعي ودرجات الحرارة\"]},\"idea_summary\":{\"description_ar\":\"جهاز IoT يعمل بالبطارية لمدة سنة كاملة مع إرسال إشارة WiFi بشكل مستمر كل ثانية، يستهدف البيئات الصناعية لحل مشكلة انقطاع الاتصال المتكرر\",\"apparent_domain_tags\":[\"Industrial-IoT\"],\"clarification_needed_ar\":\"هل البث كل ثانية يعني إرسال حزمة بيانات عبر WiFi أم أن الجهاز يعمل كنقطة وصول WiFi دائمة؟\"},\"feasibility\":{\"assessment_possible\":true,\"feasibility_signal\":\"SIGNIFICANT_CONCERNS_IDENTIFIED\",\"signal_basis_ar\":\"الجمع بين تشغيل WiFi مستمر كل ثانية وعمر بطارية سنة كاملة يمثل تعارضاً تقنياً جوهرياً، إذ يستهلك مودم WiFi النشط ما بين 100-300 مللي أمبير مما يجعل استمرار البطارية لسنة أمراً غير واقعي بالتقنيات الحالية\"},\"observations\":{\"apparent_components_ar\":[{\"component_ar\":\"وحدة WiFi\",\"basis_ar\":\"مذكورة صراحةً في الفكرة والحل\",\"component_specificity\":\"USER_SPECIFIED\"},{\"component_ar\":\"بطارية عالية الكثافة\",\"basis_ar\":\"مذكورة صراحةً في الحل كمصدر للطاقة\",\"component_specificity\":\"USER_SPECIFIED\"},{\"component_ar\":\"معالج أو وحدة تحكم مدمجة\",\"basis_ar\":\"ضروري بوضوح لإدارة البث الدوري والطاقة\",\"component_specificity\":\"CLEARLY_IMPLIED_TYPE\"}],\"power_observations_ar\":\"التعارض الطاقوي حرج: WiFi النشط يستهلك 100-300mA، لتحقيق سنة عمل بدون انقطاع يحتاج الجهاز بطارية بسعة 876-2628 أمبير/ساعة وهو غير عملي. حتى مع Deep Sleep بين البثات لا يكفي 1 ثانية للحد من الاستهلاك.\",\"connectivity_observations_ar\":\"WiFi بروتوكول مرتفع الاستهلاك الطاقوي مقارنة بـ BLE أو Zigbee أو LoRa. البث كل ثانية يعني أن الراديو نشط بشكل شبه دائم مما يلغي أي فائدة من تقنيات توفير الطاقة.\"},\"identified_concerns\":{\"items\":[{\"basis_ar\":\"استهلاك WiFi المستمر يتعارض جذرياً مع عمر البطارية لسنة\",\"why_it_matters_ar\":\"WiFi النشط يستهلك طاقة كبيرة جداً تجعل هدف السنة غير قابل للتحقيق بالبطاريات التجارية المتاحة حالياً\",\"severity\":\"SIGNIFICANT\"},{\"basis_ar\":\"تواتر البث كل ثانية لا يتيح وقتاً كافياً لوضع السكون العميق\",\"why_it_matters_ar\":\"تقنيات توفير الطاقة في WiFi تحتاج فترات سكون أطول بكثير من ثانية واحدة لتحقيق وفورات حقيقية\",\"severity\":\"SIGNIFICANT\"},{\"basis_ar\":\"البيئة الصناعية قد تفرض متطلبات إضافية كالتشفير والموثوقية\",\"why_it_matters_ar\":\"يزيد ذلك من استهلاك الطاقة ويعقد تصميم الجهاز\",\"severity\":\"NOTABLE\"}]},\"missing_information\":{\"has_critical_gaps\":true,\"items\":[{\"what_is_missing_ar\":\"سعة البطارية المستهدفة وكيمياء الخلايا\",\"why_it_matters_ar\":\"ضروري لحساب جدوى عمر السنة وتحديد حجم الجهاز ووزنه\",\"severity\":\"CRITICAL\",\"how_to_provide_ar\":\"حدد سعة البطارية بالأمبير/ساعة ونوعها LiPo أو Li-Ion أو LiFePO4 وأبعاد الجهاز المسموح بها\"},{\"what_is_missing_ar\":\"طبيعة البث كل ثانية بدقة\",\"why_it_matters_ar\":\"يحدد حسابات الاستهلاك الطاقوي الفعلي وجدوى الحل\",\"severity\":\"CRITICAL\",\"how_to_provide_ar\":\"وضح هل الجهاز يرسل حزمة بيانات صغيرة كل ثانية أم يعمل كنقطة وصول WiFi نشطة باستمرار\"},{\"what_is_missing_ar\":\"معيار WiFi المستهدف وقدرة الإرسال\",\"why_it_matters_ar\":\"يؤثر مباشرة على استهلاك الطاقة، فـ 802.11n يختلف عن 802.11ah HaLow المصمم للـ IoT\",\"severity\":\"IMPORTANT\",\"how_to_provide_ar\":\"حدد معيار WiFi المطلوب مثل 802.11n أو 802.11ah وقدرة الإرسال بالـ dBm ومدى الاتصال المطلوب\"},{\"what_is_missing_ar\":\"كمية البيانات المرسلة في كل بث\",\"why_it_matters_ar\":\"حجم الحزمة يؤثر على مدة تشغيل الراديو وبالتالي استهلاك الطاقة\",\"severity\":\"IMPORTANT\",\"how_to_provide_ar\":\"حدد نوع البيانات المرسلة ومقدارها مثل قراءة حساس 10 بايت أو حالة الجهاز 50 بايت في كل دورة إرسال\"}]},\"next_steps_suggestion\":{\"suggestion_possible\":true,\"items_ar\":[\"إجراء حسابات دقيقة لميزانية الطاقة بناءً على دورة عمل WiFi المطلوبة مقارنةً بسعة البطارية لتحديد جدوى الفكرة\",\"دراسة استبدال WiFi ببروتوكول 802.11ah WiFi HaLow أو BLE 5 كحل وسط بين التوافق والاستهلاك المنخفض\",\"إعادة تقييم تواتر البث وزيادة الفترة بين الإرسالات إلى 10-30 ثانية مع تفعيل Deep Sleep لتحقيق توازن أفضل\",\"بناء نموذج أولي لقياس الاستهلاك الفعلي في ظروف الاستخدام الصناعي قبل الالتزام بمواصفات التصميم النهائي\"]},\"disclaimer_ar\":\"هذا تحليل أولي فقط مبني على المعلومات المقدمة وليس شهادة هندسية معتمدة. قرار التصنيف النهائي تحدده المنصة وليس هذا التحليل. الأرقام الواردة تقديرية للتوجيه فقط.\"}",
+    "http_status": 200
+  },
+  "expected": {
+    "overall": false,
+    "failure_type": "logic",
+    "weighted_score": 87,
+    "scores": {
+      "Schema Compliance": {
+        "passed": true,
+        "weight": 18,
+        "issues": []
+      },
+      "No Invented Info": {
+        "passed": true,
+        "weight": 18,
+        "issues": []
+      },
+      "Missing Info + Recovery": {
+        "passed": true,
+        "weight": 14,
+        "issues": []
+      },
+      "Confidence Calibration": {
+        "passed": true,
+        "weight": 14,
+        "issues": []
+      },
+      "Groundedness": {
+        "passed": true,
+        "weight": 14,
+        "issues": []
+      },
+      "Gate Engine Utility": {
+        "passed": true,
+        "weight": 9,
+        "issues": []
+      },
+      "Restraint Check": {
+        "passed": false,
+        "weight": 13,
+        "issues": [
+          "CONTRADICTION_NOT_DETECTED"
+        ]
+      }
+    },
+    "normalized_output": {
+      "schema_version": "1.1",
+      "domain": "IOT_ELECTRONICS",
+      "analysis_language": "ar",
+      "input_assessment": {
+        "sufficient_for_analysis": true,
+        "confidence_level": "LOW",
+        "limiting_factors_ar": [
+          "لم يتم تحديد سعة البطارية أو كيمياء الخلايا المستخدمة",
+          "لم يتم تحديد معيار WiFi المستخدم 802.11b/g/n/ax",
+          "لم يتم توضيح طبيعة البث كل ثانية هل هو إرسال بيانات أم نقطة وصول كاملة",
+          "لم يتم تحديد بيئة الاستخدام الصناعي ودرجات الحرارة"
+        ]
+      },
+      "idea_summary": {
+        "description_ar": "جهاز IoT يعمل بالبطارية لمدة سنة كاملة مع إرسال إشارة WiFi بشكل مستمر كل ثانية، يستهدف البيئات الصناعية لحل مشكلة انقطاع الاتصال المتكرر",
+        "apparent_domain_tags": [
+          "Industrial-IoT"
+        ],
+        "clarification_needed_ar": "هل البث كل ثانية يعني إرسال حزمة بيانات عبر WiFi أم أن الجهاز يعمل كنقطة وصول WiFi دائمة؟"
+      },
+      "feasibility": {
+        "assessment_possible": true,
+        "feasibility_signal": "SIGNIFICANT_CONCERNS_IDENTIFIED",
+        "signal_basis_ar": "الجمع بين تشغيل WiFi مستمر كل ثانية وعمر بطارية سنة كاملة يمثل تعارضاً تقنياً جوهرياً، إذ يستهلك مودم WiFi النشط ما بين 100-300 مللي أمبير مما يجعل استمرار البطارية لسنة أمراً غير واقعي بالتقنيات الحالية"
+      },
+      "observations": {
+        "apparent_components_ar": [
+          {
+            "component_ar": "وحدة WiFi",
+            "basis_ar": "مذكورة صراحةً في الفكرة والحل",
+            "component_specificity": "USER_SPECIFIED"
+          },
+          {
+            "component_ar": "بطارية عالية الكثافة",
+            "basis_ar": "مذكورة صراحةً في الحل كمصدر للطاقة",
+            "component_specificity": "USER_SPECIFIED"
+          },
+          {
+            "component_ar": "معالج أو وحدة تحكم مدمجة",
+            "basis_ar": "ضروري بوضوح لإدارة البث الدوري والطاقة",
+            "component_specificity": "CLEARLY_IMPLIED_TYPE"
+          }
+        ],
+        "power_observations_ar": "التعارض الطاقوي حرج: WiFi النشط يستهلك 100-300mA، لتحقيق سنة عمل بدون انقطاع يحتاج الجهاز بطارية بسعة 876-2628 أمبير/ساعة وهو غير عملي. حتى مع Deep Sleep بين البثات لا يكفي 1 ثانية للحد من الاستهلاك.",
+        "connectivity_observations_ar": "WiFi بروتوكول مرتفع الاستهلاك الطاقوي مقارنة بـ BLE أو Zigbee أو LoRa. البث كل ثانية يعني أن الراديو نشط بشكل شبه دائم مما يلغي أي فائدة من تقنيات توفير الطاقة."
+      },
+      "identified_concerns": {
+        "items": [
+          {
+            "basis_ar": "استهلاك WiFi المستمر يتعارض جذرياً مع عمر البطارية لسنة",
+            "why_it_matters_ar": "WiFi النشط يستهلك طاقة كبيرة جداً تجعل هدف السنة غير قابل للتحقيق بالبطاريات التجارية المتاحة حالياً",
+            "severity": "SIGNIFICANT"
+          },
+          {
+            "basis_ar": "تواتر البث كل ثانية لا يتيح وقتاً كافياً لوضع السكون العميق",
+            "why_it_matters_ar": "تقنيات توفير الطاقة في WiFi تحتاج فترات سكون أطول بكثير من ثانية واحدة لتحقيق وفورات حقيقية",
+            "severity": "SIGNIFICANT"
+          },
+          {
+            "basis_ar": "البيئة الصناعية قد تفرض متطلبات إضافية كالتشفير والموثوقية",
+            "why_it_matters_ar": "يزيد ذلك من استهلاك الطاقة ويعقد تصميم الجهاز",
+            "severity": "NOTABLE"
+          }
+        ]
+      },
+      "missing_information": {
+        "has_critical_gaps": true,
+        "items": [
+          {
+            "what_is_missing_ar": "سعة البطارية المستهدفة وكيمياء الخلايا",
+            "why_it_matters_ar": "ضروري لحساب جدوى عمر السنة وتحديد حجم الجهاز ووزنه",
+            "severity": "CRITICAL",
+            "how_to_provide_ar": "حدد سعة البطارية بالأمبير/ساعة ونوعها LiPo أو Li-Ion أو LiFePO4 وأبعاد الجهاز المسموح بها"
+          },
+          {
+            "what_is_missing_ar": "طبيعة البث كل ثانية بدقة",
+            "why_it_matters_ar": "يحدد حسابات الاستهلاك الطاقوي الفعلي وجدوى الحل",
+            "severity": "CRITICAL",
+            "how_to_provide_ar": "وضح هل الجهاز يرسل حزمة بيانات صغيرة كل ثانية أم يعمل كنقطة وصول WiFi نشطة باستمرار"
+          },
+          {
+            "what_is_missing_ar": "معيار WiFi المستهدف وقدرة الإرسال",
+            "why_it_matters_ar": "يؤثر مباشرة على استهلاك الطاقة، فـ 802.11n يختلف عن 802.11ah HaLow المصمم للـ IoT",
+            "severity": "IMPORTANT",
+            "how_to_provide_ar": "حدد معيار WiFi المطلوب مثل 802.11n أو 802.11ah وقدرة الإرسال بالـ dBm ومدى الاتصال المطلوب"
+          },
+          {
+            "what_is_missing_ar": "كمية البيانات المرسلة في كل بث",
+            "why_it_matters_ar": "حجم الحزمة يؤثر على مدة تشغيل الراديو وبالتالي استهلاك الطاقة",
+            "severity": "IMPORTANT",
+            "how_to_provide_ar": "حدد نوع البيانات المرسلة ومقدارها مثل قراءة حساس 10 بايت أو حالة الجهاز 50 بايت في كل دورة إرسال"
+          }
+        ]
+      },
+      "next_steps_suggestion": {
+        "suggestion_possible": true,
+        "items_ar": [
+          "إجراء حسابات دقيقة لميزانية الطاقة بناءً على دورة عمل WiFi المطلوبة مقارنةً بسعة البطارية لتحديد جدوى الفكرة",
+          "دراسة استبدال WiFi ببروتوكول 802.11ah WiFi HaLow أو BLE 5 كحل وسط بين التوافق والاستهلاك المنخفض",
+          "إعادة تقييم تواتر البث وزيادة الفترة بين الإرسالات إلى 10-30 ثانية مع تفعيل Deep Sleep لتحقيق توازن أفضل",
+          "بناء نموذج أولي لقياس الاستهلاك الفعلي في ظروف الاستخدام الصناعي قبل الالتزام بمواصفات التصميم النهائي"
+        ]
+      },
+      "disclaimer_ar": "هذا تحليل أولي فقط مبني على المعلومات المقدمة وليس شهادة هندسية معتمدة. قرار التصنيف النهائي تحدده المنصة وليس هذا التحليل. الأرقام الواردة تقديرية للتوجيه فقط."
+    }
+  },
+  "trace": {
+    "extraction_method": "direct",
+    "extraction_failure": "",
+    "parsed_output": {
+      "schema_version": "1.1",
+      "domain": "IOT_ELECTRONICS",
+      "analysis_language": "ar",
+      "input_assessment": {
+        "sufficient_for_analysis": true,
+        "confidence_level": "LOW",
+        "limiting_factors_ar": [
+          "لم يتم تحديد سعة البطارية أو كيمياء الخلايا المستخدمة",
+          "لم يتم تحديد معيار WiFi المستخدم 802.11b/g/n/ax",
+          "لم يتم توضيح طبيعة البث كل ثانية هل هو إرسال بيانات أم نقطة وصول كاملة",
+          "لم يتم تحديد بيئة الاستخدام الصناعي ودرجات الحرارة"
+        ]
+      },
+      "idea_summary": {
+        "description_ar": "جهاز IoT يعمل بالبطارية لمدة سنة كاملة مع إرسال إشارة WiFi بشكل مستمر كل ثانية، يستهدف البيئات الصناعية لحل مشكلة انقطاع الاتصال المتكرر",
+        "apparent_domain_tags": [
+          "Industrial-IoT"
+        ],
+        "clarification_needed_ar": "هل البث كل ثانية يعني إرسال حزمة بيانات عبر WiFi أم أن الجهاز يعمل كنقطة وصول WiFi دائمة؟"
+      },
+      "feasibility": {
+        "assessment_possible": true,
+        "feasibility_signal": "SIGNIFICANT_CONCERNS_IDENTIFIED",
+        "signal_basis_ar": "الجمع بين تشغيل WiFi مستمر كل ثانية وعمر بطارية سنة كاملة يمثل تعارضاً تقنياً جوهرياً، إذ يستهلك مودم WiFi النشط ما بين 100-300 مللي أمبير مما يجعل استمرار البطارية لسنة أمراً غير واقعي بالتقنيات الحالية"
+      },
+      "observations": {
+        "apparent_components_ar": [
+          {
+            "component_ar": "وحدة WiFi",
+            "basis_ar": "مذكورة صراحةً في الفكرة والحل",
+            "component_specificity": "USER_SPECIFIED"
+          },
+          {
+            "component_ar": "بطارية عالية الكثافة",
+            "basis_ar": "مذكورة صراحةً في الحل كمصدر للطاقة",
+            "component_specificity": "USER_SPECIFIED"
+          },
+          {
+            "component_ar": "معالج أو وحدة تحكم مدمجة",
+            "basis_ar": "ضروري بوضوح لإدارة البث الدوري والطاقة",
+            "component_specificity": "CLEARLY_IMPLIED_TYPE"
+          }
+        ],
+        "power_observations_ar": "التعارض الطاقوي حرج: WiFi النشط يستهلك 100-300mA، لتحقيق سنة عمل بدون انقطاع يحتاج الجهاز بطارية بسعة 876-2628 أمبير/ساعة وهو غير عملي. حتى مع Deep Sleep بين البثات لا يكفي 1 ثانية للحد من الاستهلاك.",
+        "connectivity_observations_ar": "WiFi بروتوكول مرتفع الاستهلاك الطاقوي مقارنة بـ BLE أو Zigbee أو LoRa. البث كل ثانية يعني أن الراديو نشط بشكل شبه دائم مما يلغي أي فائدة من تقنيات توفير الطاقة."
+      },
+      "identified_concerns": {
+        "items": [
+          {
+            "basis_ar": "استهلاك WiFi المستمر يتعارض جذرياً مع عمر البطارية لسنة",
+            "why_it_matters_ar": "WiFi النشط يستهلك طاقة كبيرة جداً تجعل هدف السنة غير قابل للتحقيق بالبطاريات التجارية المتاحة حالياً",
+            "severity": "SIGNIFICANT"
+          },
+          {
+            "basis_ar": "تواتر البث كل ثانية لا يتيح وقتاً كافياً لوضع السكون العميق",
+            "why_it_matters_ar": "تقنيات توفير الطاقة في WiFi تحتاج فترات سكون أطول بكثير من ثانية واحدة لتحقيق وفورات حقيقية",
+            "severity": "SIGNIFICANT"
+          },
+          {
+            "basis_ar": "البيئة الصناعية قد تفرض متطلبات إضافية كالتشفير والموثوقية",
+            "why_it_matters_ar": "يزيد ذلك من استهلاك الطاقة ويعقد تصميم الجهاز",
+            "severity": "NOTABLE"
+          }
+        ]
+      },
+      "missing_information": {
+        "has_critical_gaps": true,
+        "items": [
+          {
+            "what_is_missing_ar": "سعة البطارية المستهدفة وكيمياء الخلايا",
+            "why_it_matters_ar": "ضروري لحساب جدوى عمر السنة وتحديد حجم الجهاز ووزنه",
+            "severity": "CRITICAL",
+            "how_to_provide_ar": "حدد سعة البطارية بالأمبير/ساعة ونوعها LiPo أو Li-Ion أو LiFePO4 وأبعاد الجهاز المسموح بها"
+          },
+          {
+            "what_is_missing_ar": "طبيعة البث كل ثانية بدقة",
+            "why_it_matters_ar": "يحدد حسابات الاستهلاك الطاقوي الفعلي وجدوى الحل",
+            "severity": "CRITICAL",
+            "how_to_provide_ar": "وضح هل الجهاز يرسل حزمة بيانات صغيرة كل ثانية أم يعمل كنقطة وصول WiFi نشطة باستمرار"
+          },
+          {
+            "what_is_missing_ar": "معيار WiFi المستهدف وقدرة الإرسال",
+            "why_it_matters_ar": "يؤثر مباشرة على استهلاك الطاقة، فـ 802.11n يختلف عن 802.11ah HaLow المصمم للـ IoT",
+            "severity": "IMPORTANT",
+            "how_to_provide_ar": "حدد معيار WiFi المطلوب مثل 802.11n أو 802.11ah وقدرة الإرسال بالـ dBm ومدى الاتصال المطلوب"
+          },
+          {
+            "what_is_missing_ar": "كمية البيانات المرسلة في كل بث",
+            "why_it_matters_ar": "حجم الحزمة يؤثر على مدة تشغيل الراديو وبالتالي استهلاك الطاقة",
+            "severity": "IMPORTANT",
+            "how_to_provide_ar": "حدد نوع البيانات المرسلة ومقدارها مثل قراءة حساس 10 بايت أو حالة الجهاز 50 بايت في كل دورة إرسال"
+          }
+        ]
+      },
+      "next_steps_suggestion": {
+        "suggestion_possible": true,
+        "items_ar": [
+          "إجراء حسابات دقيقة لميزانية الطاقة بناءً على دورة عمل WiFi المطلوبة مقارنةً بسعة البطارية لتحديد جدوى الفكرة",
+          "دراسة استبدال WiFi ببروتوكول 802.11ah WiFi HaLow أو BLE 5 كحل وسط بين التوافق والاستهلاك المنخفض",
+          "إعادة تقييم تواتر البث وزيادة الفترة بين الإرسالات إلى 10-30 ثانية مع تفعيل Deep Sleep لتحقيق توازن أفضل",
+          "بناء نموذج أولي لقياس الاستهلاك الفعلي في ظروف الاستخدام الصناعي قبل الالتزام بمواصفات التصميم النهائي"
+        ]
+      },
+      "disclaimer_ar": "هذا تحليل أولي فقط مبني على المعلومات المقدمة وليس شهادة هندسية معتمدة. قرار التصنيف النهائي تحدده المنصة وليس هذا التحليل. الأرقام الواردة تقديرية للتوجيه فقط."
+    },
+    "http_error_body": null,
+    "error_category": null,
+    "error_detail": null,
+    "error": false
+  },
+  "provenance": {
+    "source_results_file": "results_20260520_074904.json",
+    "recorded_at": "2026-05-20T07:49:04+00:00",
+    "corpus_mode": "diagnostic",
+    "model": "claude-sonnet-4-6",
+    "schema_version": "1.1"
+  }
+}

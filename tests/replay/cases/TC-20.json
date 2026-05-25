@@ -1,0 +1,226 @@
+{
+  "fixture_id": "TC-20",
+  "case_id": "TC-20",
+  "sig": "BLOCK",
+  "input": {
+    "raw_text": "{\"schema_version\":\"1.1\",\"domain\":\"IOT_ELECTRONICS\",\"analysis_language\":\"ar\",\"input_assessment\":{\"sufficient_for_analysis\":true,\"confidence_level\":\"HIGH\",\"limiting_factors_ar\":[]},\"idea_summary\":{\"description_ar\":\"جهاز إلكتروني يُفترض أنه يبث إشارات أو موجات بهدف منع حدوث الزلازل وتقليل خسائرها على سكان المناطق الزلزالية\",\"apparent_domain_tags\":[\"Industrial-IoT\",\"Environmental-Monitoring\"],\"clarification_needed_ar\":null},\"feasibility\":{\"assessment_possible\":true,\"feasibility_signal\":\"SIGNIFICANT_CONCERNS_IDENTIFIED\",\"signal_basis_ar\":\"منع حدوث الزلازل عبر إشارات إلكترونية يتعارض مع المبادئ العلمية الجيولوجية الأساسية. الزلازل ظاهرة جيوفيزيائية ناتجة عن حركة الصفائح التكتونية بطاقة هائلة لا يمكن لأي جهاز إلكتروني التأثير فيها أو إيقافها.\"},\"observations\":{\"apparent_components_ar\":[{\"component_ar\":\"مولد إشارات أو موجات\",\"basis_ar\":\"مستنتج من وصف الجهاز الذي يبث إشارات لمنع الزلازل\",\"component_specificity\":\"UNCLEAR\"}],\"power_observations_ar\":\"لم يتم ذكر مصدر الطاقة اللازم لتشغيل الجهاز\",\"connectivity_observations_ar\":\"لم يتم ذكر أي بروتوكول اتصال أو طريقة للتحكم في الجهاز أو مراقبته\"},\"identified_concerns\":{\"items\":[{\"basis_ar\":\"لا توجد أي أساس علمي أو هندسي معروف يدعم إمكانية منع الزلازل عبر إشارات إلكترونية\",\"why_it_matters_ar\":\"الزلازل تتولد من طاقة جيولوجية هائلة تفوق بمليارات المرات أي طاقة يمكن لجهاز إلكتروني توليدها، مما يجعل الفكرة الأساسية غير قابلة للتحقق علمياً\",\"severity\":\"SIGNIFICANT\"},{\"basis_ar\":\"الفكرة تعتمد على آلية عمل غير محددة وغير مثبتة علمياً\",\"why_it_matters_ar\":\"لا يوجد تفسير فيزيائي أو هندسي لكيفية تأثير إشارات إلكترونية على حركة الصفائح التكتونية أو تخفيف الضغط الجيولوجي\",\"severity\":\"SIGNIFICANT\"},{\"basis_ar\":\"الفكرة قد تُوهم المستفيدين بحماية غير حقيقية\",\"why_it_matters_ar\":\"الاعتماد على جهاز غير فعال في مناطق زلزالية قد يعرض حياة البشر للخطر بسبب الشعور الزائف بالأمان\",\"severity\":\"SIGNIFICANT\"}]},\"missing_information\":{\"has_critical_gaps\":true,\"items\":[{\"what_is_missing_ar\":\"الآلية العلمية التي يعتمد عليها الجهاز لمنع الزلازل\",\"why_it_matters_ar\":\"بدون آلية علمية موثوقة لا يمكن تقييم الجدوى التقنية أو بناء أي نموذج هندسي\",\"severity\":\"CRITICAL\",\"how_to_provide_ar\":\"قدم مرجعاً علمياً أو دراسة تُثبت وجود علاقة بين نوع الإشارة المقترحة والنشاط الجيولوجي، وحدد نوع الإشارة وتردداتها وقوتها\"},{\"what_is_missing_ar\":\"نطاق عمل الجهاز الجغرافي المقترح\",\"why_it_matters_ar\":\"الزلازل تنشأ على أعماق عدة كيلومترات تحت سطح الأرض، ولا يتضح كيف ستصل الإشارة إلى موقع النشاط الزلزالي\",\"severity\":\"CRITICAL\",\"how_to_provide_ar\":\"حدد العمق والمسافة الجغرافية التي يُفترض أن الجهاز يؤثر فيها وكيفية اختراق الإشارة لطبقات الأرض\"}]},\"next_steps_suggestion\":{\"suggestion_possible\":true,\"items_ar\":[\"إعادة توجيه الفكرة نحو الكشف المبكر عن الزلازل والإنذار المسبق بدلاً من محاولة منعها، وهو مجال قابل للتطبيق إلكترونياً\",\"استشارة متخصصين في الجيوفيزياء والزلازل للتحقق من أي أساس علمي قبل الاستثمار في التطوير التقني\",\"البحث في تقنيات الاستشعار الزلزالي المتاحة مثل مقاييس التسارع والمستشعرات الجيوفيزيائية كبديل هندسي واقعي\"]},\"disclaimer_ar\":\"هذا تحليل أولي فقط مبني على المعلومات المقدمة وليس شهادة هندسية معتمدة. قرار التصنيف النهائي تحدده المنصة وليس هذا التحليل. التقييم السلبي للجدوى مبني على المعرفة العلمية الجيوفيزيائية المتاحة حول طبيعة الزلازل.\"}",
+    "http_status": 200
+  },
+  "expected": {
+    "overall": false,
+    "failure_type": "logic",
+    "weighted_score": 86,
+    "scores": {
+      "Schema Compliance": {
+        "passed": true,
+        "weight": 18,
+        "issues": []
+      },
+      "No Invented Info": {
+        "passed": true,
+        "weight": 18,
+        "issues": []
+      },
+      "Missing Info + Recovery": {
+        "passed": true,
+        "weight": 14,
+        "issues": []
+      },
+      "Confidence Calibration": {
+        "passed": false,
+        "weight": 14,
+        "issues": [
+          "CONFIDENCE:got=HIGH,expected=['LOW']"
+        ]
+      },
+      "Groundedness": {
+        "passed": true,
+        "weight": 14,
+        "issues": []
+      },
+      "Gate Engine Utility": {
+        "passed": true,
+        "weight": 9,
+        "issues": []
+      },
+      "Restraint Check": {
+        "passed": true,
+        "weight": 13,
+        "issues": []
+      }
+    },
+    "normalized_output": {
+      "schema_version": "1.1",
+      "domain": "IOT_ELECTRONICS",
+      "analysis_language": "ar",
+      "input_assessment": {
+        "sufficient_for_analysis": true,
+        "confidence_level": "HIGH",
+        "limiting_factors_ar": []
+      },
+      "idea_summary": {
+        "description_ar": "جهاز إلكتروني يُفترض أنه يبث إشارات أو موجات بهدف منع حدوث الزلازل وتقليل خسائرها على سكان المناطق الزلزالية",
+        "apparent_domain_tags": [
+          "Industrial-IoT",
+          "Environmental-Monitoring"
+        ],
+        "clarification_needed_ar": null
+      },
+      "feasibility": {
+        "assessment_possible": true,
+        "feasibility_signal": "SIGNIFICANT_CONCERNS_IDENTIFIED",
+        "signal_basis_ar": "منع حدوث الزلازل عبر إشارات إلكترونية يتعارض مع المبادئ العلمية الجيولوجية الأساسية. الزلازل ظاهرة جيوفيزيائية ناتجة عن حركة الصفائح التكتونية بطاقة هائلة لا يمكن لأي جهاز إلكتروني التأثير فيها أو إيقافها."
+      },
+      "observations": {
+        "apparent_components_ar": [
+          {
+            "component_ar": "مولد إشارات أو موجات",
+            "basis_ar": "مستنتج من وصف الجهاز الذي يبث إشارات لمنع الزلازل",
+            "component_specificity": "UNCLEAR"
+          }
+        ],
+        "power_observations_ar": "لم يتم ذكر مصدر الطاقة اللازم لتشغيل الجهاز",
+        "connectivity_observations_ar": "لم يتم ذكر أي بروتوكول اتصال أو طريقة للتحكم في الجهاز أو مراقبته"
+      },
+      "identified_concerns": {
+        "items": [
+          {
+            "basis_ar": "لا توجد أي أساس علمي أو هندسي معروف يدعم إمكانية منع الزلازل عبر إشارات إلكترونية",
+            "why_it_matters_ar": "الزلازل تتولد من طاقة جيولوجية هائلة تفوق بمليارات المرات أي طاقة يمكن لجهاز إلكتروني توليدها، مما يجعل الفكرة الأساسية غير قابلة للتحقق علمياً",
+            "severity": "SIGNIFICANT"
+          },
+          {
+            "basis_ar": "الفكرة تعتمد على آلية عمل غير محددة وغير مثبتة علمياً",
+            "why_it_matters_ar": "لا يوجد تفسير فيزيائي أو هندسي لكيفية تأثير إشارات إلكترونية على حركة الصفائح التكتونية أو تخفيف الضغط الجيولوجي",
+            "severity": "SIGNIFICANT"
+          },
+          {
+            "basis_ar": "الفكرة قد تُوهم المستفيدين بحماية غير حقيقية",
+            "why_it_matters_ar": "الاعتماد على جهاز غير فعال في مناطق زلزالية قد يعرض حياة البشر للخطر بسبب الشعور الزائف بالأمان",
+            "severity": "SIGNIFICANT"
+          }
+        ]
+      },
+      "missing_information": {
+        "has_critical_gaps": true,
+        "items": [
+          {
+            "what_is_missing_ar": "الآلية العلمية التي يعتمد عليها الجهاز لمنع الزلازل",
+            "why_it_matters_ar": "بدون آلية علمية موثوقة لا يمكن تقييم الجدوى التقنية أو بناء أي نموذج هندسي",
+            "severity": "CRITICAL",
+            "how_to_provide_ar": "قدم مرجعاً علمياً أو دراسة تُثبت وجود علاقة بين نوع الإشارة المقترحة والنشاط الجيولوجي، وحدد نوع الإشارة وتردداتها وقوتها"
+          },
+          {
+            "what_is_missing_ar": "نطاق عمل الجهاز الجغرافي المقترح",
+            "why_it_matters_ar": "الزلازل تنشأ على أعماق عدة كيلومترات تحت سطح الأرض، ولا يتضح كيف ستصل الإشارة إلى موقع النشاط الزلزالي",
+            "severity": "CRITICAL",
+            "how_to_provide_ar": "حدد العمق والمسافة الجغرافية التي يُفترض أن الجهاز يؤثر فيها وكيفية اختراق الإشارة لطبقات الأرض"
+          }
+        ]
+      },
+      "next_steps_suggestion": {
+        "suggestion_possible": true,
+        "items_ar": [
+          "إعادة توجيه الفكرة نحو الكشف المبكر عن الزلازل والإنذار المسبق بدلاً من محاولة منعها، وهو مجال قابل للتطبيق إلكترونياً",
+          "استشارة متخصصين في الجيوفيزياء والزلازل للتحقق من أي أساس علمي قبل الاستثمار في التطوير التقني",
+          "البحث في تقنيات الاستشعار الزلزالي المتاحة مثل مقاييس التسارع والمستشعرات الجيوفيزيائية كبديل هندسي واقعي"
+        ]
+      },
+      "disclaimer_ar": "هذا تحليل أولي فقط مبني على المعلومات المقدمة وليس شهادة هندسية معتمدة. قرار التصنيف النهائي تحدده المنصة وليس هذا التحليل. التقييم السلبي للجدوى مبني على المعرفة العلمية الجيوفيزيائية المتاحة حول طبيعة الزلازل."
+    }
+  },
+  "trace": {
+    "extraction_method": "direct",
+    "extraction_failure": "",
+    "parsed_output": {
+      "schema_version": "1.1",
+      "domain": "IOT_ELECTRONICS",
+      "analysis_language": "ar",
+      "input_assessment": {
+        "sufficient_for_analysis": true,
+        "confidence_level": "HIGH",
+        "limiting_factors_ar": []
+      },
+      "idea_summary": {
+        "description_ar": "جهاز إلكتروني يُفترض أنه يبث إشارات أو موجات بهدف منع حدوث الزلازل وتقليل خسائرها على سكان المناطق الزلزالية",
+        "apparent_domain_tags": [
+          "Industrial-IoT",
+          "Environmental-Monitoring"
+        ],
+        "clarification_needed_ar": null
+      },
+      "feasibility": {
+        "assessment_possible": true,
+        "feasibility_signal": "SIGNIFICANT_CONCERNS_IDENTIFIED",
+        "signal_basis_ar": "منع حدوث الزلازل عبر إشارات إلكترونية يتعارض مع المبادئ العلمية الجيولوجية الأساسية. الزلازل ظاهرة جيوفيزيائية ناتجة عن حركة الصفائح التكتونية بطاقة هائلة لا يمكن لأي جهاز إلكتروني التأثير فيها أو إيقافها."
+      },
+      "observations": {
+        "apparent_components_ar": [
+          {
+            "component_ar": "مولد إشارات أو موجات",
+            "basis_ar": "مستنتج من وصف الجهاز الذي يبث إشارات لمنع الزلازل",
+            "component_specificity": "UNCLEAR"
+          }
+        ],
+        "power_observations_ar": "لم يتم ذكر مصدر الطاقة اللازم لتشغيل الجهاز",
+        "connectivity_observations_ar": "لم يتم ذكر أي بروتوكول اتصال أو طريقة للتحكم في الجهاز أو مراقبته"
+      },
+      "identified_concerns": {
+        "items": [
+          {
+            "basis_ar": "لا توجد أي أساس علمي أو هندسي معروف يدعم إمكانية منع الزلازل عبر إشارات إلكترونية",
+            "why_it_matters_ar": "الزلازل تتولد من طاقة جيولوجية هائلة تفوق بمليارات المرات أي طاقة يمكن لجهاز إلكتروني توليدها، مما يجعل الفكرة الأساسية غير قابلة للتحقق علمياً",
+            "severity": "SIGNIFICANT"
+          },
+          {
+            "basis_ar": "الفكرة تعتمد على آلية عمل غير محددة وغير مثبتة علمياً",
+            "why_it_matters_ar": "لا يوجد تفسير فيزيائي أو هندسي لكيفية تأثير إشارات إلكترونية على حركة الصفائح التكتونية أو تخفيف الضغط الجيولوجي",
+            "severity": "SIGNIFICANT"
+          },
+          {
+            "basis_ar": "الفكرة قد تُوهم المستفيدين بحماية غير حقيقية",
+            "why_it_matters_ar": "الاعتماد على جهاز غير فعال في مناطق زلزالية قد يعرض حياة البشر للخطر بسبب الشعور الزائف بالأمان",
+            "severity": "SIGNIFICANT"
+          }
+        ]
+      },
+      "missing_information": {
+        "has_critical_gaps": true,
+        "items": [
+          {
+            "what_is_missing_ar": "الآلية العلمية التي يعتمد عليها الجهاز لمنع الزلازل",
+            "why_it_matters_ar": "بدون آلية علمية موثوقة لا يمكن تقييم الجدوى التقنية أو بناء أي نموذج هندسي",
+            "severity": "CRITICAL",
+            "how_to_provide_ar": "قدم مرجعاً علمياً أو دراسة تُثبت وجود علاقة بين نوع الإشارة المقترحة والنشاط الجيولوجي، وحدد نوع الإشارة وتردداتها وقوتها"
+          },
+          {
+            "what_is_missing_ar": "نطاق عمل الجهاز الجغرافي المقترح",
+            "why_it_matters_ar": "الزلازل تنشأ على أعماق عدة كيلومترات تحت سطح الأرض، ولا يتضح كيف ستصل الإشارة إلى موقع النشاط الزلزالي",
+            "severity": "CRITICAL",
+            "how_to_provide_ar": "حدد العمق والمسافة الجغرافية التي يُفترض أن الجهاز يؤثر فيها وكيفية اختراق الإشارة لطبقات الأرض"
+          }
+        ]
+      },
+      "next_steps_suggestion": {
+        "suggestion_possible": true,
+        "items_ar": [
+          "إعادة توجيه الفكرة نحو الكشف المبكر عن الزلازل والإنذار المسبق بدلاً من محاولة منعها، وهو مجال قابل للتطبيق إلكترونياً",
+          "استشارة متخصصين في الجيوفيزياء والزلازل للتحقق من أي أساس علمي قبل الاستثمار في التطوير التقني",
+          "البحث في تقنيات الاستشعار الزلزالي المتاحة مثل مقاييس التسارع والمستشعرات الجيوفيزيائية كبديل هندسي واقعي"
+        ]
+      },
+      "disclaimer_ar": "هذا تحليل أولي فقط مبني على المعلومات المقدمة وليس شهادة هندسية معتمدة. قرار التصنيف النهائي تحدده المنصة وليس هذا التحليل. التقييم السلبي للجدوى مبني على المعرفة العلمية الجيوفيزيائية المتاحة حول طبيعة الزلازل."
+    },
+    "http_error_body": null,
+    "error_category": null,
+    "error_detail": null,
+    "error": false
+  },
+  "provenance": {
+    "source_results_file": "results_20260520_074904.json",
+    "recorded_at": "2026-05-20T07:49:04+00:00",
+    "corpus_mode": "diagnostic",
+    "model": "claude-sonnet-4-6",
+    "schema_version": "1.1"
+  }
+}

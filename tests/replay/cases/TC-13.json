@@ -1,0 +1,308 @@
+{
+  "fixture_id": "TC-13",
+  "case_id": "TC-13",
+  "sig": "WARN",
+  "input": {
+    "raw_text": "{\"schema_version\":\"1.1\",\"domain\":\"IOT_ELECTRONICS\",\"analysis_language\":\"ar\",\"input_assessment\":{\"sufficient_for_analysis\":true,\"confidence_level\":\"HIGH\",\"limiting_factors_ar\":[]},\"idea_summary\":{\"description_ar\":\"صندوق توصيل ذكي مزود بعزل حراري وعنصر تسخين داخلي وقفل إلكتروني يُفتح فقط عبر كود OTP يُرسل للمستلم عبر SMS، بهدف الحفاظ على حرارة الطعام أثناء رحلة التوصيل وضمان استلامه من الشخص المخول فقط\",\"apparent_domain_tags\":[\"Industrial-IoT\",\"Smart-Home\",\"Dashboard\"],\"clarification_needed_ar\":null},\"feasibility\":{\"assessment_possible\":true,\"feasibility_signal\":\"APPEARS_FEASIBLE_WITH_CAVEATS\",\"signal_basis_ar\":\"الفكرة ممكنة تقنياً من حيث المكونات المتاحة في السوق، لكن توجد تحفظات تتعلق بإدارة الطاقة خلال رحلة التوصيل وتكامل بوابة SMS مع القفل الإلكتروني في بيئة متنقلة\"},\"observations\":{\"apparent_components_ar\":[{\"component_ar\":\"صندوق معزول حرارياً\",\"basis_ar\":\"مذكور صراحةً في وصف الحل\",\"component_specificity\":\"USER_SPECIFIED\"},{\"component_ar\":\"عنصر تسخين\",\"basis_ar\":\"مذكور صراحةً في وصف الحل\",\"component_specificity\":\"USER_SPECIFIED\"},{\"component_ar\":\"قفل إلكتروني\",\"basis_ar\":\"مذكور صراحةً في وصف الحل\",\"component_specificity\":\"USER_SPECIFIED\"},{\"component_ar\":\"وحدة GSM لإرسال OTP عبر SMS\",\"basis_ar\":\"مذكور صراحةً من خلال ذكر OTP عبر SMS\",\"component_specificity\":\"CLEARLY_IMPLIED_TYPE\"},{\"component_ar\":\"متحكم مدمج (Microcontroller)\",\"basis_ar\":\"ضروري للتحكم في عنصر التسخين والقفل والتحقق من كود OTP\",\"component_specificity\":\"CLEARLY_IMPLIED_TYPE\"},{\"component_ar\":\"مستشعر درجة حرارة\",\"basis_ar\":\"ضروري لمراقبة الحرارة الداخلية والتحكم في عنصر التسخين تلقائياً\",\"component_specificity\":\"CLEARLY_IMPLIED_TYPE\"},{\"component_ar\":\"بطارية أو مصدر طاقة متنقل\",\"basis_ar\":\"الجهاز متنقل ولا يمكنه الاعتماد على التيار الكهربائي الثابت\",\"component_specificity\":\"CLEARLY_IMPLIED_TYPE\"}],\"power_observations_ar\":\"لم يُحدد مصدر الطاقة في المدخلات. الجهاز متنقل مما يستلزم بطارية قابلة لإعادة الشحن، وعنصر التسخين يستهلك طاقة عالية مما يجعل إدارة الطاقة تحدياً رئيسياً يحتاج دراسة دقيقة لتحديد سعة البطارية المناسبة.\",\"connectivity_observations_ar\":\"الاتصال عبر شبكة GSM لإرسال رسائل SMS يُعدّ مناسباً للبيئة المتنقلة. يُنصح بدراسة إضافة اتصال بلوتوث أو WiFi لتمكين لوحة تحكم تتبع الرحلات لشركات التوصيل.\"},\"identified_concerns\":{\"items\":[{\"basis_ar\":\"عنصر التسخين يستهلك طاقة عالية جداً مقارنة ببقية المكونات\",\"why_it_matters_ar\":\"قد تنفد البطارية قبل اكتمال رحلة التوصيل خاصة في الرحلات الطويلة مما يؤدي إلى فشل الهدف الأساسي\",\"severity\":\"SIGNIFICANT\",\"how_to_provide_ar\":\"حدد المدة الزمنية المتوقعة للتوصيل ودرجة الحرارة المستهدفة لحساب استهلاك الطاقة\"},{\"basis_ar\":\"الاعتماد الكامل على شبكة GSM لإرسال OTP\",\"why_it_matters_ar\":\"في حال ضعف التغطية أو انقطاعها لن يتمكن المستلم من فتح الصندوق مما يُعطل عملية التوصيل\",\"severity\":\"NOTABLE\",\"how_to_provide_ar\":\"دراسة آلية بديلة للفتح مثل كود احتياطي ثابت أو تطبيق موبايل عبر البلوتوث\"},{\"basis_ar\":\"تحديات الجانب الميكانيكي للقفل الإلكتروني في بيئة التوصيل\",\"why_it_matters_ar\":\"القفل يتعرض لصدمات واهتزازات أثناء النقل وقد يتعطل مما يجعل الصندوق عالقاً مفتوحاً أو مغلقاً\",\"severity\":\"NOTABLE\",\"how_to_provide_ar\":\"تحديد مواصفات متانة القفل ومعيار IP المطلوب للمقاومة\"}]},\"missing_information\":{\"has_critical_gaps\":false,\"items\":[{\"what_is_missing_ar\":\"نوع مصدر الطاقة وسعته\",\"why_it_matters_ar\":\"تحديد نوع البطارية وسعتها ضروري لضمان عمل عنصر التسخين طوال رحلة التوصيل\",\"severity\":\"IMPORTANT\",\"how_to_provide_ar\":\"حدد متوسط مدة رحلة التوصيل ودرجة الحرارة البيئية الخارجية\"},{\"what_is_missing_ar\":\"آلية إعادة الشحن أو استبدال البطارية بين الرحلات\",\"why_it_matters_ar\":\"الصندوق سيُستخدم بشكل متكرر ويحتاج وضوحاً في كيفية إعادة تجهيزه بين التوصيلات\",\"severity\":\"IMPORTANT\",\"how_to_provide_ar\":\"حدد هل سيتم الشحن في المستودع أو عبر سيارة التوصيل\"},{\"what_is_missing_ar\":\"أبعاد الصندوق وأنواع الطعام المستهدفة\",\"why_it_matters_ar\":\"يؤثر على اختيار حجم عنصر التسخين ونوع العازل الحراري المناسب\",\"severity\":\"HELPFUL\",\"how_to_provide_ar\":\"حدد متوسط حجم الطلبية المستهدفة هل هي وجبة واحدة أم طلبيات متعددة\"}]},\"next_steps_suggestion\":{\"suggestion_possible\":true,\"items_ar\":[\"حساب ميزانية الطاقة الكاملة لتحديد سعة البطارية المطلوبة بناءً على متوسط مدة التوصيل ودرجات الحرارة البيئية\",\"بناء نموذج أولي بسيط للتحقق من قدرة العزل الحراري وعنصر التسخين على الحفاظ على الحرارة خلال المدة المستهدفة\",\"اختيار وحدة GSM مع دراسة آلية فتح احتياطية عبر البلوتوث لضمان عمل النظام في مناطق ضعيفة التغطية\",\"تصميم لوحة تحكم لشركات التوصيل لمتابعة حالة الصندوق ودرجة الحرارة وحالة القفل في الوقت الفعلي\"]},\"disclaimer_ar\":\"هذا تحليل أولي فقط مبني على المعلومات المقدمة وليس شهادة هندسية معتمدة. قرار التصنيف النهائي تحدده المنصة وليس هذا التحليل.\"}",
+    "http_status": 200
+  },
+  "expected": {
+    "overall": false,
+    "failure_type": "logic",
+    "weighted_score": 91,
+    "scores": {
+      "Schema Compliance": {
+        "passed": true,
+        "weight": 18,
+        "issues": []
+      },
+      "No Invented Info": {
+        "passed": true,
+        "weight": 18,
+        "issues": []
+      },
+      "Missing Info + Recovery": {
+        "passed": true,
+        "weight": 14,
+        "issues": []
+      },
+      "Confidence Calibration": {
+        "passed": true,
+        "weight": 14,
+        "issues": [
+          "CONFIDENCE:got=HIGH,expected=['MEDIUM']"
+        ]
+      },
+      "Groundedness": {
+        "passed": true,
+        "weight": 14,
+        "issues": []
+      },
+      "Gate Engine Utility": {
+        "passed": true,
+        "weight": 9,
+        "issues": []
+      },
+      "Restraint Check": {
+        "passed": true,
+        "weight": 13,
+        "issues": []
+      }
+    },
+    "normalized_output": {
+      "schema_version": "1.1",
+      "domain": "IOT_ELECTRONICS",
+      "analysis_language": "ar",
+      "input_assessment": {
+        "sufficient_for_analysis": true,
+        "confidence_level": "HIGH",
+        "limiting_factors_ar": []
+      },
+      "idea_summary": {
+        "description_ar": "صندوق توصيل ذكي مزود بعزل حراري وعنصر تسخين داخلي وقفل إلكتروني يُفتح فقط عبر كود OTP يُرسل للمستلم عبر SMS، بهدف الحفاظ على حرارة الطعام أثناء رحلة التوصيل وضمان استلامه من الشخص المخول فقط",
+        "apparent_domain_tags": [
+          "Industrial-IoT",
+          "Smart-Home",
+          "Dashboard"
+        ],
+        "clarification_needed_ar": null
+      },
+      "feasibility": {
+        "assessment_possible": true,
+        "feasibility_signal": "APPEARS_FEASIBLE_WITH_CAVEATS",
+        "signal_basis_ar": "الفكرة ممكنة تقنياً من حيث المكونات المتاحة في السوق، لكن توجد تحفظات تتعلق بإدارة الطاقة خلال رحلة التوصيل وتكامل بوابة SMS مع القفل الإلكتروني في بيئة متنقلة"
+      },
+      "observations": {
+        "apparent_components_ar": [
+          {
+            "component_ar": "صندوق معزول حرارياً",
+            "basis_ar": "مذكور صراحةً في وصف الحل",
+            "component_specificity": "USER_SPECIFIED"
+          },
+          {
+            "component_ar": "عنصر تسخين",
+            "basis_ar": "مذكور صراحةً في وصف الحل",
+            "component_specificity": "USER_SPECIFIED"
+          },
+          {
+            "component_ar": "قفل إلكتروني",
+            "basis_ar": "مذكور صراحةً في وصف الحل",
+            "component_specificity": "USER_SPECIFIED"
+          },
+          {
+            "component_ar": "وحدة GSM لإرسال OTP عبر SMS",
+            "basis_ar": "مذكور صراحةً من خلال ذكر OTP عبر SMS",
+            "component_specificity": "CLEARLY_IMPLIED_TYPE"
+          },
+          {
+            "component_ar": "متحكم مدمج (Microcontroller)",
+            "basis_ar": "ضروري للتحكم في عنصر التسخين والقفل والتحقق من كود OTP",
+            "component_specificity": "CLEARLY_IMPLIED_TYPE"
+          },
+          {
+            "component_ar": "مستشعر درجة حرارة",
+            "basis_ar": "ضروري لمراقبة الحرارة الداخلية والتحكم في عنصر التسخين تلقائياً",
+            "component_specificity": "CLEARLY_IMPLIED_TYPE"
+          },
+          {
+            "component_ar": "بطارية أو مصدر طاقة متنقل",
+            "basis_ar": "الجهاز متنقل ولا يمكنه الاعتماد على التيار الكهربائي الثابت",
+            "component_specificity": "CLEARLY_IMPLIED_TYPE"
+          }
+        ],
+        "power_observations_ar": "لم يُحدد مصدر الطاقة في المدخلات. الجهاز متنقل مما يستلزم بطارية قابلة لإعادة الشحن، وعنصر التسخين يستهلك طاقة عالية مما يجعل إدارة الطاقة تحدياً رئيسياً يحتاج دراسة دقيقة لتحديد سعة البطارية المناسبة.",
+        "connectivity_observations_ar": "الاتصال عبر شبكة GSM لإرسال رسائل SMS يُعدّ مناسباً للبيئة المتنقلة. يُنصح بدراسة إضافة اتصال بلوتوث أو WiFi لتمكين لوحة تحكم تتبع الرحلات لشركات التوصيل."
+      },
+      "identified_concerns": {
+        "items": [
+          {
+            "basis_ar": "عنصر التسخين يستهلك طاقة عالية جداً مقارنة ببقية المكونات",
+            "why_it_matters_ar": "قد تنفد البطارية قبل اكتمال رحلة التوصيل خاصة في الرحلات الطويلة مما يؤدي إلى فشل الهدف الأساسي",
+            "severity": "SIGNIFICANT",
+            "how_to_provide_ar": "حدد المدة الزمنية المتوقعة للتوصيل ودرجة الحرارة المستهدفة لحساب استهلاك الطاقة"
+          },
+          {
+            "basis_ar": "الاعتماد الكامل على شبكة GSM لإرسال OTP",
+            "why_it_matters_ar": "في حال ضعف التغطية أو انقطاعها لن يتمكن المستلم من فتح الصندوق مما يُعطل عملية التوصيل",
+            "severity": "NOTABLE",
+            "how_to_provide_ar": "دراسة آلية بديلة للفتح مثل كود احتياطي ثابت أو تطبيق موبايل عبر البلوتوث"
+          },
+          {
+            "basis_ar": "تحديات الجانب الميكانيكي للقفل الإلكتروني في بيئة التوصيل",
+            "why_it_matters_ar": "القفل يتعرض لصدمات واهتزازات أثناء النقل وقد يتعطل مما يجعل الصندوق عالقاً مفتوحاً أو مغلقاً",
+            "severity": "NOTABLE",
+            "how_to_provide_ar": "تحديد مواصفات متانة القفل ومعيار IP المطلوب للمقاومة"
+          }
+        ]
+      },
+      "missing_information": {
+        "has_critical_gaps": false,
+        "items": [
+          {
+            "what_is_missing_ar": "نوع مصدر الطاقة وسعته",
+            "why_it_matters_ar": "تحديد نوع البطارية وسعتها ضروري لضمان عمل عنصر التسخين طوال رحلة التوصيل",
+            "severity": "IMPORTANT",
+            "how_to_provide_ar": "حدد متوسط مدة رحلة التوصيل ودرجة الحرارة البيئية الخارجية"
+          },
+          {
+            "what_is_missing_ar": "آلية إعادة الشحن أو استبدال البطارية بين الرحلات",
+            "why_it_matters_ar": "الصندوق سيُستخدم بشكل متكرر ويحتاج وضوحاً في كيفية إعادة تجهيزه بين التوصيلات",
+            "severity": "IMPORTANT",
+            "how_to_provide_ar": "حدد هل سيتم الشحن في المستودع أو عبر سيارة التوصيل"
+          },
+          {
+            "what_is_missing_ar": "أبعاد الصندوق وأنواع الطعام المستهدفة",
+            "why_it_matters_ar": "يؤثر على اختيار حجم عنصر التسخين ونوع العازل الحراري المناسب",
+            "severity": "HELPFUL",
+            "how_to_provide_ar": "حدد متوسط حجم الطلبية المستهدفة هل هي وجبة واحدة أم طلبيات متعددة"
+          }
+        ]
+      },
+      "next_steps_suggestion": {
+        "suggestion_possible": true,
+        "items_ar": [
+          "حساب ميزانية الطاقة الكاملة لتحديد سعة البطارية المطلوبة بناءً على متوسط مدة التوصيل ودرجات الحرارة البيئية",
+          "بناء نموذج أولي بسيط للتحقق من قدرة العزل الحراري وعنصر التسخين على الحفاظ على الحرارة خلال المدة المستهدفة",
+          "اختيار وحدة GSM مع دراسة آلية فتح احتياطية عبر البلوتوث لضمان عمل النظام في مناطق ضعيفة التغطية",
+          "تصميم لوحة تحكم لشركات التوصيل لمتابعة حالة الصندوق ودرجة الحرارة وحالة القفل في الوقت الفعلي"
+        ]
+      },
+      "disclaimer_ar": "هذا تحليل أولي فقط مبني على المعلومات المقدمة وليس شهادة هندسية معتمدة. قرار التصنيف النهائي تحدده المنصة وليس هذا التحليل."
+    }
+  },
+  "trace": {
+    "extraction_method": "direct",
+    "extraction_failure": "",
+    "parsed_output": {
+      "schema_version": "1.1",
+      "domain": "IOT_ELECTRONICS",
+      "analysis_language": "ar",
+      "input_assessment": {
+        "sufficient_for_analysis": true,
+        "confidence_level": "HIGH",
+        "limiting_factors_ar": []
+      },
+      "idea_summary": {
+        "description_ar": "صندوق توصيل ذكي مزود بعزل حراري وعنصر تسخين داخلي وقفل إلكتروني يُفتح فقط عبر كود OTP يُرسل للمستلم عبر SMS، بهدف الحفاظ على حرارة الطعام أثناء رحلة التوصيل وضمان استلامه من الشخص المخول فقط",
+        "apparent_domain_tags": [
+          "Industrial-IoT",
+          "Smart-Home",
+          "Dashboard"
+        ],
+        "clarification_needed_ar": null
+      },
+      "feasibility": {
+        "assessment_possible": true,
+        "feasibility_signal": "APPEARS_FEASIBLE_WITH_CAVEATS",
+        "signal_basis_ar": "الفكرة ممكنة تقنياً من حيث المكونات المتاحة في السوق، لكن توجد تحفظات تتعلق بإدارة الطاقة خلال رحلة التوصيل وتكامل بوابة SMS مع القفل الإلكتروني في بيئة متنقلة"
+      },
+      "observations": {
+        "apparent_components_ar": [
+          {
+            "component_ar": "صندوق معزول حرارياً",
+            "basis_ar": "مذكور صراحةً في وصف الحل",
+            "component_specificity": "USER_SPECIFIED"
+          },
+          {
+            "component_ar": "عنصر تسخين",
+            "basis_ar": "مذكور صراحةً في وصف الحل",
+            "component_specificity": "USER_SPECIFIED"
+          },
+          {
+            "component_ar": "قفل إلكتروني",
+            "basis_ar": "مذكور صراحةً في وصف الحل",
+            "component_specificity": "USER_SPECIFIED"
+          },
+          {
+            "component_ar": "وحدة GSM لإرسال OTP عبر SMS",
+            "basis_ar": "مذكور صراحةً من خلال ذكر OTP عبر SMS",
+            "component_specificity": "CLEARLY_IMPLIED_TYPE"
+          },
+          {
+            "component_ar": "متحكم مدمج (Microcontroller)",
+            "basis_ar": "ضروري للتحكم في عنصر التسخين والقفل والتحقق من كود OTP",
+            "component_specificity": "CLEARLY_IMPLIED_TYPE"
+          },
+          {
+            "component_ar": "مستشعر درجة حرارة",
+            "basis_ar": "ضروري لمراقبة الحرارة الداخلية والتحكم في عنصر التسخين تلقائياً",
+            "component_specificity": "CLEARLY_IMPLIED_TYPE"
+          },
+          {
+            "component_ar": "بطارية أو مصدر طاقة متنقل",
+            "basis_ar": "الجهاز متنقل ولا يمكنه الاعتماد على التيار الكهربائي الثابت",
+            "component_specificity": "CLEARLY_IMPLIED_TYPE"
+          }
+        ],
+        "power_observations_ar": "لم يُحدد مصدر الطاقة في المدخلات. الجهاز متنقل مما يستلزم بطارية قابلة لإعادة الشحن، وعنصر التسخين يستهلك طاقة عالية مما يجعل إدارة الطاقة تحدياً رئيسياً يحتاج دراسة دقيقة لتحديد سعة البطارية المناسبة.",
+        "connectivity_observations_ar": "الاتصال عبر شبكة GSM لإرسال رسائل SMS يُعدّ مناسباً للبيئة المتنقلة. يُنصح بدراسة إضافة اتصال بلوتوث أو WiFi لتمكين لوحة تحكم تتبع الرحلات لشركات التوصيل."
+      },
+      "identified_concerns": {
+        "items": [
+          {
+            "basis_ar": "عنصر التسخين يستهلك طاقة عالية جداً مقارنة ببقية المكونات",
+            "why_it_matters_ar": "قد تنفد البطارية قبل اكتمال رحلة التوصيل خاصة في الرحلات الطويلة مما يؤدي إلى فشل الهدف الأساسي",
+            "severity": "SIGNIFICANT",
+            "how_to_provide_ar": "حدد المدة الزمنية المتوقعة للتوصيل ودرجة الحرارة المستهدفة لحساب استهلاك الطاقة"
+          },
+          {
+            "basis_ar": "الاعتماد الكامل على شبكة GSM لإرسال OTP",
+            "why_it_matters_ar": "في حال ضعف التغطية أو انقطاعها لن يتمكن المستلم من فتح الصندوق مما يُعطل عملية التوصيل",
+            "severity": "NOTABLE",
+            "how_to_provide_ar": "دراسة آلية بديلة للفتح مثل كود احتياطي ثابت أو تطبيق موبايل عبر البلوتوث"
+          },
+          {
+            "basis_ar": "تحديات الجانب الميكانيكي للقفل الإلكتروني في بيئة التوصيل",
+            "why_it_matters_ar": "القفل يتعرض لصدمات واهتزازات أثناء النقل وقد يتعطل مما يجعل الصندوق عالقاً مفتوحاً أو مغلقاً",
+            "severity": "NOTABLE",
+            "how_to_provide_ar": "تحديد مواصفات متانة القفل ومعيار IP المطلوب للمقاومة"
+          }
+        ]
+      },
+      "missing_information": {
+        "has_critical_gaps": false,
+        "items": [
+          {
+            "what_is_missing_ar": "نوع مصدر الطاقة وسعته",
+            "why_it_matters_ar": "تحديد نوع البطارية وسعتها ضروري لضمان عمل عنصر التسخين طوال رحلة التوصيل",
+            "severity": "IMPORTANT",
+            "how_to_provide_ar": "حدد متوسط مدة رحلة التوصيل ودرجة الحرارة البيئية الخارجية"
+          },
+          {
+            "what_is_missing_ar": "آلية إعادة الشحن أو استبدال البطارية بين الرحلات",
+            "why_it_matters_ar": "الصندوق سيُستخدم بشكل متكرر ويحتاج وضوحاً في كيفية إعادة تجهيزه بين التوصيلات",
+            "severity": "IMPORTANT",
+            "how_to_provide_ar": "حدد هل سيتم الشحن في المستودع أو عبر سيارة التوصيل"
+          },
+          {
+            "what_is_missing_ar": "أبعاد الصندوق وأنواع الطعام المستهدفة",
+            "why_it_matters_ar": "يؤثر على اختيار حجم عنصر التسخين ونوع العازل الحراري المناسب",
+            "severity": "HELPFUL",
+            "how_to_provide_ar": "حدد متوسط حجم الطلبية المستهدفة هل هي وجبة واحدة أم طلبيات متعددة"
+          }
+        ]
+      },
+      "next_steps_suggestion": {
+        "suggestion_possible": true,
+        "items_ar": [
+          "حساب ميزانية الطاقة الكاملة لتحديد سعة البطارية المطلوبة بناءً على متوسط مدة التوصيل ودرجات الحرارة البيئية",
+          "بناء نموذج أولي بسيط للتحقق من قدرة العزل الحراري وعنصر التسخين على الحفاظ على الحرارة خلال المدة المستهدفة",
+          "اختيار وحدة GSM مع دراسة آلية فتح احتياطية عبر البلوتوث لضمان عمل النظام في مناطق ضعيفة التغطية",
+          "تصميم لوحة تحكم لشركات التوصيل لمتابعة حالة الصندوق ودرجة الحرارة وحالة القفل في الوقت الفعلي"
+        ]
+      },
+      "disclaimer_ar": "هذا تحليل أولي فقط مبني على المعلومات المقدمة وليس شهادة هندسية معتمدة. قرار التصنيف النهائي تحدده المنصة وليس هذا التحليل."
+    },
+    "http_error_body": null,
+    "error_category": null,
+    "error_detail": null,
+    "error": false
+  },
+  "provenance": {
+    "source_results_file": "results_20260518_141231.json",
+    "recorded_at": "2026-05-18T14:12:31+00:00",
+    "corpus_mode": "diagnostic",
+    "model": "claude-sonnet-4-6",
+    "schema_version": "1.1"
+  }
+}

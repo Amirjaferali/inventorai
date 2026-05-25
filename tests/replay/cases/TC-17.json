@@ -1,0 +1,32 @@
+{
+  "fixture_id": "TC-17",
+  "case_id": "TC-17",
+  "sig": "BLOCK",
+  "input": {
+    "raw_text": null,
+    "http_status": null
+  },
+  "expected": {
+    "overall": false,
+    "failure_type": "timeout",
+    "weighted_score": 0,
+    "scores": {},
+    "normalized_output": null
+  },
+  "trace": {
+    "extraction_method": null,
+    "extraction_failure": null,
+    "parsed_output": null,
+    "http_error_body": null,
+    "error_category": "TimeoutError",
+    "error_detail": "The read operation timed out",
+    "error": true
+  },
+  "provenance": {
+    "source_results_file": "results_20260519_124751.json",
+    "recorded_at": "2026-05-19T12:47:51+00:00",
+    "corpus_mode": "diagnostic",
+    "model": "claude-sonnet-4-6",
+    "schema_version": "1.1"
+  }
+}

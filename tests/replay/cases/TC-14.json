@@ -1,0 +1,294 @@
+{
+  "fixture_id": "TC-14",
+  "case_id": "TC-14",
+  "sig": "WARN",
+  "input": {
+    "raw_text": "{\"schema_version\":\"1.1\",\"domain\":\"IOT_ELECTRONICS\",\"analysis_language\":\"ar\",\"input_assessment\":{\"sufficient_for_analysis\":true,\"confidence_level\":\"MEDIUM\",\"limiting_factors_ar\":[\"لم يتم تحديد نوع المعالج أو المنصة البرمجية المستخدمة\",\"لم يتم توضيح مصدر الطاقة للجهاز\",\"لم يتم تحديد بروتوكول الاتصال أو ما إذا كان الجهاز مستقلاً أم متصلاً\"]},\"idea_summary\":{\"description_ar\":\"جهاز مدمج في المركبة يعتمد على كاميرا لمراقبة عيني السائق في الوقت الفعلي وتحليل حركتها باستخدام رؤية حاسوبية للكشف عن علامات النعاس، مع إصدار تنبيه صوتي فوري لتنبيه السائق وتفادي الحوادث\",\"apparent_domain_tags\":[\"Computer-Vision\",\"Dashboard\"],\"clarification_needed_ar\":null},\"feasibility\":{\"assessment_possible\":true,\"feasibility_signal\":\"APPEARS_FEASIBLE_WITH_CAVEATS\",\"signal_basis_ar\":\"الفكرة مثبتة تقنياً في أبحاث ومنتجات تجارية، غير أن التنفيذ يتطلب معالجاً كافي القدرة لتشغيل خوارزميات رؤية حاسوبية في الوقت الفعلي، مع تحديات تتعلق بالإضاءة والدقة في بيئات القيادة المتغيرة\"},\"observations\":{\"apparent_components_ar\":[{\"component_ar\":\"كاميرا مراقبة العينين\",\"basis_ar\":\"مذكورة صراحةً في وصف الحل\",\"component_specificity\":\"USER_SPECIFIED\"},{\"component_ar\":\"وحدة معالجة مركزية\",\"basis_ar\":\"مذكورة صراحةً في وصف الحل كمعالج\",\"component_specificity\":\"USER_SPECIFIED\"},{\"component_ar\":\"مكبر صوت أو جرس تنبيه\",\"basis_ar\":\"مذكور صراحةً كتنبيه صوتي في وصف الحل\",\"component_specificity\":\"USER_SPECIFIED\"},{\"component_ar\":\"خوارزمية رؤية حاسوبية لتحليل العينين\",\"basis_ar\":\"مستنتج بوضوح من متطلبة الكشف عن النعاس عبر الكاميرا\",\"component_specificity\":\"CLEARLY_IMPLIED_TYPE\"},{\"component_ar\":\"مصدر إضاءة IR للرؤية الليلية\",\"basis_ar\":\"مستنتج من ضرورة مراقبة العينين في ظروف إضاءة متغيرة داخل المركبة\",\"component_specificity\":\"CLEARLY_IMPLIED_TYPE\"}],\"power_observations_ar\":\"لم يتم تحديد مصدر الطاقة، ويُرجَّح التوصيل بنظام كهرباء المركبة OBD أو USB، لكن لم يُذكر ذلك صراحةً\",\"connectivity_observations_ar\":\"لم يُذكر أي بروتوكول اتصال، ويبدو الجهاز مستقلاً يعمل دون اتصال خارجي بناءً على الوصف\"},\"identified_concerns\":{\"items\":[{\"basis_ar\":\"تشغيل خوارزميات رؤية حاسوبية في الوقت الفعلي يتطلب قدرة حوسبية عالية\",\"why_it_matters_ar\":\"اختيار معالج غير كافٍ سيؤدي إلى تأخر في الاستجابة أو استهلاك طاقة مرتفع\",\"severity\":\"SIGNIFICANT\",\"how_to_provide_ar\":\"حدد المنصة المستهدفة مثل Raspberry Pi أو Jetson Nano أو معالج مدمج مخصص\"},{\"basis_ar\":\"دقة الكشف تتأثر بتغيرات الإضاءة داخل السيارة وزوايا رأس السائق\",\"why_it_matters_ar\":\"معدل الأخطاء الكاذبة أو الإخفاقات في الكشف يؤثر مباشرة على مصداقية نظام السلامة\",\"severity\":\"SIGNIFICANT\",\"how_to_provide_ar\":\"وضح إن كان سيُستخدم كاميرا IR وهل ستُطبَّق تقنيات تعويض الإضاءة\"},{\"basis_ar\":\"لم تُحدد آلية تثبيت الجهاز داخل المركبة أو زاوية الكاميرا\",\"why_it_matters_ar\":\"الموضع الخاطئ للكاميرا قد يجعل الكشف عن العينين غير دقيق أو مستحيل\",\"severity\":\"NOTABLE\",\"how_to_provide_ar\":\"حدد طريقة التركيب المقترحة مثل لوحة القيادة أو عمود التوجيه أو مرآة الرؤية الخلفية\"}]},\"missing_information\":{\"has_critical_gaps\":true,\"items\":[{\"what_is_missing_ar\":\"نوع المعالج أو المنصة الحوسبية غير محدد\",\"why_it_matters_ar\":\"يحدد مدى قدرة الجهاز على معالجة الفيديو في الوقت الفعلي وتكلفته وحجمه\",\"severity\":\"CRITICAL\",\"how_to_provide_ar\":\"حدد المعالج المستهدف مثل Raspberry Pi 4 أو NVIDIA Jetson Nano أو شريحة مدمجة مخصصة\"},{\"what_is_missing_ar\":\"مصدر الطاقة غير محدد\",\"why_it_matters_ar\":\"ضروري لتصميم دائرة الطاقة وتحديد متطلبات التوصيل بالمركبة\",\"severity\":\"IMPORTANT\",\"how_to_provide_ar\":\"وضح هل سيتصل الجهاز بمقبس OBD أو USB للسيارة أم يعمل ببطارية مستقلة\"},{\"what_is_missing_ar\":\"الخوارزمية أو النموذج المستخدم للكشف عن النعاس غير محدد\",\"why_it_matters_ar\":\"يؤثر على دقة الكشف ومتطلبات الحوسبة ووقت التطوير\",\"severity\":\"IMPORTANT\",\"how_to_provide_ar\":\"حدد هل ستُستخدم مكتبة جاهزة مثل OpenCV أو Dlib أو نموذج تعلم عميق مخصص\"}]},\"next_steps_suggestion\":{\"suggestion_possible\":true,\"items_ar\":[\"اختيار المنصة الحوسبية المناسبة بناءً على متطلبات المعالجة في الوقت الفعلي والقيود على الحجم والطاقة\",\"تطوير نموذج أولي باستخدام Raspberry Pi وكاميرا IR واختبار خوارزمية EAR لقياس انغلاق العينين\",\"تقييم دقة الكشف في ظروف إضاءة مختلفة داخل المركبة نهاراً وليلاً\",\"تحديد آلية التثبيت المثلى للكاميرا لضمان تغطية وجه السائق في مختلف أوضاع الجلوس\"]},\"disclaimer_ar\":\"هذا تحليل أولي فقط مبني على المعلومات المقدمة وليس شهادة هندسية معتمدة. قرار التصنيف النهائي تحدده المنصة وليس هذا التحليل.\"}",
+    "http_status": 200
+  },
+  "expected": {
+    "overall": false,
+    "failure_type": "logic",
+    "weighted_score": 87,
+    "scores": {
+      "Schema Compliance": {
+        "passed": true,
+        "weight": 18,
+        "issues": []
+      },
+      "No Invented Info": {
+        "passed": true,
+        "weight": 18,
+        "issues": []
+      },
+      "Missing Info + Recovery": {
+        "passed": true,
+        "weight": 14,
+        "issues": []
+      },
+      "Confidence Calibration": {
+        "passed": true,
+        "weight": 14,
+        "issues": []
+      },
+      "Groundedness": {
+        "passed": true,
+        "weight": 14,
+        "issues": []
+      },
+      "Gate Engine Utility": {
+        "passed": true,
+        "weight": 9,
+        "issues": []
+      },
+      "Restraint Check": {
+        "passed": false,
+        "weight": 13,
+        "issues": [
+          "SIGNAL:got=APPEARS_FEASIBLE_WITH_CAVEATS,expected=['SIGNIFICANT_CONCERNS_IDENTIFIED', 'FEASIBILITY_UNCLEAR']"
+        ]
+      }
+    },
+    "normalized_output": {
+      "schema_version": "1.1",
+      "domain": "IOT_ELECTRONICS",
+      "analysis_language": "ar",
+      "input_assessment": {
+        "sufficient_for_analysis": true,
+        "confidence_level": "MEDIUM",
+        "limiting_factors_ar": [
+          "لم يتم تحديد نوع المعالج أو المنصة البرمجية المستخدمة",
+          "لم يتم توضيح مصدر الطاقة للجهاز",
+          "لم يتم تحديد بروتوكول الاتصال أو ما إذا كان الجهاز مستقلاً أم متصلاً"
+        ]
+      },
+      "idea_summary": {
+        "description_ar": "جهاز مدمج في المركبة يعتمد على كاميرا لمراقبة عيني السائق في الوقت الفعلي وتحليل حركتها باستخدام رؤية حاسوبية للكشف عن علامات النعاس، مع إصدار تنبيه صوتي فوري لتنبيه السائق وتفادي الحوادث",
+        "apparent_domain_tags": [
+          "Computer-Vision",
+          "Dashboard"
+        ],
+        "clarification_needed_ar": null
+      },
+      "feasibility": {
+        "assessment_possible": true,
+        "feasibility_signal": "APPEARS_FEASIBLE_WITH_CAVEATS",
+        "signal_basis_ar": "الفكرة مثبتة تقنياً في أبحاث ومنتجات تجارية، غير أن التنفيذ يتطلب معالجاً كافي القدرة لتشغيل خوارزميات رؤية حاسوبية في الوقت الفعلي، مع تحديات تتعلق بالإضاءة والدقة في بيئات القيادة المتغيرة"
+      },
+      "observations": {
+        "apparent_components_ar": [
+          {
+            "component_ar": "كاميرا مراقبة العينين",
+            "basis_ar": "مذكورة صراحةً في وصف الحل",
+            "component_specificity": "USER_SPECIFIED"
+          },
+          {
+            "component_ar": "وحدة معالجة مركزية",
+            "basis_ar": "مذكورة صراحةً في وصف الحل كمعالج",
+            "component_specificity": "USER_SPECIFIED"
+          },
+          {
+            "component_ar": "مكبر صوت أو جرس تنبيه",
+            "basis_ar": "مذكور صراحةً كتنبيه صوتي في وصف الحل",
+            "component_specificity": "USER_SPECIFIED"
+          },
+          {
+            "component_ar": "خوارزمية رؤية حاسوبية لتحليل العينين",
+            "basis_ar": "مستنتج بوضوح من متطلبة الكشف عن النعاس عبر الكاميرا",
+            "component_specificity": "CLEARLY_IMPLIED_TYPE"
+          },
+          {
+            "component_ar": "مصدر إضاءة IR للرؤية الليلية",
+            "basis_ar": "مستنتج من ضرورة مراقبة العينين في ظروف إضاءة متغيرة داخل المركبة",
+            "component_specificity": "CLEARLY_IMPLIED_TYPE"
+          }
+        ],
+        "power_observations_ar": "لم يتم تحديد مصدر الطاقة، ويُرجَّح التوصيل بنظام كهرباء المركبة OBD أو USB، لكن لم يُذكر ذلك صراحةً",
+        "connectivity_observations_ar": "لم يُذكر أي بروتوكول اتصال، ويبدو الجهاز مستقلاً يعمل دون اتصال خارجي بناءً على الوصف"
+      },
+      "identified_concerns": {
+        "items": [
+          {
+            "basis_ar": "تشغيل خوارزميات رؤية حاسوبية في الوقت الفعلي يتطلب قدرة حوسبية عالية",
+            "why_it_matters_ar": "اختيار معالج غير كافٍ سيؤدي إلى تأخر في الاستجابة أو استهلاك طاقة مرتفع",
+            "severity": "SIGNIFICANT",
+            "how_to_provide_ar": "حدد المنصة المستهدفة مثل Raspberry Pi أو Jetson Nano أو معالج مدمج مخصص"
+          },
+          {
+            "basis_ar": "دقة الكشف تتأثر بتغيرات الإضاءة داخل السيارة وزوايا رأس السائق",
+            "why_it_matters_ar": "معدل الأخطاء الكاذبة أو الإخفاقات في الكشف يؤثر مباشرة على مصداقية نظام السلامة",
+            "severity": "SIGNIFICANT",
+            "how_to_provide_ar": "وضح إن كان سيُستخدم كاميرا IR وهل ستُطبَّق تقنيات تعويض الإضاءة"
+          },
+          {
+            "basis_ar": "لم تُحدد آلية تثبيت الجهاز داخل المركبة أو زاوية الكاميرا",
+            "why_it_matters_ar": "الموضع الخاطئ للكاميرا قد يجعل الكشف عن العينين غير دقيق أو مستحيل",
+            "severity": "NOTABLE",
+            "how_to_provide_ar": "حدد طريقة التركيب المقترحة مثل لوحة القيادة أو عمود التوجيه أو مرآة الرؤية الخلفية"
+          }
+        ]
+      },
+      "missing_information": {
+        "has_critical_gaps": true,
+        "items": [
+          {
+            "what_is_missing_ar": "نوع المعالج أو المنصة الحوسبية غير محدد",
+            "why_it_matters_ar": "يحدد مدى قدرة الجهاز على معالجة الفيديو في الوقت الفعلي وتكلفته وحجمه",
+            "severity": "CRITICAL",
+            "how_to_provide_ar": "حدد المعالج المستهدف مثل Raspberry Pi 4 أو NVIDIA Jetson Nano أو شريحة مدمجة مخصصة"
+          },
+          {
+            "what_is_missing_ar": "مصدر الطاقة غير محدد",
+            "why_it_matters_ar": "ضروري لتصميم دائرة الطاقة وتحديد متطلبات التوصيل بالمركبة",
+            "severity": "IMPORTANT",
+            "how_to_provide_ar": "وضح هل سيتصل الجهاز بمقبس OBD أو USB للسيارة أم يعمل ببطارية مستقلة"
+          },
+          {
+            "what_is_missing_ar": "الخوارزمية أو النموذج المستخدم للكشف عن النعاس غير محدد",
+            "why_it_matters_ar": "يؤثر على دقة الكشف ومتطلبات الحوسبة ووقت التطوير",
+            "severity": "IMPORTANT",
+            "how_to_provide_ar": "حدد هل ستُستخدم مكتبة جاهزة مثل OpenCV أو Dlib أو نموذج تعلم عميق مخصص"
+          }
+        ]
+      },
+      "next_steps_suggestion": {
+        "suggestion_possible": true,
+        "items_ar": [
+          "اختيار المنصة الحوسبية المناسبة بناءً على متطلبات المعالجة في الوقت الفعلي والقيود على الحجم والطاقة",
+          "تطوير نموذج أولي باستخدام Raspberry Pi وكاميرا IR واختبار خوارزمية EAR لقياس انغلاق العينين",
+          "تقييم دقة الكشف في ظروف إضاءة مختلفة داخل المركبة نهاراً وليلاً",
+          "تحديد آلية التثبيت المثلى للكاميرا لضمان تغطية وجه السائق في مختلف أوضاع الجلوس"
+        ]
+      },
+      "disclaimer_ar": "هذا تحليل أولي فقط مبني على المعلومات المقدمة وليس شهادة هندسية معتمدة. قرار التصنيف النهائي تحدده المنصة وليس هذا التحليل."
+    }
+  },
+  "trace": {
+    "extraction_method": "direct",
+    "extraction_failure": "",
+    "parsed_output": {
+      "schema_version": "1.1",
+      "domain": "IOT_ELECTRONICS",
+      "analysis_language": "ar",
+      "input_assessment": {
+        "sufficient_for_analysis": true,
+        "confidence_level": "MEDIUM",
+        "limiting_factors_ar": [
+          "لم يتم تحديد نوع المعالج أو المنصة البرمجية المستخدمة",
+          "لم يتم توضيح مصدر الطاقة للجهاز",
+          "لم يتم تحديد بروتوكول الاتصال أو ما إذا كان الجهاز مستقلاً أم متصلاً"
+        ]
+      },
+      "idea_summary": {
+        "description_ar": "جهاز مدمج في المركبة يعتمد على كاميرا لمراقبة عيني السائق في الوقت الفعلي وتحليل حركتها باستخدام رؤية حاسوبية للكشف عن علامات النعاس، مع إصدار تنبيه صوتي فوري لتنبيه السائق وتفادي الحوادث",
+        "apparent_domain_tags": [
+          "Computer-Vision",
+          "Dashboard"
+        ],
+        "clarification_needed_ar": null
+      },
+      "feasibility": {
+        "assessment_possible": true,
+        "feasibility_signal": "APPEARS_FEASIBLE_WITH_CAVEATS",
+        "signal_basis_ar": "الفكرة مثبتة تقنياً في أبحاث ومنتجات تجارية، غير أن التنفيذ يتطلب معالجاً كافي القدرة لتشغيل خوارزميات رؤية حاسوبية في الوقت الفعلي، مع تحديات تتعلق بالإضاءة والدقة في بيئات القيادة المتغيرة"
+      },
+      "observations": {
+        "apparent_components_ar": [
+          {
+            "component_ar": "كاميرا مراقبة العينين",
+            "basis_ar": "مذكورة صراحةً في وصف الحل",
+            "component_specificity": "USER_SPECIFIED"
+          },
+          {
+            "component_ar": "وحدة معالجة مركزية",
+            "basis_ar": "مذكورة صراحةً في وصف الحل كمعالج",
+            "component_specificity": "USER_SPECIFIED"
+          },
+          {
+            "component_ar": "مكبر صوت أو جرس تنبيه",
+            "basis_ar": "مذكور صراحةً كتنبيه صوتي في وصف الحل",
+            "component_specificity": "USER_SPECIFIED"
+          },
+          {
+            "component_ar": "خوارزمية رؤية حاسوبية لتحليل العينين",
+            "basis_ar": "مستنتج بوضوح من متطلبة الكشف عن النعاس عبر الكاميرا",
+            "component_specificity": "CLEARLY_IMPLIED_TYPE"
+          },
+          {
+            "component_ar": "مصدر إضاءة IR للرؤية الليلية",
+            "basis_ar": "مستنتج من ضرورة مراقبة العينين في ظروف إضاءة متغيرة داخل المركبة",
+            "component_specificity": "CLEARLY_IMPLIED_TYPE"
+          }
+        ],
+        "power_observations_ar": "لم يتم تحديد مصدر الطاقة، ويُرجَّح التوصيل بنظام كهرباء المركبة OBD أو USB، لكن لم يُذكر ذلك صراحةً",
+        "connectivity_observations_ar": "لم يُذكر أي بروتوكول اتصال، ويبدو الجهاز مستقلاً يعمل دون اتصال خارجي بناءً على الوصف"
+      },
+      "identified_concerns": {
+        "items": [
+          {
+            "basis_ar": "تشغيل خوارزميات رؤية حاسوبية في الوقت الفعلي يتطلب قدرة حوسبية عالية",
+            "why_it_matters_ar": "اختيار معالج غير كافٍ سيؤدي إلى تأخر في الاستجابة أو استهلاك طاقة مرتفع",
+            "severity": "SIGNIFICANT",
+            "how_to_provide_ar": "حدد المنصة المستهدفة مثل Raspberry Pi أو Jetson Nano أو معالج مدمج مخصص"
+          },
+          {
+            "basis_ar": "دقة الكشف تتأثر بتغيرات الإضاءة داخل السيارة وزوايا رأس السائق",
+            "why_it_matters_ar": "معدل الأخطاء الكاذبة أو الإخفاقات في الكشف يؤثر مباشرة على مصداقية نظام السلامة",
+            "severity": "SIGNIFICANT",
+            "how_to_provide_ar": "وضح إن كان سيُستخدم كاميرا IR وهل ستُطبَّق تقنيات تعويض الإضاءة"
+          },
+          {
+            "basis_ar": "لم تُحدد آلية تثبيت الجهاز داخل المركبة أو زاوية الكاميرا",
+            "why_it_matters_ar": "الموضع الخاطئ للكاميرا قد يجعل الكشف عن العينين غير دقيق أو مستحيل",
+            "severity": "NOTABLE",
+            "how_to_provide_ar": "حدد طريقة التركيب المقترحة مثل لوحة القيادة أو عمود التوجيه أو مرآة الرؤية الخلفية"
+          }
+        ]
+      },
+      "missing_information": {
+        "has_critical_gaps": true,
+        "items": [
+          {
+            "what_is_missing_ar": "نوع المعالج أو المنصة الحوسبية غير محدد",
+            "why_it_matters_ar": "يحدد مدى قدرة الجهاز على معالجة الفيديو في الوقت الفعلي وتكلفته وحجمه",
+            "severity": "CRITICAL",
+            "how_to_provide_ar": "حدد المعالج المستهدف مثل Raspberry Pi 4 أو NVIDIA Jetson Nano أو شريحة مدمجة مخصصة"
+          },
+          {
+            "what_is_missing_ar": "مصدر الطاقة غير محدد",
+            "why_it_matters_ar": "ضروري لتصميم دائرة الطاقة وتحديد متطلبات التوصيل بالمركبة",
+            "severity": "IMPORTANT",
+            "how_to_provide_ar": "وضح هل سيتصل الجهاز بمقبس OBD أو USB للسيارة أم يعمل ببطارية مستقلة"
+          },
+          {
+            "what_is_missing_ar": "الخوارزمية أو النموذج المستخدم للكشف عن النعاس غير محدد",
+            "why_it_matters_ar": "يؤثر على دقة الكشف ومتطلبات الحوسبة ووقت التطوير",
+            "severity": "IMPORTANT",
+            "how_to_provide_ar": "حدد هل ستُستخدم مكتبة جاهزة مثل OpenCV أو Dlib أو نموذج تعلم عميق مخصص"
+          }
+        ]
+      },
+      "next_steps_suggestion": {
+        "suggestion_possible": true,
+        "items_ar": [
+          "اختيار المنصة الحوسبية المناسبة بناءً على متطلبات المعالجة في الوقت الفعلي والقيود على الحجم والطاقة",
+          "تطوير نموذج أولي باستخدام Raspberry Pi وكاميرا IR واختبار خوارزمية EAR لقياس انغلاق العينين",
+          "تقييم دقة الكشف في ظروف إضاءة مختلفة داخل المركبة نهاراً وليلاً",
+          "تحديد آلية التثبيت المثلى للكاميرا لضمان تغطية وجه السائق في مختلف أوضاع الجلوس"
+        ]
+      },
+      "disclaimer_ar": "هذا تحليل أولي فقط مبني على المعلومات المقدمة وليس شهادة هندسية معتمدة. قرار التصنيف النهائي تحدده المنصة وليس هذا التحليل."
+    },
+    "http_error_body": null,
+    "error_category": null,
+    "error_detail": null,
+    "error": false
+  },
+  "provenance": {
+    "source_results_file": "results_20260520_074904.json",
+    "recorded_at": "2026-05-20T07:49:04+00:00",
+    "corpus_mode": "diagnostic",
+    "model": "claude-sonnet-4-6",
+    "schema_version": "1.1"
+  }
+}

@@ -1,0 +1,300 @@
+{
+  "fixture_id": "TC-22",
+  "case_id": "TC-A4",
+  "sig": "WARN",
+  "input": {
+    "raw_text": "{\"schema_version\":\"1.1\",\"domain\":\"IOT_ELECTRONICS\",\"analysis_language\":\"ar\",\"input_assessment\":{\"sufficient_for_analysis\":true,\"confidence_level\":\"LOW\",\"limiting_factors_ar\":[\"المشكلة غير محددة بوضوح\",\"المستفيد غير محدد\",\"لم تُذكر متطلبات النظام أو معايير الأداء\",\"السياق التشغيلي للمستودعات غير مفصّل\"]},\"idea_summary\":{\"description_ar\":\"جهاز مراقبة درجة حرارة المستودعات باستخدام متحكم ESP32 ووحدة LoRa للاتصال اللاسلكي بعيد المدى، بهدف رصد بيئة التخزين عن بُعد\",\"apparent_domain_tags\":[\"Industrial-IoT\",\"Cold-Chain\",\"Environmental-Monitoring\"],\"clarification_needed_ar\":\"يحتاج توضيح المشكلة الفعلية التي يحلها الجهاز، والجهة المستفيدة، ومتطلبات الدقة والتنبيهات والبنية التحتية للاستقبال\"},\"feasibility\":{\"assessment_possible\":true,\"feasibility_signal\":\"APPEARS_FEASIBLE_WITH_CAVEATS\",\"signal_basis_ar\":\"التركيبة ESP32 مع LoRa معتمدة في تطبيقات المراقبة البيئية، لكن غياب تفاصيل المشكلة والمستفيد والبنية التحتية يجعل تقييم الجدوى الكاملة محدوداً\"},\"observations\":{\"apparent_components_ar\":[{\"component_ar\":\"متحكم ESP32\",\"basis_ar\":\"ذُكر صراحةً في وصف الفكرة\",\"component_specificity\":\"USER_SPECIFIED\"},{\"component_ar\":\"وحدة LoRa للاتصال\",\"basis_ar\":\"ذُكر صراحةً في وصف الفكرة\",\"component_specificity\":\"USER_SPECIFIED\"},{\"component_ar\":\"مستشعر درجة الحرارة\",\"basis_ar\":\"مضمّن بشكل واضح من متطلب مراقبة درجة الحرارة\",\"component_specificity\":\"CLEARLY_IMPLIED_TYPE\"},{\"component_ar\":\"بوابة LoRa أو خادم استقبال\",\"basis_ar\":\"مطلوب لاستقبال البيانات من الجهاز في أي منظومة LoRa\",\"component_specificity\":\"CLEARLY_IMPLIED_TYPE\"}],\"power_observations_ar\":\"لم يُحدد مصدر الطاقة، وهو عامل حاسم في بيئة المستودعات سواء كان بطارية أم توصيل مباشر\",\"connectivity_observations_ar\":\"LoRa مناسب للمدى الطويل واستهلاك الطاقة المنخفض، لكن يجب تحديد بنية الشبكة LoRaWAN أو P2P ووجود بوابة استقبال\"},\"identified_concerns\":{\"items\":[{\"basis_ar\":\"المشكلة المُعرَّفة غير واضحة ولا توجد معايير نجاح محددة\",\"why_it_matters_ar\":\"بدون تعريف واضح للمشكلة يصعب تقييم نجاح المشروع أو قياس أدائه\",\"severity\":\"SIGNIFICANT\",\"how_to_provide_ar\":\"حدد ما الذي يحدث حالياً في المستودعات وما الضرر الناتج عن غياب المراقبة\"},{\"basis_ar\":\"لم تُذكر دقة المستشعر المطلوبة ونطاق درجات الحرارة المستهدف\",\"why_it_matters_ar\":\"تؤثر مباشرة على اختيار نوع المستشعر وتكلفته وموثوقيته في بيئات التبريد\",\"severity\":\"NOTABLE\",\"how_to_provide_ar\":\"حدد نطاق درجة الحرارة المطلوب رصده ودقة القياس المقبولة\"},{\"basis_ar\":\"لا توجد إشارة لنظام التنبيهات أو لوحة المراقبة\",\"why_it_matters_ar\":\"الجهاز وحده بدون واجهة استقبال وتنبيه لا يحقق الفائدة العملية\",\"severity\":\"NOTABLE\",\"how_to_provide_ar\":\"وضح كيف ستُعرض البيانات وما آلية التنبيه عند تجاوز حدود الحرارة\"}]},\"missing_information\":{\"has_critical_gaps\":true,\"items\":[{\"what_is_missing_ar\":\"المستفيد الفعلي من الجهاز غير محدد\",\"why_it_matters_ar\":\"يحدد متطلبات الواجهة والتكامل ومستوى الموثوقية المطلوب\",\"severity\":\"IMPORTANT\",\"how_to_provide_ar\":\"حدد هل المستفيد مستودع تجاري أم صيدلاني أم غذائي وما حجم العملية\"},{\"what_is_missing_ar\":\"مصدر الطاقة غير محدد\",\"why_it_matters_ar\":\"يحدد عمر البطارية ومدة التشغيل وطريقة التركيب في المستودع\",\"severity\":\"IMPORTANT\",\"how_to_provide_ar\":\"حدد هل الجهاز يعمل بالبطارية أم متصل بالكهرباء\"},{\"what_is_missing_ar\":\"بنية شبكة LoRa غير محددة\",\"why_it_matters_ar\":\"LoRaWAN تتطلب بنية تحتية مختلفة عن الاتصال المباشر P2P\",\"severity\":\"IMPORTANT\",\"how_to_provide_ar\":\"حدد هل ستستخدم LoRaWAN مع خادم شبكة أم اتصال مباشر بين الأجهزة\"},{\"what_is_missing_ar\":\"عدد نقاط القياس ومساحة المستودع غير محددة\",\"why_it_matters_ar\":\"يؤثر على عدد الأجهزة المطلوبة وتصميم الشبكة وتكلفة المشروع\",\"severity\":\"HELPFUL\",\"how_to_provide_ar\":\"حدد عدد المستودعات ومساحتها وعدد نقاط القياس المطلوبة\"}]},\"next_steps_suggestion\":{\"suggestion_possible\":true,\"items_ar\":[\"تعريف المشكلة بدقة وتحديد معايير النجاح قبل البدء بالتصميم التقني\",\"اختيار مستشعر درجة الحرارة المناسب بناءً على النطاق المطلوب مثل DS18B20 أو DHT22 أو PT100\",\"تحديد بنية شبكة LoRa ووجود بوابة استقبال وخادم لمعالجة البيانات\",\"بناء نموذج أولي واختباره في بيئة مستودع حقيقية قبل التوسع\"]},\"disclaimer_ar\":\"هذا تحليل أولي فقط مبني على المعلومات المقدمة وليس شهادة هندسية معتمدة. لا يُعدّ تأكيداً لنجاح الفكرة أو ضماناً لأدائها. قرار التصنيف النهائي تحدده المنصة وليس هذا التحليل.\"}",
+    "http_status": 200
+  },
+  "expected": {
+    "overall": false,
+    "failure_type": "logic",
+    "weighted_score": 87,
+    "scores": {
+      "Schema Compliance": {
+        "passed": true,
+        "weight": 18,
+        "issues": []
+      },
+      "No Invented Info": {
+        "passed": true,
+        "weight": 18,
+        "issues": []
+      },
+      "Missing Info + Recovery": {
+        "passed": true,
+        "weight": 14,
+        "issues": []
+      },
+      "Confidence Calibration": {
+        "passed": true,
+        "weight": 14,
+        "issues": []
+      },
+      "Groundedness": {
+        "passed": true,
+        "weight": 14,
+        "issues": []
+      },
+      "Gate Engine Utility": {
+        "passed": true,
+        "weight": 9,
+        "issues": []
+      },
+      "Restraint Check": {
+        "passed": false,
+        "weight": 13,
+        "issues": [
+          "SIGNAL:got=APPEARS_FEASIBLE_WITH_CAVEATS,expected=['FEASIBILITY_UNCLEAR', 'INSUFFICIENT_INPUT']"
+        ]
+      }
+    },
+    "normalized_output": {
+      "schema_version": "1.1",
+      "domain": "IOT_ELECTRONICS",
+      "analysis_language": "ar",
+      "input_assessment": {
+        "sufficient_for_analysis": true,
+        "confidence_level": "LOW",
+        "limiting_factors_ar": [
+          "المشكلة غير محددة بوضوح",
+          "المستفيد غير محدد",
+          "لم تُذكر متطلبات النظام أو معايير الأداء",
+          "السياق التشغيلي للمستودعات غير مفصّل"
+        ]
+      },
+      "idea_summary": {
+        "description_ar": "جهاز مراقبة درجة حرارة المستودعات باستخدام متحكم ESP32 ووحدة LoRa للاتصال اللاسلكي بعيد المدى، بهدف رصد بيئة التخزين عن بُعد",
+        "apparent_domain_tags": [
+          "Industrial-IoT",
+          "Cold-Chain",
+          "Environmental-Monitoring"
+        ],
+        "clarification_needed_ar": "يحتاج توضيح المشكلة الفعلية التي يحلها الجهاز، والجهة المستفيدة، ومتطلبات الدقة والتنبيهات والبنية التحتية للاستقبال"
+      },
+      "feasibility": {
+        "assessment_possible": true,
+        "feasibility_signal": "APPEARS_FEASIBLE_WITH_CAVEATS",
+        "signal_basis_ar": "التركيبة ESP32 مع LoRa معتمدة في تطبيقات المراقبة البيئية، لكن غياب تفاصيل المشكلة والمستفيد والبنية التحتية يجعل تقييم الجدوى الكاملة محدوداً"
+      },
+      "observations": {
+        "apparent_components_ar": [
+          {
+            "component_ar": "متحكم ESP32",
+            "basis_ar": "ذُكر صراحةً في وصف الفكرة",
+            "component_specificity": "USER_SPECIFIED"
+          },
+          {
+            "component_ar": "وحدة LoRa للاتصال",
+            "basis_ar": "ذُكر صراحةً في وصف الفكرة",
+            "component_specificity": "USER_SPECIFIED"
+          },
+          {
+            "component_ar": "مستشعر درجة الحرارة",
+            "basis_ar": "مضمّن بشكل واضح من متطلب مراقبة درجة الحرارة",
+            "component_specificity": "CLEARLY_IMPLIED_TYPE"
+          },
+          {
+            "component_ar": "بوابة LoRa أو خادم استقبال",
+            "basis_ar": "مطلوب لاستقبال البيانات من الجهاز في أي منظومة LoRa",
+            "component_specificity": "CLEARLY_IMPLIED_TYPE"
+          }
+        ],
+        "power_observations_ar": "لم يُحدد مصدر الطاقة، وهو عامل حاسم في بيئة المستودعات سواء كان بطارية أم توصيل مباشر",
+        "connectivity_observations_ar": "LoRa مناسب للمدى الطويل واستهلاك الطاقة المنخفض، لكن يجب تحديد بنية الشبكة LoRaWAN أو P2P ووجود بوابة استقبال"
+      },
+      "identified_concerns": {
+        "items": [
+          {
+            "basis_ar": "المشكلة المُعرَّفة غير واضحة ولا توجد معايير نجاح محددة",
+            "why_it_matters_ar": "بدون تعريف واضح للمشكلة يصعب تقييم نجاح المشروع أو قياس أدائه",
+            "severity": "SIGNIFICANT",
+            "how_to_provide_ar": "حدد ما الذي يحدث حالياً في المستودعات وما الضرر الناتج عن غياب المراقبة"
+          },
+          {
+            "basis_ar": "لم تُذكر دقة المستشعر المطلوبة ونطاق درجات الحرارة المستهدف",
+            "why_it_matters_ar": "تؤثر مباشرة على اختيار نوع المستشعر وتكلفته وموثوقيته في بيئات التبريد",
+            "severity": "NOTABLE",
+            "how_to_provide_ar": "حدد نطاق درجة الحرارة المطلوب رصده ودقة القياس المقبولة"
+          },
+          {
+            "basis_ar": "لا توجد إشارة لنظام التنبيهات أو لوحة المراقبة",
+            "why_it_matters_ar": "الجهاز وحده بدون واجهة استقبال وتنبيه لا يحقق الفائدة العملية",
+            "severity": "NOTABLE",
+            "how_to_provide_ar": "وضح كيف ستُعرض البيانات وما آلية التنبيه عند تجاوز حدود الحرارة"
+          }
+        ]
+      },
+      "missing_information": {
+        "has_critical_gaps": true,
+        "items": [
+          {
+            "what_is_missing_ar": "المستفيد الفعلي من الجهاز غير محدد",
+            "why_it_matters_ar": "يحدد متطلبات الواجهة والتكامل ومستوى الموثوقية المطلوب",
+            "severity": "IMPORTANT",
+            "how_to_provide_ar": "حدد هل المستفيد مستودع تجاري أم صيدلاني أم غذائي وما حجم العملية"
+          },
+          {
+            "what_is_missing_ar": "مصدر الطاقة غير محدد",
+            "why_it_matters_ar": "يحدد عمر البطارية ومدة التشغيل وطريقة التركيب في المستودع",
+            "severity": "IMPORTANT",
+            "how_to_provide_ar": "حدد هل الجهاز يعمل بالبطارية أم متصل بالكهرباء"
+          },
+          {
+            "what_is_missing_ar": "بنية شبكة LoRa غير محددة",
+            "why_it_matters_ar": "LoRaWAN تتطلب بنية تحتية مختلفة عن الاتصال المباشر P2P",
+            "severity": "IMPORTANT",
+            "how_to_provide_ar": "حدد هل ستستخدم LoRaWAN مع خادم شبكة أم اتصال مباشر بين الأجهزة"
+          },
+          {
+            "what_is_missing_ar": "عدد نقاط القياس ومساحة المستودع غير محددة",
+            "why_it_matters_ar": "يؤثر على عدد الأجهزة المطلوبة وتصميم الشبكة وتكلفة المشروع",
+            "severity": "HELPFUL",
+            "how_to_provide_ar": "حدد عدد المستودعات ومساحتها وعدد نقاط القياس المطلوبة"
+          }
+        ]
+      },
+      "next_steps_suggestion": {
+        "suggestion_possible": true,
+        "items_ar": [
+          "تعريف المشكلة بدقة وتحديد معايير النجاح قبل البدء بالتصميم التقني",
+          "اختيار مستشعر درجة الحرارة المناسب بناءً على النطاق المطلوب مثل DS18B20 أو DHT22 أو PT100",
+          "تحديد بنية شبكة LoRa ووجود بوابة استقبال وخادم لمعالجة البيانات",
+          "بناء نموذج أولي واختباره في بيئة مستودع حقيقية قبل التوسع"
+        ]
+      },
+      "disclaimer_ar": "هذا تحليل أولي فقط مبني على المعلومات المقدمة وليس شهادة هندسية معتمدة. لا يُعدّ تأكيداً لنجاح الفكرة أو ضماناً لأدائها. قرار التصنيف النهائي تحدده المنصة وليس هذا التحليل."
+    }
+  },
+  "trace": {
+    "extraction_method": "direct",
+    "extraction_failure": "",
+    "parsed_output": {
+      "schema_version": "1.1",
+      "domain": "IOT_ELECTRONICS",
+      "analysis_language": "ar",
+      "input_assessment": {
+        "sufficient_for_analysis": true,
+        "confidence_level": "LOW",
+        "limiting_factors_ar": [
+          "المشكلة غير محددة بوضوح",
+          "المستفيد غير محدد",
+          "لم تُذكر متطلبات النظام أو معايير الأداء",
+          "السياق التشغيلي للمستودعات غير مفصّل"
+        ]
+      },
+      "idea_summary": {
+        "description_ar": "جهاز مراقبة درجة حرارة المستودعات باستخدام متحكم ESP32 ووحدة LoRa للاتصال اللاسلكي بعيد المدى، بهدف رصد بيئة التخزين عن بُعد",
+        "apparent_domain_tags": [
+          "Industrial-IoT",
+          "Cold-Chain",
+          "Environmental-Monitoring"
+        ],
+        "clarification_needed_ar": "يحتاج توضيح المشكلة الفعلية التي يحلها الجهاز، والجهة المستفيدة، ومتطلبات الدقة والتنبيهات والبنية التحتية للاستقبال"
+      },
+      "feasibility": {
+        "assessment_possible": true,
+        "feasibility_signal": "APPEARS_FEASIBLE_WITH_CAVEATS",
+        "signal_basis_ar": "التركيبة ESP32 مع LoRa معتمدة في تطبيقات المراقبة البيئية، لكن غياب تفاصيل المشكلة والمستفيد والبنية التحتية يجعل تقييم الجدوى الكاملة محدوداً"
+      },
+      "observations": {
+        "apparent_components_ar": [
+          {
+            "component_ar": "متحكم ESP32",
+            "basis_ar": "ذُكر صراحةً في وصف الفكرة",
+            "component_specificity": "USER_SPECIFIED"
+          },
+          {
+            "component_ar": "وحدة LoRa للاتصال",
+            "basis_ar": "ذُكر صراحةً في وصف الفكرة",
+            "component_specificity": "USER_SPECIFIED"
+          },
+          {
+            "component_ar": "مستشعر درجة الحرارة",
+            "basis_ar": "مضمّن بشكل واضح من متطلب مراقبة درجة الحرارة",
+            "component_specificity": "CLEARLY_IMPLIED_TYPE"
+          },
+          {
+            "component_ar": "بوابة LoRa أو خادم استقبال",
+            "basis_ar": "مطلوب لاستقبال البيانات من الجهاز في أي منظومة LoRa",
+            "component_specificity": "CLEARLY_IMPLIED_TYPE"
+          }
+        ],
+        "power_observations_ar": "لم يُحدد مصدر الطاقة، وهو عامل حاسم في بيئة المستودعات سواء كان بطارية أم توصيل مباشر",
+        "connectivity_observations_ar": "LoRa مناسب للمدى الطويل واستهلاك الطاقة المنخفض، لكن يجب تحديد بنية الشبكة LoRaWAN أو P2P ووجود بوابة استقبال"
+      },
+      "identified_concerns": {
+        "items": [
+          {
+            "basis_ar": "المشكلة المُعرَّفة غير واضحة ولا توجد معايير نجاح محددة",
+            "why_it_matters_ar": "بدون تعريف واضح للمشكلة يصعب تقييم نجاح المشروع أو قياس أدائه",
+            "severity": "SIGNIFICANT",
+            "how_to_provide_ar": "حدد ما الذي يحدث حالياً في المستودعات وما الضرر الناتج عن غياب المراقبة"
+          },
+          {
+            "basis_ar": "لم تُذكر دقة المستشعر المطلوبة ونطاق درجات الحرارة المستهدف",
+            "why_it_matters_ar": "تؤثر مباشرة على اختيار نوع المستشعر وتكلفته وموثوقيته في بيئات التبريد",
+            "severity": "NOTABLE",
+            "how_to_provide_ar": "حدد نطاق درجة الحرارة المطلوب رصده ودقة القياس المقبولة"
+          },
+          {
+            "basis_ar": "لا توجد إشارة لنظام التنبيهات أو لوحة المراقبة",
+            "why_it_matters_ar": "الجهاز وحده بدون واجهة استقبال وتنبيه لا يحقق الفائدة العملية",
+            "severity": "NOTABLE",
+            "how_to_provide_ar": "وضح كيف ستُعرض البيانات وما آلية التنبيه عند تجاوز حدود الحرارة"
+          }
+        ]
+      },
+      "missing_information": {
+        "has_critical_gaps": true,
+        "items": [
+          {
+            "what_is_missing_ar": "المستفيد الفعلي من الجهاز غير محدد",
+            "why_it_matters_ar": "يحدد متطلبات الواجهة والتكامل ومستوى الموثوقية المطلوب",
+            "severity": "IMPORTANT",
+            "how_to_provide_ar": "حدد هل المستفيد مستودع تجاري أم صيدلاني أم غذائي وما حجم العملية"
+          },
+          {
+            "what_is_missing_ar": "مصدر الطاقة غير محدد",
+            "why_it_matters_ar": "يحدد عمر البطارية ومدة التشغيل وطريقة التركيب في المستودع",
+            "severity": "IMPORTANT",
+            "how_to_provide_ar": "حدد هل الجهاز يعمل بالبطارية أم متصل بالكهرباء"
+          },
+          {
+            "what_is_missing_ar": "بنية شبكة LoRa غير محددة",
+            "why_it_matters_ar": "LoRaWAN تتطلب بنية تحتية مختلفة عن الاتصال المباشر P2P",
+            "severity": "IMPORTANT",
+            "how_to_provide_ar": "حدد هل ستستخدم LoRaWAN مع خادم شبكة أم اتصال مباشر بين الأجهزة"
+          },
+          {
+            "what_is_missing_ar": "عدد نقاط القياس ومساحة المستودع غير محددة",
+            "why_it_matters_ar": "يؤثر على عدد الأجهزة المطلوبة وتصميم الشبكة وتكلفة المشروع",
+            "severity": "HELPFUL",
+            "how_to_provide_ar": "حدد عدد المستودعات ومساحتها وعدد نقاط القياس المطلوبة"
+          }
+        ]
+      },
+      "next_steps_suggestion": {
+        "suggestion_possible": true,
+        "items_ar": [
+          "تعريف المشكلة بدقة وتحديد معايير النجاح قبل البدء بالتصميم التقني",
+          "اختيار مستشعر درجة الحرارة المناسب بناءً على النطاق المطلوب مثل DS18B20 أو DHT22 أو PT100",
+          "تحديد بنية شبكة LoRa ووجود بوابة استقبال وخادم لمعالجة البيانات",
+          "بناء نموذج أولي واختباره في بيئة مستودع حقيقية قبل التوسع"
+        ]
+      },
+      "disclaimer_ar": "هذا تحليل أولي فقط مبني على المعلومات المقدمة وليس شهادة هندسية معتمدة. لا يُعدّ تأكيداً لنجاح الفكرة أو ضماناً لأدائها. قرار التصنيف النهائي تحدده المنصة وليس هذا التحليل."
+    },
+    "http_error_body": null,
+    "error_category": null,
+    "error_detail": null,
+    "error": false
+  },
+  "provenance": {
+    "source_results_file": "results_20260518_141231.json",
+    "recorded_at": "2026-05-18T14:12:31+00:00",
+    "corpus_mode": "diagnostic",
+    "model": "claude-sonnet-4-6",
+    "schema_version": "1.1"
+  }
+}

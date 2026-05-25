@@ -1,0 +1,292 @@
+{
+  "fixture_id": "TC-08",
+  "case_id": "TC-08",
+  "sig": "PASS",
+  "input": {
+    "raw_text": "{\"schema_version\":\"1.1\",\"domain\":\"IOT_ELECTRONICS\",\"analysis_language\":\"ar\",\"input_assessment\":{\"sufficient_for_analysis\":true,\"confidence_level\":\"HIGH\",\"limiting_factors_ar\":[\"لم يتم تحديد مصدر الطاقة بشكل صريح\",\"لم يتم تحديد طريقة الاتصال أو نقل البيانات\"]},\"idea_summary\":{\"description_ar\":\"جهاز محمول لقياس جودة الهواء الداخلي يستخدم حساس CO2 من نوع SCD40 وحساس الغبار PMS5003 مع متحكم Arduino Nano وشاشة OLED لعرض القراءات الفورية للمستخدم\",\"apparent_domain_tags\":[\"Environmental-Monitoring\",\"Healthcare\"],\"clarification_needed_ar\":null},\"feasibility\":{\"assessment_possible\":true,\"feasibility_signal\":\"APPEARS_FEASIBLE_WITH_CAVEATS\",\"signal_basis_ar\":\"المكونات المذكورة متوافقة تقنياً وموثقة جيداً، لكن توجد تحفظات تتعلق بمصدر الطاقة واستهلاكها لكون الجهاز محمولاً، فضلاً عن تحدي الحجم والتكامل المادي\"},\"observations\":{\"apparent_components_ar\":[{\"component_ar\":\"حساس CO2 SCD40\",\"basis_ar\":\"تم ذكره صراحةً في وصف الحل\",\"component_specificity\":\"USER_SPECIFIED\"},{\"component_ar\":\"حساس الغبار PMS5003\",\"basis_ar\":\"تم ذكره صراحةً في وصف الحل\",\"component_specificity\":\"USER_SPECIFIED\"},{\"component_ar\":\"Arduino Nano\",\"basis_ar\":\"تم ذكره صراحةً في وصف الحل كمتحكم رئيسي\",\"component_specificity\":\"USER_SPECIFIED\"},{\"component_ar\":\"شاشة OLED\",\"basis_ar\":\"تم ذكرها صراحةً في الفكرة لعرض البيانات\",\"component_specificity\":\"USER_SPECIFIED\"},{\"component_ar\":\"بطارية محمولة أو مصدر طاقة\",\"basis_ar\":\"مستنتج ضرورياً لكون الجهاز محمولاً\",\"component_specificity\":\"CLEARLY_IMPLIED_TYPE\"}],\"power_observations_ar\":\"لم يتم تحديد مصدر الطاقة، وهو أمر جوهري لجهاز محمول. حساس PMS5003 وحده يستهلك نحو 100mA، وSCD40 يستهلك نحو 18mA، مما يعني الحاجة لبطارية بسعة مناسبة أو توصيل USB مستمر.\",\"connectivity_observations_ar\":\"لم تُذكر أي وسيلة اتصال لاسلكي أو تسجيل بيانات، الجهاز يبدو مصمماً للعرض المحلي فقط عبر الشاشة دون إرسال البيانات لأي منصة خارجية.\"},\"identified_concerns\":{\"items\":[{\"basis_ar\":\"حساس PMS5003 يعمل بمنفذ UART ويتطلب مستوى منطق 3.3V، بينما Arduino Nano يعمل بـ 5V مما قد يسبب تعارضاً في الإشارات\",\"why_it_matters_ar\":\"عدم التوافق في مستويات الجهد قد يتلف الحساس أو يعطي قراءات خاطئة\",\"severity\":\"SIGNIFICANT\",\"how_to_provide_ar\":\"استخدم محول مستوى منطقي بين Arduino Nano وPMS5003، أو انتقل إلى متحكم 3.3V مثل Arduino Nano 33 IoT\"},{\"basis_ar\":\"الجمع بين Arduino Nano وSCD40 وPMS5003 وشاشة OLED في جهاز محمول يطرح تساؤلات حول الحجم النهائي للجهاز\",\"why_it_matters_ar\":\"حساس PMS5003 بحجم كبير نسبياً قد يجعل الجهاز غير عملي للحمل اليومي\",\"severity\":\"NOTABLE\",\"how_to_provide_ar\":\"حدد إن كانت الحمولية تعني الاستخدام المكتبي المتنقل أو الحمل الشخصي، وفكر في بديل أصغر مثل SPS30\"},{\"basis_ar\":\"لا يوجد تخزين أو نقل للبيانات مذكور\",\"why_it_matters_ar\":\"بدون تسجيل البيانات لن يتمكن المستخدم من تتبع جودة الهواء عبر الزمن أو تحليل الأنماط\",\"severity\":\"MINOR\",\"how_to_provide_ar\":\"حدد إن كنت تحتاج لتسجيل البيانات على بطاقة SD أو إرسالها عبر Bluetooth أو WiFi\"}]},\"missing_information\":{\"has_critical_gaps\":false,\"items\":[{\"what_is_missing_ar\":\"مصدر الطاقة وسعته\",\"why_it_matters_ar\":\"ضروري لتحديد عمر البطارية ومدى عملية الجهاز في الاستخدام الميداني\",\"severity\":\"IMPORTANT\",\"how_to_provide_ar\":\"حدد نوع الطاقة: بطارية ليثيوم بحجم معين أم توصيل USB مستمر، مع توقع مدة الاستخدام المطلوبة\"},{\"what_is_missing_ar\":\"غلاف الجهاز وطريقة التجميع\",\"why_it_matters_ar\":\"التصميم الفيزيائي يؤثر على تدفق الهواء للحساسات وبالتالي دقة القراءات\",\"severity\":\"IMPORTANT\",\"how_to_provide_ar\":\"حدد إن كنت ستستخدم علبة مطبوعة بثلاثية الأبعاد أو علبة جاهزة، مع مراعاة فتحات التهوية\"},{\"what_is_missing_ar\":\"حد التنبيه والإجراء المطلوب عند تجاوز القيم\",\"why_it_matters_ar\":\"لزيادة الفائدة العملية يجب تحديد آلية التنبيه عند وصول CO2 أو الغبار لمستويات خطرة\",\"severity\":\"HELPFUL\",\"how_to_provide_ar\":\"حدد إن كنت تريد تنبيهاً صوتياً بزر أو تغيير لون الشاشة أو إشارة LED عند تجاوز الحد الآمن\"}]},\"next_steps_suggestion\":{\"suggestion_possible\":true,\"items_ar\":[\"معالجة مشكلة توافق مستويات الجهد بين Arduino Nano وحساس PMS5003 باستخدام محول منطقي أو تغيير المتحكم إلى نسخة 3.3V\",\"بناء نموذج أولي على لوحة تجريبية breadboard والتحقق من دقة قراءات الحساسين في بيئة مغلقة حقيقية\",\"تحديد سعة البطارية المناسبة بناءً على استهلاك الطاقة الكلي للمكونات وحساب عمر الجهاز المتوقع\",\"تصميم غلاف مناسب يضمن تدفق الهواء الطبيعي للحساسات مع إبقاء الحجم عملياً للحمل اليومي\"]},\"disclaimer_ar\":\"هذا تحليل أولي فقط مبني على المعلومات المقدمة وليس شهادة هندسية معتمدة. قرار التصنيف النهائي تحدده المنصة وليس هذا التحليل.\"}",
+    "http_status": 200
+  },
+  "expected": {
+    "overall": false,
+    "failure_type": "logic",
+    "weighted_score": 87,
+    "scores": {
+      "Schema Compliance": {
+        "passed": true,
+        "weight": 18,
+        "issues": []
+      },
+      "No Invented Info": {
+        "passed": true,
+        "weight": 18,
+        "issues": []
+      },
+      "Missing Info + Recovery": {
+        "passed": true,
+        "weight": 14,
+        "issues": []
+      },
+      "Confidence Calibration": {
+        "passed": true,
+        "weight": 14,
+        "issues": []
+      },
+      "Groundedness": {
+        "passed": true,
+        "weight": 14,
+        "issues": []
+      },
+      "Gate Engine Utility": {
+        "passed": true,
+        "weight": 9,
+        "issues": []
+      },
+      "Restraint Check": {
+        "passed": false,
+        "weight": 13,
+        "issues": [
+          "SIGNAL:got=APPEARS_FEASIBLE_WITH_CAVEATS,expected=['APPEARS_FEASIBLE']"
+        ]
+      }
+    },
+    "normalized_output": {
+      "schema_version": "1.1",
+      "domain": "IOT_ELECTRONICS",
+      "analysis_language": "ar",
+      "input_assessment": {
+        "sufficient_for_analysis": true,
+        "confidence_level": "HIGH",
+        "limiting_factors_ar": [
+          "لم يتم تحديد مصدر الطاقة بشكل صريح",
+          "لم يتم تحديد طريقة الاتصال أو نقل البيانات"
+        ]
+      },
+      "idea_summary": {
+        "description_ar": "جهاز محمول لقياس جودة الهواء الداخلي يستخدم حساس CO2 من نوع SCD40 وحساس الغبار PMS5003 مع متحكم Arduino Nano وشاشة OLED لعرض القراءات الفورية للمستخدم",
+        "apparent_domain_tags": [
+          "Environmental-Monitoring",
+          "Healthcare"
+        ],
+        "clarification_needed_ar": null
+      },
+      "feasibility": {
+        "assessment_possible": true,
+        "feasibility_signal": "APPEARS_FEASIBLE_WITH_CAVEATS",
+        "signal_basis_ar": "المكونات المذكورة متوافقة تقنياً وموثقة جيداً، لكن توجد تحفظات تتعلق بمصدر الطاقة واستهلاكها لكون الجهاز محمولاً، فضلاً عن تحدي الحجم والتكامل المادي"
+      },
+      "observations": {
+        "apparent_components_ar": [
+          {
+            "component_ar": "حساس CO2 SCD40",
+            "basis_ar": "تم ذكره صراحةً في وصف الحل",
+            "component_specificity": "USER_SPECIFIED"
+          },
+          {
+            "component_ar": "حساس الغبار PMS5003",
+            "basis_ar": "تم ذكره صراحةً في وصف الحل",
+            "component_specificity": "USER_SPECIFIED"
+          },
+          {
+            "component_ar": "Arduino Nano",
+            "basis_ar": "تم ذكره صراحةً في وصف الحل كمتحكم رئيسي",
+            "component_specificity": "USER_SPECIFIED"
+          },
+          {
+            "component_ar": "شاشة OLED",
+            "basis_ar": "تم ذكرها صراحةً في الفكرة لعرض البيانات",
+            "component_specificity": "USER_SPECIFIED"
+          },
+          {
+            "component_ar": "بطارية محمولة أو مصدر طاقة",
+            "basis_ar": "مستنتج ضرورياً لكون الجهاز محمولاً",
+            "component_specificity": "CLEARLY_IMPLIED_TYPE"
+          }
+        ],
+        "power_observations_ar": "لم يتم تحديد مصدر الطاقة، وهو أمر جوهري لجهاز محمول. حساس PMS5003 وحده يستهلك نحو 100mA، وSCD40 يستهلك نحو 18mA، مما يعني الحاجة لبطارية بسعة مناسبة أو توصيل USB مستمر.",
+        "connectivity_observations_ar": "لم تُذكر أي وسيلة اتصال لاسلكي أو تسجيل بيانات، الجهاز يبدو مصمماً للعرض المحلي فقط عبر الشاشة دون إرسال البيانات لأي منصة خارجية."
+      },
+      "identified_concerns": {
+        "items": [
+          {
+            "basis_ar": "حساس PMS5003 يعمل بمنفذ UART ويتطلب مستوى منطق 3.3V، بينما Arduino Nano يعمل بـ 5V مما قد يسبب تعارضاً في الإشارات",
+            "why_it_matters_ar": "عدم التوافق في مستويات الجهد قد يتلف الحساس أو يعطي قراءات خاطئة",
+            "severity": "SIGNIFICANT",
+            "how_to_provide_ar": "استخدم محول مستوى منطقي بين Arduino Nano وPMS5003، أو انتقل إلى متحكم 3.3V مثل Arduino Nano 33 IoT"
+          },
+          {
+            "basis_ar": "الجمع بين Arduino Nano وSCD40 وPMS5003 وشاشة OLED في جهاز محمول يطرح تساؤلات حول الحجم النهائي للجهاز",
+            "why_it_matters_ar": "حساس PMS5003 بحجم كبير نسبياً قد يجعل الجهاز غير عملي للحمل اليومي",
+            "severity": "NOTABLE",
+            "how_to_provide_ar": "حدد إن كانت الحمولية تعني الاستخدام المكتبي المتنقل أو الحمل الشخصي، وفكر في بديل أصغر مثل SPS30"
+          },
+          {
+            "basis_ar": "لا يوجد تخزين أو نقل للبيانات مذكور",
+            "why_it_matters_ar": "بدون تسجيل البيانات لن يتمكن المستخدم من تتبع جودة الهواء عبر الزمن أو تحليل الأنماط",
+            "severity": "MINOR",
+            "how_to_provide_ar": "حدد إن كنت تحتاج لتسجيل البيانات على بطاقة SD أو إرسالها عبر Bluetooth أو WiFi"
+          }
+        ]
+      },
+      "missing_information": {
+        "has_critical_gaps": false,
+        "items": [
+          {
+            "what_is_missing_ar": "مصدر الطاقة وسعته",
+            "why_it_matters_ar": "ضروري لتحديد عمر البطارية ومدى عملية الجهاز في الاستخدام الميداني",
+            "severity": "IMPORTANT",
+            "how_to_provide_ar": "حدد نوع الطاقة: بطارية ليثيوم بحجم معين أم توصيل USB مستمر، مع توقع مدة الاستخدام المطلوبة"
+          },
+          {
+            "what_is_missing_ar": "غلاف الجهاز وطريقة التجميع",
+            "why_it_matters_ar": "التصميم الفيزيائي يؤثر على تدفق الهواء للحساسات وبالتالي دقة القراءات",
+            "severity": "IMPORTANT",
+            "how_to_provide_ar": "حدد إن كنت ستستخدم علبة مطبوعة بثلاثية الأبعاد أو علبة جاهزة، مع مراعاة فتحات التهوية"
+          },
+          {
+            "what_is_missing_ar": "حد التنبيه والإجراء المطلوب عند تجاوز القيم",
+            "why_it_matters_ar": "لزيادة الفائدة العملية يجب تحديد آلية التنبيه عند وصول CO2 أو الغبار لمستويات خطرة",
+            "severity": "HELPFUL",
+            "how_to_provide_ar": "حدد إن كنت تريد تنبيهاً صوتياً بزر أو تغيير لون الشاشة أو إشارة LED عند تجاوز الحد الآمن"
+          }
+        ]
+      },
+      "next_steps_suggestion": {
+        "suggestion_possible": true,
+        "items_ar": [
+          "معالجة مشكلة توافق مستويات الجهد بين Arduino Nano وحساس PMS5003 باستخدام محول منطقي أو تغيير المتحكم إلى نسخة 3.3V",
+          "بناء نموذج أولي على لوحة تجريبية breadboard والتحقق من دقة قراءات الحساسين في بيئة مغلقة حقيقية",
+          "تحديد سعة البطارية المناسبة بناءً على استهلاك الطاقة الكلي للمكونات وحساب عمر الجهاز المتوقع",
+          "تصميم غلاف مناسب يضمن تدفق الهواء الطبيعي للحساسات مع إبقاء الحجم عملياً للحمل اليومي"
+        ]
+      },
+      "disclaimer_ar": "هذا تحليل أولي فقط مبني على المعلومات المقدمة وليس شهادة هندسية معتمدة. قرار التصنيف النهائي تحدده المنصة وليس هذا التحليل."
+    }
+  },
+  "trace": {
+    "extraction_method": "direct",
+    "extraction_failure": "",
+    "parsed_output": {
+      "schema_version": "1.1",
+      "domain": "IOT_ELECTRONICS",
+      "analysis_language": "ar",
+      "input_assessment": {
+        "sufficient_for_analysis": true,
+        "confidence_level": "HIGH",
+        "limiting_factors_ar": [
+          "لم يتم تحديد مصدر الطاقة بشكل صريح",
+          "لم يتم تحديد طريقة الاتصال أو نقل البيانات"
+        ]
+      },
+      "idea_summary": {
+        "description_ar": "جهاز محمول لقياس جودة الهواء الداخلي يستخدم حساس CO2 من نوع SCD40 وحساس الغبار PMS5003 مع متحكم Arduino Nano وشاشة OLED لعرض القراءات الفورية للمستخدم",
+        "apparent_domain_tags": [
+          "Environmental-Monitoring",
+          "Healthcare"
+        ],
+        "clarification_needed_ar": null
+      },
+      "feasibility": {
+        "assessment_possible": true,
+        "feasibility_signal": "APPEARS_FEASIBLE_WITH_CAVEATS",
+        "signal_basis_ar": "المكونات المذكورة متوافقة تقنياً وموثقة جيداً، لكن توجد تحفظات تتعلق بمصدر الطاقة واستهلاكها لكون الجهاز محمولاً، فضلاً عن تحدي الحجم والتكامل المادي"
+      },
+      "observations": {
+        "apparent_components_ar": [
+          {
+            "component_ar": "حساس CO2 SCD40",
+            "basis_ar": "تم ذكره صراحةً في وصف الحل",
+            "component_specificity": "USER_SPECIFIED"
+          },
+          {
+            "component_ar": "حساس الغبار PMS5003",
+            "basis_ar": "تم ذكره صراحةً في وصف الحل",
+            "component_specificity": "USER_SPECIFIED"
+          },
+          {
+            "component_ar": "Arduino Nano",
+            "basis_ar": "تم ذكره صراحةً في وصف الحل كمتحكم رئيسي",
+            "component_specificity": "USER_SPECIFIED"
+          },
+          {
+            "component_ar": "شاشة OLED",
+            "basis_ar": "تم ذكرها صراحةً في الفكرة لعرض البيانات",
+            "component_specificity": "USER_SPECIFIED"
+          },
+          {
+            "component_ar": "بطارية محمولة أو مصدر طاقة",
+            "basis_ar": "مستنتج ضرورياً لكون الجهاز محمولاً",
+            "component_specificity": "CLEARLY_IMPLIED_TYPE"
+          }
+        ],
+        "power_observations_ar": "لم يتم تحديد مصدر الطاقة، وهو أمر جوهري لجهاز محمول. حساس PMS5003 وحده يستهلك نحو 100mA، وSCD40 يستهلك نحو 18mA، مما يعني الحاجة لبطارية بسعة مناسبة أو توصيل USB مستمر.",
+        "connectivity_observations_ar": "لم تُذكر أي وسيلة اتصال لاسلكي أو تسجيل بيانات، الجهاز يبدو مصمماً للعرض المحلي فقط عبر الشاشة دون إرسال البيانات لأي منصة خارجية."
+      },
+      "identified_concerns": {
+        "items": [
+          {
+            "basis_ar": "حساس PMS5003 يعمل بمنفذ UART ويتطلب مستوى منطق 3.3V، بينما Arduino Nano يعمل بـ 5V مما قد يسبب تعارضاً في الإشارات",
+            "why_it_matters_ar": "عدم التوافق في مستويات الجهد قد يتلف الحساس أو يعطي قراءات خاطئة",
+            "severity": "SIGNIFICANT",
+            "how_to_provide_ar": "استخدم محول مستوى منطقي بين Arduino Nano وPMS5003، أو انتقل إلى متحكم 3.3V مثل Arduino Nano 33 IoT"
+          },
+          {
+            "basis_ar": "الجمع بين Arduino Nano وSCD40 وPMS5003 وشاشة OLED في جهاز محمول يطرح تساؤلات حول الحجم النهائي للجهاز",
+            "why_it_matters_ar": "حساس PMS5003 بحجم كبير نسبياً قد يجعل الجهاز غير عملي للحمل اليومي",
+            "severity": "NOTABLE",
+            "how_to_provide_ar": "حدد إن كانت الحمولية تعني الاستخدام المكتبي المتنقل أو الحمل الشخصي، وفكر في بديل أصغر مثل SPS30"
+          },
+          {
+            "basis_ar": "لا يوجد تخزين أو نقل للبيانات مذكور",
+            "why_it_matters_ar": "بدون تسجيل البيانات لن يتمكن المستخدم من تتبع جودة الهواء عبر الزمن أو تحليل الأنماط",
+            "severity": "MINOR",
+            "how_to_provide_ar": "حدد إن كنت تحتاج لتسجيل البيانات على بطاقة SD أو إرسالها عبر Bluetooth أو WiFi"
+          }
+        ]
+      },
+      "missing_information": {
+        "has_critical_gaps": false,
+        "items": [
+          {
+            "what_is_missing_ar": "مصدر الطاقة وسعته",
+            "why_it_matters_ar": "ضروري لتحديد عمر البطارية ومدى عملية الجهاز في الاستخدام الميداني",
+            "severity": "IMPORTANT",
+            "how_to_provide_ar": "حدد نوع الطاقة: بطارية ليثيوم بحجم معين أم توصيل USB مستمر، مع توقع مدة الاستخدام المطلوبة"
+          },
+          {
+            "what_is_missing_ar": "غلاف الجهاز وطريقة التجميع",
+            "why_it_matters_ar": "التصميم الفيزيائي يؤثر على تدفق الهواء للحساسات وبالتالي دقة القراءات",
+            "severity": "IMPORTANT",
+            "how_to_provide_ar": "حدد إن كنت ستستخدم علبة مطبوعة بثلاثية الأبعاد أو علبة جاهزة، مع مراعاة فتحات التهوية"
+          },
+          {
+            "what_is_missing_ar": "حد التنبيه والإجراء المطلوب عند تجاوز القيم",
+            "why_it_matters_ar": "لزيادة الفائدة العملية يجب تحديد آلية التنبيه عند وصول CO2 أو الغبار لمستويات خطرة",
+            "severity": "HELPFUL",
+            "how_to_provide_ar": "حدد إن كنت تريد تنبيهاً صوتياً بزر أو تغيير لون الشاشة أو إشارة LED عند تجاوز الحد الآمن"
+          }
+        ]
+      },
+      "next_steps_suggestion": {
+        "suggestion_possible": true,
+        "items_ar": [
+          "معالجة مشكلة توافق مستويات الجهد بين Arduino Nano وحساس PMS5003 باستخدام محول منطقي أو تغيير المتحكم إلى نسخة 3.3V",
+          "بناء نموذج أولي على لوحة تجريبية breadboard والتحقق من دقة قراءات الحساسين في بيئة مغلقة حقيقية",
+          "تحديد سعة البطارية المناسبة بناءً على استهلاك الطاقة الكلي للمكونات وحساب عمر الجهاز المتوقع",
+          "تصميم غلاف مناسب يضمن تدفق الهواء الطبيعي للحساسات مع إبقاء الحجم عملياً للحمل اليومي"
+        ]
+      },
+      "disclaimer_ar": "هذا تحليل أولي فقط مبني على المعلومات المقدمة وليس شهادة هندسية معتمدة. قرار التصنيف النهائي تحدده المنصة وليس هذا التحليل."
+    },
+    "http_error_body": null,
+    "error_category": null,
+    "error_detail": null,
+    "error": false
+  },
+  "provenance": {
+    "source_results_file": "results_20260520_074904.json",
+    "recorded_at": "2026-05-20T07:49:04+00:00",
+    "corpus_mode": "diagnostic",
+    "model": "claude-sonnet-4-6",
+    "schema_version": "1.1"
+  }
+}

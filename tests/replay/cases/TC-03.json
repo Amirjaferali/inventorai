@@ -1,0 +1,294 @@
+{
+  "fixture_id": "TC-03",
+  "case_id": "TC-03",
+  "sig": "PASS",
+  "input": {
+    "raw_text": "{\"schema_version\":\"1.1\",\"domain\":\"IOT_ELECTRONICS\",\"analysis_language\":\"ar\",\"input_assessment\":{\"sufficient_for_analysis\":true,\"confidence_level\":\"MEDIUM\",\"limiting_factors_ar\":[\"لم يتم تحديد بروتوكول الاتصال أو آلية المراقبة عن بعد\",\"لم يتم تحديد نوع الصمام الكهربائي ومتطلبات جهد التشغيل\",\"لم يتم توضيح آلية إعادة شحن أو استبدال البطارية\"]},\"idea_summary\":{\"description_ar\":\"نظام سقاية آلية للنباتات يعمل بالبطارية، يستخدم حساس رطوبة تربة مرتبطاً بـ Arduino لقياس مستوى الرطوبة، وعند اكتشاف الجفاف يفتح صماماً كهربائياً لتوصيل الماء تلقائياً دون تدخل بشري.\",\"apparent_domain_tags\":[\"Agriculture\",\"Smart-Home\"],\"clarification_needed_ar\":null},\"feasibility\":{\"assessment_possible\":true,\"feasibility_signal\":\"APPEARS_FEASIBLE_WITH_CAVEATS\",\"signal_basis_ar\":\"المكونات الأساسية معروفة وشائعة الاستخدام في مشاريع مشابهة، لكن توافق جهد بطارية 9V مع متطلبات الصمام الكهربائي والاستهلاك طويل الأمد يستوجب فحصاً دقيقاً.\"},\"observations\":{\"apparent_components_ar\":[{\"component_ar\":\"حساس رطوبة التربة\",\"basis_ar\":\"مذكور صراحةً في وصف الحل\",\"component_specificity\":\"USER_SPECIFIED\"},{\"component_ar\":\"متحكم Arduino\",\"basis_ar\":\"مذكور صراحةً في وصف الحل\",\"component_specificity\":\"USER_SPECIFIED\"},{\"component_ar\":\"صمام كهربائي\",\"basis_ar\":\"مذكور صراحةً في وصف الحل\",\"component_specificity\":\"USER_SPECIFIED\"},{\"component_ar\":\"بطارية 9V\",\"basis_ar\":\"مذكورة صراحةً في وصف الحل\",\"component_specificity\":\"USER_SPECIFIED\"},{\"component_ar\":\"دائرة تحويل أو ريلاي للتحكم بالصمام\",\"basis_ar\":\"الصمامات الكهربائية غالباً تحتاج جهداً أو تياراً أعلى مما يوفره Arduino مباشرة\",\"component_specificity\":\"CLEARLY_IMPLIED_TYPE\"}],\"power_observations_ar\":\"البطارية 9V ذات سعة محدودة، واستهلاك Arduino مع الصمام الكهربائي قد يستنزفها سريعاً خلال فترة السفر. يُنصح بدراسة وضع السكون للتوفير في الطاقة.\",\"connectivity_observations_ar\":\"لم يُذكر أي اتصال لاسلكي أو إشعار عن بعد، مما يعني أن النظام يعمل محلياً فقط دون مراقبة عن بعد.\"},\"identified_concerns\":{\"items\":[{\"basis_ar\":\"بطارية 9V قد لا تكفي لفترة سفر مطولة مع تشغيل Arduino والصمام بشكل متكرر\",\"why_it_matters_ar\":\"إذا نفدت البطارية أثناء السفر توقف النظام كلياً وذبلت النباتات\",\"severity\":\"SIGNIFICANT\",\"how_to_provide_ar\":\"احسب استهلاك التيار الكلي وحدد مدة السفر المستهدفة لاختيار سعة البطارية المناسبة أو استخدام وضع Sleep\"},{\"basis_ar\":\"توافق جهد الصمام الكهربائي مع مصدر 9V غير مؤكد\",\"why_it_matters_ar\":\"كثير من الصمامات تعمل على 12V أو تحتاج تياراً أعلى مما تتحمله دبابيس Arduino\",\"severity\":\"NOTABLE\",\"how_to_provide_ar\":\"حدد موديل الصمام الكهربائي ومتطلباته الكهربائية للتحقق من الحاجة لريلاي أو مصدر طاقة إضافي\"},{\"basis_ar\":\"حساسات رطوبة التربة الرخيصة تتآكل بسرعة في التربة الرطبة\",\"why_it_matters_ar\":\"قد تعطي قراءات خاطئة بعد فترة قصيرة مما يسبب إفراطاً في السقي أو نقصاً\",\"severity\":\"NOTABLE\",\"how_to_provide_ar\":\"حدد نوع الحساس المستخدم مقاومي أو سعوي للتقييم الصحيح\"}]},\"missing_information\":{\"has_critical_gaps\":false,\"items\":[{\"what_is_missing_ar\":\"مدة السفر المستهدفة التي يجب أن يعمل فيها النظام\",\"why_it_matters_ar\":\"تحدد سعة البطارية المطلوبة وعدد دورات السقي المتوقعة\",\"severity\":\"IMPORTANT\",\"how_to_provide_ar\":\"حدد المدة الزمنية القصوى للغياب مثل 3 أيام أو أسبوع أو أكثر\"},{\"what_is_missing_ar\":\"عدد النباتات وحجم خزان الماء أو مصدره\",\"why_it_matters_ar\":\"يؤثر على نوع الصمام وضغط الماء المطلوب وعدد الدوائر\",\"severity\":\"IMPORTANT\",\"how_to_provide_ar\":\"وضح عدد النباتات وهل المياه من صنبور مباشر أم خزان محدود السعة\"},{\"what_is_missing_ar\":\"هل مطلوب تنبيه أو مراقبة عن بعد\",\"why_it_matters_ar\":\"إضافة اتصال لاسلكي تغير المتطلبات والتصميم بشكل جوهري\",\"severity\":\"HELPFUL\",\"how_to_provide_ar\":\"وضح هل تحتاج إشعاراً على الهاتف عند السقي أو عند انخفاض البطارية\"}]},\"next_steps_suggestion\":{\"suggestion_possible\":true,\"items_ar\":[\"حساب استهلاك الطاقة الكلي للدائرة وتحديد سعة البطارية أو استخدام بطارية ليثيوم أكبر\",\"اختبار حساس الرطوبة في التربة المستخدمة فعلياً لضبط عتبة تفعيل الصمام\",\"تصميم الكود بحيث يدخل Arduino في وضع النوم العميق بين القراءات لتوفير الطاقة\",\"بناء نموذج أولي واختباره لفترة أسبوع كامل للتحقق من موثوقية الأداء\"]},\"disclaimer_ar\":\"هذا تحليل أولي فقط مبني على المعلومات المقدمة وليس شهادة هندسية معتمدة. قرار التصنيف النهائي تحدده المنصة وليس هذا التحليل.\"}",
+    "http_status": 200
+  },
+  "expected": {
+    "overall": false,
+    "failure_type": "logic",
+    "weighted_score": 87,
+    "scores": {
+      "Schema Compliance": {
+        "passed": true,
+        "weight": 18,
+        "issues": []
+      },
+      "No Invented Info": {
+        "passed": true,
+        "weight": 18,
+        "issues": []
+      },
+      "Missing Info + Recovery": {
+        "passed": true,
+        "weight": 14,
+        "issues": []
+      },
+      "Confidence Calibration": {
+        "passed": true,
+        "weight": 14,
+        "issues": []
+      },
+      "Groundedness": {
+        "passed": true,
+        "weight": 14,
+        "issues": []
+      },
+      "Gate Engine Utility": {
+        "passed": true,
+        "weight": 9,
+        "issues": []
+      },
+      "Restraint Check": {
+        "passed": false,
+        "weight": 13,
+        "issues": [
+          "SIGNAL:got=APPEARS_FEASIBLE_WITH_CAVEATS,expected=['APPEARS_FEASIBLE']"
+        ]
+      }
+    },
+    "normalized_output": {
+      "schema_version": "1.1",
+      "domain": "IOT_ELECTRONICS",
+      "analysis_language": "ar",
+      "input_assessment": {
+        "sufficient_for_analysis": true,
+        "confidence_level": "MEDIUM",
+        "limiting_factors_ar": [
+          "لم يتم تحديد بروتوكول الاتصال أو آلية المراقبة عن بعد",
+          "لم يتم تحديد نوع الصمام الكهربائي ومتطلبات جهد التشغيل",
+          "لم يتم توضيح آلية إعادة شحن أو استبدال البطارية"
+        ]
+      },
+      "idea_summary": {
+        "description_ar": "نظام سقاية آلية للنباتات يعمل بالبطارية، يستخدم حساس رطوبة تربة مرتبطاً بـ Arduino لقياس مستوى الرطوبة، وعند اكتشاف الجفاف يفتح صماماً كهربائياً لتوصيل الماء تلقائياً دون تدخل بشري.",
+        "apparent_domain_tags": [
+          "Agriculture",
+          "Smart-Home"
+        ],
+        "clarification_needed_ar": null
+      },
+      "feasibility": {
+        "assessment_possible": true,
+        "feasibility_signal": "APPEARS_FEASIBLE_WITH_CAVEATS",
+        "signal_basis_ar": "المكونات الأساسية معروفة وشائعة الاستخدام في مشاريع مشابهة، لكن توافق جهد بطارية 9V مع متطلبات الصمام الكهربائي والاستهلاك طويل الأمد يستوجب فحصاً دقيقاً."
+      },
+      "observations": {
+        "apparent_components_ar": [
+          {
+            "component_ar": "حساس رطوبة التربة",
+            "basis_ar": "مذكور صراحةً في وصف الحل",
+            "component_specificity": "USER_SPECIFIED"
+          },
+          {
+            "component_ar": "متحكم Arduino",
+            "basis_ar": "مذكور صراحةً في وصف الحل",
+            "component_specificity": "USER_SPECIFIED"
+          },
+          {
+            "component_ar": "صمام كهربائي",
+            "basis_ar": "مذكور صراحةً في وصف الحل",
+            "component_specificity": "USER_SPECIFIED"
+          },
+          {
+            "component_ar": "بطارية 9V",
+            "basis_ar": "مذكورة صراحةً في وصف الحل",
+            "component_specificity": "USER_SPECIFIED"
+          },
+          {
+            "component_ar": "دائرة تحويل أو ريلاي للتحكم بالصمام",
+            "basis_ar": "الصمامات الكهربائية غالباً تحتاج جهداً أو تياراً أعلى مما يوفره Arduino مباشرة",
+            "component_specificity": "CLEARLY_IMPLIED_TYPE"
+          }
+        ],
+        "power_observations_ar": "البطارية 9V ذات سعة محدودة، واستهلاك Arduino مع الصمام الكهربائي قد يستنزفها سريعاً خلال فترة السفر. يُنصح بدراسة وضع السكون للتوفير في الطاقة.",
+        "connectivity_observations_ar": "لم يُذكر أي اتصال لاسلكي أو إشعار عن بعد، مما يعني أن النظام يعمل محلياً فقط دون مراقبة عن بعد."
+      },
+      "identified_concerns": {
+        "items": [
+          {
+            "basis_ar": "بطارية 9V قد لا تكفي لفترة سفر مطولة مع تشغيل Arduino والصمام بشكل متكرر",
+            "why_it_matters_ar": "إذا نفدت البطارية أثناء السفر توقف النظام كلياً وذبلت النباتات",
+            "severity": "SIGNIFICANT",
+            "how_to_provide_ar": "احسب استهلاك التيار الكلي وحدد مدة السفر المستهدفة لاختيار سعة البطارية المناسبة أو استخدام وضع Sleep"
+          },
+          {
+            "basis_ar": "توافق جهد الصمام الكهربائي مع مصدر 9V غير مؤكد",
+            "why_it_matters_ar": "كثير من الصمامات تعمل على 12V أو تحتاج تياراً أعلى مما تتحمله دبابيس Arduino",
+            "severity": "NOTABLE",
+            "how_to_provide_ar": "حدد موديل الصمام الكهربائي ومتطلباته الكهربائية للتحقق من الحاجة لريلاي أو مصدر طاقة إضافي"
+          },
+          {
+            "basis_ar": "حساسات رطوبة التربة الرخيصة تتآكل بسرعة في التربة الرطبة",
+            "why_it_matters_ar": "قد تعطي قراءات خاطئة بعد فترة قصيرة مما يسبب إفراطاً في السقي أو نقصاً",
+            "severity": "NOTABLE",
+            "how_to_provide_ar": "حدد نوع الحساس المستخدم مقاومي أو سعوي للتقييم الصحيح"
+          }
+        ]
+      },
+      "missing_information": {
+        "has_critical_gaps": false,
+        "items": [
+          {
+            "what_is_missing_ar": "مدة السفر المستهدفة التي يجب أن يعمل فيها النظام",
+            "why_it_matters_ar": "تحدد سعة البطارية المطلوبة وعدد دورات السقي المتوقعة",
+            "severity": "IMPORTANT",
+            "how_to_provide_ar": "حدد المدة الزمنية القصوى للغياب مثل 3 أيام أو أسبوع أو أكثر"
+          },
+          {
+            "what_is_missing_ar": "عدد النباتات وحجم خزان الماء أو مصدره",
+            "why_it_matters_ar": "يؤثر على نوع الصمام وضغط الماء المطلوب وعدد الدوائر",
+            "severity": "IMPORTANT",
+            "how_to_provide_ar": "وضح عدد النباتات وهل المياه من صنبور مباشر أم خزان محدود السعة"
+          },
+          {
+            "what_is_missing_ar": "هل مطلوب تنبيه أو مراقبة عن بعد",
+            "why_it_matters_ar": "إضافة اتصال لاسلكي تغير المتطلبات والتصميم بشكل جوهري",
+            "severity": "HELPFUL",
+            "how_to_provide_ar": "وضح هل تحتاج إشعاراً على الهاتف عند السقي أو عند انخفاض البطارية"
+          }
+        ]
+      },
+      "next_steps_suggestion": {
+        "suggestion_possible": true,
+        "items_ar": [
+          "حساب استهلاك الطاقة الكلي للدائرة وتحديد سعة البطارية أو استخدام بطارية ليثيوم أكبر",
+          "اختبار حساس الرطوبة في التربة المستخدمة فعلياً لضبط عتبة تفعيل الصمام",
+          "تصميم الكود بحيث يدخل Arduino في وضع النوم العميق بين القراءات لتوفير الطاقة",
+          "بناء نموذج أولي واختباره لفترة أسبوع كامل للتحقق من موثوقية الأداء"
+        ]
+      },
+      "disclaimer_ar": "هذا تحليل أولي فقط مبني على المعلومات المقدمة وليس شهادة هندسية معتمدة. قرار التصنيف النهائي تحدده المنصة وليس هذا التحليل."
+    }
+  },
+  "trace": {
+    "extraction_method": "direct",
+    "extraction_failure": "",
+    "parsed_output": {
+      "schema_version": "1.1",
+      "domain": "IOT_ELECTRONICS",
+      "analysis_language": "ar",
+      "input_assessment": {
+        "sufficient_for_analysis": true,
+        "confidence_level": "MEDIUM",
+        "limiting_factors_ar": [
+          "لم يتم تحديد بروتوكول الاتصال أو آلية المراقبة عن بعد",
+          "لم يتم تحديد نوع الصمام الكهربائي ومتطلبات جهد التشغيل",
+          "لم يتم توضيح آلية إعادة شحن أو استبدال البطارية"
+        ]
+      },
+      "idea_summary": {
+        "description_ar": "نظام سقاية آلية للنباتات يعمل بالبطارية، يستخدم حساس رطوبة تربة مرتبطاً بـ Arduino لقياس مستوى الرطوبة، وعند اكتشاف الجفاف يفتح صماماً كهربائياً لتوصيل الماء تلقائياً دون تدخل بشري.",
+        "apparent_domain_tags": [
+          "Agriculture",
+          "Smart-Home"
+        ],
+        "clarification_needed_ar": null
+      },
+      "feasibility": {
+        "assessment_possible": true,
+        "feasibility_signal": "APPEARS_FEASIBLE_WITH_CAVEATS",
+        "signal_basis_ar": "المكونات الأساسية معروفة وشائعة الاستخدام في مشاريع مشابهة، لكن توافق جهد بطارية 9V مع متطلبات الصمام الكهربائي والاستهلاك طويل الأمد يستوجب فحصاً دقيقاً."
+      },
+      "observations": {
+        "apparent_components_ar": [
+          {
+            "component_ar": "حساس رطوبة التربة",
+            "basis_ar": "مذكور صراحةً في وصف الحل",
+            "component_specificity": "USER_SPECIFIED"
+          },
+          {
+            "component_ar": "متحكم Arduino",
+            "basis_ar": "مذكور صراحةً في وصف الحل",
+            "component_specificity": "USER_SPECIFIED"
+          },
+          {
+            "component_ar": "صمام كهربائي",
+            "basis_ar": "مذكور صراحةً في وصف الحل",
+            "component_specificity": "USER_SPECIFIED"
+          },
+          {
+            "component_ar": "بطارية 9V",
+            "basis_ar": "مذكورة صراحةً في وصف الحل",
+            "component_specificity": "USER_SPECIFIED"
+          },
+          {
+            "component_ar": "دائرة تحويل أو ريلاي للتحكم بالصمام",
+            "basis_ar": "الصمامات الكهربائية غالباً تحتاج جهداً أو تياراً أعلى مما يوفره Arduino مباشرة",
+            "component_specificity": "CLEARLY_IMPLIED_TYPE"
+          }
+        ],
+        "power_observations_ar": "البطارية 9V ذات سعة محدودة، واستهلاك Arduino مع الصمام الكهربائي قد يستنزفها سريعاً خلال فترة السفر. يُنصح بدراسة وضع السكون للتوفير في الطاقة.",
+        "connectivity_observations_ar": "لم يُذكر أي اتصال لاسلكي أو إشعار عن بعد، مما يعني أن النظام يعمل محلياً فقط دون مراقبة عن بعد."
+      },
+      "identified_concerns": {
+        "items": [
+          {
+            "basis_ar": "بطارية 9V قد لا تكفي لفترة سفر مطولة مع تشغيل Arduino والصمام بشكل متكرر",
+            "why_it_matters_ar": "إذا نفدت البطارية أثناء السفر توقف النظام كلياً وذبلت النباتات",
+            "severity": "SIGNIFICANT",
+            "how_to_provide_ar": "احسب استهلاك التيار الكلي وحدد مدة السفر المستهدفة لاختيار سعة البطارية المناسبة أو استخدام وضع Sleep"
+          },
+          {
+            "basis_ar": "توافق جهد الصمام الكهربائي مع مصدر 9V غير مؤكد",
+            "why_it_matters_ar": "كثير من الصمامات تعمل على 12V أو تحتاج تياراً أعلى مما تتحمله دبابيس Arduino",
+            "severity": "NOTABLE",
+            "how_to_provide_ar": "حدد موديل الصمام الكهربائي ومتطلباته الكهربائية للتحقق من الحاجة لريلاي أو مصدر طاقة إضافي"
+          },
+          {
+            "basis_ar": "حساسات رطوبة التربة الرخيصة تتآكل بسرعة في التربة الرطبة",
+            "why_it_matters_ar": "قد تعطي قراءات خاطئة بعد فترة قصيرة مما يسبب إفراطاً في السقي أو نقصاً",
+            "severity": "NOTABLE",
+            "how_to_provide_ar": "حدد نوع الحساس المستخدم مقاومي أو سعوي للتقييم الصحيح"
+          }
+        ]
+      },
+      "missing_information": {
+        "has_critical_gaps": false,
+        "items": [
+          {
+            "what_is_missing_ar": "مدة السفر المستهدفة التي يجب أن يعمل فيها النظام",
+            "why_it_matters_ar": "تحدد سعة البطارية المطلوبة وعدد دورات السقي المتوقعة",
+            "severity": "IMPORTANT",
+            "how_to_provide_ar": "حدد المدة الزمنية القصوى للغياب مثل 3 أيام أو أسبوع أو أكثر"
+          },
+          {
+            "what_is_missing_ar": "عدد النباتات وحجم خزان الماء أو مصدره",
+            "why_it_matters_ar": "يؤثر على نوع الصمام وضغط الماء المطلوب وعدد الدوائر",
+            "severity": "IMPORTANT",
+            "how_to_provide_ar": "وضح عدد النباتات وهل المياه من صنبور مباشر أم خزان محدود السعة"
+          },
+          {
+            "what_is_missing_ar": "هل مطلوب تنبيه أو مراقبة عن بعد",
+            "why_it_matters_ar": "إضافة اتصال لاسلكي تغير المتطلبات والتصميم بشكل جوهري",
+            "severity": "HELPFUL",
+            "how_to_provide_ar": "وضح هل تحتاج إشعاراً على الهاتف عند السقي أو عند انخفاض البطارية"
+          }
+        ]
+      },
+      "next_steps_suggestion": {
+        "suggestion_possible": true,
+        "items_ar": [
+          "حساب استهلاك الطاقة الكلي للدائرة وتحديد سعة البطارية أو استخدام بطارية ليثيوم أكبر",
+          "اختبار حساس الرطوبة في التربة المستخدمة فعلياً لضبط عتبة تفعيل الصمام",
+          "تصميم الكود بحيث يدخل Arduino في وضع النوم العميق بين القراءات لتوفير الطاقة",
+          "بناء نموذج أولي واختباره لفترة أسبوع كامل للتحقق من موثوقية الأداء"
+        ]
+      },
+      "disclaimer_ar": "هذا تحليل أولي فقط مبني على المعلومات المقدمة وليس شهادة هندسية معتمدة. قرار التصنيف النهائي تحدده المنصة وليس هذا التحليل."
+    },
+    "http_error_body": null,
+    "error_category": null,
+    "error_detail": null,
+    "error": false
+  },
+  "provenance": {
+    "source_results_file": "results_20260520_074904.json",
+    "recorded_at": "2026-05-20T07:49:04+00:00",
+    "corpus_mode": "diagnostic",
+    "model": "claude-sonnet-4-6",
+    "schema_version": "1.1"
+  }
+}
