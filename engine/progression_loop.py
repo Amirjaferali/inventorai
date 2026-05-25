@@ -259,7 +259,7 @@ def evaluate_transition(state: IdeaState) -> tuple[bool, str]:
 
     if level == 0:
         # 0 → 1: problem established with beneficiary signal
-        if state.known_problem and state.known_problem.quality >= ASSERTED:
+        if state.known_problem and state.known_problem.quality >= REASONED:
             mech_gap = state.get_gap(MECHANISM_COMPLETENESS)
             if mech_gap and mech_gap.status == OPEN and mech_gap.iterations_open == 0:
                 return False, "MECHANISM_COMPLETENESS must be attempted first"
