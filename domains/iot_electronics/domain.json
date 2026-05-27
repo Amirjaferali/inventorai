@@ -1,12 +1,4 @@
 {
-  "governance": {
-    "source": "Internal — InventorAI engineering knowledge base",
-    "license": "Internal",
-    "owner": "repository-owner",
-    "review_date": "2026-05-27",
-    "version": "1.0.0",
-    "deprecation_status": "active"
-  },
   "taxonomy_group": "electronics",
   "capability_id": "iot_electronics",
   "display_name": "IoT Electronics",
@@ -23,5 +15,13 @@
     "PHYSICAL_FEASIBILITY",
     "BOUNDARY_AMBIGUITY"
   ],
-  "notes": "Capability pack created in Phase 5 Step 2. Hardcoded content in engine/domain_rules.py remains the active runtime source until Phase 5 Step 3 registry loader is implemented."
+  "notes": "Capability pack created in Phase 5 Step 2. Hardcoded content in engine/domain_rules.py remains the active runtime source until Phase 5 Step 3 registry loader is implemented.",
+  "governance": {
+    "source": "InventorAI internal domain pack",
+    "license": "proprietary",
+    "owner": "inventorai-core-team",
+    "review_date": "2025-01-01",
+    "version": "1.0.0",
+    "deprecation_status": "active"
+  }
 }
