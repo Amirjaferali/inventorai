@@ -4,3 +4,4 @@ benchmark/results_*.json
 __pycache__/
 *.pyc
 tests/replay/replay_report_v2.json
+*.bak
