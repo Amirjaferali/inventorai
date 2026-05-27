@@ -142,12 +142,13 @@ class TestIntegrateResponseGapStatus:
         )
         assert state.known_mechanism is not None
 
-    def test_B7_known_problem_set_on_first_response(self):
+    def test_B7_asserted_response_does_not_set_known_problem(self):
+        """After RISK-002 fix: ASSERTED evidence must NOT set known_problem."""
         state = make_state()
         state.gaps.append(make_gap(MECHANISM_COMPLETENESS, OPEN))
         assert state.known_problem is None
         integrate_response(state, MECHANISM_COMPLETENESS, "question", "sensor")
-        assert state.known_problem is not None
+        assert state.known_problem is None  # RISK-002 fix: ASSERTED blocked
 
     @pytest.mark.xfail(reason="RISK-002: known_problem accepts ASSERTED, no REASONED floor")
     def test_B8_known_problem_should_require_reasoned_floor(self):

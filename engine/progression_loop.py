@@ -220,7 +220,7 @@ def integrate_response(
             state.known_mechanism = evidence
 
     # أي evidence في المراحل المبكرة تُثبت المشكلة ضمنياً
-    if state.known_problem is None:
+    if state.known_problem is None and quality >= REASONED:  # RISK-002
         state.known_problem = evidence
 
     # Update gap status
@@ -331,7 +331,7 @@ def run_iteration(state: IdeaState, response: str) -> dict:
             quality=quality,
             iteration=state.iteration,
         )
-        if state.known_problem is None or quality > state.known_problem.quality:
+        if quality >= REASONED and (state.known_problem is None or quality > state.known_problem.quality):  # RISK-002
             state.known_problem = evidence
 
     if gap_type is None:
