@@ -264,3 +264,31 @@ Before any code change to assess_response() is written:
 ---
 
 *This ADR supersedes no prior decision record on evidence quality. It may be superseded by a replacement ADR approved by the project owner. Section 9 forbidden behaviors apply immediately upon acceptance.*
+
+---
+
+## Step 6 Implementation Note — Anti-Triviality Guard Only
+
+Date: 2026-05-27
+
+### What was changed
+A minimum length threshold (`len(r) >= 40`) was added to `assess_response()`
+before returning `REASONED` when a substance token is detected.
+
+### What this is NOT
+This threshold does NOT validate reasoning quality.
+It does NOT confirm claim + basis + relationship structure.
+It is a minimum anti-triviality guard only.
+
+Purpose: prevent trivially short token-triggered promotion to REASONED.
+
+### Known false-negative risk
+Concise but legitimate technical explanations (e.g. "Hall sensor detects rotation via magnetic flux")
+may be classified as ASSERTED despite containing genuine reasoning structure.
+This is an accepted limitation of the current vocabulary-based approach.
+Resolution: future structure-based reasoning model (not approved for implementation).
+
+### Governance boundary
+Step 6 is approved as: stabilization fix only.
+Not approved as: semantic reasoning validation.
+Not approved as: Tier system, domain vocabulary, or AI classification.

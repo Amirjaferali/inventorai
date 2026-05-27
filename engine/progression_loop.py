@@ -159,6 +159,8 @@ _SUBSTANCE_SIGNALS = [
 ]
 
 
+MIN_REASONED_RESPONSE_LENGTH = 40  # anti-triviality guard only — see ADR-003 Step 6 note
+
 def assess_response(response: str) -> str:
     """
     Quality assessment: weak-answer guard + substance check.
@@ -182,8 +184,9 @@ def assess_response(response: str) -> str:
     if has_weak and not has_substance:
         return ASSERTED  # vague filler — no technical substance
 
-    # 3. Short but technically specific answers are valid (e.g. "Hall sensor")
-    if has_substance:
+    # 3. Substance token present AND response meets minimum length (anti-triviality guard)
+    #    NOTE: length threshold does NOT validate reasoning quality — see ADR-003 Step 6 note
+    if has_substance and len(r) >= MIN_REASONED_RESPONSE_LENGTH:
         return REASONED
 
     # 4. Length fallback for borderline answers without clear substance signals
