@@ -1,0 +1,6 @@
+{
+  "name": "prose_before_json",
+  "input": "Here is the result:\n{\"a\": 1}",
+  "expected_mode": "brace_extract",
+  "expected_has_json": true
+}

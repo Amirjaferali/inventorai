@@ -1,0 +1,266 @@
+{
+  "id": "TC-16",
+  "sig": "",
+  "raw_text": "{\"schema_version\":\"1.1\",\"domain\":\"IOT_ELECTRONICS\",\"analysis_language\":\"ar\",\"input_assessment\":{\"sufficient_for_analysis\":true,\"confidence_level\":\"MEDIUM\",\"limiting_factors_ar\":[\"لم يتم تحديد نوع المعالج أو المنصة المستخدمة في القفازات\",\"لم يتم تحديد مصدر الطاقة للقفازات\",\"لم يتم توضيح حجم بيانات التدريب لنموذج ML\"]},\"idea_summary\":{\"description_ar\":\"قفازات ذكية مزودة بحساسات flex وIMU تلتقط حركات اليد وأصابع المستخدم، وترسل البيانات عبر Bluetooth إلى تطبيق يستخدم تعلم الآلة لترجمة لغة الإشارة إلى نص مقروء، بهدف تمكين الصم من التواصل مع المجتمع\",\"apparent_domain_tags\":[\"Machine-Learning\",\"Healthcare\"],\"clarification_needed_ar\":null},\"feasibility\":{\"assessment_possible\":true,\"feasibility_signal\":\"APPEARS_FEASIBLE_WITH_CAVEATS\",\"signal_basis_ar\":\"المكونات الأساسية معروفة وموثقة في أبحاث مماثلة، لكن دقة الترجمة تعتمد بشكل كبير على جودة نموذج ML وحجم بيانات التدريب، كما أن الراحة في الاستخدام اليومي تمثل تحدياً هندسياً غير محدد بعد\"},\"observations\":{\"apparent_components_ar\":[{\"component_ar\":\"حساسات Flex\",\"basis_ar\":\"ذُكرت صراحةً في وصف الحل لقياس انحناء الأصابع\",\"component_specificity\":\"USER_SPECIFIED\"},{\"component_ar\":\"وحدة IMU (مقياس التسارع والجيروسكوب)\",\"basis_ar\":\"ذُكرت صراحةً في وصف الحل لرصد حركة اليد واتجاهها\",\"component_specificity\":\"USER_SPECIFIED\"},{\"component_ar\":\"وحدة Bluetooth\",\"basis_ar\":\"ذُكرت صراحةً لإرسال البيانات إلى التطبيق\",\"component_specificity\":\"USER_SPECIFIED\"},{\"component_ar\":\"تطبيق موبايل مع نموذج ML\",\"basis_ar\":\"ذُكر صراحةً كطرف استقبال وترجمة للبيانات\",\"component_specificity\":\"USER_SPECIFIED\"},{\"component_ar\":\"ميكروكنترولر أو وحدة معالجة مضمنة\",\"basis_ar\":\"ضروري بشكل واضح لجمع بيانات الحساسات وإرسالها عبر Bluetooth\",\"component_specificity\":\"CLEARLY_IMPLIED_TYPE\"},{\"component_ar\":\"بطارية قابلة للشحن\",\"basis_ar\":\"مطلوبة بشكل واضح لتشغيل القفاز بشكل لاسلكي\",\"component_specificity\":\"CLEARLY_IMPLIED_TYPE\"}],\"power_observations_ar\":\"لم يُحدد مصدر الطاقة، لكن الطبيعة اللاسلكية للجهاز تستلزم بطارية مدمجة. استهلاك الطاقة لحساسات IMU وBluetooth يؤثر مباشرة على مدة التشغيل وراحة الاستخدام\",\"connectivity_observations_ar\":\"تم تحديد Bluetooth كبروتوكول الاتصال. يُنصح بالنظر في BLE لتقليل استهلاك الطاقة. التأخر الزمني في الإرسال قد يؤثر على طلاقة الترجمة\"},\"identified_concerns\":{\"items\":[{\"basis_ar\":\"دقة نموذج ML تعتمد على حجم وجودة بيانات التدريب للغة الإشارة المستهدفة\",\"why_it_matters_ar\":\"لغات الإشارة تختلف بين الدول وحتى المناطق، وبناء مجموعة بيانات كافية يتطلب جهداً كبيراً وقد يكون عائقاً رئيسياً للمشروع\",\"severity\":\"SIGNIFICANT\"},{\"basis_ar\":\"وضع الحساسات على القفاز وضمان ثباتها أثناء الحركة\",\"why_it_matters_ar\":\"أي إزاحة للحساسات تؤدي إلى قراءات خاطئة وتدهور في دقة الترجمة\",\"severity\":\"NOTABLE\"},{\"basis_ar\":\"الراحة الجسدية للقفاز عند الاستخدام المطوّل\",\"why_it_matters_ar\":\"إذا كان القفاز مزعجاً أو مقيداً للحركة، لن يتبناه المستخدمون في حياتهم اليومية\",\"severity\":\"NOTABLE\"},{\"basis_ar\":\"التأخر الزمني بين أداء الإشارة وظهور النص\",\"why_it_matters_ar\":\"التأخر الملحوظ يكسر سلاسة التواصل ويؤثر على تجربة المستخدم\",\"severity\":\"NOTABLE\"}]},\"missing_information\":{\"has_critical_gaps\":true,\"items\":[{\"what_is_missing_ar\":\"لغة الإشارة المستهدفة غير محددة\",\"why_it_matters_ar\":\"لغة الإشارة تختلف بشكل جذري بين الدول، وهذا يحدد متطلبات بيانات التدريب والمفردات المدعومة\",\"severity\":\"CRITICAL\",\"how_to_provide_ar\":\"حدد لغة الإشارة المستهدفة مثل لغة الإشارة العربية أو الأمريكية ASL أو غيرها\"},{\"what_is_missing_ar\":\"منصة المعالجة في القفاز غير محددة\",\"why_it_matters_ar\":\"اختيار المنصة يحدد قدرات المعالجة والحجم والتكلفة واستهلاك الطاقة\",\"severity\":\"IMPORTANT\",\"how_to_provide_ar\":\"حدد المنصة المقترحة مثل Arduino Nano BLE أو ESP32 أو STM32 أو غيرها\"},{\"what_is_missing_ar\":\"مصدر الطاقة وسعة البطارية غير محددين\",\"why_it_matters_ar\":\"يحدد مدة تشغيل القفاز ووزنه وحجمه المناسب للارتداء\",\"severity\":\"IMPORTANT\",\"how_to_provide_ar\":\"حدد نوع البطارية المقترحة وسعتها بالمللي أمبير وطريقة الشحن\"},{\"what_is_missing_ar\":\"هل المعالجة تتم على الجهاز أم على الهاتف فقط\",\"why_it_matters_ar\":\"يؤثر على متطلبات المعالج في القفاز والاتصال المستمر بالهاتف\",\"severity\":\"IMPORTANT\",\"how_to_provide_ar\":\"وضح هل نموذج ML يعمل على القفاز نفسه أم يرسل البيانات الخام للتطبيق ليعالجها\"}]},\"next_steps_suggestion\":{\"suggestion_possible\":true,\"items_ar\":[\"تحديد لغة الإشارة المستهدفة وجمع مجموعة بيانات أولية لأكثر الإشارات شيوعاً\",\"بناء نموذج أولي بسيط باستخدام ESP32 مع حساسين flex وIMU واحد للتحقق من جودة البيانات\",\"اختبار كفاءة نماذج ML الخفيفة مثل TensorFlow Lite على بيانات الحساسات المجمعة\",\"إجراء اختبارات مبكرة مع مستخدمين من الصم لتقييم راحة القفاز ودقة الترجمة\"]},\"disclaimer_ar\":\"هذا تحليل أولي فقط مبني على المعلومات المقدمة وليس شهادة هندسية معتمدة. قرار التصنيف النهائي تحدده المنصة وليس هذا التحليل.\"}",
+  "extracted_json": {
+    "schema_version": "1.1",
+    "domain": "IOT_ELECTRONICS",
+    "analysis_language": "ar",
+    "input_assessment": {
+      "sufficient_for_analysis": true,
+      "confidence_level": "MEDIUM",
+      "limiting_factors_ar": [
+        "لم يتم تحديد نوع المعالج أو المنصة المستخدمة في القفازات",
+        "لم يتم تحديد مصدر الطاقة للقفازات",
+        "لم يتم توضيح حجم بيانات التدريب لنموذج ML"
+      ]
+    },
+    "idea_summary": {
+      "description_ar": "قفازات ذكية مزودة بحساسات flex وIMU تلتقط حركات اليد وأصابع المستخدم، وترسل البيانات عبر Bluetooth إلى تطبيق يستخدم تعلم الآلة لترجمة لغة الإشارة إلى نص مقروء، بهدف تمكين الصم من التواصل مع المجتمع",
+      "apparent_domain_tags": [
+        "Machine-Learning",
+        "Healthcare"
+      ],
+      "clarification_needed_ar": null
+    },
+    "feasibility": {
+      "assessment_possible": true,
+      "feasibility_signal": "APPEARS_FEASIBLE_WITH_CAVEATS",
+      "signal_basis_ar": "المكونات الأساسية معروفة وموثقة في أبحاث مماثلة، لكن دقة الترجمة تعتمد بشكل كبير على جودة نموذج ML وحجم بيانات التدريب، كما أن الراحة في الاستخدام اليومي تمثل تحدياً هندسياً غير محدد بعد"
+    },
+    "observations": {
+      "apparent_components_ar": [
+        {
+          "component_ar": "حساسات Flex",
+          "basis_ar": "ذُكرت صراحةً في وصف الحل لقياس انحناء الأصابع",
+          "component_specificity": "USER_SPECIFIED"
+        },
+        {
+          "component_ar": "وحدة IMU (مقياس التسارع والجيروسكوب)",
+          "basis_ar": "ذُكرت صراحةً في وصف الحل لرصد حركة اليد واتجاهها",
+          "component_specificity": "USER_SPECIFIED"
+        },
+        {
+          "component_ar": "وحدة Bluetooth",
+          "basis_ar": "ذُكرت صراحةً لإرسال البيانات إلى التطبيق",
+          "component_specificity": "USER_SPECIFIED"
+        },
+        {
+          "component_ar": "تطبيق موبايل مع نموذج ML",
+          "basis_ar": "ذُكر صراحةً كطرف استقبال وترجمة للبيانات",
+          "component_specificity": "USER_SPECIFIED"
+        },
+        {
+          "component_ar": "ميكروكنترولر أو وحدة معالجة مضمنة",
+          "basis_ar": "ضروري بشكل واضح لجمع بيانات الحساسات وإرسالها عبر Bluetooth",
+          "component_specificity": "CLEARLY_IMPLIED_TYPE"
+        },
+        {
+          "component_ar": "بطارية قابلة للشحن",
+          "basis_ar": "مطلوبة بشكل واضح لتشغيل القفاز بشكل لاسلكي",
+          "component_specificity": "CLEARLY_IMPLIED_TYPE"
+        }
+      ],
+      "power_observations_ar": "لم يُحدد مصدر الطاقة، لكن الطبيعة اللاسلكية للجهاز تستلزم بطارية مدمجة. استهلاك الطاقة لحساسات IMU وBluetooth يؤثر مباشرة على مدة التشغيل وراحة الاستخدام",
+      "connectivity_observations_ar": "تم تحديد Bluetooth كبروتوكول الاتصال. يُنصح بالنظر في BLE لتقليل استهلاك الطاقة. التأخر الزمني في الإرسال قد يؤثر على طلاقة الترجمة"
+    },
+    "identified_concerns": {
+      "items": [
+        {
+          "basis_ar": "دقة نموذج ML تعتمد على حجم وجودة بيانات التدريب للغة الإشارة المستهدفة",
+          "why_it_matters_ar": "لغات الإشارة تختلف بين الدول وحتى المناطق، وبناء مجموعة بيانات كافية يتطلب جهداً كبيراً وقد يكون عائقاً رئيسياً للمشروع",
+          "severity": "SIGNIFICANT"
+        },
+        {
+          "basis_ar": "وضع الحساسات على القفاز وضمان ثباتها أثناء الحركة",
+          "why_it_matters_ar": "أي إزاحة للحساسات تؤدي إلى قراءات خاطئة وتدهور في دقة الترجمة",
+          "severity": "NOTABLE"
+        },
+        {
+          "basis_ar": "الراحة الجسدية للقفاز عند الاستخدام المطوّل",
+          "why_it_matters_ar": "إذا كان القفاز مزعجاً أو مقيداً للحركة، لن يتبناه المستخدمون في حياتهم اليومية",
+          "severity": "NOTABLE"
+        },
+        {
+          "basis_ar": "التأخر الزمني بين أداء الإشارة وظهور النص",
+          "why_it_matters_ar": "التأخر الملحوظ يكسر سلاسة التواصل ويؤثر على تجربة المستخدم",
+          "severity": "NOTABLE"
+        }
+      ]
+    },
+    "missing_information": {
+      "has_critical_gaps": true,
+      "items": [
+        {
+          "what_is_missing_ar": "لغة الإشارة المستهدفة غير محددة",
+          "why_it_matters_ar": "لغة الإشارة تختلف بشكل جذري بين الدول، وهذا يحدد متطلبات بيانات التدريب والمفردات المدعومة",
+          "severity": "CRITICAL",
+          "how_to_provide_ar": "حدد لغة الإشارة المستهدفة مثل لغة الإشارة العربية أو الأمريكية ASL أو غيرها"
+        },
+        {
+          "what_is_missing_ar": "منصة المعالجة في القفاز غير محددة",
+          "why_it_matters_ar": "اختيار المنصة يحدد قدرات المعالجة والحجم والتكلفة واستهلاك الطاقة",
+          "severity": "IMPORTANT",
+          "how_to_provide_ar": "حدد المنصة المقترحة مثل Arduino Nano BLE أو ESP32 أو STM32 أو غيرها"
+        },
+        {
+          "what_is_missing_ar": "مصدر الطاقة وسعة البطارية غير محددين",
+          "why_it_matters_ar": "يحدد مدة تشغيل القفاز ووزنه وحجمه المناسب للارتداء",
+          "severity": "IMPORTANT",
+          "how_to_provide_ar": "حدد نوع البطارية المقترحة وسعتها بالمللي أمبير وطريقة الشحن"
+        },
+        {
+          "what_is_missing_ar": "هل المعالجة تتم على الجهاز أم على الهاتف فقط",
+          "why_it_matters_ar": "يؤثر على متطلبات المعالج في القفاز والاتصال المستمر بالهاتف",
+          "severity": "IMPORTANT",
+          "how_to_provide_ar": "وضح هل نموذج ML يعمل على القفاز نفسه أم يرسل البيانات الخام للتطبيق ليعالجها"
+        }
+      ]
+    },
+    "next_steps_suggestion": {
+      "suggestion_possible": true,
+      "items_ar": [
+        "تحديد لغة الإشارة المستهدفة وجمع مجموعة بيانات أولية لأكثر الإشارات شيوعاً",
+        "بناء نموذج أولي بسيط باستخدام ESP32 مع حساسين flex وIMU واحد للتحقق من جودة البيانات",
+        "اختبار كفاءة نماذج ML الخفيفة مثل TensorFlow Lite على بيانات الحساسات المجمعة",
+        "إجراء اختبارات مبكرة مع مستخدمين من الصم لتقييم راحة القفاز ودقة الترجمة"
+      ]
+    },
+    "disclaimer_ar": "هذا تحليل أولي فقط مبني على المعلومات المقدمة وليس شهادة هندسية معتمدة. قرار التصنيف النهائي تحدده المنصة وليس هذا التحليل."
+  },
+  "normalized_output": {
+    "schema_version": "1.1",
+    "domain": "IOT_ELECTRONICS",
+    "analysis_language": "ar",
+    "input_assessment": {
+      "sufficient_for_analysis": true,
+      "confidence_level": "MEDIUM",
+      "limiting_factors_ar": [
+        "لم يتم تحديد نوع المعالج أو المنصة المستخدمة في القفازات",
+        "لم يتم تحديد مصدر الطاقة للقفازات",
+        "لم يتم توضيح حجم بيانات التدريب لنموذج ML"
+      ]
+    },
+    "idea_summary": {
+      "description_ar": "قفازات ذكية مزودة بحساسات flex وIMU تلتقط حركات اليد وأصابع المستخدم، وترسل البيانات عبر Bluetooth إلى تطبيق يستخدم تعلم الآلة لترجمة لغة الإشارة إلى نص مقروء، بهدف تمكين الصم من التواصل مع المجتمع",
+      "apparent_domain_tags": [
+        "Machine-Learning",
+        "Healthcare"
+      ],
+      "clarification_needed_ar": null
+    },
+    "feasibility": {
+      "assessment_possible": true,
+      "feasibility_signal": "APPEARS_FEASIBLE_WITH_CAVEATS",
+      "signal_basis_ar": "المكونات الأساسية معروفة وموثقة في أبحاث مماثلة، لكن دقة الترجمة تعتمد بشكل كبير على جودة نموذج ML وحجم بيانات التدريب، كما أن الراحة في الاستخدام اليومي تمثل تحدياً هندسياً غير محدد بعد"
+    },
+    "observations": {
+      "apparent_components_ar": [
+        {
+          "component_ar": "حساسات Flex",
+          "basis_ar": "ذُكرت صراحةً في وصف الحل لقياس انحناء الأصابع",
+          "component_specificity": "USER_SPECIFIED"
+        },
+        {
+          "component_ar": "وحدة IMU (مقياس التسارع والجيروسكوب)",
+          "basis_ar": "ذُكرت صراحةً في وصف الحل لرصد حركة اليد واتجاهها",
+          "component_specificity": "USER_SPECIFIED"
+        },
+        {
+          "component_ar": "وحدة Bluetooth",
+          "basis_ar": "ذُكرت صراحةً لإرسال البيانات إلى التطبيق",
+          "component_specificity": "USER_SPECIFIED"
+        },
+        {
+          "component_ar": "تطبيق موبايل مع نموذج ML",
+          "basis_ar": "ذُكر صراحةً كطرف استقبال وترجمة للبيانات",
+          "component_specificity": "USER_SPECIFIED"
+        },
+        {
+          "component_ar": "ميكروكنترولر أو وحدة معالجة مضمنة",
+          "basis_ar": "ضروري بشكل واضح لجمع بيانات الحساسات وإرسالها عبر Bluetooth",
+          "component_specificity": "CLEARLY_IMPLIED_TYPE"
+        },
+        {
+          "component_ar": "بطارية قابلة للشحن",
+          "basis_ar": "مطلوبة بشكل واضح لتشغيل القفاز بشكل لاسلكي",
+          "component_specificity": "CLEARLY_IMPLIED_TYPE"
+        }
+      ],
+      "power_observations_ar": "لم يُحدد مصدر الطاقة، لكن الطبيعة اللاسلكية للجهاز تستلزم بطارية مدمجة. استهلاك الطاقة لحساسات IMU وBluetooth يؤثر مباشرة على مدة التشغيل وراحة الاستخدام",
+      "connectivity_observations_ar": "تم تحديد Bluetooth كبروتوكول الاتصال. يُنصح بالنظر في BLE لتقليل استهلاك الطاقة. التأخر الزمني في الإرسال قد يؤثر على طلاقة الترجمة"
+    },
+    "identified_concerns": {
+      "items": [
+        {
+          "basis_ar": "دقة نموذج ML تعتمد على حجم وجودة بيانات التدريب للغة الإشارة المستهدفة",
+          "why_it_matters_ar": "لغات الإشارة تختلف بين الدول وحتى المناطق، وبناء مجموعة بيانات كافية يتطلب جهداً كبيراً وقد يكون عائقاً رئيسياً للمشروع",
+          "severity": "SIGNIFICANT"
+        },
+        {
+          "basis_ar": "وضع الحساسات على القفاز وضمان ثباتها أثناء الحركة",
+          "why_it_matters_ar": "أي إزاحة للحساسات تؤدي إلى قراءات خاطئة وتدهور في دقة الترجمة",
+          "severity": "NOTABLE"
+        },
+        {
+          "basis_ar": "الراحة الجسدية للقفاز عند الاستخدام المطوّل",
+          "why_it_matters_ar": "إذا كان القفاز مزعجاً أو مقيداً للحركة، لن يتبناه المستخدمون في حياتهم اليومية",
+          "severity": "NOTABLE"
+        },
+        {
+          "basis_ar": "التأخر الزمني بين أداء الإشارة وظهور النص",
+          "why_it_matters_ar": "التأخر الملحوظ يكسر سلاسة التواصل ويؤثر على تجربة المستخدم",
+          "severity": "NOTABLE"
+        }
+      ]
+    },
+    "missing_information": {
+      "has_critical_gaps": true,
+      "items": [
+        {
+          "what_is_missing_ar": "لغة الإشارة المستهدفة غير محددة",
+          "why_it_matters_ar": "لغة الإشارة تختلف بشكل جذري بين الدول، وهذا يحدد متطلبات بيانات التدريب والمفردات المدعومة",
+          "severity": "CRITICAL",
+          "how_to_provide_ar": "حدد لغة الإشارة المستهدفة مثل لغة الإشارة العربية أو الأمريكية ASL أو غيرها"
+        },
+        {
+          "what_is_missing_ar": "منصة المعالجة في القفاز غير محددة",
+          "why_it_matters_ar": "اختيار المنصة يحدد قدرات المعالجة والحجم والتكلفة واستهلاك الطاقة",
+          "severity": "IMPORTANT",
+          "how_to_provide_ar": "حدد المنصة المقترحة مثل Arduino Nano BLE أو ESP32 أو STM32 أو غيرها"
+        },
+        {
+          "what_is_missing_ar": "مصدر الطاقة وسعة البطارية غير محددين",
+          "why_it_matters_ar": "يحدد مدة تشغيل القفاز ووزنه وحجمه المناسب للارتداء",
+          "severity": "IMPORTANT",
+          "how_to_provide_ar": "حدد نوع البطارية المقترحة وسعتها بالمللي أمبير وطريقة الشحن"
+        },
+        {
+          "what_is_missing_ar": "هل المعالجة تتم على الجهاز أم على الهاتف فقط",
+          "why_it_matters_ar": "يؤثر على متطلبات المعالج في القفاز والاتصال المستمر بالهاتف",
+          "severity": "IMPORTANT",
+          "how_to_provide_ar": "وضح هل نموذج ML يعمل على القفاز نفسه أم يرسل البيانات الخام للتطبيق ليعالجها"
+        }
+      ]
+    },
+    "next_steps_suggestion": {
+      "suggestion_possible": true,
+      "items_ar": [
+        "تحديد لغة الإشارة المستهدفة وجمع مجموعة بيانات أولية لأكثر الإشارات شيوعاً",
+        "بناء نموذج أولي بسيط باستخدام ESP32 مع حساسين flex وIMU واحد للتحقق من جودة البيانات",
+        "اختبار كفاءة نماذج ML الخفيفة مثل TensorFlow Lite على بيانات الحساسات المجمعة",
+        "إجراء اختبارات مبكرة مع مستخدمين من الصم لتقييم راحة القفاز ودقة الترجمة"
+      ]
+    },
+    "disclaimer_ar": "هذا تحليل أولي فقط مبني على المعلومات المقدمة وليس شهادة هندسية معتمدة. قرار التصنيف النهائي تحدده المنصة وليس هذا التحليل."
+  },
+  "scores": {
+    "Schema Compliance": true,
+    "No Invented Info": true,
+    "Missing Info + Recovery": true,
+    "Confidence Calibration": false,
+    "Groundedness": true,
+    "Gate Engine Utility": true,
+    "Restraint Check": false
+  }
+}

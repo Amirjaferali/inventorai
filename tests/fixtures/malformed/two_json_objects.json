@@ -1,0 +1,7 @@
+{
+  "name": "two_json_objects",
+  "input": "{\"a\": 1} garbage {\"b\": 2}",
+  "expected_mode": "multiple_json_objects",
+  "expected_has_json": false,
+  "contract_note": "ambiguous multi-object input = explicit rejection, not recovery"
+}

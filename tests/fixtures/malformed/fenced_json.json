@@ -1,0 +1,6 @@
+{
+  "name": "fenced_json",
+  "input": "```json\n{\"a\": 1}\n```",
+  "expected_mode": "fence_strip",
+  "expected_has_json": true
+}

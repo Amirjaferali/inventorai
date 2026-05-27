@@ -1,0 +1,6 @@
+{
+  "name": "empty_response",
+  "input": "",
+  "expected_mode": "none",
+  "expected_has_json": false
+}

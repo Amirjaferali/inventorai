@@ -1,0 +1,302 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "iot_electronics_output_v1.1",
+  "title": "IoT + Electronics Domain — Analysis Output Schema",
+  "description": "Structured preliminary feasibility analysis output. Version 1.1. Uncertainty is structurally allowed — null is never a failure. The platform decides PASS/WARN/BLOCK from this output. The AI does not.",
+  "version": "1.1",
+  "domain": "IOT_ELECTRONICS",
+  "type": "object",
+  "additionalProperties": false,
+
+  "required": [
+    "schema_version",
+    "domain",
+    "analysis_language",
+    "input_assessment",
+    "idea_summary",
+    "feasibility",
+    "identified_concerns",
+    "missing_information",
+    "disclaimer_ar"
+  ],
+
+  "properties": {
+
+    "schema_version": {
+      "type": "string",
+      "const": "1.1"
+    },
+
+    "domain": {
+      "type": "string",
+      "const": "IOT_ELECTRONICS"
+    },
+
+    "analysis_language": {
+      "type": "string",
+      "const": "ar"
+    },
+
+    "input_assessment": {
+      "description": "Assessment of input quality before any analysis. Determines how much the AI can reliably say.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sufficient_for_analysis", "confidence_level", "limiting_factors_ar"],
+      "properties": {
+
+        "sufficient_for_analysis": {
+          "type": "boolean",
+          "description": "Can a meaningful preliminary analysis be produced from the provided input? If false, missing_information should dominate the output."
+        },
+
+        "confidence_level": {
+          "type": "string",
+          "enum": ["LOW", "MEDIUM", "HIGH"],
+          "description": "LOW = input is sparse or vague. MEDIUM = input covers main aspects. HIGH = input is detailed and specific. HIGH is rarely justified for a preliminary analysis."
+        },
+
+        "limiting_factors_ar": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "What specific gaps in the input limit the reliability of this analysis."
+        }
+      }
+    },
+
+    "idea_summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["description_ar", "apparent_domain_tags"],
+      "properties": {
+
+        "description_ar": {
+          "type": "string",
+          "minLength": 20,
+          "maxLength": 600,
+          "description": "Neutral restatement of the idea as understood from the input. No added assumptions."
+        },
+
+        "apparent_domain_tags": {
+          "type": "array",
+          "minItems": 0,
+          "description": "Domain tags that appear to apply based on what was stated. Empty array is valid if input is too vague.",
+          "items": {
+            "type": "string",
+            "enum": [
+              "IoT", "LoRaWAN", "WiFi", "BLE", "Zigbee", "NB-IoT", "4G-LTE",
+              "Microcontroller", "Arduino", "ESP32", "Raspberry-Pi", "STM32",
+              "Sensors", "Actuators", "Power-Management", "Battery", "Solar",
+              "PCB", "Embedded-Software", "Mobile-App", "Dashboard",
+              "Machine-Learning", "Computer-Vision", "RFID", "GPS",
+              "Industrial-IoT", "Smart-Home", "Agriculture", "Healthcare",
+              "Cold-Chain", "Asset-Tracking", "Environmental-Monitoring"
+            ]
+          }
+        },
+
+        "clarification_needed_ar": {
+          "type": ["string", "null"],
+          "description": "If the idea description is ambiguous, state what needs clarification before a reliable summary can be made."
+        }
+      }
+    },
+
+    "feasibility": {
+      "description": "Preliminary feasibility signals only. Not a determination. Not a gate decision.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["assessment_possible", "feasibility_signal", "signal_basis_ar"],
+      "properties": {
+
+        "assessment_possible": {
+          "type": "boolean",
+          "description": "Can a feasibility signal be given from the available input? If false, feasibility_signal must be INSUFFICIENT_INPUT."
+        },
+
+        "feasibility_signal": {
+          "type": "string",
+          "enum": [
+            "APPEARS_FEASIBLE",
+            "APPEARS_FEASIBLE_WITH_CAVEATS",
+            "FEASIBILITY_UNCLEAR",
+            "SIGNIFICANT_CONCERNS_IDENTIFIED",
+            "INSUFFICIENT_INPUT"
+          ],
+          "description": "Preliminary signal only. The platform gate engine converts this to PASS/WARN/BLOCK using defined rules. Do not select a signal that implies a gate decision."
+        },
+
+        "signal_basis_ar": {
+          "type": "string",
+          "minLength": 30,
+          "maxLength": 500,
+          "description": "What specifically in the input led to this signal. Must reference stated information only — no invented assumptions."
+        },
+
+        "complexity_indication": {
+          "type": ["string", "null"],
+          "enum": ["LOW", "MEDIUM", "HIGH", "VERY_HIGH", null],
+          "description": "Rough complexity indication if enough information exists. Null if cannot be determined."
+        },
+
+        "prototype_path_clarity": {
+          "type": ["string", "null"],
+          "enum": ["DESCRIBED_PATH_EXISTS", "PARTIAL_PATH_ONLY", "INSUFFICIENT_INFO", null],
+          "description": "Whether the input describes enough of a technical path to discuss prototyping. DESCRIBED_PATH_EXISTS means the user described steps — not that prototyping will succeed. Null if prototyping was not addressed in the input."
+        }
+      }
+    },
+
+    "observations": {
+      "description": "Optional section. Structured observations about technical aspects — based only on stated input. Clearly separated from assumptions.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+
+        "apparent_components_ar": {
+          "type": "array",
+          "minItems": 0,
+          "description": "Components that appear to be needed based on what the user described. Not a BOM. Not a recommendation.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["component_ar", "basis_ar"],
+            "properties": {
+              "component_ar": {
+                "type": "string",
+                "description": "Component type — not a specific model unless user mentioned one"
+              },
+              "basis_ar": {
+                "type": "string",
+                "description": "What in the user's description suggests this component is needed"
+              },
+              "component_specificity": {
+                "type": "string",
+                "enum": ["USER_SPECIFIED", "CLEARLY_IMPLIED_TYPE", "UNCLEAR"],
+                "description": "Whether this component was explicitly named by the user, clearly implied by the description, or is uncertain. Distinguishes observation from assumption."
+              }
+            }
+          }
+        },
+
+        "power_observations_ar": {
+          "type": ["string", "null"],
+          "maxLength": 400,
+          "description": "Observations about power requirements based only on what was stated. Null if user provided no power-related information. No assumed values."
+        },
+
+        "connectivity_observations_ar": {
+          "type": ["string", "null"],
+          "maxLength": 400,
+          "description": "Observations about connectivity based only on what was stated. Null if user provided no connectivity information."
+        }
+      }
+    },
+
+    "identified_concerns": {
+      "description": "Technical concerns visible from the stated description. Not invented. Not assumed.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["has_concerns", "items"],
+      "properties": {
+
+        "has_concerns": {
+          "type": "boolean"
+        },
+
+        "items": {
+          "type": "array",
+          "minItems": 0,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["concern_ar", "basis_ar", "severity"],
+            "properties": {
+              "concern_ar": {
+                "type": "string",
+                "description": "Description of the concern"
+              },
+              "basis_ar": {
+                "type": "string",
+                "description": "What in the stated description raises this concern — no invented information"
+              },
+              "severity": {
+                "type": "string",
+                "enum": ["MINOR", "NOTABLE", "SIGNIFICANT"]
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "missing_information": {
+      "description": "The most important section when input is incomplete. Honest gaps are more valuable than fabricated analysis.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["has_critical_gaps", "items"],
+      "properties": {
+
+        "has_critical_gaps": {
+          "type": "boolean",
+          "description": "True if any CRITICAL gap exists that prevents meaningful feasibility assessment."
+        },
+
+        "items": {
+          "type": "array",
+          "minItems": 0,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["what_is_missing_ar", "why_it_matters_ar", "severity", "how_to_provide_ar"],
+            "properties": {
+              "what_is_missing_ar": {
+                "type": "string"
+              },
+              "why_it_matters_ar": {
+                "type": "string",
+                "description": "Why this gap limits the analysis — not a generic statement"
+              },
+              "severity": {
+                "type": "string",
+                "enum": ["CRITICAL", "IMPORTANT", "HELPFUL"]
+              },
+              "how_to_provide_ar": {
+                "type": "string",
+                "description": "Specific actionable guidance for the user to fill this gap"
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "next_steps_suggestion": {
+      "description": "Optional. Only include if input was sufficient to warrant specific suggestions. Omit entirely if not enough is known.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "suggestion_possible": {
+          "type": "boolean",
+          "description": "Is there enough information to suggest meaningful next steps? If false, omit items."
+        },
+        "items_ar": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 4,
+          "items": {
+            "type": "string",
+            "minLength": 20
+          },
+          "description": "Concrete next steps grounded in stated information. Not generic advice."
+        }
+      }
+    },
+
+    "disclaimer_ar": {
+      "type": "string",
+      "minLength": 50,
+      "description": "Mandatory. Must clearly state: this is a preliminary analysis only, based on provided information, not an engineering certification, and PASS/WARN/BLOCK is determined by the platform — not by this analysis."
+    }
+
+  }
+}

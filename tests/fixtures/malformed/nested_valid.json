@@ -1,0 +1,6 @@
+{
+  "name": "nested_valid",
+  "input": "{\"feasibility\": {\"signal\": \"APPEARS_FEASIBLE\"}}",
+  "expected_mode": "direct",
+  "expected_has_json": true
+}

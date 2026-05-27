@@ -1,0 +1,6 @@
+{
+  "name": "markdown_prose_only",
+  "input": "The analysis shows concerns.",
+  "expected_mode": "none",
+  "expected_has_json": false
+}

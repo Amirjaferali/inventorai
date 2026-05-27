@@ -1,0 +1,6 @@
+{
+  "name": "truncated_json",
+  "input": "{\"a\": 1, \"b\":",
+  "expected_mode": "none",
+  "expected_has_json": false
+}

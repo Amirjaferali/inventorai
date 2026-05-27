@@ -1,0 +1,242 @@
+{
+  "id": "TC-04",
+  "sig": "",
+  "raw_text": "{\"schema_version\":\"1.1\",\"domain\":\"IOT_ELECTRONICS\",\"analysis_language\":\"ar\",\"input_assessment\":{\"sufficient_for_analysis\":true,\"confidence_level\":\"MEDIUM\",\"limiting_factors_ar\":[\"لم يتم تحديد سعة البطارية ومدة الاستخدام المطلوبة\",\"لم يتم تحديد طريقة إخفاء الجهاز في الدراجة\",\"لم يتم ذكر منصة التطبيق iOS أم Android\"]},\"idea_summary\":{\"description_ar\":\"جهاز تتبع GPS مخصص للدراجات يعتمد على وحدة SIM808 التي تدمج GPS وGSM، ويرسل بيانات الموقع كل دقيقة عبر شبكة الجوال إلى تطبيق هاتف ذكي، بهدف الحد من سرقة الدراجات وتمكين أصحابها من تتبعها في الوقت الفعلي\",\"apparent_domain_tags\":[\"GPS\",\"Asset-Tracking\",\"Dashboard\"],\"clarification_needed_ar\":null},\"feasibility\":{\"assessment_possible\":true,\"feasibility_signal\":\"APPEARS_FEASIBLE_WITH_CAVEATS\",\"signal_basis_ar\":\"وحدة SIM808 شائعة الاستخدام في مشاريع التتبع وتدمج GPS وGSM في مكون واحد، لكن هناك تحفظات تتعلق باستهلاك الطاقة عند الإرسال كل دقيقة وعمر البطارية وتصغير الحجم لإخفاء الجهاز\"},\"observations\":{\"apparent_components_ar\":[{\"component_ar\":\"وحدة SIM808 تدمج GPS وGSM\",\"basis_ar\":\"ذكرها المستخدم صراحةً في قسم الحل\",\"component_specificity\":\"USER_SPECIFIED\"},{\"component_ar\":\"شريحة SIM للاتصال بشبكة الجوال\",\"basis_ar\":\"ذكرها المستخدم صراحةً في قسم الحل\",\"component_specificity\":\"USER_SPECIFIED\"},{\"component_ar\":\"بطارية ليثيوم قابلة للشحن\",\"basis_ar\":\"ذكر المستخدم بطارية قابلة للشحن دون تحديد النوع\",\"component_specificity\":\"CLEARLY_IMPLIED_TYPE\"},{\"component_ar\":\"تطبيق هاتف ذكي لعرض الموقع\",\"basis_ar\":\"ذكره المستخدم صراحةً كواجهة للمستخدم\",\"component_specificity\":\"USER_SPECIFIED\"},{\"component_ar\":\"خادم سحابي لاستقبال وتخزين بيانات الموقع\",\"basis_ar\":\"ضروري لربط الجهاز بالتطبيق عبر الإنترنت\",\"component_specificity\":\"CLEARLY_IMPLIED_TYPE\"}],\"power_observations_ar\":\"ذكر المستخدم بطارية قابلة للشحن دون تحديد السعة. وحدة SIM808 تستهلك طاقة عالية أثناء الإرسال GSM مما قد يحد من عمر البطارية عند الإرسال كل دقيقة\",\"connectivity_observations_ar\":\"يعتمد الجهاز على شبكة GSM 2G/3G للإرسال عبر بطاقة SIM، وهو نهج مجرب في تطبيقات التتبع لكنه يستلزم اشتراكاً شهرياً في خدمة البيانات\"},\"identified_concerns\":{\"items\":[{\"basis_ar\":\"الإرسال كل دقيقة مع SIM808 يستهلك طاقة عالية\",\"why_it_matters_ar\":\"قد يؤدي إلى استنزاف البطارية سريعاً وتقليل فترة التتبع الفعلية بشكل كبير\",\"severity\":\"SIGNIFICANT\",\"how_to_provide_ar\":\"حدد سعة البطارية المستهدفة وعدد ساعات التشغيل المطلوبة لتقدير جدوى فترة الإرسال\"},{\"basis_ar\":\"حجم وحدة SIM808 والبطارية قد يجعل الإخفاء في الدراجة صعباً\",\"why_it_matters_ar\":\"الجهاز الظاهر يسهل إزالته من قبل السارق مما يبطل الغرض منه\",\"severity\":\"NOTABLE\",\"how_to_provide_ar\":\"وضح موضع تركيب الجهاز في الدراجة وهل هناك متطلبات للحجم أو التصغير\"},{\"basis_ar\":\"لم يتم ذكر آلية تنبيه أو إنذار عند الحركة غير المصرح بها\",\"why_it_matters_ar\":\"التتبع الدوري كل دقيقة قد لا يكفي للإنذار الفوري عند بدء السرقة\",\"severity\":\"NOTABLE\",\"how_to_provide_ar\":\"وضح هل تريد إضافة مستشعر اهتزاز أو مقياس تسارع لتشغيل إنذار فوري عند تحريك الدراجة\"}]},\"missing_information\":{\"has_critical_gaps\":false,\"items\":[{\"what_is_missing_ar\":\"سعة البطارية ومدة التشغيل المطلوبة\",\"why_it_matters_ar\":\"تحدد إمكانية تحقيق الإرسال كل دقيقة على مدار الساعة\",\"severity\":\"IMPORTANT\",\"how_to_provide_ar\":\"حدد عدد الساعات أو الأيام التي يجب أن يعمل فيها الجهاز بين كل شحن وشحن\"},{\"what_is_missing_ar\":\"منصة تطوير التطبيق المستهدفة\",\"why_it_matters_ar\":\"يؤثر على تكلفة وجدول التطوير وإمكانية الوصول للمستخدمين\",\"severity\":\"HELPFUL\",\"how_to_provide_ar\":\"حدد هل التطبيق لنظام Android فقط أم iOS أم كليهما\"},{\"what_is_missing_ar\":\"آلية الشحن وكيفية الوصول إلى الجهاز\",\"why_it_matters_ar\":\"الجهاز المخفي يحتاج طريقة عملية لإعادة الشحن دون الكشف عنه\",\"severity\":\"IMPORTANT\",\"how_to_provide_ar\":\"وضح هل يتم شحن الجهاز عبر دينامو الدراجة أم بطارية قابلة للنزع أم منفذ شحن مخفي\"}]},\"next_steps_suggestion\":{\"suggestion_possible\":true,\"items_ar\":[\"قياس استهلاك الطاقة الفعلي لوحدة SIM808 عند الإرسال كل دقيقة وتحديد سعة البطارية المناسبة لضمان عمل الجهاز لفترة كافية\",\"تصميم هيكل مادي مدمج وصغير الحجم يمكن إخفاؤه داخل إطار الدراجة أو تحت المقعد لتجنب اكتشافه\",\"إعداد نموذج أولي باستخدام SIM808 مع خادم MQTT أو HTTP بسيط للتحقق من دقة GPS وثبات الاتصال في بيئة حضرية\",\"دراسة إضافة مستشعر اهتزاز لتشغيل وضع التتبع المكثف تلقائياً عند تحريك الدراجة بدلاً من الإرسال الدائم كل دقيقة\"]},\"disclaimer_ar\":\"هذا تحليل أولي فقط مبني على المعلومات المقدمة وليس شهادة هندسية معتمدة. قرار التصنيف النهائي تحدده المنصة وليس هذا التحليل.\"}",
+  "extracted_json": {
+    "schema_version": "1.1",
+    "domain": "IOT_ELECTRONICS",
+    "analysis_language": "ar",
+    "input_assessment": {
+      "sufficient_for_analysis": true,
+      "confidence_level": "MEDIUM",
+      "limiting_factors_ar": [
+        "لم يتم تحديد سعة البطارية ومدة الاستخدام المطلوبة",
+        "لم يتم تحديد طريقة إخفاء الجهاز في الدراجة",
+        "لم يتم ذكر منصة التطبيق iOS أم Android"
+      ]
+    },
+    "idea_summary": {
+      "description_ar": "جهاز تتبع GPS مخصص للدراجات يعتمد على وحدة SIM808 التي تدمج GPS وGSM، ويرسل بيانات الموقع كل دقيقة عبر شبكة الجوال إلى تطبيق هاتف ذكي، بهدف الحد من سرقة الدراجات وتمكين أصحابها من تتبعها في الوقت الفعلي",
+      "apparent_domain_tags": [
+        "GPS",
+        "Asset-Tracking",
+        "Dashboard"
+      ],
+      "clarification_needed_ar": null
+    },
+    "feasibility": {
+      "assessment_possible": true,
+      "feasibility_signal": "APPEARS_FEASIBLE_WITH_CAVEATS",
+      "signal_basis_ar": "وحدة SIM808 شائعة الاستخدام في مشاريع التتبع وتدمج GPS وGSM في مكون واحد، لكن هناك تحفظات تتعلق باستهلاك الطاقة عند الإرسال كل دقيقة وعمر البطارية وتصغير الحجم لإخفاء الجهاز"
+    },
+    "observations": {
+      "apparent_components_ar": [
+        {
+          "component_ar": "وحدة SIM808 تدمج GPS وGSM",
+          "basis_ar": "ذكرها المستخدم صراحةً في قسم الحل",
+          "component_specificity": "USER_SPECIFIED"
+        },
+        {
+          "component_ar": "شريحة SIM للاتصال بشبكة الجوال",
+          "basis_ar": "ذكرها المستخدم صراحةً في قسم الحل",
+          "component_specificity": "USER_SPECIFIED"
+        },
+        {
+          "component_ar": "بطارية ليثيوم قابلة للشحن",
+          "basis_ar": "ذكر المستخدم بطارية قابلة للشحن دون تحديد النوع",
+          "component_specificity": "CLEARLY_IMPLIED_TYPE"
+        },
+        {
+          "component_ar": "تطبيق هاتف ذكي لعرض الموقع",
+          "basis_ar": "ذكره المستخدم صراحةً كواجهة للمستخدم",
+          "component_specificity": "USER_SPECIFIED"
+        },
+        {
+          "component_ar": "خادم سحابي لاستقبال وتخزين بيانات الموقع",
+          "basis_ar": "ضروري لربط الجهاز بالتطبيق عبر الإنترنت",
+          "component_specificity": "CLEARLY_IMPLIED_TYPE"
+        }
+      ],
+      "power_observations_ar": "ذكر المستخدم بطارية قابلة للشحن دون تحديد السعة. وحدة SIM808 تستهلك طاقة عالية أثناء الإرسال GSM مما قد يحد من عمر البطارية عند الإرسال كل دقيقة",
+      "connectivity_observations_ar": "يعتمد الجهاز على شبكة GSM 2G/3G للإرسال عبر بطاقة SIM، وهو نهج مجرب في تطبيقات التتبع لكنه يستلزم اشتراكاً شهرياً في خدمة البيانات"
+    },
+    "identified_concerns": {
+      "items": [
+        {
+          "basis_ar": "الإرسال كل دقيقة مع SIM808 يستهلك طاقة عالية",
+          "why_it_matters_ar": "قد يؤدي إلى استنزاف البطارية سريعاً وتقليل فترة التتبع الفعلية بشكل كبير",
+          "severity": "SIGNIFICANT",
+          "how_to_provide_ar": "حدد سعة البطارية المستهدفة وعدد ساعات التشغيل المطلوبة لتقدير جدوى فترة الإرسال"
+        },
+        {
+          "basis_ar": "حجم وحدة SIM808 والبطارية قد يجعل الإخفاء في الدراجة صعباً",
+          "why_it_matters_ar": "الجهاز الظاهر يسهل إزالته من قبل السارق مما يبطل الغرض منه",
+          "severity": "NOTABLE",
+          "how_to_provide_ar": "وضح موضع تركيب الجهاز في الدراجة وهل هناك متطلبات للحجم أو التصغير"
+        },
+        {
+          "basis_ar": "لم يتم ذكر آلية تنبيه أو إنذار عند الحركة غير المصرح بها",
+          "why_it_matters_ar": "التتبع الدوري كل دقيقة قد لا يكفي للإنذار الفوري عند بدء السرقة",
+          "severity": "NOTABLE",
+          "how_to_provide_ar": "وضح هل تريد إضافة مستشعر اهتزاز أو مقياس تسارع لتشغيل إنذار فوري عند تحريك الدراجة"
+        }
+      ]
+    },
+    "missing_information": {
+      "has_critical_gaps": false,
+      "items": [
+        {
+          "what_is_missing_ar": "سعة البطارية ومدة التشغيل المطلوبة",
+          "why_it_matters_ar": "تحدد إمكانية تحقيق الإرسال كل دقيقة على مدار الساعة",
+          "severity": "IMPORTANT",
+          "how_to_provide_ar": "حدد عدد الساعات أو الأيام التي يجب أن يعمل فيها الجهاز بين كل شحن وشحن"
+        },
+        {
+          "what_is_missing_ar": "منصة تطوير التطبيق المستهدفة",
+          "why_it_matters_ar": "يؤثر على تكلفة وجدول التطوير وإمكانية الوصول للمستخدمين",
+          "severity": "HELPFUL",
+          "how_to_provide_ar": "حدد هل التطبيق لنظام Android فقط أم iOS أم كليهما"
+        },
+        {
+          "what_is_missing_ar": "آلية الشحن وكيفية الوصول إلى الجهاز",
+          "why_it_matters_ar": "الجهاز المخفي يحتاج طريقة عملية لإعادة الشحن دون الكشف عنه",
+          "severity": "IMPORTANT",
+          "how_to_provide_ar": "وضح هل يتم شحن الجهاز عبر دينامو الدراجة أم بطارية قابلة للنزع أم منفذ شحن مخفي"
+        }
+      ]
+    },
+    "next_steps_suggestion": {
+      "suggestion_possible": true,
+      "items_ar": [
+        "قياس استهلاك الطاقة الفعلي لوحدة SIM808 عند الإرسال كل دقيقة وتحديد سعة البطارية المناسبة لضمان عمل الجهاز لفترة كافية",
+        "تصميم هيكل مادي مدمج وصغير الحجم يمكن إخفاؤه داخل إطار الدراجة أو تحت المقعد لتجنب اكتشافه",
+        "إعداد نموذج أولي باستخدام SIM808 مع خادم MQTT أو HTTP بسيط للتحقق من دقة GPS وثبات الاتصال في بيئة حضرية",
+        "دراسة إضافة مستشعر اهتزاز لتشغيل وضع التتبع المكثف تلقائياً عند تحريك الدراجة بدلاً من الإرسال الدائم كل دقيقة"
+      ]
+    },
+    "disclaimer_ar": "هذا تحليل أولي فقط مبني على المعلومات المقدمة وليس شهادة هندسية معتمدة. قرار التصنيف النهائي تحدده المنصة وليس هذا التحليل."
+  },
+  "normalized_output": {
+    "schema_version": "1.1",
+    "domain": "IOT_ELECTRONICS",
+    "analysis_language": "ar",
+    "input_assessment": {
+      "sufficient_for_analysis": true,
+      "confidence_level": "MEDIUM",
+      "limiting_factors_ar": [
+        "لم يتم تحديد سعة البطارية ومدة الاستخدام المطلوبة",
+        "لم يتم تحديد طريقة إخفاء الجهاز في الدراجة",
+        "لم يتم ذكر منصة التطبيق iOS أم Android"
+      ]
+    },
+    "idea_summary": {
+      "description_ar": "جهاز تتبع GPS مخصص للدراجات يعتمد على وحدة SIM808 التي تدمج GPS وGSM، ويرسل بيانات الموقع كل دقيقة عبر شبكة الجوال إلى تطبيق هاتف ذكي، بهدف الحد من سرقة الدراجات وتمكين أصحابها من تتبعها في الوقت الفعلي",
+      "apparent_domain_tags": [
+        "GPS",
+        "Asset-Tracking",
+        "Dashboard"
+      ],
+      "clarification_needed_ar": null
+    },
+    "feasibility": {
+      "assessment_possible": true,
+      "feasibility_signal": "APPEARS_FEASIBLE_WITH_CAVEATS",
+      "signal_basis_ar": "وحدة SIM808 شائعة الاستخدام في مشاريع التتبع وتدمج GPS وGSM في مكون واحد، لكن هناك تحفظات تتعلق باستهلاك الطاقة عند الإرسال كل دقيقة وعمر البطارية وتصغير الحجم لإخفاء الجهاز"
+    },
+    "observations": {
+      "apparent_components_ar": [
+        {
+          "component_ar": "وحدة SIM808 تدمج GPS وGSM",
+          "basis_ar": "ذكرها المستخدم صراحةً في قسم الحل",
+          "component_specificity": "USER_SPECIFIED"
+        },
+        {
+          "component_ar": "شريحة SIM للاتصال بشبكة الجوال",
+          "basis_ar": "ذكرها المستخدم صراحةً في قسم الحل",
+          "component_specificity": "USER_SPECIFIED"
+        },
+        {
+          "component_ar": "بطارية ليثيوم قابلة للشحن",
+          "basis_ar": "ذكر المستخدم بطارية قابلة للشحن دون تحديد النوع",
+          "component_specificity": "CLEARLY_IMPLIED_TYPE"
+        },
+        {
+          "component_ar": "تطبيق هاتف ذكي لعرض الموقع",
+          "basis_ar": "ذكره المستخدم صراحةً كواجهة للمستخدم",
+          "component_specificity": "USER_SPECIFIED"
+        },
+        {
+          "component_ar": "خادم سحابي لاستقبال وتخزين بيانات الموقع",
+          "basis_ar": "ضروري لربط الجهاز بالتطبيق عبر الإنترنت",
+          "component_specificity": "CLEARLY_IMPLIED_TYPE"
+        }
+      ],
+      "power_observations_ar": "ذكر المستخدم بطارية قابلة للشحن دون تحديد السعة. وحدة SIM808 تستهلك طاقة عالية أثناء الإرسال GSM مما قد يحد من عمر البطارية عند الإرسال كل دقيقة",
+      "connectivity_observations_ar": "يعتمد الجهاز على شبكة GSM 2G/3G للإرسال عبر بطاقة SIM، وهو نهج مجرب في تطبيقات التتبع لكنه يستلزم اشتراكاً شهرياً في خدمة البيانات"
+    },
+    "identified_concerns": {
+      "items": [
+        {
+          "basis_ar": "الإرسال كل دقيقة مع SIM808 يستهلك طاقة عالية",
+          "why_it_matters_ar": "قد يؤدي إلى استنزاف البطارية سريعاً وتقليل فترة التتبع الفعلية بشكل كبير",
+          "severity": "SIGNIFICANT",
+          "how_to_provide_ar": "حدد سعة البطارية المستهدفة وعدد ساعات التشغيل المطلوبة لتقدير جدوى فترة الإرسال"
+        },
+        {
+          "basis_ar": "حجم وحدة SIM808 والبطارية قد يجعل الإخفاء في الدراجة صعباً",
+          "why_it_matters_ar": "الجهاز الظاهر يسهل إزالته من قبل السارق مما يبطل الغرض منه",
+          "severity": "NOTABLE",
+          "how_to_provide_ar": "وضح موضع تركيب الجهاز في الدراجة وهل هناك متطلبات للحجم أو التصغير"
+        },
+        {
+          "basis_ar": "لم يتم ذكر آلية تنبيه أو إنذار عند الحركة غير المصرح بها",
+          "why_it_matters_ar": "التتبع الدوري كل دقيقة قد لا يكفي للإنذار الفوري عند بدء السرقة",
+          "severity": "NOTABLE",
+          "how_to_provide_ar": "وضح هل تريد إضافة مستشعر اهتزاز أو مقياس تسارع لتشغيل إنذار فوري عند تحريك الدراجة"
+        }
+      ]
+    },
+    "missing_information": {
+      "has_critical_gaps": false,
+      "items": [
+        {
+          "what_is_missing_ar": "سعة البطارية ومدة التشغيل المطلوبة",
+          "why_it_matters_ar": "تحدد إمكانية تحقيق الإرسال كل دقيقة على مدار الساعة",
+          "severity": "IMPORTANT",
+          "how_to_provide_ar": "حدد عدد الساعات أو الأيام التي يجب أن يعمل فيها الجهاز بين كل شحن وشحن"
+        },
+        {
+          "what_is_missing_ar": "منصة تطوير التطبيق المستهدفة",
+          "why_it_matters_ar": "يؤثر على تكلفة وجدول التطوير وإمكانية الوصول للمستخدمين",
+          "severity": "HELPFUL",
+          "how_to_provide_ar": "حدد هل التطبيق لنظام Android فقط أم iOS أم كليهما"
+        },
+        {
+          "what_is_missing_ar": "آلية الشحن وكيفية الوصول إلى الجهاز",
+          "why_it_matters_ar": "الجهاز المخفي يحتاج طريقة عملية لإعادة الشحن دون الكشف عنه",
+          "severity": "IMPORTANT",
+          "how_to_provide_ar": "وضح هل يتم شحن الجهاز عبر دينامو الدراجة أم بطارية قابلة للنزع أم منفذ شحن مخفي"
+        }
+      ]
+    },
+    "next_steps_suggestion": {
+      "suggestion_possible": true,
+      "items_ar": [
+        "قياس استهلاك الطاقة الفعلي لوحدة SIM808 عند الإرسال كل دقيقة وتحديد سعة البطارية المناسبة لضمان عمل الجهاز لفترة كافية",
+        "تصميم هيكل مادي مدمج وصغير الحجم يمكن إخفاؤه داخل إطار الدراجة أو تحت المقعد لتجنب اكتشافه",
+        "إعداد نموذج أولي باستخدام SIM808 مع خادم MQTT أو HTTP بسيط للتحقق من دقة GPS وثبات الاتصال في بيئة حضرية",
+        "دراسة إضافة مستشعر اهتزاز لتشغيل وضع التتبع المكثف تلقائياً عند تحريك الدراجة بدلاً من الإرسال الدائم كل دقيقة"
+      ]
+    },
+    "disclaimer_ar": "هذا تحليل أولي فقط مبني على المعلومات المقدمة وليس شهادة هندسية معتمدة. قرار التصنيف النهائي تحدده المنصة وليس هذا التحليل."
+  },
+  "scores": {
+    "Schema Compliance": true,
+    "No Invented Info": true,
+    "Missing Info + Recovery": true,
+    "Confidence Calibration": true,
+    "Groundedness": true,
+    "Gate Engine Utility": true,
+    "Restraint Check": true
+  }
+}

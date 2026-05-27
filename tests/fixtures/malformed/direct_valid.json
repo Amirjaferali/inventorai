@@ -1,0 +1,6 @@
+{
+  "name": "direct_valid",
+  "input": "{\"a\": 1}",
+  "expected_mode": "direct",
+  "expected_has_json": true
+}
