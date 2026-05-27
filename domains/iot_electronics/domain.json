@@ -1,0 +1,27 @@
+{
+  "governance": {
+    "source": "Internal — InventorAI engineering knowledge base",
+    "license": "Internal",
+    "owner": "repository-owner",
+    "review_date": "2026-05-27",
+    "version": "1.0.0",
+    "deprecation_status": "active"
+  },
+  "taxonomy_group": "electronics",
+  "capability_id": "iot_electronics",
+  "display_name": "IoT Electronics",
+  "description": "Internet of Things and embedded electronics domain covering microcontrollers, sensors, connectivity, and hardware-software integration.",
+  "domain_signals": [
+    "electronics_electrical",
+    "iot",
+    "embedded",
+    "microcontroller",
+    "sensor"
+  ],
+  "gaps": [
+    "MECHANISM_COMPLETENESS",
+    "PHYSICAL_FEASIBILITY",
+    "BOUNDARY_AMBIGUITY"
+  ],
+  "notes": "Capability pack created in Phase 5 Step 2. Hardcoded content in engine/domain_rules.py remains the active runtime source until Phase 5 Step 3 registry loader is implemented."
+}

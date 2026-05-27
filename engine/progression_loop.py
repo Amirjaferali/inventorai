@@ -366,7 +366,7 @@ def run_iteration(state: IdeaState, response: str) -> dict:
             }
             next_q = get_ai_question(state.domain, next_gap_opened, _ai_ctx) \
                 or get_question(state.domain, next_gap_opened, iterations_open)
-            return {
+            result = {
                 "iteration"     : state.iteration,
                 "gap_targeted"  : next_gap_opened,
                 "question"      : next_q,
@@ -378,7 +378,7 @@ def run_iteration(state: IdeaState, response: str) -> dict:
         closing_q = None
         if state.maturity_level == 2:
             closing_q = "Your mechanism is taking shape. Now state clearly: what does your invention NOT do or NOT cover? Name at least one boundary."
-        return {
+        result = {
             "iteration": state.iteration,
             "gap_targeted": None,
             "question": closing_q,
@@ -388,50 +388,52 @@ def run_iteration(state: IdeaState, response: str) -> dict:
             "direction": state.direction,
         }
 
-    # Get question — AI advisory (G-A) or fallback to domain/generic
-    gap = state.get_gap(gap_type)
-    iterations_open = gap.iterations_open if gap else 0
-    from engine.ai_advisor import get_ai_question
-    _ai_context = {
-        "domain": state.domain,
-        "gap_type": gap_type,
-        "idea_summary": getattr(state, 'idea_summary', None),
-        "last_response": response[:200] if response else None,
-        "iteration": state.iteration,
-    }
-    question = get_ai_question(state.domain, gap_type, _ai_context) \
-        or get_question(state.domain, gap_type, iterations_open)
-
-    # Integrate response
-    transition, reason = integrate_response(state, gap_type, question, response)
-
-    # Check transition
-    can, t_reason = evaluate_transition(state)
-    if can and state.maturity_level < 2:
-        state.maturity_level += 1
-        transition = "PASS"
-        reason = t_reason
-
-    update_direction(state, prev_level)
-
-    # GAP_PRIORITY cascade — open next gap if none remain
-    next_gap_opened = _open_next_gap_if_needed(state)
-    if next_gap_opened:
-        new_gap = state.get_gap(next_gap_opened)
-        iterations_open = new_gap.iterations_open if new_gap else 0
+    else:
+        # Get question — AI advisory (G-A) or fallback to domain/generic
+        gap = state.get_gap(gap_type)
+        iterations_open = gap.iterations_open if gap else 0
         from engine.ai_advisor import get_ai_question
-        ai_ctx = {
+        _ai_context = {
             "domain": state.domain,
-            "gap_type": next_gap_opened,
-            "idea_summary": getattr(state, "idea_summary", None),
-            "last_response": None,
+            "gap_type": gap_type,
+            "idea_summary": getattr(state, 'idea_summary', None),
+            "last_response": response[:200] if response else None,
             "iteration": state.iteration,
         }
-        next_q = (
-            get_ai_question(state.domain, next_gap_opened, ai_ctx)
-            or get_question(state.domain, next_gap_opened, iterations_open)
-        )
-        return {
+        question = get_ai_question(state.domain, gap_type, _ai_context) \
+            or get_question(state.domain, gap_type, iterations_open)
+
+        # Integrate response
+        transition, reason = integrate_response(state, gap_type, question, response)
+
+        # Check transition
+        can, t_reason = evaluate_transition(state)
+        if can and state.maturity_level < 2:
+            state.maturity_level += 1
+            transition = "PASS"
+            reason = t_reason
+
+        update_direction(state, prev_level)
+
+        # GAP_PRIORITY cascade — open next gap if none remain
+        next_gap_opened = _open_next_gap_if_needed(state)
+        next_q = None
+        if next_gap_opened:
+            new_gap = state.get_gap(next_gap_opened)
+            iterations_open = new_gap.iterations_open if new_gap else 0
+            from engine.ai_advisor import get_ai_question
+            ai_ctx = {
+                "domain": state.domain,
+                "gap_type": next_gap_opened,
+                "idea_summary": getattr(state, "idea_summary", None),
+                "last_response": None,
+                "iteration": state.iteration,
+            }
+            next_q = (
+                get_ai_question(state.domain, next_gap_opened, ai_ctx)
+                or get_question(state.domain, next_gap_opened, iterations_open)
+            )
+        result = {
             "iteration": state.iteration,
             "gap_targeted": next_gap_opened,
             "question": next_q,
@@ -441,24 +443,15 @@ def run_iteration(state: IdeaState, response: str) -> dict:
             "direction": state.direction,
         }
 
-    # Log
+    # Log — single exit guaranteed by structure
     log = IterationLog(
         iteration=state.iteration,
-        gap_targeted=gap_type,
-        question_asked=question,
+        gap_targeted=result.get('gap_targeted'),
+        question_asked=result.get('question'),
         response_summary=response[:100],
-        gaps_changed=[gap_type],
+        gaps_changed=[result.get('gap_targeted')],
         maturity_before=prev_level,
         maturity_after=state.maturity_level,
     )
     state.iteration_log.append(log)
-
-    return {
-        "iteration"     : state.iteration,
-        "gap_targeted"  : gap_type,
-        "question"      : question,
-        "transition"    : transition,
-        "reason"        : reason,
-        "maturity_level": state.maturity_level,
-        "direction"     : state.direction,
-    }
+    return result
