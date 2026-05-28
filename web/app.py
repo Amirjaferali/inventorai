@@ -8,6 +8,7 @@ from flask import Flask, request, redirect, url_for, render_template
 from engine.domain_rules import infer_domain
 from engine.idea_state import IdeaState
 from engine.progression_loop import run_iteration, select_next_gap, get_question
+from web.gap_labels import GAP_LABELS, get_gap_label, get_maturity_label, SESSION_DISCLOSURE
 
 app = Flask(__name__)
 app.secret_key = "inventorai-dev-only"
@@ -57,6 +58,9 @@ def show_session(sid):
     ):
         question = INTAKE_QUESTION
     open_gaps = [g for g in state.gaps if g.status == "OPEN"]
+    closed_gaps = [g for g in state.gaps if g.status == "CLOSED"]
+    gap_labels = {g.gap_type: GAP_LABELS.get(g.gap_type, GAP_LABELS["__default__"]) for g in state.gaps}
+    current_gap_label = GAP_LABELS.get(gap_type, GAP_LABELS["__default__"]) if gap_type else None
     return render_template("session.html",
         sid=sid,
         state=state,
@@ -64,6 +68,11 @@ def show_session(sid):
         open_gaps=open_gaps,
         gap_type=gap_type,
         last_result=last_result,
+        gap_labels=gap_labels,
+        current_gap_label=current_gap_label,
+        maturity_label=get_maturity_label(state.maturity_level),
+        session_disclosure=SESSION_DISCLOSURE,
+        closed_gaps=closed_gaps,
     )
 
 @app.route("/session/<sid>", methods=["POST"])

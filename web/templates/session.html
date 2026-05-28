@@ -5,38 +5,36 @@
 body{font-family:sans-serif;max-width:720px;margin:60px auto;padding:0 20px;color:#222}
 h1{color:#2c3e50;margin-bottom:4px}
 .meta{background:#f0f4f8;padding:10px 14px;border-radius:4px;margin-bottom:18px;font-size:13px;color:#444}
-
-/* Progress Bar */
+.disclosure{background:#f8f9fa;border-left:3px solid #b0b8c1;padding:9px 14px;border-radius:0 4px 4px 0;margin-bottom:20px;font-size:12px;color:#666;line-height:1.5}
 .progress-section{margin-bottom:20px}
 .progress-label{font-size:13px;color:#555;margin-bottom:4px}
 .progress-track{background:#dde3ea;border-radius:8px;height:14px;width:100%;overflow:hidden}
 .progress-fill{background:#2c3e50;height:14px;border-radius:8px}
-
-/* Gap Board */
+.stage-block{margin-bottom:18px;padding:10px 14px;background:#f0f4f8;border-radius:4px}
+.stage-label{font-size:15px;font-weight:bold;color:#2c3e50;margin-bottom:3px}
+.stage-meaning{font-size:13px;color:#555;line-height:1.4}
 .gap-board{margin-bottom:20px}
 .gap-board h3{font-size:14px;color:#555;margin:0 0 8px 0;text-transform:uppercase;letter-spacing:.5px}
 .gap-row{display:flex;align-items:center;padding:6px 10px;border-radius:4px;margin-bottom:4px;font-size:13px;background:#f8f9fa;border:1px solid #e2e6ea}
 .gap-row.current{background:#fff8e1;border-color:#ffe082;font-weight:bold}
 .gap-row.closed{background:#f0faf0;border-color:#c8e6c9;color:#555}
-.gap-status{width:60px;font-size:11px;padding:2px 6px;border-radius:3px;text-align:center;margin-right:10px;font-weight:bold}
-.status-open{background:#fff3e0;color:#e65100}
-.status-closed{background:#e8f5e9;color:#2e7d32}
-.status-current{background:#fff8e1;color:#f57f17}
-.gap-name{flex:1}
-.current-arrow{margin-left:6px;color:#f57f17}
-
-/* Transition Badge */
-.transition-section{margin-bottom:20px}
-.transition-section h3{font-size:14px;color:#555;margin:0 0 8px 0;text-transform:uppercase;letter-spacing:.5px}
-.badge{display:inline-block;padding:4px 12px;border-radius:4px;font-size:13px;font-weight:bold;margin-right:8px}
-.badge-warn{background:#fff3e0;color:#e65100;border:1px solid #ffcc02}
-.badge-pass{background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7}
-.badge-block{background:#fdecea;color:#c62828;border:1px solid #ef9a9a}
-.badge-none{background:#f0f4f8;color:#555;border:1px solid #ccc}
+.gap-status{width:70px;font-size:11px;padding:2px 6px;border-radius:3px;text-align:center;margin-right:10px;font-weight:bold;flex-shrink:0}
+.status-current{background:#fff3cd;color:#856404;border:1px solid #ffc107}
+.status-closed{background:#d4edda;color:#155724;border:1px solid #c3e6cb}
+.status-open{background:#f0f4f8;color:#555;border:1px solid #ccc}
+.gap-name{flex:1;color:#333}
+.gap-stage-note{font-size:11px;color:#888;margin-left:8px;flex-shrink:0}
+.current-arrow{font-size:11px;color:#e65100;margin-left:6px;flex-shrink:0}
+.gap-guidance{background:#fffbf0;border:1px solid #ffe082;border-radius:4px;padding:12px 16px;margin-bottom:18px}
+.gap-guidance-heading{font-size:15px;font-weight:bold;color:#2c3e50;margin-bottom:6px}
+.gap-guidance-text{font-size:13px;color:#555;line-height:1.5}
+.last-result{margin-bottom:18px;padding:10px 14px;border-radius:4px;border:1px solid #e2e6ea;font-size:13px}
+.badge-warn{background:#fff3e0;color:#e65100;border:1px solid #ffcc02;display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:bold;margin-bottom:6px}
+.badge-pass{background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7;display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:bold;margin-bottom:6px}
+.badge-block{background:#fdecea;color:#c62828;border:1px solid #ef9a9a;display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:bold;margin-bottom:6px}
+.badge-none{background:#f0f4f8;color:#555;border:1px solid #ccc;display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;margin-bottom:6px}
 .reason-text{font-size:13px;color:#555;margin-top:6px}
 .direction-text{font-size:12px;color:#888;margin-top:4px}
-
-/* Question */
 .question{font-size:18px;margin-bottom:16px;color:#2c3e50;line-height:1.5}
 textarea{width:100%;padding:12px;font-size:15px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box}
 button{margin-top:10px;padding:10px 24px;background:#2c3e50;color:white;border:none;border-radius:4px;font-size:15px;cursor:pointer}
@@ -47,135 +45,117 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
 <body>
 <h1>InventorAI</h1>
 
+<div class="disclosure">{{ session_disclosure }}</div>
+
 <div class="meta">
-  <strong>Domain:</strong> {{ state.domain if state.domain else '—' }} &nbsp;|&nbsp;
-  <strong>Iteration:</strong> {{ state.iteration }}
+  Idea: {{ state.idea_id }}
+  &nbsp;·&nbsp;
+  Iteration: {{ state.iteration }}
+  &nbsp;·&nbsp;
+  Domain: {{ state.domain or "electronics" }}
 </div>
 
-<!-- Progress Bar -->
+<div class="stage-block">
+  <div class="stage-label">{{ maturity_label.label }}</div>
+  <div class="stage-meaning">{{ maturity_label.meaning }}</div>
+</div>
+
 <div class="progress-section">
-  <div class="progress-label">Maturity Level: {{ state.maturity_level }} / 5</div>
+  <div class="progress-label">Progress — Stage {{ state.maturity_level + 1 }} of 3</div>
   <div class="progress-track">
-    <div class="progress-fill" style="width:{{ (state.maturity_level / 5 * 100)|int }}%"></div>
+    <div class="progress-fill" style="width:{{ ((state.maturity_level + 1) / 3 * 100)|int }}%"></div>
   </div>
 </div>
 
-<!-- Gap Status Board -->
 {% if state.gaps %}
 <div class="gap-board">
-  <h3>Gap Journey</h3>
+  <h3>Your Progress Areas</h3>
   {% for g in state.gaps %}
+  {% set label = gap_labels.get(g.gap_type, gap_labels.get('__default__', {'heading': g.gap_type, 'stage_note': ''})) %}
   <div class="gap-row {% if g.gap_type == gap_type %}current{% elif g.status == 'CLOSED' %}closed{% endif %}">
     {% if g.gap_type == gap_type %}
       <span class="gap-status status-current">ACTIVE</span>
     {% elif g.status == 'CLOSED' %}
-      <span class="gap-status status-closed">CLOSED</span>
+      <span class="gap-status status-closed">DONE</span>
     {% else %}
-      <span class="gap-status status-open">OPEN</span>
+      <span class="gap-status status-open">UPCOMING</span>
     {% endif %}
-    <span class="gap-name">{{ g.gap_type }}</span>
-    {% if g.gap_type == gap_type %}<span class="current-arrow">◀ current</span>{% endif %}
+    <span class="gap-name">{{ label.heading }}</span>
+    <span class="gap-stage-note">{{ label.stage_note }}</span>
+    {% if g.gap_type == gap_type %}<span class="current-arrow">◄ now</span>{% endif %}
   </div>
   {% endfor %}
 </div>
 {% endif %}
 
-<!-- Last Transition -->
+{% if state.maturity_level < 2 or open_gaps %}
+
+{% if gap_type and current_gap_label %}
+<div class="gap-guidance">
+  <div class="gap-guidance-heading">{{ current_gap_label.heading }}</div>
+  <div class="gap-guidance-text">{{ current_gap_label.guidance }}</div>
+</div>
+{% endif %}
+
 {% if last_result %}
-<div class="transition-section">
-  <h3>Last Transition</h3>
-  {% if last_result.transition == 'PASS' %}
-    <span class="badge badge-pass">PASS</span>
-  {% elif last_result.transition == 'WARN' %}
-    <span class="badge badge-warn">WARN</span>
-  {% elif last_result.transition == 'BLOCK' %}
-    <span class="badge badge-block">BLOCK</span>
+<div class="last-result">
+  {% if last_result.get('transition') == 'PASS' %}
+    <span class="badge-pass">Good progress</span>
+  {% elif last_result.get('transition') == 'WARN' %}
+    <span class="badge-warn">More detail needed</span>
+  {% elif last_result.get('transition') == 'BLOCK' %}
+    <span class="badge-block">Not enough to continue</span>
   {% else %}
-    <span class="badge badge-none">{{ last_result.transition if last_result.transition else '—' }}</span>
+    <span class="badge-none">Response recorded</span>
   {% endif %}
-  {% if last_result.reason %}
-  <div class="reason-text">{{ last_result.reason }}</div>
+  {% if last_result.get('reason') %}
+  <div class="reason-text">{{ last_result.get('reason') }}</div>
   {% endif %}
-  {% if last_result.direction %}
-  <div class="direction-text">Direction: {{ last_result.direction }}</div>
+  {% if last_result.get('direction') %}
+  <div class="direction-text">Direction: {{ last_result.get('direction') }}</div>
   {% endif %}
 </div>
 {% endif %}
 
-<hr>
-
-<!-- Question or Complete -->
-{% if question %}
 <p class="question">{{ question }}</p>
+
 <form method="POST" action="/session/{{ sid }}">
-  <textarea name="response" rows="4" placeholder="Your answer..." required></textarea>
-  <br><button type="submit">Submit</button>
+  <textarea name="response" rows="5" placeholder="Describe your thinking here..."></textarea>
+  <br>
+  <button type="submit">Submit</button>
 </form>
+
 {% else %}
-<div style="background:#e8f5e9;border:1px solid #a5d6a7;border-radius:6px;padding:20px;margin-bottom:20px">
-  <p class="complete">✓ Session Complete</p>
 
-  <table style="width:100%;font-size:14px;border-collapse:collapse;margin-top:12px">
-    <tr>
-      <td style="padding:5px 10px 5px 0;color:#555;width:160px;vertical-align:top"><strong>Domain</strong></td>
-      <td style="padding:5px 0">{{ state.domain if state.domain else '—' }}</td>
-    </tr>
-    <tr>
-      <td style="padding:5px 10px 5px 0;color:#555;vertical-align:top"><strong>Final Maturity</strong></td>
-      <td style="padding:5px 0">{{ state.maturity_level }} / 5</td>
-    </tr>
-    {% if last_result %}
-    <tr>
-      <td style="padding:5px 10px 5px 0;color:#555;vertical-align:top"><strong>Last Transition</strong></td>
-      <td style="padding:5px 0">
-        {% if last_result.transition == 'PASS' %}<span style="background:#e8f5e9;color:#2e7d32;padding:2px 8px;border-radius:3px;font-weight:bold">PASS</span>
-        {% elif last_result.transition == 'WARN' %}<span style="background:#fff3e0;color:#e65100;padding:2px 8px;border-radius:3px;font-weight:bold">WARN</span>
-        {% elif last_result.transition == 'BLOCK' %}<span style="background:#fdecea;color:#c62828;padding:2px 8px;border-radius:3px;font-weight:bold">BLOCK</span>
-        {% else %}{{ last_result.transition if last_result.transition else '—' }}{% endif %}
-      </td>
-    </tr>
-    {% if last_result.reason %}
-    <tr>
-      <td style="padding:5px 10px 5px 0;color:#555;vertical-align:top"><strong>Reason</strong></td>
-      <td style="padding:5px 0">{{ last_result.reason }}</td>
-    </tr>
-    {% endif %}
-    {% if last_result.direction %}
-    <tr>
-      <td style="padding:5px 10px 5px 0;color:#555;vertical-align:top"><strong>Direction</strong></td>
-      <td style="padding:5px 0">{{ last_result.direction }}</td>
-    </tr>
-    {% endif %}
-    {% endif %}
-  </table>
+<hr>
+<p class="complete">&#10003; You have worked through the key questions for your idea.</p>
 
-  {% set closed_gaps = state.gaps | selectattr('status', 'equalto', 'CLOSED') | list %}
-  {% if closed_gaps %}
-  <div style="margin-top:14px">
-    <strong style="font-size:13px;color:#2e7d32">Closed Gaps ({{ closed_gaps | length }})</strong>
-    <ul style="margin:6px 0 0 0;padding-left:18px;font-size:13px">
-      {% for g in closed_gaps %}<li>{{ g.gap_type }}</li>{% endfor %}
-    </ul>
-  </div>
-  {% endif %}
-
-  {% if open_gaps %}
-  <div style="margin-top:10px">
-    <strong style="font-size:13px;color:#e65100">Remaining Gaps ({{ open_gaps | length }})</strong>
-    <ul style="margin:6px 0 0 0;padding-left:18px;font-size:13px;color:#555">
-      {% for g in open_gaps %}<li>{{ g.gap_type }}</li>{% endfor %}
-    </ul>
-  </div>
-  {% endif %}
+{% if open_gaps %}
+<div style="margin-top:10px;color:#e65100;font-size:13px">
+  <strong>Areas still open ({{ open_gaps | length }}):</strong>
+  <ul style="margin:6px 0 0 0;padding-left:18px;font-size:13px;color:#555">
+    {% for g in open_gaps %}
+    {% set label = gap_labels.get(g.gap_type, gap_labels.get('__default__', {'heading': g.gap_type})) %}
+    <li>{{ label.heading }}</li>
+    {% endfor %}
+  </ul>
 </div>
+{% endif %}
+
+{% if closed_gaps %}
+<div style="margin-top:14px">
+  <strong style="font-size:13px;color:#2e7d32">Areas you have addressed ({{ closed_gaps | length }})</strong>
+  <ul style="margin:6px 0 0 0;padding-left:18px;font-size:13px;color:#555">
+    {% for g in closed_gaps %}
+    {% set label = gap_labels.get(g.gap_type, gap_labels.get('__default__', {'heading': g.gap_type})) %}
+    <li>{{ label.heading }}</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
+
 <p><a href="/">Start a new idea</a></p>
 {% endif %}
 
-{% if open_gaps %}
-<p style="font-size:13px;color:#888;margin-top:16px">
-  <strong>Open gaps:</strong>
-  {% for g in open_gaps %}{{ g.gap_type }}{% if not loop.last %}, {% endif %}{% endfor %}
-</p>
-{% endif %}
-
-</body></html>
+</body>
+</html>
