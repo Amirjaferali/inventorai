@@ -1,3 +1,5 @@
+> **Primary governance baseline:** See `docs/governance/INVENTORAI_PROJECT_STATE_FREEZE_v1.2.md` for the complete project state, findings, vision principles, and frozen decisions. This file is subordinate to that document.
+
 # MVP_SCOPE_FREEZE.md
 # Status: ACTIVE FREEZE
 # Date: 2026-05-20T20:54:20.663456

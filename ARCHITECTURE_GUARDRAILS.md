@@ -1,3 +1,5 @@
+> **Primary governance baseline:** See `docs/governance/INVENTORAI_PROJECT_STATE_FREEZE_v1.2.md` for the complete project state, findings, vision principles, and frozen decisions. This file is subordinate to that document.
+
 # InventorAI — Architecture Guardrails
 
 This document defines permanent architectural constraints.
