@@ -302,8 +302,8 @@ def evaluate_transition(state: IdeaState) -> tuple[bool, str]:
         if state.known_mechanism.quality == ASSERTED:
             return False, "Mechanism quality must be REASONED minimum"
         mech_gap = state.get_gap(MECHANISM_COMPLETENESS)
-        if mech_gap and mech_gap.status == OPEN:
-            return False, "BLOCK: MECHANISM_COMPLETENESS still open"
+        if mech_gap and mech_gap.status != CLOSED:
+            return False, "BLOCK: MECHANISM_COMPLETENESS not yet closed"
         return True, "Mechanism established — ready for LEVEL 2"
 
     return False, f"LEVEL {level} is max for MVP"
