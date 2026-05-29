@@ -157,6 +157,27 @@ _SUBSTANCE_SIGNALS = [
     "electrode", "biosensor", "optical", "tissue", "glucose",
     "implant", "catheter", "biomarker", "wearable", "pulse",
 ]
+_GENERIC_CAUSAL_VERBS = {
+    "detects","detect","sends","send","uses","use",
+    "connects","connect","receives","receive","triggers",
+    "trigger","activates","activate","processes","process",
+}
+_CAUSAL_STRUCTURE_PATTERNS = [
+    "when ","if ","after ","before ","until ","once ","as soon as ",
+    "causes","produces","results in","leads to",
+    "converts","transforms","transfers",
+    "measures","calculates","compares","exceeds",
+    "locks","releases","pushes","pulls","blocks","rotates",
+    "in order to","so that","which means","which causes",
+    "by measuring","by detecting","by converting","then ",
+    
+]
+def _has_causal_structure(r_lower):
+    return any(p in r_lower for p in _CAUSAL_STRUCTURE_PATTERNS)
+def _is_generic_verb_trap(r_lower):
+    if not (set(r_lower.split()) & _GENERIC_CAUSAL_VERBS): return False
+    return not _has_causal_structure(r_lower)
+
 
 
 MIN_REASONED_RESPONSE_LENGTH = 40  # anti-triviality guard only — see ADR-003 Step 6 note
@@ -164,8 +185,8 @@ MIN_REASONED_RESPONSE_LENGTH = 40  # anti-triviality guard only — see ADR-003 
 def assess_response(response: str) -> str:
     """
     Quality assessment: weak-answer guard + substance check.
-    MVP: pattern rejection + substance heuristic.
-    Future: replace substance check with AI-advisory assessment.
+    Rules 1-2: weak pattern rejection. Rule 2.5: generic verb trap.
+    Rule 3: substance + causal structure + length. See ADR-004.
     """
     r = response.strip()
     r_lower = r.lower()
@@ -186,7 +207,12 @@ def assess_response(response: str) -> str:
 
     # 3. Substance token present AND response meets minimum length (anti-triviality guard)
     #    NOTE: length threshold does NOT validate reasoning quality — see ADR-003 Step 6 note
-    if has_substance and len(r) >= MIN_REASONED_RESPONSE_LENGTH:
+    if _is_generic_verb_trap(r_lower):
+        return ASSERTED
+    has_causal = _has_causal_structure(r_lower)
+    # REASONED path A: substance domain token + causal structure + length
+    # REASONED path B: causal structure + no trap + length (for non-electronics domains)
+    if has_causal and not _is_generic_verb_trap(r_lower) and len(r) >= MIN_REASONED_RESPONSE_LENGTH:
         return REASONED
 
     # 4. Length fallback for borderline answers without clear substance signals

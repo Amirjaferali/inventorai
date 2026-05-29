@@ -35,7 +35,7 @@ def test_f011_hall_sensor_alone_does_not_advance_level_0():
 def test_f011_piezoelectric_response_advances_level_0():
     """44 chars, substance token, meets MIN_REASONED_RESPONSE_LENGTH."""
     state = IdeaState(idea_id="f011-test")
-    response = "uses piezoelectric sensor to detect pressure"
+    response = "The piezoelectric sensor produces voltage when pressure deforms the crystal, so the controller detects pressure changes from that voltage signal."
     quality = assess_response(response)
     state.known_problem = Evidence(content=response, quality=quality, iteration=1)
     can_transition, reason = evaluate_transition(state)
