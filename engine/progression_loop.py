@@ -304,6 +304,18 @@ def evaluate_transition(state: IdeaState) -> tuple[bool, str]:
         mech_gap = state.get_gap(MECHANISM_COMPLETENESS)
         if mech_gap and mech_gap.status != CLOSED:
             return False, "BLOCK: MECHANISM_COMPLETENESS not yet closed"
+        # GD-001 / ILT-F-001: all Stage Two gaps must exist and be CLOSED
+        REQUIRED_STAGE_TWO_GAPS = [
+            MECHANISM_COMPLETENESS,
+            PHYSICAL_FEASIBILITY,
+            BOUNDARY_AMBIGUITY,
+        ]
+        for required_gap in REQUIRED_STAGE_TWO_GAPS:
+            gap = state.get_gap(required_gap)
+            if gap is None:
+                return False, f"BLOCK: {required_gap} not yet opened"
+            if gap.status != CLOSED:
+                return False, f"BLOCK: {required_gap} not yet closed (status: {gap.status})"
         return True, "Mechanism established — ready for LEVEL 2"
 
     return False, f"LEVEL {level} is max for MVP"

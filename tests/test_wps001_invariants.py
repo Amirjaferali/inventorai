@@ -82,13 +82,19 @@ class TestWPS001_INV002_BlockPreventsAdvancement:
         can, reason = evaluate_transition(s)
         assert can is False,             f"WPS-001 INV-002 VIOLATED: Level 1->2 allowed with ASSERTED mechanism. can={can} reason={reason!r}"
     def test_level_1_to_2_allowed_with_reasoned_mechanism(self):
-        """WPS-001 INV-002 positive: REASONED mechanism + no open gaps must allow Level 1->2."""
+        """WPS-001 INV-002 positive: all Stage Two gaps CLOSED must allow Level 1->2 (GD-001).
+        Old contract (MC only) was invalidated by ILT-001 finding ILT-F-001.
+        Updated: all three required Stage Two gaps must exist and be CLOSED."""
         from engine.progression_loop import evaluate_transition
+        from engine.idea_state import Gap, CLOSED, MECHANISM_COMPLETENESS, PHYSICAL_FEASIBILITY, BOUNDARY_AMBIGUITY
         s = make_state(); s.maturity_level = 1
         s.known_problem = Evidence("Clear problem", REASONED, 0)
         s.known_mechanism = Evidence("ESP32 ADC reads TMP117 via I2C every 60s", REASONED, 0)
+        s.gaps.append(Gap(gap_type=MECHANISM_COMPLETENESS, status=CLOSED, opened_at=1))
+        s.gaps.append(Gap(gap_type=PHYSICAL_FEASIBILITY, status=CLOSED, opened_at=1))
+        s.gaps.append(Gap(gap_type=BOUNDARY_AMBIGUITY, status=CLOSED, opened_at=1))
         can, reason = evaluate_transition(s)
-        assert can is True,             f"WPS-001 INV-002 POSITIVE VIOLATED: REASONED mechanism + no gaps denied. can={can} reason={reason!r}"
+        assert can is True, f"WPS-001 INV-002 POSITIVE VIOLATED: all Stage Two gaps closed denied. can={can} reason={reason!r}"
 
 class TestWPS001_INV004_GapLifecycle:
     """WPS-001 INV-004: Gap lifecycle is forward-only — OPEN->PARTIAL->CLOSED, never backward."""

@@ -17,7 +17,7 @@ from engine.progression_loop import (
     integrate_response,
     evaluate_transition,
     ASSERTED, REASONED, DEMONSTRATED,
-    MECHANISM_COMPLETENESS,
+    MECHANISM_COMPLETENESS, PHYSICAL_FEASIBILITY, BOUNDARY_AMBIGUITY,
 )
 
 OPEN = "OPEN"
@@ -238,12 +238,14 @@ class TestEvaluateTransition:
         can, reason = evaluate_transition(state)
         assert can is False
 
-    def test_C7_level1_reasoned_mechanism_closed_gap_allows(self):
+    def test_C7_level1_all_stage_two_gaps_closed_allows(self):
+        # GD-001: all three Stage Two gaps must be CLOSED for Level 1->2
         state = make_state()
         state.maturity_level = 1
         state.known_mechanism = make_evidence(REASONED)
-        gap = make_gap(MECHANISM_COMPLETENESS, CLOSED)
-        state.gaps.append(gap)
+        state.gaps.append(make_gap(MECHANISM_COMPLETENESS, CLOSED))
+        state.gaps.append(make_gap(PHYSICAL_FEASIBILITY, CLOSED))
+        state.gaps.append(make_gap(BOUNDARY_AMBIGUITY, CLOSED))
         can, reason = evaluate_transition(state)
         assert can is True
 
