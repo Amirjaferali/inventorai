@@ -320,7 +320,7 @@ def update_direction(state: IdeaState, prev_level: int) -> None:
         open_count = len(state.get_open_gaps())
         stalled_gaps = [
             g for g in state.gaps
-            if g.status == OPEN and g.iterations_open >= STALL_THRESHOLD
+            if g.status in (OPEN, PARTIAL) and g.iterations_open >= STALL_THRESHOLD
         ]
         if stalled_gaps:
             state.direction = STALLED
@@ -342,7 +342,7 @@ def run_iteration(state: IdeaState, response: str) -> dict:
 
     # Update gap iteration counters
     for g in state.gaps:
-        if g.status == OPEN:
+        if g.status in (OPEN, PARTIAL):
             g.iterations_open += 1
 
     # Select gap
