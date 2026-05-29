@@ -1,0 +1,26 @@
+{
+  "timestamp": "20260519_2159",
+  "phase": "engine_extraction_checkpoint_1",
+  "score": 93,
+  "valid": "22/22",
+  "schema_compliance": "100%",
+  "parity_verified": true,
+  "extracted_modules": [
+    "engine/enums.py",
+    "engine/normalize_output.py"
+  ],
+  "pending_extraction": [
+    "engine/extract_json.py",
+    "engine/compute_decision.py",
+    "engine/call_anthropic.py"
+  ],
+  "contract_tests_passing": 11,
+  "prompt_sha256": "2d8714a1622cd1936bf6e0cdc4bcae4840ce664efb94a79ce59f2fa8998fe2a8",
+  "enums_sha256": "239ba5aaefe8673ff2cc5cc70d998437bbd2d3971a72ca3b04f20e211fcc3209",
+  "normalize_sha256": "80cf609e3ddbf9c1c3d1fa09400f57311172dd2a8d15cba934faa491511f1d86",
+  "canonical": false,
+  "status": "active",
+  "lifecycle": "stable",
+  "parent": "baseline_20260518_1809_score93",
+  "notes": "First engine extraction checkpoint. enums + normalize_output extracted and verified. Parity confirmed. extract_json.py is next — most dangerous seam in system."
+}

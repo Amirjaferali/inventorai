@@ -1,0 +1,30 @@
+{
+  "_template": "Copy this when creating a new experiment entry",
+  "baseline": "experiment_YYYYMMDD_HHMM_<description>",
+  "score": null,
+  "timestamp": null,
+  "prompt_sha256": null,
+  "model": "claude-sonnet-4-6",
+  "max_tokens": 4096,
+  "schema_file": "schemas/iot_electronics_output.schema.json",
+  "benchmark_runner": "benchmark/run_benchmark_v1.py",
+  "benchmark_runner_sha256": "748e8fded2b076a4ddf946f1bf685d3d8a0727736e507dbc30f8184a7672a253",
+  "schema_sha256": "26d25e73fb2686b489700026f31a33db2d2d6d123df25dad9ce4f5314d0ab4b5",
+  "runner_version": "v1.1",
+  "schema_compliance": null,
+  "restraint_check": null,
+  "status": "active",
+  "lifecycle": "experimental",
+  "parent": "baseline_20260518_1809_score93",
+  "delta_vs_parent": null,
+  "changed_dimensions": [
+    "<describe what changed>"
+  ],
+  "notes": "",
+  "env_provenance": {
+    "python_version": "3.12.1 (main, Mar 11 2026, 12:17:56) [GCC 13.3.0]",
+    "platform": "Linux-6.8.0-1044-azure-x86_64-with-glibc2.39",
+    "environment": "codespaces",
+    "anthropic_sdk_version": "0.102.0"
+  }
+}

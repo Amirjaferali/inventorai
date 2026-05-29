@@ -1,0 +1,25 @@
+{
+  "timestamp": "20260518_1809",
+  "avg_weighted": 93,
+  "valid": "22/22",
+  "schema_compliance": "100%",
+  "no_invented_info": "100%",
+  "missing_info_recovery": "100%",
+  "confidence_calibration": "86%",
+  "groundedness": "100%",
+  "gate_engine_utility": "100%",
+  "restraint_check": "68%",
+  "model": "claude-sonnet-4-6",
+  "max_tokens": 4096,
+  "schema_file": "schemas/iot_electronics_output.schema.json",
+  "benchmark_runner": "benchmark/run_benchmark_v1.py",
+  "prompt_sha256": "2d8714a1622cd1936bf6e0cdc4bcae4840ce664efb94a79ce59f2fa8998fe2a8",
+  "prompt_chars": 6372,
+  "notes": "Stable state after schema fix and behavioral calibration. Original 95/100 prompt lost before snapshotting.",
+  "env_provenance": {
+    "python_version": "3.12.1 (main, Mar 11 2026, 12:17:56) [GCC 13.3.0]",
+    "platform": "Linux-6.8.0-1044-azure-x86_64-with-glibc2.39",
+    "environment": "codespaces",
+    "anthropic_sdk_version": "0.102.0"
+  }
+}
