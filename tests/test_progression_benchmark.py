@@ -279,3 +279,31 @@ class TestEvaluateTransition:
         state.known_problem = make_evidence(ASSERTED)
         can, _ = evaluate_transition(state)
         assert can is False
+
+# SECTION D: ILT-001S closure
+class TestUpdateDirection:
+    def test_D1_partial_gap_at_threshold_triggers_stalled(self):
+        from engine.progression_loop import STALL_THRESHOLD
+        from engine.idea_state import STALLED
+        """ILT-001S: PARTIAL gap at STALL_THRESHOLD causes STALLED direction."""
+        from engine.progression_loop import update_direction
+        state = make_state()
+        state.maturity_level = 1
+        gap = make_gap(MECHANISM_COMPLETENESS, PARTIAL, iterations_open=STALL_THRESHOLD)
+        state.gaps.append(gap)
+        update_direction(state, state.maturity_level)
+        assert state.direction == STALLED
+
+# SECTION E: R-007 closure
+class TestIdeaSummaryInDeliverable:
+    def test_E1_idea_summary_included_in_fdc001_package(self):
+        """R-007: assemble_deliverable includes idea_summary in _session_meta."""
+        from engine.deliverable_assembler import assemble_deliverable
+        state = make_state()
+        state.idea_summary = "Capacitive soil moisture sensor using ESP32 discharge timing"
+        state.maturity_level = 2
+        state.known_problem  = make_evidence(REASONED, "inventor stated problem")
+        state.known_mechanism = make_evidence(REASONED, "capacitive discharge mechanism")
+        pkg = assemble_deliverable(state)
+        meta = pkg.get("_session_meta", {})
+        assert meta.get("idea_summary") == "Capacitive soil moisture sensor using ESP32 discharge timing"

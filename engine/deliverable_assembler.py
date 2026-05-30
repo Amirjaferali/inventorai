@@ -90,6 +90,7 @@ def assemble_deliverable(state: IdeaState) -> dict:
             "direction":            getattr(state, "direction", None),
             "domain_signal":        getattr(state, "domain_signal", None),
             "evidence_quality":     _overall_quality(state),
+            "idea_summary":          getattr(state, "idea_summary", None),  # R-007
             "deliverable_eligible": _eligible(state, open_gaps),
         },
     }

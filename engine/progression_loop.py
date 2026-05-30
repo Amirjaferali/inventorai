@@ -34,6 +34,18 @@ GAP_PRIORITY = [
 
 STALL_THRESHOLD = 3  # iterations before reframe
 
+_IDEA_SUMMARY_MAX = 500
+
+def _trim_idea_summary(text: str) -> str:
+    """Inventor statement safely trimmed — display safeguard, not summarization."""
+    text = text.strip()
+    if len(text) <= _IDEA_SUMMARY_MAX:
+        return text
+    trimmed = text[:_IDEA_SUMMARY_MAX]
+    boundary = trimmed.rfind(" ")
+    return trimmed[:boundary] if boundary > 0 else trimmed
+
+
 
 # ─────────────────────────────────────────────
 # 1. Select next gap to address
@@ -371,6 +383,8 @@ def run_iteration(state: IdeaState, response: str) -> dict:
         )
         if quality >= REASONED and (state.known_problem is None or quality > state.known_problem.quality):  # RISK-002
             state.known_problem = evidence
+            if state.idea_summary is None:  # R-007: capture once
+                state.idea_summary = _trim_idea_summary(response)
 
     if gap_type is None:
         can, reason = evaluate_transition(state)
