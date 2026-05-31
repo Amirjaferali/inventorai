@@ -75,6 +75,9 @@ class IdeaState:
 
     # History
     iteration_log  : list                   = field(default_factory=list)
+      
+    # Idea capture
+    idea_summary   : Optional[str]          = None
 
     def get_open_gaps(self):
         return [g for g in self.gaps if g.status in (OPEN, PARTIAL)]
