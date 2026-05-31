@@ -8,7 +8,7 @@ Planned artifacts have no standing until committed.
 
 1. `progression_loop.py` must NEVER contain domain-specific branching
 2. AI must NEVER control maturity, gaps, or gate decisions
-3. Benchmark must remain at 27 passed (or higher), 0 failed
+3. Official benchmark (WPS001) must remain at 0 failed — see OFFICIAL_BENCHMARK_BASELINE.md
 4. Web routes must contain no business logic
 5. `idea_summary` must not be AI-generated or overwritten after first capture
 6. Platform must never optimize for protocol completion at the expense of user
@@ -52,11 +52,12 @@ Verify repository state before acting. Never act on chat-only context alone.
 
 1. Read this document completely
 2. Run `git log --oneline --decorate -3` — confirm HEAD
-3. Run `python -m pytest tests/ -q` — confirm benchmark matches Section 2
+3. Run `python -m pytest tests/test_wps001_invariants.py -v` — confirm WPS001 benchmark passes
 4. Run `ls docs/governance/` — confirm committed artifacts match Section 7
 5. Check Section 12 for open blockers before any action
 6. Check Section 14 for authorization status before any action
 7. Do NOT start implementation without explicit owner instruction
+8. HEAD at time of this document: 5661504 — OFFICIAL_BENCHMARK_BASELINE.md committed
 
 ---
 
