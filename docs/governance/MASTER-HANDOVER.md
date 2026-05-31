@@ -57,7 +57,7 @@ Verify repository state before acting. Never act on chat-only context alone.
 5. Check Section 12 for open blockers before any action
 6. Check Section 14 for authorization status before any action
 7. Do NOT start implementation without explicit owner instruction
-8. HEAD at time of this document: 5661504 — OFFICIAL_BENCHMARK_BASELINE.md committed
+8. HEAD at time of this document: 65acf6e — OFFICIAL_BENCHMARK_BASELINE.md committed
 
 ---
 
