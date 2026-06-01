@@ -173,11 +173,15 @@ def get_domain_question(domain: str, gap_type: str, iterations_open: int) -> str
     Return a domain-specific question for gap_type, or None to trigger generic fallback.
     Domain layer owns questions. Engine must not contain domain-specific question logic.
     """
-    domain_bank = _DOMAIN_QUESTIONS.get(domain)
-    if not domain_bank:
+    # Gap Discovery Authority: read from registry gap_type_mappings (AB-005 Step 6b)
+    pack = _REGISTRY.get(domain)
+    if not pack:
         return None
-    variants = domain_bank.get(gap_type)
-    if not variants:
-        return None
-    index = min(iterations_open, len(variants) - 1)
-    return variants[index]
+    for mapping in pack.get("gap_type_mappings", []):
+        if mapping.get("gap_type_id") == gap_type:
+            questions = mapping.get("questions", [])
+            if not questions:
+                return None
+            index = min(iterations_open, len(questions) - 1)
+            return questions[index].get("text")
+    return None
