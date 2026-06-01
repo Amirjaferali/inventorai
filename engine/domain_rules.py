@@ -38,12 +38,13 @@ def infer_domain(idea_text: str) -> str | None:
 			return domain
 	return None
 def get_active_rules(domain: str) -> list:
+    # Electronics: evaluation authority from registry rule_nuances (AB-005 Step 6a)
     if domain == "electronics_electrical":
-        return [
-            "PHYSICAL_PRINCIPLE_REQUIRED",
-            "POWER_ACKNOWLEDGMENT_IF_ENERGY",
-            "NO_PLATFORM_SPECIFIC_NAMING",
-        ]
+        pack = _REGISTRY.get(domain)
+        if pack and pack.get("rule_nuances"):
+            return [rn["modifier_value"] for rn in pack["rule_nuances"]]
+    # AB-006: remaining domains hardcoded — evaluation authority not yet
+    # clarified for mechanical/medical_device/software (gap types vs eval rules)
     if domain == "mechanical":
         return [
             "MECHANISM_COMPLETENESS",
