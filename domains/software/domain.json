@@ -3,20 +3,358 @@
   "schema_date": "2026-06-01",
   "pack_id": "software",
   "version": "1.0",
-  "status": "draft",
+  "status": "active",
   "display_name": "Software",
-  "aliases": ["software"],
+  "aliases": [
+    "software"
+  ],
   "schema_version_ref": "1.0",
-  "activated_date": null,
+  "activated_date": "2026-06-01",
   "deprecated_date": null,
   "parent_pack_id": null,
-  "classification_signals": [],
-  "substance_signals": [],
-  "gap_type_mappings": [],
+  "classification_signals": [
+    {
+      "signal": "software",
+      "weight": 0.7,
+      "layer": 1,
+      "provenance_ref": "software:PR001"
+    },
+    {
+      "signal": "app",
+      "weight": 0.5,
+      "layer": 1,
+      "provenance_ref": "software:PR001"
+    },
+    {
+      "signal": "application",
+      "weight": 0.5,
+      "layer": 1,
+      "provenance_ref": "software:PR001"
+    },
+    {
+      "signal": "algorithm",
+      "weight": 0.8,
+      "layer": 1,
+      "provenance_ref": "software:PR001"
+    },
+    {
+      "signal": "api",
+      "weight": 0.8,
+      "layer": 2,
+      "provenance_ref": "software:PR001"
+    },
+    {
+      "signal": "database",
+      "weight": 0.8,
+      "layer": 2,
+      "provenance_ref": "software:PR001"
+    },
+    {
+      "signal": "web",
+      "weight": 0.5,
+      "layer": 2,
+      "provenance_ref": "software:PR001"
+    },
+    {
+      "signal": "mobile",
+      "weight": 0.5,
+      "layer": 2,
+      "provenance_ref": "software:PR001"
+    },
+    {
+      "signal": "backend",
+      "weight": 0.7,
+      "layer": 2,
+      "provenance_ref": "software:PR001"
+    },
+    {
+      "signal": "frontend",
+      "weight": 0.6,
+      "layer": 2,
+      "provenance_ref": "software:PR001"
+    },
+    {
+      "signal": "code",
+      "weight": 0.5,
+      "layer": 2,
+      "provenance_ref": "software:PR001"
+    },
+    {
+      "signal": "programming",
+      "weight": 0.6,
+      "layer": 2,
+      "provenance_ref": "software:PR001"
+    },
+    {
+      "signal": "system",
+      "weight": 0.4,
+      "layer": 1,
+      "provenance_ref": "software:PR001"
+    },
+    {
+      "signal": "workflow",
+      "weight": 0.6,
+      "layer": 2,
+      "provenance_ref": "software:PR001"
+    },
+    {
+      "signal": "automation",
+      "weight": 0.6,
+      "layer": 2,
+      "provenance_ref": "software:PR001"
+    },
+    {
+      "signal": "dashboard",
+      "weight": 0.5,
+      "layer": 3,
+      "provenance_ref": "software:PR001"
+    },
+    {
+      "signal": "interface",
+      "weight": 0.6,
+      "layer": 2,
+      "provenance_ref": "software:PR001"
+    },
+    {
+      "signal": "data pipeline",
+      "weight": 0.7,
+      "layer": 2,
+      "provenance_ref": "software:PR001"
+    },
+    {
+      "signal": "machine learning",
+      "weight": 0.8,
+      "layer": 1,
+      "provenance_ref": "software:PR001"
+    },
+    {
+      "signal": "ml model",
+      "weight": 0.8,
+      "layer": 2,
+      "provenance_ref": "software:PR001"
+    },
+    {
+      "signal": "neural network",
+      "weight": 0.8,
+      "layer": 1,
+      "provenance_ref": "software:PR001"
+    }
+  ],
+  "substance_signals": [
+    {
+      "signal": "algorithm",
+      "layer": 1,
+      "context": "finite sequence of well-defined instructions for solving a class of problems or performing a computation",
+      "provenance_ref": "software:PR001"
+    },
+    {
+      "signal": "parser",
+      "layer": 2,
+      "context": "software component analyzing input according to a formal grammar and producing structured representation",
+      "provenance_ref": "software:PR001"
+    },
+    {
+      "signal": "parses",
+      "layer": 2,
+      "context": "verb form of parser — retained for behavioral equivalence with current _SUBSTANCE_SIGNALS flat list",
+      "provenance_ref": "software:PR001"
+    },
+    {
+      "signal": "tokenize",
+      "layer": 2,
+      "context": "process of breaking input stream into discrete tokens for lexical analysis",
+      "provenance_ref": "software:PR001"
+    },
+    {
+      "signal": "tokenizes",
+      "layer": 2,
+      "context": "verb form of tokenize — retained for behavioral equivalence with current _SUBSTANCE_SIGNALS flat list",
+      "provenance_ref": "software:PR001"
+    },
+    {
+      "signal": "token",
+      "layer": 2,
+      "context": "CROSS-DOMAIN: software context = atomic unit produced by lexical analysis. Also used in security (auth token). Context ownership here: lexical/parsing token.",
+      "provenance_ref": "software:PR001"
+    },
+    {
+      "signal": "ast",
+      "layer": 2,
+      "context": "Abstract Syntax Tree — hierarchical tree representation of source code structure produced by a parser",
+      "provenance_ref": "software:PR001"
+    },
+    {
+      "signal": "function",
+      "layer": 2,
+      "context": "LOW SPECIFICITY: named block of code performing a specific task. Retained for behavioral equivalence. AB-006 candidate.",
+      "provenance_ref": "software:PR001"
+    },
+    {
+      "signal": "database",
+      "layer": 2,
+      "context": "organized collection of structured data managed by a database management system",
+      "provenance_ref": "software:PR001"
+    },
+    {
+      "signal": "api",
+      "layer": 2,
+      "context": "Application Programming Interface — defined contract for interaction between software components",
+      "provenance_ref": "software:PR001"
+    },
+    {
+      "signal": "cache",
+      "layer": 2,
+      "context": "high-speed data storage layer holding copies of frequently accessed data to reduce retrieval latency",
+      "provenance_ref": "software:PR001"
+    },
+    {
+      "signal": "latency",
+      "layer": 2,
+      "context": "time delay between a request being made and its response being received in a software system",
+      "provenance_ref": "software:PR001"
+    },
+    {
+      "signal": "encryption",
+      "layer": 2,
+      "context": "process of encoding data using a cryptographic algorithm so that only authorized parties can decode it",
+      "provenance_ref": "software:PR001"
+    },
+    {
+      "signal": "runtime",
+      "layer": 2,
+      "context": "period during which a program is executing; also the software environment supporting program execution",
+      "provenance_ref": "software:PR001"
+    },
+    {
+      "signal": "static analysis",
+      "layer": 2,
+      "context": "examination of source code without execution to detect errors, vulnerabilities, or style violations",
+      "provenance_ref": "software:PR001"
+    }
+  ],
+  "gap_type_mappings": [
+    {
+      "gap_type_id": "MECHANISM_COMPLETENESS",
+      "domain_label": "Software Mechanism Completeness",
+      "layer": 1,
+      "questions": [
+        {
+          "question_id": "software:MECHANISM_COMPLETENESS:Q1",
+          "text": "Describe specifically how your software works.",
+          "layer": 1,
+          "order": 1,
+          "provenance_ref": "software:PR001"
+        },
+        {
+          "question_id": "software:MECHANISM_COMPLETENESS:Q2",
+          "text": "What logic, steps, or process does it follow to produce its output?",
+          "layer": 1,
+          "order": 2,
+          "provenance_ref": "software:PR001"
+        },
+        {
+          "question_id": "software:MECHANISM_COMPLETENESS:Q3",
+          "text": "What are the individual components or modules of your system and what does each one do?",
+          "layer": 2,
+          "order": 3,
+          "provenance_ref": "software:PR001"
+        },
+        {
+          "question_id": "software:MECHANISM_COMPLETENESS:Q4",
+          "text": "If a developer tried to build your software tomorrow with no further explanation, what critical logic or workflow detail would be missing?",
+          "layer": 2,
+          "order": 4,
+          "provenance_ref": "software:PR001"
+        }
+      ],
+      "provenance_ref": "software:PR001"
+    },
+    {
+      "gap_type_id": "BOUNDARY_AMBIGUITY",
+      "domain_label": "Software Boundary Ambiguity",
+      "layer": 2,
+      "questions": [
+        {
+          "question_id": "software:BOUNDARY_AMBIGUITY:Q1",
+          "text": "What does your software specifically NOT do or NOT cover?",
+          "layer": 2,
+          "order": 1,
+          "provenance_ref": "software:PR001"
+        },
+        {
+          "question_id": "software:BOUNDARY_AMBIGUITY:Q2",
+          "text": "State at least one clear functional boundary.",
+          "layer": 2,
+          "order": 2,
+          "provenance_ref": "software:PR001"
+        },
+        {
+          "question_id": "software:BOUNDARY_AMBIGUITY:Q3",
+          "text": "Name one existing software solution similar to yours.",
+          "layer": 2,
+          "order": 3,
+          "provenance_ref": "software:PR001"
+        },
+        {
+          "question_id": "software:BOUNDARY_AMBIGUITY:Q4",
+          "text": "What makes yours different in a specific, concrete way?",
+          "layer": 2,
+          "order": 4,
+          "provenance_ref": "software:PR001"
+        },
+        {
+          "question_id": "software:BOUNDARY_AMBIGUITY:Q5",
+          "text": "If someone tried to replicate your software by changing only one module, would it still be your system? What is the core logic that cannot be replaced?",
+          "layer": 2,
+          "order": 5,
+          "provenance_ref": "software:PR001"
+        }
+      ],
+      "provenance_ref": "software:PR001"
+    }
+  ],
   "rule_nuances": [],
   "journey_extension": {
     "checkpoint_dependencies": null,
     "traversal_hints": null,
     "multi_domain_signals": null
+  },
+  "_governance_notes": {
+    "physical_feasibility_excluded": "PHYSICAL_FEASIBILITY intentionally absent. get_active_rules('software') returns [MECHANISM_COMPLETENESS, BOUNDARY_AMBIGUITY] only. Code comment states: 'MVP: PHYSICAL_FEASIBILITY excluded — assumes physical constraints.' Confirmed in ADR-002. Behavioral equivalence preserved.",
+    "rule_nuances_absent": "No named rule nuances in get_active_rules() software branch. rule_nuances intentionally empty. AB-006 OBSERVATION: ADR-003-evidence-quality-model.md describes an intent that software REASONED responses must include named algorithm + problem statement + approach — this is not currently enforced as a rule nuance. AB-006 candidate: NO_FRAMEWORK_SUBSTITUTION_FOR_ALGORITHM.",
+    "cross_domain_signals": "token documented as CROSS-DOMAIN: lexical/parsing token vs auth token. Context ownership declared: lexical/parsing in software context.",
+    "low_specificity_signals": "function, system, app, application, code, web, mobile retained at source weights for behavioral equivalence. AB-006 candidates for weight calibration.",
+    "verb_form_signals": "parses and tokenizes retained as distinct substance signals matching source _SUBSTANCE_SIGNALS flat list exactly. Behavioral equivalence requires both verb and noun forms.",
+    "questions_source": "SOFTWARE_QUESTIONS confirmed in domain_rules.py. MECHANISM_COMPLETENESS: 4 questions migrated verbatim. BOUNDARY_AMBIGUITY: 5 questions migrated verbatim. PHYSICAL_FEASIBILITY absent from SOFTWARE_QUESTIONS — consistent with get_active_rules() exclusion.",
+    "migration_discipline": "Step 2d migrates only signals, questions, and behaviors confirmed in current codebase. No new software concepts introduced.",
+    "provenance_completeness": "Pass 2 scan completed 2026-06-01. 17 files with hits reviewed. Zero hits require migration. biomedical confirmed absent from engine/ and web/ runtime. ADR-002 and ADR-003 confirm pack design decisions. All software-domain knowledge accounted for.",
+    "ab006_software_expansion_candidates": {
+      "description": "Software concepts absent from current codebase identified during deep audit and Pass 2 scan. NOT introduced in AB-005.",
+      "classification_signal_gaps": [
+        "open source",
+        "SaaS",
+        "microservices",
+        "real-time",
+        "distributed system",
+        "embedded software",
+        "compiler",
+        "operating system",
+        "concurrency",
+        "cloud"
+      ],
+      "substance_signal_gaps": [
+        "concurrency",
+        "thread",
+        "memory management",
+        "data structure",
+        "recursion",
+        "dependency",
+        "refactoring",
+        "testing"
+      ],
+      "physical_feasibility_gap": "PHYSICAL_FEASIBILITY excluded by MVP design. Future: scalability, computational complexity, O(n) analysis may warrant a software-specific feasibility gap type.",
+      "adr003_unenforced_rule": "ADR-003 describes REASONED minimum for software as: named algorithm or approach + what problem it solves + approach detail. This intent is not enforced as a rule_nuance in current code. AB-006 candidate: NO_FRAMEWORK_SUBSTITUTION_FOR_ALGORITHM.",
+      "note": "All items above are AB-006 scope. None introduced in this migration."
+    }
   }
 }
