@@ -3,6 +3,10 @@ Domain Rules — lightweight electronics/electrical only.
 MVP: 3 rules maximum per MVP_SCOPE_FREEZE.md
 """
 
+from engine.domain_registry import load_registry
+_REGISTRY = load_registry("domains/")
+
+# DEPRECATED: authority moved to registry — Step 5 (AB-005). Remove in Step 7.
 ELECTRONICS_SIGNALS = [
     "circuit", "sensor", "voltage", "current", "resistor",
     "capacitor", "microcontroller", "arduino", "esp32", "led",
@@ -19,23 +23,20 @@ MECHANICAL_SIGNALS = [
 ]
 
 def infer_domain(idea_text: str) -> str | None:
-    text = idea_text.lower()
-    scores = {
-        "electronics_electrical": sum(1 for s in ELECTRONICS_SIGNALS if s in text),
-        "mechanical":             sum(1 for s in MECHANICAL_SIGNALS if s in text),
-        "medical_device":         sum(1 for s in MEDICAL_SIGNALS if s in text),
-        "software":               sum(1 for s in SOFTWARE_SIGNALS if s in text),
-    }
-    if max(scores.values()) == 0:
-        return None
-    # Tie-breaker priority: medical_device > electronics_electrical > mechanical > software
-    priority = ["medical_device", "electronics_electrical", "mechanical", "software"]
-    best_score = max(scores.values())
-    for domain in priority:
-        if scores[domain] == best_score:
-            return domain
-    return None
-
+	text = idea_text.lower()
+	scores = {
+		pack_id: sum(1 for item in pack["classification_signals"] if item["signal"] in text)
+		for pack_id, pack in _REGISTRY.items()
+	}
+	if not scores or max(scores.values()) == 0:
+		return None
+	# Tie-breaker priority: medical_device > electronics_electrical > mechanical > software
+	priority = ["medical_device", "electronics_electrical", "mechanical", "software"]
+	best_score = max(scores.values())
+	for domain in priority:
+		if scores.get(domain, 0) == best_score:
+			return domain
+	return None
 def get_active_rules(domain: str) -> list:
     if domain == "electronics_electrical":
         return [
