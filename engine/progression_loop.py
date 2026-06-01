@@ -16,6 +16,7 @@ NOT responsible for:
   - Replay (scripts/)
 """
 
+from engine.domain_rules import _REGISTRY
 from engine.idea_state import (
     IdeaState, Evidence, Gap, IterationLog,
     PHYSICAL_FEASIBILITY, BOUNDARY_AMBIGUITY, MECHANISM_COMPLETENESS,
@@ -143,32 +144,6 @@ _WEAK_PATTERNS = {
 }
 
 # Substance signals: at least one required for REASONED
-_SUBSTANCE_SIGNALS = [
-    # components/devices (electronics)
-    "sensor", "microcontroller", "arduino", "esp", "raspberry",
-    "motor", "pump", "relay", "led", "display", "battery",
-    "chip", "ic", "resistor", "capacitor", "transistor",
-    "bluetooth", "wifi", "ble", "mqtt", "uart", "i2c", "spi",
-    # actions/signals (electronics)
-    "reads", "sends", "detects", "measures", "activates",
-    "triggers", "converts", "transmits", "receives", "processes",
-    "samples", "outputs", "controls", "monitors", "calculates",
-    # principles (electronics)
-    "voltage", "current", "frequency", "analog", "digital",
-    "signal", "threshold", "filter", "protocol", "data",
-    "piezoelectric", "hall", "infrared", "ultrasonic", "capacitive",
-    # mechanical domain
-    "piston", "spring", "valve", "gear", "lever", "hydraulic",
-    "pneumatic", "pressure", "torque", "compression", "seal",
-    "bearing", "actuator", "mechanism", "force", "friction", "bar",
-    # software domain
-    "algorithm", "parser", "parses", "tokenize", "tokenizes", "token",
-    "ast", "function", "database", "api", "cache", "latency",
-    "encryption", "runtime", "static analysis",
-    # medical domain
-    "electrode", "biosensor", "optical", "tissue", "glucose",
-    "implant", "catheter", "biomarker", "wearable", "pulse",
-]
 _GENERIC_CAUSAL_VERBS = {
     "detects","detect","sends","send","uses","use",
     "connects","connect","receives","receive","triggers",
@@ -194,7 +169,7 @@ def _is_generic_verb_trap(r_lower):
 
 MIN_REASONED_RESPONSE_LENGTH = 40  # anti-triviality guard only — see ADR-003 Step 6 note
 
-def assess_response(response: str) -> str:
+def assess_response(response: str, domain: str = "") -> str:
     """
     Quality assessment: weak-answer guard + substance check.
     Rules 1-2: weak pattern rejection. Rule 2.5: generic verb trap.
@@ -209,10 +184,13 @@ def assess_response(response: str) -> str:
 
     # 2. Reject vague filler phrases (contains weak tokens, no substance)
     weak_tokens = {"somehow", "something", "technology", "stuff", "things"}
-    substance_tokens = set(_SUBSTANCE_SIGNALS)
+    # Substance Signal Authority: read from registry per domain (AB-005 Step 7)
+    substance_tokens = set(
+        s["signal"] for s in _REGISTRY.get(domain, {}).get("substance_signals", [])
+    )
     words = set(r_lower.split())
     has_weak = bool(words & weak_tokens)
-    has_substance = any(sig in r_lower for sig in _SUBSTANCE_SIGNALS)
+    has_substance = any(sig in r_lower for sig in substance_tokens)
 
     if has_weak and not has_substance:
         return ASSERTED  # vague filler — no technical substance
@@ -245,7 +223,7 @@ def integrate_response(
     Returns (transition_result, reason).
     transition_result: PASS | WARN | BLOCK
     """
-    quality = assess_response(response)
+    quality = assess_response(response, state.domain)
     evidence = Evidence(
         content=response,
         quality=quality,
@@ -375,7 +353,7 @@ def run_iteration(state: IdeaState, response: str) -> dict:
     # Level-0 problem establishment path
     # Handles initial response when no gaps exist yet (maturity=0)
     if gap_type is None and state.maturity_level == 0 and response:
-        quality = assess_response(response)
+        quality = assess_response(response, state.domain)
         evidence = Evidence(
             content=response,
             quality=quality,
