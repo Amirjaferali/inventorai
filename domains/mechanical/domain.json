@@ -3,20 +3,341 @@
   "schema_date": "2026-06-01",
   "pack_id": "mechanical",
   "version": "1.0",
-  "status": "draft",
+  "status": "active",
   "display_name": "Mechanical",
-  "aliases": ["mechanical"],
+  "aliases": [
+    "mechanical"
+  ],
   "schema_version_ref": "1.0",
-  "activated_date": null,
+  "activated_date": "2026-06-01",
   "deprecated_date": null,
   "parent_pack_id": null,
-  "classification_signals": [],
-  "substance_signals": [],
-  "gap_type_mappings": [],
+  "classification_signals": [
+    {
+      "signal": "gear",
+      "weight": 0.9,
+      "layer": 2,
+      "provenance_ref": "mechanical:PR001"
+    },
+    {
+      "signal": "hinge",
+      "weight": 0.8,
+      "layer": 2,
+      "provenance_ref": "mechanical:PR001"
+    },
+    {
+      "signal": "spring",
+      "weight": 0.8,
+      "layer": 1,
+      "provenance_ref": "mechanical:PR001"
+    },
+    {
+      "signal": "clamp",
+      "weight": 0.7,
+      "layer": 2,
+      "provenance_ref": "mechanical:PR001"
+    },
+    {
+      "signal": "lever",
+      "weight": 0.9,
+      "layer": 1,
+      "provenance_ref": "mechanical:PR001"
+    },
+    {
+      "signal": "pulley",
+      "weight": 0.9,
+      "layer": 1,
+      "provenance_ref": "mechanical:PR001"
+    },
+    {
+      "signal": "bearing",
+      "weight": 0.8,
+      "layer": 2,
+      "provenance_ref": "mechanical:PR001"
+    },
+    {
+      "signal": "shaft",
+      "weight": 0.8,
+      "layer": 2,
+      "provenance_ref": "mechanical:PR001"
+    },
+    {
+      "signal": "linkage",
+      "weight": 0.9,
+      "layer": 2,
+      "provenance_ref": "mechanical:PR001"
+    },
+    {
+      "signal": "mechanism",
+      "weight": 0.5,
+      "layer": 1,
+      "provenance_ref": "mechanical:PR001"
+    },
+    {
+      "signal": "torque",
+      "weight": 0.9,
+      "layer": 1,
+      "provenance_ref": "mechanical:PR001"
+    },
+    {
+      "signal": "friction",
+      "weight": 0.8,
+      "layer": 1,
+      "provenance_ref": "mechanical:PR001"
+    },
+    {
+      "signal": "joint",
+      "weight": 0.7,
+      "layer": 2,
+      "provenance_ref": "mechanical:PR001"
+    },
+    {
+      "signal": "actuator",
+      "weight": 0.6,
+      "layer": 2,
+      "provenance_ref": "mechanical:PR001"
+    },
+    {
+      "signal": "piston",
+      "weight": 0.9,
+      "layer": 2,
+      "provenance_ref": "mechanical:PR001"
+    },
+    {
+      "signal": "valve",
+      "weight": 0.8,
+      "layer": 2,
+      "provenance_ref": "mechanical:PR001"
+    },
+    {
+      "signal": "bracket",
+      "weight": 0.5,
+      "layer": 2,
+      "provenance_ref": "mechanical:PR001"
+    },
+    {
+      "signal": "fastener",
+      "weight": 0.4,
+      "layer": 2,
+      "provenance_ref": "mechanical:PR001"
+    },
+    {
+      "signal": "locking",
+      "weight": 0.4,
+      "layer": 2,
+      "provenance_ref": "mechanical:PR001"
+    }
+  ],
+  "substance_signals": [
+    {
+      "signal": "piston",
+      "layer": 2,
+      "context": "reciprocating mechanical component in hydraulic or pneumatic systems",
+      "provenance_ref": "mechanical:PR001"
+    },
+    {
+      "signal": "spring",
+      "layer": 1,
+      "context": "elastic element storing mechanical energy through deformation (Hooke's Law)",
+      "provenance_ref": "mechanical:PR001"
+    },
+    {
+      "signal": "valve",
+      "layer": 2,
+      "context": "CROSS-DOMAIN: mechanical context = flow control device regulating fluid or gas passage. Also appears in medical and process engineering. Context ownership here: mechanical flow control.",
+      "provenance_ref": "mechanical:PR001"
+    },
+    {
+      "signal": "gear",
+      "layer": 2,
+      "context": "toothed wheel transmitting torque and motion between rotating shafts",
+      "provenance_ref": "mechanical:PR001"
+    },
+    {
+      "signal": "lever",
+      "layer": 1,
+      "context": "rigid body rotating about a fulcrum to transmit or amplify force (simple machine)",
+      "provenance_ref": "mechanical:PR001"
+    },
+    {
+      "signal": "hydraulic",
+      "layer": 1,
+      "context": "mechanism using pressurised liquid to transmit force and motion",
+      "provenance_ref": "mechanical:PR001"
+    },
+    {
+      "signal": "pneumatic",
+      "layer": 1,
+      "context": "mechanism using pressurised gas to transmit force and motion",
+      "provenance_ref": "mechanical:PR001"
+    },
+    {
+      "signal": "pressure",
+      "layer": 1,
+      "context": "CROSS-DOMAIN: mechanical context = force per unit area acting on a surface (Pascal's principle). Also appears in medical and electronics. Context ownership here: mechanical force/area.",
+      "provenance_ref": "mechanical:PR001"
+    },
+    {
+      "signal": "torque",
+      "layer": 1,
+      "context": "rotational force — moment of force about an axis (SI unit: newton-metre)",
+      "provenance_ref": "mechanical:PR001"
+    },
+    {
+      "signal": "compression",
+      "layer": 1,
+      "context": "CROSS-DOMAIN: mechanical context = compressive force reducing volume or length of a material. Also appears in software (data compression). Context ownership here: mechanical compressive force.",
+      "provenance_ref": "mechanical:PR001"
+    },
+    {
+      "signal": "seal",
+      "layer": 2,
+      "context": "component preventing leakage of fluid or gas across a mechanical boundary",
+      "provenance_ref": "mechanical:PR001"
+    },
+    {
+      "signal": "bearing",
+      "layer": 2,
+      "context": "component constraining relative motion and reducing friction between moving parts",
+      "provenance_ref": "mechanical:PR001"
+    },
+    {
+      "signal": "actuator",
+      "layer": 2,
+      "context": "CROSS-DOMAIN: mechanical context = device converting energy into physical motion. Also appears in electronics. Context ownership here: mechanical motion output device.",
+      "provenance_ref": "mechanical:PR001"
+    },
+    {
+      "signal": "mechanism",
+      "layer": 1,
+      "context": "LOW SPECIFICITY: arrangement of parts producing motion or force. Retained for behavioral equivalence. AB-006 candidate.",
+      "provenance_ref": "mechanical:PR001"
+    },
+    {
+      "signal": "force",
+      "layer": 1,
+      "context": "LOW SPECIFICITY: physical interaction causing acceleration or deformation (SI unit: newton). Retained for behavioral equivalence. AB-006 candidate.",
+      "provenance_ref": "mechanical:PR001"
+    },
+    {
+      "signal": "friction",
+      "layer": 1,
+      "context": "resistive force opposing relative motion between surfaces in contact",
+      "provenance_ref": "mechanical:PR001"
+    },
+    {
+      "signal": "bar",
+      "layer": 2,
+      "context": "LOW SPECIFICITY: structural rod or unit of pressure (1 bar = 100 kPa). Ambiguous. Retained for behavioral equivalence. AB-006 candidate.",
+      "provenance_ref": "mechanical:PR001"
+    }
+  ],
+  "gap_type_mappings": [
+    {
+      "gap_type_id": "MECHANISM_COMPLETENESS",
+      "domain_label": "Mechanical Mechanism Completeness",
+      "layer": 1,
+      "questions": [
+        {
+          "question_id": "mechanical:MECHANISM_COMPLETENESS:Q1",
+          "text": "Describe the physical steps your mechanism takes to achieve its function.",
+          "layer": 1,
+          "order": 1,
+          "provenance_ref": "mechanical:PR001"
+        },
+        {
+          "question_id": "mechanical:MECHANISM_COMPLETENESS:Q2",
+          "text": "What moves, connects, or transfers force?",
+          "layer": 1,
+          "order": 2,
+          "provenance_ref": "mechanical:PR001"
+        },
+        {
+          "question_id": "mechanical:MECHANISM_COMPLETENESS:Q3",
+          "text": "What are the individual mechanical components and how does each one contribute to the overall motion or function?",
+          "layer": 2,
+          "order": 3,
+          "provenance_ref": "mechanical:PR001"
+        },
+        {
+          "question_id": "mechanical:MECHANISM_COMPLETENESS:Q4",
+          "text": "If someone tried to build your mechanism tomorrow with no further explanation, what physical detail would be missing?",
+          "layer": 2,
+          "order": 4,
+          "provenance_ref": "mechanical:PR001"
+        }
+      ],
+      "provenance_ref": "mechanical:PR001"
+    },
+    {
+      "gap_type_id": "PHYSICAL_FEASIBILITY",
+      "domain_label": "Mechanical Physical Feasibility",
+      "layer": 1,
+      "questions": [
+        {
+          "question_id": "mechanical:PHYSICAL_FEASIBILITY:Q1",
+          "text": "What physical principle does your mechanism rely on? (e.g. leverage, spring tension, gear ratio, friction)",
+          "layer": 1,
+          "order": 1,
+          "provenance_ref": "mechanical:PR001"
+        },
+        {
+          "question_id": "mechanical:PHYSICAL_FEASIBILITY:Q2",
+          "text": "What are the material or force constraints your mechanism must operate within?",
+          "layer": 2,
+          "order": 2,
+          "provenance_ref": "mechanical:PR001"
+        }
+      ],
+      "provenance_ref": "mechanical:PR001"
+    },
+    {
+      "gap_type_id": "BOUNDARY_AMBIGUITY",
+      "domain_label": "Mechanical Boundary Ambiguity",
+      "layer": 2,
+      "questions": [
+        {
+          "question_id": "mechanical:BOUNDARY_AMBIGUITY:Q1",
+          "text": "What does your mechanism specifically NOT do or NOT cover?",
+          "layer": 2,
+          "order": 1,
+          "provenance_ref": "mechanical:PR001"
+        },
+        {
+          "question_id": "mechanical:BOUNDARY_AMBIGUITY:Q2",
+          "text": "State at least one clear mechanical boundary.",
+          "layer": 2,
+          "order": 2,
+          "provenance_ref": "mechanical:PR001"
+        },
+        {
+          "question_id": "mechanical:BOUNDARY_AMBIGUITY:Q3",
+          "text": "Name one existing mechanical approach similar to yours.",
+          "layer": 2,
+          "order": 3,
+          "provenance_ref": "mechanical:PR001"
+        },
+        {
+          "question_id": "mechanical:BOUNDARY_AMBIGUITY:Q4",
+          "text": "What makes yours different in a concrete, physical way?",
+          "layer": 2,
+          "order": 4,
+          "provenance_ref": "mechanical:PR001"
+        }
+      ],
+      "provenance_ref": "mechanical:PR001"
+    }
+  ],
   "rule_nuances": [],
   "journey_extension": {
     "checkpoint_dependencies": null,
     "traversal_hints": null,
     "multi_domain_signals": null
+  },
+  "_governance_notes": {
+    "rule_nuances_absent": "No named rule nuances in get_active_rules() mechanical branch. rule_nuances intentionally empty — behavioral equivalence preserved.",
+    "cross_domain_signals": "valve, pressure, compression, actuator documented as legitimate cross-domain concepts. Context ownership declared per signal. Not deleted. AB-006 candidates.",
+    "ab006_candidates": "mechanism, force, bar, bracket, fastener, locking retained for behavioral equivalence. Flagged for AB-006 Domain Signal Quality Review.",
+    "questions_source": "MECHANICAL_QUESTIONS confirmed in domain_rules.py. All questions migrated verbatim."
   }
 }
