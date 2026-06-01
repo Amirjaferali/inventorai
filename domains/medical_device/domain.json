@@ -3,20 +3,367 @@
   "schema_date": "2026-06-01",
   "pack_id": "medical_device",
   "version": "1.0",
-  "status": "draft",
+  "status": "active",
   "display_name": "Medical Device",
-  "aliases": ["medical_device"],
+  "aliases": [
+    "medical_device",
+    "medical"
+  ],
   "schema_version_ref": "1.0",
-  "activated_date": null,
+  "activated_date": "2026-06-01",
   "deprecated_date": null,
   "parent_pack_id": null,
-  "classification_signals": [],
-  "substance_signals": [],
-  "gap_type_mappings": [],
+  "classification_signals": [
+    {
+      "signal": "implantable",
+      "weight": 0.9,
+      "layer": 1,
+      "provenance_ref": "medical_device:PR001"
+    },
+    {
+      "signal": "clinical_trial",
+      "weight": 0.8,
+      "layer": 2,
+      "provenance_ref": "medical_device:PR002"
+    },
+    {
+      "signal": "patient_monitoring",
+      "weight": 0.8,
+      "layer": 2,
+      "provenance_ref": "medical_device:PR001"
+    },
+    {
+      "signal": "diagnosis",
+      "weight": 0.7,
+      "layer": 1,
+      "provenance_ref": "medical_device:PR001"
+    },
+    {
+      "signal": "therapeutic",
+      "weight": 0.8,
+      "layer": 1,
+      "provenance_ref": "medical_device:PR001"
+    },
+    {
+      "signal": "implant",
+      "weight": 0.9,
+      "layer": 1,
+      "provenance_ref": "medical_device:PR001"
+    },
+    {
+      "signal": "wearable",
+      "weight": 0.6,
+      "layer": 2,
+      "provenance_ref": "medical_device:PR001"
+    },
+    {
+      "signal": "prosthetic",
+      "weight": 0.9,
+      "layer": 2,
+      "provenance_ref": "medical_device:PR001"
+    },
+    {
+      "signal": "surgical",
+      "weight": 0.9,
+      "layer": 1,
+      "provenance_ref": "medical_device:PR001"
+    },
+    {
+      "signal": "rehabilitation",
+      "weight": 0.7,
+      "layer": 2,
+      "provenance_ref": "medical_device:PR001"
+    },
+    {
+      "signal": "glucose",
+      "weight": 0.8,
+      "layer": 1,
+      "provenance_ref": "medical_device:PR001"
+    },
+    {
+      "signal": "insulin",
+      "weight": 0.8,
+      "layer": 1,
+      "provenance_ref": "medical_device:PR001"
+    },
+    {
+      "signal": "cardiac",
+      "weight": 0.9,
+      "layer": 1,
+      "provenance_ref": "medical_device:PR001"
+    },
+    {
+      "signal": "heart",
+      "weight": 0.7,
+      "layer": 1,
+      "provenance_ref": "medical_device:PR001"
+    },
+    {
+      "signal": "pulse",
+      "weight": 0.6,
+      "layer": 1,
+      "provenance_ref": "medical_device:PR001"
+    },
+    {
+      "signal": "blood",
+      "weight": 0.6,
+      "layer": 1,
+      "provenance_ref": "medical_device:PR001"
+    },
+    {
+      "signal": "monitoring",
+      "weight": 0.5,
+      "layer": 2,
+      "provenance_ref": "medical_device:PR001"
+    },
+    {
+      "signal": "biosensor",
+      "weight": 0.9,
+      "layer": 1,
+      "provenance_ref": "medical_device:PR001"
+    },
+    {
+      "signal": "catheter",
+      "weight": 0.9,
+      "layer": 2,
+      "provenance_ref": "medical_device:PR001"
+    },
+    {
+      "signal": "stent",
+      "weight": 0.9,
+      "layer": 2,
+      "provenance_ref": "medical_device:PR001"
+    },
+    {
+      "signal": "orthopedic",
+      "weight": 0.9,
+      "layer": 2,
+      "provenance_ref": "medical_device:PR001"
+    },
+    {
+      "signal": "neural",
+      "weight": 0.8,
+      "layer": 1,
+      "provenance_ref": "medical_device:PR001"
+    },
+    {
+      "signal": "retinal",
+      "weight": 0.9,
+      "layer": 1,
+      "provenance_ref": "medical_device:PR001"
+    },
+    {
+      "signal": "hearing",
+      "weight": 0.7,
+      "layer": 1,
+      "provenance_ref": "medical_device:PR001"
+    },
+    {
+      "signal": "respiratory",
+      "weight": 0.8,
+      "layer": 1,
+      "provenance_ref": "medical_device:PR001"
+    },
+    {
+      "signal": "drug delivery",
+      "weight": 0.9,
+      "layer": 2,
+      "provenance_ref": "medical_device:PR001"
+    }
+  ],
+  "substance_signals": [
+    {
+      "signal": "electrode",
+      "layer": 2,
+      "context": "CROSS-DOMAIN: medical context = conductive element in contact with biological tissue for stimulation or sensing. Also appears in electronics. Context ownership here: biomedical tissue interface.",
+      "provenance_ref": "medical_device:PR001"
+    },
+    {
+      "signal": "biosensor",
+      "layer": 1,
+      "context": "device detecting and quantifying biological analytes through physicochemical transduction",
+      "provenance_ref": "medical_device:PR001"
+    },
+    {
+      "signal": "optical",
+      "layer": 1,
+      "context": "CROSS-DOMAIN: medical context = optical sensing or optical therapy (e.g. photoplethysmography, OCT). Also appears in electronics. Context ownership here: medical optical sensing.",
+      "provenance_ref": "medical_device:PR001"
+    },
+    {
+      "signal": "tissue",
+      "layer": 1,
+      "context": "biological material composed of cells performing a specific function; target of medical device interaction",
+      "provenance_ref": "medical_device:PR001"
+    },
+    {
+      "signal": "glucose",
+      "layer": 1,
+      "context": "blood sugar analyte; primary target of continuous glucose monitoring and diabetes management devices",
+      "provenance_ref": "medical_device:PR001"
+    },
+    {
+      "signal": "implant",
+      "layer": 2,
+      "context": "device or material surgically placed inside the body for therapeutic, structural, or diagnostic purpose",
+      "provenance_ref": "medical_device:PR001"
+    },
+    {
+      "signal": "catheter",
+      "layer": 2,
+      "context": "flexible tube inserted into body cavity, duct, or vessel for drainage, infusion, or access",
+      "provenance_ref": "medical_device:PR001"
+    },
+    {
+      "signal": "biomarker",
+      "layer": 1,
+      "context": "measurable biological indicator of normal or pathological process; target of diagnostic medical devices",
+      "provenance_ref": "medical_device:PR001"
+    },
+    {
+      "signal": "wearable",
+      "layer": 2,
+      "context": "CROSS-DOMAIN: medical context = body-worn device for continuous health monitoring. Also appears in IoT. Context ownership here: medical monitoring wearable.",
+      "provenance_ref": "medical_device:PR001"
+    },
+    {
+      "signal": "pulse",
+      "layer": 1,
+      "context": "CROSS-DOMAIN: medical context = pulsatile blood flow signal used in cardiovascular monitoring. Also appears in electronics (electrical pulse). Context ownership here: cardiovascular physiological signal.",
+      "provenance_ref": "medical_device:PR001"
+    }
+  ],
+  "gap_type_mappings": [
+    {
+      "gap_type_id": "MECHANISM_COMPLETENESS",
+      "domain_label": "Medical Device Mechanism Completeness",
+      "layer": 1,
+      "questions": [
+        {
+          "question_id": "medical_device:MECHANISM_COMPLETENESS:Q1",
+          "text": "Describe specifically how your medical device interacts with the body.",
+          "layer": 1,
+          "order": 1,
+          "provenance_ref": "medical_device:PR001"
+        },
+        {
+          "question_id": "medical_device:MECHANISM_COMPLETENESS:Q2",
+          "text": "What biological or physiological process does it target?",
+          "layer": 1,
+          "order": 2,
+          "provenance_ref": "medical_device:PR001"
+        },
+        {
+          "question_id": "medical_device:MECHANISM_COMPLETENESS:Q3",
+          "text": "What are the individual components of your device and what does each one do in contact with or in proximity to the patient?",
+          "layer": 2,
+          "order": 3,
+          "provenance_ref": "medical_device:PR001"
+        },
+        {
+          "question_id": "medical_device:MECHANISM_COMPLETENESS:Q4",
+          "text": "If a clinician tried to use your device tomorrow with no further explanation, what critical detail about its mechanism would be missing?",
+          "layer": 2,
+          "order": 4,
+          "provenance_ref": "medical_device:PR001"
+        }
+      ],
+      "provenance_ref": "medical_device:PR001"
+    },
+    {
+      "gap_type_id": "PHYSICAL_FEASIBILITY",
+      "domain_label": "Medical Device Physical Feasibility",
+      "layer": 1,
+      "questions": [
+        {
+          "question_id": "medical_device:PHYSICAL_FEASIBILITY:Q1",
+          "text": "What physical or biological principle does your device rely on? (e.g. electrical stimulation, optical sensing, mechanical compression)",
+          "layer": 1,
+          "order": 1,
+          "provenance_ref": "medical_device:PR001"
+        },
+        {
+          "question_id": "medical_device:PHYSICAL_FEASIBILITY:Q2",
+          "text": "What are the biocompatibility or safety constraints your device must meet to operate safely in or on the human body?",
+          "layer": 2,
+          "order": 2,
+          "provenance_ref": "medical_device:PR001"
+        }
+      ],
+      "provenance_ref": "medical_device:PR001"
+    },
+    {
+      "gap_type_id": "BOUNDARY_AMBIGUITY",
+      "domain_label": "Medical Device Boundary Ambiguity",
+      "layer": 2,
+      "questions": [
+        {
+          "question_id": "medical_device:BOUNDARY_AMBIGUITY:Q1",
+          "text": "What does your medical device specifically NOT diagnose, treat, or cover?",
+          "layer": 2,
+          "order": 1,
+          "provenance_ref": "medical_device:PR001"
+        },
+        {
+          "question_id": "medical_device:BOUNDARY_AMBIGUITY:Q2",
+          "text": "State at least one clear clinical boundary.",
+          "layer": 2,
+          "order": 2,
+          "provenance_ref": "medical_device:PR001"
+        },
+        {
+          "question_id": "medical_device:BOUNDARY_AMBIGUITY:Q3",
+          "text": "Name one existing medical device or approach similar to yours.",
+          "layer": 2,
+          "order": 3,
+          "provenance_ref": "medical_device:PR001"
+        },
+        {
+          "question_id": "medical_device:BOUNDARY_AMBIGUITY:Q4",
+          "text": "What makes yours different in a specific, clinically meaningful way?",
+          "layer": 2,
+          "order": 4,
+          "provenance_ref": "medical_device:PR001"
+        }
+      ],
+      "provenance_ref": "medical_device:PR001"
+    }
+  ],
   "rule_nuances": [],
   "journey_extension": {
     "checkpoint_dependencies": null,
     "traversal_hints": null,
     "multi_domain_signals": null
+  },
+  "_governance_notes": {
+    "rule_nuances_absent": "No named rule nuances in get_active_rules() medical_device branch. rule_nuances intentionally empty — behavioral equivalence preserved.",
+    "cross_domain_signals": "electrode, optical, wearable, pulse documented as legitimate cross-domain concepts. Context ownership declared per signal. Not deleted. AB-006 candidates.",
+    "questions_source": "MEDICAL_QUESTIONS confirmed in domain_rules.py. All questions migrated verbatim.",
+    "migration_discipline": "Step 2c migrates only signals, questions, and behaviors confirmed in current codebase. No new medical concepts introduced.",
+    "ab006_medical_expansion_candidates": {
+      "description": "Medical concepts absent from current codebase but identified during migration as future expansion candidates. NOT introduced in AB-005. Recorded for AB-006 Medical Expansion.",
+      "classification_signal_gaps": [
+        "FDA",
+        "CE marking",
+        "biocompatibility",
+        "sterilization",
+        "clinical validation",
+        "in vitro",
+        "in vivo",
+        "non-invasive",
+        "minimally invasive",
+        "point of care"
+      ],
+      "substance_signal_gaps": [
+        "biocompatibility",
+        "sterility",
+        "cytotoxicity",
+        "hemocompatibility",
+        "clinical evidence",
+        "risk management"
+      ],
+      "regulatory_coverage_gap": "Current MEDICAL_SIGNALS contains no regulatory pathway signals (FDA, CE, ISO 13485, ISO 14971). AB-006 should address this.",
+      "note": "All items above are AB-006 scope. None introduced in this migration."
+    }
   }
 }
