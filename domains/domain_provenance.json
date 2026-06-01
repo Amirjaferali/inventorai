@@ -1,5 +1,109 @@
 {
   "schema_version": "1.0",
   "schema_date": "2026-06-01",
-  "records": []
+  "records": [
+    {
+      "record_id": "electronics_electrical:PR001",
+      "pack_id": "electronics_electrical",
+      "tier": 1,
+      "source_name": "IEC 60050 — International Electrotechnical Vocabulary",
+      "source_type": "international_standard",
+      "standard_number": "IEC 60050",
+      "jurisdiction": null,
+      "version_or_edition": "current",
+      "url": "https://www.electropedia.org/",
+      "notes": "Used as governance anchor for electronics and electrical engineering terminology. IEC 60050 serves as the primary reference set for scientific and engineering vocabulary in this domain. Signal categories supported: electromagnetic principles (voltage, current, frequency), semiconductor devices (transistor), sensing phenomena (piezoelectric, Hall effect, infrared, ultrasonic, capacitive), communication protocols (Bluetooth, Wi-Fi, MQTT), and action verbs denoting electronic behavior (detects, measures, converts, transmits). Individual signals are compiled from this baseline; not every term is directly defined in IEC 60050 but all are consistent with its vocabulary scope.",
+      "cross_domain_usage": null
+    },
+    {
+      "record_id": "electronics_electrical:PR002",
+      "pack_id": "electronics_electrical",
+      "tier": 1,
+      "source_name": "IPC-2221B + General PCB and Electronics Engineering Reference Baseline",
+      "source_type": "international_standard",
+      "standard_number": "IPC-2221B",
+      "jurisdiction": null,
+      "version_or_edition": "IPC-2221B:2012",
+      "url": "https://www.ipc.org/ipc-2221",
+      "notes": "MVP provenance grouping covering PCB design and electronics component engineering vocabulary. IPC-2221B used as governance anchor for PCB-specific terminology (PCB, resistor, capacitor, IC, chip). Broader electronics component terms (motor, pump, relay, LED, display, battery, UART, I2C, SPI, microcontroller) are compiled into this grouping as a practical electronics engineering reference baseline. Not every term is directly defined in IPC-2221B; the standard supports the terminology category rather than providing term-by-term authority. AB-006 candidate for refinement into multiple Tier 1 sources per signal category.",
+      "cross_domain_usage": null
+    },
+    {
+      "record_id": "electronics_electrical:PR003",
+      "pack_id": "electronics_electrical",
+      "tier": 3,
+      "source_name": "Vendor documentation — Arduino LLC, Espressif Systems, Raspberry Pi Foundation",
+      "source_type": "vendor_documentation",
+      "standard_number": null,
+      "jurisdiction": null,
+      "version_or_edition": null,
+      "url": null,
+      "notes": "TIER 3 RESTRICTED: Vendor-specific platform documentation used as MVP provenance grouping for platform-named signals (arduino, esp, esp32, raspberry). These signals are retained for behavioral equivalence with current _SUBSTANCE_SIGNALS but carry vendor lock-in risk. Not authoritative for domain classification in a domain-agnostic system. AB-006 candidates for replacement with generic equivalents such as microcontroller, SoC, or single-board computer. Weights set to 0.5 in classification and Layer 3 in substance to reflect restricted status.",
+      "cross_domain_usage": null
+    },
+    {
+      "record_id": "mechanical:PR001",
+      "pack_id": "mechanical",
+      "tier": 1,
+      "source_name": "ASME Y14.5-2018 + ISO 31-3 — Mechanical Engineering Reference Baseline",
+      "source_type": "international_standard",
+      "standard_number": "ASME Y14.5-2018; ISO 31-3",
+      "jurisdiction": null,
+      "version_or_edition": "ASME Y14.5-2018; ISO 31-3:1992",
+      "url": "https://www.asme.org/codes-standards/find-codes-standards/y14-5-dimensioning-tolerancing",
+      "notes": "Compiled baseline for mechanical engineering vocabulary used as governance anchor for this domain pack. ASME Y14.5-2018 supports dimensioning and tolerancing terminology (shaft, linkage, joint, bearing, bracket, fastener). ISO 31-3 supports SI mechanics quantities (force in newtons, torque in newton-metres, pressure in pascals). Broader mechanical vocabulary (lever, pulley, gear, hinge, spring, clamp, piston, valve, seal, hydraulic, pneumatic, actuator, friction, compression, mechanism, bar) is compiled into this grouping as a mechanical engineering reference baseline. Cross-domain signals documented: valve (also medical/process engineering), pressure (also medical/electronics), compression (also software data compression), actuator (also electronics). Low-specificity signals mechanism, force, and bar are flagged as AB-006 candidates.",
+      "cross_domain_usage": [
+        "valve: also used in medical_device context as heart valve or biological valve — separate context ownership",
+        "pressure: also used in medical_device context as blood pressure — separate context ownership",
+        "actuator: also used in electronics_electrical context as servo or linear actuator — separate context ownership",
+        "compression: also used in software context as data compression — separate context ownership"
+      ]
+    },
+    {
+      "record_id": "medical_device:PR001",
+      "pack_id": "medical_device",
+      "tier": 1,
+      "source_name": "ISO 13485:2016 + ISO 10993-1:2018 + IEC 60601-1 — Medical Device Governance and Safety Reference Set",
+      "source_type": "international_standard",
+      "standard_number": "ISO 13485:2016; ISO 10993-1:2018; IEC 60601-1:2005",
+      "jurisdiction": null,
+      "version_or_edition": "ISO 13485:2016; ISO 10993-1:2018; IEC 60601-1:2005+AMD2:2020",
+      "url": "https://www.iso.org/standard/59752.html",
+      "notes": "Compiled baseline for medical device terminology used as governance anchor for this domain pack. This record represents a medical-device governance and safety reference set rather than exhaustive term-by-term authority. ISO 13485 supports quality management vocabulary; ISO 10993-1 supports biocompatibility vocabulary; IEC 60601-1 supports electrical medical device safety vocabulary. Signal categories supported: implantable and surgical devices (implant, implantable, prosthetic, surgical, catheter, stent, orthopedic, drug delivery), physiological monitoring (cardiac, pulse, blood, glucose, insulin, biosensor, wearable, patient_monitoring), neurological and sensory (neural, retinal, hearing, respiratory), and therapeutic and clinical terms (therapeutic, rehabilitation, diagnosis). Cross-domain signals documented with explicit context ownership. AB-006 expansion candidates: biocompatibility, sterilization, cytotoxicity, hemocompatibility, ISO 14971 risk management.",
+      "cross_domain_usage": [
+        "electrode: also used in electronics_electrical as electrical terminal — separate context ownership",
+        "optical: also used in electronics_electrical as IR/optical sensor — separate context ownership",
+        "wearable: also used in IoT context as wearable sensor — separate context ownership (IoT pack not yet active)",
+        "pulse: also used in electronics_electrical as electrical pulse signal — separate context ownership"
+      ]
+    },
+    {
+      "record_id": "medical_device:PR002",
+      "pack_id": "medical_device",
+      "tier": 1,
+      "source_name": "FDA 21 CFR Part 820 + EU MDR 2017/745 — Regulatory Reference Baseline",
+      "source_type": "regulatory_standard",
+      "standard_number": "21 CFR Part 820; EU MDR 2017/745",
+      "jurisdiction": "US-FDA; EU",
+      "version_or_edition": "21 CFR Part 820 (current); EU MDR 2017/745 (effective 2021)",
+      "url": "https://www.ecfr.gov/current/title-21/chapter-I/subchapter-H/part-820",
+      "notes": "MVP provenance grouping for regulatory vocabulary in the medical device domain. Currently covers one signal: clinical_trial. FDA 21 CFR Part 820 and EU MDR 2017/745 used as governance anchor for regulatory pathway terminology. AB-006 observation: current MEDICAL_SIGNALS contains no FDA, CE marking, ISO 14971, or other regulatory pathway signals beyond clinical_trial — this is a known gap. AB-006 should expand this record or introduce PR003 for additional regulatory signals.",
+      "cross_domain_usage": null
+    },
+    {
+      "record_id": "software:PR001",
+      "pack_id": "software",
+      "tier": 1,
+      "source_name": "IEEE 12207:2017 + ISO/IEC 25010:2011 + SWEBOK v3.0 — Software Engineering Reference Baseline",
+      "source_type": "international_standard",
+      "standard_number": "IEEE 12207-2017; ISO/IEC 25010:2011; SWEBOK v3.0",
+      "jurisdiction": null,
+      "version_or_edition": "IEEE 12207-2017; ISO/IEC 25010:2011; SWEBOK v3.0 (2014)",
+      "url": "https://www.iso.org/standard/63712.html",
+      "notes": "Compiled software engineering reference baseline used as governance anchor for this domain pack. This record represents a primary reference set for software engineering terminology rather than direct proof for every individual signal. IEEE 12207 supports software lifecycle process vocabulary (api, database, workflow, automation, runtime). ISO/IEC 25010 supports software quality characteristic vocabulary (latency, encryption, cache, static analysis). SWEBOK v3.0 supports software engineering body of knowledge vocabulary (algorithm, parser, tokenize, ast). Classification signals (software, app, application, web, mobile, backend, frontend, code, programming, system, dashboard, interface, data pipeline, machine learning, ml model, neural network) are compiled from the broader software engineering domain consistent with this baseline. Low-specificity signals (function, system, app) are retained for behavioral equivalence and flagged as AB-006 candidates. Verb forms parses and tokenizes retained per _SUBSTANCE_SIGNALS behavioral equivalence requirement.",
+      "cross_domain_usage": [
+        "token: also used in security/cryptography context as authentication token — separate context ownership"
+      ]
+    }
+  ]
 }
