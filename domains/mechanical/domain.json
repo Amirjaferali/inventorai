@@ -334,6 +334,9 @@
     },
     {
       "modifier_value": "PHYSICAL_FEASIBILITY"
+    },
+    {
+      "modifier_value": "BOUNDARY_AMBIGUITY"
     }
   ],
   "journey_extension": {
@@ -342,7 +345,7 @@
     "multi_domain_signals": null
   },
   "_governance_notes": {
-    "rule_nuances_absent": "AB-006-A Step 1b: rule_nuances populated with MECHANISM_COMPLETENESS and PHYSICAL_FEASIBILITY, migrated from hardcoded get_active_rules() mechanical branch in domain_rules.py. No invented fields added.",
+    "rule_nuances_absent": "AB-006-A Step 1b (corrected): rule_nuances populated with MECHANISM_COMPLETENESS, PHYSICAL_FEASIBILITY, and BOUNDARY_AMBIGUITY, migrated from hardcoded get_active_rules() mechanical branch in domain_rules.py. BOUNDARY_AMBIGUITY was omitted in original Step 1b commit 5eb514c — corrected here. No invented fields added.",
     "cross_domain_signals": "valve, pressure, compression, actuator documented as legitimate cross-domain concepts. Context ownership declared per signal. Not deleted. AB-006 candidates.",
     "ab006_candidates": "mechanism, force, bar, bracket, fastener, locking retained for behavioral equivalence. Flagged for AB-006 Domain Signal Quality Review.",
     "questions_source": "MECHANICAL_QUESTIONS confirmed in domain_rules.py. All questions migrated verbatim."
