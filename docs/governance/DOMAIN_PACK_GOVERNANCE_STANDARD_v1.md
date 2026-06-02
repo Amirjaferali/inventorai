@@ -211,6 +211,58 @@ before any parent domain coverage is authored.
   question authoring or coverage declaration. Separate governance authorization
   is required.
 
+### Domain Family Role Fields
+
+*Provenance: AB-006-B Step 3d — Owner Decision (2026-06-03)*
+
+These fields define a domain pack's position within a domain family. They are
+required for any pack that acts as a parent domain. Standalone packs should
+explicitly declare domain_family_role: "standalone" unless backward-compatibility
+constraints require omission.
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| domain_family_role | YES for parent/child packs | Declares the pack's role in the domain family. Allowed values: "parent", "child", "standalone". A pack without this field is treated as standalone. |
+| authorized_child_domains | YES if domain_family_role is "parent" | List of child domain IDs explicitly authorized under this parent. An empty list is permitted — it means no child domains have been authorized yet. |
+
+**domain_family_role behavior:**
+- A pack with `domain_family_role: "parent"` establishes the family authority
+  boundary for its domain. It does not automatically grant authority to any
+  child domain.
+- A pack with `domain_family_role: "child"` must explicitly declare its parent
+  domain and its inheritance position per §8.2 of SA-001B.
+- A pack with `domain_family_role: "standalone"` has no family relationships.
+  Standalone packs may not inherit from or authorize child domains.
+
+**authorized_child_domains behavior:**
+- An empty list means no child domains have been authorized. This is the correct
+  initial state for a newly designated parent domain.
+- A non-empty list records which child domain IDs have received explicit
+  governance authorization. Presence in this list does not trigger any runtime
+  behavior — it is a governance record only.
+- Adding a domain ID to authorized_child_domains does not authorize that domain
+  to author questions, declare coverage, or participate in multi-domain
+  reasoning. Each of those capabilities requires separate governance
+  authorization.
+
+**Validation expectations:**
+- A pack declaring `domain_family_role: "parent"` must also carry a complete
+  coverage declaration per §6 Coverage Declaration Fields.
+- A child pack must identify its governing parent domain. The exact schema
+  representation of that relationship will be defined when the first
+  child-domain pack is authorized.
+- authorized_child_domains must be an explicit list. A null value is not
+  acceptable for a parent domain — use an empty list to represent zero
+  authorized children.
+
+**Relationship to parent-domain authority:**
+- Parent role establishes the family authority boundary only.
+- Child domains require separate governance authorization regardless of their
+  presence in authorized_child_domains.
+- authorized_child_domains is a record of authorization status, not an
+  implementation trigger.
+- No runtime behavior changes when authorized_child_domains is updated.
+
 ### Validation and Traceability Fields
 
 *Provenance: Owner Decision (2026-05-31)*
