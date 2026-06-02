@@ -178,6 +178,39 @@ A conformant domain pack must contain all required fields. A pack missing any re
 - Incomplete regulatory coverage (pack references compliance considerations but does not fully assess them)
 - Limited domain breadth (pack covers one sub-domain within a broader field)
 
+### Coverage Declaration Validation Rules
+
+*Provenance: AB-006-A Step 2 — Owner Decision (2026-06-02)*
+
+Coverage declarations define authority boundaries, not capability claims.
+
+The following rules govern coverage declarations for all domain packs. They apply
+before any parent domain coverage is authored.
+
+**Required field behavior:**
+- `covered_areas`: must be a non-empty explicit list. Vague entries such as
+  "general electronics" or "most hardware concepts" are not acceptable.
+- `not_covered_areas`: must require explicit consideration and documentation.
+  A pack that has not documented what it does not cover has not completed its
+  coverage declaration.
+- `known_limitations`: must be a non-empty explicit list. Simplifying assumptions
+  and scope boundaries must be stated, not implied.
+
+**Validation criteria:**
+- Coverage claims must be bounded. A claim that implies unlimited scope fails.
+- Exclusions must be visible. A pack that does not declare what it does not cover
+  cannot be treated as authoritative for unlisted areas.
+- Known limitations must be preserved as governance-visible constraints, not
+  buried in design notes or omitted entirely.
+
+**Scope constraints for this declaration:**
+- A coverage declaration does not authorize child domain creation.
+- A coverage declaration does not authorize multi-domain reasoning.
+- A coverage declaration does not modify runtime behavior.
+- A parent domain coverage declaration alone does not authorize child-domain
+  question authoring or coverage declaration. Separate governance authorization
+  is required.
+
 ### Validation and Traceability Fields
 
 *Provenance: Owner Decision (2026-05-31)*
