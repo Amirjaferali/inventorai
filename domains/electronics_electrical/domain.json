@@ -113,6 +113,30 @@
       "provenance_ref": "electronics_electrical:PR003"
     }
   ],
+  "coverage_declaration": {
+    "covered_areas": [
+      "Concept-level explanation of basic circuit function and electronic mechanism",
+      "Concept-level power delivery and energy budget awareness",
+      "Concept-level rationale for selecting electronic components",
+      "Electronic mechanism completeness as a reasoning quality assessment"
+    ],
+    "not_covered_areas": [
+      "Regulatory approval and certification (CE, FCC, UL)",
+      "EMC / electromagnetic compatibility testing",
+      "PCB layout and manufacturing design rules",
+      "Supply chain and component availability",
+      "Production cost and commercial viability",
+      "Firmware and embedded software logic — outside the authority of the current parent electronics pack and requires separate governance authorization.",
+      "Safety certification (IEC 61508, ISO 26262) — concept-level risk awareness may be authorized separately"
+    ],
+    "known_limitations": [
+      "Early-concept stage only — not suitable for production-ready designs",
+      "Parent domain covers electronics broadly; sub-domain depth requires child pack",
+      "Questions are calibrated for parent-domain concept validation and may not satisfy specialist-level engineering review without a child domain pack.",
+      "This coverage declaration defines Stage 2 parent-domain reasoning authority only. It does not authorize Stage 3 implementation readiness, Stage 4 engineering readiness, or Stage 5 prototype readiness.",
+      "Coverage does not imply ability to validate, certify, simulate, or produce build-ready designs."
+    ]
+  },
   "journey_extension": {
     "checkpoint_dependencies": null,
     "traversal_hints": null,
