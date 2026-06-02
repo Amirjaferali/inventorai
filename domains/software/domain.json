@@ -313,7 +313,14 @@
       "provenance_ref": "software:PR001"
     }
   ],
-  "rule_nuances": [],
+  "rule_nuances": [
+    {
+      "modifier_value": "MECHANISM_COMPLETENESS"
+    },
+    {
+      "modifier_value": "BOUNDARY_AMBIGUITY"
+    }
+  ],
   "journey_extension": {
     "checkpoint_dependencies": null,
     "traversal_hints": null,
@@ -321,7 +328,7 @@
   },
   "_governance_notes": {
     "physical_feasibility_excluded": "PHYSICAL_FEASIBILITY intentionally absent. get_active_rules('software') returns [MECHANISM_COMPLETENESS, BOUNDARY_AMBIGUITY] only. Code comment states: 'MVP: PHYSICAL_FEASIBILITY excluded — assumes physical constraints.' Confirmed in ADR-002. Behavioral equivalence preserved.",
-    "rule_nuances_absent": "No named rule nuances in get_active_rules() software branch. rule_nuances intentionally empty. AB-006 OBSERVATION: ADR-003-evidence-quality-model.md describes an intent that software REASONED responses must include named algorithm + problem statement + approach — this is not currently enforced as a rule nuance. AB-006 candidate: NO_FRAMEWORK_SUBSTITUTION_FOR_ALGORITHM.",
+    "rule_nuances_absent": "AB-006-A Step 1d: rule_nuances populated with MECHANISM_COMPLETENESS and BOUNDARY_AMBIGUITY, migrated from hardcoded get_active_rules() software branch in domain_rules.py. PHYSICAL_FEASIBILITY intentionally absent per ADR-002. No invented fields added.",
     "cross_domain_signals": "token documented as CROSS-DOMAIN: lexical/parsing token vs auth token. Context ownership declared: lexical/parsing in software context.",
     "low_specificity_signals": "function, system, app, application, code, web, mobile retained at source weights for behavioral equivalence. AB-006 candidates for weight calibration.",
     "verb_form_signals": "parses and tokenizes retained as distinct substance signals matching source _SUBSTANCE_SIGNALS flat list exactly. Behavioral equivalence requires both verb and noun forms.",
