@@ -137,6 +137,8 @@
       "Coverage does not imply ability to validate, certify, simulate, or produce build-ready designs."
     ]
   },
+  "domain_family_role": "parent",
+  "authorized_child_domains": [],
   "journey_extension": {
     "checkpoint_dependencies": null,
     "traversal_hints": null,
