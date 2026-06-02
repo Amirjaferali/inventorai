@@ -380,7 +380,12 @@ Level 1 — Governance Note
   precedence relationship. Conflicts between Level 1 documents that
   cannot be resolved by reference to Level 0 require an explicit
   owner decision before any implementation proceeds.
-  
+  Level 1 — Domain Model
+  SA-001B_DOMAIN_MODEL_SPECIFICATION.md
+  Defines domain family model, parent/child inheritance,
+  coverage declaration governance, electronics as first
+  parent domain, and AB-006-B governing position
+  Added: 2026-06-02, SA-001 authorization
 Level 2 — Master Reference
   MASTER-HANDOVER.md
   Defines current repository state and authorized work
