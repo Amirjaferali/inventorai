@@ -16,7 +16,7 @@ NOT responsible for:
   - Replay (scripts/)
 """
 
-from engine.domain_rules import _REGISTRY
+from engine.domain_rules import get_substance_signals
 from engine.idea_state import (
     IdeaState, Evidence, Gap, IterationLog,
     PHYSICAL_FEASIBILITY, BOUNDARY_AMBIGUITY, MECHANISM_COMPLETENESS,
@@ -186,7 +186,7 @@ def assess_response(response: str, domain: str = "") -> str:
     weak_tokens = {"somehow", "something", "technology", "stuff", "things"}
     # Substance Signal Authority: read from registry per domain (AB-005 Step 7)
     substance_tokens = set(
-        s["signal"] for s in _REGISTRY.get(domain, {}).get("substance_signals", [])
+        get_substance_signals(domain)
     )
     words = set(r_lower.split())
     has_weak = bool(words & weak_tokens)

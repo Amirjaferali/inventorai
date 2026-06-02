@@ -53,6 +53,13 @@ def get_active_rules(domain: str) -> list:
 
 
 
+def get_substance_signals(domain: str) -> list:
+    # AB-006-C: registry accessor — replaces direct _REGISTRY access in progression_loop.py
+    pack = _REGISTRY.get(domain)
+    if pack:
+        return [s["signal"] for s in pack.get("substance_signals", [])]
+    return []
+
 def get_domain_question(domain: str, gap_type: str, iterations_open: int) -> str | None:
     """
     Return a domain-specific question for gap_type, or None to trigger generic fallback.
