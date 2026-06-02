@@ -16,7 +16,8 @@ NOT responsible for:
   - Replay (scripts/)
 """
 
-from engine.domain_rules import get_substance_signals
+import warnings
+from engine.domain_rules import get_substance_signals, is_known_domain
 from engine.idea_state import (
     IdeaState, Evidence, Gap, IterationLog,
     PHYSICAL_FEASIBILITY, BOUNDARY_AMBIGUITY, MECHANISM_COMPLETENESS,
@@ -188,6 +189,25 @@ def assess_response(response: str, domain: str = "") -> str:
     substance_tokens = set(
         get_substance_signals(domain)
     )
+    # AB-006-D: fail-explicit observability for empty/unknown domain
+    if not domain:
+        warnings.warn(
+            "assess_response called with empty domain — "
+            "substance check disabled (AB-006-D)",
+            stacklevel=2
+        )
+    elif not is_known_domain(domain):
+        warnings.warn(
+            "assess_response: domain=" + repr(domain) + " not found in registry — "
+            "substance check disabled (AB-006-D)",
+            stacklevel=2
+        )
+    elif not substance_tokens:
+        warnings.warn(
+            "assess_response: domain=" + repr(domain) + " has no substance signals in registry — "
+            "substance check disabled (AB-006-D)",
+            stacklevel=2
+        )
     words = set(r_lower.split())
     has_weak = bool(words & weak_tokens)
     has_substance = any(sig in r_lower for sig in substance_tokens)

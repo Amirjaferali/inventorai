@@ -53,6 +53,11 @@ def get_active_rules(domain: str) -> list:
 
 
 
+def is_known_domain(domain: str) -> bool:
+    # AB-006-D: check domain existence without exposing _REGISTRY
+    return domain in _REGISTRY
+
+
 def get_substance_signals(domain: str) -> list:
     # AB-006-C: registry accessor — replaces direct _REGISTRY access in progression_loop.py
     pack = _REGISTRY.get(domain)
