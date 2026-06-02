@@ -364,6 +364,23 @@ Level 1 — Domain Governance Standard
   DOMAIN_PACK_GOVERNANCE_STANDARD_v1.md
   Defines how domains are validated and maintained
 
+Level 1 — Journey Architecture
+  SA-001A_JOURNEY_ARCHITECTURE_SPECIFICATION.md
+  Defines platform stage model, stage boundaries, evaluation
+  rule governance across stages, and AB-006-A architectural
+  direction
+  Added: 2026-06-02, SA-001 authorization
+
+Level 1 — Governance Note
+  Level 1 documents are permanent peer authorities. Each governs
+  a distinct architectural domain. A new Level 1 document requires
+  explicit owner authorization and must govern a domain not already
+  covered by an existing Level 1 document. Level 1 documents do not
+  subordinate each other unless this section explicitly records a
+  precedence relationship. Conflicts between Level 1 documents that
+  cannot be resolved by reference to Level 0 require an explicit
+  owner decision before any implementation proceeds.
+  
 Level 2 — Master Reference
   MASTER-HANDOVER.md
   Defines current repository state and authorized work
