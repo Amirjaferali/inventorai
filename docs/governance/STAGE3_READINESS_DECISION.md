@@ -175,3 +175,26 @@ This document will be superseded when AB-005 remediation is approved, implemente
 **Evidence base:** Session 2026-05-31, HEAD 49b26e3
 **Recovered at:** HEAD 34253cc, 2026-05-31
 **Recovery basis:** AGENT_HANDOVER_2026-05-31.md, AB-005_MISSING_EVIDENCE_SUPPLEMENT.md, session evidence
+
+---
+
+## NAMING SUPERSESSION NOTICE
+
+**Date:** 2026-06-03
+**Authority:** STAGE_EVOLUTION_POSITION Position 3 (committed c1d1573)
+
+The term "Stage 3" in this document was originally used to mean **Domain Validation**.
+
+Per STAGE_EVOLUTION_POSITION Position 3, SA-001A governs stage naming. SA-001A defines Stage 3 as **Implementation Readiness**. This supersession applies to naming only.
+
+**Scope of supersession:** The Stage 3 naming interpretation in this document is superseded by SA-001A.
+
+**What remains valid:** All independent governance decisions recorded in this document remain valid unless explicitly superseded by a later authoritative artifact:
+- Product Identity: Innovation Lifecycle Platform (Identity B)
+- Domain priority order: IoT first, Solar second
+- AB-005 Hard Gate classification and trigger conditions
+- AB-001 deferred status and trigger condition
+- Stage 3 execution conditions table
+
+**Reference:** STAGE_EVOLUTION_POSITION §4.1, STAGE3_AUTHORIZATION_READINESS_REVIEW §4, STAGE3_DESIGN_AUTHORIZATION §4.2
+
