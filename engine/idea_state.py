@@ -14,10 +14,20 @@ ASSERTED    = "ASSERTED"
 REASONED    = "REASONED"
 DEMONSTRATED = "DEMONSTRATED"
 
-# --- Gap types (3 only per MVP_SCOPE_FREEZE) ---
+# --- Gap types ---
+# Stage 2 gap types (3 only per GD-001 frozen)
 PHYSICAL_FEASIBILITY    = "PHYSICAL_FEASIBILITY"
 BOUNDARY_AMBIGUITY      = "BOUNDARY_AMBIGUITY"
 MECHANISM_COMPLETENESS  = "MECHANISM_COMPLETENESS"
+
+# Stage 3 gap types (per STAGE3_GAP_TAXONOMY_PROPOSAL)
+PROBLEM_MECHANISM_FIT   = "PROBLEM_MECHANISM_FIT"
+ASSUMPTION_INVENTORY    = "ASSUMPTION_INVENTORY"
+EXPERTISE_GAP_AWARENESS = "EXPERTISE_GAP_AWARENESS"
+
+# Stage registry
+STAGE_2_GAP_TYPES = {MECHANISM_COMPLETENESS, PHYSICAL_FEASIBILITY, BOUNDARY_AMBIGUITY}
+STAGE_3_GAP_TYPES = {PROBLEM_MECHANISM_FIT, ASSUMPTION_INVENTORY, EXPERTISE_GAP_AWARENESS}
 
 # --- Gap status ---
 OPEN          = "OPEN"
@@ -62,7 +72,8 @@ class IterationLog:
 class IdeaState:
     idea_id        : str
     iteration      : int                    = 0
-    maturity_level : int                    = 0  # 0 | 1 | 2 only
+    maturity_level : int                    = 0  # 0 | 1 | 2 only (Stage 2)
+    current_stage  : int                    = 2  # 2 = Stage 2, 3 = Stage 3
     domain_signal  : Optional[str]          = None
     direction      : str                    = PROGRESSING
 
