@@ -21,6 +21,8 @@ from engine.domain_rules import get_substance_signals, is_known_domain
 from engine.idea_state import (
     IdeaState, Evidence, Gap, IterationLog,
     PHYSICAL_FEASIBILITY, BOUNDARY_AMBIGUITY, MECHANISM_COMPLETENESS,
+    PROBLEM_MECHANISM_FIT, ASSUMPTION_INVENTORY, EXPERTISE_GAP_AWARENESS,
+    STAGE_2_GAP_TYPES, STAGE_3_GAP_TYPES,
     OPEN, PARTIAL, CLOSED, ACCEPTED_RISK,
     ASSERTED, REASONED, DEMONSTRATED,
     PROGRESSING, STALLED, REGRESSING
@@ -32,6 +34,14 @@ GAP_PRIORITY = [
     MECHANISM_COMPLETENESS,
     PHYSICAL_FEASIBILITY,
     BOUNDARY_AMBIGUITY,
+]
+
+# Stage 3 gap priority (per STAGE3_GAP_TAXONOMY_PROPOSAL)
+# PMF must be attempted before AI; AI before EGA
+STAGE3_GAP_PRIORITY = [
+    PROBLEM_MECHANISM_FIT,
+    ASSUMPTION_INVENTORY,
+    EXPERTISE_GAP_AWARENESS,
 ]
 
 STALL_THRESHOLD = 3  # iterations before reframe
@@ -396,7 +406,13 @@ def run_iteration(state: IdeaState, response: str) -> dict:
         # GAP_PRIORITY cascade: open next gap when no OPEN/PARTIAL gap exists
         next_gap_opened = None
         if len([g for g in state.gaps if g.status in (OPEN, PARTIAL)]) == 0:
-            for next_gap_type in GAP_PRIORITY:
+            # Select gap priority based on current stage
+            active_priority = (
+                STAGE3_GAP_PRIORITY
+                if getattr(state, "current_stage", 2) == 3
+                else GAP_PRIORITY
+            )
+            for next_gap_type in active_priority:
                 if state.get_gap(next_gap_type) is None:
                     from engine.idea_state import Gap
                     gap = Gap(gap_type=next_gap_type, status=OPEN, opened_at=state.iteration)
