@@ -444,18 +444,19 @@ def run_iteration(state: IdeaState, response: str) -> dict:
                 "maturity_level": state.maturity_level,
                 "direction"     : state.direction,
             }
-        closing_q = None
-        if state.maturity_level == 2:
-            closing_q = "Your mechanism is taking shape. Now state clearly: what does your invention NOT do or NOT cover? Name at least one boundary."
-        result = {
-            "iteration": state.iteration,
-            "gap_targeted": None,
-            "question": closing_q,
-            "transition": "PASS" if can else "WARN",
-            "reason": reason,
-            "maturity_level": state.maturity_level,
-            "direction": state.direction,
-        }
+        else:
+            closing_q = None
+            if state.maturity_level == 2:
+                closing_q = "Your mechanism is taking shape. Now state clearly: what does your invention NOT do or NOT cover? Name at least one boundary."
+            result = {
+                "iteration": state.iteration,
+                "gap_targeted": None,
+                "question": closing_q,
+                "transition": "PASS" if can else "WARN",
+                "reason": reason,
+                "maturity_level": state.maturity_level,
+                "direction": state.direction,
+            }
 
     else:
         # Get question — AI advisory (G-A) or fallback to domain/generic
