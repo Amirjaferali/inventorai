@@ -124,6 +124,43 @@ QUESTIONS = {
         "If someone tried to copy your invention by changing only one component, "
         "would it still be your invention? What is the core that cannot be replaced?",
     ],
+    # ── Stage 3 questions — sourced verbatim from STAGE3_QUESTION_SET.md (admitted 5926b63) ──
+    PROBLEM_MECHANISM_FIT: [
+        # PMF-Q1 — Primary Evidence Target: PMF-E1
+        "Without describing how your mechanism works, describe the problem you are trying to solve. "
+        "What is happening for the person or system that has this problem, and why does it matter to them?",
+        # PMF-Q2 — Primary Evidence Target: PMF-E2
+        "Why does your mechanism solve this problem rather than a different approach? "
+        "What is it about how your mechanism works that makes it the right fit for this problem?",
+        # PMF-Q3 — Primary Evidence Target: PMF-E3
+        "Are there situations or conditions where your mechanism would not solve this problem, "
+        "or would solve it less well? What are those conditions?",
+    ],
+    ASSUMPTION_INVENTORY: [
+        # AI-Q1 — Primary Evidence Target: AI-E1
+        "What are you taking for granted about your mechanism that you have not yet tested or verified? "
+        "These might be things you expect to be true, materials you assume are available, "
+        "or conditions you assume will hold.",
+        # AI-Q2 — Primary Evidence Target: AI-E2
+        "For each assumption you named, would your mechanism still work if that assumption turned out to be wrong? "
+        "Which assumptions are essential — the mechanism fails without them — "
+        "and which ones would just require you to adjust your approach?",
+        # AI-Q3 — Primary Evidence Target: AI-E3
+        "Now that you have thought through your assumptions — is there anything you realize you were assuming "
+        "that you had not recognized as an assumption before this conversation? "
+        "Something that seemed obvious but is actually unverified?",
+    ],
+    EXPERTISE_GAP_AWARENESS: [
+        # EGA-Q1 — Primary Evidence Target: EGA-E1
+        "What areas of technical knowledge would someone need to actually build or implement your mechanism? "
+        "List the domains of expertise required — not what you know, but what the implementation itself demands.",
+        # EGA-Q2 — Primary Evidence Target: EGA-E2
+        "Of the expertise areas you just identified — which ones do you have sufficient working knowledge of "
+        "to proceed, and which ones represent genuine gaps where you would need to learn more or bring in someone else?",
+        # EGA-Q3 — Primary Evidence Target: EGA-E3
+        "For the expertise gaps you identified — what would happen to your implementation if those gaps were not "
+        "addressed before you started building? What specific problems would you run into?",
+    ],
 }
 
 
