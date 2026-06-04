@@ -4,7 +4,7 @@
 **Document ID:** STAGE3_QUESTION_TRACEABILITY_METHOD
 **Type:** Governance Method Artifact
 **Governance Level:** Level 3
-**Status:** PROPOSED -- PENDING OWNER ADMISSION DECISION
+**Status:** ADMITTED
 **Date:** 2026-06-03
 **Provenance:** Owner Authorization -- pre-Question Design
 **Depends on:** STAGE3_QUESTION_DESIGN_AUTHORIZATION, STAGE3_GAP_EVIDENCE_MODEL, STAGE3_CAPABILITY_MODEL, STAGE3_GAP_RESOLUTION_MODEL
