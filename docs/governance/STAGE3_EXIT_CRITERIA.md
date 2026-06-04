@@ -249,6 +249,30 @@ The distinction is capability evidence versus perfection performance. These crit
 ---
 
 *This document is produced to be accurate, not reassuring.*
-*Stage 3 completion is defined. Progression authorization is not.*
+## 11. TRANSITION AUTHORIZATION — NOW DEFINED
+
+Transition Authorization was deferred at the time this document was drafted
+per STAGE_EVOLUTION_POSITION §5.1 and STAGE3_DESIGN_AUTHORIZATION §4.1.
+
+That deferral is now resolved. TRANSITION_AUTHORIZATION_GOVERNANCE.md
+has been admitted (2026-06-04) with:
+
+- OA-1: Hybrid Authorization Model
+  Platform evaluates evidence (Layer 1).
+  Human reviewer assesses genuine inventor growth (Layer 2).
+  Authorization decision recorded (Layer 3).
+
+- OA-2: Provisional Authorization Standard
+  Single-session proxy applies until GOVERNANCE-ROADMAP Priorities 3-5 resolved.
+  All provisional authorizations carry mandatory statement per
+  TRANSITION_AUTHORIZATION_GOVERNANCE §5.
+
+Stage-level completion (§6 of this document) is necessary but not sufficient.
+Authorization requires all three layers per TRANSITION_AUTHORIZATION_GOVERNANCE.
+
+*Stage 3 completion is defined. Progression authorization is now defined.*
+*See TRANSITION_AUTHORIZATION_GOVERNANCE.md.*
+
+
 *Capability evidence and perfection performance are different things. These criteria test the first.*
 *The honest state: Stage 3 completion is substantially verifiable today. Full verification depends on infrastructure not yet built.*
