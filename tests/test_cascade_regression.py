@@ -223,3 +223,101 @@ class TestCascadeTransitionRegression:
         assert log_2.gap_targeted == BOUNDARY_AMBIGUITY
         assert log_2.question_asked == result_2["question"]
         assert _CLOSING_Q_FRAGMENT not in (log_2.question_asked or "")
+
+
+class TestStage3Reachability:
+    """
+    Regression suite for Stage 3 reachability fix (commit after 0da3d65).
+    Proves current_stage advances to 3 naturally after maturity_level reaches 2,
+    and that PROBLEM_MECHANISM_FIT opens without manual state manipulation.
+    """
+
+    _REASONED = (
+        "The sensor detects voltage drop across the shunt resistor. "
+        "When the measured voltage falls below the threshold, the comparator "
+        "triggers the relay which disconnects the load. "
+        "This mechanism relies on Ohm's law and uses an LM393 comparator IC."
+    )
+
+    def _make_state_s2_almost_complete(self):
+        """maturity_level=1, MECH+PF closed, BA open — one step from Stage 3."""
+        state = IdeaState(idea_id="reachability-regression")
+        state.maturity_level = 1
+        state.current_stage = 2
+        state.domain = "electronics_electrical"
+        state.known_problem = Evidence(
+            content="motors fail without warning", quality=REASONED, iteration=1)
+        state.known_mechanism = Evidence(
+            content=self._REASONED, quality=REASONED, iteration=2)
+        for gap_type, closed_at in [
+            (MECHANISM_COMPLETENESS, 2),
+            (PHYSICAL_FEASIBILITY, 4),
+        ]:
+            state.gaps.append(Gap(
+                gap_type=gap_type, status=CLOSED,
+                opened_at=1, closed_at=closed_at))
+        state.gaps.append(Gap(
+            gap_type=BOUNDARY_AMBIGUITY, status=OPEN, opened_at=4))
+        state.iteration = 4
+        return state
+
+    def test_current_stage_advances_to_3_after_maturity_level_2(self):
+        """
+        TC-REACH-001
+        After all Stage 2 gaps close and maturity_level reaches 2,
+        current_stage must become 3 automatically.
+        No manual state manipulation.
+        """
+        state = self._make_state_s2_almost_complete()
+        run_iteration(state, self._REASONED)
+        run_iteration(state, self._REASONED)
+
+        assert state.maturity_level == 2, (
+            f"maturity_level={state.maturity_level}, expected 2"
+        )
+        assert state.current_stage == 3, (
+            "REGRESSION: current_stage did not advance to 3 after maturity_level=2. "
+            "Stage 3 is unreachable. Fix: set state.current_stage=3 when maturity_level reaches 2."
+        )
+
+    def test_stage3_gap_opens_naturally_after_stage2_complete(self):
+        """
+        TC-REACH-002
+        After Stage 2 complete, the next run_iteration must open
+        PROBLEM_MECHANISM_FIT without any manual intervention.
+        """
+        state = self._make_state_s2_almost_complete()
+        run_iteration(state, self._REASONED)
+        run_iteration(state, self._REASONED)
+
+        # One more iteration triggers cascade
+        result = run_iteration(state, self._REASONED)
+
+        pmf_gaps = [g for g in state.gaps if g.gap_type == PROBLEM_MECHANISM_FIT]
+        assert len(pmf_gaps) > 0, (
+            "REGRESSION: PROBLEM_MECHANISM_FIT never opened after Stage 2 complete."
+        )
+        assert pmf_gaps[0].status == OPEN, (
+            f"REGRESSION: PMF gap status={pmf_gaps[0].status}, expected OPEN"
+        )
+        assert result.get("gap_targeted") == PROBLEM_MECHANISM_FIT, (
+            f"REGRESSION: gap_targeted={result.get('gap_targeted')}, "
+            "expected PROBLEM_MECHANISM_FIT"
+        )
+
+    def test_stage3_question_delivered_not_closing_q(self):
+        """
+        TC-REACH-003
+        When Stage 3 first opens, the question delivered must not be
+        the Stage 2 closing prompt.
+        """
+        state = self._make_state_s2_almost_complete()
+        run_iteration(state, self._REASONED)
+        run_iteration(state, self._REASONED)
+        result = run_iteration(state, self._REASONED)
+
+        question = result.get("question")
+        assert question is not None, "REGRESSION: no question delivered at Stage 3 opening"
+        assert "NOT do or NOT cover" not in (question or ""), (
+            "REGRESSION: closing_q delivered instead of Stage 3 question"
+        )

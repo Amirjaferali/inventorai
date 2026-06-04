@@ -435,6 +435,8 @@ def run_iteration(state: IdeaState, response: str) -> dict:
         can, reason = evaluate_transition(state)
         if can and state.maturity_level < 2:
             state.maturity_level += 1
+            if state.maturity_level == 2:
+                state.current_stage = 3
         # Level-1 gap initialization: open MECHANISM_COMPLETENESS if maturity just reached 1
         if state.maturity_level == 1 and len(state.gaps) == 0 and state.get_gap(MECHANISM_COMPLETENESS) is None:
             from engine.idea_state import Gap
@@ -517,6 +519,8 @@ def run_iteration(state: IdeaState, response: str) -> dict:
         can, t_reason = evaluate_transition(state)
         if can and state.maturity_level < 2:
             state.maturity_level += 1
+            if state.maturity_level == 2:
+                state.current_stage = 3
             transition = "PASS"
             reason = t_reason
 
