@@ -69,6 +69,20 @@ class IterationLog:
 
 
 @dataclass
+class AcknowledgedUnknown:
+    """
+    Records an explicit inventor acknowledgment of a specific unknown.
+    Parallel track in integrate_response(). NO effect on progression.
+    Governance: TRANSITION_AUTHORIZATION_GOVERNANCE s4 Layer 1 PGC-3
+    Authorization: Owner-authorized 2026-06-06
+    """
+    iteration      : int
+    gap_context    : str
+    verbatim       : str
+    category_basis : str
+
+
+@dataclass
 class IdeaState:
     idea_id        : str
     iteration      : int                    = 0
@@ -86,7 +100,11 @@ class IdeaState:
 
     # History
     iteration_log  : list                   = field(default_factory=list)
-      
+
+    # Acknowledged unknowns -- inventor-stated knowledge gaps (parallel track)
+    # No effect on progression. Governance: PGC-3, Priority 5, FDC-001.
+    acknowledged_unknowns : list            = field(default_factory=list)
+
     # Idea capture
     idea_summary   : Optional[str]          = None
 

@@ -79,7 +79,7 @@ def assemble_deliverable(state: IdeaState) -> dict:
         "section_5_assumptions":         _s5(state),
         "section_6_risks":               _s6(state, open_gaps),
         "section_7_recommendations":     _s7(state, open_gaps),
-        "section_8_unresolved_items":    _s8(open_gaps),
+        "section_8_unresolved_items":    _s8(open_gaps, state),
         "_session_meta": {
             "total_iterations":     state.iteration,
             "total_gaps":           len(state.gaps),
@@ -174,8 +174,18 @@ def _s5(state):
                 "risk_if_invalid": "Assessment remains incomplete at this gap",
                 "basis": "Open gap"})
             n += 1
-    return {"assumptions": asmp, "total": len(asmp),
-            "note": "Assumptions inferred from session state in MVP."}
+    inventor_unknowns = [
+        {"iteration": u.iteration, "gap_context": u.gap_context,
+         "statement": u.verbatim, "source": "inventor_stated"}
+        for u in getattr(state, "acknowledged_unknowns", [])
+    ]
+    return {
+        "assumptions":       asmp,
+        "total":             len(asmp),
+        "inventor_unknowns": inventor_unknowns,
+        "note": "Assumptions inferred from session state in MVP. "
+                "Inventor-stated unknowns recorded separately.",
+    }
 
 def _s6(state, open_gaps):
     risks, n = [], 1
@@ -239,14 +249,28 @@ def _s7(state, open_gaps):
         "category_d_open_items": cat_d,
     }
 
-def _s8(open_gaps):
+def _s8(open_gaps, state=None):
+    items = [
+        {"id": f"OPEN-{i+1:03d}", "type": "open_gap",
+         "gap_type": g.gap_type,
+         "gap_label": _GAP_LABELS.get(g.gap_type, g.gap_type),
+         "status": g.status, "iterations_open": g.iterations_open,
+         "resolution": "Address in next session with substantive evidence"}
+        for i, g in enumerate(open_gaps)
+    ]
+    for u in getattr(state, "acknowledged_unknowns", []):
+        items.append({
+            "id": f"UNKNOWN-{u.iteration:03d}",
+            "type": "acknowledged_unknown",
+            "gap_context": u.gap_context,
+            "statement": u.verbatim,
+            "iteration": u.iteration,
+            "source": "inventor_stated",
+        })
     return {
-        "open_gaps": [{"id": f"OPEN-{i+1:03d}", "gap_type": g.gap_type,
-            "gap_label": _GAP_LABELS.get(g.gap_type, g.gap_type),
-            "status": g.status, "iterations_open": g.iterations_open,
-            "resolution": "Address in next session with substantive evidence"}
-            for i, g in enumerate(open_gaps)],
+        "items": items,
         "open_gap_count": len(open_gaps),
+        "acknowledged_unknown_count": len(getattr(state, "acknowledged_unknowns", [])),
         "cross_capability_conflicts": [], "conflict_count": 0,
         "note_conflicts": "Cross-capability conflict detection deferred to Phase 6.",
     }

@@ -19,7 +19,7 @@ NOT responsible for:
 import warnings
 from engine.domain_rules import get_substance_signals, is_known_domain
 from engine.idea_state import (
-    IdeaState, Evidence, Gap, IterationLog,
+    IdeaState, Evidence, Gap, IterationLog, AcknowledgedUnknown,
     PHYSICAL_FEASIBILITY, BOUNDARY_AMBIGUITY, MECHANISM_COMPLETENESS,
     PROBLEM_MECHANISM_FIT, ASSUMPTION_INVENTORY, EXPERTISE_GAP_AWARENESS,
     STAGE_2_GAP_TYPES, STAGE_3_GAP_TYPES,
@@ -180,6 +180,54 @@ def get_question(domain: str, gap_type: str, iterations_open: int) -> str:
 
 
 # ─────────────────────────────────────────────
+# 2b. Acknowledged unknown detection (parallel track)
+# Conservative: false negatives ok, false positives not.
+# Governance: TRANSITION_AUTHORIZATION_GOVERNANCE s4 Layer 1 PGC-3
+# Authorization: Owner-authorized 2026-06-06
+# ─────────────────────────────────────────────
+
+_ACKNOWLEDGED_UNKNOWN_MARKERS = (
+    "i do not know",
+    "i don't know the",
+    "i am not sure about",
+    "i'm not sure about",
+    "i have not yet determined",
+    "i do not yet know",
+    "i haven't determined",
+    "i have not decided",
+    "i haven't decided",
+    "i am not yet sure",
+    "i'm not yet sure",
+    "i have not yet researched",
+    "i haven't researched",
+)
+
+_MIN_ACKNOWLEDGED_UNKNOWN_LENGTH = 40
+
+
+def _detect_acknowledged_unknown(response, gap_type, iteration):
+    """
+    Conservative detection of explicit acknowledged unknowns.
+    Requires ignorance marker AND minimum response length.
+    Returns AcknowledgedUnknown or None.
+    NO effect on gap closure or quality classification.
+    """
+    r = response.strip()
+    if len(r) < _MIN_ACKNOWLEDGED_UNKNOWN_LENGTH:
+        return None
+    r_lower = r.lower()
+    for marker in _ACKNOWLEDGED_UNKNOWN_MARKERS:
+        if marker in r_lower:
+            return AcknowledgedUnknown(
+                iteration=iteration,
+                gap_context=gap_type,
+                verbatim=r,
+                category_basis=marker,
+            )
+    return None
+
+
+# ─────────────────────────────────────────────
 # 3. Integrate response → update gap status
 # ─────────────────────────────────────────────
 
@@ -311,6 +359,13 @@ def integrate_response(
     if gap is None:
         gap = Gap(gap_type=gap_type, status=OPEN, opened_at=state.iteration)
         state.gaps.append(gap)
+
+    # Parallel track: record acknowledged unknown if present.
+    # Unconditional -- runs for DEMONSTRATED, REASONED, and ASSERTED.
+    # Does NOT affect gap.status, quality, or any return value.
+    _unknown = _detect_acknowledged_unknown(response, gap_type, state.iteration)
+    if _unknown is not None:
+        state.acknowledged_unknowns.append(_unknown)
 
     if quality == DEMONSTRATED:
         gap.status = CLOSED
