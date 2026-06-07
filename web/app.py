@@ -31,7 +31,7 @@ def start():
     state.domain_signal = domain
     sid = str(uuid.uuid4())
     initial_result = run_iteration(state, idea_text)
-    SESSION_STORE[sid] = {"state": state, "last_result": initial_result}
+    SESSION_STORE[sid] = {"state": state, "last_result": initial_result, "transcript": []}
     return redirect(url_for("show_session", sid=sid))
 
 @app.route("/start_ilt002_water_leak", methods=["POST"])
@@ -44,7 +44,7 @@ def start_ilt002_water_leak():
     state.domain_signal = "electronics_electrical"
     sid = str(uuid.uuid4())
     initial_result = run_iteration(state, idea_text)
-    SESSION_STORE[sid] = {"state": state, "last_result": initial_result}
+    SESSION_STORE[sid] = {"state": state, "last_result": initial_result, "transcript": []}
     return redirect(url_for("show_session", sid=sid))
 
 @app.route("/session/<sid>", methods=["GET"])
@@ -87,6 +87,11 @@ def show_session(sid):
         session_disclosure=SESSION_DISCLOSURE,
         closed_gaps=closed_gaps,
     )
+    # Transcript capture: store the question computed in GET
+    # so POST handler can record it with the response.
+    # No engine effect. Evidence preservation only.
+    if entry is not None and question is not None:
+        entry["last_question"] = question
 
 @app.route("/session/<sid>", methods=["POST"])
 def submit_answer(sid):
@@ -98,6 +103,14 @@ def submit_answer(sid):
     if response:
         result = run_iteration(state, response)
         entry["last_result"] = result
+        # Transcript capture: append verbatim record for ILT-002 evidence.
+        # iteration number read after run_iteration() incremented it.
+        # No engine effect. Evidence preservation only.
+        entry["transcript"].append({
+            "iteration": state.iteration,
+            "question":  entry.get("last_question", ""),
+            "response":  response,
+        })
         import sys
         for g in state.gaps:
                     pass
