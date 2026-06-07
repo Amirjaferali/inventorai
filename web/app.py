@@ -74,6 +74,10 @@ def show_session(sid):
     closed_gaps = [g for g in state.gaps if g.status == "CLOSED"]
     gap_labels = {g.gap_type: GAP_LABELS.get(g.gap_type, GAP_LABELS["__default__"]) for g in state.gaps}
     current_gap_label = GAP_LABELS.get(gap_type, GAP_LABELS["__default__"]) if gap_type else None
+    # Transcript capture: store question before render so POST can record it.
+    # No engine effect. Evidence preservation only.
+    if entry is not None and question is not None:
+        entry["last_question"] = question
     return render_template("session.html",
         sid=sid,
         state=state,
@@ -87,12 +91,6 @@ def show_session(sid):
         session_disclosure=SESSION_DISCLOSURE,
         closed_gaps=closed_gaps,
     )
-    # Transcript capture: store the question computed in GET
-    # so POST handler can record it with the response.
-    # No engine effect. Evidence preservation only.
-    if entry is not None and question is not None:
-        entry["last_question"] = question
-
 @app.route("/session/<sid>", methods=["POST"])
 def submit_answer(sid):
     entry = SESSION_STORE.get(sid)
@@ -106,11 +104,22 @@ def submit_answer(sid):
         # Transcript capture: append verbatim record for ILT-002 evidence.
         # iteration number read after run_iteration() incremented it.
         # No engine effect. Evidence preservation only.
-        entry["transcript"].append({
+        import json, os
+        from datetime import datetime
+        record = {
+            "session_id": sid,
             "iteration": state.iteration,
             "question":  entry.get("last_question", ""),
             "response":  response,
-        })
+            "domain":    getattr(state, "domain", None),
+            "timestamp": datetime.utcnow().isoformat() + "Z",
+        }
+        entry["transcript"].append(record)
+        # Disk-backed persistence: survives Flask restarts.
+        # ILT-002 evidence preservation only. No engine effect.
+        transcript_path = f"/tmp/ilt002_transcript_{sid}.jsonl"
+        with open(transcript_path, "a") as _tf:
+            _tf.write(json.dumps(record) + "\n")
         import sys
         for g in state.gaps:
                     pass
