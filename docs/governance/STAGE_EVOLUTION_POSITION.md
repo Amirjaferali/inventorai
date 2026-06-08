@@ -1,199 +1,598 @@
 # STAGE_EVOLUTION_POSITION.md
-## Strategic Position Paper — Stage Evolution Governance
 
 **Document ID:** STAGE_EVOLUTION_POSITION
-**Governance Level:** Level 3
-**Status:** PROPOSED — PENDING OWNER ADMISSION DECISION
-**Date:** 2026-06-03
-**Provenance:** Owner Authorization — post SR-001 admission
-**Depends on:** STRATEGIC_PRODUCT_VISION.md (Level 0), SA-001A (Level 1), SA-001B (Level 1), SR-001 (Level 3)
+**Type:** Evidence Burden Definition -- Governance Observability Phase
+**Status:** ACTIVE
+**Date:** 2026-06-08
+**Sequence position:** Step 3 of Governance Observability sequence
+**Depends on:** SA-001A (Level 1), INVENTOR_OUTCOME_MEASUREMENT.md,
+               ILT-002 session transcripts (Sessions 3, 4, Idea A Session 1)
+**Does not authorize:** Stage 4-7 design, Professional Workspace,
+                        domain expansion, new governance programs
+**Does not design:** Any future stage
+**Does not assume:** Future stages are justified
 
 ---
 
-## 1. PURPOSE
+## PURPOSE
 
-This paper does not design stages. It does not define workflows. It does not introduce implementation requirements. It establishes the strategic positions that must govern any future stage design before authorization begins.
+This document defines the evidence burden required before any stage
+evolution can be authorized.
 
-Five positions are established in this document, each derived from committed governance artifacts and explicitly authorized by the owner. No position in this paper authorizes implementation, stage design, or domain expansion.
+The question this document answers:
+> "What evidence would justify future stage evolution?"
 
----
+It does not answer: "What stages should we build?"
+It does not answer: "When will Stage 4 begin?"
 
-## 2. GOVERNING PRINCIPLE FOR STAGE BOUNDARIES
-
-### 2.1 Position 1 — Accepted
-
-**Each stage represents a qualitatively different epistemic state in the inventor -- a different kind of knowing, not merely more depth of the same kind.**
-
-A stage boundary is justified when the inventor's relationship to their idea changes in kind, not just in degree. Stage progression is not about completing more questions. It is about the inventor demonstrating a qualitatively different understanding at each boundary.
-
-**Evidence basis:**
-- SA-001A §3.3: "Stages are architectural boundaries defining what the platform evaluates, what the inventor must demonstrate, and what governance authority applies."
-- SA-001A §2.3: Stage exit conditions must be expressed as measurable growth -- not session completion, iteration count, or mechanical protocol closure.
-- SA-001A §11: "A stage is not complete because an inventor traversed the questions. A stage is complete when growth is demonstrable."
-
-**Application to committed stages:**
-
-Stage 2 produces mechanism understanding -- the inventor can articulate why their approach works.
-Stage 3 produces implementation orientation -- the inventor understands what they would need to do to make it work. SA-001A §6 confirms this requires Problem-Mechanism Fit, Assumption Inventory, and Expertise-Gap Awareness, all explicitly excluded from Stage 2 by GD-001. These cannot be reached by more Stage 2 iterations.
-Stage 4 produces engineering decision capability -- the inventor can specify what must be built and justify engineering decisions. SA-001A §7 confirms the boundary: knowing what to do (Stage 3) does not imply knowing what to build (Stage 4).
-Stage 5 produces proof-of-concept precision -- the inventor can define what a prototype must prove. SA-001A §8 confirms: knowing what to build (Stage 4) does not imply knowing what success criteria to test (Stage 5).
-Stage 6 represents a deployment context shift, not an inventor epistemic shift. SA-001A §9 confirms Stage 6 does not change the measurement model -- it changes the deployment model.
+It defines what must be true, observable, and verifiable before the
+project is authorized to move from designing one stage to designing
+the next.
 
 ---
 
-## 3. COGNITIVE GROWTH AND IMPLEMENTATION READINESS
+## 1. CURRENT DEMONSTRATED CAPABILITY
 
-### 3.1 Position 2 -- Accepted
+The following is what the platform has demonstrated through committed
+session evidence. These are facts, not aspirations.
 
-**InventorAI optimizes for a governed combination of cognitive growth and implementation readiness growth, with the following binding constraint:**
+### 1.1 What is demonstrated
 
-> Implementation readiness must emerge from inventor capability growth and must never replace it.
+**FACT -- from Sessions 3, 4 (Idea B), and Idea A Session 1:**
 
-This constraint is binding at every stage. An inventor who follows a structured process to identify next actions without demonstrating genuine reasoning development has completed a protocol, not developed as an inventor. Platform-supplied implementation structure that substitutes for inventor reasoning violates SPV §2 Principle 2 regardless of completion rate.
+- The platform reliably produces Stage 3 completion for inventors
+  with electronics ideas submitted via fixed-domain routes.
+- All three stage gaps (MECHANISM_COMPLETENESS, PHYSICAL_FEASIBILITY,
+  BOUNDARY_AMBIGUITY) close in sequence in every completed session.
+- Stage 3 is reachable: all three Stage 3 gaps
+  (PROBLEM_MECHANISM_FIT, ASSUMPTION_INVENTORY, EXPERTISE_GAP_AWARENESS)
+  are delivered as questions. TC-REACH-001/002/003 confirm reachability.
+- The platform produces mechanism-specific responses: specificity
+  test passes consistently across all completed sessions.
+- S-2 (naming mechanism-specific limitations) is observable and
+  stable across both ideas and multiple sessions.
+- S-4 (cross-gap reasoning transfer, with proximity objection) is
+  observable and stable across both ideas.
 
-**Evidence basis:**
-- SPV §2 Owner Vision Lock: all four dimensions -- reasoning quality, ownership depth, gap precision, implementation readiness proximity -- are co-equal governing objectives. No single dimension may be optimized at the expense of others.
-- SPV §2 Principle 2: "Any feature that substitutes platform capability for inventor capability is a violation of this vision, regardless of its technical merit."
-- SA-001A §2.2: "Does the capability improve the inventor's ability to reason, or does it reason on their behalf? The second is a governance violation regardless of technical merit."
-- SA-001A §3.1: Stage 2 primary objective is reasoning quality and gap precision. Stages 3-5 primary objective shifts toward implementation readiness proximity. This implies the platform's emphasis shifts across stages -- cognitive foundations established in Stage 2, implementation orientation developed in Stages 3-5.
-- SR-001 §2.4: Expected growth per stage maps cognitive dimensions to early stages and implementation readiness to later stages, consistent with this governed combination.
+### 1.2 What is not demonstrated
 
-**What this position requires of future stage design:**
-- Every Stage 3-5 exit condition must include a reasoning quality component, not only an implementation readiness component
-- Implementation readiness evidence must be traceable to inventor-demonstrated reasoning, not platform-supplied structure
-- No stage may advance an inventor whose implementation orientation is disconnected from their mechanism understanding
+**FACT -- from the same session record:**
 
----
+- That inventor understanding improved as a result of the sessions.
+- That S-1 (self-correction) occurs. It has not appeared in any
+  admissible session across either idea.
+- That Stage 3 produces a qualitatively different epistemic state
+  from Stage 2 in the inventor. This has not been measured.
+- That gap closure represents genuine knowledge acquisition rather
+  than linguistic quality gate satisfaction.
+- That the FDC-001 deliverable assembler produces accurate assumption
+  records. The assembler infers assumptions from session state;
+  inventor-stated assumptions are not separately tracked.
+- That Stage 3 exit criteria are enforced at runtime.
+  stage3_evaluator.py exists but is not integrated into run_iteration().
 
-## 4. STAGE NAMING CONFLICT RESOLUTION
+### 1.3 What the current stage architecture proves
 
-### 4.1 Position 3 -- Accepted with Clarification
+**FACT -- from SA-001A (read verbatim in this project):**
 
-**SA-001A governs stage naming. The Stage 3 naming conflict is resolved in favor of SA-001A.**
+SA-001A §11 states prerequisites before Stage 3 design begins:
+1. SA-001A committed and owner-approved -- DONE
+2. SA-001B committed and owner-approved -- DONE
+3. AB-006-A and AB-006-B resolved -- DONE (commit aa47149)
+4. Owner explicit authorization of Stage 3 design work -- DONE
 
-STAGE3_READINESS_DECISION.md uses "Stage 3" to mean Domain Validation. SA-001A uses "Stage 3" to mean Implementation Readiness. SA-001A is a Level 1 governance document. STAGE3_READINESS_DECISION.md is a Level 3 committed artifact. Per SPV §12 authority hierarchy, Level 1 takes precedence over Level 3 on architectural definitions.
+Stage 3 design was authorized. Stage 3 questions are delivered.
+The architecture supports it. What has not been demonstrated is
+that Stage 3 produces the epistemic outcomes it is designed to produce.
 
-Stage 3 in all future governance work means Implementation Readiness, as defined in SA-001A §6.
+**FACT -- SA-001A §5 (Stage 2 exit, verbatim):**
+"Exit: Inventor demonstrates measurable growth in reasoning quality,
+ownership depth, and gap precision sufficient to indicate readiness
+for implementation-oriented evaluation. Not defined by iteration
+count, completion metrics, or mechanical closure of all identified
+gaps."
 
-**Clarification -- Scope of Supersession:**
-
-Supersession applies only to the Stage 3 naming interpretation where a documented conflict exists. It does not invalidate independent governance decisions recorded in STAGE3_READINESS_DECISION.md.
-
-The following decisions recorded in STAGE3_READINESS_DECISION.md remain valid unless explicitly superseded by a later authoritative artifact:
-- Product Identity: Innovation Lifecycle Platform (Identity B)
-- Domain priority order: IoT first, Solar second
-- AB-005 Hard Gate classification and trigger conditions
-- AB-001 deferred status and trigger condition
-- Stage 3 execution conditions table
-
-These decisions are independent of the naming conflict. Their validity is not affected by this resolution.
-
-**Required follow-up:** STAGE3_READINESS_DECISION.md should be updated in a separate governance commit to record that its Stage 3 naming has been superseded by SA-001A, while preserving all independent governance decisions. That update is not authorized by this document.
-
----
-
-## 5. STAGE TRANSITION AUTHORIZATION MECHANISM
-
-### 5.1 Position 4 -- Deferred
-
-The mechanism by which stage transitions are formally authorized -- who decides, what evidence is sufficient, what review process applies -- is explicitly deferred to later governance work.
-
-**What is already established by committed artifacts:**
-
-SA-001A §11 defines what transition authorization may NOT be based on:
-- Iteration count
-- Mechanical gap closure
-- Session completion metrics
-- Owner override without evidence basis
-
-SR-001 §4.3 defines the minimum evidence standard: cross-session evidence constituting at minimum two sessions on comparable invention problems with stable inventor identity.
-
-**What remains unresolved:**
-
-The positive authorization mechanism -- what process, what artifact, what review triggers a valid stage transition -- is not defined. This is a governance gap that must be addressed before Stage 3 exit conditions can be fully designed.
-
-**Recorded dependency:** Stage 3 exit condition design cannot be completed until transition authorization governance is defined. This dependency must be carried into any Stage 3 design authorization document.
+The current engine measures mechanical gap closure and linguistic
+quality. It does not measure reasoning quality growth, ownership
+depth growth, or gap precision growth. The SA-001A exit criterion
+is not implemented.
 
 ---
 
-## 6. SR-001 AND GOVERNANCE-ROADMAP PRIORITY 7
+## 2. CURRENT OBSERVED OUTCOMES
 
-### 6.1 Position 5 -- Accepted
+What has actually been seen in sessions, stated without adjustment.
 
-**SR-001 is considered to have satisfied the majority of GOVERNANCE-ROADMAP Priority 7 intent.**
+### 2.1 From Idea B (Sessions 3 and 4)
 
-Priority 7 asked four governance questions:
-1. What evidence demonstrates inventor improvement across sessions? -- SR-001 §4.3 answers this.
-2. Is improvement measurable with the current evidence model? -- SR-001 §4.5 answers this: partially, with documented infrastructure gaps.
-3. Should the platform attempt to measure inventor development? -- SR-001 §2 answers this: yes, and defines what measurement means.
-4. If version history is implemented, does quality trajectory constitute evidence of development? -- SR-001 does not fully answer this. It remains open pending GOVERNANCE-ROADMAP Priority 4 resolution.
+- 7 iterations per session, all gaps closed, Stage 3 reached
+- S-2 confirmed at Iteration 5 in both sessions: 6 mechanism-specific
+  unknowns named for power budget calculation, partially prompted
+- S-4 confirmed at Iterations 5 and 7 in both sessions: MC->PF and
+  MC->BA cross-gap transfers, proximity objection documented
+- S-1 absent in both sessions: no revision marker, no prior claim
+  contradicted
+- S-3, S-5 absent in both sessions
+- The fail-state question (primary S-1 trigger for Candidate 5) was
+  not generated by the platform for Idea B (Water Leak Detection)
 
-Priority 7 remains open only on question 4, which depends on versioning design not yet authorized. SR-001 does not close Priority 7 -- it resolves its primary governance intent and reduces the remaining scope to a single infrastructure-dependent question.
+### 2.2 From Idea A (Session 1)
 
----
+- 7 iterations (Iterations 2-7), all stage gaps closed, Stage 3 reached
+- S-2 confirmed at Iteration 5: six mechanism-specific unknowns named,
+  partially prompted by question structure
+- S-4 confirmed at Iteration 7: control/mechanical distinction
+  transferred from mechanism to boundary gap, proximity objection applies
+- S-1 absent: fail-state question not generated by platform for
+  Candidate 5 (Combination Lock) in this session
+- S-3, S-5 absent
 
-## 7. HOW FUTURE STAGES PREVENT STAGE INFLATION
+### 2.3 Cross-session pattern
 
-### 7.1 The Stage Inflation Risk
+The same two signals (S-2, S-4) appear in the same iteration positions
+across three sessions on two different ideas with the same participant.
+S-1 is absent in all three sessions.
 
-Stage inflation occurs when a new stage is added for product or engagement reasons rather than because it represents a genuine epistemic boundary, or when exit conditions are defined by protocol completion rather than demonstrated growth.
+This pattern is consistent with two competing explanations:
+(a) The platform reliably elicits ownership articulation and cross-gap
+    reasoning transfer from this participant -- a real capability.
+(b) The participant produces consistent responses to a consistent
+    question sequence, and the signals reflect question structure
+    as much as inventor behavior.
 
-### 7.2 Safeguards from Committed Artifacts
-
-The following safeguards are already in place and apply to all future stage design:
-
-**From SA-001A §2.1:** Every stage must serve at least one of the four SPV §1 objectives. A stage serving none has no governance basis.
-
-**From SA-001A §11:** Stage exit conditions must express measurable growth. Transition may not be authorized by iteration count, mechanical closure, or protocol metrics.
-
-**From SR-001 §4:** Evidence of improvement requires cross-session minimum standard. Single-session protocol traversal is not sufficient evidence for stage exit.
-
-**From SPV §2 Principle 2:** Substitution prohibition applies at every stage. A stage that advances inventors by supplying structure rather than requiring demonstrated reasoning violates this principle.
-
-**From Position 1 (§2):** A stage proposal that cannot articulate the qualitative epistemic shift it represents has no governance justification.
-
-**From Position 2 (§3):** A stage whose exit conditions can be satisfied without cognitive growth demonstrates stage inflation by definition.
-
-### 7.3 The Remaining Governance Gap
-
-The safeguards above define what evidence is required but do not define the authorization mechanism for stage transitions. Until Position 4 is resolved (§5), the safeguards are necessary but not fully enforceable. This is the primary remaining inflation risk.
-
----
-
-## 8. THE RELATIONSHIP BETWEEN SESSION SUCCESS, INVENTOR IMPROVEMENT, AND REAL-WORLD EXECUTION
-
-For governance clarity, this relationship is recorded as a binding chain:
-Each level requires the previous but does not imply it. A successful session does not prove inventor improvement (SR-001 §4.5). Inventor improvement does not automatically produce implementation readiness (SA-001A §6 exit conditions). Implementation readiness as defined by InventorAI does not constitute proof of real-world execution capability (SPV §4).
-
-**Governance implication:** Each stage must be justified by what it adds to this chain. No stage may claim to prove a level it does not reach.
+The current evidence cannot distinguish between these explanations.
+That is the central measurement problem. It is not a design failure
+-- it is an honest description of what single-participant, same-
+question-structure evidence can and cannot demonstrate.
 
 ---
 
-## 9. WHAT THIS DOCUMENT DOES NOT DECIDE
+## 3. CURRENT MEASUREMENT LIMITATIONS
 
-- No stage is designed
-- No gap types are defined for any future stage
-- No workflows are specified
-- No implementation requirements are introduced
-- No Stage 3 authorization is granted by this document
-- No domain expansion is authorized
-- Transition authorization mechanism is explicitly deferred (§5)
-- STAGE3_READINESS_DECISION.md supersession handling is noted but not executed (§4.1)
+The following limitations are structural. They bound what stage
+evolution evidence is currently collectible.
+
+### L-1 -- No persistence
+
+The engine has no cross-session memory. Each session starts from
+zero. Stage exit epistemic state (what the inventor knows, assumes,
+and has acknowledged not knowing) is not carried forward.
+
+**Impact on stage evolution:** Cannot measure whether an inventor
+who completes Stage 2 enters Stage 3 with a richer epistemic map
+than they had at Stage 2 entry. Cannot track whether the stage
+boundary represents a qualitatively different state.
+
+### L-2 -- assess_response() measures linguistic quality, not growth
+
+REASONED/ASSERTED classification does not detect improvement. A
+REASONED response in Session 1 and a REASONED response in Session 4
+are indistinguishable by the engine regardless of content depth.
+
+**Impact on stage evolution:** The engine cannot confirm that a
+Stage 2 exit is earned by genuine growth rather than by producing
+linguistically adequate responses. Stage boundary enforcement depends
+on this distinction.
+
+### L-3 -- Stage 3 evaluator not integrated
+
+stage3_evaluator.py exists and passes 41 tests. It is not integrated
+into run_iteration(). Stage 3 exit criteria are not checked at
+runtime. Stage 3 completion in current sessions is question delivery,
+not evaluation-gated exit.
+
+**Impact on stage evolution:** Stage 3 cannot be claimed to be
+functionally complete until the evaluator is integrated and exit
+criteria are enforced. A stage that delivers questions without
+evaluating exit is not a complete stage.
+
+### L-4 -- Single participant, single domain
+
+All admissible ILT-002 sessions use one participant in one domain
+(electronics_electrical). The signal pattern observed may reflect:
+this participant, this domain, this question set, or some combination.
+
+**Impact on stage evolution:** Stage evolution evidence from a single
+participant cannot generalize to the platform. A finding that Stage 2
+produces development in one participant is not evidence that it does
+so reliably.
+
+### L-5 -- S-1 has not appeared
+
+The signal most resistant to protocol learning has not been confirmed
+in any admissible session. This is a measurement outcome, not a
+measurement failure. But it means the strongest evidence for genuine
+development is absent from the entire evidence base.
+
+**Impact on stage evolution:** Any claim that Stage 2 produces the
+epistemic change required for Stage 3 entry must explain the absence
+of S-1 across all sessions.
 
 ---
 
-## 10. OPEN ITEMS REQUIRING FUTURE GOVERNANCE ACTION
+## 4. EVOLUTION HYPOTHESES
 
-| Item | Required Before | Reference |
-|------|----------------|-----------|
-| Stage transition authorization mechanism | Stage 3 exit condition design | §5.1 |
-| STAGE3_READINESS_DECISION.md naming update | Any Stage 3 design work | §4.1 |
-| GOVERNANCE-ROADMAP Priority 7 Question 4 | Versioning design authorization | §6.1 |
-| Stage 3 explicit design authorization | Stage 3 design work begins | SA-001A §11 |
+The following are hypotheses only. They are not claims. Each requires
+the evidence specified in Section 5 before it can be treated as more
+than a hypothesis.
+
+### H-1 -- Stage 2 produces mechanism understanding sufficient for Stage 3 entry
+
+**Hypothesis:** An inventor who completes Stage 2 (gaps closed, Stage 3
+reached) has demonstrated sufficient understanding of their mechanism
+to benefit from Stage 3 (assumption inventory, expertise gap awareness,
+problem-mechanism fit assessment).
+
+**Current evidence status:** CONSISTENT WITH but not confirmed by.
+All sessions produced Stage 3 completion. The inventor's responses
+in Stage 3 questions (Iterations 5-7) showed mechanism-specific
+content. No session produced responses indicating Stage 3 was
+premature.
+
+**Disconfirming evidence available:** None observed. But this is
+partly because Stage 3 evaluator is not integrated -- Stage 3
+adequacy has not been formally tested.
 
 ---
 
-*This document is produced to be accurate, not reassuring.*
-*No position in this paper authorizes implementation, stage design, or domain expansion.*
-*Positions recorded here have governance standing only after explicit owner admission.*
-*Repository evidence takes precedence over this document at all times.*
+### H-2 -- The current stage gap set (Stages 2-3) produces a meaningfully
+different epistemic state at exit than at entry
+
+**Hypothesis:** An inventor who exits Stage 3 understands their
+invention qualitatively differently than they did when they entered
+Stage 2 -- not just more specifically, but differently in kind.
+
+**Current evidence status:** NOT TESTABLE with current infrastructure.
+No epistemic snapshot at stage entry exists to compare against exit.
+SA-001A §3.3 states this is the governing criterion for stage
+boundary justification. The criterion cannot currently be tested.
+
+**What would need to be true:** The inventor at Stage 3 exit could
+articulate: (a) what they now know that they did not know at Stage 2
+entry, (b) what they now know they do not know, (c) what the next
+concrete action is and why. This articulation would need to be
+qualitatively different from what they could produce at Stage 2 entry.
+
+---
+
+### H-3 -- Stage evolution to engineering assessment (Stage 4 characterization)
+is warranted when Stage 2-3 outcomes are consistently demonstrated
+
+**Hypothesis:** If Stage 2-3 consistently produces genuine mechanism
+understanding and honest unknown articulation across multiple
+participants and ideas, then an engineering assessment stage
+(helping inventors recognize engineering implications of their
+mechanism) would be a natural and justified next step.
+
+**Current evidence status:** NOT SUPPORTED. Stage 2-3 consistency
+has been demonstrated for one participant, one domain, three sessions.
+Genuine mechanism understanding vs protocol traversal quality has not
+been distinguished. H-3 cannot be evaluated until H-1 and H-2 are
+confirmed.
+
+---
+
+### H-4 -- The fail-state and power-failure contradictions are reliably surfaced
+by platform questions in Candidate 5 ideas
+
+**Hypothesis:** The platform's standard question sequence for
+electronics_electrical ideas reliably surfaces the primary S-1
+structural opportunity in Candidate 5 (battery fail-state) across
+participants.
+
+**Current evidence status:** DISCONFIRMED for one session. Idea A
+Session 1 (Candidate 5) completed 6 iterations without generating
+the fail-state question. The platform did not surface the primary
+S-1 opportunity in the one session where Candidate 5 was used.
+
+**Implication:** S-1 absence in Idea A Session 1 cannot be fully
+attributed to inventor behavior. The platform may not generate the
+questions that create S-1 conditions.
+
+---
+
+## 5. EVIDENCE REQUIREMENTS FOR EVOLUTION
+
+This section defines what must be demonstrated before any stage
+evolution is authorized. These are minimum requirements, not
+sufficient conditions.
+
+### E-1 -- Stage 2-3 functional completion must be confirmed
+
+**What must be true:**
+- stage3_evaluator.py integrated into run_iteration()
+- Stage 3 exit criteria enforced at runtime, not just question delivery
+- At least one session completes Stage 3 with evaluator-confirmed
+  exit, not question-delivery-only exit
+
+**Why this must precede evolution:**
+A stage that delivers questions without evaluating exit is not a
+complete stage. Adding Stage 4 before Stage 3 is functionally
+complete creates an unvalidated stage stack.
+
+**Current status:** NOT MET. stage3_evaluator.py is not integrated.
+
+---
+
+### E-2 -- S-1 must be confirmed in at least one admissible session
+
+**What must be true:**
+- At least one session produces a Tier 1 or Tier 2 revision marker
+  with a logically contradicting prior claim
+- The contradiction must be specific and mechanism-linked
+- The question that surfaced it must be documented
+
+**Why this must precede evolution:**
+S-1 is the signal most diagnostic of genuine epistemic change.
+Without at least one S-1 confirmation, the evidence base for
+"Stage 2 produces qualitative change in the inventor" is absent.
+SA-001A's governing criterion for stage boundaries is qualitative
+epistemic change -- this criterion has not been demonstrated.
+
+**Current status:** NOT MET. S-1 absent across all admissible
+sessions in both ideas.
+
+---
+
+### E-3 -- §8 threshold must be met for at least the Idea Development
+Platform classification
+
+**What must be true:**
+- ILT-002 §8 classification procedure applied to complete evidence
+- At minimum, IDEA DEVELOPMENT PLATFORM classification is authorized
+  (§8 Step 2 returns NO -- the platform reliably produces structured
+  idea articulation)
+- Classification is based on completed Idea A session record, not
+  on Idea A Session 1 alone
+
+**Why this must precede evolution:**
+If the platform cannot demonstrate reliable idea development output
+(Category 1 or 2 from INVENTOR_OUTCOME_MEASUREMENT.md), adding a
+new stage produces complexity without demonstrated foundation.
+
+**Current status:** NOT MET. Idea A session record is incomplete --
+only Session 1 has been conducted. §8 requires at least two sessions
+per idea for a stable signal record.
+
+---
+
+### E-4 -- The question-type confound for S-1 must be resolved or documented
+
+**What must be true:**
+- Either the platform generates questions that create S-1 conditions
+  (fail-state, constraint exposure) and S-1 is still absent (inventor
+  does not self-correct when the opportunity exists), OR
+- The question set is confirmed to not generate S-1 conditions for
+  these ideas, and this is recorded as a platform limitation
+
+**Why this must precede evolution:**
+If S-1 is absent because the platform does not ask the right questions,
+that is a Stage 2-3 design problem, not evidence that inventors do not
+develop. Stage evolution should not proceed on an unresolved ambiguity
+about whether the current stages are working as designed.
+
+**Current status:** ACTIVE AMBIGUITY. Idea A Session 1 did not
+generate the fail-state question for Candidate 5. Whether this
+reflects question set design, gap cascade logic, or session state
+is not yet determined.
+
+---
+
+### E-5 -- Multi-participant evidence must exist
+
+**What must be true:**
+- At least two participants have completed the Stage 2-3 sequence
+- Signal records exist for both participants
+- The pattern observed in single-participant ILT-002 is either
+  confirmed or disconfirmed across participants
+
+**Why this must precede evolution:**
+Single-participant evidence cannot generalize. A stage evolution
+decision based on one participant's behavior is not a platform-level
+decision -- it is an observation about one inventor.
+
+**Current status:** NOT MET. ILT-002 is single-participant by design
+(Decision D-1). Multi-participant evidence requires a separate campaign.
+
+---
+
+## 6. AUTHORIZATION THRESHOLDS
+
+Authorization for stage evolution requires ALL of the following.
+These are not individually sufficient -- they are jointly necessary.
+
+| Threshold | Current status | Notes |
+|---|---|---|
+| E-1: Stage 3 evaluator integrated | NOT MET | stage3_evaluator.py exists; integration not done |
+| E-2: S-1 confirmed in at least one session | NOT MET | Absent across all admissible sessions |
+| E-3: §8 classification completed on full Idea record | NOT MET | Idea A incomplete (Session 1 only) |
+| E-4: S-1 question-confound resolved | ACTIVE AMBIGUITY | Platform may not generate S-1 conditions |
+| E-5: Multi-participant evidence | NOT MET | ILT-002 is single-participant |
+
+**Current authorization status: STAGE EVOLUTION IS NOT AUTHORIZED.**
+
+This is a finding, not a failure. The thresholds exist to prevent
+premature complexity addition. Zero thresholds are currently met.
+
+---
+
+## 7. DISCONFIRMING EVIDENCE
+
+The following evidence actively works against stage evolution
+authorization. It is not ignored -- it is recorded.
+
+### D-1 -- S-1 absent across all sessions
+
+Across three admissible sessions (Sessions 3, 4 on Idea B; Session 1
+on Idea A), S-1 has not appeared. The signal requiring genuine prior
+commitment and revision has not been observed.
+
+This is consistent with either: (a) the platform does not produce
+the epistemic conditions for self-correction, or (b) the participant
+does not self-correct under any question sequence. Both explanations
+are active.
+
+### D-2 -- Stage 3 is question delivery, not evaluation-gated
+
+Stage 3 questions are delivered but Stage 3 exit is not evaluated.
+The claim that "Stage 3 is reachable" is accurate for question
+delivery. The claim that "Stage 3 is functionally complete" is not.
+Stage evolution from Stage 3 to a hypothetical Stage 4 would be
+evolution from an incomplete stage.
+
+### D-3 -- assess_response() accepted explicit ignorance as REASONED
+
+DVO-S1-003 (Session 1, Idea B, pre-admissible): PHYSICAL_FEASIBILITY
+closed on a response stating physical constraints were explicitly
+unknown. The engine scored this as REASONED. The gap closed. The
+inventor gained no understanding of feasibility in the process.
+
+This is direct evidence that Stage 2 gap closure does not require
+genuine mechanism knowledge. It requires linguistic quality that
+the engine classifies as REASONED. Stage evolution built on Stage 2
+gap closure assumes the foundation is sound. D-3 shows the foundation
+has a known weakness.
+
+### D-4 -- The platform did not generate the S-1 condition for Candidate 5
+
+Candidate 5 (Combination Lock) was selected specifically because its
+primary S-1 opportunity (battery fail-state contradiction) is a
+generalizable engineering design concern. In Idea A Session 1, the
+platform completed 6 iterations without generating a question about
+failure modes or fail-state behavior. The S-1 opportunity was
+structurally available but the platform did not create the conditions
+for it.
+
+This suggests the question set may systematically avoid or not reach
+failure-mode questions within the iteration budget of a typical session.
+
+---
+
+## 8. CONDITIONS UNDER WHICH STAGE EVOLUTION SHOULD NOT OCCUR
+
+Stage evolution should not occur if any of the following are true.
+These are not optional checks -- they are conditions that make
+evolution structurally premature or misleading.
+
+### C-1 -- Stage 3 evaluator is not integrated
+
+Adding a stage beyond Stage 3 while Stage 3 itself has unenforced
+exit criteria creates a system where two stages have unverified
+boundaries. The platform would deliver questions for Stage 4 without
+knowing whether the inventor actually completed Stage 3.
+
+### C-2 -- S-1 has not appeared in any session after systematic
+question-confound investigation
+
+If the question-confound is investigated (the platform deliberately
+generates S-1-creating questions) and S-1 still does not appear
+across multiple sessions and participants, this is evidence that
+the current stage design does not produce the epistemic conditions
+for genuine development. Stage evolution that adds complexity to a
+foundation that does not produce development makes the problem worse,
+not better.
+
+### C-3 -- Evidence base is single-participant
+
+A stage design decision informed by one participant's behavior is
+not a product decision -- it is a hypothesis. Stage evolution requires
+evidence that the current stages produce value for the intended user
+population, not for one observed inventor.
+
+### C-4 -- §8 classification has not been completed
+
+Stage evolution before the ILT-002 campaign produces a platform
+identity classification skips the primary validation gate the project
+designed for this purpose. The campaign exists to answer "what does
+the platform produce?" before asking "what should we add?"
+
+### C-5 -- The assessed_response() quality gate weakness (D-3) has not
+been addressed or formally accepted as a design limitation
+
+If gap closure can be achieved without genuine mechanism knowledge,
+then Stage 3 completion does not guarantee the inventor has the
+understanding Stage 4 would build on. Evolution on a weak foundation
+requires at minimum that the weakness be formally accepted as a
+known limitation, not discovered later as a surprise.
+
+---
+
+## 9. RELATIONSHIP TO SA-001A STAGE BOUNDARY CRITERION
+
+SA-001A §3.3 states (read verbatim in this project):
+> "A stage boundary is justified when the inventor's relationship
+> to their idea changes in kind, not just in degree."
+
+This is the governing criterion for stage boundaries.
+
+**Current evidence against this criterion:**
+
+No evidence currently demonstrates that completing Stage 2-3 changes
+the inventor's relationship to their idea in kind. The evidence shows:
+- The inventor produces more specific mechanism descriptions
+  (degree, not kind)
+- The inventor names limitations when asked (degree, not kind)
+- The inventor applies consistent reasoning across gap types
+  (consistent framing, possibly kind -- but with proximity objection)
+
+The one signal that would most clearly indicate change in kind (S-1:
+the inventor revises a prior belief when a contradiction is exposed)
+has not appeared.
+
+**What "change in kind" would look like:**
+
+An inventor who enters Stage 2 believing their mechanism is
+straightforward and exits Stage 3 having genuinely revised that
+understanding -- not just added detail, but changed what they
+thought they knew -- represents a change in kind.
+
+The current evidence does not demonstrate this. It demonstrates
+that inventors can traverse the protocol competently. Competent
+traversal is evidence of protocol design quality, not necessarily
+of epistemic change in the inventor.
+
+---
+
+## 10. SUMMARY
+
+**Current demonstrated capability:**
+Stage 2-3 question delivery, reliable session completion, S-2 and
+S-4 observable and stable. The platform works as an elicitation
+and structuring tool.
+
+**Current evidence gap:**
+No demonstrated qualitative epistemic change in inventors. S-1
+absent. Stage 3 evaluator not integrated. Single-participant evidence
+base.
+
+**Evidence burden for stage evolution:**
+Five thresholds (E-1 through E-5), all currently unmet.
+
+**Conditions that block evolution:**
+Five conditions (C-1 through C-5), all currently active.
+
+**Recommendation from evidence:**
+Stage evolution is not currently authorized by evidence.
+
+The following are evidence prerequisites -- not current implementation
+authorizations. No item below is authorized by this document. Each
+is a condition that must be satisfied before a future stage evolution
+authorization decision can be made:
+
+- ILT-002 campaign completed and §8 classification applied
+- Stage 3 evaluator integration confirmed (separate authorization required)
+- S-1 question-confound investigated and resolved or documented
+- Multi-participant evidence collected (separate campaign required)
+
+This document records what evidence is needed. It does not authorize
+the work required to produce that evidence.
+
+This is not a judgment about whether future stages are valuable.
+It is an evidence-grounded statement about what has been demonstrated
+and what has not.
+
+---
+
+*This document defines the evidence burden for stage evolution.*
+*It does not authorize stage evolution.*
+*Evidence determines readiness. Not schedule. Not aspiration.*
