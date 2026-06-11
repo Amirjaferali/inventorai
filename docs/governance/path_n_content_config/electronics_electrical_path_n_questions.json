@@ -1,0 +1,64 @@
+{
+  "metadata": {
+    "path": "Path N",
+    "domain": "electronics_electrical",
+    "status": "approved_governance_content_not_runtime_integrated",
+    "source_spec": "e2e6234",
+    "approval_record": "effd040",
+    "integration_plan": "fa26744",
+    "artifact_plan": "932b7a8",
+    "runtime_integrated": false
+  },
+  "gaps": {
+    "MECHANISM_COMPLETENESS": [
+      {
+        "question_id": "N-MC-1",
+        "text": "Explain in everyday words how you imagine the system would notice the problem and respond."
+      },
+      {
+        "question_id": "N-MC-2",
+        "text": "What are the main parts of your idea, in your own words, and what does each part do?"
+      },
+      {
+        "question_id": "N-MC-3",
+        "text": "Walk through what happens step by step, from the moment the problem starts to the moment someone knows about it."
+      },
+      {
+        "question_id": "N-MC-4",
+        "text": "Is there any part of how it works that you're unsure about or imagining loosely? Describe it as best you can."
+      }
+    ],
+    "PHYSICAL_FEASIBILITY": [
+      {
+        "question_id": "N-PF-1",
+        "text": "What would need to be true for this system to work safely, and what information would you need later to confirm it?"
+      },
+      {
+        "question_id": "N-PF-2",
+        "text": "What do you think would keep the system running, and what do you not know yet about that?"
+      },
+      {
+        "question_id": "N-PF-3",
+        "text": "Are there real-world conditions, such as heat, water, time, or wear, that might stop it from working? Which ones worry you most?"
+      },
+      {
+        "question_id": "N-PF-4",
+        "text": "If an engineer offered to check one thing about whether this can physically work, what would you ask them to check first?"
+      }
+    ],
+    "BOUNDARY_AMBIGUITY": [
+      {
+        "question_id": "N-BA-1",
+        "text": "When should the system work, when should it not work, and what situations might confuse it?"
+      },
+      {
+        "question_id": "N-BA-2",
+        "text": "What is your idea responsible for, and what is someone or something else's job?"
+      },
+      {
+        "question_id": "N-BA-3",
+        "text": "Describe a situation where the system should definitely react, and one where it should definitely stay quiet."
+      }
+    ]
+  }
+}
