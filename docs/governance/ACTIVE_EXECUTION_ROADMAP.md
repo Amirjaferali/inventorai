@@ -31,11 +31,11 @@ hides them.
 
 | Item | State |
 |------|-------|
-| Latest relevant execution baseline | `165e0da` — feat: implement Phase 2 Path N content selection |
+| Latest relevant execution baseline | `ffaab93` — governance: close Phase 2 Path N content selection implementation |
 | Phase 1 Path N designation | CLOSED |
 | Phase 2 Authorization | COMMITTED (`b3a5fba`) |
-| Phase 2 Implementation | COMMITTED (`165e0da`) |
-| Path N runtime integration | CONTENT SELECTION IMPLEMENTED; NOT FULLY CLOSED |
+| Phase 2 Path N content selection | CLOSED (`ffaab93`) |
+| Path N runtime integration | NOT FULLY CLOSED |
 | `runtime_integrated` | `false` |
 | R2 | HELD |
 | FORM T | BLOCKED |
@@ -61,6 +61,7 @@ hides them.
 | `b3a5fba` | Phase 2 Path N content selection authorization |
 | `71e90b3` | Phase 2 Gate Amendment 1 — adds `tests/test_phase1_path_designation.py` (one test) to authorized files; corrects §10 gate meaning |
 | `165e0da` | Phase 2 Path N content selection implementation — approved Path N artifact consumed by `state.path == "N"`; gates passed before commit |
+| `ffaab93` | Phase 2 Path N content selection implementation closure record |
 
 (Product-intent anchor `DUAL_PATH_PRODUCT_ANCHOR.md` at `60c809b`
 is deliberately NOT in this table: it is a product-intent anchor,
@@ -68,22 +69,21 @@ not a Path N implementation step.)
 
 ## 6. Current execution lane
 
-PATH N RUNTIME INTEGRATION — Phase 2 implementation is committed
-at `165e0da`. The Amendment 1 plumbing zone has been consumed for
-minimal Path N content selection. Path N-designated sessions now
-select approved N-* content from the approved JSON artifact for
-covered Stage 2 gap types. This does NOT set `runtime_integrated=true`
-and does NOT move R2, FORM T, S-6, or AA-5.
-Gate Amendment 1 (`71e90b3`) is in force: the authorized file set is
-five files, and the Phase 1 gate's equality test is amended to a
-Phase 2 regression guard.
+PATH N RUNTIME INTEGRATION — Phase 2 content selection is CLOSED at
+`ffaab93`. Path N runtime integration overall remains NOT FULLY CLOSED.
+`runtime_integrated` remains `false`. R2 remains HELD. FORM T remains
+BLOCKED. S-6 remains UNCLASSIFIED. AA-5 remains BLOCKED.
+
+This closure does not authorize runtime integration completion, R2,
+FORM T, S-6, AA-5, Path T, Professional Workspace, or Stage 4-7 expansion.
 
 ## 7. Next authorized step (exactly one)
 
-Create the Phase 2 implementation closure record — and only that.
-Phase 2 implementation is committed at `165e0da`, but the phase is
-not closed until a closure record captures scope, gates, diff,
-non-authorizations, and remaining blocked items.
+Create and commit `POST_PHASE_2_AUTHORIZATION_REVIEW.md`
+(review document only — authorizes nothing).
+
+Any E-1/E-2/E-3 evidence collection requires a later, separate limited
+evidence authorization. Nothing else is allowed.
 
 ## 8. Required future sequence
 
