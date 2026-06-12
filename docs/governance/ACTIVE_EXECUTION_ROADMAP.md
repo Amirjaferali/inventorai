@@ -31,7 +31,7 @@ hides them.
 
 | Item | State |
 |------|-------|
-| Latest relevant execution baseline | `b3a5fba` — governance: authorize Phase 2 Path N content selection |
+| Latest relevant execution baseline | `71e90b3` — governance: Phase 2 gate amendment 1 (Phase 1 test expectation correction) |
 | Phase 1 Path N designation | CLOSED |
 | Phase 2 Authorization | COMMITTED (`b3a5fba`) |
 | Phase 2 Implementation | NOT STARTED |
@@ -59,6 +59,7 @@ hides them.
 | `aa068fd` | Path N current execution anchor |
 | `3c15c32` | Phase 1 implementation closure record |
 | `b3a5fba` | Phase 2 Path N content selection authorization |
+| `71e90b3` | Phase 2 Gate Amendment 1 — adds `tests/test_phase1_path_designation.py` (one test) to authorized files; corrects §10 gate meaning |
 
 (Product-intent anchor `DUAL_PATH_PRODUCT_ANCHOR.md` at `60c809b`
 is deliberately NOT in this table: it is a product-intent anchor,
@@ -71,6 +72,9 @@ PATH N RUNTIME INTEGRATION — between Phase 2 Authorization
 The Amendment 1 plumbing zone is authorized for consumption but has
 NOT been consumed. Path N-designated sessions still receive legacy
 content.
+Gate Amendment 1 (`71e90b3`) is in force: the authorized file set is
+five files, and the Phase 1 gate's equality test is amended to a
+Phase 2 regression guard.
 
 ## 7. Next authorized step (exactly one)
 
