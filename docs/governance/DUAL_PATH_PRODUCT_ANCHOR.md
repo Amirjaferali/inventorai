@@ -1,132 +1,102 @@
-# ACTIVE EXECUTION ROADMAP
-# Single source of execution continuity across agent changes
+# DUAL PATH PRODUCT ANCHOR
+# Consolidation of committed dual-path product interpretation
 
-## 1. Purpose of this document
+## 1. Status and nature of this document
 
-Any agent joining this project reads this roadmap to know the
-current lane and next step WITHOUT reconstructing state from chat
-history, memory, or assumption. Repository truth overrides any
-conversation. This roadmap is execution control only — product
-meaning lives in `DUAL_PATH_PRODUCT_ANCHOR.md`; epistemic rules
-live in `ILT-002_GOVERNANCE_ANCHOR.md`.
+- DUAL PATH PRODUCT ANCHOR
+- This document is a CONSOLIDATION of already-committed governance.
+  It introduces NO new product scope, NO new theory, and NO new
+  authorization. If any statement here appears to conflict with its
+  committed sources, the committed sources prevail.
+- Purpose: prevent repeated re-explanation of product intent to
+  each new agent. Future agents read this anchor instead of
+  reconstructing intent from memory or chat history.
 
-## 2. What the application is
-
-InventorAI: a deterministic invention-progression platform.
-The engine is the single source of truth; AI is advisory only and
-never decides maturity, closes gaps, or issues PASS/WARN/BLOCK.
-Three-stage journey (GD-001) frozen. WPS001 benchmark must remain
-green.
-
-## 3. What the product target is
-
-A dual-path guided inventor journey (see
-`DUAL_PATH_PRODUCT_ANCHOR.md`, commit hash to be recorded at its
-commit): Path N serves non-specialist inventors with approved
-non-specialist questioning; Path T serves technical questioning
-contexts. The platform preserves gaps and known-unknowns; it never
-falsely solves or hides them.
-
-## 4. Current official state
-
-| Item | State |
-|------|-------|
-| Latest verified HEAD | `3c15c32` — governance: close Phase 1 Path N designation implementation |
-| Phase 1 Path N designation | CLOSED |
-| Path N runtime integration | NOT COMPLETE |
-| `runtime_integrated` | `false` |
-| Phase 2 | NOT AUTHORIZED |
-| R2 | HELD |
-| FORM T | BLOCKED |
-| S-6 | UNCLASSIFIED |
-| AA-5 | BLOCKED |
-
-## 5. Completed chain (Path N lane, commit order)
+## 2. Committed sources consolidated here
 
 | Commit | Artifact |
 |--------|----------|
-| `e2e6234` / `effd040` | Path N question content specification + approval |
-| `8ceb5d4` | Path N content config artifact (JSON) |
-| `806a3c6` | Path N content config artifact tests (10 passed) |
-| `26fa3e1` | Path N content config artifact approval record |
-| `d2b2a9a` | Path N runtime integration authorization plan (corrected) |
-| `2c0d2a5` | Phase 0 runtime discovery report |
-| `2f6720d` | Phase 0 conditional STOP owner ruling (R-A…R-G ACCEPT) |
-| `bd1019c` | Plan Amendment 1 (narrow question-selection plumbing zone) |
-| `16e020e` | Phase 1 authorization (designation field + route) |
-| `5084110` | Phase 1 implementation (`IdeaState.path`, `/start_ilt002_combination_lock_path_n`, tests) |
-| `aa068fd` | Path N current execution anchor |
-| `3c15c32` | Phase 1 implementation closure record |
+| `a31010a` | `NON_SPECIALIST_QUESTIONING_POLICY.md` |
+| `d3b2349` | `NON_SPECIALIST_MODE_SEPARATION_DESIGN_PLAN.md` |
+| `cdcd079` | `MVP_SCOPE_FREEZE_AMENDMENT_FUNCTIONAL_PATH_N.md` |
+| — | `SR-001_INVENTOR_OUTCOME_MEASUREMENT.md` (admitted framework; cited as source) |
+| `10d6876` | R1 product-alignment drift record (origin of the dual-path corrective) |
+| `e2e6234` / `effd040` | Path N question content specification and approval |
+| `aa068fd` | `PATH_N_CURRENT_EXECUTION_ANCHOR.md` (current execution state) |
 
-## 6. Current execution lane
+## 3. The two paths (committed interpretation)
 
-PATH N RUNTIME INTEGRATION — between Phase 1 (closed) and Phase 2
-(not yet authorized). The Amendment 1 plumbing zone exists but has
-NOT been consumed. Path N-designated sessions still receive legacy
-content.
+1. **Path N = non-specialist guided inventor path.**
+   A guided journey for inventors without engineering specialization.
+   Questions follow the non-specialist policy (`a31010a`): translate,
+   defer, or record-unknown — never demand engineering parameters
+   the inventor cannot supply.
 
-## 7. Next authorized step (exactly one)
+2. **Path T = technical/specialist questioning context.**
+   The existing technical question bank
+   (`domains/electronics_electrical/domain.json`) serving sessions
+   where engineering-level questioning is appropriate.
 
-Draft Phase 2 Authorization — DRAFT ONLY
-(`PHASE_2_PATH_N_CONTENT_SELECTION_AUTHORIZATION.md`).
-Nothing else is next. No implementation precedes the committed
-authorization plus a separate explicit implementation instruction.
+3. **Path N users must not be blocked early by engineering-heavy
+   questions.** This is the committed lesson of the R1 stall
+   (`10d6876`): voltage/current/frequency questioning repeated
+   verbatim to a non-specialist stalled PHYSICAL_FEASIBILITY and
+   exposed product-alignment drift. The dual-path chain exists to
+   correct exactly this.
 
-## 8. Required future sequence
+4. **The platform leads the journey** and acts as an orchestration
+   layer toward execution, within governed limits. It elicits,
+   structures, and progresses — it does not merely interrogate.
 
-1. Commit `DUAL_PATH_PRODUCT_ANCHOR.md`
-2. Commit `ACTIVE_EXECUTION_ROADMAP.md` (this document)
-3. Draft Phase 2 Authorization only
-4. Commit Phase 2 Authorization only after owner review
-5. Implement Phase 2 only after separate explicit instruction
-6. Run required test gates and review diff
-7. Commit Phase 2 implementation only if gates green and diff confined
-8. Create Phase 2 closure record
-9. Only after runtime evidence: review whether R2 / FORM T / S-6
-   can move — each requires its own authorization; nothing moves
-   automatically
+5. **The platform must preserve invention gaps and known-unknowns.**
+   It must not falsely solve, silently close, or hide them.
+   Known-unknowns are recorded as evidence (per `e2e6234`
+   known-unknowns rule), not papered over. Gap taxonomy is unchanged
+   by the dual-path concept; only asking strategy differs.
 
-## 9. What is blocked and what must not be done
+## 4. Hard boundaries (restated from committed sources)
 
-Blocked: R2 (HELD — D-B, `ccd1ecd` §6.1), FORM T, S-6
-classification, AA-5, `runtime_integrated=true` (plan Phase 4
-process only), conversion of the `72b5f11` strict xfail
-(plan Phase 5 only).
+6. **Path T does not authorize Mode B, Professional Workspace,
+   Stage 4+, or unrestricted engineering execution.**
+   Per `d3b2349`: the terms "Mode B" and "Professional Workspace"
+   carry prior meaning and remain PROHIBITED as Path designations.
+   Per `cdcd079`: the freeze amendment admitted exactly ONE item —
+   Functional Path N — with no Workspace, no Engineering Translation
+   stage, no Stage 4+, no auto-classification, and no engine
+   redesign.
 
-Must not be done by any agent without explicit owner authorization:
-- Modify `domains/electronics_electrical/domain.json` (Path T bank)
-- Touch deterministic gates (`evaluate_transition()`,
-  `assess_response()`, `integrate_response()`) or PASS/WARN/BLOCK
-- Modify `engine/progression_loop.py` outside the Amendment 1 zone,
-  and even inside the zone only under a committed phase authorization
-- Mutate the Path N JSON artifact or its metadata
-- Auto-label legacy sessions with any path
-- Reconstruct global state, infer missing evidence, or treat
-  absence of evidence as a negative fact
-- Bundle multiple authorizations into one action
+7. **Phase 2 must remain Path N content selection only.**
+   It must not become full implementation orchestration. Phase 2's
+   entire meaning is: `state.path == "N"` selects approved Path N
+   question content. Nothing more.
 
-## 10. Mandatory reading before any analysis
+## 5. What this anchor does NOT do
 
-1. `docs/governance/ILT-002_GOVERNANCE_ANCHOR.md` (epistemic boot — mandatory first)
+8. No implementation is authorized by this anchor.
+9. Phase 2 is not authorized by this anchor. Phase 2 requires its
+   own authorization document and, separately, its own explicit
+   implementation instruction.
+10. `runtime_integrated` remains `false`.
+11. R2 remains HELD.
+12. FORM T remains BLOCKED.
+13. S-6 remains UNCLASSIFIED.
+14. AA-5 remains BLOCKED.
+
+## 6. Forbidden interpretations of this anchor
+
+Future agents must NOT read this anchor as:
+- A scope expansion of any kind.
+- Authorization for any phase, route, loader, or content change.
+- Evidence that Path N is live or runtime-integrated (it is not —
+  see `aa068fd` §4–§7).
+- License to redefine Path N/Path T beyond the committed sources.
+- A substitute for the boot sequence: `ILT-002_GOVERNANCE_ANCHOR.md`
+  and `PATH_N_CURRENT_EXECUTION_ANCHOR.md` remain mandatory reads;
+  this anchor is supplementary product-intent context only.
+
+## 7. Reading order for future agents
+
+1. `docs/governance/ILT-002_GOVERNANCE_ANCHOR.md` (epistemic boot)
 2. `docs/governance/PATH_N_CURRENT_EXECUTION_ANCHOR.md` (execution state)
-3. `docs/governance/DUAL_PATH_PRODUCT_ANCHOR.md` (product intent)
-4. This roadmap (current lane and next step)
-5. The phase authorization in force, if any
-
-If these are not read, the agent must not proceed.
-
-## 11. Roadmap update rule
-
-This roadmap MUST be updated (and the update committed) at every
-one of these events, and is otherwise stale:
-- A phase authorization is committed
-- A phase implementation is committed
-- A phase closure record is committed
-- Any of R2 / FORM T / S-6 / AA-5 changes status
-- `runtime_integrated` changes
-- Any STOP is declared or resolved
-
-Each update revises §4 (state), §5 (chain), §6 (lane), §7 (next
-step), and the HEAD reference. An out-of-date roadmap is detectable
-by comparing §4's HEAD against `git log -1 --oneline`; on mismatch,
-agents trust git and flag the roadmap for update before proceeding.
+3. This document (product intent)
+4. The phase authorization in force, if any
