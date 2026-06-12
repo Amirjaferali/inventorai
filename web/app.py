@@ -88,7 +88,7 @@ def show_session(sid):
     if gap_type:
         gap = state.get_gap(gap_type)
         iterations_open = gap.iterations_open if gap else 0
-        question = get_question(state.domain, gap_type, iterations_open)
+        question = get_question(state.domain, gap_type, iterations_open, path=state.path)
     elif (
         state.maturity_level == 0
         and len(state.gaps) == 0

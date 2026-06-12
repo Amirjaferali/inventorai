@@ -50,7 +50,14 @@ def test_legacy_session_behavior_unchanged_with_field_present():
     assert state.path == "legacy_undesignated_current_behavior"
 
 
-def test_path_n_session_receives_same_question_as_legacy():
+def test_path_n_question_differs_from_legacy_and_matches_artifact():
+    """Phase 2 regression guard — amended under PHASE_2_GATE_AMENDMENT_1.md.
+    Supersedes the Phase 1 designation-only equality invariant: after Phase 2,
+    a Path N session must NOT receive legacy content; its question must come
+    from the approved N-* artifact. Gate behavior must remain identical.
+    """
+    import json
+
     client = _client()
 
     r_legacy = _post_route(client, "/start_ilt002_combination_lock")
@@ -62,7 +69,26 @@ def test_path_n_session_receives_same_question_as_legacy():
     res_l = SESSION_STORE[sid_l]["last_result"]
     res_n = SESSION_STORE[sid_n]["last_result"]
 
-    assert res_l.get("question") == res_n.get("question")
+    artifact_path = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "..",
+        "docs", "governance", "path_n_content_config",
+        "electronics_electrical_path_n_questions.json",
+    )
+    with open(artifact_path, encoding="utf-8") as f:
+        artifact = json.load(f)
+
+    approved_texts = {
+        entry["text"]
+        for variants in artifact["gaps"].values()
+        for entry in variants
+    }
+
+    assert res_n.get("question") != res_l.get("question"), (
+        "Path N regressed to legacy content"
+    )
+    assert res_n.get("question") in approved_texts, (
+        "Path N question is not approved N-* artifact content"
+    )
     assert res_l.get("transition") == res_n.get("transition")
 
     st_l = SESSION_STORE[sid_l]["state"]

@@ -164,12 +164,26 @@ QUESTIONS = {
 }
 
 
-def get_question(domain: str, gap_type: str, iterations_open: int) -> str:
+def get_question(domain: str, gap_type: str, iterations_open: int,
+                 path: str | None = None) -> str:
     """
     Select question for gap_type.
-    Asks domain layer first; falls back to generic questions.
+    path == "N": resolves from the approved Path N artifact
+    (engine/path_n_questions.py). Gap types not covered by the artifact
+    fall through to generic QUESTIONS — the explicit Stage 3 fallthrough
+    (b3a5fba §8), not a hidden fallback to Path T content.
+    Default / any other path value: existing behavior unchanged —
+    domain layer first, generic QUESTIONS fallback.
     Framework-level delegation — no domain-specific logic here.
     """
+    if path == "N":
+        from engine.path_n_questions import get_path_n_question
+        path_n_q = get_path_n_question(gap_type, iterations_open)
+        if path_n_q is not None:
+            return path_n_q
+        variants = QUESTIONS[gap_type]
+        index = min(iterations_open, len(variants) - 1)
+        return variants[index]
     from engine.domain_rules import get_domain_question
     domain_q = get_domain_question(domain, gap_type, iterations_open)
     if domain_q:
@@ -527,8 +541,11 @@ def run_iteration(state: IdeaState, response: str) -> dict:
                 "last_response": None,
                 "iteration": state.iteration,
             }
-            next_q = get_ai_question(state.domain, next_gap_opened, _ai_ctx) \
-                or get_question(state.domain, next_gap_opened, iterations_open)
+            _ai_q = None if state.path == "N" \
+                else get_ai_question(state.domain, next_gap_opened, _ai_ctx)
+            next_q = _ai_q \
+                or get_question(state.domain, next_gap_opened, iterations_open,
+                                path=state.path)
             result = {
                 "iteration"     : state.iteration,
                 "gap_targeted"  : next_gap_opened,
@@ -564,8 +581,11 @@ def run_iteration(state: IdeaState, response: str) -> dict:
             "last_response": response[:200] if response else None,
             "iteration": state.iteration,
         }
-        question = get_ai_question(state.domain, gap_type, _ai_context) \
-            or get_question(state.domain, gap_type, iterations_open)
+        _ai_q = None if state.path == "N" \
+            else get_ai_question(state.domain, gap_type, _ai_context)
+        question = _ai_q \
+            or get_question(state.domain, gap_type, iterations_open,
+                            path=state.path)
 
         # Integrate response
         transition, reason = integrate_response(state, gap_type, question, response)
@@ -595,9 +615,14 @@ def run_iteration(state: IdeaState, response: str) -> dict:
                 "last_response": None,
                 "iteration": state.iteration,
             }
+            _ai_q = (
+                None if state.path == "N"
+                else get_ai_question(state.domain, next_gap_opened, ai_ctx)
+            )
             next_q = (
-                get_ai_question(state.domain, next_gap_opened, ai_ctx)
-                or get_question(state.domain, next_gap_opened, iterations_open)
+                _ai_q
+                or get_question(state.domain, next_gap_opened, iterations_open,
+                                path=state.path)
             )
         result = {
             "iteration": state.iteration,
