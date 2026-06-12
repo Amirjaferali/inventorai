@@ -31,11 +31,12 @@ hides them.
 
 | Item | State |
 |------|-------|
-| Roadmap baseline HEAD before this document | `60c809b` — governance: correct dual path product anchor content |
+| Latest relevant execution baseline | `b3a5fba` — governance: authorize Phase 2 Path N content selection |
 | Phase 1 Path N designation | CLOSED |
+| Phase 2 Authorization | COMMITTED (`b3a5fba`) |
+| Phase 2 Implementation | NOT STARTED |
 | Path N runtime integration | NOT COMPLETE |
 | `runtime_integrated` | `false` |
-| Phase 2 | NOT AUTHORIZED |
 | R2 | HELD |
 | FORM T | BLOCKED |
 | S-6 | UNCLASSIFIED |
@@ -57,6 +58,7 @@ hides them.
 | `5084110` | Phase 1 implementation (`IdeaState.path`, `/start_ilt002_combination_lock_path_n`, tests) |
 | `aa068fd` | Path N current execution anchor |
 | `3c15c32` | Phase 1 implementation closure record |
+| `b3a5fba` | Phase 2 Path N content selection authorization |
 
 (Product-intent anchor `DUAL_PATH_PRODUCT_ANCHOR.md` at `60c809b`
 is deliberately NOT in this table: it is a product-intent anchor,
@@ -64,27 +66,30 @@ not a Path N implementation step.)
 
 ## 6. Current execution lane
 
-PATH N RUNTIME INTEGRATION — between Phase 1 (closed) and Phase 2
-(not yet authorized). The Amendment 1 plumbing zone exists but has
+PATH N RUNTIME INTEGRATION — between Phase 2 Authorization
+(committed, `b3a5fba`) and Phase 2 Implementation (NOT STARTED).
+The Amendment 1 plumbing zone is authorized for consumption but has
 NOT been consumed. Path N-designated sessions still receive legacy
 content.
 
 ## 7. Next authorized step (exactly one)
 
-Draft Phase 2 Authorization — DRAFT ONLY
-(`PHASE_2_PATH_N_CONTENT_SELECTION_AUTHORIZATION.md`).
-Nothing else is next. No implementation precedes the committed
-authorization plus a separate explicit implementation instruction.
+Explicit owner instruction to IMPLEMENT PHASE 2 — and only that.
+No implementation may start automatically from the authorization
+commit alone. The authorization (`b3a5fba`) defines the scope; the
+implementation instruction is a separate, explicit gate. Until that
+instruction is issued, no code changes occur.
 
 ## 8. Required future sequence
 
 1. ~~Commit `DUAL_PATH_PRODUCT_ANCHOR.md`~~ — DONE (`60c809b`)
-2. Commit `ACTIVE_EXECUTION_ROADMAP.md` (this document)
-3. Draft Phase 2 Authorization only
-4. Commit Phase 2 Authorization only after owner review
-5. Implement Phase 2 only after separate explicit instruction
-6. Run required test gates and review diff
-7. Commit Phase 2 implementation only if gates green and diff confined
+2. ~~Commit `ACTIVE_EXECUTION_ROADMAP.md`~~ — DONE (`1982e2b`)
+3. ~~Draft Phase 2 Authorization~~ — DONE
+4. ~~Commit Phase 2 Authorization~~ — DONE (`b3a5fba`)
+5. Explicit owner instruction to implement Phase 2 only
+6. Run required test gates (authorization §10) and review diff
+7. Commit Phase 2 implementation only if gates green and diff
+   confined to the four authorized files
 8. Create Phase 2 closure record
 9. Only after runtime evidence: review whether R2 / FORM T / S-6
    can move — each requires its own authorization; nothing moves
@@ -102,7 +107,8 @@ Must not be done by any agent without explicit owner authorization:
 - Touch deterministic gates (`evaluate_transition()`,
   `assess_response()`, `integrate_response()`) or PASS/WARN/BLOCK
 - Modify `engine/progression_loop.py` outside the Amendment 1 zone,
-  and even inside the zone only under a committed phase authorization
+  and even inside the zone only under the committed Phase 2
+  authorization plus the explicit implementation instruction
 - Mutate the Path N JSON artifact or its metadata
 - Auto-label legacy sessions with any path
 - Reconstruct global state, infer missing evidence, or treat
@@ -115,20 +121,19 @@ Must not be done by any agent without explicit owner authorization:
 2. `docs/governance/PATH_N_CURRENT_EXECUTION_ANCHOR.md` (`aa068fd`, execution state)
 3. `docs/governance/DUAL_PATH_PRODUCT_ANCHOR.md` (`60c809b`, product intent)
 4. This roadmap (current lane and next step)
-5. The phase authorization in force, if any
+5. `docs/governance/PHASE_2_PATH_N_CONTENT_SELECTION_AUTHORIZATION.md` (`b3a5fba`, the phase authorization in force)
 
 If these are not read, the agent must not proceed.
 
 ## 11. Roadmap update rule and baseline semantics
 
 Baseline semantics:
-- §4's baseline HEAD is the commit BEFORE this roadmap's own
-  creation commit. The roadmap creation commit itself does NOT make
-  this roadmap stale: at creation, §4's baseline equals the
-  creation commit's parent, and that is the correct, fresh state.
+- §4's baseline is the latest relevant execution-event commit
+  reflected in this roadmap. Roadmap-only commits (including this
+  update's own commit) do NOT make the roadmap stale.
 - Agents flag staleness only when phase/state-change events (below)
   have occurred AFTER the roadmap's last update — not because the
-  roadmap's own commit (or other roadmap-only commits) advanced HEAD.
+  roadmap's own commit advanced HEAD.
 
 This roadmap MUST be updated (and the update committed) at every
 one of these events, and is otherwise stale:
