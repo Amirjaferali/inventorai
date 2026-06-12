@@ -107,7 +107,7 @@ class IdeaState:
 
     # Idea capture
     idea_summary   : Optional[str]          = None
-
+    path           : str                    = "legacy_undesignated_current_behavior"
     def get_open_gaps(self):
         return [g for g in self.gaps if g.status in (OPEN, PARTIAL)]
 

@@ -60,6 +60,20 @@ def start_ilt002_combination_lock():
     SESSION_STORE[sid] = {"state": state, "last_result": initial_result, "transcript": []}
     return redirect(url_for("show_session", sid=sid))
 
+@app.route("/start_ilt002_combination_lock_path_n", methods=["POST"])
+def start_ilt002_combination_lock_path_n():
+    idea_text = request.form.get("idea", "").strip()
+    if not idea_text:
+        return redirect(url_for("index"))
+    state = IdeaState(idea_id=str(uuid.uuid4()))
+    state.domain = "electronics_electrical"
+    state.domain_signal = "electronics_electrical"
+    state.path = "N"
+    sid = str(uuid.uuid4())
+    initial_result = run_iteration(state, idea_text)
+    SESSION_STORE[sid] = {"state": state, "last_result": initial_result, "transcript": []}
+    return redirect(url_for("show_session", sid=sid))
+
 @app.route("/session/<sid>", methods=["GET"])
 def show_session(sid):
     entry = SESSION_STORE.get(sid)
