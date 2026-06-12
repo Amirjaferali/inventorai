@@ -31,10 +31,10 @@ hides them.
 
 | Item | State |
 |------|-------|
-| Latest relevant execution baseline | `ffaab93` — governance: close Phase 2 Path N content selection implementation |
+| Latest relevant execution baseline | `7a3350c` — governance: post-Phase-2 authorization review (review only) |
 | Phase 1 Path N designation | CLOSED |
-| Phase 2 Authorization | COMMITTED (`b3a5fba`) |
-| Phase 2 Path N content selection | CLOSED (`ffaab93`) |
+| Phase 2 Path N content selection | CLOSED (implementation `165e0da`, gate amendment `71e90b3`, closure `ffaab93`) |
+| Post-Phase-2 Authorization Review | COMMITTED (`7a3350c`) — review only, authorizes nothing |
 | Path N runtime integration | NOT FULLY CLOSED |
 | `runtime_integrated` | `false` |
 | R2 | HELD |
@@ -62,6 +62,7 @@ hides them.
 | `71e90b3` | Phase 2 Gate Amendment 1 — adds `tests/test_phase1_path_designation.py` (one test) to authorized files; corrects §10 gate meaning |
 | `165e0da` | Phase 2 Path N content selection implementation — approved Path N artifact consumed by `state.path == "N"`; gates passed before commit |
 | `ffaab93` | Phase 2 Path N content selection implementation closure record |
+| `7a3350c` | Post-Phase-2 Authorization Review — review only, authorizes nothing |
 
 (Product-intent anchor `DUAL_PATH_PRODUCT_ANCHOR.md` at `60c809b`
 is deliberately NOT in this table: it is a product-intent anchor,
@@ -69,21 +70,24 @@ not a Path N implementation step.)
 
 ## 6. Current execution lane
 
-PATH N RUNTIME INTEGRATION — Phase 2 content selection is CLOSED at
-`ffaab93`. Path N runtime integration overall remains NOT FULLY CLOSED.
-`runtime_integrated` remains `false`. R2 remains HELD. FORM T remains
-BLOCKED. S-6 remains UNCLASSIFIED. AA-5 remains BLOCKED.
-
-This closure does not authorize runtime integration completion, R2,
-FORM T, S-6, AA-5, Path T, Professional Workspace, or Stage 4-7 expansion.
+PATH N RUNTIME INTEGRATION — Post-Phase-2 Authorization Review is
+committed (`7a3350c`). No evidence collection has begun. Runtime
+integration remains NOT FULLY CLOSED: `runtime_integrated` remains
+`false`; no live runtime evidence exists; the plan Phase 4 flag
+process has not begun. R2 HELD, FORM T BLOCKED, S-6 UNCLASSIFIED,
+AA-5 BLOCKED.
 
 ## 7. Next authorized step (exactly one)
 
-Create and commit `POST_PHASE_2_AUTHORIZATION_REVIEW.md`
-(review document only — authorizes nothing).
-
-Any E-1/E-2/E-3 evidence collection requires a later, separate limited
-evidence authorization. Nothing else is allowed.
+Create `LIMITED_EVIDENCE_AUTHORIZATION.md` — authorization document
+only. It must define and bound exactly E-1 (gate re-run at current
+HEAD), E-2 (one Path N smoke session, transcript preserved,
+unclassified — NOT R2, NOT FORM T), and E-3 (paste of integration
+plan `d2b2a9a` Phase 3/4 text into session evidence). E-1/E-2/E-3
+evidence collection CANNOT run until that authorization document is
+committed. Nothing else is allowed. R2 remains HELD, FORM T
+BLOCKED, S-6 UNCLASSIFIED, AA-5 BLOCKED, `runtime_integrated`
+remains `false`.
 
 ## 8. Required future sequence
 
