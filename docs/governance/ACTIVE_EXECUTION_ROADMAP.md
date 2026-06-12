@@ -31,11 +31,11 @@ hides them.
 
 | Item | State |
 |------|-------|
-| Latest relevant execution baseline | `71e90b3` — governance: Phase 2 gate amendment 1 (Phase 1 test expectation correction) |
+| Latest relevant execution baseline | `165e0da` — feat: implement Phase 2 Path N content selection |
 | Phase 1 Path N designation | CLOSED |
 | Phase 2 Authorization | COMMITTED (`b3a5fba`) |
-| Phase 2 Implementation | NOT STARTED |
-| Path N runtime integration | NOT COMPLETE |
+| Phase 2 Implementation | COMMITTED (`165e0da`) |
+| Path N runtime integration | CONTENT SELECTION IMPLEMENTED; NOT FULLY CLOSED |
 | `runtime_integrated` | `false` |
 | R2 | HELD |
 | FORM T | BLOCKED |
@@ -60,6 +60,7 @@ hides them.
 | `3c15c32` | Phase 1 implementation closure record |
 | `b3a5fba` | Phase 2 Path N content selection authorization |
 | `71e90b3` | Phase 2 Gate Amendment 1 — adds `tests/test_phase1_path_designation.py` (one test) to authorized files; corrects §10 gate meaning |
+| `165e0da` | Phase 2 Path N content selection implementation — approved Path N artifact consumed by `state.path == "N"`; gates passed before commit |
 
 (Product-intent anchor `DUAL_PATH_PRODUCT_ANCHOR.md` at `60c809b`
 is deliberately NOT in this table: it is a product-intent anchor,
@@ -67,22 +68,22 @@ not a Path N implementation step.)
 
 ## 6. Current execution lane
 
-PATH N RUNTIME INTEGRATION — between Phase 2 Authorization
-(committed, `b3a5fba`) and Phase 2 Implementation (NOT STARTED).
-The Amendment 1 plumbing zone is authorized for consumption but has
-NOT been consumed. Path N-designated sessions still receive legacy
-content.
+PATH N RUNTIME INTEGRATION — Phase 2 implementation is committed
+at `165e0da`. The Amendment 1 plumbing zone has been consumed for
+minimal Path N content selection. Path N-designated sessions now
+select approved N-* content from the approved JSON artifact for
+covered Stage 2 gap types. This does NOT set `runtime_integrated=true`
+and does NOT move R2, FORM T, S-6, or AA-5.
 Gate Amendment 1 (`71e90b3`) is in force: the authorized file set is
 five files, and the Phase 1 gate's equality test is amended to a
 Phase 2 regression guard.
 
 ## 7. Next authorized step (exactly one)
 
-Explicit owner instruction to IMPLEMENT PHASE 2 — and only that.
-No implementation may start automatically from the authorization
-commit alone. The authorization (`b3a5fba`) defines the scope; the
-implementation instruction is a separate, explicit gate. Until that
-instruction is issued, no code changes occur.
+Create the Phase 2 implementation closure record — and only that.
+Phase 2 implementation is committed at `165e0da`, but the phase is
+not closed until a closure record captures scope, gates, diff,
+non-authorizations, and remaining blocked items.
 
 ## 8. Required future sequence
 
