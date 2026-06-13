@@ -1,0 +1,42 @@
+E-1 gate rerun baseline: 2792ed9893f02acc4f91b47924183397ee3c2395
+
+..........                                                               [100%]
+=============================== warnings summary ===============================
+engine/domain_rules.py:7
+  /workspaces/inventorai/tests/../engine/domain_rules.py:7: UserWarning: domain_registry: skipping domains/iot_electronics/domain.json (schema_version=None, expected '1.0')
+    _REGISTRY = load_registry("domains/")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+10 passed, 1 warning in 0.17s
+.......                                                                  [100%]
+=============================== warnings summary ===============================
+engine/domain_rules.py:7
+  /workspaces/inventorai/tests/../engine/domain_rules.py:7: UserWarning: domain_registry: skipping domains/iot_electronics/domain.json (schema_version=None, expected '1.0')
+    _REGISTRY = load_registry("domains/")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+7 passed, 1 warning in 0.57s
+..                                                                       [100%]
+=============================== warnings summary ===============================
+engine/domain_rules.py:7
+  /workspaces/inventorai/tests/../engine/domain_rules.py:7: UserWarning: domain_registry: skipping domains/iot_electronics/domain.json (schema_version=None, expected '1.0')
+    _REGISTRY = load_registry("domains/")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+2 passed, 1 warning in 0.16s
+............s.....................x.                                     [100%]
+=============================== warnings summary ===============================
+engine/domain_rules.py:7
+  /workspaces/inventorai/tests/../engine/domain_rules.py:7: UserWarning: domain_registry: skipping domains/iot_electronics/domain.json (schema_version=None, expected '1.0')
+    _REGISTRY = load_registry("domains/")
+
+tests/test_wps001_invariants.py::TestWPS001_INV007_AIBoundary::test_assess_response_deterministic
+  /workspaces/inventorai/tests/test_wps001_invariants.py:34: UserWarning: assess_response called with empty domain — substance check disabled (AB-006-D)
+    assert assess_response(inp) == assess_response(inp),                 f"WPS-001 INV-007 VIOLATED: assess_response({inp!r}) non-deterministic"
+
+tests/test_wps001_invariants.py::TestWPS001_INV001_WeakInputLevel2Block::test_weak_patterns_return_asserted_not_reasoned
+  /workspaces/inventorai/tests/test_wps001_invariants.py:59: UserWarning: assess_response called with empty domain — substance check disabled (AB-006-D)
+    r = assess_response(inp)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+34 passed, 1 skipped, 1 xfailed, 3 warnings in 0.29s
