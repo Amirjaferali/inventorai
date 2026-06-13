@@ -31,14 +31,15 @@ hides them.
 
 | Item | State |
 |------|-------|
-| Latest relevant execution baseline | `cfcc95f` — evidence: E-3 integration plan recovery and E-1 gate re-run results |
+| Latest relevant execution baseline | `f1a02a1` — governance: E-2 operational procedure — Path N smoke session |
 | Phase 1 Path N designation | CLOSED |
 | Phase 2 Path N content selection | CLOSED (implementation `165e0da`, gate amendment `71e90b3`, closure `ffaab93`) |
 | Post-Phase-2 Authorization Review | COMMITTED (`7a3350c`) — review only, authorizes nothing |
 | Limited Evidence Authorization | COMMITTED (`db2c46e`) |
 | E-3 integration plan recovery | COMPLETE — artifact committed at `cfcc95f` |
 | E-1 gate re-run | COMPLETE — results match authorized baseline; artifact committed at `cfcc95f` |
-| E-2 smoke session | BLOCKED — pending separately committed `E2_OPERATIONAL_PROCEDURE.md` |
+| E-2 operational procedure | COMMITTED (`f1a02a1`) |
+| E-2 smoke session execution | NOT STARTED |
 | Path N runtime integration | NOT FULLY CLOSED |
 | `runtime_integrated` | `false` |
 | R2 | HELD |
@@ -69,6 +70,7 @@ hides them.
 | `7a3350c` | Post-Phase-2 Authorization Review — review only, authorizes nothing |
 | `db2c46e` | Limited Evidence Authorization — E-1/E-3 execution authorized after roadmap refresh; E-2 objective authorized but execution blocked pending `E2_OPERATIONAL_PROCEDURE.md` |
 | `cfcc95f` | E-3 integration plan recovery and E-1 gate re-run evidence — both accepted; E-2 still blocked |
+| `f1a02a1` | E-2 operational procedure — committed; execution not yet started |
 
 (Product-intent anchor `DUAL_PATH_PRODUCT_ANCHOR.md` at `60c809b`
 is deliberately NOT in this table: it is a product-intent anchor,
@@ -76,25 +78,24 @@ not a Path N implementation step.)
 
 ## 6. Current execution lane
 
-PATH N RUNTIME INTEGRATION — E-3 and E-1 evidence committed and
-accepted at `cfcc95f`. E-1 gate results match the authorized
-closure baseline exactly. E-3 confirms Phase 3/4 requirements and
-semantic boundaries: E-2 is limited supplemental live runtime
-smoke evidence only; it does not constitute Phase 3 and cannot
-satisfy Phase 3; `runtime_integrated=true` is not automatic.
-E-2 execution remains BLOCKED pending a separately committed and
-owner-authorized `E2_OPERATIONAL_PROCEDURE.md`. No automatic
-status movement. `runtime_integrated` remains `false`. R2 HELD,
-FORM T BLOCKED, S-6 UNCLASSIFIED, AA-5 BLOCKED.
+PATH N RUNTIME INTEGRATION — E-2 operational procedure committed
+at `f1a02a1`. E-2 execution has NOT started. E-2 may run only
+after this roadmap refresh is committed and a clean evidence
+execution baseline HEAD is verified. `runtime_integrated` remains
+`false`. R2 HELD, FORM T BLOCKED, S-6 UNCLASSIFIED, AA-5 BLOCKED.
 
 ## 7. Next authorized step (exactly one)
 
-Create and commit `docs/governance/E2_OPERATIONAL_PROCEDURE.md`
-(authorization and procedure document only — no E-2 execution yet).
-It must specify items (a)–(f) from `LIMITED_EVIDENCE_AUTHORIZATION.md`
-§6.3 from a committed or owner-verified source. E-2 execution may
-begin only after that document is committed and owner-authorized.
-Nothing else is allowed. All holds unchanged.
+1. Commit this roadmap refresh (governance-only commit).
+2. Verify clean tree and record exact evidence execution
+   baseline HEAD.
+3. Execute E-2 strictly according to
+   `docs/governance/E2_OPERATIONAL_PROCEDURE.md`.
+4. Stop immediately on any documented STOP condition.
+5. Review all outputs before any evidence commit.
+
+No automatic status movement after E-2 execution or evidence
+commit. All holds unchanged.
 
 ## 8. Required future sequence
 
