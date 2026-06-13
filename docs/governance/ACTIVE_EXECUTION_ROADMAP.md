@@ -31,7 +31,7 @@ hides them.
 
 | Item | State |
 |------|-------|
-| Latest relevant execution baseline | `a684aba` — E-2 STOP incident record and byte-preserved failed-attempt artifacts |
+| Latest relevant execution baseline | `1cb08cb` — E-2 safe retry design authorization (Gate A) |
 | E-2 execution-attempt baseline | `feaff2a` — governance: amend E-2 server start command with repository PYTHONPATH |
 | Phase 1 Path N designation | CLOSED |
 | Phase 2 Path N content selection | CLOSED (implementation `165e0da`, gate amendment `71e90b3`, closure `ffaab93`) |
@@ -42,6 +42,11 @@ hides them.
 | E-2 operational procedure | COMMITTED (`f1a02a1`) |
 | E-2 smoke session execution | STOP DECLARED — E-2 NOT ACCEPTED; session `830054a4` invalid; retry NOT AUTHORIZED |
 | E-2 STOP incident record | COMMITTED (`a684aba`) |
+| E-2 Safe Retry Gate A | COMMITTED (`1cb08cb`) — design only |
+| Safe-retry design work | AUTHORIZED |
+| Safe-retry implementation | NOT AUTHORIZED |
+| E-2 retry execution | NOT AUTHORIZED |
+| E-2 STOP | DECLARED AND RECORDED |
 | Path N runtime integration | NOT FULLY CLOSED |
 | `runtime_integrated` | `false` |
 | R2 | HELD |
@@ -74,6 +79,7 @@ hides them.
 | `cfcc95f` | E-3 integration plan recovery and E-1 gate re-run evidence — both accepted; E-2 still blocked |
 | `f1a02a1` | E-2 operational procedure — committed; execution not yet started |
 | `a684aba` | E-2 STOP incident record and byte-preserved failed-attempt artifacts — session `830054a4` |
+| `1cb08cb` | E-2 Safe Retry Design Authorization — Gate A, design only |
 
 (Product-intent anchor `DUAL_PATH_PRODUCT_ANCHOR.md` at `60c809b`
 is deliberately NOT in this table: it is a product-intent anchor,
@@ -81,23 +87,18 @@ not a Path N implementation step.)
 
 ## 6. Current execution lane
 
-PATH N RUNTIME INTEGRATION — E-2 STOP DECLARED and recorded
-at `a684aba`.
+PATH N RUNTIME INTEGRATION — E-2 STOP remains declared.
 
-The E-2 attempt ran from baseline `feaff2a`. One GET/POST pair
-was submitted, but no classified cycle completed. The session
-`830054a4` is invalid and is not accepted E-2 evidence.
+Safe Retry Gate A was committed at `1cb08cb`.
+Design work only is authorized.
 
-Cause: operator/tooling defect — indentation-destructive
-normalization of the §7.4 Markdown block produced an execution
-script whose embedded Python heredoc was indentation-corrupted.
+Implementation remains NOT AUTHORIZED.
+E-2 retry execution remains NOT AUTHORIZED.
+No scripts, tests, server startup, SID creation, or retry session
+are authorized by Gate A.
 
-The committed E2_OPERATIONAL_PROCEDURE.md is NOT ESTABLISHED
-as defective.
-
-E-2 retry is NOT AUTHORIZED. `runtime_integrated` remains
-`false`. R2 HELD, FORM T BLOCKED, S-6 UNCLASSIFIED,
-AA-5 BLOCKED.
+`runtime_integrated` remains `false`.
+R2 HELD, FORM T BLOCKED, S-6 UNCLASSIFIED, AA-5 BLOCKED.
 
 ## 7. Next authorized step (exactly one)
 
