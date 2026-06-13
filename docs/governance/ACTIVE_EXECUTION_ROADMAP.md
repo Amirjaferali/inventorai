@@ -31,7 +31,7 @@ hides them.
 
 | Item | State |
 |------|-------|
-| Latest relevant execution baseline | `1cb08cb` — E-2 safe retry design authorization (Gate A) |
+| Latest relevant execution baseline | `d8277f9` — E-2 safe retry implementation authorization (Gate B) |
 | E-2 execution-attempt baseline | `feaff2a` — governance: amend E-2 server start command with repository PYTHONPATH |
 | Phase 1 Path N designation | CLOSED |
 | Phase 2 Path N content selection | CLOSED (implementation `165e0da`, gate amendment `71e90b3`, closure `ffaab93`) |
@@ -43,8 +43,12 @@ hides them.
 | E-2 smoke session execution | STOP DECLARED — E-2 NOT ACCEPTED; session `830054a4` invalid; retry NOT AUTHORIZED |
 | E-2 STOP incident record | COMMITTED (`a684aba`) |
 | E-2 Safe Retry Gate A | COMMITTED (`1cb08cb`) — design only |
-| Safe-retry design work | AUTHORIZED |
-| Safe-retry implementation | NOT AUTHORIZED |
+| E-2 Safe Retry Gate B | COMMITTED (`d8277f9`) — implementation only |
+| Safe-retry design | AUTHORIZED |
+| Safe-retry implementation | AUTHORIZED |
+| Matcher implementation | NOT STARTED |
+| Runner implementation | NOT STARTED |
+| Gate B closure | NOT STARTED |
 | E-2 retry execution | NOT AUTHORIZED |
 | E-2 STOP | DECLARED AND RECORDED |
 | Path N runtime integration | NOT FULLY CLOSED |
@@ -80,6 +84,7 @@ hides them.
 | `f1a02a1` | E-2 operational procedure — committed; execution not yet started |
 | `a684aba` | E-2 STOP incident record and byte-preserved failed-attempt artifacts — session `830054a4` |
 | `1cb08cb` | E-2 Safe Retry Design Authorization — Gate A, design only |
+| `d8277f9` | E-2 Safe Retry Implementation Authorization — Gate B, implementation only |
 
 (Product-intent anchor `DUAL_PATH_PRODUCT_ANCHOR.md` at `60c809b`
 is deliberately NOT in this table: it is a product-intent anchor,
@@ -90,29 +95,38 @@ not a Path N implementation step.)
 PATH N RUNTIME INTEGRATION — E-2 STOP remains declared.
 
 Safe Retry Gate A was committed at `1cb08cb`.
-Design work only is authorized.
+Safe Retry Gate B was committed at `d8277f9`.
 
-Implementation remains NOT AUTHORIZED.
+Implementation of the frozen Gate A design is authorized, but no
+implementation file has been created or committed yet.
+
+B-1 matcher and matcher tests: NOT STARTED.
+B-2 runner and preflight tests: NOT STARTED.
+Gate B closure/readiness: NOT STARTED.
+
 E-2 retry execution remains NOT AUTHORIZED.
-No scripts, tests, server startup, SID creation, or retry session
-are authorized by Gate A.
+No Flask startup, SID creation, or live retry session is authorized.
 
 `runtime_integrated` remains `false`.
 R2 HELD, FORM T BLOCKED, S-6 UNCLASSIFIED, AA-5 BLOCKED.
 
 ## 7. Next authorized step (exactly one)
 
-1. Await explicit owner authorization for safe-retry design work.
+1. Prepare B-1: the standalone matcher and its behavioral tests,
+   within the exact Gate B authorized scope.
 
 Constraints:
 
-- Do not create a new session or execute E-2.
-- Any retry requires a separately committed authorization and a
-  validated execution mechanism.
+- Only these two files may be prepared:
+  `scripts/e2_exact_matcher.py`
+  `tests/test_e2_exact_matcher.py`
+- Do not create the runner or preflight tests.
+- Do not start Flask.
+- Do not create a SID.
+- Do not execute E-2.
+- Do not declare Gate B closed.
+- The E-2 STOP remains declared.
 - All holds remain unchanged.
-
-No automatic status movement after E-2 execution or evidence
-commit. All holds unchanged.
 
 ## 8. Required future sequence
 
