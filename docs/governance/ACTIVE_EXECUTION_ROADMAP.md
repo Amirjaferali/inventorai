@@ -31,13 +31,13 @@ hides them.
 
 | Item | State |
 |------|-------|
-| Latest relevant execution baseline | `cfc95f` — evidence: E-3 integration plan recovery and E-1 gate re-run results |
+| Latest relevant execution baseline | `cfcc95f` — evidence: E-3 integration plan recovery and E-1 gate re-run results |
 | Phase 1 Path N designation | CLOSED |
 | Phase 2 Path N content selection | CLOSED (implementation `165e0da`, gate amendment `71e90b3`, closure `ffaab93`) |
 | Post-Phase-2 Authorization Review | COMMITTED (`7a3350c`) — review only, authorizes nothing |
 | Limited Evidence Authorization | COMMITTED (`db2c46e`) |
-| E-3 integration plan recovery | COMPLETE — artifact committed at `cfc95f` |
-| E-1 gate re-run | COMPLETE — results match authorized baseline; artifact committed at `cfc95f` |
+| E-3 integration plan recovery | COMPLETE — artifact committed at `cfcc95f` |
+| E-1 gate re-run | COMPLETE — results match authorized baseline; artifact committed at `cfcc95f` |
 | E-2 smoke session | BLOCKED — pending separately committed `E2_OPERATIONAL_PROCEDURE.md` |
 | Path N runtime integration | NOT FULLY CLOSED |
 | `runtime_integrated` | `false` |
@@ -68,7 +68,7 @@ hides them.
 | `ffaab93` | Phase 2 Path N content selection implementation closure record |
 | `7a3350c` | Post-Phase-2 Authorization Review — review only, authorizes nothing |
 | `db2c46e` | Limited Evidence Authorization — E-1/E-3 execution authorized after roadmap refresh; E-2 objective authorized but execution blocked pending `E2_OPERATIONAL_PROCEDURE.md` |
-| `cfc95f` | E-3 integration plan recovery and E-1 gate re-run evidence — both accepted; E-2 still blocked |
+| `cfcc95f` | E-3 integration plan recovery and E-1 gate re-run evidence — both accepted; E-2 still blocked |
 
 (Product-intent anchor `DUAL_PATH_PRODUCT_ANCHOR.md` at `60c809b`
 is deliberately NOT in this table: it is a product-intent anchor,
@@ -77,7 +77,7 @@ not a Path N implementation step.)
 ## 6. Current execution lane
 
 PATH N RUNTIME INTEGRATION — E-3 and E-1 evidence committed and
-accepted at `cfc95f`. E-1 gate results match the authorized
+accepted at `cfcc95f`. E-1 gate results match the authorized
 closure baseline exactly. E-3 confirms Phase 3/4 requirements and
 semantic boundaries: E-2 is limited supplemental live runtime
 smoke evidence only; it does not constitute Phase 3 and cannot
