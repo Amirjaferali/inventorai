@@ -31,7 +31,8 @@ hides them.
 
 | Item | State |
 |------|-------|
-| Latest relevant execution baseline | `f1a02a1` — governance: E-2 operational procedure — Path N smoke session |
+| Latest relevant execution baseline | `a684aba` — E-2 STOP incident record and byte-preserved failed-attempt artifacts |
+| E-2 execution-attempt baseline | `feaff2a` — governance: amend E-2 server start command with repository PYTHONPATH |
 | Phase 1 Path N designation | CLOSED |
 | Phase 2 Path N content selection | CLOSED (implementation `165e0da`, gate amendment `71e90b3`, closure `ffaab93`) |
 | Post-Phase-2 Authorization Review | COMMITTED (`7a3350c`) — review only, authorizes nothing |
@@ -39,7 +40,8 @@ hides them.
 | E-3 integration plan recovery | COMPLETE — artifact committed at `cfcc95f` |
 | E-1 gate re-run | COMPLETE — results match authorized baseline; artifact committed at `cfcc95f` |
 | E-2 operational procedure | COMMITTED (`f1a02a1`) |
-| E-2 smoke session execution | NOT STARTED |
+| E-2 smoke session execution | STOP DECLARED — E-2 NOT ACCEPTED; session `830054a4` invalid; retry NOT AUTHORIZED |
+| E-2 STOP incident record | COMMITTED (`a684aba`) |
 | Path N runtime integration | NOT FULLY CLOSED |
 | `runtime_integrated` | `false` |
 | R2 | HELD |
@@ -71,6 +73,7 @@ hides them.
 | `db2c46e` | Limited Evidence Authorization — E-1/E-3 execution authorized after roadmap refresh; E-2 objective authorized but execution blocked pending `E2_OPERATIONAL_PROCEDURE.md` |
 | `cfcc95f` | E-3 integration plan recovery and E-1 gate re-run evidence — both accepted; E-2 still blocked |
 | `f1a02a1` | E-2 operational procedure — committed; execution not yet started |
+| `a684aba` | E-2 STOP incident record and byte-preserved failed-attempt artifacts — session `830054a4` |
 
 (Product-intent anchor `DUAL_PATH_PRODUCT_ANCHOR.md` at `60c809b`
 is deliberately NOT in this table: it is a product-intent anchor,
@@ -78,21 +81,34 @@ not a Path N implementation step.)
 
 ## 6. Current execution lane
 
-PATH N RUNTIME INTEGRATION — E-2 operational procedure committed
-at `f1a02a1`. E-2 execution has NOT started. E-2 may run only
-after this roadmap refresh is committed and a clean evidence
-execution baseline HEAD is verified. `runtime_integrated` remains
-`false`. R2 HELD, FORM T BLOCKED, S-6 UNCLASSIFIED, AA-5 BLOCKED.
+PATH N RUNTIME INTEGRATION — E-2 STOP DECLARED and recorded
+at `a684aba`.
+
+The E-2 attempt ran from baseline `feaff2a`. One GET/POST pair
+was submitted, but no classified cycle completed. The session
+`830054a4` is invalid and is not accepted E-2 evidence.
+
+Cause: operator/tooling defect — indentation-destructive
+normalization of the §7.4 Markdown block produced an execution
+script whose embedded Python heredoc was indentation-corrupted.
+
+The committed E2_OPERATIONAL_PROCEDURE.md is NOT ESTABLISHED
+as defective.
+
+E-2 retry is NOT AUTHORIZED. `runtime_integrated` remains
+`false`. R2 HELD, FORM T BLOCKED, S-6 UNCLASSIFIED,
+AA-5 BLOCKED.
 
 ## 7. Next authorized step (exactly one)
 
-1. Commit this roadmap refresh (governance-only commit).
-2. Verify clean tree and record exact evidence execution
-   baseline HEAD.
-3. Execute E-2 strictly according to
-   `docs/governance/E2_OPERATIONAL_PROCEDURE.md`.
-4. Stop immediately on any documented STOP condition.
-5. Review all outputs before any evidence commit.
+1. Await explicit owner authorization for safe-retry design work.
+
+Constraints:
+
+- Do not create a new session or execute E-2.
+- Any retry requires a separately committed authorization and a
+  validated execution mechanism.
+- All holds remain unchanged.
 
 No automatic status movement after E-2 execution or evidence
 commit. All holds unchanged.
