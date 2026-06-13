@@ -101,7 +101,7 @@ server in Terminal A.
 
 From the repository root:
 
-    python web/app.py
+    PYTHONPATH=. python web/app.py
 
 Confirm: output includes `Running on http://127.0.0.1:5000`.
 Leave running until §7.7.
