@@ -31,7 +31,7 @@ hides them.
 
 | Item | State |
 |------|-------|
-| Latest relevant execution baseline | `654ce07` — B-1 standalone exact matcher and nine behavioral tests |
+| Latest relevant execution baseline | `d12db64` — B-2 standalone smoke runner and five isolated preflight tests |
 | E-2 execution-attempt baseline | `feaff2a` — governance: amend E-2 server start command with repository PYTHONPATH |
 | Phase 1 Path N designation | CLOSED |
 | Phase 2 Path N content selection | CLOSED (implementation `165e0da`, gate amendment `71e90b3`, closure `ffaab93`) |
@@ -47,7 +47,7 @@ hides them.
 | Safe-retry design | AUTHORIZED |
 | Safe-retry implementation | AUTHORIZED |
 | Matcher implementation | COMMITTED AND PUSHED (`654ce07`) |
-| Runner implementation | NOT STARTED |
+| Runner implementation | COMMITTED AND PUSHED (`d12db64`) |
 | Gate B closure | NOT STARTED |
 | E-2 retry execution | NOT AUTHORIZED |
 | E-2 STOP | DECLARED AND RECORDED |
@@ -86,6 +86,7 @@ hides them.
 | `1cb08cb` | E-2 Safe Retry Design Authorization — Gate A, design only |
 | `d8277f9` | E-2 Safe Retry Implementation Authorization — Gate B, implementation only |
 | `654ce07` | B-1 standalone exact matcher (`scripts/e2_exact_matcher.py`) and nine behavioral tests (`tests/test_e2_exact_matcher.py`) — gates passed before commit |
+| `d12db64` | B-2 E-2 Path N smoke runner (`scripts/e2_path_n_smoke_runner.sh`) and five isolated preflight tests (`tests/test_e2_runner_preflight.py`) — B-2 gates passed before commit |
 
 (Product-intent anchor `DUAL_PATH_PRODUCT_ANCHOR.md` at `60c809b`
 is deliberately NOT in this table: it is a product-intent anchor,
@@ -99,7 +100,7 @@ Safe Retry Gate A was committed at `1cb08cb`.
 Safe Retry Gate B was committed at `d8277f9`.
 
 B-1 matcher and matcher tests: COMMITTED AND PUSHED (`654ce07`).
-B-2 runner and preflight tests: NOT STARTED.
+B-2 runner and preflight tests: COMMITTED AND PUSHED (`d12db64`).
 Gate B closure/readiness: NOT STARTED.
 
 E-2 retry execution remains NOT AUTHORIZED.
@@ -110,25 +111,21 @@ R2 HELD, FORM T BLOCKED, S-6 UNCLASSIFIED, AA-5 BLOCKED.
 
 ## 7. Next authorized step (exactly one)
 
-1. Prepare B-2: the standalone runner and its isolated preflight
-   tests, within the exact Gate B authorized scope.
+1. Run Gate B closure gates V-1 through V-9 only.
 
 Constraints:
 
-- Only these two files may be prepared:
-  `scripts/e2_path_n_smoke_runner.sh`
-  `tests/test_e2_runner_preflight.py`
-- Do not create any other file.
+- Running closure gates does not authorize normal runner execution.
+- V-5 is `--preflight` only — not live execution mode.
 - Do not start Flask.
-- Do not create a SID.
-- Do not issue GET or POST requests.
+- Do not create a live SID.
+- Do not issue GET or POST to a live E-2 session.
 - Do not execute E-2 or begin live retry.
-- Do not declare Gate B closed.
+- No closure record (`E2_SAFE_RETRY_IMPLEMENTATION_CLOSURE_RECORD.md`)
+  may be committed until every V-1 through V-9 output is reviewed
+  and accepted by the owner.
 - The E-2 STOP remains declared.
 - All holds remain unchanged.
-- This roadmap synchronization does not itself authorize live
-  execution, Flask startup, SID creation, GET/POST activity,
-  or E-2 retry.
 
 ## 8. Required future sequence
 
