@@ -31,7 +31,7 @@ hides them.
 
 | Item | State |
 |------|-------|
-| Latest relevant execution baseline | `d8277f9` — E-2 safe retry implementation authorization (Gate B) |
+| Latest relevant execution baseline | `654ce07` — B-1 standalone exact matcher and nine behavioral tests |
 | E-2 execution-attempt baseline | `feaff2a` — governance: amend E-2 server start command with repository PYTHONPATH |
 | Phase 1 Path N designation | CLOSED |
 | Phase 2 Path N content selection | CLOSED (implementation `165e0da`, gate amendment `71e90b3`, closure `ffaab93`) |
@@ -46,7 +46,7 @@ hides them.
 | E-2 Safe Retry Gate B | COMMITTED (`d8277f9`) — implementation only |
 | Safe-retry design | AUTHORIZED |
 | Safe-retry implementation | AUTHORIZED |
-| Matcher implementation | NOT STARTED |
+| Matcher implementation | COMMITTED AND PUSHED (`654ce07`) |
 | Runner implementation | NOT STARTED |
 | Gate B closure | NOT STARTED |
 | E-2 retry execution | NOT AUTHORIZED |
@@ -85,6 +85,7 @@ hides them.
 | `a684aba` | E-2 STOP incident record and byte-preserved failed-attempt artifacts — session `830054a4` |
 | `1cb08cb` | E-2 Safe Retry Design Authorization — Gate A, design only |
 | `d8277f9` | E-2 Safe Retry Implementation Authorization — Gate B, implementation only |
+| `654ce07` | B-1 standalone exact matcher (`scripts/e2_exact_matcher.py`) and nine behavioral tests (`tests/test_e2_exact_matcher.py`) — gates passed before commit |
 
 (Product-intent anchor `DUAL_PATH_PRODUCT_ANCHOR.md` at `60c809b`
 is deliberately NOT in this table: it is a product-intent anchor,
@@ -97,10 +98,7 @@ PATH N RUNTIME INTEGRATION — E-2 STOP remains declared.
 Safe Retry Gate A was committed at `1cb08cb`.
 Safe Retry Gate B was committed at `d8277f9`.
 
-Implementation of the frozen Gate A design is authorized, but no
-implementation file has been created or committed yet.
-
-B-1 matcher and matcher tests: NOT STARTED.
+B-1 matcher and matcher tests: COMMITTED AND PUSHED (`654ce07`).
 B-2 runner and preflight tests: NOT STARTED.
 Gate B closure/readiness: NOT STARTED.
 
@@ -112,21 +110,25 @@ R2 HELD, FORM T BLOCKED, S-6 UNCLASSIFIED, AA-5 BLOCKED.
 
 ## 7. Next authorized step (exactly one)
 
-1. Prepare B-1: the standalone matcher and its behavioral tests,
-   within the exact Gate B authorized scope.
+1. Prepare B-2: the standalone runner and its isolated preflight
+   tests, within the exact Gate B authorized scope.
 
 Constraints:
 
 - Only these two files may be prepared:
-  `scripts/e2_exact_matcher.py`
-  `tests/test_e2_exact_matcher.py`
-- Do not create the runner or preflight tests.
+  `scripts/e2_path_n_smoke_runner.sh`
+  `tests/test_e2_runner_preflight.py`
+- Do not create any other file.
 - Do not start Flask.
 - Do not create a SID.
-- Do not execute E-2.
+- Do not issue GET or POST requests.
+- Do not execute E-2 or begin live retry.
 - Do not declare Gate B closed.
 - The E-2 STOP remains declared.
 - All holds remain unchanged.
+- This roadmap synchronization does not itself authorize live
+  execution, Flask startup, SID creation, GET/POST activity,
+  or E-2 retry.
 
 ## 8. Required future sequence
 
@@ -169,7 +171,7 @@ Must not be done by any agent without explicit owner authorization:
 2. `docs/governance/PATH_N_CURRENT_EXECUTION_ANCHOR.md` (`aa068fd`, execution state)
 3. `docs/governance/DUAL_PATH_PRODUCT_ANCHOR.md` (`60c809b`, product intent)
 4. This roadmap (current lane and next step)
-5. `docs/governance/PHASE_2_PATH_N_CONTENT_SELECTION_AUTHORIZATION.md` (`b3a5fba`, the phase authorization in force)
+5. `docs/governance/PHASE_2_PATH_N_CONTENT_SELECTION_AUTHORIZATION.md` (`b3a5fba`, the phase authorization inforce)
 
 If these are not read, the agent must not proceed.
 
