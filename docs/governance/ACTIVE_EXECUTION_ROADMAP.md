@@ -31,7 +31,7 @@ hides them.
 
 | Item | State |
 |------|-------|
-| Latest relevant execution baseline | `d631439` — B-2 runner executable-mode correction |
+| Latest relevant execution baseline | `2a33763` — E-2 safe retry implementation closure record (Gate B complete) |
 | E-2 execution-attempt baseline | `feaff2a` — governance: amend E-2 server start command with repository PYTHONPATH |
 | Phase 1 Path N designation | CLOSED |
 | Phase 2 Path N content selection | CLOSED (implementation `165e0da`, gate amendment `71e90b3`, closure `ffaab93`) |
@@ -48,7 +48,7 @@ hides them.
 | Safe-retry implementation | AUTHORIZED |
 | Matcher implementation | COMMITTED AND PUSHED (`654ce07`) |
 | Runner implementation | COMMITTED AND PUSHED (content `d12db64`; executable-mode correction `d631439`) |
-| Gate B closure | NOT STARTED |
+| Gate B closure | CLOSED (`2a33763`) |
 | E-2 retry execution | NOT AUTHORIZED |
 | E-2 STOP | DECLARED AND RECORDED |
 | Path N runtime integration | NOT FULLY CLOSED |
@@ -88,6 +88,7 @@ hides them.
 | `654ce07` | B-1 standalone exact matcher (`scripts/e2_exact_matcher.py`) and nine behavioral tests (`tests/test_e2_exact_matcher.py`) — gates passed before commit |
 | `d12db64` | B-2 E-2 Path N smoke runner (`scripts/e2_path_n_smoke_runner.sh`) and five isolated preflight tests (`tests/test_e2_runner_preflight.py`) — B-2 gates passed before commit |
 | `d631439` | B-2 runner executable-mode correction (100644 → 100755), required for direct `--preflight` invocation |
+| `2a33763` | E-2 safe retry implementation closure record; Gate B implementation closed after V-1 through V-9 passed |
 
 (Product-intent anchor `DUAL_PATH_PRODUCT_ANCHOR.md` at `60c809b`
 is deliberately NOT in this table: it is a product-intent anchor,
@@ -100,11 +101,17 @@ PATH N RUNTIME INTEGRATION — E-2 STOP remains declared.
 Safe Retry Gate A was committed at `1cb08cb`.
 Safe Retry Gate B was committed at `d8277f9`.
 
-B-1 matcher and matcher tests: COMMITTED AND PUSHED (`654ce07`).
-B-2 runner content committed and pushed at `d12db64`.
-B-2 runner executable mode corrected at `d631439`.
-V-1 through V-9 closure gates reported passed after the correction.
-Gate B closure record: NOT STARTED.
+B-1 matcher implementation: COMPLETE (`654ce07`).
+B-2 runner implementation: COMPLETE (content `d12db64`; executable-mode correction `d631439`).
+B-3 Gate B closure record: COMMITTED (`2a33763`).
+Gate B implementation: CLOSED.
+
+This closes implementation readiness only.
+
+No live E-2 retry has been executed.
+E-2 retry remains NOT AUTHORIZED.
+E-2 STOP remains declared.
+All holds remain unchanged.
 
 E-2 retry execution remains NOT AUTHORIZED.
 No Flask startup, SID creation, or live retry session is authorized.
@@ -114,23 +121,25 @@ R2 HELD, FORM T BLOCKED, S-6 UNCLASSIFIED, AA-5 BLOCKED.
 
 ## 7. Next authorized step (exactly one)
 
-1. Prepare B-3 closure record only after confirming and preserving
-   the complete verbatim V-1 through V-9 outputs produced against
-   HEAD `d631439`.
+1. Conduct the post-Gate-B authorization review to determine whether
+   a separate Gate C authorization may be prepared.
+
+   No Gate C implementation or live retry execution is authorized by
+   this roadmap synchronization.
 
 Constraints:
 
-- Re-run V-1 through V-9 against HEAD `d631439` to obtain a
-  complete and verified set of gate outputs for inclusion in the
-  closure record.
-- No live E-2 execution.
-- No normal runner mode.
+- No normal runner execution.
 - No Flask startup.
 - No SID creation.
-- No live GET or POST.
-- No status or hold movement.
-- No closure record commit until the drafted record is reviewed
-  and accepted by the owner.
+- No live GET or POST session activity.
+- No E-2 retry.
+- No change to `runtime_integrated`.
+- No release of R2.
+- No FORM T movement.
+- No S-6 classification.
+- No AA-5 movement.
+- No Gate C document unless separately authorized after review.
 
 ## 8. Required future sequence
 
