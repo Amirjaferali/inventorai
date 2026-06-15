@@ -3,7 +3,7 @@
 ## 1. Title and Status
 
 **Document:** AA-2 Terminal Lane Closure — Measurement Not Completed
-**Status:** DRAFT — NOT EFFECTIVE
+**Status:** APPROVED — EFFECTIVE
 **Type:** One-time owner-authority ruling (operational lane closure only)
 **Baseline HEAD at drafting:** 1f4f5d2165e8f3517336ff8c7e9f432a8af18a0c
 **Applies to:** AA-2 (Idea A Emergence Timing Table lock) for historical sessions
@@ -12,17 +12,21 @@ a4e42558-3f56-4e53-a9bc-bedcc134044c and 63aa184d-e214-4635-979a-2acfa7a664d5 ON
 Prominent status summary (do not read in isolation from Sections 6-10):
 
 ```
-Operational lane:              PROPOSED TERMINAL CLOSURE
+Operational lane:              TERMINALLY CLOSED — NOT COMPLETED
 AA-2 measurement:              NOT COMPLETED
 Idea A timing-table lock:      NOT ACHIEVED
 AA-2 sequence prerequisite:    NOT SATISFIED
 Downstream authorization:      NONE
-Document state:                DRAFT — NOT EFFECTIVE
+Document state:                APPROVED — EFFECTIVE
 ```
 
-This document is DRAFT and creates no effect until separately approved, created,
-reviewed, committed, and pushed by the owner. Drafting, file creation, or staging
-alone does not close the lane.
+This authority became effective after explicit owner approval, repository
+creation, content review, commit and push at b1b852c, and verification that
+HEAD equals origin/main.
+
+Its effectiveness closes only the AA-2 operational lane as NOT COMPLETED.
+It does not complete the measurement, lock the timing table, satisfy the
+AA-2 sequence prerequisite, or authorize downstream progression.
 
 ---
 
@@ -92,10 +96,10 @@ non-repository location.
 
 ## 5. Owner Authority Created
 
-The owner authorizes ONE operational termination ruling: the AA-2 operational lane
-for the two named historical Idea A sessions is terminally closed as NOT COMPLETED,
-on the ground that its mandatory historical stage provenance is not reliably
-recoverable from committed repository evidence.
+The owner authorizes and makes effective ONE operational termination ruling:
+the AA-2 operational lane for the two named historical Idea A sessions is
+terminally closed as NOT COMPLETED, on the ground that its mandatory historical
+stage provenance is not reliably recoverable from committed repository evidence.
 
 This authority creates an operational lane closure ONLY. It does not classify AA-2
 as completed, does not lock the timing table, and does not satisfy any downstream
@@ -242,29 +246,30 @@ authority becomes effective.
 
 ---
 
-## 14. Effective Condition
+## 14. Effective Record
 
-This document becomes effective ONLY after, in order:
+This authority became effective upon completion of all required conditions:
 
 1. explicit owner approval;
-2. repository file creation under the approved filename;
+2. repository file creation;
 3. content review;
-4. commit and push;
-5. verification that HEAD equals origin/main.
+4. commit and push at b1b852c;
+5. verification that HEAD equaled origin/main at
+   b1b852c821d302984f477a752b49398fa3b740d0.
 
-Drafting, file creation, or staging alone must not close the lane. No status changes
-until the committed, effective version exists and HEAD equals origin/main.
+The effective authority remains bounded by every limitation, prohibition,
+non-precedent clause, and downstream hold stated in this document.
 
 ---
 
 ## 15. Owner Decision Block
 
 ```
-Owner approval:   ____________________
-Date:             ____________________
-Approved (Y/N):   ____________________
-Effective commit: ____________________
-HEAD = origin/main verified: ________
+Owner approval:   APPROVED
+Date:             NOT RECORDED IN DOCUMENT
+Approved (Y/N):   Y
+Authority commit: b1b852c821d302984f477a752b49398fa3b740d0
+HEAD = origin/main verification: CONFIRMED
 ```
 
 ---
