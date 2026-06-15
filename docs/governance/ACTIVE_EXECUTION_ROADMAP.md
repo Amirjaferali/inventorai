@@ -31,7 +31,7 @@ hides them.
 
 | Item | State |
 |------|-------|
-| Latest relevant execution baseline | `2a33763` — E-2 safe retry implementation closure record (Gate B complete) |
+| Latest relevant execution baseline | `d4140d4` — single controlled E-2 safe retry execution authorization (Gate C) |
 | E-2 execution-attempt baseline | `feaff2a` — governance: amend E-2 server start command with repository PYTHONPATH |
 | Phase 1 Path N designation | CLOSED |
 | Phase 2 Path N content selection | CLOSED (implementation `165e0da`, gate amendment `71e90b3`, closure `ffaab93`) |
@@ -49,7 +49,8 @@ hides them.
 | Matcher implementation | COMMITTED AND PUSHED (`654ce07`) |
 | Runner implementation | COMMITTED AND PUSHED (content `d12db64`; executable-mode correction `d631439`) |
 | Gate B closure | CLOSED (`2a33763`) |
-| E-2 retry execution | NOT AUTHORIZED |
+| Gate C authorization | COMMITTED (`d4140d4`) — execution authorization recorded but not yet operational until roadmap synchronization is committed, repository baseline is reverified, and a separate owner execution instruction is issued |
+| E-2 retry execution | NOT YET AUTHORIZED FOR INVOCATION |
 | E-2 STOP | DECLARED AND RECORDED |
 | Path N runtime integration | NOT FULLY CLOSED |
 | `runtime_integrated` | `false` |
@@ -89,6 +90,7 @@ hides them.
 | `d12db64` | B-2 E-2 Path N smoke runner (`scripts/e2_path_n_smoke_runner.sh`) and five isolated preflight tests (`tests/test_e2_runner_preflight.py`) — B-2 gates passed before commit |
 | `d631439` | B-2 runner executable-mode correction (100644 → 100755), required for direct `--preflight` invocation |
 | `2a33763` | E-2 safe retry implementation closure record; Gate B implementation closed after V-1 through V-9 passed |
+| `d4140d4` | Gate C authorization for one controlled E-2 safe retry; execution remains blocked pending mandatory roadmap synchronization, clean-baseline verification, and a separate owner instruction |
 
 (Product-intent anchor `DUAL_PATH_PRODUCT_ANCHOR.md` at `60c809b`
 is deliberately NOT in this table: it is a product-intent anchor,
@@ -105,15 +107,26 @@ B-1 matcher implementation: COMPLETE (`654ce07`).
 B-2 runner implementation: COMPLETE (content `d12db64`; executable-mode correction `d631439`).
 B-3 Gate B closure record: COMMITTED (`2a33763`).
 Gate B implementation: CLOSED.
+Gate C authorization: COMMITTED (`d4140d4`).
 
-This closes implementation readiness only.
+No Gate C execution has occurred.
+No Flask server has been started under Gate C.
+No new SID has been created.
+The single controlled attempt has not been consumed.
 
-No live E-2 retry has been executed.
-E-2 retry remains NOT AUTHORIZED.
-E-2 STOP remains declared.
-All holds remain unchanged.
+This roadmap synchronization is the mandatory condition 4 from
+Gate C §15.
 
-E-2 retry execution remains NOT AUTHORIZED.
+After this synchronization is committed, conditions 5 and 6 still
+remain:
+
+5. Clean working tree and HEAD == origin/main verification.
+6. Separate explicit owner instruction to perform the one
+   controlled attempt.
+
+All holds and statuses remain unchanged.
+
+E-2 retry execution remains NOT YET AUTHORIZED FOR INVOCATION.
 No Flask startup, SID creation, or live retry session is authorized.
 
 `runtime_integrated` remains `false`.
@@ -121,25 +134,31 @@ R2 HELD, FORM T BLOCKED, S-6 UNCLASSIFIED, AA-5 BLOCKED.
 
 ## 7. Next authorized step (exactly one)
 
-1. Conduct the post-Gate-B authorization review to determine whether
-   a separate Gate C authorization may be prepared.
+1. Verify the post-synchronization repository baseline:
 
-   No Gate C implementation or live retry execution is authorized by
-   this roadmap synchronization.
+   - working tree clean;
+   - HEAD equals origin/main;
+   - Gate C document committed and present;
+   - runner executable mode preserved;
+   - runner --preflight returns PREFLIGHT OK.
+
+   Then return the evidence for owner review.
+
+   Normal runner execution remains prohibited until a separate
+   explicit owner instruction is issued after the baseline evidence
+   is reviewed.
 
 Constraints:
 
-- No normal runner execution.
 - No Flask startup.
+- No runner normal mode.
+- No start-route POST.
 - No SID creation.
-- No live GET or POST session activity.
-- No E-2 retry.
-- No change to `runtime_integrated`.
-- No release of R2.
-- No FORM T movement.
-- No S-6 classification.
-- No AA-5 movement.
-- No Gate C document unless separately authorized after review.
+- No session GET or POST.
+- No E-2 execution.
+- No consumption of the single-attempt authorization.
+- No status or hold movement.
+- No new authorization document.
 
 ## 8. Required future sequence
 
