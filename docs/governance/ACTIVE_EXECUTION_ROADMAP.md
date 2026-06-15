@@ -31,7 +31,7 @@ hides them.
 
 | Item | State |
 |------|-------|
-| Latest relevant execution baseline | `d4140d4` — single controlled E-2 safe retry execution authorization (Gate C) |
+| Latest authoritative baseline | `d130256` — limited E-2 safe retry evidence accepted |
 | E-2 execution-attempt baseline | `feaff2a` — governance: amend E-2 server start command with repository PYTHONPATH |
 | Phase 1 Path N designation | CLOSED |
 | Phase 2 Path N content selection | CLOSED (implementation `165e0da`, gate amendment `71e90b3`, closure `ffaab93`) |
@@ -49,8 +49,13 @@ hides them.
 | Matcher implementation | COMMITTED AND PUSHED (`654ce07`) |
 | Runner implementation | COMMITTED AND PUSHED (content `d12db64`; executable-mode correction `d631439`) |
 | Gate B closure | CLOSED (`2a33763`) |
-| Gate C authorization | COMMITTED (`d4140d4`) — execution authorization recorded but not yet operational until roadmap synchronization is committed, repository baseline is reverified, and a separate owner execution instruction is issued |
-| E-2 retry execution | NOT YET AUTHORIZED FOR INVOCATION |
+| Gate C authorization | COMMITTED (`d4140d4`) |
+| Post-Gate-C roadmap synchronization | COMMITTED (`d6441b0`) |
+| Single controlled E-2 attempt | EXECUTED ONCE — SID `d39526ce-92a5-469a-9c93-5e6d23f7a31b`; result LIMITED TECHNICAL ACCEPTED; matched question N-MC-1; gap MECHANISM_COMPLETENESS; cycle 1; runner exit 0 |
+| Evidence acceptance record | COMMITTED (`d130256`) |
+| Gate C | CONSUMED — second attempt NOT AUTHORIZED |
+| Raw evidence preservation | NOT DURABLY COMPLETED — current location `/tmp`; preservation risk, not evidence invalidation |
+| E-2 retry execution | CONSUMED — one authorized attempt executed; LIMITED TECHNICAL ACCEPTED; no further retry authorized |
 | E-2 STOP | DECLARED AND RECORDED |
 | Path N runtime integration | NOT FULLY CLOSED |
 | `runtime_integrated` | `false` |
@@ -91,6 +96,8 @@ hides them.
 | `d631439` | B-2 runner executable-mode correction (100644 → 100755), required for direct `--preflight` invocation |
 | `2a33763` | E-2 safe retry implementation closure record; Gate B implementation closed after V-1 through V-9 passed |
 | `d4140d4` | Gate C authorization for one controlled E-2 safe retry; execution remains blocked pending mandatory roadmap synchronization, clean-baseline verification, and a separate owner instruction |
+| `d6441b0` | Roadmap synchronization after Gate C authorization |
+| `d130256` | E-2 safe retry evidence acceptance record; one controlled attempt executed (SID `d39526ce`), MATCH N-MC-1, runner exit 0; LIMITED TECHNICAL ACCEPTED; Gate C consumed; all holds unchanged |
 
 (Product-intent anchor `DUAL_PATH_PRODUCT_ANCHOR.md` at `60c809b`
 is deliberately NOT in this table: it is a product-intent anchor,
@@ -98,66 +105,78 @@ not a Path N implementation step.)
 
 ## 6. Current execution lane
 
-PATH N RUNTIME INTEGRATION — E-2 STOP remains declared.
+The Gate C execution lane is closed.
 
-Safe Retry Gate A was committed at `1cb08cb`.
-Safe Retry Gate B was committed at `d8277f9`.
+The single authorized E-2 attempt was consumed. One newly created
+Path N session (SID `d39526ce-92a5-469a-9c93-5e6d23f7a31b`) produced
+exactly one approved Path N question match (N-MC-1,
+MECHANISM_COMPLETENESS) at cycle 1, and the runner completed with
+exit 0. The result is classified LIMITED TECHNICAL ACCEPTED and the
+evidence acceptance record is committed at `d130256`.
 
-B-1 matcher implementation: COMPLETE (`654ce07`).
-B-2 runner implementation: COMPLETE (content `d12db64`; executable-mode correction `d631439`).
-B-3 Gate B closure record: COMMITTED (`2a33763`).
-Gate B implementation: CLOSED.
-Gate C authorization: COMMITTED (`d4140d4`).
+No additional retry is authorized. Any future live retry requires a
+new, separately reviewed and committed authorization.
 
-No Gate C execution has occurred.
-No Flask server has been started under Gate C.
-No new SID has been created.
-The single controlled attempt has not been consumed.
+### Meaning boundary
 
-This roadmap synchronization is the mandatory condition 4 from
-Gate C §15.
+The accepted evidence proves only:
 
-After this synchronization is committed, conditions 5 and 6 still
-remain:
+One newly created Path N session produced exactly one approved
+Path N question match within the authorized execution boundary,
+and the runner completed successfully.
 
-5. Clean working tree and HEAD == origin/main verification.
-6. Separate explicit owner instruction to perform the one
-   controlled attempt.
+It does not prove:
+
+- inventor development
+- improved understanding
+- idea growth
+- Stage 3 completion
+- general Path N reliability
+- repeatability
+- production readiness
+- runtime integration completion
+- S-6 classification
+
+### Evidence-preservation state
+
+Raw evidence preservation: NOT DURABLY COMPLETED.
+Current evidence location: /tmp.
+Classification: preservation risk — not evidence invalidation.
+
+### Holds
 
 All holds and statuses remain unchanged.
-
-E-2 retry execution remains NOT YET AUTHORIZED FOR INVOCATION.
-No Flask startup, SID creation, or live retry session is authorized.
 
 `runtime_integrated` remains `false`.
 R2 HELD, FORM T BLOCKED, S-6 UNCLASSIFIED, AA-5 BLOCKED.
 
 ## 7. Next authorized step (exactly one)
 
-1. Verify the post-synchronization repository baseline:
+OWNER DECISION REQUIRED:
 
-   - working tree clean;
-   - HEAD equals origin/main;
-   - Gate C document committed and present;
-   - runner executable mode preserved;
-   - runner --preflight returns PREFLIGHT OK.
+Choose whether to:
 
-   Then return the evidence for owner review.
+A. Prepare a separately authorized byte-identical durable raw
+   evidence preservation step;
 
-   Normal runner execution remains prohibited until a separate
-   explicit owner instruction is issued after the baseline evidence
-   is reviewed.
+or
 
-Constraints:
+B. Accept the committed evidence record (`d130256`) as the durable
+   governance record while retaining the documented /tmp
+   preservation risk.
 
+Neither option moves runtime_integrated, R2, FORM T, S-6, or AA-5.
+
+Constraints until the owner decides:
+
+- No copying of /tmp evidence.
+- No evidence archive directory creation.
 - No Flask startup.
-- No runner normal mode.
-- No start-route POST.
+- No runner invocation.
 - No SID creation.
-- No session GET or POST.
-- No E-2 execution.
-- No consumption of the single-attempt authorization.
+- No further retry.
 - No status or hold movement.
+- No S-6 classification.
 - No new authorization document.
 
 ## 8. Required future sequence
