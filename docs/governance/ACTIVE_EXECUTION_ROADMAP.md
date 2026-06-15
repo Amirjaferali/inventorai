@@ -31,7 +31,7 @@ hides them.
 
 | Item | State |
 |------|-------|
-| Latest authoritative baseline | `c59b2b8` — byte-identical E-2 raw evidence durably preserved |
+| Latest authoritative baseline | `82c5d89` — AA-2 terminal lane closure activated (roadmap-sync baseline); prior execution baseline `c59b2b8` |
 | E-2 execution-attempt baseline | `feaff2a` — governance: amend E-2 server start command with repository PYTHONPATH |
 | Phase 1 Path N designation | CLOSED |
 | Phase 2 Path N content selection | CLOSED (implementation `165e0da`, gate amendment `71e90b3`, closure `ffaab93`) |
@@ -67,6 +67,13 @@ hides them.
 | FORM T | BLOCKED |
 | S-6 | UNCLASSIFIED |
 | AA-5 | BLOCKED |
+| AA-2 operational lane | TERMINALLY CLOSED — NOT COMPLETED (authority `b1b852c`; activation `82c5d89`) |
+| AA-2 measurement | NOT COMPLETED |
+| Idea A timing-table lock | NOT ACHIEVED |
+| AA-2 sequence prerequisite | NOT SATISFIED |
+| AA-3 | BLOCKED |
+| AA-4 | BLOCKED |
+| Downstream authorization | NONE |
 
 ## 5. Completed chain (Path N lane only, commit order)
 
@@ -109,6 +116,8 @@ hides them.
 | (operation) | Python manifest-creation operation — manifest created; command ended non-zero |
 | (verification) | Final independent read-only closure verification — PASS |
 | `c59b2b8` | Four-file byte-identical E-2 raw evidence set (3 artifacts + SHA256SUMS) committed and pushed; durable preservation complete |
+| `b1b852c` | AA-2 terminal lane-closure authority — operational lane closed as NOT COMPLETED; measurement NOT COMPLETED; timing-table lock NOT ACHIEVED; sequence prerequisite NOT SATISFIED; no downstream authorization; all holds preserved |
+| `82c5d89` | Activation of the AA-2 authority document (DRAFT → APPROVED — EFFECTIVE); reconciles embedded status with effective state; no status or hold moved |
 
 (Product-intent anchor `DUAL_PATH_PRODUCT_ANCHOR.md` at `60c809b`
 is deliberately NOT in this table: it is a product-intent anchor,
@@ -175,24 +184,39 @@ All holds and statuses remain unchanged.
 `runtime_integrated` remains `false`.
 R2 HELD, FORM T BLOCKED, S-6 UNCLASSIFIED, AA-5 BLOCKED.
 
+AA-2 update (authority `b1b852c`, activation `82c5d89`): the AA-2 operational
+lane is TERMINALLY CLOSED — NOT COMPLETED. This is an operational lane closure
+only. It does NOT equal AA-2 measurement completion; the Idea A timing-table
+lock was NOT ACHIEVED; the AA-2 sequence prerequisite was NOT SATISFIED;
+downstream authorization remains NONE. AA-3 BLOCKED and AA-4 BLOCKED. No status
+or hold above is moved by this synchronization.
+
 ## 7. Next authorized step (exactly one)
 
-POST-E-2 GOVERNANCE REVIEW REQUIRED
+AA-2 TERMINALLY CLOSED — NOT COMPLETED. NO DOWNSTREAM AA PROGRESSION AUTHORIZED.
 
-Determine the next action from the committed roadmap and governing
-anchors without reopening Gate C, repeating E-2, or automatically
-moving any hold.
+Governance state (authority `b1b852c`, activation `82c5d89`):
+The AA-2 operational lane is terminally closed but NOT completed. The AA-2
+measurement was NOT completed; the Idea A timing-table lock was NOT achieved;
+the AA-2 sequence prerequisite remains NOT SATISFIED. Because the AA-2 sequence
+prerequisite is unsatisfied, no downstream AA progression (AA-3, AA-4, AA-5) is
+authorized, and none is authorized by this synchronization.
 
-The review may examine whether any separately defined downstream
-gate is now eligible, while preserving:
+The following are preserved unchanged:
 
   runtime_integrated=false
   R2=HELD
   FORM T=BLOCKED
   S-6=UNCLASSIFIED
+  AA-3=BLOCKED
+  AA-4=BLOCKED
   AA-5=BLOCKED
+  Downstream authorization=NONE
 
-No downstream gate is authorized by this roadmap synchronization.
+The next step is NOT a downstream execution phase. The next step requires a
+separate owner-authorized governance disposition review to determine how the
+campaign proceeds given a terminally-closed-but-incomplete AA-2 lane. That
+review is not authorized by this synchronization and moves no status or hold.
 
 Constraints:
 
