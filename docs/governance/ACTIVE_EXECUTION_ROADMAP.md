@@ -31,7 +31,7 @@ hides them.
 
 | Item | State |
 |------|-------|
-| Latest authoritative baseline | `d130256` — limited E-2 safe retry evidence accepted |
+| Latest authoritative baseline | `c59b2b8` — byte-identical E-2 raw evidence durably preserved |
 | E-2 execution-attempt baseline | `feaff2a` — governance: amend E-2 server start command with repository PYTHONPATH |
 | Phase 1 Path N designation | CLOSED |
 | Phase 2 Path N content selection | CLOSED (implementation `165e0da`, gate amendment `71e90b3`, closure `ffaab93`) |
@@ -54,7 +54,11 @@ hides them.
 | Single controlled E-2 attempt | EXECUTED ONCE — SID `d39526ce-92a5-469a-9c93-5e6d23f7a31b`; result LIMITED TECHNICAL ACCEPTED; matched question N-MC-1; gap MECHANISM_COMPLETENESS; cycle 1; runner exit 0 |
 | Evidence acceptance record | COMMITTED (`d130256`) |
 | Gate C | CONSUMED — second attempt NOT AUTHORIZED |
-| Raw evidence preservation | NOT DURABLY COMPLETED — current location `/tmp`; preservation risk, not evidence invalidation |
+| Preservation authorization | COMMITTED (`adcd34e`) |
+| Durable preservation commit | COMMITTED (`c59b2b8`) — 3 accepted raw artifacts + SHA256SUMS |
+| Preserved SID | `d39526ce-92a5-469a-9c93-5e6d23f7a31b` |
+| Governed evidence directory | `docs/governance/evidence/e2_safe_retry/d39526ce-92a5-469a-9c93-5e6d23f7a31b/` |
+| Raw evidence preservation | DURABLY COMPLETED — byte-identity VERIFIED against accepted hashes and `/tmp` source artifacts before commit |
 | E-2 retry execution | CONSUMED — one authorized attempt executed; LIMITED TECHNICAL ACCEPTED; no further retry authorized |
 | E-2 STOP | DECLARED AND RECORDED |
 | Path N runtime integration | NOT FULLY CLOSED |
@@ -98,6 +102,13 @@ hides them.
 | `d4140d4` | Gate C authorization for one controlled E-2 safe retry; execution remains blocked pending mandatory roadmap synchronization, clean-baseline verification, and a separate owner instruction |
 | `d6441b0` | Roadmap synchronization after Gate C authorization |
 | `d130256` | E-2 safe retry evidence acceptance record; one controlled attempt executed (SID `d39526ce`), MATCH N-MC-1, runner exit 0; LIMITED TECHNICAL ACCEPTED; Gate C consumed; all holds unchanged |
+| `aef888e` | Roadmap synchronization after limited E-2 evidence acceptance |
+| `adcd34e` | E-2 raw evidence preservation authorization (Option A) committed |
+| (operation) | Initial preservation operation — STOPPED, INCOMPLETE (3 raw files copied byte-identical; manifest not created) |
+| (operation) | First manifest-completion operation — STOPPED, INCOMPLETE |
+| (operation) | Python manifest-creation operation — manifest created; command ended non-zero |
+| (verification) | Final independent read-only closure verification — PASS |
+| `c59b2b8` | Four-file byte-identical E-2 raw evidence set (3 artifacts + SHA256SUMS) committed and pushed; durable preservation complete |
 
 (Product-intent anchor `DUAL_PATH_PRODUCT_ANCHOR.md` at `60c809b`
 is deliberately NOT in this table: it is a product-intent anchor,
@@ -105,43 +116,57 @@ not a Path N implementation step.)
 
 ## 6. Current execution lane
 
-The Gate C execution lane is closed.
+The Gate C execution and evidence-preservation lane is closed.
 
 The single authorized E-2 attempt was consumed. One newly created
 Path N session (SID `d39526ce-92a5-469a-9c93-5e6d23f7a31b`) produced
 exactly one approved Path N question match (N-MC-1,
 MECHANISM_COMPLETENESS) at cycle 1, and the runner completed with
-exit 0. The result is classified LIMITED TECHNICAL ACCEPTED and the
-evidence acceptance record is committed at `d130256`.
+exit 0. The result was accepted as LIMITED TECHNICAL ACCEPTED
+(record `d130256`).
+
+The three raw evidence artifacts and SHA256SUMS are durably
+preserved in Git at `c59b2b8`.
 
 No additional retry is authorized. Any future live retry requires a
 new, separately reviewed and committed authorization.
 
+### Preservation operation history
+
+Observed: long pasted command blocks ended non-zero while short
+independent verification commands succeeded.
+Root cause: UNKNOWN.
+Possible explanation: terminal paste or line-transmission distortion.
+
+The accurate operation history is:
+- Initial preservation operation — STOPPED, INCOMPLETE.
+- First manifest-completion operation — STOPPED, INCOMPLETE.
+- Python manifest-creation operation — manifest created; command
+  ended non-zero.
+- Final independent read-only closure verification — PASS.
+- Durable Git preservation — COMPLETE (`c59b2b8`).
+
+Neither stopped operation is described as successful.
+
 ### Meaning boundary
 
-The accepted evidence proves only:
+Durable preservation proves only:
 
-One newly created Path N session produced exactly one approved
-Path N question match within the authorized execution boundary,
-and the runner completed successfully.
+The bytes reviewed and accepted during the E-2 evidence review are
+now durably available from Git and match the previously accepted
+hashes.
 
 It does not prove:
 
+- repeatability
+- general Path N reliability
 - inventor development
 - improved understanding
 - idea growth
 - Stage 3 completion
-- general Path N reliability
-- repeatability
-- production readiness
 - runtime integration completion
+- production readiness
 - S-6 classification
-
-### Evidence-preservation state
-
-Raw evidence preservation: NOT DURABLY COMPLETED.
-Current evidence location: /tmp.
-Classification: preservation risk — not evidence invalidation.
 
 ### Holds
 
@@ -152,32 +177,33 @@ R2 HELD, FORM T BLOCKED, S-6 UNCLASSIFIED, AA-5 BLOCKED.
 
 ## 7. Next authorized step (exactly one)
 
-OWNER DECISION REQUIRED:
+POST-E-2 GOVERNANCE REVIEW REQUIRED
 
-Choose whether to:
+Determine the next action from the committed roadmap and governing
+anchors without reopening Gate C, repeating E-2, or automatically
+moving any hold.
 
-A. Prepare a separately authorized byte-identical durable raw
-   evidence preservation step;
+The review may examine whether any separately defined downstream
+gate is now eligible, while preserving:
 
-or
+  runtime_integrated=false
+  R2=HELD
+  FORM T=BLOCKED
+  S-6=UNCLASSIFIED
+  AA-5=BLOCKED
 
-B. Accept the committed evidence record (`d130256`) as the durable
-   governance record while retaining the documented /tmp
-   preservation risk.
+No downstream gate is authorized by this roadmap synchronization.
 
-Neither option moves runtime_integrated, R2, FORM T, S-6, or AA-5.
+Constraints:
 
-Constraints until the owner decides:
-
-- No copying of /tmp evidence.
-- No evidence archive directory creation.
-- No Flask startup.
-- No runner invocation.
+- No reopening of Gate C.
+- No further E-2 attempt.
 - No SID creation.
-- No further retry.
+- No Flask startup or runner invocation.
+- No modification of the committed evidence files.
 - No status or hold movement.
 - No S-6 classification.
-- No new authorization document.
+- No new authorization document by this synchronization.
 
 ## 8. Required future sequence
 
