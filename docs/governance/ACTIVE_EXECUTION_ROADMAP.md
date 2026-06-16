@@ -31,7 +31,7 @@ hides them.
 
 | Item | State |
 |------|-------|
-| Latest authoritative baseline | `82c5d89` — AA-2 terminal lane closure activated (roadmap-sync baseline); prior execution baseline `c59b2b8` |
+| Latest authoritative baseline | `1cf848b` — ILT-002 campaign disposition INDETERMINATE committed, pushed, and activated; prior roadmap-sync baseline `82c5d89` |
 | E-2 execution-attempt baseline | `feaff2a` — governance: amend E-2 server start command with repository PYTHONPATH |
 | Phase 1 Path N designation | CLOSED |
 | Phase 2 Path N content selection | CLOSED (implementation `165e0da`, gate amendment `71e90b3`, closure `ffaab93`) |
@@ -73,6 +73,8 @@ hides them.
 | AA-2 sequence prerequisite | NOT SATISFIED |
 | AA-3 | BLOCKED |
 | AA-4 | BLOCKED |
+| ILT-002 campaign disposition authority | COMMITTED AND ACTIVATED (`1cf848b`) — `docs/governance/ILT-002_CAMPAIGN_DISPOSITION_INDETERMINATE_ONE_TIME_AUTHORITY.md`; VERIFIED REPOSITORY ACTIVATION completed |
+| ILT-002 campaign disposition | INDETERMINATE — OPERATIONALLY EFFECTIVE |
 | Downstream authorization | NONE |
 
 ## 5. Completed chain (Path N lane only, commit order)
@@ -118,6 +120,7 @@ hides them.
 | `c59b2b8` | Four-file byte-identical E-2 raw evidence set (3 artifacts + SHA256SUMS) committed and pushed; durable preservation complete |
 | `b1b852c` | AA-2 terminal lane-closure authority — operational lane closed as NOT COMPLETED; measurement NOT COMPLETED; timing-table lock NOT ACHIEVED; sequence prerequisite NOT SATISFIED; no downstream authorization; all holds preserved |
 | `82c5d89` | Activation of the AA-2 authority document (DRAFT → APPROVED — EFFECTIVE); reconciles embedded status with effective state; no status or hold moved |
+| `1cf848b` | ILT-002 campaign disposition one-time authority — INDETERMINATE; owner-approved bytes committed and pushed; VERIFIED REPOSITORY ACTIVATION completed; no downstream authorization and no hold movement |
 
 (Product-intent anchor `DUAL_PATH_PRODUCT_ANCHOR.md` at `60c809b`
 is deliberately NOT in this table: it is a product-intent anchor,
@@ -191,7 +194,27 @@ lock was NOT ACHIEVED; the AA-2 sequence prerequisite was NOT SATISFIED;
 downstream authorization remains NONE. AA-3 BLOCKED and AA-4 BLOCKED. No status
 or hold above is moved by this synchronization.
 
-## 7. Next authorized step (exactly one)
+### ILT-002 Campaign Disposition
+
+The one-time ILT-002 campaign disposition authority was committed and pushed
+at `1cf848b`. VERIFIED REPOSITORY ACTIVATION was completed on 2026-06-16.
+
+ILT-002 CAMPAIGN DISPOSITION: INDETERMINATE — OPERATIONALLY EFFECTIVE
+
+This disposition:
+- is NOT an AA-5 verdict;
+- does NOT establish platform or campaign success or failure;
+- does NOT complete AA-2 measurement;
+- does NOT satisfy the AA-2 sequence prerequisite;
+- does NOT authorize AA-3, AA-4, AA-5, or S-6 classification;
+- does NOT release any hold;
+- does NOT authorize new evidence collection;
+- is one-time, non-precedential, and limited to ILT-002.
+
+All existing holds and blocked states remain unchanged.
+No downstream action is authorized by this disposition.
+
+## 7. Current authorization boundary
 
 AA-2 TERMINALLY CLOSED — NOT COMPLETED. NO DOWNSTREAM AA PROGRESSION AUTHORIZED.
 
@@ -213,10 +236,16 @@ The following are preserved unchanged:
   AA-5=BLOCKED
   Downstream authorization=NONE
 
-The next step is NOT a downstream execution phase. The next step requires a
-separate owner-authorized governance disposition review to determine how the
-campaign proceeds given a terminally-closed-but-incomplete AA-2 lane. That
-review is not authorized by this synchronization and moves no status or hold.
+The owner-authorized ILT-002 campaign disposition process has been completed,
+committed, pushed, and externally verified at `1cf848b`.
+
+ILT-002 CAMPAIGN DISPOSITION: INDETERMINATE — OPERATIONALLY EFFECTIVE.
+
+This disposition supplies no downstream execution authority and moves no
+status or hold.
+
+NEXT DOWNSTREAM ACTION: NONE AUTHORIZED
+NEXT GOVERNANCE ACTION: REQUIRES SEPARATE OWNER AUTHORIZATION
 
 Constraints:
 
