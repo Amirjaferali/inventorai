@@ -1,3 +1,53 @@
+# Current Repository Execution Authority
+
+This section overrides any older current-priority, active-document, or
+document-authority statement in this file when they conflict.
+
+Before any analysis, recommendation, code change, command execution, file
+creation, staging, commit, or push, every Claude Code session, team lead,
+subagent, and Agent Teams teammate MUST read, in this order:
+
+1. `docs/governance/ILT-002_GOVERNANCE_ANCHOR.md`
+2. `docs/governance/PATH_N_CURRENT_EXECUTION_ANCHOR.md`
+3. `docs/governance/DUAL_PATH_PRODUCT_ANCHOR.md`
+4. `docs/governance/ACTIVE_EXECUTION_ROADMAP.md`
+5. Any phase-specific authorization identified as active by the roadmap
+
+Repository truth overrides conversation history, memory, and assumption.
+
+The active roadmap controls:
+- the current execution lane;
+- authorized next actions;
+- blocked states and holds;
+- mandatory stop conditions;
+- roadmap-staleness handling.
+
+Current statuses, holds, authorization boundaries, and next actions MUST be
+read from the latest committed `ACTIVE_EXECUTION_ROADMAP.md`; they must not be
+copied, reconstructed, or inferred from this file.
+
+Unless the latest committed roadmap and a separate applicable authority
+explicitly authorize an action, agents MUST NOT:
+
+- reopen Gate C;
+- run another E-2 attempt;
+- create a new SID;
+- start Flask or invoke the E-2 runner;
+- modify preserved evidence;
+- move any status or hold;
+- classify S-6;
+- create or imply downstream authorization;
+- treat analysis, recommendations, or team consensus as authorization.
+
+Agent Teams does not create authority. Every teammate is bound by the same
+repository documents, prohibitions, and stop conditions as the team lead.
+
+If Git history contains a qualifying state-change event not reflected in the
+roadmap, STOP, report the exact evidence, and request roadmap synchronization.
+Do not continue under a stale roadmap.
+
+---
+
 # InventorAI — Refactor Governance Contract
 
 ## Mission
