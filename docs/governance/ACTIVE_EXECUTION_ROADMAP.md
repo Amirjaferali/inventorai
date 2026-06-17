@@ -31,7 +31,8 @@ hides them.
 
 | Item | State |
 |------|-------|
-| Latest authoritative baseline | `1cf848b` — ILT-002 campaign disposition INDETERMINATE committed, pushed, and activated; prior roadmap-sync baseline `82c5d89` |
+| Latest authoritative baseline | `3a7bc13` — Phase 3 Path N runtime verification closure-record commit, parent `1058c4a`; operational effectiveness subject to VERIFIED REPOSITORY ACTIVATION; prior baseline `1cf848b` |
+| Phase 3 Path N runtime verification | CLOSURE RECORDED (`3a7bc13`) — technical criterion SATISFIED; operationally effective only upon VERIFIED REPOSITORY ACTIVATION; Phase 4 NOT AUTHORIZED |
 | E-2 execution-attempt baseline | `feaff2a` — governance: amend E-2 server start command with repository PYTHONPATH |
 | Phase 1 Path N designation | CLOSED |
 | Phase 2 Path N content selection | CLOSED (implementation `165e0da`, gate amendment `71e90b3`, closure `ffaab93`) |
@@ -121,6 +122,7 @@ hides them.
 | `b1b852c` | AA-2 terminal lane-closure authority — operational lane closed as NOT COMPLETED; measurement NOT COMPLETED; timing-table lock NOT ACHIEVED; sequence prerequisite NOT SATISFIED; no downstream authorization; all holds preserved |
 | `82c5d89` | Activation of the AA-2 authority document (DRAFT → APPROVED — EFFECTIVE); reconciles embedded status with effective state; no status or hold moved |
 | `1cf848b` | ILT-002 campaign disposition one-time authority — INDETERMINATE; owner-approved bytes committed and pushed; VERIFIED REPOSITORY ACTIVATION completed; no downstream authorization and no hold movement |
+| `3a7bc13` | Phase 3 Path N runtime verification closure record — technical criterion SATISFIED; committed test suites collectively cover all six §7 targets of the runtime-integration plan; tests executed at `2f4a58b`; applicability at `1058c4a` established by path-level diff review (tests not rerun at `1058c4a`); authorizes no Phase 4 action; no `runtime_integrated`, R2, FORM T, S-6, AA, or ILT-002 state moves |
 
 (Product-intent anchor `DUAL_PATH_PRODUCT_ANCHOR.md` at `60c809b`
 is deliberately NOT in this table: it is a product-intent anchor,
@@ -214,6 +216,34 @@ This disposition:
 All existing holds and blocked states remain unchanged.
 No downstream action is authorized by this disposition.
 
+### Phase 3 Path N Runtime Verification Closure
+
+A Phase 3 Path N runtime verification closure record is recorded by commit
+`3a7bc13` on parent `1058c4a`.
+
+PHASE 3 TECHNICAL CRITERION: SATISFIED
+
+Operational effectiveness is governed by the closure record's VERIFIED
+REPOSITORY ACTIVATION requirement.
+
+Technical execution baseline: `2f4a58b`.
+Pre-activation applicability baseline: `1058c4a`.
+Tests were not rerun at `1058c4a`; applicability was established through
+path-level diff review.
+
+This closure does not authorize:
+
+- runtime_integrated=true
+- Phase 4
+- R2 release
+- FORM T unblock
+- S-6 classification
+- AA-3, AA-4, or AA-5
+- ILT-002 evidence collection
+- downstream AA execution
+
+E-2 remains LIMITED TECHNICAL ACCEPTED, without upgrade.
+
 ## 7. Current authorization boundary
 
 AA-2 TERMINALLY CLOSED — NOT COMPLETED. NO DOWNSTREAM AA PROGRESSION AUTHORIZED.
@@ -243,6 +273,11 @@ ILT-002 CAMPAIGN DISPOSITION: INDETERMINATE — OPERATIONALLY EFFECTIVE.
 
 This disposition supplies no downstream execution authority and moves no
 status or hold.
+
+The Phase 3 Path N runtime verification closure recorded at `3a7bc13`
+supplies no downstream execution authority and moves no status or hold.
+NEXT DOWNSTREAM ACTION remains NONE AUTHORIZED. Any Phase 4 review or
+action requires separate owner authorization.
 
 NEXT DOWNSTREAM ACTION: NONE AUTHORIZED
 NEXT GOVERNANCE ACTION: REQUIRES SEPARATE OWNER AUTHORIZATION
