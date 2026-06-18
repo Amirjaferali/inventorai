@@ -31,52 +31,33 @@ hides them.
 
 | Item | State |
 |------|-------|
-| Latest authoritative baseline | `3a7bc13` — Phase 3 Path N runtime verification closure-record commit, parent `1058c4a`; operational effectiveness subject to VERIFIED REPOSITORY ACTIVATION; prior baseline `1cf848b` |
-| Phase 3 Path N runtime verification | CLOSURE RECORDED (`3a7bc13`) — technical criterion SATISFIED; operationally effective only upon VERIFIED REPOSITORY ACTIVATION; Phase 4 NOT AUTHORIZED |
-| E-2 execution-attempt baseline | `feaff2a` — governance: amend E-2 server start command with repository PYTHONPATH |
-| Phase 1 Path N designation | CLOSED |
-| Phase 2 Path N content selection | CLOSED (implementation `165e0da`, gate amendment `71e90b3`, closure `ffaab93`) |
-| Post-Phase-2 Authorization Review | COMMITTED (`7a3350c`) — review only, authorizes nothing |
-| Limited Evidence Authorization | COMMITTED (`db2c46e`) |
-| E-3 integration plan recovery | COMPLETE — artifact committed at `cfcc95f` |
-| E-1 gate re-run | COMPLETE — results match authorized baseline; artifact committed at `cfcc95f` |
-| E-2 operational procedure | COMMITTED (`f1a02a1`) |
-| E-2 smoke session execution | STOP DECLARED — E-2 NOT ACCEPTED; session `830054a4` invalid; retry NOT AUTHORIZED |
-| E-2 STOP incident record | COMMITTED (`a684aba`) |
-| E-2 Safe Retry Gate A | COMMITTED (`1cb08cb`) — design only |
-| E-2 Safe Retry Gate B | COMMITTED (`d8277f9`) — implementation only |
-| Safe-retry design | AUTHORIZED |
-| Safe-retry implementation | AUTHORIZED |
-| Matcher implementation | COMMITTED AND PUSHED (`654ce07`) |
-| Runner implementation | COMMITTED AND PUSHED (content `d12db64`; executable-mode correction `d631439`) |
-| Gate B closure | CLOSED (`2a33763`) |
-| Gate C authorization | COMMITTED (`d4140d4`) |
-| Post-Gate-C roadmap synchronization | COMMITTED (`d6441b0`) |
-| Single controlled E-2 attempt | EXECUTED ONCE — SID `d39526ce-92a5-469a-9c93-5e6d23f7a31b`; result LIMITED TECHNICAL ACCEPTED; matched question N-MC-1; gap MECHANISM_COMPLETENESS; cycle 1; runner exit 0 |
-| Evidence acceptance record | COMMITTED (`d130256`) |
-| Gate C | CONSUMED — second attempt NOT AUTHORIZED |
-| Preservation authorization | COMMITTED (`adcd34e`) |
-| Durable preservation commit | COMMITTED (`c59b2b8`) — 3 accepted raw artifacts + SHA256SUMS |
-| Preserved SID | `d39526ce-92a5-469a-9c93-5e6d23f7a31b` |
-| Governed evidence directory | `docs/governance/evidence/e2_safe_retry/d39526ce-92a5-469a-9c93-5e6d23f7a31b/` |
-| Raw evidence preservation | DURABLY COMPLETED — byte-identity VERIFIED against accepted hashes and `/tmp` source artifacts before commit |
-| E-2 retry execution | CONSUMED — one authorized attempt executed; LIMITED TECHNICAL ACCEPTED; no further retry authorized |
-| E-2 STOP | DECLARED AND RECORDED |
-| Path N runtime integration | NOT FULLY CLOSED |
-| `runtime_integrated` | `false` |
+| Latest authoritative execution baseline | `bc34d785a135f98c97a1a54965762848a13db4b2` — Step K Phase 4 closure-review record committed locally; parent `37001da8202d85d1e34bfc4e8bbdd005922a2b98` |
+| Remote baseline | `origin/main = 37001da8202d85d1e34bfc4e8bbdd005922a2b98`; local branch ahead/behind = `1 0` before Step L |
+| Phase 3 Path N runtime verification | CLOSED (`3a7bc13`) — technical criterion SATISFIED |
+| Phase 4 authorization | COMMITTED AND REMOTELY ACTIVATED (`f4827d1`), with Amendment 1 (`b6d465d`) and activation-sequence Amendment 2 (`37001da`) |
+| Phase 4 implementation | COMMITTED AND REMOTELY VERIFIED (`97a1a51`) |
+| Step K closure-review record | COMMITTED LOCALLY (`bc34d78`); not yet pushed |
+| Revised Step L | CURRENT EXECUTION LANE — roadmap synchronization only |
+| Revised Step M | NOT YET PERFORMED — combined push of Step K and Step L commits only |
+| Revised Step N | NOT YET PERFORMED — complete remote-chain verification required |
+| Phase 4 | NOT CLOSED pending completion of revised Step M and revised Step N |
+| Path N runtime integration | IMPLEMENTATION COMMITTED; GOVERNANCE EFFECTIVENESS PENDING REVISED STEP N |
+| `runtime_integrated` byte state | `true` in committed JSON metadata (`97a1a51`) |
+| `runtime_integrated` approved governance state | NOT YET EFFECTIVE — requires revised Step N completion |
 | R2 | HELD |
 | FORM T | BLOCKED |
 | S-6 | UNCLASSIFIED |
-| AA-5 | BLOCKED |
-| AA-2 operational lane | TERMINALLY CLOSED — NOT COMPLETED (authority `b1b852c`; activation `82c5d89`) |
+| AA-2 operational lane | TERMINALLY CLOSED — NOT COMPLETED |
 | AA-2 measurement | NOT COMPLETED |
-| Idea A timing-table lock | NOT ACHIEVED |
 | AA-2 sequence prerequisite | NOT SATISFIED |
 | AA-3 | BLOCKED |
 | AA-4 | BLOCKED |
-| ILT-002 campaign disposition authority | COMMITTED AND ACTIVATED (`1cf848b`) — `docs/governance/ILT-002_CAMPAIGN_DISPOSITION_INDETERMINATE_ONE_TIME_AUTHORITY.md`; VERIFIED REPOSITORY ACTIVATION completed |
-| ILT-002 campaign disposition | INDETERMINATE — OPERATIONALLY EFFECTIVE |
-| Downstream authorization | NONE |
+| AA-5 | BLOCKED |
+| Phase 5 | UNAUTHORIZED |
+| Phase 6 | UNAUTHORIZED |
+| ILT-002 evidence collection | NOT AUTHORIZED |
+| Production-readiness claim | NONE |
+| Downstream authorization | Revised Step L only; no AA progression or other downstream execution authorized |
 
 ## 5. Completed chain (Path N lane only, commit order)
 
@@ -124,217 +105,189 @@ hides them.
 | `1cf848b` | ILT-002 campaign disposition one-time authority — INDETERMINATE; owner-approved bytes committed and pushed; VERIFIED REPOSITORY ACTIVATION completed; no downstream authorization and no hold movement |
 | `3a7bc13` | Phase 3 Path N runtime verification closure record — technical criterion SATISFIED; committed test suites collectively cover all six §7 targets of the runtime-integration plan; tests executed at `2f4a58b`; applicability at `1058c4a` established by path-level diff review (tests not rerun at `1058c4a`); authorizes no Phase 4 action; no `runtime_integrated`, R2, FORM T, S-6, AA, or ILT-002 state moves |
 
+| `bc475ff` | Roadmap synchronization after Phase 3 closure |
+| `f4827d1` | Phase 4 Path N runtime integration authorization |
+| `b6d465d` | Phase 4 Amendment 1 — expected artifact test count corrected to exactly 10 |
+| `97a1a51` | Phase 4 implementation — authorized metadata/test changes; `runtime_integrated=true` committed and remotely verified |
+| `37001da` | Phase 4 Amendment 2 — activation-sequence repair after early implementation push |
+| `bc34d78` | Step K closure-review record — committed locally; not yet pushed |
+
 (Product-intent anchor `DUAL_PATH_PRODUCT_ANCHOR.md` at `60c809b`
 is deliberately NOT in this table: it is a product-intent anchor,
 not a Path N implementation step.)
 
 ## 6. Current execution lane
 
-The Gate C execution and evidence-preservation lane is closed.
+The current governed lane is Revised Step L of the Phase 4 activation
+sequence defined by §24 of
+`PHASE_4_PATH_N_RUNTIME_INTEGRATION_AUTHORIZATION.md`.
 
-The single authorized E-2 attempt was consumed. One newly created
-Path N session (SID `d39526ce-92a5-469a-9c93-5e6d23f7a31b`) produced
-exactly one approved Path N question match (N-MC-1,
-MECHANISM_COMPLETENESS) at cycle 1, and the runner completed with
-exit 0. The result was accepted as LIMITED TECHNICAL ACCEPTED
-(record `d130256`).
+The following Phase 4 sequence has already occurred:
 
-The three raw evidence artifacts and SHA256SUMS are durably
-preserved in Git at `c59b2b8`.
+1. Phase 4 authorization committed at `f4827d1`.
+2. Amendment 1 committed at `b6d465d`.
+3. The authorized two-file implementation committed and remotely
+   verified at `97a1a51`.
+4. Amendment 2 repaired the activation sequence and was committed and
+   remotely verified at `37001da`.
+5. Step K closure-review record was created, verified, and committed
+   locally at `bc34d78`.
 
-No additional retry is authorized. Any future live retry requires a
-new, separately reviewed and committed authorization.
+The repository is now performing Revised Step L: synchronize this
+roadmap to the actual repository state and commit that synchronization
+as a separate local commit.
 
-### Preservation operation history
+The byte value `metadata.runtime_integrated=true` is present in
+committed history. It is not yet the approved operational governance
+state. Phase 4 remains NOT CLOSED until both of the following complete:
 
-Observed: long pasted command blocks ended non-zero while short
-independent verification commands succeeded.
-Root cause: UNKNOWN.
-Possible explanation: terminal paste or line-transmission distortion.
+- Revised Step M: push the Step K closure commit and Step L roadmap
+  synchronization commit together as one linear fast-forward
+  extension of the current remote chain.
+- Revised Step N: verify the complete remote chain, confirm
+  `HEAD = origin/main`, confirm ahead/behind `0 0`, and confirm the
+  committed hashes of the closure record and roadmap.
 
-The accurate operation history is:
-- Initial preservation operation — STOPPED, INCOMPLETE.
-- First manifest-completion operation — STOPPED, INCOMPLETE.
-- Python manifest-creation operation — manifest created; command
-  ended non-zero.
-- Final independent read-only closure verification — PASS.
-- Durable Git preservation — COMPLETE (`c59b2b8`).
+No Path N current-execution anchor refresh is included in Step L.
+`PATH_N_CURRENT_EXECUTION_ANCHOR.md` remains historically stale and
+cannot override later committed Phase 4 authority.
 
-Neither stopped operation is described as successful.
-
-### Meaning boundary
-
-Durable preservation proves only:
-
-The bytes reviewed and accepted during the E-2 evidence review are
-now durably available from Git and match the previously accepted
-hashes.
-
-It does not prove:
-
-- repeatability
-- general Path N reliability
-- inventor development
-- improved understanding
-- idea growth
-- Stage 3 completion
-- runtime integration completion
-- production readiness
-- S-6 classification
-
-### Holds
-
-All holds and statuses remain unchanged.
-
-`runtime_integrated` remains `false`.
-R2 HELD, FORM T BLOCKED, S-6 UNCLASSIFIED, AA-5 BLOCKED.
-
-AA-2 update (authority `b1b852c`, activation `82c5d89`): the AA-2 operational
-lane is TERMINALLY CLOSED — NOT COMPLETED. This is an operational lane closure
-only. It does NOT equal AA-2 measurement completion; the Idea A timing-table
-lock was NOT ACHIEVED; the AA-2 sequence prerequisite was NOT SATISFIED;
-downstream authorization remains NONE. AA-3 BLOCKED and AA-4 BLOCKED. No status
-or hold above is moved by this synchronization.
-
-### ILT-002 Campaign Disposition
-
-The one-time ILT-002 campaign disposition authority was committed and pushed
-at `1cf848b`. VERIFIED REPOSITORY ACTIVATION was completed on 2026-06-16.
-
-ILT-002 CAMPAIGN DISPOSITION: INDETERMINATE — OPERATIONALLY EFFECTIVE
-
-This disposition:
-- is NOT an AA-5 verdict;
-- does NOT establish platform or campaign success or failure;
-- does NOT complete AA-2 measurement;
-- does NOT satisfy the AA-2 sequence prerequisite;
-- does NOT authorize AA-3, AA-4, AA-5, or S-6 classification;
-- does NOT release any hold;
-- does NOT authorize new evidence collection;
-- is one-time, non-precedential, and limited to ILT-002.
-
-All existing holds and blocked states remain unchanged.
-No downstream action is authorized by this disposition.
-
-### Phase 3 Path N Runtime Verification Closure
-
-A Phase 3 Path N runtime verification closure record is recorded by commit
-`3a7bc13` on parent `1058c4a`.
-
-PHASE 3 TECHNICAL CRITERION: SATISFIED
-
-Operational effectiveness is governed by the closure record's VERIFIED
-REPOSITORY ACTIVATION requirement.
-
-Technical execution baseline: `2f4a58b`.
-Pre-activation applicability baseline: `1058c4a`.
-Tests were not rerun at `1058c4a`; applicability was established through
-path-level diff review.
-
-This closure does not authorize:
-
-- runtime_integrated=true
-- Phase 4
-- R2 release
-- FORM T unblock
-- S-6 classification
-- AA-3, AA-4, or AA-5
-- ILT-002 evidence collection
-- downstream AA execution
-
-E-2 remains LIMITED TECHNICAL ACCEPTED, without upgrade.
+Earlier E-2, Gate C, preservation, AA-2, and ILT-002 records remain
+historical repository evidence. They do not replace the current
+Phase 4 Step L lane and do not authorize new evidence collection,
+new sessions, additional retries, or downstream AA progression.
 
 ## 7. Current authorization boundary
 
-AA-2 TERMINALLY CLOSED — NOT COMPLETED. NO DOWNSTREAM AA PROGRESSION AUTHORIZED.
+AUTHORIZED NOW:
 
-Governance state (authority `b1b852c`, activation `82c5d89`):
-The AA-2 operational lane is terminally closed but NOT completed. The AA-2
-measurement was NOT completed; the Idea A timing-table lock was NOT achieved;
-the AA-2 sequence prerequisite remains NOT SATISFIED. Because the AA-2 sequence
-prerequisite is unsatisfied, no downstream AA progression (AA-3, AA-4, AA-5) is
-authorized, and none is authorized by this synchronization.
+- Revised Step L only: update, review, and locally commit
+  `docs/governance/ACTIVE_EXECUTION_ROADMAP.md`.
+- Read-only verification required for Step L.
 
-The following are preserved unchanged:
+NOT YET AUTHORIZED OR NOT YET COMPLETED:
 
-  runtime_integrated=false
-  R2=HELD
-  FORM T=BLOCKED
-  S-6=UNCLASSIFIED
-  AA-3=BLOCKED
-  AA-4=BLOCKED
-  AA-5=BLOCKED
-  Downstream authorization=NONE
+- Revised Step M push.
+- Revised Step N remote-chain verification.
+- Declaring Phase 4 CLOSED.
+- Treating `runtime_integrated=true` as the approved governance state
+  before revised Step N.
+- Updating `PATH_N_CURRENT_EXECUTION_ANCHOR.md`.
+- Reopening Gate C or executing another E-2 attempt.
+- Creating a new SID or collecting new ILT-002 evidence.
+- Releasing R2.
+- Unblocking FORM T.
+- Classifying S-6.
+- Unblocking AA-3, AA-4, or AA-5.
+- Phase 5 or Phase 6 execution.
+- Production-readiness, feasibility, patent-validity, manufacturing-
+  readiness, or commercialization claims.
 
-The owner-authorized ILT-002 campaign disposition process has been completed,
-committed, pushed, and externally verified at `1cf848b`.
+Preserved state:
 
-ILT-002 CAMPAIGN DISPOSITION: INDETERMINATE — OPERATIONALLY EFFECTIVE.
+    R2=HELD
+    FORM T=BLOCKED
+    S-6=UNCLASSIFIED
+    AA-3=BLOCKED
+    AA-4=BLOCKED
+    AA-5=BLOCKED
+    Phase 5=UNAUTHORIZED
+    Phase 6=UNAUTHORIZED
+    ILT-002 evidence collection=NOT AUTHORIZED
+    Phase 4=NOT CLOSED
 
-This disposition supplies no downstream execution authority and moves no
-status or hold.
+NEXT GOVERNED ACTION AFTER THE STEP L COMMIT:
 
-The Phase 3 Path N runtime verification closure recorded at `3a7bc13`
-supplies no downstream execution authority and moves no status or hold.
-NEXT DOWNSTREAM ACTION remains NONE AUTHORIZED. Any Phase 4 review or
-action requires separate owner authorization.
+    Revised Step M — push only the Step K closure-record commit and
+    the Step L roadmap-synchronization commit together.
 
-NEXT DOWNSTREAM ACTION: NONE AUTHORIZED
-NEXT GOVERNANCE ACTION: REQUIRES SEPARATE OWNER AUTHORIZATION
-
-Constraints:
-
-- No reopening of Gate C.
-- No further E-2 attempt.
-- No SID creation.
-- No Flask startup or runner invocation.
-- No modification of the committed evidence files.
-- No status or hold movement.
-- No S-6 classification.
-- No new authorization document by this synchronization.
+The push requires its own separate owner authorization. Revised
+Step N also requires completion and raw post-push evidence before
+Phase 4 can be declared CLOSED.
 
 ## 8. Required future sequence
 
-1. ~~Commit `DUAL_PATH_PRODUCT_ANCHOR.md`~~ — DONE (`60c809b`)
-2. ~~Commit `ACTIVE_EXECUTION_ROADMAP.md`~~ — DONE (`1982e2b`)
-3. ~~Draft Phase 2 Authorization~~ — DONE
-4. ~~Commit Phase 2 Authorization~~ — DONE (`b3a5fba`)
-5. Explicit owner instruction to implement Phase 2 only
-6. Run required test gates (authorization §10) and review diff
-7. Commit Phase 2 implementation only if gates green and diff
-   confined to the four authorized files
-8. Create Phase 2 closure record
-9. Only after runtime evidence: review whether R2 / FORM T / S-6
-   can move — each requires its own authorization; nothing moves
-   automatically
+The remaining Phase 4 sequence is governed by §24 of
+`PHASE_4_PATH_N_RUNTIME_INTEGRATION_AUTHORIZATION.md`.
+
+1. Complete review of the current Step L working-tree roadmap
+   synchronization.
+2. Stage only
+   `docs/governance/ACTIVE_EXECUTION_ROADMAP.md`.
+3. Verify the staged roadmap diff, path scope, SHA256, byte count,
+   final LF, and repository state.
+4. Commit the Step L roadmap synchronization as one separate local
+   commit whose parent is the Step K commit `bc34d78`.
+5. Revised Step M — under separate owner authorization, push the
+   Step K closure-record commit and the Step L roadmap-synchronization
+   commit together as one linear fast-forward extension of the
+   current verified remote chain ending at `37001da`.
+6. Revised Step N — verify by raw post-push evidence:
+   `HEAD = origin/main`, ahead/behind `0 0`, complete commit-chain
+   identity, and committed hashes of the Step K closure record and
+   this roadmap.
+7. Only after revised Step N completes successfully may Phase 4 be
+   recorded as CLOSED and `runtime_integrated=true` be treated as the
+   approved operational governance state.
+8. Any action after Phase 4 closure requires its own separately
+   reviewed owner authorization.
+
+This Step L synchronization does not itself perform revised Step M
+or revised Step N and does not close Phase 4.
 
 ## 9. What is blocked and what must not be done
 
-Blocked: R2 (HELD — D-B, `ccd1ecd` §6.1), FORM T, S-6
-classification, AA-5, `runtime_integrated=true` (plan Phase 4
-process only), conversion of the `72b5f11` strict xfail
-(plan Phase 5 only).
+Current blocked or pending state:
 
-Must not be done by any agent without explicit owner authorization:
-- Modify `domains/electronics_electrical/domain.json` (Path T bank)
-- Touch deterministic gates (`evaluate_transition()`,
-  `assess_response()`, `integrate_response()`) or PASS/WARN/BLOCK
-- Modify `engine/progression_loop.py` outside the Amendment 1 zone,
-  and even inside the zone only under the committed Phase 2
-  authorization plus the explicit implementation instruction
-- Mutate the Path N JSON artifact or its metadata
-- Auto-label legacy sessions with any path
-- Reconstruct global state, infer missing evidence, or treat
-  absence of evidence as a negative fact
-- Bundle multiple authorizations into one action
+- Phase 4 remains NOT CLOSED.
+- Revised Step M has not been performed.
+- Revised Step N has not been performed.
+- `runtime_integrated=true` exists in committed byte state but is not
+  yet the approved operational governance state.
+- R2 remains HELD.
+- FORM T remains BLOCKED.
+- S-6 remains UNCLASSIFIED.
+- AA-3 remains BLOCKED.
+- AA-4 remains BLOCKED.
+- AA-5 remains BLOCKED.
+- Phase 5 remains UNAUTHORIZED.
+- Phase 6 remains UNAUTHORIZED.
+- ILT-002 evidence collection remains NOT AUTHORIZED.
+- Production readiness has not been established.
+
+Must not be done by any agent without separate explicit owner
+authorization:
+
+- Push the Step K or Step L commits.
+- Execute revised Step M or revised Step N.
+- Declare Phase 4 CLOSED before revised Step N completes.
+- Treat the committed `runtime_integrated=true` byte value as approved
+  governance effectiveness before revised Step N.
+- Amend, rewrite, revert, or otherwise modify the Phase 4
+  implementation commit `97a1a51`, Amendment 2 commit `37001da`, or
+  Step K commit `bc34d78`.
+- Modify
+  `docs/governance/PATH_N_CURRENT_EXECUTION_ANCHOR.md`.
+- Reopen Gate C or execute another E-2 attempt.
+- Create a new SID or collect new ILT-002 evidence.
+- Release R2.
+- Unblock FORM T.
+- Classify S-6.
+- Unblock AA-3, AA-4, or AA-5.
+- Execute Phase 5 or Phase 6.
+- Make production-readiness, feasibility, patent-validity,
+  manufacturing-readiness, or commercialization claims.
+- Bundle the owner product-identity correction into this Step L
+  synchronization; that correction remains a separate future action.
 
 ## 10. Mandatory reading before any analysis
 
 1. `docs/governance/ILT-002_GOVERNANCE_ANCHOR.md` (epistemic boot — mandatory first)
-2. `docs/governance/PATH_N_CURRENT_EXECUTION_ANCHOR.md` (`aa068fd`, execution state)
-3. `docs/governance/DUAL_PATH_PRODUCT_ANCHOR.md` (`60c809b`, product intent)
-4. This roadmap (current lane and next step)
-5. `docs/governance/PHASE_2_PATH_N_CONTENT_SELECTION_AUTHORIZATION.md` (`b3a5fba`, the phase authorization inforce)
+2. `docs/governance/PATH_N_CURRENT_EXECUTION_ANCHOR.md` (`aa068fd`; historically stale and subordinate to later committed authority)
+3. `docs/governance/DUAL_PATH_PRODUCT_ANCHOR.md` (`60c809b`, product-intent anchor)
+4. This roadmap (current execution lane and next governed step)
+5. `docs/governance/PHASE_4_PATH_N_RUNTIME_INTEGRATION_AUTHORIZATION.md` (`f4827d1`, Amendment 1 `b6d465d`, Amendment 2 `37001da`)
+6. `docs/governance/PHASE_4_PATH_N_RUNTIME_INTEGRATION_CLOSURE_RECORD.md` (Step K commit `bc34d78`)
 
 If these are not read, the agent must not proceed.
 
