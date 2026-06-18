@@ -30,7 +30,7 @@ ARTIFACT_PATH = (
 EXPECTED_METADATA = {
     "path": "Path N",
     "domain": "electronics_electrical",
-    "status": "approved_governance_content_not_runtime_integrated",
+    "status": "approved_governance_content_runtime_integrated",
     "source_spec": "e2e6234",
     "approval_record": "effd040",
     "integration_plan": "fa26744",
@@ -109,8 +109,8 @@ def test_metadata_correct():
         if meta.get(key) != expected
     }
     assert not mismatches, f"metadata mismatches: {mismatches}"
-    assert meta.get("runtime_integrated") is False, (
-        f"runtime_integrated must be false, got: {meta.get('runtime_integrated')!r}"
+    assert meta.get("runtime_integrated") is True, (
+        f"runtime_integrated must be true, got: {meta.get('runtime_integrated')!r}"
     )
 
 
@@ -221,11 +221,14 @@ def test_no_runtime_or_domain_dependency():
 # Test 9 — runtime_integrated remains false (integration tripwire)
 # ---------------------------------------------------------------------------
 
-def test_runtime_integrated_remains_false():
-    """Integration tripwire (plan 932b7a8 §6 T-5): flipping this flag
-    without an authorized test update fails the suite loudly."""
+def test_runtime_integrated_remains_true_post_phase4():
+    """Post-Phase-4 invariant (Phase 4 authority
+    PHASE_4_PATH_N_RUNTIME_INTEGRATION_AUTHORIZATION.md): the flag must
+    remain true after authorized runtime integration. Any future
+    regression of this flag to false outside a separately authorized
+    rollback action fails the suite loudly."""
     meta = load_artifact().get("metadata", {})
-    assert meta.get("runtime_integrated") is False, (
-        "runtime_integrated changed — runtime integration requires its own "
-        "owner authorization and coordinated test updates"
+    assert meta.get("runtime_integrated") is True, (
+        "runtime_integrated reverted to false unexpectedly — any "
+        "reversal requires its own recorded rollback authorization"
     )

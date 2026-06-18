@@ -2,12 +2,12 @@
   "metadata": {
     "path": "Path N",
     "domain": "electronics_electrical",
-    "status": "approved_governance_content_not_runtime_integrated",
+    "status": "approved_governance_content_runtime_integrated",
     "source_spec": "e2e6234",
     "approval_record": "effd040",
     "integration_plan": "fa26744",
     "artifact_plan": "932b7a8",
-    "runtime_integrated": false
+    "runtime_integrated": true
   },
   "gaps": {
     "MECHANISM_COMPLETENESS": [
