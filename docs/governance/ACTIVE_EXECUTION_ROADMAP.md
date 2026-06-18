@@ -31,19 +31,19 @@ hides them.
 
 | Item | State |
 |------|-------|
-| Latest authoritative execution baseline | `bc34d785a135f98c97a1a54965762848a13db4b2` — Step K Phase 4 closure-review record committed locally; parent `37001da8202d85d1e34bfc4e8bbdd005922a2b98` |
-| Remote baseline | `origin/main = 37001da8202d85d1e34bfc4e8bbdd005922a2b98`; local branch ahead/behind = `1 0` before Step L |
+| Latest authoritative execution baseline | `b3ff5c18c77459d4d8eb7cc380b6b368e7619856` — Step L roadmap-synchronization commit, remotely verified; parent `bc34d785a135f98c97a1a54965762848a13db4b2` |
+| Remote baseline | `origin/main = b3ff5c18c77459d4d8eb7cc380b6b368e7619856`; HEAD/origin ahead/behind = `0 0` |
 | Phase 3 Path N runtime verification | CLOSED (`3a7bc13`) — technical criterion SATISFIED |
 | Phase 4 authorization | COMMITTED AND REMOTELY ACTIVATED (`f4827d1`), with Amendment 1 (`b6d465d`) and activation-sequence Amendment 2 (`37001da`) |
 | Phase 4 implementation | COMMITTED AND REMOTELY VERIFIED (`97a1a51`) |
-| Step K closure-review record | COMMITTED LOCALLY (`bc34d78`); not yet pushed |
-| Revised Step L | CURRENT EXECUTION LANE — roadmap synchronization only |
-| Revised Step M | NOT YET PERFORMED — combined push of Step K and Step L commits only |
-| Revised Step N | NOT YET PERFORMED — complete remote-chain verification required |
-| Phase 4 | NOT CLOSED pending completion of revised Step M and revised Step N |
-| Path N runtime integration | IMPLEMENTATION COMMITTED; GOVERNANCE EFFECTIVENESS PENDING REVISED STEP N |
+| Step K closure-review record | COMMITTED AND REMOTELY VERIFIED (`bc34d78`) |
+| Step L roadmap synchronization | COMMITTED AND REMOTELY VERIFIED (`b3ff5c1`) |
+| Revised Step M | COMPLETED — Step K and Step L commits pushed together as one linear fast-forward extension ending at `b3ff5c1` |
+| Revised Step N | COMPLETED — complete remote-chain verification performed; `HEAD = origin/main`, ahead/behind `0 0` |
+| Phase 4 | CLOSED |
+| Path N runtime integration | CLOSED for the authorized Phase 4 scope |
 | `runtime_integrated` byte state | `true` in committed JSON metadata (`97a1a51`) |
-| `runtime_integrated` approved governance state | NOT YET EFFECTIVE — requires revised Step N completion |
+| `runtime_integrated` approved governance state | EFFECTIVE |
 | R2 | HELD |
 | FORM T | BLOCKED |
 | S-6 | UNCLASSIFIED |
@@ -57,7 +57,7 @@ hides them.
 | Phase 6 | UNAUTHORIZED |
 | ILT-002 evidence collection | NOT AUTHORIZED |
 | Production-readiness claim | NONE |
-| Downstream authorization | Revised Step L only; no AA progression or other downstream execution authorized |
+| Downstream authorization | None. Phase 4 closure authorizes no AA progression, no Phase 5/6, no S-6 classification, and no production-readiness, feasibility, patent-validity, manufacturing-readiness, commercialization-readiness, inventor-development, or idea-growth claim beyond the specifically authorized runtime-integration fact. |
 
 ## 5. Completed chain (Path N lane only, commit order)
 
@@ -110,7 +110,8 @@ hides them.
 | `b6d465d` | Phase 4 Amendment 1 — expected artifact test count corrected to exactly 10 |
 | `97a1a51` | Phase 4 implementation — authorized metadata/test changes; `runtime_integrated=true` committed and remotely verified |
 | `37001da` | Phase 4 Amendment 2 — activation-sequence repair after early implementation push |
-| `bc34d78` | Step K closure-review record — committed locally; not yet pushed |
+| `bc34d78` | Step K closure-review record — committed and remotely verified |
+| `b3ff5c1` | Step L roadmap synchronization for Phase 4 closure activation — committed and remotely verified; pushed together with `bc34d78` as Revised Step M; Revised Step N remote-chain verification completed; Phase 4 CLOSED |
 
 (Product-intent anchor `DUAL_PATH_PRODUCT_ANCHOR.md` at `60c809b`
 is deliberately NOT in this table: it is a product-intent anchor,
@@ -118,11 +119,10 @@ not a Path N implementation step.)
 
 ## 6. Current execution lane
 
-The current governed lane is Revised Step L of the Phase 4 activation
-sequence defined by §24 of
-`PHASE_4_PATH_N_RUNTIME_INTEGRATION_AUTHORIZATION.md`.
+The Phase 4 activation and verification lane defined by §24 of
+`PHASE_4_PATH_N_RUNTIME_INTEGRATION_AUTHORIZATION.md` is complete.
 
-The following Phase 4 sequence has already occurred:
+The following Phase 4 sequence has occurred, in full:
 
 1. Phase 4 authorization committed at `f4827d1`.
 2. Amendment 1 committed at `b6d465d`.
@@ -131,47 +131,54 @@ The following Phase 4 sequence has already occurred:
 4. Amendment 2 repaired the activation sequence and was committed and
    remotely verified at `37001da`.
 5. Step K closure-review record was created, verified, and committed
-   locally at `bc34d78`.
-
-The repository is now performing Revised Step L: synchronize this
-roadmap to the actual repository state and commit that synchronization
-as a separate local commit.
+   at `bc34d78`.
+6. Step L roadmap synchronization was created, verified, and
+   committed at `b3ff5c1`.
+7. Revised Step M pushed the Step K and Step L commits together as
+   one linear fast-forward extension of the remote chain ending at
+   `37001da`; the push succeeded (`37001da..b3ff5c1 main -> main`).
+8. Revised Step N verified the complete remote chain by raw
+   post-push evidence: `HEAD = origin/main = b3ff5c1`, ahead/behind
+   `0 0`, full commit-chain parentage from `b3ff5c1` back through
+   `bc34d78`, `37001da`, `97a1a51`, and matching committed hashes for
+   the Step K closure record and this roadmap.
 
 The byte value `metadata.runtime_integrated=true` is present in
-committed history. It is not yet the approved operational governance
-state. Phase 4 remains NOT CLOSED until both of the following complete:
+committed history and is now the approved operational governance
+state, per §24's revised Step N completion condition.
 
-- Revised Step M: push the Step K closure commit and Step L roadmap
-  synchronization commit together as one linear fast-forward
-  extension of the current remote chain.
-- Revised Step N: verify the complete remote chain, confirm
-  `HEAD = origin/main`, confirm ahead/behind `0 0`, and confirm the
-  committed hashes of the closure record and roadmap.
+The current governed lane is limited to:
 
-No Path N current-execution anchor refresh is included in Step L.
-`PATH_N_CURRENT_EXECUTION_ANCHOR.md` remains historically stale and
-cannot override later committed Phase 4 authority.
+    Owner product-identity correction review and authorization
+    preparation.
+
+This statement does not authorize implementation of that
+correction. No correction document exists yet, no final correction
+text has been defined, and no historical governance record,
+`DUAL_PATH_PRODUCT_ANCHOR.md`, `CLAUDE.md`,
+`STRATEGIC_PRODUCT_VISION.md`, `INVENTORAI_PRODUCT_THEORY.md`, code,
+or test has been modified by Phase 4 closure.
+
+No Path N current-execution anchor refresh is included in this
+closure. `PATH_N_CURRENT_EXECUTION_ANCHOR.md` remains historically
+stale and cannot override later committed Phase 4 authority.
 
 Earlier E-2, Gate C, preservation, AA-2, and ILT-002 records remain
 historical repository evidence. They do not replace the current
-Phase 4 Step L lane and do not authorize new evidence collection,
-new sessions, additional retries, or downstream AA progression.
+lane and do not authorize new evidence collection, new sessions,
+additional retries, or downstream AA progression.
 
 ## 7. Current authorization boundary
 
 AUTHORIZED NOW:
 
-- Revised Step L only: update, review, and locally commit
-  `docs/governance/ACTIVE_EXECUTION_ROADMAP.md`.
-- Read-only verification required for Step L.
+- Review and preparation of the owner product-identity correction as
+  a separate governance package.
+- Read-only verification of the closed Phase 4 lane.
 
-NOT YET AUTHORIZED OR NOT YET COMPLETED:
+NOT AUTHORIZED BY PHASE 4 CLOSURE:
 
-- Revised Step M push.
-- Revised Step N remote-chain verification.
-- Declaring Phase 4 CLOSED.
-- Treating `runtime_integrated=true` as the approved governance state
-  before revised Step N.
+- Implementation of the owner product-identity correction.
 - Updating `PATH_N_CURRENT_EXECUTION_ANCHOR.md`.
 - Reopening Gate C or executing another E-2 attempt.
 - Creating a new SID or collecting new ILT-002 evidence.
@@ -181,7 +188,8 @@ NOT YET AUTHORIZED OR NOT YET COMPLETED:
 - Unblocking AA-3, AA-4, or AA-5.
 - Phase 5 or Phase 6 execution.
 - Production-readiness, feasibility, patent-validity, manufacturing-
-  readiness, or commercialization claims.
+  readiness, commercialization-readiness, inventor-development, or
+  idea-growth claims.
 
 Preserved state:
 
@@ -194,56 +202,43 @@ Preserved state:
     Phase 5=UNAUTHORIZED
     Phase 6=UNAUTHORIZED
     ILT-002 evidence collection=NOT AUTHORIZED
-    Phase 4=NOT CLOSED
+    Phase 4=CLOSED
 
-NEXT GOVERNED ACTION AFTER THE STEP L COMMIT:
+    AA-4 final S-6 classification has NOT been performed.
 
-    Revised Step M — push only the Step K closure-record commit and
-    the Step L roadmap-synchronization commit together.
+NEXT GOVERNED ACTION:
 
-The push requires its own separate owner authorization. Revised
-Step N also requires completion and raw post-push evidence before
-Phase 4 can be declared CLOSED.
+    Commit and remotely verify this post-Step-N roadmap
+    synchronization under a separate future authorization, then
+    review and prepare the owner product-identity correction as a
+    separate governance package.
+
+This roadmap update (the working-tree change reflecting completed
+Step M and Step N) is not yet committed. Its own commit and remote
+verification require their own separate owner authorization, exactly
+as every other write in this project has required.
 
 ## 8. Required future sequence
 
-The remaining Phase 4 sequence is governed by §24 of
-`PHASE_4_PATH_N_RUNTIME_INTEGRATION_AUTHORIZATION.md`.
+The Phase 4 Step K/L/M/N sequence governed by §24 of
+`PHASE_4_PATH_N_RUNTIME_INTEGRATION_AUTHORIZATION.md` is complete.
+The required future sequence is now:
 
-1. Complete review of the current Step L working-tree roadmap
-   synchronization.
-2. Stage only
-   `docs/governance/ACTIVE_EXECUTION_ROADMAP.md`.
-3. Verify the staged roadmap diff, path scope, SHA256, byte count,
-   final LF, and repository state.
-4. Commit the Step L roadmap synchronization as one separate local
-   commit whose parent is the Step K commit `bc34d78`.
-5. Revised Step M — under separate owner authorization, push the
-   Step K closure-record commit and the Step L roadmap-synchronization
-   commit together as one linear fast-forward extension of the
-   current verified remote chain ending at `37001da`.
-6. Revised Step N — verify by raw post-push evidence:
-   `HEAD = origin/main`, ahead/behind `0 0`, complete commit-chain
-   identity, and committed hashes of the Step K closure record and
-   this roadmap.
-7. Only after revised Step N completes successfully may Phase 4 be
-   recorded as CLOSED and `runtime_integrated=true` be treated as the
-   approved operational governance state.
-8. Any action after Phase 4 closure requires its own separately
-   reviewed owner authorization.
-
-This Step L synchronization does not itself perform revised Step M
-or revised Step N and does not close Phase 4.
+1. Commit and remotely verify this post-Step-N roadmap
+   synchronization under a separate future authorization.
+2. Review and prepare the owner product-identity correction as a
+   separate governance package.
+3. Do not implement the identity correction without separate
+   authorization.
+4. Do not begin Phase 5 or Phase 6.
+5. Do not classify S-6 or progress AA-3, AA-4, or AA-5.
 
 ## 9. What is blocked and what must not be done
 
 Current blocked or pending state:
 
-- Phase 4 remains NOT CLOSED.
-- Revised Step M has not been performed.
-- Revised Step N has not been performed.
-- `runtime_integrated=true` exists in committed byte state but is not
-  yet the approved operational governance state.
+- Phase 4 is CLOSED. This closure does not itself change any of the
+  following.
 - R2 remains HELD.
 - FORM T remains BLOCKED.
 - S-6 remains UNCLASSIFIED.
@@ -254,18 +249,14 @@ Current blocked or pending state:
 - Phase 6 remains UNAUTHORIZED.
 - ILT-002 evidence collection remains NOT AUTHORIZED.
 - Production readiness has not been established.
+- AA-4 final S-6 classification has NOT been performed.
 
 Must not be done by any agent without separate explicit owner
 authorization:
 
-- Push the Step K or Step L commits.
-- Execute revised Step M or revised Step N.
-- Declare Phase 4 CLOSED before revised Step N completes.
-- Treat the committed `runtime_integrated=true` byte value as approved
-  governance effectiveness before revised Step N.
 - Amend, rewrite, revert, or otherwise modify the Phase 4
-  implementation commit `97a1a51`, Amendment 2 commit `37001da`, or
-  Step K commit `bc34d78`.
+  implementation commit `97a1a51`, Amendment 2 commit `37001da`,
+  Step K commit `bc34d78`, or Step L commit `b3ff5c1`.
 - Modify
   `docs/governance/PATH_N_CURRENT_EXECUTION_ANCHOR.md`.
 - Reopen Gate C or execute another E-2 attempt.
@@ -276,9 +267,14 @@ authorization:
 - Unblock AA-3, AA-4, or AA-5.
 - Execute Phase 5 or Phase 6.
 - Make production-readiness, feasibility, patent-validity,
-  manufacturing-readiness, or commercialization claims.
-- Bundle the owner product-identity correction into this Step L
-  synchronization; that correction remains a separate future action.
+  manufacturing-readiness, commercialization-readiness, inventor-
+  development, or idea-growth claims beyond the specifically
+  authorized runtime-integration fact.
+- Create the owner product-identity correction document, define its
+  final text, rewrite the product identity, or modify
+  `DUAL_PATH_PRODUCT_ANCHOR.md`, `CLAUDE.md`,
+  `STRATEGIC_PRODUCT_VISION.md`, `INVENTORAI_PRODUCT_THEORY.md`, code,
+  or tests, without a separate future governance action.
 
 ## 10. Mandatory reading before any analysis
 
