@@ -323,7 +323,7 @@ basis):
 
     pytest tests/test_path_n_content_config_artifact.py -q
 
-Expected result: exactly **9 passed**.
+Expected result: exactly **10 passed**.
 
 [OWNER DECISION] The following four are required under this
 authorization as an owner-imposed regression requirement for Phase 4 —
@@ -359,7 +359,7 @@ the strict xfail `72b5f11` must:
 
 ## 12. STOP conditions
 
-- The artifact suite must report exactly 9 passed; any other count:
+- The artifact suite must report exactly 10 passed; any other count:
   STOP.
 - Each of the other four authorized commands must exit successfully
   with zero failed and zero errors; any unexpected result count, skip,
@@ -574,3 +574,61 @@ ahead/behind `0 0`, file SHA256 match) — exactly the pattern used for
 the Phase 3 closure record and the ILT-002 disposition. Only after that
 activation does §9 step C (the separate execution instruction) become
 possible to issue.
+
+## 23. Amendment 1 — §11/§12 expected test count correction
+
+This amendment corrects a defect discovered during the first execution
+attempt under this authorization. It does not expand, narrow, or
+reinterpret any other section of this document.
+
+**What happened:** Under the original §11/§12 text, the artifact suite
+(`pytest tests/test_path_n_content_config_artifact.py -q`) was executed
+as part of an authorized Step E attempt. The actual result was 10
+passed, exit code 0 — not the 9 passed required by the original text.
+This discrepancy triggered the mandatory STOP condition in the original
+§12 as written at the time.
+
+**Restoration:** Following the STOP, both files in the §5.1
+implementation-commit scope (the JSON content file and the test file)
+were restored to a clean `HEAD`. No staging, no implementation commit,
+and no push occurred under the rejected attempt. The restoration was
+documented at the time by SHA256 equality between each restored
+working-tree file and its corresponding `HEAD` blob, together with a
+clean `git status`.
+
+**Correction:** §11 and §12 are corrected so that the artifact suite's
+expected result is exactly 10 passed, matching the actually observed
+test count. No other expected count, STOP condition, or authorized
+scope in this document is altered by this correction.
+
+**Explicit prohibitions and requirements:**
+- The rejected Step D/Step E attempt is not retroactively accepted as
+  successful and must not be characterized as such in any future
+  record.
+- Step D and Step E must be repeated in full from a clean working tree
+  after this amendment is activated. The prior rejected attempt does
+  not substitute for this repetition.
+- A new, separate, explicit owner authorization is required before
+  Step D may be restarted. This amendment does not itself constitute
+  that authorization.
+- The two authorized implementation-commit paths defined in §5.1 remain
+  unchanged and exhaustive; this amendment authorizes no additional
+  file.
+- All other STOP conditions in §12, all preconditions in §13, all
+  rollback rules in §14, and all other controls in this document remain
+  unchanged and in full force.
+- `runtime_integrated` remains governance-approved as `false` until the
+  full controlled Phase 4 sequence (§9) and final closure are completed
+  under a corrected and successfully repeated Step D/Step E.
+- R2 remains HELD. FORM T remains blocked. Phase 5, Phase 6, AA-3, AA-4,
+  and AA-5 remain unauthorized under the current governing repository
+  authority and are not authorized by this amendment.
+- The commit that activates this amendment is an exceptional
+  authority-correction commit. It is not an implementation commit and
+  does not itself touch any §5.1 implementation-commit-scope file.
+- This correction creates no precedent for silently adjusting any
+  future expected test count without an equivalent documented
+  amendment, STOP record, and owner authorization.
+- This amendment becomes effective only after its own commit, push,
+  and post-push verification against `origin/main` — following the
+  same activation pattern described in §22.
