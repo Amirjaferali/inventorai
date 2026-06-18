@@ -43,6 +43,14 @@ Stage 3 (Domain Validation) requires two things before it can proceed: committed
 
 ## 1. PLATFORM IDENTITY
 
+> **GOVERNING EFFECT AMENDED**
+> The governing effect of this section has been amended by the active
+> Level 0 Owner Amendment: `docs/governance/OWNER_PRODUCT_IDENTITY_CORRECTION.md`.
+> Read that document before relying on the wording below. Where wording
+> conflicts, the Owner Amendment governs. The original text is retained
+> for historical provenance. This notice does not modify execution gates,
+> holds, or authorization status.
+
 *Provenance: Repository Derived*
 
 **InventorAI is not an idea evaluator.**
@@ -59,6 +67,14 @@ AI is **advisory only** — it cannot gate, classify, score, or advance state.
 ---
 
 ## 2. OWNER VISION LOCK
+
+> **GOVERNING EFFECT AMENDED**
+> The governing effect of this section has been amended by the active
+> Level 0 Owner Amendment: `docs/governance/OWNER_PRODUCT_IDENTITY_CORRECTION.md`.
+> Read that document before relying on the wording below. Where wording
+> conflicts, the Owner Amendment governs. The original text is retained
+> for historical provenance. This notice does not modify execution gates,
+> holds, or authorization status.
 
 *Provenance: Owner Decision (2026-05-31)*
 
@@ -78,6 +94,14 @@ This vision is not a product aspiration. It is a governance constraint.
 ---
 
 ## 3. OWNER VISION STATEMENT
+
+> **GOVERNING EFFECT AMENDED**
+> The governing effect of this section has been amended by the active
+> Level 0 Owner Amendment: `docs/governance/OWNER_PRODUCT_IDENTITY_CORRECTION.md`.
+> Read that document before relying on the wording below. Where wording
+> conflicts, the Owner Amendment governs. The original text is retained
+> for historical provenance. This notice does not modify execution gates,
+> holds, or authorization status.
 
 *Provenance: Repository Derived — STATE_FREEZE Section 11, GOVERNANCE-ROADMAP Priority 7*
 
@@ -133,6 +157,14 @@ Completing an InventorAI session does not constitute validation of an invention 
 ---
 
 ## 5A. PLATFORM SUCCESS DEFINITION
+
+> **GOVERNING EFFECT AMENDED**
+> The governing effect of this section has been amended by the active
+> Level 0 Owner Amendment: `docs/governance/OWNER_PRODUCT_IDENTITY_CORRECTION.md`.
+> Read that document before relying on the wording below. Where wording
+> conflicts, the Owner Amendment governs. The original text is retained
+> for historical provenance. This notice does not modify execution gates,
+> holds, or authorization status.
 
 *Provenance: Repository Derived — STATE_FREEZE Section 11, GOVERNANCE-ROADMAP Priority 7*
 
