@@ -632,3 +632,90 @@ scope in this document is altered by this correction.
 - This amendment becomes effective only after its own commit, push,
   and post-push verification against `origin/main` — following the
   same activation pattern described in §22.
+
+## 24. Amendment 2 — activation-sequence repair after early push of the implementation commit
+
+This amendment repairs a sequencing deviation discovered after the
+implementation commit was created. It does not reopen, repeat, or
+retroactively alter the implementation commit's content, scope, or
+validity, and it does not expand this authorization's scope beyond
+the activation-sequence repair described below.
+
+**What happened:** Per the original §9 step M, Push/Activation 2 was
+specified to push the implementation commit (step I), the closure
+commit (step K), and the roadmap-synchronization commit (step L)
+together as one linear fast-forward chain, after steps K and L had
+each been separately created and verified. In practice, the
+implementation commit was pushed and remotely verified before the
+original Push/Activation 2 batch could be formed. Push/Activation 2
+itself did not occur — its original multi-commit batch had not yet
+been assembled when the implementation commit reached `origin/main`.
+Verified state at the time of this discovery:
+
+    HEAD = origin/main = 97a1a514dcea2d8e63b512bcba6cc579d5649e0c
+    ahead/behind = 0 0
+    working tree = clean
+
+This is a sequencing deviation from the original §9 step M batching
+order. It is recorded here rather than hidden, reinterpreted, or
+silently absorbed into the existing step M text.
+
+**What remains valid and is not repeated or changed:** The
+implementation commit's two-file scope (§5.1), its exact diff content
+(§6/§7), its Step E test results (artifact suite exactly 10 passed;
+the four regression commands each exit 0 with zero failed and zero
+errors; the strict xfail `72b5f11` confirmed genuinely XFAIL), its
+committed blob hashes, its parent commit, its subject line, and its
+remote post-push verification all remain valid as originally
+established. None of this is retroactively re-tested, re-pushed,
+rewritten, reverted, or re-authorized by this amendment; it is
+restated only for continuity, and the exactly 10 passed result
+recorded under §11 remains the governing record of that step.
+
+**Revised activation sequence:** The remaining steps of §9 are revised
+as follows, and only as follows:
+
+- Step K (closure-record commit) proceeds as originally defined:
+  create, review, and locally commit
+  `docs/governance/PHASE_4_PATH_N_RUNTIME_INTEGRATION_CLOSURE_RECORD.md`
+  (§5.2 path 4), under its own separate commit authorization.
+- Step L (roadmap-synchronization commit) proceeds as originally
+  defined: create, review, and locally commit the update to
+  `docs/governance/ACTIVE_EXECUTION_ROADMAP.md` (§5.2 path 5), under
+  its own separate commit authorization.
+- Revised Step M: push only the closure-record commit and the
+  roadmap-synchronization commit, together, as one linear
+  fast-forward extension of the already-remote commit `97a1a51`. The
+  implementation commit is not re-pushed; it is already remotely
+  activated and verified.
+- Revised Step N: verify the complete remote chain — `97a1a51`
+  followed by the closure commit followed by the roadmap-sync commit
+  — by raw post-push evidence: `HEAD = origin/main`, ahead/behind
+  `0 0`, and hash confirmation for the closure record and the roadmap
+  document.
+
+**Explicit prohibitions and requirements:**
+- Phase 4 is not CLOSED, and `runtime_integrated=true` is not the
+  approved governance state, until revised Step N completes in full.
+- This amendment does not authorize re-pushing, reverting, or
+  otherwise modifying the already-remote implementation commit
+  `97a1a51`.
+- This amendment does not authorize creation of the closure record or
+  the roadmap-synchronization commit; those each require their own
+  separate write, stage, and commit authorizations as originally
+  required by §9.
+- R2 remains HELD. FORM T remains BLOCKED. S-6 remains UNCLASSIFIED.
+  AA-3, AA-4, and AA-5 remain BLOCKED. Phase 5 and Phase 6 remain
+  unauthorized.
+- `docs/governance/PATH_N_CURRENT_EXECUTION_ANCHOR.md` is not updated
+  by this amendment; its staleness is noted elsewhere and remains a
+  separately authorized future action, if any.
+- All other STOP conditions in §12, all preconditions in §13, all
+  rollback rules in §14, and all other controls in this document not
+  explicitly revised above remain unchanged and in full force.
+- This amendment creates no precedent for silently changing activation
+  order, batching, or push sequencing in any future phase; any future
+  deviation requires its own equivalent documented amendment.
+- This amendment becomes effective only after its own commit, push,
+  and post-push verification against `origin/main` — following the
+  same activation pattern described in §22.
