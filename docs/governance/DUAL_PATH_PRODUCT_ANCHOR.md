@@ -26,11 +26,15 @@
 
 ## 3. The two paths (committed interpretation)
 
-1. **Path N = non-specialist guided inventor path.**
-   A guided journey for inventors without engineering specialization.
+Synchronized to the active Level 0 Owner Amendment:
+`docs/governance/OWNER_PRODUCT_IDENTITY_CORRECTION.md`
+
+1. **Path N = non-specialist guided idea-development path.**
+   A guided journey for developing and progressing an idea with a user
+   who is not required to have engineering specialization.
    Questions follow the non-specialist policy (`a31010a`): translate,
    defer, or record-unknown — never demand engineering parameters
-   the inventor cannot supply.
+   the user cannot supply.
 
 2. **Path T = technical/specialist questioning context.**
    The existing technical question bank
@@ -96,7 +100,10 @@ Future agents must NOT read this anchor as:
 
 ## 7. Reading order for future agents
 
-1. `docs/governance/ILT-002_GOVERNANCE_ANCHOR.md` (epistemic boot)
-2. `docs/governance/PATH_N_CURRENT_EXECUTION_ANCHOR.md` (execution state)
-3. This document (product intent)
-4. The phase authorization in force, if any
+1. `docs/governance/ILT-002_GOVERNANCE_ANCHOR.md`
+2. `docs/governance/OWNER_PRODUCT_IDENTITY_CORRECTION.md`
+3. `docs/governance/STRATEGIC_PRODUCT_VISION.md`
+4. `docs/governance/PATH_N_CURRENT_EXECUTION_ANCHOR.md`
+5. This document — `docs/governance/DUAL_PATH_PRODUCT_ANCHOR.md`
+6. `docs/governance/ACTIVE_EXECUTION_ROADMAP.md`
+7. Any phase-specific authorization identified as active by the roadmap
