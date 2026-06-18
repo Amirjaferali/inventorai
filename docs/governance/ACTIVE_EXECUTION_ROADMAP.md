@@ -20,7 +20,7 @@ green.
 
 ## 3. What the product target is
 
-A dual-path guided inventor journey — see
+A dual-path governed idea-development journey — see
 `DUAL_PATH_PRODUCT_ANCHOR.md` (commit `60c809b`): Path N serves
 non-specialist inventors with approved non-specialist questioning;
 Path T serves technical questioning contexts. The platform
@@ -31,8 +31,8 @@ hides them.
 
 | Item | State |
 |------|-------|
-| Latest authoritative execution baseline | `b3ff5c18c77459d4d8eb7cc380b6b368e7619856` — Step L roadmap-synchronization commit, remotely verified; parent `bc34d785a135f98c97a1a54965762848a13db4b2` |
-| Remote baseline | `origin/main = b3ff5c18c77459d4d8eb7cc380b6b368e7619856`; HEAD/origin ahead/behind = `0 0` |
+| Latest authoritative product/governance execution baseline | `6c2277ff95204d57f5c73e32540498d46f044b10` — Gate 8 owner product-identity synchronization, remotely verified; direct parent `31b34d8`; Gate 8 sequence begins at `5768d31` |
+| Pre-synchronization remote baseline | `origin/main = 6c2277ff95204d57f5c73e32540498d46f044b10`; HEAD/origin ahead/behind was `0 0` before this roadmap synchronization |
 | Phase 3 Path N runtime verification | CLOSED (`3a7bc13`) — technical criterion SATISFIED |
 | Phase 4 authorization | COMMITTED AND REMOTELY ACTIVATED (`f4827d1`), with Amendment 1 (`b6d465d`) and activation-sequence Amendment 2 (`37001da`) |
 | Phase 4 implementation | COMMITTED AND REMOTELY VERIFIED (`97a1a51`) |
@@ -41,6 +41,12 @@ hides them.
 | Revised Step M | COMPLETED — Step K and Step L commits pushed together as one linear fast-forward extension ending at `b3ff5c1` |
 | Revised Step N | COMPLETED — complete remote-chain verification performed; `HEAD = origin/main`, ahead/behind `0 0` |
 | Phase 4 | CLOSED |
+| Gate 8 owner product-identity synchronization | CLOSED AND REMOTELY VERIFIED (`6c2277f`) |
+| `OWNER_PRODUCT_IDENTITY_CORRECTION.md` | COMMITTED AND EFFECTIVE (`5768d31`) — Level 0 amendment |
+| `CLAUDE.md` reading-order | UPDATED (`0f0fdeb`) — owner identity correction at position 2 |
+| `INVENTORAI_PRODUCT_THEORY.md` | SYNCHRONIZED (`68698d8`) |
+| `DUAL_PATH_PRODUCT_ANCHOR.md` | SYNCHRONIZED (`31b34d8`) |
+| `STRATEGIC_PRODUCT_VISION.md` | GOVERNING EFFECT AMENDED notices inserted (`6c2277f`) |
 | Path N runtime integration | CLOSED for the authorized Phase 4 scope |
 | `runtime_integrated` byte state | `true` in committed JSON metadata (`97a1a51`) |
 | `runtime_integrated` approved governance state | EFFECTIVE |
@@ -112,6 +118,12 @@ hides them.
 | `37001da` | Phase 4 Amendment 2 — activation-sequence repair after early implementation push |
 | `bc34d78` | Step K closure-review record — committed and remotely verified |
 | `b3ff5c1` | Step L roadmap synchronization for Phase 4 closure activation — committed and remotely verified; pushed together with `bc34d78` as Revised Step M; Revised Step N remote-chain verification completed; Phase 4 CLOSED |
+| `f4868d2` | Record Phase 4 closure after remote verification |
+| `5768d31` | Gate 8: Level 0 owner product identity amendment (`OWNER_PRODUCT_IDENTITY_CORRECTION.md`) |
+| `0f0fdeb` | Gate 8: `CLAUDE.md` reading-order updated — owner identity correction at position 2 |
+| `68698d8` | Gate 8: `INVENTORAI_PRODUCT_THEORY.md` synchronized with owner identity amendment |
+| `31b34d8` | Gate 8: `DUAL_PATH_PRODUCT_ANCHOR.md` synchronized — §3 and §7 updated |
+| `6c2277f` | Gate 8: `STRATEGIC_PRODUCT_VISION.md` — historical text preserved; four GOVERNING EFFECT AMENDED notices added (§1, §2, §3, §5A) — **GATE 8 REMOTE BASELINE** |
 
 (Product-intent anchor `DUAL_PATH_PRODUCT_ANCHOR.md` at `60c809b`
 is deliberately NOT in this table: it is a product-intent anchor,
@@ -147,38 +159,38 @@ The byte value `metadata.runtime_integrated=true` is present in
 committed history and is now the approved operational governance
 state, per §24's revised Step N completion condition.
 
-The current governed lane is limited to:
+Gate 8 owner product-identity synchronization is CLOSED AND REMOTELY
+VERIFIED at HEAD `6c2277f`.
 
-    Owner product-identity correction review and authorization
-    preparation.
+No active product-execution lane currently exists.
 
-This statement does not authorize implementation of that
-correction. No correction document exists yet, no final correction
-text has been defined, and no historical governance record,
-`DUAL_PATH_PRODUCT_ANCHOR.md`, `CLAUDE.md`,
-`STRATEGIC_PRODUCT_VISION.md`, `INVENTORAI_PRODUCT_THEORY.md`, code,
-or test has been modified by Phase 4 closure.
+No next phase may be inferred from numerical sequence. A separate
+repository-grounded owner authorization is required before any new
+product implementation may begin.
 
-No Path N current-execution anchor refresh is included in this
-closure. `PATH_N_CURRENT_EXECUTION_ANCHOR.md` remains historically
-stale and cannot override later committed Phase 4 authority.
+`PATH_N_CURRENT_EXECUTION_ANCHOR.md` is historically stale and
+cannot override subsequently committed Phase 2, Phase 3, Phase 4,
+or Gate 8 authority. Its statement `runtime_integrated=false` is
+superseded by committed `97a1a51`. Its recommended next step is
+superseded by committed closure records at `3c15c32`, `ffaab93`,
+`3a7bc13`, `b3ff5c1`, and `f4868d2`.
 
 Earlier E-2, Gate C, preservation, AA-2, and ILT-002 records remain
-historical repository evidence. They do not replace the current
-lane and do not authorize new evidence collection, new sessions,
-additional retries, or downstream AA progression.
+historical repository evidence. They do not authorize new evidence
+collection, new sessions, additional retries, or downstream AA
+progression.
 
 ## 7. Current authorization boundary
 
 AUTHORIZED NOW:
 
-- Review and preparation of the owner product-identity correction as
-  a separate governance package.
-- Read-only verification of the closed Phase 4 lane.
+- Read-only verification of repository state.
+- Reviewing committed governance documents.
+- No product implementation or repository write is authorized without explicit owner authorization for that exact scope.
 
-NOT AUTHORIZED BY PHASE 4 CLOSURE:
+NOT AUTHORIZED (no active lane):
 
-- Implementation of the owner product-identity correction.
+- Any working-tree write without explicit owner authorization for that exact scope.
 - Updating `PATH_N_CURRENT_EXECUTION_ANCHOR.md`.
 - Reopening Gate C or executing another E-2 attempt.
 - Creating a new SID or collecting new ILT-002 evidence.
@@ -279,11 +291,12 @@ authorization:
 ## 10. Mandatory reading before any analysis
 
 1. `docs/governance/ILT-002_GOVERNANCE_ANCHOR.md` (epistemic boot — mandatory first)
-2. `docs/governance/PATH_N_CURRENT_EXECUTION_ANCHOR.md` (`aa068fd`; historically stale and subordinate to later committed authority)
-3. `docs/governance/DUAL_PATH_PRODUCT_ANCHOR.md` (`60c809b`, product-intent anchor)
-4. This roadmap (current execution lane and next governed step)
-5. `docs/governance/PHASE_4_PATH_N_RUNTIME_INTEGRATION_AUTHORIZATION.md` (`f4827d1`, Amendment 1 `b6d465d`, Amendment 2 `37001da`)
-6. `docs/governance/PHASE_4_PATH_N_RUNTIME_INTEGRATION_CLOSURE_RECORD.md` (Step K commit `bc34d78`)
+2. `docs/governance/OWNER_PRODUCT_IDENTITY_CORRECTION.md` (`5768d31`; Level 0 active amendment — read before relying on STRATEGIC_PRODUCT_VISION.md §1, §2, §3, §5A)
+3. `docs/governance/PATH_N_CURRENT_EXECUTION_ANCHOR.md` (`aa068fd`; historically stale — cannot override Phase 2, Phase 3, Phase 4, or Gate 8 authority)
+4. `docs/governance/DUAL_PATH_PRODUCT_ANCHOR.md` (`60c809b`, product-intent anchor)
+5. This roadmap (current execution lane and next governed step)
+6. `docs/governance/PHASE_4_PATH_N_RUNTIME_INTEGRATION_AUTHORIZATION.md` (`f4827d1`, Amendment 1 `b6d465d`, Amendment 2 `37001da`)
+7. `docs/governance/PHASE_4_PATH_N_RUNTIME_INTEGRATION_CLOSURE_RECORD.md` (Step K commit `bc34d78`)
 
 If these are not read, the agent must not proceed.
 
