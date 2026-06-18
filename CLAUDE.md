@@ -8,10 +8,12 @@ creation, staging, commit, or push, every Claude Code session, team lead,
 subagent, and Agent Teams teammate MUST read, in this order:
 
 1. `docs/governance/ILT-002_GOVERNANCE_ANCHOR.md`
-2. `docs/governance/PATH_N_CURRENT_EXECUTION_ANCHOR.md`
-3. `docs/governance/DUAL_PATH_PRODUCT_ANCHOR.md`
-4. `docs/governance/ACTIVE_EXECUTION_ROADMAP.md`
-5. Any phase-specific authorization identified as active by the roadmap
+2. `docs/governance/OWNER_PRODUCT_IDENTITY_CORRECTION.md`
+3. `docs/governance/STRATEGIC_PRODUCT_VISION.md`
+4. `docs/governance/PATH_N_CURRENT_EXECUTION_ANCHOR.md`
+5. `docs/governance/DUAL_PATH_PRODUCT_ANCHOR.md`
+6. `docs/governance/ACTIVE_EXECUTION_ROADMAP.md`
+7. Any phase-specific authorization identified as active by the roadmap
 
 Repository truth overrides conversation history, memory, and assumption.
 
