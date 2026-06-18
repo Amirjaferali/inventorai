@@ -15,26 +15,40 @@ or Level 1 authority.
 
 ## 2. THE PRODUCT THEORY
 
-InventorAI develops inventors through ideas.
+Synchronized to the active Level 0 Owner Amendment:
+`docs/governance/OWNER_PRODUCT_IDENTITY_CORRECTION.md`
+
+InventorAI develops ideas through a governed progression process;
+inventor or user learning may occur as a secondary effect.
 Ideas accumulate state, evidence, assumptions, gaps, and readiness signals.
 Inventors accumulate reasoning capability, ownership depth, gap awareness,
 and implementation-oriented judgment.
 Idea progression and inventor progression are related but not identical.
 Deliverables primarily describe accumulated idea state.
-Authorization evaluates inventor growth.
+Authorization evaluates evidence-grounded idea-state progression.
 Neither constitutes external validation.
 
 ## 3. THE TWO-ENTITY MODEL
 
-The idea is the operational entity tracked by the platform.
-The inventor is the developmental entity improved by the platform.
-The idea's state changes when the inventor demonstrates understanding.
-The inventor's development is measured through contributions to idea state.
+The idea is the primary developmental subject tracked and progressed
+by the platform.
+The inventor or user is the source of context, reasoning, decisions,
+evidence, and ownership; they may develop as a secondary effect of
+guided idea progression, but this is not the platform's primary
+objective or principal success metric.
+The idea's state changes through evidence-grounded inputs, which may
+include user reasoning and decisions, collected evidence, test results,
+expert input, supported simulation, clarified assumptions, identified
+limitations, or preserved gaps and known unknowns.
+Any observed inventor or user learning is a secondary effect; it is
+not the principal success metric, not the governing objective, and
+not a substitute for evidence-grounded idea-state progression.
 
 ## 4. THE HIERARCHICAL OBJECTIVE
 
-Inventor development is the governing objective.
-Innovation progress is the governed outcome.
+Evidence-grounded progression of the idea is the governing objective.
+The governed outcome is an honestly bounded change in idea state,
+supported by evidence and explicit about unresolved gaps and unknowns.
 The capability comes first. The readiness is its evidence, not its substitute.
 (STAGE3_PURPOSE_CLARIFICATION)
 
