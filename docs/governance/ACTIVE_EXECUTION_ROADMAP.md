@@ -220,28 +220,31 @@ Preserved state:
 
 NEXT GOVERNED ACTION:
 
-    Commit and remotely verify this post-Step-N roadmap
-    synchronization under a separate future authorization, then
-    review and prepare the owner product-identity correction as a
-    separate governance package.
+    No active product-execution lane currently exists.
 
-This roadmap update (the working-tree change reflecting completed
-Step M and Step N) is not yet committed. Its own commit and remote
-verification require their own separate owner authorization, exactly
-as every other write in this project has required.
+    Any next product implementation, governance write, roadmap
+    admission, strategic-roadmap correction, mandatory-reading binding,
+    Stage 3 action, Path T action, Phase 5/6 action, or other repository
+    modification requires a separate, explicit, repository-grounded
+    owner authorization for that exact scope.
+
+    Read-only repository verification and review of committed
+    governance documents remain permitted.
 
 ## 8. Required future sequence
 
-The Phase 4 Step K/L/M/N sequence governed by §24 of
-`PHASE_4_PATH_N_RUNTIME_INTEGRATION_AUTHORIZATION.md` is complete.
+The Phase 4 Step K/L/M/N sequence and Gate 8 owner product-identity
+synchronization are complete and remotely verified.
+
 The required future sequence is now:
 
-1. Commit and remotely verify this post-Step-N roadmap
-   synchronization under a separate future authorization.
-2. Review and prepare the owner product-identity correction as a
-   separate governance package.
-3. Do not implement the identity correction without separate
-   authorization.
+1. Do not infer a new execution lane from phase numbering, roadmap
+   priority, strategic recommendation, or completed governance history.
+2. Obtain a separate, explicit, repository-grounded owner authorization
+   before any new working-tree write or product implementation.
+3. Preserve all current holds, blocked states, unauthorized phases, and
+   the unclassified S-6 state unless a later committed authority
+   explicitly changes them.
 4. Do not begin Phase 5 or Phase 6.
 5. Do not classify S-6 or progress AA-3, AA-4, or AA-5.
 
