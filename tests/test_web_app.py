@@ -221,3 +221,144 @@ def test_deliverable_route_uses_package_eligibility_for_status_selection():
     finally:
         SESSION_STORE.pop(sid_a, None)
         SESSION_STORE.pop(sid_b, None)
+
+
+def _make_state_with_unknowns(idea_id, unknowns):
+    state = IdeaState(idea_id=idea_id)
+    state.domain = "electronics_electrical"
+    state.domain_signal = "electronics_electrical"
+    for it, ctx, verb in unknowns:
+        state.acknowledged_unknowns.append(
+            AcknowledgedUnknown(iteration=it, gap_context=ctx, verbatim=verb, category_basis="explicit")
+        )
+    return state
+
+
+def test_session_page_no_unknowns_section_when_empty():
+    sid = "test-no-unknowns-sid"
+    state = _make_incomplete_state(sid)
+    SESSION_STORE[sid] = {"state": state, "last_result": None, "transcript": []}
+    try:
+        client = app.test_client()
+        body = client.get(f"/session/{sid}").get_data(as_text=True)
+        assert "What You Have Marked as Not Yet Known" not in body
+    finally:
+        SESSION_STORE.pop(sid, None)
+
+
+def test_session_page_shows_one_acknowledged_unknown():
+    sid = "test-one-unknown-sid"
+    state = _make_state_with_unknowns(sid, [(2, "MECHANISM_COMPLETENESS", "I do not yet know the exact voltage")])
+    SESSION_STORE[sid] = {"state": state, "last_result": None, "transcript": []}
+    try:
+        client = app.test_client()
+        body = client.get(f"/session/{sid}").get_data(as_text=True)
+        assert "What You Have Marked as Not Yet Known" in body
+        assert "I do not yet know the exact voltage" in body
+    finally:
+        SESSION_STORE.pop(sid, None)
+
+
+def test_session_page_shows_multiple_unknowns_in_order():
+    sid = "test-multi-unknown-sid"
+    state = _make_state_with_unknowns(sid, [
+        (2, "MECHANISM_COMPLETENESS", "First unknown statement"),
+        (4, "PHYSICAL_FEASIBILITY", "Second unknown statement"),
+    ])
+    SESSION_STORE[sid] = {"state": state, "last_result": None, "transcript": []}
+    try:
+        client = app.test_client()
+        body = client.get(f"/session/{sid}").get_data(as_text=True)
+        idx1 = body.find("First unknown statement")
+        idx2 = body.find("Second unknown statement")
+        assert idx1 != -1 and idx2 != -1
+        assert idx1 < idx2
+    finally:
+        SESSION_STORE.pop(sid, None)
+
+
+def test_session_page_escapes_unknown_text():
+    sid = "test-escape-unknown-sid"
+    state = _make_state_with_unknowns(sid, [(2, "MECHANISM_COMPLETENESS", "<script>alert(1)</script>")])
+    SESSION_STORE[sid] = {"state": state, "last_result": None, "transcript": []}
+    try:
+        client = app.test_client()
+        body = client.get(f"/session/{sid}").get_data(as_text=True)
+        assert "<script>alert(1)</script>" not in body
+        assert "&lt;script&gt;" in body
+    finally:
+        SESSION_STORE.pop(sid, None)
+
+
+def test_session_page_viewing_does_not_mutate_unknowns_or_state():
+    sid = "test-unknowns-no-mutation-sid"
+    state = _make_state_with_unknowns(sid, [(2, "MECHANISM_COMPLETENESS", "Some unknown")])
+    before = (
+        state.iteration, state.maturity_level, len(state.gaps),
+        len(state.acknowledged_unknowns), state.acknowledged_unknowns[0].verbatim,
+    )
+    SESSION_STORE[sid] = {"state": state, "last_result": None, "transcript": []}
+    try:
+        client = app.test_client()
+        client.get(f"/session/{sid}")
+        after = (
+            state.iteration, state.maturity_level, len(state.gaps),
+            len(state.acknowledged_unknowns), state.acknowledged_unknowns[0].verbatim,
+        )
+        assert before == after, f"state mutated: {before} != {after}"
+    finally:
+        SESSION_STORE.pop(sid, None)
+
+
+def test_session_page_unknowns_section_no_resolution_claim():
+    sid = "test-unknown-no-resolution-claim-sid"
+    state = _make_state_with_unknowns(sid, [(2, "MECHANISM_COMPLETENESS", "Some unknown")])
+    SESSION_STORE[sid] = {"state": state, "last_result": None, "transcript": []}
+    try:
+        client = app.test_client()
+        body = client.get(f"/session/{sid}").get_data(as_text=True)
+        for forbidden in ["resolved unknown", "completed unknown", "feasibility established", "ready to build"]:
+            assert forbidden not in body.lower()
+    finally:
+        SESSION_STORE.pop(sid, None)
+
+
+def test_session_page_unknowns_section_no_ilt002_or_evidence_wording():
+    sid = "test-unknown-no-ilt002-wording-sid"
+    state = _make_state_with_unknowns(sid, [(2, "MECHANISM_COMPLETENESS", "Some unknown")])
+    SESSION_STORE[sid] = {"state": state, "last_result": None, "transcript": []}
+    try:
+        client = app.test_client()
+        body = client.get(f"/session/{sid}").get_data(as_text=True)
+        assert "ILT-002" not in body
+        assert "evidence" not in body.lower()
+    finally:
+        SESSION_STORE.pop(sid, None)
+
+
+def test_session_page_with_unknowns_retains_snapshot_link_when_incomplete():
+    sid = "test-unknown-retains-snapshot-link-sid"
+    state = _make_state_with_unknowns(sid, [(2, "MECHANISM_COMPLETENESS", "Some unknown")])
+    SESSION_STORE[sid] = {"state": state, "last_result": None, "transcript": []}
+    try:
+        client = app.test_client()
+        body = client.get(f"/session/{sid}").get_data(as_text=True)
+        assert "View In-Progress Assessment Snapshot" in body
+    finally:
+        SESSION_STORE.pop(sid, None)
+
+
+def test_session_page_with_unknowns_retains_deliverable_link_when_eligible():
+    sid = "test-unknown-retains-deliverable-link-sid"
+    state = _make_eligible_state(sid)
+    state.acknowledged_unknowns.append(
+        AcknowledgedUnknown(iteration=2, gap_context="MECHANISM_COMPLETENESS", verbatim="Some unknown", category_basis="explicit")
+    )
+    SESSION_STORE[sid] = {"state": state, "last_result": None, "transcript": []}
+    try:
+        client = app.test_client()
+        body = client.get(f"/session/{sid}").get_data(as_text=True)
+        assert "View FDC-001 Deliverable" in body
+        assert "What You Have Marked as Not Yet Known" in body
+    finally:
+        SESSION_STORE.pop(sid, None)

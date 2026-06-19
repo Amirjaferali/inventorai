@@ -54,6 +54,18 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
 </p>
 
 
+{% if state.acknowledged_unknowns %}
+<div class="gap-guidance" style="background:#f8f9fa;border-color:#ccc">
+  <div class="gap-guidance-heading">What You Have Marked as Not Yet Known</div>
+  <div class="gap-guidance-text" style="margin-bottom:10px">These items remain open for later clarification. Recording an unknown does not resolve it.</div>
+  <ul style="margin:6px 0 0 0;padding-left:18px;font-size:13px;color:#444">
+    {% for u in state.acknowledged_unknowns %}
+    <li><strong>{{ u.gap_context }}:</strong> {{ u.verbatim }}</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
+
 <div class="meta">
   Idea: {{ state.idea_id }}
   &nbsp;·&nbsp;
