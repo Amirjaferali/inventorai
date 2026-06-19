@@ -9,6 +9,7 @@ from engine.domain_rules import infer_domain
 from engine.idea_state import IdeaState
 from engine.progression_loop import run_iteration, select_next_gap, get_question
 from web.gap_labels import GAP_LABELS, get_gap_label, get_maturity_label, SESSION_DISCLOSURE
+from engine.deliverable_assembler import assemble_deliverable
 
 app = Flask(__name__)
 app.secret_key = "inventorai-dev-only"
@@ -118,6 +119,21 @@ def show_session(sid):
         session_disclosure=SESSION_DISCLOSURE,
         closed_gaps=closed_gaps,
     )
+@app.route("/session/<sid>/deliverable", methods=["GET"])
+def show_deliverable(sid):
+    entry = SESSION_STORE.get(sid)
+    if not entry:
+        return redirect(url_for("index"))
+    state = entry["state"]
+    package = assemble_deliverable(state)
+    eligible = package["_session_meta"]["deliverable_eligible"]
+    return render_template(
+        "deliverable.html",
+        sid=sid,
+        package=package,
+        eligible=eligible,
+    )
+
 @app.route("/session/<sid>", methods=["POST"])
 def submit_answer(sid):
     entry = SESSION_STORE.get(sid)

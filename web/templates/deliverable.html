@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>InventorAI — Deliverable</title>
+<style>
+body{font-family:sans-serif;max-width:760px;margin:60px auto;padding:0 20px;color:#222}
+h1{color:#2c3e50;margin-bottom:4px}
+h2{color:#2c3e50;font-size:16px;margin-top:28px;border-bottom:1px solid #e2e6ea;padding-bottom:4px}
+.meta{background:#f0f4f8;padding:10px 14px;border-radius:4px;margin-bottom:18px;font-size:13px;color:#444}
+.status-eligible{background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7;padding:10px 14px;border-radius:4px;margin-bottom:18px}
+.status-snapshot{background:#fff3e0;color:#e65100;border:1px solid #ffcc02;padding:10px 14px;border-radius:4px;margin-bottom:18px}
+.status-title{font-weight:bold;font-size:16px;margin-bottom:4px}
+.status-sub{font-size:13px}
+.disclaimer{background:#f8f9fa;border-left:3px solid #b0b8c1;padding:9px 14px;border-radius:0 4px 4px 0;margin-bottom:20px;font-size:12px;color:#666;line-height:1.5}
+section{margin-bottom:18px}
+ul{padding-left:18px;font-size:13px;color:#444}
+li{margin-bottom:4px}
+.field-label{font-weight:bold;color:#2c3e50;font-size:13px}
+.field-value{font-size:13px;color:#444;margin-bottom:6px}
+.back-link{margin-top:30px;font-size:13px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
+</style>
+</head>
+<body>
+<h1>InventorAI</h1>
+
+<div class="meta">
+  Package version: {{ package.package_version }}
+  &nbsp;·&nbsp;
+  Schema: {{ package.schema_id }}
+  &nbsp;·&nbsp;
+  Generated: {{ package.generated_at }}
+  &nbsp;·&nbsp;
+  Session: {{ package.session_id }}
+</div>
+
+{% if eligible %}
+<div class="status-eligible">
+  <div class="status-title">FDC-001 Deliverable</div>
+  <div class="status-sub">Eligible assessment package</div>
+</div>
+{% else %}
+<div class="status-snapshot">
+  <div class="status-title">Assessment Snapshot — In Progress</div>
+  <div class="status-sub">This is not a final deliverable. Continue developing the idea to reach eligibility.</div>
+</div>
+{% endif %}
+
+<div class="disclaimer">{{ package.section_1_disclaimer.text }}</div>
+
+<section>
+  <h2>Invention Summary</h2>
+  <div class="field-label">Maturity</div>
+  <div class="field-value">{{ package.section_2_invention_summary.maturity_label }}</div>
+  <div class="field-label">Assessment Completeness</div>
+  <div class="field-value">{{ package.section_2_invention_summary.assessment_completeness }}</div>
+  {% if package.section_2_invention_summary.known_problem %}
+  <div class="field-label">Known Problem</div>
+  <div class="field-value">{{ package.section_2_invention_summary.known_problem.content }}</div>
+  {% endif %}
+  {% if package.section_2_invention_summary.known_mechanism %}
+  <div class="field-label">Known Mechanism</div>
+  <div class="field-value">{{ package.section_2_invention_summary.known_mechanism.content }}</div>
+  {% endif %}
+</section>
+
+<section>
+  <h2>Assessment Overview</h2>
+  {% for cap in package.section_3_assessment_overview.capabilities_assessed %}
+  <div class="field-value">
+    Capability: {{ cap.capability_id }} &nbsp;·&nbsp;
+    Maturity: {{ cap.maturity_level }} &nbsp;·&nbsp;
+    Gaps total/open/resolved: {{ cap.gaps_total }}/{{ cap.gaps_open }}/{{ cap.gaps_resolved }}
+  </div>
+  {% endfor %}
+</section>
+
+<section>
+  <h2>Requirements</h2>
+  {% if package.section_4_requirements.requirements %}
+  <ul>
+    {% for r in package.section_4_requirements.requirements %}
+    <li>{{ r.id }} — {{ r.statement }} ({{ r.resolution_status }})</li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <div class="field-value">No requirements recorded yet.</div>
+  {% endif %}
+</section>
+
+<section>
+  <h2>Assumptions &amp; Inventor-Stated Unknowns</h2>
+  {% if package.section_5_assumptions.assumptions %}
+  <ul>
+    {% for a in package.section_5_assumptions.assumptions %}
+    <li>{{ a.assumption }} — {{ a.validation_approach }}</li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <div class="field-value">No assumptions recorded yet.</div>
+  {% endif %}
+  {% if package.section_5_assumptions.inventor_unknowns %}
+  <ul>
+    {% for u in package.section_5_assumptions.inventor_unknowns %}
+    <li>(Iteration {{ u.iteration }}) {{ u.statement }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</section>
+
+<section>
+  <h2>Risks</h2>
+  {% if package.section_6_risks.risks %}
+  <ul>
+    {% for r in package.section_6_risks.risks %}
+    <li>[{{ r.severity }}] {{ r.description }}</li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <div class="field-value">No risks recorded.</div>
+  {% endif %}
+</section>
+
+<section>
+  <h2>Recommendations</h2>
+  <div class="field-label">Verdict</div>
+  <div class="field-value">{{ package.section_7_recommendations.category_a_proceed_revise_block.verdict }}</div>
+  <div class="field-label">Rationale</div>
+  <div class="field-value">{{ package.section_7_recommendations.category_a_proceed_revise_block.rationale }}</div>
+  {% if package.section_7_recommendations.category_d_open_items %}
+  <div class="field-label">Open Items</div>
+  <ul>
+    {% for item in package.section_7_recommendations.category_d_open_items %}
+    <li>{{ item.action }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</section>
+
+<section>
+  <h2>Unresolved Items</h2>
+  {% if package["section_8_unresolved_items"]["items"] %}
+  <ul>
+    {% for item in package["section_8_unresolved_items"]["items"] %}
+    <li>
+      {% if item.type == 'open_gap' %}
+        {{ item.gap_label }} — {{ item.status_label if item.status_label else item.status }}
+      {% else %}
+        Acknowledged unknown: {{ item.statement }}
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <div class="field-value">No unresolved items.</div>
+  {% endif %}
+</section>
+
+<p class="back-link"><a href="{{ url_for('show_session', sid=sid) }}">Back to session</a></p>
+
+</body>
+</html>
