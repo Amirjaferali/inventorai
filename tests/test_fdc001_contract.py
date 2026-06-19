@@ -138,17 +138,19 @@ class TestFDC001_DeliverableEligibility:
 class TestFDC001_S8_UnresolvedItems:
     """FDC-001 §2 S8: Unresolved items must reflect actual open gaps."""
     def test_count_matches_list(self):
-        """FDC-001 §2 S8: open_gap_count must equal len(open_gaps)."""
+        """FDC-001 §2 S8: open_gap_count must equal the number of type=='open_gap' entries in items."""
         pkg = assemble_deliverable(make_complete())
         s8 = pkg["section_8_unresolved_items"]
-        assert s8["open_gap_count"] == len(s8["open_gaps"]),             f"FDC-001 §2 S8 VIOLATED: count={s8['open_gap_count']} != len={len(s8['open_gaps'])}"
+        open_gap_items = [i for i in s8["items"] if i.get("type") == "open_gap"]
+        assert s8["open_gap_count"] == len(open_gap_items), f"FDC-001 §2 S8 VIOLATED: count={s8['open_gap_count']} != len={len(open_gap_items)}"
     def test_cross_capability_conflicts_empty(self):
         """FDC-001 §2 S8b: cross_capability_conflicts must be [] for single-capability."""
         s8 = assemble_deliverable(mks())["section_8_unresolved_items"]
         assert s8.get("cross_capability_conflicts") == [],             f"FDC-001 §2 S8b VIOLATED: conflicts={s8.get('cross_capability_conflicts')!r}"
     def test_open_gaps_match_state(self):
-        """FDC-001 §2 S8a: open_gaps must match OPEN gaps in IdeaState."""
+        """FDC-001 §2 S8a: type=='open_gap' items must match OPEN gaps in IdeaState."""
         s = make_complete()
         actual = {g.gap_type for g in s.gaps if g.status == OPEN}
-        pkg_open = {i["gap_type"] for i in assemble_deliverable(s)["section_8_unresolved_items"]["open_gaps"]}
+        items = assemble_deliverable(s)["section_8_unresolved_items"]["items"]
+        pkg_open = {i["gap_type"] for i in items if i.get("type") == "open_gap"}
         assert pkg_open == actual, f"FDC-001 §2 S8a VIOLATED: pkg={pkg_open} != state={actual}"
