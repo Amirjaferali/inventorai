@@ -2,23 +2,30 @@
 # Strategic sequencing and preservation document — NOT an execution authority
 
 Current status:
-DRAFT — WORKING-TREE ONLY
-
-Document role:
-Proposed non-authorizing strategic sequencing and preservation roadmap
-
-Intended post-admission status:
 ACTIVE STRATEGIC COORDINATION — NON-AUTHORIZING
 
-The intended post-admission status above does not apply automatically.
-It requires a later, separate, explicit owner admission decision,
-commit, push, and remote verification before it takes effect.
-This document does not currently hold committed Level 3 status under
-`STRATEGIC_PRODUCT_VISION.md` §12, which defines Level 3 as committed
-governance artifacts with ACTIVE status — a status this untracked
-draft does not yet satisfy.
+Document role:
+Committed non-authorizing strategic sequencing and preservation roadmap
 
-Baseline at drafting time: `HEAD = origin/main = f5adaf4a8593347f0c26e4c655866eade8912071`
+Admission basis:
+Explicit owner admission decision issued after initial commit, push,
+and remote verification. This status is repository-effective only upon
+commit, push, and remote verification of this status-activation amendment.
+
+Authority boundary:
+This roadmap coordinates strategic direction and sequencing only.
+It does not authorize product implementation, activate any P0–P6 item,
+override an active anchor, alter blocked or held states, or bind itself
+into the mandatory reading order.
+Level 3 classification:
+Upon commit, push, and remote verification of this status-activation
+amendment, this roadmap satisfies the Level 3 classification defined in
+`STRATEGIC_PRODUCT_VISION.md` §12 as a committed governance artifact
+with ACTIVE status.
+
+This Level 3 classification does not expand the roadmap’s authority.
+Its role remains limited to non-authorizing strategic coordination,
+subject to the Authority boundary stated above.
 
 ---
 
