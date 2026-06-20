@@ -225,27 +225,53 @@ external-source mechanism.
 ### P2 — Stage 3 Runtime and Authority Audit
 
 ```text
-SEPARATE READ-ONLY AUDIT REQUIRED
+STATIC AUDIT COMPLETED — FINDINGS CLASSIFIED
 IMPLEMENTATION NOT AUTHORIZED
 ```
 
-**UNRESOLVED — recorded as an open observation, not an established fact
-beyond what was directly read in `engine/progression_loop.py`:**
+**AUDIT COMPLETED BY DIRECT REPOSITORY READ — the prior uncertainty has
+been classified. This entry is documentary and non-authorizing; it does
+not activate P2 implementation, any other P0–P6 item, or any held,
+blocked, or unauthorized state.**
 
-- `STAGE3_GAP_PRIORITY` and Stage 3 questions
+* `STAGE3_GAP_PRIORITY` and Stage 3 questions
   (`PROBLEM_MECHANISM_FIT`, `ASSUMPTION_INVENTORY`,
   `EXPERTISE_GAP_AWARENESS`) are present in committed code and are
   selected by `run_iteration()` once `state.current_stage == 3`.
-- `state.current_stage` is set to `3` automatically inside
-  `run_iteration()` when `maturity_level` reaches `2`.
-- `web/templates/session.html`, as read, displays a progress label
-  derived from `state.maturity_level`, not from `state.current_stage`.
-  Whether this constitutes a user-facing inconsistency, and whether
-  `engine/stage3_evaluator.py` is integrated into this runtime path, has
-  **not** been confirmed by direct inspection of `stage3_evaluator.py` or
-  of the full current `session.html` Stage-3-specific rendering logic.
-- This observation must be independently re-verified by direct repository
-  read before any conclusion is treated as fact.
+* `state.current_stage` is set to `3` automatically inside
+  `run_iteration()` when `maturity_level` reaches `2`, in the same
+  conditional in both occurrences within `engine/progression_loop.py`.
+* `web/templates/session.html` displays a progress label derived from
+  `state.maturity_level`, not from `state.current_stage`. Direct
+  inspection of `web/app.py`, `engine/progression_loop.py`, and
+  `engine/stage3_evaluator.py` identified no reachable numeric divergence
+  between these two fields across the currently committed execution
+  paths inspected by this audit.
+* `engine/stage3_evaluator.py` is confirmed absent from any committed
+  production import or call path (`web/app.py`, `engine/progression_loop.py`).
+  Its own module docstring states that its observations are advisory only,
+  pending a separate human-review authorization layer
+  (`TRANSITION_AUTHORIZATION_GOVERNANCE` OA-1). Its current non-integration
+  is therefore consistent with an intentional deferred design and is not
+  a confirmed defect. This finding does not authorize future integration;
+  integration remains a separate, future, explicit owner decision.
+* The previously unconfirmed Stage 3 dedicated-label presentation gap
+  was independently confirmed and corrected at commit
+  `7605e46bde6b96887b62bc44283ae8a682338e4d` (`web/gap_labels.py`,
+  `tests/test_gap_labels.py`, 10 passing tests). This commit reference
+  applies only to that dedicated gap-label mapping and its narrow
+  mapping tests; it does not certify, correct, or authorize anything
+  else referenced in this section.
+* Direct rendered-template or Flask-route regression coverage for
+  Stage 3 runtime-to-UI consistency remains absent. This is a recorded
+  test-coverage gap, not evidence of a live product failure.
+* The duplicated Stage 3 transition-advancement condition across two
+  locations in `engine/progression_loop.py` remains an unresolved
+  architectural drift risk. No refactoring of this logic is authorized
+  by this entry.
+* No live session was created and no observed live product failure was
+  established under this audit. All findings above are based on static
+  repository inspection only.
 
 ### P3 — Specialist Questions Section
 
@@ -338,12 +364,24 @@ implementation authorization is granted by this section.
      `GAP_LABELS.get(u.gap_context, GAP_LABELS["__default__"]).heading`.
    - No implementation authorized here.
 
-3. **Possible Stage 3 / UI mismatch**
-   - Evidence: See P2 above. Not yet independently confirmed.
-   - Risk: Unknown until P2 audit is performed.
-   - User-facing: Possibly.
-   - Governance-sensitive: Possibly.
-   - Smallest future correction: Not determinable before P2 audit.
+3. **Stage 3 / UI presentation — audit completed**
+   - Evidence: See P2 above for the complete classified findings.
+   - Status: No confirmed numeric runtime/UI mismatch. The previously
+     unconfirmed dedicated Stage 3 label gap was confirmed and corrected
+     at commit `7605e46bde6b96887b62bc44283ae8a682338e4d`.
+   - Remaining risk: Architectural duplication in the Stage 3 transition
+     condition and absence of rendered-UI regression coverage both remain
+     unresolved and were not corrected by that commit or by this entry.
+   - User-facing: The corrected gap affected user-facing label content in
+     committed code; no observed live user-facing failure was established.
+     The remaining architectural and coverage risks have not been shown
+     to produce a current user-facing failure.
+   - Governance-sensitive: The completed label correction is narrow and
+     non-authorizing. The remaining risks require separate assessment
+     before any implementation decision.
+   - Potential future follow-up: Rendered-template regression coverage and
+     consolidation of the duplicated transition condition must be assessed
+     separately and would each require explicit future owner authorization.
    - No implementation authorized here.
 
 4. **Normal sessions writing to an ILT-002-named transcript path**
