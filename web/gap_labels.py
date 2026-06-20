@@ -30,6 +30,35 @@ GAP_LABELS = {
         ),
         "stage_note": "Developing mechanism",
     },
+    "PROBLEM_MECHANISM_FIT": {
+        "heading": "How does your idea address the problem?",
+        "guidance": (
+            "Describe the problem on its own terms first — who experiences it "
+            "and why it matters — without describing your idea. Then explain how "
+            "your idea is intended to address that problem, and identify situations "
+            "where the match may be weaker."
+        ),
+        "stage_note": "Checking problem fit",
+    },
+    "ASSUMPTION_INVENTORY": {
+        "heading": "What are you assuming that hasn't been tested yet?",
+        "guidance": (
+            "List anything you are taking for granted about your idea that you "
+            "have not yet verified — materials, conditions, or behaviors you "
+            "expect to hold true. Then note which of these would be most "
+            "serious if they turned out to be wrong."
+        ),
+        "stage_note": "Surfacing assumptions",
+    },
+    "EXPERTISE_GAP_AWARENESS": {
+        "heading": "What expertise would building this require?",
+        "guidance": (
+            "List the areas of technical knowledge someone would need to build "
+            "your idea — not what you personally know, but what the implementation "
+            "itself demands. Then identify which areas require specialist input."
+        ),
+        "stage_note": "Identifying expertise needs",
+    },
     "__default__": {
         "heading": "Tell us more about this aspect of your idea",
         "guidance": (
