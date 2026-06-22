@@ -63,23 +63,40 @@ def _trim_idea_summary(text: str) -> str:
 # 1. Select next gap to address
 # ─────────────────────────────────────────────
 
+def _active_gap_priority(state: IdeaState) -> list[str]:
+    """
+    Return the gap-priority order for the state's current stage.
+
+    Stage 3 (state.current_stage == 3) uses STAGE3_GAP_PRIORITY; every other
+    stage uses the Stage 2 GAP_PRIORITY. This mirrors the stage-aware
+    selection already performed by the no-active-gap cascade in
+    run_iteration(); it introduces no new priority data and no new gap
+    types. Behaviour-preserving for Stage 2 (current_stage defaults to 2).
+    """
+    return (
+        STAGE3_GAP_PRIORITY
+        if getattr(state, "current_stage", 2) == 3
+        else GAP_PRIORITY
+    )
+
+
 def select_next_gap(state: IdeaState) -> str | None:
     """
-    Return the highest-priority OPEN gap_type.
+    Return the highest-priority OPEN/PARTIAL gap_type for the active stage.
     Returns None if no open gaps exist.
     """
     open_gaps = {g.gap_type: g for g in state.gaps if g.status in (OPEN, PARTIAL)}
-    for gap_type in GAP_PRIORITY:
+    for gap_type in _active_gap_priority(state):
         if gap_type in open_gaps:
             return gap_type
     return None
 
 
 def _open_next_gap_if_needed(state):
-    """Open the next GAP_PRIORITY gap if no OPEN/PARTIAL gap exists. Returns gap_type or None."""
+    """Open the next active-stage priority gap if no OPEN/PARTIAL gap exists. Returns gap_type or None."""
     if any(g.status in (OPEN, PARTIAL) for g in state.gaps):
         return None
-    for next_gap_type in GAP_PRIORITY:
+    for next_gap_type in _active_gap_priority(state):
         if state.get_gap(next_gap_type) is None:
             from engine.idea_state import Gap
             gap = Gap(gap_type=next_gap_type, status=OPEN, opened_at=state.iteration)

@@ -2,7 +2,11 @@ import os, sys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
 from web.app import app, SESSION_STORE
-from engine.idea_state import IdeaState, Evidence, REASONED, Gap, OPEN, CLOSED, AcknowledgedUnknown
+from engine.idea_state import (
+    IdeaState, Evidence, REASONED, Gap, OPEN, PARTIAL, CLOSED, AcknowledgedUnknown,
+    MECHANISM_COMPLETENESS, PHYSICAL_FEASIBILITY, BOUNDARY_AMBIGUITY,
+    PROBLEM_MECHANISM_FIT, ASSUMPTION_INVENTORY,
+)
 from engine.domain_rules import infer_domain
 
 
@@ -360,5 +364,91 @@ def test_session_page_with_unknowns_retains_deliverable_link_when_eligible():
         body = client.get(f"/session/{sid}").get_data(as_text=True)
         assert "View FDC-001 Deliverable" in body
         assert "What You Have Marked as Not Yet Known" in body
+    finally:
+        SESSION_STORE.pop(sid, None)
+
+
+_WEB_REASONED = (
+    "The sensor detects voltage drop across the shunt resistor. "
+    "When the measured voltage falls below the threshold, the comparator "
+    "triggers the relay which disconnects the load. "
+    "This mechanism relies on Ohm's law and uses an LM393 comparator IC."
+)
+_FORM_MARKER = 'name="response"'
+_SUBMIT_MARKER = ">Submit</button>"
+_COMPLETION_MARKER = "You have worked through the key questions for your idea."
+_PMF_Q1 = (
+    "Without describing how your mechanism works, describe the problem you are trying to solve. "
+    "What is happening for the person or system that has this problem, and why does it matter to them?"
+)
+_PMF_HEADING = "How does your idea address the problem?"
+_PMF_GUIDANCE = (
+    "Describe the problem on its own terms first — who experiences it "
+    "and why it matters — without describing your idea. Then explain how "
+    "your idea is intended to address that problem, and identify situations "
+    "where the match may be weaker."
+)
+_AI_Q1 = (
+    "What are you taking for granted about your mechanism that you have not yet tested or verified? "
+    "These might be things you expect to be true, materials you assume are available, "
+    "or conditions you assume will hold."
+)
+_AI_HEADING_RENDERED = "What are you assuming that hasn&#39;t been tested yet?"
+_AI_GUIDANCE = (
+    "List anything you are taking for granted about your idea that you "
+    "have not yet verified — materials, conditions, or behaviors you "
+    "expect to hold true. Then note which of these would be most "
+    "serious if they turned out to be wrong."
+)
+_CLOSING_FRAGMENT = "NOT do or NOT cover"
+
+
+def _make_stage2_boundary_state(idea_id):
+    state = IdeaState(idea_id=idea_id)
+    state.domain = "electronics_electrical"
+    state.domain_signal = "electronics_electrical"
+    state.maturity_level = 1
+    state.current_stage = 2
+    state.known_problem = Evidence("existing systems miss micro-faults", REASONED, 1)
+    state.known_mechanism = Evidence(_WEB_REASONED, REASONED, 2)
+    state.gaps.append(Gap(gap_type=MECHANISM_COMPLETENESS, status=CLOSED, opened_at=1, closed_at=2))
+    state.gaps.append(Gap(gap_type=PHYSICAL_FEASIBILITY, status=CLOSED, opened_at=3, closed_at=4))
+    state.gaps.append(Gap(gap_type=BOUNDARY_AMBIGUITY, status=PARTIAL, opened_at=5))
+    state.iteration = 5
+    return state
+
+
+def test_stage3_rendered_browser_flow_form_persists_through_partial():
+    sid = "test-stage3-rendered-flow-sid"
+    SESSION_STORE[sid] = {"state": _make_stage2_boundary_state(sid),
+                          "last_result": None, "transcript": [], "last_question": ""}
+    try:
+        client = app.test_client()
+        client.post(f"/session/{sid}", data={"response": _WEB_REASONED})
+        state = SESSION_STORE[sid]["state"]
+        assert state.current_stage == 3
+        assert state.get_gap(PROBLEM_MECHANISM_FIT).status == "OPEN"
+        body = client.get(f"/session/{sid}").get_data(as_text=True)
+        assert _FORM_MARKER in body and _SUBMIT_MARKER in body
+        assert _PMF_Q1 in body and _PMF_HEADING in body and _PMF_GUIDANCE in body
+        assert _COMPLETION_MARKER not in body and _CLOSING_FRAGMENT not in body
+        client.post(f"/session/{sid}", data={"response": _WEB_REASONED})
+        assert state.get_gap(PROBLEM_MECHANISM_FIT).status == "PARTIAL"
+        body = client.get(f"/session/{sid}").get_data(as_text=True)
+        assert _FORM_MARKER in body and _SUBMIT_MARKER in body
+        assert _PMF_HEADING in body and _PMF_GUIDANCE in body
+        assert _COMPLETION_MARKER not in body
+        client.post(f"/session/{sid}", data={"response": _WEB_REASONED})
+        assert state.get_gap(PROBLEM_MECHANISM_FIT).status == "CLOSED"
+        assert state.get_gap(ASSUMPTION_INVENTORY).status == "OPEN"
+        body = client.get(f"/session/{sid}").get_data(as_text=True)
+        assert _FORM_MARKER in body and _SUBMIT_MARKER in body
+        assert _AI_Q1 in body and _AI_HEADING_RENDERED in body and _AI_GUIDANCE in body
+        assert _COMPLETION_MARKER not in body
+        client.post(f"/session/{sid}", data={"response": _WEB_REASONED})
+        assert state.get_gap(ASSUMPTION_INVENTORY).status == "PARTIAL"
+        body = client.get(f"/session/{sid}").get_data(as_text=True)
+        assert _FORM_MARKER in body and _SUBMIT_MARKER in body
+        assert _COMPLETION_MARKER not in body
     finally:
         SESSION_STORE.pop(sid, None)

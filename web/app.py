@@ -98,7 +98,7 @@ def show_session(sid):
         and "not yet established" in (last_result.get("reason") or "")
     ):
         question = INTAKE_QUESTION
-    open_gaps = [g for g in state.gaps if g.status == "OPEN"]
+    open_gaps = state.get_open_gaps()
     closed_gaps = [g for g in state.gaps if g.status == "CLOSED"]
     gap_labels = {g.gap_type: GAP_LABELS.get(g.gap_type, GAP_LABELS["__default__"]) for g in state.gaps}
     current_gap_label = GAP_LABELS.get(gap_type, GAP_LABELS["__default__"]) if gap_type else None
