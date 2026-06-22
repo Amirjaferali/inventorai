@@ -282,16 +282,13 @@ class TestStage3Reachability:
 
     def test_stage3_gap_opens_naturally_after_stage2_complete(self):
         """
-        TC-REACH-002
-        After Stage 2 complete, the next run_iteration must open
-        PROBLEM_MECHANISM_FIT without any manual intervention.
+        TC-REACH-002 (updated for the stage-aware routing fix)
+        The SAME run_iteration() that closes BOUNDARY_AMBIGUITY and reaches
+        maturity_level 2 must open PROBLEM_MECHANISM_FIT — no extra submission.
         """
         state = self._make_state_s2_almost_complete()
-        run_iteration(state, self._REASONED)
-        run_iteration(state, self._REASONED)
-
-        # One more iteration triggers cascade
-        result = run_iteration(state, self._REASONED)
+        run_iteration(state, self._REASONED)           # BOUNDARY_AMBIGUITY OPEN -> PARTIAL
+        result = run_iteration(state, self._REASONED)  # BA -> CLOSED; Stage 3; PMF opens
 
         pmf_gaps = [g for g in state.gaps if g.gap_type == PROBLEM_MECHANISM_FIT]
         assert len(pmf_gaps) > 0, (
@@ -302,17 +299,16 @@ class TestStage3Reachability:
         )
         assert result.get("gap_targeted") == PROBLEM_MECHANISM_FIT, (
             f"REGRESSION: gap_targeted={result.get('gap_targeted')}, "
-            "expected PROBLEM_MECHANISM_FIT"
+            "expected PROBLEM_MECHANISM_FIT in the same call that reaches Stage 3"
         )
 
     def test_stage3_question_delivered_not_closing_q(self):
         """
-        TC-REACH-003
-        When Stage 3 first opens, the question delivered must not be
-        the Stage 2 closing prompt.
+        TC-REACH-003 (updated for the stage-aware routing fix)
+        The run_iteration() that opens Stage 3 must deliver a Stage 3
+        question, not the Stage 2 closing prompt.
         """
         state = self._make_state_s2_almost_complete()
-        run_iteration(state, self._REASONED)
         run_iteration(state, self._REASONED)
         result = run_iteration(state, self._REASONED)
 
@@ -321,3 +317,90 @@ class TestStage3Reachability:
         assert "NOT do or NOT cover" not in (question or ""), (
             "REGRESSION: closing_q delivered instead of Stage 3 question"
         )
+
+
+class TestStage3RoutingRegression:
+    """
+    Principal regression for the Stage 3 response-routing defect:
+    select_next_gap() and _open_next_gap_if_needed() were not stage-aware, so
+    Stage 3 answers bypassed active-gap integration. Begins at the actual defect
+    boundary and proves the full PMF -> AI -> EGA routing through run_iteration().
+    """
+
+    _REASONED = (
+        "The sensor detects voltage drop across the shunt resistor. "
+        "When the measured voltage falls below the threshold, the comparator "
+        "triggers the relay which disconnects the load. "
+        "This mechanism relies on Ohm's law and uses an LM393 comparator IC."
+    )
+
+    _PMF_Q1 = (
+        "Without describing how your mechanism works, describe the problem you are trying to solve. "
+        "What is happening for the person or system that has this problem, and why does it matter to them?"
+    )
+    _AI_Q1 = (
+        "What are you taking for granted about your mechanism that you have not yet tested or verified? "
+        "These might be things you expect to be true, materials you assume are available, "
+        "or conditions you assume will hold."
+    )
+    _CLOSING_FRAGMENT = "NOT do or NOT cover"
+
+    def _make_boundary_state(self) -> IdeaState:
+        state = IdeaState(idea_id="stage3-routing-boundary")
+        state.maturity_level = 1
+        state.current_stage = 2
+        state.domain = "electronics_electrical"
+        state.idea_summary = "IoT fault detection device"
+        state.known_problem = Evidence(
+            content="existing systems miss micro-faults", quality=REASONED, iteration=1)
+        state.known_mechanism = Evidence(
+            content=self._REASONED, quality=REASONED, iteration=2)
+        for gap_type, closed_at in [(MECHANISM_COMPLETENESS, 2), (PHYSICAL_FEASIBILITY, 4)]:
+            state.gaps.append(Gap(
+                gap_type=gap_type, status=CLOSED, opened_at=1, closed_at=closed_at))
+        state.gaps.append(Gap(gap_type=BOUNDARY_AMBIGUITY, status=OPEN, opened_at=4))
+        state.iteration = 4
+        return state
+
+    def _status(self, state, gap_type):
+        gap = state.get_gap(gap_type)
+        return gap.status if gap else None
+
+    def test_final_stage2_response_opens_pmf_same_call(self):
+        state = self._make_boundary_state()
+        run_iteration(state, self._REASONED)
+        assert state.maturity_level == 1
+        assert state.current_stage == 2
+        assert state.get_gap(PROBLEM_MECHANISM_FIT) is None
+        result = run_iteration(state, self._REASONED)
+        assert self._status(state, BOUNDARY_AMBIGUITY) == CLOSED
+        assert state.maturity_level == 2
+        assert state.current_stage == 3
+        assert self._status(state, PROBLEM_MECHANISM_FIT) == OPEN
+        assert result["gap_targeted"] == PROBLEM_MECHANISM_FIT
+        assert result["question"] == self._PMF_Q1
+        assert self._CLOSING_FRAGMENT not in (result["question"] or "")
+
+    def test_stage3_cascade_pmf_ai_ega_full_routing(self):
+        state = self._make_boundary_state()
+        run_iteration(state, self._REASONED)
+        run_iteration(state, self._REASONED)
+        run_iteration(state, self._REASONED)
+        assert self._status(state, PROBLEM_MECHANISM_FIT) == PARTIAL
+        r_ai = run_iteration(state, self._REASONED)
+        assert self._status(state, PROBLEM_MECHANISM_FIT) == CLOSED
+        assert self._status(state, ASSUMPTION_INVENTORY) == OPEN
+        assert r_ai["gap_targeted"] == ASSUMPTION_INVENTORY
+        assert r_ai["question"] == self._AI_Q1
+        run_iteration(state, self._REASONED)
+        assert self._status(state, ASSUMPTION_INVENTORY) == PARTIAL
+        r_ega = run_iteration(state, self._REASONED)
+        assert self._status(state, ASSUMPTION_INVENTORY) == CLOSED
+        assert self._status(state, EXPERTISE_GAP_AWARENESS) == OPEN
+        assert r_ega["gap_targeted"] == EXPERTISE_GAP_AWARENESS
+        run_iteration(state, self._REASONED)
+        assert self._status(state, EXPERTISE_GAP_AWARENESS) == PARTIAL
+        run_iteration(state, self._REASONED)
+        assert self._status(state, EXPERTISE_GAP_AWARENESS) == CLOSED
+        for log in state.iteration_log:
+            assert self._CLOSING_FRAGMENT not in (log.question_asked or "")
