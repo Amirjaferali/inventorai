@@ -15,6 +15,14 @@ app = Flask(__name__)
 app.secret_key = "inventorai-dev-only"
 SESSION_STORE = {}
 
+# Option B product-boundary enforcement (DOMAIN_SCOPE_OWNER_RESOLUTION_OPTION_B).
+# Current generic product-runtime activation is limited to electronics/electrical.
+# Stable, exact refusal message — does not expose the internally inferred domain.
+UNSUPPORTED_DOMAIN_MESSAGE = (
+    "InventorAI currently supports electronics and electrical ideas only. "
+    "Please describe an electronics or electrical invention."
+)
+
 @app.route("/", methods=["GET"])
 def index():
     return render_template("index.html")
@@ -25,8 +33,13 @@ def start():
     if not idea_text:
         return redirect(url_for("index"))
     domain = infer_domain(idea_text)
-    if not domain:
-        return render_template("index.html", error="Domain not recognized. Please describe an electronics, mechanical, medical, or software invention.")
+    # Option B product-boundary enforcement: generic activation is limited to
+    # electronics/electrical only. Any non-electronics, None, or unexpected
+    # inference result is refused here — not relabeled, not activated. No
+    # session is created on refusal. Infrastructure (infer_domain, the registry
+    # loader, and all domain packs) is unchanged.
+    if domain != "electronics_electrical":
+        return render_template("index.html", error=UNSUPPORTED_DOMAIN_MESSAGE)
     state = IdeaState(idea_id=str(uuid.uuid4()))
     state.domain = domain
     state.domain_signal = domain
