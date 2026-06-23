@@ -11,6 +11,7 @@ from typing import Any
 from engine.idea_state import (
     IdeaState, ASSERTED, REASONED, DEMONSTRATED, OPEN, PARTIAL, CLOSED,
     STAGE_3_GAP_TYPES, PROBLEM_MECHANISM_FIT,
+    ASSUMPTION_INVENTORY, EXPERTISE_GAP_AWARENESS,
 )
 
 PACKAGE_VERSION = "1.0.0"
@@ -92,6 +93,7 @@ def assemble_deliverable(state: IdeaState) -> dict:
         "section_8_unresolved_items":    _s8(open_gaps, state),
         "section_9_stage3_reasoning":    _s9(state),
         "section_10_recommended_next_steps": _s10(state, open_gaps),
+        "section_11_prototype_test_plan": _s11(state),
         "_session_meta": {
             "total_iterations":     state.iteration,
             "total_gaps":           len(state.gaps),
@@ -364,6 +366,185 @@ def _s10(state, open_gaps):
             "No outstanding next steps identified from the current session state.",
         "note": "Synthesized from current session state and captured evidence. "
                 "Advisory only; no new analysis was performed.",
+    }
+
+
+_PLAN_MAX_EXPERIMENTS = 3
+_OWNER_CRITERION_REQUIRED = "Owner-defined criterion required."
+_PLAN_STOPWORDS = {
+    "that", "this", "with", "from", "would", "which", "have", "been", "they",
+    "their", "there", "when", "what", "into", "such", "than", "then", "them",
+    "because", "could", "should", "about", "where", "while", "still", "only",
+    "also", "does", "your", "yet", "the", "and", "for", "are", "but", "not",
+}
+
+
+def _plan_sig(text):
+    """Significant-token signature of a source string, for uncertainty dedup."""
+    import re
+    toks = re.findall(r"[a-z0-9]+", (text or "").lower())
+    return frozenset(t for t in toks if len(t) > 3 and t not in _PLAN_STOPWORDS)
+
+
+def _lexically_overlaps(a, b):
+    """Best-effort LEXICAL overlap test between two source token signatures: True
+    when one is a subset of the other, or token-set Jaccard overlap >= 0.6. This
+    is a heuristic to suppress near-duplicate sources; it does NOT establish
+    semantic equivalence and may keep two lexically distinct sources that test a
+    related idea, or (rarely) merge two that differ semantically."""
+    if not a or not b:
+        return False
+    if a <= b or b <= a:
+        return True
+    inter, union = len(a & b), len(a | b)
+    return union > 0 and inter / union >= 0.6
+
+
+def _owner_success_criterion(text):
+    """Return a verbatim owner-provided success criterion if the captured source
+    explicitly states one ("success criterion: ..."), else None. Never invents
+    a criterion."""
+    import re
+    m = re.search(r"success criterion\s*[:\-]\s*(.+)", text or "", re.I)
+    if not m:
+        return None
+    crit = m.group(1).strip()
+    crit = re.split(r"(?<=[.!?])\s", crit)[0].strip()  # first sentence only
+    return crit or None
+
+
+def _plan_expertise(state):
+    """First captured Expertise-Gap Awareness evidence content, or None.
+    Supplies required expertise/tools ONLY when actually captured."""
+    ega = state.get_gap(EXPERTISE_GAP_AWARENESS)
+    if ega is not None:
+        for e in getattr(ega, "evidence", []):
+            c = (getattr(e, "content", "") or "").strip()
+            if c:
+                return c
+    return None
+
+
+def _s11(state):
+    """
+    Prototype & Test Plan — at most three traceable PROPOSED experiments that
+    reorganize already-captured evidence into "what to test next". Deterministic;
+    reads existing state only. Never invents specifications, thresholds,
+    measurements, results, feasibility, validation, certification, safety, or
+    expert conclusions. Success criteria are surfaced as owner-provided (verbatim)
+    when captured, otherwise "Owner-defined criterion required."
+
+    Source priority (de-duplicated by best-effort LEXICAL overlap only — not
+    semantic equivalence — keeping the first-priority source):
+      1. acknowledged unknowns;
+      2. accepted ASSUMPTION_INVENTORY evidence (essential/untested assumption);
+      3. a REASONED-but-not-DEMONSTRATED leading mechanism claim.
+    Expertise-Gap Awareness evidence supplies required expertise/tools; it never
+    creates a standalone experiment.
+    """
+    expertise = _plan_expertise(state)
+    expertise_field = (
+        f"Inventor-identified (Expertise-Gap Awareness): {expertise}"
+        if expertise else None
+    )
+    items, sigs = [], []
+
+    def _add(source_text, exp):
+        if len(items) >= _PLAN_MAX_EXPERIMENTS:
+            return
+        sig = _plan_sig(source_text)
+        if any(_lexically_overlaps(sig, s) for s in sigs):
+            return  # near-duplicate source (best-effort lexical overlap) already covered
+        sigs.append(sig)
+        exp["success_criterion"] = _owner_success_criterion(source_text) or _OWNER_CRITERION_REQUIRED
+        exp["required_expertise_or_tools"] = expertise_field
+        items.append(exp)
+
+    # Priority 1 — acknowledged unknowns.
+    for u in getattr(state, "acknowledged_unknowns", []):
+        verbatim = (getattr(u, "verbatim", "") or "").strip()
+        if not verbatim:
+            continue
+        _add(verbatim, {
+            "experiment_title": "Proposed experiment: resolve a stated unknown",
+            "objective": "Evaluate the inventor's stated unknown under controlled "
+                         "conditions to reduce its uncertainty.",
+            "source_basis": f"Acknowledged unknown (iteration {u.iteration}): "
+                            f"\"{verbatim}\"",
+            "minimum_prototype": "A minimal build that exercises only the part of "
+                                 "the described mechanism this unknown depends on.",
+            "what_to_observe": "Observe whether the stated unknown can be "
+                               "distinguished or measured under conditions you control.",
+            "failure_or_revision_condition": "If the unknown cannot be resolved as "
+                "assumed, revise the assumption or the mechanism that depends on it.",
+            "expected_evidence_upgrade": "Reduce this uncertainty and move the "
+                "dependent claim toward Demonstrated.",
+            "traceability": {"source_type": "acknowledged_unknown",
+                             "source_ref": f"iteration_{u.iteration}",
+                             "content": verbatim},
+        })
+
+    # Priority 2 — accepted ASSUMPTION_INVENTORY evidence (essential/untested).
+    ai = state.get_gap(ASSUMPTION_INVENTORY)
+    if ai is not None:
+        for e in getattr(ai, "evidence", []):
+            content = (getattr(e, "content", "") or "").strip()
+            if not content:
+                continue
+            _add(content, {
+                "experiment_title": "Proposed experiment: test an essential assumption",
+                "objective": "Test an essential or untested assumption the mechanism "
+                             "depends on.",
+                "source_basis": f"Assumption Inventory evidence: \"{content}\"",
+                "minimum_prototype": "A minimal build that puts the stated assumption "
+                                     "under test without the full system.",
+                "what_to_observe": "Observe whether the assumption holds under "
+                                   "conditions you control.",
+                "failure_or_revision_condition": "If the assumption does not hold, "
+                    "revise the mechanism or the design choices that rely on it.",
+                "expected_evidence_upgrade": "Move this assumption from Reasoned "
+                    "toward Demonstrated.",
+                "traceability": {"source_type": "assumption_inventory_evidence",
+                                 "source_ref": "ASSUMPTION_INVENTORY",
+                                 "content": content},
+            })
+
+    # Priority 3 — a REASONED-but-not-DEMONSTRATED leading mechanism claim.
+    if _overall_quality(state) == REASONED:
+        mech = getattr(state, "known_mechanism", None)
+        claim = (getattr(mech, "content", "") or "").strip()
+        if claim:
+            _add(claim, {
+                "experiment_title": "Proposed experiment: demonstrate the leading "
+                                    "mechanism claim",
+                "objective": "Build a minimum prototype of the described mechanism and "
+                             "observe whether it behaves as the inventor described, to "
+                             "raise the evidence from Reasoned toward Demonstrated.",
+                "source_basis": f"Leading claim at Reasoned quality: \"{claim}\"",
+                "minimum_prototype": "A minimal end-to-end build of the described "
+                                     "operating principle, no more than needed to "
+                                     "observe the claimed behavior.",
+                "what_to_observe": "Observe whether the described input-to-output "
+                                   "behavior occurs as stated.",
+                "failure_or_revision_condition": "If the described behavior does not "
+                    "occur, revise the mechanism before relying on it.",
+                "expected_evidence_upgrade": "Reasoned -> Demonstrated.",
+                "traceability": {"source_type": "reasoned_leading_claim",
+                                 "source_ref": "known_mechanism",
+                                 "content": claim},
+            })
+
+    return {
+        "title": "Prototype & Test Plan",
+        "items": items,
+        "count": len(items),
+        "empty_statement": None if items else
+            "No evidence-grounded prototype experiment can be proposed from the "
+            "currently captured information.",
+        "note": "Proposed experiments synthesized from your own captured evidence. "
+                "Advisory only: nothing here has been built, tested, demonstrated, "
+                "validated, certified, or shown feasible. You define the success "
+                "criteria.",
     }
 
 

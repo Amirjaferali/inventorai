@@ -191,6 +191,28 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   <div class="field-value"><em>{{ package.section_10_recommended_next_steps.note }}</em></div>
 </section>
 
+<section>
+  <h2>Prototype &amp; Test Plan</h2>
+  {% if package.section_11_prototype_test_plan["items"] %}
+  {% for exp in package.section_11_prototype_test_plan["items"] %}
+  <div class="field-label">{{ exp.experiment_title }}</div>
+  <div class="field-value"><strong>Objective:</strong> {{ exp.objective }}</div>
+  <div class="field-value"><strong>Based on:</strong> {{ exp.source_basis }}</div>
+  <div class="field-value"><strong>Minimum prototype:</strong> {{ exp.minimum_prototype }}</div>
+  <div class="field-value"><strong>Observe:</strong> {{ exp.what_to_observe }}</div>
+  <div class="field-value"><strong>Success criterion:</strong> {{ exp.success_criterion }}</div>
+  <div class="field-value"><strong>Failure / revise if:</strong> {{ exp.failure_or_revision_condition }}</div>
+  {% if exp.required_expertise_or_tools %}
+  <div class="field-value"><strong>Expertise / tools:</strong> {{ exp.required_expertise_or_tools }}</div>
+  {% endif %}
+  <div class="field-value"><strong>Evidence upgrade target:</strong> {{ exp.expected_evidence_upgrade }}</div>
+  {% endfor %}
+  {% else %}
+  <div class="field-value">{{ package.section_11_prototype_test_plan.empty_statement }}</div>
+  {% endif %}
+  <div class="field-value"><em>{{ package.section_11_prototype_test_plan.note }}</em></div>
+</section>
+
 <p class="back-link"><a href="{{ url_for('show_session', sid=sid) }}">Back to session</a></p>
 
 </body>
