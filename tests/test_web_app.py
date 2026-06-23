@@ -1,7 +1,10 @@
 import os, sys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
-from web.app import app, SESSION_STORE, UNSUPPORTED_DOMAIN_MESSAGE
+from web.app import (
+    app, SESSION_STORE, UNSUPPORTED_DOMAIN_MESSAGE,
+    CONFIRMATION_REQUIRED_MESSAGE, DOMAIN_CONFIRM_VALUE,
+)
 from engine.idea_state import (
     IdeaState, Evidence, REASONED, Gap, OPEN, PARTIAL, CLOSED, AcknowledgedUnknown,
     MECHANISM_COMPLETENESS, PHYSICAL_FEASIBILITY, BOUNDARY_AMBIGUITY,
@@ -38,7 +41,7 @@ def test_start_uses_infer_domain_for_normal_flow():
     idea_text = "ESP32 moisture sensor circuit with WiFi reporting"
     response = client.post(
         "/start",
-        data={"idea": idea_text},
+        data={"idea": idea_text, "domain_confirm": "electronics_electrical"},
         follow_redirects=False,
     )
 
@@ -50,8 +53,9 @@ def test_start_uses_infer_domain_for_normal_flow():
     assert entry is not None, "Normal session state not stored"
 
     state = entry["state"]
-    assert state.domain == infer_domain(idea_text)
-    assert state.domain_signal == infer_domain(idea_text)
+    # Admission assigns the explicitly confirmed supported domain.
+    assert state.domain == "electronics_electrical"
+    assert state.domain_signal == "electronics_electrical"
 
 
 def _make_incomplete_state(idea_id):
@@ -152,7 +156,11 @@ def test_deliverable_route_does_not_mutate_state():
 def test_session_page_incomplete_state_contains_snapshot_link():
     client = app.test_client()
     idea_text = "ESP32 moisture sensor circuit with WiFi reporting"
-    response = client.post("/start", data={"idea": idea_text}, follow_redirects=False)
+    response = client.post(
+        "/start",
+        data={"idea": idea_text, "domain_confirm": "electronics_electrical"},
+        follow_redirects=False,
+    )
     sid = response.headers["Location"].rsplit("/", 1)[-1]
     try:
         page = client.get(f"/session/{sid}")
@@ -465,8 +473,13 @@ def test_stage3_rendered_browser_flow_form_persists_through_partial():
 _ERROR_HTML = '<p class="error">' + UNSUPPORTED_DOMAIN_MESSAGE + '</p>'
 
 
-def _start_post(client, idea):
-    return client.post("/start", data={"idea": idea}, follow_redirects=False)
+def _start_post(client, idea, confirm=True):
+    # Existing Option B refusal/admission tests exercise the bounded conflict
+    # check, so they post WITH explicit electronics confirmation by default.
+    data = {"idea": idea}
+    if confirm:
+        data["domain_confirm"] = "electronics_electrical"
+    return client.post("/start", data=data, follow_redirects=False)
 
 
 def test_start_admits_electronics_idea():
@@ -526,13 +539,15 @@ def test_start_refuses_software_idea_and_creates_no_session():
     assert "software" not in [v["state"].domain for v in SESSION_STORE.values()]
 
 
-def test_start_refuses_unknown_idea_when_inference_returns_none(monkeypatch):
+def test_start_without_confirmation_refused_even_when_inference_none(monkeypatch):
+    # Under explicit confirmation, a None-classified idea is admitted ONLY with
+    # confirmation; without confirmation it is refused and no session is created.
     client = app.test_client()
     before = set(SESSION_STORE)
     monkeypatch.setattr("web.app.infer_domain", lambda _t: None)
-    resp = _start_post(client, "something with no recognizable signals")
+    resp = _start_post(client, "something with no recognizable signals", confirm=False)
     assert resp.status_code == 200
-    assert _ERROR_HTML in resp.get_data(as_text=True)
+    assert CONFIRMATION_REQUIRED_MESSAGE in resp.get_data(as_text=True)
     assert set(SESSION_STORE) == before
 
 
@@ -630,3 +645,146 @@ def test_index_error_surface_renders_stable_refusal_message(monkeypatch):
     monkeypatch.setattr("web.app.infer_domain", lambda _t: "mechanical")
     body = _start_post(client, "a mechanical idea forced through the boundary").get_data(as_text=True)
     assert _ERROR_HTML in body
+
+
+# ---------------------------------------------------------------------------
+# Explicit electronics/electrical domain confirmation at the generic boundary
+# (ADR-001 explicit assignment). POST /start requires non-empty idea text AND
+# an affirmative electronics/electrical confirmation. infer_domain() is used
+# only as a bounded conflict check: electronics or None is admitted under
+# confirmation; a clearly different supported domain is refused and never
+# relabeled. infer_domain(), the registry, and the packs are unchanged here.
+# ---------------------------------------------------------------------------
+
+WATER_LEAK_IDEA = (
+    "A small device installed near a household water pipe detects an early leak, "
+    "sounds a local alarm, and sends a notification to the user's phone."
+)
+
+
+def _admitted_sid(resp):
+    assert resp.status_code == 302 and "/session/" in resp.headers["Location"]
+    return resp.headers["Location"].rsplit("/", 1)[-1]
+
+
+def test_confirm_admits_valid_electronics_idea():
+    client = app.test_client()
+    before = set(SESSION_STORE)
+    resp = _start_post(client, "ESP32 microcontroller circuit with a voltage sensor")
+    sid = _admitted_sid(resp)
+    assert SESSION_STORE[sid]["state"].domain == "electronics_electrical"
+    assert set(SESSION_STORE) == before | {sid}
+
+
+def test_water_leak_admitted_even_if_inference_is_none(monkeypatch):
+    # Proves admission rests on explicit confirmation + the bounded conflict
+    # rule, NOT on the accidental 'led' substring: even when the classifier
+    # returns None (as it would after substring matching is corrected later),
+    # the confirmed water-leak idea is admitted.
+    client = app.test_client()
+    monkeypatch.setattr("web.app.infer_domain", lambda _t: None)
+    sid = _admitted_sid(_start_post(client, WATER_LEAK_IDEA))
+    assert SESSION_STORE[sid]["state"].domain == "electronics_electrical"
+
+
+def test_functional_electronics_paraphrase_admitted_when_confirmed():
+    # A functional electronics idea with no component keywords infers None, yet
+    # is admitted because the user explicitly confirmed the domain.
+    idea = "A gadget that watches for a problem and warns the homeowner right away"
+    assert infer_domain(idea) is None              # no signal keyword present
+    client = app.test_client()
+    sid = _admitted_sid(_start_post(client, idea))
+    assert SESSION_STORE[sid]["state"].domain == "electronics_electrical"
+
+
+def test_no_confirmation_creates_no_session():
+    client = app.test_client()
+    before = set(SESSION_STORE)
+    resp = _start_post(client, "ESP32 microcontroller circuit", confirm=False)
+    assert resp.status_code == 200
+    assert CONFIRMATION_REQUIRED_MESSAGE in resp.get_data(as_text=True)
+    assert "Location" not in resp.headers
+    assert set(SESSION_STORE) == before
+
+
+def test_empty_idea_creates_no_session_even_with_confirmation():
+    client = app.test_client()
+    before = set(SESSION_STORE)
+    resp = client.post("/start", data={"idea": "   ", "domain_confirm": DOMAIN_CONFIRM_VALUE},
+                       follow_redirects=False)
+    assert resp.status_code == 302
+    assert "/session/" not in resp.headers.get("Location", "")
+    assert set(SESSION_STORE) == before
+
+
+def test_confirmed_software_idea_refused_and_no_session():
+    client = app.test_client()
+    before = set(SESSION_STORE)
+    idea = "a software application with an api backend and database"
+    assert infer_domain(idea) == "software"
+    resp = _start_post(client, idea)              # confirmation present
+    assert resp.status_code == 200
+    body = resp.get_data(as_text=True)
+    assert _ERROR_HTML in body and "software" not in body
+    assert set(SESSION_STORE) == before
+
+
+def test_confirmed_medical_idea_refused_and_no_session():
+    client = app.test_client()
+    before = set(SESSION_STORE)
+    idea = "a surgical implant for patient diagnosis"
+    assert infer_domain(idea) == "medical_device"
+    resp = _start_post(client, idea)
+    assert resp.status_code == 200
+    body = resp.get_data(as_text=True)
+    assert _ERROR_HTML in body and "medical_device" not in body
+    assert set(SESSION_STORE) == before
+
+
+def test_confirmed_mechanical_idea_refused_and_no_session():
+    client = app.test_client()
+    before = set(SESSION_STORE)
+    idea = "a gearbox with a rotating shaft and bearing torque"
+    assert infer_domain(idea) == "mechanical"
+    resp = _start_post(client, idea)
+    assert resp.status_code == 200
+    assert _ERROR_HTML in resp.get_data(as_text=True)
+    assert set(SESSION_STORE) == before
+
+
+def test_confirmation_never_relabels_conflicting_domain():
+    # A confirmed-but-conflicting idea must neither persist its real domain nor
+    # be silently converted into an electronics session.
+    client = app.test_client()
+    before_electronics = sum(
+        1 for v in SESSION_STORE.values() if v["state"].domain == "electronics_electrical")
+    for idea in ("a gearbox with a rotating shaft and bearing torque",
+                 "a surgical implant for patient diagnosis",
+                 "a software application with an api backend and database"):
+        _start_post(client, idea)                 # confirmed, yet conflicting
+    after_electronics = sum(
+        1 for v in SESSION_STORE.values() if v["state"].domain == "electronics_electrical")
+    assert after_electronics == before_electronics
+    assert all(v["state"].domain == "electronics_electrical" for v in SESSION_STORE.values())
+
+
+def test_unexpected_classifier_value_refused_even_with_confirmation(monkeypatch):
+    client = app.test_client()
+    before = set(SESSION_STORE)
+    monkeypatch.setattr("web.app.infer_domain", lambda _t: "quantum_widgets")
+    resp = _start_post(client, "an idea the boundary scores oddly")
+    assert resp.status_code == 200
+    assert _ERROR_HTML in resp.get_data(as_text=True)
+    assert set(SESSION_STORE) == before
+
+
+def test_index_page_states_scope_and_has_confirmation_control():
+    client = app.test_client()
+    body = client.get("/").get_data(as_text=True)
+    # current scope stated
+    assert "Electronics and electrical ideas are currently supported." in body
+    # required confirmation control present
+    assert 'name="domain_confirm"' in body
+    assert 'value="electronics_electrical"' in body
+    assert "required" in body
+    assert "I confirm that this idea is primarily an electronics or electrical idea." in body

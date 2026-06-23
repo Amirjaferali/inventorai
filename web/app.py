@@ -23,6 +23,20 @@ UNSUPPORTED_DOMAIN_MESSAGE = (
     "Please describe an electronics or electrical invention."
 )
 
+# Explicit electronics/electrical confirmation at the generic product boundary
+# (ADR-001: "Domain assignment is explicit or it does not occur"). The user must
+# affirmatively declare the supported domain; consent is never inferred from the
+# idea text. The checkbox submits this exact value.
+DOMAIN_CONFIRM_VALUE = "electronics_electrical"
+CONFIRMATION_REQUIRED_MESSAGE = (
+    "Please confirm that your idea is an electronics or electrical idea "
+    "before starting."
+)
+# Bounded conflict check: explicit confirmation is the primary declaration, but
+# a clearly different *supported* internal classification is not silently
+# relabeled as electronics. These are refused; no session is created.
+CONFLICTING_SUPPORTED_DOMAINS = {"mechanical", "medical_device", "software"}
+
 @app.route("/", methods=["GET"])
 def index():
     return render_template("index.html")
@@ -32,17 +46,28 @@ def start():
     idea_text = request.form.get("idea", "").strip()
     if not idea_text:
         return redirect(url_for("index"))
+    # Explicit electronics/electrical confirmation is required (ADR-001 explicit
+    # assignment). Consent is never inferred from the idea text; without it no
+    # session is created.
+    if request.form.get("domain_confirm") != DOMAIN_CONFIRM_VALUE:
+        return render_template("index.html", error=CONFIRMATION_REQUIRED_MESSAGE)
+    # Bounded conflict check using the unchanged deterministic classifier: the
+    # explicit confirmation is the primary domain declaration, but it must not
+    # silently override clear conflicting classification evidence.
+    # infer_domain(), the registry loader, and all domain packs are unchanged.
     domain = infer_domain(idea_text)
-    # Option B product-boundary enforcement: generic activation is limited to
-    # electronics/electrical only. Any non-electronics, None, or unexpected
-    # inference result is refused here — not relabeled, not activated. No
-    # session is created on refusal. Infrastructure (infer_domain, the registry
-    # loader, and all domain packs) is unchanged.
-    if domain != "electronics_electrical":
+    if domain in CONFLICTING_SUPPORTED_DOMAINS:
+        # A clearly different *supported* domain — refuse, do not relabel.
         return render_template("index.html", error=UNSUPPORTED_DOMAIN_MESSAGE)
+    if domain not in ("electronics_electrical", None):
+        # Unexpected / unknown classifier value — refuse defensively.
+        return render_template("index.html", error=UNSUPPORTED_DOMAIN_MESSAGE)
+    # electronics_electrical or None is admitted under explicit confirmation
+    # (None covers functional electronics ideas the signal classifier misses).
+    # Admit: the session's domain is the explicitly confirmed supported domain.
     state = IdeaState(idea_id=str(uuid.uuid4()))
-    state.domain = domain
-    state.domain_signal = domain
+    state.domain = DOMAIN_CONFIRM_VALUE
+    state.domain_signal = DOMAIN_CONFIRM_VALUE
     sid = str(uuid.uuid4())
     initial_result = run_iteration(state, idea_text)
     SESSION_STORE[sid] = {"state": state, "last_result": initial_result, "transcript": []}

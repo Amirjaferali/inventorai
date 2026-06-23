@@ -6,10 +6,16 @@
 <body>
 <h1>InventorAI</h1>
 <p>Describe your invention idea to begin.</p>
+<p>Electronics and electrical ideas are currently supported. Before starting, please confirm that your idea belongs to this supported domain.</p>
 {% if error %}<p class="error">{{ error }}</p>{% endif %}
 <form method="POST" action="/start">
 <textarea name="idea" rows="4" placeholder="Describe your electronics or electrical invention..." required></textarea>
-<br><button type="submit">Start</button>
+<br>
+<label style="display:block;margin-top:12px;font-size:14px">
+<input type="checkbox" name="domain_confirm" value="electronics_electrical" required>
+I confirm that this idea is primarily an electronics or electrical idea.
+</label>
+<button type="submit">Start</button>
 </form>
 <p style="color:#888;font-size:13px">Currently supported: electronics and electrical ideas.</p>
 </body></html>
