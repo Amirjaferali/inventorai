@@ -1,7 +1,7 @@
 import os, sys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
-from web.app import app, SESSION_STORE
+from web.app import app, SESSION_STORE, UNSUPPORTED_DOMAIN_MESSAGE
 from engine.idea_state import (
     IdeaState, Evidence, REASONED, Gap, OPEN, PARTIAL, CLOSED, AcknowledgedUnknown,
     MECHANISM_COMPLETENESS, PHYSICAL_FEASIBILITY, BOUNDARY_AMBIGUITY,
@@ -452,3 +452,181 @@ def test_stage3_rendered_browser_flow_form_persists_through_partial():
         assert _COMPLETION_MARKER not in body
     finally:
         SESSION_STORE.pop(sid, None)
+
+
+# ---------------------------------------------------------------------------
+# Option B product-boundary enforcement at POST /start.
+# DOMAIN_SCOPE_OWNER_RESOLUTION_OPTION_B: current generic product activation is
+# limited to electronics/electrical. infer_domain(), the registry loader, and
+# all domain packs are unchanged — only product admission is restricted.
+# Refused requests create no session and are never relabeled as electronics.
+# ---------------------------------------------------------------------------
+
+_ERROR_HTML = '<p class="error">' + UNSUPPORTED_DOMAIN_MESSAGE + '</p>'
+
+
+def _start_post(client, idea):
+    return client.post("/start", data={"idea": idea}, follow_redirects=False)
+
+
+def test_start_admits_electronics_idea():
+    client = app.test_client()
+    before = set(SESSION_STORE)
+    resp = _start_post(client, "ESP32 microcontroller circuit with a voltage sensor")
+    assert resp.status_code == 302
+    assert "/session/" in resp.headers["Location"]
+    sid = resp.headers["Location"].rsplit("/", 1)[-1]
+    entry = SESSION_STORE.get(sid)
+    assert entry is not None
+    assert entry["state"].domain == "electronics_electrical"
+    assert entry["state"].domain_signal == "electronics_electrical"
+    assert set(SESSION_STORE) == before | {sid}
+
+
+def test_start_refuses_mechanical_idea_and_creates_no_session():
+    client = app.test_client()
+    before = set(SESSION_STORE)
+    idea = "a gearbox with a rotating shaft and bearing torque"
+    # Infrastructure inference still identifies the domain ...
+    assert infer_domain(idea) == "mechanical"
+    # ... but the product boundary refuses it.
+    resp = _start_post(client, idea)
+    assert resp.status_code == 200
+    body = resp.get_data(as_text=True)
+    assert _ERROR_HTML in body                       # exact stable message rendered
+    assert "Location" not in resp.headers             # no redirect to a session
+    assert set(SESSION_STORE) == before               # no new session created
+    assert "mechanical" not in [v["state"].domain for v in SESSION_STORE.values()]
+
+
+def test_start_refuses_medical_device_idea_and_creates_no_session():
+    client = app.test_client()
+    before = set(SESSION_STORE)
+    idea = "a surgical implant for patient diagnosis"
+    assert infer_domain(idea) == "medical_device"
+    resp = _start_post(client, idea)
+    assert resp.status_code == 200
+    body = resp.get_data(as_text=True)
+    assert _ERROR_HTML in body
+    # the inferred internal pack id must not leak into the response
+    assert "medical_device" not in body
+    assert set(SESSION_STORE) == before
+    assert "medical_device" not in [v["state"].domain for v in SESSION_STORE.values()]
+
+
+def test_start_refuses_software_idea_and_creates_no_session():
+    client = app.test_client()
+    before = set(SESSION_STORE)
+    idea = "a software application with an api backend and database"
+    assert infer_domain(idea) == "software"
+    resp = _start_post(client, idea)
+    assert resp.status_code == 200
+    assert _ERROR_HTML in resp.get_data(as_text=True)
+    assert set(SESSION_STORE) == before
+    assert "software" not in [v["state"].domain for v in SESSION_STORE.values()]
+
+
+def test_start_refuses_unknown_idea_when_inference_returns_none(monkeypatch):
+    client = app.test_client()
+    before = set(SESSION_STORE)
+    monkeypatch.setattr("web.app.infer_domain", lambda _t: None)
+    resp = _start_post(client, "something with no recognizable signals")
+    assert resp.status_code == 200
+    assert _ERROR_HTML in resp.get_data(as_text=True)
+    assert set(SESSION_STORE) == before
+
+
+def test_start_refuses_unexpected_inference_value_defensively(monkeypatch):
+    # Defensive: an unexpected boundary return must be refused, never admitted
+    # or converted to electronics.
+    client = app.test_client()
+    before = set(SESSION_STORE)
+    monkeypatch.setattr("web.app.infer_domain", lambda _t: "quantum_widgets")
+    resp = _start_post(client, "an idea the boundary scores oddly")
+    assert resp.status_code == 200
+    assert _ERROR_HTML in resp.get_data(as_text=True)
+    assert set(SESSION_STORE) == before
+    assert "quantum_widgets" not in [v["state"].domain for v in SESSION_STORE.values()]
+
+
+def test_start_does_not_fall_back_to_electronics_on_refusal(monkeypatch):
+    # A refused non-electronics result must not produce an electronics session.
+    client = app.test_client()
+    before_electronics = sum(
+        1 for v in SESSION_STORE.values() if v["state"].domain == "electronics_electrical"
+    )
+    monkeypatch.setattr("web.app.infer_domain", lambda _t: "mechanical")
+    resp = _start_post(client, "a mechanical idea forced through the boundary")
+    assert resp.status_code == 200
+    after_electronics = sum(
+        1 for v in SESSION_STORE.values() if v["state"].domain == "electronics_electrical"
+    )
+    assert after_electronics == before_electronics    # no electronics fallback session
+
+
+def test_governed_ilt002_routes_remain_electronics_pinned_after_restriction():
+    # The generic /start restriction must not affect the electronics-pinned
+    # governed ILT-002 / Path N routes.
+    client = app.test_client()
+    for route in (
+        "/start_ilt002_water_leak",
+        "/start_ilt002_combination_lock",
+        "/start_ilt002_combination_lock_path_n",
+    ):
+        resp = client.post(route, data={"idea": "any idea text"}, follow_redirects=False)
+        assert resp.status_code == 302
+        assert "/session/" in resp.headers["Location"]
+        sid = resp.headers["Location"].rsplit("/", 1)[-1]
+        assert SESSION_STORE[sid]["state"].domain == "electronics_electrical"
+
+
+def test_refusals_persist_no_non_electronics_domain():
+    # Aggregate invariant: exercising all refusal cases adds no session, and no
+    # stored session carries a non-electronics domain.
+    client = app.test_client()
+    before = set(SESSION_STORE)
+    for idea in (
+        "a gearbox with a rotating shaft and bearing torque",
+        "a surgical implant for patient diagnosis",
+        "a software application with an api backend and database",
+    ):
+        _start_post(client, idea)
+    assert set(SESSION_STORE) == before
+    assert all(v["state"].domain == "electronics_electrical" for v in SESSION_STORE.values())
+
+
+# ---------------------------------------------------------------------------
+# Option B start-page copy alignment: the landing page must reflect the current
+# authorized product scope (electronics/electrical only) and must not advertise
+# mechanical, medical-device, or software as currently supported. GET / has no
+# user-entered content, so these assertions target purely static product copy.
+# ---------------------------------------------------------------------------
+
+def test_index_page_states_electronics_only_support():
+    client = app.test_client()
+    body = client.get("/").get_data(as_text=True)
+    assert "Currently supported: electronics and electrical ideas." in body
+
+
+def test_index_page_does_not_advertise_other_domains():
+    client = app.test_client()
+    body = client.get("/").get_data(as_text=True)
+    assert "mechanical" not in body
+    assert "medical device" not in body
+    assert "medical_device" not in body
+    assert "software" not in body
+
+
+def test_index_page_placeholder_is_electronics_aligned():
+    client = app.test_client()
+    body = client.get("/").get_data(as_text=True)
+    assert "Describe your electronics or electrical invention..." in body
+
+
+def test_index_error_surface_renders_stable_refusal_message(monkeypatch):
+    # The {{ error }} surface still renders the stable refusal message exactly
+    # when /start refuses a non-electronics activation.
+    client = app.test_client()
+    monkeypatch.setattr("web.app.infer_domain", lambda _t: "mechanical")
+    body = _start_post(client, "a mechanical idea forced through the boundary").get_data(as_text=True)
+    assert _ERROR_HTML in body
