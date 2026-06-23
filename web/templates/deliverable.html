@@ -156,6 +156,24 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% endif %}
 </section>
 
+{% if package.section_9_stage3_reasoning["items"] %}
+<section>
+  <h2>Stage 3 Reasoning</h2>
+  {% for item in package.section_9_stage3_reasoning["items"] %}
+  <div class="field-label">{{ item.gap_label }} — {{ item.status_label }}</div>
+  {% if item.evidence %}
+  <ul>
+    {% for ev in item.evidence %}
+    <li>{{ ev.content }} <em>({{ ev.quality_label }})</em></li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <div class="field-value">{{ item.missing_evidence_statement }}</div>
+  {% endif %}
+  {% endfor %}
+</section>
+{% endif %}
+
 <p class="back-link"><a href="{{ url_for('show_session', sid=sid) }}">Back to session</a></p>
 
 </body>

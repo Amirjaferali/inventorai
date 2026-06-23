@@ -10,6 +10,7 @@ from datetime import datetime, timezone
 from typing import Any
 from engine.idea_state import (
     IdeaState, ASSERTED, REASONED, DEMONSTRATED, OPEN, PARTIAL, CLOSED,
+    STAGE_3_GAP_TYPES,
 )
 
 PACKAGE_VERSION = "1.0.0"
@@ -40,7 +41,16 @@ _GAP_LABELS = {
     "PHYSICAL_FEASIBILITY":   "Physical Feasibility",
     "BOUNDARY_AMBIGUITY":     "Boundary and Scope",
     "MECHANISM_COMPLETENESS": "Mechanism Completeness",
+    # Stage 3 reasoning areas (human-readable; never expose raw enum names)
+    "PROBLEM_MECHANISM_FIT":   "Problem–Mechanism Fit",
+    "ASSUMPTION_INVENTORY":    "Assumption Inventory",
+    "EXPERTISE_GAP_AWARENESS": "Expertise-Gap Awareness",
 }
+
+_STAGE3_MISSING_EVIDENCE = (
+    "No substantiated response captured for this area yet. "
+    "It remains open for the inventor to address."
+)
 _STATUS_LABELS = {
     OPEN: "Open", PARTIAL: "Partially addressed",
     CLOSED: "Resolved", "ACCEPTED_RISK": "Accepted risk",
@@ -80,6 +90,7 @@ def assemble_deliverable(state: IdeaState) -> dict:
         "section_6_risks":               _s6(state, open_gaps),
         "section_7_recommendations":     _s7(state, open_gaps),
         "section_8_unresolved_items":    _s8(open_gaps, state),
+        "section_9_stage3_reasoning":    _s9(state),
         "_session_meta": {
             "total_iterations":     state.iteration,
             "total_gaps":           len(state.gaps),
@@ -274,6 +285,35 @@ def _s8(open_gaps, state=None):
         "cross_capability_conflicts": [], "conflict_count": 0,
         "note_conflicts": "Cross-capability conflict detection deferred to Phase 6.",
     }
+
+def _s9(state):
+    """
+    Stage 3 reasoning areas: surface each Stage 3 gap that exists in the state
+    with its human-readable label, current status, and the inventor's captured
+    accepted evidence (or an honest missing-evidence statement). Reads existing
+    state only — no mutation, no validation/feasibility claim. Empty for
+    Stage-2-only sessions (no Stage 3 gaps present).
+    """
+    items = []
+    for g in state.gaps:
+        if g.gap_type in STAGE_3_GAP_TYPES:
+            ev = [_ev(e) for e in getattr(g, "evidence", []) if e]
+            items.append({
+                "gap_type":     g.gap_type,
+                "gap_label":    _GAP_LABELS.get(g.gap_type, g.gap_type),
+                "status":       g.status,
+                "status_label": _STATUS_LABELS.get(g.status, g.status),
+                "evidence":     ev,
+                "missing_evidence_statement": None if ev else _STAGE3_MISSING_EVIDENCE,
+            })
+    return {
+        "items": items,
+        "stage3_gap_count": len(items),
+        "note": "Stage 3 reasoning areas. Captured evidence is the inventor's own "
+                "substantiated wording. This is not validation, feasibility "
+                "confirmation, completeness, or expert review.",
+    }
+
 
 def _now_iso():
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
