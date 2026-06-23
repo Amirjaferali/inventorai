@@ -57,6 +57,9 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% if package.section_2_invention_summary.known_problem %}
   <div class="field-label">Known Problem</div>
   <div class="field-value">{{ package.section_2_invention_summary.known_problem.content }}</div>
+  {% elif package.section_2_invention_summary.known_problem_note %}
+  <div class="field-label">Known Problem</div>
+  <div class="field-value">{{ package.section_2_invention_summary.known_problem_note }}</div>
   {% endif %}
   {% if package.section_2_invention_summary.known_mechanism %}
   <div class="field-label">Known Mechanism</div>
@@ -173,6 +176,20 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% endfor %}
 </section>
 {% endif %}
+
+<section>
+  <h2>Recommended Next Steps</h2>
+  {% if package.section_10_recommended_next_steps["items"] %}
+  <ul>
+    {% for step in package.section_10_recommended_next_steps["items"] %}
+    <li>{{ step.action }}{% if step.priority == 'high' %} <em>(high priority)</em>{% endif %}</li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <div class="field-value">{{ package.section_10_recommended_next_steps.empty_statement }}</div>
+  {% endif %}
+  <div class="field-value"><em>{{ package.section_10_recommended_next_steps.note }}</em></div>
+</section>
 
 <p class="back-link"><a href="{{ url_for('show_session', sid=sid) }}">Back to session</a></p>
 

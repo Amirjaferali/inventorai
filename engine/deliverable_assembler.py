@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 from typing import Any
 from engine.idea_state import (
     IdeaState, ASSERTED, REASONED, DEMONSTRATED, OPEN, PARTIAL, CLOSED,
-    STAGE_3_GAP_TYPES,
+    STAGE_3_GAP_TYPES, PROBLEM_MECHANISM_FIT,
 )
 
 PACKAGE_VERSION = "1.0.0"
@@ -91,6 +91,7 @@ def assemble_deliverable(state: IdeaState) -> dict:
         "section_7_recommendations":     _s7(state, open_gaps),
         "section_8_unresolved_items":    _s8(open_gaps, state),
         "section_9_stage3_reasoning":    _s9(state),
+        "section_10_recommended_next_steps": _s10(state, open_gaps),
         "_session_meta": {
             "total_iterations":     state.iteration,
             "total_gaps":           len(state.gaps),
@@ -110,11 +111,14 @@ def _s1():
     return {"tier": "standard", "text": _DISCLAIMER_STANDARD, "applies": True}
 
 def _s2(state):
+    resolved_problem = _resolved_problem(state)
     return {
         "maturity_level":         state.maturity_level,
         "maturity_label":         _MATURITY_LABELS.get(state.maturity_level, "Unknown"),
         "domain_signal":          getattr(state, "domain_signal", None),
-        "known_problem":          _ev(getattr(state, "known_problem", None)),
+        "known_problem":          _ev(resolved_problem),
+        "known_problem_note":     None if resolved_problem else
+                                  "Problem evidence has not yet been captured clearly.",
         "known_mechanism":        _ev(getattr(state, "known_mechanism", None)),
         "known_boundaries":       [_ev(b) for b in getattr(state, "known_boundaries", []) if b],
         "assessment_completeness": _completeness(state),
@@ -142,10 +146,11 @@ def _s3(state, open_gaps):
 
 def _s4(state):
     reqs, n = [], 1
-    if getattr(state, "known_problem", None):
+    problem = _resolved_problem(state)
+    if problem:
         reqs.append({"id": f"REQ-{n:03d}", "type": "functional",
-            "statement": _txt(state.known_problem), "source": "session_evidence",
-            "evidence_quality": state.known_problem.quality, "resolution_status": "stated",
+            "statement": _txt(problem), "source": "session_evidence",
+            "evidence_quality": problem.quality, "resolution_status": "stated",
             "note": "Derived from inventor-stated problem evidence. Verification required."})
         n += 1
     if getattr(state, "known_mechanism", None):
@@ -254,9 +259,9 @@ def _s7(state, open_gaps):
                       "open_gap_count": len(open_gaps),
                       "evidence_quality": _overall_quality(state)}},
         "category_b_material_selection": {"status": "DEFERRED",
-            "note": "Requires Options Database (ODS-001). Not in Phase 5 MVP."},
+            "note": "Requires Options Database (ODS-001). Not in the current MVP."},
         "category_c_manufacturing":      {"status": "DEFERRED",
-            "note": "Requires Options Database (ODS-001). Not in Phase 5 MVP."},
+            "note": "Requires Options Database (ODS-001). Not in the current MVP."},
         "category_d_open_items": cat_d,
     }
 
@@ -315,6 +320,53 @@ def _s9(state):
     }
 
 
+def _s10(state, open_gaps):
+    """
+    Recommended next steps — synthesized ONLY from already-computed state and
+    captured evidence. No new analysis, no domain-specific advice, no invented
+    recommendations. Each step names the existing state element it derives from.
+
+    Sources (in order): unresolved gaps (OPEN/PARTIAL), maturity below Level 2,
+    inventor-stated unknowns, and an evidence-strength step when the leading
+    evidence is REASONED but not yet DEMONSTRATED. Duplicate source evidence
+    (e.g. an unknown stated twice) does not create duplicate actions. Empty ->
+    a single honest statement that no outstanding next steps were identified.
+    """
+    steps, seen = [], set()
+
+    def _add(action, priority, basis):
+        if action in seen:                 # duplicate source -> no duplicate action
+            return
+        seen.add(action)
+        steps.append({"id": f"NEXT-{len(steps) + 1:03d}",
+                      "action": action, "priority": priority, "basis": basis})
+
+    for g in open_gaps:
+        label = _GAP_LABELS.get(g.gap_type, g.gap_type)
+        _add(f"Provide substantive evidence for {label.lower()}.",
+             "high" if g.iterations_open >= 2 else "normal",
+             f"open_gap:{g.gap_type}")
+    if state.maturity_level < 2:
+        _add("Continue with technically substantive answers to reach "
+             "Level 2 (mechanism established).",
+             "high", f"maturity_level:{state.maturity_level}")
+    for u in getattr(state, "acknowledged_unknowns", []):
+        _add(f"Resolve the inventor-stated unknown: {u.verbatim}",
+             "normal", f"acknowledged_unknown:iteration_{u.iteration}")
+    if _overall_quality(state) == REASONED:
+        _add("Validate the leading claims with a prototype or "
+             "demonstration to raise evidence from Reasoned to Demonstrated.",
+             "normal", "evidence_quality:REASONED")
+    return {
+        "items": steps,
+        "count": len(steps),
+        "empty_statement": None if steps else
+            "No outstanding next steps identified from the current session state.",
+        "note": "Synthesized from current session state and captured evidence. "
+                "Advisory only; no new analysis was performed.",
+    }
+
+
 def _now_iso():
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
@@ -323,6 +375,28 @@ def _ev(ev):
     return {"content": getattr(ev, "content", str(ev)),
             "quality": getattr(ev, "quality", None),
             "quality_label": _QUALITY_LABELS.get(getattr(ev, "quality", None), "Unknown")}
+
+def _resolved_problem(state):
+    """
+    The Evidence to display as the inventor's actual *problem*, taken ONLY from
+    accepted Problem–Mechanism Fit evidence. Returns an Evidence or None — no
+    fabrication, no synthesis, no validation claim, and never the mechanism.
+
+    Provenance: PROBLEM_MECHANISM_FIT evidence is the only state element that
+    carries reliable proof of being problem evidence — it is captured solely
+    when the inventor substantively answers a problem–fit question at REASONED+.
+    state.known_problem is deliberately NOT used as a fallback: RISK-002 can
+    populate it from a mechanism answer, and a mere textual difference from
+    known_mechanism is not proof that it is genuine problem evidence. When no
+    PMF evidence exists this returns None, and the deliverable states honestly
+    that problem evidence has not yet been captured.
+    """
+    pmf = state.get_gap(PROBLEM_MECHANISM_FIT)
+    if pmf is not None:
+        for e in getattr(pmf, "evidence", []):
+            if e and (getattr(e, "content", "") or "").strip():
+                return e
+    return None
 
 def _txt(ev):
     return getattr(ev, "content", str(ev)) if ev else ""
@@ -343,7 +417,7 @@ def _completeness(state):
     has_mech = getattr(state, "known_mechanism", None) is not None
     open_gaps = [g for g in state.gaps if g.status == OPEN]
     if state.maturity_level >= 2 and not open_gaps and has_mech:
-        return "COMPLETE — eligible for Phase 5 deliverable"
+        return "COMPLETE — mechanism established and all identified gaps resolved"
     if state.maturity_level >= 1 and has_prob:
         return "PARTIAL — mechanism or boundaries still required"
     return "INCOMPLETE — problem statement not yet established"
