@@ -55,6 +55,11 @@ class Gap:
     opened_at       : int  # iteration number
     iterations_open : int  = 0
     closed_at       : Optional[int] = None
+    # Accepted (substantiated) Evidence captured for this gap (written only for
+    # Stage 3 reasoning gaps). Optional and backward compatible: states/fixtures
+    # that omit it default to []. Evidence is defined above and the module
+    # evaluates annotations eagerly, so list[Evidence] is safe here.
+    evidence        : list[Evidence] = field(default_factory=list)
 
 
 @dataclass

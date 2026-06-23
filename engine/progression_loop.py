@@ -398,6 +398,17 @@ def integrate_response(
     if _unknown is not None:
         state.acknowledged_unknowns.append(_unknown)
 
+    # Capture accepted (substantiated) evidence for Stage 3 reasoning gaps only.
+    # Restricted to PROBLEM_MECHANISM_FIT / ASSUMPTION_INVENTORY /
+    # EXPERTISE_GAP_AWARENESS — Stage 2 gaps do not use this capture path.
+    # "Accepted" = REASONED or better (the quality tier that advances a gap);
+    # ASSERTED and empty/whitespace responses are NOT recorded. Append-only:
+    # no effect on gap.status, quality, transition, or return value.
+    if (gap_type in STAGE_3_GAP_TYPES
+            and response.strip()
+            and quality in (REASONED, DEMONSTRATED)):
+        gap.evidence.append(evidence)
+
     if quality == DEMONSTRATED:
         gap.status = CLOSED
         gap.closed_at = state.iteration
