@@ -17,7 +17,10 @@ from engine.idea_state import (
     MECHANISM_COMPLETENESS, PROBLEM_MECHANISM_FIT,
     ASSUMPTION_INVENTORY, EXPERTISE_GAP_AWARENESS,
 )
-from engine.deliverable_assembler import assemble_deliverable
+from engine.deliverable_assembler import (
+    assemble_deliverable, _experiment_id, _canonical_source,
+)
+import dataclasses
 from web.app import app, SESSION_STORE
 
 OWNER_CRITERION_REQUIRED = "Owner-defined criterion required."
@@ -273,3 +276,193 @@ def test_rendered_template_shows_empty_statement_when_appropriate():
         assert "No evidence-grounded prototype experiment can be proposed" in body
     finally:
         SESSION_STORE.pop(sid, None)
+
+
+# ===========================================================================
+# Stable, deterministic, source-derived experiment identifiers (section_11).
+# id = exp_v1_<source_type>_<sha256(source_type + normalized source)[:16]>.
+# Derived ONLY from source_type + normalized verbatim source content — never
+# list position or synthesized display wording.
+# ===========================================================================
+
+from engine.idea_state import IdeaState as _IdeaState
+
+# Journey-equivalent source contents (distinct vocabulary per idea).
+_WL_UNKNOWN = "I do not know the exact moisture threshold that distinguishes a leak from ambient humidity"
+_WL_ASSUMPTION = "surface moisture must reach the sensor electrodes for the mechanism to work"
+_WL_MECH = "a moisture sensor changes capacitance and the controller then sounds an alarm"
+_LK_UNKNOWN = "I do not know how many wrong attempts should trigger the lockout or how long it should last"
+_LK_ASSUMPTION = "the stored code must stay secret and the solenoid bolt must hold against a push"
+_LK_MECH = "a keypad enters a code and on a match the controller drives a solenoid bolt"
+
+
+def _three_experiment_state(unknown, assumption, mech):
+    s = _state()
+    _unknown(s, unknown)
+    _gap(s, ASSUMPTION_INVENTORY, assumption)
+    s.known_problem = _ev_problem("a clear problem statement for this idea")
+    s.known_mechanism = Evidence(mech, REASONED, 0)
+    return s
+
+
+def _ev_problem(text):
+    # PMF evidence is the resolved-problem source; use a Stage-3 PMF gap so the
+    # leading claim resolves and _overall_quality(state) == REASONED.
+    return Evidence(text, REASONED, 0)
+
+
+# 1 / 2 — every experiment has a versioned, namespaced, non-empty id ----------
+
+def test_every_experiment_has_versioned_namespaced_id():
+    s = _three_experiment_state(_WL_UNKNOWN, _WL_ASSUMPTION, _WL_MECH)
+    items = _plan(s)["items"]
+    assert items
+    for it in items:
+        eid = it["experiment_id"]
+        assert eid and isinstance(eid, str)
+        st = it["traceability"]["source_type"]
+        assert eid.startswith(f"exp_v1_{st}_")
+        # exact format: exp_v1_<source_type>_<32 lowercase hex chars> (128-bit)
+        assert re.fullmatch(r"exp_v1_" + re.escape(st) + r"_[0-9a-f]{32}", eid)
+
+
+def test_digest_is_32_lowercase_hex():
+    eid = _experiment_id("acknowledged_unknown", "some normalized source content")
+    digest = eid.rsplit("_", 1)[-1]
+    assert len(digest) == 32
+    assert re.fullmatch(r"[0-9a-f]{32}", digest)
+
+
+# 3 — repeated assembly is stable ---------------------------------------------
+
+def test_repeated_assembly_produces_identical_ids():
+    s = _three_experiment_state(_WL_UNKNOWN, _WL_ASSUMPTION, _WL_MECH)
+    a = [i["experiment_id"] for i in _plan(s)["items"]]
+    b = [i["experiment_id"] for i in _plan(s)["items"]]
+    assert a == b and len(a) == 3
+
+
+# 4 / 5 — canonicalization (whitespace + documented casefold) -----------------
+
+def test_whitespace_normalization_stability():
+    base = "the   stored  code\tmust stay secret"
+    spaced = "  the stored   code must stay  secret  "
+    assert _experiment_id("acknowledged_unknown", base) == \
+           _experiment_id("acknowledged_unknown", spaced)
+
+
+def test_case_normalization_is_casefold():
+    assert _canonical_source("ABC Def") == "abc def"
+    assert _experiment_id("acknowledged_unknown", "Surface Moisture Reaches") == \
+           _experiment_id("acknowledged_unknown", "surface moisture reaches")
+
+
+# 6 / 7 — source_type and content both affect identity ------------------------
+
+def test_same_content_different_source_type_differ():
+    c = "identical source content across both"
+    assert _experiment_id("acknowledged_unknown", c) != \
+           _experiment_id("assumption_inventory_evidence", c)
+
+
+def test_same_source_type_different_content_differ():
+    assert _experiment_id("acknowledged_unknown", "content one here") != \
+           _experiment_id("acknowledged_unknown", "content two here")
+
+
+# 8 — id is independent of synthesized display wording ------------------------
+
+def test_id_derived_only_from_source_not_display_wording():
+    # The rendered id must equal the id recomputed from ONLY source_type+content,
+    # proving the synthesized title/objective/observe/failure/upgrade are not
+    # inputs to identity.
+    s = _three_experiment_state(_WL_UNKNOWN, _WL_ASSUMPTION, _WL_MECH)
+    for it in _plan(s)["items"]:
+        recomputed = _experiment_id(it["traceability"]["source_type"],
+                                    it["traceability"]["content"])
+        assert it["experiment_id"] == recomputed
+
+
+# 9 — ordering does not define identity ---------------------------------------
+
+def test_experiment_order_does_not_change_ids():
+    s1 = _state(); _unknown(s1, "alpha distinct uncertainty about timing")
+    _gap(s1, ASSUMPTION_INVENTORY, "beta distinct assumption about sealing")
+    # reversed declaration order of the same two sources in a fresh state
+    s2 = _state()
+    _gap(s2, ASSUMPTION_INVENTORY, "beta distinct assumption about sealing")
+    _unknown(s2, "alpha distinct uncertainty about timing")
+    id_map1 = {i["traceability"]["content"]: i["experiment_id"] for i in _plan(s1)["items"]}
+    id_map2 = {i["traceability"]["content"]: i["experiment_id"] for i in _plan(s2)["items"]}
+    assert id_map1 == id_map2  # same source -> same id regardless of position
+
+
+# 10 — multiple ASSUMPTION_INVENTORY evidence items get distinct ids -----------
+
+def test_multiple_assumption_evidence_get_distinct_ids():
+    s = _state()
+    _gap(s, ASSUMPTION_INVENTORY,
+         "first assumption about battery longevity in cold weather",
+         "second assumption about radio range through concrete walls")
+    items = _plan(s)["items"]
+    assert len(items) == 2
+    ids = [i["experiment_id"] for i in items]
+    assert len(set(ids)) == 2
+    assert all(i.startswith("exp_v1_assumption_inventory_evidence_") for i in ids)
+
+
+# 11 / 12 / 13 — both journeys: 3 unique ids each, disjoint across journeys ----
+
+def test_water_leak_three_unique_ids():
+    s = _three_experiment_state(_WL_UNKNOWN, _WL_ASSUMPTION, _WL_MECH)
+    ids = [i["experiment_id"] for i in _plan(s)["items"]]
+    assert len(ids) == 3 and len(set(ids)) == 3
+
+
+def test_combination_lock_three_unique_ids():
+    s = _three_experiment_state(_LK_UNKNOWN, _LK_ASSUMPTION, _LK_MECH)
+    ids = [i["experiment_id"] for i in _plan(s)["items"]]
+    assert len(ids) == 3 and len(set(ids)) == 3
+
+
+def test_journey_ids_do_not_overlap_when_content_differs():
+    a = {i["experiment_id"] for i in
+         _plan(_three_experiment_state(_WL_UNKNOWN, _WL_ASSUMPTION, _WL_MECH))["items"]}
+    b = {i["experiment_id"] for i in
+         _plan(_three_experiment_state(_LK_UNKNOWN, _LK_ASSUMPTION, _LK_MECH))["items"]}
+    assert a.isdisjoint(b)
+
+
+# 14 / 15 — dedup, count, and plan content unchanged except additive id -------
+
+def test_lexical_dedup_unchanged_with_ids():
+    s = _state()
+    same = "the leak must produce detectable surface moisture at the sensor location"
+    _unknown(s, same)
+    _gap(s, ASSUMPTION_INVENTORY, same)   # lexically identical -> collapses to one
+    items = _plan(s)["items"]
+    assert len(items) == 1
+    assert items[0]["traceability"]["source_type"] == "acknowledged_unknown"
+
+
+def test_plan_content_unchanged_except_additive_id():
+    s = _three_experiment_state(_WL_UNKNOWN, _WL_ASSUMPTION, _WL_MECH)
+    items = _plan(s)["items"]
+    # every previously-specified field is still present and the only new key is id
+    expected = {"experiment_title", "objective", "source_basis", "minimum_prototype",
+                "what_to_observe", "success_criterion", "failure_or_revision_condition",
+                "required_expertise_or_tools", "expected_evidence_upgrade",
+                "traceability", "experiment_id"}
+    for it in items:
+        assert set(it.keys()) == expected
+
+
+# 16 — no state field / serialization behavior introduced ---------------------
+
+def test_no_state_field_added_for_ids():
+    field_names = {f.name for f in dataclasses.fields(_IdeaState)}
+    assert "success_criteria" not in field_names
+    assert "experiment_id" not in field_names
+    # id lives only on the assembled plan item, not on the state
+    s = _three_experiment_state(_WL_UNKNOWN, _WL_ASSUMPTION, _WL_MECH)
+    assert not hasattr(s, "experiment_id")
