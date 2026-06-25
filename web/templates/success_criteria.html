@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>InventorAI — Define Success Criteria</title>
+<style>
+body{font-family:sans-serif;max-width:760px;margin:60px auto;padding:0 20px;color:#222}
+h1{color:#2c3e50;margin-bottom:4px}
+h2{color:#2c3e50;font-size:16px;margin-top:28px;border-bottom:1px solid #e2e6ea;padding-bottom:4px}
+.intro{background:#f0f4f8;padding:10px 14px;border-radius:4px;margin-bottom:18px;font-size:13px;color:#444;line-height:1.5}
+.error{background:#fdecea;color:#b71c1c;border:1px solid #f5c6cb;padding:10px 14px;border-radius:4px;margin-bottom:18px;font-size:13px}
+.stale{background:#fff3e0;color:#e65100;border:1px solid #ffcc02;padding:10px 14px;border-radius:4px;margin-bottom:18px;font-size:13px}
+.exp{border:1px solid #e2e6ea;border-radius:4px;padding:12px 14px;margin-bottom:16px}
+.exp-title{font-weight:bold;color:#2c3e50;font-size:14px;margin-bottom:4px}
+.source{font-size:12px;color:#666;margin-bottom:8px}
+label{display:block;font-size:13px;color:#2c3e50;margin-bottom:4px}
+textarea{width:100%;padding:8px;font-size:13px;border:1px solid #ccc;border-radius:4px}
+button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:none;border-radius:4px;font-size:15px;cursor:pointer}
+.links{margin-top:24px;font-size:13px}
+</style>
+</head>
+<body>
+<h1>InventorAI — Define Success Criteria</h1>
+<div class="intro">
+  For each proposed experiment below, you may enter <strong>one success criterion</strong>:
+  a target <em>you</em> decide on for judging whether that test succeeded.
+  A criterion is your own planning target — it is <strong>not</strong> a test result, and
+  saving it does not validate, demonstrate, or approve anything. Leave a box blank
+  to keep that criterion undefined.
+</div>
+
+{% if error %}<div class="error">{{ error }}</div>{% endif %}
+{% if stale_notice %}<div class="stale">{{ stale_notice }}</div>{% endif %}
+
+{% if experiments %}
+<form method="POST" action="{{ url_for('save_success_criteria', sid=sid) }}">
+  {% for exp in experiments %}
+  <div class="exp">
+    <div class="exp-title">{{ exp.experiment_title }}</div>
+    <div class="source">{{ exp.source_basis }}</div>
+    <label for="{{ field_prefix }}{{ exp.experiment_id }}">Success criterion (your target):</label>
+    <textarea id="{{ field_prefix }}{{ exp.experiment_id }}"
+              name="{{ field_prefix }}{{ exp.experiment_id }}" rows="2"
+              maxlength="{{ max_length }}"
+              placeholder="Optional — define how you will judge this test.">{% if exp.success_criterion_provenance == 'user_defined' %}{{ exp.success_criterion }}{% endif %}</textarea>
+  </div>
+  {% endfor %}
+  <button type="submit">Save criteria</button>
+</form>
+{% else %}
+<div class="intro">No proposed experiments are currently available for this session.</div>
+{% endif %}
+
+<p class="links"><a href="{{ url_for('show_deliverable', sid=sid) }}">Back to the assessment</a></p>
+</body></html>

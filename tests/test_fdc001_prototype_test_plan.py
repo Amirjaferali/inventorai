@@ -452,7 +452,9 @@ def test_plan_content_unchanged_except_additive_id():
     expected = {"experiment_title", "objective", "source_basis", "minimum_prototype",
                 "what_to_observe", "success_criterion", "failure_or_revision_condition",
                 "required_expertise_or_tools", "expected_evidence_upgrade",
-                "traceability", "experiment_id"}
+                "traceability", "experiment_id",
+                # added by the per-experiment success-criteria increment:
+                "success_criterion_provenance", "success_criterion_status"}
     for it in items:
         assert set(it.keys()) == expected
 
@@ -460,9 +462,10 @@ def test_plan_content_unchanged_except_additive_id():
 # 16 — no state field / serialization behavior introduced ---------------------
 
 def test_no_state_field_added_for_ids():
+    # The stable-ID mechanism itself adds no state field: the id lives only on
+    # the assembled plan item. (success_criteria is added separately by the
+    # per-experiment success-criteria increment and is verified there.)
     field_names = {f.name for f in dataclasses.fields(_IdeaState)}
-    assert "success_criteria" not in field_names
     assert "experiment_id" not in field_names
-    # id lives only on the assembled plan item, not on the state
     s = _three_experiment_state(_WL_UNKNOWN, _WL_ASSUMPTION, _WL_MECH)
     assert not hasattr(s, "experiment_id")

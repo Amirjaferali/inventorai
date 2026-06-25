@@ -200,7 +200,11 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   <div class="field-value"><strong>Based on:</strong> {{ exp.source_basis }}</div>
   <div class="field-value"><strong>Minimum prototype:</strong> {{ exp.minimum_prototype }}</div>
   <div class="field-value"><strong>Observe:</strong> {{ exp.what_to_observe }}</div>
+  {% if exp.success_criterion_provenance == 'user_defined' %}
+  <div class="field-value"><strong>Success criterion — user-defined:</strong> {{ exp.success_criterion }}</div>
+  {% else %}
   <div class="field-value"><strong>Success criterion:</strong> {{ exp.success_criterion }}</div>
+  {% endif %}
   <div class="field-value"><strong>Failure / revise if:</strong> {{ exp.failure_or_revision_condition }}</div>
   {% if exp.required_expertise_or_tools %}
   <div class="field-value"><strong>Expertise / tools:</strong> {{ exp.required_expertise_or_tools }}</div>
@@ -209,6 +213,12 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% endfor %}
   {% else %}
   <div class="field-value">{{ package.section_11_prototype_test_plan.empty_statement }}</div>
+  {% endif %}
+  {% if package.section_11_prototype_test_plan.stale_criteria_notice %}
+  <div class="field-value status-snapshot">{{ package.section_11_prototype_test_plan.stale_criteria_notice }}</div>
+  {% endif %}
+  {% if package.section_11_prototype_test_plan["items"] %}
+  <div class="field-value"><a href="{{ url_for('success_criteria', sid=sid) }}">Define or edit success criteria</a></div>
   {% endif %}
   <div class="field-value"><em>{{ package.section_11_prototype_test_plan.note }}</em></div>
 </section>
