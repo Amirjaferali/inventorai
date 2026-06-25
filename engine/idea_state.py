@@ -63,6 +63,19 @@ class Gap:
 
 
 @dataclass
+class SuccessCriterion:
+    """
+    A user-authored success criterion for one proposed Prototype & Test Plan
+    experiment. Planning metadata ONLY: never graded, never read by progression
+    or maturity, never written to the ILT-002 transcript, and never treated as a
+    result. Keyed in IdeaState.success_criteria by the experiment's stable
+    experiment_id. provenance records that the inventor authored it.
+    """
+    criterion  : str
+    provenance : str = "user_defined"
+
+
+@dataclass
 class IterationLog:
     iteration       : int
     gap_targeted    : str
@@ -113,6 +126,15 @@ class IdeaState:
     # Idea capture
     idea_summary   : Optional[str]          = None
     path           : str                    = "legacy_undesignated_current_behavior"
+
+    # Per-experiment owner-defined success criteria (planning metadata only).
+    # Keyed by stable prototype experiment_id -> SuccessCriterion. Default empty
+    # for backward compatibility. NOT Evidence, NOT graded, NOT read by
+    # progression/maturity, NOT written to the ILT-002 transcript.
+    # SuccessCriterion is defined above and the module evaluates annotations
+    # eagerly (no `from __future__ import annotations`), so the parameterized
+    # form is safe — matching the Gap.evidence: list[Evidence] precedent.
+    success_criteria : dict[str, SuccessCriterion] = field(default_factory=dict)
     def get_open_gaps(self):
         return [g for g in self.gaps if g.status in (OPEN, PARTIAL)]
 

@@ -399,6 +399,45 @@ def _experiment_id(source_type, source_text):
     payload = f"{source_type}\x1f{canonical}".encode("utf-8")
     digest = hashlib.sha256(payload).hexdigest()[:_EXPERIMENT_ID_DIGEST_LEN]
     return f"exp_{_EXPERIMENT_ID_VERSION}_{source_type}_{digest}"
+
+
+def _resolve_success_criterion(exp, eid, source_text, state):
+    """Set success_criterion / _provenance / _status on an experiment item.
+    Precedence: a user-authored criterion (state.success_criteria[eid]) wins;
+    else an explicit owner criterion stated verbatim in the source; else the
+    honest "Owner-defined criterion required." placeholder. Never invents,
+    grades, validates, or claims a criterion was met. status is 'captured' or
+    'required' — never 'met'/'validated'."""
+    user = (getattr(state, "success_criteria", None) or {}).get(eid)
+    user_text = (getattr(user, "criterion", "") or "").strip() if user else ""
+    if user_text:
+        exp["success_criterion"] = user_text
+        exp["success_criterion_provenance"] = getattr(user, "provenance", "user_defined")
+        exp["success_criterion_status"] = "captured"
+        return
+    scanned = _owner_success_criterion(source_text)
+    if scanned:
+        exp["success_criterion"] = scanned
+        exp["success_criterion_provenance"] = "source_stated"
+        exp["success_criterion_status"] = "captured"
+        return
+    exp["success_criterion"] = _OWNER_CRITERION_REQUIRED
+    exp["success_criterion_provenance"] = None
+    exp["success_criterion_status"] = "required"
+
+
+def _stale_success_criteria(state, current_ids):
+    """User criteria whose experiment_id is no longer generated. Preserved and
+    surfaced honestly; never reattached. Deterministic (dict insertion order)."""
+    stale = []
+    for eid, sc in (getattr(state, "success_criteria", None) or {}).items():
+        if eid in current_ids:
+            continue
+        txt = (getattr(sc, "criterion", "") or "").strip()
+        if txt:
+            stale.append({"experiment_id": eid, "criterion": txt,
+                          "provenance": getattr(sc, "provenance", "user_defined")})
+    return stale
 _PLAN_STOPWORDS = {
     "that", "this", "with", "from", "would", "which", "have", "been", "they",
     "their", "there", "when", "what", "into", "such", "than", "then", "them",
@@ -493,7 +532,7 @@ def _s11(state):
             raise ValueError(f"experiment_id collision for {eid!r}")
         seen_ids[eid] = payload
         exp["experiment_id"] = eid
-        exp["success_criterion"] = _owner_success_criterion(source_text) or _OWNER_CRITERION_REQUIRED
+        _resolve_success_criterion(exp, eid, source_text, state)
         exp["required_expertise_or_tools"] = expertise_field
         items.append(exp)
 
@@ -571,6 +610,7 @@ def _s11(state):
                                  "content": claim},
             })
 
+    stale = _stale_success_criteria(state, {it["experiment_id"] for it in items})
     return {
         "title": "Prototype & Test Plan",
         "items": items,
@@ -578,6 +618,10 @@ def _s11(state):
         "empty_statement": None if items else
             "No evidence-grounded prototype experiment can be proposed from the "
             "currently captured information.",
+        "stale_criteria": stale,
+        "stale_criteria_notice": None if not stale else
+            "A previously entered success criterion no longer matches a current "
+            "proposed experiment. It has been preserved but is not applied.",
         "note": "Proposed experiments synthesized from your own captured evidence. "
                 "Advisory only: nothing here has been built, tested, demonstrated, "
                 "validated, certified, or shown feasible. You define the success "

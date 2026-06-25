@@ -6,7 +6,7 @@ SESSION_STORE: in-memory, non-production, temporary.
 import uuid
 from flask import Flask, request, redirect, url_for, render_template
 from engine.domain_rules import infer_domain
-from engine.idea_state import IdeaState
+from engine.idea_state import IdeaState, SuccessCriterion
 from engine.progression_loop import run_iteration, select_next_gap, get_question
 from web.gap_labels import GAP_LABELS, get_gap_label, get_maturity_label, SESSION_DISCLOSURE
 from engine.deliverable_assembler import assemble_deliverable
@@ -171,6 +171,76 @@ def show_deliverable(sid):
         package=package,
         eligible=eligible,
     )
+
+# Per-experiment owner-defined success criteria (planning metadata only).
+# Field name on the form is "criterion__<experiment_id>". A criterion is a
+# user-defined target, never a test result; this route never runs progression,
+# never calls submit_answer, and never writes the ILT-002 transcript.
+MAX_CRITERION_LENGTH = 1000
+_CRITERION_FIELD_PREFIX = "criterion__"
+
+
+@app.route("/session/<sid>/success-criteria", methods=["GET"])
+def success_criteria(sid):
+    entry = SESSION_STORE.get(sid)
+    if not entry:
+        return redirect(url_for("index"))
+    package = assemble_deliverable(entry["state"])
+    plan = package["section_11_prototype_test_plan"]
+    return render_template(
+        "success_criteria.html",
+        sid=sid,
+        experiments=plan["items"],
+        stale_notice=plan.get("stale_criteria_notice"),
+        field_prefix=_CRITERION_FIELD_PREFIX,
+        max_length=MAX_CRITERION_LENGTH,
+    )
+
+
+@app.route("/session/<sid>/success-criteria", methods=["POST"])
+def save_success_criteria(sid):
+    entry = SESSION_STORE.get(sid)
+    if not entry:
+        return redirect(url_for("index"))
+    state = entry["state"]
+    package = assemble_deliverable(state)
+    plan = package["section_11_prototype_test_plan"]
+    current_ids = {it["experiment_id"] for it in plan["items"]}
+
+    # Collect submitted criteria, namespaced by experiment_id.
+    submitted = {name[len(_CRITERION_FIELD_PREFIX):]: val
+                 for name, val in request.form.items()
+                 if name.startswith(_CRITERION_FIELD_PREFIX)}
+
+    def _reject(message):
+        return render_template(
+            "success_criteria.html", sid=sid, experiments=plan["items"],
+            stale_notice=plan.get("stale_criteria_notice"),
+            field_prefix=_CRITERION_FIELD_PREFIX, max_length=MAX_CRITERION_LENGTH,
+            error=message,
+        ), 400
+
+    # Validate before any write: reject unknown/stale ids and over-limit input.
+    for eid in submitted:
+        if eid not in current_ids:
+            return _reject("A submitted experiment is not part of the current plan. "
+                           "No changes were saved.")
+    for eid, raw in submitted.items():
+        if len(raw.strip()) > MAX_CRITERION_LENGTH:
+            return _reject(f"A criterion exceeds the {MAX_CRITERION_LENGTH}-character "
+                           "limit. No changes were saved.")
+
+    # Apply: trim only; whitespace-only removes; idempotent upsert.
+    if not isinstance(getattr(state, "success_criteria", None), dict):
+        state.success_criteria = {}
+    for eid, raw in submitted.items():
+        text = raw.strip()
+        if text:
+            state.success_criteria[eid] = SuccessCriterion(criterion=text)
+        else:
+            state.success_criteria.pop(eid, None)
+    return redirect(url_for("show_deliverable", sid=sid))
+
 
 @app.route("/session/<sid>", methods=["POST"])
 def submit_answer(sid):
