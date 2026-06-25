@@ -6,6 +6,7 @@ No LLM calls. No registry dependency. No IdeaState mutation.
 """
 from __future__ import annotations
 import uuid
+import hashlib
 from datetime import datetime, timezone
 from typing import Any
 from engine.idea_state import (
@@ -371,6 +372,33 @@ def _s10(state, open_gaps):
 
 _PLAN_MAX_EXPERIMENTS = 3
 _OWNER_CRITERION_REQUIRED = "Owner-defined criterion required."
+
+# Stable prototype-experiment identifiers. The id is derived ONLY from the
+# experiment's source_type and the normalized verbatim source content — never
+# from list position or any synthesized display wording — so user-authored
+# planning metadata (a later increment) can attach to it safely. SHA-256 is used
+# (not the process-randomized built-in hash()). The id is deterministic and
+# stable for the same source_type + normalized source content across re-assembly
+# and process restarts; it is NOT claimed globally permanent.
+_EXPERIMENT_ID_VERSION = "v1"
+_EXPERIMENT_ID_DIGEST_LEN = 32  # hex chars (128 bits); silent-collision risk negligible at this scope
+
+
+def _canonical_source(text):
+    """Narrow, documented canonicalization for stable identity: trim, collapse
+    internal whitespace runs to a single space, and Unicode-casefold. No
+    paraphrase, stemming, stopword removal, or lexical-dedup signature."""
+    import re
+    return re.sub(r"\s+", " ", (text or "").strip()).casefold()
+
+
+def _experiment_id(source_type, source_text):
+    """exp_v1_<source_type>_<sha256(source_type + U+001F + normalized source),
+    truncated to _EXPERIMENT_ID_DIGEST_LEN lowercase hex chars (128 bits)>."""
+    canonical = _canonical_source(source_text)
+    payload = f"{source_type}\x1f{canonical}".encode("utf-8")
+    digest = hashlib.sha256(payload).hexdigest()[:_EXPERIMENT_ID_DIGEST_LEN]
+    return f"exp_{_EXPERIMENT_ID_VERSION}_{source_type}_{digest}"
 _PLAN_STOPWORDS = {
     "that", "this", "with", "from", "would", "which", "have", "been", "they",
     "their", "there", "when", "what", "into", "such", "than", "then", "them",
@@ -447,7 +475,7 @@ def _s11(state):
         f"Inventor-identified (Expertise-Gap Awareness): {expertise}"
         if expertise else None
     )
-    items, sigs = [], []
+    items, sigs, seen_ids = [], [], {}
 
     def _add(source_text, exp):
         if len(items) >= _PLAN_MAX_EXPERIMENTS:
@@ -456,6 +484,15 @@ def _s11(state):
         if any(_lexically_overlaps(sig, s) for s in sigs):
             return  # near-duplicate source (best-effort lexical overlap) already covered
         sigs.append(sig)
+        source_type = exp["traceability"]["source_type"]
+        eid = _experiment_id(source_type, source_text)
+        payload = (source_type, _canonical_source(source_text))
+        if eid in seen_ids and seen_ids[eid] != payload:
+            # Fail closed on a digest collision between distinct canonical
+            # payloads; never silently reuse an id or invent an order-based suffix.
+            raise ValueError(f"experiment_id collision for {eid!r}")
+        seen_ids[eid] = payload
+        exp["experiment_id"] = eid
         exp["success_criterion"] = _owner_success_criterion(source_text) or _OWNER_CRITERION_REQUIRED
         exp["required_expertise_or_tools"] = expertise_field
         items.append(exp)
