@@ -206,11 +206,12 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   <div class="field-value"><strong>Success criterion:</strong> {{ exp.success_criterion }}</div>
   {% endif %}
   <div class="field-value"><strong>Failure / revise if:</strong> {{ exp.failure_or_revision_condition }}</div>
-  {% if exp.required_expertise_or_tools %}
-  <div class="field-value"><strong>Expertise / tools:</strong> {{ exp.required_expertise_or_tools }}</div>
-  {% endif %}
   <div class="field-value"><strong>Evidence upgrade target:</strong> {{ exp.expected_evidence_upgrade }}</div>
   {% endfor %}
+  {% if package.section_11_prototype_test_plan.shared_required_expertise %}
+  <div class="field-label">Shared expertise and tools identified by the inventor</div>
+  <div class="field-value">{{ package.section_11_prototype_test_plan.shared_required_expertise }}</div>
+  {% endif %}
   {% else %}
   <div class="field-value">{{ package.section_11_prototype_test_plan.empty_statement }}</div>
   {% endif %}
