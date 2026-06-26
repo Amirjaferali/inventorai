@@ -120,10 +120,19 @@ def test_no_phase5_anywhere_in_package():
         assert "Phase 5" not in text, f"'Phase 5' leaked: {text!r}"
 
 
-def test_completeness_string_has_no_phase5():
+def test_completeness_string_is_truthful_and_has_no_phase5():
     s = _polluted_state()
     comp = assemble_deliverable(s)["section_2_invention_summary"]["assessment_completeness"]
-    assert "Phase 5" not in comp and comp.startswith("COMPLETE")
+    assert "Phase 5" not in comp
+    # truthful contract: states inquiry completion AND outstanding validation
+    assert comp.startswith("ASSESSMENT COMPLETE")
+    low = comp.lower()
+    assert "remain outstanding" in low
+    assert "validation" in low and "demonstration" in low
+    # must NOT imply the invention / development / validation itself is complete
+    assert "demonstrated" not in low.replace("demonstration", "")
+    for w in ("feasible", "validated", "proven", "ready", "certified"):
+        assert w not in low
 
 
 def test_ods001_reference_preserved():
@@ -222,3 +231,125 @@ def test_rendered_deliverable_shows_next_steps_and_problem():
         assert "Phase 5" not in body
     finally:
         SESSION_STORE.pop(sid, None)
+
+
+# ===========================================================================
+# Known Problem provenance (idea_summary first) + truthful completeness.
+# Selection is by capture provenance, never keywords/string analysis.
+# ===========================================================================
+
+CYCLIST_PROBLEM = ("Cyclists often slow suddenly but drivers behind may not notice in time, "
+                   "especially at night, leaving little warning before a rear collision")
+PMF_FIT_FIRST = ("This mechanism is a good fit because the accelerometer measures the same "
+                 "deceleration a driver would want warning of, and the light brightens on braking")
+BIKE_MECH = ("Inside the mechanism there is a three-axis accelerometer, a microcontroller, a "
+             "MOSFET driver and an LED array that brightens when deceleration exceeds a threshold")
+
+
+def _bike_state(idea_summary=CYCLIST_PROBLEM):
+    s = IdeaState(idea_id="tl-" + uuid.uuid4().hex[:8])
+    s.domain_signal = "electronics_electrical"; s.maturity_level = 2; s.current_stage = 3
+    if idea_summary is not None:
+        s.idea_summary = idea_summary
+    s.known_mechanism = Evidence(BIKE_MECH, REASONED, 2)
+    pmf = Gap(gap_type=PROBLEM_MECHANISM_FIT, status=CLOSED, opened_at=3)
+    pmf.evidence.append(Evidence(PMF_FIT_FIRST, REASONED, 4))   # mechanism-fit FIRST
+    s.gaps.append(pmf)
+    return s
+
+
+def test_idea_summary_takes_priority_over_pmf_for_known_problem():
+    s = _bike_state()
+    s2 = assemble_deliverable(s)["section_2_invention_summary"]
+    assert s2["known_problem"]["content"] == CYCLIST_PROBLEM          # provenance wins
+
+
+def test_mechanism_fit_first_pmf_cannot_replace_present_idea_summary():
+    s = _bike_state()
+    kp = assemble_deliverable(s)["section_2_invention_summary"]["known_problem"]["content"]
+    assert kp != PMF_FIT_FIRST
+    assert not kp.startswith("This mechanism is a good fit because")
+
+
+def test_known_mechanism_unchanged_by_problem_fix():
+    s = _bike_state()
+    assert assemble_deliverable(s)["section_2_invention_summary"]["known_mechanism"]["content"] == BIKE_MECH
+
+
+def test_pmf_fallback_when_idea_summary_absent():
+    s = _bike_state(idea_summary=None)   # no problem-establishment capture
+    kp = assemble_deliverable(s)["section_2_invention_summary"]["known_problem"]["content"]
+    assert kp == PMF_FIT_FIRST           # falls back to accepted PMF evidence
+
+
+def test_honest_absence_when_both_absent():
+    s = IdeaState(idea_id="tl-" + uuid.uuid4().hex[:8])
+    s.domain_signal = "electronics_electrical"; s.maturity_level = 2
+    s.known_mechanism = Evidence(BIKE_MECH, REASONED, 2)   # mechanism present, no problem source
+    s2 = assemble_deliverable(s)["section_2_invention_summary"]
+    assert s2["known_problem"] is None
+    assert s2["known_problem_note"] == "Problem evidence has not yet been captured clearly."
+
+
+def test_selection_is_provenance_not_keywords():
+    # idea_summary has NONE of the words problem/because/mechanism/fit/need; the
+    # PMF evidence has them. Provenance (idea_summary) must still win — proving
+    # selection is not keyword-based.
+    s = _bike_state(idea_summary="riders are struck from behind when they slow at night")
+    pmf = s.get_gap(PROBLEM_MECHANISM_FIT)
+    pmf.evidence[0] = Evidence("the problem is rear collisions because the mechanism fits the need", REASONED, 4)
+    kp = assemble_deliverable(s)["section_2_invention_summary"]["known_problem"]["content"]
+    assert kp == "riders are struck from behind when they slow at night"
+
+
+def test_water_leak_backward_compatible():
+    # _polluted_state has no idea_summary -> PMF problem evidence still used.
+    s = _polluted_state()
+    assert assemble_deliverable(s)["section_2_invention_summary"]["known_problem"]["content"] == PMF_PROBLEM
+
+
+def test_problem_fix_does_not_change_experiment_ids_or_criteria():
+    # idea_summary presence must not affect Prototype & Test Plan experiment IDs
+    # (section_11 reads unknowns / AI evidence / known_mechanism, not the problem),
+    # and a stored success criterion stays attached to its experiment_id.
+    from engine.idea_state import SuccessCriterion, ASSUMPTION_INVENTORY
+    def build(with_summary):
+        s = IdeaState(idea_id="tl-fixed")
+        s.domain_signal = "electronics_electrical"; s.maturity_level = 2; s.current_stage = 3
+        if with_summary:
+            s.idea_summary = CYCLIST_PROBLEM
+        s.acknowledged_unknowns.append(AcknowledgedUnknown(
+            iteration=5, gap_context=ASSUMPTION_INVENTORY,
+            verbatim="the exact deceleration threshold for braking", category_basis="explicit"))
+        g = Gap(gap_type=ASSUMPTION_INVENTORY, status=CLOSED, opened_at=0)
+        g.evidence.append(Evidence("the accelerometer must distinguish braking from bumps", REASONED, 1))
+        s.gaps.append(g)
+        s.known_problem = Evidence(CYCLIST_PROBLEM, REASONED, 0)
+        s.known_mechanism = Evidence(BIKE_MECH, REASONED, 0)
+        return s
+    ids_no = [it["experiment_id"] for it in assemble_deliverable(build(False))["section_11_prototype_test_plan"]["items"]]
+    s_yes = build(True)
+    items_yes = assemble_deliverable(s_yes)["section_11_prototype_test_plan"]["items"]
+    ids_yes = [it["experiment_id"] for it in items_yes]
+    assert ids_no == ids_yes                                  # ids unaffected by the problem fix
+    # a stored criterion stays attached to the same id
+    s_yes.success_criteria[ids_yes[0]] = SuccessCriterion("my target")
+    after = assemble_deliverable(s_yes)["section_11_prototype_test_plan"]["items"]
+    assert next(it for it in after if it["experiment_id"] == ids_yes[0])["success_criterion"] == "my target"
+
+
+def test_unrelated_sections_unchanged_by_problem_fix():
+    # Only section 2 (known_problem) and section 4 (functional REQ) derive from
+    # the resolved problem; other sections must be identical with/without idea_summary.
+    base = IdeaState(idea_id="tl-u")
+    base.domain_signal = "electronics_electrical"; base.maturity_level = 2; base.current_stage = 3
+    base.known_mechanism = Evidence(BIKE_MECH, REASONED, 0)
+    pmf = Gap(gap_type=PROBLEM_MECHANISM_FIT, status=CLOSED, opened_at=3)
+    pmf.evidence.append(Evidence(PMF_FIT_FIRST, REASONED, 4)); base.gaps.append(pmf)
+    a = assemble_deliverable(base)
+    base.idea_summary = CYCLIST_PROBLEM
+    b = assemble_deliverable(base)
+    for k in ("section_3_assessment_overview", "section_5_assumptions", "section_6_risks",
+              "section_7_recommendations", "section_8_unresolved_items",
+              "section_9_stage3_reasoning", "section_11_prototype_test_plan"):
+        assert a[k] == b[k]

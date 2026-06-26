@@ -10,7 +10,7 @@ import hashlib
 from datetime import datetime, timezone
 from typing import Any
 from engine.idea_state import (
-    IdeaState, ASSERTED, REASONED, DEMONSTRATED, OPEN, PARTIAL, CLOSED,
+    IdeaState, Evidence, ASSERTED, REASONED, DEMONSTRATED, OPEN, PARTIAL, CLOSED,
     STAGE_3_GAP_TYPES, PROBLEM_MECHANISM_FIT,
     ASSUMPTION_INVENTORY, EXPERTISE_GAP_AWARENESS,
 )
@@ -640,19 +640,32 @@ def _ev(ev):
 
 def _resolved_problem(state):
     """
-    The Evidence to display as the inventor's actual *problem*, taken ONLY from
-    accepted Problem–Mechanism Fit evidence. Returns an Evidence or None — no
-    fabrication, no synthesis, no validation claim, and never the mechanism.
+    The Evidence to display as the inventor's actual *problem*, selected by
+    PROVENANCE (capture origin) — never by keyword or string analysis, and
+    never the mechanism. Returns an Evidence or None.
 
-    Provenance: PROBLEM_MECHANISM_FIT evidence is the only state element that
-    carries reliable proof of being problem evidence — it is captured solely
-    when the inventor substantively answers a problem–fit question at REASONED+.
-    state.known_problem is deliberately NOT used as a fallback: RISK-002 can
-    populate it from a mechanism answer, and a mere textual difference from
-    known_mechanism is not proof that it is genuine problem evidence. When no
-    PMF evidence exists this returns None, and the deliverable states honestly
-    that problem evidence has not yet been captured.
+    Priority:
+      1. state.idea_summary — the dedicated problem-establishment capture, set
+         once at the maturity-0 "describe the problem" step from a REASONED+
+         response (_trim_idea_summary) and NOT exposed to RISK-002 mechanism
+         pollution. When present it is the most reliable problem provenance, and
+         it must win over a Problem–Mechanism Fit answer that happens to lead
+         with mechanism-fit wording (e.g. "This mechanism is a good fit because…").
+      2. first accepted non-empty PROBLEM_MECHANISM_FIT evidence — the inventor's
+         answer to the PMF problem question — used only when no idea_summary
+         exists (e.g. legacy/water-leak states where the idea graded ASSERTED at
+         problem establishment).
+      3. None — honest absence ("Problem evidence has not yet been captured…").
+
+    state.known_problem is deliberately NOT used: RISK-002 can populate it from a
+    mechanism answer, so it lacks reliable problem-only provenance.
     """
+    summary = (getattr(state, "idea_summary", None) or "").strip()
+    if summary:
+        # idea_summary is captured only from a REASONED+ problem-establishment
+        # response; wrap it for uniform rendering. No quality is fabricated above
+        # what the capture path already guarantees.
+        return Evidence(content=summary, quality=REASONED, iteration=0)
     pmf = state.get_gap(PROBLEM_MECHANISM_FIT)
     if pmf is not None:
         for e in getattr(pmf, "evidence", []):
@@ -679,7 +692,8 @@ def _completeness(state):
     has_mech = getattr(state, "known_mechanism", None) is not None
     open_gaps = [g for g in state.gaps if g.status == OPEN]
     if state.maturity_level >= 2 and not open_gaps and has_mech:
-        return "COMPLETE — mechanism established and all identified gaps resolved"
+        return ("ASSESSMENT COMPLETE — all current inquiry areas addressed. "
+                "Technical validation and demonstration remain outstanding.")
     if state.maturity_level >= 1 and has_prob:
         return "PARTIAL — mechanism or boundaries still required"
     return "INCOMPLETE — problem statement not yet established"
