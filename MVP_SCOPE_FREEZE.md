@@ -52,3 +52,73 @@ Platform risks becoming:
   - score optimization system
   - giant expert-system simulator
 The freeze protects the progression hypothesis from premature complexity.
+
+---
+
+## APPEND-ONLY AMENDMENT 1 — BOUNDED TECHNICAL REALIZATION CARVE-OUT
+STATUS: APPROVED AND FINAL — NON-ACTIVATING APPEND-ONLY AMENDMENT. The bounded carve-out remains unavailable until the complete lane-activation sequence is satisfied. Authorizes no implementation.
+
+AUTHORITY (this amendment is subordinate to the following and creates no
+independent product identity or path authority):
+- governing product identity: `docs/governance/OWNER_PRODUCT_IDENTITY_CORRECTION.md`;
+- governing dual-mode / path authority: `docs/governance/DUAL_PATH_PRODUCT_ANCHOR.md`;
+- operational Technical Realization and lane-gating constraint:
+  `docs/governance/TECHNICAL_REALIZATION_ANCHOR_COMPANION.md`.
+
+The historical freeze above and its completed purpose are PRESERVED in full.
+This is an append-only narrowing, not a rewrite.
+
+Bounded allowance (describes the exact work permitted, not "external document
+generation" broadly):
+- The freeze's "External document generation" out-of-scope item is NARROWED
+  SOLELY to permit separately authorized and fully activated (under the complete
+  governing activation sequence below), single-domain Technical Realization
+  work, limited to: capability disclosure; plain-language requirement
+  translation; structured option analysis; option qualification or disposition;
+  bounded recommendation when evidence permits; and production of the exact
+  versioned decision-readiness artifact declared by the activated per-lane
+  authorization, currently proposed as `adaptive-decision-readiness-v1`.
+- These operate through the one shared capability layer defined by the anchor
+  companion. The carve-out permits ONLY the exact operations and artifact
+  declared by an activated per-lane authorization. A per-lane authorization
+  document alone does not make this allowance available; the allowance remains
+  unavailable until every condition in "Lane activation requires ALL of" below is
+  complete. The artifact name itself creates no activation and confers no
+  authority; the artifact cannot be produced before the lane is fully activated;
+  no alternative artifact or broader package is authorized by implication; and the
+  artifact remains mode-neutral and creates no separate Path-N schema or store.
+- The bounded recommendation permitted here MUST NOT issue or imply
+  `technically_selected`, `frozen`, final technical selection, or downstream
+  baseline status. Those states remain outside this carve-out and require
+  separately authorized capabilities, evidence gates, approvals, and roadmap
+  activation.
+
+This amendment explicitly does NOT authorize, by implication or otherwise:
+- general document generation;
+- multi-domain runtime orchestration;
+- component or material selection;
+- deterministic calculations;
+- BOM;
+- wiring or pin maps;
+- firmware or software generation;
+- compilation;
+- simulation;
+- assembly or test claims;
+- complete invention/implementation package generation;
+- Path T / Direct Technical Work Mode;
+- accounts, collaboration, or artifact-store implementation;
+- any change to a hold or closed state.
+
+Lane activation requires ALL of: (1) a separate per-lane authorization document;
+(2) explicit owner approval; (3) transition of each applicable document — this
+carve-out amendment, every prerequisite authority and architecture document, the
+separate per-lane authorization, and the required roadmap state update — to its
+required non-DRAFT final status, and the specific final-status commit of each to
+the authoritative repository; (4) all declared activation prerequisites
+satisfied; (5) no unresolved governance or authority blocker. "Commit to the
+authoritative repository" means each document's required final-status commit, not
+any generic or unrelated commit; a document committed while its governing status
+remains DRAFT does NOT satisfy activation, even if another package document is
+committed. A working-tree draft, conversation, or uncommitted owner instruction
+never activates this carve-out or a lane. Absent all required activation
+conditions, the original freeze remains fully effective.
