@@ -327,3 +327,74 @@ and §7 (next step). Staleness check for agents: review repository
 history since §4's baseline; if any event from the list above
 appears and is not reflected here, trust git, flag the roadmap,
 and request a roadmap update before proceeding.
+
+---
+
+## 12. APPEND-ONLY BOUNDED AMENDMENT — PROPOSED TECHNICAL REALIZATION LANE
+STATUS: APPROVED AND FINAL — NON-ACTIVATING APPEND-ONLY AMENDMENT. §§4–7 official state, §6 lane, holds, and closed states remain UNCHANGED. The proposed lane remains INACTIVE; only the committed §§4–7 activation action records active-lane state.
+
+### 12.A Extension to the §11 update rule
+The §11 event list above does NOT currently include execution-lane activation.
+This amendment adds, for purposes of §11: the completion of the final
+lane-activation governance action — the committed update of §§4, 5, 6, and 7 that
+records a lane as active — is an additional roadmap state-change event.
+Finalization, approval, or commit of a non-activating proposed-lane
+authorization, or of this amendment, does NOT itself trigger active-lane state
+recording and does NOT make the roadmap stale; only the committed §§4–7
+activation update does. This does not retroactively claim that §11's existing
+list already contained this event.
+
+### 12.B Proposed (not yet active) first lane
+- Name: "Adaptive Idea Orchestration — Capability Disclosure, Requirement
+  Translation, Decision Preparation, and Bounded Recommendation".
+- Mode: Orchestrated Idea Mode (internal "Path N"). Single domain: electronics.
+- Scope: capability disclosure, plain-language requirement translation,
+  structured option analysis, option qualification/disposition, and bounded
+  recommendation for ONE electronics decision. Produces no part numbers, final
+  selection, calculation, BOM, wiring, pin map, firmware, simulation, or
+  tested/demonstrated claim.
+- Decision-state boundary: this lane may NOT issue `technically_selected`,
+  `frozen`, final technical selection, or downstream baseline status; its
+  outputs are limited to the statuses and artifact permitted by its governing
+  first-lane authorization.
+
+### 12.C Complete prerequisite set (exact repository paths; this amendment replaces none of them)
+1. `docs/governance/TECHNICAL_REALIZATION_ANCHOR_COMPANION.md`
+2. `MVP_SCOPE_FREEZE.md` (Amendment 1)
+3. `docs/governance/PATH_N_ORCHESTRATION_AND_HANDOFF_CONTRACT.md`
+4. `docs/governance/SUPPORTED_TECHNOLOGY_AND_SOURCE_OF_TRUTH_CONTRACT.md`
+5. `docs/governance/TECHNICAL_REALIZATION_EVIDENCE_AND_ARTIFACT_MODEL.md`
+6. `docs/governance/FIRST_LANE_AUTHORIZATION_ADAPTIVE_IDEA_ORCHESTRATION.md`
+
+### 12.D Activation sequencing
+The lane cannot begin merely because its first-lane authorization is approved and
+committed. Owner approval, required non-DRAFT final-status transition, the
+specific final-status commit, prerequisite completion, blocker clearance, and the
+final roadmap activation update are **distinct conditions**; a non-DRAFT status
+transition is never an implicit substitute for owner approval. Activation requires
+ALL of:
+1. explicit owner approval of the final authority package where applicable, and
+   explicit owner approval of the final per-lane authorization;
+2. every §12.C prerequisite document — which includes the MVP_SCOPE_FREEZE
+   Amendment 1 carve-out and the separate first-lane authorization, counted once
+   each — transitioned to its required non-DRAFT final status and committed to the
+   authoritative repository. A document committed while its governing status
+   remains DRAFT does NOT satisfy activation, even if another package document is
+   committed; "committed" means each document's required final-status commit, not
+   a generic or unrelated commit;
+3. every declared activation prerequisite satisfied;
+4. no unresolved governance or authority blocker;
+5. the final activation governance action that updates and commits §§4, 5, 6, and
+   7 to record the lane as active.
+The final roadmap update in condition 5 is part of activation completion, not
+evidence of a previously active lane. Until that committed update exists, the
+lane remains inactive, and the current roadmap state and next authorized action
+remain unchanged.
+
+### 12.E Preserved state (unchanged)
+- §4 official state and baseline;
+- all holds: R2=HELD, FORM T=BLOCKED, S-6=UNCLASSIFIED, AA-3/AA-4/AA-5=BLOCKED,
+  Phase 5/6=UNAUTHORIZED, ILT-002 evidence collection=NOT AUTHORIZED;
+- Path T = BLOCKED; Phase 4 = CLOSED; Gate 8 = CLOSED; runtime_integrated=TRUE.
+
+No execution is authorized by this amendment.
