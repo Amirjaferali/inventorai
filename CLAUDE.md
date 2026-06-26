@@ -14,6 +14,15 @@ subagent, and Agent Teams teammate MUST read, in this order:
 5. `docs/governance/DUAL_PATH_PRODUCT_ANCHOR.md`
 6. `docs/governance/ACTIVE_EXECUTION_ROADMAP.md`
 7. Any phase-specific authorization identified as active by the roadmap
+8. `docs/governance/INVENTORAI_COMMERCIAL_DIFFERENTIATION_DIRECTION.md`
+   — mandatory strategic product direction; non-activating and non-authorizing;
+   subordinate to committed anchors, contracts, and
+   `docs/governance/ACTIVE_EXECUTION_ROADMAP.md`.
+9. `docs/benchmarks/BICYCLE_BRAKE_LIGHT_COMPETITIVE_BENCHMARK.md`
+   — mandatory competitive product-value evaluation protocol; non-activating
+   and non-authorizing; subordinate to committed anchors, contracts, and
+   `docs/governance/ACTIVE_EXECUTION_ROADMAP.md`; no benchmark run or result is
+   implied by this record.
 
 Repository truth overrides conversation history, memory, and assumption.
 
