@@ -27,6 +27,8 @@ OWNER_CRITERION_REQUIRED = "Owner-defined criterion required."
 # Synthesized (platform-authored) item fields — must never carry invented specs
 # or feasibility/validation/etc. claims. Excludes source_basis / traceability /
 # required_expertise_or_tools, which quote the inventor's own captured wording.
+# (required_expertise_or_tools is retained per-item for output backward-compat;
+# the shared section-level field shared_required_expertise is additive.)
 _SYNTH_FIELDS = ("experiment_title", "objective", "minimum_prototype",
                  "what_to_observe", "failure_or_revision_condition",
                  "expected_evidence_upgrade")
@@ -84,17 +86,24 @@ def test_reasoned_not_demonstrated_creates_upgrade_experiment():
     assert items[0]["expected_evidence_upgrade"] == "Reasoned -> Demonstrated."
 
 
-# --- 4: EGA supplies expertise only when supported ----------------------------
+# --- 4: EGA supplies the per-item field (unchanged) AND an additive shared field
 
 def test_expertise_supplied_only_when_ega_evidence_present():
     s = _state(); _unknown(s, "unknown alpha")
     _gap(s, EXPERTISE_GAP_AWARENESS, "I would need analog sensor calibration expertise")
-    item = _plan(s)["items"][0]
+    plan = _plan(s)
+    item = plan["items"][0]
+    # legacy per-experiment field preserved exactly as before (prefixed string)
     assert item["required_expertise_or_tools"]
     assert "analog sensor calibration" in item["required_expertise_or_tools"]
-    # without EGA evidence -> None
+    # additive shared, plan-level field carries the captured expertise verbatim
+    assert plan["shared_required_expertise"] == "I would need analog sensor calibration expertise"
+    # without EGA evidence -> per-item field None (prior behavior), shared None
     s2 = _state(); _unknown(s2, "unknown beta")
-    assert _plan(s2)["items"][0]["required_expertise_or_tools"] is None
+    plan2 = _plan(s2)
+    assert plan2["items"][0]["required_expertise_or_tools"] is None
+    assert plan2["shared_required_expertise"] is None
+    assert plan2["items"]
 
 
 # --- 5: nothing invented from absent evidence ---------------------------------
@@ -448,7 +457,8 @@ def test_lexical_dedup_unchanged_with_ids():
 def test_plan_content_unchanged_except_additive_id():
     s = _three_experiment_state(_WL_UNKNOWN, _WL_ASSUMPTION, _WL_MECH)
     items = _plan(s)["items"]
-    # every previously-specified field is still present and the only new key is id
+    # every previously-specified field is still present (incl. the retained
+    # per-item required_expertise_or_tools); id remains the only additive item key.
     expected = {"experiment_title", "objective", "source_basis", "minimum_prototype",
                 "what_to_observe", "success_criterion", "failure_or_revision_condition",
                 "required_expertise_or_tools", "expected_evidence_upgrade",
@@ -469,3 +479,125 @@ def test_no_state_field_added_for_ids():
     assert "experiment_id" not in field_names
     s = _three_experiment_state(_WL_UNKNOWN, _WL_ASSUMPTION, _WL_MECH)
     assert not hasattr(s, "experiment_id")
+
+
+# ===========================================================================
+# Shared expertise presentation (deduplication, backward-compatible): the
+# captured Expertise-Gap Awareness evidence is rendered ONCE at the Prototype &
+# Test Plan section level (additive shared_required_expertise field) instead of
+# repeated in the web experiment loop. The legacy per-item
+# required_expertise_or_tools field is RETAINED unchanged for output
+# backward-compatibility. Presentation-layer only — no id / criterion / state /
+# schema change.
+# ===========================================================================
+
+_EGA_TEXT = ("Building this needs embedded firmware for the accelerometer signal "
+             "processing, low-power hardware design, and optics knowledge to make "
+             "the LED bright enough, because poor calibration leads to false "
+             "brightening on rough roads.")
+_EGA_PER_ITEM = f"Inventor-identified (Expertise-Gap Awareness): {_EGA_TEXT}"
+
+
+def _three_with_expertise():
+    s = _three_experiment_state(_WL_UNKNOWN, _WL_ASSUMPTION, _WL_MECH)
+    _gap(s, EXPERTISE_GAP_AWARENESS, _EGA_TEXT)
+    return s
+
+
+def test_legacy_per_item_field_preserved_and_shared_field_additive():
+    # 1/2/3/9: per-item field retained verbatim (prior prefixed value) on every
+    # experiment; shared field is the additive verbatim text.
+    plan = _plan(_three_with_expertise())
+    assert len(plan["items"]) == 3
+    for it in plan["items"]:
+        assert it["required_expertise_or_tools"] == _EGA_PER_ITEM   # legacy, unchanged
+    assert plan["shared_required_expertise"] == _EGA_TEXT           # additive, verbatim
+
+
+def test_shared_expertise_absent_when_no_ega_evidence():
+    # 6/7/8: no EGA -> shared field None AND per-item field None (prior behavior);
+    # experiments still render.
+    s = _three_experiment_state(_WL_UNKNOWN, _WL_ASSUMPTION, _WL_MECH)
+    plan = _plan(s)
+    assert plan["shared_required_expertise"] is None
+    assert len(plan["items"]) == 3
+    for it in plan["items"]:
+        assert it["required_expertise_or_tools"] is None
+
+
+def test_shared_expertise_heading_renders_once_in_web_deliverable():
+    # 4/5/6: shared heading + text render exactly once within the plan section;
+    # the per-experiment "Expertise / tools:" loop block is NOT rendered.
+    s = _state(); _unknown(s, "an unknown about early detection timing")
+    _gap(s, ASSUMPTION_INVENTORY, "a separate assumption about enclosure sealing integrity")
+    _gap(s, EXPERTISE_GAP_AWARENESS, _EGA_TEXT)
+    sid = "pp-share-" + uuid.uuid4().hex[:8]
+    SESSION_STORE[sid] = {"state": s, "last_result": None, "transcript": []}
+    try:
+        body = app.test_client().get(f"/session/{sid}/deliverable").get_data(as_text=True)
+        # scope to the Prototype & Test Plan section (the EGA evidence also
+        # legitimately appears once in Stage 3 Reasoning, which we exclude here).
+        start = body.index("Prototype &amp; Test Plan")
+        plan_html = body[start:]
+        assert plan_html.count("Shared expertise and tools identified by the inventor") == 1
+        # expertise text appears exactly once within the plan section, not per experiment
+        assert plan_html.count(_EGA_TEXT) == 1
+        # the old per-experiment label is no longer rendered in the loop
+        assert "Expertise / tools:" not in plan_html
+        # there is more than one experiment, proving it is not once-per-experiment
+        assert plan_html.count("Proposed experiment") >= 2
+    finally:
+        SESSION_STORE.pop(sid, None)
+
+
+def test_no_shared_expertise_block_when_absent():
+    # 8: no heading / placeholder block when no EGA evidence
+    s = _state(); _unknown(s, "an unknown about timing only")
+    sid = "pp-noshare-" + uuid.uuid4().hex[:8]
+    SESSION_STORE[sid] = {"state": s, "last_result": None, "transcript": []}
+    try:
+        body = app.test_client().get(f"/session/{sid}/deliverable").get_data(as_text=True)
+        assert "Shared expertise and tools identified by the inventor" not in body
+        assert "Proposed experiment" in body  # experiments still render
+    finally:
+        SESSION_STORE.pop(sid, None)
+
+
+def test_shared_expertise_does_not_change_experiment_ids_or_criteria():
+    # 10: ids identical with/without EGA; every non-expertise field identical;
+    # a stored criterion stays attached to the same id.
+    from engine.idea_state import SuccessCriterion
+    base = _three_experiment_state(_WL_UNKNOWN, _WL_ASSUMPTION, _WL_MECH)
+    base_items = _plan(base)["items"]
+    ids_no_ega = [it["experiment_id"] for it in base_items]
+    with_ega = _three_with_expertise()
+    items = _plan(with_ega)["items"]
+    ids_ega = [it["experiment_id"] for it in items]
+    assert ids_no_ega == ids_ega
+    # every field except the (legitimately EGA-dependent) expertise field is identical
+    for a, b in zip(base_items, items):
+        assert {k: v for k, v in a.items() if k != "required_expertise_or_tools"} == \
+               {k: v for k, v in b.items() if k != "required_expertise_or_tools"}
+    # criterion stays attached to its id under the shared-expertise plan
+    with_ega.success_criteria[ids_ega[0]] = SuccessCriterion("my measurable target")
+    after = _plan(with_ega)["items"]
+    assert next(it for it in after if it["experiment_id"] == ids_ega[0])["success_criterion"] == "my measurable target"
+
+
+def test_shared_expertise_does_not_change_stale_criteria_semantics():
+    # 11: a criterion on a no-longer-generated id is still preserved + noticed
+    from engine.idea_state import SuccessCriterion
+    s = _three_with_expertise()
+    s.success_criteria["exp_v1_acknowledged_unknown_" + "0" * 32] = SuccessCriterion("orphaned target")
+    plan = _plan(s)
+    assert any(sc["criterion"] == "orphaned target" for sc in plan["stale_criteria"])
+    assert plan["stale_criteria_notice"]
+
+
+def test_schema_id_unchanged_by_shared_expertise():
+    # 9: schema identifier remains fdc-001-mvp-v1 (no bump)
+    from engine.deliverable_assembler import SCHEMA_ID
+    s = _three_with_expertise()
+    pkg = assemble_deliverable(s)
+    assert SCHEMA_ID == "fdc-001-mvp-v1"
+    assert pkg["schema_id"] == "fdc-001-mvp-v1"

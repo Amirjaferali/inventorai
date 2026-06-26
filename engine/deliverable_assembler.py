@@ -506,14 +506,25 @@ def _s11(state):
       1. acknowledged unknowns;
       2. accepted ASSUMPTION_INVENTORY evidence (essential/untested assumption);
       3. a REASONED-but-not-DEMONSTRATED leading mechanism claim.
-    Expertise-Gap Awareness evidence supplies required expertise/tools; it never
-    creates a standalone experiment.
+    Expertise-Gap Awareness evidence supplies required expertise/tools. The
+    per-experiment `required_expertise_or_tools` field is retained unchanged for
+    output backward-compatibility (schema fdc-001-mvp-v1); an additive
+    section-level `shared_required_expertise` field carries the same captured
+    text verbatim so the web view can render it once instead of per experiment.
+    EGA evidence never creates a standalone experiment.
     """
+    # Per-experiment expertise value — UNCHANGED from prior behavior (legacy
+    # output contract). Same prefixed string on every item, or None.
     expertise = _plan_expertise(state)
     expertise_field = (
         f"Inventor-identified (Expertise-Gap Awareness): {expertise}"
         if expertise else None
     )
+    # Additive, presentation-only shared field: the exact captured text (no
+    # prefix, no summary, no split, no per-experiment mapping). The
+    # "inventor-identified" framing is carried by the section heading. None when
+    # no EGA evidence was captured.
+    shared_expertise = expertise or None
     items, sigs, seen_ids = [], [], {}
 
     def _add(source_text, exp):
@@ -533,7 +544,7 @@ def _s11(state):
         seen_ids[eid] = payload
         exp["experiment_id"] = eid
         _resolve_success_criterion(exp, eid, source_text, state)
-        exp["required_expertise_or_tools"] = expertise_field
+        exp["required_expertise_or_tools"] = expertise_field  # legacy per-item field, unchanged
         items.append(exp)
 
     # Priority 1 — acknowledged unknowns.
@@ -615,6 +626,10 @@ def _s11(state):
         "title": "Prototype & Test Plan",
         "items": items,
         "count": len(items),
+        # One shared, plan-level expertise/tools statement (verbatim captured
+        # Expertise-Gap Awareness evidence), or None when none was captured.
+        # Not mapped to any single experiment.
+        "shared_required_expertise": shared_expertise,
         "empty_statement": None if items else
             "No evidence-grounded prototype experiment can be proposed from the "
             "currently captured information.",
