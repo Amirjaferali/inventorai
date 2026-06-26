@@ -64,6 +64,7 @@ hides them.
 | ILT-002 evidence collection | NOT AUTHORIZED |
 | Production-readiness claim | NONE |
 | Downstream authorization | None. Phase 4 closure authorizes no AA progression, no Phase 5/6, no S-6 classification, and no production-readiness, feasibility, patent-validity, manufacturing-readiness, commercialization-readiness, inventor-development, or idea-growth claim beyond the specifically authorized runtime-integration fact. |
+| Adaptive Idea Orchestration first lane | ACTIVE — activated by Commit B, this committed §§4–7 activation update, effective when integrated into the authoritative execution branch. The lane name and scope are exactly those defined by `FIRST_LANE_AUTHORIZATION_ADAPTIVE_IDEA_ORCHESTRATION.md`; its bounded first increment is the accepted `docs/product/FDC-001_FIRST_INCREMENT_IMPLEMENTATION_SPECIFICATION.md`. Activation authorizes no implementation, grants no `technically_selected` or `frozen`, runs no benchmark, makes no persistence change, and alters no hold or closure. |
 
 ## 5. Completed chain (Path N lane only, commit order)
 
@@ -124,6 +125,7 @@ hides them.
 | `68698d8` | Gate 8: `INVENTORAI_PRODUCT_THEORY.md` synchronized with owner identity amendment |
 | `31b34d8` | Gate 8: `DUAL_PATH_PRODUCT_ANCHOR.md` synchronized — §3 and §7 updated |
 | `6c2277f` | Gate 8: `STRATEGIC_PRODUCT_VISION.md` — historical text preserved; four GOVERNING EFFECT AMENDED notices added (§1, §2, §3, §5A) — **GATE 8 REMOTE BASELINE** |
+| Commit B — this update | Committed §§4–7 lane-activation update recording the Adaptive Idea Orchestration first lane as ACTIVE upon integration into the authoritative execution branch (per §12.A/§12.D). Activation-only: authorizes no implementation, no `technically_selected`/`frozen`, no benchmark run, and no persistence change; all holds and closed states preserved. |
 
 (Product-intent anchor `DUAL_PATH_PRODUCT_ANCHOR.md` at `60c809b`
 is deliberately NOT in this table: it is a product-intent anchor,
@@ -162,11 +164,20 @@ state, per §24's revised Step N completion condition.
 Gate 8 owner product-identity synchronization is CLOSED AND REMOTELY
 VERIFIED at HEAD `6c2277f`.
 
-No active product-execution lane currently exists.
+The Adaptive Idea Orchestration first lane (internal "Path N"; single
+domain electronics; one bounded decision scope per authorized invocation) is
+ACTIVE as of this committed §§4–7 activation update. Its bounded first increment
+is the accepted FDC-001 Technical Decision Workspace specification
+(`docs/product/FDC-001_FIRST_INCREMENT_IMPLEMENTATION_SPECIFICATION.md`), scoped
+by `FIRST_LANE_AUTHORIZATION_ADAPTIVE_IDEA_ORCHESTRATION.md`. Activation itself
+authorizes no code; no implementation has started; no persistence work or
+benchmark run is authorized; and the lane may not issue `technically_selected` or
+`frozen`. Implementation still requires a separate, explicit, exact-scope owner
+authorization and a named test plan (see §7).
 
-No next phase may be inferred from numerical sequence. A separate
-repository-grounded owner authorization is required before any new
-product implementation may begin.
+No further phase may be inferred from numerical sequence. Beyond this activated
+first lane, a separate repository-grounded owner authorization is required before
+any new product implementation may begin.
 
 `PATH_N_CURRENT_EXECUTION_ANCHOR.md` is historically stale and
 cannot override subsequently committed Phase 2, Phase 3, Phase 4,
@@ -188,7 +199,7 @@ AUTHORIZED NOW:
 - Reviewing committed governance documents.
 - No product implementation or repository write is authorized without explicit owner authorization for that exact scope.
 
-NOT AUTHORIZED (no active lane):
+NOT AUTHORIZED (the first lane is active; these remain out of scope and are not authorized by activation):
 
 - Any working-tree write without explicit owner authorization for that exact scope.
 - Updating `PATH_N_CURRENT_EXECUTION_ANCHOR.md`.
@@ -220,16 +231,25 @@ Preserved state:
 
 NEXT GOVERNED ACTION:
 
-    No active product-execution lane currently exists.
+    The Adaptive Idea Orchestration first lane is ACTIVE. Activation grants
+    no implementation authority.
 
-    Any next product implementation, governance write, roadmap
-    admission, strategic-roadmap correction, mandatory-reading binding,
-    Stage 3 action, Path T action, Phase 5/6 action, or other repository
-    modification requires a separate, explicit, repository-grounded
-    owner authorization for that exact scope.
+    The next governed action is a separate, explicit, repository-grounded
+    owner implementation authorization for the bounded FDC-001 first
+    increment, which must name: the exact files and paths the implementation
+    may create or modify; a named acceptance-test set derived from FDC-001
+    §14; a clean isolated worktree as the work location; and explicit
+    preservation of all holds and closed states below. Implementation
+    authorization is NOT granted by this activation and is not contained in
+    Commit B.
 
-    Read-only repository verification and review of committed
-    governance documents remain permitted.
+    Any other product implementation, governance write, roadmap admission,
+    strategic-roadmap correction, mandatory-reading binding, Stage 3 action,
+    Path T action, or Phase 5/6 action still requires its own separate,
+    explicit, repository-grounded owner authorization for that exact scope.
+
+    Read-only repository verification and review of committed governance
+    documents remain permitted.
 
 ## 8. Required future sequence
 
