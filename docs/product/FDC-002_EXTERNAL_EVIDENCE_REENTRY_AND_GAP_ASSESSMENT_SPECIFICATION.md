@@ -38,6 +38,15 @@ set) is required before any implementation begins.
    content scope.** FDC-002 adds no second case, domain, or decision.
 8. The **lane records evidence but does not perform or verify physical testing,
    calibration, bench testing, or field testing** (lane authorization §7).
+9. **Clearing the `missing_physical_or_calibration_information` blocker is a
+   user-facing-surface rule, not a domain-method change.** The prohibition on
+   clearing that blocker through bare text entry is enforced at the Flask route
+   and form surface. The legacy first-increment `resolve_gap()` /
+   `reclassify_gap()` domain methods remain behaviorally unchanged solely to
+   preserve the previously accepted FDC-001 internal/programmatic contract and
+   its frozen acceptance tests; they are not modified to universally reject any
+   gap, and this preservation creates no user-facing clearing path for the
+   physical/calibration blocker (§7.2, §8, §9, §10).
 
 This document does not create a new product lane, roadmap phase, governance
 program, anchor, generic laboratory or test-plan subsystem, persistence subsystem,
@@ -133,6 +142,11 @@ This preserves the strict separation in §7/§9: evidence entry ≠ verification
 relevance ≠ assessment ≠ resolution ≠ readiness ≠ owner preference ≠ technical
 selection.
 
+For a gap whose blocking reason is `missing_physical_or_calibration_information`,
+this assess-and-decide workflow is the **only** user-facing path that can clear
+it; the workspace's pre-existing bare-text gap-resolution control does not clear
+that blocker (§7.2, §10).
+
 ## 7. Domain / data model
 
 Prefer **extension** of the existing model; do not create a parallel subsystem and
@@ -190,10 +204,26 @@ Resolution rule: a gap may transition to non-blocking (`resolved` or
 ≥1 valid linked evidence item is present. `partially_addresses`,
 `contradicts_assumption`, and `insufficient` **cannot** resolve the gap and leave
 `blocks_readiness` unchanged. `remains_blocking` records the assessment without
-changing gap state. The first-increment `resolve_gap`/`reclassify_gap` text paths
-remain available for non-physical gaps, but a gap whose blocking reason is
-`missing_physical_or_calibration_information` may be cleared only via a
-`GapAssessment` (never by bare text entry).
+changing gap state.
+
+**Compatibility rule (physical/calibration blocker — user-facing surface).** The
+legacy first-increment `resolve_gap()` / `reclassify_gap()` domain methods remain
+behaviorally unchanged. They are preserved solely to keep the previously accepted
+FDC-001 internal/programmatic contract and its frozen acceptance tests valid; they
+are **not** modified to universally reject any gap. The prohibition on clearing a
+gap whose blocking reason is `missing_physical_or_calibration_information` through
+bare text entry is therefore enforced at the **user-facing surface**, not inside
+the legacy domain methods: the Flask routes and forms must not clear that blocker
+through the legacy bare-text gap-resolution workflow. The FDC-002
+evidence-assessment workflow — a linked-evidence `GapAssessment` with
+`assessment == supports_resolution`, ≥1 valid linked evidence item, an explicit
+`resolved` or `reclassified_nonblocking` resolution decision, and the required
+rationale — is the **sole authorized user-facing path** for clearing that blocker.
+This compatibility preservation does **not** authorize the web application, any
+future UI, or the FDC-002 routes to invoke the legacy methods to clear the
+physical/calibration blocker, and **no automatic fallback or hidden readiness
+bypass is permitted**. For non-physical gaps, any pre-existing user-facing
+gap-resolution behavior is unchanged.
 
 ### 7.3 Separation of concepts (binding)
 
@@ -272,6 +302,17 @@ Required validation cases (each → `DecisionError`, no mutation):
 `None`); they are never required, never affect validation outcome, and never
 change verification or readiness.
 
+**User-facing physical-blocker guard (route surface; bounded and atomic).** The
+pre-existing user-facing gap-resolution route (the first-increment bare-text
+resolve/reclassify control), when asked to clear a gap whose blocking reason is
+`missing_physical_or_calibration_information`, rejects the request with a bounded
+error (HTTP 400 via `_render_decision_workspace(record, error=…, status=400)`) and
+performs **no** mutation — no change to gap state, `revision`, `history`,
+`readiness_status`, `blocking_reasons`, or `change_impact_summary`, and no
+`ChangeEvent`. This guard lives at the web route surface (§10); the legacy domain
+methods themselves are not modified (§7.2), and the guard must not invoke them to
+clear the physical/calibration blocker. Non-physical gaps are unaffected.
+
 **History-event rule (exactly one event per successful submission):** every
 successful FDC-002 mutation records exactly one `ChangeEvent` and one revision
 increment via `_record`. Specifically:
@@ -313,8 +354,13 @@ readiness. A `gap_assessed` event's `details` carries `gap_id`, `evidence_ids`,
 6. The existing readiness ordered table (§5 of FDC-001) is **unchanged**; only the
    set of blocking gaps changes, then readiness recomputes deterministically.
 7. **Unsupported readiness remains impossible**: nothing auto-resolves;
-   `verification_status` is permanently `unverified`; a physical gap cannot be
-   cleared without an explicit, evidence-backed, rationale-carrying decision.
+   `verification_status` is permanently `unverified`; through the user-facing
+   surface a `missing_physical_or_calibration_information` gap cannot be cleared
+   without an explicit, evidence-backed, rationale-carrying FDC-002 resolution
+   decision, and the legacy bare-text gap-resolution route does not clear it
+   (§7.2, §10). The legacy `resolve_gap()` / `reclassify_gap()` domain methods
+   remaining available for the FDC-001 internal/programmatic contract create no
+   user-facing bypass.
 8. **No prohibited status may be emitted** (`PROHIBITED_STATUS_VALUES` never
    appears as an output status).
 
@@ -341,6 +387,17 @@ that gap's evidence); assessment (select of the four values); assessment rationa
 (text); resolution decision (select of the three values); resolution rationale
 (text). On success → redirect; on `DecisionError` → 400 bounded error, no
 mutation.
+
+**Legacy gap-resolution route guard (physical/calibration blocker).** Any
+pre-existing user-facing gap-resolution control (the first-increment bare-text
+resolve/reclassify route) must reject an attempt to clear a gap whose blocking
+reason is `missing_physical_or_calibration_information`, returning a bounded 400
+via `_render_decision_workspace(record, error=…, status=400)` with no mutation
+(§8). Form 2 (assess gap & decide) is the **sole** user-facing path that may clear
+that blocker, and only via a valid evidence-backed resolution. The route guard
+must not invoke the legacy domain methods (§7.2) to clear the physical blocker and
+must provide no automatic fallback or hidden readiness bypass. Non-physical gaps
+are unaffected.
 
 Explicitly excluded from FDC-002: input update/remove controls; export-filename
 correction; multi-decision management; generalized administration; test execution;
@@ -383,11 +440,17 @@ benchmark result; no final-selection status.
 
 New file: `tests/test_fdc001_second_increment.py`, named set
 `FDC002_SECOND_INCREMENT_ACCEPTANCE`. Behavioral tests (static inspection only for
-prohibitions that cannot be observed behaviorally). Target **≈ 30** tests — one per
+prohibitions that cannot be observed behaviorally). Target **≈ 33** tests — one per
 distinct behavioral guarantee below; fewer would leave a guarantee unverified. (The
 target rose from ≈26 to ≈30 to add four guarantees: per-evidence `limitations`
 preserved in export; `evidence_version` preserved in export; the one-event-per-
-submission history rule; and the no-caller-controlled-verification-status rule.)
+submission history rule; and the no-caller-controlled-verification-status rule. It
+then rose from ≈30 to ≈33 under this compatibility amendment to add three
+user-facing-surface guarantees: the legacy bare-text gap-resolution route rejects
+clearing a physical/calibration blocker — bounded and atomic; the FDC-002
+assess-and-decide route is the sole user-facing path that clears it, and only via a
+valid evidence-backed resolution; and the compatibility-preserved legacy domain
+methods are not exposed as a user-facing physical-blocker clearing path.)
 
 1. valid operator-reported evidence entry;
 2. valid external-reference evidence entry;
@@ -431,7 +494,26 @@ submission history rule; and the no-caller-controlled-verification-status rule.)
 30. **no caller-controlled verification status**: a posted `verification_status`
     form value is ignored and the stored/exported value remains `unverified`
     (and, if a defensive optional argument exists, a non-`unverified` value is
-    rejected before mutation).
+    rejected before mutation);
+31. **legacy user-facing gap-resolution route rejects the physical/calibration
+    blocker (bounded and atomic)**: posting the first-increment bare-text
+    resolve/reclassify request for a `missing_physical_or_calibration_information`
+    gap returns a bounded 400 and changes nothing — the gap stays blocking, no
+    `ChangeEvent` is recorded, and `revision`, `history`, `readiness_status`,
+    `blocking_reasons`, and `change_impact_summary` are unchanged (§8, §10);
+32. **FDC-002 assess-and-decide route is the sole user-facing clearing path**: the
+    `missing_physical_or_calibration_information` gap clears only through Form 2
+    with `supports_resolution` + ≥1 valid linked evidence item + an explicit
+    `resolved`/`reclassified_nonblocking` decision + rationale; an otherwise
+    equivalent user-facing attempt that lacks the evidence-backed assessment does
+    not clear it (§6, §7.2);
+33. **compatibility-preserved legacy methods are not a user-facing physical-blocker
+    path (static/behavioral)**: the web route layer exposes no user-facing path
+    that invokes the legacy `resolve_gap()` / `reclassify_gap()` methods to clear
+    the physical/calibration blocker (the legacy guard is present and no automatic
+    fallback exists), while the legacy methods remain callable programmatically and
+    the frozen FDC-001 acceptance set that exercises them stays unedited (§7.2,
+    §15).
 
 The exact count may differ slightly only if the implementation explains why (e.g.
 merging two guarantees that share one behavior, or splitting one that needs two
@@ -465,7 +547,12 @@ docs/product/FDC-002_EXTERNAL_EVIDENCE_REENTRY_AND_GAP_ASSESSMENT_SPECIFICATION.
 - **Confusing operator observation with fact** → `observed_fact` disallowed for
   evidence entry; evidence kept in a separate `evidence` list, not `inputs`.
 - **Clearing blockers too easily** → evidence entry ≠ resolution; resolution
-  requires `supports_resolution` + ≥1 evidence item + explicit rationale.
+  requires `supports_resolution` + ≥1 evidence item + explicit rationale; and the
+  `missing_physical_or_calibration_information` blocker cannot be cleared through
+  the legacy bare-text user-facing route at all — only through the FDC-002
+  evidence-backed workflow (§7.2, §10). The legacy domain methods remain available
+  solely for the frozen FDC-001 programmatic contract and create no user-facing
+  bypass.
 - **Drifting into a generic laboratory / test-plan system** → bounded to the
   existing three-candidate electronics decision; no test execution; no artifact
   upload; two forms only.
@@ -483,7 +570,12 @@ status; add a second decision case or domain; implement persistence or
 restart-restoration; run or represent a benchmark; expose input edit/remove or
 fix the export filename; add multi-decision management, generalized
 administration, or artifact upload; modify governance anchors, `CLAUDE.md`, the
-roadmap, `main`, or any frozen persistence file.
+roadmap, `main`, or any frozen persistence file. FDC-002 also does **not** modify
+or weaken the legacy `resolve_gap()` / `reclassify_gap()` domain methods'
+programmatic contract, and does **not** expose those legacy methods as a
+user-facing path for clearing the `missing_physical_or_calibration_information`
+blocker (§7.2, §10); they are preserved unchanged solely for the frozen FDC-001
+internal contract and acceptance tests.
 
 Explicitly prohibited paths (must not change under any FDC-002 authorization):
 `engine/session_store.py`, `tests/conftest.py`, `tests/test_session_persistence.py`,
@@ -501,6 +593,11 @@ above; the named acceptance-test set `FDC002_SECOND_INCREMENT_ACCEPTANCE`
 (`tests/test_fdc001_second_increment.py`); a clean isolated worktree based on the
 then-authoritative SHA; and explicit preservation of all holds, closed states, the
 persistence pause, the benchmark-not-run state, and the no-final-selection
-boundary. Any later roadmap synchronization is a separate governed action. Until
-that separate authorization exists, no code, test, commit, push, or PR is
-permitted.
+boundary. The implementation must also preserve the frozen FDC-001 acceptance set
+byte-for-byte — the legacy `resolve_gap()` / `reclassify_gap()` domain methods stay
+backward-compatible (§7.2) — and enforce the
+`missing_physical_or_calibration_information` clearing prohibition at the
+user-facing route surface (§10), never by modifying the legacy domain methods and
+never by introducing an automatic fallback or hidden readiness bypass. Any later
+roadmap synchronization is a separate governed action. Until that separate
+authorization exists, no code, test, commit, push, or PR is permitted.
