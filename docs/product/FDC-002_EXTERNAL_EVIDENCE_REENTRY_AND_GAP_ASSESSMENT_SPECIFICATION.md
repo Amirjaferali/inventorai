@@ -1,21 +1,49 @@
 # FDC-002 — External Evidence Re-Entry and Gap Assessment (Implementation Specification)
 
-STATUS: REVIEW DRAFT — IMPLEMENTATION NOT AUTHORIZED
-EXECUTION_AUTHORITY: NONE
+STATUS: IMPLEMENTED AND INTEGRATED — PR #23 CLOSED
+IMPLEMENTATION_AUTHORITY: CONSUMED AND CLOSED
 PRODUCT_LANE: ADAPTIVE IDEA ORCHESTRATION
 CONTENT_SCOPE: FDC-001 BICYCLE BRAKING-DETECTION DECISION ONLY
 PERSISTENCE_STATUS: PRESERVE UNMODIFIED AND PAUSE
 BENCHMARK_STATUS: NOT RUN
 FINAL_TECHNICAL_SELECTION: NONE
+EVIDENCE_VERIFICATION: NONE PERFORMED (recorded evidence is operator-reported/external and permanently `unverified`)
+INTEGRATED_AT: PR #23 true-merge `7dffea8333759f1e21f159ded51bf0e14c6e24ee` (ordered parents `3a1a29caf6d06ed7d511a82f475ee2ba3de2b5bf` then `bb1a9602e3c38b006204d7125d6018c83e25fb0f`)
 
-This is a planning specification only. It authorizes no code, test, or working-tree
-change beyond this single document. A later, separate, explicit, repository-grounded
-owner implementation authorization (naming exact files and a named acceptance-test
-set) is required before any implementation begins.
+This specification's one-time implementation authority was exercised through PR #23 and
+is now CONSUMED AND CLOSED. The FDC-002 code is integrated at merge SHA `7dffea8…`; this
+document implies no further implementation authority and begins no new execution. It
+remains the GOVERNING CONTRACT for the integrated FDC-002 behavior: the user-facing
+physical/calibration route guard, the five-path implementation boundary, the immutable
+epistemic records (`EvidenceItem` / `GapAssessment`), the governed FDC-001 test-23
+exception, and guarantees #31–#33 are historical provenance and current product truth.
+Persistence remains paused, the benchmark remains NOT RUN, no final technical selection
+exists, and no evidence verification occurred.
+
+### Pre-implementation history (preserved as provenance)
+
+Before integration this specification carried the planning-stage headers
+`STATUS: REVIEW DRAFT — IMPLEMENTATION NOT AUTHORIZED` and `EXECUTION_AUTHORITY: NONE`,
+and stated: "This is a planning specification only. It authorizes no code, test, or
+working-tree change beyond this single document. A later, separate, explicit,
+repository-grounded owner implementation authorization (naming exact files and a named
+acceptance-test set) is required before any implementation begins." That separate owner
+implementation authorization was subsequently granted and exercised (five governed
+paths), reviewed, test-verified, and true-merged as PR #23. The pre-implementation
+status is retained above as historical provenance only — this update erases no
+pre-implementation history and grants no new authority.
 
 ---
 
 ## 1. Status and authority
+
+> **Post-integration note (PR #23).** The items in this section are the
+> pre-implementation status statements, retained as historical provenance. The
+> separate owner implementation authorization they anticipate was granted, exercised
+> (five governed paths), reviewed, test-verified, and true-merged as PR #23
+> (`7dffea8333759f1e21f159ded51bf0e14c6e24ee`); the one-time implementation authority
+> is now CONSUMED AND CLOSED. See the status header above. No statement in this
+> section grants any new or pending implementation authority.
 
 1. FDC-002 implementation is **not authorized** by this specification itself.
 2. The current lane authorization
@@ -55,7 +83,9 @@ or final technical-selection authority.
 ## 2. Authoritative repository identity
 
 - Branch: `feature/atomic-json-session-persistence`
-- Authoritative SHA: `38b5d81e319d585c74182dca245886b4bd8520b3`
+- Authoritative SHA (at drafting): `38b5d81e319d585c74182dca245886b4bd8520b3`
+- Most recent integrated execution commit: `7dffea8333759f1e21f159ded51bf0e14c6e24ee` — the PR #23 true-merge integrating the FDC-002 implementation, and the authoritative predecessor/base of the PR #24 documentation closure; it is NOT the post-PR-#24 branch tip.
+- Authoritative tip (branch-relative): the latest owner-authorized true-merge commit integrated into `origin/feature/atomic-json-session-persistence`; after PR #24 integration this becomes the resulting PR #24 true-merge commit (full SHA captured during PR #24 post-merge closure; not asserted here).
 - FDC-001 first increment merged at PR #17 (`fbd2992…`); observation record merged
   at PR #18 (`dd17fcdb…`); authoritative tip is the PR #18 merge `38b5d81…`.
 - FDC-002 builds on the committed FDC-001 domain model
