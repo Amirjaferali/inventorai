@@ -31,8 +31,10 @@ hides them.
 
 | Item | State |
 |------|-------|
-| Latest authoritative product/governance execution baseline | `6c2277ff95204d57f5c73e32540498d46f044b10` — Gate 8 owner product-identity synchronization, remotely verified; direct parent `31b34d8`; Gate 8 sequence begins at `5768d31` |
-| Pre-synchronization remote baseline | `origin/main = 6c2277ff95204d57f5c73e32540498d46f044b10`; HEAD/origin ahead/behind was `0 0` before this roadmap synchronization |
+| Current authoritative remote execution ref and tip | `origin/feature/atomic-json-session-persistence = 0b0517b0906ce75cdb51007bdde3cc94ccb3c241` — the Adaptive Idea Orchestration lane execution branch; PR #20 true-merge (ordered parents `820b8f6a8b56b8245b6ddfef71930e219105aa78` then `a8538d10411df0985afdf727343d07aaabe17df1`), remotely verified. This tip carries the committed FDC-001 implementation and all FDC-002 documentation. Reconciliation of `origin/main` (`0e89e4636399760965c9ff8086b465c90dbadf8e`) with this lane branch is a separate governed question, not decided here. |
+| Frozen local persistence worktree | `/home/user/inventorai` remains at `aec9cf6409efc18e125b6745762002f59e529654` with seven paused, uncommitted persistence paths. It is NOT a current checkout of the authoritative tip `0b0517b0906ce75cdb51007bdde3cc94ccb3c241` and must remain untouched. PERSISTENCE_STATUS: PRESERVE UNMODIFIED AND PAUSE. |
+| Gate 8 product/governance baseline (historical, superseded for the execution lane) | `6c2277ff95204d57f5c73e32540498d46f044b10` — Gate 8 owner product-identity synchronization, remotely verified; direct parent `31b34d8`; Gate 8 sequence begins at `5768d31`. This is HISTORICAL: it is no longer the latest authoritative execution tip (now `0b0517b0906ce75cdb51007bdde3cc94ccb3c241`); it remains the governing Gate 8 product-identity baseline. |
+| Pre-synchronization remote baseline (historical) | `origin/main = 6c2277ff95204d57f5c73e32540498d46f044b10` was the remote-main baseline before the Adaptive Idea Orchestration lane advanced on `feature/atomic-json-session-persistence`; it does not describe the current execution tip. |
 | Phase 3 Path N runtime verification | CLOSED (`3a7bc13`) — technical criterion SATISFIED |
 | Phase 4 authorization | COMMITTED AND REMOTELY ACTIVATED (`f4827d1`), with Amendment 1 (`b6d465d`) and activation-sequence Amendment 2 (`37001da`) |
 | Phase 4 implementation | COMMITTED AND REMOTELY VERIFIED (`97a1a51`) |
@@ -64,7 +66,13 @@ hides them.
 | ILT-002 evidence collection | NOT AUTHORIZED |
 | Production-readiness claim | NONE |
 | Downstream authorization | None. Phase 4 closure authorizes no AA progression, no Phase 5/6, no S-6 classification, and no production-readiness, feasibility, patent-validity, manufacturing-readiness, commercialization-readiness, inventor-development, or idea-growth claim beyond the specifically authorized runtime-integration fact. |
-| Adaptive Idea Orchestration first lane | ACTIVE — activated by Commit B, this committed §§4–7 activation update, effective when integrated into the authoritative execution branch. The lane name and scope are exactly those defined by `FIRST_LANE_AUTHORIZATION_ADAPTIVE_IDEA_ORCHESTRATION.md`; its bounded first increment is the accepted `docs/product/FDC-001_FIRST_INCREMENT_IMPLEMENTATION_SPECIFICATION.md`. Activation authorizes no implementation, grants no `technically_selected` or `frozen`, runs no benchmark, makes no persistence change, and alters no hold or closure. |
+| Adaptive Idea Orchestration first lane | ACTIVE — activated by Commit B (committed §§4–7 activation update), integrated into the authoritative execution branch. The lane name and scope are exactly those defined by `FIRST_LANE_AUTHORIZATION_ADAPTIVE_IDEA_ORCHESTRATION.md`; its bounded first increment is the accepted `docs/product/FDC-001_FIRST_INCREMENT_IMPLEMENTATION_SPECIFICATION.md`. The lane grants no `technically_selected` or `frozen`, runs no benchmark, makes no persistence change, and alters no hold or closure. |
+| FDC-001 first increment | IMPLEMENTED, MERGED, AND ACTIVE — implementation merged via PR #17 (`fbd2992977a23b34b2ceca0f68e5d56302ddb426` → true-merge `ed302a48eb97e559a172581ff52c3468c5cfa112`). At the authoritative tip, `engine/decision_workspace.py`, `web/templates/decision_workspace.html`, and the frozen 32-test acceptance set `tests/test_fdc001_first_increment.py` are present. Grants no `technically_selected`/`frozen`; no benchmark; no persistence change. |
+| FDC-001 practical-use exercise | COMPLETE — `VISIBLE VALUE CONFIRMED`; readiness ended truthfully at `blocked_by_evidence_gap`, remaining blocker `missing_physical_or_calibration_information`. Observation/closure record merged via PR #18 (`dd17fcdbbd98aed036cdcf0308fc30a7d46c97cc` → true-merge `38b5d81e319d585c74182dca245886b4bd8520b3`). No benchmark; no final selection. |
+| FDC-002 specification | MERGED — external-evidence re-entry & gap-assessment specification merged via PR #19 (`73e58db4c0aa18b8877569c46c65248149148d0e` → true-merge `820b8f6a8b56b8245b6ddfef71930e219105aa78`). A compatibility conflict with the frozen FDC-001 contract was discovered BEFORE any implementation mutation; the owner-approved compatibility boundary was preserved; the compatibility amendment was true-merged via PR #20 (`a8538d10411df0985afdf727343d07aaabe17df1` → true-merge `0b0517b0906ce75cdb51007bdde3cc94ccb3c241`). Specification status remains `REVIEW DRAFT — IMPLEMENTATION NOT AUTHORIZED`; `EXECUTION_AUTHORITY: NONE`. |
+| FDC-002 implementation | PAUSED AND NOT RESUMED — no FDC-002 code or second-increment test exists at the authoritative tip (`tests/test_fdc001_second_increment.py` absent; no `EvidenceItem`/`GapAssessment`/`add_evidence` in `engine/decision_workspace.py`; no `/evidence` or `/gap-assessment` route in `web/app.py`). Implementation requires a separate, explicit, exact-scope owner authorization. |
+| FDC-002 implementation worktree | NOT AUTHORIZED FOR USE — `/home/user/inventorai-fdc002-implementation-820b8f6` is clean but based on the superseded SHA `820b8f6a8b56b8245b6ddfef71930e219105aa78`; it is not a checkout of the authoritative tip `0b0517b0906ce75cdb51007bdde3cc94ccb3c241` and must not be used for implementation. It is preserved until a separately authorized replacement worktree is created and verified. |
+| FDC-002 benchmark / final technical selection | Benchmark NOT RUN; final technical selection NONE. |
 
 ## 5. Completed chain (Path N lane only, commit order)
 
@@ -125,7 +133,11 @@ hides them.
 | `68698d8` | Gate 8: `INVENTORAI_PRODUCT_THEORY.md` synchronized with owner identity amendment |
 | `31b34d8` | Gate 8: `DUAL_PATH_PRODUCT_ANCHOR.md` synchronized — §3 and §7 updated |
 | `6c2277f` | Gate 8: `STRATEGIC_PRODUCT_VISION.md` — historical text preserved; four GOVERNING EFFECT AMENDED notices added (§1, §2, §3, §5A) — **GATE 8 REMOTE BASELINE** |
-| Commit B — this update | Committed §§4–7 lane-activation update recording the Adaptive Idea Orchestration first lane as ACTIVE upon integration into the authoritative execution branch (per §12.A/§12.D). Activation-only: authorizes no implementation, no `technically_selected`/`frozen`, no benchmark run, and no persistence change; all holds and closed states preserved. |
+| Commit B (`4cb37ae`, merged via PR #16 → `fb3d1de`) | Committed §§4–7 lane-activation update recording the Adaptive Idea Orchestration first lane as ACTIVE upon integration into the authoritative execution branch (per §12.A/§12.D). Activation-only: authorizes no implementation, no `technically_selected`/`frozen`, no benchmark run, and no persistence change; all holds and closed states preserved. |
+| `fbd2992` / true-merge `ed302a4` (PR #17) | FDC-001 Technical Decision Workspace implementation — `engine/decision_workspace.py`, `web/templates/decision_workspace.html`, and the 32-test acceptance set `tests/test_fdc001_first_increment.py`; the lane's bounded first increment. No `technically_selected`/`frozen`; no benchmark; no persistence change. |
+| `dd17fcd` / true-merge `38b5d81` (PR #18) | FDC-001 first practical-use observation & closure record — `VISIBLE VALUE CONFIRMED`; readiness truthfully `blocked_by_evidence_gap` (blocker `missing_physical_or_calibration_information`); documentation-only, non-authorizing. |
+| `73e58db` / true-merge `820b8f6` (PR #19) | FDC-002 external-evidence re-entry & gap-assessment specification — `REVIEW DRAFT — IMPLEMENTATION NOT AUTHORIZED`; `EXECUTION_AUTHORITY: NONE`. |
+| `a8538d1` / true-merge `0b0517b` (PR #20) | FDC-002 compatibility-boundary amendment — the `missing_physical_or_calibration_information` clearing prohibition relocated to the user-facing route surface; legacy `resolve_gap()`/`reclassify_gap()` domain methods preserved unchanged for the frozen FDC-001 contract; documentation-only. **Authoritative execution tip.** |
 
 (Product-intent anchor `DUAL_PATH_PRODUCT_ANCHOR.md` at `60c809b`
 is deliberately NOT in this table: it is a product-intent anchor,
@@ -170,14 +182,43 @@ ACTIVE as of this committed §§4–7 activation update. Its bounded first incre
 is the accepted FDC-001 Technical Decision Workspace specification
 (`docs/product/FDC-001_FIRST_INCREMENT_IMPLEMENTATION_SPECIFICATION.md`), scoped
 by `FIRST_LANE_AUTHORIZATION_ADAPTIVE_IDEA_ORCHESTRATION.md`. Activation itself
-authorizes no code; no implementation has started; no persistence work or
-benchmark run is authorized; and the lane may not issue `technically_selected` or
-`frozen`. Implementation still requires a separate, explicit, exact-scope owner
-authorization and a named test plan (see §7).
+authorizes no code by itself; the FDC-001 first increment has since been
+separately authorized, implemented, and merged (see §4 and the synchronized status
+note below); no persistence work or benchmark run is authorized; and the lane may
+not issue `technically_selected` or `frozen`. Each further increment still requires
+a separate, explicit, exact-scope owner authorization and a named test plan (see
+§7).
 
 No further phase may be inferred from numerical sequence. Beyond this activated
 first lane, a separate repository-grounded owner authorization is required before
 any new product implementation may begin.
+
+Synchronized lane status (through merge `0b0517b0906ce75cdb51007bdde3cc94ccb3c241`,
+PR #20). The authoritative remote execution ref is
+`origin/feature/atomic-json-session-persistence` at
+`0b0517b0906ce75cdb51007bdde3cc94ccb3c241`. The frozen local persistence worktree
+`/home/user/inventorai` remains at `aec9cf6409efc18e125b6745762002f59e529654` with
+seven paused, uncommitted persistence paths and is NOT a current checkout of the
+authoritative tip. The FDC-001 first increment is IMPLEMENTED, MERGED, and ACTIVE
+(PR #17, true-merge `ed302a48eb97e559a172581ff52c3468c5cfa112`); the 32-test frozen
+acceptance set exists; one controlled practical-use exercise is COMPLETE with
+`VISIBLE VALUE CONFIRMED`, readiness truthfully ending `blocked_by_evidence_gap`
+(blocker `missing_physical_or_calibration_information`), observation record merged
+via PR #18 (true-merge `38b5d81e319d585c74182dca245886b4bd8520b3`). The FDC-002
+external-evidence re-entry specification (PR #19, true-merge
+`820b8f6a8b56b8245b6ddfef71930e219105aa78`) and its compatibility amendment (PR #20,
+true-merge `0b0517b0906ce75cdb51007bdde3cc94ccb3c241`) are MERGED as documentation
+carrying status `REVIEW DRAFT — IMPLEMENTATION NOT AUTHORIZED` and
+`EXECUTION_AUTHORITY: NONE`; the compatibility conflict was discovered before any
+implementation mutation and the owner-approved compatibility boundary is preserved.
+FDC-002 implementation is PAUSED AND NOT RESUMED: no FDC-002 code or second-increment
+test exists at the authoritative tip. The existing FDC-002 implementation worktree
+`/home/user/inventorai-fdc002-implementation-820b8f6` is clean but based on the
+superseded SHA `820b8f6a8b56b8245b6ddfef71930e219105aa78`; it is not authorized for
+use and is preserved until a separately authorized replacement worktree is created
+and verified. No `technically_selected`/`frozen` exists; benchmark remains NOT RUN;
+final technical selection remains NONE; persistence remains PRESERVE UNMODIFIED AND
+PAUSE; and all holds and closed states are preserved unchanged.
 
 `PATH_N_CURRENT_EXECUTION_ANCHOR.md` is historically stale and
 cannot override subsequently committed Phase 2, Phase 3, Phase 4,
@@ -231,17 +272,37 @@ Preserved state:
 
 NEXT GOVERNED ACTION:
 
-    The Adaptive Idea Orchestration first lane is ACTIVE. Activation grants
-    no implementation authority.
+    The Adaptive Idea Orchestration first lane is ACTIVE. The FDC-001 first
+    increment has been authorized, implemented, merged, and exercised; its
+    observation record and the FDC-002 specification (with its compatibility
+    amendment) are merged. The authoritative execution tip is
+    `origin/feature/atomic-json-session-persistence` at
+    `0b0517b0906ce75cdb51007bdde3cc94ccb3c241`. No action here grants
+    implementation authority.
 
-    The next governed action is a separate, explicit, repository-grounded
-    owner implementation authorization for the bounded FDC-001 first
-    increment, which must name: the exact files and paths the implementation
-    may create or modify; a named acceptance-test set derived from FDC-001
-    §14; a clean isolated worktree as the work location; and explicit
-    preservation of all holds and closed states below. Implementation
-    authorization is NOT granted by this activation and is not contained in
-    Commit B.
+    The next governed actions, in order, are:
+
+    1. First, true-merge this roadmap synchronization after read-only review,
+       so the roadmap records execution continuity through PR #20.
+
+    2. Then, under a SEPARATE explicit owner authorization, create a NEW clean
+       replacement FDC-002 implementation worktree from the authoritative SHA
+       `0b0517b0906ce75cdb51007bdde3cc94ccb3c241`. The existing worktree
+       `/home/user/inventorai-fdc002-implementation-820b8f6` is based on the
+       superseded SHA `820b8f6a8b56b8245b6ddfef71930e219105aa78` and must be
+       PRESERVED until the replacement worktree is created and its verification
+       succeeds. Creating a fresh worktree from the authoritative tip is the
+       governed method; rebasing the superseded worktree is not the preferred
+       action.
+
+    3. Only after the replacement worktree is verified does FDC-002
+       implementation become eligible, and it still requires a later, separate,
+       explicit, exact-scope owner implementation authorization naming the exact
+       four files (`engine/decision_workspace.py`, `web/app.py`,
+       `web/templates/decision_workspace.html`,
+       `tests/test_fdc001_second_increment.py`), the named acceptance-test set
+       `FDC002_SECOND_INCREMENT_ACCEPTANCE`, and explicit preservation of all
+       holds and closed states below.
 
     Any other product implementation, governance write, roadmap admission,
     strategic-roadmap correction, mandatory-reading binding, Stage 3 action,
