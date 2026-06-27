@@ -498,15 +498,26 @@ def test_route_gap_resolve_and_reclassify():
     did, rec = _start_decision(client)
     gids = [g.gap_id for g in rec.gaps]
     assert len(gids) >= 2
+    # Governed FDC-002 route-contract reconciliation (spec §12.1): the legacy
+    # user-facing route keeps its non-physical behavior but must reject clearing
+    # or reclassifying a physical/calibration blocker. Identify each gap by its
+    # deterministic blocker code rather than by seed order.
+    nonphysical = [g.gap_id for g in rec.gaps
+                   if rec.gap_blocker_code(g.gap_id)
+                   != dw.MISSING_PHYSICAL_OR_CALIBRATION_INFORMATION]
+    physical = [g.gap_id for g in rec.gaps
+                if rec.gap_blocker_code(g.gap_id)
+                == dw.MISSING_PHYSICAL_OR_CALIBRATION_INFORMATION]
+    assert nonphysical and physical
+    np_gid = nonphysical[0]
+    phys_gid = physical[0]
+    # (1) A non-physical legacy gap retains the prior successful route behavior:
+    #     reclassify via the legacy route succeeds (302) and becomes non-blocking.
     r1 = client.post("/decision-workspace/%s/gap" % did, data={
-        "action": "reclassify", "gap_id": gids[0],
+        "action": "reclassify", "gap_id": np_gid,
         "rationale": "owner accepts for the prototype stage"})
     assert r1.status_code == 302
-    assert rec._gap(gids[0]).blocks_readiness is False
-    r2 = client.post("/decision-workspace/%s/gap" % did, data={
-        "action": "resolve", "gap_id": gids[1]})
-    assert r2.status_code == 302
-    assert all(g.gap_id != gids[1] for g in rec.gaps)
+    assert rec._gap(np_gid).blocks_readiness is False
     # The reclassification's prior/new blocking state survives into export.
     obj = json.loads(client.get(
         "/decision-workspace/%s/export" % did).get_data(as_text=True))
@@ -514,6 +525,28 @@ def test_route_gap_resolve_and_reclassify():
            if e["change_type"] == GAP_RECLASSIFIED][-1]
     assert evt["details"]["previous_blocks_readiness"] is True
     assert evt["details"]["new_blocks_readiness"] is False
+    # (2) Resolving AND reclassifying the physical/calibration gap through the
+    #     legacy route is rejected with a bounded HTTP 400 and is atomic: the gap
+    #     remains, its classification is unchanged, and revision / history /
+    #     readiness / blocking reasons / change-impact state are all unchanged.
+    for action in ("resolve", "reclassify"):
+        before_rev = rec.revision
+        before_hist = len(rec.history)
+        before_readiness = rec.readiness_status
+        before_blocks = rec._gap(phys_gid).blocks_readiness
+        before_codes = sorted(b.code for b in rec.blocking_reasons)
+        before_impact = rec.change_impact_summary
+        r2 = client.post("/decision-workspace/%s/gap" % did, data={
+            "action": action, "gap_id": phys_gid,
+            "rationale": "should be ignored"})
+        assert r2.status_code == 400
+        assert any(g.gap_id == phys_gid for g in rec.gaps)
+        assert rec._gap(phys_gid).blocks_readiness is before_blocks
+        assert rec.revision == before_rev
+        assert len(rec.history) == before_hist
+        assert rec.readiness_status == before_readiness
+        assert sorted(b.code for b in rec.blocking_reasons) == before_codes
+        assert rec.change_impact_summary is before_impact
 
 
 # 24 ------------------------------- defect 4: owner-preference set/clear routes

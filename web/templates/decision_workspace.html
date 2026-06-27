@@ -34,7 +34,9 @@ td,th{padding:5px 8px;border-bottom:1px solid #e2e6ea;text-align:left;font-size:
 {% if view.blocking_reasons %}
 <ul>
   {% for b in view.blocking_reasons %}
-  <li><code>{{ b.code }}</code> — {{ b.text }} <span class="note">(scope: {{ b.affected_scope }})</span></li>
+  <li><code>{{ b.code }}</code> — {{ b.text }} <span class="note">(scope: {{ b.affected_scope }})</span>
+    {% if b.clearing_guidance %}<div class="note">Clearing guidance: {{ b.clearing_guidance }}</div>{% endif %}
+  </li>
   {% endfor %}
 </ul>
 {% else %}
@@ -164,6 +166,114 @@ td,th{padding:5px 8px;border-bottom:1px solid #e2e6ea;text-align:left;font-size:
     rationale (required to reclassify): <input type="text" name="rationale" size="32">
     <button type="submit">Apply</button>
   </p>
+  <p class="note">A physical/calibration evidence gap cannot be cleared here; use the evidence-assessment workflow below.</p>
+</form>
+{% endif %}
+
+<h2>External evidence (operator-reported / external; unverified)</h2>
+<p class="note">Evidence is recorded as <strong>unverified</strong>; this lane performs no verification and recording it alone does not change readiness.</p>
+{% if view.evidence %}
+<table>
+<tr><th>Observation / result</th><th>claim_class</th><th>verification</th><th>linked gap</th><th>method</th><th>limitations</th></tr>
+{% for e in view.evidence %}
+<tr>
+  <td>{{ e.text }}</td>
+  <td>{{ e.claim_class }}</td>
+  <td>{{ e.verification_status }}</td>
+  <td><code>{{ e.linked_gap_id }}</code></td>
+  <td>{{ e.method or "—" }}</td>
+  <td>{{ e.limitations or "—" }}</td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<p class="note">No evidence recorded.</p>
+{% endif %}
+{% if view.gaps %}
+<form method="post" action="{{ url_for('decision_workspace_add_evidence', did=view.decision_id) }}">
+  <p>
+    Record evidence —
+    gap:
+    <select name="gap_id">
+      {% for g in view.gaps %}<option value="{{ g.gap_id }}">{{ g.text }}</option>{% endfor %}
+    </select>
+    claim_class:
+    <select name="claim_class">
+      <option value="operator_reported_result">operator_reported_result</option>
+      <option value="external_reference">external_reference</option>
+    </select>
+    provenance:
+    <select name="provenance">
+      <option value="operator_entered">operator_entered</option>
+      <option value="derived_by_rule">derived_by_rule</option>
+    </select>
+  </p>
+  <p>
+    observation/result: <input type="text" name="text" size="50" required>
+    <label><input type="checkbox" name="decision_relevant"> decision-relevant</label>
+  </p>
+  <p>
+    method: <input type="text" name="method" size="20">
+    source_label: <input type="text" name="source_label" size="20">
+    evidence_version: <input type="text" name="evidence_version" size="16">
+    limitations: <input type="text" name="limitations" size="28">
+    candidate:
+    <select name="candidate_id">
+      <option value="">(none)</option>
+      {% for c in view.candidates %}<option value="{{ c.candidate_id }}">{{ c.name }}</option>{% endfor %}
+    </select>
+    <button type="submit">Record evidence (unverified)</button>
+  </p>
+  <p class="note">verification status is system-set to <code>unverified</code> and cannot be entered.</p>
+</form>
+{% endif %}
+
+<h2>Gap assessment &amp; resolution</h2>
+{% if view.gap_assessments %}
+<ul>
+  {% for a in view.gap_assessments %}
+  <li>gap <code>{{ a.gap_id }}</code><span class="tag">{{ a.assessment }}</span><span class="tag">{{ a.resolution_decision }}</span> — {{ a.rationale }}
+    {% if a.resolution_rationale %}<span class="note">(resolution: {{ a.resolution_rationale }})</span>{% endif %}
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p class="note">No gap assessments recorded.</p>
+{% endif %}
+{% if view.gaps and view.evidence %}
+<form method="post" action="{{ url_for('decision_workspace_gap_assessment', did=view.decision_id) }}">
+  <p>
+    Assess gap &amp; decide —
+    gap:
+    <select name="gap_id">
+      {% for g in view.gaps %}<option value="{{ g.gap_id }}">{{ g.text }}</option>{% endfor %}
+    </select>
+    linked evidence (select one or more of the gap's evidence):
+    <select name="evidence_ids" multiple size="3">
+      {% for e in view.evidence %}<option value="{{ e.evidence_id }}">{{ e.text }} [gap {{ e.linked_gap_id }}]</option>{% endfor %}
+    </select>
+  </p>
+  <p>
+    assessment:
+    <select name="assessment">
+      <option value="supports_resolution">supports_resolution</option>
+      <option value="partially_addresses">partially_addresses</option>
+      <option value="contradicts_assumption">contradicts_assumption</option>
+      <option value="insufficient">insufficient</option>
+    </select>
+    assessment rationale: <input type="text" name="rationale" size="32" required>
+  </p>
+  <p>
+    resolution decision:
+    <select name="resolution_decision">
+      <option value="remains_blocking">remains_blocking</option>
+      <option value="resolved">resolved</option>
+      <option value="reclassified_nonblocking">reclassified_nonblocking</option>
+    </select>
+    resolution rationale (required unless remains_blocking): <input type="text" name="resolution_rationale" size="32">
+    <button type="submit">Assess &amp; decide</button>
+  </p>
+  <p class="note">Only a <code>supports_resolution</code> assessment with linked evidence may clear or reclassify a gap; this is the sole user-facing path for the physical/calibration blocker.</p>
 </form>
 {% endif %}
 
