@@ -124,6 +124,53 @@ OWNER_PREFERENCE_SET = "owner_preference_set"
 OWNER_PREFERENCE_CLEARED = "owner_preference_cleared"
 CANDIDATE_STATUS_CHANGED = "candidate_status_changed"
 
+# --- FDC-002 second increment: evidence claim classes (user-selectable) -------
+# Only these two unverified classes may be entered as external evidence;
+# observed_fact is explicitly forbidden for evidence entry.
+EVIDENCE_CLAIM_CLASSES = {OPERATOR_REPORTED_RESULT, EXTERNAL_REFERENCE}
+
+# --- FDC-002 verification status (system-controlled; never user-supplied) ------
+EVIDENCE_VERIFICATION_UNVERIFIED = "unverified"
+
+# --- FDC-002 gap-assessment values --------------------------------------------
+SUPPORTS_RESOLUTION = "supports_resolution"
+PARTIALLY_ADDRESSES = "partially_addresses"
+CONTRADICTS_ASSUMPTION = "contradicts_assumption"
+INSUFFICIENT = "insufficient"
+ASSESSMENT_VALUES = {
+    SUPPORTS_RESOLUTION, PARTIALLY_ADDRESSES, CONTRADICTS_ASSUMPTION, INSUFFICIENT,
+}
+
+# --- FDC-002 resolution decisions ---------------------------------------------
+RESOLVED = "resolved"
+REMAINS_BLOCKING = "remains_blocking"
+RECLASSIFIED_NONBLOCKING = "reclassified_nonblocking"
+RESOLUTION_DECISIONS = {RESOLVED, REMAINS_BLOCKING, RECLASSIFIED_NONBLOCKING}
+# A gap transitions to non-blocking only under these two decisions.
+RESOLUTION_DECISIONS_CLEARING = {RESOLVED, RECLASSIFIED_NONBLOCKING}
+
+# --- FDC-002 history change types ----------------------------------------------
+EVIDENCE_ADDED = "evidence_added"
+GAP_ASSESSED = "gap_assessed"
+GAP_RESOLVED_VIA_EVIDENCE = "gap_resolved_via_evidence"
+
+# --- FDC-002 deterministic blocker-clearing guidance (keyed by blocker code) ---
+# Codes with no entry render no guidance (never invented text).
+BLOCKER_CLEARING_GUIDANCE = {
+    MISSING_PHYSICAL_OR_CALIBRATION_INFORMATION: (
+        "Record an externally-produced operator or physical observation/result "
+        "against this gap, then make an explicit assessment and resolution "
+        "decision. This lane performs no verification; recorded evidence is "
+        "operator-reported and unverified."
+    ),
+}
+
+# --- FDC-002 export limitation disclaimer (appended at export time) ------------
+FDC002_EXPORT_LIMITATION = (
+    "no verification performed by this lane; recorded evidence is "
+    "operator-reported and unverified"
+)
+
 # --- fixed first-case definition ----------------------------------------------
 DECISION_QUESTION = (
     "Which braking-detection architecture should the bicycle automatic brake "
@@ -150,6 +197,37 @@ EXPORT_LIMITATIONS = [
 
 def _new_id(prefix):
     return prefix + "-" + uuid.uuid4().hex[:12]
+
+
+def _classify_blocking_gap_code(text):
+    """Deterministic blocker code for a readiness-blocking gap's text. Single
+    source of truth shared by readiness-reason derivation and the FDC-002
+    user-facing route guard, so both classify a gap identically — the route guard
+    therefore protects exactly the gaps that surface as a
+    `missing_physical_or_calibration_information` blocking reason (no divergent
+    second classifier).
+
+    BOUNDED-SCOPE LIMITATION (intentional historical FDC-001 policy, preserved):
+    the final `return` defaults any gap text matching none of the keyword groups
+    to `missing_physical_or_calibration_information`. This is the original
+    first-increment readiness-derivation behavior (this function was extracted
+    behavior-identically from `_derive_blocking_reasons`), so changing it would
+    silently alter historical readiness. It is preserved deliberately. In the
+    bounded model this default is unreachable for any user-facing gap: gaps are
+    only the two fixed seeded gaps and there is no route that adds an arbitrary
+    gap (`add_gap` is programmatic/test-only), so every user-facing gap matches a
+    positive keyword group. An arbitrary-text gap added programmatically would be
+    classified physical by this same historical default for BOTH readiness and the
+    guard, consistently — never a divergence."""
+    low = text.lower()
+    if "false-positive" in low or "false positive" in low or "false-braking" in low:
+        return MISSING_FALSE_POSITIVE_TOLERANCE
+    if ("calibration" in low or "physical" in low or "field" in low
+            or "bench" in low):
+        return MISSING_PHYSICAL_OR_CALIBRATION_INFORMATION
+    if "wire" in low or "install" in low:
+        return MISSING_INSTALLATION_CONSTRAINT
+    return MISSING_PHYSICAL_OR_CALIBRATION_INFORMATION
 
 
 # ------------------------------------------------------------------ dataclasses
@@ -330,6 +408,112 @@ class ChangeImpactSummary:
         }
 
 
+@dataclass(frozen=True)
+class EvidenceItem:
+    """FDC-002: one externally-produced, explicitly-unverified evidence item
+    recorded against an existing gap. verification_status is system-controlled
+    and never caller-supplied (§7.4).
+
+    Immutable epistemic record: this is a `frozen` dataclass so no truth-bearing
+    field (verification_status, linked_gap_id, text, claim_class, provenance,
+    candidate_ids, ...) can be reassigned after a successful creation. The only
+    collection field, `candidate_ids`, is stored as an immutable tuple (its
+    elements are immutable str ids) so the nested collection cannot be mutated in
+    place either; it is still exported as a JSON list by `to_dict`."""
+    evidence_id: str
+    linked_gap_id: str
+    text: str
+    claim_class: str
+    provenance: str
+    verification_status: str = EVIDENCE_VERIFICATION_UNVERIFIED
+    method: Optional[str] = None
+    source_label: Optional[str] = None
+    evidence_version: Optional[str] = None
+    limitations: Optional[str] = None
+    candidate_ids: tuple = field(default_factory=tuple)
+    decision_relevant: bool = False
+
+    def __post_init__(self):
+        # §7.4 defensive guarantee: verification_status is permanently
+        # `unverified`. The public mutation never supplies any other value, but if
+        # a future revision ever did, construction is rejected here (frozen blocks
+        # later reassignment), so the value can never become anything else.
+        if self.verification_status != EVIDENCE_VERIFICATION_UNVERIFIED:
+            raise DecisionError(
+                "verification_status is system-controlled and must remain %r"
+                % EVIDENCE_VERIFICATION_UNVERIFIED)
+        # The class ITSELF guarantees nested-collection immutability regardless of
+        # how it is constructed (not only via add_evidence): normalize
+        # candidate_ids to an immutable tuple here. frozen=True forbids ordinary
+        # assignment, so the controlled `object.__setattr__` is used inside
+        # __post_init__. §7.1 types these as string candidate ids, so reject any
+        # non-string member rather than silently stringifying an arbitrary object.
+        ids = tuple(self.candidate_ids)
+        for cid in ids:
+            if not isinstance(cid, str):
+                raise DecisionError("candidate_ids members must be strings")
+        object.__setattr__(self, "candidate_ids", ids)
+
+    def to_dict(self):
+        return {
+            "evidence_id": self.evidence_id,
+            "linked_gap_id": self.linked_gap_id,
+            "text": self.text,
+            "claim_class": self.claim_class,
+            "provenance": self.provenance,
+            "verification_status": self.verification_status,
+            "method": self.method,
+            "source_label": self.source_label,
+            "evidence_version": self.evidence_version,
+            "limitations": self.limitations,
+            "candidate_ids": list(self.candidate_ids),
+            "decision_relevant": self.decision_relevant,
+        }
+
+
+@dataclass(frozen=True)
+class GapAssessment:
+    """FDC-002: an explicit assessment of an existing gap against >=1 linked
+    evidence item plus a separate resolution decision.
+
+    Immutable epistemic record: this is a `frozen` dataclass so no field
+    (assessment, resolution_decision, evidence_ids, ...) can be reassigned after
+    a successful creation. `evidence_ids` is stored as an immutable tuple (its
+    elements are immutable str ids) so the nested collection cannot be mutated in
+    place either; it is still exported as a JSON list by `to_dict`."""
+    assessment_id: str
+    gap_id: str
+    evidence_ids: tuple
+    assessment: str
+    rationale: str
+    resolution_decision: str
+    resolution_rationale: Optional[str] = None
+
+    def __post_init__(self):
+        # The class ITSELF guarantees nested-collection immutability regardless of
+        # how it is constructed (not only via assess_gap): normalize evidence_ids
+        # to an immutable tuple here. frozen=True forbids ordinary assignment, so
+        # the controlled `object.__setattr__` is used inside __post_init__. §7.2
+        # types these as evidence ids (strings), so reject any non-string member
+        # rather than silently stringifying an arbitrary object.
+        ids = tuple(self.evidence_ids)
+        for eid in ids:
+            if not isinstance(eid, str):
+                raise DecisionError("evidence_ids members must be strings")
+        object.__setattr__(self, "evidence_ids", ids)
+
+    def to_dict(self):
+        return {
+            "assessment_id": self.assessment_id,
+            "gap_id": self.gap_id,
+            "evidence_ids": list(self.evidence_ids),
+            "assessment": self.assessment,
+            "rationale": self.rationale,
+            "resolution_decision": self.resolution_decision,
+            "resolution_rationale": self.resolution_rationale,
+        }
+
+
 class DecisionError(ValueError):
     """Raised when an operation would violate the spec's invariants."""
 
@@ -347,6 +531,8 @@ class DecisionRecord:
         self.inputs = []            # list[ClaimItem]
         self.constraints = []       # list[Constraint]
         self.gaps = []              # list[Gap]
+        self.evidence = []          # list[EvidenceItem]  (FDC-002)
+        self.gap_assessments = []   # list[GapAssessment] (FDC-002)
         self.risks = []             # list[Risk]
         self.owner_preference = None
         self.blocking_reasons = []  # list[BlockingReason] (derived each recompute)
@@ -406,6 +592,20 @@ class DecisionRecord:
             if g.gap_id == gap_id:
                 return g
         raise DecisionError("unknown gap_id: %r" % gap_id)
+
+    def _evidence_item(self, evidence_id):
+        for e in self.evidence:
+            if e.evidence_id == evidence_id:
+                return e
+        raise DecisionError("unknown evidence_id: %r" % evidence_id)
+
+    def gap_blocker_code(self, gap_id):
+        """The deterministic blocker code for an existing gap. Used by the
+        FDC-002 user-facing route guard to decide whether the legacy bare-text
+        route must reject clearing/reclassifying a physical/calibration gap.
+        Raises DecisionError for an unknown gap_id (read-only; never mutates)."""
+        g = self._gap(gap_id)
+        return _classify_blocking_gap_code(g.text)
 
     def _input(self, claim_id):
         for ci in self.inputs:
@@ -508,16 +708,7 @@ class DecisionRecord:
         for g in self.gaps:
             if not g.blocks_readiness:
                 continue
-            low = g.text.lower()
-            if "false-positive" in low or "false positive" in low or "false-braking" in low:
-                code = MISSING_FALSE_POSITIVE_TOLERANCE
-            elif ("calibration" in low or "physical" in low or "field" in low
-                  or "bench" in low):
-                code = MISSING_PHYSICAL_OR_CALIBRATION_INFORMATION
-            elif "wire" in low or "install" in low:
-                code = MISSING_INSTALLATION_CONSTRAINT
-            else:
-                code = MISSING_PHYSICAL_OR_CALIBRATION_INFORMATION
+            code = _classify_blocking_gap_code(g.text)
             reasons.append(BlockingReason(code, g.text, "decision", None))
         for con in self._unevaluable_mandatory_constraints():
             reasons.append(BlockingReason(
@@ -686,6 +877,149 @@ class DecisionRecord:
                      })
         return g
 
+    # -- FDC-002 evidence re-entry & gap assessment ----------------------------
+    def add_evidence(self, linked_gap_id, text, claim_class, provenance,
+                     method=None, source_label=None, evidence_version=None,
+                     limitations=None, candidate_ids=None, decision_relevant=False):
+        """Record ONE externally-produced evidence item against an existing gap.
+
+        claim_class is restricted to operator_reported_result / external_reference
+        (observed_fact is rejected). verification_status is system-set to
+        `unverified` and is NEVER a caller-controlled parameter (§7.4). Evidence
+        lives in a separate `evidence` list (not `inputs`) and entry alone changes
+        no readiness. Validate-before-mutate and atomic: on any failure nothing is
+        appended and no event/revision is recorded; on success exactly one
+        `evidence_added` event is recorded."""
+        # Evidence text is operator-entered text (§7.1, type str). Reject non-text
+        # values rather than silently stringifying an arbitrary object, then store
+        # the stripped string so no leading/trailing whitespace is preserved.
+        if not isinstance(text, str):
+            raise DecisionError("evidence text must be a string")
+        text = text.strip()
+        if not text:
+            raise DecisionError("evidence text must not be blank")
+        if claim_class not in EVIDENCE_CLAIM_CLASSES:
+            raise DecisionError("unsupported evidence claim_class: %r" % claim_class)
+        if provenance not in PROVENANCES:
+            raise DecisionError("invalid provenance: %r" % provenance)
+        # linked gap must exist (raises before any mutation)
+        self._gap(linked_gap_id)
+        validated_ids = self._validate_candidate_ids(candidate_ids)
+
+        def _norm(v):
+            if v is None:
+                return None
+            v = str(v).strip()
+            return v or None
+
+        ev = EvidenceItem(
+            _new_id("ev"), linked_gap_id, text, claim_class, provenance,
+            verification_status=EVIDENCE_VERIFICATION_UNVERIFIED,
+            method=_norm(method), source_label=_norm(source_label),
+            evidence_version=_norm(evidence_version), limitations=_norm(limitations),
+            candidate_ids=tuple(validated_ids),
+            decision_relevant=bool(decision_relevant))
+        self.evidence.append(ev)
+        self._record(EVIDENCE_ADDED, ev.evidence_id, "recorded evidence",
+                     affected_candidates=list(ev.candidate_ids),
+                     affected_gaps_or_blockers=[linked_gap_id],
+                     details={
+                         "evidence_id": ev.evidence_id,
+                         "linked_gap_id": linked_gap_id,
+                         "claim_class": claim_class,
+                         "provenance": provenance,
+                         "verification_status": EVIDENCE_VERIFICATION_UNVERIFIED,
+                         "evidence_version": ev.evidence_version,
+                         "limitations": ev.limitations,
+                     })
+        return ev
+
+    def assess_gap(self, gap_id, evidence_ids, assessment, rationale,
+                   resolution_decision, resolution_rationale=None):
+        """Assess an existing gap against >=1 linked evidence item and make an
+        explicit, separate resolution decision.
+
+        A gap transitions to non-blocking ONLY for a `resolved` or
+        `reclassified_nonblocking` decision backed by `assessment ==
+        supports_resolution` and >=1 valid linked evidence item;
+        `partially_addresses` / `contradicts_assumption` / `insufficient` cannot
+        clear it, and `remains_blocking` records the assessment without changing
+        gap state. Validate-before-mutate and atomic; emits EXACTLY ONE event —
+        `gap_assessed` (remains_blocking) or `gap_resolved_via_evidence` (a valid
+        clearing) — never both, and nothing on failure."""
+        g = self._gap(gap_id)
+        if assessment not in ASSESSMENT_VALUES:
+            raise DecisionError("invalid assessment: %r" % assessment)
+        if resolution_decision not in RESOLUTION_DECISIONS:
+            raise DecisionError("invalid resolution_decision: %r" % resolution_decision)
+        if not rationale or not str(rationale).strip():
+            raise DecisionError("assessment rationale must not be blank")
+        if not evidence_ids:
+            raise DecisionError(
+                "an assessment requires at least one linked evidence item")
+        # Reject duplicate ids within one assessment request. The spec is silent
+        # on duplicates; the conservative, non-misleading choice is to reject so
+        # the recorded audit never carries duplicate evidence references (no
+        # invented normalization policy is introduced).
+        if len(set(evidence_ids)) != len(evidence_ids):
+            raise DecisionError(
+                "duplicate evidence id in a single assessment is not permitted")
+        # every referenced evidence must exist AND be linked to this gap
+        for eid in evidence_ids:
+            ev = self._evidence_item(eid)
+            if ev.linked_gap_id != gap_id:
+                raise DecisionError("evidence %r is linked to a different gap" % eid)
+        clearing = resolution_decision in RESOLUTION_DECISIONS_CLEARING
+        if resolution_decision != REMAINS_BLOCKING:
+            if not resolution_rationale or not str(resolution_rationale).strip():
+                raise DecisionError(
+                    "resolution rationale is required for a %s decision"
+                    % resolution_decision)
+        if clearing:
+            if assessment != SUPPORTS_RESOLUTION:
+                raise DecisionError(
+                    "only a supports_resolution assessment may clear or "
+                    "reclassify a gap")
+            if not g.blocks_readiness:
+                raise DecisionError("gap is already non-blocking")
+        # All validation passed -> mutate atomically and record exactly one event.
+        ga = GapAssessment(
+            _new_id("ga"), gap_id, tuple(evidence_ids), assessment, rationale,
+            resolution_decision,
+            (str(resolution_rationale).strip() if resolution_rationale else None))
+        self.gap_assessments.append(ga)
+        if clearing:
+            previous = g.blocks_readiness
+            g.blocks_readiness = False
+            if resolution_decision == RECLASSIFIED_NONBLOCKING:
+                g.reclassification_rationale = ga.resolution_rationale
+            self._record(GAP_RESOLVED_VIA_EVIDENCE, gap_id,
+                         "gap cleared via evidence (%s)" % resolution_decision,
+                         affected_gaps_or_blockers=[gap_id],
+                         details={
+                             "assessment_id": ga.assessment_id,
+                             "gap_id": gap_id,
+                             "evidence_ids": list(ga.evidence_ids),
+                             "assessment": assessment,
+                             "rationale": rationale,
+                             "resolution_decision": resolution_decision,
+                             "resolution_rationale": ga.resolution_rationale,
+                             "previous_blocks_readiness": previous,
+                             "new_blocks_readiness": False,
+                         })
+        else:
+            self._record(GAP_ASSESSED, gap_id, "gap assessed (%s)" % assessment,
+                         affected_gaps_or_blockers=[gap_id],
+                         details={
+                             "assessment_id": ga.assessment_id,
+                             "gap_id": gap_id,
+                             "evidence_ids": list(ga.evidence_ids),
+                             "assessment": assessment,
+                             "rationale": rationale,
+                             "resolution_decision": resolution_decision,
+                         })
+        return ga
+
     def dispose_candidate(self, candidate_id, option_status, disposition_reason,
                           disposition_basis):
         # Atomic: validate option_status, candidate identity, and all required
@@ -773,7 +1107,13 @@ class DecisionRecord:
                                  if self.owner_preference else None),
             "readiness_status": self.readiness_status,
             "review_required_label": self.review_required_label(),
-            "blocking_reasons": [b.to_dict() for b in self.blocking_reasons],
+            "blocking_reasons": [
+                dict(b.to_dict(),
+                     clearing_guidance=BLOCKER_CLEARING_GUIDANCE.get(b.code))
+                for b in self.blocking_reasons
+            ],
+            "evidence": [e.to_dict() for e in self.evidence],
+            "gap_assessments": [a.to_dict() for a in self.gap_assessments],
             "history": [e.to_dict() for e in self.history],
             "change_impact_summary": (self.change_impact_summary.to_dict()
                                       if self.change_impact_summary else None),
@@ -788,7 +1128,7 @@ class DecisionRecord:
             "export_format": EXPORT_FORMAT,
             "export_revision": self.revision,
             "generated_at": datetime.now(timezone.utc).isoformat(),
-            "limitations": list(EXPORT_LIMITATIONS),
+            "limitations": list(EXPORT_LIMITATIONS) + [FDC002_EXPORT_LIMITATION],
         }
         return rec
 

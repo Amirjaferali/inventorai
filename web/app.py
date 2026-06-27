@@ -367,15 +367,86 @@ def decision_workspace_gap_action(did):
     action = request.form.get("action", "").strip()
     gap_id = request.form.get("gap_id", "").strip()
     try:
-        if action == "resolve":
-            record.resolve_gap(gap_id)
-        elif action == "reclassify":
-            record.reclassify_gap(gap_id, request.form.get("rationale", "").strip())
+        if action in ("resolve", "reclassify"):
+            # FDC-002 user-facing route guard (reconciled contract, spec §12.1 /
+            # guarantee #31): the legacy bare-text resolve/reclassify route must
+            # NOT clear or reclassify a physical/calibration blocker. Reject
+            # BEFORE invoking the legacy domain mutation, so the rejection is
+            # bounded (HTTP 400) and atomic — no gap, revision, history,
+            # readiness, blocker, or change-impact mutation. The FDC-002
+            # evidence-assessment workflow is the sole user-facing path for that
+            # blocker. (gap_blocker_code is read-only and raises for unknown ids.)
+            if (record.gap_blocker_code(gap_id)
+                    == fdc001_dw.MISSING_PHYSICAL_OR_CALIBRATION_INFORMATION):
+                return _render_decision_workspace(
+                    record,
+                    error=("Gap action rejected: the "
+                           "missing_physical_or_calibration_information blocker "
+                           "can be cleared only through the evidence-assessment "
+                           "workflow (record evidence, then assess and decide), "
+                           "not this route."),
+                    status=400)
+            if action == "resolve":
+                record.resolve_gap(gap_id)
+            else:
+                record.reclassify_gap(
+                    gap_id, request.form.get("rationale", "").strip())
         else:
             raise fdc001_dw.DecisionError("unknown gap action: %r" % action)
     except fdc001_dw.DecisionError as exc:
         return _render_decision_workspace(
             record, error="Gap action rejected: %s" % exc, status=400)
+    return redirect(url_for("decision_workspace_view", did=did))
+
+
+@app.route("/decision-workspace/<did>/evidence", methods=["POST"])
+def decision_workspace_add_evidence(did):
+    record = FDC001_DECISIONS.get(did)
+    if record is None:
+        return redirect(url_for("decision_workspace_start"))
+    candidate_id = request.form.get("candidate_id", "").strip()
+    candidate_ids = [candidate_id] if candidate_id else []
+    try:
+        # verification_status is NEVER read from the form: it is system-set to
+        # `unverified` inside add_evidence (§7.4). Any posted value is ignored.
+        record.add_evidence(
+            request.form.get("gap_id", "").strip(),
+            request.form.get("text", "").strip(),
+            request.form.get("claim_class", "").strip(),
+            request.form.get("provenance", "").strip(),
+            method=request.form.get("method", "").strip() or None,
+            source_label=request.form.get("source_label", "").strip() or None,
+            evidence_version=request.form.get("evidence_version", "").strip() or None,
+            limitations=request.form.get("limitations", "").strip() or None,
+            candidate_ids=candidate_ids,
+            decision_relevant=request.form.get("decision_relevant") == "on",
+        )
+    except fdc001_dw.DecisionError as exc:
+        return _render_decision_workspace(
+            record, error="Evidence rejected: %s" % exc, status=400)
+    return redirect(url_for("decision_workspace_view", did=did))
+
+
+@app.route("/decision-workspace/<did>/gap-assessment", methods=["POST"])
+def decision_workspace_gap_assessment(did):
+    record = FDC001_DECISIONS.get(did)
+    if record is None:
+        return redirect(url_for("decision_workspace_start"))
+    evidence_ids = [e.strip() for e in request.form.getlist("evidence_ids")
+                    if e.strip()]
+    try:
+        record.assess_gap(
+            request.form.get("gap_id", "").strip(),
+            evidence_ids,
+            request.form.get("assessment", "").strip(),
+            request.form.get("rationale", "").strip(),
+            request.form.get("resolution_decision", "").strip(),
+            resolution_rationale=(
+                request.form.get("resolution_rationale", "").strip() or None),
+        )
+    except fdc001_dw.DecisionError as exc:
+        return _render_decision_workspace(
+            record, error="Gap assessment rejected: %s" % exc, status=400)
     return redirect(url_for("decision_workspace_view", did=did))
 
 
