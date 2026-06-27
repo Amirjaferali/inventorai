@@ -629,8 +629,14 @@ This specification is a REVIEW DRAFT and authorizes no implementation. After own
 approval, a **separate, explicit, repository-grounded owner implementation
 authorization** is required, which must name: the exact five implementation files
 in §13 above; the named acceptance-test set `FDC002_SECOND_INCREMENT_ACCEPTANCE`
-(`tests/test_fdc001_second_increment.py`); a clean isolated worktree based on the
-then-authoritative SHA; and explicit preservation of all holds, closed states, the
+(`tests/test_fdc001_second_increment.py`); a clean isolated implementation worktree
+based on the integrated authoritative commit that contains this reconciliation
+amendment — i.e. the PR that true-merges this amendment (currently the open route/test
+contract-reconciliation PR), whose exact SHA must be captured and verified during
+that PR's post-merge closure and is not asserted here. No implementation may rely on
+the predecessor `3a8cc1e457c9ef474273a0495336ccb551d18715` checkout, which predates
+and lacks this reconciliation. The authorization must also require explicit
+preservation of all holds, closed states, the
 persistence pause, the benchmark-not-run state, and the no-final-selection
 boundary. The implementation must preserve all FDC-001 acceptance behavior except
 the single governed route-test amendment in §12.1 — the legacy `resolve_gap()` /

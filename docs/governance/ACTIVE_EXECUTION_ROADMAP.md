@@ -74,7 +74,7 @@ hides them.
 | FDC-002 specification | MERGED — external-evidence re-entry & gap-assessment specification merged via PR #19 (`73e58db4c0aa18b8877569c46c65248149148d0e` → true-merge `820b8f6a8b56b8245b6ddfef71930e219105aa78`). A compatibility conflict with the frozen FDC-001 contract was discovered BEFORE any implementation mutation; the owner-approved compatibility boundary was preserved; the compatibility amendment was true-merged via PR #20 (`a8538d10411df0985afdf727343d07aaabe17df1` → true-merge `0b0517b0906ce75cdb51007bdde3cc94ccb3c241`). Specification status remains `REVIEW DRAFT — IMPLEMENTATION NOT AUTHORIZED`; `EXECUTION_AUTHORITY: NONE`. |
 | FDC-002 route/test contract reconciliation | A pre-implementation review discovered a SECOND compatibility conflict: frozen FDC-001 route test `test_route_gap_resolve_and_reclassify` ("test 23") drives the legacy user-facing route `POST /decision-workspace/<did>/gap` to `resolve` the seeded `missing_physical_or_calibration_information` gap and asserts HTTP 302 plus gap removal — the exact behavior the FDC-002 guard must now reject with a bounded HTTP 400 and no mutation. OWNER RULING (final): the route-level FDC-002 physical/calibration-gap guard PREVAILS; the legacy domain methods `resolve_gap()` / `reclassify_gap()` remain compatible for the internal FDC-001 domain contract; non-physical legacy-route behavior is unchanged; that one historical test expectation is explicitly SUPERSEDED and `test_route_gap_resolve_and_reclassify` must be revised (not removed or bypassed). The 32-test set is therefore historically preserved EXCEPT this single governed route-test amendment; the future implementation authorization may modify that one test only (FDC-002 specification §12.1). Recorded by this reconciliation — documentation only; grants no implementation authority; FDC-002 implementation remains PAUSED AND NOT RESUMED. |
 | FDC-002 implementation | PAUSED AND NOT RESUMED — no FDC-002 code or second-increment test exists at the authoritative tip (`tests/test_fdc001_second_increment.py` absent; no `EvidenceItem`/`GapAssessment`/`add_evidence` in `engine/decision_workspace.py`; no `/evidence` or `/gap-assessment` route in `web/app.py`). Implementation requires a separate, explicit, exact-scope owner authorization. |
-| FDC-002 implementation worktree | NOT AUTHORIZED FOR USE — `/home/user/inventorai-fdc002-implementation-820b8f6` is clean but based on the superseded SHA `820b8f6a8b56b8245b6ddfef71930e219105aa78`; it is not a checkout of the authoritative execution branch tip and must not be used for implementation. It is preserved until a separately authorized replacement worktree is created from the integrated PR #21 true-merge SHA and verified. |
+| FDC-002 implementation worktrees | NOT AUTHORIZED FOR USE — both existing FDC-002 implementation worktrees are obsolete for implementation: `/home/user/inventorai-fdc002-implementation-820b8f6` is based on the superseded SHA `820b8f6a8b56b8245b6ddfef71930e219105aa78`, and `/home/user/inventorai-fdc002-implementation-3a8cc1e` is based on `3a8cc1e457c9ef474273a0495336ccb551d18715`, which PREDATES and does NOT contain this route/test contract reconciliation. Both are clean and PRESERVED. The authorized implementation worktree must be created fresh from the integrated PR #22 true-merge SHA (the tip that contains this reconciliation; exact SHA captured during PR #22 post-merge closure) and verified before any implementation begins. |
 | FDC-002 benchmark / final technical selection | Benchmark NOT RUN; final technical selection NONE. |
 
 ## 5. Completed chain (Path N lane only, commit order)
@@ -285,10 +285,13 @@ NEXT GOVERNED ACTION:
     increment has been authorized, implemented, merged, and exercised; its
     observation record, the FDC-002 specification (with its compatibility
     amendment), and the PR #21 roadmap synchronization are merged. PR #21 is
-    integrated; the clean replacement FDC-002 implementation worktree has been
-    created and verified at the integrated authoritative SHA
-    `3a8cc1e457c9ef474273a0495336ccb551d18715` (the superseded worktree
-    `/home/user/inventorai-fdc002-implementation-820b8f6` remains preserved). A
+    integrated; a clean replacement FDC-002 implementation worktree was created and
+    verified at the PR #21 integration SHA
+    `3a8cc1e457c9ef474273a0495336ccb551d18715` (the older worktree
+    `/home/user/inventorai-fdc002-implementation-820b8f6` remains preserved). That
+    `3a8cc1e…` worktree is clean and preserved but is now OBSOLETE for
+    implementation: it predates and does NOT contain this route/test contract
+    reconciliation, so implementation must not begin from it. A
     pre-implementation review then discovered a SECOND compatibility conflict
     (frozen route test `test_route_gap_resolve_and_reclassify` asserted HTTP 302
     plus removal for the same physical-gap route now required to return HTTP 400
@@ -304,10 +307,20 @@ NEXT GOVERNED ACTION:
        exactly one obsolete FDC-001 route-test expectation is superseded. This
        roadmap does not instruct any agent to re-merge an already-integrated PR.
 
-    2. Then, under a SEPARATE explicit owner implementation authorization, the
-       FDC-002 second increment may be implemented in the existing clean
-       replacement worktree at `3a8cc1e457c9ef474273a0495336ccb551d18715`,
-       authorizing exactly these FIVE bounded paths:
+    2. After this reconciliation is integrated, and under a SEPARATE explicit owner
+       authorization, create a NEW clean replacement FDC-002 implementation
+       worktree directly from the actual integrated PR #22 true-merge SHA (the new
+       authoritative tip, which contains this reconciliation) — NOT from the
+       predecessor `3a8cc1e457c9ef474273a0495336ccb551d18715`, which is preserved
+       but obsolete for implementation because it lacks this reconciliation. The
+       exact PR #22 merge SHA must be captured and verified during post-merge
+       closure (not asserted here); the existing `3a8cc1e…` worktree must be
+       preserved until the post-PR-#22 replacement worktree is created and
+       verified, and no implementation may rely on the `3a8cc1e…` checkout.
+
+    3. Only after that replacement worktree is created and verified may a SEPARATE
+       explicit five-path exact-scope FDC-002 implementation authorization be
+       issued, authorizing exactly these FIVE bounded paths:
        `engine/decision_workspace.py`, `web/app.py`,
        `web/templates/decision_workspace.html`,
        `tests/test_fdc001_second_increment.py`, and
