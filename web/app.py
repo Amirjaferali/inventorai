@@ -276,5 +276,164 @@ def submit_answer(sid):
                     pass
     return redirect(url_for("show_session", sid=sid))
 
+
+# ---------------------------------------------------------------------------
+# FDC-001 first increment — Technical Decision Workspace.
+# In-memory only. Distinct from SESSION_STORE; imports no session_store; writes
+# no durable state; performs no benchmark run. Activation-only lane surface.
+# ---------------------------------------------------------------------------
+from engine import decision_workspace as fdc001_dw
+
+# Dedicated in-memory store for FDC-001 decision records (non-durable).
+FDC001_DECISIONS = {}
+
+
+@app.route("/decision-workspace", methods=["GET"])
+def decision_workspace_start():
+    record = fdc001_dw.DecisionRecord()
+    FDC001_DECISIONS[record.decision_id] = record
+    return redirect(url_for("decision_workspace_view", did=record.decision_id))
+
+
+def _render_decision_workspace(record, error=None, status=200):
+    """Render the workspace, optionally with a bounded user-visible validation
+    error. The error is a concise message only — never a traceback."""
+    html = render_template(
+        "decision_workspace.html",
+        view=record.to_record_dict(),
+        candidate_names=list(fdc001_dw.CANDIDATE_NAMES),
+        limitations=list(fdc001_dw.EXPORT_LIMITATIONS),
+        error=error,
+    )
+    return (html, status)
+
+
+@app.route("/decision-workspace/<did>", methods=["GET"])
+def decision_workspace_view(did):
+    record = FDC001_DECISIONS.get(did)
+    if record is None:
+        return redirect(url_for("decision_workspace_start"))
+    return _render_decision_workspace(record)
+
+
+@app.route("/decision-workspace/<did>/input", methods=["POST"])
+def decision_workspace_add_input(did):
+    record = FDC001_DECISIONS.get(did)
+    if record is None:
+        return redirect(url_for("decision_workspace_start"))
+    candidate_id = request.form.get("candidate_id", "").strip()
+    candidate_ids = [candidate_id] if candidate_id else []
+    try:
+        record.add_input(
+            request.form.get("text", "").strip(),
+            request.form.get("claim_class", "").strip(),
+            request.form.get("provenance", "").strip(),
+            decision_relevant=request.form.get("decision_relevant") == "on",
+            candidate_ids=candidate_ids,
+        )
+    except fdc001_dw.DecisionError as exc:
+        # The record is left unmodified; show a concise bounded error.
+        return _render_decision_workspace(
+            record, error="Input rejected: %s" % exc, status=400)
+    return redirect(url_for("decision_workspace_view", did=did))
+
+
+@app.route("/decision-workspace/<did>/constraint", methods=["POST"])
+def decision_workspace_add_constraint(did):
+    record = FDC001_DECISIONS.get(did)
+    if record is None:
+        return redirect(url_for("decision_workspace_start"))
+    candidate_id = request.form.get("candidate_id", "").strip()
+    candidate_ids = [candidate_id] if candidate_id else []
+    try:
+        record.add_constraint(
+            request.form.get("text", "").strip(),
+            request.form.get("constraint_strength", "").strip(),
+            request.form.get("provenance", "").strip(),
+            confirmed=request.form.get("confirmed") == "on",
+            candidate_ids=candidate_ids,
+        )
+    except fdc001_dw.DecisionError as exc:
+        return _render_decision_workspace(
+            record, error="Constraint rejected: %s" % exc, status=400)
+    return redirect(url_for("decision_workspace_view", did=did))
+
+
+@app.route("/decision-workspace/<did>/gap", methods=["POST"])
+def decision_workspace_gap_action(did):
+    record = FDC001_DECISIONS.get(did)
+    if record is None:
+        return redirect(url_for("decision_workspace_start"))
+    action = request.form.get("action", "").strip()
+    gap_id = request.form.get("gap_id", "").strip()
+    try:
+        if action == "resolve":
+            record.resolve_gap(gap_id)
+        elif action == "reclassify":
+            record.reclassify_gap(gap_id, request.form.get("rationale", "").strip())
+        else:
+            raise fdc001_dw.DecisionError("unknown gap action: %r" % action)
+    except fdc001_dw.DecisionError as exc:
+        return _render_decision_workspace(
+            record, error="Gap action rejected: %s" % exc, status=400)
+    return redirect(url_for("decision_workspace_view", did=did))
+
+
+@app.route("/decision-workspace/<did>/preference", methods=["POST"])
+def decision_workspace_preference(did):
+    record = FDC001_DECISIONS.get(did)
+    if record is None:
+        return redirect(url_for("decision_workspace_start"))
+    action = request.form.get("action", "").strip()
+    try:
+        if action == "set":
+            record.set_owner_preference(
+                request.form.get("candidate_id", "").strip(),
+                request.form.get("rationale", "").strip() or None)
+        elif action == "clear":
+            record.clear_owner_preference()
+        else:
+            raise fdc001_dw.DecisionError("unknown preference action: %r" % action)
+    except fdc001_dw.DecisionError as exc:
+        return _render_decision_workspace(
+            record, error="Preference action rejected: %s" % exc, status=400)
+    return redirect(url_for("decision_workspace_view", did=did))
+
+
+@app.route("/decision-workspace/<did>/candidate", methods=["POST"])
+def decision_workspace_dispose_candidate(did):
+    record = FDC001_DECISIONS.get(did)
+    if record is None:
+        return redirect(url_for("decision_workspace_start"))
+    try:
+        record.dispose_candidate(
+            request.form.get("candidate_id", "").strip(),
+            request.form.get("option_status", "").strip(),
+            request.form.get("disposition_reason", "").strip(),
+            request.form.get("disposition_basis", "").strip(),
+        )
+    except fdc001_dw.DecisionError as exc:
+        return _render_decision_workspace(
+            record, error="Candidate disposition rejected: %s" % exc, status=400)
+    return redirect(url_for("decision_workspace_view", did=did))
+
+
+@app.route("/decision-workspace/<did>/export", methods=["GET"])
+def decision_workspace_export(did):
+    record = FDC001_DECISIONS.get(did)
+    if record is None:
+        return redirect(url_for("decision_workspace_start"))
+    # Deterministic, safe attachment filename derived from the decision id.
+    filename = "fdc001-decision-%s.json" % record.decision_id
+    response = app.response_class(
+        response=record.to_json(),
+        status=200,
+        mimetype="application/json",
+    )
+    response.headers["Content-Disposition"] = (
+        'attachment; filename="%s"' % filename)
+    return response
+
+
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
