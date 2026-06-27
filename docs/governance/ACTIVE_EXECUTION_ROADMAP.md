@@ -34,7 +34,7 @@ hides them.
 | Authoritative execution branch | `origin/feature/atomic-json-session-persistence` — the Adaptive Idea Orchestration lane execution branch. Its authoritative tip is always the latest commit integrated into this branch (see the two rows below). This branch carries the committed FDC-001 implementation, all FDC-002 documentation, and the integrated FDC-002 implementation (PR #23 true-merge `7dffea8333759f1e21f159ded51bf0e14c6e24ee`). Reconciliation of `origin/main` (`0e89e4636399760965c9ff8086b465c90dbadf8e`) with this lane branch is a separate governed question, not decided here. |
 | Pre-synchronization authoritative predecessor (base of this roadmap synchronization, PR #21) | `0b0517b0906ce75cdb51007bdde3cc94ccb3c241` — PR #20 true-merge (ordered parents `820b8f6a8b56b8245b6ddfef71930e219105aa78` then `a8538d10411df0985afdf727343d07aaabe17df1`), remotely verified. This is the branch tip on which this roadmap synchronization (PR #21) was prepared. It is NOT the authoritative tip after PR #21 is integrated. |
 | Authoritative tip after PR #21 integration | Upon true-merge of PR #21, the authoritative tip of `origin/feature/atomic-json-session-persistence` becomes the resulting PR #21 true-merge commit. That commit does not yet exist; its full SHA must be captured in the PR #21 post-merge closure report and is not asserted here. (HISTORICAL provenance — superseded by the current authoritative tip below.) |
-| Authoritative tip (current) | `7dffea8333759f1e21f159ded51bf0e14c6e24ee` — the PR #23 true-merge integrating the FDC-002 implementation; ordered parents `3a1a29caf6d06ed7d511a82f475ee2ba3de2b5bf` (predecessor tip) then `bb1a9602e3c38b006204d7125d6018c83e25fb0f` (accepted PR #23 head). `origin/feature/atomic-json-session-persistence` now points here; this is the current authoritative execution tip. The PR #21/#22 "tip after integration" rows are historical provenance. |
+| Authoritative execution tip (branch-relative) | The authoritative tip is the latest owner-authorized true-merge commit integrated into `origin/feature/atomic-json-session-persistence`. The most recent integrated execution commit is the PR #23 FDC-002 implementation true-merge `7dffea8333759f1e21f159ded51bf0e14c6e24ee` (ordered parents `3a1a29caf6d06ed7d511a82f475ee2ba3de2b5bf` (predecessor tip) then `bb1a9602e3c38b006204d7125d6018c83e25fb0f` (accepted PR #23 head)). `7dffea8…` is also the authoritative predecessor/base of this PR #24 documentation closure; it is NOT the post-PR-#24 branch tip. Upon true-merge of PR #24, the authoritative tip becomes the resulting PR #24 true-merge commit (full SHA captured and verified during PR #24 post-merge closure; not asserted here). The PR #21/#22 "tip after integration" rows are historical provenance. |
 | Frozen local persistence worktree | `/home/user/inventorai` remains at `aec9cf6409efc18e125b6745762002f59e529654` with seven paused, uncommitted persistence paths. It is NOT a current checkout of the authoritative execution branch tip and must remain untouched. PERSISTENCE_STATUS: PRESERVE UNMODIFIED AND PAUSE. |
 | Gate 8 product/governance baseline (historical, superseded for the execution lane) | `6c2277ff95204d57f5c73e32540498d46f044b10` — Gate 8 owner product-identity synchronization, remotely verified; direct parent `31b34d8`; Gate 8 sequence begins at `5768d31`. This is HISTORICAL: it is no longer the latest authoritative execution baseline (the execution lane has since advanced on `origin/feature/atomic-json-session-persistence`, predecessor tip `0b0517b0906ce75cdb51007bdde3cc94ccb3c241`); it remains the governing Gate 8 product-identity baseline. |
 | Pre-synchronization remote baseline (historical) | `origin/main = 6c2277ff95204d57f5c73e32540498d46f044b10` was the remote-main baseline before the Adaptive Idea Orchestration lane advanced on `feature/atomic-json-session-persistence`; it does not describe the current execution tip. |
@@ -205,9 +205,14 @@ PR #21). The authoritative execution branch is
 authoritative tip becomes the resulting PR #21 true-merge commit (full SHA captured
 in the PR #21 post-merge closure report, not asserted here). (Historical
 synchronization context: the authoritative tip has since advanced through PR #21,
-PR #22, and the PR #23 FDC-002 implementation merge; the CURRENT authoritative tip
-is `7dffea8333759f1e21f159ded51bf0e14c6e24ee` — see §4.) The frozen local
-persistence worktree
+PR #22, and the PR #23 FDC-002 implementation merge
+`7dffea8333759f1e21f159ded51bf0e14c6e24ee` — the most recent integrated execution
+commit and the predecessor/base of this PR #24 documentation closure, NOT the
+post-PR-#24 branch tip. The authoritative tip is the latest owner-authorized
+true-merge integrated into `origin/feature/atomic-json-session-persistence`; upon
+true-merge of PR #24 it becomes the resulting PR #24 true-merge commit (full SHA
+captured during PR #24 post-merge closure; not asserted here) — see §4.) The frozen
+local persistence worktree
 `/home/user/inventorai` remains at `aec9cf6409efc18e125b6745762002f59e529654` with
 seven paused, uncommitted persistence paths and is NOT a current checkout of the
 authoritative tip. The FDC-001 first increment is IMPLEMENTED, MERGED, and ACTIVE

@@ -84,7 +84,8 @@ or final technical-selection authority.
 
 - Branch: `feature/atomic-json-session-persistence`
 - Authoritative SHA (at drafting): `38b5d81e319d585c74182dca245886b4bd8520b3`
-- Authoritative SHA (current, after integration): `7dffea8333759f1e21f159ded51bf0e14c6e24ee` — the PR #23 true-merge integrating the FDC-002 implementation; `origin/feature/atomic-json-session-persistence` now points here.
+- Most recent integrated execution commit: `7dffea8333759f1e21f159ded51bf0e14c6e24ee` — the PR #23 true-merge integrating the FDC-002 implementation, and the authoritative predecessor/base of the PR #24 documentation closure; it is NOT the post-PR-#24 branch tip.
+- Authoritative tip (branch-relative): the latest owner-authorized true-merge commit integrated into `origin/feature/atomic-json-session-persistence`; after PR #24 integration this becomes the resulting PR #24 true-merge commit (full SHA captured during PR #24 post-merge closure; not asserted here).
 - FDC-001 first increment merged at PR #17 (`fbd2992…`); observation record merged
   at PR #18 (`dd17fcdb…`); authoritative tip is the PR #18 merge `38b5d81…`.
 - FDC-002 builds on the committed FDC-001 domain model
