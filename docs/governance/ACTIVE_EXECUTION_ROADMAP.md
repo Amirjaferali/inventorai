@@ -77,6 +77,9 @@ hides them.
 | FDC-002 implementation | IMPLEMENTED AND INTEGRATED — reviewed, test-verified, and true-merged as PR #23 (accepted head `bb1a9602e3c38b006204d7125d6018c83e25fb0f` → true-merge `7dffea8333759f1e21f159ded51bf0e14c6e24ee`, ordered parents `3a1a29caf6d06ed7d511a82f475ee2ba3de2b5bf` then `bb1a9602e3c38b006204d7125d6018c83e25fb0f`; the authoritative branch tip now equals this merge commit). Exactly the FIVE governed paths were integrated: `engine/decision_workspace.py`, `web/app.py`, `web/templates/decision_workspace.html`, `tests/test_fdc001_first_increment.py` (governed test-23 exception only), and `tests/test_fdc001_second_increment.py` (new acceptance set, `FDC002_SECOND_INCREMENT_ACCEPTANCE`). Accepted test evidence at the merge SHA: FDC-002 55 passed; FDC-001 32 passed; relevant regressions (`test_web_app.py`, `test_cascade_regression.py`) 57 passed; full suite 538 passed, 31 failed, 1 skipped, 2 xfailed, 24 xpassed — all 31 failures confined to `tests/test_domain_registry.py` and confirmed pre-existing by identical-node comparison against a clean pre-FDC-002 baseline. Evidence recorded by the lane is externally produced, operator-reported/external, and permanently `unverified`; no evidence verification was performed. Grants no `technically_selected`/`frozen`; no benchmark; no persistence change. |
 | FDC-002 implementation worktrees | The authorized implementation worktree was created fresh from the integrated PR #22 true-merge base (`/home/user/inventorai-fdc002-implementation-3a1a29c`, branch `feature/fdc002-external-evidence-reentry-v3`), where the five-path implementation was performed, committed (`bb1a9602e3c38b006204d7125d6018c83e25fb0f`), pushed, and true-merged via PR #23. The earlier worktrees `/home/user/inventorai-fdc002-implementation-820b8f6` and `/home/user/inventorai-fdc002-implementation-3a8cc1e`, and the PR #23 feature worktree `/home/user/inventorai-fdc002-implementation-3a1a29c`, are all PRESERVED and clean; none is an authoritative execution baseline after merge — the authoritative baseline is the PR #23 merge commit on `origin/feature/atomic-json-session-persistence`. The feature branch `feature/fdc002-external-evidence-reentry-v3` is preserved (not deleted). |
 | FDC-002 benchmark / final technical selection | Benchmark NOT RUN; final technical selection NONE. Persistence remains PRESERVE UNMODIFIED AND PAUSE (frozen worktree `/home/user/inventorai` at `aec9cf6…`, seven paused paths, untouched). Recorded evidence is operator-reported/external and permanently `unverified`; no evidence verification occurred. PR #23 creation/merge introduced no new feature, phase, lane, anchor, benchmark authority, persistence authority, or technical-selection authority. |
+| Owner-observed product-value validation findings | ACCEPTED AS PRODUCT EVIDENCE — a read-only owner product-observation session (idea-development "session" workflow, hospital-power example) and a read-only readiness assessment were performed against the authoritative tip `91eff27…`. Findings recorded in `docs/validation/OWNER_OBSERVED_PRODUCT_VALIDATION_FINDINGS_2026-06-27.md` (session/deliverable dated 2026-06-27; governance classification 2026-06-28). Principal conclusion: the product is functional as a structured deterministic elicitation/assembly workflow but does not yet consistently provide the non-specialist-safe, evidence-honest, visibly value-adding idea-development experience required by committed governance. Confirmed: owner–expert question-boundary defect+gap; gap/evidence closure truth defect; proxy-based closure feedback defect; weak visible-value capability gap; deliverable defects (copied/non-atomic requirements, repetition, criterion placeholder, no alternative comparison). Observational/not-confirmed: deliverable truncation; a single hard-coded low risk (the confirmed gap is lack of domain/safety criticality awareness); absence of concrete experiments. Documentation-only; non-authorizing. |
+| Product-Value Correction Plan | RECORDED AS NON-AUTHORIZING GOVERNANCE COMPANION — `docs/governance/INVENTORAI_PRODUCT_VALUE_CORRECTION_PLAN.md`, companion to `PRODUCT_ARCHITECTURE_AND_CREDIBILITY_ROADMAP.md`. Dependency-ordered increments (shared epistemic foundation → 1 Owner–Expert Question Boundary → 2 Truthful Gap/Evidence State → 3 Visible Idea-Development Outputs → 4 Atomic Requirements & Criticality-Aware Risk → 5 Validation-Plan Generation → 6 Deliverable Redesign) with acceptance gates. **Implementation has NOT started and is NOT authorized.** |
+| Product-value correction — anchor status | No substantive standalone anchor amendment is currently required: the governing principles (owner–expert boundary; honest gap semantics; no-text-length closure; visible value; stage-bounded verdicts; standards/compliance honesty) already exist in committed governance. The issue is governance-to-runtime conformance, not missing principle. Any optional future cross-reference consolidation is separate and not authorized here. |
 
 ## 5. Completed chain (Path N lane only, commit order)
 
@@ -246,6 +249,14 @@ PRESERVED but are not authoritative execution baselines after merge. No
 final technical selection remains NONE; persistence remains PRESERVE UNMODIFIED AND
 PAUSE; and all holds and closed states are preserved unchanged.
 
+Following FDC-002 integration, a read-only owner-observed product-value validation
+of the idea-development "session" workflow was performed and its findings accepted
+as product evidence (§4;
+`docs/validation/OWNER_OBSERVED_PRODUCT_VALIDATION_FINDINGS_2026-06-27.md`). The
+next lane is the documentation-only design of the Product-Value Correction Plan's
+shared epistemic foundation (§7); product implementation has NOT started and is NOT
+authorized, and this lane note grants none. No anchor amendment is required.
+
 `PATH_N_CURRENT_EXECUTION_ANCHOR.md` is historically stale and
 cannot override subsequently committed Phase 2, Phase 3, Phase 4,
 or Gate 8 authority. Its statement `runtime_integrated=false` is
@@ -311,21 +322,33 @@ NEXT GOVERNED ACTION:
     any new implementation authority, and no new product execution begins from this
     status update.
 
-    The next governed action is a SEPARATE owner decision between bounded options
-    (this documentation closure authorizes NEITHER):
+    Of the two bounded options previously listed here, the PRODUCT-VALUE REVIEW
+    option has been exercised read-only: an owner-observed product-value session of
+    the general idea-development `/start` "session" workflow (and its generated
+    deliverable) was performed against the authoritative tip `91eff27…`, and its
+    findings were ACCEPTED AS PRODUCT EVIDENCE in
+    `docs/validation/OWNER_OBSERVED_PRODUCT_VALIDATION_FINDINGS_2026-06-27.md`. This
+    session does NOT establish completion of the separate FDC-002 practical-use
+    validation option (the FDC-002 evidence-entry → assessment → resolution
+    decision-workspace workflow); no FDC-002 practical-use completion is claimed, and
+    all FDC-002 implementation/closure facts above are unchanged. A non-authorizing
+    Product-Value Correction Plan companion was recorded in
+    `docs/governance/INVENTORAI_PRODUCT_VALUE_CORRECTION_PLAN.md`. Implementation has
+    NOT started and is NOT authorized; no substantive anchor amendment is required
+    (the governing principles already exist — the issue is governance-to-runtime
+    conformance, not a missing principle).
 
-    1. Practical-use validation of the integrated FDC-002 evidence-entry →
-       assessment → explicit-resolution workflow using the existing fixed bicycle
-       braking-detection decision case (no new case, domain, persistence, benchmark,
-       or final technical selection); or
-
-    2. A product-value review of the visible evidence-entry → assessment → explicit
-       resolution workflow.
-
-    Benchmark execution and final technical selection are NOT the automatic next
-    action and remain out of scope. Each option requires its own separate, explicit,
-    repository-grounded owner authorization for that exact scope before any
-    working-tree write.
+    The next governed action is review and authorization of the SHARED
+    EPISTEMIC-FOUNDATION DESIGN for correction Increments 1 (Owner–Expert Question
+    Boundary) and 2 (Truthful Gap and Evidence State): the question-responsibility
+    model, the knowledge/evidence-state model, transition rules, provenance,
+    migration of existing `ASSERTED/REASONED/DEMONSTRATED` data, and backward
+    compatibility, as defined in the Product-Value Correction Plan. That design
+    requires its own SEPARATE, explicit, repository-grounded owner authorization;
+    this roadmap synchronization grants none. Benchmark execution and final technical
+    selection are NOT the automatic next action and remain out of scope. Each
+    increment and the foundation design require their own separate authorization for
+    that exact scope before any working-tree write.
 
     Any other product implementation, governance write, roadmap admission,
     strategic-roadmap correction, mandatory-reading binding, Stage 3 action,
@@ -351,6 +374,28 @@ The required future sequence is now:
    explicitly changes them.
 4. Do not begin Phase 5 or Phase 6.
 5. Do not classify S-6 or progress AA-3, AA-4, or AA-5.
+
+Product-value correction sequence (PROPOSED, NON-AUTHORIZING — each step requires
+its own separate explicit owner authorization; recorded in
+`docs/governance/INVENTORAI_PRODUCT_VALUE_CORRECTION_PLAN.md`):
+
+6. Shared epistemic-foundation design (question responsibility + knowledge/evidence
+   states + transitions + provenance + migration + backward compatibility) — the
+   immediate next governed action (§7).
+7. Increment 1 — Owner–Expert Question Boundary (enforce the committed
+   non-specialist questioning policy; allow "I do not know" / defer / provisional
+   assumption / route-to-specialist / continue without inventing technical values).
+8. Increment 2 — Truthful Gap and Evidence State (no owner text/length/causal wording
+   alone becomes verification or generic "resolved"; preserve WPS001 parity).
+9. Increment 3 — Visible Idea-Development Outputs (bounded, provenance-labeled,
+   identity-preserving platform-added value; "Improvement Not Generation" preserved).
+10. Increments 4–6 — Atomic Requirements & Criticality-Aware Risk Register;
+    Concrete Validation-Plan Generation; Deliverable Redesign (last; depends on the
+    corrected source semantics and outputs).
+
+This sequence grants no implementation authority and is subordinate to
+`MVP_SCOPE_FREEZE.md`; capability-adding increments may require a separate scope
+decision before authorization.
 
 ## 9. What is blocked and what must not be done
 
