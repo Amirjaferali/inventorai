@@ -31,9 +31,10 @@ hides them.
 
 | Item | State |
 |------|-------|
-| Authoritative execution branch | `origin/feature/atomic-json-session-persistence` — the Adaptive Idea Orchestration lane execution branch. Its authoritative tip is always the latest commit integrated into this branch (see the two rows below). This branch carries the committed FDC-001 implementation and all FDC-002 documentation. Reconciliation of `origin/main` (`0e89e4636399760965c9ff8086b465c90dbadf8e`) with this lane branch is a separate governed question, not decided here. |
+| Authoritative execution branch | `origin/feature/atomic-json-session-persistence` — the Adaptive Idea Orchestration lane execution branch. Its authoritative tip is always the latest commit integrated into this branch (see the two rows below). This branch carries the committed FDC-001 implementation, all FDC-002 documentation, and the integrated FDC-002 implementation (PR #23 true-merge `7dffea8333759f1e21f159ded51bf0e14c6e24ee`). Reconciliation of `origin/main` (`0e89e4636399760965c9ff8086b465c90dbadf8e`) with this lane branch is a separate governed question, not decided here. |
 | Pre-synchronization authoritative predecessor (base of this roadmap synchronization, PR #21) | `0b0517b0906ce75cdb51007bdde3cc94ccb3c241` — PR #20 true-merge (ordered parents `820b8f6a8b56b8245b6ddfef71930e219105aa78` then `a8538d10411df0985afdf727343d07aaabe17df1`), remotely verified. This is the branch tip on which this roadmap synchronization (PR #21) was prepared. It is NOT the authoritative tip after PR #21 is integrated. |
-| Authoritative tip after PR #21 integration | Upon true-merge of PR #21, the authoritative tip of `origin/feature/atomic-json-session-persistence` becomes the resulting PR #21 true-merge commit. That commit does not yet exist; its full SHA must be captured in the PR #21 post-merge closure report and is not asserted here. |
+| Authoritative tip after PR #21 integration | Upon true-merge of PR #21, the authoritative tip of `origin/feature/atomic-json-session-persistence` becomes the resulting PR #21 true-merge commit. That commit does not yet exist; its full SHA must be captured in the PR #21 post-merge closure report and is not asserted here. (HISTORICAL provenance — superseded by the current authoritative tip below.) |
+| Authoritative tip (current) | `7dffea8333759f1e21f159ded51bf0e14c6e24ee` — the PR #23 true-merge integrating the FDC-002 implementation; ordered parents `3a1a29caf6d06ed7d511a82f475ee2ba3de2b5bf` (predecessor tip) then `bb1a9602e3c38b006204d7125d6018c83e25fb0f` (accepted PR #23 head). `origin/feature/atomic-json-session-persistence` now points here; this is the current authoritative execution tip. The PR #21/#22 "tip after integration" rows are historical provenance. |
 | Frozen local persistence worktree | `/home/user/inventorai` remains at `aec9cf6409efc18e125b6745762002f59e529654` with seven paused, uncommitted persistence paths. It is NOT a current checkout of the authoritative execution branch tip and must remain untouched. PERSISTENCE_STATUS: PRESERVE UNMODIFIED AND PAUSE. |
 | Gate 8 product/governance baseline (historical, superseded for the execution lane) | `6c2277ff95204d57f5c73e32540498d46f044b10` — Gate 8 owner product-identity synchronization, remotely verified; direct parent `31b34d8`; Gate 8 sequence begins at `5768d31`. This is HISTORICAL: it is no longer the latest authoritative execution baseline (the execution lane has since advanced on `origin/feature/atomic-json-session-persistence`, predecessor tip `0b0517b0906ce75cdb51007bdde3cc94ccb3c241`); it remains the governing Gate 8 product-identity baseline. |
 | Pre-synchronization remote baseline (historical) | `origin/main = 6c2277ff95204d57f5c73e32540498d46f044b10` was the remote-main baseline before the Adaptive Idea Orchestration lane advanced on `feature/atomic-json-session-persistence`; it does not describe the current execution tip. |
@@ -71,11 +72,11 @@ hides them.
 | Adaptive Idea Orchestration first lane | ACTIVE — activated by Commit B (committed §§4–7 activation update), integrated into the authoritative execution branch. The lane name and scope are exactly those defined by `FIRST_LANE_AUTHORIZATION_ADAPTIVE_IDEA_ORCHESTRATION.md`; its bounded first increment is the accepted `docs/product/FDC-001_FIRST_INCREMENT_IMPLEMENTATION_SPECIFICATION.md`. The lane grants no `technically_selected` or `frozen`, runs no benchmark, makes no persistence change, and alters no hold or closure. |
 | FDC-001 first increment | IMPLEMENTED, MERGED, AND ACTIVE — implementation merged via PR #17 (`fbd2992977a23b34b2ceca0f68e5d56302ddb426` → true-merge `ed302a48eb97e559a172581ff52c3468c5cfa112`). At the authoritative tip, `engine/decision_workspace.py`, `web/templates/decision_workspace.html`, and the 32-test acceptance set `tests/test_fdc001_first_increment.py` are present. The acceptance set is historically preserved; it is NOT entirely byte-frozen going forward — exactly one obsolete route-test expectation is superseded under the governed reconciliation below (see "FDC-002 route/test contract reconciliation"). Grants no `technically_selected`/`frozen`; no benchmark; no persistence change. |
 | FDC-001 practical-use exercise | COMPLETE — `VISIBLE VALUE CONFIRMED`; readiness ended truthfully at `blocked_by_evidence_gap`, remaining blocker `missing_physical_or_calibration_information`. Observation/closure record merged via PR #18 (`dd17fcdbbd98aed036cdcf0308fc30a7d46c97cc` → true-merge `38b5d81e319d585c74182dca245886b4bd8520b3`). No benchmark; no final selection. |
-| FDC-002 specification | MERGED — external-evidence re-entry & gap-assessment specification merged via PR #19 (`73e58db4c0aa18b8877569c46c65248149148d0e` → true-merge `820b8f6a8b56b8245b6ddfef71930e219105aa78`). A compatibility conflict with the frozen FDC-001 contract was discovered BEFORE any implementation mutation; the owner-approved compatibility boundary was preserved; the compatibility amendment was true-merged via PR #20 (`a8538d10411df0985afdf727343d07aaabe17df1` → true-merge `0b0517b0906ce75cdb51007bdde3cc94ccb3c241`). Specification status remains `REVIEW DRAFT — IMPLEMENTATION NOT AUTHORIZED`; `EXECUTION_AUTHORITY: NONE`. |
-| FDC-002 route/test contract reconciliation | A pre-implementation review discovered a SECOND compatibility conflict: frozen FDC-001 route test `test_route_gap_resolve_and_reclassify` ("test 23") drives the legacy user-facing route `POST /decision-workspace/<did>/gap` to `resolve` the seeded `missing_physical_or_calibration_information` gap and asserts HTTP 302 plus gap removal — the exact behavior the FDC-002 guard must now reject with a bounded HTTP 400 and no mutation. OWNER RULING (final): the route-level FDC-002 physical/calibration-gap guard PREVAILS; the legacy domain methods `resolve_gap()` / `reclassify_gap()` remain compatible for the internal FDC-001 domain contract; non-physical legacy-route behavior is unchanged; that one historical test expectation is explicitly SUPERSEDED and `test_route_gap_resolve_and_reclassify` must be revised (not removed or bypassed). The 32-test set is therefore historically preserved EXCEPT this single governed route-test amendment; the future implementation authorization may modify that one test only (FDC-002 specification §12.1). Recorded by this reconciliation — documentation only; grants no implementation authority; FDC-002 implementation remains PAUSED AND NOT RESUMED. |
-| FDC-002 implementation | PAUSED AND NOT RESUMED — no FDC-002 code or second-increment test exists at the authoritative tip (`tests/test_fdc001_second_increment.py` absent; no `EvidenceItem`/`GapAssessment`/`add_evidence` in `engine/decision_workspace.py`; no `/evidence` or `/gap-assessment` route in `web/app.py`). Implementation requires a separate, explicit, exact-scope owner authorization. |
-| FDC-002 implementation worktrees | NOT AUTHORIZED FOR USE — both existing FDC-002 implementation worktrees are obsolete for implementation: `/home/user/inventorai-fdc002-implementation-820b8f6` is based on the superseded SHA `820b8f6a8b56b8245b6ddfef71930e219105aa78`, and `/home/user/inventorai-fdc002-implementation-3a8cc1e` is based on `3a8cc1e457c9ef474273a0495336ccb551d18715`, which PREDATES and does NOT contain this route/test contract reconciliation. Both are clean and PRESERVED. The authorized implementation worktree must be created fresh from the integrated PR #22 true-merge SHA (the tip that contains this reconciliation; exact SHA captured during PR #22 post-merge closure) and verified before any implementation begins. |
-| FDC-002 benchmark / final technical selection | Benchmark NOT RUN; final technical selection NONE. |
+| FDC-002 specification | MERGED — external-evidence re-entry & gap-assessment specification merged via PR #19 (`73e58db4c0aa18b8877569c46c65248149148d0e` → true-merge `820b8f6a8b56b8245b6ddfef71930e219105aa78`). A compatibility conflict with the frozen FDC-001 contract was discovered BEFORE any implementation mutation; the owner-approved compatibility boundary was preserved; the compatibility amendment was true-merged via PR #20 (`a8538d10411df0985afdf727343d07aaabe17df1` → true-merge `0b0517b0906ce75cdb51007bdde3cc94ccb3c241`). Specification status is now `IMPLEMENTED AND INTEGRATED — PR #23 CLOSED`; `IMPLEMENTATION_AUTHORITY: CONSUMED AND CLOSED`. The pre-implementation headers `REVIEW DRAFT — IMPLEMENTATION NOT AUTHORIZED` / `EXECUTION_AUTHORITY: NONE` are retained in the specification as historical provenance only. The specification remains the governing contract for the integrated FDC-002 behavior and grants no further implementation authority. |
+| FDC-002 route/test contract reconciliation | A pre-implementation review discovered a SECOND compatibility conflict: frozen FDC-001 route test `test_route_gap_resolve_and_reclassify` ("test 23") drives the legacy user-facing route `POST /decision-workspace/<did>/gap` to `resolve` the seeded `missing_physical_or_calibration_information` gap and asserts HTTP 302 plus gap removal — the exact behavior the FDC-002 guard must now reject with a bounded HTTP 400 and no mutation. OWNER RULING (final): the route-level FDC-002 physical/calibration-gap guard PREVAILS; the legacy domain methods `resolve_gap()` / `reclassify_gap()` remain compatible for the internal FDC-001 domain contract; non-physical legacy-route behavior is unchanged; that one historical test expectation is explicitly SUPERSEDED and `test_route_gap_resolve_and_reclassify` must be revised (not removed or bypassed). The 32-test set is therefore historically preserved EXCEPT this single governed route-test amendment; the future implementation authorization may modify that one test only (FDC-002 specification §12.1). At implementation time the governed test-23 exception was applied to exactly `test_route_gap_resolve_and_reclassify` and to no other FDC-001 test. FDC-002 implementation is now IMPLEMENTED AND INTEGRATED via PR #23 (see the FDC-002 implementation row below); it is no longer paused. |
+| FDC-002 implementation | IMPLEMENTED AND INTEGRATED — reviewed, test-verified, and true-merged as PR #23 (accepted head `bb1a9602e3c38b006204d7125d6018c83e25fb0f` → true-merge `7dffea8333759f1e21f159ded51bf0e14c6e24ee`, ordered parents `3a1a29caf6d06ed7d511a82f475ee2ba3de2b5bf` then `bb1a9602e3c38b006204d7125d6018c83e25fb0f`; the authoritative branch tip now equals this merge commit). Exactly the FIVE governed paths were integrated: `engine/decision_workspace.py`, `web/app.py`, `web/templates/decision_workspace.html`, `tests/test_fdc001_first_increment.py` (governed test-23 exception only), and `tests/test_fdc001_second_increment.py` (new acceptance set, `FDC002_SECOND_INCREMENT_ACCEPTANCE`). Accepted test evidence at the merge SHA: FDC-002 55 passed; FDC-001 32 passed; relevant regressions (`test_web_app.py`, `test_cascade_regression.py`) 57 passed; full suite 538 passed, 31 failed, 1 skipped, 2 xfailed, 24 xpassed — all 31 failures confined to `tests/test_domain_registry.py` and confirmed pre-existing by identical-node comparison against a clean pre-FDC-002 baseline. Evidence recorded by the lane is externally produced, operator-reported/external, and permanently `unverified`; no evidence verification was performed. Grants no `technically_selected`/`frozen`; no benchmark; no persistence change. |
+| FDC-002 implementation worktrees | The authorized implementation worktree was created fresh from the integrated PR #22 true-merge base (`/home/user/inventorai-fdc002-implementation-3a1a29c`, branch `feature/fdc002-external-evidence-reentry-v3`), where the five-path implementation was performed, committed (`bb1a9602e3c38b006204d7125d6018c83e25fb0f`), pushed, and true-merged via PR #23. The earlier worktrees `/home/user/inventorai-fdc002-implementation-820b8f6` and `/home/user/inventorai-fdc002-implementation-3a8cc1e`, and the PR #23 feature worktree `/home/user/inventorai-fdc002-implementation-3a1a29c`, are all PRESERVED and clean; none is an authoritative execution baseline after merge — the authoritative baseline is the PR #23 merge commit on `origin/feature/atomic-json-session-persistence`. The feature branch `feature/fdc002-external-evidence-reentry-v3` is preserved (not deleted). |
+| FDC-002 benchmark / final technical selection | Benchmark NOT RUN; final technical selection NONE. Persistence remains PRESERVE UNMODIFIED AND PAUSE (frozen worktree `/home/user/inventorai` at `aec9cf6…`, seven paused paths, untouched). Recorded evidence is operator-reported/external and permanently `unverified`; no evidence verification occurred. PR #23 creation/merge introduced no new feature, phase, lane, anchor, benchmark authority, persistence authority, or technical-selection authority. |
 
 ## 5. Completed chain (Path N lane only, commit order)
 
@@ -139,7 +140,7 @@ hides them.
 | Commit B (`4cb37ae`, merged via PR #16 → `fb3d1de`) | Committed §§4–7 lane-activation update recording the Adaptive Idea Orchestration first lane as ACTIVE upon integration into the authoritative execution branch (per §12.A/§12.D). Activation-only: authorizes no implementation, no `technically_selected`/`frozen`, no benchmark run, and no persistence change; all holds and closed states preserved. |
 | `fbd2992` / true-merge `ed302a4` (PR #17) | FDC-001 Technical Decision Workspace implementation — `engine/decision_workspace.py`, `web/templates/decision_workspace.html`, and the 32-test acceptance set `tests/test_fdc001_first_increment.py`; the lane's bounded first increment. No `technically_selected`/`frozen`; no benchmark; no persistence change. |
 | `dd17fcd` / true-merge `38b5d81` (PR #18) | FDC-001 first practical-use observation & closure record — `VISIBLE VALUE CONFIRMED`; readiness truthfully `blocked_by_evidence_gap` (blocker `missing_physical_or_calibration_information`); documentation-only, non-authorizing. |
-| `73e58db` / true-merge `820b8f6` (PR #19) | FDC-002 external-evidence re-entry & gap-assessment specification — `REVIEW DRAFT — IMPLEMENTATION NOT AUTHORIZED`; `EXECUTION_AUTHORITY: NONE`. |
+| `73e58db` / true-merge `820b8f6` (PR #19) | FDC-002 external-evidence re-entry & gap-assessment specification — at that commit `REVIEW DRAFT — IMPLEMENTATION NOT AUTHORIZED`; `EXECUTION_AUTHORITY: NONE` (historical commit-chain provenance; the specification status is now `IMPLEMENTED AND INTEGRATED — PR #23 CLOSED` per §4). |
 | `a8538d1` / true-merge `0b0517b` (PR #20) | FDC-002 compatibility-boundary amendment — the `missing_physical_or_calibration_information` clearing prohibition relocated to the user-facing route surface; legacy `resolve_gap()`/`reclassify_gap()` domain methods preserved unchanged for the frozen FDC-001 contract; documentation-only. **Pre-synchronization predecessor tip — base of the PR #21 roadmap synchronization; superseded as the authoritative tip once PR #21 is integrated.** |
 
 (Product-intent anchor `DUAL_PATH_PRODUCT_ANCHOR.md` at `60c809b`
@@ -202,7 +203,10 @@ PR #21). The authoritative execution branch is
 `origin/feature/atomic-json-session-persistence`; its pre-synchronization tip is
 `0b0517b0906ce75cdb51007bdde3cc94ccb3c241`, and upon integration of PR #21 its
 authoritative tip becomes the resulting PR #21 true-merge commit (full SHA captured
-in the PR #21 post-merge closure report, not asserted here). The frozen local
+in the PR #21 post-merge closure report, not asserted here). (Historical
+synchronization context: the authoritative tip has since advanced through PR #21,
+PR #22, and the PR #23 FDC-002 implementation merge; the CURRENT authoritative tip
+is `7dffea8333759f1e21f159ded51bf0e14c6e24ee` — see §4.) The frozen local
 persistence worktree
 `/home/user/inventorai` remains at `aec9cf6409efc18e125b6745762002f59e529654` with
 seven paused, uncommitted persistence paths and is NOT a current checkout of the
@@ -216,16 +220,24 @@ FDC-002 specification §12.1); one controlled practical-use exercise is COMPLETE
 via PR #18 (true-merge `38b5d81e319d585c74182dca245886b4bd8520b3`). The FDC-002
 external-evidence re-entry specification (PR #19, true-merge
 `820b8f6a8b56b8245b6ddfef71930e219105aa78`) and its compatibility amendment (PR #20,
-true-merge `0b0517b0906ce75cdb51007bdde3cc94ccb3c241`) are MERGED as documentation
-carrying status `REVIEW DRAFT — IMPLEMENTATION NOT AUTHORIZED` and
-`EXECUTION_AUTHORITY: NONE`; the compatibility conflict was discovered before any
-implementation mutation and the owner-approved compatibility boundary is preserved.
-FDC-002 implementation is PAUSED AND NOT RESUMED: no FDC-002 code or second-increment
-test exists at the authoritative tip. The existing FDC-002 implementation worktree
-`/home/user/inventorai-fdc002-implementation-820b8f6` is clean but based on the
-superseded SHA `820b8f6a8b56b8245b6ddfef71930e219105aa78`; it is not authorized for
-use and is preserved until a separately authorized replacement worktree is created
-and verified. No `technically_selected`/`frozen` exists; benchmark remains NOT RUN;
+true-merge `0b0517b0906ce75cdb51007bdde3cc94ccb3c241`) are MERGED; the compatibility
+conflict was discovered before any implementation mutation and the owner-approved
+compatibility boundary is preserved. The specification status is now `IMPLEMENTED AND
+INTEGRATED — PR #23 CLOSED` (`IMPLEMENTATION_AUTHORITY: CONSUMED AND CLOSED`), with the
+pre-implementation `REVIEW DRAFT` / `EXECUTION_AUTHORITY: NONE` headers retained in the
+document as historical provenance only.
+FDC-002 implementation is IMPLEMENTED AND INTEGRATED: the five-path implementation was
+performed in a clean worktree created from the integrated PR #22 base
+(`/home/user/inventorai-fdc002-implementation-3a1a29c`), committed
+(`bb1a9602e3c38b006204d7125d6018c83e25fb0f`), and true-merged via PR #23
+(`7dffea8333759f1e21f159ded51bf0e14c6e24ee`, ordered parents `3a1a29c…` then
+`bb1a960…`); the authoritative tip now equals that merge commit. Accepted test evidence:
+FDC-002 55 passed, FDC-001 32 passed, relevant regressions 57 passed, full suite 538
+passed / 31 failed (all confined to `tests/test_domain_registry.py`, pre-existing by
+identical-node comparison). The earlier FDC-002 implementation worktrees
+(`…-820b8f6`, `…-3a8cc1e`) and the PR #23 feature worktree (`…-3a1a29c`) are clean and
+PRESERVED but are not authoritative execution baselines after merge. No
+`technically_selected`/`frozen` exists; benchmark remains NOT RUN;
 final technical selection remains NONE; persistence remains PRESERVE UNMODIFIED AND
 PAUSE; and all holds and closed states are preserved unchanged.
 
@@ -283,55 +295,32 @@ NEXT GOVERNED ACTION:
 
     The Adaptive Idea Orchestration first lane is ACTIVE. The FDC-001 first
     increment has been authorized, implemented, merged, and exercised; its
-    observation record, the FDC-002 specification (with its compatibility
-    amendment), and the PR #21 roadmap synchronization are merged. PR #21 is
-    integrated; a clean replacement FDC-002 implementation worktree was created and
-    verified at the PR #21 integration SHA
-    `3a8cc1e457c9ef474273a0495336ccb551d18715` (the older worktree
-    `/home/user/inventorai-fdc002-implementation-820b8f6` remains preserved). That
-    `3a8cc1e…` worktree is clean and preserved but is now OBSOLETE for
-    implementation: it predates and does NOT contain this route/test contract
-    reconciliation, so implementation must not begin from it. A
-    pre-implementation review then discovered a SECOND compatibility conflict
-    (frozen route test `test_route_gap_resolve_and_reclassify` asserted HTTP 302
-    plus removal for the same physical-gap route now required to return HTTP 400
-    without mutation); the owner ruling and its FDC-002 specification + roadmap
-    reconciliation are recorded above and in the present contract-reconciliation
-    amendment. No action here grants implementation authority.
+    observation record, the FDC-002 specification (with its compatibility amendment
+    and route/test contract reconciliation), and the PR #21/#22 roadmap
+    synchronizations are merged. The FDC-002 implementation has now been authorized
+    (five-path exact-scope), implemented, reviewed, test-verified, and true-merged
+    as PR #23 (accepted head `bb1a9602e3c38b006204d7125d6018c83e25fb0f` → true-merge
+    `7dffea8333759f1e21f159ded51bf0e14c6e24ee`, ordered parents `3a1a29c…` then
+    `bb1a960…`); the authoritative tip now equals that merge commit. The one-time
+    FDC-002 implementation authority is CONSUMED AND CLOSED. No action here grants
+    any new implementation authority, and no new product execution begins from this
+    status update.
 
-    The next governed actions, in order, are:
+    The next governed action is a SEPARATE owner decision between bounded options
+    (this documentation closure authorizes NEITHER):
 
-    1. Read-only review and true-merge of this FDC-002 route/test contract
-       reconciliation (the present amendment), so the FDC-002 specification §12.1
-       and this roadmap agree that the physical-gap route guard prevails and that
-       exactly one obsolete FDC-001 route-test expectation is superseded. This
-       roadmap does not instruct any agent to re-merge an already-integrated PR.
+    1. Practical-use validation of the integrated FDC-002 evidence-entry →
+       assessment → explicit-resolution workflow using the existing fixed bicycle
+       braking-detection decision case (no new case, domain, persistence, benchmark,
+       or final technical selection); or
 
-    2. After this reconciliation is integrated, and under a SEPARATE explicit owner
-       authorization, create a NEW clean replacement FDC-002 implementation
-       worktree directly from the actual integrated PR #22 true-merge SHA (the new
-       authoritative tip, which contains this reconciliation) — NOT from the
-       predecessor `3a8cc1e457c9ef474273a0495336ccb551d18715`, which is preserved
-       but obsolete for implementation because it lacks this reconciliation. The
-       exact PR #22 merge SHA must be captured and verified during post-merge
-       closure (not asserted here); the existing `3a8cc1e…` worktree must be
-       preserved until the post-PR-#22 replacement worktree is created and
-       verified, and no implementation may rely on the `3a8cc1e…` checkout.
+    2. A product-value review of the visible evidence-entry → assessment → explicit
+       resolution workflow.
 
-    3. Only after that replacement worktree is created and verified may a SEPARATE
-       explicit five-path exact-scope FDC-002 implementation authorization be
-       issued, authorizing exactly these FIVE bounded paths:
-       `engine/decision_workspace.py`, `web/app.py`,
-       `web/templates/decision_workspace.html`,
-       `tests/test_fdc001_second_increment.py`, and
-       `tests/test_fdc001_first_increment.py`. Modifications to
-       `tests/test_fdc001_first_increment.py` are restricted EXCLUSIVELY to the
-       single conflicting route test `test_route_gap_resolve_and_reclassify`
-       (FDC-002 specification §12.1); no other FDC-001 test may be altered. That
-       authorization must also name the acceptance-test set
-       `FDC002_SECOND_INCREMENT_ACCEPTANCE` and explicitly preserve all holds and
-       closed states below, the persistence pause, the benchmark-not-run state,
-       and the no-final-selection boundary.
+    Benchmark execution and final technical selection are NOT the automatic next
+    action and remain out of scope. Each option requires its own separate, explicit,
+    repository-grounded owner authorization for that exact scope before any
+    working-tree write.
 
     Any other product implementation, governance write, roadmap admission,
     strategic-roadmap correction, mandatory-reading binding, Stage 3 action,
