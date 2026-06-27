@@ -512,26 +512,65 @@ methods are not exposed as a user-facing physical-blocker clearing path.)
     that invokes the legacy `resolve_gap()` / `reclassify_gap()` methods to clear
     the physical/calibration blocker (the legacy guard is present and no automatic
     fallback exists), while the legacy methods remain callable programmatically and
-    the frozen FDC-001 acceptance set that exercises them stays unedited (§7.2,
-    §15).
+    the FDC-001 acceptance set continues to exercise them for the internal
+    contract — preserved except for the single governed route-test amendment in
+    §12.1 (§7.2, §12.1, §15).
 
 The exact count may differ slightly only if the implementation explains why (e.g.
 merging two guarantees that share one behavior, or splitting one that needs two
 independent assertions).
 
-The FDC-001 acceptance set (`tests/test_fdc001_first_increment.py`, 32 tests)
-remains **frozen** and unedited; FDC-002 must not alter it.
+### 12.1 FDC-001 acceptance-set preservation (narrowly scoped governed exception)
+
+All FDC-001 acceptance contracts remain preserved EXCEPT the single obsolete
+user-facing physical-gap route expectation in the first-increment route test
+`test_route_gap_resolve_and_reclassify` (historically "test 23" in
+`tests/test_fdc001_first_increment.py`). A pre-implementation review discovered a
+second compatibility conflict: that test drives the legacy user-facing route
+`POST /decision-workspace/<did>/gap` to `resolve` the seeded
+`missing_physical_or_calibration_information` gap and asserts HTTP 302 plus gap
+removal — the exact behavior the FDC-002 guard (guarantee #31) must now reject
+with a bounded HTTP 400 and no mutation. Per the final owner ruling reconciling
+the two, the FDC-001 acceptance set (`tests/test_fdc001_first_increment.py`, 32
+tests) remains historically preserved with this one explicitly governed
+amendment:
+
+- the physical/calibration legacy-route guard (guarantee #31) **prevails**: the
+  legacy user-facing route must reject resolving or reclassifying a
+  `missing_physical_or_calibration_information` gap with a bounded HTTP 400 and no
+  mutation (no gap change, no revision increment, no history event, no readiness
+  change, no blocker change, no change-impact mutation);
+- the obsolete expectation that the legacy route returns HTTP 302 and removes the
+  physical/calibration gap is explicitly **SUPERSEDED**;
+- the legacy domain methods `resolve_gap()` / `reclassify_gap()` remain available
+  and unchanged for the internal frozen FDC-001 domain contract;
+- non-physical legacy-route behavior (e.g. the false-positive gap reclassification
+  asserted in the same test) remains covered and unchanged;
+- `test_route_gap_resolve_and_reclassify` MUST be **revised** to assert the new
+  guarded route behavior for the physical/calibration gap; the test count may
+  remain 32; the conflicting test is revised, not silently removed or bypassed,
+  and no other FDC-001 test is weakened merely to obtain a passing result;
+- this is the ONLY permitted modification to
+  `tests/test_fdc001_first_increment.py`: changes are restricted exclusively to
+  that one conflicting route test and any directly necessary assertions inside it.
+  Every other FDC-001 acceptance behavior remains preserved.
 
 ## 13. Exact implementation file scope
 
-When later authorized, implementation may modify **only**:
+When later authorized, implementation may modify **only** these five paths:
 
 ```text
 engine/decision_workspace.py
 web/app.py
 web/templates/decision_workspace.html
 tests/test_fdc001_second_increment.py
+tests/test_fdc001_first_increment.py
 ```
+
+Modifications to `tests/test_fdc001_first_increment.py` are restricted exclusively
+to the single conflicting route test `test_route_gap_resolve_and_reclassify` and
+any directly necessary assertions inside that test (§12.1). No other FDC-001 test
+may be altered, and no other change to that file is permitted.
 
 This specification document is the only file created by the drafting action:
 
@@ -588,16 +627,24 @@ test-plan/laboratory file.
 
 This specification is a REVIEW DRAFT and authorizes no implementation. After owner
 approval, a **separate, explicit, repository-grounded owner implementation
-authorization** is required, which must name: the exact four implementation files
-above; the named acceptance-test set `FDC002_SECOND_INCREMENT_ACCEPTANCE`
-(`tests/test_fdc001_second_increment.py`); a clean isolated worktree based on the
-then-authoritative SHA; and explicit preservation of all holds, closed states, the
+authorization** is required, which must name: the exact five implementation files
+in §13 above; the named acceptance-test set `FDC002_SECOND_INCREMENT_ACCEPTANCE`
+(`tests/test_fdc001_second_increment.py`); a clean isolated implementation worktree
+based on the integrated authoritative commit that contains this reconciliation
+amendment — i.e. the PR that true-merges this amendment (currently the open route/test
+contract-reconciliation PR), whose exact SHA must be captured and verified during
+that PR's post-merge closure and is not asserted here. No implementation may rely on
+the predecessor `3a8cc1e457c9ef474273a0495336ccb551d18715` checkout, which predates
+and lacks this reconciliation. The authorization must also require explicit
+preservation of all holds, closed states, the
 persistence pause, the benchmark-not-run state, and the no-final-selection
-boundary. The implementation must also preserve the frozen FDC-001 acceptance set
-byte-for-byte — the legacy `resolve_gap()` / `reclassify_gap()` domain methods stay
-backward-compatible (§7.2) — and enforce the
+boundary. The implementation must preserve all FDC-001 acceptance behavior except
+the single governed route-test amendment in §12.1 — the legacy `resolve_gap()` /
+`reclassify_gap()` domain methods stay backward-compatible (§7.2) — and enforce the
 `missing_physical_or_calibration_information` clearing prohibition at the
-user-facing route surface (§10), never by modifying the legacy domain methods and
-never by introducing an automatic fallback or hidden readiness bypass. Any later
+user-facing route surface (§10, guarantee #31), never by modifying the legacy
+domain methods and never by introducing an automatic fallback or hidden readiness
+bypass. The only permitted edit to `tests/test_fdc001_first_increment.py` is the
+revision of `test_route_gap_resolve_and_reclassify` described in §12.1. Any later
 roadmap synchronization is a separate governed action. Until that separate
 authorization exists, no code, test, commit, push, or PR is permitted.
