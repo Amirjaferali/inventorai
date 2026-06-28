@@ -11,6 +11,7 @@ from engine.progression_loop import run_iteration, select_next_gap, get_question
 from web.gap_labels import GAP_LABELS, get_gap_label, get_maturity_label, SESSION_DISCLOSURE
 from engine.deliverable_assembler import assemble_deliverable
 from web.responsibility_labels import get_responsibility  # Increment 1B: advisory only
+from web.clarification_labels import get_clarification  # Increment 1B: display-only clarification
 
 app = Flask(__name__)
 app.secret_key = "inventorai-dev-only"
@@ -191,6 +192,12 @@ def show_session(sid):
         # the current gap. Computed at render time; never stored, never affects
         # gates/scoring/maturity/closure/transcript/IdeaState. None when no gap.
         current_responsibility=get_responsibility(gap_type) if gap_type else None,
+        # Increment 1B clarification display: deterministic, owner-invoked,
+        # display-only guidance explaining the current question. Derived from the
+        # same gap_type at render time; never stored, never affects
+        # gates/scoring/maturity/closure/transcript/IdeaState/persistence; adds no
+        # owner action and no POST handling. None when no gap (intake path).
+        current_clarification=get_clarification(gap_type) if gap_type else None,
     )
 @app.route("/session/<sid>/deliverable", methods=["GET"])
 def show_deliverable(sid):
