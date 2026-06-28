@@ -80,6 +80,7 @@ hides them.
 | Owner-observed product-value validation findings | ACCEPTED AS PRODUCT EVIDENCE — a read-only owner product-observation session (idea-development "session" workflow, hospital-power example) and a read-only readiness assessment were performed against the authoritative tip `91eff27…`. Findings recorded in `docs/validation/OWNER_OBSERVED_PRODUCT_VALIDATION_FINDINGS_2026-06-27.md` (session/deliverable dated 2026-06-27; governance classification 2026-06-28). Principal conclusion: the product is functional as a structured deterministic elicitation/assembly workflow but does not yet consistently provide the non-specialist-safe, evidence-honest, visibly value-adding idea-development experience required by committed governance. Confirmed: owner–expert question-boundary defect+gap; gap/evidence closure truth defect; proxy-based closure feedback defect; weak visible-value capability gap; deliverable defects (copied/non-atomic requirements, repetition, criterion placeholder, no alternative comparison). Observational/not-confirmed: deliverable truncation; a single hard-coded low risk (the confirmed gap is lack of domain/safety criticality awareness); absence of concrete experiments. Documentation-only; non-authorizing. |
 | Product-Value Correction Plan | RECORDED AS NON-AUTHORIZING GOVERNANCE COMPANION — `docs/governance/INVENTORAI_PRODUCT_VALUE_CORRECTION_PLAN.md`, companion to `PRODUCT_ARCHITECTURE_AND_CREDIBILITY_ROADMAP.md`. Dependency-ordered increments (shared epistemic foundation → 1 Owner–Expert Question Boundary → 2 Truthful Gap/Evidence State → 3 Visible Idea-Development Outputs → 4 Atomic Requirements & Criticality-Aware Risk → 5 Validation-Plan Generation → 6 Deliverable Redesign) with acceptance gates. **Implementation has NOT started and is NOT authorized.** |
 | Product-value correction — anchor status | No substantive standalone anchor amendment is currently required: the governing principles (owner–expert boundary; honest gap semantics; no-text-length closure; visible value; stage-bounded verdicts; standards/compliance honesty) already exist in committed governance. The issue is governance-to-runtime conformance, not missing principle. Any optional future cross-reference consolidation is separate and not authorized here. |
+| Shared epistemic-foundation architectural decision | COMPLETED AND COMMITTED — the read-only shared epistemic-foundation assessment and the read-only detailed contract were completed, the owner approved the architectural direction, and `docs/governance/EPISTEMIC_FOUNDATION_DESIGN_DECISION.md` was true-merged through PR #26 (true-merge `75f1435f2b072ac333acfb543b93b2c59389c67a`, ordered parents `b0e557cd5494f52e8382ac7694f253538e6781e9` then `e13391cdd108cc374faab65bdd732c16ca9ded7f`). The merged document is an APPROVED ARCHITECTURAL DESIGN DECISION and is non-implementing; its terminology and increment structure live in that document, not in this status table. **Implementation has NOT started and is NOT authorized**; Increment 1A has not begun; each increment requires its own separate, explicit, repository-grounded owner authorization. |
 
 ## 5. Completed chain (Path N lane only, commit order)
 
@@ -253,9 +254,12 @@ Following FDC-002 integration, a read-only owner-observed product-value validati
 of the idea-development "session" workflow was performed and its findings accepted
 as product evidence (§4;
 `docs/validation/OWNER_OBSERVED_PRODUCT_VALIDATION_FINDINGS_2026-06-27.md`). The
-next lane is the documentation-only design of the Product-Value Correction Plan's
-shared epistemic foundation (§7); product implementation has NOT started and is NOT
-authorized, and this lane note grants none. No anchor amendment is required.
+documentation-only design lane for the Product-Value Correction Plan's shared
+epistemic foundation is now COMPLETE and TRUE-MERGED as the approved architectural
+design decision `docs/governance/EPISTEMIC_FOUNDATION_DESIGN_DECISION.md` (PR #26;
+merge identity recorded in §4). That merged decision is non-implementing; product
+implementation has NOT started and is NOT authorized, and this lane note grants
+none. No anchor amendment is required.
 
 `PATH_N_CURRENT_EXECUTION_ANCHOR.md` is historically stale and
 cannot override subsequently committed Phase 2, Phase 3, Phase 4,
@@ -338,17 +342,39 @@ NEXT GOVERNED ACTION:
     (the governing principles already exist — the issue is governance-to-runtime
     conformance, not a missing principle).
 
-    The next governed action is review and authorization of the SHARED
-    EPISTEMIC-FOUNDATION DESIGN for correction Increments 1 (Owner–Expert Question
-    Boundary) and 2 (Truthful Gap and Evidence State): the question-responsibility
-    model, the knowledge/evidence-state model, transition rules, provenance,
-    migration of existing `ASSERTED/REASONED/DEMONSTRATED` data, and backward
-    compatibility, as defined in the Product-Value Correction Plan. That design
-    requires its own SEPARATE, explicit, repository-grounded owner authorization;
-    this roadmap synchronization grants none. Benchmark execution and final technical
-    selection are NOT the automatic next action and remain out of scope. Each
-    increment and the foundation design require their own separate authorization for
-    that exact scope before any working-tree write.
+    The SHARED EPISTEMIC-FOUNDATION DESIGN has since been reviewed read-only,
+    approved by the owner, and TRUE-MERGED as the APPROVED ARCHITECTURAL DESIGN
+    DECISION `docs/governance/EPISTEMIC_FOUNDATION_DESIGN_DECISION.md` (PR #26; merge
+    identity and ordered parents recorded in §4). That merged decision is
+    NON-IMPLEMENTING: it records the approved direction only; it begins no increment,
+    authorizes no code, and Increment 1A has NOT begun.
+
+    The next governed action is a READ-ONLY INCREMENT 1A IMPLEMENTATION-READINESS AND
+    COLLISION PLAN — SEPARATE OWNER AUTHORIZATION REQUIRED. Its purpose is to
+    determine, before any code authorization, the safest implementation and
+    integration order for Increment 1A (Structured Owner Actions). That plan must
+    account for a known frozen-worktree dependency: Increment 1A is expected to affect
+    repository paths that overlap the paused persistence work preserved under
+    PRESERVE UNMODIFIED AND PAUSE in the frozen worktree `/home/user/inventorai`. The
+    direct or potential Increment 1A overlap is on `web/app.py`,
+    `web/templates/session.html`, and `tests/conftest.py`; the frozen worktree also
+    contains four additional protected paths (not named here). The worktrees are
+    physically independent, so a clean implementation branch can modify the same
+    repository paths without touching the frozen worktree; NO current worktree
+    mutation is authorized; the future integration collision risk is real; and the
+    paused persistence work must later be explicitly preserved, ported, reconciled, or
+    excluded through a separate owner-approved plan. No agent may silently overwrite,
+    clean, stash, commit, or discard the paused work.
+
+    This readiness/collision plan is READ-ONLY and requires its own SEPARATE,
+    explicit, repository-grounded owner authorization; this synchronization does not
+    itself authorize conducting or documenting that plan, any code, or any Increment
+    1A work. Planning requires a separate owner authorization; Increment 1A
+    implementation requires another, later authorization after the plan. Benchmark
+    execution and final technical selection are NOT the automatic next action and
+    remain out of scope. Each increment and the readiness plan require their own
+    separate authorization for that exact scope before any implementation-related
+    repository write or any repository change that relies on that scope.
 
     Any other product implementation, governance write, roadmap admission,
     strategic-roadmap correction, mandatory-reading binding, Stage 3 action,
@@ -380,8 +406,13 @@ its own separate explicit owner authorization; recorded in
 `docs/governance/INVENTORAI_PRODUCT_VALUE_CORRECTION_PLAN.md`):
 
 6. Shared epistemic-foundation design (question responsibility + knowledge/evidence
-   states + transitions + provenance + migration + backward compatibility) — the
-   immediate next governed action (§7).
+   states + transitions + provenance + compatibility treatment for existing quality
+   and gap-state shapes) — COMPLETED AND TRUE-MERGED as
+   `docs/governance/EPISTEMIC_FOUNDATION_DESIGN_DECISION.md` (PR #26; merge identity
+   in §4); non-implementing.
+6a. Read-only Increment 1A implementation-readiness and frozen-worktree collision
+   plan — the immediate next governed action (§7); SEPARATE OWNER AUTHORIZATION
+   REQUIRED; read-only; authorizes no code and does not begin Increment 1A.
 7. Increment 1 — Owner–Expert Question Boundary (enforce the committed
    non-specialist questioning policy; allow "I do not know" / defer / provisional
    assumption / route-to-specialist / continue without inventing technical values).
