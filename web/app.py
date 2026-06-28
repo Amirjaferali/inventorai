@@ -10,6 +10,7 @@ from engine.idea_state import IdeaState, SuccessCriterion
 from engine.progression_loop import run_iteration, select_next_gap, get_question
 from web.gap_labels import GAP_LABELS, get_gap_label, get_maturity_label, SESSION_DISCLOSURE
 from engine.deliverable_assembler import assemble_deliverable
+from web.responsibility_labels import get_responsibility  # Increment 1B: advisory only
 
 app = Flask(__name__)
 app.secret_key = "inventorai-dev-only"
@@ -186,6 +187,10 @@ def show_session(sid):
         session_disclosure=SESSION_DISCLOSURE,
         closed_gaps=closed_gaps,
         interaction_ack=entry.pop("_interaction_ack", None) if entry else None,
+        # Increment 1B: advisory, derived, read-only responsibility guidance for
+        # the current gap. Computed at render time; never stored, never affects
+        # gates/scoring/maturity/closure/transcript/IdeaState. None when no gap.
+        current_responsibility=get_responsibility(gap_type) if gap_type else None,
     )
 @app.route("/session/<sid>/deliverable", methods=["GET"])
 def show_deliverable(sid):

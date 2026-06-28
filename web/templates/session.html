@@ -138,6 +138,13 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
 
 <p class="question">{{ question }}</p>
 
+{% if question and current_responsibility %}
+<div class="gap-guidance" style="background:#f3f7fb;border-color:#cfe0ee;margin-bottom:14px">
+  <div class="gap-guidance-heading">{{ current_responsibility.label }}</div>
+  <div class="gap-guidance-text">{{ current_responsibility.guidance }}</div>
+</div>
+{% endif %}
+
 {% if interaction_ack %}
 <div class="badge-warn" style="display:block;padding:9px 14px;margin-bottom:14px">{{ interaction_ack }}</div>
 {% endif %}
