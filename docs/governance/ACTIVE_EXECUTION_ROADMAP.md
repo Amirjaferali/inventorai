@@ -34,7 +34,7 @@ hides them.
 | Authoritative execution branch | `origin/feature/atomic-json-session-persistence` — the Adaptive Idea Orchestration lane execution branch. Its authoritative tip is always the latest commit integrated into this branch (see the two rows below). This branch carries the committed FDC-001 implementation, all FDC-002 documentation, and the integrated FDC-002 implementation (PR #23 true-merge `7dffea8333759f1e21f159ded51bf0e14c6e24ee`). Reconciliation of `origin/main` (`0e89e4636399760965c9ff8086b465c90dbadf8e`) with this lane branch is a separate governed question, not decided here. |
 | Pre-synchronization authoritative predecessor (base of this roadmap synchronization, PR #21) | `0b0517b0906ce75cdb51007bdde3cc94ccb3c241` — PR #20 true-merge (ordered parents `820b8f6a8b56b8245b6ddfef71930e219105aa78` then `a8538d10411df0985afdf727343d07aaabe17df1`), remotely verified. This is the branch tip on which this roadmap synchronization (PR #21) was prepared. It is NOT the authoritative tip after PR #21 is integrated. |
 | Authoritative tip after PR #21 integration | Upon true-merge of PR #21, the authoritative tip of `origin/feature/atomic-json-session-persistence` becomes the resulting PR #21 true-merge commit. That commit does not yet exist; its full SHA must be captured in the PR #21 post-merge closure report and is not asserted here. (HISTORICAL provenance — superseded by the current authoritative tip below.) |
-| Authoritative execution tip (branch-relative) | The authoritative tip is the latest owner-authorized true-merge commit integrated into `origin/feature/atomic-json-session-persistence`. The most recent integrated execution commit is the PR #23 FDC-002 implementation true-merge `7dffea8333759f1e21f159ded51bf0e14c6e24ee` (ordered parents `3a1a29caf6d06ed7d511a82f475ee2ba3de2b5bf` (predecessor tip) then `bb1a9602e3c38b006204d7125d6018c83e25fb0f` (accepted PR #23 head)). `7dffea8…` is also the authoritative predecessor/base of this PR #24 documentation closure; it is NOT the post-PR-#24 branch tip. Upon true-merge of PR #24, the authoritative tip becomes the resulting PR #24 true-merge commit (full SHA captured and verified during PR #24 post-merge closure; not asserted here). The PR #21/#22 "tip after integration" rows are historical provenance. |
+| Authoritative execution tip (branch-relative) | The authoritative tip is the latest owner-authorized true-merge commit integrated into `origin/feature/atomic-json-session-persistence`. The most recent integrated product-execution commit before this documentation synchronization is the Increment 1B responsibility-guidance true-merge `4fc57ef8da06fece74d46a598129f82a67182d88` (PR #29, ordered parents `0afb617e5ab42ecab91e5ce533859718e8b4983e` (Increment 1A true-merge, PR #28) then `c1dfba3317e69d8fbf736af10f8f532b37a39d00` (accepted PR #29 head)). It is the authoritative pre-synchronization execution baseline and the predecessor/base for this documentation-only correction; it will not be the post-synchronization branch tip. Earlier integrated execution commits — including the PR #23 FDC-002 true-merge `7dffea8333759f1e21f159ded51bf0e14c6e24ee` and the PR #28 Increment 1A true-merge `0afb617e5ab42ecab91e5ce533859718e8b4983e` — remain historical predecessors. The PR #21/#22 "tip after integration" rows are historical provenance. |
 | Frozen local persistence worktree | `/home/user/inventorai` remains at `aec9cf6409efc18e125b6745762002f59e529654` with seven paused, uncommitted persistence paths. It is NOT a current checkout of the authoritative execution branch tip and must remain untouched. PERSISTENCE_STATUS: PRESERVE UNMODIFIED AND PAUSE. |
 | Gate 8 product/governance baseline (historical, superseded for the execution lane) | `6c2277ff95204d57f5c73e32540498d46f044b10` — Gate 8 owner product-identity synchronization, remotely verified; direct parent `31b34d8`; Gate 8 sequence begins at `5768d31`. This is HISTORICAL: it is no longer the latest authoritative execution baseline (the execution lane has since advanced on `origin/feature/atomic-json-session-persistence`, predecessor tip `0b0517b0906ce75cdb51007bdde3cc94ccb3c241`); it remains the governing Gate 8 product-identity baseline. |
 | Pre-synchronization remote baseline (historical) | `origin/main = 6c2277ff95204d57f5c73e32540498d46f044b10` was the remote-main baseline before the Adaptive Idea Orchestration lane advanced on `feature/atomic-json-session-persistence`; it does not describe the current execution tip. |
@@ -80,7 +80,9 @@ hides them.
 | Owner-observed product-value validation findings | ACCEPTED AS PRODUCT EVIDENCE — a read-only owner product-observation session (idea-development "session" workflow, hospital-power example) and a read-only readiness assessment were performed against the authoritative tip `91eff27…`. Findings recorded in `docs/validation/OWNER_OBSERVED_PRODUCT_VALIDATION_FINDINGS_2026-06-27.md` (session/deliverable dated 2026-06-27; governance classification 2026-06-28). Principal conclusion: the product is functional as a structured deterministic elicitation/assembly workflow but does not yet consistently provide the non-specialist-safe, evidence-honest, visibly value-adding idea-development experience required by committed governance. Confirmed: owner–expert question-boundary defect+gap; gap/evidence closure truth defect; proxy-based closure feedback defect; weak visible-value capability gap; deliverable defects (copied/non-atomic requirements, repetition, criterion placeholder, no alternative comparison). Observational/not-confirmed: deliverable truncation; a single hard-coded low risk (the confirmed gap is lack of domain/safety criticality awareness); absence of concrete experiments. Documentation-only; non-authorizing. |
 | Product-Value Correction Plan | RECORDED AS NON-AUTHORIZING GOVERNANCE COMPANION — `docs/governance/INVENTORAI_PRODUCT_VALUE_CORRECTION_PLAN.md`, companion to `PRODUCT_ARCHITECTURE_AND_CREDIBILITY_ROADMAP.md`. Dependency-ordered increments (shared epistemic foundation → 1 Owner–Expert Question Boundary → 2 Truthful Gap/Evidence State → 3 Visible Idea-Development Outputs → 4 Atomic Requirements & Criticality-Aware Risk → 5 Validation-Plan Generation → 6 Deliverable Redesign) with acceptance gates. **Implementation has NOT started and is NOT authorized.** |
 | Product-value correction — anchor status | No substantive standalone anchor amendment is currently required: the governing principles (owner–expert boundary; honest gap semantics; no-text-length closure; visible value; stage-bounded verdicts; standards/compliance honesty) already exist in committed governance. The issue is governance-to-runtime conformance, not missing principle. Any optional future cross-reference consolidation is separate and not authorized here. |
-| Shared epistemic-foundation architectural decision | COMPLETED AND COMMITTED — the read-only shared epistemic-foundation assessment and the read-only detailed contract were completed, the owner approved the architectural direction, and `docs/governance/EPISTEMIC_FOUNDATION_DESIGN_DECISION.md` was true-merged through PR #26 (true-merge `75f1435f2b072ac333acfb543b93b2c59389c67a`, ordered parents `b0e557cd5494f52e8382ac7694f253538e6781e9` then `e13391cdd108cc374faab65bdd732c16ca9ded7f`). The merged document is an APPROVED ARCHITECTURAL DESIGN DECISION and is non-implementing; its terminology and increment structure live in that document, not in this status table. **Implementation has NOT started and is NOT authorized**; Increment 1A has not begun; each increment requires its own separate, explicit, repository-grounded owner authorization. |
+| Shared epistemic-foundation architectural decision | COMPLETED AND COMMITTED — the read-only shared epistemic-foundation assessment and the read-only detailed contract were completed, the owner approved the architectural direction, and `docs/governance/EPISTEMIC_FOUNDATION_DESIGN_DECISION.md` was true-merged through PR #26 (true-merge `75f1435f2b072ac333acfb543b93b2c59389c67a`, ordered parents `b0e557cd5494f52e8382ac7694f253538e6781e9` then `e13391cdd108cc374faab65bdd732c16ca9ded7f`). The merged document is an APPROVED ARCHITECTURAL DESIGN DECISION and is non-implementing; its terminology and increment structure live in that document, not in this status table. Two of its increments (1A, 1B) have since been separately authorized, implemented, true-merged, and read-only product-validated (see the two rows below); the remaining design scope — Increment 1B clarification-first routing, Increment 1C, and Increment 2 — has NOT started and is NOT authorized. This synchronization authorizes no product code, and not all epistemic-foundation work is complete; each remaining increment still requires its own separate, explicit, repository-grounded owner authorization. |
+| Increment 1A — Structured Owner Actions | IMPLEMENTED, TRUE-MERGED, PRODUCT-VALID, AND CLOSED — six structured owner actions (`ANSWERED`, `UNKNOWN`, `DEFERRED`, `PROVISIONAL_ASSUMPTION`, `SPECIALIST_REQUESTED`, `EVIDENCE_REQUESTED`); only `ANSWERED` with meaningful text enters assessment, and all five non-answer dispositions remain non-assessing, non-closing, non-maturity-increasing, non-evidence-creating, and non-gate-satisfying (additive in-memory interaction metadata only). True-merged via PR #28 (accepted head `d11760e37264eea2bc6c07788ba8933d58fa7a2e` → true-merge `0afb617e5ab42ecab91e5ce533859718e8b4983e`, ordered parents `6b082ec3264fb9b6cf0589a3d5c942f59b1e3d57` then `d11760e37264eea2bc6c07788ba8933d58fa7a2e`). No engine/IdeaState/scoring/maturity/gap/gate/closure/transcript/deliverable/persistence change. Owner-accepted read-only product-validation disposition: PRODUCT-VALID. No dedicated Increment 1A closure or product-validation record is currently committed; this roadmap row records the accepted execution state and does not represent a new product authorization. This is a CLOSED state and must not be reopened casually; it grants no further increment authority. |
+| Increment 1B — Responsibility Guidance | IMPLEMENTED, TRUE-MERGED, PRODUCT-VALID WITH NON-BLOCKING UX OBSERVATIONS, AND CLOSED — advisory, derived, render-time, web/display-layer responsibility guidance (one short label + one guidance sentence) for the current `gap_type`; approved five-value vocabulary `OWNER_INPUT` / `SYSTEM_ANALYSIS` / `SPECIALIST_INPUT` / `EMPIRICAL_EVIDENCE` / `UNDETERMINED`. Approved static per-gap-type responsibility mapping: `MECHANISM_COMPLETENESS → OWNER_INPUT`, `BOUNDARY_AMBIGUITY → OWNER_INPUT`, `ASSUMPTION_INVENTORY → OWNER_INPUT`, `PROBLEM_MECHANISM_FIT → SYSTEM_ANALYSIS`, `PHYSICAL_FEASIBILITY → EMPIRICAL_EVIDENCE`, `EXPERTISE_GAP_AWARENESS → SPECIALIST_INPUT`, and unknown/missing → `UNDETERMINED`. No stored responsibility field; no assessment, scoring, maturity, closure, gate, transcript, deliverable, or persistence effect. True-merged via PR #29 (accepted head `c1dfba3317e69d8fbf736af10f8f532b37a39d00` → true-merge `4fc57ef8da06fece74d46a598129f82a67182d88`, ordered parents `0afb617e5ab42ecab91e5ce533859718e8b4983e` then `c1dfba3317e69d8fbf736af10f8f532b37a39d00`); that merge commit is the authoritative pre-synchronization execution baseline (see the §4 execution-tip row), not the post-synchronization branch tip. Owner-accepted read-only product-validation disposition: PRODUCT-VALID WITH NON-BLOCKING UX OBSERVATIONS. No dedicated Increment 1B closure or product-validation record is currently committed; this roadmap row records the accepted execution state and does not represent a new product authorization. Increment 1B currently consists ONLY of advisory responsibility guidance; Increment 1B clarification-first routing is NOT implemented and remains separately gated. This is a CLOSED state and must not be reopened casually; it grants no further increment authority. |
 
 ## 5. Completed chain (Path N lane only, commit order)
 
@@ -255,11 +257,24 @@ of the idea-development "session" workflow was performed and its findings accept
 as product evidence (§4;
 `docs/validation/OWNER_OBSERVED_PRODUCT_VALIDATION_FINDINGS_2026-06-27.md`). The
 documentation-only design lane for the Product-Value Correction Plan's shared
-epistemic foundation is now COMPLETE and TRUE-MERGED as the approved architectural
+epistemic foundation is COMPLETE and TRUE-MERGED as the approved architectural
 design decision `docs/governance/EPISTEMIC_FOUNDATION_DESIGN_DECISION.md` (PR #26;
-merge identity recorded in §4). That merged decision is non-implementing; product
-implementation has NOT started and is NOT authorized, and this lane note grants
-none. No anchor amendment is required.
+merge identity recorded in §4); that merged decision is non-implementing. Two of its
+increments have since been separately authorized, implemented, true-merged, and
+read-only product-validated: Increment 1A (Structured Owner Actions) via PR #28
+(true-merge `0afb617e5ab42ecab91e5ce533859718e8b4983e`), PRODUCT-VALID; and Increment
+1B (advisory Responsibility Guidance only, using the approved static per-gap-type
+responsibility mapping) via PR #29 (true-merge
+`4fc57ef8da06fece74d46a598129f82a67182d88`), PRODUCT-VALID WITH NON-BLOCKING UX
+OBSERVATIONS. Increment 1A and Increment 1B are CLOSED states. Increment 1B
+clarification-first routing is NOT implemented and remains separately gated;
+Increment 1C and Increment 2 are NOT authorized; not all epistemic-foundation work is
+complete. This lane note grants no product-code or product authority. Persistence
+remains PRESERVE UNMODIFIED AND PAUSE (frozen worktree `/home/user/inventorai` at
+`aec9cf6409efc18e125b6745762002f59e529654`, seven paused paths, untouched); the
+frozen persistence work remains valuable and protected, and its reconciliation
+remains a separate, future, owner-approved action — not resumed, superseded,
+discarded, or reconciled here. No anchor amendment is required.
 
 `PATH_N_CURRENT_EXECUTION_ANCHOR.md` is historically stale and
 cannot override subsequently committed Phase 2, Phase 3, Phase 4,
@@ -342,39 +357,48 @@ NEXT GOVERNED ACTION:
     (the governing principles already exist — the issue is governance-to-runtime
     conformance, not a missing principle).
 
-    The SHARED EPISTEMIC-FOUNDATION DESIGN has since been reviewed read-only,
-    approved by the owner, and TRUE-MERGED as the APPROVED ARCHITECTURAL DESIGN
-    DECISION `docs/governance/EPISTEMIC_FOUNDATION_DESIGN_DECISION.md` (PR #26; merge
-    identity and ordered parents recorded in §4). That merged decision is
-    NON-IMPLEMENTING: it records the approved direction only; it begins no increment,
-    authorizes no code, and Increment 1A has NOT begun.
+    The SHARED EPISTEMIC-FOUNDATION DESIGN was reviewed read-only, approved by the
+    owner, and TRUE-MERGED as the APPROVED ARCHITECTURAL DESIGN DECISION
+    `docs/governance/EPISTEMIC_FOUNDATION_DESIGN_DECISION.md` (PR #26; merge identity
+    and ordered parents recorded in §4). That merged decision is NON-IMPLEMENTING.
 
-    The next governed action is a READ-ONLY INCREMENT 1A IMPLEMENTATION-READINESS AND
-    COLLISION PLAN — SEPARATE OWNER AUTHORIZATION REQUIRED. Its purpose is to
-    determine, before any code authorization, the safest implementation and
-    integration order for Increment 1A (Structured Owner Actions). That plan must
-    account for a known frozen-worktree dependency: Increment 1A is expected to affect
-    repository paths that overlap the paused persistence work preserved under
-    PRESERVE UNMODIFIED AND PAUSE in the frozen worktree `/home/user/inventorai`. The
-    direct or potential Increment 1A overlap is on `web/app.py`,
-    `web/templates/session.html`, and `tests/conftest.py`; the frozen worktree also
-    contains four additional protected paths (not named here). The worktrees are
-    physically independent, so a clean implementation branch can modify the same
-    repository paths without touching the frozen worktree; NO current worktree
-    mutation is authorized; the future integration collision risk is real; and the
-    paused persistence work must later be explicitly preserved, ported, reconciled, or
-    excluded through a separate owner-approved plan. No agent may silently overwrite,
-    clean, stash, commit, or discard the paused work.
+    The read-only Increment 1A implementation-readiness and frozen-worktree collision
+    plan has since been completed read-only; the owner disposition was PRESERVE FROZEN
+    PERSISTENCE UNMODIFIED — IMPLEMENT INCREMENT 1A FIRST — RECONCILE PERSISTENCE LATER. On that
+    basis, Increment 1A (Structured Owner Actions) and Increment 1B (advisory
+    Responsibility Guidance only) were each separately authorized, implemented,
+    true-merged, and read-only product-validated: Increment 1A via PR #28 (true-merge
+    `0afb617e5ab42ecab91e5ce533859718e8b4983e`), PRODUCT-VALID; Increment 1B via PR #29
+    (true-merge `4fc57ef8da06fece74d46a598129f82a67182d88`, the authoritative
+    pre-synchronization execution baseline — not the post-synchronization branch tip),
+    PRODUCT-VALID WITH NON-BLOCKING UX OBSERVATIONS. These are CLOSED states and must
+    not be reopened casually; no action here grants any new implementation authority,
+    and no new product execution begins from this status update.
 
-    This readiness/collision plan is READ-ONLY and requires its own SEPARATE,
-    explicit, repository-grounded owner authorization; this synchronization does not
-    itself authorize conducting or documenting that plan, any code, or any Increment
-    1A work. Planning requires a separate owner authorization; Increment 1A
-    implementation requires another, later authorization after the plan. Benchmark
-    execution and final technical selection are NOT the automatic next action and
-    remain out of scope. Each increment and the readiness plan require their own
-    separate authorization for that exact scope before any implementation-related
-    repository write or any repository change that relies on that scope.
+    Increment 1B currently consists ONLY of advisory responsibility guidance.
+    Increment 1B clarification-first routing is NOT implemented and remains separately
+    gated. Increment 1C is NOT authorized. Increment 2 is NOT authorized.
+
+    The next governed action, after this documentation-only synchronization is
+    independently reviewed and true-merged, is a READ-ONLY INCREMENT 1B
+    CLARIFICATION-ROUTING READINESS ASSESSMENT covering the remaining separately-gated
+    Increment 1B design element. That assessment requires its own separate, explicit,
+    repository-grounded owner authorization.
+
+    This synchronization does not authorize that assessment, any implementation,
+    Increment 1C, Increment 2, persistence reconciliation, or any product-code change.
+
+    The frozen-worktree persistence remains PRESERVE UNMODIFIED AND PAUSE (frozen
+    worktree `/home/user/inventorai` at `aec9cf6409efc18e125b6745762002f59e529654`,
+    seven paused paths, untouched). The known integration overlap on `web/app.py`,
+    `web/templates/session.html`, and `tests/conftest.py` (plus four further protected
+    paths) is unchanged; the paused persistence work remains valuable and protected and
+    must later be explicitly preserved, ported, reconciled, or excluded through a
+    separate owner-approved plan. No agent may silently overwrite, clean, stash,
+    commit, or discard the paused work. Each increment and any readiness assessment
+    require their own separate authorization for that exact scope before any
+    implementation-related repository write or any repository change that relies on
+    that scope.
 
     Any other product implementation, governance write, roadmap admission,
     strategic-roadmap correction, mandatory-reading binding, Stage 3 action,
@@ -411,8 +435,20 @@ its own separate explicit owner authorization; recorded in
    `docs/governance/EPISTEMIC_FOUNDATION_DESIGN_DECISION.md` (PR #26; merge identity
    in §4); non-implementing.
 6a. Read-only Increment 1A implementation-readiness and frozen-worktree collision
-   plan — the immediate next governed action (§7); SEPARATE OWNER AUTHORIZATION
-   REQUIRED; read-only; authorizes no code and does not begin Increment 1A.
+   plan — COMPLETED (read-only). Owner disposition: PRESERVE FROZEN PERSISTENCE
+   UNMODIFIED — IMPLEMENT INCREMENT 1A FIRST — RECONCILE PERSISTENCE LATER. The
+   frozen-worktree reconciliation remains a separate, future, owner-approved action;
+   persistence stays PRESERVE UNMODIFIED AND PAUSE.
+6b. Increment 1A — Structured Owner Actions — IMPLEMENTED, TRUE-MERGED (PR #28,
+   true-merge `0afb617e5ab42ecab91e5ce533859718e8b4983e`), PRODUCT-VALID, and CLOSED;
+   grants no further authority.
+6c. Increment 1B — Responsibility Guidance — IMPLEMENTED, TRUE-MERGED (PR #29,
+   true-merge `4fc57ef8da06fece74d46a598129f82a67182d88`), PRODUCT-VALID WITH
+   NON-BLOCKING UX OBSERVATIONS, and CLOSED; currently advisory responsibility guidance
+   only (the approved static per-gap-type responsibility mapping). Increment 1B
+   clarification-first routing is NOT implemented and remains separately gated;
+   Increment 1C and Increment 2 are NOT authorized. This sequence authorizes no
+   product code.
 7. Increment 1 — Owner–Expert Question Boundary (enforce the committed
    non-specialist questioning policy; allow "I do not know" / defer / provisional
    assumption / route-to-specialist / continue without inventing technical values).
