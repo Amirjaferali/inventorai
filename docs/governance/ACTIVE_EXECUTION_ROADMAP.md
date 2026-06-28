@@ -35,7 +35,7 @@ hides them.
 | Pre-synchronization authoritative predecessor (base of this roadmap synchronization, PR #21) | `0b0517b0906ce75cdb51007bdde3cc94ccb3c241` — PR #20 true-merge (ordered parents `820b8f6a8b56b8245b6ddfef71930e219105aa78` then `a8538d10411df0985afdf727343d07aaabe17df1`), remotely verified. This is the branch tip on which this roadmap synchronization (PR #21) was prepared. It is NOT the authoritative tip after PR #21 is integrated. |
 | Authoritative tip after PR #21 integration | Upon true-merge of PR #21, the authoritative tip of `origin/feature/atomic-json-session-persistence` becomes the resulting PR #21 true-merge commit. That commit does not yet exist; its full SHA must be captured in the PR #21 post-merge closure report and is not asserted here. (HISTORICAL provenance — superseded by the current authoritative tip below.) |
 | Authoritative execution tip (branch-relative) | The authoritative tip is the latest owner-authorized true-merge commit integrated into `origin/feature/atomic-json-session-persistence`. The most recent integrated product-execution commit before this documentation synchronization is the Increment 1B clarification-display true-merge `b46ac10492103358c7122e1fe2cdcb156cab4a37` (PR #31, ordered parents `4e1609ee98e281d1ae2522484ceea753d115902b` (prior documentation-sync merge, PR #30) then `696451dbf653fc80bc74e63e6b09d957e956fb48` (accepted PR #31 head)). It is the authoritative pre-synchronization execution baseline and the predecessor/base for this documentation-only correction; it will not be the post-synchronization branch tip. Earlier integrated execution commits — including the prior documentation-sync merge `4e1609ee98e281d1ae2522484ceea753d115902b` (PR #30), the Increment 1B responsibility-guidance true-merge `4fc57ef8da06fece74d46a598129f82a67182d88` (PR #29), the PR #28 Increment 1A true-merge `0afb617e5ab42ecab91e5ce533859718e8b4983e`, and the PR #23 FDC-002 true-merge `7dffea8333759f1e21f159ded51bf0e14c6e24ee` — remain historical predecessors. The PR #21/#22 "tip after integration" rows are historical provenance. |
-| Frozen local persistence worktree | `/home/user/inventorai` remains at `aec9cf6409efc18e125b6745762002f59e529654` with seven paused, uncommitted persistence paths. It is NOT a current checkout of the authoritative execution branch tip and must remain untouched. PERSISTENCE_STATUS: PRESERVE UNMODIFIED AND PAUSE. |
+| Frozen local persistence worktree | `/home/user/inventorai` remains at `aec9cf6409efc18e125b6745762002f59e529654` with seven paused, uncommitted persistence paths. It is NOT a current checkout of the authoritative execution branch tip and must remain untouched. PERSISTENCE_STATUS: PRESERVE UNMODIFIED AND PAUSE. The persistence-reconciliation readiness assessment has since been completed read-only; the owner decision is CONTINUE PRESERVE UNMODIFIED AND PAUSE (direct port rejected; selective reconciliation deferred). The assessment made no repository change and approved no reconciliation plan; the seven paused paths remain untouched. |
 | Gate 8 product/governance baseline (historical, superseded for the execution lane) | `6c2277ff95204d57f5c73e32540498d46f044b10` — Gate 8 owner product-identity synchronization, remotely verified; direct parent `31b34d8`; Gate 8 sequence begins at `5768d31`. This is HISTORICAL: it is no longer the latest authoritative execution baseline (the execution lane has since advanced on `origin/feature/atomic-json-session-persistence`, predecessor tip `0b0517b0906ce75cdb51007bdde3cc94ccb3c241`); it remains the governing Gate 8 product-identity baseline. |
 | Pre-synchronization remote baseline (historical) | `origin/main = 6c2277ff95204d57f5c73e32540498d46f044b10` was the remote-main baseline before the Adaptive Idea Orchestration lane advanced on `feature/atomic-json-session-persistence`; it does not describe the current execution tip. |
 | Phase 3 Path N runtime verification | CLOSED (`3a7bc13`) — technical criterion SATISFIED |
@@ -280,7 +280,11 @@ remains PRESERVE UNMODIFIED AND PAUSE (frozen worktree `/home/user/inventorai` a
 `aec9cf6409efc18e125b6745762002f59e529654`, seven paused paths, untouched); the
 frozen persistence work remains valuable and protected, and its reconciliation
 remains a separate, future, owner-approved action — not resumed, superseded,
-discarded, or reconciled here. No anchor amendment is required.
+discarded, or reconciled here. Persistence-reconciliation readiness has now been
+assessed read-only; the owner decision is CONTINUE PRESERVE UNMODIFIED AND PAUSE
+(direct port rejected, selective reconciliation deferred, no plan approved, no
+repository change), and execution direction returns to visible idea-development
+value. No anchor amendment is required.
 
 `PATH_N_CURRENT_EXECUTION_ANCHOR.md` is historically stale and
 cannot override subsequently committed Phase 2, Phase 3, Phase 4,
@@ -393,17 +397,45 @@ NEXT GOVERNED ACTION:
     authorized — separately gated future candidates, not assigned to Increment 1C or
     Increment 2. Increment 1C is NOT authorized. Increment 2 is NOT authorized.
 
-    The next governed action, after this documentation-only synchronization is
-    independently reviewed and true-merged, is a READ-ONLY PERSISTENCE RECONCILIATION
-    READINESS ASSESSMENT (read-only inspection of how the paused frozen persistence
-    work would later be preserved, ported, reconciled, or excluded relative to the
-    current authoritative tip). That assessment requires its own separate, explicit,
-    repository-grounded owner authorization.
+    The READ-ONLY PERSISTENCE RECONCILIATION READINESS ASSESSMENT named here as the
+    prior next action has since been completed read-only. The owner-accepted outcome is
+    PERSISTENCE RECONCILIATION READINESS ASSESSED — CONTINUE PRESERVE UNMODIFIED AND
+    PAUSE (disposition READINESS ASSESSED — CONTINUE PRESERVE UNMODIFIED AND PAUSE —
+    DIRECT PORT REJECTED — SELECTIVE RECONCILIATION DEFERRED). The assessment confirmed
+    the frozen base is behind the current authoritative tip, that direct port is unsafe,
+    and that selective reconciliation is technically possible later but is not selected
+    or authorized now; readiness to plan is technically possible but not selected,
+    readiness to edit code is not established, and readiness to stage or commit
+    persistence work is not established. The frozen work remains preserved as salvageable
+    evidence, current authoritative session state remains ephemeral, no real persistence
+    data requires migration, and the assessment produced no repository change. No
+    owner-approved reconciliation plan exists and persistence implementation remains
+    unauthorized. No dedicated persistence-reconciliation readiness-assessment record is
+    currently committed; this roadmap entry records the owner-accepted read-only
+    assessment outcome and Git/execution evidence, and does not represent persistence
+    authorization.
 
-    This synchronization does not authorize that assessment, persistence
-    reconciliation, copying or porting frozen persistence work, staging or committing
-    any frozen path, clarification interaction, system analysis, Increment 1C,
-    Increment 2, or any product-code change.
+    Project direction now returns to visible idea-development value. The next governed
+    action, after this documentation-only synchronization is independently reviewed and
+    true-merged, is a READ-ONLY OWNER–EXPERT QUESTION-BOUNDARY READINESS ASSESSMENT — a
+    read-only assessment of readiness to enforce the committed
+    `NON_SPECIALIST_QUESTIONING_POLICY` (the §8 "Increment 1 — Owner–Expert Question
+    Boundary" item; the product-value correction plan's Increment 1; addressing the
+    confirmed owner–expert question-boundary defect), under which an owner may answer
+    with known information, mark unknown, defer, use a provisional assumption, request
+    specialist input, request evidence, or continue without inventing technical values
+    (outcomes already carried by the six implemented Increment 1A owner actions; this
+    names no new action). That assessment requires its own separate, explicit,
+    repository-grounded owner authorization after this synchronization is true-merged.
+
+    This synchronization does not authorize that Owner–Expert Question-Boundary readiness
+    assessment, any implementation of the Owner–Expert Question Boundary, truthful
+    gap/evidence-state implementation, persistence planning or reconciliation, copying or
+    porting frozen persistence work, staging or committing any frozen path, clarification
+    interaction, system analysis, Increment 1C, Increment 2, or any product-code change.
+    Persistence selective-reconciliation planning, persistence implementation,
+    clarification-interaction readiness, Increment 1C, Increment 2, and truthful
+    gap/evidence-state readiness are NOT parallel or alternative active next actions.
 
     The frozen-worktree persistence remains PRESERVE UNMODIFIED AND PAUSE (frozen
     worktree `/home/user/inventorai` at `aec9cf6409efc18e125b6745762002f59e529654`,
@@ -470,6 +502,11 @@ its own separate explicit owner authorization; recorded in
    committed. Clarification interaction, system analysis, LLM-generated clarification,
    and persistence integration remain NOT implemented and separately gated; Increment 1C
    and Increment 2 are NOT authorized. This sequence authorizes no product code.
+6e. Persistence reconciliation readiness — ASSESSED (read-only); outcome CONTINUE
+   PRESERVE UNMODIFIED AND PAUSE; direct port rejected; selective reconciliation
+   deferred; no plan approved; no authority granted; no repository change. No dedicated
+   readiness-assessment record is currently committed. This sequence authorizes no
+   product code.
 7. Increment 1 — Owner–Expert Question Boundary (enforce the committed
    non-specialist questioning policy; allow "I do not know" / defer / provisional
    assumption / route-to-specialist / continue without inventing technical values).
