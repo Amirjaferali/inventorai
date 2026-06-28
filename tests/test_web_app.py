@@ -342,8 +342,21 @@ def test_session_page_unknowns_section_no_ilt002_or_evidence_wording():
     try:
         client = app.test_client()
         body = client.get(f"/session/{sid}").get_data(as_text=True)
-        assert "ILT-002" not in body
-        assert "evidence" not in body.lower()
+        # Scope the forbidden-word protection to the acknowledged-unknowns SECTION,
+        # not the whole page. Increment 1A added a structured EVIDENCE_REQUESTED
+        # action control elsewhere on the page — a request that evidence/a test is
+        # needed, NOT a claim that evidence exists — which legitimately contains the
+        # word "evidence". The original protection is unchanged in intent and still
+        # enforced here: the unknowns section must not claim evidence exists and must
+        # not use ILT-002 or evidence-state wording. The section is identified by its
+        # stable heading and bounded by its list (no template/production change).
+        marker = "What You Have Marked as Not Yet Known"
+        assert marker in body  # the unknowns section is present (protection is live)
+        start = body.index(marker)
+        end = body.index("</ul>", start)
+        unknowns_section = body[start:end]
+        assert "ILT-002" not in unknowns_section
+        assert "evidence" not in unknowns_section.lower()
     finally:
         SESSION_STORE.pop(sid, None)
 
