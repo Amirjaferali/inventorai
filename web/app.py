@@ -15,6 +15,35 @@ app = Flask(__name__)
 app.secret_key = "inventorai-dev-only"
 SESSION_STORE = {}
 
+# --- Increment 1A: structured owner actions (conformance correction) ---------
+# Non-specialist owners respond through explicit, structured actions instead of
+# being forced to invent technical prose. ONLY `answered` enters the existing
+# assessment path (run_iteration -> assess/integrate/transition); its behavior
+# and the ILT-002 transcript record are unchanged. The five non-answer actions
+# are recorded ONLY as additive in-memory metadata on the SESSION_STORE entry:
+# they never assess, score, close or alter a gap, advance maturity, satisfy a
+# transition gate, or create an evidence record. No IdeaState field is added, no
+# durable persistence is used, the transcript schema is untouched, and the frozen
+# engine.session_store is never imported.
+ACTION_ANSWERED = "answered"
+INTERACTION_ACTIONS = {
+    ACTION_ANSWERED,
+    "unknown",
+    "deferred",
+    "provisional_assumption",
+    "specialist_requested",
+    "evidence_requested",
+}
+# Honest, non-progress acknowledgements for the five non-answer actions. None of
+# these implies the question is resolved, verified, or answered.
+_NON_ANSWER_ACK = {
+    "unknown": "Recorded that you do not know this yet. It is kept as an open unknown and does not resolve the question.",
+    "deferred": "Recorded as deferred. The question remains open and unresolved.",
+    "provisional_assumption": "Recorded as a provisional assumption (not verified). It does not resolve the question or count as evidence.",
+    "specialist_requested": "Recorded that specialist input is needed. No technical answer has been assumed.",
+    "evidence_requested": "Recorded that evidence is needed. No evidence or result has been recorded.",
+}
+
 # Option B product-boundary enforcement (DOMAIN_SCOPE_OWNER_RESOLUTION_OPTION_B).
 # Current generic product-runtime activation is limited to electronics/electrical.
 # Stable, exact refusal message — does not expose the internally inferred domain.
@@ -156,6 +185,7 @@ def show_session(sid):
         maturity_label=get_maturity_label(state.maturity_level),
         session_disclosure=SESSION_DISCLOSURE,
         closed_gaps=closed_gaps,
+        interaction_ack=entry.pop("_interaction_ack", None) if entry else None,
     )
 @app.route("/session/<sid>/deliverable", methods=["GET"])
 def show_deliverable(sid):
@@ -248,7 +278,36 @@ def submit_answer(sid):
     if not entry:
         return redirect(url_for("index"))
     state = entry["state"]
+    # Increment 1A: resolve the explicit structured action. Legacy-compatibility
+    # rule (chosen, explicit): a submission with NO `action` field is treated as
+    # `answered` — exactly the pre-1A behavior, where a non-empty `response` is
+    # assessed and an empty one is a no-op. An explicit but UNRECOGNIZED action is
+    # rejected with HTTP 400 (never silently assessed), so a malformed client can
+    # not smuggle an unknown action into the assessment path.
+    action = request.form.get("action", ACTION_ANSWERED).strip().lower()
+    if action not in INTERACTION_ACTIONS:
+        return ("Unrecognized session action. No change was made.", 400)
     response = request.form.get("response", "").strip()
+
+    if action != ACTION_ANSWERED:
+        # Non-answer action: record as additive in-memory metadata only. This
+        # path NEVER calls run_iteration, never assesses/scores, never closes or
+        # alters a gap, never advances maturity, never satisfies a gate, and never
+        # creates an evidence record. select_next_gap() is a read-only selector
+        # used only to label which question the action was taken against. Optional
+        # owner text is retained verbatim as metadata, not as an assessed response
+        # or evidence. The journey truthfully redisplays the same (still-open)
+        # question with an honest acknowledgement rather than feigning progress.
+        entry.setdefault("interaction_actions", []).append({
+            "action": action,
+            "iteration": state.iteration,
+            "gap_type": select_next_gap(state),
+            "text": response or None,
+        })
+        entry["_interaction_ack"] = _NON_ANSWER_ACK[action]
+        return redirect(url_for("show_session", sid=sid))
+
+    # ANSWERED — unchanged existing assessment path and transcript record.
     if response:
         result = run_iteration(state, response)
         entry["last_result"] = result
