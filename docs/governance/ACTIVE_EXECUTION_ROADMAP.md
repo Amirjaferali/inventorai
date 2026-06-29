@@ -34,7 +34,7 @@ hides them.
 | Authoritative execution branch | `origin/feature/atomic-json-session-persistence` — the Adaptive Idea Orchestration lane execution branch. Its authoritative tip is always the latest commit integrated into this branch (see the two rows below). This branch carries the committed FDC-001 implementation, all FDC-002 documentation, and the integrated FDC-002 implementation (PR #23 true-merge `7dffea8333759f1e21f159ded51bf0e14c6e24ee`). Reconciliation of `origin/main` (`0e89e4636399760965c9ff8086b465c90dbadf8e`) with this lane branch is a separate governed question, not decided here. |
 | Pre-synchronization authoritative predecessor (base of this roadmap synchronization, PR #21) | `0b0517b0906ce75cdb51007bdde3cc94ccb3c241` — PR #20 true-merge (ordered parents `820b8f6a8b56b8245b6ddfef71930e219105aa78` then `a8538d10411df0985afdf727343d07aaabe17df1`), remotely verified. This is the branch tip on which this roadmap synchronization (PR #21) was prepared. It is NOT the authoritative tip after PR #21 is integrated. |
 | Authoritative tip after PR #21 integration | Upon true-merge of PR #21, the authoritative tip of `origin/feature/atomic-json-session-persistence` becomes the resulting PR #21 true-merge commit. That commit does not yet exist; its full SHA must be captured in the PR #21 post-merge closure report and is not asserted here. (HISTORICAL provenance — superseded by the current authoritative tip below.) |
-| Authoritative execution tip (branch-relative) | The authoritative tip is the latest owner-authorized true-merge commit integrated into `origin/feature/atomic-json-session-persistence`. The most recent integrated product-execution commit before this documentation synchronization is the Increment 1B clarification-display true-merge `b46ac10492103358c7122e1fe2cdcb156cab4a37` (PR #31, ordered parents `4e1609ee98e281d1ae2522484ceea753d115902b` (prior documentation-sync merge, PR #30) then `696451dbf653fc80bc74e63e6b09d957e956fb48` (accepted PR #31 head)). It is the authoritative pre-synchronization execution baseline and the predecessor/base for this documentation-only correction; it will not be the post-synchronization branch tip. Earlier integrated execution commits — including the prior documentation-sync merge `4e1609ee98e281d1ae2522484ceea753d115902b` (PR #30), the Increment 1B responsibility-guidance true-merge `4fc57ef8da06fece74d46a598129f82a67182d88` (PR #29), the PR #28 Increment 1A true-merge `0afb617e5ab42ecab91e5ce533859718e8b4983e`, and the PR #23 FDC-002 true-merge `7dffea8333759f1e21f159ded51bf0e14c6e24ee` — remain historical predecessors. The PR #21/#22 "tip after integration" rows are historical provenance. |
+| Authoritative execution tip (branch-relative) | The authoritative tip is the latest owner-authorized true-merge commit integrated into `origin/feature/atomic-json-session-persistence`. The current authoritative product-execution tip is the Increment 1 Owner–Expert Question-Boundary true-merge `68f7dcbe4f0ff9b53f9acd6ce33c5c00708274e9` (PR #34, ordered parents `8ae15a94d488eaef581511a543b1905743e7e0f7` (PR #33 documentation-sync merge) then `85d980fdbbaa09ebdea056799148350018df3646` (accepted PR #34 head — the reviewed Increment 1 implementation)). The Increment 1B clarification-display true-merge `b46ac10492103358c7122e1fe2cdcb156cab4a37` (PR #31) and the PR #33 documentation-sync merge `8ae15a94d488eaef581511a543b1905743e7e0f7` are now historical predecessors; this documentation synchronization is itself a roadmap-only correction and does not advance the product-execution tip. Earlier integrated execution commits — including the prior documentation-sync merge `4e1609ee98e281d1ae2522484ceea753d115902b` (PR #30), the Increment 1B responsibility-guidance true-merge `4fc57ef8da06fece74d46a598129f82a67182d88` (PR #29), the PR #28 Increment 1A true-merge `0afb617e5ab42ecab91e5ce533859718e8b4983e`, and the PR #23 FDC-002 true-merge `7dffea8333759f1e21f159ded51bf0e14c6e24ee` — remain historical predecessors. The PR #21/#22 "tip after integration" rows are historical provenance. |
 | Frozen local persistence worktree | `/home/user/inventorai` remains at `aec9cf6409efc18e125b6745762002f59e529654` with seven paused, uncommitted persistence paths. It is NOT a current checkout of the authoritative execution branch tip and must remain untouched. PERSISTENCE_STATUS: PRESERVE UNMODIFIED AND PAUSE. The persistence-reconciliation readiness assessment has since been completed read-only; the owner decision is CONTINUE PRESERVE UNMODIFIED AND PAUSE (direct port rejected; selective reconciliation deferred). The assessment made no repository change and approved no reconciliation plan; the seven paused paths remain untouched. |
 | Gate 8 product/governance baseline (historical, superseded for the execution lane) | `6c2277ff95204d57f5c73e32540498d46f044b10` — Gate 8 owner product-identity synchronization, remotely verified; direct parent `31b34d8`; Gate 8 sequence begins at `5768d31`. This is HISTORICAL: it is no longer the latest authoritative execution baseline (the execution lane has since advanced on `origin/feature/atomic-json-session-persistence`, predecessor tip `0b0517b0906ce75cdb51007bdde3cc94ccb3c241`); it remains the governing Gate 8 product-identity baseline. |
 | Pre-synchronization remote baseline (historical) | `origin/main = 6c2277ff95204d57f5c73e32540498d46f044b10` was the remote-main baseline before the Adaptive Idea Orchestration lane advanced on `feature/atomic-json-session-persistence`; it does not describe the current execution tip. |
@@ -271,11 +271,13 @@ OBSERVATIONS. The Increment 1B clarification display was subsequently authorized
 implemented, and true-merged via PR #31 (true-merge
 `b46ac10492103358c7122e1fe2cdcb156cab4a37`), owner-accepted disposition
 PRODUCT-VALID — APPROVABLE WITH NON-BLOCKING OBSERVATIONS, CLOSED for the implemented
-display scope. Increment 1A, the Increment 1B responsibility guidance, and the
-Increment 1B clarification display are CLOSED states. Increment 1B clarification
-**interaction**, system analysis, LLM-generated clarification, and persistence
-integration remain NOT implemented and separately gated; Increment 1C and Increment 2
-are NOT authorized; not all epistemic-foundation work is complete. This lane note grants no product-code or product authority. Persistence
+display scope. Increment 1A, the Increment 1B responsibility guidance, the
+Increment 1B clarification display, and the Increment 1 Owner–Expert Question
+Boundary (IMPLEMENTED, TRUE-MERGED via PR #34, IMPLEMENTATION-VALID, and CLOSED
+for the enforced question-layer boundary scope) are CLOSED states. Increment 1B
+clarification **interaction**, system analysis, LLM-generated clarification, and
+persistence integration remain NOT implemented and separately gated; Increment 1C
+and Increment 2 are NOT authorized; not all epistemic-foundation work is complete. This lane note grants no product-code or product authority. Persistence
 remains PRESERVE UNMODIFIED AND PAUSE (frozen worktree `/home/user/inventorai` at
 `aec9cf6409efc18e125b6745762002f59e529654`, seven paused paths, untouched); the
 frozen persistence work remains valuable and protected, and its reconciliation
@@ -415,27 +417,59 @@ NEXT GOVERNED ACTION:
     assessment outcome and Git/execution evidence, and does not represent persistence
     authorization.
 
-    Project direction now returns to visible idea-development value. The next governed
-    action, after this documentation-only synchronization is independently reviewed and
-    true-merged, is a READ-ONLY OWNER–EXPERT QUESTION-BOUNDARY READINESS ASSESSMENT — a
-    read-only assessment of readiness to enforce the committed
-    `NON_SPECIALIST_QUESTIONING_POLICY` (the §8 "Increment 1 — Owner–Expert Question
-    Boundary" item; the product-value correction plan's Increment 1; addressing the
-    confirmed owner–expert question-boundary defect), under which an owner may answer
-    with known information, mark unknown, defer, use a provisional assumption, request
-    specialist input, request evidence, or continue without inventing technical values
-    (outcomes already carried by the six implemented Increment 1A owner actions; this
-    names no new action). That assessment requires its own separate, explicit,
-    repository-grounded owner authorization after this synchronization is true-merged.
+    The Increment 1 Owner–Expert Question Boundary is now complete. The read-only
+    readiness assessment and the implementation-contract assessment were completed; the
+    bounded question-layer implementation was drafted, source-reviewed, hardened with an
+    end-to-end integration test, staged, committed, pushed, independently reviewed, and
+    true-merged via PR #34 (reviewed head `85d980fdbbaa09ebdea056799148350018df3646` →
+    true-merge `68f7dcbe4f0ff9b53f9acd6ce33c5c00708274e9`, ordered parents
+    `8ae15a94d488eaef581511a543b1905743e7e0f7` then
+    `85d980fdbbaa09ebdea056799148350018df3646`), independent disposition
+    IMPLEMENTATION-VALID — APPROVABLE WITH NON-BLOCKING OBSERVATIONS. The general
+    `/start` flow now uses the committed Path N non-specialist-safe question provider;
+    named ILT routes are unchanged; `get_question` remains a pure selector and
+    `show_session` renders through `get_display_question`; a deterministic plain-language
+    reframe replaces verbatim repetition only after a Stage-2 gap's approved Path N
+    variants are exhausted (exhaustion-only triggering is the owner-ratified behavior; no
+    unused approved variant is suppressed at `STALL_THRESHOLD`); the six owner actions are
+    unchanged with no seventh action; and no state-model, provenance, transcript,
+    deliverable, or persistence change occurred. Accepted test evidence: targeted suite
+    27 passed; boundary regression suite 144 passed; full suite 633 passed, 31 failed, 1
+    skipped, 1 xfailed, 24 xpassed, with all 31 failures confined to the pre-existing
+    `tests/test_domain_registry.py` baseline and zero non-baseline failures.
+    INCREMENT 1 — OWNER–EXPERT QUESTION BOUNDARY — IMPLEMENTED, TRUE-MERGED,
+    IMPLEMENTATION-VALID, AND CLOSED FOR THE ENFORCED QUESTION-LAYER BOUNDARY SCOPE:
+    optional deferred/specialist re-presentation suppression was not required for closure
+    and is not implemented; provenance/state truthfulness remains separately gated under
+    Increment 2. No dedicated Owner–Expert Question-Boundary implementation closure record
+    is currently committed; this roadmap entry records the accepted PR #34, Git, test, and
+    independent-review evidence, not a dedicated committed closure artifact, and grants no
+    new product authority.
 
-    This synchronization does not authorize that Owner–Expert Question-Boundary readiness
-    assessment, any implementation of the Owner–Expert Question Boundary, truthful
-    gap/evidence-state implementation, persistence planning or reconciliation, copying or
-    porting frozen persistence work, staging or committing any frozen path, clarification
-    interaction, system analysis, Increment 1C, Increment 2, or any product-code change.
-    Persistence selective-reconciliation planning, persistence implementation,
-    clarification-interaction readiness, Increment 1C, Increment 2, and truthful
-    gap/evidence-state readiness are NOT parallel or alternative active next actions.
+    Project direction continues toward visible idea-development value. The next governed
+    action is a READ-ONLY INCREMENT 2 (TRUTHFUL GAP AND EVIDENCE STATE) READINESS
+    ASSESSMENT — the next dependency-ordered §8 increment (product-value correction plan's
+    Increment 2). At a boundary level it concerns readiness to assess truthful
+    distinctions among owner assertion, provisional assumption, unknown, deferred,
+    evidence-requested, specialist-input-required, specialist-confirmed information, system
+    suggestion, verified evidence, and gap resolution; the known current limitation is
+    that evidence *quality* (ASSERTED/REASONED/DEMONSTRATED) exists but source/provenance
+    does not, so an unsupported owner technical claim may be treated as reasoned evidence
+    and conflicting owner/specialist sources cannot currently be represented. That
+    assessment has not begun; it requires its own separate, explicit, repository-grounded
+    owner authorization; it does not authorize Increment 2 implementation, provenance or
+    state-model edits, staging/committing/PR creation, reopening Increment 1, Increment 1C,
+    clarification interaction, system analysis, or persistence planning or reconciliation.
+
+    This synchronization does not begin or authorize the Increment 2 readiness assessment,
+    Increment 2 implementation, Increment 1C, provenance/state-model work, clarification
+    interaction, system analysis, persistence planning or reconciliation, specialist
+    collaboration, dynamic questionnaires, conversational follow-up, any new owner action,
+    or any product-code change. Increment 1C, persistence selective-reconciliation
+    planning, persistence implementation, clarification-interaction readiness, and
+    Increment 2 implementation are NOT parallel or alternative active next actions; the
+    Increment 2 readiness assessment is the sole next governed action and remains
+    separately gated.
 
     The frozen-worktree persistence remains PRESERVE UNMODIFIED AND PAUSE (frozen
     worktree `/home/user/inventorai` at `aec9cf6409efc18e125b6745762002f59e529654`,
@@ -507,9 +541,14 @@ its own separate explicit owner authorization; recorded in
    deferred; no plan approved; no authority granted; no repository change. No dedicated
    readiness-assessment record is currently committed. This sequence authorizes no
    product code.
-7. Increment 1 — Owner–Expert Question Boundary (enforce the committed
-   non-specialist questioning policy; allow "I do not know" / defer / provisional
-   assumption / route-to-specialist / continue without inventing technical values).
+7. Increment 1 — Owner–Expert Question Boundary — IMPLEMENTED — TRUE-MERGED via PR #34
+   (`85d980fdbbaa09ebdea056799148350018df3646` → `68f7dcbe4f0ff9b53f9acd6ce33c5c00708274e9`),
+   IMPLEMENTATION-VALID, and CLOSED FOR THE ENFORCED QUESTION-LAYER BOUNDARY SCOPE: the
+   general `/start` flow now uses the committed Path N non-specialist-safe questions and a
+   deterministic exhaustion-only reframe replaces verbatim repetition; the six owner
+   actions are unchanged. No dedicated closure record is currently committed. Optional
+   deferred/specialist re-presentation suppression was not required for closure;
+   provenance/state truthfulness remains separately gated under Increment 2.
 8. Increment 2 — Truthful Gap and Evidence State (no owner text/length/causal wording
    alone becomes verification or generic "resolved"; preserve WPS001 parity).
 9. Increment 3 — Visible Idea-Development Outputs (bounded, provenance-labeled,
