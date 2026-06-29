@@ -181,6 +181,26 @@ QUESTIONS = {
 }
 
 
+# Deterministic, question-layer stall reframe (Increment 1 — Owner-Expert
+# Question Boundary). Shown on the non-specialist Path N flow once a gap's
+# approved Path N variants are exhausted, instead of repeating the final variant
+# verbatim (NON_SPECIALIST_QUESTIONING_POLICY §7; MVP_SCOPE_FREEZE "reframed after
+# 3 stalls"). Plain language; asks what the owner already knows and what
+# information would be needed; contains no engineering-gated terminology. It is
+# pure display content: it does not change gap status, evidence, maturity,
+# iteration semantics, or the six owner actions, adds no new action, performs no
+# I/O or LLM call, and starts no conversational / multi-question loop. A single
+# deterministic reframe is sufficient for this bounded increment; the owner's
+# existing six actions remain the truthful exits.
+_STALL_REFRAME = (
+    "Let's take this part in plainer terms. In your own words, what do you "
+    "already know about this aspect of your idea — and what information do you "
+    "think you would need, or who could help you find it, to work out the rest? "
+    "If you are not sure, you can also use the options below to mark it unknown, "
+    "defer it, note a provisional assumption, or ask for a specialist or evidence."
+)
+
+
 def get_question(domain: str, gap_type: str, iterations_open: int,
                  path: str | None = None) -> str:
     """
@@ -192,6 +212,11 @@ def get_question(domain: str, gap_type: str, iterations_open: int,
     Default / any other path value: existing behavior unchanged —
     domain layer first, generic QUESTIONS fallback.
     Framework-level delegation — no domain-specific logic here.
+
+    Pure selector: this returns the approved/clamped variant for the position and
+    deliberately performs NO stall reframe, so the Path N artifact-selection
+    invariant is preserved. The owner-facing stall reframe is applied separately
+    by get_display_question() (used by the web session view).
     """
     if path == "N":
         from engine.path_n_questions import get_path_n_question
@@ -208,6 +233,39 @@ def get_question(domain: str, gap_type: str, iterations_open: int,
     variants = QUESTIONS[gap_type]
     index = min(iterations_open, len(variants) - 1)
     return variants[index]
+
+
+def get_display_question(domain: str, gap_type: str, iterations_open: int,
+                         path: str | None = None) -> str:
+    """Owner-facing question for the current gap, with the Increment 1 stall
+    reframe applied (Owner-Expert Question Boundary).
+
+    Identical to get_question(), except that on the non-specialist Path N flow
+    (path == "N"), once a Stage 2 gap's approved Path N variants are exhausted —
+    i.e. get_question() would otherwise repeat the final variant verbatim — the
+    deterministic plain-language reframe (_STALL_REFRAME) is returned instead
+    (NON_SPECIALIST_QUESTIONING_POLICY §7; MVP_SCOPE_FREEZE "reframed after 3
+    stalls"). This is the function the web session view uses to render the
+    displayed question; get_question() itself stays a pure selector so the
+    approved Path N artifact-selection invariant is unchanged.
+
+    Pure display selection: no engine state, gap status, evidence, maturity,
+    iteration semantics, or owner action is changed; no persistence, I/O, or LLM
+    call is performed; the approved artifact is not modified. A single
+    deterministic reframe is sufficient — the existing six owner actions remain
+    the truthful exits.
+    """
+    if path == "N" and iterations_open > 0:
+        from engine.path_n_questions import get_path_n_question
+        current = get_path_n_question(gap_type, iterations_open)
+        # Path N serves Stage 2 gaps; a clamp (current == the previous
+        # iteration's question) marks variant exhaustion → reframe instead of a
+        # verbatim repeat. Stage 3 gaps return None here and are unaffected.
+        if current is not None and current == get_path_n_question(
+            gap_type, iterations_open - 1
+        ):
+            return _STALL_REFRAME
+    return get_question(domain, gap_type, iterations_open, path=path)
 
 
 # ─────────────────────────────────────────────
