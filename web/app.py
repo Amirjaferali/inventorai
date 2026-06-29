@@ -7,7 +7,9 @@ import uuid
 from flask import Flask, request, redirect, url_for, render_template
 from engine.domain_rules import infer_domain
 from engine.idea_state import IdeaState, SuccessCriterion
-from engine.progression_loop import run_iteration, select_next_gap, get_question
+from engine.progression_loop import (
+    run_iteration, select_next_gap, get_question, get_display_question,
+)
 from web.gap_labels import GAP_LABELS, get_gap_label, get_maturity_label, SESSION_DISCLOSURE
 from engine.deliverable_assembler import assemble_deliverable
 from web.responsibility_labels import get_responsibility  # Increment 1B: advisory only
@@ -99,6 +101,13 @@ def start():
     state = IdeaState(idea_id=str(uuid.uuid4()))
     state.domain = DOMAIN_CONFIRM_VALUE
     state.domain_signal = DOMAIN_CONFIRM_VALUE
+    # Increment 1 (Owner-Expert Question Boundary): the general /start flow is the
+    # non-specialist owner flow and must use the committed Path N non-specialist-safe
+    # question provider (NON_SPECIALIST_QUESTIONING_POLICY). This is the same
+    # provider already used by the governed _path_n route; no new question bank,
+    # mode selector, role, or engine-state field is introduced. The named ILT
+    # routes below are deliberately left on their existing default behavior.
+    state.path = "N"
     sid = str(uuid.uuid4())
     initial_result = run_iteration(state, idea_text)
     SESSION_STORE[sid] = {"state": state, "last_result": initial_result, "transcript": []}
@@ -158,7 +167,12 @@ def show_session(sid):
     if gap_type:
         gap = state.get_gap(gap_type)
         iterations_open = gap.iterations_open if gap else 0
-        question = get_question(state.domain, gap_type, iterations_open, path=state.path)
+        # Increment 1 (Owner-Expert Question Boundary): render via the display
+        # selector so an exhausted non-specialist Path N gap shows the
+        # deterministic plain-language reframe instead of repeating the final
+        # question verbatim. Pure selection — no engine/state/maturity effect.
+        question = get_display_question(state.domain, gap_type, iterations_open,
+                                        path=state.path)
     elif (
         state.maturity_level == 0
         and len(state.gaps) == 0
