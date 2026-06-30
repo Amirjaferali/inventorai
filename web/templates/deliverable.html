@@ -155,7 +155,11 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
     {% endfor %}
   </ul>
   {% else %}
+    {% if package["_session_meta"].get("derived_verified_ready", False) %}
   <div class="field-value">No unresolved items.</div>
+    {% else %}
+  <div class="field-value">No stored gaps remain open, but evidence validation or readiness items are still unresolved. The recorded evidence is not technically verified.</div>
+    {% endif %}
   {% endif %}
 </section>
 

@@ -24,11 +24,19 @@ SESSION_STORE = {}
 # being forced to invent technical prose. ONLY `answered` enters the existing
 # assessment path (run_iteration -> assess/integrate/transition); its behavior
 # and the ILT-002 transcript record are unchanged. The five non-answer actions
-# are recorded ONLY as additive in-memory metadata on the SESSION_STORE entry:
-# they never assess, score, close or alter a gap, advance maturity, satisfy a
-# transition gate, or create an evidence record. No IdeaState field is added, no
-# durable persistence is used, the transcript schema is untouched, and the frozen
-# engine.session_store is never imported.
+# still never assess, score, close or alter a gap, advance maturity, satisfy a
+# transition gate, or create an evidence record, and the SESSION_STORE entry
+# keeps its additive in-memory display metadata.
+#
+# --- Increment 2: durable, truthful disposition records -----------------------
+# In addition (Increment 2 truthful-state correction), every owner action now
+# also appends a durable in-memory record to the IdeaState interaction ledger
+# (state.record_interaction). This ledger is NOT progression state: it does not
+# assess, score, advance maturity, alter the gap lifecycle, satisfy a gate, or
+# create Evidence; it carries the truthful provenance/validation/disposition of
+# what the owner did. It remains persistence-independent — no durable persistence
+# is used, the transcript schema is untouched, and the frozen engine.session_store
+# is never imported.
 ACTION_ANSWERED = "answered"
 INTERACTION_ACTIONS = {
     ACTION_ANSWERED,
@@ -324,17 +332,27 @@ def submit_answer(sid):
         # owner text is retained verbatim as metadata, not as an assessed response
         # or evidence. The journey truthfully redisplays the same (still-open)
         # question with an honest acknowledgement rather than feigning progress.
+        gap_ctx = select_next_gap(state)
         entry.setdefault("interaction_actions", []).append({
             "action": action,
             "iteration": state.iteration,
-            "gap_type": select_next_gap(state),
+            "gap_type": gap_ctx,
             "text": response or None,
         })
         entry["_interaction_ack"] = _NON_ANSWER_ACK[action]
+        # Increment 2: durable disposition record on the IdeaState ledger. This
+        # adds NO epistemic movement (no assess/score/gap/maturity/transcript
+        # change) — it only records, truthfully and durably, that the owner took
+        # this non-answer action against the still-open question.
+        state.record_interaction(
+            action=action, content=response or "",
+            gap_context=gap_ctx, iteration=state.iteration,
+        )
         return redirect(url_for("show_session", sid=sid))
 
     # ANSWERED — unchanged existing assessment path and transcript record.
     if response:
+        targeted_gap = select_next_gap(state)   # gap this answer addresses (pre-iteration)
         result = run_iteration(state, response)
         entry["last_result"] = result
         # Transcript capture: append verbatim record for ILT-002 evidence.
@@ -356,6 +374,17 @@ def submit_answer(sid):
         transcript_path = f"/tmp/ilt002_transcript_{sid}.jsonl"
         with open(transcript_path, "a") as _tf:
             _tf.write(json.dumps(record) + "\n")
+        # Increment 2: durable answered record on the IdeaState ledger.
+        # OWNER_STATED provenance (the owner authored it), UNVALIDATED status
+        # (never auto-verified by the act of answering), carrying the current
+        # leading evidence quality where available. Additive only: the existing
+        # assessment path, transcript, and gap lifecycle above are unchanged.
+        state.record_interaction(
+            action=ACTION_ANSWERED, content=response,
+            gap_context=targeted_gap, iteration=state.iteration,
+            quality=getattr(getattr(state, "known_mechanism", None), "quality", None)
+                    or getattr(getattr(state, "known_problem", None), "quality", None),
+        )
         import sys
         for g in state.gaps:
                     pass
