@@ -560,25 +560,41 @@ NEXT GOVERNED ACTION:
     test; O-2 — tests must prove that the session callout and the deliverable section
     render the same engine-selected primary issue.
 
-    The sole next governed action is a READ-ONLY INCREMENT 3 — IMPLEMENTATION
-    AUTHORIZATION REVIEW — a read-only, repository-grounded review bounded to the merged
-    five-path contract, intended only to determine whether a later explicit Increment 3
-    implementation authorization may be issued. It has not begun; it requires its own
-    separate, explicit, repository-grounded owner authorization; it is review-only; and it
-    is NOT tests-first authorization, NOT source-implementation authorization, NOT
+    The READ-ONLY INCREMENT 3 — IMPLEMENTATION AUTHORIZATION REVIEW has since been
+    COMPLETED, with disposition `INCREMENT 3 IMPLEMENTATION CONTRACT REQUIRES CORRECTION
+    BEFORE AUTHORIZATION`. Blocking finding: the R-3 session callout (O-2) cannot be
+    delivered within the merged FIVE-PATH scope, because the `show_session` route in
+    `web/app.py` is the sole owner of the session render context and the
+    presentation-only `web/templates/session.html` cannot obtain the engine-selected
+    payload without it; the merged five-path scope was therefore insufficient and NO
+    implementation authorization was issued. The owner correction decision: preserve both
+    visible surfaces (deliverable section + session callout); expand future scope to
+    EXACTLY SIX paths by adding `web/app.py`, narrowly constrained to the `show_session`
+    render-context routing only; pin deterministic within-level tie-breaking (R-6); and
+    preserve O-1 (engine-layer provider grounding) and O-2 (shared single derivation, same
+    `(issue_type, reference_id)` on both surfaces). A bounded correction draft recording
+    owner rulings R-5 and R-6 and the six-path contract has been prepared; it is a PROPOSED
+    DRAFT and is NON-OPERATIVE until independently reviewed, committed, and merged. Until
+    then the merged R-1–R-4 and the merged five-path contract remain binding, and because
+    that scope is insufficient no Increment 3 implementation may be authorized under it.
+
+    The sole next governed action is a READ-ONLY INCREMENT 3 — CORRECTED RULINGS AND
+    SIX-PATH CONTRACT REVIEW — a read-only, repository-grounded review of the bounded
+    correction draft (R-5, R-6, and the six-path contract). It has not begun; it requires
+    its own separate, explicit, repository-grounded owner authorization; it is review-only;
+    and it is NOT tests-first authorization, NOT source-implementation authorization, NOT
     worktree-creation authorization, and NOT staging or commit authorization. It does NOT
-    authorize any source or test edit, a new contract, an implementation branch or
-    worktree, staging, committing, pushing, a PR, a change to any protected function,
-    Increment 1C activation, a specialist workspace or collaboration mode, clarification
-    interaction, system analysis, domain expansion, or persistence planning or
-    reconciliation.
+    authorize any source or test edit, an implementation branch or worktree, staging,
+    committing, pushing, a PR, a change to any protected function, Increment 1C activation,
+    a specialist workspace or collaboration mode, clarification interaction, system
+    analysis, domain expansion, or persistence planning or reconciliation.
 
     This synchronization records completed status only; it authorizes no product code, no
-    authority change, no new governance document, no Increment 3 implementation in this
-    turn, no Increment 1C, no persistence planning or reconciliation, no specialist
-    collaboration, no domain expansion, and no merge into `main`. The READ-ONLY INCREMENT 3
-    — IMPLEMENTATION AUTHORIZATION REVIEW is the sole next governed action and remains
-    separately gated.
+    authority change beyond recording the proposed correction, no Increment 3
+    implementation in this turn, no Increment 1C, no persistence planning or
+    reconciliation, no specialist collaboration, no domain expansion, and no merge into
+    `main`. The READ-ONLY INCREMENT 3 — CORRECTED RULINGS AND SIX-PATH CONTRACT REVIEW is
+    the sole next governed action and remains separately gated.
 
     The frozen-worktree persistence remains PRESERVE UNMODIFIED AND PAUSE (frozen
     worktree `/home/user/inventorai` at `aec9cf6409efc18e125b6745762002f59e529654`,
@@ -690,7 +706,7 @@ its own separate explicit owner authorization; recorded in
    branch `feature/increment-2-truthful-state` preserved. The Increment 3 readiness
    assessment, owner rulings R-1 through R-4, and bounded implementation contract have
    since been COMPLETED AND MERGED via PR #40 (see item 9). The sole next governed action
-   is a READ-ONLY INCREMENT 3 — IMPLEMENTATION AUTHORIZATION REVIEW (review-only;
+   is a READ-ONLY INCREMENT 3 — CORRECTED RULINGS AND SIX-PATH CONTRACT REVIEW (review-only;
    authorizes no implementation, no tests-first work, no worktree, and no product code).
 9. Increment 3 — Visible Idea-Development Outputs (bounded, provenance-labeled,
    identity-preserving platform-added value; "Improvement Not Generation" preserved).
@@ -707,8 +723,18 @@ its own separate explicit owner authorization; recorded in
    boundary; Increment 3 tests-first work and source implementation remain unauthorized,
    and no Increment 3 product code has changed. Carried-forward review observations O-1
    (provider/sufficiency grounding with a no-fabrication test) and O-2 (session/deliverable
-   same-primary-issue test) are preserved for the next review. The next governed action is
-   a READ-ONLY INCREMENT 3 — IMPLEMENTATION AUTHORIZATION REVIEW.
+   same-primary-issue test) are preserved for the next review. The READ-ONLY INCREMENT 3 —
+   IMPLEMENTATION AUTHORIZATION REVIEW has since COMPLETED with disposition `INCREMENT 3
+   IMPLEMENTATION CONTRACT REQUIRES CORRECTION BEFORE AUTHORIZATION`: the R-3 session
+   callout (O-2) could not be delivered within the merged five-path scope because the
+   `show_session` route in `web/app.py` owns the session render context, so no
+   implementation was authorized. A bounded correction draft (owner rulings R-5
+   session-routing/six-path scope and R-6 within-level tie-break; the six-path contract
+   adding `web/app.py` narrowly constrained to `show_session` render-context routing; O-1
+   engine-layer grounding; O-2 shared single derivation; immutable additive output) has
+   been prepared as a PROPOSED DRAFT, non-operative until reviewed, committed, and merged.
+   The next governed action is a READ-ONLY INCREMENT 3 — CORRECTED RULINGS AND SIX-PATH
+   CONTRACT REVIEW.
 10. Increments 4–6 — Atomic Requirements & Criticality-Aware Risk Register;
     Concrete Validation-Plan Generation; Deliverable Redesign (last; depends on the
     corrected source semantics and outputs).
