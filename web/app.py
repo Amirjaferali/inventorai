@@ -12,6 +12,9 @@ from engine.progression_loop import (
 )
 from web.gap_labels import GAP_LABELS, get_gap_label, get_maturity_label, SESSION_DISCLOSURE
 from engine.deliverable_assembler import assemble_deliverable
+# Increment 3 (R-5): the SAME shared public derivation that feeds the deliverable
+# section, imported as a module-level name so one selection feeds both surfaces.
+from engine.idea_development_outputs import derive_next_development_step
 from web.responsibility_labels import get_responsibility  # Increment 1B: advisory only
 from web.clarification_labels import get_clarification  # Increment 1B: display-only clarification
 
@@ -179,8 +182,12 @@ def show_session(sid):
         # selector so an exhausted non-specialist Path N gap shows the
         # deterministic plain-language reframe instead of repeating the final
         # question verbatim. Pure selection — no engine/state/maturity effect.
-        question = get_display_question(state.domain, gap_type, iterations_open,
-                                        path=state.path)
+        # `domain` is attached by the /start routes for live sessions; guard the
+        # read so render-context construction never raises if it is absent (the
+        # value is unchanged for every real session). No routing/method/state
+        # change; the displayed question is identical when `domain` is present.
+        question = get_display_question(getattr(state, "domain", None), gap_type,
+                                        iterations_open, path=state.path)
     elif (
         state.maturity_level == 0
         and len(state.gaps) == 0
@@ -197,9 +204,15 @@ def show_session(sid):
     # No engine effect. Evidence preservation only.
     if entry is not None and question is not None:
         entry["last_question"] = question
+    # Increment 3 (R-5): compute the one prioritized next development step from the
+    # ALREADY-LOADED in-memory IdeaState via the shared pure derivation, and pass
+    # it to the presentation-only session callout. Read-only: no route/method
+    # change, no state mutation, no persistence, no scoring/progression.
+    next_development_step = derive_next_development_step(state)
     return render_template("session.html",
         sid=sid,
         state=state,
+        next_development_step=next_development_step,
         question=question,
         open_gaps=open_gaps,
         gap_type=gap_type,
