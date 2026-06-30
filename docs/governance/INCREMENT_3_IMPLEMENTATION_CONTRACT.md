@@ -1,8 +1,23 @@
 # Increment 3 — Visible Next Development Step — Bounded Implementation Contract
 
 Status:
+`IMPLEMENTED AND INTEGRATED VIA PR #45 (true-merge b5a8e72b26acc5ddbee355bc69b419ff09152c50)`
+`IMPLEMENTATION AUTHORITY CONSUMED AND CLOSED`
+
+Historical drafting status (retained as provenance):
 `DRAFT — NOT AUTHORIZED FOR IMPLEMENTATION`
 `CORRECTED SIX-PATH BOUNDARY COMMITTED AND MERGED VIA PR #42 — OPERATIVE AS A BINDING IMPLEMENTATION BOUNDARY — NOT AUTHORIZED FOR IMPLEMENTATION`
+
+That historical status governed this contract before separate tests-first and
+source-implementation authorizations were issued. It no longer describes the current
+execution state and grants no further implementation authority. The bounded behavior
+defined below (R-1..R-6, O-1, O-2, the six-path boundary, and the prohibited behaviors)
+remains the governing description of the implemented Increment 3 scope; it was NOT approved
+for implementation at original publication — implementation was authorized only later,
+through separate explicit owner authorizations, and is now consumed and closed. See the
+`## Completion and status amendment` section at the end of this document and the Increment 3
+completion row in `docs/governance/ACTIVE_EXECUTION_ROADMAP.md` (the primary
+execution-continuity record).
 
 This contract expressly relies on the separate owner authority-rulings document
 `docs/governance/INCREMENT_3_AUTHORITY_RULINGS.md`
@@ -12,8 +27,13 @@ final Python class, exact field name, API signature, or CSS.
 
 ## 1. Authoritative baseline
 
-- Authoritative branch `origin/feature/atomic-json-session-persistence` at tip
-  `408385f3a7461393e8e9dc0b9f4e1c6433a0f5ce`.
+- Document-publication baseline — historical. This contract was drafted on
+  `origin/feature/atomic-json-session-persistence` at tip
+  `408385f3a7461393e8e9dc0b9f4e1c6433a0f5ce`. That SHA records the repository state used to
+  draft the contract; it is NOT the current live branch tip (the live tip is always resolved
+  from Git; at this status amendment it is the PR #45 Increment 3 SOURCE true-merge
+  `b5a8e72b26acc5ddbee355bc69b419ff09152c50`). Per the roadmap's stable-SHA rule, this
+  publication baseline is not invalidated by later merges and requires no recursive update.
 - Remote `main` `0e89e4636399760965c9ff8086b465c90dbadf8e` — outside this lane.
 - Frozen persistence worktree `/home/user/inventorai` at
   `aec9cf6409efc18e125b6745762002f59e529654`, seven paused paths, untouched.
@@ -377,10 +397,54 @@ Owner correction (R-5, R-6):
 - Within-level ties are broken deterministically by R-6 (ascending `rec_N`
   `record_id`, else earliest `iteration`, else stable first-encountered order).
 
-Lifecycle: the corrected six-path contract is now the currently binding boundary
-(merged via PR #42), superseding the prior five-path version; tests-first =
-unauthorized; source implementation = unauthorized; implementation-worktree
-creation = unauthorized. No active-anchor amendment is required: the correction
-resolves technical routing and deterministic selection inside the already-approved
-Increment 3 identity and changes no product identity, increment sequence, domain
-authority, scoring, persistence, or stage-transition authority.
+Lifecycle (HISTORICAL — superseded by the `## Completion and status amendment` section
+below): the corrected six-path contract was, at drafting, the binding boundary (merged via
+PR #42), superseding the prior five-path version, with tests-first, source implementation,
+and implementation-worktree creation all then unauthorized. Those have SINCE been separately
+authorized, completed, and true-merged; tests-first, source implementation, and the
+implementation worktree are no longer pending. No active-anchor amendment is required: the
+correction (and the implementation that followed it) resolves technical routing and
+deterministic selection inside the already-approved Increment 3 identity and changes no
+product identity, increment sequence, domain authority, scoring, persistence, or
+stage-transition authority.
+
+## Completion and status amendment
+
+Increment 3 — Visible Next Development Step — is IMPLEMENTED, INDEPENDENTLY REVIEWED,
+TRUE-MERGED, POST-MERGE VERIFIED, and CLOSED; this contract's implementation authority is
+CONSUMED AND CLOSED. This section records the minimum completion evidence; the Increment 3
+completion row in `docs/governance/ACTIVE_EXECUTION_ROADMAP.md` is the primary
+execution-continuity record (this is not a second closure narrative).
+
+- Tests-first contract merged via PR #44, true-merge
+  `c41d4a95a1181c14bcf3ce82fe1f7bc061545c96`. The frozen artifact
+  `tests/test_increment_3_visible_outputs.py` (783 lines, 38,209 bytes, SHA-256
+  `7c971ebcb7c9f69d2e1881a118157a481054edbc6c089295c0996bac41af42ef`, 39 tests) was NOT
+  modified by the source implementation.
+- Implementation commit `740b6d09d47681e9b1e50e3ed9bb10aecc9e5326`
+  (`feat: add Increment 3 visible development outputs`).
+- Source scope — exactly five paths: NEW `engine/idea_development_outputs.py`; MODIFIED
+  `engine/deliverable_assembler.py`, `web/app.py`, `web/templates/deliverable.html`,
+  `web/templates/session.html`. No sixth path; `engine/scoring.py` and
+  `engine/progression_loop.py` unchanged; no persistence, domain, ILT, scoring, or anchor
+  change.
+- Increment 3 SOURCE-implementation PR #45 true-merge
+  `b5a8e72b26acc5ddbee355bc69b419ff09152c50` (ordered parents
+  `c41d4a95a1181c14bcf3ce82fe1f7bc061545c96` then
+  `740b6d09d47681e9b1e50e3ed9bb10aecc9e5326`). `main`
+  `0e89e4636399760965c9ff8086b465c90dbadf8e` unchanged and outside this merge.
+- Post-merge verification (clean checkout at the merge commit):
+  `tests/test_increment_3_visible_outputs.py` `39 passed`;
+  `tests/test_deliverable_assembler.py` + `tests/test_web_app.py` `45 passed`;
+  `tests/test_stage3_evidence_deliverable.py` `12 passed`; full suite
+  `31 failed, 719 passed, 1 skipped, 1 xfailed, 24 xpassed`, all 31 failures confined to the
+  pre-existing baseline `tests/test_domain_registry.py`.
+- The frozen persistence worktree `/home/user/inventorai` at
+  `aec9cf6409efc18e125b6745762002f59e529654` remains PRESERVE UNMODIFIED AND PAUSE — it was
+  not reconciled, ported, or completed by Increment 3.
+
+R-1 through R-6, O-1, O-2, R-5, R-6, the six-path historical implementation boundary, the
+prohibited behaviors, and the tests-first requirements above are unchanged in meaning and
+remain the governing description of the implemented scope. This amendment grants no new
+authority: it neither reopens the merged scope nor authorizes Increment 4 (the next
+increment is separately gated per the roadmap).
