@@ -1,8 +1,7 @@
 # Increment 3 — Visible Next Development Step — Owner Authority Rulings
 
 Status:
-`OWNER-RATIFIED AND MERGED AUTHORITY RULINGS (R-1–R-4)`
-`PROPOSED CORRECTION DRAFT (R-5–R-6) — NOT YET COMMITTED — NON-OPERATIVE UNTIL INDEPENDENTLY REVIEWED, COMMITTED, AND MERGED`
+`OWNER-RATIFIED AND MERGED AUTHORITY RULINGS — R-1 THROUGH R-6`
 
 This document records the owner's binding rulings that resolve the conditional
 disposition of the completed read-only Increment 3 readiness assessment
@@ -163,35 +162,38 @@ introduced.)
 
 ## 3. Authorization state
 
-- Owner rulings R-1 through R-4 are APPROVED, committed, and merged (binding).
-- Owner rulings R-5 and R-6 are PROPOSED by this bounded correction draft. They
-  are NOT yet committed or merged and are NON-OPERATIVE until independently
-  reviewed, committed, and merged. Until then, the merged R-1–R-4 and the merged
-  Increment 3 implementation contract (five-path) remain the binding authority;
-  because that merged five-path scope is insufficient to deliver the session
-  callout, NO Increment 3 implementation may be authorized under it.
+- Owner rulings R-1 through R-6 are APPROVED, committed, and merged (binding).
+  R-1 through R-4 were merged via PR #40; the R-5 (session payload routing /
+  six-path scope) and R-6 (within-level deterministic tie-break) correction was
+  merged via PR #42 (merge commit `083a0bb1de5dd2f62f8d275bc45423f29f70ff64`,
+  ordered parents `cb36da8665b5c2704c52235d1b6752ecb0e5e252` then
+  `8a81ce99aef3bfc05054a812d327247b57c263eb`). All six rulings are now operative as
+  binding Increment 3 boundary authority; the corrected six-path implementation
+  contract is now the binding future implementation boundary.
 - Contract drafting (the companion `INCREMENT_3_IMPLEMENTATION_CONTRACT.md`) is
-  AUTHORIZED; the six-path correction in that contract is the product of this
-  ruling and remains a proposed draft.
-- Source implementation is NOT yet authorized.
+  AUTHORIZED; the merged six-path correction in that contract is the product of
+  R-5/R-6.
+- Source implementation is NOT yet authorized; operative as a binding boundary is
+  NOT the same as authorized for implementation.
 - Tests-first or source work requires a separate, explicit, repository-grounded
   owner authorization.
-- This document was independently reviewed, committed in
-  `6a11cb2ad389c318ea8f19ea18d95b06c04f59f6`, merged through PR #40, and
-  incorporated into the authoritative branch by the documentation-only true-merge
-  `429e4b6b88a3fb3d7cece522a0386ec424cf8a1e`. Rulings R-1 through R-4 are now
-  operative as binding Increment 3 boundary authority. The companion
-  `INCREMENT_3_IMPLEMENTATION_CONTRACT.md` is likewise committed and merged and is
-  operative as a binding boundary, but remains `DRAFT — NOT AUTHORIZED FOR
-  IMPLEMENTATION`. Operative as a binding boundary is NOT the same as authorized
-  for implementation.
+- This document was independently reviewed and merged in two stages: R-1 through
+  R-4 committed in `6a11cb2ad389c318ea8f19ea18d95b06c04f59f6` and merged through
+  PR #40 (true-merge `429e4b6b88a3fb3d7cece522a0386ec424cf8a1e`); R-5 and R-6
+  committed in `8a81ce99aef3bfc05054a812d327247b57c263eb` and merged through PR #42
+  (true-merge `083a0bb1de5dd2f62f8d275bc45423f29f70ff64`). Rulings R-1 through R-6
+  are now operative as binding Increment 3 boundary authority. The companion
+  `INCREMENT_3_IMPLEMENTATION_CONTRACT.md` (corrected six-path boundary) is likewise
+  committed and merged and is operative as the binding implementation boundary, but
+  remains `DRAFT — NOT AUTHORIZED FOR IMPLEMENTATION`. Operative as a binding
+  boundary is NOT the same as authorized for implementation.
 
 ## 4. Non-authorization
 
 This rulings record:
 
 - is a committed and merged governance authority document (rulings R-1 through
-  R-4 are operative as binding Increment 3 boundaries);
+  R-6 are operative as binding Increment 3 boundaries);
 - does not authorize Increment 3 implementation, code, or test changes;
 - does not authorize tests-first or source work, an implementation worktree, or
   any product-code change;

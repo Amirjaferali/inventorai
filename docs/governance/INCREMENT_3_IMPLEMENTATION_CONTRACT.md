@@ -2,8 +2,7 @@
 
 Status:
 `DRAFT — NOT AUTHORIZED FOR IMPLEMENTATION`
-`PRIOR FIVE-PATH VERSION COMMITTED AND MERGED VIA PR #40 AND SYNCHRONIZED VIA PR #41 — CURRENTLY BINDING AS A BOUNDARY — NOT AUTHORIZED FOR IMPLEMENTATION`
-`SIX-PATH SCOPE CORRECTION (R-5 / R-6) — PROPOSED CORRECTION DRAFT — NOT YET COMMITTED — NON-OPERATIVE UNTIL INDEPENDENTLY REVIEWED, COMMITTED, AND MERGED`
+`CORRECTED SIX-PATH BOUNDARY COMMITTED AND MERGED VIA PR #42 — OPERATIVE AS A BINDING IMPLEMENTATION BOUNDARY — NOT AUTHORIZED FOR IMPLEMENTATION`
 
 This contract expressly relies on the separate owner authority-rulings document
 `docs/governance/INCREMENT_3_AUTHORITY_RULINGS.md`
@@ -323,12 +322,13 @@ merge; no Increment 4–6 work.
 - Operative as a binding boundary is NOT the same as authorized for
   implementation. This document remains `DRAFT — NOT AUTHORIZED FOR
   IMPLEMENTATION`.
-- The prior FIVE-PATH version (committed via PR #40, synchronized via PR #41) is
-  the version currently binding. The SIX-PATH scope correction (R-5 / R-6) added
-  by §4, §5, §7, §8, and §18 is a PROPOSED correction draft: it is NOT yet
-  committed or merged and is NON-OPERATIVE until independently reviewed,
-  committed, and merged into the authoritative branch. It does not retroactively
-  alter the merged version.
+- The corrected SIX-PATH boundary (R-5 / R-6) added by §4, §5, §7, §8, and §18 was
+  committed in `8a81ce99aef3bfc05054a812d327247b57c263eb` and merged via PR #42
+  (true-merge `083a0bb1de5dd2f62f8d275bc45423f29f70ff64`, ordered parents
+  `cb36da8665b5c2704c52235d1b6752ecb0e5e252` then
+  `8a81ce99aef3bfc05054a812d327247b57c263eb`). It is now OPERATIVE AS THE BINDING
+  future implementation boundary, superseding the prior five-path version (PR #40 /
+  PR #41) for current authority.
 - Source implementation is NOT yet authorized.
 - Tests-first or source work requires a separate, explicit, repository-grounded
   owner authorization for the exact scope, after source review of this contract.
@@ -345,12 +345,12 @@ Increment 4, 5, or 6. Any implementation requires a separate, explicit,
 repository-grounded owner authorization for the exact scope, after source review
 of this contract.
 
-## 18. Six-path scope correction (R-5 / R-6) — proposed
+## 18. Six-path scope correction (R-5 / R-6) — merged and binding
 
-This section consolidates the bounded correction. It is a PROPOSED DRAFT and is
-NON-OPERATIVE until independently reviewed, committed, and merged; the prior
-merged five-path version remains binding until then, and no implementation is
-authorized under either version by this section.
+This section consolidates the bounded correction. It was committed and merged via
+PR #42 (true-merge `083a0bb1de5dd2f62f8d275bc45423f29f70ff64`) and is now OPERATIVE
+as the binding Increment 3 implementation boundary, superseding the prior five-path
+version. It does not, by itself, authorize implementation.
 
 Blocking finding (from the completed read-only implementation-authorization
 review, disposition `INCREMENT 3 IMPLEMENTATION CONTRACT REQUIRES CORRECTION
@@ -377,9 +377,10 @@ Owner correction (R-5, R-6):
 - Within-level ties are broken deterministically by R-6 (ascending `rec_N`
   `record_id`, else earliest `iteration`, else stable first-encountered order).
 
-Lifecycle: existing merged contract = currently binding (five-path); this
-correction = proposed (six-path); tests-first = unauthorized; source
-implementation = unauthorized. No active-anchor amendment is required: the
-correction resolves technical routing and deterministic selection inside the
-already-approved Increment 3 identity and changes no product identity, increment
-sequence, domain authority, scoring, persistence, or stage-transition authority.
+Lifecycle: the corrected six-path contract is now the currently binding boundary
+(merged via PR #42), superseding the prior five-path version; tests-first =
+unauthorized; source implementation = unauthorized; implementation-worktree
+creation = unauthorized. No active-anchor amendment is required: the correction
+resolves technical routing and deterministic selection inside the already-approved
+Increment 3 identity and changes no product identity, increment sequence, domain
+authority, scoring, persistence, or stage-transition authority.
