@@ -2,7 +2,8 @@
 
 Status:
 `DRAFT — NOT AUTHORIZED FOR IMPLEMENTATION`
-`COMMITTED AND MERGED VIA PR #40 — OPERATIVE AS A BINDING IMPLEMENTATION BOUNDARY — NOT AUTHORIZED FOR IMPLEMENTATION`
+`PRIOR FIVE-PATH VERSION COMMITTED AND MERGED VIA PR #40 AND SYNCHRONIZED VIA PR #41 — CURRENTLY BINDING AS A BOUNDARY — NOT AUTHORIZED FOR IMPLEMENTATION`
+`SIX-PATH SCOPE CORRECTION (R-5 / R-6) — PROPOSED CORRECTION DRAFT — NOT YET COMMITTED — NON-OPERATIVE UNTIL INDEPENDENTLY REVIEWED, COMMITTED, AND MERGED`
 
 This contract expressly relies on the separate owner authority-rulings document
 `docs/governance/INCREMENT_3_AUTHORITY_RULINGS.md`
@@ -58,6 +59,15 @@ contradiction winner, change stored lifecycle/maturity, mutate assertion state,
 delete/supersede records, or introduce scoring. The output MAY state that other
 unresolved items remain, but MUST NOT present a ranked multi-item program.
 
+Within-level tie-break (R-6): after applying the order above, if more than one
+ACTIVE candidate exists at the selected level, choose exactly one by (1) lowest
+numeric `record_id` of the `rec_N` form; (2) else earliest recorded `iteration`;
+(3) else stable first-encountered order. Inactive/superseded records are excluded
+before tie-breaking. Tie-breaking is presentation-only — no truth adjudication, no
+quality ranking, no winner selection, no mutation, no scoring, no history
+deletion, no free-form heuristic; identical state always yields the same primary
+issue.
+
 ## 5. User-visible surfaces (R-3)
 
 One shared derived payload is rendered on two surfaces:
@@ -70,6 +80,19 @@ Derivation logic lives in the engine layer only. Templates render the result and
 MUST NOT independently determine priority or truth state. The session callout and
 deliverable section MUST remain consistent because they consume the SAME derived
 payload.
+
+Payload routing (R-5, O-2 operational definition): exactly ONE pure engine
+function derives the primary-issue payload. `assemble_deliverable()` invokes or
+consumes that derivation to add the deliverable section; the `show_session` route
+in `web/app.py` invokes the SAME derivation using the SAME current in-memory
+`IdeaState` and passes the resulting payload to `web/templates/session.html`. The
+deliverable surface is reachable through the assembler; the session surface is
+reachable ONLY through the `show_session` render context, which is why `web/app.py`
+is added to the bounded scope (see §7 and R-5). Both surfaces MUST compare equal
+by `issue_type` and one stable primary reference identifier (`record_id` or
+`gap_type`). No payload is persisted. A future acceptance test
+`test_session_and_deliverable_same_primary_issue` MUST demonstrate that the same
+state yields the same `(issue_type, reference_id)` on both surfaces.
 
 ## 6. Truthfulness and scope boundary (R-4)
 
@@ -85,33 +108,50 @@ active anchor. A "technical recommendation" may be displayed ONLY as a truthful
 restatement/organization of already-recorded content, with explicit uncertainty
 and validation caveats.
 
-## 7. Bounded implementation surfaces
+## 7. Bounded implementation surfaces (six paths — R-5)
 
 Subject to a SEPARATE later implementation authorization after source review, the
-contract authorizes only the following minimum surfaces. No other path may be
-included without a later owner ruling.
+contract authorizes EXACTLY SIX paths and no others. This is the R-5 correction:
+the prior version bounded five paths, which could not deliver the session callout
+because the `show_session` route owns the session render context; `web/app.py` is
+added solely for that reason. No additional path — no CSS, JavaScript, new route,
+persistence file, helper module, fixture, or existing test file other than the one
+new test file — is authorized. The six paths remain FUTURE scope only; tests-first
+and source implementation remain separately unauthorized.
 
 New:
 - `engine/idea_development_outputs.py` — pure, deterministic, non-mutating
-  derivation; selects one primary issue using §4; produces a typed
-  `Next Development Step` payload; reads existing assertions, gaps, provenance,
-  validation, pending dispositions, contradiction relationships, and derived
-  readiness; does NOT persist or mutate state.
+  derivation; selects one primary issue using §4 (including the R-6 tie-break);
+  produces a typed, IMMUTABLE `Next Development Step` payload; reads existing
+  assertions, gaps, provenance, validation, pending dispositions, contradiction
+  relationships, and derived readiness; does NOT persist or mutate state; does NOT
+  import `web/responsibility_labels.py` or any `web/` module (engine must not
+  depend on the web layer).
+- `tests/test_increment_3_visible_outputs.py` — unit, assembler, rendered-output,
+  session-callout, truthfulness, legacy, contradiction, specialist,
+  evidence-request, tie-break, O-1 no-fabrication, O-2 same-primary-issue,
+  additive-integration, mutation-safety, and protected-hash acceptance coverage.
 
 Modified:
 - `engine/deliverable_assembler.py` — call the new pure derivation; add ONE
-  additive development-guidance section; preserve all existing sections and the
-  existing verdict behavior unchanged.
+  additive development-guidance section or payload key; preserve all existing
+  sections, verdict behavior, scoring, and readiness outputs unchanged; repurpose
+  no existing package field; delete or rewrite no existing section.
+- `web/app.py` — ONLY the `show_session` route or its direct render-context
+  construction may change, and ONLY to call the shared pure Increment 3 derivation
+  with the already-loaded in-memory `IdeaState` and pass the resulting payload to
+  `web/templates/session.html`. It MUST NOT change routing behavior, add a route,
+  change request methods, mutate state, change session storage, invoke
+  persistence, write files, alter scoring, alter progression, change
+  authentication or authorization, modify database behavior, change stage
+  transitions, introduce a second priority implementation, import paused
+  persistence code, or reconcile or reuse the frozen persistence worktree.
 - `web/templates/deliverable.html` — visibly render the complete
   `Next Development Step` output (issue, reason, required action, evidence or
   specialist input, unlock condition, remaining uncertainty).
 - `web/templates/session.html` — render a compact callout from the same derived
-  payload; MUST NOT implement priority logic in the template.
-
-New tests:
-- `tests/test_increment_3_visible_outputs.py` — unit, assembler, rendered-output,
-  session-callout, truthfulness, legacy, contradiction, specialist, and
-  evidence-request acceptance coverage.
+  payload passed in by `show_session`; presentation-only; MUST NOT implement
+  priority or truth logic in the template.
 
 No existing test file other than the new test file may be modified, unless an
 existing test conflicts with the committed Increment 3 truthfulness requirements,
@@ -134,9 +174,26 @@ containing only fields equivalent to:
 - references to the relevant stored assertion or gap IDs
 
 These fields MUST NOT be persisted. The exact Python representation is determined
-during implementation review, but it must remain typed, deterministic, and
-testable. Unused/optional fields default to a truthful absence value (e.g. None /
-empty), never a fabricated value.
+during implementation review, but it must remain typed, deterministic, testable,
+and IMMUTABLE (a frozen dataclass or equivalent immutable typed structure). The
+immutability requirement introduces no persistence, schema migration,
+serialization authority, or API authority. Unused/optional fields default to a
+truthful absence value (e.g. None / empty), never a fabricated value.
+
+O-1 grounding and layering. `suggested_provider` may use only engine-resident
+responsibility information and MUST resolve to one of `OWNER_INPUT`,
+`SYSTEM_ANALYSIS`, `SPECIALIST_INPUT`, `EMPIRICAL_EVIDENCE`, `UNDETERMINED`, or a
+truthful absence (None). It is grounded in the disposition kind and the recorded
+`AssertionRecord.responsibility` (e.g. an evidence request implies empirical
+evidence, a specialist request implies specialist input, an owner answer carries
+`OWNER_INPUT`); the engine module MUST NOT import `web/responsibility_labels.py`
+or any `web/` module. No free-form provider may be invented; ungrounded provider
+information resolves to `UNDETERMINED` or absence. `sufficiency_condition` MUST be
+grounded in recorded gap, assertion, evidence, or validation context; unsupported
+regulatory, engineering, scientific, commercial, or domain criteria are
+prohibited. Future tests MUST include: provider is in the approved vocabulary or
+absent; an unknown context does not invent a provider; and sufficiency language is
+traceable to recorded state.
 
 ## 9. Per-issue behaviors
 
@@ -207,6 +264,18 @@ and no new persisted field is authorized.
 - maturity fallback;
 - fully verified-ready behavior;
 - consistent deliverable and session output (same derived payload);
+- deterministic within-level tie-break (R-6): identical state yields the same
+  primary issue;
+- session callout and deliverable section render the same `(issue_type,
+  reference_id)` (O-2);
+- `suggested_provider` is in the approved vocabulary or truthfully absent, never
+  invented (O-1);
+- the assembler change is strictly additive (existing sections/verdict/scoring/
+  readiness unchanged);
+- the `web/app.py` change is confined to the `show_session` render context and
+  changes no routing, method, state, storage, persistence, scoring, progression,
+  auth, database, or stage-transition behavior;
+- the immutable output model cannot be mutated after construction;
 - no verification overclaim;
 - no automatic contradiction winner;
 - no mutation of stored state;
@@ -220,11 +289,16 @@ Pure-derivation unit tests; priority-order tests; active-contradiction tests;
 evidence-request tests; specialist-request tests; provisional-assumption tests;
 owner-unvalidated-answer tests; open-gap fallback tests; maturity fallback tests;
 no-ledger legacy tests; no-open-gap-but-unverified tests; verified-ready tests;
-assembler integration tests; rendered-deliverable tests; rendered session-callout
-tests; mutation-safety tests; protected-hash verification; and the full
-regression suite. The known 31 failures in `tests/test_domain_registry.py` must
-remain isolated and unchanged (baseline: full suite `680 passed, 31 failed, 1
-skipped, 1 xfailed, 24 xpassed`, plus the new Increment 3 tests).
+within-level tie-break tests (R-6); `test_session_and_deliverable_same_primary_issue`
+(O-2); O-1 provider-vocabulary and no-fabrication tests; additive-integration test
+(existing assembler outputs unchanged); `web/app.py` show_session render-context
+constraint test (no routing/method/state/persistence/scoring/progression change);
+output-model immutability test; assembler integration tests; rendered-deliverable
+tests; rendered session-callout tests; mutation-safety tests; protected-hash
+verification; and the full regression suite. The known 31 failures in
+`tests/test_domain_registry.py` must remain isolated and unchanged (baseline: full
+suite `680 passed, 31 failed, 1 skipped, 1 xfailed, 24 xpassed`, plus the new
+Increment 3 tests).
 
 ## 15. Explicit non-goals
 
@@ -249,6 +323,12 @@ merge; no Increment 4–6 work.
 - Operative as a binding boundary is NOT the same as authorized for
   implementation. This document remains `DRAFT — NOT AUTHORIZED FOR
   IMPLEMENTATION`.
+- The prior FIVE-PATH version (committed via PR #40, synchronized via PR #41) is
+  the version currently binding. The SIX-PATH scope correction (R-5 / R-6) added
+  by §4, §5, §7, §8, and §18 is a PROPOSED correction draft: it is NOT yet
+  committed or merged and is NON-OPERATIVE until independently reviewed,
+  committed, and merged into the authoritative branch. It does not retroactively
+  alter the merged version.
 - Source implementation is NOT yet authorized.
 - Tests-first or source work requires a separate, explicit, repository-grounded
   owner authorization for the exact scope, after source review of this contract.
@@ -264,3 +344,42 @@ domain, or anchor changes; does not authorize a `main` merge; and does not begin
 Increment 4, 5, or 6. Any implementation requires a separate, explicit,
 repository-grounded owner authorization for the exact scope, after source review
 of this contract.
+
+## 18. Six-path scope correction (R-5 / R-6) — proposed
+
+This section consolidates the bounded correction. It is a PROPOSED DRAFT and is
+NON-OPERATIVE until independently reviewed, committed, and merged; the prior
+merged five-path version remains binding until then, and no implementation is
+authorized under either version by this section.
+
+Blocking finding (from the completed read-only implementation-authorization
+review, disposition `INCREMENT 3 IMPLEMENTATION CONTRACT REQUIRES CORRECTION
+BEFORE AUTHORIZATION`): the merged five-path scope cannot deliver the R-3 session
+callout, because the `show_session` route in `web/app.py` is the sole owner of the
+session render context and `web/templates/session.html` (presentation-only) cannot
+obtain the engine-selected payload without it. No implementation authorization was
+issued.
+
+Owner correction (R-5, R-6):
+
+- Both visible surfaces are preserved (deliverable section + session callout); O-2
+  is not deferred and the session callout is not removed.
+- Future implementation scope is expanded from five to exactly SIX paths by adding
+  `web/app.py`, which is permitted only for the narrow `show_session`
+  render-context routing described in §7 and R-5 and is otherwise fully
+  constrained.
+- One pure engine derivation feeds both surfaces; both compare equal by
+  `issue_type` and a stable reference identifier (O-2).
+- `suggested_provider` is grounded only in engine-resident responsibility
+  information and never invented (O-1); the engine module must not import any
+  `web/` module.
+- The derived payload is immutable; the assembler change is strictly additive.
+- Within-level ties are broken deterministically by R-6 (ascending `rec_N`
+  `record_id`, else earliest `iteration`, else stable first-encountered order).
+
+Lifecycle: existing merged contract = currently binding (five-path); this
+correction = proposed (six-path); tests-first = unauthorized; source
+implementation = unauthorized. No active-anchor amendment is required: the
+correction resolves technical routing and deterministic selection inside the
+already-approved Increment 3 identity and changes no product identity, increment
+sequence, domain authority, scoring, persistence, or stage-transition authority.
