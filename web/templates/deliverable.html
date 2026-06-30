@@ -228,6 +228,37 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   <div class="field-value"><em>{{ package.section_11_prototype_test_plan.note }}</em></div>
 </section>
 
+<section>
+  <h2>Next Development Step</h2>
+  {# Increment 3 (R-3): presentation-only render of the shared engine derivation
+     carried in package.section_12_next_development_step. No priority/record/
+     provider logic and no state change happen here. #}
+  {% if package.section_12_next_development_step and package.section_12_next_development_step.actionable %}
+  {% set nds = package.section_12_next_development_step %}
+  <div class="field-label">{{ nds.title }}</div>
+  <div class="field-value">{{ nds.why_it_matters }}</div>
+  <div class="field-label">Next action</div>
+  <div class="field-value">{{ nds.next_action }}</div>
+  {% if nds.evidence_needed %}
+  <div class="field-label">Evidence needed</div>
+  <div class="field-value">{{ nds.evidence_needed }}</div>
+  {% endif %}
+  {% if nds.suggested_provider %}
+  <div class="field-label">Suggested provider</div>
+  <div class="field-value">{{ nds.suggested_provider }}</div>
+  {% endif %}
+  {% if nds.sufficiency_condition %}
+  <div class="field-label">Sufficiency condition</div>
+  <div class="field-value">{{ nds.sufficiency_condition }}</div>
+  {% endif %}
+  {% if nds.remaining_uncertainty %}
+  <div class="field-value"><em>{{ nds.remaining_uncertainty }}</em></div>
+  {% endif %}
+  {% else %}
+  <div class="field-value">No actionable next development step. The recorded state shows nothing outstanding to develop next.</div>
+  {% endif %}
+</section>
+
 <p class="back-link"><a href="{{ url_for('show_session', sid=sid) }}">Back to session</a></p>
 
 </body>

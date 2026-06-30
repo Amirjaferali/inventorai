@@ -47,6 +47,20 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
 
 <div class="disclosure">{{ session_disclosure }}</div>
 
+{# Increment 3 (R-3/R-5): compact, presentation-only Next Development Step callout.
+   Renders the single primary issue selected by the shared engine derivation. The
+   template performs no priority/record/provider logic and mutates no state. #}
+{% if next_development_step and next_development_step.reference_id %}
+<div class="next-step-callout" style="background:#eef5ff;border:1px solid #b3d1ff;border-radius:4px;padding:10px 14px;margin-bottom:18px">
+  <div class="next-step-heading" style="font-weight:bold;color:#1a4f8b">Next Development Step</div>
+  <div class="next-step-issue" style="font-size:14px;margin-top:4px">{{ next_development_step.title }}</div>
+  {% if next_development_step.next_action %}
+  <div class="next-step-action" style="font-size:13px;color:#444;margin-top:4px">{{ next_development_step.next_action }}</div>
+  {% endif %}
+  <div class="next-step-ref" style="font-size:12px;color:#666;margin-top:4px">Reference: {{ next_development_step.reference_id }}</div>
+</div>
+{% endif %}
+
 <p>
   <a href="{{ url_for('show_deliverable', sid=sid) }}">
   {% if state.maturity_level >= 2 and not open_gaps %}View FDC-001 Deliverable{% else %}View In-Progress Assessment Snapshot{% endif %}

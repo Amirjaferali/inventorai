@@ -16,6 +16,9 @@ from engine.idea_state import (
     LEGACY_UNSPECIFIED, UNVALIDATED,
 )
 from engine.derived_readiness import derive_readiness
+# Increment 3: the SAME shared public derivation that feeds the session callout.
+# Imported as a module-level name so a single selection feeds both surfaces (O-2).
+from engine.idea_development_outputs import derive_next_development_step
 
 PACKAGE_VERSION = "1.0.0"
 SCHEMA_ID       = "fdc-001-mvp-v1"
@@ -108,6 +111,10 @@ def assemble_deliverable(state: IdeaState) -> dict:
         "section_9_stage3_reasoning":    _s9(state),
         "section_10_recommended_next_steps": _s10(state, open_gaps),
         "section_11_prototype_test_plan": _s11(state),
+        # Increment 3 (additive, R-3): one visible "Next Development Step" section
+        # consuming the SAME shared engine derivation as the session callout. It
+        # adds no new truth; it reorganizes already-recorded state for display.
+        "section_12_next_development_step": _s12(state),
         "_session_meta": {
             "total_iterations":     state.iteration,
             "total_gaps":           len(state.gaps),
@@ -127,6 +134,42 @@ def assemble_deliverable(state: IdeaState) -> dict:
             "derived_verified_ready": _derived_verified_ready(state),
         },
     }
+
+def _s12(state):
+    """Increment 3 additive section: render the shared next-development-step
+    derivation as a presentation-ready dict (read-only; no priority logic here).
+
+    When the derivation finds nothing actionable (verified-ready), the section is
+    present but non-actionable (`actionable=False`) — no problem is invented."""
+    payload = derive_next_development_step(state)
+    if payload is None:
+        return {
+            "actionable":            False,
+            "issue_type":            None,
+            "reference_id":          None,
+            "title":                 None,
+            "why_it_matters":        None,
+            "next_action":           None,
+            "evidence_needed":       None,
+            "suggested_provider":    None,
+            "sufficiency_condition": None,
+            "unlock_condition":      None,
+            "remaining_uncertainty": None,
+        }
+    return {
+        "actionable":            True,
+        "issue_type":            payload.issue_type,
+        "reference_id":          payload.reference_id,
+        "title":                 payload.title,
+        "why_it_matters":        payload.why_it_matters,
+        "next_action":           payload.next_action,
+        "evidence_needed":       payload.evidence_needed,
+        "suggested_provider":    payload.suggested_provider,
+        "sufficiency_condition": payload.sufficiency_condition,
+        "unlock_condition":      payload.unlock_condition,
+        "remaining_uncertainty": payload.remaining_uncertainty,
+    }
+
 
 def _derived_verified_ready(state):
     """Truthful, recomputed-on-demand verified-readiness flag for the deliverable.
