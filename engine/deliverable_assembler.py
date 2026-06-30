@@ -13,7 +13,9 @@ from engine.idea_state import (
     IdeaState, Evidence, ASSERTED, REASONED, DEMONSTRATED, OPEN, PARTIAL, CLOSED,
     STAGE_3_GAP_TYPES, PROBLEM_MECHANISM_FIT,
     ASSUMPTION_INVENTORY, EXPERTISE_GAP_AWARENESS,
+    LEGACY_UNSPECIFIED, UNVALIDATED,
 )
+from engine.derived_readiness import derive_readiness
 
 PACKAGE_VERSION = "1.0.0"
 SCHEMA_ID       = "fdc-001-mvp-v1"
@@ -26,11 +28,22 @@ _DISCLAIMER_STANDARD = (
     "claims, feasibility conclusions, and recommendations before acting on "
     "this assessment."
 )
+# Increment 2: evidence QUALITY (a reasoning-structure axis, ADR-003) is not
+# validation. The REASONED label no longer implies technical confirmation
+# "beyond stored evidence" — validation is surfaced separately on each evidence
+# view via `validation_status`.
 _QUALITY_LABELS = {
     ASSERTED:     "Asserted (inventor-stated, unvalidated)",
-    REASONED:     "Reasoned (technically substantiated)",
+    REASONED:     "Reasoned (inventor's structured rationale; not validated)",
     DEMONSTRATED: "Demonstrated (externally evidenced)",
     None:         "No evidence recorded",
+}
+# Honest, human-readable labels for the Increment 2 validation axis.
+_VALIDATION_LABELS = {
+    "UNVALIDATED":              "Not validated",
+    "SPECIALIST_REVIEWED":      "Specialist-reviewed",
+    "EMPIRICALLY_DEMONSTRATED": "Empirically demonstrated",
+    "INDEPENDENTLY_VERIFIED":   "Independently verified",
 }
 _MATURITY_LABELS = {
     0: "Level 0 — Problem signal not yet established",
@@ -107,8 +120,20 @@ def assemble_deliverable(state: IdeaState) -> dict:
             "evidence_quality":     _overall_quality(state),
             "idea_summary":          getattr(state, "idea_summary", None),  # R-007
             "deliverable_eligible": _eligible(state, open_gaps),
+            # Increment 2: derived verified readiness, presented SEPARATELY from
+            # stored maturity/lifecycle and from legacy `deliverable_eligible`.
+            # Purely recomputed; it never overrides or mutates stored state, and
+            # stored CLOSED / high maturity does not force it True.
+            "derived_verified_ready": _derived_verified_ready(state),
         },
     }
+
+def _derived_verified_ready(state):
+    """Truthful, recomputed-on-demand verified-readiness flag for the deliverable.
+    Reads the append-only ledger via the pure derived-readiness module; defaults
+    to False when there is no validated basis (e.g. legacy states with no ledger
+    records). Never overstates certainty from stored maturity/lifecycle alone."""
+    return derive_readiness(state).overall_verified()
 
 def _s1():
     return {"tier": "standard", "text": _DISCLAIMER_STANDARD, "applies": True}
@@ -256,11 +281,36 @@ def _s7(state, open_gaps):
             "gap_label": "Maturity level",
             "action": "Continue with technically substantive answers to reach Level 2.",
             "priority": "high"})
+    # F-1 truthfulness: when derived verified readiness is NOT met, a positive
+    # verdict/rationale must not imply verified readiness. Stored maturity and the
+    # stored gap lifecycle remain visible as stored state (deliverable_eligible,
+    # maturity_label and gap statuses are unchanged); derived readiness is shown
+    # separately. We qualify only the already-rendered verdict/rationale and add a
+    # visible Open Item — no template change, no new verdict value, no change to
+    # stored eligibility, and no claim that the idea is technically verified.
+    derived_ready = _derived_verified_ready(state)
+    if not derived_ready and verdict in ("PROCEED", "PROCEED WITH CAUTION"):
+        verdict = "PROCEED WITH CAUTION"
+        rationale = (
+            "Structurally progressed: stored maturity and the stored gap "
+            "lifecycle are recorded as shown, but derived verified readiness is "
+            "NOT met — recorded supporting evidence remains unvalidated, "
+            "provisional, pending, or contradicted. Proceed only with "
+            "verification caution; this is not a determination that the idea is "
+            "technically verified, and unresolved validation items remain even "
+            "where stored gaps are CLOSED.")
+        cat_d.append({"item_type": "validation_unresolved", "gap_type": None,
+            "gap_label": "Evidence validation",
+            "action": "Validate the supporting evidence (specialist review, "
+                      "demonstration, or independent verification): verification "
+                      "remains incomplete even where stored gaps are CLOSED.",
+            "priority": "high"})
     return {
         "category_a_proceed_revise_block": {"verdict": verdict, "rationale": rationale,
             "basis": {"maturity_level": state.maturity_level,
                       "open_gap_count": len(open_gaps),
-                      "evidence_quality": _overall_quality(state)}},
+                      "evidence_quality": _overall_quality(state),
+                      "derived_verified_ready": derived_ready}},
         "category_b_material_selection": {"status": "DEFERRED",
             "note": "Requires Options Database (ODS-001). Not in the current MVP."},
         "category_c_manufacturing":      {"status": "DEFERRED",
@@ -649,9 +699,15 @@ def _now_iso():
 
 def _ev(ev):
     if ev is None: return None
+    validation = getattr(ev, "validation_status", UNVALIDATED)
     return {"content": getattr(ev, "content", str(ev)),
             "quality": getattr(ev, "quality", None),
-            "quality_label": _QUALITY_LABELS.get(getattr(ev, "quality", None), "Unknown")}
+            "quality_label": _QUALITY_LABELS.get(getattr(ev, "quality", None), "Unknown"),
+            # Increment 2: provenance and validation are surfaced separately from
+            # quality, so REASONED is never presented as verified by quality alone.
+            "provenance": getattr(ev, "provenance", LEGACY_UNSPECIFIED),
+            "validation_status": validation,
+            "validation_label": _VALIDATION_LABELS.get(validation, "Not validated")}
 
 def _resolved_problem(state):
     """
