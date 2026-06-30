@@ -2,10 +2,11 @@
 
 Status:
 `DRAFT — NOT AUTHORIZED FOR IMPLEMENTATION`
+`COMMITTED AND MERGED VIA PR #40 — OPERATIVE AS A BINDING IMPLEMENTATION BOUNDARY — NOT AUTHORIZED FOR IMPLEMENTATION`
 
 This contract expressly relies on the separate owner authority-rulings document
 `docs/governance/INCREMENT_3_AUTHORITY_RULINGS.md`
-(`OWNER-RATIFIED AUTHORITY RULINGS — DRAFT — NOT YET COMMITTED`). It defines
+(`OWNER-RATIFIED AND MERGED AUTHORITY RULINGS`). It defines
 bounded behavior only. It is not an implementation design and prescribes no
 final Python class, exact field name, API signature, or CSS.
 
@@ -237,21 +238,29 @@ merge; no Increment 4–6 work.
 ## 16. Authorization state
 
 - Owner rulings R-1 through R-4 are APPROVED (see
-  `INCREMENT_3_AUTHORITY_RULINGS.md`).
+  `INCREMENT_3_AUTHORITY_RULINGS.md`), and that rulings document is committed and
+  merged.
 - Contract drafting is authorized; this draft is its product.
+- This document was independently reviewed, committed in
+  `6a11cb2ad389c318ea8f19ea18d95b06c04f59f6`, merged through PR #40, and
+  incorporated into the authoritative branch by the documentation-only true-merge
+  `429e4b6b88a3fb3d7cece522a0386ec424cf8a1e`. It is therefore OPERATIVE AS A
+  BINDING IMPLEMENTATION BOUNDARY.
+- Operative as a binding boundary is NOT the same as authorized for
+  implementation. This document remains `DRAFT — NOT AUTHORIZED FOR
+  IMPLEMENTATION`.
 - Source implementation is NOT yet authorized.
 - Tests-first or source work requires a separate, explicit, repository-grounded
   owner authorization for the exact scope, after source review of this contract.
-- This document remains DRAFT and non-operative until independently reviewed,
-  committed, and merged into the authoritative branch. It is NOT
-  implementation-authorized.
 
 ## 17. Non-authorization
 
-This contract: is a documentation draft only; is not yet committed authority;
-does not authorize Increment 3 implementation; does not authorize code or test
-changes; does not authorize staging, committing, pushing, or PR creation; does
-not authorize persistence, scoring, progression, domain, or anchor changes; does
-not authorize a `main` merge; and does not begin Increment 4, 5, or 6. Any
-implementation requires a separate, explicit, repository-grounded owner
-authorization for the exact scope, after source review of this contract.
+This contract: is a committed and merged governance boundary document that is
+operative as a binding boundary but is NOT authorized for implementation; does
+not authorize Increment 3 implementation; does not authorize code or test
+changes; does not authorize tests-first work, an implementation worktree, or any
+product-code change; does not authorize persistence, scoring, progression,
+domain, or anchor changes; does not authorize a `main` merge; and does not begin
+Increment 4, 5, or 6. Any implementation requires a separate, explicit,
+repository-grounded owner authorization for the exact scope, after source review
+of this contract.

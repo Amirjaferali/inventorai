@@ -34,7 +34,7 @@ hides them.
 | Authoritative execution branch | `origin/feature/atomic-json-session-persistence` — the Adaptive Idea Orchestration lane execution branch. Its authoritative tip is always the latest commit integrated into this branch (see the two rows below). This branch carries the committed FDC-001 implementation, all FDC-002 documentation, and the integrated FDC-002 implementation (PR #23 true-merge `7dffea8333759f1e21f159ded51bf0e14c6e24ee`). Reconciliation of `origin/main` (`0e89e4636399760965c9ff8086b465c90dbadf8e`) with this lane branch is a separate governed question, not decided here. |
 | Pre-synchronization authoritative predecessor (base of this roadmap synchronization, PR #21) | `0b0517b0906ce75cdb51007bdde3cc94ccb3c241` — PR #20 true-merge (ordered parents `820b8f6a8b56b8245b6ddfef71930e219105aa78` then `a8538d10411df0985afdf727343d07aaabe17df1`), remotely verified. This is the branch tip on which this roadmap synchronization (PR #21) was prepared. It is NOT the authoritative tip after PR #21 is integrated. |
 | Authoritative tip after PR #21 integration | Upon true-merge of PR #21, the authoritative tip of `origin/feature/atomic-json-session-persistence` becomes the resulting PR #21 true-merge commit. That commit does not yet exist; its full SHA must be captured in the PR #21 post-merge closure report and is not asserted here. (HISTORICAL provenance — superseded by the current authoritative tip below.) |
-| Authoritative execution tip (branch-relative) | The authoritative tip is the latest owner-authorized true-merge commit integrated into `origin/feature/atomic-json-session-persistence`. The current authoritative product-execution tip is the Increment 2 — Truthful Gap and Evidence State — true-merge `66415d41515f5a6bf379549f0e4547a5b15ce127` (PR #38, ordered parents `a7e97cbc455e8ff4ec435650f4f4039dc4885075` (PR #37 documentation-sync merge) then `71efce9cc9e083bf261bfdd073836afcb967d4c2` (accepted PR #38 head — the reviewed Increment 2 implementation)); the prior product-execution tip, the Increment 1 Owner–Expert Question-Boundary true-merge `68f7dcbe4f0ff9b53f9acd6ce33c5c00708274e9` (PR #34), is now a historical predecessor. The Increment 1B clarification-display true-merge `b46ac10492103358c7122e1fe2cdcb156cab4a37` (PR #31) and the PR #33 documentation-sync merge `8ae15a94d488eaef581511a543b1905743e7e0f7` are now historical predecessors. The branch tip earlier advanced through documentation-only merges that did NOT advance the product-execution tip — the PR #35 roadmap-synchronization true-merge `2ec983b52a29e90aebf237f95ac61caf71ecd2c7`, the PR #36 Increment 2 authority-rulings and bounded implementation-contract true-merge `865c66e85f0cb716cd118172c7ea7dec15d5eb1f`, and the PR #37 roadmap-synchronization true-merge `a7e97cbc455e8ff4ec435650f4f4039dc4885075` — and has since advanced through the PR #38 Increment 2 SOURCE-implementation true-merge `66415d41515f5a6bf379549f0e4547a5b15ce127`, which DOES advance the product-execution lane; the current branch tip and product-execution tip are now both that PR #38 merge commit. `main` remains `0e89e4636399760965c9ff8086b465c90dbadf8e` and is outside this merge. Earlier integrated execution commits — including the prior documentation-sync merge `4e1609ee98e281d1ae2522484ceea753d115902b` (PR #30), the Increment 1B responsibility-guidance true-merge `4fc57ef8da06fece74d46a598129f82a67182d88` (PR #29), the PR #28 Increment 1A true-merge `0afb617e5ab42ecab91e5ce533859718e8b4983e`, and the PR #23 FDC-002 true-merge `7dffea8333759f1e21f159ded51bf0e14c6e24ee` — remain historical predecessors. The PR #21/#22 "tip after integration" rows are historical provenance. |
+| Authoritative execution tip (branch-relative) | The authoritative tip is the latest owner-authorized true-merge commit integrated into `origin/feature/atomic-json-session-persistence`. The current authoritative product-execution tip is the Increment 2 — Truthful Gap and Evidence State — true-merge `66415d41515f5a6bf379549f0e4547a5b15ce127` (PR #38, ordered parents `a7e97cbc455e8ff4ec435650f4f4039dc4885075` (PR #37 documentation-sync merge) then `71efce9cc9e083bf261bfdd073836afcb967d4c2` (accepted PR #38 head — the reviewed Increment 2 implementation)); the prior product-execution tip, the Increment 1 Owner–Expert Question-Boundary true-merge `68f7dcbe4f0ff9b53f9acd6ce33c5c00708274e9` (PR #34), is now a historical predecessor. The Increment 1B clarification-display true-merge `b46ac10492103358c7122e1fe2cdcb156cab4a37` (PR #31) and the PR #33 documentation-sync merge `8ae15a94d488eaef581511a543b1905743e7e0f7` are now historical predecessors. The branch tip earlier advanced through documentation-only merges that did NOT advance the product-execution tip — the PR #35 roadmap-synchronization true-merge `2ec983b52a29e90aebf237f95ac61caf71ecd2c7`, the PR #36 Increment 2 authority-rulings and bounded implementation-contract true-merge `865c66e85f0cb716cd118172c7ea7dec15d5eb1f`, and the PR #37 roadmap-synchronization true-merge `a7e97cbc455e8ff4ec435650f4f4039dc4885075` — and has since advanced through the PR #38 Increment 2 SOURCE-implementation true-merge `66415d41515f5a6bf379549f0e4547a5b15ce127`, which DOES advance the product-execution lane. The branch tip has since advanced through two further documentation-only governance true-merges that did NOT advance the product-execution lane — the PR #39 roadmap-synchronization true-merge `408385f3a7461393e8e9dc0b9f4e1c6433a0f5ce` and the PR #40 Increment 3 authority-rulings and bounded implementation-contract true-merge `429e4b6b88a3fb3d7cece522a0386ec424cf8a1e` (ordered parents `408385f3a7461393e8e9dc0b9f4e1c6433a0f5ce` then `6a11cb2ad389c318ea8f19ea18d95b06c04f59f6`) — so the authoritative branch tip is now `429e4b6b88a3fb3d7cece522a0386ec424cf8a1e` while the product-execution tip remains the PR #38 Increment 2 merge `66415d41515f5a6bf379549f0e4547a5b15ce127`. `main` remains `0e89e4636399760965c9ff8086b465c90dbadf8e` and is outside this merge. Earlier integrated execution commits — including the prior documentation-sync merge `4e1609ee98e281d1ae2522484ceea753d115902b` (PR #30), the Increment 1B responsibility-guidance true-merge `4fc57ef8da06fece74d46a598129f82a67182d88` (PR #29), the PR #28 Increment 1A true-merge `0afb617e5ab42ecab91e5ce533859718e8b4983e`, and the PR #23 FDC-002 true-merge `7dffea8333759f1e21f159ded51bf0e14c6e24ee` — remain historical predecessors. The PR #21/#22 "tip after integration" rows are historical provenance. |
 | Frozen local persistence worktree | `/home/user/inventorai` remains at `aec9cf6409efc18e125b6745762002f59e529654` with seven paused, uncommitted persistence paths. It is NOT a current checkout of the authoritative execution branch tip and must remain untouched. PERSISTENCE_STATUS: PRESERVE UNMODIFIED AND PAUSE. The persistence-reconciliation readiness assessment has since been completed read-only; the owner decision is CONTINUE PRESERVE UNMODIFIED AND PAUSE (direct port rejected; selective reconciliation deferred). The assessment made no repository change and approved no reconciliation plan; the seven paused paths remain untouched. |
 | Gate 8 product/governance baseline (historical, superseded for the execution lane) | `6c2277ff95204d57f5c73e32540498d46f044b10` — Gate 8 owner product-identity synchronization, remotely verified; direct parent `31b34d8`; Gate 8 sequence begins at `5768d31`. This is HISTORICAL: it is no longer the latest authoritative execution baseline (the execution lane has since advanced on `origin/feature/atomic-json-session-persistence`, predecessor tip `0b0517b0906ce75cdb51007bdde3cc94ccb3c241`); it remains the governing Gate 8 product-identity baseline. |
 | Pre-synchronization remote baseline (historical) | `origin/main = 6c2277ff95204d57f5c73e32540498d46f044b10` was the remote-main baseline before the Adaptive Idea Orchestration lane advanced on `feature/atomic-json-session-persistence`; it does not describe the current execution tip. |
@@ -524,26 +524,61 @@ NEXT GOVERNED ACTION:
     implementation branch or worktree (the head branch `feature/increment-2-truthful-state`
     is preserved).
 
-    The sole next governed action is a READ-ONLY INCREMENT 3 — VISIBLE IDEA-DEVELOPMENT
-    OUTPUTS — READINESS ASSESSMENT — an assessment-only determination of the next bounded
-    visible idea-development value to build on the truthful evidence and readiness state,
-    such as clearer next-action guidance, gap-specific evidence requests, specialist
-    handoff preparation, contradiction-resolution assistance without automated winner
-    selection, and stronger idea assembly and technical recommendation output. That
-    assessment has not begun; it requires its own separate, explicit, repository-grounded
-    owner authorization; it is assessment-only; and it does NOT authorize Increment 3
-    implementation, any source or test edit, a new contract, an implementation branch or
+    The READ-ONLY INCREMENT 3 — VISIBLE IDEA-DEVELOPMENT OUTPUTS — READINESS ASSESSMENT
+    has since been completed, and the Increment 3 governance foundation is now
+    established. INCREMENT 3 READINESS, OWNER RULINGS, AND BOUNDED CONTRACT — COMPLETED
+    AND MERGED: the read-only readiness assessment was performed (disposition conditional
+    pending owner rulings); the owner ratified rulings R-1 through R-4 (R-1 unified
+    `NEXT DEVELOPMENT STEP` scope; R-2 deterministic seven-tier presentation priority;
+    R-3 two surfaces from one engine-derived payload; R-4 truthfulness and scope
+    boundary); the bounded implementation contract was drafted; both documents were
+    independently reviewed (VALID WITH NON-BLOCKING OBSERVATIONS); committed in
+    `6a11cb2ad389c318ea8f19ea18d95b06c04f59f6`; PR #40 was created; independently
+    PR-reviewed (`PR #40 VALID WITH NON-BLOCKING OBSERVATIONS — READY FOR CONDITIONAL
+    MERGE AUTHORIZATION`); and true-merged and post-merge verified
+    (`PR #40 TRUE-MERGED AND FULLY VERIFIED`) via the documentation-only true-merge
+    `429e4b6b88a3fb3d7cece522a0386ec424cf8a1e` (ordered parents
+    `408385f3a7461393e8e9dc0b9f4e1c6433a0f5ce` then
+    `6a11cb2ad389c318ea8f19ea18d95b06c04f59f6`). The merged documents are
+    `docs/governance/INCREMENT_3_AUTHORITY_RULINGS.md` (127 lines, SHA-256
+    `572737822d51a3d595c87cc8d675bff66d37fda3eae5d57411f06d49c7049502`) and
+    `docs/governance/INCREMENT_3_IMPLEMENTATION_CONTRACT.md` (257 lines, SHA-256
+    `e41d0ac513acfcce6611521707e2428f619ee13e767b3344d4bf204a4f3f91e8`). PR #40 is
+    documentation-only and did NOT advance the product-execution tip (which remains the
+    PR #38 merge `66415d41515f5a6bf379549f0e4547a5b15ce127`); `main` remains
+    `0e89e4636399760965c9ff8086b465c90dbadf8e`.
+
+    The rulings and contract are now merged and authoritative as binding Increment 3
+    boundaries. The implementation contract remains `DRAFT — NOT AUTHORIZED FOR
+    IMPLEMENTATION` — operative as a binding boundary is NOT the same as authorized for
+    implementation. Increment 3 tests-first work remains unauthorized; Increment 3 source
+    implementation remains unauthorized; no implementation worktree is authorized; and no
+    product code has changed for Increment 3. Two non-blocking review observations are
+    carried forward for the next read-only review: O-1 — `suggested_provider` and
+    `sufficiency_condition` must remain grounded in the responsibility axis, recorded gap
+    context, and existing evidence and assertion context, with an explicit no-fabrication
+    test; O-2 — tests must prove that the session callout and the deliverable section
+    render the same engine-selected primary issue.
+
+    The sole next governed action is a READ-ONLY INCREMENT 3 — IMPLEMENTATION
+    AUTHORIZATION REVIEW — a read-only, repository-grounded review bounded to the merged
+    five-path contract, intended only to determine whether a later explicit Increment 3
+    implementation authorization may be issued. It has not begun; it requires its own
+    separate, explicit, repository-grounded owner authorization; it is review-only; and it
+    is NOT tests-first authorization, NOT source-implementation authorization, NOT
+    worktree-creation authorization, and NOT staging or commit authorization. It does NOT
+    authorize any source or test edit, a new contract, an implementation branch or
     worktree, staging, committing, pushing, a PR, a change to any protected function,
     Increment 1C activation, a specialist workspace or collaboration mode, clarification
     interaction, system analysis, domain expansion, or persistence planning or
     reconciliation.
 
     This synchronization records completed status only; it authorizes no product code, no
-    authority change, no new governance document, no Increment 3 readiness assessment in
-    this turn, no Increment 1C, no persistence planning or reconciliation, no specialist
+    authority change, no new governance document, no Increment 3 implementation in this
+    turn, no Increment 1C, no persistence planning or reconciliation, no specialist
     collaboration, no domain expansion, and no merge into `main`. The READ-ONLY INCREMENT 3
-    — VISIBLE IDEA-DEVELOPMENT OUTPUTS — READINESS ASSESSMENT is the sole next governed
-    action and remains separately gated.
+    — IMPLEMENTATION AUTHORIZATION REVIEW is the sole next governed action and remains
+    separately gated.
 
     The frozen-worktree persistence remains PRESERVE UNMODIFIED AND PAUSE (frozen
     worktree `/home/user/inventorai` at `aec9cf6409efc18e125b6745762002f59e529654`,
@@ -652,11 +687,28 @@ its own separate explicit owner authorization; recorded in
    byte-identical; Increment 2 `47 passed`; full suite `680 passed, 31 failed, 1 skipped,
    1 xfailed, 24 xpassed`, all 31 failures confined to `tests/test_domain_registry.py`.
    `main` `0e89e4636399760965c9ff8086b465c90dbadf8e` unchanged and outside this merge; head
-   branch `feature/increment-2-truthful-state` preserved. The sole next governed action is
-   a READ-ONLY INCREMENT 3 — VISIBLE IDEA-DEVELOPMENT OUTPUTS — READINESS ASSESSMENT
-   (assessment-only; authorizes no implementation, no contract, and no product code).
+   branch `feature/increment-2-truthful-state` preserved. The Increment 3 readiness
+   assessment, owner rulings R-1 through R-4, and bounded implementation contract have
+   since been COMPLETED AND MERGED via PR #40 (see item 9). The sole next governed action
+   is a READ-ONLY INCREMENT 3 — IMPLEMENTATION AUTHORIZATION REVIEW (review-only;
+   authorizes no implementation, no tests-first work, no worktree, and no product code).
 9. Increment 3 — Visible Idea-Development Outputs (bounded, provenance-labeled,
    identity-preserving platform-added value; "Improvement Not Generation" preserved).
+   AUTHORITY RULINGS R-1 THROUGH R-4 AND BOUNDED IMPLEMENTATION CONTRACT (the unified
+   `NEXT DEVELOPMENT STEP` capability) — COMMITTED AND INTEGRATED via PR #40 (true-merge
+   `429e4b6b88a3fb3d7cece522a0386ec424cf8a1e`, ordered parents
+   `408385f3a7461393e8e9dc0b9f4e1c6433a0f5ce` then
+   `6a11cb2ad389c318ea8f19ea18d95b06c04f59f6`); documents
+   `INCREMENT_3_AUTHORITY_RULINGS.md` (127 lines, SHA-256
+   `572737822d51a3d595c87cc8d675bff66d37fda3eae5d57411f06d49c7049502`) and
+   `INCREMENT_3_IMPLEMENTATION_CONTRACT.md` (257 lines, SHA-256
+   `e41d0ac513acfcce6611521707e2428f619ee13e767b3344d4bf204a4f3f91e8`). The contract
+   remains `DRAFT — NOT AUTHORIZED FOR IMPLEMENTATION` and is operative only as a binding
+   boundary; Increment 3 tests-first work and source implementation remain unauthorized,
+   and no Increment 3 product code has changed. Carried-forward review observations O-1
+   (provider/sufficiency grounding with a no-fabrication test) and O-2 (session/deliverable
+   same-primary-issue test) are preserved for the next review. The next governed action is
+   a READ-ONLY INCREMENT 3 — IMPLEMENTATION AUTHORIZATION REVIEW.
 10. Increments 4–6 — Atomic Requirements & Criticality-Aware Risk Register;
     Concrete Validation-Plan Generation; Deliverable Redesign (last; depends on the
     corrected source semantics and outputs).

@@ -1,7 +1,7 @@
 # Increment 3 — Visible Next Development Step — Owner Authority Rulings
 
 Status:
-`OWNER-RATIFIED AUTHORITY RULINGS — DRAFT — NOT YET COMMITTED`
+`OWNER-RATIFIED AND MERGED AUTHORITY RULINGS`
 
 This document records the owner's binding rulings that resolve the conditional
 disposition of the completed read-only Increment 3 readiness assessment
@@ -110,17 +110,25 @@ uncertainty and validation caveats.
 - Source implementation is NOT yet authorized.
 - Tests-first or source work requires a separate, explicit, repository-grounded
   owner authorization.
-- This document and the companion contract remain DRAFT and non-operative until
-  independently reviewed, committed, and merged into the authoritative branch.
+- This document was independently reviewed, committed in
+  `6a11cb2ad389c318ea8f19ea18d95b06c04f59f6`, merged through PR #40, and
+  incorporated into the authoritative branch by the documentation-only true-merge
+  `429e4b6b88a3fb3d7cece522a0386ec424cf8a1e`. Rulings R-1 through R-4 are now
+  operative as binding Increment 3 boundary authority. The companion
+  `INCREMENT_3_IMPLEMENTATION_CONTRACT.md` is likewise committed and merged and is
+  operative as a binding boundary, but remains `DRAFT — NOT AUTHORIZED FOR
+  IMPLEMENTATION`. Operative as a binding boundary is NOT the same as authorized
+  for implementation.
 
 ## 4. Non-authorization
 
 This rulings record:
 
-- is a documentation draft only;
-- is not yet committed authority;
+- is a committed and merged governance authority document (rulings R-1 through
+  R-4 are operative as binding Increment 3 boundaries);
 - does not authorize Increment 3 implementation, code, or test changes;
-- does not authorize staging, committing, pushing, or PR creation;
+- does not authorize tests-first or source work, an implementation worktree, or
+  any product-code change;
 - does not authorize persistence, scoring, progression-loop, domain, or anchor
   changes;
 - does not authorize a `main` merge;
