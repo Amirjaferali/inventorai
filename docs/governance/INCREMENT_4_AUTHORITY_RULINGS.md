@@ -432,3 +432,64 @@ Status:
 This document is owner-approved text only. It is not active or merged repository
 authority until the separate review, commit, push, PR, and true-merge
 authorizations are completed.
+
+## 12. Post-merge authority-status amendment
+
+### 12.1 Historical-status preservation
+
+The original status recorded near the top and bottom of this document —
+`OWNER-APPROVED TEXT — PENDING COMMITTED GOVERNANCE INTEGRATION` — accurately
+described this document when it was created and independently reviewed, before it was
+committed and merged. That original status and the §1 / §11 non-authorization language
+are preserved as historical provenance and MUST NOT be retroactively rewritten or
+deleted.
+
+### 12.2 Current authority status
+
+Current status:
+
+`OWNER-RATIFIED AND MERGED REPOSITORY AUTHORITY`
+
+- PR: `#47`
+- Source commit: `f2eae3eb883d9b6d5397541406733c702741feb9`
+- True-merge commit: `393537aa7671b9a6e0cfbcde5a05047e5e76c842`
+- Ordered parents:
+  1. `2048fe8ab211117362b5c4ad3ecc4ee5cb45b2d6`
+  2. `f2eae3eb883d9b6d5397541406733c702741feb9`
+- Merged file SHA-256: `445e283198e60ecd057b9726948d3ff2cf52fd907d89b3d4215ee3ca6f49e1a9`
+
+### 12.3 Authority effect
+
+C4-R1 through C4-R13 are now binding merged repository authority for subsequent
+Increment 4 decisions. This merge is governance-document-only: the product-execution
+tip does NOT advance and remains `b5a8e72b26acc5ddbee355bc69b419ff09152c50` (PR #45
+Increment 3 SOURCE merge); `main` remains `0e89e4636399760965c9ff8086b465c90dbadf8e`.
+
+### 12.4 Non-authorization boundary
+
+This merge does NOT itself authorize:
+
+- design creation;
+- implementation-contract drafting;
+- tests-first work;
+- source implementation;
+- persistence work;
+- domain expansion;
+- domain-registry repair;
+- a specialist workspace;
+- a professional requirements-management workspace;
+- an Increment 3 amendment;
+- an active-anchor amendment.
+
+Increment 3 remains closed and unmodified, and the active anchor is unchanged.
+
+### 12.5 Next governed action
+
+`READ-ONLY INCREMENT 4 DESIGN/READINESS ASSESSMENT`
+
+- It is a separate owner-gated operation.
+- No design artifact may be created during that assessment.
+- Tests-first remains unauthorized until a separate later decision; C4-R13's
+  prerequisite (C4-R1 through C4-R12 committed and merged) is now satisfied, but that
+  satisfaction does NOT automatically authorize tests-first work.
+- The product-execution tip remains `b5a8e72b26acc5ddbee355bc69b419ff09152c50`.
