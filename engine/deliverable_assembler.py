@@ -19,6 +19,9 @@ from engine.derived_readiness import derive_readiness
 # Increment 3: the SAME shared public derivation that feeds the session callout.
 # Imported as a module-level name so a single selection feeds both surfaces (O-2).
 from engine.idea_development_outputs import derive_next_development_step
+# Increment 4 (additive): the pure Requirement Landscape derivation. Consumed by
+# the single additive section _s13; adds no new truth and changes no prior section.
+from engine.requirement_landscape import derive_requirement_landscape
 
 PACKAGE_VERSION = "1.0.0"
 SCHEMA_ID       = "fdc-001-mvp-v1"
@@ -115,6 +118,9 @@ def assemble_deliverable(state: IdeaState) -> dict:
         # consuming the SAME shared engine derivation as the session callout. It
         # adds no new truth; it reorganizes already-recorded state for display.
         "section_12_next_development_step": _s12(state),
+        # Increment 4 (additive): the provenance-anchored Requirement Landscape.
+        # Human-readable only; adds no new truth and changes no prior section.
+        "section_13_requirement_landscape": _s13(state),
         "_session_meta": {
             "total_iterations":     state.iteration,
             "total_gaps":           len(state.gaps),
@@ -134,6 +140,48 @@ def assemble_deliverable(state: IdeaState) -> dict:
             "derived_verified_ready": _derived_verified_ready(state),
         },
     }
+
+_ZERO_RISK_DISCLAIMER = (
+    "No structurally grounded risks are recorded for the current requirements. "
+    "This is not a statement that the idea is risk-free, safe, or verified; it "
+    "means no structural adverse-consequence signal exists in the recorded state."
+)
+_REQUIREMENT_LANDSCAPE_EMPTY = (
+    "No active, provenance-anchored requirements are recorded yet. This is an "
+    "idea-development state, not an error: nothing outstanding has been captured "
+    "to derive a requirement from."
+)
+
+
+def _s13(state):
+    """Increment 4 additive section: render the pure Requirement Landscape
+    derivation as a presentation-ready, JSON-safe dict (read-only; mirrors _s12).
+    Human-readable labels only — no raw enum or internal identifier is exposed."""
+    landscape = derive_requirement_landscape(state)
+    requirements = []
+    for r in landscape.requirements:
+        action = r.resolving_action
+        requirements.append({
+            "statement":             r.statement,
+            "provenance":            r.primary_anchor.display_label,
+            "status":                r.source_status,
+            "criticality":           r.criticality,
+            "criticality_authority": r.criticality_authority,
+            "criticality_rationale": r.criticality_rationale,
+            "resolving_action":      (action.statement if action is not None else None),
+            "supporting_references": [ref.display_label for ref in r.supporting_references],
+            "has_linked_risk":       bool(r.linked_risk_ids),
+        })
+    return {
+        "title":           "Requirement Landscape",
+        "requirements":    requirements,
+        "total":           len(requirements),
+        "empty_statement": _REQUIREMENT_LANDSCAPE_EMPTY,
+        "risks":           [],
+        "has_risks":       bool(landscape.risks),
+        "risk_disclaimer": _ZERO_RISK_DISCLAIMER,
+    }
+
 
 def _s12(state):
     """Increment 3 additive section: render the shared next-development-step

@@ -259,6 +259,38 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% endif %}
 </section>
 
+<section>
+  <h2>Requirement Landscape</h2>
+  {# Increment 4 (additive): presentation-only render of the provenance-anchored
+     requirement landscape in package.section_13_requirement_landscape. Human-
+     readable labels only; no raw enum, identifier, or state change happens here. #}
+  {% set rl = package.section_13_requirement_landscape %}
+  {% if rl.requirements %}
+  {% for req in rl.requirements %}
+  <div class="field-label">{{ req.statement }}</div>
+  <div class="field-value"><strong>Provenance:</strong> {{ req.provenance }}</div>
+  <div class="field-value"><strong>Status:</strong> {{ req.status }}</div>
+  <div class="field-value"><strong>Criticality:</strong> {{ req.criticality }} ({{ req.criticality_authority }})</div>
+  {% if req.criticality_rationale %}
+  <div class="field-value"><strong>Rationale:</strong> {{ req.criticality_rationale }}</div>
+  {% endif %}
+  {% if req.resolving_action %}
+  <div class="field-value"><strong>Resolving action:</strong> {{ req.resolving_action }}</div>
+  {% endif %}
+  {% if req.supporting_references %}
+  <div class="field-value"><strong>Supporting references:</strong>
+    {% for ref in req.supporting_references %}{{ ref }}{% if not loop.last %}; {% endif %}{% endfor %}
+  </div>
+  {% endif %}
+  {% endfor %}
+  {% else %}
+  <div class="field-value">{{ rl.empty_statement }}</div>
+  {% endif %}
+  {% if not rl.has_risks %}
+  <div class="field-value"><em>{{ rl.risk_disclaimer }}</em></div>
+  {% endif %}
+</section>
+
 <p class="back-link"><a href="{{ url_for('show_session', sid=sid) }}">Back to session</a></p>
 
 </body>
