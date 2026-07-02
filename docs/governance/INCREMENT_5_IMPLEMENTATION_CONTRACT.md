@@ -119,8 +119,12 @@ EXCLUDED (MUST NOT), in MVP-1 and by this contract:
   `linked_risk_ids`.
 - **Increment 2 axes (read-only, via `engine.idea_state` only):** where a step's
   classification consults record truth, it MAY read `AssertionRecord` fields
-  already carried on the ledger — `disposition`, `provenance`, `validation_status`,
-  `superseded_by` — reachable through `engine.idea_state` (no third import). Active-
+  already carried on the ledger — `responsibility`, `disposition`, `provenance`,
+  `validation_status`, `superseded_by` — reachable through `engine.idea_state` (no
+  third import). The explicit `AssertionRecord.responsibility` field, when present
+  and a valid member of the responsibility vocabulary, is the PRIMARY structural
+  responsibility signal (§7); `disposition` and `provenance` are fallback
+  structural evidence. Active-
   set and supersession handling are inherited: only records with
   `superseded_by is None` participate, exactly as the Increment 4 derivation
   already enforces on `state.assertions` and `state.get_open_gaps()`.
@@ -224,36 +228,72 @@ text. No raw enum token leaks into rendered output (mirrors Increment 4 §7.3).
 The five responsibility classes are frozen, exactly: `OWNER_EXECUTABLE`,
 `SYSTEM_DERIVABLE`, `SPECIALIST_REQUIRED`, `EMPIRICAL_EVIDENCE_REQUIRED`,
 `UNDETERMINED`. Each names WHO must perform or resolve the validation action —
-never the fact that the system generated the plan.
+never the fact that the system generated the plan. A definite actor class is
+assigned ONLY when affirmative structural evidence supports it; otherwise the
+truthful value is `UNDETERMINED`.
 
-Deterministic, structural selection (keyed on the supporting requirement's
-Increment 4 `primary_anchor.anchor_kind` and `resolving_action.action_kind`; never
-on free text, keywords, or LLM judgment):
+**Responsibility precedence (deterministic; keyed only on committed structural
+fields — never on free text, keywords, prose confidence, or LLM judgment):**
+1. the explicit `AssertionRecord.responsibility` field, when present and a valid
+   member of the responsibility vocabulary — used directly;
+2. otherwise, a `disposition`/`provenance`-supported mapping (table below);
+3. otherwise, an `action_kind`-supported mapping, but ONLY where the action kind
+   affirmatively identifies an actor (`provide_requested_evidence`,
+   `obtain_requested_specialist_input`, `reconcile_recorded_contradiction`);
+4. otherwise, `UNDETERMINED`.
 
-| anchor_kind | action_kind | responsibility | evidence_category |
+The Increment 4 `anchor_kind` already encodes the requesting disposition
+(`pending_evidence` ← `evidence_requested`; `pending_specialist` ←
+`specialist_requested`; `active_contradiction`), while the `assertion` anchor
+COLLAPSES the dispositions `answered`, `unknown`, `deferred`, and
+`provisional_assumption`. Because that collapse loses actor-relevant information,
+for the `assertion` anchor the source MUST consult the underlying record's
+`disposition` and `provenance` (read-only, via `engine.idea_state`; §4); it must
+NOT classify from `anchor_kind` alone.
+
+**Deterministic mapping (applied when precedence 1 does not resolve the class):**
+
+| anchor_kind | disposition / provenance | responsibility | evidence_category |
 |---|---|---|---|
-| `active_contradiction` | `reconcile_recorded_contradiction` | `OWNER_EXECUTABLE` | `reconciliation of conflicting records` |
-| `pending_evidence` | `provide_requested_evidence` | `EMPIRICAL_EVIDENCE_REQUIRED` | `empirical evidence` |
-| `pending_specialist` | `obtain_requested_specialist_input` | `SPECIALIST_REQUIRED` | `specialist input` |
-| `assertion` | `validate_recorded_answer` | `OWNER_EXECUTABLE` | `owner confirmation` |
-| `gap` | `address_open_gap` | `UNDETERMINED` | `owner clarification` |
+| `active_contradiction` | (`reconcile_recorded_contradiction`) | `OWNER_EXECUTABLE` | `reconciliation of conflicting records` |
+| `pending_evidence` | (`evidence_requested`) | `EMPIRICAL_EVIDENCE_REQUIRED` | `empirical evidence` |
+| `pending_specialist` | (`specialist_requested`) | `SPECIALIST_REQUIRED` | `specialist input` |
+| `assertion` | `answered` with owner-stated provenance | `OWNER_EXECUTABLE` | `owner confirmation` |
+| `assertion` | `unknown` | `UNDETERMINED` | `clarifying information` |
+| `assertion` | `deferred` | `UNDETERMINED` | `clarifying information` |
+| `assertion` | `provisional_assumption` without sufficient actor evidence | `UNDETERMINED` | `clarifying information` |
+| `assertion` | `LEGACY_UNSPECIFIED` provenance (no other affirmative signal) | `UNDETERMINED` | `clarifying information` |
+| `gap` | (`address_open_gap`) | `UNDETERMINED` | `clarifying information` |
 
 Rules:
-- exactly ONE responsibility class per step (no multi-class steps in MVP-1);
-- the mapping is total over the five Increment 4 anchor kinds and is the single
-  precedence source — no additional structural signal is consulted, so no
-  precedence conflict can arise;
-- `gap` maps to `UNDETERMINED` deliberately: a `gap_type` carries no structural
-  signal identifying an actor, and inferring one (e.g. reading
-  `EXPERTISE_GAP_AWARENESS` as "specialist") would invent domain meaning and is
-  prohibited;
-- `SYSTEM_DERIVABLE` is part of the frozen vocabulary but NO MVP-1 anchor kind maps
-  to it; the source must not manufacture a `SYSTEM_DERIVABLE` step, and in
-  particular must never assign it merely because the system produced the plan
-  (prohibition/eligibility is separate from actor class — §8);
-- an anchor kind or action kind outside the table above is treated as unsupported:
-  the candidate is ineligible and yields a blocked item (§8), never a guessed
-  class.
+- exactly ONE responsibility class per step (no multi-class steps in MVP-1); the
+  precedence order is total and yields a single class, so no contradictory
+  combination can arise;
+- `OWNER_EXECUTABLE` is RESERVED for affirmatively supported owner-executable cases
+  — an `answered` record with owner-stated provenance, or structurally supported
+  contradiction reconciliation; it MUST NOT be assigned to `unknown`, `deferred`,
+  or provisional/legacy records lacking affirmative actor evidence;
+- a `LEGACY_UNSPECIFIED` provenance is INSUFFICIENT to assign a definite actor: such
+  a record maps to `UNDETERMINED` unless a valid explicit `responsibility` field
+  (precedence 1) or another affirmative structural signal applies; no
+  `LEGACY_UNSPECIFIED` record receives `OWNER_EXECUTABLE` without such a signal;
+- `SPECIALIST_REQUIRED`, `EMPIRICAL_EVIDENCE_REQUIRED`, and `SYSTEM_DERIVABLE` are
+  assigned ONLY when structural evidence supports them; `SYSTEM_DERIVABLE` has NO
+  default MVP-1 anchor mapping and MUST NEVER be assigned merely because the system
+  generated the step (prohibition/eligibility is separate from actor class — §8);
+- `gap` maps to `UNDETERMINED`: a `gap_type` carries no structural signal
+  identifying an actor, and inferring one (e.g. reading `EXPERTISE_GAP_AWARENESS`
+  as "specialist") would invent domain meaning and is prohibited;
+- whenever responsibility resolves to `UNDETERMINED`, `evidence_category` is the
+  generic `clarifying information` (never a specific test/value);
+- an anchor kind or action kind outside this mapping is treated as unsupported: the
+  candidate is ineligible and yields a blocked item (§8), never a guessed class.
+
+This mapping is a **contract-level refinement implementing design §5** (which
+authorizes deriving responsibility "from the supporting record's
+disposition/provenance and the Increment 4 resolving-action kind"). It introduces
+no new owner ruling and reads only already-permitted committed fields (§4); it does
+not widen the import boundary.
 
 ## 8. Eligibility and emission rules
 
@@ -280,6 +320,11 @@ responsibility class (design §5). Deterministic rules:
 
 ## 9. Identity and provenance
 
+- **Plan identity:** MVP-1 defines no separate plan-level identifier. A
+  `ValidationPlan` is identified by deterministic structural equality of its frozen
+  fields. No `plan_id` field exists in MVP-1. Equivalent input states produce
+  structurally equal plans, and input record order does not affect plan equality;
+  step and blocked-item identifiers remain stable and non-positional (below).
 - **Step identity:** `step_id = "vstep:" + requirement_id`, where `requirement_id`
   is the Increment 4 stable anchor key (`req:assertion:{rec_N}`,
   `req:evidence:{rec_N}`, `req:specialist:{rec_N}`,
@@ -337,9 +382,10 @@ responsibility class (design §5). Deterministic rules:
 | condition | outcome | steps | blocked_items | rendered |
 |---|---|---|---|---|
 | no active provenance-anchored requirement | `EMPTY` | `()` | `()` | fixed empty statement |
-| ≥1 eligible requirement | `PLAN` | ordered steps | ineligible-only items (usually `()`) | ordered steps |
+| ≥1 eligible requirement, no ineligible ones | `PLAN` | ordered steps | `()` | ordered steps |
+| ≥1 eligible requirement AND ≥1 ineligible requirement (mixed) | `PLAN` | ordered steps | ordered blocked items | steps + a separate blocked-items block |
 | ≥1 requirement, all ineligible | `BLOCKED` | `()` | ordered blocked items | blocked items + generic missing text |
-| a single malformed requirement among valid ones | outcome unaffected | valid steps continue | optionally one blocked item | unaffected |
+| a single malformed requirement among valid ones (mixed) | `PLAN` | valid steps continue | one blocked item for the malformed one | steps + blocked-items block |
 | total derivation failure | MUST NOT occur | — | — | derivation must not raise; degrade instead |
 | duplicate-only input | deduped (§10) | one step per unique key | — | as PLAN |
 | zero grounded risk | not a plan state | — | — | never presented as safe/verified/risk-free |
@@ -353,6 +399,12 @@ responsibility class (design §5). Deterministic rules:
   deliverable assembly (mirrors Increment 4 §9.10.6).
 - Zero grounded risk (inherited: Increment 4 emits none in MVP-1) MUST NEVER be
   presented as "risk-free", safe, or verified (§13).
+- **Mixed state (no `PARTIAL` outcome):** when at least one requirement is eligible
+  AND at least one is ineligible/malformed, the plan is `outcome = PLAN` with
+  non-empty `steps` AND non-empty `blocked_items`. No `PARTIAL` outcome exists; the
+  two arrays together represent the mixed state truthfully and without loss. Blocked
+  items are surfaced whenever `blocked_items` is non-empty, regardless of the plan
+  outcome (§15). The machine package preserves BOTH arrays (§16).
 
 ## 13. Epistemic truth and non-claims
 
@@ -404,6 +456,16 @@ implies them.
   tokens and may be finalized in source, but a raw token must never be shown.
 - It renders the `EMPTY` and `BLOCKED` outcomes truthfully (empty statement;
   blocked items with generic missing-input text).
+- **Mixed state:** whenever `blocked_items` is non-empty — including a `PLAN`
+  outcome that also carries blocked items — the section renders BOTH the actionable
+  validation steps AND the blocked items in a separate, user-visible blocked-items
+  subsection (or equivalent block). Blocked items render whenever `blocked_items`
+  is non-empty, regardless of the plan `outcome`. The blocked-items block preserves
+  the generic missing-input wording and MUST NOT imply failure, danger,
+  infeasibility, invalidity, or validation completion. Raw machine tokens
+  (`outcome`, `responsibility`, `confidence`, `anchor_kind`, `action_kind`,
+  `requirement_id`, `step_id`, `item_id`) MUST NOT appear in the rendered mixed
+  output, and Jinja autoescape remains mandatory for every blocked-item field.
 - It MUST present steps as PROPOSED, never as completed/passed/verified, and MUST
   NOT imply feasibility, safety, compliance, testing, verification, market-
   readiness, or implementation-readiness.
@@ -426,6 +488,10 @@ implies them.
   dicts/lists/strings WITHOUT mutating the engine payload. It contains only the
   human-semantic fields of §5 plus the bounded `outcome`.
 - Deterministic list ordering: `steps` and `blocked_items` follow §11 order.
+- **Both arrays always preserved:** the package always emits both `steps` and
+  `blocked_items` (each `[]` when empty), regardless of `outcome`; a mixed `PLAN`
+  state (non-empty `steps` AND non-empty `blocked_items`) is represented losslessly
+  by both arrays. No information is dropped or merged.
 - Null vs absent vs empty-array: absent optional scalars are emitted as `null`;
   empty collections are emitted as `[]` (never `null`); `outcome` is always a
   present non-null token.
@@ -486,10 +552,20 @@ and boundary obligations — not incidental internal structure):
 - pure / read-only / no-mutation of `state`;
 - active-set filtering and supersession exclusion (inherited);
 - deterministic, equivalent-state order-independent `step_id`s and plan equality;
+- plan-level identity: no `plan_id` field exists; a `ValidationPlan` is identified
+  by deterministic structural equality; equivalent input states (including shuffled
+  input record order) produce structurally equal plans; step and blocked-item
+  identifiers remain stable and non-positional;
 - deterministic, severity-neutral ordering and repeated-run stability;
-- the five responsibility classes and their exact structural mapping (§7),
-  including `gap → UNDETERMINED` and the absence of any MVP-1 `SYSTEM_DERIVABLE`
-  mapping;
+- the five responsibility classes and the §7 precedence: explicit valid
+  `AssertionRecord.responsibility` used first; then `disposition`/`provenance`
+  mapping; `answered` + owner-stated → `OWNER_EXECUTABLE`; `unknown`, `deferred`,
+  provisional-without-support, and `LEGACY_UNSPECIFIED` → `UNDETERMINED`;
+  `evidence_requested` → `EMPIRICAL_EVIDENCE_REQUIRED`; `specialist_requested` →
+  `SPECIALIST_REQUIRED`; `gap → UNDETERMINED`; no `LEGACY_UNSPECIFIED` record
+  receives `OWNER_EXECUTABLE` without an affirmative signal; and the absence of any
+  default MVP-1 `SYSTEM_DERIVABLE` mapping (never assigned because the system
+  generated the step);
 - evidence-category correctness (bounded, generic, never a specific test/value);
 - provenance presence on every step and blocked item, and no raw-enum/identifier
   leak into rendered output;
@@ -498,6 +574,11 @@ and boundary obligations — not incidental internal structure):
   wording anywhere;
 - `EMPTY`, `PLAN`, and `BLOCKED` selection (including a constructed `BLOCKED` case)
   and malformed-per-record degradation without raising;
+- the mixed state — at least one eligible requirement AND at least one
+  ineligible/malformed requirement — asserting `outcome == PLAN`, non-empty `steps`,
+  non-empty `blocked_items`, both arrays present in the machine package, both
+  rendered (steps + a separate blocked-items block), no `PARTIAL` token, and no
+  validation-completion or risk claim;
 - deduplication invariant (unique `step_id`);
 - Increment-3 non-dependency: `derive_next_development_step` not called and
   `engine.idea_development_outputs` not imported;
@@ -559,8 +640,13 @@ This contract is realized (by a later authorized artifact) only when, objectivel
 2. `outcome ∈ {PLAN, EMPTY, BLOCKED}` selected exactly per §6;
 3. every step has a `vstep:`-prefixed `step_id` derived from a stable Increment 4
    `requirement_id`, never positional; deduped per §10;
-4. responsibility and evidence_category follow the §7 table exactly for all five
-   anchor kinds;
+4. responsibility follows the §7 precedence exactly (explicit valid
+   `AssertionRecord.responsibility` first; then `disposition`/`provenance` mapping;
+   `unknown`/`deferred`/provisional-without-support/`LEGACY_UNSPECIFIED` →
+   `UNDETERMINED`; no `LEGACY_UNSPECIFIED` → `OWNER_EXECUTABLE` without an
+   affirmative signal; no default `SYSTEM_DERIVABLE`), and `evidence_category`
+   follows the §7 mapping (generic `clarifying information` whenever responsibility
+   is `UNDETERMINED`);
 5. every step and blocked item retains a `ProvenanceRef`;
 6. `confidence == UNDETERMINED` for all MVP-1 steps and blocked items;
 7. steps and blocked items are ordered per §11 and are equivalent-state order-
@@ -573,7 +659,14 @@ This contract is realized (by a later authorized artifact) only when, objectivel
 11. `_s4`, `_s6`, `_s12`, `_s13`, and all existing sections are unchanged; the full
     suite shows no new non-baseline failures (the 31 `test_domain_registry.py`
     baseline failures excepted);
-12. the import boundary and Increment-3 non-dependency hold exactly.
+12. the import boundary and Increment-3 non-dependency hold exactly;
+13. no `plan_id` field exists; a `ValidationPlan` is identified by deterministic
+    structural equality, and shuffled-input-order states produce structurally equal
+    plans;
+14. the mixed state yields `outcome == PLAN` with non-empty `steps` and non-empty
+    `blocked_items`; the machine package contains both arrays; the rendered output
+    displays both (steps + a separate blocked-items block); no `PARTIAL` token
+    appears; and no validation-completion or risk claim is present.
 
 No acceptance criterion relies on unverifiable wording ("high quality",
 "appropriate", "robust", "user friendly", "sufficient") without the measurable
@@ -587,12 +680,12 @@ definition given above.
 | §4 input + import boundary + Inc-3 non-dependency | 2, 8 | §3, §12 (F-INC5-1) | merged design F-INC5-1 |
 | §5 output model | 2, 3, 4, 5 | §4 | — |
 | §6 outcome representation | 4, 9 | §4, §11 | **contract-level resolution of PR56-O2** |
-| §7 responsibility | 3 | §5 | — |
+| §7 responsibility | 3, 5 | §5 | **contract-level refinement implementing design §5** — responsibility precedence reads `AssertionRecord.responsibility` / `disposition` / `provenance` |
 | §8 eligibility/emission | 3, 9 | §5, §9 | — |
-| §9 identity/provenance | 5, 6 | §6, §8 | Increment 4 stable keys |
+| §9 identity/provenance | 5, 6 | §6, §8 | Increment 4 stable keys; **contract-level resolution of design §8 "stable plan identity, if required" — no `plan_id`; structural equality** |
 | §10 dedup/composition | 2, 6 | §8 | — |
 | §11 ordering | 6 | §8 | — |
-| §12 empty/blocked/malformed | 9, 4 | §9 | Increment 4 §9.10.6 |
+| §12 empty/blocked/mixed/malformed | 9, 4 | §9 | Increment 4 §9.10.6; **mixed-state = `PLAN` + non-empty `blocked_items` (contract-level; no `PARTIAL`)** |
 | §13 epistemic non-claims | 4, 10 | §7, §13 | — |
 | §14 confidence | 5 | §6 | — |
 | §15 rendering | 4, 6, 7, 10 | §10 | Increment 4 §7.3 |
@@ -609,8 +702,15 @@ token representation and the "bounded tokens allowed in package / never in rende
 output" rule (§6, §16 — resolves PR56-O2); (b) the fixed `section_14_validation_plan`
 / `_s14` names (§16); (c) the `vstep:`/`vblock:` identifier prefixes (§9); (d) the
 `gap → UNDETERMINED` responsibility and the no-MVP-1-`SYSTEM_DERIVABLE` mapping
-(§7); (e) the fixed `closure_condition` template (§13). None reopens a ruling or
-redesigns the merged design.
+(§7); (e) the fixed `closure_condition` template (§13); (f) the responsibility
+precedence and the `assertion`-by-`disposition`/`provenance` mapping — including
+`unknown`/`deferred`/provisional/`LEGACY_UNSPECIFIED` → `UNDETERMINED` — as a
+refinement implementing design §5 (§7); (g) the plan-level identity resolution — no
+`plan_id`; deterministic structural equality — resolving design §8's "stable plan
+identity, if required" (§9); (h) the mixed-state representation — `outcome = PLAN`
+with non-empty `steps` and non-empty `blocked_items`, both arrays preserved in the
+package and both rendered, with no `PARTIAL` outcome (§12, §15, §16). None reopens a
+ruling or redesigns the merged design.
 
 ## 24. Lifecycle boundary
 
