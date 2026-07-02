@@ -329,8 +329,15 @@ sufficiency; resolves readiness M-1).** An `AssertionRecord.responsibility` valu
 that was populated automatically from default provenance or disposition logic is
 not, by itself, affirmative actor evidence. For a `provisional_assumption` record,
 an auto-populated `OWNER_INPUT` value MUST NOT resolve the `ValidationStep`
-responsibility to `OWNER_EXECUTABLE`. Unless a separate explicit responsibility
-signal was supplied by an authorized actor, the record falls through to the
+responsibility to `OWNER_EXECUTABLE`. Because the committed `AssertionRecord`
+payload does not preserve whether `OWNER_INPUT` was supplied explicitly by a caller
+or auto-populated internally from default `OWNER_STATED` provenance, a
+`provisional_assumption` record's `OWNER_INPUT` is structurally INDISTINGUISHABLE as
+to origin; therefore `provisional_assumption` + `OWNER_INPUT` resolves to
+`UNDETERMINED` regardless of whether the token was supplied explicitly or
+auto-populated. Precedence 1 may rescue a `provisional_assumption` record ONLY when
+the recognized responsibility token is structurally distinguishable from that
+auto-populated `OWNER_INPUT` case; otherwise the record falls through to the
 `provisional_assumption` disposition rule and the `ValidationStep` responsibility is
 `UNDETERMINED`. Concretely:
 - explicitly supplied responsibility and internally inferred/defaulted
@@ -341,15 +348,25 @@ signal was supplied by an authorized actor, the record falls through to the
   example, where `record_interaction` defaulted provenance to `OWNER_STATED` and
   thereby auto-populated ledger responsibility `OWNER_INPUT`) is structurally
   INSUFFICIENT for assigning a definite actor;
-- `provisional_assumption` + auto-populated `OWNER_INPUT` → `UNDETERMINED`;
-- `provisional_assumption` + a separately and explicitly supplied authorized
-  responsibility signal → precedence 1 applies per the existing §7-T translation
-  table (unchanged);
+- `provisional_assumption` + `OWNER_INPUT` → `UNDETERMINED`, IRRESPECTIVE of origin
+  (explicitly supplied or auto-populated); an explicitly supplied `OWNER_INPUT` MUST
+  NOT resolve a `provisional_assumption` record to `OWNER_EXECUTABLE` under the
+  current committed schema, because it is structurally indistinguishable from the
+  auto-populated case;
+- precedence 1 may apply to a `provisional_assumption` record ONLY when the
+  recognized responsibility token is structurally DISTINGUISHABLE from the
+  auto-populated `OWNER_INPUT` case — e.g. `SYSTEM_ANALYSIS`, `SPECIALIST_INPUT`,
+  `EMPIRICAL_EVIDENCE`, or `UNDETERMINED`, subject to the existing §7-T mappings
+  (unchanged); distinguishing origin here requires NO new token, field, sentinel,
+  provenance flag, or hidden signal, and NO Increment 4 or schema modification;
 - this clarification MUST NOT alter the treatment of `answered` records with
   owner-stated provenance, where precedence 1 and the disposition rule already
   converge on `OWNER_EXECUTABLE`.
 This clarification closes readiness finding M-1 and permits a later authorized test
-to assert the auto-default provisional outcome as `UNDETERMINED`. It narrows only
+to assert that (a) `provisional_assumption` + `OWNER_INPUT` → `UNDETERMINED`
+(explicitly supplied or auto-populated), and (b) `provisional_assumption` + a
+structurally distinguishable explicit token → its existing §7-T translation. It
+narrows only
 what counts as "affirmative actor evidence"/"structurally sufficient responsibility
 evidence" for precedence 1; it changes none of the five §7-T mappings, no outcome,
 no test seam, no data structure, and no public API, and it grants no test or source
