@@ -324,6 +324,37 @@ Rules:
 - an anchor kind or action kind outside this mapping is treated as unsupported: the
   candidate is ineligible and yields a blocked item (§8), never a guessed class.
 
+**§7-P Auto-populated vs. explicitly supplied responsibility (precedence-1
+sufficiency; resolves readiness M-1).** An `AssertionRecord.responsibility` value
+that was populated automatically from default provenance or disposition logic is
+not, by itself, affirmative actor evidence. For a `provisional_assumption` record,
+an auto-populated `OWNER_INPUT` value MUST NOT resolve the `ValidationStep`
+responsibility to `OWNER_EXECUTABLE`. Unless a separate explicit responsibility
+signal was supplied by an authorized actor, the record falls through to the
+`provisional_assumption` disposition rule and the `ValidationStep` responsibility is
+`UNDETERMINED`. Concretely:
+- explicitly supplied responsibility and internally inferred/defaulted
+  responsibility are NOT equivalent evidence;
+- precedence 1 (the §7-T translation) applies ONLY when the recognized ledger token
+  represents an explicit, structurally sufficient responsibility signal;
+- an internally defaulted `OWNER_INPUT` for a `provisional_assumption` record (for
+  example, where `record_interaction` defaulted provenance to `OWNER_STATED` and
+  thereby auto-populated ledger responsibility `OWNER_INPUT`) is structurally
+  INSUFFICIENT for assigning a definite actor;
+- `provisional_assumption` + auto-populated `OWNER_INPUT` → `UNDETERMINED`;
+- `provisional_assumption` + a separately and explicitly supplied authorized
+  responsibility signal → precedence 1 applies per the existing §7-T translation
+  table (unchanged);
+- this clarification MUST NOT alter the treatment of `answered` records with
+  owner-stated provenance, where precedence 1 and the disposition rule already
+  converge on `OWNER_EXECUTABLE`.
+This clarification closes readiness finding M-1 and permits a later authorized test
+to assert the auto-default provisional outcome as `UNDETERMINED`. It narrows only
+what counts as "affirmative actor evidence"/"structurally sufficient responsibility
+evidence" for precedence 1; it changes none of the five §7-T mappings, no outcome,
+no test seam, no data structure, and no public API, and it grants no test or source
+authority.
+
 This mapping is a **contract-level refinement implementing design §5** (which
 authorizes deriving responsibility "from the supporting record's
 disposition/provenance and the Increment 4 resolving-action kind"). It introduces
