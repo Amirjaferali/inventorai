@@ -234,13 +234,48 @@ truthful value is `UNDETERMINED`.
 
 **Responsibility precedence (deterministic; keyed only on committed structural
 fields — never on free text, keywords, prose confidence, or LLM judgment):**
-1. the explicit `AssertionRecord.responsibility` field, when present and a valid
-   member of the responsibility vocabulary — used directly;
+1. the explicit `AssertionRecord.responsibility` field, when present and a
+   RECOGNIZED ledger token — **translated** through the ledger→ValidationStep table
+   in §7-T below (NEVER copied verbatim); `None`, an unrecognized/invalid token, or
+   structurally insufficient responsibility evidence does not resolve a definite
+   actor and falls through to the next step;
 2. otherwise, a `disposition`/`provenance`-supported mapping (table below);
 3. otherwise, an `action_kind`-supported mapping, but ONLY where the action kind
    affirmatively identifies an actor (`provide_requested_evidence`,
    `obtain_requested_specialist_input`, `reconcile_recorded_contradiction`);
 4. otherwise, `UNDETERMINED`.
+
+**§7-T Ledger-to-ValidationStep responsibility translation (precedence 1 —
+resolves C-1).** The ledger `AssertionRecord.responsibility` vocabulary is DISTINCT
+from the frozen `ValidationStep.responsibility` vocabulary; a recognized explicit
+ledger token is TRANSLATED through this exact table and is NEVER copied verbatim
+into `ValidationStep.responsibility`:
+
+| Ledger `AssertionRecord.responsibility` | ValidationStep responsibility |
+|---|---|
+| `OWNER_INPUT` | `OWNER_EXECUTABLE` |
+| `SYSTEM_ANALYSIS` | `SYSTEM_DERIVABLE` |
+| `SPECIALIST_INPUT` | `SPECIALIST_REQUIRED` |
+| `EMPIRICAL_EVIDENCE` | `EMPIRICAL_EVIDENCE_REQUIRED` |
+| `UNDETERMINED` | `UNDETERMINED` |
+
+Translation rules:
+- a recognized explicit ledger token resolves the class via this table (precedence
+  1) and is never copied verbatim;
+- `None`, an unrecognized/invalid ledger token, or structurally insufficient
+  responsibility evidence does NOT produce a definite actor — the source continues
+  to the `disposition`/`provenance` mapping (precedence 2), then action-kind
+  evidence (precedence 3) only where it affirmatively identifies the actor, then
+  `UNDETERMINED` (precedence 4);
+- system generation of a step MUST NEVER imply `SYSTEM_DERIVABLE`; only an explicit
+  `SYSTEM_ANALYSIS` ledger token (translated here) yields `SYSTEM_DERIVABLE`;
+- `LEGACY_UNSPECIFIED` provenance alone remains insufficient for a definite actor;
+- no ledger-vocabulary token (`OWNER_INPUT`, `SYSTEM_ANALYSIS`, `SPECIALIST_INPUT`,
+  `EMPIRICAL_EVIDENCE`) may appear in the frozen `ValidationStep.responsibility`
+  vocabulary, the machine package, or rendered output.
+
+This translation is a **contract-level implementation refinement within merged
+design §5** and invents no new owner ruling.
 
 The Increment 4 `anchor_kind` already encodes the requesting disposition
 (`pending_evidence` ← `evidence_requested`; `pending_specialist` ←
@@ -405,6 +440,15 @@ responsibility class (design §5). Deterministic rules:
   two arrays together represent the mixed state truthfully and without loss. Blocked
   items are surfaced whenever `blocked_items` is non-empty, regardless of the plan
   outcome (§15). The machine package preserves BOTH arrays (§16).
+- **Unreachable non-empty/no-output state (§12-C; clarifies C-2).** Under the real
+  authorized Increment 4 feed every emitted requirement is structurally addressable
+  (each carries a `primary_anchor`, and for the five anchor kinds a
+  `resolving_action`); therefore a NON-EMPTY real landscape that produces neither a
+  step nor a blocked item is UNREACHABLE BY CONSTRUCTION in MVP-1. Crafted malformed
+  tests (the §19 test seam) MUST produce a `BlockedValidationItem` for an ineligible
+  requirement rather than silently dropping every requirement. The contract defines
+  and authorizes NO fourth outcome; `PLAN` / `EMPTY` / `BLOCKED` remain unchanged.
+  This is a clarification, not a new owner ruling.
 
 ## 13. Epistemic truth and non-claims
 
@@ -557,8 +601,15 @@ and boundary obligations — not incidental internal structure):
   input record order) produce structurally equal plans; step and blocked-item
   identifiers remain stable and non-positional;
 - deterministic, severity-neutral ordering and repeated-run stability;
-- the five responsibility classes and the §7 precedence: explicit valid
-  `AssertionRecord.responsibility` used first; then `disposition`/`provenance`
+- the five responsibility classes and the §7 precedence, including the §7-T
+  ledger→ValidationStep translation (`OWNER_INPUT→OWNER_EXECUTABLE`,
+  `SYSTEM_ANALYSIS→SYSTEM_DERIVABLE`, `SPECIALIST_INPUT→SPECIALIST_REQUIRED`,
+  `EMPIRICAL_EVIDENCE→EMPIRICAL_EVIDENCE_REQUIRED`, `UNDETERMINED→UNDETERMINED`;
+  a recognized ledger token is translated, never copied verbatim; an
+  invalid/unknown ledger token continues the precedence, ultimately `UNDETERMINED`;
+  no ledger token leaks into the frozen ValidationStep vocabulary, package, or
+  rendered output): an explicit recognized `AssertionRecord.responsibility` is
+  translated first; then the `disposition`/`provenance`
   mapping; `answered` + owner-stated → `OWNER_EXECUTABLE`; `unknown`, `deferred`,
   provisional-without-support, and `LEGACY_UNSPECIFIED` → `UNDETERMINED`;
   `evidence_requested` → `EMPIRICAL_EVIDENCE_REQUIRED`; `specialist_requested` →
@@ -592,6 +643,23 @@ and boundary obligations — not incidental internal structure):
   sections unchanged; Increments 1–4 non-regression;
 - non-claim wording (no feasible/safe/compliant/verified/tested/market-ready/
   implementation-ready/risk-free).
+
+**Authorized pre-source test seam (resolves T-1).** The `BLOCKED`-only, mixed
+`PLAN + blocked_items`, and malformed-per-record degradation states are not
+reachable through the real Increment 4 feed (§12-C), so tests MAY monkeypatch the
+symbol `engine.validation_plan.derive_requirement_landscape` at the Increment 5
+import site to return a crafted `RequirementLandscape` containing bounded malformed
+or ineligible requirements. This is a TEST SEAM ONLY: (1) it is test-only; (2) it
+creates no public production API; (3) it does not authorize modifying Increment 4;
+(4) it does not authorize a new source helper solely for testing; (5) it does not
+authorize persistence fixtures; (6) it does not widen the runtime import boundary;
+(7) it permits deterministic construction of the `BLOCKED`-only, mixed
+`PLAN + blocked_items`, and malformed-per-record degradation cases; (8) crafted
+requirements MUST use the committed Increment 4 payload types (`RequirementLandscape`
+/ `DerivedRequirement` / `ResolvingAction` / `ProvenanceAnchor`); (9) tests MUST
+monkeypatch only the Increment 5 import-site symbol and MUST NOT mutate global
+repository state; and (10) production behavior remains driven by the real
+`derive_requirement_landscape(state)`.
 
 Tests must be plain pre-source failing tests (Increment 3/4 precedent) and must
 invent no product decision.
@@ -640,8 +708,15 @@ This contract is realized (by a later authorized artifact) only when, objectivel
 2. `outcome ∈ {PLAN, EMPTY, BLOCKED}` selected exactly per §6;
 3. every step has a `vstep:`-prefixed `step_id` derived from a stable Increment 4
    `requirement_id`, never positional; deduped per §10;
-4. responsibility follows the §7 precedence exactly (explicit valid
-   `AssertionRecord.responsibility` first; then `disposition`/`provenance` mapping;
+4. responsibility follows the §7 precedence exactly (a recognized explicit
+   `AssertionRecord.responsibility` ledger token first, TRANSLATED through the §7-T
+   ledger→ValidationStep table — `OWNER_INPUT→OWNER_EXECUTABLE`,
+   `SYSTEM_ANALYSIS→SYSTEM_DERIVABLE`, `SPECIALIST_INPUT→SPECIALIST_REQUIRED`,
+   `EMPIRICAL_EVIDENCE→EMPIRICAL_EVIDENCE_REQUIRED`, `UNDETERMINED→UNDETERMINED` —
+   never copied verbatim, and no ledger-vocabulary token leaking into the frozen
+   `ValidationStep.responsibility` vocabulary, the machine package, or rendered
+   output; a `None`/unrecognized/invalid ledger token continues to the
+   `disposition`/`provenance` mapping;
    `unknown`/`deferred`/provisional-without-support/`LEGACY_UNSPECIFIED` →
    `UNDETERMINED`; no `LEGACY_UNSPECIFIED` → `OWNER_EXECUTABLE` without an
    affirmative signal; no default `SYSTEM_DERIVABLE`), and `evidence_category`
@@ -666,7 +741,16 @@ This contract is realized (by a later authorized artifact) only when, objectivel
 14. the mixed state yields `outcome == PLAN` with non-empty `steps` and non-empty
     `blocked_items`; the machine package contains both arrays; the rendered output
     displays both (steps + a separate blocked-items block); no `PARTIAL` token
-    appears; and no validation-completion or risk claim is present.
+    appears; and no validation-completion or risk claim is present;
+15. the constructed `BLOCKED`-only, mixed `PLAN + blocked_items`, and
+    malformed-per-record degradation cases are exercised through the §19 pre-source
+    test seam (monkeypatching the Increment 5 import-site symbol
+    `engine.validation_plan.derive_requirement_landscape` to return a crafted
+    `RequirementLandscape`): a non-empty landscape containing an ineligible or
+    malformed requirement yields a `BlockedValidationItem` for that requirement (never
+    a silently dropped requirement and never a fourth outcome — §12-C), the seam
+    creates no production API and does not drive production behavior, and no ledger
+    token or raw identifier leaks into the rendered output.
 
 No acceptance criterion relies on unverifiable wording ("high quality",
 "appropriate", "robust", "user friendly", "sufficient") without the measurable
@@ -680,19 +764,19 @@ definition given above.
 | §4 input + import boundary + Inc-3 non-dependency | 2, 8 | §3, §12 (F-INC5-1) | merged design F-INC5-1 |
 | §5 output model | 2, 3, 4, 5 | §4 | — |
 | §6 outcome representation | 4, 9 | §4, §11 | **contract-level resolution of PR56-O2** |
-| §7 responsibility | 3, 5 | §5 | **contract-level refinement implementing design §5** — responsibility precedence reads `AssertionRecord.responsibility` / `disposition` / `provenance` |
+| §7 responsibility | 3, 5 | §5 | **contract-level refinement implementing design §5** — responsibility precedence reads `AssertionRecord.responsibility` / `disposition` / `provenance`; the §7-T ledger→ValidationStep translation table (resolves readiness C-1) refines design §5 and invents no ruling |
 | §8 eligibility/emission | 3, 9 | §5, §9 | — |
 | §9 identity/provenance | 5, 6 | §6, §8 | Increment 4 stable keys; **contract-level resolution of design §8 "stable plan identity, if required" — no `plan_id`; structural equality** |
 | §10 dedup/composition | 2, 6 | §8 | — |
 | §11 ordering | 6 | §8 | — |
-| §12 empty/blocked/mixed/malformed | 9, 4 | §9 | Increment 4 §9.10.6; **mixed-state = `PLAN` + non-empty `blocked_items` (contract-level; no `PARTIAL`)** |
+| §12 empty/blocked/mixed/malformed | 9, 4 | §9 | Increment 4 §9.10.6; **mixed-state = `PLAN` + non-empty `blocked_items` (contract-level; no `PARTIAL`)**; §12-C unreachable non-empty/no-output clarification (resolves readiness C-2) — no fourth outcome |
 | §13 epistemic non-claims | 4, 10 | §7, §13 | — |
 | §14 confidence | 5 | §6 | — |
 | §15 rendering | 4, 6, 7, 10 | §10 | Increment 4 §7.3 |
 | §16 machine package | 4, 8 | §11 | **PR56-O2 resolution**; `_s13` precedent |
 | §17 backward compatibility | 7, 8 | §12 | — |
 | §18 paths | 1, 7, 8 | §15 | — |
-| §19 tests-first obligations | all | §16 | Increment 3/4 precedent |
+| §19 tests-first obligations | all | §16 | Increment 3/4 precedent; **authorized pre-source test seam (resolves readiness T-1)** — monkeypatch the Increment 5 import-site `derive_requirement_landscape` symbol; test-only, no production API |
 | §20 source obligations | all | §17 | — |
 | §21 failure conditions | 4, 6, 8, 9, 10 | §13, §14 | — |
 | §22 acceptance | all | §17 | — |
@@ -709,8 +793,21 @@ refinement implementing design §5 (§7); (g) the plan-level identity resolution
 `plan_id`; deterministic structural equality — resolving design §8's "stable plan
 identity, if required" (§9); (h) the mixed-state representation — `outcome = PLAN`
 with non-empty `steps` and non-empty `blocked_items`, both arrays preserved in the
-package and both rendered, with no `PARTIAL` outcome (§12, §15, §16). None reopens a
-ruling or redesigns the merged design.
+package and both rendered, with no `PARTIAL` outcome (§12, §15, §16); (i) the §7-T
+ledger→ValidationStep responsibility translation table — a recognized explicit
+`AssertionRecord.responsibility` ledger token is translated (never copied verbatim)
+and no ledger-vocabulary token enters the frozen `ValidationStep` vocabulary, the
+package, or rendered output — a refinement implementing design §5 that resolves
+readiness finding C-1 (§7, §7-T); (j) the §19 authorized pre-source test seam —
+tests MAY monkeypatch the Increment 5 import-site symbol
+`engine.validation_plan.derive_requirement_landscape` to construct the
+`BLOCKED`-only, mixed, and malformed-per-record cases; test-only, creates no
+production API, does not drive production behavior — resolving readiness finding T-1
+(§19); (k) the §12-C clarification that a non-empty real landscape producing neither
+a step nor a blocked item is unreachable by construction, that crafted malformed
+tests must yield a `BlockedValidationItem`, and that no fourth outcome exists —
+resolving readiness finding C-2 (§12). None reopens a ruling or redesigns the merged
+design.
 
 ## 24. Lifecycle boundary
 
@@ -722,6 +819,11 @@ After this contract is independently reviewed and (separately) merged:
   SEPARATE owner authorizations for every artifact (contract, tests-first,
   source, and any roadmap synchronization);
 - the roadmap is NOT automatically updated by this contract;
+- the §19 authorized pre-source test seam is a TESTS-FIRST-ONLY construct: it is
+  usable only inside a later, separately authorized tests-first package, grants NO
+  source or production API, authorizes NO Increment 4 modification and NO new source
+  helper created solely for testing, and does not itself authorize the tests-first
+  package (which still requires its own separate owner authorization);
 - no held lane is resumed: persistence remains `PRESERVE UNMODIFIED AND PAUSE`;
   domain-registry cleanup, compact/session-summary, and Increment 6 remain
   separately gated; no synchronization with `main` is authorized.
