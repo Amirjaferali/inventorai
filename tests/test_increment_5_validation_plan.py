@@ -38,6 +38,7 @@ and `engine.requirement_landscape`, and monkeypatches its import-site symbol
 """
 import os
 import sys
+import ast
 import copy
 import json
 import importlib
@@ -172,9 +173,19 @@ def _b_deferred():
     return s, f"req:assertion:{r.record_id}"
 
 def _b_legacy_unspecified():
-    # answered content but NON-owner-stated provenance and no explicit responsibility
-    s = _state(); r = _record(s, DISPOSITION_ANSWERED, content="legacy answer",
-                              provenance=LEGACY_UNSPECIFIED)
+    # Deterministically isolate the §7 "LEGACY_UNSPECIFIED provenance (no other
+    # affirmative signal)" fall-through. An `answered` record WOULD map to
+    # OWNER_EXECUTABLE ONLY via owner-stated provenance; here provenance is forced
+    # to LEGACY_UNSPECIFIED and no explicit responsibility is supplied, so the SOLE
+    # operative signal is the legacy provenance → UNDETERMINED. The preconditions
+    # below pin the isolation to current committed fields, so the case cannot pass
+    # for an unrelated disposition-mapping reason if the mapping changes.
+    s = _state()
+    r = _record(s, DISPOSITION_ANSWERED, content="legacy answer",
+                provenance=LEGACY_UNSPECIFIED)
+    assert r.provenance == LEGACY_UNSPECIFIED      # not owner-stated
+    assert r.provenance != OWNER_STATED            # so the answered→OWNER_EXECUTABLE row cannot apply
+    assert r.responsibility is None                # no affirmative responsibility signal
     return s, f"req:assertion:{r.record_id}"
 
 def _b_active_contradiction():
@@ -183,8 +194,15 @@ def _b_active_contradiction():
     r2 = _record(s, DISPOSITION_ANSWERED, content="rail is 12V")
     r2.contradicts = [r1.record_id]
     r1.contradicts = [r2.record_id]
-    lo, hi = sorted([r1.record_id, r2.record_id], key=lambda x: int(x.split("_")[1]))
-    return s, f"req:contradiction:{lo}|{hi}"
+    # Derive the expected requirement id from the committed Increment 4
+    # normalization itself (NOT an ad-hoc re-sort): the landscape emits exactly one
+    # active_contradiction requirement whose requirement_id carries the
+    # order-normalized rec pair. Increment 5 reuses that same stable key.
+    landscape = derive_requirement_landscape(s)
+    contradiction_ids = [req.requirement_id for req in landscape.requirements
+                         if req.primary_anchor.anchor_kind == "active_contradiction"]
+    assert len(contradiction_ids) == 1
+    return s, contradiction_ids[0]
 
 def _b_pending_evidence():
     s = _state(); r = _record(s, DISPOSITION_EVIDENCE_REQUESTED, content="measure current")
@@ -285,14 +303,23 @@ def test_output_frozen_and_collections_are_tuples():
 
 
 def test_step_id_prefix_and_non_positional():
-    s = _state(); r = _record(s, DISPOSITION_ANSWERED, content="X is 5V")
-    plan = _derive(s)
-    step = _step_by_reqid(plan, f"req:assertion:{r.record_id}")
-    assert step.step_id == f"vstep:req:assertion:{r.record_id}"
-    assert step.step_id.startswith("vstep:")
-    # identity is the stable Increment 4 key, never the list position
-    assert step.step_id == "vstep:" + f"req:assertion:{r.record_id}"
-    assert str(plan.steps.index(step)) not in step.step_id
+    # Semantic position-independence proof: the SAME underlying requirement yields
+    # the SAME step_id even when it is emitted at a DIFFERENT index. State A emits
+    # the answered requirement first; state B pushes the SAME requirement (rec_1)
+    # to a later index by adding evidence/specialist requests, which the Increment 4
+    # landscape order sorts ahead of an assertion.
+    a = _state(); ra = _record(a, DISPOSITION_ANSWERED, content="X is 5V")
+    b = _state(); rb = _record(b, DISPOSITION_ANSWERED, content="X is 5V")
+    _record(b, DISPOSITION_EVIDENCE_REQUESTED, content="measure")
+    _record(b, DISPOSITION_SPECIALIST_REQUESTED, content="ask EE")
+    assert ra.record_id == rb.record_id == "rec_1"        # same underlying record identity
+    req_id = "req:assertion:rec_1"
+    pa, pb = _derive(a), _derive(b)
+    sa, sb = _step_by_reqid(pa, req_id), _step_by_reqid(pb, req_id)
+    assert sa.step_id == "vstep:" + req_id                # stable Increment 4 key
+    assert sa.step_id.startswith("vstep:")
+    assert sb.step_id == sa.step_id                       # identical id across states
+    assert pa.steps.index(sa) != pb.steps.index(sb)       # emitted at different indices
 
 
 def test_blocked_item_id_prefix(monkeypatch):
@@ -517,24 +544,41 @@ def test_rendered_no_raw_token_leak():
         assert raw not in html
 
 
-def test_rendered_jinja_autoescape_preserved():
-    s = _state()
-    _record(s, DISPOSITION_ANSWERED, content="<script>alert('x')</script>")
-    html = _render_deliverable_html(s)
-    assert "Validation Plan" in html                 # additive section rendered (fails by absence)
-    assert "<script>alert('x')</script>" not in html
-    assert "&lt;script&gt;" in html
+def test_rendered_jinja_autoescape_preserved(monkeypatch):
+    # Inject a UNIQUE unsafe marker ONLY through the Validation Plan payload via the
+    # authorized §19 seam. The seam replaces derive_requirement_landscape at the
+    # Increment 5 import site ONLY, so the marker reaches section_14 (Validation
+    # Plan) alone; every legacy section uses the real (empty) landscape and cannot
+    # contain it. Autoescape must render the marker escaped INSIDE the Validation
+    # Plan section and never raw — an escaped value elsewhere cannot satisfy this.
+    marker_raw = "<vp-xss-42>alert&\"'</vp-xss-42>"
+    good = _crafted_requirement("req:assertion:rec_1", statement=marker_raw)
+    _install_seam(monkeypatch, RequirementLandscape(requirements=(good,), risks=()))
+    html = _render_deliverable_html(_state())
+    assert "Validation Plan" in html                  # additive section rendered (fails by absence)
+    section = html[html.find("Validation Plan"):]     # isolate the Validation Plan region
+    assert "<vp-xss-42>" not in html                  # raw unsafe marker never leaks anywhere
+    assert "<vp-xss-42>" not in section               # ... and specifically not in this section
+    assert "&lt;vp-xss-42&gt;" in section             # escaped representation IS inside the section
 
 
 def test_rendered_mixed_state_shows_both(monkeypatch):
     good = _crafted_requirement("req:assertion:rec_1", statement="Validate the recorded answer.")
     ineligible = _crafted_requirement("req:assertion:rec_2", resolving_action=None)
     _install_seam(monkeypatch, RequirementLandscape(requirements=(good, ineligible), risks=()))
+    # Contract-anchored mixed state (§12/§16): the machine package losslessly carries
+    # BOTH a non-empty `steps` array AND a non-empty `blocked_items` array under a
+    # single `PLAN` outcome — a stable structural signal, not generic English words.
+    section = assemble_deliverable(_state())["section_14_validation_plan"]
+    assert section["outcome"] == "PLAN"
+    assert len(section["steps"]) >= 1
+    assert len(section["blocked_items"]) >= 1
+    # The rendered mixed output shows the actionable step and leaks no raw identifier.
     html = _render_deliverable_html(_state())
     assert "Validation Plan" in html
-    assert "Validate the recorded answer." in html   # actionable step shown
-    low = html.lower()
-    assert "blocked" in low or "cannot" in low or "missing" in low  # blocked-items block shown
+    assert "Validate the recorded answer." in html   # the actionable step is rendered
+    for raw in ("vstep:", "vblock:", "req:assertion:"):
+        assert raw not in html
 
 
 def test_rendered_non_claim_wording():
@@ -548,19 +592,47 @@ def test_rendered_non_claim_wording():
 
 
 def test_import_boundary_only_two_project_modules():
+    # AST-based (not spelling-based): accept ANY syntactically valid form that
+    # imports only engine.idea_state and engine.requirement_landscape — including
+    # `from engine import idea_state, requirement_landscape`, aliased imports,
+    # parenthesized multi-line imports, `from engine.idea_state import X`, and
+    # relative `from . import requirement_landscape`. Reject any other engine
+    # submodule and any `web` import. Robust to comments/strings/whitespace.
+    _ALLOWED = {"idea_state", "requirement_landscape"}
     mod = importlib.import_module("engine.validation_plan")
-    src = inspect.getsource(mod)
+    tree = ast.parse(inspect.getsource(mod))
     offending = []
-    for line in src.splitlines():
-        t = line.strip()
-        if t.startswith("import engine") or t.startswith("from engine"):
-            if not (t.startswith("from engine.idea_state")
-                    or t.startswith("import engine.idea_state")
-                    or t.startswith("from engine.requirement_landscape")
-                    or t.startswith("import engine.requirement_landscape")):
-                offending.append(t)
-        if t.startswith("import web") or t.startswith("from web"):
-            offending.append(t)
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                parts = alias.name.split(".")
+                if parts[0] == "web":
+                    offending.append(alias.name)
+                elif parts[0] == "engine":
+                    # bare `import engine` is too broad; a submodule must be allowed
+                    if len(parts) < 2 or parts[1] not in _ALLOWED:
+                        offending.append(alias.name)
+        elif isinstance(node, ast.ImportFrom):
+            mod_name = node.module or ""
+            top = mod_name.split(".")[0] if mod_name else ""
+            if top == "web":
+                offending.append(mod_name)
+            elif top == "engine":
+                parts = mod_name.split(".")
+                if len(parts) == 1:                       # from engine import X, Y
+                    for alias in node.names:
+                        if alias.name not in _ALLOWED:
+                            offending.append(f"engine.{alias.name}")
+                elif parts[1] not in _ALLOWED:            # from engine.<sub> import ...
+                    offending.append(mod_name)
+            elif node.level and node.level > 0:           # relative, i.e. within engine/
+                if mod_name:                              # from .idea_state import X
+                    if mod_name.split(".")[0] not in _ALLOWED:
+                        offending.append("." + mod_name)
+                else:                                     # from . import idea_state, ...
+                    for alias in node.names:
+                        if alias.name not in _ALLOWED:
+                            offending.append("." + alias.name)
     assert offending == []
 
 
