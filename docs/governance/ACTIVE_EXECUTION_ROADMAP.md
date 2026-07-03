@@ -1214,6 +1214,75 @@ NEXT GOVERNED ACTION:
     Each such action, if ever desired, requires its own separate, explicit,
     repository-grounded owner authorization for that exact scope.
 
+    INCREMENT 6 DESIGN + IMPLEMENTATION CONTRACT ROADMAP SYNCHRONIZATION (current;
+    supersedes — to the extent of recording the Increment 6 design and implementation
+    contract as MERGED AND ACTIVE — every prior operative statement above that
+    Increment 6 "has NOT started and is NOT authorized" / "remains NOT started and
+    unauthorized"; all other holds, blocked states, and the persistence and `main`
+    fences remain in force unchanged):
+
+    This synchronization records repository reality after two documentation-only
+    true-merges that had not yet been reflected in this roadmap. All facts below are
+    committed authoritative facts, verified from Git first-parent lineage and the
+    merged PR records; this synchronization is documentation-only and creates no new
+    authority.
+
+    (1) PR #70 is TRUE-MERGED — Increment 6 Deliverable Redesign DESIGN document
+    true-merge `ad012be3d91aafaf2344f0e021007e6a97360a70` (subject `Merge pull request
+    #70 from Amirjaferali/docs/increment-6-deliverable-redesign-design`), a genuine
+    two-parent merge changing exactly one additive documentation path —
+    `docs/governance/INCREMENT_6_DELIVERABLE_REDESIGN_DESIGN.md`. Scope: DESIGN DOCUMENT
+    ONLY; it grants no tests/source/implementation authority. The Increment 6 bounded
+    design (Deliverable Redesign — the last product-value increment; re-presents the
+    already-produced Increment 1–5 outputs in a coherent inventor-facing reading order,
+    adding no new truth) is now committed repository authority.
+
+    (2) PR #71 is TRUE-MERGED — Increment 6 IMPLEMENTATION CONTRACT true-merge
+    `cbddea942c214c61b8e6d2396810457f0e2c71c9` (subject `Merge pull request #71 from
+    Amirjaferali/docs/increment-6-implementation-contract`), a genuine two-parent merge
+    (ordered parents `ad012be3d91aafaf2344f0e021007e6a97360a70` then
+    `dbbe3af31575b9f3e59a192ffa252eb67e06ad69`) changing exactly one additive
+    documentation path — `docs/governance/INCREMENT_6_IMPLEMENTATION_CONTRACT.md`
+    (`+196 / -0`). Scope: IMPLEMENTATION CONTRACT ONLY; it grants no
+    tests-first/source/implementation authority. The contract is bounded by C6-R1
+    through C6-R10, selects TEMPLATE-ONLY (`web/templates/deliverable.html`,
+    presentation-only) as the bounded default future edit surface, holds
+    `engine/deliverable_assembler.py` outside the default future source scope, and
+    fences any additive assembler-helper fallback as a contingency NOT authorized now.
+    Both merges were independently reviewed before their respective owner-gated
+    creation/merge.
+
+    (3) The current authoritative integration tip is
+    `cbddea942c214c61b8e6d2396810457f0e2c71c9` (PR #71). PR #70 and PR #71 are
+    documentation-only: they advanced NO product code; the product-execution tip does
+    NOT advance and remains `af2ee9ba1df0af2dbd99dc7a7badfe903903281a` (PR #66
+    Increment 5 SOURCE merge).
+
+    (4) INCREMENT 6 CURRENT STATUS: DESIGN + IMPLEMENTATION CONTRACT ACTIVE. Tests-first
+    NOT started. Source NOT started. Implementation NOT started. NO
+    tests-first/source/implementation authority is granted by these merges or by this
+    synchronization. The next lifecycle step — an owner-gated Increment 6 tests-first
+    readiness review, then a separate explicit owner tests-first authorization — is NOT
+    authorized here and requires its own separate, explicit owner decision.
+
+    (5) PERSISTENCE STATUS: PAUSED. NO recovery. NO reconciliation. The frozen
+    persistence lane remains PRESERVE UNMODIFIED AND PAUSE (frozen worktree
+    `/home/user/inventorai` at `aec9cf6409efc18e125b6745762002f59e529654`, seven paused
+    paths, untouched); the old frozen artifact `aec9cf6…` remains out of scope.
+
+    (6) `main` remains UNCHANGED at `0e89e4636399760965c9ff8086b465c90dbadf8e` and is
+    NOT synchronized; `main` synchronization remains NOT AUTHORIZED.
+
+    (7) This synchronization records the checkpoint only; it creates no new authority
+    and begins no downstream work. Distinctly NOT authorized here: Increment 6
+    tests-first, tests, source, template edits (`web/templates/deliverable.html`),
+    engine edits (`engine/deliverable_assembler.py`), persistence work, `main`
+    synchronization, PR creation, merge, or Increment 6 implementation. Holds unchanged:
+    R2 HELD, FORM T BLOCKED, S-6 UNCLASSIFIED, AA-3/AA-4/AA-5 BLOCKED, Phase 5/6
+    UNAUTHORIZED, ILT-002 evidence collection NOT AUTHORIZED. Any next lifecycle action
+    requires its own separate, explicit, repository-grounded owner authorization for
+    that exact scope.
+
 ## 8. Required future sequence
 
 The Phase 4 Step K/L/M/N sequence and Gate 8 owner product-identity
