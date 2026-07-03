@@ -22,6 +22,9 @@ from engine.idea_development_outputs import derive_next_development_step
 # Increment 4 (additive): the pure Requirement Landscape derivation. Consumed by
 # the single additive section _s13; adds no new truth and changes no prior section.
 from engine.requirement_landscape import derive_requirement_landscape
+# Increment 5 (additive): the pure Validation Plan derivation. Consumed by the
+# single additive section _s14; adds no new truth and changes no prior section.
+from engine.validation_plan import derive_validation_plan
 
 PACKAGE_VERSION = "1.0.0"
 SCHEMA_ID       = "fdc-001-mvp-v1"
@@ -121,6 +124,10 @@ def assemble_deliverable(state: IdeaState) -> dict:
         # Increment 4 (additive): the provenance-anchored Requirement Landscape.
         # Human-readable only; adds no new truth and changes no prior section.
         "section_13_requirement_landscape": _s13(state),
+        # Increment 5 (additive): the Validation Plan (proposed validation actions
+        # and blocked items). Human-readable only; adds no new truth, proposes
+        # nothing verified, and changes no prior section.
+        "section_14_validation_plan": _s14(state),
         "_session_meta": {
             "total_iterations":     state.iteration,
             "total_gaps":           len(state.gaps),
@@ -180,6 +187,63 @@ def _s13(state):
         "risks":           [],
         "has_risks":       bool(landscape.risks),
         "risk_disclaimer": _ZERO_RISK_DISCLAIMER,
+    }
+
+
+# --- Increment 5 additive Validation Plan section (mirrors _s13 discipline) --------
+_VALIDATION_PLAN_EMPTY = (
+    "No active, provenance-anchored requirements are recorded yet, so no validation "
+    "steps can be proposed. This is an idea-development state, not an error."
+)
+# Fixed human labels for the bounded responsibility/confidence tokens (contract §15).
+# Raw tokens are never rendered; the template shows these labels only.
+_RESPONSIBILITY_LABELS = {
+    "OWNER_EXECUTABLE":            "Owner can perform",
+    "SYSTEM_DERIVABLE":            "System can derive",
+    "SPECIALIST_REQUIRED":         "Specialist input required",
+    "EMPIRICAL_EVIDENCE_REQUIRED": "Empirical evidence required",
+    "UNDETERMINED":                "Responsibility undetermined",
+}
+_CONFIDENCE_LABELS = {
+    "UNDETERMINED": "Confidence undetermined",
+}
+
+
+def _s14(state):
+    """Increment 5 additive section: render the pure Validation Plan derivation as a
+    presentation-ready, JSON-safe dict (read-only; mirrors _s12/_s13). Human-readable
+    labels only — no raw enum, token, or internal identifier is exposed. Both `steps`
+    and `blocked_items` are always emitted as lists (never null); the bounded status
+    tokens (`outcome`, `responsibility`, `confidence`) may appear in the package but
+    are rendered only via their fixed human labels (contract §15/§16)."""
+    plan = derive_validation_plan(state)
+    steps = []
+    for st in plan.steps:
+        steps.append({
+            "statement":            st.statement,
+            "responsibility":       st.responsibility,
+            "responsibility_label": _RESPONSIBILITY_LABELS.get(st.responsibility, ""),
+            "evidence_category":    st.evidence_category,
+            "closure_condition":    st.closure_condition,
+            "provenance":           st.provenance.display_label,
+            "confidence":           st.confidence,
+            "confidence_label":     _CONFIDENCE_LABELS.get(st.confidence, ""),
+        })
+    blocked_items = []
+    for b in plan.blocked_items:
+        blocked_items.append({
+            "reason":               b.reason,
+            "missing":              b.missing,
+            "responsibility":       b.responsibility,
+            "responsibility_label": _RESPONSIBILITY_LABELS.get(b.responsibility, ""),
+            "provenance":           b.provenance.display_label,
+        })
+    return {
+        "title":           "Validation Plan",
+        "outcome":         plan.outcome,
+        "steps":           steps,
+        "blocked_items":   blocked_items,
+        "empty_statement": _VALIDATION_PLAN_EMPTY,
     }
 
 
