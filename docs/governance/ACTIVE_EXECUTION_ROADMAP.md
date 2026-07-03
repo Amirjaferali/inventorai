@@ -291,6 +291,42 @@ authorization:
   `STRATEGIC_PRODUCT_VISION.md`, `INVENTORAI_PRODUCT_THEORY.md`, code,
   or tests, without a separate future governance action.
 
+### 9.P Persistence lane (feature/atomic-json-session-persistence) — PAUSED, artifact not independently reviewable
+
+Documentation-only record. This subsection records an evidence state and
+confirms a standing prohibition; it creates no new implementation
+authority, changes no phase, baseline, completed-scope closure, or §11
+next-step authorization, and is not a state-change event under §11.
+
+1. Increment 5 remains CLOSED FOR IMPLEMENTED SCOPE.
+2. The authoritative integration tip of
+   `feature/atomic-json-session-persistence` remains
+   `1f4d5acb25a6ceb6602a04003ba4f0de0574cb8e` unless and until
+   independently verified otherwise from raw repository evidence.
+3. A prior frozen persistence artifact was reported at
+   `aec9cf6409efc18e125b6745762002f59e529654` with seven uncommitted
+   paused paths (`.gitignore`, `web/app.py`,
+   `web/templates/deliverable.html`, `web/templates/session.html`,
+   `engine/session_store.py`, `tests/conftest.py`,
+   `tests/test_session_persistence.py`). As of this record, that old
+   uncommitted artifact is not independently reviewable from available
+   repository evidence: a non-authoring review environment could not
+   access the frozen object `aec9cf6`, the authoritative-tip object
+   `1f4d5acb`, the three new persistence files, or a working-tree diff
+   for the seven paused paths.
+4. No recovery, reconciliation, commit, PR, merge, `main`
+   synchronization, Increment 6, or implementation is authorized by
+   this record.
+5. Persistence remains PAUSED.
+6. Any future persistence work must be recreated cleanly from the
+   current authoritative tip, OR separately reintroduced through a
+   fresh, owner-gated design → review → lifecycle path.
+7. The old uncommitted seven-path artifact must NOT be treated as
+   executable authority unless it is later re-proven by complete raw
+   evidence and independently reviewed by a non-authoring reviewer.
+8. This record must not modify source, tests, persistence files, or
+   `main`; it is documentation only.
+
 ## 10. Mandatory reading before any analysis
 
 1. `docs/governance/ILT-002_GOVERNANCE_ANCHOR.md` (epistemic boot — mandatory first)
