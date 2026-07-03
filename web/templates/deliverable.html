@@ -291,6 +291,38 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% endif %}
 </section>
 
+<section>
+  <h2>Validation Plan</h2>
+  {# Increment 5 (additive): presentation-only render of the Validation Plan in
+     package.section_14_validation_plan. Proposed validation actions and blocked
+     items only — never verified/passed/supplied. Human-readable labels only; no
+     raw enum, token, or internal identifier (vstep:/vblock:/requirement id) is
+     exposed, and Jinja autoescape applies to every field. #}
+  {% set vp = package.section_14_validation_plan %}
+  {% if vp.steps %}
+  {% for st in vp.steps %}
+  <div class="field-label">{{ st.statement }}</div>
+  <div class="field-value"><strong>Responsibility:</strong> {{ st.responsibility_label }}</div>
+  <div class="field-value"><strong>Evidence needed:</strong> {{ st.evidence_category }}</div>
+  <div class="field-value"><strong>Closure:</strong> {{ st.closure_condition }}</div>
+  <div class="field-value"><strong>Provenance:</strong> {{ st.provenance }}</div>
+  <div class="field-value"><strong>Confidence:</strong> {{ st.confidence_label }}</div>
+  {% endfor %}
+  {% endif %}
+  {% if vp.blocked_items %}
+  <h3>Blocked items</h3>
+  {% for b in vp.blocked_items %}
+  <div class="field-label">{{ b.reason }}</div>
+  <div class="field-value"><strong>Missing:</strong> {{ b.missing }}</div>
+  <div class="field-value"><strong>Responsibility:</strong> {{ b.responsibility_label }}</div>
+  <div class="field-value"><strong>Provenance:</strong> {{ b.provenance }}</div>
+  {% endfor %}
+  {% endif %}
+  {% if not vp.steps and not vp.blocked_items %}
+  <div class="field-value">{{ vp.empty_statement }}</div>
+  {% endif %}
+</section>
+
 <p class="back-link"><a href="{{ url_for('show_session', sid=sid) }}">Back to session</a></p>
 
 </body>
