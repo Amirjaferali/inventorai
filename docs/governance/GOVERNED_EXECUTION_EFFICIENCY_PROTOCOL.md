@@ -299,9 +299,85 @@ This protocol explicitly prohibits using efficiency to:
 - modify a protected, paused worktree.
 
 Efficiency reduces repeated verification, not owner control. The one-authorization
--per-turn discipline is preserved in full: this protocol changes only how a
-single authorized operation is verified and reported, never how many operations
-one authorization permits.
+-per-turn discipline is preserved in full for every operation except the single
+narrow, conditional case defined in §9.1: this protocol changes only how a single
+authorized operation is verified and reported, and — outside §9.1 — never how many
+operations one authorization permits.
+
+### 9.1 Conditional reversible LOW-RISK lifecycle sequence
+
+This subsection narrows — and ONLY narrows — the one-authorization-per-turn
+statement above, and only for reversible LOW-RISK identity lifecycle actions
+(§3.1). It creates no delegated, standing, or blanket authority.
+
+A single explicit owner authorization MAY conditionally cover, within one turn,
+this bounded sequence of reversible LOW-RISK identity lifecycle actions on one
+already-reviewed exact artifact:
+
+```text
+precondition verification
+→ exact-path staging
+→ commit
+→ normal non-force push
+→ PR creation
+```
+
+This conditional fast path is available ONLY when ALL of the following are true.
+If any is not, the fast path is unavailable and every step reverts to its own
+separate owner authorization:
+
+1. the exact artifact has already passed the required independent review;
+2. the authorized changed-path set is fixed and explicit;
+3. the expected base and head identities are known in advance;
+4. the relevant focused and regression tests have passed at the accepted baseline;
+5. no Source correction remains open;
+6. no scope expansion is required;
+7. no persistence, migration, authentication, security, privacy, destructive, or
+   history-rewriting operation is involved;
+8. the operation is fully reversible before merge;
+9. every step has explicit stop conditions;
+10. any deviation stops the sequence before any further mutation.
+
+This is a conditional bounded sequence, NOT unlimited or delegated authority. It
+permits exactly the five listed reversible pre-merge Git actions on the one
+authorized artifact and nothing else. It confers no authority to run a second
+artifact's sequence, to repeat after a stop, or to proceed past any unmet
+precondition.
+
+The following remain SEPARATELY owner-gated and are never part of the fast path:
+
+- true merge (always a separate owner authorization; automatic merge is never
+  permitted);
+- any HIGH-RISK operation (§3.3);
+- any semantic or authority change;
+- any destructive or irreversible action;
+- persistence or migration work;
+- force push, reset, rebase, history rewrite, branch deletion, or data deletion;
+- any action taken after an unexpected test result, a changed path, a changed
+  SHA, or any scope difference — such a difference STOPS the sequence before any
+  further mutation and returns control to the owner.
+
+Reversibility distinction (governing this subsection):
+
+- REVERSIBLE PRE-MERGE GIT LIFECYCLE ACTIONS — staging, commit on a
+  non-authoritative lifecycle branch, normal non-force push of that branch, and
+  PR creation — do not alter the authoritative integration branch, are undoable
+  before merge (the branch or PR may be closed or replaced without rewriting
+  shared history), and change no product reality. These are the ONLY actions the
+  fast path may cover.
+- IRREVERSIBLE OR AUTHORITY-CHANGING ACTIONS — true merge, force push, reset,
+  rebase, history rewrite, branch or data deletion, persistence or migration, and
+  any semantic, scope, anchor, or authority change — alter shared or product
+  reality and ALWAYS require their own explicit owner authorization.
+
+All existing controls are preserved and NOT weakened by this subsection:
+mandatory risk classification before the operation (§3); repository evidence over
+chat (§7); closed-finding finality (§5); independent review wherever the risk
+class requires it (§3); exact-path staging; test-baseline verification; true-merge
+verification and owner control over merge; the persistence pause; the
+stop-on-difference rule; and the prohibition on silent scope expansion. Efficiency
+still reduces repeated verification and routine round-trips, never owner control
+over irreversible or authority-changing actions.
 
 ## 10. Reporting and stop behavior
 
