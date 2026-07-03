@@ -585,7 +585,13 @@ def test_rendered_non_claim_wording():
     s = _state(); _record(s, DISPOSITION_ANSWERED, content="X is 5V")
     html = _render_deliverable_html(s)
     assert "Validation Plan" in html                 # additive section rendered (fails by absence)
-    low = html.lower()
+    # Scope the prohibited-claim scan to the additive Validation Plan region (as the
+    # autoescape test does): preserved Increment 4 disclaimer prose elsewhere on the
+    # page — e.g. the truthful "risk-free" negation in the Requirement Landscape risk
+    # disclaimer — must not produce a false failure. The six prohibited claim phrases
+    # are unchanged and asserted within this section only.
+    section = html[html.find("Validation Plan"):]
+    low = section.lower()
     for banned in ("has been verified", "evidence supplied", "step passed",
                    "validation complete", "risk-free", "market-ready"):
         assert banned not in low
