@@ -1158,6 +1158,62 @@ NEXT GOVERNED ACTION:
     synchronization records the checkpoint only; it creates no new authority and
     begins no downstream work.
 
+    INCREMENT 5 CLOSURE FOR IMPLEMENTED SCOPE (current; supersedes the POST-PR-#66
+    TRUE-MERGE FINAL CHECKPOINT's item (10) "completion, validation, and closure are
+    NOT asserted" only to the extent of recording closure of the implemented scope;
+    all other checkpoint facts and holds remain in force). Recorded consistently with
+    the Increment 4 completion-row precedent — closure is recorded here in the
+    roadmap; no standalone Increment 5 closure or validation file is created, and this
+    row is the primary Increment 5 completion record.
+
+    Increment 5 — Concrete Validation-Plan Generation — is now CLOSED FOR IMPLEMENTED
+    SCOPE. The closure is limited strictly to the implemented Increment 5 Source scope
+    that was independently reviewed and true-merged; it asserts nothing about
+    unimplemented, deferred, or future Increment 5 extensions.
+
+    (a) Increment 5 Source was TRUE-MERGED via PR #66
+    `af2ee9ba1df0af2dbd99dc7a7badfe903903281a` (genuine two-parent merge; ordered
+    parents `8ca69117e35645ce9c0ad1465adac37a98c96f22` then
+    `7c938cd77b567cc4f5e25bcd0af7256703c0f86c`), changing exactly three additive
+    Source paths: `engine/validation_plan.py` (NEW), `engine/deliverable_assembler.py`
+    (MODIFIED), and `web/templates/deliverable.html` (MODIFIED).
+    (b) The current authoritative integration tip remains
+    `a4358e8f54e8c899e60f1f426e5b1d7f209d3eb3` (PR #67 roadmap checkpoint), and is
+    unchanged by this closure record.
+    (c) The product-execution tip remains `af2ee9ba1df0af2dbd99dc7a7badfe903903281a`
+    (PR #66 Increment 5 SOURCE); the prior product-execution tip
+    `f1734285162915ac577c93a37b30e7babd68586e` (PR #54 Increment 4 SOURCE) is a
+    historical predecessor.
+    (d) Verification evidence at merge and re-verified on the active Source: Increment
+    5 focused tests `55 passed`; Increment 4 focused tests `39 passed`; full suite
+    `31 failed, 813 passed, 1 skipped, 1 xfailed, 24 xpassed`, with all 31 failures
+    confined to `tests/test_domain_registry.py` (the known pre-existing baseline).
+    (e) Governance authority in effect: PR #65 governance amendment is merged and
+    active — protocol §9.1 (bounded reversible LOW-RISK lifecycle fast path) and
+    roadmap §11.A (bounded batching of LOW/MEDIUM-risk sub-events) remain ACTIVE
+    committed authority. The PR #67 roadmap checkpoint remains merged and active.
+    (f) The Increment 5 Source review-only transport
+    `review/increment-5-source-artifact` (`fa12655b136a99e93408ca55b740921d9fa90749`)
+    and the governance-amendment review-only transport
+    `review/execution-efficiency-amendment-artifact`
+    (`9bfaddcc4767826d78ea14a82350eeb84aa358a7`) remain EVIDENTIARY ONLY and intact.
+
+    This closure does NOT reopen or alter any closed state, active anchor, product
+    scope, or prior accepted observation; Increment 3 and Increment 4 remain closed
+    and unmodified. `main` remains UNCHANGED at
+    `0e89e4636399760965c9ff8086b465c90dbadf8e`. The frozen persistence lane remains
+    PRESERVE UNMODIFIED AND PAUSE (frozen worktree `/home/user/inventorai` at
+    `aec9cf6409efc18e125b6745762002f59e529654`, seven paused paths, untouched). Holds
+    unchanged: R2 HELD, FORM T BLOCKED, S-6 UNCLASSIFIED, AA-3/AA-4/AA-5 BLOCKED, Phase
+    5/6 UNAUTHORIZED.
+
+    Recording this closure authorizes NOTHING downstream: no Increment 6 or any next
+    Increment; no new Source authoring; no persistence restart or persistence-path
+    touch; no `main` synchronization; no domain-registry cleanup; no
+    compact/session-summary work; and no active-anchor or product-scope expansion.
+    Each such action, if ever desired, requires its own separate, explicit,
+    repository-grounded owner authorization for that exact scope.
+
 ## 8. Required future sequence
 
 The Phase 4 Step K/L/M/N sequence and Gate 8 owner product-identity
