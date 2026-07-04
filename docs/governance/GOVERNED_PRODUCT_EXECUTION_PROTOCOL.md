@@ -1,6 +1,6 @@
  # GOVERNED_PRODUCT_EXECUTION_PROTOCOL.md
 
-**Status:** PROPOSED — requires explicit owner authorization before commit
+**Status:** ACTIVE — owner-approved, committed, and pushed on the authoritative branch
 **Scope:** Execution-efficiency triage layer only
 **Does NOT supersede:** Any active anchor, scope freeze, blocked state, or existing governance document
 **Authoritative repository:** Amirjaferali/inventorai
@@ -259,7 +259,7 @@ This protocol does not grant itself authority over items 1-4 above. Any apparent
 
 ---
 
-*Proposed — not yet committed.*
-*Requires owner authorization before any repository action.*
+*Active — owner-approved, committed, and pushed on the authoritative branch.*
+*Does not authorize implementation without separate owner approval.*
 *Authoritative branch: feature/atomic-json-session-persistence*
 *Proposed at tip: 16d62f1e461dbd2a780c82e3b0654d068c31d30c*
