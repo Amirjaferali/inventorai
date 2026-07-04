@@ -345,9 +345,31 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   <p class="vp-intro">Suggested checks that would help firm up this idea. None has been carried out yet &mdash; these are proposals, not results. Each check keeps its supporting details on one line below it.</p>
   {% endif %}
   {% if vp.steps %}
-  {% for st in vp.steps %}
+  {# Phase 7A (presentation-only): group the already-derived steps by their
+     existing responsibility_label for legibility. Neutral headers mapped only
+     from the known label values; a catch-all group renders any other/undetermined
+     step so every step appears exactly once. Steps keep their original vp.steps
+     order within each group (selectattr/rejectattr preserve it). No data change,
+     no reordering of the underlying data, no confidence change. #}
+  {% set g_owner = vp.steps | selectattr('responsibility_label', 'equalto', 'Owner can perform') | list %}
+  {% set g_spec  = vp.steps | selectattr('responsibility_label', 'equalto', 'Specialist input required') | list %}
+  {% set g_emp   = vp.steps | selectattr('responsibility_label', 'equalto', 'Empirical evidence required') | list %}
+  {% set g_other = vp.steps
+        | rejectattr('responsibility_label', 'equalto', 'Owner can perform')
+        | rejectattr('responsibility_label', 'equalto', 'Specialist input required')
+        | rejectattr('responsibility_label', 'equalto', 'Empirical evidence required') | list %}
+  {% for grp in [
+        ('Checks you can do yourself', g_owner),
+        ('Needs specialist input', g_spec),
+        ('Needs a physical test or evidence', g_emp),
+        ('Other suggested checks', g_other)] %}
+  {% if grp[1] %}
+  <h4 class="vp-group">{{ grp[0] }}</h4>
+  {% for st in grp[1] %}
   <div class="field-label">{{ st.statement }}</div>
   <div class="vp-meta">Responsibility: {{ st.responsibility_label }} &nbsp;&middot;&nbsp; Evidence needed: {{ st.evidence_category }} &nbsp;&middot;&nbsp; Closure: {{ st.closure_condition }} &nbsp;&middot;&nbsp; Provenance: {{ st.provenance }} &nbsp;&middot;&nbsp; Confidence: {{ st.confidence_label }}</div>
+  {% endfor %}
+  {% endif %}
   {% endfor %}
   {% endif %}
   {% if vp.blocked_items %}
