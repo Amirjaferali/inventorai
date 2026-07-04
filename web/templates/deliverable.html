@@ -5,6 +5,7 @@
 body{font-family:sans-serif;max-width:760px;margin:60px auto;padding:0 20px;color:#222}
 h1{color:#2c3e50;margin-bottom:4px}
 h2{color:#2c3e50;font-size:18px;margin-top:34px;border-bottom:2px solid #2c3e50;padding-bottom:5px}
+.group-lede{font-size:13px;color:#667;line-height:1.5;margin:6px 0 14px 0}
 h3{color:#2c3e50;font-size:15px;margin-top:20px;margin-bottom:4px}
 .meta{background:#f0f4f8;padding:10px 14px;border-radius:4px;margin-bottom:18px;font-size:13px;color:#444}
 .status-eligible{background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7;padding:10px 14px;border-radius:4px;margin-bottom:18px}
@@ -76,6 +77,7 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
 
 <section>
   <h2>What your idea is</h2>
+  <p class="group-lede">A plain restatement of the invention as we currently understand it from your inputs.</p>
 
   <div class="disclaimer">{{ package.section_1_disclaimer.text }}</div>
 
@@ -99,6 +101,7 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
 
 <section>
   <h2>What we assessed</h2>
+  <p class="group-lede">The areas we looked at, and how far each one has been developed so far.</p>
 
   <h3>Assessment Overview</h3>
   {% for cap in package.section_3_assessment_overview.capabilities_assessed %}
@@ -112,6 +115,7 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
 
 <section>
   <h2>What it needs</h2>
+  <p class="group-lede">Requirements and open areas that still have to be worked out.</p>
 
   <h3>Requirements</h3>
   {% if package.section_4_requirements.requirements %}
@@ -157,6 +161,7 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
 
 <section>
   <h2>What is assumed vs still unknown</h2>
+  <p class="group-lede">Things currently taken as given, alongside items you have flagged as not yet known.</p>
 
   <h3>Assumptions &amp; Inventor-Stated Unknowns</h3>
   {% if package.section_5_assumptions.assumptions %}
@@ -200,6 +205,7 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
 
 <section>
   <h2>What could go wrong</h2>
+  <p class="group-lede">Risks recorded from the current state. This is not a safety judgement and is not exhaustive.</p>
 
   <h3>Risks</h3>
   {% if package.section_6_risks.risks %}
@@ -215,6 +221,7 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
 
 <section>
   <h2>The reasoning behind it</h2>
+  <p class="group-lede">The recorded reasoning and evidence behind the assessment above.</p>
 
   {% if package.section_9_stage3_reasoning["items"] %}
   <h3>Stage 3 Reasoning</h3>
@@ -237,6 +244,7 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
 
 <section>
   <h2>What we recommend and what to do next</h2>
+  <p class="group-lede">A suggested direction and concrete next steps you can act on. Advisory only.</p>
 
   <h3>Recommendations</h3>
   <div class="field-label">Verdict</div>
