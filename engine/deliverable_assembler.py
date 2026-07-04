@@ -150,6 +150,11 @@ def assemble_deliverable(state: IdeaState) -> dict:
             # evidence registry. Full text is carried once here; Section 4
             # references it by id. No evidence removed, no claim added.
             "evidence_registry": _evidence_registry(state),
+            # Phase 3B-1 (additive, nested, SEPARATE from evidence_registry so
+            # EV-001/EV-002 are untouched): acknowledged-unknown registry. Full
+            # verbatim is carried once here; Section 8 references it by id while
+            # Section 5 shows the full text. No unknown removed, no claim added.
+            "unknown_registry": _unknown_registry(state),
         },
     }
 
@@ -337,6 +342,43 @@ def _evidence_registry(state):
     return reg
 
 
+# Phase 3B-1 Unknown Registry (acknowledged unknowns only). A SEPARATE namespace
+# and a SEPARATE registry from Phase 3A: acknowledged unknowns are gaps, not
+# established evidence, so they never enter evidence_registry and EV-001/EV-002
+# behavior is untouched. IDs are UNK-001, UNK-002, ... assigned by 1-based order
+# in state.acknowledged_unknowns (NOT iteration, which may not be unique). No
+# fake entry is created when there is no acknowledged unknown. The registry
+# carries the full verbatim once (never deleted); Section 8 references it by id
+# while Section 5 remains the primary visible location for the full text. Lives
+# under _session_meta so the top-level canonical-section contract is unchanged.
+# Presentation/packaging only: no new truth, no summarization, no claim.
+_UNKNOWN_ID_PREFIX = "UNK"
+_UNKNOWN_LABEL_PREFIX = "Acknowledged Unknown"
+
+
+def _unknown_id(index):
+    """Stable visible id for the index-th (0-based) acknowledged unknown."""
+    return f"{_UNKNOWN_ID_PREFIX}-{index + 1:03d}"
+
+
+def _unknown_registry(state):
+    """Acknowledged-unknown registry (Phase 3B-1). Full verbatim is carried once
+    here so Section 8 can reference it by id instead of re-copying it. Section 5
+    stays the primary visible location. No unknown is deleted and no claim is
+    added. Empty list when there are no acknowledged unknowns."""
+    reg = []
+    for i, u in enumerate(getattr(state, "acknowledged_unknowns", [])):
+        reg.append({
+            "unknown_id": _unknown_id(i),
+            "label": f"{_UNKNOWN_LABEL_PREFIX} {i + 1}",
+            "content": getattr(u, "verbatim", None),
+            "gap_context": getattr(u, "gap_context", None),
+            "category_basis": getattr(u, "category_basis", None),
+            "source": "inventor_stated",
+        })
+    return reg
+
+
 def _s2(state):
     resolved_problem = _resolved_problem(state)
     # Phase 3A: surface the fixed-slot evidence id next to the full text that is
@@ -433,10 +475,14 @@ def _s5(state):
                 "risk_if_invalid": "Assessment remains incomplete at this gap",
                 "basis": "Open gap"})
             n += 1
+    # Phase 3B-1: attach the stable unknown id (UNK-00N) next to the full text
+    # that is shown once here, so Section 8 can reference it instead of re-copying
+    # it. Full verbatim is unchanged and still shown in this primary location.
     inventor_unknowns = [
-        {"iteration": u.iteration, "gap_context": u.gap_context,
+        {"unknown_id": _unknown_id(i),
+         "iteration": u.iteration, "gap_context": u.gap_context,
          "statement": u.verbatim, "source": "inventor_stated"}
-        for u in getattr(state, "acknowledged_unknowns", [])
+        for i, u in enumerate(getattr(state, "acknowledged_unknowns", []))
     ]
     return {
         "assumptions":       asmp,
@@ -542,12 +588,18 @@ def _s8(open_gaps, state=None):
          "resolution": "Address in next session with substantive evidence"}
         for i, g in enumerate(open_gaps)
     ]
-    for u in getattr(state, "acknowledged_unknowns", []):
+    for i, u in enumerate(getattr(state, "acknowledged_unknowns", [])):
+        # Phase 3B-1: reference the unknown registry entry (UNK-00N) instead of
+        # re-copying the full verbatim text (shown once in Section 5 / the
+        # unknown registry). Existing item id, gap_context, iteration, and source
+        # are preserved. Sections 10/11 are intentionally unchanged in this PR.
+        uid = _unknown_id(i)
         items.append({
             "id": f"UNKNOWN-{u.iteration:03d}",
             "type": "acknowledged_unknown",
             "gap_context": u.gap_context,
-            "statement": u.verbatim,
+            "statement": f"See {uid} — Acknowledged unknown",
+            "unknown_id": uid,
             "iteration": u.iteration,
             "source": "inventor_stated",
         })

@@ -178,7 +178,7 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% if package.section_5_assumptions.inventor_unknowns %}
   <ul>
     {% for u in package.section_5_assumptions.inventor_unknowns %}
-    <li>(Iteration {{ u.iteration }}) {{ u.statement }}</li>
+    <li>{% if u.unknown_id %}<span class="ev-id" style="font-weight:normal;color:#667">({{ u.unknown_id }})</span> {% endif %}(Iteration {{ u.iteration }}) {{ u.statement }}</li>
     {% endfor %}
   </ul>
   {% endif %}
