@@ -103,3 +103,27 @@ def get_gap_label(gap_type: str) -> dict:
 
 def get_maturity_label(level: int) -> dict:
     return MATURITY_LABELS.get(level, MATURITY_LABELS[0])
+
+
+# Presentation-only short names for the internal gap-type IDs. Used to translate
+# the raw identifiers that leak into a few session-page surfaces (the Next
+# Development Step "Reference:" line and acknowledged-unknown gap contexts).
+# This changes display text only; internal IDs, state, and engine behavior are
+# unchanged. Non-gap references (e.g. "rec_1", "maturity_level_0") pass through.
+GAP_DISPLAY_NAMES = {
+    "MECHANISM_COMPLETENESS": "Working mechanism",
+    "PHYSICAL_FEASIBILITY": "Practical feasibility",
+    "BOUNDARY_AMBIGUITY": "Scope and boundaries",
+    "PROBLEM_MECHANISM_FIT": "Problem–solution fit",
+    "ASSUMPTION_INVENTORY": "Untested assumptions",
+    "EXPERTISE_GAP_AWARENESS": "Expertise needed",
+}
+
+
+def friendly_gap_name(value):
+    """Display-only translation of an internal gap-type ID to a short,
+    inventor-friendly label. Any value that is not a known gap ID (e.g. a record
+    id like ``rec_1`` or ``maturity_level_0``, or None) is returned unchanged."""
+    if isinstance(value, str):
+        return GAP_DISPLAY_NAMES.get(value, value)
+    return value
