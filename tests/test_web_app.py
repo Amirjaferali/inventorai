@@ -123,7 +123,7 @@ def test_deliverable_route_contains_required_sections():
         for fragment in [
             "Invention Summary",
             "Assessment Overview",
-            "Requirements",
+            "Captured Inputs and Assessment Status",  # Phase 4A: renamed from "Requirements"
             "Assumptions",
             "Risks",
             "Recommendations",
