@@ -125,7 +125,7 @@ def test_completeness_string_is_truthful_and_has_no_phase5():
     comp = assemble_deliverable(s)["section_2_invention_summary"]["assessment_completeness"]
     assert "Phase 5" not in comp
     # truthful contract: states inquiry completion AND outstanding validation
-    assert comp.startswith("ASSESSMENT COMPLETE")
+    assert comp.startswith("INQUIRY COMPLETE")
     low = comp.lower()
     assert "remain outstanding" in low
     assert "validation" in low and "demonstration" in low
