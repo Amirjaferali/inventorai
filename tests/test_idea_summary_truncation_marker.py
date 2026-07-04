@@ -73,11 +73,20 @@ def test_rendered_known_problem_ends_with_marker_not_midphrase():
     assert not kp.rstrip().endswith("so that")  # the reported broken mid-phrase ending
 
 
-def test_rendered_req001_statement_carries_marker():
+def test_req001_references_evidence_and_marker_lives_in_registry():
+    # Phase 3A: REQ-001 no longer re-copies the full problem text; it references
+    # the evidence registry (EV-001). The truncation marker is preserved where the
+    # full (trimmed) problem text is now carried — Section 2 (tested above) and the
+    # EV-001 registry entry.
     s, _ = _state_with_long_summary()
-    reqs = assemble_deliverable(s)["section_4_requirements"]["requirements"]
+    pkg = assemble_deliverable(s)
+    reqs = pkg["section_4_requirements"]["requirements"]
     assert reqs, "expected at least REQ-001 from the resolved problem"
-    assert reqs[0]["statement"].endswith(_ELLIPSIS)
+    assert reqs[0].get("evidence_id") == "EV-001"
+    assert "EV-001" in reqs[0]["statement"]
+    assert not reqs[0]["statement"].endswith(_ELLIPSIS)  # full text no longer copied here
+    ev001 = next(e for e in pkg["_session_meta"]["evidence_registry"] if e["evidence_id"] == "EV-001")
+    assert ev001["content"].endswith(_ELLIPSIS)  # marker preserved at its new home
 
 
 def test_full_original_remains_intact_in_known_problem_content():

@@ -89,14 +89,14 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   <div class="field-label">Assessment Completeness</div>
   <div class="field-value">{{ package.section_2_invention_summary.assessment_completeness }}</div>
   {% if package.section_2_invention_summary.known_problem %}
-  <div class="field-label">Known Problem</div>
+  <div class="field-label">Known Problem{% if package.section_2_invention_summary.known_problem.evidence_id %} <span class="ev-id" style="font-weight:normal;color:#667">({{ package.section_2_invention_summary.known_problem.evidence_id }})</span>{% endif %}</div>
   <div class="field-value">{{ package.section_2_invention_summary.known_problem.content }}</div>
   {% elif package.section_2_invention_summary.known_problem_note %}
   <div class="field-label">Known Problem</div>
   <div class="field-value">{{ package.section_2_invention_summary.known_problem_note }}</div>
   {% endif %}
   {% if package.section_2_invention_summary.known_mechanism %}
-  <div class="field-label">Known Mechanism</div>
+  <div class="field-label">Known Mechanism{% if package.section_2_invention_summary.known_mechanism.evidence_id %} <span class="ev-id" style="font-weight:normal;color:#667">({{ package.section_2_invention_summary.known_mechanism.evidence_id }})</span>{% endif %}</div>
   <div class="field-value">{{ package.section_2_invention_summary.known_mechanism.content }}</div>
   {% endif %}
 </section>

@@ -61,10 +61,18 @@ def test_known_problem_uses_problem_evidence_not_mechanism():
 
 
 def test_requirement_functional_uses_problem_evidence():
+    # Phase 3A: the functional requirement references the evidence registry
+    # (EV-001) instead of re-copying the full problem text; the problem provenance
+    # is proven by the EV-001 registry entry carrying that exact problem evidence.
     s = _polluted_state()
-    reqs = assemble_deliverable(s)["section_4_requirements"]["requirements"]
+    pkg = assemble_deliverable(s)
+    reqs = pkg["section_4_requirements"]["requirements"]
     func = [r for r in reqs if r["type"] == "functional"]
-    assert func and func[0]["statement"] == PMF_PROBLEM
+    assert func and func[0].get("evidence_id") == "EV-001"
+    assert func[0]["statement"] == "See EV-001 — Known Problem"
+    ev001 = next(e for e in pkg["_session_meta"]["evidence_registry"]
+                 if e["evidence_id"] == "EV-001")
+    assert ev001["content"] == PMF_PROBLEM      # grounded in real problem evidence
 
 
 def test_legacy_known_problem_not_surfaced_without_pmf_even_if_distinct():

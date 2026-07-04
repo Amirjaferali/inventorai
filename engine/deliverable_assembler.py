@@ -145,6 +145,11 @@ def assemble_deliverable(state: IdeaState) -> dict:
             # Purely recomputed; it never overrides or mutates stored state, and
             # stored CLOSED / high maturity does not force it True.
             "derived_verified_ready": _derived_verified_ready(state),
+            # Phase 3A (additive, nested under _session_meta so the top-level
+            # canonical-section contract is unchanged): minimal problem/mechanism
+            # evidence registry. Full text is carried once here; Section 4
+            # references it by id. No evidence removed, no claim added.
+            "evidence_registry": _evidence_registry(state),
         },
     }
 
@@ -293,16 +298,63 @@ def _derived_verified_ready(state):
 def _s1():
     return {"tier": "standard", "text": _DISCLAIMER_STANDARD, "applies": True}
 
+# Phase 3A Evidence Registry pilot (problem/mechanism only). Stable fixed-slot
+# IDs: the problem is always EV-001, the mechanism always EV-002. When one is
+# absent no fake entry is created and the other keeps its fixed ID. The registry
+# carries the full evidence text once (so it is never deleted), with a
+# human-readable label and provenance. It lives under _session_meta so the
+# top-level canonical-section contract is unchanged. Presentation/packaging only:
+# no new truth, no summarization, no maturity/readiness/progression change.
+_EVIDENCE_PROBLEM_ID = "EV-001"
+_EVIDENCE_MECHANISM_ID = "EV-002"
+_EVIDENCE_PROBLEM_LABEL = "Known Problem"
+_EVIDENCE_MECHANISM_LABEL = "Known Mechanism"
+
+
+def _evidence_registry(state):
+    """Minimal problem/mechanism evidence registry (Phase 3A). Full text is
+    carried once here so downstream sections can reference it by id instead of
+    re-copying it. No evidence is deleted and no claim is added."""
+    reg = []
+    problem = _resolved_problem(state)
+    if problem is not None:
+        reg.append({
+            "evidence_id": _EVIDENCE_PROBLEM_ID,
+            "label": _EVIDENCE_PROBLEM_LABEL,
+            "content": _txt(problem),
+            "provenance": getattr(problem, "provenance", LEGACY_UNSPECIFIED),
+            "quality_label": _QUALITY_LABELS.get(getattr(problem, "quality", None), "Unknown"),
+        })
+    mech = getattr(state, "known_mechanism", None)
+    if mech is not None:
+        reg.append({
+            "evidence_id": _EVIDENCE_MECHANISM_ID,
+            "label": _EVIDENCE_MECHANISM_LABEL,
+            "content": _txt(mech),
+            "provenance": getattr(mech, "provenance", LEGACY_UNSPECIFIED),
+            "quality_label": _QUALITY_LABELS.get(getattr(mech, "quality", None), "Unknown"),
+        })
+    return reg
+
+
 def _s2(state):
     resolved_problem = _resolved_problem(state)
+    # Phase 3A: surface the fixed-slot evidence id next to the full text that is
+    # shown once here, so Section 4 can reference it instead of re-copying it.
+    known_problem = _ev(resolved_problem)
+    if known_problem is not None:
+        known_problem["evidence_id"] = _EVIDENCE_PROBLEM_ID
+    known_mechanism = _ev(getattr(state, "known_mechanism", None))
+    if known_mechanism is not None:
+        known_mechanism["evidence_id"] = _EVIDENCE_MECHANISM_ID
     return {
         "maturity_level":         state.maturity_level,
         "maturity_label":         _MATURITY_LABELS.get(state.maturity_level, "Unknown"),
         "domain_signal":          getattr(state, "domain_signal", None),
-        "known_problem":          _ev(resolved_problem),
+        "known_problem":          known_problem,
         "known_problem_note":     None if resolved_problem else
                                   "Problem evidence has not yet been captured clearly.",
-        "known_mechanism":        _ev(getattr(state, "known_mechanism", None)),
+        "known_mechanism":        known_mechanism,
         "known_boundaries":       [_ev(b) for b in getattr(state, "known_boundaries", []) if b],
         "assessment_completeness": _completeness(state),
     }
@@ -331,14 +383,22 @@ def _s4(state):
     reqs, n = [], 1
     problem = _resolved_problem(state)
     if problem:
+        # Phase 3A: reference the registry entry instead of re-copying the full
+        # problem text (which is shown once in Section 2 / the evidence registry).
         reqs.append({"id": f"REQ-{n:03d}", "type": "functional",
-            "statement": _txt(problem), "source": "session_evidence",
+            "statement": f"See {_EVIDENCE_PROBLEM_ID} — {_EVIDENCE_PROBLEM_LABEL}",
+            "evidence_id": _EVIDENCE_PROBLEM_ID,
+            "source": "session_evidence",
             "evidence_quality": problem.quality, "resolution_status": "stated",
             "note": "Derived from inventor-stated problem evidence. Verification required."})
         n += 1
     if getattr(state, "known_mechanism", None):
+        # Phase 3A: reference the registry entry instead of re-copying the full
+        # mechanism text (which is shown once in Section 2 / the evidence registry).
         reqs.append({"id": f"REQ-{n:03d}", "type": "technical",
-            "statement": _txt(state.known_mechanism), "source": "session_evidence",
+            "statement": f"See {_EVIDENCE_MECHANISM_ID} — {_EVIDENCE_MECHANISM_LABEL}",
+            "evidence_id": _EVIDENCE_MECHANISM_ID,
+            "source": "session_evidence",
             "evidence_quality": state.known_mechanism.quality, "resolution_status": "stated",
             "note": "Component-level specification required before implementation."})
         n += 1
