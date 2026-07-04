@@ -77,7 +77,7 @@ _STAGE3_MISSING_EVIDENCE = (
 )
 _STATUS_LABELS = {
     OPEN: "Open", PARTIAL: "Partially addressed",
-    CLOSED: "Resolved", "ACCEPTED_RISK": "Accepted risk",
+    CLOSED: "Answered (not yet validated)", "ACCEPTED_RISK": "Accepted risk",
 }
 _RECOMMENDATION_A = {
     (2, False): ("PROCEED",
@@ -918,7 +918,7 @@ def _completeness(state):
     has_mech = getattr(state, "known_mechanism", None) is not None
     open_gaps = [g for g in state.gaps if g.status == OPEN]
     if state.maturity_level >= 2 and not open_gaps and has_mech:
-        return ("ASSESSMENT COMPLETE — all current inquiry areas addressed. "
+        return ("INQUIRY COMPLETE — all current inquiry areas addressed. "
                 "Technical validation and demonstration remain outstanding.")
     if state.maturity_level >= 1 and has_prob:
         return "PARTIAL — mechanism or boundaries still required"
