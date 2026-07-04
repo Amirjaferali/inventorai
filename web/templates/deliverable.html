@@ -169,7 +169,7 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% if package.section_5_assumptions.assumptions %}
   <ul>
     {% for a in package.section_5_assumptions.assumptions %}
-    <li>{{ a.assumption }} — {{ a.validation_approach }}</li>
+    <li>{{ a.assumption }} — {{ a.validation_approach }}{% if a.risk_if_invalid %}<br><span class="group-lede" style="margin:0">Why this matters: {{ a.risk_if_invalid }}</span>{% endif %}</li>
     {% endfor %}
   </ul>
   {% else %}
