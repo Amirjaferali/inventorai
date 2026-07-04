@@ -21,6 +21,8 @@ ul{padding-left:18px;font-size:13px;color:#444}
 li{margin-bottom:4px}
 .field-label{font-weight:bold;color:#2c3e50;font-size:13px}
 .field-value{font-size:13px;color:#444;margin-bottom:6px}
+.vp-meta{font-size:12px;color:#667;line-height:1.5;margin:0 0 12px 0}
+.vp-intro{font-size:13px;color:#555;line-height:1.5;margin:0 0 12px 0}
 .back-link{margin-top:30px;font-size:13px}
 table{width:100%;border-collapse:collapse;font-size:13px}
 td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
@@ -339,23 +341,20 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
      raw enum, token, or internal identifier (vstep:/vblock:/requirement id) is
      exposed, and Jinja autoescape applies to every field. #}
   {% set vp = package.section_14_validation_plan %}
+  {% if vp.steps or vp.blocked_items %}
+  <p class="vp-intro">Suggested checks that would help firm up this idea. None has been carried out yet &mdash; these are proposals, not results. Each check keeps its supporting details on one line below it.</p>
+  {% endif %}
   {% if vp.steps %}
   {% for st in vp.steps %}
   <div class="field-label">{{ st.statement }}</div>
-  <div class="field-value"><strong>Responsibility:</strong> {{ st.responsibility_label }}</div>
-  <div class="field-value"><strong>Evidence needed:</strong> {{ st.evidence_category }}</div>
-  <div class="field-value"><strong>Closure:</strong> {{ st.closure_condition }}</div>
-  <div class="field-value"><strong>Provenance:</strong> {{ st.provenance }}</div>
-  <div class="field-value"><strong>Confidence:</strong> {{ st.confidence_label }}</div>
+  <div class="vp-meta">Responsibility: {{ st.responsibility_label }} &nbsp;&middot;&nbsp; Evidence needed: {{ st.evidence_category }} &nbsp;&middot;&nbsp; Closure: {{ st.closure_condition }} &nbsp;&middot;&nbsp; Provenance: {{ st.provenance }} &nbsp;&middot;&nbsp; Confidence: {{ st.confidence_label }}</div>
   {% endfor %}
   {% endif %}
   {% if vp.blocked_items %}
   <h4>Blocked items</h4>
   {% for b in vp.blocked_items %}
   <div class="field-label">{{ b.reason }}</div>
-  <div class="field-value"><strong>Missing:</strong> {{ b.missing }}</div>
-  <div class="field-value"><strong>Responsibility:</strong> {{ b.responsibility_label }}</div>
-  <div class="field-value"><strong>Provenance:</strong> {{ b.provenance }}</div>
+  <div class="vp-meta">Missing: {{ b.missing }} &nbsp;&middot;&nbsp; Responsibility: {{ b.responsibility_label }} &nbsp;&middot;&nbsp; Provenance: {{ b.provenance }}</div>
   {% endfor %}
   {% endif %}
   {% if not vp.steps and not vp.blocked_items %}
