@@ -4,12 +4,16 @@
 <style>
 body{font-family:sans-serif;max-width:760px;margin:60px auto;padding:0 20px;color:#222}
 h1{color:#2c3e50;margin-bottom:4px}
-h2{color:#2c3e50;font-size:16px;margin-top:28px;border-bottom:1px solid #e2e6ea;padding-bottom:4px}
+h2{color:#2c3e50;font-size:18px;margin-top:34px;border-bottom:2px solid #2c3e50;padding-bottom:5px}
+h3{color:#2c3e50;font-size:15px;margin-top:20px;margin-bottom:4px}
 .meta{background:#f0f4f8;padding:10px 14px;border-radius:4px;margin-bottom:18px;font-size:13px;color:#444}
 .status-eligible{background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7;padding:10px 14px;border-radius:4px;margin-bottom:18px}
 .status-snapshot{background:#fff3e0;color:#e65100;border:1px solid #ffcc02;padding:10px 14px;border-radius:4px;margin-bottom:18px}
 .status-title{font-weight:bold;font-size:16px;margin-bottom:4px}
 .status-sub{font-size:13px}
+.status-strip{background:#f0f4f8;border:1px solid #d4dde6;padding:10px 14px;border-radius:4px;margin-bottom:20px;font-size:13px;color:#444;display:flex;flex-wrap:wrap;gap:10px 28px}
+.status-strip .field-label{margin:0}
+.status-strip .field-value{margin:0}
 .disclaimer{background:#f8f9fa;border-left:3px solid #b0b8c1;padding:9px 14px;border-radius:0 4px 4px 0;margin-bottom:20px;font-size:12px;color:#666;line-height:1.5}
 section{margin-bottom:18px}
 ul{padding-left:18px;font-size:13px;color:#444}
@@ -46,10 +50,36 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
 </div>
 {% endif %}
 
-<div class="disclaimer">{{ package.section_1_disclaimer.text }}</div>
+{# Increment 6 (Deliverable Redesign): honest status strip. Surfaces the two
+   _session_meta signals — the stored maturity label and the Increment 2
+   derived_verified_ready readiness signal — SEPARATELY and close together. They
+   are shown as two distinct fields and are never merged into a single
+   "verified/resolved" impression: derived readiness is recomputed and stated
+   honestly as not a validation or resolved status. #}
+<div class="status-strip">
+  <div>
+    <div class="field-label">Maturity</div>
+    <div class="field-value">{{ package["_session_meta"].maturity_label }}</div>
+  </div>
+  <div>
+    <div class="field-label">Derived readiness <span style="font-weight:normal">(recomputed separately from stored maturity; not a validation or resolved status)</span></div>
+    <div class="field-value">{{ "Derived readiness signal met (still not technically verified)" if package["_session_meta"].get("derived_verified_ready", False) else "Not derived-ready — recorded evidence is not technically verified" }}</div>
+  </div>
+</div>
+
+{# ============================================================================
+   Increment 6 Deliverable Redesign — inventor-facing reading order (design §4).
+   Presentation-only: the fourteen existing sections are grouped and reordered;
+   no value is generated or changed in meaning. Every rendered value remains a
+   value already present in the assembled package.
+   ============================================================================ #}
 
 <section>
-  <h2>Invention Summary</h2>
+  <h2>What your idea is</h2>
+
+  <div class="disclaimer">{{ package.section_1_disclaimer.text }}</div>
+
+  <h3>Invention Summary</h3>
   <div class="field-label">Maturity</div>
   <div class="field-value">{{ package.section_2_invention_summary.maturity_label }}</div>
   <div class="field-label">Assessment Completeness</div>
@@ -68,7 +98,9 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
 </section>
 
 <section>
-  <h2>Assessment Overview</h2>
+  <h2>What we assessed</h2>
+
+  <h3>Assessment Overview</h3>
   {% for cap in package.section_3_assessment_overview.capabilities_assessed %}
   <div class="field-value">
     Capability: {{ cap.capability_id }} &nbsp;·&nbsp;
@@ -79,7 +111,9 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
 </section>
 
 <section>
-  <h2>Requirements</h2>
+  <h2>What it needs</h2>
+
+  <h3>Requirements</h3>
   {% if package.section_4_requirements.requirements %}
   <ul>
     {% for r in package.section_4_requirements.requirements %}
@@ -89,178 +123,8 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% else %}
   <div class="field-value">No requirements recorded yet.</div>
   {% endif %}
-</section>
 
-<section>
-  <h2>Assumptions &amp; Inventor-Stated Unknowns</h2>
-  {% if package.section_5_assumptions.assumptions %}
-  <ul>
-    {% for a in package.section_5_assumptions.assumptions %}
-    <li>{{ a.assumption }} — {{ a.validation_approach }}</li>
-    {% endfor %}
-  </ul>
-  {% else %}
-  <div class="field-value">No assumptions recorded yet.</div>
-  {% endif %}
-  {% if package.section_5_assumptions.inventor_unknowns %}
-  <ul>
-    {% for u in package.section_5_assumptions.inventor_unknowns %}
-    <li>(Iteration {{ u.iteration }}) {{ u.statement }}</li>
-    {% endfor %}
-  </ul>
-  {% endif %}
-</section>
-
-<section>
-  <h2>Risks</h2>
-  {% if package.section_6_risks.risks %}
-  <ul>
-    {% for r in package.section_6_risks.risks %}
-    <li>[{{ r.severity }}] {{ r.description }}</li>
-    {% endfor %}
-  </ul>
-  {% else %}
-  <div class="field-value">No risks recorded.</div>
-  {% endif %}
-</section>
-
-<section>
-  <h2>Recommendations</h2>
-  <div class="field-label">Verdict</div>
-  <div class="field-value">{{ package.section_7_recommendations.category_a_proceed_revise_block.verdict }}</div>
-  <div class="field-label">Rationale</div>
-  <div class="field-value">{{ package.section_7_recommendations.category_a_proceed_revise_block.rationale }}</div>
-  {% if package.section_7_recommendations.category_d_open_items %}
-  <div class="field-label">Open Items</div>
-  <ul>
-    {% for item in package.section_7_recommendations.category_d_open_items %}
-    <li>{{ item.action }}</li>
-    {% endfor %}
-  </ul>
-  {% endif %}
-</section>
-
-<section>
-  <h2>Unresolved Items</h2>
-  {% if package["section_8_unresolved_items"]["items"] %}
-  <ul>
-    {% for item in package["section_8_unresolved_items"]["items"] %}
-    <li>
-      {% if item.type == 'open_gap' %}
-        {{ item.gap_label }} — {{ item.status_label if item.status_label else item.status }}
-      {% else %}
-        Acknowledged unknown: {{ item.statement }}
-      {% endif %}
-    </li>
-    {% endfor %}
-  </ul>
-  {% else %}
-    {% if package["_session_meta"].get("derived_verified_ready", False) %}
-  <div class="field-value">No unresolved items.</div>
-    {% else %}
-  <div class="field-value">No stored gaps remain open, but evidence validation or readiness items are still unresolved. The recorded evidence is not technically verified.</div>
-    {% endif %}
-  {% endif %}
-</section>
-
-{% if package.section_9_stage3_reasoning["items"] %}
-<section>
-  <h2>Stage 3 Reasoning</h2>
-  {% for item in package.section_9_stage3_reasoning["items"] %}
-  <div class="field-label">{{ item.gap_label }} — {{ item.status_label }}</div>
-  {% if item.evidence %}
-  <ul>
-    {% for ev in item.evidence %}
-    <li>{{ ev.content }} <em>({{ ev.quality_label }})</em></li>
-    {% endfor %}
-  </ul>
-  {% else %}
-  <div class="field-value">{{ item.missing_evidence_statement }}</div>
-  {% endif %}
-  {% endfor %}
-</section>
-{% endif %}
-
-<section>
-  <h2>Recommended Next Steps</h2>
-  {% if package.section_10_recommended_next_steps["items"] %}
-  <ul>
-    {% for step in package.section_10_recommended_next_steps["items"] %}
-    <li>{{ step.action }}{% if step.priority == 'high' %} <em>(high priority)</em>{% endif %}</li>
-    {% endfor %}
-  </ul>
-  {% else %}
-  <div class="field-value">{{ package.section_10_recommended_next_steps.empty_statement }}</div>
-  {% endif %}
-  <div class="field-value"><em>{{ package.section_10_recommended_next_steps.note }}</em></div>
-</section>
-
-<section>
-  <h2>Prototype &amp; Test Plan</h2>
-  {% if package.section_11_prototype_test_plan["items"] %}
-  {% for exp in package.section_11_prototype_test_plan["items"] %}
-  <div class="field-label">{{ exp.experiment_title }}</div>
-  <div class="field-value"><strong>Objective:</strong> {{ exp.objective }}</div>
-  <div class="field-value"><strong>Based on:</strong> {{ exp.source_basis }}</div>
-  <div class="field-value"><strong>Minimum prototype:</strong> {{ exp.minimum_prototype }}</div>
-  <div class="field-value"><strong>Observe:</strong> {{ exp.what_to_observe }}</div>
-  {% if exp.success_criterion_provenance == 'user_defined' %}
-  <div class="field-value"><strong>Success criterion — user-defined:</strong> {{ exp.success_criterion }}</div>
-  {% else %}
-  <div class="field-value"><strong>Success criterion:</strong> {{ exp.success_criterion }}</div>
-  {% endif %}
-  <div class="field-value"><strong>Failure / revise if:</strong> {{ exp.failure_or_revision_condition }}</div>
-  <div class="field-value"><strong>Evidence upgrade target:</strong> {{ exp.expected_evidence_upgrade }}</div>
-  {% endfor %}
-  {% if package.section_11_prototype_test_plan.shared_required_expertise %}
-  <div class="field-label">Shared expertise and tools identified by the inventor</div>
-  <div class="field-value">{{ package.section_11_prototype_test_plan.shared_required_expertise }}</div>
-  {% endif %}
-  {% else %}
-  <div class="field-value">{{ package.section_11_prototype_test_plan.empty_statement }}</div>
-  {% endif %}
-  {% if package.section_11_prototype_test_plan.stale_criteria_notice %}
-  <div class="field-value status-snapshot">{{ package.section_11_prototype_test_plan.stale_criteria_notice }}</div>
-  {% endif %}
-  {% if package.section_11_prototype_test_plan["items"] %}
-  <div class="field-value"><a href="{{ url_for('success_criteria', sid=sid) }}">Define or edit success criteria</a></div>
-  {% endif %}
-  <div class="field-value"><em>{{ package.section_11_prototype_test_plan.note }}</em></div>
-</section>
-
-<section>
-  <h2>Next Development Step</h2>
-  {# Increment 3 (R-3): presentation-only render of the shared engine derivation
-     carried in package.section_12_next_development_step. No priority/record/
-     provider logic and no state change happen here. #}
-  {% if package.section_12_next_development_step and package.section_12_next_development_step.actionable %}
-  {% set nds = package.section_12_next_development_step %}
-  <div class="field-label">{{ nds.title }}</div>
-  <div class="field-value">{{ nds.why_it_matters }}</div>
-  <div class="field-label">Next action</div>
-  <div class="field-value">{{ nds.next_action }}</div>
-  {% if nds.evidence_needed %}
-  <div class="field-label">Evidence needed</div>
-  <div class="field-value">{{ nds.evidence_needed }}</div>
-  {% endif %}
-  {% if nds.suggested_provider %}
-  <div class="field-label">Suggested provider</div>
-  <div class="field-value">{{ nds.suggested_provider }}</div>
-  {% endif %}
-  {% if nds.sufficiency_condition %}
-  <div class="field-label">Sufficiency condition</div>
-  <div class="field-value">{{ nds.sufficiency_condition }}</div>
-  {% endif %}
-  {% if nds.remaining_uncertainty %}
-  <div class="field-value"><em>{{ nds.remaining_uncertainty }}</em></div>
-  {% endif %}
-  {% else %}
-  <div class="field-value">No actionable next development step. The recorded state shows nothing outstanding to develop next.</div>
-  {% endif %}
-</section>
-
-<section>
-  <h2>Requirement Landscape</h2>
+  <h3>Requirement Landscape</h3>
   {# Increment 4 (additive): presentation-only render of the provenance-anchored
      requirement landscape in package.section_13_requirement_landscape. Human-
      readable labels only; no raw enum, identifier, or state change happens here. #}
@@ -292,7 +156,175 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
 </section>
 
 <section>
-  <h2>Validation Plan</h2>
+  <h2>What is assumed vs still unknown</h2>
+
+  <h3>Assumptions &amp; Inventor-Stated Unknowns</h3>
+  {% if package.section_5_assumptions.assumptions %}
+  <ul>
+    {% for a in package.section_5_assumptions.assumptions %}
+    <li>{{ a.assumption }} — {{ a.validation_approach }}</li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <div class="field-value">No assumptions recorded yet.</div>
+  {% endif %}
+  {% if package.section_5_assumptions.inventor_unknowns %}
+  <ul>
+    {% for u in package.section_5_assumptions.inventor_unknowns %}
+    <li>(Iteration {{ u.iteration }}) {{ u.statement }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
+  <h3>Unresolved Items</h3>
+  {% if package["section_8_unresolved_items"]["items"] %}
+  <ul>
+    {% for item in package["section_8_unresolved_items"]["items"] %}
+    <li>
+      {% if item.type == 'open_gap' %}
+        {{ item.gap_label }} — {{ item.status_label if item.status_label else item.status }}
+      {% else %}
+        Acknowledged unknown: {{ item.statement }}
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+    {% if package["_session_meta"].get("derived_verified_ready", False) %}
+  <div class="field-value">No unresolved items.</div>
+    {% else %}
+  <div class="field-value">No stored gaps remain open, but evidence validation or readiness items are still unresolved. The recorded evidence is not technically verified.</div>
+    {% endif %}
+  {% endif %}
+</section>
+
+<section>
+  <h2>What could go wrong</h2>
+
+  <h3>Risks</h3>
+  {% if package.section_6_risks.risks %}
+  <ul>
+    {% for r in package.section_6_risks.risks %}
+    <li>[{{ r.severity }}] {{ r.description }}</li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <div class="field-value">No risks recorded.</div>
+  {% endif %}
+</section>
+
+<section>
+  <h2>The reasoning behind it</h2>
+
+  {% if package.section_9_stage3_reasoning["items"] %}
+  <h3>Stage 3 Reasoning</h3>
+  {% for item in package.section_9_stage3_reasoning["items"] %}
+  <div class="field-label">{{ item.gap_label }} — {{ item.status_label }}</div>
+  {% if item.evidence %}
+  <ul>
+    {% for ev in item.evidence %}
+    <li>{{ ev.content }} <em>({{ ev.quality_label }})</em></li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <div class="field-value">{{ item.missing_evidence_statement }}</div>
+  {% endif %}
+  {% endfor %}
+  {% else %}
+  <div class="field-value">No Stage 3 reasoning areas are recorded for this session.</div>
+  {% endif %}
+</section>
+
+<section>
+  <h2>What we recommend and what to do next</h2>
+
+  <h3>Recommendations</h3>
+  <div class="field-label">Verdict</div>
+  <div class="field-value">{{ package.section_7_recommendations.category_a_proceed_revise_block.verdict }}</div>
+  <div class="field-label">Rationale</div>
+  <div class="field-value">{{ package.section_7_recommendations.category_a_proceed_revise_block.rationale }}</div>
+  {% if package.section_7_recommendations.category_d_open_items %}
+  <div class="field-label">Open Items</div>
+  <ul>
+    {% for item in package.section_7_recommendations.category_d_open_items %}
+    <li>{{ item.action }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
+  <h3>Next Development Step</h3>
+  {# Increment 3 (R-3): presentation-only render of the shared engine derivation
+     carried in package.section_12_next_development_step. No priority/record/
+     provider logic and no state change happen here. #}
+  {% if package.section_12_next_development_step and package.section_12_next_development_step.actionable %}
+  {% set nds = package.section_12_next_development_step %}
+  <div class="field-label">{{ nds.title }}</div>
+  <div class="field-value">{{ nds.why_it_matters }}</div>
+  <div class="field-label">Next action</div>
+  <div class="field-value">{{ nds.next_action }}</div>
+  {% if nds.evidence_needed %}
+  <div class="field-label">Evidence needed</div>
+  <div class="field-value">{{ nds.evidence_needed }}</div>
+  {% endif %}
+  {% if nds.suggested_provider %}
+  <div class="field-label">Suggested provider</div>
+  <div class="field-value">{{ nds.suggested_provider }}</div>
+  {% endif %}
+  {% if nds.sufficiency_condition %}
+  <div class="field-label">Sufficiency condition</div>
+  <div class="field-value">{{ nds.sufficiency_condition }}</div>
+  {% endif %}
+  {% if nds.remaining_uncertainty %}
+  <div class="field-value"><em>{{ nds.remaining_uncertainty }}</em></div>
+  {% endif %}
+  {% else %}
+  <div class="field-value">No actionable next development step. The recorded state shows nothing outstanding to develop next.</div>
+  {% endif %}
+
+  <h3>Recommended Next Steps</h3>
+  {% if package.section_10_recommended_next_steps["items"] %}
+  <ul>
+    {% for step in package.section_10_recommended_next_steps["items"] %}
+    <li>{{ step.action }}{% if step.priority == 'high' %} <em>(high priority)</em>{% endif %}</li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <div class="field-value">{{ package.section_10_recommended_next_steps.empty_statement }}</div>
+  {% endif %}
+  <div class="field-value"><em>{{ package.section_10_recommended_next_steps.note }}</em></div>
+
+  <h3>Prototype &amp; Test Plan</h3>
+  {% if package.section_11_prototype_test_plan["items"] %}
+  {% for exp in package.section_11_prototype_test_plan["items"] %}
+  <div class="field-label">{{ exp.experiment_title }}</div>
+  <div class="field-value"><strong>Objective:</strong> {{ exp.objective }}</div>
+  <div class="field-value"><strong>Based on:</strong> {{ exp.source_basis }}</div>
+  <div class="field-value"><strong>Minimum prototype:</strong> {{ exp.minimum_prototype }}</div>
+  <div class="field-value"><strong>Observe:</strong> {{ exp.what_to_observe }}</div>
+  {% if exp.success_criterion_provenance == 'user_defined' %}
+  <div class="field-value"><strong>Success criterion — user-defined:</strong> {{ exp.success_criterion }}</div>
+  {% else %}
+  <div class="field-value"><strong>Success criterion:</strong> {{ exp.success_criterion }}</div>
+  {% endif %}
+  <div class="field-value"><strong>Failure / revise if:</strong> {{ exp.failure_or_revision_condition }}</div>
+  <div class="field-value"><strong>Evidence upgrade target:</strong> {{ exp.expected_evidence_upgrade }}</div>
+  {% endfor %}
+  {% if package.section_11_prototype_test_plan.shared_required_expertise %}
+  <div class="field-label">Shared expertise and tools identified by the inventor</div>
+  <div class="field-value">{{ package.section_11_prototype_test_plan.shared_required_expertise }}</div>
+  {% endif %}
+  {% else %}
+  <div class="field-value">{{ package.section_11_prototype_test_plan.empty_statement }}</div>
+  {% endif %}
+  {% if package.section_11_prototype_test_plan.stale_criteria_notice %}
+  <div class="field-value status-snapshot">{{ package.section_11_prototype_test_plan.stale_criteria_notice }}</div>
+  {% endif %}
+  {% if package.section_11_prototype_test_plan["items"] %}
+  <div class="field-value"><a href="{{ url_for('success_criteria', sid=sid) }}">Define or edit success criteria</a></div>
+  {% endif %}
+  <div class="field-value"><em>{{ package.section_11_prototype_test_plan.note }}</em></div>
+
+  <h3>Validation Plan</h3>
   {# Increment 5 (additive): presentation-only render of the Validation Plan in
      package.section_14_validation_plan. Proposed validation actions and blocked
      items only — never verified/passed/supplied. Human-readable labels only; no
@@ -310,7 +342,7 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% endfor %}
   {% endif %}
   {% if vp.blocked_items %}
-  <h3>Blocked items</h3>
+  <h4>Blocked items</h4>
   {% for b in vp.blocked_items %}
   <div class="field-label">{{ b.reason }}</div>
   <div class="field-value"><strong>Missing:</strong> {{ b.missing }}</div>
