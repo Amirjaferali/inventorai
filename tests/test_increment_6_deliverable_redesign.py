@@ -249,19 +249,33 @@ def test_label_preservation_stage3_status_label_present():
 
 
 def test_label_preservation_gaps_detail_carry_status_label():
-    """section_3 capability gap rows carry a human-readable status_label."""
+    """section_3 capability gap rows carry a human-readable status_label.
+
+    Tightened (review caveat C2): the fixture must actually yield at least one
+    ``gaps_detail`` row, so the per-row ``status_label`` assertion is exercised on a
+    real row rather than passing vacuously on an empty capability/gap set."""
     pkg = _package()
     rows = pkg["section_3_assessment_overview"]["capabilities_assessed"]
     detailed = [d for r in rows for d in r.get("gaps_detail", [])]
+    assert detailed, "fixture produced no capability gaps_detail rows to check"
     for d in detailed:
         assert "status_label" in d
 
 
 def test_label_preservation_known_mechanism_keeps_validation_status():
+    """A Level>=1 ``_mechanism_session`` establishes a known mechanism; that mechanism
+    must keep its ``validation_status`` label (Increment 2 honesty).
+
+    Tightened (review caveat C2): the test now asserts the known-mechanism path is
+    actually exercised (``known_mechanism`` is a dict), failing clearly if the fixture
+    stops producing a mechanism instead of passing vacuously on a ``None`` mechanism."""
     pkg = assemble_deliverable(_mechanism_session())
     km = pkg["section_2_invention_summary"]["known_mechanism"]
-    if km is not None:
-        assert "validation_status" in km
+    assert km is not None, (
+        "fixture no longer exercises the known-mechanism path "
+        "(_mechanism_session was expected to establish a known_mechanism dict)"
+    )
+    assert "validation_status" in km
 
 
 def test_label_preservation_stage9_not_validation_note_preserved():
@@ -431,7 +445,16 @@ def test_no_new_truth_validation_plan_proposes_nothing_verified():
                    "TMP117 sensor via ESP32 I2C triggers relay at threshold",
                    "range -10 to 50C IP65 3.3V battery 72h")["section_14_validation_plan"]
     assert s14["outcome"] in {"PLAN", "EMPTY", "BLOCKED"}
-    for step in s14.get("steps", []):
+    # Tightened (review caveat C2): the deep fixture must actually reach the proposal
+    # path (a PLAN carrying at least one step), so the "proposes nothing verified"
+    # property is exercised against real steps instead of passing vacuously on an
+    # empty/blocked plan with no steps to inspect.
+    assert s14["outcome"] == "PLAN", (
+        "fixture no longer exercises the validation-plan proposal path "
+        f"(expected outcome PLAN, got {s14['outcome']!r})"
+    )
+    assert s14.get("steps"), "expected the PLAN to carry at least one proposed step"
+    for step in s14["steps"]:
         # steps are proposals carrying responsibility/confidence, not verdicts
         assert "responsibility" in step
         assert step.get("outcome") not in {"VERIFIED", "VALIDATED"}
@@ -514,13 +537,42 @@ def test_redesign_needs_group_colocates_requirements_and_landscape():
 
 def test_redesign_honest_status_strip_separate_from_maturity():
     """EXPECTED RED — SOURCE NOT YET AUTHORIZED.
-    Design §4/§7: derived_verified_ready is surfaced in a small honest status strip,
-    presented separately from the stored maturity label, never merged into one
-    'resolved/verified' impression."""
+    Design §4/§7: the honest ``_session_meta`` signals — the stored maturity label AND
+    the Increment 2 ``derived_verified_ready`` readiness signal — are surfaced together
+    in a small honest status strip, presented SEPARATELY from each other and never
+    merged into one 'resolved/verified' impression.
+
+    Asserted SEMANTICALLY (review caveat C1). The design describes the honest status
+    strip conceptually; it does NOT mandate any specific CSS class or the literal words
+    'status strip', so this test no longer requires that phrase. It requires only the
+    design's actual semantic outcome: both honest signals surfaced as two DISTINCT,
+    design-named ``_session_meta`` fields (``maturity_label`` and
+    ``derived_verified_ready``) CO-LOCATED in one small strip. Today the template
+    renders ``maturity_label`` deep inside the Invention Summary body and uses
+    ``derived_verified_ready`` only as a hidden branch guard ~3.6k characters away — the
+    two honest signals are not co-surfaced as one strip — so this is EXPECTED RED until
+    the TEMPLATE-ONLY redesign introduces that strip.
+    """
     src = _template_source()
-    assert "status strip" in src.lower() or "status-strip" in src.lower(), (
-        "EXPECTED RED — SOURCE NOT YET AUTHORIZED: honest status strip not yet "
-        "introduced by the redesign"
+    # Both honest _session_meta signals must be surfaced by the template at all.
+    assert "maturity_label" in src, (
+        "EXPECTED RED — SOURCE NOT YET AUTHORIZED: stored maturity label not surfaced"
+    )
+    assert "derived_verified_ready" in src, (
+        "EXPECTED RED — SOURCE NOT YET AUTHORIZED: derived_verified_ready readiness "
+        "signal not surfaced"
+    )
+    # ...and the two distinct signals must be CO-LOCATED in a single small honest status
+    # strip (shown separately, not merged into one verified/resolved label). A generous
+    # character window keeps the check class-name/phrase-agnostic while still failing
+    # today's ~3.6k-character separation across two different section bodies.
+    STRIP_WINDOW = 800
+    maturity_at = src.index("maturity_label")
+    verified_at = src.index("derived_verified_ready")
+    assert abs(maturity_at - verified_at) <= STRIP_WINDOW, (
+        "EXPECTED RED — SOURCE NOT YET AUTHORIZED: the honest maturity and "
+        "derived_verified_ready signals are not yet co-located in one honest status "
+        "strip (still presented far apart in separate section bodies)"
     )
 
 
