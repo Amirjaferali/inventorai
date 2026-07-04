@@ -49,13 +49,21 @@ STALL_THRESHOLD = 3  # iterations before reframe
 _IDEA_SUMMARY_MAX = 500
 
 def _trim_idea_summary(text: str) -> str:
-    """Inventor statement safely trimmed — display safeguard, not summarization."""
+    """Inventor statement safely trimmed — display safeguard, not summarization.
+
+    When the statement exceeds the limit it is cut at a word boundary and an
+    explicit ellipsis marker is appended, so the truncation is visible and never
+    reads as a broken mid-phrase sentence. The full original statement remains
+    available in ``state.known_problem.content``; this is a display safeguard
+    only and adds no meaning.
+    """
     text = text.strip()
     if len(text) <= _IDEA_SUMMARY_MAX:
         return text
     trimmed = text[:_IDEA_SUMMARY_MAX]
     boundary = trimmed.rfind(" ")
-    return trimmed[:boundary] if boundary > 0 else trimmed
+    cut = trimmed[:boundary] if boundary > 0 else trimmed
+    return cut.rstrip() + "…"
 
 
 
