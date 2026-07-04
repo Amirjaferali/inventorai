@@ -10,7 +10,7 @@ from engine.idea_state import IdeaState, SuccessCriterion
 from engine.progression_loop import (
     run_iteration, select_next_gap, get_question, get_display_question,
 )
-from web.gap_labels import GAP_LABELS, get_gap_label, get_maturity_label, SESSION_DISCLOSURE
+from web.gap_labels import GAP_LABELS, get_gap_label, get_maturity_label, SESSION_DISCLOSURE, friendly_gap_name
 from engine.deliverable_assembler import assemble_deliverable
 # Increment 3 (R-5): the SAME shared public derivation that feeds the deliverable
 # section, imported as a module-level name so one selection feeds both surfaces.
@@ -20,6 +20,10 @@ from web.clarification_labels import get_clarification  # Increment 1B: display-
 
 app = Flask(__name__)
 app.secret_key = "inventorai-dev-only"
+# Presentation-only Jinja filter: translate an internal gap-type ID to a short
+# inventor-friendly label for the few session-page surfaces that render raw
+# reference/context IDs. Non-gap values pass through unchanged. Display only.
+app.jinja_env.filters["gap_display"] = friendly_gap_name
 SESSION_STORE = {}
 
 # --- Increment 1A: structured owner actions (conformance correction) ---------
