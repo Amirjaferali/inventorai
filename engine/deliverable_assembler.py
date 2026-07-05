@@ -670,8 +670,19 @@ def _s10(state, open_gaps):
         _add("Continue with technically substantive answers to reach "
              "Level 2 (mechanism established).",
              "high", f"maturity_level:{state.maturity_level}")
-    for u in getattr(state, "acknowledged_unknowns", []):
-        _add(f"Resolve the inventor-stated unknown: {u.verbatim}",
+    # Phase 3B-2a: reference the unknown registry entry (UNK-00N, position-based
+    # to match Section 5/8) instead of repeating the full verbatim, which is shown
+    # once in Section 5 and referenced in Section 8. Dedup stays keyed on the
+    # verbatim (not the UNK id), so a repeated unknown still yields no duplicate
+    # action — the first occurrence's UNK id is the one referenced. Basis,
+    # priority, and NEXT-00N numbering are unchanged.
+    seen_unknown_text = set()
+    for i, u in enumerate(getattr(state, "acknowledged_unknowns", [])):
+        if u.verbatim in seen_unknown_text:   # duplicate source -> no duplicate action
+            continue
+        seen_unknown_text.add(u.verbatim)
+        _add(f"Resolve the inventor-stated unknown: See {_unknown_id(i)} "
+             f"— Acknowledged unknown",
              "normal", f"acknowledged_unknown:iteration_{u.iteration}")
     if _overall_quality(state) == REASONED:
         _add("Validate the leading claims with a prototype or "

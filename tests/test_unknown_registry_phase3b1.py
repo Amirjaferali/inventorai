@@ -162,13 +162,15 @@ def test_evidence_registry_and_ev_ids_untouched():
 
 # --- sections 10 / 11 intentionally unchanged by 3B-1 -----------------------
 
-def test_sections_10_and_11_still_carry_unknown_text_this_phase():
-    # 3B-1 scope is Section 5 + Section 8 only; Sections 10/11 are deferred to
-    # 3B-2 and MUST remain unchanged (still reference the verbatim here).
+def test_section_11_still_carries_unknown_text_this_phase():
+    # 3B-1 scope was Section 5 + Section 8. Section 10 was later de-duplicated in
+    # Phase 3B-2a (it now references UNK ids, not the verbatim). Section 11 is
+    # still deferred (3B-2b) and MUST remain unchanged, still carrying the verbatim.
     pkg = assemble_deliverable(_state())
     s10 = json.dumps(pkg["section_10_recommended_next_steps"])
     s11 = json.dumps(pkg["section_11_prototype_test_plan"])
-    assert UNK1 in s10 and UNK1 in s11
+    assert UNK1 not in s10          # Phase 3B-2a: Section 10 now references UNK ids
+    assert UNK1 in s11              # Section 11 unchanged this phase
 
 
 # --- rendering --------------------------------------------------------------
