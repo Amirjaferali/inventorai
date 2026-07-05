@@ -170,7 +170,10 @@ def test_next_steps_synthesized_from_state_only():
     # traceable to existing state via the basis field.
     assert any(i["basis"] == "evidence_quality:REASONED" for i in items)
     assert any(i["basis"].startswith("acknowledged_unknown:") for i in items)
-    assert "the exact moisture threshold is unknown" in actions
+    # Phase 3B-2a: the unknown next step references the registry (See UNK-00N)
+    # instead of repeating the full verbatim; the verbatim is no longer in Section 10.
+    assert "See UNK-" in actions
+    assert "the exact moisture threshold is unknown" not in actions
     for i in items:                       # every step names its state source
         assert i.get("basis")
 
@@ -194,7 +197,11 @@ def test_next_steps_no_duplicate_actions_from_duplicate_evidence():
     items = assemble_deliverable(s)["section_10_recommended_next_steps"]["items"]
     actions = [i["action"] for i in items]
     assert len(actions) == len(set(actions))            # no duplicate actions
-    assert sum(1 for a in actions if same in a) == 1    # collapsed to one
+    # Phase 3B-2a: the duplicate unknown still collapses to a single action; the
+    # action now references the registry (See UNK-00N) rather than the verbatim.
+    assert same not in " ".join(actions)                # verbatim no longer repeated
+    unknown_actions = [i for i in items if i["basis"].startswith("acknowledged_unknown:")]
+    assert len(unknown_actions) == 1                     # collapsed to one
 
 
 def test_next_steps_absent_evidence_invents_nothing():
