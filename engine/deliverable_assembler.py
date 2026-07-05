@@ -875,8 +875,15 @@ def _s11(state):
         exp["required_expertise_or_tools"] = expertise_field  # legacy per-item field, unchanged
         items.append(exp)
 
-    # Priority 1 — acknowledged unknowns.
-    for u in getattr(state, "acknowledged_unknowns", []):
+    # Priority 1 — acknowledged unknowns. Phase 3B-2b: the user-facing "Based on:"
+    # line references the acknowledged unknown by its stable registry id (See
+    # UNK-00N) instead of re-copying the full verbatim, mirroring Section 10. The
+    # index is the same 1-based position used by _unknown_registry / Section 5 / 8
+    # / 10, so the reference resolves to the same entry. Presentation-only: the
+    # full verbatim is still passed as the identity/digest/dedup source_text and is
+    # still carried in traceability.content below; _experiment_id, _plan_sig, dedup,
+    # and success-criterion resolution are unchanged.
+    for i, u in enumerate(getattr(state, "acknowledged_unknowns", [])):
         verbatim = (getattr(u, "verbatim", "") or "").strip()
         if not verbatim:
             continue
@@ -884,8 +891,7 @@ def _s11(state):
             "experiment_title": "Proposed experiment: resolve a stated unknown",
             "objective": "Evaluate the inventor's stated unknown under controlled "
                          "conditions to reduce its uncertainty.",
-            "source_basis": f"Acknowledged unknown (iteration {u.iteration}): "
-                            f"\"{verbatim}\"",
+            "source_basis": f"See {_unknown_id(i)} — Acknowledged unknown",
             "minimum_prototype": "A minimal build that exercises only the part of "
                                  "the described mechanism this unknown depends on.",
             "what_to_observe": "Observe whether the stated unknown can be "
