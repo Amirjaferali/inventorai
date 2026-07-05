@@ -164,13 +164,15 @@ def test_evidence_registry_and_ev_ids_untouched():
 
 def test_section_11_still_carries_unknown_text_this_phase():
     # 3B-1 scope was Section 5 + Section 8. Section 10 was later de-duplicated in
-    # Phase 3B-2a (it now references UNK ids, not the verbatim). Section 11 is
-    # still deferred (3B-2b) and MUST remain unchanged, still carrying the verbatim.
+    # Phase 3B-2a (it now references UNK ids, not the verbatim). Phase 3B-2b then
+    # changed only Section 11's user-facing "Based on:" display to a UNK reference;
+    # the full verbatim is still retained in the section_11 data (traceability
+    # content and the identity source), so it remains present in this JSON dump.
     pkg = assemble_deliverable(_state())
     s10 = json.dumps(pkg["section_10_recommended_next_steps"])
     s11 = json.dumps(pkg["section_11_prototype_test_plan"])
     assert UNK1 not in s10          # Phase 3B-2a: Section 10 now references UNK ids
-    assert UNK1 in s11              # Section 11 unchanged this phase
+    assert UNK1 in s11              # Section 11 data still carries the verbatim (traceability)
 
 
 # --- rendering --------------------------------------------------------------
