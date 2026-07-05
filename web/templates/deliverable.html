@@ -366,9 +366,28 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
         ('Other suggested checks', g_other)] %}
   {% if grp[1] %}
   <h4 class="vp-group">{{ grp[0] }}</h4>
+  {# Phase 7B (presentation-only): collapse byte-for-byte identical rows within
+     this group. The collapse key is the FULL rendered tuple (statement +
+     responsibility + evidence + closure + provenance + confidence), so rows that
+     differ in any visible field still render separately. Each distinct row is
+     shown once (first-occurrence order); a visible count is shown when more than
+     one recorded answer produced the same row. No data change: vp.steps is
+     untouched, all metadata is preserved verbatim, and confidence is unchanged. #}
+  {% set ns = namespace(seen=[]) %}
   {% for st in grp[1] %}
-  <div class="field-label">{{ st.statement }}</div>
+  {% set key = [st.statement, st.responsibility_label, st.evidence_category, st.closure_condition, st.provenance, st.confidence_label] %}
+  {% if key not in ns.seen %}
+  {% set _ = ns.seen.append(key) %}
+  {% set cnt = grp[1]
+        | selectattr('statement', 'equalto', st.statement)
+        | selectattr('responsibility_label', 'equalto', st.responsibility_label)
+        | selectattr('evidence_category', 'equalto', st.evidence_category)
+        | selectattr('closure_condition', 'equalto', st.closure_condition)
+        | selectattr('provenance', 'equalto', st.provenance)
+        | selectattr('confidence_label', 'equalto', st.confidence_label) | list | length %}
+  <div class="field-label">{{ st.statement }}{% if cnt > 1 %} <span class="vp-count" style="font-weight:normal;color:#667">(applies to {{ cnt }} recorded answers)</span>{% endif %}</div>
   <div class="vp-meta">Responsibility: {{ st.responsibility_label }} &nbsp;&middot;&nbsp; Evidence needed: {{ st.evidence_category }} &nbsp;&middot;&nbsp; Closure: {{ st.closure_condition }} &nbsp;&middot;&nbsp; Provenance: {{ st.provenance }} &nbsp;&middot;&nbsp; Confidence: {{ st.confidence_label }}</div>
+  {% endif %}
   {% endfor %}
   {% endif %}
   {% endfor %}
