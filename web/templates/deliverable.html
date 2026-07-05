@@ -137,8 +137,30 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
      readable labels only; no raw enum, identifier, or state change happens here. #}
   {% set rl = package.section_13_requirement_landscape %}
   {% if rl.requirements %}
+  {# Phase 7C (presentation-only): collapse repeated display metadata. Entries are
+     grouped ONLY when their FULL metadata tuple (provenance + status + criticality
+     + authority + rationale + resolving action + supporting references + linked
+     risk) is identical; every distinct statement is listed in full, then the
+     shared metadata is rendered once. Entries whose metadata differs in ANY field
+     render separately. No data change: rl.requirements is untouched, no statement
+     is dropped/truncated, and the criticality authority stays visible (C4-R5). #}
+  {% set ns = namespace(seen=[]) %}
   {% for req in rl.requirements %}
-  <div class="field-label">{{ req.statement }}</div>
+  {% set mkey = [req.provenance, req.status, req.criticality, req.criticality_authority, req.criticality_rationale, req.resolving_action, req.supporting_references, req.has_linked_risk] %}
+  {% if mkey not in ns.seen %}
+  {% set _ = ns.seen.append(mkey) %}
+  {% set members = rl.requirements
+        | selectattr('provenance', 'equalto', req.provenance)
+        | selectattr('status', 'equalto', req.status)
+        | selectattr('criticality', 'equalto', req.criticality)
+        | selectattr('criticality_authority', 'equalto', req.criticality_authority)
+        | selectattr('criticality_rationale', 'equalto', req.criticality_rationale)
+        | selectattr('resolving_action', 'equalto', req.resolving_action)
+        | selectattr('supporting_references', 'equalto', req.supporting_references)
+        | selectattr('has_linked_risk', 'equalto', req.has_linked_risk) | list %}
+  {% for m in members %}
+  <div class="field-label">{{ m.statement }}</div>
+  {% endfor %}
   <div class="field-value"><strong>Provenance:</strong> {{ req.provenance }}</div>
   <div class="field-value"><strong>Status:</strong> {{ req.status }}</div>
   <div class="field-value"><strong>Criticality:</strong> {{ req.criticality }} ({{ req.criticality_authority }})</div>
@@ -152,6 +174,10 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   <div class="field-value"><strong>Supporting references:</strong>
     {% for ref in req.supporting_references %}{{ ref }}{% if not loop.last %}; {% endif %}{% endfor %}
   </div>
+  {% endif %}
+  {% if members | length > 1 %}
+  <div class="field-value" style="color:#667">(shared by {{ members | length }} entries)</div>
+  {% endif %}
   {% endif %}
   {% endfor %}
   {% else %}
