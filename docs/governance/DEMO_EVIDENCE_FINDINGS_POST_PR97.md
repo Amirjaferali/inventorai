@@ -65,12 +65,36 @@ Character of the existing material:
 
 ## 3. Missing owner-proposed feature — Inventor Answer Clarification / Improve Wording Assistant
 
-Status: NEW FUTURE NON-ACTIVATING CANDIDATE. Not implemented. Not authorized.
-A strict read-only discovery confirmed this feature does NOT exist in any form
-(no answer clarification assistant, no improve-wording assistant, no
-rewrite/rephrase answer feature, no pre-save assistant, and no
+Status: FUTURE NON-ACTIVATING CANDIDATE — BACKLOG-DOCUMENTED, NOT IMPLEMENTED,
+NOT ACTIVATED. Not authorized.
+
+A strict read-only diagnostic confirmed this feature does NOT exist as
+implemented runtime behavior, schema/session state, UI flow, tests, or activated
+product capability (no answer clarification assistant, no improve-wording
+assistant, no rewrite/rephrase answer feature, no pre-save assistant, and no
 `original_user_answer` / `suggested_clarified_answer` / `user_approved_answer` /
-`clarification_status` fields or owner-approved clarified-answer flow).
+`clarification_status` fields or owner-approved clarified-answer flow in the
+runtime, schema, session, or UI).
+
+A pre-existing product backlog note DOES exist and is preserved:
+`docs/product/INVENTOR_ANSWER_CLARIFICATION_FEATURE_BACKLOG.md`. This PR #98
+evidence record does NOT replace that backlog; it preserves the post-PR97 demo
+evidence and reclassifies/prioritizes the concept as a future non-activating
+candidate based on the observed demo issues, adding governance prioritization
+only. The feature remains NOT authorized and requires a separate owner scope
+decision, Increment Contract, tests, review, and owner-authorized true merge
+before any implementation.
+
+Three states must be kept distinct and not conflated:
+
+- existing Increment 1B **question-level** clarification — implemented,
+  display-only (see §2);
+- the pre-existing **answer-clarification backlog documentation**
+  (`docs/product/INVENTOR_ANSWER_CLARIFICATION_FEATURE_BACKLOG.md`) — a
+  documentation note only, not a runtime capability;
+- the **missing runtime implementation / activation** of the answer-level
+  assistant — not present as runtime behavior, schema/session state, UI flow,
+  tests, or activated product capability.
 
 ### Description
 
