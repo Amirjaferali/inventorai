@@ -207,3 +207,117 @@ def test_no_mechanism_idea_is_guided_not_admitted_and_guidance_is_actionable():
     for forbidden in ("valid", "safe", "feasib", "compliance", "certif",
                       "build-ready", "buildable", "patent"):
         assert forbidden not in lowered
+
+# ---------------------------------------------------------------------------
+# Independent-review boundary fixes — false admissions must NOT be admitted
+# (each of these was REJECTED on the pristine base and must never gain a
+# session through the bounded ambiguity resolution).
+# ---------------------------------------------------------------------------
+
+def test_hearing_aid_is_rejected_not_flipped_by_lay_tokens():
+    # medical_device-classified; "battery"/"sensor" lay tokens must not flip a
+    # genuinely medical (hearing-aid) idea toward electronics (§7.C, §15).
+    before = set(SESSION_STORE)
+    resp = _post("A hearing aid device with a rechargeable battery and a "
+                 "volume sensor.")
+    _assert_not_admitted(resp, _ERROR_HTML)
+    assert set(SESSION_STORE) == before
+
+
+def test_body_temperature_fever_wearable_is_rejected():
+    # Health monitoring (fever / body temperature on a wearable) must reject
+    # (§10 "medical monitoring must STILL reject", §15 rollback criterion).
+    before = set(SESSION_STORE)
+    resp = _post("A wearable sensor that measures body temperature and alerts "
+                 "of fever.")
+    _assert_not_admitted(resp, _ERROR_HTML)
+    assert set(SESSION_STORE) == before
+
+
+def test_powerful_software_idea_is_not_admitted_via_power_substring():
+    # "powerful" must not satisfy the lay "power" marker; software-only idea
+    # stays un-admitted (guided, no session).
+    before = set(SESSION_STORE)
+    resp = _post("A powerful app that reminds people to drink water on "
+                 "schedule.")
+    _assert_not_admitted(resp, _GUIDANCE_HTML)
+    assert set(SESSION_STORE) == before
+
+
+def test_empowers_software_idea_is_not_admitted_via_power_substring():
+    # "empowers" must not satisfy the lay "power" marker; software-only idea
+    # stays un-admitted (guided, no session).
+    before = set(SESSION_STORE)
+    resp = _post("A mobile app dashboard that empowers teams to track their "
+                 "chores.")
+    _assert_not_admitted(resp, _GUIDANCE_HTML)
+    assert set(SESSION_STORE) == before
+
+
+def test_hand_powered_mechanical_idea_is_not_admitted():
+    # "hand-powered" must not satisfy the lay "power" marker; mechanical-only
+    # idea stays un-admitted (guided, no session).
+    before = set(SESSION_STORE)
+    resp = _post("A hand-powered valve locking mechanism for garden hoses.")
+    _assert_not_admitted(resp, _GUIDANCE_HTML)
+    assert set(SESSION_STORE) == before
+
+
+def test_medical_conflict_needs_more_than_one_lay_token():
+    # §7.C bounded rule: a medical_device classification is not flipped by a
+    # single lay electrical token (guided) ...
+    before = set(SESSION_STORE)
+    resp = _post("A monitoring plug device for the kitchen stove.")
+    _assert_not_admitted(resp, _GUIDANCE_HTML)
+    assert set(SESSION_STORE) == before
+    # ... but corroborated household-electrical mechanism wording admits.
+    _assert_admitted(_post("A monitoring plug that cuts power to the stove."))
+
+
+# ---------------------------------------------------------------------------
+# Independent-review boundary fixes — valid electronics must remain admitted
+# (each of these was ADMITTED on the pristine base; strong-marker word forms
+# with ordinary electronics meanings must not reject them).
+# ---------------------------------------------------------------------------
+
+def test_pulse_circuit_electronics_idea_is_admitted():
+    # "pulse" has an ordinary electronics meaning (pulse circuits/signals) and
+    # must not act as strong medical evidence on an electronics-classified idea.
+    _assert_admitted(_post(
+        "A circuit that generates a pulse signal for testing LEDs."))
+
+
+def test_algorithm_in_charger_electronics_idea_is_admitted():
+    # "algorithm" appears in embedded/electronics control wording and must not
+    # act as strong software-only evidence.
+    _assert_admitted(_post(
+        "A battery charger that monitors charging current with an algorithm."))
+
+
+def test_self_diagnostics_power_supply_is_admitted():
+    # "self-diagnostics" is ordinary electronics wording; only the medical
+    # forms diagnose/diagnosis/diagnoses/diagnosing are strong markers.
+    _assert_admitted(_post(
+        "A power supply that runs self-diagnostics and warns of faults."))
+
+
+# ---------------------------------------------------------------------------
+# Independent-review boundary fixes — non-activated technology families
+# ---------------------------------------------------------------------------
+
+def test_robotics_idea_is_rejected_non_activation():
+    # Contract §6 — robotics is a non-activated technology family.
+    before = set(SESSION_STORE)
+    resp = _post("A robot that sorts warehouse boxes using a camera and arm.")
+    _assert_not_admitted(resp, _ERROR_HTML)
+    assert set(SESSION_STORE) == before
+
+
+def test_solar_garden_light_is_rejected_solar_not_activated():
+    # Conservative documented behavior: the solar technology family is NOT
+    # activated (§6), so even an electronics-flavored solar idea is refused.
+    # This is a solar non-activation boundary, not a judgment of the idea.
+    before = set(SESSION_STORE)
+    resp = _post("A solar garden light with an LED and a charging circuit.")
+    _assert_not_admitted(resp, _ERROR_HTML)
+    assert set(SESSION_STORE) == before

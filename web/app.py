@@ -105,26 +105,37 @@ _TOKEN_RE = re.compile(r"[a-z0-9]+")
 
 # Strong, unambiguous NON-electronics evidence. When present, the idea clearly
 # belongs to an unsupported domain (medical / mechanical / software / drone /
-# solar / agriculture); the explicit electronics confirmation must NOT override
-# it (Increment Contract §7.C, §10, §15). Matched against word tokens.
+# solar / robotics / agriculture); the explicit electronics confirmation must
+# NOT override it (Increment Contract §7.C, §10, §15). Matched against word
+# tokens. Words that ALSO carry ordinary electronics meanings are deliberately
+# EXCLUDED so valid electronics ideas are not rejected (independent-review
+# boundary fix): NOT "pulse" (pulse circuits/signals), NOT "algorithm"
+# (embedded/electronics control wording), NOT "diagnostic"/"diagnostics"
+# (electronics self-diagnostics) — only the medical noun/verb forms
+# diagnosis/diagnose/diagnoses/diagnosing are strong.
 _STRONG_UNSUPPORTED_WORDS = frozenset({
-    # medical_device (note: NOT "monitoring" — that is a weak/ambiguous term per
-    # §10 — and NOT "medicine")
-    "medical", "cardiac", "heart", "pulse", "blood", "insulin", "glucose",
+    # medical_device / health (note: NOT "monitoring" — that is a weak/ambiguous
+    # term per §10 — and NOT "medicine")
+    "medical", "cardiac", "heart", "blood", "insulin", "glucose",
     "clinical", "surgical", "surgery", "implant", "implantable", "prosthetic",
     "catheter", "stent", "biosensor", "patient", "dementia", "therapeutic",
     "respiratory", "neural", "retinal", "orthopedic",
+    "diagnosis", "diagnose", "diagnoses", "diagnosing",
+    "hearing", "wearable", "fever", "rehabilitation",
     # mechanical
     "mechanical", "gear", "gearbox", "gearing", "shaft", "bearing", "torque",
     "piston", "pulley", "hydraulic", "crankshaft", "camshaft",
     # software
-    "software", "algorithm", "api", "backend", "frontend", "database", "sql",
-    # drone / solar / agriculture (explicitly non-activated families, §6/§15)
+    "software", "api", "backend", "frontend", "database", "sql",
+    # drone / solar / robotics / agriculture (non-activated families, §6/§15)
     "drone", "solar", "crop", "crops", "agriculture", "agricultural",
     "pesticide", "herbicide", "irrigation", "farm", "farms",
+    "robot", "robots", "robotic", "robotics",
 })
-# Strong markers whose word-forms vary; matched as substrings of the full text.
-_STRONG_UNSUPPORTED_SUBSTRINGS = ("diagnos", "machine learning", "neural network")
+# Strong multi-word markers; matched as substrings of the full text.
+_STRONG_UNSUPPORTED_SUBSTRINGS = (
+    "machine learning", "neural network", "body temperature",
+)
 
 # Lay household-electrical MECHANISM evidence. Presence indicates a genuine
 # electrical mechanism written in non-specialist words, so the idea is admitted
@@ -132,15 +143,28 @@ _STRONG_UNSUPPORTED_SUBSTRINGS = ("diagnos", "machine learning", "neural network
 # or returned a weak conflicting supported domain (Increment Contract §7.B).
 # Deliberately EXCLUDES bare "appliance"/"alert"/"device" (which carry no
 # electrical mechanism on their own — see §9.B, which must NOT be admitted).
+# "power"/"powers" are matched ONLY as whole word tokens (independent-review
+# boundary fix): the previous "power" SUBSTRING marker fired inside unrelated
+# words such as "powerful", "empowers", and "hand-powered", falsely admitting
+# software-only and mechanical-only ideas. "powered" is deliberately NOT a
+# marker because it frequently names a non-electrical energy source
+# ("hand-powered", "spring-powered") and carries no electrical mechanism alone.
 _LAY_ELECTRICAL_WORDS = frozenset({
     "plug", "socket", "outlet", "switch", "circuit", "wire", "wiring",
     "voltage", "sensor", "sensors", "charger", "chargers", "battery",
     "batteries", "relay", "electric", "electrical", "electronic",
     "electronics", "electricity", "current", "currents", "transistor",
     "microcontroller", "arduino", "esp32", "led", "wifi", "bluetooth",
+    "power", "powers",
 })
-# Substring lay markers (variant word-forms), e.g. "power" -> powered/powers.
-_LAY_ELECTRICAL_SUBSTRINGS = ("power",)
+
+# Bounded medical-conflict corroboration bar (independent-review boundary fix):
+# when the unchanged deterministic classifier returns `medical_device`, ONE lay
+# electrical token must not flip the conflict toward electronics/electrical
+# (Increment Contract §7.C: confirmation helps resolve ambiguity but is not an
+# unconditional override). At least TWO distinct lay electrical mechanism words
+# are required; otherwise the owner is guided to name the mechanism instead.
+_MEDICAL_CONFLICT_LAY_MINIMUM = 2
 
 # User-facing guidance shown when an idea does not yet clearly show an electrical
 # mechanism (Increment Contract §7.E). Advisory only: it makes NO validation,
@@ -166,15 +190,14 @@ def _has_strong_unsupported_evidence(lowered_text: str) -> bool:
     return any(s in lowered_text for s in _STRONG_UNSUPPORTED_SUBSTRINGS)
 
 
-def _has_lay_electrical_evidence(lowered_text: str) -> bool:
-    """True when the text carries lay household-electrical MECHANISM evidence.
+def _lay_electrical_evidence_count(lowered_text: str) -> int:
+    """Number of DISTINCT lay household-electrical MECHANISM words in the text.
 
-    Word/token based, plus a small set of variant-form substrings. Read-only.
+    Word/token based only (no substrings) so markers never fire inside
+    unrelated words ("power" inside "powerful"/"empowers"). Read-only.
     """
     tokens = set(_TOKEN_RE.findall(lowered_text))
-    if tokens & _LAY_ELECTRICAL_WORDS:
-        return True
-    return any(s in lowered_text for s in _LAY_ELECTRICAL_SUBSTRINGS)
+    return len(tokens & _LAY_ELECTRICAL_WORDS)
 
 @app.route("/", methods=["GET"])
 def index():
@@ -201,27 +224,34 @@ def start():
     # WEAK/ambiguous conflicts and never overrides strong unsupported evidence.
     if _has_strong_unsupported_evidence(lowered):
         # Clearly a non-electronics idea (medical / mechanical / software /
-        # drone / solar / agriculture). The confirmation checkbox cannot override
-        # this; refuse with the stable unsupported message (§7.C, §10, §15).
+        # drone / solar / robotics / agriculture). The confirmation checkbox
+        # cannot override this; refuse with the stable unsupported message
+        # (§7.C, §10, §15).
         return render_template("index.html", error=UNSUPPORTED_DOMAIN_MESSAGE)
-    if domain != "electronics_electrical" and not _has_lay_electrical_evidence(lowered):
-        # No clear electronics classification and no lay electrical mechanism.
+    if domain != "electronics_electrical":
         if domain in CONFLICTING_SUPPORTED_DOMAINS:
-            # The conflicting supported-domain classification came from a
-            # weak/ambiguous term (e.g. the generic word "monitoring", or the
-            # substring "app" inside "appliance"), there is no electrical
-            # mechanism in the wording, and there is no strong unsupported
-            # evidence. Guide the owner toward naming the electrical mechanism
-            # instead of a bare hard rejection (§7.B, §7.E). No session created.
-            return render_template("index.html", error=MECHANISM_GUIDANCE_MESSAGE)
-        if domain is not None:
-            # Unexpected / unknown classifier value — refuse defensively.
+            # A weak/ambiguous conflicting supported-domain classification
+            # (e.g. the generic word "monitoring", or the substring "app"
+            # inside "appliance") with no strong unsupported evidence. Resolve
+            # toward electronics ONLY with corroborating lay electrical
+            # mechanism evidence; a medical_device conflict requires MORE
+            # corroboration than one lay token (§7.C, §10 — confirmation is
+            # never an unconditional override). Otherwise guide the owner
+            # toward naming the electrical mechanism instead of a bare hard
+            # rejection (§7.B, §7.E). No session is created on guidance.
+            required = (_MEDICAL_CONFLICT_LAY_MINIMUM
+                        if domain == "medical_device" else 1)
+            if _lay_electrical_evidence_count(lowered) < required:
+                return render_template("index.html", error=MECHANISM_GUIDANCE_MESSAGE)
+        elif domain is not None:
+            # Unexpected / unknown classifier value — refuse defensively,
+            # regardless of any lay wording.
             return render_template("index.html", error=UNSUPPORTED_DOMAIN_MESSAGE)
-        # domain is None with no lay electrical signal: preserve the existing
-        # explicit-confirmation fallback admission (unchanged behavior).
-    # electronics_electrical, lay electrical mechanism, or None-fallback is
-    # admitted under explicit confirmation (None covers functional electronics
-    # ideas the signal classifier misses).
+        # domain is None: preserve the existing explicit-confirmation fallback
+        # admission (unchanged behavior).
+    # electronics_electrical, sufficiently corroborated lay electrical
+    # mechanism, or None-fallback is admitted under explicit confirmation
+    # (None covers functional electronics ideas the signal classifier misses).
     # Admit: the session's domain is the explicitly confirmed supported domain.
     state = IdeaState(idea_id=str(uuid.uuid4()))
     state.domain = DOMAIN_CONFIRM_VALUE
