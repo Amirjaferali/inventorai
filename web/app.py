@@ -3,6 +3,7 @@ InventorAI Web Interface (Phase H-A)
 Thin web shell only. Engine called as library.
 SESSION_STORE: in-memory, non-production, temporary.
 """
+import re
 import uuid
 from flask import Flask, request, redirect, url_for, render_template
 from engine.domain_rules import infer_domain
@@ -85,6 +86,96 @@ CONFIRMATION_REQUIRED_MESSAGE = (
 # relabeled as electronics. These are refused; no session is created.
 CONFLICTING_SUPPORTED_DOMAINS = {"mechanical", "medical_device", "software"}
 
+# --- Domain Gate / Entry UX Increment (post-PR #100 Increment Contract) --------
+# Bounded ambiguity resolution for the /start domain gate. The problem being
+# fixed (see the merged evidence record + Increment Contract §3, §7.C, §10):
+# `infer_domain()` matches classification signals as SUBSTRINGS, so ordinary lay
+# wording produces spurious *conflicting-supported-domain* classifications that
+# the gate then hard-rejects even though the idea is a genuine electronics/
+# electrical one and the owner explicitly confirmed that domain — e.g. "app" is a
+# substring of "appliance" (-> software), and the generic word "monitoring" ->
+# medical_device. This increment lets the explicit confirmation resolve such
+# WEAK/ambiguous conflicts, while STRONG unsupported-domain evidence is never
+# overridden. It adds NO domain, activates no technology family, changes no
+# classifier/registry/domain pack, and makes no safety/feasibility/compliance
+# claim. Matching is word/token based (not substring) precisely so that markers
+# like "app" cannot fire inside "appliance" and "medical" cannot fire inside
+# "medicine".
+_TOKEN_RE = re.compile(r"[a-z0-9]+")
+
+# Strong, unambiguous NON-electronics evidence. When present, the idea clearly
+# belongs to an unsupported domain (medical / mechanical / software / drone /
+# solar / agriculture); the explicit electronics confirmation must NOT override
+# it (Increment Contract §7.C, §10, §15). Matched against word tokens.
+_STRONG_UNSUPPORTED_WORDS = frozenset({
+    # medical_device (note: NOT "monitoring" — that is a weak/ambiguous term per
+    # §10 — and NOT "medicine")
+    "medical", "cardiac", "heart", "pulse", "blood", "insulin", "glucose",
+    "clinical", "surgical", "surgery", "implant", "implantable", "prosthetic",
+    "catheter", "stent", "biosensor", "patient", "dementia", "therapeutic",
+    "respiratory", "neural", "retinal", "orthopedic",
+    # mechanical
+    "mechanical", "gear", "gearbox", "gearing", "shaft", "bearing", "torque",
+    "piston", "pulley", "hydraulic", "crankshaft", "camshaft",
+    # software
+    "software", "algorithm", "api", "backend", "frontend", "database", "sql",
+    # drone / solar / agriculture (explicitly non-activated families, §6/§15)
+    "drone", "solar", "crop", "crops", "agriculture", "agricultural",
+    "pesticide", "herbicide", "irrigation", "farm", "farms",
+})
+# Strong markers whose word-forms vary; matched as substrings of the full text.
+_STRONG_UNSUPPORTED_SUBSTRINGS = ("diagnos", "machine learning", "neural network")
+
+# Lay household-electrical MECHANISM evidence. Presence indicates a genuine
+# electrical mechanism written in non-specialist words, so the idea is admitted
+# under the explicit confirmation even if the deterministic classifier missed it
+# or returned a weak conflicting supported domain (Increment Contract §7.B).
+# Deliberately EXCLUDES bare "appliance"/"alert"/"device" (which carry no
+# electrical mechanism on their own — see §9.B, which must NOT be admitted).
+_LAY_ELECTRICAL_WORDS = frozenset({
+    "plug", "socket", "outlet", "switch", "circuit", "wire", "wiring",
+    "voltage", "sensor", "sensors", "charger", "chargers", "battery",
+    "batteries", "relay", "electric", "electrical", "electronic",
+    "electronics", "electricity", "current", "currents", "transistor",
+    "microcontroller", "arduino", "esp32", "led", "wifi", "bluetooth",
+})
+# Substring lay markers (variant word-forms), e.g. "power" -> powered/powers.
+_LAY_ELECTRICAL_SUBSTRINGS = ("power",)
+
+# User-facing guidance shown when an idea does not yet clearly show an electrical
+# mechanism (Increment Contract §7.E). Advisory only: it makes NO validation,
+# safety, feasibility, compliance, or build-readiness claim, and does NOT admit
+# the idea (no session is created).
+MECHANISM_GUIDANCE_MESSAGE = (
+    "InventorAI currently supports electronics and electrical ideas only. Your "
+    "description does not yet clearly show the electrical mechanism. Try adding a "
+    "simple phrase describing how it works electrically — for example that it uses "
+    "a sensor, current, switch, circuit, power, plug, or microcontroller."
+)
+
+
+def _has_strong_unsupported_evidence(lowered_text: str) -> bool:
+    """True when the text carries clear, unambiguous NON-electronics evidence.
+
+    Word/token based so short markers never fire inside unrelated words (e.g.
+    "app" inside "appliance", "medical" inside "medicine"). Read-only; no state.
+    """
+    tokens = set(_TOKEN_RE.findall(lowered_text))
+    if tokens & _STRONG_UNSUPPORTED_WORDS:
+        return True
+    return any(s in lowered_text for s in _STRONG_UNSUPPORTED_SUBSTRINGS)
+
+
+def _has_lay_electrical_evidence(lowered_text: str) -> bool:
+    """True when the text carries lay household-electrical MECHANISM evidence.
+
+    Word/token based, plus a small set of variant-form substrings. Read-only.
+    """
+    tokens = set(_TOKEN_RE.findall(lowered_text))
+    if tokens & _LAY_ELECTRICAL_WORDS:
+        return True
+    return any(s in lowered_text for s in _LAY_ELECTRICAL_SUBSTRINGS)
+
 @app.route("/", methods=["GET"])
 def index():
     return render_template("index.html")
@@ -104,14 +195,33 @@ def start():
     # silently override clear conflicting classification evidence.
     # infer_domain(), the registry loader, and all domain packs are unchanged.
     domain = infer_domain(idea_text)
-    if domain in CONFLICTING_SUPPORTED_DOMAINS:
-        # A clearly different *supported* domain — refuse, do not relabel.
+    lowered = idea_text.lower()
+    # Domain Gate / Entry UX Increment (post-PR #100 Increment Contract). Bounded
+    # ambiguity resolution, ordered so that explicit confirmation resolves only
+    # WEAK/ambiguous conflicts and never overrides strong unsupported evidence.
+    if _has_strong_unsupported_evidence(lowered):
+        # Clearly a non-electronics idea (medical / mechanical / software /
+        # drone / solar / agriculture). The confirmation checkbox cannot override
+        # this; refuse with the stable unsupported message (§7.C, §10, §15).
         return render_template("index.html", error=UNSUPPORTED_DOMAIN_MESSAGE)
-    if domain not in ("electronics_electrical", None):
-        # Unexpected / unknown classifier value — refuse defensively.
-        return render_template("index.html", error=UNSUPPORTED_DOMAIN_MESSAGE)
-    # electronics_electrical or None is admitted under explicit confirmation
-    # (None covers functional electronics ideas the signal classifier misses).
+    if domain != "electronics_electrical" and not _has_lay_electrical_evidence(lowered):
+        # No clear electronics classification and no lay electrical mechanism.
+        if domain in CONFLICTING_SUPPORTED_DOMAINS:
+            # The conflicting supported-domain classification came from a
+            # weak/ambiguous term (e.g. the generic word "monitoring", or the
+            # substring "app" inside "appliance"), there is no electrical
+            # mechanism in the wording, and there is no strong unsupported
+            # evidence. Guide the owner toward naming the electrical mechanism
+            # instead of a bare hard rejection (§7.B, §7.E). No session created.
+            return render_template("index.html", error=MECHANISM_GUIDANCE_MESSAGE)
+        if domain is not None:
+            # Unexpected / unknown classifier value — refuse defensively.
+            return render_template("index.html", error=UNSUPPORTED_DOMAIN_MESSAGE)
+        # domain is None with no lay electrical signal: preserve the existing
+        # explicit-confirmation fallback admission (unchanged behavior).
+    # electronics_electrical, lay electrical mechanism, or None-fallback is
+    # admitted under explicit confirmation (None covers functional electronics
+    # ideas the signal classifier misses).
     # Admit: the session's domain is the explicitly confirmed supported domain.
     state = IdeaState(idea_id=str(uuid.uuid4()))
     state.domain = DOMAIN_CONFIRM_VALUE
