@@ -3,6 +3,7 @@ InventorAI Web Interface (Phase H-A)
 Thin web shell only. Engine called as library.
 SESSION_STORE: in-memory, non-production, temporary.
 """
+import re
 import uuid
 from flask import Flask, request, redirect, url_for, render_template
 from engine.domain_rules import infer_domain
@@ -85,6 +86,119 @@ CONFIRMATION_REQUIRED_MESSAGE = (
 # relabeled as electronics. These are refused; no session is created.
 CONFLICTING_SUPPORTED_DOMAINS = {"mechanical", "medical_device", "software"}
 
+# --- Domain Gate / Entry UX Increment (post-PR #100 Increment Contract) --------
+# Bounded ambiguity resolution for the /start domain gate. The problem being
+# fixed (see the merged evidence record + Increment Contract §3, §7.C, §10):
+# `infer_domain()` matches classification signals as SUBSTRINGS, so ordinary lay
+# wording produces spurious *conflicting-supported-domain* classifications that
+# the gate then hard-rejects even though the idea is a genuine electronics/
+# electrical one and the owner explicitly confirmed that domain — e.g. "app" is a
+# substring of "appliance" (-> software), and the generic word "monitoring" ->
+# medical_device. This increment lets the explicit confirmation resolve such
+# WEAK/ambiguous conflicts, while STRONG unsupported-domain evidence is never
+# overridden. It adds NO domain, activates no technology family, changes no
+# classifier/registry/domain pack, and makes no safety/feasibility/compliance
+# claim. Matching is word/token based (not substring) precisely so that markers
+# like "app" cannot fire inside "appliance" and "medical" cannot fire inside
+# "medicine".
+_TOKEN_RE = re.compile(r"[a-z0-9]+")
+
+# Strong, unambiguous NON-electronics evidence. When present, the idea clearly
+# belongs to an unsupported domain (medical / mechanical / software / drone /
+# solar / robotics / agriculture); the explicit electronics confirmation must
+# NOT override it (Increment Contract §7.C, §10, §15). Matched against word
+# tokens. Words that ALSO carry ordinary electronics meanings are deliberately
+# EXCLUDED so valid electronics ideas are not rejected (independent-review
+# boundary fix): NOT "pulse" (pulse circuits/signals), NOT "algorithm"
+# (embedded/electronics control wording), NOT "diagnostic"/"diagnostics"
+# (electronics self-diagnostics) — only the medical noun/verb forms
+# diagnosis/diagnose/diagnoses/diagnosing are strong.
+_STRONG_UNSUPPORTED_WORDS = frozenset({
+    # medical_device / health (note: NOT "monitoring" — that is a weak/ambiguous
+    # term per §10 — and NOT "medicine")
+    "medical", "cardiac", "heart", "blood", "insulin", "glucose",
+    "clinical", "surgical", "surgery", "implant", "implantable", "prosthetic",
+    "catheter", "stent", "biosensor", "patient", "dementia", "therapeutic",
+    "respiratory", "neural", "retinal", "orthopedic",
+    "diagnosis", "diagnose", "diagnoses", "diagnosing",
+    "hearing", "wearable", "fever", "rehabilitation",
+    # mechanical
+    "mechanical", "gear", "gearbox", "gearing", "shaft", "bearing", "torque",
+    "piston", "pulley", "hydraulic", "crankshaft", "camshaft",
+    # software
+    "software", "api", "backend", "frontend", "database", "sql",
+    # drone / solar / robotics / agriculture (non-activated families, §6/§15)
+    "drone", "solar", "crop", "crops", "agriculture", "agricultural",
+    "pesticide", "herbicide", "irrigation", "farm", "farms",
+    "robot", "robots", "robotic", "robotics",
+})
+# Strong multi-word markers; matched as substrings of the full text.
+_STRONG_UNSUPPORTED_SUBSTRINGS = (
+    "machine learning", "neural network", "body temperature",
+)
+
+# Lay household-electrical MECHANISM evidence. Presence indicates a genuine
+# electrical mechanism written in non-specialist words, so the idea is admitted
+# under the explicit confirmation even if the deterministic classifier missed it
+# or returned a weak conflicting supported domain (Increment Contract §7.B).
+# Deliberately EXCLUDES bare "appliance"/"alert"/"device" (which carry no
+# electrical mechanism on their own — see §9.B, which must NOT be admitted).
+# "power"/"powers" are matched ONLY as whole word tokens (independent-review
+# boundary fix): the previous "power" SUBSTRING marker fired inside unrelated
+# words such as "powerful", "empowers", and "hand-powered", falsely admitting
+# software-only and mechanical-only ideas. "powered" is deliberately NOT a
+# marker because it frequently names a non-electrical energy source
+# ("hand-powered", "spring-powered") and carries no electrical mechanism alone.
+_LAY_ELECTRICAL_WORDS = frozenset({
+    "plug", "socket", "outlet", "switch", "circuit", "wire", "wiring",
+    "voltage", "sensor", "sensors", "charger", "chargers", "battery",
+    "batteries", "relay", "electric", "electrical", "electronic",
+    "electronics", "electricity", "current", "currents", "transistor",
+    "microcontroller", "arduino", "esp32", "led", "wifi", "bluetooth",
+    "power", "powers",
+})
+
+# Bounded medical-conflict corroboration bar (independent-review boundary fix):
+# when the unchanged deterministic classifier returns `medical_device`, ONE lay
+# electrical token must not flip the conflict toward electronics/electrical
+# (Increment Contract §7.C: confirmation helps resolve ambiguity but is not an
+# unconditional override). At least TWO distinct lay electrical mechanism words
+# are required; otherwise the owner is guided to name the mechanism instead.
+_MEDICAL_CONFLICT_LAY_MINIMUM = 2
+
+# User-facing guidance shown when an idea does not yet clearly show an electrical
+# mechanism (Increment Contract §7.E). Advisory only: it makes NO validation,
+# safety, feasibility, compliance, or build-readiness claim, and does NOT admit
+# the idea (no session is created).
+MECHANISM_GUIDANCE_MESSAGE = (
+    "InventorAI currently supports electronics and electrical ideas only. Your "
+    "description does not yet clearly show the electrical mechanism. Try adding a "
+    "simple phrase describing how it works electrically — for example that it uses "
+    "a sensor, current, switch, circuit, power, plug, or microcontroller."
+)
+
+
+def _has_strong_unsupported_evidence(lowered_text: str) -> bool:
+    """True when the text carries clear, unambiguous NON-electronics evidence.
+
+    Word/token based so short markers never fire inside unrelated words (e.g.
+    "app" inside "appliance", "medical" inside "medicine"). Read-only; no state.
+    """
+    tokens = set(_TOKEN_RE.findall(lowered_text))
+    if tokens & _STRONG_UNSUPPORTED_WORDS:
+        return True
+    return any(s in lowered_text for s in _STRONG_UNSUPPORTED_SUBSTRINGS)
+
+
+def _lay_electrical_evidence_count(lowered_text: str) -> int:
+    """Number of DISTINCT lay household-electrical MECHANISM words in the text.
+
+    Word/token based only (no substrings) so markers never fire inside
+    unrelated words ("power" inside "powerful"/"empowers"). Read-only.
+    """
+    tokens = set(_TOKEN_RE.findall(lowered_text))
+    return len(tokens & _LAY_ELECTRICAL_WORDS)
+
 @app.route("/", methods=["GET"])
 def index():
     return render_template("index.html")
@@ -104,13 +218,39 @@ def start():
     # silently override clear conflicting classification evidence.
     # infer_domain(), the registry loader, and all domain packs are unchanged.
     domain = infer_domain(idea_text)
-    if domain in CONFLICTING_SUPPORTED_DOMAINS:
-        # A clearly different *supported* domain — refuse, do not relabel.
+    lowered = idea_text.lower()
+    # Domain Gate / Entry UX Increment (post-PR #100 Increment Contract). Bounded
+    # ambiguity resolution, ordered so that explicit confirmation resolves only
+    # WEAK/ambiguous conflicts and never overrides strong unsupported evidence.
+    if _has_strong_unsupported_evidence(lowered):
+        # Clearly a non-electronics idea (medical / mechanical / software /
+        # drone / solar / robotics / agriculture). The confirmation checkbox
+        # cannot override this; refuse with the stable unsupported message
+        # (§7.C, §10, §15).
         return render_template("index.html", error=UNSUPPORTED_DOMAIN_MESSAGE)
-    if domain not in ("electronics_electrical", None):
-        # Unexpected / unknown classifier value — refuse defensively.
-        return render_template("index.html", error=UNSUPPORTED_DOMAIN_MESSAGE)
-    # electronics_electrical or None is admitted under explicit confirmation
+    if domain != "electronics_electrical":
+        if domain in CONFLICTING_SUPPORTED_DOMAINS:
+            # A weak/ambiguous conflicting supported-domain classification
+            # (e.g. the generic word "monitoring", or the substring "app"
+            # inside "appliance") with no strong unsupported evidence. Resolve
+            # toward electronics ONLY with corroborating lay electrical
+            # mechanism evidence; a medical_device conflict requires MORE
+            # corroboration than one lay token (§7.C, §10 — confirmation is
+            # never an unconditional override). Otherwise guide the owner
+            # toward naming the electrical mechanism instead of a bare hard
+            # rejection (§7.B, §7.E). No session is created on guidance.
+            required = (_MEDICAL_CONFLICT_LAY_MINIMUM
+                        if domain == "medical_device" else 1)
+            if _lay_electrical_evidence_count(lowered) < required:
+                return render_template("index.html", error=MECHANISM_GUIDANCE_MESSAGE)
+        elif domain is not None:
+            # Unexpected / unknown classifier value — refuse defensively,
+            # regardless of any lay wording.
+            return render_template("index.html", error=UNSUPPORTED_DOMAIN_MESSAGE)
+        # domain is None: preserve the existing explicit-confirmation fallback
+        # admission (unchanged behavior).
+    # electronics_electrical, sufficiently corroborated lay electrical
+    # mechanism, or None-fallback is admitted under explicit confirmation
     # (None covers functional electronics ideas the signal classifier misses).
     # Admit: the session's domain is the explicitly confirmed supported domain.
     state = IdeaState(idea_id=str(uuid.uuid4()))
