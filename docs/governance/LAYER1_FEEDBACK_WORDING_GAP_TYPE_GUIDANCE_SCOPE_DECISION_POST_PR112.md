@@ -19,7 +19,7 @@ File-creation record (per `CLAUDE.md` File Creation Rules):
 - Purpose: governance evidence artifact recording an owner admission decision.
 - Input contract: the read-only Scoring-Behavior Review findings and the merged
   PR #108/#110/#111/#112 record.
-- Output contract: a single admission decision (§8) and its boundaries; nothing
+- Output contract: a single admission decision (§9) and its boundaries; nothing
   executable, nothing activating.
 - Prohibited behaviors: this file must never be read as implementation
   authorization, scoring authorization, an increment contract, or roadmap
