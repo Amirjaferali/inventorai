@@ -18,6 +18,7 @@ from engine.deliverable_assembler import assemble_deliverable
 from engine.idea_development_outputs import derive_next_development_step
 from web.responsibility_labels import get_responsibility  # Increment 1B: advisory only
 from web.clarification_labels import get_clarification  # Increment 1B: display-only clarification
+from web.scaffolding_guidance import get_scaffolding_guidance  # MDN: display-only WARN guidance
 
 app = Flask(__name__)
 app.secret_key = "inventorai-dev-only"
@@ -377,6 +378,14 @@ def show_session(sid):
         # gates/scoring/maturity/closure/transcript/IdeaState/persistence; adds no
         # owner action and no POST handling. None when no gap (intake path).
         current_clarification=get_clarification(gap_type) if gap_type else None,
+        # More Detail Needed / Guided Answer Scaffolding (Increment Contract PR
+        # #106): deterministic, display-only guidance naming the KIND of missing
+        # detail to add when the ALREADY-computed engine outcome for the current
+        # answer is WARN. Derived at render time from the existing `last_result`
+        # (unchanged) and the current gap; never stored, never rewrites/mutates
+        # the answer, never closes a gap, never advances maturity, never creates
+        # evidence, and never alters the PASS/WARN/BLOCK outcome. None unless WARN.
+        current_scaffolding_guidance=get_scaffolding_guidance(last_result, gap_type),
     )
 @app.route("/session/<sid>/deliverable", methods=["GET"])
 def show_deliverable(sid):
