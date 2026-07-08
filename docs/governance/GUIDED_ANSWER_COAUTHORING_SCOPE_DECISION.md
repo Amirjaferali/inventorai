@@ -11,7 +11,7 @@ authorized increment candidate. It records an owner scope decision only. It
 authorizes NO implementation, code, test, schema, UI, route, template, runtime,
 session, scoring, maturity, readiness, criticality, persistence, or domain
 change; no Increment Contract in this step; no roadmap change beyond a proposed
-entry (§12); no `main` synchronization; and no MVP activation of any kind.
+entry (§14); no `main` synchronization; and no MVP activation of any kind.
 
 File-creation record (per `CLAUDE.md` File Creation Rules):
 - File path: `docs/governance/GUIDED_ANSWER_COAUTHORING_SCOPE_DECISION.md`
