@@ -191,3 +191,61 @@ def test_deliverable_remains_json_serialisable_with_section_15():
     pkg = assemble_deliverable(_state(_INSULATION))
     json.dumps(pkg, default=str)  # must not raise
     assert "inventor_stated_safety_signals" in pkg["_session_meta"]
+
+
+# ---------------------------------------------------------------------------
+# 14-16. Rendered user-facing visibility (PR #122 independent-review correction)
+# ---------------------------------------------------------------------------
+
+def _render_deliverable_html(state):
+    """Render the real user-facing deliverable HTML through the committed web route
+    (Increment 4/5 precedent). Lazy web import isolates the dependency to the
+    render tests only."""
+    from web.app import app as _flask_app, SESSION_STORE as _STORE
+    sid = "safety-render-" + str(id(state))
+    _STORE[sid] = {"state": state}
+    try:
+        resp = _flask_app.test_client().get(f"/session/{sid}/deliverable")
+        return resp.get_data(as_text=True)
+    finally:
+        _STORE.pop(sid, None)
+
+
+def _panel_region(html):
+    """The rendered safety-signals panel region: from the visible panel label to
+    the first Increment-6 group heading that follows it. Fails by absence if the
+    panel is not rendered."""
+    start = html.find("Inventor-Stated Safety Signals")
+    assert start != -1, "safety-signals panel label not rendered in deliverable HTML"
+    end = html.find("What your idea is", start)
+    return html[start:end] if end != -1 else html[start:]
+
+
+def test_rendered_deliverable_shows_safety_signal_panel():
+    html = _render_deliverable_html(_state(_INSULATION))
+    region = _panel_region(html)
+    low = region.lower()
+    # Visible label, inventor-stated provenance, and independent-validation wording.
+    assert "potential safety-critical assumption (inventor-stated)" in low
+    assert "inventor stated" in low or "inventor-stated" in low
+    assert "requires independent validation" in low or "require independent validation" in low
+    # The inventor's own bounded statement excerpt is visible.
+    assert "insulation cannot be safely achieved" in low
+
+
+def test_rendered_empty_state_neutral_wording_only():
+    html = _render_deliverable_html(_state("An ordinary sensor that reports readings."))
+    region = _panel_region(html)
+    low = region.lower()
+    assert "not a determination" in low
+    # The empty state must not present a positive safe/verified/risk-free claim:
+    # the only wording shown is the neutral no-signals-derived statement.
+    assert "no inventor-stated safety signals were derived" in low
+
+
+def test_rendered_panel_makes_no_forbidden_final_claims():
+    for text in (_INSULATION, None):
+        region = _panel_region(_render_deliverable_html(_state(text)))
+        low = region.lower()
+        for claim in _FORBIDDEN_CLAIMS:
+            assert claim not in low, (text, claim)

@@ -16,6 +16,10 @@ h3{color:#2c3e50;font-size:15px;margin-top:20px;margin-bottom:4px}
 .status-strip .field-label{margin:0}
 .status-strip .field-value{margin:0}
 .disclaimer{background:#f8f9fa;border-left:3px solid #b0b8c1;padding:9px 14px;border-radius:0 4px 4px 0;margin-bottom:20px;font-size:12px;color:#666;line-height:1.5}
+.safety-signals{background:#fff8e1;border:1px solid #f0c36d;padding:12px 14px;border-radius:4px;margin-bottom:20px}
+.ss-note{font-size:12px;color:#8a6d3b;line-height:1.5;margin:6px 0 12px 0}
+.ss-meta{font-size:12px;color:#667;line-height:1.5;margin:2px 0 6px 0}
+.ss-caution{font-size:12px;color:#8a6d3b;line-height:1.5;margin:0 0 12px 0}
 section{margin-bottom:18px}
 ul{padding-left:18px;font-size:13px;color:#444}
 li{margin-bottom:4px}
@@ -68,6 +72,39 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
     <div class="field-label">Derived readiness <span style="font-weight:normal">(recomputed separately from stored maturity; not a validation or resolved status)</span></div>
     <div class="field-value">{{ "Derived readiness signal met (still not technically verified)" if package["_session_meta"].get("derived_verified_ready", False) else "Not derived-ready — recorded evidence is not technically verified" }}</div>
   </div>
+</div>
+
+{# Safety-Aware first increment (PR #120 contract; PR #122 independent-review
+   correction): presentation-only render of the advisory block already assembled
+   at _session_meta.inventor_stated_safety_signals. The JSON location is
+   unchanged (no top-level section is added; the Increment-6 canonical
+   top-level section set and traceability contract are untouched). Every
+   rendered value is a value already present in the assembled package. This
+   panel is advisory only: every signal is inventor-stated and requires
+   independent validation, and nothing here is a determination that the idea is
+   safe, unsafe, risk-free, certified, compliant, approved, patent-ready, or
+   engineering-validated. #}
+{% set ss = package["_session_meta"].inventor_stated_safety_signals %}
+<div class="safety-signals">
+  <div class="status-title">Inventor-Stated Safety Signals</div>
+  {% if ss.signals %}
+  <p class="ss-note">{{ ss.advisory_note }}</p>
+  {% for sig in ss.signals %}
+  <div class="field-label">{{ sig.display_label }}</div>
+  <div class="field-value">&ldquo;{{ sig.statement }}&rdquo;</div>
+  <div class="ss-meta">
+    Safety subject: {{ sig.safety_subject }} &nbsp;&middot;&nbsp;
+    Failure condition stated by inventor: {{ sig.failure_condition }} &nbsp;&middot;&nbsp;
+    Possible consequence: {{ sig.possible_consequence }} &nbsp;&middot;&nbsp;
+    Source: {{ sig.source }} &nbsp;&middot;&nbsp;
+    Provenance: {{ sig.provenance | replace("_", " ") }} &nbsp;&middot;&nbsp;
+    Validation: {{ sig.validation_status | replace("_", " ") }}
+  </div>
+  <div class="ss-caution">{{ sig.caution_text }}</div>
+  {% endfor %}
+  {% else %}
+  <div class="field-value">{{ ss.empty_statement }}</div>
+  {% endif %}
 </div>
 
 {# ============================================================================
