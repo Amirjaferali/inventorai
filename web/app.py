@@ -19,6 +19,7 @@ from engine.idea_development_outputs import derive_next_development_step
 from web.responsibility_labels import get_responsibility  # Increment 1B: advisory only
 from web.clarification_labels import get_clarification  # Increment 1B: display-only clarification
 from web.scaffolding_guidance import get_scaffolding_guidance  # MDN: display-only WARN guidance
+from web.answer_coauthoring_prompts import get_answer_coauthoring_prompts  # GACA Increment 1: display-only advisory prompts
 
 app = Flask(__name__)
 app.secret_key = "inventorai-dev-only"
@@ -386,6 +387,17 @@ def show_session(sid):
         # the answer, never closes a gap, never advances maturity, never creates
         # evidence, and never alters the PASS/WARN/BLOCK outcome. None unless WARN.
         current_scaffolding_guidance=get_scaffolding_guidance(last_result, gap_type),
+        # Guided Answer Co-Authoring Increment 1 — Advisory Prompt Support
+        # (Increment Contract PR #127): deterministic, display-only, content-free
+        # OPTIONAL prompts naming the KIND of information the inventor could add to
+        # their OWN answer for the current question. Derived at render time from
+        # the current gap_type alone; never stored, never reads/rewrites/mutates
+        # the answer, never closes a gap, never advances maturity/readiness, never
+        # changes scoring/criticality, never touches the transcript/IdeaState/
+        # persistence, and adds no owner action, save/approve flow, or form field.
+        # None when there is no gap (intake path). The inventor remains the sole
+        # author of any saved answer.
+        current_answer_coauthoring=get_answer_coauthoring_prompts(gap_type) if gap_type else None,
     )
 @app.route("/session/<sid>/deliverable", methods=["GET"])
 def show_deliverable(sid):
