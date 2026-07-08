@@ -25,6 +25,10 @@ from engine.requirement_landscape import derive_requirement_landscape
 # Increment 5 (additive): the pure Validation Plan derivation. Consumed by the
 # single additive section _s14; adds no new truth and changes no prior section.
 from engine.validation_plan import derive_validation_plan
+# Safety-Aware first increment (PR #120 contract): additive, read-only,
+# advisory-only inventor-stated safety-signal derivation. Changes no prior
+# section, no criticality, no Section 6 risk, and no RequirementLandscape.risks.
+from engine.safety_signal import derive_inventor_stated_safety_signals
 
 PACKAGE_VERSION = "1.0.0"
 SCHEMA_ID       = "fdc-001-mvp-v1"
@@ -155,6 +159,14 @@ def assemble_deliverable(state: IdeaState) -> dict:
             # verbatim is carried once here; Section 8 references it by id while
             # Section 5 shows the full text. No unknown removed, no claim added.
             "unknown_registry": _unknown_registry(state),
+            # Safety-Aware first increment (additive, nested under _session_meta so
+            # the top-level canonical-section contract is unchanged — mirrors
+            # evidence_registry / unknown_registry; PR #120 contract). Advisory-only
+            # inventor-stated safety signals: adds no new top-level section, changes
+            # no prior section, does NOT populate RequirementLandscape.risks, does
+            # NOT touch Section 6 risks or Section 13 criticality, and makes no final
+            # safety / compliance / certification determination.
+            "inventor_stated_safety_signals": _s15(state),
         },
     }
 
@@ -217,6 +229,52 @@ _RESPONSIBILITY_LABELS = {
 _CONFIDENCE_LABELS = {
     "UNDETERMINED": "Confidence undetermined",
 }
+
+
+_SAFETY_SIGNALS_EMPTY = (
+    "No inventor-stated safety signals were derived from the recorded statements. "
+    "This is NOT a determination that the idea is safe, unsafe, risk-free, or "
+    "verified — it means no inventor-stated safety-critical failure condition was "
+    "detected in the recorded content."
+)
+
+
+def _s15(state):
+    """Safety-Aware first increment additive section (PR #120 contract): render the
+    pure inventor-stated safety-signal derivation as a JSON-safe dict (read-only;
+    mirrors _s13/_s14). Advisory-only: it adds no new stored truth, changes no prior
+    section, does NOT populate RequirementLandscape.risks, does NOT touch Section 6
+    risks or Section 13 criticality, and makes NO final safety / compliance /
+    certification / approval / legal / patent / engineering-validation claim. Every
+    signal is labelled inventor-stated and requiring independent validation."""
+    signals = derive_inventor_stated_safety_signals(state)
+    rendered = []
+    for s in signals:
+        rendered.append({
+            "signal_id":            s.signal_id,
+            "source":               s.source,
+            "provenance":           s.provenance,
+            "safety_subject":       s.safety_subject,
+            "failure_condition":    s.failure_condition,
+            "possible_consequence": s.possible_consequence,
+            "domain_context":       s.domain_context,
+            "validation_status":    s.validation_status,
+            "display_label":        s.display_label,
+            "caution_text":         s.caution_text,
+            "statement":            s.statement,
+        })
+    return {
+        "title":           "Inventor-Stated Safety Signals",
+        "signals":         rendered,
+        "total":           len(rendered),
+        "has_signals":     bool(rendered),
+        "empty_statement": _SAFETY_SIGNALS_EMPTY,
+        "advisory_note": (
+            "These signals are inventor-stated and require independent validation. "
+            "They are advisory only and are not a safety, compliance, certification, "
+            "engineering, or legal determination."
+        ),
+    }
 
 
 def _s14(state):
