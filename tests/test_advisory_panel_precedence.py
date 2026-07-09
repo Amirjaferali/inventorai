@@ -111,6 +111,22 @@ def test_arabic_uncertainty_state_uncertainty_is_sole_primary():
         SESSION_STORE.pop(sid, None)
 
 
+def test_arabic_uncertainty_suppresses_scaffolding_and_coauthoring_and_is_rtl():
+    # Arabic / RTL Supportive Response (contract PR #148): even in a WARN state,
+    # Arabic uncertainty is the SOLE primary panel (scaffolding and co-authoring
+    # suppressed as competing open primaries) and the panel is RTL — while the
+    # page shell stays LTR/en. The one-primary-panel precedence is unchanged.
+    sid = _start_electronics_session()
+    try:
+        _force(sid, last_result=_warn(), last_response="لا أعرف")
+        body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+        assert _primary_panels(body) == ["uncertainty"]
+        assert 'dir="rtl"' in body and body.count('dir="rtl"') == 1
+        assert '<html lang="en">' in body
+    finally:
+        SESSION_STORE.pop(sid, None)
+
+
 def test_uncertainty_wins_over_warn_scaffolding():
     # Both drivers present (WARN + uncertainty text): uncertainty is sole primary,
     # scaffolding advisory panel is suppressed — but the truthful WARN badge stays.

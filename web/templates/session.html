@@ -213,8 +213,13 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
 {# apply/rewrite control, carries no hidden form field, and adds no session        #}
 {# action. The inventor writes and owns the answer; there is nothing exam-like.    #}
 {% if question and current_uncertainty_guidance %}
-<div class="uncertainty-guidance" style="margin-bottom:14px;padding:10px 14px;border-radius:4px;border:1px solid #cfe6d6;background:#f2faf5;font-size:13px">
-  <div class="uncertainty-guidance-eyebrow" style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#5a9a75;margin-bottom:6px">Optional — no pressure</div>
+{# Arabic / RTL Supportive Response (contract PR #148): lang/dir are scoped to    #}
+{# THIS uncertainty panel only, from the display-only guidance dict. The page     #}
+{# shell stays <html lang="en"> LTR; only this supportive panel flips to Arabic   #}
+{# RTL when an Arabic-script uncertainty cue is detected. No other surface,        #}
+{# precedence guard, action, or behavior changes.                                 #}
+<div class="uncertainty-guidance" lang="{{ current_uncertainty_guidance.lang }}" dir="{{ current_uncertainty_guidance.dir }}" style="margin-bottom:14px;padding:10px 14px;border-radius:4px;border:1px solid #cfe6d6;background:#f2faf5;font-size:13px">
+  <div class="uncertainty-guidance-eyebrow" style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#5a9a75;margin-bottom:6px">{{ current_uncertainty_guidance.eyebrow }}</div>
   <div class="uncertainty-guidance-heading" style="font-weight:bold;color:#2c5a42;margin-bottom:8px">{{ current_uncertainty_guidance.heading }}</div>
   <ul class="uncertainty-guidance-prompts" style="margin:0 0 8px 18px;color:#3d5a4c">
     {% for prompt in current_uncertainty_guidance.prompts %}<li>{{ prompt }}</li>{% endfor %}

@@ -32,6 +32,19 @@ from engine.safety_signal import derive_inventor_stated_safety_signals  # noqa: 
 
 _EYEBROW = "Optional — no pressure"
 
+# Arabic / RTL Supportive Response (contract PR #148) — owner-pinned copy.
+_AR_EYEBROW = "اختياري — بدون ضغط"
+_AR_HEADING = "لا بأس — لنأخذها خطوة بخطوة."
+_AR_PROMPTS = (
+    "ما الجزء الذي أنت غير متأكد منه تحديدًا؟",
+    "ما الذي تعرفه بالفعل عن هذه الفكرة، ولو كان بسيطًا؟",
+    "ما المعلومة أو القياس أو المكوّن الذي تحتاج إلى التحقق منه لاحقًا؟",
+)
+_AR_NOTE = (
+    "يمكنك الإجابة بما تعرفه الآن فقط، وترك ما لا تعرفه واضحًا. "
+    "هذا التوجيه لا يغيّر إجابتك ولا يُعد تحققًا هندسيًا أو موافقة سلامة أو امتثال أو براءة اختراع."
+)
+
 _ENGLISH_UNCERTAIN = (
     "I don't know",
     "I'm not sure",
@@ -103,8 +116,12 @@ def test_non_uncertainty_returns_none():
 
 def test_returns_only_safe_keys_and_list_of_str_prompts():
     g = get_uncertainty_guidance("I don't know")
-    assert set(g.keys()) == {"heading", "prompts", "note"}
+    # Arabic / RTL Supportive Response (contract PR #148) adds display-only
+    # language/direction metadata; the key set stays a fixed, safe allow-list
+    # with NO answer/clarification field.
+    assert set(g.keys()) == {"heading", "prompts", "note", "eyebrow", "lang", "dir"}
     assert isinstance(g["prompts"], list) and g["prompts"]
+    assert g["lang"] in ("en", "ar") and g["dir"] in ("ltr", "rtl")
     assert all(isinstance(p, str) and p for p in g["prompts"])
 
 
@@ -171,12 +188,16 @@ def test_panel_appears_for_uncertainty_via_unknown_action():
 
 
 def test_panel_appears_for_arabic_uncertainty():
+    # Arabic uncertainty now renders the pinned Arabic supportive copy (not the
+    # English eyebrow) with the panel flipped to RTL.
     sid = _start_electronics_session()
     try:
         app.test_client().post(f"/session/{sid}",
                                data={"response": "لا أعرف", "action": "unknown"})
         body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
-        assert _EYEBROW in body
+        assert _AR_EYEBROW in body
+        assert _AR_HEADING in body
+        assert _EYEBROW not in body            # English eyebrow not shown for Arabic
     finally:
         SESSION_STORE.pop(sid, None)
 
@@ -307,6 +328,87 @@ def test_guided_answer_coauthoring_suppressed_in_uncertainty_but_not_removed():
         body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
         assert _COAUTHORING_HEADING in body                 # co-authoring available/primary
         assert _EYEBROW not in body                          # uncertainty absent here
+    finally:
+        SESSION_STORE.pop(sid, None)
+
+
+# ---------------------------------------------------------------------------
+# Arabic / RTL Supportive Response (contract PR #148) — display-only
+# ---------------------------------------------------------------------------
+
+def _panel_div(body):
+    """Return the opening <div ...> tag of the uncertainty panel, or ''."""
+    marker = 'class="uncertainty-guidance"'
+    if marker not in body:
+        return ""
+    start = body.rindex("<div", 0, body.index(marker))
+    return body[start:body.index(">", start) + 1]
+
+
+def test_arabic_helper_lang_dir_and_byte_exact_pinned_copy():
+    for text in ("لا أعرف", "غير متأكد", "لا أفهم"):
+        g = get_uncertainty_guidance(text)
+        assert g is not None, text
+        assert g["lang"] == "ar" and g["dir"] == "rtl", text
+        assert g["eyebrow"] == _AR_EYEBROW
+        assert g["heading"] == _AR_HEADING
+        assert g["prompts"] == list(_AR_PROMPTS)
+        assert g["note"] == _AR_NOTE
+
+
+def test_english_helper_lang_dir_and_english_copy():
+    for text in ("I don't know", "not sure"):
+        g = get_uncertainty_guidance(text)
+        assert g is not None, text
+        assert g["lang"] == "en" and g["dir"] == "ltr", text
+        assert g["eyebrow"] == _EYEBROW
+
+
+def test_mixed_language_uncertainty_chooses_arabic():
+    g = get_uncertainty_guidance("I don't know لا أعرف")
+    assert g["lang"] == "ar" and g["dir"] == "rtl"
+    assert g["eyebrow"] == _AR_EYEBROW
+
+
+def test_arabic_panel_is_lang_ar_dir_rtl_and_page_shell_stays_english():
+    sid = _start_electronics_session()
+    try:
+        app.test_client().post(f"/session/{sid}",
+                               data={"response": "لا أعرف", "action": "unknown"})
+        body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+        div = _panel_div(body)
+        assert 'lang="ar"' in div and 'dir="rtl"' in div
+        # RTL is scoped to the uncertainty panel only — the page shell is LTR/en.
+        assert '<html lang="en">' in body
+        assert body.count('dir="rtl"') == 1
+    finally:
+        SESSION_STORE.pop(sid, None)
+
+
+def test_english_panel_is_ltr_and_no_rtl_anywhere():
+    sid = _start_electronics_session()
+    try:
+        app.test_client().post(f"/session/{sid}",
+                               data={"response": "I don't know", "action": "unknown"})
+        body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+        div = _panel_div(body)
+        assert 'lang="en"' in div and 'dir="ltr"' in div
+        assert 'dir="rtl"' not in body
+        assert '<html lang="en">' in body
+    finally:
+        SESSION_STORE.pop(sid, None)
+
+
+def test_arabic_panel_saved_answer_verbatim_and_six_actions():
+    sid = _start_electronics_session()
+    answer = "لا أعرف كيف يعمل الحساس بعد."
+    try:
+        app.test_client().post(f"/session/{sid}",
+                               data={"response": answer, "action": "answered"})
+        transcript = SESSION_STORE[sid]["transcript"]
+        assert transcript and transcript[-1]["response"] == answer  # verbatim
+        body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+        assert body.count('name="action"') == 6
     finally:
         SESSION_STORE.pop(sid, None)
 
