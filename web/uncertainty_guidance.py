@@ -63,6 +63,32 @@ _NOTE = (
     "patent, or engineering approval."
 )
 
+# English eyebrow (unchanged copy; now sourced from this module so the template
+# can render one eyebrow for either language). Display-only; content-free.
+_EN_EYEBROW = "Optional — no pressure"
+
+# --- Arabic supportive display payload (fixed, content-free) ---------------
+# Arabic / RTL Supportive Response increment, governed by
+# `docs/governance/ARABIC_RTL_SUPPORTIVE_RESPONSE_INCREMENT_CONTRACT.md`
+# (true-merged via PR #148). Display-only Arabic supportive copy shown ONLY when
+# the user's own text expresses uncertainty in Arabic. These strings are the
+# owner-pinned copy: supportive, optional, content-free. None supplies answer
+# content, a component, a value, a material, a mechanism, a safety fact, or a
+# domain detail; none makes a validation / safety / compliance / patent /
+# engineering-readiness claim; none rewrites the inventor's answer. The inventor
+# remains the sole author and source of any saved answer.
+_AR_EYEBROW = "اختياري — بدون ضغط"
+_AR_HEADING = "لا بأس — لنأخذها خطوة بخطوة."
+_AR_PROMPTS = (
+    "ما الجزء الذي أنت غير متأكد منه تحديدًا؟",
+    "ما الذي تعرفه بالفعل عن هذه الفكرة، ولو كان بسيطًا؟",
+    "ما المعلومة أو القياس أو المكوّن الذي تحتاج إلى التحقق منه لاحقًا؟",
+)
+_AR_NOTE = (
+    "يمكنك الإجابة بما تعرفه الآن فقط، وترك ما لا تعرفه واضحًا. "
+    "هذا التوجيه لا يغيّر إجابتك ولا يُعد تحققًا هندسيًا أو موافقة سلامة أو امتثال أو براءة اختراع."
+)
+
 # --- Text normalization (pure; no imports) ---------------------------------
 # Apostrophe variants stripped so "don't" == "dont".
 _APOSTROPHES = ("'", "’", "´", "`", "ʼ")
@@ -127,20 +153,57 @@ def is_uncertainty_text(text):
     return any(cue in normalized for cue in _ALL_CUES)
 
 
+def _uncertainty_language(text):
+    """Return ``"ar"`` / ``"en"`` for the language of the matched uncertainty
+    cue, or ``None`` when the text expresses no uncertainty.
+
+    Pure and deterministic. Mixed-language tie-break (contract §6): if an
+    Arabic-script uncertainty cue is present, Arabic wins — so Arabic cues are
+    checked first. Never raises; performs no I/O.
+    """
+    normalized = _normalize(text)
+    if not normalized:
+        return None
+    if any(cue in normalized for cue in _ARABIC_CUES):
+        return "ar"
+    if any(cue in normalized for cue in _ENGLISH_CUES):
+        return "en"
+    return None
+
+
 def get_uncertainty_guidance(text):
     """Return supportive, display-only guidance for uncertainty text, else None.
 
     Pure and deterministic. ``text`` is the user's own expressed answer/signal
-    text (or None). Returns a fresh dict ``{heading, prompts, note}`` of
-    supportive, content-free prompts when the text expresses uncertainty, or
-    ``None`` otherwise. Never raises; performs no I/O; never reads, stores, or
-    mutates any answer or state; never affects scoring, maturity, readiness,
-    criticality, gaps, the transcript, or the IdeaState.
+    text (or None). Returns a fresh dict
+    ``{heading, prompts, note, eyebrow, lang, dir}`` of supportive, content-free
+    prompts when the text expresses uncertainty, or ``None`` otherwise. When an
+    Arabic-script uncertainty cue is present the guidance is the owner-pinned
+    Arabic copy with ``lang="ar"`` / ``dir="rtl"`` (RTL is scoped to the
+    uncertainty panel only; the page itself stays ``lang="en"`` LTR); otherwise
+    it is the existing English copy with ``lang="en"`` / ``dir="ltr"``. Never
+    raises; performs no I/O; never reads, stores, or mutates any answer or state;
+    never affects scoring, maturity, readiness, criticality, gaps, the
+    transcript, or the IdeaState. The inventor remains the sole author of any
+    saved answer.
     """
-    if not is_uncertainty_text(text):
+    language = _uncertainty_language(text)
+    if language is None:
         return None
+    if language == "ar":
+        return {
+            "heading": _AR_HEADING,
+            "prompts": list(_AR_PROMPTS),
+            "note": _AR_NOTE,
+            "eyebrow": _AR_EYEBROW,
+            "lang": "ar",
+            "dir": "rtl",
+        }
     return {
         "heading": _HEADING,
         "prompts": list(_PROMPTS),
         "note": _NOTE,
+        "eyebrow": _EN_EYEBROW,
+        "lang": "en",
+        "dir": "ltr",
     }
