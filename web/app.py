@@ -20,6 +20,7 @@ from web.responsibility_labels import get_responsibility  # Increment 1B: adviso
 from web.clarification_labels import get_clarification  # Increment 1B: display-only clarification
 from web.scaffolding_guidance import get_scaffolding_guidance  # MDN: display-only WARN guidance
 from web.answer_coauthoring_prompts import get_answer_coauthoring_prompts  # GACA Increment 1: display-only advisory prompts
+from web.uncertainty_guidance import get_uncertainty_guidance  # GUS: display-only supportive uncertainty guidance
 
 app = Flask(__name__)
 app.secret_key = "inventorai-dev-only"
@@ -355,6 +356,25 @@ def show_session(sid):
     # it to the presentation-only session callout. Read-only: no route/method
     # change, no state mutation, no persistence, no scoring/progression.
     next_development_step = derive_next_development_step(state)
+    # Guided Uncertainty Support (Increment Contract PR #134): derive, READ-ONLY,
+    # the user's most recent submitted text from already-existing session state —
+    # the last transcript response (an `answered` submission) or the last
+    # non-answer interaction text (e.g. the "I do not know this yet" action) —
+    # choosing the more recent by iteration. This reads existing structures only;
+    # it mutates nothing, adds no field, and never re-scores. The text feeds the
+    # pure display-only helper below; the saved answer is unaffected.
+    _uncertainty_candidates = []
+    _tx = entry.get("transcript") or []
+    if _tx:
+        _uncertainty_candidates.append(
+            (_tx[-1].get("iteration", 0), _tx[-1].get("response", "") or ""))
+    _actions = entry.get("interaction_actions") or []
+    if _actions:
+        _uncertainty_candidates.append(
+            (_actions[-1].get("iteration", 0), _actions[-1].get("text", "") or ""))
+    _uncertainty_text = (
+        max(_uncertainty_candidates, key=lambda c: c[0])[1]
+        if _uncertainty_candidates else "")
     return render_template("session.html",
         sid=sid,
         state=state,
@@ -398,6 +418,17 @@ def show_session(sid):
         # None when there is no gap (intake path). The inventor remains the sole
         # author of any saved answer.
         current_answer_coauthoring=get_answer_coauthoring_prompts(gap_type) if gap_type else None,
+        # Guided Uncertainty Support (Increment Contract PR #134): deterministic,
+        # display-only, content-free SUPPORTIVE prompts shown when the user's most
+        # recent submitted text expresses uncertainty ("I don't know" / "لا أعرف").
+        # Derived at render time from the read-only `_uncertainty_text` signal
+        # above; never stored, never reads/rewrites/mutates the answer, never
+        # closes a gap, never marks uncertainty as sufficient, never advances
+        # maturity/readiness, never changes scoring/criticality, never touches the
+        # transcript/IdeaState/persistence, and adds no owner action, save/approve
+        # flow, or form field. None when the text is not uncertainty. The inventor
+        # remains the sole author of any saved answer.
+        current_uncertainty_guidance=get_uncertainty_guidance(_uncertainty_text),
     )
 @app.route("/session/<sid>/deliverable", methods=["GET"])
 def show_deliverable(sid):

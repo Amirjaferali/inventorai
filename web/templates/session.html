@@ -203,6 +203,22 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
 <div class="badge-warn" style="display:block;padding:9px 14px;margin-bottom:14px">{{ interaction_ack }}</div>
 {% endif %}
 
+{# Guided Uncertainty Support (PR #134 Increment Contract): supportive, OPTIONAL, #}
+{# display-only prompts shown when the user's own text expresses uncertainty      #}
+{# ("I don't know" / "لا أعرف"). It supplies no answer text, has no save/approve/  #}
+{# apply/rewrite control, carries no hidden form field, and adds no session        #}
+{# action. The inventor writes and owns the answer; there is nothing exam-like.    #}
+{% if question and current_uncertainty_guidance %}
+<div class="uncertainty-guidance" style="margin-bottom:14px;padding:10px 14px;border-radius:4px;border:1px solid #cfe6d6;background:#f2faf5;font-size:13px">
+  <div class="uncertainty-guidance-eyebrow" style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#5a9a75;margin-bottom:6px">Optional — no pressure</div>
+  <div class="uncertainty-guidance-heading" style="font-weight:bold;color:#2c5a42;margin-bottom:8px">{{ current_uncertainty_guidance.heading }}</div>
+  <ul class="uncertainty-guidance-prompts" style="margin:0 0 8px 18px;color:#3d5a4c">
+    {% for prompt in current_uncertainty_guidance.prompts %}<li>{{ prompt }}</li>{% endfor %}
+  </ul>
+  <div class="uncertainty-guidance-note" style="font-size:12px;color:#7a9a88">{{ current_uncertainty_guidance.note }}</div>
+</div>
+{% endif %}
+
 {# Guided Answer Co-Authoring Increment 1 — Advisory Prompt Support (PR #127     #}
 {# Increment Contract): OPTIONAL, display-only, content-free prompts naming the  #}
 {# KIND of information the inventor could add to their OWN answer. It supplies    #}
