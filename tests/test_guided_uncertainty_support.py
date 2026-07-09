@@ -278,17 +278,35 @@ def test_no_forbidden_fields_introduced_on_state_or_store():
         SESSION_STORE.pop(sid, None)
 
 
-def test_guided_answer_coauthoring_remains_present_and_distinct():
-    # A live electronics session renders the Guided Answer Co-Authoring panel; the
-    # new uncertainty panel is a separate, distinctly-labeled surface.
+def test_guided_answer_coauthoring_suppressed_in_uncertainty_but_not_removed():
+    # Advisory Panel Precedence (Increment Contract PR #141) reconciliation: in the
+    # uncertainty state, Guided Uncertainty Support is the primary advisory panel
+    # and Guided Answer Co-Authoring is SUPPRESSED as a competing open primary
+    # panel — it is NOT removed as a capability. The uncertainty panel and the
+    # Increment 1B clarification expander remain present and distinct.
+    _COAUTHORING_HEADING = "Optional: what you could include in your answer"
     sid = _start_electronics_session()
     try:
         app.test_client().post(f"/session/{sid}",
                                data={"response": "I don't know", "action": "unknown"})
         body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
-        assert "Optional: what you could include in your answer" in body  # co-authoring
-        assert _EYEBROW in body                                            # uncertainty
-        assert "Help me understand this question" in body                 # Increment 1B
+        assert _EYEBROW in body                              # uncertainty is primary
+        assert _COAUTHORING_HEADING not in body             # co-authoring suppressed here
+        assert "Help me understand this question" in body   # Increment 1B intact
+    finally:
+        SESSION_STORE.pop(sid, None)
+    # Co-Authoring is NOT deleted or persistently disabled: it renders as primary
+    # in a separate non-uncertainty / non-WARN (PASS) state.
+    sid = _start_electronics_session()
+    try:
+        entry = SESSION_STORE[sid]
+        entry["last_result"] = {"transition": "PASS", "reason": "ok",
+                                "direction": "PROGRESSING"}
+        entry["transcript"] = [{"response": "it opens a relay when current exceeds a threshold",
+                                "iteration": 1}]
+        body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+        assert _COAUTHORING_HEADING in body                 # co-authoring available/primary
+        assert _EYEBROW not in body                          # uncertainty absent here
     finally:
         SESSION_STORE.pop(sid, None)
 
