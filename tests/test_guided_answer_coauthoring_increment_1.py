@@ -65,6 +65,27 @@ def _start_electronics_session():
     return resp.headers["Location"].rsplit("/", 1)[-1]
 
 
+def _coauthoring_primary_session():
+    """Start an electronics session and force a non-WARN (PASS), non-uncertainty
+    render state so Guided Answer Co-Authoring is the PRIMARY advisory panel under
+    Advisory Panel Precedence (Increment Contract PR #141: uncertainty >
+    scaffolding[WARN] > co-authoring). A freshly started session is legitimately
+    already in a WARN state, where scaffolding is now primary; this forces the
+    reversible non-WARN/non-uncertainty state in which co-authoring is primary.
+
+    In-memory test override only (sets the already-existing `last_result` and last
+    transcript response on the ephemeral session entry) — it changes no production
+    code, scoring, schema, or persistence.
+    """
+    sid = _start_electronics_session()
+    entry = SESSION_STORE[sid]
+    entry["last_result"] = {"transition": "PASS", "reason": "ok",
+                            "direction": "PROGRESSING"}
+    entry["transcript"] = [{"response": "it opens a relay when current exceeds a threshold",
+                            "iteration": 1}]
+    return sid
+
+
 # ---------------------------------------------------------------------------
 # Pure function — deterministic, content-free, safe structure
 # ---------------------------------------------------------------------------
@@ -145,7 +166,9 @@ def test_pure_call_does_not_perform_io_or_read_source_of_engine():
 # ---------------------------------------------------------------------------
 
 def test_panel_appears_and_is_labeled_advisory_for_electronics_question():
-    sid = _start_electronics_session()
+    # Co-authoring is the primary advisory panel in a non-uncertainty / non-WARN
+    # state (Advisory Panel Precedence, PR #141).
+    sid = _coauthoring_primary_session()
     try:
         body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
         assert _HEADING in body
@@ -157,7 +180,7 @@ def test_panel_appears_and_is_labeled_advisory_for_electronics_question():
 
 
 def test_panel_has_no_save_approve_apply_control_or_hidden_field():
-    sid = _start_electronics_session()
+    sid = _coauthoring_primary_session()
     try:
         body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
         panel = body[body.index(_HEADING):]
@@ -205,7 +228,7 @@ def test_saved_answer_is_verbatim_and_guidance_not_persisted():
 
 
 def test_render_does_not_change_maturity_gaps_or_outcome():
-    sid = _start_electronics_session()
+    sid = _coauthoring_primary_session()
     state = SESSION_STORE[sid]["state"]
     before_maturity = state.maturity_level
     before_gaps = [(g.gap_type, g.status) for g in state.gaps]
@@ -236,13 +259,46 @@ def test_no_forbidden_fields_introduced_on_state_or_store():
 
 def test_existing_surfaces_present_and_distinct():
     # Increment 1B "Help me understand this question" expander remains; the new
-    # advisory co-authoring panel is a separate, distinctly-labeled surface.
-    sid = _start_electronics_session()
+    # advisory co-authoring panel is a separate, distinctly-labeled surface. Under
+    # Advisory Panel Precedence (PR #141) the co-authoring panel is primary in a
+    # non-uncertainty / non-WARN state, where this distinctness is asserted.
+    sid = _coauthoring_primary_session()
     try:
         body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
         assert "Help me understand this question" in body   # Increment 1B intact
-        assert _HEADING in body                             # new surface present
+        assert _HEADING in body                             # co-authoring surface present
         assert _EYEBROW in body                             # distinctly labeled
+    finally:
+        SESSION_STORE.pop(sid, None)
+
+
+def test_coauthoring_suppressed_as_primary_in_uncertainty_and_warn_states():
+    # Advisory Panel Precedence (PR #141) reconciliation: the co-authoring panel is
+    # suppressed only as a competing OPEN primary panel in the uncertainty state
+    # and the WARN-scaffolding state — it is NOT removed as a capability (proven
+    # present in the non-uncertainty / non-WARN state by the tests above).
+    # Uncertainty state (non-scoring "I do not know this yet" action):
+    sid = _start_electronics_session()
+    try:
+        app.test_client().post(f"/session/{sid}",
+                               data={"response": "I don't know", "action": "unknown"})
+        body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+        assert "Optional — no pressure" in body   # uncertainty is primary
+        assert _HEADING not in body                # co-authoring suppressed here
+    finally:
+        SESSION_STORE.pop(sid, None)
+    # WARN-not-uncertainty state (forced WARN, non-uncertainty text):
+    sid = _start_electronics_session()
+    try:
+        entry = SESSION_STORE[sid]
+        entry["last_result"] = {"transition": "WARN",
+                                "reason": "MECHANISM_COMPLETENESS asserted only — reasoning required",
+                                "direction": "STALLED"}
+        entry["transcript"] = [{"response": "the plug senses current and cuts power",
+                                "iteration": 1}]
+        body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+        assert 'class="scaffolding-guidance"' in body  # scaffolding is primary
+        assert _HEADING not in body                    # co-authoring suppressed here
     finally:
         SESSION_STORE.pop(sid, None)
 
