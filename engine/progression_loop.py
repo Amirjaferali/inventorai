@@ -16,6 +16,7 @@ NOT responsible for:
   - Replay (scripts/)
 """
 
+import re
 import warnings
 from engine.domain_rules import get_substance_signals, is_known_domain
 from engine.idea_state import (
@@ -297,9 +298,45 @@ _ACKNOWLEDGED_UNKNOWN_MARKERS = (
     "i'm not yet sure",
     "i have not yet researched",
     "i haven't researched",
+    # Fragment-capture correction (owner-authorized 2026-07-10): remaining
+    # minimum supported explicit-unknown phrases. Appended AFTER the original
+    # markers so category_basis resolution for previously detected responses
+    # is unchanged. Explicit inventor-marked uncertainty only — the bare
+    # technical word "unknown" must never match.
+    "i don't know",
+    "i am not sure",
+    "i'm not sure",
+    "it is still unknown",
+    "this is not yet known",
 )
 
 _MIN_ACKNOWLEDGED_UNKNOWN_LENGTH = 40
+
+# Deterministic sentence boundary: a terminator (. ! ?) followed by
+# whitespace. Markers contain no terminators, so a matched marker can never
+# span a split point.
+_SENTENCE_SPLIT_RE = re.compile(r"(?<=[.!?])\s+")
+
+
+def _extract_unknown_fragment(r, marker):
+    """
+    Bounded acknowledged-unknown fragment: the inventor-written sentence
+    containing the explicit unknown marker, verbatim except surrounding
+    whitespace. A whole response is returned only when it is a single
+    sentence. Never paraphrases, never captures neighboring sentences.
+    """
+    sentences = [s.strip() for s in _SENTENCE_SPLIT_RE.split(r) if s.strip()]
+    if len(sentences) <= 1:
+        return r
+    for sentence in sentences:
+        if marker in sentence.lower():
+            return sentence
+    # Defensive fallback (unreachable for the current marker set, which
+    # cannot span a split point): capture from the marker to the end of its
+    # sentence rather than mislabeling the whole multi-sentence answer.
+    start = r.lower().find(marker)
+    tail = _SENTENCE_SPLIT_RE.split(r[start:], 1)[0].strip()
+    return tail or r
 
 
 def _detect_acknowledged_unknown(response, gap_type, iteration):
@@ -308,6 +345,9 @@ def _detect_acknowledged_unknown(response, gap_type, iteration):
     Requires ignorance marker AND minimum response length.
     Returns AcknowledgedUnknown or None.
     NO effect on gap closure or quality classification.
+    verbatim holds only the bounded unknown fragment (owner-authorized
+    2026-07-10 correction); the full answer stays in the transcript,
+    interaction ledger, and evidence records unchanged.
     """
     r = response.strip()
     if len(r) < _MIN_ACKNOWLEDGED_UNKNOWN_LENGTH:
@@ -318,7 +358,7 @@ def _detect_acknowledged_unknown(response, gap_type, iteration):
             return AcknowledgedUnknown(
                 iteration=iteration,
                 gap_context=gap_type,
-                verbatim=r,
+                verbatim=_extract_unknown_fragment(r, marker),
                 category_basis=marker,
             )
     return None
