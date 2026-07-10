@@ -21,6 +21,7 @@ from web.clarification_labels import get_clarification  # Increment 1B: display-
 from web.scaffolding_guidance import get_scaffolding_guidance  # MDN: display-only WARN guidance
 from web.answer_coauthoring_prompts import get_answer_coauthoring_prompts  # GACA Increment 1: display-only advisory prompts
 from web.uncertainty_guidance import get_uncertainty_guidance  # GUS: display-only supportive uncertainty guidance
+from web.result_feedback import get_result_feedback  # PLRF: display-only plain-language result feedback
 
 app = Flask(__name__)
 app.secret_key = "inventorai-dev-only"
@@ -407,6 +408,15 @@ def show_session(sid):
         # the answer, never closes a gap, never advances maturity, never creates
         # evidence, and never alters the PASS/WARN/BLOCK outcome. None unless WARN.
         current_scaffolding_guidance=get_scaffolding_guidance(last_result, gap_type),
+        # Plain-Language Result Feedback (Increment Contract PR #155): deterministic,
+        # display-only, content-free plain-language explanation of the ALREADY-computed
+        # result for the PRIMARY visible feedback line, derived at render time from the
+        # existing `last_result` (transition + raw reason) alone. It never mutates
+        # `last_result`, never rewrites `last_result.reason`, never re-scores, and never
+        # alters the PASS/WARN/BLOCK outcome; the truthful badge and the raw reason (as
+        # non-primary provenance) are rendered by the template independently. None when
+        # there is no result / no recognized transition.
+        current_result_feedback=get_result_feedback(last_result),
         # Guided Answer Co-Authoring Increment 1 — Advisory Prompt Support
         # (Increment Contract PR #127): deterministic, display-only, content-free
         # OPTIONAL prompts naming the KIND of information the inventor could add to
