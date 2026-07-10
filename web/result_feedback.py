@@ -56,6 +56,25 @@ _PASS_REASONED_FOLLOW_UP = (
 _NOT_ESTABLISHED = (
     "This point is not established yet, so the idea cannot move forward on this item."
 )
+# Semantic WARN corrections (independent-review defect): distinct live WARN
+# reasons whose meaning is NOT "unestablished". Each is plain-language, truthful,
+# concise, non-authoring, and free of readiness/validation/safety/compliance/
+# feasibility/patent claims.
+_MVP_CAP = (
+    "This point has reached the highest maturity level supported by the current MVP demo."
+)
+_SEQUENCING = (
+    "An earlier required step needs to be addressed first before this can move forward."
+)
+_REASONED_MINIMUM = (
+    "This needs more reasoning or supporting detail before it can move forward."
+)
+# Conservative fallback for an unknown / future WARN reason: it does NOT invent
+# the cause, does NOT claim the point is unestablished, and points the inventor
+# to the raw reason preserved in the non-primary result details.
+_GENERIC_WARN = (
+    "This point cannot move forward yet. Review the result details for the specific reason."
+)
 
 
 def get_result_feedback(last_result):
@@ -85,15 +104,35 @@ def get_result_feedback(last_result):
         return _PASS_DEMONSTRATED_EVIDENCE
 
     if transition == "WARN":
+        # Semantically faithful mapping of every live WARN reason. Specific
+        # categories are matched before the generic fallback; the raw reason is
+        # never mutated. See the source-review live-reason inventory:
+        #   "{gap_type} asserted only — reasoning required"      -> asserted-only
+        #   "{gap_type} partially addressed — needs more depth"  -> partially
+        #   "LEVEL N is max for MVP"                             -> MVP maturity cap
+        #   "... must be attempted first"                        -> sequencing
+        #   "... must be REASONED minimum"                       -> reasoning needed
+        #   "... not (yet) established / not yet closed / opened"-> not established
+        #   anything else                                        -> conservative fallback
         if "asserted only" in reason:
             return _WARN_ASSERTED_ONLY
         if "partially addressed" in reason:
             return _WARN_PARTIALLY_ADDRESSED
-        # Other WARN reasons are "not established yet" style (e.g. "Problem not
-        # yet established", "Mechanism not established").
-        return _NOT_ESTABLISHED
+        if "is max for MVP" in reason:
+            return _MVP_CAP
+        if "must be attempted first" in reason:
+            return _SEQUENCING
+        if "REASONED minimum" in reason:
+            return _REASONED_MINIMUM
+        if ("not established" in reason or "not yet established" in reason
+                or "not yet closed" in reason or "not yet opened" in reason):
+            return _NOT_ESTABLISHED
+        # Unknown / future WARN reason: do not invent the cause, do not claim the
+        # point is unestablished, and direct the inventor to the result details.
+        return _GENERIC_WARN
 
     if transition == "BLOCK":
+        # A genuine BLOCK means there is not enough to continue on this item.
         return _NOT_ESTABLISHED
 
     # No result / unrecognized transition: render no feedback message.

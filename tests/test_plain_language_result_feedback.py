@@ -31,6 +31,11 @@ _WARN_PARTIAL = "You addressed part of this, but more detail is still needed."
 _PASS_DEMO = "This point is supported well enough to move forward in the current demo flow."
 _PASS_REASONED = "Your follow-up added enough reasoning to continue in the current demo flow."
 _NOT_ESTABLISHED = "This point is not established yet, so the idea cannot move forward on this item."
+# Semantic WARN corrections (independent-review defect fix).
+_MVP_CAP = "This point has reached the highest maturity level supported by the current MVP demo."
+_SEQUENCING = "An earlier required step needs to be addressed first before this can move forward."
+_REASONED_MINIMUM = "This needs more reasoning or supporting detail before it can move forward."
+_GENERIC_WARN = "This point cannot move forward yet. Review the result details for the specific reason."
 
 _FORBIDDEN_CLAIM_WORDS = (
     "production-ready", "production ready", "validated", "safe to build",
@@ -88,13 +93,60 @@ def test_helper_initial_or_no_result_renders_nothing():
 
 
 def test_helper_degrades_safely_for_unknown_reason_without_false_success():
-    # Unknown WARN reason -> truthful "not established", never a success message.
+    # Unknown / future WARN reason -> conservative generic fallback that does NOT
+    # invent the cause, does NOT claim "not established", and never a success.
     out = get_result_feedback({"transition": "WARN", "reason": "some unexpected reason"})
-    assert out == _NOT_ESTABLISHED
+    assert out == _GENERIC_WARN
+    assert out != _NOT_ESTABLISHED
     assert out not in (_PASS_DEMO, _PASS_REASONED)
     # Generic maturity-advance PASS -> truthful supportive PASS, never over-claim.
     out2 = get_result_feedback({"transition": "PASS", "reason": "Problem established — ready for LEVEL 1"})
     assert out2 == _PASS_DEMO
+
+
+def test_semantic_warn_categories_are_faithful():
+    # Independent-review defect fix: distinct live WARN reasons must NOT all
+    # collapse to "not established".
+    # 1. MVP maturity cap must NOT say the point is unestablished.
+    mvp = get_result_feedback({"transition": "WARN", "reason": "LEVEL 2 is max for MVP"})
+    assert mvp == _MVP_CAP
+    assert mvp != _NOT_ESTABLISHED
+    assert "not established" not in mvp.lower()
+    # 2. Sequencing / prerequisite not attempted.
+    seq = get_result_feedback({"transition": "WARN", "reason": "MECHANISM_COMPLETENESS must be attempted first"})
+    assert seq == _SEQUENCING
+    assert seq != _NOT_ESTABLISHED
+    # 3. Reasoned-evidence minimum not met.
+    rmin = get_result_feedback({"transition": "WARN", "reason": "Mechanism quality must be REASONED minimum"})
+    assert rmin == _REASONED_MINIMUM
+    assert rmin != _NOT_ESTABLISHED
+    # 4. Genuine not-established reasons still map to the approved not-established string.
+    for r in ("Problem not yet established", "Mechanism not established",
+              "BLOCK: MECHANISM_COMPLETENESS not yet closed",
+              "BLOCK: PHYSICAL_FEASIBILITY not yet opened",
+              "BLOCK: PHYSICAL_FEASIBILITY not yet closed (status: OPEN)"):
+        assert get_result_feedback({"transition": "WARN", "reason": r}) == _NOT_ESTABLISHED
+
+
+def test_semantic_warn_strings_have_no_forbidden_claims():
+    for s in (_MVP_CAP, _SEQUENCING, _REASONED_MINIMUM, _GENERIC_WARN):
+        low = s.lower()
+        for w in _FORBIDDEN_CLAIM_WORDS:
+            assert w not in low, (w, s)
+
+
+def test_mvp_cap_renders_dedicated_message_in_session_ui():
+    sid = _session()
+    try:
+        _force(sid, "WARN", "LEVEL 2 is max for MVP")
+        b = _body(sid)
+        assert _primary_reason(b) == _MVP_CAP
+        assert "not established" not in (_primary_reason(b) or "").lower()
+        assert "More detail needed" in b                      # WARN badge preserved
+        assert "LEVEL 2 is max for MVP" in b                  # raw reason still in provenance
+        assert 'class="reason-raw"' in b
+    finally:
+        SESSION_STORE.pop(sid, None)
 
 
 def test_helper_is_pure_no_forbidden_imports():
