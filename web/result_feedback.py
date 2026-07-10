@@ -41,8 +41,14 @@ detail to add" prompts in the WARN state; this helper explains the RESULT itself
 # Supportive, plain-language, truthful, concise, neutral, non-authoring, and
 # free of raw internal tokens. The PASS strings are scoped to "the current demo
 # flow" so they make no engineering / readiness / validation claim.
+# Detector-honest (owner-gated feedback-truthfulness correction): the system
+# knows only that its recognizer did not detect enough explicit structure; it
+# must never claim the answer lacks reasoning (answers using "because"/"since"
+# or step-by-step causal chains can remain in this state).
 _WARN_ASSERTED_ONLY = (
-    "You gave a starting answer, but the reasoning still needs more support."
+    "The current demo did not recognize enough explicit reasoning structure in "
+    "your answer to move this area forward yet. Making the cause-and-effect "
+    "relationship more explicit may help."
 )
 _WARN_PARTIALLY_ADDRESSED = (
     "You addressed part of this, but more detail is still needed."

@@ -111,6 +111,124 @@ def test_gap_family_recovered_from_reason_when_gap_type_absent():
 
 
 # ---------------------------------------------------------------------------
+# Feedback-truthfulness correction (owner-gated; scoring unchanged):
+# ASSERTED-state feedback must be detector-honest. The engine knows only that
+# its deterministic recognizer did not detect enough of the explicit structure
+# it accepts — it must NEVER tell the inventor that reasoning, mechanism,
+# limits, or rationale are absent from the answer.
+# ---------------------------------------------------------------------------
+
+# Superseded untruthful diagnosis phrases that must never reappear in
+# ASSERTED-state feedback (each claims the answer lacks something the
+# recognizer cannot establish is absent).
+_FALSE_ABSENCE_PHRASES = (
+    "but not how or why",
+    "but not the reasoning",
+    "not the reasoning behind",
+    "no reasoning",
+    "without reasoning",
+    "says what happens",
+    "states that it works",
+    "only stated",
+    "no rationale",
+    "does not explain",
+)
+# Internal recognizer/scoring terminology that must never be exposed.
+_INTERNAL_TOKENS = ("asserted", "reasoned", "lexical", "regex", "classifier")
+# The detector-honest marker every ASSERTED-state feedback must carry.
+_DETECTOR_HONEST_MARK = "did not recognize enough explicit"
+
+# Answers that plainly contain reasoning language yet remain classified
+# ASSERTED by the unchanged lexical recognizer. The classification is pinned
+# (scoring unchanged); the displayed feedback must not contradict the answer.
+_REASONING_BEARING_ASSERTED_EXAMPLES = (
+    ("because", "The device should use a sealed sensor chamber because dust "
+                "buildup can distort the thermal readings and cause false alarms."),
+    ("since", "The controller should retain the previous threshold locally "
+              "since internet connectivity may be unavailable during a fault."),
+    ("scope-rationale", "The device covers only single-phase circuits because "
+                        "three-phase fault currents exceed the sensor's saturation limit."),
+    ("no-connective-mechanism", "The thermistor resistance drops with heat. "
+                                "The comparator output flips at 2.5 volts. "
+                                "The relay coil energizes and disconnects the load."),
+)
+
+
+def test_asserted_leads_never_claim_reasoning_is_absent():
+    for gap in ("MECHANISM_COMPLETENESS", "BOUNDARY_AMBIGUITY", "PHYSICAL_FEASIBILITY"):
+        g = get_scaffolding_guidance(_warn(gap, "asserted only — reasoning required"), gap_type=gap)
+        lead = g["lead"].lower()
+        assert _DETECTOR_HONEST_MARK in lead, gap
+        for phrase in _FALSE_ABSENCE_PHRASES:
+            assert phrase not in lead, (gap, phrase)
+        for token in _INTERNAL_TOKENS:
+            assert token not in lead, (gap, token)
+
+
+def test_asserted_leads_are_actionable_per_family():
+    # Mechanism family: asks for the explicit physical/functional chain.
+    mech = get_scaffolding_guidance(
+        _warn("MECHANISM_COMPLETENESS", "asserted only — reasoning required"),
+        gap_type="MECHANISM_COMPLETENESS")["lead"].lower()
+    assert "condition" in mech and "respond" in mech and "why" in mech
+    # Boundary family: asks for the explicit reason for the boundary.
+    boundary = get_scaffolding_guidance(
+        _warn("BOUNDARY_AMBIGUITY", "asserted only — reasoning required"),
+        gap_type="BOUNDARY_AMBIGUITY")["lead"].lower()
+    assert "boundary" in boundary and "limit" in boundary and "why" in boundary
+    # Feasibility family: asks for explicit operating conditions/constraints/
+    # dependencies (never says the answer merely states that it works).
+    feas = get_scaffolding_guidance(
+        _warn("PHYSICAL_FEASIBILITY", "asserted only — reasoning required"),
+        gap_type="PHYSICAL_FEASIBILITY")["lead"].lower()
+    assert "conditions" in feas and "constraints" in feas and "dependencies" in feas
+
+
+def test_stage3_and_generic_asserted_lead_is_neutral_not_mechanism_specific():
+    # Stage-3 / unknown gap types fall back to the generic lead, which must be
+    # detector-honest and must not describe a list-style or declarative answer
+    # as a failed mechanism explanation.
+    for gap in ("PROBLEM_MECHANISM_FIT", "ASSUMPTION_INVENTORY",
+                "EXPERTISE_GAP_AWARENESS", None):
+        g = get_scaffolding_guidance(
+            _warn(gap or "SOME_FUTURE_GAP", "asserted only — reasoning required"),
+            gap_type=gap)
+        lead = g["lead"].lower()
+        assert _DETECTOR_HONEST_MARK in lead, gap
+        assert "mechanism" not in lead, gap
+        for phrase in _FALSE_ABSENCE_PHRASES:
+            assert phrase not in lead, (gap, phrase)
+
+
+def test_reasoning_bearing_answers_keep_classification_and_get_noncontradictory_feedback():
+    from web.result_feedback import get_result_feedback
+    result = _warn("MECHANISM_COMPLETENESS", "asserted only — reasoning required")
+    lead = get_scaffolding_guidance(result, gap_type="MECHANISM_COMPLETENESS")["lead"].lower()
+    primary = get_result_feedback(result).lower()
+    for label, answer in _REASONING_BEARING_ASSERTED_EXAMPLES:
+        # Scoring unchanged: the recognizer still classifies these ASSERTED.
+        assert assess_response(answer, "electronics_electrical") == "ASSERTED", label
+        # The visible feedback for the resulting state never claims the answer
+        # lacks reasoning/mechanism/rationale, and stays detector-honest.
+        for text in (lead, primary):
+            assert _DETECTOR_HONEST_MARK in text, label
+            for phrase in _FALSE_ABSENCE_PHRASES:
+                assert phrase not in text, (label, phrase)
+
+
+def test_primary_result_feedback_for_asserted_is_detector_honest():
+    from web.result_feedback import get_result_feedback
+    primary = get_result_feedback(
+        {"transition": "WARN", "reason": "X asserted only — reasoning required"})
+    low = primary.lower()
+    assert _DETECTOR_HONEST_MARK in low
+    for phrase in _FALSE_ABSENCE_PHRASES:
+        assert phrase not in low, phrase
+    for token in _INTERNAL_TOKENS:
+        assert token not in low, token
+
+
+# ---------------------------------------------------------------------------
 # No validation/readiness/answer-content claims; safe keys only
 # ---------------------------------------------------------------------------
 
