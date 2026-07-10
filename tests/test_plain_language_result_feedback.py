@@ -25,8 +25,15 @@ import engine.progression_loop as _progression_loop  # noqa: E402
 from engine.deliverable_assembler import assemble_deliverable  # noqa: E402
 from engine.safety_signal import derive_inventor_stated_safety_signals  # noqa: E402
 
-# The exact pinned friendly strings (contract section 10).
-_WARN_ASSERTED = "You gave a starting answer, but the reasoning still needs more support."
+# The exact pinned friendly strings (contract section 10; the asserted-only
+# string was corrected by the owner-gated feedback-truthfulness correction —
+# the superseded string implied a reasoning deficiency the recognizer cannot
+# actually establish).
+_WARN_ASSERTED = (
+    "The current demo did not recognize enough explicit reasoning structure in "
+    "your answer to move this area forward yet. Making the cause-and-effect "
+    "relationship more explicit may help."
+)
 _WARN_PARTIAL = "You addressed part of this, but more detail is still needed."
 _PASS_DEMO = "This point is supported well enough to move forward in the current demo flow."
 _PASS_REASONED = "Your follow-up added enough reasoning to continue in the current demo flow."

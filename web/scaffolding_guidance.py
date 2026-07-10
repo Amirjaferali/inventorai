@@ -31,9 +31,10 @@ Layer-1 refinement (PR #115 contract §4): the displayed wording now distinguish
 three honest cases using ONLY the already-computed outcome — (a) a first
 accepted / REASONED answer whose gap is `PARTIAL` (accepted; one more specific
 answer is needed before the gap can close — never a quality judgment), (b) an
-asserted-only answer (reasoning is needed), and (c) a boundary / feasibility /
-limitation answer (limits, conditions, assumptions, constraints, or evidence are
-needed) — and the category prompts are gap-type-aware. Engine reason strings
+asserted-only outcome (the demo did not recognize enough explicit reasoning
+structure — never a claim that the answer lacks reasoning), and (c) a boundary /
+feasibility / limitation answer (limits, conditions, assumptions, constraints,
+or evidence are needed) — and the category prompts are gap-type-aware. Engine reason strings
 (`engine.progression_loop.integrate_response`) are unchanged; this module only
 selects display wording from the already-computed WARN outcome and the available
 `gap_type`.
@@ -84,25 +85,42 @@ _DEFAULT_PROMPTS = _MECHANISM_PROMPTS
 # already reported, matched on stable substrings of the WARN `reason` string.
 # No scoring is recomputed here; classification only selects display wording.
 
-# Case (b): asserted-only — the answer states what happens but not how/why.
+# Case (b): asserted-only — the deterministic recognizer did not detect enough
+# of the explicit structure it accepts. Detector-honest wording (owner-gated
+# feedback-truthfulness correction): the system knows only that it did not
+# recognize enough explicit structure — it must NEVER claim the inventor's
+# answer lacks reasoning, mechanism, limits, or rationale, because answers
+# using e.g. "because"/"since" or step-by-step causal chains can remain in
+# this state while plainly containing reasoning.
 _ASSERTED_BY_FAMILY = {
     _MECHANISM: (
-        "Your answer says what happens, but not how or why it works. Add the "
-        "missing mechanism or reasoning — describe what makes it work."
+        "The current demo did not recognize enough explicit reasoning structure "
+        "in this answer to move this area forward. It can help to spell out the "
+        "physical chain step by step — what condition is detected, what part "
+        "responds, what happens next, and why that response produces the "
+        "intended effect."
     ),
     _BOUNDARY: (
-        "Your answer names a limit or scope, but not the reasoning behind it. "
-        "Explain why that boundary holds — the conditions or assumptions that "
-        "set it."
+        "The current demo did not recognize enough explicit reasoning structure "
+        "in this answer to move this area forward. It can help to make the "
+        "reason for the boundary more explicit — what technical limit creates "
+        "it, what condition falls outside the intended use, and why that "
+        "condition is excluded."
     ),
     _FEASIBILITY: (
-        "Your answer states that it works, but not the reasoning. Explain the "
-        "conditions, limits, or constraints that make it work."
+        "The current demo did not recognize enough explicit reasoning structure "
+        "in this answer to move this area forward. It can help to state the "
+        "operating conditions, constraints, and dependencies more explicitly — "
+        "what must hold for it to work, and why."
     ),
 }
+# Neutral generic/Stage-3 lead: never describes the answer as a failed
+# mechanism explanation (list-style and declarative answers land here too).
 _ASSERTED_GENERIC = (
-    "Your answer says what happens, but not how or why it works. Add the missing "
-    "mechanism or reasoning — describe what makes it work."
+    "The current demo did not recognize enough explicit structure in this "
+    "answer to move this area forward. It can help to make the relationship "
+    "more explicit — the condition or situation involved, what addresses it, "
+    "and why that matters."
 )
 
 # Case (a): first accepted / REASONED answer whose gap is PARTIAL. Honest
