@@ -278,7 +278,7 @@ author**; saved answers **verbatim**; no full-localization claim; `main` remains
 `0e89e4636399760965c9ff8086b465c90dbadf8e` and **unsynchronized**; the frozen
 persistence lane remains PRESERVE UNMODIFIED AND PAUSE at
 `aec9cf6409efc18e125b6745762002f59e529654` (untouched); the quarantined scratch
-branch remains untouched (`02586747c902d5e1cea4dd4ecd1c174a`); no implementation
+branch remains untouched (`02586747c902d5e1ebb78adde54ddd4ecd1c174a`); no implementation
 authorization; and **no roadmap mutation in this PR**.
 
 ## 19. Required future sequence (each step separately owner-gated)
