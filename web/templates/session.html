@@ -144,8 +144,19 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
   {% else %}
     <span class="badge-none">Response recorded</span>
   {% endif %}
+  {# Plain-Language Result Feedback (Increment Contract PR #155): the friendly    #}
+  {# plain-language explanation is the PRIMARY visible feedback line. The raw      #}
+  {# engine/scoring reason is PRESERVED UNCHANGED and shown only as non-primary    #}
+  {# provenance in the collapsed "Result details" disclosure below. The truthful   #}
+  {# WARN/PASS/BLOCK badge above and the direction below are unaffected.           #}
+  {% if current_result_feedback %}
+  <div class="reason-text">{{ current_result_feedback }}</div>
+  {% endif %}
   {% if last_result.get('reason') %}
-  <div class="reason-text">{{ last_result.get('reason') }}</div>
+  <details class="result-details" style="margin-top:4px">
+    <summary style="cursor:pointer;font-size:12px;color:#8a97a3">Result details</summary>
+    <div class="reason-raw" style="font-size:12px;color:#8a7a68;margin-top:4px">{{ last_result.get('reason') }}</div>
+  </details>
   {% endif %}
   {% if last_result.get('direction') %}
   <div class="direction-text">Direction: {{ last_result.get('direction') }}</div>
