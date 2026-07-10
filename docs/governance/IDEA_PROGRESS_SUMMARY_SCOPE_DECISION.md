@@ -50,7 +50,7 @@ three frozen Stage-2 gap types, in-memory storage, display-only, deterministic).
 
 The candidate is the most governance-defensible next increment because it makes
 the platform's own success definition visible without violating any boundary.
-`STRATEGIC_PRODUCT_VISION.md §6` defines success as *"the honesty and
+`OWNER_PRODUCT_IDENTITY_CORRECTION.md §6` defines success as *"the honesty and
 completeness of what is established and what is preserved as unknown — not …
 advancement to a particular stage,"* and the corrected identity
 (`OWNER_PRODUCT_IDENTITY_CORRECTION.md §3/§5`) makes **the idea** the primary
@@ -75,7 +75,7 @@ no closed decision. It is therefore admitted as a bounded future candidate.
 5. This increment is **not** justified as inventor education, motivation,
    gamification, or idea-growth celebration. It is justified solely as making the
    factual idea-state (established / changed / open / unknown) honestly visible,
-   consistent with `STRATEGIC_PRODUCT_VISION.md §6` and the
+   consistent with `OWNER_PRODUCT_IDENTITY_CORRECTION.md §6` and the
    `OWNER_PRODUCT_IDENTITY_CORRECTION.md §3` "the idea is the subject" framing.
    `ACTIVE_EXECUTION_ROADMAP.md §9` forbidance of "inventor-development or
    idea-growth claims" is honored: no growth/achievement claim may be made.
