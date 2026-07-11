@@ -1,0 +1,397 @@
+[
+  {
+    "iteration": 2,
+    "question_shown": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+    "action": "answered",
+    "response_verbatim": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance.",
+    "transition": "PASS",
+    "reason": "Problem established — ready for LEVEL 1",
+    "direction": "PROGRESSING",
+    "maturity_after": 1,
+    "gaps_after": [
+      [
+        "MECHANISM_COMPLETENESS",
+        "PARTIAL"
+      ]
+    ],
+    "acknowledged_unknowns_after": 0
+  },
+  {
+    "iteration": 3,
+    "question_shown": "What are the main parts of your idea, in your own words, and what does each part do?",
+    "action": "answered",
+    "response_verbatim": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance. If the sensing is wrong, the dangerous appliance could remain powered.",
+    "transition": "PASS",
+    "reason": "MECHANISM_COMPLETENESS closed after REASONED follow-up",
+    "direction": "PROGRESSING",
+    "maturity_after": 1,
+    "gaps_after": [
+      [
+        "MECHANISM_COMPLETENESS",
+        "CLOSED"
+      ],
+      [
+        "PHYSICAL_FEASIBILITY",
+        "OPEN"
+      ]
+    ],
+    "acknowledged_unknowns_after": 0
+  },
+  {
+    "iteration": 4,
+    "question_shown": "What would need to be true for this system to work safely, and what information would you need later to confirm it?",
+    "action": "answered",
+    "response_verbatim": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance. If it trips the wrong branch, the wrong appliance could be disconnected and it would fail to isolate the actual source of danger.",
+    "transition": "WARN",
+    "reason": "PHYSICAL_FEASIBILITY partially addressed — needs more depth",
+    "direction": "PROGRESSING",
+    "maturity_after": 1,
+    "gaps_after": [
+      [
+        "MECHANISM_COMPLETENESS",
+        "CLOSED"
+      ],
+      [
+        "PHYSICAL_FEASIBILITY",
+        "PARTIAL"
+      ]
+    ],
+    "acknowledged_unknowns_after": 0
+  },
+  {
+    "iteration": 5,
+    "question_shown": "What do you think would keep the system running, and what do you not know yet about that?",
+    "action": "unknown",
+    "response_verbatim": "I don't know yet.",
+    "transition": "WARN",
+    "reason": "PHYSICAL_FEASIBILITY partially addressed — needs more depth",
+    "direction": "PROGRESSING",
+    "maturity_after": 1,
+    "gaps_after": [
+      [
+        "MECHANISM_COMPLETENESS",
+        "CLOSED"
+      ],
+      [
+        "PHYSICAL_FEASIBILITY",
+        "PARTIAL"
+      ]
+    ],
+    "acknowledged_unknowns_after": 0
+  },
+  {
+    "iteration": 6,
+    "question_shown": "What do you think would keep the system running, and what do you not know yet about that?",
+    "action": "answered",
+    "response_verbatim": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance. If the relay sticks, damage or overheating could continue and the fire risk could continue until someone notices.",
+    "transition": "PASS",
+    "reason": "PHYSICAL_FEASIBILITY closed after REASONED follow-up",
+    "direction": "PROGRESSING",
+    "maturity_after": 1,
+    "gaps_after": [
+      [
+        "MECHANISM_COMPLETENESS",
+        "CLOSED"
+      ],
+      [
+        "PHYSICAL_FEASIBILITY",
+        "CLOSED"
+      ],
+      [
+        "BOUNDARY_AMBIGUITY",
+        "OPEN"
+      ]
+    ],
+    "acknowledged_unknowns_after": 0
+  },
+  {
+    "iteration": 7,
+    "question_shown": "When should the system work, when should it not work, and what situations might confuse it?",
+    "action": "answered",
+    "response_verbatim": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance. The current sensing accuracy is essential; the buzzer volume and alert timing are adjustable.",
+    "transition": "WARN",
+    "reason": "BOUNDARY_AMBIGUITY partially addressed — needs more depth",
+    "direction": "PROGRESSING",
+    "maturity_after": 1,
+    "gaps_after": [
+      [
+        "MECHANISM_COMPLETENESS",
+        "CLOSED"
+      ],
+      [
+        "PHYSICAL_FEASIBILITY",
+        "CLOSED"
+      ],
+      [
+        "BOUNDARY_AMBIGUITY",
+        "PARTIAL"
+      ]
+    ],
+    "acknowledged_unknowns_after": 0
+  },
+  {
+    "iteration": 8,
+    "question_shown": "What is your idea responsible for, and what is someone or something else&#39;s job?",
+    "action": "answered",
+    "response_verbatim": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance.",
+    "transition": "PASS",
+    "reason": "Mechanism established — ready for LEVEL 2",
+    "direction": "PROGRESSING",
+    "maturity_after": 2,
+    "gaps_after": [
+      [
+        "MECHANISM_COMPLETENESS",
+        "CLOSED"
+      ],
+      [
+        "PHYSICAL_FEASIBILITY",
+        "CLOSED"
+      ],
+      [
+        "BOUNDARY_AMBIGUITY",
+        "CLOSED"
+      ],
+      [
+        "PROBLEM_MECHANISM_FIT",
+        "OPEN"
+      ]
+    ],
+    "acknowledged_unknowns_after": 0
+  },
+  {
+    "iteration": 9,
+    "observation": "stage label already says 'You have worked through the key questions' while a question is still being asked"
+  },
+  {
+    "iteration": 9,
+    "question_shown": "Without describing how your mechanism works, describe the problem you are trying to solve. What is happening for the person or system that has this problem, and why does it matter to them?",
+    "action": "answered",
+    "response_verbatim": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance.",
+    "transition": "WARN",
+    "reason": "PROBLEM_MECHANISM_FIT partially addressed — needs more depth",
+    "direction": "PROGRESSING",
+    "maturity_after": 2,
+    "gaps_after": [
+      [
+        "MECHANISM_COMPLETENESS",
+        "CLOSED"
+      ],
+      [
+        "PHYSICAL_FEASIBILITY",
+        "CLOSED"
+      ],
+      [
+        "BOUNDARY_AMBIGUITY",
+        "CLOSED"
+      ],
+      [
+        "PROBLEM_MECHANISM_FIT",
+        "PARTIAL"
+      ]
+    ],
+    "acknowledged_unknowns_after": 0
+  },
+  {
+    "iteration": 10,
+    "observation": "stage label already says 'You have worked through the key questions' while a question is still being asked"
+  },
+  {
+    "iteration": 10,
+    "question_shown": "Why does your mechanism solve this problem rather than a different approach? What is it about how your mechanism works that makes it the right fit for this problem?",
+    "action": "answered",
+    "response_verbatim": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance.",
+    "transition": "PASS",
+    "reason": "PROBLEM_MECHANISM_FIT closed after REASONED follow-up",
+    "direction": "PROGRESSING",
+    "maturity_after": 2,
+    "gaps_after": [
+      [
+        "MECHANISM_COMPLETENESS",
+        "CLOSED"
+      ],
+      [
+        "PHYSICAL_FEASIBILITY",
+        "CLOSED"
+      ],
+      [
+        "BOUNDARY_AMBIGUITY",
+        "CLOSED"
+      ],
+      [
+        "PROBLEM_MECHANISM_FIT",
+        "CLOSED"
+      ],
+      [
+        "ASSUMPTION_INVENTORY",
+        "OPEN"
+      ]
+    ],
+    "acknowledged_unknowns_after": 0
+  },
+  {
+    "iteration": 11,
+    "observation": "stage label already says 'You have worked through the key questions' while a question is still being asked"
+  },
+  {
+    "iteration": 11,
+    "question_shown": "What are you taking for granted about your mechanism that you have not yet tested or verified? These might be things you expect to be true, materials you assume are available, or conditions you assume will hold.",
+    "action": "answered",
+    "response_verbatim": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance.",
+    "transition": "WARN",
+    "reason": "ASSUMPTION_INVENTORY partially addressed — needs more depth",
+    "direction": "PROGRESSING",
+    "maturity_after": 2,
+    "gaps_after": [
+      [
+        "MECHANISM_COMPLETENESS",
+        "CLOSED"
+      ],
+      [
+        "PHYSICAL_FEASIBILITY",
+        "CLOSED"
+      ],
+      [
+        "BOUNDARY_AMBIGUITY",
+        "CLOSED"
+      ],
+      [
+        "PROBLEM_MECHANISM_FIT",
+        "CLOSED"
+      ],
+      [
+        "ASSUMPTION_INVENTORY",
+        "PARTIAL"
+      ]
+    ],
+    "acknowledged_unknowns_after": 0
+  },
+  {
+    "iteration": 12,
+    "observation": "stage label already says 'You have worked through the key questions' while a question is still being asked"
+  },
+  {
+    "iteration": 12,
+    "question_shown": "For each assumption you named, would your mechanism still work if that assumption turned out to be wrong? Which assumptions are essential — the mechanism fails without them — and which ones would just require you to adjust your approach?",
+    "action": "answered",
+    "response_verbatim": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance.",
+    "transition": "PASS",
+    "reason": "ASSUMPTION_INVENTORY closed after REASONED follow-up",
+    "direction": "PROGRESSING",
+    "maturity_after": 2,
+    "gaps_after": [
+      [
+        "MECHANISM_COMPLETENESS",
+        "CLOSED"
+      ],
+      [
+        "PHYSICAL_FEASIBILITY",
+        "CLOSED"
+      ],
+      [
+        "BOUNDARY_AMBIGUITY",
+        "CLOSED"
+      ],
+      [
+        "PROBLEM_MECHANISM_FIT",
+        "CLOSED"
+      ],
+      [
+        "ASSUMPTION_INVENTORY",
+        "CLOSED"
+      ],
+      [
+        "EXPERTISE_GAP_AWARENESS",
+        "OPEN"
+      ]
+    ],
+    "acknowledged_unknowns_after": 0
+  },
+  {
+    "iteration": 13,
+    "observation": "stage label already says 'You have worked through the key questions' while a question is still being asked"
+  },
+  {
+    "iteration": 13,
+    "question_shown": "What areas of technical knowledge would someone need to actually build or implement your mechanism? List the domains of expertise required — not what you know, but what the implementation itself demands.",
+    "action": "answered",
+    "response_verbatim": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance.",
+    "transition": "WARN",
+    "reason": "EXPERTISE_GAP_AWARENESS partially addressed — needs more depth",
+    "direction": "PROGRESSING",
+    "maturity_after": 2,
+    "gaps_after": [
+      [
+        "MECHANISM_COMPLETENESS",
+        "CLOSED"
+      ],
+      [
+        "PHYSICAL_FEASIBILITY",
+        "CLOSED"
+      ],
+      [
+        "BOUNDARY_AMBIGUITY",
+        "CLOSED"
+      ],
+      [
+        "PROBLEM_MECHANISM_FIT",
+        "CLOSED"
+      ],
+      [
+        "ASSUMPTION_INVENTORY",
+        "CLOSED"
+      ],
+      [
+        "EXPERTISE_GAP_AWARENESS",
+        "PARTIAL"
+      ]
+    ],
+    "acknowledged_unknowns_after": 0
+  },
+  {
+    "iteration": 14,
+    "observation": "stage label already says 'You have worked through the key questions' while a question is still being asked"
+  },
+  {
+    "iteration": 14,
+    "question_shown": "Of the expertise areas you just identified — which ones do you have sufficient working knowledge of to proceed, and which ones represent genuine gaps where you would need to learn more or bring in someone else?",
+    "action": "answered",
+    "response_verbatim": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance.",
+    "transition": "PASS",
+    "reason": "EXPERTISE_GAP_AWARENESS closed after REASONED follow-up",
+    "direction": "PROGRESSING",
+    "maturity_after": 2,
+    "gaps_after": [
+      [
+        "MECHANISM_COMPLETENESS",
+        "CLOSED"
+      ],
+      [
+        "PHYSICAL_FEASIBILITY",
+        "CLOSED"
+      ],
+      [
+        "BOUNDARY_AMBIGUITY",
+        "CLOSED"
+      ],
+      [
+        "PROBLEM_MECHANISM_FIT",
+        "CLOSED"
+      ],
+      [
+        "ASSUMPTION_INVENTORY",
+        "CLOSED"
+      ],
+      [
+        "EXPERTISE_GAP_AWARENESS",
+        "CLOSED"
+      ]
+    ],
+    "acknowledged_unknowns_after": 0
+  },
+  {
+    "iteration": 15,
+    "page_state": "COMPLETION_BRANCH",
+    "question": null,
+    "open_gaps_at_render": []
+  }
+]

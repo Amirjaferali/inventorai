@@ -1,0 +1,41 @@
+[
+  {
+    "caution_text": "Inventor-stated safety signal — requires independent validation. This is not a determination that the idea is safe or unsafe, and it is not certification, compliance, or engineering approval.",
+    "display_label": "Potential safety-critical assumption (inventor-stated)",
+    "domain_context": "electronics_electrical",
+    "failure_condition": "should not be used",
+    "possible_consequence": "safety risk",
+    "provenance": "inventor_stated",
+    "safety_subject": "insulation",
+    "signal_id": "SIG-001",
+    "source": "assertion:rec_1",
+    "statement": "If insulation cannot be safely achieved inside the plug housing, the device should not be used because it could create a safety risk.",
+    "validation_status": "requires_independent_validation"
+  },
+  {
+    "caution_text": "Inventor-stated safety signal — requires independent validation. This is not a determination that the idea is safe or unsafe, and it is not certification, compliance, or engineering approval.",
+    "display_label": "Potential safety-critical assumption (inventor-stated)",
+    "domain_context": "electronics_electrical",
+    "failure_condition": "should not be used",
+    "possible_consequence": "safety risk",
+    "provenance": "inventor_stated",
+    "safety_subject": "insulation",
+    "signal_id": "SIG-002",
+    "source": "known_problem",
+    "statement": "If insulation cannot be safely achieved inside the plug housing, the device should not be used because it could create a safety risk.",
+    "validation_status": "requires_independent_validation"
+  },
+  {
+    "caution_text": "Inventor-stated safety signal — requires independent validation. This is not a determination that the idea is safe or unsafe, and it is not certification, compliance, or engineering approval.",
+    "display_label": "Potential safety-critical assumption (inventor-stated)",
+    "domain_context": "electronics_electrical",
+    "failure_condition": "should not be used",
+    "possible_consequence": "safety risk",
+    "provenance": "inventor_stated",
+    "safety_subject": "insulation",
+    "signal_id": "SIG-003",
+    "source": "known_mechanism",
+    "statement": "If insulation cannot be safely achieved inside the plug housing, the device should not be used because it could create a safety risk.",
+    "validation_status": "requires_independent_validation"
+  }
+]
