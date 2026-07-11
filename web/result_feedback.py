@@ -50,8 +50,13 @@ _WARN_ASSERTED_ONLY = (
     "your answer to move this area forward yet. Making the cause-and-effect "
     "relationship more explicit may help."
 )
+# Accepted-partial (Increment 1 — accepted-vs-rejected result-state clarity):
+# a first REASONED answer that moved the gap to PARTIAL was ACCEPTED and counts
+# toward closure. The wording must communicate accepted / counted / progressed /
+# not yet complete, and must never imply rejection.
 _WARN_PARTIALLY_ADDRESSED = (
-    "You addressed part of this, but more detail is still needed."
+    "Your answer was accepted and moved this area forward. One focused "
+    "follow-up is still needed to complete it."
 )
 _PASS_DEMONSTRATED_EVIDENCE = (
     "This point is supported well enough to move forward in the current demo flow."
@@ -142,4 +147,55 @@ def get_result_feedback(last_result):
         return _NOT_ESTABLISHED
 
     # No result / unrecognized transition: render no feedback message.
+    return None
+
+
+# --- Result-state badge (Increment 1: accepted-vs-rejected clarity) ---------
+# The badge is the strongest visible result signal. Before this increment the
+# template mapped ALL WARN outcomes to one badge ("More detail needed"),
+# collapsing two materially different states: an ACCEPTED first REASONED answer
+# that moved its gap to PARTIAL, and an ASSERTED answer that was not accepted
+# as sufficient. The mapping below distinguishes them using only the
+# already-computed transition and the same stable, replay-locked reason
+# substrings this module (and web/scaffolding_guidance.py) already pin. It is
+# pure, display-only presentation selection: no engine value, transition,
+# reason, gap status, maturity, direction, or transcript entry is read back,
+# recomputed, or mutated.
+_BADGE_PASS = {"css_class": "badge-pass", "label": "Good progress"}
+_BADGE_ACCEPTED_PARTIAL = {"css_class": "badge-accepted", "label": "Accepted — one more step"}
+_BADGE_WARN_ASSERTED = {"css_class": "badge-warn", "label": "More explanation needed"}
+_BADGE_WARN_OTHER = {"css_class": "badge-warn", "label": "More detail needed"}
+_BADGE_BLOCK = {"css_class": "badge-block", "label": "Not enough to continue"}
+
+
+def get_result_badge(last_result):
+    """Return the badge presentation ``{css_class, label}`` for a result, or None.
+
+    Pure and deterministic. Reads only ``transition`` and the raw ``reason`` of
+    the already-computed result dict; never mutates them, never re-scores.
+    Returns a fresh dict per call so callers cannot alter the pinned constants.
+    ``None`` (no result / unrecognized transition) lets the template fall back
+    to the neutral "Response recorded" badge, preserving prior behavior.
+
+    WARN sub-classification (same stable substrings as get_result_feedback):
+      * "asserted only"        -> not accepted as sufficient ("More explanation needed")
+      * "partially addressed"  -> accepted first REASONED answer, gap now PARTIAL
+                                  ("Accepted — one more step")
+      * anything else          -> the prior generic WARN badge ("More detail needed")
+    """
+    if not isinstance(last_result, dict):
+        return None
+    transition = last_result.get("transition")
+    reason = last_result.get("reason") or ""
+
+    if transition == "PASS":
+        return dict(_BADGE_PASS)
+    if transition == "WARN":
+        if "asserted only" in reason:
+            return dict(_BADGE_WARN_ASSERTED)
+        if "partially addressed" in reason:
+            return dict(_BADGE_ACCEPTED_PARTIAL)
+        return dict(_BADGE_WARN_OTHER)
+    if transition == "BLOCK":
+        return dict(_BADGE_BLOCK)
     return None

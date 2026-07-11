@@ -21,7 +21,7 @@ from web.clarification_labels import get_clarification  # Increment 1B: display-
 from web.scaffolding_guidance import get_scaffolding_guidance  # MDN: display-only WARN guidance
 from web.answer_coauthoring_prompts import get_answer_coauthoring_prompts  # GACA Increment 1: display-only advisory prompts
 from web.uncertainty_guidance import get_uncertainty_guidance  # GUS: display-only supportive uncertainty guidance
-from web.result_feedback import get_result_feedback  # PLRF: display-only plain-language result feedback
+from web.result_feedback import get_result_feedback, get_result_badge  # PLRF: display-only plain-language result feedback + result-state badge
 
 app = Flask(__name__)
 app.secret_key = "inventorai-dev-only"
@@ -417,6 +417,16 @@ def show_session(sid):
         # non-primary provenance) are rendered by the template independently. None when
         # there is no result / no recognized transition.
         current_result_feedback=get_result_feedback(last_result),
+        # Result-state badge (Increment 1 — accepted-vs-rejected clarity):
+        # deterministic, display-only badge presentation {css_class, label} for the
+        # ALREADY-computed result, derived at render time from `last_result`
+        # (transition + the same stable raw-reason substrings as the feedback line).
+        # It distinguishes an ACCEPTED first REASONED answer (gap now PARTIAL) from
+        # an ASSERTED answer that was not accepted, without mutating `last_result`,
+        # re-scoring, or altering the PASS/WARN/BLOCK outcome. None when there is no
+        # result / no recognized transition (template falls back to "Response
+        # recorded", preserving prior behavior).
+        current_result_badge=get_result_badge(last_result),
         # Guided Answer Co-Authoring Increment 1 — Advisory Prompt Support
         # (Increment Contract PR #127): deterministic, display-only, content-free
         # OPTIONAL prompts naming the KIND of information the inventor could add to

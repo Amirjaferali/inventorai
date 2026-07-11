@@ -32,7 +32,9 @@ _UNCERTAINTY = 'class="uncertainty-guidance"'
 _COAUTHORING = 'class="answer-coauthoring"'
 # On-demand / truthful surface markers.
 _CLARIFICATION = "Help me understand this question"
-_WARN_BADGE = "More detail needed"
+# The _warn() default below is an asserted-only reason; Increment 1
+# (accepted-vs-rejected clarity) renders it with the not-accepted badge.
+_WARN_BADGE = "More explanation needed"
 
 _FORBIDDEN_FIELDS = (
     "suggested_clarified_answer", "user_approved_answer",

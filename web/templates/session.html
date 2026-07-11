@@ -31,10 +31,10 @@ h1{color:#2c3e50;margin-bottom:4px}
 .last-result{margin-bottom:18px;padding:10px 14px;border-radius:4px;border:1px solid #e2e6ea;font-size:13px}
 .badge-warn{background:#fff3e0;color:#e65100;border:1px solid #ffcc02;display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:bold;margin-bottom:6px}
 .badge-pass{background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7;display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:bold;margin-bottom:6px}
+.badge-accepted{background:#e3f2fd;color:#1565c0;border:1px solid #90caf9;display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:bold;margin-bottom:6px}
 .badge-block{background:#fdecea;color:#c62828;border:1px solid #ef9a9a;display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:bold;margin-bottom:6px}
 .badge-none{background:#f0f4f8;color:#555;border:1px solid #ccc;display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;margin-bottom:6px}
 .reason-text{font-size:13px;color:#555;margin-top:6px}
-.direction-text{font-size:12px;color:#888;margin-top:4px}
 .question{font-size:18px;margin-bottom:16px;color:#2c3e50;line-height:1.5}
 textarea{width:100%;padding:12px;font-size:15px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box}
 button{margin-top:10px;padding:10px 24px;background:#2c3e50;color:white;border:none;border-radius:4px;font-size:15px;cursor:pointer}
@@ -135,12 +135,15 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
 
 {% if last_result %}
 <div class="last-result">
-  {% if last_result.get('transition') == 'PASS' %}
-    <span class="badge-pass">Good progress</span>
-  {% elif last_result.get('transition') == 'WARN' %}
-    <span class="badge-warn">More detail needed</span>
-  {% elif last_result.get('transition') == 'BLOCK' %}
-    <span class="badge-block">Not enough to continue</span>
+  {# Result-state badge (Increment 1 — accepted-vs-rejected clarity): the badge #}
+  {# presentation is selected by the dedicated deterministic display helper      #}
+  {# web/result_feedback.get_result_badge from the ALREADY-computed transition   #}
+  {# and stable raw-reason substrings, so an ACCEPTED first REASONED answer      #}
+  {# (gap now PARTIAL) is no longer shown with the same badge as an ASSERTED     #}
+  {# answer that was not accepted. The underlying PASS/WARN/BLOCK values are     #}
+  {# unchanged; with no recognized result the prior neutral badge renders.       #}
+  {% if current_result_badge %}
+    <span class="{{ current_result_badge.css_class }}">{{ current_result_badge.label }}</span>
   {% else %}
     <span class="badge-none">Response recorded</span>
   {% endif %}
@@ -148,7 +151,7 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
   {# plain-language explanation is the PRIMARY visible feedback line. The raw      #}
   {# engine/scoring reason is PRESERVED UNCHANGED and shown only as non-primary    #}
   {# provenance in the collapsed "Result details" disclosure below. The truthful   #}
-  {# WARN/PASS/BLOCK badge above and the direction below are unaffected.           #}
+  {# WARN/PASS/BLOCK badge above is unaffected.                                    #}
   {% if current_result_feedback %}
   <div class="reason-text">{{ current_result_feedback }}</div>
   {% endif %}
@@ -158,9 +161,10 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
     <div class="reason-raw" style="font-size:12px;color:#8a7a68;margin-top:4px">{{ last_result.get('reason') }}</div>
   </details>
   {% endif %}
-  {% if last_result.get('direction') %}
-  <div class="direction-text">Direction: {{ last_result.get('direction') }}</div>
-  {% endif %}
+  {# Increment 1 (accepted-vs-rejected clarity): the raw internal direction enum #}
+  {# ("Direction: PROGRESSING" / "STALLED") is no longer rendered in the normal  #}
+  {# user-facing view. The internal direction value itself is unchanged and       #}
+  {# remains in the engine result.                                                #}
 </div>
 {% endif %}
 
