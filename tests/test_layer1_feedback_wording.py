@@ -76,10 +76,15 @@ def test_partial_wording_says_gap_not_closed_yet():
 # (9) ASSERTED-only wording still asks for reasoning/detail
 # ---------------------------------------------------------------------------
 
-def test_asserted_wording_asks_for_reasoning():
+def test_asserted_wording_asks_for_explicit_structure():
+    # Micro UX correction: the lead no longer repeats the recognizer
+    # explanation (that lives once in the primary result feedback); it begins
+    # directly with actionable guidance asking to make the structure explicit.
     for gap in ("MECHANISM_COMPLETENESS", "BOUNDARY_AMBIGUITY", "PHYSICAL_FEASIBILITY"):
         g = get_scaffolding_guidance(_warn(gap, "asserted only — reasoning required"), gap_type=gap)
-        assert "reasoning" in g["lead"].lower()
+        lead = g["lead"].lower()
+        assert "explicit" in lead
+        assert "why" in lead
 
 
 # ---------------------------------------------------------------------------
@@ -155,10 +160,16 @@ _REASONING_BEARING_ASSERTED_EXAMPLES = (
 
 
 def test_asserted_leads_never_claim_reasoning_is_absent():
+    # Micro UX correction: the recognizer-limitation explanation is rendered
+    # ONCE by the primary result feedback; the leads must NOT repeat it (the
+    # previous requirement that the mark appear in both was the confirmed
+    # duplication defect). Truthfulness is preserved: leads still never claim
+    # reasoning is absent and never expose internal terminology.
     for gap in ("MECHANISM_COMPLETENESS", "BOUNDARY_AMBIGUITY", "PHYSICAL_FEASIBILITY"):
         g = get_scaffolding_guidance(_warn(gap, "asserted only — reasoning required"), gap_type=gap)
         lead = g["lead"].lower()
-        assert _DETECTOR_HONEST_MARK in lead, gap
+        assert _DETECTOR_HONEST_MARK not in lead, gap
+        assert "move this area forward" not in lead, gap
         for phrase in _FALSE_ABSENCE_PHRASES:
             assert phrase not in lead, (gap, phrase)
         for token in _INTERNAL_TOKENS:
@@ -186,18 +197,79 @@ def test_asserted_leads_are_actionable_per_family():
 
 def test_stage3_and_generic_asserted_lead_is_neutral_not_mechanism_specific():
     # Stage-3 / unknown gap types fall back to the generic lead, which must be
-    # detector-honest and must not describe a list-style or declarative answer
-    # as a failed mechanism explanation.
+    # suitable for list-style and declarative answers (problem fit, assumption
+    # inventories, expertise/specialist lists): it must not repeat the
+    # recognizer explanation (that lives in the primary line), must not assume
+    # a mechanism or a condition-response relationship, must not assume the
+    # answer "addresses" something, and must not claim content is absent.
     for gap in ("PROBLEM_MECHANISM_FIT", "ASSUMPTION_INVENTORY",
                 "EXPERTISE_GAP_AWARENESS", None):
         g = get_scaffolding_guidance(
             _warn(gap or "SOME_FUTURE_GAP", "asserted only — reasoning required"),
             gap_type=gap)
         lead = g["lead"].lower()
-        assert _DETECTOR_HONEST_MARK in lead, gap
+        assert _DETECTOR_HONEST_MARK not in lead, gap
         assert "mechanism" not in lead, gap
+        assert "addresses" not in lead, gap
+        assert "condition" not in lead, gap
         for phrase in _FALSE_ABSENCE_PHRASES:
             assert phrase not in lead, (gap, phrase)
+
+
+def test_generic_lead_is_actionable_for_list_style_answers():
+    # The generic lead must invite question-appropriate specificity that works
+    # equally for problem-fit prose, assumption inventories, and expertise
+    # lists: name the items, say why each matters, flag remaining uncertainty
+    # or the need for specialist input.
+    g = get_scaffolding_guidance(
+        _warn("ASSUMPTION_INVENTORY", "asserted only — reasoning required"),
+        gap_type="ASSUMPTION_INVENTORY")
+    lead = g["lead"].lower()
+    assert "name" in lead
+    assert "why" in lead
+    assert "uncertain" in lead or "specialist" in lead
+
+
+def test_recognizer_explanation_appears_in_primary_but_never_in_leads():
+    # Duplication acceptance rule: explanation once (primary result feedback),
+    # actionable guidance next (scaffolding lead) — never the same sentence
+    # twice in the normal ASSERTED flow.
+    from web.result_feedback import get_result_feedback
+    result = _warn("MECHANISM_COMPLETENESS", "asserted only — reasoning required")
+    assert _DETECTOR_HONEST_MARK in get_result_feedback(result).lower()
+    for gap in ("MECHANISM_COMPLETENESS", "BOUNDARY_AMBIGUITY",
+                "PHYSICAL_FEASIBILITY", "PROBLEM_MECHANISM_FIT",
+                "ASSUMPTION_INVENTORY", "EXPERTISE_GAP_AWARENESS", None):
+        g = get_scaffolding_guidance(
+            _warn(gap or "SOME_FUTURE_GAP", "asserted only — reasoning required"),
+            gap_type=gap)
+        assert _DETECTOR_HONEST_MARK not in g["lead"].lower(), gap
+
+
+def test_rendered_asserted_page_shows_recognizer_explanation_once():
+    # Integrated render: on a real ASSERTED WARN session page, the recognizer
+    # explanation renders exactly once (primary line), the badge and raw
+    # engine reason are unchanged, and the stored answer stays verbatim.
+    sid = "ux-dup-once"
+    state = IdeaState(idea_id="ux-dup-1")
+    state.domain = "electronics_electrical"
+    state.maturity_level = 1
+    from engine.idea_state import Gap
+    state.gaps.append(Gap(gap_type="MECHANISM_COMPLETENESS", status="OPEN", opened_at=1))
+    last_result = _warn("MECHANISM_COMPLETENESS", "asserted only — reasoning required")
+    transcript = [{"response": "It protects the wiring because overloads are dangerous.",
+                   "iteration": 1}]
+    _store(sid, state, last_result, transcript, "How does it work?")
+    before_answer = copy.deepcopy(transcript)
+    try:
+        body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+        assert body.lower().count(_DETECTOR_HONEST_MARK) == 1
+        assert "More detail needed" in body                    # badge unchanged
+        assert "asserted only — reasoning required" in body     # raw reason preserved
+        assert SESSION_STORE[sid]["transcript"] == before_answer
+        assert SESSION_STORE[sid]["last_result"]["transition"] == "WARN"
+    finally:
+        SESSION_STORE.pop(sid, None)
 
 
 def test_reasoning_bearing_answers_keep_classification_and_get_noncontradictory_feedback():
@@ -209,9 +281,11 @@ def test_reasoning_bearing_answers_keep_classification_and_get_noncontradictory_
         # Scoring unchanged: the recognizer still classifies these ASSERTED.
         assert assess_response(answer, "electronics_electrical") == "ASSERTED", label
         # The visible feedback for the resulting state never claims the answer
-        # lacks reasoning/mechanism/rationale, and stays detector-honest.
+        # lacks reasoning/mechanism/rationale. Detector-honesty lives ONCE in
+        # the primary line; the lead is actionable-only (duplication removed).
+        assert _DETECTOR_HONEST_MARK in primary, label
+        assert _DETECTOR_HONEST_MARK not in lead, label
         for text in (lead, primary):
-            assert _DETECTOR_HONEST_MARK in text, label
             for phrase in _FALSE_ABSENCE_PHRASES:
                 assert phrase not in text, (label, phrase)
 
