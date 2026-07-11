@@ -1,0 +1,709 @@
+{
+  "_session_meta": {
+    "closed_gap_count": 6,
+    "deliverable_eligible": true,
+    "derived_verified_ready": false,
+    "direction": "PROGRESSING",
+    "domain_signal": "electronics_electrical",
+    "evidence_quality": "REASONED",
+    "evidence_registry": [
+      {
+        "content": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance.",
+        "evidence_id": "EV-001",
+        "label": "Known Problem",
+        "provenance": "LEGACY_UNSPECIFIED",
+        "quality_label": "Reasoned (inventor's structured rationale; not validated)"
+      },
+      {
+        "content": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance. If the sensing is wrong, the dangerous appliance could remain powered.",
+        "evidence_id": "EV-002",
+        "label": "Known Mechanism",
+        "provenance": "LEGACY_UNSPECIFIED",
+        "quality_label": "Reasoned (inventor's structured rationale; not validated)"
+      }
+    ],
+    "idea_summary": null,
+    "inventor_stated_safety_signals": {
+      "advisory_note": "These signals are inventor-stated and require independent validation. They are advisory only and are not a safety, compliance, certification, engineering, or legal determination.",
+      "empty_statement": "No inventor-stated safety signals were derived from the recorded statements. This is NOT a determination that the idea is safe, unsafe, risk-free, or verified — it means no inventor-stated safety-critical failure condition was detected in the recorded content.",
+      "has_signals": false,
+      "signals": [],
+      "title": "Inventor-Stated Safety Signals",
+      "total": 0
+    },
+    "maturity_label": "Level 2 — Mechanism established: operating principle substantiated.",
+    "maturity_level": 2,
+    "open_gap_count": 0,
+    "total_gaps": 6,
+    "total_iterations": 13,
+    "unknown_registry": []
+  },
+  "generated_at": "GENERATED_AT_UTC",
+  "package_version": "1.0.0",
+  "schema_id": "fdc-001-mvp-v1",
+  "section_10_recommended_next_steps": {
+    "count": 1,
+    "empty_statement": null,
+    "items": [
+      {
+        "action": "Validate the leading claims with a prototype or demonstration to raise evidence from Reasoned to Demonstrated.",
+        "basis": "evidence_quality:REASONED",
+        "id": "NEXT-001",
+        "priority": "normal"
+      }
+    ],
+    "note": "Synthesized from current session state and captured evidence. Advisory only; no new analysis was performed."
+  },
+  "section_11_prototype_test_plan": {
+    "count": 1,
+    "empty_statement": null,
+    "items": [
+      {
+        "expected_evidence_upgrade": "Move this assumption from Reasoned toward Demonstrated.",
+        "experiment_id": "exp_v1_assumption_inventory_evidence_a5f783aa9e2dc977b192cb767b8c482a",
+        "experiment_title": "Proposed experiment: test an essential assumption",
+        "failure_or_revision_condition": "If the assumption does not hold, revise the mechanism or the design choices that rely on it.",
+        "minimum_prototype": "A minimal build that puts the stated assumption under test without the full system.",
+        "objective": "Test an essential or untested assumption the mechanism depends on.",
+        "required_expertise_or_tools": "Inventor-identified (Expertise-Gap Awareness): The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance.",
+        "source_basis": "Assumption Inventory evidence: \"The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance.\"",
+        "success_criterion": "Owner-defined criterion required.",
+        "success_criterion_provenance": null,
+        "success_criterion_status": "required",
+        "traceability": {
+          "content": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance.",
+          "source_ref": "ASSUMPTION_INVENTORY",
+          "source_type": "assumption_inventory_evidence"
+        },
+        "what_to_observe": "Observe whether the assumption holds under conditions you control."
+      }
+    ],
+    "note": "Proposed experiments synthesized from your own captured evidence. Advisory only: nothing here has been built, tested, demonstrated, validated, certified, or shown feasible. You define the success criteria.",
+    "shared_required_expertise": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance.",
+    "stale_criteria": [],
+    "stale_criteria_notice": null,
+    "title": "Prototype & Test Plan"
+  },
+  "section_12_next_development_step": {
+    "actionable": true,
+    "evidence_needed": null,
+    "issue_type": "owner_unvalidated",
+    "next_action": "Validate the owner-stated answer.",
+    "reference_id": "rec_1",
+    "remaining_uncertainty": "Owner-stated, not validated.",
+    "sufficiency_condition": "The owner-stated answer is independently validated.",
+    "suggested_provider": "OWNER_INPUT",
+    "title": "Owner-stated answer awaiting validation",
+    "unlock_condition": "Independent validation is recorded.",
+    "why_it_matters": "An owner-provided answer is recorded but not independently validated."
+  },
+  "section_13_requirement_landscape": {
+    "empty_statement": "No active, provenance-anchored requirements are recorded yet. This is an idea-development state, not an error: nothing outstanding has been captured to derive a requirement from.",
+    "has_risks": false,
+    "requirements": [
+      {
+        "criticality": "UNDETERMINED",
+        "criticality_authority": "system-derived",
+        "criticality_rationale": null,
+        "has_linked_risk": false,
+        "provenance": "Recorded answer",
+        "resolving_action": "Validate the recorded answer against the available evidence.",
+        "statement": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance.",
+        "status": "recorded",
+        "supporting_references": []
+      },
+      {
+        "criticality": "UNDETERMINED",
+        "criticality_authority": "system-derived",
+        "criticality_rationale": null,
+        "has_linked_risk": false,
+        "provenance": "Recorded answer",
+        "resolving_action": "Validate the recorded answer against the available evidence.",
+        "statement": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance. If the sensing is wrong, the dangerous appliance could remain powered.",
+        "status": "recorded",
+        "supporting_references": []
+      },
+      {
+        "criticality": "UNDETERMINED",
+        "criticality_authority": "system-derived",
+        "criticality_rationale": null,
+        "has_linked_risk": false,
+        "provenance": "Recorded answer",
+        "resolving_action": "Validate the recorded answer against the available evidence.",
+        "statement": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance. If it trips the wrong branch, the wrong appliance could be disconnected and it would fail to isolate the actual source of danger.",
+        "status": "recorded",
+        "supporting_references": []
+      },
+      {
+        "criticality": "UNDETERMINED",
+        "criticality_authority": "system-derived",
+        "criticality_rationale": null,
+        "has_linked_risk": false,
+        "provenance": "Recorded answer",
+        "resolving_action": "Validate the recorded answer against the available evidence.",
+        "statement": "I don't know yet.",
+        "status": "recorded",
+        "supporting_references": []
+      },
+      {
+        "criticality": "UNDETERMINED",
+        "criticality_authority": "system-derived",
+        "criticality_rationale": null,
+        "has_linked_risk": false,
+        "provenance": "Recorded answer",
+        "resolving_action": "Validate the recorded answer against the available evidence.",
+        "statement": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance. If the relay sticks, damage or overheating could continue and the fire risk could continue until someone notices.",
+        "status": "recorded",
+        "supporting_references": []
+      },
+      {
+        "criticality": "UNDETERMINED",
+        "criticality_authority": "system-derived",
+        "criticality_rationale": null,
+        "has_linked_risk": false,
+        "provenance": "Recorded answer",
+        "resolving_action": "Validate the recorded answer against the available evidence.",
+        "statement": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance. The current sensing accuracy is essential; the buzzer volume and alert timing are adjustable.",
+        "status": "recorded",
+        "supporting_references": []
+      },
+      {
+        "criticality": "UNDETERMINED",
+        "criticality_authority": "system-derived",
+        "criticality_rationale": null,
+        "has_linked_risk": false,
+        "provenance": "Recorded answer",
+        "resolving_action": "Validate the recorded answer against the available evidence.",
+        "statement": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance.",
+        "status": "recorded",
+        "supporting_references": []
+      },
+      {
+        "criticality": "UNDETERMINED",
+        "criticality_authority": "system-derived",
+        "criticality_rationale": null,
+        "has_linked_risk": false,
+        "provenance": "Recorded answer",
+        "resolving_action": "Validate the recorded answer against the available evidence.",
+        "statement": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance.",
+        "status": "recorded",
+        "supporting_references": []
+      },
+      {
+        "criticality": "UNDETERMINED",
+        "criticality_authority": "system-derived",
+        "criticality_rationale": null,
+        "has_linked_risk": false,
+        "provenance": "Recorded answer",
+        "resolving_action": "Validate the recorded answer against the available evidence.",
+        "statement": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance.",
+        "status": "recorded",
+        "supporting_references": []
+      },
+      {
+        "criticality": "UNDETERMINED",
+        "criticality_authority": "system-derived",
+        "criticality_rationale": null,
+        "has_linked_risk": false,
+        "provenance": "Recorded answer",
+        "resolving_action": "Validate the recorded answer against the available evidence.",
+        "statement": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance.",
+        "status": "recorded",
+        "supporting_references": []
+      },
+      {
+        "criticality": "UNDETERMINED",
+        "criticality_authority": "system-derived",
+        "criticality_rationale": null,
+        "has_linked_risk": false,
+        "provenance": "Recorded answer",
+        "resolving_action": "Validate the recorded answer against the available evidence.",
+        "statement": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance.",
+        "status": "recorded",
+        "supporting_references": []
+      },
+      {
+        "criticality": "UNDETERMINED",
+        "criticality_authority": "system-derived",
+        "criticality_rationale": null,
+        "has_linked_risk": false,
+        "provenance": "Recorded answer",
+        "resolving_action": "Validate the recorded answer against the available evidence.",
+        "statement": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance.",
+        "status": "recorded",
+        "supporting_references": []
+      },
+      {
+        "criticality": "UNDETERMINED",
+        "criticality_authority": "system-derived",
+        "criticality_rationale": null,
+        "has_linked_risk": false,
+        "provenance": "Recorded answer",
+        "resolving_action": "Validate the recorded answer against the available evidence.",
+        "statement": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance.",
+        "status": "recorded",
+        "supporting_references": []
+      }
+    ],
+    "risk_disclaimer": "No structurally grounded risks are recorded for the current requirements. This is not a statement that the idea is risk-free, safe, or verified; it means no structural adverse-consequence signal exists in the recorded state.",
+    "risks": [],
+    "title": "Requirement Landscape",
+    "total": 13
+  },
+  "section_14_validation_plan": {
+    "blocked_items": [],
+    "empty_statement": "No active, provenance-anchored requirements are recorded yet, so no validation steps can be proposed. This is an idea-development state, not an error.",
+    "outcome": "PLAN",
+    "steps": [
+      {
+        "closure_condition": "Closed when owner confirmation is provided and recorded; no such evidence is recorded yet.",
+        "confidence": "UNDETERMINED",
+        "confidence_label": "Confidence undetermined",
+        "evidence_category": "owner confirmation",
+        "provenance": "Recorded answer",
+        "responsibility": "OWNER_EXECUTABLE",
+        "responsibility_label": "Owner can perform",
+        "statement": "Validate the recorded answer against the available evidence."
+      },
+      {
+        "closure_condition": "Closed when owner confirmation is provided and recorded; no such evidence is recorded yet.",
+        "confidence": "UNDETERMINED",
+        "confidence_label": "Confidence undetermined",
+        "evidence_category": "owner confirmation",
+        "provenance": "Recorded answer",
+        "responsibility": "OWNER_EXECUTABLE",
+        "responsibility_label": "Owner can perform",
+        "statement": "Validate the recorded answer against the available evidence."
+      },
+      {
+        "closure_condition": "Closed when owner confirmation is provided and recorded; no such evidence is recorded yet.",
+        "confidence": "UNDETERMINED",
+        "confidence_label": "Confidence undetermined",
+        "evidence_category": "owner confirmation",
+        "provenance": "Recorded answer",
+        "responsibility": "OWNER_EXECUTABLE",
+        "responsibility_label": "Owner can perform",
+        "statement": "Validate the recorded answer against the available evidence."
+      },
+      {
+        "closure_condition": "Closed when clarifying information is provided and recorded; no such evidence is recorded yet.",
+        "confidence": "UNDETERMINED",
+        "confidence_label": "Confidence undetermined",
+        "evidence_category": "clarifying information",
+        "provenance": "Recorded answer",
+        "responsibility": "UNDETERMINED",
+        "responsibility_label": "Responsibility undetermined",
+        "statement": "Validate the recorded answer against the available evidence."
+      },
+      {
+        "closure_condition": "Closed when owner confirmation is provided and recorded; no such evidence is recorded yet.",
+        "confidence": "UNDETERMINED",
+        "confidence_label": "Confidence undetermined",
+        "evidence_category": "owner confirmation",
+        "provenance": "Recorded answer",
+        "responsibility": "OWNER_EXECUTABLE",
+        "responsibility_label": "Owner can perform",
+        "statement": "Validate the recorded answer against the available evidence."
+      },
+      {
+        "closure_condition": "Closed when owner confirmation is provided and recorded; no such evidence is recorded yet.",
+        "confidence": "UNDETERMINED",
+        "confidence_label": "Confidence undetermined",
+        "evidence_category": "owner confirmation",
+        "provenance": "Recorded answer",
+        "responsibility": "OWNER_EXECUTABLE",
+        "responsibility_label": "Owner can perform",
+        "statement": "Validate the recorded answer against the available evidence."
+      },
+      {
+        "closure_condition": "Closed when owner confirmation is provided and recorded; no such evidence is recorded yet.",
+        "confidence": "UNDETERMINED",
+        "confidence_label": "Confidence undetermined",
+        "evidence_category": "owner confirmation",
+        "provenance": "Recorded answer",
+        "responsibility": "OWNER_EXECUTABLE",
+        "responsibility_label": "Owner can perform",
+        "statement": "Validate the recorded answer against the available evidence."
+      },
+      {
+        "closure_condition": "Closed when owner confirmation is provided and recorded; no such evidence is recorded yet.",
+        "confidence": "UNDETERMINED",
+        "confidence_label": "Confidence undetermined",
+        "evidence_category": "owner confirmation",
+        "provenance": "Recorded answer",
+        "responsibility": "OWNER_EXECUTABLE",
+        "responsibility_label": "Owner can perform",
+        "statement": "Validate the recorded answer against the available evidence."
+      },
+      {
+        "closure_condition": "Closed when owner confirmation is provided and recorded; no such evidence is recorded yet.",
+        "confidence": "UNDETERMINED",
+        "confidence_label": "Confidence undetermined",
+        "evidence_category": "owner confirmation",
+        "provenance": "Recorded answer",
+        "responsibility": "OWNER_EXECUTABLE",
+        "responsibility_label": "Owner can perform",
+        "statement": "Validate the recorded answer against the available evidence."
+      },
+      {
+        "closure_condition": "Closed when owner confirmation is provided and recorded; no such evidence is recorded yet.",
+        "confidence": "UNDETERMINED",
+        "confidence_label": "Confidence undetermined",
+        "evidence_category": "owner confirmation",
+        "provenance": "Recorded answer",
+        "responsibility": "OWNER_EXECUTABLE",
+        "responsibility_label": "Owner can perform",
+        "statement": "Validate the recorded answer against the available evidence."
+      },
+      {
+        "closure_condition": "Closed when owner confirmation is provided and recorded; no such evidence is recorded yet.",
+        "confidence": "UNDETERMINED",
+        "confidence_label": "Confidence undetermined",
+        "evidence_category": "owner confirmation",
+        "provenance": "Recorded answer",
+        "responsibility": "OWNER_EXECUTABLE",
+        "responsibility_label": "Owner can perform",
+        "statement": "Validate the recorded answer against the available evidence."
+      },
+      {
+        "closure_condition": "Closed when owner confirmation is provided and recorded; no such evidence is recorded yet.",
+        "confidence": "UNDETERMINED",
+        "confidence_label": "Confidence undetermined",
+        "evidence_category": "owner confirmation",
+        "provenance": "Recorded answer",
+        "responsibility": "OWNER_EXECUTABLE",
+        "responsibility_label": "Owner can perform",
+        "statement": "Validate the recorded answer against the available evidence."
+      },
+      {
+        "closure_condition": "Closed when owner confirmation is provided and recorded; no such evidence is recorded yet.",
+        "confidence": "UNDETERMINED",
+        "confidence_label": "Confidence undetermined",
+        "evidence_category": "owner confirmation",
+        "provenance": "Recorded answer",
+        "responsibility": "OWNER_EXECUTABLE",
+        "responsibility_label": "Owner can perform",
+        "statement": "Validate the recorded answer against the available evidence."
+      }
+    ],
+    "title": "Validation Plan"
+  },
+  "section_1_disclaimer": {
+    "applies": true,
+    "text": "This assessment package is produced by an automated invention analysis system. It is advisory only. No claim made in this package constitutes engineering certification, regulatory approval, or legal advice. The inventor is responsible for independent verification of all technical claims, feasibility conclusions, and recommendations before acting on this assessment.",
+    "tier": "standard"
+  },
+  "section_2_invention_summary": {
+    "assessment_completeness": "INQUIRY COMPLETE — all current inquiry areas addressed. Technical validation and demonstration remain outstanding.",
+    "domain_signal": "electronics_electrical",
+    "known_boundaries": [],
+    "known_mechanism": {
+      "content": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance. If the sensing is wrong, the dangerous appliance could remain powered.",
+      "evidence_id": "EV-002",
+      "provenance": "LEGACY_UNSPECIFIED",
+      "quality": "REASONED",
+      "quality_label": "Reasoned (inventor's structured rationale; not validated)",
+      "validation_label": "Not validated",
+      "validation_status": "UNVALIDATED"
+    },
+    "known_problem": {
+      "content": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance.",
+      "evidence_id": "EV-001",
+      "provenance": "LEGACY_UNSPECIFIED",
+      "quality": "REASONED",
+      "quality_label": "Reasoned (inventor's structured rationale; not validated)",
+      "validation_label": "Not validated",
+      "validation_status": "UNVALIDATED"
+    },
+    "known_problem_note": null,
+    "maturity_label": "Level 2 — Mechanism established: operating principle substantiated.",
+    "maturity_level": 2
+  },
+  "section_3_assessment_overview": {
+    "capabilities_assessed": [
+      {
+        "capability_id": "electronics_electrical",
+        "gaps_detail": [
+          {
+            "gap_label": "Mechanism Completeness",
+            "gap_type": "MECHANISM_COMPLETENESS",
+            "iterations_open": 2,
+            "status": "CLOSED",
+            "status_label": "Answered (not yet validated)"
+          },
+          {
+            "gap_label": "Physical Feasibility",
+            "gap_type": "PHYSICAL_FEASIBILITY",
+            "iterations_open": 2,
+            "status": "CLOSED",
+            "status_label": "Answered (not yet validated)"
+          },
+          {
+            "gap_label": "Boundary and Scope",
+            "gap_type": "BOUNDARY_AMBIGUITY",
+            "iterations_open": 2,
+            "status": "CLOSED",
+            "status_label": "Answered (not yet validated)"
+          },
+          {
+            "gap_label": "Problem–Mechanism Fit",
+            "gap_type": "PROBLEM_MECHANISM_FIT",
+            "iterations_open": 2,
+            "status": "CLOSED",
+            "status_label": "Answered (not yet validated)"
+          },
+          {
+            "gap_label": "Assumption Inventory",
+            "gap_type": "ASSUMPTION_INVENTORY",
+            "iterations_open": 2,
+            "status": "CLOSED",
+            "status_label": "Answered (not yet validated)"
+          },
+          {
+            "gap_label": "Expertise-Gap Awareness",
+            "gap_type": "EXPERTISE_GAP_AWARENESS",
+            "iterations_open": 2,
+            "status": "CLOSED",
+            "status_label": "Answered (not yet validated)"
+          }
+        ],
+        "gaps_open": 0,
+        "gaps_resolved": 6,
+        "gaps_total": 6,
+        "maturity_level": 2,
+        "overall_quality": "REASONED"
+      }
+    ],
+    "cross_capability_conflicts": [],
+    "note": "Single-capability assessment. Cross-capability deferred to Phase 6."
+  },
+  "section_4_requirements": {
+    "note": "Requirements derived from session evidence in MVP.",
+    "requirements": [
+      {
+        "evidence_id": "EV-001",
+        "evidence_quality": "REASONED",
+        "id": "REQ-001",
+        "note": "Derived from inventor-stated problem evidence. Verification required.",
+        "resolution_status": "stated",
+        "source": "session_evidence",
+        "statement": "See EV-001 — Known Problem",
+        "type": "functional"
+      },
+      {
+        "evidence_id": "EV-002",
+        "evidence_quality": "REASONED",
+        "id": "REQ-002",
+        "note": "Component-level specification required before implementation.",
+        "resolution_status": "stated",
+        "source": "session_evidence",
+        "statement": "See EV-002 — Known Mechanism",
+        "type": "technical"
+      },
+      {
+        "evidence_quality": "REASONED",
+        "id": "REQ-003",
+        "note": null,
+        "resolution_status": "resolved",
+        "source": "gap_resolution",
+        "statement": "Mechanism Completeness addressed",
+        "type": "constraint"
+      },
+      {
+        "evidence_quality": "REASONED",
+        "id": "REQ-004",
+        "note": null,
+        "resolution_status": "resolved",
+        "source": "gap_resolution",
+        "statement": "Physical Feasibility addressed",
+        "type": "constraint"
+      },
+      {
+        "evidence_quality": "REASONED",
+        "id": "REQ-005",
+        "note": null,
+        "resolution_status": "resolved",
+        "source": "gap_resolution",
+        "statement": "Boundary and Scope addressed",
+        "type": "constraint"
+      },
+      {
+        "evidence_quality": "REASONED",
+        "id": "REQ-006",
+        "note": null,
+        "resolution_status": "resolved",
+        "source": "gap_resolution",
+        "statement": "Problem–Mechanism Fit addressed",
+        "type": "constraint"
+      },
+      {
+        "evidence_quality": "REASONED",
+        "id": "REQ-007",
+        "note": null,
+        "resolution_status": "resolved",
+        "source": "gap_resolution",
+        "statement": "Assumption Inventory addressed",
+        "type": "constraint"
+      },
+      {
+        "evidence_quality": "REASONED",
+        "id": "REQ-008",
+        "note": null,
+        "resolution_status": "resolved",
+        "source": "gap_resolution",
+        "statement": "Expertise-Gap Awareness addressed",
+        "type": "constraint"
+      }
+    ],
+    "total": 8
+  },
+  "section_5_assumptions": {
+    "assumptions": [
+      {
+        "assumption": "The stated mechanism operates as described",
+        "basis": "REASONED evidence",
+        "id": "ASM-001",
+        "risk_if_invalid": "Session assessment may not reflect true feasibility",
+        "validation_approach": "Component-level testing to confirm operating principle"
+      }
+    ],
+    "inventor_unknowns": [],
+    "note": "Assumptions inferred from session state in MVP. Inventor-stated unknowns recorded separately.",
+    "total": 1
+  },
+  "section_6_risks": {
+    "high_count": 0,
+    "low_count": 1,
+    "medium_count": 0,
+    "risks": [
+      {
+        "category": "evidence_quality",
+        "description": "Evidence is REASONED (substantiated but not demonstrated).",
+        "id": "RISK-001",
+        "residual_risk": "Prototype validation recommended before detailed design.",
+        "severity": "low",
+        "status": "open"
+      }
+    ],
+    "total": 1
+  },
+  "section_7_recommendations": {
+    "category_a_proceed_revise_block": {
+      "basis": {
+        "derived_verified_ready": false,
+        "evidence_quality": "REASONED",
+        "maturity_level": 2,
+        "open_gap_count": 0
+      },
+      "rationale": "Structurally progressed: stored maturity and the stored gap lifecycle are recorded as shown, but derived verified readiness is NOT met — recorded supporting evidence remains unvalidated, provisional, pending, or contradicted. Proceed only with verification caution; this is not a determination that the idea is technically verified, and unresolved validation items remain even where stored gaps are CLOSED.",
+      "verdict": "PROCEED WITH CAUTION"
+    },
+    "category_b_material_selection": {
+      "note": "Requires Options Database (ODS-001). Not in the current MVP.",
+      "status": "DEFERRED"
+    },
+    "category_c_manufacturing": {
+      "note": "Requires Options Database (ODS-001). Not in the current MVP.",
+      "status": "DEFERRED"
+    },
+    "category_d_open_items": [
+      {
+        "action": "Validate the supporting evidence (specialist review, demonstration, or independent verification): verification remains incomplete even where stored gaps are CLOSED.",
+        "gap_label": "Evidence validation",
+        "gap_type": null,
+        "item_type": "validation_unresolved",
+        "priority": "high"
+      }
+    ]
+  },
+  "section_8_unresolved_items": {
+    "acknowledged_unknown_count": 0,
+    "conflict_count": 0,
+    "cross_capability_conflicts": [],
+    "items": [],
+    "note_conflicts": "Cross-capability conflict detection deferred to Phase 6.",
+    "open_gap_count": 0
+  },
+  "section_9_stage3_reasoning": {
+    "items": [
+      {
+        "evidence": [
+          {
+            "content": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance.",
+            "provenance": "LEGACY_UNSPECIFIED",
+            "quality": "REASONED",
+            "quality_label": "Reasoned (inventor's structured rationale; not validated)",
+            "validation_label": "Not validated",
+            "validation_status": "UNVALIDATED"
+          },
+          {
+            "content": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance.",
+            "provenance": "LEGACY_UNSPECIFIED",
+            "quality": "REASONED",
+            "quality_label": "Reasoned (inventor's structured rationale; not validated)",
+            "validation_label": "Not validated",
+            "validation_status": "UNVALIDATED"
+          }
+        ],
+        "gap_label": "Problem–Mechanism Fit",
+        "gap_type": "PROBLEM_MECHANISM_FIT",
+        "missing_evidence_statement": null,
+        "status": "CLOSED",
+        "status_label": "Answered (not yet validated)"
+      },
+      {
+        "evidence": [
+          {
+            "content": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance.",
+            "provenance": "LEGACY_UNSPECIFIED",
+            "quality": "REASONED",
+            "quality_label": "Reasoned (inventor's structured rationale; not validated)",
+            "validation_label": "Not validated",
+            "validation_status": "UNVALIDATED"
+          },
+          {
+            "content": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance.",
+            "provenance": "LEGACY_UNSPECIFIED",
+            "quality": "REASONED",
+            "quality_label": "Reasoned (inventor's structured rationale; not validated)",
+            "validation_label": "Not validated",
+            "validation_status": "UNVALIDATED"
+          }
+        ],
+        "gap_label": "Assumption Inventory",
+        "gap_type": "ASSUMPTION_INVENTORY",
+        "missing_evidence_statement": null,
+        "status": "CLOSED",
+        "status_label": "Answered (not yet validated)"
+      },
+      {
+        "evidence": [
+          {
+            "content": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance.",
+            "provenance": "LEGACY_UNSPECIFIED",
+            "quality": "REASONED",
+            "quality_label": "Reasoned (inventor's structured rationale; not validated)",
+            "validation_label": "Not validated",
+            "validation_status": "UNVALIDATED"
+          },
+          {
+            "content": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance.",
+            "provenance": "LEGACY_UNSPECIFIED",
+            "quality": "REASONED",
+            "quality_label": "Reasoned (inventor's structured rationale; not validated)",
+            "validation_label": "Not validated",
+            "validation_status": "UNVALIDATED"
+          }
+        ],
+        "gap_label": "Expertise-Gap Awareness",
+        "gap_type": "EXPERTISE_GAP_AWARENESS",
+        "missing_evidence_statement": null,
+        "status": "CLOSED",
+        "status_label": "Answered (not yet validated)"
+      }
+    ],
+    "note": "Stage 3 reasoning areas. Captured evidence is the inventor's own substantiated wording. This is not validation, feasibility confirmation, completeness, or expert review.",
+    "stage3_gap_count": 3
+  },
+  "session_id": "IDEA_ID"
+}
