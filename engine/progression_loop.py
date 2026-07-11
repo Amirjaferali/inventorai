@@ -404,26 +404,71 @@ def _is_generic_verb_trap(r_lower):
 # deliberately NOT added to _CAUSAL_STRUCTURE_PATTERNS: existing entries keep
 # their raw substring semantics unchanged, while this path additionally
 # requires an electronics/electrical domain substance signal matched as a
-# WHOLE WORD (with conservative plural folding) inside the clause that
-# supports the connective. Case-insensitive. Bare "so", "and so", "for",
-# "as", "while", punctuation-only inference, quoted-speech parsing, negation
-# parsing, and probabilistic classification are intentionally excluded.
+# WHOLE WORD (with conservative plural folding) in the SAME SENTENCE as the
+# connective, on the directional side the connective supports. Case-
+# insensitive. Bare "so", "and so", "for", "as", "while", punctuation-only
+# inference, quoted-speech parsing, negation parsing, and probabilistic
+# classification are intentionally excluded.
 #
-# Direction of the supporting clause:
+# TRUE SENTENCE BOUNDING (owner-authorized correction 2026-07-11): sentences
+# are bounded deterministically by ".", "?", "!", and line breaks; semicolons,
+# commas, and colons stay inside a sentence for this increment. The qualifying
+# substance must occur in the same sentence as the qualifying connective —
+# substance found only in another sentence never qualifies, and sides from
+# different sentences or from different connective occurrences are never
+# combined. Each connective occurrence is evaluated independently.
+#
+# Direction of the supporting side WITHIN the selected sentence:
 #   - cause connectives (because / since / due to): the rationale FOLLOWS
-#     the connective, so substance is required AFTER it;
+#     the connective, so substance is required AFTER it, before the sentence
+#     ends;
 #   - consequence connectives (therefore / thus / hence / as a result): the
 #     supporting cause PRECEDES the connective, so substance is required
-#     BEFORE it.
-# The clause scoping is what keeps third-party/quoted causal claims whose
-# rationale clause is substance-free ("Someone said the sensor fails because
-# heat is bad") ASSERTED without any quoted-speech or negation parsing, and
-# what keeps domain-token stuffing outside the supporting clause from
-# qualifying.
+#     BEFORE it, after the sentence starts. A result-first connective whose
+#     result side (the sentence part after it) is empty is nonsensical and
+#     never qualifies.
+#
+# Narrowly documented conservative disqualifiers (NOT parsers — fixed
+# character/token checks only; each can only produce false negatives, never
+# false positives; the same lexical technology as the existing weak-pattern
+# and acknowledged-unknown marker lists):
+#   * QUOTE GUARD — a double-quote character anywhere in the connective's
+#     sentence disqualifies that occurrence: quoted material in the sentence
+#     cannot be attributed to the owner's own reasoning without quote
+#     parsing, which is not authorized.
+#   * REPORTED-SPEECH GUARD — a fixed whole-token marker (said / says /
+#     told / heard / claims / claimed / reported / according) BEFORE the
+#     connective in the same sentence disqualifies that occurrence: the
+#     causal claim is attributed to a third party, not stated as the
+#     owner's own reasoning.
+#   * NEGATION GUARD — the whole token "not" or "never" BEFORE the
+#     connective in the same sentence disqualifies that occurrence ("does
+#     not fail because ..." is a negated explanation). Contracted negations
+#     (e.g. "doesn't") are NOT recognized — a documented conservative
+#     limitation, not a negation parser.
+#   * TEMPORAL-SINCE GUARD — "since" ONLY additionally requires a non-empty
+#     claim side before it in the same sentence: sentence-initial "since"
+#     is frequently temporal ("Since Tuesday ...") and this narrow lexical
+#     detector cannot distinguish the temporal from the causal reading
+#     there, so it conservatively never qualifies. Sentence-initial
+#     "because" remains eligible (unambiguously causal).
 _NEW_CAUSAL_CONNECTIVES_CAUSE_FIRST = ("because", "since", "due to")
 _NEW_CAUSAL_CONNECTIVES_RESULT_FIRST = ("therefore", "thus", "hence", "as a result")
 
 _SUBSTANCE_WORD_RE = re.compile(r"[a-z0-9]+")
+
+# Deterministic sentence boundaries for this narrow detector: terminator
+# punctuation runs or line-break runs. NOT a general NLP sentence tokenizer;
+# no external dependency.
+_GATE_SENTENCE_BOUNDARY_RE = re.compile(r"[.!?]+|[\r\n]+")
+
+# Fixed guard sets — see the narrowly documented disqualifiers above.
+_GATE_QUOTE_CHARS = "\"“”«»"
+_GATE_REPORTED_SPEECH_TOKENS = frozenset({
+    "said", "says", "told", "heard", "claims", "claimed", "reported",
+    "according",
+})
+_GATE_PRE_NEGATION_TOKENS = frozenset({"not", "never"})
 
 
 def _connective_regex(connective):
@@ -463,25 +508,86 @@ def _has_whole_word_substance(text_lower, substance_tokens):
     return False
 
 
+def _gate_sentence_spans(r_lower):
+    """
+    Deterministic (start, end) character spans of the sentences of r_lower,
+    bounded by terminator punctuation (. ! ?) and line breaks. Semicolons,
+    commas, and colons remain inside a sentence. Empty segments between
+    consecutive boundaries are skipped. Pure; no side effects.
+    """
+    spans = []
+    start = 0
+    for m in _GATE_SENTENCE_BOUNDARY_RE.finditer(r_lower):
+        if m.start() > start:
+            spans.append((start, m.start()))
+        start = m.end()
+    if start < len(r_lower):
+        spans.append((start, len(r_lower)))
+    return spans
+
+
+def _gate_directional_segment(r_lower, spans, match, cause_first, connective):
+    """
+    Return the same-sentence directional segment for one connective
+    occurrence, or None when the occurrence cannot qualify:
+
+      * the occurrence does not sit fully inside one sentence (a multi-word
+        connective spanning a line break spans a sentence boundary);
+      * the quote guard, reported-speech guard, or negation guard fires;
+      * "since" opens its sentence (temporal-since guard);
+      * a result-first connective has an empty result side.
+
+    cause_first=True selects the sentence part AFTER the connective (the
+    rationale); cause_first=False selects the part BEFORE it (the supporting
+    cause). Sides from other sentences are never used. Deterministic.
+    """
+    for start, end in spans:
+        if start <= match.start() and match.end() <= end:
+            sentence = r_lower[start:end]
+            if any(q in sentence for q in _GATE_QUOTE_CHARS):
+                return None
+            before = r_lower[start:match.start()]
+            after = r_lower[match.end():end]
+            before_tokens = set(_SUBSTANCE_WORD_RE.findall(before))
+            if before_tokens & _GATE_REPORTED_SPEECH_TOKENS:
+                return None
+            if before_tokens & _GATE_PRE_NEGATION_TOKENS:
+                return None
+            if connective == "since" and not before_tokens:
+                return None            # temporal-since guard
+            if not cause_first and not _SUBSTANCE_WORD_RE.search(after):
+                return None            # empty result side is nonsensical
+            return after if cause_first else before
+    return None                        # spans a sentence boundary
+
+
 def _connective_whole_word_substance_gate(r_lower, substance_tokens):
     """
-    New-connective gate: an authorized new connective present as a whole
-    word AND a whole-word (plural-folded) substance signal inside the
-    clause that supports it. Returns False whenever the substance check is
-    disabled (empty/unknown domain or empty signal list) — this path never
-    fires without domain substance authority, so domain="" and unknown-
-    domain behavior is unchanged. Deterministic; no side effects.
+    New-connective gate (TRUE SENTENCE-BOUNDED): an authorized new
+    connective present as a whole word AND a whole-word (plural-folded)
+    substance signal in the SAME SENTENCE, on the directional side that
+    connective supports. Every occurrence is evaluated independently;
+    substance from a different sentence never qualifies, and opposing sides
+    of different occurrences are never combined. Returns False whenever the
+    substance check is disabled (empty/unknown domain or empty signal list)
+    — this path never fires without domain substance authority, so
+    domain="" and unknown-domain behavior is unchanged. Deterministic; no
+    side effects.
     """
     if not substance_tokens:
         return False
-    for conn_re in _NEW_CONNECTIVE_RES_CAUSE_FIRST:
-        for m in conn_re.finditer(r_lower):
-            if _has_whole_word_substance(r_lower[m.end():], substance_tokens):
-                return True
-    for conn_re in _NEW_CONNECTIVE_RES_RESULT_FIRST:
-        for m in conn_re.finditer(r_lower):
-            if _has_whole_word_substance(r_lower[:m.start()], substance_tokens):
-                return True
+    spans = _gate_sentence_spans(r_lower)
+    for connectives, regexes, cause_first in (
+        (_NEW_CAUSAL_CONNECTIVES_CAUSE_FIRST, _NEW_CONNECTIVE_RES_CAUSE_FIRST, True),
+        (_NEW_CAUSAL_CONNECTIVES_RESULT_FIRST, _NEW_CONNECTIVE_RES_RESULT_FIRST, False),
+    ):
+        for connective, conn_re in zip(connectives, regexes):
+            for m in conn_re.finditer(r_lower):
+                segment = _gate_directional_segment(
+                    r_lower, spans, m, cause_first, connective)
+                if segment is not None and _has_whole_word_substance(
+                        segment, substance_tokens):
+                    return True
     return False
 
 
