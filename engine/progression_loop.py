@@ -404,7 +404,7 @@ def _is_generic_verb_trap(r_lower):
 # deliberately NOT added to _CAUSAL_STRUCTURE_PATTERNS: existing entries keep
 # their raw substring semantics unchanged, while this path additionally
 # requires an electronics/electrical domain substance signal matched as a
-# WHOLE WORD (with conservative plural folding) in the SAME SENTENCE as the
+# WHOLE WORD (with an explicit safe plural alias map) in the SAME SENTENCE as the
 # connective, on the directional side the connective supports. Case-
 # insensitive. Bare "so", "and so", "for", "as", "while", punctuation-only
 # inference, quoted-speech parsing, negation parsing, and probabilistic
@@ -485,25 +485,42 @@ _NEW_CONNECTIVE_RES_RESULT_FIRST = tuple(
     _connective_regex(c) for c in _NEW_CAUSAL_CONNECTIVES_RESULT_FIRST)
 
 
+# EXPLICIT SAFE PLURAL MAP (owner-authorized final correction 2026-07-11).
+# Generic suffix stripping (-s / -es / -ies) is NOT ratified: independent
+# probing demonstrated false-positive folds such as "ices"→"ic",
+# "halls"→"hall", non-electronics "chips", and verbal "displays". Plural
+# recognition is therefore limited to this explicit, conservative alias map.
+# These are MATCHING ALIASES ONLY: they modify no domain pack or registry
+# data, add no vocabulary, and are never derived dynamically from suffix
+# rules. "hall", "chip", "display", and "esp" deliberately have NO plural
+# alias unless separately authorized later.
+_SUBSTANCE_PLURAL_ALIASES = {
+    "sensors":    "sensor",
+    "relays":     "relay",
+    "resistors":  "resistor",
+    "batteries":  "battery",
+    "capacitors": "capacitor",
+    "motors":     "motor",
+    "leds":       "led",
+    "ics":        "ic",
+}
+
+
 def _has_whole_word_substance(text_lower, substance_tokens):
     """
-    Whole-word substance-signal detection with conservative plural folding.
+    Whole-word substance-signal detection with an explicit safe plural map.
     Tokenizes on alphanumeric runs, so substring fragments inside larger
     words never match ("ic" in "nice"/"device"/"which", "led" in
     "called"/"enabled", "esp" in "especially", "hall" in "shall").
-    Folding recognizes only a normal English plural of an authorized signal
-    (sensors→sensor, relays→relay, resistors→resistor, batteries→battery);
-    it is not a stemmer and adds no vocabulary. Deterministic; no side
-    effects.
+    A plural form matches ONLY via _SUBSTANCE_PLURAL_ALIASES and only when
+    its singular is an authorized registry signal — no suffix stripping, no
+    stemming, no vocabulary addition. Deterministic; no side effects.
     """
     for w in _SUBSTANCE_WORD_RE.findall(text_lower):
         if w in substance_tokens:
             return True
-        if len(w) > 4 and w.endswith("ies") and (w[:-3] + "y") in substance_tokens:
-            return True
-        if len(w) > 3 and w.endswith("es") and w[:-2] in substance_tokens:
-            return True
-        if len(w) > 2 and w.endswith("s") and w[:-1] in substance_tokens:
+        singular = _SUBSTANCE_PLURAL_ALIASES.get(w)
+        if singular is not None and singular in substance_tokens:
             return True
     return False
 
@@ -564,7 +581,8 @@ def _gate_directional_segment(r_lower, spans, match, cause_first, connective):
 def _connective_whole_word_substance_gate(r_lower, substance_tokens):
     """
     New-connective gate (TRUE SENTENCE-BOUNDED): an authorized new
-    connective present as a whole word AND a whole-word (plural-folded)
+    connective present as a whole word AND a whole-word (explicit safe
+    plural aliases only)
     substance signal in the SAME SENTENCE, on the directional side that
     connective supports. Every occurrence is evaluated independently;
     substance from a different sentence never qualifies, and opposing sides
@@ -656,7 +674,7 @@ def assess_response(response: str, domain: str = "") -> str:
     if has_causal and not _is_generic_verb_trap(r_lower) and len(r) >= MIN_REASONED_RESPONSE_LENGTH:
         return REASONED
     # REASONED path C (Layer-2, owner-authorized): authorized new causal
-    # connective + whole-word (plural-folded) substance signal in the
+    # connective + whole-word (explicit-plural-alias) substance signal in the
     # supporting clause + existing minimum length. Distinct gated path —
     # never bypasses the weak-pattern / weak-token rejections above.
     if new_connective_gate and len(r) >= MIN_REASONED_RESPONSE_LENGTH:

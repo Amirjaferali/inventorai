@@ -3,7 +3,7 @@ Focused tests for the Layer-2 bounded scoring correction (owner-authorized
 2026-07-11): explicit causal connectives (because / since / therefore / thus /
 hence / due to / as a result) qualify for REASONED only through a distinct
 gated path that additionally requires an electronics/electrical domain
-substance signal matched as a WHOLE WORD (conservative plural folding) in the
+substance signal matched as a WHOLE WORD (explicit safe plural alias map) in the
 SAME SENTENCE as the connective, on the directional side it supports
 (TRUE SENTENCE-BOUNDED correction, owner-authorized 2026-07-11):
 
@@ -176,18 +176,77 @@ def test_substring_only_fake_substance_never_qualifies(label, text):
 
 
 # ---------------------------------------------------------------------------
-# (5) Conservative plural folding.
+# (5) Explicit safe plural alias map (generic suffix folding is NOT ratified).
 # ---------------------------------------------------------------------------
 
-def test_plural_folding_recognizes_normal_plurals_of_authorized_signals():
+def test_explicit_plural_map_is_exactly_the_authorized_pairs():
+    from engine.progression_loop import _SUBSTANCE_PLURAL_ALIASES
+    assert _SUBSTANCE_PLURAL_ALIASES == {
+        "sensors": "sensor", "relays": "relay", "resistors": "resistor",
+        "batteries": "battery", "capacitors": "capacitor", "motors": "motor",
+        "leds": "led", "ics": "ic",
+    }
+    # "hall", "chip", "display", and "esp" deliberately have no plural alias.
+    for excluded in ("halls", "chips", "displays", "esps"):
+        assert excluded not in _SUBSTANCE_PLURAL_ALIASES, excluded
+
+
+def test_explicit_plural_map_recognizes_only_the_authorized_pairs():
     from engine.domain_rules import get_substance_signals
     toks = set(get_substance_signals(D))
+    # The eight authorized plural forms match (and their singulars still do).
     for plural in ("sensors", "relays", "resistors", "batteries",
-                   "capacitors", "motors", "leds", "chips"):
+                   "capacitors", "motors", "leds", "ics"):
         assert _has_whole_word_substance(plural, toks), plural
-    # Folding never invents vocabulary: non-signal plurals stay unmatched.
+    for singular in ("sensor", "relay", "resistor", "battery",
+                     "capacitor", "motor", "led", "ic"):
+        assert _has_whole_word_substance(singular, toks), singular
+    # No generic suffix stripping: non-whitelisted plurals and inflections
+    # never match, including the independently demonstrated false folds.
+    for rejected in ("ices", "halls", "chips", "displays", "buses",
+                     "classes", "glasses", "statuses", "series", "analyses",
+                     "relaying", "displaying"):
+        assert not _has_whole_word_substance(rejected, toks), rejected
+    # The map never invents vocabulary: non-signal plurals stay unmatched.
     for nonsignal in ("parts", "areas", "things", "wires", "cases"):
         assert not _has_whole_word_substance(nonsignal, toks), nonsignal
+
+
+_UNSAFE_PLURAL_REJECTION_SENTENCES = [
+    ("ices", "The dessert stays cold because the ices melt slowly in the "
+             "insulated serving tray."),
+    ("halls", "The venue works well because the halls stay quiet during the "
+              "evening events."),
+    ("chips", "The snack bowl empties fast because the chips taste salty and "
+              "fresh every single day."),
+    ("displays", "The kiosk attracts attention because it displays bright "
+                 "messages all day long."),
+    ("buses", "The commute is easy because the buses arrive every ten "
+              "minutes at this corner."),
+    ("classes", "The course fills early because the classes cover very "
+                "popular topics each term."),
+    ("glasses", "The tray looks elegant because the glasses sparkle under "
+                "the warm dining lights."),
+    ("statuses", "The board stays useful because the statuses update every "
+                 "hour without any effort."),
+    ("series", "The show stays popular because the series builds suspense "
+               "across every single season."),
+    ("analyses", "The report reads clearly because the analyses were written "
+                 "in plain simple language."),
+    ("relaying", "The signal keeps moving because the relaying happens at "
+                 "every node along the path."),
+    ("displaying", "The stand works nicely because the displaying continues "
+                   "even in direct sunlight."),
+]
+
+
+@pytest.mark.parametrize("label,text", _UNSAFE_PLURAL_REJECTION_SENTENCES)
+def test_non_whitelisted_plural_forms_never_qualify(label, text):
+    # Each sentence has an authorized connective, exceeds the minimum length,
+    # and carries the probe word in the rationale side — it must stay
+    # ASSERTED because no explicit plural alias exists for the probe word.
+    assert len(text) >= MIN_REASONED_RESPONSE_LENGTH
+    assert assess_response(text, D) == ASSERTED, label
 
 
 def test_plural_substance_in_rationale_clause_is_reasoned():
@@ -744,11 +803,20 @@ _REVIEW_MATRIX = (
     ("trap-called-enabled", "The feature works because it is called smart mode and stays enabled all day long.", _A, False),
     ("trap-especially-hallway", "People like it because it is especially handy in the kitchen and hallway areas.", _A, False),
     ("trap-shall", "We shall win because we shall try harder and we shall never give up on this plan.", _A, False),
-    # --- plural folding ---
+    # --- explicit safe plural aliases ---
     ("plural-resistors", "The cabinet needs venting because the resistors and batteries overheat during long idle periods.", _R, True),
     ("plural-relays", "Contacts wear out quickly because the relays switch at full motor load every few seconds.", _R, True),
+    ("plural-capacitors", "The supply sags briefly because the capacitors leak charge during cold storage months.", _R, True),
+    ("plural-motors", "The chassis vibrates loudly because the motors stall under heavy load without extra cooling.", _R, True),
+    ("plural-leds", "The panel stays visible because the leds shine through the diffuser at night.", _R, True),
+    ("plural-ics", "The board runs hot because the ics draw current constantly at full clock speed.", _R, True),
     ("plural-nonsignal", "The box needs padding because the parts and wires and cases rattle during transport.", _A, True),
     ("plural-things", "It helps because the things inside it are arranged nicely and packed very well.", _A, False),
+    # --- unsafe generic-fold artifacts (owner-required ASSERTED; no alias) ---
+    ("plural-unsafe-ices", "The dessert stays cold because the ices melt slowly in the insulated serving tray.", _A, False),
+    ("plural-unsafe-halls", "The venue works well because the halls stay quiet during the evening events.", _A, False),
+    ("plural-unsafe-chips", "The snack bowl empties fast because the chips taste salty and fresh every single day.", _A, False),
+    ("plural-unsafe-displays", "The kiosk attracts attention because it displays bright messages all day long.", _A, False),
     # --- praise / weak placeholders / weak patterns ---
     ("praise", "It is nice because everyone loves how it looks on the kitchen counter every day.", _A, False),
     ("weak-technology", "It works because technology makes everything better somehow.", _A, False),
