@@ -202,7 +202,9 @@ Gate rules:
 1. No new analytical feature, AI Coach capability, domain expansion,
    journey redesign, monetization feature, or unrelated product feature
    may proceed until the active remediation plan reaches its defined
-   closure gates.
+   closure gates. The freeze applies to UNRELATED work only: work inside
+   the currently owner-authorized remediation workstream remains
+   permitted, and no workstream may begin without its separate owner gate.
 2. Remediation items are NOT complete merely because code changed or
    focused tests passed.
 3. Closure of any remediation item requires ALL of:
@@ -212,6 +214,9 @@ Gate rules:
    - absence of the target defect in that regenerated evidence;
    - independent read-only review;
    - explicit owner authorization.
+
+   This six-item list is a stable gate-level summary; if any operational
+   detail differs, the current owner-approved remediation plan controls.
 4. This Anchor records only the gate itself. Workstream content, ordering,
    priorities, statuses, and closure detail MUST be read from the
    remediation-plan document above and must not be copied into, inferred

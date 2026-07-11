@@ -12,7 +12,8 @@
 `docs/governance/PATH_N_CURRENT_EXECUTION_ANCHOR.md` §13 (gate declaration)
 **Depends on:** the owner-accepted comprehensive read-only product journey and
 deliverable diagnosis performed against merged tip
-`c62bd9ab8f3cd1fa137b15415283672611109261`
+`c62bd9ab8f3cd1fa137b15415283672611109261`, preserved as
+`docs/governance/DELIVERABLE_STABILIZATION_EVIDENCE_BASIS.md`
 
 ---
 
@@ -21,8 +22,10 @@ deliverable diagnosis performed against merged tip
 A comprehensive read-only diagnosis of the full product journey and the
 generated deliverable confirmed defects across safety extraction,
 deliverable content quality, question design, evaluation fit, and guidance
-(enumerated in the remediation plan §3). The owner has reviewed and accepted
-that evidence basis and ordered a structured remediation program.
+(enumerated in the remediation plan §3 and preserved as
+`docs/governance/DELIVERABLE_STABILIZATION_EVIDENCE_BASIS.md`). The owner
+has reviewed and accepted that evidence basis and ordered a structured
+remediation program.
 
 ---
 
@@ -33,7 +36,9 @@ The owner orders the following, effective upon commit:
 1. **Remediation freeze.** No new analytical feature, AI Coach capability,
    domain expansion, journey redesign, monetization feature, or unrelated
    product feature may proceed until the remediation plan reaches its
-   defined closure gates.
+   defined closure gates. The freeze applies to UNRELATED work only: work
+   inside the currently owner-authorized remediation workstream remains
+   permitted, and no workstream may begin without its separate owner gate.
 2. **The remediation plan is mandatory, not advisory.**
    `docs/governance/DELIVERABLE_STABILIZATION_REMEDIATION_PLAN.md` is the
    single authoritative remediation document.

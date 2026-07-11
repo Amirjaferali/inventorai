@@ -46,6 +46,11 @@ Effective upon commit of this document:
 - All new analytical features, AI Coach capabilities, domain expansions,
   journey redesigns, monetization features, and unrelated product features
   are FROZEN until the closure gates in this plan are reached (Anchor §13).
+- The freeze applies to UNRELATED work only: it does NOT block the
+  remediation workstreams of this plan themselves. Work inside the
+  currently owner-authorized remediation workstream remains permitted;
+  however, no workstream (and no lifecycle step within it) may begin
+  without its separate owner gate (§10, §11).
 - The freeze does not reopen, alter, or unfreeze any previously frozen or
   paused lane (persistence remains frozen and paused; Safety Signals remain
   closed as a feature lane; Answer Clarification remains inactive; the
@@ -59,7 +64,8 @@ Effective upon commit of this document:
 
 The following issues are CONFIRMED (owner-accepted evidence basis: the
 comprehensive read-only product journey and deliverable diagnosis performed
-against merged tip `c62bd9ab8f3cd1fa137b15415283672611109261`).
+against merged tip `c62bd9ab8f3cd1fa137b15415283672611109261`, preserved as
+`docs/governance/DELIVERABLE_STABILIZATION_EVIDENCE_BASIS.md`).
 
 ### 3.A Safety correctness (highest severity)
 
@@ -163,6 +169,19 @@ existing authority and freeze state):
 - PR #162 and PR #167 lifecycles;
 - roadmap restructuring beyond §11-conformant entries;
 - monetization, marketing, or commercial-differentiation implementation.
+
+### 6.A Disposition of earlier owner-gated contracts
+
+The existing owner-gated contracts concerning Guided Uncertainty Support,
+Guided Answer Co-Authoring, and Advisory Panel Precedence remain
+historically valid, but they are NOT independently executable while this
+remediation plan is active. They may be reused, amended, superseded, or
+incorporated into Workstreams 12 (Controlled Unknown Progression),
+13 (Guided Answer Support), or 15 (Guidance Consolidation) only through new
+written owner authorization and the applicable Increment Contract (§9). The
+execution timing of any such work is governed by this plan's mandatory
+sequence (§5). This provision does not alter or close those earlier
+contracts.
 
 ---
 
