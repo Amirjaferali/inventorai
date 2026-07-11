@@ -399,6 +399,92 @@ def _is_generic_verb_trap(r_lower):
     return not _has_causal_structure(r_lower)
 
 
+# ─── Layer-2 bounded scoring correction (owner-authorized 2026-07-11) ───
+# Previously missing explicit causal connectives. DISTINCT gated path —
+# deliberately NOT added to _CAUSAL_STRUCTURE_PATTERNS: existing entries keep
+# their raw substring semantics unchanged, while this path additionally
+# requires an electronics/electrical domain substance signal matched as a
+# WHOLE WORD (with conservative plural folding) inside the clause that
+# supports the connective. Case-insensitive. Bare "so", "and so", "for",
+# "as", "while", punctuation-only inference, quoted-speech parsing, negation
+# parsing, and probabilistic classification are intentionally excluded.
+#
+# Direction of the supporting clause:
+#   - cause connectives (because / since / due to): the rationale FOLLOWS
+#     the connective, so substance is required AFTER it;
+#   - consequence connectives (therefore / thus / hence / as a result): the
+#     supporting cause PRECEDES the connective, so substance is required
+#     BEFORE it.
+# The clause scoping is what keeps third-party/quoted causal claims whose
+# rationale clause is substance-free ("Someone said the sensor fails because
+# heat is bad") ASSERTED without any quoted-speech or negation parsing, and
+# what keeps domain-token stuffing outside the supporting clause from
+# qualifying.
+_NEW_CAUSAL_CONNECTIVES_CAUSE_FIRST = ("because", "since", "due to")
+_NEW_CAUSAL_CONNECTIVES_RESULT_FIRST = ("therefore", "thus", "hence", "as a result")
+
+_SUBSTANCE_WORD_RE = re.compile(r"[a-z0-9]+")
+
+
+def _connective_regex(connective):
+    # Whole-word connective match; multi-word connectives tolerate any
+    # whitespace run between their words ("due to", "as a result").
+    return re.compile(
+        r"\b" + r"\s+".join(re.escape(part) for part in connective.split()) + r"\b"
+    )
+
+
+_NEW_CONNECTIVE_RES_CAUSE_FIRST = tuple(
+    _connective_regex(c) for c in _NEW_CAUSAL_CONNECTIVES_CAUSE_FIRST)
+_NEW_CONNECTIVE_RES_RESULT_FIRST = tuple(
+    _connective_regex(c) for c in _NEW_CAUSAL_CONNECTIVES_RESULT_FIRST)
+
+
+def _has_whole_word_substance(text_lower, substance_tokens):
+    """
+    Whole-word substance-signal detection with conservative plural folding.
+    Tokenizes on alphanumeric runs, so substring fragments inside larger
+    words never match ("ic" in "nice"/"device"/"which", "led" in
+    "called"/"enabled", "esp" in "especially", "hall" in "shall").
+    Folding recognizes only a normal English plural of an authorized signal
+    (sensors→sensor, relays→relay, resistors→resistor, batteries→battery);
+    it is not a stemmer and adds no vocabulary. Deterministic; no side
+    effects.
+    """
+    for w in _SUBSTANCE_WORD_RE.findall(text_lower):
+        if w in substance_tokens:
+            return True
+        if len(w) > 4 and w.endswith("ies") and (w[:-3] + "y") in substance_tokens:
+            return True
+        if len(w) > 3 and w.endswith("es") and w[:-2] in substance_tokens:
+            return True
+        if len(w) > 2 and w.endswith("s") and w[:-1] in substance_tokens:
+            return True
+    return False
+
+
+def _connective_whole_word_substance_gate(r_lower, substance_tokens):
+    """
+    New-connective gate: an authorized new connective present as a whole
+    word AND a whole-word (plural-folded) substance signal inside the
+    clause that supports it. Returns False whenever the substance check is
+    disabled (empty/unknown domain or empty signal list) — this path never
+    fires without domain substance authority, so domain="" and unknown-
+    domain behavior is unchanged. Deterministic; no side effects.
+    """
+    if not substance_tokens:
+        return False
+    for conn_re in _NEW_CONNECTIVE_RES_CAUSE_FIRST:
+        for m in conn_re.finditer(r_lower):
+            if _has_whole_word_substance(r_lower[m.end():], substance_tokens):
+                return True
+    for conn_re in _NEW_CONNECTIVE_RES_RESULT_FIRST:
+        for m in conn_re.finditer(r_lower):
+            if _has_whole_word_substance(r_lower[:m.start()], substance_tokens):
+                return True
+    return False
+
+
 
 MIN_REASONED_RESPONSE_LENGTH = 40  # anti-triviality guard only — see ADR-003 Step 6 note
 
@@ -449,12 +535,25 @@ def assess_response(response: str, domain: str = "") -> str:
 
     # 3. Substance token present AND response meets minimum length (anti-triviality guard)
     #    NOTE: length threshold does NOT validate reasoning quality — see ADR-003 Step 6 note
-    if _is_generic_verb_trap(r_lower):
+    # Layer-2 gated path input (owner-authorized 2026-07-11): evaluated here
+    # only so the generic-verb trap recognizes the new connective+substance
+    # form as causal structure — exactly as the trap already yields to the
+    # existing _CAUSAL_STRUCTURE_PATTERNS. The trap is unchanged for every
+    # input that does not qualify for the new gate. REASONED is still granted
+    # only at path C below, after the existing causal path.
+    new_connective_gate = _connective_whole_word_substance_gate(r_lower, substance_tokens)
+    if _is_generic_verb_trap(r_lower) and not new_connective_gate:
         return ASSERTED
     has_causal = _has_causal_structure(r_lower)
     # REASONED path A: substance domain token + causal structure + length
     # REASONED path B: causal structure + no trap + length (for non-electronics domains)
     if has_causal and not _is_generic_verb_trap(r_lower) and len(r) >= MIN_REASONED_RESPONSE_LENGTH:
+        return REASONED
+    # REASONED path C (Layer-2, owner-authorized): authorized new causal
+    # connective + whole-word (plural-folded) substance signal in the
+    # supporting clause + existing minimum length. Distinct gated path —
+    # never bypasses the weak-pattern / weak-token rejections above.
+    if new_connective_gate and len(r) >= MIN_REASONED_RESPONSE_LENGTH:
         return REASONED
 
     # 4. Length fallback for borderline answers without clear substance signals
