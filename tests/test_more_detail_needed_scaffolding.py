@@ -52,10 +52,15 @@ def test_guidance_none_for_pass_and_block():
 
 
 def test_guidance_asserted_reason_names_missing_reasoning():
+    # Micro UX correction: the lead no longer repeats the recognizer
+    # explanation (that lives once in the primary result feedback); it names
+    # the KIND of detail to make explicit for the mechanism family directly.
     g = get_scaffolding_guidance(_warn("MECHANISM_COMPLETENESS asserted only — reasoning required"))
     assert g is not None
     assert g["heading"] == _HEADING
-    assert "mechanism" in g["lead"].lower() or "reasoning" in g["lead"].lower()
+    lead = g["lead"].lower()
+    assert "explicit" in lead
+    assert "chain" in lead or "condition" in lead
 
 
 def test_guidance_partial_reason_asks_for_more_depth():
