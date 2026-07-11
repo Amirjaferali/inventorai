@@ -144,18 +144,34 @@ _INTERNAL_TOKENS = ("asserted", "reasoned", "lexical", "regex", "classifier")
 _DETECTOR_HONEST_MARK = "did not recognize enough explicit"
 
 # Answers that plainly contain reasoning language yet remain classified
-# ASSERTED by the unchanged lexical recognizer. The classification is pinned
-# (scoring unchanged); the displayed feedback must not contradict the answer.
+# ASSERTED by the recognizer. These are the recognizer's remaining known
+# false negatives after the Layer-2 connective+whole-word-substance gate
+# (owner-authorized 2026-07-11): the new gate requires a whole-word domain
+# substance signal inside the clause supporting the connective, so a
+# substance-free rationale clause ("dust buildup can distort the thermal
+# readings…", "internet connectivity may be unavailable…") and the implicit
+# no-connective mechanism chain still classify ASSERTED. The classification
+# is pinned; the displayed feedback must not contradict the answer.
 _REASONING_BEARING_ASSERTED_EXAMPLES = (
     ("because", "The device should use a sealed sensor chamber because dust "
                 "buildup can distort the thermal readings and cause false alarms."),
     ("since", "The controller should retain the previous threshold locally "
               "since internet connectivity may be unavailable during a fault."),
-    ("scope-rationale", "The device covers only single-phase circuits because "
-                        "three-phase fault currents exceed the sensor's saturation limit."),
     ("no-connective-mechanism", "The thermistor resistance drops with heat. "
                                 "The comparator output flips at 2.5 volts. "
                                 "The relay coil energizes and disconnects the load."),
+)
+
+# Scoring-specific expected-REASONED set: previously pinned ASSERTED, now
+# recognized by the Layer-2 connective gate because the rationale clause
+# after "because" carries whole-word domain substance ("currents" plural-
+# folds to the authorized signal "current"; "sensor's" tokenizes to the
+# authorized signal "sensor"). Moved here from the ASSERTED truthfulness set
+# per the owner-gated Layer-2 authorization; feedback truthfulness
+# protections above are unchanged.
+_CONNECTIVE_GATE_EXPECTED_REASONED_EXAMPLES = (
+    ("scope-rationale", "The device covers only single-phase circuits because "
+                        "three-phase fault currents exceed the sensor's saturation limit."),
 )
 
 
@@ -278,7 +294,8 @@ def test_reasoning_bearing_answers_keep_classification_and_get_noncontradictory_
     lead = get_scaffolding_guidance(result, gap_type="MECHANISM_COMPLETENESS")["lead"].lower()
     primary = get_result_feedback(result).lower()
     for label, answer in _REASONING_BEARING_ASSERTED_EXAMPLES:
-        # Scoring unchanged: the recognizer still classifies these ASSERTED.
+        # Remaining known false negatives: the recognizer (including the
+        # Layer-2 connective gate) still classifies these ASSERTED.
         assert assess_response(answer, "electronics_electrical") == "ASSERTED", label
         # The visible feedback for the resulting state never claims the answer
         # lacks reasoning/mechanism/rationale. Detector-honesty lives ONCE in
@@ -288,6 +305,16 @@ def test_reasoning_bearing_answers_keep_classification_and_get_noncontradictory_
         for text in (lead, primary):
             for phrase in _FALSE_ABSENCE_PHRASES:
                 assert phrase not in text, (label, phrase)
+
+
+def test_connective_gate_recognizes_substance_bearing_rationale():
+    # Layer-2 scoring correction (owner-authorized): a rationale clause that
+    # carries whole-word domain substance after an authorized connective is
+    # now REASONED. This does not weaken the ASSERTED-feedback truthfulness
+    # protections above — it records the scoring-side reason the example was
+    # moved out of the pinned-ASSERTED set.
+    for label, answer in _CONNECTIVE_GATE_EXPECTED_REASONED_EXAMPLES:
+        assert assess_response(answer, "electronics_electrical") == "REASONED", label
 
 
 def test_primary_result_feedback_for_asserted_is_detector_honest():
