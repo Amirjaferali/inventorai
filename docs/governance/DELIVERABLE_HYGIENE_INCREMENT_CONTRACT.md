@@ -2,7 +2,8 @@
 
 **Document ID:** DELIVERABLE_HYGIENE_INCREMENT_CONTRACT
 **Type:** Increment Contract (DELIVERABLE_STABILIZATION_REMEDIATION_PLAN.md §9)
-**Status:** OWNER-APPROVED — RECORDING PENDING — NO IMPLEMENTATION AUTHORIZED
+**Status:** OWNER-APPROVED — CANONICALLY RECORDED — NO IMPLEMENTATION AUTHORIZED
+**Canonical recording:** recording PR #175; true two-parent merge `0189577f269366dc3201cb4cfeb32875a904d4e9` (ordered parents `3d288f2f51d18e47977f5213722993a25aeb7ba3`, `a196f9f9ef8d3b635220b5e4f87b57f9c3d1f53a`); contract pre-sync blob `113139067faa5048b9f38033bfe34548dc356f9c`; recorded 2026-07-12.
 **Owner approval record:** WORKSTREAM 3 DELIVERABLE HYGIENE INCREMENT CONTRACT — APPROVED — 2026-07-12, incorporating the final revised contract plus the three binding recording corrections (Final-Deliverable serialization distinction; Defect-4 heading correction; existing-safety-test clarification).
 **Workstream / Priority:** Workstream 3 — P0 Deliverable Hygiene
 **Governing evidence:** remediation plan §§3.B(3–4), 5, 8–15; WS1 defect manifest rows 3–4; WS1 baseline `docs/governance/evidence/workstream1_deliverable_baseline/` (tree `a49a51338aaefd82d0f060308464c90dbe68b14c`); the Workstream 3 read-only Source Review, completed and accepted by the owner as sufficient for contract derivation (session record at tip `3d288f2f51d18e47977f5213722993a25aeb7ba3`; not itself a canonical repository artifact).
