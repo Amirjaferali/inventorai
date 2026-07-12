@@ -355,8 +355,8 @@ values: `NOT STARTED`, `SOURCE REVIEW`, `CONTRACT`, `IMPLEMENTATION`,
 
 | # | Workstream | Priority | Status | Closure evidence |
 |---|---|---|---|---|
-| 1 | Evidence Lock and baseline preservation | Gate | NOT STARTED | — |
-| 2 | Safety Signal Stabilization | P0 | NOT STARTED | — |
+| 1 | Evidence Lock and baseline preservation | Gate | CLOSED | PR #169; true two-parent merge `3209836b5648f55c70ebb4149db7dfdd5e4adbeb`; canonical evidence tree `a49a51338aaefd82d0f060308464c90dbe68b14c`; independent final closure verification PASS; explicit owner closure authorization granted 2026-07-12 |
+| 2 | Safety Signal Stabilization | P0 | CLOSED | Implementation PR #172; implementation merge `523d4306dc4ce0d02b865550eedab80793637dab`; roadmap-sync PR #173; authoritative closure merge `1d532bf046e098956d8c936110b0ef33d4298eed`; evidence directory `docs/governance/evidence/workstream2_safety_stabilization/` |
 | 3 | Deliverable Hygiene | P0 | NOT STARTED | — |
 | 4 | Structured Criticality Capture | P1 | NOT STARTED | — |
 | 5 | Unified Risk and Safety Presentation | P1 | NOT STARTED | — |
