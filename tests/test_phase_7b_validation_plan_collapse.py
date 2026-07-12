@@ -114,7 +114,9 @@ def test_underlying_data_shape_and_steps_unchanged():
     state = _state([OWNER_INPUT] * 5)
     vp = assemble_deliverable(state)["section_14_validation_plan"]
     # data shape unchanged (no fields added by this template-only change)
-    assert set(vp) == {"title", "outcome", "steps", "blocked_items", "empty_statement"}
+    assert set(vp) == {"title", "outcome", "steps", "blocked_items",
+                       "validation_plan_source", "validation_step_total",
+                       "blocked_item_total", "empty_statement"}
     # steps list still holds every underlying step (collapse is display-only)
     assert len(vp["steps"]) == 5
 
@@ -141,5 +143,5 @@ def test_sections_6_10_11_13_and_contract_unchanged():
     assert "section_10_recommended_next_steps" in pkg
     assert "section_11_prototype_test_plan" in pkg
     for r in pkg["section_13_requirement_landscape"]["requirements"]:
-        assert r["criticality"] == "UNDETERMINED"
-        assert r["criticality_authority"] == "system-derived"
+        assert r["criticality"] == "Not yet determined"
+        assert r["criticality_authority"] == "assigned automatically by the system; not yet reviewed"
