@@ -133,7 +133,33 @@ _NEGATIVES = (
      "If some hypothetical gadget elsewhere malfunctioned, this design would be unaffected."),
     ("adjacent-unrelated-hazard-mentions",
      "Overheating is a common topic in electronics forums. Fire safety is also popular."),
+    # Owner-ordered benign-failover correction (PR #172 review finding):
+    # benign OPERATIONAL continuation is not a safety consequence. "could
+    # continue" must bind to an explicitly harmful continuation, not to an
+    # electrical subject alone.
+    ("benign-failover-mains",
+     "If the battery fails to charge, operation could continue on mains power."),
+    ("benign-failover-backup",
+     "If the charger fails, service could continue using the backup supply."),
+    ("benign-failover-redundant",
+     "If one feed is unavailable, normal operation could continue on the redundant circuit."),
 )
+
+# Harmful-continuation counterpart positives (owner-ordered paired checks):
+# the SAME "could continue" surface form must still be detected when the
+# continuing thing is itself harmful (fire risk / overheating / damage).
+_HARMFUL_CONTINUATION_POSITIVES = (
+    ("relay-sticks-fire-risk", "If the relay sticks, the fire risk could continue."),
+    ("isolation-fails-overheating", "If isolation fails, overheating could continue."),
+    ("protection-fails-damage", "If protection fails, damage could continue."),
+)
+
+
+def test_harmful_continuation_remains_positive_and_benign_failover_negative():
+    for label, text in _HARMFUL_CONTINUATION_POSITIVES:
+        assert len(_signals(text)) == 1, label
+    for label, text in _NEGATIVES[-3:]:
+        assert _signals(text) == (), label
 
 
 def test_negative_fixtures_produce_no_signal():
