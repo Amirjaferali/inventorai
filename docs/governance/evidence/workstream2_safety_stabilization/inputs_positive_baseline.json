@@ -1,0 +1,10 @@
+{
+  "idea": "A smart plug-in safety device for home appliances using current and voltage sensing, a microcontroller, Wi-Fi, an LED buzzer warning, and a plug housing",
+  "steps": [
+    {
+      "iteration": 2,
+      "action": "answered",
+      "text": "If insulation cannot be safely achieved inside the plug housing, the device should not be used because it could create a safety risk."
+    }
+  ]
+}
