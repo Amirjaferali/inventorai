@@ -69,6 +69,9 @@ _FAILURE_CUES = (
     "wrong load", "wrong branch",
     "sticks", "stuck",
     "leaving the appliance powered", "left powered",
+    # Benign-failover correction companions: explicit failed-protective-
+    # function conditions (finite phrases, not a bare "fails" token).
+    "isolation fails", "protection fails",
 )
 _SUBJECT_CUES = (
     "insulation", "electric shock", "electrical shock", "shock", "overcurrent",
@@ -83,6 +86,9 @@ _SUBJECT_CUES = (
     # subject qualifiers evidenced by the WS1 false-negative baseline.
     "electrocute", "electrocuted", "electrocutes", "electrocuting", "electrocution",
     "danger", "dangerous",
+    # Benign-failover correction companion: a failed protective function is a
+    # safety-relevant subject ("If protection fails, damage could continue.").
+    "protection",
 )
 _CONSEQUENCE_CUES = (
     "safety risk", "unsafe", "create a risk", "creates a risk", "could create a",
@@ -93,7 +99,16 @@ _CONSEQUENCE_CUES = (
     "electrocute", "electrocuted", "electrocutes", "electrocuting", "electrocution",
     "could remain powered", "remain powered", "stay powered",
     "could remain energized", "remain energized", "stay energized",
-    "could be disconnected", "could allow overheating", "could continue",
+    "could be disconnected", "could allow overheating",
+    # Benign-failover correction (owner-ordered, PR #172 review finding):
+    # the bare modal "could continue" is NOT a consequence cue — benign
+    # operational continuation ("operation could continue on mains power")
+    # is not a safety consequence. Continuation counts only when the
+    # continuing thing is itself explicitly harmful.
+    "risk could continue", "fire risk could continue",
+    "damage could continue", "overheating could continue",
+    "danger could continue", "exposure could continue",
+    "hazard could continue",
 )
 # Electronics/electrical context: satisfied by the session domain OR by an
 # electrical-domain term appearing in the inventor's own text.
