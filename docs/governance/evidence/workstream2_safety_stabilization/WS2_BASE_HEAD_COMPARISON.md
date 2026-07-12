@@ -65,3 +65,16 @@ diffs are confined to the same block (3 duplicate signals → 1).
 - Positive safety baseline did not lose detection (≥1 signal).
 - No previously-correct deliverable content disappeared or was reworded: proven by the diff confinement in §4 and the byte-identical journey log.
 - No Workstream 1 artifact was modified (F4): the WS1 directory is untouched by every commit on this branch.
+
+## 6. Disclosed-risk status (updated after owner-ordered correction)
+
+The single residual false positive disclosed by the PR #172 independent
+review (benign failover: "If the battery fails to charge, operation could
+continue on mains power.") was CORRECTED by commits `291f5d47` (corrective
+RED) and `b2888238` (bounded fix): bare `could continue` is no longer a
+consequence cue; continuation counts only when explicitly harmful (risk /
+fire risk / damage / overheating / danger / exposure / hazard could
+continue). The paired harmful-continuation positives remain detected. The
+regenerated artifacts in this directory are byte-identical before and after
+the correction (the journey's signal cues were unaffected). No other
+residual risk is currently disclosed.

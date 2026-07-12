@@ -58,6 +58,43 @@ the previously known `tests/test_domain_registry.py` set; no prohibited
 regression in replay, benchmark, WPS-001, causal-gate, or focused safety
 results; prior-failure count unchanged (31).
 
+## 4A. Owner-ordered benign-failover correction (post-review)
+
+The PR #172 independent review disclosed one residual false positive outside
+the contracted matrix: "If the battery fails to charge, operation could
+continue on mains power." produced a signal (`fails to` + subject `mains` +
+bare consequence modal `could continue`). The owner ordered correction
+before merge.
+
+- **Corrective RED:** commit `291f5d478396012aa3f072bdf39a97d86e7f3c05`
+  (tests only; `engine/` diff empty). Command
+  `python3 -m pytest tests/test_safety_signal_stabilization.py -q` →
+  `2 failed, 13 passed`: the benign-failover negative failed by producing a
+  signal, and the harmful-continuation counterpart positives
+  ("If isolation fails, overheating could continue." / "If protection
+  fails, damage could continue.") failed by producing none.
+- **Correction:** commit `b2888238339f5da311eeb43f246df0c2389f466e`
+  (`engine/safety_signal.py` only, `16 insertions, 1 deletion`): the bare
+  modal `could continue` was removed from the consequence family and
+  replaced by explicit harmful-continuation phrases (risk / fire risk /
+  damage / overheating / danger / exposure / hazard could continue);
+  failure family gained the finite phrases `isolation fails` /
+  `protection fails`; subject family gained `protection`. No sentence
+  blacklist, no removal of harmful-continuation detection, no schema or
+  architecture change.
+- **Corrective GREEN:** same command → `15 passed`. Paired checks: the
+  three benign-failover statements derive 0 signals; the three
+  harmful-continuation statements each derive exactly 1.
+- **Battery at corrected head:** unchanged `tests/test_safety_signal.py`
+  `18 passed`; replay+adversarial `26 passed, 18 xpassed`; WPS-001
+  `20 passed, 1 skipped`; benchmark `27 passed, 6 xpassed`; causal gate
+  `177 passed`; full suite `31 failed, 1339 passed, 1 skipped, 1 xfailed,
+  24 xpassed` — 0 failures outside `tests/test_domain_registry.py`
+  (+1 passed = the new paired test).
+- **Regenerated artifacts:** byte-identical to the §4 run (the journey
+  signals' cue selections are unaffected by the correction); verified by a
+  clean git tree after re-running the committed harness.
+
 ## 5. F3 loud-failure demonstration
 
 With the iteration bound temporarily reduced to 3 in an in-memory import

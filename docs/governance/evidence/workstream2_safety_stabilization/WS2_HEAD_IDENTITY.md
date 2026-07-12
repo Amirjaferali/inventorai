@@ -13,6 +13,8 @@
 | Implementation branch | `claude/ws2-safety-signal-stabilization` |
 | BASE RED commit (tests only) | `4303682f4301b3e9dd09d2b8c90236060ba91171` |
 | Implementation commit | `3db477cd2779803f771f59d078046a5e8d459d75` |
+| Corrective RED commit (tests only; owner-ordered benign-failover correction) | `291f5d478396012aa3f072bdf39a97d86e7f3c05` |
+| Correction commit | `b2888238339f5da311eeb43f246df0c2389f466e` |
 | Canonical contract blob | `3db597c77d14aa8f39f7a624c7c32d4984e4f3a3` |
 | Generation timestamp (final committed run) | `2026-07-12T09:03:11Z` (normalized to `GENERATED_AT_UTC` in artifacts) |
 | Environment | Python 3.11.15; pytest 9.1.1; Flask 3.1.3 (container-installed) |
@@ -40,3 +42,10 @@ Headline: **false-negative journey 0 → 3 signals; positive baseline still ≥1
 signal (1 after exact-duplicate dedup).** The byte-identical inputs and
 journey log prove the journey, scoring, transitions, and reasons are
 unchanged by this workstream.
+
+Post-correction note: after the owner-ordered benign-failover correction
+(commits `291f5d47` + `b2888238`), the committed harness was re-run and every
+artifact above remained BYTE-IDENTICAL (clean git tree) — the correction
+changes cue-family membership only and does not alter the journey's derived
+signals. The hash table above therefore remains current at the corrected
+head.
