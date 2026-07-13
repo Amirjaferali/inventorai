@@ -76,6 +76,30 @@ SPECIALIST_INPUT   = "SPECIALIST_INPUT"
 EMPIRICAL_EVIDENCE = "EMPIRICAL_EVIDENCE"
 UNDETERMINED       = "UNDETERMINED"
 
+# --- Workstream 4: structured criticality confirmation vocabulary ---------
+# (STRUCTURED_CRITICALITY_CAPTURE_INCREMENT_CONTRACT.md §4/§6; C4-R4/C4-R5.)
+# Confirmable categories: exactly the three non-UNDETERMINED C4-R4 categories.
+# `confirmed + UNDETERMINED` is an invalid combination and is rejected;
+# uncertainty must use the `deferred` action, which carries no category.
+CRITICALITY_FEASIBILITY_THREATENING = "FEASIBILITY-THREATENING"
+CRITICALITY_VALUE_ENHANCING         = "VALUE-ENHANCING"
+CRITICALITY_REFINEMENT              = "REFINEMENT"
+CONFIRMABLE_CRITICALITY_CATEGORIES = frozenset({
+    CRITICALITY_FEASIBILITY_THREATENING,
+    CRITICALITY_VALUE_ENHANCING,
+    CRITICALITY_REFINEMENT,
+})
+CRITICALITY_ACTION_CONFIRMED = "confirmed"
+CRITICALITY_ACTION_DEFERRED  = "deferred"
+CRITICALITY_ACTIONS = frozenset({
+    CRITICALITY_ACTION_CONFIRMED, CRITICALITY_ACTION_DEFERRED,
+})
+# rationale_source vocabulary (contract §6.1): an attributed reuse of an
+# existing ledger record, an inventor-edited variant, or freshly typed text.
+_RATIONALE_SOURCE_REUSED_PREFIX = "reused_statement:"
+_RATIONALE_SOURCE_FIXED = frozenset({"inventor_edited", "inventor_typed"})
+
+
 # --- Interaction dispositions: exactly the six preserved owner actions ---
 DISPOSITION_ANSWERED               = "answered"
 DISPOSITION_UNKNOWN                = "unknown"
@@ -170,6 +194,26 @@ class AssertionRecord:
     superseded_by     : Optional[str] = None
 
 
+@dataclass(frozen=True)
+class CriticalityConfirmation:
+    """Workstream 4 (contract §6.1): one frozen record per explicit inventor
+    criticality action — `confirmed` (with exactly one non-UNDETERMINED
+    category and a verbatim rationale) or `deferred` (no category, no
+    rationale). Lives ONLY in the in-memory session-bounded append-only
+    history IdeaState.criticality_confirmations; records are never mutated or
+    removed within the session — later actions supersede by ordering only.
+    NOT Evidence, NOT a gap, NO effect on maturity, scoring, lifecycle,
+    transitions, the ledger, or the transcript; no durable retention."""
+    confirmation_id    : int
+    requirement_id     : str
+    action             : str                      # confirmed | deferred
+    category           : Optional[str]            # one of the three, or None
+    rationale_verbatim : Optional[str]            # byte-verbatim; None for deferred
+    rationale_source   : Optional[str]            # reused_statement:<rec_N> | inventor_edited | inventor_typed
+    iteration          : int
+    provenance         : str = "owner_confirmed"
+
+
 @dataclass
 class SuccessCriterion:
     """
@@ -249,6 +293,11 @@ class IdeaState:
     # this is the durable disposition history, not progression state. Empty by
     # default and persistence-independent (in-memory only).
     assertions : list = field(default_factory=list)
+
+    # Workstream 4 (contract §6.1): session-bounded, append-only criticality
+    # confirmation history. In-memory only — nothing here survives restart or
+    # reload, and no durable retention is implied (persistence stays frozen).
+    criticality_confirmations : list = field(default_factory=list)
 
     def get_open_gaps(self):
         return [g for g in self.gaps if g.status in (OPEN, PARTIAL)]
@@ -350,6 +399,65 @@ class IdeaState:
         superseded.superseded_by = by_id
         if superseded_id not in by.supersedes:
             by.supersedes.append(superseded_id)
+
+    # --- Workstream 4 structured criticality (contract §6; append-only) ----
+
+    def record_criticality_confirmation(self, requirement_id, action,
+                                        category=None, rationale_verbatim=None,
+                                        rationale_source=None, iteration=0):
+        """Guarded recorder (contract §6.3). Appends one frozen
+        CriticalityConfirmation for an explicit inventor action and returns
+        it. Rejections store NOTHING: unknown actions; `confirmed` with any
+        category outside the three confirmable ones (in particular the
+        invalid `confirmed + UNDETERMINED` combination); `confirmed` without
+        a non-empty verbatim rationale or a valid rationale_source; and
+        `deferred` carrying a category. The rationale is stored byte-verbatim
+        (an attributed copy — the original ledger record stays unchanged).
+        Affects nothing else: no gaps, maturity, transitions, ledger content,
+        Evidence, transcript, or scoring."""
+        if action not in CRITICALITY_ACTIONS:
+            raise ValueError(f"unknown criticality action: {action!r}")
+        if action == CRITICALITY_ACTION_CONFIRMED:
+            if category not in CONFIRMABLE_CRITICALITY_CATEGORIES:
+                raise ValueError(
+                    "a confirmed criticality must carry exactly one of the "
+                    f"confirmable categories, not {category!r} "
+                    "(confirmed + UNDETERMINED is invalid; use the deferred "
+                    "action for uncertainty)")
+            if not (rationale_verbatim or "").strip():
+                raise ValueError(
+                    "a confirmed (non-UNDETERMINED) criticality requires a "
+                    "non-empty verbatim rationale")
+            if not (rationale_source in _RATIONALE_SOURCE_FIXED
+                    or (isinstance(rationale_source, str)
+                        and rationale_source.startswith(_RATIONALE_SOURCE_REUSED_PREFIX)
+                        and len(rationale_source) > len(_RATIONALE_SOURCE_REUSED_PREFIX))):
+                raise ValueError(
+                    f"invalid rationale_source: {rationale_source!r}")
+        else:  # deferred — carries no category and no rationale (§4/§6.1)
+            if category is not None:
+                raise ValueError(
+                    "a deferred criticality action carries no category")
+            rationale_verbatim = None
+            rationale_source = None
+        record = CriticalityConfirmation(
+            confirmation_id=len(self.criticality_confirmations) + 1,
+            requirement_id=requirement_id, action=action, category=category,
+            rationale_verbatim=rationale_verbatim,
+            rationale_source=rationale_source, iteration=iteration,
+        )
+        self.criticality_confirmations.append(record)
+        return record
+
+    def current_criticality_confirmation(self, requirement_id):
+        """Current lookup (contract §6.2): the latest recorded explicit action
+        for requirement_id, or None. Later actions govern by append order;
+        earlier records remain retained for in-session traceability."""
+        latest = None
+        for record in self.criticality_confirmations:
+            if record.requirement_id == requirement_id:
+                latest = record
+        return latest
 
     def has_unresolved_contradiction(self, gap_context):
         """True if any record in the given gap_context carries an (unresolved)

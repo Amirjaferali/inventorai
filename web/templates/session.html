@@ -305,6 +305,53 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
 </div>
 {% endif %}
 
+{# Workstream 4 (contract §7): summary-first structured criticality step on
+   the completion-stage surface. Plain language only — no raw category,
+   authority, provenance, or requirement-id token renders. One contextually
+   supported item at a time; deferral is always available and changes nothing
+   else; skipping the step entirely changes nothing. #}
+{% if criticality_step %}
+{% if criticality_step.stage == 'correction' %}
+<div class="gap-guidance" style="margin-top:18px">
+  <div class="gap-guidance-heading">Tell me in your own words</div>
+  <div class="gap-guidance-text">Describe what should change or what is missing, and it will be used to update the picture of your idea.</div>
+</div>
+<form method="POST" action="/session/{{ sid }}">
+  <textarea name="response" rows="5" placeholder="Describe the change or the missing part in your own words..."></textarea>
+  <br>
+  <button type="submit">Submit</button>
+</form>
+{% elif criticality_step.stage == 'clarify' %}
+<div class="gap-guidance" style="margin-top:18px">
+  <div class="gap-guidance-heading">{{ criticality_step.clarification }}</div>
+  <div class="gap-guidance-text" style="margin-bottom:8px"><strong>{{ criticality_step.statement }}</strong></div>
+  <form method="POST" action="/session/{{ sid }}">
+    <input type="hidden" name="criticality_action" value="clarify_choice">
+    <input type="hidden" name="focus_token" value="{{ criticality_step.focus_token }}">
+    {% for value, label in criticality_step.choices %}
+    <label style="display:block;margin:5px 0"><input type="radio" name="category_choice" value="{{ value }}" {% if loop.first %}checked{% endif %}> {{ label }}</label>
+    {% endfor %}
+    <p style="font-size:13px;color:#555;margin:10px 0 4px 0">Your reason, in your own words (already filled in from what you said &mdash; keep it or edit it):</p>
+    <textarea name="rationale" rows="3">{{ criticality_step.proposed_rationale }}</textarea>
+    <br>
+    <button type="submit">Save this</button>
+  </form>
+</div>
+{% else %}
+<div class="gap-guidance" style="margin-top:18px">
+  <div class="gap-guidance-heading">{{ criticality_step.summary_lead }}</div>
+  <div class="gap-guidance-text" style="margin-bottom:10px">You said: &ldquo;{{ criticality_step.you_said }}&rdquo;</div>
+  <div class="gap-guidance-text" style="margin-bottom:6px">Is that correct?</div>
+  <form method="POST" action="/session/{{ sid }}">
+    <input type="hidden" name="focus_token" value="{{ criticality_step.focus_token }}">
+    {% for value, label in criticality_step.summary_actions %}
+    <button type="submit" name="criticality_action" value="{{ value }}" style="margin:4px 6px 0 0">{{ label }}</button>
+    {% endfor %}
+  </form>
+</div>
+{% endif %}
+{% endif %}
+
 <p><a href="/">Start a new idea</a></p>
 {% endif %}
 

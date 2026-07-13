@@ -7,7 +7,15 @@ import re
 import uuid
 from flask import Flask, request, redirect, url_for, render_template
 from engine.domain_rules import infer_domain
-from engine.idea_state import IdeaState, SuccessCriterion
+from engine.idea_state import (
+    IdeaState, SuccessCriterion,
+    CRITICALITY_FEASIBILITY_THREATENING, CRITICALITY_VALUE_ENHANCING,
+    CRITICALITY_REFINEMENT, CRITICALITY_ACTION_CONFIRMED,
+    CRITICALITY_ACTION_DEFERRED,
+)
+# Workstream 4 (structured criticality): the same pure landscape derivation
+# that feeds Section 13, used read-only to select the confirmation focus.
+from engine.requirement_landscape import derive_requirement_landscape
 from engine.progression_loop import (
     run_iteration, select_next_gap, get_question, get_display_question,
 )
@@ -67,6 +75,171 @@ _NON_ANSWER_ACK = {
     "specialist_requested": "Recorded that specialist input is needed. No technical answer has been assumed.",
     "evidence_requested": "Recorded that evidence is needed. No evidence or result has been recorded.",
 }
+
+# --- Workstream 4: structured criticality confirmation flow -------------------
+# (docs/governance/STRUCTURED_CRITICALITY_CAPTURE_INCREMENT_CONTRACT.md §7;
+# owner GREEN authorization.) A lightweight, summary-first step on the existing
+# completion-stage session surface — no new route. One contextually supported
+# requirement at a time (grouped confirmation is NOT implemented, per the
+# owner's deliberate minimum-risk restriction). The server re-derives the
+# current focus from authoritative session state on every request and never
+# trusts a browser-supplied target: stale, mismatched, or manipulated
+# submissions are rejected with NOTHING stored. All inventor-facing wording is
+# plain language — no raw category, authority, provenance, or requirement-id
+# token ever renders.
+import hashlib as _crit_hashlib
+
+CRITICALITY_SUMMARY_LEAD = "This is what I understood from your explanation:"
+CRITICALITY_CLARIFICATION = (
+    "Would the idea still achieve its purpose if this part changed?")
+# Exact owner-mandated plain-language choices and their internal mapping. The
+# mapping happens server-side only; the raw category never reaches the page.
+CRITICALITY_CHOICES = (
+    ("essential",  "The idea may not work without this"),
+    ("value",      "The idea would still work, but this adds important value"),
+    ("refinement", "This mainly improves or refines the idea"),
+    ("unsure",     "I am not sure yet"),
+)
+_CRITICALITY_CHOICE_CATEGORY = {
+    "essential":  CRITICALITY_FEASIBILITY_THREATENING,
+    "value":      CRITICALITY_VALUE_ENHANCING,
+    "refinement": CRITICALITY_REFINEMENT,
+}
+# Exact owner-mandated five lightweight actions (contract §7.2).
+CRITICALITY_SUMMARY_ACTIONS = (
+    ("summary_correct", "Yes, that is correct"),
+    ("summary_change",  "Change this part"),
+    ("summary_missing", "Something is missing"),
+    ("summary_unsure",  "I am not sure yet"),
+    ("summary_later",   "Decide later"),
+)
+_CRITICALITY_SUMMARY_VALUES = {v for v, _ in CRITICALITY_SUMMARY_ACTIONS}
+
+
+def _criticality_focus(state):
+    """The single current focus: the first landscape requirement, in the
+    stable derivation order, that (a) has understanding context — its primary
+    anchor is an inventor ledger record with verbatim content — and (b) has
+    no recorded confirmation/deferral yet. Requirements without understanding
+    context are never offered for classification (contract §7.1): they keep
+    the untouched never-interacted default."""
+    landscape = derive_requirement_landscape(state)
+    for req in landscape.requirements:
+        if state.current_criticality_confirmation(req.requirement_id):
+            continue
+        if req.primary_anchor.anchor_kind != "assertion":
+            continue
+        record = next(
+            (a for a in state.assertions
+             if a.record_id == req.primary_anchor.anchor_reference), None)
+        if record is not None and (record.content or "").strip():
+            return req, record
+    return None, None
+
+
+def _criticality_focus_token(sid, requirement_id):
+    """Opaque per-focus token: lets the server detect a submission rendered
+    against a different (stale) focus without ever exposing the raw
+    requirement id in the page."""
+    digest = _crit_hashlib.sha256(
+        ("ws4:" + sid + ":" + requirement_id).encode("utf-8")).hexdigest()
+    return digest[:16]
+
+
+def _criticality_step_context(entry, state, sid):
+    """Read-only render context for the completion-stage block, or None when
+    the step does not apply (journey not complete, or no contextually
+    supported unconfirmed requirement remains). Mutates nothing."""
+    if state.maturity_level < 2 or state.get_open_gaps():
+        return None
+    if entry.get("criticality_correction"):
+        return {"stage": "correction"}
+    req, record = _criticality_focus(state)
+    if req is None:
+        return None
+    stage_state = entry.get("criticality_stage") or {}
+    stage = ("clarify"
+             if stage_state.get("requirement_id") == req.requirement_id
+             else "summary")
+    return {
+        "stage": stage,
+        "summary_lead": CRITICALITY_SUMMARY_LEAD,
+        "statement": req.statement,
+        "you_said": record.content,
+        "clarification": CRITICALITY_CLARIFICATION,
+        "choices": CRITICALITY_CHOICES,
+        "summary_actions": CRITICALITY_SUMMARY_ACTIONS,
+        "proposed_rationale": record.content,
+        "focus_token": _criticality_focus_token(sid, req.requirement_id),
+    }
+
+
+def _handle_criticality_action(entry, state, sid):
+    """POST branch for the structured criticality actions. Never calls
+    run_iteration; never touches gaps, maturity, the ledger, the transcript,
+    scoring, or any unrelated state. Every rejection returns HTTP 400 with
+    NOTHING stored."""
+    def _reject():
+        return ("This confirmation step is no longer current. "
+                "No change was made.", 400)
+
+    crit_action = (request.form.get("criticality_action") or "").strip()
+    # Server-side focus protection (owner rule 5): re-derive the authoritative
+    # focus and require the rendered token to match it.
+    req, record = _criticality_focus(state)
+    if req is None:
+        return _reject()
+    if request.form.get("focus_token", "") != \
+            _criticality_focus_token(sid, req.requirement_id):
+        return _reject()
+
+    if crit_action in _CRITICALITY_SUMMARY_VALUES:
+        entry.pop("criticality_stage", None)
+        if crit_action == "summary_correct":
+            # Understanding confirmed — advance to the single clarification.
+            # No criticality is stored by this action (no silent adoption).
+            entry["criticality_stage"] = {"requirement_id": req.requirement_id}
+        elif crit_action in ("summary_unsure", "summary_later"):
+            state.record_criticality_confirmation(
+                requirement_id=req.requirement_id,
+                action=CRITICALITY_ACTION_DEFERRED,
+                iteration=state.iteration)
+        else:
+            # Change this part / Something is missing: store nothing; return
+            # the inventor to the existing free-text answer path (owner rule 6).
+            entry["criticality_correction"] = True
+        return redirect(url_for("show_session", sid=sid))
+
+    if crit_action == "clarify_choice":
+        if (entry.get("criticality_stage") or {}).get("requirement_id") \
+                != req.requirement_id:
+            return _reject()
+        choice = (request.form.get("category_choice") or "").strip()
+        if choice == "unsure":
+            entry.pop("criticality_stage", None)
+            state.record_criticality_confirmation(
+                requirement_id=req.requirement_id,
+                action=CRITICALITY_ACTION_DEFERRED,
+                iteration=state.iteration)
+            return redirect(url_for("show_session", sid=sid))
+        category = _CRITICALITY_CHOICE_CATEGORY.get(choice)
+        rationale = request.form.get("rationale", "")
+        if category is None or not rationale.strip():
+            return _reject()
+        source = ("reused_statement:" + record.record_id
+                  if rationale == record.content else "inventor_edited")
+        try:
+            state.record_criticality_confirmation(
+                requirement_id=req.requirement_id,
+                action=CRITICALITY_ACTION_CONFIRMED, category=category,
+                rationale_verbatim=rationale, rationale_source=source,
+                iteration=state.iteration)
+        except ValueError:
+            return _reject()
+        entry.pop("criticality_stage", None)
+        return redirect(url_for("show_session", sid=sid))
+
+    return _reject()
 
 # Option B product-boundary enforcement (DOMAIN_SCOPE_OWNER_RESOLUTION_OPTION_B).
 # Current generic product-runtime activation is limited to electronics/electrical.
@@ -379,6 +552,10 @@ def show_session(sid):
     return render_template("session.html",
         sid=sid,
         state=state,
+        # Workstream 4: read-only render context for the completion-stage
+        # structured criticality step (None while the journey is in progress
+        # or when no contextually supported unconfirmed requirement remains).
+        criticality_step=_criticality_step_context(entry, state, sid),
         next_development_step=next_development_step,
         question=question,
         open_gaps=open_gaps,
@@ -531,6 +708,14 @@ def submit_answer(sid):
     if not entry:
         return redirect(url_for("index"))
     state = entry["state"]
+    # Workstream 4: the structured criticality actions are handled by their
+    # own guarded branch (additive; the six frozen dispositions below are
+    # untouched). Any OTHER post leaves the criticality step, so its transient
+    # UI stage is cleared — recorded confirmations are unaffected.
+    if request.form.get("criticality_action") is not None:
+        return _handle_criticality_action(entry, state, sid)
+    entry.pop("criticality_stage", None)
+    entry.pop("criticality_correction", None)
     # Increment 1A: resolve the explicit structured action. Legacy-compatibility
     # rule (chosen, explicit): a submission with NO `action` field is treated as
     # `answered` — exactly the pre-1A behavior, where a non-empty `response` is
