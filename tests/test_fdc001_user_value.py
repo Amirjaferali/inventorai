@@ -168,7 +168,7 @@ def test_next_steps_synthesized_from_state_only():
     actions = " ".join(i["action"] for i in items)
     # validation step (REASONED -> Demonstrated) and the stated unknown, both
     # traceable to existing state via the basis field.
-    assert any(i["basis"] == "evidence_quality:REASONED" for i in items)
+    assert any(i["basis"] == "evidence_quality:Reasoned" for i in items)
     assert any(i["basis"].startswith("acknowledged_unknown:") for i in items)
     # Phase 3B-2a: the unknown next step references the registry (See UNK-00N)
     # instead of repeating the full verbatim; the verbatim is no longer in Section 10.
@@ -183,7 +183,7 @@ def test_next_steps_reference_open_gaps():
     s.domain_signal = "electronics_electrical"; s.maturity_level = 2
     s.gaps.append(Gap(gap_type=EXPERTISE_GAP_AWARENESS, status=OPEN, opened_at=1))
     items = assemble_deliverable(s)["section_10_recommended_next_steps"]["items"]
-    assert any(i["basis"] == f"open_gap:{EXPERTISE_GAP_AWARENESS}" for i in items)
+    assert any(i["basis"] == "open_gap:Expertise-Gap Awareness" for i in items)
 
 
 def test_next_steps_no_duplicate_actions_from_duplicate_evidence():

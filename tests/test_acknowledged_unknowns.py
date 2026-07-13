@@ -206,7 +206,7 @@ class TestFDC001:
         u = pkg["section_5_assumptions"]["inventor_unknowns"]
         assert len(u) == 1
         assert u[0]["source"] == "inventor_stated"
-        assert u[0]["gap_context"] == PHYSICAL_FEASIBILITY
+        assert u[0]["gap_context"] == "Physical Feasibility"
 
     def test_s5_inferred_separate_from_stated(self):
         from engine.deliverable_assembler import assemble_deliverable

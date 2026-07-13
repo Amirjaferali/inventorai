@@ -113,7 +113,7 @@ def test_groups_render_in_fixed_order_and_cover_every_step():
 
 def test_confidence_stays_undetermined():
     vp = assemble_deliverable(_multi_step_state())["section_14_validation_plan"]
-    assert all(st["confidence"] == "UNDETERMINED" for st in vp["steps"])
+    assert all(st["confidence"] == "Confidence undetermined" for st in vp["steps"])
 
 
 def test_intro_and_advisory_framing_preserved():
@@ -135,7 +135,9 @@ def test_section_14_data_unchanged_and_contract_intact():
     pkg = assemble_deliverable(_multi_step_state())
     vp = pkg["section_14_validation_plan"]
     # data-shape keys unchanged (presentation-only change did not touch the package)
-    assert set(vp) == {"title", "outcome", "steps", "blocked_items", "empty_statement"}
+    assert set(vp) == {"title", "outcome", "steps", "blocked_items",
+                       "validation_plan_source", "validation_step_total",
+                       "blocked_item_total", "empty_statement"}
     assert len([k for k in pkg if k.startswith("section_")]) == 14
     # sections 10/11/13 still present and untouched by this render change
     assert "section_10_recommended_next_steps" in pkg

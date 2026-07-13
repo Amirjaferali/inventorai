@@ -72,7 +72,7 @@ def test_registry_entry_shape():
     assert e["unknown_id"] == "UNK-001"
     assert e["label"] == "Acknowledged Unknown 1"
     assert e["content"] == UNK1                      # full verbatim carried once
-    assert e["gap_context"] == "ASSUMPTION_INVENTORY"
+    assert e["gap_context"] == "Assumption Inventory"
     assert e["source"] == "inventor_stated"
     assert e["category_basis"] == "reasoned"
 
@@ -97,7 +97,7 @@ def test_section5_shows_full_text_with_unknown_id():
     assert [u["unknown_id"] for u in unknowns] == ["UNK-001", "UNK-002"]
     assert unknowns[0]["statement"] == UNK1          # full text still shown here
     assert unknowns[0]["iteration"] == 2             # preserved
-    assert unknowns[0]["gap_context"] == "ASSUMPTION_INVENTORY"
+    assert unknowns[0]["gap_context"] == "Assumption Inventory"
 
 
 # --- section 8 references (dedup) -------------------------------------------
@@ -120,7 +120,7 @@ def test_section8_preserves_existing_item_id_and_provenance():
              if i.get("type") == "acknowledged_unknown"]
     assert items[0]["id"] == "UNKNOWN-002"           # existing iteration-based id preserved
     assert items[0]["iteration"] == 2
-    assert items[0]["gap_context"] == "ASSUMPTION_INVENTORY"
+    assert items[0]["gap_context"] == "Assumption Inventory"
     assert items[0]["source"] == "inventor_stated"
     assert pkg["section_8_unresolved_items"]["acknowledged_unknown_count"] == 2
 

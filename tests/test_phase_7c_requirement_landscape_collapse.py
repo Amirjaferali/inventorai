@@ -99,7 +99,7 @@ def test_every_statement_present_in_full_untruncated():
 def test_criticality_authority_and_metadata_visible():
     _, body = _render(_state_identical())
     sec = _section13(body)
-    assert "Criticality:</strong> UNDETERMINED (system-derived)" in sec
+    assert "Criticality:</strong> Not yet determined (assigned automatically by the system; not yet reviewed)" in sec
     assert "<strong>Provenance:</strong>" in sec
     assert "<strong>Status:</strong>" in sec
     assert "<strong>Resolving action:</strong>" in sec
@@ -126,12 +126,13 @@ def test_entries_with_differing_metadata_render_separately():
 def test_section13_data_and_requirements_unchanged():
     state = _state_identical()
     rl = assemble_deliverable(state)["section_13_requirement_landscape"]
-    assert set(rl) == {"title", "requirements", "total", "empty_statement",
+    assert set(rl) == {"title", "requirements", "total", "count_basis",
+                       "count_relationship", "empty_statement",
                        "risks", "has_risks", "risk_disclaimer"}
     assert len(rl["requirements"]) == 5          # collapse is display-only
     for r in rl["requirements"]:
-        assert r["criticality"] == "UNDETERMINED"
-        assert r["criticality_authority"] == "system-derived"
+        assert r["criticality"] == "Not yet determined"
+        assert r["criticality_authority"] == "assigned automatically by the system; not yet reviewed"
 
 
 def test_no_forbidden_wording_introduced_by_collapse():

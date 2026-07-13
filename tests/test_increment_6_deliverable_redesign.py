@@ -237,7 +237,7 @@ def test_label_preservation_stage3_evidence_quality_and_validation_separated():
     for field in ("quality", "quality_label", "validation_status", "validation_label"):
         assert field in ev, f"evidence view missing {field}"
     # REASONED quality must NOT be presented as validated.
-    assert ev["quality"] == REASONED
+    assert ev["quality"] == "Reasoned"
     assert ev["validation_status"] == "UNVALIDATED"
     assert "not validated" in ev["validation_label"].lower()
 

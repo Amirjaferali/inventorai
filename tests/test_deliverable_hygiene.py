@@ -44,6 +44,7 @@ import pytest
 
 from web.app import app, SESSION_STORE, DOMAIN_CONFIRM_VALUE
 from engine.deliverable_assembler import assemble_deliverable
+from engine.idea_state import IdeaState, Gap, OPEN
 from engine.safety_signal import derive_inventor_stated_safety_signals
 
 # --------------------------------------------------------------------------
@@ -52,6 +53,29 @@ from engine.safety_signal import derive_inventor_stated_safety_signals
 SECTION_4_COUNT_BASIS = "evidence_derived_requirements"
 SECTION_13_COUNT_BASIS = "requirement_landscape"
 SECTION_14_PLAN_SOURCE = "requirement_landscape"
+
+# --------------------------------------------------------------------------
+# Exact inventor-facing public values for the Section 12 serialization
+# boundary (Finding F1 corrective contract). The six gap-type values are the
+# already-committed inventor-facing gap labels; the five provider values are
+# the owner-approved public provider wordings. These are asserted byte-exact
+# (never by absence scanning alone) so a wrong or partial mapping cannot pass.
+# --------------------------------------------------------------------------
+SECTION_12_GAP_PUBLIC = {
+    "PHYSICAL_FEASIBILITY":    "Physical Feasibility",
+    "BOUNDARY_AMBIGUITY":      "Boundary and Scope",
+    "MECHANISM_COMPLETENESS":  "Mechanism Completeness",
+    "PROBLEM_MECHANISM_FIT":   "Problem–Mechanism Fit",
+    "ASSUMPTION_INVENTORY":    "Assumption Inventory",
+    "EXPERTISE_GAP_AWARENESS": "Expertise-Gap Awareness",
+}
+SECTION_12_PROVIDER_PUBLIC = {
+    "OWNER_INPUT":        "You (the inventor)",
+    "SYSTEM_ANALYSIS":    "System analysis",
+    "SPECIALIST_INPUT":   "A relevant technical specialist",
+    "EMPIRICAL_EVIDENCE": "A measurement, test, or other empirical evidence",
+    "UNDETERMINED":       "Not yet determined",
+}
 
 # --------------------------------------------------------------------------
 # Prohibited Tokens (contract §8.1). Nine pinned tokens first, then the
@@ -86,6 +110,14 @@ PROHIBITED_TOKENS = (
     "SYSTEM_DERIVABLE",
     "SPECIALIST_REQUIRED",
     "EMPIRICAL_EVIDENCE_REQUIRED",
+    # disclosed additions (Finding F1 corrective contract) — the remaining raw
+    # suggested-provider vocabulary values (same owner-approved five-value
+    # class as the pinned exemplar UNDETERMINED; engine-resident provider
+    # grounding in engine.idea_development_outputs)
+    "OWNER_INPUT",
+    "SYSTEM_ANALYSIS",
+    "SPECIALIST_INPUT",
+    "EMPIRICAL_EVIDENCE",
 )
 
 _TOKEN_RES = {
@@ -125,6 +157,10 @@ EXEMPT_VERBATIM_PATHS = (
     ("section_9_stage3_reasoning", "items", "*", "evidence", "*", "content"),
     ("section_11_prototype_test_plan", "items", "*", "traceability", "content"),
     ("section_11_prototype_test_plan", "items", "*", "success_criterion"),
+    # Disclosed candidate verbatim path (Finding F1 corrective contract):
+    # pending-evidence Section 12 payloads carry the record's verbatim content
+    # as evidence_needed.
+    ("section_12_next_development_step", "evidence_needed"),
     ("section_13_requirement_landscape", "requirements", "*", "statement"),
     ("section_13_requirement_landscape", "requirements", "*", "resolving_action"),
     ("section_14_validation_plan", "steps", "*", "statement"),
@@ -252,6 +288,31 @@ def positive_journey():
             return None, None
         return "answered", POSITIVE_STATEMENT
     inputs, state, package, html = _run_journey(IDEA_POSITIVE, answers, 1)
+    return {"inputs": inputs, "state": state, "package": package, "html": html}
+
+
+@pytest.fixture(scope="module")
+def no_answer_journey():
+    """No-substantive-answer journey (Finding F1 corrective contract): the
+    session is started with the WS1 idea and NO owner response of any kind is
+    submitted, so no ledger record exists and the shared next-development-step
+    derivation reaches its open-gap path — the state in which the unpatched
+    Section 12 exports a raw gap enum and the raw UNDETERMINED provider."""
+    def answers(i):
+        return None, None
+    inputs, state, package, html = _run_journey(IDEA_WS1, answers, 1)
+    return {"inputs": inputs, "state": state, "package": package, "html": html}
+
+
+@pytest.fixture(scope="module")
+def unknown_action_journey():
+    """Unknown-action journey (Finding F1 corrective contract): the owner takes
+    exactly one structured 'unknown' action and never answers, so the only
+    ledger record is a non-answer disposition and the shared derivation again
+    reaches its open-gap path through the real committed routes."""
+    def answers(i):
+        return "unknown", UNKNOWN_TEXT
+    inputs, state, package, html = _run_journey(IDEA_WS1, answers, 1)
     return {"inputs": inputs, "state": state, "package": package, "html": html}
 
 
@@ -410,6 +471,127 @@ def test_defect3_labels_alongside_raw_values_insufficient(ws1_journey):
         "section_14 carries human labels ALONGSIDE raw machine tokens; the "
         "raw tokens are still exported, which owner Decision 1 rules "
         "insufficient (contract §5.1): %r" % hits)
+
+
+# --------------------------------------------------------------------------
+# Finding F1 corrective contract — Section 12 serialization-boundary coverage.
+# Exact rendered-field extraction for the deliverable HTML: the template
+# renders the suggested provider as a labelled field-value pair.
+# --------------------------------------------------------------------------
+_HTML_PROVIDER_RE = re.compile(
+    r'<div class="field-label">Suggested provider</div>\s*'
+    r'<div class="field-value">([^<]*)</div>')
+
+
+def _html_provider_value(html):
+    """The exact rendered Suggested-provider field value, or None when the
+    deliverable HTML renders no suggested provider."""
+    m = _HTML_PROVIDER_RE.search(html)
+    return m.group(1) if m else None
+
+
+def test_defect3_no_answer_state_json_token_absence(no_answer_journey):
+    """RED (F1): the no-substantive-answer state must export no Prohibited
+    Token in any non-exempt value of the Final Deliverable JSON. On the
+    unpatched base, Section 12 exports the raw open-gap enum as reference_id
+    and the raw UNDETERMINED provider token as suggested_provider."""
+    hits = _prohibited_token_hits(no_answer_journey["package"],
+                                  no_answer_journey["inputs"])
+    assert hits == [], (
+        "Raw internal machine-state values are exported in the no-answer "
+        "state Deliverable JSON (contract §8.2; Finding F1): %r" % hits)
+
+
+def test_defect3_no_answer_state_html_token_absence(no_answer_journey):
+    """RED (F1): the rendered no-substantive-answer Deliverable HTML must
+    contain no Prohibited Token. The fixture's only inventor input is the
+    idea text, which contains no Prohibited Token, so a plain boundary scan
+    is exact here."""
+    html = no_answer_journey["html"]
+    hits = [t for t, rx in _TOKEN_RES.items() if rx.search(html)]
+    assert hits == [], (
+        "Raw internal machine-state values are rendered in the no-answer "
+        "state Deliverable HTML (contract §8.4; Finding F1): %r" % hits)
+
+
+def test_defect3_unknown_action_state_token_absence(unknown_action_journey):
+    """RED (F1): the unknown-action state must export no Prohibited Token in
+    the Final Deliverable — neither in any non-exempt JSON value nor in the
+    rendered HTML. The fixture's inventor inputs contain no Prohibited Token,
+    so the HTML boundary scan is exact here."""
+    json_hits = _prohibited_token_hits(unknown_action_journey["package"],
+                                       unknown_action_journey["inputs"])
+    html = unknown_action_journey["html"]
+    html_hits = [t for t, rx in _TOKEN_RES.items() if rx.search(html)]
+    assert json_hits == [] and html_hits == [], (
+        "Raw internal machine-state values are exported in the unknown-action "
+        "state Deliverable (contract §8.2/§8.4; Finding F1): JSON=%r HTML=%r"
+        % (json_hits, html_hits))
+
+
+def test_defect3_section12_open_gap_exact_public_values(no_answer_journey):
+    """RED (F1, exact values): the open-gap Section 12 payload must carry the
+    exact committed public gap label as reference_id and the exact public
+    provider wording as suggested_provider — verified byte-exact in the JSON
+    package AND in the rendered HTML field, not by absence scanning."""
+    s12 = no_answer_journey["package"]["section_12_next_development_step"]
+    assert s12["actionable"] is True and s12["issue_type"] == "open_gap", (
+        "fixture integrity: the no-answer journey must reach the open-gap "
+        "next-development-step payload — the fixture no longer exercises the "
+        "state under test")
+    assert s12["reference_id"] == SECTION_12_GAP_PUBLIC["MECHANISM_COMPLETENESS"], (
+        "Section 12 open-gap reference_id is not the exact committed public "
+        "gap label (Finding F1): %r" % (s12["reference_id"],))
+    assert s12["suggested_provider"] == SECTION_12_PROVIDER_PUBLIC["UNDETERMINED"], (
+        "Section 12 open-gap suggested_provider is not the exact public "
+        "provider wording (Finding F1): %r" % (s12["suggested_provider"],))
+    rendered = _html_provider_value(no_answer_journey["html"])
+    assert rendered == SECTION_12_PROVIDER_PUBLIC["UNDETERMINED"], (
+        "The rendered HTML Suggested-provider field is not the exact public "
+        "provider wording (Finding F1): %r" % (rendered,))
+
+
+def test_defect3_section12_all_gap_types_public_mapping():
+    """RED (F1, exact values): for each of the six committed gap types, the
+    real assembler's open-gap Section 12 payload must carry exactly the
+    committed inventor-facing gap label and exactly the public UNDETERMINED
+    provider wording. Exercises the real assemble_deliverable path with a
+    minimal one-open-gap state per gap type."""
+    for raw, public in SECTION_12_GAP_PUBLIC.items():
+        state = IdeaState(idea_id="hygiene-f1-gap-mapping")
+        state.gaps.append(Gap(gap_type=raw, status=OPEN, opened_at=1))
+        s12 = assemble_deliverable(state)["section_12_next_development_step"]
+        assert s12["issue_type"] == "open_gap", (
+            "fixture integrity: a single open %s gap must reach the open-gap "
+            "payload" % raw)
+        assert s12["reference_id"] == public, (
+            "Section 12 reference_id for gap type %s is not the exact "
+            "committed public label (Finding F1): %r" % (raw, s12["reference_id"]))
+        assert s12["suggested_provider"] == SECTION_12_PROVIDER_PUBLIC["UNDETERMINED"], (
+            "Section 12 suggested_provider for gap type %s is not the exact "
+            "public wording (Finding F1): %r" % (raw, s12["suggested_provider"]))
+
+
+def test_defect3_section12_owner_input_public_value(ws1_journey):
+    """RED (F1, exact values): the owner-unvalidated Section 12 payload must
+    keep its rec_N reference id UNCHANGED while the OWNER_INPUT provider token
+    is exported as the exact public wording — verified byte-exact in the JSON
+    package AND in the rendered HTML field."""
+    s12 = ws1_journey["package"]["section_12_next_development_step"]
+    assert s12["actionable"] is True and s12["issue_type"] == "owner_unvalidated", (
+        "fixture integrity: the WS1 journey must reach the owner-unvalidated "
+        "next-development-step payload — the fixture no longer exercises the "
+        "state under test")
+    assert re.fullmatch(r"rec_\d+", s12["reference_id"] or ""), (
+        "Section 12 owner-unvalidated reference_id must remain the unchanged "
+        "rec_N record id (Finding F1): %r" % (s12["reference_id"],))
+    assert s12["suggested_provider"] == SECTION_12_PROVIDER_PUBLIC["OWNER_INPUT"], (
+        "Section 12 owner-unvalidated suggested_provider is not the exact "
+        "public wording (Finding F1): %r" % (s12["suggested_provider"],))
+    rendered = _html_provider_value(ws1_journey["html"])
+    assert rendered == SECTION_12_PROVIDER_PUBLIC["OWNER_INPUT"], (
+        "The rendered HTML Suggested-provider field is not the exact public "
+        "wording (Finding F1): %r" % (rendered,))
 
 
 # ==========================================================================

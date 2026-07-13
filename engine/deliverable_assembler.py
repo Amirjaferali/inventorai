@@ -75,6 +75,79 @@ _GAP_LABELS = {
     "EXPERTISE_GAP_AWARENESS": "Expertise-Gap Awareness",
 }
 
+# --- Workstream 3 deliverable hygiene: inventor-facing serialization boundary ---
+# Value-level transformations applied ONLY at Final Deliverable assembly
+# (contract DELIVERABLE_HYGIENE_INCREMENT_CONTRACT.md §9.6). Internal state,
+# dataclasses, enums, and every derivation are unchanged; raw values remain
+# available on the internal objects. No raw machine token is exported in the
+# inventor-facing package, and no compatibility field retains one.
+_QUALITY_PLAIN = {
+    ASSERTED:     "Asserted",
+    REASONED:     "Reasoned",
+    DEMONSTRATED: "Demonstrated",
+}
+_PROVENANCE_PUBLIC = {
+    LEGACY_UNSPECIFIED: "Not recorded (pre-provenance session)",
+}
+_RESOLUTION_STATUS_PUBLIC = {
+    "stated": "Stated by the inventor (not yet verified)",
+}
+_SOURCE_STATUS_PUBLIC = {
+    "recorded": "Recorded from your answers (not yet verified)",
+}
+_CRITICALITY_PUBLIC = {
+    "UNDETERMINED": "Not yet determined",
+}
+_CRITICALITY_AUTHORITY_PUBLIC = {
+    "system-derived": "assigned automatically by the system; not yet reviewed",
+}
+# Finding F1 correction: engine-resident inventor-facing wording for the five
+# owner-approved suggested-provider vocabulary values exported by the shared
+# next-development-step derivation (engine.idea_development_outputs). Applied
+# ONLY at the Section 12 serialization boundary; the derivation, the payload,
+# and every internal object keep the raw vocabulary unchanged.
+_PROVIDER_PUBLIC = {
+    "OWNER_INPUT":        "You (the inventor)",
+    "SYSTEM_ANALYSIS":    "System analysis",
+    "SPECIALIST_INPUT":   "A relevant technical specialist",
+    "EMPIRICAL_EVIDENCE": "A measurement, test, or other empirical evidence",
+    "UNDETERMINED":       "Not yet determined",
+}
+SECTION_4_COUNT_BASIS = "evidence_derived_requirements"
+SECTION_13_COUNT_BASIS = "requirement_landscape"
+SECTION_4_13_COUNT_RELATIONSHIP = {
+    "narrower_view": SECTION_4_COUNT_BASIS,
+    "broader_set": SECTION_13_COUNT_BASIS,
+    "relationship": (
+        "evidence_derived_requirements is a narrower, evidence-oriented view; "
+        "it is not the same collection as requirement_landscape and the two "
+        "totals are counted from different sets."),
+}
+
+
+def _plain_quality(q):
+    """Inventor-facing form of a raw evidence-quality constant."""
+    return _QUALITY_PLAIN.get(q, q)
+
+
+def _public_provenance(p):
+    """Inventor-facing form of a raw evidence-provenance value."""
+    return _PROVENANCE_PUBLIC.get(p, p)
+
+
+def _public_gap(gt):
+    """Inventor-facing form of a raw gap-type value (existing committed labels)."""
+    return _GAP_LABELS.get(gt, gt)
+
+
+def _public_provider(p):
+    """Inventor-facing form of a raw suggested-provider value (Finding F1).
+    The five known provider vocabulary values map to their fixed public
+    wording; any value outside the known vocabulary (including None) passes
+    through unchanged — no meaning is invented for an unknown value."""
+    return _PROVIDER_PUBLIC.get(p, p)
+
+
 _STAGE3_MISSING_EVIDENCE = (
     "No substantiated response captured for this area yet. "
     "It remains open for the inventor to address."
@@ -141,7 +214,7 @@ def assemble_deliverable(state: IdeaState) -> dict:
             "maturity_label":       _MATURITY_LABELS.get(state.maturity_level, "Unknown"),
             "direction":            getattr(state, "direction", None),
             "domain_signal":        getattr(state, "domain_signal", None),
-            "evidence_quality":     _overall_quality(state),
+            "evidence_quality":     _plain_quality(_overall_quality(state)),
             "idea_summary":          getattr(state, "idea_summary", None),  # R-007
             "deliverable_eligible": _eligible(state, open_gaps),
             # Increment 2: derived verified readiness, presented SEPARATELY from
@@ -193,9 +266,10 @@ def _s13(state):
         requirements.append({
             "statement":             r.statement,
             "provenance":            r.primary_anchor.display_label,
-            "status":                r.source_status,
-            "criticality":           r.criticality,
-            "criticality_authority": r.criticality_authority,
+            "status":                _SOURCE_STATUS_PUBLIC.get(r.source_status, r.source_status),
+            "criticality":           _CRITICALITY_PUBLIC.get(r.criticality, r.criticality),
+            "criticality_authority": _CRITICALITY_AUTHORITY_PUBLIC.get(
+                                         r.criticality_authority, r.criticality_authority),
             "criticality_rationale": r.criticality_rationale,
             "resolving_action":      (action.statement if action is not None else None),
             "supporting_references": [ref.display_label for ref in r.supporting_references],
@@ -205,6 +279,8 @@ def _s13(state):
         "title":           "Requirement Landscape",
         "requirements":    requirements,
         "total":           len(requirements),
+        "count_basis":     SECTION_13_COUNT_BASIS,
+        "count_relationship": SECTION_4_13_COUNT_RELATIONSHIP,
         "empty_statement": _REQUIREMENT_LANDSCAPE_EMPTY,
         "risks":           [],
         "has_risks":       bool(landscape.risks),
@@ -289,12 +365,13 @@ def _s14(state):
     for st in plan.steps:
         steps.append({
             "statement":            st.statement,
-            "responsibility":       st.responsibility,
+            "responsibility":       _RESPONSIBILITY_LABELS.get(st.responsibility,
+                                                               st.responsibility),
             "responsibility_label": _RESPONSIBILITY_LABELS.get(st.responsibility, ""),
             "evidence_category":    st.evidence_category,
             "closure_condition":    st.closure_condition,
             "provenance":           st.provenance.display_label,
-            "confidence":           st.confidence,
+            "confidence":           _CONFIDENCE_LABELS.get(st.confidence, st.confidence),
             "confidence_label":     _CONFIDENCE_LABELS.get(st.confidence, ""),
         })
     blocked_items = []
@@ -302,7 +379,8 @@ def _s14(state):
         blocked_items.append({
             "reason":               b.reason,
             "missing":              b.missing,
-            "responsibility":       b.responsibility,
+            "responsibility":       _RESPONSIBILITY_LABELS.get(b.responsibility,
+                                                               b.responsibility),
             "responsibility_label": _RESPONSIBILITY_LABELS.get(b.responsibility, ""),
             "provenance":           b.provenance.display_label,
         })
@@ -311,6 +389,9 @@ def _s14(state):
         "outcome":         plan.outcome,
         "steps":           steps,
         "blocked_items":   blocked_items,
+        "validation_plan_source": SECTION_13_COUNT_BASIS,
+        "validation_step_total":  len(steps),
+        "blocked_item_total":     len(blocked_items),
         "empty_statement": _VALIDATION_PLAN_EMPTY,
     }
 
@@ -339,12 +420,17 @@ def _s12(state):
     return {
         "actionable":            True,
         "issue_type":            payload.issue_type,
-        "reference_id":          payload.reference_id,
+        # Finding F1: serialization-boundary mapping only. The existing public
+        # gap mapping turns the six gap enums into their committed
+        # inventor-facing labels and passes every other reference id (rec_N,
+        # maturity_level_N) through unchanged; the provider mapping turns the
+        # five known provider vocabulary values into their public wording.
+        "reference_id":          _public_gap(payload.reference_id),
         "title":                 payload.title,
         "why_it_matters":        payload.why_it_matters,
         "next_action":           payload.next_action,
         "evidence_needed":       payload.evidence_needed,
-        "suggested_provider":    payload.suggested_provider,
+        "suggested_provider":    _public_provider(payload.suggested_provider),
         "sufficiency_condition": payload.sufficiency_condition,
         "unlock_condition":      payload.unlock_condition,
         "remaining_uncertainty": payload.remaining_uncertainty,
@@ -385,7 +471,7 @@ def _evidence_registry(state):
             "evidence_id": _EVIDENCE_PROBLEM_ID,
             "label": _EVIDENCE_PROBLEM_LABEL,
             "content": _txt(problem),
-            "provenance": getattr(problem, "provenance", LEGACY_UNSPECIFIED),
+            "provenance": _public_provenance(getattr(problem, "provenance", LEGACY_UNSPECIFIED)),
             "quality_label": _QUALITY_LABELS.get(getattr(problem, "quality", None), "Unknown"),
         })
     mech = getattr(state, "known_mechanism", None)
@@ -394,7 +480,7 @@ def _evidence_registry(state):
             "evidence_id": _EVIDENCE_MECHANISM_ID,
             "label": _EVIDENCE_MECHANISM_LABEL,
             "content": _txt(mech),
-            "provenance": getattr(mech, "provenance", LEGACY_UNSPECIFIED),
+            "provenance": _public_provenance(getattr(mech, "provenance", LEGACY_UNSPECIFIED)),
             "quality_label": _QUALITY_LABELS.get(getattr(mech, "quality", None), "Unknown"),
         })
     return reg
@@ -430,7 +516,7 @@ def _unknown_registry(state):
             "unknown_id": _unknown_id(i),
             "label": f"{_UNKNOWN_LABEL_PREFIX} {i + 1}",
             "content": getattr(u, "verbatim", None),
-            "gap_context": getattr(u, "gap_context", None),
+            "gap_context": _public_gap(getattr(u, "gap_context", None)),
             "category_basis": getattr(u, "category_basis", None),
             "source": "inventor_stated",
         })
@@ -465,11 +551,11 @@ def _s3(state, open_gaps):
         "capabilities_assessed": [{
             "capability_id":  cap,
             "maturity_level": state.maturity_level,
-            "overall_quality": _overall_quality(state),
+            "overall_quality": _plain_quality(_overall_quality(state)),
             "gaps_total":  len(state.gaps),
             "gaps_open":   len(open_gaps),
             "gaps_resolved": len([g for g in state.gaps if g.status == CLOSED]),
-            "gaps_detail": [{"gap_type": g.gap_type,
+            "gaps_detail": [{"gap_type": _public_gap(g.gap_type),
                              "gap_label": _GAP_LABELS.get(g.gap_type, g.gap_type),
                              "status": g.status,
                              "status_label": _STATUS_LABELS.get(g.status, g.status),
@@ -489,7 +575,8 @@ def _s4(state):
             "statement": f"See {_EVIDENCE_PROBLEM_ID} — {_EVIDENCE_PROBLEM_LABEL}",
             "evidence_id": _EVIDENCE_PROBLEM_ID,
             "source": "session_evidence",
-            "evidence_quality": problem.quality, "resolution_status": "stated",
+            "evidence_quality": _plain_quality(problem.quality),
+            "resolution_status": _RESOLUTION_STATUS_PUBLIC["stated"],
             "note": "Derived from inventor-stated problem evidence. Verification required."})
         n += 1
     if getattr(state, "known_mechanism", None):
@@ -499,17 +586,19 @@ def _s4(state):
             "statement": f"See {_EVIDENCE_MECHANISM_ID} — {_EVIDENCE_MECHANISM_LABEL}",
             "evidence_id": _EVIDENCE_MECHANISM_ID,
             "source": "session_evidence",
-            "evidence_quality": state.known_mechanism.quality, "resolution_status": "stated",
+            "evidence_quality": _plain_quality(state.known_mechanism.quality),
+            "resolution_status": _RESOLUTION_STATUS_PUBLIC["stated"],
             "note": "Component-level specification required before implementation."})
         n += 1
     for g in state.gaps:
         if g.status == CLOSED:
             reqs.append({"id": f"REQ-{n:03d}", "type": "constraint",
                 "statement": f"{_GAP_LABELS.get(g.gap_type, g.gap_type)} addressed",
-                "source": "gap_resolution", "evidence_quality": REASONED,
+                "source": "gap_resolution", "evidence_quality": _plain_quality(REASONED),
                 "resolution_status": "resolved", "note": None})
             n += 1
     return {"requirements": reqs, "total": len(reqs),
+            "count_basis": SECTION_4_COUNT_BASIS,
             "note": "Requirements derived from session evidence in MVP."}
 
 def _s5(state):
@@ -523,7 +612,7 @@ def _s5(state):
             "validation_approach": "Prototype or simulation required" if q == ASSERTED
                                    else "Component-level testing to confirm operating principle",
             "risk_if_invalid": "Session assessment may not reflect true feasibility",
-            "basis": f"{q} evidence"})
+            "basis": f"{_plain_quality(q)} evidence"})
         n += 1
     for g in state.gaps:
         if g.status == OPEN:
@@ -538,7 +627,7 @@ def _s5(state):
     # it. Full verbatim is unchanged and still shown in this primary location.
     inventor_unknowns = [
         {"unknown_id": _unknown_id(i),
-         "iteration": u.iteration, "gap_context": u.gap_context,
+         "iteration": u.iteration, "gap_context": _public_gap(u.gap_context),
          "statement": u.verbatim, "source": "inventor_stated"}
         for i, u in enumerate(getattr(state, "acknowledged_unknowns", []))
     ]
@@ -562,14 +651,14 @@ def _s6(state, open_gaps):
     q = _overall_quality(state)
     if q == ASSERTED:
         risks.append({"id": f"RISK-{n:03d}", "category": "evidence_quality",
-            "description": "All evidence is ASSERTED (inventor-stated, unvalidated).",
+            "description": "All evidence is asserted (inventor-stated, unvalidated).",
             "severity": "high",
             "residual_risk": "Technical claims may not reflect actual feasibility.",
             "status": "open"})
         n += 1
     elif q == REASONED:
         risks.append({"id": f"RISK-{n:03d}", "category": "evidence_quality",
-            "description": "Evidence is REASONED (substantiated but not demonstrated).",
+            "description": "Evidence is reasoned (substantiated but not demonstrated).",
             "severity": "low",
             "residual_risk": "Prototype validation recommended before detailed design.",
             "status": "open"})
@@ -590,7 +679,7 @@ def _s7(state, open_gaps):
     key = (min(state.maturity_level, 2), len(open_gaps) > 0)
     verdict, rationale = _RECOMMENDATION_A.get(key,
         ("REVISE", "Insufficient evidence to recommend proceeding."))
-    cat_d = [{"item_type": "open_gap", "gap_type": g.gap_type,
+    cat_d = [{"item_type": "open_gap", "gap_type": _public_gap(g.gap_type),
               "gap_label": _GAP_LABELS.get(g.gap_type, g.gap_type),
               "action": f"Provide substantive evidence for {_GAP_LABELS.get(g.gap_type, g.gap_type).lower()}",
               "priority": "high" if g.iterations_open >= 2 else "normal"}
@@ -628,7 +717,7 @@ def _s7(state, open_gaps):
         "category_a_proceed_revise_block": {"verdict": verdict, "rationale": rationale,
             "basis": {"maturity_level": state.maturity_level,
                       "open_gap_count": len(open_gaps),
-                      "evidence_quality": _overall_quality(state),
+                      "evidence_quality": _plain_quality(_overall_quality(state)),
                       "derived_verified_ready": derived_ready}},
         "category_b_material_selection": {"status": "DEFERRED",
             "note": "Requires Options Database (ODS-001). Not in the current MVP."},
@@ -640,7 +729,7 @@ def _s7(state, open_gaps):
 def _s8(open_gaps, state=None):
     items = [
         {"id": f"OPEN-{i+1:03d}", "type": "open_gap",
-         "gap_type": g.gap_type,
+         "gap_type": _public_gap(g.gap_type),
          "gap_label": _GAP_LABELS.get(g.gap_type, g.gap_type),
          "status": g.status, "iterations_open": g.iterations_open,
          "resolution": "Address in next session with substantive evidence"}
@@ -655,7 +744,7 @@ def _s8(open_gaps, state=None):
         items.append({
             "id": f"UNKNOWN-{u.iteration:03d}",
             "type": "acknowledged_unknown",
-            "gap_context": u.gap_context,
+            "gap_context": _public_gap(u.gap_context),
             "statement": f"See {uid} — Acknowledged unknown",
             "unknown_id": uid,
             "iteration": u.iteration,
@@ -682,7 +771,7 @@ def _s9(state):
         if g.gap_type in STAGE_3_GAP_TYPES:
             ev = [_ev(e) for e in getattr(g, "evidence", []) if e]
             items.append({
-                "gap_type":     g.gap_type,
+                "gap_type":     _public_gap(g.gap_type),
                 "gap_label":    _GAP_LABELS.get(g.gap_type, g.gap_type),
                 "status":       g.status,
                 "status_label": _STATUS_LABELS.get(g.status, g.status),
@@ -723,7 +812,7 @@ def _s10(state, open_gaps):
         label = _GAP_LABELS.get(g.gap_type, g.gap_type)
         _add(f"Provide substantive evidence for {label.lower()}.",
              "high" if g.iterations_open >= 2 else "normal",
-             f"open_gap:{g.gap_type}")
+             f"open_gap:{_public_gap(g.gap_type)}")
     if state.maturity_level < 2:
         _add("Continue with technically substantive answers to reach "
              "Level 2 (mechanism established).",
@@ -745,7 +834,7 @@ def _s10(state, open_gaps):
     if _overall_quality(state) == REASONED:
         _add("Validate the leading claims with a prototype or "
              "demonstration to raise evidence from Reasoned to Demonstrated.",
-             "normal", "evidence_quality:REASONED")
+             "normal", f"evidence_quality:{_plain_quality(REASONED)}")
     return {
         "items": steps,
         "count": len(steps),
@@ -984,7 +1073,7 @@ def _s11(state):
                 "expected_evidence_upgrade": "Move this assumption from Reasoned "
                     "toward Demonstrated.",
                 "traceability": {"source_type": "assumption_inventory_evidence",
-                                 "source_ref": "ASSUMPTION_INVENTORY",
+                                 "source_ref": _public_gap(ASSUMPTION_INVENTORY),
                                  "content": content},
             })
 
@@ -1043,11 +1132,11 @@ def _ev(ev):
     if ev is None: return None
     validation = getattr(ev, "validation_status", UNVALIDATED)
     return {"content": getattr(ev, "content", str(ev)),
-            "quality": getattr(ev, "quality", None),
+            "quality": _plain_quality(getattr(ev, "quality", None)),
             "quality_label": _QUALITY_LABELS.get(getattr(ev, "quality", None), "Unknown"),
             # Increment 2: provenance and validation are surfaced separately from
             # quality, so REASONED is never presented as verified by quality alone.
-            "provenance": getattr(ev, "provenance", LEGACY_UNSPECIFIED),
+            "provenance": _public_provenance(getattr(ev, "provenance", LEGACY_UNSPECIFIED)),
             "validation_status": validation,
             "validation_label": _VALIDATION_LABELS.get(validation, "Not validated")}
 

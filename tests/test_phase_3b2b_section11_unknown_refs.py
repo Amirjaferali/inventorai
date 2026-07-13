@@ -271,7 +271,7 @@ def test_section13_collapse_still_intact():
     sec13 = body[i:(j if j > i else len(body))]
     assert sec13.count("<strong>Provenance:</strong>") == 1
     assert "(shared by 5 entries)" in sec13
-    assert "Criticality:</strong> UNDETERMINED (system-derived)" in sec13
+    assert "Criticality:</strong> Not yet determined (assigned automatically by the system; not yet reviewed)" in sec13
 
 
 def test_section14_collapse_still_intact():
