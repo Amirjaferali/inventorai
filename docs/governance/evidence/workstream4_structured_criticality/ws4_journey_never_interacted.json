@@ -1,0 +1,165 @@
+{
+  "confirmation_history": [],
+  "five_lightweight_actions_present": true,
+  "journey": "A_never_interacted",
+  "section_13": {
+    "count_basis": "requirement_landscape",
+    "count_relationship": {
+      "broader_set": "requirement_landscape",
+      "narrower_view": "evidence_derived_requirements",
+      "relationship": "evidence_derived_requirements is a narrower, evidence-oriented view; it is not the same collection as requirement_landscape and the two totals are counted from different sets."
+    },
+    "empty_statement": "No active, provenance-anchored requirements are recorded yet. This is an idea-development state, not an error: nothing outstanding has been captured to derive a requirement from.",
+    "has_risks": false,
+    "requirements": [
+      {
+        "criticality": "Not yet determined",
+        "criticality_authority": "assigned automatically by the system; not yet reviewed",
+        "criticality_rationale": null,
+        "has_linked_risk": false,
+        "provenance": "Recorded answer",
+        "resolving_action": "Validate the recorded answer against the available evidence.",
+        "statement": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance.",
+        "status": "Recorded from your answers (not yet verified)",
+        "supporting_references": []
+      },
+      {
+        "criticality": "Not yet determined",
+        "criticality_authority": "assigned automatically by the system; not yet reviewed",
+        "criticality_rationale": null,
+        "has_linked_risk": false,
+        "provenance": "Recorded answer",
+        "resolving_action": "Validate the recorded answer against the available evidence.",
+        "statement": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance. If the sensing is wrong, the dangerous appliance could remain powered.",
+        "status": "Recorded from your answers (not yet verified)",
+        "supporting_references": []
+      },
+      {
+        "criticality": "Not yet determined",
+        "criticality_authority": "assigned automatically by the system; not yet reviewed",
+        "criticality_rationale": null,
+        "has_linked_risk": false,
+        "provenance": "Recorded answer",
+        "resolving_action": "Validate the recorded answer against the available evidence.",
+        "statement": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance. If it trips the wrong branch, the wrong appliance could be disconnected and it would fail to isolate the actual source of danger.",
+        "status": "Recorded from your answers (not yet verified)",
+        "supporting_references": []
+      },
+      {
+        "criticality": "Not yet determined",
+        "criticality_authority": "assigned automatically by the system; not yet reviewed",
+        "criticality_rationale": null,
+        "has_linked_risk": false,
+        "provenance": "Recorded answer",
+        "resolving_action": "Validate the recorded answer against the available evidence.",
+        "statement": "I don't know yet.",
+        "status": "Recorded from your answers (not yet verified)",
+        "supporting_references": []
+      },
+      {
+        "criticality": "Not yet determined",
+        "criticality_authority": "assigned automatically by the system; not yet reviewed",
+        "criticality_rationale": null,
+        "has_linked_risk": false,
+        "provenance": "Recorded answer",
+        "resolving_action": "Validate the recorded answer against the available evidence.",
+        "statement": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance. If the relay sticks, damage or overheating could continue and the fire risk could continue until someone notices.",
+        "status": "Recorded from your answers (not yet verified)",
+        "supporting_references": []
+      },
+      {
+        "criticality": "Not yet determined",
+        "criticality_authority": "assigned automatically by the system; not yet reviewed",
+        "criticality_rationale": null,
+        "has_linked_risk": false,
+        "provenance": "Recorded answer",
+        "resolving_action": "Validate the recorded answer against the available evidence.",
+        "statement": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance. The current sensing accuracy is essential; the buzzer volume and alert timing are adjustable.",
+        "status": "Recorded from your answers (not yet verified)",
+        "supporting_references": []
+      },
+      {
+        "criticality": "Not yet determined",
+        "criticality_authority": "assigned automatically by the system; not yet reviewed",
+        "criticality_rationale": null,
+        "has_linked_risk": false,
+        "provenance": "Recorded answer",
+        "resolving_action": "Validate the recorded answer against the available evidence.",
+        "statement": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance.",
+        "status": "Recorded from your answers (not yet verified)",
+        "supporting_references": []
+      },
+      {
+        "criticality": "Not yet determined",
+        "criticality_authority": "assigned automatically by the system; not yet reviewed",
+        "criticality_rationale": null,
+        "has_linked_risk": false,
+        "provenance": "Recorded answer",
+        "resolving_action": "Validate the recorded answer against the available evidence.",
+        "statement": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance.",
+        "status": "Recorded from your answers (not yet verified)",
+        "supporting_references": []
+      },
+      {
+        "criticality": "Not yet determined",
+        "criticality_authority": "assigned automatically by the system; not yet reviewed",
+        "criticality_rationale": null,
+        "has_linked_risk": false,
+        "provenance": "Recorded answer",
+        "resolving_action": "Validate the recorded answer against the available evidence.",
+        "statement": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance.",
+        "status": "Recorded from your answers (not yet verified)",
+        "supporting_references": []
+      },
+      {
+        "criticality": "Not yet determined",
+        "criticality_authority": "assigned automatically by the system; not yet reviewed",
+        "criticality_rationale": null,
+        "has_linked_risk": false,
+        "provenance": "Recorded answer",
+        "resolving_action": "Validate the recorded answer against the available evidence.",
+        "statement": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance.",
+        "status": "Recorded from your answers (not yet verified)",
+        "supporting_references": []
+      },
+      {
+        "criticality": "Not yet determined",
+        "criticality_authority": "assigned automatically by the system; not yet reviewed",
+        "criticality_rationale": null,
+        "has_linked_risk": false,
+        "provenance": "Recorded answer",
+        "resolving_action": "Validate the recorded answer against the available evidence.",
+        "statement": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance.",
+        "status": "Recorded from your answers (not yet verified)",
+        "supporting_references": []
+      },
+      {
+        "criticality": "Not yet determined",
+        "criticality_authority": "assigned automatically by the system; not yet reviewed",
+        "criticality_rationale": null,
+        "has_linked_risk": false,
+        "provenance": "Recorded answer",
+        "resolving_action": "Validate the recorded answer against the available evidence.",
+        "statement": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance.",
+        "status": "Recorded from your answers (not yet verified)",
+        "supporting_references": []
+      },
+      {
+        "criticality": "Not yet determined",
+        "criticality_authority": "assigned automatically by the system; not yet reviewed",
+        "criticality_rationale": null,
+        "has_linked_risk": false,
+        "provenance": "Recorded answer",
+        "resolving_action": "Validate the recorded answer against the available evidence.",
+        "statement": "The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance.",
+        "status": "Recorded from your answers (not yet verified)",
+        "supporting_references": []
+      }
+    ],
+    "risk_disclaimer": "No structurally grounded risks are recorded for the current requirements. This is not a statement that the idea is risk-free, safe, or verified; it means no structural adverse-consequence signal exists in the recorded state.",
+    "risks": [],
+    "title": "Requirement Landscape",
+    "total": 13
+  },
+  "summary_block_present": true
+}
