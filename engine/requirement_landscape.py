@@ -19,18 +19,30 @@ Contract of ``derive_requirement_landscape(state)``:
     active anchor remains.
 """
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Optional, Tuple
 
 from engine.idea_state import (
     OPEN,
     DISPOSITION_EVIDENCE_REQUESTED,
     DISPOSITION_SPECIALIST_REQUESTED,
+    CRITICALITY_ACTION_CONFIRMED,
 )
 
 # --- Frozen category / status vocabularies (contract §4.2, §9.7) ------------------
-UNDETERMINED = "UNDETERMINED"                 # the only MVP-1 criticality category
-AUTHORITY_SYSTEM_DERIVED = "system-derived"   # the only MVP-1 criticality authority
+UNDETERMINED = "UNDETERMINED"                 # the never-interacted criticality category
+AUTHORITY_SYSTEM_DERIVED = "system-derived"   # the never-interacted criticality authority
+# Workstream 4 (STRUCTURED_CRITICALITY_CAPTURE_INCREMENT_CONTRACT.md §4/§16.1):
+# the two additional authorities of the narrow three-state model. Never-
+# interacted requirements keep UNDETERMINED / system-derived byte-identically;
+# an explicit deferral derives UNDETERMINED / undetermined; an explicit
+# confirmation derives the selected category / owner-confirmed. Criticality is
+# NEVER inferred from free text — only the recorded explicit inventor actions
+# in IdeaState.criticality_confirmations (current lookup, latest governs) are
+# applied here. A stale confirmation (its requirement_id is no longer
+# generated) simply does not apply and is never reattached.
+AUTHORITY_OWNER_CONFIRMED = "owner-confirmed"
+AUTHORITY_UNDETERMINED = "undetermined"
 
 _SOURCE_STATUS = {
     "assertion": "recorded",
@@ -293,4 +305,31 @@ def derive_requirement_landscape(state):
         requirements.append(_requirement_from_gap(gap_type, by_type[gap_type]))
 
     ordered = tuple(sorted(requirements, key=_order_key))
+
+    # 4. Workstream 4 (§16.1 three-state authority model): apply the latest
+    #    explicit inventor action per requirement_id from the session-bounded
+    #    confirmation history. Read-only over the input; requirements without
+    #    a recorded action stay byte-identical (UNDETERMINED/system-derived).
+    confirmations = getattr(state, "criticality_confirmations", None) or []
+    if confirmations:
+        latest = {}
+        for record in confirmations:          # append order == action order
+            latest[record.requirement_id] = record
+        applied = []
+        for r in ordered:
+            record = latest.get(r.requirement_id)
+            if record is None:
+                applied.append(r)
+            elif record.action == CRITICALITY_ACTION_CONFIRMED:
+                applied.append(replace(
+                    r, criticality=record.category,
+                    criticality_authority=AUTHORITY_OWNER_CONFIRMED,
+                    criticality_rationale=record.rationale_verbatim))
+            else:                              # explicit deferral
+                applied.append(replace(
+                    r, criticality=UNDETERMINED,
+                    criticality_authority=AUTHORITY_UNDETERMINED,
+                    criticality_rationale=None))
+        ordered = tuple(applied)
+
     return RequirementLandscape(requirements=ordered, risks=())

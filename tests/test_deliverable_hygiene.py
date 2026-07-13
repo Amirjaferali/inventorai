@@ -118,6 +118,18 @@ PROHIBITED_TOKENS = (
     "SYSTEM_ANALYSIS",
     "SPECIALIST_INPUT",
     "EMPIRICAL_EVIDENCE",
+    # disclosed additions (Workstream 4 structured criticality hardening) —
+    # the raw criticality category tokens (same single-uppercase-token class
+    # as the pinned exemplar UNDETERMINED) and the raw owner-confirmed
+    # authority token (same hyphenated-machine-form class as the pinned
+    # exemplar system-derived). The lowercase `undetermined` authority is
+    # deliberately NOT a blanket token (it is legitimate English prose,
+    # e.g. "Responsibility undetermined"); it is covered by the field-aware
+    # criticality-value rule below.
+    "FEASIBILITY-THREATENING",
+    "VALUE-ENHANCING",
+    "REFINEMENT",
+    "owner-confirmed",
 )
 
 _TOKEN_RES = {
@@ -130,6 +142,18 @@ _TOKEN_RES = {
 # field-aware — these words remain permitted inside ordinary prose).
 MACHINE_STATUS_FIELD_KEYS = ("resolution_status", "status")
 MACHINE_STATUS_PROHIBITED_VALUES = ("stated", "recorded")
+
+# Workstream 4 hardening: criticality machine fields where RAW internal
+# vocabulary is prohibited as FIELD VALUES (field-aware, mirroring the
+# stated/recorded rule above): the section_13 criticality and
+# criticality_authority fields must carry only the committed public wordings.
+# Lowercase "undetermined" remains permitted in ordinary prose.
+CRITICALITY_FIELD_KEYS = ("criticality",)
+CRITICALITY_PROHIBITED_VALUES = (
+    "FEASIBILITY-THREATENING", "VALUE-ENHANCING", "REFINEMENT", "UNDETERMINED")
+CRITICALITY_AUTHORITY_FIELD_KEYS = ("criticality_authority",)
+CRITICALITY_AUTHORITY_PROHIBITED_VALUES = (
+    "owner-confirmed", "undetermined", "system-derived")
 
 # --------------------------------------------------------------------------
 # Verbatim-exemption discipline (contract §8.3). An output value is exempt
@@ -380,6 +404,20 @@ def _machine_status_hits(package):
     return hits
 
 
+def _criticality_field_hits(package):
+    """All (path, value) pairs where a section_13 criticality machine field
+    carries a raw internal category/authority value (Workstream 4 field-aware
+    hardening rule)."""
+    hits = []
+    for path, key, value in _walk(package):
+        if key in CRITICALITY_FIELD_KEYS and value in CRITICALITY_PROHIBITED_VALUES:
+            hits.append((".".join(path), value))
+        if (key in CRITICALITY_AUTHORITY_FIELD_KEYS
+                and value in CRITICALITY_AUTHORITY_PROHIBITED_VALUES):
+            hits.append((".".join(path), value))
+    return hits
+
+
 def _dir_content_sha256(root):
     h = hashlib.sha256()
     for dirpath, dirnames, filenames in sorted(os.walk(root)):
@@ -434,6 +472,19 @@ def test_defect3_machine_status_fields_hold_no_raw_stated_recorded(ws1_journey):
     assert hits == [], (
         "Machine-status fields expose raw internal status values in the "
         "final inventor-facing Deliverable JSON (contract §5.3/§8.2): %r" % hits)
+
+
+def test_ws4_criticality_fields_hold_no_raw_internal_values(ws1_journey):
+    """Workstream 4 protective hardening (WS4 contract §9/§16.3): the
+    section_13 criticality and criticality_authority machine fields must
+    carry only the committed public wordings — never a raw category or
+    authority token. The lowercase `undetermined` authority is checked here
+    field-aware (it remains permitted in ordinary inventor-facing prose and
+    is therefore not a blanket Prohibited Token)."""
+    hits = _criticality_field_hits(ws1_journey["package"])
+    assert hits == [], (
+        "Raw internal criticality vocabulary exported as section_13 machine "
+        "field values (Workstream 4 hardening): %r" % hits)
 
 
 def test_defect3_asserted_prose_path(asserted_journey):

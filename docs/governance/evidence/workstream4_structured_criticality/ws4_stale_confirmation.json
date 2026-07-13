@@ -1,0 +1,22 @@
+{
+  "confirmation_history": [
+    {
+      "action": "deferred",
+      "category": null,
+      "confirmation_id": 1,
+      "iteration": 13,
+      "provenance": "owner_confirmed",
+      "rationale_source": null,
+      "rationale_verbatim": null,
+      "requirement_id": "req:assertion:rec_999"
+    }
+  ],
+  "journey": "stale_confirmation_surfacing",
+  "raw_stale_id_exported": false,
+  "reattachment": "none — every generated requirement keeps its own authority; the stale record applies to nothing",
+  "recorded_stale_requirement_id_kept_in_session_history_only": true,
+  "stale_aggregate_metadata": {
+    "note": "One or more of your earlier confirmations refer to items that are no longer part of the current requirement landscape. They were kept in your session history but were not reapplied to any other item.",
+    "total": 1
+  }
+}

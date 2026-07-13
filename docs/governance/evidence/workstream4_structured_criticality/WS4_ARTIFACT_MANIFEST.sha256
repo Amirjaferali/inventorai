@@ -1,0 +1,41 @@
+# WS4_ARTIFACT_MANIFEST — Workstream 4 structured criticality evidence
+# Source commit (evidence generated at): 61f0b14cb6bf2f5c5328eb9958640bf036015720
+# Generation commands:
+#   deterministic artifacts: python docs/governance/evidence/workstream4_structured_criticality/generate_ws4_artifacts.py
+#   raw outputs: the exact pytest commands recorded inside WS4_TEST_RECORD.md
+#   narrative indexes: authored evidence records (see WS4_EVIDENCE_README.md index for per-file type)
+# File types: narrative index = WS4_*.md (except WS4_TEST_RECORD.md = raw output);
+#   deterministic harness = generate_ws4_artifacts.py; deterministic artifact = ws4_*.json / ws4_*.html
+# Byte sizes:
+#   WS4_BASE_RED_RECORD.md 1813 bytes
+#   WS4_EVIDENCE_README.md 3345 bytes
+#   WS4_HEAD_IDENTITY.md 3956 bytes
+#   WS4_HYGIENE_RECORD.md 3086 bytes
+#   WS4_REVIEW_FINDINGS.md 2236 bytes
+#   WS4_STALE_CONFIRMATION_RECORD.md 2347 bytes
+#   WS4_TEST_RECORD.md 8629 bytes
+#   WS4_TRACEABILITY.md 4671 bytes
+#   generate_ws4_artifacts.py 20608 bytes
+#   ws4_journey_correction.json 446 bytes
+#   ws4_journey_deferral_zero_delta.json 7969 bytes
+#   ws4_journey_manipulated_rejection.json 524 bytes
+#   ws4_journey_never_interacted.json 9853 bytes
+#   ws4_journey_owner_confirmed.json 10659 bytes
+#   ws4_journey_owner_confirmed_deliverable.html 22741 bytes
+#   ws4_stale_confirmation.json 839 bytes
+a6f9a8c45515e7c616223e4cbbec6a03ab60ab115901a41202cc3ec538cb44c9  WS4_BASE_RED_RECORD.md
+c06c064e8e639de010396d6a33b0f00fea6a92e6d586800a22825571a52bcbea  WS4_EVIDENCE_README.md
+5794d2cdd3fa926efa253b505187913c29f8a8c0567089116d47cc9077204e19  WS4_HEAD_IDENTITY.md
+06554afb3114ea92d5d124aeaab9e59be82b53eacca5c650c97a896edbe5c050  WS4_HYGIENE_RECORD.md
+fb3d427cb0e9a05659a2c7354bccc149c0e45a695f88bb2928668e6c54e3a2b0  WS4_REVIEW_FINDINGS.md
+37a14413f140db562c055eedc70bae4e5de71fe0ce80f32ed23e8d400c73176f  WS4_STALE_CONFIRMATION_RECORD.md
+702cde5d544474e0948cd7ae057cae2c8dab986eaf6b3041b0b1c931858b2e29  WS4_TEST_RECORD.md
+bd4ce258b3c636a44adeb59bee6cdf58c5f1fdc9900bf126e93e0511c28cf76c  WS4_TRACEABILITY.md
+38d7b9b1babfb306f39d0c30993a37cab8af6a23eddbddaa22c5b8d6aff044fa  generate_ws4_artifacts.py
+cb8e540c9f80f464369c7b94bda9e7e1564cf2e3f8314013adfbbd47520ded1b  ws4_journey_correction.json
+a0cc821b19e32c7ffb4fdb79136e2a7195eda73e35f7fa3dc27313d70f518359  ws4_journey_deferral_zero_delta.json
+d084a8946be7a30ef7160a4fdb85dfb7f1459da3bd439da7a88571af17c5bf6a  ws4_journey_manipulated_rejection.json
+a4cc284d99465fc90b7d0600710140eba8a7482400c4f7b4efd2f93d8d6c7d86  ws4_journey_never_interacted.json
+b4aa94980055737c81c99464317b39e84b5c5ccb43e7cd26a1f7e74f65b38b85  ws4_journey_owner_confirmed.json
+ec5ea8142b32ef32d4d1fce93d17fca7e7dd58eee38aeed47ba4f5571e8fc6dc  ws4_journey_owner_confirmed_deliverable.html
+0ce1f7333bd56e49bd1f40b91046c853dbae665c02b65fddda41f34be374e20c  ws4_stale_confirmation.json

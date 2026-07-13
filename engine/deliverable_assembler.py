@@ -97,10 +97,29 @@ _SOURCE_STATUS_PUBLIC = {
 }
 _CRITICALITY_PUBLIC = {
     "UNDETERMINED": "Not yet determined",
+    # Workstream 4 (contract §4): owner-approved public wordings for the three
+    # confirmable categories. Serialization-boundary mapping only — the
+    # derivation and every internal object keep the raw vocabulary unchanged.
+    "FEASIBILITY-THREATENING": "Essential to feasibility",
+    "VALUE-ENHANCING":         "Important to value",
+    "REFINEMENT":              "Refinement or improvement",
 }
 _CRITICALITY_AUTHORITY_PUBLIC = {
     "system-derived": "assigned automatically by the system; not yet reviewed",
+    # Workstream 4 (contract §4): the two additional authority wordings; the
+    # system-derived mapping above is unchanged.
+    "owner-confirmed": "Confirmed by the inventor",
+    "undetermined":    "Confirmation not yet available",
 }
+# Workstream 4 stale-confirmation surfacing (contract §4 "stale confirmation";
+# stale-success-criteria precedent): aggregate truthful JSON metadata only.
+# Raw requirement ids are never exported, and the wording carries no internal
+# token. Nested under _session_meta so the canonical section contract and the
+# pinned section_13 shape are unchanged.
+_STALE_CRITICALITY_NOTE = (
+    "One or more of your earlier confirmations refer to items that are no "
+    "longer part of the current requirement landscape. They were kept in "
+    "your session history but were not reapplied to any other item.")
 # Finding F1 correction: engine-resident inventor-facing wording for the five
 # owner-approved suggested-provider vocabulary values exported by the shared
 # next-development-step derivation (engine.idea_development_outputs). Applied
@@ -240,8 +259,28 @@ def assemble_deliverable(state: IdeaState) -> dict:
             # NOT touch Section 6 risks or Section 13 criticality, and makes no final
             # safety / compliance / certification determination.
             "inventor_stated_safety_signals": _s15(state),
+            # Workstream 4 (additive, nested under _session_meta so the
+            # canonical-section contract and the pinned section_13 shape are
+            # unchanged): aggregate truthful stale-confirmation surfacing.
+            # Counts only — raw requirement ids are never exported; stale
+            # confirmations are retained in session history, never reattached.
+            "stale_criticality_confirmations": _stale_criticality_meta(state),
         },
     }
+
+
+def _stale_criticality_meta(state):
+    """Aggregate stale-confirmation truth (Workstream 4 contract §4): how many
+    recorded explicit criticality actions reference a requirement_id that the
+    current landscape no longer generates. JSON metadata only; no raw id."""
+    confirmations = getattr(state, "criticality_confirmations", None) or []
+    if not confirmations:
+        return {"total": 0, "note": None}
+    generated = {r.requirement_id
+                 for r in derive_requirement_landscape(state).requirements}
+    stale_ids = {c.requirement_id for c in confirmations} - generated
+    return {"total": len(stale_ids),
+            "note": _STALE_CRITICALITY_NOTE if stale_ids else None}
 
 _ZERO_RISK_DISCLAIMER = (
     "No structurally grounded risks are recorded for the current requirements. "
