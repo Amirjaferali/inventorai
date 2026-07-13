@@ -21,19 +21,12 @@ change). "RED" tests (R1-R8) fail on base because the §6 recorded-state
 model, the §6.3 guarded recorder, and the §4 owner-confirmed/undetermined
 representations do not exist yet; each RED failure carries an
 obligation-specific message naming the distinct missing contract behavior,
-never a fixture defect. GREEN-ONLY JOURNEY OBLIGATIONS (owner final
-RED-suite review): two obligations are deliberately NOT BASE RED tests
-because they cannot be functionally probed without assuming the
-implementation-chosen interaction surface; they are recorded in
-GREEN_ONLY_JOURNEY_OBLIGATIONS below and are MANDATORY at GREEN:
-(1) the §7.2 summary-first journey capability — after the real WS1
-journey, a reachable functional action lets the inventor review a
-contextual criticality summary, explicitly accept or correct it, or
-explicitly defer, with the five owner-approved lightweight actions
-asserted byte-exact on the ultimately chosen authorized surface;
-(2) the deferral-without-penalty zero-delta comparison (§7.8 / GREEN #10)
-— state before and after an ACTUAL deferral proves zero maturity,
-scoring, gap, transition, and unrelated-state deltas.
+never a fixture defect. GREEN JOURNEY TESTS (G1-G5, TestGreenJourney):
+real executable journey tests over the implemented completion-stage
+confirmation surface, covering every entry recorded in
+GREEN_ONLY_JOURNEY_OBLIGATIONS (the former owner-recorded GREEN-only
+placeholder, now replaced as mandated — this suite must show zero
+skipped and zero xfailed).
 Prohibited behaviors: must not modify any source file or any other test
 file; must not assert an implementation-chosen mechanism (route paths,
 endpoint names, placement, template structure, storage layout, or the
@@ -124,13 +117,10 @@ LIGHTWEIGHT_ACTIONS = [
     "Decide later",
 ]
 
-# --- Mandatory GREEN-only journey obligations (owner final RED-suite review:
-# these cannot be functionally probed on base without assuming the
-# implementation-chosen interaction surface — any such probe would need to
-# operate the future affordance with inputs the contract leaves
-# implementation-chosen, and could stay RED against a correct head; a weak or
-# misleading BASE RED test is prohibited). The GREEN suite MUST implement
-# each of these as real journey tests before the GREEN gate can pass. -------
+# --- Mandatory GREEN journey obligations (owner final RED-suite review). On
+# base these could not be functionally probed without assuming the
+# implementation-chosen surface; they are now implemented as the real journey
+# tests in TestGreenJourney below (G1-G5). ----------------------------------
 GREEN_ONLY_JOURNEY_OBLIGATIONS = [
     ("summary_first_journey_capability",
      "After completing the real WS1 journey, a reachable functional action "
@@ -450,17 +440,227 @@ class TestEndToEndRepresentationRed:
         assert derived[0].criticality_authority == "owner-confirmed"
 
 
-class TestGreenOnlyJourneyObligations:
-    @pytest.mark.skip(reason=(
-        "MANDATORY GREEN-ONLY journey tests (owner final RED-suite review): "
-        "the summary-first journey capability (§7.2/§11(6), incl. the five "
-        "lightweight-action wordings byte-exact on the chosen authorized "
-        "surface) and the deferral-without-penalty zero-delta comparison "
-        "(§7.8/GREEN #10) cannot be functionally probed on base without "
-        "assuming the implementation-chosen interaction surface; they MUST "
-        "be implemented as real journey tests in this file at GREEN — see "
-        "GREEN_ONLY_JOURNEY_OBLIGATIONS."))
-    def test_green_only_journey_obligations_recorded(self):
-        """Visible, machine-recorded placeholder: replaced at GREEN by real
-        journey tests for every entry in GREEN_ONLY_JOURNEY_OBLIGATIONS."""
-        raise AssertionError("placeholder — must be replaced at GREEN")
+# =============================================================================
+# GROUP G — GREEN JOURNEY TESTS (real journeys over the implemented
+# completion-stage surface; replaces the owner-recorded GREEN-only
+# placeholder; every GREEN_ONLY_JOURNEY_OBLIGATIONS entry is covered).
+# =============================================================================
+import re as _re
+
+SUMMARY_LEAD = "This is what I understood from your explanation:"
+CLARIFICATION_QUESTION = (
+    "Would the idea still achieve its purpose if this part changed?")
+CATEGORY_CHOICE_LABELS = [
+    "The idea may not work without this",
+    "The idea would still work, but this adds important value",
+    "This mainly improves or refines the idea",
+    "I am not sure yet",
+]
+# §7.9 banned inventor-facing governance vocabulary (exact phrases).
+BANNED_UI_TERMS = [
+    "criticality authority", "owner-confirmed", "system-derived",
+    "undetermined authority", "rationale requirement", "evidence gate",
+    "classification compliance",
+]
+
+_FOCUS_TOKEN_RE = _re.compile(r'name="focus_token" value="([0-9a-f]{16})"')
+_RATIONALE_RE = _re.compile(
+    r'<textarea name="rationale"[^>]*>(.*?)</textarea>', _re.S)
+
+
+def _page(client, sid):
+    return client.get(f"/session/{sid}").get_data(as_text=True)
+
+
+def _focus_token(page):
+    m = _FOCUS_TOKEN_RE.search(page)
+    assert m, "no focus token rendered on the confirmation surface"
+    return m.group(1)
+
+
+def _fresh_completed_journey():
+    """A second completed WS1 journey for tests needing an untouched state."""
+    client, sid = _start(IDEA_WS1)
+    _drive_ws1_journey_to_completion(client, sid)
+    return client, sid, SESSION_STORE[sid]["state"]
+
+
+class TestGreenJourney:
+    def test_g1_summary_first_surface_five_actions_clean_vocabulary(
+            self, ws1_completed):
+        """G1 (§7.2 / GREEN #1-#4, #12; obligations A, B, F): the completed
+        real journey presents the summary-first block with the exact lead-in,
+        the inventor's own recorded words, and ALL FIVE lightweight actions
+        byte-exact — while exposing no raw category/authority/requirement-id
+        token and no §7.9 banned governance phrase."""
+        client, sid, _, _ = ws1_completed
+        page = _page(client, sid)
+        assert SUMMARY_LEAD in page
+        assert "You said:" in page
+        for action in LIGHTWEIGHT_ACTIONS:
+            assert action in page, "missing lightweight action: %r" % action
+        for token in (CATEGORY_FEASIBILITY, CATEGORY_VALUE, CATEGORY_REFINEMENT,
+                      "req:assertion:", "req:gap:", "req:contradiction:"):
+            assert token not in page, token
+        for phrase in BANNED_UI_TERMS:
+            assert phrase not in page, phrase
+
+    def test_g2_accept_flow_end_to_end_no_adoption_before_acceptance(
+            self, ws1_completed):
+        """G2 (§7.2/§7.4/§7.7/§7.10; §12 correctness; obligations A, C-accept,
+        D): 'Yes, that is correct' leads to exactly one supportive
+        clarification; nothing is adopted before the explicit final
+        acceptance; accepting 'The idea may not work without this' with the
+        prefilled verbatim rationale (zero retyping) records the confirmation
+        and renders the §4 public wordings end-to-end."""
+        client, sid, state, _ = ws1_completed
+        page = _page(client, sid)
+        token = _focus_token(page)
+        # Step 1: confirm the understanding summary.
+        r = client.post(f"/session/{sid}", data={
+            "criticality_action": "summary_correct", "focus_token": token})
+        assert r.status_code == 302
+        assert state.criticality_confirmations == []   # no silent adoption
+        # Step 2: the single clarification, with the prefilled rationale.
+        page = _page(client, sid)
+        assert CLARIFICATION_QUESTION in page
+        for label in CATEGORY_CHOICE_LABELS:
+            assert label in page, label
+        # Rendering the unaccepted proposal changes nothing (GREEN #5/#17).
+        for req in derive_requirement_landscape(state).requirements:
+            assert req.criticality == CATEGORY_UNDETERMINED
+            assert req.criticality_authority == "system-derived"
+        rationale_m = _RATIONALE_RE.search(page)
+        assert rationale_m, "no prefilled rationale textarea"
+        rationale = rationale_m.group(1)
+        assert rationale.strip(), "proposed rationale is empty"
+        token = _focus_token(page)
+        # Step 3: explicit acceptance — zero typed input (accept as displayed).
+        r = client.post(f"/session/{sid}", data={
+            "criticality_action": "clarify_choice", "focus_token": token,
+            "category_choice": "essential", "rationale": rationale})
+        assert r.status_code == 302
+        history = state.criticality_confirmations
+        assert len(history) == 1
+        record = history[0]
+        assert record.action == "confirmed"
+        assert record.category == CATEGORY_FEASIBILITY
+        assert record.rationale_verbatim == rationale
+        assert record.rationale_source.startswith("reused_statement:")
+        assert record.provenance == "owner_confirmed"
+        # End-to-end public representation (byte-exact §4 wordings).
+        confirmed = [r_ for r_ in derive_requirement_landscape(state).requirements
+                     if r_.requirement_id == record.requirement_id]
+        assert confirmed and confirmed[0].criticality == CATEGORY_FEASIBILITY
+        assert confirmed[0].criticality_authority == "owner-confirmed"
+        rows = [row for row in _section13(state)["requirements"]
+                if row["criticality"] == PUBLIC_ESSENTIAL]
+        assert rows and rows[0]["criticality_authority"] == PUBLIC_OWNER_CONFIRMED
+        assert rows[0]["criticality_rationale"] == rationale
+        html = client.get(f"/session/{sid}/deliverable").get_data(as_text=True)
+        assert PUBLIC_ESSENTIAL in html and PUBLIC_OWNER_CONFIRMED in html
+        assert rationale in html
+
+    def test_g3_correction_and_missing_paths_store_nothing(self, ws1_completed):
+        """G3 (§7.2 / owner rule 6; obligation C-correct/missing): 'Change
+        this part' and 'Something is missing' store no confirmation and
+        return the inventor to an existing free-text answer path on the same
+        journey."""
+        client, sid, state, _ = ws1_completed
+        for action in ("summary_change", "summary_missing"):
+            token = _focus_token(_page(client, sid))
+            r = client.post(f"/session/{sid}", data={
+                "criticality_action": action, "focus_token": token})
+            assert r.status_code == 302
+            assert state.criticality_confirmations == []
+            page = _page(client, sid)
+            assert 'name="response"' in page, (
+                "no free-text path offered after %s" % action)
+            # The next input flows through the EXISTING answer handling.
+            r = client.post(f"/session/{sid}", data={
+                "response": "The relay module is the part that changed.",
+                "action": "answered"})
+            assert r.status_code == 302
+            assert state.criticality_confirmations == []
+
+    def test_g4_uncertainty_and_deferral_zero_delta(self):
+        """G4 (§7.8 / GREEN #10; obligations C-uncertainty/defer, E): both
+        'I am not sure yet' and 'Decide later' record an explicit deferral
+        with ZERO change to maturity, scoring, gaps, transitions, iteration,
+        direction, the ledger, the last result, and every unrelated
+        deliverable section."""
+        for action in ("summary_unsure", "summary_later"):
+            client, sid, state = _fresh_completed_journey()
+            entry = SESSION_STORE[sid]
+            token = _focus_token(_page(client, sid))
+            before = assemble_deliverable(state)
+            snapshot = (
+                state.maturity_level, state.iteration, state.direction,
+                [(g.gap_type, g.status, g.iterations_open) for g in state.gaps],
+                len(state.assertions), len(state.acknowledged_unknowns),
+                entry.get("last_result"),
+            )
+            r = client.post(f"/session/{sid}", data={
+                "criticality_action": action, "focus_token": token})
+            assert r.status_code == 302
+            after = assemble_deliverable(state)
+            assert snapshot == (
+                state.maturity_level, state.iteration, state.direction,
+                [(g.gap_type, g.status, g.iterations_open) for g in state.gaps],
+                len(state.assertions), len(state.acknowledged_unknowns),
+                entry.get("last_result"),
+            )
+            for key in before:
+                if key in ("section_13_requirement_landscape", "generated_at"):
+                    continue
+                assert json.dumps(before[key], sort_keys=True, default=str) == \
+                    json.dumps(after[key], sort_keys=True, default=str), (
+                        "deferral altered unrelated deliverable section %r "
+                        "after %s" % (key, action))
+            history = state.criticality_confirmations
+            assert len(history) == 1 and history[0].action == "deferred"
+            assert history[0].category is None
+            deferred = [r_ for r_ in derive_requirement_landscape(state).requirements
+                        if r_.requirement_id == history[0].requirement_id]
+            assert deferred[0].criticality == CATEGORY_UNDETERMINED
+            assert deferred[0].criticality_authority == "undetermined"
+            rows = [row for row in _section13(state)["requirements"]
+                    if row["criticality_authority"] == PUBLIC_DEFERRED]
+            assert rows and rows[0]["criticality"] == PUBLIC_NOT_YET_DETERMINED
+            SESSION_STORE.pop(sid, None)
+
+    def test_g5_manipulated_or_stale_posts_rejected(self, ws1_completed):
+        """G5 (§6.3 route rejection / owner rule 5; obligation G): stale,
+        mismatched, or manipulated submissions — a wrong focus token, an
+        unknown action, a clarify submission without the summary step, a
+        manipulated category value (the route-level confirmed+UNDETERMINED
+        analogue), and an emptied rationale — are all rejected with HTTP 400
+        and NOTHING stored."""
+        client, sid, state, _ = ws1_completed
+        token = _focus_token(_page(client, sid))
+        bad = [
+            {"criticality_action": "summary_correct", "focus_token": "0" * 16},
+            {"criticality_action": "bogus_action", "focus_token": token},
+            {"criticality_action": "clarify_choice", "focus_token": token,
+             "category_choice": "essential", "rationale": "text"},  # no summary step
+        ]
+        for form in bad:
+            r = client.post(f"/session/{sid}", data=form)
+            assert r.status_code == 400, form
+            assert state.criticality_confirmations == []
+        # Enter the clarify stage legitimately, then attempt manipulation.
+        r = client.post(f"/session/{sid}", data={
+            "criticality_action": "summary_correct", "focus_token": token})
+        assert r.status_code == 302
+        page = _page(client, sid)
+        token = _focus_token(page)
+        rationale = _RATIONALE_RE.search(page).group(1)
+        for form in (
+            {"criticality_action": "clarify_choice", "focus_token": token,
+             "category_choice": "UNDETERMINED", "rationale": rationale},
+            {"criticality_action": "clarify_choice", "focus_token": token,
+             "category_choice": "essential", "rationale": "   "},
+        ):
+            r = client.post(f"/session/{sid}", data=form)
+            assert r.status_code == 400, form
+            assert state.criticality_confirmations == []
