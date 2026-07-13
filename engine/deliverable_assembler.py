@@ -101,6 +101,18 @@ _CRITICALITY_PUBLIC = {
 _CRITICALITY_AUTHORITY_PUBLIC = {
     "system-derived": "assigned automatically by the system; not yet reviewed",
 }
+# Finding F1 correction: engine-resident inventor-facing wording for the five
+# owner-approved suggested-provider vocabulary values exported by the shared
+# next-development-step derivation (engine.idea_development_outputs). Applied
+# ONLY at the Section 12 serialization boundary; the derivation, the payload,
+# and every internal object keep the raw vocabulary unchanged.
+_PROVIDER_PUBLIC = {
+    "OWNER_INPUT":        "You (the inventor)",
+    "SYSTEM_ANALYSIS":    "System analysis",
+    "SPECIALIST_INPUT":   "A relevant technical specialist",
+    "EMPIRICAL_EVIDENCE": "A measurement, test, or other empirical evidence",
+    "UNDETERMINED":       "Not yet determined",
+}
 SECTION_4_COUNT_BASIS = "evidence_derived_requirements"
 SECTION_13_COUNT_BASIS = "requirement_landscape"
 SECTION_4_13_COUNT_RELATIONSHIP = {
@@ -126,6 +138,14 @@ def _public_provenance(p):
 def _public_gap(gt):
     """Inventor-facing form of a raw gap-type value (existing committed labels)."""
     return _GAP_LABELS.get(gt, gt)
+
+
+def _public_provider(p):
+    """Inventor-facing form of a raw suggested-provider value (Finding F1).
+    The five known provider vocabulary values map to their fixed public
+    wording; any value outside the known vocabulary (including None) passes
+    through unchanged — no meaning is invented for an unknown value."""
+    return _PROVIDER_PUBLIC.get(p, p)
 
 
 _STAGE3_MISSING_EVIDENCE = (
@@ -400,12 +420,17 @@ def _s12(state):
     return {
         "actionable":            True,
         "issue_type":            payload.issue_type,
-        "reference_id":          payload.reference_id,
+        # Finding F1: serialization-boundary mapping only. The existing public
+        # gap mapping turns the six gap enums into their committed
+        # inventor-facing labels and passes every other reference id (rec_N,
+        # maturity_level_N) through unchanged; the provider mapping turns the
+        # five known provider vocabulary values into their public wording.
+        "reference_id":          _public_gap(payload.reference_id),
         "title":                 payload.title,
         "why_it_matters":        payload.why_it_matters,
         "next_action":           payload.next_action,
         "evidence_needed":       payload.evidence_needed,
-        "suggested_provider":    payload.suggested_provider,
+        "suggested_provider":    _public_provider(payload.suggested_provider),
         "sufficiency_condition": payload.sufficiency_condition,
         "unlock_condition":      payload.unlock_condition,
         "remaining_uncertainty": payload.remaining_uncertainty,
