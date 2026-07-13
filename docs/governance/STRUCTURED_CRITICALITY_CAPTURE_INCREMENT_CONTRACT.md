@@ -2,7 +2,8 @@
 
 **Document ID:** STRUCTURED_CRITICALITY_CAPTURE_INCREMENT_CONTRACT
 **Type:** Increment Contract (DELIVERABLE_STABILIZATION_REMEDIATION_PLAN.md §9)
-**Status:** OWNER-APPROVED — RECORDING PENDING — NO IMPLEMENTATION AUTHORIZED
+**Status:** OWNER-APPROVED — CANONICALLY RECORDED — NO IMPLEMENTATION AUTHORIZED
+**Canonical recording:** recording PR #181; true two-parent merge `cb1f4fd8fb4854864ef89c3f3df2275d818785c9` (ordered parents `f6e67d6b3a7742d56139cb1b574522bac256de2d`, `c9bad34d4c1abcedf5a72922d23c7e7feb52665c`); contract blob `44b2a1f254e80c98ff80cbced89db3332af7ce57`; recorded 2026-07-13.
 **Owner approval record:** WORKSTREAM 4 STRUCTURED CRITICALITY CAPTURE INCREMENT CONTRACT — APPROVED — 2026-07-13, approving the final draft that incorporates the owner contract-scope decision, owner amendment round 1, the final owner clarifications, and the Final Owner Product and Journey Direction (all eighteen sections).
 **Workstream / Priority:** Workstream 4 — P1 Structured Criticality Capture
 **Authoritative base:** `f6e67d6b3a7742d56139cb1b574522bac256de2d`
