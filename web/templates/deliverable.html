@@ -223,6 +223,14 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% if not rl.has_risks %}
   <div class="field-value"><em>{{ rl.risk_disclaimer }}</em></div>
   {% endif %}
+  {# Workstream 5 (contract §4.4 / §5.3): contextual note ADJACENT to the
+     unchanged frozen disclaimer, rendered only when inventor-stated safety
+     signals exist; sourced from _session_meta.risk_safety_linkage — no key
+     inside section_13_requirement_landscape is added or read differently. #}
+  {% set rsl13 = package["_session_meta"].risk_safety_linkage %}
+  {% if rsl13.section_13_note %}
+  <div class="field-value" style="white-space:pre-line;margin-top:8px">{{ rsl13.section_13_note }}</div>
+  {% endif %}
 </section>
 
 <section>
@@ -274,14 +282,25 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   <p class="group-lede">Risks recorded from the current state. This is not a safety judgement and is not exhaustive.</p>
 
   <h3>Risks</h3>
+  {# Workstream 5 (contract §12): render-only linkage sourced from the additive
+     _session_meta.risk_safety_linkage block already assembled in the package.
+     Existing risk rows, totals, severities, and wordings are unchanged; the
+     bare empty message is replaced ONLY when inventor-stated safety signals
+     exist (contract §4.3 / §5.2); otherwise the current rendering is kept. #}
+  {% set rsl = package["_session_meta"].risk_safety_linkage %}
   {% if package.section_6_risks.risks %}
   <ul>
     {% for r in package.section_6_risks.risks %}
     <li>[{{ r.severity }}] {{ r.description }}</li>
     {% endfor %}
   </ul>
+  {% elif rsl.section_6_empty_qualification %}
+  <div class="field-value" style="white-space:pre-line">{{ rsl.section_6_empty_qualification }}</div>
   {% else %}
   <div class="field-value">No risks recorded.</div>
+  {% endif %}
+  {% if rsl.section_6_note %}
+  <div class="field-value" style="white-space:pre-line;margin-top:10px">{{ rsl.section_6_note }}</div>
   {% endif %}
 </section>
 
