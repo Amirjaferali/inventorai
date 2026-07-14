@@ -26,6 +26,9 @@ from engine.idea_state import (
     OPEN,
     DISPOSITION_EVIDENCE_REQUESTED,
     DISPOSITION_SPECIALIST_REQUESTED,
+    DISPOSITION_UNKNOWN,
+    DISPOSITION_DEFERRED,
+    DISPOSITION_PROVISIONAL_ASSUMPTION,
     CRITICALITY_ACTION_CONFIRMED,
 )
 
@@ -87,6 +90,39 @@ _ACTION = {
 _CONTRADICTION_STATEMENT = (
     "Resolve the active contradiction between the two recorded answers."
 )
+
+# Workstream 6 (REQUIREMENT_LANDSCAPE_SYNTHESIS_INCREMENT_CONTRACT.md §2.2/§7;
+# owner decision D3): truthful public vocabulary for the three explicitly
+# authorized ledger dispositions. Selected SOLELY by the exact existing
+# AssertionRecord.disposition value — never inferred from content, vocabulary,
+# answer quality, domain, or technical complexity. These records keep the
+# `assertion` anchor kind, the `req:assertion:rec_N` identifier scheme, the
+# existing precedence, ordering, one-row-per-record behavior, and Section 14
+# eligibility byte-unchanged (contract §3 F2 clarification); ONLY the
+# public-facing anchor label, source status, and resolving-action wording
+# differ. `answered` and every unlisted disposition keep the legacy assertion
+# vocabulary byte-identically.
+_DISPOSITION_LABELS = {
+    DISPOSITION_UNKNOWN:                "Recorded unknown",
+    DISPOSITION_DEFERRED:               "Deferred decision",
+    DISPOSITION_PROVISIONAL_ASSUMPTION: "Provisional assumption",
+}
+_DISPOSITION_STATUS = {
+    DISPOSITION_UNKNOWN:                "You indicated that this is not known yet.",
+    DISPOSITION_DEFERRED:               "You chose to defer this item.",
+    DISPOSITION_PROVISIONAL_ASSUMPTION: ("This assumption was recorded as a "
+                                         "temporary direction and has not "
+                                         "been validated."),
+}
+_DISPOSITION_ACTION_STATEMENTS = {
+    DISPOSITION_UNKNOWN: ("This item remains unresolved. It may later be "
+                          "addressed through additional information, "
+                          "evidence, or specialist input."),
+    DISPOSITION_DEFERRED: ("This item remains unresolved and can be revisited "
+                           "when you are ready to decide."),
+    DISPOSITION_PROVISIONAL_ASSUMPTION: ("Validate, revise, or replace it "
+                                         "before relying on it."),
+}
 
 # Display precedence — a stable, readable order that carries NO severity meaning.
 _PRECEDENCE = {
@@ -194,21 +230,38 @@ def _restate(content, kind):
     text = (content or "").strip()
     if text:
         return text
-    return {"assertion": "Recorded answer awaiting restatement.",
+    # Workstream 6 (contract §7.5; owner decision D7): the assertion-kind
+    # empty-content placeholder wording. Triggered ONLY by structurally empty
+    # recorded content — never inferred from answer quality, terminology,
+    # domain, or complexity. The pending-request placeholders are unchanged.
+    return {"assertion": ("Insufficient information was recorded to organize "
+                          "this item reliably.\nThis does not indicate that "
+                          "the idea is invalid; the item remains unresolved."),
             "pending_evidence": "Empirical evidence requested for the recorded item.",
             "pending_specialist": "Specialist input requested for the recorded item."}[kind]
 
 
 def _requirement_from_record(record, kind):
-    anchor = ProvenanceAnchor(anchor_kind=kind, anchor_reference=record.record_id,
-                              display_label=_ANCHOR_LABELS[kind])
+    display_label = _ANCHOR_LABELS[kind]
     action_kind, statement = _ACTION[kind]
+    source_status = _SOURCE_STATUS[kind]
+    # Workstream 6 (contract §2.2, D3): the three authorized dispositions keep
+    # the assertion kind, identifier, precedence, ordering, and Section 14
+    # eligibility; only their public label, status, and action wording differ.
+    if kind == "assertion":
+        disposition = getattr(record, "disposition", None)
+        if disposition in _DISPOSITION_LABELS:
+            display_label = _DISPOSITION_LABELS[disposition]
+            source_status = _DISPOSITION_STATUS[disposition]
+            statement = _DISPOSITION_ACTION_STATEMENTS[disposition]
+    anchor = ProvenanceAnchor(anchor_kind=kind, anchor_reference=record.record_id,
+                              display_label=display_label)
     return DerivedRequirement(
         requirement_id=_record_id_prefix(kind) + record.record_id,
         statement=_restate(getattr(record, "content", ""), kind),
         primary_anchor=anchor,
         supporting_references=(),
-        source_status=_SOURCE_STATUS[kind],
+        source_status=source_status,
         criticality=UNDETERMINED,
         criticality_authority=AUTHORITY_SYSTEM_DERIVED,
         criticality_rationale=None,
