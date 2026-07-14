@@ -613,8 +613,21 @@ class TestGreenJourney:
             for key in before:
                 if key in ("section_13_requirement_landscape", "generated_at"):
                     continue
-                assert json.dumps(before[key], sort_keys=True, default=str) == \
-                    json.dumps(after[key], sort_keys=True, default=str), (
+                before_val, after_val = before[key], after[key]
+                if key == "_session_meta":
+                    # Workstream 6 owner ruling (GREEN continuation): the
+                    # additive _session_meta.requirement_landscape_synthesis
+                    # object is canonically DERIVED from Section 13 values, so
+                    # it legitimately changes when the deferred row's Section
+                    # 13 criticality metadata changes — exactly parallel to
+                    # the existing section_13 exclusion above. Every other
+                    # _session_meta key remains strictly asserted.
+                    before_val = {k: v for k, v in before_val.items()
+                                  if k != "requirement_landscape_synthesis"}
+                    after_val = {k: v for k, v in after_val.items()
+                                 if k != "requirement_landscape_synthesis"}
+                assert json.dumps(before_val, sort_keys=True, default=str) == \
+                    json.dumps(after_val, sort_keys=True, default=str), (
                         "deferral altered unrelated deliverable section %r "
                         "after %s" % (key, action))
             history = state.criticality_confirmations
