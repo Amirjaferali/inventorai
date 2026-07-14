@@ -2,7 +2,8 @@
 
 **Document ID:** UNIFIED_RISK_SAFETY_PRESENTATION_INCREMENT_CONTRACT
 **Type:** Increment Contract (DELIVERABLE_STABILIZATION_REMEDIATION_PLAN.md §9)
-**Status:** OWNER-APPROVED — RECORDING PENDING — NO IMPLEMENTATION AUTHORIZED
+**Status:** OWNER-APPROVED — CONTRACT / CANONICAL (CANONICALLY RECORDED) — NO IMPLEMENTATION AUTHORIZED
+**Canonical recording:** recording PR #185; true two-parent merge `8b6868fce5e5fe81f221f3a6e8ab271552751339` (ordered parents `031f455825b2d03c7980e55e990953c063e436f6`, `23edeabeaec834d96d196fa61a53fa5b60cf4cd8`); contract blob `92029fdfcc2a6a05374a72b0782808c9d3fa24da`; recorded 2026-07-14.
 **Owner approval record:** WORKSTREAM 5 OWNER CONTRACT DECISIONS AND RECORDING AUTHORIZATION — 2026-07-13/14, approving the proposed contract with owner decisions D1=A, D2=A (revised exact wordings below), D3=A, D4=B (no visual grouping in Workstream 5), D5=A, D6=A, and the D4 contract correction incorporated throughout.
 **Workstream / Priority:** Workstream 5 — P1 Unified Risk and Safety Presentation
 **Classification:** B — Deliverable assembly / synthesis only
