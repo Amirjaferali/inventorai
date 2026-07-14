@@ -1,6 +1,16 @@
 # Workstream 6 — Requirement Landscape Synthesis — Increment Contract
 
-**Status:** OWNER-APPROVED — RECORDED — NO IMPLEMENTATION AUTHORIZED
+**Status:** OWNER-APPROVED — CONTRACT / CANONICAL (CANONICALLY RECORDED) — NO IMPLEMENTATION AUTHORIZED
+
+**Canonical recording:** recorded through Draft PR #189 and merged into the
+authoritative branch `feature/atomic-json-session-persistence` by true
+two-parent merge `90f1c34877743510535c397798fcd7da88693606` (ordered parents
+`622176980cc04273a415275332f3780f6ed3ba90` (base),
+`6dee3dd2fb0b2ba51aa93961921e8deae334d919` (reviewed head)); independent
+contract review and focused F1/F2 re-review: PASSED. This canonicalization
+changes no scope, wording decision, RED gate, implementation boundary,
+deferred requirement, or technical provision of this contract. BASE RED
+remains NOT AUTHORIZED; implementation remains NOT AUTHORIZED.
 
 **Workstream:** Workstream 6 — Requirement Landscape Synthesis (P1;
 `DELIVERABLE_STABILIZATION_REMEDIATION_PLAN.md` §5 item 6, §15 row 6).
