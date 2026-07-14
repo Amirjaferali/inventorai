@@ -195,8 +195,30 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
         | selectattr('resolving_action', 'equalto', req.resolving_action)
         | selectattr('supporting_references', 'equalto', req.supporting_references)
         | selectattr('has_linked_risk', 'equalto', req.has_linked_risk) | list %}
+  {# Workstream 6 (contract §2.1; owner decisions D1/D2/D5): within one
+     metadata group, byte-identical statements are presented once with the
+     owner-approved repetition sentence taken from the additive
+     _session_meta.requirement_landscape_synthesis metadata (byte-identical
+     grouping only; the underlying rl.requirements rows, count, IDs, and
+     ordering are untouched; every non-byte-identical statement remains fully
+     visible exactly once). #}
+  {% set rls6 = package["_session_meta"].requirement_landscape_synthesis %}
+  {% set gseen = namespace(stmts=[]) %}
   {% for m in members %}
+  {% if m.statement not in gseen.stmts %}
+  {% set _ = gseen.stmts.append(m.statement) %}
   <div class="field-label">{{ m.statement }}</div>
+  {% for g in rls6.statement_groups %}
+  {% if g.repetition_note and g.statement == m.statement
+        and g.provenance == m.provenance and g.status == m.status
+        and g.criticality == m.criticality
+        and g.criticality_authority == m.criticality_authority
+        and g.criticality_rationale == m.criticality_rationale
+        and g.resolving_action == m.resolving_action %}
+  <div class="field-value" style="color:#667">{{ g.repetition_note }}</div>
+  {% endif %}
+  {% endfor %}
+  {% endif %}
   {% endfor %}
   <div class="field-value"><strong>Provenance:</strong> {{ req.provenance }}</div>
   <div class="field-value"><strong>Status:</strong> {{ req.status }}</div>

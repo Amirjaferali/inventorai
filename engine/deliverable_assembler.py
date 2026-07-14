@@ -274,6 +274,13 @@ def assemble_deliverable(state: IdeaState) -> dict:
     # and alters no underlying record. Nested under _session_meta so the
     # canonical section contract and the frozen section_13 shape are unchanged.
     package["_session_meta"]["risk_safety_linkage"] = _risk_safety_linkage(package)
+    # Workstream 6 (REQUIREMENT_LANDSCAPE_SYNTHESIS_INCREMENT_CONTRACT.md §2.3;
+    # owner decision D5): additive exact-repeat synthesis metadata, assembled
+    # EXCLUSIVELY from the already-serialized Section 13 rows (never from raw
+    # state — no disposition re-derivation). Nested under _session_meta so the
+    # canonical section contract and the pinned Section 13 shape are unchanged.
+    package["_session_meta"]["requirement_landscape_synthesis"] = (
+        _requirement_landscape_synthesis(package))
     return package
 
 
@@ -324,6 +331,81 @@ def _risk_safety_linkage(package):
             if signals_present and not s6["risks"] else None),
         "section_13_note": (_LINKAGE_SECTION_13_NOTE
                             if signals_present else None),
+    }
+
+
+# --- Workstream 6: exact-repeat requirement landscape synthesis -------------------
+# Owner-approved exact repetition wording (contract §7.4; owner decision D2).
+# The count is always derived from the assembled data — never hard-coded.
+_REPETITION_NOTE_TEMPLATE = (
+    "This statement was recorded {count} times during the session.")
+# The four assertion-anchored public labels. Repetition synthesis applies ONLY
+# to inventor-record rows (these labels): system-worded rows (contradiction
+# pairs, gap anchors, pending requests) are never grouped, so the sentence
+# "recorded ... during the session" is never attached to a non-inventor row.
+_SYNTHESIS_GROUPABLE_LABELS = frozenset({
+    "Recorded answer", "Recorded unknown", "Deferred decision",
+    "Provisional assumption",
+})
+
+
+def _requirement_landscape_synthesis(package):
+    """Contract §2.3 synthesis metadata: read-only over the ALREADY-ASSEMBLED
+    Section 13 rows (never over raw state). Grouping key = the FULL serialized
+    row (byte-identical statement AND byte-identical metadata) so two rows are
+    grouped ONLY when they are exact repeats — a statement recorded with any
+    differing metadata (for example an owner-confirmed criticality) is never
+    merged, and non-byte-identical statements are never grouped. Deterministic,
+    JSON-safe, additive; carries exactly the values the template renders.
+
+    Fields per statement group (narrowest set that lets the template locate
+    the group inside the Phase 7C metadata-tuple presentation WITHOUT
+    re-deriving disposition from raw state, and lets the GREEN parity test
+    machine-compare metadata against JSON and HTML):
+      * statement            — the exact inventor statement represented;
+      * provenance/status/criticality/criticality_authority/
+        criticality_rationale/resolving_action — the row's already-public
+        metadata tuple (group discriminator; byte-equal to the rows);
+      * occurrence_count     — number of byte-identical rows in the group;
+      * repetition_note      — the exact owner-approved sentence with the
+        derived count, or None for a single occurrence.
+    """
+    rows = package["section_13_requirement_landscape"]["requirements"]
+    groups = []
+    index = {}
+    for row in rows:
+        if row["provenance"] not in _SYNTHESIS_GROUPABLE_LABELS:
+            continue
+        key = (row["statement"], row["provenance"], row["status"],
+               row["criticality"], row["criticality_authority"],
+               row["criticality_rationale"], row["resolving_action"],
+               tuple(row["supporting_references"]), row["has_linked_risk"])
+        if key in index:
+            index[key]["occurrence_count"] += 1
+        else:
+            entry = {
+                "statement":             row["statement"],
+                "provenance":            row["provenance"],
+                "status":                row["status"],
+                "criticality":           row["criticality"],
+                "criticality_authority": row["criticality_authority"],
+                "criticality_rationale": row["criticality_rationale"],
+                "resolving_action":      row["resolving_action"],
+                "occurrence_count":      1,
+                "repetition_note":       None,
+            }
+            index[key] = entry
+            groups.append(entry)
+    for entry in groups:
+        if entry["occurrence_count"] > 1:
+            entry["repetition_note"] = _REPETITION_NOTE_TEMPLATE.format(
+                count=entry["occurrence_count"])
+    return {
+        "synthesis_basis":      "byte_identical_statement_and_metadata",
+        "statement_groups":     groups,
+        "group_total":          len(groups),
+        "repeated_group_total": sum(1 for g in groups
+                                    if g["occurrence_count"] > 1),
     }
 
 

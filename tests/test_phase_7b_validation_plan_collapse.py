@@ -20,7 +20,14 @@ from engine.idea_state import (
 )
 from web.app import app, SESSION_STORE
 
-_GENERIC = "Validate the recorded answer against the available evidence."
+# Workstream 6 (owner-authorized F1-corrected D4 amendment): these fixtures
+# record provisional_assumption dispositions, whose Section 14 step statement
+# now carries the owner-approved provisional-assumption resolving action via
+# the authorized Section 13 -> Section 14 pass-through (contract §4.1). Was:
+# "Validate the recorded answer against the available evidence." Grouping,
+# collapse, responsibility, confidence, ordering, count, key-set, and
+# rendered-structure assertions below are unchanged.
+_GENERIC = "Validate, revise, or replace it before relying on it."
 _FORBIDDEN = ["validated", "verified", "feasible", "certified", "guaranteed",
               "pass/fail", "criticality", "market-ready", "build-ready"]
 

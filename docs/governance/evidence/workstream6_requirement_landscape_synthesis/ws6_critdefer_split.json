@@ -1,0 +1,18 @@
+{
+ "action": "summary_later (explicit criticality deferral)",
+ "before_group_total": 6,
+ "after_group_total": 7,
+ "before_core_counts": [
+  8
+ ],
+ "after_core_counts": [
+  1,
+  7
+ ],
+ "after_deferred_row_authority": [
+  "Confirmation not yet available"
+ ],
+ "unrelated_session_meta_keys_byte_identical": true,
+ "unrelated_sections_byte_identical": true,
+ "row_total_unchanged": true
+}

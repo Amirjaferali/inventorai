@@ -392,21 +392,65 @@ def test_r4_requirement_landscape_synthesis_metadata_with_parity(ws1_journey):
         "_session_meta.requirement_landscape_synthesis does not exist")
     rls = meta["requirement_landscape_synthesis"]
     json.dumps(rls)                       # JSON-safe additive metadata only
-    # Machine parity: derive the repetition facts from the Section 13 JSON
-    # rows (byte-identical statement counting), then require the rendered
-    # HTML to present each repeated statement once with the machine-built
-    # owner-approved sentence for exactly that count.
-    statements = [r["statement"]
-                  for r in package["section_13_requirement_landscape"]["requirements"]]
+    rows = package["section_13_requirement_landscape"]["requirements"]
     sec = _section13(html)
-    rendered = _standalone_counts(sec, sorted(set(statements), key=len))
-    for stmt in set(statements):
-        n = statements.count(stmt)
-        if n > 1:
-            assert rendered[stmt] == 1
-            assert REPETITION_SENTENCE.format(n=n) in sec
+
+    # --- Direct machine-comparable METADATA <-> JSON parity (GREEN
+    # strengthening carried forward from the PR #191 merge record): every
+    # metadata statement group's occurrence_count must equal the number of
+    # FULLY byte-identical Section 13 rows (statement AND metadata), and its
+    # repetition_note must be exactly the owner sentence built from that
+    # derived count (None for a single occurrence). The groups must cover
+    # every inventor-record row exactly once.
+    def _row_key(r):
+        return (r["statement"], r["provenance"], r["status"],
+                r["criticality"], r["criticality_authority"],
+                r["criticality_rationale"], r["resolving_action"])
+    groupable = [r for r in rows
+                 if r["provenance"] in ("Recorded answer", "Recorded unknown",
+                                        "Deferred decision",
+                                        "Provisional assumption")]
+    groups = rls["statement_groups"]
+    assert sum(g["occurrence_count"] for g in groups) == len(groupable)
+    assert rls["group_total"] == len(groups)
+    for g in groups:
+        expected_count = sum(1 for r in groupable if _row_key(r) == (
+            g["statement"], g["provenance"], g["status"], g["criticality"],
+            g["criticality_authority"], g["criticality_rationale"],
+            g["resolving_action"]))
+        assert g["occurrence_count"] == expected_count, (
+            "metadata count %d disagrees with the %d byte-identical JSON "
+            "rows for %r" % (g["occurrence_count"], expected_count,
+                             g["statement"][:60]))
+        if g["occurrence_count"] > 1:
+            assert g["repetition_note"] == REPETITION_SENTENCE.format(
+                n=g["occurrence_count"])
         else:
-            assert rendered[stmt] == 1
+            assert g["repetition_note"] is None
+    assert rls["repeated_group_total"] == sum(
+        1 for g in groups if g["occurrence_count"] > 1)
+
+    # --- Direct machine-comparable METADATA <-> HTML parity: the rendered
+    # HTML must present exactly the metadata's statements and repetition
+    # sentences — the note string asserted below is taken FROM the metadata
+    # (never rebuilt independently), the statement must render standalone
+    # exactly once, and the total number of rendered repetition sentences
+    # must equal the metadata's repeated-group total, so the test fails if
+    # metadata says one count or statement while HTML presents another.
+    rendered = _standalone_counts(
+        sec, sorted({g["statement"] for g in groups}, key=len))
+    for g in groups:
+        assert rendered[g["statement"]] == 1, (
+            "metadata statement not rendered standalone exactly once: %r"
+            % g["statement"][:60])
+        if g["repetition_note"] is not None:
+            assert g["repetition_note"] in sec, (
+                "metadata repetition sentence missing from HTML: %r"
+                % g["repetition_note"])
+    assert sec.count("This statement was recorded ") == (
+        rls["repeated_group_total"]), (
+        "HTML presents a different number of repetition sentences than the "
+        "metadata records")
 
 
 def test_r5_empty_content_placeholder_owner_wording():

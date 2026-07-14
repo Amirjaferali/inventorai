@@ -135,13 +135,25 @@ def test_section13_data_and_requirements_unchanged():
         assert r["criticality_authority"] == "assigned automatically by the system; not yet reviewed"
 
 
+# Workstream 6 (owner-authorized D4 amendment): the exact owner-approved
+# provisional-assumption status sentence NEGATES validation and is narrowly
+# allowlisted below; the forbidden-token protection itself (including the
+# token "validated" against any positive validation claim) is unchanged.
+_WS6_ALLOWED_NEGATED_SENTENCE = (
+    "This assumption was recorded as a temporary direction and has not "
+    "been validated.")
+
+
 def test_no_forbidden_wording_introduced_by_collapse():
     # scan only the collapsed statement/metadata region, not the pre-existing
     # advisory risk_disclaimer (which legitimately negates "safe/verified").
     _, body = _render(_state_identical())
     sec = _section13(body)
     cut = sec.find("No structurally grounded risks")
-    added_region = (sec[:cut] if cut >= 0 else sec).lower()
+    added_region = (sec[:cut] if cut >= 0 else sec)
+    # Remove ONLY the exact owner-approved negated sentence (byte-exact);
+    # every other occurrence of every forbidden token still fails the scan.
+    added_region = added_region.replace(_WS6_ALLOWED_NEGATED_SENTENCE, "").lower()
     for w in _FORBIDDEN:
         assert w not in added_region, f"forbidden wording in Section 13 body: {w!r}"
 
