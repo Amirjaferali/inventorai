@@ -1,0 +1,89 @@
+{
+ "ws1": {
+  "json_row_total": 13,
+  "json_core_statement_rows": 8,
+  "html_core_standalone_renderings": 1,
+  "html_distinct_statement_renderings": {
+   "I don't know yet.": 1,
+   "The current sensor detects an abnormal rise because the shunt resistor voltage i": 1
+  },
+  "html_repetition_sentence_count": 1,
+  "html_owner_sentence_for_8_present": true,
+  "metadata_present": true,
+  "requirement_ids": [
+   "req:assertion:rec_1",
+   "req:assertion:rec_2",
+   "req:assertion:rec_3",
+   "req:assertion:rec_4",
+   "req:assertion:rec_5",
+   "req:assertion:rec_6",
+   "req:assertion:rec_7",
+   "req:assertion:rec_8",
+   "req:assertion:rec_9",
+   "req:assertion:rec_10",
+   "req:assertion:rec_11",
+   "req:assertion:rec_12",
+   "req:assertion:rec_13"
+  ]
+ },
+ "unknown": {
+  "disposition": "unknown",
+  "content_verbatim": "I don't know the safe cutoff current yet.",
+  "requirement_id_scheme": "req:assertion:rec_1",
+  "s13_statement": "I don't know the safe cutoff current yet.",
+  "s13_provenance": "Recorded unknown",
+  "s13_status": "You indicated that this is not known yet.",
+  "s13_resolving_action": "This item remains unresolved. It may later be addressed through additional information, evidence, or specialist input.",
+  "s13_criticality": "Not yet determined",
+  "s13_criticality_authority": "assigned automatically by the system; not yet reviewed",
+  "s14_provenance": "Recorded unknown",
+  "s14_statement": "This item remains unresolved. It may later be addressed through additional information, evidence, or specialist input.",
+  "s14_step_total": 1,
+  "s14_blocked_total": 0
+ },
+ "deferred": {
+  "disposition": "deferred",
+  "content_verbatim": "I will decide the enclosure later.",
+  "requirement_id_scheme": "req:assertion:rec_1",
+  "s13_statement": "I will decide the enclosure later.",
+  "s13_provenance": "Deferred decision",
+  "s13_status": "You chose to defer this item.",
+  "s13_resolving_action": "This item remains unresolved and can be revisited when you are ready to decide.",
+  "s13_criticality": "Not yet determined",
+  "s13_criticality_authority": "assigned automatically by the system; not yet reviewed",
+  "s14_provenance": "Deferred decision",
+  "s14_statement": "This item remains unresolved and can be revisited when you are ready to decide.",
+  "s14_step_total": 1,
+  "s14_blocked_total": 0
+ },
+ "provisional": {
+  "disposition": "provisional_assumption",
+  "content_verbatim": "Assume a 5V relay coil for now.",
+  "requirement_id_scheme": "req:assertion:rec_1",
+  "s13_statement": "Assume a 5V relay coil for now.",
+  "s13_provenance": "Provisional assumption",
+  "s13_status": "This assumption was recorded as a temporary direction and has not been validated.",
+  "s13_resolving_action": "Validate, revise, or replace it before relying on it.",
+  "s13_criticality": "Not yet determined",
+  "s13_criticality_authority": "assigned automatically by the system; not yet reviewed",
+  "s14_provenance": "Provisional assumption",
+  "s14_statement": "Validate, revise, or replace it before relying on it.",
+  "s14_step_total": 1,
+  "s14_blocked_total": 0
+ },
+ "emptycontent": {
+  "disposition": "answered",
+  "content_verbatim": "",
+  "requirement_id_scheme": "req:assertion:rec_1",
+  "s13_statement": "Insufficient information was recorded to organize this item reliably.\nThis does not indicate that the idea is invalid; the item remains unresolved.",
+  "s13_provenance": "Recorded answer",
+  "s13_status": "Recorded from your answers (not yet verified)",
+  "s13_resolving_action": "Validate the recorded answer against the available evidence.",
+  "s13_criticality": "Not yet determined",
+  "s13_criticality_authority": "assigned automatically by the system; not yet reviewed",
+  "s14_provenance": "Recorded answer",
+  "s14_statement": "Validate the recorded answer against the available evidence.",
+  "s14_step_total": 1,
+  "s14_blocked_total": 0
+ }
+}
