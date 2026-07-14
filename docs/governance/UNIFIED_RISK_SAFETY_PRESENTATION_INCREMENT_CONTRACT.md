@@ -2,8 +2,9 @@
 
 **Document ID:** UNIFIED_RISK_SAFETY_PRESENTATION_INCREMENT_CONTRACT
 **Type:** Increment Contract (DELIVERABLE_STABILIZATION_REMEDIATION_PLAN.md §9)
-**Status:** OWNER-APPROVED — CONTRACT / CANONICAL (CANONICALLY RECORDED) — NO IMPLEMENTATION AUTHORIZED
+**Status:** OWNER-APPROVED — CLOSED / CANONICAL — IMPLEMENTED, VERIFIED, AND EVIDENCED
 **Canonical recording:** recording PR #185; true two-parent merge `8b6868fce5e5fe81f221f3a6e8ab271552751339` (ordered parents `031f455825b2d03c7980e55e990953c063e436f6`, `23edeabeaec834d96d196fa61a53fa5b60cf4cd8`); contract blob `92029fdfcc2a6a05374a72b0782808c9d3fa24da`; recorded 2026-07-14.
+**Canonical closure:** implementation and evidence PR #187; true two-parent merge `af8b89b5ea5dfa2d4c7025066a2a377a4d5671ef` (ordered parents `3bf67da09d2a0f64591ba6c874507eada54897c8`, `22cdda37d53dad33ec4b2dfb32a10b6a12acce21`; carrying RED `3cef5eb79a3c3483903f3e0acbe59c18dc05caf0`, GREEN `97b6725953150509059dd41ba623e438f939f094`, evidence `22cdda37d53dad33ec4b2dfb32a10b6a12acce21`); evidence directory `docs/governance/evidence/workstream5_unified_risk_safety/` (22 files, manifest 21/21 OK); independent HEAD GREEN review PASSED; independent evidence review PASSED; non-blocking findings N1/N2 and the Case-C prose observation remain recorded, not fixed; closed 2026-07-14.
 **Owner approval record:** WORKSTREAM 5 OWNER CONTRACT DECISIONS AND RECORDING AUTHORIZATION — 2026-07-13/14, approving the proposed contract with owner decisions D1=A, D2=A (revised exact wordings below), D3=A, D4=B (no visual grouping in Workstream 5), D5=A, D6=A, and the D4 contract correction incorporated throughout.
 **Workstream / Priority:** Workstream 5 — P1 Unified Risk and Safety Presentation
 **Classification:** B — Deliverable assembly / synthesis only
