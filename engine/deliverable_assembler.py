@@ -197,7 +197,7 @@ def assemble_deliverable(state: IdeaState) -> dict:
         raise ValueError("state.idea_id must be set before assembling a deliverable")
     open_gaps   = [g for g in state.gaps if g.status == OPEN]
     closed_gaps = [g for g in state.gaps if g.status == CLOSED]
-    return {
+    package = {
         "package_version": PACKAGE_VERSION,
         "schema_id":       SCHEMA_ID,
         "session_id":      state.idea_id,
@@ -266,6 +266,64 @@ def assemble_deliverable(state: IdeaState) -> dict:
             # confirmations are retained in session history, never reattached.
             "stale_criticality_confirmations": _stale_criticality_meta(state),
         },
+    }
+    # Workstream 5 (UNIFIED_RISK_SAFETY_PRESENTATION_INCREMENT_CONTRACT.md §4;
+    # owner decision D5): additive linkage object, synthesized EXCLUSIVELY from
+    # values already present in the assembled package. It re-runs no detection,
+    # mines no text, infers no severity, creates no risk, promotes no signal,
+    # and alters no underlying record. Nested under _session_meta so the
+    # canonical section contract and the frozen section_13 shape are unchanged.
+    package["_session_meta"]["risk_safety_linkage"] = _risk_safety_linkage(package)
+    return package
+
+
+# --- Workstream 5: unified risk and safety presentation linkage -------------------
+# Owner-approved exact public wordings (contract §5; owner decision D2). Rendered
+# ONLY when inventor-stated safety signals exist; None otherwise (defined
+# no-signal semantics, contract §11). Byte-exact — never paraphrased.
+_LINKAGE_SECTION_6_NOTE = (
+    "You also described possible safety consequences in your own words.\n"
+    "See “Inventor-Stated Safety Signals.”\n\n"
+    "These are your statements, not confirmed risks, and they still require\n"
+    "independent validation.")
+_LINKAGE_SECTION_6_EMPTY_QUALIFIED = (
+    "No system-derived risks were identified from the current session state.\n\n"
+    "This does not mean the idea is safe or risk-free. Safety consequences you\n"
+    "described are listed separately under “Inventor-Stated Safety Signals” and\n"
+    "have not been independently validated.")
+_LINKAGE_SECTION_13_NOTE = (
+    "You also described possible safety consequences in your own words.\n\n"
+    "They are listed separately under “Inventor-Stated Safety Signals.” They are\n"
+    "not structural risk records and have not been independently validated.")
+
+
+def _risk_safety_linkage(package):
+    """Contract §4.1 linkage synthesis: read-only over the ALREADY-ASSEMBLED
+    package (never over raw state), returning the additive
+    _session_meta.risk_safety_linkage object. The distinct semantic categories
+    are preserved — inventor-stated signals are never merged into, or promoted
+    to, system-derived or structural risks; every truthful disclaimer stays."""
+    signals = package["_session_meta"]["inventor_stated_safety_signals"]
+    s6 = package["section_6_risks"]
+    s13 = package["section_13_requirement_landscape"]
+    signals_present = bool(signals["signals"])
+    return {
+        "signals_present":            signals_present,
+        "signal_total":               signals["total"],
+        "section_6_risk_total":       s6["total"],
+        "section_6_high_count":       s6["high_count"],
+        "section_6_medium_count":     s6["medium_count"],
+        "section_6_low_count":        s6["low_count"],
+        "section_13_has_structural_risks": s13["has_risks"],
+        "acknowledged_unknown_count": package["section_8_unresolved_items"][
+                                          "acknowledged_unknown_count"],
+        "section_6_note": (_LINKAGE_SECTION_6_NOTE
+                           if signals_present else None),
+        "section_6_empty_qualification": (
+            _LINKAGE_SECTION_6_EMPTY_QUALIFIED
+            if signals_present and not s6["risks"] else None),
+        "section_13_note": (_LINKAGE_SECTION_13_NOTE
+                            if signals_present else None),
     }
 
 

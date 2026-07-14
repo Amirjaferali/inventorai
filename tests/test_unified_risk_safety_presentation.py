@@ -19,15 +19,17 @@ IdeaState in web.app.SESSION_STORE, engine.deliverable_assembler
 .assemble_deliverable, and the rendered /session/<sid>/deliverable HTML.
 Deterministic committed inputs only; no mocks, no network, no dependency on
 PR #167 or PR #162.
-Output contract: two disjoint groups. "PROTECTED INVARIANT" tests (P1-P6)
-must pass on base AND at head. "RED" tests (R1-R5) fail on base because the
-contract §4 linkage block (_session_meta.risk_safety_linkage) and the §5
-wordings do not exist yet; each RED failure carries an obligation-specific
-message naming the missing contract behavior, never a fixture defect. R6 is
-DOCUMENTATION-ONLY (owner decision D4): it records the existing
-near-duplicate signal presentation as a known limitation, passes on base
-AND at head, and is NOT a RED-to-GREEN gate. Zero skipped and zero xfailed
-tests at every stage.
+Output contract: "PROTECTED INVARIANT" tests (P1-P6) must pass on base AND
+at head. "RED" tests (R1-R5) failed on the recorded BASE RED commit
+(3cef5eb79a3c3483903f3e0acbe59c18dc05caf0) because the contract §4 linkage
+block (_session_meta.risk_safety_linkage) and the §5 wordings did not exist;
+at HEAD GREEN they prove the implemented linkage behavior, and the GREEN
+group (G1-G5) additionally pins the §5 wordings BYTE-EXACT in the JSON
+linkage object with machine-compared JSON/HTML parity and defined no-signal
+semantics. R6 is DOCUMENTATION-ONLY (owner decision D4): it records the
+existing near-duplicate signal presentation as a known limitation, passes on
+base AND at head, and is NOT a RED-to-GREEN gate. Zero skipped and zero
+xfailed tests at every stage.
 Prohibited behaviors: must not modify production source, templates, any
 other test file (including tests/test_deliverable_hygiene.py), fixtures,
 or evidence; must not weaken the frozen disclaimer, signal fields, or
@@ -102,8 +104,6 @@ FROZEN_S13_DISCLAIMER = (
 )
 
 _SEVERITIES = {"high", "medium", "low"}
-_RAW_TOKENS = ("inventor_stated_safety_signals\" leaked", "UNDETERMINED",
-               "system-derived", "owner-confirmed", "LEGACY_UNSPECIFIED")
 
 
 def _collapse(text):
@@ -245,10 +245,19 @@ class TestProtectedInvariants:
         the deliverable HTML exactly as today (no grouping, no hiding, no
         abbreviation beyond the existing excerpt behavior)."""
         _, package, html = ws1_journey
-        for sig in package["_session_meta"]["inventor_stated_safety_signals"]["signals"]:
+        signals = package["_session_meta"]["inventor_stated_safety_signals"]["signals"]
+        assert signals, "fixture defect: no signals to verify"
+        for sig in signals:
             assert sig["statement"] in html, (
                 "signal statement no longer rendered: %s" % sig["signal_id"])
-            assert sig["signal_id"] not in ("",)
+            assert re.fullmatch(r"SIG-\d{3}", sig["signal_id"]), sig["signal_id"]
+            for field in ("source", "provenance", "safety_subject",
+                          "failure_condition", "possible_consequence",
+                          "validation_status", "display_label",
+                          "caution_text", "statement"):
+                assert sig[field], "empty per-signal field %r" % field
+            assert sig["provenance"] == "inventor_stated"
+            assert sig["validation_status"] == "requires_independent_validation"
 
 
 # =============================================================================
@@ -305,13 +314,15 @@ class TestLinkageRed:
         MISSING ON BASE."""
         _, _, html = mature_gap_free_journey
         region = _s6_region(html)
-        if "No risks recorded." not in region:
-            pytest.fail("fixture defect: expected the current bare empty "
-                        "Section 6 message on the mature/gap-free fixture")
+        # On BASE this region carried the bare unqualified message (proven at
+        # the recorded RED gate); at HEAD the qualification must replace it.
         assert _collapse(WORDING_S6_EMPTY_QUALIFIED) in _collapse(region), (
             "missing behavior: the bare 'No risks recorded.' renders beside "
             "populated inventor-stated safety signals without the required "
             "qualification (contract §4.3/§5.2)")
+        assert "No risks recorded." not in region, (
+            "the bare unqualified empty message must not render while "
+            "inventor-stated safety signals exist (contract §4.3)")
 
     def test_r5_disconnection_in_both_json_and_html(self, ws1_journey):
         """Contract §4.5 (R5): the linkage truth must exist in BOTH the
@@ -325,6 +336,99 @@ class TestLinkageRed:
             "JSON (present=%s) and HTML (present=%s) — the disconnection "
             "exists on both inventor-facing surfaces (contract §4.5)"
             % (json_has, html_has))
+
+
+# =============================================================================
+# GROUP G — HEAD GREEN strengthening (contract §16): byte-exact JSON wordings
+# and machine-compared JSON/HTML parity.
+# =============================================================================
+class TestGreenLinkage:
+    def test_g1_json_linkage_wordings_byte_exact(self, ws1_journey):
+        """Contract §5/§11: the JSON linkage object carries the three
+        owner-approved public wordings BYTE-EXACT (Section 6 note and
+        Section 13 note on a signal-bearing journey; the empty-state
+        qualification is None here because Section 6 has rows)."""
+        _, package, _ = ws1_journey
+        linkage = package["_session_meta"]["risk_safety_linkage"]
+        assert linkage["section_6_note"] == WORDING_S6_LINKAGE
+        assert linkage["section_13_note"] == WORDING_S13_ADJACENT
+        assert linkage["section_6_empty_qualification"] is None
+
+    def test_g2_json_linkage_empty_state_wording_byte_exact(
+            self, mature_gap_free_journey):
+        """Contract §5.2/§11: on the empty-Section-6 signal-bearing state the
+        qualification wording is carried byte-exact in JSON."""
+        _, package, _ = mature_gap_free_journey
+        linkage = package["_session_meta"]["risk_safety_linkage"]
+        assert linkage["section_6_empty_qualification"] == \
+            WORDING_S6_EMPTY_QUALIFIED
+        assert linkage["section_6_note"] == WORDING_S6_LINKAGE
+        assert linkage["section_13_note"] == WORDING_S13_ADJACENT
+
+    def _assert_parity(self, package, html):
+        """Machine-compared JSON->HTML parity (contract §4.5): iterate the
+        linkage object's wording fields — every non-None wording must appear
+        (whitespace-collapsed) in the rendered HTML, and every None wording
+        must be absent; the totals must equal the underlying blocks."""
+        linkage = package["_session_meta"]["risk_safety_linkage"]
+        collapsed_html = _collapse(html)
+        for field, wording in (
+            ("section_6_note", WORDING_S6_LINKAGE),
+            ("section_6_empty_qualification", WORDING_S6_EMPTY_QUALIFIED),
+            ("section_13_note", WORDING_S13_ADJACENT),
+        ):
+            if linkage[field] is not None:
+                assert linkage[field] == wording, field
+                assert _collapse(wording) in collapsed_html, (
+                    "JSON carries %s but HTML does not render it" % field)
+            else:
+                assert _collapse(wording) not in collapsed_html, (
+                    "HTML renders %s but JSON carries None" % field)
+        signals = package["_session_meta"]["inventor_stated_safety_signals"]
+        s6 = package["section_6_risks"]
+        assert linkage["signals_present"] == bool(signals["signals"])
+        assert linkage["signal_total"] == signals["total"]
+        assert linkage["section_6_risk_total"] == s6["total"]
+        assert (linkage["section_6_high_count"], linkage["section_6_medium_count"],
+                linkage["section_6_low_count"]) == (
+            s6["high_count"], s6["medium_count"], s6["low_count"])
+        assert linkage["section_13_has_structural_risks"] == \
+            package["section_13_requirement_landscape"]["has_risks"]
+
+    def test_g3_json_html_parity_signal_bearing(self, ws1_journey):
+        """Contract §4.5: machine-compared parity on the WS1 journey."""
+        _, package, html = ws1_journey
+        self._assert_parity(package, html)
+
+    def test_g4_json_html_parity_empty_section6(self, mature_gap_free_journey):
+        """Contract §4.5: machine-compared parity on the empty-Section-6
+        signal-bearing state."""
+        _, package, html = mature_gap_free_journey
+        self._assert_parity(package, html)
+
+    def test_g5_no_signal_state_carries_no_notes(self):
+        """Contract §11 defined no-signal semantics: with zero signals the
+        linkage block records the state truthfully, every wording field is
+        None, and the existing unqualified Section 6 rendering is unchanged."""
+        client, sid = _start(IDEA_WS1)
+        state = SESSION_STORE[sid]["state"]
+        try:
+            package = assemble_deliverable(state)
+            signals = package["_session_meta"]["inventor_stated_safety_signals"]
+            if signals["signals"]:
+                pytest.fail("fixture defect: fresh session unexpectedly "
+                            "produced safety signals")
+            linkage = package["_session_meta"]["risk_safety_linkage"]
+            assert linkage["signals_present"] is False
+            assert linkage["section_6_note"] is None
+            assert linkage["section_6_empty_qualification"] is None
+            assert linkage["section_13_note"] is None
+            html = client.get(f"/session/{sid}/deliverable").get_data(as_text=True)
+            for wording in (WORDING_S6_LINKAGE, WORDING_S6_EMPTY_QUALIFIED,
+                            WORDING_S13_ADJACENT):
+                assert _collapse(wording) not in _collapse(html)
+        finally:
+            SESSION_STORE.pop(sid, None)
 
 
 # =============================================================================
