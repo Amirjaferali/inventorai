@@ -1,8 +1,31 @@
 # Workstream 6 — Requirement Landscape Synthesis — Increment Contract
 
-**Status:** OWNER-APPROVED — CONTRACT / CANONICAL (CANONICALLY RECORDED) — NO IMPLEMENTATION AUTHORIZED
+**Status:** OWNER-CLOSED — CLOSED / CANONICAL
 
-**Canonical recording:** recorded through Draft PR #189 and merged into the
+**Canonical closure:** Workstream 6 is owner-closed after the complete
+canonical chain: Increment Contract recorded through Draft PR #189 (merge
+`90f1c34877743510535c397798fcd7da88693606`); contract status canonicalized
+through PR #190 (merge `fbe645a761b278b18f57b27a9d691880d989597f`);
+deterministic BASE RED recorded through PR #191 (merge
+`721b4613618d74e49707ced4d80b0571e5a2073f`); bounded implementation, HEAD
+GREEN tests, owner-authorized protected-test compatibility amendments, and
+the 42-file evidence package merged through PR #192 (true two-parent merge
+`26cdb63e0c63dc3079eaf3b3e7b3612c3bb1c774`; reviewed head
+`9c3f6b25ffd7f371929e2910aa1700842192404a`; evidence directory
+`docs/governance/evidence/workstream6_requirement_landscape_synthesis/`).
+The implementation is HEAD GREEN and canonical; the evidence is canonical;
+the independent implementation review PASSED; the independent evidence
+review PASSED; the final post-merge verification PASSED (focused 12 passed;
+affected 34 passed; protected 249 passed with one known pre-existing skip;
+full suite 31 known failures confined to `tests/test_domain_registry.py`;
+evidence validator PASSED; manifest 41/41 OK). Closure is bounded to the
+owner decisions D1–D7 of this contract: Workstream 6 is closed WITHOUT any
+claim of broader semantic synthesis, specialist routing, domain-capability
+support, or Workstream 7 functionality. Known limitations L1–L5 and the
+evidence-validator hardening observation remain recorded, unresolved, and
+non-closure-blocking. No further Workstream 6 implementation is authorized.
+
+**Canonical recording (historical):** recorded through Draft PR #189 and merged into the
 authoritative branch `feature/atomic-json-session-persistence` by true
 two-parent merge `90f1c34877743510535c397798fcd7da88693606` (ordered parents
 `622176980cc04273a415275332f3780f6ed3ba90` (base),
