@@ -1,0 +1,33 @@
+# command: (cd /home/user/inventorai) python -m pytest tests/test_actionable_validation_plan.py -v
+============================= test session starts ==============================
+platform linux -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0 -- /usr/local/bin/python
+cachedir: .pytest_cache
+rootdir: /home/user/inventorai
+collecting ... collected 18 items
+
+tests/test_actionable_validation_plan.py::test_r1_answered_actions_must_be_requirement_linked_not_generic PASSED [  5%]
+tests/test_actionable_validation_plan.py::test_r2_requirement_linked_wording_with_byte_verbatim_embed PASSED [ 11%]
+tests/test_actionable_validation_plan.py::test_r3_undetermined_responsibility_uses_honest_two_line_wording PASSED [ 16%]
+tests/test_actionable_validation_plan.py::test_r4_meaningless_confidence_line_suppressed_in_html_json_unchanged PASSED [ 22%]
+tests/test_actionable_validation_plan.py::test_r5_pending_evidence_advisory_present_in_json_and_html PASSED [ 27%]
+tests/test_actionable_validation_plan.py::test_r6_pending_specialist_advisory_present_in_json_and_html PASSED [ 33%]
+tests/test_actionable_validation_plan.py::test_p1_exactly_one_step_or_blocked_item_per_eligible_requirement PASSED [ 38%]
+tests/test_actionable_validation_plan.py::test_p2_section13_section14_arithmetic_tie_unchanged PASSED [ 44%]
+tests/test_actionable_validation_plan.py::test_p3_vstep_and_vblock_id_schemes_unchanged PASSED [ 50%]
+tests/test_actionable_validation_plan.py::test_p4_source_requirement_ids_unchanged PASSED [ 55%]
+tests/test_actionable_validation_plan.py::test_p5_landscape_inherited_order_unchanged PASSED [ 61%]
+tests/test_actionable_validation_plan.py::test_p6_section13_rows_statements_ids_order_byte_unchanged PASSED [ 66%]
+tests/test_actionable_validation_plan.py::test_p7_disposition_passthrough_byte_unchanged PASSED [ 72%]
+tests/test_actionable_validation_plan.py::test_p8_grouping_collapse_headers_and_count_wording_unchanged PASSED [ 77%]
+tests/test_actionable_validation_plan.py::test_p9_inventor_statements_preserved_byte_verbatim PASSED [ 83%]
+tests/test_actionable_validation_plan.py::test_p10_internal_responsibility_and_confidence_tokens_unchanged PASSED [ 88%]
+tests/test_actionable_validation_plan.py::test_p11_advisory_absent_or_null_for_all_non_pending_rows PASSED [ 94%]
+tests/test_actionable_validation_plan.py::test_p12_no_specialist_tool_threshold_or_d13_claim_in_section14 PASSED [100%]
+
+=============================== warnings summary ===============================
+engine/domain_rules.py:7
+  /home/user/inventorai/engine/domain_rules.py:7: UserWarning: domain_registry: skipping domains/iot_electronics/domain.json (schema_version=None, expected '1.0')
+    _REGISTRY = load_registry("domains/")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 18 passed, 1 warning in 0.41s =========================

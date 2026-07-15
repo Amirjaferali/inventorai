@@ -1,0 +1,41 @@
+Workstream 7 protected-invariant machine record — BASE
+generated from BASE_WS1_JSON.json and the four case JSONs; all values below are read from the artifacts, not asserted from memory.
+
+P1 one step/blocked per requirement: steps=13 blocked=0 s13_total=13 -> OK
+P2 arithmetic tie: validation_step_total=13 blocked_item_total=0 s13_total=13 source=requirement_landscape
+P3/P4 ID schemes: all vstep:req:* = True; first=vstep:req:assertion:rec_1; last=vstep:req:assertion:rec_13
+P5 order: step_ids in landscape order (recorded verbatim below)
+  vstep:req:assertion:rec_1
+  vstep:req:assertion:rec_2
+  vstep:req:assertion:rec_3
+  vstep:req:assertion:rec_4
+  vstep:req:assertion:rec_5
+  vstep:req:assertion:rec_6
+  vstep:req:assertion:rec_7
+  vstep:req:assertion:rec_8
+  vstep:req:assertion:rec_9
+  vstep:req:assertion:rec_10
+  vstep:req:assertion:rec_11
+  vstep:req:assertion:rec_12
+  vstep:req:assertion:rec_13
+P6 Section 13 statements (verbatim, in order):
+  [Recorded answer] 'The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance.' action='Validate the recorded answer against the available evidence.'
+  [Recorded answer] 'The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance. If the sensing is wrong, the dangerous appliance could remain powered.' action='Validate the recorded answer against the available evidence.'
+  [Recorded answer] 'The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance. If it trips the wrong branch, the wrong appliance could be disconnected and it would fail to isolate the actual source of danger.' action='Validate the recorded answer against the available evidence.'
+  [Recorded unknown] "I don't know yet." action='This item remains unresolved. It may later be addressed through additional information, evidence, or specialist input.'
+  [Recorded answer] 'The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance. If the relay sticks, damage or overheating could continue and the fire risk could continue until someone notices.' action='Validate the recorded answer against the available evidence.'
+  [Recorded answer] 'The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance. The current sensing accuracy is essential; the buzzer volume and alert timing are adjustable.' action='Validate the recorded answer against the available evidence.'
+  [Recorded answer] 'The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance.' action='Validate the recorded answer against the available evidence.'
+  [Recorded answer] 'The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance.' action='Validate the recorded answer against the available evidence.'
+  [Recorded answer] 'The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance.' action='Validate the recorded answer against the available evidence.'
+  [Recorded answer] 'The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance.' action='Validate the recorded answer against the available evidence.'
+  [Recorded answer] 'The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance.' action='Validate the recorded answer against the available evidence.'
+  [Recorded answer] 'The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance.' action='Validate the recorded answer against the available evidence.'
+  [Recorded answer] 'The current sensor detects an abnormal rise because the shunt resistor voltage increases, therefore the microcontroller opens the relay to disconnect the appliance.' action='Validate the recorded answer against the available evidence.'
+P10 tokens: responsibility_tokens=['OWNER_EXECUTABLE', 'UNDETERMINED'] confidence_tokens=['UNDETERMINED']
+P11 advisory values across WS1 steps: ['None'] (advisory key present: False)
+P7 unknown: row.resolving_action == step.statement -> True ('This item remains unresolved. It may later be addressed through additional information, evidence, or specialist input.')
+P7 deferred: row.resolving_action == step.statement -> True ('This item remains unresolved and can be revisited when you are ready to decide.')
+P7 provisional_assumption: row.resolving_action == step.statement -> True ('Validate, revise, or replace it before relying on it.')
+criticality case: 'Essential to feasibility' rationale='Without the right fuse the device fails.'
+risk/safety linkage: signal_total=3 linkage_keys=['acknowledged_unknown_count', 'section_13_has_structural_risks', 'section_13_note', 'section_6_empty_qualification', 'section_6_high_count', 'section_6_low_count', 'section_6_medium_count', 'section_6_note', 'section_6_risk_total', 'signal_total', 'signals_present']

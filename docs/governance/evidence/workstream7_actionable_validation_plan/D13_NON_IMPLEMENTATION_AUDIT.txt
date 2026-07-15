@@ -1,0 +1,35 @@
+Workstream 7 D13 non-implementation audit
+
+D13 (Technical Capability Gap Detection and Actionable Research Guidance) status:
+MANDATORY FUTURE PRODUCT CAPABILITY — NOT CANCELLED — NOT SATISFIED BY GENERIC
+SPECIALIST REFERRAL — SEPARATELY OWNER-GATED — NOT AUTHORIZED IN WORKSTREAM 7
+
+Audit of the Workstream 7 implementation (diff e1e71b3b..52b1960f, 4 files, +78/-6):
+1. D13 was NOT designed: the diff adds no capability-gap detection logic, no
+   analysis of the inventor's domain or idea content, and no research-guidance
+   generation of any kind.
+2. D13 was NOT implemented: the only pending-specialist behavior added is a fixed,
+   owner-approved two-line advisory constant keyed by the anchor kind.
+3. D13 was NOT approximated: the advisory is identical for every pending_specialist
+   row regardless of content — no subsystem decomposition, no technical subdomain
+   identification, no precise research-topic generation.
+4. Generic specialist referral is NOT treated as D13 completion anywhere: the
+   advisory wording explicitly states the limitation ('The appropriate specialist
+   has not yet been identified by the system.') — an honest interim limitation
+   notice, not a referral, not routing, not identification.
+5. No specialist taxonomy exists in the diff or output (verified by the
+   invention-token scan: zero specialist types, tools, laboratories, standards,
+   simulations, thresholds, methods, products, companies, or services).
+6. No routing: no code path selects, matches, ranks, or suggests any specialist,
+   provider, or destination.
+7. No governed technical knowledge source was added or consulted.
+8. No tool, laboratory, standard, method, or simulation recommendation appears in
+   any system-generated field (see INVENTION_TOKEN_SCAN.txt).
+9. No D13-completion claim appears in any artifact, wording, comment, or test
+   (the scan covers 'technical capability gap', 'research guidance',
+   'capability gap detect', and 'specialist was/has been identified').
+10. The production comments in engine/deliverable_assembler.py explicitly record:
+    'The pending-specialist advisory does not satisfy, approximate, or discharge D13.'
+
+RESULT: D13 remains unimplemented, unapproximated, and preserved as a mandatory
+future separately owner-gated capability. PASS
