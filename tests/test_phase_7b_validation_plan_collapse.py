@@ -110,11 +110,26 @@ def test_group_headers_and_intro_preserved():
 
 
 def test_metadata_and_confidence_visible():
-    _, body = _render(_state([OWNER_INPUT] * 3))
+    # Workstream 7 (ACTIONABLE_VALIDATION_PLAN_INCREMENT_CONTRACT.md §3.2/§3.3;
+    # authorized bounded 7B wording-pin amendment): these provisional fixtures
+    # classify as the UNDETERMINED responsibility, whose rendered presentation
+    # is now the exact two-line owner wording, and the meaningless
+    # "Confidence:" line is suppressed for the UNDETERMINED token. Was pinned:
+    # "Responsibility:" label and "Confidence: Confidence undetermined" line.
+    # The JSON confidence fields are unchanged and are pinned below; all other
+    # metadata labels remain visible; collapse behavior is untouched.
+    state = _state([OWNER_INPUT] * 3)
+    _, body = _render(state)
     sec = _section14(body)
-    for k in ("Responsibility:", "Evidence needed:", "Closure:", "Provenance:", "Confidence:"):
+    for k in ("Evidence needed:", "Closure:", "Provenance:"):
         assert k in sec
-    assert "Confidence undetermined" in sec
+    assert "Responsibility has not yet been assigned." in sec
+    assert "Choose who will own this validation step before relying on the result." in sec
+    assert "Confidence:" not in sec
+    vp = assemble_deliverable(state)["section_14_validation_plan"]
+    assert vp["steps"]
+    assert all(st["confidence"] == "Confidence undetermined" for st in vp["steps"])
+    assert all(st["confidence_label"] == "Confidence undetermined" for st in vp["steps"])
 
 
 def test_underlying_data_shape_and_steps_unchanged():
