@@ -490,7 +490,23 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
         | selectattr('provenance', 'equalto', st.provenance)
         | selectattr('confidence_label', 'equalto', st.confidence_label) | list | length %}
   <div class="field-label">{{ st.statement }}{% if cnt > 1 %} <span class="vp-count" style="font-weight:normal;color:#667">(applies to {{ cnt }} recorded answers)</span>{% endif %}</div>
-  <div class="vp-meta">Responsibility: {{ st.responsibility_label }} &nbsp;&middot;&nbsp; Evidence needed: {{ st.evidence_category }} &nbsp;&middot;&nbsp; Closure: {{ st.closure_condition }} &nbsp;&middot;&nbsp; Provenance: {{ st.provenance }} &nbsp;&middot;&nbsp; Confidence: {{ st.confidence_label }}</div>
+  {# Workstream 7 (contract §3.2 D5/C3): for the UNDETERMINED responsibility
+     token the public presentation is the exact owner wording rendered as two
+     separate lines; no actor is assigned. Internal token and JSON unchanged. #}
+  {% if st.responsibility_label == 'Responsibility undetermined' %}
+  <div class="vp-resp" style="font-size:12px;color:#667;line-height:1.5;margin:0">Responsibility has not yet been assigned.</div>
+  <div class="vp-resp" style="font-size:12px;color:#667;line-height:1.5;margin:0 0 4px 0">Choose who will own this validation step before relying on the result.</div>
+  {% endif %}
+  {# Workstream 7 (contract §3.3 D6): the confidence line is suppressed for the
+     UNDETERMINED token — presentation only; the JSON fields are unchanged. #}
+  <div class="vp-meta">{% if st.responsibility_label != 'Responsibility undetermined' %}Responsibility: {{ st.responsibility_label }} &nbsp;&middot;&nbsp; {% endif %}Evidence needed: {{ st.evidence_category }} &nbsp;&middot;&nbsp; Closure: {{ st.closure_condition }} &nbsp;&middot;&nbsp; Provenance: {{ st.provenance }}{% if st.confidence_label != 'Confidence undetermined' %} &nbsp;&middot;&nbsp; Confidence: {{ st.confidence_label }}{% endif %}</div>
+  {# Workstream 7 (contract §3.4 D7/D8 per C2): render the per-step advisory
+     verbatim when present (the two pending kinds only), one line per div. #}
+  {% if st.advisory %}
+  {% for advisory_line in st.advisory.split('\n') %}
+  <div class="vp-advisory" style="font-size:12px;color:#667;line-height:1.5;margin:0 0 4px 0">{{ advisory_line }}</div>
+  {% endfor %}
+  {% endif %}
   {% endif %}
   {% endfor %}
   {% endif %}
@@ -500,7 +516,13 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   <h4>Blocked items</h4>
   {% for b in vp.blocked_items %}
   <div class="field-label">{{ b.reason }}</div>
-  <div class="vp-meta">Missing: {{ b.missing }} &nbsp;&middot;&nbsp; Responsibility: {{ b.responsibility_label }} &nbsp;&middot;&nbsp; Provenance: {{ b.provenance }}</div>
+  {# Workstream 7 (contract §3.2 D5/C3): same two-line UNDETERMINED public
+     wording for blocked items; internal token and JSON unchanged. #}
+  {% if b.responsibility_label == 'Responsibility undetermined' %}
+  <div class="vp-resp" style="font-size:12px;color:#667;line-height:1.5;margin:0">Responsibility has not yet been assigned.</div>
+  <div class="vp-resp" style="font-size:12px;color:#667;line-height:1.5;margin:0 0 4px 0">Choose who will own this validation step before relying on the result.</div>
+  {% endif %}
+  <div class="vp-meta">Missing: {{ b.missing }}{% if b.responsibility_label != 'Responsibility undetermined' %} &nbsp;&middot;&nbsp; Responsibility: {{ b.responsibility_label }}{% endif %} &nbsp;&middot;&nbsp; Provenance: {{ b.provenance }}</div>
   {% endfor %}
   {% endif %}
   {% if not vp.steps and not vp.blocked_items %}

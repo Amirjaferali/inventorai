@@ -484,6 +484,22 @@ _RESPONSIBILITY_LABELS = {
 _CONFIDENCE_LABELS = {
     "UNDETERMINED": "Confidence undetermined",
 }
+# Workstream 7 (ACTIONABLE_VALIDATION_PLAN_INCREMENT_CONTRACT.md §3.4/§5.4/§5.5;
+# owner decisions D7/D8 carried per C2): ADDITIVE OPTIONAL per-step `advisory`
+# wordings, keyed SOLELY by the step's provenance anchor kind — the two pending
+# kinds only. Null on every other row. Honest interim limitation notices only:
+# no technical method, tool, standard, threshold, laboratory, simulation,
+# product, specialist type, routing, or sufficiency claim. The pending-specialist
+# advisory does not satisfy, approximate, or discharge D13.
+_STEP_ADVISORIES = {
+    "pending_evidence": (
+        "Additional evidence is still required for this item.\n"
+        "Prepare or obtain the evidence identified in the recorded request "
+        "before treating the item as validated."),
+    "pending_specialist": (
+        "Specialist input is still required for this item.\n"
+        "The appropriate specialist has not yet been identified by the system."),
+}
 
 
 _SAFETY_SIGNALS_EMPTY = (
@@ -552,6 +568,7 @@ def _s14(state):
             "provenance":           st.provenance.display_label,
             "confidence":           _CONFIDENCE_LABELS.get(st.confidence, st.confidence),
             "confidence_label":     _CONFIDENCE_LABELS.get(st.confidence, ""),
+            "advisory":             _STEP_ADVISORIES.get(st.provenance.anchor_kind),
         })
     blocked_items = []
     for b in plan.blocked_items:

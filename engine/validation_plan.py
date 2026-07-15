@@ -49,6 +49,17 @@ OUTCOME_BLOCKED = "BLOCKED"
 # The bounded MVP-1 confidence value (contract §14).
 CONFIDENCE_UNDETERMINED = "UNDETERMINED"
 
+# Workstream 7 (ACTIONABLE_VALIDATION_PLAN_INCREMENT_CONTRACT.md §3.1/§5.1;
+# owner decisions D3/C1): eligible answered-record steps carry the owner-approved
+# requirement-linked action embedding the requirement's already-derived statement
+# BYTE-VERBATIM. Selected SOLELY by the underlying active record's exact
+# disposition value "answered" — never inferred from content, vocabulary, answer
+# quality, domain, or technical complexity. Contradiction, gap, pending, unknown,
+# deferred, and provisional actions are unchanged; the Section 13 landscape
+# statement and resolving action are not modified.
+_ANSWERED_STEP_STATEMENT_PREFIX = (
+    "Validate this recorded answer against the available evidence: ")
+
 # §7-T ledger -> ValidationStep responsibility translation (recognized tokens only).
 _LEDGER_TRANSLATION = {
     OWNER_INPUT:        OWNER_EXECUTABLE,
@@ -224,9 +235,16 @@ def derive_validation_plan(state):
                 continue
             seen_steps.add(step_id)
             responsibility, evidence_category = _classify(req, state)
+            statement = req.resolving_action.statement
+            if kind == "assertion":
+                record = _active_record(state, req.primary_anchor.anchor_reference)
+                if record is not None and \
+                        getattr(record, "disposition", None) == DISPOSITION_ANSWERED:
+                    statement = (_ANSWERED_STEP_STATEMENT_PREFIX
+                                 + "“" + req.statement + "”")
             steps.append(ValidationStep(
                 step_id=step_id,
-                statement=req.resolving_action.statement,
+                statement=statement,
                 responsibility=responsibility,
                 evidence_category=evidence_category,
                 closure_condition=_closure_condition(evidence_category),

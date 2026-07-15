@@ -1,0 +1,20 @@
+# command: (cd /home/user/inventorai) python -m pytest tests/test_increment_5_validation_plan.py tests/test_phase_7a_validation_plan_grouping.py tests/test_phase_7b_validation_plan_collapse.py tests/test_increment_4_requirement_landscape.py tests/test_phase_7c_requirement_landscape_collapse.py tests/test_requirement_landscape_synthesis.py tests/test_deliverable_hygiene.py tests/test_structured_criticality.py tests/test_unified_risk_safety_presentation.py tests/test_safety_signal.py tests/test_safety_signal_stabilization.py tests/test_wps001_invariants.py tests/test_phase_3b2b_section11_unknown_refs.py -q
+........................................................................ [ 27%]
+........................................................................ [ 55%]
+........................................................................ [ 83%]
+.................s..........................                             [100%]
+=============================== warnings summary ===============================
+engine/domain_rules.py:7
+  /home/user/inventorai/tests/../engine/domain_rules.py:7: UserWarning: domain_registry: skipping domains/iot_electronics/domain.json (schema_version=None, expected '1.0')
+    _REGISTRY = load_registry("domains/")
+
+tests/test_wps001_invariants.py::TestWPS001_INV007_AIBoundary::test_assess_response_deterministic
+  /home/user/inventorai/tests/test_wps001_invariants.py:34: UserWarning: assess_response called with empty domain — substance check disabled (AB-006-D)
+    assert assess_response(inp) == assess_response(inp),                 f"WPS-001 INV-007 VIOLATED: assess_response({inp!r}) non-deterministic"
+
+tests/test_wps001_invariants.py::TestWPS001_INV001_WeakInputLevel2Block::test_weak_patterns_return_asserted_not_reasoned
+  /home/user/inventorai/tests/test_wps001_invariants.py:59: UserWarning: assess_response called with empty domain — substance check disabled (AB-006-D)
+    r = assess_response(inp)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+259 passed, 1 skipped, 3 warnings in 2.63s

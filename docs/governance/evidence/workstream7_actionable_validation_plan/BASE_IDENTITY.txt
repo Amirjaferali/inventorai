@@ -1,0 +1,13 @@
+Workstream 7 BASE identity (generation checkout: detached worktree)
+commit: e1e71b3b089cd41fc90ca4f2c0b7ce6a37e37268
+parents: 4197e6925a3055547b8c17910a5415e0bab4f948 73a643663efe4646f9de8fd7ba518ce3db6deeee
+tree: 31af1ae46f54460b82a54f671f4a4bcc12378c94
+subject: Merge PR #196: record Workstream 7 actionable validation plan BASE RED
+branch identity: authoritative feature/atomic-json-session-persistence tip (PR #196 merge)
+working tree during generation: 0 modified files (clean)
+relevant blobs:
+  engine/validation_plan.py 60d8f49e483c9eae747c8f776d749c35c559c753
+  engine/deliverable_assembler.py 4159c1d41b65db7cc0cb5f7ac6b9c5b4c9cb14da
+  web/templates/deliverable.html 1013940739caf98439cb5a6c11ec628ff55dd84c
+  tests/test_phase_7b_validation_plan_collapse.py 15ef996429b192247895364a77932f1a3671effe
+  tests/test_actionable_validation_plan.py 651a5219d32773b196c0a64dfbfbdb719a03401e

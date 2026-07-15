@@ -1,0 +1,408 @@
+{
+  "contradiction": {
+    "engine": {
+      "blocked_items": [],
+      "outcome": "PLAN",
+      "steps": [
+        {
+          "closure_condition": "Closed when reconciliation of conflicting records is provided and recorded; no such evidence is recorded yet.",
+          "confidence_token": "UNDETERMINED",
+          "evidence_category": "reconciliation of conflicting records",
+          "provenance_kind": "active_contradiction",
+          "provenance_label": "Recorded contradiction",
+          "provenance_reference": "rec_1|rec_2",
+          "responsibility_token": "OWNER_EXECUTABLE",
+          "statement": "Reconcile the conflicting recorded answers without assuming either is correct.",
+          "step_id": "vstep:req:contradiction:rec_1|rec_2"
+        }
+      ]
+    },
+    "fixture_inputs": [
+      "answered: The housing is sealed.",
+      "answered: The housing is vented.",
+      "mark_contradiction(rec_1, rec_2)"
+    ],
+    "package": {
+      "risk_safety_linkage": {
+        "acknowledged_unknown_count": 0,
+        "section_13_has_structural_risks": false,
+        "section_13_note": null,
+        "section_6_empty_qualification": null,
+        "section_6_high_count": 1,
+        "section_6_low_count": 0,
+        "section_6_medium_count": 0,
+        "section_6_note": null,
+        "section_6_risk_total": 1,
+        "signal_total": 0,
+        "signals_present": false
+      },
+      "safety_signal_total": 0,
+      "section_13": {
+        "count_basis": "requirement_landscape",
+        "requirements": [
+          {
+            "criticality": "Not yet determined",
+            "criticality_authority": "assigned automatically by the system; not yet reviewed",
+            "criticality_rationale": null,
+            "has_linked_risk": false,
+            "provenance": "Recorded contradiction",
+            "resolving_action": "Reconcile the conflicting recorded answers without assuming either is correct.",
+            "statement": "Resolve the active contradiction between the two recorded answers.",
+            "status": "active contradiction",
+            "supporting_references": []
+          }
+        ],
+        "total": 1
+      },
+      "section_14": {
+        "blocked_item_total": 0,
+        "blocked_items": [],
+        "empty_statement": "No active, provenance-anchored requirements are recorded yet, so no validation steps can be proposed. This is an idea-development state, not an error.",
+        "outcome": "PLAN",
+        "steps": [
+          {
+            "closure_condition": "Closed when reconciliation of conflicting records is provided and recorded; no such evidence is recorded yet.",
+            "confidence": "Confidence undetermined",
+            "confidence_label": "Confidence undetermined",
+            "evidence_category": "reconciliation of conflicting records",
+            "provenance": "Recorded contradiction",
+            "responsibility": "Owner can perform",
+            "responsibility_label": "Owner can perform",
+            "statement": "Reconcile the conflicting recorded answers without assuming either is correct."
+          }
+        ],
+        "title": "Validation Plan",
+        "validation_plan_source": "requirement_landscape",
+        "validation_step_total": 1
+      }
+    },
+    "section_14_html_excerpt": "<h3>Validation Plan</h3>\n  \n  \n  \n  <p class=\"vp-intro\">Suggested checks that would help firm up this idea. None has been carried out yet &mdash; these are proposals, not results. Each check keeps its supporting details on one line below it.</p>\n  \n  \n  \n  \n  \n  \n  \n  \n  \n  <h4 class=\"vp-group\">Checks you can do yourself</h4>\n  \n  \n  \n  \n  \n  \n  \n  <div class=\"field-label\">Reconcile the conflicting recorded answers without assuming either is correct.</div>\n  <div class=\"vp-meta\">Responsibility: Owner can perform &nbsp;&middot;&nbsp; Evidence needed: reconciliation of conflicting records &nbsp;&middot;&nbsp; Closure: Closed when reconciliation of conflicting records is provided and recorded; no such evidence is recorded yet. &nbsp;&middot;&nbsp; Provenance: Recorded contradiction &nbsp;&middot;&nbsp; Confidence: Confidence undetermined</div>\n  \n  \n  \n  \n  \n  \n  \n  \n  \n  \n  \n  \n  \n</section>\n\n<p class=\""
+  },
+  "criticality_linked": {
+    "engine": {
+      "blocked_items": [],
+      "outcome": "PLAN",
+      "steps": [
+        {
+          "closure_condition": "Closed when owner confirmation is provided and recorded; no such evidence is recorded yet.",
+          "confidence_token": "UNDETERMINED",
+          "evidence_category": "owner confirmation",
+          "provenance_kind": "assertion",
+          "provenance_label": "Recorded answer",
+          "provenance_reference": "rec_1",
+          "responsibility_token": "OWNER_EXECUTABLE",
+          "statement": "Validate the recorded answer against the available evidence.",
+          "step_id": "vstep:req:assertion:rec_1"
+        }
+      ]
+    },
+    "fixture_inputs": [
+      "answered: The fuse rating is decisive.",
+      "criticality confirmed FEASIBILITY-THREATENING, rationale 'Without the right fuse the device fails.' (inventor_typed)"
+    ],
+    "package": {
+      "risk_safety_linkage": {
+        "acknowledged_unknown_count": 0,
+        "section_13_has_structural_risks": false,
+        "section_13_note": null,
+        "section_6_empty_qualification": null,
+        "section_6_high_count": 1,
+        "section_6_low_count": 0,
+        "section_6_medium_count": 0,
+        "section_6_note": null,
+        "section_6_risk_total": 1,
+        "signal_total": 0,
+        "signals_present": false
+      },
+      "safety_signal_total": 0,
+      "section_13": {
+        "count_basis": "requirement_landscape",
+        "requirements": [
+          {
+            "criticality": "Essential to feasibility",
+            "criticality_authority": "Confirmed by the inventor",
+            "criticality_rationale": "Without the right fuse the device fails.",
+            "has_linked_risk": false,
+            "provenance": "Recorded answer",
+            "resolving_action": "Validate the recorded answer against the available evidence.",
+            "statement": "The fuse rating is decisive.",
+            "status": "Recorded from your answers (not yet verified)",
+            "supporting_references": []
+          }
+        ],
+        "total": 1
+      },
+      "section_14": {
+        "blocked_item_total": 0,
+        "blocked_items": [],
+        "empty_statement": "No active, provenance-anchored requirements are recorded yet, so no validation steps can be proposed. This is an idea-development state, not an error.",
+        "outcome": "PLAN",
+        "steps": [
+          {
+            "closure_condition": "Closed when owner confirmation is provided and recorded; no such evidence is recorded yet.",
+            "confidence": "Confidence undetermined",
+            "confidence_label": "Confidence undetermined",
+            "evidence_category": "owner confirmation",
+            "provenance": "Recorded answer",
+            "responsibility": "Owner can perform",
+            "responsibility_label": "Owner can perform",
+            "statement": "Validate the recorded answer against the available evidence."
+          }
+        ],
+        "title": "Validation Plan",
+        "validation_plan_source": "requirement_landscape",
+        "validation_step_total": 1
+      }
+    },
+    "section_14_html_excerpt": "<h3>Validation Plan</h3>\n  \n  \n  \n  <p class=\"vp-intro\">Suggested checks that would help firm up this idea. None has been carried out yet &mdash; these are proposals, not results. Each check keeps its supporting details on one line below it.</p>\n  \n  \n  \n  \n  \n  \n  \n  \n  \n  <h4 class=\"vp-group\">Checks you can do yourself</h4>\n  \n  \n  \n  \n  \n  \n  \n  <div class=\"field-label\">Validate the recorded answer against the available evidence.</div>\n  <div class=\"vp-meta\">Responsibility: Owner can perform &nbsp;&middot;&nbsp; Evidence needed: owner confirmation &nbsp;&middot;&nbsp; Closure: Closed when owner confirmation is provided and recorded; no such evidence is recorded yet. &nbsp;&middot;&nbsp; Provenance: Recorded answer &nbsp;&middot;&nbsp; Confidence: Confidence undetermined</div>\n  \n  \n  \n  \n  \n  \n  \n  \n  \n  \n  \n  \n  \n</section>\n\n<p class=\""
+  },
+  "deferred": {
+    "engine": {
+      "blocked_items": [],
+      "outcome": "PLAN",
+      "steps": [
+        {
+          "closure_condition": "Closed when clarifying information is provided and recorded; no such evidence is recorded yet.",
+          "confidence_token": "UNDETERMINED",
+          "evidence_category": "clarifying information",
+          "provenance_kind": "assertion",
+          "provenance_label": "Deferred decision",
+          "provenance_reference": "rec_1",
+          "responsibility_token": "UNDETERMINED",
+          "statement": "This item remains unresolved and can be revisited when you are ready to decide.",
+          "step_id": "vstep:req:assertion:rec_1"
+        }
+      ]
+    },
+    "fixture_inputs": [
+      "deferred: Deferred item content."
+    ],
+    "package": {
+      "risk_safety_linkage": {
+        "acknowledged_unknown_count": 0,
+        "section_13_has_structural_risks": false,
+        "section_13_note": null,
+        "section_6_empty_qualification": null,
+        "section_6_high_count": 1,
+        "section_6_low_count": 0,
+        "section_6_medium_count": 0,
+        "section_6_note": null,
+        "section_6_risk_total": 1,
+        "signal_total": 0,
+        "signals_present": false
+      },
+      "safety_signal_total": 0,
+      "section_13": {
+        "count_basis": "requirement_landscape",
+        "requirements": [
+          {
+            "criticality": "Not yet determined",
+            "criticality_authority": "assigned automatically by the system; not yet reviewed",
+            "criticality_rationale": null,
+            "has_linked_risk": false,
+            "provenance": "Deferred decision",
+            "resolving_action": "This item remains unresolved and can be revisited when you are ready to decide.",
+            "statement": "Deferred item content.",
+            "status": "You chose to defer this item.",
+            "supporting_references": []
+          }
+        ],
+        "total": 1
+      },
+      "section_14": {
+        "blocked_item_total": 0,
+        "blocked_items": [],
+        "empty_statement": "No active, provenance-anchored requirements are recorded yet, so no validation steps can be proposed. This is an idea-development state, not an error.",
+        "outcome": "PLAN",
+        "steps": [
+          {
+            "closure_condition": "Closed when clarifying information is provided and recorded; no such evidence is recorded yet.",
+            "confidence": "Confidence undetermined",
+            "confidence_label": "Confidence undetermined",
+            "evidence_category": "clarifying information",
+            "provenance": "Deferred decision",
+            "responsibility": "Responsibility undetermined",
+            "responsibility_label": "Responsibility undetermined",
+            "statement": "This item remains unresolved and can be revisited when you are ready to decide."
+          }
+        ],
+        "title": "Validation Plan",
+        "validation_plan_source": "requirement_landscape",
+        "validation_step_total": 1
+      }
+    },
+    "section_14_html_excerpt": "<h3>Validation Plan</h3>\n  \n  \n  \n  <p class=\"vp-intro\">Suggested checks that would help firm up this idea. None has been carried out yet &mdash; these are proposals, not results. Each check keeps its supporting details on one line below it.</p>\n  \n  \n  \n  \n  \n  \n  \n  \n  \n  \n  \n  \n  \n  \n  \n  <h4 class=\"vp-group\">Other suggested checks</h4>\n  \n  \n  \n  \n  \n  \n  \n  <div class=\"field-label\">This item remains unresolved and can be revisited when you are ready to decide.</div>\n  <div class=\"vp-meta\">Responsibility: Responsibility undetermined &nbsp;&middot;&nbsp; Evidence needed: clarifying information &nbsp;&middot;&nbsp; Closure: Closed when clarifying information is provided and recorded; no such evidence is recorded yet. &nbsp;&middot;&nbsp; Provenance: Deferred decision &nbsp;&middot;&nbsp; Confidence: Confidence undetermined</div>\n  \n  \n  \n  \n  \n  \n  \n</section>\n\n<p class=\""
+  },
+  "provisional_assumption": {
+    "engine": {
+      "blocked_items": [],
+      "outcome": "PLAN",
+      "steps": [
+        {
+          "closure_condition": "Closed when clarifying information is provided and recorded; no such evidence is recorded yet.",
+          "confidence_token": "UNDETERMINED",
+          "evidence_category": "clarifying information",
+          "provenance_kind": "assertion",
+          "provenance_label": "Provisional assumption",
+          "provenance_reference": "rec_1",
+          "responsibility_token": "UNDETERMINED",
+          "statement": "Validate, revise, or replace it before relying on it.",
+          "step_id": "vstep:req:assertion:rec_1"
+        }
+      ]
+    },
+    "fixture_inputs": [
+      "provisional_assumption: Provisional item content."
+    ],
+    "package": {
+      "risk_safety_linkage": {
+        "acknowledged_unknown_count": 0,
+        "section_13_has_structural_risks": false,
+        "section_13_note": null,
+        "section_6_empty_qualification": null,
+        "section_6_high_count": 1,
+        "section_6_low_count": 0,
+        "section_6_medium_count": 0,
+        "section_6_note": null,
+        "section_6_risk_total": 1,
+        "signal_total": 0,
+        "signals_present": false
+      },
+      "safety_signal_total": 0,
+      "section_13": {
+        "count_basis": "requirement_landscape",
+        "requirements": [
+          {
+            "criticality": "Not yet determined",
+            "criticality_authority": "assigned automatically by the system; not yet reviewed",
+            "criticality_rationale": null,
+            "has_linked_risk": false,
+            "provenance": "Provisional assumption",
+            "resolving_action": "Validate, revise, or replace it before relying on it.",
+            "statement": "Provisional item content.",
+            "status": "This assumption was recorded as a temporary direction and has not been validated.",
+            "supporting_references": []
+          }
+        ],
+        "total": 1
+      },
+      "section_14": {
+        "blocked_item_total": 0,
+        "blocked_items": [],
+        "empty_statement": "No active, provenance-anchored requirements are recorded yet, so no validation steps can be proposed. This is an idea-development state, not an error.",
+        "outcome": "PLAN",
+        "steps": [
+          {
+            "closure_condition": "Closed when clarifying information is provided and recorded; no such evidence is recorded yet.",
+            "confidence": "Confidence undetermined",
+            "confidence_label": "Confidence undetermined",
+            "evidence_category": "clarifying information",
+            "provenance": "Provisional assumption",
+            "responsibility": "Responsibility undetermined",
+            "responsibility_label": "Responsibility undetermined",
+            "statement": "Validate, revise, or replace it before relying on it."
+          }
+        ],
+        "title": "Validation Plan",
+        "validation_plan_source": "requirement_landscape",
+        "validation_step_total": 1
+      }
+    },
+    "section_14_html_excerpt": "<h3>Validation Plan</h3>\n  \n  \n  \n  <p class=\"vp-intro\">Suggested checks that would help firm up this idea. None has been carried out yet &mdash; these are proposals, not results. Each check keeps its supporting details on one line below it.</p>\n  \n  \n  \n  \n  \n  \n  \n  \n  \n  \n  \n  \n  \n  \n  \n  <h4 class=\"vp-group\">Other suggested checks</h4>\n  \n  \n  \n  \n  \n  \n  \n  <div class=\"field-label\">Validate, revise, or replace it before relying on it.</div>\n  <div class=\"vp-meta\">Responsibility: Responsibility undetermined &nbsp;&middot;&nbsp; Evidence needed: clarifying information &nbsp;&middot;&nbsp; Closure: Closed when clarifying information is provided and recorded; no such evidence is recorded yet. &nbsp;&middot;&nbsp; Provenance: Provisional assumption &nbsp;&middot;&nbsp; Confidence: Confidence undetermined</div>\n  \n  \n  \n  \n  \n  \n  \n</section>\n\n<p class=\""
+  },
+  "risk_safety_linked": {
+    "fixture_inputs": "the canonical Workstream 1 journey above (danger statements produce safety signals)",
+    "risk_safety_linkage": {
+      "acknowledged_unknown_count": 0,
+      "section_13_has_structural_risks": false,
+      "section_13_note": "You also described possible safety consequences in your own words.\n\nThey are listed separately under “Inventor-Stated Safety Signals.” They are\nnot structural risk records and have not been independently validated.",
+      "section_6_empty_qualification": null,
+      "section_6_high_count": 0,
+      "section_6_low_count": 1,
+      "section_6_medium_count": 0,
+      "section_6_note": "You also described possible safety consequences in your own words.\nSee “Inventor-Stated Safety Signals.”\n\nThese are your statements, not confirmed risks, and they still require\nindependent validation.",
+      "section_6_risk_total": 1,
+      "signal_total": 3,
+      "signals_present": true
+    },
+    "safety_signal_total": 3,
+    "section_13_total": 13
+  },
+  "unknown": {
+    "engine": {
+      "blocked_items": [],
+      "outcome": "PLAN",
+      "steps": [
+        {
+          "closure_condition": "Closed when clarifying information is provided and recorded; no such evidence is recorded yet.",
+          "confidence_token": "UNDETERMINED",
+          "evidence_category": "clarifying information",
+          "provenance_kind": "assertion",
+          "provenance_label": "Recorded unknown",
+          "provenance_reference": "rec_1",
+          "responsibility_token": "UNDETERMINED",
+          "statement": "This item remains unresolved. It may later be addressed through additional information, evidence, or specialist input.",
+          "step_id": "vstep:req:assertion:rec_1"
+        }
+      ]
+    },
+    "fixture_inputs": [
+      "unknown: Unknown item content."
+    ],
+    "package": {
+      "risk_safety_linkage": {
+        "acknowledged_unknown_count": 0,
+        "section_13_has_structural_risks": false,
+        "section_13_note": null,
+        "section_6_empty_qualification": null,
+        "section_6_high_count": 1,
+        "section_6_low_count": 0,
+        "section_6_medium_count": 0,
+        "section_6_note": null,
+        "section_6_risk_total": 1,
+        "signal_total": 0,
+        "signals_present": false
+      },
+      "safety_signal_total": 0,
+      "section_13": {
+        "count_basis": "requirement_landscape",
+        "requirements": [
+          {
+            "criticality": "Not yet determined",
+            "criticality_authority": "assigned automatically by the system; not yet reviewed",
+            "criticality_rationale": null,
+            "has_linked_risk": false,
+            "provenance": "Recorded unknown",
+            "resolving_action": "This item remains unresolved. It may later be addressed through additional information, evidence, or specialist input.",
+            "statement": "Unknown item content.",
+            "status": "You indicated that this is not known yet.",
+            "supporting_references": []
+          }
+        ],
+        "total": 1
+      },
+      "section_14": {
+        "blocked_item_total": 0,
+        "blocked_items": [],
+        "empty_statement": "No active, provenance-anchored requirements are recorded yet, so no validation steps can be proposed. This is an idea-development state, not an error.",
+        "outcome": "PLAN",
+        "steps": [
+          {
+            "closure_condition": "Closed when clarifying information is provided and recorded; no such evidence is recorded yet.",
+            "confidence": "Confidence undetermined",
+            "confidence_label": "Confidence undetermined",
+            "evidence_category": "clarifying information",
+            "provenance": "Recorded unknown",
+            "responsibility": "Responsibility undetermined",
+            "responsibility_label": "Responsibility undetermined",
+            "statement": "This item remains unresolved. It may later be addressed through additional information, evidence, or specialist input."
+          }
+        ],
+        "title": "Validation Plan",
+        "validation_plan_source": "requirement_landscape",
+        "validation_step_total": 1
+      }
+    },
+    "section_14_html_excerpt": "<h3>Validation Plan</h3>\n  \n  \n  \n  <p class=\"vp-intro\">Suggested checks that would help firm up this idea. None has been carried out yet &mdash; these are proposals, not results. Each check keeps its supporting details on one line below it.</p>\n  \n  \n  \n  \n  \n  \n  \n  \n  \n  \n  \n  \n  \n  \n  \n  <h4 class=\"vp-group\">Other suggested checks</h4>\n  \n  \n  \n  \n  \n  \n  \n  <div class=\"field-label\">This item remains unresolved. It may later be addressed through additional information, evidence, or specialist input.</div>\n  <div class=\"vp-meta\">Responsibility: Responsibility undetermined &nbsp;&middot;&nbsp; Evidence needed: clarifying information &nbsp;&middot;&nbsp; Closure: Closed when clarifying information is provided and recorded; no such evidence is recorded yet. &nbsp;&middot;&nbsp; Provenance: Recorded unknown &nbsp;&middot;&nbsp; Confidence: Confidence undetermined</div>\n  \n  \n  \n  \n  \n  \n  \n</section>\n\n<p class=\""
+  }
+}

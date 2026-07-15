@@ -1,0 +1,76 @@
+{
+  "engine": {
+    "blocked_items": [],
+    "outcome": "PLAN",
+    "steps": [
+      {
+        "closure_condition": "Closed when empirical evidence is provided and recorded; no such evidence is recorded yet.",
+        "confidence_token": "UNDETERMINED",
+        "evidence_category": "empirical evidence",
+        "provenance_kind": "pending_evidence",
+        "provenance_label": "Pending evidence request",
+        "provenance_reference": "rec_1",
+        "responsibility_token": "EMPIRICAL_EVIDENCE_REQUIRED",
+        "statement": "Provide the requested empirical evidence.",
+        "step_id": "vstep:req:evidence:rec_1"
+      }
+    ]
+  },
+  "fixture_inputs": [
+    "evidence_requested: Measure the actual trip time of the relay under a representative overload condition."
+  ],
+  "package": {
+    "risk_safety_linkage": {
+      "acknowledged_unknown_count": 0,
+      "section_13_has_structural_risks": false,
+      "section_13_note": null,
+      "section_6_empty_qualification": null,
+      "section_6_high_count": 1,
+      "section_6_low_count": 0,
+      "section_6_medium_count": 0,
+      "section_6_note": null,
+      "section_6_risk_total": 1,
+      "signal_total": 0,
+      "signals_present": false
+    },
+    "safety_signal_total": 0,
+    "section_13": {
+      "count_basis": "requirement_landscape",
+      "requirements": [
+        {
+          "criticality": "Not yet determined",
+          "criticality_authority": "assigned automatically by the system; not yet reviewed",
+          "criticality_rationale": null,
+          "has_linked_risk": false,
+          "provenance": "Pending evidence request",
+          "resolving_action": "Provide the requested empirical evidence.",
+          "statement": "Measure the actual trip time of the relay under a representative overload condition.",
+          "status": "evidence pending",
+          "supporting_references": []
+        }
+      ],
+      "total": 1
+    },
+    "section_14": {
+      "blocked_item_total": 0,
+      "blocked_items": [],
+      "empty_statement": "No active, provenance-anchored requirements are recorded yet, so no validation steps can be proposed. This is an idea-development state, not an error.",
+      "outcome": "PLAN",
+      "steps": [
+        {
+          "closure_condition": "Closed when empirical evidence is provided and recorded; no such evidence is recorded yet.",
+          "confidence": "Confidence undetermined",
+          "confidence_label": "Confidence undetermined",
+          "evidence_category": "empirical evidence",
+          "provenance": "Pending evidence request",
+          "responsibility": "Empirical evidence required",
+          "responsibility_label": "Empirical evidence required",
+          "statement": "Provide the requested empirical evidence."
+        }
+      ],
+      "title": "Validation Plan",
+      "validation_plan_source": "requirement_landscape",
+      "validation_step_total": 1
+    }
+  }
+}

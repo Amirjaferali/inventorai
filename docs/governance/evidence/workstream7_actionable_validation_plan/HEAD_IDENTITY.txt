@@ -1,0 +1,19 @@
+Workstream 7 HEAD identity (generation checkout: feature/ws7-actionable-validation-plan-green)
+commit: 52b1960fc99af6e746c522b9b32509df1a45076d
+parents: e1e71b3b089cd41fc90ca4f2c0b7ce6a37e37268
+tree: b71ddf7749acea5e5c7b8f5d4d26750ad1783b45
+subject: feat: implement Workstream 7 actionable validation plan
+branch: feature/ws7-actionable-validation-plan-green
+changed files vs BASE (diffstat):
+   engine/deliverable_assembler.py                 | 17 ++++++++++++++++
+   engine/validation_plan.py                       | 20 ++++++++++++++++++-
+   tests/test_phase_7b_validation_plan_collapse.py | 21 +++++++++++++++++---
+   web/templates/deliverable.html                  | 26 +++++++++++++++++++++++--
+   4 files changed, 78 insertions(+), 6 deletions(-)
+working tree during generation: clean apart from this uncommitted evidence directory
+relevant blobs:
+  engine/validation_plan.py b9851eb5b262d214c3f0dfcd9aef49c83849b2ed
+  engine/deliverable_assembler.py eac4031a6ee2a2879c1c3e59c88f74c91dc14921
+  web/templates/deliverable.html 29e761f23b4055aa7dada88d3ecddf346040b766
+  tests/test_phase_7b_validation_plan_collapse.py 21bfd1108e469e55090050e75b2d7d8524c06743
+  tests/test_actionable_validation_plan.py 651a5219d32773b196c0a64dfbfbdb719a03401e
