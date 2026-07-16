@@ -1,25 +1,32 @@
-# D13 Gate 3 — Research Authorization
+# D13 Gate 3 — Research Authorization Framework
 
-**Status:** OWNER AUTHORIZATION — GATE 3 RECORDED —
-RESEARCH ACTIVATION BLOCKED —
+**Status:** OWNER-APPROVED GATE 3 FRAMEWORK RECORDED —
+GATE 3 NOT ISSUED —
+RESEARCH NOT AUTHORIZED —
 NO D13 IMPLEMENTATION AUTHORIZED
 
-This owner authorization becomes canonical only when this docs-only recording
-increment is merged into the authoritative branch. Canonical recording alone
-does NOT activate research. Research activation is separately gated by Gate 3A
-(§4). No research method, external-source access, workspace creation, or
-appointment execution begins through recording alone, and none begins
-automatically upon merge.
+This document records the complete owner-approved framework for a future Gate 3
+issuance. It does NOT issue Gate 3 and does NOT authorize research. The
+framework becomes canonical only when this docs-only recording increment is
+merged into the authoritative branch; canonical recording of the framework
+neither issues Gate 3 nor activates research. No research method,
+external-source access, workspace creation, or appointment execution begins
+through framework recording alone, and none begins automatically upon merge.
 
-Gate 3 is issued under the D13 Knowledge-Governance Research Contract
+This framework is prepared under the D13 Knowledge-Governance Research Contract
 (`docs/governance/D13_KNOWLEDGE_GOVERNANCE_RESEARCH_CONTRACT.md`, §16 Gate 3)
 and incorporates by reference the canonical Gate 2 Pre-Research Owner Decision
-(`docs/governance/D13_GATE2_PRE_RESEARCH_OWNER_DECISION.md`) in full.
+(`docs/governance/D13_GATE2_PRE_RESEARCH_OWNER_DECISION.md`) in full. Gate 3
+issuance occurs only through a later owner-approved canonical recording that
+names, verifies, owner-approves, and records all three required appointments
+(executing agent, qualified technical expert, and independent reviewer); no
+research begins until all three appointments exist and Gate 3 is issued.
 
 **Authoritative context:** authoritative branch
 `feature/atomic-json-session-persistence`; authoritative tip
 `aebdd53f316fcbbe964a9d110bb31e01f938beb2`; the D13 research contract and the
-Gate 2 decision are CONTRACT / CANONICAL; D13 remains UNSATISFIED /
+Gate 2 decision are CONTRACT / CANONICAL; Gate 3 remains NOT ISSUED; D13
+research remains NOT AUTHORIZED; D13 remains UNSATISFIED /
 UNIMPLEMENTED; Workstream 8 remains NOT AUTHORIZED / NOT STARTED; official
 product state DEMO_READY_WITH_LIMITATIONS; MVP scope electronics/electrical-only;
 persistence FROZEN; AI Coach PROHIBITED / BLOCKED; Answer Clarification
@@ -27,21 +34,27 @@ INACTIVE.
 
 ---
 
-## 1. Two distinct states
+## 1. Three distinct states
 
-This authorization separates two states that must never be conflated:
+This framework separates three states that must never be conflated:
 
-- **Gate 3 canonical recording** — achieved by merging this docs-only
-  increment. It records the authorization and its bounds. It activates
-  nothing.
-- **Gate 3 research activation** — achieved only when Gate 3A (§4) passes
-  after merge. Research begins only after activation.
+1. **Gate 3 framework recording** — achieved by merging this docs-only
+   increment. It records the scope, roles, source boundaries, caps, evidence
+   requirements, stop conditions, and the future authorization structure. It
+   issues nothing, appoints no one, and activates nothing.
+2. **Gate 3 issuance** — occurs only through a later owner-approved canonical
+   recording that names, verifies, owner-approves, and records all three
+   required appointments (executing agent, qualified technical expert, and
+   independent reviewer). Gate 3 is not issued by this framework recording.
+3. **Gate 3A research activation** — may occur only after Gate 3 issuance and
+   after all activation conditions (§4) pass.
 
-The lifecycle stages, each separately controlled, are: canonical Gate 3
-recording; Gate 3A research activation; Phase A execution; Phase B controlled
-source access; qualified-expert review; independent review; owner
-research-completion decision. None of these later stages is authorized or
-satisfied by recording this document.
+No research begins through framework recording alone. The later lifecycle
+stages, each separately controlled, are: Gate 3 issuance; Gate 3A research
+activation; Phase A execution; Phase B controlled source access;
+qualified-expert review; independent review; owner research-completion
+decision. None of these is authorized or satisfied by recording this
+framework.
 
 ---
 
@@ -124,30 +137,35 @@ No technical checklist or engineering rule is created by this authorization.
 
 ## 4. Gate 3A — research activation
 
-Research activation is blocked until Gate 3A passes. Gate 3A minimum
-activation conditions:
+Research activation is blocked until Gate 3 has been issued — all three
+appointments named, verified, owner-approved, and recorded — and Gate 3A
+passes. Gate 3A minimum activation conditions:
 
-1. the executing AI agent (Claude Code) is recorded;
-2. the qualified technical expert is appointed, verified against the Gate 2
-   §10 competency criteria, and owner-approved;
-3. confidentiality and conflict-of-interest declarations are recorded;
+1. Gate 3 has been issued and all three appointments — the executing AI agent
+   (Claude Code), the qualified technical expert, and the independent reviewer —
+   are recorded and owner-approved;
+2. the qualified technical expert and the independent reviewer are verified
+   against the Gate 2 §§10–11 competency and independence criteria;
+3. confidentiality and conflict-of-interest declarations are recorded for all
+   appointed roles;
 4. the isolated workspace location (§12) is approved;
 5. the research caps (§11) are approved;
 6. no material scope or repository divergence exists.
 
-No research method or external-source access begins before Gate 3A.
+No research method or external-source access begins before Gate 3 issuance and
+Gate 3A.
 
 ---
 
 ## 5. Evidence and review gates
 
-- **Gate 3A** — appointments (executing agent + qualified expert) and
-  activation conditions satisfied.
+- **Gate 3A** — Gate 3 issued (all three appointments recorded and
+  owner-approved) and activation conditions satisfied.
 - **Gate 3B** — Phase A manifest and scope verification.
 - **Gate 3C** — qualified-expert approval of the Phase A research-question set.
 - **Gate 3D** — controlled Phase B source access begins.
-- **Gate 3E** — candidate knowledge package complete (independent reviewer must
-  be appointed and verified before this gate begins).
+- **Gate 3E** — candidate knowledge package complete (the independent reviewer,
+  already appointed and recorded at Gate 3 issuance, is confirmed active).
 - **Gate 3F** — qualified-expert review complete.
 - **Gate 3G** — independent review complete (cannot occur without an active,
   verified independent reviewer).
@@ -158,25 +176,32 @@ satisfy D13 and does not authorize any later contract gate.
 
 ---
 
-## 6. Appointment timing
+## 6. Appointment prerequisites and timing
 
-**Qualified technical expert:** appointment required before Gate 3C; must
-review and approve the Phase A research-question set; must be active before
-Phase B begins.
+**All three appointments** — the executing agent, the qualified technical
+expert, and the independent reviewer — must be completed, verified,
+owner-approved, and recorded **before Gate 3 is issued**, and all three must
+exist **before any research begins**. Framework recording appoints no one; the
+appointments are made, verified, and recorded at Gate 3 issuance.
 
-**Independent reviewer:** not required to record Gate 3 canonically; not
-required for Gate 3A; must be appointed and verified before Gate 3E begins;
-mandatory before Gate 3G; must remain independent of the executing AI agent,
-the qualified expert, and every candidate-content author. If the reviewer
-later contributes to candidate technical content, independence is lost for
-that content, the affected artifacts are re-reviewed by a newly appointed
+**Qualified technical expert:** appointed and recorded at Gate 3 issuance;
+reviews and approves the Phase A research-question set at Gate 3C; active
+before Phase B begins.
+
+**Independent reviewer:** appointed and recorded at Gate 3 issuance (not after
+Gate 3A); must remain independent of the executing AI agent, the qualified
+expert, and every candidate-content author. The reviewer need not perform
+review work before Gate 3E, but must already be appointed and recorded before
+Gate 3 issuance and before research activation. If the reviewer later
+contributes to candidate technical content, independence is lost for that
+content, the affected artifacts are re-reviewed by a newly appointed
 independent reviewer, and the loss is logged.
 
-Appointment records must capture, at minimum, for the expert and the reviewer:
+Appointment records must capture, at minimum, for each appointed role:
 accountable identity or organization; competency evidence against the Gate 2
 criteria; conflict-of-interest declaration; confidentiality commitment; scope
 acceptance; availability; explicit written acceptance; and owner approval. No
-individual or organization is appointed by this document.
+individual or organization is appointed by this framework document.
 
 ---
 
@@ -389,9 +414,13 @@ patent-export readiness.
 
 ## 16. Preserved boundaries
 
-Gate 3 is recorded as an authorization only; research activation remains
-blocked until Gate 3A passes after merge. No person or organization is
-appointed by this document; no source is selected or accessed; no technical
+This document records the Gate 3 framework only; Gate 3 is NOT issued and
+research is NOT authorized. Gate 3 issuance requires all three appointments —
+the executing agent, the qualified technical expert, and the independent
+reviewer — to be named, verified, owner-approved, and recorded; all three must
+exist before any research begins; and research activation additionally requires
+Gate 3A to pass after issuance. No person or organization is appointed by this
+framework document; no source is selected or accessed; no technical
 rule, checklist, threshold, mapping, taxonomy, or decision table is created.
 D13 remains UNSATISFIED / UNIMPLEMENTED; no Workstream number or implementation
 vehicle is assigned; Workstream 8 remains NOT AUTHORIZED / NOT STARTED;
