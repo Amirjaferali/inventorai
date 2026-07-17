@@ -1796,3 +1796,32 @@ remain unchanged.
 - Path T = BLOCKED; Phase 4 = CLOSED; Gate 8 = CLOSED; runtime_integrated=TRUE.
 
 No execution is authorized by this amendment.
+
+---
+
+## D13 Candidate Identification Planning and Pre-Evidence Governance Process — Recorded
+
+The governance process defined in:
+
+`docs/governance/D13_CANDIDATE_IDENTIFICATION_PLANNING_AND_PRE_EVIDENCE_GOVERNANCE_PROCESS.md`
+
+is recorded as a planning-only, non-activating, non-appointing, non-research, and non-implementation governance artifact.
+
+This recording does not authorize candidate discovery, candidate searching, preliminary screening, identification, ranking, shortlisting, outreach, contact, evidence collection, evidence verification, candidate proposal, appointment, Gate 3 issuance, Gate 3A activation, research, architecture, RED, implementation, or Workstream 8.
+
+The labels `OD-CI-1`, `OD-CI-2`, and `OD-CI-3` remain provisional planning labels only. This recording does not issue or activate any of them.
+
+State preserved by this recording:
+
+- Workstreams 1–7 remain `CLOSED / CANONICAL`.
+- D13 remains `UNSATISFIED / UNIMPLEMENTED`, a `MANDATORY FUTURE PRODUCT CAPABILITY`, and `SEPARATELY OWNER-GATED`.
+- Appointments remain `NOT MADE`.
+- Gate 3 remains `NOT ISSUED`.
+- Gate 3A remains `INACTIVE`.
+- Research remains `NOT AUTHORIZED`.
+- D13 implementation remains `NOT AUTHORIZED`.
+- Workstream 8 remains `NOT AUTHORIZED / NOT STARTED`.
+- The official product state remains `DEMO_READY_WITH_LIMITATIONS`.
+- The MVP scope remains electronics/electrical-only.
+
+Recording or merging this governance artifact authorizes no downstream D13 activity.
