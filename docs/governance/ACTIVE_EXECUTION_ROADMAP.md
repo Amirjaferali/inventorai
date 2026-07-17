@@ -1825,3 +1825,32 @@ State preserved by this recording:
 - The MVP scope remains electronics/electrical-only.
 
 Recording or merging this governance artifact authorizes no downstream D13 activity.
+
+---
+
+## D13 Technology-First Objective and Technical Knowledge Package Governance Clarification — Recorded
+
+The supplemental owner decision defined in:
+
+`docs/governance/D13_TECHNOLOGY_FIRST_OBJECTIVE_AND_TECHNICAL_KNOWLEDGE_PACKAGE_GOVERNANCE_CLARIFICATION.md`
+
+is recorded as a docs-only, non-activating, non-authorizing supplemental owner decision. It passed an independent non-authoring governance review and integrates six non-blocking corrections. It clarifies the technology-first D13 output objective and proposes the Technical Knowledge Package (TKP) as a bounded, package-scoped, deferred internal QA vehicle.
+
+This recording amends no existing canonical D13 document. It creates or authorizes no TKP, performs no candidate activity, and makes no appointment.
+
+State preserved by this recording:
+
+- No existing canonical D13 document is amended.
+- Gate 3 Framework remains `RECORDED / CANONICAL`.
+- Gate 3 remains `NOT ISSUED`.
+- Gate 3A remains `INACTIVE`.
+- No TKP is created or authorized.
+- Candidate identification remains `NOT AUTHORIZED CANONICALLY`.
+- Appointments remain `NOT MADE`.
+- Research remains `NOT AUTHORIZED`.
+- D13 implementation remains `NOT AUTHORIZED`.
+- Workstream 8 remains `NOT AUTHORIZED / NOT STARTED`.
+- The official product state remains `DEMO_READY_WITH_LIMITATIONS`.
+- The MVP scope remains electronics/electrical-only.
+
+Recording or merging this supplemental owner decision authorizes no downstream D13 activity.
