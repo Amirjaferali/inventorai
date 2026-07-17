@@ -1903,3 +1903,34 @@ State preserved by this recording:
 - The official product state remains `DEMO_READY_WITH_LIMITATIONS`.
 
 Recording or merging this proposal authorizes no downstream D13 activity.
+
+---
+
+## D13-TKP-PKG-001 Owner-Accepted Bounded Technical Knowledge Package — NC-TKP-4 Owner Acceptance — Canonical Recording — Gate 3 Not Issued — Research Not Authorized
+
+The owner-accepted bounded package definition in:
+
+`docs/governance/D13_TKP_PKG_001_OWNER_ACCEPTED_BOUNDED_TECHNICAL_KNOWLEDGE_PACKAGE.md`
+
+is recorded as a governance-only canonical recording of the first D13 Technical Knowledge Package definition (`D13-TKP-PKG-001`), bounded to low-voltage single-signal sensor-to-microcontroller interfacing, diagnostic-only, electronics/electrical-only. It amends no historical canonical D13 document. Recording this package definition creates no research authority.
+
+State preserved by this recording:
+
+- D13-TKP-PKG-001 package definition recorded.
+- NC-TKP-2 (bounded package proposal): COMPLETED.
+- NC-TKP-3 (independent governance review): COMPLETED with verdict B (pass with required corrections).
+- NC-TKP-3 correction re-verification: COMPLETED with verdict A (corrections verified).
+- NC-TKP-4 (owner acceptance of the package definition): COMPLETED.
+- Canonical recording only; no downstream authority created.
+- Gate 3 remains `NOT ISSUED`.
+- Gate 3A remains `INACTIVE`.
+- Phase A `NOT AUTHORIZED`; Phase B `NOT AUTHORIZED`.
+- Research and source access `NOT AUTHORIZED`.
+- External technical validation `NOT AUTHORIZED`.
+- Architecture, RED, implementation, integration, and Workstream 8 `NOT AUTHORIZED`.
+- No candidate activity and no appointment activity.
+- The executable scope remains electronics/electrical-only.
+- The official product state remains `DEMO_READY_WITH_LIMITATIONS`.
+- PR #167 and PR #162 untouched.
+
+Recording or merging this package definition authorizes no downstream D13 activity.
