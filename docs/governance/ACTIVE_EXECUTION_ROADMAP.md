@@ -1854,3 +1854,28 @@ State preserved by this recording:
 - The MVP scope remains electronics/electrical-only.
 
 Recording or merging this supplemental owner decision authorizes no downstream D13 activity.
+
+---
+
+## D13 No-Candidate and No-Appointment TKP Validation and Independent Review Owner Decision — Owner-Approved / Canonical — No Research Authorized
+
+The owner decision defined in:
+
+`docs/governance/D13_NO_CANDIDATE_NO_APPOINTMENT_TKP_VALIDATION_AND_INDEPENDENT_REVIEW_OWNER_DECISION.md`
+
+is recorded as an owner-approved / canonical docs-only decision that reconciles the current D13 path with the controlling no-candidate and no-appointment direction. It supersedes, by reference and for the current D13 path only, the appointment-dependent provisions identified in the decision's Section 4. It amends no historical canonical D13 document, and the candidate-identification planning process and the appointment-package standard remain historical canonical records that must not be activated.
+
+State preserved by this recording:
+
+- No existing canonical D13 document is amended.
+- Gate 3 remains `NOT ISSUED`.
+- Gate 3A remains `INACTIVE`.
+- No candidate activity and no appointment activity is authorized.
+- No architecture, RED, implementation, integration, or Workstream 8 authorization.
+- Research remains `NOT AUTHORIZED`.
+- External specialist engagement requires a separate bounded owner authorization.
+- The executable scope remains electronics/electrical-only.
+- Future PCB, drone, renewable-energy, energy-storage, and grid-integration domain packs are `NOT AUTHORIZED`.
+- The official product state remains `DEMO_READY_WITH_LIMITATIONS`.
+
+Recording or merging this owner decision authorizes no downstream D13 activity.
