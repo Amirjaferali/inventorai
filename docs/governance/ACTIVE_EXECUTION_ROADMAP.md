@@ -1879,3 +1879,27 @@ State preserved by this recording:
 - The official product state remains `DEMO_READY_WITH_LIMITATIONS`.
 
 Recording or merging this owner decision authorizes no downstream D13 activity.
+
+---
+
+## D13 No-Candidate and No-Appointment Gate 3 Research Authorization Proposal — Owner-Approved / Canonical Recording — Gate 3 Not Issued — Research Not Authorized
+
+The proposal defined in:
+
+`docs/governance/D13_NO_CANDIDATE_NO_APPOINTMENT_GATE3_RESEARCH_AUTHORIZATION_PROPOSAL.md`
+
+is recorded as an owner-approved, canonically recorded proposal describing how a future owner-issued Gate 3 would authorize bounded Technical Knowledge Package research under the no-candidate and no-appointment model recorded in PR #207. It passed independent governance review with corrections integrated and post-correction verification. Recording this proposal issues no gate and authorizes no research.
+
+State preserved by this recording:
+
+- No existing canonical D13 document is amended.
+- Gate 3 remains `NOT ISSUED`.
+- Gate 3A remains `INACTIVE`.
+- Research remains `NOT AUTHORIZED`.
+- No candidate activity and no appointment activity is authorized.
+- No external specialist engagement is authorized; any external technical validation requires a separate bounded owner authorization.
+- No architecture, RED, implementation, integration, or Workstream 8 authorization.
+- The executable scope remains electronics/electrical-only; future PCB, drone, renewable-energy, energy-storage, and grid-integration domain packs remain `NOT AUTHORIZED`.
+- The official product state remains `DEMO_READY_WITH_LIMITATIONS`.
+
+Recording or merging this proposal authorizes no downstream D13 activity.
