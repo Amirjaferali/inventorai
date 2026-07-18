@@ -1934,3 +1934,43 @@ State preserved by this recording:
 - PR #167 and PR #162 untouched.
 
 Recording or merging this package definition authorizes no downstream D13 activity.
+
+---
+
+## D13-TKP-PKG-001 Owner-Issued Package-Specific Gate 3 Research Authorization — Canonical Recording — Gate 3A Inactive — Research Not Authorized
+
+The owner-issued package-specific Gate 3 authorization in:
+
+`docs/governance/D13_TKP_PKG_001_OWNER_ISSUED_PACKAGE_SPECIFIC_GATE3_RESEARCH_AUTHORIZATION.md`
+
+is recorded as a governance-only canonical recording of the owner-issued
+package-specific Gate 3 for `D13-TKP-PKG-001`. The issuance defines the
+bounded authorization envelope only; it activates no gate stage, no phase,
+and no research method.
+
+State recorded and preserved by this recording:
+
+- Authorization ID: `D13-TKP-PKG-001-G3-ISS-001`.
+- Package ID: `D13-TKP-PKG-001`.
+- Package-specific Gate 3: `OWNER-ISSUED`.
+- Canonical recording only.
+- Effective date: 2026-07-18.
+- Expiration: 2026-10-16 at 23:59 Asia/Kuwait.
+- RQ-01 through RQ-11 are the bounded authorization envelope.
+- Gate 3A: `INACTIVE`.
+- Phase A: `NOT STARTED`.
+- Phase B: `NOT STARTED`.
+- DOCUMENT REVIEW and DATASHEET COMPARISON: `ELIGIBLE FOR LATER GATE 3A ONLY`.
+- BOUNDED CALCULATION, MEASUREMENT, BENCH TEST, and SIMULATION:
+  `NOT ELIGIBLE WITHOUT SEPARATE OWNER AMENDMENT`.
+- External technical validation: `NOT AUTHORIZED`.
+- Budget cap: zero paid expenditure.
+- Source-volume cap: maximum five source records per RQ and forty total.
+- No restricted-source access.
+- No method activated or executed.
+- Research execution: `NOT AUTHORIZED`.
+- No candidate or appointment activity.
+- No architecture, RED, implementation, integration, or Workstream 8.
+- PR #167 and PR #162 untouched.
+
+Recording or merging this owner-issued Gate 3 authorizes no downstream D13 activity.
