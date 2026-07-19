@@ -1974,3 +1974,60 @@ State recorded and preserved by this recording:
 - PR #167 and PR #162 untouched.
 
 Recording or merging this owner-issued Gate 3 authorizes no downstream D13 activity.
+
+---
+
+## D13-TKP-PKG-001 Phase-A-Only Gate 3A Proposal and Owner Decision — Governance-Only Canonical Recording — Gate 3A Not Operationally Activated
+
+Governance-only canonical recording of the Phase-A-only Gate 3A proposal and the owner-issued Phase-A-only Gate 3A activation decision for Technical Knowledge Package `D13-TKP-PKG-001`. Recording these documents activates nothing operationally and authorizes no Phase A or Phase B activity, no research, no source access, and no method execution.
+
+### Identity
+
+- Proposal ID: `D13-TKP-PKG-001-G3A-PROP-001` — `docs/governance/D13_TKP_PKG_001_LIMITED_PHASE_A_ONLY_GATE3A_ACTIVATION_PROPOSAL.md`
+- Decision ID: `D13-TKP-PKG-001-G3A-ACT-001-PHASE-A` — `docs/governance/D13_TKP_PKG_001_OWNER_ISSUED_PHASE_A_ONLY_GATE3A_ACTIVATION_DECISION.md`
+- Gate 3 authorization ID: `D13-TKP-PKG-001-G3-ISS-001`
+- Package ID: `D13-TKP-PKG-001`
+
+### Recording status
+
+- Phase-A-only Gate 3A proposal: CANONICALLY RECORDED UPON MERGE
+- Owner-issued Phase-A-only Gate 3A decision: CANONICALLY RECORDED UPON MERGE
+
+### Operational status
+
+- Gate 3A operational activation: NOT EFFECTIVE
+- Phase A: NOT STARTED
+- Phase B: INACTIVE / NOT AUTHORIZED
+- DOCUMENT REVIEW: NOT ACTIVATED
+- DATASHEET COMPARISON: NOT ACTIVATED
+- Research execution: NOT AUTHORIZED
+- Workspace: NOT CREATED / NOT APPROVED FOR USE
+- Evidence-storage path: NOT CREATED / NOT APPROVED FOR USE
+- Post-recording owner start authorization: NOT ISSUED
+
+### Scope boundaries
+
+- Governance-only canonical recording.
+- No Phase A start.
+- No Phase B authority.
+- No external source access.
+- No datasheet retrieval.
+- No research method execution.
+- No candidate or appointment activity.
+- No architecture.
+- No RED.
+- No implementation.
+- No integration.
+- No Workstream 8.
+- PR #167 and PR #162 untouched.
+
+### Gate 3 §10 Phase-A dispositions
+
+- Source manifest: EMPTY
+- Required-input manifest: NOT APPLICABLE TO PHASE A EXTERNAL RESEARCH
+- RQ/source/method matrix: INACTIVE FOR PHASE A
+- External source access: NONE AUTHORIZED
+- Source consumption: ZERO
+- Budget: ZERO PAID EXPENDITURE
+
+Workspace-designation and evidence-storage-designation remain OUTSTANDING prerequisites that must be separately proposed, owner-approved, and canonically recorded before Phase A may begin. Recording or merging these documents authorizes no downstream D13 activity.
