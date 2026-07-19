@@ -2088,3 +2088,71 @@ Governance-only canonical recording of the corrected Phase A workspace, evidence
 - PR #167 and PR #162 untouched.
 
 Phase A may begin only after a separate explicit post-recording owner start authorization satisfying all fifteen Section 19 checklist items and containing or contemporaneously recording the complete Section 13 repository-state-lock record. Recording or merging these documents authorizes no downstream D13 activity.
+
+---
+
+## D13-TKP-PKG-001 Phase A Operational Start Terms and Reserved Start-Authorization ID — Governance-Only Canonical Recording — Start Authorization Not Issued
+
+Governance-only canonical recording of the corrected Limited Phase A Operational Start Authorization Proposal for Technical Knowledge Package `D13-TKP-PKG-001`, together with the owner decision approving its fourteen operational terms and reserving the future start-authorization identity. Recording these documents issues no start authorization, fixes no operational timestamp, creates no branch/workspace/evidence-storage path, authorizes no branch/workspace/evidence use, starts no operational window, and begins no Phase A activity.
+
+### Identity
+
+- Start proposal ID: `D13-TKP-PKG-001-PHASE-A-START-PROP-001` — `docs/governance/D13_TKP_PKG_001_LIMITED_PHASE_A_OPERATIONAL_START_AUTHORIZATION_PROPOSAL.md`
+- Owner decision ID: `D13-TKP-PKG-001-PHASE-A-START-TERMS-DEC-001` — `docs/governance/D13_TKP_PKG_001_OWNER_APPROVED_LIMITED_PHASE_A_OPERATIONAL_TERMS_AND_RESERVED_START_AUTHORIZATION_ID_DECISION.md`
+- Reserved future start-authorization ID: `D13-TKP-PKG-001-PHASE-A-START-AUTH-001` (RESERVED ONLY / NOT ISSUED)
+- Phase A prerequisite decision ID: `D13-TKP-PKG-001-PHASE-A-PREREQ-DEC-001`
+- Gate 3A owner decision ID: `D13-TKP-PKG-001-G3A-ACT-001-PHASE-A`
+- Gate 3 authorization ID: `D13-TKP-PKG-001-G3-ISS-001`
+- Package ID: `D13-TKP-PKG-001`
+
+### Independent review
+
+- Corrected start proposal independent governance verdict: A. PASS — READY FOR OWNER DECISION (no fatal, material, or minor findings).
+
+### Recording status
+
+- Corrected Limited Phase A Operational Start Authorization Proposal: CANONICALLY RECORDED UPON MERGE
+- Owner decision approving the fourteen operational terms and reserving the start-authorization ID: CANONICALLY RECORDED UPON MERGE
+
+### Decision status
+
+- Fourteen operational terms: OWNER-APPROVED
+- Future start-authorization ID: RESERVED ONLY / NOT ISSUED
+- Start authorization: NOT ISSUED
+- Exact operational start timestamp: NOT FIXED
+- Exact operational end timestamp: NOT FIXED
+
+### Operational status
+
+- Gate 3A operational activation: NOT EFFECTIVE
+- Phase A: NOT STARTED
+- Phase B: INACTIVE / NOT AUTHORIZED
+- Phase A branch (`research/d13-tkp-pkg-001-phase-a-read-only-analysis`): EXISTS / NOT AUTHORIZED FOR USE
+- Workspace path (`research/d13-tkp-pkg-001/phase-a/`): NOT CREATED / NOT AUTHORIZED FOR USE
+- Evidence-storage path (`research/d13-tkp-pkg-001/phase-a/evidence/`): NOT CREATED / NOT AUTHORIZED FOR USE
+- Operational window: NOT STARTED
+- Journey data: EXCLUDED / NOT VERIFIED / SEPARATE OWNER DECISION REQUIRED
+- Research execution: NOT AUTHORIZED
+- DOCUMENT REVIEW / DATASHEET COMPARISON: NOT ACTIVATED
+
+### Scope boundaries
+
+- Governance-only canonical recording.
+- No start authorization issued.
+- No operational timestamp fixed.
+- No Phase A start.
+- No Phase B authority.
+- No branch, workspace, or evidence-storage path created or authorized for use.
+- No operational window started.
+- No journey, personal, production, or external data access.
+- No datasheet retrieval.
+- No research method execution.
+- No candidate or appointment activity.
+- No architecture.
+- No RED.
+- No implementation.
+- No integration.
+- No Workstream 8.
+- PR #167 and PR #162 untouched.
+
+A separate later owner issuance of `D13-TKP-PKG-001-PHASE-A-START-AUTH-001` remains mandatory before Phase A, following re-verification of the complete repository-state lock and all prerequisite checklist items. Recording or merging these documents authorizes no downstream D13 activity.
