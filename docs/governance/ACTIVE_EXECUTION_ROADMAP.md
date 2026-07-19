@@ -2031,3 +2031,60 @@ Governance-only canonical recording of the Phase-A-only Gate 3A proposal and the
 - Budget: ZERO PAID EXPENDITURE
 
 Workspace-designation and evidence-storage-designation remain OUTSTANDING prerequisites that must be separately proposed, owner-approved, and canonically recorded before Phase A may begin. Recording or merging these documents authorizes no downstream D13 activity.
+
+---
+
+## D13-TKP-PKG-001 Phase A Prerequisites and Owner Decision — Governance-Only Canonical Recording — Phase A Not Started
+
+Governance-only canonical recording of the corrected Phase A workspace, evidence-storage, operational-window, and start-control prerequisite proposal for Technical Knowledge Package `D13-TKP-PKG-001`, together with the owner decision approving its thirteen prerequisite decisions. Recording these documents starts no Phase A activity, creates no branch/workspace/evidence-storage path, starts no operational window, and issues no post-recording Phase A start authorization.
+
+### Identity
+
+- Prerequisite proposal ID: `D13-TKP-PKG-001-PHASE-A-PREREQ-PROP-001` — `docs/governance/D13_TKP_PKG_001_PHASE_A_WORKSPACE_EVIDENCE_STORAGE_OPERATIONAL_WINDOW_AND_START_CONTROL_PROPOSAL.md`
+- Owner decision ID: `D13-TKP-PKG-001-PHASE-A-PREREQ-DEC-001` — `docs/governance/D13_TKP_PKG_001_OWNER_APPROVED_PHASE_A_PREREQUISITES_AND_START_CONTROL_DECISION.md`
+- Gate 3A owner decision ID: `D13-TKP-PKG-001-G3A-ACT-001-PHASE-A`
+- Gate 3 authorization ID: `D13-TKP-PKG-001-G3-ISS-001`
+- Package ID: `D13-TKP-PKG-001`
+
+### Recording status
+
+- Corrected Phase A prerequisite proposal (with independent findings F-001 and F-002 integrated): CANONICALLY RECORDED UPON MERGE
+- Owner decision approving the thirteen prerequisite decisions: CANONICALLY RECORDED UPON MERGE
+
+### Prerequisite-decision status
+
+- Phase A branch identity (`research/d13-tkp-pkg-001-phase-a-read-only-analysis`): APPROVED AS FUTURE IDENTITY / NOT CREATED / NOT AUTHORIZED FOR USE
+- Workspace path identity (`research/d13-tkp-pkg-001/phase-a/`): APPROVED AS FUTURE IDENTITY / NOT CREATED / NOT AUTHORIZED FOR USE
+- Evidence-storage path identity (`research/d13-tkp-pkg-001/phase-a/evidence/`): APPROVED AS FUTURE IDENTITY / NOT CREATED / NOT AUTHORIZED FOR USE
+- Operational window: APPROVED AS A MAXIMUM RULE (30 calendar days, not beyond 2026-10-16 23:59 Asia/Kuwait) / NOT STARTED / NO START OR END DATE FIXED
+- Journey-data access: NOT YET VERIFIED / EXCLUDED FROM INITIAL PHASE A SCOPE / SEPARATE OWNER DECISION REQUIRED
+
+### Operational status
+
+- Gate 3A operational activation: NOT EFFECTIVE
+- Phase A: NOT STARTED
+- Phase B: INACTIVE / NOT AUTHORIZED
+- DOCUMENT REVIEW: NOT ACTIVATED
+- DATASHEET COMPARISON: NOT ACTIVATED
+- Research execution: NOT AUTHORIZED
+- Post-recording owner Phase A start authorization: NOT ISSUED
+
+### Scope boundaries
+
+- Governance-only canonical recording.
+- No Phase A start.
+- No Phase B authority.
+- No branch, workspace, or evidence-storage path created or authorized for use.
+- No operational window started.
+- No journey, personal, production, or external data access.
+- No datasheet retrieval.
+- No research method execution.
+- No candidate or appointment activity.
+- No architecture.
+- No RED.
+- No implementation.
+- No integration.
+- No Workstream 8.
+- PR #167 and PR #162 untouched.
+
+Phase A may begin only after a separate explicit post-recording owner start authorization satisfying all fifteen Section 19 checklist items and containing or contemporaneously recording the complete Section 13 repository-state-lock record. Recording or merging these documents authorizes no downstream D13 activity.
