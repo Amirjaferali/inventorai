@@ -2156,3 +2156,68 @@ Governance-only canonical recording of the corrected Limited Phase A Operational
 - PR #167 and PR #162 untouched.
 
 A separate later owner issuance of `D13-TKP-PKG-001-PHASE-A-START-AUTH-001` remains mandatory before Phase A, following re-verification of the complete repository-state lock and all prerequisite checklist items. Recording or merging these documents authorizes no downstream D13 activity.
+
+---
+
+## D13-TKP-PKG-001 Refreshed Phase A Repository State Lock and Verified Branch Alignment — Governance-Only Canonical Recording — Start Authorization Not Issued
+
+Governance-only canonical recording of the owner-approved refreshed Phase A repository-state lock and the independently verified Phase A branch alignment for Technical Knowledge Package `D13-TKP-PKG-001`. Recording this decision issues no start authorization, fixes no operational timestamp, authorizes no operational use of the Phase A branch, creates no workspace/evidence-storage path or Phase A output, and begins no Phase A activity.
+
+### Identity
+
+- Decision ID: `D13-TKP-PKG-001-PHASE-A-STATE-LOCK-REFRESH-DEC-001` — `docs/governance/D13_TKP_PKG_001_OWNER_APPROVED_REFRESHED_PHASE_A_REPOSITORY_STATE_LOCK_AND_VERIFIED_BRANCH_ALIGNMENT_DECISION.md`
+- Reserved future start-authorization ID: `D13-TKP-PKG-001-PHASE-A-START-AUTH-001` (RESERVED ONLY / NOT ISSUED)
+- Start-terms owner decision ID: `D13-TKP-PKG-001-PHASE-A-START-TERMS-DEC-001`
+- Phase A prerequisite decision ID: `D13-TKP-PKG-001-PHASE-A-PREREQ-DEC-001`
+- Gate 3A owner decision ID: `D13-TKP-PKG-001-G3A-ACT-001-PHASE-A`
+- Gate 3 authorization ID: `D13-TKP-PKG-001-G3-ISS-001`
+- Package ID: `D13-TKP-PKG-001`
+
+### Branch alignment
+
+- Phase A branch alignment (Option A fast-forward): COMPLETED
+- Phase A branch: `research/d13-tkp-pkg-001-phase-a-read-only-analysis`
+- Pre-alignment tip: `c960b29cdd5d531a5d298aa9a2bfe46703cb2dbf`
+- Post-alignment tip: `17f5cbae475b120133c1cb602c2718fc063f71c6`
+- Authoritative tip: `17f5cbae475b120133c1cb602c2718fc063f71c6`
+- Branch-tip equality: VERIFIED / EMPTY DIFF / ZERO UNIQUE COMMITS
+- Independent verification verdict: A. BRANCH ALIGNMENT VERIFIED — READY FOR REFRESHED REPOSITORY-STATE-LOCK OWNER DECISION (no FATAL, MATERIAL, or MINOR findings; OBS-1 and OBS-2 non-blocking)
+
+### Recording status
+
+- Refreshed Repository State Lock: OWNER-APPROVED / PENDING CANONICAL RECORDING UNTIL MERGE
+
+### Operational status
+
+- Start authorization (`D13-TKP-PKG-001-PHASE-A-START-AUTH-001`): RESERVED ONLY / NOT ISSUED
+- Effective start timestamp: NOT FIXED
+- Effective end timestamp: NOT FIXED
+- Gate 3A operational activation: NOT EFFECTIVE
+- Phase A: NOT STARTED
+- Phase B: INACTIVE / NOT AUTHORIZED
+- Phase A branch operational use: NOT AUTHORIZED
+- Workspace (`research/d13-tkp-pkg-001/phase-a/`): NOT CREATED
+- Evidence-storage path (`research/d13-tkp-pkg-001/phase-a/evidence/`): NOT CREATED
+- Operational window: NOT STARTED
+- Phase A outputs: NONE
+- Journey data: EXCLUDED / NOT VERIFIED / SEPARATE OWNER DECISION REQUIRED
+- External research / DOCUMENT REVIEW / DATASHEET COMPARISON / RQ research: NOT AUTHORIZED
+- Architecture / RED / implementation / integration / Workstream 8: NOT AUTHORIZED
+
+### Scope boundaries
+
+- Governance-only canonical recording.
+- No start authorization issued.
+- No operational timestamp fixed.
+- No Phase A start.
+- No Phase B authority.
+- No operational use of the Phase A branch.
+- No workspace, evidence-storage path, or Phase A output created.
+- No operational window started.
+- No journey, personal, production, or external data access.
+- No research method execution.
+- No candidate or appointment activity.
+- No architecture, RED, implementation, integration, or Workstream 8.
+- PR #167 and PR #162 untouched.
+
+The next decision is a separate later owner decision on the remaining start-authorization prerequisites (operational branch use; workspace and evidence-storage creation/use; reaffirmed inputs and exclusions; session, provenance, and stop controls; exact start/end timestamps; and explicit issuance of `D13-TKP-PKG-001-PHASE-A-START-AUTH-001`). Recording or merging this decision authorizes no downstream D13 activity.
