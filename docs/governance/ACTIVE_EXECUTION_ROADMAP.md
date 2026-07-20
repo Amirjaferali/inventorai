@@ -2221,3 +2221,38 @@ Governance-only canonical recording of the owner-approved refreshed Phase A repo
 - PR #167 and PR #162 untouched.
 
 The next decision is a separate later owner decision on the remaining start-authorization prerequisites (operational branch use; workspace and evidence-storage creation/use; reaffirmed inputs and exclusions; session, provenance, and stop controls; exact start/end timestamps; and explicit issuance of `D13-TKP-PKG-001-PHASE-A-START-AUTH-001`). Recording or merging this decision authorizes no downstream D13 activity.
+
+---
+
+## D13-TKP-PKG-001 Phase A START-AUTH-001 — Owner-Issued — Canonical Recording — Operational Window Not Yet Open
+
+Canonical recording of the owner-issued Phase A start authorization `D13-TKP-PKG-001-PHASE-A-START-AUTH-001` for Technical Knowledge Package `D13-TKP-PKG-001`. This recording begins no Phase A activity and activates Gate 3A in no operational sense before the stated start time.
+
+### Identity
+
+- Authorization ID: `D13-TKP-PKG-001-PHASE-A-START-AUTH-001` — `docs/governance/D13_TKP_PKG_001_OWNER_ISSUED_PHASE_A_START_AUTHORIZATION.md`
+- Issuance-locked authoritative commit: `57e2fac837f333224b2f985be285fe9e0a9f6243`
+- Phase A branch (`research/d13-tkp-pkg-001-phase-a-read-only-analysis`) locked at: `57e2fac837f333224b2f985be285fe9e0a9f6243`
+- Alignment at issuance: divergence 0 0 / empty diff / matching tree and parents (INDEPENDENTLY VERIFIED)
+
+### Status
+
+- START-AUTH-001: OWNER-ISSUED / CANONICALLY RECORDED THROUGH THIS INCREMENT
+- Operational window: 2026-07-28 09:00 → 2026-08-11 09:00 Asia/Kuwait — NOT YET OPEN
+- Gate 3A operational effectiveness: NOT YET EFFECTIVE (only within the window, after re-verification)
+- Phase A: NOT STARTED
+- Phase B: NOT AUTHORIZED
+- Workstream 8: NOT AUTHORIZED
+- Workspace (`research/d13-tkp-pkg-001/phase-a/`): NOT CREATED
+- Evidence-storage path (`research/d13-tkp-pkg-001/phase-a/evidence/`): NOT CREATED
+- Phase A outputs: NONE
+
+### Next action
+
+- At or after 2026-07-28 09:00 Asia/Kuwait: complete the mandatory pre-start re-verification (complete repository lock; Gate 3 and Gate 3A validity; branch equality at `57e2fac8`; divergence 0 0; empty diff; clean tracked state; no unexpected non-.bundle side state; operational-window validity) before creating any authorized path or output.
+- Any failed verification is a stop condition — stop without mutation and report exact raw evidence to the owner.
+
+### Boundaries
+
+- Bounded post-recording tip-advance rule applies: this single governance-only recording may advance the authoritative branch without invalidating the issuance lock; the Phase A branch remains fixed at `57e2fac8` during the window and must not absorb the recording commit; every other authoritative advancement remains a stop condition.
+- Phase B and Workstream 8 remain unauthorized. Recording this authorization authorizes no downstream D13 activity before the stated start time.
