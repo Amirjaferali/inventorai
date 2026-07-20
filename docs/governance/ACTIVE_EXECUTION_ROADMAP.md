@@ -2301,3 +2301,52 @@ Until all four are satisfied: no Gate 3A operational activation, no Phase A star
 - Supersedes only the original operational timestamps; every other START-AUTH-001 term remains in force (Phase A branch lock, permitted scope, four outputs, provenance/session controls, stop/suspension/termination conditions, all prohibitions, PR #167/#162 protection, .bundle exclusion).
 - Bounded post-recording tip-advance rule preserved: this single governance-only recording may advance the authoritative branch without invalidating the Phase A lock; the Phase A branch remains fixed at `57e2fac8` and must not absorb the recording commit; every other authoritative advancement remains a stop condition.
 - Phase B and Workstream 8 remain unauthorized. Recording this amendment authorizes no downstream D13 activity.
+
+---
+
+## D13-TKP-PKG-001 Phase A No-Date, Gate-Based Execution Amendment — Owner-Issued — Canonical Recording — Phase A Not Started
+
+Canonical recording of the owner-issued decision `D13-TKP-PKG-001-PHASE-A-NO-DATE-GATE-BASED-EXECUTION-AMENDMENT-001`, which removes all calendar-date and clock-time dependencies from Phase A operational execution and replaces them with an owner-and-gate-based model. Recording this decision does not start Phase A and activates Gate 3A in no operational sense.
+
+### Identity
+
+- Decision ID: `D13-TKP-PKG-001-PHASE-A-NO-DATE-GATE-BASED-EXECUTION-AMENDMENT-001` — `docs/governance/D13_TKP_PKG_001_PHASE_A_NO_DATE_GATE_BASED_EXECUTION_AMENDMENT_001.md`
+- Amends: `D13-TKP-PKG-001-PHASE-A-START-AUTH-001` (PR #215) and `D13-TKP-PKG-001-PHASE-A-START-AUTH-001-AMEND-001` (PR #216)
+- Authoritative commit at decision: `8ccb977cc29fc9ec56fa9113c45a24913270e6ae` (parents `4ec49e5f` + `20dd6a1f`; tree `db6af2745`)
+- Phase A branch (`research/d13-tkp-pkg-001-phase-a-read-only-analysis`) lock: PRESERVED at `57e2fac837f333224b2f985be285fe9e0a9f6243`
+
+### Model change (only change)
+
+- Both prior calendar windows SUPERSEDED / NOT OPERATIONALLY CONTROLLING:
+  - START-AUTH-001 window 2026-07-28 09:00 → 2026-08-11 09:00 Asia/Kuwait
+  - AMEND-001 window 2026-07-22 09:00 → 2026-08-05 09:00 Asia/Kuwait
+- Activation: owner-and-gate-based (explicit owner phase authorization + valid gates + passing contemporaneous verification + no active stop condition + activity within scope). Elapsed calendar time alone neither activates nor terminates Phase A.
+- Termination: earliest of completion, owner suspension/revocation/termination, Gate 3/3A lapse, any stop condition, or out-of-scope need. Gate 3 expiry (2026-10-16 23:59 Asia/Kuwait) remains an outer authorization-validity boundary, not a Phase A operational window.
+
+### Status
+
+- No-date amendment: OWNER-ISSUED / CANONICALLY RECORDED THROUGH THIS INCREMENT
+- START-AUTH-001: OWNER-ISSUED / CANONICALLY RECORDED (unchanged historical identity)
+- AMEND-001: OWNER-ISSUED / CANONICALLY RECORDED (unchanged historical identity; calendar window superseded)
+- Gate 3A operational effectiveness: NOT EFFECTIVE
+- Phase A: NOT STARTED
+- Phase B: NOT AUTHORIZED
+- Workstream 8: NOT AUTHORIZED
+- Workspace / evidence-storage path: NOT CREATED
+- Phase A outputs: NONE
+
+### Conditions before Phase A may start (all required)
+
+1. this no-date decision independently verified;
+2. canonically recorded through a governance-only PR;
+3. that PR merged;
+4. owner issues a separate explicit Phase A start authorization;
+5. mandatory contemporaneous pre-start verification passes.
+
+Once satisfied, Phase A may begin immediately without waiting for a calendar date or clock time. Any failed verification is a stop condition — stop without mutation and report exact raw evidence to the owner.
+
+### Boundaries
+
+- Changes only the calendar-based activation and termination model; every other START-AUTH-001 and AMEND-001 control remains in force (Phase A branch lock, permitted read-only scope, four outputs, supporting records, provenance/session controls, stop/suspension/termination controls, Gate 3/3A dependencies, journey-data exclusion, all prohibitions, no-candidate/no-appointment rule, PR #167/#162 protection, .bundle preservation/exclusion, tip-advance rule).
+- Historical START-AUTH-001 and AMEND-001 files and prior roadmap entries are not altered by this recording.
+- Bounded post-recording tip-advance rule preserved: the Phase A branch remains fixed at `57e2fac8` and must not absorb this recording commit; every other authoritative advancement remains a stop condition.
