@@ -2256,3 +2256,48 @@ Canonical recording of the owner-issued Phase A start authorization `D13-TKP-PKG
 
 - Bounded post-recording tip-advance rule applies: this single governance-only recording may advance the authoritative branch without invalidating the issuance lock; the Phase A branch remains fixed at `57e2fac8` during the window and must not absorb the recording commit; every other authoritative advancement remains a stop condition.
 - Phase B and Workstream 8 remain unauthorized. Recording this authorization authorizes no downstream D13 activity before the stated start time.
+
+---
+
+## D13-TKP-PKG-001 Phase A START-AUTH-001 Operational-Window Amendment (AMEND-001) — Owner-Issued — Canonical Recording — Not Yet Operational
+
+Canonical recording of the owner-issued amendment `D13-TKP-PKG-001-PHASE-A-START-AUTH-001-AMEND-001`, which modifies only the operational start and end timestamps of `D13-TKP-PKG-001-PHASE-A-START-AUTH-001`. Recording this amendment does not make the new window effective, begins no Phase A activity, and activates Gate 3A in no operational sense.
+
+### Identity
+
+- Amendment ID: `D13-TKP-PKG-001-PHASE-A-START-AUTH-001-AMEND-001` — `docs/governance/D13_TKP_PKG_001_OWNER_ISSUED_PHASE_A_START_AUTHORIZATION_AMENDMENT_001.md`
+- Amends: `D13-TKP-PKG-001-PHASE-A-START-AUTH-001` (PR #215)
+- Authoritative commit at amendment: `4ec49e5f7ecdecdc634d4854b344794015c816aa` (parents `57e2fac8` + `23e8e7d4`; tree `faa0e725`)
+- Phase A branch (`research/d13-tkp-pkg-001-phase-a-read-only-analysis`) lock: PRESERVED at `57e2fac837f333224b2f985be285fe9e0a9f6243`
+
+### Timestamp change (only change)
+
+- Superseded start: 2026-07-28 09:00 Asia/Kuwait → New start: 2026-07-22 09:00 Asia/Kuwait
+- Superseded end: 2026-08-11 09:00 Asia/Kuwait → New end: 2026-08-05 09:00 Asia/Kuwait
+- Duration: 14 calendar days; within Gate 3 validity (expiry 2026-10-16 23:59 Asia/Kuwait)
+
+### Status
+
+- AMEND-001: OWNER-ISSUED / CANONICALLY RECORDED THROUGH THIS INCREMENT
+- Operational state: NOT YET OPERATIONAL
+- Gate 3A operational effectiveness: NOT YET EFFECTIVE
+- Phase A: NOT STARTED
+- Phase B: NOT AUTHORIZED
+- Workstream 8: NOT AUTHORIZED
+- Workspace / evidence-storage path: NOT CREATED
+- Phase A outputs: NONE
+
+### Effectiveness conditions (all four required)
+
+1. this amendment canonically recorded through a governance-only PR;
+2. that recording independently verified as faithful and governance-only;
+3. the recording PR merged;
+4. mandatory contemporaneous pre-start verification passes at or after 2026-07-22 09:00 Asia/Kuwait.
+
+Until all four are satisfied: no Gate 3A operational activation, no Phase A start, no workspace/evidence path, no output, no analysis. Any failed verification is a stop condition — stop without mutation and report exact raw evidence to the owner.
+
+### Boundaries
+
+- Supersedes only the original operational timestamps; every other START-AUTH-001 term remains in force (Phase A branch lock, permitted scope, four outputs, provenance/session controls, stop/suspension/termination conditions, all prohibitions, PR #167/#162 protection, .bundle exclusion).
+- Bounded post-recording tip-advance rule preserved: this single governance-only recording may advance the authoritative branch without invalidating the Phase A lock; the Phase A branch remains fixed at `57e2fac8` and must not absorb the recording commit; every other authoritative advancement remains a stop condition.
+- Phase B and Workstream 8 remain unauthorized. Recording this amendment authorizes no downstream D13 activity.
