@@ -2350,3 +2350,38 @@ Once satisfied, Phase A may begin immediately without waiting for a calendar dat
 - Changes only the calendar-based activation and termination model; every other START-AUTH-001 and AMEND-001 control remains in force (Phase A branch lock, permitted read-only scope, four outputs, supporting records, provenance/session controls, stop/suspension/termination controls, Gate 3/3A dependencies, journey-data exclusion, all prohibitions, no-candidate/no-appointment rule, PR #167/#162 protection, .bundle preservation/exclusion, tip-advance rule).
 - Historical START-AUTH-001 and AMEND-001 files and prior roadmap entries are not altered by this recording.
 - Bounded post-recording tip-advance rule preserved: the Phase A branch remains fixed at `57e2fac8` and must not absorb this recording commit; every other authoritative advancement remains a stop condition.
+
+---
+
+## D13-TKP-PKG-001 Phase A Output Package — Owner-Accepted — Lock-Safe Preservation Recording
+
+Governance acceptance and lock-safe preservation of the independently verified, owner-accepted D13-TKP-PKG-001 Phase A output package (12 files). Preservation records the package on a separate preservation branch based on the authoritative tip; it does not move the Phase A branch and authorizes no downstream activity.
+
+### Identity
+
+- Acceptance record: `docs/governance/D13_TKP_PKG_001_PHASE_A_OUTPUT_PACKAGE_OWNER_ACCEPTANCE.md`
+- Package: `D13-TKP-PKG-001`
+- Phase A branch (locked, unchanged): `research/d13-tkp-pkg-001-phase-a-read-only-analysis` @ `57e2fac837f333224b2f985be285fe9e0a9f6243`
+- Preservation branch: `docs/d13-tkp-pkg-001-phase-a-output-preservation-recording`
+- Authoritative base: `feature/atomic-json-session-persistence` @ `70f032d13f503195b716e4e627e87f373f80ed29`
+- Preserved package path: `research/d13-tkp-pkg-001/phase-a/` (12 files, byte-identical to the accepted inventory)
+
+### Verdict and status
+
+- Independent verdict: A. PHASE A OUTPUT PACKAGE VERIFIED — READY FOR OWNER ACCEPTANCE DECISION
+- Prior review: B. PASS WITH REQUIRED CORRECTIONS; F-1 and F-2 corrected and re-verified
+- Owner acceptance: RECORDED (preservation)
+- Phase A branch: FIXED at `57e2fac8` (not moved by preservation)
+- Gate 3A: activated for the read-only Phase A only; Gate 3 valid to 2026-10-16 23:59 Asia/Kuwait
+- Phase A: analysis complete for the bounded scope; preserved
+- Phase B / Workstream 8 / research execution / implementation: NOT AUTHORIZED
+
+### Scope boundaries
+
+- Governance acceptance + lock-safe preservation only (not a docs-only change; not an operational change).
+- Preserves the exact 12-file package byte-identically; adds one acceptance record; append-only roadmap.
+- Does not move/realign/merge/commit-onto the Phase A branch.
+- Proposed missing fields (MF-01…MF-10), capability gaps (CG-01…CG-07), and proposed RQs (P-RQ-A1…P-RQ-A8) remain non-binding, unauthorized downstream items; no proposed RQ enters the authorized RQ-01…RQ-11 set without a separate owner decision (Gate 3 §4).
+- No product/application/prompt/schema/database/UI/test/configuration/persistence/integration change; no `.bundle`; PR #167 and PR #162 untouched.
+
+Publication, PR creation, and merge each remain separate owner authorizations. Recording this preservation authorizes no downstream D13 activity.
