@@ -2385,3 +2385,36 @@ Governance acceptance and lock-safe preservation of the independently verified, 
 - No product/application/prompt/schema/database/UI/test/configuration/persistence/integration change; no `.bundle`; PR #167 and PR #162 untouched.
 
 Publication, PR creation, and merge each remain separate owner authorizations. Recording this preservation authorizes no downstream D13 activity.
+
+---
+
+## D13-TKP-PKG-001 Phase A — Formal Closure (Phase A Only)
+
+Formal closure of Phase A (bounded, repository-only, read-only internal analysis) of Technical Knowledge Package `D13-TKP-PKG-001`. Phase A is CLOSED — COMPLETE FOR THE AUTHORIZED BOUNDED SCOPE. This closure covers Phase A only; it does not close D13, does not close the package, and authorizes no downstream phase.
+
+### Identity
+
+- Closure record: `docs/governance/D13_TKP_PKG_001_PHASE_A_FORMAL_CLOSURE_RECORD.md`
+- Package: `D13-TKP-PKG-001`
+- Phase A branch (locked, unchanged): `research/d13-tkp-pkg-001-phase-a-read-only-analysis` @ `57e2fac837f333224b2f985be285fe9e0a9f6243`
+- Closure canonical basis: `feature/atomic-json-session-persistence` @ `6919f78b0779ca42d75cbbc809e385743af09fd2` (tree `ab9eea7b`; parents `70f032d` + `5fc8f895`)
+- Closure branch: `docs/d13-tkp-pkg-001-phase-a-formal-closure-recording`
+
+### Status
+
+- Phase A: CLOSED — COMPLETE FOR THE AUTHORIZED BOUNDED SCOPE
+- Package (D13-TKP-PKG-001): NOT CLOSED
+- D13 program: NOT CLOSED
+- Independent verdict chain: B. PASS WITH REQUIRED CORRECTIONS (F-1/F-2) → corrected/re-verified → A. PHASE A OUTPUT PACKAGE VERIFIED → owner acceptance (PR #218) → post-#218 takeover PASS
+- Gate 3: valid to 2026-10-16 23:59 Asia/Kuwait (outer bound); Gate 3A: was activated for read-only Phase A only
+
+### Not authorized by this closure
+
+- D13 closure; Phase B; external / external technical research; execution or answering of RQ-01…RQ-11 or any proposed RQ; Technical Knowledge Package build; architecture; contract; BASE RED; implementation; integration; UI/schema/prompt/database/test/code/persistence change; Domain Registry change; Workstream 8; candidate or appointment activity.
+- Proposed missing fields (MF-01…MF-10), capability gaps (CG-01…CG-07), and proposed RQs (P-RQ-A1…P-RQ-A8) remain recorded findings only — non-binding and unauthorized downstream.
+
+### Boundaries
+
+- Does not move/realign/merge the Phase A branch (fixed at `57e2fac8`).
+- PR #167 and PR #162 untouched; no `.bundle` touched; no product/technical file changed.
+- Preparation only; publication, PR, and merge each remain separate owner authorizations. Recording this closure authorizes no downstream D13 activity.
