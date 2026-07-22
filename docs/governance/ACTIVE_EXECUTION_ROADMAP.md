@@ -2418,3 +2418,9 @@ Formal closure of Phase A (bounded, repository-only, read-only internal analysis
 - Does not move/realign/merge the Phase A branch (fixed at `57e2fac8`).
 - PR #167 and PR #162 untouched; no `.bundle` touched; no product/technical file changed.
 - Preparation only; publication, PR, and merge each remain separate owner authorizations. Recording this closure authorizes no downstream D13 activity.
+
+---
+
+## Risk-Based Execution and Review Model — Recorded (Process Model Only)
+
+Records the binding risk-based execution and review model for InventorAI in `docs/governance/RISK_BASED_EXECUTION_AND_REVIEW_MODEL.md`. Governance is proportional to actual risk (LOW/MEDIUM/HIGH) with matching paths; the non-negotiable quality floor (accuracy, evidence integrity, regression protection) is never reduced for speed; GitHub Draft PR is the default review/evidence mechanism; `.bundle` transfer only when publication/reviewer-access/confidentiality/preservation requires it; bounded low-risk actions may share one authorization; merge stays a separate owner decision for canonical/behavior/code/data/status changes; independent review applies only where it protects a real risk; empty procedural gates are removed. This model changes process efficiency only and authorizes no Phase B, research, TKP construction, architecture, contract, BASE RED, implementation, integration, D13 closure, Workstream 8, or any product/code/database/UI/schema/prompt/persistence change. All future handovers must cite it.
