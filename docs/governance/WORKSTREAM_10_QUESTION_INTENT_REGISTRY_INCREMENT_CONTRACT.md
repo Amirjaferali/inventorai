@@ -16,7 +16,7 @@ directed the corrections applied in this follow-up commit. This contract therefo
 retroactive owner approval; it records owner-ratified decisions where the owner has ratified them, and marks
 everything else as invariant, candidate, unresolved, or future proposal.
 
-**How to read this contract — five categories.** Every substantive statement is classified as one of:
+**How to read this contract — six categories.** Every substantive statement is classified as one of:
 - **[RATIFIED]** — an owner-ratified decision (owner-approved after independent review; §1).
 - **[INVARIANT]** — a binding WS10 contract requirement that follows directly from a ratified decision or a
   protected prior-workstream behavior.
