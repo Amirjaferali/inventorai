@@ -80,8 +80,10 @@ ordering contract.
 - **AC-2:** No in-scope question requires **two independently answerable** requests or **two unrelated evidence types**
   for a single completion event.
 - **AC-3:** Question text ↔ answer expectation ↔ completion target are **one-to-one** for each in-scope question.
-- **AC-4:** The identified committed multi-intent questions (MI-1…MI-5) are demonstrably **non-compliant** until
-  corrected; already-single-intent questions (e.g. N-MC-3, N-MC-4, N-PF-4) remain compliant.
+- **AC-4:** The **CONFIRMED MULTI-INTENT** questions (N-PF-1, N-PF-2, N-BA-1) are demonstrably **non-compliant** until
+  corrected. Questions marked **UNRESOLVED — PENDING BASE RED** (N-MC-2, N-PF-3, N-BA-2, N-BA-3) are **not** asserted
+  non-compliant here; their disposition is decided by BASE RED source analysis under Addenda B.1–B.2 and C.1.
+  Already-single-intent questions (e.g. N-MC-3, N-MC-4, N-PF-4) remain compliant. (Amended per WS9-FV-1; see Addendum C.)
 - **AC-5:** WS1–8 protected outputs are unchanged in substance for protected fixtures.
 - **AC-6:** No out-of-scope artifact (WS10–16, STG, WS-PFV-001, SID) is introduced; the `test_domain_registry.py`
   baseline is unchanged.
@@ -309,3 +311,47 @@ Addendum B is docs-only and authorizes no implementation of any kind. All §5/§
 protections remain in force; nothing here begins BASE RED, implementation, Arabic parity verification, or any downstream
 workstream. Phase A branch remains fixed at `57e2fac8`; PR #167/#162 untouched; product state
 `DEMO_READY_WITH_LIMITATIONS`; MVP electronics/electrical-only; AI Coach (WS17) BLOCKED until Workstreams 1–16 owner-closed.
+
+---
+
+# Addendum C — Final Drafting Closure (WS9-FV-1, WS9-FV-2)
+
+**Status:** OWNER-AUTHORIZED final drafting clarification resolving the last two independent findings for Draft PR #235.
+Docs-only, non-implementing. Authorizes no tests, BASE RED, production/question-text/UI/schema/persistence/analytics/
+prompt/AI-logic change, and no Workstream 10-or-later artifact.
+
+## C.1 (WS9-FV-1) AC-4 / Addendum B.2 conflict resolved
+The prior §8 **AC-4** wording ("MI-1…MI-5 are demonstrably non-compliant") conflicted with Addendum B.2, which
+reclassified N-MC-2 (MI-1) and N-PF-3 (MI-4) to **UNRESOLVED — PENDING BASE RED**. **AC-4 has been amended in place**
+(the single justified edit in this addendum's commit) so that it asserts non-compliance **only** for the CONFIRMED
+MULTI-INTENT set and defers the UNRESOLVED set — leaving the governing clause self-consistent without requiring the
+reader to infer precedence. The final, canonical dispositions are:
+- **CONFIRMED MULTI-INTENT:** N-PF-1, N-PF-2, N-BA-1.
+- **UNRESOLVED — PENDING BASE RED SOURCE ANALYSIS:** N-MC-2, N-PF-3, N-BA-2, N-BA-3.
+No unresolved item is forced into confirmed-defect status; no confirmed item is downgraded. The legacy labels MI-1…MI-5
+in §1 are historical evidence notes; the authoritative dispositions are those above and in Addendum B.2, and AC-4 as
+amended.
+
+## C.2 (WS9-FV-2) Disposition rule for mixed probe outcomes
+Applying Addendum B.1's four diagnostic probes and conjunctive decision rule, the following disposition rule is binding:
+
+- A question is classified **MULTI-INTENT only when all required multi-intent conditions are satisfied** (the conjunctive
+  rule of B.1: independent-answer, completion-divergence, and separate-follow-up all true, and atomic-dependency false).
+- If **one or more required conditions are not satisfied**, the question **must not be automatically classified as
+  multi-intent.** It must instead be classified as either:
+  - **ATOMIC / DEPENDENT** — when the committed evidence supports that conclusion; or
+  - **UNRESOLVED — PENDING BASE RED SOURCE ANALYSIS** — when the evidence is insufficient or the probe outcomes are
+    **mixed**.
+- The **absence of a multi-intent classification does not automatically prove** that the question is valid, clear, or
+  ready for implementation; a non-multi-intent question may still fail other acceptance criteria (§3, §7, §8, Addendum A).
+
+This clarification **preserves**: the four diagnostic probes (B.1); the conjunctive decision rule (B.1); the three-state
+disposition model (B.2: CONFIRMED MULTI-INTENT / CONFIRMED ATOMIC-OR-DEPENDENT / UNRESOLVED — PENDING BASE RED); and the
+prohibition against subjective classification based only on question length or the presence of the word "and".
+
+## C.3 Boundary reaffirmed
+Addendum C is docs-only and authorizes no implementation. All §5/§6/§13/§15 and Addenda A/B prohibitions and protections
+remain in force; nothing here begins BASE RED, implementation, Arabic parity verification, or any downstream workstream.
+No claim is made that BASE RED, implementation, Arabic parity, or downstream capabilities have begun or passed. Phase A
+branch remains fixed at `57e2fac8`; PR #167/#162 untouched; product state `DEMO_READY_WITH_LIMITATIONS`; MVP
+electronics/electrical-only; AI Coach (WS17) BLOCKED until Workstreams 1–16 owner-closed.
