@@ -1,3 +1,6 @@
+# COMMAND:
+python3 -m pytest tests/test_workstream_9_single_intent_question_design.py -v
+# ---
 ============================= test session starts ==============================
 platform linux -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0 -- /usr/local/bin/python3
 cachedir: .pytest_cache

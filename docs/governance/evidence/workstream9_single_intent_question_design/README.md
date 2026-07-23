@@ -45,7 +45,7 @@ suite produced:
     UNRESOLVED baselines excluded but rewrites not; N-PF-4 protected baseline excluded from sweep);
   - **1 diagnostic** (serving seam reaches every artifact-defined variant).
 
-**Independent BASE RED review verdict: B — VALID WITH NON-BLOCKING DOCUMENTARY RECOMMENDATIONS**
+**Independent BASE RED review verdict: B — READY WITH NON-BLOCKING RECOMMENDATIONS**
 (after two prior verdict-C hardening cycles: WS9-BR-F1/F2/F3, then F8/F9/F10). Accepted non-blocking
 recommendations preserved for this package:
 
@@ -154,7 +154,7 @@ separate owner authorization. This increment changes no historical defect eviden
   `f180eab8`.
 - **Owner BASE RED status-canonicalization acceptance and PR #238 merge authorization** — accepted
   verdict B; merged as `7fb1ff06`; §15 status → `BASE RED ACCEPTED AND PUBLISHED — GREEN NOT AUTHORIZED`.
-- **Independent BASE RED review — verdict B** — VALID WITH NON-BLOCKING DOCUMENTARY RECOMMENDATIONS.
+- **Independent BASE RED review — verdict B** — READY WITH NON-BLOCKING RECOMMENDATIONS.
 - **Owner GREEN implementation authorization** — minimal question-content change for N-PF-1/N-PF-2/N-BA-1.
 - **Independent GREEN implementation review — verdict B** — GREEN VALID WITH NON-BLOCKING RECOMMENDATIONS;
   no blocking findings.
