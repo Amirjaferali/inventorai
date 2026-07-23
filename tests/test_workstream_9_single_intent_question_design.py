@@ -7,52 +7,49 @@ Governance basis:
     operational single-intent rule and probes] + Addendum C [WS9-FV-1/FV-2]).
 Authoritative tip at authoring: 4c7a57142e7714f331a280b4aaaba140da5d4de1
 (WS9 contract merged via PR #235; status canonicalized via PR #236).
-Hardened per independent BASE RED verdict C (findings WS9-BR-F1, F2, F3).
+Hardened per independent BASE RED verdicts C: WS9-BR-F1/F2/F3 then F8/F9/F10.
 
 Purpose:
-    Deterministic BASE RED for Single-Intent Question Design, targeting the
-    committed observable serving seam
-    engine.path_n_questions.get_path_n_question(gap_type, iterations_open),
-    which returns approved Path N question text verbatim from
+    Deterministic BASE RED for Single-Intent Question Design against the committed
+    observable serving seam engine.path_n_questions.get_path_n_question, which
+    serves approved Path N question text verbatim from the committed artifact
     docs/governance/path_n_content_config/electronics_electrical_path_n_questions.json.
 
-Design (hardened):
-    * F1 — each independent answer component is detected by a small, bounded,
-      reviewable MARKER SET (multiple synonyms), so a superficial synonym
-      substitution that preserves the multi-intent structure still fails. The
-      markers are tied to the contract-confirmed committed components; they are
-      NOT the generic word "and" and are independent of question length
-      (Addendum B.1/C.2).
-    * F2 — N-BA-1 has THREE independently answerable components (operate /
-      non-operate / confusion). The RED fails when a served question event
-      matches markers for ANY two-or-more of the three; a GREEN preserving any
-      pair (operate+non-operate, operate+confusion, non-operate+confusion)
-      still fails.
-    * F3 — for each confirmed gap the RED sweeps ALL currently reachable
-      committed serving indices (not only the original defect index), so a
-      confirmed multi-intent question cannot be dodged by moving it to another
-      index within the same served surface.
+Hardening summary:
+    F1  bounded, reviewable MARKER SETS per independent component (not "and",
+        length-independent).
+    F2  N-BA-1 has THREE components (operate/non-operate/confusion); failing on
+        ANY two-or-more.
+    F3  sweep the WHOLE committed serving surface, not just the original index.
+    F8  exclusions are EXACT committed-text identity literals for the currently
+        UNRESOLVED/protected baselines (N-PF-3, N-PF-4, N-BA-2, N-BA-3) — NOT
+        index-derived. A confirmed multi-intent question moved into a formerly
+        excluded index still fails; a rewritten unresolved question that no longer
+        matches its committed baseline is no longer auto-excluded.
+    F9  the sweep is ARTIFACT-DRIVEN: the current variant list per gap is read
+        from the committed JSON artifact (test-only read of the same file the
+        serving implementation uses), so a bundled question appended at a new
+        reachable index still fails. A diagnostic confirms the serving seam
+        reaches every artifact-defined variant. No count is frozen.
+    F10 N-PF-2 sustaining-operation markers cover obvious inflections
+        ("keeps the system running", "system running") without bare "run".
 
-    UNRESOLVED / protected boundary: the sweep EXCLUDES served texts that exactly
-    equal a currently UNRESOLVED — PENDING BASE RED baseline (N-PF-3, N-BA-2,
-    N-BA-3) or a protected single-intent baseline (N-PF-4). This guarantees the
-    confirmed-defect sweep never forces an unresolved item into confirmed-defect
-    status (contract Addendum B.2/C); those items remain UNRESOLVED and are not
-    asserted here.
-
-    Note (contract §5): this marker-based RED is a STRENGTHENED deterministic
+    Note (contract §5): this marker-based RED is a strengthened deterministic
     guard against cosmetic single-intent passes; it is NOT a substitute for the
-    later independent GREEN implementation review of true single-intent design.
+    later independent GREEN implementation review.
 
-No production code, question text, UI, schema, registry, evaluator, progression,
-persistence, prompt, or AI logic is modified. No GREEN. No Arabic-parity RED
-(no committed Arabic variant; parity mandatory-but-conditional, Addendum B.3).
-No perceptual/usability RED (requires later independent usability evidence).
-RED cases fail by assertion against real served behavior; they do not crash.
+No production code, question content, UI, schema, registry, evaluator,
+progression, persistence, prompt, or AI logic is modified. No GREEN. No
+Arabic-parity RED (no committed Arabic variant; parity mandatory-but-conditional,
+Addendum B.3). No perceptual/usability RED. Adversarial controls use synthetic
+in-memory served surfaces only (no on-disk patching). RED cases fail by assertion
+against real served behavior; they do not crash.
 """
 
-import importlib
+import json
+import pathlib
 
+import importlib
 import pytest
 
 from engine.path_n_questions import get_path_n_question
@@ -64,24 +61,34 @@ from engine.idea_state import (
 from engine.progression_loop import select_next_gap, GAP_PRIORITY
 
 
-# Number of committed variants per gap (serving-reachable indices are 0..N-1;
-# get_path_n_question clamps iterations_open >= N-1 to the last variant).
-_GAP_VARIANT_COUNT = {
-    PHYSICAL_FEASIBILITY: 4,
-    BOUNDARY_AMBIGUITY: 3,
-    MECHANISM_COMPLETENESS: 4,
+# The committed question-content artifact the serving implementation uses.
+_ARTIFACT_PATH = pathlib.Path(
+    "docs/governance/path_n_content_config/electronics_electrical_path_n_questions.json"
+)
+
+
+def _artifact_variants(gap_type):
+    """(F9) Read the current committed variant texts for a gap from the artifact.
+    Test-only read of the same file engine.path_n_questions serves from; the
+    variant count is NOT frozen — newly added variants are swept automatically."""
+    data = json.loads(_ARTIFACT_PATH.read_text(encoding="utf-8"))
+    return [entry["text"] for entry in data["gaps"][gap_type]]
+
+
+# (F8) EXACT committed-text identity exclusions — pinned string literals, not
+# index-derived. Only a served text EXACTLY equal to one of these is excluded.
+EXCLUDED_BASELINES = {
+    # UNRESOLVED — PENDING BASE RED (contract Addendum B.2/C):
+    "N-PF-3": "Are there real-world conditions, such as heat, water, time, or wear, "
+              "that might stop it from working? Which ones worry you most?",
+    "N-BA-2": "What is your idea responsible for, and what is someone or something else's job?",
+    "N-BA-3": "Describe a situation where the system should definitely react, and one "
+              "where it should definitely stay quiet.",
+    # Protected single-intent (also separately protected verbatim below):
+    "N-PF-4": "If an engineer offered to check one thing about whether this can "
+              "physically work, what would you ask them to check first?",
 }
-
-
-def _reachable_served_texts(gap_type):
-    """All unique committed served texts for a gap across reachable indices."""
-    seen = []
-    for i in range(_GAP_VARIANT_COUNT[gap_type]):
-        t = get_path_n_question(gap_type, i)
-        assert isinstance(t, str) and t.strip()
-        if t not in seen:
-            seen.append(t)
-    return seen
+_EXCLUDED_TEXTS = frozenset(EXCLUDED_BASELINES.values())
 
 
 def _matches(text, markers):
@@ -89,13 +96,20 @@ def _matches(text, markers):
     return any(m.lower() in low for m in markers)
 
 
-def _component_hits(text, components):
-    """Number of distinct components (each a marker set) present in text."""
-    return sum(1 for markers in components.values() if _matches(text, markers))
+def _bundle_offenders(served_texts, components, excluded=_EXCLUDED_TEXTS):
+    """Pure helper: served texts (excluding exact pinned baselines) that present
+    markers for >= 2 distinct independent components of a confirmed profile."""
+    offenders = []
+    for text in served_texts:
+        if text in excluded:
+            continue
+        present = [name for name, markers in components.items() if _matches(text, markers)]
+        if len(present) >= 2:
+            offenders.append((text, present))
+    return offenders
 
 
-# CONFIRMED MULTI-INTENT profiles (bounded marker sets per independent component).
-# A served text "bundles" the profile when it hits >= 2 distinct components.
+# CONFIRMED MULTI-INTENT profiles — bounded marker sets per independent component.
 CONFIRMED_PROFILES = {
     "N-PF-1": {
         "gap": PHYSICAL_FEASIBILITY,
@@ -108,8 +122,12 @@ CONFIRMED_PROFILES = {
     "N-PF-2": {
         "gap": PHYSICAL_FEASIBILITY,
         "components": {
-            "sustaining_operation": ["keep the system running", "keep running", "keep it running",
-                                     "continue operating", "maintain operation", "keep working"],
+            # F10: inflection coverage ("keeps the system running", "system running")
+            # without introducing bare "run".
+            "sustaining_operation": ["keep the system running", "keeps the system running",
+                                     "system running", "keep running", "keeps running",
+                                     "keep it running", "keeps it running", "continue operating",
+                                     "maintain operation", "keep working", "keeps working"],
             "unknown_information": ["not know", "do not know", "don't know", "unsure",
                                     "uncertain", "not sure", "unresolved"],
         },
@@ -126,48 +144,98 @@ CONFIRMED_PROFILES = {
     },
 }
 
-# Currently UNRESOLVED — PENDING BASE RED (N-PF-3, N-BA-2, N-BA-3) and protected
-# single-intent (N-PF-4) committed baselines, excluded from the confirmed sweep so
-# no unresolved/protected item is forced into confirmed-defect status.
-_EXCLUDED_BASELINES_BY_GAP = {
-    PHYSICAL_FEASIBILITY: [get_path_n_question(PHYSICAL_FEASIBILITY, 2),   # N-PF-3 (unresolved)
-                           get_path_n_question(PHYSICAL_FEASIBILITY, 3)],  # N-PF-4 (protected single-intent)
-    BOUNDARY_AMBIGUITY: [get_path_n_question(BOUNDARY_AMBIGUITY, 1),       # N-BA-2 (unresolved)
-                         get_path_n_question(BOUNDARY_AMBIGUITY, 2)],      # N-BA-3 (unresolved)
-}
-
 
 # ─────────────────────────────────────────────
 # RED — no served question event may bundle >= 2 independent components
+# (artifact-driven full-surface sweep; identity-based exclusions)
 # ─────────────────────────────────────────────
 
 @pytest.mark.parametrize("qid", list(CONFIRMED_PROFILES))
 def test_RED_confirmed_multi_intent_not_served_anywhere(qid):
-    """RED · Contract §8 AC-1/AC-2, Addendum B.1/C (F1/F2/F3): sweeping the full
-    committed serving surface of the confirmed gap (excluding separately-recorded
-    UNRESOLVED/protected baselines), NO served question event may present markers
-    for two-or-more independently answerable components of the confirmed profile.
-    Fails now because the confirmed multi-intent question is still served."""
+    """RED · Contract §8 AC-1/AC-2, Addendum B.1/C (F1/F2/F3/F8/F9): sweeping the
+    full artifact-defined serving surface of the confirmed gap (excluding only
+    exact committed UNRESOLVED/protected baseline strings), NO served question
+    event may present markers for two-or-more independent components of the
+    confirmed profile. Fails now because the confirmed multi-intent question is
+    still served."""
     profile = CONFIRMED_PROFILES[qid]
-    gap = profile["gap"]
-    components = profile["components"]
-    excluded = _EXCLUDED_BASELINES_BY_GAP.get(gap, [])
-    offenders = []
-    for text in _reachable_served_texts(gap):
-        if text in excluded:
-            continue
-        hits = _component_hits(text, components)
-        if hits >= 2:
-            present = [c for c, m in components.items() if _matches(text, m)]
-            offenders.append((text, present))
+    served = _artifact_variants(profile["gap"])
+    offenders = _bundle_offenders(served, profile["components"])
     assert not offenders, (
-        f"{qid}: served question event(s) bundle >= 2 independent components "
+        f"{qid}: served question event(s) bundle >= 2 independent components: "
         f"{[(o[1], o[0]) for o in offenders]}"
     )
 
 
+def test_diagnostic_serving_seam_reaches_every_artifact_variant():
+    """Diagnostic (F9): the serving seam get_path_n_question reaches every
+    artifact-defined variant for the swept gaps (no frozen count)."""
+    for gap in (PHYSICAL_FEASIBILITY, BOUNDARY_AMBIGUITY, MECHANISM_COMPLETENESS):
+        variants = _artifact_variants(gap)
+        for i, expected in enumerate(variants):
+            assert get_path_n_question(gap, i) == expected
+
+
 # ─────────────────────────────────────────────
-# PROTECTED — existing valid behavior unchanged (must PASS now)  [unchanged]
+# ADVERSARIAL CONTROLS (synthetic in-memory served surfaces; no on-disk patching)
+# ─────────────────────────────────────────────
+
+_N_PF_1 = "What would need to be true for this system to work safely, and what information would you need later to confirm it?"
+_N_BA_1 = "When should the system work, when should it not work, and what situations might confuse it?"
+_HONEST_SINGLE = "What would need to be true for this system to work safely?"
+
+
+def test_ADV_confirmed_defect_at_formerly_excluded_index_still_fails():
+    """ADV-1 (F8): a still-multi-intent question placed where an excluded baseline
+    used to sit is NOT excluded (identity, not index) and is flagged."""
+    surface = [EXCLUDED_BASELINES["N-BA-3"], _N_BA_1]  # N-BA-1 sits at the ex-N-BA-3 slot
+    offenders = _bundle_offenders(surface, CONFIRMED_PROFILES["N-BA-1"]["components"])
+    assert [o[0] for o in offenders] == [_N_BA_1]
+
+
+def test_ADV_confirmed_defect_appended_as_new_variant_fails():
+    """ADV-2 (F9): the verbatim confirmed defect appended at a new reachable index
+    is flagged even alongside an honest single-intent question."""
+    surface = [_HONEST_SINGLE, _N_PF_1]
+    offenders = _bundle_offenders(surface, CONFIRMED_PROFILES["N-PF-1"]["components"])
+    assert [o[0] for o in offenders] == [_N_PF_1]
+
+
+def test_ADV_n_pf_2_inflection_fails():
+    """ADV-3 (F10): the sustaining-operation inflection is caught."""
+    surface = ["What keeps the system running, and what are you still uncertain about?"]
+    offenders = _bundle_offenders(surface, CONFIRMED_PROFILES["N-PF-2"]["components"])
+    assert len(offenders) == 1
+
+
+def test_ADV_honest_single_intent_split_passes():
+    """ADV-4: an honest single-intent split (one component only) is NOT flagged."""
+    for prof in ("N-PF-1", "N-PF-2", "N-BA-1"):
+        assert _bundle_offenders([_HONEST_SINGLE], CONFIRMED_PROFILES[prof]["components"]) == []
+
+
+def test_ADV_exact_unresolved_baselines_excluded_but_rewrites_not():
+    """ADV-5 (F8): exact committed unresolved baselines remain excluded (not forced
+    into confirmed-defect status), while a rewritten unresolved question that no
+    longer matches the baseline is no longer auto-excluded."""
+    ba = CONFIRMED_PROFILES["N-BA-1"]["components"]
+    # N-BA-3 baseline bundles operate+non_operate but is excluded by identity:
+    assert _bundle_offenders([EXCLUDED_BASELINES["N-BA-3"]], ba) == []
+    # A rewritten unresolved question (not equal to the baseline) is evaluated:
+    rewritten = ("When should it react, when should it stay quiet, and what might "
+                 "confuse it?")
+    assert len(_bundle_offenders([rewritten], ba)) == 1
+
+
+def test_ADV_protected_single_intent_baseline_excluded_from_sweep():
+    """ADV-6: N-PF-4 protected baseline is excluded from the confirmed sweep."""
+    for prof in ("N-PF-1", "N-PF-2"):
+        assert _bundle_offenders([EXCLUDED_BASELINES["N-PF-4"]],
+                                 CONFIRMED_PROFILES[prof]["components"]) == []
+
+
+# ─────────────────────────────────────────────
+# PROTECTED — existing valid behavior unchanged (must PASS now)
 # ─────────────────────────────────────────────
 
 PROTECTED_SINGLE_INTENT = {
@@ -193,9 +261,10 @@ def test_PROTECTED_single_intent_questions_unchanged(qid):
 
 def test_PROTECTED_serving_is_deterministic_by_index():
     """PROTECTED · Contract §12 (persistence/resume): the same committed state
-    (gap_type, iterations_open) deterministically serves the same question."""
+    (gap_type, iterations_open) deterministically serves the same question,
+    across every artifact-defined variant."""
     for gap_type in (PHYSICAL_FEASIBILITY, BOUNDARY_AMBIGUITY, MECHANISM_COMPLETENESS):
-        for i in range(_GAP_VARIANT_COUNT[gap_type]):
+        for i in range(len(_artifact_variants(gap_type))):
             assert get_path_n_question(gap_type, i) == get_path_n_question(gap_type, i)
 
 
