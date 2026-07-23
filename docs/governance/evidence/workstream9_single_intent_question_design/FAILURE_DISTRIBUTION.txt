@@ -1,0 +1,5 @@
+# COMMAND: python3 -m pytest -q | grep '^FAILED' | sed 's/::.*//' | sort | uniq -c
+# ---
+     31 FAILED tests/test_domain_registry.py
+# failures outside tests/test_domain_registry.py:
+0
