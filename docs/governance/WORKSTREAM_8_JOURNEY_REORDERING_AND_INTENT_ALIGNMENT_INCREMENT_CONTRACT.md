@@ -139,3 +139,81 @@ Phase A branch `research/d13-tkp-pkg-001-phase-a-read-only-analysis` remains fix
 scope, and untouched. No product / code / test / schema / prompt / database / UI / persistence / research / TKP file is
 changed by this contract. No `.bundle` is part of it. Official product state remains `DEMO_READY_WITH_LIMITATIONS`; MVP
 scope remains electronics/electrical-only; the AI Coach (WS17) remains BLOCKED until Workstreams 1–16 are owner-closed.
+
+---
+
+# Amendment 1 — Observable Intent and BASE RED Boundary Clarification
+
+**Status:** OWNER-AUTHORIZED CONTRACT CLARIFICATION (docs-only). Binding independent-review verdict:
+**D — CONTRACT CLARIFICATION REQUIRED BEFORE BASE RED CAN BE CORRECTED.** This amendment supersedes any clause of §1–§12
+above where they conflict. It authorizes no BASE RED, tests, production code, intent-capture mechanism, GREEN, evidence
+package, or Workstream 9-or-later work. The canonical Workstream 8 status remains **CONTRACT RECORDED — BASE RED NOT
+STARTED**. The rejected local BASE RED commit `a2c0d183…` is not a publication/merge candidate and never entered the
+authoritative branch; no valid Workstream 8 BASE RED has been published or accepted.
+
+## A1.1 Semantic findings (committed repository evidence)
+1. **`IterationLog.gap_targeted` does NOT represent the gap answered or the inventor's expressed current intent.** In the
+   normal answer flow it records **`next_gap_opened`** (the gap the priority cascade opens next) or **`None`**
+   (`engine/progression_loop.py` `run_iteration()`: `result['gap_targeted'] = next_gap_opened` in the answered-gap and
+   cascade branches; `None` in the closing branch; logged at the single `IterationLog(...)` exit).
+2. **`AssertionRecord.gap_context` records the engine-selected question/gap against which the answer was recorded.** It is
+   written from `select_next_gap(state)` — the fixed-priority selector — at the point of answer capture
+   (`web/app.py`: `gap_ctx = select_next_gap(state)` and `targeted_gap = select_next_gap(state)  # gap this answer
+   addresses (pre-iteration)`, passed as `record_interaction(gap_context=…)`). It therefore represents the engine's
+   selection, **not** an independent divergence between user intent and engine ordering.
+3. **No currently committed observable seam has been proven to represent the inventor's expressed intent independently of
+   the engine's fixed-priority selection.** The inventor answers whichever gap the engine selected; the repository holds
+   no field capturing "the gap the inventor wishes to address" separate from `select_next_gap()`.
+4. **Workstream 8 must not construct or infer user intent** from field names, synthetic test fixtures, transcript
+   wording, or engine-selected gap attribution (`gap_targeted`, `gaps_changed`, or `gap_context`). Doing so would encode
+   a semantic the production code does not provide.
+5. **Creating a new intent-capture mechanism, question-intent model, or intent registry may overlap with:** Workstream 9
+   (Single-Intent Question Design), Workstream 10 (Question Intent Registry), Workstream 11 (Question-Aware Evaluation),
+   and Workstream 14 (Adaptive Follow-Up and Completion Logic). Such capability is therefore **out of Workstream 8's
+   bounded scope**.
+
+## A1.2 Evidence-based recommendation — **Option A (DEFER)**
+Adopt **Option A**: defer expressed-intent capture and all intent-dependent acceptance criteria to the appropriate later
+workstream(s), and confine Workstream 8 to the observable, testable residue defined in A1.4. **Option B is NOT selected**
+— no already-committed observable seam genuinely satisfies an expressed-intent requirement (see A1.1.1–A1.1.3); there is
+no direct committed evidence to support Option B.
+
+## A1.3 Criteria disposition (deferred / retained / redefined)
+| Original clause | Disposition | Reason | Later-workstream dependency |
+|---|---|---|---|
+| §1 P8-1 "ordering follows user intent" (as *expressed intent*) | **DEFERRED** | No committed expressed-intent seam; would require inventing intent semantics | WS9 / WS10 / WS11 |
+| §1 P8-2 "no lower-relevance before higher-relevance *intent*" | **DEFERRED** | "Relevance to intent" needs an intent signal not committed | WS10 / WS11 |
+| §1 P8-3 / §6 "presentation order matches *stated intent*" | **REDEFINED** (see A1.4) → deterministic selection/presentation *consistency* only | Presentation-vs-intent alignment needs intent capture | WS9 / WS13 |
+| §7 **AC-1** "reordered journey matches the inventor's *expressed intent*" | **DEFERRED** (intent clause) / **RETAINED** as set-equality with baseline | Set-equality is observable; the "expressed intent" match is not | WS9–WS11 |
+| §7 AC-2 transition conditions unchanged | **RETAINED** | Observable via `evaluate_transition` / gap-state | — |
+| §7 AC-3 protected WS1–7 outputs unchanged | **RETAINED** | Observable | — |
+| §7 AC-4 determinism | **RETAINED** | Observable | — |
+| §7 AC-5 no out-of-scope artifact / AC-6 baseline unchanged | **RETAINED** | Observable | — |
+| §8 **RED-8-Ordering** "target intent-aligned order" | **BLOCKED / WITHDRAWN** | Cannot be written without inventing an intent semantic | WS9 / WS10 / WS11 |
+| §8 RED-8-SetEquality / RED-8-Transition / RED-8-Protected / RED-8-Determinism | **RETAINED** | Observable, testable on committed state | — |
+
+**Blocked/deferred criteria (must not be encoded indirectly):** any criterion that asserts the *inventor's expressed
+intent*, or asserts an ordering as "intent-aligned," is **BLOCKED** for Workstream 8. A corrected BASE RED must **not**
+reintroduce this semantic through field names (`gap_targeted`/`gaps_changed`/`gap_context`), fixtures, or transcript
+wording. Reason: no committed intent semantic (A1.1). Dependency: WS9 / WS10 / WS11 / WS14.
+
+## A1.4 Bounded, independently-testable Workstream 8 residue (retained)
+Workstream 8 **does** retain a bounded residue testable **only** on currently committed observable state, **without**
+claiming that state represents expressed user intent:
+- **R-A Deterministic selection ordering:** `select_next_gap(state)` is deterministic and follows the documented
+  stage-aware fixed priority (`GAP_PRIORITY` / `STAGE3_GAP_PRIORITY`) — characterization and regression protection.
+- **R-B Transition coherence:** the Stage 2→3 transition fires under the defined, deterministic gap-state conditions
+  (`evaluate_transition`) — unchanged by any reordering.
+- **R-C Selection/presentation consistency:** the gap that drives the presented question equals `select_next_gap()`'s
+  result — an *internal coherence* property, explicitly **not** a claim about expressed intent.
+- **R-D Protected-behavior preservation:** WS1–7 outputs and safety signals remain unchanged (§5, §7 AC-3).
+
+Any Workstream 8 GREEN limited to this residue would be **behavior-characterizing / regression-protecting**, not
+intent-reordering. Whether Workstream 8 warrants its own GREEN increment on this residue alone, or should be folded into
+the later intent workstreams, is a **separate owner decision** — not made here.
+
+## A1.5 Boundaries preserved
+This clarification adds no intent-capture mechanism and authorizes no BASE RED, tests, production-code change, GREEN,
+evidence package, Workstream 9-or-later work, Structured Technical Guidance, WS-PFV-001, or Structured Invention
+Disclosure / Patent Export. Phase A branch remains fixed at `57e2fac8`; PR #167 / PR #162 untouched; product state
+`DEMO_READY_WITH_LIMITATIONS`; MVP scope electronics/electrical-only.
