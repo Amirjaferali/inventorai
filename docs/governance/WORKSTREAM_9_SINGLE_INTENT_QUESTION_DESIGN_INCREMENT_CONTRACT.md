@@ -219,3 +219,93 @@ analytics, prompt/AI-logic, database/persistence, or downstream workstream). All
 §13, and §15 remain in force; Addendum A adds product-experience and truthfulness requirements to the Workstream 9 scope
 without expanding it into Workstreams 10–16, Structured Technical Guidance, WS-PFV-001, or Structured Invention
 Disclosure / Patent Export.
+
+---
+
+# Addendum B — Independent-Review Resolution (Findings F-1…F-5, before BASE RED)
+
+**Status:** OWNER-AUTHORIZED clarification addendum resolving the independent-review verdict **B — READY WITH
+NON-BLOCKING RECOMMENDATIONS** for Draft PR #235. Docs-only, non-implementing. It refines the contract for the BASE RED
+design gate; it authorizes no tests, BASE RED, production/question-text/UI change, registry/schema/evaluator/analytics/
+persistence/adaptive-follow-up/technology-profile, and no Workstream 10-or-later work. Supersedes §1/§3/§9/§10 wording
+where they conflict.
+
+## B.1 (F-1) Operational multi-intent separation rule
+A question is **multi-intent** when it contains **two or more answer components** such that **all** of the following hold:
+1. one component can be answered fully while another remains unanswered;
+2. each component has a **distinct answer objective or completion condition**; and
+3. the components are **not jointly necessary** to express one indivisible atomic decision, relationship,
+   classification, or description.
+
+A compound question is **single-intent only** when all included parts are **inseparable for one atomic answer**.
+
+**Mandatory diagnostic probes** (applied per question; not implemented in code at this gate):
+- **Independent-answer probe:** can one part be fully answered while another is omitted?
+- **Completion-divergence probe:** could one part satisfy its completion condition while another remains open?
+- **Separate-follow-up probe:** could the unanswered part reasonably be asked later without changing the meaning of the
+  answered part?
+- **Atomic-dependency probe:** are all parts necessary together to express one indivisible answer?
+
+**Decision:** if the first three probes are **true** and the atomic-dependency probe is **false**, the question is
+multi-intent and must be split or redesigned. This rule makes §8 AC-1/AC-2 deterministically applicable at BASE RED.
+
+## B.2 (F-2) Disposition of borderline questions under B.1
+Re-evaluated against B.1; recorded contract-level disposition (three states: **CONFIRMED MULTI-INTENT** /
+**CONFIRMED ATOMIC-OR-DEPENDENT** / **UNRESOLVED — PENDING BASE RED SOURCE ANALYSIS**). Where committed evidence remains
+ambiguous, the disposition is left UNRESOLVED rather than forced.
+- **N-MC-2** ("main parts … and what each does"): **UNRESOLVED — PENDING BASE RED.** May be **atomic** when "parts and
+  what each does" is one component-to-function mapping answer; may be multi-intent if enumerating parts and describing
+  each function have separate completion conditions. BASE RED source analysis decides under B.1.
+- **N-PF-3** ("conditions … which worry you most?"): **UNRESOLVED — PENDING BASE RED.** May be **dependent** (ranking
+  follows necessarily from the same list → single-intent) but **must be split** if listing and prioritization have
+  **separate completion conditions** (completion-divergence probe true).
+- **N-BA-2** ("your idea responsible for … and … someone/something else's job"): **UNRESOLVED — PENDING BASE RED**, to be
+  decided by the independent-answer and completion-divergence probes (own-responsibility vs. others'-responsibility are
+  prima facie independently answerable; likely CONFIRMED MULTI-INTENT if the probes hold).
+- **N-BA-3** ("a situation where it should react, and one where it should stay quiet"): **UNRESOLVED — PENDING BASE RED**,
+  decided by the same probes (two independent examples are prima facie independently answerable).
+The previously "confirmed" MI-1 (N-MC-2) and MI-4 (N-PF-3) are hereby **reclassified to UNRESOLVED — PENDING BASE RED**
+under B.1; MI-2 (N-PF-1), MI-3 (N-PF-2), and MI-5 (N-BA-1) remain **CONFIRMED MULTI-INTENT** (each satisfies all three
+probes with atomic-dependency false).
+
+## B.3 (F-3) Arabic/English parity — conditional BASE RED status
+Arabic/English intent parity **remains a mandatory product requirement** (Addendum A.1, §10) and is **not removed**. It is
+**conditional for BASE RED**: the committed Path N content is currently English-only, so **no Arabic-parity RED case may
+be fabricated from absent committed content**, and **absence of Arabic content must not be misreported as parity
+success**. When Arabic question content is introduced, parity must be verified for: **primary intent; answer objective;
+completion condition; technical difficulty; plain-language accessibility; examples and help wording.** **§9 R4 is
+amended:** R4 is a **conditional/deferred** class that yields **no** BASE RED case in the current repository and activates
+only once committed Arabic variants exist.
+
+## B.4 (F-4) Downstream-boundary tightening (affordance-only)
+The following are **question-design affordance requirements only**; WS9 may define **how a single question presents** them
+but may **not implement** any downstream mechanism:
+- **Guided choices** = bounded examples or answer affordances presented in the question — **not** generated technical
+  recommendations (that is **WS13**).
+- **Examples** = illustrative, fixed, non-generated wording within the question.
+- **"Return later"** = the question **wording and state boundary** are defined — **not** a redesign of progression
+  (**WS12**) or persistence mechanisms (persistence remains frozen).
+- **Progressive internal translation** (Addendum A.2) = a **future-compatible design principle** — **not** an implemented
+  interpretation engine, and not a registry (**WS10**), evaluation/semantic scoring (**WS11**), adaptive follow-up
+  selection/completion (**WS14**), Structured Technical Guidance, or Domain Capability Profiles.
+WS9 may not implement WS10 registry/taxonomy, WS11 evaluation/scoring, WS12 unknown/deferred progression decisions, WS13
+generated guidance/answer coaching, WS14 adaptive follow-up/completion logic, Structured Technical Guidance, or Domain
+Capability Profiles.
+
+## B.5 (F-5) UX acceptance-criteria → evidence-method mapping
+- **Automated / deterministic repository evidence** (candidates for BASE RED or protected tests): one primary intent; one
+  answer objective; one completion condition; no hidden secondary task; presence of approved uncertainty/help affordances
+  where required; absence of misleading fixed completion percentages; no prohibited feasibility/uniqueness/readiness/
+  completion claims; preservation of question context across existing save/resume behavior **where an observable
+  committed seam exists**; Arabic/English parity **only when both committed variants exist** (per B.3).
+- **Independent usability / product evidence** (must **not** be represented as unit-test outcomes): first-read clarity;
+  perceived relevance; user confidence; psychological safety; professional tone; question fatigue; abandonment risk;
+  perceived value; whether explanations and examples are genuinely helpful. These require **representative-user review,
+  structured expert review, or another approved usability-evidence method in a later gate** (Addendum A.5). No user
+  research or analytics is conducted at this gate.
+
+## B.6 Boundary reaffirmed
+Addendum B is docs-only and authorizes no implementation of any kind. All §5/§6/§13/§15 and Addendum A prohibitions and
+protections remain in force; nothing here begins BASE RED, implementation, Arabic parity verification, or any downstream
+workstream. Phase A branch remains fixed at `57e2fac8`; PR #167/#162 untouched; product state
+`DEMO_READY_WITH_LIMITATIONS`; MVP electronics/electrical-only; AI Coach (WS17) BLOCKED until Workstreams 1–16 owner-closed.
