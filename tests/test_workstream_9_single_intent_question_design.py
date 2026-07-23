@@ -7,37 +7,47 @@ Governance basis:
     operational single-intent rule and probes] + Addendum C [WS9-FV-1/FV-2]).
 Authoritative tip at authoring: 4c7a57142e7714f331a280b4aaaba140da5d4de1
 (WS9 contract merged via PR #235; status canonicalized via PR #236).
+Hardened per independent BASE RED verdict C (findings WS9-BR-F1, F2, F3).
 
 Purpose:
     Deterministic BASE RED for Single-Intent Question Design, targeting the
-    committed observable question-serving seam
+    committed observable serving seam
     engine.path_n_questions.get_path_n_question(gap_type, iterations_open),
-    which returns the approved Path N question text verbatim from
+    which returns approved Path N question text verbatim from
     docs/governance/path_n_content_config/electronics_electrical_path_n_questions.json.
 
-Classification / design (see Addendum B/C of the contract):
-    RED — expected to FAIL now, on a deterministic assertion, for the exact
-          missing WS9 behavior: the CONFIRMED MULTI-INTENT questions
-          (N-PF-1, N-PF-2, N-BA-1) are still served with BOTH of their two
-          independently-answerable component anchors present in one served
-          question event. A single-intent redesign (GREEN) asks only one
-          component, so the served text will no longer contain both anchors.
-          The anchors are the SPECIFIC committed component phrases the contract
-          identified as bundled — NOT the generic word "and" (Addendum B.1/C.2
-          prohibit classifying merely on length or "and").
-    PROTECTED — expected to PASS now, proving existing valid single-intent
-          questions and Workstreams 1–8 behavior are unchanged, and that no
-          Workstream 10–14 capability is introduced.
+Design (hardened):
+    * F1 — each independent answer component is detected by a small, bounded,
+      reviewable MARKER SET (multiple synonyms), so a superficial synonym
+      substitution that preserves the multi-intent structure still fails. The
+      markers are tied to the contract-confirmed committed components; they are
+      NOT the generic word "and" and are independent of question length
+      (Addendum B.1/C.2).
+    * F2 — N-BA-1 has THREE independently answerable components (operate /
+      non-operate / confusion). The RED fails when a served question event
+      matches markers for ANY two-or-more of the three; a GREEN preserving any
+      pair (operate+non-operate, operate+confusion, non-operate+confusion)
+      still fails.
+    * F3 — for each confirmed gap the RED sweeps ALL currently reachable
+      committed serving indices (not only the original defect index), so a
+      confirmed multi-intent question cannot be dodged by moving it to another
+      index within the same served surface.
 
-    UNRESOLVED (no RED created; recorded, not forced): N-MC-2, N-PF-3, N-BA-2,
-          N-BA-3 remain UNRESOLVED — PENDING BASE RED SOURCE ANALYSIS (contract
-          B.2/C). The four diagnostic probes are semantic judgments the owner
-          left unresolved; per contract §5 no failing test is created for them.
+    UNRESOLVED / protected boundary: the sweep EXCLUDES served texts that exactly
+    equal a currently UNRESOLVED — PENDING BASE RED baseline (N-PF-3, N-BA-2,
+    N-BA-3) or a protected single-intent baseline (N-PF-4). This guarantees the
+    confirmed-defect sweep never forces an unresolved item into confirmed-defect
+    status (contract Addendum B.2/C); those items remain UNRESOLVED and are not
+    asserted here.
 
-No production code is modified. No GREEN. No registry/schema/evaluator/
-progression/persistence/UI change. No Arabic-parity RED (no committed Arabic
-variant exists — parity is mandatory-but-conditional per Addendum B.3). No
-perceptual/usability RED (those require later independent usability evidence).
+    Note (contract §5): this marker-based RED is a STRENGTHENED deterministic
+    guard against cosmetic single-intent passes; it is NOT a substitute for the
+    later independent GREEN implementation review of true single-intent design.
+
+No production code, question text, UI, schema, registry, evaluator, progression,
+persistence, prompt, or AI logic is modified. No GREEN. No Arabic-parity RED
+(no committed Arabic variant; parity mandatory-but-conditional, Addendum B.3).
+No perceptual/usability RED (requires later independent usability evidence).
 RED cases fail by assertion against real served behavior; they do not crash.
 """
 
@@ -54,16 +64,112 @@ from engine.idea_state import (
 from engine.progression_loop import select_next_gap, GAP_PRIORITY
 
 
-# Committed serving indices (get_path_n_question indexes the per-gap variant list
-# by min(iterations_open, len-1)). Verified against the committed JSON at authoring.
-CONFIRMED_MULTI_INTENT = {
-    # question_id: (gap_type, iterations_open, [component-anchor-A, component-anchor-B])
-    "N-PF-1": (PHYSICAL_FEASIBILITY, 0, ["work safely", "confirm it"]),
-    "N-PF-2": (PHYSICAL_FEASIBILITY, 1, ["keep the system running", "not know yet"]),
-    "N-BA-1": (BOUNDARY_AMBIGUITY, 0, ["should it not work", "confuse it"]),
+# Number of committed variants per gap (serving-reachable indices are 0..N-1;
+# get_path_n_question clamps iterations_open >= N-1 to the last variant).
+_GAP_VARIANT_COUNT = {
+    PHYSICAL_FEASIBILITY: 4,
+    BOUNDARY_AMBIGUITY: 3,
+    MECHANISM_COMPLETENESS: 4,
 }
 
-# Committed single-intent questions that must remain unchanged (protected baseline).
+
+def _reachable_served_texts(gap_type):
+    """All unique committed served texts for a gap across reachable indices."""
+    seen = []
+    for i in range(_GAP_VARIANT_COUNT[gap_type]):
+        t = get_path_n_question(gap_type, i)
+        assert isinstance(t, str) and t.strip()
+        if t not in seen:
+            seen.append(t)
+    return seen
+
+
+def _matches(text, markers):
+    low = text.lower()
+    return any(m.lower() in low for m in markers)
+
+
+def _component_hits(text, components):
+    """Number of distinct components (each a marker set) present in text."""
+    return sum(1 for markers in components.values() if _matches(text, markers))
+
+
+# CONFIRMED MULTI-INTENT profiles (bounded marker sets per independent component).
+# A served text "bundles" the profile when it hits >= 2 distinct components.
+CONFIRMED_PROFILES = {
+    "N-PF-1": {
+        "gap": PHYSICAL_FEASIBILITY,
+        "components": {
+            "safety_condition": ["work safely", "safely", "safe operation", "safe conditions"],
+            "confirmation_evidence": ["confirm", "verify", "check later", "prove", "validate",
+                                      "information would you need", "information you would need"],
+        },
+    },
+    "N-PF-2": {
+        "gap": PHYSICAL_FEASIBILITY,
+        "components": {
+            "sustaining_operation": ["keep the system running", "keep running", "keep it running",
+                                     "continue operating", "maintain operation", "keep working"],
+            "unknown_information": ["not know", "do not know", "don't know", "unsure",
+                                    "uncertain", "not sure", "unresolved"],
+        },
+    },
+    "N-BA-1": {  # three components (F2): failing on ANY two-or-more
+        "gap": BOUNDARY_AMBIGUITY,
+        "components": {
+            "operate": ["should the system work", "should work", "expected to operate",
+                        "react", "should activate"],
+            "non_operate": ["should it not work", "should not work", "stay inactive",
+                            "not react", "stay quiet", "should stay off"],
+            "confusion": ["confuse", "confusing", "false trigger", "ambiguous", "mislead"],
+        },
+    },
+}
+
+# Currently UNRESOLVED — PENDING BASE RED (N-PF-3, N-BA-2, N-BA-3) and protected
+# single-intent (N-PF-4) committed baselines, excluded from the confirmed sweep so
+# no unresolved/protected item is forced into confirmed-defect status.
+_EXCLUDED_BASELINES_BY_GAP = {
+    PHYSICAL_FEASIBILITY: [get_path_n_question(PHYSICAL_FEASIBILITY, 2),   # N-PF-3 (unresolved)
+                           get_path_n_question(PHYSICAL_FEASIBILITY, 3)],  # N-PF-4 (protected single-intent)
+    BOUNDARY_AMBIGUITY: [get_path_n_question(BOUNDARY_AMBIGUITY, 1),       # N-BA-2 (unresolved)
+                         get_path_n_question(BOUNDARY_AMBIGUITY, 2)],      # N-BA-3 (unresolved)
+}
+
+
+# ─────────────────────────────────────────────
+# RED — no served question event may bundle >= 2 independent components
+# ─────────────────────────────────────────────
+
+@pytest.mark.parametrize("qid", list(CONFIRMED_PROFILES))
+def test_RED_confirmed_multi_intent_not_served_anywhere(qid):
+    """RED · Contract §8 AC-1/AC-2, Addendum B.1/C (F1/F2/F3): sweeping the full
+    committed serving surface of the confirmed gap (excluding separately-recorded
+    UNRESOLVED/protected baselines), NO served question event may present markers
+    for two-or-more independently answerable components of the confirmed profile.
+    Fails now because the confirmed multi-intent question is still served."""
+    profile = CONFIRMED_PROFILES[qid]
+    gap = profile["gap"]
+    components = profile["components"]
+    excluded = _EXCLUDED_BASELINES_BY_GAP.get(gap, [])
+    offenders = []
+    for text in _reachable_served_texts(gap):
+        if text in excluded:
+            continue
+        hits = _component_hits(text, components)
+        if hits >= 2:
+            present = [c for c, m in components.items() if _matches(text, m)]
+            offenders.append((text, present))
+    assert not offenders, (
+        f"{qid}: served question event(s) bundle >= 2 independent components "
+        f"{[(o[1], o[0]) for o in offenders]}"
+    )
+
+
+# ─────────────────────────────────────────────
+# PROTECTED — existing valid behavior unchanged (must PASS now)  [unchanged]
+# ─────────────────────────────────────────────
+
 PROTECTED_SINGLE_INTENT = {
     "N-MC-3": (MECHANISM_COMPLETENESS, 2,
                "Walk through what happens step by step, from the moment the problem "
@@ -77,30 +183,6 @@ PROTECTED_SINGLE_INTENT = {
 }
 
 
-# ─────────────────────────────────────────────
-# RED — confirmed multi-intent questions still bundle two independent components
-# ─────────────────────────────────────────────
-
-@pytest.mark.parametrize("qid", list(CONFIRMED_MULTI_INTENT))
-def test_RED_confirmed_question_no_longer_bundles_two_independent_components(qid):
-    """RED · Contract §8 AC-1/AC-2, Addendum B.1/C: a CONFIRMED MULTI-INTENT question
-    must be redesigned to a single component, so the served text must NOT contain
-    BOTH of its identified independently-answerable component anchors at once."""
-    gap_type, iters, (anchor_a, anchor_b) = CONFIRMED_MULTI_INTENT[qid]
-    served = get_path_n_question(gap_type, iters)
-    assert served is not None
-    both_present = (anchor_a in served) and (anchor_b in served)
-    # WS9 target: not both — a single-intent question asks one component.
-    assert not both_present, (
-        f"{qid} still bundles two independently-answerable components "
-        f"({anchor_a!r} and {anchor_b!r}) in one served question: {served!r}"
-    )
-
-
-# ─────────────────────────────────────────────
-# PROTECTED — existing valid behavior unchanged (must PASS now)
-# ─────────────────────────────────────────────
-
 @pytest.mark.parametrize("qid", list(PROTECTED_SINGLE_INTENT))
 def test_PROTECTED_single_intent_questions_unchanged(qid):
     """PROTECTED · Contract §6/§8 AC-4: committed single-intent questions
@@ -112,8 +194,9 @@ def test_PROTECTED_single_intent_questions_unchanged(qid):
 def test_PROTECTED_serving_is_deterministic_by_index():
     """PROTECTED · Contract §12 (persistence/resume): the same committed state
     (gap_type, iterations_open) deterministically serves the same question."""
-    for gap_type, iters, _ in CONFIRMED_MULTI_INTENT.values():
-        assert get_path_n_question(gap_type, iters) == get_path_n_question(gap_type, iters)
+    for gap_type in (PHYSICAL_FEASIBILITY, BOUNDARY_AMBIGUITY, MECHANISM_COMPLETENESS):
+        for i in range(_GAP_VARIANT_COUNT[gap_type]):
+            assert get_path_n_question(gap_type, i) == get_path_n_question(gap_type, i)
 
 
 def test_PROTECTED_ordering_selection_unchanged():
