@@ -139,3 +139,83 @@ Registry; it may describe a **conceptual** primary intent for contract/testing p
 prescribing a registry schema. Each later Workstream 9 gate requires its own separate owner authorization. Phase A branch
 remains fixed at `57e2fac8`; PR #167 (`74ea297f…`) / PR #162 (`088ab884…`) untouched; product state
 `DEMO_READY_WITH_LIMITATIONS`; MVP electronics/electrical-only; AI Coach (WS17) BLOCKED until Workstreams 1–16 owner-closed.
+
+---
+
+# Addendum A — Critical Paid-Product Experience Requirements
+
+**Status:** OWNER-DESIGNATED contract expansion (docs-only, non-implementing). The owner designates Workstream 9 as a
+**critical product-conversion, retention, and trust** workstream: the question experience is a major point at which users
+decide whether to continue using and paying for the application. This addendum binds the Workstream 9 contract to treat
+question design as **both** (1) an evidence-integrity and remediation concern **and** (2) a professional user-experience
+and perceived-value concern. It authorizes no UI change, no question-text change, no user research, and no analytics in
+this contract-recording gate.
+
+## A.1 User-facing question requirements
+Every in-scope user-facing question must:
+- default to **plain language** understandable by non-technical inventors;
+- **never require prior engineering terminology** merely to progress;
+- **ask one clear thing at a time** (consistent with the single-intent definition, §3);
+- be **directly connected** to the user's idea and prior answers;
+- **avoid sounding like a generic fixed questionnaire**;
+- avoid **interrogation fatigue, repetition, jargon, and premature technical depth**;
+- **progress** from easier, confidence-building questions toward deeper ones;
+- **explain why a question matters** when that explanation provides real value;
+- provide **examples or guided choices** where ambiguity is likely;
+- support responses such as: *I do not know yet* · *I am not sure* · *show me an example* · *help me understand what is
+  needed* · *let me return to this later*;
+- **never treat lack of technical knowledge as user failure**;
+- **never fabricate** completion, feasibility, certainty, or understanding;
+- surface **visible progress and intermediate value** without misleading completion percentages;
+- support **save and resume** without losing question context;
+- preserve the **same simplicity, intent, and answer expectation in Arabic and English**;
+- remain **extensible** to technologies and domains added in the future.
+
+## A.2 Progressive internal translation
+The system should progressively translate the user's everyday description into **structured technical meaning
+internally**. Technical terminology may be introduced **only when genuinely necessary**, and must then be **explained in
+plain language**. This translation is an internal-representation goal; it does not authorize changing question text,
+building an evaluator, or implementing a registry in this gate.
+
+## A.3 Engagement vs. manipulation (prohibited)
+The contract distinguishes **engagement** from **manipulation** and prohibits:
+- exaggerated praise;
+- false assurance that an idea is feasible, complete, unique, or ready;
+- dark patterns;
+- artificial urgency;
+- hiding uncertainty;
+- optimizing for continued interaction at the expense of correctness.
+Truthful uncertainty and evidence integrity (WS2/WS4/WS5 preservation, §13) always take precedence over engagement.
+
+## A.4 User-experience acceptance criteria (deterministic where observable; otherwise evaluated in the future plan A.5)
+- **UX-1 First-read clarity:** a question's primary intent is understandable on first read without technical background.
+- **UX-2 Answer-expectation clarity:** what a good answer looks like is evident (one answer objective, §3).
+- **UX-3 Perceived relevance:** the question connects observably to the user's idea and prior answers.
+- **UX-4 Confidence & psychological safety:** phrasing does not imply user failure for not knowing; "I don't know"
+  paths exist.
+- **UX-5 Fatigue & repetition risk:** no near-duplicate or redundant question within a session for the same gap.
+- **UX-6 Early visible value:** intermediate value/progress is surfaced without misleading completion percentages.
+- **UX-7 Non-technical accessibility:** progression never requires unexplained engineering terminology.
+- **UX-8 "I don't know" handling:** unknown/uncertain responses are accepted and preserved (§11), never scored as
+  failure.
+- **UX-9 Abandonment/drop-off awareness:** likely abandonment points are identified (future plan A.5), not asserted here.
+- **UX-10 Evidence integrity & truthful uncertainty:** no fabricated completion/feasibility/certainty; uncertainty stays
+  visible.
+
+UX-1…UX-8 and UX-10 that are observable from question content/structure are testable at the WS9 BASE RED/GREEN gates;
+UX-9 and the perceptual dimensions of UX-1/UX-3/UX-4 are evaluated by the future validation plan (A.5), not in this gate.
+
+## A.5 Future validation plan (defined here; NOT performed in this gate)
+A later, separately authorized usability/product-evaluation increment must validate the question experience with
+representative users: a non-technical inventor with only an early idea; a user with partial domain knowledge; a technical
+user; a user who does not know key implementation details; a user resuming an incomplete session; and Arabic and English
+users. It must measure UX-1…UX-10 and evidence integrity. **This contract does not conduct user research, change the UI,
+modify question text, or implement analytics** — it only defines the future evidence to be gathered under its own owner
+gate.
+
+## A.6 Boundary reaffirmed
+This addendum is docs-only and authorizes no implementation of any kind (no UI, question-text, evaluator, registry,
+analytics, prompt/AI-logic, database/persistence, or downstream workstream). All prohibitions and protections of §5, §6,
+§13, and §15 remain in force; Addendum A adds product-experience and truthfulness requirements to the Workstream 9 scope
+without expanding it into Workstreams 10–16, Structured Technical Guidance, WS-PFV-001, or Structured Invention
+Disclosure / Patent Export.
