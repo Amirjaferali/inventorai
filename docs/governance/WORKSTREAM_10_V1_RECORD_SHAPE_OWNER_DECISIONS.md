@@ -77,7 +77,7 @@ Approved `source_reference` shape:
 ```json
 {
   "artifact_path": "docs/governance/path_n_content_config/electronics_electrical_path_n_questions.json",
-  "question_id": "<committed question_id>"
+  "question_id": "N-PF-1"
 }
 ```
 Reason: array-index JSON pointers are unstable under question reordering; `question_id` is the durable
