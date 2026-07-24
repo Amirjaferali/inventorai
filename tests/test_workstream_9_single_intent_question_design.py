@@ -299,10 +299,14 @@ def test_PROTECTED_workstreams_1_to_8_modules_intact():
 
 
 def test_PROTECTED_no_workstream_10_to_14_capability_introduced():
-    """PROTECTED · Contract §5 / P6 / F-4: no WS10 registry, WS11 evaluator,
-    WS13 guided-answer, or WS14 adaptive-follow-up module is introduced."""
+    """PROTECTED · Contract §5 / P6 / F-4: no WS11 evaluator, WS13 guided-answer,
+    or WS14 adaptive-follow-up module is introduced.
+
+    WS10 (engine.question_intent_registry) is intentionally NOT guarded here: WS10
+    is the active, owner-authorized workstream explicitly authorized to introduce
+    that module, so the WS10 absence guard is stale (owner-approved amendment). The
+    WS11/WS13/WS14 protections remain valid and unchanged."""
     for absent in (
-        "engine.question_intent_registry",   # WS10
         "engine.question_aware_evaluation",  # WS11
         "engine.guided_answer_support",      # WS13
         "engine.adaptive_follow_up",         # WS14
