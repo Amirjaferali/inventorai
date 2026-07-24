@@ -374,7 +374,7 @@ def test_evaluation_is_observation_only(tmp_path):
     from engine.progression_loop import evaluate_transition
     evaluate = _require_evaluator_attr("evaluate_question_intent", "D1/D8/D14 observation-only")
     registry = _build_registry(tmp_path)
-    state = IdeaState()
+    state = IdeaState(idea_id="ws11-observation-only")
     gaps_before = [(g.gap_type, g.status, g.iterations_open) for g in state.gaps]
     transition_before = evaluate_transition(state)
     evaluate(
