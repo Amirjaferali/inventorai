@@ -83,6 +83,7 @@ Approved `source_reference` shape:
 Reason: array-index JSON pointers are unstable under question reordering; `question_id` is the durable
 committed locator; structural validation must resolve the question **by ID** and verify its committed parent
 gap. Do **not** store an array index, a JSON array pointer, or a source commit hash in every record.
+`source_reference.question_id` MUST equal the containing registry record's `question_id`.
 
 ### D7 — Artifact format and location — APPROVED (records the future target only)
 - One JSON registry file.
