@@ -28,7 +28,16 @@ PASSED tests/test_workstream_9_single_intent_question_design.py::test_PROTECTED_
 EXIT_CODE=0
 
 ### GROUP (e2) — direct import check (absence)
-COMMAND: python3 -c "import importlib; [print(m, ("EXISTS" if _try(m) else "ABSENT")) ...]"
+COMMAND (exact, copy-executable):
+python3 -c "
+import importlib
+for m in ('engine.guided_answer_support', 'engine.adaptive_follow_up'):
+    try:
+        importlib.import_module(m)
+        print(m, 'EXISTS')
+    except ModuleNotFoundError:
+        print(m, 'ABSENT')
+"
 engine.guided_answer_support ABSENT
 engine.adaptive_follow_up ABSENT
 EXIT_CODE=0
@@ -101,7 +110,18 @@ FAILED tests/test_domain_registry.py::TestInvalidValueValidation::test_empty_gov
 FAILED tests/test_domain_registry.py::TestRuntimeIsolation::test_domain_rules_not_modified
 
 ### GROUP (e-dist) — failure distribution proof
-COMMAND: (count total FAILED) ; (count test_domain_registry) ; (count NON-test_domain_registry)
+COMMANDS (exact, copy-executable; each is a separate pipeline):
+  total_FAILED:
+    python3 -m pytest tests/ -q 2>&1 | grep -c '^FAILED'
+  test_domain_registry_failures:
+    python3 -m pytest tests/ -q 2>&1 | grep '^FAILED' | grep -c 'test_domain_registry'
+  non_domain_registry_failures:
+    python3 -m pytest tests/ -q 2>&1 | grep '^FAILED' | grep -vc 'test_domain_registry'
+PIPELINE-EXIT NOTE: in each pipeline above the reported shell exit status is
+grep's, NOT pytest's. pytest's own exit status is 1 (see GROUP (e), captured via
+${PIPESTATUS[0]}), because the 31 pre-existing tests/test_domain_registry.py
+failures are present. The counts below are read from grep's stdout, and the
+pytest failure list itself is the authority (see GROUP (e-nodes)).
 total_FAILED=31
 test_domain_registry_failures=31
 non_domain_registry_failures=0

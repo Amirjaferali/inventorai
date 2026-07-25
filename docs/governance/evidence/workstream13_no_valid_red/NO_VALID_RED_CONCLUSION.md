@@ -6,14 +6,19 @@ search at authoritative base `0598a05137912866bab49f67b0c82048b282f85d`.
 ## Conclusion
 
 - **No valid WS13 RED seam was found.** Across the five existing display-layer
-  seams, every committed public entry point is deterministic, exception-free,
-  side-effect-free (no engine/network/AI/persistence/hidden state), and
+  seams, every committed public entry point is deterministic, exception-free, and
   provenance-traceable to its OD-4 input; repeated identical inputs produced
   identical outputs; the one bilingual seam has committed EN/AR parity; the
   WS13/WS14 absence guards pass; and the ratified §10 protected regression set is
   green with all 31 full-suite failures confined to the pre-existing
-  `tests/test_domain_registry.py` baseline and zero non-baseline failures.
-  **Zero observations were classified as VALID OBSERVABLE DEFECT.**
+  `tests/test_domain_registry.py` baseline and zero non-baseline failures. On the
+  side-effect boundary: no direct engine, AI/LLM, network, or persistence/file-write
+  dependency was identified in the five inspected modules. Some module-level
+  configuration containers may be structurally mutable (dict constants), but no
+  mutation was observed during the recorded representative repeated calls; this is
+  a bounded inspection and not a mathematical proof of absence of every hidden or
+  indirect effect. **Zero observations were classified as VALID OBSERVABLE
+  DEFECT.**
 
 - **BASE RED must not be manufactured.** No artificial defect, speculative test,
   or expanded defect-hunt scope may be created merely to force a WS13 BASE RED

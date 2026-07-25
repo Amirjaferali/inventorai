@@ -12,7 +12,7 @@ REPOSITORY**.
 | O-4 | `clarification_labels.get_clarification` deterministic, exception-free over 6 committed inputs (RAW_BEHAVIOR_OUTPUTS) | NOT A DEFECT |
 | O-5 | `result_feedback.get_result_feedback` deterministic over WARN/PASS/empty results (RAW_BEHAVIOR_OUTPUTS) | NOT A DEFECT |
 | O-6 | Repeated identical inputs → identical outputs for every examined entry point (REPEATABILITY_PROOF) | NOT A DEFECT |
-| O-7 | No engine/network/AI/persistence/hidden-state within the five seams (SIDE_EFFECT_BOUNDARY_PROOF) | NOT A DEFECT |
+| O-7 | No direct engine/AI/network/persistence dependency in the five seams; some module-level dict configuration containers are structurally mutable, but no mutation was observed during the recorded representative repeated calls (SIDE_EFFECT_BOUNDARY_PROOF) | NOT A DEFECT |
 | O-8 | `uncertainty_guidance.py` committed EN/AR behavioral parity holds (EN_AR_PARITY_PROOF) | NOT A DEFECT |
 | O-9 | WS13/WS14 absence guards pass; `engine.guided_answer_support` / `engine.adaptive_follow_up` absent (PROTECTED_TEST_RESULTS) | NOT A DEFECT |
 | O-10 | §10 protected regression set green: 177 display-layer, 38 WS9/Path-N, 70 WS10/11/12; full suite 31 failed / 1514 passed with all 31 in the `test_domain_registry.py` baseline and zero non-baseline failures (PROTECTED_TEST_RESULTS) | NOT A DEFECT |
