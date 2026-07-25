@@ -149,12 +149,19 @@ Read directly from the authoritative tip `b4e38c0`:
    INDEPENDENTLY_VERIFIED`). Never inferred from text; defaults are the
    truthful "unknown" values.
 
-5. **Latent `ACCEPTED_RISK` closure-path seam.** `Gap.status` defines
-   `ACCEPTED_RISK` (`idea_state.py:36`, `:155`) and it has a deliverable label
-   (`deliverable_assembler.py:176` "Accepted risk"), but **no engine logic ever
-   writes it** (verified: zero assignments across `engine/*.py`). It is a
-   defined-but-unused closure state — a genuine seam whose activation would be a
-   progression-state mutation and therefore an owner decision.
+5. **`ACCEPTED_RISK` closure-path seam.** `ACCEPTED_RISK` is defined in the
+   current production source model / vocabulary (`Gap.status`,
+   `idea_state.py:36`, `:155`) and has a deliverable label
+   (`deliverable_assembler.py:176` "Accepted risk"); tests may explicitly
+   construct or reference it where required to protect boundaries. **No verified
+   production-engine assignment path was identified during this fresh WS12
+   source review** (zero `Gap.status = ACCEPTED_RISK` assignments across the
+   inspected `engine/*.py`). Its existence in the model does **not** authorize
+   WS12 to use it: **WS12 v1 is not authorized to create, assign, recommend,
+   infer, or transition an unknown or gap to `ACCEPTED_RISK`** (see OD-6). Its
+   existence is not asserted as absent from the source model, and its presence
+   confers no WS12 authority to write it; any such activation would be a
+   progression-state mutation requiring a separate owner decision.
 
 6. **Separate decision-workspace blocker model.** `engine/decision_workspace.py`
    maintains an independent candidate-decision lane with `DEFERRED` / `BLOCKED`
@@ -295,147 +302,272 @@ A future WS12 increment, if authorized, should:
 
 ---
 
-## 12. Required owner decisions (re-derived; fresh IDs; not decided here)
+## 12. Owner decisions (OD-1 … OD-16) — ratified and controlling
 
-Each decision is surfaced, not decided. Old D-A…D-P IDs are **not** reused; an
-issue appears below only because fresh evidence shows it is still open.
+**Status:** every decision below is now an **`OWNER DECISION — RATIFIED`** and
+is **`RESOLVED BEFORE BASE RED`**, ratified by the owner authorization
+"Owner Decisions and Correction Authorization — WS12 Fresh Increment Contract
+Only" (including the "Owner Decision — OD-3 Reconciliation"). They are recorded
+here as **controlling**, not as recommendations. Old D-A…D-P IDs are **not**
+reused. Ratifying these decisions does **not** start WS12 and does **not**
+authorize BASE RED — each remains a resolved *prerequisite* that a future,
+separate BASE RED authorization must satisfy.
 
-Every decision lists: (1) Decision ID · (2) Question · (3) Current repository
-evidence · (4) Options · (5) Trade-offs · (6) Recommendation · (7) Consequence
-of deferring · (8) Protected surfaces affected · (9) Capability-register overlap
-· (10) Required before BASE RED?
+Each entry preserves: (2) Question · (3) Current repository evidence ·
+(4) Options · (5) Trade-offs · (7) Consequence of deferring · (8) Protected
+surfaces affected · (9) Capability-register overlap · (10) Required before
+BASE RED — and records (R) the ratified controlling ruling.
 
-- **OD-1 — Observation-only vs state-mutating.**
+- **OD-1 — Observation-only v1.** `OWNER DECISION — RATIFIED` ·
+  `RESOLVED BEFORE BASE RED`.
   (2) May WS12 mutate progression state, or is it strictly observation-only?
   (3) Today unknowns are progression-neutral (`progression_loop.py:725`);
   ledger `resolves_gap=False`. (4) Observation-only / bounded owner-gated
   mutation. (5) Observation-only is safest but less powerful; mutation risks
-  false maturity movement. (6) **Observation-only for v1.** (7) Deferring blocks
-  the whole contract shape. (8) `evaluate_transition`, `Gap.status`, ledger.
-  (9) CAP-04/08/10. (10) **Yes.**
+  false maturity movement.
+  **(R) WS12 v1 IS observation-only. It may organize, classify, expose, and
+  report controlled unknowns, but must NOT independently mutate invention
+  progression, maturity, `maturity_level`, readiness, `Gap.status`,
+  `evaluate_transition`, scoring, or closure state.**
+  (7) Deferring blocks the whole contract shape. (8) `evaluate_transition`,
+  `Gap.status`, scoring, ledger. (9) CAP-04/08/10. (10) **Yes.**
 
-- **OD-2 — Unknown record identity & lifecycle.**
-  (2) Do WS12 unknowns reuse `AcknowledgedUnknown` + the ledger, or a new
-  record type? (3) Two existing tracks already exist. (4) Reuse / new type.
-  (5) Reuse preserves history & avoids drift; new type risks duplication.
-  (6) **Reuse existing tracks.** (7) Ambiguous identity blocks BASE RED design.
-  (8) `idea_state.py`. (9) CAP-08. (10) **Yes.**
+- **OD-2 — Existing record types only.** `OWNER DECISION — RATIFIED` ·
+  `RESOLVED BEFORE BASE RED`.
+  (2) Reuse existing record types, or create a new one? (3) `AcknowledgedUnknown`
+  and `AssertionRecord` already exist. (4) Reuse / new type. (5) Reuse preserves
+  history & avoids drift; new type risks duplication.
+  **(R) Reuse the existing `AcknowledgedUnknown` track and `AssertionRecord`
+  ledger. Do NOT create a third unknown-record system in WS12 v1.** The proposed
+  WS12 classification vocabulary (OD-3) is a future typed classification, not
+  authorization for a new record family or persistence model; its exact
+  representation remains subject to BASE RED evidence and later GREEN.
+  (7) Ambiguous identity blocks BASE RED design. (8) `idea_state.py`.
+  (9) CAP-08. (10) **Yes.**
 
-- **OD-3 — Unknown classification vocabulary.**
-  (2) Is the vocabulary exactly the six existing dispositions, or extended?
-  (3) `INTERACTION_DISPOSITIONS` (`:111`) has six values. (4) Freeze at six /
-  extend. (5) Freezing preserves parity; extending needs migration. (6)
-  **Freeze at the six existing dispositions for v1.** (7) Vocabulary drift.
-  (8) ledger. (9) CAP-08/10. (10) **Yes.**
+- **OD-3 — Separate WS12 unknown-path classification vocabulary.**
+  `OWNER DECISION — RATIFIED` · `RESOLVED BEFORE BASE RED`.
+  WS12 v1 defines the following six **proposed** controlled-unknown path
+  classifications:
+  `NEEDS_EVIDENCE` · `NEEDS_MEASUREMENT` · `NEEDS_TEST` · `NEEDS_SPECIALIST` ·
+  `DEFERRED_BY_USER` · `OUT_OF_SCOPE`.
+  These are **distinct** from the existing six `INTERACTION_DISPOSITIONS`
+  (`idea_state.py:111`): `answered` · `unknown` · `deferred` ·
+  `provisional_assumption` · `specialist_requested` · `evidence_requested`.
+  The two vocabularies represent **different semantic dimensions** and must NOT
+  be silently mapped, aliased, substituted, or treated as interchangeable.
+  `INTERACTION_DISPOSITIONS` describe user/question interaction state; the
+  proposed WS12 classifications describe the **path required to evaluate or
+  manage a controlled unknown**.
+  **The proposed WS12 values do NOT currently exist in tracked production
+  source** (verified: 0 tracked files contain any of `NEEDS_EVIDENCE`,
+  `NEEDS_MEASUREMENT`, `NEEDS_TEST`, `NEEDS_SPECIALIST`, `DEFERRED_BY_USER`,
+  `OUT_OF_SCOPE`) **and are not authorized for implementation by this
+  documentation-only correction.** Their future implementation, representation,
+  and validation require: separate BASE RED authorization; deterministic failing
+  tests; separate GREEN authorization; minimal bounded implementation;
+  independent verification; owner acceptance; merge and status synchronization.
+  No enum, schema, model, persistence, UI, prompt, or production-code change is
+  authorized now. The prohibition "do not add, remove, rename, merge, or
+  silently map" applies **within each vocabulary and across their separation**:
+  do not modify the six existing `INTERACTION_DISPOSITIONS`; do not alter the six
+  ratified WS12 classification names; do not map one vocabulary to the other; do
+  not implement either during this correction.
+  (8) ledger / future classification. (9) CAP-08/10. (10) **Yes.**
 
-- **OD-4 — Blocker authority.**
-  (2) May an unknown ever block a maturity transition, and under what
-  deterministic rule? (3) Today unknowns never block (`evaluate_transition`
-  ignores them). (4) Never-block (report-only) / owner-ratified blocking rule.
-  (5) Never-block keeps determinism simple but may let unsupported ideas
-  advance; a blocking rule must be exact to avoid silent gating. (6)
-  **Report-only for v1; any blocking rule is a separate later decision.**
+- **OD-4 — Blocker classification only.** `OWNER DECISION — RATIFIED` ·
+  `RESOLVED BEFORE BASE RED`.
+  (2) May an unknown block a maturity transition? (3) Today unknowns never block
+  (`evaluate_transition` ignores them). (4) Never-block (report-only) /
+  owner-ratified blocking rule. (5) Never-block keeps determinism simple; a
+  blocking rule must be exact to avoid silent gating.
+  **(R) WS12 may classify and REPORT whether an unknown is blocking, but must
+  NOT itself block progression or mutate a blocking gate in v1. Any
+  progression-blocking authority requires a separately gated future increment
+  and owner authorization.**
   (7) Core behavior undefined. (8) `evaluate_transition`. (9) CAP-04. (10)
   **Yes.**
 
-- **OD-5 — Importance / criticality source.**
-  (2) Does WS12 read WS4 `CriticalityConfirmation` to weight unknowns? (3) WS4
-  criticality history exists (`idea_state.py:405`). (4) Ignore / read-only
-  consume. (5) Consuming adds signal but couples WS12 to WS4 semantics. (6)
-  **Read-only consume at most; no new criticality authoring.** (7) Prioritization
-  undefined. (8) criticality history. (9) CAP-05/06. (10) No (can defer).
-
-- **OD-6 — Closure-path representation & the latent `ACCEPTED_RISK` seam.**
-  (2) Which closure paths are valid, and may WS12 write `ACCEPTED_RISK`?
-  (3) `ACCEPTED_RISK` is defined but **never written** by any engine logic.
-  (4) Keep read-only / allow owner-gated `ACCEPTED_RISK` writing. (5) Writing it
-  is a progression-state mutation (ties to OD-1). (6) **Do not write
-  `ACCEPTED_RISK` in v1; document it as a future closure path.** (7) Closure
-  model undefined. (8) `Gap.status`, deliverable. (9) CAP-04. (10) **Yes.**
-
-- **OD-7 — Evidence requirements for closure.**
-  (2) What evidence quality (if any) is required to close an unknown vs accept
-  its risk? (3) `pending="evidence"` exists but has no closure workflow. (4)
-  None / REASONED+ / specialist. (5) Higher bars are safer but slower. (6)
-  **Define per closure path in the increment, not here.** (7) — (8) ledger.
-  (9) CAP-11. (10) No.
-
-- **OD-8 — Answer-later & supersession behavior.**
-  (2) How does answering a previously-unknown item interact with supersession?
-  (3) `mark_supersession` is acyclic, non-destructive. (4) Supersede / append.
-  (5) Supersession preserves history cleanly. (6) **Reuse supersession.**
-  (7) — (8) ledger graph. (9) CAP-08/10. (10) No.
-
-- **OD-9 — Multiplicity of unknown records.**
-  (2) May multiple unknown records coexist for one gap context? (3) The ledger
-  already allows multiple records per `gap_context`. (4) One / many. (5) Many
-  reflects reality; needs dedup rules. (6) **Allow many (as today).** (7) —
-  (8) ledger. (9) CAP-10. (10) No.
-
-- **OD-10 — Technical-user sufficiency.**
-  (2) Does a technically sufficient answer bypass unknown capture? (3)
-  `assess_response` sufficiency is deterministic; CAP-03 warns against
-  expertise→unknown reinterpretation. (4) Yes / no. (5) — (6) **Follow existing
-  deterministic sufficiency; no per-user relaxation.** (7) — (8) sufficiency
-  gate. (9) CAP-03. (10) No.
-
-- **OD-11 — Safety-critical unknowns.**
-  (2) Are safety-critical unknowns handled specially (never silently accepted)?
-  (3) WS4 `FEASIBILITY-THREATENING` category exists. (4) Uniform / special-case.
-  (5) Special-casing safety is prudent but must stay deterministic. (6)
-  **Never silently accept a safety-critical unknown; surface explicitly.** (7)
-  Safety exposure. (8) criticality, closure paths. (9) CAP-13 (safety advisory
-  is separate). (10) **Yes.**
-
-- **OD-12 — Export & persistence boundaries.**
-  (2) Are WS12 unknown states persisted or exported, or in-memory only? (3)
-  Ledger is explicitly in-memory; persistence is frozen. (4) In-memory / persist.
-  (5) Persisting crosses the persistence freeze. (6) **In-memory only for v1.**
-  (7) — (8) persistence boundary. (9) CAP-05/07. (10) **Yes.**
-
-- **OD-13 — D13 routing.**
-  (2) When an unknown is a technical knowledge gap, does WS12 route to D13
-  rather than answering it? (3) D13 owns technical guidance; CAP-01 must not be
-  satisfied by generic referral. (4) Route / answer. (5) Answering would breach
-  D13's authority. (6) **Route to D13 as a boundary; never answer technical
-  content in WS12.** (7) D13-boundary breach risk. (8) — (9) CAP-01/D13. (10)
+- **OD-5 — Criticality is read-only.** `OWNER DECISION — RATIFIED` ·
+  `RESOLVED BEFORE BASE RED`.
+  (2) Does WS12 read WS4 `CriticalityConfirmation`? (3) WS4 criticality history
+  exists (`idea_state.py:405`). (4) Ignore / read-only consume. (5) Consuming
+  adds signal but couples WS12 to WS4 semantics.
+  **(R) WS12 may read, display, preserve, and report existing criticality
+  read-only. It must NOT silently calculate, create, infer, raise, lower, or
+  replace authoritative criticality.**
+  (7) Prioritization undefined. (8) criticality history. (9) CAP-05/06. (10)
   **Yes.**
 
-- **OD-14 — WS13 / WS14 separation.**
-  (2) How does WS12 avoid drifting into guided-answer (WS13) or adaptive
-  follow-up (WS14)? (3) Both modules are guarded absent (`:301`). (4) Strict
-  separation / shared code. (5) Strict separation preserves the guard. (6)
-  **Strict separation; no WS13/WS14 module introduced.** (7) Guard breach.
-  (8) WS13/WS14 absence guard. (9) CAP-03. (10) **Yes.**
+- **OD-6 — Closure-path recommendation only.** `OWNER DECISION — RATIFIED` ·
+  `RESOLVED BEFORE BASE RED`.
+  (2) Which closure paths are valid, and may WS12 write `ACCEPTED_RISK`?
+  (3) `ACCEPTED_RISK` exists in the source model but no verified production-engine
+  assignment path was found (§5). (4) Recommendation-only / owner-gated writing.
+  (5) Writing it is a progression-state mutation (ties to OD-1).
+  **(R) WS12 may RECOMMEND the evidence, measurement, test, specialist review,
+  deferral, or scope decision needed for a future closure path. WS12 v1 must
+  NOT: assign `ACCEPTED_RISK`; close a gap; resolve an unknown; reduce
+  criticality; mark evidence sufficient; set `resolves_gap=True`; or approve
+  progression.**
+  (7) Closure model undefined. (8) `Gap.status`, deliverable. (9) CAP-04. (10)
+  **Yes.**
 
-- **OD-15 — CAP-04 / CAP-08 / CAP-10 interaction depth.**
+- **OD-7 — No false resolution.** `OWNER DECISION — RATIFIED` ·
+  `RESOLVED BEFORE BASE RED`.
+  (2) May WS12 declare an unknown resolved? (3) `pending="evidence"` exists but
+  has no closure workflow; D13/CAP-11 own technical/evidence-quality content.
+  (4) Declare resolved / describe requirement only. (5) Declaring resolution
+  without evidence is unsafe.
+  **(R) WS12 must NOT declare an unknown resolved. It may describe only what
+  evidence, measurement, test, document, or specialist category appears
+  necessary to evaluate it later. It must NOT implement CAP-11 or D13.**
+  (8) ledger. (9) CAP-11. (10) **Yes.**
+
+- **OD-8 — Supersession preserves history.** `OWNER DECISION — RATIFIED` ·
+  `RESOLVED BEFORE BASE RED`.
+  (2) How does a later answer interact with an existing unknown record?
+  (3) `mark_supersession` is acyclic, non-destructive. (4) Supersede / overwrite.
+  (5) Supersession preserves history cleanly; overwriting loses it.
+  **(R) When later user input addresses an existing unknown: create or preserve
+  the later record; connect it through explicit supersession or lineage;
+  preserve the earlier historical record; do NOT silently overwrite the earlier
+  record.**
+  (8) ledger graph. (9) CAP-08/10. (10) **Yes.**
+
+- **OD-9 — Multiple records are allowed.** `OWNER DECISION — RATIFIED` ·
+  `RESOLVED BEFORE BASE RED`.
+  (2) May multiple unknown records coexist for one `gap_context`? (3) The ledger
+  already allows multiple records per `gap_context`. (4) One / many.
+  (5) Many reflects reality; needs an explicit dedup policy.
+  **(R) Multiple controlled-unknown records may coexist for the same
+  `gap_context`. Do NOT perform automatic deduplication solely because records
+  share a gap context. Any future deduplication policy requires a separate owner
+  decision.**
+  (8) ledger. (9) CAP-10. (10) **Yes.**
+
+- **OD-10 — Uniform sufficiency rules.** `OWNER DECISION — RATIFIED` ·
+  `RESOLVED BEFORE BASE RED`.
+  (2) Do sufficiency rules vary by user? (3) `assess_response` sufficiency is
+  deterministic; CAP-03 warns against expertise→unknown reinterpretation.
+  (4) Uniform / per-user. (5) Per-user relaxation breaks the deterministic gate.
+  **(R) Evidence-sufficiency rules remain uniform. They must NOT be weakened,
+  strengthened, or changed according to the user's claimed experience, role,
+  profession, seniority, or confidence.**
+  (8) sufficiency gate. (9) CAP-03. (10) **Yes.**
+
+- **OD-11 — Safety-critical visibility.** `OWNER DECISION — RATIFIED` ·
+  `RESOLVED BEFORE BASE RED`.
+  (2) How are safety-critical unknowns handled? (3) WS4 `FEASIBILITY-THREATENING`
+  category exists. (4) Uniform / prominent-surface. (5) Silently accepting a
+  safety-critical unknown is unsafe.
+  **(R) Safety-critical or feasibility-threatening unknowns must remain explicit
+  and prominently visible. They must NOT be silently accepted, closed,
+  downgraded, deferred, or converted into non-critical unknowns or into
+  `ACCEPTED_RISK` by WS12.**
+  (7) Safety exposure. (8) criticality, closure paths. (9) CAP-13 (safety
+  advisory is separate). (10) **Yes.**
+
+- **OD-12 — In-memory and non-exporting v1.** `OWNER DECISION — RATIFIED` ·
+  `RESOLVED BEFORE BASE RED`.
+  (2) Persisted/exported or in-memory? (3) Ledger is explicitly in-memory;
+  persistence is frozen. (4) In-memory / persist. (5) Persisting crosses the
+  persistence freeze.
+  **(R) WS12 v1 remains in-memory and non-exporting. It must NOT add database
+  persistence, schema migrations, durable storage, export formats, external
+  publication, or Patent Export integration.**
+  (8) persistence boundary. (9) CAP-05/07, Patent Export. (10) **Yes.**
+
+- **OD-13 — D13 boundary.** `OWNER DECISION — RATIFIED` ·
+  `RESOLVED BEFORE BASE RED`.
+  (2) How are technical knowledge gaps handled? (3) D13 owns technical guidance;
+  CAP-01 must not be satisfied by generic referral. (4) Route to D13 / answer.
+  (5) Answering would breach D13's authority.
+  **(R) Technical gaps may be routed ONLY to the existing D13 boundary. WS12
+  must NOT implement Structured Technical Guidance and must NOT produce: a
+  precise unresolved technical subproblem; research topics; search terms;
+  measurement instructions; test procedures; document-acquisition instructions;
+  or specialist-appointment instructions. Those remain separately gated and
+  inactive.**
+  (8) D13 boundary. (9) CAP-01/D13. (10) **Yes.**
+
+- **OD-14 — WS13 and WS14 separation.** `OWNER DECISION — RATIFIED` ·
+  `RESOLVED BEFORE BASE RED`.
+  (2) How does WS12 avoid WS13/WS14 behavior? (3) Both modules are guarded
+  absent (`tests/test_workstream_9_single_intent_question_design.py:301`).
+  (4) Strict separation / shared code. (5) Strict separation preserves the guard.
+  **(R) WS12 must NOT implement WS13 Guided Answer Support or WS14 Adaptive
+  Follow-Up and Completion Logic, and must NOT generate adaptive interviews,
+  guided answers, or completion logic belonging to those Workstreams.**
+  (7) Guard breach. (8) WS13/WS14 absence guard. (9) CAP-03. (10) **Yes.**
+
+- **OD-15 — CAP-04 / CAP-08 / CAP-10 boundaries only.**
+  `OWNER DECISION — RATIFIED` · `RESOLVED BEFORE BASE RED`.
   (2) Interface boundary only, or partial implementation? (3) Each CAP depends
   on WS12 but is separately gated. (4) Interface-only / partial. (5) Partial
-  implementation would silently absorb a separately-gated capability. (6)
-  **Interface boundary only.** (7) Silent absorption risk. (8) — (9)
-  CAP-04/08/10. (10) **Yes.**
+  implementation would silently absorb a separately-gated capability.
+  **(R) CAP-04, CAP-08, and CAP-10 may appear ONLY as typed interface boundaries
+  or future integration seams where the canonical documents require them. WS12
+  must NOT implement their full capability behavior.**
+  (7) Silent absorption risk. (8) — (9) CAP-04/08/10. (10) **Yes.**
 
-- **OD-16 — CAP-12 / CAP-13 / CAP-14 prohibition.**
+- **OD-16 — CAP-12 / CAP-13 / CAP-14 excluded.** `OWNER DECISION — RATIFIED` ·
+  `RESOLVED BEFORE BASE RED`.
   (2) Confirm WS12 implements none of CAP-12/13/14. (3) All three are
-  `RECORDED — NOT AUTHORIZED`, each a distinct gate. (4) — (5) — (6) **WS12
-  implements none of CAP-12/13/14.** (7) Scope breach. (8) — (9)
-  CAP-12/13/14. (10) **Yes (as a standing prohibition).**
+  `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`, each a distinct gate.
+  (4) — (5) —
+  **(R) WS12 must NOT implement or absorb any behavior from CAP-12, CAP-13, or
+  CAP-14 — including materials, manufacturing, thickness, specifications, safety
+  advisory, drawings, static images, or multi-view interpretation. These remain
+  `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`.**
+  (7) Scope breach. (8) — (9) CAP-12/13/14. (10) **Yes.**
+
+### 12.1 Ratified two-vocabulary separation — explicit statements
+
+- The six existing `INTERACTION_DISPOSITIONS` remain **unchanged**.
+- The six proposed WS12 classifications
+  (`NEEDS_EVIDENCE / NEEDS_MEASUREMENT / NEEDS_TEST / NEEDS_SPECIALIST /
+  DEFERRED_BY_USER / OUT_OF_SCOPE`) are **distinct and not currently
+  implemented**.
+- **No implicit mapping exists** between the two vocabularies.
+- **No automatic transition** from an `INTERACTION_DISPOSITIONS` value to a WS12
+  classification is authorized.
+- Classification does **not** resolve an unknown.
+- Classification does **not** close a gap.
+- Classification does **not** mutate progression.
+- Classification does **not** assign `ACCEPTED_RISK`.
+- Classification does **not** activate D13, WS13, WS14, CAP-12, CAP-13, or
+  CAP-14.
+- Representation and implementation of the WS12 classifications remain subject
+  to separate BASE RED and GREEN gates.
 
 ---
 
 ## 13. BASE RED prerequisites
 
-Before any WS12 BASE RED could be authorized (each is a separate owner action):
+**All sixteen owner decisions OD-1 … OD-16 are RATIFIED** by the owner
+authorization "Owner Decisions and Correction Authorization — WS12 Fresh
+Increment Contract Only" (with the OD-3 reconciliation), and each is
+**`RESOLVED BEFORE BASE RED`**. Their ratification satisfies the decision
+prerequisites for a future BASE RED — but **this authorization does NOT start
+BASE RED.** BASE RED remains **NOT AUTHORIZED** and requires a separate,
+explicit owner authorization.
 
-1. Resolution of the **"required before BASE RED"** owner decisions above
-   (OD-1, OD-2, OD-3, OD-4, OD-6, OD-11, OD-12, OD-13, OD-14, OD-15, OD-16).
-2. Owner ratification of the observation-only-vs-mutating boundary (OD-1) and
-   the blocker-authority rule (OD-4).
-3. A separate owner authorization explicitly starting WS12 BASE RED.
-4. Confirmation that the WS13/WS14 absence guard and `MVP_SCOPE_FREEZE.md`
+Remaining prerequisites before any WS12 BASE RED could be authorized (each is a
+separate owner action):
+
+1. **[SATISFIED — RATIFIED]** Resolution of every owner decision above
+   (OD-1 … OD-16), each recorded as `OWNER DECISION — RATIFIED` and
+   `RESOLVED BEFORE BASE RED` in §12.
+2. A separate owner authorization **explicitly starting WS12 BASE RED** (not
+   granted here).
+3. Confirmation that the WS13/WS14 absence guard and `MVP_SCOPE_FREEZE.md`
    remain in force.
-5. A deterministic, AI-free test design with no scoring/persistence/UI/prompt/
+4. A deterministic, AI-free test design with no scoring/persistence/UI/prompt/
    question-content change.
+5. A representation for the proposed WS12 classifications (OD-3) expressed only
+   as deterministic failing tests under that separate BASE RED authorization —
+   never as production source under this documentation-only correction.
 
 ---
 
@@ -459,7 +591,19 @@ implementation.
 
 ## 15. Explicit status statement
 
-**Workstream 12 (Controlled Unknown Progression) remains NOT STARTED.**
+```
+WS12:      NOT STARTED
+BASE RED:  NOT AUTHORIZED
+GREEN:     NOT AUTHORIZED
+```
+
+**Workstream 12 (Controlled Unknown Progression) remains NOT STARTED.** BASE RED
+remains **NOT AUTHORIZED** and GREEN remains **NOT AUTHORIZED**. Ratifying the
+owner decisions OD-1 … OD-16 in §12 does **not** make WS12 active, does **not**
+start WS12, does **not** authorize RED, does **not** permit tests or code to
+begin automatically, and does **not** activate any capability or later
+Workstream. OD-1 … OD-16 are resolved contract prerequisites for a future,
+separate BASE RED authorization.
 
 ---
 
