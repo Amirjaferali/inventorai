@@ -47,7 +47,6 @@ must never mutate progression, maturity, gap status, or closure state (OD-1).
 """
 
 import copy
-import dataclasses
 import importlib
 
 import pytest
@@ -272,19 +271,29 @@ def test_supersession_preserves_history():
 
 # ── 9. Uniform sufficiency — classification independent of user role (OD-10) ──
 def test_uniform_sufficiency_independent_of_user_role():
+    """OD-10: classification/sufficiency must not vary by user_role, experience,
+    profession, seniority, or confidence. Proven behaviorally — the classifier
+    exposes no such parameter and rejects any attempt to supply one loudly; and
+    repeated calls yield an identical classification (no hidden per-user path)."""
+    import inspect
     classify = _require_ws12_attr(
         "classify_controlled_unknown", "OD-10 uniform sufficiency")
     state = _state_with_acknowledged_unknown()
     record = state.acknowledged_unknowns[0]
-    # The classifier must not accept or vary on a user role/experience signal.
-    view_a = classify(record, path="NEEDS_SPECIALIST")
-    view_b = classify(record, path="NEEDS_SPECIALIST")
-    assert view_a.path_classification == view_b.path_classification
-    params = dataclasses.fields(type(view_a))
-    field_names = {f.name for f in params}
-    assert not (field_names & {
-        "user_role", "experience", "profession", "seniority", "confidence"}), (
-        "WS12 view must not carry user role/experience/seniority (OD-10).")
+    forbidden = ("user_role", "experience", "profession", "seniority", "confidence")
+    # (a) The classifier signature must expose none of the user-attribute inputs.
+    sig = inspect.signature(classify)
+    assert set(forbidden).isdisjoint(sig.parameters), (
+        "classify_controlled_unknown must expose no user-attribute parameter "
+        "(OD-10 uniform sufficiency).")
+    # (b) Supplying any user attribute must fail loudly — never silently vary.
+    for attr in forbidden:
+        with pytest.raises(TypeError):
+            classify(record, path="NEEDS_SPECIALIST", **{attr: "senior-expert"})
+    # (c) The classification/sufficiency result is deterministic and identical
+    #     across repeated calls (no hidden per-user variation).
+    assert (classify(record, path="NEEDS_SPECIALIST").path_classification
+            == classify(record, path="NEEDS_SPECIALIST").path_classification)
 
 
 # ── 10. Safety-critical unknowns remain explicit — no silent downgrade (OD-11)
@@ -343,6 +352,8 @@ def test_closure_path_is_recommendation_only():
 
 
 # ── 14. ACCEPTED_RISK boundary — WS12 never emits/assigns it (OD-6/OD-11) ──
+# Supplementary coverage: an unrelated valid path (OUT_OF_SCOPE) never yields or
+# assigns ACCEPTED_RISK. The direct rejection contract is test 14b below.
 def test_accepted_risk_boundary_not_emitted():
     classify = _require_ws12_attr(
         "classify_controlled_unknown", "OD-6 ACCEPTED_RISK boundary")
@@ -357,6 +368,72 @@ def test_accepted_risk_boundary_not_emitted():
     assert getattr(view, "closure_recommendation", None) != ACCEPTED_RISK
     assert gap.status != ACCEPTED_RISK, (
         "WS12 must not transition a gap to ACCEPTED_RISK (OD-6).")
+
+
+# ── 14b. ACCEPTED_RISK rejected as a WS12 path — fails loudly, no state change ─
+def test_accepted_risk_rejected_as_path_classification():
+    """OD-6 (direct): ACCEPTED_RISK is a Gap.status value, never a WS12 path.
+    Supplying it must fail loudly through the governed typed error, produce no
+    view, and change no gap/maturity/progression/ledger/closure state."""
+    classify = _require_ws12_attr(
+        "classify_controlled_unknown", "OD-6 ACCEPTED_RISK rejection")
+    Error = _require_ws12_attr(
+        "ControlledUnknownProgressionError", "OD-6 fail-loud typed error")
+    state = _state_with_acknowledged_unknown()
+    gap = state.gaps[0]
+    before = _snapshot(state)
+    result = None
+    with pytest.raises(Error):
+        result = classify(state.acknowledged_unknowns[0], path=ACCEPTED_RISK)
+    # The call raised: no view was produced, and nothing was mutated.
+    assert result is None
+    assert _snapshot(state) == before, (
+        "A rejected ACCEPTED_RISK path must change no gap/maturity/ledger/closure "
+        "state (OD-6).")
+    assert gap.status != ACCEPTED_RISK
+
+
+# ── 14c. Safety-critical deferral is not silent acceptance/resolution (OD-11) ─
+def test_safety_critical_deferral_not_silently_accepted():
+    """OD-11: safety_critical=True with path DEFERRED_BY_USER. The unknown
+    remains an explicit, unresolved, safety-critical view; deferral is not
+    acceptance, resolution, closure, downgrade, or conversion — and the call is
+    observation-only (no state mutation)."""
+    classify = _require_ws12_attr(
+        "classify_controlled_unknown", "OD-11 safety-critical deferral")
+    state = _state_with_acknowledged_unknown()
+    gap = state.gaps[0]
+    before = _snapshot(state)
+    view = classify(state.acknowledged_unknowns[0], path="DEFERRED_BY_USER",
+                    safety_critical=True)
+    # The safety-critical flag survives the deferral and stays prominent.
+    assert getattr(view, "safety_critical", None) is True
+    assert getattr(view, "path_classification", None) == "DEFERRED_BY_USER"
+    # Deferral resolves/closes/accepts nothing.
+    assert getattr(view, "resolves_gap", True) is False
+    assert gap.status not in (CLOSED, ACCEPTED_RISK)
+    assert _snapshot(state) == before, (
+        "Deferring a safety-critical unknown must not silently defer, downgrade, "
+        "close, accept, or convert it (OD-11).")
+
+
+# ── 14d. Typed error exposes a stable reason_code (documented public contract) ─
+def test_typed_error_exposes_stable_reason_code():
+    """The test-file/governance documentation states that
+    ControlledUnknownProgressionError exposes a stable reason_code; prove it. An
+    invalid path classification must raise the governed typed error carrying a
+    non-empty string reason_code."""
+    classify = _require_ws12_attr(
+        "classify_controlled_unknown", "typed-error reason_code")
+    Error = _require_ws12_attr(
+        "ControlledUnknownProgressionError", "typed-error reason_code")
+    state = _state_with_acknowledged_unknown()
+    with pytest.raises(Error) as exc_info:
+        classify(state.acknowledged_unknowns[0], path="NOT_A_VALID_WS12_PATH")
+    reason_code = getattr(exc_info.value, "reason_code", None)
+    assert isinstance(reason_code, str) and reason_code, (
+        "ControlledUnknownProgressionError must expose a stable, non-empty "
+        "string reason_code.")
 
 
 # ── 15. In-memory / non-exporting — no persistence/export surface (OD-12) ──
