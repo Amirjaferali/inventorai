@@ -11,7 +11,10 @@ content-free; all wired in `web/app.py` (imports `:28–32`, rendered `:579–61
 - **Language coverage:** English-only.
 - **web/app.py wiring:** imported `:30`; rendered `current_answer_coauthoring=get_answer_coauthoring_prompts(gap_type) if gap_type else None` (`:607`).
 - **Current committed tests:** `tests/test_guided_answer_coauthoring_increment_1.py`.
-- **Classification:** NOT A DEFECT (deterministic, side-effect-free, tested).
+- **Classification:** NOT A DEFECT (deterministic and tested; no direct engine,
+  AI/LLM, network, or persistence/file-write dependency was identified in the
+  inspected module — `_PROMPTS` is a structurally mutable dict constant, but no
+  mutation was observed during the recorded representative calls).
 
 ## 2. `web/scaffolding_guidance.py`
 - **Public entry point:** `get_scaffolding_guidance(last_result, gap_type=None)` (`:196`).

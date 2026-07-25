@@ -50,10 +50,15 @@ scope (per the Owner Decisions and the Increment Contract).
 ## Summary of the no-valid-RED conclusion
 
 Across the five seams, every committed public entry point is deterministic,
-exception-free, side-effect-free (no engine/network/AI/persistence/hidden
-state), and provenance-traceable to its OD-4 input; repeated identical inputs
-produced identical outputs; the one bilingual seam (`uncertainty_guidance.py`)
-has committed EN/AR behavioral parity; the WS13/WS14 absence guards pass; and the
+exception-free, and provenance-traceable to its OD-4 input; repeated identical
+inputs produced identical outputs. On the side-effect boundary: no direct engine,
+AI/LLM, network, or persistence/file-write dependency was identified in the five
+inspected modules; some module-level configuration containers are structurally
+mutable (dict constants in four of the five modules), but no mutation was
+observed during the recorded representative calls (this is a bounded inspection,
+not a mathematical proof of absence of every hidden or indirect effect). The one
+bilingual seam (`uncertainty_guidance.py`) has committed EN/AR behavioral parity;
+the WS13/WS14 absence guards pass; and the
 ratified §10 protected regression set is green (177 display-layer tests; 38
 WS9/Path-N; 70 WS10/11/12; full suite 31 failed / 1514 passed with all 31
 failures confined to the pre-existing `tests/test_domain_registry.py` baseline
