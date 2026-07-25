@@ -248,27 +248,55 @@ No BASE RED, GREEN, or implementation is created on this path.
   **reported committed-coverage gap** (OD-11); it must not be counted as parity
   and must not be silently filled.
 
-## 13. Risks, assumptions, and unresolved repository-supported gaps
+## 13. Risks, assumptions, and ratified gap resolutions
 
 - **R-1 (overlap with WS15).** The five display-layer seams are exactly the
   fragmented guidance WS15 would later consolidate; WS13 must fix defects
   in-place without consolidating (OD-10).
-- **R-2 (EN/AR gap).** Four of five seams are English-only; whether closing that
-  gap is WS13 scope or a separate localization gate is an unresolved
-  owner-supported gap (see UG-1).
+- **R-2 (EN/AR gap).** Four of five seams are English-only. Per **WS13-CD-1**
+  below, this remains a recorded localization coverage gap that is **outside
+  WS13 v1**; it is not an unresolved question.
 - **R-3 (no-valid-RED likelihood).** The existing behavior is already governed
-  and tested; a genuine observable defect may not exist, making §11 the likely
-  path — this must be proven, not assumed.
+  and tested; a genuine observable defect may not exist, so the no-valid-RED
+  path (§11, **WS13-CD-2**) is the required outcome when the bounded search finds
+  none — this must be proven, not assumed, and never forced.
 - **A-1.** Guidance remains display-only and deterministic; no engine/AI/network
   dependency is introduced.
-- **Unresolved repository-supported gaps (surfaced, not decided):**
-  - **UG-1** Is closing the English-only EN/AR coverage gap in scope for WS13, or
-    a separate localization workstream? (Ties to OD-11/R-2.)
-  - **UG-2** If independent analysis finds no observable defect, is the
-    no-valid-RED closure (§11) the intended WS13 outcome, or does the owner want
-    a specific defect-hunt scope defined first?
-  - **UG-3** Confirmation of the exact protected display-layer test set that must
-    remain green before any WS13 RED.
+
+### 13.1 Ratified decisions (WS13-CD-1 … WS13-CD-3)
+
+The former UG-1/UG-2/UG-3 are **resolved** by the following owner decisions; they
+are no longer unresolved gaps.
+
+- **WS13-CD-1 — EN/AR scope.** `OWNER DECISION — RATIFIED`. The four currently
+  English-only display seams (`answer_coauthoring_prompts`, `scaffolding_guidance`,
+  `clarification_labels`, `result_feedback`) remain a **recorded localization
+  coverage gap** and are **explicitly outside WS13 v1**. Adding Arabic content to
+  those seams is not within WS13 v1 and must not become a WS13 BASE RED or
+  implementation requirement. Only a defect in an **already-committed bilingual
+  surface** (today: `web/uncertainty_guidance.py`) may support an EN/AR parity
+  RED under WS13. Any broader Arabic expansion requires a separate owner gate and
+  must not be silently assigned to WS13.
+
+- **WS13-CD-2 — No-valid-RED path (mandatory).** `OWNER DECISION — RATIFIED`.
+  OD-14 is ratified as the **required** outcome when a bounded evidence search
+  finds no proven observable WS13 defect. The evidence search must cover the five
+  identified display-layer seams, their committed inputs and outputs,
+  deterministic provenance, single-intent behavior, the absence guards, and
+  committed bilingual behavior. **No artificial defect, speculative test, or
+  expanded defect-hunt scope may be created merely to force BASE RED.** The
+  no-valid-RED path still requires a durable evidence package, independent
+  review, explicit owner acceptance, and a separately authorized closure/status
+  canonicalization (§11).
+
+- **WS13-CD-3 — Protected regression set (ratified).** `OWNER DECISION —
+  RATIFIED`. The protected regression set in **§10 is the ratified protected
+  regression set for WS13 v1**: the WS13 and WS14 absence guards; the listed
+  existing display-layer guidance tests; the WS9/Path-N protected regression; the
+  WS10, WS11, and WS12 focused suites; and preservation of the known
+  domain-registry baseline without worsening it. A later BASE RED may add **only
+  a minimal focused test targeting a proven observable defect within one of the
+  five existing display-layer seams.**
 
 ---
 
