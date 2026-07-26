@@ -180,17 +180,20 @@ Source anchors are committed-source line references at `143a1ed4`.
   MATCHES the committed application's stage structure. The prototype is an
   illustrative low-fidelity mock; canonical_state labels and screen data are
   simulated, not live engine output.
-- **Disposition: PASS WITH ACCEPTABLE LIMITATION** — structure matches; the
-  prototype is not behavior-accurate by design (see REPRESENTATIVE_JOURNEY_
-  COMPARISON.md).
+- **Disposition: LIMITATION** — the stage structure MATCHES the committed
+  application (a passing comparison), but the prototype is a low-fidelity,
+  non-behavior-accurate mock by design; that bounded fidelity limitation is
+  intrinsic to this stage, so the single canonical disposition is LIMITATION
+  (see REPRESENTATIVE_JOURNEY_COMPARISON.md).
 
 ## Stage 15 — Owner acceptance
 
 - **Observed:** Owner acceptance is an **owner act**. This gate is authorized for
   read-only validation and durable evidence only; recording owner acceptance is
   explicitly out of scope for the executor.
-- **Disposition: NOT APPLICABLE (THIS GATE)** — OWNER ACT, NOT PERFORMED; deferred
-  to the owner in a subsequent, separately authorized step.
+- **Disposition: NOT APPLICABLE** — owner acceptance is an owner act; it is not
+  performed by the executor in this read-only gate and is deferred to the owner in
+  a subsequent, separately authorized step.
 
 ---
 
@@ -211,8 +214,18 @@ Source anchors are committed-source line references at `143a1ed4`.
 | 11 | Persistence and recovery | LIMITATION |
 | 12 | Security and privacy | LIMITATION |
 | 13 | Arabic/English limitations | LIMITATION |
-| 14 | Representative-journey consistency | PASS (with acceptable limitation) |
-| 15 | Owner acceptance | NOT APPLICABLE (this gate) |
+| 14 | Representative-journey consistency | LIMITATION |
+| 15 | Owner acceptance | NOT APPLICABLE |
+
+**Canonical disposition counts (exactly one token per stage, IC §8):**
+
+```
+PASS           8   (stages 1, 2, 3, 4, 5, 6, 7, 10)
+LIMITATION     6   (stages 8, 9, 11, 12, 13, 14)
+BLOCKER        0
+NOT APPLICABLE 1   (stage 15)
+TOTAL         15
+```
 
 **No stage is dispositioned BLOCKER.** All LIMITATIONs are source-backed and
 map to already-recorded product boundaries or forward backlog; none is remediated

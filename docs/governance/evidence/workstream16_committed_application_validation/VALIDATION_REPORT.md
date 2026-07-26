@@ -48,11 +48,16 @@ never patched.
 | 11 | Persistence and recovery | LIMITATION |
 | 12 | Security and privacy | LIMITATION |
 | 13 | Arabic/English limitations | LIMITATION |
-| 14 | Representative-journey consistency | PASS (acceptable limitation) |
-| 15 | Owner acceptance | NOT APPLICABLE (owner act; this gate) |
+| 14 | Representative-journey consistency | LIMITATION |
+| 15 | Owner acceptance | NOT APPLICABLE |
 
-No stage is BLOCKER. Every LIMITATION is source-backed and maps to an
-already-recorded product boundary or forward backlog.
+Canonical counts (exactly one token per stage, IC §8): PASS ×8; LIMITATION ×6;
+BLOCKER ×0; NOT APPLICABLE ×1. No stage is BLOCKER. Every LIMITATION is
+source-backed and maps to an already-recorded product boundary or forward
+backlog. Stage 14 structure MATCHES the committed application; its single
+canonical disposition is LIMITATION because the prototype is a low-fidelity,
+non-behavior-accurate mock by design. Stage 15 owner acceptance is an owner act,
+not performed by the executor in this gate.
 
 ---
 
@@ -66,8 +71,11 @@ already-recorded product boundary or forward backlog.
   recovery/next-step): controlled-unknown handling does not fabricate facts;
   non-answer submissions are rejected with nothing stored; unknown session
   redirects safely; deferred items are never marked resolved. **Disposition:
-  PASS with LIMITATION** — the edge path is honest and does not overclaim, but
-  durable-recovery is not a committed surface (Stage 11).
+  LIMITATION** — the edge path is honest and does not overclaim, but the
+  limitation intrinsic to it is that durable-recovery is not a committed surface
+  (Stage 11). (The interaction/error handling itself behaves correctly; the single
+  canonical disposition is LIMITATION because the absent durable-recovery surface
+  is part of this path.)
 
 ---
 
@@ -105,20 +113,22 @@ The committed application stores sessions **in memory only** (`SESSION_STORE = {
 documented in-memory/non-production/temporary). There is no durable/atomic session
 store and no session-recovery path in committed source. Scenarios requiring a
 durable artifact to save, reload, corrupt, or recover therefore have **no
-execution surface** and are recorded as `NOT APPLICABLE — EXECUTION SURFACE
-ABSENT`. This is a source-backed absence, not a manufactured defect, and is **not
-remediated**.
+execution surface** and are recorded as `LIMITATION — EXECUTION SURFACE ABSENT`.
+This is a real deliverable limitation (a scenario the final deliverable is
+expected to support but currently cannot), not a merely inapplicable scenario; it
+is a source-backed absence, not a manufactured defect, and is **not remediated**
+in this gate. No claim is made that durable persistence or recovery exists.
 
 | ID | Scenario | Disposition | Basis |
 |---|---|---|---|
-| PR-1 | Normal save and reload | NOT APPLICABLE — EXECUTION SURFACE ABSENT | No durable session save/reload in committed source (in-memory store). |
-| PR-2 | Process-restart recovery | NOT APPLICABLE — EXECUTION SURFACE ABSENT | In-memory store does not survive process restart; no recovery path exists. |
+| PR-1 | Normal save and reload | LIMITATION — EXECUTION SURFACE ABSENT | No durable session save/reload in committed source (in-memory store). |
+| PR-2 | Process-restart recovery | LIMITATION — EXECUTION SURFACE ABSENT | In-memory store does not survive process restart; no recovery path exists. |
 | PR-3 | Missing session artifact | PASS | Unknown/missing `sid` → `if not entry: return redirect(url_for("index"))`. No silent success, no fabricated recovery. |
-| PR-4 | Malformed/unreadable artifact | NOT APPLICABLE — EXECUTION SURFACE ABSENT | No durable session artifact is read back, so none can be malformed/recovered. |
-| PR-5 | Partial/interrupted write (atomic-write) | NOT APPLICABLE — EXECUTION SURFACE ABSENT | No atomic session-write path in committed source. (The `/tmp` transcript is an append-only evidence log, not a recoverable session artifact.) |
-| PR-6 | Previous valid-state preservation | NOT APPLICABLE — EXECUTION SURFACE ABSENT | No durable session-recovery path that could destroy or preserve a prior state. |
+| PR-4 | Malformed/unreadable artifact | LIMITATION — EXECUTION SURFACE ABSENT | No durable session artifact is read back, so none can be malformed/recovered. |
+| PR-5 | Partial/interrupted write (atomic-write) | LIMITATION — EXECUTION SURFACE ABSENT | No atomic session-write path in committed source. (The `/tmp` transcript is an append-only evidence log, not a recoverable session artifact.) |
+| PR-6 | Previous valid-state preservation | LIMITATION — EXECUTION SURFACE ABSENT | No durable session-recovery path that could destroy or preserve a prior state. |
 | PR-7 | Session identity isolation | PASS | `SESSION_STORE` keyed per-`sid`; recovering/reading one session does not read another. |
-| PR-8 | Recovery evidence integrity | NOT APPLICABLE — EXECUTION SURFACE ABSENT | No recovery path to evidence; nothing to record recovery integrity for. |
+| PR-8 | Recovery evidence integrity | LIMITATION — EXECUTION SURFACE ABSENT | No recovery path to evidence; nothing to record recovery integrity for. |
 
 > Naming note (recorded honestly): the branch lineage is
 > `feature/atomic-json-session-persistence`, but the committed application at
@@ -171,12 +181,12 @@ content is authored by this gate. (Stage 13 → LIMITATION.)
 
 ```
 WS16 COMMITTED-APPLICATION END-TO-END VALIDATION (READ-ONLY): COMPLETE
-  Stages dispositioned:        15/15 (PASS ×8, LIMITATION ×5, PASS-w/-limitation ×1, N/A ×1)
+  Stages dispositioned:        15/15 (PASS ×8, LIMITATION ×6, BLOCKER ×0, NOT APPLICABLE ×1)
   BLOCKERs:                    0
   New test failures:           0 (baseline 31 reconfirmed independently)
   Protected WS9–WS15 suites:   88 passed / 0 failed
   SP-1…SP-7:                   assessed (PASS ×5, LIMITATION ×2)
-  PR-1…PR-8:                   assessed (PASS ×2, N/A—surface absent ×6)
+  PR-1…PR-8:                   assessed (PASS ×2 [PR-3, PR-7], LIMITATION—surface absent ×6 [PR-1, PR-2, PR-4, PR-5, PR-6, PR-8])
   Representative-journey:      structure MATCHES committed application; no material mismatch
   Product state:               DEMO_READY_WITH_LIMITATIONS (preserved)
   Owner acceptance:            NOT RECORDED (owner act; out of scope for this gate)
