@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WS16 Representative Journey — Low-Fidelity / Simulated / Non-Production</title>
+<style>
+  /* Low-fidelity, intentionally plain. System fonts only; no external assets, no network. */
+  :root { --line:#444; --muted:#555; --warn:#7a5b00; --warnbg:#fff7e0; --sim:#5b3a7a; --simbg:#f2ebfa; }
+  * { box-sizing:border-box; }
+  body { font-family: system-ui, Arial, sans-serif; margin:0; color:#111; background:#fafafa; line-height:1.45; }
+  .simband { background:var(--simbg); color:var(--sim); border-bottom:2px dashed var(--sim); padding:8px 12px; font-weight:bold; font-size:0.95em; }
+  .simband small { font-weight:normal; color:#333; }
+  header.shell { display:flex; flex-wrap:wrap; gap:6px; align-items:center; justify-content:space-between; padding:8px 12px; background:#eee; border-bottom:1px solid var(--line); }
+  header.shell .brand { font-weight:bold; }
+  header.shell nav { display:flex; flex-wrap:wrap; gap:6px; }
+  header.shell button { font:inherit; padding:4px 8px; border:1px solid var(--line); background:#fff; cursor:pointer; }
+  .mocktag { font-size:0.7em; border:1px solid var(--sim); color:var(--sim); background:var(--simbg); padding:0 4px; margin-left:4px; }
+  main { max-width:820px; margin:0 auto; padding:14px; }
+  .stepper { display:flex; flex-wrap:wrap; gap:4px; font-size:0.8em; margin:10px 0; }
+  .stepper button { font:inherit; font-size:1em; border:1px solid var(--line); padding:2px 6px; background:#fff; cursor:pointer; color:inherit; }
+  .stepper button:hover { background:#eef; }
+  .stepper button:focus-visible { outline:3px solid #1a5fb4; outline-offset:1px; }
+  .stepper button.current { background:#111; color:#fff; font-weight:bold; }
+  .stepper button.done { background:#e6e6e6; }
+  .stepper button.done::before { content:"\2713 "; }        /* checkmark: completed (not color-only) */
+  .stepper button.current::before { content:"\25B6 "; }     /* triangle: current (not color-only) */
+  .stepper button.future { background:#fff; color:#333; }
+  .stepphint { font-size:0.8em; color:var(--muted); margin:2px 0 8px; }
+  .pathrow { margin:8px 0; padding:8px; border:1px solid var(--line); background:#fff; }
+  .pathrow label { margin-right:14px; }
+  .badge { display:inline-block; border:1px solid var(--line); padding:0 6px; font-size:0.8em; margin-right:6px; }
+  .badge.sim { border-color:var(--sim); color:var(--sim); background:var(--simbg); }
+  .badge.warn { border-color:var(--warn); color:var(--warn); background:var(--warnbg); }
+  .card { border:1px solid var(--line); background:#fff; padding:14px; margin:10px 0; }
+  .card h2 { margin:0 0 6px; font-size:1.15em; }
+  .kv { border-collapse:collapse; width:100%; margin:8px 0; font-size:0.92em; }
+  .kv th, .kv td { border:1px solid #ccc; padding:5px 7px; text-align:left; vertical-align:top; }
+  .kv th { background:#f3f3f3; width:230px; }
+  .clarity li { margin:2px 0; }
+  .actions { margin-top:10px; display:flex; flex-wrap:wrap; gap:8px; }
+  .actions button { font:inherit; padding:6px 12px; border:1px solid var(--line); background:#f0f0f0; cursor:pointer; }
+  .actions button.primary { background:#111; color:#fff; }
+  .note { font-size:0.85em; color:var(--muted); }
+  .warnbox { border:1px solid var(--warn); background:var(--warnbg); color:#5a4400; padding:8px; margin:8px 0; }
+  footer { border-top:1px solid var(--line); padding:12px; font-size:0.82em; color:#333; max-width:820px; margin:20px auto 0; }
+  dialog { max-width:520px; border:1px solid var(--line); }
+  dialog h3 { margin-top:0; }
+  code { background:#eee; padding:0 3px; }
+  .progress { font-size:0.85em; margin:6px 0; }
+  .langnote { font-size:0.82em; color:var(--muted); border-left:3px solid var(--sim); padding-left:8px; margin:6px 0; }
+</style>
+</head>
+<body>
+
+<div class="simband">
+  WS16 LOW-FIDELITY REPRESENTATIVE JOURNEY —
+  <span>SIMULATED · NON-PRODUCTION · VALIDATION ONLY</span><br>
+  <small>All screens, data, states, and actions below are mocked for comprehension review only. This artifact does not connect to the committed InventorAI application, sessions, persistence, databases, APIs, authentication, or network. It validates journey comprehension and expected flow — <b>not</b> committed application behavior.</small>
+</div>
+
+<header class="shell">
+  <div class="brand">InventorAI · <span class="badge sim">MOCK SHELL</span></div>
+  <nav aria-label="Mocked application shell (non-production)">
+    <button onclick="openShell('help')">Help<span class="mocktag">MOCKED</span></button>
+    <button onclick="openShell('account')">Account / Profile<span class="mocktag">MOCKED</span></button>
+    <button onclick="openShell('settings')">Settings<span class="mocktag">MOCKED</span></button>
+    <button onclick="openShell('logout')">Log out<span class="mocktag">MOCKED</span></button>
+    <button onclick="openShell('privacy')">Privacy &amp; Terms<span class="mocktag">MOCKED</span></button>
+  </nav>
+</header>
+
+<main>
+  <div class="pathrow">
+    <b>Representative flow (electronics / electrical inventor):</b>
+    <span class="badge sim">SIMULATED DATA</span>
+    <div style="margin-top:6px">
+      <label><input type="radio" name="path" value="primary" checked onchange="setPath('primary')"> Primary path (adequate answer → normal progression)</label>
+      <label><input type="radio" name="path" value="edge" onchange="setPath('edge')"> Edge path (missing/uncertain information → guidance → open/deferred → recovery)</label>
+    </div>
+  </div>
+
+  <div class="stepper" id="stepper" role="tablist" aria-label="Journey stages — select any stage to jump to it"></div>
+  <p class="stepphint">Tip: the stage chips above are clickable. Use the mouse, or press <b>Tab</b> to a chip and then <b>Enter</b> or <b>Space</b> to jump to that stage. ✓ = completed · ▶ = current. Your selected Primary/Edge path is preserved.</p>
+  <div class="progress" id="progress"></div>
+
+  <div id="stage"></div>
+
+  <div class="actions">
+    <button id="backBtn" onclick="go(-1)">◀ Back</button>
+    <button id="nextBtn" class="primary" onclick="go(1)">Next ▶</button>
+    <button onclick="goErrorPath()">Show a representative error/recovery state ▸</button>
+    <button onclick="restart()">Restart journey ↺</button>
+  </div>
+
+  <p class="note">Navigation is bounded: every stage has a defined Back/Next; the final stage and every error state offer an explicit return path. There are no dead ends. This prototype keeps a small in-memory step index only; it writes nothing and persists nothing.</p>
+</main>
+
+<footer>
+  <b>Status boundary (this artifact):</b><br>
+  WS16 REPRESENTATIVE JOURNEY: CREATED AS A LOW-FIDELITY NON-PRODUCTION ARTIFACT ·
+  INDEPENDENT REVIEW: NOT PERFORMED · OWNER JOURNEY ACCEPTANCE: NOT RECORDED ·
+  COMMITTED-APPLICATION VALIDATION: NOT STARTED · PROTECTED REGRESSION: NOT STARTED ·
+  BASELINE RECONFIRMATION: NOT STARTED · WS16 FORMAL CLOSURE: NOT PERFORMED.<br><br>
+  <b>Account / subscription boundary:</b> NO REAL ACCOUNT · NO REAL REGISTRATION · NO REAL EMAIL VERIFICATION · NO REAL LOGIN · NO REAL LOGOUT · NO REAL PASSWORD RECOVERY · NO REAL SUBSCRIPTION · NO REAL BILLING · NO REAL PAYMENT · NO REAL ACCESS ENTITLEMENTS. These belong to future, separately gated workstreams after formal WS16 closure and the Product UX/UI foundation.<br><br>
+  <b>Overclaim boundary:</b> progression here never means technical verification, completion, safety, patentability, production readiness, or deployment approval. Product state remains DEMO_READY_WITH_LIMITATIONS (MVP electronics/electrical only).
+</footer>
+
+<dialog id="shellDialog">
+  <h3 id="shellTitle"></h3>
+  <div id="shellBody"></div>
+  <div class="actions"><button class="primary" onclick="document.getElementById('shellDialog').close()">Close</button></div>
+</dialog>
+
+<script>
+/* ---- Simulated, in-memory only. No network, no storage, no analytics, no AI. ---- */
+var STAGES = [
+ {id:"intake", name:"1. Idea intake",
+  primary:{happened:"You described your invention in your own words (a simulated brake-light controller for a bicycle).",
+    why:"The journey begins by capturing your idea before asking targeted questions.",
+    next:"Continue to the first question.",
+    unresolved:"Nothing yet — intake only.", evaluated:"Nothing evaluated yet.", notverified:"No technical claim has been verified.",
+    canonical:"INTAKE_CAPTURED", message:"Idea captured. Let's explore it step by step.", action:"Continue", expected:"QUESTION_SELECTED"},
+  edge:{happened:"You entered only a short, uncertain idea (\"maybe a light that reacts to braking, not sure how\").",
+    why:"Intake accepts partial ideas; the system will guide you rather than demand completeness.",
+    next:"Continue — the next stage will help you.",
+    unresolved:"The mechanism is not yet described.", evaluated:"Nothing evaluated yet.", notverified:"No technical claim has been verified.",
+    canonical:"INTAKE_CAPTURED_PARTIAL", message:"Thanks — even a rough idea is a fine start.", action:"Continue", expected:"QUESTION_SELECTED"}},
+
+ {id:"select", name:"2. Question selection",
+  primary:{happened:"A single-intent question was selected: \"How does your device detect that braking is happening?\"",
+    why:"The system asks one focused question at a time (one intent, one action).",
+    next:"Answer the question.",
+    unresolved:"The detection mechanism gap is open.", evaluated:"Not yet — awaiting your answer.", notverified:"Nothing verified.",
+    canonical:"GAP_OPEN(detection_mechanism)", message:"One question at a time — here is the next one.", action:"Answer", expected:"ANSWER_GUIDED"},
+  edge:{happened:"The same single-intent question was selected, plus a note that your idea was rough.",
+    why:"One focused question at a time; the system does not pile on multiple asks.",
+    next:"Answer, or tell the system you are unsure.",
+    unresolved:"Detection mechanism gap is open.", evaluated:"Not yet.", notverified:"Nothing verified.",
+    canonical:"GAP_OPEN(detection_mechanism)", message:"Let's take the first question gently.", action:"Answer / I'm not sure", expected:"ANSWER_GUIDED"}},
+
+ {id:"guidance", name:"3. Answer guidance",
+  primary:{happened:"Optional guidance offered the KINDS of detail you could add (what senses braking, how the signal is produced).",
+    why:"Guidance helps you write YOUR own answer; it never writes the answer for you.",
+    next:"Submit your answer.",
+    unresolved:"Detection mechanism still open until you answer.", evaluated:"Not yet.", notverified:"Nothing verified.",
+    canonical:"GUIDANCE_SHOWN", message:"Optional: you could mention what detects braking and how the light is triggered.", action:"Submit answer", expected:"EVALUATED"},
+  edge:{happened:"You indicated uncertainty (\"I don't know how it detects braking\"). Supportive guidance appeared, and an uncertainty path opened.",
+    why:"Uncertainty is a valid input; the system supports it instead of forcing a guess.",
+    next:"Record as unknown for now, or try a partial answer.",
+    unresolved:"Detection mechanism unknown — acknowledged.", evaluated:"Not yet.", notverified:"Nothing verified.",
+    canonical:"UNCERTAINTY_ACKNOWLEDGED", message:"That's okay — let's take it one step at a time.", action:"Record as unknown / Try a partial answer", expected:"OPEN_OR_DEFERRED"}},
+
+ {id:"evaluation", name:"4. Evaluation",
+  primary:{happened:"Your answer was evaluated structurally (it described a mechanism, with reasoning).",
+    why:"Evaluation is deterministic and structural — it checks how the answer is formed, not whether it is technically true.",
+    next:"See what this means for progression.",
+    unresolved:"None for this gap after a sufficient answer.", evaluated:"Answer structure: REASONED.", notverified:"Structural evaluation is NOT technical verification.",
+    canonical:"EVALUATION(REASONED→PARTIALLY_SATISFIED)", message:"Your answer looks reasoned. Note: this checks structure, not technical correctness.", action:"Continue", expected:"PROGRESSION_ALLOWED"},
+  edge:{happened:"There was no sufficient answer to evaluate; the item is treated as an open/unknown, not a failure.",
+    why:"An unknown is neither complete nor a failure; it does not auto-fail the journey.",
+    next:"See how open items are handled.",
+    unresolved:"Detection mechanism remains UNKNOWN.", evaluated:"No sufficient answer to evaluate.", notverified:"Nothing verified.",
+    canonical:"EVALUATION(NONE)/UNKNOWN", message:"No problem — we'll keep this as an open item you can return to.", action:"Continue", expected:"OPEN_ITEM_RECORDED"}},
+
+ {id:"unknown", name:"5. Controlled unknown handling",
+  primary:{happened:"No controlled unknown was needed on the primary path.",
+    why:"When an answer is sufficient, there is no unknown to classify.",
+    next:"Continue to progression.",
+    unresolved:"None.", evaluated:"n/a", notverified:"n/a",
+    canonical:"NO_CONTROLLED_UNKNOWN", message:"Nothing to flag here.", action:"Continue", expected:"PROGRESSION_ALLOWED"},
+  edge:{happened:"The unknown was classified (observation only) as NEEDS_EVIDENCE — you may later add evidence or ask a specialist.",
+    why:"The system records the KIND of unknown without pretending it is resolved.",
+    next:"Continue — the item stays open.",
+    unresolved:"Detection mechanism: NEEDS_EVIDENCE (open).", evaluated:"Classified, not resolved.", notverified:"Nothing verified.",
+    canonical:"CONTROLLED_UNKNOWN(NEEDS_EVIDENCE)", message:"Marked as needing evidence. It stays open — it is not resolved or failed.", action:"Continue", expected:"CONTINUE_WITH_OPEN_ITEM"}},
+
+ {id:"progression", name:"6. Post-answer progression",
+  primary:{happened:"Progression is permitted for this gap.",
+    why:"A sufficiently reasoned answer allows the journey to move on.",
+    next:"Review your open and deferred items.",
+    unresolved:"None for this gap.", evaluated:"Structural only.", notverified:"Progression is NOT technical verification.",
+    canonical:"PROGRESSION_ALLOWED", message:"You can move forward. (Moving forward does not mean the idea is technically verified.)", action:"Continue", expected:"OPEN_ITEMS_VIEW"},
+  edge:{happened:"Progression is allowed WITH an open item; the journey does not stall on the unknown.",
+    why:"You can continue while an item stays honestly open.",
+    next:"Review your open and deferred items.",
+    unresolved:"1 open item (detection mechanism: NEEDS_EVIDENCE).", evaluated:"Structural only.", notverified:"Nothing verified.",
+    canonical:"CONTINUE_WITH_OPEN_ITEM", message:"You can continue; one item stays open and visible.", action:"Continue", expected:"OPEN_ITEMS_VIEW"}},
+
+ {id:"openitems", name:"7. Open and deferred items",
+  primary:{happened:"Your open-item list is empty for this simulated gap; nothing deferred.",
+    why:"Open/deferred items are always shown honestly, even when there are none.",
+    next:"See the progress vs. verification distinction.",
+    unresolved:"0 open · 0 deferred.", evaluated:"Structural only.", notverified:"No technical verification claimed.",
+    canonical:"OPEN=0,DEFERRED=0", message:"No open or deferred items for this step.", action:"Continue", expected:"PROGRESS_VIEW"},
+  edge:{happened:"Your open-item list shows 1 open item (NEEDS_EVIDENCE) and, if you chose, 1 deferred item.",
+    why:"Open and deferred items are listed distinctly and never silently dropped or marked resolved.",
+    next:"See the progress vs. verification distinction.",
+    unresolved:"1 open (NEEDS_EVIDENCE) · 0–1 deferred.", evaluated:"Structural only.", notverified:"Nothing verified.",
+    canonical:"OPEN=1,DEFERRED=0", message:"Open items: detection mechanism (needs evidence). Deferred: none.", action:"Continue", expected:"PROGRESS_VIEW"}},
+
+ {id:"distinction", name:"8. Progress / completion / verification",
+  primary:{happened:"The screen distinguishes what is DONE, what was EVALUATED, and what is TECHNICALLY VERIFIED.",
+    why:"These are different things; the journey never blurs them.",
+    next:"See your final result / handoff.",
+    unresolved:"None for this gap.", evaluated:"Answer evaluated (structural).", notverified:"Technical verification: NOT PERFORMED.",
+    canonical:"PROGRESS(some)·COMPLETE(no)·VERIFIED(no)", message:"Progress made · not marked complete · not technically verified.", action:"Continue", expected:"FINAL_RESULT"},
+  edge:{happened:"Same distinction, plus the open unknown shown as neither complete nor verified.",
+    why:"Open items must never appear complete or verified.",
+    next:"See your final result / handoff.",
+    unresolved:"1 open (NEEDS_EVIDENCE).", evaluated:"No sufficient answer for the open item.", notverified:"Technical verification: NOT PERFORMED.",
+    canonical:"PROGRESS(partial)·COMPLETE(no)·VERIFIED(no)·OPEN(1)", message:"Partial progress · not complete · not verified · 1 item open.", action:"Continue", expected:"FINAL_RESULT"}},
+
+ {id:"final", name:"9. Final result / handoff",
+  primary:{happened:"A plain-language summary was shown with an explicit confidence boundary (below).",
+    why:"The final moment must be honest about what has and has not been established.",
+    next:"You may restart, or view a representative error/recovery state.",
+    unresolved:"See the confidence boundary.", evaluated:"Structural evaluation only.", notverified:"No technical verification, safety, or patentability claim.",
+    canonical:"FINAL_SUMMARY(DEMO_READY_WITH_LIMITATIONS)", message:"Here is an honest summary of your session so far.", action:"Restart / See error state", expected:"END_OR_RESTART", confidence:true},
+  edge:{happened:"A plain-language summary was shown, foregrounding the open unknown and next steps.",
+    why:"With an open item, the summary must make the unresolved status obvious.",
+    next:"You may restart, or view a representative error/recovery state.",
+    unresolved:"Detection mechanism: NEEDS_EVIDENCE (open).", evaluated:"Structural only.", notverified:"No technical verification, safety, or patentability claim.",
+    canonical:"FINAL_SUMMARY(OPEN_ITEM)", message:"Honest summary: one item still needs evidence before it can be considered addressed.", action:"Restart / See error state", expected:"END_OR_RESTART", confidence:true}},
+
+ {id:"error", name:"10. Error and recovery",
+  primary:{happened:"A representative safe error state is shown (e.g., expected information temporarily unavailable).",
+    why:"The journey must fail safely and explain what to do, never fake success.",
+    next:"Return to the last clear step.",
+    unresolved:"Depends on the specific error (shown honestly).", evaluated:"n/a", notverified:"n/a",
+    canonical:"SAFE_ERROR", message:"Something wasn't available. Nothing was lost. You can return to your last clear step.", action:"Return to last clear step", expected:"RECOVERED", errorstate:true},
+  edge:{happened:"A representative safe error state is shown (e.g., a persisted item could not be read).",
+    why:"Unreadable/unavailable state must be reported explicitly — never silently replaced with a fake success.",
+    next:"Return to the last clear step.",
+    unresolved:"Item unavailable — reported, not fabricated.", evaluated:"n/a", notverified:"n/a",
+    canonical:"SAFE_ERROR(UNAVAILABLE)", message:"An item could not be read. We will not invent a result. You can return to your last clear step.", action:"Return to last clear step", expected:"RECOVERED", errorstate:true}},
+];
+
+var ERROR_STATES = [
+  {t:"Required information missing", d:"A needed answer is absent. The journey asks for it plainly and does not proceed as if it were provided."},
+  {t:"Uncertain answer", d:"The answer expressed uncertainty. It is recorded as unknown — not complete, not failed."},
+  {t:"Unavailable evidence", d:"Expected evidence is unavailable. Shown as UNAVAILABLE; no result is fabricated."},
+  {t:"Deferred item", d:"An item was deferred. It stays open and visible; it is never shown as resolved."},
+  {t:"Persistence / recovery warning", d:"A saved session could not be recovered. Reported explicitly; the last valid state is offered where available."},
+  {t:"Generic safe error", d:"An unexpected condition occurred. A safe, plain-language message is shown with no secrets, stack traces, tokens, or internal paths."},
+  {t:"Return to the last clear step", d:"A single clear action returns you to your last understood step."}
+];
+
+var idx = 0, path = "primary";
+
+function setPath(p){ path = p; render(); }
+function restart(){ idx = 0; render(); }
+function go(delta){ idx = Math.max(0, Math.min(STAGES.length-1, idx+delta)); render(); }
+/* Direct stage navigation via the clickable stepper chips. Preserves the
+   currently selected Primary/Edge path (the global `path` is untouched). */
+function goToStage(i){ idx = Math.max(0, Math.min(STAGES.length-1, i)); render(); }
+function goErrorPath(){ idx = STAGES.length-1; render(); }
+
+function esc(s){ return String(s).replace(/[&<>]/g, function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c];}); }
+
+function render(){
+  var s = STAGES[idx], v = s[path];
+  // stepper
+  var st = STAGES.map(function(x,i){
+    var cls = i<idx?"done":(i===idx?"current":"future");
+    var stateWord = i<idx?"completed":(i===idx?"current stage":"upcoming stage");
+    return '<button type="button" class="'+cls+'" data-index="'+i+'" '+
+           'onclick="goToStage('+i+')" '+
+           (i===idx?'aria-current="step" ':'')+
+           'title="Jump to '+esc(x.name)+' ('+stateWord+') — clickable" '+
+           'aria-label="Jump to stage '+(i+1)+' of '+STAGES.length+': '+esc(x.name)+' ('+stateWord+')">'+
+           esc(x.name)+'</button>';
+  }).join("");
+  document.getElementById("stepper").innerHTML = st;
+  document.getElementById("progress").innerHTML =
+    '<span class="badge">Stage '+(idx+1)+' of '+STAGES.length+'</span>'+
+    '<span class="badge sim">SIMULATED</span>'+
+    '<span class="badge">Path: '+(path==="primary"?"Primary":"Edge")+'</span>';
+
+  var html = '<div class="card"'+(v.errorstate?' aria-label="error state"':'')+'>';
+  html += '<h2>'+esc(s.name)+(v.errorstate?' <span class="badge warn">SAFE ERROR / RECOVERY</span>':'')+'</h2>';
+  html += '<div class="langnote"><b>Non-technical clarity:</b> the text on this stage is written in plain language; internal terms in the state table below are shown for reviewers and would be explained or hidden for real users.</div>';
+  html += '<ul class="clarity">';
+  html += '<li><b>What happened:</b> '+esc(v.happened)+'</li>';
+  html += '<li><b>Why it happened:</b> '+esc(v.why)+'</li>';
+  html += '<li><b>What you can do next:</b> '+esc(v.next)+'</li>';
+  html += '<li><b>What remains unresolved:</b> '+esc(v.unresolved)+'</li>';
+  html += '<li><b>What has been evaluated:</b> '+esc(v.evaluated)+'</li>';
+  html += '<li><b>What has NOT been verified:</b> '+esc(v.notverified)+'</li>';
+  html += '</ul>';
+
+  html += '<table class="kv"><tr><th>canonical_state (simulated)</th><td>'+esc(v.canonical)+' <span class="badge sim">SIMULATED STATE</span></td></tr>';
+  html += '<tr><th>displayed_message</th><td>'+esc(v.message)+'</td></tr>';
+  html += '<tr><th>available_user_action</th><td>'+esc(v.action)+'</td></tr>';
+  html += '<tr><th>expected_next_state</th><td>'+esc(v.expected)+'</td></tr></table>';
+  html += '<p class="note">Consistency check: the displayed message, the available action, and the expected next state all agree with the canonical state. A LIMITATION is never shown as COMPLETE; UNAVAILABLE is never shown as SUCCESS; DEFERRED is never shown as RESOLVED; PROGRESS is never shown as TECHNICALLY VERIFIED.</p>';
+
+  if(v.confidence){
+    html += '<div class="warnbox"><b>Progress &amp; confidence boundary (final moment):</b><ul>'+
+      '<li><b>Completed:</b> your description and one reasoned answer (this session, simulated).</li>'+
+      '<li><b>Evaluated:</b> answer structure only.</li>'+
+      '<li><b>Technically verified:</b> NOTHING — no technical verification was performed.</li>'+
+      '<li><b>Assumed:</b> real-world detection behaviour is assumed, not confirmed.</li>'+
+      '<li><b>Unknown / open:</b> '+(path==="edge"?'detection mechanism (needs evidence).':'none for this simulated gap.')+'</li>'+
+      '<li><b>Risks remaining:</b> feasibility and safety are unassessed.</li>'+
+      '<li><b>Specialist review:</b> may be required for feasibility/safety.</li>'+
+      '</ul>This summary does not claim feasibility, safety, regulatory compliance, patentability, production readiness, or deployment readiness.</div>';
+  }
+
+  if(v.errorstate){
+    html += '<div class="warnbox"><b>Representative error &amp; recovery states (all mocked, all safe):</b><ul>';
+    html += ERROR_STATES.map(function(e){ return '<li><b>'+esc(e.t)+':</b> '+esc(e.d)+'</li>'; }).join("");
+    html += '</ul>No error screen reveals secrets, stack traces, tokens, protected paths, or internal credentials.</div>';
+  }
+
+  html += '<div class="langnote"><b>Arabic / English limitation (honest):</b> this prototype is shown in English. In the committed product, only the uncertainty-support panel is bilingual (EN + AR); four other guidance surfaces are English-only, there is no page-level right-to-left (RTL) layout, and there is no canonical locale owner. Full bilingual parity is <b>not</b> claimed. No new production Arabic content is created here.</div>';
+
+  html += '</div>';
+  document.getElementById("stage").innerHTML = html;
+
+  document.getElementById("backBtn").disabled = (idx===0);
+  document.getElementById("nextBtn").disabled = (idx===STAGES.length-1);
+}
+
+function openShell(kind){
+  var titles = {help:"Help", account:"Account / Profile", settings:"Settings", logout:"Log out", privacy:"Privacy & Terms"};
+  var bodies = {
+    help:"<p><span class='badge sim'>MOCKED · NON-PRODUCTION · VALIDATION ONLY</span></p>"+
+      "<p>Illustrates where future users could find: journey guidance, explanations of what each stage means, support information, and error/recovery guidance.</p>"+
+      "<p class='note'>This is not final Help content and not a production support service.</p>",
+    account:"<p><span class='badge sim'>MOCKED · NON-PRODUCTION · VALIDATION ONLY</span></p>"+
+      "<p>Illustrates the future location of account and profile management.</p>"+
+      "<p class='note'>No real personal information is collected, persisted, or displayed. No real account exists.</p>",
+    settings:"<p><span class='badge sim'>MOCKED · NON-PRODUCTION · VALIDATION ONLY</span></p>"+
+      "<p>Illustrates future settings categories: language · display preferences · notifications · session preferences.</p>"+
+      "<p class='note'>No real settings are implemented or persisted.</p>",
+    logout:"<p><span class='badge sim'>MOCKED · NON-PRODUCTION · VALIDATION ONLY</span></p>"+
+      "<p><b>SIMULATED LOGOUT — NO REAL SESSION TERMINATION.</b></p>"+
+      "<p>Demonstrates the expected location and confirmation pattern for a future logout. No real application session is altered or terminated.</p>",
+    privacy:"<p><span class='badge sim'>MOCKED · NON-PRODUCTION · VALIDATION ONLY</span></p>"+
+      "<p>Shows the future navigation location for Privacy &amp; Terms.</p>"+
+      "<p class='note'>No claim is made that final legal, privacy, security, or regulatory texts are complete or approved.</p>"
+  };
+  document.getElementById("shellTitle").innerHTML = esc(titles[kind]) + " <span class='mocktag'>MOCKED</span>";
+  document.getElementById("shellBody").innerHTML = bodies[kind];
+  var d = document.getElementById("shellDialog");
+  if (d.showModal) d.showModal(); else d.setAttribute("open","open");
+}
+
+render();
+</script>
+</body>
+</html>
