@@ -13,12 +13,29 @@ subagent, and Agent Teams teammate MUST read, in this order:
 4. `docs/governance/PATH_N_CURRENT_EXECUTION_ANCHOR.md`
 5. `docs/governance/DUAL_PATH_PRODUCT_ANCHOR.md`
 6. `docs/governance/ACTIVE_EXECUTION_ROADMAP.md`
-7. Any phase-specific authorization identified as active by the roadmap
-8. `docs/governance/INVENTORAI_COMMERCIAL_DIFFERENTIATION_DIRECTION.md`
+7. `docs/governance/PRODUCT_FOUNDATION_AND_COMMERCIAL_READINESS_REMEDIATION_PLAN.md`
+   — mandatory product-foundation and commercial-readiness remediation plan (the
+   owner-approved v2 candidate; it supersedes any earlier draft). Read it in full
+   after the governing anchors and the roadmap and before any Product UX/UI,
+   persistence, accounts, API, multi-domain, subscription, or other implementation
+   work. Every agent MUST: read the full plan; resolve and verify the current
+   authoritative branch and tip from the active governance sources (do not treat
+   the plan's historical drafting baseline SHA as the expected tip); verify the
+   currently active phase from the latest committed roadmap and status surfaces;
+   distinguish its statuses (`RECORDED` / `PLANNED` / `ELIGIBLE` /
+   `OWNER-AUTHORIZED` / `ACTIVE` / `CLOSED`) and never treat one as another;
+   perform no automatic downstream activation (closing one phase never activates
+   another); and return `VERIFICATION BLOCKED` when repository state, the
+   authoritative tip/branch, the active phase, or authorization cannot be
+   verified. The plan is subordinate to the committed anchors, contracts, and
+   `docs/governance/ACTIVE_EXECUTION_ROADMAP.md`; recording future work in it
+   authorizes nothing.
+8. Any phase-specific authorization identified as active by the roadmap
+9. `docs/governance/INVENTORAI_COMMERCIAL_DIFFERENTIATION_DIRECTION.md`
    — mandatory strategic product direction; non-activating and non-authorizing;
    subordinate to committed anchors, contracts, and
    `docs/governance/ACTIVE_EXECUTION_ROADMAP.md`.
-9. `docs/benchmarks/BICYCLE_BRAKE_LIGHT_COMPETITIVE_BENCHMARK.md`
+10. `docs/benchmarks/BICYCLE_BRAKE_LIGHT_COMPETITIVE_BENCHMARK.md`
    — mandatory competitive product-value evaluation protocol; non-activating
    and non-authorizing; subordinate to committed anchors, contracts, and
    `docs/governance/ACTIVE_EXECUTION_ROADMAP.md`; no benchmark run or result is
