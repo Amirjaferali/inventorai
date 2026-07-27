@@ -7,7 +7,8 @@
 **Authoritative branch at drafting:** `feature/atomic-json-session-persistence`  
 **Historical drafting baseline tip:** `78490ab4146a220f9e2a91d9586f5be5c9ab2338`  
 **Baseline rule:** this SHA is historical evidence of the drafting point, not a permanent future-session expected tip. Every session must verify the current authoritative branch and tip from the active governance sources.
-**Document status:** `OWNER-DRAFT — NOT YET CANONICAL — REQUIRES INDEPENDENT REVIEW, OWNER ACCEPTANCE, MERGE, AND POST-MERGE VERIFICATION`  
+**Document status:** `CANONICAL GOVERNANCE PLAN — MERGED VIA PR #289 — POST-MERGE VERIFIED — PHASE 0 NOT STARTED — NO IMPLEMENTATION AUTHORITY GRANTED BY ADOPTION`  
+**Adoption note:** Plan adoption grants no implementation authority. Phase 0 remains `NOT STARTED` and is only eligible for a separate owner authorization; no downstream work is activated automatically by this plan becoming canonical.  
 **Working product name:** `InventorAI` — temporary working name only; not approved as the final public brand.  
 **Program position:** Workstreams 1–16 formally closed. Product remains `DEMO_READY_WITH_LIMITATIONS`, Electronics/Electrical MVP only, NOT production ready, and with NO deployment authority.
 
@@ -656,7 +657,7 @@ Repository preparation must therefore:
 6. not silently rewrite published history — if the earlier draft text had already been committed to published history, pushed, or included in an open PR, stop and report `SUPERSESSION CONFLICT — OWNER REVIEW REQUIRED` (in the current increment the earlier draft was local-only and unpublished, so no such conflict exists).
 
 
-This document becomes canonical only after:
+This document became canonical after all of the following (now satisfied):
 
 - exact owner approval of the text;
 - repository identity and authoritative tip verification;
@@ -667,6 +668,13 @@ This document becomes canonical only after:
 - post-merge verification;
 - roadmap/status synchronization.
 
-Until then:
+Status history: the earlier `OWNER-DRAFT — NOT YET CANONICAL — NO IMPLEMENTATION
+AUTHORITY` state has been superseded. The adoption conditions above are satisfied
+— the owner approved the exact text; repository identity and the authoritative tip
+were verified; the documentation-only increment was implemented and independently
+reviewed (verdict `B — PASS WITH NON-BLOCKING OBSERVATIONS`); the owner accepted the
+exact reviewed commit `666b9330c36ff31f8c7a7b7aa5129f5770a022f8`; it was merged by a
+normal merge commit via PR #289 (`224def7572c6869d4aef35897f124900ae4e351b`) and
+post-merge verified; and this record completes roadmap/status synchronization.
 
-`OWNER-DRAFT — NOT YET CANONICAL — NO IMPLEMENTATION AUTHORITY`
+`CANONICAL GOVERNANCE PLAN — MERGED VIA PR #289 — POST-MERGE VERIFIED — PHASE 0 NOT STARTED — NO IMPLEMENTATION AUTHORITY GRANTED BY ADOPTION`
