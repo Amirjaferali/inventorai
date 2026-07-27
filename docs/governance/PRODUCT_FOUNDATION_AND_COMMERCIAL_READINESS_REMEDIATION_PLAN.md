@@ -7,8 +7,8 @@
 **Authoritative branch at drafting:** `feature/atomic-json-session-persistence`  
 **Historical drafting baseline tip:** `78490ab4146a220f9e2a91d9586f5be5c9ab2338`  
 **Baseline rule:** this SHA is historical evidence of the drafting point, not a permanent future-session expected tip. Every session must verify the current authoritative branch and tip from the active governance sources.
-**Document status:** `CANONICAL GOVERNANCE PLAN — MERGED VIA PR #289 — POST-MERGE VERIFIED — PHASE 0 NOT STARTED — NO IMPLEMENTATION AUTHORITY GRANTED BY ADOPTION`  
-**Adoption note:** Plan adoption grants no implementation authority. Phase 0 remains `NOT STARTED` and is only eligible for a separate owner authorization; no downstream work is activated automatically by this plan becoming canonical.  
+**Document status:** `CANONICAL GOVERNANCE PLAN — MERGED VIA PR #289 — POST-MERGE VERIFIED — PHASE 0 FORMALLY CLOSED (PR #291) — PHASE 1 NOT STARTED — NO IMPLEMENTATION AUTHORITY GRANTED BY ADOPTION`  
+**Adoption note:** Plan adoption grants no implementation authority. Phase 0 (Evidence Lock and Governance Reconciliation) is **FORMALLY CLOSED** — its read-only evidence registers were prepared, independently reviewed, owner-accepted, merged via PR #291 (merge commit `451ff4368bc1862d94924d73a05a0192558ee2bd`), and post-merge verified; closure evidence: `docs/governance/evidence/phase0_evidence_lock/FORMAL_CLOSURE.md`. Phase 0 closure resolved no conflict and no owner decision; conflicts CR-1…CR-7 and open owner decisions OD-A…OD-Q are carried forward unresolved. **Phase 1 remains `NOT STARTED` and requires a separate Owner Authorization**; no downstream work is activated automatically.  
 **Working product name:** `InventorAI` — temporary working name only; not approved as the final public brand.  
 **Program position:** Workstreams 1–16 formally closed. Product remains `DEMO_READY_WITH_LIMITATIONS`, Electronics/Electrical MVP only, NOT production ready, and with NO deployment authority.
 
@@ -547,6 +547,8 @@ After this plan becomes canonical, the first eligible path is:
 `Phase 0 — Evidence Lock and Governance Reconciliation`
 
 Canonical adoption makes Phase 0 eligible for a separate owner authorization; it does not activate Phase 0 automatically. Nothing else becomes active automatically.
+
+**Status update (post-PR #291):** Phase 0 has been separately authorized, executed read-only, and is now **FORMALLY CLOSED** (merge commit `451ff4368bc1862d94924d73a05a0192558ee2bd`; closure evidence `docs/governance/evidence/phase0_evidence_lock/FORMAL_CLOSURE.md`). The next eligible path is `Phase 1 — Owner Product Decisions`, which is **NOT STARTED** and requires a separate Owner Authorization; Phase 0 closure grants no Phase 1 authority and activates nothing. The phase sequence in §5 is unchanged.
 
 Expected sequence:
 
