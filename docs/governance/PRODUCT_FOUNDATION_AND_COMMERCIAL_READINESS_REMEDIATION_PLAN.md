@@ -1,7 +1,7 @@
 # PRODUCT FOUNDATION AND COMMERCIAL READINESS REMEDIATION PLAN
 
 **Draft revision:** `v2 — owner review candidate`  
-**Supersession instruction:** This `v2` document supersedes and replaces the previously transmitted draft file named `PRODUCT_FOUNDATION_AND_COMMERCIAL_READINESS_REMEDIATION_PLAN.md`. The earlier draft must not be adopted, merged, cited as the active plan, or used as implementation authority. If both files are present during review or repository preparation, the earlier draft must be treated as superseded and excluded from the canonical increment. Only this `v2` text is the owner-approved candidate for repository adoption, subject to independent review, owner acceptance, merge, and post-merge verification.  
+**Supersession instruction:** This `v2` text supersedes and replaces the previously transmitted v1 draft text. The withdrawn v1 draft text must not be adopted, merged, cited as the active plan, or used as implementation authority. Only this `v2` text is the owner-approved candidate for repository adoption at the single, non-versioned canonical repository path `PRODUCT_FOUNDATION_AND_COMMERCIAL_READINESS_REMEDIATION_PLAN.md` (draft revision = `v2`; canonical repository filename = `PRODUCT_FOUNDATION_AND_COMMERCIAL_READINESS_REMEDIATION_PLAN.md`). No version-suffixed or competing plan file is created in the repository. Adoption remains subject to independent review, owner acceptance, merge, and post-merge verification.  
 
 **Repository:** `Amirjaferali/inventorai`  
 **Authoritative branch at drafting:** `feature/atomic-json-session-persistence`  
@@ -285,6 +285,16 @@ Each UI element must be marked internally as `IMPLEMENTED`, `DESIGN-ONLY`, `FUTU
 
 No role label may be treated as legal proof of ownership.
 
+### Phase 6 — Multi-Domain and Technology Capability Foundation
+
+**Purpose:** Make the platform extensible before activating new domains.
+
+**Must include:** Domain Registry; Technology Capability Registry; domain-pack contract; capability-pack contract where appropriate; cross-domain project model; subsystem model; domain-specific evidence/risk/validation schemas; specialist-category model; unsupported-domain handling; activation status; compatibility testing; API-safe domain contracts; and no core branching on domain names.
+
+**Project model:** `Project → Domains → Capabilities → Subsystems → Evidence → Gaps → Risks → Validation Requirements`
+
+**IoT foundation must model:** sensors, devices, connectivity, protocols, gateways, edge, cloud/local processing, power, device identity, firmware, telemetry, updates, security, maintenance, privacy, scalability, and failure modes.
+
 ### Phase 7 — API and Integration Foundation
 
 **Purpose:** Enable governed interoperability without coupling external applications to the core engine.
@@ -298,16 +308,6 @@ No role label may be treated as legal proof of ownership.
 **API types to design for:** inbound API, outbound API, webhooks, file exchange, embedded integration, and partner connectors.
 
 **Prohibited:** direct mutation of core progression state without authorized service rules; bypassing deterministic gates; trusting external evidence automatically; activating unsupported domains; bypassing subscription/entitlement controls; or embedding partner-specific code into the core engine.
-
-### Phase 6 — Multi-Domain and Technology Capability Foundation
-
-**Purpose:** Make the platform extensible before activating new domains.
-
-**Must include:** Domain Registry; Technology Capability Registry; domain-pack contract; capability-pack contract where appropriate; cross-domain project model; subsystem model; domain-specific evidence/risk/validation schemas; specialist-category model; unsupported-domain handling; activation status; compatibility testing; API-safe domain contracts; and no core branching on domain names.
-
-**Project model:** `Project → Domains → Capabilities → Subsystems → Evidence → Gaps → Risks → Validation Requirements`
-
-**IoT foundation must model:** sensors, devices, connectivity, protocols, gateways, edge, cloud/local processing, power, device identity, firmware, telemetry, updates, security, maintenance, privacy, scalability, and failure modes.
 
 ### Phase 8 — Subscription, Billing and Entitlements
 
@@ -632,24 +632,28 @@ If the agent cannot truthfully provide every line, it must stop and report `VERI
 
 ## 14. Formal Plan Adoption Gate
 
-### 14.1 Replacement of the previously transmitted draft
+### 14.1 Replacement of the previously transmitted draft text
 
-The owner has withdrawn the previously transmitted draft:
+The owner has withdrawn the **text** of the previously transmitted v1 draft. The
+owner-approved **v2 text** supersedes and replaces that earlier draft text.
 
-`PRODUCT_FOUNDATION_AND_COMMERCIAL_READINESS_REMEDIATION_PLAN.md`
+The distinction is:
 
-That earlier draft is superseded by this document:
+- **Draft revision:** `v2`.
+- **Canonical repository filename:** `PRODUCT_FOUNDATION_AND_COMMERCIAL_READINESS_REMEDIATION_PLAN.md` (single, non-versioned path).
 
-`PRODUCT_FOUNDATION_AND_COMMERCIAL_READINESS_REMEDIATION_PLAN_v2.md`
+The v2 text is adopted at that single non-versioned canonical repository path. No
+version-suffixed filename (for example, any `..._v1.md` or `..._v2.md`) is created
+in the repository, and no competing v1 or v2 file is preserved.
 
 Repository preparation must therefore:
 
-1. use this `v2` document as the sole owner-approved candidate;
-2. not create or preserve the earlier draft as a competing active plan;
-3. not merge both versions;
-4. not cite the earlier draft as current authority;
-5. replace any pending, uncommitted, or unmerged use of the earlier draft with this `v2` text;
-6. stop and report `SUPERSESSION CONFLICT — OWNER REVIEW REQUIRED` if the earlier draft has already been committed, pushed, or included in an open PR, rather than silently rewriting published history.
+1. use the v2 text as the sole owner-approved candidate at the single canonical, non-versioned repository path;
+2. not create or preserve any competing v1 or version-suffixed file as an active plan;
+3. not merge two versions of the plan;
+4. not cite the earlier withdrawn draft text as current authority;
+5. replace any pending, uncommitted, or unmerged use of the earlier draft text with this v2 text;
+6. not silently rewrite published history — if the earlier draft text had already been committed to published history, pushed, or included in an open PR, stop and report `SUPERSESSION CONFLICT — OWNER REVIEW REQUIRED` (in the current increment the earlier draft was local-only and unpublished, so no such conflict exists).
 
 
 This document becomes canonical only after:
