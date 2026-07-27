@@ -15,7 +15,8 @@ subagent, and Agent Teams teammate MUST read, in this order:
 6. `docs/governance/ACTIVE_EXECUTION_ROADMAP.md`
 7. `docs/governance/PRODUCT_FOUNDATION_AND_COMMERCIAL_READINESS_REMEDIATION_PLAN.md`
    — mandatory product-foundation and commercial-readiness remediation plan (the
-   owner-approved v2 candidate; it supersedes any earlier draft). Read it in full
+   owner-approved v2 plan, now CANONICAL — merged via PR #289 and post-merge
+   verified; it supersedes any earlier draft). Read it in full
    after the governing anchors and the roadmap and before any Product UX/UI,
    persistence, accounts, API, multi-domain, subscription, or other implementation
    work. Every agent MUST: read the full plan; resolve and verify the current
