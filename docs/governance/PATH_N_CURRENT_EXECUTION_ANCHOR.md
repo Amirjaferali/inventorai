@@ -1,5 +1,16 @@
 # PATH N CURRENT EXECUTION ANCHOR
 
+> **STATUS: HISTORICAL / SUPERSEDED (Phase 2 Increment 1).** This document is
+> historical and must not be treated as current authority for `runtime_integrated`.
+> Its statements `runtime_integrated=false` and "No Path N content loader has been
+> implemented" are **SUPERSEDED**: the canonical governance-recorded status is
+> `runtime_integrated=true` (per `docs/governance/ACTIVE_EXECUTION_ROADMAP.md`
+> L56–57 / L192 / L353–357 and committed JSON `97a1a51`). The authoritative pointer
+> for the current status and the full reconciliation (including the AA-2 relationship
+> and the "end-to-end runtime invocation NOT CERTIFIED" boundary) is
+> `docs/governance/evidence/phase2_governance_corrections/P2I1_PATH_N_RUNTIME_INTEGRATED_RECONCILIATION.md`.
+> The body below is preserved unchanged as history.
+
 ## 1. Purpose
 
 This document is the current execution anchor for Path N after Phase 1 implementation.
