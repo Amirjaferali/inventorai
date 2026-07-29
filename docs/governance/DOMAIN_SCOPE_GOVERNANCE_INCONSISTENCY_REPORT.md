@@ -1,5 +1,25 @@
 # DOMAIN-SCOPE GOVERNANCE INCONSISTENCY REPORT
 
+> **STATUS: HISTORICAL — MISLEADING IF READ AS CURRENT / SUPERSEDED (Phase 2 Increment 3).**
+> This report is historical and must not be read as current governance truth. Its
+> `Status: DRAFT — OWNER RESOLUTION REQUIRED` header and its core claim that the
+> generic `/start` route "calls `infer_domain(idea_text)` and assigns the result to
+> `state.domain`" so that "a user may be routed into the `mechanical`,
+> `medical_device`, or `software` domain" are **SUPERSEDED**: the current runtime
+> admits only electronics/electrical sessions. The current runtime truth is
+> `web/app.py` — `DOMAIN_CONFIRM_VALUE = "electronics_electrical"`, the `/start`
+> route requires an explicit electronics-electrical confirmation and otherwise
+> returns `UNSUPPORTED_DOMAIN_MESSAGE` with no session, and on admission sets
+> `state.domain = DOMAIN_CONFIRM_VALUE` (always electronics_electrical). See
+> `docs/governance/evidence/phase0_evidence_lock/CONFLICT_REGISTER.md` (CR-1) and
+> `docs/governance/evidence/phase0_evidence_lock/STALE_DOCUMENT_REGISTER.md` (SD-2).
+> The governing authority for current phasing and status is the canonical
+> `docs/governance/PRODUCT_FOUNDATION_AND_COMMERCIAL_READINESS_REMEDIATION_PLAN.md`
+> and `docs/governance/ACTIVE_EXECUTION_ROADMAP.md`. This increment defines no new
+> architecture and changes no runtime behavior. The full reconciliation is
+> `docs/governance/evidence/phase2_governance_corrections/P2I3_STALE_DOMAIN_SCOPE_REPORT_SUPERSESSION.md`.
+> The body below is preserved unchanged as history.
+
 ## 1. Record identity
 
 ```text
