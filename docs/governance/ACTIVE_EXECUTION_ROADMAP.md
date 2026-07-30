@@ -2893,3 +2893,22 @@ Exact candidate scope: **1 ADD · 2 MODIFY** — ADD `docs/governance/evidence/p
 Protected and unchanged at this candidate: `OD-S_PHASE_2_CLOSURE_CRITERIA.md` blob `8984bb243e8062bd5985e55e0f0fef2f78317cba`; `RW-2_SD-4_FORMAL_CLOSURE.md` blob `599bddc7ad1421d27e52d16f5d27b154040d8c9c`; `OWNER_PRODUCT_IDENTITY_CORRECTION.md` blob `7f3834506e5c197b57235538c6fb483a2881d905`; `OD-I_OD-N_COMMERCIAL_SEQUENCING_AND_NON_INTERFERENCE.md` blob `5b8f74cdc551b54266ab3ece2685dc85e765bf01`.
 
 This candidate does not claim RW-7 is already durably clarified, does not close Phase 2, and does not authorize Phase 3. RW-7 must complete independent review → owner acceptance → normal merge → post-merge verification, followed by its governed formal-closure and status-synchronization lifecycle. `PHASE 2: IN PROGRESS`; `PHASE 3 AND LATER: NOT STARTED / NOT AUTHORIZED`; `IMPLEMENTATION AUTHORITY: NONE`; `RELEASE AUTHORITY: NONE`; `DEPLOYMENT AUTHORITY: NONE`. RED path: `DOCUMENTED NO-VALID-RED`. Earlier roadmap history is not rewritten.
+
+
+---
+
+## Product Foundation Plan — RW-7 — Formal-Closure Candidate — Current Product-Sequencing Baseline (Documentation-Only)
+
+Records the owner-authorized **RW-7 formal-closure candidate** on verified live prerequisite tip `3c23fa20b0477833214eaac593423bbfc5ff887e` after the successful normal merge and post-merge verification of PR #322.
+
+Lifecycle status: `RW-7 — FORMAL-CLOSURE CANDIDATE / SUBSTANTIVE CLARIFICATION MERGED AND VERIFIED THROUGH PR #322 / NOT YET FORMALLY CLOSED / POST-CLOSURE SYNCHRONIZATION STILL PENDING / NOT YET DURABLY CLARIFIED`.
+
+Substantive evidence: candidate `7ecd8932a50aeea78a61695a27c0b548969960bb`, parent `01843ec97add8894df8e715b32fd807d33d09bdf`, tree `8d42835bf8894defe2f9950de65ed4a1efb35757`, normal merge `3c23fa20b0477833214eaac593423bbfc5ff887e`, ordered parents ① `01843ec97add8894df8e715b32fd807d33d09bdf` · ② `7ecd8932a50aeea78a61695a27c0b548969960bb`, and merge tree equal to the accepted candidate tree. Accepted independent verdict: `B — INDEPENDENT RW-7 PRODUCT-SEQUENCING BASELINE REVIEW PASS WITH NON-BLOCKING OBSERVATIONS`; blocking findings: none. Accepted post-merge verdict: `A — PR #322 POST-MERGE PASS`.
+
+Exact formal-closure candidate scope: **1 ADD · 2 MODIFY** — ADD `docs/governance/evidence/phase2_governance_corrections/RW-7_FORMAL_CLOSURE.md`; MODIFY `docs/governance/PRODUCT_FOUNDATION_AND_COMMERCIAL_READINESS_REMEDIATION_PLAN.md` for bounded RW-7 lifecycle-status reconciliation; MODIFY this roadmap through this append-only record. Prior roadmap content of exactly `665392` bytes is preserved as an exact byte prefix.
+
+`RW-7_PRODUCT_SEQUENCING_BASELINE.md` remains protected and unchanged at blob `30aa13b911a424b8fd74d820cd5e53d63700ca1e`. `OD-S_PHASE_2_CLOSURE_CRITERIA.md`, `RW-2_SD-4_FORMAL_CLOSURE.md`, `OWNER_PRODUCT_IDENTITY_CORRECTION.md`, and `OD-I_OD-N_COMMERCIAL_SEQUENCING_AND_NON_INTERFERENCE.md` remain unchanged.
+
+RW-7 becomes formally closed only after this candidate completes independent review → owner acceptance → normal merge → post-merge verification. Durable clarification still requires a separately gated post-closure synchronization. `PHASE 2: IN PROGRESS`; `PHASE 3 AND LATER: NOT STARTED / NOT AUTHORIZED`; `IMPLEMENTATION AUTHORITY: NONE`; `RELEASE AUTHORITY: NONE`; `DEPLOYMENT AUTHORITY: NONE`.
+
+No implementation, runtime, UI, schema, prompt or AI logic, database, persistence, account, authentication, authorization, subscription, billing, API, domain activation, main reconciliation, release, deployment, production-readiness, Structured Technical Guidance, or Phase 3 work is introduced or authorized. RED path: `DOCUMENTED NO-VALID-RED`. Earlier roadmap history is not rewritten.
