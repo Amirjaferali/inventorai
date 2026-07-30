@@ -2933,3 +2933,22 @@ RW-7 becomes `DURABLY CLARIFIED` only after this synchronization candidate compl
 `PHASE 2: IN PROGRESS`; `PHASE 3 AND LATER: NOT STARTED / NOT AUTHORIZED`; `IMPLEMENTATION AUTHORITY: NONE`; `RELEASE AUTHORITY: NONE`; `DEPLOYMENT AUTHORITY: NONE`.
 
 No implementation, runtime, UI, schema, prompt or AI logic, database, persistence, accounts, authentication, authorization, subscription, billing, API, domain activation, main reconciliation, release, deployment, production-readiness, Structured Technical Guidance, or Phase 3 work is introduced or authorized. RED path: `DOCUMENTED NO-VALID-RED`. Earlier roadmap history is not rewritten.
+
+
+---
+
+## Product Foundation Plan — Phase 2 — Final Formal-Closure Candidate
+
+Records the owner-authorized documentation-only **Phase 2 final formal-closure candidate** on verified prerequisite tip `748423c8965ed8c3c30476fa8eb0914c2aee9d38`, following successful normal merge and post-merge verification of RW-7 post-closure synchronization PR #324.
+
+Lifecycle status: `PHASE 2 — FINAL FORMAL-CLOSURE CANDIDATE / NOT YET FORMALLY CLOSED`.
+
+OD-S §4 conditions are recorded as satisfied at the prerequisite tip: OD-R / OD-S are durably and fully formally closed through PR #315; RW-1 / SD-3 and RW-2 / SD-4 are durably closed; RW-7 is durably clarified through PR #324; RW-10 is closed with no further action; every RW-1…RW-10 and X-1…X-5 item has one disposition; no item remains `OWNER DECISION STILL REQUIRED`; all mandatory documentation lifecycles are complete; accepted limitations remain visible; and no implementation authority exists.
+
+Exact candidate scope: **1 ADD · 2 MODIFY** — ADD `docs/governance/evidence/phase2_governance_corrections/PHASE_2_FORMAL_CLOSURE.md`; MODIFY the canonical remediation plan for bounded final lifecycle synchronization; MODIFY this roadmap append-only. Earlier roadmap content is preserved as an exact byte prefix.
+
+Phase 2 becomes `FORMALLY CLOSED` only after this candidate completes independent review → owner acceptance → normal merge → post-merge verification. Successful closure does not activate Phase 3.
+
+`PHASE 3 AND LATER: NOT STARTED / NOT AUTHORIZED`; `IMPLEMENTATION AUTHORITY: NONE`; `RELEASE AUTHORITY: NONE`; `DEPLOYMENT AUTHORITY: NONE`.
+
+No implementation, runtime, UI, schema, prompt or AI logic, database, persistence, accounts, authentication, authorization, subscription, billing, API, main reconciliation, release, deployment, production-readiness, Structured Technical Guidance, or Phase 3 work is introduced or authorized. RED path: `DOCUMENTED NO-VALID-RED`.
