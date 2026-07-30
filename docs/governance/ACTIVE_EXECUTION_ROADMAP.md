@@ -2876,3 +2876,20 @@ Verified lifecycle evidence: substantive remediation candidate `a323b9c0046c0d36
 Exact synchronization scope: **2 MODIFY · 0 ADD** — MODIFY `docs/governance/PRODUCT_FOUNDATION_AND_COMMERCIAL_READINESS_REMEDIATION_PLAN.md` for bounded RW-2 / SD-4 and CR-3 lifecycle-status synchronization, and MODIFY this roadmap through this append-only record. Prior roadmap content of exactly `660242` bytes is preserved as an exact byte prefix. No evidence record is added. `RW-2_SD-4_FORMAL_CLOSURE.md` remains unchanged at blob `599bddc7ad1421d27e52d16f5d27b154040d8c9c`. `OWNER_PRODUCT_IDENTITY_CORRECTION.md` remains protected and unchanged at blob `7f3834506e5c197b57235538c6fb483a2881d905`.
 
 RW-2 / SD-4 and CR-3 become `DURABLY AND FULLY FORMALLY CLOSED` only after this synchronization candidate completes independent review → owner acceptance → normal merge → post-merge verification. Until then RW-2 / SD-4 remains `FORMALLY CLOSED / NOT YET DURABLY AND FULLY FORMALLY CLOSED`. `RW-7: NOT STARTED`; `PHASE 2: IN PROGRESS`; `PHASE 3 AND LATER: NOT STARTED / NOT AUTHORIZED`. No implementation, UI, structured-output schema, prompt or AI logic, database, runtime, tests, accounts, authentication, subscription, billing, release, deployment, main reconciliation, or Structured Technical Guidance work is introduced or authorized. RED path: `DOCUMENTED NO-VALID-RED`. Earlier roadmap history is not rewritten.
+
+
+---
+
+## Product Foundation Plan — RW-7 — Product-Sequencing Baseline Documentation Candidate
+
+Records the owner-authorized documentation-only **RW-7 current product-sequencing baseline candidate** on verified live prerequisite tip `01843ec97add8894df8e715b32fd807d33d09bdf` after the successful normal merge and post-merge verification of PR #321.
+
+Lifecycle status: `RW-7 — PRODUCT-SEQUENCING BASELINE DOCUMENTATION CANDIDATE / NOT YET REVIEWED / NOT YET MERGED / NOT YET DURABLY CLARIFIED`.
+
+The candidate records the canonical order `Phase 0 → Phase 1 → Phase 2 → Phase 3 → Phase 4 → Phase 5 → Phase 6 → Phase 7 → Phase 8 → Phase 9 → Phase 10`; clarifies that eligibility is not authorization and closure is not automatic activation; preserves all phase entry dependencies, separate owner gates, formal-closure requirements, and future-work boundaries; and introduces no implementation or architecture change.
+
+Exact candidate scope: **1 ADD · 2 MODIFY** — ADD `docs/governance/evidence/phase2_governance_corrections/RW-7_PRODUCT_SEQUENCING_BASELINE.md`; MODIFY `docs/governance/PRODUCT_FOUNDATION_AND_COMMERCIAL_READINESS_REMEDIATION_PLAN.md` for bounded §5 sequencing clarification and verified RW-2 / SD-4 / CR-3 post-PR #321 lifecycle synchronization; MODIFY this roadmap through this append-only record. Prior roadmap content of exactly `663010` bytes is preserved as an exact byte prefix.
+
+Protected and unchanged at this candidate: `OD-S_PHASE_2_CLOSURE_CRITERIA.md` blob `8984bb243e8062bd5985e55e0f0fef2f78317cba`; `RW-2_SD-4_FORMAL_CLOSURE.md` blob `599bddc7ad1421d27e52d16f5d27b154040d8c9c`; `OWNER_PRODUCT_IDENTITY_CORRECTION.md` blob `7f3834506e5c197b57235538c6fb483a2881d905`; `OD-I_OD-N_COMMERCIAL_SEQUENCING_AND_NON_INTERFERENCE.md` blob `5b8f74cdc551b54266ab3ece2685dc85e765bf01`.
+
+This candidate does not claim RW-7 is already durably clarified, does not close Phase 2, and does not authorize Phase 3. RW-7 must complete independent review → owner acceptance → normal merge → post-merge verification, followed by its governed formal-closure and status-synchronization lifecycle. `PHASE 2: IN PROGRESS`; `PHASE 3 AND LATER: NOT STARTED / NOT AUTHORIZED`; `IMPLEMENTATION AUTHORITY: NONE`; `RELEASE AUTHORITY: NONE`; `DEPLOYMENT AUTHORITY: NONE`. RED path: `DOCUMENTED NO-VALID-RED`. Earlier roadmap history is not rewritten.
