@@ -33,12 +33,12 @@ NONE at this stage). `Status` = current governing status. `Supersession` noted w
 | OD-R | Cross-application boundaries: sponsor recognition (A); administrative notice (B); privacy/trust (C) — boundaries only | ACCEPTED / durably closed | Phase 3+ | NONE | phase2_owner_decisions/OD-R_CROSS_APPLICATION_COMMUNICATION_SPONSORSHIP_PRIVACY_TRUST_BOUNDARIES.md |
 | OD-S | Finite 12-condition Phase 2 closure criteria | ACCEPTED / durably closed | Phase 2 | NONE | phase2_owner_decisions/OD-S_PHASE_2_CLOSURE_CRITERIA.md |
 
-## Phase 3-preparation owner decisions (this gate — CANDIDATE, not yet accepted/merged)
+## Phase 3-preparation owner decisions (ACCEPTED and MERGED via PR #327, merge `0330273b`)
 
 | ID | Subject | Status | Phase/WS | Impl. authority | Evidence |
 |---|---|---|---|---|---|
-| OD-T | Audit disposition + handover-gap canonicalization (DISC-001…018) | CANDIDATE | Phase 3 prep | NONE | phase3_owner_decisions/OD-T_AUDIT_DISPOSITION_AND_HANDOVER_GAP_CANONICALIZATION.md |
-| OD-U | Deferred output & visualization: ACV, Direct Output Download, Email Delivery | CANDIDATE | Phase 3/4/5+ | NONE | phase3_owner_decisions/OD-U_DEFERRED_OUTPUT_AND_VISUALIZATION_CAPABILITIES.md |
+| OD-T | Audit disposition + handover-gap canonicalization (DISC-001…018) | ACCEPTED / MERGED (PR #327) | Phase 3 prep | NONE | phase3_owner_decisions/OD-T_AUDIT_DISPOSITION_AND_HANDOVER_GAP_CANONICALIZATION.md |
+| OD-U | Deferred output & visualization: ACV, Direct Output Download, Email Delivery | ACCEPTED / MERGED (PR #327) | Phase 3/4/5+ | NONE | phase3_owner_decisions/OD-U_DEFERRED_OUTPUT_AND_VISUALIZATION_CAPABILITIES.md |
 
 ## Canonicalized future capabilities & active separate-authorization requirements
 
