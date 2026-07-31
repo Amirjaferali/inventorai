@@ -14,19 +14,25 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
 - **Authoritative branch:** `feature/atomic-json-session-persistence`.
 - **Live tip:** resolve from Git each session
   (`git rev-parse origin/feature/atomic-json-session-persistence`). Do **not** trust a
-  prose-pinned SHA. Last independently verified tip at this record's drafting:
-  `7816bdaddd762c38e6fa8cbbf05b7de26022e306` (PR #326 merge) — historical evidence only.
+  prose-pinned SHA. Last independently verified tip:
+  `0330273b0d8b15fc66a285bcb9b866c6aa81b8e5` (PR #327 merge) — historical evidence only.
 - **`main`:** `0e89e4636399760965c9ff8086b465c90dbadf8e` — STALE / UNRECONCILED / NOT authority.
 
 ## Phase and gate
 
 - **Phase 1:** FORMALLY CLOSED. **Phase 2:** FORMALLY CLOSED (PR #325) and status-synchronized (PR #326).
-- **Phases 3–10:** NOT STARTED / NOT AUTHORIZED.
-- **Current authorized gate:** documentation-only Audit-Disposition & Handover-Gap
-  Canonicalization + Lean-Governance adoption (this candidate). No implementation authority.
-- **Exact next gate:** independent review → owner acceptance → normal merge → post-merge
-  verification of this candidate. Then a separate explicit owner authorization is required
-  before any Phase 3A step.
+- **Phases 3–10:** NOT STARTED / NOT AUTHORIZED. **Phase 3B:** NOT STARTED.
+- **Completed gate:** Audit-Disposition & Handover-Gap Canonicalization + Lean-Governance
+  adoption — **FORMALLY CLOSED** (merged via PR #327, merge `0330273b`; independent review
+  `B — PASS WITH NON-BLOCKING OBSERVATIONS`; owner ACCEPTED AS-IS; post-merge PASS).
+- **Lean Governance and Agent Continuity Protocol:** **MERGED AND EFFECTIVE** on the
+  authoritative branch (this document, the Owner Decision Register, the Active Increment
+  Contract, and the Handover Template are now the binding continuity inputs).
+- **Current active work:** NONE — AWAITING NEXT OWNER-AUTHORIZED GATE. No implementation authority.
+- **Next proposed gate (not started, not authorized here):** Phase 3A formal
+  discovery/current-state inventory closure, or the minimum Lean-Governance-aligned
+  preparation required by the canonical roadmap. A separate explicit owner authorization is
+  required before any Phase 3A step.
 
 ## Product / runtime distinction
 

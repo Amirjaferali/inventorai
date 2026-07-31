@@ -42,8 +42,14 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 
 ## Active contract
 
+**Status:** NO ACTIVE CONTRACT — the contract below is **CLOSED** (Audit-Disposition &
+Lean-Governance gate FORMALLY CLOSED, merged via PR #327, merge `0330273b`; independent
+review `B — PASS WITH NON-BLOCKING OBSERVATIONS`; owner ACCEPTED AS-IS; post-merge PASS).
+Current active work: NONE — awaiting the next owner-authorized gate. No new increment is
+authorized. The block below is retained as the completed contract of record.
+
 ```
-INCREMENT CONTRACT — Audit Disposition & Handover-Gap Canonicalization + Lean-Governance Adoption
+INCREMENT CONTRACT — Audit Disposition & Handover-Gap Canonicalization + Lean-Governance Adoption   [CLOSED — PR #327]
 Objective:                Documentation-only canonicalization of the historical audit
                           disposition, the handover-to-repository gaps (DISC-001…018), the
                           deferred output/visualization capabilities (ACV/Download/Email), the
