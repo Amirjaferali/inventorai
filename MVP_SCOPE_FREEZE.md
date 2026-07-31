@@ -122,3 +122,49 @@ remains DRAFT does NOT satisfy activation, even if another package document is
 committed. A working-tree draft, conversation, or uncommitted owner instruction
 never activates this carve-out or a lane. Absent all required activation
 conditions, the original freeze remains fully effective.
+
+---
+
+## APPENDED BOUNDED ALLOWANCE — APPROXIMATE CONCEPT VISUALIZATION (ACV) — CANONICALIZATION ONLY (NON-ACTIVATING)
+
+The historical freeze above and every prior bounded allowance are PRESERVED in full.
+This append CANONICALIZES a future capability boundary only; it authorizes NO design and
+NO implementation and activates nothing.
+
+Owner decision: `docs/governance/evidence/phase3_owner_decisions/OD-U_DEFERRED_OUTPUT_AND_VISUALIZATION_CAPABILITIES.md`.
+
+Apparent conflict (stated, not waived): ACV produces an image, apparently touching the
+"External document generation" freeze and `STRATEGIC_PRODUCT_VISION.md §7 Principle 2 —
+Improvement, Not Generation`. Resolution: the freeze's external-document-generation item is
+NARROWLY narrowed to admit ACV as an APPROXIMATE CONCEPT ILLUSTRATION of an already-captured,
+inventor-owned idea record. ACV:
+- visualizes an already-captured, inventor-owned idea; does NOT originate the core idea,
+  invent missing knowledge, supply missing mechanism steps, or complete reasoning (so it does
+  NOT cross Principle 2);
+- does NOT replace inventor authorship; does NOT present imagery as authoritative technical
+  progress;
+- is NOT CAD, NOT a manufacturing drawing, NOT dimensionally precise, NOT final engineering
+  design, NOT simulation-ready geometry, NOT a patent figure by default, NOT guaranteed
+  correct;
+- makes NO safety, compliance, feasibility, manufacturability, patentability, or readiness
+  claim.
+
+`STRATEGIC_PRODUCT_VISION.md` and `INVENTORAI_PROJECT_STATE_FREEZE_v1.2.md` Principle-2 text
+is UNCHANGED and remains binding; this allowance is drafted to remain consistent with it.
+
+Explicitly NOT allowed by this append: general/external document generation; autonomous
+invention or mechanism generation; CAD; manufacturing drawings; patent drafting; simulation
+geometry; firmware/software generation; complete invention/implementation package generation;
+Structured Technical Guidance.
+
+Phase allocation (design/impl separately gated): Phase 3 UX placement only after the separate
+Phase 3 gate and owner authorization; Phase 4 persistence/privacy/retention/deletion/
+generation-limit foundations; Phase 5 accounts/authentication/ownership/authorization; a
+separate owner-authorized later workstream for provider integration and actual image
+generation.
+
+Non-activation: this append changes no runtime, UI, schema, prompt, or code. It grants no
+ACV design or implementation authority. `ACV IMPLEMENTATION: NOT AUTHORIZED`. Absent a
+separate explicit owner authorization at each applicable gate, no ACV work is permitted, and
+the original freeze remains fully effective for everything outside this narrow illustration
+boundary.

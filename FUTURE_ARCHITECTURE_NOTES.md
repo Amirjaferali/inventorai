@@ -1,5 +1,13 @@
 # InventorAI — Future Architecture Notes
 
+> **STATUS BANNER (added by the Audit-Disposition & Lean-Governance gate):**
+> **HISTORICAL / FORWARD-LOOKING — NOT CURRENT EXECUTION AUTHORITY.** These are recommendations
+> and concepts, not adopted authority or an implementation mandate. Nothing here is authorized
+> merely by appearing in this file. Resolve current authority from `CLAUDE.md`,
+> `docs/governance/CURRENT_PROJECT_STATE.md`, the current anchors, the canonical plan, the
+> latest `ACTIVE_EXECUTION_ROADMAP.md` records, and current owner decisions
+> (`docs/governance/OWNER_DECISION_REGISTER.md`). Body preserved unchanged below. (SD-8.)
+
 This document captures architectural recommendations and product concepts
 that are NOT required for current phases but must be considered before
 the platform scales to multiple domains and real users.

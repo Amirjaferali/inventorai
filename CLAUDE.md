@@ -3,6 +3,26 @@
 This section overrides any older current-priority, active-document, or
 document-authority statement in this file when they conflict.
 
+## Mandatory Lean Governance Boot Sequence (current authority — read first)
+
+Governed by `docs/governance/LEAN_GOVERNANCE_AND_AGENT_CONTINUITY_PROTOCOL.md`
+(binding). Before planning or implementation, every agent MUST read, in order:
+
+1. this `CLAUDE.md`;
+2. `docs/governance/CURRENT_PROJECT_STATE.md`;
+3. the current authoritative anchor (per the reading order below);
+4. `docs/governance/OWNER_DECISION_REGISTER.md`;
+5. the active phase/increment contract (`docs/governance/ACTIVE_INCREMENT_CONTRACT.md`);
+6. only the additional documents the active contract references.
+
+Then verify the live authoritative tip from Git (never a prose-pinned SHA). A full
+historical audit and the complete reading order below are required only for a Depth-1 /
+high-risk / strategic change or when a full-audit trigger applies (protocol §6) — not as
+daily default work. This boot sequence weakens no Level-0 authority, product identity,
+security/privacy boundary, phase sequencing, active hold, or separate-authorization
+requirement; Phase 3 implementation remains NOT authorized. The detailed reading order that
+follows remains authoritative for Depth-1 / full-audit contexts.
+
 Before any analysis, recommendation, code change, command execution, file
 creation, staging, commit, or push, every Claude Code session, team lead,
 subagent, and Agent Teams teammate MUST read, in this order:
