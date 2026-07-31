@@ -42,11 +42,16 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 
 ## Active contract
 
-**Status:** NO ACTIVE CONTRACT — the contract below is **CLOSED** (Audit-Disposition &
-Lean-Governance gate FORMALLY CLOSED, merged via PR #327, merge `0330273b`; independent
-review `B — PASS WITH NON-BLOCKING OBSERVATIONS`; owner ACCEPTED AS-IS; post-merge PASS).
-Current active work: NONE — awaiting the next owner-authorized gate. No new increment is
-authorized. The block below is retained as the completed contract of record.
+**Status:** NO ACTIVE CONTRACT. Since the PR #327 gate, the current bounded **remediation
+program** was authorized and is now **FORMALLY CLOSED** (executable track COMPLETE): G-R01
+CLOSED via PR #329/#330; DISC-007 CLOSED via PR #331 (Domain Registry v1.0 test
+reconciliation) and PR #332 (v1.0 validation hardening); verified authoritative tip
+`239557e1` (PR #332 merge); repository-wide XPASS `0`; deferred Domain Registry v1.0 rules
+FORMALLY DEFERRED — NOT IMPLEMENTED — NOT SOLVED. See
+`docs/governance/evidence/phase3_owner_decisions/REMEDIATION_PROGRAM_FORMAL_CLOSURE.md`.
+Current active work: NONE — awaiting the next owner-authorized gate; **Phase 3 remains NOT
+AUTHORIZED**. No new increment is authorized. The block below is retained as the prior
+completed contract of record (Audit-Disposition & Lean-Governance gate, PR #327).
 
 ```
 INCREMENT CONTRACT — Audit Disposition & Handover-Gap Canonicalization + Lean-Governance Adoption   [CLOSED — PR #327]

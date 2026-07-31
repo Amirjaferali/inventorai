@@ -14,8 +14,11 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
 - **Authoritative branch:** `feature/atomic-json-session-persistence`.
 - **Live tip:** resolve from Git each session
   (`git rev-parse origin/feature/atomic-json-session-persistence`). Do **not** trust a
-  prose-pinned SHA. Last independently verified tip:
-  `0330273b0d8b15fc66a285bcb9b866c6aa81b8e5` (PR #327 merge) — historical evidence only.
+  prose-pinned SHA.
+  - **Current authoritative branch tip (last independently verified for this closure):**
+    `239557e1b9f2c799c31065cc860217505a5beb83` (PR #332 merge).
+  - **Historical verified evidence tip:** `0330273b0d8b15fc66a285bcb9b866c6aa81b8e5`
+    (PR #327 merge) — **historical evidence only; not the current tip.**
 - **`main`:** `0e89e4636399760965c9ff8086b465c90dbadf8e` — STALE / UNRECONCILED / NOT authority.
 
 ## Phase and gate
@@ -25,6 +28,13 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
 - **Completed gate:** Audit-Disposition & Handover-Gap Canonicalization + Lean-Governance
   adoption — **FORMALLY CLOSED** (merged via PR #327, merge `0330273b`; independent review
   `B — PASS WITH NON-BLOCKING OBSERVATIONS`; owner ACCEPTED AS-IS; post-merge PASS).
+- **Latest completed gate:** the current bounded **remediation program** — **FORMALLY
+  CLOSED** (executable track COMPLETE; G-R01 CLOSED via PR #329/#330; DISC-007 CLOSED via
+  PR #331 test reconciliation + PR #332 v1.0 validation hardening; last verified tip
+  `239557e1` (PR #332 merge); repository-wide XPASS `0`; one governed ADR-003 xfail retained;
+  deferred Domain Registry v1.0 rules FORMALLY DEFERRED — NOT SOLVED). This closes only the
+  remediation program; **Phase 3 remains NOT AUTHORIZED**. See
+  `docs/governance/evidence/phase3_owner_decisions/REMEDIATION_PROGRAM_FORMAL_CLOSURE.md`.
 - **Lean Governance and Agent Continuity Protocol:** **MERGED AND EFFECTIVE** on the
   authoritative branch (this document, the Owner Decision Register, the Active Increment
   Contract, and the Handover Template are now the binding continuity inputs).
@@ -60,9 +70,13 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
 ## Accepted limitations (honest, not waived)
 
 End-to-end runtime invocation not certified; `main` stale/unreconciled; `/tmp` transcript
-handling (Phase 4 remediation); latent domain packs (Phase 6); pre-existing
-`tests/test_domain_registry.py` failing baseline (~31; Phase 6 / separately authorized);
-narrow Arabic/RTL. Full register: OD-T and the canonical plan.
+handling (Phase 4 remediation); `iot_electronics` latent/legacy (not loaded; future
+separately authorized domain-activation workstream); durable persistence not implemented —
+runtime remains in-memory (G-R02; Phase 4); narrow Arabic/RTL. Full register: OD-T and the
+canonical plan. (The former `tests/test_domain_registry.py` ~31 failing baseline is RESOLVED
+— DISC-007 CLOSED via the current bounded remediation program; suite `0 failed`, XPASS `0`;
+deferred Domain Registry v1.0 hardening rules remain FORMALLY DEFERRED — NOT IMPLEMENTED —
+NOT SOLVED; see the Remediation Program Formal Closure Record.)
 
 ## Active holds / forbidden work now
 
