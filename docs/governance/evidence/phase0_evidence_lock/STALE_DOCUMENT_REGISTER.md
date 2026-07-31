@@ -55,3 +55,39 @@
 - **Line ranges:** roadmap tail (append-only history).
 - **Why stale:** superseded by later append-only records.
 - **Classification:** **HISTORICAL — SAFE TO RETAIN** (append-only roadmap; supersession stated in-line).
+
+---
+
+## Phase 3-preparation append (OD-T / DISC dispositions — documentation-only)
+
+Added by the Audit-Disposition & Lean-Governance gate on verified tip
+`7816bdaddd762c38e6fa8cbbf05b7de26022e306`. Append-only; no prior entry rewritten.
+
+## SD-7 — `NEXT_SESSION.md` (root)
+- **Why stale:** session-time notes snapshot; not current execution authority.
+- **Action:** banner added — `HISTORICAL — NOT CURRENT EXECUTION AUTHORITY`; body preserved.
+- **Classification:** **HISTORICAL — NOT CURRENT EXECUTION AUTHORITY** (DISC-008).
+
+## SD-8 — `FUTURE_ARCHITECTURE_NOTES.md` (root)
+- **Why stale:** forward-looking recommendations/concepts, not adopted authority.
+- **Action:** banner added — `HISTORICAL / FORWARD-LOOKING — NOT CURRENT EXECUTION AUTHORITY`; body preserved.
+- **Classification:** **HISTORICAL — NOT CURRENT EXECUTION AUTHORITY** (DISC-008/011).
+
+## SD-9 — `VALIDATION_LOG.md` (root)
+- **Why stale:** historical validation log; superseded by committed evidence/closures.
+- **Action:** banner added — `HISTORICAL — NOT CURRENT EXECUTION AUTHORITY`; body preserved.
+- **Classification:** **HISTORICAL — SAFE TO RETAIN / NOT CURRENT EXECUTION AUTHORITY** (DISC-008).
+
+## SD-10 — `replay_debug.txt` (root, raw diagnostic output)
+- **Why stale:** raw Replay Benchmark Runner diagnostic output; not current authority.
+- **Action:** **register-only** disposition; the raw output is a forbidden-to-modify artifact,
+  so **no in-file banner** is added. Recorded here as historical.
+- **Classification:** **HISTORICAL — RAW OUTPUT — NOT CURRENT EXECUTION AUTHORITY** (DISC-016).
+
+## SD-11 — `GOVERNANCE_MODEL.md` (root)
+- **Why partially current:** parts of its authority/boot model remain referenced; its
+  replay-era `Status: PROPOSED — pending review` header and some sections are historical.
+- **Action:** bounded-purpose clarification banner added (NOT marked entirely obsolete);
+  directs agents to resolve current authority from CLAUDE.md, current anchors, canonical plan,
+  latest roadmap records, and current owner decisions.
+- **Classification:** **PARTIALLY CURRENT — BOUNDED PURPOSE / NOT SOLE CURRENT AUTHORITY** (DISC-017).

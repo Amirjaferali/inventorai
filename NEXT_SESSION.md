@@ -1,5 +1,13 @@
 # InventorAI — Next Session Notes
 
+> **STATUS BANNER (added by the Audit-Disposition & Lean-Governance gate):**
+> **HISTORICAL — NOT CURRENT EXECUTION AUTHORITY.** These are session-time notes and do not
+> govern current work. Resolve current authority from `CLAUDE.md`,
+> `docs/governance/CURRENT_PROJECT_STATE.md`, the current anchors, the canonical plan, the
+> latest append-only `ACTIVE_EXECUTION_ROADMAP.md` records, and current owner decisions
+> (`docs/governance/OWNER_DECISION_REGISTER.md`). Body preserved unchanged below. (See
+> stale-document register SD-7.)
+
 ## Architecture Status Snapshot
 Date: 2026-05-22
 Current state: Multi-domain engine with web interface shell.
