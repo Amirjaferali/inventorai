@@ -90,6 +90,20 @@ were owner decisions respected; were current limitations preserved honestly; did
 increment activate a later phase or a separate-authorization capability. The reviewer
 does not repeat the full historical audit unless a §6 trigger is present.
 
+**Formal review independence (mandatory where independent review is required).** Proportionate
+scope never weakens independence. A formal independent review must be performed in a genuinely
+separate review session that did not author or modify the candidate. A subagent, child agent, or
+agent function operating inside the implementation or authoring session does **not** qualify as a
+formally independent reviewer, and an agent identifier alone is **not** sufficient evidence of
+separate-session independence. The reviewer must record: its separate session (or equivalent
+verifiable review) identity; a declaration that it did not author or modify the candidate; the
+exact candidate SHA; the parent SHA; the tree where applicable; the verified changed paths; and
+the evidence source or transfer artifact it independently inspected. When a bundle or transferred
+candidate is used, the review must verify the artifact's identity rather than rely on the filename
+alone — checking the applicable file size, SHA-256, `git bundle list-heads`, candidate SHA, parent
+SHA, tree, and changed paths. A review that cannot satisfy these conditions is recorded as
+technical verification only, with formal independent review `NOT YET SATISFIED`.
+
 ## 6. Full-historical-audit triggers (exceptions only)
 
 A full historical review is required only when one or more applies: current authority
