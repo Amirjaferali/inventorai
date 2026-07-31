@@ -77,8 +77,8 @@ def _valid_v1_domain(pack_id="test_pack"):
         "display_name": "Test Pack",
         "classification_signals": [{"signal": "test_signal"}],
         "substance_signals": [{"signal": "test_substance"}],
-        "gap_type_mappings": {},
-        "rule_nuances": {},
+        "gap_type_mappings": [{"gap_type_id": "TEST_GAP"}],
+        "rule_nuances": [{"rule_id": "TEST_RULE"}],
     }
 
 
@@ -285,6 +285,49 @@ class TestV1ValueValidation:
         _make_domain_dir(tmp_path, "bad_dir", data)
         with pytest.raises(RegistryLoadError, match="substance_signals"):
             load_registry(str(tmp_path))
+
+    # --- v1.0 validation hardening (owner-approved: A1, A1, B1-LIMITED, B1-LIMITED) ---
+
+    def test_empty_classification_signals_raises(self, tmp_path):
+        # A1: classification_signals must be a NON-EMPTY list.
+        data = _valid_v1_domain()
+        data["classification_signals"] = []
+        _make_domain_dir(tmp_path, "bad_dir", data)
+        with pytest.raises(RegistryLoadError, match="classification_signals"):
+            load_registry(str(tmp_path))
+
+    def test_empty_substance_signals_raises(self, tmp_path):
+        # A1: substance_signals must be a NON-EMPTY list.
+        data = _valid_v1_domain()
+        data["substance_signals"] = []
+        _make_domain_dir(tmp_path, "bad_dir", data)
+        with pytest.raises(RegistryLoadError, match="substance_signals"):
+            load_registry(str(tmp_path))
+
+    def test_non_list_gap_type_mappings_raises(self, tmp_path):
+        # B1-LIMITED: gap_type_mappings must be a list (non-emptiness deferred).
+        data = _valid_v1_domain()
+        data["gap_type_mappings"] = {"not": "a list"}
+        _make_domain_dir(tmp_path, "bad_dir", data)
+        with pytest.raises(RegistryLoadError, match="gap_type_mappings"):
+            load_registry(str(tmp_path))
+
+    def test_non_list_rule_nuances_raises(self, tmp_path):
+        # B1-LIMITED: rule_nuances must be a list (non-emptiness deferred).
+        data = _valid_v1_domain()
+        data["rule_nuances"] = {"not": "a list"}
+        _make_domain_dir(tmp_path, "bad_dir", data)
+        with pytest.raises(RegistryLoadError, match="rule_nuances"):
+            load_registry(str(tmp_path))
+
+    def test_empty_gap_type_mappings_and_rule_nuances_are_accepted(self, tmp_path):
+        # B1-LIMITED boundary: non-emptiness is DEFERRED, so empty lists load.
+        data = _valid_v1_domain("boundary_pack")
+        data["gap_type_mappings"] = []
+        data["rule_nuances"] = []
+        _make_domain_dir(tmp_path, "boundary_dir", data)
+        registry = load_registry(str(tmp_path))
+        assert "boundary_pack" in registry
 
     def test_invalid_json_raises(self, tmp_path):
         domain_dir = tmp_path / "bad_dir"
