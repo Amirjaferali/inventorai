@@ -280,7 +280,7 @@ def test_rendered_asserted_page_shows_recognizer_explanation_once():
     try:
         body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
         assert body.lower().count(_DETECTOR_HONEST_MARK) == 1
-        assert "More detail needed" in body                    # badge unchanged
+        assert "More explanation needed" in body               # not-accepted badge (Increment 1)
         assert "asserted only — reasoning required" in body     # raw reason preserved
         assert SESSION_STORE[sid]["transcript"] == before_answer
         assert SESSION_STORE[sid]["last_result"]["transition"] == "WARN"

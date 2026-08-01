@@ -34,7 +34,11 @@ _WARN_ASSERTED = (
     "your answer to move this area forward yet. Making the cause-and-effect "
     "relationship more explicit may help."
 )
-_WARN_PARTIAL = "You addressed part of this, but more detail is still needed."
+# Accepted-partial wording (Increment 1 — accepted-vs-rejected clarity): a first
+# accepted REASONED answer (gap now PARTIAL) must read as accepted/counted/
+# progressed/not-yet-complete, never as rejection.
+_WARN_PARTIAL = ("Your answer was accepted and moved this area forward. One "
+                 "focused follow-up is still needed to complete it.")
 _PASS_DEMO = "This point is supported well enough to move forward in the current demo flow."
 _PASS_REASONED = "Your follow-up added enough reasoning to continue in the current demo flow."
 _NOT_ESTABLISHED = "This point is not established yet, so the idea cannot move forward on this item."
@@ -204,10 +208,12 @@ def test_raw_reason_preserved_byte_for_byte_and_shown_as_provenance():
 
 
 def test_warn_badge_visible():
+    # Increment 1 (accepted-vs-rejected clarity): an asserted-only WARN renders
+    # the not-accepted badge wording.
     sid = _session()
     try:
         _force(sid, "WARN", "X asserted only — reasoning required")
-        assert "More detail needed" in _body(sid)
+        assert "More explanation needed" in _body(sid)
     finally:
         SESSION_STORE.pop(sid, None)
 
@@ -234,12 +240,18 @@ def test_block_badge_visible():
         SESSION_STORE.pop(sid, None)
 
 
-def test_direction_and_gaps_still_visible():
+def test_direction_raw_token_absent_and_gaps_still_visible():
+    # Increment 1 (accepted-vs-rejected clarity): the raw internal direction enum
+    # is no longer rendered in the normal user-facing view; the stored direction
+    # value itself is unchanged. Gap surfaces are preserved.
     sid = _session()
     try:
-        _force(sid, "WARN", "X partially addressed — needs more depth", direction="Add the mechanism")
+        _force(sid, "WARN", "X partially addressed — needs more depth", direction="PROGRESSING")
+        before = SESSION_STORE[sid]["last_result"]["direction"]
         b = _body(sid)
-        assert "Direction: Add the mechanism" in b
+        assert "Direction: PROGRESSING" not in b
+        assert 'class="direction-text"' not in b
+        assert SESSION_STORE[sid]["last_result"]["direction"] == before == "PROGRESSING"
         # gap board / open gap surfaces preserved
         assert "gap" in b.lower()
     finally:
