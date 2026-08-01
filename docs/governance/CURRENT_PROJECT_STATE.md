@@ -15,8 +15,9 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
 - **Live tip:** resolve from Git each session
   (`git rev-parse origin/feature/atomic-json-session-persistence`). Do **not** trust a
   prose-pinned SHA.
-  - **Current authoritative branch tip (last independently verified for this closure):**
-    `239557e1b9f2c799c31065cc860217505a5beb83` (PR #332 merge).
+  - **Current authoritative branch tip (last independently verified):**
+    `d856f97693f8d0aae08454cf7c52c57bcec131fa` (Merge PR #334) — the base on which the Phase 3B
+    governance-record synchronization candidate is prepared (candidate not yet reviewed/merged).
   - **Historical verified evidence tip:** `0330273b0d8b15fc66a285bcb9b866c6aa81b8e5`
     (PR #327 merge) — **historical evidence only; not the current tip.**
 - **`main`:** `0e89e4636399760965c9ff8086b465c90dbadf8e` — STALE / UNRECONCILED / NOT authority.
@@ -24,7 +25,15 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
 ## Phase and gate
 
 - **Phase 1:** FORMALLY CLOSED. **Phase 2:** FORMALLY CLOSED (PR #325) and status-synchronized (PR #326).
-- **Phases 3–10:** NOT STARTED / NOT AUTHORIZED. **Phase 3B:** NOT STARTED.
+- **Phase 3 (Product UX/UI foundation) — product-decision lane:** **Phase 3A FORMALLY CLOSED**;
+  **Phase 3B product-decision scope FORMALLY COMPLETE AND CLOSED** (Phase 3B-1 D1–D4 and Phase 3B-2
+  D5–D17 accepted and closed; the **Project Technology Profile** decision — the final proved residual —
+  accepted; all 32 agenda items + owner notes A–F dispositioned). These were **owner-accepted decisions
+  delivered outside the repository and not previously committed**; their accepted summaries and provenance
+  are recorded (by reference/hash) in
+  `docs/governance/evidence/phase3_owner_decisions/PHASE_3B_PRODUCT_DECISION_FORMAL_CLOSURE.md`.
+  **Phase 3C–3F: NOT AUTHORIZED / NOT STARTED** (each requires a separate explicit owner authorization).
+- **Phases 4–10:** NOT STARTED / NOT AUTHORIZED.
 - **Completed gate:** Audit-Disposition & Handover-Gap Canonicalization + Lean-Governance
   adoption — **FORMALLY CLOSED** (merged via PR #327, merge `0330273b`; independent review
   `B — PASS WITH NON-BLOCKING OBSERVATIONS`; owner ACCEPTED AS-IS; post-merge PASS).
@@ -38,11 +47,12 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
 - **Lean Governance and Agent Continuity Protocol:** **MERGED AND EFFECTIVE** on the
   authoritative branch (this document, the Owner Decision Register, the Active Increment
   Contract, and the Handover Template are now the binding continuity inputs).
-- **Current active work:** NONE — AWAITING NEXT OWNER-AUTHORIZED GATE. No implementation authority.
-- **Next proposed gate (not started, not authorized here):** Phase 3A formal
-  discovery/current-state inventory closure, or the minimum Lean-Governance-aligned
-  preparation required by the canonical roadmap. A separate explicit owner authorization is
-  required before any Phase 3A step.
+- **Current active work:** the **Phase 3B governance-record synchronization** documentation candidate
+  (this record + status updates) — **PENDING bounded independent review (Lean §5) and owner acceptance;
+  no push/PR/merge performed or authorized**. No implementation authority.
+- **Next proposed gate (not started, not authorized here):** after this synchronization is reviewed and
+  accepted, a separate explicit owner authorization of **Phase 3C** (low-fidelity, non-production
+  prototype / UX direction). A separate explicit owner authorization is required before any Phase 3C step.
 
 ## Product / runtime distinction
 
@@ -82,10 +92,14 @@ NOT SOLVED; see the Remediation Program Formal Closure Record.)
 
 No implementation, UI, runtime, engine, schema, database, prompt/AI, tests-as-gates,
 domain activation, ACV/Download/Email, sponsors/notice/privacy implementation, Arabic/RTL,
-accessibility, Structured Technical Guidance, Phase 3 activation, main reconciliation, or PR
-merge is authorized by the current gate.
+accessibility, Structured Technical Guidance, Phase 3C–3F activation, WS17, main reconciliation,
+or PR merge is authorized by the current gate. (Phase 3A/3B product decisions are closed; Phase 3C
+requires a separate explicit owner authorization.)
 
 ## Open owner decisions
 
-None blocking the current gate. Phase 3B owner UX/product decisions are pending and are
-staged (not decided) in `docs/governance/evidence/phase3_owner_decisions/PHASE_3B_OWNER_DECISION_AGENDA.md`.
+None blocking the current gate. The Phase 3B owner UX/product decisions staged in
+`docs/governance/evidence/phase3_owner_decisions/PHASE_3B_OWNER_DECISION_AGENDA.md` are now **DECIDED and
+CLOSED** (all 32 items + owner notes A–F dispositioned; D1–D17 + the Project Technology Profile accepted);
+see `PHASE_3B_PRODUCT_DECISION_FORMAL_CLOSURE.md`. The only open owner decision is whether to authorize the
+next Product-Foundation gate (Phase 3C), which is **not** authorized here.
