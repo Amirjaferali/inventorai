@@ -104,6 +104,106 @@ alone — checking the applicable file size, SHA-256, `git bundle list-heads`, c
 SHA, tree, and changed paths. A review that cannot satisfy these conditions is recorded as
 technical verification only, with formal independent review `NOT YET SATISFIED`.
 
+## 5A. Mandatory Pre-Delivery Adversarial Self-Review
+
+Before DELIVERING any material gated deliverable, the authoring or reporting session
+MUST perform an adversarial review of its own output and record the result. This
+self-review is a precondition of delivery; it authorizes nothing and does not replace
+owner authorization or independent review.
+
+Material gated deliverables include: plans and owner-decision packages; proposed
+increment/gate contracts; implementation candidates; completion-evidence packages;
+independent-review reports; publication and merge-verification reports; and closure or
+governance-synchronization proposals. Trivial conversational replies do not require the
+formal block below.
+
+The self-review examines, WHERE RELEVANT: (1) authoritative evidence vs unsupported
+inference; (2) mandatory requirement vs preferred best practice; (3) scope vs
+exclusions; (4) permitted paths vs required implementation paths; (5) the current gate
+vs later or separately authorized gates; (6) RED criteria vs actual pre-change
+behavior; (7) GREEN criteria vs achievable authorized behavior; (8) source checks vs
+runtime/behavioral evidence; (9) false-green and false-positive tests; (10) fallback,
+bypass, logging, persistence, security, and privacy; (11) temporary-session
+truthfulness; (12) accessibility, RTL/LTR, and responsive claims; (13) minimum
+necessary files, changes, and process; (14) prior accepted observations and lessons
+learned; (15) Lean proportionality; (16) unresolved ambiguity and missing evidence.
+
+**Mandatory behavior.** Every avoidable blocking defect found MUST be corrected before
+delivery. If correction requires unauthorized scope, the agent MUST STOP and report
+instead of expanding scope. If any material ambiguity or unresolved blocker remains, the
+package MUST NOT be presented as ready for owner authorization. The agent MUST NOT
+fabricate certainty or fill an evidence gap with preference. Non-blocking observations
+MUST be disclosed, not silently hidden. When the same avoidable defect class recurs
+across deliverables, a lessons-learned note is recorded at the next authorized
+governance-maintenance opportunity (see §11).
+
+**Author vs reviewer scope.** For an authoring/implementation session, the self-review
+targets defects in its own proposed plan, contract, candidate, or evidence package, and
+corrects every avoidable defect within authorization. For an independent-review session,
+the self-review targets defects in its own review reasoning and report; the independent
+reviewer MUST NOT modify the candidate merely to satisfy this requirement. In an
+independent-review report, the block fields **BLOCKING DEFECTS FOUND AND CORRECTED** and
+**REMAINING BLOCKING DEFECTS** refer to defects in the review report/reasoning unless the
+report explicitly labels candidate findings separately; candidate findings remain
+separately classified as `BLOCKING` / `NON-BLOCKING` / `OBSERVATION` / `NO FINDING`.
+
+**Self-review is not independence.** 
+
+    SELF-REVIEW:
+    MANDATORY
+    NOT INDEPENDENT
+
+    INDEPENDENT REVIEW:
+    SEPARATELY REQUIRED WHEN THE GOVERNANCE GATE REQUIRES IT
+
+Self-review MUST NEVER be cited as satisfying the §5 independence requirement, and a
+same-session subagent does not become independent merely by performing a review.
+
+**Proportionality.** The self-review is concise for small bounded material deliverables
+and deeper for security, governance, architecture, persistence, identity, or broad UX
+work. By default it performs no full repository re-audit, does not repeat already-proved
+evidence unless identity, base, scope, or content changed, corrects within authorization
+where possible, stops and reports when correction exceeds authorization, and never
+requires a separate repository gate merely to store a self-review result.
+
+**Required output block.** Every material gated deliverable MUST end with this exact
+minimum block, reporting the ACTUAL result — it MUST NEVER be filled with predetermined
+successful values:
+
+    PRE-DELIVERY ADVERSARIAL SELF-REVIEW:
+    COMPLETED
+
+    BLOCKING DEFECTS FOUND AND CORRECTED:
+    [COUNT]
+
+    REMAINING BLOCKING DEFECTS:
+    [COUNT]
+
+    KNOWN NON-BLOCKING OBSERVATIONS:
+    [LIST OR NONE]
+
+    UNRESOLVED EVIDENCE GAPS:
+    [LIST OR NONE]
+
+    UNAUTHORIZED SCOPE REQUIRED TO CORRECT ANY REMAINING ISSUE:
+    [YES/NO]
+
+    READY FOR OWNER OR INDEPENDENT REVIEW:
+    [YES/NO]
+
+Binding consistency rules for the block:
+
+- If `REMAINING BLOCKING DEFECTS` is greater than 0, `READY FOR OWNER OR INDEPENDENT
+  REVIEW` MUST be `NO`.
+- If a material unresolved evidence gap prevents a reliable decision, `READY FOR OWNER OR
+  INDEPENDENT REVIEW` MUST be `NO`.
+- If correcting a remaining issue requires unauthorized scope, `UNAUTHORIZED SCOPE
+  REQUIRED TO CORRECT ANY REMAINING ISSUE` MUST be `YES`, and the agent MUST stop.
+- `READY` may be `YES` only when no unresolved blocker or material ambiguity remains.
+
+When the package is not ready, the last two fields MUST honestly reflect that and the
+agent MUST stop rather than deliver it as ready.
+
 ## 6. Full-historical-audit triggers (exceptions only)
 
 A full historical review is required only when one or more applies: current authority
@@ -157,6 +257,9 @@ a material contradiction by editing history — report it and request canonicali
   roadmap.
 - The active-contract declaration is updated when a new increment is authorized.
 - The append-only roadmap receives one record per governed gate.
+- When the same avoidable defect class recurs across deliverables (per §5A), a
+  lessons-learned note is appended at the next authorized governance-maintenance
+  opportunity.
 
 ## 12. Scope and non-weakening guarantee
 
