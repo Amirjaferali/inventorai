@@ -1,9 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head><meta charset="UTF-8"><title>InventorAI</title>
+{% extends "base.html" %}
+{% block title %}InventorAI{% endblock %}
+{% block head %}
 <style>body{font-family:sans-serif;max-width:700px;margin:60px auto;padding:0 20px}textarea{width:100%;padding:12px;font-size:16px;border:1px solid #ccc;border-radius:4px}button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:none;border-radius:4px;font-size:16px;cursor:pointer}.error{color:#e74c3c}.orient{background:#f0f4f8;border:1px solid #d4dde6;border-radius:4px;padding:12px 16px;margin:12px 0 20px 0}.orient p{margin:0 0 8px 0;font-size:14px;line-height:1.5;color:#333}.orient p:last-child{margin-bottom:0}.orient .honest{font-size:13px;color:#555}</style>
-</head>
-<body>
+{% endblock %}
+{% block content %}
 <h1>InventorAI</h1>
 <div class="orient">
   <p>InventorAI helps you develop an early invention idea. It asks a few focused questions, one at a time, and organizes your answers into a clear, readable assessment you can revisit.</p>
@@ -23,4 +23,4 @@ I confirm that this idea is primarily an electronics or electrical idea.
 <button type="submit">Start</button>
 </form>
 <p style="color:#888;font-size:13px">Currently supported: electronics and electrical ideas.</p>
-</body></html>
+{% endblock %}

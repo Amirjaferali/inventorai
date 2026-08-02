@@ -1,6 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head><meta charset="UTF-8"><title>InventorAI — Session</title>
+{% extends "base.html" %}
+{% block title %}InventorAI — Session{% endblock %}
+{% block head %}
 <style>
 body{font-family:sans-serif;max-width:720px;margin:60px auto;padding:0 20px;color:#222}
 h1{color:#2c3e50;margin-bottom:4px}
@@ -41,8 +41,8 @@ button{margin-top:10px;padding:10px 24px;background:#2c3e50;color:white;border:n
 .complete{color:#27ae60;font-weight:bold;font-size:18px}
 hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
 </style>
-</head>
-<body>
+{% endblock %}
+{% block content %}
 <h1>InventorAI</h1>
 
 <div class="disclosure">{{ session_disclosure }}</div>
@@ -355,5 +355,4 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
 <p><a href="/">Start a new idea</a></p>
 {% endif %}
 
-</body>
-</html>
+{% endblock %}
