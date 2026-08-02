@@ -20,7 +20,7 @@ a.skip-link:focus{left:8px;top:8px;position:fixed}
 <a class="skip-link" href="#main-content">Skip to content</a>
 <header class="app-header">
 <span class="brand">InventorAI</span>
-<span class="temp-session">Temporary session</span>
+<span class="temp-session">Temporary session{% if request.path != '/data-and-session' %} <a href="/data-and-session">Learn more</a>{% endif %}</span>
 </header>
 <main id="main-content">
 {% block content %}{% endblock %}
