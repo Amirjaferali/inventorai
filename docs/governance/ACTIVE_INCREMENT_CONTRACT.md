@@ -42,15 +42,27 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 
 ## Active contract
 
-**Status:** NO ACTIVE CONTRACT. Since the PR #327 gate, the current bounded **remediation
-program** was authorized and is now **FORMALLY CLOSED** (executable track COMPLETE): G-R01
-CLOSED via PR #329/#330; DISC-007 CLOSED via PR #331 (Domain Registry v1.0 test
-reconciliation) and PR #332 (v1.0 validation hardening); verified authoritative tip
-`239557e1` (PR #332 merge); repository-wide XPASS `0`; deferred Domain Registry v1.0 rules
-FORMALLY DEFERRED — NOT IMPLEMENTED — NOT SOLVED. See
-`docs/governance/evidence/phase3_owner_decisions/REMEDIATION_PROGRAM_FORMAL_CLOSURE.md`.
-Current active work: NONE — awaiting the next owner-authorized gate; **Phase 3 remains NOT
-AUTHORIZED**. No new increment is authorized. The block below is retained as the prior
+**Status:** NO ACTIVE CONTRACT. **Verified authoritative branch:** `feature/atomic-json-session-persistence`.
+**Verified authoritative tip:** `82cf45f94cf6a9701e10ad02c2f2d557add1ed55` (Merge PR #345 — G-UX-GUIDED-LABEL;
+always re-resolve the live tip from Git). Since the PR #327 gate, the bounded **remediation program** was
+authorized and is now **FORMALLY CLOSED** (executable track COMPLETE): G-R01 CLOSED via PR #329/#330; DISC-007
+CLOSED via PR #331 (Domain Registry v1.0 test reconciliation) and PR #332 (v1.0 validation hardening); tip at that
+closure `239557e1` (PR #332 merge); repository-wide XPASS `0`; deferred Domain Registry v1.0 rules FORMALLY DEFERRED
+— NOT IMPLEMENTED — NOT SOLVED. See `docs/governance/evidence/phase3_owner_decisions/REMEDIATION_PROGRAM_FORMAL_CLOSURE.md`.
+**Since then, the following bounded gates have been separately owner-authorized, executed, merged, post-merge
+verified, and FORMALLY CLOSED** (separate-session independent review is recorded in the respective owner
+authorizations for these gates, except **PR #341 — G-PDSR**, for which merge, post-merge verification, and owner
+closure are verified but a separate-session independent-review record and a letter verdict were not independently
+located from inspectable PR evidence) (full merge SHAs; enumerated in
+`docs/governance/evidence/phase3_owner_decisions/POST_PHASE_3_UX_IMPLEMENTATION_GATES_FORMAL_CLOSURE.md`):
+PR #338 Phase 3E–3F governance sync (`a7a141ce7f25eab261e29a3e44930b76a9e7c1f4`); PR #339 G-IRB
+(`fa054abe8979d9f1fe63fe9ca3122d9ce9df7078`); PR #340 G-SC0 (`94b6b9df61d655a9005599e1e18fe19de26e7338`);
+PR #341 G-PDSR (`745aaaf77aaad838d418f597710194f61db3c98e`); PR #342 G-UX-SHELL
+(`43453ceb87936d3a041e6edcccc0e7a8f16237a7`); PR #343 G-UX-TRUST (`cc71ab7acb39d9f772dbb1a347c78bc53f86beae`);
+PR #344 G-UX-ENTRY (`41e51ba070c71e9a1ca1c351a680abb73d72204e`); PR #345 G-UX-GUIDED-LABEL
+(`82cf45f94cf6a9701e10ad02c2f2d557add1ed55`). Current active work: **NONE** — no implementation work is presently
+authorized; the next gate requires **separate explicit owner authorization**. Phase 3F bounded implementation
+broadly, **Phase 4, WS17, and STG remain NOT AUTHORIZED / NOT STARTED**. The block below is retained as the prior
 completed contract of record (Audit-Disposition & Lean-Governance gate, PR #327).
 
 ```
