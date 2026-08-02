@@ -420,6 +420,14 @@ def _lay_electrical_evidence_count(lowered_text: str) -> int:
 def index():
     return render_template("index.html")
 
+@app.route("/data-and-session", methods=["GET"])
+def data_and_session():
+    # G-UX-TRUST (S15): static informational Data & Session trust surface.
+    # GET-only; takes no session id; reads no session data; mutates nothing;
+    # calls no engine function; performs no logging, persistence, or redirect;
+    # renders only the static template.
+    return render_template("data_session.html")
+
 @app.route("/start", methods=["POST"])
 def start():
     idea_text = request.form.get("idea", "").strip()

@@ -102,14 +102,24 @@ def test_html_lang_marker_preserved():
 
 
 def test_shell_header_adds_no_navigation_or_future_controls():
-    # The shared header must contain only brand + temporary-session text — no
-    # navigation and no future-capability controls (accounts, settings, logout,
-    # projects, PDF, email, etc.). The skip link lives outside the header.
+    # The shared header may contain AT MOST one approved informational link — the
+    # accepted "Learn more" link to /data-and-session (G-UX-TRUST). It must contain
+    # no navigation, no buttons, and no future-capability controls. The skip link
+    # lives outside the header.
+    _forbidden_labels = ("Account", "Settings", "Logout", "Projects", "Saved",
+                         "History", "PDF", "Email", "ACV", "Sponsor", "Theme")
     for key, html in _render_journey_pages().items():
         header = _header_block(html)
-        assert "<a" not in header, f"{key}: header must not contain links/navigation"
+        anchors = re.findall(r"<a\b[^>]*>.*?</a>", header, re.DOTALL)
+        assert len(anchors) <= 1, f"{key}: header may contain at most one link"
+        for a in anchors:
+            assert 'href="/data-and-session"' in a and "Learn more" in a, (
+                f"{key}: the only permitted header link is the Learn more link to /data-and-session"
+            )
         assert "<nav" not in header, f"{key}: header must not contain a nav element"
         assert "<button" not in header, f"{key}: header must not contain controls"
+        for label in _forbidden_labels:
+            assert label not in header, f"{key}: header must not contain a {label} control"
 
 
 def test_existing_journey_markers_preserved():
