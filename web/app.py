@@ -3,7 +3,9 @@ InventorAI Web Interface (Phase H-A)
 Thin web shell only. Engine called as library.
 SESSION_STORE: in-memory, non-production, temporary.
 """
+import os
 import re
+import secrets
 import uuid
 from flask import Flask, request, redirect, url_for, render_template
 from engine.domain_rules import infer_domain
@@ -31,8 +33,46 @@ from web.answer_coauthoring_prompts import get_answer_coauthoring_prompts  # GAC
 from web.uncertainty_guidance import get_uncertainty_guidance  # GUS: display-only supportive uncertainty guidance
 from web.result_feedback import get_result_feedback  # PLRF: display-only plain-language result feedback
 
+# --- G-SC0 Bounded Security Containment: runtime security configuration -------
+# Runtime debug, host, and the Flask secret are environment-controlled with safe
+# defaults. No secret value is hard-coded in source. See README "Runtime security
+# configuration". No accounts/authentication/authorization are introduced here.
+_TRUTHY = frozenset({"1", "true", "yes", "on"})
+
+
+def _debug_enabled():
+    """Debug is OFF unless INVENTORAI_DEBUG is an explicit recognized truthy value.
+    Ambiguous or unknown values never enable debug."""
+    return os.environ.get("INVENTORAI_DEBUG", "").strip().lower() in _TRUTHY
+
+
+def _resolve_host():
+    """Host defaults to loopback (127.0.0.1); override only via INVENTORAI_HOST."""
+    return os.environ.get("INVENTORAI_HOST", "").strip() or "127.0.0.1"
+
+
+def _is_production():
+    return os.environ.get("INVENTORAI_ENV", "").strip().lower() == "production"
+
+
+def _resolve_secret_key():
+    """Return the Flask secret. Sourced from INVENTORAI_SECRET_KEY. When explicit
+    production mode is enabled and the secret is missing, fail clearly. For local
+    development only, an ephemeral random secret is generated (never persisted or
+    logged). No fixed secret value is stored in source."""
+    secret = os.environ.get("INVENTORAI_SECRET_KEY", "")
+    if secret:
+        return secret
+    if _is_production():
+        raise RuntimeError(
+            "INVENTORAI_SECRET_KEY must be set to a non-empty value when "
+            "INVENTORAI_ENV=production."
+        )
+    return secrets.token_hex(32)
+
+
 app = Flask(__name__)
-app.secret_key = "inventorai-dev-only"
+app.secret_key = _resolve_secret_key()
 # Presentation-only Jinja filter: translate an internal gap-type ID to a short
 # inventor-friendly label for the few session-page surfaces that render raw
 # reference/context IDs. Non-gap values pass through unchanged. Display only.
@@ -759,10 +799,14 @@ def submit_answer(sid):
         targeted_gap = select_next_gap(state)   # gap this answer addresses (pre-iteration)
         result = run_iteration(state, response)
         entry["last_result"] = result
-        # Transcript capture: append verbatim record for ILT-002 evidence.
-        # iteration number read after run_iteration() incremented it.
-        # No engine effect. Evidence preservation only.
-        import json, os
+        # Transcript capture: append the answered record to the IN-MEMORY session
+        # transcript only. iteration number read after run_iteration() incremented
+        # it. No engine effect.
+        # G-SC0 (R6): the previous automatic verbatim write to a world/group-
+        # readable temporary file has been REMOVED (it exposed verbatim user input
+        # on disk). No replacement disk write, log, cache, or durable store is
+        # introduced; durable transcript persistence is deferred to Phase 4. The
+        # in-memory behavior is unchanged.
         from datetime import datetime
         record = {
             "session_id": sid,
@@ -773,11 +817,6 @@ def submit_answer(sid):
             "timestamp": datetime.utcnow().isoformat() + "Z",
         }
         entry["transcript"].append(record)
-        # Disk-backed persistence: survives Flask restarts.
-        # ILT-002 evidence preservation only. No engine effect.
-        transcript_path = f"/tmp/ilt002_transcript_{sid}.jsonl"
-        with open(transcript_path, "a") as _tf:
-            _tf.write(json.dumps(record) + "\n")
         # Increment 2: durable answered record on the IdeaState ledger.
         # OWNER_STATED provenance (the owner authored it), UNVALIDATED status
         # (never auto-verified by the act of answering), carrying the current
@@ -1025,4 +1064,4 @@ def decision_workspace_export(did):
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    app.run(debug=_debug_enabled(), host=_resolve_host(), port=5000)
