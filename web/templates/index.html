@@ -11,10 +11,12 @@
   <p class="honest">This is an advisory tool to sharpen your own thinking. The assessment is a work-in-progress snapshot &mdash; not a validation, verification, score, approval, certification, patent opinion, legal opinion, or final technical judgment. You remain responsible for verifying any technical claim.</p>
 </div>
 <p>Describe your invention idea to begin.</p>
+<p class="session-note">This is a temporary session. There is no account or durable saved-projects area.</p>
 <p>Electronics and electrical ideas are currently supported. Before starting, please confirm that your idea belongs to this supported domain.</p>
 {% if error %}<p class="error">{{ error }}</p>{% endif %}
 <form method="POST" action="/start">
-<textarea name="idea" rows="4" placeholder="Describe your electronics or electrical invention..." required></textarea>
+<label for="idea" style="display:block;margin-bottom:6px;font-size:14px">Describe your idea</label>
+<textarea id="idea" name="idea" rows="4" placeholder="Describe your electronics or electrical invention..." required></textarea>
 <br>
 <label style="display:block;margin-top:12px;font-size:14px">
 <input type="checkbox" name="domain_confirm" value="electronics_electrical" required>
