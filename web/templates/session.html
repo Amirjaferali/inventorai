@@ -262,7 +262,8 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
 {% endif %}
 
 <form method="POST" action="/session/{{ sid }}">
-  <textarea name="response" rows="5" placeholder="Describe your thinking here, or pick an option below..."></textarea>
+  <label for="response" style="display:block;margin-bottom:6px;font-size:13px;color:#555">Your answer</label>
+  <textarea id="response" name="response" rows="5" placeholder="Describe your thinking here, or pick an option below..."></textarea>
   <br>
   <fieldset style="margin-top:12px;border:1px solid #e2e6ea;border-radius:4px;padding:10px">
     <legend style="font-size:13px;color:#555;padding:0 6px">How do you want to respond?</legend>
