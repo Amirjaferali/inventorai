@@ -16,9 +16,10 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
   (`git rev-parse origin/feature/atomic-json-session-persistence`). Do **not** trust a
   prose-pinned SHA.
   - **Current authoritative branch tip (last independently verified):**
-    `62ebf8f1a07e3c0f48e4637029d641d19c3f9b9e` (Merge PR #337 — Phase 3D governance-record
-    synchronization) — the base on which the Phase 3E–3F governance-record synchronization candidate is
-    prepared (candidate not yet reviewed/merged).
+    `82cf45f94cf6a9701e10ad02c2f2d557add1ed55` (Merge PR #345 — G-UX-GUIDED-LABEL, the latest closed
+    bounded post-Phase-3 implementation gate) — always re-resolve the live tip from Git per the rule above.
+  - **Prior recorded tip (historical):** `62ebf8f1a07e3c0f48e4637029d641d19c3f9b9e` (Merge PR #337 —
+    Phase 3D governance-record synchronization); superseded by PRs #338–#345 (see the Phase-and-gate section).
   - **Historical verified evidence tip:** `0330273b0d8b15fc66a285bcb9b866c6aa81b8e5`
     (PR #327 merge) — **historical evidence only; not the current tip.**
 - **`main`:** `0e89e4636399760965c9ff8086b465c90dbadf8e` — STALE / UNRECONCILED / NOT authority.
@@ -76,22 +77,42 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
   CLOSED** (executable track COMPLETE; G-R01 CLOSED via PR #329/#330; DISC-007 CLOSED via
   PR #331 test reconciliation + PR #332 v1.0 validation hardening; last verified tip
   `239557e1` (PR #332 merge); repository-wide XPASS `0`; one governed ADR-003 xfail retained;
-  deferred Domain Registry v1.0 rules FORMALLY DEFERRED — NOT SOLVED). This closes only the
-  remediation program; **Phase 3 remains NOT AUTHORIZED**. See
+  deferred Domain Registry v1.0 rules FORMALLY DEFERRED — NOT SOLVED). See
   `docs/governance/evidence/phase3_owner_decisions/REMEDIATION_PROGRAM_FORMAL_CLOSURE.md`.
+- **Post-Phase-3 bounded implementation gates — ALL MERGED, POST-MERGE VERIFIED, AND FORMALLY CLOSED**
+  (each separately owner-authorized, merged via "Create a merge commit", post-merge verified, and formally closed;
+  separate-session independent review is recorded in the respective owner authorizations for these gates, **except
+  PR #341 — G-PDSR** — for which merge, post-merge verification, and owner closure are verified, but a separate-session
+  independent-review record and a letter verdict were not independently located from inspectable PR evidence):
+  **PR #338** Phase 3E–3F governance-record synchronization (merge `a7a141ce7f25eab261e29a3e44930b76a9e7c1f4`);
+  **PR #339** G-IRB Implementation-Readiness Baseline (merge `fa054abe8979d9f1fe63fe9ca3122d9ce9df7078`);
+  **PR #340** G-SC0 Bounded Security Containment R6/R16 (merge `94b6b9df61d655a9005599e1e18fe19de26e7338`);
+  **PR #341** G-PDSR Lean §5A pre-delivery adversarial self-review amendment (merge `745aaaf77aaad838d418f597710194f61db3c98e`);
+  **PR #342** G-UX-SHELL shared application shell & accessibility/disclosure baseline (merge `43453ceb87936d3a041e6edcccc0e7a8f16237a7`);
+  **PR #343** G-UX-TRUST temporary-session Data & Session trust surface S15 (merge `cc71ab7acb39d9f772dbb1a347c78bc53f86beae`);
+  **PR #344** G-UX-ENTRY existing entry-surface alignment (merge `41e51ba070c71e9a1ca1c351a680abb73d72204e`);
+  **PR #345** G-UX-GUIDED-LABEL guided-answer-field label (merge `82cf45f94cf6a9701e10ad02c2f2d557add1ed55`).
+  These are **bounded, behavior-preserving** readiness/security/governance and UX accessibility-and-disclosure
+  increments only. They do **not** activate Phase 3F bounded implementation broadly, Phase 4, WS17, or STG, and add
+  no persistence, accounts, ownership, or later capability. Enumerated with full evidence in
+  `docs/governance/evidence/phase3_owner_decisions/POST_PHASE_3_UX_IMPLEMENTATION_GATES_FORMAL_CLOSURE.md`.
+  **No UX implementation increment is currently active; the next gate is NOT AUTHORIZED and requires a separate
+  explicit owner decision. Phase 4, WS17, and STG remain NOT AUTHORIZED / NOT STARTED.**
 - **Lean Governance and Agent Continuity Protocol:** **MERGED AND EFFECTIVE** on the
   authoritative branch (this document, the Owner Decision Register, the Active Increment
   Contract, and the Handover Template are now the binding continuity inputs).
-- **Current active work:** the **Phase 3E–3F governance-record synchronization** documentation candidate
-  (the two closure records above + these status updates + the plan Phase-3F supersedence note + the append-only
-  roadmap records) — **PENDING bounded independent review (Lean §5) and owner acceptance; no push/PR/merge performed
-  or authorized**. (The Phase 3B, 3C, and 3D synchronizations are complete — merged via PR #335, PR #336, and PR #337
-  respectively, all post-merge verified.) No implementation authority.
-- **Next proposed gate (not started, not authorized here):** after this Phase 3E–3F synchronization is reviewed and
-  accepted, any move toward **Phase 3F bounded implementation increments** (or Phase 4, WS17, or a Structured Technical
-  Guidance workstream) requires a **separate explicit owner authorization** with separately bounded, tested, reviewed,
-  accepted, merged, and verified contracts. **NEXT IMPLEMENTATION OR POST-PHASE-3 GATE: NOT AUTHORIZED / REQUIRES
-  SEPARATE OWNER DECISION.** No implementation, exact/production build, runtime, or tests are authorized here.
+- **Current active work:** **NONE — no UX implementation increment is active.** The Phase 3E–3F
+  governance-record synchronization is **MERGED and CLOSED (PR #338, merge `a7a141ce`)**, and the subsequent bounded
+  post-Phase-3 gates (PRs #339–#345) are all **merged, post-merge verified, and formally closed** (see the
+  Phase-and-gate section). The `ACTIVE_INCREMENT_CONTRACT.md` correctly records **NO ACTIVE CONTRACT**; the repository
+  awaits the next separately owner-authorized gate. No implementation authority is presently granted.
+- **This governance-currency synchronization:** the currency lag (older tip pointer; #338–#345 not recorded) is
+  **proposed to be resolved by the G-GOV-SYNC-01 documentation-only candidate**; the lag becomes **resolved only after
+  that candidate is independently reviewed, owner-accepted, merged, and post-merge verified**.
+- **Next proposed gate (not started, not authorized here):** any move toward **Phase 3F bounded implementation
+  increments** (or Phase 4, WS17, or a Structured Technical Guidance workstream) requires a **separate explicit owner
+  authorization** with separately bounded, tested, reviewed, accepted, merged, and verified contracts. **NEXT
+  UX-INCREMENT / POST-PHASE-3 GATE: NOT AUTHORIZED / REQUIRES SEPARATE OWNER DECISION.**
 
 ## Product / runtime distinction
 
@@ -107,6 +128,13 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
 - Flask app; Path N guided journey; electronics/electrical admission gate; decision workspace;
   success-criteria; deliverable view; FDC-001 narrow canonical-JSON decision-record export.
 - In-memory `SESSION_STORE` only.
+- **Bounded UX accessibility & disclosure baseline (post-Phase-3 gates #342–#345):** a shared application
+  shell (viewport, `<main>` landmark, skip-to-content link, persistent "Temporary session" header disclosure);
+  a static informational Data & Session trust surface at `GET /data-and-session` with a header "Learn more"
+  link (S15); an entry-surface alignment (idea-field `<label>` + one temporary-session intake-disclosure line);
+  and a guided-session answer-field `<label>`. These are **presentation/accessibility-only, behavior-preserving**
+  additions — no route, session, engine, validation, persistence, account, or ownership change. The full Phase 3E
+  nine-step journey (including the S01 "Step 1 of 9" stepper) is **NOT** implemented and remains deferred.
 
 ## Not implemented / not authorized
 
