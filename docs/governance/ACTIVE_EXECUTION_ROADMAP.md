@@ -3124,3 +3124,59 @@ Records the owner-authorized **documentation-only** Phase 3E–3F governance-rec
 **Preserved / not moved earlier:** durable persistence / lifecycle / retention / deletion / durable history = **Phase 4**; accounts / authentication / ownership / roles / access = **Phase 5**; **WS17** and **STG** = NOT STARTED / NOT AUTHORIZED (separate owner decision); **ACV** = optional future capability with accepted phased dependencies; **PDF / Email** = deferred and separately authorized; domain activation = separate future workstreams; `main` reconciliation / release / deployment = NOT AUTHORIZED. No deferred capability becomes active because this synchronization is merged.
 
 **Next proposed gate (not started, not authorized here):** **NEXT UX-INCREMENT / POST-PHASE-3 GATE: NOT AUTHORIZED / REQUIRES SEPARATE OWNER DECISION.** Next eligible work is read-only discovery and bounded definition of the next remaining post-Phase-3 UX obligation. RED path `DOCUMENTED NO-VALID-RED — DOCUMENTATION-ONLY SYNCHRONIZATION`. Append-only; prior history not rewritten. This candidate authorizes no push, no PR, no merge, no implementation, and no phase activation. The lag is **resolved only after this candidate is reviewed (where required), owner-accepted, merged, and post-merge verified.**
+
+---
+
+## Post-Output AI-Assisted Specialist Refinement (AISR) — Capability Direction Accepted; Documentation-Only Recording (Append-Only)
+
+**Lane note:** Append-only record of two owner-gated AISR governance events. This entry rewrites **no** prior entry;
+**all earlier entries above remain historical evidence and are not retroactively changed.** Prepared on verified
+authoritative live tip `687b71010f12c630eda8fb5eeb84adc941e02edd` (Merge PR #349); always re-resolve the live tip
+from Git. This entry grants **no** implementation authority and activates **no** phase or workstream.
+
+**What it records:**
+
+- **G-AISR-MATERIAL-DECISION** (read-only material-product-change decision package) — **COMPLETED AND ACCEPTED**;
+  owner verdict **B — ACCEPT WITH NON-BLOCKING OBSERVATIONS**. It produced the capability definition, responsibility
+  model, change-type / project-identity / content-origin / lifecycle models, Phase 4–7 + WS17 + STG dependency
+  matrix, forward-compatibility requirements, non-forgetting model, risk register, lean minimum-path, and owner
+  decisions D-AISR-01 … D-AISR-10. It authorized no implementation.
+- **G-AISR-DOC-01** (documentation-only canonical decision recording) — **CANDIDATE**. It creates the single
+  canonical AISR record `docs/governance/POST_OUTPUT_AI_ASSISTED_SPECIALIST_REFINEMENT_CANONICAL_DECISION.md`
+  (status `ACCEPTED PRODUCT DIRECTION` / `IMPLEMENTATION NOT AUTHORIZED`) plus concise cross-references in the Owner
+  Decision Register, this roadmap (append-only), the Current Project State, and the Capability Enrichment Register.
+  Candidate lifecycle status: `CANDIDATE / NOT YET REVIEWED / NOT YET MERGED / NOT YET CLOSED`.
+
+**Accepted owner decisions (recorded, non-authorizing):** D-AISR-01 capability direction accepted as `ACCEPTED FUTURE
+PRODUCT DIRECTION`; D-AISR-02 responsibility model (directional; WS17 not defined, STG not expanded); D-AISR-03
+material-identity-change → new-project rule (directional); D-AISR-04 content-origin target vocabulary (conceptual
+only); D-AISR-05 open-ended refinement within controls; D-AISR-06 full deterministic re-evaluation mandatory
+(preserves D17); D-AISR-07 phased dependency map — four numbered phases (Phase 4–7) + two protected workstreams
+(WS17, STG) + one cross-cutting integration lane (post-output refinement); seven distinct owners; governing map only;
+D-AISR-08 non-forgetting model; D-AISR-09
+Phase 3E artifact recovery required before exact UX amendment; D-AISR-10 next action = this documentation-only
+recording. Full detail governs in the canonical record; this roadmap entry does not duplicate it.
+
+**Preserved / not moved:** durable persistence / lifecycle / retention / deletion = **Phase 4**; accounts /
+authentication / ownership / access = **Phase 5**; domain specialization / truthful specialist labeling = **Phase 6**;
+AI-provider integration / privacy / cost / rate limits / failure behavior = **Phase 7**; **WS17** = NOT AUTHORIZED
+(scope undefined); **STG** = NOT AUTHORIZED / NOT EXPANDED; provider = NOT SELECTED / NOT AUTHORIZED; exact UX = NOT
+AUTHORIZED (Phase 3E artifact recovery required first); `main` reconciliation / release / deployment = NOT AUTHORIZED.
+Decision **D17** is preserved and not rewritten. No deferred capability becomes active because this record is merged.
+
+**Changed files (documentation-only):** **ADD**
+`docs/governance/POST_OUTPUT_AI_ASSISTED_SPECIALIST_REFINEMENT_CANONICAL_DECISION.md`; **MODIFY**
+`docs/governance/OWNER_DECISION_REGISTER.md` (concise AISR decision index),
+`docs/governance/CURRENT_PROJECT_STATE.md` (concise AISR current-state facts),
+`docs/governance/INVENTORAI_CAPABILITY_ENRICHMENT_REGISTER.md` (concise AISR/WS17/STG relationship reference); and
+this append-only `docs/governance/ACTIVE_EXECUTION_ROADMAP.md`. No `engine/`, `web/`, `tests/`, `domains/`,
+`database/`, `schemas/`, `prompts/`, `scripts/`, `.github/`, CI/runtime/deploy, `main`, raw-output, application/UI,
+or `ACTIVE_INCREMENT_CONTRACT.md` change; the Lean protocol and all historical evidence are unchanged; no prior
+roadmap history rewritten.
+
+**Next proposed gate (not started, not authorized here):** **NO IMPLEMENTATION GATE IS AUTHORIZED.** Any Phase 4
+entry contract, WS17 functional definition, STG authorization, provider selection, or exact-UX gate requires a
+**separate explicit owner decision** with separately bounded, tested, reviewed, accepted, merged, and verified
+contracts. RED path `DOCUMENTED NO-VALID-RED — DOCUMENTATION-ONLY RECORDING`. Append-only; prior history not
+rewritten. This candidate awaits independent review (Lean §5) and owner acceptance; **it authorizes no push, no PR,
+no merge, no implementation, and no phase activation.**

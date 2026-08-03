@@ -121,6 +121,25 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
   authorization** with separately bounded, tested, reviewed, accepted, merged, and verified contracts. **NEXT
   UX-INCREMENT / POST-PHASE-3 GATE: NOT AUTHORIZED / REQUIRES SEPARATE OWNER DECISION.**
 
+## AISR capability direction (Post-Output AI-Assisted Specialist Refinement)
+
+- **G-AISR-MATERIAL-DECISION:** COMPLETED AND ACCEPTED (owner verdict **B — ACCEPT WITH NON-BLOCKING OBSERVATIONS**).
+- **G-AISR-DOC-01:** documentation-only gate recording owner decisions D-AISR-01 … D-AISR-10.
+- **Capability:** `ACCEPTED FUTURE PRODUCT DIRECTION`. **Implementation:** `NOT AUTHORIZED`.
+- **Canonical source of truth:** `docs/governance/POST_OUTPUT_AI_ASSISTED_SPECIALIST_REFINEMENT_CANONICAL_DECISION.md`
+  (governs; not duplicated here). Indexed in the Owner Decision Register; concise reference in the Capability
+  Enrichment Register; append-only roadmap entry.
+- **Dependency model:** four numbered phases (Phase 4–7) + two protected workstreams (WS17, STG) + one cross-cutting
+  integration lane (post-output refinement) = **seven distinct owners**; obligation groups
+  `AISR-OBL-P4/P5/P6/P7/WS17/STG/REFINE` (post-output refinement is not a substitute for any of the six owners).
+- **Deferred:** Phase 4 (persistence/records/provenance/re-evaluation foundations) — NOT AUTHORIZED; Phase 5
+  (accounts/ownership/access) — NOT AUTHORIZED; Phase 6 (domain specialization / truthful specialist labeling) — NOT
+  AUTHORIZED; Phase 7 (AI-provider integration / privacy / cost / rate limits / failure) — NOT AUTHORIZED.
+- **WS17:** NOT AUTHORIZED (functional scope undefined; not defined by this record). **STG:** NOT AUTHORIZED / NOT
+  EXPANDED. **Provider:** NOT SELECTED / NOT AUTHORIZED. **Exact UX:** NOT AUTHORIZED — **Phase 3E artifact recovery
+  is required before any exact UX amendment** (D-AISR-09). Decision **D17** is preserved. **Next implementation gate:
+  NOT AUTHORIZED.**
+
 ## Product / runtime distinction
 
 - **Product identity:** multi-domain and cross-domain idea-development platform.

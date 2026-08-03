@@ -35,6 +35,14 @@ their capabilities:
   Controlled Unknown Progression; WS13 Guided Answer Support; WS14 Adaptive Follow-Up and Completion
   Logic; WS15 Guidance Consolidation; WS16 Final Deliverable Completion and full end-to-end owner
   validation (Gate); WS17 AI Coach (Post-gate)).
+- **Post-Output AI-Assisted Specialist Refinement (AISR)** is governed by
+  `POST_OUTPUT_AI_ASSISTED_SPECIALIST_REFINEMENT_CANONICAL_DECISION.md` (canonical, non-authorizing;
+  status `ACCEPTED PRODUCT DIRECTION` / `IMPLEMENTATION NOT AUTHORIZED`; owner decisions D-AISR-01 …
+  D-AISR-10). That record — not this register — governs AISR. Its directional responsibility model
+  records that **WS17 may later become the user-facing advisory umbrella** and that **STG (D13/CAP-01)
+  may later be a bounded specialist capability WS17 invokes where separately authorized**; it does
+  **not** define WS17's functional scope and does **not** expand or activate STG. WS17 and STG remain
+  governed by their own records above and remain NOT AUTHORIZED / NOT STARTED.
 
 No existing canonical capability register enumerates these fourteen concepts; this record does not
 duplicate or conflict with any existing authority.
