@@ -115,6 +115,9 @@ _NON_ANSWER_ACK = {
     "specialist_requested": "Recorded that specialist input is needed. No technical answer has been assumed.",
     "evidence_requested": "Recorded that evidence is needed. No evidence or result has been recorded.",
 }
+# G-UX-ANSWER-VALIDATION: shown only when the owner chooses to answer but submits
+# a whitespace-normalized empty response. Position-neutral; echoes no user content.
+ANSWER_REQUIRED_MESSAGE = "Enter an answer, or choose one of the response options below."
 
 # --- Workstream 4: structured criticality confirmation flow -------------------
 # (docs/governance/STRUCTURED_CRITICALITY_CAPTURE_INCREMENT_CONTRACT.md §7;
@@ -615,6 +618,10 @@ def show_session(sid):
         session_disclosure=SESSION_DISCLOSURE,
         closed_gaps=closed_gaps,
         interaction_ack=entry.pop("_interaction_ack", None) if entry else None,
+        # G-UX-ANSWER-VALIDATION: single-use empty-answer validation error, popped
+        # here so it renders exactly once after the Post/Redirect/Get and never
+        # repeats on a later plain GET. None on every normal load.
+        answer_error=entry.pop("_answer_error", None) if entry else None,
         # Increment 1B: advisory, derived, read-only responsibility guidance for
         # the current gap. Computed at render time; never stored, never affects
         # gates/scoring/maturity/closure/transcript/IdeaState. None when no gap.
@@ -839,6 +846,14 @@ def submit_answer(sid):
         import sys
         for g in state.gaps:
                     pass
+    else:
+        # G-UX-ANSWER-VALIDATION: the owner chose to answer (action == answered)
+        # but the whitespace-normalized response is empty. Set a SINGLE-USE
+        # transient error and preserve Post/Redirect/Get. The empty string is
+        # never assessed, scored, or written to transcript/gap/maturity/evidence/
+        # engine state (the assessment branch above is skipped). show_session GET
+        # pops the transient, so it displays once and is not repeated on refresh.
+        entry["_answer_error"] = ANSWER_REQUIRED_MESSAGE
     return redirect(url_for("show_session", sid=sid))
 
 
