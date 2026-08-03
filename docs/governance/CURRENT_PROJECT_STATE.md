@@ -16,10 +16,10 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
   (`git rev-parse origin/feature/atomic-json-session-persistence`). Do **not** trust a
   prose-pinned SHA.
   - **Current authoritative branch tip (last independently verified):**
-    `82cf45f94cf6a9701e10ad02c2f2d557add1ed55` (Merge PR #345 — G-UX-GUIDED-LABEL, the latest closed
+    `115239ffc4b4f2f1a108aae498cb1bbf016bbf08` (Merge PR #348 — G-UX-SNAPSHOT-DECISION, the latest closed
     bounded post-Phase-3 implementation gate) — always re-resolve the live tip from Git per the rule above.
   - **Prior recorded tip (historical):** `62ebf8f1a07e3c0f48e4637029d641d19c3f9b9e` (Merge PR #337 —
-    Phase 3D governance-record synchronization); superseded by PRs #338–#345 (see the Phase-and-gate section).
+    Phase 3D governance-record synchronization); superseded by PRs #338–#348 (see the Phase-and-gate section).
   - **Historical verified evidence tip:** `0330273b0d8b15fc66a285bcb9b866c6aa81b8e5`
     (PR #327 merge) — **historical evidence only; not the current tip.**
 - **`main`:** `0e89e4636399760965c9ff8086b465c90dbadf8e` — STALE / UNRECONCILED / NOT authority.
@@ -91,7 +91,10 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
   **PR #342** G-UX-SHELL shared application shell & accessibility/disclosure baseline (merge `43453ceb87936d3a041e6edcccc0e7a8f16237a7`);
   **PR #343** G-UX-TRUST temporary-session Data & Session trust surface S15 (merge `cc71ab7acb39d9f772dbb1a347c78bc53f86beae`);
   **PR #344** G-UX-ENTRY existing entry-surface alignment (merge `41e51ba070c71e9a1ca1c351a680abb73d72204e`);
-  **PR #345** G-UX-GUIDED-LABEL guided-answer-field label (merge `82cf45f94cf6a9701e10ad02c2f2d557add1ed55`).
+  **PR #345** G-UX-GUIDED-LABEL guided-answer-field label (merge `82cf45f94cf6a9701e10ad02c2f2d557add1ed55`);
+  **PR #346** G-GOV-SYNC-01 post-Phase-3 governance currency synchronization — documentation-only (merge `6b375121648e08b882fcc2b475a5986f6a9508ef`);
+  **PR #347** G-UX-ANSWER-VALIDATION guided empty-answer validation experience (merge `722cf1c5d9b1756503ba92b34d0938fca3d1b695`);
+  **PR #348** G-UX-SNAPSHOT-DECISION temporary-session Keep/Refine post-output decision — classification A, entry-point-only refinement (merge `115239ffc4b4f2f1a108aae498cb1bbf016bbf08`).
   These are **bounded, behavior-preserving** readiness/security/governance and UX accessibility-and-disclosure
   increments only. They do **not** activate Phase 3F bounded implementation broadly, Phase 4, WS17, or STG, and add
   no persistence, accounts, ownership, or later capability. Enumerated with full evidence in
@@ -103,12 +106,16 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
   Contract, and the Handover Template are now the binding continuity inputs).
 - **Current active work:** **NONE — no UX implementation increment is active.** The Phase 3E–3F
   governance-record synchronization is **MERGED and CLOSED (PR #338, merge `a7a141ce`)**, and the subsequent bounded
-  post-Phase-3 gates (PRs #339–#345) are all **merged, post-merge verified, and formally closed** (see the
-  Phase-and-gate section). The `ACTIVE_INCREMENT_CONTRACT.md` correctly records **NO ACTIVE CONTRACT**; the repository
-  awaits the next separately owner-authorized gate. No implementation authority is presently granted.
-- **This governance-currency synchronization:** the currency lag (older tip pointer; #338–#345 not recorded) is
-  **proposed to be resolved by the G-GOV-SYNC-01 documentation-only candidate**; the lag becomes **resolved only after
-  that candidate is independently reviewed, owner-accepted, merged, and post-merge verified**.
+  post-Phase-3 gates (PRs #339–#348) are all **merged, post-merge verified, and formally closed** (see the
+  Phase-and-gate section). The **last formally closed implementation gate is G-UX-SNAPSHOT-DECISION (PR #348, merge
+  `115239ffc4b4f2f1a108aae498cb1bbf016bbf08`)**. The `ACTIVE_INCREMENT_CONTRACT.md` correctly records **NO ACTIVE
+  CONTRACT**; the repository awaits the next separately owner-authorized gate. No implementation authority is presently granted.
+- **Governance-currency synchronization history:** the earlier currency lag (#338–#345 unrecorded) was resolved by
+  **G-GOV-SYNC-01 (PR #346, merge `6b375121648e08b882fcc2b475a5986f6a9508ef`), MERGED and CLOSED** — so it is no longer
+  a pending candidate. The subsequent lag (PR #346, PR #347 G-UX-ANSWER-VALIDATION, and PR #348 G-UX-SNAPSHOT-DECISION
+  unrecorded; older tip pointer) is **proposed to be resolved by the G-GOV-SYNC-02 documentation-only candidate**; that
+  lag becomes **resolved only after G-GOV-SYNC-02 is independently reviewed (where required), owner-accepted, merged,
+  and post-merge verified**.
 - **Next proposed gate (not started, not authorized here):** any move toward **Phase 3F bounded implementation
   increments** (or Phase 4, WS17, or a Structured Technical Guidance workstream) requires a **separate explicit owner
   authorization** with separately bounded, tested, reviewed, accepted, merged, and verified contracts. **NEXT
