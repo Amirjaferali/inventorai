@@ -530,6 +530,26 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% endif %}
 </section>
 
+{% if eligible %}
+{# G-UX-SNAPSHOT-DECISION: truthful post-output decision within the current
+   temporary session. Refine (primary) returns to the SAME guided session (same
+   sid); Keep (secondary) records only a single-use temporary acknowledgement.
+   No durable save, version, ownership, or approval is created or implied. #}
+<section class="decision-section" aria-labelledby="decision-heading" style="margin-top:34px;border-top:2px solid #2c3e50;padding-top:14px">
+  <h2 id="decision-heading" style="border-bottom:none;margin-top:0">Output review</h2>
+  <p class="group-lede">This is a working snapshot of your idea in the current temporary session. It has not been permanently saved or approved. Choose what to do next.</p>
+  {% if snapshot_kept_ack %}
+  <p id="snapshot-kept-ack" role="status" class="status-eligible" style="margin:12px 0">{{ snapshot_kept_ack }}</p>
+  {% endif %}
+  <div class="decision-actions" style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:12px">
+    <a class="decision-primary" href="{{ url_for('show_session', sid=sid) }}" style="display:inline-block;padding:10px 22px;background:#2c3e50;color:#fff;border-radius:4px;text-decoration:none;font-size:15px">Refine this idea</a>
+    <form method="POST" action="{{ url_for('keep_snapshot', sid=sid) }}" style="margin:0">
+      <button type="submit" class="decision-secondary" style="padding:10px 22px;background:#fff;color:#2c3e50;border:1px solid #2c3e50;border-radius:4px;font-size:15px;cursor:pointer">Keep current snapshot</button>
+    </form>
+  </div>
+</section>
+{% endif %}
+
 <p class="back-link"><a href="{{ url_for('show_session', sid=sid) }}">Back to session</a></p>
 
 {% endblock %}

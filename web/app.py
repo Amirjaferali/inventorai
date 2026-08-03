@@ -118,6 +118,14 @@ _NON_ANSWER_ACK = {
 # G-UX-ANSWER-VALIDATION: shown only when the owner chooses to answer but submits
 # a whitespace-normalized empty response. Position-neutral; echoes no user content.
 ANSWER_REQUIRED_MESSAGE = "Enter an answer, or choose one of the response options below."
+# G-UX-SNAPSHOT-DECISION: truthful, temporary-session acknowledgement for the
+# "Keep current snapshot" post-output decision. It selects the CURRENT deterministic
+# working snapshot for this temporary session only — it does not serialize, duplicate,
+# version, persist, approve, or create ownership. Echoes no idea/snapshot content.
+KEEP_SNAPSHOT_ACK = (
+    "Current working snapshot selected for this temporary session. "
+    "It has not been permanently saved or approved."
+)
 
 # --- Workstream 4: structured criticality confirmation flow -------------------
 # (docs/governance/STRUCTURED_CRITICALITY_CAPTURE_INCREMENT_CONTRACT.md §7;
@@ -685,7 +693,28 @@ def show_deliverable(sid):
         sid=sid,
         package=package,
         eligible=eligible,
+        # G-UX-SNAPSHOT-DECISION: single-use, per-sid "Keep current snapshot"
+        # acknowledgement, popped here so it renders once after the Post/Redirect/Get
+        # and never repeats on a later plain GET. None on every normal load.
+        snapshot_kept_ack=entry.pop("_snapshot_kept_ack", None) if entry else None,
     )
+
+
+@app.route("/session/<sid>/keep-snapshot", methods=["POST"])
+def keep_snapshot(sid):
+    # G-UX-SNAPSHOT-DECISION: "Keep current snapshot" — a meaningful but bounded
+    # post-output decision within the CURRENT temporary session. It records a
+    # single-use, per-sid presentation acknowledgement only and preserves
+    # Post/Redirect/Get. It NEVER serializes/duplicates/versions the snapshot,
+    # writes any durable store, mutates deterministic IdeaState/results/gaps/
+    # maturity/transcript/evidence/interaction-ledger, or leaks across session ids.
+    # The current deterministic state itself remains the working snapshot.
+    entry = SESSION_STORE.get(sid)
+    if not entry:
+        # Generic behavior: does not disclose whether the session previously existed.
+        return redirect(url_for("index"))
+    entry["_snapshot_kept_ack"] = KEEP_SNAPSHOT_ACK
+    return redirect(url_for("show_deliverable", sid=sid))
 
 # Per-experiment owner-defined success criteria (planning metadata only).
 # Field name on the form is "criterion__<experiment_id>". A criterion is a
