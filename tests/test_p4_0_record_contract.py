@@ -12,16 +12,19 @@ Scope limit: P4-0 proves that readiness-relevant contract data survives
 round-trip and can seed a FRESH `derive_readiness` call. P4-0 does NOT prove
 full deterministic replay from accepted source inputs (that is P4-2).
 """
+import dataclasses
 import json
 
 import pytest
 
 from engine.idea_state import (
+    AssertionRecord,
     IdeaState,
     OWNER_STATED,
     LEGACY_UNSPECIFIED,
     UNVALIDATED,
     INDEPENDENTLY_VERIFIED,
+    REASONED,
 )
 from engine.derived_readiness import derive_readiness
 
@@ -36,7 +39,19 @@ from engine.record_contract import (
     UnknownFieldError,
     InvalidReferenceError,
     RelationshipCycleError,
+    assertion_to_dict,
 )
+
+# Independent expected set of AssertionRecord's authoritative fields. Declared
+# HERE (not imported from record_contract's own _ASSERTION_FIELDS) so the
+# completeness guard cross-checks the contract against the authoritative
+# dataclass, not against the implementation's own constant. A new authoritative
+# field on AssertionRecord must break this test until the contract handles it.
+_EXPECTED_ASSERTION_FIELDS = frozenset({
+    "record_id", "disposition", "content", "gap_context", "iteration",
+    "provenance", "validation_status", "quality", "pending", "responsibility",
+    "resolves_gap", "contradicts", "supersedes", "superseded_by",
+})
 
 
 # --- Non-trivial fixture (idea_state only; no contract dependency) -----------
@@ -193,3 +208,76 @@ def test_appendonly_history_preserved_through_roundtrip():
     # the superseded record remains present (not collapsed/removed)
     assert any(r.record_id == "rec_3" and r.superseded_by == "rec_4"
                for r in restored.assertions)
+
+
+# ============================================================================
+# RC-1 (independent-review verdict C) — test-only authoritative-value coverage.
+# The prior fixture never exercised non-default pending/quality/resolves_gap, so
+# an implementation hardcoding pending=None/quality=None/resolves_gap=False
+# could still pass. These tests close that false-green gap and add a
+# dataclass-based field-completeness guard. No production code is changed.
+# ============================================================================
+def _state_with_nondefault_pending_and_quality():
+    """A state that additionally exercises non-default pending and quality via
+    the real runtime API: specialist_requested -> pending 'specialist';
+    evidence_requested -> pending 'evidence'; plus a non-None quality."""
+    st = sample_state()
+    r6 = st.record_interaction("specialist_requested",
+                               gap_context="mechanism", iteration=6)
+    r7 = st.record_interaction("evidence_requested",
+                               gap_context="mechanism", iteration=7)
+    # Sanity: the runtime API itself produced non-default pending values.
+    assert r6.pending == "specialist"
+    assert r7.pending == "evidence"
+    r6.quality = REASONED   # non-default (non-None) quality
+    return st, r6.record_id, r7.record_id
+
+
+def test_rc1_nondefault_pending_and_quality_roundtrip():
+    st, r6_id, r7_id = _state_with_nondefault_pending_and_quality()
+    restored = ProjectRecordContract.from_dict(_dumped(st))
+    by_id = {r.record_id: r for r in restored.assertions}
+    # non-default pending survives exactly
+    assert by_id[r6_id].pending == "specialist"
+    assert by_id[r7_id].pending == "evidence"
+    # non-default quality survives exactly
+    assert by_id[r6_id].quality == REASONED
+    # and the default (None) values elsewhere are preserved as None, not coerced
+    assert by_id["rec_1"].pending is None
+    assert by_id["rec_1"].quality is None
+
+
+def test_rc1_resolves_gap_true_survives_via_contract_api():
+    # The public IdeaState construction path always yields resolves_gap=False,
+    # so per the contract this field is proved through a valid serialized record
+    # dictionary passed through the governed contract API.
+    blob = _dumped(sample_state())
+    assert blob["assertions"][0]["resolves_gap"] is False   # default baseline
+    blob["assertions"][0]["resolves_gap"] = True
+    restored = ProjectRecordContract.from_dict(blob)
+    assert restored.assertions[0].resolves_gap is True
+    # survives a further serialize/restore round-trip unchanged
+    again = ProjectRecordContract.from_json(
+        ProjectRecordContract(idea_id=restored.idea_id,
+                              assertions=restored.assertions).to_json())
+    assert again.assertions[0].resolves_gap is True
+    # untouched records keep the default exactly
+    assert again.assertions[1].resolves_gap is False
+
+
+def test_rc1_field_completeness_guard_matches_authoritative_dataclass():
+    """Independent completeness guard: compare the AUTHORITATIVE dataclass field
+    names (dataclasses.fields(AssertionRecord)) against the expected set and the
+    contract's serialized keys. A new authoritative field added to
+    AssertionRecord must fail this test until the contract deliberately handles
+    it — preventing a future field from being silently omitted while green."""
+    actual = {f.name for f in dataclasses.fields(AssertionRecord)}
+    # 1) authoritative dataclass == the independently-declared expected set
+    assert actual == _EXPECTED_ASSERTION_FIELDS, (
+        "AssertionRecord authoritative fields changed (symmetric difference: "
+        "%s); update engine/record_contract.py and this proof deliberately."
+        % sorted(actual ^ _EXPECTED_ASSERTION_FIELDS))
+    # 2) the contract's serialization covers exactly the authoritative fields
+    sample = sample_state().assertions[0]
+    assert set(assertion_to_dict(sample)) == actual, (
+        "contract serialization keys do not match AssertionRecord fields")
