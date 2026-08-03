@@ -140,6 +140,21 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
   is required before any exact UX amendment** (D-AISR-09). Decision **D17** is preserved. **Next implementation gate:
   NOT AUTHORIZED.**
 
+## Phase 4 entry direction (Durable Data and Evidence Foundation)
+
+- **G-P4-ENTRY-DEFINITION:** COMPLETED AND ACCEPTED (owner verdict **B**). **G-P4-DOC-01:** documentation-only gate
+  recording owner decisions D-P4-01 … D-P4-10.
+- **Phase 4 entry direction:** `ACCEPTED` (Lean minimum durable-data & evidence foundations). **Phase 4
+  implementation:** `NOT AUTHORIZED`. **P4-0 implementation:** `NOT AUTHORIZED`. **Active implementation contract:**
+  NONE. **Next implementation gate:** NOT AUTHORIZED.
+- **Canonical source of truth:** `docs/governance/PHASE_4_DURABLE_DATA_AND_EVIDENCE_ENTRY_DECISION.md` (governs; not
+  duplicated here). Concerns the Product-Foundation Phase 4, distinct from the Path-N lane "Phase 4 runtime
+  integration". Obligation groups `P4-OBL-DATA/PROV/REEVAL/OUTPUT/LIFE/DELETE/MIGRATE/SEC` (Phase 4) plus deferred
+  `P4-OBL-P5/P6/P7/WS17/STG/UX/FUTURE`.
+- **Boundary:** Phase 4 = foundation owner only. **Phase 5** (accounts/ownership/access), **Phase 6** (domain),
+  **Phase 7** (provider), **WS17**, **STG** remain NOT AUTHORIZED; provider NOT SELECTED; exact UX NOT AUTHORIZED
+  (Phase 3E artifact recovery required first). Decision **D17** and the AISR seven-owner model are preserved.
+
 ## Product / runtime distinction
 
 - **Product identity:** multi-domain and cross-domain idea-development platform.

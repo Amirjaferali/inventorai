@@ -3180,3 +3180,60 @@ entry contract, WS17 functional definition, STG authorization, provider selectio
 contracts. RED path `DOCUMENTED NO-VALID-RED — DOCUMENTATION-ONLY RECORDING`. Append-only; prior history not
 rewritten. This candidate awaits independent review (Lean §5) and owner acceptance; **it authorizes no push, no PR,
 no merge, no implementation, and no phase activation.**
+
+---
+
+## Phase 4 (Durable Data and Evidence Foundation) — Entry Direction Accepted; Documentation-Only Recording (Append-Only)
+
+**Lane note:** Append-only record of two owner-gated Phase 4 entry-definition governance events. This entry rewrites
+**no** prior entry; **all earlier entries above remain historical evidence and are not retroactively changed.**
+Prepared on verified authoritative live tip `f99b8a24c03230ea46eaffba08667e01583b98df` (Merge PR #350); always
+re-resolve the live tip from Git. This entry grants **no** implementation authority and activates **no** phase. This
+concerns the **Product-Foundation Phase 4 — Durable Data and Evidence Foundation** (plan §5), distinct from the
+Path-N execution-lane "Phase 4 runtime integration".
+
+**What it records:**
+
+- **G-P4-ENTRY-DEFINITION** (read-only Phase 4 entry-definition & owner-decision package) — **COMPLETED AND
+  ACCEPTED**; owner verdict **B — ACCEPT WITH NON-BLOCKING OBSERVATIONS**. It produced the current-state diagnosis,
+  authoritative Phase 4 ceiling vs Lean minimum entry, mandatory foundations, Phase 4 / future-phase boundary matrix,
+  provenance implemented-vs-reserved split, full-re-evaluation definition, retention/deletion/migration/security
+  direction, the directional P4-0…P4-4 sequence, RED/GREEN feasibility, risk register, and owner decisions
+  D-P4-01 … D-P4-10. It authorized no implementation.
+- **G-P4-DOC-01** (documentation-only canonical entry recording) — **CANDIDATE**. It creates the single canonical
+  Phase 4 entry record `docs/governance/PHASE_4_DURABLE_DATA_AND_EVIDENCE_ENTRY_DECISION.md` (status `PHASE 4 ENTRY
+  DIRECTION ACCEPTED` / `PHASE 4 IMPLEMENTATION NOT AUTHORIZED` / `P4-0 IMPLEMENTATION NOT AUTHORIZED`) plus concise
+  cross-references in the Owner Decision Register, the Current Project State, and this append-only roadmap. Candidate
+  lifecycle status: `CANDIDATE / NOT YET REVIEWED / NOT YET MERGED / NOT YET CLOSED`.
+
+**Accepted owner decisions (recorded, non-authorizing):** D-P4-01 Lean minimum scope; D-P4-02 project-record &
+lifecycle foundation (project identity = data identity only); D-P4-03 accepted-input & append-only supersession (no
+silent overwrite); D-P4-04 extensible provenance (implement subset now; AI values not populated); D-P4-05 full
+deterministic re-evaluation foundation (targeted partial prohibited; cached reload ≠ re-eval); D-P4-06 retention/
+deletion/tombstone by data type; D-P4-07 migration & backward compatibility (ephemeral sessions never claimed saved;
+legacy schema not adopted); D-P4-08 security/isolation/transactions/failure minimums (no accounts/auth); D-P4-09
+phased P4-0…P4-4 direction (planning only); D-P4-10 next action = this documentation-only recording. Full detail
+governs in the canonical entry record; this roadmap entry does not duplicate it.
+
+**Preserved / not moved:** Phase 4 obligation groups `P4-OBL-DATA/PROV/REEVAL/OUTPUT/LIFE/DELETE/MIGRATE/SEC` remain
+`FOUNDATION DEFERRED TO PHASE 4` (implementation NOT authorized); **Phase 5** (accounts/ownership/access), **Phase
+6** (domain), **Phase 7** (provider), **WS17**, **STG** remain NOT AUTHORIZED with obligation groups
+`P4-OBL-P5/P6/P7/WS17/STG-*`; exact UX (`P4-OBL-UX-01`) requires Phase 3E artifact recovery; branching/restoration
+(`P4-OBL-FUTURE-01`) remain FUTURE RESERVED. **POST-OUTPUT REFINEMENT IS NOT A SUBSTITUTE FOR PHASE 4, PHASE 5,
+PHASE 6, PHASE 7, WS17, OR STG.** Decision **D17** and the AISR seven-owner model are preserved and not rewritten.
+
+**Changed files (documentation-only):** **ADD**
+`docs/governance/PHASE_4_DURABLE_DATA_AND_EVIDENCE_ENTRY_DECISION.md`; **MODIFY**
+`docs/governance/OWNER_DECISION_REGISTER.md` (concise D-P4 decision index),
+`docs/governance/CURRENT_PROJECT_STATE.md` (concise Phase 4 entry-direction facts); and this append-only
+`docs/governance/ACTIVE_EXECUTION_ROADMAP.md`. No `engine/`, `web/`, `tests/`, `domains/`, `database/`, `schemas/`,
+`prompts/`, `scripts/`, `.github/`, CI/runtime/deploy, `main`, raw-output, application/UI, `ACTIVE_INCREMENT_CONTRACT.md`,
+or AISR canonical-record change; the Lean protocol and all historical evidence are unchanged; no prior roadmap history
+rewritten.
+
+**Next proposed gate (not started, not authorized here):** **NO PHASE 4 IMPLEMENTATION GATE IS AUTHORIZED.** The
+recommended next action after this record is merged is a separately authorized Phase 4 entry increment contract for
+**P4-0** (readiness & storage-contract proof) — not Phase 4 implementation. RED path `DOCUMENTED NO-VALID-RED —
+DOCUMENTATION-ONLY RECORDING`. Append-only; prior history not rewritten. This candidate awaits independent review
+(Lean §5) and owner acceptance; **it authorizes no push, no PR, no merge, no implementation, and no phase
+activation.**
