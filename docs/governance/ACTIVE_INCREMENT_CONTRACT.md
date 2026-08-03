@@ -43,7 +43,7 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ## Active contract
 
 **Status:** NO ACTIVE CONTRACT. **Verified authoritative branch:** `feature/atomic-json-session-persistence`.
-**Verified authoritative tip:** `82cf45f94cf6a9701e10ad02c2f2d557add1ed55` (Merge PR #345 — G-UX-GUIDED-LABEL;
+**Verified authoritative tip:** `115239ffc4b4f2f1a108aae498cb1bbf016bbf08` (Merge PR #348 — G-UX-SNAPSHOT-DECISION;
 always re-resolve the live tip from Git). Since the PR #327 gate, the bounded **remediation program** was
 authorized and is now **FORMALLY CLOSED** (executable track COMPLETE): G-R01 CLOSED via PR #329/#330; DISC-007
 CLOSED via PR #331 (Domain Registry v1.0 test reconciliation) and PR #332 (v1.0 validation hardening); tip at that
@@ -60,9 +60,13 @@ PR #338 Phase 3E–3F governance sync (`a7a141ce7f25eab261e29a3e44930b76a9e7c1f4
 PR #341 G-PDSR (`745aaaf77aaad838d418f597710194f61db3c98e`); PR #342 G-UX-SHELL
 (`43453ceb87936d3a041e6edcccc0e7a8f16237a7`); PR #343 G-UX-TRUST (`cc71ab7acb39d9f772dbb1a347c78bc53f86beae`);
 PR #344 G-UX-ENTRY (`41e51ba070c71e9a1ca1c351a680abb73d72204e`); PR #345 G-UX-GUIDED-LABEL
-(`82cf45f94cf6a9701e10ad02c2f2d557add1ed55`). Current active work: **NONE** — no implementation work is presently
+(`82cf45f94cf6a9701e10ad02c2f2d557add1ed55`); PR #346 G-GOV-SYNC-01 governance currency synchronization —
+documentation-only (`6b375121648e08b882fcc2b475a5986f6a9508ef`); PR #347 G-UX-ANSWER-VALIDATION
+(`722cf1c5d9b1756503ba92b34d0938fca3d1b695`); PR #348 G-UX-SNAPSHOT-DECISION — classification A, entry-point-only
+refinement (`115239ffc4b4f2f1a108aae498cb1bbf016bbf08`). The **last formally closed implementation gate is
+G-UX-SNAPSHOT-DECISION (PR #348)**. Current active work: **NONE** — no implementation work is presently
 authorized; the next gate requires **separate explicit owner authorization**. Phase 3F bounded implementation
-broadly, **Phase 4, WS17, and STG remain NOT AUTHORIZED / NOT STARTED**. The block below is retained as the prior
+broadly, **Phase 4, Phase 5, WS17, and STG remain NOT AUTHORIZED / NOT STARTED**. The block below is retained as the prior
 completed contract of record (Audit-Disposition & Lean-Governance gate, PR #327).
 
 ```

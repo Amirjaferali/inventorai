@@ -38,6 +38,9 @@ deleted) per each gate's authorization.
 | G-UX-TRUST — temporary-session Data & Session trust surface (S15) | #343 | `cc71ab7acb39d9f772dbb1a347c78bc53f86beae` | Yes | Yes | Yes | preserved |
 | G-UX-ENTRY — existing entry-surface alignment | #344 | `41e51ba070c71e9a1ca1c351a680abb73d72204e` | Yes | Yes | Yes | preserved |
 | G-UX-GUIDED-LABEL — guided-answer-field label | #345 | `82cf45f94cf6a9701e10ad02c2f2d557add1ed55` | Yes | Yes | Yes | preserved |
+| G-GOV-SYNC-01 — governance currency synchronization (documentation-only) | #346 | `6b375121648e08b882fcc2b475a5986f6a9508ef` | Yes | Yes | Yes | preserved |
+| G-UX-ANSWER-VALIDATION — guided empty-answer validation experience | #347 | `722cf1c5d9b1756503ba92b34d0938fca3d1b695` | Yes | Yes | Yes | preserved |
+| G-UX-SNAPSHOT-DECISION — temporary-session Keep/Refine post-output decision (classification A) | #348 | `115239ffc4b4f2f1a108aae498cb1bbf016bbf08` | Yes | Yes | Yes | preserved |
 
 **PR #341 (G-PDSR) evidence note.** For this gate the permanent record states only:
 
@@ -50,6 +53,41 @@ deleted) per each gate's authorization.
 
 This does not weaken or revoke the gate's closure, does not reopen the gate, and does not imply the gate lacked
 appropriate governance; it records only the precision of the permanent evidence record for PR #341.
+
+**G-UX-SNAPSHOT-DECISION (PR #348) record.** Owner verdict **B — ACCEPT WITH NON-BLOCKING OBSERVATIONS**;
+independent verdict **B**; 0 blocking; no code correction required. Candidate `5f19799eba3fdc0c20437e307c7f6d47571a3942`.
+Implemented classification **A — ENTRY-POINT-ONLY REFINEMENT**. Behavior: truthful post-output review framing;
+**Keep current snapshot** records a single-use, per-`sid` temporary presentation acknowledgement only (no serialize/
+duplicate/version/durable-store; deterministic IdeaState/results/gaps/maturity/transcript/evidence unchanged);
+**Refine this idea** returns to the SAME existing guided temporary session with the same `sid`; no durable save,
+version, ownership, restoration, or complete-revision claim. Post-merge suite: 1661 collected / 1659 passed /
+0 failed / 1 skipped / 1 xfailed / 0 xpassed / exit 0.
+
+- **Classification definitions (corrected):** **A — ENTRY-POINT-ONLY REFINEMENT** · **B — BOUNDED IN-SESSION REVISION**
+  · **C — FULL ACCEPTED IN-SESSION REVISION FLOW.** The earlier authoring-report description of Option C as
+  "link-only with no meaningful Keep" is superseded and is not the record.
+- **Why Option B was not implemented (corrected rationale):** not because it inherently requires Phase 4 durable
+  storage. Proved reasons: the current user flow is forward-only; progression and evidence are append-only; no
+  prior-answer editing semantics exist; ordinary continuation cannot currently be distinguished safely from material
+  revision; no safe user-facing transition exists for replacing or superseding prior input; no complete full
+  re-evaluation mechanism after a material prior-answer revision is currently proved; implementing Option B now could
+  create silent overwrite or misleading provenance. A temporary in-memory bounded revision could theoretically exist
+  without Phase 4, but the present architecture does not yet support it truthfully.
+- **Preserved non-blocking observations (recorded, not blockers; do not authorize an automatic correction gate):**
+  (1) Refine this idea and the existing Back to session link share the same destination; (2) one new test contains a
+  vestigial non-asserting loop; (3) no direct negative test covers an ineligible-session Keep POST; (4) deterministic
+  non-mutation coverage uses representative fields rather than a complete deep-state comparison; (5) no direct
+  no-file-write assertion exists, while code inspection and R6 regression evidence prove no file-write path was
+  introduced; (6) some acknowledgement-copy tests are mildly exact-wording coupled; (7) 320px/430px evidence is
+  browser emulation, not physical-device testing; (8) live assistive-technology announcement of `role="status"`
+  remains unproved.
+- **PR #347 (G-UX-ANSWER-VALIDATION) preserved observations:** **F-1** a direct two-session isolation test was absent
+  (non-blocking; isolation empirically verified); **F-2** a theoretical stale transient exists only for a non-browser
+  client that ignores the redirect (accepted non-blocking). Neither observation automatically authorizes correction.
+- **Remaining product obligations (NOT completed by PR #348):** complete bounded in-session material revision
+  semantics; safe full re-evaluation after material revision; truthful revised-snapshot production; in-session
+  revision-difference visibility; broader end-to-end journey verification; any later decision about the duplicate
+  Refine / Back-to-session navigation. Option A did not complete the full accepted revision vision.
 
 **Nature of the gates:** bounded, behavior-preserving readiness/security/governance and UX
 accessibility-and-disclosure increments. They add **no** persistence, accounts, authentication, ownership, version
