@@ -41,7 +41,14 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status:** NO ACTIVE (authorized) IMPLEMENTATION CONTRACT.
+**Status:** NO ACTIVE (authorized) IMPLEMENTATION CONTRACT. A documentation-only **P4-1a — Durable-Store Proof**
+increment-contract **CANDIDATE** (implementation **NOT authorized**) is recorded in the section **"P4-1a Increment
+Contract Candidate (CONTRACT CANDIDATE ONLY — IMPLEMENTATION NOT AUTHORIZED)"** at the end of this file; it becomes an
+active contract only after independent review, owner acceptance, merge, post-merge verification, and a separate
+explicit P4-1a implementation authorization. Current live tip
+`06be080e1a12108a5f4cd84060b756f9ba7c1878` (Merge PR #354 — post-P4-0 governance-currency synchronization; always
+re-resolve from Git). The "Verified authoritative tip (synchronized closure pointer)" value below records the P4-0
+closure merge and is not re-synchronized by this candidate.
 
 **Current synchronized boundary (post-PR #353):** P4-0 — Readiness and Storage-Contract Proof was separately
 authorized, implemented, independently reviewed, corrected, merged through PR #353, post-merge verified, and
@@ -315,3 +322,185 @@ Merge authority:          Owner, separately (not by the execution agent).
 **Preserved (unchanged by this candidate):** decision **D17**; the **AISR seven-owner model** (post-output
 refinement is not a substitute for Phase 4/5/6/7/WS17/STG); Phase 4 implementation, P4-1, P4-2, Phase 5–7, WS17,
 STG, provider selection, and exact UX all remain **NOT AUTHORIZED**.
+
+---
+
+## P4-1a Increment Contract Candidate (CONTRACT CANDIDATE ONLY — IMPLEMENTATION NOT AUTHORIZED)
+
+**1. Gate identity & status.** P4-1a — Durable-Store Proof (first sub-increment of P4-1: a datastore-neutral durable
+record store proved without runtime/web integration). Produced under gate **G-P4-1A-DOC-01**.
+**Status:** `CONTRACT CANDIDATE ONLY` · `IMPLEMENTATION NOT AUTHORIZED` · `P4-1a NOT STARTED`. This block authorizes
+no code, tests, database creation/opening/migration, dependency, or runtime work. It governs the future P4-1a
+increment only after independent review (Lean §5), owner acceptance, merge, post-merge verification, and a **separate
+explicit P4-1a implementation authorization**.
+
+**2. Exact purpose.** Prove a **datastore-neutral repository/store abstraction with a Python standard-library SQLite
+reference adapter** that durably persists and restores the accepted-source record set (the P4-0 record contract),
+surviving an explicit store **close-and-reopen**, with atomic writes, rollback, project-scoped isolation,
+durability-safe identifiers, provenance preservation, and validation — **without** any runtime/`web/` integration.
+
+**3. Owner decisions (recorded; governs D-P4-1-01 … D-P4-1-10 in `OWNER_DECISION_REGISTER.md`).**
+- **D-P4-1-01 Split:** P4-1 = P4-1a (durable-store proof) + P4-1b (runtime integration), each separately gated.
+- **D-P4-1-02 Datastore:** datastore-neutral repository/store abstraction + a **stdlib SQLite reference adapter**;
+  SQLite is a reference/MVP adapter, **not a permanent production commitment**; future PostgreSQL/other adapters
+  remain possible through the abstraction.
+- **D-P4-1-03 Dependencies:** **no new runtime dependency**; stdlib `sqlite3` only; no SQLAlchemy/psycopg/Supabase/
+  provider SDK/server dependency.
+- **D-P4-1-04 Existing sessions:** current in-memory sessions are **not recoverable and will not be migrated**;
+  durability is future-facing (post-P4-1b). Do not imply existing temporary sessions can be restored.
+- **D-P4-1-05 Identifiers:** new durable records use **durability-safe UUID-based identifiers**; **existing serialized
+  identifiers are preserved exactly on load**; no adapter regenerates or silently rewrites existing record ids.
+- **D-P4-1-06 Pre-account isolation:** unguessable capability identifiers; all reads/writes **scoped by project**;
+  generic unavailable-project/session behavior preserved. **This is not authentication, ownership, or authorization**;
+  no accounts or user ownership.
+- **D-P4-1-07 Exclusions:** exclude FDC-001 persistence; P4-2 replay / durable output records / stale-output
+  invalidation / full re-evaluation; Phase 5 accounts/authentication/ownership; providers; ACV; PDF; Email;
+  production deployment.
+- **D-P4-1-08 No web integration:** P4-1a must not modify `web/app.py`; runtime creation/retrieval/answer-submission/
+  Keep-Refine/unavailable-session wiring is **P4-1b**.
+- **D-P4-1-09 Required proof:** durable project creation; durable accepted-input round-trip; close-and-reopen
+  persistence; atomic append; rollback with no partial write; append-only history preservation; cross-project
+  isolation; stable identifier preservation; provenance preservation + allowed mapping; unknown-contract-version
+  rejection; malformed-reference validation; readiness never persisted/accepted as authoritative; no P4-2 replay
+  claim.
+- **D-P4-1-10 Governance currency:** no additional governance-synchronization gate is required before defining P4-1a;
+  this gate records the decisions and the P4-1a contract candidate.
+
+**4. Authorized paths for future implementation.** ONE new datastore-neutral store module — proposed
+`engine/record_store.py` (repository/store protocol + SQLite reference adapter + mapping to/from the P4-0 record
+contract; exact name confirmed at the implementation gate); ONE focused test module — proposed
+`tests/test_p4_1a_record_store.py`. CONDITIONAL: a minimal config/env helper for the SQLite file path **only if
+proved necessary** and env-sourced with production fail-fast (mirroring the existing `INVENTORAI_*` pattern) — default
+is to accept an explicit path/`:memory:`-then-reopen argument and add **no** config path.
+
+**5. Prohibited & conditional paths.** PROHIBITED: `web/app.py` (D-P4-1-08); `engine/idea_state.py`,
+`engine/record_contract.py`, `engine/derived_readiness.py`, `engine/decision_workspace.py`; `database/` (including the
+dormant `supabase_schema.sql`); `schemas/`; `migrations/`; `requirements.txt`; `pytest.ini`; `prompts/`, `templates/`,
+`static/`, `domains/`, `scripts/`, `benchmark/`; CI/`.github/`; governance docs except a later closure recording;
+any Phase 5 / P4-2 / FDC-001 / provider path. CONDITIONAL: the config helper above. Any need beyond the authorized/
+conditional set → **STOP — CONTRACT AMENDMENT REQUIRED**.
+
+**6. Product & technical non-goals.** No runtime/web integration; no migration of current temporary sessions; no
+general migration framework; no accounts/authentication/ownership; no replay/output persistence/stale-invalidation/
+full re-evaluation; no retention-policy implementation, backup service, encryption-key management, deletion UI, or
+production operations; no new dependency; no datastore server.
+
+**7. Storage abstraction boundary.** A repository/store **protocol/interface** (responsibilities: create a project;
+append an accepted-input record; record supersession/contradiction links; load a project's records; scoped lookup)
+that is **datastore-agnostic**, so a future PostgreSQL/other adapter can be added without redesign. The store persists
+and restores exactly the **P4-0 record-contract shape** (reuse `record_contract.to_dict`/`from_dict`); it introduces
+no parallel schema authority and performs no evaluation.
+
+**8. SQLite adapter boundary.** A stdlib `sqlite3` reference adapter behind the protocol: real on-disk (or explicit
+file) SQLite; explicit **connection close and reopen**; project-scoped tables/rows keyed by project id; no ORM; no
+server; single-file backup semantics are noted but backup/restore tooling is out of scope.
+
+**9. Transaction & rollback rules.** Each mutation (project creation; accepted-input append with its link updates;
+supersession edge; contradiction edges) is **atomic** (single transaction). A failed write **rolls back with no
+partial record**. Loads validate the restored set via the record contract (reject invalid references / cycles /
+unknown version) and **fail closed** — never silently repair.
+
+**10. Identifier rules.** New durable records receive **durability-safe UUID-based** identifiers; **existing serialized
+identifiers (`sid`, `idea_id`, `record_id`) are preserved exactly on load and never regenerated or rewritten**. The
+P4-0 sequence-based `record_id` collision risk is resolved for **new** records only; previously serialized ids are
+honored verbatim.
+
+**11. Provenance rules.** Provenance/validation values are preserved **verbatim** (`OWNER_STATED`,
+`LEGACY_UNSPECIFIED`, and the existing validation vocabulary). Any allowed mapping to the future target vocabulary is
+**adapter-only**; **`AI_PROPOSED` / `USER_MODIFIED_AI_PROPOSAL` must not be populated** in P4-1a.
+
+**12. Project-isolation rules.** All reads/writes are **scoped by project id**; one project's records must never be
+returned for another. Identifiers are unguessable capability tokens (uuid). **This is lookup/isolation, not
+authentication or authorization** (Phase 5).
+
+**13. Unknown-version & malformed-record handling.** On load, an unknown/unsupported `contract_version` is rejected
+explicitly (via the P4-0 record contract); malformed or invalid-reference records are rejected and never silently
+coerced, dropped, or repaired.
+
+**14. RED criteria (behavior-based; not written in this gate).** RED-1 accepted-input data does **not** survive store
+**close/reopen** (impossible today — in-memory). RED-2 atomic **rollback is absent** (a failing multi-write leaves
+partial state). RED-3 **project isolation is absent** (cross-project read). RED-4 an unknown persisted
+`contract_version` is **not rejected through the future store**. RED-5 **append-only** records are not preserved after
+reload. RED-6 **stable ids and provenance** do not survive durable round-trip.
+
+**15. GREEN criteria.** Actual SQLite persistence; connection **close and reopen**; deterministic durable round-trip;
+transaction rollback with **no partial records**; cross-project isolation; **stable ids preserved**; append-only
+preserved; provenance preserved (+ allowed mapping, no AI values); unknown-version rejection; malformed-reference
+rejection; **no persisted or cached readiness accepted as authority** (readiness re-derived from restored records via
+the existing engine, never stored as a value); **provider-free and network-free** execution; **no runtime/web
+integration claim**; **full governed-suite non-regression** after implementation.
+
+**16. False-RED & false-GREEN controls.** RED must fail for missing **behavior**, not file/import absence, and must
+not be satisfiable by an empty/`NotImplementedError` stub. **Fake durability is prohibited:** module-level
+dictionaries; process-lifetime caches; reusing the same in-memory object; mocks that never close/reopen a real SQLite
+connection; assertions based only on file existence. GREEN must **actually close and reopen** a real SQLite connection
+and read the data back, use **non-trivial fixtures** (multiple records, multiple provenance/validation values, a
+supersession, a contradiction, ≥2 projects), assert deep field equality, and re-derive readiness rather than compare a
+cached value.
+
+**17. Security & privacy preservation.** Persist only accepted-source records (the contract already excludes derived/
+cached). Datastore file path/credential env-sourced with production fail-fast if adopted. No content logging. Validate
+all loaded (potentially untrusted) serialized data via the record contract. Prevent cross-project leakage by scoping.
+No backup exposure surface introduced (backup tooling out of scope). Preserve the **generic unavailable behavior**
+(never disclose whether a project exists) — enforced at P4-1b, and P4-1a must not introduce a leak.
+
+**18. R6/R16 preservation.** No `/tmp`/transcript disk write is introduced (R6); any datastore secret/path is
+env-sourced with production fail-fast and no hard-coded secret (R16). The security-containment tests remain green
+(non-regression).
+
+**19. No cached readiness as authority.** Readiness is **never** serialized, persisted, or restored as an authoritative
+value; it is always re-derived from restored accepted-source records by the existing engine. (Preserves D17 and the
+P4-0 boundary.)
+
+**20. P4-1a / P4-1b / P4-2 / Phase 5 separation.** **P4-1a:** durable store + SQLite adapter + mapping + transactions
++ durable ids + isolation + close/reopen + rollback/validation — **no web change**. **P4-1b:** runtime integration in
+`web/app.py` (create/retrieve/answer-submission/Keep-Refine/unavailable-session), future-facing migration. **P4-2:**
+deterministic replay, durable output records, stale-output invalidation, full re-evaluation. **Phase 5:** accounts,
+authentication, ownership, verified email, account-linked authorization. All remain separately gated and NOT
+AUTHORIZED.
+
+**21. Evidence-package requirements (future implementation gate).** Candidate SHA/parent/tree; changed paths; diffstat;
+RED evidence (failing for the right reason, incl. a stub-still-fails demonstration); GREEN evidence (real close/reopen
+round-trip); full governed-suite result; no-new-dependency proof (`requirements.txt` unchanged); `web/app.py`- and
+`idea_state.py`-untouched proof; bundle + sha256; §5A self-review.
+
+**22. Independent-review requirement.** This candidate and the future P4-1a implementation each require **formal Lean
+§5 independent review in a genuinely separate session**; same-session self-review/subagents do not qualify.
+
+**23. Owner publication & merge boundary.** Publication/PR/merge are owner-side (this environment's writes are
+org-policy blocked). No push/PR/merge in this gate; the candidate stops at delivery.
+
+**24. Mandatory stop.** On completion of this documentation candidate, stop; do not write RED tests or implementation
+code; do not create the store module; do not create/open/migrate a database; do not add a dependency; do not modify
+`web/app.py`; do not start P4-1a/P4-1b/P4-2 or Phase 5.
+
+### Reusable contract-template rendering
+```
+INCREMENT CONTRACT — P4-1a Durable-Store Proof   [CANDIDATE — NOT AUTHORIZED]
+Objective:                Datastore-neutral durable record store + stdlib SQLite reference adapter, proved by
+                          close/reopen round-trip + transactions + isolation, with no runtime/web integration.
+Owner authorization:      G-P4-1A-DOC-01 (documentation-only candidate); implementation NOT authorized.
+Risk level:               LEVEL 2 (new isolated engine module + focused test; no runtime/web/schema change).
+Allowed paths:            engine/record_store.py (new); tests/test_p4_1a_record_store.py (new);
+                          conditional minimal config/env helper only if proved necessary.
+Forbidden paths:          web/app.py, engine/idea_state.py, engine/record_contract.py, engine/derived_readiness.py,
+                          engine/decision_workspace.py, database/, schemas/, migrations/, requirements.txt,
+                          pytest.ini, prompts/, templates/, static/, domains/, scripts/, benchmark/, CI/.github,
+                          governance docs (except later closure), Phase 5 / P4-2 / FDC-001 / provider paths.
+Expected behavior:        Durable SQLite persistence surviving close/reopen; atomic writes + rollback; project
+                          isolation; durable-safe ids; provenance verbatim; validate-on-load; no readiness persisted.
+Non-goals:                Runtime/web integration; session migration; accounts/auth/ownership; replay/output
+                          persistence; retention policy; backup service; encryption key mgmt; deletion UI; provider.
+Acceptance criteria:      GREEN criteria (§15); false-RED/false-GREEN controls (§16); full-suite non-regression.
+Required tests:           RED-1..RED-6 → GREEN; deterministic, provider-free, network-free; real close/reopen.
+Tests not required:       Any server/provider/web-route test.
+Dependencies:             stdlib sqlite3 + existing deps only; NO new dependency.
+Unresolved decisions:     Exact module name; whether a config helper is proved necessary (default: no).
+Stop conditions:          Any need to modify web/app.py or any forbidden path → STOP — CONTRACT AMENDMENT REQUIRED.
+Independent-review scope: Per §5; plus real close/reopen durability; no fake durability; ids/provenance preserved;
+                          isolation not authorization; readiness never authoritative; no P4-1b/P4-2/Phase 5 work.
+Merge authority:          Owner, separately (not by the execution agent).
+```
+
+**Preserved (unchanged by this candidate):** decision **D17**; the **AISR seven-owner model**; P4-1b, P4-2, Phase 5–7,
+WS17, STG, provider selection, and exact UX all remain **NOT AUTHORIZED**.
