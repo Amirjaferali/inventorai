@@ -218,3 +218,45 @@ reference/MVP adapter, not a permanent production-datastore commitment.
 **Next eligible gate (owner consideration only):** P4-1b — READ-ONLY DISCOVERY AND CONTRACT-DEFINITION PREPARATION,
 `ELIGIBLE FOR SEPARATE OWNER CONSIDERATION ONLY`. This synchronization authorizes nothing further. Decision **D17**
 and the AISR seven-owner model are preserved; Phase 5 / WS17 / STG separation is preserved.
+
+## P4-1b-1 owner decisions (G-P4-1B-1-DOC-01) — contract candidate, IMPLEMENTATION NOT AUTHORIZED
+
+**Decision status:** ACCEPTED / RECORDED — NO IMPLEMENTATION AUTHORITY. The owner authorized a **documentation-only**
+gate to record the P4-1b decisions and define the bounded **P4-1b-1 — Runtime Store Construction and Durable Project
+Create/Load** contract candidate. **P4-1b READ-ONLY DISCOVERY is COMPLETE** (owner decision package delivered). Recording
+these decisions and the candidate grants **no** implementation, code, test, database, dependency, or runtime authority;
+P4-1b-1 implementation requires a **separate explicit owner authorization** after independent review and owner
+acceptance. **P4-1b-2, P4-2, and Phase 5 remain NOT AUTHORIZED / NOT STARTED.** Recorded on live tip
+`e4f9cd97e1b4329b98f1678412a6a36b9d7238bf` (Merge PR #357; always re-resolve from Git).
+
+| ID | Subject | Decision | Impl. authority | Evidence / boundary |
+|---|---|---|---|---|
+| D-P4-1B-01 | Split P4-1b into P4-1b-1 (store construction + durable project create/load) + P4-1b-2 (accepted-input append + Keep/Refine), each separately gated | ACCEPTED | NONE | P4-1b discovery package §18; P4-1b-2 NOT authorized by this gate |
+| D-P4-1B-02 | Runtime state model | ACCEPTED | NONE | SESSION_STORE = active in-memory cache; SQLite = durable mirror + cold-reload; rebuild via `load_contract(sid).to_state()` (the `sid` IS the durable `project_id`); readiness always re-derived; **no cache framework**; failed durability must not be presented as durable |
+| D-P4-1B-03 | Store lifecycle | ACCEPTED | NONE | one app-scoped `SqliteRecordStore`, single-process MVP; multi-worker/pool/per-request/WAL/production-DB/provider deferred; SQLite = reference/MVP adapter |
+| D-P4-1B-04 | Configuration | ACCEPTED | NONE | `INVENTORAI_DB_PATH`; safe local/test path; pytest `tmp_path`; **no repo-tracked `.db`/`.sqlite`/user-data file**; production fail-fast on missing/unusable/unsafe path; no new dependency; no uncontrolled `/tmp` user-content write (R6) |
+| D-P4-1B-05 | Durability start policy | ACCEPTED | NONE | new projects only; existing lost in-memory sessions not recoverable/migratable/claimable; live-session promotion excluded from first increment |
+| D-P4-1B-06 | Unified pre-account capability identifier (corrected — resolves BF-1) | ACCEPTED | NONE | **`sid` and durable `project_id` are the SAME `uuid4` value**; the route capability IS the durable project key; cold-load calls **`load_contract(sid)`**; **no separate `sid`→`project_id` mapping table, no `project_ids()` scan, no reversible mapping layer**; `project_ids()` remains prohibited from runtime/API/UI; temporary before Phase 5 (which may add account ownership + a separately governed external identifier); `new_record_id()` unused in P4-1b-1; **no change to `engine/record_store.py` or `engine/record_contract.py`** |
+| D-P4-1B-07 | Project creation order | ACCEPTED | NONE | validate → **one `uuid4` used as both `sid` and `project_id`** (+ `idea_id`) → IdeaState → **durable create with `project_id = sid`** → **then** `SESSION_STORE[sid]` entry → redirect; on failure fail closed, one generic response, no live session, no user-content log |
+| D-P4-1B-08 | Cold-load behaviour | ACCEPTED | NONE | request presents `sid`; SESSION_STORE empty → **`load_contract(sid)`** → P4-0 validation → `to_state()` → fresh `derive_readiness` → minimum runtime entry; no mapping lookup / `project_ids()` scan; transcript/`last_result` never restored as authoritative |
+| D-P4-1B-09 | Error translation | ACCEPTED | NONE | translate at the web boundary; `record_store.py` unmodified by default; `ProjectNotFound`/malformed-contract/DB-unavailable/unknown-SQLite → generic; log class/operation/non-content id only; never log content/payloads/transcript |
+| D-P4-1B-10 | Generic non-disclosure | ACCEPTED | NONE | one generic unavailable behaviour; never reveals non-existence, wrong capability, deletion, DB failure, malformed/unsupported contract |
+| D-P4-1B-11 | Product-truth boundary | ACCEPTED / RECORDED | NONE | P4-1b-1 may prove durable **new-project** create/restart-survival/cold-load only; must NOT claim accepted-answer persistence, Keep/Refine durability, durable output, version history, session recovery, or full save — those require P4-1b-2 |
+
+**BF-1 correction (independent-review verdict C — revise and re-review).** The original candidate `095e969` required
+`sid` and `project_id` to be **separate** UUIDs while routes continued to receive only `sid` — with no durable mechanism
+to resolve `project_id` from `sid` after restart, making cold-load infeasible within the authorized paths. Owner
+correction (recorded above as the corrected D-P4-1B-06 / D-P4-1B-07 / D-P4-1B-08): **`sid` and `project_id` are the same
+`uuid4` value**, so cold-load is simply `load_contract(sid)`. No mapping table, `project_ids()` scan, or reversible
+mapping layer is introduced; `engine/record_store.py` and `engine/record_contract.py` are unchanged. The original
+candidate `095e969` is **not amended** — this correction is a **new** candidate.
+
+**Decision-trace clarification.** The P4-1b READ-ONLY DISCOVERY package identified **14** owner decisions. This P4-1b-1
+contract records only the decisions required for P4-1b-1 (D-P4-1B-01 … D-P4-1B-11). Decisions concerning accepted-input
+append, duplicate/retry & idempotency, supersession/contradiction mutation, write-path failure/compensation, and
+Keep/Refine *durable* behaviour are **deferred to P4-1b-2 or later — not dropped**; they remain open.
+
+No P4-1b-1 decision grants implementation authority. **P4-1b-1 implementation, P4-1b-2, P4-2, and Phase 5 remain NOT
+AUTHORIZED.** Decision **D17** and the **AISR seven-owner model** are preserved. SQLite is recorded as a reference/MVP
+adapter only, not a permanent production-datastore commitment. The live application still uses temporary in-memory
+sessions and durably saves nothing until P4-1b implementation lands.

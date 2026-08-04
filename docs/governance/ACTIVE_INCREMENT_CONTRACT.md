@@ -41,7 +41,15 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status:** NO ACTIVE (authorized) IMPLEMENTATION CONTRACT.
+**Status:** ACTIVE CONTRACT-OF-RECORD = **P4-1b-1 Increment Contract Candidate** (defined below under gate
+**G-P4-1B-1-DOC-01**) — **CONTRACT CANDIDATE ONLY · IMPLEMENTATION NOT AUTHORIZED · P4-1b-1 NOT STARTED**. This
+records the owner-approved P4-1b decisions and defines the bounded P4-1b-1 (Runtime Store Construction and Durable
+Project Create/Load) implementation contract candidate. It grants **no** code, test, database, dependency, or runtime
+authority: it governs future P4-1b-1 work only after a genuinely separate-session independent review (Lean §5), owner
+acceptance, publication, merge, post-merge verification, and a **separate explicit P4-1b-1 implementation
+authorization**. **P4-1b-2, P4-2, and Phase 5 remain NOT AUTHORIZED / NOT STARTED**; **P4-1b READ-ONLY DISCOVERY is
+COMPLETE** (owner decision package delivered) and authorizes nothing further. Product-truth boundary is unchanged: the
+live application still uses temporary in-memory sessions and durably saves nothing until P4-1b implementation lands.
 
 **P4-1a closure boundary (post-PR #356):** the **P4-1a — Durable-Store Proof** increment was: recorded as a contract
 candidate (merged PR #355); **separately and explicitly authorized for implementation by the owner** (a distinct
@@ -131,6 +139,271 @@ Independent-review scope: Per protocol §5, plus: banners accurate; carve-out bo
                           implementation authority granted; roadmap prefix preserved.
 Merge authority:          Owner, separately (not by the execution agent).
 ```
+
+---
+
+## P4-1b-1 Increment Contract Candidate (CONTRACT CANDIDATE ONLY — IMPLEMENTATION NOT AUTHORIZED)
+
+**1. Gate identity & status.** P4-1b-1 — Runtime Store Construction and Durable Project Create/Load (the first
+runtime-integration sub-increment of P4-1b, itself the first runtime half of P4-1). Produced under gate
+**G-P4-1B-1-DOC-01** on live tip `e4f9cd97e1b4329b98f1678412a6a36b9d7238bf` (Merge PR #357; always re-resolve from Git).
+**Status:** `CONTRACT CANDIDATE ONLY` · `IMPLEMENTATION NOT AUTHORIZED` · `P4-1b-1 NOT STARTED`. This block authorizes
+no `web/app.py` change, no test, no database creation/opening, no dependency, and no runtime work. It governs the
+future P4-1b-1 increment only after independent review (Lean §5, genuinely separate session), owner acceptance,
+publication, merge, post-merge verification, and a **separate explicit P4-1b-1 implementation authorization**.
+
+**2. Authorized objective (future implementation).** Prove, through the application boundary, that a **new project is
+durably created at `/start`, survives a real process/store restart, and is cold-loaded back into runtime** from the
+merged P4-1a durable store (`engine.record_store.SqliteRecordStore`) via the P4-0 record contract — while preserving
+the existing generic unavailable behaviour and R6/R16 containment. The future implementation may ONLY: construct the
+store at application startup; resolve the SQLite path safely; create a durable empty/new project during `/start`;
+use the **`sid` as the durable `project_id`** (one unified capability); load a durable project after memory loss via
+**`load_contract(sid)`**; rebuild minimum runtime state; preserve generic unavailable behaviour; translate storage
+errors at the web boundary; and prove real restart/cold-load behaviour. Nothing else.
+
+**3. Owner decisions (recorded; governs D-P4-1B-01 … D-P4-1B-11 in `OWNER_DECISION_REGISTER.md`).**
+- **D-P4-1B-01 Split:** P4-1b = **P4-1b-1** (Runtime Store Construction + Durable Project Create/Load) + **P4-1b-2**
+  (Accepted-Input Append + Keep/Refine Runtime Integration). Each requires a separate contract, separate implementation
+  authorization, RED/GREEN evidence, independent review, owner publication decision, owner merge decision, post-merge
+  verification, and formal closure. **P4-1b-2 is NOT authorized by this gate.**
+- **D-P4-1B-02 Runtime state model:** for the current MVP, `SESSION_STORE` remains the active in-memory state during a
+  live process; **SQLite is the durable mirror and cold-reload source**; when memory is absent and a durable project
+  exists, state may be rebuilt from `load_contract(sid).to_state()` (the `sid` IS the durable `project_id`);
+  **readiness must always be derived again**;
+  **no cache framework or invalidation platform is authorized**. If durable persistence fails, the application must not
+  present the in-memory state as successfully durable.
+- **D-P4-1B-03 Store lifecycle:** **one application-scoped `SqliteRecordStore` instance** for the current
+  single-process MVP. Explicitly defer multi-worker topology, connection pools, per-request connection architecture,
+  WAL tuning, production database selection, and provider-managed databases. SQLite remains a reference/MVP adapter.
+- **D-P4-1B-04 Configuration:** use **`INVENTORAI_DB_PATH`**. Local/test execution may use a safe explicit file path;
+  **pytest must use test-managed temporary directories**; **no repository-tracked `.db`/`.sqlite`/user-data file is
+  permitted**; **production must fail fast** when the path is missing, unusable, or unsafe; **no new runtime
+  dependency**. The exact local default must be specified truthfully and must not write user content to an uncontrolled
+  `/tmp` transcript path (R6).
+- **D-P4-1B-05 Durability start policy:** P4-1b-1 durability applies to **newly created projects only**. Existing lost
+  in-memory sessions are **not recoverable, not migratable, and must not be claimed restorable**. Promotion of
+  already-live pre-integration sessions is **excluded** from the first increment.
+- **D-P4-1B-06 Unified pre-account capability identifier (correction, BF-1):** for P4-1b-1, **`sid` and the durable
+  `project_id` are the SAME `uuid4` value** — one unguessable pre-account capability used for route/session lookup,
+  durable project lookup, and cold-load after process restart. The route capability IS the durable project key:
+  **cold-load calls `load_contract(sid)`**; **no separate `sid`→`project_id` mapping table, no scan through
+  `project_ids()`, and no derived/reversible mapping layer is introduced**. It is **lookup only** — not authentication,
+  ownership, account authorization, or verified identity. **`project_ids()` must never be exposed** through route, API,
+  template, UI, or user-facing runtime behaviour. This capability model is temporary before Phase 5 (which may later
+  introduce account ownership and a separately governed external/public identifier model). P4-1b-1 does **not** use
+  `new_record_id()` (accepted-input record creation is P4-1b-2). **No modification to `engine/record_store.py` or
+  `engine/record_contract.py` is required by this model** (`create_project(contract, project_id=sid)` and
+  `load_contract(sid)` are already supported by the merged P4-1a store).
+- **D-P4-1B-07 Project creation order:** (1) validate the `/start` request; (2) generate **one** `uuid4` capability
+  value used as **both** `sid` and `project_id`, plus an `idea_id`; (3) construct the initial `IdeaState`; (4) create
+  the durable project through the store **with `project_id = sid`**; (5) **only after durable creation succeeds**,
+  create the `SESSION_STORE[sid]` entry; (6) redirect to the session. On durable-creation failure: do not advertise or
+  retain a successful live session; fail closed; show one generic unavailable response; log no user content.
+- **D-P4-1B-08 Cold-load behaviour:** when a valid capability (`sid`) is presented and `SESSION_STORE` has no live
+  entry: attempt **`load_contract(sid)`** (the `sid` IS the durable `project_id`); validate through the existing P4-0
+  record contract; reconstruct `IdeaState` from the contract; derive readiness freshly; create only the minimum
+  temporary runtime entry needed; **do not restore transcript or cached `last_result` as authoritative**. No
+  `sid`→`project_id` mapping lookup and no `project_ids()` scan is used.
+- **D-P4-1B-09 Error translation:** translate storage errors **at the web integration boundary**; **do not modify
+  `engine/record_store.py` by default**. Minimum categories: `ProjectNotFound` → generic unavailable; malformed/
+  unsupported contract → generic unavailable, fail closed; database unavailable/locked/path error → generic temporarily
+  unavailable; unknown SQLite error → generic unavailable, fail closed. Permitted internal logging: error class,
+  operation, non-content technical identifier when safe. Prohibited logging: idea text, answers, assertion payloads,
+  serialized records, transcript content.
+- **D-P4-1B-10 Generic non-disclosure:** the user-facing result must not reveal whether a project never existed, a
+  capability was wrong, a project was deleted/unavailable, the database failed, the contract was malformed, or the
+  contract version was unsupported. Use **one generic unavailable behaviour** consistent with existing session handling.
+- **D-P4-1B-11 Product-truth boundary:** P4-1b-1 may prove durable creation of a **new** project, process-restart
+  survival of that created project, and cold loading into runtime. It must **not** claim: accepted answers are durably
+  persisted; Keep creates a durable snapshot; Refine is durably recorded; durable output exists; version history
+  exists; recovery of existing temporary sessions; or that user ideas are fully saved. **Full accepted-input durability
+  requires P4-1b-2.**
+
+**4. Authorized paths for future implementation.** `web/app.py` (store construction at startup; `INVENTORAI_DB_PATH`
+resolution; durable project creation in `/start`; `sid`↔`project_id` association; cold-load of a durable project;
+minimum runtime-state rebuild; web-boundary storage-error translation; preserved generic unavailable behaviour);
+ONE focused test module — **`tests/test_p4_1b1_runtime_project_persistence.py`** (new).
+
+**5. Conditional paths.** A small new **configuration helper** (e.g. a `web/`-side path resolver) **only if** inline
+configuration would make `web/app.py` unsafe or untestable — env-sourced with production fail-fast, mirroring the
+existing `INVENTORAI_*` pattern; default is inline resolution and **no** new file. Existing tests
+(`tests/test_web_app.py`, `tests/test_security_containment_r6_r16.py`) may be updated **only** to inject a temporary DB
+safely; existing assertions must not be weakened.
+
+**6. Prohibited paths (by default).** `engine/record_store.py`, `engine/record_contract.py`, `engine/idea_state.py`,
+`engine/derived_readiness.py`, `requirements.txt`, `database/` (incl. dormant `supabase_schema.sql`), `schemas/`,
+`pytest.ini`, templates/static files, `prompts/`, `domains/`, `scripts/`, `benchmark/`, CI/`.github/`/deployment files,
+and any Phase 5 / P4-2 / P4-1b-2 / FDC-001 / provider path. **No new `sid`→`project_id` mapping module and no new
+database table/schema are introduced** (the unified capability makes both unnecessary — D-P4-1B-06; the merged P4-1a
+schema is reused unchanged). If implementation genuinely requires a prohibited or unlisted path → **STOP — CONTRACT
+AMENDMENT REQUIRED**.
+
+**7. Store lifecycle.** One app-scoped `SqliteRecordStore` constructed at startup over a real on-disk SQLite file
+resolved from `INVENTORAI_DB_PATH`; single-process MVP; `close()` on teardown where applicable. Multi-worker/pooling/
+WAL/production-datastore topology is explicitly deferred (D-P4-1B-03).
+
+**8. Configuration rules.** `INVENTORAI_DB_PATH` env-sourced; safe explicit local/test path; pytest uses `tmp_path`;
+**no repository-tracked database file**; production fail-fast on missing/unusable/unsafe path; **no new dependency**
+(stdlib `sqlite3`); no uncontrolled `/tmp` user-content write (R6).
+
+**9. Project creation ordering.** Exactly D-P4-1B-07 (validate → **one `uuid4` used as both `sid` and `project_id`**
+(+ `idea_id`) → IdeaState → **durable create with `project_id = sid`** → `SESSION_STORE[sid]` entry → redirect),
+durable-create as the commit point; fail closed with one generic response and no live session on failure.
+
+**10. Cold-load behaviour.** Exactly D-P4-1B-08: **`load_contract(sid)`** (the `sid` IS the durable `project_id`) →
+P4-0 validation → `to_state()` → fresh `derive_readiness` → minimum runtime entry; transcript and cached `last_result`
+are never restored as authority; no mapping lookup or `project_ids()` scan.
+
+**11. Source-of-truth model.** SESSION_STORE = active working cache within a live process; SQLite = durable mirror and
+cold-reload source (keyed by the `sid`=`project_id` capability); readiness always re-derived; no cache-invalidation
+framework and **no `sid`→`project_id` mapping module or table** (D-P4-1B-02, D-P4-1B-06). This is not P4-2 replay.
+
+**12. Capability-isolation boundary.** A **single** unguessable `uuid4` used as both `sid` and `project_id` (no separate
+identifier, no mapping); project-scoped store access; lookup/isolation only — **not** authentication/ownership/
+authorization (Phase 5). `project_ids()` never exposed; cross-project isolation proved with two distinct capabilities.
+
+**13. Error translation.** Exactly D-P4-1B-09 — at the web boundary; `record_store.py` unmodified by default; storage
+errors mapped to generic user-facing responses; non-content technical logging only.
+
+**14. Generic unavailable behaviour.** Exactly D-P4-1B-10 — one generic unavailable response consistent with the
+existing missing-session redirect; never discloses project existence, capability validity, deletion, DB failure, or
+contract/version state.
+
+**15. Product-truth boundary.** Exactly D-P4-1B-11 — P4-1b-1 proves durable **new-project** create/restart-survival/
+cold-load only; **no accepted-answer persistence, Keep/Refine durability, durable output, version history, session
+recovery, or full-save claim** (all P4-1b-2 or later).
+
+**16. RED criteria (behaviour-based; not written in this gate).** Each RED states its expected current failure, the
+genuine missing capability, a false-RED control, and the prohibited shortcut.
+- **RED-1** `/start` does **not** currently create a durable project. *Current failure:* no store call exists (grep-proven
+  unwired). *Missing capability:* durable project creation at the boundary. *False-RED control:* assert a real row via a
+  reopened store, not an in-memory dict. *Prohibited shortcut:* asserting only `SESSION_STORE` contents.
+- **RED-2** a project does **not** survive clearing `SESSION_STORE` and reconstructing the app. *Failure:* in-memory
+  state is lost on restart. *Missing:* durable persistence. *False-RED control:* **preserve only the route `sid` value**
+  across restart; real store close + a new store on the same file; discard the original app/store/SESSION_STORE/
+  IdeaState objects. *Shortcut:* reusing a module-global or stale memory.
+- **RED-3** a cold request **cannot** currently load durable state. *Failure:* missing-sid redirects with nothing to
+  load. *Missing:* cold-load path. *Control:* clear SESSION_STORE; create a fresh runtime/store; call the route with the
+  **same `sid`**; prove **`load_contract(sid)`** restores the correct project. *Shortcut:* same-object reuse, a mapping
+  table, or a `project_ids()` scan.
+- **RED-4** failed project creation must **not** leave a live `SESSION_STORE` entry. *Failure:* no durable step, so no
+  fail-closed ordering. *Missing:* create-before-advertise ordering + compensation. *Control:* inject a durable-write
+  failure; assert no live entry and one generic response. *Shortcut:* swallowing the error.
+- **RED-5** unknown project capability must remain **generic**. *Failure/known-good:* generic redirect exists; guard
+  against regression. *Missing:* durable-missing path kept generic. *Control:* assert identical generic response.
+  *Shortcut:* leaking existence.
+- **RED-6** malformed or unsupported stored contract must **fail closed**. *Failure:* no load-validation path yet.
+  *Missing:* fail-closed cold-load. *Control:* store a bad `contract_version`; assert generic unavailable, no traceback.
+  *Shortcut:* 500/traceback or silent repair.
+- **RED-7** database-unavailable behaviour must remain **generic**. *Failure:* no DB path/handling yet. *Missing:*
+  boundary translation. *Control:* point at an unusable path; assert generic temporarily-unavailable. *Shortcut:* raw
+  `sqlite3` error to the user.
+- **RED-8** cross-project capability isolation must hold. *Failure:* project scoping not exercised at runtime. *Missing:*
+  project-scoped cold-load. *Control:* create two projects; assert neither loads the other. *Shortcut:* shared id.
+- **RED-9** readiness must be **freshly derived** after cold load. *Failure:* no reload path. *Missing:* re-derivation.
+  *Control:* compare `derive_readiness` of the cold-loaded `to_state()` against a fresh derivation; never a stored value.
+  *Shortcut:* persisting/restoring a readiness value.
+- **RED-10** transcript and cached `last_result` must **not** be restored as authoritative. *Failure:* nothing durable
+  yet. *Missing:* authoritative-input boundary. *Control:* assert the cold entry carries no restored transcript/
+  last_result authority. *Shortcut:* persisting transcript (violates R6).
+- **RED-11** **no repository-tracked database file** may be created. *Failure/guard.* *Missing:* safe path discipline.
+  *Control:* assert the SQLite file lives only under `tmp_path`; `git status` clean of DB artifacts. *Shortcut:* writing
+  a DB into the repo tree or uncontrolled `/tmp`.
+
+**17. GREEN criteria (future implementation).** Real SQLite file in a pytest-managed temporary directory; `/start`
+durably creates a new project keyed by the `sid`=`project_id` capability; the store connection and original runtime
+objects are discarded; a **new** runtime/store instance opens the **same** database; `SESSION_STORE` begins empty; a
+cold request **presenting the same `sid`** reconstructs the correct `IdeaState` via **`load_contract(sid)`** (no mapping
+table, no `project_ids()` scan, no stale memory); readiness is newly derived; no transcript or cached result becomes
+authoritative; failed durable creation creates no live session; unknown/malformed/unavailable conditions produce
+**one** generic response; two capabilities cannot cross-load each other; **no `project_ids()` exposure**; **no new
+dependency**; **no P4-1b-2 behaviour**; **full governed suite remains green**.
+
+**18. False-RED & false-GREEN controls.** RED must fail for missing **behaviour**, not import/file absence, and must
+not be satisfiable by an empty stub. **False-green is prohibited through:** reused `SESSION_STORE`; a reused `app`
+instance when restart behaviour is claimed; a reused store connection; a reused `IdeaState` object; a mocked/fake
+datastore; `:memory:` SQLite for restart proof; database-file-existence-only assertions; direct insertion of expected
+state into `SESSION_STORE`; bypassing route behaviour by calling store methods only; **a `sid`→`project_id` mapping
+table, a `project_ids()` scan, or any stale-memory substitute for `load_contract(sid)`**; or weakening existing
+missing-session or security assertions. GREEN must exercise the **route** through Flask `test_client`, preserve **only
+the `sid` value** across restart, actually close and reopen a **real** SQLite file, discard originals, and assert
+reconstructed field equality.
+
+**19. Security & privacy preservation.** Preserve **R6** (no transcript/user-content disk or log write) and **R16**
+(env-sourced debug/secret, no hard-coded values, production fail-fast); no repository-tracked DB; generic
+non-disclosure; project-scoped store access; malformed-record fail-closed on load; no provider/network call; no
+auth/ownership overclaim. Deletion/retention, backup exposure, permissions hardening, and oversized-content DoS caps
+are **deferred** (Phase 5 / production hardening) and out of P4-1b-1 scope.
+
+**20. P4-1b-1 / P4-1b-2 / P4-2 / Phase 5 separation.** **P4-1b-1:** store construction + durable **new-project**
+create/load + cold-load + web-boundary error translation — no accepted-input append. **P4-1b-2:** `append_record`
+integration in `submit_answer`, durable accepted-input mutation, duplicate/retry handling, Keep/Refine runtime
+integration. **P4-2:** deterministic replay, durable output records, stale-output invalidation, full re-evaluation.
+**Phase 5:** accounts, authentication, ownership, verified email, account-linked authorization. All beyond P4-1b-1
+remain separately gated and NOT AUTHORIZED.
+
+**20a. Decision-trace clarification.** The P4-1b READ-ONLY DISCOVERY package identified **14** owner decisions. This
+P4-1b-1 contract records only the decisions required for P4-1b-1 (D-P4-1B-01 … D-P4-1B-11 as corrected here). The
+remaining discovery decisions — accepted-input append/write-path, duplicate/retry & idempotency,
+supersession/contradiction mutation strategy, failure/compensation on the write path, and the Keep/Refine *durable*
+behaviour — are **deferred to P4-1b-2 or later, not dropped**; they remain open and will be recorded when their gate is
+authorized. Nothing here resolves or discards them.
+
+**21. Test sequence (future implementation gate).** (1) focused P4-1b-1 RED tests; (2) focused GREEN tests;
+(3) existing web-route tests (`tests/test_web_app.py`); (4) P4-1a store tests (`tests/test_p4_1a_record_store.py`);
+(5) P4-0 record-contract tests (`tests/test_p4_0_record_contract.py`); (6) R6/R16 tests
+(`tests/test_security_containment_r6_r16.py`); (7) protected regression tests; (8) full governed suite. No exact future
+count is predicted; existing tests may be updated only to inject a temporary DB safely, without weakening assertions.
+
+**22. Evidence-package requirements (future implementation gate).** Candidate SHA/parent/tree; changed paths; diffstat;
+RED evidence (failing for the right reason, incl. a stub-still-fails demonstration); GREEN evidence (real restart/
+cold-load round-trip through the route); full governed-suite result; no-new-dependency proof (`requirements.txt`
+unchanged); `record_store.py`/`record_contract.py`/`idea_state.py`/`derived_readiness.py`-untouched proof; no
+repository-tracked DB proof; bundle + sha256; §5A self-review.
+
+**23. Independent-review requirement.** This candidate and the future P4-1b-1 implementation each require **formal Lean
+§5 independent review in a genuinely separate session**; same-session self-review/subagents do not qualify.
+
+**24. Owner publication & merge boundary.** Publication/PR/merge are owner-side (this environment's writes are
+org-policy blocked). No push/PR/merge in this gate; the candidate stops at delivery.
+
+**25. Mandatory stop.** On completion of this documentation candidate, stop; do not write RED tests or implementation
+code; do not modify `web/app.py`; do not create/open a database; do not add a dependency; do not start P4-1b-1,
+P4-1b-2, P4-2, or Phase 5.
+
+### Reusable contract-template rendering
+```
+INCREMENT CONTRACT — P4-1b-1 Runtime Store Construction & Durable Project Create/Load   [CANDIDATE — NOT AUTHORIZED]
+Objective:                Construct the merged P4-1a store at startup; durably create a NEW project at /start; survive
+                          a real process/store restart; cold-load it back into runtime via the P4-0 contract — no
+                          accepted-input append, no Keep/Refine durability.
+Owner authorization:      G-P4-1B-1-DOC-01 (documentation-only candidate); implementation NOT authorized.
+Risk level:               LEVEL 2 (bounded web/app.py runtime wiring + focused test; no engine/schema/dependency change).
+Allowed paths:            web/app.py; tests/test_p4_1b1_runtime_project_persistence.py (new);
+                          conditional web-side config helper only if inline config is unsafe/untestable;
+                          existing web/security tests updated only to inject a temporary DB (no assertion weakening).
+Forbidden paths:          engine/record_store.py, engine/record_contract.py, engine/idea_state.py,
+                          engine/derived_readiness.py, requirements.txt, pytest.ini, database/, schemas/, templates/,
+                          static/, prompts/, domains/, scripts/, benchmark/, CI/.github, P4-1b-2/P4-2/Phase 5 paths.
+Expected behavior:        Durable new-project creation surviving restart; cold-load reconstruction; fresh readiness;
+                          generic unavailable non-disclosure; R6/R16 preserved; no project_ids() exposure.
+Non-goals:                Accepted-input append; Keep/Refine durability; duplicate/retry; relationship mutation;
+                          transcript/last_result/output/readiness persistence; migration; accounts/auth; replay.
+Acceptance criteria:      GREEN criteria (§17); false-RED/false-GREEN controls (§18); full-suite non-regression.
+Required tests:           RED-1..RED-11 → GREEN; real restart/cold-load via Flask test_client; real tmp_path SQLite.
+Tests not required:       Any provider/network/server-process test; exact future baseline count.
+Dependencies:             P4-1a store (merged PR #356) + P4-0 contract (merged PR #353); stdlib sqlite3; NO new dep.
+Unresolved decisions:     Whether a separate config helper is proved necessary (default: no).
+Stop conditions:          Any need to modify a forbidden path or add P4-1b-2 behaviour → STOP — CONTRACT AMENDMENT REQUIRED.
+Independent-review scope: Per §5; plus real restart/cold-load; no fake durability; create-before-advertise ordering;
+                          generic non-disclosure; capability ≠ authorization; readiness never authoritative;
+                          no accepted-input append; no P4-1b-2/P4-2/Phase 5 work.
+Merge authority:          Owner, separately (not by the execution agent).
+```
+
+**Preserved (unchanged by this candidate):** decision **D17**; the **AISR seven-owner model**; **P4-1b-2, P4-2,
+Phase 5–7, WS17, STG**, provider selection, and exact UX all remain **NOT AUTHORIZED**. The merged P4-1a and P4-0
+artifacts are unchanged; this candidate wires nothing and creates no database.
 
 ---
 

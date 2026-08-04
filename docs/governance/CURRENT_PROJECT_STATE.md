@@ -181,6 +181,32 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
   CONTRACT-DEFINITION PREPARATION** — `ELIGIBLE FOR SEPARATE OWNER CONSIDERATION ONLY`. Decision **D17** and the AISR
   seven-owner model are preserved.
 
+## Post-PR #357 governance boundary — P4-1b discovery complete; P4-1b-1 contract candidate defined
+
+- **Live tip:** `e4f9cd97e1b4329b98f1678412a6a36b9d7238bf` (Merge PR #357 — G-P4-1A-CLOSE-SYNC-01 governance
+  synchronization; always re-resolve from Git). The "last independently verified tip" pointer above
+  (`dfa082a`, PR #356) is unchanged by this documentation gate.
+- **P4-1b — READ-ONLY DISCOVERY AND CONTRACT-DEFINITION PREPARATION:** `COMPLETE`. The owner decision package
+  (runtime data-flow map, P4-1a API suitability, lifecycle, source-of-truth model, supersession/contradiction options,
+  retrieval/error behaviour, Keep/Refine boundary, migration/isolation, security/config, path/RED-GREEN/test feasibility,
+  risk register, 14 owner decisions, split recommendation) was delivered. Discovery authorizes nothing further.
+- **D-P4-1B-01 split (RECORDED):** P4-1b = **P4-1b-1** (Runtime Store Construction + Durable Project Create/Load) +
+  **P4-1b-2** (Accepted-Input Append + Keep/Refine Runtime Integration), each separately gated.
+- **P4-1b-1 contract candidate (G-P4-1B-1-DOC-01):** `CONTRACT CANDIDATE ONLY — IMPLEMENTATION NOT AUTHORIZED —
+  P4-1b-1 NOT STARTED`. Decisions **D-P4-1B-01 … D-P4-1B-11** recorded (see `OWNER_DECISION_REGISTER.md`); the bounded
+  contract is defined in `ACTIVE_INCREMENT_CONTRACT.md` (active contract-of-record). Authorized future scope: construct
+  the merged P4-1a store at startup; resolve `INVENTORAI_DB_PATH` safely; durably create a **new** project at `/start`;
+  **use the `sid` as the durable `project_id`** (one unified pre-account capability — corrected per BF-1); cold-load
+  after memory loss via **`load_contract(sid)`** (no mapping table, no `project_ids()` scan); translate storage errors at
+  the web boundary; prove real restart/cold-load — via `web/app.py` + one new focused test only.
+- **Product-truth boundary (binding, unchanged):** P4-1b-1 may prove durable **new-project** create / restart-survival /
+  cold-load only. It must **not** claim accepted answers are durably persisted, that Keep/Refine is durably recorded,
+  durable output/version history, recovery of existing temporary sessions, or that user ideas are fully saved — **full
+  accepted-input durability requires P4-1b-2**. Until P4-1b-1 is authorized, implemented, and merged, the live
+  application still uses temporary in-memory sessions and durably saves nothing.
+- **Current active implementation contract:** NONE (a candidate is not an authorization). **P4-1b-1 implementation,
+  P4-1b-2, P4-2, Phase 5:** NOT AUTHORIZED / NOT STARTED. Decision **D17** and the AISR seven-owner model are preserved.
+
 ## Phase 4 entry direction (Durable Data and Evidence Foundation)
 
 - **G-P4-ENTRY-DEFINITION:** COMPLETED AND ACCEPTED (owner verdict **B**). **G-P4-DOC-01:** documentation-only gate
