@@ -41,19 +41,22 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status:** ACTIVE CONTRACT-OF-RECORD = **P4-1b-1 Increment Contract Candidate** (defined below under gate
-**G-P4-1B-1-DOC-01**) — **CONTRACT CANDIDATE ONLY · IMPLEMENTATION NOT AUTHORIZED · P4-1b-1 NOT STARTED**. This
-records the owner-approved P4-1b decisions and defines the bounded P4-1b-1 (Runtime Store Construction and Durable
-Project Create/Load) implementation contract candidate. It grants **no** code, test, database, dependency, or runtime
-authority: it governs future P4-1b-1 work only after a genuinely separate-session independent review (Lean §5), owner
-acceptance, publication, merge, post-merge verification, and a **separate explicit P4-1b-1 implementation
-authorization**. **P4-1b-2, P4-2, and Phase 5 remain NOT AUTHORIZED / NOT STARTED**; **P4-1b READ-ONLY DISCOVERY is
-COMPLETE** (owner decision package delivered) and authorizes nothing further. Product-truth boundary is unchanged: the
-live application still uses temporary in-memory sessions and durably saves nothing until P4-1b implementation lands.
-The P4-1b-1 contract is refined by the **G-P4-1B-1-AMEND-01** amendment below (threading `threaded=False` +
-pytest DB-isolation `tests/conftest.py`), recorded after implementation candidate `1eced7d` received independent
-verdict **C — REVISE AND RE-REVIEW**; that amendment is **documentation-only** and authorizes no correction
-implementation. Candidate `1eced7d` is preserved intact as superseded review evidence.
+**Status:** NO ACTIVE (authorized) IMPLEMENTATION CONTRACT. **P4-1b-1 implementation is MERGED and POST-MERGE VERIFIED
+(technically COMPLETE); its GOVERNANCE CLOSURE is PENDING** until the G-P4-1B-1-CLOSURE-SYNC-01 candidate below is
+itself separately reviewed, published, PR-created, merged, and post-merge verified. The bounded P4-1b-1 (Runtime Store
+Construction and Durable Project Create/Load) contract (gate **G-P4-1B-1-DOC-01**, corrected by **G-P4-1B-1-AMEND-01**)
+was fulfilled by the merged correction candidate `3179cd556673e5c5b6b596a052b0744bddab011a` (independent verdict
+**B — ACCEPT WITH NON-BLOCKING OBSERVATIONS**; **PR #360**, merge `cbd0ce3046b24631c23e482dadd413aaa42dea05`; changed
+exactly `web/app.py`, `tests/test_p4_1b1_runtime_project_persistence.py`, `tests/conftest.py`; 3 files / 497 insertions
+/ 2 deletions). The superseded first candidate `1eced7d280449b9c0842355a1882a9d3b731a633` (verdict C) remains preserved
+intact and unmerged as superseded review evidence. **P4-1b-2, P4-2, and Phase 5 remain NOT AUTHORIZED / NOT STARTED**;
+**P4-1b READ-ONLY DISCOVERY is COMPLETE** (owner decision package delivered) and authorizes nothing further.
+**Product-truth boundary (unchanged):** P4-1b-1 proves durable **new-project** create/restart-survival/cold-load only;
+the live application does **not** durably persist accepted answers, outputs, or complete ideas — that remains P4-1b-2.
+See the **"P4-1b-1 Governance Closure Sync (G-P4-1B-1-CLOSURE-SYNC-01)"** section below for the merge, post-merge
+verification, preserved observations, and the recorded procedural deviation. The P4-1b-1 contract and its
+G-P4-1B-1-AMEND-01 amendment below are retained as the fulfilled contract-of-record and MUST NOT be interpreted as an
+active authorization for further work.
 
 **P4-1a closure boundary (post-PR #356):** the **P4-1a — Durable-Store Proof** increment was: recorded as a contract
 candidate (merged PR #355); **separately and explicitly authorized for implementation by the owner** (a distinct
@@ -486,6 +489,56 @@ remains responsible for accepted-input append and related retention implications
 **Preserved (unchanged by this amendment):** decision **D17**; the **AISR seven-owner model**; the unified
 `sid`==`project_id` model (D-P4-1B-06); candidate `1eced7d` is **preserved intact as superseded review evidence and is
 NOT amended**; **P4-1b-2, P4-2, Phase 5–7, WS17, STG** remain **NOT AUTHORIZED**.
+
+---
+
+## P4-1b-1 Governance Closure Sync — G-P4-1B-1-CLOSURE-SYNC-01 (documentation-only) — GOVERNANCE CLOSURE CANDIDATE — NOT YET MERGED
+
+**Status:** `GOVERNANCE CLOSURE CANDIDATE — NOT YET MERGED`. This documentation-only sync records the completed P4-1b-1
+correction implementation, its independent review, merge, and post-merge verification, preserves the non-blocking
+observations, and records a procedural deviation truthfully. It authorizes **no** code, test, runtime, dependency,
+schema, database, UI, CI, release, deployment, or later-phase work. Recorded on live tip
+`cbd0ce3046b24631c23e482dadd413aaa42dea05` (Merge PR #360; always re-resolve from Git).
+
+**What was completed (evidence-first).**
+- The P4-1b-1 **correction** implementation (threading + pytest DB isolation) was **separately owner-authorized** and
+  built as candidate `3179cd556673e5c5b6b596a052b0744bddab011a` from authoritative base
+  `ccb1f23fdd9f5cb1a318ec3cec1ca05248c04bae` (tree `f3ec086d845577a0b5befae019b4ebebdb2f7fcf`).
+- The superseded first candidate `1eced7d280449b9c0842355a1882a9d3b731a633` (independent verdict C) **remains preserved
+  intact and unmerged** as superseded evidence.
+- Independent review of `3179cd5` returned **B — ACCEPT WITH NON-BLOCKING OBSERVATIONS**.
+- **PR #360** merged the **exact reviewed candidate**; merge commit `cbd0ce3046b24631c23e482dadd413aaa42dea05`
+  (parents `ccb1f23` + `3179cd5`).
+- **Post-merge verification (independently reproduced):** candidate-ancestor check exit 0; changed exactly
+  `web/app.py`, `tests/test_p4_1b1_runtime_project_persistence.py`, `tests/conftest.py`; diffstat **3 files / 497
+  insertions / 2 deletions**; explicit **`threaded=False`** present in `web/app.py`; **pytest DB isolation via
+  `INVENTORAI_DB_PATH`** present in `tests/conftest.py`; no engine path changed; no accepted-input persistence; no
+  P4-1b-2 behaviour.
+- **P4-1b-1 implementation:** MERGED AND POST-MERGE VERIFIED. **P4-1b-1 technical status:** COMPLETE.
+
+**Procedural deviation (recorded truthfully, neutral language).** PR #360 was **merged before a separate explicit merge
+authorization was issued in the conversation**. This was a **governance-process deviation**. It does **not** invalidate
+the independently reviewed candidate or the successful technical post-merge verification, and repository evidence does
+not indicate a security incident or technical defect. It **must not be normalized as precedent**: future gates must
+preserve the separation among **publication authorization**, **PR-creation authorization**, **merge authorization**,
+and **post-merge closure**. No wording in this record states or implies that a separate merge authorization existed
+before the PR #360 merge; the owner **later** authorized this governance closure sync (G-P4-1B-1-CLOSURE-SYNC-01).
+
+**Preserved non-blocking observations (recorded, not fixed).** (1) Committed authorization-record lag: the separate
+correction-implementation authorization was owner-issued in conversation and is being recorded here at closure. (2) The
+superseded candidate `1eced7d` was unavailable to the independent reviewer for byte-level verification. (3) The
+author's protected-regression count (82) differed from the reviewer's equivalent set (83) due to set composition, not a
+substantive discrepancy. (4) RED against `1eced7d` was not independently reproducible; base RED was used. (5) The test
+helper returning zero on a SQLite error was a minor false-green risk, neutralized by external SQLite inspection. (6) The
+RED-B2 path-string proof is weak alone but is backed by behavioural proof. (7) Local-development DB file permissions and
+retained capability identifiers remain deferred to P4-1b-2. (8) A harmless `runpy` `RuntimeWarning` remains. (9) Legacy
+ILT demo `/start` routes remain memory-only. (10) Cold-load route coverage remains limited to `show_session`. None is
+silently deleted or marked resolved.
+
+**Closure boundary.** **P4-1b-1 governance closure is PENDING** and becomes complete only after this
+G-P4-1B-1-CLOSURE-SYNC-01 candidate is itself separately reviewed, published, PR-created, merged, and post-merge
+verified. **P4-1b-2, P4-2, and Phase 5 remain NOT AUTHORIZED / NOT STARTED.** No durable claim about accepted answers,
+outputs, or complete ideas is made. Decision **D17** and the AISR seven-owner model are preserved.
 
 ---
 

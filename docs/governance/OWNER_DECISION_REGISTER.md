@@ -291,3 +291,29 @@ candidate that keeps `1eced7d` as superseded evidence, starts from the then-live
 RED/GREEN + protected regressions + full suite, and undergoes a new independent review. **This amendment authorizes none
 of it.** **P4-1b-1 correction implementation, P4-1b-2, P4-2, and Phase 5 remain NOT AUTHORIZED.** Decision **D17** and
 the AISR seven-owner model are preserved.
+
+## P4-1b-1 governance closure sync (G-P4-1B-1-CLOSURE-SYNC-01) — DOC-ONLY — CLOSURE CANDIDATE NOT YET MERGED
+
+**Decision status:** ACCEPTED / RECORDED — NO IMPLEMENTATION AUTHORITY. Documentation-only closure sync recording the
+merged, post-merge-verified, technically complete P4-1b-1 correction implementation and a procedural deviation.
+Recorded on live tip `cbd0ce3046b24631c23e482dadd413aaa42dea05` (Merge PR #360). **P4-1b-1 governance closure is
+PENDING** until this closure candidate is itself separately reviewed, published, PR-created, merged, and post-merge
+verified.
+
+| ID | Subject | Decision | Impl. authority | Evidence / boundary |
+|---|---|---|---|---|
+| D-P4-1B-1-CLOSE-01 | Independent-review verdict on correction candidate `3179cd5` | ACCEPTED — **B — ACCEPT WITH NON-BLOCKING OBSERVATIONS** | NONE | Separate-session review of `3179cd5` |
+| D-P4-1B-1-CLOSE-02 | Publication authorization for the exact candidate `3179cd5` | ACCEPTED (owner-issued) | NONE | Owner publication-only authorization; branch `fix/p4-1b1-threading-pytest-isolation` |
+| D-P4-1B-1-CLOSE-03 | PR-creation authorization → **PR #360** | ACCEPTED (owner-issued) | NONE | Owner PR-creation-only authorization |
+| D-P4-1B-1-CLOSE-04 | Factual merge of **PR #360** | RECORDED (factual event) | NONE | Merge `cbd0ce3046b24631c23e482dadd413aaa42dea05`; parents `ccb1f23` + `3179cd5`; exact reviewed candidate |
+| D-P4-1B-1-CLOSE-05 | Post-merge verification acceptance | ACCEPTED | NONE | Ancestor check exit 0; exactly 3 authorized paths; 3 files / 497 insertions / 2 deletions; `threaded=False` present; pytest DB isolation present; no engine change; no accepted-input persistence; no P4-1b-2 behaviour |
+| D-P4-1B-1-CLOSE-06 | Procedural deviation acknowledgment | RECORDED | NONE | **PR #360 merged before a separate explicit merge authorization was issued in the conversation** — a governance-process deviation; not a security incident or technical defect; must not be normalized as precedent; no retroactive merge-authorization claim is made |
+| D-P4-1B-1-CLOSE-07 | P4-1b-1 technical completion | RECORDED | NONE | Implementation MERGED AND POST-MERGE VERIFIED; technical status COMPLETE |
+| D-P4-1B-1-CLOSE-08 | Preservation of the ten non-blocking observations | RECORDED | NONE | See the closure section in `ACTIVE_INCREMENT_CONTRACT.md`; none deleted or marked resolved |
+| D-P4-1B-1-CLOSE-09 | Later-gate exclusion | NOT AUTHORIZED / NOT STARTED | NONE | **P4-1b-2, P4-2, and Phase 5** remain unauthorized; separate owner decision + contract required |
+| D-P4-1B-1-CLOSE-10 | This governance closure sync | ACCEPTED (owner later authorized) | NONE | Owner authorized G-P4-1B-1-CLOSURE-SYNC-01; **governance closure is PENDING until this candidate is itself merged and post-merge verified** |
+
+**Truthfulness boundary.** No decision above states or implies that a separate merge authorization preceded the PR #360
+merge; the owner **later** authorized this documentation closure sync. The superseded candidate `1eced7d` remains
+preserved intact and unmerged. Decision **D17** and the AISR seven-owner model are preserved. The live application does
+not durably persist accepted answers, outputs, or complete ideas (that remains P4-1b-2).

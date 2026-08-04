@@ -3409,3 +3409,51 @@ independent review). **This amendment authorizes none of it.**
 **P4-1b-1 correction implementation, P4-1b-2, P4-2, and Phase 5 remain NOT AUTHORIZED / NOT STARTED.** Decision **D17**
 and the AISR seven-owner model are preserved. Append-only; prior history not rewritten. This gate authorizes no push,
 no PR, no merge, no implementation, and no phase activation.
+
+---
+
+## G-P4-1B-1-CLOSURE-SYNC-01 — P4-1b-1 governance closure sync (documentation-only) — CLOSURE CANDIDATE NOT YET MERGED
+
+**Gate:** G-P4-1B-1-CLOSURE-SYNC-01. **Type:** documentation-only governance closure sync. **Live tip at authoring:**
+`cbd0ce3046b24631c23e482dadd413aaa42dea05` (Merge PR #360; tree `f3ec086d845577a0b5befae019b4ebebdb2f7fcf`; parents
+`ccb1f23fdd9f5cb1a318ec3cec1ca05248c04bae` + `3179cd556673e5c5b6b596a052b0744bddab011a`; always re-resolve from Git).
+
+**P4-1b-1 correction implementation — MERGED, POST-MERGE VERIFIED, TECHNICALLY COMPLETE.** The correction implementation
+(threading + pytest DB isolation) was separately owner-authorized and built as candidate `3179cd5` from base `ccb1f23`;
+independent review returned **B — ACCEPT WITH NON-BLOCKING OBSERVATIONS**; **PR #360** merged the exact reviewed
+candidate (merge `cbd0ce3`). Post-merge verification (independently reproduced): candidate-ancestor exit 0; changed
+exactly `web/app.py`, `tests/test_p4_1b1_runtime_project_persistence.py`, `tests/conftest.py`; **3 files / 497
+insertions / 2 deletions**; explicit `threaded=False` present; pytest DB isolation via `INVENTORAI_DB_PATH` present; no
+engine path changed; no accepted-input persistence; no P4-1b-2 behaviour. The superseded first candidate `1eced7d`
+(verdict C) remains preserved intact and unmerged as superseded evidence.
+
+**Recorded owner decisions:** **D-P4-1B-1-CLOSE-01 … -10** (verdict-B acceptance; publication authorization for `3179cd5`;
+PR-creation authorization → PR #360; factual merge of PR #360; post-merge verification acceptance; procedural-deviation
+acknowledgment; technical completion; preservation of the ten non-blocking observations; explicit exclusion of P4-1b-2 /
+P4-2 / Phase 5; this closure sync — governance closure PENDING until this candidate is itself merged and verified). Full
+text in `OWNER_DECISION_REGISTER.md`.
+
+**Procedural deviation (recorded truthfully, neutral).** PR #360 was **merged before a separate explicit merge
+authorization was issued in the conversation** — a governance-process deviation. It does not invalidate the
+independently reviewed candidate or the technical post-merge verification, and repository evidence does not indicate a
+security incident or technical defect. It must not be normalized as precedent; future gates must keep publication,
+PR-creation, merge, and post-merge-closure authorizations separate. **No wording claims a prior merge authorization
+existed;** the owner later authorized this governance closure sync.
+
+**Preserved non-blocking observations (recorded, not fixed):** authorization-record lag; `1eced7d` unavailable to the
+reviewer for byte-level verification; author 82 vs reviewer 83 protected-regression set composition; RED-against-`1eced7d`
+not independently reproducible (base RED used); a helper's zero-on-SQLite-error minor false-green risk neutralized by
+external inspection; RED-B2 path-string proof weak alone but backed by behavioural proof; local-dev DB permissions +
+retained capability identifiers deferred to P4-1b-2; harmless `runpy` RuntimeWarning; legacy ILT demo `/start` routes
+memory-only; cold-load coverage limited to `show_session`.
+
+**Changed files (documentation-only, this gate):** `docs/governance/ACTIVE_INCREMENT_CONTRACT.md`,
+`docs/governance/OWNER_DECISION_REGISTER.md`, `docs/governance/CURRENT_PROJECT_STATE.md`, and this append-only
+`docs/governance/ACTIVE_EXECUTION_ROADMAP.md`. No code, test, runtime, dependency, schema, database, UI, or CI path
+changed.
+
+**Status:** **P4-1b-1 implementation MERGED AND POST-MERGE VERIFIED (technical status COMPLETE); P4-1b-1 GOVERNANCE
+CLOSURE PENDING** until this closure candidate is itself separately reviewed, published, PR-created, merged, and
+post-merge verified. **P4-1b-2, P4-2, and Phase 5 remain NOT AUTHORIZED / NOT STARTED.** Decision **D17** and the AISR
+seven-owner model are preserved. Append-only; prior history not rewritten. This gate authorizes no push, no PR, no
+merge, no implementation, and no phase activation.

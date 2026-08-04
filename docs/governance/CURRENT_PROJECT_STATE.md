@@ -228,6 +228,37 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
 - **Current active implementation contract:** NONE. **P4-1b-1 correction implementation, P4-1b-2, P4-2, Phase 5:**
   NOT AUTHORIZED / NOT STARTED. The live application still uses temporary in-memory sessions and durably saves nothing.
 
+## Post-PR #360 boundary — P4-1b-1 implementation merged & technically complete; governance closure pending (G-P4-1B-1-CLOSURE-SYNC-01)
+
+- **Live tip:** `cbd0ce3046b24631c23e482dadd413aaa42dea05` (Merge PR #360 — P4-1b-1 correction implementation; always
+  re-resolve from Git).
+- **P4-1b-1 implementation:** `MERGED AND POST-MERGE VERIFIED`. **P4-1b-1 technical status:** `COMPLETE`.
+  The **corrected** candidate `3179cd556673e5c5b6b596a052b0744bddab011a` (independent verdict **B — ACCEPT WITH
+  NON-BLOCKING OBSERVATIONS**) was merged via **PR #360**; changed exactly `web/app.py`,
+  `tests/test_p4_1b1_runtime_project_persistence.py`, `tests/conftest.py` (3 files, 497 insertions, 2 deletions);
+  post-merge verification passed (candidate-ancestor exit 0; `threaded=False` present; pytest DB isolation via
+  `INVENTORAI_DB_PATH` present; no engine change; no accepted-input persistence; no P4-1b-2 behaviour). The superseded
+  first candidate `1eced7d280449b9c0842355a1882a9d3b731a633` (verdict C) remains **preserved intact and unmerged**.
+- **P4-1b-1 governance closure:** `PENDING` — completes only after this **G-P4-1B-1-CLOSURE-SYNC-01** documentation
+  candidate is itself separately reviewed, published, PR-created, merged, and post-merge verified.
+- **Procedural deviation (recorded truthfully):** **PR #360 was merged before a separate explicit merge authorization
+  was issued in the conversation.** This is a governance-process deviation; it does not invalidate the independently
+  reviewed candidate or the technical post-merge verification, is not a security incident or technical defect, and must
+  not be normalized as precedent. Future gates must keep publication, PR-creation, merge, and post-merge-closure
+  authorizations separate. No retroactive claim of prior merge authorization is made; the owner **later** authorized
+  this closure sync.
+- **Product-truth boundary (binding):** P4-1b-1 proves durable **new-project** create / restart-survival / cold-load
+  only. The live application does **not** durably persist accepted answers, outputs, or complete ideas; Keep/Refine are
+  not durable; lost temporary sessions are not recoverable. **Full accepted-input durability requires P4-1b-2.**
+- **Preserved non-blocking observations (recorded, not fixed):** authorization-record lag; `1eced7d` unavailable to the
+  reviewer for byte-level checks; author 82 vs reviewer 83 protected-regression set composition; RED-against-`1eced7d`
+  not independently reproducible (base RED used); a helper's zero-on-SQLite-error minor false-green risk neutralized by
+  external inspection; RED-B2 path-string proof weak alone but backed by behavioural proof; local-dev DB permissions +
+  retained capability identifiers deferred to P4-1b-2; harmless `runpy` RuntimeWarning; legacy ILT demo start routes
+  remain memory-only; cold-load coverage limited to `show_session`.
+- **Current active implementation contract:** NONE. **P4-1b-2, P4-2, Phase 5:** NOT AUTHORIZED / NOT STARTED. Decision
+  **D17** and the AISR seven-owner model are preserved.
+
 ## Phase 4 entry direction (Durable Data and Evidence Foundation)
 
 - **G-P4-ENTRY-DEFINITION:** COMPLETED AND ACCEPTED (owner verdict **B**). **G-P4-DOC-01:** documentation-only gate
