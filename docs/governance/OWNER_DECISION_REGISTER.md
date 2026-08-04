@@ -165,3 +165,29 @@ authorized deterministic dependency model.
 **Future/deferred requirements:** prior accepted future requirements remain preserved under their existing canonical
 records and timing. This synchronization does not redesign, activate, or implement them. Any requirement found only
 in chat or a handover remains non-canonical until separately owner-decided and committed.
+
+## P4-1 owner decisions (P4-1a / P4-1b split) — CONTRACT CANDIDATE / IMPLEMENTATION NOT AUTHORIZED
+
+Owner decisions **D-P4-1-01 … D-P4-1-10** were accepted and recorded documentation-only via **G-P4-1A-DOC-01**,
+together with the **P4-1a — Durable-Store Proof** increment-contract **CANDIDATE**. The canonical contract text is the
+"P4-1a Increment Contract Candidate" section of `docs/governance/ACTIVE_INCREMENT_CONTRACT.md` (which governs; this
+index does not duplicate it). Summary: P4-1a is a datastore-neutral durable-store proof using a stdlib SQLite
+reference adapter — `IMPLEMENTATION NOT AUTHORIZED`; no code/test/database/dependency/`web/app.py` change; P4-1b,
+P4-2, and Phase 5 remain separate and NOT AUTHORIZED.
+
+| ID | Subject | Status | Impl. authority | Evidence |
+|---|---|---|---|---|
+| D-P4-1-01 | Split P4-1 into P4-1a (durable-store proof) + P4-1b (runtime integration), each separately gated | ACCEPTED | NONE | P4-1a contract candidate §3 |
+| D-P4-1-02 | Datastore-neutral store abstraction + stdlib SQLite reference adapter (reference/MVP, not permanent production commitment; PostgreSQL/others possible via the abstraction) | ACCEPTED | NONE | §3, §7, §8 |
+| D-P4-1-03 | No new runtime dependency; stdlib `sqlite3` only (no SQLAlchemy/psycopg/Supabase/provider/server) | ACCEPTED | NONE | §3 |
+| D-P4-1-04 | Existing in-memory sessions not recoverable / not migrated; durability future-facing | ACCEPTED | NONE | §3 |
+| D-P4-1-05 | Durability-safe UUID ids for new records; existing serialized ids preserved exactly on load | ACCEPTED | NONE | §3, §10 |
+| D-P4-1-06 | Pre-account isolation via unguessable capability ids + project-scoped reads/writes; not authentication/ownership/authorization | ACCEPTED | NONE | §3, §12 |
+| D-P4-1-07 | Exclude FDC-001 persistence, P4-2 (replay/output/stale-invalidation/full re-eval), Phase 5, providers, ACV, PDF, Email, production deployment | ACCEPTED | NONE | §3, §6, §20 |
+| D-P4-1-08 | P4-1a must not modify `web/app.py`; runtime wiring is P4-1b | ACCEPTED | NONE | §3, §5 |
+| D-P4-1-09 | Required proof set (durable create/round-trip/close-reopen/atomic append/rollback/append-only/isolation/stable-ids/provenance/unknown-version/malformed-ref/no-authoritative-readiness/no-replay-claim) | ACCEPTED | NONE | §9, §14, §15 |
+| D-P4-1-10 | No additional governance-sync gate required before defining P4-1a; this gate records decisions + candidate | ACCEPTED | NONE | §3 |
+
+No P4-1 decision grants implementation authority. **P4-1a implementation, P4-1b, P4-2, and Phase 5 remain NOT
+AUTHORIZED.** Decision **D17** and the **AISR seven-owner model** are preserved. SQLite is recorded as a reference/MVP
+adapter only, not a permanent production-datastore commitment.
