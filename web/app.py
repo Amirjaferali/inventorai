@@ -6,6 +6,7 @@ SESSION_STORE: in-memory, non-production, temporary.
 import os
 import re
 import secrets
+import tempfile
 import uuid
 from flask import Flask, request, redirect, url_for, render_template
 from engine.domain_rules import infer_domain
@@ -23,6 +24,13 @@ from engine.progression_loop import (
 )
 from web.gap_labels import GAP_LABELS, get_gap_label, get_maturity_label, SESSION_DISCLOSURE, friendly_gap_name
 from engine.deliverable_assembler import assemble_deliverable
+# P4-1b-1 (G-P4-1B-1-DOC-01 / PR #358): the merged P4-1a durable store and the
+# P4-0 record contract, used ONLY to durably create and cold-load a NEW project
+# envelope keyed by the unified sid==project_id capability. No accepted-input
+# append, Keep/Refine durability, transcript/last_result persistence, or replay
+# is introduced here (those are P4-1b-2 / P4-2).
+from engine.record_store import SqliteRecordStore
+from engine.record_contract import ProjectRecordContract
 # Increment 3 (R-5): the SAME shared public derivation that feeds the deliverable
 # section, imported as a module-level name so one selection feeds both surfaces.
 from engine.idea_development_outputs import derive_next_development_step
@@ -78,6 +86,83 @@ app.secret_key = _resolve_secret_key()
 # reference/context IDs. Non-gap values pass through unchanged. Display only.
 app.jinja_env.filters["gap_display"] = friendly_gap_name
 SESSION_STORE = {}
+
+# --- P4-1b-1: durable project store (construction, configuration, cold-load) --
+# The in-memory SESSION_STORE remains the active working state within a live
+# process; SQLite is the durable project-envelope mirror and cold-reload source,
+# keyed by the unified `sid`==`project_id` pre-account capability. There is NO
+# sid->project_id mapping table, no project_ids() scan, and no reversible mapping
+# layer. project_ids() is never exposed through any route/API/UI surface. This
+# capability is an unguessable lookup only — not authentication, ownership,
+# account authorization, or verified identity (Phase 5). No cache framework or
+# invalidation platform is introduced.
+_STORE = None
+# Generic, non-disclosing message for a durable-store failure at /start. It never
+# reveals project existence, capability validity, contract state, or DB detail.
+SERVICE_UNAVAILABLE_MESSAGE = (
+    "This service is temporarily unavailable. Please try again in a moment.")
+
+
+def _resolve_db_path():
+    """Resolve the SQLite database path from INVENTORAI_DB_PATH.
+
+    Explicit env value wins. In explicit production mode a missing value is a
+    hard fail (no silent fallback). For local development only, an explicit,
+    app-namespaced temp path is used (never a repository-tracked file; the
+    envelope carries no verbatim user content — R6 is preserved)."""
+    path = os.environ.get("INVENTORAI_DB_PATH", "").strip()
+    if path:
+        return path
+    if _is_production():
+        raise RuntimeError(
+            "INVENTORAI_DB_PATH must be set to a writable path when "
+            "INVENTORAI_ENV=production.")
+    return os.path.join(tempfile.gettempdir(), "inventorai_dev",
+                        "inventorai_p4_1b1.sqlite")
+
+
+def _get_store():
+    """Return the one application-scoped SqliteRecordStore (single-process MVP),
+    building it on first use from the resolved path. Multi-worker topology,
+    pooling, per-request connections, WAL tuning, and production datastore
+    selection are deferred. Raises on an unusable path (caller fails closed)."""
+    global _STORE
+    if _STORE is None:
+        path = _resolve_db_path()
+        directory = os.path.dirname(path)
+        if directory:
+            os.makedirs(directory, exist_ok=True)
+        _STORE = SqliteRecordStore(path)
+    return _STORE
+
+
+def _cold_load_entry(sid):
+    """P4-1b-1 durable cold-load: rebuild the MINIMUM runtime entry for `sid`
+    from the durable project envelope (the `sid` IS the durable `project_id`).
+
+    Returns the minimal entry, or None on any missing/malformed/unsupported/
+    unavailable durable state — the caller then falls through to the existing
+    generic unavailable behaviour, disclosing nothing. Readiness is re-derived
+    by the render path from the reconstructed ledger; transcript and cached
+    last_result are NOT restored as authoritative. No mapping lookup or
+    project_ids() scan is used."""
+    try:
+        contract = _get_store().load_contract(sid)   # scoped by sid==project_id
+        state = contract.to_state()
+    except Exception:
+        # Fail closed. Storage/contract errors are translated to the generic
+        # unavailable behaviour at this web boundary; no user content is logged.
+        return None
+    return {"state": state, "last_result": None, "transcript": []}
+
+
+# Production fail-fast (mirrors the R16 secret-key policy): in explicit
+# production mode the durable store must be constructable at startup — a missing
+# or unusable INVENTORAI_DB_PATH makes the app refuse to start rather than
+# silently degrade per request. Local/development stays lazy so tests and dev
+# runs are unaffected (no eager database file is created outside production).
+if _is_production():
+    _get_store()
 
 # --- Increment 1A: structured owner actions (conformance correction) ---------
 # Non-specialist owners respond through explicit, structured actions instead of
@@ -499,8 +584,20 @@ def start():
     # mode selector, role, or engine-state field is introduced. The named ILT
     # routes below are deliberately left on their existing default behavior.
     state.path = "N"
+    # P4-1b-1 unified capability: ONE uuid4 is used as both the route `sid` and
+    # the durable `project_id` (`idea_id` stays a separate uuid4, set above).
     sid = str(uuid.uuid4())
     initial_result = run_iteration(state, idea_text)
+    # P4-1b-1 creation order: durably create the project envelope BEFORE any live
+    # session is advertised. Durable creation is the commit point for /start; on
+    # failure we fail closed — no SESSION_STORE entry, generic unavailable, no
+    # user content logged. The envelope carries only the accepted-input ledger
+    # (empty at creation) + idea_id; readiness/gaps/last_result are NOT persisted.
+    try:
+        contract = ProjectRecordContract.from_state(state)
+        _get_store().create_project(contract, project_id=sid)
+    except Exception:
+        return render_template("index.html", error=SERVICE_UNAVAILABLE_MESSAGE), 503
     SESSION_STORE[sid] = {"state": state, "last_result": initial_result, "transcript": []}
     return redirect(url_for("show_session", sid=sid))
 
@@ -548,7 +645,15 @@ def start_ilt002_combination_lock_path_n():
 def show_session(sid):
     entry = SESSION_STORE.get(sid)
     if not entry:
-        return redirect(url_for("index"))
+        # P4-1b-1 durable cold-load: after memory loss, rebuild the minimum
+        # runtime entry from the durable project envelope keyed by sid. On any
+        # missing/malformed/unavailable durable state this returns None and we
+        # fall through to the existing generic unavailable behaviour (no
+        # disclosure of whether the project ever existed).
+        entry = _cold_load_entry(sid)
+        if not entry:
+            return redirect(url_for("index"))
+        SESSION_STORE[sid] = entry
     state = entry["state"]
     last_result = entry.get("last_result")
     INTAKE_QUESTION = "Describe your invention in more detail — what specific problem does it solve, and how does it solve it?"
@@ -1115,5 +1220,23 @@ def decision_workspace_export(did):
     return response
 
 
+def _run_config():
+    """Explicit run configuration for the bounded single-threaded P4-1b-1 MVP
+    (G-P4-1B-1-AMEND-01 / D-P4-1B-1-AMEND-01). `threaded` is pinned **False** so
+    requests are served one at a time, matching the single application-scoped
+    `SqliteRecordStore` connection (which is thread-bound); the runtime must NOT
+    rely on Flask's default threaded serving. This is a bounded MVP decision, NOT
+    a claim that Flask's built-in server is a production deployment architecture;
+    multi-worker/threaded topology is deferred. No `engine/record_store.py`
+    change and no `check_same_thread` override is used. Exposed as a small helper
+    so the selected serving boundary is inspectable and testable."""
+    return {
+        "debug": _debug_enabled(),
+        "host": _resolve_host(),
+        "port": 5000,
+        "threaded": False,
+    }
+
+
 if __name__ == "__main__":
-    app.run(debug=_debug_enabled(), host=_resolve_host(), port=5000)
+    app.run(**_run_config())
