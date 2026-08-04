@@ -3311,3 +3311,56 @@ PREPARATION**, `ELIGIBLE FOR SEPARATE OWNER CONSIDERATION ONLY`. Eligibility is 
 **Phase 5** remain NOT AUTHORIZED / NOT STARTED. Decision **D17** and the AISR seven-owner model are preserved.
 Append-only; prior history not rewritten. This documentation synchronization authorizes no push, no PR, no merge, no
 implementation, and no phase activation.
+
+---
+
+## G-P4-1B-1-DOC-01 — P4-1b-1 owner-decision recording & contract definition (documentation-only) — CONTRACT CANDIDATE ONLY
+
+**Gate:** G-P4-1B-1-DOC-01. **Type:** documentation-only governance gate. **Live tip at authoring:**
+`e4f9cd97e1b4329b98f1678412a6a36b9d7238bf` (Merge PR #357; tree `944c1b0a588f6081d6deed00f11275c7770116a5`; parents
+`dfa082a` + `83a5012` — always re-resolve from Git). `83a5012` confirmed ancestor.
+
+**P4-1b READ-ONLY DISCOVERY:** `COMPLETE` — the owner decision package (runtime data-flow map; P4-1a API suitability;
+store lifecycle; creation/read/write sequence; source-of-truth options; supersession/contradiction options; retrieval/
+unavailable/error behaviour; Keep/Refine boundary; migration & capability isolation; security/privacy/configuration;
+path feasibility; RED/GREEN feasibility; test impact; risk register; 14 owner decisions; split recommendation) was
+delivered. Discovery authorized nothing further.
+
+**Owner-approved sequencing (D-P4-1B-01):** P4-1b is split into **P4-1b-1 — Runtime Store Construction and Durable
+Project Create/Load** and **P4-1b-2 — Accepted-Input Append and Keep/Refine Runtime Integration**, each with a separate
+contract, separate implementation authorization, RED/GREEN evidence, independent review, owner publication decision,
+owner merge decision, post-merge verification, and formal closure. **P4-1b-2 is NOT authorized by this gate.**
+
+**Recorded decisions:** **D-P4-1B-01 … D-P4-1B-11** (sequencing; runtime state model; store lifecycle; configuration
+via `INVENTORAI_DB_PATH`; new-projects-only durability start; **unified single-`uuid4` `sid`==`project_id` pre-account
+capability** — cold-load via **`load_contract(sid)`**, **no mapping table / no `project_ids()` scan** — with
+`project_ids()` never exposed; project-creation ordering with fail-closed compensation; cold-load via
+`load_contract(sid).to_state()` + fresh readiness; web-boundary error translation; generic non-disclosure; product-truth
+boundary). Full text in `OWNER_DECISION_REGISTER.md`; the bounded contract candidate is in
+`ACTIVE_INCREMENT_CONTRACT.md` (active contract-of-record). **D-P4-1B-06 reflects the BF-1 correction** (independent
+review verdict C): the original candidate `095e969` (separate `sid`/`project_id`) is superseded by this new correction
+candidate and is **not amended in place**.
+
+**Contract status:** `CONTRACT CANDIDATE ONLY — IMPLEMENTATION NOT AUTHORIZED — P4-1b-1 NOT STARTED`. Authorized future
+paths: `web/app.py` + `tests/test_p4_1b1_runtime_project_persistence.py` (new), with a conditional web-side config
+helper only if inline configuration is unsafe/untestable. Prohibited by default: `engine/record_store.py`,
+`engine/record_contract.py`, `engine/idea_state.py`, `engine/derived_readiness.py`, `requirements.txt`, `pytest.ini`,
+`database/`, `schemas/`, templates/static, and any P4-1b-2/P4-2/Phase 5 path — any need beyond the set →
+STOP — CONTRACT AMENDMENT REQUIRED.
+
+**Product-truth boundary (binding):** P4-1b-1 may prove durable **new-project** creation, process-restart survival, and
+cold-load only. It must **not** claim accepted answers are durably persisted, that Keep creates a durable snapshot, that
+Refine is durably recorded, durable output/version history, recovery of existing temporary sessions, or that user ideas
+are fully saved — **full accepted-input durability requires P4-1b-2**. The live application still uses temporary
+in-memory sessions and durably saves nothing.
+
+**Changed files (documentation-only, this gate):** `docs/governance/ACTIVE_INCREMENT_CONTRACT.md`,
+`docs/governance/OWNER_DECISION_REGISTER.md`, `docs/governance/CURRENT_PROJECT_STATE.md`, and this append-only
+`docs/governance/ACTIVE_EXECUTION_ROADMAP.md`. No `engine/`, `web/`, `tests/`, `database/`, `schemas/`,
+`requirements.txt`, `pytest.ini`, or other non-governance change; no code, test, database, dependency, or runtime work.
+
+**Status:** P4-1b-1 contract candidate DEFINED — **IMPLEMENTATION NOT AUTHORIZED**. Requires a genuinely separate-session
+independent review, owner acceptance, publication, merge, post-merge verification, and a separate explicit P4-1b-1
+implementation authorization before any code. **P4-1b-2, P4-2, and Phase 5 remain NOT AUTHORIZED / NOT STARTED.**
+Decision **D17** and the AISR seven-owner model are preserved. Append-only; prior history not rewritten. This gate
+authorizes no push, no PR, no merge, no implementation, and no phase activation.
