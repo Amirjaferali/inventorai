@@ -3364,3 +3364,48 @@ independent review, owner acceptance, publication, merge, post-merge verificatio
 implementation authorization before any code. **P4-1b-2, P4-2, and Phase 5 remain NOT AUTHORIZED / NOT STARTED.**
 Decision **D17** and the AISR seven-owner model are preserved. Append-only; prior history not rewritten. This gate
 authorizes no push, no PR, no merge, no implementation, and no phase activation.
+
+---
+
+## G-P4-1B-1-AMEND-01 — P4-1b-1 threading & pytest DB-isolation contract amendment (documentation-only) — AMENDMENT CANDIDATE ONLY
+
+**Gate:** G-P4-1B-1-AMEND-01. **Type:** documentation-only contract amendment. **Live tip at authoring:**
+`b22f82ef1f7d08ce802ecbc52d68706d358fadb5` (Merge PR #358; always re-resolve from Git).
+
+**Trigger:** P4-1b-1 implementation candidate `1eced7d280449b9c0842355a1882a9d3b731a633` (branch
+`feat/p4-1b1-runtime-project-persistence`) received independent verdict **C — REVISE AND RE-REVIEW** with two blocking
+findings — **B1 (threading):** the merged P4-1a `SqliteRecordStore`'s single app-scoped `sqlite3` connection is
+incompatible with Flask's default threaded serving; **B2 (pytest DB isolation):** governed tests outside the focused
+P4-1b-1 file write project envelopes to the shared default database instead of pytest temp paths. The candidate is
+**preserved intact as superseded evidence and is NOT amended**; it is **not merged**.
+
+**Recorded owner decisions:** **D-P4-1B-1-AMEND-01** explicit single-threaded MVP serving `threaded=False` (bounded MVP,
+not a production-architecture claim; no `engine/record_store.py`/`check_same_thread`/pool/per-request change);
+**D-P4-1B-1-AMEND-02** `tests/conftest.py` authorized ONLY for a minimal pytest isolated-DB fixture (unique `tmp_path`
+`INVENTORAI_DB_PATH`; safe store close/reset; env/runtime restore; no repo DB / no `:memory:` for restart / no global
+store mock / not order-dependent / no weakened assertions); **D-P4-1B-1-AMEND-03** a threading/run-mode regression proof
+(no `test_client`-alone cross-thread claim; reproduce the reviewer scenario or equivalent); **D-P4-1B-1-AMEND-04** a
+truthful local-development DB boundary (persists until OS/user cleanup; holds only capability identifiers; not an
+account/ownership store; pytest must never use it; P4-1b-2 re-evaluates retention/permissions/deletion/user-content;
+production still requires explicit `INVENTORAI_DB_PATH` + fail-fast). Full text in `OWNER_DECISION_REGISTER.md`; the
+amended contract is in `ACTIVE_INCREMENT_CONTRACT.md`.
+
+**Amended future implementation paths:** `web/app.py` + `tests/test_p4_1b1_runtime_project_persistence.py` +
+**`tests/conftest.py`** (new, isolation fixture only); conditionally, existing test files only to adopt the fixture
+without weakening assertions. `engine/record_store.py`, `engine/record_contract.py`, `engine/idea_state.py`,
+`engine/derived_readiness.py`, `requirements.txt`, `database/`, `schemas/`, templates/static, CI remain prohibited; any
+engine-store threading redesign requires a separate amendment.
+
+**Contract status:** `AMENDMENT CANDIDATE ONLY — CORRECTION IMPLEMENTATION NOT AUTHORIZED`. The corrected implementation
+is a **separate** future authorization (keeps `1eced7d` as superseded evidence, starts from the then-live tip, sets
+`threaded=False`, adds the fixture + threading regression, re-runs RED/GREEN + protected regressions + full suite, new
+independent review). **This amendment authorizes none of it.**
+
+**Changed files (documentation-only, this gate):** `docs/governance/ACTIVE_INCREMENT_CONTRACT.md`,
+`docs/governance/OWNER_DECISION_REGISTER.md`, `docs/governance/CURRENT_PROJECT_STATE.md`, and this append-only
+`docs/governance/ACTIVE_EXECUTION_ROADMAP.md`. No code, test, runtime, dependency, or database path changed.
+
+**Status:** P4-1b-1 contract AMENDED (threading + pytest DB isolation) — **CORRECTION IMPLEMENTATION NOT AUTHORIZED**.
+**P4-1b-1 correction implementation, P4-1b-2, P4-2, and Phase 5 remain NOT AUTHORIZED / NOT STARTED.** Decision **D17**
+and the AISR seven-owner model are preserved. Append-only; prior history not rewritten. This gate authorizes no push,
+no PR, no merge, no implementation, and no phase activation.
