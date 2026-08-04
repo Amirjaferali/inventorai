@@ -138,3 +138,30 @@ WS17, STG, provider selection, and exact UX remain NOT AUTHORIZED.** Phase 4 obl
 **Not-yet-canonical rule:** any capability or decision appearing only in a handover or chat —
 not in committed owner-decision evidence — is `NOT CANONICAL — REQUIRES OWNER DECISION` and
 must be added here with evidence before implementation.
+
+
+## P4-0 implementation closure and governance-currency synchronization
+
+**Decision status:** ACCEPTED COMPLETED HISTORY / NO NEW IMPLEMENTATION AUTHORITY.
+
+The owner accepted the independently reviewed and corrected P4-0 implementation, its merge through PR #353,
+post-merge verification, and formal closure. The authoritative merge commit recorded for this completed gate is
+`286b83ffbd6916086c834658f9e16411ef4de4fe`. This row supersedes earlier register wording only where that wording
+states that P4-0 was not authorized or not started; those statements remain historical context, not current status.
+
+| ID | Subject | Status | Implementation authority | Evidence |
+|---|---|---|---|---|
+| D-P4-0-CLOSE-01 | P4-0 contract and implementation | COMPLETE AND FORMALLY CLOSED | NONE — closed history only | PR #352 contract; PR #353 implementation merge and accepted post-merge verification |
+| D-P4-0-CLOSE-02 | Current active implementation contract | NONE | NONE | `ACTIVE_INCREMENT_CONTRACT.md` synchronized status |
+| D-P4-0-CLOSE-03 | P4-1 and P4-2 | NOT AUTHORIZED / NOT STARTED | NONE | Separate owner decision and contract required |
+| D-P4-0-CLOSE-04 | Governance synchronization | DOCUMENTATION-ONLY | NONE | Four bounded governance paths; no runtime/product change |
+
+**Preserved boundaries:** P4-0 did not implement durable storage, adapters, transactions, migration, runtime
+integration, deterministic replay, output invalidation, full re-evaluation, accounts, authentication, ownership,
+verified email, ACV, PDF, Email Delivery, WS17, STG, release, or deployment. Full re-evaluation remains the safe
+default after accepted material revision; targeted partial re-evaluation remains prohibited absent a separately
+authorized deterministic dependency model.
+
+**Future/deferred requirements:** prior accepted future requirements remain preserved under their existing canonical
+records and timing. This synchronization does not redesign, activate, or implement them. Any requirement found only
+in chat or a handover remains non-canonical until separately owner-decided and committed.

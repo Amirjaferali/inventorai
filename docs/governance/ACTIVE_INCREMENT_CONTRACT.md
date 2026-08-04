@@ -41,17 +41,20 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
+**Status:** NO ACTIVE (authorized) IMPLEMENTATION CONTRACT.
 
-**Status:** NO ACTIVE (authorized) IMPLEMENTATION CONTRACT. A documentation-only **P4-0 — Readiness and
-Storage-Contract Proof** increment-contract **CANDIDATE** (implementation **NOT authorized**) is recorded in the
-section **"P4-0 Increment Contract Candidate (CONTRACT CANDIDATE ONLY — IMPLEMENTATION NOT AUTHORIZED)"** at the end
-of this file; it becomes an active contract only after independent review, owner acceptance, merge, post-merge
-verification, and a separate explicit P4-0 implementation authorization. Current live tip
-`021a45afb2961aa3e497fa99d1f62111538f87a4` (Merge PR #351 — G-P4-DOC-01; always re-resolve from Git); the
-"Verified authoritative tip" value below is a historical pointer and is not re-synchronized by this candidate.
+**Current synchronized boundary (post-PR #353):** P4-0 — Readiness and Storage-Contract Proof was separately
+authorized, implemented, independently reviewed, corrected, merged through PR #353, post-merge verified, and
+formally closed by the owner. The authoritative merge commit recorded for that closure is
+`286b83ffbd6916086c834658f9e16411ef4de4fe`. This synchronization records completed history only; it does not
+activate or authorize P4-1, P4-2, any other Phase 4 increment, repository implementation, testing, runtime work,
+publication, merge, release, or deployment. The P4-0 candidate block retained later in this file is a historical
+contract-of-record and MUST NOT be interpreted as the currently active contract. Any next gate requires separate
+explicit owner authorization.
+
 **Verified authoritative branch:** `feature/atomic-json-session-persistence`.
-**Verified authoritative tip:** `115239ffc4b4f2f1a108aae498cb1bbf016bbf08` (Merge PR #348 — G-UX-SNAPSHOT-DECISION;
-always re-resolve the live tip from Git). Since the PR #327 gate, the bounded **remediation program** was
+**Verified authoritative tip (synchronized closure pointer):** `286b83ffbd6916086c834658f9e16411ef4de4fe`
+(Merge PR #353 — P4-0 implementation closure; always re-resolve the live tip from Git). Since the PR #327 gate, the bounded **remediation program** was
 authorized and is now **FORMALLY CLOSED** (executable track COMPLETE): G-R01 CLOSED via PR #329/#330; DISC-007
 CLOSED via PR #331 (Domain Registry v1.0 test reconciliation) and PR #332 (v1.0 validation hardening); tip at that
 closure `239557e1` (PR #332 merge); repository-wide XPASS `0`; deferred Domain Registry v1.0 rules FORMALLY DEFERRED
@@ -113,6 +116,12 @@ Merge authority:          Owner, separately (not by the execution agent).
 ```
 
 ---
+
+## P4-0 Historical Increment Contract Record — SUPERSEDED AS ACTIVE AUTHORITY
+
+**Current interpretation:** the text below is preserved as the pre-implementation P4-0 contract candidate and
+historical execution record. P4-0 has since been completed and formally closed through PR #353. Nothing in the
+historical wording below reopens P4-0 or authorizes P4-1/P4-2.
 
 ## P4-0 Increment Contract Candidate (CONTRACT CANDIDATE ONLY — IMPLEMENTATION NOT AUTHORIZED)
 
