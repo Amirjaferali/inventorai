@@ -41,7 +41,26 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status:** NO ACTIVE (authorized) IMPLEMENTATION CONTRACT. **P4-1b-1 implementation is MERGED and POST-MERGE VERIFIED
+**Status:** ACTIVE CONTRACT-OF-RECORD = **P4-1b-2a Increment Contract Candidate — REV1** (gate
+**G-P4-1B-2-DOC-01-REV1**, defined in the "P4-1b-2a Increment Contract Candidate — REV1" section below) —
+**CORRECTED CONTRACT CANDIDATE — NOT YET MERGED · IMPLEMENTATION NOT AUTHORIZED · P4-1b-2a NOT STARTED**. REV1 corrects
+independent-review blocking findings **B1** (mandatory token + affected existing tests), **B2** (token transport on
+every answered-producing form), and **B3** (downstream `evt-*` semantic consequences). **The original DOC-01 candidate
+`0e2a5cec24d71462eadbffa193e3467d40d506a0` carries independent-review verdict `C — REVISE AND RE-REVIEW`; it is
+PRESERVED (unmerged) and NOT PUBLISHABLE, and is NOT amended.** A separately-claimed candidate
+`518cfdfe0eca3fb0f52c88c5baea46c643d3c288` / bundle `p4_1b2_doc01_rev1_518cfdf.bundle` is **NOT an established
+repository artifact and must not be relied upon**. **B3 determination (corrected):** a token-derived `evt-*`
+answered-record id **materially changes deterministic output** in `engine/idea_development_outputs.py` and
+`engine/requirement_landscape.py`, so **CONTRACT AMENDMENT / OWNER DECISION is REQUIRED** before P4-1b-2a implementation
+(the earlier "feasibility PASS, no amendment" is superseded). **P4-1b-2b, P4-2, and Phase 5 remain NOT AUTHORIZED / NOT
+STARTED.**
+
+**P4-1b-1 is FULLY CLOSED** (implementation MERGED and POST-MERGE VERIFIED via PR #360; governance closure COMPLETE via
+PR #361 `25dacb00295bcd3d34fd2cb5f789e9eae390ae11`). *(Preserved observation: the closure section below still reads
+"pending its own merge", now satisfied by PR #361.)* The bounded P4-1b-1 (Runtime Store
+Construction and Durable Project Create/Load) contract (gate **G-P4-1B-1-DOC-01**, corrected by **G-P4-1B-1-AMEND-01**)
+is retained below as the fulfilled contract-of-record. *(The next paragraph's "GOVERNANCE CLOSURE is PENDING" wording is
+historical and superseded by this status line.)* **P4-1b-1 implementation is MERGED and POST-MERGE VERIFIED
 (technically COMPLETE); its GOVERNANCE CLOSURE is PENDING** until the G-P4-1B-1-CLOSURE-SYNC-01 candidate below is
 itself separately reviewed, published, PR-created, merged, and post-merge verified. The bounded P4-1b-1 (Runtime Store
 Construction and Durable Project Create/Load) contract (gate **G-P4-1B-1-DOC-01**, corrected by **G-P4-1B-1-AMEND-01**)
@@ -146,6 +165,143 @@ Independent-review scope: Per protocol §5, plus: banners accurate; carve-out bo
                           implementation authority granted; roadmap prefix preserved.
 Merge authority:          Owner, separately (not by the execution agent).
 ```
+
+---
+
+## P4-1b-2a Increment Contract Candidate — REV1 — G-P4-1B-2-DOC-01-REV1 (CORRECTED CONTRACT CANDIDATE — NOT YET MERGED · IMPLEMENTATION NOT AUTHORIZED)
+
+**0. Provenance & preservation.** REV1 supersedes the original P4-1b-2a contract candidate
+`0e2a5cec24d71462eadbffa193e3467d40d506a0` (gate G-P4-1B-2-DOC-01), which received independent-review verdict
+**C — REVISE AND RE-REVIEW** and is **PRESERVED intact, unmerged, NOT PUBLISHABLE, and NOT amended**. A previously
+claimed `518cfdfe0eca3fb0f52c88c5baea46c643d3c288` candidate/bundle is **not an established repository artifact** and is
+not relied upon. REV1 is a **new** candidate created from live tip `25dacb00295bcd3d34fd2cb5f789e9eae390ae11`.
+
+**1. Gate identity & status.** P4-1b-2a — Durable Answered-Event Append and Web-Layer Idempotency. Gate
+**G-P4-1B-2-DOC-01-REV1**. **Status:** `CORRECTED CONTRACT CANDIDATE — NOT YET MERGED` · `IMPLEMENTATION NOT AUTHORIZED`
+· `P4-1b-2a NOT STARTED`. **P4-1b-2b, P4-2, Phase 5 remain NOT AUTHORIZED / NOT STARTED.** Owner decisions govern
+`D-P4-1B-2-01 … -14` (unchanged) plus the REV1 corrections `D-P4-1B-2-REV1-B1/B2/B3` and clarifications
+`D-P4-1B-2-REV1-C1 … C8` in `OWNER_DECISION_REGISTER.md`.
+
+**2. Objective (unchanged).** Prove durable accepted-answer evidence: durably append each answered-submission
+accepted-input event exactly once, persist-before-acknowledge, with mandatory web-layer idempotency — no full session/
+progression/deliverable/output/Keep-Refine/account durability, no replay (P4-2).
+
+**B1 — Mandatory token & affected existing tests (correction).** A server-issued token is **mandatory for every
+answered submission**; **no tokenless fallback** is permitted (a POST resolving to `answered` without a valid token
+fails closed, generic behaviour, no acceptance). The future implementation MUST enumerate and update **only** the
+existing test files that genuinely POST answered submissions, **solely to obtain and submit a real valid token**, with
+**no weakened assertion, no skipped behaviour, and no conftest auto-injection of tokens** (auto-injection would create a
+false-green path and is prohibited). **Enumerated affected test paths (evidence, live tip):** `test_web_app.py`,
+`test_p4_1b1_runtime_project_persistence.py`, `test_security_containment_r6_r16.py`, `test_increment_1a_actions.py`,
+`test_structured_criticality.py`, `test_success_criteria.py`, `test_gux_snapshot_decision.py`,
+`test_s04_guided_answer_validation.py`, `test_actionable_validation_plan.py`, `test_advisory_panel_precedence.py`,
+`test_deliverable_hygiene.py`, `test_domain_gate_entry_ux.py`, `test_guided_answer_coauthoring_increment_1.py`,
+`test_guided_uncertainty_support.py`, `test_layer1_feedback_wording.py`, `test_more_detail_needed_scaffolding.py`,
+`test_plain_language_result_feedback.py`, `test_requirement_landscape_synthesis.py`,
+`test_unified_risk_safety_presentation.py`, `test_acknowledged_unknown_fragment_capture.py`,
+`test_causal_connective_substance_gate.py` (final set re-verified at the implementation gate). **Any answered-producing
+test path not identified by evidence → STOP — CONTRACT AMENDMENT REQUIRED.**
+
+**B2 — Token transport on every answered-producing form (correction).** Token transport MUST cover **every** form whose
+POST resolves to `answered`. Verified answered-producing forms (`web/templates/session.html`): (i) the **main answer
+form** (`name="response"` + `action=answered`); (ii) the **criticality-correction free-text form**, whose POST carries
+**no `action` field** and is therefore treated as `answered` by the legacy-compatibility rule in
+`web/app.py::submit_answer`. Both MUST carry a hidden server-issued token. The contract REQUIRES an **inventory/route-form
+regression** proving **no answered-producing form bypasses the token requirement** (fail closed if any does).
+
+**B3 — Downstream `evt-*` semantic consequences (correction; CONTRACT AMENDMENT / OWNER DECISION REQUIRED).** A
+token-derived event id (`evt-*`) replacing the positional `rec_N` on an accepted answered record is **NOT semantically
+neutral**. Static evidence at the live tip:
+  * `engine/idea_development_outputs.py::_record_sort_key` (`_REC_ID_RE = ^rec_(\d+)$`): `rec_N` ids receive tuple lead
+    **0** (numeric order) and **always precede** non-`rec_N` ids (lead 1/2). An `evt-*` answered record therefore sorts
+    differently, **changing which record `_select_record` picks** for the deterministic next-development-step output.
+  * `engine/requirement_landscape.py`: mirrors the same `rec_N` sort key (`_rec_sort_key`) **and embeds `record_id` into
+    derived identifiers and metadata** — `requirement_id = _record_id_prefix(kind) + record.record_id` (e.g.
+    `req:assertion:rec_3` → `req:assertion:evt-…`), `anchor_reference`, `ResolvingAction`, and contradiction-pair
+    ordering (`_order_pair`). `evt-*` ids therefore **change derived requirement identifiers, rationale metadata, and
+    pair ordering** — deterministic outputs.
+The contract REQUIRES **protected regression tests for mixed `rec_N` / `evt-*` ledgers and deterministic output
+behaviour**. **Because static inspection already demonstrates a material change, this contract does NOT authorize the
+`evt-*` id scheme for implementation.** **DETERMINATION: CONTRACT AMENDMENT / OWNER DECISION REQUIRED** before P4-1b-2a
+implementation — the owner must choose one of: **(a)** explicitly accept the changed deterministic output (owner
+decision + regenerated golden expectations); **(b)** authorize a **bounded engine amendment** so durable event ids are
+order-equivalent to `rec_N` and embed acceptably in `idea_development_outputs.py`/`requirement_landscape.py`; or
+**(c)** adopt an idempotency design that keeps `rec_N` as the identifier consumed by the derived-output engines. **The
+semantic change must NOT be silently normalized or accepted.** *(This corrects the original candidate's erroneous
+"STABLE RECORD-ID FEASIBILITY: PASS — no amendment".)*
+
+**Clarification C1 — Web-layer staging (D-P4-1B-2-REV1-C1).** On an answered submission the implementation MUST: clone
+the live `IdeaState`; run evaluation and create the `AssertionRecord` on the **staged copy**; set the canonical event
+id; **append durably**; and **only after durable success** publish staged state, transcript, and `last_result` into
+`SESSION_STORE`. On append failure it MUST discard the staged copy and leave live memory unchanged (persist-before-ack;
+no partial publication).
+
+**Clarification C2 — Duplicate retry (D-P4-1B-2-REV1-C2).** A duplicate valid-token retry MUST cause: no second durable
+event; no second progression; no reconstructed `last_result`; no claim of reproducing the prior response; a no-op with a
+`show_session` redirect where truthful, otherwise a generic redirect.
+
+**Clarification C3 — IntegrityError handling (D-P4-1B-2-REV1-C3).** No `sqlite3.IntegrityError` may be **automatically**
+classified as a duplicate. On IntegrityError the runtime MUST reload the durable contract and confirm the **exact event
+id, same project, and same logical accepted content** before treating it as an idempotent duplicate. **Same token with
+different content fails closed.** Unrelated integrity failures remain **generic store failures** (fail closed).
+
+**Clarification C4 — Concurrency boundary (D-P4-1B-2-REV1-C4).** The bounded MVP relies on the existing
+`threaded=False` single-process/single-thread serving topology (G-P4-1B-1-AMEND-01); the store **primary key is the
+durable duplicate backstop**; multi-thread/multi-worker behaviour is **out of scope**.
+
+**Clarification C5 — Canonical token/event-id model (D-P4-1B-2-REV1-C5).** A **cryptographically strong** server-issued
+token; **URL/form-safe bounded** encoding; **exact-match** validation; **hidden-form transport only**; **never** placed
+in URLs, logs, or user-facing errors. **One precise digest model is chosen: the canonical durable event id is
+`evt-` + hex SHA-256 of (`sid` ‖ separator ‖ raw token), truncated to a bounded length** — i.e. the raw token is
+**hashed, not stored raw**, and **`sid` is included in the canonical derivation** so the event id is project-bound.
+*(This id scheme is subject to the B3 amendment/owner decision above before implementation.)*
+
+**Clarification C6 — Durable-success / memory-failure (D-P4-1B-2-REV1-C6).** If the durable append succeeds but the
+in-memory publish fails: the durable ledger remains authoritative; the temporary `SESSION_STORE` entry is invalidated;
+the runtime redirects safely; it does **not** continue from partially published progression, does **not** append again,
+and does **not** claim replay or exact resume.
+
+**Clarification C7 — Pre-append scanning (D-P4-1B-2-REV1-C7).** A full-ledger `load_contract(sid)` load/scan is
+acceptable for this bounded MVP and is recorded as **O(n)**; **no `project_ids()` exposure**; a direct-record lookup
+optimization is **deferred**.
+
+**Clarification C8 — Mixed-id state (D-P4-1B-2-REV1-C8).** Durable `evt-*` answered records may coexist with legacy or
+volatile `rec_N` non-answer records; **protected regressions MUST cover this mixed-id state** (feeds directly into B3).
+
+**Ordering / failure / reconciliation / restart / product-truth (unchanged from DOC-01, retained):** store `seq`
+ordering, one accepted event per token, no cross-project append; the ten-case failure model with generic non-disclosing
+errors and no raw SQLite/user-content logs; durable-authoritative reconciliation; restart guarantees ledger + fresh
+readiness only (no progression/deliverable restore — P4-2); product may claim only **durable accepted-answer evidence**
+and must not claim saved project / fully saved idea / durable outputs / "resume exactly where you left off" / complete
+session resume / Keep-Refine durability / account-owned records.
+
+**Permitted paths (future implementation).** `web/app.py`; `web/templates/session.html` (hidden token field on **both**
+answered-producing forms — B2); ONE focused test module `tests/test_p4_1b2a_durable_answer_append.py` (new);
+`tests/conftest.py` (reuse only — **no token auto-injection**); and the **enumerated B1 existing test files** updated
+**only** to obtain/submit a real token without weakening assertions. **Prohibited (unless a separately reviewed
+amendment authorizes):** `engine/idea_state.py`, `engine/record_store.py`, `engine/record_contract.py`,
+`engine/derived_readiness.py`, `engine/idea_development_outputs.py`, `engine/requirement_landscape.py`,
+`engine/deliverable_assembler.py`, `requirements.txt`, `pytest.ini`, `database/`, `schemas/`, migrations; accounts/
+auth/ownership; outputs; replay; durable Keep/Refine; retention/deletion; local-dev permission hardening; P4-1b-2b;
+P4-2; Phase 5. **NOTE:** the B3 resolution may require an authorized amendment touching
+`engine/idea_development_outputs.py` and/or `engine/requirement_landscape.py`; that is a **separate** authorization, not
+granted here.
+
+**RED / GREEN (corrected).** RED-1…11 (DOC-01) **plus**: RED-B1 an answered POST without a valid token **fails closed**
+(no acceptance); RED-B2 an inventory/route-form test proves **no answered-producing form** (main + criticality-correction)
+bypasses the token; RED-B3 mixed `rec_N`/`evt-*` ledger **deterministic-output** regressions (next-development-step
+selection + derived requirement identifiers) — these are **gating**: if they demonstrate a material change (as static
+analysis indicates), implementation STOPS pending the B3 amendment/owner decision; RED-C3 IntegrityError is **not**
+auto-classified as duplicate (same-token-different-content fails closed). GREEN additionally requires: real token
+lifecycle end-to-end; staging (C1) with persist-before-publish; idempotent retry (C2) with no second event/progression;
+IntegrityError confirmation-by-reload (C3); no false-green via conftest/`SESSION_STORE`; protected regressions incl.
+mixed-id (C8) pass **only** under an owner-approved B3 resolution; full governed suite green.
+
+**Preserved (unchanged by REV1):** decision **D17**; the **AISR seven-owner model**; the original `0e2a5ce` candidate and
+its verdict-C history; all P4-1b-1 implementation-review and post-closure documentation observations (closure
+"pending its own merge" now satisfied by PR #361; non-material tree-attribution note; stale "current" wording;
+authorization-record lag) — recorded, not fixed here. **P4-1b-2b, P4-2, Phase 5–7, WS17, STG** remain **NOT
+AUTHORIZED**.
 
 ---
 

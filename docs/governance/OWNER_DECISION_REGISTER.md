@@ -317,3 +317,41 @@ verified.
 merge; the owner **later** authorized this documentation closure sync. The superseded candidate `1eced7d` remains
 preserved intact and unmerged. Decision **D17** and the AISR seven-owner model are preserved. The live application does
 not durably persist accepted answers, outputs, or complete ideas (that remains P4-1b-2).
+
+## P4-1b-2a owner decisions — REV1 (G-P4-1B-2-DOC-01-REV1) — corrected contract candidate, IMPLEMENTATION NOT AUTHORIZED
+
+**Decision status:** ACCEPTED / RECORDED — NO IMPLEMENTATION AUTHORITY. REV1 corrects the independent-review verdict
+**C** blocking findings B1/B2/B3 against the original DOC-01 candidate `0e2a5cec24d71462eadbffa193e3467d40d506a0`
+(**preserved intact, unmerged, NOT PUBLISHABLE, NOT amended**). A separately-claimed `518cfdfe…` candidate/bundle is
+**not an established repository artifact**. Recorded on live tip `25dacb00295bcd3d34fd2cb5f789e9eae390ae11`.
+
+**Base decisions carried forward (re-affirmed from the preserved original candidate, unchanged):** **D-P4-1B-2-01**
+append-only accepted-input **event** ledger authoritative (event-versus-snapshot is one authoritative decision);
+**-02** accepted input (2a) = an answered submission producing one `AssertionRecord`; **-03** persist→memory→acknowledge;
+**-04** server-issued web-layer submission token (outside `engine/idea_state.py` absent a separate amendment); **-05**
+duplicate retry = idempotent no-op (no second event/progression); **-06** stable record-id requirement; **-07** ledger
+authoritative / readiness+progression+deliverable derived; **-08** restart guarantees ledger + fresh readiness only;
+**-09** replay is P4-2; **-10** cold-load stays on `show_session`; **-11** Keep/Refine excluded; **-12** retention/
+deletion + local-dev permission hardening deferred; **-13** P4-1b-2a/2b split (2b not authorized); **-14** truthful
+product wording.
+
+| ID | Subject | Decision | Impl. authority | Evidence / boundary |
+|---|---|---|---|---|
+| D-P4-1B-2-REV1-B1 | Mandatory token + affected existing tests | ACCEPTED | NONE | token mandatory for every answered submission; **no tokenless fallback**; enumerated ~21 answered-producing existing test files updated **only** to obtain/submit a real token; **no weakened assertion, no skipped behaviour, no conftest token auto-injection**; unidentified answered path → STOP — CONTRACT AMENDMENT REQUIRED |
+| D-P4-1B-2-REV1-B2 | Token transport on every answered-producing form | ACCEPTED | NONE | covers the **main answer form** and the **criticality-correction free-text form** (no `action` → treated as `answered`) in `web/templates/session.html`; inventory/route-form regression proves **no answered-producing form bypasses** the token |
+| D-P4-1B-2-REV1-B3 | Downstream `evt-*` semantic consequences | **CONTRACT AMENDMENT / OWNER DECISION REQUIRED** | NONE | `evt-*` ids materially change `engine/idea_development_outputs.py::_record_sort_key` (rec_N lead-0 precedence lost) and `engine/requirement_landscape.py` (derived requirement ids `req:assertion:<record_id>`, anchor/rationale, pair ordering); require mixed-id deterministic-output regressions; **implementation BLOCKED** pending owner choice (a) accept change + regen goldens, (b) bounded engine amendment for order-equivalent ids, or (c) keep `rec_N` in the derived path; **must not be silently normalized** — corrects the original "PASS/no-amendment" |
+| D-P4-1B-2-REV1-C1 | Web-layer staging | ACCEPTED | NONE | clone IdeaState → evaluate + build record on staged copy → set event id → durable append → publish staged state/transcript/last_result ONLY after durable success; on failure discard staged copy, live memory unchanged |
+| D-P4-1B-2-REV1-C2 | Duplicate retry | ACCEPTED | NONE | no second event/progression/reconstructed last_result; no claim of reproducing prior response; no-op with `show_session` redirect when truthful else generic |
+| D-P4-1B-2-REV1-C3 | IntegrityError handling | ACCEPTED | NONE | never auto-classify IntegrityError as duplicate; reload durable contract and confirm exact event id + same project + same logical content; **same token, different content fails closed**; unrelated integrity failures = generic store failures |
+| D-P4-1B-2-REV1-C4 | Concurrency boundary | ACCEPTED | NONE | relies on existing `threaded=False` single-process/single-thread topology; store PK is the durable duplicate backstop; multi-thread/worker out of scope |
+| D-P4-1B-2-REV1-C5 | Canonical token/event-id model | ACCEPTED (subject to B3) | NONE | cryptographically strong server-issued token; URL/form-safe bounded encoding; exact-match; hidden-form transport only; never in URLs/logs/user errors; **one digest model: `evt-` + truncated hex SHA-256 of (`sid` ‖ raw token)** — token hashed not stored raw; `sid` included → project-bound |
+| D-P4-1B-2-REV1-C6 | Durable-success / memory-failure | ACCEPTED | NONE | durable ledger authoritative; invalidate temporary session entry; redirect safely; no continue-from-partial; no re-append; no replay/exact-resume claim |
+| D-P4-1B-2-REV1-C7 | Pre-append scanning | ACCEPTED | NONE | full-ledger `load_contract(sid)` scan acceptable for MVP; recorded **O(n)**; no `project_ids()` exposure; direct-record lookup deferred |
+| D-P4-1B-2-REV1-C8 | Mixed-id state | ACCEPTED | NONE | durable `evt-*` answered records may coexist with legacy/volatile `rec_N` non-answer records; protected regressions must cover this (feeds B3) |
+
+**Boundary.** No decision authorizes implementation. **P4-1b-2a implementation is BLOCKED at least until the B3
+amendment/owner decision is resolved**, and in all cases requires this REV1 candidate to be independently reviewed,
+merged, and post-merge verified plus a separate explicit implementation authorization. **P4-1b-2b, P4-2, Phase 5 remain
+NOT AUTHORIZED / NOT STARTED.** The original `0e2a5ce` candidate (verdict C) and the superseded `1eced7d` remain
+preserved; all P4-1b-1 and post-closure observations are preserved, not fixed. Decision **D17** and the AISR
+seven-owner model are preserved.

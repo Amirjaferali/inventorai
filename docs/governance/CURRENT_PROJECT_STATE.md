@@ -259,6 +259,37 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
 - **Current active implementation contract:** NONE. **P4-1b-2, P4-2, Phase 5:** NOT AUTHORIZED / NOT STARTED. Decision
   **D17** and the AISR seven-owner model are preserved.
 
+## Post-PR #361 boundary — P4-1b-1 fully closed; P4-1b-2a contract candidate REV1 (G-P4-1B-2-DOC-01-REV1)
+
+- **Live tip:** `25dacb00295bcd3d34fd2cb5f789e9eae390ae11` (Merge PR #361; always re-resolve from Git).
+- **P4-1b-1:** `FULLY CLOSED` (implementation merged/post-merge-verified via PR #360; governance closure complete via
+  PR #361). *(Preserved observation: merged closure prose still reads "pending its own merge", satisfied by PR #361;
+  plus the non-material tree-attribution note, stale "current" wording, and authorization-record lag — preserved for a
+  later documentation gate.)*
+- **P4-1b-2a DOC-01 original candidate `0e2a5cec24d71462eadbffa193e3467d40d506a0`:** independent-review verdict
+  **C — REVISE AND RE-REVIEW**; **PRESERVED (unmerged), NOT PUBLISHABLE, NOT amended.** A previously claimed
+  `518cfdfe0eca3fb0f52c88c5baea46c643d3c288` candidate/bundle is **NOT an established repository artifact and must not be
+  relied upon.**
+- **P4-1b-2a contract candidate REV1 (G-P4-1B-2-DOC-01-REV1):** `CORRECTED CONTRACT CANDIDATE — NOT YET MERGED —
+  IMPLEMENTATION NOT AUTHORIZED — P4-1b-2a NOT STARTED`. Corrects B1 (mandatory token; ~21 enumerated answered-producing
+  existing tests updated only to submit a real token; no conftest auto-injection), B2 (token transport on both the main
+  answer form and the criticality-correction form), and B3 (downstream `evt-*` semantic consequences). Records
+  clarifications C1–C8 (web-layer staging; idempotent retry; IntegrityError confirm-by-reload; `threaded=False`
+  concurrency backstop; canonical `evt-`+truncated-SHA-256(`sid`‖token) hashed project-bound id; durable-success/
+  memory-failure invalidation; O(n) pre-append scan; mixed-id regressions). See `ACTIVE_INCREMENT_CONTRACT.md` +
+  `OWNER_DECISION_REGISTER.md`.
+- **B3 determination (binding):** a token-derived `evt-*` answered-record id **materially changes deterministic output**
+  in `engine/idea_development_outputs.py::_record_sort_key` and `engine/requirement_landscape.py` (derived requirement
+  ids, ordering, rationale). **CONTRACT AMENDMENT / OWNER DECISION REQUIRED** before P4-1b-2a implementation; the earlier
+  "feasibility PASS / no amendment" is **superseded**. The change must not be silently normalized.
+- **Product-truth boundary (unchanged):** P4-1b-2a would make **accepted-answer evidence** durable + readiness
+  re-derivable only; it does **not** durably restore progression, the deliverable, outputs, Keep/Refine, or enable full
+  session resume (progression = P4-2 replay). No claim of a saved project, fully saved idea, durable outputs, or
+  account-owned records.
+- **Current active implementation contract:** NONE. **P4-1b-2a implementation** is BLOCKED at least until the B3
+  amendment/owner decision. **P4-1b-2b, P4-2, Phase 5:** NOT AUTHORIZED / NOT STARTED. Decision **D17** and the AISR
+  seven-owner model are preserved.
+
 ## Phase 4 entry direction (Durable Data and Evidence Foundation)
 
 - **G-P4-ENTRY-DEFINITION:** COMPLETED AND ACCEPTED (owner verdict **B**). **G-P4-DOC-01:** documentation-only gate

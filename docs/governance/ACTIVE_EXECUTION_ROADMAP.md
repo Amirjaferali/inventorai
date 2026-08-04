@@ -3457,3 +3457,50 @@ CLOSURE PENDING** until this closure candidate is itself separately reviewed, pu
 post-merge verified. **P4-1b-2, P4-2, and Phase 5 remain NOT AUTHORIZED / NOT STARTED.** Decision **D17** and the AISR
 seven-owner model are preserved. Append-only; prior history not rewritten. This gate authorizes no push, no PR, no
 merge, no implementation, and no phase activation.
+
+---
+
+## G-P4-1B-2-DOC-01-REV1 — P4-1b-2a contract candidate correction (documentation-only) — CORRECTED CANDIDATE NOT YET MERGED
+
+**Gate:** G-P4-1B-2-DOC-01-REV1. **Type:** documentation-only correction of the P4-1b-2a contract candidate. **Live tip
+at authoring:** `25dacb00295bcd3d34fd2cb5f789e9eae390ae11` (Merge PR #361; tree
+`baff8a22d814a41e25bffbf875f05e47d12fa1e9`; always re-resolve from Git).
+
+**Provenance & preservation.** The original DOC-01 candidate `0e2a5cec24d71462eadbffa193e3467d40d506a0` received
+independent-review verdict **C — REVISE AND RE-REVIEW** and is **PRESERVED (unmerged), NOT PUBLISHABLE, NOT amended**.
+A separately-claimed candidate `518cfdfe0eca3fb0f52c88c5baea46c643d3c288` / bundle `p4_1b2_doc01_rev1_518cfdf.bundle` is
+**NOT an established repository artifact and must not be relied upon**. REV1 is a **new** correction candidate from the
+live tip; its own commit/tree/bundle/SHA are newly generated and reported honestly.
+
+**Corrections recorded (D-P4-1B-2-REV1-B1/B2/B3 + C1…C8).** **B1** — token mandatory for every answered submission
+(no tokenless fallback); ~21 enumerated answered-producing existing test files updated **only** to submit a real token,
+no weakened assertions, **no conftest auto-injection**. **B2** — token transport on **every** answered-producing form:
+the main answer form **and** the criticality-correction free-text form (no `action` → treated as `answered`) in
+`web/templates/session.html`; inventory/route-form regression required. **B3** — a token-derived `evt-*` answered-record
+id **materially changes deterministic output** in `engine/idea_development_outputs.py::_record_sort_key` (rec_N lead-0
+precedence lost) and `engine/requirement_landscape.py` (derived requirement ids `req:assertion:<record_id>`, anchor/
+rationale, pair ordering); mixed-id deterministic-output regressions required; **DETERMINATION: CONTRACT AMENDMENT /
+OWNER DECISION REQUIRED** before implementation — the change must not be silently normalized (this **corrects** the
+original "feasibility PASS / no amendment"). **C1–C8** — web-layer staging (persist-before-publish); idempotent-retry
+no-op; IntegrityError confirm-by-reload (same token+different content fails closed); `threaded=False` concurrency
+backstop; canonical `evt-`+truncated-SHA-256(`sid`‖token) **hashed, project-bound** id; durable-success/memory-failure
+invalidation; O(n) pre-append scan; mixed-id regressions.
+
+**Contract status:** `CORRECTED CONTRACT CANDIDATE — NOT YET MERGED · IMPLEMENTATION NOT AUTHORIZED · P4-1b-2a NOT
+STARTED`. **CONTRACT AMENDMENT REQUIRED: YES (B3)** — the `evt-*` id scheme alters deterministic derived output;
+implementation is blocked pending an owner decision / bounded engine amendment / rec_N-preserving redesign. Permitted
+future implementation paths: `web/app.py`, `web/templates/session.html` (both answered-producing forms),
+`tests/test_p4_1b2a_durable_answer_append.py` (new), `tests/conftest.py` (reuse; no auto-injection), and the enumerated
+B1 existing test files (token-only updates). Any B3 engine change (`idea_development_outputs.py`/`requirement_landscape.py`)
+is a **separate** authorized amendment, not granted here.
+
+**Changed files (documentation-only, this gate):** `docs/governance/ACTIVE_INCREMENT_CONTRACT.md`,
+`docs/governance/OWNER_DECISION_REGISTER.md`, `docs/governance/CURRENT_PROJECT_STATE.md`, and this append-only
+`docs/governance/ACTIVE_EXECUTION_ROADMAP.md`. No code, test, template, runtime, engine, schema, database, dependency,
+or CI path changed. All P4-1b-1 and post-closure observations preserved, not fixed; the verdict-C history and the
+original `0e2a5ce` candidate are preserved.
+
+**Status:** P4-1b-2a contract candidate REV1 DEFINED — **CORRECTED CANDIDATE NOT YET MERGED — IMPLEMENTATION NOT
+AUTHORIZED** (and B3-blocked pending owner decision/amendment). **P4-1b-2b, P4-2, and Phase 5 remain NOT AUTHORIZED /
+NOT STARTED.** Decision **D17** and the AISR seven-owner model are preserved. Append-only; prior history not rewritten.
+This gate authorizes no push, no PR, no merge, no implementation, and no phase activation.
