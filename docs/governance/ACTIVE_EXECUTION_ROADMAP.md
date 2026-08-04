@@ -3237,3 +3237,28 @@ recommended next action after this record is merged is a separately authorized P
 DOCUMENTATION-ONLY RECORDING`. Append-only; prior history not rewritten. This candidate awaits independent review
 (Lean §5) and owner acceptance; **it authorizes no push, no PR, no merge, no implementation, and no phase
 activation.**
+
+
+---
+
+## Governance currency synchronization after P4-0 closure — documentation-only candidate
+
+**Recorded state:**
+
+- Phase 4 entry direction was recorded through PR #351.
+- The P4-0 contract was recorded through PR #352.
+- P4-0 implementation was independently reviewed, corrected, merged through PR #353, post-merge verified, and
+  formally closed by the owner.
+- Authoritative closure merge: `286b83ffbd6916086c834658f9e16411ef4de4fe`.
+- P4-0 changed only `engine/record_contract.py` and `tests/test_p4_0_record_contract.py`; it did not implement a
+  datastore, migration, runtime persistence, replay, accounts, authentication, ownership, P4-1, or P4-2.
+- Current active implementation contract: **NONE**.
+- P4-1 and P4-2 remain **NOT AUTHORIZED / NOT STARTED**.
+
+**Purpose of this entry:** correct governance currency while preserving the append-only execution history. Earlier
+P4-0 candidate/not-started language remains historical evidence and is superseded only as a statement of current
+status. This entry does not authorize code, tests, runtime, a new contract, PR, merge, release, deployment, or any
+future capability.
+
+**Next eligible decision point:** owner consideration of a separately bounded P4-1 read-only discovery/contract
+definition gate. Eligibility is not authorization. Mandatory stop after this documentation synchronization package.

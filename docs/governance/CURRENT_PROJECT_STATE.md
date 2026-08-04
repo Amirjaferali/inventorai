@@ -16,13 +16,26 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
   (`git rev-parse origin/feature/atomic-json-session-persistence`). Do **not** trust a
   prose-pinned SHA.
   - **Current authoritative branch tip (last independently verified):**
-    `115239ffc4b4f2f1a108aae498cb1bbf016bbf08` (Merge PR #348 — G-UX-SNAPSHOT-DECISION, the latest closed
-    bounded post-Phase-3 implementation gate) — always re-resolve the live tip from Git per the rule above.
+    `286b83ffbd6916086c834658f9e16411ef4de4fe` (Merge PR #353 — P4-0 implementation, post-merge
+    verified and formally closed) — always re-resolve the live tip from Git per the rule above.
   - **Prior recorded tip (historical):** `62ebf8f1a07e3c0f48e4637029d641d19c3f9b9e` (Merge PR #337 —
     Phase 3D governance-record synchronization); superseded by PRs #338–#348 (see the Phase-and-gate section).
   - **Historical verified evidence tip:** `0330273b0d8b15fc66a285bcb9b866c6aa81b8e5`
     (PR #327 merge) — **historical evidence only; not the current tip.**
 - **`main`:** `0e89e4636399760965c9ff8086b465c90dbadf8e` — STALE / UNRECONCILED / NOT authority.
+
+
+## Post-PR #353 synchronized current boundary
+
+- **P4-0 — Readiness and Storage-Contract Proof:** COMPLETE AND FORMALLY CLOSED.
+- **Technical evidence:** PR #353; merge commit `286b83ffbd6916086c834658f9e16411ef4de4fe`; bounded paths
+  `engine/record_contract.py` and `tests/test_p4_0_record_contract.py`.
+- **Current active implementation contract:** NONE.
+- **P4-1 / P4-2:** NOT AUTHORIZED / NOT STARTED. A separate owner-authorized discovery and contract gate is
+  required before any later implementation.
+- **Runtime truth remains unchanged by P4-0:** no durable datastore, migration, accounts, authentication,
+  ownership, replay, or production persistence was implemented by P4-0.
+- **This synchronization is documentation-only:** it records completed history and grants no new authority.
 
 ## Phase and gate
 
@@ -198,7 +211,7 @@ NOT SOLVED; see the Remediation Program Formal Closure Record.)
 
 ## Active holds / forbidden work now
 
-No implementation, UI, runtime, engine, schema, database, prompt/AI, tests-as-gates,
+No implementation contract is active. P4-0 is closed; P4-1/P4-2 and every later gate require separate explicit owner authorization. No implementation, UI, runtime, engine, schema, database, prompt/AI, tests-as-gates,
 domain activation, ACV/Download/Email, sponsors/notice/privacy implementation, Arabic/RTL,
 accessibility, Structured Technical Guidance, exact/production build, Phase 3F implementation increments, Phase 4,
 WS17, main reconciliation, or PR merge is authorized by the current gate. (Phase 3A/3B product decisions, the
