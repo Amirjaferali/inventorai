@@ -207,6 +207,27 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
 - **Current active implementation contract:** NONE (a candidate is not an authorization). **P4-1b-1 implementation,
   P4-1b-2, P4-2, Phase 5:** NOT AUTHORIZED / NOT STARTED. Decision **D17** and the AISR seven-owner model are preserved.
 
+## P4-1b-1 implementation review + contract amendment (G-P4-1B-1-AMEND-01) — DOC-ONLY
+
+- **Implementation candidate `1eced7d280449b9c0842355a1882a9d3b731a633`** (P4-1b-1 runtime store construction +
+  durable project create/load, on unmerged branch `feat/p4-1b1-runtime-project-persistence`) received independent
+  verdict **C — REVISE AND RE-REVIEW** with two blocking findings: **B1** shared single `sqlite3` connection is
+  incompatible with Flask's default threaded serving; **B2** governed tests outside the focused file wrote envelopes to
+  the shared default DB instead of pytest temp paths. The candidate is **preserved intact as superseded evidence and is
+  NOT amended**; it is **not merged** (authoritative tip has no runtime store integration).
+- **G-P4-1B-1-AMEND-01 (documentation-only) — RECORDED:** owner decisions **D-P4-1B-1-AMEND-01 … -04** — (1) explicit
+  single-threaded MVP serving `threaded=False` (bounded MVP, **not** a production-architecture claim; no
+  `record_store.py`/`check_same_thread` change); (2) `tests/conftest.py` authorized ONLY for a pytest isolated-DB
+  fixture (unique `tmp_path`, safe store close/reset, no repo/`:memory:`/mock/order-dependence); (3) a threading/run-mode
+  regression proof; (4) a truthful local-dev DB boundary (persists until OS cleanup; holds only capability identifiers;
+  pytest must never use it; P4-1b-2 re-evaluates retention/permissions/deletion). Amended future implementation paths:
+  `web/app.py` + `tests/test_p4_1b1_runtime_project_persistence.py` + `tests/conftest.py`; existing tests only to adopt
+  the fixture without weakening assertions; engine store remains prohibited.
+- **Correction implementation is NOT authorized here** — it is a separate future authorization that keeps `1eced7d`
+  as superseded evidence, starts from the then-live tip, and undergoes a new independent review.
+- **Current active implementation contract:** NONE. **P4-1b-1 correction implementation, P4-1b-2, P4-2, Phase 5:**
+  NOT AUTHORIZED / NOT STARTED. The live application still uses temporary in-memory sessions and durably saves nothing.
+
 ## Phase 4 entry direction (Durable Data and Evidence Foundation)
 
 - **G-P4-ENTRY-DEFINITION:** COMPLETED AND ACCEPTED (owner verdict **B**). **G-P4-DOC-01:** documentation-only gate

@@ -50,6 +50,10 @@ acceptance, publication, merge, post-merge verification, and a **separate explic
 authorization**. **P4-1b-2, P4-2, and Phase 5 remain NOT AUTHORIZED / NOT STARTED**; **P4-1b READ-ONLY DISCOVERY is
 COMPLETE** (owner decision package delivered) and authorizes nothing further. Product-truth boundary is unchanged: the
 live application still uses temporary in-memory sessions and durably saves nothing until P4-1b implementation lands.
+The P4-1b-1 contract is refined by the **G-P4-1B-1-AMEND-01** amendment below (threading `threaded=False` +
+pytest DB-isolation `tests/conftest.py`), recorded after implementation candidate `1eced7d` received independent
+verdict **C — REVISE AND RE-REVIEW**; that amendment is **documentation-only** and authorizes no correction
+implementation. Candidate `1eced7d` is preserved intact as superseded review evidence.
 
 **P4-1a closure boundary (post-PR #356):** the **P4-1a — Durable-Store Proof** increment was: recorded as a contract
 candidate (merged PR #355); **separately and explicitly authorized for implementation by the owner** (a distinct
@@ -221,8 +225,11 @@ errors at the web boundary; and prove real restart/cold-load behaviour. Nothing 
 
 **4. Authorized paths for future implementation.** `web/app.py` (store construction at startup; `INVENTORAI_DB_PATH`
 resolution; durable project creation in `/start`; `sid`↔`project_id` association; cold-load of a durable project;
-minimum runtime-state rebuild; web-boundary storage-error translation; preserved generic unavailable behaviour);
-ONE focused test module — **`tests/test_p4_1b1_runtime_project_persistence.py`** (new).
+minimum runtime-state rebuild; web-boundary storage-error translation; preserved generic unavailable behaviour;
+**explicit single-threaded MVP serving mode `threaded=False` — G-P4-1B-1-AMEND-01 / D-P4-1B-1-AMEND-01**);
+ONE focused test module — **`tests/test_p4_1b1_runtime_project_persistence.py`** (new); and, per
+**G-P4-1B-1-AMEND-01 / D-P4-1B-1-AMEND-02**, **`tests/conftest.py`** (new) — authorized ONLY for a minimal pytest
+isolated-DB fixture (see the "P4-1b-1 Contract Amendment" section below).
 
 **5. Conditional paths.** A small new **configuration helper** (e.g. a `web/`-side path resolver) **only if** inline
 configuration would make `web/app.py` unsafe or untestable — env-sourced with production fail-fast, mirroring the
@@ -404,6 +411,81 @@ Merge authority:          Owner, separately (not by the execution agent).
 **Preserved (unchanged by this candidate):** decision **D17**; the **AISR seven-owner model**; **P4-1b-2, P4-2,
 Phase 5–7, WS17, STG**, provider selection, and exact UX all remain **NOT AUTHORIZED**. The merged P4-1a and P4-0
 artifacts are unchanged; this candidate wires nothing and creates no database.
+
+---
+
+## P4-1b-1 Contract Amendment — G-P4-1B-1-AMEND-01 (Threading & Pytest DB Isolation) — AMENDMENT CANDIDATE ONLY
+
+**Status:** `AMENDMENT CANDIDATE ONLY` · `CORRECTION IMPLEMENTATION NOT AUTHORIZED` · `P4-1b-1 CORRECTION NOT STARTED`.
+This is a **documentation-only** amendment to the P4-1b-1 Increment Contract above. It responds to the independent
+review of implementation candidate `1eced7d280449b9c0842355a1882a9d3b731a633` (verdict **C — REVISE AND RE-REVIEW**)
+and records the owner-approved contract corrections. It authorizes **no** edit to candidate `1eced7d`, `web/app.py`,
+tests, runtime, dependency, database, publication, or a replacement implementation. The corrected implementation is a
+**separate** future authorization (see "Correction-implementation boundary" below). Recorded on live tip
+`b22f82ef1f7d08ce802ecbc52d68706d358fadb5` (Merge PR #358; always re-resolve from Git).
+
+**Blocking findings addressed (contract-level only).**
+- **B1 — Threading.** The merged P4-1a `SqliteRecordStore` owns one application-scoped `sqlite3` connection. Flask's
+  built-in dev server is threaded by default, so serving requests through that shared connection across request threads
+  is unsafe (`sqlite3` objects are thread-bound). The prior contract did not pin the serving mode.
+- **B2 — Pytest DB isolation.** Governed tests outside the focused P4-1b-1 file that reach `/start` write project
+  envelopes to the shared local-development default database instead of a pytest-managed temporary path.
+
+**Owner decisions (recorded; govern D-P4-1B-1-AMEND-01 … D-P4-1B-1-AMEND-04 in `OWNER_DECISION_REGISTER.md`).**
+- **D-P4-1B-1-AMEND-01 — Explicit single-threaded MVP serving mode.** For the bounded P4-1b-1 SQLite reference
+  implementation, the Flask development/runtime entry point MUST explicitly use **`threaded=False`**, because the merged
+  P4-1a `SqliteRecordStore` owns one application-scoped `sqlite3` connection that must not be used across request
+  threads. The implementation MUST NOT rely on Flask's default threaded mode. **No change to `engine/record_store.py`;
+  no `check_same_thread=False`; no connection pool, per-thread store, or per-request connection model.** Multi-threaded,
+  multi-worker, and production-topology redesign remain deferred. **`threaded=False` is a bounded MVP decision, not a
+  claim that Flask's built-in server is a production deployment architecture.**
+- **D-P4-1B-1-AMEND-02 — Governed pytest database isolation.** All governed pytest execution that can reach P4-1b-1
+  runtime-store creation MUST use test-managed isolated database files. This authorizes **`tests/conftest.py`** ONLY for
+  a minimal fixture that: assigns `INVENTORAI_DB_PATH` to a unique pytest-managed `tmp_path`; prevents tests from writing
+  to the shared local-development database; resets `SESSION_STORE`; **safely closes** an existing app-scoped store before
+  replacing/resetting it; restores environment and runtime state after each test; introduces no production behaviour;
+  weakens no existing assertion. The fixture MUST NOT: use a repository-tracked DB; use `:memory:` SQLite for
+  durability/restart tests; expose `project_ids()`; persist transcripts or accepted-answer content; hide failures by
+  mocking the store globally; or make tests order-dependent. **Focused restart tests continue using a real on-disk
+  SQLite file under pytest-managed temporary storage.**
+- **D-P4-1B-1-AMEND-03 — Threading regression proof.** The corrected implementation MUST include a focused regression
+  proving the single-threaded serving boundary is explicitly configured and cannot silently regress to Flask's threaded
+  default. The proof may use a narrowly bounded helper or run-entry test, but MUST NOT claim that `test_client` alone
+  proves cross-thread safety. The evidence must also reproduce the reviewer's scenario (or an equivalent check)
+  demonstrating that the corrected selected execution mode no longer serves requests through a shared SQLite connection
+  across threads.
+- **D-P4-1B-1-AMEND-04 — Local-development DB boundary.** The local-development default MAY remain under the system
+  temporary directory ONLY for non-test, non-production development. Recorded truthfully: it **persists across local
+  application runs until OS/user cleanup**; it **may contain durable project capability identifiers**; it is **not an
+  account or ownership store**; **pytest must never use it**; and **P4-1b-2 must re-evaluate retention, permissions,
+  deletion, and user-content implications** before adding accepted-input persistence. **Production still requires an
+  explicit `INVENTORAI_DB_PATH` with fail-fast behaviour.**
+
+**Amended implementation paths (supersede §4/§5 for the corrected P4-1b-1 implementation).**
+- **Required / permitted:** `web/app.py`; `tests/test_p4_1b1_runtime_project_persistence.py`; **`tests/conftest.py`**
+  (new — pytest isolated-DB fixture per D-P4-1B-1-AMEND-02 only).
+- **Conditionally permitted:** narrowly necessary existing test files, ONLY when their setup must be adapted to the
+  global isolated-DB fixture, **without weakening assertions**.
+- **Remain prohibited:** `engine/record_store.py`, `engine/record_contract.py`, `engine/idea_state.py`,
+  `engine/derived_readiness.py`, `requirements.txt`, `database/`, `schemas/`, `templates/`, `static/`, CI/deployment
+  files. **Any engine-store threading redesign still requires a separate contract amendment.**
+
+**Correction-implementation boundary (NOT authorized by this amendment).** After this documentation amendment is
+independently reviewed, accepted, published, merged, and post-merge verified, a **separate** correction authorization
+may permit a replacement implementation candidate that: (1) keeps candidate `1eced7d` intact as superseded evidence;
+(2) starts from the then-live authoritative tip; (3) explicitly configures the Flask run entry as single-threaded;
+(4) introduces the minimal `tests/conftest.py` isolated-DB fixture; (5) closes/resets stores safely in tests; (6) adds a
+threading/run-mode regression; (7) re-runs RED/GREEN, protected regressions, and the full suite; (8) creates a new
+commit and bundle; (9) undergoes a new independent review. **This amendment itself authorizes none of those changes.**
+
+**Preserved observations (recorded, not expanded by this gate).** Cold-load route coverage is currently limited to the
+normal session route (non-blocking for this increment); the restart proof was accepted as sufficient module-level
+reconstruction under the current contract; explicit production-grade connection topology remains deferred; P4-1b-2
+remains responsible for accepted-input append and related retention implications.
+
+**Preserved (unchanged by this amendment):** decision **D17**; the **AISR seven-owner model**; the unified
+`sid`==`project_id` model (D-P4-1B-06); candidate `1eced7d` is **preserved intact as superseded review evidence and is
+NOT amended**; **P4-1b-2, P4-2, Phase 5–7, WS17, STG** remain **NOT AUTHORIZED**.
 
 ---
 

@@ -260,3 +260,34 @@ No P4-1b-1 decision grants implementation authority. **P4-1b-1 implementation, P
 AUTHORIZED.** Decision **D17** and the **AISR seven-owner model** are preserved. SQLite is recorded as a reference/MVP
 adapter only, not a permanent production-datastore commitment. The live application still uses temporary in-memory
 sessions and durably saves nothing until P4-1b implementation lands.
+
+## P4-1b-1 contract amendment (G-P4-1B-1-AMEND-01) — threading & pytest DB isolation — DOC-ONLY
+
+**Decision status:** ACCEPTED / RECORDED — NO IMPLEMENTATION AUTHORITY. Documentation-only amendment recorded after
+the independent review of implementation candidate `1eced7d280449b9c0842355a1882a9d3b731a633` returned verdict
+**C — REVISE AND RE-REVIEW** with two blocking findings: **B1** the shared single `sqlite3` connection is incompatible
+with Flask's default threaded serving mode; **B2** governed tests outside the focused P4-1b-1 file write project
+envelopes to the shared default database instead of pytest-managed temp paths. Recorded on live tip
+`b22f82ef1f7d08ce802ecbc52d68706d358fadb5` (Merge PR #358). Candidate `1eced7d` is **preserved intact and NOT amended**;
+the corrected implementation is a **separate** future authorization.
+
+| ID | Subject | Decision | Impl. authority | Evidence / boundary |
+|---|---|---|---|---|
+| D-P4-1B-1-AMEND-01 | Explicit single-threaded MVP serving mode (B1) | ACCEPTED | NONE | Flask entry MUST use **`threaded=False`**; the app-scoped `sqlite3` connection must not cross request threads; **no `engine/record_store.py` change, no `check_same_thread=False`, no pool/per-thread/per-request model**; multi-thread/worker/production topology deferred; `threaded=False` is a bounded MVP decision, **not** a production-architecture claim |
+| D-P4-1B-1-AMEND-02 | Governed pytest database isolation (B2) | ACCEPTED | NONE | authorizes **`tests/conftest.py`** ONLY for a minimal fixture: unique `tmp_path` `INVENTORAI_DB_PATH`; blocks writes to the shared dev DB; resets `SESSION_STORE`; **safely closes** the app-scoped store before reset; restores env/runtime after each test; no production behaviour; no weakened assertion; no repo-tracked DB; no `:memory:` for restart proofs; no `project_ids()`/transcript/answer exposure; no global store mock; not order-dependent |
+| D-P4-1B-1-AMEND-03 | Threading regression proof | ACCEPTED | NONE | corrected impl must include a focused regression proving `threaded=False` is explicitly configured and cannot silently regress; may use a bounded helper/run-entry test; MUST NOT claim `test_client` alone proves cross-thread safety; must reproduce the reviewer scenario (or equivalent) showing requests no longer served through a shared SQLite connection across threads |
+| D-P4-1B-1-AMEND-04 | Local-development DB boundary | ACCEPTED / RECORDED | NONE | dev default MAY stay under the system temp dir for non-test/non-production only; persists across local runs until OS/user cleanup; may hold durable project capability identifiers; **not** an account/ownership store; **pytest must never use it**; **P4-1b-2 must re-evaluate retention/permissions/deletion/user-content** before accepted-input persistence; production still requires explicit `INVENTORAI_DB_PATH` + fail-fast |
+
+**Amended implementation paths (future correction).** Required/permitted: `web/app.py`;
+`tests/test_p4_1b1_runtime_project_persistence.py`; **`tests/conftest.py`** (new, isolation fixture only).
+Conditionally permitted: narrowly necessary existing test files, only to adopt the global isolated-DB fixture without
+weakening assertions. Prohibited (unchanged): `engine/record_store.py`, `engine/record_contract.py`,
+`engine/idea_state.py`, `engine/derived_readiness.py`, `requirements.txt`, `database/`, `schemas/`, `templates/`,
+`static/`, CI/deployment. Any engine-store threading redesign requires a separate amendment.
+
+**Correction-implementation boundary (NOT authorized here).** A separate future authorization may permit a replacement
+candidate that keeps `1eced7d` as superseded evidence, starts from the then-live tip, sets `threaded=False`, adds the
+`tests/conftest.py` fixture, closes/resets stores safely in tests, adds a threading/run-mode regression, re-runs
+RED/GREEN + protected regressions + full suite, and undergoes a new independent review. **This amendment authorizes none
+of it.** **P4-1b-1 correction implementation, P4-1b-2, P4-2, and Phase 5 remain NOT AUTHORIZED.** Decision **D17** and
+the AISR seven-owner model are preserved.
