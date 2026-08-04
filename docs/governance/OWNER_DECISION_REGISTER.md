@@ -191,3 +191,30 @@ P4-2, and Phase 5 remain separate and NOT AUTHORIZED.
 No P4-1 decision grants implementation authority. **P4-1a implementation, P4-1b, P4-2, and Phase 5 remain NOT
 AUTHORIZED.** Decision **D17** and the **AISR seven-owner model** are preserved. SQLite is recorded as a reference/MVP
 adapter only, not a permanent production-datastore commitment.
+
+## P4-1a durable-store proof — implementation authorization, merge, and formal closure
+
+**Decision status:** ACCEPTED COMPLETED HISTORY / NO NEW IMPLEMENTATION AUTHORITY. The owner **separately and
+explicitly authorized P4-1a implementation** (distinct from the PR #355 contract-candidate merge, which did not by
+itself grant implementation authority). The implementation was executed, independently reviewed
+(**B — ACCEPT WITH NON-BLOCKING OBSERVATIONS**, 0 blocking), published, merged through **PR #356** (merge
+`dfa082af0e6f9c09222608ca47d088dc7e2df6a8`; candidate `faf57300121a74d3493e88fc1e9a9631f6ab5815`, tree
+`415aee66eb92c6c3fd6683c36deb70756af6cb36`), post-merge verified, and **FORMALLY CLOSED**.
+
+| ID | Subject | Status | Impl. authority | Evidence |
+|---|---|---|---|---|
+| D-P4-1a-CLOSE-01 | P4-1a implementation authorization (separate from the PR #355 contract merge) | ACCEPTED | NONE beyond the bounded P4-1a increment | Owner implementation authorization; PR #356 merge |
+| D-P4-1a-CLOSE-02 | P4-1a durable-store proof implementation | COMPLETE / MERGED / POST-MERGE VERIFIED / FORMALLY CLOSED | NONE | PR #356 (`dfa082af0e6f9c09222608ca47d088dc7e2df6a8`); paths `engine/record_store.py` + `tests/test_p4_1a_record_store.py`; 2 files / 426 insertions / 0 deletions; focused post-merge 11 passed; full suite 1681 passed / 1 skip / 1 xfail / exit 0 |
+| D-P4-1a-CLOSE-03 | Current active implementation contract | NONE | NONE | `ACTIVE_INCREMENT_CONTRACT.md` synchronized status |
+| D-P4-1a-CLOSE-04 | P4-1b / P4-2 / Phase 5 | NOT AUTHORIZED / NOT STARTED | NONE | Separate owner decision + contract required |
+| D-P4-1a-CLOSE-05 | Product-truth boundary | RECORDED | NONE | P4-1a is a durable-store adapter capability only; no user-facing durable-save claim; runtime still temporary until P4-1b |
+
+**Preserved non-blocking observations (recorded, not fixed):** durable supersession/contradiction mutation behaviour
+decided in the future P4-1b contract; `project_ids()` must not be exposed through runtime/API/UI/user-facing surfaces;
+`new_record_id()` exists but is not yet connected to runtime record creation (P4-1b); SQLite exception translation may
+be considered during later runtime integration; minor test-connection hygiene remains non-blocking; SQLite remains a
+reference/MVP adapter, not a permanent production-datastore commitment.
+
+**Next eligible gate (owner consideration only):** P4-1b — READ-ONLY DISCOVERY AND CONTRACT-DEFINITION PREPARATION,
+`ELIGIBLE FOR SEPARATE OWNER CONSIDERATION ONLY`. This synchronization authorizes nothing further. Decision **D17**
+and the AISR seven-owner model are preserved; Phase 5 / WS17 / STG separation is preserved.
