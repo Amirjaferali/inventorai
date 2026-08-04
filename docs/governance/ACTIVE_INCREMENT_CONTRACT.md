@@ -41,14 +41,24 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status:** NO ACTIVE (authorized) IMPLEMENTATION CONTRACT. A documentation-only **P4-1a — Durable-Store Proof**
-increment-contract **CANDIDATE** (implementation **NOT authorized**) is recorded in the section **"P4-1a Increment
-Contract Candidate (CONTRACT CANDIDATE ONLY — IMPLEMENTATION NOT AUTHORIZED)"** at the end of this file; it becomes an
-active contract only after independent review, owner acceptance, merge, post-merge verification, and a separate
-explicit P4-1a implementation authorization. Current live tip
-`06be080e1a12108a5f4cd84060b756f9ba7c1878` (Merge PR #354 — post-P4-0 governance-currency synchronization; always
-re-resolve from Git). The "Verified authoritative tip (synchronized closure pointer)" value below records the P4-0
-closure merge and is not re-synchronized by this candidate.
+**Status:** NO ACTIVE (authorized) IMPLEMENTATION CONTRACT.
+
+**P4-1a closure boundary (post-PR #356):** the **P4-1a — Durable-Store Proof** increment was: recorded as a contract
+candidate (merged PR #355); **separately and explicitly authorized for implementation by the owner** (a distinct
+authorization — the PR #355 contract merge did **not** by itself grant implementation authority); implemented;
+independently reviewed (verdict **B — ACCEPT WITH NON-BLOCKING OBSERVATIONS**, 0 blocking); published; merged through
+**PR #356** (merge commit `dfa082af0e6f9c09222608ca47d088dc7e2df6a8`; candidate `faf57300121a74d3493e88fc1e9a9631f6ab5815`,
+tree `415aee66eb92c6c3fd6683c36deb70756af6cb36`; changed exactly `engine/record_store.py` and
+`tests/test_p4_1a_record_store.py`; 2 files, 426 insertions, 0 deletions); post-merge verified (candidate-ancestor
+PASS; focused post-merge tests 11 passed; no prohibited path changed; no new runtime dependency); and **FORMALLY
+CLOSED**. The "P4-1a Increment Contract Candidate" block retained later in this file is now a **historical
+contract-of-record** and MUST NOT be interpreted as the currently active contract. **Product-truth boundary:** P4-1a
+proves only a durable-store adapter capability; because P4-1b runtime integration has not started, the application
+still uses the existing temporary in-memory session behaviour, no user-facing "saved"/"recoverable"/durable-project
+claim is permitted, and existing in-memory sessions remain unrecoverable and unmigrated. Current live tip
+`dfa082af0e6f9c09222608ca47d088dc7e2df6a8` (Merge PR #356 — P4-1a implementation closure; always re-resolve from Git).
+The "Verified authoritative tip (synchronized closure pointer)" value below records an earlier closure merge and is
+not re-synchronized by this entry.
 
 **Current synchronized boundary (post-PR #353):** P4-0 — Readiness and Storage-Contract Proof was separately
 authorized, implemented, independently reviewed, corrected, merged through PR #353, post-merge verified, and
@@ -324,6 +334,13 @@ refinement is not a substitute for Phase 4/5/6/7/WS17/STG); Phase 4 implementati
 STG, provider selection, and exact UX all remain **NOT AUTHORIZED**.
 
 ---
+
+## P4-1a Historical Increment Contract Record — SUPERSEDED AS ACTIVE AUTHORITY
+
+**Current interpretation:** the text below is preserved as the pre-implementation P4-1a contract candidate and
+historical execution record. P4-1a has since been separately owner-authorized for implementation, implemented,
+independently reviewed, merged through PR #356, post-merge verified, and **FORMALLY CLOSED**. Nothing in the
+historical wording below reopens P4-1a or authorizes P4-1b, P4-2, or Phase 5.
 
 ## P4-1a Increment Contract Candidate (CONTRACT CANDIDATE ONLY — IMPLEMENTATION NOT AUTHORIZED)
 

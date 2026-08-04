@@ -16,8 +16,11 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
   (`git rev-parse origin/feature/atomic-json-session-persistence`). Do **not** trust a
   prose-pinned SHA.
   - **Current authoritative branch tip (last independently verified):**
-    `286b83ffbd6916086c834658f9e16411ef4de4fe` (Merge PR #353 — P4-0 implementation, post-merge
-    verified and formally closed) — always re-resolve the live tip from Git per the rule above.
+    `dfa082af0e6f9c09222608ca47d088dc7e2df6a8` (Merge PR #356 — P4-1a durable-store proof implementation,
+    post-merge verified and formally closed) — always re-resolve the live tip from Git per the rule above.
+  - **Prior recorded tip (historical):** `286b83ffbd6916086c834658f9e16411ef4de4fe` (Merge PR #353 — P4-0
+    implementation closure); superseded by PR #354 (governance sync), PR #355 (P4-1a contract), and PR #356 (P4-1a
+    implementation).
   - **Prior recorded tip (historical):** `62ebf8f1a07e3c0f48e4637029d641d19c3f9b9e` (Merge PR #337 —
     Phase 3D governance-record synchronization); superseded by PRs #338–#348 (see the Phase-and-gate section).
   - **Historical verified evidence tip:** `0330273b0d8b15fc66a285bcb9b866c6aa81b8e5`
@@ -152,6 +155,31 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
   EXPANDED. **Provider:** NOT SELECTED / NOT AUTHORIZED. **Exact UX:** NOT AUTHORIZED — **Phase 3E artifact recovery
   is required before any exact UX amendment** (D-AISR-09). Decision **D17** is preserved. **Next implementation gate:
   NOT AUTHORIZED.**
+
+## Post-PR #356 synchronized boundary — P4-1a durable-store proof CLOSED
+
+- **P4-1a — Durable-Store Proof:** `COMPLETED / MERGED / POST-MERGE VERIFIED / FORMALLY CLOSED`.
+- **Authorization chain (distinct steps):** P4-1a contract candidate merged (PR #355) → **separate explicit owner
+  implementation authorization** (the contract merge did **not** grant implementation authority) → implementation →
+  independent review (verdict **B**, 0 blocking) → publication → merge (**PR #356**, merge
+  `dfa082af0e6f9c09222608ca47d088dc7e2df6a8`; candidate `faf5730`) → post-merge verification → formal closure.
+- **Technical evidence:** changed exactly `engine/record_store.py` + `tests/test_p4_1a_record_store.py` (2 files, 426
+  insertions, 0 deletions); focused post-merge 11 passed; full governed suite 1681 passed / 1 skipped / 1 xfailed /
+  0 xpassed / exit 0; no prohibited path changed; no new runtime dependency (stdlib `sqlite3`).
+- **Product-truth boundary (binding):** P4-1a proves only a **durable-store adapter capability**. It does **not** mean
+  the application currently saves user ideas durably. Because **P4-1b runtime integration has not started**, `web/app.py`
+  still uses the existing temporary in-memory session behaviour; **no user-facing "saved", "recoverable", or
+  durable-project claim is permitted**; existing in-memory sessions remain unrecoverable and unmigrated.
+- **Preserved non-blocking observations (recorded, not fixed):** (1) durable supersession/contradiction mutation
+  behaviour is decided in the future P4-1b contract; (2) `project_ids()` must not be exposed through runtime/API/UI/
+  user-facing surfaces (it enumerates project capability identifiers); (3) `new_record_id()` exists and is bounded but
+  is not yet connected to runtime record creation (P4-1b); (4) SQLite exception translation may be considered in later
+  runtime integration if the future contract requires it; (5) minor test-connection hygiene observations remain
+  non-blocking; (6) SQLite remains a reference/MVP adapter, not a permanent production-datastore commitment.
+- **Current active implementation contract:** NONE. **P4-1b / P4-2 / Phase 5:** NOT AUTHORIZED / NOT STARTED.
+- **Next eligible gate (owner consideration only, not authorized here):** **P4-1b — READ-ONLY DISCOVERY AND
+  CONTRACT-DEFINITION PREPARATION** — `ELIGIBLE FOR SEPARATE OWNER CONSIDERATION ONLY`. Decision **D17** and the AISR
+  seven-owner model are preserved.
 
 ## Phase 4 entry direction (Durable Data and Evidence Foundation)
 

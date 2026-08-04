@@ -3262,3 +3262,52 @@ future capability.
 
 **Next eligible decision point:** owner consideration of a separately bounded P4-1 read-only discovery/contract
 definition gate. Eligibility is not authorization. Mandatory stop after this documentation synchronization package.
+
+---
+
+## P4-1a Durable-Store Proof — Implementation Merged and Formally Closed (Append-Only)
+
+**Lane note:** Append-only record of the P4-1a durable-store proof closure. This entry rewrites **no** prior entry;
+all earlier entries above remain historical evidence. Prepared on verified authoritative live tip
+`dfa082af0e6f9c09222608ca47d088dc7e2df6a8` (Merge PR #356); always re-resolve the live tip from Git. Grants **no**
+implementation authority and activates **no** phase or workstream.
+
+**Authorization chain (distinct steps, recorded truthfully):**
+- **PR #355** recorded the P4-1a **contract candidate** (documentation-only, G-P4-1A-DOC-01). This contract merge did
+  **not** by itself authorize implementation.
+- The owner then **separately and explicitly authorized P4-1a implementation**.
+- Implementation was executed, then **independently reviewed** in a separate session (initial verdict included a
+  test-only correction RC-1; corrected candidate re-reviewed **B — ACCEPT WITH NON-BLOCKING OBSERVATIONS**, 0
+  blocking), published, and **merged via PR #356** ("Create a merge commit"; merge
+  `dfa082af0e6f9c09222608ca47d088dc7e2df6a8`; parents `80c8f335d36ce61e0623f1d7af5c1e9da25dbf65` +
+  `faf57300121a74d3493e88fc1e9a9631f6ab5815`).
+- **Post-merge verification:** candidate `faf5730` is in ancestry; merged paths are exactly `engine/record_store.py`
+  and `tests/test_p4_1a_record_store.py` (2 files, 426 insertions, 0 deletions); focused post-merge tests **11 passed**;
+  no prohibited path changed; **no new runtime dependency** (stdlib `sqlite3`). Independently reproduced: focused P4-1a
+  11 passed; P4-0 record contract 11 passed; R6/R16 + readiness baseline 15 passed; full governed suite **1681 passed /
+  1 skipped / 1 xfailed / 0 xpassed / exit 0**.
+- **Status:** **P4-1a — FORMALLY CLOSED.**
+
+**What P4-1a is (and is not):** it proves a datastore-neutral durable record-store adapter (stdlib SQLite reference
+adapter) with real close/reopen persistence, atomic rollback, append-only preservation, cross-project isolation,
+stable/UUID-safe identifiers, verbatim provenance, and fail-closed validation on load — reusing the P4-0 record
+contract. It is **not** runtime integration: because **P4-1b has not started**, `web/app.py` still uses the temporary
+in-memory session behaviour, and **no user-facing "saved"/"recoverable"/durable-project claim is permitted**; existing
+in-memory sessions remain unrecoverable and unmigrated. SQLite is a reference/MVP adapter, not a permanent production
+commitment.
+
+**Preserved non-blocking observations (recorded, not fixed):** future P4-1b decides durable supersession/contradiction
+mutation behaviour; `project_ids()` must not be exposed through runtime/API/UI/user-facing surfaces; `new_record_id()`
+is bounded but not yet wired to runtime record creation (P4-1b); SQLite exception translation may be considered later;
+minor test-connection hygiene remains non-blocking.
+
+**Changed files (documentation-only, this synchronization):** `docs/governance/ACTIVE_INCREMENT_CONTRACT.md`,
+`docs/governance/CURRENT_PROJECT_STATE.md`, `docs/governance/OWNER_DECISION_REGISTER.md`, and this append-only
+`docs/governance/ACTIVE_EXECUTION_ROADMAP.md`. No `engine/`, `web/`, `tests/`, `database/`, `schemas/`,
+`requirements.txt`, or other non-governance change; the merged P4-1a implementation itself is unchanged.
+
+**Next eligible gate (not started, not authorized here):** **P4-1b — READ-ONLY DISCOVERY AND CONTRACT-DEFINITION
+PREPARATION**, `ELIGIBLE FOR SEPARATE OWNER CONSIDERATION ONLY`. Eligibility is not authorization. **P4-2** and
+**Phase 5** remain NOT AUTHORIZED / NOT STARTED. Decision **D17** and the AISR seven-owner model are preserved.
+Append-only; prior history not rewritten. This documentation synchronization authorizes no push, no PR, no merge, no
+implementation, and no phase activation.
