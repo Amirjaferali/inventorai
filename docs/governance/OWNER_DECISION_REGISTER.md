@@ -397,7 +397,7 @@ closure record; it grants no new implementation authority.
 | D-P4-1B-2A-IMPL-01 | P4-1b-2a implementation accepted & closed | ACCEPTED — **verdict B**; **IMPLEMENTED / MERGED / VERIFIED / ACCEPTED / CLOSED** | NONE (closure) | OPTION A delivered: durable accepted-answer append persist-before-ack; additive nullable `idempotency_key` + partial uniqueness; server-issued token on **both** answered-producing forms (no tokenless fallback); `HMAC-SHA-256(INVENTORAI_SECRET_KEY, sid‖token)` ≥128-bit durable idempotency identity (raw token not stored/logged); same-token idempotent retry / different-content fail-closed; validation-error token retention; legacy `start_ilt002_*` routes durably backed (usable, unlinked). **`record_id` = `rec_N` preserved; separate durable idempotency identity; no deterministic-output engine changed; no `evt-*` engine identifier.** Merged scope **21 files / +1048 / −96**; disallowed paths **NONE**; source branch + bundle **PRESERVED** (bundle sha-256 `621b9546…a6a9b`); full suite **1726 passed, 1 skipped, 1 xfailed** |
 | D-P4-1B-2A-IMPL-02 | Review lineage | RECORDED | NONE | superseded original candidate `b1eb91e` — first independent-review verdict **C — REVISE AND RE-REVIEW** (four blocking findings: **BF1** s04 tests reached token rejection not the empty-answer validation branch; **BF2** no direct real criticality-correction-form test; **BF3** token rejection only indirectly covered; **BF4** legacy `start_ilt002_*` routes lacked the durable envelope). Corrected REV1 candidate `0b5f757` — re-review verdict **B**, all four blockers independently verified CLOSED |
 | D-P4-1B-2A-IMPL-03 | Accepted non-blocking observations | RECORDED | NONE | (1) RED not independently reproducible on the superseded candidate; reproduced on the authoritative parent; (2) the second focused legacy-route test module accepted as a justified corrective extension; (3) token rejection may write only bounded transient error state (no durable/progression/epistemic change); (4) CRLF-to-LF normalization not implemented (newline-only differences may fail closed); (5) durable-success / memory-publication-failure recovery **not claimed** (no reachable failure without artificial injection); (6) this governance synchronization records the post-merge history and closure; (7) `Optional[str]` typing and the current cold-load domain guard remain non-blocking observations |
-| D-P4-1B-2A-IMPL-04 | Later-scope exclusion (unchanged) | NONE — NOT AUTHORIZED | NONE | **P4-1b-2b, P4-2, Phase 5+, and every FPC (FPC-01…FPC-04) remain NOT AUTHORIZED / NOT STARTED**; closing P4-1b-2a activates nothing downstream. Decision **D17** and the AISR seven-owner model preserved |
+| D-P4-1B-2A-IMPL-04 | Later-scope exclusion (unchanged) | NONE — NOT AUTHORIZED | NONE | **P4-1b-2b, P4-2, Phase 5+, and every FPC (FPC-01…FPC-04) remain NOT AUTHORIZED / NOT STARTED**; closing P4-1b-2a activates nothing downstream. Decision **D17** and the AISR seven-owner model preserved. **[SUPERSEDED for P4-1b-2b only, as of the PR #365 boundary: P4-1b-2b was subsequently discovered, authorized (Option A), implemented, independently reviewed (verdict B), merged (PR #367, `1c9dff7`), post-merge verified, owner accepted, and FORMALLY CLOSED — see "P4-1b-2b … discovery, implementation acceptance & closure" below. P4-2, Phase 5+, and every FPC remain NOT AUTHORIZED / NOT STARTED.]** |
 
 **Boundary.** Closure grants no downstream authorization. All prior decisions, candidates, verdicts, and observations
 are preserved; no history is rewritten.
@@ -417,7 +417,10 @@ records it went through owner-gated revision (no governance-sync candidate was p
 
 **Boundary.** These are chronology/decision records for the closure documentation only. **P4-1b-2a remains IMPLEMENTED /
 MERGED / POST-MERGE VERIFIED / OWNER ACCEPTED / CLOSED (PR #365, merge `77bd10c`).** No governance-sync candidate is
-claimed as published, merged, or accepted. **P4-1b-2b, P4-2, Phase 5, and every FPC remain NOT AUTHORIZED / NOT STARTED.**
+claimed as published, merged, or accepted. **P4-2, Phase 5, and every FPC remain NOT AUTHORIZED / NOT STARTED.**
+*(Historical note, as of the PR #365 boundary: this section's earlier "P4-1b-2b … remain NOT AUTHORIZED / NOT STARTED"
+wording is **superseded** — P4-1b-2b is now IMPLEMENTED / MERGED / VERIFIED / ACCEPTED / FORMALLY CLOSED (PR #367,
+`1c9dff7`); see "P4-1b-2b … discovery, implementation acceptance & closure" below.)*
 
 ## Future Product Capability classifications (G-FPC-MAP-01) — documentation-only, NON-AUTHORIZING
 
@@ -443,3 +446,33 @@ model, no standalone document, and no `ACTIVE_INCREMENT_CONTRACT.md` change. Ful
 **Boundary.** No FPC is authorized, active, started, or implemented; no specialist approval, AI authority, PDF/Email
 delivery availability, saved-project, or full-resume capability is implied. Decision **D17** and the AISR seven-owner
 model are preserved; all prior governance history and observations are preserved.
+
+## P4-1b-2b — Read-Only Accepted-Answer Evidence Reconstruction: discovery, implementation acceptance & closure (G-P4-1B-2B-DISCOVERY-CONTRACT-01 + G-P4-1B-2B-IMPLEMENTATION-01) — owner-accepted, MERGED & CLOSED
+
+**Decision status:** ACCEPTED AND CLOSED — owner verdict **B — ACCEPT WITH BINDING CONTRACT REFINEMENTS** (refinements
+satisfied). Records the read-only discovery gate, the separate implementation authorization (Option A), the
+independent review, the merge through **PR #367** (merge commit `1c9dff7962a428cfd32ab577dbbbb84ce21909b3`, two-parent
+merge of `7d8895122235a4da25a7f4d9d0d4d5e4bab20c6b` (base) + `945f4a36a6a6eef5bcab1ea55e30ce1dfa468820` (reviewed
+candidate), tree `bff45ada35e8d3bb606bcf4e6bd80e3df33d449d` — equal to the candidate tree; candidate ancestry PASS),
+post-merge verification, owner acceptance, and formal closure. This is a documentation-only closure record; it grants no
+new implementation authority. Recorded on the authoritative live tip resolved from Git (`1c9dff7`).
+
+**Supersession clause.** This section supersedes earlier register wording **only where that wording states that
+P4-1b-2b was not authorized, not started, pending, a candidate, or awaiting review/publication** (e.g. the historical
+"P4-1b-2b … remain NOT AUTHORIZED / NOT STARTED" statements in the P4-1b-2a REV1 boundary, the B3 amendment exclusions,
+the P4-1b-2a implementation-closure and governance-sync-lineage sections, and the D-FPC-MAP-10 row). Those statements
+were accurate as of their PR #365-era authoring and **remain historical context, not current status**. Current status:
+**P4-1b-2b is IMPLEMENTED / MERGED / POST-MERGE VERIFIED / OWNER ACCEPTED / FORMALLY CLOSED.** No prior history is
+rewritten.
+
+| ID | Subject | Decision | Impl. authority | Evidence / boundary |
+|---|---|---|---|---|
+| D-P4-1B-2B-DISC-01 | Read-only discovery & contract-definition preparation (G-P4-1B-2B-DISCOVERY-CONTRACT-01) | ACCEPTED / RECORDED | NONE | Discovery package delivered; recommended **Option A** — a bounded, read-only reconstruction of durably persisted accepted-answer evidence reusing the project-scoped `load_contract` read; no mutation, no session resume, no replay. Discovery authorized nothing further |
+| D-P4-1B-2B-IMPL-01 | P4-1b-2b implementation authorized (Option A) & accepted, closed | ACCEPTED — **verdict B**; **IMPLEMENTED / MERGED / VERIFIED / ACCEPTED / CLOSED** | NONE (closure) | Separate explicit implementation authorization **G-P4-1B-2B-IMPLEMENTATION-01** (Option A; binding API contract; two permitted paths; required RED set; RED→GREEN). Delivered: read-only `SqliteRecordStore.load_accepted_answer_evidence(project_id) -> tuple` returning an **immutable `tuple`** of `answered`-disposition `AssertionRecord`s in persisted (`seq`) order via `load_contract`; `record_id` preserved as `rec_N` (non-contiguous expected/valid); unknown/absent `sid` → `()`; malformed/unsupported-version/invalid-reference/cyclic → canonical `ContractError` propagates (fail closed, no partial evidence); legacy NULL-`idempotency_key` rows load unchanged. Merged scope **2 files / +367 / −0** (`engine/record_store.py` +38; `tests/test_p4_1b2b_accepted_answer_evidence.py` +329); disallowed paths **NONE**; source branch `feat/p4-1b2b-accepted-answer-evidence` + bundle **PRESERVED** (`p4_1b2b_impl_945f4a3.bundle`, SHA-256 `b04f07688804d27f0cafd7c1e7cc7136da705c3e14efc275e2587ecfef4d365f`); tests focused **15** / P4-1b-2a regression **60** / protected **227** / full **1741 passed, 1 skipped, 1 xfailed** |
+| D-P4-1B-2B-IMPL-02 | Capability boundary — explicit "does NOT provide" | RECORDED | NONE | P4-1b-2b is **evidence reconstruction only**. It does **NOT** provide: a resumable session / "resume exactly where you left off"; a reconstructed next question, gaps, maturity, domain/path, transcript, `last_result`, or progression; full deterministic replay or durable output (**P4-2**); accounts/ownership/authorization (**Phase 5**); any mutation/append/repair/state-advance; any UI, route, or runtime surface; any change to `record_id`/`rec_N`, the deterministic-output engines, or the P4-1b-2a durable idempotency identity |
+| D-P4-1B-2B-IMPL-03 | Accepted non-blocking observations | RECORDED | NONE | (1) **Governance-tree authorization lag** — the P4-1b-2b gates were reviewed/merged/verified before the committed governance tree recorded them; this synchronization (G-P4-1B-2B-GOVERNANCE-SYNC-01) closes the lag; not a defect. (2) **Protected-regression set composition (226 vs 227)** — differs by one from a neighbouring gate's count purely by which modules are enumerated as "protected"; both green; bookkeeping only. (3) **`seq` ordering confirmed by manual experiment** and by reuse of the proven `load_contract` `ORDER BY seq ASC` read, rather than an isolated in-suite ordering-only assertion; behaviour correct. (4) **Plain-`tuple` return + single `SESSION_STORE`-unchanged assertion** — stylistic/polish only. Honest value note: net-new capability is modest (exposes, read-only, evidence P4-1b-2a already persists); no reachable memory-publication-failure recovery without artificial injection; correct and within scope |
+| D-P4-1B-2B-IMPL-04 | Later-scope exclusion (unchanged) | NONE — NOT AUTHORIZED | NONE | **P4-2, Phase 5+, WS17, STG, and every FPC (FPC-01…FPC-04) remain NOT AUTHORIZED / NOT STARTED**; closing P4-1b-2b activates nothing downstream. Decision **D17** and the AISR seven-owner model preserved |
+
+**Boundary.** Closure grants no downstream authorization. All prior decisions, candidates, verdicts, and observations are
+preserved; no history is rewritten. **P4-1b-2b is IMPLEMENTED / MERGED / POST-MERGE VERIFIED / OWNER ACCEPTED / FORMALLY
+CLOSED** (PR #367, merge `1c9dff7`). **P4-2, Phase 5, and every FPC remain NOT AUTHORIZED / NOT STARTED.**
