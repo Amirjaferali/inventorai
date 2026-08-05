@@ -16,10 +16,13 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
   (`git rev-parse origin/feature/atomic-json-session-persistence`). Do **not** trust a
   prose-pinned SHA.
   - **Current authoritative branch tip (last independently verified):**
-    `1c9dff7962a428cfd32ab577dbbbb84ce21909b3` (Merge PR #367 — P4-1b-2b read-only accepted-answer evidence
-    reconstruction implementation, post-merge verified, owner accepted, and CLOSED; two-parent merge of
-    `7d88951` (base) + `945f4a3` (candidate), tree `bff45ada`) — always re-resolve the live tip from Git per the rule
+    `276e89681e6008ec859383771b845833321b5552` (Merge PR #369 — P4-2 Level-1 deterministic read-only reconstructed
+    review-state implementation, post-merge verified, owner accepted, and CLOSED; two-parent merge of
+    `2cde586` (base) + `e66ae3a` (candidate), tree `1f6babf`) — always re-resolve the live tip from Git per the rule
     above.
+  - **Prior recorded tip (historical):** `1c9dff7962a428cfd32ab577dbbbb84ce21909b3` (Merge PR #367 — P4-1b-2b read-only
+    accepted-answer evidence reconstruction implementation, post-merge verified, owner accepted, and CLOSED); superseded
+    as the live tip by PR #369 (P4-2 Level-1).
   - **Prior recorded tip (historical):** `77bd10cc55a731b18d4e35ea262b55342a9f847f` (Merge PR #365 — P4-1b-2a durable
     idempotent accepted-answer persistence implementation, post-merge verified, owner accepted, and CLOSED); superseded
     as the live tip by PR #367 (P4-1b-2b).
@@ -313,13 +316,14 @@ gated.*
   separate explicit implementation authorization). **P4-1b-2b, P4-2, Phase 5:** NOT AUTHORIZED / NOT STARTED. Decision
   **D17** and the AISR seven-owner model are preserved.
 
-## HISTORICAL SNAPSHOT — POST-PR #365 boundary — P4-1b-2a IMPLEMENTED, MERGED, VERIFIED, ACCEPTED, CLOSED (SUPERSEDED by the Post-PR #367 boundary below)
+## HISTORICAL SNAPSHOT — POST-PR #365 boundary — P4-1b-2a IMPLEMENTED, MERGED, VERIFIED, ACCEPTED, CLOSED (SUPERSEDED by the Post-PR #369 boundary — current truth)
 
 *Superseded historical snapshot — accurate as of the PR #365 boundary only; do not read as present authority. Its
 "Current active implementation contract: NONE / P4-1b-2b … NOT AUTHORIZED / NOT STARTED" wording and its
-"governance-sync record status" were current at PR #365. **Current truth is the "Post-PR #367 boundary" section below:
-P4-1b-2b is IMPLEMENTED / MERGED / POST-MERGE VERIFIED / OWNER ACCEPTED / FORMALLY CLOSED (PR #367, live tip
-`1c9dff7`); P4-2, Phase 5, and every FPC remain NOT AUTHORIZED / NOT STARTED.***
+"governance-sync record status" were current at PR #365. **Current truth is the "Post-PR #369 boundary" current-truth
+section: P4-1b-2a, P4-1b-2b, and P4-2 Level-1 are all IMPLEMENTED / MERGED / VERIFIED / ACCEPTED / FORMALLY CLOSED and
+Phase 4 is FORMALLY CLOSED (live tip `276e896`, PR #369); writable continuation, Phase 5, and every FPC remain NOT
+AUTHORIZED / NOT STARTED.***
 
 - **Live tip:** `77bd10cc55a731b18d4e35ea262b55342a9f847f` (Merge PR #365; two-parent merge of `4a31ece` + `0b5f757`,
   tree `c8808be`; always re-resolve from Git).
@@ -350,7 +354,57 @@ P4-1b-2b is IMPLEMENTED / MERGED / POST-MERGE VERIFIED / OWNER ACCEPTED / FORMAL
   published) → **REV4** (this documentation-only candidate; **pending independent review only**). See the roadmap
   "governance-synchronization review lineage" and `OWNER_DECISION_REGISTER.md` (`D-P4-1B-2A-GSYNC-01…05`).
 
-## Post-PR #367 boundary — P4-1b-2b IMPLEMENTED, MERGED, VERIFIED, ACCEPTED, CLOSED (current truth)
+## Post-PR #369 boundary — P4-2 Level-1 IMPLEMENTED, MERGED, VERIFIED, ACCEPTED, CLOSED + PHASE 4 FORMALLY CLOSED (current truth)
+
+- **Live tip:** `276e89681e6008ec859383771b845833321b5552` (Merge PR #369; two-parent merge of `2cde586` (base) +
+  `e66ae3a` (candidate), tree `1f6babf`, equal to the candidate tree; always re-resolve from Git).
+- **P4-2 Level-1 — Deterministic Read-Only Reconstruction of Review State (OPTION A):** **IMPLEMENTED, MERGED,
+  POST-MERGE VERIFIED, OWNER ACCEPTED, AND FORMALLY CLOSED** (owner verdict **B — ACCEPT WITH NON-BLOCKING
+  OBSERVATIONS**). No longer a candidate, pending review, pending publication, not-authorized, or not-started.
+  Authorization chain: discovery gate **G-P4-2-DISCOVERY-CONTRACT-01** (Option A / Level 1 recommended) → separate
+  implementation authorization **G-P4-2-LEVEL1-IMPLEMENTATION-01** (Option A / Level 1; Path-N only; additive nullable
+  envelope inputs; version constant; replay limit) → implementation (candidate `e66ae3a`, base `2cde586`, tree
+  `1f6babf`) → independent review verdict **B** → merge **PR #369** (`276e896`) → post-merge verification (ancestry
+  PASS; scope **4 files / +795 / −13**; disallowed paths **NONE**) → owner acceptance and closure.
+- **Delivered (Option A / Level 1):** `engine.session_reconstruction.reconstruct_review_state(store, sid)` — a
+  deterministic, **read-only** reconstruction for a durably recorded **Path-N** session. It additively persists the
+  reconstruction inputs (`seed_idea_text`, `confirmed_domain`, `recon_path`, `engine_contract_version`) at project
+  creation, loads accepted-answer evidence in authoritative `seq` order, builds a **fresh** canonical `IdeaState`,
+  replays the seed then the answer contents through the **unchanged** `progression_loop.run_iteration`, and returns an
+  **immutable** `ReconstructedReviewState`. Version `p4-2-level1-recon-v1`; replay limit **500**.
+- **Does NOT provide (explicit boundary):** a resumed session; writable continuation; `SESSION_STORE` rehydration;
+  answer submission from reconstructed state; full runtime restoration; durable version history / branching / rollback;
+  account ownership; **Phase 5** capability; **FPC-02** stale-output implementation. Legacy / missing-metadata /
+  unsupported-path / version-mismatch fail closed to Level-0 evidence (no AI, no network); malformed history raises the
+  canonical `ContractError`; the replay boundary+1 fails closed; **no DB / `SESSION_STORE` mutation**; **no UI**; **no
+  prior-output validity claim**. The seed idea is never logged or duplicated into an `AssertionRecord`.
+- **Evidence:** permitted paths exactly `engine/record_store.py`, `engine/session_reconstruction.py` (new), `web/app.py`
+  (persist inputs at creation only), `tests/test_p4_2_session_reconstruction.py` (new). Source branch
+  `feat/p4-2-level1-readonly-reconstruction` and the SHA-preserving bundle `p4_2_level1_e66ae3a.bundle` (SHA-256
+  `d1aae8f16239a8ffe2088ec9a8e197b4dc6b329f73d760f8f6cab7213dec9b25`) **PRESERVED**. Tests: focused **28 passed**; full
+  governed suite **1769 passed, 1 skipped, 1 xfailed**.
+- **Accepted non-blocking observations (preserved, not fixed):** (1) SQLite column `recon_path` maps to the logical
+  field `path`; (2) the literal replay boundary 500/501 was independently verified; (3) a genuine pre-change-schema
+  migration was independently verified but is not a committed focused test; (4) returned `AssertionRecord` elements are
+  mutable local deserialized copies but cannot mutate durable storage or live sessions.
+- **PHASE 4 (Durable Data and Evidence Foundation): FORMALLY CLOSED** within its implemented boundary — durable
+  accepted-answer append (P4-1b-2a) + separate durable idempotency identity (P4-1b-2a) + accepted-answer evidence
+  loading (P4-1b-2b) + deterministic Level-1 read-only reconstruction (P4-2) + additive legacy-safe project
+  reconstruction metadata + no false session-resume claim. Phase 4 did **NOT** deliver writable continuation, accounts /
+  authentication / ownership, version history / branching / rollback, output email / download, ACV, an AI Coach, or any
+  FPC implementation. **NEXT ELIGIBLE PHASE: Phase 5 — Accounts / Authentication / Ownership / Verified Email
+  Foundations — NOT STARTED / NOT AUTHORIZED.**
+- **Current active implementation contract:** NONE. **Writable continuation, P4-2 beyond Level-1 read-only, Phase 5–7,
+  WS17, STG, ACV, PDF, Email, and every FPC (FPC-01…FPC-04) remain NOT AUTHORIZED / NOT STARTED.** Decision **D17** and
+  the AISR seven-owner model are preserved.
+
+## HISTORICAL SNAPSHOT — Post-PR #367 boundary — P4-1b-2b IMPLEMENTED, MERGED, VERIFIED, ACCEPTED, CLOSED (SUPERSEDED by the Post-PR #369 boundary above)
+
+*Superseded historical snapshot — accurate as of the PR #367 boundary only; do not read as present authority. Its
+"P4-2 … NOT AUTHORIZED / NOT STARTED" wording was current at PR #367. **Current truth is the "Post-PR #369 boundary"
+section above: P4-2 Level-1 is IMPLEMENTED / MERGED / VERIFIED / ACCEPTED / FORMALLY CLOSED and Phase 4 is FORMALLY
+CLOSED (PR #369, live tip `276e896`); Phase 5, writable continuation, and every FPC remain NOT AUTHORIZED / NOT
+STARTED.***
 
 - **Live tip:** `1c9dff7962a428cfd32ab577dbbbb84ce21909b3` (Merge PR #367; two-parent merge of `7d88951` (base) +
   `945f4a3` (candidate), tree `bff45ada`; always re-resolve from Git).
@@ -407,7 +461,15 @@ PRESERVED in their approved future sequencing — NOT AUTHORIZED FOR IMPLEMENTAT
 G-FPC-MAP-01 decision lineage (and its now-superseded P4-1b-2a boundary, see `OWNER_DECISION_REGISTER.md` D-FPC-MAP-10,
 labelled HISTORICAL / SUPERSEDED) is preserved.
 
-## Phase 4 entry direction (Durable Data and Evidence Foundation)
+## Phase 4 entry direction (Durable Data and Evidence Foundation) — ENTRY HISTORY (Phase 4 is now FORMALLY CLOSED; see the Post-PR #369 boundary above)
+
+*The entry-direction statements below (including "Phase 4 implementation: NOT AUTHORIZED / Next implementation gate: NOT
+AUTHORIZED") record the Phase-4 ENTRY decision and were accurate before the phase was executed. **Current truth: Phase 4
+is FORMALLY CLOSED within its implemented boundary** (P4-0 record contract; P4-1a durable store; P4-1b-1 runtime store;
+P4-1b-2a durable answered append + idempotency; P4-1b-2b accepted-answer evidence; P4-2 Level-1 read-only reconstruction)
+— see the "Post-PR #369 boundary" current-truth section above. Phase 4 delivered no writable continuation, accounts,
+version history, output email/download, ACV, AI Coach, or FPC. **NEXT ELIGIBLE PHASE: Phase 5 — NOT STARTED / NOT
+AUTHORIZED.***
 
 - **G-P4-ENTRY-DEFINITION:** COMPLETED AND ACCEPTED (owner verdict **B**). **G-P4-DOC-01:** documentation-only gate
   recording owner decisions D-P4-01 … D-P4-10.
@@ -444,6 +506,15 @@ labelled HISTORICAL / SUPERSEDED) is preserved.
   `AssertionRecord`s in persisted (`seq`) order, reusing the project-scoped `load_contract` read. It is **evidence
   reconstruction only** — no mutation, no runtime/UI/route, no session resume, and **not** full deterministic replay
   (that is P4-2).
+- **Deterministic read-only reconstructed review state (P4-2 Level-1, PR #369):**
+  `engine.session_reconstruction.reconstruct_review_state(store, sid)` — for a durably recorded **Path-N** session it
+  additively persists the reconstruction inputs (`seed_idea_text`, `confirmed_domain`, `recon_path`,
+  `engine_contract_version`) at creation, loads accepted-answer evidence in `seq` order, builds a **fresh** canonical
+  `IdeaState`, replays the seed then answer contents through the **unchanged** `run_iteration`, and returns an
+  **immutable** `ReconstructedReviewState` (maturity, stage, open gaps, next question, ordered evidence). Version
+  `p4-2-level1-recon-v1`; replay limit **500**. **Read-only** — no mutation, no UI, no AI/network, no session resume,
+  no writable continuation; legacy/missing-metadata/unsupported-path/version-mismatch fail closed to Level-0 evidence;
+  malformed history raises `ContractError`; no prior-output validity claim.
 - **Bounded UX accessibility & disclosure baseline (post-Phase-3 gates #342–#345):** a shared application
   shell (viewport, `<main>` landmark, skip-to-content link, persistent "Temporary session" header disclosure);
   a static informational Data & Session trust surface at `GET /data-and-session` with a header "Learn more"
@@ -454,12 +525,14 @@ labelled HISTORICAL / SUPERSEDED) is preserved.
 
 ## Not implemented / not authorized
 
-- **Full durable session persistence** — full live session resume, complete runtime-session reconstruction,
-  progression restoration/replay, and durable ownership-linked session continuation (separately gated: **P4-2 / Phase
-  5**). *(Note: durable accepted-answer evidence append IS implemented under P4-1b-2a, and its read-only evidence
-  reconstruction IS implemented under P4-1b-2b — see "Implemented capabilities" above; this line is about full-session
-  durability / resume / replay, which is NOT implemented. P4-1b-2b provides read-only accepted-answer evidence only, not
-  session resume.)* Accounts; authentication; authorization; billing/subscription.
+- **Full durable session persistence / writable continuation** — full live session resume, complete runtime-session
+  restoration, writable continuation from reconstructed state, progression restoration/replay into a live editable
+  session, and durable ownership-linked session continuation (separately gated: **writable continuation / Phase 5**).
+  *(Note: durable accepted-answer evidence append IS implemented under P4-1b-2a; its read-only evidence reconstruction
+  IS implemented under P4-1b-2b; and deterministic **read-only** reconstructed review state IS implemented under P4-2
+  Level-1 — see "Implemented capabilities" above. This line is about WRITABLE full-session durability / resume, which is
+  NOT implemented: P4-2 Level-1 is read-only review reconstruction only — it cannot continue, submit, or rehydrate a
+  live session.)* Accounts; authentication; authorization; billing/subscription.
 - ACV (Approximate Concept Visualization); Direct Output Download (PDF); Email Delivery.
 - Sponsors/themes; administrative notice; privacy-control implementation; full Arabic/RTL;
   accessibility; multi-domain runtime; Path T / FORM T (BLOCKED).

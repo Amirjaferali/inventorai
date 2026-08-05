@@ -3858,3 +3858,90 @@ increment is nonetheless correct, bounded, and within its authorized scope.
 active open implementation contract. Decision **D17** and the AISR seven-owner model are preserved. Append-only; prior
 history not rewritten. This synchronization authorizes no push, no PR, no merge, no implementation, and no phase
 activation.
+
+---
+
+## P4-2 Level-1 — Deterministic Read-Only Reconstructed Review State + PHASE 4 FORMAL CLOSURE (G-P4-2-PHASE4-CLOSURE-SYNC-01, documentation-only, append-only)
+
+This append-only entry records the completed lifecycle of **P4-2 Level-1 — Deterministic Read-Only Reconstruction of
+Review State (OPTION A)**, now **IMPLEMENTED, MERGED, POST-MERGE VERIFIED, OWNER ACCEPTED, AND FORMALLY CLOSED** (owner
+verdict **B — ACCEPT WITH NON-BLOCKING OBSERVATIONS**), and formally closes **Phase 4** within its implemented boundary.
+It is documentation-only: it records completed history, rewrites no prior history, and authorizes no push, no PR, no
+merge, no implementation, and no phase activation. Current authoritative live tip (resolve from Git):
+`276e89681e6008ec859383771b845833321b5552` (Merge PR #369).
+
+**Governance-tree authorization lag (recorded honestly).** The P4-2 discovery, implementation authorization, review,
+merge (PR #369), and post-merge verification all occurred, but the committed governance tree at tip `276e896` did not
+yet record them (the preceding committed surfaces still named P4-2 as "NOT AUTHORIZED / NOT STARTED", accurate only as of
+the PR #367 boundary). This synchronization closes that lag. It records completed events; it grants nothing.
+
+**Authorization chain (distinct, separately gated steps).**
+1. **G-P4-2-DISCOVERY-CONTRACT-01** — read-only discovery and contract definition. Found that current durable records are
+   insufficient for any continuation beyond Level 0 (the seed idea, confirmed domain, path, and engine version are not
+   persisted). Recommended **Option A** — deterministic read-only reconstruction to **Level 1** (read-only reconstructed
+   review state) via canonical engine replay, additively persisting the missing inputs. Discovery authorized nothing.
+2. **G-P4-2-LEVEL1-IMPLEMENTATION-01** — separate explicit owner implementation authorization selecting **Option A /
+   Level 1**, with a binding capability, additive nullable envelope inputs, a version constant, Path-N-only scope, a
+   bounded replay limit, four permitted paths, 27 required RED tests, and a RED→GREEN order.
+3. Implementation on branch `feat/p4-2-level1-readonly-reconstruction` (base
+   `2cde5868249f5e2b135b13fb33adff5dd5e4a816`), candidate `e66ae3a7d95994b32dd590000b1bd1e95c499c64`
+   (tree `1f6babf08ca6aae04677739d6c945581ed90db56`).
+4. Independent review → verdict **B — ACCEPT WITH NON-BLOCKING OBSERVATIONS** (0 blocking).
+5. Publication → PR-creation → merge via **PR #369** — two-parent merge `276e89681e6008ec859383771b845833321b5552`
+   (ordered parents `2cde5868249f5e2b135b13fb33adff5dd5e4a816` (base) +
+   `e66ae3a7d95994b32dd590000b1bd1e95c499c64` (reviewed candidate); merge tree
+   `1f6babf08ca6aae04677739d6c945581ed90db56`, equal to the candidate tree — the merge introduced exactly the reviewed
+   candidate changes).
+6. Post-merge verification → candidate-ancestry **PASS** (exit 0); merged scope exactly **4 files / +795 / −13**
+   (`engine/record_store.py`, `engine/session_reconstruction.py` (new), `web/app.py`,
+   `tests/test_p4_2_session_reconstruction.py` (new)); **no disallowed path changed**.
+7. Owner acceptance and **formal closure** (verdict **B**).
+
+**Delivered behaviour (OPTION A / LEVEL 1).** `engine.session_reconstruction.reconstruct_review_state(store, sid)` —
+a deterministic, **read-only** reconstruction for a durably recorded **Path-N** session. It additively persists the
+reconstruction inputs (`seed_idea_text`, `confirmed_domain`, `recon_path`, `engine_contract_version`) at project
+creation, loads the accepted-answer evidence in authoritative store `seq` order, builds a **fresh** canonical
+`IdeaState`, replays the seed then the answer contents through the **unchanged** `progression_loop.run_iteration`, and
+returns an **immutable** `ReconstructedReviewState`. Version constant `p4-2-level1-recon-v1`; bounded replay limit **500**.
+
+**Capability boundary — what P4-2 Level-1 provides and, explicitly, does NOT provide.**
+- **Provides:** deterministic read-only reconstruction for **Path N**; persisted seed idea / confirmed domain / path /
+  reconstruction version; accepted-answer replay in authoritative `seq` order; an immutable `ReconstructedReviewState`
+  (maturity, current stage, open gaps, next question, ordered evidence); **Level-0 fail-closed fallback** for legacy /
+  missing-metadata / unsupported-path / version-mismatch; a **500** replay limit (boundary+1 fails closed, no partial
+  state); **no AI / no network**; **no database or `SESSION_STORE` mutation**; **no UI**; **no prior-output validity
+  claim**. Malformed / corrupt / cyclic durable history raises the canonical `ContractError` (no partial state). The seed
+  idea is never logged and never duplicated into an `AssertionRecord`.
+- **Does NOT provide:** a resumed session; writable continuation; `SESSION_STORE` rehydration; answer submission from
+  reconstructed state; full runtime restoration; durable version history / branching / rollback; account ownership;
+  Phase 5 capability; FPC-02 stale-output implementation.
+
+**Evidence.** Merged scope **4 files / +795 / −13**; disallowed paths **NONE**. Source branch
+`feat/p4-2-level1-readonly-reconstruction` and the SHA-preserving implementation bundle `p4_2_level1_e66ae3a.bundle`
+(SHA-256 `d1aae8f16239a8ffe2088ec9a8e197b4dc6b329f73d760f8f6cab7213dec9b25`) are **PRESERVED**. Tests: focused
+**28 passed**; full governed suite **1769 passed, 1 skipped, 1 xfailed** (0 failed, 0 xpassed).
+
+**Accepted non-blocking observations (preserved, not fixed here).**
+1. The SQLite column `recon_path` maps to the logical field `path` (column-name/logical-field mapping; behaviour
+   correct).
+2. The literal replay boundary 500/501 was independently verified.
+3. A genuine pre-change-schema migration was independently verified but is not included as a committed focused test.
+4. Returned `AssertionRecord` elements are mutable local deserialized copies, but cannot mutate durable storage or live
+   sessions.
+These are recorded, not reopened.
+
+**PHASE 4 — FORMAL CLOSURE.** Phase 4 (Durable Data and Evidence Foundation) is **FORMALLY CLOSED within its implemented
+boundary**: durable accepted-answer append (P4-1b-2a); a separate durable idempotency identity (P4-1b-2a); accepted-answer
+evidence loading (P4-1b-2b); deterministic Level-1 read-only reconstruction (P4-2); additive legacy-safe project
+reconstruction metadata; and truthful product wording with **no false session-resume claim**. Phase 4 did **NOT** deliver
+writable continuation, accounts / authentication / ownership, version history / branching / rollback, output email /
+download, ACV, an AI Coach, or any FPC implementation — those are out of the Phase-4 boundary. **NEXT ELIGIBLE PHASE:
+Phase 5 — Accounts / Authentication / Ownership / Verified Email Foundations**, which is **NOT STARTED / NOT AUTHORIZED**
+by this gate.
+
+**Status.** **P4-2 Level-1: IMPLEMENTED, MERGED, POST-MERGE VERIFIED, OWNER ACCEPTED, AND FORMALLY CLOSED** (owner
+verdict **B**); it is no longer a candidate, pending review, pending publication, not-authorized, or not-started.
+**Phase 4: FORMALLY CLOSED.** **Writable continuation, Phase 5–7, WS17, STG, ACV, PDF, Email, and FPC-01…FPC-04 remain
+NOT AUTHORIZED / NOT STARTED.** There is no active open implementation contract. Decision **D17** and the AISR
+seven-owner model are preserved. Append-only; prior history not rewritten. This synchronization authorizes no push, no
+PR, no merge, no implementation, and no phase activation.
