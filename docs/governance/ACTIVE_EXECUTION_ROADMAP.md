@@ -3672,3 +3672,96 @@ merge + a separate explicit implementation authorization). **P4-1b-2b, P4-2, Pha
 FPC-01…FPC-04 remain NOT AUTHORIZED / NOT STARTED.** Decision **D17** and the AISR seven-owner model are preserved.
 Append-only; prior history not rewritten. This gate authorizes no push, no PR, no merge, no implementation, and no phase
 activation.
+
+---
+
+## P4-1b-2a Implementation — IMPLEMENTED, MERGED, VERIFIED, ACCEPTED, CLOSED (G-P4-1B-2A-IMPLEMENTATION-01-REV1)
+
+**Gate:** G-P4-1B-2A-IMPLEMENTATION-01 (→ REV1). **Type:** bounded RED-first implementation of the merged P4-1b-2a
+REV1 contract as amended by G-P4-1B-2A-B3-CONTRACT-AMENDMENT-01 (OPTION A). **Governance-synchronization record**
+(documentation-only) authored on the authoritative merge tip.
+
+**Chronology.**
+- **Original candidate:** `b1eb91e6fb1b3cd60637e0808c9976c408cc090a` (parent `4a31ece`). **First independent-review
+  verdict: C — REVISE AND RE-REVIEW**, with four blocking findings: **BF1** the five s04 empty-answer tests reached
+  token rejection instead of the empty-answer validation branch; **BF2** no direct test of the real
+  criticality-correction free-text form; **BF3** token-rejection was only indirectly covered; **BF4** the three legacy
+  `start_ilt002_*` routes were left without the durable envelope accepted-answer persistence now requires.
+- **Corrected candidate:** **REV1 `0b5f7577371e196e2f7e453afc720ca168544188`** (parent `4a31ece`, tree
+  `c8808beba759fefca6816014b5e83688bc5544a1`). **REV1 independent re-review verdict: B — ACCEPT WITH NON-BLOCKING
+  OBSERVATIONS**; all four blocking findings independently verified CLOSED.
+- **Merge:** **PR #365** merged via **Create a merge commit** → authoritative tip
+  **`77bd10cc55a731b18d4e35ea262b55342a9f847f`**, a two-parent merge of `4a31ece` + `0b5f757`, merge tree `c8808be`,
+  **candidate ancestry PASS (ANCESTRY_EXIT=0)**. Merged scope **21 files changed, 1048 insertions, 96 deletions**;
+  **disallowed paths: NONE**; **source branch `fix/p4-1b2a-implementation-rev1` PRESERVED**; the SHA-preserving bundle
+  is **PRESERVED** (sha-256 `621b9546f544641699d4cc5d0c50b232d90614d2677213c2d4529cccdb8a6a9b`).
+
+**What was implemented (OPTION A).** Durable accepted-answer append **before acknowledgement** (persist-before-ack);
+an additive nullable `idempotency_key` column on `records` with a **partial UNIQUE** for non-null keys (idempotent
+forward migration + disable-and-ignore rollback); a server-issued answered-submission token on **both**
+answered-producing forms (main answer form + criticality-correction form) with **no tokenless fallback**; the durable
+idempotency identity `HMAC-SHA-256(INVENTORAI_SECRET_KEY, sid‖token)` truncated to **≥128 bits** (existing env secret,
+no new secret in code, raw token not stored/logged); **same-token/same-content idempotent retry** and
+**same-token/different-content fail-closed** (confirm-by-reload, never auto-classifying an IntegrityError); and
+**validation-error token retention**. **The deterministic engine `record_id` remains `rec_N`** and **no
+deterministic-output engine was modified**; the durable idempotency identity is **separate** from `record_id` and no
+`evt-*` engine record identifier was introduced. The three legacy `start_ilt002_*` routes now create the same minimum
+durable envelope (fail-closed), remaining usable and unlinked. Full governed suite **1726 passed, 1 skipped, 1 xfailed**.
+
+**Accepted non-blocking observations (preserved, not fixed here).** (1) RED against the superseded candidate was not
+independently reproducible; RED was reproduced against the authoritative parent. (2) The second focused legacy-route
+test module was accepted as a justified corrective extension (BF4). (3) Token rejection may write only bounded transient
+error state, never durable/progression/epistemic state. (4) CRLF-to-LF normalization is not implemented; newline-only
+differences may fail closed. (5) Durable-success / memory-publication-failure recovery is **not claimed** (no reachable
+failure without artificial injection). (6) This governance synchronization records the post-merge history and closure.
+(7) `Optional[str]` typing and the current cold-load domain guard remain non-blocking implementation observations.
+
+**Changed files (documentation-only, this gate):** `docs/governance/ACTIVE_EXECUTION_ROADMAP.md` (this append-only
+entry), `docs/governance/CURRENT_PROJECT_STATE.md`, `docs/governance/OWNER_DECISION_REGISTER.md`, and
+`docs/governance/ACTIVE_INCREMENT_CONTRACT.md` (closure status only). No production, test, engine, schema, database,
+dependency, or CI path changed by this synchronization.
+
+**Status:** **P4-1b-2a: IMPLEMENTED, MERGED, VERIFIED, ACCEPTED, AND CLOSED** (owner verdict **B**). **P4-1b-2b, P4-2,
+Phase 5–7, WS17, STG, ACV, PDF, Email, and FPC-01…FPC-04 remain NOT AUTHORIZED / NOT STARTED.** Decision **D17** and the
+AISR seven-owner model are preserved. Append-only; prior history not rewritten. This synchronization authorizes no push,
+no PR, no merge, no implementation, and no phase activation.
+
+---
+
+## P4-1b-2a governance-synchronization review lineage (G-P4-1B-2A-GOVERNANCE-SYNC-01, chronology only)
+
+The P4-1b-2a **implementation** is closed (above). The **documentation-only governance-synchronization** that records
+that closure went through its own review lineage (chronology; **no governance-sync candidate has been published, merged,
+or accepted**):
+- **First candidate `571229ea48cf078ed2aff2753a634ee29c7c8b54`** — independent review reported **B**; **owner
+  reclassified to C — REVISE AND RE-REVIEW** because a material present-tense contradiction remained in
+  `ACTIVE_INCREMENT_CONTRACT.md` (stale "NOT YET MERGED / IMPLEMENTATION NOT AUTHORIZED / P4-1b-2a NOT STARTED"). **Not
+  published.**
+- **REV1 candidate `1575c8023b5bc0f35806e875fde8ed4bd35f87b3`** — independent review reported **B**; **owner did not
+  accept for publication** (D-FPC-MAP-10 still carried a current-readable historical blocker and the governance-sync
+  review lineage was under-recorded). **Not published.**
+- **REV2** — this corrected documentation-only candidate; **pending independent review**.
+
+This is chronology only. **P4-1b-2a remains IMPLEMENTED / MERGED / POST-MERGE VERIFIED / OWNER ACCEPTED / CLOSED** (PR
+#365, merge `77bd10cc55a731b18d4e35ea262b55342a9f847f`); only its post-merge governance-sync record is under correction.
+**P4-1b-2b, P4-2, Phase 5, and FPC-01…FPC-04 remain NOT AUTHORIZED / NOT STARTED.** Append-only; prior history not
+rewritten. This entry authorizes no push, no PR, no merge, no implementation, and no phase activation.
+
+**Governance-sync lineage update (append-only).** The **REV2 candidate `a92f75cc92974c6ef108e55e54d541a3dc2067ca`**
+(referenced as "pending independent review" in the entry above) subsequently returned independent-review verdict
+**C — REVISE AND RE-REVIEW** (owner accepted the verdict); it is **not published**. **REV3** is the corrected
+documentation-only candidate — **pending independent review**. No governance-sync candidate has been published, merged,
+or accepted. **P4-1b-2a remains IMPLEMENTED / MERGED / POST-MERGE VERIFIED / OWNER ACCEPTED / CLOSED** (PR #365,
+`77bd10c`). **P4-1b-2b, P4-2, Phase 5, and FPC-01…FPC-04 remain NOT AUTHORIZED / NOT STARTED.** Append-only; prior
+history not rewritten. This entry authorizes no push, no PR, no merge, no implementation, and no phase activation.
+
+**Governance-sync lineage update (append-only).** The **REV3 candidate `c2bb542f59babc3cd4bfd2b3ea70a614d3db835e`**
+(referenced as "pending independent review" in the entry above) subsequently returned independent-review verdict
+**C — REVISE AND RE-REVIEW** (owner accepted the verdict) — one residual finding (BF5): `CURRENT_PROJECT_STATE.md` named
+REV2 rather than REV3 as the pending candidate and omitted the updated GSYNC pointer range. REV3 is **not published**.
+**REV4** is the corrected documentation-only candidate — **pending independent review**. Full lineage: `571229e` (B →
+owner C) → REV1 `1575c80` (B → owner C) → REV2 `a92f75c` (C) → REV3 `c2bb542` (C) → REV4 (pending). No governance-sync
+candidate has been published, merged, or accepted. **P4-1b-2a remains IMPLEMENTED / MERGED / POST-MERGE VERIFIED / OWNER
+ACCEPTED / CLOSED** (PR #365, `77bd10c`). **P4-1b-2b, P4-2, Phase 5, and FPC-01…FPC-04 remain NOT AUTHORIZED / NOT
+STARTED.** Append-only; prior history not rewritten. This entry authorizes no push, no PR, no merge, no implementation,
+and no phase activation.

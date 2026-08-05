@@ -41,19 +41,25 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status:** ACTIVE CONTRACT-OF-RECORD = **P4-1b-2a Increment Contract Candidate — REV1** (gate
-**G-P4-1B-2-DOC-01-REV1**, defined in the "P4-1b-2a Increment Contract Candidate — REV1" section below) —
-**CORRECTED CONTRACT CANDIDATE — NOT YET MERGED · IMPLEMENTATION NOT AUTHORIZED · P4-1b-2a NOT STARTED**. REV1 corrects
-independent-review blocking findings **B1** (mandatory token + affected existing tests), **B2** (token transport on
-every answered-producing form), and **B3** (downstream `evt-*` semantic consequences). **The original DOC-01 candidate
-`0e2a5cec24d71462eadbffa193e3467d40d506a0` carries independent-review verdict `C — REVISE AND RE-REVIEW`; it is
-PRESERVED (unmerged) and NOT PUBLISHABLE, and is NOT amended.** A separately-claimed candidate
-`518cfdfe0eca3fb0f52c88c5baea46c643d3c288` / bundle `p4_1b2_doc01_rev1_518cfdf.bundle` is **NOT an established
-repository artifact and must not be relied upon**. **B3 determination (corrected):** a token-derived `evt-*`
-answered-record id **materially changes deterministic output** in `engine/idea_development_outputs.py` and
-`engine/requirement_landscape.py`, so **CONTRACT AMENDMENT / OWNER DECISION is REQUIRED** before P4-1b-2a implementation
-(the earlier "feasibility PASS, no amendment" is superseded). **P4-1b-2b, P4-2, and Phase 5 remain NOT AUTHORIZED / NOT
-STARTED.**
+**Status:** CONTRACT-OF-RECORD = **P4-1b-2a — Durable Answered-Event Append and Web-Layer Idempotency**, now
+**IMPLEMENTED, MERGED, POST-MERGE VERIFIED, OWNER ACCEPTED, AND CLOSED** (owner verdict
+**B — ACCEPT WITH NON-BLOCKING OBSERVATIONS**). Merged via **PR #365** (merge commit
+`77bd10cc55a731b18d4e35ea262b55342a9f847f`, parents `4a31ece` + `0b5f757`, tree `c8808be`; candidate ancestry PASS).
+**Option A is IMPLEMENTED:** the deterministic engine `record_id` remains **`rec_N` (preserved)** and a **separate
+durable idempotency identity** was implemented (never an `evt-*` `record_id`; no deterministic-output engine changed).
+The B3 owner decision (Option A) is **RESOLVED** and the amendment is **merged** — **no contract amendment, owner
+decision, review, or merge remains outstanding for P4-1b-2a; it is not a pending candidate.** **There is NO active
+open implementation contract; P4-1b-2b, P4-2, Phase 5, and every FPC remain NOT AUTHORIZED / NOT STARTED.**
+
+**Review lineage (HISTORICAL — for the record).** DOC-01 candidate `0e2a5cec24d71462eadbffa193e3467d40d506a0` carried
+verdict `C — REVISE AND RE-REVIEW` (preserved, unmerged); a separately-claimed
+`518cfdfe0eca3fb0f52c88c5baea46c643d3c288` candidate/bundle is **NOT** an established repository artifact and must not be
+relied upon. The B3 finding that a token-derived `evt-*` id would change deterministic output — historically stated as
+"CONTRACT AMENDMENT / OWNER DECISION REQUIRED" — was **resolved by selecting Option A** (that requirement is no longer
+outstanding). The implementation candidate `b1eb91e6fb1b3cd60637e0808c9976c408cc090a` (verdict `C`, four blocking
+findings) was superseded by REV1 `0b5f7577371e196e2f7e453afc720ca168544188` (verdict `B`, all four verified closed), which
+is the merged implementation. The "P4-1b-2a Increment Contract Candidate — REV1" and "P4-1b-2a Contract Amendment"
+sections below are retained as **HISTORICAL PRE-IMPLEMENTATION CONTRACT STATE**, not the current status.
 
 **P4-1b-1 is FULLY CLOSED** (implementation MERGED and POST-MERGE VERIFIED via PR #360; governance closure COMPLETE via
 PR #361 `25dacb00295bcd3d34fd2cb5f789e9eae390ae11`). *(Preserved observation: the closure section below still reads
@@ -168,7 +174,16 @@ Merge authority:          Owner, separately (not by the execution agent).
 
 ---
 
-## P4-1b-2a Increment Contract Candidate — REV1 — G-P4-1B-2-DOC-01-REV1 (CORRECTED CONTRACT CANDIDATE — NOT YET MERGED · IMPLEMENTATION NOT AUTHORIZED)
+## P4-1b-2a Increment Contract Candidate — REV1 — G-P4-1B-2-DOC-01-REV1 (HISTORICAL PRE-IMPLEMENTATION CONTRACT STATE — the increment is now IMPLEMENTED / MERGED / CLOSED via PR #365; see the closure banner and the "Active contract" status above)
+
+> **[CLOSURE STATUS — G-P4-1B-2A-IMPLEMENTATION-01-REV1, owner verdict B.]** The increment defined by this contract (as
+> amended for OPTION A by G-P4-1B-2A-B3-CONTRACT-AMENDMENT-01) is now **IMPLEMENTED, MERGED, VERIFIED, ACCEPTED, AND
+> CLOSED** — merged via **PR #365** (merge commit `77bd10cc55a731b18d4e35ea262b55342a9f847f`, parents `4a31ece` +
+> `0b5f757`, tree `c8808be`; candidate ancestry PASS). `record_id` remains `rec_N`; a separate durable idempotency
+> identity was implemented; no deterministic-output engine changed. The candidate/contract-definition text below is
+> **preserved as historical record** and is no longer the pending state. **P4-1b-2b, P4-2, Phase 5+, and every FPC
+> remain NOT AUTHORIZED / NOT STARTED.** See `docs/governance/ACTIVE_EXECUTION_ROADMAP.md` and
+> `OWNER_DECISION_REGISTER.md` (`D-P4-1B-2A-IMPL-01…04`).
 
 **0. Provenance & preservation.** REV1 supersedes the original P4-1b-2a contract candidate
 `0e2a5cec24d71462eadbffa193e3467d40d506a0` (gate G-P4-1B-2-DOC-01), which received independent-review verdict
@@ -177,8 +192,10 @@ claimed `518cfdfe0eca3fb0f52c88c5baea46c643d3c288` candidate/bundle is **not an 
 not relied upon. REV1 is a **new** candidate created from live tip `25dacb00295bcd3d34fd2cb5f789e9eae390ae11`.
 
 **1. Gate identity & status.** P4-1b-2a — Durable Answered-Event Append and Web-Layer Idempotency. Gate
-**G-P4-1B-2-DOC-01-REV1**. **Status:** `CORRECTED CONTRACT CANDIDATE — NOT YET MERGED` · `IMPLEMENTATION NOT AUTHORIZED`
-· `P4-1b-2a NOT STARTED`. **P4-1b-2b, P4-2, Phase 5 remain NOT AUTHORIZED / NOT STARTED.** Owner decisions govern
+**G-P4-1B-2-DOC-01-REV1**. **Status (HISTORICAL PRE-IMPLEMENTATION CONTRACT STATE):** at the time this contract was
+defined it read `CORRECTED CONTRACT CANDIDATE — NOT YET MERGED · IMPLEMENTATION NOT AUTHORIZED · P4-1b-2a NOT STARTED`;
+**that state is superseded — P4-1b-2a is now IMPLEMENTED / MERGED / VERIFIED / ACCEPTED / CLOSED (PR #365; see the
+"Active contract" status above).** **P4-1b-2b, P4-2, Phase 5 remain NOT AUTHORIZED / NOT STARTED.** Owner decisions govern
 `D-P4-1B-2-01 … -14` (unchanged) plus the REV1 corrections `D-P4-1B-2-REV1-B1/B2/B3` and clarifications
 `D-P4-1B-2-REV1-C1 … C8` in `OWNER_DECISION_REGISTER.md`.
 
@@ -324,7 +341,7 @@ AUTHORIZED**.
 
 ---
 
-## P4-1b-2a Contract Amendment — G-P4-1B-2A-B3-CONTRACT-AMENDMENT-01 (B3 OWNER DECISION = OPTION A) — DOCUMENTATION-ONLY · IMPLEMENTATION NOT AUTHORIZED
+## P4-1b-2a Contract Amendment — G-P4-1B-2A-B3-CONTRACT-AMENDMENT-01 (B3 OWNER DECISION = OPTION A) — MERGED (HISTORICAL PRE-IMPLEMENTATION CONTRACT STATE; the Option-A decision below remains authoritative, but its "not authorized / not merged" status is superseded — P4-1b-2a is IMPLEMENTED / MERGED / CLOSED via PR #365)
 
 **A0. Provenance & preservation.** This amendment amends the merged **P4-1b-2a REV1** contract candidate
 (`G-P4-1B-2-DOC-01-REV1`, above) **only** to correctly incorporate the owner's B3 decision. The REV1 candidate and all
@@ -337,8 +354,10 @@ newly generated commit/tree/bundle SHAs and reports them honestly. A previously 
 upon.
 
 **A1. Gate identity & status.** Gate **G-P4-1B-2A-B3-CONTRACT-AMENDMENT-01**. **Type:** documentation-only contract
-amendment preparation. **Status:** `CONTRACT AMENDMENT CANDIDATE — NOT YET MERGED` · `IMPLEMENTATION NOT AUTHORIZED` ·
-`P4-1b-2a NOT STARTED`. This gate records an owner decision and corrects the contract text; it authorizes **no** push,
+amendment preparation. **Status (HISTORICAL PRE-IMPLEMENTATION CONTRACT STATE):** at amendment-preparation time this read
+`CONTRACT AMENDMENT CANDIDATE — NOT YET MERGED · IMPLEMENTATION NOT AUTHORIZED · P4-1b-2a NOT STARTED`; **that state is
+superseded — the amendment is merged and P4-1b-2a is IMPLEMENTED / MERGED / CLOSED (PR #365).** The Option-A decision
+recorded here remains authoritative. As authored, this gate recorded an owner decision and corrected the contract text; it authorized **no** push,
 PR, merge, code/engine/schema/test/template change, or phase activation. **P4-1b-2b, P4-2, Phase 5+ remain NOT
 AUTHORIZED / NOT STARTED.** Governing decision: `D-P4-1B-2A-B3-01` (Option A selection) plus the retained
 `D-P4-1B-2-REV1-*` decisions in `OWNER_DECISION_REGISTER.md`.

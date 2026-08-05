@@ -16,8 +16,12 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
   (`git rev-parse origin/feature/atomic-json-session-persistence`). Do **not** trust a
   prose-pinned SHA.
   - **Current authoritative branch tip (last independently verified):**
-    `dfa082af0e6f9c09222608ca47d088dc7e2df6a8` (Merge PR #356 — P4-1a durable-store proof implementation,
-    post-merge verified and formally closed) — always re-resolve the live tip from Git per the rule above.
+    `77bd10cc55a731b18d4e35ea262b55342a9f847f` (Merge PR #365 — P4-1b-2a durable idempotent accepted-answer
+    persistence implementation, post-merge verified, owner accepted, and CLOSED) — always re-resolve the live tip from
+    Git per the rule above.
+  - **Prior recorded tip (historical):** `dfa082af0e6f9c09222608ca47d088dc7e2df6a8` (Merge PR #356 — P4-1a durable-store
+    proof implementation, post-merge verified and formally closed); superseded by the P4-1b-1 and P4-1b-2a gates
+    (PRs #358–#365).
   - **Prior recorded tip (historical):** `286b83ffbd6916086c834658f9e16411ef4de4fe` (Merge PR #353 — P4-0
     implementation closure); superseded by PR #354 (governance sync), PR #355 (P4-1a contract), and PR #356 (P4-1a
     implementation).
@@ -28,7 +32,13 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
 - **`main`:** `0e89e4636399760965c9ff8086b465c90dbadf8e` — STALE / UNRECONCILED / NOT authority.
 
 
-## Post-PR #353 synchronized current boundary
+## HISTORICAL SNAPSHOT — POST-PR #353 (SUPERSEDED BY THE POST-PR #365 CURRENT-TRUTH SECTION)
+
+*Superseded historical snapshot — do not read as present authority. Its "current" wording and the "P4-1 / P4-2: NOT
+AUTHORIZED / NOT STARTED" / "no durable datastore" statements were accurate at PR #353 only. Current truth is the
+"Post-PR #365 boundary" section below: P4-1 (P4-1a/P4-1b-1/P4-1b-2a) is implemented/merged/closed through PR #365
+(`77bd10c`); a durable store and durable accepted-answer append now exist; P4-1b-2b / P4-2 / Phase 5 remain separately
+gated.*
 
 - **P4-0 — Readiness and Storage-Contract Proof:** COMPLETE AND FORMALLY CLOSED.
 - **Technical evidence:** PR #353; merge commit `286b83ffbd6916086c834658f9e16411ef4de4fe`; bounded paths
@@ -259,7 +269,7 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
 - **Current active implementation contract:** NONE. **P4-1b-2, P4-2, Phase 5:** NOT AUTHORIZED / NOT STARTED. Decision
   **D17** and the AISR seven-owner model are preserved.
 
-## Post-PR #361 boundary — P4-1b-1 fully closed; P4-1b-2a contract candidate REV1 (G-P4-1B-2-DOC-01-REV1)
+## Post-PR #361 boundary — P4-1b-1 fully closed; P4-1b-2a contract candidate REV1 (G-P4-1B-2-DOC-01-REV1) — HISTORICAL SNAPSHOT (superseded by the "Post-PR #365 boundary" section below: P4-1b-2a is now IMPLEMENTED / MERGED / CLOSED)
 
 - **Live tip:** `25dacb00295bcd3d34fd2cb5f789e9eae390ae11` (Merge PR #361; always re-resolve from Git).
 - **P4-1b-1:** `FULLY CLOSED` (implementation merged/post-merge-verified via PR #360; governance closure complete via
@@ -299,16 +309,50 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
   separate explicit implementation authorization). **P4-1b-2b, P4-2, Phase 5:** NOT AUTHORIZED / NOT STARTED. Decision
   **D17** and the AISR seven-owner model are preserved.
 
+## Post-PR #365 boundary — P4-1b-2a IMPLEMENTED, MERGED, VERIFIED, ACCEPTED, CLOSED (current truth)
+
+- **Live tip:** `77bd10cc55a731b18d4e35ea262b55342a9f847f` (Merge PR #365; two-parent merge of `4a31ece` + `0b5f757`,
+  tree `c8808be`; always re-resolve from Git).
+- **P4-1b-2a:** **IMPLEMENTED, MERGED, VERIFIED, ACCEPTED, AND CLOSED** (owner verdict **B — ACCEPT WITH NON-BLOCKING
+  OBSERVATIONS**). It is no longer a candidate, pending review, or awaiting merge. Superseded original candidate
+  `b1eb91e` (first independent-review verdict **C**, four blocking findings BF1–BF4); corrected REV1 `0b5f757`
+  (re-review verdict **B**, all four blockers verified CLOSED). Merged scope **21 files / +1048 / −96**; disallowed
+  paths **NONE**; source branch and SHA-preserving bundle **PRESERVED** (bundle sha-256 `621b9546…a6a9b`). Full governed
+  suite **1726 passed, 1 skipped, 1 xfailed**. See the roadmap entry and `OWNER_DECISION_REGISTER.md`
+  (`D-P4-1B-2A-IMPL-01…`).
+- **Delivered behaviour (OPTION A):** durable accepted-answer append persist-before-ack; additive nullable
+  `idempotency_key` + partial uniqueness; server-issued token on both answered-producing forms (no tokenless fallback);
+  `HMAC-SHA-256(INVENTORAI_SECRET_KEY, sid‖token)` ≥128-bit durable idempotency identity (raw token not stored/logged);
+  same-token idempotent retry / different-content fail-closed; validation-error token retention; the three legacy
+  `start_ilt002_*` routes durably backed (usable, unlinked). **`record_id` remains `rec_N`; no deterministic-output
+  engine changed; no `evt-*` engine identifier.**
+- **Product-truth boundary (unchanged):** P4-1b-2a makes **accepted-answer evidence** durable + readiness re-derivable
+  only; it does **not** restore progression/deliverable/outputs/Keep-Refine or enable "resume exactly where you left
+  off" (that is P4-2). A new answer on a cold-loaded session fails closed generically (no resume).
+- **Current active implementation contract:** NONE. **P4-1b-2b, P4-2, Phase 5:** NOT AUTHORIZED / NOT STARTED; every FPC
+  remains NOT AUTHORIZED / NOT STARTED. Decision **D17** and the AISR seven-owner model are preserved.
+- **Governance-sync record status:** the P4-1b-2a **implementation** closure above is **final and unchanged**; only the
+  post-merge **documentation-only governance-synchronization record** is under owner-gated correction. **No
+  governance-sync candidate has been published, merged, owner-accepted-as-final, or made authoritative.** Lineage:
+  `571229e` (independent review **B**; owner reclassified to **C**; not published) → REV1 `1575c80` (independent review
+  **B**; owner rejected / reclassified to **C**; not published) → REV2 `a92f75c` (independent review **C**; owner
+  accepted the verdict; not published) → REV3 `c2bb542` (independent review **C**; owner accepted the verdict; not
+  published) → **REV4** (this documentation-only candidate; **pending independent review only**). See the roadmap
+  "governance-synchronization review lineage" and `OWNER_DECISION_REGISTER.md` (`D-P4-1B-2A-GSYNC-01…05`).
+
 ## Future product capabilities pointer (G-FPC-MAP-01)
 
 Preserved future-product capability classifications and missing-elements-only mapping for **FPC-01 … FPC-04** are
 recorded in the **Active Execution Roadmap** (Future Product Capability Integration Map) and the **Owner Decision
 Register** (D-FPC-MAP-01 … -10) under **G-FPC-MAP-01**. **FPC-01 through FPC-04 remain: PRESERVED — NOT AUTHORIZED FOR
 IMPLEMENTATION.** `ACTIVE_INCREMENT_CONTRACT.md` was **unchanged by G-FPC-MAP-01**; **no FPC gate has been activated.** (This is a pointer
-only — see the roadmap/register for the full map.) **[Update — G-P4-1B-2A-B3-CONTRACT-AMENDMENT-01:]** the B3 blocker
-that was `CONTRACT AMENDMENT / OWNER DECISION REQUIRED` is now **RESOLVED (Option A)** by the documentation-only contract
-amendment; **P4-1b-2a implementation remains NOT AUTHORIZED / NOT STARTED**, and **FPC-01…FPC-04 remain PRESERVED — NOT
-AUTHORIZED FOR IMPLEMENTATION** (unchanged).
+only — see the roadmap/register for the full map.) **[Current status:]** the B3 blocker that was historically
+`CONTRACT AMENDMENT / OWNER DECISION REQUIRED` was **RESOLVED (Option A)**, and **P4-1b-2a is now IMPLEMENTED / MERGED /
+POST-MERGE VERIFIED / OWNER ACCEPTED / CLOSED** (PR #365, merge `77bd10c`). **P4-1b-2a implementation status no longer
+controls or blocks the FPC mapping.** Independently of that, **FPC-01, FPC-02, FPC-03, FPC-04A, and FPC-04B remain
+PRESERVED in their approved future sequencing — NOT AUTHORIZED FOR IMPLEMENTATION / NOT STARTED.** The historical
+G-FPC-MAP-01 decision lineage (and its now-superseded P4-1b-2a boundary, see `OWNER_DECISION_REGISTER.md` D-FPC-MAP-10,
+labelled HISTORICAL / SUPERSEDED) is preserved.
 
 ## Phase 4 entry direction (Durable Data and Evidence Foundation)
 
@@ -338,7 +382,10 @@ AUTHORIZED FOR IMPLEMENTATION** (unchanged).
 - Deterministic engine (scoring, progression, gaps, safety signals) — transport-free core.
 - Flask app; Path N guided journey; electronics/electrical admission gate; decision workspace;
   success-criteria; deliverable view; FDC-001 narrow canonical-JSON decision-record export.
-- In-memory `SESSION_STORE` only.
+- **Durable accepted-answer persistence (P4-1b-2a, PR #365):** a durable project envelope + accepted-answer evidence
+  ledger, with a **separate durable idempotency identity** and **persist-before-acknowledge** append for accepted
+  answers. The live working session state otherwise remains **in-memory (`SESSION_STORE`)** — `SESSION_STORE` itself is
+  **not** durable; only the accepted-answer evidence is persisted.
 - **Bounded UX accessibility & disclosure baseline (post-Phase-3 gates #342–#345):** a shared application
   shell (viewport, `<main>` landmark, skip-to-content link, persistent "Temporary session" header disclosure);
   a static informational Data & Session trust surface at `GET /data-and-session` with a header "Learn more"
@@ -349,7 +396,11 @@ AUTHORIZED FOR IMPLEMENTATION** (unchanged).
 
 ## Not implemented / not authorized
 
-- Durable persistence; accounts; authentication; authorization; billing/subscription.
+- **Full durable session persistence** — full live session resume, complete runtime-session reconstruction,
+  progression restoration/replay, and durable ownership-linked session continuation (separately gated:
+  **P4-1b-2b / P4-2 / Phase 5**). *(Note: durable accepted-answer evidence append IS implemented under P4-1b-2a — see
+  "Implemented capabilities" above; this line is about full-session durability, which is NOT implemented.)* Accounts;
+  authentication; authorization; billing/subscription.
 - ACV (Approximate Concept Visualization); Direct Output Download (PDF); Email Delivery.
 - Sponsors/themes; administrative notice; privacy-control implementation; full Arabic/RTL;
   accessibility; multi-domain runtime; Path T / FORM T (BLOCKED).
@@ -359,8 +410,12 @@ AUTHORIZED FOR IMPLEMENTATION** (unchanged).
 
 End-to-end runtime invocation not certified; `main` stale/unreconciled; `/tmp` transcript
 handling (Phase 4 remediation); `iot_electronics` latent/legacy (not loaded; future
-separately authorized domain-activation workstream); durable persistence not implemented —
-runtime remains in-memory (G-R02; Phase 4); narrow Arabic/RTL. Full register: OD-T and the
+separately authorized domain-activation workstream); **durable persistence is bounded: durable
+accepted-answer evidence append IS implemented and merged (P4-1b-2a, PR #365) — durable project
+envelope + accepted-answer ledger; but full session state / progression / deliverable / outputs
+are NOT durably restored and "resume exactly where you left off" is not implemented (that is
+P4-1b-2b / P4-2, separately gated); the live working session state otherwise remains in-memory**;
+narrow Arabic/RTL. Full register: OD-T and the
 canonical plan. (The former `tests/test_domain_registry.py` ~31 failing baseline is RESOLVED
 — DISC-007 CLOSED via the current bounded remediation program; suite `0 failed`, XPASS `0`;
 deferred Domain Registry v1.0 hardening rules remain FORMALLY DEFERRED — NOT IMPLEMENTED —
