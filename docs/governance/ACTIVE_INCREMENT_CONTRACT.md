@@ -41,8 +41,29 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status:** CONTRACT-OF-RECORD = **P4-1b-2b — Read-Only Accepted-Answer Evidence Reconstruction (OPTION A)**, now
-**IMPLEMENTED, MERGED, POST-MERGE VERIFIED, OWNER ACCEPTED, AND FORMALLY CLOSED** (owner verdict
+**Status:** CONTRACT-OF-RECORD = **P4-2 Level-1 — Deterministic Read-Only Reconstruction of Review State (OPTION A)**,
+now **IMPLEMENTED, MERGED, POST-MERGE VERIFIED, OWNER ACCEPTED, AND FORMALLY CLOSED** (owner verdict
+**B — ACCEPT WITH NON-BLOCKING OBSERVATIONS**). Merged via **PR #369** (merge commit
+`276e89681e6008ec859383771b845833321b5552`, two-parent merge of `2cde5868249f5e2b135b13fb33adff5dd5e4a816` (base) +
+`e66ae3a7d95994b32dd590000b1bd1e95c499c64` (reviewed candidate), tree `1f6babf08ca6aae04677739d6c945581ed90db56`,
+equal to the candidate tree; candidate ancestry PASS). **Delivered (Option A / Level 1):**
+`engine.session_reconstruction.reconstruct_review_state(store, sid)` — a deterministic, **read-only** reconstruction for
+a durably recorded **Path-N** session. It additively persists the reconstruction inputs (`seed_idea_text`,
+`confirmed_domain`, `recon_path`, `engine_contract_version`) at project creation, loads accepted-answer evidence in
+authoritative `seq` order, builds a **fresh** canonical `IdeaState`, replays the seed then answer contents through the
+**unchanged** `progression_loop.run_iteration`, and returns an **immutable** `ReconstructedReviewState`. Version
+`p4-2-level1-recon-v1`; replay limit **500**. Legacy / missing-metadata / unsupported-path / version-mismatch fail
+closed to Level-0 evidence (no AI, no network); malformed history raises the canonical `ContractError`; **no DB /
+`SESSION_STORE` mutation, no UI, no session resume, no writable continuation, no prior-output validity claim.** Merged
+scope **4 files / +795 / −13** (`engine/record_store.py`, `engine/session_reconstruction.py`, `web/app.py`,
+`tests/test_p4_2_session_reconstruction.py`); disallowed paths **NONE**. **P4-2 Level-1 is no longer a candidate,
+pending review, pending publication, not-authorized, or not-started. PHASE 4 (Durable Data and Evidence Foundation) is
+FORMALLY CLOSED within its implemented boundary** (P4-0 → P4-1a → P4-1b-1 → P4-1b-2a → P4-1b-2b → P4-2 Level-1);
+**NEXT ELIGIBLE PHASE: Phase 5 — Accounts / Authentication / Ownership / Verified Email Foundations — NOT STARTED / NOT
+AUTHORIZED.**
+
+The **immediately prior** contract-of-record **P4-1b-2b — Read-Only Accepted-Answer Evidence Reconstruction (OPTION A)**
+remains **IMPLEMENTED, MERGED, POST-MERGE VERIFIED, OWNER ACCEPTED, AND FORMALLY CLOSED** (owner verdict
 **B — ACCEPT WITH BINDING CONTRACT REFINEMENTS**, refinements satisfied). Merged via **PR #367** (merge commit
 `1c9dff7962a428cfd32ab577dbbbb84ce21909b3`, two-parent merge of `7d8895122235a4da25a7f4d9d0d4d5e4bab20c6b` (base) +
 `945f4a36a6a6eef5bcab1ea55e30ce1dfa468820` (reviewed candidate), tree `bff45ada35e8d3bb606bcf4e6bd80e3df33d449d`,
@@ -56,10 +77,10 @@ pending review, pending publication, not-authorized, or not-started.** The **imm
 **P4-1b-2a — Durable Answered-Event Append and Web-Layer Idempotency** remains **IMPLEMENTED / MERGED / VERIFIED /
 ACCEPTED / CLOSED** (owner verdict **B**; PR #365, merge `77bd10cc55a731b18d4e35ea262b55342a9f847f`, tree `c8808be`;
 `record_id` = `rec_N`; separate durable idempotency identity; no deterministic-output engine changed). **There is NO
-active open implementation contract; P4-2, Phase 5, and every FPC remain NOT AUTHORIZED / NOT STARTED.** (Documentation
-note: the historical "P4-1b-2a … REV1" and "Contract Amendment" sections retained below, and any statement in them that
-"P4-1b-2b … remain NOT AUTHORIZED / NOT STARTED", were accurate as of the PR #365 boundary and are **superseded** by
-this status for current truth.)
+active open implementation contract. Phase 4 is FORMALLY CLOSED; writable continuation, Phase 5, and every FPC remain
+NOT AUTHORIZED / NOT STARTED.** (Documentation note: the historical "P4-1b-2a … REV1" and "Contract Amendment" sections
+retained below, and any statement anywhere below that "P4-2 … / P4-1b-2b … remain NOT AUTHORIZED / NOT STARTED", were
+accurate as of their PR #365/#367 boundary and are **superseded** by this status for current truth.)
 
 **Review lineage (HISTORICAL — for the record).** DOC-01 candidate `0e2a5cec24d71462eadbffa193e3467d40d506a0` carried
 verdict `C — REVISE AND RE-REVIEW` (preserved, unmerged); a separately-claimed

@@ -476,3 +476,34 @@ rewritten.
 **Boundary.** Closure grants no downstream authorization. All prior decisions, candidates, verdicts, and observations are
 preserved; no history is rewritten. **P4-1b-2b is IMPLEMENTED / MERGED / POST-MERGE VERIFIED / OWNER ACCEPTED / FORMALLY
 CLOSED** (PR #367, merge `1c9dff7`). **P4-2, Phase 5, and every FPC remain NOT AUTHORIZED / NOT STARTED.**
+
+## P4-2 Level-1 — Deterministic Read-Only Reconstructed Review State: discovery, implementation acceptance & closure + PHASE 4 FORMAL CLOSURE (G-P4-2-DISCOVERY-CONTRACT-01 + G-P4-2-LEVEL1-IMPLEMENTATION-01) — owner-accepted, MERGED & CLOSED
+
+**Decision status:** ACCEPTED AND CLOSED — owner verdict **B — ACCEPT WITH NON-BLOCKING OBSERVATIONS**. Records the
+read-only discovery gate, the separate implementation authorization (Option A / Level 1), the independent review, the
+merge through **PR #369** (merge commit `276e89681e6008ec859383771b845833321b5552`, two-parent merge of
+`2cde5868249f5e2b135b13fb33adff5dd5e4a816` (base) + `e66ae3a7d95994b32dd590000b1bd1e95c499c64` (reviewed candidate),
+tree `1f6babf08ca6aae04677739d6c945581ed90db56` — equal to the candidate tree; candidate ancestry PASS), post-merge
+verification, owner acceptance, formal closure, and the **formal closure of Phase 4**. Documentation-only; grants no new
+implementation authority. Recorded on the authoritative live tip resolved from Git (`276e896`).
+
+**Supersession clause.** This section supersedes earlier register wording **only where that wording states that P4-2 was
+not authorized, not started, pending, a candidate, or awaiting review/publication** (e.g. the historical "P4-2 … remain
+NOT AUTHORIZED / NOT STARTED" statements in the P4-1b-2a/2b closure and FPC-map sections, and "Phase 4 implementation:
+NOT AUTHORIZED" in the Phase-4 entry rows). Those statements were accurate as of their PR #365/#367-era authoring and
+**remain historical context, not current status**. Current status: **P4-2 Level-1 is IMPLEMENTED / MERGED / POST-MERGE
+VERIFIED / OWNER ACCEPTED / FORMALLY CLOSED, and Phase 4 is FORMALLY CLOSED.** No prior history is rewritten.
+
+| ID | Subject | Decision | Impl. authority | Evidence / boundary |
+|---|---|---|---|---|
+| D-P4-2-DISC-01 | Read-only discovery & contract definition (G-P4-2-DISCOVERY-CONTRACT-01) | ACCEPTED / RECORDED | NONE | Discovery found current durable records insufficient for any continuation beyond Level 0 (seed idea, confirmed domain, path, engine version not persisted). Recommended **Option A** — deterministic read-only reconstruction to **Level 1** (read-only reconstructed review state) via canonical engine replay, additively persisting the missing inputs. Discovery authorized nothing further |
+| D-P4-2-L1-IMPL-01 | P4-2 Level-1 implementation authorized (Option A / Level 1) & accepted, closed | ACCEPTED — **verdict B**; **IMPLEMENTED / MERGED / VERIFIED / ACCEPTED / CLOSED** | NONE (closure) | Separate explicit implementation authorization **G-P4-2-LEVEL1-IMPLEMENTATION-01** (Option A / Level 1; Path-N only; additive nullable envelope inputs; version constant; bounded replay limit; four permitted paths; RED→GREEN). Delivered: read-only `engine.session_reconstruction.reconstruct_review_state(store, sid)` — persists `seed_idea_text`/`confirmed_domain`/`recon_path`/`engine_contract_version` at creation; loads accepted-answer evidence in `seq` order; builds a fresh canonical `IdeaState`; replays seed then answer contents through the **unchanged** `progression_loop.run_iteration`; returns an **immutable** `ReconstructedReviewState`. Version `p4-2-level1-recon-v1`; replay limit **500**. Merged scope **4 files / +795 / −13** (`engine/record_store.py`, `engine/session_reconstruction.py`, `web/app.py`, `tests/test_p4_2_session_reconstruction.py`); disallowed paths **NONE**; source branch `feat/p4-2-level1-readonly-reconstruction` + bundle **PRESERVED** (`p4_2_level1_e66ae3a.bundle`, SHA-256 `d1aae8f16239a8ffe2088ec9a8e197b4dc6b329f73d760f8f6cab7213dec9b25`); tests focused **28 passed** / full **1769 passed, 1 skipped, 1 xfailed** |
+| D-P4-2-L1-IMPL-02 | Capability boundary — explicit "does NOT provide" | RECORDED | NONE | P4-2 Level-1 is **read-only review reconstruction only**. It does **NOT** provide: a resumed session; writable continuation; `SESSION_STORE` rehydration; answer submission from reconstructed state; full runtime restoration; durable version history / branching / rollback; account ownership (**Phase 5**); **FPC-02** stale-output implementation. Fail-closed to Level-0 on legacy/missing-metadata/unsupported-path/version-mismatch (no AI, no network); malformed history raises canonical `ContractError`; replay boundary+1 fails closed; **no DB / `SESSION_STORE` mutation, no UI, no prior-output validity claim**; the seed idea is never logged or duplicated into an `AssertionRecord` |
+| D-P4-2-L1-IMPL-03 | Accepted non-blocking observations | RECORDED | NONE | (1) SQLite column `recon_path` maps to the logical field `path`; (2) the literal replay boundary 500/501 was independently verified; (3) a genuine pre-change-schema migration was independently verified but is not a committed focused test; (4) returned `AssertionRecord` elements are mutable local deserialized copies but cannot mutate durable storage or live sessions. Recorded, not reopened |
+| D-P4-2-L1-IMPL-04 | Later-scope exclusion (unchanged) | NONE — NOT AUTHORIZED | NONE | **Writable continuation, P4-2 beyond Level-1 read-only, Phase 5+, WS17, STG, and every FPC (FPC-01…FPC-04) remain NOT AUTHORIZED / NOT STARTED**; closing P4-2 Level-1 activates nothing downstream. Decision **D17** and the AISR seven-owner model preserved |
+| D-PHASE4-CLOSE-01 | Phase 4 (Durable Data and Evidence Foundation) formal closure | **FORMALLY CLOSED** within the implemented boundary | NONE | Phase 4 delivered: durable accepted-answer append (P4-1b-2a); a separate durable idempotency identity (P4-1b-2a); accepted-answer evidence loading (P4-1b-2b); deterministic Level-1 read-only reconstruction (P4-2); additive legacy-safe project reconstruction metadata; truthful wording with **no false session-resume claim**. Phase 4 did **NOT** deliver writable continuation, accounts / authentication / ownership, version history / branching / rollback, output email / download, ACV, an AI Coach, or any FPC implementation. **NEXT ELIGIBLE PHASE: Phase 5 — Accounts / Authentication / Ownership / Verified Email Foundations — NOT STARTED / NOT AUTHORIZED by this gate** |
+
+**Boundary.** Closure grants no downstream authorization. All prior decisions, candidates, verdicts, and observations are
+preserved; no history is rewritten. **P4-2 Level-1 is IMPLEMENTED / MERGED / POST-MERGE VERIFIED / OWNER ACCEPTED /
+FORMALLY CLOSED (PR #369, merge `276e896`); Phase 4 is FORMALLY CLOSED.** **Writable continuation, Phase 5, and every FPC
+remain NOT AUTHORIZED / NOT STARTED.**
