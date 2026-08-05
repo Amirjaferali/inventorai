@@ -32,6 +32,7 @@ import uuid
 from typing import List, Protocol, runtime_checkable
 
 from engine.record_contract import ProjectRecordContract, assertion_to_dict
+from engine.idea_state import DISPOSITION_ANSWERED
 
 
 class StoreError(Exception):
@@ -51,6 +52,7 @@ class RecordStore(Protocol):
     def create_project(self, contract: ProjectRecordContract, project_id: str = ...) -> str: ...
     def append_record(self, project_id: str, record, idempotency_key: str = ...) -> None: ...
     def load_contract(self, project_id: str) -> ProjectRecordContract: ...
+    def load_accepted_answer_evidence(self, project_id: str) -> tuple: ...
     def project_ids(self) -> List[str]: ...
     def new_record_id(self) -> str: ...
     def close(self) -> None: ...
@@ -227,6 +229,42 @@ class SqliteRecordStore:
             "assertions": [json.loads(payload) for (payload,) in rows],
         }
         return ProjectRecordContract.from_dict(envelope)   # validates; fail-closed
+
+    def load_accepted_answer_evidence(self, project_id: str) -> tuple:
+        """P4-1b-2b — bounded, READ-ONLY reconstruction of the durably persisted
+        accepted-answer evidence for ONE project/session (`project_id == sid`), in
+        the authoritative persisted order (store `seq`).
+
+        Returns an immutable ``tuple`` of the existing `AssertionRecord` values
+        whose disposition is `answered`, exactly as persisted — `record_id`
+        preserved as `rec_N` (non-contiguous values are expected and valid, since
+        only accepted-answer interactions are durably appended), ordered by the
+        `seq` order established by ``load_contract``. This is accepted-answer
+        EVIDENCE, not a resumable session: it reconstructs no next question,
+        gaps, maturity, domain/path, transcript, last_result, or progression, and
+        is NOT full deterministic replay (that is P4-2).
+
+        Failure behaviour (deterministic, fail-closed, non-disclosing):
+          * unknown/absent `project_id` -> the empty tuple `()` — the SAME result
+            an existing empty project returns (no existence leak, no mutation, no
+            enumeration);
+          * malformed / unsupported-version / invalid-reference / cyclic durable
+            content -> the canonical ``ContractError`` propagates from
+            ``load_contract`` (fail closed; NO partial evidence; corruption is
+            never silently converted into a valid empty history).
+
+        Read-only: performs no write, append, repair, rehydration, or state
+        progression; reuses the project-scoped ``load_contract`` read (no
+        cross-project read, no ``project_ids()``); bounded linear over the loaded
+        contract; logs nothing."""
+        try:
+            contract = self.load_contract(project_id)
+        except ProjectNotFound:
+            return ()
+        return tuple(
+            record for record in contract.assertions
+            if record.disposition == DISPOSITION_ANSWERED
+        )
 
     def project_ids(self) -> List[str]:
         return [row[0] for row in
