@@ -49,7 +49,7 @@ class RecordStore(Protocol):
     PostgreSQL/other adapter can implement the same protocol without redesign."""
 
     def create_project(self, contract: ProjectRecordContract, project_id: str = ...) -> str: ...
-    def append_record(self, project_id: str, record) -> None: ...
+    def append_record(self, project_id: str, record, idempotency_key: str = ...) -> None: ...
     def load_contract(self, project_id: str) -> ProjectRecordContract: ...
     def project_ids(self) -> List[str]: ...
     def new_record_id(self) -> str: ...
@@ -76,6 +76,20 @@ _SCHEMA = (
     """,
 )
 
+# P4-1b-2a (G-P4-1B-2A-B3-CONTRACT-AMENDMENT-01, OPTION A): the SEPARATE durable
+# idempotency identity. This is NOT the engine record_id (which stays the
+# positional rec_N and is untouched here); it is an additive, nullable column
+# plus a partial UNIQUE index that is the durable duplicate backstop for accepted
+# answered submissions. Legacy/pre-amendment rows and every non-answer record
+# carry a NULL idempotency_key and remain valid (mixed-state). Additive only: no
+# column drop, no type change, no record_id rewrite.
+_IDEMPOTENCY_COLUMN = "idempotency_key"
+_IDEMPOTENCY_INDEX = (
+    "CREATE UNIQUE INDEX IF NOT EXISTS records_idempotency_key_uq "
+    "ON records (project_id, idempotency_key) "
+    "WHERE idempotency_key IS NOT NULL"
+)
+
 
 class SqliteRecordStore:
     """Reference/MVP durable adapter over Python stdlib `sqlite3`.
@@ -95,6 +109,24 @@ class SqliteRecordStore:
         with self._conn:
             for stmt in _SCHEMA:
                 self._conn.execute(stmt)
+            self._migrate_idempotency(self._conn)
+
+    # --- migration (additive, idempotent, forward + safe rollback) ----------
+    @staticmethod
+    def _has_idempotency_column(conn) -> bool:
+        cols = [row[1] for row in conn.execute("PRAGMA table_info(records)").fetchall()]
+        return _IDEMPOTENCY_COLUMN in cols
+
+    def _migrate_idempotency(self, conn) -> None:
+        """P4-1b-2a forward migration against the LIVE schema: additively add the
+        nullable ``idempotency_key`` column and its partial UNIQUE index. Applied
+        idempotently to existing populated databases (existing rows keep a NULL
+        key). Rollback for this additive change is disable-and-ignore (stop
+        reading/enforcing the key) rather than a destructive column drop, so no
+        durable ``records``/``rec_N`` data is ever lost."""
+        if not self._has_idempotency_column(conn):
+            conn.execute("ALTER TABLE records ADD COLUMN idempotency_key TEXT")
+        conn.execute(_IDEMPOTENCY_INDEX)
 
     # --- identifiers --------------------------------------------------------
     def new_record_id(self) -> str:
@@ -125,9 +157,17 @@ class SqliteRecordStore:
                 )
         return pid
 
-    def append_record(self, project_id: str, record) -> None:
+    def append_record(self, project_id: str, record, idempotency_key: str = None) -> None:
         """Atomically append one accepted-input record to an existing project,
-        preserving its identifier exactly and its append order (seq)."""
+        preserving its identifier exactly and its append order (seq).
+
+        ``idempotency_key`` (P4-1b-2a, OPTION A) is the SEPARATE durable
+        idempotency identity — NOT the engine ``record_id``. When provided it is
+        stored in the additive column and is subject to the partial UNIQUE index;
+        a duplicate key therefore raises ``sqlite3.IntegrityError`` and the whole
+        append rolls back (the durable duplicate backstop). It is never derived
+        from, and never overwrites, ``record_id`` (which stays ``rec_N``). A
+        ``None`` key preserves the exact pre-amendment behaviour."""
         with self._conn:
             row = self._conn.execute(
                 "SELECT COUNT(*) FROM projects WHERE project_id = ?", (project_id,)
@@ -139,11 +179,30 @@ class SqliteRecordStore:
                 (project_id,),
             ).fetchone()[0]
             self._conn.execute(
-                "INSERT INTO records (project_id, seq, record_id, payload) "
-                "VALUES (?, ?, ?, ?)",
+                "INSERT INTO records (project_id, seq, record_id, payload, idempotency_key) "
+                "VALUES (?, ?, ?, ?, ?)",
                 (project_id, seq, record.record_id,
-                 json.dumps(assertion_to_dict(record), sort_keys=True)),
+                 json.dumps(assertion_to_dict(record), sort_keys=True),
+                 idempotency_key),
             )
+
+    def record_payload_for_idempotency_key(self, project_id: str, idempotency_key: str):
+        """Return the stored payload dict for the record carrying
+        ``idempotency_key`` under ``project_id`` (or ``None`` if absent). Used by
+        the runtime's confirm-by-reload check (C3): on a duplicate-key append the
+        runtime reloads and compares the accepted content before treating a retry
+        as an idempotent no-op — it never auto-classifies an IntegrityError as a
+        duplicate. Project-scoped; reads nothing across projects."""
+        if idempotency_key is None:
+            return None
+        row = self._conn.execute(
+            "SELECT payload FROM records "
+            "WHERE project_id = ? AND idempotency_key = ?",
+            (project_id, idempotency_key),
+        ).fetchone()
+        if row is None:
+            return None
+        return json.loads(row[0])
 
     # --- reads (project-scoped; fail-closed validation) ---------------------
     def load_contract(self, project_id: str) -> ProjectRecordContract:

@@ -27,6 +27,9 @@ import pytest
 from web.app import app, SESSION_STORE, INTERACTION_ACTIONS
 from engine.idea_state import IdeaState, OPEN, PARTIAL, CLOSED
 from engine.progression_loop import run_iteration
+# P4-1b-2a: obtain/submit a real server-issued token for answered submissions,
+# and durably back a directly-constructed session so an answer can be accepted.
+from test_p4_1b2a_durable_answer_append import answered_post, seed_direct_session_envelope
 
 
 def _new_session():
@@ -46,6 +49,7 @@ def _new_session():
         "transcript": [],
         "last_question": "What is the core mechanism?",
     }
+    seed_direct_session_envelope(sid, state)   # P4-1b-2a: durably back the session
     return sid
 
 
@@ -75,8 +79,8 @@ def test_answered_invokes_assessment_path():
         before = _snapshot(entry["state"])
         before_transcript = len(entry["transcript"])
         client = app.test_client()
-        r = client.post(f"/session/{sid}",
-                        data={"action": "answered",
+        r = answered_post(client, sid,
+                        {"action": "answered",
                               "response": "The accelerometer measures deceleration and "
                                           "triggers the light when it crosses a threshold."},
                         follow_redirects=False)
@@ -99,8 +103,8 @@ def test_legacy_submission_without_action_is_answered():
         before_iter = entry["state"].iteration
         before_transcript = len(entry["transcript"])
         client = app.test_client()
-        r = client.post(f"/session/{sid}",
-                        data={"response": "The sensor detects deceleration by measuring "
+        r = answered_post(client, sid,
+                        {"response": "The sensor detects deceleration by measuring "
                                           "the rate of change of speed over time."},
                         follow_redirects=False)
         assert r.status_code in (301, 302)
@@ -250,8 +254,8 @@ def test_answered_transcript_record_shape_unchanged():
     try:
         entry = SESSION_STORE[sid]
         client = app.test_client()
-        client.post(f"/session/{sid}",
-                    data={"action": "answered", "response": "The Hall-effect sensor "
+        answered_post(client, sid,
+                    {"action": "answered", "response": "The Hall-effect sensor "
                           "detects wheel slowing and the controller switches the light."},
                     follow_redirects=False)
         assert len(entry["transcript"]) == 1

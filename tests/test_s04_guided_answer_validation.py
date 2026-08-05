@@ -18,6 +18,10 @@ from engine.idea_state import (
     IdeaState, Evidence, REASONED, Gap, PARTIAL, CLOSED,
     MECHANISM_COMPLETENESS, PHYSICAL_FEASIBILITY, BOUNDARY_AMBIGUITY,
 )
+# P4-1b-2a: answered submissions require a real server-issued token; the seeded
+# session is durably backed so an answer can be accepted.
+from test_p4_1b2a_durable_answer_append import (
+    answered_post, get_answer_token, seed_direct_session_envelope)
 
 _SID = "gux-answer-validation-sid"
 ERROR_MSG = "Enter an answer, or choose one of the response options below."
@@ -37,6 +41,7 @@ def _seed_session(sid):
     s.gaps.append(Gap(gap_type=BOUNDARY_AMBIGUITY, status=PARTIAL, opened_at=5))
     s.iteration = 5
     SESSION_STORE[sid] = {"state": s, "last_result": None, "transcript": [], "last_question": "Q"}
+    seed_direct_session_envelope(sid, s)   # P4-1b-2a: durably back the session
 
 
 def _snapshot(entry):
@@ -52,7 +57,7 @@ def test_empty_answered_shows_error_once():
     _seed_session(_SID)
     try:
         c = app.test_client()
-        r = c.post(f"/session/{_SID}", data={"response": "", "action": "answered"},
+        r = answered_post(c, _SID, {"response": "", "action": "answered"},
                    follow_redirects=True)
         assert r.status_code == 200
         body = r.get_data(as_text=True)
@@ -65,7 +70,7 @@ def test_whitespace_only_answered_shows_error():
     _seed_session(_SID)
     try:
         c = app.test_client()
-        r = c.post(f"/session/{_SID}", data={"response": "   \t  ", "action": "answered"},
+        r = answered_post(c, _SID, {"response": "   \t  ", "action": "answered"},
                    follow_redirects=True)
         assert ERROR_MSG in r.get_data(as_text=True), "whitespace-only answer must be treated as empty"
     finally:
@@ -76,8 +81,11 @@ def test_error_element_id_and_aria_association():
     _seed_session(_SID)
     try:
         c = app.test_client()
-        body = c.post(f"/session/{_SID}", data={"response": "", "action": "answered"},
+        body = answered_post(c, _SID, {"response": "", "action": "answered"},
                       follow_redirects=True).get_data(as_text=True)
+        # Prove the intended EMPTY-ANSWER VALIDATION branch was reached (a real
+        # token was submitted), not the P4-1b-2a token-rejection branch.
+        assert ERROR_MSG in body, "must reach empty-answer validation, not token rejection"
         # exactly one error element with a stable id and role=alert
         errs = re.findall(r'<[a-z0-9]+\b[^>]*\bid="answer-error"[^>]*>', body)
         assert len(errs) == 1, "exactly one error element with id=answer-error"
@@ -94,8 +102,9 @@ def test_conditional_autofocus_on_error():
     _seed_session(_SID)
     try:
         c = app.test_client()
-        body = c.post(f"/session/{_SID}", data={"response": "", "action": "answered"},
+        body = answered_post(c, _SID, {"response": "", "action": "answered"},
                       follow_redirects=True).get_data(as_text=True)
+        assert ERROR_MSG in body, "must reach empty-answer validation, not token rejection"
         ta = [t for t in re.findall(r"<textarea\b[^>]*>", body) if 'id="response"' in t][0]
         assert "autofocus" in ta, "textarea must autofocus on the validation-error render"
     finally:
@@ -108,8 +117,9 @@ def test_error_consumed_once_not_repeated_on_refresh():
     _seed_session(_SID)
     try:
         c = app.test_client()
-        c.post(f"/session/{_SID}", data={"response": "", "action": "answered"},
-               follow_redirects=True)  # error rendered here (transient consumed)
+        rendered = answered_post(c, _SID, {"response": "", "action": "answered"},
+               follow_redirects=True).get_data(as_text=True)  # error rendered here (transient consumed)
+        assert ERROR_MSG in rendered, "must reach empty-answer validation, not token rejection"
         refreshed = c.get(f"/session/{_SID}").get_data(as_text=True)
         assert ERROR_MSG not in refreshed, "consumed error must not reappear on a later plain GET"
         assert 'id="answer-error"' not in refreshed, "no error element on a normal load"
@@ -146,8 +156,8 @@ def test_valid_answer_shows_no_error():
     _seed_session(_SID)
     try:
         c = app.test_client()
-        body = c.post(f"/session/{_SID}",
-                      data={"response": "It uses a shunt resistor and comparator to detect the fault current.",
+        body = answered_post(c, _SID,
+                      {"response": "It uses a shunt resistor and comparator to detect the fault current.",
                             "action": "answered"}, follow_redirects=True).get_data(as_text=True)
         assert ERROR_MSG not in body, "a valid non-empty answer must not show the error"
     finally:
@@ -159,8 +169,11 @@ def test_valid_answer_shows_no_error():
 def test_empty_answered_changes_no_state_and_no_transcript():
     _seed_session(_SID)
     try:
+        client = app.test_client()
         before = _snapshot(SESSION_STORE[_SID])
-        app.test_client().post(f"/session/{_SID}", data={"response": "", "action": "answered"})
+        body = answered_post(client, _SID, {"response": "", "action": "answered"},
+                             follow_redirects=True).get_data(as_text=True)
+        assert ERROR_MSG in body, "must reach empty-answer validation, not token rejection"
         after = _snapshot(SESSION_STORE[_SID])
         assert after == before, "empty answered submit must not change iteration/maturity/gaps/transcript/interactions"
         assert (SESSION_STORE[_SID].get("transcript") or []) == [], "no transcript entry for an empty answer"
@@ -171,9 +184,13 @@ def test_empty_answered_changes_no_state_and_no_transcript():
 def test_empty_answered_redirects_302():
     _seed_session(_SID)
     try:
-        r = app.test_client().post(f"/session/{_SID}", data={"response": "", "action": "answered"})
+        client = app.test_client()
+        r = answered_post(client, _SID, {"response": "", "action": "answered"})
         assert r.status_code == 302 and r.headers.get("Location", "").endswith(f"/session/{_SID}"), \
             "empty answered must still Post/Redirect/Get to the same session page"
+        # Prove the PRG came from the empty-answer validation branch, not token rejection.
+        assert ERROR_MSG in client.get(f"/session/{_SID}").get_data(as_text=True), \
+            "must reach empty-answer validation, not token rejection"
     finally:
         SESSION_STORE.pop(_SID, None)
 
@@ -182,7 +199,7 @@ def test_error_does_not_echo_submitted_content():
     _seed_session(_SID)
     try:
         # even a non-empty-but-whitespace payload must not be echoed; the message is a constant
-        body = app.test_client().post(f"/session/{_SID}", data={"response": "  \n ", "action": "answered"},
+        body = answered_post(app.test_client(), _SID, {"response": "  \n ", "action": "answered"},
                                       follow_redirects=True).get_data(as_text=True)
         # the rendered error region contains only the constant message
         m = re.search(r'<[a-z0-9]+\b[^>]*\bid="answer-error"[^>]*>(.*?)</[a-z0-9]+>', body, re.DOTALL)

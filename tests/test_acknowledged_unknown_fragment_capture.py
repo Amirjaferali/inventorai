@@ -16,6 +16,7 @@ iteration behavior, and the explicit "unknown" non-answer action are
 unchanged.
 """
 import os
+from test_p4_1b2a_durable_answer_append import answered_post  # P4-1b-2a
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -270,9 +271,7 @@ class TestExtractionIndependence:
             # Deterministically target the answered->integrate_response path.
             state.gaps.append(Gap(gap_type=MECHANISM_COMPLETENESS,
                                   status=OPEN, opened_at=state.iteration))
-            app.test_client().post(
-                f"/session/{sid}",
-                data={"action": "answered", "response": DEMO_ANSWER})
+            answered_post(app.test_client(), sid, {"action": "answered", "response": DEMO_ANSWER})
             # Transcript: full answer, byte-for-byte.
             transcript = SESSION_STORE[sid]["transcript"]
             assert transcript and transcript[-1]["response"] == DEMO_ANSWER

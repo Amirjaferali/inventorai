@@ -20,6 +20,7 @@ its scope decision
   * the Guided Answer Co-Authoring surface remains present and distinct.
 """
 import copy
+from test_p4_1b2a_durable_answer_append import answered_post  # P4-1b-2a
 import os
 import sys
 
@@ -245,8 +246,7 @@ def test_saved_answer_is_verbatim_and_guidance_not_persisted():
     sid = _start_electronics_session()
     answer = "I don't know how the sensor triggers the relay yet."
     try:
-        app.test_client().post(f"/session/{sid}",
-                               data={"response": answer, "action": "answered"})
+        answered_post(app.test_client(), sid, {"response": answer, "action": "answered"})
         transcript = SESSION_STORE[sid]["transcript"]
         assert transcript, "an answered submission must be recorded"
         assert transcript[-1]["response"] == answer  # verbatim, byte-for-byte
@@ -403,8 +403,7 @@ def test_arabic_panel_saved_answer_verbatim_and_six_actions():
     sid = _start_electronics_session()
     answer = "لا أعرف كيف يعمل الحساس بعد."
     try:
-        app.test_client().post(f"/session/{sid}",
-                               data={"response": answer, "action": "answered"})
+        answered_post(app.test_client(), sid, {"response": answer, "action": "answered"})
         transcript = SESSION_STORE[sid]["transcript"]
         assert transcript and transcript[-1]["response"] == answer  # verbatim
         body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)

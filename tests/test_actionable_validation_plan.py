@@ -24,6 +24,7 @@ service; MUST NOT imply that D13 (Technical Capability Gap Detection and
 Actionable Research Guidance) is implemented or satisfied.
 """
 import os
+from test_p4_1b2a_durable_answer_append import answered_post  # P4-1b-2a
 import re
 import sys
 import uuid
@@ -151,7 +152,7 @@ def _run_ws1_journey():
             action, text = "unknown", UNKNOWN_TEXT
         else:
             action, text = "answered", BASE_ANSWER + DANGER_BY_ITERATION.get(i, "")
-        client.post(f"/session/{sid}", data={"response": text, "action": action})
+        answered_post(client, sid, {"response": text, "action": action})
     state = SESSION_STORE[sid]["state"]
     package = assemble_deliverable(state)
     html = client.get(f"/session/{sid}/deliverable").get_data(as_text=True)

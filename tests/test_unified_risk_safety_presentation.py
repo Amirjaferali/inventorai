@@ -44,6 +44,7 @@ Contract-pinned surface used here (and nothing beyond it):
   * the frozen Section 13 disclaimer and Section 6 row semantics
 """
 import json
+from test_p4_1b2a_durable_answer_append import answered_post  # P4-1b-2a
 import re
 
 import pytest
@@ -143,7 +144,7 @@ def ws1_journey():
             action, text = "unknown", UNKNOWN_TEXT
         else:
             action, text = "answered", BASE + DANGER_BY_ITERATION.get(i, "")
-        client.post(f"/session/{sid}", data={"response": text, "action": action})
+        answered_post(client, sid, {"response": text, "action": action})
     else:
         pytest.fail("fixture defect: WS1 journey did not complete")
     state = SESSION_STORE[sid]["state"]

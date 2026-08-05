@@ -1,4 +1,5 @@
 import os, sys
+from test_p4_1b2a_durable_answer_append import answered_post, seed_direct_session_envelope  # P4-1b-2a
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
 from web.app import (
@@ -441,11 +442,13 @@ def _make_stage2_boundary_state(idea_id):
 
 def test_stage3_rendered_browser_flow_form_persists_through_partial():
     sid = "test-stage3-rendered-flow-sid"
-    SESSION_STORE[sid] = {"state": _make_stage2_boundary_state(sid),
+    _stage3_state = _make_stage2_boundary_state(sid)
+    SESSION_STORE[sid] = {"state": _stage3_state,
                           "last_result": None, "transcript": [], "last_question": ""}
+    seed_direct_session_envelope(sid, _stage3_state)  # explicit P4-1b-2a durable envelope
     try:
         client = app.test_client()
-        client.post(f"/session/{sid}", data={"response": _WEB_REASONED})
+        answered_post(client, sid, {"response": _WEB_REASONED})
         state = SESSION_STORE[sid]["state"]
         assert state.current_stage == 3
         assert state.get_gap(PROBLEM_MECHANISM_FIT).status == "OPEN"
@@ -453,20 +456,20 @@ def test_stage3_rendered_browser_flow_form_persists_through_partial():
         assert _FORM_MARKER in body and _SUBMIT_MARKER in body
         assert _PMF_Q1 in body and _PMF_HEADING in body and _PMF_GUIDANCE in body
         assert _COMPLETION_MARKER not in body and _CLOSING_FRAGMENT not in body
-        client.post(f"/session/{sid}", data={"response": _WEB_REASONED})
+        answered_post(client, sid, {"response": _WEB_REASONED})
         assert state.get_gap(PROBLEM_MECHANISM_FIT).status == "PARTIAL"
         body = client.get(f"/session/{sid}").get_data(as_text=True)
         assert _FORM_MARKER in body and _SUBMIT_MARKER in body
         assert _PMF_HEADING in body and _PMF_GUIDANCE in body
         assert _COMPLETION_MARKER not in body
-        client.post(f"/session/{sid}", data={"response": _WEB_REASONED})
+        answered_post(client, sid, {"response": _WEB_REASONED})
         assert state.get_gap(PROBLEM_MECHANISM_FIT).status == "CLOSED"
         assert state.get_gap(ASSUMPTION_INVENTORY).status == "OPEN"
         body = client.get(f"/session/{sid}").get_data(as_text=True)
         assert _FORM_MARKER in body and _SUBMIT_MARKER in body
         assert _AI_Q1 in body and _AI_HEADING_RENDERED in body and _AI_GUIDANCE in body
         assert _COMPLETION_MARKER not in body
-        client.post(f"/session/{sid}", data={"response": _WEB_REASONED})
+        answered_post(client, sid, {"response": _WEB_REASONED})
         assert state.get_gap(ASSUMPTION_INVENTORY).status == "PARTIAL"
         body = client.get(f"/session/{sid}").get_data(as_text=True)
         assert _FORM_MARKER in body and _SUBMIT_MARKER in body
