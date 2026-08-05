@@ -41,15 +41,25 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status:** CONTRACT-OF-RECORD = **P4-1b-2a — Durable Answered-Event Append and Web-Layer Idempotency**, now
-**IMPLEMENTED, MERGED, POST-MERGE VERIFIED, OWNER ACCEPTED, AND CLOSED** (owner verdict
-**B — ACCEPT WITH NON-BLOCKING OBSERVATIONS**). Merged via **PR #365** (merge commit
-`77bd10cc55a731b18d4e35ea262b55342a9f847f`, parents `4a31ece` + `0b5f757`, tree `c8808be`; candidate ancestry PASS).
-**Option A is IMPLEMENTED:** the deterministic engine `record_id` remains **`rec_N` (preserved)** and a **separate
-durable idempotency identity** was implemented (never an `evt-*` `record_id`; no deterministic-output engine changed).
-The B3 owner decision (Option A) is **RESOLVED** and the amendment is **merged** — **no contract amendment, owner
-decision, review, or merge remains outstanding for P4-1b-2a; it is not a pending candidate.** **There is NO active
-open implementation contract; P4-1b-2b, P4-2, Phase 5, and every FPC remain NOT AUTHORIZED / NOT STARTED.**
+**Status:** CONTRACT-OF-RECORD = **P4-1b-2b — Read-Only Accepted-Answer Evidence Reconstruction (OPTION A)**, now
+**IMPLEMENTED, MERGED, POST-MERGE VERIFIED, OWNER ACCEPTED, AND FORMALLY CLOSED** (owner verdict
+**B — ACCEPT WITH BINDING CONTRACT REFINEMENTS**, refinements satisfied). Merged via **PR #367** (merge commit
+`1c9dff7962a428cfd32ab577dbbbb84ce21909b3`, two-parent merge of `7d8895122235a4da25a7f4d9d0d4d5e4bab20c6b` (base) +
+`945f4a36a6a6eef5bcab1ea55e30ce1dfa468820` (reviewed candidate), tree `bff45ada35e8d3bb606bcf4e6bd80e3df33d449d`,
+equal to the candidate tree; candidate ancestry PASS). **Delivered (Option A):** a bounded, **read-only**
+`SqliteRecordStore.load_accepted_answer_evidence(sid)` returning an **immutable `tuple`** of the `answered`-disposition
+`AssertionRecord`s in persisted (`seq`) order via the project-scoped `load_contract`; `record_id` preserved as `rec_N`;
+unknown `sid` → `()`; corruption → canonical `ContractError` (fail closed); no mutation, no runtime/UI/route, no session
+resume, and **not** full deterministic replay (P4-2). Merged scope **2 files / +367 / −0** (`engine/record_store.py`,
+`tests/test_p4_1b2b_accepted_answer_evidence.py`); disallowed paths **NONE**. **P4-1b-2b is no longer a candidate,
+pending review, pending publication, not-authorized, or not-started.** The **immediately prior** contract-of-record
+**P4-1b-2a — Durable Answered-Event Append and Web-Layer Idempotency** remains **IMPLEMENTED / MERGED / VERIFIED /
+ACCEPTED / CLOSED** (owner verdict **B**; PR #365, merge `77bd10cc55a731b18d4e35ea262b55342a9f847f`, tree `c8808be`;
+`record_id` = `rec_N`; separate durable idempotency identity; no deterministic-output engine changed). **There is NO
+active open implementation contract; P4-2, Phase 5, and every FPC remain NOT AUTHORIZED / NOT STARTED.** (Documentation
+note: the historical "P4-1b-2a … REV1" and "Contract Amendment" sections retained below, and any statement in them that
+"P4-1b-2b … remain NOT AUTHORIZED / NOT STARTED", were accurate as of the PR #365 boundary and are **superseded** by
+this status for current truth.)
 
 **Review lineage (HISTORICAL — for the record).** DOC-01 candidate `0e2a5cec24d71462eadbffa193e3467d40d506a0` carried
 verdict `C — REVISE AND RE-REVIEW` (preserved, unmerged); a separately-claimed

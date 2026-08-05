@@ -16,9 +16,13 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
   (`git rev-parse origin/feature/atomic-json-session-persistence`). Do **not** trust a
   prose-pinned SHA.
   - **Current authoritative branch tip (last independently verified):**
-    `77bd10cc55a731b18d4e35ea262b55342a9f847f` (Merge PR #365 — P4-1b-2a durable idempotent accepted-answer
-    persistence implementation, post-merge verified, owner accepted, and CLOSED) — always re-resolve the live tip from
-    Git per the rule above.
+    `1c9dff7962a428cfd32ab577dbbbb84ce21909b3` (Merge PR #367 — P4-1b-2b read-only accepted-answer evidence
+    reconstruction implementation, post-merge verified, owner accepted, and CLOSED; two-parent merge of
+    `7d88951` (base) + `945f4a3` (candidate), tree `bff45ada`) — always re-resolve the live tip from Git per the rule
+    above.
+  - **Prior recorded tip (historical):** `77bd10cc55a731b18d4e35ea262b55342a9f847f` (Merge PR #365 — P4-1b-2a durable
+    idempotent accepted-answer persistence implementation, post-merge verified, owner accepted, and CLOSED); superseded
+    as the live tip by PR #367 (P4-1b-2b).
   - **Prior recorded tip (historical):** `dfa082af0e6f9c09222608ca47d088dc7e2df6a8` (Merge PR #356 — P4-1a durable-store
     proof implementation, post-merge verified and formally closed); superseded by the P4-1b-1 and P4-1b-2a gates
     (PRs #358–#365).
@@ -309,7 +313,13 @@ gated.*
   separate explicit implementation authorization). **P4-1b-2b, P4-2, Phase 5:** NOT AUTHORIZED / NOT STARTED. Decision
   **D17** and the AISR seven-owner model are preserved.
 
-## Post-PR #365 boundary — P4-1b-2a IMPLEMENTED, MERGED, VERIFIED, ACCEPTED, CLOSED (current truth)
+## HISTORICAL SNAPSHOT — POST-PR #365 boundary — P4-1b-2a IMPLEMENTED, MERGED, VERIFIED, ACCEPTED, CLOSED (SUPERSEDED by the Post-PR #367 boundary below)
+
+*Superseded historical snapshot — accurate as of the PR #365 boundary only; do not read as present authority. Its
+"Current active implementation contract: NONE / P4-1b-2b … NOT AUTHORIZED / NOT STARTED" wording and its
+"governance-sync record status" were current at PR #365. **Current truth is the "Post-PR #367 boundary" section below:
+P4-1b-2b is IMPLEMENTED / MERGED / POST-MERGE VERIFIED / OWNER ACCEPTED / FORMALLY CLOSED (PR #367, live tip
+`1c9dff7`); P4-2, Phase 5, and every FPC remain NOT AUTHORIZED / NOT STARTED.***
 
 - **Live tip:** `77bd10cc55a731b18d4e35ea262b55342a9f847f` (Merge PR #365; two-parent merge of `4a31ece` + `0b5f757`,
   tree `c8808be`; always re-resolve from Git).
@@ -339,6 +349,49 @@ gated.*
   accepted the verdict; not published) → REV3 `c2bb542` (independent review **C**; owner accepted the verdict; not
   published) → **REV4** (this documentation-only candidate; **pending independent review only**). See the roadmap
   "governance-synchronization review lineage" and `OWNER_DECISION_REGISTER.md` (`D-P4-1B-2A-GSYNC-01…05`).
+
+## Post-PR #367 boundary — P4-1b-2b IMPLEMENTED, MERGED, VERIFIED, ACCEPTED, CLOSED (current truth)
+
+- **Live tip:** `1c9dff7962a428cfd32ab577dbbbb84ce21909b3` (Merge PR #367; two-parent merge of `7d88951` (base) +
+  `945f4a3` (candidate), tree `bff45ada`; always re-resolve from Git).
+- **P4-1b-2b — Read-Only Accepted-Answer Evidence Reconstruction (OPTION A):** **IMPLEMENTED, MERGED, POST-MERGE
+  VERIFIED, OWNER ACCEPTED, AND FORMALLY CLOSED** (owner verdict **B — ACCEPT WITH BINDING CONTRACT REFINEMENTS**,
+  refinements satisfied). It is **no longer** a candidate, pending review, pending publication, not-authorized, or
+  not-started. Authorization chain (distinct steps): discovery gate **G-P4-1B-2B-DISCOVERY-CONTRACT-01** (Option A
+  recommended) → separate implementation authorization **G-P4-1B-2B-IMPLEMENTATION-01** (Option A selected; binding API
+  contract; two permitted paths; required RED set; RED→GREEN) → implementation (candidate `945f4a3`, base `7d88951`,
+  tree `bff45ada`) → independent review verdict **B** → merge **PR #367** (`1c9dff7`) → post-merge verification
+  (ancestry PASS; scope **2 files / +367 / −0**; disallowed paths **NONE**) → owner acceptance and closure.
+- **Delivered behaviour (OPTION A):** a bounded, **read-only** `SqliteRecordStore.load_accepted_answer_evidence(sid)`
+  returning an **immutable `tuple`** of the `answered`-disposition `AssertionRecord`s in the authoritative persisted
+  order (store `seq`, via the existing project-scoped `load_contract`); `record_id` preserved as `rec_N` (non-contiguous
+  values expected/valid); unknown/absent `sid` → `()` (same as an empty project; no existence leak); malformed /
+  unsupported-version / invalid-reference / cyclic content → canonical `ContractError` propagates (fail closed, no
+  partial evidence); legacy NULL-`idempotency_key` rows load unchanged. No write/append/repair/rehydration/progression;
+  no runtime/UI/route; no change to `record_id`/`rec_N`, the deterministic-output engines, or the P4-1b-2a idempotency
+  identity.
+- **Does NOT provide (explicit boundary):** no resumable session or "resume exactly where you left off"; no
+  reconstructed next question, gaps, maturity, domain/path, transcript, `last_result`, or progression; no full
+  deterministic replay or durable output (that is **P4-2**); no accounts/ownership/authorization (that is **Phase 5**);
+  no mutation and no UI/runtime surface change.
+- **Evidence:** permitted paths exactly `engine/record_store.py` (+38) and
+  `tests/test_p4_1b2b_accepted_answer_evidence.py` (+329); source branch `feat/p4-1b2b-accepted-answer-evidence` and the
+  SHA-preserving bundle `p4_1b2b_impl_945f4a3.bundle` (SHA-256
+  `b04f07688804d27f0cafd7c1e7cc7136da705c3e14efc275e2587ecfef4d365f`) **PRESERVED**. Tests: focused **15 passed**;
+  P4-1b-2a regression **60 passed**; protected **227 passed**; full governed suite **1741 passed, 1 skipped, 1 xfailed**.
+- **Accepted non-blocking observations (preserved, not fixed):** (1) governance-tree authorization lag — the P4-1b-2b
+  gates were reviewed/merged/verified before the committed governance tree recorded them; this synchronization closes the
+  lag; (2) protected-regression set composition (226 vs 227) — bookkeeping only; both green; (3) `seq` ordering confirmed
+  by manual experiment and by reuse of the proven `load_contract` `ORDER BY seq ASC` read (no isolated in-suite
+  ordering-only assertion); (4) plain-`tuple` return and a single `SESSION_STORE`-unchanged no-mutation assertion —
+  stylistic/polish only. Honest value note: the net-new capability is modest (it exposes, read-only, evidence P4-1b-2a
+  already persists); correct and within scope.
+- **Current active implementation contract:** NONE. **P4-2, Phase 5–7, WS17, STG, ACV, PDF, Email, and every FPC
+  (FPC-01…FPC-04) remain NOT AUTHORIZED / NOT STARTED.** Decision **D17** and the AISR seven-owner model are preserved.
+- **Product-truth boundary (unchanged):** durable **accepted-answer evidence** append (P4-1b-2a) plus its read-only
+  reconstruction (P4-1b-2b) exist; full session state / progression / deliverable / outputs are **not** durably restored,
+  and "resume exactly where you left off" is not implemented (that is P4-2 / Phase 5). The live working session state
+  otherwise remains in-memory (`SESSION_STORE`).
 
 ## Future product capabilities pointer (G-FPC-MAP-01)
 
@@ -386,6 +439,11 @@ labelled HISTORICAL / SUPERSEDED) is preserved.
   ledger, with a **separate durable idempotency identity** and **persist-before-acknowledge** append for accepted
   answers. The live working session state otherwise remains **in-memory (`SESSION_STORE`)** — `SESSION_STORE` itself is
   **not** durable; only the accepted-answer evidence is persisted.
+- **Read-only accepted-answer evidence reconstruction (P4-1b-2b, PR #367):** a bounded, read-only
+  `SqliteRecordStore.load_accepted_answer_evidence(sid)` returning an immutable `tuple` of the `answered`-disposition
+  `AssertionRecord`s in persisted (`seq`) order, reusing the project-scoped `load_contract` read. It is **evidence
+  reconstruction only** — no mutation, no runtime/UI/route, no session resume, and **not** full deterministic replay
+  (that is P4-2).
 - **Bounded UX accessibility & disclosure baseline (post-Phase-3 gates #342–#345):** a shared application
   shell (viewport, `<main>` landmark, skip-to-content link, persistent "Temporary session" header disclosure);
   a static informational Data & Session trust surface at `GET /data-and-session` with a header "Learn more"
@@ -397,10 +455,11 @@ labelled HISTORICAL / SUPERSEDED) is preserved.
 ## Not implemented / not authorized
 
 - **Full durable session persistence** — full live session resume, complete runtime-session reconstruction,
-  progression restoration/replay, and durable ownership-linked session continuation (separately gated:
-  **P4-1b-2b / P4-2 / Phase 5**). *(Note: durable accepted-answer evidence append IS implemented under P4-1b-2a — see
-  "Implemented capabilities" above; this line is about full-session durability, which is NOT implemented.)* Accounts;
-  authentication; authorization; billing/subscription.
+  progression restoration/replay, and durable ownership-linked session continuation (separately gated: **P4-2 / Phase
+  5**). *(Note: durable accepted-answer evidence append IS implemented under P4-1b-2a, and its read-only evidence
+  reconstruction IS implemented under P4-1b-2b — see "Implemented capabilities" above; this line is about full-session
+  durability / resume / replay, which is NOT implemented. P4-1b-2b provides read-only accepted-answer evidence only, not
+  session resume.)* Accounts; authentication; authorization; billing/subscription.
 - ACV (Approximate Concept Visualization); Direct Output Download (PDF); Email Delivery.
 - Sponsors/themes; administrative notice; privacy-control implementation; full Arabic/RTL;
   accessibility; multi-domain runtime; Path T / FORM T (BLOCKED).
@@ -412,9 +471,10 @@ End-to-end runtime invocation not certified; `main` stale/unreconciled; `/tmp` t
 handling (Phase 4 remediation); `iot_electronics` latent/legacy (not loaded; future
 separately authorized domain-activation workstream); **durable persistence is bounded: durable
 accepted-answer evidence append IS implemented and merged (P4-1b-2a, PR #365) — durable project
-envelope + accepted-answer ledger; but full session state / progression / deliverable / outputs
+envelope + accepted-answer ledger — and its read-only evidence reconstruction IS implemented and
+merged (P4-1b-2b, PR #367); but full session state / progression / deliverable / outputs
 are NOT durably restored and "resume exactly where you left off" is not implemented (that is
-P4-1b-2b / P4-2, separately gated); the live working session state otherwise remains in-memory**;
+P4-2 / Phase 5, separately gated); the live working session state otherwise remains in-memory**;
 narrow Arabic/RTL. Full register: OD-T and the
 canonical plan. (The former `tests/test_domain_registry.py` ~31 failing baseline is RESOLVED
 — DISC-007 CLOSED via the current bounded remediation program; suite `0 failed`, XPASS `0`;

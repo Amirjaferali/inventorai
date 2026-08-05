@@ -3765,3 +3765,96 @@ candidate has been published, merged, or accepted. **P4-1b-2a remains IMPLEMENTE
 ACCEPTED / CLOSED** (PR #365, `77bd10c`). **P4-1b-2b, P4-2, Phase 5, and FPC-01…FPC-04 remain NOT AUTHORIZED / NOT
 STARTED.** Append-only; prior history not rewritten. This entry authorizes no push, no PR, no merge, no implementation,
 and no phase activation.
+
+---
+
+## P4-1b-2b — Read-Only Accepted-Answer Evidence Reconstruction: authorization, implementation, independent review, merge, verification, acceptance, and closure (G-P4-1B-2B-GOVERNANCE-SYNC-01, documentation-only, append-only)
+
+This append-only entry records the completed lifecycle of **P4-1b-2b — Read-Only Accepted-Answer Evidence
+Reconstruction (OPTION A)**, now **IMPLEMENTED, MERGED, POST-MERGE VERIFIED, OWNER ACCEPTED, AND FORMALLY CLOSED**
+(owner verdict **B — ACCEPT WITH BINDING CONTRACT REFINEMENTS**, all refinements satisfied). It is documentation-only:
+it records completed history, rewrites no prior history, and authorizes no push, no PR, no merge, no implementation, and
+no phase activation. Current authoritative live tip (resolved from Git):
+`1c9dff7962a428cfd32ab577dbbbb84ce21909b3` (Merge PR #367).
+
+**Governance-tree authorization lag (recorded honestly).** The P4-1b-2b discovery, implementation authorization, review,
+merge (PR #367), and post-merge verification all occurred and are captured in the owner-authorization evidence chain,
+but the committed governance tree at tip `1c9dff7` did **not** yet record them (the immediately preceding committed
+roadmap/register/current-state surfaces still named P4-1b-2b as "NOT AUTHORIZED / NOT STARTED", accurate only as of the
+PR #365 boundary). This synchronization closes that lag. It records completed events; it grants nothing.
+
+**Authorization chain (distinct, separately gated steps).**
+1. **G-P4-1B-2B-DISCOVERY-CONTRACT-01** — read-only discovery and contract-definition preparation for P4-1b-2b. The
+   discovery package recommended **Option A** (a bounded, read-only reconstruction of durably persisted accepted-answer
+   evidence, reusing the existing project-scoped `load_contract` read; no mutation, no session resume, no replay).
+   Discovery authorized nothing further.
+2. **G-P4-1B-2B-IMPLEMENTATION-01** — separate explicit owner implementation authorization selecting **Option A**, with
+   a binding API contract, exactly two permitted paths, a required RED test set, and a RED→GREEN execution order.
+   (The discovery gate did not by itself grant implementation authority.)
+3. Implementation on branch `feat/p4-1b2b-accepted-answer-evidence` (parent/base
+   `7d8895122235a4da25a7f4d9d0d4d5e4bab20c6b`), candidate `945f4a36a6a6eef5bcab1ea55e30ce1dfa468820`
+   (tree `bff45ada35e8d3bb606bcf4e6bd80e3df33d449d`; subject
+   `feat(p4-1b2b): read-only accepted-answer evidence reconstruction (Option A)`).
+4. Independent review → verdict **B — ACCEPT WITH BINDING CONTRACT REFINEMENTS** (refinements satisfied; 0 unresolved
+   blocking findings).
+5. Publication → PR-creation → merge via **PR #367** — true two-parent merge `1c9dff7962a428cfd32ab577dbbbb84ce21909b3`
+   (ordered parents `7d8895122235a4da25a7f4d9d0d4d5e4bab20c6b` (base) + `945f4a36a6a6eef5bcab1ea55e30ce1dfa468820`
+   (reviewed candidate head); merge tree `bff45ada35e8d3bb606bcf4e6bd80e3df33d449d`, equal to the candidate tree —
+   the merge introduced exactly the reviewed candidate changes).
+6. Post-merge verification → candidate-ancestry check **PASS** (`945f4a3` is an ancestor of `1c9dff7`); merged scope
+   exactly **2 files / +367 / −0** (`engine/record_store.py` +38; `tests/test_p4_1b2b_accepted_answer_evidence.py`
+   +329); **no disallowed path changed**.
+7. Owner acceptance and **formal closure** (verdict **B**).
+
+**Delivered behaviour (OPTION A — exact API contract).** A bounded, **read-only**
+`SqliteRecordStore.load_accepted_answer_evidence(project_id: str) -> tuple` (`project_id == sid`) that reconstructs the
+durably persisted accepted-answer evidence for one project/session: it returns an **immutable `tuple`** of the existing
+`AssertionRecord` values whose disposition is `answered`, exactly as persisted — `record_id` preserved as `rec_N`
+(non-contiguous values are expected and valid, since only accepted-answer interactions are durably appended) — in the
+authoritative persisted order (store `seq`, via the existing project-scoped `load_contract`). It performs **no** write,
+append, repair, rehydration, or state progression, adds no runtime/UI/route, and enables no session resume.
+
+**Capability boundary — what P4-1b-2b provides and, explicitly, does NOT provide.**
+- **Provides:** a read-only reconstruction of the durably persisted **accepted-answer EVIDENCE** (the `answered`-
+  disposition `AssertionRecord`s in `seq` order); deterministic, fail-closed, non-disclosing failure behaviour —
+  unknown/absent `sid` → the empty tuple `()` (the same result an existing empty project returns; no existence leak, no
+  enumeration, no mutation); malformed / unsupported-version / invalid-reference / cyclic durable content → the canonical
+  `ContractError` propagates from `load_contract` (fail closed; NO partial evidence; corruption is never silently
+  converted into a valid empty history); legacy NULL-`idempotency_key` rows load unchanged.
+- **Does NOT provide:** a resumable session or "resume exactly where you left off"; a reconstructed next question, gaps,
+  maturity, domain/path, transcript, `last_result`, or progression; full deterministic replay or durable output (that is
+  **P4-2**); any mutation, append, repair, or state advance; any accounts/ownership/authorization (that is **Phase 5**);
+  any UI, route, or runtime surface change; any change to `record_id`/`rec_N`, to the deterministic-output engines, or to
+  the P4-1b-2a durable idempotency identity.
+
+**Evidence.** Merged scope **2 files / +367 / −0**; disallowed paths **NONE**; permitted paths exactly
+`engine/record_store.py` and `tests/test_p4_1b2b_accepted_answer_evidence.py`. Source branch
+`feat/p4-1b2b-accepted-answer-evidence` and the SHA-preserving implementation bundle
+`p4_1b2b_impl_945f4a3.bundle` (SHA-256 `b04f07688804d27f0cafd7c1e7cc7136da705c3e14efc275e2587ecfef4d365f`) are
+**PRESERVED**. Tests: focused P4-1b-2b **15 passed**; P4-1b-2a append/idempotency regression **60 passed**; protected
+regression **227 passed**; full governed suite **1741 passed, 1 skipped, 1 xfailed**.
+
+**Accepted non-blocking observations (preserved, not fixed here).**
+1. **Governance-tree authorization lag** — the P4-1b-2b gates were reviewed, merged, and verified before the committed
+   governance tree recorded them; this synchronization records the completed lifecycle and closes the lag. Not a defect;
+   no history rewritten.
+2. **Protected-regression set composition (226 vs 227)** — the protected regression battery differs by one from a
+   neighbouring gate's count purely by set composition (which modules are enumerated as "protected"); both selections
+   pass green. Bookkeeping only.
+3. **Seq ordering confirmed by manual experiment** — the `seq`-ordered return is confirmed by a manual experiment and by
+   reuse of the already-proven `load_contract` `ORDER BY seq ASC` read, rather than by an in-suite ordering-only
+   assertion isolating that property alone. Coverage observation only; behaviour is correct.
+4. **Plain-tuple / single-SESSION_STORE-assertion polish** — the return is an immutable plain `tuple` and the
+   no-mutation proof includes a single `SESSION_STORE`-unchanged assertion; these are stylistic/polish observations only,
+   not correctness gaps.
+
+Honest value note (preserved): P4-1b-2b's net-new capability is modest — it exposes, read-only, evidence that P4-1b-2a
+already persists — and there is no reachable memory-publication-failure recovery path without artificial injection. The
+increment is nonetheless correct, bounded, and within its authorized scope.
+
+**Status.** **P4-1b-2b: IMPLEMENTED, MERGED, POST-MERGE VERIFIED, OWNER ACCEPTED, AND FORMALLY CLOSED** (owner verdict
+**B**). It is no longer a candidate, pending review, pending publication, not-authorized, or not-started.
+**P4-2, Phase 5–7, WS17, STG, ACV, PDF, Email, and FPC-01…FPC-04 remain NOT AUTHORIZED / NOT STARTED.** There is no
+active open implementation contract. Decision **D17** and the AISR seven-owner model are preserved. Append-only; prior
+history not rewritten. This synchronization authorizes no push, no PR, no merge, no implementation, and no phase
+activation.
