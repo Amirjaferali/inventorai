@@ -290,6 +290,15 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
   amendment/owner decision. **P4-1b-2b, P4-2, Phase 5:** NOT AUTHORIZED / NOT STARTED. Decision **D17** and the AISR
   seven-owner model are preserved.
 
+## Future product capabilities pointer (G-FPC-MAP-01)
+
+Preserved future-product capability classifications and missing-elements-only mapping for **FPC-01 … FPC-04** are
+recorded in the **Active Execution Roadmap** (Future Product Capability Integration Map) and the **Owner Decision
+Register** (D-FPC-MAP-01 … -10) under **G-FPC-MAP-01**. **FPC-01 through FPC-04 remain: PRESERVED — NOT AUTHORIZED FOR
+IMPLEMENTATION.** `ACTIVE_INCREMENT_CONTRACT.md` remains **unchanged**; the active technical blocker remains **P4-1b-2a /
+B3** (CONTRACT AMENDMENT / OWNER DECISION REQUIRED); **no FPC gate has been activated.** (This is a pointer only — see the
+roadmap/register for the full map.)
+
 ## Phase 4 entry direction (Durable Data and Evidence Foundation)
 
 - **G-P4-ENTRY-DEFINITION:** COMPLETED AND ACCEPTED (owner verdict **B**). **G-P4-DOC-01:** documentation-only gate

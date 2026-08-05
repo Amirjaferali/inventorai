@@ -355,3 +355,28 @@ merged, and post-merge verified plus a separate explicit implementation authoriz
 NOT AUTHORIZED / NOT STARTED.** The original `0e2a5ce` candidate (verdict C) and the superseded `1eced7d` remain
 preserved; all P4-1b-1 and post-closure observations are preserved, not fixed. Decision **D17** and the AISR
 seven-owner model are preserved.
+
+## Future Product Capability classifications (G-FPC-MAP-01) — documentation-only, NON-AUTHORIZING
+
+**Decision status:** ACCEPTED / RECORDED — NO IMPLEMENTATION AUTHORITY. Records the owner-accepted classifications and
+boundaries for FPC-01…FPC-04 following the read-only assessment G-FPC-OVERLAP-01. Non-activating; consumes/cross-
+references existing canonical models (Capability Enrichment Register, workstream/phase records); creates no parallel
+model, no standalone document, and no `ACTIVE_INCREMENT_CONTRACT.md` change. Full map in `ACTIVE_EXECUTION_ROADMAP.md`
+(Future Product Capability Integration Map). Recorded on live tip `7d489614b5535244f1116304db1c46c8639e836f`.
+
+| ID | Subject | Decision | Impl. authority | Evidence / boundary |
+|---|---|---|---|---|
+| D-FPC-MAP-01 | FPC-01 Idea Validation Roadmap classification | ACCEPTED — **PARTIALLY CANONICAL / PARTIALLY DOCUMENTED** | NONE | missing = unified evidence-closure **roadmap UX + action-status only** (UX orchestration); consumes WS7 plan, CAP-04/09/11, WS12, merged evidence/provenance, P4-2 re-eval; **no** new gap/evidence/provenance/action-pack/validation-engine model |
+| D-FPC-MAP-02 | FPC-02 Revision Difference & Stale-Output | ACCEPTED — **CANONICAL PRODUCT REQUIREMENT, already owned by P4-2 + D17 + Phase-3C; NOT a new capability; implementation contract & execution NOT YET AUTHORIZED / NOT complete** | NONE | missing = a **P4-2 implementation contract** (durable revision/output relationships, stale-output invalidation, updated output, full replay) + the accepted in-session **"What changed?"** UX increment; targeted re-eval prohibited pending a dependency model |
+| D-FPC-MAP-03 | FPC-03 Decision & Assumption Ledger | ACCEPTED — **PARTIALLY CANONICAL**; no-rebuild boundary | NONE | missing = unified **Decision-and-Assumption UX** + complete **Decision Ledger** (owner, date, alternatives, rationale, evidence, affected gaps/outputs, retirement/supersession, source class); consumes CAP-05/07/08/10 + merged provenance/contradiction/supersession; **no** rebuild of provenance/assumption/contradiction/supersession/evidence-classification; identity/ownership/audit = **Phase 5** |
+| D-FPC-MAP-04 | FPC-04 Specialist Handoff — **04A Assembly / 04B Delivery separation** | ACCEPTED — **PARTIALLY DOCUMENTED (assembly on existing foundations)** | NONE | **04A** missing = internal in-app **preview** + **durable handoff-package record** assembling current non-stale snapshot/evidence/gaps/contradictions/specialist-category/bounded questions. **04B (owned elsewhere, not bundled):** sharing/access/recipient/permissions/revocation = **Phase 5**; **PDF** = OD-U/Phase-4; **Email** = OD-U/Phase-5; specialist content = **STG/D13**; response ingestion = **AISR/STG**; stale-output awareness = **P4-2**. No new sharing/PDF/Email subsystem or duplicate specialist-category/STG workflow |
+| D-FPC-MAP-05 | Governing phase/workstream assignments | ACCEPTED | NONE | as recorded in the roadmap map (P4-2; Phase 5; STG/D13; OD-U PDF/Email; Phase-3 UX lineage; Phase-4/P4 durable foundations) |
+| D-FPC-MAP-06 | No-parallel-model duplication ruling | ACCEPTED | NONE | for every overlap (Phase 4/P4-0/P4-1a foundations, P4-2, CAP-04/05/07/08/09/10/11, WS12, D17, Phase-3C revision UX, D13 specialist-category, CAP-01/STG, OD-U PDF/Email, Phase-5): **DO NOT CREATE A NEW PARALLEL MODEL — EXTEND OR CONSUME THE EXISTING CANONICAL MODEL** |
+| D-FPC-MAP-07 | Canonicalization Method D | ACCEPTED | NONE | roadmap integration map + owner-register rows + one current-state pointer; **no standalone document; no active-contract change; Capability Enrichment Register unchanged (cross-reference only)** |
+| D-FPC-MAP-08 | Reminder policy | ACCEPTED | NONE | governance is source of truth; handovers carry a concise "Preserved Future Product Capabilities" section that **references** the map/register (no full re-listing); reminders only when contextually relevant; no long FPC reminder on every response; no reminder overrides merged governance; existing ACV/PDF/Email/sponsor-theme/Domain-Registry governance referenced, not re-listed |
+| D-FPC-MAP-09 | FPC implementation authorization | NONE — **NOT AUTHORIZED / NOT STARTED** | NONE | FPC-01, FPC-02, FPC-03, FPC-04A, FPC-04B and every referenced future gate remain unauthorized; future-gate references are eligibility only |
+| D-FPC-MAP-10 | Non-disturbance of active blocker | RECORDED | NONE | G-FPC-MAP-01 does **not** disturb P4-1b-2a / B3 (CONTRACT AMENDMENT / OWNER DECISION REQUIRED remains the active technical blocker; Option A/B/C unselected); P4-1b-2b/P4-2/Phase 5 remain NOT AUTHORIZED / NOT STARTED |
+
+**Boundary.** No FPC is authorized, active, started, or implemented; no specialist approval, AI authority, PDF/Email
+delivery availability, saved-project, or full-resume capability is implied. Decision **D17** and the AISR seven-owner
+model are preserved; all prior governance history and observations are preserved.
