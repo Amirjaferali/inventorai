@@ -278,26 +278,37 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
   concurrency backstop; canonical `evt-`+truncated-SHA-256(`sid`‖token) hashed project-bound id; durable-success/
   memory-failure invalidation; O(n) pre-append scan; mixed-id regressions). See `ACTIVE_INCREMENT_CONTRACT.md` +
   `OWNER_DECISION_REGISTER.md`.
-- **B3 determination (binding):** a token-derived `evt-*` answered-record id **materially changes deterministic output**
-  in `engine/idea_development_outputs.py::_record_sort_key` and `engine/requirement_landscape.py` (derived requirement
-  ids, ordering, rationale). **CONTRACT AMENDMENT / OWNER DECISION REQUIRED** before P4-1b-2a implementation; the earlier
-  "feasibility PASS / no amendment" is **superseded**. The change must not be silently normalized.
+- **B3 determination (binding) — RESOLVED, OPTION A SELECTED (G-P4-1B-2A-B3-CONTRACT-AMENDMENT-01):** a token-derived
+  `evt-*` answered-record id **materially changes deterministic output** in
+  `engine/idea_development_outputs.py::_record_sort_key` and `engine/requirement_landscape.py` (derived requirement ids,
+  ordering, rationale); the earlier "feasibility PASS / no amendment" is **superseded** and the change must not be
+  silently normalized. The owner has now **SELECTED OPTION A:** the engine **`record_id` stays `rec_N` (unchanged)** and
+  a **SEPARATE durable idempotency identity** (server-issued-token-derived) is introduced; the `evt-*` scheme is **NOT**
+  adopted as `record_id`, so the derived-output engines are **unchanged**. Option B (order-equivalent embedded event id)
+  and Option C (idempotency key derived from `rec_N`) are **REJECTED**. Correction: stable idempotency is **NOT a
+  web-layer-only change** — Option A **requires a bounded, additive `engine/record_store.py` storage amendment** (a
+  separate future implementation authorization). See `ACTIVE_INCREMENT_CONTRACT.md` (amendment `A0…A14`) +
+  `OWNER_DECISION_REGISTER.md` (`D-P4-1B-2A-B3-01…06`).
 - **Product-truth boundary (unchanged):** P4-1b-2a would make **accepted-answer evidence** durable + readiness
   re-derivable only; it does **not** durably restore progression, the deliverable, outputs, Keep/Refine, or enable full
   session resume (progression = P4-2 replay). No claim of a saved project, fully saved idea, durable outputs, or
   account-owned records.
-- **Current active implementation contract:** NONE. **P4-1b-2a implementation** is BLOCKED at least until the B3
-  amendment/owner decision. **P4-1b-2b, P4-2, Phase 5:** NOT AUTHORIZED / NOT STARTED. Decision **D17** and the AISR
-  seven-owner model are preserved.
+- **Current active implementation contract:** NONE. The B3 owner decision is now **RESOLVED (Option A)** via the
+  documentation-only amendment `G-P4-1B-2A-B3-CONTRACT-AMENDMENT-01`; **P4-1b-2a implementation remains NOT AUTHORIZED /
+  NOT STARTED** (the amendment grants no implementation authority and still requires independent review + merge + a
+  separate explicit implementation authorization). **P4-1b-2b, P4-2, Phase 5:** NOT AUTHORIZED / NOT STARTED. Decision
+  **D17** and the AISR seven-owner model are preserved.
 
 ## Future product capabilities pointer (G-FPC-MAP-01)
 
 Preserved future-product capability classifications and missing-elements-only mapping for **FPC-01 … FPC-04** are
 recorded in the **Active Execution Roadmap** (Future Product Capability Integration Map) and the **Owner Decision
 Register** (D-FPC-MAP-01 … -10) under **G-FPC-MAP-01**. **FPC-01 through FPC-04 remain: PRESERVED — NOT AUTHORIZED FOR
-IMPLEMENTATION.** `ACTIVE_INCREMENT_CONTRACT.md` remains **unchanged**; the active technical blocker remains **P4-1b-2a /
-B3** (CONTRACT AMENDMENT / OWNER DECISION REQUIRED); **no FPC gate has been activated.** (This is a pointer only — see the
-roadmap/register for the full map.)
+IMPLEMENTATION.** `ACTIVE_INCREMENT_CONTRACT.md` was **unchanged by G-FPC-MAP-01**; **no FPC gate has been activated.** (This is a pointer
+only — see the roadmap/register for the full map.) **[Update — G-P4-1B-2A-B3-CONTRACT-AMENDMENT-01:]** the B3 blocker
+that was `CONTRACT AMENDMENT / OWNER DECISION REQUIRED` is now **RESOLVED (Option A)** by the documentation-only contract
+amendment; **P4-1b-2a implementation remains NOT AUTHORIZED / NOT STARTED**, and **FPC-01…FPC-04 remain PRESERVED — NOT
+AUTHORIZED FOR IMPLEMENTATION** (unchanged).
 
 ## Phase 4 entry direction (Durable Data and Evidence Foundation)
 

@@ -229,6 +229,14 @@ order-equivalent to `rec_N` and embed acceptably in `idea_development_outputs.py
 **(c)** adopt an idempotency design that keeps `rec_N` as the identifier consumed by the derived-output engines. **The
 semantic change must NOT be silently normalized or accepted.** *(This corrects the original candidate's erroneous
 "STABLE RECORD-ID FEASIBILITY: PASS — no amendment".)*
+>
+> **[SUPERSEDED / RESOLVED — see “P4-1b-2a Contract Amendment — G-P4-1B-2A-B3-CONTRACT-AMENDMENT-01” below.]** The
+> owner has formally **SELECTED OPTION A**: the deterministic engine `record_id` **stays `rec_N` (unchanged)**, and a
+> **SEPARATE durable idempotency identity** (distinct from `record_id`) is introduced. The `evt-*` scheme is therefore
+> **NOT adopted as `record_id`**, and the derived-output engines (`engine/idea_development_outputs.py`,
+> `engine/requirement_landscape.py`) are **NOT changed**. Options **(b)** and **(c)** above are recorded **REJECTED**
+> (reasons in the amendment). This resolution introduces a **bounded `engine/record_store.py` storage amendment**, so
+> stable idempotency is **NOT a web-layer-only change**.
 
 **Clarification C1 — Web-layer staging (D-P4-1B-2-REV1-C1).** On an answered submission the implementation MUST: clone
 the live `IdeaState`; run evaluation and create the `AssertionRecord` on the **staged copy**; set the canonical event
@@ -255,6 +263,11 @@ in URLs, logs, or user-facing errors. **One precise digest model is chosen: the 
 `evt-` + hex SHA-256 of (`sid` ‖ separator ‖ raw token), truncated to a bounded length** — i.e. the raw token is
 **hashed, not stored raw**, and **`sid` is included in the canonical derivation** so the event id is project-bound.
 *(This id scheme is subject to the B3 amendment/owner decision above before implementation.)*
+> **[AMENDED — see G-P4-1B-2A-B3-CONTRACT-AMENDMENT-01 below.]** Under the selected **Option A**, this hashed,
+> project-bound, token-derived value is the **SEPARATE durable idempotency identity** — it is **NOT** the engine
+> `record_id` and is **NOT** rendered as an `evt-*` `record_id`. The `record_id` remains the positional `rec_N`
+> produced by `engine/idea_state.py`. The precise raw-vs-hash-vs-HMAC form, encoding, and truncation bound are refined
+> by the amendment and remain an **implementation-gate decision**, not locked here.
 
 **Clarification C6 — Durable-success / memory-failure (D-P4-1B-2-REV1-C6).** If the durable append succeeds but the
 in-memory publish fails: the durable ledger remains authoritative; the temporary `SESSION_STORE` entry is invalidated;
@@ -286,6 +299,12 @@ auth/ownership; outputs; replay; durable Keep/Refine; retention/deletion; local-
 P4-2; Phase 5. **NOTE:** the B3 resolution may require an authorized amendment touching
 `engine/idea_development_outputs.py` and/or `engine/requirement_landscape.py`; that is a **separate** authorization, not
 granted here.
+> **[AMENDED — see G-P4-1B-2A-B3-CONTRACT-AMENDMENT-01 below.]** Under the selected **Option A** the B3 resolution does
+> **NOT** touch `engine/idea_development_outputs.py` or `engine/requirement_landscape.py` (the derived-output engines are
+> left unchanged because `record_id` stays `rec_N`). Instead it introduces a **bounded, additive
+> `engine/record_store.py` storage amendment** for the separate durable idempotency identity (evaluated — not locked — as
+> an additive nullable column + uniqueness constraint, or a sibling table). That storage amendment is a **separate future
+> implementation authorization**, not granted by this documentation-only gate.
 
 **RED / GREEN (corrected).** RED-1…11 (DOC-01) **plus**: RED-B1 an answered POST without a valid token **fails closed**
 (no acceptance); RED-B2 an inventory/route-form test proves **no answered-producing form** (main + criticality-correction)
@@ -302,6 +321,149 @@ its verdict-C history; all P4-1b-1 implementation-review and post-closure docume
 "pending its own merge" now satisfied by PR #361; non-material tree-attribution note; stale "current" wording;
 authorization-record lag) — recorded, not fixed here. **P4-1b-2b, P4-2, Phase 5–7, WS17, STG** remain **NOT
 AUTHORIZED**.
+
+---
+
+## P4-1b-2a Contract Amendment — G-P4-1B-2A-B3-CONTRACT-AMENDMENT-01 (B3 OWNER DECISION = OPTION A) — DOCUMENTATION-ONLY · IMPLEMENTATION NOT AUTHORIZED
+
+**A0. Provenance & preservation.** This amendment amends the merged **P4-1b-2a REV1** contract candidate
+(`G-P4-1B-2-DOC-01-REV1`, above) **only** to correctly incorporate the owner's B3 decision. The REV1 candidate and all
+prior candidates, verdict-C history, clarifications `C1…C8`, and preserved observations remain **intact and preserved**;
+this amendment supersedes **only** the specific B3 `DETERMINATION` (the "(a)/(b)/(c) owner-decision-required" outcome),
+the C5 event-id parenthetical, and the Permitted/Prohibited paths NOTE — each flagged inline above. Authored on the
+authoritative live tip resolved from Git (`origin/feature/atomic-json-session-persistence`); this gate mints its own
+newly generated commit/tree/bundle SHAs and reports them honestly. A previously claimed
+`518cfdfe0eca3fb0f52c88c5baea46c643d3c288` artifact remains **not an established repository artifact** and is not relied
+upon.
+
+**A1. Gate identity & status.** Gate **G-P4-1B-2A-B3-CONTRACT-AMENDMENT-01**. **Type:** documentation-only contract
+amendment preparation. **Status:** `CONTRACT AMENDMENT CANDIDATE — NOT YET MERGED` · `IMPLEMENTATION NOT AUTHORIZED` ·
+`P4-1b-2a NOT STARTED`. This gate records an owner decision and corrects the contract text; it authorizes **no** push,
+PR, merge, code/engine/schema/test/template change, or phase activation. **P4-1b-2b, P4-2, Phase 5+ remain NOT
+AUTHORIZED / NOT STARTED.** Governing decision: `D-P4-1B-2A-B3-01` (Option A selection) plus the retained
+`D-P4-1B-2-REV1-*` decisions in `OWNER_DECISION_REGISTER.md`.
+
+**A2. B3 OWNER DECISION — OPTION A SELECTED (binding).** The owner formally **SELECTED OPTION A: SEPARATE THE DURABLE
+IDEMPOTENCY IDENTITY FROM THE DETERMINISTIC ENGINE `record_id`.** Concretely:
+  * The engine **`record_id` remains the positional `rec_N`** produced by `engine/idea_state.py`
+    (`record_id = f"rec_{len(self.assertions)+1}"`). It is **unchanged** in value, format, creation site, ordering role,
+    and every derived-identifier consumer.
+  * A **SEPARATE durable idempotency identity** (the server-issued-token-derived value) is introduced and stored
+    **separately** from `record_id`. It is the durable duplicate/idempotency backstop **only**; it is **never** consumed
+    by the deterministic derived-output engines and is **never** rendered as an `evt-*` `record_id`.
+  * **Option B REJECTED:** engineering a durable event id that is "order-equivalent to `rec_N`" and embeds acceptably in
+    `idea_development_outputs.py`/`requirement_landscape.py` enlarges the deterministic-engine blast radius, couples the
+    idempotency key to sort/derivation semantics, and risks silent semantic drift — contrary to the governance contract.
+  * **Option C REJECTED:** "keep `rec_N` in the derived path" while still deriving the idempotency key **from** `rec_N`
+    conflates two concerns (positional identity vs. request-idempotency) and provides no unpredictable, request-bound,
+    replay-safe idempotency guarantee. Option A keeps `rec_N` in the derived path **and** gives idempotency its own
+    identity — a strict superset of C's benefit with none of the conflation.
+
+**A3. Correction of the "web-layer-only / no-amendment" implication (mandatory).** Any statement — in REV1 or earlier —
+implying that stable/durable idempotency is a **web-layer-only** change, or that **no engine/storage amendment** is
+required, is **INCORRECT and is hereby superseded.** Evidence at the live tip: `engine/record_store.py` `records` table
+is `PRIMARY KEY (project_id, record_id)` with **no** idempotency/token column and no separate uniqueness constraint for a
+request-idempotency identity. Storing a **separate** durable idempotency identity therefore **requires a bounded,
+additive `engine/record_store.py` storage amendment.** Option A is **not** implementable in the web layer alone.
+
+**A4. Two separate identity concepts (normative definitions).**
+  * **Deterministic engine `record_id` (`rec_N`)** — positional, append-only, assigned by `engine/idea_state.py`;
+    consumed by ordering (`_record_sort_key` / `_rec_sort_key` lead-0 precedence), derived requirement identifiers
+    (`req:assertion:rec_N`), anchors, rationale metadata, contradiction-pair ordering, and other `record_id` consumers.
+    **Unchanged by Option A.**
+  * **Durable idempotency identity** — a separate, server-issued-token-derived value bound to a single accepted
+    answered-submission request; its sole role is to make durable append **idempotent** (exactly-once) and to detect
+    duplicate retries. It is **not** an engine identifier, **not** an ordering key, and **not** embedded in any derived
+    output. It lives in the storage amendment (A9), not in `record_id`.
+
+**A5. Token & security requirements (implementation-gate contract).** The idempotency token MUST be:
+  * **server-issued** (never client-supplied as authority), **cryptographically strong / unpredictable**, of a
+    **bounded, sufficient length**, and **URL/form-safe**;
+  * **bound** to project/session (`sid`) and to the specific answered **operation** (one accepted answered submission);
+  * **single-use for acceptance** — a valid token accepts at most one durable answered event;
+  * transported **only** via a hidden server-issued form field on the answered-producing forms (A7); **never** placed in
+    URLs, logs, analytics, or user-facing errors;
+  * subject to a defined **lifecycle/expiration** (issued with the form render; consumed on acceptance; re-issued for a
+    fresh legitimate submission);
+  * **raw-vs-hash-vs-HMAC storage form is an explicit implementation-gate decision that remains REQUIRED** — the
+    amendment records the requirement (do not store a reversible secret unnecessarily; prefer a one-way/keyed digest for
+    the stored idempotency identity) but does **not** finalize the exact digest/keying here.
+  * **Rejection contract (fail closed):** a **missing**, **malformed**, **expired**, **cross-session**, or
+    **cross-project** token MUST cause a fail-closed, generic, non-disclosing rejection with **no** durable append and
+    **no** acceptance. There is **no tokenless fallback** (retained from B1).
+
+**A6. Uniqueness & payload binding.** The durable idempotency identity's uniqueness is scoped to
+**(project + idempotency identity + operation)**. The durable record MUST bind the idempotency identity to a
+**normalized fingerprint of the accepted-request content**, so that:
+  * **same token + same normalized request** → return the **prior** durable result (no second event, no second
+    progression, no reconstructed `last_result`, no replay claim) — an idempotent no-op (retains C2);
+  * **same token + different request content** → **fail closed** (retains C3: never auto-classify an IntegrityError as a
+    duplicate; confirm exact identity + same project + same logical content by reload before treating as duplicate);
+  * uniqueness is enforced **durably** (storage-level constraint, A9), not only in the web layer.
+
+**A7. Both answered-producing forms (retained B2).** The hidden idempotency token MUST be carried by **every**
+answered-producing form in `web/templates/session.html`: (i) the **main answer form**; (ii) the **criticality-correction
+free-text form** (which posts no `action` and is treated as `answered` by the legacy rule in `web/app.py`). An
+inventory/route-form regression MUST prove **no** answered-producing form bypasses the token.
+
+**A8. Persist-before-acknowledge ordering (retained C1/C6).** On an accepted answered submission the implementation MUST
+stage evaluation on a cloned `IdeaState`, create the `AssertionRecord` (with its **`rec_N`** `record_id`) and the
+**separate** durable idempotency identity, **append durably**, and **only after durable success** publish staged state /
+transcript / `last_result` into `SESSION_STORE`. On append failure it discards the staged copy and leaves live memory
+unchanged. Durable-success / memory-failure invalidation follows C6.
+
+**A9. Storage amendment — likely-owner `engine/record_store.py` (evaluated, not locked).** The separate durable
+idempotency identity requires a **bounded, additive** amendment to `engine/record_store.py`. Two shapes are recorded as
+**candidates to evaluate at the implementation gate** — the schema is **NOT locked here**:
+  * **(i)** an **additive nullable column** on `records` (e.g. an `idempotency_key` / `idempotency_fingerprint`) plus a
+    **partial/nullable UNIQUE constraint** scoped to `(project_id, idempotency_key)` for non-null keys; **or**
+  * **(ii)** a **sibling table** keyed by `(project_id, idempotency_key)` referencing the owning record, with its own
+    UNIQUE constraint.
+  In **both** shapes: the existing `PRIMARY KEY (project_id, record_id)` and `rec_N` semantics are **unchanged**;
+  legacy/volatile `rec_N` non-answer records and pre-amendment rows carry a **NULL** idempotency identity and remain
+  valid (mixed-state, retains C8); the change is **additive only** (no column drop, no type change, no `rec_N`
+  rewrite). Selection between (i) and (ii) and the exact constraint form is a **separate implementation-gate decision**.
+
+**A10. Migration & rollback (against the live DB mechanism).** Because a durable SQLite store already exists, the storage
+amendment MUST specify a **real forward migration** against the live schema (additive column/constraint or new table,
+applied idempotently to existing databases) and a **defined rollback** that is safe on populated databases — **not**
+"just drop the column." Rollback MUST preserve existing `records`/`rec_N` data and MUST NOT corrupt or orphan durable
+answered evidence; where a physical drop is unsafe, rollback is specified as **disable-and-ignore** (stop enforcing/
+reading the idempotency identity) rather than destructive removal. Exact migration/rollback mechanics are an
+implementation-gate deliverable.
+
+**A11. RED test contract & false-green prohibitions (retained + extended).** The future implementation remains **RED-first
+and behavior-based**. Required RED coverage: **RED-B1** answered POST without a valid token **fails closed**; **RED-B2**
+inventory/route-form regression proves no answered-producing form bypasses the token; **RED-A6** same-token+same-request
+→ idempotent no-op (one durable event), same-token+different-request → fail closed, duplicate retry produces no second
+event/progression; **RED-A9** durable uniqueness is enforced at the storage layer (constraint proven, not only web-layer
+guarded); **RED-C8/mixed-id** `rec_N` answered/non-answer records with NULL idempotency identity coexist with
+idempotency-bearing records and deterministic derived output (**`rec_N` ordering, `req:assertion:rec_N` identifiers,
+pair ordering**) is **unchanged** (this is now a *stability* assertion, since Option A leaves the derived engines
+untouched). **Prohibited false-green paths:** no conftest token auto-injection; no weakened/skipped assertions in the
+enumerated B1 existing tests; no reliance on `SESSION_STORE`/replay to simulate durability; no recomputation of
+pass/fail outside real behavior. Replay greenness is not proof.
+
+**A12. Logging & observability.** The idempotency token and any raw user answer content MUST NOT appear in logs, error
+messages, analytics, or URLs. Observability is limited to non-sensitive, non-disclosing signals (e.g. accepted / duplicate
+no-op / fail-closed **counts or generic markers**) sufficient to prove the idempotency behavior without leaking secrets or
+user content.
+
+**A13. Explicit exclusions (unchanged scope walls).** This amendment does **NOT** authorize: any change to the engine
+`record_id` / `rec_N` scheme; adoption of the `evt-*` id as `record_id`; P4-1b-2b; P4-2 (replay / durable output /
+stale-output / full session resume); Phase 5 (accounts, ownership, sharing, permissions); any FPC (FPC-01…FPC-04);
+PDF / Email / STG / WS17 / ACV; any event-bus or general-idempotency abstraction; retention/deletion/permission
+hardening; multi-thread/multi-worker concurrency (C4 `threaded=False` topology retained). No downstream activation is
+implied; closing this gate activates nothing.
+
+**A14. Product-truth boundary (unchanged).** Even after implementation, P4-1b-2a may claim only **durable accepted-answer
+evidence** with re-derivable readiness; it does **not** restore progression, deliverable, outputs, or Keep/Refine, and
+does not claim a saved project / fully saved idea / durable outputs / "resume exactly where you left off" / complete
+session resume / account-owned records.
+
+**Boundary.** This is a documentation-only contract amendment. **No implementation authority is granted.** P4-1b-2a
+implementation still requires: this amendment independently reviewed and merged; a separate explicit implementation
+authorization; and RED-first behavior-based proof. Append-only governance; prior candidate history preserved.
 
 ---
 
