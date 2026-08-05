@@ -39,6 +39,7 @@ must not assert implementation-chosen mechanics beyond the names and
 wordings the contract itself pins.
 """
 import html as html_module
+from test_p4_1b2a_durable_answer_append import answered_post  # P4-1b-2a
 import json
 
 import pytest
@@ -178,7 +179,7 @@ def ws1_journey():
             action, text = "unknown", UNKNOWN_TEXT
         else:
             action, text = "answered", CORE + DANGER_BY_ITERATION.get(i, "")
-        client.post(f"/session/{sid}", data={"response": text, "action": action})
+        answered_post(client, sid, {"response": text, "action": action})
     else:
         pytest.fail("fixture defect: WS1 journey did not complete")
     state = SESSION_STORE[sid]["state"]

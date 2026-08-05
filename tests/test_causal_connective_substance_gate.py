@@ -31,6 +31,7 @@ grants REASONED only at the existing minimum response length.
 """
 
 import warnings
+from test_p4_1b2a_durable_answer_append import answered_post, seed_direct_session_envelope  # P4-1b-2a
 
 import pytest
 
@@ -504,6 +505,7 @@ def _seed_session():
         "transcript": [],
         "last_question": "What is the core mechanism?",
     }
+    seed_direct_session_envelope(sid, state)  # explicit P4-1b-2a durable envelope
     return sid
 
 
@@ -538,8 +540,7 @@ def test_answered_flow_keeps_transcript_and_ledger_verbatim():
         state = entry["state"]
         answer = ("Fan must continue because sensor still reads high "
                   "temperature and enclosure has not cooled.")
-        r = app.test_client().post(
-            f"/session/{sid}", data={"action": "answered", "response": answer})
+        r = answered_post(app.test_client(), sid, {"action": "answered", "response": answer})
         assert r.status_code in (301, 302)
         # Exactly one new transcript record, byte-for-byte verbatim.
         assert len(entry["transcript"]) == 1

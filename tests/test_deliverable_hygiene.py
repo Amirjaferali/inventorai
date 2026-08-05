@@ -37,6 +37,7 @@ observation, not repair): raw lifecycle status values such as "OPEN" /
 constant "UNVALIDATED" — their classes have no pinned exemplar in §8.1.
 """
 import hashlib
+from test_p4_1b2a_durable_answer_append import answered_post  # P4-1b-2a
 import os
 import re
 
@@ -268,7 +269,7 @@ def _run_journey(idea, answer_for_iteration, max_iterations):
         if action is None:
             break
         inputs.append(text)
-        client.post(f"/session/{sid}", data={"response": text, "action": action})
+        answered_post(client, sid, {"response": text, "action": action})
     state = SESSION_STORE[sid]["state"]
     package = assemble_deliverable(state)
     html = client.get(f"/session/{sid}/deliverable").get_data(as_text=True)

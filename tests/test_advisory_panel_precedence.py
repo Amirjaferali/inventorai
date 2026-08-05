@@ -15,6 +15,7 @@ They are written to FAIL on the prior stacked-panel behavior and PASS only after
 the template precedence guards are applied.
 """
 import copy
+from test_p4_1b2a_durable_answer_append import answered_post  # P4-1b-2a
 import os
 import sys
 
@@ -276,8 +277,7 @@ def test_saved_answer_verbatim_and_guidance_not_persisted():
     sid = _start_electronics_session()
     answer = "The ESP32 reads the voltage sensor and opens a relay above 5V."
     try:
-        app.test_client().post(f"/session/{sid}",
-                               data={"response": answer, "action": "answered"})
+        answered_post(app.test_client(), sid, {"response": answer, "action": "answered"})
         tx = SESSION_STORE[sid]["transcript"]
         assert tx[-1]["response"] == answer
     finally:

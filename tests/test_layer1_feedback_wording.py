@@ -13,6 +13,7 @@ Governed by
   persistence behavior, and Domain-Gate rejection unchanged.
 """
 import copy
+from test_p4_1b2a_durable_answer_append import answered_post  # P4-1b-2a
 import os
 import sys
 
@@ -414,8 +415,10 @@ def test_render_preserves_answer_state_and_outcome():
         assert state.maturity_level == before_maturity
         assert [(g.gap_type, g.status) for g in state.gaps] == before_gap_status
         assert SESSION_STORE[sid]["last_result"]["transition"] == before_transition
-        # No new persistence/schema keys introduced into the session record.
-        assert set(SESSION_STORE[sid].keys()) == before_store_keys
+        # No new persistence/schema keys introduced into the session record,
+        # aside from the additive P4-1b-2a `answer_token` a render legitimately
+        # stores (retained across renders; not epistemic/answer state).
+        assert set(SESSION_STORE[sid].keys()) - {"answer_token"} == before_store_keys
         for field in _FORBIDDEN_FIELDS:
             assert not hasattr(state, field)
             assert field not in SESSION_STORE[sid]

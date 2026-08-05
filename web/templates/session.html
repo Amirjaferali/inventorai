@@ -262,6 +262,8 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
 {% endif %}
 
 <form method="POST" action="/session/{{ sid }}">
+  {# P4-1b-2a: server-issued idempotency token required on this answered-producing form. #}
+  <input type="hidden" name="answer_token" value="{{ answer_token }}">
   <label for="response" style="display:block;margin-bottom:6px;font-size:13px;color:#555">Your answer</label>
   {% if answer_error %}<p id="answer-error" role="alert" class="answer-error" style="color:#c0392b;font-size:13px;margin:0 0 6px 0">{{ answer_error }}</p>{% endif %}
   <textarea id="response" name="response" rows="5" placeholder="Describe your thinking here, or pick an option below..."{% if answer_error %} aria-describedby="answer-error" autofocus{% endif %}></textarea>
@@ -319,6 +321,9 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
   <div class="gap-guidance-text">Describe what should change or what is missing, and it will be used to update the picture of your idea.</div>
 </div>
 <form method="POST" action="/session/{{ sid }}">
+  {# P4-1b-2a: this criticality-correction free-text form posts no `action`, so it
+     resolves to `answered` and MUST also carry the server-issued idempotency token. #}
+  <input type="hidden" name="answer_token" value="{{ answer_token }}">
   <textarea name="response" rows="5" placeholder="Describe the change or the missing part in your own words..."></textarea>
   <br>
   <button type="submit">Submit</button>

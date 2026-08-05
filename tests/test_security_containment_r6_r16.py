@@ -8,6 +8,7 @@ and monkeypatched environment. No existing test is modified.
 """
 
 import os
+from test_p4_1b2a_durable_answer_append import answered_post, seed_direct_session_envelope  # P4-1b-2a
 from pathlib import Path
 
 import pytest
@@ -46,13 +47,15 @@ def _boundary_state(idea_id):
 
 
 def _answer_once(sid):
+    state = _boundary_state(sid)
     SESSION_STORE[sid] = {
-        "state": _boundary_state(sid),
+        "state": state,
         "last_result": None,
         "transcript": [],
         "last_question": "Q",
     }
-    app.test_client().post(f"/session/{sid}", data={"response": _REASONED})
+    seed_direct_session_envelope(sid, state)  # explicit P4-1b-2a durable envelope
+    answered_post(app.test_client(), sid, {"response": _REASONED})
 
 
 # --------------------------------------------------------------------------- R6

@@ -55,6 +55,7 @@ Contract-pinned surface used here (and nothing beyond it):
     GREEN_ONLY_JOURNEY_OBLIGATIONS).
 """
 import json
+from test_p4_1b2a_durable_answer_append import answered_post  # P4-1b-2a
 
 import pytest
 
@@ -160,7 +161,7 @@ def _drive_ws1_journey_to_completion(client, sid):
             action, text = "unknown", UNKNOWN_TEXT
         else:
             action, text = "answered", BASE + DANGER_BY_ITERATION.get(i, "")
-        client.post(f"/session/{sid}", data={"response": text, "action": action})
+        answered_post(client, sid, {"response": text, "action": action})
     pytest.fail("fixture defect: WS1 journey did not reach the completion "
                 "branch within %d iterations" % MAX_ITERATIONS)
 
@@ -577,7 +578,7 @@ class TestGreenJourney:
             assert 'name="response"' in page, (
                 "no free-text path offered after %s" % action)
             # The next input flows through the EXISTING answer handling.
-            r = client.post(f"/session/{sid}", data={
+            r = answered_post(client, sid, {
                 "response": "The relay module is the part that changed.",
                 "action": "answered"})
             assert r.status_code == 302
@@ -677,3 +678,69 @@ class TestGreenJourney:
             r = client.post(f"/session/{sid}", data=form)
             assert r.status_code == 400, form
             assert state.criticality_confirmations == []
+
+
+# --- P4-1b-2a BF2: the REAL criticality-correction free-text form -------------
+def test_p4_1b2a_criticality_correction_form_carries_and_enforces_token():
+    """BF2 (REV1): drive the real journey to the criticality-correction stage,
+    inspect the actual rendered correction form, and submit the extracted token
+    through the real route. Proves the correction free-text form (A) carries the
+    server-issued token, (B) posts its true production shape (response + token,
+    NO action), (C) resolves to `answered` via the legacy default rule, (D)
+    durably appends before acknowledgement with record_id = rec_N, (E) is an
+    idempotent no-op on same-token/same-content retry, and (F) fails closed on
+    same-token/different-content."""
+    import os
+    import re as _re
+    from engine.record_store import SqliteRecordStore
+
+    client, sid = _start(IDEA_WS1)
+    _drive_ws1_journey_to_completion(client, sid)
+    # Enter the correction stage via the real summary action (NOT answered_post:
+    # this criticality branch ignores the answer token).
+    ftok = _focus_token(_page(client, sid))
+    assert client.post(f"/session/{sid}", data={
+        "criticality_action": "summary_change", "focus_token": ftok}
+    ).status_code == 302
+
+    page = _page(client, sid)
+    # Isolate the correction free-text form (the one carrying the response field).
+    forms = _re.findall(r"<form\b[^>]*>(.*?)</form>", page, _re.DOTALL)
+    corr = [f for f in forms if 'name="response"' in f]
+    assert corr, "the correction free-text form must render at the correction stage"
+    corr_html = corr[0]
+    # (A) token present; (B) production shape: response + answer_token, no action.
+    assert 'name="answer_token"' in corr_html, "(A) correction form must carry the token"
+    assert 'name="action"' not in corr_html, "(B) correction form posts NO action field"
+    mtok = _re.search(r'name="answer_token"[^>]*value="([^"]+)"', corr_html)
+    assert mtok and mtok.group(1), "(A) a server-issued token value must render"
+    atok = mtok.group(1)
+
+    def _durable_answers():
+        st = SqliteRecordStore(os.environ["INVENTORAI_DB_PATH"])
+        try:
+            contract = st.load_contract(sid)
+        finally:
+            st.close()
+        return [r for r in contract.assertions if r.disposition == "answered"]
+
+    before = len(_durable_answers())
+    correction = "The enclosure also overheats during long fan runs and needs a vent."
+    # (C)+(D): submit the correction with response + token, NO action field.
+    assert client.post(f"/session/{sid}",
+                       data={"response": correction, "answer_token": atok}
+                       ).status_code in (301, 302)
+    after = _durable_answers()
+    assert len(after) == before + 1, "(C/D) correction resolves to answered and durably appends once"
+    assert after[-1].content == correction, "(D) the accepted correction is stored verbatim"
+    assert _re.fullmatch(r"rec_\d+", after[-1].record_id), "(D) record_id stays rec_N (Option A)"
+
+    # (E) same token + same content retry: no second durable event.
+    client.post(f"/session/{sid}", data={"response": correction, "answer_token": atok})
+    assert len(_durable_answers()) == before + 1, "(E) same-token same-content retry does not double-append"
+
+    # (F) same token + different content: fail closed, no second event.
+    client.post(f"/session/{sid}",
+                data={"response": "A completely different correction body.", "answer_token": atok})
+    assert len(_durable_answers()) == before + 1, "(F) same-token different-content fails closed"
+    SESSION_STORE.pop(sid, None)

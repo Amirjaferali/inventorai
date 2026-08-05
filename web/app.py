@@ -29,7 +29,8 @@ from engine.deliverable_assembler import assemble_deliverable
 # envelope keyed by the unified sid==project_id capability. No accepted-input
 # append, Keep/Refine durability, transcript/last_result persistence, or replay
 # is introduced here (those are P4-1b-2 / P4-2).
-from engine.record_store import SqliteRecordStore
+import sqlite3
+from engine.record_store import SqliteRecordStore, StoreError
 from engine.record_contract import ProjectRecordContract
 # Increment 3 (R-5): the SAME shared public derivation that feeds the deliverable
 # section, imported as a module-level name so one selection feeds both surfaces.
@@ -203,6 +204,11 @@ _NON_ANSWER_ACK = {
 # G-UX-ANSWER-VALIDATION: shown only when the owner chooses to answer but submits
 # a whitespace-normalized empty response. Position-neutral; echoes no user content.
 ANSWER_REQUIRED_MESSAGE = "Enter an answer, or choose one of the response options below."
+# P4-1b-2a: generic, non-disclosing transient shown when an answered submission
+# cannot be durably accepted (missing/invalid token, a same-token/different-content
+# reuse, or an unavailable durable append). It reveals nothing about the token
+# mechanism, the durable store, or any user content — fail closed, then retry.
+ANSWER_NOT_SAVED_MESSAGE = "That answer could not be saved just now. Please try again."
 # G-UX-SNAPSHOT-DECISION: truthful, temporary-session acknowledgement for the
 # "Keep current snapshot" post-output decision. It selects the CURRENT deterministic
 # working snapshot for this temporary session only — it does not serialize, duplicate,
@@ -280,6 +286,110 @@ def _criticality_focus_token(sid, requirement_id):
     digest = _crit_hashlib.sha256(
         ("ws4:" + sid + ":" + requirement_id).encode("utf-8")).hexdigest()
     return digest[:16]
+
+
+# --- P4-1b-2a: answered-submission token + SEPARATE durable idempotency identity
+# (G-P4-1B-2A-B3-CONTRACT-AMENDMENT-01, OPTION A). The token is a server-issued,
+# sid-signed, unpredictable value carried by a hidden field on every
+# answered-producing form. The durable idempotency identity is a SEPARATE
+# HMAC-SHA-256(secret, sid || token) truncated to >= 128 bits — it is stored in
+# engine.record_store and is NEVER the engine record_id (which stays rec_N).
+import hmac as _p2a_hmac
+import hashlib as _p2a_hashlib
+
+_ANSWER_TOKEN_SEP = "."
+_ANSWER_TOKEN_NONCE_BYTES = 24
+# 32 hex chars of SHA-256 output == 128 bits (owner constraint: truncation >= 128b).
+_ANSWER_HMAC_HEX_LEN = 32
+
+
+def _canonical_message(*fields):
+    """Unambiguous, length-prefixed canonical encoding of ordered fields: each
+    field is emitted as its UTF-8 byte-length (decimal ASCII) + ':' + its UTF-8
+    bytes. Because every field carries its own explicit length, no field content
+    (including a separator byte, empty string, or a value equal to another
+    field's boundary) can ever be mistaken for a field boundary. Field VALUES are
+    passed through verbatim — this encoding wraps them, it does not normalise
+    them (accepted-response case/punctuation/whitespace/line-breaks preserved)."""
+    out = b""
+    for f in fields:
+        fb = ("" if f is None else str(f)).encode("utf-8")
+        out += str(len(fb)).encode("ascii") + b":" + fb
+    return out
+
+
+def _answer_secret():
+    """The existing approved environment secret (INVENTORAI_SECRET_KEY, resolved
+    into app.secret_key). No new secret is minted here."""
+    key = app.secret_key
+    return key.encode("utf-8") if isinstance(key, str) else key
+
+
+def _answer_token_sig(sid, nonce):
+    msg = _canonical_message("p4-1b2a-answer-token", sid, nonce)
+    return _p2a_hmac.new(_answer_secret(), msg,
+                         _p2a_hashlib.sha256).hexdigest()[:_ANSWER_HMAC_HEX_LEN]
+
+
+def _issue_answer_token(sid):
+    """A fresh, unpredictable, sid-signed answered-submission token."""
+    nonce = secrets.token_urlsafe(_ANSWER_TOKEN_NONCE_BYTES)
+    return nonce + _ANSWER_TOKEN_SEP + _answer_token_sig(sid, nonce)
+
+
+def _answer_token_for(sid, entry):
+    """Return the entry's current answered-submission token, issuing and storing
+    one when absent. The token is RETAINED across renders (and across a
+    validation-error re-render) until an accepted answer consumes it, then it is
+    rotated; this realises the owner's single-use-for-acceptance lifecycle."""
+    tok = entry.get("answer_token")
+    if not tok:
+        tok = _issue_answer_token(sid)
+        entry["answer_token"] = tok
+    return tok
+
+
+def _valid_answer_token(sid, token):
+    """Verify a submitted token is server-issued FOR THIS sid (stateless). Fails
+    closed on missing, malformed, forged, cross-session, or cross-project
+    tokens — the signature binds sid, so a token minted for another session does
+    not verify here."""
+    if not token or _ANSWER_TOKEN_SEP not in token:
+        return False
+    nonce, _, sig = token.partition(_ANSWER_TOKEN_SEP)
+    if not nonce or not sig:
+        return False
+    return _p2a_hmac.compare_digest(sig, _answer_token_sig(sid, nonce))
+
+
+def _answer_idempotency_key(sid, token):
+    """The SEPARATE durable idempotency identity: HMAC-SHA-256(secret, sid ||
+    token) truncated to >= 128 bits. Project-bound; token-derived; one-way (the
+    raw token is not stored). This is NOT the engine record_id."""
+    msg = _canonical_message(sid, token)
+    return _p2a_hmac.new(_answer_secret(), msg,
+                         _p2a_hashlib.sha256).hexdigest()[:_ANSWER_HMAC_HEX_LEN]
+
+
+def _answer_fingerprint(sid, target_step, action, accepted_response):
+    """SHA-256 over the length-prefixed canonical encoding of
+    (sid, target_step, resolved_action, exact_accepted_response). The response
+    component is the EXACT value accepted and passed to record_interaction
+    (post-validation); the canonical encoding wraps it without any whitespace
+    collapsing or meaning-changing normalisation, and its length-prefixing makes
+    the four field boundaries unambiguous for any field contents."""
+    msg = _canonical_message(sid, target_step or "", action, accepted_response)
+    return _p2a_hashlib.sha256(msg).hexdigest()
+
+
+def _payload_answer_fingerprint(sid, payload):
+    """Recompute the fingerprint from a STORED record payload (confirm-by-reload,
+    C3): binds the same fields from the durable record so a same-token retry with
+    identical accepted content is recognised without ever auto-classifying an
+    IntegrityError as a duplicate."""
+    return _answer_fingerprint(sid, payload.get("gap_context"),
+                               payload.get("disposition") or "",
+                               payload.get("content") or "")
 
 
 def _criticality_step_context(entry, state, sid):
@@ -601,6 +711,22 @@ def start():
     SESSION_STORE[sid] = {"state": state, "last_result": initial_result, "transcript": []}
     return redirect(url_for("show_session", sid=sid))
 
+def _finalize_started_session(sid, state, initial_result):
+    """Shared start finalisation. Durably create the project envelope (the SAME
+    minimum P4-1b-1 envelope /start uses) BEFORE advertising a live session, then
+    store the runtime entry. Fail closed (generic 503) if durable creation fails,
+    so no live session is advertised without durable backing. Added for P4-1b-2a
+    so the legacy start_ilt002_* routes remain usable: their accepted answers
+    require a durable envelope. No second persistence model; no UX/scope change."""
+    try:
+        _get_store().create_project(
+            ProjectRecordContract.from_state(state), project_id=sid)
+    except Exception:
+        return render_template("index.html", error=SERVICE_UNAVAILABLE_MESSAGE), 503
+    SESSION_STORE[sid] = {"state": state, "last_result": initial_result, "transcript": []}
+    return redirect(url_for("show_session", sid=sid))
+
+
 @app.route("/start_ilt002_water_leak", methods=["POST"])
 def start_ilt002_water_leak():
     idea_text = request.form.get("idea", "").strip()
@@ -611,8 +737,7 @@ def start_ilt002_water_leak():
     state.domain_signal = "electronics_electrical"
     sid = str(uuid.uuid4())
     initial_result = run_iteration(state, idea_text)
-    SESSION_STORE[sid] = {"state": state, "last_result": initial_result, "transcript": []}
-    return redirect(url_for("show_session", sid=sid))
+    return _finalize_started_session(sid, state, initial_result)
 
 @app.route("/start_ilt002_combination_lock", methods=["POST"])
 def start_ilt002_combination_lock():
@@ -624,8 +749,7 @@ def start_ilt002_combination_lock():
     state.domain_signal = "electronics_electrical"
     sid = str(uuid.uuid4())
     initial_result = run_iteration(state, idea_text)
-    SESSION_STORE[sid] = {"state": state, "last_result": initial_result, "transcript": []}
-    return redirect(url_for("show_session", sid=sid))
+    return _finalize_started_session(sid, state, initial_result)
 
 @app.route("/start_ilt002_combination_lock_path_n", methods=["POST"])
 def start_ilt002_combination_lock_path_n():
@@ -638,8 +762,7 @@ def start_ilt002_combination_lock_path_n():
     state.path = "N"
     sid = str(uuid.uuid4())
     initial_result = run_iteration(state, idea_text)
-    SESSION_STORE[sid] = {"state": state, "last_result": initial_result, "transcript": []}
-    return redirect(url_for("show_session", sid=sid))
+    return _finalize_started_session(sid, state, initial_result)
 
 @app.route("/session/<sid>", methods=["GET"])
 def show_session(sid):
@@ -716,6 +839,9 @@ def show_session(sid):
     return render_template("session.html",
         sid=sid,
         state=state,
+        # P4-1b-2a: the server-issued token every answered-producing form must
+        # carry (retained across renders until an accepted answer consumes it).
+        answer_token=_answer_token_for(sid, entry),
         # Workstream 4: read-only render context for the completion-stage
         # structured criticality step (None while the journey is in progress
         # or when no contextually supported unconfirmed requirement remains).
@@ -943,50 +1069,91 @@ def submit_answer(sid):
         )
         return redirect(url_for("show_session", sid=sid))
 
-    # ANSWERED — unchanged existing assessment path and transcript record.
+    # ANSWERED — P4-1b-2a (G-P4-1B-2A-B3-CONTRACT-AMENDMENT-01, OPTION A):
+    # a mandatory server-issued token, then a STAGED evaluation whose result is
+    # published to live memory only after a durable append succeeds
+    # (persist-before-acknowledge). record_id stays rec_N; a SEPARATE durable
+    # idempotency identity is the durable duplicate backstop.
+    token = request.form.get("answer_token", "")
+    if not _valid_answer_token(sid, token):
+        # No tokenless fallback: a missing/malformed/forged/cross-session token
+        # fails closed generically — no assessment, no durable append, no
+        # acceptance, and no disclosure of the token mechanism.
+        entry["_answer_error"] = ANSWER_NOT_SAVED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    if getattr(state, "domain", None) is None:
+        # A cold-loaded session (P4-1b-1) restores the durable ledger + fresh
+        # readiness ONLY — it deliberately does not restore the runtime domain or
+        # progression, and continuing to answer it is complete session resume
+        # (P4-2), which is out of scope here. Refuse a NEW answer generically and
+        # fail closed (no assessment, no durable append, no 500/traceback) rather
+        # than operating on a non-resumable state. The durable evidence remains
+        # viewable; it is simply not extendable in this bounded increment.
+        entry["_answer_error"] = ANSWER_NOT_SAVED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
     if response:
-        targeted_gap = select_next_gap(state)   # gap this answer addresses (pre-iteration)
-        result = run_iteration(state, response)
-        entry["last_result"] = result
-        # Transcript capture: append the answered record to the IN-MEMORY session
-        # transcript only. iteration number read after run_iteration() incremented
-        # it. No engine effect.
-        # G-SC0 (R6): the previous automatic verbatim write to a world/group-
-        # readable temporary file has been REMOVED (it exposed verbatim user input
-        # on disk). No replacement disk write, log, cache, or durable store is
-        # introduced; durable transcript persistence is deferred to Phase 4. The
-        # in-memory behavior is unchanged.
+        import copy
         from datetime import datetime
-        record = {
+        # C1 staging: evaluate on a CLONE and publish only after a durable append
+        # succeeds. On any durable failure the clone is discarded and live memory
+        # is left unchanged (no partial publication).
+        staged = copy.deepcopy(state)
+        targeted_gap = select_next_gap(staged)   # gap this answer addresses (pre-iteration)
+        result = run_iteration(staged, response)
+        # Increment 2 provenance preserved (OWNER_STATED, UNVALIDATED, current
+        # leading evidence quality) — now created on the staged copy.
+        new_record = staged.record_interaction(
+            action=ACTION_ANSWERED, content=response,
+            gap_context=targeted_gap, iteration=staged.iteration,
+            quality=getattr(getattr(staged, "known_mechanism", None), "quality", None)
+                    or getattr(getattr(staged, "known_problem", None), "quality", None),
+        )
+        idem_key = _answer_idempotency_key(sid, token)
+        fingerprint = _answer_fingerprint(sid, targeted_gap, ACTION_ANSWERED, response)
+        try:
+            _get_store().append_record(sid, new_record, idempotency_key=idem_key)
+        except sqlite3.IntegrityError:
+            # C3: never auto-classify an IntegrityError as a duplicate. Reload and
+            # confirm the SAME accepted content under the SAME idempotency identity
+            # before treating a retry as an idempotent no-op; a same-token /
+            # different-content submission fails closed.
+            try:
+                prior = _get_store().record_payload_for_idempotency_key(sid, idem_key)
+            except StoreError:
+                prior = None
+            if prior is not None and _payload_answer_fingerprint(sid, prior) == fingerprint:
+                # Idempotent no-op: no second event, no second progression, no
+                # reconstructed result, no replay claim. Redirect to the session.
+                return redirect(url_for("show_session", sid=sid))
+            entry["_answer_error"] = ANSWER_NOT_SAVED_MESSAGE
+            return redirect(url_for("show_session", sid=sid))
+        except StoreError:
+            # Durable append unavailable: fail closed; live memory unchanged.
+            entry["_answer_error"] = ANSWER_NOT_SAVED_MESSAGE
+            return redirect(url_for("show_session", sid=sid))
+        # Durable success — publish the staged evaluation into the LIVE session
+        # object IN PLACE (preserving its identity) only now that the durable
+        # append has committed (persist-before-acknowledge). On any durable
+        # failure above we returned early without ever mutating live memory.
+        # G-SC0 (R6): no verbatim disk write; the transcript stays in memory.
+        state.__dict__.update(staged.__dict__)
+        entry["last_result"] = result
+        entry["transcript"].append({
             "session_id": sid,
-            "iteration": state.iteration,
+            "iteration": staged.iteration,
             "question":  entry.get("last_question", ""),
             "response":  response,
-            "domain":    getattr(state, "domain", None),
+            "domain":    getattr(staged, "domain", None),
             "timestamp": datetime.utcnow().isoformat() + "Z",
-        }
-        entry["transcript"].append(record)
-        # Increment 2: durable answered record on the IdeaState ledger.
-        # OWNER_STATED provenance (the owner authored it), UNVALIDATED status
-        # (never auto-verified by the act of answering), carrying the current
-        # leading evidence quality where available. Additive only: the existing
-        # assessment path, transcript, and gap lifecycle above are unchanged.
-        state.record_interaction(
-            action=ACTION_ANSWERED, content=response,
-            gap_context=targeted_gap, iteration=state.iteration,
-            quality=getattr(getattr(state, "known_mechanism", None), "quality", None)
-                    or getattr(getattr(state, "known_problem", None), "quality", None),
-        )
-        import sys
-        for g in state.gaps:
-                    pass
+        })
+        # Consume the token (single-use for acceptance); the next render issues a
+        # fresh one, so distinct submissions get distinct idempotency identities.
+        entry.pop("answer_token", None)
     else:
-        # G-UX-ANSWER-VALIDATION: the owner chose to answer (action == answered)
-        # but the whitespace-normalized response is empty. Set a SINGLE-USE
-        # transient error and preserve Post/Redirect/Get. The empty string is
-        # never assessed, scored, or written to transcript/gap/maturity/evidence/
-        # engine state (the assessment branch above is skipped). show_session GET
-        # pops the transient, so it displays once and is not repeated on refresh.
+        # G-UX-ANSWER-VALIDATION: answered chosen but the response is empty. Set a
+        # SINGLE-USE transient and preserve Post/Redirect/Get. The empty string is
+        # never assessed/scored/appended. The token is NOT consumed — it is
+        # retained across this validation-error re-render (owner decision).
         entry["_answer_error"] = ANSWER_REQUIRED_MESSAGE
     return redirect(url_for("show_session", sid=sid))
 

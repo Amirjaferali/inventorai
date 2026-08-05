@@ -20,6 +20,7 @@ its scope decision `docs/governance/GUIDED_ANSWER_COAUTHORING_SCOPE_DECISION.md`
     scaffolding surfaces present and distinct.
 """
 import copy
+from test_p4_1b2a_durable_answer_append import answered_post  # P4-1b-2a
 import os
 import sys
 
@@ -206,8 +207,7 @@ def test_saved_answer_is_verbatim_and_guidance_not_persisted():
     sid = _start_electronics_session()
     answer = "The ESP32 reads the voltage sensor and opens a relay above 5V."
     try:
-        app.test_client().post(f"/session/{sid}",
-                               data={"response": answer, "action": "answered"})
+        answered_post(app.test_client(), sid, {"response": answer, "action": "answered"})
         transcript = SESSION_STORE[sid]["transcript"]
         assert transcript, "an answered submission must be recorded"
         assert transcript[-1]["response"] == answer  # verbatim, byte-for-byte
