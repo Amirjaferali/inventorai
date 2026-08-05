@@ -32,6 +32,10 @@ from engine.deliverable_assembler import assemble_deliverable
 import sqlite3
 from engine.record_store import SqliteRecordStore, StoreError
 from engine.record_contract import ProjectRecordContract
+# P4-2 Level-1: the exact supported reconstruction/engine-contract version stamp
+# persisted at project creation (read-only reconstruction lives entirely in the
+# engine; web only persists these additive envelope inputs).
+from engine.session_reconstruction import RECONSTRUCTION_VERSION
 # Increment 3 (R-5): the SAME shared public derivation that feeds the deliverable
 # section, imported as a module-level name so one selection feeds both surfaces.
 from engine.idea_development_outputs import derive_next_development_step
@@ -705,22 +709,42 @@ def start():
     # (empty at creation) + idea_id; readiness/gaps/last_result are NOT persisted.
     try:
         contract = ProjectRecordContract.from_state(state)
-        _get_store().create_project(contract, project_id=sid)
+        _get_store().create_project(
+            contract, project_id=sid,
+            reconstruction_inputs=_reconstruction_inputs(idea_text, state))
     except Exception:
         return render_template("index.html", error=SERVICE_UNAVAILABLE_MESSAGE), 503
     SESSION_STORE[sid] = {"state": state, "last_result": initial_result, "transcript": []}
     return redirect(url_for("show_session", sid=sid))
 
-def _finalize_started_session(sid, state, initial_result):
+def _reconstruction_inputs(seed_idea, state):
+    """P4-2 Level-1 (G-P4-2-LEVEL1-IMPLEMENTATION-01): the additive, persisted-once
+    project-envelope reconstruction inputs for a newly created project. Written
+    ONLY at creation; never mutated afterwards. ``seed_idea`` is verbatim user
+    content — it is stored only in the durable project envelope, never logged,
+    never placed in an exception string, and never duplicated into an
+    ``AssertionRecord``. The confirmed domain and path are read from the state the
+    start route already established; the version is the exact supported stamp."""
+    return {
+        "seed_idea_text": seed_idea,
+        "confirmed_domain": getattr(state, "domain", None),
+        "path": getattr(state, "path", None),
+        "engine_contract_version": RECONSTRUCTION_VERSION,
+    }
+
+def _finalize_started_session(sid, state, initial_result, seed_idea=None):
     """Shared start finalisation. Durably create the project envelope (the SAME
     minimum P4-1b-1 envelope /start uses) BEFORE advertising a live session, then
     store the runtime entry. Fail closed (generic 503) if durable creation fails,
     so no live session is advertised without durable backing. Added for P4-1b-2a
     so the legacy start_ilt002_* routes remain usable: their accepted answers
-    require a durable envelope. No second persistence model; no UX/scope change."""
+    require a durable envelope. No second persistence model; no UX/scope change.
+    P4-2 Level-1: the additive reconstruction inputs (seed/domain/path/version) are
+    persisted at this creation point when the caller supplies the seed idea."""
     try:
         _get_store().create_project(
-            ProjectRecordContract.from_state(state), project_id=sid)
+            ProjectRecordContract.from_state(state), project_id=sid,
+            reconstruction_inputs=_reconstruction_inputs(seed_idea, state))
     except Exception:
         return render_template("index.html", error=SERVICE_UNAVAILABLE_MESSAGE), 503
     SESSION_STORE[sid] = {"state": state, "last_result": initial_result, "transcript": []}
@@ -737,7 +761,7 @@ def start_ilt002_water_leak():
     state.domain_signal = "electronics_electrical"
     sid = str(uuid.uuid4())
     initial_result = run_iteration(state, idea_text)
-    return _finalize_started_session(sid, state, initial_result)
+    return _finalize_started_session(sid, state, initial_result, seed_idea=idea_text)
 
 @app.route("/start_ilt002_combination_lock", methods=["POST"])
 def start_ilt002_combination_lock():
@@ -749,7 +773,7 @@ def start_ilt002_combination_lock():
     state.domain_signal = "electronics_electrical"
     sid = str(uuid.uuid4())
     initial_result = run_iteration(state, idea_text)
-    return _finalize_started_session(sid, state, initial_result)
+    return _finalize_started_session(sid, state, initial_result, seed_idea=idea_text)
 
 @app.route("/start_ilt002_combination_lock_path_n", methods=["POST"])
 def start_ilt002_combination_lock_path_n():
@@ -762,7 +786,7 @@ def start_ilt002_combination_lock_path_n():
     state.path = "N"
     sid = str(uuid.uuid4())
     initial_result = run_iteration(state, idea_text)
-    return _finalize_started_session(sid, state, initial_result)
+    return _finalize_started_session(sid, state, initial_result, seed_idea=idea_text)
 
 @app.route("/session/<sid>", methods=["GET"])
 def show_session(sid):

@@ -49,10 +49,11 @@ class RecordStore(Protocol):
     boundary). The SQLite adapter below is one concrete implementation; a future
     PostgreSQL/other adapter can implement the same protocol without redesign."""
 
-    def create_project(self, contract: ProjectRecordContract, project_id: str = ...) -> str: ...
+    def create_project(self, contract: ProjectRecordContract, project_id: str = ..., reconstruction_inputs: dict = ...) -> str: ...
     def append_record(self, project_id: str, record, idempotency_key: str = ...) -> None: ...
     def load_contract(self, project_id: str) -> ProjectRecordContract: ...
     def load_accepted_answer_evidence(self, project_id: str) -> tuple: ...
+    def load_reconstruction_inputs(self, project_id: str) -> dict: ...
     def project_ids(self) -> List[str]: ...
     def new_record_id(self) -> str: ...
     def close(self) -> None: ...
@@ -92,6 +93,18 @@ _IDEMPOTENCY_INDEX = (
     "WHERE idempotency_key IS NOT NULL"
 )
 
+# P4-2 Level-1 (G-P4-2-LEVEL1-IMPLEMENTATION-01, OPTION A): additive, nullable
+# project-envelope reconstruction inputs, persisted ONLY at project creation and
+# never mutated afterwards. They are the deterministic inputs a later read-only
+# reconstruction needs (`engine.session_reconstruction`): the seed idea text, the
+# confirmed domain, the path, and the exact supported engine/contract version.
+# Legacy/pre-amendment projects carry NULL in all four columns and remain valid
+# (mixed-state); reconstruction fails closed to Level-0 evidence for them.
+# Additive only: no column drop, no type change, no rewrite of existing rows.
+_RECONSTRUCTION_COLUMNS = (
+    "seed_idea_text", "confirmed_domain", "recon_path", "engine_contract_version",
+)
+
 
 class SqliteRecordStore:
     """Reference/MVP durable adapter over Python stdlib `sqlite3`.
@@ -112,6 +125,7 @@ class SqliteRecordStore:
             for stmt in _SCHEMA:
                 self._conn.execute(stmt)
             self._migrate_idempotency(self._conn)
+            self._migrate_reconstruction_inputs(self._conn)
 
     # --- migration (additive, idempotent, forward + safe rollback) ----------
     @staticmethod
@@ -130,6 +144,20 @@ class SqliteRecordStore:
             conn.execute("ALTER TABLE records ADD COLUMN idempotency_key TEXT")
         conn.execute(_IDEMPOTENCY_INDEX)
 
+    def _migrate_reconstruction_inputs(self, conn) -> None:
+        """P4-2 Level-1 forward migration against the LIVE schema: additively add
+        the four nullable ``projects`` reconstruction-input columns. Applied
+        idempotently to existing populated databases (existing project rows keep
+        NULL in every new column, so they stay valid and simply fail closed to
+        Level-0 evidence at reconstruction time). Rollback is disable-and-ignore
+        (stop reading the columns) rather than a destructive column drop, so no
+        durable project/record data is ever lost. Never rewrites existing rows."""
+        cols = [row[1] for row in
+                conn.execute("PRAGMA table_info(projects)").fetchall()]
+        for column in _RECONSTRUCTION_COLUMNS:
+            if column not in cols:
+                conn.execute(f"ALTER TABLE projects ADD COLUMN {column} TEXT")
+
     # --- identifiers --------------------------------------------------------
     def new_record_id(self) -> str:
         """A durability-safe, collision-safe identifier for a NEWLY created
@@ -137,18 +165,33 @@ class SqliteRecordStore:
         return "rec-" + uuid.uuid4().hex
 
     # --- writes (atomic) ----------------------------------------------------
-    def create_project(self, contract: ProjectRecordContract, project_id: str = None) -> str:
+    def create_project(self, contract: ProjectRecordContract, project_id: str = None,
+                       reconstruction_inputs: dict = None) -> str:
         """Atomically persist a project envelope + its accepted-input records.
         Existing serialized record identifiers are preserved exactly. A failure
         (e.g. a duplicate record_id) rolls back the whole write — no partial
         project or record survives. Records are persisted verbatim; validation
-        is enforced on load (fail-closed), matching the record contract."""
+        is enforced on load (fail-closed), matching the record contract.
+
+        ``reconstruction_inputs`` (P4-2 Level-1, OPTION A) is an OPTIONAL, additive
+        dict carrying the deterministic read-only reconstruction inputs
+        ``seed_idea_text`` / ``confirmed_domain`` / ``path`` / ``engine_contract_version``.
+        When ``None`` (the exact pre-amendment behaviour) all four columns stay
+        NULL and the project remains a legacy/Level-0 project. These values are
+        written ONCE here at creation and are never mutated afterwards. The seed
+        idea is sensitive user content: it is stored only in this project column,
+        never duplicated into an ``AssertionRecord`` and never logged."""
         pid = project_id or uuid.uuid4().hex
+        ri = reconstruction_inputs or {}
         with self._conn:   # single transaction: commit on success, rollback on error
             self._conn.execute(
-                "INSERT INTO projects (project_id, idea_id, contract_version) "
-                "VALUES (?, ?, ?)",
-                (pid, contract.idea_id, contract.contract_version),
+                "INSERT INTO projects "
+                "(project_id, idea_id, contract_version, "
+                " seed_idea_text, confirmed_domain, recon_path, engine_contract_version) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?)",
+                (pid, contract.idea_id, contract.contract_version,
+                 ri.get("seed_idea_text"), ri.get("confirmed_domain"),
+                 ri.get("path"), ri.get("engine_contract_version")),
             )
             for seq, record in enumerate(contract.assertions):
                 self._conn.execute(
@@ -158,6 +201,32 @@ class SqliteRecordStore:
                      json.dumps(assertion_to_dict(record), sort_keys=True)),
                 )
         return pid
+
+    def load_reconstruction_inputs(self, project_id: str) -> dict:
+        """P4-2 Level-1 — return the additive project-envelope reconstruction
+        inputs for ``project_id`` as a dict
+        (``seed_idea_text`` / ``confirmed_domain`` / ``path`` /
+        ``engine_contract_version``), or ``None`` when the project is absent OR
+        carries NULL in every reconstruction column (a legacy/pre-amendment
+        project). Project-scoped; reads nothing across projects; never mutates.
+        The caller (``engine.session_reconstruction``) treats ``None`` and any
+        missing individual field as a fail-closed Level-0 condition."""
+        row = self._conn.execute(
+            "SELECT seed_idea_text, confirmed_domain, recon_path, "
+            "engine_contract_version FROM projects WHERE project_id = ?",
+            (project_id,),
+        ).fetchone()
+        if row is None:
+            return None
+        seed, domain, path, version = row
+        if seed is None and domain is None and path is None and version is None:
+            return None
+        return {
+            "seed_idea_text": seed,
+            "confirmed_domain": domain,
+            "path": path,
+            "engine_contract_version": version,
+        }
 
     def append_record(self, project_id: str, record, idempotency_key: str = None) -> None:
         """Atomically append one accepted-input record to an existing project,
