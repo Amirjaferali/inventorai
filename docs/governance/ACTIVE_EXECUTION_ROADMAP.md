@@ -3504,3 +3504,111 @@ original `0e2a5ce` candidate are preserved.
 AUTHORIZED** (and B3-blocked pending owner decision/amendment). **P4-1b-2b, P4-2, and Phase 5 remain NOT AUTHORIZED /
 NOT STARTED.** Decision **D17** and the AISR seven-owner model are preserved. Append-only; prior history not rewritten.
 This gate authorizes no push, no PR, no merge, no implementation, and no phase activation.
+
+---
+
+## Future Product Capability Integration Map — FPC-01 to FPC-04 (G-FPC-MAP-01, documentation-only)
+
+**Gate:** G-FPC-MAP-01. **Type:** documentation-only integration map (Method D). **Live tip at authoring:**
+`7d489614b5535244f1116304db1c46c8639e836f` (Merge PR #362; always re-resolve from Git). **Purpose:** canonically record
+the owner-accepted classifications, missing-elements-only findings, phase ownership, dependencies, and non-authorization
+boundaries for FPC-01…FPC-04, following the read-only assessment **G-FPC-OVERLAP-01**. This map is **NON-ACTIVATING and
+NON-AUTHORIZING**; it consumes/cross-references existing canonical models (the **Capability Enrichment Register** and
+the workstream/phase records) and creates **no** parallel model, **no** standalone document, and **no** change to
+`ACTIVE_INCREMENT_CONTRACT.md`. **Every FPC and every referenced future gate is NOT AUTHORIZED / NOT STARTED.**
+
+### FPC-01 — Idea Validation Roadmap / Evidence Closure Plan (خطة التحقق من الفكرة وإغلاق فجوات الأدلة)
+- **Classification:** PARTIALLY CANONICAL / PARTIALLY DOCUMENTED.
+- **Existing canonical foundation (consume, do not duplicate):** WS7 Actionable Validation Plan; existing
+  requirement-landscape and next-development-step derivations; **CAP-04 Gap Action Packs**; **CAP-09 Experiment
+  Designer**; **CAP-11 Evidence Ladder**; **WS12** gap-closure/unknown-progression paths; merged evidence, provenance,
+  contradiction, and supersession foundations (Increment-2 / Phase 4 / P4-0 / P4-1a); **P4-2** full re-evaluation after
+  accepted evidence or material revision.
+- **Missing bounded element only:** a unified prioritized evidence-closure **roadmap UX**, action-status/progress
+  presentation, and orchestration of the existing canonical gaps/evidence/actions/re-evaluation lifecycle. **No** new
+  gap, evidence, provenance, action-pack, or validation-engine model.
+- **Dependencies:** merged evidence/provenance/gap foundations; P4-2 (re-evaluation + roadmap refresh); STG/D13 +
+  approved domain activation (domain-specific actions).
+- **Governing phase/workstream:** UX orchestration = future bounded UX gate in the accepted Phase-3 design lineage;
+  durable records/lifecycle = Phase-4/P4 foundations; full re-evaluation + roadmap refresh = **P4-2**; domain-specific
+  validation actions = **STG/D13**.
+- **Implementation authorization status:** NOT AUTHORIZED / NOT STARTED.
+- **Next eligible future gate:** future UX-orchestration gate after required foundations (P4-2 owns roadmap refresh;
+  STG owns domain-specific actions) — eligibility only, not authorization.
+
+### FPC-02 — Revision Difference and Stale-Output Handling (إظهار فروقات التعديلات ومعالجة المخرجات القديمة)
+- **Classification:** **CANONICAL PRODUCT REQUIREMENT — ALREADY OWNED BY P4-2 + D17 + PHASE-3C.** This is **not** a new
+  capability. **CANONICAL REQUIREMENT — IMPLEMENTATION CONTRACT AND EXECUTION NOT YET AUTHORIZED** (not implemented, not
+  complete).
+- **Existing canonical foundation:** full re-evaluation as the **safe default** after a material revision; targeted
+  re-evaluation **prohibited** until a reliable deterministic dependency model is separately designed and authorized;
+  **P4-2** replay + durable output records; stale-output identification/invalidation; preservation of historical outputs
+  where authorized; source-to-output and revision relationships; **Phase-3C** in-session revision-difference visibility
+  (CORE); side-by-side comparison (OPTIONAL); durable history (later durable-data obligation).
+- **Missing bounded elements only:** a **P4-2 implementation contract** for durable revision/output relationships,
+  stale-output invalidation, updated deterministic output, and full replay; and the accepted in-session **"What
+  changed?"** presentation increment.
+- **Dependencies:** the accepted-input durability chain beneath it (P4-1b-2 — currently B3-blocked); P4-2.
+- **Governing phase/workstream:** **P4-2** (durable/stale-output/updated-output) + Phase-3-accepted revision UX.
+- **Implementation authorization status:** NOT AUTHORIZED / NOT STARTED.
+- **Next eligible future gate:** the existing **P4-2** implementation contract + the accepted revision-difference UX
+  increment — eligibility only.
+
+### FPC-03 — Decision and Assumption Ledger (سجل القرارات والافتراضات)
+- **Classification:** PARTIALLY CANONICAL.
+- **Existing canonical foundation (do not rebuild):** **CAP-08 Assumption Register**; **CAP-05 Decision Trace**;
+  **CAP-07 Decision Room**; **CAP-10 Contradiction Detector**; **CAP-11 Evidence Ladder**; merged provenance and source
+  distinction; append-only assertions; contradiction and supersession relationships; fact/assumption/uncertainty
+  distinctions; deterministic-result versus human/advisory source separation.
+- **Missing bounded elements only:** a unified **Decision-and-Assumption UX**; and a complete **Decision Ledger**
+  containing decision owner, date, alternatives considered, rationale, supporting evidence, affected gaps and outputs,
+  retirement/supersession, and source classification. **No** rebuild of provenance, assumption records, contradiction,
+  supersession, or evidence classification.
+- **Dependencies:** merged provenance/contradiction/supersession foundations; **Phase 5** (identity, ownership,
+  organization auditability, permissions).
+- **Governing phase/workstream:** unified decision-support UX = future bounded UX gate consuming CAP-05/07/08/10;
+  durable record relationships = Phase-4/P4 foundations; identity/ownership/auditability/permissions = **Phase 5**.
+- **Implementation authorization status:** NOT AUTHORIZED / NOT STARTED.
+- **Next eligible future gate:** future decision-support UX gate; **Phase 5** for identity/ownership/auditability —
+  eligibility only.
+
+### FPC-04 — Specialist Handoff Pack (حزمة تسليم الفكرة إلى المختص) — split into Assembly (04A) + Delivery (04B)
+- **Classification:** PARTIALLY DOCUMENTED — ASSEMBLY CAPABILITY BUILT ON EXISTING FOUNDATIONS.
+- **FPC-04A — Specialist Handoff Pack Assembly.** *Missing bounded elements only:* an internal **in-app preview**; a
+  **durable handoff-package record**; assembly of the current **non-stale** snapshot, evidence, gaps, contradictions,
+  specialist category, and bounded specialist questions. *Governing:* future in-app handoff assembly/preview + durable
+  record gate after current-output and persistence foundations. *Status:* NOT AUTHORIZED / NOT STARTED.
+- **FPC-04B — Specialist Handoff Delivery (owned elsewhere; MUST NOT be bundled into 04A).** external sharing / access
+  control = **Phase 5**; recipient identity + permissions = **Phase 5**; access revocation = **Phase 5**; **PDF** = OD-U
+  / authorized Phase-4 delivery foundation; **Email** = OD-U / **Phase-5** verified-email foundation; specialist-specific
+  technical content = **STG/D13**; specialist response ingestion = **AISR/STG** + deterministic user-acceptance
+  boundaries; stale-output awareness = **P4-2**. *Status:* NOT AUTHORIZED / NOT STARTED.
+- **Existing canonical foundation:** D13 specialist-category model; **CAP-01/STG** specialist questions; the current
+  reviewable snapshot (deliverable); evidence/provenance/gaps/contradictions (merged); **OD-U** PDF and Email deferrals;
+  **Phase-5** sharing and permission ownership. **No** new sharing/PDF/Email subsystem, duplicate specialist-category
+  model, or parallel STG workflow.
+- **Next eligible future gate:** FPC-04A internal assembly/preview + durable-record gate (after output/persistence
+  foundations); FPC-04B **Phase 5 / PDF / Email / STG**-owned delivery and specialist-interaction gates — eligibility
+  only.
+
+### Duplication ruling (owner-approved) — for every overlap: **DO NOT CREATE A NEW PARALLEL MODEL — EXTEND OR CONSUME THE EXISTING CANONICAL MODEL**
+Applies to: **Phase 4 / P4-0 / P4-1a durable evidence and provenance foundations**; P4-2 replay and stale-output
+obligations; CAP-04 Gap Action Packs; CAP-05 Decision Trace; CAP-07 Decision Room; CAP-08 Assumption Register; CAP-09
+Experiment Designer; CAP-10 Contradiction Detector; CAP-11 Evidence Ladder; WS12 closure paths; D17 post-output
+refinement and full re-evaluation; Phase-3C revision-difference visibility; D13 specialist-category model; CAP-01 / STG;
+OD-U PDF and Email delivery; Phase-5 ownership, sharing, permissions, and recipient identity.
+
+### Reminder policy (owner-approved)
+Repository governance is the source of truth; handovers include a concise **"Preserved Future Product Capabilities"**
+section that **references** this roadmap map and the Owner Decision Register instead of copying full capability
+definitions; ordinary messages include reminders **only when contextually relevant**; **no long FPC reminder is appended
+to every response**; no reminder overrides merged governance; implementation timing and authorization remain explicit;
+existing **ACV/PDF/Email/sponsor-theme/Domain-Registry** governance (OD-U + roadmap + Domain Registry records) is
+**referenced, not redundantly re-listed**.
+
+### Boundary
+**No FPC implementation is authorized.** The **`ACTIVE_INCREMENT_CONTRACT.md` is unchanged**; the **Capability Enrichment
+Register is unchanged** (cross-referenced only); the active technical blocker remains **P4-1b-2a / B3** (CONTRACT
+AMENDMENT / OWNER DECISION REQUIRED). **P4-1b-2b, P4-2, Phase 5–7, WS17, STG, plugins, ACV, PDF, and Email remain NOT
+AUTHORIZED / NOT STARTED.** Decision **D17** and the AISR seven-owner model are preserved. Append-only; prior history not
+rewritten. This gate authorizes no push, no PR, no merge, no implementation, and no phase activation.
