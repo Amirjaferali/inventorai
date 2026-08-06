@@ -41,10 +41,37 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current):** CONTRACT-OF-RECORD = **P5-1 — Account & Credential Foundation (Phase 5, Option A)**, now
-**IMPLEMENTED, INDEPENDENTLY REVIEWED, MERGED, POST-MERGE VERIFIED, OWNER ACCEPTED, AND FORMALLY CLOSED** (independent
-review **G-P5-1-ACCOUNT-CREDENTIAL-FOUNDATION-INDEPENDENT-REVIEW-01**, verdict **B — ACCEPT WITH NON-BLOCKING
-OBSERVATIONS**, PUBLISH). Gate **G-P5-1-ACCOUNT-CREDENTIAL-FOUNDATION-IMPLEMENTATION-01**; candidate `6be86f5` (tree
+**Status (current):** CONTRACT-OF-RECORD = **P5-2 — Authenticated Sessions, Verified Email & Account Recovery (Phase 5,
+Option A)**, now **IMPLEMENTED, INDEPENDENTLY REVIEWED, MERGED, POST-MERGE VERIFIED, OWNER ACCEPTED, AND FORMALLY
+CLOSED** (independent review **G-P5-2-AUTH-SESSIONS-VERIFIED-EMAIL-RECOVERY-INDEPENDENT-REVIEW-01**, verdict **B — ACCEPT
+WITH NON-BLOCKING OBSERVATIONS**, PUBLISH). Gate **G-P5-2-AUTH-SESSIONS-VERIFIED-EMAIL-RECOVERY-IMPLEMENTATION-01**;
+candidate `87c85c7` (tree `375db689`, parent `f84c87d`); merged via **PR #377** (merge commit
+`402727a557edd7dbea3e92f477bf9cbefe74ea3e`, two-parent merge of `f84c87dc190b431ecb258b03aea699045d68a945` (base) +
+`87c85c7bb2b2c41e4510377eac9ce0133061f61e` (reviewed candidate), tree `375db6895748d101905b44ca8e622128acb3f51b`, equal
+to the candidate tree; ancestry PASS). Merged scope **13 files / +1712 / −78**; disallowed paths **NONE** (no
+deterministic engine file, no `engine/record_store.py`, no `projects.owner_account_id`, no production
+`requirements.txt`); source branch `feat/p5-2-auth-sessions-verification-recovery` PRESERVED. Focused **40 passed**; full
+suite **1874 passed, 1 skipped, 1 xfailed**. The two mandatory P5-1-closure preconditions were satisfied first —
+**P5-2-PRE-01** (rate-limit concurrency: `BEGIN IMMEDIATE` read-modify-write proven race-free under real concurrent
+threads + bounded expired-row cleanup) and **P5-2-PRE-02** (SQLite thread strategy: one connection
+`check_same_thread=False` + re-entrant lock + immediate transactions, proven under real multi-thread tests; not a bare
+`check_same_thread` override). **Delivered:** login/logout; logout-all via `session_epoch`; a signed-cookie authenticated
+session distinct from the project `sid`; idle 2h / absolute 14d expiry; session rotation on login; CSRF on authenticated
+mutations; email-verification completion + resend; recovery request + password-reset completion (reset revokes all
+sessions, no auto sign-in); disabled/deleted denial; generic non-enumerating responses; Draft L2 account-switch
+isolation; bilingual accessible UX. **Does NOT implement** `projects.owner_account_id`, project ownership, project route
+authorization, anonymous project claim, collaboration/sharing, P5-3, Draft Level 3, writable continuation, output email
+delivery, or a production email provider. **Preserved non-blocking observations:** **OBS-P5-2-01** email-link raw tokens
+in URL paths (hash-only, single-use, short expiry, not app-logged; revisit before production email/reverse-proxy) and
+**OBS-P5-2-02** password-reset sequential-transaction atomicity (accepted resilience debt; evaluate one atomic operation
+when `account_store` is next touched for a related security increment). **NEXT ELIGIBLE INCREMENT: P5-3 — Project
+Ownership and Route Authorization**, authorized under the continuing Phase 5 owner authorization **only after this
+closure sync is merged and post-merge verified**. **Draft Level 3, writable continuation, output email delivery, and
+every FPC remain NOT AUTHORIZED / NOT STARTED.**
+
+The **immediately prior** contract-of-record was **P5-1 — Account & Credential Foundation (Phase 5, Option A)**,
+**IMPLEMENTED, INDEPENDENTLY REVIEWED, MERGED, POST-MERGE VERIFIED, OWNER ACCEPTED, AND FORMALLY CLOSED** (verdict
+**B**, PUBLISH). Gate **G-P5-1-ACCOUNT-CREDENTIAL-FOUNDATION-IMPLEMENTATION-01**; candidate `6be86f5` (tree
 `128b2d4`, parent `e84526d`); merged via **PR #375** (merge commit
 `65a2c0e258bf9635921046ad27f8a886cce78218`, two-parent merge of `e84526d36e8518bea75da109c77f0851c0acf5c2` (base) +
 `6be86f5853d84216d2bd0792c4ca98babadbfe31` (reviewed candidate), tree `128b2d415ace8a5fee2c0cff4c84aeeb28bcf5e6`, equal
@@ -127,8 +154,12 @@ accurate as of their PR #365/#367 boundary and are **superseded** by this status
 (P5-1 boundary):** this rolling narrative and the Phase 5 formal-contract section below predate the P5-1 merge; every
 forward-looking phrase such as "NEXT ELIGIBLE GATE: P5-1", "P5-1 becomes the next eligible implementation gate", or
 "Phase 5 … remain NOT AUTHORIZED / NOT STARTED" was accurate as of the PR #374 formal-contract boundary and is
-**superseded by the leading "Status (current)" block**: P5-1 is now IMPLEMENTED / MERGED (PR #375) / FORMALLY CLOSED, and
-**P5-2 is the next eligible increment** — eligible only after this closure sync is merged and post-merge verified.)
+**superseded by the leading "Status (current)" block**. **Further superseded (P5-2 boundary):** this rolling narrative
+and every forward-looking phrase below such as "NEXT ELIGIBLE INCREMENT: P5-2", "P5-2 is the next eligible increment", or
+"P5-3: NOT STARTED" was accurate as of the PR #375/#376 boundary and is superseded by the leading "Status (current)"
+block: **P5-1 and P5-2 are now both IMPLEMENTED / MERGED (PR #375, PR #377) / FORMALLY CLOSED, and P5-3 — Project
+Ownership and Route Authorization — is the next eligible increment**, eligible only after this closure sync is merged and
+post-merge verified.)
 
 **Review lineage (HISTORICAL — for the record).** DOC-01 candidate `0e2a5cec24d71462eadbffa193e3467d40d506a0` carried
 verdict `C — REVISE AND RE-REVIEW` (preserved, unmerged); a separately-claimed

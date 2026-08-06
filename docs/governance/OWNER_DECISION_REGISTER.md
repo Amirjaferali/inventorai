@@ -585,8 +585,8 @@ FORMAL CONTRACT-OF-RECORD" section of `ACTIVE_INCREMENT_CONTRACT.md` (which gove
 Recording this grants **no** implementation, code, test, schema, migration, dependency, CI, or push/PR/merge authority.
 **P5-1 becomes the next eligible implementation gate only after this formal contract is merged and post-merge verified.**
 Recorded on live tip `3b231936c5d01d2af9a1c0eca2dfd39d39161cff` (Merge PR #373). *(Superseded for current truth by the
-"P5-1 — Account & Credential Foundation: implementation acceptance & closure" section below: P5-1 is now MERGED via
-PR #375 and FORMALLY CLOSED, and **P5-2** is the next eligible increment.)*
+P5-1 and P5-2 implementation-acceptance & closure sections below: **P5-1 (PR #375) and P5-2 (PR #377) are both MERGED
+and FORMALLY CLOSED, and P5-3 — Project Ownership and Route Authorization — is the next eligible increment.**)*
 
 | ID | Subject | Decision | Impl. authority | Evidence / boundary |
 |---|---|---|---|---|
@@ -629,3 +629,26 @@ authorization (`D-P5-03`) was implemented RED-first, independently reviewed, pub
 or push/PR/merge authority and begins no P5-2 work. P5-1 is FORMALLY CLOSED; closing it activates nothing downstream.
 Decision **D17** and the AISR seven-owner model are preserved; Phase 4 remains FORMALLY CLOSED; P4-2 Level-1, Draft
 Level 2, and now **P5-1** remain CLOSED; the Phase 5 formal contract remains MERGED / VERIFIED / ACCEPTED.
+
+## P5-2 — Authenticated Sessions, Verified Email & Account Recovery: implementation acceptance & closure (G-P5-2-AUTH-SESSIONS-VERIFIED-EMAIL-RECOVERY-IMPLEMENTATION-01 + INDEPENDENT-REVIEW-01 + G-P5-2-CLOSURE-SYNC-01) — owner-accepted, MERGED & CLOSED
+
+Recorded by the documentation-only closure sync **G-P5-2-CLOSURE-SYNC-01** (authoritative base
+`402727a557edd7dbea3e92f477bf9cbefe74ea3e`, Merge PR #377). The second bounded Phase 5 increment under the continuing
+authorization (`D-P5-03`) was implemented RED-first, satisfied the two mandatory P5-1-closure preconditions, was
+independently reviewed, published, merged, and post-merge verified.
+
+| ID | Subject | Status | Impl. authority | Evidence / notes |
+|---|---|---|---|---|
+| D-P5-2-IMPL-01 | P5-2 implementation, review, merge & closure | **IMPLEMENTED / INDEPENDENTLY REVIEWED / MERGED / POST-MERGE VERIFIED / OWNER ACCEPTED / FORMALLY CLOSED** | NONE (closing P5-2 activates nothing downstream) | Gate G-P5-2-AUTH-SESSIONS-VERIFIED-EMAIL-RECOVERY-IMPLEMENTATION-01; candidate `87c85c7` (tree `375db689`, parent `f84c87d`); independent review G-P5-2-AUTH-SESSIONS-VERIFIED-EMAIL-RECOVERY-INDEPENDENT-REVIEW-01 = **verdict B — ACCEPT WITH NON-BLOCKING OBSERVATIONS / PUBLISH**; merge **PR #377** `402727a` (parents `f84c87d` + `87c85c7`, tree `375db689`, ancestry PASS); scope **13 files / +1712 / −78**; source branch `feat/p5-2-auth-sessions-verification-recovery` PRESERVED; focused **40 passed**, full suite **1874 passed, 1 skipped, 1 xfailed** |
+| D-P5-2-PRE-01-MET | Rate-limit concurrency hardening precondition | **SATISFIED** | NONE | `record_rate_attempt` read-modify-write runs inside `BEGIN IMMEDIATE`; proven race-free under REAL concurrent multi-connection threads (exactly `limit` allowed, stored count == N, one row); bounded expired-row cleanup added; privacy-digest subject keys; generic responses unchanged when limited |
+| D-P5-2-PRE-02-MET | SQLite thread/connection strategy precondition | **SATISFIED** | NONE | one connection `check_same_thread=False` guarded by a re-entrant lock, every write in an explicit `BEGIN IMMEDIATE` transaction (foreign keys on, fail-closed rollback); proven under REAL multi-thread tests (no thread-affinity error; concurrent token consume atomic; record-store unchanged); NOT a bare `check_same_thread` override |
+| D-P5-2-IMPL-02 | Implemented capability | RECORDED | NONE | login/logout; logout-all via `session_epoch`; signed-cookie authenticated session distinct from the project `sid`; idle **2h** / absolute **14d** expiry; session rotation on login; **CSRF** on authenticated mutations; email-verification completion + resend; recovery request + password-reset completion (**reset revokes all sessions**, no auto sign-in); disabled/deleted denial; generic non-enumerating responses; hardened concurrency-safe rate limiting; SQLite thread hardening; Draft L2 account-switch isolation; bilingual accessible UX; hash-only single-use expiring tokens (verification 24h / reset 1h); no `sid`-based identity/ownership; no new runtime dependency |
+| D-P5-2-IMPL-03 | Capability boundary — explicit "does NOT provide" | RECORDED | NONE | P5-2 does **NOT** implement: `projects.owner_account_id`; project ownership; project route authorization; anonymous project claim; collaboration/sharing; P5-3; Draft Level 3; writable continuation; output email delivery; production email provider |
+| D-P5-2-OBS-01 | Email-link tokens in URL paths | RECORDED — non-blocking | NONE | Verification/reset raw tokens appear in URL paths. Accepted mitigation: hash-only at rest; single-use; short expiry; no application logging; no third-party resources on result pages. Required future review before a production email-provider/reverse-proxy deployment: confirm access-log redaction; assess browser-history exposure; consider POST-based completion or fragment/interstitial alternatives where Lean |
+| D-P5-2-OBS-02 | Password-reset transaction atomicity | RECORDED — non-blocking resilience debt | NONE | Reset performs sequential transactions (consume reset token → update password hash → increment `session_epoch` → supersede remaining reset tokens). When `account_store` is next modified for a related security increment: evaluate one atomic store operation; ensure password update and session revocation cannot partially commit; preserve single-use and fail-closed behaviour. The accepted P5-2 candidate is NOT changed by this closure gate |
+| D-P5-2-NEXT-03 | Next eligible increment | RECORDED | NONE — **not authorized by this closure sync** | **P5-3 — Project Ownership and Route Authorization** is the next eligible increment under the continuing Phase 5 owner authorization (`D-P5-03`), eligible **only after this closure sync is merged and post-merge verified**; **Draft Level 3: NOT AUTHORIZED**. Supersedes the forward-looking "P5-2 next eligible" wording in `D-P5-1-NEXT-04` |
+
+**Boundary.** This closure sync is documentation-only; it grants no implementation, code, test, schema, dependency, CI,
+or push/PR/merge authority and begins no P5-3 work. P5-2 is FORMALLY CLOSED; closing it activates nothing downstream.
+Decision **D17** and the AISR seven-owner model are preserved; Phase 4 remains FORMALLY CLOSED; P4-2 Level-1, Draft
+Level 2, P5-1, and now **P5-2** remain CLOSED; the Phase 5 formal contract remains MERGED / VERIFIED / ACCEPTED.
