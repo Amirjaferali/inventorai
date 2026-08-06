@@ -4073,3 +4073,54 @@ Phase 5 — Accounts / Authentication / Ownership / Verified Email — DISCOVERY
 **FORMALLY CLOSED**; P4-2 Level-1 remains **CLOSED**. Decision **D17** and the AISR seven-owner model are preserved.
 Append-only; prior history not rewritten. This synchronization authorizes no push, PR, merge, implementation, or phase
 activation.
+
+---
+
+## Phase 5 — Identity / Ownership / Verified-Email formal contract & continuing authorization (G-P5-FORMAL-CONTRACT-AND-CONTINUING-AUTHORIZATION-01, documentation-only, append-only)
+
+This append-only entry records the **formal Phase 5 contract-of-record**. It is documentation-only: it records owner
+decisions and a continuing authorization, and grants **no** Phase 5 implementation, code, test, schema, migration,
+dependency, CI, or push/PR/merge authority. Live tip (resolve from Git): `3b231936c5d01d2af9a1c0eca2dfd39d39161cff`
+(Merge PR #373).
+
+**Acceptance.** The owner accepted discovery **G-P5-IDENTITY-OWNERSHIP-DISCOVERY-CONTRACT-01** (verdict **B — ACCEPT
+WITH NON-BLOCKING RISKS**), selected **Identity Option A (application-managed email + password; Werkzeug scrypt; no new
+runtime dependency)** and the structure **P5-1 → P5-2 → P5-3**, and granted a **continuing authorization** to complete
+all three bounded increments through formal Phase 5 closure under the mandatory per-increment controls.
+
+**Owner decisions (binding; full detail in `ACTIVE_INCREMENT_CONTRACT.md` and `OWNER_DECISION_REGISTER.md`
+`D-P5-01…15`).** immutable UUID `account_id` (never email) + normalized-email uniqueness + scrypt hashing; unverified
+users may register/login/verify/recover but may NOT own durable projects or claim anonymous projects; verification
+required before owning a durable account-linked project; anonymous projects stay `owner_account_id=NULL`, not
+auto-claimable, never claimed by `sid`; sessions idle 2h / absolute 14d, HttpOnly+SameSite=Lax+Secure(prod), not the
+project `sid`, `session_epoch` revocation, reset revokes all sessions; account disable/delete tombstones and never
+silently transfers ownership or destroys accepted-answer data; legacy projects stay NULL-owner and capability-only;
+email = dev sink + prod provider behind an `EmailSender` abstraction, verification token 24h / reset token 1h, hashed
+single-use expiring, no output/marketing email; Draft L2 consumed not replaced (logout/account-switch isolation, no
+server upload, no Draft L3).
+
+**Increments (bounded).** **P5-1** account & credential foundation (accounts schema, registration, scrypt, email-token
+model, dev email sink, rate-limit storage). **P5-2** authenticated sessions + verified email + recovery (signed cookie,
+`session_epoch` revocation, expiry, CSRF, verification/resend/reset, non-enumerating responses). **P5-3** project
+ownership + route authorization (additive nullable `projects.owner_account_id`, owner-link at authenticated+verified
+creation, central server-side ownership check, authorization matrix, generic 404, cross-account isolation,
+disabled/deleted handling, Draft-L2 account-switch isolation).
+
+**Continuing-authorization controls (each increment).** bounded contract → genuine RED on the live parent → minimum
+GREEN → focused/related/security/full-suite tests → adversarial self-review → one SHA-preserving bundle → stop before
+publication → independent adversarial review (publish only on **A or B without blockers**) → merge via "Create a merge
+commit" → post-merge verification → governance sync where material. The continuing authorization permits P5-1 → P5-2 →
+P5-3 **without a new owner authorization** provided all controls pass; STOP and return to the owner on a material
+blocker, a live-repo contradiction of the discovery, scope outside the Phase 5 boundary, a new unresolved product-policy
+decision, an independent-review **C**, or security that cannot be proved fail-closed.
+
+**Non-blocking risks (recorded).** (1) production Secure-cookie depends on confirmed HTTPS/reverse-proxy; (2) no
+rate-limit primitive — use a small bounded store-backed counter, not a new platform/dependency; (3) production email
+deliverability is operational — begin with the dev sink, preserve the provider abstraction.
+
+**Status.** **G-P5-IDENTITY-OWNERSHIP-DISCOVERY-CONTRACT-01: COMPLETED / ACCEPTED.** **Phase 5: FORMALLY PLANNED AS
+P5-1 → P5-2 → P5-3.** **P5-1 IMPLEMENTATION: NEXT ELIGIBLE GATE — eligible only after this formal contract is merged and
+post-merge verified.** **P5-2 and P5-3: NOT STARTED.** **Draft Level 3, writable continuation, output email delivery,
+and every FPC remain NOT AUTHORIZED / NOT STARTED.** Phase 4 remains FORMALLY CLOSED; P4-2 Level-1 and Draft Level 2
+remain CLOSED. Decision **D17** and the AISR seven-owner model are preserved. Append-only; prior history not rewritten.
+This entry authorizes no push, PR, merge, implementation, or phase activation.
