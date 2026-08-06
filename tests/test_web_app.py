@@ -1,5 +1,4 @@
 import os, sys
-from test_p4_1b2a_durable_answer_append import answered_post, seed_direct_session_envelope  # P4-1b-2a
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
 from web.app import (
@@ -124,7 +123,7 @@ def test_deliverable_route_contains_required_sections():
         for fragment in [
             "Invention Summary",
             "Assessment Overview",
-            "Captured Inputs and Assessment Status",  # Phase 4A: renamed from "Requirements"
+            "Requirements",
             "Assumptions",
             "Risks",
             "Recommendations",
@@ -343,21 +342,8 @@ def test_session_page_unknowns_section_no_ilt002_or_evidence_wording():
     try:
         client = app.test_client()
         body = client.get(f"/session/{sid}").get_data(as_text=True)
-        # Scope the forbidden-word protection to the acknowledged-unknowns SECTION,
-        # not the whole page. Increment 1A added a structured EVIDENCE_REQUESTED
-        # action control elsewhere on the page — a request that evidence/a test is
-        # needed, NOT a claim that evidence exists — which legitimately contains the
-        # word "evidence". The original protection is unchanged in intent and still
-        # enforced here: the unknowns section must not claim evidence exists and must
-        # not use ILT-002 or evidence-state wording. The section is identified by its
-        # stable heading and bounded by its list (no template/production change).
-        marker = "What You Have Marked as Not Yet Known"
-        assert marker in body  # the unknowns section is present (protection is live)
-        start = body.index(marker)
-        end = body.index("</ul>", start)
-        unknowns_section = body[start:end]
-        assert "ILT-002" not in unknowns_section
-        assert "evidence" not in unknowns_section.lower()
+        assert "ILT-002" not in body
+        assert "evidence" not in body.lower()
     finally:
         SESSION_STORE.pop(sid, None)
 
@@ -442,13 +428,11 @@ def _make_stage2_boundary_state(idea_id):
 
 def test_stage3_rendered_browser_flow_form_persists_through_partial():
     sid = "test-stage3-rendered-flow-sid"
-    _stage3_state = _make_stage2_boundary_state(sid)
-    SESSION_STORE[sid] = {"state": _stage3_state,
+    SESSION_STORE[sid] = {"state": _make_stage2_boundary_state(sid),
                           "last_result": None, "transcript": [], "last_question": ""}
-    seed_direct_session_envelope(sid, _stage3_state)  # explicit P4-1b-2a durable envelope
     try:
         client = app.test_client()
-        answered_post(client, sid, {"response": _WEB_REASONED})
+        client.post(f"/session/{sid}", data={"response": _WEB_REASONED})
         state = SESSION_STORE[sid]["state"]
         assert state.current_stage == 3
         assert state.get_gap(PROBLEM_MECHANISM_FIT).status == "OPEN"
@@ -456,20 +440,20 @@ def test_stage3_rendered_browser_flow_form_persists_through_partial():
         assert _FORM_MARKER in body and _SUBMIT_MARKER in body
         assert _PMF_Q1 in body and _PMF_HEADING in body and _PMF_GUIDANCE in body
         assert _COMPLETION_MARKER not in body and _CLOSING_FRAGMENT not in body
-        answered_post(client, sid, {"response": _WEB_REASONED})
+        client.post(f"/session/{sid}", data={"response": _WEB_REASONED})
         assert state.get_gap(PROBLEM_MECHANISM_FIT).status == "PARTIAL"
         body = client.get(f"/session/{sid}").get_data(as_text=True)
         assert _FORM_MARKER in body and _SUBMIT_MARKER in body
         assert _PMF_HEADING in body and _PMF_GUIDANCE in body
         assert _COMPLETION_MARKER not in body
-        answered_post(client, sid, {"response": _WEB_REASONED})
+        client.post(f"/session/{sid}", data={"response": _WEB_REASONED})
         assert state.get_gap(PROBLEM_MECHANISM_FIT).status == "CLOSED"
         assert state.get_gap(ASSUMPTION_INVENTORY).status == "OPEN"
         body = client.get(f"/session/{sid}").get_data(as_text=True)
         assert _FORM_MARKER in body and _SUBMIT_MARKER in body
         assert _AI_Q1 in body and _AI_HEADING_RENDERED in body and _AI_GUIDANCE in body
         assert _COMPLETION_MARKER not in body
-        answered_post(client, sid, {"response": _WEB_REASONED})
+        client.post(f"/session/{sid}", data={"response": _WEB_REASONED})
         assert state.get_gap(ASSUMPTION_INVENTORY).status == "PARTIAL"
         body = client.get(f"/session/{sid}").get_data(as_text=True)
         assert _FORM_MARKER in body and _SUBMIT_MARKER in body

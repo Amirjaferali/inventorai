@@ -1,6 +1,0 @@
-WORKSTREAM 9 GREEN — FINAL SINGLE-INTENT QUESTION TEXTS (authoritative tip d787a959)
-Source: docs/governance/path_n_content_config/electronics_electrical_path_n_questions.json
-
-N-PF-1 :: 'What would need to be true for this system to work safely in the real world?'
-N-PF-2 :: 'What do you think would keep the system running reliably over time?'
-N-BA-1 :: 'Which situations should the system be responsible for handling?'

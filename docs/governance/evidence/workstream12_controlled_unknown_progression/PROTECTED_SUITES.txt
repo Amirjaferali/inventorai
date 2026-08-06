@@ -1,8 +1,0 @@
-### WS9
-18 passed, 1 warning in 0.14s
-### WS10
-33 passed in 0.85s
-### WS11
-15 passed, 1 warning in 0.44s
-### WS9/Path-N protected regression
-38 passed, 1533 deselected, 1 warning in 1.11s

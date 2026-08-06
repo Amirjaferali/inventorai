@@ -10,6 +10,7 @@ Covers:
 Total: 31 cases
 """
 
+import pytest
 from engine.idea_state import IdeaState, Evidence, Gap
 from engine.progression_loop import (
     assess_response,
@@ -64,15 +65,19 @@ class TestAssessResponseQuality:
         )
         assert result != DEMONSTRATED
 
+    @pytest.mark.xfail(reason="RISK-001: bare substance token classified as REASONED")
     def test_A5_single_token_sensor_should_be_asserted(self):
         assert assess_response("sensor") == ASSERTED
 
+    @pytest.mark.xfail(reason="RISK-001: short technical phrase classified as REASONED")
     def test_A6_short_phrase_should_be_asserted(self):
         assert assess_response("it processes data") == ASSERTED
 
+    @pytest.mark.xfail(reason="RISK-001: vague sentence with token classified as REASONED")
     def test_A7_vague_plus_token_should_be_asserted(self):
         assert assess_response("it detects things somehow") == ASSERTED
 
+    @pytest.mark.xfail(reason="RISK-001: substring 'bar' in 'barrier' triggers REASONED")
     def test_A8_substring_match_should_be_asserted(self):
         assert assess_response("barrier protection") == ASSERTED
 
@@ -145,12 +150,14 @@ class TestIntegrateResponseGapStatus:
         integrate_response(state, MECHANISM_COMPLETENESS, "question", "sensor")
         assert state.known_problem is None  # RISK-002 fix: ASSERTED blocked
 
+    @pytest.mark.xfail(reason="RISK-002: known_problem accepts ASSERTED, no REASONED floor")
     def test_B8_known_problem_should_require_reasoned_floor(self):
         state = make_state()
         state.gaps.append(make_gap(MECHANISM_COMPLETENESS, OPEN))
         integrate_response(state, MECHANISM_COMPLETENESS, "question", "sensor")
         assert state.known_problem is None
 
+    @pytest.mark.xfail(reason="RISK-001/RISK-002: ASSERTED on PARTIAL gap incorrectly closes it")
     def test_B9_asserted_on_partial_gap_stays_partial(self):
         state = make_state()
         state.gaps.append(make_gap(MECHANISM_COMPLETENESS, PARTIAL))

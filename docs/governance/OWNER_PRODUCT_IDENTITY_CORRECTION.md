@@ -15,20 +15,14 @@ original document in full and leaving repository history untouched.
 
 **Governance status:**
 
-    SUBSTANTIVE PRODUCT IDENTITY: OWNER-RATIFIED
-    ORIGINAL §11 ACTIVATION MECHANISM: SUPERSEDED
-    CURRENT AUTHORITY MODEL: GOVERNED OFFICIAL-BRANCH MODEL
+    PROPOSED until all activation conditions in §11 are satisfied.
+    EFFECTIVE only upon completion of all activation conditions in §11,
+    including successful remote verification confirming
+    HEAD = origin/main and ahead/behind = 0 0.
 
-The owner-ratified substance governs product intent. This textual remediation
-becomes authoritative only when integrated through an owner-authorized normal
-merge into the authoritative execution branch identified by the latest
-committed governance sources and post-merge remote verification confirms the
-resulting branch state under §11.
-
-Historical evidence remains preserved. This amendment does not claim that the
-obsolete `HEAD = origin/main` condition was ever satisfied, and no historical
-drafting SHA or prose-pinned SHA is treated as the current live authoritative
-tip.
+At initial authoring this document exists as a working-tree proposal
+only. It does not embed a permanent DRAFT status. Its state advances
+automatically as the activation conditions in §11 are satisfied.
 
 ---
 
@@ -45,7 +39,7 @@ This document does not claim that a lower-level authority overrides a
 higher-level authority. It operates at Level 0 by virtue of explicit
 owner authorization.
 
-**Required reading order under the effective amendment:**
+**Required reading order after remote activation:**
 
     1. docs/governance/ILT-002_GOVERNANCE_ANCHOR.md
     2. docs/governance/OWNER_PRODUCT_IDENTITY_CORRECTION.md
@@ -57,7 +51,7 @@ This document must be read before `STRATEGIC_PRODUCT_VISION.md` so
 that future agents interpret any conflicting provisions of that
 document in light of this governing amendment.
 
-Under the effective amendment, any conflicting product-identity statement in a
+Upon remote activation, any conflicting product-identity statement in a
 lower-level document becomes subordinate to this amendment by operation
 of the repository authority hierarchy, without requiring immediate
 textual modification of those documents. The following documents
@@ -71,7 +65,7 @@ this package:
     CLAUDE.md
 
 Specifically, the following provisions in those documents are
-subordinate under the effective governing amendment:
+subordinate upon remote activation of this amendment:
 
     docs/governance/INVENTORAI_PRODUCT_THEORY.md
       §2 — "InventorAI develops inventors through ideas"
@@ -274,9 +268,9 @@ and to confirm that the corrected identity governs both paths.
 
 ## 9. Lower-Level Authority Treatment
 
-Under the effective governing amendment, conflicting lower-level
-product-identity statements are subordinate to this Level 0 owner
-amendment by operation of the repository authority hierarchy. No textual
+Upon remote activation, conflicting lower-level product-identity
+statements become subordinate to this Level 0 owner amendment by
+operation of the repository authority hierarchy. No textual
 modification of lower-level documents is required for this
 subordination to take effect.
 
@@ -322,9 +316,9 @@ artifacts — remains valid as historical evidence of the authority and
 understanding in effect when those artifacts were created.
 
 The correction governs current and future product identity
-prospectively under the effective official-branch authority model. It
-does not alter the accuracy of any historical classification exercise,
-measurement, or governance decision made under prior authority.
+prospectively, after remote activation only. It does not alter the
+accuracy of any historical classification exercise, measurement, or
+governance decision made under prior authority.
 
 `SESSION4_CLASSIFICATION_CORRECTION_NOTE.md` and
 `OWNER_CORRECTION_DECISION.md` remain as historical evidence of prior
@@ -339,29 +333,16 @@ this correction.
 This document recognizes the following lifecycle states:
 
     PROPOSED
-    The document exists only in a working tree, local commit, transport
-    artifact, review branch, or unmerged pull request. It remains subject
-    to owner review and authorized integration and has no authoritative
-    repository effect from those locations alone.
+    The document exists in the working tree or is committed locally.
+    It is a proposal subject to owner review and authorized activation.
+    It has no governing effect.
 
     EFFECTIVE
-    The owner-ratified amendment, including any authorized textual
-    remediation of its activation mechanism, has been integrated through
-    an owner-authorized normal merge into the authoritative execution
-    branch identified by the latest committed governance sources.
-
-    Post-merge remote verification must confirm all of the following:
-
-    1. the authoritative remote branch contains the accepted merge;
-    2. the authoritative branch and resulting live tip are resolved from
-       Git under the latest committed governance sources;
-    3. the merged identity matches the reviewed and owner-accepted
-       candidate, including the applicable merge lineage; and
-    4. no historical drafting SHA or prose-pinned SHA is treated as the
-       current live authoritative tip.
-
-    At that point the Level 0 amendment authority is operational.
-    Conflicting lower-level provisions are subordinate automatically.
+    The document has been committed locally, pushed to origin/main,
+    and post-push remote verification has confirmed
+    HEAD = origin/main with ahead/behind = 0 0.
+    At this point the Level 0 amendment authority becomes operational.
+    Conflicting lower-level provisions become subordinate automatically.
 
 The amendment sequence requires separate explicit owner authorization
 for each of the following gates:
@@ -369,9 +350,8 @@ for each of the following gates:
     Gate 3 — owner-approved content review
     Gate 4 — authorized staging of this file only
     Gate 5 — authorized local commit
-    Gate 6 — authorized publication and normal integration into the
-             authoritative execution branch, followed by successful
-             post-merge remote verification under the conditions above
+    Gate 6 — authorized push followed by successful remote verification
+             confirming HEAD = origin/main and ahead/behind = 0 0
 
 ---
 
@@ -416,7 +396,7 @@ Preserved holds, exactly:
 ## 13. Required Later Synchronization
 
 The following textual synchronizations are required under separate
-future authorizations after this amendment is effective. They
+future authorizations, after remote activation of this document. They
 are not part of this package. They are listed here so that future
 agents know the full correction scope:
 
@@ -434,7 +414,7 @@ None of these documents have been modified by this package.
 
 ## 14. Final Owner Ruling
 
-As an effective Level 0 owner amendment, this document records and gives
+Upon verified remote activation, this document records and gives
 governing effect to the owner's decision that:
 
 1. The primary product identity of InventorAI is: a governed

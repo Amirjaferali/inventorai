@@ -1,2 +1,0 @@
-# machine-derived from FULL_SUITE_HEAD.txt: grep '^FAILED' | sed 's/::.*//' | sort | uniq -c
-     31 FAILED tests/test_domain_registry.py

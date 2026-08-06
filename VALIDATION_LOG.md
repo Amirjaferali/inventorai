@@ -1,13 +1,5 @@
 # InventorAI — Validation Log
 
-> **STATUS BANNER (added by the Audit-Disposition & Lean-Governance gate):**
-> **HISTORICAL — NOT CURRENT EXECUTION AUTHORITY.** This is a historical validation log,
-> superseded for current status by committed evidence and formal-closure records. Resolve
-> current authority from `CLAUDE.md`, `docs/governance/CURRENT_PROJECT_STATE.md`, the current
-> anchors, the canonical plan, the latest `ACTIVE_EXECUTION_ROADMAP.md` records, and current
-> owner decisions (`docs/governance/OWNER_DECISION_REGISTER.md`). Body preserved unchanged
-> below. (SD-9.)
-
 ## Format
 | session_id | idea_summary | domain_detected | iterations | final_level | open_gaps | next_step_useful | observations |
 |------------|--------------|-----------------|------------|-------------|-----------|------------------|--------------|

@@ -13,22 +13,7 @@ from engine.idea_state import (
     IdeaState, Evidence, ASSERTED, REASONED, DEMONSTRATED, OPEN, PARTIAL, CLOSED,
     STAGE_3_GAP_TYPES, PROBLEM_MECHANISM_FIT,
     ASSUMPTION_INVENTORY, EXPERTISE_GAP_AWARENESS,
-    LEGACY_UNSPECIFIED, UNVALIDATED,
 )
-from engine.derived_readiness import derive_readiness
-# Increment 3: the SAME shared public derivation that feeds the session callout.
-# Imported as a module-level name so a single selection feeds both surfaces (O-2).
-from engine.idea_development_outputs import derive_next_development_step
-# Increment 4 (additive): the pure Requirement Landscape derivation. Consumed by
-# the single additive section _s13; adds no new truth and changes no prior section.
-from engine.requirement_landscape import derive_requirement_landscape
-# Increment 5 (additive): the pure Validation Plan derivation. Consumed by the
-# single additive section _s14; adds no new truth and changes no prior section.
-from engine.validation_plan import derive_validation_plan
-# Safety-Aware first increment (PR #120 contract): additive, read-only,
-# advisory-only inventor-stated safety-signal derivation. Changes no prior
-# section, no criticality, no Section 6 risk, and no RequirementLandscape.risks.
-from engine.safety_signal import derive_inventor_stated_safety_signals
 
 PACKAGE_VERSION = "1.0.0"
 SCHEMA_ID       = "fdc-001-mvp-v1"
@@ -41,22 +26,11 @@ _DISCLAIMER_STANDARD = (
     "claims, feasibility conclusions, and recommendations before acting on "
     "this assessment."
 )
-# Increment 2: evidence QUALITY (a reasoning-structure axis, ADR-003) is not
-# validation. The REASONED label no longer implies technical confirmation
-# "beyond stored evidence" — validation is surfaced separately on each evidence
-# view via `validation_status`.
 _QUALITY_LABELS = {
     ASSERTED:     "Asserted (inventor-stated, unvalidated)",
-    REASONED:     "Reasoned (inventor's structured rationale; not validated)",
+    REASONED:     "Reasoned (technically substantiated)",
     DEMONSTRATED: "Demonstrated (externally evidenced)",
     None:         "No evidence recorded",
-}
-# Honest, human-readable labels for the Increment 2 validation axis.
-_VALIDATION_LABELS = {
-    "UNVALIDATED":              "Not validated",
-    "SPECIALIST_REVIEWED":      "Specialist-reviewed",
-    "EMPIRICALLY_DEMONSTRATED": "Empirically demonstrated",
-    "INDEPENDENTLY_VERIFIED":   "Independently verified",
 }
 _MATURITY_LABELS = {
     0: "Level 0 — Problem signal not yet established",
@@ -75,105 +49,13 @@ _GAP_LABELS = {
     "EXPERTISE_GAP_AWARENESS": "Expertise-Gap Awareness",
 }
 
-# --- Workstream 3 deliverable hygiene: inventor-facing serialization boundary ---
-# Value-level transformations applied ONLY at Final Deliverable assembly
-# (contract DELIVERABLE_HYGIENE_INCREMENT_CONTRACT.md §9.6). Internal state,
-# dataclasses, enums, and every derivation are unchanged; raw values remain
-# available on the internal objects. No raw machine token is exported in the
-# inventor-facing package, and no compatibility field retains one.
-_QUALITY_PLAIN = {
-    ASSERTED:     "Asserted",
-    REASONED:     "Reasoned",
-    DEMONSTRATED: "Demonstrated",
-}
-_PROVENANCE_PUBLIC = {
-    LEGACY_UNSPECIFIED: "Not recorded (pre-provenance session)",
-}
-_RESOLUTION_STATUS_PUBLIC = {
-    "stated": "Stated by the inventor (not yet verified)",
-}
-_SOURCE_STATUS_PUBLIC = {
-    "recorded": "Recorded from your answers (not yet verified)",
-}
-_CRITICALITY_PUBLIC = {
-    "UNDETERMINED": "Not yet determined",
-    # Workstream 4 (contract §4): owner-approved public wordings for the three
-    # confirmable categories. Serialization-boundary mapping only — the
-    # derivation and every internal object keep the raw vocabulary unchanged.
-    "FEASIBILITY-THREATENING": "Essential to feasibility",
-    "VALUE-ENHANCING":         "Important to value",
-    "REFINEMENT":              "Refinement or improvement",
-}
-_CRITICALITY_AUTHORITY_PUBLIC = {
-    "system-derived": "assigned automatically by the system; not yet reviewed",
-    # Workstream 4 (contract §4): the two additional authority wordings; the
-    # system-derived mapping above is unchanged.
-    "owner-confirmed": "Confirmed by the inventor",
-    "undetermined":    "Confirmation not yet available",
-}
-# Workstream 4 stale-confirmation surfacing (contract §4 "stale confirmation";
-# stale-success-criteria precedent): aggregate truthful JSON metadata only.
-# Raw requirement ids are never exported, and the wording carries no internal
-# token. Nested under _session_meta so the canonical section contract and the
-# pinned section_13 shape are unchanged.
-_STALE_CRITICALITY_NOTE = (
-    "One or more of your earlier confirmations refer to items that are no "
-    "longer part of the current requirement landscape. They were kept in "
-    "your session history but were not reapplied to any other item.")
-# Finding F1 correction: engine-resident inventor-facing wording for the five
-# owner-approved suggested-provider vocabulary values exported by the shared
-# next-development-step derivation (engine.idea_development_outputs). Applied
-# ONLY at the Section 12 serialization boundary; the derivation, the payload,
-# and every internal object keep the raw vocabulary unchanged.
-_PROVIDER_PUBLIC = {
-    "OWNER_INPUT":        "You (the inventor)",
-    "SYSTEM_ANALYSIS":    "System analysis",
-    "SPECIALIST_INPUT":   "A relevant technical specialist",
-    "EMPIRICAL_EVIDENCE": "A measurement, test, or other empirical evidence",
-    "UNDETERMINED":       "Not yet determined",
-}
-SECTION_4_COUNT_BASIS = "evidence_derived_requirements"
-SECTION_13_COUNT_BASIS = "requirement_landscape"
-SECTION_4_13_COUNT_RELATIONSHIP = {
-    "narrower_view": SECTION_4_COUNT_BASIS,
-    "broader_set": SECTION_13_COUNT_BASIS,
-    "relationship": (
-        "evidence_derived_requirements is a narrower, evidence-oriented view; "
-        "it is not the same collection as requirement_landscape and the two "
-        "totals are counted from different sets."),
-}
-
-
-def _plain_quality(q):
-    """Inventor-facing form of a raw evidence-quality constant."""
-    return _QUALITY_PLAIN.get(q, q)
-
-
-def _public_provenance(p):
-    """Inventor-facing form of a raw evidence-provenance value."""
-    return _PROVENANCE_PUBLIC.get(p, p)
-
-
-def _public_gap(gt):
-    """Inventor-facing form of a raw gap-type value (existing committed labels)."""
-    return _GAP_LABELS.get(gt, gt)
-
-
-def _public_provider(p):
-    """Inventor-facing form of a raw suggested-provider value (Finding F1).
-    The five known provider vocabulary values map to their fixed public
-    wording; any value outside the known vocabulary (including None) passes
-    through unchanged — no meaning is invented for an unknown value."""
-    return _PROVIDER_PUBLIC.get(p, p)
-
-
 _STAGE3_MISSING_EVIDENCE = (
     "No substantiated response captured for this area yet. "
     "It remains open for the inventor to address."
 )
 _STATUS_LABELS = {
     OPEN: "Open", PARTIAL: "Partially addressed",
-    CLOSED: "Answered (not yet validated)", "ACCEPTED_RISK": "Accepted risk",
+    CLOSED: "Resolved", "ACCEPTED_RISK": "Accepted risk",
 }
 _RECOMMENDATION_A = {
     (2, False): ("PROCEED",
@@ -197,7 +79,7 @@ def assemble_deliverable(state: IdeaState) -> dict:
         raise ValueError("state.idea_id must be set before assembling a deliverable")
     open_gaps   = [g for g in state.gaps if g.status == OPEN]
     closed_gaps = [g for g in state.gaps if g.status == CLOSED]
-    package = {
+    return {
         "package_version": PACKAGE_VERSION,
         "schema_id":       SCHEMA_ID,
         "session_id":      state.idea_id,
@@ -213,17 +95,6 @@ def assemble_deliverable(state: IdeaState) -> dict:
         "section_9_stage3_reasoning":    _s9(state),
         "section_10_recommended_next_steps": _s10(state, open_gaps),
         "section_11_prototype_test_plan": _s11(state),
-        # Increment 3 (additive, R-3): one visible "Next Development Step" section
-        # consuming the SAME shared engine derivation as the session callout. It
-        # adds no new truth; it reorganizes already-recorded state for display.
-        "section_12_next_development_step": _s12(state),
-        # Increment 4 (additive): the provenance-anchored Requirement Landscape.
-        # Human-readable only; adds no new truth and changes no prior section.
-        "section_13_requirement_landscape": _s13(state),
-        # Increment 5 (additive): the Validation Plan (proposed validation actions
-        # and blocked items). Human-readable only; adds no new truth, proposes
-        # nothing verified, and changes no prior section.
-        "section_14_validation_plan": _s14(state),
         "_session_meta": {
             "total_iterations":     state.iteration,
             "total_gaps":           len(state.gaps),
@@ -233,510 +104,25 @@ def assemble_deliverable(state: IdeaState) -> dict:
             "maturity_label":       _MATURITY_LABELS.get(state.maturity_level, "Unknown"),
             "direction":            getattr(state, "direction", None),
             "domain_signal":        getattr(state, "domain_signal", None),
-            "evidence_quality":     _plain_quality(_overall_quality(state)),
+            "evidence_quality":     _overall_quality(state),
             "idea_summary":          getattr(state, "idea_summary", None),  # R-007
             "deliverable_eligible": _eligible(state, open_gaps),
-            # Increment 2: derived verified readiness, presented SEPARATELY from
-            # stored maturity/lifecycle and from legacy `deliverable_eligible`.
-            # Purely recomputed; it never overrides or mutates stored state, and
-            # stored CLOSED / high maturity does not force it True.
-            "derived_verified_ready": _derived_verified_ready(state),
-            # Phase 3A (additive, nested under _session_meta so the top-level
-            # canonical-section contract is unchanged): minimal problem/mechanism
-            # evidence registry. Full text is carried once here; Section 4
-            # references it by id. No evidence removed, no claim added.
-            "evidence_registry": _evidence_registry(state),
-            # Phase 3B-1 (additive, nested, SEPARATE from evidence_registry so
-            # EV-001/EV-002 are untouched): acknowledged-unknown registry. Full
-            # verbatim is carried once here; Section 8 references it by id while
-            # Section 5 shows the full text. No unknown removed, no claim added.
-            "unknown_registry": _unknown_registry(state),
-            # Safety-Aware first increment (additive, nested under _session_meta so
-            # the top-level canonical-section contract is unchanged — mirrors
-            # evidence_registry / unknown_registry; PR #120 contract). Advisory-only
-            # inventor-stated safety signals: adds no new top-level section, changes
-            # no prior section, does NOT populate RequirementLandscape.risks, does
-            # NOT touch Section 6 risks or Section 13 criticality, and makes no final
-            # safety / compliance / certification determination.
-            "inventor_stated_safety_signals": _s15(state),
-            # Workstream 4 (additive, nested under _session_meta so the
-            # canonical-section contract and the pinned section_13 shape are
-            # unchanged): aggregate truthful stale-confirmation surfacing.
-            # Counts only — raw requirement ids are never exported; stale
-            # confirmations are retained in session history, never reattached.
-            "stale_criticality_confirmations": _stale_criticality_meta(state),
         },
     }
-    # Workstream 5 (UNIFIED_RISK_SAFETY_PRESENTATION_INCREMENT_CONTRACT.md §4;
-    # owner decision D5): additive linkage object, synthesized EXCLUSIVELY from
-    # values already present in the assembled package. It re-runs no detection,
-    # mines no text, infers no severity, creates no risk, promotes no signal,
-    # and alters no underlying record. Nested under _session_meta so the
-    # canonical section contract and the frozen section_13 shape are unchanged.
-    package["_session_meta"]["risk_safety_linkage"] = _risk_safety_linkage(package)
-    # Workstream 6 (REQUIREMENT_LANDSCAPE_SYNTHESIS_INCREMENT_CONTRACT.md §2.3;
-    # owner decision D5): additive exact-repeat synthesis metadata, assembled
-    # EXCLUSIVELY from the already-serialized Section 13 rows (never from raw
-    # state — no disposition re-derivation). Nested under _session_meta so the
-    # canonical section contract and the pinned Section 13 shape are unchanged.
-    package["_session_meta"]["requirement_landscape_synthesis"] = (
-        _requirement_landscape_synthesis(package))
-    return package
-
-
-# --- Workstream 5: unified risk and safety presentation linkage -------------------
-# Owner-approved exact public wordings (contract §5; owner decision D2). Rendered
-# ONLY when inventor-stated safety signals exist; None otherwise (defined
-# no-signal semantics, contract §11). Byte-exact — never paraphrased.
-_LINKAGE_SECTION_6_NOTE = (
-    "You also described possible safety consequences in your own words.\n"
-    "See “Inventor-Stated Safety Signals.”\n\n"
-    "These are your statements, not confirmed risks, and they still require\n"
-    "independent validation.")
-_LINKAGE_SECTION_6_EMPTY_QUALIFIED = (
-    "No system-derived risks were identified from the current session state.\n\n"
-    "This does not mean the idea is safe or risk-free. Safety consequences you\n"
-    "described are listed separately under “Inventor-Stated Safety Signals” and\n"
-    "have not been independently validated.")
-_LINKAGE_SECTION_13_NOTE = (
-    "You also described possible safety consequences in your own words.\n\n"
-    "They are listed separately under “Inventor-Stated Safety Signals.” They are\n"
-    "not structural risk records and have not been independently validated.")
-
-
-def _risk_safety_linkage(package):
-    """Contract §4.1 linkage synthesis: read-only over the ALREADY-ASSEMBLED
-    package (never over raw state), returning the additive
-    _session_meta.risk_safety_linkage object. The distinct semantic categories
-    are preserved — inventor-stated signals are never merged into, or promoted
-    to, system-derived or structural risks; every truthful disclaimer stays."""
-    signals = package["_session_meta"]["inventor_stated_safety_signals"]
-    s6 = package["section_6_risks"]
-    s13 = package["section_13_requirement_landscape"]
-    signals_present = bool(signals["signals"])
-    return {
-        "signals_present":            signals_present,
-        "signal_total":               signals["total"],
-        "section_6_risk_total":       s6["total"],
-        "section_6_high_count":       s6["high_count"],
-        "section_6_medium_count":     s6["medium_count"],
-        "section_6_low_count":        s6["low_count"],
-        "section_13_has_structural_risks": s13["has_risks"],
-        "acknowledged_unknown_count": package["section_8_unresolved_items"][
-                                          "acknowledged_unknown_count"],
-        "section_6_note": (_LINKAGE_SECTION_6_NOTE
-                           if signals_present else None),
-        "section_6_empty_qualification": (
-            _LINKAGE_SECTION_6_EMPTY_QUALIFIED
-            if signals_present and not s6["risks"] else None),
-        "section_13_note": (_LINKAGE_SECTION_13_NOTE
-                            if signals_present else None),
-    }
-
-
-# --- Workstream 6: exact-repeat requirement landscape synthesis -------------------
-# Owner-approved exact repetition wording (contract §7.4; owner decision D2).
-# The count is always derived from the assembled data — never hard-coded.
-_REPETITION_NOTE_TEMPLATE = (
-    "This statement was recorded {count} times during the session.")
-# The four assertion-anchored public labels. Repetition synthesis applies ONLY
-# to inventor-record rows (these labels): system-worded rows (contradiction
-# pairs, gap anchors, pending requests) are never grouped, so the sentence
-# "recorded ... during the session" is never attached to a non-inventor row.
-_SYNTHESIS_GROUPABLE_LABELS = frozenset({
-    "Recorded answer", "Recorded unknown", "Deferred decision",
-    "Provisional assumption",
-})
-
-
-def _requirement_landscape_synthesis(package):
-    """Contract §2.3 synthesis metadata: read-only over the ALREADY-ASSEMBLED
-    Section 13 rows (never over raw state). Grouping key = the FULL serialized
-    row (byte-identical statement AND byte-identical metadata) so two rows are
-    grouped ONLY when they are exact repeats — a statement recorded with any
-    differing metadata (for example an owner-confirmed criticality) is never
-    merged, and non-byte-identical statements are never grouped. Deterministic,
-    JSON-safe, additive; carries exactly the values the template renders.
-
-    Fields per statement group (narrowest set that lets the template locate
-    the group inside the Phase 7C metadata-tuple presentation WITHOUT
-    re-deriving disposition from raw state, and lets the GREEN parity test
-    machine-compare metadata against JSON and HTML):
-      * statement            — the exact inventor statement represented;
-      * provenance/status/criticality/criticality_authority/
-        criticality_rationale/resolving_action — the row's already-public
-        metadata tuple (group discriminator; byte-equal to the rows);
-      * occurrence_count     — number of byte-identical rows in the group;
-      * repetition_note      — the exact owner-approved sentence with the
-        derived count, or None for a single occurrence.
-    """
-    rows = package["section_13_requirement_landscape"]["requirements"]
-    groups = []
-    index = {}
-    for row in rows:
-        if row["provenance"] not in _SYNTHESIS_GROUPABLE_LABELS:
-            continue
-        key = (row["statement"], row["provenance"], row["status"],
-               row["criticality"], row["criticality_authority"],
-               row["criticality_rationale"], row["resolving_action"],
-               tuple(row["supporting_references"]), row["has_linked_risk"])
-        if key in index:
-            index[key]["occurrence_count"] += 1
-        else:
-            entry = {
-                "statement":             row["statement"],
-                "provenance":            row["provenance"],
-                "status":                row["status"],
-                "criticality":           row["criticality"],
-                "criticality_authority": row["criticality_authority"],
-                "criticality_rationale": row["criticality_rationale"],
-                "resolving_action":      row["resolving_action"],
-                "occurrence_count":      1,
-                "repetition_note":       None,
-            }
-            index[key] = entry
-            groups.append(entry)
-    for entry in groups:
-        if entry["occurrence_count"] > 1:
-            entry["repetition_note"] = _REPETITION_NOTE_TEMPLATE.format(
-                count=entry["occurrence_count"])
-    return {
-        "synthesis_basis":      "byte_identical_statement_and_metadata",
-        "statement_groups":     groups,
-        "group_total":          len(groups),
-        "repeated_group_total": sum(1 for g in groups
-                                    if g["occurrence_count"] > 1),
-    }
-
-
-def _stale_criticality_meta(state):
-    """Aggregate stale-confirmation truth (Workstream 4 contract §4): how many
-    recorded explicit criticality actions reference a requirement_id that the
-    current landscape no longer generates. JSON metadata only; no raw id."""
-    confirmations = getattr(state, "criticality_confirmations", None) or []
-    if not confirmations:
-        return {"total": 0, "note": None}
-    generated = {r.requirement_id
-                 for r in derive_requirement_landscape(state).requirements}
-    stale_ids = {c.requirement_id for c in confirmations} - generated
-    return {"total": len(stale_ids),
-            "note": _STALE_CRITICALITY_NOTE if stale_ids else None}
-
-_ZERO_RISK_DISCLAIMER = (
-    "No structurally grounded risks are recorded for the current requirements. "
-    "This is not a statement that the idea is risk-free, safe, or verified; it "
-    "means no structural adverse-consequence signal exists in the recorded state."
-)
-_REQUIREMENT_LANDSCAPE_EMPTY = (
-    "No active, provenance-anchored requirements are recorded yet. This is an "
-    "idea-development state, not an error: nothing outstanding has been captured "
-    "to derive a requirement from."
-)
-
-
-def _s13(state):
-    """Increment 4 additive section: render the pure Requirement Landscape
-    derivation as a presentation-ready, JSON-safe dict (read-only; mirrors _s12).
-    Human-readable labels only — no raw enum or internal identifier is exposed."""
-    landscape = derive_requirement_landscape(state)
-    requirements = []
-    for r in landscape.requirements:
-        action = r.resolving_action
-        requirements.append({
-            "statement":             r.statement,
-            "provenance":            r.primary_anchor.display_label,
-            "status":                _SOURCE_STATUS_PUBLIC.get(r.source_status, r.source_status),
-            "criticality":           _CRITICALITY_PUBLIC.get(r.criticality, r.criticality),
-            "criticality_authority": _CRITICALITY_AUTHORITY_PUBLIC.get(
-                                         r.criticality_authority, r.criticality_authority),
-            "criticality_rationale": r.criticality_rationale,
-            "resolving_action":      (action.statement if action is not None else None),
-            "supporting_references": [ref.display_label for ref in r.supporting_references],
-            "has_linked_risk":       bool(r.linked_risk_ids),
-        })
-    return {
-        "title":           "Requirement Landscape",
-        "requirements":    requirements,
-        "total":           len(requirements),
-        "count_basis":     SECTION_13_COUNT_BASIS,
-        "count_relationship": SECTION_4_13_COUNT_RELATIONSHIP,
-        "empty_statement": _REQUIREMENT_LANDSCAPE_EMPTY,
-        "risks":           [],
-        "has_risks":       bool(landscape.risks),
-        "risk_disclaimer": _ZERO_RISK_DISCLAIMER,
-    }
-
-
-# --- Increment 5 additive Validation Plan section (mirrors _s13 discipline) --------
-_VALIDATION_PLAN_EMPTY = (
-    "No active, provenance-anchored requirements are recorded yet, so no validation "
-    "steps can be proposed. This is an idea-development state, not an error."
-)
-# Fixed human labels for the bounded responsibility/confidence tokens (contract §15).
-# Raw tokens are never rendered; the template shows these labels only.
-_RESPONSIBILITY_LABELS = {
-    "OWNER_EXECUTABLE":            "Owner can perform",
-    "SYSTEM_DERIVABLE":            "System can derive",
-    "SPECIALIST_REQUIRED":         "Specialist input required",
-    "EMPIRICAL_EVIDENCE_REQUIRED": "Empirical evidence required",
-    "UNDETERMINED":                "Responsibility undetermined",
-}
-_CONFIDENCE_LABELS = {
-    "UNDETERMINED": "Confidence undetermined",
-}
-# Workstream 7 (ACTIONABLE_VALIDATION_PLAN_INCREMENT_CONTRACT.md §3.4/§5.4/§5.5;
-# owner decisions D7/D8 carried per C2): ADDITIVE OPTIONAL per-step `advisory`
-# wordings, keyed SOLELY by the step's provenance anchor kind — the two pending
-# kinds only. Null on every other row. Honest interim limitation notices only:
-# no technical method, tool, standard, threshold, laboratory, simulation,
-# product, specialist type, routing, or sufficiency claim. The pending-specialist
-# advisory does not satisfy, approximate, or discharge D13.
-_STEP_ADVISORIES = {
-    "pending_evidence": (
-        "Additional evidence is still required for this item.\n"
-        "Prepare or obtain the evidence identified in the recorded request "
-        "before treating the item as validated."),
-    "pending_specialist": (
-        "Specialist input is still required for this item.\n"
-        "The appropriate specialist has not yet been identified by the system."),
-}
-
-
-_SAFETY_SIGNALS_EMPTY = (
-    "No inventor-stated safety signals were derived from the recorded statements. "
-    "This is NOT a determination that the idea is safe, unsafe, risk-free, or "
-    "verified — it means no inventor-stated safety-critical failure condition was "
-    "detected in the recorded content."
-)
-
-
-def _s15(state):
-    """Safety-Aware first increment additive section (PR #120 contract): render the
-    pure inventor-stated safety-signal derivation as a JSON-safe dict (read-only;
-    mirrors _s13/_s14). Advisory-only: it adds no new stored truth, changes no prior
-    section, does NOT populate RequirementLandscape.risks, does NOT touch Section 6
-    risks or Section 13 criticality, and makes NO final safety / compliance /
-    certification / approval / legal / patent / engineering-validation claim. Every
-    signal is labelled inventor-stated and requiring independent validation."""
-    signals = derive_inventor_stated_safety_signals(state)
-    rendered = []
-    for s in signals:
-        rendered.append({
-            "signal_id":            s.signal_id,
-            "source":               s.source,
-            "provenance":           s.provenance,
-            "safety_subject":       s.safety_subject,
-            "failure_condition":    s.failure_condition,
-            "possible_consequence": s.possible_consequence,
-            "domain_context":       s.domain_context,
-            "validation_status":    s.validation_status,
-            "display_label":        s.display_label,
-            "caution_text":         s.caution_text,
-            "statement":            s.statement,
-        })
-    return {
-        "title":           "Inventor-Stated Safety Signals",
-        "signals":         rendered,
-        "total":           len(rendered),
-        "has_signals":     bool(rendered),
-        "empty_statement": _SAFETY_SIGNALS_EMPTY,
-        "advisory_note": (
-            "These signals are inventor-stated and require independent validation. "
-            "They are advisory only and are not a safety, compliance, certification, "
-            "engineering, or legal determination."
-        ),
-    }
-
-
-def _s14(state):
-    """Increment 5 additive section: render the pure Validation Plan derivation as a
-    presentation-ready, JSON-safe dict (read-only; mirrors _s12/_s13). Human-readable
-    labels only — no raw enum, token, or internal identifier is exposed. Both `steps`
-    and `blocked_items` are always emitted as lists (never null); the bounded status
-    tokens (`outcome`, `responsibility`, `confidence`) may appear in the package but
-    are rendered only via their fixed human labels (contract §15/§16)."""
-    plan = derive_validation_plan(state)
-    steps = []
-    for st in plan.steps:
-        steps.append({
-            "statement":            st.statement,
-            "responsibility":       _RESPONSIBILITY_LABELS.get(st.responsibility,
-                                                               st.responsibility),
-            "responsibility_label": _RESPONSIBILITY_LABELS.get(st.responsibility, ""),
-            "evidence_category":    st.evidence_category,
-            "closure_condition":    st.closure_condition,
-            "provenance":           st.provenance.display_label,
-            "confidence":           _CONFIDENCE_LABELS.get(st.confidence, st.confidence),
-            "confidence_label":     _CONFIDENCE_LABELS.get(st.confidence, ""),
-            "advisory":             _STEP_ADVISORIES.get(st.provenance.anchor_kind),
-        })
-    blocked_items = []
-    for b in plan.blocked_items:
-        blocked_items.append({
-            "reason":               b.reason,
-            "missing":              b.missing,
-            "responsibility":       _RESPONSIBILITY_LABELS.get(b.responsibility,
-                                                               b.responsibility),
-            "responsibility_label": _RESPONSIBILITY_LABELS.get(b.responsibility, ""),
-            "provenance":           b.provenance.display_label,
-        })
-    return {
-        "title":           "Validation Plan",
-        "outcome":         plan.outcome,
-        "steps":           steps,
-        "blocked_items":   blocked_items,
-        "validation_plan_source": SECTION_13_COUNT_BASIS,
-        "validation_step_total":  len(steps),
-        "blocked_item_total":     len(blocked_items),
-        "empty_statement": _VALIDATION_PLAN_EMPTY,
-    }
-
-
-def _s12(state):
-    """Increment 3 additive section: render the shared next-development-step
-    derivation as a presentation-ready dict (read-only; no priority logic here).
-
-    When the derivation finds nothing actionable (verified-ready), the section is
-    present but non-actionable (`actionable=False`) — no problem is invented."""
-    payload = derive_next_development_step(state)
-    if payload is None:
-        return {
-            "actionable":            False,
-            "issue_type":            None,
-            "reference_id":          None,
-            "title":                 None,
-            "why_it_matters":        None,
-            "next_action":           None,
-            "evidence_needed":       None,
-            "suggested_provider":    None,
-            "sufficiency_condition": None,
-            "unlock_condition":      None,
-            "remaining_uncertainty": None,
-        }
-    return {
-        "actionable":            True,
-        "issue_type":            payload.issue_type,
-        # Finding F1: serialization-boundary mapping only. The existing public
-        # gap mapping turns the six gap enums into their committed
-        # inventor-facing labels and passes every other reference id (rec_N,
-        # maturity_level_N) through unchanged; the provider mapping turns the
-        # five known provider vocabulary values into their public wording.
-        "reference_id":          _public_gap(payload.reference_id),
-        "title":                 payload.title,
-        "why_it_matters":        payload.why_it_matters,
-        "next_action":           payload.next_action,
-        "evidence_needed":       payload.evidence_needed,
-        "suggested_provider":    _public_provider(payload.suggested_provider),
-        "sufficiency_condition": payload.sufficiency_condition,
-        "unlock_condition":      payload.unlock_condition,
-        "remaining_uncertainty": payload.remaining_uncertainty,
-    }
-
-
-def _derived_verified_ready(state):
-    """Truthful, recomputed-on-demand verified-readiness flag for the deliverable.
-    Reads the append-only ledger via the pure derived-readiness module; defaults
-    to False when there is no validated basis (e.g. legacy states with no ledger
-    records). Never overstates certainty from stored maturity/lifecycle alone."""
-    return derive_readiness(state).overall_verified()
 
 def _s1():
     return {"tier": "standard", "text": _DISCLAIMER_STANDARD, "applies": True}
 
-# Phase 3A Evidence Registry pilot (problem/mechanism only). Stable fixed-slot
-# IDs: the problem is always EV-001, the mechanism always EV-002. When one is
-# absent no fake entry is created and the other keeps its fixed ID. The registry
-# carries the full evidence text once (so it is never deleted), with a
-# human-readable label and provenance. It lives under _session_meta so the
-# top-level canonical-section contract is unchanged. Presentation/packaging only:
-# no new truth, no summarization, no maturity/readiness/progression change.
-_EVIDENCE_PROBLEM_ID = "EV-001"
-_EVIDENCE_MECHANISM_ID = "EV-002"
-_EVIDENCE_PROBLEM_LABEL = "Known Problem"
-_EVIDENCE_MECHANISM_LABEL = "Known Mechanism"
-
-
-def _evidence_registry(state):
-    """Minimal problem/mechanism evidence registry (Phase 3A). Full text is
-    carried once here so downstream sections can reference it by id instead of
-    re-copying it. No evidence is deleted and no claim is added."""
-    reg = []
-    problem = _resolved_problem(state)
-    if problem is not None:
-        reg.append({
-            "evidence_id": _EVIDENCE_PROBLEM_ID,
-            "label": _EVIDENCE_PROBLEM_LABEL,
-            "content": _txt(problem),
-            "provenance": _public_provenance(getattr(problem, "provenance", LEGACY_UNSPECIFIED)),
-            "quality_label": _QUALITY_LABELS.get(getattr(problem, "quality", None), "Unknown"),
-        })
-    mech = getattr(state, "known_mechanism", None)
-    if mech is not None:
-        reg.append({
-            "evidence_id": _EVIDENCE_MECHANISM_ID,
-            "label": _EVIDENCE_MECHANISM_LABEL,
-            "content": _txt(mech),
-            "provenance": _public_provenance(getattr(mech, "provenance", LEGACY_UNSPECIFIED)),
-            "quality_label": _QUALITY_LABELS.get(getattr(mech, "quality", None), "Unknown"),
-        })
-    return reg
-
-
-# Phase 3B-1 Unknown Registry (acknowledged unknowns only). A SEPARATE namespace
-# and a SEPARATE registry from Phase 3A: acknowledged unknowns are gaps, not
-# established evidence, so they never enter evidence_registry and EV-001/EV-002
-# behavior is untouched. IDs are UNK-001, UNK-002, ... assigned by 1-based order
-# in state.acknowledged_unknowns (NOT iteration, which may not be unique). No
-# fake entry is created when there is no acknowledged unknown. The registry
-# carries the full verbatim once (never deleted); Section 8 references it by id
-# while Section 5 remains the primary visible location for the full text. Lives
-# under _session_meta so the top-level canonical-section contract is unchanged.
-# Presentation/packaging only: no new truth, no summarization, no claim.
-_UNKNOWN_ID_PREFIX = "UNK"
-_UNKNOWN_LABEL_PREFIX = "Acknowledged Unknown"
-
-
-def _unknown_id(index):
-    """Stable visible id for the index-th (0-based) acknowledged unknown."""
-    return f"{_UNKNOWN_ID_PREFIX}-{index + 1:03d}"
-
-
-def _unknown_registry(state):
-    """Acknowledged-unknown registry (Phase 3B-1). Full verbatim is carried once
-    here so Section 8 can reference it by id instead of re-copying it. Section 5
-    stays the primary visible location. No unknown is deleted and no claim is
-    added. Empty list when there are no acknowledged unknowns."""
-    reg = []
-    for i, u in enumerate(getattr(state, "acknowledged_unknowns", [])):
-        reg.append({
-            "unknown_id": _unknown_id(i),
-            "label": f"{_UNKNOWN_LABEL_PREFIX} {i + 1}",
-            "content": getattr(u, "verbatim", None),
-            "gap_context": _public_gap(getattr(u, "gap_context", None)),
-            "category_basis": getattr(u, "category_basis", None),
-            "source": "inventor_stated",
-        })
-    return reg
-
-
 def _s2(state):
     resolved_problem = _resolved_problem(state)
-    # Phase 3A: surface the fixed-slot evidence id next to the full text that is
-    # shown once here, so Section 4 can reference it instead of re-copying it.
-    known_problem = _ev(resolved_problem)
-    if known_problem is not None:
-        known_problem["evidence_id"] = _EVIDENCE_PROBLEM_ID
-    known_mechanism = _ev(getattr(state, "known_mechanism", None))
-    if known_mechanism is not None:
-        known_mechanism["evidence_id"] = _EVIDENCE_MECHANISM_ID
     return {
         "maturity_level":         state.maturity_level,
         "maturity_label":         _MATURITY_LABELS.get(state.maturity_level, "Unknown"),
         "domain_signal":          getattr(state, "domain_signal", None),
-        "known_problem":          known_problem,
+        "known_problem":          _ev(resolved_problem),
         "known_problem_note":     None if resolved_problem else
                                   "Problem evidence has not yet been captured clearly.",
-        "known_mechanism":        known_mechanism,
+        "known_mechanism":        _ev(getattr(state, "known_mechanism", None)),
         "known_boundaries":       [_ev(b) for b in getattr(state, "known_boundaries", []) if b],
         "assessment_completeness": _completeness(state),
     }
@@ -747,11 +133,11 @@ def _s3(state, open_gaps):
         "capabilities_assessed": [{
             "capability_id":  cap,
             "maturity_level": state.maturity_level,
-            "overall_quality": _plain_quality(_overall_quality(state)),
+            "overall_quality": _overall_quality(state),
             "gaps_total":  len(state.gaps),
             "gaps_open":   len(open_gaps),
             "gaps_resolved": len([g for g in state.gaps if g.status == CLOSED]),
-            "gaps_detail": [{"gap_type": _public_gap(g.gap_type),
+            "gaps_detail": [{"gap_type": g.gap_type,
                              "gap_label": _GAP_LABELS.get(g.gap_type, g.gap_type),
                              "status": g.status,
                              "status_label": _STATUS_LABELS.get(g.status, g.status),
@@ -765,36 +151,25 @@ def _s4(state):
     reqs, n = [], 1
     problem = _resolved_problem(state)
     if problem:
-        # Phase 3A: reference the registry entry instead of re-copying the full
-        # problem text (which is shown once in Section 2 / the evidence registry).
         reqs.append({"id": f"REQ-{n:03d}", "type": "functional",
-            "statement": f"See {_EVIDENCE_PROBLEM_ID} — {_EVIDENCE_PROBLEM_LABEL}",
-            "evidence_id": _EVIDENCE_PROBLEM_ID,
-            "source": "session_evidence",
-            "evidence_quality": _plain_quality(problem.quality),
-            "resolution_status": _RESOLUTION_STATUS_PUBLIC["stated"],
+            "statement": _txt(problem), "source": "session_evidence",
+            "evidence_quality": problem.quality, "resolution_status": "stated",
             "note": "Derived from inventor-stated problem evidence. Verification required."})
         n += 1
     if getattr(state, "known_mechanism", None):
-        # Phase 3A: reference the registry entry instead of re-copying the full
-        # mechanism text (which is shown once in Section 2 / the evidence registry).
         reqs.append({"id": f"REQ-{n:03d}", "type": "technical",
-            "statement": f"See {_EVIDENCE_MECHANISM_ID} — {_EVIDENCE_MECHANISM_LABEL}",
-            "evidence_id": _EVIDENCE_MECHANISM_ID,
-            "source": "session_evidence",
-            "evidence_quality": _plain_quality(state.known_mechanism.quality),
-            "resolution_status": _RESOLUTION_STATUS_PUBLIC["stated"],
+            "statement": _txt(state.known_mechanism), "source": "session_evidence",
+            "evidence_quality": state.known_mechanism.quality, "resolution_status": "stated",
             "note": "Component-level specification required before implementation."})
         n += 1
     for g in state.gaps:
         if g.status == CLOSED:
             reqs.append({"id": f"REQ-{n:03d}", "type": "constraint",
                 "statement": f"{_GAP_LABELS.get(g.gap_type, g.gap_type)} addressed",
-                "source": "gap_resolution", "evidence_quality": _plain_quality(REASONED),
+                "source": "gap_resolution", "evidence_quality": REASONED,
                 "resolution_status": "resolved", "note": None})
             n += 1
     return {"requirements": reqs, "total": len(reqs),
-            "count_basis": SECTION_4_COUNT_BASIS,
             "note": "Requirements derived from session evidence in MVP."}
 
 def _s5(state):
@@ -808,7 +183,7 @@ def _s5(state):
             "validation_approach": "Prototype or simulation required" if q == ASSERTED
                                    else "Component-level testing to confirm operating principle",
             "risk_if_invalid": "Session assessment may not reflect true feasibility",
-            "basis": f"{_plain_quality(q)} evidence"})
+            "basis": f"{q} evidence"})
         n += 1
     for g in state.gaps:
         if g.status == OPEN:
@@ -818,14 +193,10 @@ def _s5(state):
                 "risk_if_invalid": "Assessment remains incomplete at this gap",
                 "basis": "Open gap"})
             n += 1
-    # Phase 3B-1: attach the stable unknown id (UNK-00N) next to the full text
-    # that is shown once here, so Section 8 can reference it instead of re-copying
-    # it. Full verbatim is unchanged and still shown in this primary location.
     inventor_unknowns = [
-        {"unknown_id": _unknown_id(i),
-         "iteration": u.iteration, "gap_context": _public_gap(u.gap_context),
+        {"iteration": u.iteration, "gap_context": u.gap_context,
          "statement": u.verbatim, "source": "inventor_stated"}
-        for i, u in enumerate(getattr(state, "acknowledged_unknowns", []))
+        for u in getattr(state, "acknowledged_unknowns", [])
     ]
     return {
         "assumptions":       asmp,
@@ -847,14 +218,14 @@ def _s6(state, open_gaps):
     q = _overall_quality(state)
     if q == ASSERTED:
         risks.append({"id": f"RISK-{n:03d}", "category": "evidence_quality",
-            "description": "All evidence is asserted (inventor-stated, unvalidated).",
+            "description": "All evidence is ASSERTED (inventor-stated, unvalidated).",
             "severity": "high",
             "residual_risk": "Technical claims may not reflect actual feasibility.",
             "status": "open"})
         n += 1
     elif q == REASONED:
         risks.append({"id": f"RISK-{n:03d}", "category": "evidence_quality",
-            "description": "Evidence is reasoned (substantiated but not demonstrated).",
+            "description": "Evidence is REASONED (substantiated but not demonstrated).",
             "severity": "low",
             "residual_risk": "Prototype validation recommended before detailed design.",
             "status": "open"})
@@ -875,7 +246,7 @@ def _s7(state, open_gaps):
     key = (min(state.maturity_level, 2), len(open_gaps) > 0)
     verdict, rationale = _RECOMMENDATION_A.get(key,
         ("REVISE", "Insufficient evidence to recommend proceeding."))
-    cat_d = [{"item_type": "open_gap", "gap_type": _public_gap(g.gap_type),
+    cat_d = [{"item_type": "open_gap", "gap_type": g.gap_type,
               "gap_label": _GAP_LABELS.get(g.gap_type, g.gap_type),
               "action": f"Provide substantive evidence for {_GAP_LABELS.get(g.gap_type, g.gap_type).lower()}",
               "priority": "high" if g.iterations_open >= 2 else "normal"}
@@ -885,36 +256,11 @@ def _s7(state, open_gaps):
             "gap_label": "Maturity level",
             "action": "Continue with technically substantive answers to reach Level 2.",
             "priority": "high"})
-    # F-1 truthfulness: when derived verified readiness is NOT met, a positive
-    # verdict/rationale must not imply verified readiness. Stored maturity and the
-    # stored gap lifecycle remain visible as stored state (deliverable_eligible,
-    # maturity_label and gap statuses are unchanged); derived readiness is shown
-    # separately. We qualify only the already-rendered verdict/rationale and add a
-    # visible Open Item — no template change, no new verdict value, no change to
-    # stored eligibility, and no claim that the idea is technically verified.
-    derived_ready = _derived_verified_ready(state)
-    if not derived_ready and verdict in ("PROCEED", "PROCEED WITH CAUTION"):
-        verdict = "PROCEED WITH CAUTION"
-        rationale = (
-            "Structurally progressed: stored maturity and the stored gap "
-            "lifecycle are recorded as shown, but derived verified readiness is "
-            "NOT met — recorded supporting evidence remains unvalidated, "
-            "provisional, pending, or contradicted. Proceed only with "
-            "verification caution; this is not a determination that the idea is "
-            "technically verified, and unresolved validation items remain even "
-            "where stored gaps are CLOSED.")
-        cat_d.append({"item_type": "validation_unresolved", "gap_type": None,
-            "gap_label": "Evidence validation",
-            "action": "Validate the supporting evidence (specialist review, "
-                      "demonstration, or independent verification): verification "
-                      "remains incomplete even where stored gaps are CLOSED.",
-            "priority": "high"})
     return {
         "category_a_proceed_revise_block": {"verdict": verdict, "rationale": rationale,
             "basis": {"maturity_level": state.maturity_level,
                       "open_gap_count": len(open_gaps),
-                      "evidence_quality": _plain_quality(_overall_quality(state)),
-                      "derived_verified_ready": derived_ready}},
+                      "evidence_quality": _overall_quality(state)}},
         "category_b_material_selection": {"status": "DEFERRED",
             "note": "Requires Options Database (ODS-001). Not in the current MVP."},
         "category_c_manufacturing":      {"status": "DEFERRED",
@@ -925,24 +271,18 @@ def _s7(state, open_gaps):
 def _s8(open_gaps, state=None):
     items = [
         {"id": f"OPEN-{i+1:03d}", "type": "open_gap",
-         "gap_type": _public_gap(g.gap_type),
+         "gap_type": g.gap_type,
          "gap_label": _GAP_LABELS.get(g.gap_type, g.gap_type),
          "status": g.status, "iterations_open": g.iterations_open,
          "resolution": "Address in next session with substantive evidence"}
         for i, g in enumerate(open_gaps)
     ]
-    for i, u in enumerate(getattr(state, "acknowledged_unknowns", [])):
-        # Phase 3B-1: reference the unknown registry entry (UNK-00N) instead of
-        # re-copying the full verbatim text (shown once in Section 5 / the
-        # unknown registry). Existing item id, gap_context, iteration, and source
-        # are preserved. Sections 10/11 are intentionally unchanged in this PR.
-        uid = _unknown_id(i)
+    for u in getattr(state, "acknowledged_unknowns", []):
         items.append({
             "id": f"UNKNOWN-{u.iteration:03d}",
             "type": "acknowledged_unknown",
-            "gap_context": _public_gap(u.gap_context),
-            "statement": f"See {uid} — Acknowledged unknown",
-            "unknown_id": uid,
+            "gap_context": u.gap_context,
+            "statement": u.verbatim,
             "iteration": u.iteration,
             "source": "inventor_stated",
         })
@@ -967,7 +307,7 @@ def _s9(state):
         if g.gap_type in STAGE_3_GAP_TYPES:
             ev = [_ev(e) for e in getattr(g, "evidence", []) if e]
             items.append({
-                "gap_type":     _public_gap(g.gap_type),
+                "gap_type":     g.gap_type,
                 "gap_label":    _GAP_LABELS.get(g.gap_type, g.gap_type),
                 "status":       g.status,
                 "status_label": _STATUS_LABELS.get(g.status, g.status),
@@ -1008,29 +348,18 @@ def _s10(state, open_gaps):
         label = _GAP_LABELS.get(g.gap_type, g.gap_type)
         _add(f"Provide substantive evidence for {label.lower()}.",
              "high" if g.iterations_open >= 2 else "normal",
-             f"open_gap:{_public_gap(g.gap_type)}")
+             f"open_gap:{g.gap_type}")
     if state.maturity_level < 2:
         _add("Continue with technically substantive answers to reach "
              "Level 2 (mechanism established).",
              "high", f"maturity_level:{state.maturity_level}")
-    # Phase 3B-2a: reference the unknown registry entry (UNK-00N, position-based
-    # to match Section 5/8) instead of repeating the full verbatim, which is shown
-    # once in Section 5 and referenced in Section 8. Dedup stays keyed on the
-    # verbatim (not the UNK id), so a repeated unknown still yields no duplicate
-    # action — the first occurrence's UNK id is the one referenced. Basis,
-    # priority, and NEXT-00N numbering are unchanged.
-    seen_unknown_text = set()
-    for i, u in enumerate(getattr(state, "acknowledged_unknowns", [])):
-        if u.verbatim in seen_unknown_text:   # duplicate source -> no duplicate action
-            continue
-        seen_unknown_text.add(u.verbatim)
-        _add(f"Resolve the inventor-stated unknown: See {_unknown_id(i)} "
-             f"— Acknowledged unknown",
+    for u in getattr(state, "acknowledged_unknowns", []):
+        _add(f"Resolve the inventor-stated unknown: {u.verbatim}",
              "normal", f"acknowledged_unknown:iteration_{u.iteration}")
     if _overall_quality(state) == REASONED:
         _add("Validate the leading claims with a prototype or "
              "demonstration to raise evidence from Reasoned to Demonstrated.",
-             "normal", f"evidence_quality:{_plain_quality(REASONED)}")
+             "normal", "evidence_quality:REASONED")
     return {
         "items": steps,
         "count": len(steps),
@@ -1218,15 +547,8 @@ def _s11(state):
         exp["required_expertise_or_tools"] = expertise_field  # legacy per-item field, unchanged
         items.append(exp)
 
-    # Priority 1 — acknowledged unknowns. Phase 3B-2b: the user-facing "Based on:"
-    # line references the acknowledged unknown by its stable registry id (See
-    # UNK-00N) instead of re-copying the full verbatim, mirroring Section 10. The
-    # index is the same 1-based position used by _unknown_registry / Section 5 / 8
-    # / 10, so the reference resolves to the same entry. Presentation-only: the
-    # full verbatim is still passed as the identity/digest/dedup source_text and is
-    # still carried in traceability.content below; _experiment_id, _plan_sig, dedup,
-    # and success-criterion resolution are unchanged.
-    for i, u in enumerate(getattr(state, "acknowledged_unknowns", [])):
+    # Priority 1 — acknowledged unknowns.
+    for u in getattr(state, "acknowledged_unknowns", []):
         verbatim = (getattr(u, "verbatim", "") or "").strip()
         if not verbatim:
             continue
@@ -1234,7 +556,8 @@ def _s11(state):
             "experiment_title": "Proposed experiment: resolve a stated unknown",
             "objective": "Evaluate the inventor's stated unknown under controlled "
                          "conditions to reduce its uncertainty.",
-            "source_basis": f"See {_unknown_id(i)} — Acknowledged unknown",
+            "source_basis": f"Acknowledged unknown (iteration {u.iteration}): "
+                            f"\"{verbatim}\"",
             "minimum_prototype": "A minimal build that exercises only the part of "
                                  "the described mechanism this unknown depends on.",
             "what_to_observe": "Observe whether the stated unknown can be "
@@ -1269,7 +592,7 @@ def _s11(state):
                 "expected_evidence_upgrade": "Move this assumption from Reasoned "
                     "toward Demonstrated.",
                 "traceability": {"source_type": "assumption_inventory_evidence",
-                                 "source_ref": _public_gap(ASSUMPTION_INVENTORY),
+                                 "source_ref": "ASSUMPTION_INVENTORY",
                                  "content": content},
             })
 
@@ -1326,15 +649,9 @@ def _now_iso():
 
 def _ev(ev):
     if ev is None: return None
-    validation = getattr(ev, "validation_status", UNVALIDATED)
     return {"content": getattr(ev, "content", str(ev)),
-            "quality": _plain_quality(getattr(ev, "quality", None)),
-            "quality_label": _QUALITY_LABELS.get(getattr(ev, "quality", None), "Unknown"),
-            # Increment 2: provenance and validation are surfaced separately from
-            # quality, so REASONED is never presented as verified by quality alone.
-            "provenance": _public_provenance(getattr(ev, "provenance", LEGACY_UNSPECIFIED)),
-            "validation_status": validation,
-            "validation_label": _VALIDATION_LABELS.get(validation, "Not validated")}
+            "quality": getattr(ev, "quality", None),
+            "quality_label": _QUALITY_LABELS.get(getattr(ev, "quality", None), "Unknown")}
 
 def _resolved_problem(state):
     """
@@ -1390,7 +707,7 @@ def _completeness(state):
     has_mech = getattr(state, "known_mechanism", None) is not None
     open_gaps = [g for g in state.gaps if g.status == OPEN]
     if state.maturity_level >= 2 and not open_gaps and has_mech:
-        return ("INQUIRY COMPLETE — all current inquiry areas addressed. "
+        return ("ASSESSMENT COMPLETE — all current inquiry areas addressed. "
                 "Technical validation and demonstration remain outstanding.")
     if state.maturity_level >= 1 and has_prob:
         return "PARTIAL — mechanism or boundaries still required"

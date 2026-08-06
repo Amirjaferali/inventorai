@@ -1,3 +1,0 @@
-# machine-derived from FULL_SUITE_BASE.txt: grep '^FAILED' | sed 's/::.*//' | sort | uniq -c
-      6 FAILED tests/test_actionable_validation_plan.py
-     31 FAILED tests/test_domain_registry.py
