@@ -334,7 +334,14 @@ def test_no_javascript_required():
         start = body.index(SUMMARY)
         block = body[start - 200:start + 1400]
         assert "<details" in block and "<summary" in block
-        assert "<script" not in body
+        # The clarification disclosure is native HTML and needs no JavaScript: its
+        # own region carries no <script> and no inline handler. (An additive,
+        # first-party, DEFERRED Draft Level 2 local-draft script may load in the
+        # page <head> under G-DRAFT-L2-LOCAL-CONTINUITY-IMPLEMENTATION-01; it is
+        # optional — the app and this disclosure work fully with JavaScript
+        # disabled — so the no-JS property is asserted on the clarification block,
+        # not as a page-wide absence of all scripts.)
+        assert "<script" not in block
         assert "onclick" not in block
     finally:
         SESSION_STORE.pop(sid, None)
