@@ -398,6 +398,27 @@ AUTHORIZED / NOT STARTED.***
   WS17, STG, ACV, PDF, Email, and every FPC (FPC-01…FPC-04) remain NOT AUTHORIZED / NOT STARTED.** Decision **D17** and
   the AISR seven-owner model are preserved.
 
+## Next-gate direction — Draft Level 2 contract candidate defined; Phase 5 next (current truth)
+
+- **Accepted discovery (G-P5-DISCOVERY-AND-DRAFT-CONTINUITY-ASSESSMENT-01): COMPLETED / ACCEPTED.** Overlap **D — NOT
+  FOUND** (no existing owner for unsubmitted-text recovery); current **Draft Level 0**; current unsent-text protection
+  **NONE** (every editable field loses typed text on close/refresh/crash/power/connectivity loss; even a recoverable
+  failed answered submit re-renders the textarea empty). Selected **Option B**; sequence **Draft Level 2 → Phase 5
+  identity foundation → Draft Level 3 (server, account-linked)**.
+- **Draft Level 2 — Same-Device Unsubmitted-Text Recovery (Local Draft Recovery):** **CONTRACT CANDIDATE DEFINED —
+  IMPLEMENTATION NOT AUTHORIZED — NOT STARTED** (gate **G-DRAFT-L2-LOCAL-CONTINUITY-CONTRACT-01**). Bounded, **local-only**
+  same-device recovery of unfinished typed text via `localStorage`; **explicit** recovery, never silent overwrite;
+  truthful device-only wording (never "saved to your account/server/another device"); clears the matching draft only on a
+  truthful accepted signal; **no** evaluation / `AssertionRecord` / maturity / gap / output change; **no** accounts, no
+  server persistence, no cross-device, no writable continuation; **schema/migration NONE**. Full contract in
+  `ACTIVE_INCREMENT_CONTRACT.md`; decisions `D-DRAFT-L2-01 … -14` in `OWNER_DECISION_REGISTER.md`; append-only roadmap
+  entry recorded. Implementation requires a **separate explicit owner authorization** after independent review.
+- **Phase 5** (accounts / authentication / ownership / authorization / verified email) remains the next major phase
+  **immediately after** this bounded Draft Level 2 increment — **NOT STARTED / NOT AUTHORIZED**. **Server-side Draft Level
+  3, writable continuation, and every FPC remain NOT AUTHORIZED / NOT STARTED.** Phase 4 remains **FORMALLY CLOSED**;
+  P4-2 Level-1 remains **CLOSED**. Recording this candidate changes no current implementation status and grants no
+  implementation authority.
+
 ## HISTORICAL SNAPSHOT — Post-PR #367 boundary — P4-1b-2b IMPLEMENTED, MERGED, VERIFIED, ACCEPTED, CLOSED (SUPERSEDED by the Post-PR #369 boundary above)
 
 *Superseded historical snapshot — accurate as of the PR #367 boundary only; do not read as present authority. Its
