@@ -714,7 +714,12 @@ def start():
             reconstruction_inputs=_reconstruction_inputs(idea_text, state))
     except Exception:
         return render_template("index.html", error=SERVICE_UNAVAILABLE_MESSAGE), 503
-    SESSION_STORE[sid] = {"state": state, "last_result": initial_result, "transcript": []}
+    SESSION_STORE[sid] = {"state": state, "last_result": initial_result, "transcript": [],
+                          # Draft Level 2: a truthful ONE-SHOT seed-accepted signal.
+                          # Set only here at successful /start; the first session
+                          # render pops it so the client clears ONLY the matching
+                          # seed draft (never on an unrelated session render).
+                          "_seed_accepted": True}
     return redirect(url_for("show_session", sid=sid))
 
 def _reconstruction_inputs(seed_idea, state):
@@ -747,7 +752,12 @@ def _finalize_started_session(sid, state, initial_result, seed_idea=None):
             reconstruction_inputs=_reconstruction_inputs(seed_idea, state))
     except Exception:
         return render_template("index.html", error=SERVICE_UNAVAILABLE_MESSAGE), 503
-    SESSION_STORE[sid] = {"state": state, "last_result": initial_result, "transcript": []}
+    SESSION_STORE[sid] = {"state": state, "last_result": initial_result, "transcript": [],
+                          # Draft Level 2: a truthful ONE-SHOT seed-accepted signal.
+                          # Set only here at successful /start; the first session
+                          # render pops it so the client clears ONLY the matching
+                          # seed draft (never on an unrelated session render).
+                          "_seed_accepted": True}
     return redirect(url_for("show_session", sid=sid))
 
 
@@ -787,6 +797,18 @@ def start_ilt002_combination_lock_path_n():
     sid = str(uuid.uuid4())
     initial_result = run_iteration(state, idea_text)
     return _finalize_started_session(sid, state, initial_result, seed_idea=idea_text)
+
+def _draft_context_id(question):
+    """Draft Level 2: a stable, non-sensitive per-question context identifier for
+    the client-side local-draft key. A short SHA-256 digest of the CURRENT question
+    text (or a fixed token when there is no gap/question), so a draft saved for one
+    question is not offered for a different/changed question. It carries no raw
+    invention text, persists nothing server-side, and affects no engine behaviour."""
+    import hashlib
+    basis = (question or "").strip()
+    if not basis:
+        return "intake"
+    return hashlib.sha256(basis.encode("utf-8")).hexdigest()[:16]
 
 @app.route("/session/<sid>", methods=["GET"])
 def show_session(sid):
@@ -862,6 +884,16 @@ def show_session(sid):
         if _uncertainty_candidates else "")
     return render_template("session.html",
         sid=sid,
+        # Draft Level 2 (local-draft recovery, client-side only): a truthful,
+        # one-shot ACCEPTED signal (set only after a durable accepted answer,
+        # popped here so it renders once) plus a stable per-question context id and
+        # a draft-schema version. These let the client-side local-draft script key
+        # drafts to the current question and clear them after a confirmed accept.
+        # They add NO durable/engine/accepted-answer behaviour and store nothing.
+        answer_accepted=(entry.pop("_answer_accepted", False) if entry else False),
+        seed_accepted=(entry.pop("_seed_accepted", False) if entry else False),
+        draft_context=_draft_context_id(question),
+        draft_context_version="v1",
         state=state,
         # P4-1b-2a: the server-issued token every answered-producing form must
         # carry (retained across renders until an accepted answer consumes it).
@@ -1173,6 +1205,13 @@ def submit_answer(sid):
         # Consume the token (single-use for acceptance); the next render issues a
         # fresh one, so distinct submissions get distinct idempotency identities.
         entry.pop("answer_token", None)
+        # Draft Level 2 (G-DRAFT-L2-...-IMPLEMENTATION-01): a truthful, one-shot
+        # ACCEPTED signal, set ONLY here after a durable append committed and the
+        # staged evaluation was published. The next session render exposes it once
+        # (then pops it) so the client-side local-draft script can clear the
+        # matching local draft. It is set on NO failure/ambiguous path; it never
+        # persists, and it changes no engine/durable/accepted-answer semantics.
+        entry["_answer_accepted"] = True
     else:
         # G-UX-ANSWER-VALIDATION: answered chosen but the response is empty. Set a
         # SINGLE-USE transient and preserve Post/Redirect/Get. The empty string is

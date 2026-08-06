@@ -41,8 +41,13 @@ button{margin-top:10px;padding:10px 24px;background:#2c3e50;color:white;border:n
 .complete{color:#27ae60;font-weight:bold;font-size:18px}
 hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
 </style>
+{# Draft Level 2 — Same-Device Unsubmitted-Text Recovery (local-only; no framework). #}
+<script defer src="{{ url_for('static', filename='js/local_draft.js') }}"></script>
 {% endblock %}
 {% block content %}
+{# One-shot, truthful client cleanup signals: reaching a session page means the seed
+   idea was accepted; `answer-accepted` is set only after a durable accepted answer. #}
+<div id="draft-signals" data-draft-scope="{{ sid }}" data-seed-accepted="{{ '1' if seed_accepted else '0' }}" data-answer-accepted="{{ '1' if answer_accepted else '0' }}" hidden></div>
 <h1>InventorAI</h1>
 
 <div class="disclosure">{{ session_disclosure }}</div>
@@ -266,7 +271,8 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
   <input type="hidden" name="answer_token" value="{{ answer_token }}">
   <label for="response" style="display:block;margin-bottom:6px;font-size:13px;color:#555">Your answer</label>
   {% if answer_error %}<p id="answer-error" role="alert" class="answer-error" style="color:#c0392b;font-size:13px;margin:0 0 6px 0">{{ answer_error }}</p>{% endif %}
-  <textarea id="response" name="response" rows="5" placeholder="Describe your thinking here, or pick an option below..."{% if answer_error %} aria-describedby="answer-error" autofocus{% endif %}></textarea>
+  <textarea id="response" name="response" rows="5" placeholder="Describe your thinking here, or pick an option below..."{% if answer_error %} aria-describedby="answer-error" autofocus{% endif %}
+    data-draft-field="answer" data-draft-scope="{{ sid }}" data-draft-context="{{ draft_context }}" data-draft-context-version="{{ draft_context_version }}"></textarea>
   <br>
   <fieldset style="margin-top:12px;border:1px solid #e2e6ea;border-radius:4px;padding:10px">
     <legend style="font-size:13px;color:#555;padding:0 6px">How do you want to respond?</legend>
@@ -324,7 +330,8 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
   {# P4-1b-2a: this criticality-correction free-text form posts no `action`, so it
      resolves to `answered` and MUST also carry the server-issued idempotency token. #}
   <input type="hidden" name="answer_token" value="{{ answer_token }}">
-  <textarea name="response" rows="5" placeholder="Describe the change or the missing part in your own words..."></textarea>
+  <textarea name="response" rows="5" placeholder="Describe the change or the missing part in your own words..."
+    data-draft-field="correction" data-draft-scope="{{ sid }}" data-draft-context="{{ draft_context }}" data-draft-context-version="{{ draft_context_version }}"></textarea>
   <br>
   <button type="submit">Submit</button>
 </form>
