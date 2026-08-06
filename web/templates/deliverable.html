@@ -1,38 +1,27 @@
-{% extends "base.html" %}
-{% block title %}InventorAI — Deliverable{% endblock %}
-{% block head %}
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>InventorAI — Deliverable</title>
 <style>
 body{font-family:sans-serif;max-width:760px;margin:60px auto;padding:0 20px;color:#222}
 h1{color:#2c3e50;margin-bottom:4px}
-h2{color:#2c3e50;font-size:18px;margin-top:34px;border-bottom:2px solid #2c3e50;padding-bottom:5px}
-.group-lede{font-size:13px;color:#667;line-height:1.5;margin:6px 0 14px 0}
-h3{color:#2c3e50;font-size:15px;margin-top:20px;margin-bottom:4px}
+h2{color:#2c3e50;font-size:16px;margin-top:28px;border-bottom:1px solid #e2e6ea;padding-bottom:4px}
 .meta{background:#f0f4f8;padding:10px 14px;border-radius:4px;margin-bottom:18px;font-size:13px;color:#444}
 .status-eligible{background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7;padding:10px 14px;border-radius:4px;margin-bottom:18px}
 .status-snapshot{background:#fff3e0;color:#e65100;border:1px solid #ffcc02;padding:10px 14px;border-radius:4px;margin-bottom:18px}
 .status-title{font-weight:bold;font-size:16px;margin-bottom:4px}
 .status-sub{font-size:13px}
-.status-strip{background:#f0f4f8;border:1px solid #d4dde6;padding:10px 14px;border-radius:4px;margin-bottom:20px;font-size:13px;color:#444;display:flex;flex-wrap:wrap;gap:10px 28px}
-.status-strip .field-label{margin:0}
-.status-strip .field-value{margin:0}
 .disclaimer{background:#f8f9fa;border-left:3px solid #b0b8c1;padding:9px 14px;border-radius:0 4px 4px 0;margin-bottom:20px;font-size:12px;color:#666;line-height:1.5}
-.safety-signals{background:#fff8e1;border:1px solid #f0c36d;padding:12px 14px;border-radius:4px;margin-bottom:20px}
-.ss-note{font-size:12px;color:#8a6d3b;line-height:1.5;margin:6px 0 12px 0}
-.ss-meta{font-size:12px;color:#667;line-height:1.5;margin:2px 0 6px 0}
-.ss-caution{font-size:12px;color:#8a6d3b;line-height:1.5;margin:0 0 12px 0}
 section{margin-bottom:18px}
 ul{padding-left:18px;font-size:13px;color:#444}
 li{margin-bottom:4px}
 .field-label{font-weight:bold;color:#2c3e50;font-size:13px}
 .field-value{font-size:13px;color:#444;margin-bottom:6px}
-.vp-meta{font-size:12px;color:#667;line-height:1.5;margin:0 0 12px 0}
-.vp-intro{font-size:13px;color:#555;line-height:1.5;margin:0 0 12px 0}
 .back-link{margin-top:30px;font-size:13px}
 table{width:100%;border-collapse:collapse;font-size:13px}
 td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
 </style>
-{% endblock %}
-{% block content %}
+</head>
+<body>
 <h1>InventorAI</h1>
 
 <div class="meta">
@@ -57,92 +46,29 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
 </div>
 {% endif %}
 
-{# Increment 6 (Deliverable Redesign): honest status strip. Surfaces the two
-   _session_meta signals — the stored maturity label and the Increment 2
-   derived_verified_ready readiness signal — SEPARATELY and close together. They
-   are shown as two distinct fields and are never merged into a single
-   "verified/resolved" impression: derived readiness is recomputed and stated
-   honestly as not a validation or resolved status. #}
-<div class="status-strip">
-  <div>
-    <div class="field-label">Maturity</div>
-    <div class="field-value">{{ package["_session_meta"].maturity_label }}</div>
-  </div>
-  <div>
-    <div class="field-label">Derived readiness <span style="font-weight:normal">(recomputed separately from stored maturity; not a validation or resolved status)</span></div>
-    <div class="field-value">{{ "Derived readiness signal met (still not technically verified)" if package["_session_meta"].get("derived_verified_ready", False) else "Not derived-ready — recorded evidence is not technically verified" }}</div>
-  </div>
-</div>
-
-{# Safety-Aware first increment (PR #120 contract; PR #122 independent-review
-   correction): presentation-only render of the advisory block already assembled
-   at _session_meta.inventor_stated_safety_signals. The JSON location is
-   unchanged (no top-level section is added; the Increment-6 canonical
-   top-level section set and traceability contract are untouched). Every
-   rendered value is a value already present in the assembled package. This
-   panel is advisory only: every signal is inventor-stated and requires
-   independent validation, and nothing here is a determination that the idea is
-   safe, unsafe, risk-free, certified, compliant, approved, patent-ready, or
-   engineering-validated. #}
-{% set ss = package["_session_meta"].inventor_stated_safety_signals %}
-<div class="safety-signals">
-  <div class="status-title">Inventor-Stated Safety Signals</div>
-  {% if ss.signals %}
-  <p class="ss-note">{{ ss.advisory_note }}</p>
-  {% for sig in ss.signals %}
-  <div class="field-label">{{ sig.display_label }}</div>
-  <div class="field-value">&ldquo;{{ sig.statement }}&rdquo;</div>
-  <div class="ss-meta">
-    Safety subject: {{ sig.safety_subject }} &nbsp;&middot;&nbsp;
-    Failure condition stated by inventor: {{ sig.failure_condition }} &nbsp;&middot;&nbsp;
-    Possible consequence: {{ sig.possible_consequence }} &nbsp;&middot;&nbsp;
-    Source: {{ sig.source }} &nbsp;&middot;&nbsp;
-    Provenance: {{ sig.provenance | replace("_", " ") }} &nbsp;&middot;&nbsp;
-    Validation: {{ sig.validation_status | replace("_", " ") }}
-  </div>
-  <div class="ss-caution">{{ sig.caution_text }}</div>
-  {% endfor %}
-  {% else %}
-  <div class="field-value">{{ ss.empty_statement }}</div>
-  {% endif %}
-</div>
-
-{# ============================================================================
-   Increment 6 Deliverable Redesign — inventor-facing reading order (design §4).
-   Presentation-only: the fourteen existing sections are grouped and reordered;
-   no value is generated or changed in meaning. Every rendered value remains a
-   value already present in the assembled package.
-   ============================================================================ #}
+<div class="disclaimer">{{ package.section_1_disclaimer.text }}</div>
 
 <section>
-  <h2>What your idea is</h2>
-  <p class="group-lede">A plain restatement of the invention as we currently understand it from your inputs.</p>
-
-  <div class="disclaimer">{{ package.section_1_disclaimer.text }}</div>
-
-  <h3>Invention Summary</h3>
+  <h2>Invention Summary</h2>
   <div class="field-label">Maturity</div>
   <div class="field-value">{{ package.section_2_invention_summary.maturity_label }}</div>
   <div class="field-label">Assessment Completeness</div>
   <div class="field-value">{{ package.section_2_invention_summary.assessment_completeness }}</div>
   {% if package.section_2_invention_summary.known_problem %}
-  <div class="field-label">Known Problem{% if package.section_2_invention_summary.known_problem.evidence_id %} <span class="ev-id" style="font-weight:normal;color:#667">({{ package.section_2_invention_summary.known_problem.evidence_id }})</span>{% endif %}</div>
+  <div class="field-label">Known Problem</div>
   <div class="field-value">{{ package.section_2_invention_summary.known_problem.content }}</div>
   {% elif package.section_2_invention_summary.known_problem_note %}
   <div class="field-label">Known Problem</div>
   <div class="field-value">{{ package.section_2_invention_summary.known_problem_note }}</div>
   {% endif %}
   {% if package.section_2_invention_summary.known_mechanism %}
-  <div class="field-label">Known Mechanism{% if package.section_2_invention_summary.known_mechanism.evidence_id %} <span class="ev-id" style="font-weight:normal;color:#667">({{ package.section_2_invention_summary.known_mechanism.evidence_id }})</span>{% endif %}</div>
+  <div class="field-label">Known Mechanism</div>
   <div class="field-value">{{ package.section_2_invention_summary.known_mechanism.content }}</div>
   {% endif %}
 </section>
 
 <section>
-  <h2>What we assessed</h2>
-  <p class="group-lede">The areas we looked at, and how far each one has been developed so far.</p>
-
-  <h3>Assessment Overview</h3>
+  <h2>Assessment Overview</h2>
   {% for cap in package.section_3_assessment_overview.capabilities_assessed %}
   <div class="field-value">
     Capability: {{ cap.capability_id }} &nbsp;·&nbsp;
@@ -153,11 +79,7 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
 </section>
 
 <section>
-  <h2>What it needs</h2>
-  <p class="group-lede">The inputs we captured and the open areas that still have to be worked out.</p>
-
-  <h3>Captured Inputs and Assessment Status</h3>
-  <p class="group-lede" style="margin-top:0">These are inputs captured from your answers, not tested conclusions. The suggested checks further down show what could help firm them up.</p>
+  <h2>Requirements</h2>
   {% if package.section_4_requirements.requirements %}
   <ul>
     {% for r in package.section_4_requirements.requirements %}
@@ -167,103 +89,14 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% else %}
   <div class="field-value">No requirements recorded yet.</div>
   {% endif %}
-
-  <h3>Requirement Landscape</h3>
-  {# Increment 4 (additive): presentation-only render of the provenance-anchored
-     requirement landscape in package.section_13_requirement_landscape. Human-
-     readable labels only; no raw enum, identifier, or state change happens here. #}
-  {% set rl = package.section_13_requirement_landscape %}
-  {% if rl.requirements %}
-  {# Phase 7C (presentation-only): collapse repeated display metadata. Entries are
-     grouped ONLY when their FULL metadata tuple (provenance + status + criticality
-     + authority + rationale + resolving action + supporting references + linked
-     risk) is identical; every distinct statement is listed in full, then the
-     shared metadata is rendered once. Entries whose metadata differs in ANY field
-     render separately. No data change: rl.requirements is untouched, no statement
-     is dropped/truncated, and the criticality authority stays visible (C4-R5). #}
-  {% set ns = namespace(seen=[]) %}
-  {% for req in rl.requirements %}
-  {% set mkey = [req.provenance, req.status, req.criticality, req.criticality_authority, req.criticality_rationale, req.resolving_action, req.supporting_references, req.has_linked_risk] %}
-  {% if mkey not in ns.seen %}
-  {% set _ = ns.seen.append(mkey) %}
-  {% set members = rl.requirements
-        | selectattr('provenance', 'equalto', req.provenance)
-        | selectattr('status', 'equalto', req.status)
-        | selectattr('criticality', 'equalto', req.criticality)
-        | selectattr('criticality_authority', 'equalto', req.criticality_authority)
-        | selectattr('criticality_rationale', 'equalto', req.criticality_rationale)
-        | selectattr('resolving_action', 'equalto', req.resolving_action)
-        | selectattr('supporting_references', 'equalto', req.supporting_references)
-        | selectattr('has_linked_risk', 'equalto', req.has_linked_risk) | list %}
-  {# Workstream 6 (contract §2.1; owner decisions D1/D2/D5): within one
-     metadata group, byte-identical statements are presented once with the
-     owner-approved repetition sentence taken from the additive
-     _session_meta.requirement_landscape_synthesis metadata (byte-identical
-     grouping only; the underlying rl.requirements rows, count, IDs, and
-     ordering are untouched; every non-byte-identical statement remains fully
-     visible exactly once). #}
-  {% set rls6 = package["_session_meta"].requirement_landscape_synthesis %}
-  {% set gseen = namespace(stmts=[]) %}
-  {% for m in members %}
-  {% if m.statement not in gseen.stmts %}
-  {% set _ = gseen.stmts.append(m.statement) %}
-  <div class="field-label">{{ m.statement }}</div>
-  {% for g in rls6.statement_groups %}
-  {% if g.repetition_note and g.statement == m.statement
-        and g.provenance == m.provenance and g.status == m.status
-        and g.criticality == m.criticality
-        and g.criticality_authority == m.criticality_authority
-        and g.criticality_rationale == m.criticality_rationale
-        and g.resolving_action == m.resolving_action %}
-  <div class="field-value" style="color:#667">{{ g.repetition_note }}</div>
-  {% endif %}
-  {% endfor %}
-  {% endif %}
-  {% endfor %}
-  <div class="field-value"><strong>Provenance:</strong> {{ req.provenance }}</div>
-  <div class="field-value"><strong>Status:</strong> {{ req.status }}</div>
-  <div class="field-value"><strong>Criticality:</strong> {{ req.criticality }} ({{ req.criticality_authority }})</div>
-  {% if req.criticality_rationale %}
-  <div class="field-value"><strong>Rationale:</strong> {{ req.criticality_rationale }}</div>
-  {% endif %}
-  {% if req.resolving_action %}
-  <div class="field-value"><strong>Resolving action:</strong> {{ req.resolving_action }}</div>
-  {% endif %}
-  {% if req.supporting_references %}
-  <div class="field-value"><strong>Supporting references:</strong>
-    {% for ref in req.supporting_references %}{{ ref }}{% if not loop.last %}; {% endif %}{% endfor %}
-  </div>
-  {% endif %}
-  {% if members | length > 1 %}
-  <div class="field-value" style="color:#667">(shared by {{ members | length }} entries)</div>
-  {% endif %}
-  {% endif %}
-  {% endfor %}
-  {% else %}
-  <div class="field-value">{{ rl.empty_statement }}</div>
-  {% endif %}
-  {% if not rl.has_risks %}
-  <div class="field-value"><em>{{ rl.risk_disclaimer }}</em></div>
-  {% endif %}
-  {# Workstream 5 (contract §4.4 / §5.3): contextual note ADJACENT to the
-     unchanged frozen disclaimer, rendered only when inventor-stated safety
-     signals exist; sourced from _session_meta.risk_safety_linkage — no key
-     inside section_13_requirement_landscape is added or read differently. #}
-  {% set rsl13 = package["_session_meta"].risk_safety_linkage %}
-  {% if rsl13.section_13_note %}
-  <div class="field-value" style="white-space:pre-line;margin-top:8px">{{ rsl13.section_13_note }}</div>
-  {% endif %}
 </section>
 
 <section>
-  <h2>What is assumed vs still unknown</h2>
-  <p class="group-lede">Things currently taken as given, alongside items you have flagged as not yet known.</p>
-
-  <h3>Assumptions &amp; Inventor-Stated Unknowns</h3>
+  <h2>Assumptions &amp; Inventor-Stated Unknowns</h2>
   {% if package.section_5_assumptions.assumptions %}
   <ul>
     {% for a in package.section_5_assumptions.assumptions %}
-    <li>{{ a.assumption }} — {{ a.validation_approach }}{% if a.risk_if_invalid %}<br><span class="group-lede" style="margin:0">Why this matters: {{ a.risk_if_invalid }}</span>{% endif %}</li>
+    <li>{{ a.assumption }} — {{ a.validation_approach }}</li>
     {% endfor %}
   </ul>
   {% else %}
@@ -272,12 +105,43 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% if package.section_5_assumptions.inventor_unknowns %}
   <ul>
     {% for u in package.section_5_assumptions.inventor_unknowns %}
-    <li>{% if u.unknown_id %}<span class="ev-id" style="font-weight:normal;color:#667">({{ u.unknown_id }})</span> {% endif %}(Iteration {{ u.iteration }}) {{ u.statement }}</li>
+    <li>(Iteration {{ u.iteration }}) {{ u.statement }}</li>
     {% endfor %}
   </ul>
   {% endif %}
+</section>
 
-  <h3>Unresolved Items</h3>
+<section>
+  <h2>Risks</h2>
+  {% if package.section_6_risks.risks %}
+  <ul>
+    {% for r in package.section_6_risks.risks %}
+    <li>[{{ r.severity }}] {{ r.description }}</li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <div class="field-value">No risks recorded.</div>
+  {% endif %}
+</section>
+
+<section>
+  <h2>Recommendations</h2>
+  <div class="field-label">Verdict</div>
+  <div class="field-value">{{ package.section_7_recommendations.category_a_proceed_revise_block.verdict }}</div>
+  <div class="field-label">Rationale</div>
+  <div class="field-value">{{ package.section_7_recommendations.category_a_proceed_revise_block.rationale }}</div>
+  {% if package.section_7_recommendations.category_d_open_items %}
+  <div class="field-label">Open Items</div>
+  <ul>
+    {% for item in package.section_7_recommendations.category_d_open_items %}
+    <li>{{ item.action }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</section>
+
+<section>
+  <h2>Unresolved Items</h2>
   {% if package["section_8_unresolved_items"]["items"] %}
   <ul>
     {% for item in package["section_8_unresolved_items"]["items"] %}
@@ -291,47 +155,13 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
     {% endfor %}
   </ul>
   {% else %}
-    {% if package["_session_meta"].get("derived_verified_ready", False) %}
   <div class="field-value">No unresolved items.</div>
-    {% else %}
-  <div class="field-value">No stored gaps remain open, but evidence validation or readiness items are still unresolved. The recorded evidence is not technically verified.</div>
-    {% endif %}
   {% endif %}
 </section>
 
+{% if package.section_9_stage3_reasoning["items"] %}
 <section>
-  <h2>What could go wrong</h2>
-  <p class="group-lede">Risks recorded from the current state. This is not a safety judgement and is not exhaustive.</p>
-
-  <h3>Risks</h3>
-  {# Workstream 5 (contract §12): render-only linkage sourced from the additive
-     _session_meta.risk_safety_linkage block already assembled in the package.
-     Existing risk rows, totals, severities, and wordings are unchanged; the
-     bare empty message is replaced ONLY when inventor-stated safety signals
-     exist (contract §4.3 / §5.2); otherwise the current rendering is kept. #}
-  {% set rsl = package["_session_meta"].risk_safety_linkage %}
-  {% if package.section_6_risks.risks %}
-  <ul>
-    {% for r in package.section_6_risks.risks %}
-    <li>[{{ r.severity }}] {{ r.description }}</li>
-    {% endfor %}
-  </ul>
-  {% elif rsl.section_6_empty_qualification %}
-  <div class="field-value" style="white-space:pre-line">{{ rsl.section_6_empty_qualification }}</div>
-  {% else %}
-  <div class="field-value">No risks recorded.</div>
-  {% endif %}
-  {% if rsl.section_6_note %}
-  <div class="field-value" style="white-space:pre-line;margin-top:10px">{{ rsl.section_6_note }}</div>
-  {% endif %}
-</section>
-
-<section>
-  <h2>The reasoning behind it</h2>
-  <p class="group-lede">The recorded reasoning and evidence behind the assessment above.</p>
-
-  {% if package.section_9_stage3_reasoning["items"] %}
-  <h3>Stage 3 Reasoning</h3>
+  <h2>Stage 3 Reasoning</h2>
   {% for item in package.section_9_stage3_reasoning["items"] %}
   <div class="field-label">{{ item.gap_label }} — {{ item.status_label }}</div>
   {% if item.evidence %}
@@ -344,59 +174,11 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   <div class="field-value">{{ item.missing_evidence_statement }}</div>
   {% endif %}
   {% endfor %}
-  {% else %}
-  <div class="field-value">No Stage 3 reasoning areas are recorded for this session.</div>
-  {% endif %}
 </section>
+{% endif %}
 
 <section>
-  <h2>What we recommend and what to do next</h2>
-  <p class="group-lede">A suggested direction and concrete next steps you can act on. Advisory only.</p>
-
-  <h3>Recommendations</h3>
-  <div class="field-label">Verdict</div>
-  <div class="field-value">{{ package.section_7_recommendations.category_a_proceed_revise_block.verdict }}</div>
-  <div class="field-label">Rationale</div>
-  <div class="field-value">{{ package.section_7_recommendations.category_a_proceed_revise_block.rationale }}</div>
-  {% if package.section_7_recommendations.category_d_open_items %}
-  <div class="field-label">Open Items</div>
-  <ul>
-    {% for item in package.section_7_recommendations.category_d_open_items %}
-    <li>{{ item.action }}</li>
-    {% endfor %}
-  </ul>
-  {% endif %}
-
-  <h3>Next Development Step</h3>
-  {# Increment 3 (R-3): presentation-only render of the shared engine derivation
-     carried in package.section_12_next_development_step. No priority/record/
-     provider logic and no state change happen here. #}
-  {% if package.section_12_next_development_step and package.section_12_next_development_step.actionable %}
-  {% set nds = package.section_12_next_development_step %}
-  <div class="field-label">{{ nds.title }}</div>
-  <div class="field-value">{{ nds.why_it_matters }}</div>
-  <div class="field-label">Next action</div>
-  <div class="field-value">{{ nds.next_action }}</div>
-  {% if nds.evidence_needed %}
-  <div class="field-label">Evidence needed</div>
-  <div class="field-value">{{ nds.evidence_needed }}</div>
-  {% endif %}
-  {% if nds.suggested_provider %}
-  <div class="field-label">Suggested provider</div>
-  <div class="field-value">{{ nds.suggested_provider }}</div>
-  {% endif %}
-  {% if nds.sufficiency_condition %}
-  <div class="field-label">Sufficiency condition</div>
-  <div class="field-value">{{ nds.sufficiency_condition }}</div>
-  {% endif %}
-  {% if nds.remaining_uncertainty %}
-  <div class="field-value"><em>{{ nds.remaining_uncertainty }}</em></div>
-  {% endif %}
-  {% else %}
-  <div class="field-value">No actionable next development step. The recorded state shows nothing outstanding to develop next.</div>
-  {% endif %}
-
-  <h3>Recommended Next Steps</h3>
+  <h2>Recommended Next Steps</h2>
   {% if package.section_10_recommended_next_steps["items"] %}
   <ul>
     {% for step in package.section_10_recommended_next_steps["items"] %}
@@ -407,8 +189,10 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   <div class="field-value">{{ package.section_10_recommended_next_steps.empty_statement }}</div>
   {% endif %}
   <div class="field-value"><em>{{ package.section_10_recommended_next_steps.note }}</em></div>
+</section>
 
-  <h3>Prototype &amp; Test Plan</h3>
+<section>
+  <h2>Prototype &amp; Test Plan</h2>
   {% if package.section_11_prototype_test_plan["items"] %}
   {% for exp in package.section_11_prototype_test_plan["items"] %}
   <div class="field-label">{{ exp.experiment_title }}</div>
@@ -438,118 +222,9 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   <div class="field-value"><a href="{{ url_for('success_criteria', sid=sid) }}">Define or edit success criteria</a></div>
   {% endif %}
   <div class="field-value"><em>{{ package.section_11_prototype_test_plan.note }}</em></div>
-
-  <h3>Validation Plan</h3>
-  {# Increment 5 (additive): presentation-only render of the Validation Plan in
-     package.section_14_validation_plan. Proposed validation actions and blocked
-     items only — never verified/passed/supplied. Human-readable labels only; no
-     raw enum, token, or internal identifier (vstep:/vblock:/requirement id) is
-     exposed, and Jinja autoescape applies to every field. #}
-  {% set vp = package.section_14_validation_plan %}
-  {% if vp.steps or vp.blocked_items %}
-  <p class="vp-intro">Suggested checks that would help firm up this idea. None has been carried out yet &mdash; these are proposals, not results. Each check keeps its supporting details on one line below it.</p>
-  {% endif %}
-  {% if vp.steps %}
-  {# Phase 7A (presentation-only): group the already-derived steps by their
-     existing responsibility_label for legibility. Neutral headers mapped only
-     from the known label values; a catch-all group renders any other/undetermined
-     step so every step appears exactly once. Steps keep their original vp.steps
-     order within each group (selectattr/rejectattr preserve it). No data change,
-     no reordering of the underlying data, no confidence change. #}
-  {% set g_owner = vp.steps | selectattr('responsibility_label', 'equalto', 'Owner can perform') | list %}
-  {% set g_spec  = vp.steps | selectattr('responsibility_label', 'equalto', 'Specialist input required') | list %}
-  {% set g_emp   = vp.steps | selectattr('responsibility_label', 'equalto', 'Empirical evidence required') | list %}
-  {% set g_other = vp.steps
-        | rejectattr('responsibility_label', 'equalto', 'Owner can perform')
-        | rejectattr('responsibility_label', 'equalto', 'Specialist input required')
-        | rejectattr('responsibility_label', 'equalto', 'Empirical evidence required') | list %}
-  {% for grp in [
-        ('Checks you can do yourself', g_owner),
-        ('Needs specialist input', g_spec),
-        ('Needs a physical test or evidence', g_emp),
-        ('Other suggested checks', g_other)] %}
-  {% if grp[1] %}
-  <h4 class="vp-group">{{ grp[0] }}</h4>
-  {# Phase 7B (presentation-only): collapse byte-for-byte identical rows within
-     this group. The collapse key is the FULL rendered tuple (statement +
-     responsibility + evidence + closure + provenance + confidence), so rows that
-     differ in any visible field still render separately. Each distinct row is
-     shown once (first-occurrence order); a visible count is shown when more than
-     one recorded answer produced the same row. No data change: vp.steps is
-     untouched, all metadata is preserved verbatim, and confidence is unchanged. #}
-  {% set ns = namespace(seen=[]) %}
-  {% for st in grp[1] %}
-  {% set key = [st.statement, st.responsibility_label, st.evidence_category, st.closure_condition, st.provenance, st.confidence_label] %}
-  {% if key not in ns.seen %}
-  {% set _ = ns.seen.append(key) %}
-  {% set cnt = grp[1]
-        | selectattr('statement', 'equalto', st.statement)
-        | selectattr('responsibility_label', 'equalto', st.responsibility_label)
-        | selectattr('evidence_category', 'equalto', st.evidence_category)
-        | selectattr('closure_condition', 'equalto', st.closure_condition)
-        | selectattr('provenance', 'equalto', st.provenance)
-        | selectattr('confidence_label', 'equalto', st.confidence_label) | list | length %}
-  <div class="field-label">{{ st.statement }}{% if cnt > 1 %} <span class="vp-count" style="font-weight:normal;color:#667">(applies to {{ cnt }} recorded answers)</span>{% endif %}</div>
-  {# Workstream 7 (contract §3.2 D5/C3): for the UNDETERMINED responsibility
-     token the public presentation is the exact owner wording rendered as two
-     separate lines; no actor is assigned. Internal token and JSON unchanged. #}
-  {% if st.responsibility_label == 'Responsibility undetermined' %}
-  <div class="vp-resp" style="font-size:12px;color:#667;line-height:1.5;margin:0">Responsibility has not yet been assigned.</div>
-  <div class="vp-resp" style="font-size:12px;color:#667;line-height:1.5;margin:0 0 4px 0">Choose who will own this validation step before relying on the result.</div>
-  {% endif %}
-  {# Workstream 7 (contract §3.3 D6): the confidence line is suppressed for the
-     UNDETERMINED token — presentation only; the JSON fields are unchanged. #}
-  <div class="vp-meta">{% if st.responsibility_label != 'Responsibility undetermined' %}Responsibility: {{ st.responsibility_label }} &nbsp;&middot;&nbsp; {% endif %}Evidence needed: {{ st.evidence_category }} &nbsp;&middot;&nbsp; Closure: {{ st.closure_condition }} &nbsp;&middot;&nbsp; Provenance: {{ st.provenance }}{% if st.confidence_label != 'Confidence undetermined' %} &nbsp;&middot;&nbsp; Confidence: {{ st.confidence_label }}{% endif %}</div>
-  {# Workstream 7 (contract §3.4 D7/D8 per C2): render the per-step advisory
-     verbatim when present (the two pending kinds only), one line per div. #}
-  {% if st.advisory %}
-  {% for advisory_line in st.advisory.split('\n') %}
-  <div class="vp-advisory" style="font-size:12px;color:#667;line-height:1.5;margin:0 0 4px 0">{{ advisory_line }}</div>
-  {% endfor %}
-  {% endif %}
-  {% endif %}
-  {% endfor %}
-  {% endif %}
-  {% endfor %}
-  {% endif %}
-  {% if vp.blocked_items %}
-  <h4>Blocked items</h4>
-  {% for b in vp.blocked_items %}
-  <div class="field-label">{{ b.reason }}</div>
-  {# Workstream 7 (contract §3.2 D5/C3): same two-line UNDETERMINED public
-     wording for blocked items; internal token and JSON unchanged. #}
-  {% if b.responsibility_label == 'Responsibility undetermined' %}
-  <div class="vp-resp" style="font-size:12px;color:#667;line-height:1.5;margin:0">Responsibility has not yet been assigned.</div>
-  <div class="vp-resp" style="font-size:12px;color:#667;line-height:1.5;margin:0 0 4px 0">Choose who will own this validation step before relying on the result.</div>
-  {% endif %}
-  <div class="vp-meta">Missing: {{ b.missing }}{% if b.responsibility_label != 'Responsibility undetermined' %} &nbsp;&middot;&nbsp; Responsibility: {{ b.responsibility_label }}{% endif %} &nbsp;&middot;&nbsp; Provenance: {{ b.provenance }}</div>
-  {% endfor %}
-  {% endif %}
-  {% if not vp.steps and not vp.blocked_items %}
-  <div class="field-value">{{ vp.empty_statement }}</div>
-  {% endif %}
 </section>
-
-{% if eligible %}
-{# G-UX-SNAPSHOT-DECISION: truthful post-output decision within the current
-   temporary session. Refine (primary) returns to the SAME guided session (same
-   sid); Keep (secondary) records only a single-use temporary acknowledgement.
-   No durable save, version, ownership, or approval is created or implied. #}
-<section class="decision-section" aria-labelledby="decision-heading" style="margin-top:34px;border-top:2px solid #2c3e50;padding-top:14px">
-  <h2 id="decision-heading" style="border-bottom:none;margin-top:0">Output review</h2>
-  <p class="group-lede">This is a working snapshot of your idea in the current temporary session. It has not been permanently saved or approved. Choose what to do next.</p>
-  {% if snapshot_kept_ack %}
-  <p id="snapshot-kept-ack" role="status" class="status-eligible" style="margin:12px 0">{{ snapshot_kept_ack }}</p>
-  {% endif %}
-  <div class="decision-actions" style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:12px">
-    <a class="decision-primary" href="{{ url_for('show_session', sid=sid) }}" style="display:inline-block;padding:10px 22px;background:#2c3e50;color:#fff;border-radius:4px;text-decoration:none;font-size:15px">Refine this idea</a>
-    <form method="POST" action="{{ url_for('keep_snapshot', sid=sid) }}" style="margin:0">
-      <button type="submit" class="decision-secondary" style="padding:10px 22px;background:#fff;color:#2c3e50;border:1px solid #2c3e50;border-radius:4px;font-size:15px;cursor:pointer">Keep current snapshot</button>
-    </form>
-  </div>
-</section>
-{% endif %}
 
 <p class="back-link"><a href="{{ url_for('show_session', sid=sid) }}">Back to session</a></p>
 
-{% endblock %}
+</body>
+</html>

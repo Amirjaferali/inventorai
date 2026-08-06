@@ -19,7 +19,6 @@ Prohibited behaviors:
 """
 
 import json
-from dataclasses import dataclass
 from pathlib import Path
 
 _ARTIFACT_PATH = (
@@ -51,59 +50,18 @@ def _load_content() -> dict:
     return _PATH_N_GAPS
 
 
-@dataclass(frozen=True)
-class ServedQuestion:
-    """Immutable served-question identity (WS11 D4).
-
-    ``question_id``, ``text``, and ``design_gap_id`` are read atomically from the
-    SAME committed question entry (the entry at the deterministic index under its
-    ``design_gap_id`` parent key), so identity, text, and design-gap always
-    describe one physical record. ``question_id`` is NEVER reconstructed, inferred,
-    derived, parsed, hashed, normalized, translated, fuzzy-matched, or
-    reverse-looked-up from ``text`` (D4.4)."""
-
-    question_id: str
-    text: str
-    design_gap_id: str
-
-
-def get_served_question(gap_type: str, iterations_open: int) -> "ServedQuestion | None":
-    """Return the atomically-bound approved Path N ServedQuestion for gap_type
-    (WS11 D4), or None if gap_type has no Path N mapping (the §8 Stage 3
-    fallthrough). Reads the committed artifact read-only (load-once) and fails
-    loudly with no fallback on a malformed committed entry (b3a5fba §5). The
-    ServedQuestion's three fields come from one entry in a single read."""
+def get_path_n_question(gap_type: str, iterations_open: int) -> str | None:
+    """Return approved Path N question text for gap_type, or None if unmapped."""
     gaps = _load_content()
     variants = gaps.get(gap_type)
     if not variants:
         return None
     index = min(iterations_open, len(variants) - 1)
     entry = variants[index]
-    if not isinstance(entry, dict):
-        raise ValueError(
-            f"Path N artifact entry for {gap_type}[{index}] is malformed — "
-            "failing loudly, no fallback (b3a5fba §5)"
-        )
-    text = entry.get("text")
+    text = entry.get("text") if isinstance(entry, dict) else None
     if not isinstance(text, str) or not text.strip():
         raise ValueError(
             f"Path N artifact entry for {gap_type}[{index}] has no usable "
             "'text' — failing loudly, no fallback (b3a5fba §5)"
         )
-    question_id = entry.get("question_id")
-    if not isinstance(question_id, str) or not question_id.strip():
-        raise ValueError(
-            f"Path N artifact entry for {gap_type}[{index}] has no usable "
-            "'question_id' — failing loudly, no fallback (b3a5fba §5)"
-        )
-    return ServedQuestion(question_id=question_id, text=text, design_gap_id=gap_type)
-
-
-def get_path_n_question(gap_type: str, iterations_open: int) -> str | None:
-    """Backward-compatible text accessor (WS11 D4.3): returns the served
-    question's text for gap_type, or None if unmapped. This is a thin wrapper over
-    ``get_served_question`` and is no longer an independent question-identity
-    source. Its return contract (text | None; fail-loud on unusable text) is
-    unchanged."""
-    served = get_served_question(gap_type, iterations_open)
-    return served.text if served is not None else None
+    return text

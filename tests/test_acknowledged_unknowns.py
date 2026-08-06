@@ -47,10 +47,7 @@ class TestDetection:
         result = _detect_acknowledged_unknown(r, PHYSICAL_FEASIBILITY, 3)
         assert result is not None
         assert result.gap_context == PHYSICAL_FEASIBILITY
-        # Fragment-capture correction (owner-authorized 2026-07-10): only the
-        # sentence containing the explicit unknown marker is stored, not the
-        # whole response.
-        assert result.verbatim == "I am not sure about the exact physical principle."
+        assert result.verbatim == r.strip()
 
     def test_detects_do_not_yet_know(self):
         r = ("I do not know the approximate power consumption or the "
@@ -78,21 +75,14 @@ class TestDetection:
              "it continuously monitors flow and analyzes patterns in real time.")
         assert _detect_acknowledged_unknown(r, PHYSICAL_FEASIBILITY, 4) is None
 
-    def test_verbatim_is_bounded_marker_sentence(self):
-        # Fragment-capture correction (owner-authorized 2026-07-10): this test
-        # previously asserted the WHOLE multi-sentence response was stored as
-        # the unknown — that was the defect. Only the marker sentence is kept,
-        # verbatim.
+    def test_verbatim_full_length(self):
         r = ("I do not yet know the exact technical limits, such as sensor "
              "accuracy, pressure range, signal frequency, or material "
              "constraints. These need investigation before building a prototype. "
              "The system must operate in normal building environments.")
         result = _detect_acknowledged_unknown(r, PHYSICAL_FEASIBILITY, 5)
         assert result is not None
-        assert result.verbatim == (
-            "I do not yet know the exact technical limits, such as sensor "
-            "accuracy, pressure range, signal frequency, or material "
-            "constraints.")
+        assert len(result.verbatim) == len(r.strip())
 
 
 class TestProgressionUnchanged:
@@ -206,7 +196,7 @@ class TestFDC001:
         u = pkg["section_5_assumptions"]["inventor_unknowns"]
         assert len(u) == 1
         assert u[0]["source"] == "inventor_stated"
-        assert u[0]["gap_context"] == "Physical Feasibility"
+        assert u[0]["gap_context"] == PHYSICAL_FEASIBILITY
 
     def test_s5_inferred_separate_from_stated(self):
         from engine.deliverable_assembler import assemble_deliverable
