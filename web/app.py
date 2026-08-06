@@ -317,6 +317,80 @@ def _sign_in(account, now):
     flask_session.permanent = True
 
 
+# --- P5-3: project ownership & central route authorization --------------------
+# The SINGLE server-side authorization decision for every project-scoped route.
+# It resolves ownership from DURABLE state (never from the `sid` capability, the
+# signed cookie, a template, JavaScript, or any client-provided field) and the
+# validated authenticated session, and it FAILS CLOSED.
+#
+# Model (contract §8/§9): a project that does not exist, or is owned by another
+# account, or is owned but accessed anonymously / by a disabled-deleted account,
+# is denied GENERICALLY — indistinguishably — so existence and ownership never
+# leak. A legacy/anonymous NULL-owner project keeps exactly its prior
+# capability-access behaviour (the anonymous journey is preserved).
+def _project_authorized(sid):
+    """Return True iff the current caller may access project ``sid``. Owned
+    projects require the authenticated, active OWNER (server-side account_id ==
+    durable owner_account_id); NULL-owner (legacy/anonymous) projects preserve the
+    existing sid-capability access; a missing project is denied. Fails closed on
+    any error. `sid` possession alone is NEVER treated as ownership."""
+    try:
+        exists, owner = _get_store().load_owner(sid)
+    except Exception:
+        return False                       # fail closed
+    if not exists:
+        # No durable project row. In the real flow every project is durably
+        # created at /start BEFORE any live session, so a missing durable row
+        # means the sid is unknown → generic denial. The ONLY exception is a live
+        # in-memory session with no durable backing (an unowned anonymous/legacy
+        # runtime session): it can never be owned (no durable owner exists), so
+        # preserving its existing capability access opens no cross-account path.
+        return sid in SESSION_STORE
+    if owner is None:
+        return True                        # legacy/anonymous NULL-owner: preserved
+    account = _current_account()           # validates status / epoch / expiry
+    if account is None:
+        return False                       # owned project, anonymous/invalid session
+    return account["account_id"] == owner  # only the durable owner
+
+
+def _deny_project():
+    """One generic, non-enumerating denial for every failed project access
+    (missing, non-owner, anonymous-to-owned, disabled/deleted). It is byte-for-byte
+    the pre-P5-3 'not available' behaviour (redirect to the home page), so a denial
+    never discloses whether the project exists, who owns it, or why access failed.
+    It never redirects to /login (which would reveal an owned project exists)."""
+    return redirect(url_for("index"))
+
+
+def _owned_by_current(sid):
+    """True only when the current authenticated account is the durable owner of
+    ``sid`` — used for the truthful 'saved to your account' surface. Never a
+    security decision on its own."""
+    try:
+        exists, owner = _get_store().load_owner(sid)
+    except Exception:
+        return False
+    if not exists or owner is None:
+        return False
+    account = _current_account()
+    return account is not None and account["account_id"] == owner
+
+
+def _new_project_owner():
+    """The owner_account_id to stamp on a NEW project at /start, or None. Only an
+    authenticated, ACTIVE, EMAIL-VERIFIED account owns a new durable project
+    (contract §6). Anonymous and unverified users create NULL-owner projects (the
+    anonymous journey), with no ownership claimed. Derived ONLY from the validated
+    server session — never from client input."""
+    account = _current_account()
+    if account is None:
+        return None
+    if account.get("status") == "active" and account.get("email_verified"):
+        return account["account_id"]
+    return None
+
+
 def _cold_load_entry(sid):
     """P4-1b-1 durable cold-load: rebuild the MINIMUM runtime entry for `sid`
     from the durable project envelope (the `sid` IS the durable `project_id`).
@@ -998,7 +1072,18 @@ def account_home():
     if not account:
         return redirect(url_for("login_form"))
     return render_template("account.html", account=account,
-                           csrf_token=_session_csrf(), notice=None)
+                           csrf_token=_session_csrf(), notice=None,
+                           owned_projects=_owned_projects(account))
+
+
+def _owned_projects(account):
+    """The minimum truthful 'Your projects' list: the project_ids durably owned by
+    THIS account (contract §13). Never includes NULL-owner legacy projects and
+    never another account's projects. No dashboard/analytics/sharing."""
+    try:
+        return _get_store().project_ids_for_owner(account["account_id"])
+    except Exception:
+        return []
 
 
 @app.route("/logout", methods=["POST"])
@@ -1217,11 +1302,18 @@ def start():
     # failure we fail closed — no SESSION_STORE entry, generic unavailable, no
     # user content logged. The envelope carries only the accepted-input ledger
     # (empty at creation) + idea_id; readiness/gaps/last_result are NOT persisted.
+    # P5-3: a NEW project is owned ONLY when an authenticated, active, verified
+    # account creates it (ownership derived solely from the validated server
+    # session, never from client input). Anonymous and unverified users create a
+    # NULL-owner project — the anonymous journey is preserved and no ownership is
+    # claimed. Ownership is written ATOMICALLY inside create_project's INSERT.
+    owner_account_id = _new_project_owner()
     try:
         contract = ProjectRecordContract.from_state(state)
         _get_store().create_project(
             contract, project_id=sid,
-            reconstruction_inputs=_reconstruction_inputs(idea_text, state))
+            reconstruction_inputs=_reconstruction_inputs(idea_text, state),
+            owner_account_id=owner_account_id)
     except Exception:
         return render_template("index.html", error=SERVICE_UNAVAILABLE_MESSAGE), 503
     SESSION_STORE[sid] = {"state": state, "last_result": initial_result, "transcript": [],
@@ -1322,6 +1414,8 @@ def _draft_context_id(question):
 
 @app.route("/session/<sid>", methods=["GET"])
 def show_session(sid):
+    if not _project_authorized(sid):
+        return _deny_project()
     entry = SESSION_STORE.get(sid)
     if not entry:
         # P4-1b-1 durable cold-load: after memory loss, rebuild the minimum
@@ -1394,6 +1488,10 @@ def show_session(sid):
         if _uncertainty_candidates else "")
     return render_template("session.html",
         sid=sid,
+        # P5-3: a TRUTHFUL owned-state signal — True only when the current
+        # authenticated account is the durable owner of this project. Never claims
+        # ownership for a NULL-owner (legacy/anonymous) project. Display only.
+        project_owned_by_you=_owned_by_current(sid),
         # Draft Level 2 (local-draft recovery, client-side only): a truthful,
         # one-shot ACCEPTED signal (set only after a durable accepted answer,
         # popped here so it renders once) plus a stable per-question context id and
@@ -1479,6 +1577,8 @@ def show_session(sid):
     )
 @app.route("/session/<sid>/deliverable", methods=["GET"])
 def show_deliverable(sid):
+    if not _project_authorized(sid):
+        return _deny_project()
     entry = SESSION_STORE.get(sid)
     if not entry:
         return redirect(url_for("index"))
@@ -1499,6 +1599,8 @@ def show_deliverable(sid):
 
 @app.route("/session/<sid>/keep-snapshot", methods=["POST"])
 def keep_snapshot(sid):
+    if not _project_authorized(sid):
+        return _deny_project()
     # G-UX-SNAPSHOT-DECISION: "Keep current snapshot" — a meaningful but bounded
     # post-output decision within the CURRENT temporary session. It records a
     # single-use, per-sid presentation acknowledgement only and preserves
@@ -1523,6 +1625,8 @@ _CRITERION_FIELD_PREFIX = "criterion__"
 
 @app.route("/session/<sid>/success-criteria", methods=["GET"])
 def success_criteria(sid):
+    if not _project_authorized(sid):
+        return _deny_project()
     entry = SESSION_STORE.get(sid)
     if not entry:
         return redirect(url_for("index"))
@@ -1540,6 +1644,8 @@ def success_criteria(sid):
 
 @app.route("/session/<sid>/success-criteria", methods=["POST"])
 def save_success_criteria(sid):
+    if not _project_authorized(sid):
+        return _deny_project()
     entry = SESSION_STORE.get(sid)
     if not entry:
         return redirect(url_for("index"))
@@ -1585,6 +1691,8 @@ def save_success_criteria(sid):
 
 @app.route("/session/<sid>", methods=["POST"])
 def submit_answer(sid):
+    if not _project_authorized(sid):
+        return _deny_project()
     entry = SESSION_STORE.get(sid)
     if not entry:
         return redirect(url_for("index"))

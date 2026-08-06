@@ -613,21 +613,20 @@ def test_tokens_hash_only_and_no_raw_secret_in_logs(client, caplog):
 # ===========================================================================
 # Bounded scope — NO project ownership / authorization introduced
 # ===========================================================================
-def test_no_project_ownership_column_or_effect(client, db_path):
+def test_no_project_ownership_effect(client, db_path):
+    # Reconciled at the P5-3 boundary (G-P5-3-PROJECT-OWNERSHIP-ROUTE-
+    # AUTHORIZATION-IMPLEMENTATION-01): P5-3 adds the additive nullable
+    # `owner_account_id` column, so this P5-2 test no longer asserts the column's
+    # ABSENCE. The enduring P5-2 invariant it still guards is that the P5-2 AUTH
+    # routes have NO ownership EFFECT — they create no project and assign no owner.
     _register(client, "own@example.com")
     _login(client, "own@example.com")
-    # projects table has NO owner column
-    rstore = SqliteRecordStore(db_path)
-    cols = [r[1] for r in rstore._conn.execute("PRAGMA table_info(projects)").fetchall()]
-    rstore.close()
-    assert "owner_account_id" not in cols
-    # no auth route creates a project
     rstore2 = SqliteRecordStore(db_path)
     before = len(rstore2.project_ids())
     rstore2.close()
     client.post("/account/resend-verification", data={"csrf_token": _csrf(client)})
     rstore3 = SqliteRecordStore(db_path)
-    assert len(rstore3.project_ids()) == before
+    assert len(rstore3.project_ids()) == before          # no auth route creates a project
     rstore3.close()
 
 
