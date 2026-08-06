@@ -410,7 +410,7 @@ AUTHORIZED / NOT STARTED.***
   WS17, STG, ACV, PDF, Email, and every FPC (FPC-01…FPC-04) remain NOT AUTHORIZED / NOT STARTED.** Decision **D17** and
   the AISR seven-owner model are preserved.
 
-## PHASE 5 FORMALLY CLOSED (P5-1 → P5-2 → P5-3); Phase 6 is next eligible for owner consideration only — NOT STARTED / NOT AUTHORIZED (current truth)
+## PHASE 5 FORMALLY CLOSED (P5-1 → P5-2 → P5-3); PHASE 6 discovery COMPLETED and the P6-1 Truthful Domain Labeling Foundation contract DEFINED — implementation NOT YET AUTHORIZED (current truth)
 
 - **PHASE 5 — Accounts / Authentication / Ownership / Verified Email:** **IMPLEMENTED / INDEPENDENTLY REVIEWED / MERGED /
   POST-MERGE VERIFIED / OWNER ACCEPTED / FORMALLY CLOSED** across all three increments (**P5-1 → P5-2 → P5-3**). Final
@@ -436,11 +436,20 @@ AUTHORIZED / NOT STARTED.***
   **OBS-P5-2-02** (make password reset a single atomic store operation when `account_store` is next touched). The P5-1
   rate-limit-concurrency and SQLite-threading preconditions were RESOLVED in P5-2. Full detail in the roadmap P5-3/Phase-5
   closure entry and `OWNER_DECISION_REGISTER.md` (`D-P5-3-*`).
-- **NEXT ELIGIBLE GATE (owner consideration only — NOT started, NOT authorized here):** per the authoritative roadmap
-  phase map, the phase after Phase 5 is **Phase 6 — domain specialization / truthful specialist labeling**, recorded as
-  **NEXT ELIGIBLE FOR OWNER CONSIDERATION / NOT STARTED / NOT AUTHORIZED**. (The roadmap does NOT designate Phase 6 as
-  "Post-Output Refinement Orchestration"; post-output refinement / AISR is a recorded cross-cutting capability DIRECTION,
-  IMPLEMENTATION NOT AUTHORIZED, not a numbered next phase.) **Draft Level 3: NOT AUTHORIZED.** Phase 4 remains FORMALLY
+- **PHASE 6 — Domain Specialization / Truthful Specialist Labeling (authoritative ACTIVE_EXECUTION_ROADMAP lane):**
+  discovery **G-P6-DOMAIN-SPECIALIZATION-DISCOVERY-01** is **COMPLETED / OWNER-ACCEPTED**; owner adopted recommendations
+  and decisions **D-P6-00 … D-P6-15** and selected **Option A — Truthful Domain Labeling Foundation**. The first Phase 6
+  **contract-of-record P6-1** is **DEFINED** by the documentation-only gate
+  **G-P6-1-TRUTHFUL-DOMAIN-LABELING-FOUNDATION-CONTRACT-01** (recorded in `ACTIVE_INCREMENT_CONTRACT.md`; owner decisions
+  in `OWNER_DECISION_REGISTER.md` `D-P6-*`; append-only roadmap entry). **NO Phase 6 implementation is active.** Only
+  `electronics_electrical` is runtime-operated; no new domain is activated; labels are capped at Tier 0–1 (Tier 3/4
+  prohibited); no schema/engine/AI change; registry validation hardening remains a SEPARATE prerequisite increment.
+  ⚠️ Two distinct "Phase 6" numberings exist (this execution lane vs a registry-parity lane in
+  `docs/GOVERNANCE_DOCUMENTS.md`); per `PRODUCT_ARCHITECTURE_AND_CREDIBILITY_ROADMAP.md`, **neither authorizes the other**
+  (D-P6-00).
+- **NEXT ELIGIBLE GATE: G-P6-1-TRUTHFUL-DOMAIN-LABELING-FOUNDATION-IMPLEMENTATION-01** — eligible **only after the P6-1
+  contract is merged and post-merge verified**. **Multi-domain, AI/model/agent changes, new domain activation, new
+  output types, registry hardening, and Draft Level 3 remain NOT AUTHORIZED / NOT STARTED.** Phase 4 remains FORMALLY
   CLOSED; P4-2 Level-1, Draft Level 2, P5-1, P5-2, and P5-3 remain CLOSED. Decision **D17** and the AISR seven-owner model
   are preserved.
 
