@@ -78,7 +78,10 @@ pending review, pending publication, not-authorized, or not-started.** The **imm
 ACCEPTED / CLOSED** (owner verdict **B**; PR #365, merge `77bd10cc55a731b18d4e35ea262b55342a9f847f`, tree `c8808be`;
 `record_id` = `rec_N`; separate durable idempotency identity; no deterministic-output engine changed). **There is NO
 active open implementation contract. Phase 4 is FORMALLY CLOSED; writable continuation, Phase 5, and every FPC remain
-NOT AUTHORIZED / NOT STARTED.** (Documentation note: the historical "P4-1b-2a … REV1" and "Contract Amendment" sections
+NOT AUTHORIZED / NOT STARTED.** A bounded **Draft Level 2 — Same-Device Unsubmitted-Text Recovery** increment-contract
+**CANDIDATE** is now recorded below (gate **G-DRAFT-L2-LOCAL-CONTINUITY-CONTRACT-01**); it is a **CONTRACT CANDIDATE
+ONLY — IMPLEMENTATION NOT AUTHORIZED** and does **not** become an active contract or grant any implementation, client-JS,
+localStorage, template, schema, or Phase 5 authority. (Documentation note: the historical "P4-1b-2a … REV1" and "Contract Amendment" sections
 retained below, and any statement anywhere below that "P4-2 … / P4-1b-2b … remain NOT AUTHORIZED / NOT STARTED", were
 accurate as of their PR #365/#367 boundary and are **superseded** by this status for current truth.)
 
@@ -204,6 +207,197 @@ Merge authority:          Owner, separately (not by the execution agent).
 ```
 
 ---
+
+## Draft Level 2 — Same-Device Unsubmitted-Text Recovery — Increment Contract CANDIDATE (G-DRAFT-L2-LOCAL-CONTINUITY-CONTRACT-01) — CONTRACT CANDIDATE ONLY / IMPLEMENTATION NOT AUTHORIZED
+
+**Status:** `CONTRACT CANDIDATE ONLY — IMPLEMENTATION NOT AUTHORIZED — DRAFT LEVEL 2 NOT STARTED`. Recording this
+candidate grants **no** implementation, client-JavaScript, `localStorage`/IndexedDB, template, `web/app.py`, schema,
+migration, dependency, account, or Phase 5 authority. Implementation requires a **separate explicit owner
+authorization** after this candidate is independently reviewed and accepted. Follows the accepted discovery
+**G-P5-DISCOVERY-AND-DRAFT-CONTINUITY-ASSESSMENT-01** (overlap **D — NOT FOUND**; current **Draft Level 0**; selected
+**Option B**). Sequence of record: **Draft Level 2 (this) → Phase 5 identity foundation → Draft Level 3 (server,
+account-linked)**.
+
+**Canonical capability name:** **Same-Device Unsubmitted-Text Recovery** (short label: **Local Draft Recovery**). The
+term "autosave" is avoided standalone to prevent confusion with the existing, still-binding prohibition against
+automatically **authoring / rewriting / accepting / submitting** user answers (GUIDED_ANSWER_COAUTHORING; Guided
+Uncertainty Support scope decision, PR #132). This capability stores a **literal copy of text the user typed** and does
+**NOT** write on the user's behalf, rewrite text, accept or submit an answer, create an `AssertionRecord`, run
+deterministic evaluation, close a gap, change maturity, or generate/alter outputs.
+
+### 1. Objective & truthful user outcome
+Protect unfinished user-entered text on the **same supported browser/device** against power/battery loss, tab/browser
+closure, refresh, browser crash, temporary internet loss, and intentional pause — so the user can **explicitly** recover
+the latest locally saved version on return. It is **local-only**: it does **NOT** provide cross-device recovery, server
+persistence, accounts, writable continuation, or any change to accepted-answer semantics. It must **never** claim
+recovery when browser storage is unavailable, data was cleared, private mode removed it, the user moved to another
+device/browser, the draft expired, the context no longer matches, or the user explicitly discarded it.
+
+### 2. First-increment surface scope (§6)
+- **REQUIRED:** (1) **seed idea** input (`web/templates/index.html`, `textarea#idea`); (2) **main answer** input
+  (`web/templates/session.html` `textarea#response`, the answered form). Highest data-loss + user-value.
+- **CONDITIONAL (adopt only if the same primitive covers it at trivial cost):** the **criticality-correction free-text**
+  textarea (`session.html`, the no-`action` answered-producing correction form).
+- **DEFERRED:** the criticality **clarify rationale** (server-prefilled), **success-criteria** textareas.
+- **PROHIBITED (this increment):** the **FDC-001 Decision Workspace** inputs (`decision_workspace.html`) and any
+  legacy/unlinked surface — separate lane, in-memory, out of the minimum coherent experience.
+
+### 3. Local storage decision (§7)
+- **Selected mechanism: `localStorage`.** Minimum-Lean: synchronous simple key/value API, no schema, ubiquitous support;
+  drafts are small text well under the ~5 MB origin quota. IndexedDB (async, heavier) is unnecessary for a few small
+  text drafts; **no** service worker, offline app shell, or third-party library.
+- **Per-draft size cap:** bounded (recommend **64 KB** per draft; oversized input is not stored — truthful "could not
+  save" status, submission still allowed). **Failure/private-mode/quota:** wrap every access in try/catch; any failure
+  **fails closed to Level 0** with a truthful *"Could not save a draft on this device"* and never blocks typing or
+  submission. **Compatibility:** all supported evergreen browsers; unsupported/JS-disabled → Level 0.
+- **No client-side encryption is claimed** (a client-held key adds no real protection); protection is by **disclosure +
+  TTL + cleanup + explicit-restore**, not cryptography.
+
+### 4. Draft identity contract (§8)
+Local key (raw invention text is **never** part of the key):
+`inventorai:draft:v1:<scope>:<field>:<context-id>:<context-version>` where
+`v1` = draft-schema version; `<scope>` = the temporary-session/project `sid` for session surfaces, or the reserved
+`__seed__` for the pre-submission seed-idea form (no `sid` yet); `<field>` = surface type (`idea` | `answer` |
+`correction`); `<context-id>` = the current question/step identity where applicable; `<context-version>` = a
+content/engine/question-context version stamp so a **stale** question/idea never restores. Before a stable `sid` exists
+(seed-idea form), a single per-browser `__seed__` draft is used and is cleared once `/start` is confirmed accepted. **No
+account ownership** is introduced.
+
+### 5. Save behavior (§9)
+Debounced save (**recommend ~800 ms** idle) on input, **plus** a flush on `pagehide` and on `visibilitychange`→hidden.
+`beforeunload` is **avoided** as a primary trigger (unreliable/discouraged); `pagehide` is the interruption-flush path.
+Stored record = `{ text, ts (local ISO), schema_version, key fields }`. **No network request** is made to save a Level-2
+draft. Not every keystroke (debounced). Storage-write failure → truthful failure status; never blocks.
+
+### 6. Recovery behavior (§10)
+Recovery is **explicit and safe**. On load, a **matching** non-stale draft for the current key is detected; it is offered
+only when the current field is empty (or holds only a server-prefilled value) via a **low-emphasis, non-modal** prompt
+with **Restore / Discard** (ignoring = continue without restoring). It **never silently overwrites** newer current text.
+Stale/mismatched drafts (wrong `sid`/project, wrong field, wrong `context-id`/`context-version`, expired, malformed) are
+**rejected, not restored**. The last-saved time is shown; an optional truncated preview may be shown. Bilingual EN/AR +
+correct RTL. Recommended wording — EN: *"Unsent text was found on this device."* AR:
+*"تم العثور على نص غير مرسل محفوظ على هذا الجهاز."*  Actions — EN: *Restore / Discard*; AR: *استعادة / حذف*.
+
+### 7. Product-truth messages (§11)
+Exact truthful states: *Saving locally…* · *Draft saved on this device* · *Could not save a draft on this device* ·
+*Unsent text found on this device* · *Draft restored* · *Draft discarded* · *Answer submitted*. The UI **must NOT** say
+"saved to your account", "saved securely on the server", "available on another device", or "permanently saved" (Level 2
+is local-only). *"Draft saved on this device"* appears **only after a save event** (low-emphasis, transient/inline —
+never a persistent banner). The experience stays low-emphasis and non-disruptive.
+
+### 8. Successful-submission cleanup (§12)
+The matching local draft is deleted **only after the client receives truthful evidence that the corresponding submission
+was accepted** — i.e., the Post/Redirect/Get lands on the session view showing acceptance (the just-submitted answer was
+accepted and the journey advanced), **not** merely that a POST was sent. Because the answered path redirects to
+`show_session` on both success and error, the client distinguishes acceptance via a **minimal server-provided truthful
+accepted signal** on the redirected render (a per-submit render-context flag — the only conditional `web/app.py`
+change). The draft is **NOT** cleared on client/server/CSRF/token validation failure, store-unavailable, timeout,
+disconnect-before-confirmation, ambiguous result, or an error redirect. The existing **accepted-answer idempotency model
+is preserved unchanged**; **no** second submission/retry model is introduced. **Ambiguous case** (server may have
+committed but the browser missed confirmation): **retain the local draft**; the existing token idempotency guarantees a
+same-token/same-content resubmission is an idempotent no-op (no duplicate accepted answer); truthful retry is offered;
+the draft clears only once a confirmed-accepted signal is observed.
+
+### 9. Privacy (§13)
+Invention/idea text is **sensitive**. The contract requires: a **disclosure at/before the first local draft save**,
+delivered by **extending the existing Data & Session Notice** (`/data-and-session`, `data_session.html`) with **one
+narrowly-scoped local-draft sentence** (no new large privacy system) plus a brief inline note at the surface; disclosure
+of shared-device, browser-profile, and browser-sync risks and private-mode limitations; **explicit discard**; **local
+expiry**; **cleanup after successful submit** and when the user chooses to start over. **No raw draft text** may appear
+in logs, analytics, exception messages, URLs, query strings, browser history, or third-party telemetry. (The draft never
+leaves the browser as a draft; the server receives text only through the normal, already-governed submission path.)
+
+### 10. Retention / TTL (§14)
+Local TTL options: **(a) 24 h**, **(b) 7 days**, **(c) 30 days**. **RECOMMENDED: (b) 7 days** — balances "return later"
+usefulness against shared-device exposure; enforced by **lazy cleanup on load** + cleanup on submit + explicit discard;
+stale (past-TTL) drafts are ignored and purged, never restored. **TTL classification: RECOMMENDED contract-fixed at
+7 days, but REQUIRES OWNER CONFIRMATION at the implementation-authorization gate** (it is a privacy tradeoff). Not
+configurable at runtime in the first increment.
+
+### 11. Failure & fallback (§15)
+Fail-closed for: storage unavailable; quota exceeded; invalid/corrupted JSON; incompatible schema version; missing
+project/question identity; stale question; mismatched project; malformed timestamp; expired draft; JavaScript disabled;
+unsupported browser; private-browsing restriction; multiple tabs; successful submission with cleanup failure. **A draft
+failure must never block normal answer submission**; the application remains fully usable at truthful **Level 0** whenever
+local draft storage cannot operate.
+
+### 12. Multi-tab boundary (§16)
+Minimum Level-2 rule: **last-write-wins by local timestamp per key**, with a `storage`-event **awareness note** when a
+newer same-browser draft appears in another tab (so an older tab does not silently clobber it on its next flush). **No**
+cross-tab locking, **no** conflict merge, **no** multi-device conflict resolution (that is Level 4 — out of scope).
+
+### 13. Accessibility & bilingual UX (§17)
+Preserve Arabic + English with correct RTL/LTR; full keyboard operation; screen-reader announcements via `aria-live`
+polite for save/restore status; **non-color-only** save/failure indication; accessible Restore/Discard controls; **no**
+disruptive repeated modal (inline non-modal recovery prompt); clear focus handling after restoration. Follow the existing
+Phase 3 bilingual and accessibility principles and the G-UX-SHELL baseline.
+
+### 14. Security (§18)
+DOM insertion via `.value`/`textContent` only — **never** `innerHTML`; **no** third-party scripts; a single first-party
+static script compatible with a current/future **CSP** (external file, no inline handlers; nonce if required); enforce the
+size cap; ignore malformed content; **never** trust draft metadata; **no** ownership or server-authorization decision is
+derived from local data; local draft content is **never** treated as an accepted answer without an explicit submit; no
+draft execution or HTML interpretation. On submission the restored text is **untrusted client input** — existing
+server-side validation and idempotency remain authoritative.
+
+### 15. Permitted / prohibited future paths (§19)
+- **REQUIRED (future implementation):** `web/templates/index.html`, `web/templates/session.html` (script include via the
+  `{% block head %}` hook + minimal markup hooks/data-attributes + the recovery-prompt region); **one new first-party
+  static JS file** under a new `web/static/js/` (served by Flask's default static route, currently unused); new focused
+  tests.
+- **CONDITIONAL:** `web/app.py` (minimal render context **only**: the per-submit truthful accepted signal + the
+  `context-id`/`context-version` + field/key identifiers passed to templates); `web/templates/base.html` /
+  `web/templates/data_session.html` (the one-sentence local-draft disclosure); registration of the static assets folder
+  if none is wired.
+- **PROHIBITED (unchanged):** `engine/progression_loop.py`, `engine/scoring.py`, `engine/idea_state.py`,
+  `engine/record_contract.py`, `engine/session_reconstruction.py`, `engine/path_n_questions.py`,
+  `engine/requirement_landscape.py`, `engine/idea_development_outputs.py`; any schema/migration; any server-side draft
+  store; any account/auth path; CI/deploy. **No schema or migration is required for Draft Level 2.**
+
+### 16. RED test contract (§20) — 22 behaviour-first proofs (to be written in the implementation gate, not here)
+Each fails on the live tip because **no draft mechanism exists** (typed text is lost on reload / never offered for
+recovery) and **cannot false-green** because each asserts an observable browser-storage/DOM/submission outcome, not mere
+existence: (1) seed idea survives reload; (2) main answer survives reload before submit; (3) main answer survives
+temporary offline; (4) interruption preserves the latest saved local version; (5) a matching draft is offered for
+**explicit** restoration; (6) a draft is **not** silently restored over newer current text; (7) wrong project/session
+draft not restored; (8) wrong field/question draft not restored; (9) stale question/version draft not restored;
+(10) expired draft not restored; (11) corrupted draft ignored safely; (12) storage failure → truthful status, submission
+not blocked; (13) failed submission keeps the draft; (14) successful accepted submission clears **only** the matching
+draft; (15) ambiguous network result keeps the draft and idempotency prevents a duplicate accepted answer; (16) draft
+storage never creates an `AssertionRecord`; (17) never calls deterministic evaluation; (18) never changes maturity/gaps/
+outputs; (19) explicit discard removes the matching draft; (20) no raw draft content in logs/URLs/analytics/errors;
+(21) JavaScript-disabled behaviour remains valid Level 0; (22) existing P4-1b-2a / P4-1b-2b / P4-2 / submission /
+idempotency tests remain green. Likely test file: `tests/test_draft_l2_local_continuity.py` (+ a Level-0/no-JS server
+regression assertion in the existing Flask tests).
+
+### 17. Testing approach (§21)
+The app is server-rendered with **no** existing client-JS test framework, no `web/static`, and no `package.json`.
+Proving client-side `localStorage` persistence across reload/close/offline requires a **real browser** — server-only
+Flask tests cannot. The environment **pre-provisions Chromium + Playwright browser binaries** (`/opt/pw-browsers`,
+`PLAYWRIGHT_BROWSERS_PATH`) and Node 22. **RECOMMENDED (single approach): `pytest` + Playwright (Python) driving headless
+Chromium** — it integrates with the existing pytest suite and truthfully exercises localStorage/reload/offline/restore/
+submit-cleanup end-to-end. This requires adding the **`playwright` Python package as a TEST-only dependency**, justified
+because no existing method can prove client-side storage behaviour and the browser binaries are already present (no
+download; `PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1`). A pure-function Node/jsdom unit test of the extracted key/staleness/
+cleanup logic is an acceptable **complement** but is not sufficient alone (it cannot prove real reload/offline
+lifecycle). No large frontend framework or heavyweight suite is introduced.
+
+### 18. Implementation structure (§22) — ONE increment
+**RECOMMENDED: a single implementation increment** (RED behavioural Playwright tests → the localStorage save/recovery
+primitive → UX integration, successful-submit cleanup, privacy disclosure, accessibility → GREEN + regressions).
+Rationale: splitting storage from cleanup/privacy would ship an **unsafe intermediate** (drafts stored with no cleanup or
+disclosure = a privacy hazard). The surface is bounded (2–3 fields, one primitive), so one coherent increment is the Lean
+and safe choice. Internal RED→GREEN order applies. **Rollback:** clear the `localStorage` keys and remove the script
+include + template hooks + optional render flag; **no** server or schema state exists to roll back; fully reversible with
+no data loss (drafts are ephemeral local copies).
+
+### 19. Product-truth boundary (binding)
+Draft Level 2 is **local-only, same-device, explicit-recovery**. It does **NOT** provide cross-device recovery, server/
+account persistence, accounts, authentication, authorization, ownership, verified email, writable continuation, or any
+change to accepted-answer / idempotency / deterministic-evaluation semantics. It authorizes **no** implementation. Phase 5
+remains the next step **immediately after** this bounded increment and is **NOT STARTED / NOT AUTHORIZED**; server-side
+Draft Level 3, writable continuation, and every FPC remain **NOT AUTHORIZED / NOT STARTED**.
+
 
 ## P4-1b-2a Increment Contract Candidate — REV1 — G-P4-1B-2-DOC-01-REV1 (HISTORICAL PRE-IMPLEMENTATION CONTRACT STATE — the increment is now IMPLEMENTED / MERGED / CLOSED via PR #365; see the closure banner and the "Active contract" status above)
 

@@ -3945,3 +3945,51 @@ verdict **B**); it is no longer a candidate, pending review, pending publication
 NOT AUTHORIZED / NOT STARTED.** There is no active open implementation contract. Decision **D17** and the AISR
 seven-owner model are preserved. Append-only; prior history not rewritten. This synchronization authorizes no push, no
 PR, no merge, no implementation, and no phase activation.
+
+---
+
+## Draft Level 2 — Same-Device Unsubmitted-Text Recovery — contract-definition gate (G-DRAFT-L2-LOCAL-CONTINUITY-CONTRACT-01, documentation-only, append-only)
+
+This append-only entry records the **contract-definition** gate for **Draft Level 2 — Same-Device Unsubmitted-Text
+Recovery** (short label: **Local Draft Recovery**), following the accepted discovery
+**G-P5-DISCOVERY-AND-DRAFT-CONTINUITY-ASSESSMENT-01** (overlap **D — NOT FOUND**; current **Draft Level 0**; unsent-text
+protection **NONE**; selected **Option B**). It is documentation-only: it records an increment-contract **CANDIDATE** and
+grants **no** implementation, client-JavaScript, `localStorage`, template, `web/app.py`, schema, migration, dependency,
+account, or Phase 5 authority. Live tip (resolve from Git): `ca19390f5b76b9c1573228599841b64ba7eae128` (Merge PR #370).
+
+**Accepted sequence (Option B).** **Draft Level 2 (local, same-device, this candidate) → Phase 5 identity foundation →
+Draft Level 3 (account-linked server draft).** The Draft Level 2 increment is independent of accounts and server-side
+draft storage and must not delay Phase 5 beyond this one bounded increment.
+
+**Capability (canonical).** Same-Device Unsubmitted-Text Recovery stores a **literal copy of text the user typed** so the
+user can **explicitly** recover the latest locally saved version on the **same supported browser/device** after power/
+battery loss, tab/browser closure, refresh, browser crash, temporary internet loss, or an intentional pause. It does
+**NOT** author/rewrite/accept/submit answers, create an `AssertionRecord`, run deterministic evaluation, close a gap,
+change maturity, or alter outputs (the existing answer-auto-authoring prohibition is preserved).
+
+**Contract candidate (summary; full text governs in `ACTIVE_INCREMENT_CONTRACT.md`).** First-increment surfaces:
+REQUIRED = seed idea + main answer; CONDITIONAL = criticality-correction free-text; DEFERRED = clarify rationale +
+success-criteria; PROHIBITED = FDC-001 Decision Workspace / legacy-unlinked. Storage: **`localStorage`** (≤64 KB/draft;
+fail-closed on quota/private-mode/unavailable; no client-encryption claim; no service worker / third-party lib). Key:
+`inventorai:draft:v1:<scope>:<field>:<context-id>:<context-version>` (scope = `sid` or `__seed__`; raw text never in the
+key). Save: debounced ~800 ms + `pagehide`/`visibilitychange` flush; no network for a Level-2 save. Recovery: **explicit,
+non-modal, never silent overwrite**; stale/mismatched/expired/malformed rejected; bilingual EN/AR + RTL. Product truth:
+device-only wording; must not claim account/server/other-device/permanent save. Successful-submit cleanup: clear the
+matching draft **only** on a truthful accepted signal (minimal `web/app.py` render flag); never on failure/ambiguous;
+**existing idempotency preserved**; ambiguous case retains the draft. Privacy: disclosure via the existing Data & Session
+Notice + one scoped sentence; **no raw draft text** in logs/analytics/exceptions/URLs/history/telemetry. TTL:
+**RECOMMENDED 7 days, contract-fixed, requires owner confirmation at the implementation gate**. Multi-tab:
+last-write-wins + `storage`-event awareness (no conflict merge; no multi-device). Accessibility/security: EN/AR + RTL,
+`aria-live`, non-color-only, `.value`/`textContent` only (no `innerHTML`), CSP-compatible first-party file, restored text
+is untrusted client input. **Schema/migration: NONE.** Testing: **pytest + Playwright (Python) / headless Chromium**
+(test-only `playwright` dependency justified; browser pre-installed). Structure: **ONE implementation increment**.
+Rollback: clear `localStorage` keys + remove the script include/hooks/flag; no server/schema state; fully reversible.
+
+**Decisions recorded:** `D-DRAFT-L2-01 … D-DRAFT-L2-14` in `OWNER_DECISION_REGISTER.md`.
+
+**Status.** **Draft Level 2 is a CONTRACT CANDIDATE ONLY — IMPLEMENTATION NOT AUTHORIZED — NOT STARTED.** Implementation
+requires a separate explicit owner authorization after independent review of this candidate. **Phase 5 remains the next
+step immediately after this bounded increment — NOT STARTED / NOT AUTHORIZED.** Server-side Draft Level 3, writable
+continuation, and every FPC remain **NOT AUTHORIZED / NOT STARTED**. Phase 4 remains **FORMALLY CLOSED**; P4-2 Level-1
+remains **CLOSED**. Decision **D17** and the AISR seven-owner model are preserved. Append-only; prior history not
+rewritten. This gate authorizes no push, no PR, no merge, no implementation, and no phase activation.

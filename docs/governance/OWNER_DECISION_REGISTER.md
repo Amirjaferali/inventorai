@@ -507,3 +507,38 @@ VERIFIED / OWNER ACCEPTED / FORMALLY CLOSED, and Phase 4 is FORMALLY CLOSED.** N
 preserved; no history is rewritten. **P4-2 Level-1 is IMPLEMENTED / MERGED / POST-MERGE VERIFIED / OWNER ACCEPTED /
 FORMALLY CLOSED (PR #369, merge `276e896`); Phase 4 is FORMALLY CLOSED.** **Writable continuation, Phase 5, and every FPC
 remain NOT AUTHORIZED / NOT STARTED.**
+
+## Draft Level 2 — Same-Device Unsubmitted-Text Recovery — contract-definition decisions (G-DRAFT-L2-LOCAL-CONTINUITY-CONTRACT-01) — CONTRACT CANDIDATE / IMPLEMENTATION NOT AUTHORIZED
+
+**Decision status:** ACCEPTED / RECORDED — NO IMPLEMENTATION AUTHORITY. Documentation-only gate recording the accepted
+discovery outcome and defining the bounded **Draft Level 2 — Same-Device Unsubmitted-Text Recovery** increment-contract
+**CANDIDATE**. The full contract text is the "Draft Level 2 …" section of `ACTIVE_INCREMENT_CONTRACT.md` (which governs;
+this index does not duplicate it). Recording these decisions and the candidate grants **no** implementation,
+client-JavaScript, `localStorage`/IndexedDB, template, `web/app.py`, schema, migration, dependency, account, or Phase 5
+authority. Recorded on the authoritative live tip resolved from Git (`ca19390`).
+
+**Accepted discovery facts (G-P5-DISCOVERY-AND-DRAFT-CONTINUITY-ASSESSMENT-01, COMPLETED / ACCEPTED):** overlap **D — NOT
+FOUND**; current **Draft Level 0**; current unsent-text protection **NONE**; selected **Option B**; first capability
+**Draft Level 2 — Same-Device Unsubmitted-Text Recovery**; later capability **Draft Level 3 — Account-Linked Server Draft
+Recovery after Phase 5**; sequence **Draft Level 2 → Phase 5 identity foundation → Draft Level 3**.
+
+| ID | Subject | Decision | Impl. authority | Evidence / boundary |
+|---|---|---|---|---|
+| D-DRAFT-L2-01 | Capability & canonical name | ACCEPTED | NONE | **Same-Device Unsubmitted-Text Recovery** (short: **Local Draft Recovery**); stores a literal copy of user-typed text; **never** authors/rewrites/accepts/submits, creates an `AssertionRecord`, runs evaluation, closes a gap, changes maturity, or alters outputs. "autosave" avoided standalone (existing answer-auto-authoring prohibition preserved) |
+| D-DRAFT-L2-02 | First-increment surfaces | ACCEPTED | NONE | REQUIRED = seed idea (`index.html`) + main answer (`session.html`); CONDITIONAL = criticality-correction free-text; DEFERRED = clarify rationale, success-criteria; PROHIBITED = FDC-001 Decision Workspace / legacy-unlinked |
+| D-DRAFT-L2-03 | Storage mechanism | ACCEPTED | NONE | **`localStorage`** (Lean; small text; ≤64 KB/draft cap); no IndexedDB / service worker / third-party lib; failure/quota/private-mode → **fail closed to Level 0**, never blocks; **no client-encryption claim** |
+| D-DRAFT-L2-04 | Draft identity key | ACCEPTED | NONE | `inventorai:draft:v1:<scope>:<field>:<context-id>:<context-version>`; scope = `sid` (session) or `__seed__` (pre-`/start`); raw text never in the key; stale/wrong context never restored; no account ownership |
+| D-DRAFT-L2-05 | Save behavior | ACCEPTED | NONE | debounced ~800 ms + `pagehide`/`visibilitychange` flush; `beforeunload` avoided as primary; **no network** for a Level-2 save; not per-keystroke |
+| D-DRAFT-L2-06 | Recovery behavior | ACCEPTED | NONE | **explicit** low-emphasis non-modal prompt; Restore / Discard / continue-without; **never** silently overwrite newer text; stale/mismatched/expired/malformed rejected; bilingual EN/AR + RTL; last-saved time shown |
+| D-DRAFT-L2-07 | Product-truth messages | ACCEPTED | NONE | truthful device-only wording; **must NOT** claim account/server/other-device/permanent save; "Draft saved on this device" only after a save event; low-emphasis |
+| D-DRAFT-L2-08 | Successful-submit cleanup | ACCEPTED | NONE | clear the matching draft **only** on a truthful accepted signal (minimal `web/app.py` render flag); never clear on validation/token/CSRF/store-unavailable/timeout/ambiguous/error; **existing idempotency preserved**; no second submission/retry model; ambiguous case retains the draft, idempotency prevents duplicates |
+| D-DRAFT-L2-09 | Privacy | ACCEPTED | NONE | disclosure at/before first save via the **existing Data & Session Notice** + one scoped sentence (no new privacy system); shared-device/profile/sync/private-mode risks; explicit discard; expiry; cleanup; **no raw draft text** in logs/analytics/exceptions/URLs/history/telemetry |
+| D-DRAFT-L2-10 | Retention / TTL | ACCEPTED (recommendation) | NONE | options 24 h / **7 days (RECOMMENDED)** / 30 days; lazy cleanup on load + on submit + explicit discard; **TTL RECOMMENDED contract-fixed at 7 days but REQUIRES OWNER CONFIRMATION at the implementation-authorization gate**; not runtime-configurable in the first increment |
+| D-DRAFT-L2-11 | Failure / fallback & multi-tab | ACCEPTED | NONE | every failure fails closed to Level 0; a draft failure never blocks submission; multi-tab = **last-write-wins by timestamp** + `storage`-event awareness note; no cross-tab lock / no conflict merge / no multi-device (Level 4 excluded) |
+| D-DRAFT-L2-12 | Accessibility & security | ACCEPTED | NONE | EN/AR + RTL, keyboard, `aria-live` polite, non-color-only, accessible controls, non-modal, focus handling; DOM via `.value`/`textContent` only (no `innerHTML`), no third-party scripts, CSP-compatible first-party file, size cap, malformed ignored, no ownership/authz from local data, restored text is untrusted client input (server validation authoritative) |
+| D-DRAFT-L2-13 | Paths, schema, testing, structure | ACCEPTED | NONE | REQUIRED future paths = `index.html`, `session.html`, one new `web/static/js/` file, focused tests; CONDITIONAL = minimal `web/app.py` render flag + Data-&-Session disclosure + static-folder wiring; PROHIBITED = the 8 engine files + schema/migration + server draft store + auth/CI; **schema/migration NONE**; testing = **pytest + Playwright (Python) / headless Chromium** (test-only `playwright` dep justified; pre-installed browser); **ONE implementation increment** |
+| D-DRAFT-L2-14 | Authorization boundary | NONE — NOT AUTHORIZED | NONE | Draft Level 2 is local-only; **no** cross-device/server/accounts/writable-continuation/accepted-answer-change; this gate authorizes **no** implementation. **Phase 5 is the next step immediately after this bounded increment — NOT STARTED / NOT AUTHORIZED.** Server Draft Level 3, writable continuation, and every FPC remain NOT AUTHORIZED / NOT STARTED |
+
+**Boundary.** No decision above grants implementation authority. Draft Level 2 implementation requires a **separate
+explicit owner authorization** after independent review of this candidate. Decision **D17** and the AISR seven-owner
+model are preserved; Phase 4 remains FORMALLY CLOSED; P4-2 Level-1 remains CLOSED.
