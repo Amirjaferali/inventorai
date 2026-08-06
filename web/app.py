@@ -32,6 +32,12 @@ from engine.deliverable_assembler import assemble_deliverable
 import sqlite3
 from engine.record_store import SqliteRecordStore, StoreError
 from engine.record_contract import ProjectRecordContract
+# P5-1 — Account & Credential Foundation (Phase 5, Option A). Additive account
+# persistence + pure credential helpers + a development email sink. NO login /
+# authenticated session / project ownership here (those are P5-2 / P5-3).
+from engine.account_store import SqliteAccountStore, EmailExistsError, VERIFICATION
+from engine import account_credentials as _acct
+from engine.email_sender import DevMemoryEmailSender
 # P4-2 Level-1: the exact supported reconstruction/engine-contract version stamp
 # persisted at project creation (read-only reconstruction lives entirely in the
 # engine; web only persists these additive envelope inputs).
@@ -139,6 +145,59 @@ def _get_store():
             os.makedirs(directory, exist_ok=True)
         _STORE = SqliteRecordStore(path)
     return _STORE
+
+
+# --- P5-1: account store, development email sink, and bounded policy ----------
+# The account store is SEPARATE from the project record store (its own connection
+# + tables) and shares the same INVENTORAI_DB_PATH file. It is additive: opening
+# it on a pre-P5 database only creates the new tables. No accounts/auth/ownership
+# behaviour is wired beyond registration + verification-token issuance here.
+_ACCOUNT_STORE = None
+# Development-only email sink (in-memory). A production provider adapter is a
+# separate, later concern; the raw verification token appears ONLY in a sink
+# message body and never in the application logs.
+_EMAIL_SENDER = DevMemoryEmailSender()
+
+_VERIFICATION_TTL_SECONDS = 24 * 60 * 60          # contract §8: 24 hours
+# Foundational bounded rate limit for registration (contract §10): a small
+# store-backed counter, NOT an abuse-prevention platform. Same generic response
+# whether accepted, duplicate, or limited.
+_REGISTER_RATE_LIMIT = 10
+_REGISTER_RATE_WINDOW_SECONDS = 60 * 60
+# One generic, non-enumerating registration response (contract §7): it never
+# reveals whether the email was newly registered, already in use, or belongs to a
+# disabled/deleted account, nor whether an email was actually sent.
+REGISTER_GENERIC_MESSAGE_EN = (
+    "If the address can be used, verification instructions have been sent.")
+REGISTER_GENERIC_MESSAGE_AR = (
+    "إذا كان بالإمكان استخدام هذا العنوان، فسيتم إرسال تعليمات التحقق.")
+
+
+def _get_account_store():
+    """Return the one application-scoped SqliteAccountStore, built on first use
+    from the resolved DB path (same file as the project store; separate tables)."""
+    global _ACCOUNT_STORE
+    if _ACCOUNT_STORE is None:
+        path = _resolve_db_path()
+        directory = os.path.dirname(path)
+        if directory:
+            os.makedirs(directory, exist_ok=True)
+        _ACCOUNT_STORE = SqliteAccountStore(path)
+    return _ACCOUNT_STORE
+
+
+def _utc_now():
+    from datetime import datetime
+    return datetime.utcnow()
+
+
+def _iso(dt):
+    # Canonical fixed-width UTC ISO-8601 (always 6-digit microseconds) so the
+    # bounded rate-limit window check — which compares these timestamp STRINGS
+    # lexicographically (engine.account_store.record_rate_attempt) — stays
+    # monotonic even at the exact-whole-second boundary, where a bare
+    # ``isoformat()`` would omit the microseconds and break ordering.
+    return dt.strftime("%Y-%m-%dT%H:%M:%S.%f") + "Z"
 
 
 def _cold_load_entry(sid):
@@ -629,6 +688,105 @@ def _lay_electrical_evidence_count(lowered_text: str) -> int:
 @app.route("/", methods=["GET"])
 def index():
     return render_template("index.html")
+
+
+# --- P5-1: account registration (foundation only; NO login/session/ownership) --
+def _register_generic_response(form_error=None, status=200):
+    """Render the registration page with the single generic, non-enumerating
+    acknowledgement (or a format-validation error, which is safe to show because
+    it concerns the submitted input, not whether an account exists)."""
+    return render_template(
+        "register.html",
+        generic_message_en=REGISTER_GENERIC_MESSAGE_EN,
+        generic_message_ar=REGISTER_GENERIC_MESSAGE_AR,
+        submitted=(form_error is None and status == 200),
+        form_error=form_error,
+    ), status
+
+
+@app.route("/register", methods=["GET"])
+def register_form():
+    return render_template(
+        "register.html",
+        generic_message_en=REGISTER_GENERIC_MESSAGE_EN,
+        generic_message_ar=REGISTER_GENERIC_MESSAGE_AR,
+        submitted=False, form_error=None)
+
+
+@app.route("/register", methods=["POST"])
+def register_submit():
+    """Minimum P5-1 registration. Validates + normalizes + hashes, creates the
+    account atomically, issues a verification token (hash stored; raw token only
+    in the dev email sink), and returns ONE generic non-enumerating response.
+    Never signs the user in, never creates a project. Format/length/mismatch
+    errors ARE shown (they concern the input, not account existence); account
+    existence / disabled / deleted states are never revealed."""
+    email_raw = request.form.get("email", "")
+    password = request.form.get("password", "")
+    password_confirm = request.form.get("password_confirm", "")
+
+    email_normalized = _acct.normalize_email(email_raw)
+
+    # Input-format validation (safe to surface — not account-state-sensitive).
+    if not _acct.is_valid_email(email_normalized):
+        return _register_generic_response(form_error="email_invalid", status=400)
+    ok, _reason = _acct.validate_password(password)
+    if not ok:
+        return _register_generic_response(form_error="password_invalid", status=400)
+    if password != password_confirm:
+        return _register_generic_response(form_error="password_mismatch", status=400)
+
+    now = _utc_now()
+    # Bounded rate limit keyed on a privacy-preserving email digest (no raw email
+    # as a key). Whether limited or not, the PUBLIC response is identical.
+    try:
+        allowed = _get_account_store().record_rate_attempt(
+            subject_key=_acct.email_digest(email_normalized), action="register",
+            now_iso=_iso(now),
+            window_reset_iso=_iso(now + _timedelta_seconds(_REGISTER_RATE_WINDOW_SECONDS)),
+            limit=_REGISTER_RATE_LIMIT)
+    except Exception:
+        allowed = False  # fail closed; still returns the generic response
+    if not allowed:
+        return _register_generic_response()
+
+    # Create the account atomically; a duplicate email fails closed to the SAME
+    # generic response (no enumeration). Any other store failure is also generic.
+    try:
+        store = _get_account_store()
+        account_id = _acct.new_account_id()
+        store.create_account(
+            account_id=account_id, email_normalized=email_normalized,
+            password_hash=_acct.hash_password(password), created_at=_iso(now))
+    except EmailExistsError:
+        return _register_generic_response()          # existing account: identical response
+    except Exception:
+        return _register_generic_response()          # generic; no internal detail leaked
+
+    # Issue a verification token: store only its hash; the RAW token goes solely
+    # into the dev email sink message body (never logged, never in the response).
+    try:
+        raw_token = _acct.new_raw_token()
+        store.create_email_token(
+            token_id=_acct.new_token_id(), account_id=account_id,
+            token_type=VERIFICATION, token_hash=_acct.hash_token(raw_token),
+            expires_at=_iso(now + _timedelta_seconds(_VERIFICATION_TTL_SECONDS)),
+            created_at=_iso(now))
+        _EMAIL_SENDER.send(
+            to=email_normalized,
+            subject="Verify your InventorAI email",
+            body=("Use this code to verify your email (valid 24 hours): "
+                  + raw_token))
+    except Exception:
+        # A token/email-sink failure does not change the generic response and does
+        # not sign anyone in; the account row already committed atomically above.
+        pass
+    return _register_generic_response()
+
+
+def _timedelta_seconds(seconds):
+    from datetime import timedelta
+    return timedelta(seconds=seconds)
 
 @app.route("/data-and-session", methods=["GET"])
 def data_and_session():

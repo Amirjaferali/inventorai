@@ -49,6 +49,23 @@ def _close_and_reset_store():
             pass
     webapp._STORE = None
     webapp.SESSION_STORE.clear()
+    # P5-1: the account store is also module-cached and shares INVENTORAI_DB_PATH,
+    # so it must be closed and reset per test (else it stays bound to the first
+    # test's DB). The in-memory dev email sink is cleared so captured verification
+    # messages never bleed across tests. Test-only isolation; no production change.
+    account_store = getattr(webapp, "_ACCOUNT_STORE", None)
+    if account_store is not None:
+        try:
+            account_store.close()
+        except Exception:
+            pass
+    webapp._ACCOUNT_STORE = None
+    sender = getattr(webapp, "_EMAIL_SENDER", None)
+    if sender is not None and hasattr(sender, "clear"):
+        try:
+            sender.clear()
+        except Exception:
+            pass
 
 
 @pytest.fixture(autouse=True)
