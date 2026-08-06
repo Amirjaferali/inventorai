@@ -4261,3 +4261,70 @@ after this closure sync is merged and post-merge verified**. **Draft Level 3: NO
 contract remains **MERGED / VERIFIED / ACCEPTED**. Phase 4 remains **FORMALLY CLOSED**; P4-2 Level-1, Draft Level 2, and
 P5-1 remain **CLOSED**. Decision **D17** and the AISR seven-owner model are preserved. Append-only; prior history not
 rewritten. This synchronization authorizes no push, PR, merge, implementation, or phase activation.
+
+---
+
+## P5-3 — Project Ownership & Route Authorization: implementation, independent review, PR #379 merge, post-merge verification — and the FINAL FORMAL CLOSURE OF PHASE 5 (G-P5-FINAL-CLOSURE-SYNC-01, documentation-only, append-only)
+
+This append-only entry records the third and final bounded Phase 5 increment — **P5-3 — Project Ownership and Route
+Authorization** — as **IMPLEMENTED / INDEPENDENTLY REVIEWED / MERGED / POST-MERGE VERIFIED / OWNER ACCEPTED / FORMALLY
+CLOSED**, and with it **formally closes PHASE 5 as a whole**. It is documentation-only: it grants **no** production,
+test, schema, dependency, CI, or push/PR/merge authority, and it begins **no** Draft Level 3 or any later phase.
+Authoritative base for this sync (resolve from Git): `d9f888bd0def7b3275cd04860dfa2e8cc1504111` (Merge PR #379; tree
+`e6a03ab46d6d01ca4b95ee87d240ce6658eeb47c`; parents `b14c931289ff6539bf68a15185ac27ea65cc9c72` +
+`a0997c38ea33299a3ad090abf3b99257a20626f8`).
+
+**P5-3 lineage.** Implementation gate **G-P5-3-PROJECT-OWNERSHIP-ROUTE-AUTHORIZATION-IMPLEMENTATION-01** (candidate
+`a0997c38ea33299a3ad090abf3b99257a20626f8`, tree `e6a03ab46d6d01ca4b95ee87d240ce6658eeb47c`, parent
+`b14c931289ff6539bf68a15185ac27ea65cc9c72`, bundle `p53projectownershipauthorization.bundle`, bundle SHA-256
+`bcb4aff82b6183ef3387d57745a80baf74bf1c307a4efc41b11078e43ada9b69`) → independent adversarial review
+**G-P5-3-PROJECT-OWNERSHIP-ROUTE-AUTHORIZATION-INDEPENDENT-REVIEW-01** (verdict **B — ACCEPT WITH NON-BLOCKING
+OBSERVATIONS**; recommendation **PUBLISH**) → merge **PR #379** (merge commit
+`d9f888bd0def7b3275cd04860dfa2e8cc1504111`, tree `e6a03ab46d6d01ca4b95ee87d240ce6658eeb47c` equal to the candidate tree,
+two-parent merge of `b14c931289ff6539bf68a15185ac27ea65cc9c72` (base) + `a0997c38ea33299a3ad090abf3b99257a20626f8`
+(reviewed candidate), **ancestry PASS — exit 0**) → post-merge verification. **Merged scope: 6 files changed, 562
+insertions, 15 deletions**; disallowed paths **NONE** (no deterministic engine file, no `engine/account_store.py`, no
+production `requirements.txt`). Tests: **focused 19 passed**; **full suite 1893 passed, 1 skipped, 1 xfailed**.
+
+**P5-3 implemented capability.** nullable `projects.owner_account_id` (additive, indexed, migrated idempotently and
+legacy-safe); atomic owner assignment (written in the create INSERT; no create-then-assign window; ownership immutable,
+no transfer); verified-account owned-project creation; legacy/anonymous NULL-owner compatibility preserved; one central
+server-side route-authorization helper (fail-closed; ownership from durable state + the validated session, never from
+the `sid`, cookie, template, or client input) enforced on every protected `/session/<sid>` GET/POST route
+(view/submit/deliverable/keep-snapshot/success-criteria); cross-account denial; anonymous denial for owned projects;
+generic missing/not-authorized equivalence (no enumeration); disabled/deleted-account denial; owner-scoped project list;
+Draft Level 2 account+project isolation (existing per-`sid` scope + P5-2 account namespace).
+
+**P5-3 boundary (does NOT implement).** anonymous project claim; ownership transfer; multiple owners; collaboration;
+sharing; teams; organizations; Draft Level 3; writable continuation; output email delivery; ACV; AI Coach; STG.
+
+**Preserved observation OBS-P5-3-01 — in-memory session fallback.** The current caller-agnostic `sid in SESSION_STORE`
+fallback in the authorization helper is accepted ONLY because owned projects always have durable rows, no project-delete
+route exists, and production-owned data cannot currently reach the fallback path. Before any future project-deletion
+capability, broader in-memory project access, or session-restoration expansion, it MUST be replaced with
+caller/session-scoped authorization. P5-3 is NOT reopened by this closure gate.
+
+**Preserved prior Phase 5 observations (kept visible).** P5-2: **OBS-P5-2-01** email-link tokens in URL paths must be
+revisited before any production email-provider or reverse-proxy deployment (access-log redaction, browser-history
+exposure, POST/interstitial alternatives); **OBS-P5-2-02** password reset should become a single atomic store operation
+when `account_store` is next modified for a related security increment. P5-1: the rate-limit-concurrency and
+SQLite-threading preconditions were RESOLVED in P5-2 (P5-2-PRE-01 / P5-2-PRE-02); remaining minor P5-1 observations stay
+preserved where already recorded in the P5-1 closure entry and `OWNER_DECISION_REGISTER.md`.
+
+**FORMAL PHASE 5 CLOSURE.** **P5-1: FORMALLY CLOSED. P5-2: FORMALLY CLOSED. P5-3: FORMALLY CLOSED. PHASE 5 —
+Accounts / Authentication / Ownership / Verified Email: IMPLEMENTED / INDEPENDENTLY REVIEWED / MERGED / POST-MERGE
+VERIFIED / OWNER ACCEPTED / FORMALLY CLOSED.** Phase 5 delivered: accounts; credentials; registration; login/logout;
+authenticated sessions; email verification; recovery/reset; session revocation (`session_epoch`); project ownership;
+route authorization; cross-account isolation. Phase 5 did **NOT** deliver: Draft Level 3; writable continuation;
+anonymous project claiming; collaboration/sharing; production email delivery; output email delivery; ACV; AI Coach; STG;
+or any later commercial-readiness capability — all remain **NOT AUTHORIZED / NOT STARTED**.
+
+**Next eligible gate (owner consideration only — NOT started, NOT authorized here).** Per the authoritative roadmap
+phase map, the phase after Phase 5 is **Phase 6 — domain specialization / truthful specialist labeling**
+(the roadmap does NOT designate Phase 6 as "Post-Output Refinement Orchestration"; post-output refinement / AISR is a
+recorded cross-cutting capability DIRECTION, `IMPLEMENTATION NOT AUTHORIZED`, not a numbered next phase). **Phase 6 is
+recorded as NEXT ELIGIBLE FOR OWNER CONSIDERATION / NOT STARTED / NOT AUTHORIZED.** No later phase, Draft Level 3,
+writable continuation, output email delivery, provider selection, WS17, STG, or any FPC is started or authorized by this
+record; closing Phase 5 activates nothing downstream. Decision **D17** and the AISR seven-owner model are preserved.
+Append-only; prior history not rewritten. This synchronization authorizes no push, PR, merge, implementation, or phase
+activation.
