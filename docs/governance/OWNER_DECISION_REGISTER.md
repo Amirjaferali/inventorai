@@ -673,3 +673,38 @@ verified — and with it **Phase 5 is formally closed as a whole**.
 CI, or push/PR/merge authority and begins no Phase 6, Draft Level 3, or any later phase. P5-1, P5-2, P5-3, and PHASE 5
 are FORMALLY CLOSED; closing them activates nothing downstream. Decision **D17** and the AISR seven-owner model are
 preserved; Phase 4 remains FORMALLY CLOSED; P4-2 Level-1 and Draft Level 2 remain CLOSED.
+
+## Phase 6 — Truthful Domain Labeling Foundation (Option A): discovery acceptance & owner decisions D-P6-00…15 + P6-1 contract-of-record (G-P6-DOMAIN-SPECIALIZATION-DISCOVERY-01 + G-P6-1-TRUTHFUL-DOMAIN-LABELING-FOUNDATION-CONTRACT-01) — documentation-only
+
+Recorded by the documentation-only contract-definition gate **G-P6-1-TRUTHFUL-DOMAIN-LABELING-FOUNDATION-CONTRACT-01**
+(authoritative base `3703b4ff3a74ff735964e9f16be135f17834dc17`, Merge PR #380). The owner accepted the read-only Phase 6
+discovery **G-P6-DOMAIN-SPECIALIZATION-DISCOVERY-01** and adopted decisions **D-P6-00 … D-P6-15**, selecting
+**Option A — Truthful Domain Labeling Foundation**. The full formal contract text is the "P6-1 — Truthful Domain Labeling
+Foundation" section of `ACTIVE_INCREMENT_CONTRACT.md` (which governs; this index does not duplicate it). Recording this
+grants **no** implementation, code, test, schema, migration, dependency, CI, prompt, agent, model, route, UI,
+domain-activation, or push/PR/merge authority.
+
+| ID | Subject | Decision | Impl. authority | Evidence / boundary |
+|---|---|---|---|---|
+| D-P6-00 | Phase 6 naming disambiguation | ACCEPTED | NONE | The `ACTIVE_EXECUTION_ROADMAP` Phase 6 lane (Domain Specialization / Truthful Specialist Labeling) is authoritative for this execution gate; the registry-parity "Phase 6" (`docs/GOVERNANCE_DOCUMENTS.md`, 23/23 parity) is a distinct historical/registry-reconciliation track; per `PRODUCT_ARCHITECTURE_AND_CREDIBILITY_ROADMAP.md` neither lane authorizes the other |
+| D-P6-01 | First outcome | ACCEPTED — **Option A** | NONE | Truthful Domain Labeling Foundation; no new domain engine; no new domain activation |
+| D-P6-02 | Allowed label tiers | ACCEPTED | NONE | Tier 0 (General idea review) and Tier 1 (Domain-informed review) allowed now; **Tier 2** not until real domain-specific questions/rules/output/tests exist; **Tier 3 (Specialist) and Tier 4 (Licensed/professional) PROHIBITED** under the current product identity |
+| D-P6-03 | Domain selection (this increment) | ACCEPTED | NONE | Preserve the current electronics confirmation gate; NO recommendation, AI inference, confidence scoring, or multi-domain UX |
+| D-P6-04 | Future user override | ACCEPTED — deferred | NONE | When >1 domain is later supported, users may reject a recommendation and pick General/Uncertain; NOT implemented now |
+| D-P6-05 | Low confidence | ACCEPTED | NONE | Low-confidence/unsupported cases remain General/Uncertain; never a specialist label |
+| D-P6-06 | Multi-domain | ACCEPTED — NOT supported | NONE | Not supported in the first Phase 6 increment |
+| D-P6-07 | Active domain | ACCEPTED | NONE | No new domain activated; the only runtime-operated domain remains `electronics_electrical` |
+| D-P6-08 | Evidence bar for "domain-specific" | ACCEPTED | NONE | A future label may be called domain-specific only after repo evidence proves domain-specific questions + deterministic rules + output wording + behavioral tests + cross-domain isolation + safe unknown-domain fallback |
+| D-P6-09 | First increment scope | ACCEPTED | NONE | Truthful labeling + truthful scope messaging + disclaimer preservation + behavioral truthfulness tests only; NO new deterministic domain rules |
+| D-P6-10 | Data model | ACCEPTED — NONE | NONE | No schema or migration change; `confirmed_domain`/`domain_signal` unchanged; no confidence/secondary-domain/label-history/provenance/override fields |
+| D-P6-11 | High-risk domains | ACCEPTED | NONE | Medical, regulated, structural, and other high-risk domains remain unsupported/restricted; not activated or labeled specialized in this increment |
+| D-P6-12 | Claims policy | ACCEPTED | NONE | Preserve non-professional-advice / non-certification boundaries; do not claim specialist/professional-engineering review, certification, feasibility/regulatory approval, implementation readiness, or licensed advice |
+| D-P6-13 | Future domain changes | ACCEPTED — deferred | NONE | A material future domain change must trigger full re-evaluation or a new project record; no silent reinterpretation of prior outputs; NOT implemented now |
+| D-P6-14 | Registry hardening | ACCEPTED — **separate prerequisite increment** | NONE | Deferred Domain Registry validation gaps (version-format, date fields, allowed status values, classification/substance completeness, gap_type_mappings + rule_nuances completeness/element types, provenance/governance metadata, pack-id collision detection, alias resolution) are a SEPARATE bounded increment and a prerequisite before any new domain activation; NOT fixed in this contract gate or the first labeling implementation |
+| D-P6-15 | Explicit deferrals | ACCEPTED | NONE | Deferred: new domain activation; multi-domain orchestration; AI-assisted recommendation; model/provider routing; new agents; new prompts; new output types; deterministic domain-rule activation; registry hardening; post-output refinement; WS17 AI Coach; STG; ACV; PDF/download; output email delivery; production email provider |
+| D-P6-1-CONTRACT | P6-1 contract-of-record defined | **DEFINED — IMPLEMENTATION NOT AUTHORIZED** | NONE | Full contract in `ACTIVE_INCREMENT_CONTRACT.md`. Public label map (`electronics_electrical` → EN "Electronics-informed review" / AR "مراجعة مستنيرة بمجال الإلكترونيات"; unknown/invalid → EN "General idea review" / AR "مراجعة عامة للفكرة"; fallback never silently electronics; server-side resolution, never client input); RED-01…07; behavioral runtime-truthfulness test (not source grep); exact permitted/prohibited paths; independent review A/B + C-mandatory triggers; rollback; Lean justification; completion criteria; stop conditions. **NEXT ELIGIBLE GATE: G-P6-1-TRUTHFUL-DOMAIN-LABELING-FOUNDATION-IMPLEMENTATION-01 — eligible only after this contract is merged and post-merge verified** |
+
+**Boundary.** No decision above grants Phase 6 implementation authority in this gate. Only `electronics_electrical` is
+runtime-operated; no new domain is activated; labels are capped at Tier 0–1; there is no schema/engine/AI/model/agent
+change. Decision **D17** and the AISR seven-owner model are preserved; Phase 5 remains FORMALLY CLOSED; P4-2 Level-1,
+Draft Level 2, P5-1, P5-2, and P5-3 remain CLOSED.

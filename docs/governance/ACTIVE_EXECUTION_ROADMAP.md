@@ -4328,3 +4328,59 @@ writable continuation, output email delivery, provider selection, WS17, STG, or 
 record; closing Phase 5 activates nothing downstream. Decision **D17** and the AISR seven-owner model are preserved.
 Append-only; prior history not rewritten. This synchronization authorizes no push, PR, merge, implementation, or phase
 activation.
+
+---
+
+## Phase 6 — Truthful Domain Labeling Foundation (Option A): discovery acceptance, owner decisions D-P6-00…15, and the P6-1 CONTRACT-OF-RECORD (G-P6-1-TRUTHFUL-DOMAIN-LABELING-FOUNDATION-CONTRACT-01, documentation-only, append-only)
+
+This append-only entry records the owner-accepted Phase 6 discovery and the first Phase 6 contract-of-record. It is
+documentation-only: it records owner decisions and DEFINES the P6-1 implementation contract; it grants **no** Phase 6
+implementation, code, test, schema, migration, dependency, CI, prompt, agent, model, route, UI, domain-activation, or
+push/PR/merge authority. Authoritative base (resolve from Git): `3703b4ff3a74ff735964e9f16be135f17834dc17` (Merge PR
+#380).
+
+**Discovery.** The owner accepted **G-P6-DOMAIN-SPECIALIZATION-DISCOVERY-01** (read-only). Key evidence: only
+`electronics_electrical` is runtime-operated; four v1.0 packs load but three (mechanical/medical_device/software)
+participate only in the entry conflict-gate and `iot_electronics` is skipped (legacy schema); domain affects exactly one
+deterministic behavior today (the substance-signal check in `assess_response`); `rule_nuances` is dead config and
+`gap_type_mappings` is inert in the shipped Path-N flow; the product identity (`STRATEGIC_PRODUCT_VISION`) is a
+domain-agnostic reasoning-quality assessor, NOT a specialist/professional certifier; user-facing surfaces expose the raw
+pack id `electronics_electrical`; runtime registry use is proven only by a source-grep test. There are **two distinct
+"Phase 6" numberings** (execution-lane vs registry-parity) and neither authorizes the other.
+
+**Owner decisions (binding; recorded in `OWNER_DECISION_REGISTER.md` D-P6-00…15).** D-P6-00 the ACTIVE_EXECUTION_ROADMAP
+Phase 6 (domain specialization / truthful labeling) is authoritative; the registry-parity "Phase 6" is a distinct
+historical track. D-P6-01 selected **Option A — Truthful Domain Labeling Foundation** (no new domain engine, no new
+activation). D-P6-02 allowed tiers 0–1; Tier 2 not yet; **Tier 3/4 prohibited**. D-P6-03 preserve the electronics
+confirm-gate (no recommendation/AI/confidence/multi-domain UX). D-P6-04 future user override deferred. D-P6-05
+low-confidence stays General/Uncertain. D-P6-06 multi-domain not supported. D-P6-07 no new domain activated;
+`electronics_electrical` remains the only runtime domain. D-P6-08 evidence bar for "domain-specific". D-P6-09 first
+increment = labeling + scope + disclaimers + truthfulness tests only, no new deterministic rules. D-P6-10 no
+schema/migration. D-P6-11 high-risk domains remain unsupported/restricted. D-P6-12 preserve non-professional-advice /
+non-certification claims. D-P6-13 future domain change ⇒ full re-eval / new project (deferred). D-P6-14 registry
+validation hardening is a separate bounded increment and a prerequisite before any new domain. D-P6-15 explicit
+deferrals (multi-domain, AI recommendation, model/provider routing, agents, prompts, new outputs, deterministic
+domain-rule activation, registry hardening, post-output refinement, WS17, STG, ACV, PDF/download, output/production
+email).
+
+**Contract-of-record.** The formal **P6-1 — Truthful Domain Labeling Foundation** contract is recorded in
+`ACTIVE_INCREMENT_CONTRACT.md` (the "Active contract" section governs; this roadmap entry does not duplicate it). It
+defines the truthful public label map (`electronics_electrical` → EN "Electronics-informed review" / AR "مراجعة مستنيرة
+بمجال الإلكترونيات"; unknown/invalid → EN "General idea review" / AR "مراجعة عامة للفكرة"; fallback never silently
+electronics; server-side resolution, never client input), bilingual/accessible rendering, disclaimer preservation, a
+RED-first plan (RED-01…07), a GREEN plan, a genuine BEHAVIORAL runtime-truthfulness test (not source grep), independent
+review (A/B criteria; C-mandatory triggers), exact permitted paths (a small label helper; `web/app.py` for server-side
+resolution; the current session/review/deliverable templates exposing a raw domain/pack id; focused Phase-6 tests;
+existing domain-gate/registry tests only where behavioral proof requires; conftest if necessary), exact prohibited paths
+(all deterministic engine files, `domains/*.json`, `engine/domain_registry.py`, `engine/domain_rules.py`,
+`engine/path_n_questions.py`, `engine/safety_signal.py`, schemas, migrations, dependencies, CI, prompts, providers,
+agents/models), rollback, observability, Lean justification, completion criteria, and stop conditions.
+
+**Status.** **G-P6-1-TRUTHFUL-DOMAIN-LABELING-FOUNDATION-CONTRACT-01: COMPLETED — CONTRACT DEFINED.** **P6-1: DEFINED
+(contract-of-record); IMPLEMENTATION NOT AUTHORIZED by this gate.** **NEXT ELIGIBLE GATE:
+G-P6-1-TRUTHFUL-DOMAIN-LABELING-FOUNDATION-IMPLEMENTATION-01 — eligible only after this contract is merged and post-merge
+verified.** No new domain is activated; only `electronics_electrical` is runtime-operated. Multi-domain, AI/model/agent
+changes, schema changes, registry hardening, and every later capability remain **NOT AUTHORIZED / NOT STARTED**. Phase 5
+remains FORMALLY CLOSED; P4-2 Level-1, Draft Level 2, P5-1, P5-2, P5-3 remain CLOSED. Decision **D17** and the AISR
+seven-owner model are preserved. Append-only; prior history not rewritten. This entry authorizes no push, PR, merge,
+implementation, or phase activation.

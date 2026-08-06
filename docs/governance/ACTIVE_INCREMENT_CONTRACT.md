@@ -41,7 +41,165 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current):** **THERE IS NO ACTIVE OPEN IMPLEMENTATION CONTRACT. PHASE 5 — Accounts / Authentication /
+**Status (current):** CONTRACT-OF-RECORD = **P6-1 — Truthful Domain Labeling Foundation (Phase 6, Option A)** —
+**DEFINED (contract-of-record), IMPLEMENTATION NOT AUTHORIZED BY THIS GATE.** Defined by the documentation-only
+contract-definition gate **G-P6-1-TRUTHFUL-DOMAIN-LABELING-FOUNDATION-CONTRACT-01** (authoritative base
+`3703b4ff3a74ff735964e9f16be135f17834dc17`, Merge PR #380), on the owner-accepted Phase 6 discovery
+**G-P6-DOMAIN-SPECIALIZATION-DISCOVERY-01** and owner decisions **D-P6-00 … D-P6-15**. The implementation gate
+**G-P6-1-TRUTHFUL-DOMAIN-LABELING-FOUNDATION-IMPLEMENTATION-01** is the next eligible gate, eligible **only after this
+contract is merged and post-merge verified**. A contract here is not an implementation authorization.
+
+---
+
+### P6-1 — Truthful Domain Labeling Foundation — CONTRACT-OF-RECORD (Phase 6, Option A; DEFINITION ONLY)
+
+**Phase-6 naming (D-P6-00).** The authoritative Phase 6 lane for this execution is the `ACTIVE_EXECUTION_ROADMAP` lane —
+**Domain Specialization / Truthful Specialist Labeling**. A separate registry-parity lane also historically called
+"Phase 6" (`docs/GOVERNANCE_DOCUMENTS.md`, 23/23 parity) is a **distinct historical/registry-reconciliation track**;
+`PRODUCT_ARCHITECTURE_AND_CREDIBILITY_ROADMAP.md` records that **neither lane authorizes the other**. This contract is
+scoped to the execution lane only.
+
+**Objective (D-P6-01, D-P6-09).** Give users truthful, human-readable information about the *limited* domain support
+that actually exists, WITHOUT building a new domain engine, activating a new domain, changing deterministic behavior, or
+overstating capability. Option A only: truthful labeling + truthful scope messaging + disclaimer preservation +
+behavioral truthfulness tests. **No new deterministic domain rules.**
+
+**Truthful user outcome (contract §4/§7).** Replace the raw internal identifier `electronics_electrical` on user-facing
+domain/capability surfaces with a bounded **public Tier-1 label**:
+- Internal id `electronics_electrical` → EN **"Electronics-informed review"**, AR **"مراجعة مستنيرة بمجال الإلكترونيات"**.
+- Unknown / unsupported / missing / invalid domain → EN **"General idea review"**, AR **"مراجعة عامة للفكرة"**. The
+  fallback MUST NOT silently label an unknown domain as electronics.
+- State clearly the system provides **structured reasoning assistance, not professional specialist or licensed
+  engineering review**; preserve truthful electronics-only scope; never imply `mechanical` / `medical_device` /
+  `software` / `iot_electronics` are runtime-supported user domains. No new selection flow, dashboard, wizard,
+  marketplace, multi-domain selector, or account-preference panel.
+
+**Allowed label tiers (D-P6-02).** Tier 0 (General idea review) and Tier 1 (Domain-informed review) only. **Tier 2**
+(domain-specific structured review) NOT authorized until a future increment proves real domain-specific
+questions/rules/output/tests. **Tier 3 (Specialist) and Tier 4 (Licensed/professional) are PROHIBITED** under the
+current product identity (`STRATEGIC_PRODUCT_VISION.md`: domain-agnostic reasoning-quality assessor, not an
+implementation-readiness certifier).
+
+**Exact technical capability (contract §5; DEFINITION — authorizes the future implementation to do ONLY):** (1) a
+bounded central **public-domain-label map/policy** for the active runtime domain; (2) render that public label on the
+current user-facing domain/capability surfaces; (3) truthful scope + disclaimer wording; (4) a **runtime-backed
+truthfulness invariant** proving public-label ↔ actual runtime-operated domain capability; (5) **replace/supplement the
+source-grep-only** runtime-integration evidence with BEHAVIORAL evidence; (6) tests preventing unsupported
+Tier-2/3/4 labels; (7) bilingual EN/AR; (8) preserve accessibility + RTL/LTR. The label map MUST NOT itself activate a
+domain and MUST be resolved **server-side from durable/validated runtime state** (`confirmed_domain` / validated
+`state.domain`), **never from arbitrary client input**.
+
+**Domain selection & scope (D-P6-03/04/05/06/07/11).** Preserve the current electronics confirmation gate unchanged; add
+no recommendation, AI inference, confidence scoring, or multi-domain UX. The only runtime-operated domain remains
+`electronics_electrical`. Low-confidence/unsupported → General/Uncertain, never a specialist label. Multi-domain NOT
+supported. High-risk domains (medical, regulated, structural) remain unsupported/restricted and MUST NOT be activated or
+labeled as specialized.
+
+**Deterministic vs AI responsibility (D-P6-09; contract §14).** Presentation/labeling only. **No** change to deterministic
+evaluation, gap selection, scoring, question generation, reconstruction, or the substance-signal logic. **No** AI,
+model, provider, agent, or prompt change.
+
+**Data model / migration (D-P6-10; contract §15).** Schema change NONE; migration NONE. `confirmed_domain` and
+`domain_signal` unchanged. Do NOT add confidence, secondary-domain, label-history, provenance, or override fields
+(future multi-domain increment).
+
+**Claims policy (D-P6-12; contract §8).** Preserve the existing non-professional-advice / non-certification boundaries
+and the deliverable forbidden-words guard. Prohibited public wording (unless a future separately-authorized capability
+truly supports it): "Electronics Specialist", "Engineering Specialist Review", "Expert Review", "Professional Review",
+"Certified Review", "Approved", "Feasible", "Safe to build", "Ready for implementation".
+
+**Permitted implementation paths (contract §13 — the future gate may touch ONLY, and only those proven necessary by an
+exact inventory):** one small public-domain-label helper/module; `web/app.py` (server-side label resolution/context
+only); the current session/review/deliverable templates that today expose a raw domain/pack-id
+(`web/templates/session.html`, the deliverable/review-snapshot template, entry-page domain wording, and a user-facing
+export field ONLY if it exposes a raw pack id and truthfulness requires it); focused Phase-6 truthful-label tests; the
+existing domain-gate / registry test files ONLY where required for behavioral proof; `tests/conftest.py` only if
+necessary. The implementation contract MUST list exact file paths, not directories.
+
+**Prohibited implementation paths (contract §14 — the future gate must NOT change):** `domains/*.json`;
+`engine/domain_registry.py`; `engine/domain_rules.py`; `engine/progression_loop.py`; `engine/scoring.py`;
+`engine/idea_state.py`; `engine/record_contract.py`; `engine/session_reconstruction.py`; `engine/path_n_questions.py`;
+`engine/safety_signal.py`; `engine/requirement_landscape.py`; `engine/idea_development_outputs.py`; schemas; migrations;
+dependencies; CI/deployment; prompts; provider adapters; agents/models. If an exact inventory proves a prohibited path
+is genuinely necessary, the implementation gate MUST STOP and return to the owner rather than silently broaden scope.
+
+**RED-first plan (contract §10).** Genuine RED on the exact live parent before GREEN:
+- **RED-01** a user-facing surface exposes the raw internal pack id / inconsistent raw domain wording (evidence today:
+  `web/templates/session.html` "Domain: {{ state.domain or 'electronics' }}"; the deliverable snapshot renders
+  `Capability: {{ cap.capability_id }}` = the raw `electronics_electrical` pack id).
+- **RED-02** no central enforced public-label tier policy exists.
+- **RED-03** no behavioral test binds the public label to runtime-operated capability.
+- **RED-04** the existing source-grep runtime-integration test (`tests/test_domain_registry.py::TestRuntimeIntegration`)
+  can stay green even if runtime behavior is disconnected.
+- **RED-05** no test prevents unsupported specialist/expert/professional labels being introduced.
+- **RED-06** unknown/invalid domain label fallback is not behaviorally proved.
+- **RED-07** bilingual public labels are not behaviorally proved.
+For each RED test record: exact failure; why it is a real missing behavior; why it cannot false-green; expected GREEN;
+exact path.
+
+**GREEN plan (contract §11).** internal pack id not shown on user-facing surfaces; Tier-1 label renders (EN+AR);
+fallback = General idea review / مراجعة عامة للفكرة; Tier-2/3/4 rejected/absent; disclaimer visible+truthful; no new
+domain activated; existing electronics flow functional; unknown/invalid domain does not overclaim; current domain-gate
+tests green; registry tests green; full suite green.
+
+**Runtime truthfulness test (contract §9).** A genuine BEHAVIORAL test (NOT source grep / file existence / import /
+string-presence): a real user session enters via the electronics gate → receives the validated electronics runtime
+domain → reaches a current user-facing review/session surface → sees the Tier-1 public label → does NOT see the raw
+pack id → does NOT see Tier-2/3/4 language → receives the safe fallback when domain state is missing/invalid. The exact
+mechanism is defined from live repository evidence in the implementation gate.
+
+**Independent review (contract §12).** A/B requires: no overclaim; no raw internal identifier leakage on current
+user-facing surfaces; behavioral runtime-label proof; truthful fallback; disclaimer preservation; no new domain
+activation; no deterministic-engine change; no schema change; no AI/model/agent change; no material false-green. **C is
+mandatory** if: Tier-2/3/4 shown without supporting capability; unsupported domains appear active; label derives from
+client input; unknown domain silently becomes electronics; runtime truthfulness proved only by source grep; disclaimers
+weakened; deterministic evaluation changed; a new domain activated; or scope expands into registry hardening or
+multi-domain work.
+
+**Rollback (contract §16).** Revert the bounded label/helper/template/test commit; no DB rollback; no domain-pack
+rollback; no project-data rewrite; no account/ownership effect; no output-contract change beyond user-facing
+presentation.
+
+**Observability (contract §17).** No analytics/external telemetry. Permitted evidence: deterministic tests,
+rendered-template assertions, existing app logs without raw project/domain content. Do NOT log project text, raw tokens,
+unnecessary account ids, or client-provided domain values as trusted labels.
+
+**Registry hardening (D-P6-14).** The deferred Domain Registry validation gaps (version-format, date-field, allowed
+status values, classification/substance signal completeness, gap_type_mappings completeness+element types, rule_nuances
+completeness+element types, provenance/governance metadata, pack-id collision detection, alias resolution) remain a
+**SEPARATE bounded increment and a prerequisite before any new domain activation** — NOT fixed in this contract gate or
+in the first labeling implementation.
+
+**Explicit deferrals (D-P6-15).** new domain activation; multi-domain orchestration; AI-assisted domain recommendation;
+model/provider routing; new agents; new prompts; new output types; deterministic domain-rule activation; registry
+hardening; post-output refinement; WS17 AI Coach; STG; ACV; PDF/download; output email delivery; production email
+provider.
+
+**Lean justification (contract §18).** Option A is the minimum safe next increment: current specialization is thin (only
+`electronics_electrical` is runtime-operated; `rule_nuances` dead, `gap_type_mappings` inert in the shipped flow);
+product identity forbids professional-specialist claims; raw/internal labels need truthful public mapping; behavioral
+truthfulness evidence is missing; no new engine or schema is necessary; the increment is independently reviewable and
+reversible. Do not broaden it to make Phase 6 look more substantial.
+
+**Completion criteria (contract §19).** Complete only when: paths stay within contract; RED genuine; GREEN focused
+tests pass; domain-gate tests pass; registry tests pass; UX/accessibility tests pass; full suite passes; no raw
+active-domain pack id on current user-facing surfaces; Tier-1 label + fallback truthful; no Tier-2/3/4 overclaim;
+disclaimers intact; no new domain active; no schema/engine/AI change; independent review A/B with no blockers;
+bundle/commit/tree/parent/round-trip evidence passes.
+
+**Stop conditions (contract §20).** Stop and return to the owner if truthful labeling requires modifying deterministic
+engine behavior or domain packs; the user-facing output contract cannot be changed safely; a new domain must be
+activated; multi-domain selection becomes necessary; a schema change becomes necessary; a material conflict appears
+between the two Phase 6 numbering tracks; product-identity documents contradict the proposed labels; or scope cannot
+remain bounded and Lean.
+
+**Merge authority.** Owner, separately. **Independent-review scope:** the reviewer questions in "Independent review"
+above. **This is a contract of record only — it authorizes no code, test, schema, dependency, CI, push, PR, merge, or
+implementation.**
+
+---
+
+**Immediately prior status.** **THERE IS NO ACTIVE OPEN IMPLEMENTATION CONTRACT. PHASE 5 — Accounts / Authentication /
 Ownership / Verified Email is FORMALLY CLOSED** across all three increments (**P5-1 → P5-2 → P5-3**), each IMPLEMENTED /
 INDEPENDENTLY REVIEWED (verdict **B**, PUBLISH) / MERGED / POST-MERGE VERIFIED / OWNER ACCEPTED / FORMALLY CLOSED. Final
 closure is recorded by **G-P5-FINAL-CLOSURE-SYNC-01** (authoritative base `d9f888bd0def7b3275cd04860dfa2e8cc1504111`,
