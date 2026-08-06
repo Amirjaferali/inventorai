@@ -48,6 +48,11 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
 {# One-shot, truthful client cleanup signals: reaching a session page means the seed
    idea was accepted; `answer-accepted` is set only after a durable accepted answer. #}
 <div id="draft-signals" data-draft-scope="{{ sid }}" data-seed-accepted="{{ '1' if seed_accepted else '0' }}" data-answer-accepted="{{ '1' if answer_accepted else '0' }}" hidden></div>
+{% if project_owned_by_you %}
+<p id="owned-banner" style="background:#eef7ee;border:1px solid #bcdcbc;border-radius:4px;padding:8px 12px;margin:8px 0;font-size:13px;color:#2b542b" role="status">
+  <span lang="en">Project saved to your account.</span> · <span lang="ar" dir="rtl">تم حفظ المشروع في حسابك.</span>
+</p>
+{% endif %}
 <h1>InventorAI</h1>
 
 <div class="disclosure">{{ session_disclosure }}</div>

@@ -33,6 +33,20 @@ form{display:inline-block;margin:6px 8px 0 0}
   </form>
 {% endif %}
 
+<section aria-labelledby="your-projects-h">
+  <h2 id="your-projects-h" style="font-size:16px;color:#2c3e50;margin-top:22px"><span lang="en">Your projects</span> · <span class="ar" lang="ar">مشاريعك</span></h2>
+  {% if owned_projects %}
+    <ul style="padding-left:18px;font-size:14px">
+      {% for pid in owned_projects %}
+      <li><a href="/session/{{ pid }}"><span lang="en">Open project</span> · <span class="ar" lang="ar">فتح المشروع</span></a> <span style="color:#888">({{ pid[:8] }}…)</span></li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="status" lang="en">You have no account-owned projects yet.</p>
+    <p class="status ar" lang="ar">لا توجد لديك مشاريع مملوكة للحساب بعد.</p>
+  {% endif %}
+</section>
+
 <div>
   <form method="POST" action="/logout">
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">

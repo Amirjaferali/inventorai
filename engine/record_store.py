@@ -49,12 +49,14 @@ class RecordStore(Protocol):
     boundary). The SQLite adapter below is one concrete implementation; a future
     PostgreSQL/other adapter can implement the same protocol without redesign."""
 
-    def create_project(self, contract: ProjectRecordContract, project_id: str = ..., reconstruction_inputs: dict = ...) -> str: ...
+    def create_project(self, contract: ProjectRecordContract, project_id: str = ..., reconstruction_inputs: dict = ..., owner_account_id: str = ...) -> str: ...
     def append_record(self, project_id: str, record, idempotency_key: str = ...) -> None: ...
     def load_contract(self, project_id: str) -> ProjectRecordContract: ...
     def load_accepted_answer_evidence(self, project_id: str) -> tuple: ...
     def load_reconstruction_inputs(self, project_id: str) -> dict: ...
+    def load_owner(self, project_id: str): ...
     def project_ids(self) -> List[str]: ...
+    def project_ids_for_owner(self, owner_account_id: str) -> List[str]: ...
     def new_record_id(self) -> str: ...
     def close(self) -> None: ...
 
@@ -105,6 +107,26 @@ _RECONSTRUCTION_COLUMNS = (
     "seed_idea_text", "confirmed_domain", "recon_path", "engine_contract_version",
 )
 
+# P5-3 (G-P5-3-PROJECT-OWNERSHIP-ROUTE-AUTHORIZATION-IMPLEMENTATION-01): the
+# accepted MINIMUM additive ownership model — a single nullable
+# ``owner_account_id`` column on ``projects`` plus an index. Legacy/anonymous
+# projects carry NULL (unowned, capability-accessed as before); an owned project
+# carries the immutable ``account_id`` of its owner, assigned ATOMICALLY in the
+# same INSERT that creates the project row (never a create-then-assign step). A
+# hard SQLite FOREIGN KEY to ``accounts(account_id)`` is deliberately NOT added
+# via ``ALTER TABLE ADD COLUMN`` (SQLite cannot add an inline FK that way, and the
+# ``accounts`` table is owned by a SEPARATE store that may not exist when this
+# store initialises) — the relationship is enforced at the application layer
+# (ownership is only ever assigned from a validated authenticated ``account_id``).
+# Additive only: no column drop, no type change, no existing row rewritten;
+# rollback is disable-and-ignore. Single-owner MVP: no owner-transfer, no
+# collaborators, no ownership table.
+_OWNER_COLUMN = "owner_account_id"
+_OWNER_INDEX = (
+    "CREATE INDEX IF NOT EXISTS projects_owner_account_id_idx "
+    "ON projects (owner_account_id)"
+)
+
 
 class SqliteRecordStore:
     """Reference/MVP durable adapter over Python stdlib `sqlite3`.
@@ -126,6 +148,7 @@ class SqliteRecordStore:
                 self._conn.execute(stmt)
             self._migrate_idempotency(self._conn)
             self._migrate_reconstruction_inputs(self._conn)
+            self._migrate_owner(self._conn)
 
     # --- migration (additive, idempotent, forward + safe rollback) ----------
     @staticmethod
@@ -158,6 +181,20 @@ class SqliteRecordStore:
             if column not in cols:
                 conn.execute(f"ALTER TABLE projects ADD COLUMN {column} TEXT")
 
+    def _migrate_owner(self, conn) -> None:
+        """P5-3 forward migration against the LIVE schema: additively add the
+        nullable ``owner_account_id`` column and its index. Idempotent (safe to
+        re-run on an already-migrated database) and legacy-safe (existing project
+        rows keep NULL ownership, preserving the capability-access behaviour).
+        Rollback is disable-and-ignore (stop reading/enforcing ownership) rather
+        than a destructive column drop, so no durable project/record data is ever
+        lost and old code can ignore the additive column."""
+        cols = [row[1] for row in
+                conn.execute("PRAGMA table_info(projects)").fetchall()]
+        if _OWNER_COLUMN not in cols:
+            conn.execute("ALTER TABLE projects ADD COLUMN owner_account_id TEXT")
+        conn.execute(_OWNER_INDEX)
+
     # --- identifiers --------------------------------------------------------
     def new_record_id(self) -> str:
         """A durability-safe, collision-safe identifier for a NEWLY created
@@ -166,7 +203,8 @@ class SqliteRecordStore:
 
     # --- writes (atomic) ----------------------------------------------------
     def create_project(self, contract: ProjectRecordContract, project_id: str = None,
-                       reconstruction_inputs: dict = None) -> str:
+                       reconstruction_inputs: dict = None,
+                       owner_account_id: str = None) -> str:
         """Atomically persist a project envelope + its accepted-input records.
         Existing serialized record identifiers are preserved exactly. A failure
         (e.g. a duplicate record_id) rolls back the whole write — no partial
@@ -184,14 +222,21 @@ class SqliteRecordStore:
         pid = project_id or uuid.uuid4().hex
         ri = reconstruction_inputs or {}
         with self._conn:   # single transaction: commit on success, rollback on error
+            # P5-3: ``owner_account_id`` is written HERE, in the SAME atomic INSERT
+            # that creates the project row — there is no create-then-assign step,
+            # so no window exists for a claim/visibility race. NULL preserves the
+            # exact pre-P5-3 anonymous/legacy behaviour. Ownership is immutable
+            # after creation (no reassignment method is exposed).
             self._conn.execute(
                 "INSERT INTO projects "
                 "(project_id, idea_id, contract_version, "
-                " seed_idea_text, confirmed_domain, recon_path, engine_contract_version) "
-                "VALUES (?, ?, ?, ?, ?, ?, ?)",
+                " seed_idea_text, confirmed_domain, recon_path, engine_contract_version, "
+                " owner_account_id) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                 (pid, contract.idea_id, contract.contract_version,
                  ri.get("seed_idea_text"), ri.get("confirmed_domain"),
-                 ri.get("path"), ri.get("engine_contract_version")),
+                 ri.get("path"), ri.get("engine_contract_version"),
+                 owner_account_id),
             )
             for seq, record in enumerate(contract.assertions):
                 self._conn.execute(
@@ -227,6 +272,31 @@ class SqliteRecordStore:
             "path": path,
             "engine_contract_version": version,
         }
+
+    # --- P5-3 ownership reads (project-scoped; never mutate) -----------------
+    def load_owner(self, project_id: str):
+        """Return ``(exists, owner_account_id)`` for ``project_id``:
+        ``(False, None)`` when the project row is absent; ``(True, None)`` when it
+        exists but is unowned (legacy/anonymous NULL owner); ``(True, "<acct>")``
+        when it is owned. This is the single durable source of truth for the
+        central authorization helper — ownership is NEVER inferred from the ``sid``
+        capability, the signed cookie, or any client input."""
+        row = self._conn.execute(
+            "SELECT owner_account_id FROM projects WHERE project_id = ?",
+            (project_id,)).fetchone()
+        if row is None:
+            return (False, None)
+        return (True, row[0])
+
+    def project_ids_for_owner(self, owner_account_id: str) -> List[str]:
+        """Return the project_ids durably owned by ``owner_account_id`` (empty for
+        a falsy/None owner). Scoped strictly to that owner — it can never return
+        another account's projects or any NULL-owner project."""
+        if not owner_account_id:
+            return []
+        return [r[0] for r in self._conn.execute(
+            "SELECT project_id FROM projects WHERE owner_account_id = ? "
+            "ORDER BY project_id", (owner_account_id,)).fetchall()]
 
     def append_record(self, project_id: str, record, idempotency_key: str = None) -> None:
         """Atomically append one accepted-input record to an existing project,
