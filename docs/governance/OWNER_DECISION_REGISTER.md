@@ -573,3 +573,36 @@ FORMALLY CLOSED.** No prior history is rewritten.
 **Boundary.** Closure grants no downstream authorization. All prior decisions, candidates, verdicts, and observations are
 preserved; no history is rewritten. **Draft Level 2 is FORMALLY CLOSED (PR #372, merge `43223dd`).** Decision **D17** and
 the AISR seven-owner model are preserved; Phase 4 remains FORMALLY CLOSED; P4-2 Level-1 remains CLOSED.
+
+## Phase 5 — Identity / Ownership / Verified-Email formal contract & continuing authorization (G-P5-FORMAL-CONTRACT-AND-CONTINUING-AUTHORIZATION-01) — documentation-only
+
+**Decision status:** ACCEPTED / RECORDED — NO PHASE 5 IMPLEMENTATION AUTHORITY IN THIS GATE. The owner accepted the
+discovery **G-P5-IDENTITY-OWNERSHIP-DISCOVERY-CONTRACT-01** (verdict **B — ACCEPT WITH NON-BLOCKING RISKS**), selected
+**Identity Option A** and the structure **P5-1 → P5-2 → P5-3**, and granted a **continuing authorization** to complete
+all three bounded increments through formal Phase 5 closure under the RED/GREEN + independent-review + publication +
+post-merge-verification controls in `ACTIVE_INCREMENT_CONTRACT.md`. The full formal contract text is the "Phase 5 …
+FORMAL CONTRACT-OF-RECORD" section of `ACTIVE_INCREMENT_CONTRACT.md` (which governs; this index does not duplicate it).
+Recording this grants **no** implementation, code, test, schema, migration, dependency, CI, or push/PR/merge authority.
+**P5-1 becomes the next eligible implementation gate only after this formal contract is merged and post-merge verified.**
+Recorded on live tip `3b231936c5d01d2af9a1c0eca2dfd39d39161cff` (Merge PR #373).
+
+| ID | Subject | Decision | Impl. authority | Evidence / boundary |
+|---|---|---|---|---|
+| D-P5-01 | Discovery acceptance | ACCEPTED — **verdict B** | NONE | G-P5-IDENTITY-OWNERSHIP-DISCOVERY-CONTRACT-01 accepted; existing account/auth/ownership/verified-email foundation = **NONE**; reusable primitives recorded (configured `app.secret_key`, Werkzeug scrypt, itsdangerous, stdlib, SQLite adapter); `flask.session` unused; CSRF absent; `projects` has no owner column; `sid` ≠ identity; `sid` possession ≠ ownership |
+| D-P5-02 | Identity approach | ACCEPTED — **Option A (email + password)** | NONE | immutable UUID `account_id` (never email) PK; normalized-email uniqueness; **Werkzeug scrypt** hashes; no plaintext passwords; no raw verification/reset/session tokens stored; **no new runtime dependency** |
+| D-P5-03 | Implementation structure & continuing authorization | ACCEPTED — **P5-1 → P5-2 → P5-3**; continuing authorization granted | NONE (per-gate controls apply) | move P5-1→P5-2→P5-3 without a new owner authorization **provided** each increment passes: bounded contract → genuine RED → minimum GREEN → focused/related/security/full-suite tests → adversarial self-review → SHA-preserving bundle → independent adversarial review (**A or B, no blockers**) → merge → post-merge verification → governance sync where material. STOP-and-return on: material blocker; live repo contradicting discovery; scope outside Phase 5; new unresolved product-policy decision; independent review **C**; security not provably fail-closed |
+| D-P5-04 | Unverified-account policy | ACCEPTED | NONE | unverified MAY register / sign in / verify / recover / access basic account surfaces; MAY NOT create an account-owned durable project, claim an anonymous project, or use future sensitive delivery |
+| D-P5-05 | Verified-account policy | ACCEPTED | NONE | **email verification required before creating & owning a durable account-linked project**; verified email ≠ authorization to any other project |
+| D-P5-06 | Anonymous-project policy | ACCEPTED | NONE | anonymous projects keep `owner_account_id = NULL`; **not auto-claimable**; `sid` possession never assigns ownership; anonymous-to-account claim **deferred** to a separate future increment |
+| D-P5-07 | Session policy | ACCEPTED | NONE | **idle 2h / absolute 14d**; cookie HttpOnly + SameSite=Lax + Secure(prod), **not** the project `sid`; `session_epoch` revocation; **password reset revokes all sessions**; current-session logout + bounded logout-all via epoch rotation |
+| D-P5-08 | Account-deletion policy | ACCEPTED | NONE | **disable** (reversible) + **delete** (tombstone); sessions/tokens invalidated; login blocked as applicable; ownership links **not silently transferred**; accepted-answer data **not automatically destroyed**; final legal/commercial retention periods **outside this contract**, not invented |
+| D-P5-09 | Legacy-project policy | ACCEPTED | NONE | legacy projects remain `owner_account_id = NULL`, capability-accessible under the existing truthful boundary; not auto-claimable/convertible |
+| D-P5-10 | Email policy | ACCEPTED | NONE | dev = local file/console sink; prod = provider adapter behind an `EmailSender` abstraction; **verification token 24h; reset token 1h**; tokens random, hashed at rest, single-use, expiring, rate-limited, never logged raw; scope = verification / recovery / future email change only (**no** output/marketing/notification email) |
+| D-P5-11 | Draft Level 2 integration policy | ACCEPTED | NONE | Phase 5 consumes but does not replace Draft L2; on logout/account-switch a local draft must not show under another account/project; preserve truthful device-only wording; do not upload the draft; **do not implement Draft Level 3** |
+| D-P5-12 | Canonical models (account / token / ownership) | ACCEPTED | NONE | account fields per contract; typed token table; additive nullable `projects.owner_account_id` (no separate ownership table for the single-owner MVP unless proven insufficient); ownership checked **server-side** on every protected op; templates/JS never the authorization boundary |
+| D-P5-13 | Security requirements | ACCEPTED | NONE | scrypt; anti-enumeration; session rotation + `session_epoch` revocation; HttpOnly/Secure/SameSite; **CSRF** on authenticated mutations; hashed single-use expiring tokens; server-side ownership incl. legacy routes; generic denial; brute-force/resend rate limits; no raw secret logging; disabled/deleted fail-closed; **no `sid`-based ownership claim** |
+| D-P5-14 | Non-blocking risks | RECORDED | NONE | (1) production Secure-cookie depends on confirmed HTTPS/reverse-proxy; (2) no rate-limit primitive — use a small bounded store-backed counter, not a new platform/dependency; (3) production email deliverability is operational — begin with the dev sink, preserve the provider abstraction |
+| D-P5-15 | Authorization boundary | NONE — NOT AUTHORIZED (this gate) | NONE | documentation-only; **P5-1 next eligible implementation gate after this contract is merged & post-merge verified**; P5-2/P5-3 NOT STARTED; Draft Level 3, writable continuation, output email delivery, PDF, ACV, AI Coach/WS17, STG, collaboration/sharing/teams/orgs, subscriptions, social login/SSO, admin dashboard, and every FPC remain NOT AUTHORIZED / NOT STARTED |
+
+**Boundary.** No decision above grants Phase 5 implementation authority in this gate. Decision **D17** and the AISR
+seven-owner model are preserved; Phase 4 remains FORMALLY CLOSED; P4-2 Level-1 and Draft Level 2 remain CLOSED.

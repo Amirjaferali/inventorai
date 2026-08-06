@@ -398,7 +398,7 @@ AUTHORIZED / NOT STARTED.***
   WS17, STG, ACV, PDF, Email, and every FPC (FPC-01…FPC-04) remain NOT AUTHORIZED / NOT STARTED.** Decision **D17** and
   the AISR seven-owner model are preserved.
 
-## Draft Level 2 FORMALLY CLOSED; Phase 5 is the next eligible discovery-and-contract gate (current truth)
+## Draft Level 2 FORMALLY CLOSED; Phase 5 FORMALLY PLANNED (P5-1 → P5-2 → P5-3); P5-1 is the next eligible implementation gate (current truth)
 
 - **Draft Level 2 — Same-Device Unsubmitted-Text Recovery (Local Draft Recovery):** **IMPLEMENTED / REMEDIATED /
   INDEPENDENTLY REVIEWED / MERGED / POST-MERGE VERIFIED / OWNER ACCEPTED / FORMALLY CLOSED** (re-review verdict
@@ -419,11 +419,19 @@ AUTHORIZED / NOT STARTED.***
   durable version history; any `AssertionRecord`/evaluation/maturity/gap/output effect from drafts; Phase 5 capability;
   Draft Level 3. Local draft data stays semantically separate from accepted answers and durable project records. No
   engine/schema/migration/account/server-draft change; production `requirements.txt` unchanged.
-- **NEXT ELIGIBLE GATE: Phase 5 — Accounts / Authentication / Ownership / Verified Email — DISCOVERY AND CONTRACT
-  DEFINITION** (gate **G-P5-IDENTITY-OWNERSHIP-DISCOVERY-CONTRACT-01**). **Phase 5 IMPLEMENTATION is NOT AUTHORIZED.**
-  Phase 5 must not reimplement/replace Draft Level 2; its discovery assesses only Draft-Level-3 integration boundaries.
-  **Server-side Draft Level 3, writable continuation, and every FPC remain NOT AUTHORIZED / NOT STARTED.** Phase 4 remains
-  **FORMALLY CLOSED**; P4-2 Level-1 remains **CLOSED**. Decision **D17** and the AISR seven-owner model are preserved.
+- **Phase 5 — Accounts / Authentication / Project Ownership / Authorization / Verified Email:** discovery
+  **G-P5-IDENTITY-OWNERSHIP-DISCOVERY-CONTRACT-01** is **COMPLETED / ACCEPTED** (verdict **B**); the owner selected
+  **Identity Option A (application-managed email + password; Werkzeug scrypt; no new runtime dependency)** and structure
+  **P5-1 → P5-2 → P5-3**, and granted a **continuing authorization** through formal Phase 5 closure under mandatory
+  per-increment RED/GREEN + independent-review + publication + post-merge-verification controls. The **formal Phase 5
+  contract-of-record** and owner decisions `D-P5-01…15` are recorded in `ACTIVE_INCREMENT_CONTRACT.md` /
+  `OWNER_DECISION_REGISTER.md` (gate **G-P5-FORMAL-CONTRACT-AND-CONTINUING-AUTHORIZATION-01**); an append-only roadmap
+  entry is recorded. **NO Phase 5 implementation is active.**
+- **NEXT ELIGIBLE GATE: P5-1 — Account & Credential Foundation** — eligible only **after this formal contract is merged
+  and post-merge verified**. **P5-2 and P5-3: NOT STARTED.** Phase 5 must not reimplement/replace Draft Level 2 (consumed,
+  not replaced). **Server-side Draft Level 3, writable continuation, output email delivery, and every FPC remain NOT
+  AUTHORIZED / NOT STARTED.** Phase 4 remains **FORMALLY CLOSED**; P4-2 Level-1 and Draft Level 2 remain **CLOSED**.
+  Decision **D17** and the AISR seven-owner model are preserved.
 
 ## HISTORICAL SNAPSHOT — Post-PR #367 boundary — P4-1b-2b IMPLEMENTED, MERGED, VERIFIED, ACCEPTED, CLOSED (SUPERSEDED by the Post-PR #369 boundary above)
 

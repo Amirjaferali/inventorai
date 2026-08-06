@@ -59,8 +59,12 @@ scope **4 files / +795 / −13** (`engine/record_store.py`, `engine/session_reco
 `tests/test_p4_2_session_reconstruction.py`); disallowed paths **NONE**. **P4-2 Level-1 is no longer a candidate,
 pending review, pending publication, not-authorized, or not-started. PHASE 4 (Durable Data and Evidence Foundation) is
 FORMALLY CLOSED within its implemented boundary** (P4-0 → P4-1a → P4-1b-1 → P4-1b-2a → P4-1b-2b → P4-2 Level-1);
-**NEXT ELIGIBLE PHASE: Phase 5 — Accounts / Authentication / Ownership / Verified Email Foundations — NOT STARTED / NOT
-AUTHORIZED.**
+**Draft Level 2 — Same-Device Unsubmitted-Text Recovery is FORMALLY CLOSED (PR #372).** **Phase 5 — Accounts /
+Authentication / Ownership / Verified Email Foundations is now FORMALLY PLANNED (Option A; P5-1 → P5-2 → P5-3) under the
+formal contract-of-record recorded below (gate G-P5-FORMAL-CONTRACT-AND-CONTINUING-AUTHORIZATION-01); NO Phase 5
+implementation is active. P5-1 becomes the next eligible implementation gate only after this formal contract is merged
+and post-merge verified.** Draft Level 3, writable continuation, output email delivery, and every FPC remain NOT
+AUTHORIZED / NOT STARTED.**
 
 The **immediately prior** contract-of-record **P4-1b-2b — Read-Only Accepted-Answer Evidence Reconstruction (OPTION A)**
 remains **IMPLEMENTED, MERGED, POST-MERGE VERIFIED, OWNER ACCEPTED, AND FORMALLY CLOSED** (owner verdict
@@ -84,8 +88,11 @@ Recovery (Local Draft Recovery)**, now **IMPLEMENTED / REMEDIATED / INDEPENDENTL
 `43223dd6ab6ad169eefd64e37dee211f8bc306b9`, tree `83dbf367d0754d1b59f53ba85db0867672c3f543`; local-only, same-device;
 blockers **B1/B2/B3 fixed**; no engine/schema/account/server-draft change). The Draft Level 2 increment-contract section
 retained below is a **fulfilled contract-of-record** (its "CONTRACT CANDIDATE / IMPLEMENTATION NOT AUTHORIZED / NOT
-STARTED" wording is **superseded** by this status). **NEXT ELIGIBLE GATE: Phase 5 — Accounts / Authentication /
-Ownership / Verified Email — DISCOVERY AND CONTRACT DEFINITION (implementation NOT authorized).** (Documentation note: the historical "P4-1b-2a … REV1" and "Contract Amendment" sections
+STARTED" wording is **superseded** by this status). **Phase 5 — Accounts / Authentication / Ownership / Verified Email
+— DISCOVERY IS COMPLETE / ACCEPTED (verdict B) and the FORMAL Phase 5 CONTRACT is now recorded below (Option A; P5-1 →
+P5-2 → P5-3; gate G-P5-FORMAL-CONTRACT-AND-CONTINUING-AUTHORIZATION-01). NEXT ELIGIBLE GATE: P5-1 — Account & Credential
+Foundation, which becomes eligible only after this formal contract is merged and post-merge verified. Phase 5
+implementation is NOT active in this gate.** (Documentation note: the historical "P4-1b-2a … REV1" and "Contract Amendment" sections
 retained below, and any statement anywhere below that "P4-2 … / P4-1b-2b … remain NOT AUTHORIZED / NOT STARTED", were
 accurate as of their PR #365/#367 boundary and are **superseded** by this status for current truth.)
 
@@ -414,6 +421,134 @@ account persistence, accounts, authentication, authorization, ownership, verifie
 change to accepted-answer / idempotency / deterministic-evaluation semantics. It authorizes **no** implementation. Phase 5
 remains the next step **immediately after** this bounded increment and is **NOT STARTED / NOT AUTHORIZED**; server-side
 Draft Level 3, writable continuation, and every FPC remain **NOT AUTHORIZED / NOT STARTED**.
+
+
+## Phase 5 — Accounts / Authentication / Project Ownership / Authorization / Verified Email — FORMAL CONTRACT-OF-RECORD (G-P5-FORMAL-CONTRACT-AND-CONTINUING-AUTHORIZATION-01)
+
+**Status:** `FORMAL PHASE 5 CONTRACT-OF-RECORD — DOCUMENTATION-ONLY — NO PHASE 5 IMPLEMENTATION ACTIVE IN THIS GATE`.
+The owner accepted the discovery **G-P5-IDENTITY-OWNERSHIP-DISCOVERY-CONTRACT-01** (verdict **B — ACCEPT WITH
+NON-BLOCKING RISKS**), selected **Identity Option A (application-managed email + password)** and the implementation
+structure **P5-1 → P5-2 → P5-3**, and granted a **continuing authorization** to complete all three bounded increments
+through formal Phase 5 closure under the controls in §"RED/GREEN and review controls" below. **P5-1 becomes the next
+eligible implementation gate only after THIS formal contract is merged and post-merge verified.** Recorded on live tip
+`3b231936c5d01d2af9a1c0eca2dfd39d39161cff` (Merge PR #373).
+
+### Accepted current state (evidence)
+Existing **account / authentication / ownership / verified-email** foundation: **NONE**. Reusable primitives (no new
+runtime dependency needed for Option A): a configured Flask `app.secret_key` (from `INVENTORAI_SECRET_KEY`, production
+fail-fast; ephemeral in dev); Werkzeug **scrypt** password hashing; `itsdangerous`; stdlib `secrets`/`hmac`/`hashlib`;
+the `SqliteRecordStore` adapter + additive-migration pattern; the existing generic-unavailable behaviour. Recorded
+explicitly: **`flask.session` is currently unused; CSRF protection is absent; `projects` has no owner column; `sid` is a
+project capability, NOT user identity; `sid` possession alone is never ownership proof.**
+
+### Owner decisions (binding)
+- **Identity approach:** application-managed **email + password**. Immutable **UUID `account_id`** as the durable primary
+  key (**never email**); **normalized email with uniqueness**; **Werkzeug scrypt** password hashes; **no** plaintext
+  passwords; **no** raw verification/reset/session tokens stored.
+- **Unverified-account policy:** an unverified user MAY register, sign in, request/complete verification, request
+  recovery, and access basic account-management surfaces. An unverified user MAY NOT create an account-owned durable
+  project, claim an anonymous project, or use future sensitive delivery capabilities.
+- **Verified-account policy:** **email verification is required before creating and owning a durable account-linked
+  project.** Verified email is **not** itself authorization to any other project.
+- **Anonymous-project policy:** existing and future anonymous projects keep the current `sid`-capability behaviour where
+  explicitly allowed; they remain **`owner_account_id = NULL`**; they are **not automatically claimable**; possession of
+  `sid` alone must never permit ownership assignment; anonymous-to-account **claim is deferred** to a separate future
+  increment.
+- **Session policy:** **idle expiry 2 hours; absolute expiry 14 days**; cookie `HttpOnly` + `SameSite=Lax` + `Secure`
+  (production) and **not** the project `sid`; **`session_epoch`** used for revocation; **password reset revokes all
+  existing authenticated sessions**; current-session logout plus a bounded **logout-all** via epoch rotation.
+- **Account-deletion policy:** support **disable** (reversible immediate access block) and **delete** (tombstoned
+  account state). On disable/delete: authenticated sessions invalidated; verification/reset tokens invalidated; new
+  login blocked as applicable; **project-ownership links must not be silently transferred**; **accepted-answer data must
+  not be automatically destroyed.** Final legal/commercial retention periods remain **outside this contract** and must
+  not be invented.
+- **Legacy-project policy:** legacy projects remain **`owner_account_id = NULL`**, capability-accessible only under the
+  existing truthful boundary; they cannot be automatically claimed or converted to account ownership.
+- **Email policy:** development = a **local file/console sink**; production = a provider adapter behind an `EmailSender`
+  abstraction. **Verification token expiry 24h; password-reset token expiry 1h.** Tokens are random, **hashed at rest**,
+  single-use, expiring, rate-limited, **never logged raw**. Phase 5 email is limited to **verification, password
+  recovery, and future email change** — it does **not** include output/marketing/notification delivery.
+- **Draft Level 2 policy:** Phase 5 **consumes but does not replace** Draft Level 2. On logout / account switching, a
+  local draft must not be shown under another account/project identity; preserve truthful local-device wording; do
+  **not** upload the draft to the server; do **not** implement Draft Level 3.
+
+### Canonical account model (minimum fields)
+`account_id` (UUID PK) · `email_normalized` (UNIQUE) · `email_verified` (bool) · `status` (`active`|`disabled`|`deleted`)
+· `password_hash` (scrypt) · `session_epoch` (int) · `created_at` · `updated_at` · `deleted_at` (nullable). **No raw
+credentials or tokens stored.**
+
+### Token model (bounded, typed)
+`token_id` · `account_id` · `token_type` (`verification`|`reset`) · `token_hash` · `expires_at` · `used_at` (nullable) ·
+`created_at`. Raw tokens exist only in outbound email content and the user's request. Token responses must not permit
+account enumeration.
+
+### Project-ownership model
+Additive **nullable `projects.owner_account_id`** (no separate ownership table for the MVP unless implementation
+evidence proves the nullable column cannot support the accepted **single-owner** model). The ownership check runs
+**server-side** for every protected read, answer submission, reconstruction, output view, delete, export, future
+download, future output email, and future server-draft operation. **Templates and JavaScript must not be the
+authorization boundary.**
+
+### Security requirements (fail-closed)
+scrypt hashing; non-enumerating authentication/recovery responses; login/session rotation; `session_epoch` revocation;
+`HttpOnly`/`Secure`/`SameSite` cookies; **CSRF on authenticated state-changing requests**; hashed single-use expiring
+tokens; server-side ownership checks; generic denial; brute-force + resend rate limits; **no** raw password/token/secret
+logging; disabled/deleted-account fail-closed behaviour; **legacy-route authorization coverage**; **no `sid`-based
+ownership claim**.
+
+### Phase 5 increments
+**P5-1 — Account & Credential Foundation.** Scope: additive `accounts` schema; normalized-email uniqueness; immutable
+`account_id`; registration; scrypt hashing; account status; email-token data model; development email sink; generic
+registration response; foundational rate-limit storage; RED/GREEN tests. **Not** included: authenticated project
+ownership; route authorization; Draft Level 3; output email; social login; live production email provider.
+
+**P5-2 — Authenticated Sessions, Verified Email & Recovery.** Scope: login/logout; Flask signed authenticated cookie;
+`session_epoch` revocation; idle + absolute expiry; CSRF; verification flow; resend behaviour; account recovery;
+password reset; reset revokes sessions; generic non-enumerating responses; RED/GREEN tests. **Not** included: project
+ownership enforcement; anonymous claiming; Draft Level 3.
+
+**P5-3 — Project Ownership & Route Authorization.** Scope: additive nullable `projects.owner_account_id`; owner linkage
+at **authenticated + verified** project creation; legacy NULL-owner compatibility; a central server-side ownership
+check; the authorization matrix across protected project routes; generic 404/not-available; cross-account isolation;
+disabled/deleted-account handling; Draft Level 2 logout/account-switch isolation; RED/GREEN tests. **Not** included:
+collaboration; sharing; organization ownership; multiple owners; anonymous claiming; Draft Level 3; writable
+continuation.
+
+### RED/GREEN and review controls (each increment)
+(1) define the bounded implementation contract; (2) produce genuine RED on the live parent; (3) implement the minimum
+GREEN; (4) run focused + related + security + full-suite tests; (5) adversarial self-review; (6) one SHA-preserving
+bundle; (7) stop before publication; (8) independent adversarial review; (9) publish only after **A or B without
+blockers**; (10) merge via "Create a merge commit"; (11) post-merge verification; (12) governance synchronization
+before the next increment where materially required. **The continuing owner authorization permits moving P5-1 → P5-2 →
+P5-3 without a new owner authorization, provided all controls pass.** Stop and return to the owner only on: a material
+blocker; live repository contradicting the accepted discovery; scope outside the accepted Phase 5 boundary; a new
+product-policy decision not resolved above; an independent review returning **C**; or security that cannot be proved
+fail-closed.
+
+### Non-blocking risks (recorded)
+(1) production `Secure`-cookie behaviour depends on confirmed HTTPS/reverse-proxy configuration; (2) no current
+rate-limit primitive exists — use a small bounded store-backed counter, **not** a broad new platform/dependency; (3)
+production email deliverability is an operational dependency — begin with the development sink and preserve the provider
+abstraction. These do not block P5-1 contract definition.
+
+### Permitted / prohibited future implementation paths
+**REQUIRED (future):** `web/app.py`; new auth/account/session/token/ownership/email modules; new register/login/verify/
+recover templates; additive schema/migration in the store adapter; new tests. **CONDITIONAL:** `engine/record_store.py`
+— additive nullable `owner_account_id` column + migration + owner get/set + ownership-scoped read (additive-only,
+mirroring the P4-1b-2a `idempotency_key` and P4-2 reconstruction-column precedent); a privacy-notice template update.
+**PROHIBITED:** the deterministic engine — `engine/progression_loop.py`, `engine/scoring.py`, `engine/idea_state.py`,
+`engine/record_contract.py`, `engine/session_reconstruction.py`, `engine/path_n_questions.py`,
+`engine/requirement_landscape.py`, `engine/idea_development_outputs.py`; production `requirements.txt` (Option A needs
+**no** new runtime dependency); CI/deploy; Draft Level 3; writable continuation; output/marketing email delivery;
+PDF/ACV/AI-Coach/WS17/STG; collaboration/sharing/teams/orgs/subscriptions/social-login-SSO/admin dashboard; any later
+phase. **Authorization logic must never live only in templates/JS.**
+
+### Continuing authorization boundary
+This is a **documentation-only** formal contract. It authorizes **no** production/test code, no schema/migration, no
+dependency, no CI, no push/PR/merge in this gate. **P5-1 implementation is the next eligible gate, eligible only after
+this formal contract is merged and post-merge verified.** **P5-2 and P5-3 are NOT STARTED. Draft Level 3, writable
+continuation, output email delivery, and every FPC remain NOT AUTHORIZED / NOT STARTED.** Decision **D17** and the AISR
+seven-owner model are preserved; Phase 4 remains FORMALLY CLOSED; P4-2 Level-1 and Draft Level 2 remain CLOSED.
 
 
 ## P4-1b-2a Increment Contract Candidate — REV1 — G-P4-1B-2-DOC-01-REV1 (HISTORICAL PRE-IMPLEMENTATION CONTRACT STATE — the increment is now IMPLEMENTED / MERGED / CLOSED via PR #365; see the closure banner and the "Active contract" status above)
