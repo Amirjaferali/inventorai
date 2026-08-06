@@ -62,12 +62,23 @@
       return true;
     } catch (e) { return false; }
   }
+  // The account context (signed-in account_id, or "anon" when signed out) is part
+  // of the key so a draft saved under one account is NEVER surfaced under another
+  // account (or anonymously) on a shared device — P5-2 §15 account-switch
+  // isolation. It is a display-namespacing hint only, never ownership/authz. A
+  // switch does not DELETE the other account's draft; it simply is not found.
+  function acct(el) { return el.getAttribute("data-draft-account") || "anon"; }
   function keyFor(el) {
-    return KEY_PREFIX +
+    var base = KEY_PREFIX +
       (el.getAttribute("data-draft-scope") || "") + ":" +
       (el.getAttribute("data-draft-field") || "") + ":" +
       (el.getAttribute("data-draft-context") || "") + ":" +
       (el.getAttribute("data-draft-context-version") || "");
+    // Anonymous keeps the exact pre-P5-2 key (no suffix) so the anonymous journey
+    // is byte-for-byte unchanged; a signed-in account gets its own namespace so a
+    // shared-device account switch never surfaces one account's draft to another.
+    var a = acct(el);
+    return a === "anon" ? base : base + ":acct:" + a;
   }
   function readDraft(key, el) {
     var raw;
@@ -82,8 +93,9 @@
     if (obj.scope !== el.getAttribute("data-draft-scope") ||
         obj.field !== el.getAttribute("data-draft-field") ||
         obj.context !== el.getAttribute("data-draft-context") ||
-        obj.ctxver !== el.getAttribute("data-draft-context-version")) {
-      return null;   // mismatched project/field/question/version -> never restore
+        obj.ctxver !== el.getAttribute("data-draft-context-version") ||
+        (obj.account || "anon") !== acct(el)) {
+      return null;   // mismatched project/field/question/version/account -> never restore
     }
     return obj;
   }
@@ -93,7 +105,8 @@
       scope: el.getAttribute("data-draft-scope"),
       field: el.getAttribute("data-draft-field"),
       context: el.getAttribute("data-draft-context"),
-      ctxver: el.getAttribute("data-draft-context-version")
+      ctxver: el.getAttribute("data-draft-context-version"),
+      account: acct(el)
     };
     var s = JSON.stringify(payload);
     if (s.length > MAX_DRAFT_CHARS) return false; // oversized -> not stored (truthful fail)
