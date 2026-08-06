@@ -542,3 +542,34 @@ Recovery after Phase 5**; sequence **Draft Level 2 → Phase 5 identity foundati
 **Boundary.** No decision above grants implementation authority. Draft Level 2 implementation requires a **separate
 explicit owner authorization** after independent review of this candidate. Decision **D17** and the AISR seven-owner
 model are preserved; Phase 4 remains FORMALLY CLOSED; P4-2 Level-1 remains CLOSED.
+
+## Draft Level 2 — Same-Device Unsubmitted-Text Recovery: implementation acceptance & closure (G-DRAFT-L2-LOCAL-CONTINUITY-IMPLEMENTATION-01 + REMEDIATION-01) — owner-accepted, MERGED & CLOSED
+
+**Decision status:** ACCEPTED AND CLOSED — focused re-review verdict **B — ACCEPT WITH NON-BLOCKING OBSERVATIONS**.
+Records the implementation, the independent review (verdict **C — REJECT**), the remediation of the three confirmed
+blockers, the focused re-review (verdict **B**, PUBLISH), the merge through **PR #372** (merge commit
+`43223dd6ab6ad169eefd64e37dee211f8bc306b9`, two-parent merge of `e84845de46c886b58d1e9cd04ed8bd4dffe84254` (base) +
+`4696567683e242edd8f51587797487814d573421` (reviewed remediation candidate), tree
+`83dbf367d0754d1b59f53ba85db0867672c3f543` — equal to the candidate tree; candidate ancestry PASS), post-merge
+verification, owner acceptance, and formal closure. Documentation-only; grants no new implementation authority. Recorded
+on the authoritative live tip resolved from Git (`43223dd`).
+
+**Supersession clause.** This section supersedes the "Draft Level 2 … contract-definition decisions" wording **only where
+it states that Draft Level 2 was a CONTRACT CANDIDATE / IMPLEMENTATION NOT AUTHORIZED / NOT STARTED**. That state was
+accurate at the contract gate (PR #371) and **remains historical context, not current status**. Current status:
+**Draft Level 2 is IMPLEMENTED / REMEDIATED / INDEPENDENTLY REVIEWED / MERGED / POST-MERGE VERIFIED / OWNER ACCEPTED /
+FORMALLY CLOSED.** No prior history is rewritten.
+
+| ID | Subject | Decision | Impl. authority | Evidence / boundary |
+|---|---|---|---|---|
+| D-DRAFT-L2-IMPL-01 | Draft Level 2 implemented, remediated, accepted & closed | ACCEPTED — **verdict B (re-review)**; **IMPLEMENTED / MERGED / VERIFIED / ACCEPTED / CLOSED** | NONE (closure) | Original impl candidate `9138f96` (independent review **C — REJECT**, blockers B1/B2/B3) → remediation candidate `4696567` (re-review **B**, PUBLISH) → **PR #372** merge `43223dd`. Merged scope **8 files / +981 / −6**; disallowed paths **NONE**; source branch `fix/draft-l2-local-continuity-remediation` + bundle **PRESERVED** (`draft_l2_remediation_4696567.bundle`, SHA-256 `895459d9dcff36fbef1a05c692c59ee1db234c501bb810e5ee9cfe6fceb15b6e`); focused **30 passed** / full **1799 passed, 1 skipped, 1 xfailed** |
+| D-DRAFT-L2-IMPL-02 | Confirmed remediation of the three blockers | RECORDED — **B1/B2/B3 FIXED** | NONE | **B1** seed cleanup gated on a truthful one-shot `data-seed-accepted` (set only at successful `/start`); unrelated session render never clears an unsent seed draft. **B2** pagehide/visibilitychange flush only SAVES non-empty; never deletes on an empty/untouched field. **B3** empty sibling tab never deletes another tab's draft; storage-event handling shows a low-emphasis newer-copy awareness for a non-empty field and never overwrites visible text or deletes the newer stored draft. Each proven by a real-browser test that FAILED on `9138f96` and passes on `4696567` |
+| D-DRAFT-L2-IMPL-03 | Capability now implemented | RECORDED | NONE | same-device localStorage recovery; 7-day TTL; seed + main-answer + bounded criticality-correction; debounced save + pagehide/visibilitychange; explicit Restore/Discard (no silent overwrite); stale/expired/corrupt/mismatch rejection; truthful device-only wording; a11y + bilingual (EN/AR); no-JS Level-0 fallback; failed & ambiguous submission retention; matching-draft cleanup only after truthful acceptance; multi-tab preservation + newer-copy awareness |
+| D-DRAFT-L2-IMPL-04 | Exact capability boundary — "does NOT provide" | RECORDED | NONE | NO server-side draft persistence; account-linked drafts; cross-device/browser recovery; accounts; authentication; project ownership; authorization; collaborative editing; multi-device conflict resolution; writable continuation; durable version history; `AssertionRecord`/evaluation/maturity/gap/output effects from drafts; Phase 5 capability; Draft Level 3. Local draft data stays semantically separate from accepted answers and durable project records |
+| D-DRAFT-L2-IMPL-05 | Non-blocking observations (NOT fixed here) | RECORDED | NONE | (1) stale `session.html` comment about seed acceptance (cleanup is correctly signal-gated); (2) `local_draft.js` `userEdited` assigned-not-read; (3) narrow one-shot-signal staleness edge if the success redirect render is never received; (4) the "Related: 146 passed" narrative was not one exact file set (all subsets + exact full suite green); (5) one multi-tab test uses synthetic event dispatch (reviewer also used real browser probes). Recorded, not reopened; the accepted candidate is not modified |
+| D-DRAFT-L2-IMPL-06 | Phase 5 relationship | RECORDED | NONE | Draft Level 2 is local-only and account-independent; **Phase 5 must not reimplement/replace it**. Phase 5 discovery assesses only Draft-Level-3 integration boundaries (stable account/ownership identity; authorization on every future server-draft op; no ownership from `sid` alone; account-switch/logout for local drafts on shared devices; semantic separation of local draft / server draft / accepted answer / project; additive Draft Level 3 compatibility) — **not** authorization to implement server drafts |
+| D-DRAFT-L2-IMPL-07 | Formal closure & next gate | **DRAFT LEVEL 2 FORMALLY CLOSED** | NONE | **NEXT ELIGIBLE GATE: Phase 5 — Accounts / Authentication / Ownership / Verified Email — DISCOVERY AND CONTRACT DEFINITION** (G-P5-IDENTITY-OWNERSHIP-DISCOVERY-CONTRACT-01). **Phase 5 IMPLEMENTATION NOT AUTHORIZED by this closure gate.** Server-side Draft Level 3, writable continuation, and every FPC remain NOT AUTHORIZED / NOT STARTED |
+
+**Boundary.** Closure grants no downstream authorization. All prior decisions, candidates, verdicts, and observations are
+preserved; no history is rewritten. **Draft Level 2 is FORMALLY CLOSED (PR #372, merge `43223dd`).** Decision **D17** and
+the AISR seven-owner model are preserved; Phase 4 remains FORMALLY CLOSED; P4-2 Level-1 remains CLOSED.

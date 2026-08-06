@@ -3993,3 +3993,83 @@ step immediately after this bounded increment — NOT STARTED / NOT AUTHORIZED.*
 continuation, and every FPC remain **NOT AUTHORIZED / NOT STARTED**. Phase 4 remains **FORMALLY CLOSED**; P4-2 Level-1
 remains **CLOSED**. Decision **D17** and the AISR seven-owner model are preserved. Append-only; prior history not
 rewritten. This gate authorizes no push, no PR, no merge, no implementation, and no phase activation.
+
+---
+
+## Draft Level 2 — Same-Device Unsubmitted-Text Recovery: implementation, independent review, remediation, re-review, merge, and FORMAL CLOSURE (G-DRAFT-L2-CLOSURE-SYNC-01, documentation-only, append-only)
+
+This append-only entry records the completed lifecycle of **Draft Level 2 — Same-Device Unsubmitted-Text Recovery
+(Local Draft Recovery)**, now **IMPLEMENTED, REMEDIATED, INDEPENDENTLY REVIEWED, MERGED, POST-MERGE VERIFIED, OWNER
+ACCEPTED, AND FORMALLY CLOSED**. It is documentation-only: it records completed history, rewrites no prior history, and
+authorizes no push, PR, merge, implementation, or phase activation. Live tip (resolve from Git):
+`43223dd6ab6ad169eefd64e37dee211f8bc306b9` (Merge PR #372).
+
+**Full lineage.**
+- **Discovery:** G-P5-DISCOVERY-AND-DRAFT-CONTINUITY-ASSESSMENT-01 — overlap **D — NOT FOUND**; current **Draft Level 0**;
+  selected **Option B**; sequence **Draft Level 2 → Phase 5 identity foundation → Draft Level 3**.
+- **Contract:** G-DRAFT-L2-LOCAL-CONTINUITY-CONTRACT-01 — candidate `17bc228`, **PR #371**, merge
+  `e84845de46c886b58d1e9cd04ed8bd4dffe84254` (contract MERGED / VERIFIED / ACCEPTED / CLOSED).
+- **Implementation (original):** G-DRAFT-L2-LOCAL-CONTINUITY-IMPLEMENTATION-01 — candidate
+  `9138f96b2938230377eab4fcc3e9c7f5c59698c6`; independent-review verdict **C — REJECT — REMEDIATION REQUIRED** with three
+  confirmed blockers: **B1** an unrelated session render could clear an unsent seed draft; **B2** leaving an unrestored
+  empty field could delete its draft; **B3** an empty sibling tab could delete another tab's newer draft.
+- **Remediation:** G-DRAFT-L2-LOCAL-CONTINUITY-REMEDIATION-01 — accepted remediation candidate
+  `4696567683e242edd8f51587797487814d573421` (tree `83dbf367d0754d1b59f53ba85db0867672c3f543`, parent
+  `e84845de46c886b58d1e9cd04ed8bd4dffe84254`).
+- **Focused re-review:** G-DRAFT-L2-LOCAL-CONTINUITY-REMEDIATION-REVIEW-01 — verdict
+  **B — ACCEPT WITH NON-BLOCKING OBSERVATIONS**; recommendation **PUBLISH**.
+- **Merge:** **PR #372** — two-parent merge `43223dd6ab6ad169eefd64e37dee211f8bc306b9` (ordered parents
+  `e84845de46c886b58d1e9cd04ed8bd4dffe84254` (base) + `4696567683e242edd8f51587797487814d573421` (reviewed candidate);
+  merge tree `83dbf367d0754d1b59f53ba85db0867672c3f543`, equal to the candidate tree — the merge introduced exactly the
+  reviewed candidate changes).
+- **Post-merge verification:** candidate-ancestry **PASS** (exit 0); merged scope exactly **8 files / +981 / −6**;
+  **no disallowed path changed** (no `engine/*`, no `record_store.py`, no schema/migration, no production
+  `requirements.txt`, no CI, no account/auth, no server draft). Source branch `fix/draft-l2-local-continuity-remediation`
+  and the SHA-preserving bundle `draft_l2_remediation_4696567.bundle` (SHA-256
+  `895459d9dcff36fbef1a05c692c59ee1db234c501bb810e5ee9cfe6fceb15b6e`) are **PRESERVED**. Tests: focused **30 passed**;
+  full governed suite **1799 passed, 1 skipped, 1 xfailed**.
+
+**Confirmed remediation outcomes:** **B1 FIXED** (seed cleanup gated on a truthful one-shot `data-seed-accepted` signal
+set only at successful `/start`; unrelated renders never clear an unsent seed draft); **B2 FIXED** (pagehide/
+visibilitychange flush only SAVES non-empty text and never deletes a stored draft on an empty/untouched field);
+**B3 FIXED** (an empty sibling tab never deletes another tab's draft; storage-event handling shows a low-emphasis
+newer-copy awareness notice for a non-empty field and never overwrites visible text or deletes the newer stored draft).
+
+**Capability now implemented (Draft Level 2).** Same-device local recovery of unfinished user-entered text via
+`localStorage`; 7-day TTL; seed-idea + main-answer + bounded criticality-correction coverage; debounced local saving;
+pagehide/visibilitychange persistence; explicit Restore/Discard (no silent overwrite); stale/expired/corrupted/
+mismatched rejection; truthful local-only product messages; accessibility + bilingual (EN/AR) recovery strings; no-JS
+Level-0 fallback; failed and ambiguous submission retention; matching-draft cleanup only after truthful acceptance;
+same-browser multi-tab preservation and newer-copy awareness.
+
+**Exact capability boundary — Draft Level 2 does NOT provide:** server-side draft persistence; account-linked drafts;
+recovery on another device/browser; user accounts; authentication; project ownership; authorization; collaborative
+editing; multi-device conflict resolution; writable continuation from durable accepted state; durable version history;
+`AssertionRecord` creation from drafts; evaluation from drafts; maturity/gap/output changes from drafts; Phase 5
+capability; Draft Level 3. Local draft data remains semantically separate from accepted answers and durable project
+records.
+
+**Non-blocking observations (recorded, NOT fixed in this closure — the accepted candidate is not modified).**
+(1) a stale comment in `session.html` still says reaching a session page means the seed idea was accepted, although
+cleanup is now correctly signal-gated; (2) `local_draft.js` has a `userEdited` variable assigned but not read;
+(3) a narrow one-shot-signal staleness edge remains if the success redirect render is never received and a much later
+render consumes the pending flag; (4) the implementing agent's "Related: 146 passed" narrative was not reproduced as one
+exact file set, but all relevant subsets and the exact full suite remained green; (5) one multi-tab test uses synthetic
+`pagehide`/`visibilitychange` dispatch, while the reviewer also reproduced the behaviour with real browser probes.
+
+**Phase 5 relationship.** Draft Level 2 is local-only and independent of accounts. **Phase 5 must not reimplement or
+replace Draft Level 2.** Phase 5 discovery assesses only the integration boundaries for future Draft Level 3: stable
+account identity; stable project-ownership identity; authorization on every future server-draft operation; no ownership
+claim from `sid` possession alone; account-switch/logout behaviour for local drafts on shared devices; semantic
+separation of local draft / server draft / accepted answer / project; future additive Draft Level 3 compatibility. These
+are Phase-5 integration requirements, **not** authorization to implement server drafts. **Draft Level 3 remains a
+separately authorized post-Phase-5 increment.**
+
+**Status.** **G-DRAFT-L2-LOCAL-CONTINUITY-IMPLEMENTATION-01: IMPLEMENTED / REMEDIATED / INDEPENDENTLY REVIEWED / MERGED /
+POST-MERGE VERIFIED / OWNER ACCEPTED / FORMALLY CLOSED.** **DRAFT LEVEL 2: FORMALLY CLOSED.** **NEXT ELIGIBLE GATE:
+Phase 5 — Accounts / Authentication / Ownership / Verified Email — DISCOVERY AND CONTRACT DEFINITION**
+(gate G-P5-IDENTITY-OWNERSHIP-DISCOVERY-CONTRACT-01); **Phase 5 IMPLEMENTATION is NOT AUTHORIZED by this closure gate.**
+**Server-side Draft Level 3, writable continuation, and every FPC remain NOT AUTHORIZED / NOT STARTED.** Phase 4 remains
+**FORMALLY CLOSED**; P4-2 Level-1 remains **CLOSED**. Decision **D17** and the AISR seven-owner model are preserved.
+Append-only; prior history not rewritten. This synchronization authorizes no push, PR, merge, implementation, or phase
+activation.

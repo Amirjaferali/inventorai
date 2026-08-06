@@ -398,26 +398,32 @@ AUTHORIZED / NOT STARTED.***
   WS17, STG, ACV, PDF, Email, and every FPC (FPC-01…FPC-04) remain NOT AUTHORIZED / NOT STARTED.** Decision **D17** and
   the AISR seven-owner model are preserved.
 
-## Next-gate direction — Draft Level 2 contract candidate defined; Phase 5 next (current truth)
+## Draft Level 2 FORMALLY CLOSED; Phase 5 is the next eligible discovery-and-contract gate (current truth)
 
-- **Accepted discovery (G-P5-DISCOVERY-AND-DRAFT-CONTINUITY-ASSESSMENT-01): COMPLETED / ACCEPTED.** Overlap **D — NOT
-  FOUND** (no existing owner for unsubmitted-text recovery); current **Draft Level 0**; current unsent-text protection
-  **NONE** (every editable field loses typed text on close/refresh/crash/power/connectivity loss; even a recoverable
-  failed answered submit re-renders the textarea empty). Selected **Option B**; sequence **Draft Level 2 → Phase 5
-  identity foundation → Draft Level 3 (server, account-linked)**.
-- **Draft Level 2 — Same-Device Unsubmitted-Text Recovery (Local Draft Recovery):** **CONTRACT CANDIDATE DEFINED —
-  IMPLEMENTATION NOT AUTHORIZED — NOT STARTED** (gate **G-DRAFT-L2-LOCAL-CONTINUITY-CONTRACT-01**). Bounded, **local-only**
-  same-device recovery of unfinished typed text via `localStorage`; **explicit** recovery, never silent overwrite;
-  truthful device-only wording (never "saved to your account/server/another device"); clears the matching draft only on a
-  truthful accepted signal; **no** evaluation / `AssertionRecord` / maturity / gap / output change; **no** accounts, no
-  server persistence, no cross-device, no writable continuation; **schema/migration NONE**. Full contract in
-  `ACTIVE_INCREMENT_CONTRACT.md`; decisions `D-DRAFT-L2-01 … -14` in `OWNER_DECISION_REGISTER.md`; append-only roadmap
-  entry recorded. Implementation requires a **separate explicit owner authorization** after independent review.
-- **Phase 5** (accounts / authentication / ownership / authorization / verified email) remains the next major phase
-  **immediately after** this bounded Draft Level 2 increment — **NOT STARTED / NOT AUTHORIZED**. **Server-side Draft Level
-  3, writable continuation, and every FPC remain NOT AUTHORIZED / NOT STARTED.** Phase 4 remains **FORMALLY CLOSED**;
-  P4-2 Level-1 remains **CLOSED**. Recording this candidate changes no current implementation status and grants no
-  implementation authority.
+- **Draft Level 2 — Same-Device Unsubmitted-Text Recovery (Local Draft Recovery):** **IMPLEMENTED / REMEDIATED /
+  INDEPENDENTLY REVIEWED / MERGED / POST-MERGE VERIFIED / OWNER ACCEPTED / FORMALLY CLOSED** (re-review verdict
+  **B — ACCEPT WITH NON-BLOCKING OBSERVATIONS**). Lineage: discovery **G-P5-DISCOVERY-AND-DRAFT-CONTINUITY-ASSESSMENT-01**
+  (overlap **D — NOT FOUND**; current level was **Draft Level 0**; **Option B**) → contract
+  **G-DRAFT-L2-LOCAL-CONTINUITY-CONTRACT-01** (PR #371, merge `e84845d`) → implementation
+  **G-DRAFT-L2-LOCAL-CONTINUITY-IMPLEMENTATION-01** (candidate `9138f96`, independent review **C — REJECT**, blockers
+  B1/B2/B3) → remediation **G-DRAFT-L2-LOCAL-CONTINUITY-REMEDIATION-01** (candidate `4696567`, re-review **B**, PUBLISH)
+  → merge **PR #372** (`43223dd`, tree `83dbf36`, ancestry PASS, scope **8 files / +981 / −6**, disallowed paths
+  **NONE**). Focused **30 passed**; full suite **1799 passed, 1 skipped, 1 xfailed**. **B1/B2/B3 all FIXED.**
+- **Capability (local-only):** same-device `localStorage` recovery of unfinished typed text; 7-day TTL; seed + main-answer
+  + bounded criticality-correction; debounced save + pagehide/visibilitychange; explicit Restore/Discard (never silent
+  overwrite); stale/expired/corrupt/mismatch rejection; truthful device-only wording; a11y + bilingual (EN/AR); no-JS
+  Level-0 fallback; failed & ambiguous submission retention; matching-draft cleanup only after truthful acceptance;
+  multi-tab preservation + newer-copy awareness.
+- **Does NOT provide:** server-side draft persistence; account-linked/cross-device drafts; accounts; authentication;
+  project ownership; authorization; collaborative editing; multi-device conflict resolution; writable continuation;
+  durable version history; any `AssertionRecord`/evaluation/maturity/gap/output effect from drafts; Phase 5 capability;
+  Draft Level 3. Local draft data stays semantically separate from accepted answers and durable project records. No
+  engine/schema/migration/account/server-draft change; production `requirements.txt` unchanged.
+- **NEXT ELIGIBLE GATE: Phase 5 — Accounts / Authentication / Ownership / Verified Email — DISCOVERY AND CONTRACT
+  DEFINITION** (gate **G-P5-IDENTITY-OWNERSHIP-DISCOVERY-CONTRACT-01**). **Phase 5 IMPLEMENTATION is NOT AUTHORIZED.**
+  Phase 5 must not reimplement/replace Draft Level 2; its discovery assesses only Draft-Level-3 integration boundaries.
+  **Server-side Draft Level 3, writable continuation, and every FPC remain NOT AUTHORIZED / NOT STARTED.** Phase 4 remains
+  **FORMALLY CLOSED**; P4-2 Level-1 remains **CLOSED**. Decision **D17** and the AISR seven-owner model are preserved.
 
 ## HISTORICAL SNAPSHOT — Post-PR #367 boundary — P4-1b-2b IMPLEMENTED, MERGED, VERIFIED, ACCEPTED, CLOSED (SUPERSEDED by the Post-PR #369 boundary above)
 

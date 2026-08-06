@@ -78,10 +78,14 @@ pending review, pending publication, not-authorized, or not-started.** The **imm
 ACCEPTED / CLOSED** (owner verdict **B**; PR #365, merge `77bd10cc55a731b18d4e35ea262b55342a9f847f`, tree `c8808be`;
 `record_id` = `rec_N`; separate durable idempotency identity; no deterministic-output engine changed). **There is NO
 active open implementation contract. Phase 4 is FORMALLY CLOSED; writable continuation, Phase 5, and every FPC remain
-NOT AUTHORIZED / NOT STARTED.** A bounded **Draft Level 2 — Same-Device Unsubmitted-Text Recovery** increment-contract
-**CANDIDATE** is now recorded below (gate **G-DRAFT-L2-LOCAL-CONTINUITY-CONTRACT-01**); it is a **CONTRACT CANDIDATE
-ONLY — IMPLEMENTATION NOT AUTHORIZED** and does **not** become an active contract or grant any implementation, client-JS,
-localStorage, template, schema, or Phase 5 authority. (Documentation note: the historical "P4-1b-2a … REV1" and "Contract Amendment" sections
+NOT AUTHORIZED / NOT STARTED.** The most recently completed increment is **Draft Level 2 — Same-Device Unsubmitted-Text
+Recovery (Local Draft Recovery)**, now **IMPLEMENTED / REMEDIATED / INDEPENDENTLY REVIEWED / MERGED / POST-MERGE VERIFIED
+/ OWNER ACCEPTED / FORMALLY CLOSED** (re-review verdict **B**; contract PR #371 → implementation **PR #372**, merge
+`43223dd6ab6ad169eefd64e37dee211f8bc306b9`, tree `83dbf367d0754d1b59f53ba85db0867672c3f543`; local-only, same-device;
+blockers **B1/B2/B3 fixed**; no engine/schema/account/server-draft change). The Draft Level 2 increment-contract section
+retained below is a **fulfilled contract-of-record** (its "CONTRACT CANDIDATE / IMPLEMENTATION NOT AUTHORIZED / NOT
+STARTED" wording is **superseded** by this status). **NEXT ELIGIBLE GATE: Phase 5 — Accounts / Authentication /
+Ownership / Verified Email — DISCOVERY AND CONTRACT DEFINITION (implementation NOT authorized).** (Documentation note: the historical "P4-1b-2a … REV1" and "Contract Amendment" sections
 retained below, and any statement anywhere below that "P4-2 … / P4-1b-2b … remain NOT AUTHORIZED / NOT STARTED", were
 accurate as of their PR #365/#367 boundary and are **superseded** by this status for current truth.)
 
@@ -208,9 +212,22 @@ Merge authority:          Owner, separately (not by the execution agent).
 
 ---
 
-## Draft Level 2 — Same-Device Unsubmitted-Text Recovery — Increment Contract CANDIDATE (G-DRAFT-L2-LOCAL-CONTINUITY-CONTRACT-01) — CONTRACT CANDIDATE ONLY / IMPLEMENTATION NOT AUTHORIZED
+## Draft Level 2 — Same-Device Unsubmitted-Text Recovery — Increment Contract (G-DRAFT-L2-LOCAL-CONTINUITY-CONTRACT-01) — FULFILLED CONTRACT-OF-RECORD (IMPLEMENTED / REMEDIATED / MERGED / FORMALLY CLOSED via PR #372)
 
-**Status:** `CONTRACT CANDIDATE ONLY — IMPLEMENTATION NOT AUTHORIZED — DRAFT LEVEL 2 NOT STARTED`. Recording this
+> **[CLOSURE STATUS — G-DRAFT-L2-CLOSURE-SYNC-01.]** This contract is **FULFILLED**: Draft Level 2 is **IMPLEMENTED,
+> REMEDIATED, INDEPENDENTLY REVIEWED, MERGED, POST-MERGE VERIFIED, OWNER ACCEPTED, AND FORMALLY CLOSED** — original impl
+> candidate `9138f96` (independent review **C — REJECT**, blockers **B1/B2/B3**) → remediation candidate `4696567`
+> (re-review **B — ACCEPT WITH NON-BLOCKING OBSERVATIONS**, PUBLISH) → **PR #372**, merge
+> `43223dd6ab6ad169eefd64e37dee211f8bc306b9`, tree `83dbf367d0754d1b59f53ba85db0867672c3f543`. Merged scope **8 files /
+> +981 / −6**; disallowed paths **NONE**; **B1/B2/B3 fixed**; focused **30 passed**, full suite **1799 passed, 1 skipped,
+> 1 xfailed**. The candidate/contract text below is preserved as the fulfilled contract-of-record; its
+> "CONTRACT CANDIDATE / IMPLEMENTATION NOT AUTHORIZED / NOT STARTED" wording is **superseded**. See
+> `ACTIVE_EXECUTION_ROADMAP.md` and `OWNER_DECISION_REGISTER.md` (`D-DRAFT-L2-IMPL-01…07`). **NEXT ELIGIBLE GATE: Phase 5
+> — Accounts / Authentication / Ownership / Verified Email — DISCOVERY AND CONTRACT DEFINITION (implementation NOT
+> authorized).**
+
+**Status (HISTORICAL — as written at the contract gate; SUPERSEDED by the closure status above):**
+`CONTRACT CANDIDATE ONLY — IMPLEMENTATION NOT AUTHORIZED — DRAFT LEVEL 2 NOT STARTED`. Recording this
 candidate grants **no** implementation, client-JavaScript, `localStorage`/IndexedDB, template, `web/app.py`, schema,
 migration, dependency, account, or Phase 5 authority. Implementation requires a **separate explicit owner
 authorization** after this candidate is independently reviewed and accepted. Follows the accepted discovery
