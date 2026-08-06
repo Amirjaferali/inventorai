@@ -8,7 +8,7 @@ import re
 import secrets
 import tempfile
 import uuid
-from flask import Flask, request, redirect, url_for, render_template
+from flask import Flask, request, redirect, url_for, render_template, session as flask_session
 from engine.domain_rules import infer_domain
 from engine.idea_state import (
     IdeaState, SuccessCriterion,
@@ -35,8 +35,11 @@ from engine.record_contract import ProjectRecordContract
 # P5-1 — Account & Credential Foundation (Phase 5, Option A). Additive account
 # persistence + pure credential helpers + a development email sink. NO login /
 # authenticated session / project ownership here (those are P5-2 / P5-3).
-from engine.account_store import SqliteAccountStore, EmailExistsError, VERIFICATION
+from engine.account_store import (
+    SqliteAccountStore, EmailExistsError, VERIFICATION, RESET,
+)
 from engine import account_credentials as _acct
+from engine import auth_session as _auth
 from engine.email_sender import DevMemoryEmailSender
 # P4-2 Level-1: the exact supported reconstruction/engine-contract version stamp
 # persisted at project creation (read-only reconstruction lives entirely in the
@@ -92,6 +95,18 @@ def _resolve_secret_key():
 
 app = Flask(__name__)
 app.secret_key = _resolve_secret_key()
+# P5-2: authenticated-session cookie hardening (contract §6). The signed-cookie
+# session (name "session") is DISTINCT from the project `sid`. HttpOnly + SameSite
+# =Lax always; Secure only in explicit production (so http:// dev/tests still
+# work); a bounded absolute cookie lifetime matching the 14-day absolute session
+# expiry. Server-side idle/absolute/epoch checks remain authoritative.
+app.config.update(
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE="Lax",
+    SESSION_COOKIE_SECURE=_is_production(),
+    PERMANENT_SESSION_LIFETIME=__import__("datetime").timedelta(
+        seconds=_auth.ABSOLUTE_TIMEOUT_SECONDS),
+)
 # Presentation-only Jinja filter: translate an internal gap-type ID to a short
 # inventor-friendly label for the few session-page surfaces that render raw
 # reference/context IDs. Non-gap values pass through unchanged. Display only.
@@ -198,6 +213,108 @@ def _iso(dt):
     # monotonic even at the exact-whole-second boundary, where a bare
     # ``isoformat()`` would omit the microseconds and break ordering.
     return dt.strftime("%Y-%m-%dT%H:%M:%S.%f") + "Z"
+
+
+# --- P5-2: authenticated sessions / verification / recovery -------------------
+# Token lifetimes (contract §10/§13): verification 24h (reused from P5-1),
+# reset 1h. Bounded rate limits keyed on privacy-safe digests. All auth responses
+# are generic and non-enumerating.
+_RESET_TTL_SECONDS = 60 * 60                      # reset token: 1 hour
+_LOGIN_RATE_LIMIT = 10
+_LOGIN_RATE_WINDOW_SECONDS = 15 * 60
+_RESEND_RATE_LIMIT = 5
+_RESEND_RATE_WINDOW_SECONDS = 60 * 60
+_RECOVER_RATE_LIMIT = 5
+_RECOVER_RATE_WINDOW_SECONDS = 60 * 60
+_AUTH_SESSION_KEY = "auth"                        # namespaced slot inside flask.session
+
+# One generic, non-enumerating message per auth surface (never reveals whether an
+# email exists, a password was wrong, or an account is disabled/deleted/unverified).
+LOGIN_FAILED_MESSAGE_EN = "Those sign-in details did not match. Please try again."
+LOGIN_FAILED_MESSAGE_AR = "بيانات تسجيل الدخول غير متطابقة. يرجى المحاولة مرة أخرى."
+RECOVER_GENERIC_MESSAGE_EN = (
+    "If that address matches an account, password-reset instructions have been sent.")
+RECOVER_GENERIC_MESSAGE_AR = (
+    "إذا كان هذا العنوان مطابقًا لحساب، فقد أُرسلت تعليمات إعادة تعيين كلمة المرور.")
+RESEND_GENERIC_MESSAGE_EN = (
+    "If verification is still needed, a new verification message has been sent.")
+RESEND_GENERIC_MESSAGE_AR = (
+    "إذا كان التحقق لا يزال مطلوبًا، فقد أُرسلت رسالة تحقق جديدة.")
+
+
+def _cleanup_rate_limits(now):
+    """Opportunistic bounded cleanup of expired rate-limit rows (contract §3).
+    Never raises into the request path."""
+    try:
+        _get_account_store().cleanup_expired_rate_limits(_iso(now))
+    except Exception:
+        pass
+
+
+def _rate_ok(subject_key, action, now, limit, window_seconds):
+    """Concurrency-safe rate check via the hardened store primitive. Fails closed
+    (returns False) on any store error so a failure can never bypass the limit."""
+    try:
+        return _get_account_store().record_rate_attempt(
+            subject_key=subject_key, action=action, now_iso=_iso(now),
+            window_reset_iso=_iso(now + _timedelta_seconds(window_seconds)),
+            limit=limit)
+    except Exception:
+        return False
+
+
+def _current_account():
+    """Return the live, valid signed-in account (dict) or None. Validates the
+    authenticated session against the live account and the clock (status / epoch /
+    idle / absolute); on ANY failure it clears the session and returns None (fail
+    closed). Slides the idle window on success."""
+    auth = flask_session.get(_AUTH_SESSION_KEY)
+    if not auth:
+        return None
+    try:
+        account = _get_account_store().get_account_by_id(auth.get("account_id"))
+    except Exception:
+        account = None
+    now = _utc_now()
+    ok, _reason = _auth.validate_session(auth, account, now)
+    if not ok:
+        flask_session.pop(_AUTH_SESSION_KEY, None)
+        return None
+    flask_session[_AUTH_SESSION_KEY] = _auth.touch_session(auth, now)
+    return account
+
+
+@app.context_processor
+def _inject_account_context():
+    """Expose a lightweight ``account_context`` to every template for the bounded
+    Draft-L2 account-switch isolation (contract §15). It is the signed-in
+    ``account_id`` (from the cookie claim) or ``"anon"`` when signed out — used
+    ONLY to namespace same-device local drafts so one account's draft is never
+    shown under another account (or anonymously). It performs NO database read and
+    NO session mutation, and it is NOT an authorization or ownership signal."""
+    auth = flask_session.get(_AUTH_SESSION_KEY)
+    ctx = auth.get("account_id") if isinstance(auth, dict) else None
+    return {"account_context": ctx or "anon"}
+
+
+def _session_csrf():
+    auth = flask_session.get(_AUTH_SESSION_KEY)
+    return auth.get("csrf") if auth else None
+
+
+def _csrf_valid():
+    """Constant-time CSRF check for authenticated state-changing POSTs."""
+    return _auth.csrf_matches(_session_csrf(), request.form.get("csrf_token", ""))
+
+
+def _sign_in(account, now):
+    """Establish a FRESH authenticated session (session rotation / fixation
+    defence): clear any prior session state and mint a new one with a new CSRF
+    token. Never carries pre-login cookie state forward."""
+    flask_session.clear()
+    flask_session[_AUTH_SESSION_KEY] = _auth.build_session(
+        account["account_id"], account["session_epoch"], now)
+    flask_session.permanent = True
 
 
 def _cold_load_entry(sid):
@@ -787,6 +904,241 @@ def register_submit():
 def _timedelta_seconds(seconds):
     from datetime import timedelta
     return timedelta(seconds=seconds)
+
+
+# --- P5-2: authenticated sessions, email verification & account recovery ------
+# A constant dummy scrypt hash so a login for an unknown email still runs one
+# scrypt verification (constant-ish timing; no account-existence timing oracle).
+_DUMMY_PASSWORD_HASH = _acct.hash_password(secrets.token_urlsafe(24))
+
+
+def _csrf_reject():
+    """Generic, non-enumerating rejection for a missing/invalid CSRF token."""
+    return ("Your session security token was missing or invalid. Please reload "
+            "the page and try again.", 403)
+
+
+def _issue_verification(account, now):
+    """Issue (and dev-sink send) a fresh verification token; only its hash is
+    stored, the raw token goes solely into the sink body."""
+    raw = _acct.new_raw_token()
+    _get_account_store().create_email_token(
+        token_id=_acct.new_token_id(), account_id=account["account_id"],
+        token_type=VERIFICATION, token_hash=_acct.hash_token(raw),
+        expires_at=_iso(now + _timedelta_seconds(_VERIFICATION_TTL_SECONDS)),
+        created_at=_iso(now))
+    _EMAIL_SENDER.send(
+        to=account["email_normalized"], subject="Verify your InventorAI email",
+        body=("Use this link to verify your email (valid 24 hours): "
+              "/verify/" + raw))
+
+
+def _issue_reset(account, now):
+    """Issue (and dev-sink send) a fresh 1-hour password-reset token; hash-only
+    at rest; the raw token appears solely in the sink body, never in logs."""
+    raw = _acct.new_raw_token()
+    _get_account_store().create_email_token(
+        token_id=_acct.new_token_id(), account_id=account["account_id"],
+        token_type=RESET, token_hash=_acct.hash_token(raw),
+        expires_at=_iso(now + _timedelta_seconds(_RESET_TTL_SECONDS)),
+        created_at=_iso(now))
+    _EMAIL_SENDER.send(
+        to=account["email_normalized"], subject="Reset your InventorAI password",
+        body=("Use this link to reset your password (valid 1 hour): "
+              "/reset/" + raw))
+
+
+def _render_login(error=False, status=200):
+    return render_template(
+        "login.html", login_error=error,
+        login_failed_en=LOGIN_FAILED_MESSAGE_EN,
+        login_failed_ar=LOGIN_FAILED_MESSAGE_AR), status
+
+
+@app.route("/login", methods=["GET"])
+def login_form():
+    if _current_account():
+        return redirect(url_for("account_home"))
+    return _render_login()
+
+
+@app.route("/login", methods=["POST"])
+def login_submit():
+    """Authenticate email + password. Generic non-enumerating failure; hardened
+    rate limit; scrypt verify; only an ACTIVE account may sign in; session is
+    ROTATED on success. No project creation, no ownership assignment. Unverified
+    accounts MAY sign in (limited per contract) — verification is not a login
+    gate here."""
+    email_normalized = _acct.normalize_email(request.form.get("email", ""))
+    password = request.form.get("password", "")
+    now = _utc_now()
+    _cleanup_rate_limits(now)
+    if not _rate_ok(_acct.email_digest(email_normalized), "login", now,
+                    _LOGIN_RATE_LIMIT, _LOGIN_RATE_WINDOW_SECONDS):
+        return _render_login(error=True, status=429)
+    account = None
+    try:
+        if _acct.is_valid_email(email_normalized):
+            account = _get_account_store().get_account_by_normalized_email(email_normalized)
+    except Exception:
+        account = None
+    # Always run exactly one scrypt verification (real or dummy) — no existence
+    # timing oracle. Accept only an active account with a correct password.
+    stored_hash = account["password_hash"] if account else _DUMMY_PASSWORD_HASH
+    password_ok = _acct.verify_password(stored_hash, password)
+    if account is None or account["status"] != "active" or not password_ok:
+        return _render_login(error=True, status=401)   # identical generic failure
+    _sign_in(account, now)
+    return redirect(url_for("account_home"))
+
+
+@app.route("/account", methods=["GET"])
+def account_home():
+    account = _current_account()
+    if not account:
+        return redirect(url_for("login_form"))
+    return render_template("account.html", account=account,
+                           csrf_token=_session_csrf(), notice=None)
+
+
+@app.route("/logout", methods=["POST"])
+def logout():
+    """Log out the CURRENT browser session only. CSRF-protected when signed in.
+    Never deletes accepted-answer data, never changes ownership, never uploads or
+    exposes a local draft."""
+    if _current_account() and not _csrf_valid():
+        return _csrf_reject()
+    flask_session.clear()
+    return redirect(url_for("login_form"))
+
+
+@app.route("/logout-all", methods=["POST"])
+def logout_all():
+    """Revoke EVERY authenticated session for the account by incrementing
+    ``session_epoch`` (this cookie's epoch becomes stale too). CSRF-protected."""
+    account = _current_account()
+    if not account:
+        return redirect(url_for("login_form"))
+    if not _csrf_valid():
+        return _csrf_reject()
+    try:
+        _get_account_store().increment_session_epoch(account["account_id"], _iso(_utc_now()))
+    except Exception:
+        pass
+    flask_session.clear()
+    return redirect(url_for("login_form"))
+
+
+@app.route("/account/resend-verification", methods=["POST"])
+def resend_verification():
+    """Authenticated, CSRF-protected verification resend. Generic outcome;
+    hardened rate limit; supersede-then-issue only for an active, still-unverified
+    account. A deleted account cannot reach here (its session is invalid); a
+    disabled account fails closed the same way."""
+    account = _current_account()
+    if not account:
+        return redirect(url_for("login_form"))
+    if not _csrf_valid():
+        return _csrf_reject()
+    now = _utc_now()
+    _cleanup_rate_limits(now)
+    allowed = _rate_ok(_acct.email_digest(account["email_normalized"]), "resend",
+                       now, _RESEND_RATE_LIMIT, _RESEND_RATE_WINDOW_SECONDS)
+    if allowed and account["status"] == "active" and not account["email_verified"]:
+        try:
+            _issue_verification(account, now)
+        except Exception:
+            pass
+    return render_template("account.html", account=account,
+                           csrf_token=_session_csrf(), notice="resend")
+
+
+@app.route("/verify/<token>", methods=["GET"])
+def verify_email(token):
+    """Complete email verification from the emailed link. Atomically consume the
+    raw token (hash before lookup; type must be verification; unused; unexpired;
+    active account) and set ``email_verified``. Replay/expired/invalid all render
+    the SAME generic failure. No ownership is created."""
+    now = _utc_now()
+    verified = False
+    try:
+        account_id = _get_account_store().consume_token(
+            _acct.hash_token(token), VERIFICATION, _iso(now))
+        if account_id:
+            _get_account_store().mark_email_verified(account_id, _iso(now))
+            verified = True
+    except Exception:
+        verified = False
+    return render_template("verify_result.html", verified=verified)
+
+
+@app.route("/recover", methods=["GET"])
+def recover_form():
+    return render_template("recover.html", submitted=False,
+                           generic_en=RECOVER_GENERIC_MESSAGE_EN,
+                           generic_ar=RECOVER_GENERIC_MESSAGE_AR)
+
+
+@app.route("/recover", methods=["POST"])
+def recover_submit():
+    """Request a password reset. ALWAYS returns the same generic response (no
+    enumeration of existence / status / verification). Hardened rate limit; a
+    1-hour hash-only reset token is issued only for an active account."""
+    email_normalized = _acct.normalize_email(request.form.get("email", ""))
+    now = _utc_now()
+    _cleanup_rate_limits(now)
+    allowed = _rate_ok(_acct.email_digest(email_normalized), "recover", now,
+                       _RECOVER_RATE_LIMIT, _RECOVER_RATE_WINDOW_SECONDS)
+    if allowed and _acct.is_valid_email(email_normalized):
+        try:
+            account = _get_account_store().get_account_by_normalized_email(email_normalized)
+            if account and account["status"] == "active":
+                _issue_reset(account, now)
+        except Exception:
+            pass
+    return render_template("recover.html", submitted=True,
+                           generic_en=RECOVER_GENERIC_MESSAGE_EN,
+                           generic_ar=RECOVER_GENERIC_MESSAGE_AR)
+
+
+@app.route("/reset/<token>", methods=["GET"])
+def reset_form(token):
+    return render_template("reset.html", token=token, form_error=None, done=False)
+
+
+@app.route("/reset/<token>", methods=["POST"])
+def reset_submit(token):
+    """Complete a password reset. Validate the new password (P5-1 policy), then
+    atomically consume the reset token (type reset; unused; unexpired; active
+    account), scrypt-hash and store the new password, INCREMENT ``session_epoch``
+    (revoking every existing authenticated session), and supersede any other
+    reset tokens. Does NOT auto-sign-in. Invalid/expired/used → generic failure."""
+    password = request.form.get("password", "")
+    confirm = request.form.get("password_confirm", "")
+    ok, _reason = _acct.validate_password(password)
+    if not ok:
+        return render_template("reset.html", token=token,
+                               form_error="password_invalid", done=False), 400
+    if password != confirm:
+        return render_template("reset.html", token=token,
+                               form_error="password_mismatch", done=False), 400
+    now = _utc_now()
+    account_id = None
+    try:
+        store = _get_account_store()
+        account_id = store.consume_token(_acct.hash_token(token), RESET, _iso(now))
+        if account_id:
+            store.set_password_hash(account_id, _acct.hash_password(password), _iso(now))
+            store.increment_session_epoch(account_id, _iso(now))
+            store.supersede_tokens(account_id, RESET, _iso(now))
+    except Exception:
+        account_id = None
+    if not account_id:
+        return render_template("reset.html", token=token,
+                               form_error="token_invalid", done=False), 400
+    flask_session.clear()   # never auto-sign-in on reset
+    return render_template("reset.html", token=token, form_error=None, done=True)
+
 
 @app.route("/data-and-session", methods=["GET"])
 def data_and_session():
