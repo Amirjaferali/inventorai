@@ -41,8 +41,33 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current):** CONTRACT-OF-RECORD = **P5-2 — Authenticated Sessions, Verified Email & Account Recovery (Phase 5,
-Option A)**, now **IMPLEMENTED, INDEPENDENTLY REVIEWED, MERGED, POST-MERGE VERIFIED, OWNER ACCEPTED, AND FORMALLY
+**Status (current):** **THERE IS NO ACTIVE OPEN IMPLEMENTATION CONTRACT. PHASE 5 — Accounts / Authentication /
+Ownership / Verified Email is FORMALLY CLOSED** across all three increments (**P5-1 → P5-2 → P5-3**), each IMPLEMENTED /
+INDEPENDENTLY REVIEWED (verdict **B**, PUBLISH) / MERGED / POST-MERGE VERIFIED / OWNER ACCEPTED / FORMALLY CLOSED. Final
+closure is recorded by **G-P5-FINAL-CLOSURE-SYNC-01** (authoritative base `d9f888bd0def7b3275cd04860dfa2e8cc1504111`,
+Merge PR #379, tree `e6a03ab46d6d01ca4b95ee87d240ce6658eeb47c`). The most recently completed increment is **P5-3 —
+Project Ownership and Route Authorization** (gate **G-P5-3-PROJECT-OWNERSHIP-ROUTE-AUTHORIZATION-IMPLEMENTATION-01**;
+candidate `a0997c3`, tree `e6a03ab`, parent `b14c931`; merged via **PR #379** `d9f888b`, ancestry PASS; scope **6 files /
++562 / −15**; disallowed paths **NONE**; source branch `feat/p5-3-project-ownership-authorization` PRESERVED; focused
+**19 passed**, full suite **1893 passed, 1 skipped, 1 xfailed**). **Delivered by P5-3:** additive nullable
+`projects.owner_account_id` (indexed, idempotent legacy-safe migration); atomic verified-account owned-project creation
+(ownership immutable, no transfer); one central fail-closed server-side route-authorization helper (ownership from
+durable state + the validated session, never the `sid`/cookie/client) enforced on every protected `/session/<sid>`
+GET/POST route; cross-account + anonymous denial for owned projects; generic missing/not-authorized equivalence;
+disabled/deleted denial; owner-scoped project list; Draft L2 account+project isolation. **Does NOT implement** anonymous
+project claim, ownership transfer, multiple owners, collaboration/sharing/teams/organizations, Draft Level 3, writable
+continuation, output email delivery, ACV, AI Coach, or STG. **Preserved observations:** **OBS-P5-3-01** (replace the
+`sid in SESSION_STORE` in-memory authorization fallback with caller/session-scoped authorization before any
+project-deletion / broader in-memory access / session-restoration expansion); **OBS-P5-2-01** / **OBS-P5-2-02** (P5-2
+email-link-tokens-in-URL and reset-atomicity, preserved). **NEXT ELIGIBLE GATE (owner consideration only — NOT started,
+NOT authorized):** **Phase 6 — domain specialization / truthful specialist labeling** per the authoritative roadmap phase
+map (the roadmap does NOT designate Phase 6 as "Post-Output Refinement Orchestration"). **Draft Level 3, writable
+continuation, output email delivery, and every FPC remain NOT AUTHORIZED / NOT STARTED.** Decision **D17** and the AISR
+seven-owner model are preserved.
+
+The **immediately prior** contract-of-record was **P5-2 — Authenticated Sessions, Verified Email & Account Recovery
+(Phase 5, Option A)**, now **IMPLEMENTED, INDEPENDENTLY REVIEWED, MERGED, POST-MERGE VERIFIED, OWNER ACCEPTED, AND
+FORMALLY
 CLOSED** (independent review **G-P5-2-AUTH-SESSIONS-VERIFIED-EMAIL-RECOVERY-INDEPENDENT-REVIEW-01**, verdict **B — ACCEPT
 WITH NON-BLOCKING OBSERVATIONS**, PUBLISH). Gate **G-P5-2-AUTH-SESSIONS-VERIFIED-EMAIL-RECOVERY-IMPLEMENTATION-01**;
 candidate `87c85c7` (tree `375db689`, parent `f84c87d`); merged via **PR #377** (merge commit
@@ -157,9 +182,12 @@ forward-looking phrase such as "NEXT ELIGIBLE GATE: P5-1", "P5-1 becomes the nex
 **superseded by the leading "Status (current)" block**. **Further superseded (P5-2 boundary):** this rolling narrative
 and every forward-looking phrase below such as "NEXT ELIGIBLE INCREMENT: P5-2", "P5-2 is the next eligible increment", or
 "P5-3: NOT STARTED" was accurate as of the PR #375/#376 boundary and is superseded by the leading "Status (current)"
-block: **P5-1 and P5-2 are now both IMPLEMENTED / MERGED (PR #375, PR #377) / FORMALLY CLOSED, and P5-3 — Project
-Ownership and Route Authorization — is the next eligible increment**, eligible only after this closure sync is merged and
-post-merge verified.)
+block. **Further superseded (Phase 5 final closure):** every forward-looking phrase anywhere below such as "P5-3 is the
+next eligible increment", "P5-3 — Project Ownership and Route Authorization — is the next eligible increment", or "Draft
+Level 3 … NOT AUTHORIZED / NOT STARTED" that treats P5-3 as pending is superseded by the leading "Status (current)"
+block: **P5-1, P5-2, and P5-3 are ALL IMPLEMENTED / MERGED (PR #375, PR #377, PR #379) / FORMALLY CLOSED, PHASE 5 is
+FORMALLY CLOSED, and the next eligible gate — for owner consideration only, NOT started / NOT authorized — is Phase 6
+(domain specialization / truthful specialist labeling) per the authoritative roadmap phase map.**)
 
 **Review lineage (HISTORICAL — for the record).** DOC-01 candidate `0e2a5cec24d71462eadbffa193e3467d40d506a0` carried
 verdict `C — REVISE AND RE-REVIEW` (preserved, unmerged); a separately-claimed
