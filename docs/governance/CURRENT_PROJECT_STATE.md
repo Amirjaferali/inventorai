@@ -16,10 +16,14 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
   (`git rev-parse origin/feature/atomic-json-session-persistence`). Do **not** trust a
   prose-pinned SHA.
   - **Current authoritative branch tip (last independently verified):**
-    `276e89681e6008ec859383771b845833321b5552` (Merge PR #369 — P4-2 Level-1 deterministic read-only reconstructed
-    review-state implementation, post-merge verified, owner accepted, and CLOSED; two-parent merge of
-    `2cde586` (base) + `e66ae3a` (candidate), tree `1f6babf`) — always re-resolve the live tip from Git per the rule
-    above.
+    `65a2c0e258bf9635921046ad27f8a886cce78218` (Merge PR #375 — P5-1 Account & Credential Foundation implementation,
+    post-merge verified, owner accepted, and FORMALLY CLOSED; two-parent merge of `e84526d` (base) + `6be86f5`
+    (candidate), tree `128b2d4`) — always re-resolve the live tip from Git per the rule above.
+  - **Prior recorded tip (historical):** `276e89681e6008ec859383771b845833321b5552` (Merge PR #369 — P4-2 Level-1
+    deterministic read-only reconstructed review-state implementation + Phase 4 FORMALLY CLOSED; two-parent merge of
+    `2cde586` + `e66ae3a`, tree `1f6babf`); superseded as the live tip by the intervening documentation/implementation
+    merges PR #372 (Draft Level 2 implementation + closure), PR #373 (Phase 5 identity/ownership discovery), PR #374
+    (Phase 5 formal contract + continuing authorization), and PR #375 (P5-1 implementation).
   - **Prior recorded tip (historical):** `1c9dff7962a428cfd32ab577dbbbb84ce21909b3` (Merge PR #367 — P4-1b-2b read-only
     accepted-answer evidence reconstruction implementation, post-merge verified, owner accepted, and CLOSED); superseded
     as the live tip by PR #369 (P4-2 Level-1).
@@ -354,7 +358,7 @@ AUTHORIZED / NOT STARTED.***
   published) → **REV4** (this documentation-only candidate; **pending independent review only**). See the roadmap
   "governance-synchronization review lineage" and `OWNER_DECISION_REGISTER.md` (`D-P4-1B-2A-GSYNC-01…05`).
 
-## Post-PR #369 boundary — P4-2 Level-1 IMPLEMENTED, MERGED, VERIFIED, ACCEPTED, CLOSED + PHASE 4 FORMALLY CLOSED (current truth)
+## Post-PR #369 boundary — P4-2 Level-1 IMPLEMENTED, MERGED, VERIFIED, ACCEPTED, CLOSED + PHASE 4 FORMALLY CLOSED (Phase 4 closure remains authoritative; as the live-tip / next-eligible pointer this section is SUPERSEDED by the P5-1-CLOSED current-truth section below)
 
 - **Live tip:** `276e89681e6008ec859383771b845833321b5552` (Merge PR #369; two-parent merge of `2cde586` (base) +
   `e66ae3a` (candidate), tree `1f6babf`, equal to the candidate tree; always re-resolve from Git).
@@ -398,7 +402,44 @@ AUTHORIZED / NOT STARTED.***
   WS17, STG, ACV, PDF, Email, and every FPC (FPC-01…FPC-04) remain NOT AUTHORIZED / NOT STARTED.** Decision **D17** and
   the AISR seven-owner model are preserved.
 
-## Draft Level 2 FORMALLY CLOSED; Phase 5 FORMALLY PLANNED (P5-1 → P5-2 → P5-3); P5-1 is the next eligible implementation gate (current truth)
+## P5-1 Account & Credential Foundation FORMALLY CLOSED; P5-2 is the next eligible implementation increment (current truth)
+
+- **P5-1 — Account & Credential Foundation:** **IMPLEMENTED / INDEPENDENTLY REVIEWED / MERGED / POST-MERGE VERIFIED /
+  OWNER ACCEPTED / FORMALLY CLOSED** (independent review **G-P5-1-ACCOUNT-CREDENTIAL-FOUNDATION-INDEPENDENT-REVIEW-01**,
+  verdict **B — ACCEPT WITH NON-BLOCKING OBSERVATIONS**, PUBLISH). Lineage: gate
+  **G-P5-1-ACCOUNT-CREDENTIAL-FOUNDATION-IMPLEMENTATION-01** → candidate `6be86f5` (tree `128b2d4`, parent `e84526d`)
+  → merge **PR #375** (`65a2c0e`, tree `128b2d4`, parents `e84526d` + `6be86f5`, ancestry PASS, scope **7 files /
+  +1024**, source branch `feat/p5-1-account-credential-foundation` PRESERVED). Focused **35 passed**; full suite
+  **1834 passed, 1 skipped, 1 xfailed**.
+- **P5-1 capability (foundation only):** additive accounts persistence; immutable UUID-based `account_id` (never email);
+  normalized + unique email; Werkzeug scrypt password hashing; active/disabled/deleted account status; `session_epoch`
+  foundation; registration route + bilingual accessible form; generic non-enumerating public response; verification-token
+  hash-only persistence; 24-hour verification-token expiry; verification-token supersession; development `EmailSender`
+  abstraction + memory sink; bounded store-backed rate-limit foundation; additive idempotent legacy-safe migration; no
+  plaintext password storage; no raw verification-token storage or logging.
+- **P5-1 does NOT provide (deferred to P5-2/P5-3):** login; logout; authenticated Flask sessions; authentication
+  cookies; CSRF protection for authenticated mutations; verification completion; resend route; password recovery/reset;
+  project ownership; `projects.owner_account_id`; route authorization; anonymous project claim; Draft Level 3; P5-3;
+  output email delivery; production email provider. Registration does **not** sign the user in, does **not** create a
+  project, and does **not** establish project ownership.
+- **Mandatory P5-2 preconditions (engineering, not optional):** **P5-2-PRE-01 — rate-limit concurrency hardening**
+  (eliminate the multi-connection lost-update race; atomic SQL increment or explicit immediate write transaction; prove
+  the limit under genuine concurrency; keep responses non-enumerating; add bounded expired-row cleanup) and
+  **P5-2-PRE-02 — SQLite thread/connection strategy** (resolve the module-cached connection + thread-affinity issue;
+  define a safe per-request or bounded connection strategy; prove behaviour under a threaded WSGI environment; preserve
+  transaction safety and fail-closed; do not merely set `check_same_thread=False` without proving locking/transaction
+  correctness). Both must be addressed within the first P5-2 implementation candidate before login/session security is
+  accepted. Other recorded non-blocking observations (expired rate-limit cleanup, sequential-vs-concurrent duplicate
+  test, rate-limit generic-response test strengthening, full Set-Cookie assertion in P5-2, password-too-long message,
+  keyed email digest, dev sink retention, regression-narrative naming, pinned Playwright for full-suite count) are
+  captured in the roadmap P5-1 closure entry and `OWNER_DECISION_REGISTER.md`.
+- **NEXT ELIGIBLE INCREMENT: P5-2 — Authenticated Sessions, Verified Email, and Recovery** — authorized under the
+  continuing Phase 5 owner authorization **only after this closure sync is merged and post-merge verified**. **P5-3: NOT
+  STARTED.** **Draft Level 3: NOT AUTHORIZED.** Phase 4 remains **FORMALLY CLOSED**; P4-2 Level-1, Draft Level 2, and
+  now **P5-1** remain **CLOSED**. The Phase 5 formal contract remains **MERGED / VERIFIED / ACCEPTED**. Decision **D17**
+  and the AISR seven-owner model are preserved.
+
+## HISTORICAL SNAPSHOT — Draft Level 2 FORMALLY CLOSED; Phase 5 FORMALLY PLANNED (P5-1 → P5-2 → P5-3); P5-1 is the next eligible implementation gate (SUPERSEDED by the P5-1-CLOSED current-truth section above)
 
 - **Draft Level 2 — Same-Device Unsubmitted-Text Recovery (Local Draft Recovery):** **IMPLEMENTED / REMEDIATED /
   INDEPENDENTLY REVIEWED / MERGED / POST-MERGE VERIFIED / OWNER ACCEPTED / FORMALLY CLOSED** (re-review verdict

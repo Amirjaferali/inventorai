@@ -4124,3 +4124,79 @@ post-merge verified.** **P5-2 and P5-3: NOT STARTED.** **Draft Level 3, writable
 and every FPC remain NOT AUTHORIZED / NOT STARTED.** Phase 4 remains FORMALLY CLOSED; P4-2 Level-1 and Draft Level 2
 remain CLOSED. Decision **D17** and the AISR seven-owner model are preserved. Append-only; prior history not rewritten.
 This entry authorizes no push, PR, merge, implementation, or phase activation.
+
+---
+
+## P5-1 — Account & Credential Foundation: implementation, independent review, PR #375 merge, post-merge verification & formal closure (G-P5-1-CLOSURE-SYNC-01, documentation-only, append-only)
+
+This append-only entry records the first bounded Phase 5 increment — **P5-1 — Account and Credential Foundation** —
+as **IMPLEMENTED / INDEPENDENTLY REVIEWED / MERGED / POST-MERGE VERIFIED / OWNER ACCEPTED / FORMALLY CLOSED**, and
+records the mandatory engineering preconditions that must be resolved before or during P5-2. It is documentation-only:
+it grants **no** production, test, schema, dependency, CI, or push/PR/merge authority, and it begins **no** P5-2
+implementation. Authoritative base for this sync (resolve from Git): `65a2c0e258bf9635921046ad27f8a886cce78218`
+(Merge PR #375; tree `128b2d415ace8a5fee2c0cff4c84aeeb28bcf5e6`; parents
+`e84526d36e8518bea75da109c77f0851c0acf5c2` + `6be86f5853d84216d2bd0792c4ca98babadbfe31`).
+
+**Lineage.** Implementation gate **G-P5-1-ACCOUNT-CREDENTIAL-FOUNDATION-IMPLEMENTATION-01** (candidate
+`6be86f5853d84216d2bd0792c4ca98babadbfe31`, tree `128b2d415ace8a5fee2c0cff4c84aeeb28bcf5e6`, parent
+`e84526d36e8518bea75da109c77f0851c0acf5c2`, bundle `p51accountcredentialfoundation.bundle`, bundle SHA-256
+`953e8da0ffd18308e573f809f7d5f060848690afd0903fca3a0378615c46ab26`) → independent adversarial review
+**G-P5-1-ACCOUNT-CREDENTIAL-FOUNDATION-INDEPENDENT-REVIEW-01** (verdict **B — ACCEPT WITH NON-BLOCKING OBSERVATIONS**;
+recommendation **PUBLISH**) → merge **PR #375** (merge commit `65a2c0e258bf9635921046ad27f8a886cce78218`, tree
+`128b2d415ace8a5fee2c0cff4c84aeeb28bcf5e6` equal to the candidate tree, two-parent merge of
+`e84526d36e8518bea75da109c77f0851c0acf5c2` (base) + `6be86f5853d84216d2bd0792c4ca98babadbfe31` (reviewed candidate),
+**ancestry PASS — exit 0**) → post-merge verification. **Merged scope: 7 files changed, 1024 insertions**
+(`engine/account_credentials.py`, `engine/account_store.py`, `engine/email_sender.py`, `web/app.py`,
+`web/templates/register.html`, `tests/test_p5_1_account_credential_foundation.py`, `tests/conftest.py`); disallowed
+paths **NONE**. Source branch `feat/p5-1-account-credential-foundation` **PRESERVED**. Tests: **focused 35 passed**;
+**full suite 1834 passed, 1 skipped, 1 xfailed**. Genuine RED was proven on the clean parent (`/register` and the
+additive engine modules absent).
+
+**Implemented capability (foundation only).** P5-1 now implements: additive `accounts` persistence; immutable
+UUID-based `account_id` (never the email); normalized and unique email; **Werkzeug scrypt** password hashing;
+active / disabled / deleted account status; a `session_epoch` foundation; a registration route and a bilingual,
+accessible registration form; a **generic non-enumerating** public response; verification-token **hash-only**
+persistence; **24-hour** verification-token expiry; verification-token **supersession**; a development `EmailSender`
+abstraction and in-memory sink; a bounded store-backed **rate-limit foundation**; additive, idempotent, legacy-safe
+migration; **no plaintext password storage**; and **no raw verification-token storage or logging**.
+
+**Exact boundary (P5-1 does NOT implement).** login; logout; authenticated Flask sessions; authentication cookies;
+CSRF protection for authenticated mutations; verification completion; a resend route; password recovery/reset; project
+ownership; `projects.owner_account_id`; route authorization; anonymous project claim; Draft Level 3; P5-3; output email
+delivery; a production email provider. Registration **does not** sign the user in, **does not** create a project, and
+**does not** establish project ownership.
+
+**Mandatory P5-2 preconditions (engineering, binding — not optional notes).**
+- **P5-2-PRE-01 — RATE-LIMIT CONCURRENCY HARDENING.** Before the current rate-limit primitive is used for login,
+  verification resend, password recovery, or other authentication-sensitive controls: eliminate the proven
+  multi-connection lost-update race; use an atomic SQL increment or an explicit immediate write transaction; prove the
+  limit under genuine concurrent requests; keep the public response non-enumerating; and add bounded cleanup of expired
+  rate-limit rows.
+- **P5-2-PRE-02 — SQLITE THREAD/CONNECTION STRATEGY.** Before authenticated-session routes are treated as
+  production-capable: resolve the module-cached SQLite connection and thread-affinity issue; define a safe per-request
+  or bounded connection strategy; prove behaviour under a threaded WSGI environment; preserve transaction safety and
+  fail-closed behaviour; and do not merely set `check_same_thread=False` without proving locking and transaction
+  correctness.
+
+Both preconditions MUST be addressed within the first P5-2 implementation candidate before login/session security is
+accepted.
+
+**Other non-blocking observations (recorded; P5-1 is NOT reopened).** (1) expired `auth_rate_limits` rows currently have
+no cleanup sweep; (2) the test named "concurrent duplicate registration" is sequential, although the reviewer
+independently proved true concurrent uniqueness; (3) the focused rate-limit generic-response test contains unused
+baseline logic and should be strengthened; (4) P5-2 cookie tests should assert the absence or presence of every
+`Set-Cookie` header, not only a named cookie; (5) the password-too-long validation message should distinguish the
+maximum-length failure; (6) the unkeyed truncated SHA-256 email digest permits offline guessed-email confirmation if the
+database is exposed — assess a keyed digest when touching the primitive; (7) `DevMemoryEmailSender` should have bounded
+retention in long-lived development processes; (8) the exact targeted-regression narrative count was not reproducible as
+one named test set, but all relevant subsets and the full suite were green; (9) the exact full-suite count requires the
+already-authorized pinned Playwright test-only dependencies.
+
+**Status.** **G-P5-1-ACCOUNT-CREDENTIAL-FOUNDATION-IMPLEMENTATION-01: IMPLEMENTED / INDEPENDENTLY REVIEWED / MERGED /
+POST-MERGE VERIFIED / OWNER ACCEPTED / FORMALLY CLOSED.** **P5-1: FORMALLY CLOSED.** **NEXT ELIGIBLE INCREMENT: P5-2 —
+Authenticated Sessions, Verified Email, and Recovery** — authorized under the continuing Phase 5 owner authorization
+**only after this closure sync is merged and post-merge verified**; the two mandatory preconditions above are binding on
+its first candidate. **P5-3: NOT STARTED. Draft Level 3: NOT AUTHORIZED.** The Phase 5 formal contract remains
+**MERGED / VERIFIED / ACCEPTED**. Phase 4 remains **FORMALLY CLOSED**; P4-2 Level-1 and Draft Level 2 remain **CLOSED**.
+Decision **D17** and the AISR seven-owner model are preserved. Append-only; prior history not rewritten. This
+synchronization authorizes no push, PR, merge, implementation, or phase activation.
