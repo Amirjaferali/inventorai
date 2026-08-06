@@ -304,13 +304,22 @@ def test_owner_assignment_is_atomic_under_concurrent_creation(db_path):
     exercised with SEPARATE connections, each in its own thread). Every project is
     observed with its correct owner and NEVER momentarily NULL or cross-assigned."""
     N = 12
-    barrier = threading.Barrier(N)
+    # Bounded watchdog (NOT the remedy — the remedy is the store's BEGIN IMMEDIATE
+    # serialized write transaction): a generous per-wait/join timeout plus captured
+    # worker exceptions guarantee that if the concurrent-construction deadlock ever
+    # regresses, this test FAILS LOUDLY within seconds instead of hanging the suite
+    # indefinitely (the pre-remediation failure mode). The timeout is a safety net
+    # only; a correct store completes this in well under a second.
+    WATCHDOG_S = 30
+    barrier = threading.Barrier(N, timeout=WATCHDOG_S)
     results = [None] * N
+    errors = [None] * N
     lock = threading.Lock()
 
     def worker(i):
-        store = SqliteRecordStore(db_path)     # separate connection per thread
+        store = None
         try:
+            store = SqliteRecordStore(db_path)  # separate connection per thread
             owner = "acct_owner_%d" % i
             barrier.wait()
             sid = store.create_project(
@@ -320,14 +329,27 @@ def test_owner_assignment_is_atomic_under_concurrent_creation(db_path):
             exists, got = store.load_owner(sid)
             with lock:
                 results[i] = (exists, got, owner)
+        except BaseException as exc:            # capture; never leave siblings hung
+            with lock:
+                errors[i] = "%s: %s" % (type(exc).__name__, exc)
+            try:
+                barrier.abort()                 # release siblings -> loud fail, not hang
+            except Exception:
+                pass
         finally:
-            store.close()
+            if store is not None:
+                store.close()
 
     threads = [threading.Thread(target=worker, args=(i,)) for i in range(N)]
     for t in threads:
         t.start()
     for t in threads:
-        t.join()
+        t.join(timeout=WATCHDOG_S)
+    # watchdog assertions: no worker may still be running, and none may have raised
+    assert not any(t.is_alive() for t in threads), \
+        "a worker thread is still alive after the watchdog — store concurrency deadlock regressed"
+    assert not any(errors), \
+        "concurrent worker error(s): %s" % [e for e in errors if e]
     for exists, got, owner in results:
         assert exists and got == owner          # atomic; correct owner; no NULL/cross
     # global check via a fresh connection

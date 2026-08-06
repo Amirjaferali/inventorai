@@ -29,6 +29,7 @@ NOT authentication, ownership, or authorization.
 import json
 import sqlite3
 import uuid
+from contextlib import contextmanager
 from typing import List, Protocol, runtime_checkable
 
 from engine.record_contract import ProjectRecordContract, assertion_to_dict
@@ -141,14 +142,53 @@ class SqliteRecordStore:
         # does NOT survive close — durability tests use a real file path in a
         # pytest tmp_path). No repository-tracked database file is used.
         self._path = path
-        self._conn = sqlite3.connect(path)
+        # ``isolation_level=None`` puts the connection in autocommit mode so EVERY
+        # write goes through the explicit ``_write()`` transaction below, which
+        # opens with ``BEGIN IMMEDIATE``. Taking the RESERVED write lock up front
+        # (instead of the sqlite3 default DEFERRED transaction, which takes a
+        # SHARED read lock first and only tries to upgrade to RESERVED on the first
+        # write) removes the read->write upgrade deadlock AND makes each additive
+        # migration's check-then-``ALTER`` atomic across connections — so
+        # concurrently constructing several stores on one fresh database can no
+        # longer race into ``duplicate column name`` / ``database is locked``.
+        # sqlite3's default busy timeout still lets a second writer wait for the
+        # lock rather than erroring. Single-writer serialization is SQLite's
+        # inherent model and matches the P4 threaded=False single-process design;
+        # atomicity, rollback, and the additive schema are all unchanged.
+        self._conn = sqlite3.connect(path, isolation_level=None)
         self._conn.execute("PRAGMA foreign_keys = ON")
-        with self._conn:
+        with self._write():
             for stmt in _SCHEMA:
                 self._conn.execute(stmt)
             self._migrate_idempotency(self._conn)
             self._migrate_reconstruction_inputs(self._conn)
             self._migrate_owner(self._conn)
+
+    # --- write transaction (serialized; BEGIN IMMEDIATE) --------------------
+    @contextmanager
+    def _write(self):
+        """A single durable write transaction. ``BEGIN IMMEDIATE`` takes the
+        RESERVED write lock at the start (not lazily on the first write like the
+        sqlite3 default DEFERRED transaction), so concurrent same-process writers
+        queue cleanly on SQLite's single-writer lock instead of deadlocking on a
+        read->write upgrade, and a guarded additive ``ALTER TABLE`` never races a
+        sibling into ``duplicate column name``. Commit on success; FULL rollback on
+        any error — atomicity is unchanged (the owner is still written in the same
+        INSERT, and a failed write leaves no partial project/record)."""
+        self._conn.execute("BEGIN IMMEDIATE")
+        try:
+            yield
+            self._conn.execute("COMMIT")
+        except BaseException:
+            # Any failure — including a COMMIT that itself raises (e.g. a busy
+            # timeout at commit) — must leave NO write lock held on this
+            # connection. Roll back defensively (ignoring "no active transaction"
+            # if the failure already ended it) and re-raise the original error.
+            try:
+                self._conn.execute("ROLLBACK")
+            except sqlite3.OperationalError:
+                pass
+            raise
 
     # --- migration (additive, idempotent, forward + safe rollback) ----------
     @staticmethod
@@ -221,7 +261,7 @@ class SqliteRecordStore:
         never duplicated into an ``AssertionRecord`` and never logged."""
         pid = project_id or uuid.uuid4().hex
         ri = reconstruction_inputs or {}
-        with self._conn:   # single transaction: commit on success, rollback on error
+        with self._write():   # single transaction: commit on success, rollback on error
             # P5-3: ``owner_account_id`` is written HERE, in the SAME atomic INSERT
             # that creates the project row — there is no create-then-assign step,
             # so no window exists for a claim/visibility race. NULL preserves the
@@ -309,7 +349,7 @@ class SqliteRecordStore:
         append rolls back (the durable duplicate backstop). It is never derived
         from, and never overwrites, ``record_id`` (which stays ``rec_N``). A
         ``None`` key preserves the exact pre-amendment behaviour."""
-        with self._conn:
+        with self._write():
             row = self._conn.execute(
                 "SELECT COUNT(*) FROM projects WHERE project_id = ?", (project_id,)
             ).fetchone()
