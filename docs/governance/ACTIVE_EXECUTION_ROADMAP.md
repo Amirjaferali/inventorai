@@ -4200,3 +4200,64 @@ its first candidate. **P5-3: NOT STARTED. Draft Level 3: NOT AUTHORIZED.** The P
 **MERGED / VERIFIED / ACCEPTED**. Phase 4 remains **FORMALLY CLOSED**; P4-2 Level-1 and Draft Level 2 remain **CLOSED**.
 Decision **D17** and the AISR seven-owner model are preserved. Append-only; prior history not rewritten. This
 synchronization authorizes no push, PR, merge, implementation, or phase activation.
+
+---
+
+## P5-2 — Authenticated Sessions, Verified Email & Account Recovery: implementation, independent review, PR #377 merge, post-merge verification & formal closure (G-P5-2-CLOSURE-SYNC-01, documentation-only, append-only)
+
+This append-only entry records the second bounded Phase 5 increment — **P5-2 — Authenticated Sessions, Verified Email,
+and Account Recovery** — as **IMPLEMENTED / INDEPENDENTLY REVIEWED / MERGED / POST-MERGE VERIFIED / OWNER ACCEPTED /
+FORMALLY CLOSED**, and preserves its non-blocking observations. It is documentation-only: it grants **no** production,
+test, schema, dependency, CI, or push/PR/merge authority, and it begins **no** P5-3 implementation. Authoritative base
+for this sync (resolve from Git): `402727a557edd7dbea3e92f477bf9cbefe74ea3e` (Merge PR #377; tree
+`375db6895748d101905b44ca8e622128acb3f51b`; parents `f84c87dc190b431ecb258b03aea699045d68a945` +
+`87c85c7bb2b2c41e4510377eac9ce0133061f61e`).
+
+**Lineage.** Implementation gate **G-P5-2-AUTH-SESSIONS-VERIFIED-EMAIL-RECOVERY-IMPLEMENTATION-01** (candidate
+`87c85c7bb2b2c41e4510377eac9ce0133061f61e`, tree `375db6895748d101905b44ca8e622128acb3f51b`, parent
+`f84c87dc190b431ecb258b03aea699045d68a945`, bundle `p52authsessionsverificationrecovery.bundle`, bundle SHA-256
+`c9828532c42de9d5b2b8351c7dde54df2254b956b03339a9d786f1571f395d91`) → independent adversarial review
+**G-P5-2-AUTH-SESSIONS-VERIFIED-EMAIL-RECOVERY-INDEPENDENT-REVIEW-01** (verdict **B — ACCEPT WITH NON-BLOCKING
+OBSERVATIONS**; recommendation **PUBLISH**) → merge **PR #377** (merge commit
+`402727a557edd7dbea3e92f477bf9cbefe74ea3e`, tree `375db6895748d101905b44ca8e622128acb3f51b` equal to the candidate tree,
+two-parent merge of `f84c87dc190b431ecb258b03aea699045d68a945` (base) + `87c85c7bb2b2c41e4510377eac9ce0133061f61e`
+(reviewed candidate), **ancestry PASS — exit 0**) → post-merge verification. **Merged scope: 13 files changed, 1712
+insertions, 78 deletions**; disallowed paths **NONE** (no deterministic engine file, no `engine/record_store.py`, no
+`projects.owner_account_id`, no production `requirements.txt`). Source branch
+`feat/p5-2-auth-sessions-verification-recovery` **PRESERVED**. Tests: **focused 40 passed** (39 pytest incl. real
+multi-thread PRE-01/PRE-02 + 1 Playwright account-switch); **full suite 1874 passed, 1 skipped, 1 xfailed**. The two
+mandatory P5-1-closure preconditions were satisfied first: **P5-2-PRE-01** (rate-limit concurrency: `BEGIN IMMEDIATE`
+read-modify-write proven race-free under real concurrent threads, bounded expired-row cleanup) and **P5-2-PRE-02**
+(SQLite thread strategy: one connection `check_same_thread=False` + re-entrant lock + immediate transactions, proven
+under real multi-thread tests; not a bare `check_same_thread` override).
+
+**Implemented capability.** P5-2 now implements: login and logout; logout-all through `session_epoch`; an authenticated
+signed-cookie session distinct from the project `sid`; two-hour idle expiry; fourteen-day absolute expiry; session
+rotation on login; CSRF protection on authenticated mutations; email-verification completion; verification resend;
+recovery request; password-reset completion; reset revokes existing sessions; disabled/deleted account denial; generic
+non-enumerating responses; hardened concurrency-safe rate limiting; SQLite thread/connection hardening; Draft Level 2
+account-switch isolation; and bilingual, accessible account UX.
+
+**Exact boundary (P5-2 does NOT implement).** `projects.owner_account_id`; project ownership; project route
+authorization; anonymous project claim; collaboration or sharing; P5-3; Draft Level 3; writable continuation; output
+email delivery; a production email provider.
+
+**Preserved non-blocking observations (P5-2 is NOT reopened).**
+- **OBS-P5-2-01 — email-link tokens in URL paths.** Verification and reset raw tokens currently appear in URL paths.
+  Accepted current mitigation: hash-only at rest; single-use; short expiry (verification 24h / reset 1h); no application
+  logging of the raw token; no third-party resources on result pages. Required future review: revisit before a
+  production email-provider or reverse-proxy deployment; confirm access-log redaction; assess browser-history exposure;
+  consider POST-based completion or fragment/interstitial alternatives where Lean.
+- **OBS-P5-2-02 — password-reset transaction atomicity.** Reset performs multiple sequential transactions (consume reset
+  token → update password hash → increment `session_epoch` → supersede remaining reset tokens). Accepted as non-blocking
+  resilience debt. When `account_store` is next modified for a related security increment: evaluate one atomic store
+  operation; ensure the password update and session revocation cannot partially commit; preserve single-use and
+  fail-closed behaviour. The accepted P5-2 candidate is NOT changed by this closure gate.
+
+**Status.** **G-P5-2-AUTH-SESSIONS-VERIFIED-EMAIL-RECOVERY-IMPLEMENTATION-01: IMPLEMENTED / INDEPENDENTLY REVIEWED /
+MERGED / POST-MERGE VERIFIED / OWNER ACCEPTED / FORMALLY CLOSED.** **P5-2: FORMALLY CLOSED.** **NEXT ELIGIBLE INCREMENT:
+P5-3 — Project Ownership and Route Authorization** — authorized under the continuing Phase 5 owner authorization **only
+after this closure sync is merged and post-merge verified**. **Draft Level 3: NOT AUTHORIZED.** The Phase 5 formal
+contract remains **MERGED / VERIFIED / ACCEPTED**. Phase 4 remains **FORMALLY CLOSED**; P4-2 Level-1, Draft Level 2, and
+P5-1 remain **CLOSED**. Decision **D17** and the AISR seven-owner model are preserved. Append-only; prior history not
+rewritten. This synchronization authorizes no push, PR, merge, implementation, or phase activation.
