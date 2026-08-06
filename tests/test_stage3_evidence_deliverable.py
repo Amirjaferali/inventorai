@@ -130,7 +130,7 @@ def test_9_deliverable_surfaces_captured_evidence():
     s = _state(); _add_gap(s, PROBLEM_MECHANISM_FIT)
     integrate_response(s, PROBLEM_MECHANISM_FIT, "q", REASONED_RESP)
     items = assemble_deliverable(s)["section_9_stage3_reasoning"]["items"]
-    item = [i for i in items if i["gap_type"] == PROBLEM_MECHANISM_FIT][0]
+    item = [i for i in items if i["gap_label"] == "Problem–Mechanism Fit"][0]
     assert item["evidence"] and item["evidence"][0]["content"] == REASONED_RESP
     assert item["missing_evidence_statement"] is None
 

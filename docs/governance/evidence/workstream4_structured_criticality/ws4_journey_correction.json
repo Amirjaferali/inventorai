@@ -1,0 +1,18 @@
+{
+  "actions": {
+    "summary_change": {
+      "confirmation_stored": false,
+      "followup_answer_status": 302,
+      "free_text_form_offered": true,
+      "post_status": 302
+    },
+    "summary_missing": {
+      "confirmation_stored": false,
+      "followup_answer_status": 302,
+      "free_text_form_offered": true,
+      "post_status": 302
+    }
+  },
+  "confirmation_history_final": [],
+  "journey": "D_correction_and_missing_information"
+}

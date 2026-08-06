@@ -1,4 +1,25 @@
 # Architecture Decision Document
+
+> **STATUS: HISTORICAL / SUPERSEDED (Phase 2 Increment 2).** This document is
+> historical and must not be treated as the current architecture authority. Its
+> header still reads `Status: Active` / `Last Updated: 2025-05-17`, and its
+> technology-stack statements `Database | Supabase (PostgreSQL + RLS)` and
+> `Auth | Supabase Auth` and its §7 claim that "All events are **append-only**"
+> are **SUPERSEDED**: no Supabase database, no Supabase authentication, and no
+> append-only event store is built. The current runtime truth is an in-memory,
+> non-production Flask application (`web/app.py`; `SESSION_STORE = {}`, temporary
+> and non-durable), per `docs/governance/evidence/phase0_evidence_lock/CONFLICT_REGISTER.md`
+> (CR-2) and `docs/governance/evidence/phase0_evidence_lock/STALE_DOCUMENT_REGISTER.md`
+> (SD-1). The governing authority for the product's architecture, phasing, and
+> status is the canonical
+> `docs/governance/PRODUCT_FOUNDATION_AND_COMMERCIAL_READINESS_REMEDIATION_PLAN.md`;
+> the definitive current target architecture is a separate, still-pending Phase 2
+> required-work item ("define the current target architecture") and is **NOT YET
+> DEFINED**. This increment does not define the replacement architecture. The full
+> reconciliation is
+> `docs/governance/evidence/phase2_governance_corrections/P2I2_STALE_ARCHITECTURE_DECISION_SUPERSESSION.md`.
+> The body below is preserved unchanged as history.
+
 **Version:** 1.0  
 **Status:** Active  
 **Last Updated:** 2025-05-17  

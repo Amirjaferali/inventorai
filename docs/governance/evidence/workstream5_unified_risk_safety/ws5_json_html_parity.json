@@ -1,0 +1,161 @@
+{
+  "generated_from": "head",
+  "parity_cases": [
+    {
+      "case": "ws1_safety",
+      "wordings": {
+        "section_6_note": {
+          "json_value_byte_exact": true,
+          "json_value_null": false,
+          "rendered_in_html": true
+        },
+        "section_6_empty_qualification": {
+          "json_value_byte_exact": false,
+          "json_value_null": true,
+          "rendered_in_html": false
+        },
+        "section_13_note": {
+          "json_value_byte_exact": true,
+          "json_value_null": false,
+          "rendered_in_html": true
+        }
+      },
+      "totals": {
+        "signal_total": {
+          "linkage": 3,
+          "underlying_block": 3,
+          "match": true
+        },
+        "section_6_risk_total": {
+          "linkage": 1,
+          "underlying_block": 1,
+          "match": true
+        },
+        "section_6_high_count": {
+          "linkage": 0,
+          "underlying_block": 0,
+          "match": true
+        },
+        "section_6_medium_count": {
+          "linkage": 0,
+          "underlying_block": 0,
+          "match": true
+        },
+        "section_6_low_count": {
+          "linkage": 1,
+          "underlying_block": 1,
+          "match": true
+        },
+        "section_13_has_structural_risks": {
+          "linkage": false,
+          "underlying_block": false,
+          "match": true
+        }
+      }
+    },
+    {
+      "case": "mature_gapfree",
+      "wordings": {
+        "section_6_note": {
+          "json_value_byte_exact": true,
+          "json_value_null": false,
+          "rendered_in_html": true
+        },
+        "section_6_empty_qualification": {
+          "json_value_byte_exact": true,
+          "json_value_null": false,
+          "rendered_in_html": true
+        },
+        "section_13_note": {
+          "json_value_byte_exact": true,
+          "json_value_null": false,
+          "rendered_in_html": true
+        }
+      },
+      "totals": {
+        "signal_total": {
+          "linkage": 1,
+          "underlying_block": 1,
+          "match": true
+        },
+        "section_6_risk_total": {
+          "linkage": 0,
+          "underlying_block": 0,
+          "match": true
+        },
+        "section_6_high_count": {
+          "linkage": 0,
+          "underlying_block": 0,
+          "match": true
+        },
+        "section_6_medium_count": {
+          "linkage": 0,
+          "underlying_block": 0,
+          "match": true
+        },
+        "section_6_low_count": {
+          "linkage": 0,
+          "underlying_block": 0,
+          "match": true
+        },
+        "section_13_has_structural_risks": {
+          "linkage": false,
+          "underlying_block": false,
+          "match": true
+        }
+      }
+    },
+    {
+      "case": "no_signal",
+      "wordings": {
+        "section_6_note": {
+          "json_value_byte_exact": false,
+          "json_value_null": true,
+          "rendered_in_html": false
+        },
+        "section_6_empty_qualification": {
+          "json_value_byte_exact": false,
+          "json_value_null": true,
+          "rendered_in_html": false
+        },
+        "section_13_note": {
+          "json_value_byte_exact": false,
+          "json_value_null": true,
+          "rendered_in_html": false
+        }
+      },
+      "totals": {
+        "signal_total": {
+          "linkage": 0,
+          "underlying_block": 0,
+          "match": true
+        },
+        "section_6_risk_total": {
+          "linkage": 2,
+          "underlying_block": 2,
+          "match": true
+        },
+        "section_6_high_count": {
+          "linkage": 1,
+          "underlying_block": 1,
+          "match": true
+        },
+        "section_6_medium_count": {
+          "linkage": 1,
+          "underlying_block": 1,
+          "match": true
+        },
+        "section_6_low_count": {
+          "linkage": 0,
+          "underlying_block": 0,
+          "match": true
+        },
+        "section_13_has_structural_risks": {
+          "linkage": false,
+          "underlying_block": false,
+          "match": true
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,650 @@
+# InventorAI Capability Enrichment Register
+
+**Record type:** canonical, cross-cutting **capability enrichment register**.
+**Status:** governance-documentation only — **NON-ACTIVATING and NON-AUTHORIZING**. Recording (and
+merging) this register **implements nothing** and **authorizes nothing**. Prepared under the risk-based
+execution and review model (PR #220), on authoritative tip `2775242c415cd9f26947a454938900a1b5b303ec`
+(Merge PR #265; Workstream 11 formally closed).
+
+**Purpose.** Preserve the owner-approved InventorAI enrichment concepts across agents and future
+workstreams, define their boundaries and intended sequencing, and prevent either accidental omission or
+premature implementation. This register is a durable inventory; it is subordinate to the committed
+anchors, `ACTIVE_EXECUTION_ROADMAP.md`, `DELIVERABLE_STABILIZATION_REMEDIATION_PLAN.md`, and every
+committed increment contract and owner decision. Where this register and any committed authority
+conflict, the committed authority controls.
+
+**Authority boundary (binding).** This register creates no active lane, implementation authority,
+technical-selection authority, artifact-generation authority, verification claim, RED/GREEN
+authorization, persistence authorization, or status change. It does not start, activate, or resume any
+Workstream. It does not amend, override, or reinterpret any anchor, roadmap, contract, owner decision,
+or protected boundary. Registration is **not** implementation authorization (see §R5).
+
+**Relationship to existing authorities (evidence).** The following committed records already govern
+capabilities that overlap this register; those records — not this register — remain authoritative for
+their capabilities:
+- **Structured Technical Guidance** is the existing **D13** capability ("Mandatory Future Technical
+  Capability Gap Detection and Actionable Research Guidance"; `ACTIONABLE_VALIDATION_PLAN_INCREMENT_
+  CONTRACT.md` §4 D13; `D13_FORMAL_CLOSURE_RECORD.md` and the `D13_*` records). CAP-01 defers to D13.
+- **Patent Export** is governed by `STRUCTURED_INVENTION_DISCLOSURE_AND_PATENT_EXPORT_OWNER_DECISION.md`
+  (non-activating owner decision, associated with PR #229). CAP-06's patent-disclosure-readiness axis
+  and any patent capability defer to it.
+- **WS-PFV-001 — Prototype Feasibility and Validation** is governed by
+  `PROTOTYPE_FEASIBILITY_AND_VALIDATION_FUTURE_WORKSTREAM_OWNER_DECISION.md` (non-activating future
+  workstream reservation, associated with PR #227). CAP-09 defers to it.
+- **Workstreams 12–17** are defined in `DELIVERABLE_STABILIZATION_REMEDIATION_PLAN.md` §15 (WS12
+  Controlled Unknown Progression; WS13 Guided Answer Support; WS14 Adaptive Follow-Up and Completion
+  Logic; WS15 Guidance Consolidation; WS16 Final Deliverable Completion and full end-to-end owner
+  validation (Gate); WS17 AI Coach (Post-gate)).
+- **Post-Output AI-Assisted Specialist Refinement (AISR)** is governed by
+  `POST_OUTPUT_AI_ASSISTED_SPECIALIST_REFINEMENT_CANONICAL_DECISION.md` (canonical, non-authorizing;
+  status `ACCEPTED PRODUCT DIRECTION` / `IMPLEMENTATION NOT AUTHORIZED`; owner decisions D-AISR-01 …
+  D-AISR-10). That record — not this register — governs AISR. Its directional responsibility model
+  records that **WS17 may later become the user-facing advisory umbrella** and that **STG (D13/CAP-01)
+  may later be a bounded specialist capability WS17 invokes where separately authorized**; it does
+  **not** define WS17's functional scope and does **not** expand or activate STG. WS17 and STG remain
+  governed by their own records above and remain NOT AUTHORIZED / NOT STARTED.
+
+No existing canonical capability register enumerates these fourteen concepts; this record does not
+duplicate or conflict with any existing authority.
+
+---
+
+## 1. Capability entries
+
+All fourteen capabilities share the initial status **`RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`** and
+require **separate explicit owner authorization** before any implementation (see §R5/§R6).
+
+### CAP-01 — Structured Technical Guidance
+- **Product problem:** users hit technical subproblems the system cannot answer, and generic "consult a
+  specialist" is not actionable.
+- **User value:** a precise, honest map of the unresolved technical gap and how to close it.
+- **Intended behavior:** identify the exact unresolved technical subproblem, the missing technical
+  information, the exact research topic and suggested search terms, required measurements/tests/
+  documents, what the system can and cannot verify, risk and uncertainty, and the appropriate specialist
+  category only when necessary and evidence-supported.
+- **Non-goals:** must not invent a technical answer, perform engineering execution, silently close a
+  gap, or replace professional judgment.
+- **Dependencies/prerequisites:** the committed **D13** capability and its governed knowledge sources;
+  D13 Source Review outcomes.
+- **Proposed workstream / activation gate:** **D13** (separately owner-gated). CAP-01 *is* the
+  user-facing D13 capability and does not create a parallel authority.
+- **Overlap risks:** WS-PFV-001 (validation framework); CAP-04 Gap Action Packs; CAP-09 Experiment
+  Designer; AI Coach.
+- **Protected boundaries:** must never be described as satisfied by generic referral; D13 status language
+  (`MANDATORY FUTURE PRODUCT CAPABILITY — NOT CANCELLED — NOT SATISFIED BY GENERIC SPECIALIST REFERRAL —
+  SEPARATELY OWNER-GATED`) governs.
+- **Proposed acceptance criteria:** deterministic gap identification with full provenance from the
+  recorded requirement; no invented competence/tools/standards; explicit abstention where unsupported.
+- **Current authorization state:** `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION` (governed by D13).
+- **Activation conditions:** the D13 Source Review and D13 owner-gated authorization chain.
+- **Separate owner authorization requirement:** yes — via the D13 authority.
+
+### CAP-02 — Simplified One-Step Journey Presentation
+- **Product problem:** the internal governance model is too complex for a lay inventor to navigate.
+- **User value:** a calm, legible journey.
+- **Intended behavior:** present the user-facing journey through four simple concepts — what is known,
+  what is unknown, why it matters, and the single next action.
+- **Non-goals:** internal governance and deterministic gates remain intact and must not be weakened or
+  bypassed by the simplified surface.
+- **Dependencies/prerequisites:** committed state (gaps, unknowns, transitions); WS8 Journey Reordering
+  and Intent Alignment; WS12 unknown states; CAP-04.
+- **Proposed workstream / activation gate:** presentation layer aligned with **WS8** / a later UX gate.
+- **Overlap risks:** CAP-06 dashboard; CAP-07 decision room; AI Coach.
+- **Protected boundaries:** must not collapse or hide deterministic gate outcomes; no scoring/transition
+  change.
+- **Proposed acceptance criteria:** the four concepts derive deterministically from canonical records;
+  no invented "next action"; gates unchanged.
+- **Current authorization state:** `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`.
+- **Activation conditions:** a separately authorized presentation/UX increment.
+- **Separate owner authorization requirement:** yes.
+
+### CAP-03 — Adaptive Assistance by User Expertise
+- **Product problem:** non-technical users need scaffolding; technical users are slowed by unnecessary
+  intervention.
+- **User value:** right-sized assistance.
+- **Intended behavior:** provide more explanation/structure for non-technical users while minimizing
+  unnecessary intervention for users who provide technically sufficient answers.
+- **Non-goals:** must not rely on permanent self-declared expert status alone; safety, integrity,
+  evidence, and deterministic sufficiency boundaries remain applicable to every user; must not
+  reinterpret expertise as an unknown.
+- **Dependencies/prerequisites:** deterministic sufficiency (`assess_response`); WS12 (no
+  expertise→unknown reinterpretation); WS13/WS14.
+- **Proposed workstream / activation gate:** **WS13 / WS14** family (guided answer / adaptive
+  follow-up).
+- **Overlap risks:** WS13, WS14, AI Coach, CAP-02.
+- **Protected boundaries:** existing deterministic sufficiency/safety/evidence gates apply to every
+  user; no per-user gate relaxation.
+- **Proposed acceptance criteria:** adaptation is deterministic and never lowers a safety/evidence
+  boundary; expert status never overrides sufficiency.
+- **Current authorization state:** `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`.
+- **Activation conditions:** WS13/WS14 owner authorization.
+- **Separate owner authorization requirement:** yes.
+
+### CAP-04 — Gap Action Packs
+- **Product problem:** an unresolved gap is not actionable to the user.
+- **User value:** a concrete external-work package to close a gap.
+- **Intended behavior:** convert an unresolved gap into an actionable external-work package containing
+  the required action, the reason it is required, how to obtain the information, the acceptable result,
+  and what becomes possible after completion.
+- **Non-goals:** must not perform the external work, fabricate results, or treat the action pack as
+  evidence.
+- **Dependencies/prerequisites:** WS12 closure paths; D13 (technical action packs); the gap/blocker
+  model.
+- **Proposed workstream / activation gate:** **WS12** (closure paths) with D13 for technical content.
+- **Overlap risks:** CAP-01, CAP-09, WS13.
+- **Protected boundaries:** an action pack is never Evidence and never closes a gap; no fabricated
+  result.
+- **Proposed acceptance criteria:** deterministically derived from a recorded gap/closure path; no
+  invented facts; not counted as evidence.
+- **Current authorization state:** `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`.
+- **Activation conditions:** WS12 (and D13 where technical) owner authorization.
+- **Separate owner authorization requirement:** yes.
+
+### CAP-05 — Decision Trace
+- **Product problem:** decisions are opaque; users cannot see what supports them.
+- **User value:** transparent, auditable decisions.
+- **Intended behavior:** for each important decision, expose the decision, supporting evidence,
+  assumptions, unresolved information, confidence/uncertainty basis, and what could change the decision.
+- **Non-goals:** must not create false numerical precision or replace the canonical evidence record.
+- **Dependencies/prerequisites:** the decision-workspace (FDC-001) model; the Increment-2 evidence/
+  provenance axes; CAP-08 assumptions; CAP-11 evidence ladder.
+- **Proposed workstream / activation gate:** decision-support increment aligned with the decision
+  workspace.
+- **Overlap risks:** CAP-07 decision room; CAP-08; CAP-11.
+- **Protected boundaries:** traceable to canonical records; no fabricated confidence numbers.
+- **Proposed acceptance criteria:** every element cites a canonical record; uncertainty is qualitative
+  unless a separately authorized quantitative basis exists.
+- **Current authorization state:** `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`.
+- **Activation conditions:** a separately authorized decision-support increment.
+- **Separate owner authorization requirement:** yes.
+
+### CAP-06 — Multi-Axis Invention Readiness Dashboard
+- **Product problem:** a single readiness score misleads.
+- **User value:** honest, multi-dimensional readiness.
+- **Intended behavior:** provide separate readiness views for problem clarity, mechanism completeness,
+  physical feasibility, evidence strength, assumption integrity, testability, prototype readiness, and
+  patent-disclosure readiness.
+- **Non-goals:** must not collapse these dimensions into a misleading single score unless separately
+  authorized and justified.
+- **Dependencies/prerequisites:** committed gap/evidence/criticality state; CAP-11 (evidence strength);
+  Patent Export decision (patent-disclosure readiness); WS-PFV-001 (prototype readiness).
+- **Proposed workstream / activation gate:** a readiness-presentation increment; patent-disclosure axis
+  defers to the Patent Export decision; prototype axis defers to WS-PFV-001.
+- **Overlap risks:** CAP-02, CAP-07, CAP-11, Patent Export, WS-PFV-001.
+- **Protected boundaries:** no misleading single score; each axis is independently derived from canonical
+  records.
+- **Proposed acceptance criteria:** each axis is deterministic and separately sourced; no hidden
+  weighting.
+- **Current authorization state:** `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`.
+- **Activation conditions:** a separately authorized dashboard increment (with Patent Export / WS-PFV-001
+  for the respective axes).
+- **Separate owner authorization requirement:** yes.
+
+### CAP-07 — Invention Decision Room
+- **Product problem:** no consolidated final decision workspace exists for the inventor.
+- **User value:** one place to make the go/no-go and next-step decisions.
+- **Intended behavior:** a consolidated final decision workspace containing proven items, unresolved
+  unknowns, risks, provisional decisions, accepted decisions, next action, and required tests/documents/
+  specialists.
+- **Non-goals:** must remain traceable to canonical records and must not independently alter state or
+  evidence.
+- **Dependencies/prerequisites:** decision-workspace (FDC-001); WS12 unknowns; CAP-05; CAP-08; CAP-10.
+- **Proposed workstream / activation gate:** aligned with **WS16** final-deliverable/decision
+  consolidation or a decision-support increment.
+- **Overlap risks:** CAP-02, CAP-05, CAP-06, CAP-08, CAP-10; AI Coach.
+- **Protected boundaries:** read-only over canonical records; no independent state/evidence mutation.
+- **Proposed acceptance criteria:** every item traces to a canonical record; no state mutation.
+- **Current authorization state:** `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`.
+- **Activation conditions:** a separately authorized consolidation increment.
+- **Separate owner authorization requirement:** yes.
+
+### CAP-08 — Assumption Register
+- **Product problem:** material assumptions are untracked and can masquerade as facts.
+- **User value:** disciplined assumption tracking to resolution.
+- **Intended behavior:** record each material assumption with identity, source, affected decision/gap,
+  impact, risk, review status, evidence required to confirm/reject it, and supersession/closure history.
+- **Non-goals:** an assumption must never be presented as verified evidence.
+- **Dependencies/prerequisites:** the Increment-2 provenance/validation axes and the append-only ledger
+  (supersession/contradiction); WS12; CAP-11.
+- **Proposed workstream / activation gate:** an assumption-tracking increment (leveraging the existing
+  ledger).
+- **Overlap risks:** CAP-05, CAP-07, CAP-10, CAP-11; WS12.
+- **Protected boundaries:** assumptions are never Evidence; append-only, non-destructive history.
+- **Proposed acceptance criteria:** deterministic; assumptions never auto-promote to evidence; full
+  provenance and supersession history.
+- **Current authorization state:** `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`.
+- **Activation conditions:** a separately authorized assumption-register increment.
+- **Separate owner authorization requirement:** yes.
+
+### CAP-09 — Experiment Designer
+- **Product problem:** inventors lack a structured way to plan validation experiments.
+- **User value:** a rigorous, honest experiment plan.
+- **Intended behavior:** create a structured experiment plan containing hypothesis, variable,
+  measurement method, success criterion, failure criterion, risks, and required result.
+- **Non-goals:** must not claim scientific validity, execute simulations or tests, fabricate results, or
+  replace specialist review.
+- **Dependencies/prerequisites:** **WS-PFV-001** (Prototype Feasibility and Validation); the existing
+  `SuccessCriterion` planning-metadata precedent.
+- **Proposed workstream / activation gate:** **WS-PFV-001** (separately owner-gated future workstream).
+- **Overlap risks:** CAP-01, CAP-04, CAP-06 (prototype readiness); D13.
+- **Protected boundaries:** planning metadata only; never a result; never graded; never executed.
+- **Proposed acceptance criteria:** deterministic structure; explicit non-execution and non-validity
+  disclaimers; specialist review preserved.
+- **Current authorization state:** `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION` (governed by
+  WS-PFV-001).
+- **Activation conditions:** the WS-PFV-001 activation chain.
+- **Separate owner authorization requirement:** yes — via WS-PFV-001.
+
+### CAP-10 — Contradiction Detector
+- **Product problem:** conflicting statements/constraints/assumptions/evidence go unnoticed.
+- **User value:** early, deterministic surfacing of contradictions.
+- **Intended behavior:** identify deterministic contradictions across user statements, constraints,
+  assumptions, specifications, and evidence.
+- **Non-goals:** must report the contradiction and its provenance without silently selecting a preferred
+  answer or solution.
+- **Dependencies/prerequisites:** the append-only ledger's `mark_contradiction` /
+  `has_unresolved_contradiction`; decision-workspace `UNRESOLVED_EVIDENCE_CONFLICT`; CAP-08.
+- **Proposed workstream / activation gate:** a contradiction-detection increment (leveraging the
+  existing contradiction graph).
+- **Overlap risks:** CAP-05, CAP-07, CAP-08; WS12.
+- **Protected boundaries:** report-only with provenance; never auto-resolve or pick a winner.
+- **Proposed acceptance criteria:** deterministic contradiction detection with provenance; no silent
+  resolution.
+- **Current authorization state:** `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`.
+- **Activation conditions:** a separately authorized contradiction-detection increment.
+- **Separate owner authorization requirement:** yes.
+
+### CAP-11 — Evidence Quality Ladder
+- **Product problem:** evidence of very different strength is treated alike.
+- **User value:** an honest hierarchy of evidence provenance and strength.
+- **Intended behavior:** classify evidence provenance and strength using a controlled hierarchy such as
+  opinion → assumption → calculation → manufacturer specification → test result → prototype evidence →
+  independent verification.
+- **Non-goals:** the final vocabulary and semantics require a separate contract and must not be
+  implemented from this register alone.
+- **Dependencies/prerequisites:** the committed Increment-2 provenance (`LEGACY_UNSPECIFIED /
+  OWNER_STATED / SYSTEM_INFERRED / EXPERT_SUPPLIED / EXTERNAL_EVIDENCE`) and validation
+  (`UNVALIDATED / SPECIALIST_REVIEWED / EMPIRICALLY_DEMONSTRATED / INDEPENDENTLY_VERIFIED`) axes; a
+  separate owner-approved ladder contract.
+- **Proposed workstream / activation gate:** a dedicated evidence-quality contract (separate).
+- **Overlap risks:** CAP-05, CAP-06 (evidence strength axis), CAP-08.
+- **Protected boundaries:** must not silently redefine the committed provenance/validation axes; no
+  auto-promotion; final semantics require a separate contract.
+- **Proposed acceptance criteria:** deterministic mapping from committed axes; no inference from text; a
+  ratified ladder contract before implementation.
+- **Current authorization state:** `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`.
+- **Activation conditions:** a separately authorized evidence-quality-ladder contract.
+- **Separate owner authorization requirement:** yes.
+
+### CAP-12 — Prototype Materials and Manufacturing Recommendation
+- **Product problem:** a user may complete the invention journey without knowing what material each
+  component should be made from, how a prototype component could be manufactured, or whether a component
+  should be fabricated or purchased as a standard part.
+- **User value:** an optional, understandable, component-by-component prototype materials and
+  manufacturing recommendation that helps plan a first testable prototype without presenting it as a
+  final engineering or production specification.
+- **Intended future behavior:** for each identifiable and user-confirmed component, the capability MAY
+  propose — component identity; component function; proposed prototype material; proposed material
+  family; proposed material grade or subtype only where supportable; reason for the proposal; one or more
+  alternatives; advantages and limitations of each alternative; proposed prototype manufacturing method;
+  whether fabrication or procurement of a standard part may be preferable; possible standard component
+  categories; the distinction between prototype material and possible production material; environmental
+  and operating assumptions; missing information; required validation, measurements, calculations, tests,
+  or documents; recommendation status; component-specific warnings; and source provenance and evidence
+  quality. Possible material families (only where appropriate and sufficiently supported): aluminum,
+  carbon steel, stainless steel, copper, engineering plastics, rubber, silicone, fiberglass, acrylic,
+  wood or MDF for early mock-ups, foam, insulation materials, composites, adhesives, seals and gaskets,
+  standard fasteners, purchased mechanical components, purchased electrical or electronic components.
+  Possible prototype manufacturing approaches (where appropriate): 3D printing, CNC machining, laser
+  cutting, water-jet cutting, sheet-metal cutting and bending, casting, molding, fiberglass lay-up,
+  adhesive joining, mechanical fastening, use of commercially available components, manual mock-up
+  construction.
+- **Required advisory character:** **OPTIONAL — ADVISORY — NON-BINDING.** The user may request it,
+  decline it, ignore it, request alternatives, or compare options by priorities such as speed, cost,
+  weight, durability, or ease of fabrication. **Declining CAP-12 must not block completion of the core
+  invention journey.**
+- **Non-goals / protected boundaries:** must not create a mandatory material specification; must not
+  claim final engineering approval; must not claim structural, electrical, thermal, chemical, medical,
+  food-contact, environmental, or regulatory suitability without the required evidence; must not
+  fabricate material properties, manufacturer specifications, standards, or certifications; must not
+  silently treat a recommendation as verified evidence; must not replace qualified specialist review
+  where risk is material; must clearly distinguish prototype material from production material; must not
+  infer material solely from visual appearance; must not activate CAP-13 automatically; must not activate
+  WS-PFV-001 automatically.
+- **Dependencies and overlaps:** CAP-01, CAP-08, CAP-09, CAP-10, CAP-11, **CAP-13**, **CAP-14**,
+  WS-PFV-001. Technical-guidance content defers to D13; prototype/validation content defers to WS-PFV-001.
+- **Current authorization state:** `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`.
+- **Earliest activation:** a dedicated materials-and-manufacturing feasibility gate (§6), followed by:
+  governed source review; data licensing review; knowledge-source contract; deterministic rule and
+  calculation boundary; increment contract; owner decisions; separate owner authorization; BASE RED where
+  applicable; GREEN; independent verification; owner acceptance and formal closure.
+- **Separate owner authorization requirement:** yes. CAP-12 is a **distinct capability from CAP-13 and
+  CAP-14** and must not be consolidated with either.
+
+### CAP-13 — Component Thickness, Specification, and Safety Advisory
+- **Product problem:** a general material recommendation is insufficient when the user does not know the
+  proposed thickness, dimensional range, material grade, component-specific constraints, or safety
+  limitations of a proposed prototype component.
+- **User value:** an optional, component-specific advisory recommendation for material type or grade,
+  thickness or thickness range, assumptions, missing inputs, validation requirements, and safety warnings.
+- **Intended future behavior:** for each identifiable and user-confirmed component, the capability MAY
+  propose — component identity; component function; proposed material type; proposed material grade or
+  subtype where supportable; proposed thickness or thickness range; explicit unit; reason for the
+  proposed range; manufacturing constraints affecting thickness; expected prototype use; load, support/
+  attachment, heat, moisture, impact, vibration/fatigue, chemical-exposure, electrical, flexibility/
+  rigidity, insulation, and outdoor/environmental assumptions; missing measurements and requirements;
+  alternative thicknesses; alternative materials; required calculations, tests, documents, and specialist
+  review; warning category; recommendation status; and source provenance and evidence quality.
+- **Thickness behavior:** prefer an advisory range rather than false precision; use explicit units;
+  distinguish conceptual thickness from prototype-suitable thickness, and prototype thickness from
+  production thickness; do NOT provide a precise thickness where dimensions, geometry, loads, supports,
+  joints, temperature, environment, manufacturing method, tolerance, safety factor, or applicable
+  requirements are insufficient; do not infer final production thickness from prototype thickness; do not
+  treat a proposed thickness as evidence, certification, or approval; identify the exact missing
+  information when a recommendation cannot safely be produced.
+- **Required recommendation levels:** `CONCEPTUAL` · `PROTOTYPE-SUITABLE` · `ENGINEERING REVIEW REQUIRED`
+  · `UNABLE TO RECOMMEND`.
+- **Required advisory character:** **OPTIONAL — ADVISORY — NON-BINDING.** Declining CAP-13 must not block
+  completion of the core invention journey.
+- **Mandatory warning categories:** *General* — preliminary and advisory, not a final engineering or
+  manufacturing specification. *Structural* — do not rely on a proposed thickness before verifying loads,
+  supports, stress, deformation, joints, fatigue, impact, and safety factor. *Electrical and battery* —
+  verify insulation, flammability, heat resistance, electrical clearances, battery containment,
+  short-circuit risks, and applicable requirements. *Heat and pressure* — do not use for pressure
+  vessels, high-temperature systems, or safety-critical containment without specialist design and
+  validation. *Medical, food-contact, or human-contact* — do not claim suitability before verifying
+  biocompatibility, food-contact suitability, toxicity, cleaning, sterilization, skin-contact
+  requirements, and applicable regulation. *Children and consumer safety* — review sharp edges, small
+  parts, pinch points, entrapment, toxicity, impact, misuse, and applicable consumer-safety requirements.
+  *Chemical and outdoor exposure* — verify corrosion, ultraviolet exposure, moisture, chemical
+  compatibility, aging, sealing, and environmental degradation.
+- **Non-goals / protected boundaries:** must never be presented as mandatory; must not constitute
+  structural certification or safety approval; must not fabricate dimensions, loads, material grades,
+  calculations, or standards; must not replace mechanical, materials, electrical, safety, medical, or
+  regulatory specialist review where required; must expose assumptions, uncertainty, missing information,
+  and validation needs; must clearly distinguish prototype recommendations from production
+  specifications; must not infer a reliable thickness solely from an image or undimensioned drawing; must
+  not activate CAP-12, CAP-14, or WS-PFV-001 automatically.
+- **Dependencies and overlaps:** CAP-01, CAP-08, CAP-09, CAP-10, CAP-11, **CAP-12**, **CAP-14**,
+  WS-PFV-001. Technical-guidance content defers to D13; prototype/validation content defers to WS-PFV-001.
+- **Current authorization state:** `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`.
+- **Earliest activation:** a dedicated thickness-and-safety feasibility gate (§6), followed by a separate
+  owner-approved increment. CAP-12 and CAP-13 may later be coordinated only through a separate,
+  owner-approved contract; their registration here does not authorize consolidation or implementation.
+- **Separate owner authorization requirement:** yes. CAP-13 is a **distinct capability from CAP-12 and
+  CAP-14** and must not be consolidated with either.
+
+### CAP-14 — 2D Drawing, Static Image, and Multi-View Component Interpretation
+- **Product problem:** a user may understand the invention visually but be unable to describe its
+  components, geometry, interfaces, visible movements, or assembly relationships in sufficiently
+  structured technical language.
+- **User value:** allow the user to provide one or more static images, a 2D drawing, an annotated sketch,
+  or multiple static views so the future capability can propose a structured component inventory and
+  identify information that remains visually unavailable, ambiguous, hidden, or technically unresolved.
+- **Supported future input types:** one static image; multiple static images; front / side / top /
+  perspective views; dimensioned 2D drawing; undimensioned 2D drawing; section view; annotated sketch;
+  image containing a reference dimension; image containing a reliable scale object; user labels; movement
+  arrows; component annotations.
+- **VIDEO IS EXPLICITLY EXCLUDED.** The following are outside scope and NOT authorized: video upload;
+  video interpretation; real-video analysis; AI-generated-video analysis; animation analysis;
+  video-to-component inference; video-to-CAD; video-derived material recommendations; video-derived
+  thickness recommendations; frame extraction as a way to bypass the video exclusion.
+- **Intended future behavior:** the capability MAY — identify visible component candidates, interfaces,
+  openings, joints, fasteners, and supports; identify possible relative movement shown by arrows or
+  multiple views; read explicit dimensions and labels where reliably visible; distinguish known
+  dimensions from inferred proportions; distinguish visible observations from model inferences; identify
+  hidden, occluded, ambiguous, or missing components; identify possible contradictions between views;
+  propose a preliminary component hierarchy; ask the user to confirm, reject, rename, split, or merge
+  proposed components; preserve each image or drawing as source provenance; associate observations with
+  their source image or view; convert ONLY user-confirmed observations into canonical structured
+  component records; and identify additional views, dimensions, sections, labels, or explanations
+  required before materials or thickness may be considered.
+- **Required output classifications:** `OBSERVED` · `USER-CONFIRMED` · `INFERRED` · `AMBIGUOUS` ·
+  `HIDDEN OR NOT VISIBLE` · `CONTRADICTORY` · `UNABLE TO DETERMINE`.
+- **Confirmation boundary:** **no inferred component, relationship, dimension, movement, or interface may
+  enter canonical invention state until the user confirms it.** The original visual source and the
+  inference status must remain traceable.
+- **Non-goals / protected boundaries:** static visual interpretation only; video, animation, and
+  AI-generated-video analysis are excluded; must not treat inferred components as confirmed facts; must
+  not infer internal mechanisms solely from external appearance; must not infer accurate scale without a
+  reliable reference; must not fabricate dimensions, hidden geometry, material, thickness, load,
+  tolerance, or manufacturing specifications; must not generate or claim a production-ready CAD model;
+  must not claim that a visual concept is physically feasible; must NOT recommend materials, manufacturing
+  methods, material grades, or thicknesses; must not activate CAP-12 or CAP-13 automatically; must not
+  replace engineering drawings or specialist review; must preserve provenance, uncertainty, and user
+  confirmation state.
+- **Relationship to CAP-12 and CAP-13:** CAP-14 may provide a user-confirmed component inventory and
+  known visual constraints; CAP-12 may LATER use confirmed component records when proposing materials and
+  manufacturing methods; CAP-13 may LATER use confirmed dimensions and constraints when considering
+  thickness or specification advice. **CAP-14 must not itself perform CAP-12 or CAP-13 behavior.**
+- **Dependencies and overlaps:** WS12, CAP-01, CAP-08, CAP-10, CAP-11, **CAP-12**, **CAP-13**.
+- **Current authorization state:** `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`.
+- **Earliest activation:** a dedicated static-visual-intake and component-interpretation feasibility gate
+  (§6), followed by: architecture review; privacy and retention review; image-source and provenance
+  contract; supported-format contract; model and vendor feasibility review; accuracy and failure-mode
+  evaluation; owner decisions; separate owner-approved increment contract; BASE RED where applicable;
+  GREEN; independent verification; owner acceptance and formal closure.
+- **Separate owner authorization requirement:** yes. CAP-14 is a **distinct capability from CAP-12 and
+  CAP-13** and must not be consolidated with either.
+
+---
+
+## 2. Capability-to-Workstream activation matrix
+
+| Capability | Primary activation gate / authority | Also spans | Current status |
+|---|---|---|---|
+| CAP-01 Structured Technical Guidance | **D13** (owner-gated) | WS-PFV-001, CAP-04, CAP-09 | RECORDED — NOT AUTHORIZED |
+| CAP-02 Simplified One-Step Journey | WS8 / later UX increment | CAP-06, CAP-07 | RECORDED — NOT AUTHORIZED |
+| CAP-03 Adaptive Assistance | WS13 / WS14 | CAP-02, AI Coach | RECORDED — NOT AUTHORIZED |
+| CAP-04 Gap Action Packs | WS12 (+ D13 for technical) | CAP-01, CAP-09 | RECORDED — NOT AUTHORIZED |
+| CAP-05 Decision Trace | Decision-support increment | CAP-07, CAP-08, CAP-11 | RECORDED — NOT AUTHORIZED |
+| CAP-06 Readiness Dashboard | Readiness increment (+ Patent Export, WS-PFV-001 axes) | CAP-02, CAP-07, CAP-11 | RECORDED — NOT AUTHORIZED |
+| CAP-07 Invention Decision Room | WS16 / decision-support increment | CAP-05, CAP-06, CAP-08, CAP-10 | RECORDED — NOT AUTHORIZED |
+| CAP-08 Assumption Register | Assumption-tracking increment | WS12, CAP-05, CAP-10, CAP-11 | RECORDED — NOT AUTHORIZED |
+| CAP-09 Experiment Designer | **WS-PFV-001** (owner-gated) | CAP-01, CAP-04, CAP-06 | RECORDED — NOT AUTHORIZED |
+| CAP-10 Contradiction Detector | Contradiction-detection increment | WS12, CAP-05, CAP-08 | RECORDED — NOT AUTHORIZED |
+| CAP-11 Evidence Quality Ladder | Dedicated evidence-quality contract | CAP-05, CAP-06, CAP-08 | RECORDED — NOT AUTHORIZED |
+| CAP-12 Prototype Materials and Manufacturing Recommendation | Dedicated materials-and-manufacturing feasibility gate → increment (defers to WS-PFV-001, D13) | CAP-01, CAP-08, CAP-09, CAP-10, CAP-11, CAP-13, CAP-14 | RECORDED — NOT AUTHORIZED |
+| CAP-13 Component Thickness, Specification, and Safety Advisory | Dedicated thickness-and-safety feasibility gate → increment (defers to WS-PFV-001, D13) | CAP-01, CAP-08, CAP-09, CAP-10, CAP-11, CAP-12, CAP-14 | RECORDED — NOT AUTHORIZED |
+| CAP-14 2D Drawing, Static Image, and Multi-View Component Interpretation | Dedicated static-visual-intake and interpretation feasibility gate → increment | WS12, CAP-01, CAP-08, CAP-10, CAP-11, CAP-12, CAP-13 | RECORDED — NOT AUTHORIZED |
+
+The matrix is indicative sequencing only; it activates nothing. All fourteen capabilities remain
+`RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`.
+
+## 3. Dependency map
+
+- **D13** → CAP-01 → (feeds) CAP-04, CAP-06 (technical axes), CAP-09.
+- **WS-PFV-001** → CAP-09 → (feeds) CAP-06 (prototype-readiness axis).
+- **Patent Export decision** → CAP-06 (patent-disclosure-readiness axis).
+- **WS12 Controlled Unknown Progression** → CAP-04, CAP-08, CAP-10 (closure paths / assumptions /
+  contradictions over the unknown ledger).
+- **Increment-2 provenance/validation axes + append-only ledger** → CAP-08, CAP-10, CAP-11.
+- **Decision workspace (FDC-001)** → CAP-05, CAP-07, CAP-10.
+- **WS8 / WS13 / WS14** → CAP-02, CAP-03.
+- **CAP-11 (evidence ladder)** underpins evidence-strength expressions in CAP-05, CAP-06, CAP-08, and
+  also CAP-12/CAP-13/CAP-14.
+- **WS-PFV-001 + D13** → CAP-12, CAP-13 (prototype/validation content defers to WS-PFV-001;
+  technical-guidance content defers to D13). CAP-12 and CAP-13 are **separate** capabilities that
+  reference each other and share CAP-01/CAP-08/CAP-09/CAP-10/CAP-11 dependencies, but neither subsumes
+  the other.
+- **CAP-14 (static visual interpretation)** → may LATER feed **user-confirmed** component records to
+  CAP-12 and confirmed dimensions/constraints to CAP-13; CAP-14 depends on WS12, CAP-01, CAP-08, CAP-10,
+  CAP-11 and never itself performs CAP-12/CAP-13 behavior. No CAP-14 inference becomes canonical without
+  user confirmation.
+No dependency edge implies activation; every edge is subordinate to the authority it points to, and no
+capability may activate another automatically.
+
+## 4. Overlap and conflict-prevention rules
+1. A capability's overlapping portion is governed by the **most specific committed authority** (e.g. any
+   technical-guidance content is governed by D13; prototype/experiment content by WS-PFV-001; patent
+   content by the Patent Export decision), never by this register.
+2. No capability may weaken, bypass, or reinterpret a deterministic gate, safety/evidence boundary, or
+   protected surface.
+3. No capability may introduce a second truth source for a concept already governed by a committed
+   record (evidence axes, criticality, gaps, unknown ledger, registry).
+4. Presentation capabilities (CAP-02, CAP-06, CAP-07) are read-only over canonical records and never
+   mutate state or evidence.
+5. Where two capabilities could produce the same artifact, the register defers to the workstream/gate
+   named in the activation matrix; conflicts are resolved by the committed roadmap, not this register.
+6. **CAP-12 does not perform CAP-13 thickness behavior.**
+7. **CAP-13 does not perform CAP-12 material/manufacturing selection** without its separately authorized
+   boundary.
+8. **CAP-14 does not perform CAP-12 or CAP-13 behavior** (no material, manufacturing, grade, or thickness
+   recommendation from visual interpretation).
+9. **CAP-14 visual inference does not become canonical without explicit user confirmation.**
+10. **No Workstream may silently absorb any of CAP-12 through CAP-14**, and **no capability may activate
+    another automatically.**
+
+---
+
+## R. Governance rules (binding on all future agents)
+
+- **R4 — Multi-Workstream spanning.** A single capability may span multiple Workstreams (e.g. CAP-01
+  spans D13 and informs CAP-04/CAP-06/CAP-09) **without being automatically activated** in any of them.
+  Spanning is descriptive, not activating.
+- **R5 — Registration is not implementation authorization.** Recording a capability here confers no
+  authority to design, test, or implement it. Status `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`
+  means exactly that.
+- **R6 — Every implementation requires the full gated chain.** Before any capability is implemented it
+  requires, in order: repository evidence review; an increment contract; owner decisions; BASE RED where
+  applicable; GREEN; independent verification; owner acceptance; and merge with formal status
+  synchronization. No step may be skipped or combined without explicit owner authorization.
+- **R7 — Preservation.** Later agents MUST preserve all fourteen entries (CAP-01…CAP-14) exactly, unless
+  the owner explicitly approves amendment, rejection, consolidation, or removal. No entry may be
+  silently added, dropped, merged, or reworded.
+- **R8 — Relationship to committed authorities.** This register is subordinate to and does not amend:
+  **Workstreams 12–16** (`DELIVERABLE_STABILIZATION_REMEDIATION_PLAN.md` §15); **Structured Technical
+  Guidance / D13** (`ACTIONABLE_VALIDATION_PLAN_INCREMENT_CONTRACT.md` §4 D13; `D13_FORMAL_CLOSURE_
+  RECORD.md`); **Patent Export** (`STRUCTURED_INVENTION_DISCLOSURE_AND_PATENT_EXPORT_OWNER_DECISION.md`,
+  PR #229); **WS-PFV-001** (`PROTOTYPE_FEASIBILITY_AND_VALIDATION_FUTURE_WORKSTREAM_OWNER_DECISION.md`,
+  PR #227); and **AI Coach / Workstream 17** (§15; BLOCKED until Workstreams 1–16 are owner-closed).
+  Each of those records remains the sole authority for its capability.
+- **R9 — Workstream 12 status.** **Workstream 12 (Controlled Unknown Progression) remains NOT STARTED
+  and is temporarily paused** by owner decision until this register is reviewed, owner-accepted, merged,
+  and post-merge verified. This register does not resume, start, or activate WS12; any prior
+  authorization to begin the WS12 contract is superseded and suspended per the owner decision.
+
+---
+
+## Mandatory Review by Future Agents
+
+Every future agent working on InventorAI (team lead, subagent, or Agent Teams teammate) MUST:
+
+1. **Read this capability register** before: beginning any new Workstream; drafting any increment
+   contract; proposing a new capability; or modifying guidance, evidence, progression, export,
+   validation, or user-assistance behavior.
+2. **Check whether the active Workstream** activates a registered capability; partially overlaps with
+   one; creates a prerequisite for one; or risks duplicating or contradicting one.
+3. **Explicitly report in every future handover:** which registered capabilities were reviewed; whether
+   any activation condition was reached; whether owner authorization is still required; and whether any
+   capability remains deferred.
+4. **Never treat** registration, prerequisite completion, Workstream closure, or technical feasibility
+   as automatic implementation authorization.
+5. **Stop and request owner authorization** if an active task would: implement any registered
+   capability; change its scope; merge two capabilities; remove or replace a capability; move its
+   activation gate; or alter its protected boundaries.
+6. **Preserve all fourteen capability entries (CAP-01…CAP-14) across handovers** unless the owner explicitly authorizes
+   amendment, consolidation, rejection, replacement, or removal.
+
+### A. Future-Agent Handover Checklist
+Every handover must record (for all fourteen capabilities, CAP-01…CAP-14):
+- [ ] register reviewed
+- [ ] active capability IDs identified
+- [ ] inactive capability IDs preserved
+- [ ] activation conditions checked
+- [ ] owner authorization status recorded
+- [ ] no automatic activation assumed
+
+Additionally, a later agent MUST explicitly report the status of **CAP-12, CAP-13, and CAP-14** whenever
+its active task overlaps materials, manufacturing, thickness, specifications, safety, images, drawings,
+multiple views, component inference, or prototype planning.
+
+### B. Activation Review Rule
+At the **formal closure of each Workstream from WS12 through WS16**, the closing agent MUST review this
+register and state: which capabilities became **eligible for contract drafting** (explicitly including
+whether **CAP-12, CAP-13, or CAP-14** became eligible for a feasibility gate or contract drafting); which
+remain **blocked**; which require **separate owner authorization**; and which must remain **deferred**.
+(This review records eligibility only; **eligibility must not be treated as implementation
+authorization** — see R5.)
+
+### C. Conflict-Prevention Rule
+If a later Workstream overlaps with a registered capability, the agent MUST preserve the **narrower
+existing Workstream scope** and MUST NOT absorb the full registered capability without a separate
+owner-approved contract.
+
+### D. No-Silent-Omission Rule
+A future agent may **not** omit a registered capability from planning merely because it was not
+mentioned in the latest user message or handover. All fourteen entries (CAP-01…CAP-14) remain in force at all times.
+
+### Capability review-tracking table
+
+| Capability ID | Current status | Earliest activation gate | Prerequisites | Owner authorization required | Last reviewed Workstream | Next mandatory review point |
+|---|---|---|---|---|---|---|
+| CAP-01 Structured Technical Guidance | RECORDED — NOT AUTHORIZED | D13 (owner-gated) | D13 governed knowledge sources; D13 Source Review | Yes (via D13) | — (none since registration) | At WS12–WS16 closure and any D13 gate |
+| CAP-02 Simplified One-Step Journey | RECORDED — NOT AUTHORIZED | WS8 / later UX increment | Committed state; WS8; WS12 unknowns; CAP-04 | Yes | — | At the UX increment / WS12–WS16 closure |
+| CAP-03 Adaptive Assistance | RECORDED — NOT AUTHORIZED | WS13 / WS14 | Deterministic sufficiency; WS12; WS13/WS14 | Yes | — | At WS13/WS14 authorization / WS12–WS16 closure |
+| CAP-04 Gap Action Packs | RECORDED — NOT AUTHORIZED | WS12 (+ D13 for technical) | WS12 closure paths; D13; gap/blocker model | Yes | — | At WS12 closure and any D13 gate |
+| CAP-05 Decision Trace | RECORDED — NOT AUTHORIZED | Decision-support increment | Decision workspace; evidence axes; CAP-08; CAP-11 | Yes | — | At the decision-support increment / WS12–WS16 closure |
+| CAP-06 Readiness Dashboard | RECORDED — NOT AUTHORIZED | Readiness increment (+ Patent Export, WS-PFV-001 axes) | CAP-11; Patent Export decision; WS-PFV-001 | Yes | — | At the readiness increment / WS12–WS16 closure |
+| CAP-07 Invention Decision Room | RECORDED — NOT AUTHORIZED | WS16 / decision-support increment | Decision workspace; WS12; CAP-05/08/10 | Yes | — | At WS16 closure / decision-support increment |
+| CAP-08 Assumption Register | RECORDED — NOT AUTHORIZED | Assumption-tracking increment | Provenance/validation axes; ledger; WS12; CAP-11 | Yes | — | At the assumption increment / WS12–WS16 closure |
+| CAP-09 Experiment Designer | RECORDED — NOT AUTHORIZED | WS-PFV-001 (owner-gated) | WS-PFV-001; SuccessCriterion precedent | Yes (via WS-PFV-001) | — | At any WS-PFV-001 gate / WS12–WS16 closure |
+| CAP-10 Contradiction Detector | RECORDED — NOT AUTHORIZED | Contradiction-detection increment | Contradiction graph; UNRESOLVED_EVIDENCE_CONFLICT; CAP-08 | Yes | — | At the contradiction increment / WS12–WS16 closure |
+| CAP-11 Evidence Quality Ladder | RECORDED — NOT AUTHORIZED | Dedicated evidence-quality contract | Committed provenance/validation axes; ladder contract | Yes | — | At the evidence-quality contract / WS12–WS16 closure |
+| CAP-12 Prototype Materials and Manufacturing Recommendation | RECORDED — NOT AUTHORIZED | Materials-and-manufacturing feasibility gate → increment | CAP-01, CAP-08, CAP-09, CAP-10, CAP-11, CAP-13, CAP-14; WS-PFV-001; D13; governed data/source/licensing gate (§6) | Yes | — | At the materials feasibility gate / WS12–WS16 closure |
+| CAP-13 Component Thickness, Specification, and Safety Advisory | RECORDED — NOT AUTHORIZED | Thickness-and-safety feasibility gate → increment | CAP-01, CAP-08, CAP-09, CAP-10, CAP-11, CAP-12, CAP-14; WS-PFV-001; D13; governed data/source/licensing gate (§6) | Yes | — | At the thickness feasibility gate / WS12–WS16 closure |
+| CAP-14 2D Drawing, Static Image, and Multi-View Component Interpretation | RECORDED — NOT AUTHORIZED | Static-visual-intake and interpretation feasibility gate → increment | WS12, CAP-01, CAP-08, CAP-10, CAP-11, CAP-12, CAP-13; static-image/2D feasibility gate (§6) | Yes | — | At the static-visual feasibility gate / WS12–WS16 closure |
+
+"Last reviewed Workstream" is `—` at registration; each future agent performing a §B activation review
+MUST update this table (via an owner-authorized register amendment, per R7) to record the reviewing
+Workstream and the next mandatory review point. The table is amended only under owner authorization.
+
+## Knowledge, Data, and Feasibility Boundary (CAP-12 / CAP-13 / CAP-14)
+
+Recording CAP-12 and CAP-13 does **not** prove that the existing code, data model, external sources,
+engineering tools, or knowledge architecture can support reliable material, manufacturing, grade, or
+thickness recommendations. Before implementation of CAP-12 or CAP-13, a **separate feasibility gate**
+must determine at minimum: available repository seams; the required component data model; required
+dimensions and engineering inputs; allowed external knowledge sources; source licensing and
+redistribution rights; source freshness and versioning; manufacturer-data provenance; standards-access
+limitations; deterministic rules; calculation-engine requirements; specialist-review boundaries;
+high-risk exclusion cases; `UNABLE TO RECOMMEND` conditions; operational costs; maintenance requirements;
+and a realistic MVP boundary.
+
+The register explicitly states:
+- an **AI model must NOT be the sole authority** for material properties, manufacturing suitability,
+  material grades, thickness, safety, or regulatory suitability;
+- **external data may NOT be integrated** without a separate governed source and licensing decision;
+- **implementation feasibility remains unproven** until the dedicated gate is completed;
+- the system **must be allowed to refuse a recommendation** (`UNABLE TO RECOMMEND`) when evidence or
+  inputs are insufficient.
+
+For **CAP-14**, feasibility likewise **remains unproven** until a dedicated static-image and 2D
+interpretation gate evaluates: supported image and drawing formats; OCR and dimension-reading limits;
+multi-view consistency; image-quality requirements; privacy and retention; provenance storage;
+model/vendor selection; error rates; ambiguity handling; the user-confirmation workflow; cost; latency;
+security; and architectural compatibility with the current application. CAP-14 remains static-image/2D
+only; **video, animation, and AI-generated-video analysis are excluded** (including frame extraction to
+bypass the exclusion).
+
+## 5. Non-authorization (restated)
+
+This register records capability concepts and their boundaries only. It authorizes no production code,
+RED, GREEN, contract execution, status change, persistence, schema, prompt, UI, database, registry,
+external-data/knowledge-source integration, visual-analysis, material-selection, thickness-calculation,
+engineering-analysis, CAD-generation, or architecture change, and starts/activates/resumes no Workstream.
+All fourteen capabilities are `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`. **This amendment activates
+none of CAP-12, CAP-13, or CAP-14: recording CAP-12 (Prototype Materials and Manufacturing
+Recommendation), CAP-13 (Component Thickness, Specification, and Safety Advisory), and CAP-14 (2D
+Drawing, Static Image, and Multi-View Component Interpretation) implements nothing, authorizes no
+material/manufacturing/thickness/visual-analysis behavior, and confers no implementation authority; they
+are three distinct capabilities and are not consolidated.** Implementation feasibility for CAP-12,
+CAP-13, and CAP-14 remains **unproven** until their dedicated feasibility gates complete; an AI model must
+not be the sole authority for material, thickness, safety, or regulatory recommendations; and no external
+data may be integrated without a separate governed source and licensing decision. Workstream 12 remains
+NOT STARTED (paused) — and remains paused until this amendment is owner-accepted, merged, and post-merge
+verified; Workstreams 13/14/15 remain NOT STARTED; the AI Coach (WS17) remains BLOCKED until Workstreams
+1–16 are owner-closed. Official product state remains `DEMO_READY_WITH_LIMITATIONS`; MVP scope remains
+electronics/electrical-only. The Phase A branch remains fixed at `57e2fac8`; PR #167 and PR #162 remain
+untouched. Every implementation of any capability requires separate explicit owner authorization and the
+full gated chain in R6.

@@ -3,6 +3,26 @@
 This section overrides any older current-priority, active-document, or
 document-authority statement in this file when they conflict.
 
+## Mandatory Lean Governance Boot Sequence (current authority — read first)
+
+Governed by `docs/governance/LEAN_GOVERNANCE_AND_AGENT_CONTINUITY_PROTOCOL.md`
+(binding). Before planning or implementation, every agent MUST read, in order:
+
+1. this `CLAUDE.md`;
+2. `docs/governance/CURRENT_PROJECT_STATE.md`;
+3. the current authoritative anchor (per the reading order below);
+4. `docs/governance/OWNER_DECISION_REGISTER.md`;
+5. the active phase/increment contract (`docs/governance/ACTIVE_INCREMENT_CONTRACT.md`);
+6. only the additional documents the active contract references.
+
+Then verify the live authoritative tip from Git (never a prose-pinned SHA). A full
+historical audit and the complete reading order below are required only for a Depth-1 /
+high-risk / strategic change or when a full-audit trigger applies (protocol §6) — not as
+daily default work. This boot sequence weakens no Level-0 authority, product identity,
+security/privacy boundary, phase sequencing, active hold, or separate-authorization
+requirement; Phase 3 implementation remains NOT authorized. The detailed reading order that
+follows remains authoritative for Depth-1 / full-audit contexts.
+
 Before any analysis, recommendation, code change, command execution, file
 creation, staging, commit, or push, every Claude Code session, team lead,
 subagent, and Agent Teams teammate MUST read, in this order:
@@ -13,7 +33,34 @@ subagent, and Agent Teams teammate MUST read, in this order:
 4. `docs/governance/PATH_N_CURRENT_EXECUTION_ANCHOR.md`
 5. `docs/governance/DUAL_PATH_PRODUCT_ANCHOR.md`
 6. `docs/governance/ACTIVE_EXECUTION_ROADMAP.md`
-7. Any phase-specific authorization identified as active by the roadmap
+7. `docs/governance/PRODUCT_FOUNDATION_AND_COMMERCIAL_READINESS_REMEDIATION_PLAN.md`
+   — mandatory product-foundation and commercial-readiness remediation plan (the
+   owner-approved v2 plan, now CANONICAL — merged via PR #289 and post-merge
+   verified; it supersedes any earlier draft). Read it in full
+   after the governing anchors and the roadmap and before any Product UX/UI,
+   persistence, accounts, API, multi-domain, subscription, or other implementation
+   work. Every agent MUST: read the full plan; resolve and verify the current
+   authoritative branch and tip from the active governance sources (do not treat
+   the plan's historical drafting baseline SHA as the expected tip); verify the
+   currently active phase from the latest committed roadmap and status surfaces;
+   distinguish its statuses (`RECORDED` / `PLANNED` / `ELIGIBLE` /
+   `OWNER-AUTHORIZED` / `ACTIVE` / `CLOSED`) and never treat one as another;
+   perform no automatic downstream activation (closing one phase never activates
+   another); and return `VERIFICATION BLOCKED` when repository state, the
+   authoritative tip/branch, the active phase, or authorization cannot be
+   verified. The plan is subordinate to the committed anchors, contracts, and
+   `docs/governance/ACTIVE_EXECUTION_ROADMAP.md`; recording future work in it
+   authorizes nothing.
+8. Any phase-specific authorization identified as active by the roadmap
+9. `docs/governance/INVENTORAI_COMMERCIAL_DIFFERENTIATION_DIRECTION.md`
+   — mandatory strategic product direction; non-activating and non-authorizing;
+   subordinate to committed anchors, contracts, and
+   `docs/governance/ACTIVE_EXECUTION_ROADMAP.md`.
+10. `docs/benchmarks/BICYCLE_BRAKE_LIGHT_COMPETITIVE_BENCHMARK.md`
+   — mandatory competitive product-value evaluation protocol; non-activating
+   and non-authorizing; subordinate to committed anchors, contracts, and
+   `docs/governance/ACTIVE_EXECUTION_ROADMAP.md`; no benchmark run or result is
+   implied by this record.
 
 Repository truth overrides conversation history, memory, and assumption.
 
@@ -256,25 +303,25 @@ REPORTING DIVERGENCE DETECTED
 The following documents were added after the initial governance contract.
 Read them before any code change or architectural decision.
 
-GOVERNANCE_MODEL.md
+./GOVERNANCE_MODEL.md
   Authority hierarchy (Tiers 1-4), confirmed violations,
   and remediation steps for replay/provenance issues.
   Status: ACTIVE
 
-MVP_SCOPE_FREEZE.md
+./MVP_SCOPE_FREEZE.md
   Hard boundary on MVP scope.
   Read this before writing any code.
   Status: ACTIVE FREEZE
 
-DECISION_PROGRESSION_MODEL.md
+./DECISION_PROGRESSION_MODEL.md
   Proposed architecture for the progression engine.
   Electronics/electrical domain, LEVEL 0-2 only.
   Status: PROPOSED — not implemented, not validated
 
 ## Document Authority Order
 
-When documents conflict, this order applies:
-1. MVP_SCOPE_FREEZE.md       (hard constraint)
-2. GOVERNANCE_MODEL.md       (authority hierarchy)
-3. CLAUDE.md                 (engineering rules)
-4. DECISION_PROGRESSION_MODEL.md (proposal only)
+When documents conflict, this order applies (paths are repository-root-relative):
+1. ./MVP_SCOPE_FREEZE.md          (hard constraint)
+2. ./GOVERNANCE_MODEL.md          (authority hierarchy)
+3. ./CLAUDE.md                    (engineering rules)
+4. ./DECISION_PROGRESSION_MODEL.md (proposal only)

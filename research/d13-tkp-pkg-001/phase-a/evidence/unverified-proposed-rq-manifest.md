@@ -1,0 +1,25 @@
+# Phase A Output 4 — Unverified Proposed Research-Question Manifest
+
+**Purpose (bounded).** Record research questions that emerged from the Phase A field/capability-gap analysis. **Every item
+below is `UNVERIFIED PROPOSED RQ — NOT AUTHORIZED FOR RESEARCH`.** Proposing an RQ authorizes no research, no source access,
+and no method execution. Whether a proposed RQ maps to the authorized set (RQ-01…RQ-11, defined in
+`D13-TKP-PKG-001-G3-ISS-001`) or requires a proposed addition is an **owner determination** (Gate 3 §4: PROPOSED ADDITION —
+OWNER DECISION REQUIRED); it is **not** decided here. No RQ is answered here.
+
+| Proposed RQ ID | Exact question | Originating capability gap | Required evidence (future) | Suggested method (future, unauthorized) | Current authorization status | Apparent relation to RQ-01…RQ-11 (owner to determine) | Owner-decision dependency | Status |
+|---|---|---|---|---|---|---|---|---|
+| P-RQ-A1 | Which structured field(s) must the journey capture to deterministically classify a case's sensor output as analog-voltage / single-ended-digital / pulse-frequency? | CG-01 | existing schema/field definitions; governing-parameter categories | schema/field design analysis (governance), not a research method | NOT AUTHORIZED | operationalizes RQ-01; may be a PROPOSED ADDITION | owner must decide mapping and whether to authorize | UNVERIFIED PROPOSED RQ — NOT AUTHORIZED FOR RESEARCH |
+| P-RQ-A2 | What structured inputs are minimally required to indicate a voltage-range mismatch without asserting an engineering conclusion? | CG-02 | governing-parameter documentation categories | DOCUMENT REVIEW (only if later authorized) | NOT AUTHORIZED | appears within RQ-02 / RQ-03 subject area | owner determination + Gate-3A method authorization | UNVERIFIED PROPOSED RQ — NOT AUTHORIZED FOR RESEARCH |
+| P-RQ-A3 | What target-MCU input attributes must be captured to indicate ADC-reference/input-range and single-ended digital logic-level compatibility? | CG-03 | target-device governing parameters | DOCUMENT REVIEW (only if later authorized) | NOT AUTHORIZED | appears within RQ-05 / RQ-06 subject area | owner determination + method authorization | UNVERIFIED PROPOSED RQ — NOT AUTHORIZED FOR RESEARCH |
+| P-RQ-A4 | What minimal descriptor captures pulse/frequency signal characteristics sufficient to address pulse/frequency compatibility? | CG-04 | governing-parameter documentation | DOCUMENT REVIEW (only if later authorized) | NOT AUTHORIZED | appears within RQ-07 subject area | owner determination + method authorization | UNVERIFIED PROPOSED RQ — NOT AUTHORIZED FOR RESEARCH |
+| P-RQ-A5 | When is source/load impedance context relevant enough to a case to warrant capture, and how is that relevance signalled without calculation? | CG-05 | governing-parameter documentation | DOCUMENT REVIEW (only if later authorized) | NOT AUTHORIZED | appears within RQ-04 subject area | owner determination + method authorization | UNVERIFIED PROPOSED RQ — NOT AUTHORIZED FOR RESEARCH |
+| P-RQ-A6 | What indicator determines whether governing parameters are sufficiently available to advise on interfacing, and what triggers a principled interfacing-specific abstention? | CG-06 | governing-parameter categories; abstention criteria | DOCUMENT REVIEW + governance review (only if later authorized) | NOT AUTHORIZED | appears within RQ-09 / RQ-11 subject area | owner determination + method authorization + independent review | UNVERIFIED PROPOSED RQ — NOT AUTHORIZED FOR RESEARCH |
+| P-RQ-A7 | What routing rule maps a classified case to DOCUMENT REVIEW, DATASHEET COMPARISON, or abstention, recorded as a routing decision distinct from execution? | CG-07 | routing-rule definition | governance rule design (not a research method) | NOT AUTHORIZED | operationalizes RQ-10; may be a PROPOSED ADDITION | owner determination | UNVERIFIED PROPOSED RQ — NOT AUTHORIZED FOR RESEARCH |
+| P-RQ-A8 | What structured scope-confirmation captures that a case is inside the D13-TKP-PKG-001 concept class (low-voltage, non-safety-critical, single-signal) before any interfacing guidance? | CG-01, CG-06 | concept-class boundary definition | governance/field design analysis | NOT AUTHORIZED | precondition to RQ-10 / RQ-11; may be a PROPOSED ADDITION | owner determination | UNVERIFIED PROPOSED RQ — NOT AUTHORIZED FOR RESEARCH |
+
+**Notes.** (a) "Apparent relation to RQ-01…RQ-11" is a non-binding observation to assist the owner's mapping decision; it is
+**not** an assertion that any proposed RQ is in the authorized set. (b) None of these proposed RQs enters the authorized set,
+and no method is executed, unless the owner processes it under Gate 3 §4 (PROPOSED ADDITION — OWNER DECISION REQUIRED) and
+separately authorizes it, with method execution gated on Gate 3A. (c) Several proposed RQs (P-RQ-A1, P-RQ-A7, P-RQ-A8) are
+operationalization/governance questions (field/routing/scope design) rather than external-research questions; they would not
+require external-source access. This manifest asserts no answer to any question.

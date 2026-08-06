@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}InventorAI — Set a new password{% endblock %}
+{% block head %}
+<style>
+.auth-wrap{max-width:520px;margin:48px auto;padding:0 20px;color:#222;font-family:sans-serif}
+.auth-wrap h1{color:#2c3e50;margin-bottom:6px}
+label{display:block;margin:14px 0 4px 0;font-size:14px;color:#333}
+input[type=password]{width:100%;padding:10px;font-size:16px;border:1px solid #ccc;border-radius:4px}
+button{margin-top:16px;padding:10px 24px;background:#2c3e50;color:#fff;border:none;border-radius:4px;font-size:16px;cursor:pointer}
+.form-error{color:#c0392b;font-size:13px;margin:8px 0}
+.ok{background:#eef7ee;border:1px solid #bcdcbc;border-radius:4px;padding:12px 14px;margin:12px 0;color:#2b542b;font-size:14px}
+.ar{direction:rtl;text-align:right}
+</style>
+{% endblock %}
+{% block content %}
+<div class="auth-wrap">
+<h1><span lang="en">Set a new password</span> · <span class="ar" lang="ar">تعيين كلمة مرور جديدة</span></h1>
+{% if done %}
+  <div class="ok" role="status" aria-live="polite">
+    <p lang="en">Your password has been reset. All previous sessions have been signed out. Please sign in with your new password.</p>
+    <p class="ar" lang="ar">تمت إعادة تعيين كلمة المرور. تم تسجيل الخروج من جميع الجلسات السابقة. يرجى تسجيل الدخول بكلمة المرور الجديدة.</p>
+  </div>
+  <p><a href="/login"><span lang="en">Go to sign in</span> · <span class="ar" lang="ar">الذهاب إلى تسجيل الدخول</span></a></p>
+{% else %}
+  {% if form_error == 'password_invalid' %}
+    <p class="form-error" role="alert"><span lang="en">Password must be at least 12 characters.</span> · <span class="ar" lang="ar">يجب أن تتكوّن كلمة المرور من 12 حرفًا على الأقل.</span></p>
+  {% elif form_error == 'password_mismatch' %}
+    <p class="form-error" role="alert"><span lang="en">The two passwords do not match.</span> · <span class="ar" lang="ar">كلمتا المرور غير متطابقتين.</span></p>
+  {% elif form_error == 'token_invalid' %}
+    <p class="form-error" role="alert"><span lang="en">This reset link is invalid, has expired, or has already been used.</span> · <span class="ar" lang="ar">رابط إعادة التعيين هذا غير صالح أو منتهي الصلاحية أو تم استخدامه من قبل.</span></p>
+  {% endif %}
+  <form method="POST" action="/reset/{{ token }}">
+    <label for="password"><span lang="en">New password (at least 12 characters)</span> · <span class="ar" lang="ar">كلمة المرور الجديدة (12 حرفًا على الأقل)</span></label>
+    <input type="password" id="password" name="password" autocomplete="new-password" minlength="12" required>
+    <label for="password_confirm"><span lang="en">Confirm new password</span> · <span class="ar" lang="ar">تأكيد كلمة المرور الجديدة</span></label>
+    <input type="password" id="password_confirm" name="password_confirm" autocomplete="new-password" minlength="12" required>
+    <button type="submit"><span lang="en">Set new password</span> · <span class="ar" lang="ar">تعيين كلمة المرور الجديدة</span></button>
+  </form>
+{% endif %}
+</div>
+{% endblock %}

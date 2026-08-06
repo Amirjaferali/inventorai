@@ -31,11 +31,11 @@
     "PHYSICAL_FEASIBILITY": [
       {
         "question_id": "N-PF-1",
-        "text": "What would need to be true for this system to work safely, and what information would you need later to confirm it?"
+        "text": "What would need to be true for this system to work safely in the real world?"
       },
       {
         "question_id": "N-PF-2",
-        "text": "What do you think would keep the system running, and what do you not know yet about that?"
+        "text": "What do you think would keep the system running reliably over time?"
       },
       {
         "question_id": "N-PF-3",
@@ -49,7 +49,7 @@
     "BOUNDARY_AMBIGUITY": [
       {
         "question_id": "N-BA-1",
-        "text": "When should the system work, when should it not work, and what situations might confuse it?"
+        "text": "Which situations should the system be responsible for handling?"
       },
       {
         "question_id": "N-BA-2",

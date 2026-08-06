@@ -61,10 +61,18 @@ def test_known_problem_uses_problem_evidence_not_mechanism():
 
 
 def test_requirement_functional_uses_problem_evidence():
+    # Phase 3A: the functional requirement references the evidence registry
+    # (EV-001) instead of re-copying the full problem text; the problem provenance
+    # is proven by the EV-001 registry entry carrying that exact problem evidence.
     s = _polluted_state()
-    reqs = assemble_deliverable(s)["section_4_requirements"]["requirements"]
+    pkg = assemble_deliverable(s)
+    reqs = pkg["section_4_requirements"]["requirements"]
     func = [r for r in reqs if r["type"] == "functional"]
-    assert func and func[0]["statement"] == PMF_PROBLEM
+    assert func and func[0].get("evidence_id") == "EV-001"
+    assert func[0]["statement"] == "See EV-001 — Known Problem"
+    ev001 = next(e for e in pkg["_session_meta"]["evidence_registry"]
+                 if e["evidence_id"] == "EV-001")
+    assert ev001["content"] == PMF_PROBLEM      # grounded in real problem evidence
 
 
 def test_legacy_known_problem_not_surfaced_without_pmf_even_if_distinct():
@@ -125,7 +133,7 @@ def test_completeness_string_is_truthful_and_has_no_phase5():
     comp = assemble_deliverable(s)["section_2_invention_summary"]["assessment_completeness"]
     assert "Phase 5" not in comp
     # truthful contract: states inquiry completion AND outstanding validation
-    assert comp.startswith("ASSESSMENT COMPLETE")
+    assert comp.startswith("INQUIRY COMPLETE")
     low = comp.lower()
     assert "remain outstanding" in low
     assert "validation" in low and "demonstration" in low
@@ -160,9 +168,12 @@ def test_next_steps_synthesized_from_state_only():
     actions = " ".join(i["action"] for i in items)
     # validation step (REASONED -> Demonstrated) and the stated unknown, both
     # traceable to existing state via the basis field.
-    assert any(i["basis"] == "evidence_quality:REASONED" for i in items)
+    assert any(i["basis"] == "evidence_quality:Reasoned" for i in items)
     assert any(i["basis"].startswith("acknowledged_unknown:") for i in items)
-    assert "the exact moisture threshold is unknown" in actions
+    # Phase 3B-2a: the unknown next step references the registry (See UNK-00N)
+    # instead of repeating the full verbatim; the verbatim is no longer in Section 10.
+    assert "See UNK-" in actions
+    assert "the exact moisture threshold is unknown" not in actions
     for i in items:                       # every step names its state source
         assert i.get("basis")
 
@@ -172,7 +183,7 @@ def test_next_steps_reference_open_gaps():
     s.domain_signal = "electronics_electrical"; s.maturity_level = 2
     s.gaps.append(Gap(gap_type=EXPERTISE_GAP_AWARENESS, status=OPEN, opened_at=1))
     items = assemble_deliverable(s)["section_10_recommended_next_steps"]["items"]
-    assert any(i["basis"] == f"open_gap:{EXPERTISE_GAP_AWARENESS}" for i in items)
+    assert any(i["basis"] == "open_gap:Expertise-Gap Awareness" for i in items)
 
 
 def test_next_steps_no_duplicate_actions_from_duplicate_evidence():
@@ -186,7 +197,11 @@ def test_next_steps_no_duplicate_actions_from_duplicate_evidence():
     items = assemble_deliverable(s)["section_10_recommended_next_steps"]["items"]
     actions = [i["action"] for i in items]
     assert len(actions) == len(set(actions))            # no duplicate actions
-    assert sum(1 for a in actions if same in a) == 1    # collapsed to one
+    # Phase 3B-2a: the duplicate unknown still collapses to a single action; the
+    # action now references the registry (See UNK-00N) rather than the verbatim.
+    assert same not in " ".join(actions)                # verbatim no longer repeated
+    unknown_actions = [i for i in items if i["basis"].startswith("acknowledged_unknown:")]
+    assert len(unknown_actions) == 1                     # collapsed to one
 
 
 def test_next_steps_absent_evidence_invents_nothing():

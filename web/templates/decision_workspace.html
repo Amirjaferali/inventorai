@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Technical Decision Workspace — InventorAI</title>
+<style>
+body{font-family:system-ui,Arial,sans-serif;margin:24px;color:#1b1f23;max-width:960px}
+h1{font-size:20px} h2{font-size:15px;margin-top:22px;border-bottom:1px solid #e2e6ea;padding-bottom:4px}
+.muted{color:#555} .tag{font-size:11px;border:1px solid #c8ccd0;border-radius:3px;padding:1px 5px;margin-left:4px}
+.status{display:inline-block;padding:3px 8px;border-radius:4px;background:#eef2f6;font-weight:600}
+.review{color:#e65100;font-weight:600;margin-left:8px}
+table{border-collapse:collapse;width:100%;margin-top:6px}
+td,th{padding:5px 8px;border-bottom:1px solid #e2e6ea;text-align:left;font-size:13px;vertical-align:top}
+.note{font-size:12px;color:#666} ul{margin:6px 0}
+.limits{font-size:12px;color:#666;background:#f7f8fa;border-left:3px solid #c8ccd0;padding:8px 12px}
+</style>
+</head>
+<body>
+<h1>Technical Decision Workspace</h1>
+
+{% if error %}
+<p class="error" style="color:#b00020;font-weight:600;border:1px solid #f0b0b0;background:#fdf2f2;padding:8px 12px;border-radius:4px">{{ error }}</p>
+{% endif %}
+
+<h2>Decision</h2>
+<p><strong>{{ view.decision_question }}</strong></p>
+<p class="note">Decision id: {{ view.decision_id }} &nbsp;·&nbsp; revision: {{ view.revision }}</p>
+
+<h2>Readiness</h2>
+<p>
+  <span class="status">{{ view.readiness_status }}</span>
+  {% if view.review_required_label %}<span class="review">{{ view.review_required_label }}</span>{% endif %}
+</p>
+{% if view.blocking_reasons %}
+<ul>
+  {% for b in view.blocking_reasons %}
+  <li><code>{{ b.code }}</code> — {{ b.text }} <span class="note">(scope: {{ b.affected_scope }})</span>
+    {% if b.clearing_guidance %}<div class="note">Clearing guidance: {{ b.clearing_guidance }}</div>{% endif %}
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p class="note">No active blockers.</p>
+{% endif %}
+
+<h2>Candidate architectures</h2>
+<table>
+<tr><th>Candidate</th><th>Status</th><th>Disposition</th><th>Basis</th></tr>
+{% for c in view.candidates %}
+<tr>
+  <td>{{ c.name }}</td>
+  <td>{{ c.option_status }}</td>
+  <td>{{ c.disposition_reason or "—" }}</td>
+  <td>{{ c.disposition_basis or "—" }}</td>
+</tr>
+{% endfor %}
+</table>
+<p class="note">No candidate is marked as finally selected; the lane issues no final technical selection.</p>
+<form method="post" action="{{ url_for('decision_workspace_dispose_candidate', did=view.decision_id) }}">
+  <p>
+    Set candidate disposition —
+    candidate:
+    <select name="candidate_id">
+      {% for c in view.candidates %}<option value="{{ c.candidate_id }}">{{ c.name }}</option>{% endfor %}
+    </select>
+    status:
+    <select name="option_status">
+      <option value="active">active</option>
+      <option value="eliminated">eliminated</option>
+      <option value="deferred">deferred</option>
+      <option value="blocked">blocked</option>
+    </select>
+    reason: <input type="text" name="disposition_reason" size="28">
+    basis:
+    <select name="disposition_basis">
+      <option value="">(none)</option>
+      <option value="incompatible_with_recorded_requirement">incompatible_with_recorded_requirement</option>
+      <option value="deferred_pending_input">deferred_pending_input</option>
+      <option value="blocked_by_evidence_gap">blocked_by_evidence_gap</option>
+    </select>
+    <button type="submit">Set disposition</button>
+  </p>
+  <p class="note">A non-active status requires a basis. A disposition is contextual, never a verdict of technical invalidity and never a final selection.</p>
+</form>
+
+<h2>Classified inputs</h2>
+{% if view.inputs %}
+<table>
+<tr><th>Text</th><th>claim_class</th><th>provenance</th><th>label</th><th>decision-relevant</th></tr>
+{% for i in view.inputs %}
+<tr>
+  <td>{{ i.text }}</td>
+  <td>{{ i.claim_class }}</td>
+  <td>{{ i.provenance }}</td>
+  <td>{{ i.display_label }}</td>
+  <td>{{ "yes" if i.decision_relevant else "no" }}</td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<p class="note">No classified inputs yet.</p>
+{% endif %}
+
+<h2>Constraints</h2>
+{% if view.constraints %}
+<ul>
+  {% for con in view.constraints %}
+  <li>{{ con.text }}<span class="tag">{{ con.constraint_strength }}</span><span class="tag">{{ con.provenance }}</span>{% if con.confirmed %}<span class="tag">confirmed</span>{% endif %}</li>
+  {% endfor %}
+</ul>
+{% else %}
+<p class="note">No constraints recorded.</p>
+{% endif %}
+<form method="post" action="{{ url_for('decision_workspace_add_constraint', did=view.decision_id) }}">
+  <p>
+    Add a constraint —
+    <input type="text" name="text" placeholder="constraint text" size="40" required>
+    strength:
+    <select name="constraint_strength">
+      <option value="preference">preference</option>
+      <option value="soft_constraint">soft_constraint</option>
+      <option value="mandatory_constraint">mandatory_constraint</option>
+    </select>
+    provenance:
+    <select name="provenance">
+      <option value="operator_entered">operator_entered</option>
+      <option value="platform_proposed">platform_proposed</option>
+      <option value="derived_by_rule">derived_by_rule</option>
+    </select>
+    candidate:
+    <select name="candidate_id">
+      <option value="">(none)</option>
+      {% for c in view.candidates %}<option value="{{ c.candidate_id }}">{{ c.name }}</option>{% endfor %}
+    </select>
+    <label><input type="checkbox" name="confirmed"> confirmed</label>
+    <button type="submit">Add constraint</button>
+  </p>
+</form>
+
+<h2>Unresolved gaps</h2>
+{% if view.gaps %}
+<ul>
+  {% for g in view.gaps %}
+  <li>{{ g.text }}
+    <span class="tag">{{ "blocking" if g.blocks_readiness else "non-blocking" }}</span>
+    {% if g.reclassification_rationale %}<span class="note">— reclassified: {{ g.reclassification_rationale }}</span>{% endif %}
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p class="note">No open gaps.</p>
+{% endif %}
+{% if view.gaps %}
+<form method="post" action="{{ url_for('decision_workspace_gap_action', did=view.decision_id) }}">
+  <p>
+    Gap action —
+    gap:
+    <select name="gap_id">
+      {% for g in view.gaps %}<option value="{{ g.gap_id }}">{{ g.text }}</option>{% endfor %}
+    </select>
+    action:
+    <select name="action">
+      <option value="resolve">resolve</option>
+      <option value="reclassify">reclassify (to non-blocking)</option>
+    </select>
+    rationale (required to reclassify): <input type="text" name="rationale" size="32">
+    <button type="submit">Apply</button>
+  </p>
+  <p class="note">A physical/calibration evidence gap cannot be cleared here; use the evidence-assessment workflow below.</p>
+</form>
+{% endif %}
+
+<h2>External evidence (operator-reported / external; unverified)</h2>
+<p class="note">Evidence is recorded as <strong>unverified</strong>; this lane performs no verification and recording it alone does not change readiness.</p>
+{% if view.evidence %}
+<table>
+<tr><th>Observation / result</th><th>claim_class</th><th>verification</th><th>linked gap</th><th>method</th><th>limitations</th></tr>
+{% for e in view.evidence %}
+<tr>
+  <td>{{ e.text }}</td>
+  <td>{{ e.claim_class }}</td>
+  <td>{{ e.verification_status }}</td>
+  <td><code>{{ e.linked_gap_id }}</code></td>
+  <td>{{ e.method or "—" }}</td>
+  <td>{{ e.limitations or "—" }}</td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<p class="note">No evidence recorded.</p>
+{% endif %}
+{% if view.gaps %}
+<form method="post" action="{{ url_for('decision_workspace_add_evidence', did=view.decision_id) }}">
+  <p>
+    Record evidence —
+    gap:
+    <select name="gap_id">
+      {% for g in view.gaps %}<option value="{{ g.gap_id }}">{{ g.text }}</option>{% endfor %}
+    </select>
+    claim_class:
+    <select name="claim_class">
+      <option value="operator_reported_result">operator_reported_result</option>
+      <option value="external_reference">external_reference</option>
+    </select>
+    provenance:
+    <select name="provenance">
+      <option value="operator_entered">operator_entered</option>
+      <option value="derived_by_rule">derived_by_rule</option>
+    </select>
+  </p>
+  <p>
+    observation/result: <input type="text" name="text" size="50" required>
+    <label><input type="checkbox" name="decision_relevant"> decision-relevant</label>
+  </p>
+  <p>
+    method: <input type="text" name="method" size="20">
+    source_label: <input type="text" name="source_label" size="20">
+    evidence_version: <input type="text" name="evidence_version" size="16">
+    limitations: <input type="text" name="limitations" size="28">
+    candidate:
+    <select name="candidate_id">
+      <option value="">(none)</option>
+      {% for c in view.candidates %}<option value="{{ c.candidate_id }}">{{ c.name }}</option>{% endfor %}
+    </select>
+    <button type="submit">Record evidence (unverified)</button>
+  </p>
+  <p class="note">verification status is system-set to <code>unverified</code> and cannot be entered.</p>
+</form>
+{% endif %}
+
+<h2>Gap assessment &amp; resolution</h2>
+{% if view.gap_assessments %}
+<ul>
+  {% for a in view.gap_assessments %}
+  <li>gap <code>{{ a.gap_id }}</code><span class="tag">{{ a.assessment }}</span><span class="tag">{{ a.resolution_decision }}</span> — {{ a.rationale }}
+    {% if a.resolution_rationale %}<span class="note">(resolution: {{ a.resolution_rationale }})</span>{% endif %}
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p class="note">No gap assessments recorded.</p>
+{% endif %}
+{% if view.gaps and view.evidence %}
+<form method="post" action="{{ url_for('decision_workspace_gap_assessment', did=view.decision_id) }}">
+  <p>
+    Assess gap &amp; decide —
+    gap:
+    <select name="gap_id">
+      {% for g in view.gaps %}<option value="{{ g.gap_id }}">{{ g.text }}</option>{% endfor %}
+    </select>
+    linked evidence (select one or more of the gap's evidence):
+    <select name="evidence_ids" multiple size="3">
+      {% for e in view.evidence %}<option value="{{ e.evidence_id }}">{{ e.text }} [gap {{ e.linked_gap_id }}]</option>{% endfor %}
+    </select>
+  </p>
+  <p>
+    assessment:
+    <select name="assessment">
+      <option value="supports_resolution">supports_resolution</option>
+      <option value="partially_addresses">partially_addresses</option>
+      <option value="contradicts_assumption">contradicts_assumption</option>
+      <option value="insufficient">insufficient</option>
+    </select>
+    assessment rationale: <input type="text" name="rationale" size="32" required>
+  </p>
+  <p>
+    resolution decision:
+    <select name="resolution_decision">
+      <option value="remains_blocking">remains_blocking</option>
+      <option value="resolved">resolved</option>
+      <option value="reclassified_nonblocking">reclassified_nonblocking</option>
+    </select>
+    resolution rationale (required unless remains_blocking): <input type="text" name="resolution_rationale" size="32">
+    <button type="submit">Assess &amp; decide</button>
+  </p>
+  <p class="note">Only a <code>supports_resolution</code> assessment with linked evidence may clear or reclassify a gap; this is the sole user-facing path for the physical/calibration blocker.</p>
+</form>
+{% endif %}
+
+<h2>Owner preference</h2>
+{% if view.owner_preference %}
+<p>Preference for candidate <code>{{ view.owner_preference.candidate_id }}</code>
+   {% if view.owner_preference.rationale %}— {{ view.owner_preference.rationale }}{% endif %}
+   <span class="note">(preference only; not a technical selection)</span></p>
+{% else %}
+<p class="note">No owner preference set.</p>
+{% endif %}
+<form method="post" action="{{ url_for('decision_workspace_preference', did=view.decision_id) }}">
+  <input type="hidden" name="action" value="set">
+  <p>
+    Set owner preference (preference only; not a technical selection) —
+    candidate:
+    <select name="candidate_id">
+      {% for c in view.candidates %}<option value="{{ c.candidate_id }}">{{ c.name }}</option>{% endfor %}
+    </select>
+    rationale: <input type="text" name="rationale" size="32">
+    <button type="submit">Set preference</button>
+  </p>
+</form>
+{% if view.owner_preference %}
+<form method="post" action="{{ url_for('decision_workspace_preference', did=view.decision_id) }}">
+  <input type="hidden" name="action" value="clear">
+  <p><button type="submit">Clear owner preference</button></p>
+</form>
+{% endif %}
+
+<h2>Latest change-impact</h2>
+{% if view.change_impact_summary %}
+<ul>
+  <li>changed: {{ view.change_impact_summary.changed_item }}</li>
+  <li>affected candidates: {{ view.change_impact_summary.affected_candidates|join(", ") or "—" }}</li>
+  <li>affected gaps/blockers: {{ view.change_impact_summary.affected_gaps_or_blockers|join(", ") or "—" }}</li>
+  <li>readiness: {{ view.change_impact_summary.prior_readiness }} → {{ view.change_impact_summary.new_readiness }}</li>
+</ul>
+{% else %}
+<p class="note">No changes recorded yet.</p>
+{% endif %}
+
+<h2>Add an input</h2>
+<form method="post" action="{{ url_for('decision_workspace_add_input', did=view.decision_id) }}">
+  <p><input type="text" name="text" placeholder="input text" size="60" required></p>
+  <p>
+    claim_class:
+    <select name="claim_class">
+      <option value="observed_fact">observed_fact</option>
+      <option value="owner_requirement">owner_requirement</option>
+      <option value="operator_reported_result">operator_reported_result</option>
+      <option value="assumption">assumption</option>
+      <option value="external_reference">external_reference</option>
+      <option value="unsupported_claim">unsupported_claim</option>
+    </select>
+    provenance:
+    <select name="provenance">
+      <option value="operator_entered">operator_entered</option>
+      <option value="platform_proposed">platform_proposed</option>
+      <option value="derived_by_rule">derived_by_rule</option>
+    </select>
+    candidate:
+    <select name="candidate_id">
+      <option value="">(none)</option>
+      {% for c in view.candidates %}<option value="{{ c.candidate_id }}">{{ c.name }}</option>{% endfor %}
+    </select>
+    <label><input type="checkbox" name="decision_relevant"> decision-relevant</label>
+    <button type="submit">Add</button>
+  </p>
+</form>
+
+<h2>Export</h2>
+<p><a href="{{ url_for('decision_workspace_export', did=view.decision_id) }}">Download canonical JSON decision record</a></p>
+<div class="limits">
+  Limitations:
+  <ul>
+    {% for l in limitations %}<li>{{ l }}</li>{% endfor %}
+  </ul>
+</div>
+
+</body>
+</html>

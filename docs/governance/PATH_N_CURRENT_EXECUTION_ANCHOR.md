@@ -1,5 +1,16 @@
 # PATH N CURRENT EXECUTION ANCHOR
 
+> **STATUS: HISTORICAL / SUPERSEDED (Phase 2 Increment 1).** This document is
+> historical and must not be treated as current authority for `runtime_integrated`.
+> Its statements `runtime_integrated=false` and "No Path N content loader has been
+> implemented" are **SUPERSEDED**: the canonical governance-recorded status is
+> `runtime_integrated=true` (per `docs/governance/ACTIVE_EXECUTION_ROADMAP.md`
+> L56–57 / L192 / L353–357 and committed JSON `97a1a51`). The authoritative pointer
+> for the current status and the full reconciliation (including the AA-2 relationship
+> and the "end-to-end runtime invocation NOT CERTIFIED" boundary) is
+> `docs/governance/evidence/phase2_governance_corrections/P2I1_PATH_N_RUNTIME_INTEGRATED_RECONCILIATION.md`.
+> The body below is preserved unchanged as history.
+
 ## 1. Purpose
 
 This document is the current execution anchor for Path N after Phase 1 implementation.
@@ -184,3 +195,43 @@ Path N is not runtime-integrated.
 Path N content is not live.
 
 The next governance-safe step is a Phase 1 closure / evidence record, not Phase 2 implementation.
+
+---
+
+## 13. Deliverable Stabilization Gate
+
+This section is a stable gate declaration. The detailed and changeable
+remediation content lives in the dedicated remediation-plan document, not
+in this Anchor.
+
+The authoritative remediation document is:
+
+`docs/governance/DELIVERABLE_STABILIZATION_REMEDIATION_PLAN.md`
+
+Gate rules:
+
+1. No new analytical feature, AI Coach capability, domain expansion,
+   journey redesign, monetization feature, or unrelated product feature
+   may proceed until the active remediation plan reaches its defined
+   closure gates. The freeze applies to UNRELATED work only: work inside
+   the currently owner-authorized remediation workstream remains
+   permitted, and no workstream may begin without its separate owner gate.
+2. Remediation items are NOT complete merely because code changed or
+   focused tests passed.
+3. Closure of any remediation item requires ALL of:
+   - focused tests;
+   - accepted full-regression results;
+   - regenerated deliverable evidence;
+   - absence of the target defect in that regenerated evidence;
+   - independent read-only review;
+   - explicit owner authorization.
+
+   This six-item list is a stable gate-level summary; if any operational
+   detail differs, the current owner-approved remediation plan controls.
+4. This Anchor records only the gate itself. Workstream content, ordering,
+   priorities, statuses, and closure detail MUST be read from the
+   remediation-plan document above and must not be copied into, inferred
+   from, or maintained in this Anchor.
+
+This section does not alter any other section of this Anchor, does not
+change Path N phase state, and authorizes no implementation by itself.

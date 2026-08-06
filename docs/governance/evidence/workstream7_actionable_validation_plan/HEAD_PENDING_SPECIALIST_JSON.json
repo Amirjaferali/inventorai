@@ -1,0 +1,77 @@
+{
+  "engine": {
+    "blocked_items": [],
+    "outcome": "PLAN",
+    "steps": [
+      {
+        "closure_condition": "Closed when specialist input is provided and recorded; no such evidence is recorded yet.",
+        "confidence_token": "UNDETERMINED",
+        "evidence_category": "specialist input",
+        "provenance_kind": "pending_specialist",
+        "provenance_label": "Pending specialist request",
+        "provenance_reference": "rec_1",
+        "responsibility_token": "SPECIALIST_REQUIRED",
+        "statement": "Obtain the requested specialist input.",
+        "step_id": "vstep:req:specialist:rec_1"
+      }
+    ]
+  },
+  "fixture_inputs": [
+    "specialist_requested: Review whether the sensing approach is adequate for the intended protective function."
+  ],
+  "package": {
+    "risk_safety_linkage": {
+      "acknowledged_unknown_count": 0,
+      "section_13_has_structural_risks": false,
+      "section_13_note": null,
+      "section_6_empty_qualification": null,
+      "section_6_high_count": 1,
+      "section_6_low_count": 0,
+      "section_6_medium_count": 0,
+      "section_6_note": null,
+      "section_6_risk_total": 1,
+      "signal_total": 0,
+      "signals_present": false
+    },
+    "safety_signal_total": 0,
+    "section_13": {
+      "count_basis": "requirement_landscape",
+      "requirements": [
+        {
+          "criticality": "Not yet determined",
+          "criticality_authority": "assigned automatically by the system; not yet reviewed",
+          "criticality_rationale": null,
+          "has_linked_risk": false,
+          "provenance": "Pending specialist request",
+          "resolving_action": "Obtain the requested specialist input.",
+          "statement": "Review whether the sensing approach is adequate for the intended protective function.",
+          "status": "specialist input pending",
+          "supporting_references": []
+        }
+      ],
+      "total": 1
+    },
+    "section_14": {
+      "blocked_item_total": 0,
+      "blocked_items": [],
+      "empty_statement": "No active, provenance-anchored requirements are recorded yet, so no validation steps can be proposed. This is an idea-development state, not an error.",
+      "outcome": "PLAN",
+      "steps": [
+        {
+          "advisory": "Specialist input is still required for this item.\nThe appropriate specialist has not yet been identified by the system.",
+          "closure_condition": "Closed when specialist input is provided and recorded; no such evidence is recorded yet.",
+          "confidence": "Confidence undetermined",
+          "confidence_label": "Confidence undetermined",
+          "evidence_category": "specialist input",
+          "provenance": "Pending specialist request",
+          "responsibility": "Specialist input required",
+          "responsibility_label": "Specialist input required",
+          "statement": "Obtain the requested specialist input."
+        }
+      ],
+      "title": "Validation Plan",
+      "validation_plan_source": "requirement_landscape",
+      "validation_step_total": 1
+    }
+  }
+}

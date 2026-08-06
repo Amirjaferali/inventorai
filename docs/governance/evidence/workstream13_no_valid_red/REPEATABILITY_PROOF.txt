@@ -1,0 +1,31 @@
+WS13 No-Valid-RED — REPEATABILITY_PROOF
+Generated: 2026-07-25T19:00:48Z (post-search verification re-run; authoritative base 0598a05 unchanged)
+
+answer_coauthoring_prompts gap='MECHANISM_COMPLETENESS'                INPUT="MECHANISM_COMPLETENESS"                   RUN1==RUN2 -> True
+answer_coauthoring_prompts gap='PHYSICAL_FEASIBILITY'                  INPUT="PHYSICAL_FEASIBILITY"                     RUN1==RUN2 -> True
+answer_coauthoring_prompts gap='BOUNDARY_AMBIGUITY'                    INPUT="BOUNDARY_AMBIGUITY"                       RUN1==RUN2 -> True
+answer_coauthoring_prompts gap='ASSUMPTION_INVENTORY'                  INPUT="ASSUMPTION_INVENTORY"                     RUN1==RUN2 -> True
+answer_coauthoring_prompts gap=None                                    INPUT=null                                       RUN1==RUN2 -> True
+answer_coauthoring_prompts gap='NONSENSE_GAP'                          INPUT="NONSENSE_GAP"                             RUN1==RUN2 -> True
+clarification_labels gap='MECHANISM_COMPLETENESS'                      INPUT="MECHANISM_COMPLETENESS"                   RUN1==RUN2 -> True
+clarification_labels gap='PHYSICAL_FEASIBILITY'                        INPUT="PHYSICAL_FEASIBILITY"                     RUN1==RUN2 -> True
+clarification_labels gap='BOUNDARY_AMBIGUITY'                          INPUT="BOUNDARY_AMBIGUITY"                       RUN1==RUN2 -> True
+clarification_labels gap='ASSUMPTION_INVENTORY'                        INPUT="ASSUMPTION_INVENTORY"                     RUN1==RUN2 -> True
+clarification_labels gap=None                                          INPUT=null                                       RUN1==RUN2 -> True
+clarification_labels gap='NONSENSE_GAP'                                INPUT="NONSENSE_GAP"                             RUN1==RUN2 -> True
+scaffolding_guidance lr=WARN                                           INPUT={"transition": "WARN", "reason": "MECHAN   RUN1==RUN2 -> True
+scaffolding_guidance lr=WARN                                           INPUT={"transition": "WARN", "reason": "BOUNDA   RUN1==RUN2 -> True
+scaffolding_guidance lr=PASS                                           INPUT={"transition": "PASS", "reason": "MECHAN   RUN1==RUN2 -> True
+scaffolding_guidance lr=∅                                              INPUT={}                                         RUN1==RUN2 -> True
+result_feedback lr=WARN                                                INPUT={"transition": "WARN", "reason": "MECHAN   RUN1==RUN2 -> True
+result_feedback lr=WARN                                                INPUT={"transition": "WARN", "reason": "BOUNDA   RUN1==RUN2 -> True
+result_feedback lr=PASS                                                INPUT={"transition": "PASS", "reason": "MECHAN   RUN1==RUN2 -> True
+result_feedback lr=∅                                                   INPUT={}                                         RUN1==RUN2 -> True
+uncertainty text="I don't know"                         is_uncertainty=True RUN1==RUN2 -> True
+uncertainty text="I'm not sure"                         is_uncertainty=True RUN1==RUN2 -> True
+uncertainty text='لا أعرف'                              is_uncertainty=True RUN1==RUN2 -> True
+uncertainty text='غير متأكد'                            is_uncertainty=True RUN1==RUN2 -> True
+uncertainty text='لا أفهم السؤال'                       is_uncertainty=True RUN1==RUN2 -> True
+uncertainty text='a concrete technical answer about torque' is_uncertainty=False RUN1==RUN2 -> True
+
+RESULT: every examined public entry point produced identical output on repeated identical inputs (RUN1==RUN2 = True for all).

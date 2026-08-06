@@ -1,6 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head><meta charset="UTF-8"><title>InventorAI — Session</title>
+{% extends "base.html" %}
+{% block title %}InventorAI — Session{% endblock %}
+{% block head %}
 <style>
 body{font-family:sans-serif;max-width:720px;margin:60px auto;padding:0 20px;color:#222}
 h1{color:#2c3e50;margin-bottom:4px}
@@ -41,11 +41,38 @@ button{margin-top:10px;padding:10px 24px;background:#2c3e50;color:white;border:n
 .complete{color:#27ae60;font-weight:bold;font-size:18px}
 hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
 </style>
-</head>
-<body>
+{# Draft Level 2 — Same-Device Unsubmitted-Text Recovery (local-only; no framework). #}
+<script defer src="{{ url_for('static', filename='js/local_draft.js') }}"></script>
+{% endblock %}
+{% block content %}
+{# One-shot, truthful client cleanup signals: reaching a session page means the seed
+   idea was accepted; `answer-accepted` is set only after a durable accepted answer. #}
+<div id="draft-signals" data-draft-scope="{{ sid }}" data-seed-accepted="{{ '1' if seed_accepted else '0' }}" data-answer-accepted="{{ '1' if answer_accepted else '0' }}" hidden></div>
+{% if project_owned_by_you %}
+<p id="owned-banner" style="background:#eef7ee;border:1px solid #bcdcbc;border-radius:4px;padding:8px 12px;margin:8px 0;font-size:13px;color:#2b542b" role="status">
+  <span lang="en">Project saved to your account.</span> · <span lang="ar" dir="rtl">تم حفظ المشروع في حسابك.</span>
+</p>
+{% endif %}
 <h1>InventorAI</h1>
 
 <div class="disclosure">{{ session_disclosure }}</div>
+
+{# Increment 3 (R-3/R-5): compact, presentation-only Next Development Step callout.
+   Renders the single primary issue selected by the shared engine derivation. The
+   template performs no priority/record/provider logic and mutates no state. #}
+{% if next_development_step and next_development_step.reference_id %}
+<div class="next-step-callout" style="background:#eef5ff;border:1px solid #b3d1ff;border-radius:4px;padding:10px 14px;margin-bottom:18px">
+  <div class="next-step-heading" style="font-weight:bold;color:#1a4f8b">Next Development Step</div>
+  <div class="next-step-issue" style="font-size:14px;margin-top:4px">{{ next_development_step.title }}</div>
+  {% if next_development_step.why_it_matters %}
+  <div class="next-step-why" style="font-size:13px;color:#555;margin-top:4px">{{ next_development_step.why_it_matters }}</div>
+  {% endif %}
+  {% if next_development_step.next_action %}
+  <div class="next-step-action" style="font-size:13px;color:#444;margin-top:6px"><span style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#1a4f8b">Do next:</span> {{ next_development_step.next_action }}</div>
+  {% endif %}
+  <div class="next-step-ref" style="font-size:12px;color:#666;margin-top:4px">Reference: {{ next_development_step.reference_id | gap_display }}</div>
+</div>
+{% endif %}
 
 <p>
   <a href="{{ url_for('show_deliverable', sid=sid) }}">
@@ -60,7 +87,7 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
   <div class="gap-guidance-text" style="margin-bottom:10px">These items remain open for later clarification. Recording an unknown does not resolve it.</div>
   <ul style="margin:6px 0 0 0;padding-left:18px;font-size:13px;color:#444">
     {% for u in state.acknowledged_unknowns %}
-    <li><strong>{{ u.gap_context }}:</strong> {{ u.verbatim }}</li>
+    <li><strong>{{ u.gap_context | gap_display }}:</strong> {{ u.verbatim }}</li>
     {% endfor %}
   </ul>
 </div>
@@ -127,8 +154,19 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
   {% else %}
     <span class="badge-none">Response recorded</span>
   {% endif %}
+  {# Plain-Language Result Feedback (Increment Contract PR #155): the friendly    #}
+  {# plain-language explanation is the PRIMARY visible feedback line. The raw      #}
+  {# engine/scoring reason is PRESERVED UNCHANGED and shown only as non-primary    #}
+  {# provenance in the collapsed "Result details" disclosure below. The truthful   #}
+  {# WARN/PASS/BLOCK badge above and the direction below are unaffected.           #}
+  {% if current_result_feedback %}
+  <div class="reason-text">{{ current_result_feedback }}</div>
+  {% endif %}
   {% if last_result.get('reason') %}
-  <div class="reason-text">{{ last_result.get('reason') }}</div>
+  <details class="result-details" style="margin-top:4px">
+    <summary style="cursor:pointer;font-size:12px;color:#8a97a3">Result details</summary>
+    <div class="reason-raw" style="font-size:12px;color:#8a7a68;margin-top:4px">{{ last_result.get('reason') }}</div>
+  </details>
   {% endif %}
   {% if last_result.get('direction') %}
   <div class="direction-text">Direction: {{ last_result.get('direction') }}</div>
@@ -136,11 +174,120 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
 </div>
 {% endif %}
 
+{# More Detail Needed / Guided Answer Scaffolding (Increment Contract PR #106): #}
+{# display-only guidance naming the KIND of missing detail to add when the      #}
+{# engine has already returned WARN. It does not change or grade the answer.    #}
+{# Advisory Panel Precedence (Increment Contract PR #141): as a competing OPEN  #}
+{# primary advisory panel this yields to Guided Uncertainty Support — it is     #}
+{# suppressed only in the uncertainty state. This is display-only and reversible #}
+{# by state; the truthful WARN badge/reason above (last_result) is unaffected.  #}
+{% if current_scaffolding_guidance and not current_uncertainty_guidance %}
+<div class="scaffolding-guidance" style="margin-bottom:18px;padding:10px 14px;border-radius:4px;border:1px solid #ffe0b2;background:#fff8ef;font-size:13px">
+  <div class="scaffolding-guidance-heading" style="font-weight:bold;color:#e65100;margin-bottom:6px">{{ current_scaffolding_guidance.heading }}</div>
+  <div class="scaffolding-guidance-lead" style="color:#5a4633;margin-bottom:8px">{{ current_scaffolding_guidance.lead }}</div>
+  <ul class="scaffolding-guidance-prompts" style="margin:0 0 8px 18px;color:#5a4633">
+    {% for prompt in current_scaffolding_guidance.prompts %}<li>{{ prompt }}</li>{% endfor %}
+  </ul>
+  <div class="scaffolding-guidance-note" style="font-size:12px;color:#8a7a68">{{ current_scaffolding_guidance.note }}</div>
+</div>
+{% endif %}
+
+{% if question %}
+<div class="current-question-eyebrow" style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#8a97a3;margin-bottom:4px">Current question</div>
+{% if gap_type and current_gap_label %}
+<div class="current-question-context" style="font-size:12px;color:#666;margin-bottom:8px">Currently addressing: <strong style="color:#2c3e50">{{ current_gap_label.heading }}</strong></div>
+{% endif %}
+{% endif %}
 <p class="question">{{ question }}</p>
+{% if question %}
+<p class="answer-hint" style="font-size:12px;color:#888;margin:-6px 0 14px 0">Answer in the box below, or choose one of the response options.</p>
+{% endif %}
+
+{% if question and current_clarification %}
+<details style="margin-bottom:14px;border:1px solid #d6e0e8;border-radius:4px;background:#fafcfe">
+  <summary style="cursor:pointer;padding:9px 14px;font-size:14px;color:#2c3e50">Help me understand this question</summary>
+  <div style="padding:4px 14px 12px 14px">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#8a97a3;margin-bottom:6px">System guidance</div>
+    <div style="font-size:14px;font-weight:bold;color:#2c3e50;margin-bottom:6px">{{ current_clarification.label }}</div>
+    <p style="font-size:13px;color:#555;line-height:1.5;margin:0 0 8px 0">{{ current_clarification.plain_language }}</p>
+    <p style="font-size:13px;color:#555;line-height:1.5;margin:0 0 8px 0"><strong>What would help:</strong> {{ current_clarification.information_needed }}</p>
+    <p style="font-size:13px;color:#555;line-height:1.5;margin:0 0 8px 0"><strong>A good answer looks like:</strong> {{ current_clarification.answer_shape }}</p>
+    <p style="font-size:13px;color:#555;line-height:1.5;margin:0">{{ current_clarification.support_hint }}</p>
+  </div>
+</details>
+{% endif %}
+
+{% if question and current_responsibility %}
+<div class="gap-guidance" style="background:#f3f7fb;border-color:#cfe0ee;margin-bottom:14px">
+  <div class="gap-guidance-heading">{{ current_responsibility.label }}</div>
+  <div class="gap-guidance-text">{{ current_responsibility.guidance }}</div>
+</div>
+{% endif %}
+
+{% if interaction_ack %}
+<div class="badge-warn" style="display:block;padding:9px 14px;margin-bottom:14px">{{ interaction_ack }}</div>
+{% endif %}
+
+{# Guided Uncertainty Support (PR #134 Increment Contract): supportive, OPTIONAL, #}
+{# display-only prompts shown when the user's own text expresses uncertainty      #}
+{# ("I don't know" / "لا أعرف"). It supplies no answer text, has no save/approve/  #}
+{# apply/rewrite control, carries no hidden form field, and adds no session        #}
+{# action. The inventor writes and owns the answer; there is nothing exam-like.    #}
+{% if question and current_uncertainty_guidance %}
+{# Arabic / RTL Supportive Response (contract PR #148): lang/dir are scoped to    #}
+{# THIS uncertainty panel only, from the display-only guidance dict. The page     #}
+{# shell stays <html lang="en"> LTR; only this supportive panel flips to Arabic   #}
+{# RTL when an Arabic-script uncertainty cue is detected. No other surface,        #}
+{# precedence guard, action, or behavior changes.                                 #}
+<div class="uncertainty-guidance" lang="{{ current_uncertainty_guidance.lang }}" dir="{{ current_uncertainty_guidance.dir }}" style="margin-bottom:14px;padding:10px 14px;border-radius:4px;border:1px solid #cfe6d6;background:#f2faf5;font-size:13px">
+  <div class="uncertainty-guidance-eyebrow" style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#5a9a75;margin-bottom:6px">{{ current_uncertainty_guidance.eyebrow }}</div>
+  <div class="uncertainty-guidance-heading" style="font-weight:bold;color:#2c5a42;margin-bottom:8px">{{ current_uncertainty_guidance.heading }}</div>
+  <ul class="uncertainty-guidance-prompts" style="margin:0 0 8px 18px;color:#3d5a4c">
+    {% for prompt in current_uncertainty_guidance.prompts %}<li>{{ prompt }}</li>{% endfor %}
+  </ul>
+  <div class="uncertainty-guidance-note" style="font-size:12px;color:#7a9a88">{{ current_uncertainty_guidance.note }}</div>
+</div>
+{% endif %}
+
+{# Guided Answer Co-Authoring Increment 1 — Advisory Prompt Support (PR #127     #}
+{# Increment Contract): OPTIONAL, display-only, content-free prompts naming the  #}
+{# KIND of information the inventor could add to their OWN answer. It supplies    #}
+{# no answer text, has no save/approve/apply control, carries no hidden form      #}
+{# field, and adds no session action. The inventor writes and owns the answer.   #}
+{# Advisory Panel Precedence (Increment Contract PR #141): as a competing OPEN   #}
+{# primary advisory panel this yields to Guided Uncertainty Support and to WARN  #}
+{# scaffolding guidance — it is suppressed only in those states and renders as   #}
+{# primary in every non-uncertainty / non-WARN state. Display-only, state-       #}
+{# specific, reversible by state; the Co-Authoring capability/helper are         #}
+{# unchanged and never removed, degraded, duplicated, or persistently disabled.  #}
+{% if question and current_answer_coauthoring and not current_uncertainty_guidance and not current_scaffolding_guidance %}
+<div class="answer-coauthoring" style="margin-bottom:14px;padding:10px 14px;border-radius:4px;border:1px dashed #b9c9d6;background:#f6f9fc;font-size:13px">
+  <div class="answer-coauthoring-eyebrow" style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#8a97a3;margin-bottom:6px">Optional guidance</div>
+  <div class="answer-coauthoring-heading" style="font-weight:bold;color:#2c3e50;margin-bottom:8px">{{ current_answer_coauthoring.heading }}</div>
+  <ul class="answer-coauthoring-prompts" style="margin:0 0 8px 18px;color:#41525f">
+    {% for prompt in current_answer_coauthoring.prompts %}<li>{{ prompt }}</li>{% endfor %}
+  </ul>
+  <div class="answer-coauthoring-note" style="font-size:12px;color:#8a97a3">{{ current_answer_coauthoring.note }}</div>
+</div>
+{% endif %}
 
 <form method="POST" action="/session/{{ sid }}">
-  <textarea name="response" rows="5" placeholder="Describe your thinking here..."></textarea>
+  {# P4-1b-2a: server-issued idempotency token required on this answered-producing form. #}
+  <input type="hidden" name="answer_token" value="{{ answer_token }}">
+  <label for="response" style="display:block;margin-bottom:6px;font-size:13px;color:#555">Your answer</label>
+  {% if answer_error %}<p id="answer-error" role="alert" class="answer-error" style="color:#c0392b;font-size:13px;margin:0 0 6px 0">{{ answer_error }}</p>{% endif %}
+  <textarea id="response" name="response" rows="5" placeholder="Describe your thinking here, or pick an option below..."{% if answer_error %} aria-describedby="answer-error" autofocus{% endif %}
+    data-draft-field="answer" data-draft-scope="{{ sid }}" data-draft-context="{{ draft_context }}" data-draft-context-version="{{ draft_context_version }}" data-draft-account="{{ account_context }}"></textarea>
   <br>
+  <fieldset style="margin-top:12px;border:1px solid #e2e6ea;border-radius:4px;padding:10px">
+    <legend style="font-size:13px;color:#555;padding:0 6px">How do you want to respond?</legend>
+    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="answered" checked> Answer this question (using the text above)</label>
+    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="unknown"> I do not know this yet</label>
+    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="deferred"> Defer this question for now</label>
+    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="provisional_assumption"> Record a provisional assumption (not verified &mdash; optional note above)</label>
+    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="specialist_requested"> A specialist needs to answer this</label>
+    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="evidence_requested"> Evidence or a test is needed for this</label>
+  </fieldset>
   <button type="submit">Submit</button>
 </form>
 
@@ -173,8 +320,58 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
 </div>
 {% endif %}
 
+{# Workstream 4 (contract §7): summary-first structured criticality step on
+   the completion-stage surface. Plain language only — no raw category,
+   authority, provenance, or requirement-id token renders. One contextually
+   supported item at a time; deferral is always available and changes nothing
+   else; skipping the step entirely changes nothing. #}
+{% if criticality_step %}
+{% if criticality_step.stage == 'correction' %}
+<div class="gap-guidance" style="margin-top:18px">
+  <div class="gap-guidance-heading">Tell me in your own words</div>
+  <div class="gap-guidance-text">Describe what should change or what is missing, and it will be used to update the picture of your idea.</div>
+</div>
+<form method="POST" action="/session/{{ sid }}">
+  {# P4-1b-2a: this criticality-correction free-text form posts no `action`, so it
+     resolves to `answered` and MUST also carry the server-issued idempotency token. #}
+  <input type="hidden" name="answer_token" value="{{ answer_token }}">
+  <textarea name="response" rows="5" placeholder="Describe the change or the missing part in your own words..."
+    data-draft-field="correction" data-draft-scope="{{ sid }}" data-draft-context="{{ draft_context }}" data-draft-context-version="{{ draft_context_version }}" data-draft-account="{{ account_context }}"></textarea>
+  <br>
+  <button type="submit">Submit</button>
+</form>
+{% elif criticality_step.stage == 'clarify' %}
+<div class="gap-guidance" style="margin-top:18px">
+  <div class="gap-guidance-heading">{{ criticality_step.clarification }}</div>
+  <div class="gap-guidance-text" style="margin-bottom:8px"><strong>{{ criticality_step.statement }}</strong></div>
+  <form method="POST" action="/session/{{ sid }}">
+    <input type="hidden" name="criticality_action" value="clarify_choice">
+    <input type="hidden" name="focus_token" value="{{ criticality_step.focus_token }}">
+    {% for value, label in criticality_step.choices %}
+    <label style="display:block;margin:5px 0"><input type="radio" name="category_choice" value="{{ value }}" {% if loop.first %}checked{% endif %}> {{ label }}</label>
+    {% endfor %}
+    <p style="font-size:13px;color:#555;margin:10px 0 4px 0">Your reason, in your own words (already filled in from what you said &mdash; keep it or edit it):</p>
+    <textarea name="rationale" rows="3">{{ criticality_step.proposed_rationale }}</textarea>
+    <br>
+    <button type="submit">Save this</button>
+  </form>
+</div>
+{% else %}
+<div class="gap-guidance" style="margin-top:18px">
+  <div class="gap-guidance-heading">{{ criticality_step.summary_lead }}</div>
+  <div class="gap-guidance-text" style="margin-bottom:10px">You said: &ldquo;{{ criticality_step.you_said }}&rdquo;</div>
+  <div class="gap-guidance-text" style="margin-bottom:6px">Is that correct?</div>
+  <form method="POST" action="/session/{{ sid }}">
+    <input type="hidden" name="focus_token" value="{{ criticality_step.focus_token }}">
+    {% for value, label in criticality_step.summary_actions %}
+    <button type="submit" name="criticality_action" value="{{ value }}" style="margin:4px 6px 0 0">{{ label }}</button>
+    {% endfor %}
+  </form>
+</div>
+{% endif %}
+{% endif %}
+
 <p><a href="/">Start a new idea</a></p>
 {% endif %}
 
-</body>
-</html>
+{% endblock %}

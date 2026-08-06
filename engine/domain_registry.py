@@ -82,13 +82,21 @@ def _validate_domain_v1(data: dict, path: str) -> None:
         raise RegistryLoadError(
             f"Field 'pack_id' must be a non-empty string in {path}"
         )
-    if not isinstance(data["classification_signals"], list):
+    if not isinstance(data["classification_signals"], list) or len(data["classification_signals"]) == 0:
         raise RegistryLoadError(
-            f"Field 'classification_signals' must be a list in {path}"
+            f"Field 'classification_signals' must be a non-empty list in {path}"
         )
-    if not isinstance(data["substance_signals"], list):
+    if not isinstance(data["substance_signals"], list) or len(data["substance_signals"]) == 0:
         raise RegistryLoadError(
-            f"Field 'substance_signals' must be a list in {path}"
+            f"Field 'substance_signals' must be a non-empty list in {path}"
+        )
+    if not isinstance(data["gap_type_mappings"], list):
+        raise RegistryLoadError(
+            f"Field 'gap_type_mappings' must be a list in {path}"
+        )
+    if not isinstance(data["rule_nuances"], list):
+        raise RegistryLoadError(
+            f"Field 'rule_nuances' must be a list in {path}"
         )
 
 

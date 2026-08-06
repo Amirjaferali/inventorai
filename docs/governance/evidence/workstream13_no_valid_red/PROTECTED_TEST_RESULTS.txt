@@ -1,0 +1,133 @@
+WS13 No-Valid-RED — Protected Test Results (complete raw capture)
+POST-SEARCH VERIFICATION
+Execution timestamp: 2026-07-25T19:12:30Z
+Authoritative base: 0598a05137912866bab49f67b0c82048b282f85d (unchanged; base commit and the five seams byte-identical to the original search)
+Working directory: /home/user/inventorai
+python: Python 3.11.15; pytest: pytest 9.1.1
+==================================================================
+
+### GROUP (e1) — WS13/WS14 absence guard
+COMMAND: python3 -m pytest tests/test_workstream_9_single_intent_question_design.py::test_PROTECTED_no_workstream_13_to_14_capability_introduced -rA
+============================= test session starts ==============================
+platform linux -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: /home/user/inventorai
+collected 1 item
+
+tests/test_workstream_9_single_intent_question_design.py .               [100%]
+
+=============================== warnings summary ===============================
+engine/domain_rules.py:7
+  /home/user/inventorai/engine/domain_rules.py:7: UserWarning: domain_registry: skipping domains/iot_electronics/domain.json (schema_version=None, expected '1.0')
+    _REGISTRY = load_registry("domains/")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED tests/test_workstream_9_single_intent_question_design.py::test_PROTECTED_no_workstream_13_to_14_capability_introduced
+========================= 1 passed, 1 warning in 0.08s =========================
+EXIT_CODE=0
+
+### GROUP (e2) — direct import check (absence)
+COMMAND (exact, copy-executable):
+python3 -c "
+import importlib
+for m in ('engine.guided_answer_support', 'engine.adaptive_follow_up'):
+    try:
+        importlib.import_module(m)
+        print(m, 'EXISTS')
+    except ModuleNotFoundError:
+        print(m, 'ABSENT')
+"
+engine.guided_answer_support ABSENT
+engine.adaptive_follow_up ABSENT
+EXIT_CODE=0
+
+### GROUP (b) — eight display-layer guidance test files
+COMMAND: python3 -m pytest tests/test_guided_answer_coauthoring_increment_1.py tests/test_more_detail_needed_scaffolding.py tests/test_guided_uncertainty_support.py tests/test_increment_1b_clarification_routing.py tests/test_phase_8a_section4_clarification.py tests/test_layer1_feedback_wording.py tests/test_plain_language_result_feedback.py tests/test_advisory_panel_precedence.py -q
+engine/domain_rules.py:7
+  /home/user/inventorai/tests/../engine/domain_rules.py:7: UserWarning: domain_registry: skipping domains/iot_electronics/domain.json (schema_version=None, expected '1.0')
+    _REGISTRY = load_registry("domains/")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+177 passed, 1 warning in 1.69s
+EXIT_CODE=0
+
+### GROUP (c) — WS9/Path-N protected regression
+COMMAND: python3 -m pytest tests/ -q -k "path_n_content_config_artifact or phase2_path_n_selection or workstream_9_single_intent"
+    _REGISTRY = load_registry("domains/")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+38 passed, 1533 deselected, 1 warning in 1.09s
+EXIT_CODE=0
+
+### GROUP (d) — WS10/WS11/WS12 focused suites
+COMMAND: python3 -m pytest tests/test_workstream_10_question_intent_registry_interface_contract.py tests/test_workstream_10_question_intent_registry_behavioral_validation.py tests/test_workstream_11_question_aware_evaluation_base_red.py tests/test_workstream_12_controlled_unknown_progression_base_red.py -q
+    _REGISTRY = load_registry("domains/")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+70 passed, 1 warning in 0.58s
+EXIT_CODE=0
+
+### GROUP (e) — full suite
+COMMAND: python3 -m pytest tests/ -q
+FAILED tests/test_domain_registry.py::TestInvalidValueValidation::test_empty_governance_source_raises
+FAILED tests/test_domain_registry.py::TestRuntimeIsolation::test_domain_rules_not_modified
+31 failed, 1514 passed, 1 skipped, 1 xfailed, 24 xpassed, 111 warnings in 6.21s
+EXIT_CODE=1
+
+### GROUP (e-nodes) — complete raw failing-node listing (proves all 31 failures are tests/test_domain_registry.py)
+COMMAND: python3 -m pytest tests/ -q | grep '^FAILED'
+FAILED tests/test_domain_registry.py::TestLoadValidDomain::test_load_iot_electronics_domain
+FAILED tests/test_domain_registry.py::TestLoadValidDomain::test_registry_keyed_by_capability_id
+FAILED tests/test_domain_registry.py::TestLoadValidDomain::test_domain_contains_expected_keys
+FAILED tests/test_domain_registry.py::TestLoadValidDomain::test_governance_contains_expected_keys
+FAILED tests/test_domain_registry.py::TestListDomains::test_list_domains_contains_known_domain
+FAILED tests/test_domain_registry.py::TestGetDomain::test_get_domain_returns_dict
+FAILED tests/test_domain_registry.py::TestGetDomain::test_get_domain_correct_content
+FAILED tests/test_domain_registry.py::TestDeterministicLoading::test_load_order_is_sorted
+FAILED tests/test_domain_registry.py::TestDeterministicLoading::test_subdir_without_domain_json_is_skipped
+FAILED tests/test_domain_registry.py::TestMissingFieldValidation::test_missing_top_level_field_raises[taxonomy_group]
+FAILED tests/test_domain_registry.py::TestMissingFieldValidation::test_missing_top_level_field_raises[capability_id]
+FAILED tests/test_domain_registry.py::TestMissingFieldValidation::test_missing_top_level_field_raises[display_name]
+FAILED tests/test_domain_registry.py::TestMissingFieldValidation::test_missing_top_level_field_raises[description]
+FAILED tests/test_domain_registry.py::TestMissingFieldValidation::test_missing_top_level_field_raises[domain_signals]
+FAILED tests/test_domain_registry.py::TestMissingFieldValidation::test_missing_top_level_field_raises[gaps]
+FAILED tests/test_domain_registry.py::TestMissingFieldValidation::test_missing_top_level_field_raises[notes]
+FAILED tests/test_domain_registry.py::TestMissingFieldValidation::test_missing_top_level_field_raises[governance]
+FAILED tests/test_domain_registry.py::TestMissingFieldValidation::test_missing_governance_field_raises[source]
+FAILED tests/test_domain_registry.py::TestMissingFieldValidation::test_missing_governance_field_raises[license]
+FAILED tests/test_domain_registry.py::TestMissingFieldValidation::test_missing_governance_field_raises[owner]
+FAILED tests/test_domain_registry.py::TestMissingFieldValidation::test_missing_governance_field_raises[review_date]
+FAILED tests/test_domain_registry.py::TestMissingFieldValidation::test_missing_governance_field_raises[version]
+FAILED tests/test_domain_registry.py::TestMissingFieldValidation::test_missing_governance_field_raises[deprecation_status]
+FAILED tests/test_domain_registry.py::TestInvalidValueValidation::test_invalid_version_format_raises
+FAILED tests/test_domain_registry.py::TestInvalidValueValidation::test_invalid_review_date_raises
+FAILED tests/test_domain_registry.py::TestInvalidValueValidation::test_invalid_deprecation_status_raises
+FAILED tests/test_domain_registry.py::TestInvalidValueValidation::test_empty_capability_id_raises
+FAILED tests/test_domain_registry.py::TestInvalidValueValidation::test_empty_domain_signals_raises
+FAILED tests/test_domain_registry.py::TestInvalidValueValidation::test_empty_gaps_raises
+FAILED tests/test_domain_registry.py::TestInvalidValueValidation::test_empty_governance_source_raises
+FAILED tests/test_domain_registry.py::TestRuntimeIsolation::test_domain_rules_not_modified
+
+### GROUP (e-dist) — failure distribution proof
+COMMANDS (exact, copy-executable; each is a separate pipeline):
+  total_FAILED:
+    python3 -m pytest tests/ -q 2>&1 | grep -c '^FAILED'
+  test_domain_registry_failures:
+    python3 -m pytest tests/ -q 2>&1 | grep '^FAILED' | grep -c 'test_domain_registry'
+  non_domain_registry_failures:
+    python3 -m pytest tests/ -q 2>&1 | grep '^FAILED' | grep -vc 'test_domain_registry'
+PIPELINE-EXIT NOTE: in each pipeline above the reported shell exit status is
+grep's, NOT pytest's. pytest's own exit status is 1 (see GROUP (e), captured via
+${PIPESTATUS[0]}), because the 31 pre-existing tests/test_domain_registry.py
+failures are present. The counts below are read from grep's stdout, and the
+pytest failure list itself is the authority (see GROUP (e-nodes)).
+total_FAILED=31
+test_domain_registry_failures=31
+non_domain_registry_failures=0
+
+### GROUP (e-unique) — unique failing files
+COMMAND: python3 -m pytest tests/ -q | grep '^FAILED' | sed -E 's#(tests/[^:]+)::.*#\1#' | sort -u
+FAILED tests/test_domain_registry.py
+
+SUMMARY: full suite EXIT_CODE=1 (pytest returns 1 when any test fails); 31 failed / 1514 passed / 1 skipped / 1 xfailed / 24 xpassed; all 31 failing nodes are in tests/test_domain_registry.py (the established pre-existing baseline); non_domain_registry_failures=0. The absence guards, the eight display-layer guidance suites, the WS9/Path-N protected regression, and the WS10/WS11/WS12 focused suites all pass (EXIT_CODE=0).

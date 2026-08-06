@@ -1,15 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
-<head><meta charset="UTF-8"><title>InventorAI</title>
-<style>body{font-family:sans-serif;max-width:700px;margin:60px auto;padding:0 20px}textarea{width:100%;padding:12px;font-size:16px;border:1px solid #ccc;border-radius:4px}button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:none;border-radius:4px;font-size:16px;cursor:pointer}.error{color:#e74c3c}</style>
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}InventorAI{% endblock %}
+{% block head %}
+<style>body{font-family:sans-serif;max-width:700px;margin:60px auto;padding:0 20px}textarea{width:100%;padding:12px;font-size:16px;border:1px solid #ccc;border-radius:4px}button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:none;border-radius:4px;font-size:16px;cursor:pointer}.error{color:#e74c3c}.orient{background:#f0f4f8;border:1px solid #d4dde6;border-radius:4px;padding:12px 16px;margin:12px 0 20px 0}.orient p{margin:0 0 8px 0;font-size:14px;line-height:1.5;color:#333}.orient p:last-child{margin-bottom:0}.orient .honest{font-size:13px;color:#555}</style>
+{# Draft Level 2 — Same-Device Unsubmitted-Text Recovery (local-only; no framework). #}
+<script defer src="{{ url_for('static', filename='js/local_draft.js') }}"></script>
+{% endblock %}
+{% block content %}
 <h1>InventorAI</h1>
+<div class="orient">
+  <p>InventorAI helps you develop an early invention idea. It asks a few focused questions, one at a time, and organizes your answers into a clear, readable assessment you can revisit.</p>
+  <p><strong>How it works:</strong> you describe your idea, answer one guided question per step, and build up a snapshot of what your idea is, what it needs, and what to do next.</p>
+  <p class="honest">This is an advisory tool to sharpen your own thinking. The assessment is a work-in-progress snapshot &mdash; not a validation, verification, score, approval, certification, patent opinion, legal opinion, or final technical judgment. You remain responsible for verifying any technical claim.</p>
+</div>
 <p>Describe your invention idea to begin.</p>
+<p class="session-note">This is a temporary session. There is no account or durable saved-projects area.</p>
+<p class="session-note" style="font-size:12px;color:#666">Unfinished text may be kept temporarily on this device/browser so you can recover it here if you leave and return. It is not saved to an account or another device, expires after 7 days, and can be discarded. Anyone using this browser profile may be able to see it. <a href="/data-and-session">Learn more</a>.</p>
 <p>Electronics and electrical ideas are currently supported. Before starting, please confirm that your idea belongs to this supported domain.</p>
 {% if error %}<p class="error">{{ error }}</p>{% endif %}
 <form method="POST" action="/start">
-<textarea name="idea" rows="4" placeholder="Describe your electronics or electrical invention..." required></textarea>
+<label for="idea" style="display:block;margin-bottom:6px;font-size:14px">Describe your idea</label>
+<textarea id="idea" name="idea" rows="4" placeholder="Describe your electronics or electrical invention..." required
+  data-draft-field="idea" data-draft-scope="__seed__" data-draft-context="seed" data-draft-context-version="v1" data-draft-account="{{ account_context }}"></textarea>
 <br>
 <label style="display:block;margin-top:12px;font-size:14px">
 <input type="checkbox" name="domain_confirm" value="electronics_electrical" required>
@@ -18,4 +29,4 @@ I confirm that this idea is primarily an electronics or electrical idea.
 <button type="submit">Start</button>
 </form>
 <p style="color:#888;font-size:13px">Currently supported: electronics and electrical ideas.</p>
-</body></html>
+{% endblock %}

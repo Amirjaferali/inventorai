@@ -1,0 +1,8 @@
+Total FAILED lines:
+31
+domain_registry baseline failures:
+31
+non-domain_registry failures:
+0
+--- unique failing files ---
+FAILED tests/test_domain_registry.py

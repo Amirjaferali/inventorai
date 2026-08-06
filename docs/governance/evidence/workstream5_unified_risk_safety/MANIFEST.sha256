@@ -1,0 +1,46 @@
+# WS5 MANIFEST — SHA-256 over every evidence file except this manifest itself
+# Source commits: BASE artifacts at 3cef5eb79a3c3483903f3e0acbe59c18dc05caf0; HEAD artifacts and records at 97b6725953150509059dd41ba623e438f939f094
+# Generation: python generate_ws5_artifacts.py base|head <thisdir> (artifacts); pytest commands recorded in WS5_RED_GREEN_TEST_RECORD.md (raw outputs); authored records per WS5_EVIDENCE_INDEX.md
+# Byte sizes:
+#   WS5_BASE_HEAD_COMPARISON.md 3975 bytes
+#   WS5_EVIDENCE_INDEX.md 4153 bytes
+#   WS5_HEAD_IDENTITY.md 2222 bytes
+#   WS5_PROTECTED_BEHAVIOR.md 2182 bytes
+#   WS5_RED_GREEN_TEST_RECORD.md 6174 bytes
+#   WS5_RENDERED_USER_EXPERIENCE_REVIEW.md 4062 bytes
+#   WS5_REVIEW_FINDINGS.md 1082 bytes
+#   base_mature_gapfree_deliverable.html 11482 bytes
+#   base_mature_gapfree_deliverable.json 10113 bytes
+#   base_no_signal_deliverable.html 10465 bytes
+#   base_no_signal_deliverable.json 10549 bytes
+#   base_ws1_safety_deliverable.html 22058 bytes
+#   base_ws1_safety_deliverable.json 38888 bytes
+#   generate_ws5_artifacts.py 11648 bytes
+#   head_mature_gapfree_deliverable.html 12360 bytes
+#   head_mature_gapfree_deliverable.json 11221 bytes
+#   head_no_signal_deliverable.html 10483 bytes
+#   head_no_signal_deliverable.json 10967 bytes
+#   head_ws1_safety_deliverable.html 22661 bytes
+#   head_ws1_safety_deliverable.json 39730 bytes
+#   ws5_json_html_parity.json 4055 bytes
+23bb581cada763c07c471c2041bfe1363b4217476185807f9b141f103053111a  WS5_BASE_HEAD_COMPARISON.md
+ff378f7e8abb09444baf5b0fefeffe4bb60c560a69023625afad6ab7ab039843  WS5_EVIDENCE_INDEX.md
+db781f9ef05f0420b6919bb6509b9f278d5ac821c5085201bad094c253f26ad9  WS5_HEAD_IDENTITY.md
+e7ab97a717d6cf9aeddff505228c6284ac3e66c1f258f4f178e3178ed15f6157  WS5_PROTECTED_BEHAVIOR.md
+f7f5e3d742a5ecef6869a27e13c33f59378562c90363b4e4321b5954c6f39c8a  WS5_RED_GREEN_TEST_RECORD.md
+e3d8cb652cdfc85b67728474a51f111a3eaf1cd5f3b429266c13ed8a35e26883  WS5_RENDERED_USER_EXPERIENCE_REVIEW.md
+0f79b46c0917356f93d127ab5b28625084354107fa664afd1a5791e8fd2d3259  WS5_REVIEW_FINDINGS.md
+c6dde9587c31f9795187fc9d7785be52ea8f230a5f950f8a898e9375f243d3da  base_mature_gapfree_deliverable.html
+d4a108731c5c3d6837796906e3181e7aa8afe01f0c4cadda9364ac9f55d57716  base_mature_gapfree_deliverable.json
+f2526b5ecbacd4c3263e5e68628ad5c6318b9e7fea92188fc3ea2cc24dd60651  base_no_signal_deliverable.html
+fd09dee8dd71e515f8f6b9b42e01bc11b25bed3802192e012a30f408def69ede  base_no_signal_deliverable.json
+a63fc68599deb4ddfa175f845af66ca9054b5f78c05ba44005692eda6b131de6  base_ws1_safety_deliverable.html
+8378e5ac94abbeddcbba766f5e7fd17e1a27779c2ff63294e352f94c3338ee42  base_ws1_safety_deliverable.json
+31a361683f37037f74264db4746061724f527022f2ada13ab53945a03a431485  generate_ws5_artifacts.py
+bac9974efc815711d02d60a611e3304f92bbcd17f8a25657009428844628c980  head_mature_gapfree_deliverable.html
+03be1633768014dcde1d1886de89d559c4957528a663b54cdde4650035756533  head_mature_gapfree_deliverable.json
+d62469f0ac2b4b42b4345a05f8024c6b40387f1edb666cf526e240117508172d  head_no_signal_deliverable.html
+bdb4680e47a6a2377a6cd0a8c9d7594eb23b909474239a03dec4a9dab304ad56  head_no_signal_deliverable.json
+20329f9256649b3f3389406c9e0020ca656004c838ac3f63df52680492fc66ca  head_ws1_safety_deliverable.html
+a2321a1fcacdb28166f4def502a8906d94a97898ba3c55f5320094f477eacf7a  head_ws1_safety_deliverable.json
+98cc7dc3448cbc3128000382c93a12c25b49b1fae3add6350ccc0d341f14a4d1  ws5_json_html_parity.json
