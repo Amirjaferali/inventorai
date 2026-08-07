@@ -51,6 +51,61 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
 - **`main`:** `0e89e4636399760965c9ff8086b465c90dbadf8e` — STALE / UNRECONCILED / NOT authority.
 
 
+## Master Obligation Index (routing layer — pointer-only)
+
+Added by the owner-authorized governance-only **Master Obligation Index** gate. It is a
+concise **routing layer**, not a second roadmap and not a ledger: it names which obligation
+LAYERS exist and where each is authoritatively tracked, so an owner or future agent can reach
+the source of truth without reconstructing state. **Status-ownership rule:** status is owned by
+the authoritative tracker referenced in each row; this index **does not recompute, copy, or
+become authoritative** for any workstream/phase/capability status, and it creates no new tracker
+(**D-FPC-MAP-06** — consume/extend the existing canonical model).
+
+| Obligation layer | Authoritative tracker (section) | What that tracker owns |
+|---|---|---|
+| 1. Deliverable-Stabilization workstreams (WS1–WS17) | `docs/governance/DELIVERABLE_STABILIZATION_REMEDIATION_PLAN.md` §15 *Workstream status table* | Per-WS status + closure evidence |
+| 2. Product-Foundation / Commercial-Readiness phases (Phase 0–10) | `docs/governance/PRODUCT_FOUNDATION_AND_COMMERCIAL_READINESS_REMEDIATION_PLAN.md` §4 objectives / §5 sequence / §12 standing review | Per-phase status + dependency/critical path |
+| 3. Active phase/sub-gate execution (P4 / P5 / P6 — e.g. P6-1, D-P6-18) | `docs/governance/ACTIVE_EXECUTION_ROADMAP.md` (§4 live status + append-only tail), subject to `docs/governance/ACTIVE_INCREMENT_CONTRACT.md` | Current lane / holds / authorized next action |
+| 4. Owner-added capability inventory (CAP-01…CAP-14) | `docs/governance/INVENTORAI_CAPABILITY_ENRICHMENT_REGISTER.md` | Recorded capabilities — all `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION` (**registration ≠ authorization**) |
+| 5. Owner decisions & authorization state (OD-/D- numbers) | `docs/governance/OWNER_DECISION_REGISTER.md` | Owner decisions + separate-authorization requirements (**a recorded proposal is NOT execution authorization**) |
+
+**Current critical-path pointer.** The current next-eligible action is determined by the **latest
+authoritative entry in `ACTIVE_EXECUTION_ROADMAP.md`**, subject to `ACTIVE_INCREMENT_CONTRACT.md`
+and the authorization state in `OWNER_DECISION_REGISTER.md`. Do **not** hard-code any capability as
+the permanent next action — the roadmap owns future changes. (As of D-P6-18 formal closure the
+roadmap records **no active implementation contract**; the next eligible action is read from the
+live roadmap and is **ELIGIBLE FOR OWNER CONSIDERATION, NOT AUTHORIZED**.)
+
+**Unfinished-obligation watchlist (pointer-only; status per the trackers above, not asserted here).**
+Unfinished **original** remediation currently lives in Layers 1–2 — e.g. **WS17 (AI Coach)**, Layer 1
+§15, `NOT STARTED — REQUIRES SEPARATE OWNER AUTHORIZATION`; and **Product-Foundation Phases 3–10**,
+Layer 2 §5/§12, `NOT STARTED` (each phase requires separate owner authorization). Deferred/reserved
+items are routed via Layers 4–5 — e.g. D13 / STG (Structured Technical Guidance), Patent Export,
+WS-PFV-001, Domain Registry validation hardening (D-P6-14), Output-Language (D-P6-17), ACV,
+PDF/download, output email, and CAP-01…CAP-14. Each remains `NOT STARTED` / `DEFERRED` / `RESERVED —
+INACTIVE` until **separately owner-authorized**, per its authoritative tracker; this index asserts no
+status of its own.
+
+**Mandatory displacement guard.** Before authorizing any new proposal, enhancement, capability, or
+successor gate, check **every** layer above for unfinished higher-priority obligations and ask:
+> "Is there an unfinished original remediation obligation, and would this new addition displace it
+> from the critical path?"
+- **If YES:** record the new proposal in the appropriate **existing** register (do NOT create a new
+  tracker — D-FPC-MAP-06); do NOT execute it merely because it is attractive or newly requested; and
+  preserve the unfinished higher-priority obligation unless the owner **explicitly** reprioritizes it.
+- **If NO:** proceed only through the normal **separate** authorization gate.
+
+This index authorizes nothing and triggers no automatic execution. **No-displacement / no-duplication
+rules:** new capabilities do not silently replace unfinished remediation; deferred items remain
+deferred until separately authorized; owner-added capabilities remain **inventory** (RECORDED ≠
+AUTHORIZED) unless authorized; the existing canonical trackers remain authoritative; **D-FPC-MAP-06**
+applies before creating any new tracker/register/framework; and any new finding during a gate is
+classified using the existing repository vocabulary — **BLOCKER**, **NON-BLOCKING OBSERVATION**, or
+**FUTURE / DEFERRED** item — rather than automatically expanding scope. The **Question Translation
+Assistant remains NOT AUTHORIZED / NOT STARTED**; this Master Obligation Index gate is
+governance/documentation only and starts **no** successor implementation.
+
+
 ## HISTORICAL SNAPSHOT — POST-PR #353 (SUPERSEDED BY THE POST-PR #365 CURRENT-TRUTH SECTION)
 
 *Superseded historical snapshot — do not read as present authority. Its "current" wording and the "P4-1 / P4-2: NOT
