@@ -495,6 +495,11 @@ AUTHORIZED / NOT STARTED.***
   separate future phase NOT AUTHORIZED; **new domain activation** NOT AUTHORIZED. The next-eligible action is read from the
   live `ACTIVE_EXECUTION_ROADMAP.md` + Master Obligation Index + `OWNER_DECISION_REGISTER.md` and requires **separate
   explicit owner authorization**.
+- **§5 Multi-Domain Foundation — contract defined (definition only):** the distinct future §5 program now has a
+  governance/documentation-only **contract of record §5-C1** (`docs/governance/PRODUCT_FOUNDATION_S5_MULTI_DOMAIN_FOUNDATION_CONTRACT.md`;
+  owner decisions **D-S5-C1** / **D-S5-01…D-S5-09**; append-only roadmap entry). It **authorizes no implementation** and
+  activates no domain. Next-eligible implementation gate: **§5-I1 (Domain Registry validation hardening / D-P6-14)** —
+  **ELIGIBLE FOR OWNER CONSIDERATION only after §5-C1 is owner-accepted and merged; NOT AUTHORIZED / NOT STARTED**.
 
 ## PHASE 6 — P6-1 TRUTHFUL DOMAIN LABELING FOUNDATION: FORMALLY ACCEPTED AND CLOSED (implemented / independently reviewed B / merged PR #385 / post-merge verified / governance-sync merged PR #386 / owner-accepted) — increment record within the now-CLOSED executed Phase-6 lane (see the closure banner above)
 
