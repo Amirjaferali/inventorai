@@ -4655,3 +4655,53 @@ ACCEPTED AND CLOSED**. Product-Foundation §5 Multi-Domain and Technology Capabi
 implemented boundary; P4-2 Level-1, Draft Level 2, P5-1, P5-2, P5-3, P6-1, and D-P6-18 remain CLOSED. Master Obligation
 Index governance-only gate remains AUTHORIZED (documentation reconciliation only) and pointer-only. Append-only; prior
 history not rewritten. This entry authorizes no push, PR, merge, product implementation, or successor capability.
+
+## Product-Foundation §5 — Multi-Domain & Technology Capability Foundation — CONTRACT DEFINITION + OWNER DECISIONS RECORDED (G-S5-C1-MULTI-DOMAIN-FOUNDATION-CONTRACT-01; governance/documentation-only; append-only)
+
+**What this entry records (documentation-only; authorizes no implementation).** Following the accepted §5 read-only
+discovery, the owner authorized and executed the **§5-C1 contract-definition + owner-decision gate**. This records a
+bounded architecture/governance contract for the **distinct future** Product-Foundation §5 program — **Multi-Domain and
+Technology Capability Foundation** — which is NOT the closed executed Phase-6 lane (Domain Specialization / Truthful
+Specialist Labeling) and is NOT activated here. Dedicated contract of record:
+`docs/governance/PRODUCT_FOUNDATION_S5_MULTI_DOMAIN_FOUNDATION_CONTRACT.md`; owner decisions in
+`OWNER_DECISION_REGISTER.md` (**D-S5-C1**, **D-S5-01 … D-S5-09**). Contract basis tip
+`a9bead4b4eec6568613211d77f6d6e80a2eae752` (PR #391 — Phase-6 formal-closure merge).
+
+**Owner decisions recorded.** D-S5-01 registry authority = **Option C** (one Domain Registry authoritative; capabilities
+referenced from packs; no separate capability registry now). D-S5-02 capability model = **references now, registry later
+(evidence-gated)**. D-S5-03 activation status = **Option A + separate server-side activation policy** (pack `status` =
+loader/lifecycle only; electronics-only activation NOT silently broadened; mechanical/medical_device/software stay
+registered-but-not-active). D-S5-04 cross-domain = **Option D** (generic project; single primary `confirmed_domain`
+preserved; multi-domain at the **subsystem** grain; peer root domains rejected). D-S5-05 subsystem = conceptual contract
+only. D-S5-06 unsupported/partial-domain = preserve + formalize truthful behavior (never overclaim; never silently
+electronics). D-S5-07 specialist category = pack metadata + presentation (P6-1 seam; Tier 3/4 remain prohibited). D-S5-08
+Phase-7 handoff = accepted resource-boundary contracts (not endpoints). D-S5-09 naming seam = smallest supersession/context
+labels, no history rewrite.
+
+**Domain-pack contract + D-P6-14.** The existing v1.0 pack format is formalized (not replaced), backward-compatible and
+additive, with a REQUIRED governance/provenance block (currently absent on all four active packs — the concrete D-P6-14
+gap), pack-id/alias collision + status-value + version-format rules. **D-P6-14 is registry hardening, not activation**,
+and is recommended as **§5-I1 — the first implementation gate AFTER this contract is accepted** (bounded, RED-testable,
+prerequisite before any new-domain activation). It is NOT authorized here.
+
+**Sequenced §5 plan (RECORDED — each NOT AUTHORIZED; separate owner authorization required).** §5-I1 Domain Registry
+validation hardening (D-P6-14) → §5-I2 activation-status policy + explicit unsupported-domain model → §5-I3 subsystem +
+cross-domain project model (additive, schema-gated migration) → §5-I4 capability references / Technology Capability
+Registry (only if D-S5-02 evidence supports) → §5-CLOSE. §5 closure criteria are foundation-only and **must not** depend
+on new-domain activation.
+
+**Strictly bounded.** This gate authorizes **no** implementation and **no** successor. It activates no domain
+(mechanical/medical_device/software/iot_electronics/IoT/any new domain remain NOT ACTIVATED); starts no Phase 7 and defines
+no API endpoints; and does not authorize QTA, WS17/AI Coach, Output-Language, STG, ACV, PDF/download, output email, or
+CAP-01…CAP-14. No engine/web/domains/schema/migration/tests/dependencies/CI change; no new tracker/roadmap/matrix/taxonomy
+(D-FPC-MAP-06). Lean test PASS; displacement guard PASS (§5 remains the on-critical-path original-program obligation).
+
+**Retained governance observation (NOT remediated here).** The stale Product-Foundation plan status/naming-seam text
+remains a bounded, separately-authorized future documentation-sync (D-S5-09) — not a broad rewrite in this gate.
+
+**Status after this entry.** §5-C1 Multi-Domain & Technology Capability Foundation contract: **DEFINED / CONTRACT OF
+RECORD (DEFINITION ONLY)**. Next-eligible implementation gate: **§5-I1 (Domain Registry validation hardening / D-P6-14)** —
+**ELIGIBLE FOR OWNER CONSIDERATION only after this contract is owner-accepted and merged; NOT AUTHORIZED / NOT STARTED**.
+Phase 4 & Phase 5 remain FORMALLY CLOSED; the executed Phase-6 lane remains FORMALLY CLOSED; P4-2 Level-1, Draft Level 2,
+P5-1, P5-2, P5-3, P6-1, and D-P6-18 remain CLOSED. Append-only; prior history not rewritten. This entry authorizes no push,
+PR, merge, product implementation, or successor capability.
