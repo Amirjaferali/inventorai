@@ -4568,3 +4568,34 @@ reconciliation gate that is **NOT AUTHORIZED and NOT STARTED** and remains **ELI
 authorization for the Master Obligation Index, the Question Translation Assistant, or any other successor capability
 exists or is implied. Append-only; prior history not rewritten. This entry authorizes no push, PR, merge, implementation,
 or phase activation.
+
+
+## Master Obligation Index — governance-only gate: OWNER AUTHORIZED (G-MOI-01, documentation-only, append-only)
+
+**What this entry records (documentation-only; authorizes no implementation).** The owner has EXPLICITLY authorized the
+governance-only **Master Obligation Index** gate. This supersedes, for THIS gate only, any prior roadmap wording that
+described the Master Obligation Index as "ELIGIBLE FOR OWNER CONSIDERATION — NOT AUTHORIZED / NOT STARTED": the
+**governance-only Master Obligation Index gate is now AUTHORIZED**. The gate adds a concise, pointer-only routing layer to
+`docs/governance/CURRENT_PROJECT_STATE.md` and records this authorization in `OWNER_DECISION_REGISTER.md` (decision
+**D-MOI-01**).
+
+**This authorization is strictly bounded.** It authorizes **no** successor implementation and **no** product capability.
+Specifically it does NOT authorize: the **Question Translation Assistant** (remains **NOT AUTHORIZED / NOT STARTED**),
+**WS17 / AI Coach**, any **Phase 7+** phase, any **CAP-01…CAP-14** item, Output-Language, STG, ACV, PDF/download, output
+email, or any new capability, engine/domains/schema/dependency/CI/test change. The Master Obligation Index is a routing
+layer only; it recomputes/duplicates no status and creates no new tracker, roadmap, matrix, or taxonomy (D-FPC-MAP-06).
+
+**Retained governance observation (NOT remediated here).** `PRODUCT_FOUNDATION_AND_COMMERCIAL_READINESS_REMEDIATION_PLAN.md`
+carries stale Phase-2-era document-status / adoption-note wording (later phases marked NOT STARTED) that lags live
+execution — Phase 4 and Phase 5 are formally closed and Phase 6 is partially executed and not complete per the closure
+records and this roadmap. That plan is **not** modified by this gate; its status text must **not** be read as current
+project status. Refreshing it is a **future, separately-authorized documentation-synchronization gate**. Current
+phase-execution status is owned by the live `ACTIVE_EXECUTION_ROADMAP.md` and the formal closure records, not by the
+plan's header text.
+
+**Status after this entry.** Master Obligation Index governance-only gate: **AUTHORIZED** (documentation reconciliation
+only). The current next-eligible action continues to be read from the latest authoritative entry of this roadmap, subject
+to `ACTIVE_INCREMENT_CONTRACT.md` and `OWNER_DECISION_REGISTER.md`; no capability, workstream, or phase is hard-coded as
+the permanent next action. D-P6-18 remains FORMALLY CLOSED; Phase 6 as a whole is NOT complete. Phase 5 remains FORMALLY
+CLOSED; P4-2 Level-1, Draft Level 2, P5-1, P5-2, P5-3, and P6-1 remain CLOSED. Append-only; prior history not rewritten.
+This entry authorizes no push, PR, merge, product implementation, or successor capability.
