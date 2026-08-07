@@ -474,7 +474,29 @@ AUTHORIZED / NOT STARTED.***
   WS17, STG, ACV, PDF, Email, and every FPC (FPC-01…FPC-04) remain NOT AUTHORIZED / NOT STARTED.** Decision **D17** and
   the AISR seven-owner model are preserved.
 
-## PHASE 6 — P6-1 TRUTHFUL DOMAIN LABELING FOUNDATION: FORMALLY ACCEPTED AND CLOSED (implemented / independently reviewed B / merged PR #385 / post-merge verified / governance-sync merged PR #386 / owner-accepted) — Phase 6 NOT complete (current truth)
+## PHASE 6 — DOMAIN SPECIALIZATION / TRUTHFUL SPECIALIST LABELING (executed lane, Option A): FORMALLY ACCEPTED AND CLOSED (current truth)
+
+- **Executed Phase 6 lane — Domain Specialization / Truthful Specialist Labeling, Option A — Truthful Domain Labeling
+  Foundation: FORMALLY ACCEPTED AND CLOSED** (owner gate **G-PHASE-6-DOMAIN-SPECIALIZATION-FORMAL-CLOSURE-01**; dedicated
+  record `docs/governance/PHASE_6_DOMAIN_SPECIALIZATION_FORMAL_CLOSURE_RECORD.md`; append-only roadmap closure entry; owner
+  decision **D-P6-CLOSE** in `OWNER_DECISION_REGISTER.md`). Closure basis tip `9665413` (PR #390). Grounded in: discovery
+  `G-P6-DOMAIN-SPECIALIZATION-DISCOVERY-01` accepted; **D-P6-00 … D-P6-15** adopted; **Option A** selected (**D-P6-01**);
+  **P6-1** closed (PR #385/#386); **D-P6-18** closed (PR #388/#389); **no required original Option-A implementation
+  obligation remains** (`ACTIVE_INCREMENT_CONTRACT.md` records no active contract-of-record).
+- **Distinct future program — NOT closed by this gate:** the Product-Foundation §5 **"Multi-Domain and Technology
+  Capability Foundation"** is a **DISTINCT FUTURE PROGRAM** — **FUTURE / DISTINCT / NOT AUTHORIZED** by this closure and not
+  renamed into the executed lane (naming seam per **D-P6-00**; the registry-parity "Phase 6" track is also distinct —
+  neither lane authorizes the other).
+- **No successor authorized.** This closure authorizes **no** successor gate or capability. **Question Translation
+  Assistant** remains **NOT AUTHORIZED / NOT STARTED**; **Domain Registry hardening (D-P6-14)** is a separate prerequisite
+  before any future new-domain activation; **Output-Language** override remains DEFERRED / NOT IMPLEMENTED / NOT AUTHORIZED
+  (D-P6-17 is the accepted decision, not the capability); **WS17** post-gate/deferred; **STG** reserved/inactive; **ACV**
+  future/separately gated; **PDF/download**, **output email** deferred; **CAP-01…CAP-14** RECORDED ≠ AUTHORIZED; **Phase 7**
+  separate future phase NOT AUTHORIZED; **new domain activation** NOT AUTHORIZED. The next-eligible action is read from the
+  live `ACTIVE_EXECUTION_ROADMAP.md` + Master Obligation Index + `OWNER_DECISION_REGISTER.md` and requires **separate
+  explicit owner authorization**.
+
+## PHASE 6 — P6-1 TRUTHFUL DOMAIN LABELING FOUNDATION: FORMALLY ACCEPTED AND CLOSED (implemented / independently reviewed B / merged PR #385 / post-merge verified / governance-sync merged PR #386 / owner-accepted) — increment record within the now-CLOSED executed Phase-6 lane (see the closure banner above)
 
 - **P6-1 — Truthful Domain Labeling Foundation (Option A):** **IMPLEMENTED / INDEPENDENTLY REVIEWED / MERGED / POST-MERGE
   VERIFIED.** Lineage: implementation gate **G-P6-1-TRUTHFUL-DOMAIN-LABELING-FOUNDATION-IMPLEMENTATION-01** → candidate
@@ -513,8 +535,13 @@ AUTHORIZED / NOT STARTED.***
   semantics remain preserved (its three formerly-conflicting RTL tests pass with files UNCHANGED).
 - **P6-1 FORMAL CLOSURE:** **DONE** — **FORMALLY ACCEPTED AND CLOSED** by owner gate
   **G-P6-1-TRUTHFUL-DOMAIN-LABELING-FORMAL-CLOSURE-01** (dedicated record
-  `docs/governance/P6_1_TRUTHFUL_DOMAIN_LABELING_FORMAL_CLOSURE_RECORD.md`; append-only roadmap closure entry). Phase 6 as
-  a whole is **NOT** complete. **NEXT ELIGIBLE OWNER GATE:** read from the live `ACTIVE_EXECUTION_ROADMAP.md` — **ELIGIBLE
+  `docs/governance/P6_1_TRUTHFUL_DOMAIN_LABELING_FORMAL_CLOSURE_RECORD.md`; append-only roadmap closure entry). *(Current
+  truth — SUPERSEDED at the lane level by the closure banner above: the executed Domain Specialization / Truthful
+  Specialist Labeling Phase-6 lane is now **FORMALLY ACCEPTED AND CLOSED** (**D-P6-CLOSE**); the "Phase 6 as a whole is NOT
+  complete" wording below was accurate at P6-1-closure time and reflected that D-P6-18 was then still pending — it is
+  retained as historical increment-record context. The Product-Foundation §5 Multi-Domain program remains DISTINCT /
+  FUTURE / NOT AUTHORIZED.)* At P6-1-closure time, Phase 6 as
+  a whole was **NOT** yet complete. **NEXT ELIGIBLE OWNER GATE:** read from the live `ACTIVE_EXECUTION_ROADMAP.md` — **ELIGIBLE
   FOR OWNER CONSIDERATION, NOT AUTHORIZED** (not assumed to be P6-2 from numbering). The Output-Language override
   (**D-P6-17**) and Domain Registry validation hardening (**D-P6-14**) remain SEPARATE FUTURE increments; **no** later
   Phase-6 increment is started by P6-1's closure. (The global UI language selector **D-P6-18** was subsequently authorized,

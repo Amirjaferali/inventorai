@@ -4599,3 +4599,59 @@ to `ACTIVE_INCREMENT_CONTRACT.md` and `OWNER_DECISION_REGISTER.md`; no capabilit
 the permanent next action. D-P6-18 remains FORMALLY CLOSED; Phase 6 as a whole is NOT complete. Phase 5 remains FORMALLY
 CLOSED; P4-2 Level-1, Draft Level 2, P5-1, P5-2, P5-3, and P6-1 remain CLOSED. Append-only; prior history not rewritten.
 This entry authorizes no push, PR, merge, product implementation, or successor capability.
+
+## Phase 6 formal closure — Domain Specialization / Truthful Specialist Labeling (Option A): FORMALLY ACCEPTED AND CLOSED (G-PHASE-6-DOMAIN-SPECIALIZATION-FORMAL-CLOSURE-01; governance/documentation-only; append-only)
+
+**What this entry records (documentation-only; authorizes no implementation).** The owner has EXPLICITLY authorized and
+recorded the **formal closure of the executed Phase 6 lane** — **Domain Specialization / Truthful Specialist Labeling**,
+**Option A — Truthful Domain Labeling Foundation**. This supersedes, for the executed Phase-6 lane only, prior roadmap and
+current-state wording that read "Phase 6 as a whole is NOT complete": the executed Domain Specialization / Truthful
+Specialist Labeling Phase-6 lane is now **FORMALLY ACCEPTED AND CLOSED**. Prior append-only history is **not** rewritten;
+this entry is the authoritative superseding closure record. Dedicated record:
+`docs/governance/PHASE_6_DOMAIN_SPECIALIZATION_FORMAL_CLOSURE_RECORD.md`; owner decision recorded in
+`OWNER_DECISION_REGISTER.md` (**D-P6-CLOSE**).
+
+**Closure basis and evidence.** Closure basis tip `9665413065ee027f6301488b38dd0a8ca72758b8` (PR #390 Master Obligation
+Index merge; parents `93f1153` + `d0777ee`; tree `6d62c87`). Grounded in the prior read-only Phase-6 completion
+reconciliation and re-verified from live repository evidence: Phase-6 discovery `G-P6-DOMAIN-SPECIALIZATION-DISCOVERY-01`
+completed and owner-accepted; owner decisions **D-P6-00 … D-P6-15** adopted; **Option A** selected (**D-P6-01**); **P6-1**
+delivered and FORMALLY CLOSED (PR #385 `a8b874b` + governance-sync PR #386 `1a61ae5`; dedicated record
+`P6_1_TRUTHFUL_DOMAIN_LABELING_FORMAL_CLOSURE_RECORD.md`; **D-P6-1-CLOSE**); **D-P6-18 — Global UI Language** delivered and
+FORMALLY CLOSED (PR #388 `b47bf4b` + closure-sync PR #389; dedicated record
+`D_P6_18_GLOBAL_UI_LANGUAGE_FORMAL_CLOSURE_RECORD.md`; **D-P6-18-CLOSE**); and **no required original Option-A
+implementation obligation remains** (`ACTIVE_INCREMENT_CONTRACT.md` records no active contract-of-record). Both delivered
+increments carried independent verdict **B — ACCEPT WITH NON-BLOCKING OBSERVATIONS**, zero blockers.
+
+**Explicit owner scope interpretation.** The Phase 6 being closed is the executed **Domain Specialization / Truthful
+Specialist Labeling** lane only. The Product-Foundation §5 program **"Multi-Domain and Technology Capability Foundation"**
+is a **DISTINCT FUTURE PROGRAM** — it is **NOT** closed, **NOT** marked complete, and **NOT** authorized by this closure,
+and it must not be renamed into the executed Phase-6 lane. The registry-parity "Phase 6" track (`GOVERNANCE_DOCUMENTS.md`)
+also remains distinct (**D-P6-00**: neither lane authorizes the other).
+
+**Strictly bounded — this closure authorizes no successor and no capability.** Specifically it does NOT close, implement,
+or authorize: the Product-Foundation §5 Multi-Domain and Technology Capability Foundation; the **Question Translation
+Assistant** (remains **NOT AUTHORIZED / NOT STARTED**); **WS17 / AI Coach** (post-gate/deferred); **Domain Registry
+validation hardening (D-P6-14)** (separate prerequisite before any future new-domain activation); the **Output-Language
+override capability** (deferred implementation contemplated by the accepted **D-P6-17** decision — the decision is
+accepted, the capability is not implemented/authorized); **STG** (reserved/inactive); **ACV** (future/separately gated);
+**PDF/download** (deferred); **output email delivery** (deferred); **CAP-01 … CAP-14** (RECORDED ≠ AUTHORIZED); **Phase 7
+(API / Integration Foundation)** (separate future phase — NOT AUTHORIZED); **new domain activation** (NOT AUTHORIZED); or
+any other successor capability. No engine/domains/schema/dependency/CI/test/implementation change is made or authorized.
+This is a governance/documentation-only closure; it creates no new tracker, roadmap, matrix, or taxonomy (**D-FPC-MAP-06**)
+and preserves the Master Obligation Index as a pointer-only routing layer.
+
+**Retained governance observation (NOT remediated here).** `PRODUCT_FOUNDATION_AND_COMMERCIAL_READINESS_REMEDIATION_PLAN.md`
+carries stale Phase-2-era document-status wording and a "Phase 6" naming seam that lags live execution. That plan is not
+modified by this gate; refreshing it remains a **future, separately-authorized documentation-synchronization gate**.
+Current phase-execution status is owned by this roadmap and the formal closure records, not by the plan's header text.
+
+**Successor rule.** NO SUCCESSOR GATE IS AUTOMATICALLY AUTHORIZED. Closing this phase activates nothing. The next-eligible
+action is read from the latest authoritative entry of this roadmap, subject to `ACTIVE_INCREMENT_CONTRACT.md` and
+`OWNER_DECISION_REGISTER.md`, and requires separate explicit owner authorization.
+
+**Status after this entry.** Executed Phase 6 (Domain Specialization / Truthful Specialist Labeling, Option A): **FORMALLY
+ACCEPTED AND CLOSED**. Product-Foundation §5 Multi-Domain and Technology Capability Foundation: **DISTINCT FUTURE PROGRAM
+— NOT AUTHORIZED / NOT CLOSED by this gate**. Phase 5 remains FORMALLY CLOSED; Phase 4 remains FORMALLY CLOSED within its
+implemented boundary; P4-2 Level-1, Draft Level 2, P5-1, P5-2, P5-3, P6-1, and D-P6-18 remain CLOSED. Master Obligation
+Index governance-only gate remains AUTHORIZED (documentation reconciliation only) and pointer-only. Append-only; prior
+history not rewritten. This entry authorizes no push, PR, merge, product implementation, or successor capability.
