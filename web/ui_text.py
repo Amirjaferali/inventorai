@@ -727,4 +727,58 @@ UI_STRINGS = {
         "ar": ("تم اختيار لقطة العمل الحالية لهذه الجلسة المؤقتة. لم تُحفظ بشكل "
                "دائم ولم تُعتمد."),
     },
+
+    # --- D-P6-18 bounded-review remediation ----------------------------------
+    # Answer-action choice controls (session.html response fieldset). Owner
+    # ruling: these are ordinary UI chrome, NOT canonical question text and NOT
+    # Translation-Assistant content, so they follow the selected UI language.
+    "UI_ACT_ANSWERED": {
+        "en": "Answer this question (using the text above)",
+        "ar": "الإجابة عن هذا السؤال (باستخدام النص أعلاه)",
+    },
+    "UI_ACT_UNKNOWN": {"en": "I do not know this yet", "ar": "لا أعرف هذا بعد"},
+    "UI_ACT_DEFERRED": {
+        "en": "Defer this question for now", "ar": "تأجيل هذا السؤال الآن",
+    },
+    "UI_ACT_PROVISIONAL": {
+        "en": "Record a provisional assumption (not verified — optional note above)",
+        "ar": "تسجيل افتراض مبدئي (غير مُتحقَّق منه — ملاحظة اختيارية أعلاه)",
+    },
+    "UI_ACT_SPECIALIST": {
+        "en": "A specialist needs to answer this",
+        "ar": "يحتاج متخصّص إلى الإجابة عن هذا",
+    },
+    "UI_ACT_EVIDENCE": {
+        "en": "Evidence or a test is needed for this",
+        "ar": "يلزم دليل أو اختبار لهذا",
+    },
+    # Correction free-text placeholder (criticality correction stage). UI chrome.
+    "UI_CRIT_CORR_PLACEHOLDER": {
+        "en": "Describe the change or the missing part in your own words...",
+        "ar": "صف التغيير أو الجزء الناقص بكلماتك الخاصة...",
+    },
+    # Active page <title> values. The "InventorAI" brand stays Latin in both
+    # languages; only the descriptive portion (or a bare data-screen title) is
+    # localised. Canonical question text is never a page title.
+    "UI_TITLE_INDEX": {"en": "InventorAI", "ar": "InventorAI"},
+    "UI_TITLE_ACCOUNT": {"en": "InventorAI — Your account",
+                         "ar": "InventorAI — حسابك"},
+    "UI_TITLE_LOGIN": {"en": "InventorAI — Sign in",
+                       "ar": "InventorAI — تسجيل الدخول"},
+    "UI_TITLE_REGISTER": {"en": "InventorAI — Create account",
+                          "ar": "InventorAI — إنشاء حساب"},
+    "UI_TITLE_RECOVER": {"en": "InventorAI — Reset your password",
+                         "ar": "InventorAI — إعادة تعيين كلمة المرور"},
+    "UI_TITLE_RESET": {"en": "InventorAI — Set a new password",
+                       "ar": "InventorAI — تعيين كلمة مرور جديدة"},
+    "UI_TITLE_VERIFY": {"en": "InventorAI — Email verification",
+                        "ar": "InventorAI — التحقق من البريد الإلكتروني"},
+    "UI_TITLE_SESSION": {"en": "InventorAI — Session",
+                         "ar": "InventorAI — الجلسة"},
+    "UI_TITLE_DELIVERABLE": {"en": "InventorAI — Deliverable",
+                             "ar": "InventorAI — المُخرَج"},
+    "UI_TITLE_SUCCESS": {"en": "InventorAI — Define Success Criteria",
+                         "ar": "InventorAI — تحديد معايير النجاح"},
+    "UI_TITLE_DATA": {"en": "Data & Session information",
+                      "ar": "معلومات البيانات والجلسة"},
 }

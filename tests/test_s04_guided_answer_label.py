@@ -97,7 +97,7 @@ def test_label_target_matches_textarea_id():
 def test_label_does_not_duplicate_question_text():
     # The label is a short field name, not the question prompt.
     body = _session_body().get_data(as_text=True)
-    qm = re.search(r'<p class="question">(.*?)</p>', body, re.DOTALL)
+    qm = re.search(r'<p class="question"[^>]*>(.*?)</p>', body, re.DOTALL)
     assert qm, "question paragraph must be present"
     assert qm.group(1).strip() != LABEL_TEXT, "label must not duplicate the question text"
 
@@ -121,7 +121,7 @@ def test_placeholder_preserved():
 
 def test_question_paragraph_preserved_not_heading():
     body = _session_body().get_data(as_text=True)
-    assert '<p class="question">' in body, "question must remain a <p class=\"question\"> (not converted to a heading)"
+    assert '<p class="question"' in body, "question must remain a <p class=\"question\"> (not converted to a heading)"
 
 
 def test_answer_hint_preserved():

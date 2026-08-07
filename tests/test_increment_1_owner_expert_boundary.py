@@ -210,7 +210,7 @@ def test_existing_six_owner_actions_remain_exact():
 
 def _rendered_question(html):
     """Extract the single platform question rendered by session.html."""
-    matches = re.findall(r'<p class="question">(.*?)</p>', html, re.S)
+    matches = re.findall(r'<p class="question"[^>]*>(.*?)</p>', html, re.S)
     return matches
 
 

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}InventorAI — Session{% endblock %}
+{% block title %}{{ t('UI_TITLE_SESSION') }}{% endblock %}
 {% block head %}
 <style>
 body{font-family:sans-serif;max-width:720px;margin:60px auto;padding:0 20px;color:#222}
@@ -206,7 +206,10 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
 <div class="current-question-context" style="font-size:12px;color:#666;margin-bottom:8px">{{ t('UI_B_SESSION_024') }} <strong style="color:#2c3e50">{{ current_gap_label.heading }}</strong></div>
 {% endif %}
 {% endif %}
-<p class="question">{{ question }}</p>
+{# D-P6-18: the canonical technical/system question stays English in BOTH UI
+   languages; mark it lang="en" / dir="ltr" so it renders correctly (LTR) inside
+   the Arabic RTL shell. The question TEXT is unchanged (not translated). #}
+<p class="question" lang="en" dir="ltr">{{ question }}</p>
 {% if question %}
 <p class="answer-hint" style="font-size:12px;color:#888;margin:-6px 0 14px 0">{{ t('UI_B_SESSION_025') }}</p>
 {% endif %}
@@ -289,12 +292,12 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
   <br>
   <fieldset style="margin-top:12px;border:1px solid #e2e6ea;border-radius:4px;padding:10px">
     <legend style="font-size:13px;color:#555;padding:0 6px">{{ t('UI_B_SESSION_033') }}</legend>
-    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="answered" checked> Answer this question (using the text above)</label>
-    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="unknown"> I do not know this yet</label>
-    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="deferred"> Defer this question for now</label>
-    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="provisional_assumption"> Record a provisional assumption (not verified &mdash; optional note above)</label>
-    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="specialist_requested"> A specialist needs to answer this</label>
-    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="evidence_requested"> Evidence or a test is needed for this</label>
+    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="answered" checked> {{ t('UI_ACT_ANSWERED') }}</label>
+    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="unknown"> {{ t('UI_ACT_UNKNOWN') }}</label>
+    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="deferred"> {{ t('UI_ACT_DEFERRED') }}</label>
+    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="provisional_assumption"> {{ t('UI_ACT_PROVISIONAL') }}</label>
+    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="specialist_requested"> {{ t('UI_ACT_SPECIALIST') }}</label>
+    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="evidence_requested"> {{ t('UI_ACT_EVIDENCE') }}</label>
   </fieldset>
   <button type="submit">{{ t('UI_B_SESSION_034') }}</button>
 </form>
@@ -343,7 +346,7 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
   {# P4-1b-2a: this criticality-correction free-text form posts no `action`, so it
      resolves to `answered` and MUST also carry the server-issued idempotency token. #}
   <input type="hidden" name="answer_token" value="{{ answer_token }}">
-  <textarea name="response" rows="5" placeholder="Describe the change or the missing part in your own words..."
+  <textarea name="response" rows="5" placeholder="{{ t('UI_CRIT_CORR_PLACEHOLDER') }}"
     data-draft-field="correction" data-draft-scope="{{ sid }}" data-draft-context="{{ draft_context }}" data-draft-context-version="{{ draft_context_version }}" data-draft-account="{{ account_context }}"></textarea>
   <br>
   <button type="submit">{{ t('UI_B_SESSION_034') }}</button>

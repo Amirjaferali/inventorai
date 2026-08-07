@@ -28,6 +28,14 @@ import re
 import pytest
 
 from web.app import app, SESSION_STORE
+# Reuse the byte-identical WS1 completion journey to reach the criticality
+# summary/correction surface (where the correction-form placeholder renders).
+from tests.test_structured_criticality import (
+    IDEA_WS1,
+    _start as _crit_start,
+    _drive_ws1_journey_to_completion,
+    _focus_token,
+)
 
 # --- approved Arabic chrome fragments (from the finalized EN/AR copy package) ---
 AR_START_BUTTON = "ابدأ"                       # index Start button (UI-B-INDEX-008)
@@ -175,14 +183,104 @@ def test_canonical_question_stays_english_in_both_languages(client):
 
 
 # --- OUTPUT boundary: substantive generated output not falsely Arabic ---------
+# A stable English phrase from SUBSTANTIVE generated output (the frozen
+# section-1 deliverable disclaimer, Category-C) — NOT chrome and NOT merely the
+# "InventorAI" brand. It must remain English even under Arabic UI.
+OUTPUT_ENGLISH_MARKER = "produced by an automated invention analysis system"
+
+
 def test_output_language_boundary_english_marker_on_arabic_ui(client):
     sid = _start(client)
     _set_lang(client, "ar")
     body = client.get("/session/" + sid + "/deliverable").get_data(as_text=True)
-    # UI chrome is Arabic (shell RTL) but substantive package output stays English;
-    # a stable English structural token from generated output remains present.
+    # UI chrome is Arabic (shell RTL) but substantive package output stays English:
+    # a meaningful English sentence from generated output remains verbatim.
     assert '<html lang="ar" dir="rtl">' in body
-    assert "InventorAI" in body
+    assert OUTPUT_ENGLISH_MARKER in body
+
+
+# --- REMEDIATION: answer-action / provisional / correction / titles / lang=en --
+# Owner ruling (D-P6-18 bounded review): the answer-action choice labels, the
+# provisional-assumption option, the correction-form placeholder, and active page
+# <title> values are ordinary application UI chrome (NOT canonical question text,
+# NOT Translation-Assistant content) and MUST follow the selected UI language.
+EN_ACT_UNKNOWN = "I do not know this yet"
+AR_ACT_UNKNOWN = "لا أعرف هذا بعد"
+EN_ACT_SPECIALIST = "A specialist needs to answer this"
+AR_ACT_SPECIALIST = "يحتاج متخصّص إلى الإجابة عن هذا"
+EN_ACT_PROVISIONAL = "Record a provisional assumption"     # option fragment
+AR_ACT_PROVISIONAL = "تسجيل افتراض مبدئي"
+EN_CORR_PLACEHOLDER = "Describe the change or the missing part in your own words"
+AR_CORR_PLACEHOLDER = "صف التغيير أو الجزء الناقص بكلماتك الخاصة"
+EN_SESSION_TITLE = "<title>InventorAI — Session</title>"
+AR_SESSION_TITLE_FRAGMENT = "الجلسة</title>"
+EN_LOGIN_TITLE = "<title>InventorAI — Sign in</title>"
+AR_LOGIN_TITLE_FRAGMENT = "تسجيل الدخول</title>"
+
+
+def test_answer_action_labels_follow_ui_language(client):
+    sid = _start(client)
+    en = client.get("/session/" + sid).get_data(as_text=True)
+    assert EN_ACT_UNKNOWN in en and EN_ACT_SPECIALIST in en
+    assert AR_ACT_UNKNOWN not in en
+    _set_lang(client, "ar")
+    ar = client.get("/session/" + sid).get_data(as_text=True)
+    assert AR_ACT_UNKNOWN in ar and AR_ACT_SPECIALIST in ar
+    assert EN_ACT_UNKNOWN not in ar and EN_ACT_SPECIALIST not in ar
+
+
+def test_provisional_assumption_option_follows_ui_language(client):
+    sid = _start(client)
+    en = client.get("/session/" + sid).get_data(as_text=True)
+    assert EN_ACT_PROVISIONAL in en
+    _set_lang(client, "ar")
+    ar = client.get("/session/" + sid).get_data(as_text=True)
+    assert AR_ACT_PROVISIONAL in ar
+    assert EN_ACT_PROVISIONAL not in ar
+
+
+def test_correction_form_placeholder_follows_ui_language():
+    client, sid = _crit_start(IDEA_WS1)
+    try:
+        _drive_ws1_journey_to_completion(client, sid)
+        token = _focus_token(client.get("/session/" + sid).get_data(as_text=True))
+        # "Change this part" -> the free-text correction stage (placeholder shown).
+        client.post("/session/" + sid,
+                    data={"criticality_action": "summary_change",
+                          "focus_token": token})
+        en = client.get("/session/" + sid).get_data(as_text=True)
+        assert EN_CORR_PLACEHOLDER in en
+        client.post("/ui-language", data={"lang": "ar"})
+        ar = client.get("/session/" + sid).get_data(as_text=True)
+        assert AR_CORR_PLACEHOLDER in ar
+        assert EN_CORR_PLACEHOLDER not in ar
+    finally:
+        SESSION_STORE.pop(sid, None)
+
+
+def test_active_page_titles_follow_ui_language(client):
+    # English default
+    assert EN_LOGIN_TITLE in client.get("/login").get_data(as_text=True)
+    sid = _start(client)
+    assert EN_SESSION_TITLE in client.get("/session/" + sid).get_data(as_text=True)
+    # Arabic selection -> in-scope titles localise (brand "InventorAI" stays Latin).
+    _set_lang(client, "ar")
+    ar_login = client.get("/login").get_data(as_text=True)
+    assert AR_LOGIN_TITLE_FRAGMENT in ar_login
+    assert EN_LOGIN_TITLE not in ar_login
+    ar_session = client.get("/session/" + sid).get_data(as_text=True)
+    assert AR_SESSION_TITLE_FRAGMENT in ar_session
+    assert EN_SESSION_TITLE not in ar_session
+
+
+def test_canonical_question_marked_lang_en_under_arabic_ui(client):
+    sid = _start(client)
+    _set_lang(client, "ar")
+    body = client.get("/session/" + sid).get_data(as_text=True)
+    # The canonical English question paragraph carries explicit lang="en" (LTR)
+    # inside the Arabic RTL shell; the question TEXT itself is unchanged.
+    assert re.search(r'<p class="question"[^>]*lang="en"', body)
+    assert EN_INTAKE_QUESTION_FRAGMENT in body
 
 
 # --- UI language is NOT inferred from input -----------------------------------

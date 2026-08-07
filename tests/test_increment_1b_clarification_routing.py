@@ -157,7 +157,7 @@ def test_disclosure_after_question_before_responsibility():
     try:
         body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
         r = get_responsibility("MECHANISM_COMPLETENESS")
-        qi = body.index('<p class="question">')
+        qi = body.index('<p class="question"')
         di = body.index(SUMMARY)
         ri = body.index(r["label"])
         assert qi < di < ri
@@ -171,7 +171,7 @@ def test_original_question_remains_visible():
     try:
         q = get_question(st.domain, "PHYSICAL_FEASIBILITY", 0, path=getattr(st, "path", None))
         body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
-        assert '<p class="question">' in body and q in body
+        assert '<p class="question"' in body and q in body
     finally:
         SESSION_STORE.pop(sid, None)
 
