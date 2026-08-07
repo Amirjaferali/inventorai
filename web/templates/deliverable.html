@@ -144,8 +144,15 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
 
   <h3>Assessment Overview</h3>
   {% for cap in package.section_3_assessment_overview.capabilities_assessed %}
+  {# P6-1: truthful Tier-1 public label via the single central resolver (no raw pack id).
+     Owner decision (RESUME-01): render ONE language variant per the surface's
+     authoritative language — never EN and AR together. This deliverable shell is
+     <html lang="en"> (LTR) with no per-user language-selection signal on this surface,
+     so the English variant renders; the AR variant stays canonical in the resolver
+     for a future language-aware surface (non-blocking follow-up). No extra RTL added. #}
+  {% set _dl = cap.capability_id | public_domain_label %}
   <div class="field-value">
-    Capability: {{ cap.capability_id }} &nbsp;·&nbsp;
+    Review type: {{ _dl.en }} &nbsp;·&nbsp;
     Maturity: {{ cap.maturity_level }} &nbsp;·&nbsp;
     Gaps total/open/resolved: {{ cap.gaps_total }}/{{ cap.gaps_open }}/{{ cap.gaps_resolved }}
   </div>

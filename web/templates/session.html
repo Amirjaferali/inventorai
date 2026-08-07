@@ -98,7 +98,15 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
   &nbsp;·&nbsp;
   Iteration: {{ state.iteration }}
   &nbsp;·&nbsp;
-  Domain: {{ state.domain or "electronics" }}
+  {# P6-1: truthful Tier-1 public label via the single central resolver (no raw     #}
+  {# pack id). Owner decision (RESUME-01): render ONE language variant per the      #}
+  {# surface's authoritative language — never EN and AR together. This session      #}
+  {# shell is <html lang="en"> (LTR) and no per-user language-selection signal       #}
+  {# exists on this surface yet, so the English variant renders here; the AR variant #}
+  {# stays canonical in the resolver for a future language-aware surface            #}
+  {# (non-blocking follow-up). No extra RTL region is introduced.                   #}
+  {% set _dl = state.domain | public_domain_label %}
+  Review type: {{ _dl.en }}
 </div>
 
 <div class="stage-block">
