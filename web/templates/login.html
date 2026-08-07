@@ -9,25 +9,24 @@ input[type=email],input[type=password]{width:100%;padding:10px;font-size:16px;bo
 button{margin-top:16px;padding:10px 24px;background:#2c3e50;color:#fff;border:none;border-radius:4px;font-size:16px;cursor:pointer}
 .form-error{color:#c0392b;font-size:13px;margin:8px 0}
 .links{margin-top:16px;font-size:14px}
-.ar{direction:rtl;text-align:right}
 </style>
 {% endblock %}
 {% block content %}
 <div class="auth-wrap">
-<h1><span lang="en">Sign in</span> · <span class="ar" lang="ar">تسجيل الدخول</span></h1>
+<h1>{{ t('UI_A_LOGIN_001') }}</h1>
 {% if login_error %}
-  <p class="form-error" role="alert"><span lang="en">{{ login_failed_en }}</span> · <span class="ar" lang="ar">{{ login_failed_ar }}</span></p>
+  <p class="form-error" role="alert">{{ t('UI_A_MSG_LOGIN') }}</p>
 {% endif %}
 <form method="POST" action="/login">
-  <label for="email"><span lang="en">Email address</span> · <span class="ar" lang="ar">البريد الإلكتروني</span></label>
+  <label for="email">{{ t('UI_A_LOGIN_002') }}</label>
   <input type="email" id="email" name="email" autocomplete="email" required>
-  <label for="password"><span lang="en">Password</span> · <span class="ar" lang="ar">كلمة المرور</span></label>
+  <label for="password">{{ t('UI_A_LOGIN_003') }}</label>
   <input type="password" id="password" name="password" autocomplete="current-password" required>
-  <button type="submit"><span lang="en">Sign in</span> · <span class="ar" lang="ar">تسجيل الدخول</span></button>
+  <button type="submit">{{ t('UI_A_LOGIN_001') }}</button>
 </form>
 <p class="links">
-  <a href="/recover"><span lang="en">Forgot your password?</span> · <span class="ar" lang="ar">هل نسيت كلمة المرور؟</span></a><br>
-  <a href="/register"><span lang="en">Create an account</span> · <span class="ar" lang="ar">إنشاء حساب</span></a>
+  <a href="/recover">{{ t('UI_A_LOGIN_004') }}</a><br>
+  <a href="/register">{{ t('UI_A_LOGIN_005') }}</a>
 </p>
 </div>
 {% endblock %}

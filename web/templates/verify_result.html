@@ -7,19 +7,18 @@
 .result{border-radius:4px;padding:12px 14px;margin:12px 0;font-size:15px}
 .ok{background:#eef7ee;border:1px solid #bcdcbc;color:#2b542b}
 .bad{background:#fbecec;border:1px solid #e0b4b4;color:#8a2b2b}
-.ar{direction:rtl;text-align:right}
 .links{margin-top:16px;font-size:14px}
 </style>
 {% endblock %}
 {% block content %}
 <div class="auth-wrap">
 {% if verified %}
-  <h1><span lang="en">Email verified</span> · <span class="ar" lang="ar">تم التحقق من البريد</span></h1>
-  <p class="result ok" role="status"><span lang="en">Your email address has been verified.</span> · <span class="ar" lang="ar">تم التحقق من عنوان بريدك الإلكتروني.</span></p>
+  <h1>{{ t('UI_A_VERIFY_001') }}</h1>
+  <p class="result ok" role="status">{{ t('UI_A_VERIFY_002') }}</p>
 {% else %}
-  <h1><span lang="en">Verification unavailable</span> · <span class="ar" lang="ar">التحقق غير متاح</span></h1>
-  <p class="result bad" role="alert"><span lang="en">This verification link is invalid, has expired, or has already been used.</span> · <span class="ar" lang="ar">رابط التحقق هذا غير صالح أو منتهي الصلاحية أو تم استخدامه من قبل.</span></p>
+  <h1>{{ t('UI_A_VERIFY_003') }}</h1>
+  <p class="result bad" role="alert">{{ t('UI_A_VERIFY_004') }}</p>
 {% endif %}
-<p class="links"><a href="/login"><span lang="en">Go to sign in</span> · <span class="ar" lang="ar">الذهاب إلى تسجيل الدخول</span></a></p>
+<p class="links"><a href="/login">{{ t('UI_A_RESET_003') }}</a></p>
 </div>
 {% endblock %}

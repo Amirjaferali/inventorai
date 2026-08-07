@@ -9,15 +9,15 @@ h1{color:#2c3e50;margin-bottom:12px}
 </style>
 {% endblock %}
 {% block content %}
-<h1>Data &amp; Session information</h1>
+<h1>{{ t('UI_B_DATA_TITLE') }}</h1>
 <div class="trust">
-<p>Your idea and answers are held temporarily in the running session while the tool prepares your assessment.</p>
-<p>This experience does not provide a durable saved-projects area or version history.</p>
-<p>To help you recover unfinished text if you leave and return, text you are typing may be kept temporarily in <strong>this browser on this device only</strong> (local browser storage). It is <strong>not</strong> saved to an account or to any server, and is <strong>not</strong> available on another device or browser. It expires after 7 days, is removed once the matching answer is submitted, and can be discarded at any time. Because it is kept in this browser profile, anyone who can use this browser (including browser-profile sync) may be able to see it — please avoid this feature on a shared or public device, or discard your draft when you finish.</p>
-<p>There is no account or sign-in in this experience. Using the tool does not create or prove ownership of your idea.</p>
-<p>Your answers are used within the temporary running session so the tool can prepare your assessment. This experience does not create a durable transcript file.</p>
-<p>Confidentiality and staff-access details are not finalized on this screen. Do not rely on this screen as a promise that information can never be accessed or reviewed.</p>
-<p>Privacy Policy and Terms content is not provided on this information screen.</p>
+<p>{{ t('UI_SENS_DATA_01') }}</p>
+<p>{{ t('UI_SENS_DATA_02') }}</p>
+<p>{{ t('UI_SENS_DATA_03') }}</p>
+<p>{{ t('UI_SENS_DATA_04') }}</p>
+<p>{{ t('UI_SENS_DATA_05') }}</p>
+<p>{{ t('UI_SENS_DATA_06') }}</p>
+<p>{{ t('UI_SENS_DATA_07') }}</p>
 </div>
-<p class="back"><a href="/">Back to InventorAI</a></p>
+<p class="back"><a href="/">{{ t('UI_B_DATA_BACK') }}</a></p>
 {% endblock %}

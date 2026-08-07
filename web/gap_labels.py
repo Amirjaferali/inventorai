@@ -96,13 +96,50 @@ SESSION_DISCLOSURE = (
     "remains a separate step."
 )
 
+# --- D-P6-18 Global UI Language: Arabic variants for the Category-B labels that
+# reach the session surface (maturity labels, the session disclosure, and the
+# short gap display names). Presentation only; the internal ids, GAP_LABELS
+# question framing (Category-D, stays English), engine, and state are unchanged.
+# The English structures above remain the source of truth and default.
+MATURITY_LABELS_AR = {
+    0: {
+        "label": "البدء",
+        "meaning": "شارك فكرتك — ما الذي تفعله والمشكلة التي تعالجها.",
+    },
+    1: {
+        "label": "تحديد المشكلة",
+        "meaning": ("لقد وصفت المشكلة الجوهرية واتجاه فكرتك. لنطوّر الآن الآلية."),
+    },
+    2: {
+        "label": "جاهز للمراجعة المنظَّمة",
+        "meaning": ("لقد عملت على الأسئلة الأساسية. هذه نقطة مناسبة لالتماس "
+                    "ملاحظات تقنية من خبراء المجال."),
+    },
+}
+
+SESSION_DISCLOSURE_AR = (
+    "تساعدك هذه المنصة على تنظيم تفكيرك عبر أسئلة موجَّهة. وهي تتتبّع كيف تناولت "
+    "المجالات الأساسية — ويبقى التحقق التقني الخارجي خطوة منفصلة."
+)
+
 
 def get_gap_label(gap_type: str) -> dict:
     return GAP_LABELS.get(gap_type, GAP_LABELS["__default__"])
 
 
-def get_maturity_label(level: int) -> dict:
+def get_maturity_label(level: int, lang: str = "en") -> dict:
+    """Return the ``{"label", "meaning"}`` pair for a maturity level. English by
+    default; the Arabic variant when ``lang == "ar"`` (D-P6-18). Backward
+    compatible: existing single-arg callers still receive English."""
+    if lang == "ar":
+        return MATURITY_LABELS_AR.get(level, MATURITY_LABELS_AR[0])
     return MATURITY_LABELS.get(level, MATURITY_LABELS[0])
+
+
+def get_session_disclosure(lang: str = "en") -> str:
+    """The session-page disclosure sentence. English by default; Arabic when
+    ``lang == "ar"`` (D-P6-18). ``SESSION_DISCLOSURE`` stays the English source."""
+    return SESSION_DISCLOSURE_AR if lang == "ar" else SESSION_DISCLOSURE
 
 
 # Presentation-only short names for the internal gap-type IDs. Used to translate
@@ -119,11 +156,37 @@ GAP_DISPLAY_NAMES = {
     "EXPERTISE_GAP_AWARENESS": "Expertise needed",
 }
 
+# D-P6-18: Arabic variants of the short gap display names (Category B).
+GAP_DISPLAY_NAMES_AR = {
+    "MECHANISM_COMPLETENESS": "الآلية العاملة",
+    "PHYSICAL_FEASIBILITY": "الجدوى العملية",
+    "BOUNDARY_AMBIGUITY": "النطاق والحدود",
+    "PROBLEM_MECHANISM_FIT": "ملاءمة الحل للمشكلة",
+    "ASSUMPTION_INVENTORY": "الافتراضات غير المختبَرة",
+    "EXPERTISE_GAP_AWARENESS": "الخبرة المطلوبة",
+}
+
+
+def _active_ui_lang():
+    """Resolve the selected UI language from the current request's signed session,
+    defaulting to English. Safe outside a request context (returns ``"en"``), so
+    direct (non-Flask) callers and unit tests keep the English behaviour."""
+    try:
+        from flask import has_request_context, session as _flask_session
+    except Exception:  # pragma: no cover - Flask always present in this app
+        return "en"
+    if not has_request_context():
+        return "en"
+    return "ar" if _flask_session.get("ui_lang") == "ar" else "en"
+
 
 def friendly_gap_name(value):
     """Display-only translation of an internal gap-type ID to a short,
-    inventor-friendly label. Any value that is not a known gap ID (e.g. a record
-    id like ``rec_1`` or ``maturity_level_0``, or None) is returned unchanged."""
+    inventor-friendly label, in the selected UI language (D-P6-18). Any value that
+    is not a known gap ID (e.g. a record id like ``rec_1`` or ``maturity_level_0``,
+    or None) is returned unchanged. English outside a request context."""
     if isinstance(value, str):
+        if _active_ui_lang() == "ar" and value in GAP_DISPLAY_NAMES_AR:
+            return GAP_DISPLAY_NAMES_AR[value]
         return GAP_DISPLAY_NAMES.get(value, value)
     return value

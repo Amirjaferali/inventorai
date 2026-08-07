@@ -10,55 +10,52 @@
 .notice{background:#eef7ee;border:1px solid #bcdcbc;border-radius:4px;padding:10px 14px;margin:12px 0;color:#2b542b;font-size:14px}
 button{margin-top:8px;padding:8px 18px;background:#2c3e50;color:#fff;border:none;border-radius:4px;font-size:15px;cursor:pointer}
 form{display:inline-block;margin:6px 8px 0 0}
-.ar{direction:rtl;text-align:right}
 .truthful{font-size:13px;color:#555;margin-top:18px;line-height:1.5}
 </style>
 {% endblock %}
 {% block content %}
 <div class="auth-wrap">
-<h1><span lang="en">Signed in</span> · <span class="ar" lang="ar">تم تسجيل الدخول</span></h1>
-<p class="status"><span lang="en">Signed in as</span> · <span class="ar" lang="ar">مسجّل الدخول باسم</span>: <strong>{{ account.email_normalized }}</strong></p>
+<h1>{{ t('UI_A_ACCOUNT_001') }}</h1>
+<p class="status">{{ t('UI_A_ACCOUNT_002') }}: <strong>{{ account.email_normalized }}</strong></p>
 
 {% if notice == 'resend' %}
-  <p class="notice" role="status" aria-live="polite"><span lang="en">If verification is still needed, a new verification message has been sent.</span> · <span class="ar" lang="ar">إذا كان التحقق لا يزال مطلوبًا، فقد أُرسلت رسالة تحقق جديدة.</span></p>
+  <p class="notice" role="status" aria-live="polite">{{ t('UI_A_MSG_RESEND') }}</p>
 {% endif %}
 
 {% if account.email_verified %}
-  <p class="status ok"><span lang="en">Your email is verified.</span> · <span class="ar" lang="ar">تم التحقق من بريدك الإلكتروني.</span></p>
+  <p class="status ok">{{ t('UI_A_ACCOUNT_003') }}</p>
 {% else %}
-  <p class="status warn"><span lang="en">Your email is not verified yet. Check your email for the verification link.</span> · <span class="ar" lang="ar">لم يتم التحقق من بريدك بعد. تحقق من بريدك للحصول على رابط التحقق.</span></p>
+  <p class="status warn">{{ t('UI_A_ACCOUNT_004') }}</p>
   <form method="POST" action="/account/resend-verification">
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-    <button type="submit"><span lang="en">Resend verification</span> · <span class="ar" lang="ar">إعادة إرسال التحقق</span></button>
+    <button type="submit">{{ t('UI_A_ACCOUNT_005') }}</button>
   </form>
 {% endif %}
 
 <section aria-labelledby="your-projects-h">
-  <h2 id="your-projects-h" style="font-size:16px;color:#2c3e50;margin-top:22px"><span lang="en">Your projects</span> · <span class="ar" lang="ar">مشاريعك</span></h2>
+  <h2 id="your-projects-h" style="font-size:16px;color:#2c3e50;margin-top:22px">{{ t('UI_A_ACCOUNT_006') }}</h2>
   {% if owned_projects %}
     <ul style="padding-left:18px;font-size:14px">
       {% for pid in owned_projects %}
-      <li><a href="/session/{{ pid }}"><span lang="en">Open project</span> · <span class="ar" lang="ar">فتح المشروع</span></a> <span style="color:#888">({{ pid[:8] }}…)</span></li>
+      <li><a href="/session/{{ pid }}">{{ t('UI_A_ACCOUNT_007') }}</a> <span style="color:#888">({{ pid[:8] }}…)</span></li>
       {% endfor %}
     </ul>
   {% else %}
-    <p class="status" lang="en">You have no account-owned projects yet.</p>
-    <p class="status ar" lang="ar">لا توجد لديك مشاريع مملوكة للحساب بعد.</p>
+    <p class="status">{{ t('UI_A_ACCOUNT_008') }}</p>
   {% endif %}
 </section>
 
 <div>
   <form method="POST" action="/logout">
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-    <button type="submit"><span lang="en">Sign out</span> · <span class="ar" lang="ar">تسجيل الخروج</span></button>
+    <button type="submit">{{ t('UI_A_ACCOUNT_009') }}</button>
   </form>
   <form method="POST" action="/logout-all">
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-    <button type="submit"><span lang="en">Sign out of all sessions</span> · <span class="ar" lang="ar">تسجيل الخروج من كل الجلسات</span></button>
+    <button type="submit">{{ t('UI_A_ACCOUNT_010') }}</button>
   </form>
 </div>
 
-<p class="truthful" lang="en">Signing in manages your account only. It does not save, own, or move any project to your account — projects remain accessed by their session link on this device.</p>
-<p class="truthful ar" lang="ar">تسجيل الدخول يدير حسابك فقط. لا يحفظ أي مشروع في حسابك ولا يملكه ولا ينقله؛ تبقى المشاريع متاحة عبر رابط الجلسة على هذا الجهاز.</p>
+<p class="truthful">{{ t('UI_A_ACCOUNT_011') }}</p>
 </div>
 {% endblock %}

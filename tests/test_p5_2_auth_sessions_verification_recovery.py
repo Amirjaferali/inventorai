@@ -642,10 +642,13 @@ def test_anonymous_journey_still_open_without_auth(client):
 # Bilingual / accessible auth surfaces
 # ===========================================================================
 @pytest.mark.parametrize("path", ["/login", "/recover"])
-def test_auth_pages_bilingual_and_accessible(client, path):
+def test_auth_pages_language_switch_and_accessible(client, path):
     body = client.get(path).get_data(as_text=True)
-    assert 'lang="en"' in body and 'lang="ar"' in body
-    assert 'class="ar"' in body or "direction:rtl" in body
+    # D-P6-18 (D-P6-16): one UI language at a time — no simultaneous EN+AR for the
+    # same label. Both languages remain reachable via the global UI-language
+    # selector (English | العربية) present on every page.
+    assert '/ui-language' in body
+    assert "العربية" in body and 'lang="ar"' in body
     assert 'autocomplete=' in body and 'required' in body
     assert 'for="email"' in body
 

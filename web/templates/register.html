@@ -10,36 +10,33 @@ button{margin-top:16px;padding:10px 24px;background:#2c3e50;color:#fff;border:no
 .note{background:#f0f4f8;border:1px solid #d4dde6;border-radius:4px;padding:10px 14px;margin:12px 0;font-size:13px;color:#444;line-height:1.5}
 .ack{background:#eef7ee;border:1px solid #bcdcbc;border-radius:4px;padding:12px 14px;margin:12px 0;font-size:14px;color:#2b542b}
 .form-error{color:#c0392b;font-size:13px;margin:6px 0}
-.ar{direction:rtl;text-align:right}
 </style>
 {% endblock %}
 {% block content %}
-<h1>Create your account</h1>
-<p class="note" lang="en">Registering creates an account and sends an email verification code. You are <strong>not</strong> signed in yet, and this does not create or save a project.</p>
-<p class="note ar" lang="ar">إنشاء حساب يرسل رمز تحقق إلى بريدك الإلكتروني. لن يتم تسجيل دخولك بعد، ولا يؤدي ذلك إلى إنشاء مشروع أو حفظه.</p>
+<h1>{{ t('UI_A_REG_001') }}</h1>
+<p class="note">{{ t('UI_A_REG_002') }}</p>
 
 {% if submitted %}
   <div class="ack" role="status" aria-live="polite">
-    <p lang="en">{{ generic_message_en }}</p>
-    <p class="ar" lang="ar">{{ generic_message_ar }}</p>
+    <p>{{ t('UI_A_MSG_REGISTER') }}</p>
   </div>
-  <p><a href="/register">Back to the registration form</a></p>
+  <p><a href="/register">{{ t('UI_A_REG_003') }}</a></p>
 {% else %}
   {% if form_error == 'email_invalid' %}
-    <p class="form-error" role="alert"><span lang="en">Please enter a valid email address.</span> · <span class="ar" lang="ar">يرجى إدخال عنوان بريد إلكتروني صالح.</span></p>
+    <p class="form-error" role="alert">{{ t('UI_A_REG_004') }}</p>
   {% elif form_error == 'password_invalid' %}
-    <p class="form-error" role="alert"><span lang="en">Password must be at least 12 characters.</span> · <span class="ar" lang="ar">يجب أن تتكوّن كلمة المرور من 12 حرفًا على الأقل.</span></p>
+    <p class="form-error" role="alert">{{ t('UI_A_REG_005') }}</p>
   {% elif form_error == 'password_mismatch' %}
-    <p class="form-error" role="alert"><span lang="en">The two passwords do not match.</span> · <span class="ar" lang="ar">كلمتا المرور غير متطابقتين.</span></p>
+    <p class="form-error" role="alert">{{ t('UI_A_REG_006') }}</p>
   {% endif %}
   <form method="POST" action="/register">
-    <label for="email"><span lang="en">Email address</span> · <span class="ar" lang="ar">البريد الإلكتروني</span></label>
+    <label for="email">{{ t('UI_A_LOGIN_002') }}</label>
     <input type="email" id="email" name="email" autocomplete="email" required>
-    <label for="password"><span lang="en">Password (at least 12 characters)</span> · <span class="ar" lang="ar">كلمة المرور (12 حرفًا على الأقل)</span></label>
+    <label for="password">{{ t('UI_A_REG_007') }}</label>
     <input type="password" id="password" name="password" autocomplete="new-password" minlength="12" required>
-    <label for="password_confirm"><span lang="en">Confirm password</span> · <span class="ar" lang="ar">تأكيد كلمة المرور</span></label>
+    <label for="password_confirm">{{ t('UI_A_REG_008') }}</label>
     <input type="password" id="password_confirm" name="password_confirm" autocomplete="new-password" minlength="12" required>
-    <button type="submit"><span lang="en">Create account</span> · <span class="ar" lang="ar">إنشاء حساب</span></button>
+    <button type="submit">{{ t('UI_A_REG_009') }}</button>
   </form>
 {% endif %}
 {% endblock %}

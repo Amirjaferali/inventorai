@@ -18,7 +18,12 @@ from web.app import app
 
 # ---- owner-approved exact copy ---------------------------------------------
 LABEL_TEXT = "Describe your idea"
-DISCLOSURE = "This is a temporary session. There is no account or durable saved-projects area."
+# D-P6-18: truth-corrected, owner-approved product-truth copy (UI-SENS-INDEX-04).
+# Accounts and durable/reopenable projects now exist; the prior "no account /
+# no durable saved-projects" sentence was stale Phase-4/5 copy and was replaced.
+DISCLOSURE = ("You can start anonymously, or create an account and sign in to keep "
+              "and reopen your projects. Your current working session may still "
+              "contain temporary state.")
 
 # ---- pinned pre-existing copy (preservation invariants, NOT RED) ------------
 PINNED_INTRO = "Describe your invention idea to begin."
@@ -72,8 +77,10 @@ def test_start_cta_present():
 
 def test_form_method_post_action_start():
     body = _entry_body()
-    m = re.search(r'<form\b[^>]*>', body)
-    assert m, "entry form must be present"
+    # D-P6-18 adds a global UI-language selector form (action="/ui-language") at
+    # the top of the shell; the entry form is identified by its /start action.
+    m = re.search(r'<form\b[^>]*action="/start"[^>]*>', body)
+    assert m, "entry form (POST /start) must be present"
     tag = m.group(0)
     assert 'method="POST"' in tag and 'action="/start"' in tag, "form must remain POST to /start"
 

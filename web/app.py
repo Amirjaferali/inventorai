@@ -8,7 +8,11 @@ import re
 import secrets
 import tempfile
 import uuid
-from flask import Flask, request, redirect, url_for, render_template, session as flask_session
+from urllib.parse import urlparse as _urlparse
+from flask import (
+    Flask, request, redirect, url_for, render_template,
+    has_request_context, session as flask_session,
+)
 from engine.domain_rules import infer_domain
 from engine.idea_state import (
     IdeaState, SuccessCriterion,
@@ -22,7 +26,11 @@ from engine.requirement_landscape import derive_requirement_landscape
 from engine.progression_loop import (
     run_iteration, select_next_gap, get_question, get_display_question,
 )
-from web.gap_labels import GAP_LABELS, get_gap_label, get_maturity_label, SESSION_DISCLOSURE, friendly_gap_name
+from web.gap_labels import (
+    GAP_LABELS, get_gap_label, get_maturity_label, SESSION_DISCLOSURE,
+    get_session_disclosure, friendly_gap_name,
+)
+from web import ui_text
 from engine.deliverable_assembler import assemble_deliverable
 # P4-1b-1 (G-P4-1B-1-DOC-01 / PR #358): the merged P4-1a durable store and the
 # P4-0 record contract, used ONLY to durably create and cold-load a NEW project
@@ -119,6 +127,14 @@ app.jinja_env.filters["gap_display"] = friendly_gap_name
 # "General idea review" for unknown/missing/unsupported state (never electronics).
 # Presentation only — activates no domain and changes no deterministic behavior.
 app.jinja_env.filters["public_domain_label"] = _public_domain_label
+# D-P6-18: expose the UI-string resolver and language/direction to EVERY template
+# render path. For normal requests the context processor below overrides these with
+# the per-request values; registering them as Jinja globals additionally keeps a
+# direct ``jinja_env.get_template(...).render(...)`` (used by some tests) working —
+# ``t`` stays request-safe and defaults to English outside a request context.
+app.jinja_env.globals["t"] = lambda key: ui_text.text(key, _current_ui_lang())
+app.jinja_env.globals["ui_lang"] = "en"
+app.jinja_env.globals["ui_dir"] = "ltr"
 SESSION_STORE = {}
 
 # --- P4-1b-1: durable project store (construction, configuration, cold-load) --
@@ -305,6 +321,57 @@ def _inject_account_context():
     return {"account_context": ctx or "anon"}
 
 
+# --- D-P6-18 Global UI Language ----------------------------------------------
+# The explicit UI-language selection (English | العربية) lives in the signed Flask
+# session under a single ``ui_lang`` slot, DISTINCT from the auth slot and from any
+# project state. It is a presentation preference only: it is never inferred from
+# user input, carries no authorization/ownership meaning, and controls no
+# deterministic behaviour, engine, schema, or account persistence. Default English.
+def _current_ui_lang():
+    """The selected UI language (``"en"`` default / ``"ar"``). Request-context
+    safe: returns English outside a request (e.g. a direct template render), so
+    the ``t`` Jinja global below never raises."""
+    if not has_request_context():
+        return "en"
+    return ui_text.normalize(flask_session.get("ui_lang"))
+
+
+@app.context_processor
+def _inject_ui_language():
+    """Expose the selected UI language, its writing direction, and the central
+    ``t(key)`` UI-string resolver to every template (single-language rendering)."""
+    lang = _current_ui_lang()
+    return {
+        "ui_lang": lang,
+        "ui_dir": ui_text.direction(lang),
+        "t": (lambda key: ui_text.text(key, lang)),
+    }
+
+
+def _is_safe_local_path(target):
+    """True only for a same-origin relative path (leading single ``/``); blocks
+    protocol-relative and absolute-URL open-redirect targets."""
+    if not isinstance(target, str) or not target.startswith("/") or target.startswith("//"):
+        return False
+    parsed = _urlparse(target)
+    return not parsed.scheme and not parsed.netloc
+
+
+@app.route("/ui-language", methods=["GET", "POST"])
+def set_ui_language():
+    """Set the explicit global UI language and return to the originating page.
+
+    Presentation only: it writes the ``ui_lang`` preference into the signed session
+    and redirects to a SAFE local ``next`` path. It creates/changes no project,
+    account, schema, or durable preference, and translates no question or output.
+    Accepts the shared shell's GET language links and a POST form alike."""
+    flask_session["ui_lang"] = ui_text.normalize(request.values.get("lang"))
+    nxt = request.values.get("next") or ""
+    if not _is_safe_local_path(nxt):
+        nxt = url_for("index")
+    return redirect(nxt)
+
+
 def _session_csrf():
     auth = flask_session.get(_AUTH_SESSION_KEY)
     return auth.get("csrf") if auth else None
@@ -319,9 +386,12 @@ def _sign_in(account, now):
     """Establish a FRESH authenticated session (session rotation / fixation
     defence): clear any prior session state and mint a new one with a new CSRF
     token. Never carries pre-login cookie state forward."""
+    ui_lang = flask_session.get("ui_lang")   # D-P6-18: preserve UI-language choice
     flask_session.clear()
     flask_session[_AUTH_SESSION_KEY] = _auth.build_session(
         account["account_id"], account["session_epoch"], now)
+    if ui_lang == "ar":
+        flask_session["ui_lang"] = "ar"
     flask_session.permanent = True
 
 
@@ -1101,7 +1171,10 @@ def logout():
     exposes a local draft."""
     if _current_account() and not _csrf_valid():
         return _csrf_reject()
+    _ui_lang = flask_session.get("ui_lang")   # D-P6-18: preserve UI-language choice
     flask_session.clear()
+    if _ui_lang == "ar":
+        flask_session["ui_lang"] = "ar"
     return redirect(url_for("login_form"))
 
 
@@ -1118,7 +1191,10 @@ def logout_all():
         _get_account_store().increment_session_epoch(account["account_id"], _iso(_utc_now()))
     except Exception:
         pass
+    _ui_lang = flask_session.get("ui_lang")   # D-P6-18: preserve UI-language choice
     flask_session.clear()
+    if _ui_lang == "ar":
+        flask_session["ui_lang"] = "ar"
     return redirect(url_for("login_form"))
 
 
@@ -1229,7 +1305,10 @@ def reset_submit(token):
     if not account_id:
         return render_template("reset.html", token=token,
                                form_error="token_invalid", done=False), 400
+    _ui_lang = flask_session.get("ui_lang")   # D-P6-18: preserve UI-language choice
     flask_session.clear()   # never auto-sign-in on reset
+    if _ui_lang == "ar":
+        flask_session["ui_lang"] = "ar"
     return render_template("reset.html", token=token, form_error=None, done=True)
 
 
@@ -1525,14 +1604,15 @@ def show_session(sid):
         last_result=last_result,
         gap_labels=gap_labels,
         current_gap_label=current_gap_label,
-        maturity_label=get_maturity_label(state.maturity_level),
-        session_disclosure=SESSION_DISCLOSURE,
+        maturity_label=get_maturity_label(state.maturity_level, _current_ui_lang()),
+        session_disclosure=get_session_disclosure(_current_ui_lang()),
         closed_gaps=closed_gaps,
         interaction_ack=entry.pop("_interaction_ack", None) if entry else None,
         # G-UX-ANSWER-VALIDATION: single-use empty-answer validation error, popped
         # here so it renders exactly once after the Post/Redirect/Get and never
         # repeats on a later plain GET. None on every normal load.
-        answer_error=entry.pop("_answer_error", None) if entry else None,
+        answer_error=ui_text.localize_message(
+            entry.pop("_answer_error", None) if entry else None, _current_ui_lang()),
         # Increment 1B: advisory, derived, read-only responsibility guidance for
         # the current gap. Computed at render time; never stored, never affects
         # gates/scoring/maturity/closure/transcript/IdeaState. None when no gap.
@@ -1601,7 +1681,8 @@ def show_deliverable(sid):
         # G-UX-SNAPSHOT-DECISION: single-use, per-sid "Keep current snapshot"
         # acknowledgement, popped here so it renders once after the Post/Redirect/Get
         # and never repeats on a later plain GET. None on every normal load.
-        snapshot_kept_ack=entry.pop("_snapshot_kept_ack", None) if entry else None,
+        snapshot_kept_ack=ui_text.localize_message(
+            entry.pop("_snapshot_kept_ack", None) if entry else None, _current_ui_lang()),
     )
 
 

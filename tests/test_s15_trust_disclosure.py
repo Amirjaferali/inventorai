@@ -22,18 +22,27 @@ _SID = "gux-trust-baseline-sid"
 # ---- exact canonical copy (owner-authorized) -------------------------------
 PAGE_TITLE = "Data & Session information"
 LEARN_MORE = "Learn more"
+# D-P6-18: truth-corrected, owner-approved product-truth copy. Phase-4/5 added
+# accounts and durable/reopenable projects, so the stale "held temporarily / no
+# durable saved-projects / no account or sign-in / no durable transcript"
+# sentences were replaced with the corrected canonical English (DATA-01..07).
 S15_LINES = [
-    "Your idea and answers are held temporarily in the running session while the tool prepares your assessment.",
-    "This experience does not provide a durable saved-projects area or version history.",
-    "There is no account or sign-in in this experience. Using the tool does not create or prove ownership of your idea.",
-    "Your answers are used within the temporary running session so the tool can prepare your assessment. This experience does not create a durable transcript file.",
+    "Your idea and accepted answers are saved as part of your project so the tool can prepare and reload your assessment. Some in-progress working state remains temporary to the current session.",
+    "Signed-in accounts can keep and reopen saved projects. Version history and branching are not currently provided.",
+    "To help you recover unfinished text if you leave and return, text you are typing may be kept temporarily in this browser on this device only (local browser storage). It is not saved to an account or to any server, and is not available on another device or browser. It expires after 7 days, is removed once the matching answer is submitted, and can be discarded at any time. Because it is kept in this browser profile, anyone who can use this browser (including browser-profile sync) may be able to see it — please avoid this feature on a shared or public device, or discard your draft when you finish.",
+    "You can use InventorAI anonymously, or create an account and sign in. Having an account or a saved project does not create or prove legal ownership of your idea.",
+    "Your accepted answers are saved as part of your project so the tool can prepare and reload your assessment. This does not provide a complete resumable record of every interaction in your session.",
     "Confidentiality and staff-access details are not finalized on this screen. Do not rely on this screen as a promise that information can never be accessed or reviewed.",
     "Privacy Policy and Terms content is not provided on this information screen.",
 ]
 RETURN_LABEL = "Back to InventorAI"
 
 PROHIBITED = [
-    "browser session", "reload", "closing", "tab", "/tmp",
+    # NB: the blanket "reload" token was dropped — the truth-corrected DATA-01/05
+    # copy legitimately says the tool can "reload your assessment" (durable
+    # projects now exist). The over-access / storage-mechanism claims below stay
+    # forbidden.
+    "browser session", "closing", "tab", "/tmp",
     "staff can never", "never access", "never review", "retention",
     "deleted after", "encrypted", "Privacy Policy and Terms are not yet available",
 ]
@@ -105,6 +114,8 @@ def test_s15_no_terms_privacy_body_or_future_controls():
     # only structural controls: the header has no self-link; the sole in-body link is Back to /
     hdr = _header_block(body)
     assert "Learn more" not in hdr, "S15 header must suppress the Learn more self-link"
+    # NB: the D-P6-18 UI-language selector is text links (no <form>/<button>), so
+    # the original no-product-controls guard still holds unchanged.
     for forbidden in ("Sign in", "Log in", "Logout", "Account", "Settings",
                       "Saved Projects", "Download PDF", "Email", "<form", "<button"):
         assert forbidden not in body, f"S15 must not contain: {forbidden!r}"

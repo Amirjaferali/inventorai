@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ ui_lang }}"{% if ui_dir == 'rtl' %} dir="rtl"{% endif %}>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,15 +13,32 @@ a.skip-link:focus{left:8px;top:8px;position:fixed}
 .app-header{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:760px;margin:0 auto;padding:10px 20px;border-bottom:1px solid #d4dde6}
 .app-header .brand{font-weight:600;color:#2c3e50}
 .app-header .temp-session{font-size:12px;color:#555;white-space:nowrap}
+/* D-P6-18 global UI-language selector (shared, top-of-content, consistent). */
+.ui-lang-selector{max-width:760px;margin:0 auto;padding:6px 20px;display:flex;align-items:center;gap:8px;font-size:12px;color:#555;flex-wrap:wrap}
+.ui-lang-selector .ui-lang-label{color:#666}
+.ui-lang-selector a{padding:3px 10px;background:#fff;color:#2c3e50;border:1px solid #c3ccd6;border-radius:4px;text-decoration:none}
+.ui-lang-selector .ui-lang-active{padding:3px 10px;background:#2c3e50;color:#fff;border:1px solid #2c3e50;border-radius:4px}
 </style>
 {% block head %}{% endblock %}
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to content</a>
+<a class="skip-link" href="#main-content">{{ t('UI_B_BASE_001') }}</a>
 <header class="app-header">
 <span class="brand">InventorAI</span>
-<span class="temp-session">Temporary session{% if request.path != '/data-and-session' %} <a href="/data-and-session">Learn more</a>{% endif %}</span>
+<span class="temp-session">{{ t('UI_B_BASE_002') }}{% if request.path != '/data-and-session' %} <a href="/data-and-session">{{ t('UI_B_BASE_003') }}</a>{% endif %}</span>
 </header>
+{# D-P6-18: explicit global UI-language selection (English | العربية). Presentation
+   only; each option is a keyboard-usable, text-labelled link that sets the
+   preference and returns to the same page; the active language is a non-link
+   marked with aria-current. It sits at the top of the shared content region (not
+   inside the purity-constrained G-UX-SHELL header) so it is consistent on every
+   page without adding controls to the header or colliding with page form
+   submit-buttons. #}
+<nav class="ui-lang-selector" aria-label="{{ t('UI_LANG_MENU_LABEL') }}">
+  <span class="ui-lang-label">{{ t('UI_LANG_MENU_LABEL') }}:</span>
+  {% if ui_lang == 'en' %}<span class="ui-lang-active" lang="en" aria-current="true">English</span>{% else %}<a href="{{ url_for('set_ui_language', lang='en', next=request.path) }}" lang="en">English</a>{% endif %}
+  {% if ui_lang == 'ar' %}<span class="ui-lang-active" lang="ar" aria-current="true">العربية</span>{% else %}<a href="{{ url_for('set_ui_language', lang='ar', next=request.path) }}" lang="ar">العربية</a>{% endif %}
+</nav>
 <main id="main-content">
 {% block content %}{% endblock %}
 </main>

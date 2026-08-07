@@ -70,6 +70,7 @@ from engine.progression_loop import run_iteration
 from engine.deliverable_assembler import (
     assemble_deliverable, _s9, PACKAGE_VERSION, SCHEMA_ID,
 )
+from web.app import app as _flask_app
 
 # --------------------------------------------------------------------------------
 # Frozen structural facts (verified read-only against the assembler at the tip)
@@ -173,6 +174,18 @@ def _package(idea="IoT greenhouse temperature sensor with relay control", *input
 def _template_source():
     with open(_TEMPLATE_PATH, encoding="utf-8") as fh:
         return fh.read()
+
+
+def _rendered_deliverable():
+    """Render the REAL deliverable template (default English UI) and return the
+    HTML. D-P6-18 moved the group headings into the central UI-string catalogue,
+    so the redesign reading-order/heading assertions verify the RENDERED output
+    (what the inventor sees) rather than raw template literals."""
+    pkg = _package()
+    with _flask_app.test_request_context("/"):
+        return _flask_app.jinja_env.get_template("deliverable.html").render(
+            package=pkg, sid="redesign",
+            eligible=pkg["_session_meta"]["deliverable_eligible"])
 
 
 def _assembler_source():
@@ -495,44 +508,40 @@ def test_no_new_truth_package_is_json_serialisable():
 #   product code in this tests-first phase.
 # ================================================================================
 def test_redesign_all_seven_group_headings_present():
-    """EXPECTED RED — SOURCE NOT YET AUTHORIZED.
-    The redesigned deliverable presents the fourteen sections under the seven
-    design §4 inventor-facing group headings, in reading order."""
-    src = _template_source()
-    missing = [h for h in REDESIGN_GROUP_HEADINGS if h not in src]
-    assert missing == [], (
-        "EXPECTED RED — SOURCE NOT YET AUTHORIZED: missing redesign group "
-        f"headings {missing}"
-    )
+    """The redesigned deliverable presents the fourteen sections under the seven
+    design §4 inventor-facing group headings, in reading order. Verified on the
+    RENDERED HTML (default English UI) — D-P6-18 resolves headings via the central
+    UI-string catalogue rather than raw template literals."""
+    html = _rendered_deliverable()
+    missing = [h for h in REDESIGN_GROUP_HEADINGS if h not in html]
+    assert missing == [], f"missing redesign group headings {missing}"
 
 
 def test_redesign_reading_order_needs_group_before_risks_group():
-    """EXPECTED RED — SOURCE NOT YET AUTHORIZED.
-    Design §4 reading order: 'What it needs' (requirements + requirement landscape)
-    precedes 'What could go wrong' (risks)."""
-    src = _template_source()
-    assert "What it needs" in src and "What could go wrong" in src, (
-        "EXPECTED RED — SOURCE NOT YET AUTHORIZED: redesign groups absent"
-    )
-    assert src.index("What it needs") < src.index("What could go wrong")
+    """Design §4 reading order: 'What it needs' (requirements + requirement
+    landscape) precedes 'What could go wrong' (risks) in the rendered output."""
+    html = _rendered_deliverable()
+    assert "What it needs" in html and "What could go wrong" in html, \
+        "redesign groups absent from rendered deliverable"
+    assert html.index("What it needs") < html.index("What could go wrong")
 
 
 def test_redesign_needs_group_colocates_requirements_and_landscape():
-    """EXPECTED RED — SOURCE NOT YET AUTHORIZED.
-    Under 'What it needs', section_4 (requirements) and section_13 (requirement
-    landscape) are grouped together (design §5 mapping, Group 3)."""
-    src = _template_source()
-    assert "What it needs" in src, (
-        "EXPECTED RED — SOURCE NOT YET AUTHORIZED: 'What it needs' group absent"
-    )
-    start = src.index("What it needs")
+    """Under 'What it needs', the requirements (section_4) and requirement
+    landscape (section_13) render together (design §5 mapping, Group 3). Verified
+    by their rendered subheadings appearing within the 'What it needs' group."""
+    html = _rendered_deliverable()
+    assert "What it needs" in html, "'What it needs' group absent from rendered output"
+    start = html.index("What it needs")
     nxt = min(
-        (src.index(h) for h in REDESIGN_GROUP_HEADINGS if h in src and src.index(h) > start),
-        default=len(src),
+        (html.index(h) for h in REDESIGN_GROUP_HEADINGS if h in html and html.index(h) > start),
+        default=len(html),
     )
-    group = src[start:nxt]
-    assert "section_4_requirements" in group
-    assert "section_13_requirement_landscape" in group
+    group = html[start:nxt]
+    # section_4 renders as "Captured Inputs and Assessment Status"; section_13 as
+    # the "Requirement Landscape" subheading — both inside the "What it needs" group.
+    assert "Captured Inputs and Assessment Status" in group
+    assert "Requirement Landscape" in group
 
 
 def test_redesign_honest_status_strip_separate_from_maturity():
