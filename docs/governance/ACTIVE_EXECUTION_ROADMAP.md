@@ -4557,3 +4557,14 @@ any new capability; it remains **ELIGIBLE FOR OWNER CONSIDERATION, NOT AUTHORIZE
 P4-2 Level-1, Draft Level 2, P5-1, P5-2, P5-3, and P6-1 remain CLOSED. Decision **D17** and the AISR seven-owner model are
 preserved. Append-only; prior history not rewritten. This entry authorizes no push, PR, merge, implementation, or phase
 activation.
+
+
+## D-P6-18 formal-closure — wording clarification (append-only; corrects no evidence)
+
+Clarification of the immediately-preceding D-P6-18 formal-closure entry only (no evidence, merge identity, lineage,
+verdict, or test result is changed): where that entry refers to "the separately authorized Master Obligation Index gate",
+read it as **the Master Obligation Index gate, which REQUIRES SEPARATE OWNER AUTHORIZATION** — a documentation-only
+reconciliation gate that is **NOT AUTHORIZED and NOT STARTED** and remains **ELIGIBLE FOR OWNER CONSIDERATION** only. No
+authorization for the Master Obligation Index, the Question Translation Assistant, or any other successor capability
+exists or is implied. Append-only; prior history not rewritten. This entry authorizes no push, PR, merge, implementation,
+or phase activation.

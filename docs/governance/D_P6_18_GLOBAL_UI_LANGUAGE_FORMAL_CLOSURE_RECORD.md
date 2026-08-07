@@ -78,9 +78,10 @@ schema/migration; WS17; STG; ACV; PDF/download; output email. Closing D-P6-18 au
 
 ## 6. Closure status and next governance step
 
-**D-P6-18 — Global UI Language: FORMALLY ACCEPTED AND CLOSED.** Phase 6 as a whole is **NOT** complete. The next
-governance step is the **separately authorized Master Obligation Index gate** (governance/documentation reconciliation
-only) — **NOT** the implementation of any new capability; it remains **ELIGIBLE FOR OWNER CONSIDERATION, NOT AUTHORIZED**.
+**D-P6-18 — Global UI Language: FORMALLY ACCEPTED AND CLOSED.** Phase 6 as a whole is **NOT** complete. The next eligible
+governance step is the **Master Obligation Index gate, which REQUIRES SEPARATE OWNER AUTHORIZATION**
+(governance/documentation reconciliation only) — **NOT** the implementation of any new capability; it remains **ELIGIBLE
+FOR OWNER CONSIDERATION, NOT AUTHORIZED / NOT STARTED**.
 No successor capability (Question Translation Assistant or any other) is authorized or started by this closure. Phase 5
 remains FORMALLY CLOSED; P4-2 Level-1, Draft Level 2, P5-1, P5-2, P5-3, and P6-1 remain CLOSED. Decision **D17** and the
 AISR seven-owner model are preserved.
