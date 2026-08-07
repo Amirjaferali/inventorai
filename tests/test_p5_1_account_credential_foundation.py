@@ -425,11 +425,13 @@ def test_registration_does_not_sign_in_or_set_auth_cookie(client):
     assert "session=" not in set_cookie
 
 
-# --- Group K: bilingual + accessible registration surface ------------------
-def test_register_page_bilingual_and_accessible(client):
+# --- Group K: language-switchable + accessible registration surface ---------
+def test_register_page_language_switch_and_accessible(client):
     body = client.get("/register").get_data(as_text=True)
-    assert 'lang="en"' in body and 'lang="ar"' in body   # English + Arabic
-    assert 'dir' in body or 'class="ar"' in body or "direction:rtl" in body
+    # D-P6-18 (D-P6-16): one UI language at a time; both languages remain reachable
+    # via the global UI-language selector (English | العربية) on every page.
+    assert '/ui-language' in body
+    assert "العربية" in body and 'lang="ar"' in body
     assert 'autocomplete="email"' in body
     assert 'autocomplete="new-password"' in body
     assert 'for="email"' in body and 'for="password"' in body   # labelled inputs

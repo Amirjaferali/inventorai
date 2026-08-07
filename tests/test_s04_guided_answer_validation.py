@@ -215,7 +215,7 @@ def test_preserved_answer_controls_intact():
     try:
         body = app.test_client().get(f"/session/{_SID}").get_data(as_text=True)
         assert '<label for="response"' in body and "Your answer" in body, "answer label preserved"
-        assert '<p class="question">' in body, "question paragraph preserved"
+        assert '<p class="question"' in body, "question paragraph preserved"
         assert "<fieldset" in body and "How do you want to respond?" in body, "response fieldset/legend preserved"
         for v in ("answered", "unknown", "deferred", "provisional_assumption",
                   "specialist_requested", "evidence_requested"):

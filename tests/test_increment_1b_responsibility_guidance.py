@@ -82,7 +82,7 @@ def test_label_and_guidance_render_near_question():
         assert r["label"] in body
         assert r["guidance"] in body
         # rendered AFTER the question (near it), not at the top of the page.
-        assert body.index('<p class="question">') < body.index(r["label"])
+        assert body.index('<p class="question"') < body.index(r["label"])
     finally:
         SESSION_STORE.pop(sid, None)
 

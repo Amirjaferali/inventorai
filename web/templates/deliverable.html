@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}InventorAI — Deliverable{% endblock %}
+{% block title %}{{ t('UI_TITLE_DELIVERABLE') }}{% endblock %}
 {% block head %}
 <style>
 body{font-family:sans-serif;max-width:760px;margin:60px auto;padding:0 20px;color:#222}
@@ -36,24 +36,24 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
 <h1>InventorAI</h1>
 
 <div class="meta">
-  Package version: {{ package.package_version }}
+  {{ t('UI_B_DELIV_001') }} {{ package.package_version }}
   &nbsp;·&nbsp;
-  Schema: {{ package.schema_id }}
+  {{ t('UI_B_DELIV_002') }} {{ package.schema_id }}
   &nbsp;·&nbsp;
-  Generated: {{ package.generated_at }}
+  {{ t('UI_B_DELIV_003') }} {{ package.generated_at }}
   &nbsp;·&nbsp;
-  Session: {{ package.session_id }}
+  {{ t('UI_B_DELIV_004') }} {{ package.session_id }}
 </div>
 
 {% if eligible %}
 <div class="status-eligible">
-  <div class="status-title">FDC-001 Deliverable</div>
-  <div class="status-sub">Eligible assessment package</div>
+  <div class="status-title">{{ t('UI_B_DELIV_005') }}</div>
+  <div class="status-sub">{{ t('UI_B_DELIV_006') }}</div>
 </div>
 {% else %}
 <div class="status-snapshot">
-  <div class="status-title">Assessment Snapshot — In Progress</div>
-  <div class="status-sub">This is not a final deliverable. Continue developing the idea to reach eligibility.</div>
+  <div class="status-title">{{ t('UI_B_DELIV_007') }}</div>
+  <div class="status-sub">{{ t('UI_B_DELIV_008') }}</div>
 </div>
 {% endif %}
 
@@ -65,12 +65,12 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
    honestly as not a validation or resolved status. #}
 <div class="status-strip">
   <div>
-    <div class="field-label">Maturity</div>
+    <div class="field-label">{{ t('UI_B_DELIV_009') }}</div>
     <div class="field-value">{{ package["_session_meta"].maturity_label }}</div>
   </div>
   <div>
-    <div class="field-label">Derived readiness <span style="font-weight:normal">(recomputed separately from stored maturity; not a validation or resolved status)</span></div>
-    <div class="field-value">{{ "Derived readiness signal met (still not technically verified)" if package["_session_meta"].get("derived_verified_ready", False) else "Not derived-ready — recorded evidence is not technically verified" }}</div>
+    <div class="field-label">{{ t('UI_B_DELIV_010A') }} <span style="font-weight:normal">{{ t('UI_B_DELIV_010B') }}</span></div>
+    <div class="field-value">{{ t('UI_B_DELIV_011') if package["_session_meta"].get("derived_verified_ready", False) else t('UI_B_DELIV_012') }}</div>
   </div>
 </div>
 
@@ -86,19 +86,19 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
    engineering-validated. #}
 {% set ss = package["_session_meta"].inventor_stated_safety_signals %}
 <div class="safety-signals">
-  <div class="status-title">Inventor-Stated Safety Signals</div>
+  <div class="status-title">{{ t('UI_B_DELIV_013') }}</div>
   {% if ss.signals %}
   <p class="ss-note">{{ ss.advisory_note }}</p>
   {% for sig in ss.signals %}
   <div class="field-label">{{ sig.display_label }}</div>
   <div class="field-value">&ldquo;{{ sig.statement }}&rdquo;</div>
   <div class="ss-meta">
-    Safety subject: {{ sig.safety_subject }} &nbsp;&middot;&nbsp;
-    Failure condition stated by inventor: {{ sig.failure_condition }} &nbsp;&middot;&nbsp;
-    Possible consequence: {{ sig.possible_consequence }} &nbsp;&middot;&nbsp;
-    Source: {{ sig.source }} &nbsp;&middot;&nbsp;
-    Provenance: {{ sig.provenance | replace("_", " ") }} &nbsp;&middot;&nbsp;
-    Validation: {{ sig.validation_status | replace("_", " ") }}
+    {{ t('UI_B_DELIV_014') }} {{ sig.safety_subject }} &nbsp;&middot;&nbsp;
+    {{ t('UI_B_DELIV_015') }} {{ sig.failure_condition }} &nbsp;&middot;&nbsp;
+    {{ t('UI_B_DELIV_016') }} {{ sig.possible_consequence }} &nbsp;&middot;&nbsp;
+    {{ t('UI_B_DELIV_017') }} {{ sig.source }} &nbsp;&middot;&nbsp;
+    {{ t('UI_B_DELIV_018') }} {{ sig.provenance | replace("_", " ") }} &nbsp;&middot;&nbsp;
+    {{ t('UI_B_DELIV_019') }} {{ sig.validation_status | replace("_", " ") }}
   </div>
   <div class="ss-caution">{{ sig.caution_text }}</div>
   {% endfor %}
@@ -115,34 +115,34 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
    ============================================================================ #}
 
 <section>
-  <h2>What your idea is</h2>
-  <p class="group-lede">A plain restatement of the invention as we currently understand it from your inputs.</p>
+  <h2>{{ t('UI_B_DELIV_020') }}</h2>
+  <p class="group-lede">{{ t('UI_B_DELIV_021') }}</p>
 
   <div class="disclaimer">{{ package.section_1_disclaimer.text }}</div>
 
-  <h3>Invention Summary</h3>
-  <div class="field-label">Maturity</div>
+  <h3>{{ t('UI_B_DELIV_022') }}</h3>
+  <div class="field-label">{{ t('UI_B_DELIV_009') }}</div>
   <div class="field-value">{{ package.section_2_invention_summary.maturity_label }}</div>
-  <div class="field-label">Assessment Completeness</div>
+  <div class="field-label">{{ t('UI_B_DELIV_023') }}</div>
   <div class="field-value">{{ package.section_2_invention_summary.assessment_completeness }}</div>
   {% if package.section_2_invention_summary.known_problem %}
-  <div class="field-label">Known Problem{% if package.section_2_invention_summary.known_problem.evidence_id %} <span class="ev-id" style="font-weight:normal;color:#667">({{ package.section_2_invention_summary.known_problem.evidence_id }})</span>{% endif %}</div>
+  <div class="field-label">{{ t('UI_B_DELIV_024') }}{% if package.section_2_invention_summary.known_problem.evidence_id %} <span class="ev-id" style="font-weight:normal;color:#667">({{ package.section_2_invention_summary.known_problem.evidence_id }})</span>{% endif %}</div>
   <div class="field-value">{{ package.section_2_invention_summary.known_problem.content }}</div>
   {% elif package.section_2_invention_summary.known_problem_note %}
-  <div class="field-label">Known Problem</div>
+  <div class="field-label">{{ t('UI_B_DELIV_024') }}</div>
   <div class="field-value">{{ package.section_2_invention_summary.known_problem_note }}</div>
   {% endif %}
   {% if package.section_2_invention_summary.known_mechanism %}
-  <div class="field-label">Known Mechanism{% if package.section_2_invention_summary.known_mechanism.evidence_id %} <span class="ev-id" style="font-weight:normal;color:#667">({{ package.section_2_invention_summary.known_mechanism.evidence_id }})</span>{% endif %}</div>
+  <div class="field-label">{{ t('UI_B_DELIV_025') }}{% if package.section_2_invention_summary.known_mechanism.evidence_id %} <span class="ev-id" style="font-weight:normal;color:#667">({{ package.section_2_invention_summary.known_mechanism.evidence_id }})</span>{% endif %}</div>
   <div class="field-value">{{ package.section_2_invention_summary.known_mechanism.content }}</div>
   {% endif %}
 </section>
 
 <section>
-  <h2>What we assessed</h2>
-  <p class="group-lede">The areas we looked at, and how far each one has been developed so far.</p>
+  <h2>{{ t('UI_B_DELIV_026') }}</h2>
+  <p class="group-lede">{{ t('UI_B_DELIV_027') }}</p>
 
-  <h3>Assessment Overview</h3>
+  <h3>{{ t('UI_B_DELIV_028') }}</h3>
   {% for cap in package.section_3_assessment_overview.capabilities_assessed %}
   {# P6-1: truthful Tier-1 public label via the single central resolver (no raw pack id).
      Owner decision (RESUME-01): render ONE language variant per the surface's
@@ -152,19 +152,19 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
      for a future language-aware surface (non-blocking follow-up). No extra RTL added. #}
   {% set _dl = cap.capability_id | public_domain_label %}
   <div class="field-value">
-    Review type: {{ _dl.en }} &nbsp;·&nbsp;
-    Maturity: {{ cap.maturity_level }} &nbsp;·&nbsp;
-    Gaps total/open/resolved: {{ cap.gaps_total }}/{{ cap.gaps_open }}/{{ cap.gaps_resolved }}
+    {{ t('UI_B_SESSION_010') }} {{ _dl[ui_lang] }} &nbsp;·&nbsp;
+    {{ t('UI_B_DELIV_029') }} {{ cap.maturity_level }} &nbsp;·&nbsp;
+    {{ t('UI_B_DELIV_030') }} {{ cap.gaps_total }}/{{ cap.gaps_open }}/{{ cap.gaps_resolved }}
   </div>
   {% endfor %}
 </section>
 
 <section>
-  <h2>What it needs</h2>
-  <p class="group-lede">The inputs we captured and the open areas that still have to be worked out.</p>
+  <h2>{{ t('UI_B_DELIV_031') }}</h2>
+  <p class="group-lede">{{ t('UI_B_DELIV_032') }}</p>
 
-  <h3>Captured Inputs and Assessment Status</h3>
-  <p class="group-lede" style="margin-top:0">These are inputs captured from your answers, not tested conclusions. The suggested checks further down show what could help firm them up.</p>
+  <h3>{{ t('UI_B_DELIV_033') }}</h3>
+  <p class="group-lede" style="margin-top:0">{{ t('UI_B_DELIV_034') }}</p>
   {% if package.section_4_requirements.requirements %}
   <ul>
     {% for r in package.section_4_requirements.requirements %}
@@ -172,10 +172,10 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
     {% endfor %}
   </ul>
   {% else %}
-  <div class="field-value">No requirements recorded yet.</div>
+  <div class="field-value">{{ t('UI_B_DELIV_035') }}</div>
   {% endif %}
 
-  <h3>Requirement Landscape</h3>
+  <h3>{{ t('UI_B_DELIV_036') }}</h3>
   {# Increment 4 (additive): presentation-only render of the provenance-anchored
      requirement landscape in package.section_13_requirement_landscape. Human-
      readable labels only; no raw enum, identifier, or state change happens here. #}
@@ -227,22 +227,22 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% endfor %}
   {% endif %}
   {% endfor %}
-  <div class="field-value"><strong>Provenance:</strong> {{ req.provenance }}</div>
-  <div class="field-value"><strong>Status:</strong> {{ req.status }}</div>
-  <div class="field-value"><strong>Criticality:</strong> {{ req.criticality }} ({{ req.criticality_authority }})</div>
+  <div class="field-value"><strong>{{ t('UI_B_DELIV_018') }}</strong> {{ req.provenance }}</div>
+  <div class="field-value"><strong>{{ t('UI_B_DELIV_037') }}</strong> {{ req.status }}</div>
+  <div class="field-value"><strong>{{ t('UI_B_DELIV_038') }}</strong> {{ req.criticality }} ({{ req.criticality_authority }})</div>
   {% if req.criticality_rationale %}
-  <div class="field-value"><strong>Rationale:</strong> {{ req.criticality_rationale }}</div>
+  <div class="field-value"><strong>{{ t('UI_B_DELIV_039') }}</strong> {{ req.criticality_rationale }}</div>
   {% endif %}
   {% if req.resolving_action %}
-  <div class="field-value"><strong>Resolving action:</strong> {{ req.resolving_action }}</div>
+  <div class="field-value"><strong>{{ t('UI_B_DELIV_040') }}</strong> {{ req.resolving_action }}</div>
   {% endif %}
   {% if req.supporting_references %}
-  <div class="field-value"><strong>Supporting references:</strong>
+  <div class="field-value"><strong>{{ t('UI_B_DELIV_041') }}</strong>
     {% for ref in req.supporting_references %}{{ ref }}{% if not loop.last %}; {% endif %}{% endfor %}
   </div>
   {% endif %}
   {% if members | length > 1 %}
-  <div class="field-value" style="color:#667">(shared by {{ members | length }} entries)</div>
+  <div class="field-value" style="color:#667">{{ t('UI_B_DELIV_042A') }}{{ members | length }}{{ t('UI_B_DELIV_042B') }}</div>
   {% endif %}
   {% endif %}
   {% endfor %}
@@ -263,18 +263,18 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
 </section>
 
 <section>
-  <h2>What is assumed vs still unknown</h2>
-  <p class="group-lede">Things currently taken as given, alongside items you have flagged as not yet known.</p>
+  <h2>{{ t('UI_B_DELIV_043') }}</h2>
+  <p class="group-lede">{{ t('UI_B_DELIV_044') }}</p>
 
-  <h3>Assumptions &amp; Inventor-Stated Unknowns</h3>
+  <h3>{{ t('UI_B_DELIV_045') }}</h3>
   {% if package.section_5_assumptions.assumptions %}
   <ul>
     {% for a in package.section_5_assumptions.assumptions %}
-    <li>{{ a.assumption }} — {{ a.validation_approach }}{% if a.risk_if_invalid %}<br><span class="group-lede" style="margin:0">Why this matters: {{ a.risk_if_invalid }}</span>{% endif %}</li>
+    <li>{{ a.assumption }} — {{ a.validation_approach }}{% if a.risk_if_invalid %}<br><span class="group-lede" style="margin:0">{{ t('UI_B_DELIV_047') }} {{ a.risk_if_invalid }}</span>{% endif %}</li>
     {% endfor %}
   </ul>
   {% else %}
-  <div class="field-value">No assumptions recorded yet.</div>
+  <div class="field-value">{{ t('UI_B_DELIV_046') }}</div>
   {% endif %}
   {% if package.section_5_assumptions.inventor_unknowns %}
   <ul>
@@ -284,7 +284,7 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   </ul>
   {% endif %}
 
-  <h3>Unresolved Items</h3>
+  <h3>{{ t('UI_B_DELIV_048') }}</h3>
   {% if package["section_8_unresolved_items"]["items"] %}
   <ul>
     {% for item in package["section_8_unresolved_items"]["items"] %}
@@ -292,25 +292,25 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
       {% if item.type == 'open_gap' %}
         {{ item.gap_label }} — {{ item.status_label if item.status_label else item.status }}
       {% else %}
-        Acknowledged unknown: {{ item.statement }}
+        {{ t('UI_B_DELIV_049') }} {{ item.statement }}
       {% endif %}
     </li>
     {% endfor %}
   </ul>
   {% else %}
     {% if package["_session_meta"].get("derived_verified_ready", False) %}
-  <div class="field-value">No unresolved items.</div>
+  <div class="field-value">{{ t('UI_B_DELIV_050') }}</div>
     {% else %}
-  <div class="field-value">No stored gaps remain open, but evidence validation or readiness items are still unresolved. The recorded evidence is not technically verified.</div>
+  <div class="field-value">{{ t('UI_B_DELIV_051') }}</div>
     {% endif %}
   {% endif %}
 </section>
 
 <section>
-  <h2>What could go wrong</h2>
-  <p class="group-lede">Risks recorded from the current state. This is not a safety judgement and is not exhaustive.</p>
+  <h2>{{ t('UI_B_DELIV_052') }}</h2>
+  <p class="group-lede">{{ t('UI_B_DELIV_053') }}</p>
 
-  <h3>Risks</h3>
+  <h3>{{ t('UI_B_DELIV_054') }}</h3>
   {# Workstream 5 (contract §12): render-only linkage sourced from the additive
      _session_meta.risk_safety_linkage block already assembled in the package.
      Existing risk rows, totals, severities, and wordings are unchanged; the
@@ -326,7 +326,7 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% elif rsl.section_6_empty_qualification %}
   <div class="field-value" style="white-space:pre-line">{{ rsl.section_6_empty_qualification }}</div>
   {% else %}
-  <div class="field-value">No risks recorded.</div>
+  <div class="field-value">{{ t('UI_B_DELIV_055') }}</div>
   {% endif %}
   {% if rsl.section_6_note %}
   <div class="field-value" style="white-space:pre-line;margin-top:10px">{{ rsl.section_6_note }}</div>
@@ -334,11 +334,11 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
 </section>
 
 <section>
-  <h2>The reasoning behind it</h2>
-  <p class="group-lede">The recorded reasoning and evidence behind the assessment above.</p>
+  <h2>{{ t('UI_B_DELIV_056') }}</h2>
+  <p class="group-lede">{{ t('UI_B_DELIV_057') }}</p>
 
   {% if package.section_9_stage3_reasoning["items"] %}
-  <h3>Stage 3 Reasoning</h3>
+  <h3>{{ t('UI_B_DELIV_058') }}</h3>
   {% for item in package.section_9_stage3_reasoning["items"] %}
   <div class="field-label">{{ item.gap_label }} — {{ item.status_label }}</div>
   {% if item.evidence %}
@@ -352,21 +352,21 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% endif %}
   {% endfor %}
   {% else %}
-  <div class="field-value">No Stage 3 reasoning areas are recorded for this session.</div>
+  <div class="field-value">{{ t('UI_B_DELIV_059') }}</div>
   {% endif %}
 </section>
 
 <section>
-  <h2>What we recommend and what to do next</h2>
-  <p class="group-lede">A suggested direction and concrete next steps you can act on. Advisory only.</p>
+  <h2>{{ t('UI_B_DELIV_060') }}</h2>
+  <p class="group-lede">{{ t('UI_B_DELIV_061') }}</p>
 
-  <h3>Recommendations</h3>
-  <div class="field-label">Verdict</div>
+  <h3>{{ t('UI_B_DELIV_062') }}</h3>
+  <div class="field-label">{{ t('UI_B_DELIV_063') }}</div>
   <div class="field-value">{{ package.section_7_recommendations.category_a_proceed_revise_block.verdict }}</div>
-  <div class="field-label">Rationale</div>
+  <div class="field-label">{{ t('UI_B_DELIV_064') }}</div>
   <div class="field-value">{{ package.section_7_recommendations.category_a_proceed_revise_block.rationale }}</div>
   {% if package.section_7_recommendations.category_d_open_items %}
-  <div class="field-label">Open Items</div>
+  <div class="field-label">{{ t('UI_B_DELIV_065') }}</div>
   <ul>
     {% for item in package.section_7_recommendations.category_d_open_items %}
     <li>{{ item.action }}</li>
@@ -374,7 +374,7 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   </ul>
   {% endif %}
 
-  <h3>Next Development Step</h3>
+  <h3>{{ t('UI_B_SESSION_001') }}</h3>
   {# Increment 3 (R-3): presentation-only render of the shared engine derivation
      carried in package.section_12_next_development_step. No priority/record/
      provider logic and no state change happen here. #}
@@ -382,32 +382,32 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% set nds = package.section_12_next_development_step %}
   <div class="field-label">{{ nds.title }}</div>
   <div class="field-value">{{ nds.why_it_matters }}</div>
-  <div class="field-label">Next action</div>
+  <div class="field-label">{{ t('UI_B_DELIV_067') }}</div>
   <div class="field-value">{{ nds.next_action }}</div>
   {% if nds.evidence_needed %}
-  <div class="field-label">Evidence needed</div>
+  <div class="field-label">{{ t('UI_B_DELIV_068') }}</div>
   <div class="field-value">{{ nds.evidence_needed }}</div>
   {% endif %}
   {% if nds.suggested_provider %}
-  <div class="field-label">Suggested provider</div>
+  <div class="field-label">{{ t('UI_B_DELIV_069') }}</div>
   <div class="field-value">{{ nds.suggested_provider }}</div>
   {% endif %}
   {% if nds.sufficiency_condition %}
-  <div class="field-label">Sufficiency condition</div>
+  <div class="field-label">{{ t('UI_B_DELIV_070') }}</div>
   <div class="field-value">{{ nds.sufficiency_condition }}</div>
   {% endif %}
   {% if nds.remaining_uncertainty %}
   <div class="field-value"><em>{{ nds.remaining_uncertainty }}</em></div>
   {% endif %}
   {% else %}
-  <div class="field-value">No actionable next development step. The recorded state shows nothing outstanding to develop next.</div>
+  <div class="field-value">{{ t('UI_B_DELIV_071') }}</div>
   {% endif %}
 
-  <h3>Recommended Next Steps</h3>
+  <h3>{{ t('UI_B_DELIV_072') }}</h3>
   {% if package.section_10_recommended_next_steps["items"] %}
   <ul>
     {% for step in package.section_10_recommended_next_steps["items"] %}
-    <li>{{ step.action }}{% if step.priority == 'high' %} <em>(high priority)</em>{% endif %}</li>
+    <li>{{ step.action }}{% if step.priority == 'high' %} <em>{{ t('UI_B_DELIV_073') }}</em>{% endif %}</li>
     {% endfor %}
   </ul>
   {% else %}
@@ -415,24 +415,24 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% endif %}
   <div class="field-value"><em>{{ package.section_10_recommended_next_steps.note }}</em></div>
 
-  <h3>Prototype &amp; Test Plan</h3>
+  <h3>{{ t('UI_B_DELIV_074') }}</h3>
   {% if package.section_11_prototype_test_plan["items"] %}
   {% for exp in package.section_11_prototype_test_plan["items"] %}
   <div class="field-label">{{ exp.experiment_title }}</div>
-  <div class="field-value"><strong>Objective:</strong> {{ exp.objective }}</div>
-  <div class="field-value"><strong>Based on:</strong> {{ exp.source_basis }}</div>
-  <div class="field-value"><strong>Minimum prototype:</strong> {{ exp.minimum_prototype }}</div>
-  <div class="field-value"><strong>Observe:</strong> {{ exp.what_to_observe }}</div>
+  <div class="field-value"><strong>{{ t('UI_B_DELIV_075') }}</strong> {{ exp.objective }}</div>
+  <div class="field-value"><strong>{{ t('UI_B_DELIV_076') }}</strong> {{ exp.source_basis }}</div>
+  <div class="field-value"><strong>{{ t('UI_B_DELIV_077') }}</strong> {{ exp.minimum_prototype }}</div>
+  <div class="field-value"><strong>{{ t('UI_B_DELIV_078') }}</strong> {{ exp.what_to_observe }}</div>
   {% if exp.success_criterion_provenance == 'user_defined' %}
-  <div class="field-value"><strong>Success criterion — user-defined:</strong> {{ exp.success_criterion }}</div>
+  <div class="field-value"><strong>{{ t('UI_B_DELIV_079') }}</strong> {{ exp.success_criterion }}</div>
   {% else %}
-  <div class="field-value"><strong>Success criterion:</strong> {{ exp.success_criterion }}</div>
+  <div class="field-value"><strong>{{ t('UI_B_DELIV_080') }}</strong> {{ exp.success_criterion }}</div>
   {% endif %}
-  <div class="field-value"><strong>Failure / revise if:</strong> {{ exp.failure_or_revision_condition }}</div>
-  <div class="field-value"><strong>Evidence upgrade target:</strong> {{ exp.expected_evidence_upgrade }}</div>
+  <div class="field-value"><strong>{{ t('UI_B_DELIV_081') }}</strong> {{ exp.failure_or_revision_condition }}</div>
+  <div class="field-value"><strong>{{ t('UI_B_DELIV_082') }}</strong> {{ exp.expected_evidence_upgrade }}</div>
   {% endfor %}
   {% if package.section_11_prototype_test_plan.shared_required_expertise %}
-  <div class="field-label">Shared expertise and tools identified by the inventor</div>
+  <div class="field-label">{{ t('UI_B_DELIV_083') }}</div>
   <div class="field-value">{{ package.section_11_prototype_test_plan.shared_required_expertise }}</div>
   {% endif %}
   {% else %}
@@ -442,11 +442,11 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   <div class="field-value status-snapshot">{{ package.section_11_prototype_test_plan.stale_criteria_notice }}</div>
   {% endif %}
   {% if package.section_11_prototype_test_plan["items"] %}
-  <div class="field-value"><a href="{{ url_for('success_criteria', sid=sid) }}">Define or edit success criteria</a></div>
+  <div class="field-value"><a href="{{ url_for('success_criteria', sid=sid) }}">{{ t('UI_B_DELIV_084') }}</a></div>
   {% endif %}
   <div class="field-value"><em>{{ package.section_11_prototype_test_plan.note }}</em></div>
 
-  <h3>Validation Plan</h3>
+  <h3>{{ t('UI_B_DELIV_085') }}</h3>
   {# Increment 5 (additive): presentation-only render of the Validation Plan in
      package.section_14_validation_plan. Proposed validation actions and blocked
      items only — never verified/passed/supplied. Human-readable labels only; no
@@ -454,7 +454,7 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
      exposed, and Jinja autoescape applies to every field. #}
   {% set vp = package.section_14_validation_plan %}
   {% if vp.steps or vp.blocked_items %}
-  <p class="vp-intro">Suggested checks that would help firm up this idea. None has been carried out yet &mdash; these are proposals, not results. Each check keeps its supporting details on one line below it.</p>
+  <p class="vp-intro">{{ t('UI_B_DELIV_086') }}</p>
   {% endif %}
   {% if vp.steps %}
   {# Phase 7A (presentation-only): group the already-derived steps by their
@@ -471,10 +471,10 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
         | rejectattr('responsibility_label', 'equalto', 'Specialist input required')
         | rejectattr('responsibility_label', 'equalto', 'Empirical evidence required') | list %}
   {% for grp in [
-        ('Checks you can do yourself', g_owner),
-        ('Needs specialist input', g_spec),
-        ('Needs a physical test or evidence', g_emp),
-        ('Other suggested checks', g_other)] %}
+        (t('UI_B_DELIV_087'), g_owner),
+        (t('UI_B_DELIV_088'), g_spec),
+        (t('UI_B_DELIV_089'), g_emp),
+        (t('UI_B_DELIV_090'), g_other)] %}
   {% if grp[1] %}
   <h4 class="vp-group">{{ grp[0] }}</h4>
   {# Phase 7B (presentation-only): collapse byte-for-byte identical rows within
@@ -496,17 +496,17 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
         | selectattr('closure_condition', 'equalto', st.closure_condition)
         | selectattr('provenance', 'equalto', st.provenance)
         | selectattr('confidence_label', 'equalto', st.confidence_label) | list | length %}
-  <div class="field-label">{{ st.statement }}{% if cnt > 1 %} <span class="vp-count" style="font-weight:normal;color:#667">(applies to {{ cnt }} recorded answers)</span>{% endif %}</div>
+  <div class="field-label">{{ st.statement }}{% if cnt > 1 %} <span class="vp-count" style="font-weight:normal;color:#667">{{ t('UI_B_DELIV_091A') }}{{ cnt }}{{ t('UI_B_DELIV_091B') }}</span>{% endif %}</div>
   {# Workstream 7 (contract §3.2 D5/C3): for the UNDETERMINED responsibility
      token the public presentation is the exact owner wording rendered as two
      separate lines; no actor is assigned. Internal token and JSON unchanged. #}
   {% if st.responsibility_label == 'Responsibility undetermined' %}
-  <div class="vp-resp" style="font-size:12px;color:#667;line-height:1.5;margin:0">Responsibility has not yet been assigned.</div>
-  <div class="vp-resp" style="font-size:12px;color:#667;line-height:1.5;margin:0 0 4px 0">Choose who will own this validation step before relying on the result.</div>
+  <div class="vp-resp" style="font-size:12px;color:#667;line-height:1.5;margin:0">{{ t('UI_B_DELIV_092') }}</div>
+  <div class="vp-resp" style="font-size:12px;color:#667;line-height:1.5;margin:0 0 4px 0">{{ t('UI_B_DELIV_093') }}</div>
   {% endif %}
   {# Workstream 7 (contract §3.3 D6): the confidence line is suppressed for the
      UNDETERMINED token — presentation only; the JSON fields are unchanged. #}
-  <div class="vp-meta">{% if st.responsibility_label != 'Responsibility undetermined' %}Responsibility: {{ st.responsibility_label }} &nbsp;&middot;&nbsp; {% endif %}Evidence needed: {{ st.evidence_category }} &nbsp;&middot;&nbsp; Closure: {{ st.closure_condition }} &nbsp;&middot;&nbsp; Provenance: {{ st.provenance }}{% if st.confidence_label != 'Confidence undetermined' %} &nbsp;&middot;&nbsp; Confidence: {{ st.confidence_label }}{% endif %}</div>
+  <div class="vp-meta">{% if st.responsibility_label != 'Responsibility undetermined' %}{{ t('UI_B_DELIV_094') }} {{ st.responsibility_label }} &nbsp;&middot;&nbsp; {% endif %}{{ t('UI_B_DELIV_095') }} {{ st.evidence_category }} &nbsp;&middot;&nbsp; {{ t('UI_B_DELIV_096') }} {{ st.closure_condition }} &nbsp;&middot;&nbsp; {{ t('UI_B_DELIV_018') }} {{ st.provenance }}{% if st.confidence_label != 'Confidence undetermined' %} &nbsp;&middot;&nbsp; {{ t('UI_B_DELIV_097') }} {{ st.confidence_label }}{% endif %}</div>
   {# Workstream 7 (contract §3.4 D7/D8 per C2): render the per-step advisory
      verbatim when present (the two pending kinds only), one line per div. #}
   {% if st.advisory %}
@@ -520,16 +520,16 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% endfor %}
   {% endif %}
   {% if vp.blocked_items %}
-  <h4>Blocked items</h4>
+  <h4>{{ t('UI_B_DELIV_098') }}</h4>
   {% for b in vp.blocked_items %}
   <div class="field-label">{{ b.reason }}</div>
   {# Workstream 7 (contract §3.2 D5/C3): same two-line UNDETERMINED public
      wording for blocked items; internal token and JSON unchanged. #}
   {% if b.responsibility_label == 'Responsibility undetermined' %}
-  <div class="vp-resp" style="font-size:12px;color:#667;line-height:1.5;margin:0">Responsibility has not yet been assigned.</div>
-  <div class="vp-resp" style="font-size:12px;color:#667;line-height:1.5;margin:0 0 4px 0">Choose who will own this validation step before relying on the result.</div>
+  <div class="vp-resp" style="font-size:12px;color:#667;line-height:1.5;margin:0">{{ t('UI_B_DELIV_092') }}</div>
+  <div class="vp-resp" style="font-size:12px;color:#667;line-height:1.5;margin:0 0 4px 0">{{ t('UI_B_DELIV_093') }}</div>
   {% endif %}
-  <div class="vp-meta">Missing: {{ b.missing }}{% if b.responsibility_label != 'Responsibility undetermined' %} &nbsp;&middot;&nbsp; Responsibility: {{ b.responsibility_label }}{% endif %} &nbsp;&middot;&nbsp; Provenance: {{ b.provenance }}</div>
+  <div class="vp-meta">{{ t('UI_B_DELIV_099') }} {{ b.missing }}{% if b.responsibility_label != 'Responsibility undetermined' %} &nbsp;&middot;&nbsp; {{ t('UI_B_DELIV_094') }} {{ b.responsibility_label }}{% endif %} &nbsp;&middot;&nbsp; {{ t('UI_B_DELIV_018') }} {{ b.provenance }}</div>
   {% endfor %}
   {% endif %}
   {% if not vp.steps and not vp.blocked_items %}
@@ -543,20 +543,20 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
    sid); Keep (secondary) records only a single-use temporary acknowledgement.
    No durable save, version, ownership, or approval is created or implied. #}
 <section class="decision-section" aria-labelledby="decision-heading" style="margin-top:34px;border-top:2px solid #2c3e50;padding-top:14px">
-  <h2 id="decision-heading" style="border-bottom:none;margin-top:0">Output review</h2>
-  <p class="group-lede">This is a working snapshot of your idea in the current temporary session. It has not been permanently saved or approved. Choose what to do next.</p>
+  <h2 id="decision-heading" style="border-bottom:none;margin-top:0">{{ t('UI_B_DELIV_100') }}</h2>
+  <p class="group-lede">{{ t('UI_B_DELIV_101') }}</p>
   {% if snapshot_kept_ack %}
   <p id="snapshot-kept-ack" role="status" class="status-eligible" style="margin:12px 0">{{ snapshot_kept_ack }}</p>
   {% endif %}
   <div class="decision-actions" style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:12px">
-    <a class="decision-primary" href="{{ url_for('show_session', sid=sid) }}" style="display:inline-block;padding:10px 22px;background:#2c3e50;color:#fff;border-radius:4px;text-decoration:none;font-size:15px">Refine this idea</a>
+    <a class="decision-primary" href="{{ url_for('show_session', sid=sid) }}" style="display:inline-block;padding:10px 22px;background:#2c3e50;color:#fff;border-radius:4px;text-decoration:none;font-size:15px">{{ t('UI_B_DELIV_102') }}</a>
     <form method="POST" action="{{ url_for('keep_snapshot', sid=sid) }}" style="margin:0">
-      <button type="submit" class="decision-secondary" style="padding:10px 22px;background:#fff;color:#2c3e50;border:1px solid #2c3e50;border-radius:4px;font-size:15px;cursor:pointer">Keep current snapshot</button>
+      <button type="submit" class="decision-secondary" style="padding:10px 22px;background:#fff;color:#2c3e50;border:1px solid #2c3e50;border-radius:4px;font-size:15px;cursor:pointer">{{ t('UI_B_DELIV_103') }}</button>
     </form>
   </div>
 </section>
 {% endif %}
 
-<p class="back-link"><a href="{{ url_for('show_session', sid=sid) }}">Back to session</a></p>
+<p class="back-link"><a href="{{ url_for('show_session', sid=sid) }}">{{ t('UI_B_DELIV_104') }}</a></p>
 
 {% endblock %}

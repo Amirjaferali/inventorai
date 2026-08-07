@@ -8,25 +8,25 @@
 {% block content %}
 <h1>InventorAI</h1>
 <div class="orient">
-  <p>InventorAI helps you develop an early invention idea. It asks a few focused questions, one at a time, and organizes your answers into a clear, readable assessment you can revisit.</p>
-  <p><strong>How it works:</strong> you describe your idea, answer one guided question per step, and build up a snapshot of what your idea is, what it needs, and what to do next.</p>
-  <p class="honest">This is an advisory tool to sharpen your own thinking. The assessment is a work-in-progress snapshot &mdash; not a validation, verification, score, approval, certification, patent opinion, legal opinion, or final technical judgment. You remain responsible for verifying any technical claim.</p>
+  <p>{{ t('UI_B_INDEX_001') }}</p>
+  <p><strong>{{ t('UI_B_INDEX_002_LEAD') }}</strong> {{ t('UI_B_INDEX_002') }}</p>
+  <p class="honest">{{ t('UI_SENS_INDEX_03') }}</p>
 </div>
-<p>Describe your invention idea to begin.</p>
-<p class="session-note">This is a temporary session. There is no account or durable saved-projects area.</p>
-<p class="session-note" style="font-size:12px;color:#666">Unfinished text may be kept temporarily on this device/browser so you can recover it here if you leave and return. It is not saved to an account or another device, expires after 7 days, and can be discarded. Anyone using this browser profile may be able to see it. <a href="/data-and-session">Learn more</a>.</p>
-<p>Electronics and electrical ideas are currently supported. Before starting, please confirm that your idea belongs to this supported domain.</p>
+<p>{{ t('UI_B_INDEX_003') }}</p>
+<p class="session-note">{{ t('UI_SENS_INDEX_04') }}</p>
+<p class="session-note" style="font-size:12px;color:#666">{{ t('UI_SENS_INDEX_05') }} <a href="/data-and-session">{{ t('UI_B_BASE_003') }}</a>.</p>
+<p>{{ t('UI_B_INDEX_004') }}</p>
 {% if error %}<p class="error">{{ error }}</p>{% endif %}
 <form method="POST" action="/start">
-<label for="idea" style="display:block;margin-bottom:6px;font-size:14px">Describe your idea</label>
-<textarea id="idea" name="idea" rows="4" placeholder="Describe your electronics or electrical invention..." required
+<label for="idea" style="display:block;margin-bottom:6px;font-size:14px">{{ t('UI_B_INDEX_005') }}</label>
+<textarea id="idea" name="idea" rows="4" placeholder="{{ t('UI_B_INDEX_006') }}" required
   data-draft-field="idea" data-draft-scope="__seed__" data-draft-context="seed" data-draft-context-version="v1" data-draft-account="{{ account_context }}"></textarea>
 <br>
 <label style="display:block;margin-top:12px;font-size:14px">
 <input type="checkbox" name="domain_confirm" value="electronics_electrical" required>
-I confirm that this idea is primarily an electronics or electrical idea.
+{{ t('UI_B_INDEX_007') }}
 </label>
-<button type="submit">Start</button>
+<button type="submit">{{ t('UI_B_INDEX_008') }}</button>
 </form>
-<p style="color:#888;font-size:13px">Currently supported: electronics and electrical ideas.</p>
+<p style="color:#888;font-size:13px">{{ t('UI_B_INDEX_009') }}</p>
 {% endblock %}

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}InventorAI — Define Success Criteria{% endblock %}
+{% block title %}{{ t('UI_TITLE_SUCCESS') }}{% endblock %}
 {% block head %}
 <style>
 body{font-family:sans-serif;max-width:760px;margin:60px auto;padding:0 20px;color:#222}
@@ -18,13 +18,9 @@ button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:n
 </style>
 {% endblock %}
 {% block content %}
-<h1>InventorAI — Define Success Criteria</h1>
+<h1>{{ t('UI_B_SC_001') }}</h1>
 <div class="intro">
-  For each proposed experiment below, you may enter <strong>one success criterion</strong>:
-  a target <em>you</em> decide on for judging whether that test succeeded.
-  A criterion is your own planning target — it is <strong>not</strong> a test result, and
-  saving it does not validate, demonstrate, or approve anything. Leave a box blank
-  to keep that criterion undefined.
+  {{ t('UI_SENS_SC_01') }}
 </div>
 
 {% if error %}<div class="error">{{ error }}</div>{% endif %}
@@ -36,18 +32,18 @@ button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:n
   <div class="exp">
     <div class="exp-title">{{ exp.experiment_title }}</div>
     <div class="source">{{ exp.source_basis }}</div>
-    <label for="{{ field_prefix }}{{ exp.experiment_id }}">Success criterion (your target):</label>
+    <label for="{{ field_prefix }}{{ exp.experiment_id }}">{{ t('UI_B_SC_002') }}</label>
     <textarea id="{{ field_prefix }}{{ exp.experiment_id }}"
               name="{{ field_prefix }}{{ exp.experiment_id }}" rows="2"
               maxlength="{{ max_length }}"
-              placeholder="Optional — define how you will judge this test.">{% if exp.success_criterion_provenance == 'user_defined' %}{{ exp.success_criterion }}{% endif %}</textarea>
+              placeholder="{{ t('UI_B_SC_003') }}">{% if exp.success_criterion_provenance == 'user_defined' %}{{ exp.success_criterion }}{% endif %}</textarea>
   </div>
   {% endfor %}
-  <button type="submit">Save criteria</button>
+  <button type="submit">{{ t('UI_B_SC_004') }}</button>
 </form>
 {% else %}
-<div class="intro">No proposed experiments are currently available for this session.</div>
+<div class="intro">{{ t('UI_B_SC_005') }}</div>
 {% endif %}
 
-<p class="links"><a href="{{ url_for('show_deliverable', sid=sid) }}">Back to the assessment</a></p>
+<p class="links"><a href="{{ url_for('show_deliverable', sid=sid) }}">{{ t('UI_B_SC_006') }}</a></p>
 {% endblock %}
