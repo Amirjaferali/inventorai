@@ -78,6 +78,34 @@ def localize_message(english, lang):
     return text(key, lang) if key else english
 
 
+def localize_deep(value, lang):
+    """Recursively localise KNOWN English UI-chrome strings inside a value.
+
+    D-P6-18 final UI-chrome boundary: the deterministic guidance modules
+    (clarification / scaffolding / co-authoring / result-feedback / responsibility
+    / gap-label heading-guidance-stage_note) and the criticality/non-answer-ack
+    constants keep ENGLISH as their source of truth; this helper maps their known
+    English chrome to the selected language at the PRESENTATION boundary only.
+
+    ``value`` may be a str / dict / list / tuple (the exact shapes those modules
+    return). ONLY strings present in ``_DEEP_AR`` are translated — canonical
+    questions, the criticality clarification ask, user content, tokens, and
+    identifiers are NOT in the map and therefore pass through unchanged, so actual
+    asks and user text are never translated. English selection returns the value
+    unchanged (parity-preserving). Never raises."""
+    if normalize(lang) == "en":
+        return value
+    if isinstance(value, str):
+        return _DEEP_AR.get(value, value)
+    if isinstance(value, dict):
+        return {k: localize_deep(v, lang) for k, v in value.items()}
+    if isinstance(value, tuple):
+        return tuple(localize_deep(v, lang) for v in value)
+    if isinstance(value, list):
+        return [localize_deep(v, lang) for v in value]
+    return value
+
+
 # The catalogue. Keys are stable; every value is a fresh ``{"en", "ar"}`` pair.
 # English is verbatim from the live templates/constants (parity-preserving);
 # Arabic is the finalized, owner-approved copy (including the truth-corrected
@@ -757,6 +785,25 @@ UI_STRINGS = {
         "en": "Describe the change or the missing part in your own words...",
         "ar": "صف التغيير أو الجزء الناقص بكلماتك الخاصة...",
     },
+    # Criticality correction/summary chrome literals (session.html). These are UI
+    # chrome/instructions/controls — NOT the canonical clarification ask (which
+    # stays English) and NOT echoed user content.
+    "UI_CRIT_CORR_H": {
+        "en": "Tell me in your own words", "ar": "أخبرني بكلماتك الخاصة",
+    },
+    "UI_CRIT_CORR_T": {
+        "en": ("Describe what should change or what is missing, and it will be "
+               "used to update the picture of your idea."),
+        "ar": "صف ما ينبغي تغييره أو ما هو ناقص، وسيُستخدم لتحديث صورة فكرتك.",
+    },
+    "UI_CRIT_CLAR_REASON": {
+        "en": ("Your reason, in your own words (already filled in from what you "
+               "said — keep it or edit it):"),
+        "ar": "سببك، بكلماتك الخاصة (مملوء مسبقًا مما قلته — أبقِه أو عدّله):",
+    },
+    "UI_CRIT_SAVE": {"en": "Save this", "ar": "احفظ هذا"},
+    "UI_CRIT_YOUSAID": {"en": "You said:", "ar": "لقد قلت:"},
+    "UI_CRIT_CORRECT_Q": {"en": "Is that correct?", "ar": "هل هذا صحيح؟"},
     # Active page <title> values. The "InventorAI" brand stays Latin in both
     # languages; only the descriptive portion (or a bare data-screen title) is
     # localised. Canonical question text is never a page title.
@@ -781,4 +828,174 @@ UI_STRINGS = {
                          "ar": "InventorAI — تحديد معايير النجاح"},
     "UI_TITLE_DATA": {"en": "Data & Session information",
                       "ar": "معلومات البيانات والجلسة"},
+}
+
+
+# --- D-P6-18 final UI-chrome boundary: EXACT English->Arabic map for the
+# deterministic guidance/criticality chrome (source English lives in the guidance
+# modules; this maps it at the presentation boundary via localize_deep). Actual
+# questions, the criticality clarification ask, and user content are deliberately
+# ABSENT. Populated below; kept as the single owner-approved Arabic registry.
+_DEEP_AR = {
+    # --- 4.5 clarification_labels.py (_CLARIFICATION / _FALLBACK) ---
+    "What this question is asking": "ما الذي يسأل عنه هذا السؤال",
+    "This is asking you to walk through how your idea works from start to finish — what happens first, what happens next, and how those steps lead to the result you want.": "هذا يطلب منك أن تستعرض كيف تعمل فكرتك من البداية إلى النهاية — ما الذي يحدث أولًا، وما الذي يحدث بعده، وكيف تؤدّي تلك الخطوات إلى النتيجة التي تريدها.",
+    "A step-by-step description, in your own words, of how the idea turns its starting point into the outcome.": "وصف خطوة بخطوة، بكلماتك الخاصة، لكيفية تحويل الفكرة نقطة انطلاقها إلى النتيجة.",
+    "A few plain sentences describing the sequence of steps. Everyday language is fine; exact technical figures are not required.": "بضع جُمل بسيطة تصف تسلسل الخطوات. اللغة اليومية كافية؛ الأرقام التقنية الدقيقة ليست مطلوبة.",
+    "If part of the chain is still unclear, you can describe the parts you know and mark the rest as not yet known.": "إذا كان جزء من السلسلة ما زال غير واضح، يمكنك وصف الأجزاء التي تعرفها ووضع علامة على الباقي بأنه غير معروف بعد.",
+    "This is asking you to describe the edges of your idea — what it is meant to cover, and what it deliberately leaves out.": "هذا يطلب منك وصف حدود فكرتك — ما الذي يُفترض أن تغطّيه، وما الذي تتركه عمدًا خارجها.",
+    "What problem it handles, who it is for, and where it stops or does not apply.": "ما المشكلة التي تتناولها، ولمن هي، وأين تتوقّف أو لا تنطبق.",
+    "A short description of what is inside and outside the idea's scope. No legal or patent wording is needed.": "وصف قصير لما هو داخل نطاق الفكرة وما هو خارجه. لا حاجة إلى صياغة قانونية أو خاصة ببراءات الاختراع.",
+    "If a boundary is still undecided, you can say so rather than guessing.": "إذا كان أحد الحدود لم يُحسم بعد، يمكنك قول ذلك بدلًا من التخمين.",
+    "This is asking which things you are currently taking for granted about your idea that you have not yet checked.": "هذا يسأل عن الأمور التي تعدّها حاليًا من المسلَّمات بشأن فكرتك ولم تتحقق منها بعد.",
+    "Conditions, materials, or behaviors you expect to hold true but have not confirmed.": "الظروف أو المواد أو السلوكيات التي تتوقّع صحّتها لكن لم تؤكّدها.",
+    "A short list of things you are assuming, in plain words, and which ones would matter most if they turned out to be wrong.": "قائمة قصيرة بالأمور التي تفترضها، بكلمات بسيطة، وأيّها سيكون الأهم لو تبيّن خطؤه.",
+    "Listing an assumption does not commit you to it; it just records what still needs checking.": "ذكر افتراض لا يُلزمك به؛ إنه فقط يسجّل ما لا يزال يحتاج إلى تحقّق.",
+    "This is asking you to describe the problem on its own, and then how your idea is meant to address it.": "هذا يطلب منك وصف المشكلة بمفردها، ثم كيف يُفترض أن تعالجها فكرتك.",
+    "Who has the problem and why it matters, described separately from how your idea works, plus where the match might be weaker.": "من لديه المشكلة ولماذا تهمّ، موصوفة بمعزل عن كيفية عمل فكرتك، إضافة إلى المواضع التي قد يكون فيها التوافق أضعف.",
+    "First describe the problem in plain language, then describe how you intend the idea to help. It is fine to leave the strength of that relationship as uncertain.": "صف المشكلة أولًا بلغة بسيطة، ثم صف كيف تنوي أن تساعد الفكرة. لا بأس بترك قوة تلك العلاقة غير مؤكّدة.",
+    "You only need to describe the problem and your intent; you do not need to prove the fit yourself.": "يكفي أن تصف المشكلة ونيّتك؛ لست مضطرًا لإثبات التوافق بنفسك.",
+    "This is asking what makes your idea actually work — the basic principle, components, or process behind it.": "هذا يسأل عمّا يجعل فكرتك تعمل فعليًا — المبدأ الأساسي أو المكوّنات أو العملية وراءها.",
+    "The working principle in plain terms. Whether it truly holds may later need a measurement, test, or outside evidence.": "المبدأ العامل بعبارات بسيطة. أما صحّته فعلًا فقد تحتاج لاحقًا إلى قياس أو اختبار أو دليل خارجي.",
+    "A plain description of the principle you expect to make it work. Exact measurements are not required here.": "وصف بسيط للمبدأ الذي تتوقّع أن يجعلها تعمل. القياسات الدقيقة ليست مطلوبة هنا.",
+    "If confirming it would need a test or evidence you do not have, you can note that and continue.": "إذا كان تأكيده يحتاج إلى اختبار أو دليل لا تملكه، يمكنك تدوين ذلك والمتابعة.",
+    "This is asking which areas of know-how someone would need to actually build your idea — not what you personally know.": "هذا يسأل عن مجالات الدراية التي سيحتاجها أحدهم لبناء فكرتك فعليًا — لا ما تعرفه أنت شخصيًا.",
+    "The kinds of technical fields or skills the build would demand.": "أنواع المجالات أو المهارات التقنية التي سيتطلبها البناء.",
+    "A short list of the areas of expertise involved. You do not need to have that expertise yourself.": "قائمة قصيرة بمجالات الخبرة المعنيّة. لست مضطرًا لامتلاك تلك الخبرة بنفسك.",
+    "If a particular area clearly needs a specialist, you can note that and request specialist input rather than answering it.": "إذا كان مجال معيّن يحتاج بوضوح إلى متخصّص، يمكنك تدوين ذلك وطلب مدخلات متخصّص بدلًا من الإجابة عنه.",
+    "This is asking you to describe this part of your idea in your own words.": "هذا يطلب منك وصف هذا الجزء من فكرتك بكلماتك الخاصة.",
+    "Whatever you currently know about this part of the idea.": "كل ما تعرفه حاليًا عن هذا الجزء من الفكرة.",
+    "A few plain sentences. It is fine to describe only what you know and mark the rest as not yet known.": "بضع جُمل بسيطة. لا بأس بوصف ما تعرفه فقط ووضع علامة على الباقي بأنه غير معروف بعد.",
+    "You can answer with what you know or choose any of the available actions that truthfully reflects what you need next.": "يمكنك الإجابة بما تعرفه أو اختيار أي من الإجراءات المتاحة التي تعكس بصدق ما تحتاجه تاليًا.",
+
+    # --- 4.6 scaffolding_guidance.py ---
+    "What kind of detail to add": "أي نوع من التفاصيل يجب إضافته",
+    "These are prompts to help you add detail. They do not change or grade your answer — you write it in your own words.": "هذه توجيهات تساعدك على إضافة التفاصيل. إنها لا تُغيّر إجابتك ولا تقيّمها — أنت تكتبها بكلماتك الخاصة.",
+    "What physical part or mechanism does this use?": "ما الجزء المادي أو الآلية التي يستخدمها هذا؟",
+    "What condition triggers the action?": "ما الشرط الذي يُطلق الإجراء؟",
+    "What does the device sense or detect?": "ما الذي يستشعره الجهاز أو يكشفه؟",
+    "What output or response happens?": "ما المخرَج أو الاستجابة التي تحدث؟",
+    "What evidence or observation supports this?": "ما الدليل أو الملاحظة التي تدعم هذا؟",
+    "What is in scope, and what does this deliberately NOT do?": "ما الداخل في النطاق، وما الذي لا يفعله هذا عمدًا؟",
+    "Where are the limits or boundaries of where it applies?": "أين حدود أو تخوم انطباقه؟",
+    "What operating conditions or assumptions does it depend on?": "ما ظروف التشغيل أو الافتراضات التي يعتمد عليها؟",
+    "What edge cases or exceptions are handled?": "ما الحالات الحدّية أو الاستثناءات التي يُتعامل معها؟",
+    "What evidence or observation supports these limits?": "ما الدليل أو الملاحظة التي تدعم هذه الحدود؟",
+    "What physical limits or operating range does this work within?": "ما الحدود المادية أو نطاق التشغيل الذي يعمل هذا ضمنه؟",
+    "What conditions or constraints must hold for it to work?": "ما الظروف أو القيود التي يجب أن تتحقق ليعمل؟",
+    "What assumptions about the environment does it rely on?": "ما الافتراضات حول البيئة التي يعتمد عليها؟",
+    "What could physically prevent it from working?": "ما الذي قد يمنعه ماديًا من العمل؟",
+    "What evidence or observation supports that it can work?": "ما الدليل أو الملاحظة التي تدعم أنه يمكن أن يعمل؟",
+    "Make the physical or functional chain more explicit: what condition is detected, what part responds, what happens next, and why that response produces the intended effect.": "اجعل السلسلة المادية أو الوظيفية أكثر وضوحًا: ما الشرط الذي يُكتشَف، وما الجزء الذي يستجيب، وما الذي يحدث بعد ذلك، ولماذا تُنتج تلك الاستجابة الأثر المقصود.",
+    "Make the reason for the boundary more explicit: identify the technical limit, what falls outside the intended use, and why it is excluded.": "اجعل سبب الحدّ أكثر وضوحًا: حدّد القيد التقني، وما الذي يقع خارج الاستخدام المقصود، ولماذا هو مستبعَد.",
+    "State the operating conditions, constraints, and dependencies more explicitly: what must hold, what may fail, and why.": "اذكر ظروف التشغيل والقيود والاعتماديات بشكل أكثر وضوحًا: ما الذي يجب أن يتحقق، وما الذي قد يفشل، ولماذا.",
+    "Add the specific details requested for this area. Name the relevant items, state why each matters, and note anything that is still uncertain or would need specialist input.": "أضِف التفاصيل المحدّدة المطلوبة لهذا المجال. سمِّ العناصر ذات الصلة، واذكر لماذا يهم كل منها، ونوّه إلى ما لا يزال غير مؤكّد أو يحتاج إلى مدخلات متخصّص.",
+    "Good — this answer was accepted and counts toward this point. The system needs one more specific answer about how it works before it can close, so add one more concrete detail — a part, a trigger condition, or what it senses.": "جيد — قُبِلت هذه الإجابة وتُحسب لصالح هذه النقطة. يحتاج النظام إلى إجابة محدّدة أخرى حول كيفية عمله قبل أن يُغلق، فأضِف تفصيلًا ملموسًا واحدًا آخر — جزءًا، أو شرط تشغيل، أو ما يستشعره.",
+    "Good — this answer was accepted and counts toward this point. The system needs one more specific answer about scope or limits before it can close, so add one more concrete detail — what it does not do, or a condition where it stops applying.": "جيد — قُبِلت هذه الإجابة وتُحسب لصالح هذه النقطة. يحتاج النظام إلى إجابة محدّدة أخرى حول النطاق أو الحدود قبل أن يُغلق، فأضِف تفصيلًا ملموسًا واحدًا آخر — ما لا يفعله، أو شرطًا يتوقّف عنده عن الانطباق.",
+    "Good — this answer was accepted and counts toward this point. The system needs one more specific answer about the physical limits or conditions before it can close, so add one more concrete detail — a constraint or operating range.": "جيد — قُبِلت هذه الإجابة وتُحسب لصالح هذه النقطة. يحتاج النظام إلى إجابة محدّدة أخرى حول الحدود أو الظروف المادية قبل أن يُغلق، فأضِف تفصيلًا ملموسًا واحدًا آخر — قيدًا أو نطاق تشغيل.",
+    "Good — this answer was accepted and counts toward this point. The system needs one more specific answer on the same point before it can close, so add one more concrete detail.": "جيد — قُبِلت هذه الإجابة وتُحسب لصالح هذه النقطة. يحتاج النظام إلى إجابة محدّدة أخرى حول النقطة نفسها قبل أن يُغلق، فأضِف تفصيلًا ملموسًا واحدًا آخر.",
+    "The idea is not fully described yet. Say what problem it solves and, in plain words, how it solves it.": "لم توصف الفكرة بالكامل بعد. اذكر ما المشكلة التي تحلّها، وبعبارات بسيطة، كيف تحلّها.",
+    "This answer needs more detail. Add a specific point about the mechanism, the trigger condition, the operating boundary, or a supporting observation.": "تحتاج هذه الإجابة إلى مزيد من التفصيل. أضِف نقطة محدّدة حول الآلية، أو شرط الإطلاق، أو حدّ التشغيل، أو ملاحظة داعمة.",
+
+    # --- 4.7 answer_coauthoring_prompts.py ---
+    "Optional: what you could include in your answer": "اختياري: ما الذي يمكنك تضمينه في إجابتك",
+    "These prompts are optional. You write your own answer in your own words — they are not a required format. This guidance is not validation, and it is not safety, compliance, patent, or engineering approval; it only helps you think through what details you might add.": "هذه التوجيهات اختيارية. أنت تكتب إجابتك بكلماتك الخاصة — وهي ليست صيغة إلزامية. هذا الإرشاد ليس تحققًا، وليس موافقة تتعلق بالسلامة أو الامتثال أو براءات الاختراع أو الهندسة؛ إنه فقط يساعدك على التفكير في التفاصيل التي قد تضيفها.",
+    "The main parts or steps involved, in the order they happen.": "الأجزاء أو الخطوات الرئيسية المعنيّة، بالترتيب الذي تحدث به.",
+    "What starts the process, and what it produces at the end.": "ما الذي يبدأ العملية، وما الذي تُنتجه في النهاية.",
+    "What the idea senses, detects, or responds to, if anything.": "ما الذي تستشعره الفكرة أو تكشفه أو تستجيب له، إن وُجد.",
+    "Anything you have observed that suggests it behaves this way.": "أي شيء لاحظته يشير إلى أنها تتصرف بهذه الطريقة.",
+    "What the idea is meant to cover, and what it deliberately does not do.": "ما الذي يُفترض أن تغطّيه الفكرة، وما الذي لا تفعله عمدًا.",
+    "Who or what it is for, and the situations where it applies.": "لمن أو لماذا هي، والمواقف التي تنطبق فيها.",
+    "Conditions or limits where it would stop applying.": "الظروف أو الحدود التي تتوقّف عندها عن الانطباق.",
+    "Any point where you are still deciding the boundary.": "أي نقطة ما زلت تحسم فيها الحدّ.",
+    "Things you are currently taking for granted but have not checked.": "أمور تعدّها حاليًا من المسلَّمات لكن لم تتحقق منها.",
+    "Which of those assumptions would matter most if they were wrong.": "أي تلك الافتراضات سيكون الأهم لو كان خاطئًا.",
+    "Conditions, materials, or behaviors you expect to hold true.": "الظروف أو المواد أو السلوكيات التي تتوقّع ثباتها.",
+    "Anything you already know still needs checking.": "أي شيء تعرف مسبقًا أنه لا يزال يحتاج إلى تحقّق.",
+    "The problem on its own — who has it and why it matters.": "المشكلة بمفردها — من لديه ولماذا تهمّ.",
+    "How you intend the idea to address that problem.": "كيف تنوي أن تعالج الفكرة تلك المشكلة.",
+    "Where the match between problem and idea might be weaker.": "أين قد يكون التوافق بين المشكلة والفكرة أضعف.",
+    "Anything you have seen that suggests the idea helps.": "أي شيء رأيته يشير إلى أن الفكرة تساعد.",
+    "The basic working principle you expect makes it work.": "المبدأ العامل الأساسي الذي تتوقّع أنه يجعلها تعمل.",
+    "The conditions or operating range it would need to work within.": "الظروف أو نطاق التشغيل الذي ستحتاج للعمل ضمنه.",
+    "What could physically get in the way of it working.": "ما الذي قد يعترض ماديًا عملها.",
+    "Any observation or test that speaks to whether it can work.": "أي ملاحظة أو اختبار يتعلق بإمكانية عملها.",
+    "The kinds of technical skills or fields the build would involve.": "أنواع المهارات أو المجالات التقنية التي سينطوي عليها البناء.",
+    "Which parts you could describe yourself, in plain words.": "أي الأجزاء يمكنك وصفها بنفسك، بكلمات بسيطة.",
+    "Which parts clearly need a specialist's input.": "أي الأجزاء تحتاج بوضوح إلى مدخلات متخصّص.",
+    "Anything you are unsure how to describe yet.": "أي شيء لست متأكدًا بعد من كيفية وصفه.",
+    "What you currently know about this part of the idea, in your own words.": "ما تعرفه حاليًا عن هذا الجزء من الفكرة، بكلماتك الخاصة.",
+    "The parts you are confident about, and the parts still uncertain.": "الأجزاء التي تثق بها، والأجزاء التي ما زالت غير مؤكّدة.",
+    "Anything you have observed that is relevant.": "أي شيء لاحظته وله صلة.",
+    "What you would still need to find out.": "ما الذي ستظل بحاجة إلى معرفته.",
+
+    # --- 4.8 result_feedback.py ---
+    "The current demo did not recognize enough explicit reasoning structure in your answer to move this area forward yet. Making the cause-and-effect relationship more explicit may help.": "لم يتعرّف العرض التوضيحي الحالي على بنية استدلال صريحة كافية في إجابتك لدفع هذا المجال قُدُمًا بعد. قد يساعد جعل علاقة السبب والنتيجة أكثر وضوحًا.",
+    "You addressed part of this, but more detail is still needed.": "لقد تناولت جزءًا من هذا، لكن لا يزال يلزم مزيد من التفصيل.",
+    "This point is supported well enough to move forward in the current demo flow.": "هذه النقطة مدعومة بما يكفي للمضي قدمًا في العرض التوضيحي الحالي.",
+    "Your follow-up added enough reasoning to continue in the current demo flow.": "أضافت متابعتك استدلالًا كافيًا للمتابعة في العرض التوضيحي الحالي.",
+    "This point is not established yet, so the idea cannot move forward on this item.": "هذه النقطة غير مثبتة بعد، لذا لا يمكن للفكرة المضي قدمًا في هذا العنصر.",
+    "This point has reached the highest maturity level supported by the current MVP demo.": "بلغت هذه النقطة أعلى مستوى نضج يدعمه العرض التوضيحي الحالي للحد الأدنى من المنتج.",
+    "An earlier required step needs to be addressed first before this can move forward.": "يلزم تناول خطوة سابقة مطلوبة أولًا قبل أن يمضي هذا قُدُمًا.",
+    "This needs more reasoning or supporting detail before it can move forward.": "يحتاج هذا إلى مزيد من الاستدلال أو التفاصيل الداعمة قبل أن يمضي قُدُمًا.",
+    "This point cannot move forward yet. Review the result details for the specific reason.": "لا يمكن لهذه النقطة المضي قدمًا بعد. راجِع تفاصيل النتيجة لمعرفة السبب المحدّد.",
+
+    # --- 4.9 gap_labels.py GAP_LABELS (heading / guidance / stage_note) ---
+    "Does your idea have a clear working principle?": "هل لفكرتك مبدأ عمل واضح؟",
+    "Describe what makes your idea work — the components, materials, forces, or processes involved. Be as specific as you can about the mechanism, not just the goal.": "صف ما يجعل فكرتك تعمل — المكوّنات أو المواد أو القوى أو العمليات المعنيّة. كن محدّدًا قدر الإمكان بشأن الآلية، لا الهدف فحسب.",
+    "Exploring feasibility": "استكشاف الجدوى",
+    "What does your idea do — and what doesn't it do?": "ما الذي تفعله فكرتك — وما الذي لا تفعله؟",
+    "Define the scope clearly: what problem it solves, who it's for, and where it stops. Clear boundaries help identify what is truly novel and what still needs development.": "حدّد النطاق بوضوح: ما المشكلة التي تحلّها، ولمن هي، وأين تتوقّف. الحدود الواضحة تساعد على تحديد ما هو مبتكَر حقًا وما لا يزال يحتاج إلى تطوير.",
+    "Defining scope": "تحديد النطاق",
+    "How does it work, step by step?": "كيف تعمل، خطوة بخطوة؟",
+    "Walk through the operating mechanism — the causal chain from input to output. What happens at each stage? What converts, controls, or transforms the inputs into the desired result?": "استعرض آلية العمل — السلسلة السببية من المدخل إلى المخرج. ما الذي يحدث في كل مرحلة؟ ما الذي يحوّل المدخلات أو يتحكم بها أو يبدّلها إلى النتيجة المرجوّة؟",
+    "Developing mechanism": "تطوير الآلية",
+    "How does your idea address the problem?": "كيف تعالج فكرتك المشكلة؟",
+    "Describe the problem on its own terms first — who experiences it and why it matters — without describing your idea. Then explain how your idea is intended to address that problem, and identify situations where the match may be weaker.": "صف المشكلة بشروطها الخاصة أولًا — من يعانيها ولماذا تهمّ — دون وصف فكرتك. ثم اشرح كيف يُقصد بفكرتك معالجة تلك المشكلة، وحدّد المواقف التي قد يكون التوافق فيها أضعف.",
+    "Checking problem fit": "التحقق من ملاءمة المشكلة",
+    "What are you assuming that hasn't been tested yet?": "ما الذي تفترضه ولم يُختبَر بعد؟",
+    "List anything you are taking for granted about your idea that you have not yet verified — materials, conditions, or behaviors you expect to hold true. Then note which of these would be most serious if they turned out to be wrong.": "اذكر أي شيء تعدّه من المسلَّمات بشأن فكرتك ولم تتحقق منه بعد — مواد أو ظروف أو سلوكيات تتوقّع صحّتها. ثم نوّه إلى أيّها سيكون الأخطر لو تبيّن خطؤه.",
+    "Surfacing assumptions": "إظهار الافتراضات",
+    "What expertise would building this require?": "ما الخبرة التي سيتطلبها بناء هذا؟",
+    "List the areas of technical knowledge someone would need to build your idea — not what you personally know, but what the implementation itself demands. Then identify which areas require specialist input.": "اذكر مجالات المعرفة التقنية التي سيحتاجها أحدهم لبناء فكرتك — لا ما تعرفه أنت شخصيًا، بل ما يتطلبه التنفيذ نفسه. ثم حدّد المجالات التي تحتاج إلى مدخلات متخصّص.",
+    "Identifying expertise needs": "تحديد احتياجات الخبرة",
+    "Tell us more about this aspect of your idea": "أخبرنا بالمزيد عن هذا الجانب من فكرتك",
+    "Provide as much specific detail as you can. Concrete descriptions help more than general ones.": "قدّم أكبر قدر ممكن من التفاصيل المحدّدة. الأوصاف الملموسة تساعد أكثر من العامة.",
+    "Exploring": "استكشاف",
+
+    # --- 4.10 responsibility_labels.py (label + guidance) ---
+    "You can answer this": "يمكنك الإجابة عن هذا",
+    "You can answer this from your intended design or current understanding. Exact engineering values are not required.": "يمكنك الإجابة عن هذا من تصميمك المقصود أو فهمك الحالي. القيم الهندسية الدقيقة ليست مطلوبة.",
+    "The system can help with this": "يمكن للنظام المساعدة في هذا",
+    "The system can help examine this relationship. You may still mark what is uncertain.": "يمكن للنظام المساعدة في فحص هذه العلاقة. لا يزال بإمكانك وضع علامة على ما هو غير مؤكّد.",
+    "Specialist input may help": "قد تساعد مدخلات متخصّص",
+    "This usually needs input from a relevant technical specialist. You can request specialist input and continue.": "يحتاج هذا عادةً إلى مدخلات من متخصّص تقني معنيّ. يمكنك طلب مدخلات متخصّص والمتابعة.",
+    "Evidence or a test may be needed": "قد يلزم دليل أو اختبار",
+    "This usually needs a measurement, test, or external evidence. You can request evidence and continue.": "يحتاج هذا عادةً إلى قياس أو اختبار أو دليل خارجي. يمكنك طلب دليل والمتابعة.",
+    "Who answers this is not yet clear": "من يجيب عن هذا غير واضح بعد",
+    "It is not yet clear who should answer this. You can answer, defer, or mark it as unknown.": "ليس واضحًا بعد من ينبغي أن يجيب عن هذا. يمكنك الإجابة، أو التأجيل، أو وضع علامة عليه بأنه غير معروف.",
+
+    # --- 4.12 non-answer acknowledgements (web/app.py _NON_ANSWER_ACK) ---
+    "Recorded that you do not know this yet. It is kept as an open unknown and does not resolve the question.": "تم تسجيل أنك لا تعرف هذا بعد. يُحفظ كأمر غير معروف مفتوح ولا يحلّ السؤال.",
+    "Recorded as deferred. The question remains open and unresolved.": "تم التسجيل كمؤجَّل. يبقى السؤال مفتوحًا وغير محلول.",
+    "Recorded as a provisional assumption (not verified). It does not resolve the question or count as evidence.": "تم التسجيل كافتراض مبدئي (غير مُتحقَّق منه). لا يحلّ السؤال ولا يُحتسب دليلًا.",
+    "Recorded that specialist input is needed. No technical answer has been assumed.": "تم تسجيل أنه يلزم مدخلات متخصّص. لم يُفترَض أي إجابة تقنية.",
+    "Recorded that evidence is needed. No evidence or result has been recorded.": "تم تسجيل أنه يلزم دليل. لم يُسجَّل أي دليل أو نتيجة.",
+
+    # --- 4.13 criticality (web/app.py) + session.html correction/summary chrome ---
+    "This is what I understood from your explanation:": "هذا ما فهمته من شرحك:",
+    "The idea may not work without this": "قد لا تعمل الفكرة بدون هذا",
+    "The idea would still work, but this adds important value": "ستظل الفكرة تعمل، لكن هذا يضيف قيمة مهمة",
+    "This mainly improves or refines the idea": "هذا يحسّن الفكرة أو يصقلها بشكل أساسي",
+    "I am not sure yet": "لست متأكدًا بعد",
+    "Yes, that is correct": "نعم، هذا صحيح",
+    "Change this part": "غيّر هذا الجزء",
+    "Something is missing": "هناك شيء ناقص",
+    "Decide later": "قرّر لاحقًا",
+    "Tell me in your own words": "أخبرني بكلماتك الخاصة",
+    "Describe what should change or what is missing, and it will be used to update the picture of your idea.": "صف ما ينبغي تغييره أو ما هو ناقص، وسيُستخدم لتحديث صورة فكرتك.",
+    "Your reason, in your own words (already filled in from what you said — keep it or edit it):": "سببك، بكلماتك الخاصة (مملوء مسبقًا مما قلته — أبقِه أو عدّله):",
+    "Save this": "احفظ هذا",
+    "You said:": "لقد قلت:",
+    "Is that correct?": "هل هذا صحيح؟",
 }

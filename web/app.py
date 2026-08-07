@@ -1596,18 +1596,26 @@ def show_session(sid):
         # Workstream 4: read-only render context for the completion-stage
         # structured criticality step (None while the journey is in progress
         # or when no contextually supported unconfirmed requirement remains).
-        criticality_step=_criticality_step_context(entry, state, sid),
+        # D-P6-18 final UI-chrome boundary: the criticality step's chrome (summary
+        # lead, choice/action labels) follows ui_lang; the clarification ASK, the
+        # echoed user statement/rationale, and tokens are NOT in the map and stay
+        # verbatim (localize_deep passes unknown strings through unchanged).
+        criticality_step=ui_text.localize_deep(
+            _criticality_step_context(entry, state, sid), _current_ui_lang()),
         next_development_step=next_development_step,
         question=question,
         open_gaps=open_gaps,
         gap_type=gap_type,
         last_result=last_result,
-        gap_labels=gap_labels,
-        current_gap_label=current_gap_label,
+        # D-P6-18: gap-label heading/guidance/stage_note are UI chrome/framing (not
+        # the actual question), so they follow ui_lang via the presentation map.
+        gap_labels=ui_text.localize_deep(gap_labels, _current_ui_lang()),
+        current_gap_label=ui_text.localize_deep(current_gap_label, _current_ui_lang()),
         maturity_label=get_maturity_label(state.maturity_level, _current_ui_lang()),
         session_disclosure=get_session_disclosure(_current_ui_lang()),
         closed_gaps=closed_gaps,
-        interaction_ack=entry.pop("_interaction_ack", None) if entry else None,
+        interaction_ack=ui_text.localize_deep(
+            entry.pop("_interaction_ack", None) if entry else None, _current_ui_lang()),
         # G-UX-ANSWER-VALIDATION: single-use empty-answer validation error, popped
         # here so it renders exactly once after the Post/Redirect/Get and never
         # repeats on a later plain GET. None on every normal load.
@@ -1616,13 +1624,15 @@ def show_session(sid):
         # Increment 1B: advisory, derived, read-only responsibility guidance for
         # the current gap. Computed at render time; never stored, never affects
         # gates/scoring/maturity/closure/transcript/IdeaState. None when no gap.
-        current_responsibility=get_responsibility(gap_type) if gap_type else None,
+        current_responsibility=ui_text.localize_deep(
+            get_responsibility(gap_type) if gap_type else None, _current_ui_lang()),
         # Increment 1B clarification display: deterministic, owner-invoked,
         # display-only guidance explaining the current question. Derived from the
         # same gap_type at render time; never stored, never affects
         # gates/scoring/maturity/closure/transcript/IdeaState/persistence; adds no
         # owner action and no POST handling. None when no gap (intake path).
-        current_clarification=get_clarification(gap_type) if gap_type else None,
+        current_clarification=ui_text.localize_deep(
+            get_clarification(gap_type) if gap_type else None, _current_ui_lang()),
         # More Detail Needed / Guided Answer Scaffolding (Increment Contract PR
         # #106): deterministic, display-only guidance naming the KIND of missing
         # detail to add when the ALREADY-computed engine outcome for the current
@@ -1630,7 +1640,8 @@ def show_session(sid):
         # (unchanged) and the current gap; never stored, never rewrites/mutates
         # the answer, never closes a gap, never advances maturity, never creates
         # evidence, and never alters the PASS/WARN/BLOCK outcome. None unless WARN.
-        current_scaffolding_guidance=get_scaffolding_guidance(last_result, gap_type),
+        current_scaffolding_guidance=ui_text.localize_deep(
+            get_scaffolding_guidance(last_result, gap_type), _current_ui_lang()),
         # Plain-Language Result Feedback (Increment Contract PR #155): deterministic,
         # display-only, content-free plain-language explanation of the ALREADY-computed
         # result for the PRIMARY visible feedback line, derived at render time from the
@@ -1639,7 +1650,8 @@ def show_session(sid):
         # alters the PASS/WARN/BLOCK outcome; the truthful badge and the raw reason (as
         # non-primary provenance) are rendered by the template independently. None when
         # there is no result / no recognized transition.
-        current_result_feedback=get_result_feedback(last_result),
+        current_result_feedback=ui_text.localize_deep(
+            get_result_feedback(last_result), _current_ui_lang()),
         # Guided Answer Co-Authoring Increment 1 — Advisory Prompt Support
         # (Increment Contract PR #127): deterministic, display-only, content-free
         # OPTIONAL prompts naming the KIND of information the inventor could add to
@@ -1650,7 +1662,8 @@ def show_session(sid):
         # persistence, and adds no owner action, save/approve flow, or form field.
         # None when there is no gap (intake path). The inventor remains the sole
         # author of any saved answer.
-        current_answer_coauthoring=get_answer_coauthoring_prompts(gap_type) if gap_type else None,
+        current_answer_coauthoring=ui_text.localize_deep(
+            get_answer_coauthoring_prompts(gap_type) if gap_type else None, _current_ui_lang()),
         # Guided Uncertainty Support (Increment Contract PR #134): deterministic,
         # display-only, content-free SUPPORTIVE prompts shown when the user's most
         # recent submitted text expresses uncertainty ("I don't know" / "لا أعرف").
