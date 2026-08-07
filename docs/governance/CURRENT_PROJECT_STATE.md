@@ -410,7 +410,45 @@ AUTHORIZED / NOT STARTED.***
   WS17, STG, ACV, PDF, Email, and every FPC (FPC-01…FPC-04) remain NOT AUTHORIZED / NOT STARTED.** Decision **D17** and
   the AISR seven-owner model are preserved.
 
-## PHASE 5 FORMALLY CLOSED (P5-1 → P5-2 → P5-3); PHASE 6 discovery COMPLETED and the P6-1 Truthful Domain Labeling Foundation contract DEFINED — implementation NOT YET AUTHORIZED (current truth)
+## PHASE 6 — P6-1 TRUTHFUL DOMAIN LABELING FOUNDATION: IMPLEMENTED / INDEPENDENTLY REVIEWED (B) / MERGED (PR #385) / POST-MERGE VERIFIED — eligible for owner-controlled formal closure (current truth)
+
+- **P6-1 — Truthful Domain Labeling Foundation (Option A):** **IMPLEMENTED / INDEPENDENTLY REVIEWED / MERGED / POST-MERGE
+  VERIFIED.** Lineage: implementation gate **G-P6-1-TRUTHFUL-DOMAIN-LABELING-FOUNDATION-IMPLEMENTATION-01** → candidate
+  `ddaf4357e91f3c1d9443135b903871fdb3bd554a` (parent `df9e6ab`, tree `c50d791`) → independent review **B — ACCEPT WITH
+  NON-BLOCKING OBSERVATIONS** (zero blockers) → merge **PR #385** (`a8b874be5c994687e02d64b6e84404b641ab501e`, tree
+  `c50d791`, parents `df9e6ab` + `ddaf435`, scope **5 files / +259 / −2**, source branch
+  `publish/p6-1-truthful-domain-labeling` PRESERVED). Recorded by
+  **G-P6-1-TRUTHFUL-DOMAIN-LABELING-POST-MERGE-CLOSURE-SYNC-01**. Focused **23 passed**; full suite green in both
+  environments (owner Codespace **1885 passed / 3 skipped / 1 xfailed** with test-only Playwright absent;
+  independent-review environment **1916 passed / 1 skipped / 1 xfailed**) — the additional skips are Playwright/browser
+  TEST-ENVIRONMENT dependent (documented in `tests/requirements-draft-l2.txt`), **not** a P6-1 regression.
+- **P6-1 delivered (electronics-only; presentation-only):** one central server-side public-domain-label resolver
+  (`web/domain_label.py::public_domain_label`, registered Jinja filter); truthful Tier-1 labeling bound to trusted
+  server-resolved domain state; internal `electronics_electrical` **not** exposed as the public capability/domain label;
+  approved EN and AR canonical variants; neutral **General idea review** fallback (unknown/missing/unsupported never
+  silently electronics); no Tier-2/3/4 professional/specialist/certification claim; no new domain activation; no
+  deterministic-engine / domain-pack change; no schema/migration; no localization framework; no global language selector.
+- **Owner language decisions (RESUME-01), canonical (see `OWNER_DECISION_REGISTER.md` D-P6-16 / D-P6-17 / D-P6-18):**
+  (A) **D-P6-16** — EN and AR MUST NOT render simultaneously for the same public/UI label; both remain canonical
+  internally, the user sees the selected-UI-language variant; the earlier EN+AR-together rendering is **REJECTED**.
+  (B) **D-P6-17** — three-layer model: **UI Language** (explicit user choice, applies across all pages, never auto-changed
+  by typed content), **Input Language** (free-form AR/EN/mixed; technical English terms — ESP32, Bluetooth Low Energy,
+  LiDAR, API, CAN Bus, Python — preserved; never auto-switches UI), **Output Language** (defaults to UI Language; future
+  independent selection NOT authorized here). (C) **D-P6-18** — a **global UI language selector** (persistent
+  shared-header control applied consistently across all pages) is a FUTURE, independently-authorized requirement — **NOT**
+  P6-1, NOT this sync, and NOT silently assigned to any Phase-6 increment.
+- **Current surface truth:** `session` and `deliverable` shells are `<html lang="en">` (LTR) with no canonical
+  UI-language-selection signal, so P6-1 renders the **English** variant on those surfaces only; the Arabic variants remain
+  canonical but presently unrendered. This is **NOT** global localization completion. PR #148 Arabic/RTL
+  supportive-response semantics are preserved (its three formerly-conflicting RTL tests pass with files UNCHANGED).
+- **NEXT ELIGIBLE: owner-controlled P6-1 FORMAL CLOSURE.** The global UI language selector, the Output-Language override,
+  and Domain Registry validation hardening (**D-P6-14**) remain SEPARATE FUTURE increments; **no** later Phase-6 increment
+  is started by P6-1's implementation/merge. Multi-domain, AI/model/agent changes, new output types, schema/migration,
+  registry hardening, Draft Level 3, WS17, STG, ACV, PDF/download, and output email remain **NOT AUTHORIZED / NOT
+  STARTED**. Phase 5 remains FORMALLY CLOSED; P4-2 Level-1, Draft Level 2, P5-1, P5-2, P5-3 remain CLOSED. Decision
+  **D17** and the AISR seven-owner model are preserved.
+
+## PHASE 5 FORMALLY CLOSED (P5-1 → P5-2 → P5-3); PHASE 6 discovery COMPLETED and the P6-1 Truthful Domain Labeling Foundation contract DEFINED — implementation NOT YET AUTHORIZED (SUPERSEDED by the P6-1 IMPLEMENTED / MERGED current-truth section above)
 
 - **PHASE 5 — Accounts / Authentication / Ownership / Verified Email:** **IMPLEMENTED / INDEPENDENTLY REVIEWED / MERGED /
   POST-MERGE VERIFIED / OWNER ACCEPTED / FORMALLY CLOSED** across all three increments (**P5-1 → P5-2 → P5-3**). Final

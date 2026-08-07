@@ -4384,3 +4384,79 @@ changes, schema changes, registry hardening, and every later capability remain *
 remains FORMALLY CLOSED; P4-2 Level-1, Draft Level 2, P5-1, P5-2, P5-3 remain CLOSED. Decision **D17** and the AISR
 seven-owner model are preserved. Append-only; prior history not rewritten. This entry authorizes no push, PR, merge,
 implementation, or phase activation.
+
+## Phase 6 — P6-1 Truthful Domain Labeling Foundation: IMPLEMENTED / INDEPENDENTLY REVIEWED / MERGED (PR #385) / POST-MERGE VERIFIED; RESUME-01 owner language decisions recorded (G-P6-1-TRUTHFUL-DOMAIN-LABELING-POST-MERGE-CLOSURE-SYNC-01, documentation-only, append-only)
+
+**What this entry records (documentation-only; authorizes no implementation).** The Phase 6 first increment
+**P6-1 — Truthful Domain Labeling Foundation (Option A)** has completed its full lifecycle and is now merged on the
+authoritative execution branch `feature/atomic-json-session-persistence`. This closure-sync entry records the verified
+merge/post-merge state and canonicalizes the owner language decisions established during the resume gate. It grants no
+new implementation, no localization implementation, no P6-2, and no later Phase-6 authorization.
+
+**Lineage (independently re-verified against the live repository).**
+- Contract-of-record: **G-P6-1-TRUTHFUL-DOMAIN-LABELING-FOUNDATION-CONTRACT-01** (Merge PR #380, base `3703b4f`).
+- Implementation gate: **G-P6-1-TRUTHFUL-DOMAIN-LABELING-FOUNDATION-IMPLEMENTATION-01** → held candidate → replayed
+  onto the P5-3-remediated base after the RESUME-01 language correction.
+- Accepted candidate: `ddaf4357e91f3c1d9443135b903871fdb3bd554a` (parent `df9e6abc5e0fae1ff78c91bccfa88a2ccb34a27b`,
+  tree `c50d79110da61bd6d2ea5f2283660c0876b3853a`).
+- Independent implementation review **G-P6-1-…-INDEPENDENT-REVIEW**: verdict **B — ACCEPT WITH NON-BLOCKING
+  OBSERVATIONS**, **BLOCKERS: NONE** (candidate identity, bundle SHA-256, diff, false-green probe, and full suite all
+  independently reproduced).
+- Merge: **PR #385** → merge commit `a8b874be5c994687e02d64b6e84404b641ab501e` (true merge; parents
+  `df9e6ab` + `ddaf435`; merge tree `c50d791` == candidate tree; source branch `publish/p6-1-truthful-domain-labeling`
+  preserved at the exact SHA). Implementation diff **5 files changed, +259 / −2**:
+  `web/domain_label.py` (new central resolver), `web/app.py` (filter registration), `web/templates/session.html`,
+  `web/templates/deliverable.html`, `tests/test_p6_1_truthful_domain_labeling.py`. No `engine/*`, no `domains/*.json`,
+  no schema/migration, no dependency, no governance file in the implementation diff.
+
+**Post-merge verification (evidence).** Focused P6-1 **23 passed** on the merged tip. Full-suite results differ by
+environment and this is NOT a regression: the owner-authenticated Codespace collected **1887 tests → 1885 passed, 3
+skipped, 1 xfailed**, while the independent-review environment (Playwright present) reproduced **1916 passed, 1 skipped,
+1 xfailed**. The additional Codespace skips are TEST-ENVIRONMENT dependent, not P6-1 behavior: the browser tests in
+`tests/test_draft_l2_local_continuity.py` and `tests/test_p5_2_draft_account_switch.py` **skip when the test-only
+`playwright` package is absent** (documented in `tests/requirements-draft-l2.txt`; `pip show playwright` confirmed absent
+in that Codespace), and `tests/test_wps001_invariants.py` skips its forward-only case when no gap reached CLOSED. Zero
+failures in both environments; no P6-1 regression.
+
+**P6-1 product truth now in effect (electronics-only; presentation-only).** One central server-side public-domain-label
+resolver (`web/domain_label.py::public_domain_label`, registered as the `public_domain_label` Jinja filter); truthful
+Tier-1 labeling bound to TRUSTED server-resolved domain state; the internal id `electronics_electrical` is **not** exposed
+as the public capability/domain label; approved EN and AR variants remain canonical; neutral **General idea review**
+fallback for unknown/missing/unsupported state (never silently electronics); no Tier-2/3/4 professional/specialist/
+certification claim; no new domain activation; no deterministic-engine / domain-pack change; no schema/migration; no
+localization framework; no global language selector implemented by P6-1. Current `session` and `deliverable` shells are
+`<html lang="en">` (LTR) and expose no canonical user UI-language-selection signal, so P6-1 renders the **English** variant
+on those surfaces only; the Arabic variants remain canonical in the resolver but are **presently unrendered** on those
+surfaces. This is NOT global localization completion.
+
+**RESUME-01 owner language decisions — canonicalized (see `OWNER_DECISION_REGISTER.md` D-P6-16 / D-P6-17 / D-P6-18, which
+this entry does not duplicate).**
+- **D-P6-16 — No simultaneous bilingual rendering.** For the same public-domain/UI label, English and Arabic MUST NOT be
+  displayed simultaneously. Both variants may remain canonical internally; the user sees the variant of the selected UI
+  language/context. The earlier P6-1 choice to render EN + AR together is **rejected**.
+- **D-P6-17 — Three-layer language model.** (1) **UI Language** — explicit user choice, applies consistently across all
+  pages, governs UI labels/buttons/messages/navigation; must not auto-change because the user typed another language.
+  (2) **Input Language** — free-form Arabic / English / mixed; technical English terms (e.g. ESP32, Bluetooth Low Energy,
+  LiDAR, API, CAN Bus, Python) are naturally accepted/preserved; mixed input MUST NOT auto-switch UI Language. (3)
+  **Output Language** — defaults to UI Language; a future independent Output-Language selector (e.g. Arabic UI + English
+  deliverable) is a FUTURE capability, not authorized here and not to be conflated with UI Language.
+- **D-P6-18 — Global UI language selector (FUTURE, NOT AUTHORIZED HERE).** The product requires a global language
+  selector at the top of the application, preferably a persistent shared-header/navigation control, applying the selected
+  UI language consistently across all pages without returning to the first page. Implementation is a FUTURE,
+  independently-authorized gate — NOT P6-1, NOT this sync, and NOT silently assigned to any Phase-6 increment.
+
+**RTL/LTR boundary (PR #148 preserved).** The Arabic/RTL Supportive Response semantics remain intact: Arabic content in an
+authorized Arabic context receives appropriate `lang`/`dir` semantics; the English/LTR shell is NOT broadly converted to
+RTL merely because isolated user input contains Arabic (or English) terms. A future global Arabic UI must use the
+canonical global UI-language context, not per-component language guessing. The three formerly-conflicting PR #148 RTL
+tests pass with their files UNCHANGED (not weakened).
+
+**Status after this sync.** P6-1 contract-definition: COMPLETED. P6-1 implementation: COMPLETED. Independent review:
+**B — ACCEPT**, zero blockers. **PR #385: MERGED.** Post-merge verification: COMPLETED. **P6-1: eligible for formal
+closure** at owner control. Global UI language selector: FUTURE, not implemented. Output-Language override: FUTURE, not
+implemented. Domain Registry validation hardening (D-P6-14): remains a SEPARATE future prerequisite increment. No new
+domain activation is implied by P6-1 closure. **No later Phase-6 increment is started** merely because P6-1 is
+implemented/merged. Multi-domain, AI/model/agent changes, new output types, schema/migration, registry hardening, WS17,
+STG, ACV, PDF/download, and output email remain **NOT AUTHORIZED / NOT STARTED**. Phase 5 remains FORMALLY CLOSED; P4-2
+Level-1, Draft Level 2, P5-1, P5-2, P5-3 remain CLOSED. Decision **D17** and the AISR seven-owner model are preserved.
+Append-only; prior history not rewritten. This entry authorizes no push, PR, merge, implementation, or phase activation.
