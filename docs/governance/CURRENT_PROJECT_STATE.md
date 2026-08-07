@@ -410,7 +410,7 @@ AUTHORIZED / NOT STARTED.***
   WS17, STG, ACV, PDF, Email, and every FPC (FPC-01…FPC-04) remain NOT AUTHORIZED / NOT STARTED.** Decision **D17** and
   the AISR seven-owner model are preserved.
 
-## PHASE 6 — P6-1 TRUTHFUL DOMAIN LABELING FOUNDATION: IMPLEMENTED / INDEPENDENTLY REVIEWED (B) / MERGED (PR #385) / POST-MERGE VERIFIED — eligible for owner-controlled formal closure (current truth)
+## PHASE 6 — P6-1 TRUTHFUL DOMAIN LABELING FOUNDATION: FORMALLY ACCEPTED AND CLOSED (implemented / independently reviewed B / merged PR #385 / post-merge verified / governance-sync merged PR #386 / owner-accepted) — Phase 6 NOT complete (current truth)
 
 - **P6-1 — Truthful Domain Labeling Foundation (Option A):** **IMPLEMENTED / INDEPENDENTLY REVIEWED / MERGED / POST-MERGE
   VERIFIED.** Lineage: implementation gate **G-P6-1-TRUTHFUL-DOMAIN-LABELING-FOUNDATION-IMPLEMENTATION-01** → candidate
@@ -441,9 +441,13 @@ AUTHORIZED / NOT STARTED.***
   UI-language-selection signal, so P6-1 renders the **English** variant on those surfaces only; the Arabic variants remain
   canonical but presently unrendered. This is **NOT** global localization completion. PR #148 Arabic/RTL
   supportive-response semantics are preserved (its three formerly-conflicting RTL tests pass with files UNCHANGED).
-- **NEXT ELIGIBLE: owner-controlled P6-1 FORMAL CLOSURE.** The global UI language selector, the Output-Language override,
-  and Domain Registry validation hardening (**D-P6-14**) remain SEPARATE FUTURE increments; **no** later Phase-6 increment
-  is started by P6-1's implementation/merge. Multi-domain, AI/model/agent changes, new output types, schema/migration,
+- **P6-1 FORMAL CLOSURE:** **DONE** — **FORMALLY ACCEPTED AND CLOSED** by owner gate
+  **G-P6-1-TRUTHFUL-DOMAIN-LABELING-FORMAL-CLOSURE-01** (dedicated record
+  `docs/governance/P6_1_TRUTHFUL_DOMAIN_LABELING_FORMAL_CLOSURE_RECORD.md`; append-only roadmap closure entry). Phase 6 as
+  a whole is **NOT** complete. **NEXT ELIGIBLE OWNER GATE:** read from the live `ACTIVE_EXECUTION_ROADMAP.md` — **ELIGIBLE
+  FOR OWNER CONSIDERATION, NOT AUTHORIZED** (not assumed to be P6-2 from numbering). The global UI language selector
+  (**D-P6-18**), the Output-Language override (**D-P6-17**), and Domain Registry validation hardening (**D-P6-14**) remain
+  SEPARATE FUTURE increments; **no** later Phase-6 increment is started by P6-1's closure. Multi-domain, AI/model/agent changes, new output types, schema/migration,
   registry hardening, Draft Level 3, WS17, STG, ACV, PDF/download, and output email remain **NOT AUTHORIZED / NOT
   STARTED**. Phase 5 remains FORMALLY CLOSED; P4-2 Level-1, Draft Level 2, P5-1, P5-2, P5-3 remain CLOSED. Decision
   **D17** and the AISR seven-owner model are preserved.

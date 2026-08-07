@@ -4460,3 +4460,44 @@ implemented/merged. Multi-domain, AI/model/agent changes, new output types, sche
 STG, ACV, PDF/download, and output email remain **NOT AUTHORIZED / NOT STARTED**. Phase 5 remains FORMALLY CLOSED; P4-2
 Level-1, Draft Level 2, P5-1, P5-2, P5-3 remain CLOSED. Decision **D17** and the AISR seven-owner model are preserved.
 Append-only; prior history not rewritten. This entry authorizes no push, PR, merge, implementation, or phase activation.
+
+## Phase 6 — P6-1 Truthful Domain Labeling Foundation: FORMALLY ACCEPTED AND CLOSED (G-P6-1-TRUTHFUL-DOMAIN-LABELING-FORMAL-CLOSURE-01, documentation-only, append-only)
+
+**What this entry records (documentation-only; authorizes no implementation).** On the owner's explicit decision, the
+Phase 6 first increment **P6-1 — Truthful Domain Labeling Foundation (Option A)** is **FORMALLY ACCEPTED AND CLOSED**,
+based only on the already-merged, independently-reviewed, post-merge-verified implementation (PR #385) and the
+already-merged governance closure-sync (PR #386). This closure is **P6-1 only** and does **NOT** imply completion of Phase
+6 as a whole. It grants no new implementation, no localization, no global language selector, no Output-Language override,
+no additional domain activation, no registry hardening, no schema/migration, and no P6-2 or later Phase-6 authorization.
+
+**Independently re-verified chain (at live tip `1a61ae5bca4b01b6c51be2c27c396016b676f2ee`).**
+- Implementation candidate `ddaf4357e91f3c1d9443135b903871fdb3bd554a` (parent `df9e6ab`, tree `c50d791`) → independent
+  review **B — ACCEPT WITH NON-BLOCKING OBSERVATIONS**, zero blockers → merge **PR #385** `a8b874b` (true merge; parents
+  `df9e6ab` + `ddaf435`; 5 files / +259 / −2).
+- Governance closure-sync candidate `ff2885cc1c0994edc51a344d08a4582d28dca66a` (parent `a8b874b`, tree `7d2b19b`) →
+  independent governance review **B — ACCEPT**, zero blockers → merge **PR #386** `1a61ae5` (true merge; parents
+  `a8b874b` + `ff2885c`; 4 governance docs / +133 / −7). `ddaf435` is an ancestor of the live tip; working tree clean.
+- Dedicated formal-closure record: `docs/governance/P6_1_TRUTHFUL_DOMAIN_LABELING_FORMAL_CLOSURE_RECORD.md`.
+
+**P6-1 completed (electronics-only; presentation-only).** Central resolver `web/domain_label.py::public_domain_label`
+(Jinja filter); truthful Tier-1 labeling on trusted server-resolved domain state; internal `electronics_electrical` not
+exposed as the public label; EN/AR canonical variants; neutral **General idea review** fallback (never silently
+electronics); no Tier-2/3/4 claim; current EN/LTR session and deliverable surfaces render the English variant only, with
+the Arabic Tier-1 variant canonical but presently unrendered. **NOT global localization completion.**
+
+**Canonical language decisions preserved (RESUME-01, unchanged by closure).** **D-P6-16** no simultaneous EN+AR rendering
+(both canonical internally; user sees the selected-UI-language variant). **D-P6-17** three-layer model — UI Language
+(explicit, global, not auto-switched by typed content); Input Language (AR/EN/mixed; technical English terms preserved;
+does not control UI language); Output Language (defaults to UI Language; future independent selection unimplemented).
+**D-P6-18** global UI language selector = FUTURE required capability, **NOT IMPLEMENTED**, separately authorized future
+gate; no implementation ownership assigned by this closure. PR #148 Arabic/RTL semantics preserved; the English/LTR shell
+is not broadly converted to RTL from isolated input.
+
+**Status after this closure.** **P6-1: FORMALLY ACCEPTED AND CLOSED.** Phase 6 as a whole is **NOT** complete. The next
+eligible owner-controlled gate is read from the live roadmap and is **ELIGIBLE FOR OWNER CONSIDERATION** — which does
+**NOT** mean **AUTHORIZED**. No later Phase-6 increment (no P6-2, no registry hardening, no localization / global language
+selector / Output-Language override, no new domain activation) is authorized or started by this closure. Multi-domain,
+AI/model/agent changes, new output types, schema/migration, WS17, STG, ACV, PDF/download, and output email remain **NOT
+AUTHORIZED / NOT STARTED**. Phase 5 remains FORMALLY CLOSED; P4-2 Level-1, Draft Level 2, P5-1, P5-2, P5-3 remain CLOSED.
+Decision **D17** and the AISR seven-owner model are preserved. Append-only; prior history not rewritten. This entry
+authorizes no push, PR, merge, implementation, or phase activation.

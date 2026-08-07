@@ -42,7 +42,7 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 
 ## Active contract
 **Status (current):** **P6-1 — Truthful Domain Labeling Foundation (Phase 6, Option A)** —
-**IMPLEMENTED / INDEPENDENTLY REVIEWED (B — ACCEPT, zero blockers) / MERGED (PR #385, merge `a8b874be5c994687e02d64b6e84404b641ab501e`) / POST-MERGE VERIFIED.**
+**IMPLEMENTED / INDEPENDENTLY REVIEWED (B — ACCEPT, zero blockers) / MERGED (PR #385, merge `a8b874be5c994687e02d64b6e84404b641ab501e`) / POST-MERGE VERIFIED / GOVERNANCE-SYNC MERGED (PR #386, merge `1a61ae5bca4b01b6c51be2c27c396016b676f2ee`) / FORMALLY ACCEPTED AND CLOSED (G-P6-1-TRUTHFUL-DOMAIN-LABELING-FORMAL-CLOSURE-01; dedicated record `docs/governance/P6_1_TRUTHFUL_DOMAIN_LABELING_FORMAL_CLOSURE_RECORD.md`).**
 Implementation candidate `ddaf4357e91f3c1d9443135b903871fdb3bd554a` (parent `df9e6abc5e0fae1ff78c91bccfa88a2ccb34a27b`,
 tree `c50d79110da61bd6d2ea5f2283660c0876b3853a`; 5 files / +259 / −2; central resolver `web/domain_label.py`). Per owner
 decision **D-P6-16** (RESUME-01) a surface renders exactly ONE language variant — English and Arabic are never displayed
@@ -53,9 +53,11 @@ this increment). Originally defined (contract-of-record) by the documentation-on
 contract-definition gate **G-P6-1-TRUTHFUL-DOMAIN-LABELING-FOUNDATION-CONTRACT-01** (authoritative base
 `3703b4ff3a74ff735964e9f16be135f17834dc17`, Merge PR #380), on the owner-accepted Phase 6 discovery
 **G-P6-DOMAIN-SPECIALIZATION-DISCOVERY-01** and owner decisions **D-P6-00 … D-P6-18**. The implementation gate
-**G-P6-1-TRUTHFUL-DOMAIN-LABELING-FOUNDATION-IMPLEMENTATION-01** is now COMPLETED and MERGED; the next step is
-owner-controlled **P6-1 formal closure**. No later Phase-6 increment is authorized or started by this record. (The P6-1
-CONTRACT-OF-RECORD body below is retained as the definitional record.)
+**G-P6-1-TRUTHFUL-DOMAIN-LABELING-FOUNDATION-IMPLEMENTATION-01** is COMPLETED and MERGED, and P6-1 is now **FORMALLY
+ACCEPTED AND CLOSED**. There is **no active contract-of-record**; the next eligible owner gate is read from the live
+`ACTIVE_EXECUTION_ROADMAP.md` and is **ELIGIBLE FOR OWNER CONSIDERATION, NOT AUTHORIZED** (Phase 6 as a whole is NOT
+complete; no later Phase-6 increment is authorized or started by this closure). (The P6-1 CONTRACT-OF-RECORD body below is
+retained as the definitional record.)
 
 ---
 
