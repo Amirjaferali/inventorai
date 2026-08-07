@@ -41,13 +41,21 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current):** CONTRACT-OF-RECORD = **P6-1 — Truthful Domain Labeling Foundation (Phase 6, Option A)** —
-**DEFINED (contract-of-record), IMPLEMENTATION NOT AUTHORIZED BY THIS GATE.** Defined by the documentation-only
+**Status (current):** **P6-1 — Truthful Domain Labeling Foundation (Phase 6, Option A)** —
+**IMPLEMENTED / INDEPENDENTLY REVIEWED (B — ACCEPT, zero blockers) / MERGED (PR #385, merge `a8b874be5c994687e02d64b6e84404b641ab501e`) / POST-MERGE VERIFIED.**
+Implementation candidate `ddaf4357e91f3c1d9443135b903871fdb3bd554a` (parent `df9e6abc5e0fae1ff78c91bccfa88a2ccb34a27b`,
+tree `c50d79110da61bd6d2ea5f2283660c0876b3853a`; 5 files / +259 / −2; central resolver `web/domain_label.py`). Per owner
+decision **D-P6-16** (RESUME-01) a surface renders exactly ONE language variant — English and Arabic are never displayed
+simultaneously; both EN and AR remain canonical in the resolver, and the current `<html lang="en">`/LTR session and
+deliverable surfaces render the English variant only (the Arabic variants are canonical but presently unrendered because
+no global UI-language selector exists yet — that selector is a FUTURE, independently-authorized gate, **D-P6-18**, NOT
+this increment). Originally defined (contract-of-record) by the documentation-only
 contract-definition gate **G-P6-1-TRUTHFUL-DOMAIN-LABELING-FOUNDATION-CONTRACT-01** (authoritative base
 `3703b4ff3a74ff735964e9f16be135f17834dc17`, Merge PR #380), on the owner-accepted Phase 6 discovery
-**G-P6-DOMAIN-SPECIALIZATION-DISCOVERY-01** and owner decisions **D-P6-00 … D-P6-15**. The implementation gate
-**G-P6-1-TRUTHFUL-DOMAIN-LABELING-FOUNDATION-IMPLEMENTATION-01** is the next eligible gate, eligible **only after this
-contract is merged and post-merge verified**. A contract here is not an implementation authorization.
+**G-P6-DOMAIN-SPECIALIZATION-DISCOVERY-01** and owner decisions **D-P6-00 … D-P6-18**. The implementation gate
+**G-P6-1-TRUTHFUL-DOMAIN-LABELING-FOUNDATION-IMPLEMENTATION-01** is now COMPLETED and MERGED; the next step is
+owner-controlled **P6-1 formal closure**. No later Phase-6 increment is authorized or started by this record. (The P6-1
+CONTRACT-OF-RECORD body below is retained as the definitional record.)
 
 ---
 
