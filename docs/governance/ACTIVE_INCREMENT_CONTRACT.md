@@ -41,15 +41,20 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current):** **P6-1 — Truthful Domain Labeling Foundation (Phase 6, Option A)** —
+**Status (current):** **D-P6-18 — Global UI Language (English | العربية) (Phase 6)** —
+**IMPLEMENTED / INDEPENDENTLY REVIEWED (B — ACCEPT, zero blockers) / MERGED (PR #388, merge `b47bf4bb57446956c47488283248cfbacd603e85`; parents `a0426cbb6a188a366006d22472c875ec4e5e446b` + `62818a8c71a83be487928d8b2ccaa2feb4dd678d`; merged tree `f6ed63d94db15a5e84326f9e551a7c1eddd3dd34`) / POST-MERGE VERIFIED / FORMALLY ACCEPTED AND CLOSED (G-DP6-18-GLOBAL-UI-LANGUAGE-FORMAL-CLOSURE-01; dedicated record `docs/governance/D_P6_18_GLOBAL_UI_LANGUAGE_FORMAL_CLOSURE_RECORD.md`).**
+Accepted lineage `98c47d5` → `8920f46` → `62818a8` (SHA-preserving); cumulative scope 27 files / +2012 / −337, entirely under `web/` + `tests/` (no engine/domains/schema/migration/dependency/CI). There is **no active contract-of-record**; the next eligible governance step is the **Master Obligation Index gate, which REQUIRES SEPARATE OWNER AUTHORIZATION** (documentation reconciliation only) — **ELIGIBLE FOR OWNER CONSIDERATION, NOT AUTHORIZED / NOT STARTED** — not the implementation of any new capability. Closing D-P6-18 authorizes **no** successor: the **Question Translation Assistant remains NOT AUTHORIZED / NOT STARTED**. Phase 6 as a whole is NOT complete.
+
+**Immediately prior:** **P6-1 — Truthful Domain Labeling Foundation (Phase 6, Option A)** —
 **IMPLEMENTED / INDEPENDENTLY REVIEWED (B — ACCEPT, zero blockers) / MERGED (PR #385, merge `a8b874be5c994687e02d64b6e84404b641ab501e`) / POST-MERGE VERIFIED / GOVERNANCE-SYNC MERGED (PR #386, merge `1a61ae5bca4b01b6c51be2c27c396016b676f2ee`) / FORMALLY ACCEPTED AND CLOSED (G-P6-1-TRUTHFUL-DOMAIN-LABELING-FORMAL-CLOSURE-01; dedicated record `docs/governance/P6_1_TRUTHFUL_DOMAIN_LABELING_FORMAL_CLOSURE_RECORD.md`).**
 Implementation candidate `ddaf4357e91f3c1d9443135b903871fdb3bd554a` (parent `df9e6abc5e0fae1ff78c91bccfa88a2ccb34a27b`,
 tree `c50d79110da61bd6d2ea5f2283660c0876b3853a`; 5 files / +259 / −2; central resolver `web/domain_label.py`). Per owner
 decision **D-P6-16** (RESUME-01) a surface renders exactly ONE language variant — English and Arabic are never displayed
 simultaneously; both EN and AR remain canonical in the resolver, and the current `<html lang="en">`/LTR session and
-deliverable surfaces render the English variant only (the Arabic variants are canonical but presently unrendered because
-no global UI-language selector exists yet — that selector is a FUTURE, independently-authorized gate, **D-P6-18**, NOT
-this increment). Originally defined (contract-of-record) by the documentation-only
+deliverable surfaces rendered the English variant only at P6-1 time (the Arabic variants were canonical but presently
+unrendered because no global UI-language selector existed yet — that selector, **D-P6-18**, was then a FUTURE,
+independently-authorized gate; it has SINCE been implemented and FORMALLY CLOSED (PR #388 `b47bf4b`), and the P6-1 labels
+now follow the selected UI language). Originally defined (contract-of-record) by the documentation-only
 contract-definition gate **G-P6-1-TRUTHFUL-DOMAIN-LABELING-FOUNDATION-CONTRACT-01** (authoritative base
 `3703b4ff3a74ff735964e9f16be135f17834dc17`, Merge PR #380), on the owner-accepted Phase 6 discovery
 **G-P6-DOMAIN-SPECIALIZATION-DISCOVERY-01** and owner decisions **D-P6-00 … D-P6-18**. The implementation gate

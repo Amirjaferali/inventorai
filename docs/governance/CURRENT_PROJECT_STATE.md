@@ -435,19 +435,29 @@ AUTHORIZED / NOT STARTED.***
   by typed content), **Input Language** (free-form AR/EN/mixed; technical English terms — ESP32, Bluetooth Low Energy,
   LiDAR, API, CAN Bus, Python — preserved; never auto-switches UI), **Output Language** (defaults to UI Language; future
   independent selection NOT authorized here). (C) **D-P6-18** — a **global UI language selector** (persistent
-  shared-header control applied consistently across all pages) is a FUTURE, independently-authorized requirement — **NOT**
-  P6-1, NOT this sync, and NOT silently assigned to any Phase-6 increment.
-- **Current surface truth:** `session` and `deliverable` shells are `<html lang="en">` (LTR) with no canonical
-  UI-language-selection signal, so P6-1 renders the **English** variant on those surfaces only; the Arabic variants remain
-  canonical but presently unrendered. This is **NOT** global localization completion. PR #148 Arabic/RTL
-  supportive-response semantics are preserved (its three formerly-conflicting RTL tests pass with files UNCHANGED).
+  shared-header control applied consistently across all pages) was recorded here (RESUME-01) as a FUTURE,
+  independently-authorized requirement. **UPDATE: subsequently owner-authorized, implemented, independently reviewed
+  (B — ACCEPT, zero blockers), MERGED (PR #388 `b47bf4bb57446956c47488283248cfbacd603e85`, parents `a0426cb`+`62818a8`,
+  tree `f6ed63d`), and FORMALLY ACCEPTED AND CLOSED** (gate `G-DP6-18-GLOBAL-UI-LANGUAGE-FORMAL-CLOSURE-01`; dedicated
+  record `docs/governance/D_P6_18_GLOBAL_UI_LANGUAGE_FORMAL_CLOSURE_RECORD.md`).
+- **P6-1-era surface truth — SUPERSEDED by D-P6-18 (historical, not current):** *at P6-1 time* the `session` and
+  `deliverable` shells were `<html lang="en">` (LTR) with no canonical UI-language-selection signal, so P6-1 rendered the
+  **English** variant on those surfaces only and the Arabic variants were canonical but then unrendered — this was **NOT**
+  global localization completion. **This is no longer current:** D-P6-18 (merge PR #388 `b47bf4b`) added the global UI
+  language selector and the `ui_lang`-driven shell, so the selected UI language (including the Arabic RTL shell) now
+  applies across active application UI chrome and the P6-1 labels follow it. PR #148 Arabic/RTL supportive-response
+  semantics remain preserved (its three formerly-conflicting RTL tests pass with files UNCHANGED).
 - **P6-1 FORMAL CLOSURE:** **DONE** — **FORMALLY ACCEPTED AND CLOSED** by owner gate
   **G-P6-1-TRUTHFUL-DOMAIN-LABELING-FORMAL-CLOSURE-01** (dedicated record
   `docs/governance/P6_1_TRUTHFUL_DOMAIN_LABELING_FORMAL_CLOSURE_RECORD.md`; append-only roadmap closure entry). Phase 6 as
   a whole is **NOT** complete. **NEXT ELIGIBLE OWNER GATE:** read from the live `ACTIVE_EXECUTION_ROADMAP.md` — **ELIGIBLE
-  FOR OWNER CONSIDERATION, NOT AUTHORIZED** (not assumed to be P6-2 from numbering). The global UI language selector
-  (**D-P6-18**), the Output-Language override (**D-P6-17**), and Domain Registry validation hardening (**D-P6-14**) remain
-  SEPARATE FUTURE increments; **no** later Phase-6 increment is started by P6-1's closure. Multi-domain, AI/model/agent changes, new output types, schema/migration,
+  FOR OWNER CONSIDERATION, NOT AUTHORIZED** (not assumed to be P6-2 from numbering). The Output-Language override
+  (**D-P6-17**) and Domain Registry validation hardening (**D-P6-14**) remain SEPARATE FUTURE increments; **no** later
+  Phase-6 increment is started by P6-1's closure. (The global UI language selector **D-P6-18** was subsequently authorized,
+  implemented, and **FORMALLY CLOSED** — merge PR #388 `b47bf4b`; its closure authorizes no successor capability, and the
+  **Question Translation Assistant remains NOT AUTHORIZED / NOT STARTED**. The next eligible governance step is the
+  **Master Obligation Index** gate, which **REQUIRES SEPARATE OWNER AUTHORIZATION** — documentation reconciliation only,
+  **ELIGIBLE FOR OWNER CONSIDERATION, NOT AUTHORIZED / NOT STARTED** — not the implementation of any new capability.) Multi-domain, AI/model/agent changes, new output types, schema/migration,
   registry hardening, Draft Level 3, WS17, STG, ACV, PDF/download, and output email remain **NOT AUTHORIZED / NOT
   STARTED**. Phase 5 remains FORMALLY CLOSED; P4-2 Level-1, Draft Level 2, P5-1, P5-2, P5-3 remain CLOSED. Decision
   **D17** and the AISR seven-owner model are preserved.

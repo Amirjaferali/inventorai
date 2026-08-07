@@ -4501,3 +4501,70 @@ AI/model/agent changes, new output types, schema/migration, WS17, STG, ACV, PDF/
 AUTHORIZED / NOT STARTED**. Phase 5 remains FORMALLY CLOSED; P4-2 Level-1, Draft Level 2, P5-1, P5-2, P5-3 remain CLOSED.
 Decision **D17** and the AISR seven-owner model are preserved. Append-only; prior history not rewritten. This entry
 authorizes no push, PR, merge, implementation, or phase activation.
+
+
+## Phase 6 — D-P6-18 Global UI Language: IMPLEMENTED / INDEPENDENTLY REVIEWED (B — ACCEPT, zero blockers) / MERGED (PR #388) / POST-MERGE VERIFIED / FORMALLY ACCEPTED AND CLOSED (G-DP6-18-GLOBAL-UI-LANGUAGE-FORMAL-CLOSURE-01, documentation-only, append-only)
+
+**What this entry records (documentation-only; authorizes no implementation).** The owner-authorized Phase 6 increment
+**D-P6-18 — Global UI Language (English | العربية)** has completed its full lifecycle and is now merged on the
+authoritative execution branch `feature/atomic-json-session-persistence`. This entry records the verified merge/post-merge
+state and formally closes D-P6-18. It grants no new implementation and no successor capability.
+
+**Lineage (independently re-verified from the merge + the pre-D-P6-18 base).**
+- Pre-D-P6-18 base: `a0426cbb6a188a366006d22472c875ec4e5e446b`.
+- Accepted implementation lineage (three commits; SHA-preserving — never squashed/rebased/amended):
+  `98c47d51e91467b1911c3fbe46b121acff526703` (Global UI Language seam + shared selector + in-scope surfaces)
+  → `8920f4664e1c440fe34c1a94fd90a369623a4192` (answer-action controls, correction/placeholders, active page titles)
+  → `62818a8c71a83be487928d8b2ccaa2feb4dd678d` (question-flow UI chrome reclassified; actual asks kept English).
+- Final accepted candidate: `62818a8c71a83be487928d8b2ccaa2feb4dd678d`.
+- Independent final re-review: verdict **B — ACCEPT WITH NON-BLOCKING OBSERVATIONS**, **BLOCKERS: NONE**.
+- Merge: **PR #388** → merge commit `b47bf4bb57446956c47488283248cfbacd603e85` (true merge; parents
+  `a0426cbb6a188a366006d22472c875ec4e5e446b` + `62818a8c71a83be487928d8b2ccaa2feb4dd678d`; merged tree
+  `f6ed63d94db15a5e84326f9e551a7c1eddd3dd34`). Cumulative implementation scope **27 files changed, +2012 / −337**,
+  entirely under `web/` and `tests/` — no `engine/`, no `domains/`, no schema/migration, no dependency, no CI, and no
+  governance file in the implementation diff.
+
+**Post-merge verification (evidence).** Independent final review on the accepted tree: **1944 passed / 1 skipped /
+1 xfailed / 0 failed**, plus the Playwright/browser subset **31 passed**. Owner Codespace post-merge verification on the
+merge commit `b47bf4b`: **1913 passed / 3 skipped / 1 xfailed / 0 failed**. The 31-test difference is exactly the
+Playwright/browser subset the owner Codespace did not run (the independent reviewer reproduced all 31 on the identical
+accepted tree); it is environmental/test-only, **not** a regression.
+
+**D-P6-18 product truth now in effect.** Global explicit English/Arabic UI-language selection (default English); the
+selected UI language applies consistently across active application UI chrome; the Arabic shell uses RTL and English uses
+LTR; canonical actual questions remain English; actual asks remain English while surrounding non-question UI chrome
+follows the UI language; user-authored echoed content is not intentionally translated; the P6-1 truthful domain labels
+follow the selected UI language; generated substantive output remains **OUTSIDE** this UI-language increment; PR #148 Input
+Language remains separate from UI Language; the **Question Translation Assistant** remains **NOT IMPLEMENTED**; the
+**Output-Language** capability remains **NOT IMPLEMENTED**; `decision_workspace` remains deferred/untouched. Localization
+is presentation-only (central `web/ui_text.py` seam consuming the existing English source-of-truth; the deterministic
+guidance modules are unchanged); no engine/domain/schema/dependency change.
+
+**Non-blocking observations retained (not remediated by this closure).** (1) The criticality clarification "Would the idea
+still achieve its purpose if this part changed?" remains English as an actual ask while its surrounding controls localize;
+gap-label headings are localized as UI framing. (2) `localize_deep` uses exact-match localization and could theoretically
+localize echoed user content only if the user enters a byte-identical mapped UI-chrome sentence — assessed
+negligible/cosmetic by independent review. (3) Six `session.html` criticality literals exist both via `t()` catalogue keys
+and in `_DEEP_AR` — harmless redundancy.
+
+**Status after this closure.** **D-P6-18: FORMALLY ACCEPTED AND CLOSED** (dedicated record
+`docs/governance/D_P6_18_GLOBAL_UI_LANGUAGE_FORMAL_CLOSURE_RECORD.md`). Phase 6 as a whole is **NOT** complete. This
+closure authorizes **NO** successor capability: the **Question Translation Assistant** remains **NOT AUTHORIZED / NOT
+STARTED**, and no Output-Language override, new domain activation, Domain Registry hardening (D-P6-14), schema/migration,
+WS17, STG, ACV, PDF/download, or output email is authorized or started. The next governance step is the **separately
+authorized Master Obligation Index gate** (governance/documentation reconciliation only) — **NOT** the implementation of
+any new capability; it remains **ELIGIBLE FOR OWNER CONSIDERATION, NOT AUTHORIZED**. Phase 5 remains FORMALLY CLOSED;
+P4-2 Level-1, Draft Level 2, P5-1, P5-2, P5-3, and P6-1 remain CLOSED. Decision **D17** and the AISR seven-owner model are
+preserved. Append-only; prior history not rewritten. This entry authorizes no push, PR, merge, implementation, or phase
+activation.
+
+
+## D-P6-18 formal-closure — wording clarification (append-only; corrects no evidence)
+
+Clarification of the immediately-preceding D-P6-18 formal-closure entry only (no evidence, merge identity, lineage,
+verdict, or test result is changed): where that entry refers to "the separately authorized Master Obligation Index gate",
+read it as **the Master Obligation Index gate, which REQUIRES SEPARATE OWNER AUTHORIZATION** — a documentation-only
+reconciliation gate that is **NOT AUTHORIZED and NOT STARTED** and remains **ELIGIBLE FOR OWNER CONSIDERATION** only. No
+authorization for the Master Obligation Index, the Question Translation Assistant, or any other successor capability
+exists or is implied. Append-only; prior history not rewritten. This entry authorizes no push, PR, merge, implementation,
+or phase activation.
