@@ -54,6 +54,7 @@ from web.scaffolding_guidance import get_scaffolding_guidance  # MDN: display-on
 from web.answer_coauthoring_prompts import get_answer_coauthoring_prompts  # GACA Increment 1: display-only advisory prompts
 from web.uncertainty_guidance import get_uncertainty_guidance  # GUS: display-only supportive uncertainty guidance
 from web.result_feedback import get_result_feedback  # PLRF: display-only plain-language result feedback
+from web.domain_label import public_domain_label as _public_domain_label  # P6-1: central public label resolver (display-only)
 
 # --- G-SC0 Bounded Security Containment: runtime security configuration -------
 # Runtime debug, host, and the Flask secret are environment-controlled with safe
@@ -111,6 +112,13 @@ app.config.update(
 # inventor-friendly label for the few session-page surfaces that render raw
 # reference/context IDs. Non-gap values pass through unchanged. Display only.
 app.jinja_env.filters["gap_display"] = friendly_gap_name
+# P6-1 (Truthful Domain Labeling Foundation): the SINGLE central, server-side,
+# bilingual public-domain-label resolver. Templates consume this one filter so no
+# surface reproduces domain-id conditionals or a hard-coded label; it maps the
+# trusted runtime domain to a Tier-1 public label and falls back to a neutral
+# "General idea review" for unknown/missing/unsupported state (never electronics).
+# Presentation only — activates no domain and changes no deterministic behavior.
+app.jinja_env.filters["public_domain_label"] = _public_domain_label
 SESSION_STORE = {}
 
 # --- P4-1b-1: durable project store (construction, configuration, cold-load) --
