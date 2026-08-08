@@ -4804,3 +4804,70 @@ is NOT complete** — only §5-I2 is closed; §5-C1 remains the contract of reco
 successor gate is automatically authorized. Phase 4 & Phase 5 remain FORMALLY CLOSED; the executed Phase-6 lane remains
 FORMALLY CLOSED; §5-I1 remains CLOSED. Append-only; prior history not rewritten. This entry authorizes no push, PR, merge,
 product implementation, or successor capability.
+
+## §5-I3 — Subsystem + Cross-Domain Project Model Foundation: FORMALLY ACCEPTED AND CLOSED (G-S5-I3-SUBSYSTEM-CROSS-DOMAIN-MODEL-FORMAL-CLOSURE-01; governance/documentation-only; append-only; authoritative if/when this closure candidate is merged)
+
+**What this entry records (documentation-only; authorizes no implementation).** The owner has formally closed **§5-I3 —
+Subsystem + cross-domain project model foundation**, the third implementation increment of the accepted §5-C1
+contract-of-record (D-S5-04 / D-S5-05). Implementation is merged (PR #398); this formal governance closure becomes
+authoritative only if/when this closure candidate is itself merged. Dedicated record:
+`docs/governance/S5_I3_SUBSYSTEM_CROSS_DOMAIN_MODEL_FORMAL_CLOSURE_RECORD.md`; owner decision in `OWNER_DECISION_REGISTER.md`
+(**D-S5-I3-CLOSE**). Append-only; prior history not rewritten.
+
+**Accepted lineage / merge (SHA-preserving; re-verified).** Product base `04a9c4d820a58a2036aa85bef817d58ced53f65a`
+(PR #397) → candidate `0a7f1359426b95287932f26f5ef57c9d584a207b` (tree `63a63e3`) → **PR #398** merge
+`dac5696ebcf9c9814b2adb66887a535e089a6c85` (parents `04a9c4d`+`0a7f135`, merged tree `63a63e3`, MERGE COMMIT — no
+squash/rebase/force-push). Full-chain diff **3 files / +246 / −0**, changed paths `engine/idea_state.py` +
+`engine/subsystem_model.py` + `tests/test_s5_i3_subsystem_model.py` only (no persistence / web / domain-pack / schema /
+dependency / CI / governance). Tracked worktree CLEAN. Delivered bundle SHA256 `16be7b3b…a37c2`.
+
+**Delivered now.** Canonical `IdeaState` extended additively with one in-memory, persistence-independent `subsystems`
+field (empty default; absence preserves single-domain behavior); minimum subsystem descriptor + operations
+(`engine/subsystem_model.py`); one project → zero-or-more subsystems → each may reference a canonical domain as METADATA
+ONLY (never activates a domain, never changes the scalar root domain `confirmed_domain`); support-state integration with the
+§5-I2 activation policy (recognized / recognized-not-activated / unknown; unknown never silently electronics); no peer-root
+`domains` list (D-S5-04); canonical Domain Registry reused (D-FPC-MAP-06). **NOT delivered (future):** durable subsystem
+persistence; immutable/deterministic subsystem identity; display-name; subsystem-grain evidence/gaps/risks/validation —
+governance must not claim these were implemented (GAP-3).
+
+**Independent review evidence.** **B — ACCEPT WITH NON-BLOCKING OBSERVATIONS**; BLOCKERS: NONE. RED = ImportError on base
+(intended new subsystem-model boundary absent; valid RED); focused **16 passed**; model/domain regression **153 passed**;
+persistence regression **55 passed**; full suite **2025 passed / 1 skipped / 1 xfailed / 0 failed**; independent browser
+**31 passed**. Browser classification: NO WEB SURFACE CHANGED / BROWSER NOT REQUIRED FOR THE IMPLEMENTATION GATE.
+
+**Retained non-blocking observations OBS-1…OBS-7.** durable subsystem persistence is future/not present; D-S5-05 conceptual
+delta (identity/display-name/subsystem-grain evidence-risk-validation not implemented); duplicate subsystem ids allowed
+in-memory; alias canonicalization required before any persistence; Subsystem objects mutable (list container copied); the
+`engine/subsystem_model.py` path = accepted minimum-path execution (not scope expansion); persistence-envelope key-set
+hardening is future.
+
+**§5-I4 evidence decision.** **§5-I4 NECESSITY EVIDENCE: NONE → EVIDENCE GATE NOT MET → SKIP IMPLEMENTATION AT CURRENT
+EVIDENCE STATE** (no active v1.0 pack has repeated cross-domain capability references needing central identity; legacy iot
+capability-shaped data is loader-skipped/evidence-only; no second activated domain; no repeated capability reuse justifies a
+standalone Technology Capability Registry). Not permanently forbidden — no §5-I4 implementation is required for current §5
+closure unless new evidence emerges before §5-CLOSE. No Technology Capability Registry created; §5-I4 not started.
+
+**Pre-§5-CLOSE governance obligations (retained).** **GAP-1** §5-C1 §8 pack-provenance wording ↔ §5-I1 manifest-based
+validation; **GAP-2** D-S5-09 Phase-6 naming seam (Product-Foundation plan §11/§12 + `docs/GOVERNANCE_DOCUMENTS.md`);
+**GAP-3** D-S5-05 conceptual-vs-delivered wording; **GAP-4** roadmap synchronization.
+
+**Owner clarification for the EXISTING Phase 7 (non-implementing; no new decision).** The integration-ready architecture is
+already canonical in `PRODUCT_FOUNDATION_AND_COMMERCIAL_READINESS_REMEDIATION_PLAN.md` §5 **Phase 7 — API and Integration
+Foundation** (`Core Engine → Internal Service Layer → Versioned API Contracts → Integration Adapters → External
+Applications`; inbound/outbound API, webhooks, file exchange, embedded integration, partner connectors, import/export +
+integration-adapter contracts; no partner-specific code in the core engine). Per **D-FPC-MAP-06** no parallel Integration-
+Ready decision is created. Owner clarification preserved **as a clarification of that existing Phase-7 requirement only**:
+Phase 7 must support transferring structured InventorAI outputs to compatible external tools via governed integration/export
+mechanisms, and preserve a future governed path for receiving results back (simulation / test / validation / external-
+processing) where later authorized; vendor integrations stay isolated behind adapters/connectors and must not be embedded in
+the reasoning engine, canonical Domain Registry, canonical project model, or core progression logic. Wokwi is an example
+only. This authorizes no integration, no API endpoint, and **no Phase 7** — Phase 7 remains NOT AUTHORIZED / NOT STARTED.
+
+**Status after this entry.** §5-I3: **FORMALLY ACCEPTED AND CLOSED** (B; zero blockers; authoritative on merge of this
+candidate). §5-I4: **EVIDENCE GATE NOT MET / IMPLEMENTATION SKIPPED AT CURRENT EVIDENCE STATE**. **Product-Foundation §5:
+STILL OPEN** — §5-C1 remains the contract of record; §5-I1, §5-I2, §5-I3 closed. **NEXT ELIGIBLE GATE: §5-CLOSE —
+Product-Foundation §5 formal closure + GAP-1…GAP-4 reconciliation** under continuing owner authorization, subject to
+successful §5-I3 closure merge and no new material evidence — NOT STARTED; no successor gate automatically authorized.
+Phase 7: NOT AUTHORIZED / NOT STARTED. Phase 4 & Phase 5 remain FORMALLY CLOSED; the executed Phase-6 lane remains FORMALLY
+CLOSED. Append-only; prior history not rewritten. This entry authorizes no push, PR, merge, product implementation, or
+successor capability.

@@ -505,9 +505,18 @@ AUTHORIZED / NOT STARTED.***
   model** is now **IMPLEMENTED / INDEPENDENTLY REVIEWED (B + delta B, zero blockers) / MERGED (PR #396 `e224215`) /
   FORMALLY ACCEPTED AND CLOSED** (`docs/governance/S5_I2_ACTIVATION_STATUS_POLICY_FORMAL_CLOSURE_RECORD.md`;
   **D-S5-I2-CLOSE**) — explicit engine activation policy (three support states; electronics-only; pack-status ≠ activation;
-  web admission bound to the policy); no domain activated; no persistence/domain-pack/user-copy change. **Product-Foundation
-  §5 as a whole is NOT complete** — only §5-I1 and §5-I2 are closed. Next-eligible implementation increment: **§5-I3
-  (subsystem + cross-domain project model)** — **ELIGIBLE FOR OWNER CONSIDERATION, NOT AUTHORIZED / NOT STARTED**.
+  web admission bound to the policy); no domain activated; no persistence/domain-pack/user-copy change. **§5-I3 — Subsystem
+  + cross-domain project model foundation** is now **IMPLEMENTED / INDEPENDENTLY REVIEWED (B, zero blockers) / MERGED (PR
+  #398 `dac5696`) / FORMALLY ACCEPTED AND CLOSED** (`docs/governance/S5_I3_SUBSYSTEM_CROSS_DOMAIN_MODEL_FORMAL_CLOSURE_RECORD.md`;
+  **D-S5-I3-CLOSE**) — additive in-memory subsystem foundation (one project → zero-or-more subsystems → each may reference a
+  canonical domain as metadata; support-state via the §5-I2 policy); scalar root domain + all persistence preserved; durable
+  subsystem persistence / identity / display-name / subsystem-grain evidence-risk-validation remain **future / NOT
+  delivered**. **§5-I4 — EVIDENCE GATE NOT MET → SKIP at current evidence** (no Technology Capability Registry). The owner's
+  integration-ready clarification (structured-output transfer + future result-return via governed adapters) is recorded
+  **against the existing Phase 7 — API and Integration Foundation** requirement, not as a new decision (D-FPC-MAP-06;
+  non-implementing; Phase 7 NOT AUTHORIZED). **Product-Foundation
+  §5 as a whole is NOT complete** — §5-I1, §5-I2, and §5-I3 are closed. Next-eligible gate: **§5-CLOSE (§5 formal closure +
+  GAP-1…GAP-4 governance reconciliation)** under continuing owner authorization — **NOT STARTED**; Phase 7 NOT AUTHORIZED.
 
 ## PHASE 6 — P6-1 TRUTHFUL DOMAIN LABELING FOUNDATION: FORMALLY ACCEPTED AND CLOSED (implemented / independently reviewed B / merged PR #385 / post-merge verified / governance-sync merged PR #386 / owner-accepted) — increment record within the now-CLOSED executed Phase-6 lane (see the closure banner above)
 
