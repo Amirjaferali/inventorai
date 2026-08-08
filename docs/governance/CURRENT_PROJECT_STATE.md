@@ -542,8 +542,19 @@ AUTHORIZED / NOT STARTED.***
   public API, no mutation; focused 22 / regression 69 / full 2047 passed, 0 failed; superseded candidate `acf0c46` is
   evidence only. **P7-I1 closure is an increment closure only — Phase 7 is NOT closed, no public API exists, and no
   later Phase-7 obligation is satisfied** (§25 exit review reserved before P7-CLOSE). **Next-eligible Phase-7 increment:
-  P7-I2 — Versioned Read/Export Public API + first-public-exposure security baseline — NOT STARTED** (own bounded
-  contract + review required). Phases 8/9/10, deployment, and separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
+  P7-I2 — Versioned Read/Export Public API + first-public-exposure security baseline.** Its bounded contract is now
+  **DEFINED by a governance-only PUBLICATION CANDIDATE (corrected)** (`docs/governance/P7_I2_VERSIONED_READ_EXPORT_PUBLIC_API_INCREMENT_CONTRACT.md`;
+  supersedes pre-review candidate `4933c26`, evidence only) — authoritative if/when independently reviewed,
+  Owner-accepted, merged, and post-merge verified. It bounds a versioned read-only public API (`GET /api/v1/projects/<id>`
+  + `/export`) consuming the P7-I1 seam, with a distinct machine/API principal (never the browser session; bound to one
+  `owner_account_id`; token-style hash-only; revocation/expiry/rotation), a single `project:read` scope, API + export
+  version identity, a stable non-enumerating error envelope, correlation id, minimal audit, and **two-tier rate limiting**
+  (pre-auth on a bounded derived subject of the presented credential id, before secret verification; plus post-auth
+  `api_read`) reusing the hardened `record_rate_attempt` — all fail-closed; new tables additive in the existing store
+  schema lifecycle (no handler DDL); no writes/import/adapters/P7-I3; IP/network-origin limiting NOT part of P7-I2;
+  D-FPC-MAP-06 preserved. **P7-I2 bounded contract: DEFINED BY CANDIDATE — PENDING INDEPENDENT PRE-MERGE REVIEW; NOT
+  FINALLY ESTABLISHED. P7-I2 implementation is NOT STARTED; Implementation Gate Lock ACTIVE.** Phases 8/9/10, deployment,
+  and separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
   §5 as a whole is NOT complete** — §5-I1, §5-I2, and §5-I3 are closed. Next-eligible gate: **§5-CLOSE (§5 formal closure +
   GAP-1…GAP-4 governance reconciliation)** under continuing owner authorization — **NOT STARTED**; Phase 7 NOT AUTHORIZED.
 
