@@ -4930,3 +4930,73 @@ AUTHORIZED / NOT STARTED**; no successor auto-authorized. Phase 4 & Phase 5 rema
 lane remains FORMALLY CLOSED; §5-C1 remains the contract of record; §5-I1/§5-I2/§5-I3 remain CLOSED. Phases 8/9/10,
 new-domain activation, and every deferred capability remain NOT AUTHORIZED. Append-only; prior history not rewritten. This
 entry authorizes no push, PR, merge, product implementation, or successor capability.
+
+---
+
+## P7-C — Formal Phase-7 (API and Integration Foundation) Contract PUBLISHED as contract-of-record + Standing Phase-7 Authorization RECORDED (governance/documentation-only) — G-P7C-FORMAL-PHASE-7-CONTRACT-PUBLICATION-01 / D-P7C-01 / D-P7-STANDING-01
+
+**Gate.** Owner-authorized **P7-C Publication Candidate Authorization-State Correction** gate — a **replacement**
+publication candidate from the authoritative live base. Governance/documentation-only. Authoritative basis tip verified
+read-only `f82b18b4b871b4ce5f8e7d85e603889962ba56b3` (`feature/atomic-json-session-persistence`; PR #400 §5-CLOSE merge;
+tree `ff1e55f`) — unchanged; working tree clean at publication.
+
+**Superseded unpublished candidate.** The earlier P7-C publication candidate `8001d7fa4063301a5e2f71115e28061baf12399a`
+recorded the now-stale authorization state ("P7-I1 / all Phase-7 implementation remain NOT AUTHORIZED / NOT STARTED"). It
+is **PRESERVED AS EVIDENCE — DO NOT MERGE** (tag `evidence/p7c-superseded-8001d7f`; delivered bundle retained) and is
+replaced by this clean candidate built from the authoritative base (not stacked). A later, separate owner decision was
+issued after `8001d7f`.
+
+**Two distinct decisions recorded.** (A) **D-P7C-01** — P7-C is the **owner-accepted / frozen contract of record**; the
+contract **itself confers no implementation authorization**. (B) **D-P7-STANDING-01** — a **distinct, later Standing Owner
+Authorization** to complete all remaining Phase-7 work **through formal Phase-7 closure**, subject to the contract
+boundaries, per-gate bounded scope, accepted evidence triggers, tests where applicable, Lean minimum-path, independent
+review where required, and the mandatory §25 Remaining-Obligation / Exit-Criteria Review. No repeated top-level owner
+authorization is required at each intermediate gate, but **no gate self-activates** and **standing authorization ≠ active
+implementation increment**.
+
+**What was published (minimum canonical governance change; D-FPC-MAP-06; no duplicate architecture/roadmap/contract).**
+(1) New canonical contract-of-record `docs/governance/PHASE_7_API_AND_INTEGRATION_FOUNDATION_P7C_CONTRACT.md` (accepted P7-C
+text with all sixteen accepted corrections integrated and the authorization-state framing corrected to the standing-authority
+distinction). (2) `OWNER_DECISION_REGISTER.md` — added **D-P7C-01** (contract acceptance; contract confers no implementation
+authorization) and the distinct **D-P7-STANDING-01** (Standing Phase-7 Authorization). (3) `ACTIVE_INCREMENT_CONTRACT.md` —
+active-contract current-truth synchronized: Phase 7 active under the standing authorization; current contract-of-record =
+P7-C; **current active implementation = NONE**; **P7-I1 authorized to proceed under standing authority, bounded increment
+contract NOT YET ESTABLISHED, implementation NOT STARTED**. (4) `CURRENT_PROJECT_STATE.md` — current-truth pointer updated to
+the same corrected distinction. No engine/web/domains/schema/migration/tests/dependencies/CI change; no application code or
+tests touched.
+
+**Contract substance preserved (frozen P7-B, both correction addenda).** Read/export-first v1 (product surface = Project read
+representation + Versioned Structured Output/Export only; "two" is the current minimal surface, not a permanent numeric
+invariant; transport/security metadata is not a product resource); Lean internal read/export service seam before public
+exposure (first slice = authorized project read + governed versioned export; no mutation/progression/write; no mandatory
+web-route migration); distinct least-privilege machine/API principal via the canonical authorization/ownership model (never
+browser-session reuse; principal↔account taxonomy + credential format deferred); first-public-exposure security baseline
+(authn, authz, public/export version identity, stable errors, request/correlation identity, basic access/security audit,
+basic protective rate-limit, provenance where applicable); outbound InventorAI canonical → adapter → vendor boundary
+(InventorAI central context authority; no orchestrator / routing engine / vendor-shaped core); external results untrusted by
+default (governed review/acceptance before any authorized project-state effect; trust-state taxonomy + persistence
+schema/location/retention/deletion/record-type NOT frozen); subsystem public-API/durable-identity DEFERRED; async/job DEFERRED
+(no ExternalProcessingRequest/Result/Job/Task reserved); first integration proof = outbound-only, non-mutating, vendor-neutral
+local/reference adapter with semantic no-project-state-mutation evidence (Wokwi NOT SELECTED). Audit ≠ Monitoring; basic
+rate-limit ≠ all Abuse Controls; Reference/Test Harness ≠ Partner/External-Integration Sandbox — each a distinct preserved
+original obligation. The §18 obligation register preserves every original Phase-7 obligation with owner/reason/trigger and
+pre-judges no closure classification — final closure classification is reserved exclusively for the mandatory §25 PHASE-7
+REMAINING-OBLIGATION / EXIT-CRITERIA REVIEW; a successful first proof never auto-authorizes P7-CLOSE.
+
+**Ownership / non-duplication (D-FPC-MAP-06).** CAP-15…18, AISR, Project Technology Profile, WS-PFV-001, WS17, STG, ACV, QTA,
+PDF Download, Email Delivery, Output Language, Phase-9 Domain Activation remain separately governed; reusability authorizes
+none; no second Domain Registry / Technology Capability Registry / Integration Orchestrator / AI routing / tool-recommendation
+engine.
+
+**Status after this entry.** **P7-C: OWNER ACCEPTED — PUBLISHED AS PHASE-7 CONTRACT OF RECORD** (authoritative on merge of
+this candidate). **Standing Phase-7 Authorization: GRANTED through formal Phase-7 closure**, subject to contract boundaries and
+evidence conditions. **Current active implementation: NONE.** **P7-I1: authorized to proceed under standing authority; bounded
+increment contract NOT YET ESTABLISHED; implementation NOT STARTED** — the next bounded action is to establish the P7-I1
+increment contract from the accepted P7-C model and verify its live base. Conceptual future gates P7-I1 → P7-I2 → P7-I3
+(+ evidence-triggered write/import, inbound-result persistence/review, subsystem durable identity, async/webhook, real-vendor)
+execute only under bounded scope with their accepted triggers met. Phase 4 & Phase 5 remain FORMALLY CLOSED; the executed
+Phase-6 lane remains FORMALLY CLOSED; Product-Foundation §5 remains FORMALLY CLOSED; §5-C1 / §5-I1 / §5-I2 / §5-I3 remain
+CLOSED. **Phases 8/9/10, deployment/release, new-domain activation outside Phase-7 scope, and separately governed CAP/AISR/QTA/
+ACV/WS17/STG/PDF/Email/Output-Language remain NOT AUTHORIZED.** Append-only; prior history not rewritten (superseded candidate
+`8001d7f` preserved as evidence, not merged). This entry authorizes no push, PR, or merge; implementation proceeds only under
+the recorded standing authorization with each gate's own bounded contract.
