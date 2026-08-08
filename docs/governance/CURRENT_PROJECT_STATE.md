@@ -501,9 +501,13 @@ AUTHORIZED / NOT STARTED.***
   Validation Hardening (D-P6-14)** is now **IMPLEMENTED / INDEPENDENTLY REVIEWED (B, zero blockers) / MERGED (PR #393
   `9d5e3bf`) / FORMALLY ACCEPTED AND CLOSED** (`docs/governance/S5_I1_DOMAIN_REGISTRY_HARDENING_FORMAL_CLOSURE_RECORD.md`;
   **D-S5-I1-CLOSE**). It hardened the **existing** canonical Domain Registry only (no new registry; D-FPC-MAP-06); no
-  domain activated; electronics-only activation unchanged. **Product-Foundation §5 as a whole is NOT complete** — only
-  §5-I1 is closed. Next-eligible implementation increment: **§5-I2 (activation-status policy + unsupported-domain model)**
-  — **ELIGIBLE FOR OWNER CONSIDERATION, NOT AUTHORIZED / NOT STARTED**.
+  domain activated; electronics-only activation unchanged. **§5-I2 — Activation-status policy + explicit unsupported-domain
+  model** is now **IMPLEMENTED / INDEPENDENTLY REVIEWED (B + delta B, zero blockers) / MERGED (PR #396 `e224215`) /
+  FORMALLY ACCEPTED AND CLOSED** (`docs/governance/S5_I2_ACTIVATION_STATUS_POLICY_FORMAL_CLOSURE_RECORD.md`;
+  **D-S5-I2-CLOSE**) — explicit engine activation policy (three support states; electronics-only; pack-status ≠ activation;
+  web admission bound to the policy); no domain activated; no persistence/domain-pack/user-copy change. **Product-Foundation
+  §5 as a whole is NOT complete** — only §5-I1 and §5-I2 are closed. Next-eligible implementation increment: **§5-I3
+  (subsystem + cross-domain project model)** — **ELIGIBLE FOR OWNER CONSIDERATION, NOT AUTHORIZED / NOT STARTED**.
 
 ## PHASE 6 — P6-1 TRUTHFUL DOMAIN LABELING FOUNDATION: FORMALLY ACCEPTED AND CLOSED (implemented / independently reviewed B / merged PR #385 / post-merge verified / governance-sync merged PR #386 / owner-accepted) — increment record within the now-CLOSED executed Phase-6 lane (see the closure banner above)
 
