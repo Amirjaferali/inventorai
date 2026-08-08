@@ -299,6 +299,15 @@ class IdeaState:
     # reload, and no durable retention is implied (persistence stays frozen).
     criticality_confirmations : list = field(default_factory=list)
 
+    # §5-I3 subsystem foundation (D-S5-04 / D-S5-05): optional, in-memory,
+    # persistence-independent subsystem descriptors. Empty by default so absence
+    # preserves the current single-domain behavior. NOTHING here is written to
+    # durable persistence, and it NEVER changes the project root domain (the
+    # scalar `domain`/`confirmed_domain`). A subsystem may reference a canonical
+    # domain as metadata only — a reference never activates a domain. See
+    # engine/subsystem_model.py.
+    subsystems : list = field(default_factory=list)
+
     def get_open_gaps(self):
         return [g for g in self.gaps if g.status in (OPEN, PARTIAL)]
 
