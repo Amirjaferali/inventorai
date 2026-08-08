@@ -5000,3 +5000,60 @@ CLOSED. **Phases 8/9/10, deployment/release, new-domain activation outside Phase
 ACV/WS17/STG/PDF/Email/Output-Language remain NOT AUTHORIZED.** Append-only; prior history not rewritten (superseded candidate
 `8001d7f` preserved as evidence, not merged). This entry authorizes no push, PR, or merge; implementation proceeds only under
 the recorded standing authorization with each gate's own bounded contract.
+
+---
+
+## P7-I1 — Internal Read/Export Service Boundary BOUNDED INCREMENT CONTRACT — governance-only PUBLICATION CANDIDATE created (PENDING INDEPENDENT PRE-MERGE REVIEW) under Standing Phase-7 Authorization D-P7-STANDING-01
+
+**Gate.** Owner-authorized **P7-I1 Contract Establishment / Publication Recovery** gate (pre-merge independent-review model)
+under the Standing Phase-7 Authorization. **Governance/documentation-only.** **Authorizes no implementation.** Authoritative
+basis tip verified read-only `653f66a86744e9b66bbb4817599e1e9e6339db10` (`feature/atomic-json-session-persistence`; P7-C merge
+PR #401; parents `f82b18b` + `9800dee`; tree `59d7716`) — unchanged; working tree clean at candidate creation.
+
+**Root cause corrected.** The prior P7-I1 contract work (original bounded contract + correction addendum) was reviewed
+conversationally but never established/published/committed into repository truth; repository truth still stated the P7-I1
+bounded increment contract = NOT YET ESTABLISHED, and an independent pre-implementation reviewer correctly returned
+**C — REJECT / RETURN TO CONTRACT** because no reviewable repository candidate existed. This gate closes that custody gap by
+creating the exact reviewable candidate. Conversation-side review ≠ repository contract establishment ≠ candidate-level
+independent acceptance.
+
+**Custody.** Composed from the actual verbatim **Source A** (original P7-I1 bounded contract) + verbatim **Source B** (P7-I1
+correction addendum) + **Source C** independent-review findings **IR-1…IR-6**; superseded wording removed (no conflicting
+old + corrected rules retained side by side); unaffected Source A/B substance preserved. Nothing reconstructed from memory.
+
+**Independent-review corrections integrated.** IR-1 (BLOCKING — seam consumes an already-established store; no datastore
+init/migration inside P7-I1; non-mutation scoped to the service operation); IR-2 (NON-BLOCKING + guard — prefer durable
+`load_contract`, not `from_state(live_state)`; no `ProjectRecordContract` change); IR-3 (BLOCKING — `load_owner` is ALREADY
+OWNED, CONSUME; no auth extraction from `web/app.py`; no new authorization framework); IR-4 (BLOCKING — default DO NOT MODIFY
+`web/app.py`; no route migration; dedup not sufficient justification; STOP-and-return if a web change appears strictly
+necessary — this supersedes the Source-A/B web-delegation permitted path); IR-5 (BLOCKING — durable service does not treat
+`owner=NULL` as automatic authorization; fail-closed; web legacy unchanged; P7-I2 inherits nothing); IR-6 (BLOCKING —
+preserve the Read/Export semantic distinction but do NOT freeze a new independent export version identity in P7-I1; export
+version identity is a P7-I2 concern by default; supersedes Source B's independent-export-version requirement).
+
+**Candidate scope (governance-only, minimum synchronization).** (1) NEW dedicated contract
+`docs/governance/P7_I1_INTERNAL_READ_EXPORT_SERVICE_BOUNDARY_INCREMENT_CONTRACT.md` (the canonical bounded contract
+candidate). (2) `ACTIVE_INCREMENT_CONTRACT.md` — active-contract current-truth records the P7-I1 contract candidate (DEFINED
+BY CANDIDATE — pending independent pre-merge review; implementation NOT STARTED; Implementation Gate Lock ACTIVE). (3)
+`CURRENT_PROJECT_STATE.md` — minimal current-truth pointer to the same. `OWNER_DECISION_REGISTER.md` unchanged (no new owner
+decision — establishment proceeds under the existing `D-P7-STANDING-01`). No engine/web/domains/schema/migration/tests/
+dependencies/CI change; no application code or tests touched.
+
+**Contract substance (bounded).** Two Flask-free internal read/export use cases — authorized durable **Project Read**
+(consume validated `ProjectRecordContract` via durable `load_contract`) and a distinct deterministic **Structured Export**
+(composed from canonical project data; not record JSON; not the presentation deliverable; no frozen public field names or
+export version — IR-6) — consuming `store.load_owner` (durable ownership; IR-3) + an explicit caller identity, fail-closed
+(NULL-owner not auto-authorized; IR-5). INTERNAL ONLY; no public API/route; no machine identity; no writes/mutation; no
+adapters/vendor; no async; no subsystem persistence; no `web/app.py` change; no SQLite/`ProjectRecordContract` change; no
+web-route migration. Permitted paths at implementation = one new Flask-free seam module + one focused test file (behavioral
+RED→GREEN). D-FPC-MAP-06 and Lean minimum-path binding.
+
+**Status after this entry.** **P7-I1 bounded increment contract: PUBLICATION CANDIDATE CREATED — PENDING INDEPENDENT
+PRE-MERGE REVIEW; NOT FINALLY ESTABLISHED FOR IMPLEMENTATION** (authoritative if/when this exact candidate is independently
+reviewed, Owner-accepted, merged, and post-merge verified). **P7-I1 implementation: NOT STARTED; Implementation Gate Lock
+ACTIVE.** Independent read-only review is REQUIRED against the exact candidate SHA/tree/bundle **before merge**. **P7-I2: NOT
+STARTED.** Phase 4 & Phase 5 remain FORMALLY CLOSED; the executed Phase-6 lane and Product-Foundation §5 remain FORMALLY
+CLOSED; P7-C remains the Phase-7 contract-of-record; the Standing Phase-7 Authorization (`D-P7-STANDING-01`) remains GRANTED.
+Phases 8/9/10, deployment/release, new-domain activation outside Phase-7 scope, and separately governed CAP/AISR/QTA/ACV/WS17/
+STG/PDF/Email/Output-Language remain NOT AUTHORIZED. Append-only; prior history not rewritten. This entry authorizes no push,
+PR, merge, or implementation.
