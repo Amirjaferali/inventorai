@@ -514,7 +514,13 @@ AUTHORIZED / NOT STARTED.***
   delivered**. **§5-I4 — EVIDENCE GATE NOT MET → SKIP at current evidence** (no Technology Capability Registry). The owner's
   integration-ready clarification (structured-output transfer + future result-return via governed adapters) is recorded
   **against the existing Phase 7 — API and Integration Foundation** requirement, not as a new decision (D-FPC-MAP-06;
-  non-implementing; Phase 7 NOT AUTHORIZED). **Product-Foundation
+  non-implementing; Phase 7 NOT AUTHORIZED). **Product-Foundation §5 — Multi-Domain and Technology Capability Foundation is
+  now FORMALLY ACCEPTED AND CLOSED** (gate **G-S5-CLOSE-PRODUCT-FOUNDATION-FORMAL-CLOSURE-01**; **D-S5-CLOSE**; dedicated
+  record `docs/governance/PRODUCT_FOUNDATION_S5_FORMAL_CLOSURE_RECORD.md`; authoritative if/when its governance candidate is
+  merged) after §5-C1 + §5-I1 + §5-I2 + §5-I3 + the §5-I4 evidence-gate decision and GAP-1…GAP-4 reconciliation; ORIGINAL §5
+  unfinished material obligation = NONE; POST-§5 material implementation gap = NONE; no new domain activated. **NEXT ELIGIBLE
+  PHASE: Phase 7 — API and Integration Foundation — ELIGIBLE FOR OWNER CONSIDERATION, NOT AUTHORIZED / NOT STARTED.** (The
+  now-superseded §5-open wording below is retained as history.) **Product-Foundation
   §5 as a whole is NOT complete** — §5-I1, §5-I2, and §5-I3 are closed. Next-eligible gate: **§5-CLOSE (§5 formal closure +
   GAP-1…GAP-4 governance reconciliation)** under continuing owner authorization — **NOT STARTED**; Phase 7 NOT AUTHORIZED.
 

@@ -4871,3 +4871,62 @@ successful §5-I3 closure merge and no new material evidence — NOT STARTED; no
 Phase 7: NOT AUTHORIZED / NOT STARTED. Phase 4 & Phase 5 remain FORMALLY CLOSED; the executed Phase-6 lane remains FORMALLY
 CLOSED. Append-only; prior history not rewritten. This entry authorizes no push, PR, merge, product implementation, or
 successor capability.
+
+## Product-Foundation §5 — Multi-Domain and Technology Capability Foundation: FORMALLY ACCEPTED AND CLOSED (G-S5-CLOSE-PRODUCT-FOUNDATION-FORMAL-CLOSURE-01; governance/documentation-only; append-only; authoritative if/when this closure candidate is merged)
+
+**What this entry records (documentation-only; authorizes no implementation).** The owner has formally closed the
+**Product-Foundation §5 program lane — Multi-Domain and Technology Capability Foundation** after §5-C1 + §5-I1 + §5-I2 +
+§5-I3 and the §5-I4 evidence-gate decision, and after reconciling the four known governance gaps. Implementation of the §5
+increments is already merged; this formal §5 closure becomes authoritative only if/when **this** closure candidate is
+merged. Dedicated record: `docs/governance/PRODUCT_FOUNDATION_S5_FORMAL_CLOSURE_RECORD.md`; owner decision in
+`OWNER_DECISION_REGISTER.md` (**D-S5-CLOSE**). Append-only; prior history not rewritten. Closure basis tip
+`0e2206f9a20b367b1ef09409b72bf93625bac948` (PR #399).
+
+**Predecessor lineage (verified).** §5-C1 ACCEPTED — CONTRACT OF RECORD (PR #391/#392; D-S5-C1 / D-S5-01…D-S5-09); §5-I1
+Domain Registry Validation Hardening FORMALLY CLOSED (PR #393 `9d5e3bf`; D-S5-I1-CLOSE); §5-I2 Activation-status policy +
+explicit unsupported-domain model FORMALLY CLOSED (PR #396 `e224215`; D-S5-I2-CLOSE); §5-I3 Subsystem + cross-domain
+project-model foundation FORMALLY CLOSED (PR #398 `dac5696` + correction `421cf37` / PR #399 `0e2206f`; D-S5-I3-CLOSE);
+§5-I4 Technology Capability Registry **EVIDENCE GATE NOT MET → SKIPPED AT CURRENT EVIDENCE STATE**.
+
+**Material result (verified live at `0e2206f`).** Canonical hardened Domain Registry (single authority; no second
+registry); explicit activation/support-state policy (three states; electronics-only activated; pack-status ≠ activation;
+ACTIVATED ⊆ RECOGNIZED; web admission bound to the policy); truthful unsupported-domain handling; additive in-memory
+subsystem/cross-domain foundation with the scalar root `confirmed_domain` preserved and no peer-root domains; thin
+pack-local capability model (no Technology Capability Registry); Phase-7-safe resource/model boundaries established at the
+model/governance level only (no APIs). No new domain activated.
+
+**§5-I4 evidence decision.** Fresh live check: no `capability_refs` declared by any active v1.0 pack; no capability token
+reused across packs; one activated domain; legacy iot data excluded. **§5-I4 NECESSITY EVIDENCE: NONE → EVIDENCE GATE NOT
+MET → SKIP at current evidence.** Not permanently forbidden; no §5-I4 implementation is justified before current §5
+closure; no Technology Capability Registry created/started.
+
+**Four governance gaps RECONCILED.** GAP-1: §5-C1 §8 embedded-per-pack provenance wording superseded, as the authoritative
+implementation interpretation, by the accepted §5-I1 manifest-based provenance-coverage validation against
+`domains/domain_provenance.json` (D-FPC-MAP-06; history preserved; validation not weakened). GAP-2: authoritative
+disambiguation — the lane closed now is Product-Foundation §5 (Multi-Domain and Technology Capability Foundation), DISTINCT
+from the already-closed executed "Domain Specialization / Truthful Specialist Labeling" Phase-6 lane and the historical
+registry-parity "Phase 6" track (none authorizes the others); residual stale Product-Foundation plan §11/§12 +
+`docs/GOVERNANCE_DOCUMENTS.md` status text remains a bounded, non-blocking future documentation-sync, already superseded by
+the Master Obligation Index + the formal closure records. GAP-3: D-S5-05 future semantics (durable subsystem persistence,
+immutable/deterministic identity, display-name, subsystem-grain evidence/gap/risk/validation, subsystem UI/orchestration)
+recorded as future-gated / reserved, NOT claimed delivered. GAP-4: roadmap / current-truth synchronized (this entry + the
+active-contract/current-state/decision-register sync).
+
+**Completeness + material-gap checks.** ORIGINAL §5 UNFINISHED MATERIAL OBLIGATION: **NONE** (against §5-C1 §19 closure
+criteria). POST-§5 MATERIAL IMPLEMENTATION GAP: **NONE** (no §5 contract promises implementation that does not exist;
+future items truthfully classified). Deferred/recorded items (CAP-15…18, QTA, WS17, STG, ACV, Output-Language, PDF/email,
+Patent Export, WS-PFV-001) are not original §5 obligations and do not block closure.
+
+**Phase-7 handoff — EXISTING authority only.** No new Integration-Ready decision (the prior duplicate D-INTEGRATION-READY-01
+was removed and re-anchored). The canonical **Phase 7 — API and Integration Foundation** (`Core Engine → Internal Service
+Layer → Versioned API Contracts → Integration Adapters → External Applications`) owns API/integration; the owner's
+structured-output-transfer + future governed inbound-result clarification is preserved against that existing requirement
+only (vendor integrations isolated behind adapters; Wokwi example-only). This authorizes no Phase 7 and no vendor
+integration.
+
+**Status after this entry.** **Product-Foundation §5: FORMALLY ACCEPTED AND CLOSED** (authoritative on merge of this
+candidate). **NEXT ELIGIBLE PHASE: Phase 7 — API and Integration Foundation — ELIGIBLE FOR OWNER CONSIDERATION, NOT
+AUTHORIZED / NOT STARTED**; no successor auto-authorized. Phase 4 & Phase 5 remain FORMALLY CLOSED; the executed Phase-6
+lane remains FORMALLY CLOSED; §5-C1 remains the contract of record; §5-I1/§5-I2/§5-I3 remain CLOSED. Phases 8/9/10,
+new-domain activation, and every deferred capability remain NOT AUTHORIZED. Append-only; prior history not rewritten. This
+entry authorizes no push, PR, merge, product implementation, or successor capability.
