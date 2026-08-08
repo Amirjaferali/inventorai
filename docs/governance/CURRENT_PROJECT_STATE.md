@@ -519,8 +519,21 @@ AUTHORIZED / NOT STARTED.***
   record `docs/governance/PRODUCT_FOUNDATION_S5_FORMAL_CLOSURE_RECORD.md`; authoritative if/when its governance candidate is
   merged) after §5-C1 + §5-I1 + §5-I2 + §5-I3 + the §5-I4 evidence-gate decision and GAP-1…GAP-4 reconciliation; ORIGINAL §5
   unfinished material obligation = NONE; POST-§5 material implementation gap = NONE; no new domain activated. **NEXT ELIGIBLE
-  PHASE: Phase 7 — API and Integration Foundation — ELIGIBLE FOR OWNER CONSIDERATION, NOT AUTHORIZED / NOT STARTED.** (The
-  now-superseded §5-open wording below is retained as history.) **Product-Foundation
+  PHASE: Phase 7 — API and Integration Foundation.** Phase 7 is now the **active phase** under a **Standing Owner
+  Authorization**. **Contract-of-record published: P7-C — Formal Phase-7 Contract & Acceptance Criteria**
+  (`docs/governance/PHASE_7_API_AND_INTEGRATION_FOUNDATION_P7C_CONTRACT.md`; owner gate
+  **G-P7C-FORMAL-PHASE-7-CONTRACT-PUBLICATION-01**; **D-P7C-01**) formalizing the frozen P7-A/P7-B decisions
+  (read/export-first v1; Lean internal read/export service seam; distinct least-privilege machine/API identity;
+  first-public-exposure security baseline; outbound canonical→adapter boundary; untrusted-by-default inbound-result
+  invariant; deferred subsystem-durable-identity/async/write-import/inbound-persistence/vendor-integration; §18
+  obligation register with closure classification reserved for a mandatory §25 Phase-7 exit-criteria review). **The
+  P7-C contract itself confers no implementation authorization; a distinct later Standing Phase-7 Authorization
+  (`D-P7-STANDING-01`) grants continuation through the remaining Phase-7 gates and formal closure, subject to the
+  contract boundaries, per-gate bounded scope, evidence triggers, tests, independent review where required, and the
+  §25 exit review.** Standing authorization ≠ active increment: **current active implementation = NONE; P7-I1 is
+  authorized to proceed under the standing authority but its bounded increment contract is NOT YET ESTABLISHED and
+  P7-I1 implementation is NOT STARTED.** Phases 8/9/10, deployment, and separately governed capabilities remain NOT
+  AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
   §5 as a whole is NOT complete** — §5-I1, §5-I2, and §5-I3 are closed. Next-eligible gate: **§5-CLOSE (§5 formal closure +
   GAP-1…GAP-4 governance reconciliation)** under continuing owner authorization — **NOT STARTED**; Phase 7 NOT AUTHORIZED.
 
