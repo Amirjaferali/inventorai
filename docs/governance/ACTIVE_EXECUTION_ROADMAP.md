@@ -4705,3 +4705,50 @@ RECORD (DEFINITION ONLY)**. Next-eligible implementation gate: **§5-I1 (Domain 
 Phase 4 & Phase 5 remain FORMALLY CLOSED; the executed Phase-6 lane remains FORMALLY CLOSED; P4-2 Level-1, Draft Level 2,
 P5-1, P5-2, P5-3, P6-1, and D-P6-18 remain CLOSED. Append-only; prior history not rewritten. This entry authorizes no push,
 PR, merge, product implementation, or successor capability.
+
+## §5-I1 — Domain Registry Validation Hardening (D-P6-14): FORMALLY ACCEPTED AND CLOSED (G-S5-I1-DOMAIN-REGISTRY-HARDENING-FORMAL-CLOSURE-01; governance/documentation-only; append-only)
+
+**What this entry records (documentation-only; authorizes no implementation).** The owner has formally closed **§5-I1 —
+Domain Registry Validation Hardening / D-P6-14**, the first implementation increment of the accepted §5-C1 contract-of-record.
+Implementation is merged. Dedicated record: `docs/governance/S5_I1_DOMAIN_REGISTRY_HARDENING_FORMAL_CLOSURE_RECORD.md`; owner
+decision in `OWNER_DECISION_REGISTER.md` (**D-S5-I1-CLOSE**). Append-only; prior history not rewritten.
+
+**Accepted lineage / merge (SHA-preserving; re-verified).** Base `3da1e03303e1fcadd04f5530776bc706c11c7ded` (PR #392 §5-C1
+merge) → implementation candidate `7920a732af9bc415dc8507dfb8cabfbe77bf094c` (tree `ba7b1f2`) → bounded post-review
+remediation (test-only) `5d518f4c9fafbd44a85cbf717517916c251e005f` (tree `a62f46f`) → **PR #393** merge
+`9d5e3bf1870d9f59def8bcd0d686a5b682886c8a` (parents `3da1e03`+`5d518f4`, merged tree `a62f46f`, MERGE COMMIT — no
+squash/rebase/force-push). Post-merge diff **2 files / +401 / −1**, changed paths `engine/domain_registry.py` +
+`tests/test_s5_i1_domain_registry_hardening.py` only (no domain-pack metadata / web / persistence / schema / dependency /
+CI / governance). Tracked worktree CLEAN.
+
+**Delivered (hardening of the EXISTING canonical Domain Registry; no new registry; D-FPC-MAP-06).** lifecycle-status +
+version-format + provenance-coverage (against canonical `domains/domain_provenance.json`) + gap_type_mappings +
+rule_nuances structural validation + duplicate pack_id rejection + cross-pack alias collision rejection + an authoritative
+provenance-manifest guard (test-only) closing the manifest-absence false-green.
+
+**Independent review evidence.** Implementation review (candidate `7920a73`): **B — ACCEPT WITH NON-BLOCKING OBSERVATIONS**;
+RED **15 failed / 16 passed**; focused **31 passed**; full suite **1975 passed / 1 skipped / 1 xfailed / 0 failed**. Delta
+review (candidate `5d518f4`): **B — ACCEPT DELTA WITH NON-BLOCKING OBSERVATIONS**; focused **34 passed**; full suite **1978
+passed / 1 skipped / 1 xfailed / 0 failed**; **false-green closure CLOSED**; **BLOCKERS: NONE**.
+
+**Accepted engineering decisions.** Legacy `status:"active"` accepted as a transitional lifecycle-compat value (lifecycle
+only, NOT user-facing activation; migration to `registered` NOT claimed complete). `version:"1.0"` remains valid (no pack
+migration). Provenance validated against the canonical manifest, not duplicated per pack — the §5-C1 §8 embedded-block
+wording is a **NON-BLOCKING governance-sync obligation** to reconcile before §5-CLOSE.
+
+**Retained non-blocking observations (NOT remediated here).** (1) legacy `active` transitional; (2) §5-C1 §8 provenance/
+status wording needs governance reconciliation before §5-CLOSE; (3) alias comparison case/whitespace-sensitive (not a
+current defect — aliases metadata-only; define normalization if/when runtime alias resolution is introduced); (4) the prior
+"104 regression" count is superseded by the verified full-suite evidence; (5) the provenance guard derives the v1.0 pack
+set from authoritative `domain.json` files and must stay aligned if the loader registration rule changes.
+
+**Scope truth.** No new domain activated; electronics-only activation unchanged; legacy `iot_electronics` skipped/unchanged.
+**§5-I2 / §5-I3 / §5-I4: NOT STARTED**; Phase 7: NOT STARTED; QTA / WS17 / Output-Language / STG / ACV / PDF-email: NOT
+STARTED; CAP-01…CAP-14: RECORDED ≠ AUTHORIZED.
+
+**Status after this entry.** §5-I1: **FORMALLY ACCEPTED AND CLOSED** (B; zero blockers). **Product-Foundation §5 as a whole
+is NOT complete** — only §5-I1 is closed; §5-C1 remains the contract of record. **NEXT ELIGIBLE IMPLEMENTATION INCREMENT:
+§5-I2 — Activation-status policy + explicit unsupported-domain model — ELIGIBLE FOR OWNER CONSIDERATION, NOT AUTHORIZED /
+NOT STARTED**; no successor gate is automatically authorized. Phase 4 & Phase 5 remain FORMALLY CLOSED; the executed Phase-6
+lane remains FORMALLY CLOSED; P4-2 Level-1, Draft Level 2, P5-1, P5-2, P5-3, P6-1, D-P6-18 remain CLOSED. Append-only; prior
+history not rewritten. This entry authorizes no push, PR, merge, product implementation, or successor capability.
