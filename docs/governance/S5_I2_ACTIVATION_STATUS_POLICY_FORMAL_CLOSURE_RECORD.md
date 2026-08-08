@@ -80,7 +80,7 @@ CLEAN.
 
 ## 4. Independent review evidence
 
-- **Foundation review** (candidate `7920a73`… — reviewed candidate `d32ca5d`): **B —
+- **Foundation review** (reviewed candidate `d32ca5d`): **B —
   ACCEPT WITH NON-BLOCKING OBSERVATIONS**; BLOCKERS: NONE. Foundation architecture
   accepted; the web activation migration remained a non-blocking completion
   obligation inside the §5-I2 lane.
