@@ -4752,3 +4752,55 @@ is NOT complete** — only §5-I1 is closed; §5-C1 remains the contract of reco
 NOT STARTED**; no successor gate is automatically authorized. Phase 4 & Phase 5 remain FORMALLY CLOSED; the executed Phase-6
 lane remains FORMALLY CLOSED; P4-2 Level-1, Draft Level 2, P5-1, P5-2, P5-3, P6-1, D-P6-18 remain CLOSED. Append-only; prior
 history not rewritten. This entry authorizes no push, PR, merge, product implementation, or successor capability.
+
+## §5-I2 — Activation-status Policy + Explicit Unsupported-Domain Model: FORMALLY ACCEPTED AND CLOSED (G-S5-I2-ACTIVATION-STATUS-POLICY-FORMAL-CLOSURE-01; governance/documentation-only; append-only)
+
+**What this entry records (documentation-only; authorizes no implementation).** The owner has formally closed **§5-I2 —
+Activation-status policy + explicit unsupported-domain model**, the second implementation increment of the accepted §5-C1
+contract-of-record. Implementation is merged. Dedicated record:
+`docs/governance/S5_I2_ACTIVATION_STATUS_POLICY_FORMAL_CLOSURE_RECORD.md`; owner decision in `OWNER_DECISION_REGISTER.md`
+(**D-S5-I2-CLOSE**). Append-only; prior history not rewritten.
+
+**Accepted lineage / merge (SHA-preserving; re-verified).** Product base `477024471b85c90e4b3fabd637dc3aa6def1533e`
+(PR #395) → reviewed foundation `d32ca5d3f46f200276a90d6e22515cad4d900fb9` (tree `2cea01f`) → completion
+`56afc7afb58ba2eaa7a6c2424049fbbe1016a333` (tree `1576c9c`) → **PR #396** merge
+`e224215228b52a53bb2a0cba8eacbdfc19e1ed78` (parents `4770244`+`56afc7a`, merged tree `1576c9c`, MERGE COMMIT — no
+squash/rebase/force-push). Full-chain diff **3 files / +346 / −9**, changed paths `engine/domain_activation.py` +
+`tests/test_s5_i2_domain_activation.py` + `web/app.py` only (no domain-pack metadata / persistence / schema / dependency /
+CI / governance). Tracked worktree CLEAN.
+
+**Delivered (foundation; D-S5-03).** Explicit runtime activation/support policy `engine/domain_activation.py` consuming the
+canonical Domain Registry (no new registry; D-FPC-MAP-06); three bounded support states ACTIVATED /
+RECOGNIZED_NOT_ACTIVATED / UNKNOWN_OR_UNSUPPORTED; pack lifecycle status separate from runtime activation (REGISTERED !=
+USER-ACTIVE); electronics_electrical the only activated specialist domain; mechanical/medical_device/software
+recognized-but-not-activated; unknown fail-closed (never silently electronics); aliases cannot grant activation;
+`activated_domains()` constrained to recognized domains (ACTIVATED ⊆ RECOGNIZED); all web specialist-admission sites
+(`/start` + three ILT-002 routes) bound to the policy via `_admit_specialist_domain` so the web layer holds no competing
+activation decision; user-consent semantics and classifier/evidence behavior preserved; no user-facing copy, persistence,
+or domain-pack change.
+
+**Independent review evidence.** Foundation review (candidate `d32ca5d`): **B — ACCEPT WITH NON-BLOCKING OBSERVATIONS**;
+completion delta review (candidate `56afc7a`): **B — ACCEPT DELTA WITH NON-BLOCKING OBSERVATIONS**, §5-I2 IMPLEMENTATION
+COMPLETE: YES; **BLOCKERS: NONE**. Test evidence: RED **7 failed / 24 passed** on `d32ca5d`; focused **31 passed**; web
+regression **27 passed**; prior domain regression **138 passed**; Playwright Draft-L2 **30 passed**; full suite **2009
+passed / 1 skipped / 1 xfailed / 0 failed**. A false-green risk from a broad `pytest.raises(Exception)` was identified and
+corrected to specific `DomainNotActivatedError` semantics before final delivery; the accepted RED evidence is 7 failed / 24
+passed (the early broad-Exception attempt is not represented as accepted RED).
+
+**Retained non-blocking observations (NOT remediated here).** (1) per-route admission-site bypass mutation not directly
+test-detectable today; (2) `_admit_specialist_domain` returns the passed value rather than canonicalizing to pack_id
+(harmless — all callers pass canonical electronics; future alias-accepting callers should revisit); (3) registry loads per
+specialist admission (negligible; future caching if it becomes a hot path); (4) legacy `iot_electronics` pack remains
+loader-skipped with a warning (pre-existing, unchanged).
+
+**Scope truth.** No new domain activated; electronics-only specialist runtime unchanged; legacy iot skipped/unchanged;
+persistence and domain packs unchanged. **§5-I3 / §5-I4 / §5-CLOSE: NOT AUTHORIZED / NOT STARTED**; Phase 7: NOT STARTED;
+new-domain activation: NOT AUTHORIZED; CAP-16: RECORDED — NOT AUTHORIZED. Displacement guard: unfinished original §5 work
+remains; no recorded capability displaces the critical path (RECORDED != AUTHORIZED).
+
+**Status after this entry.** §5-I2: **FORMALLY ACCEPTED AND CLOSED** (B; zero blockers). **Product-Foundation §5 as a whole
+is NOT complete** — only §5-I2 is closed; §5-C1 remains the contract of record. **NEXT ELIGIBLE IMPLEMENTATION INCREMENT:
+§5-I3 — Subsystem + cross-domain project model — ELIGIBLE FOR OWNER CONSIDERATION, NOT AUTHORIZED / NOT STARTED**; no
+successor gate is automatically authorized. Phase 4 & Phase 5 remain FORMALLY CLOSED; the executed Phase-6 lane remains
+FORMALLY CLOSED; §5-I1 remains CLOSED. Append-only; prior history not rewritten. This entry authorizes no push, PR, merge,
+product implementation, or successor capability.
