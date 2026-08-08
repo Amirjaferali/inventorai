@@ -530,10 +530,14 @@ AUTHORIZED / NOT STARTED.***
   P7-C contract itself confers no implementation authorization; a distinct later Standing Phase-7 Authorization
   (`D-P7-STANDING-01`) grants continuation through the remaining Phase-7 gates and formal closure, subject to the
   contract boundaries, per-gate bounded scope, evidence triggers, tests, independent review where required, and the
-  §25 exit review.** Standing authorization ≠ active increment: **current active implementation = NONE; P7-I1 is
-  authorized to proceed under the standing authority but its bounded increment contract is NOT YET ESTABLISHED and
-  P7-I1 implementation is NOT STARTED.** Phases 8/9/10, deployment, and separately governed capabilities remain NOT
-  AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
+  §25 exit review.** Standing authorization ≠ active increment: **current active implementation = NONE.** The bounded **P7-I1
+  (Internal Read/Export Service Boundary)** increment contract is now **DEFINED by a governance-only PUBLICATION
+  CANDIDATE** (`docs/governance/P7_I1_INTERNAL_READ_EXPORT_SERVICE_BOUNDARY_INCREMENT_CONTRACT.md`; P7-C §8 first
+  slice; Source A + Source B + independent-review corrections IR-1…IR-6) — **authoritative if/when this exact
+  candidate is independently reviewed, Owner-accepted, merged, and post-merge verified.** **P7-I1 bounded contract:
+  DEFINED BY CANDIDATE — PENDING INDEPENDENT PRE-MERGE REVIEW; NOT FINALLY ESTABLISHED. P7-I1 implementation is NOT
+  STARTED; Implementation Gate Lock ACTIVE.** Phases 8/9/10, deployment, and separately governed capabilities remain
+  NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
   §5 as a whole is NOT complete** — §5-I1, §5-I2, and §5-I3 are closed. Next-eligible gate: **§5-CLOSE (§5 formal closure +
   GAP-1…GAP-4 governance reconciliation)** under continuing owner authorization — **NOT STARTED**; Phase 7 NOT AUTHORIZED.
 
