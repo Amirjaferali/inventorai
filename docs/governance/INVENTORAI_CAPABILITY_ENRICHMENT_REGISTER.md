@@ -51,8 +51,10 @@ duplicate or conflict with any existing authority.
 
 ## 1. Capability entries
 
-All fourteen capabilities share the initial status **`RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`** and
-require **separate explicit owner authorization** before any implementation (see §R5/§R6).
+All capabilities recorded here (CAP-01 … CAP-18) share the status **`RECORDED — NOT AUTHORIZED FOR
+IMPLEMENTATION`** and require **separate explicit owner authorization** before any implementation (see
+§R5/§R6). (CAP-15 … CAP-18 were added by the legacy post-mortem capture in §1A; the original fourteen
+concepts referenced elsewhere in this register's genesis note are unchanged.)
 
 ### CAP-01 — Structured Technical Guidance
 - **Product problem:** users hit technical subproblems the system cannot answer, and generic "consult a
@@ -426,6 +428,154 @@ require **separate explicit owner authorization** before any implementation (see
   GREEN; independent verification; owner acceptance and formal closure.
 - **Separate owner authorization requirement:** yes. CAP-14 is a **distinct capability from CAP-12 and
   CAP-13** and must not be consolidated with either.
+
+---
+
+## 1A. Legacy post-mortem capability capture (source: failed legacy application "idea&reality")
+
+The following four capability proposals (**CAP-15 … CAP-18**) were derived from an owner-supplied
+post-mortem of the failed legacy application **idea&reality**. The legacy system is treated as a **source
+of lessons and possible ideas, NOT authoritative architecture**; no legacy code is imported and its
+architecture is not copied. Every entry below is **`RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`**.
+**RECORDED ≠ AUTHORIZED. ELIGIBLE ≠ AUTHORIZED. IDEA ≠ ROADMAP COMMITMENT.** Recording these does **not**
+change the active critical path: unfinished original Product-Foundation work remains, so these items are
+captured but must **not** displace it (displacement check: PASS — recorded, non-displacing).
+
+### CAP-15 — AI Provider Abstraction
+- **Priority:** HIGH. **Status:** `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`.
+- **Purpose:** prevent InventorAI application/domain logic from becoming directly coupled to a specific AI
+  vendor, SDK, or model name. Target principle: `Application/Domain Logic → AI Service Boundary → Provider
+  Interface → Provider Implementation`. Potential future providers may include OpenAI, Anthropic, or
+  others. **This record authorizes no provider migration and selects no provider.**
+- **Expected benefits:** model/provider replacement without touching unrelated logic; centralized model
+  selection, timeout/retry, response handling, and operational/cost controls; prevention of the legacy
+  failure where many services independently instantiate model SDKs and hard-code model names.
+- **Critical Lean rule:** do NOT create speculative provider abstractions before live AI usage justifies
+  the boundary; do NOT build a plugin framework or a general AI-orchestration platform. Implement only when
+  evidence shows direct provider coupling beginning to proliferate, or provider replaceability becomes a
+  real requirement.
+- **Proposed timing:** a separate future AI-platform gate after the current AI boundary is sufficiently
+  evidenced and before direct provider usage proliferates. **Do not attach it automatically to §5-I2.**
+- **Current authorization state:** `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`. Separate explicit owner
+  authorization required.
+
+### CAP-16 — Safe Domain Suggestion Assistant
+- **Priority:** HIGH. **Status:** `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`.
+- **Purpose:** let a non-technical user describe an idea naturally and have InventorAI **suggest** the most
+  relevant technical domain instead of requiring manual engineering classification.
+- **Critical product rule:** **DOMAIN SUGGESTION ≠ DOMAIN ACTIVATION.** The assistant may suggest a domain
+  that has no activated specialist experience; if a suggested domain is not activated, InventorAI must say
+  so truthfully and follow the permitted general/fallback behavior. It MUST consume the **canonical Domain
+  Registry** and MUST NOT: maintain a parallel hard-coded domain list; create its own taxonomy; activate
+  domains; treat confidence as specialist certification; or override runtime activation policy.
+- **Preferred future model:** deterministic registry evidence first; AI assistance only where justified;
+  possible output = suggested domain + supporting evidence/reason + confidence/evidence strength +
+  alternative domain(s) + current support/activation status.
+- **Legacy lesson:** the legacy app had classifiers covering many domains while runtime supported fewer —
+  InventorAI must never repeat that divergence.
+- **Proposed timing / dependency:** only after the §5 Domain Registry + activation-status +
+  unsupported-domain foundations are sufficiently stable. It **depends on** the canonical §5 foundation and
+  must **not** become a reason to accelerate new-domain activation.
+- **Current authorization state:** `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`. Separate explicit owner
+  authorization required.
+
+### CAP-17 — Central Prompt and Model Configuration
+- **Priority:** MEDIUM-HIGH. **Status:** `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`.
+- **Purpose:** prevent model names, prompts, system instructions, response schemas, timeouts, and task
+  configuration from being scattered across unrelated services.
+- **Initial Lean target:** repository-versioned configuration. Possible future concepts: task identifier;
+  provider/model reference; prompt version; system-instruction version; expected output schema; timeout;
+  safe fallback policy; provenance/version metadata.
+- **Critical Lean rule:** do NOT begin with a database-managed prompt platform or an administrative
+  prompt-management system without demonstrated operational need; a database-backed prompt registry is
+  considered only if evidence later shows prompts must change independently of normal deployment/version
+  control. Do not implement merely because the legacy system had scattered prompts.
+- **Proposed timing:** alongside or after CAP-15 (AI Provider Abstraction).
+- **Current authorization state:** `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`. Separate explicit owner
+  authorization required.
+
+### CAP-18 — Commercial Readiness Snapshot
+- **Priority:** LOWER than CAP-15…CAP-17. **Status:** `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`.
+- **Purpose:** a bounded commercial perspective after an invention concept is sufficiently structured.
+  Possible future contents: target user/customer; problem/value proposition; commercialization assumptions;
+  major cost drivers; evidence gaps; major commercial unknowns; questions requiring market validation;
+  possible next validation actions.
+- **Non-goals / protected boundaries:** must NOT become an ERP, investor marketplace, procurement system,
+  accounting system, full financial-modeling suite, guaranteed-ROI analysis, or investment advice.
+- **Proposed timing:** future output/product enrichment only after core idea-development and
+  technical/domain foundations are stable. Must not displace original remediation or Product-Foundation
+  work.
+- **Current authorization state:** `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`. Separate explicit owner
+  authorization required.
+
+### Legacy patterns explicitly NOT recommended for InventorAI (intentional risk controls)
+
+These legacy idea&reality patterns are **not** recommended for migration under the current product strategy
+and are recorded as durable exclusions (none is authorized; each may be revisited only under separate
+evidence, contract, and owner authorization):
+1. **Physical / multi-physics simulation engines** (MultiPhysicsEngine-style; thermal-structural; flight
+   physics; finite/calculated physical-simulation suites; generalized simulation orchestration) — excluded.
+2. **Broad domain-specific engineering simulation suites** (mechanical / drone / PCB-circuit / solar /
+   mold) — excluded; a narrowly bounded deterministic calculation is possible only under separate evidence,
+   contract, and authorization.
+3. **Authoritative safety/reliability engines** (legacy SafetyReliabilityAnalyzer as an authoritative
+   capability; automatic FMEA conclusions; MTBF/availability guarantees; safety certification; compliance
+   approval) — excluded. InventorAI is not a professional engineering certifier.
+4. **Standards certification claims** (automatic ASTM/DIN/JIS/regulatory/professional-approval claims) —
+   excluded; standards may become evidence/references in future authorized work, never certification claims.
+5. **IoT device-management platform** (telemetry / firmware-management / live-device dashboard /
+   cloud-device management) — excluded; separate products.
+6. **PCB manufacturing/ordering platform** (manufacturer marketplace / quote engine / ordering /
+   procurement workflow) — excluded from core InventorAI.
+7. **Domain-specific mega-dashboards** (a separate large app/dashboard per domain) — excluded; prefer a
+   shared product shell + canonical domain-pack-driven differences + minimum domain-specific presentation.
+8. **Hundreds of domain-specific APIs before stable resource contracts** — excluded; Phase 7/API work
+   remains separately governed.
+9. **Parallel domain taxonomies** (independent AI-classifier / frontend / integration-engine / feature
+   domain lists) — excluded; the **canonical Domain Registry remains the source of domain truth**.
+10. **Duplicate component/material databases by default** (per-domain large libraries pre-created) —
+    excluded; the accepted §5 principle is thin capability references first, a shared capability registry
+    only if cross-domain reuse evidence later justifies it (D-S5-02).
+11. **Multiple direct AI SDK integrations** (unrelated services independently instantiating vendor SDKs and
+    hard-coding model names) — excluded; the exact failure CAP-15 is intended to prevent if/when authorized.
+12. **Database prompt platform before need** — excluded; repository-versioned configuration is the Lean
+    starting point if/when CAP-17 is authorized.
+13. **Large Monte Carlo / financial simulation as a current requirement** (legacy EconomicSimulator; VaR;
+    CVaR; Sharpe ratio; max drawdown; investment-style probability modeling) — excluded unless a future
+    owner-authorized product need clearly justifies it; InventorAI must not drift into financial-advice or
+    investment-analysis territory by default.
+14. **Broad domain-module expansion before foundation completion** (the most important exclusion) — do NOT
+    build many new domain implementations merely because the Domain Registry can describe them.
+    **REGISTERED ≠ ACTIVATED. KNOWN DOMAIN ≠ IMPLEMENTED DOMAIN. SUGGESTED DOMAIN ≠ ACTIVATED DOMAIN.
+    FOUNDATION FIRST.**
+
+### Durable legacy lessons to preserve
+
+1. Foundation before domain expansion. 2. Finish and verify one bounded increment before opening attractive
+successor work. 3. Tests must prove real application behavior. 4. A passing arithmetic/unit-fixture test is
+not a substitute for application-behavior coverage. 5. Avoid God files. 6. Avoid God tables. 7. Avoid
+repeated domain infrastructure where a shared canonical contract can be consumed. 8. The Domain Registry
+must remain the canonical source of domain truth. 9. Do not let classifier taxonomies diverge from runtime
+support. 10. AI provider/model usage should gain a controlled boundary before provider calls proliferate.
+11. Configuration should be versionable, replaceable, and reversible. 12. Feature flags do not justify
+building large inactive modules early. 13. "Recorded" capability does not mean "authorized." 14. Attractive
+future capability does not automatically outrank unfinished original remediation. 15. Frozen architecture is
+not a substitute for modular architecture + behavior-sensitive tests. 16. Do not solve lack of confidence
+by forbidding change; solve it through bounded modules, contracts, tests, and reversible changes. 17. Agents
+must finish current authorized/broken work before adding unrelated capability. 18. Minimum-path
+implementation is preferred over speculative framework building.
+
+### Relation to current Product-Foundation §5 (recorded, non-authorizing)
+
+§5-C1 is the **ACCEPTED CONTRACT OF RECORD**; **§5-I1 (Domain Registry Validation Hardening / D-P6-14) is
+FORMALLY ACCEPTED AND CLOSED**; **Product-Foundation §5 as a whole is NOT complete**. The next eligible gate
+is **§5-I2 — Activation-status policy + explicit unsupported-domain model**, which remains **ELIGIBLE FOR
+OWNER CONSIDERATION, NOT AUTHORIZED / NOT STARTED**. **CAP-16 (Safe Domain Suggestion Assistant) must NOT be
+implemented before its required §5 activation/support-state foundations are adequate.** CAP-15 / CAP-17 /
+CAP-18 are separate future concerns and do **not** become part of §5 merely because they are recorded now.
+The existing deferred items (QTA, WS17, STG, ACV, Output Language, PDF/download, email delivery, and
+CAP-01…CAP-14) are **unchanged** and remain governed by their existing status. This capture activates
+nothing, authorizes nothing, and changes no critical path.
 
 ---
 
