@@ -80,6 +80,15 @@ def is_activated(domain, registry=None):
     return support_state(domain, registry) == ACTIVATED
 
 
-def activated_domains():
-    """The sorted list of currently activated domains (electronics only)."""
-    return sorted(_ACTIVATED_DOMAINS)
+def activated_domains(registry=None):
+    """The sorted list of currently activated domains that are ALSO canonically
+    recognized by the Domain Registry.
+
+    Enforces the invariant **ACTIVATED ⊆ RECOGNIZED**: an allowlisted id that is not
+    present in the registry (canonical id or alias) is never reported, so the
+    activation policy can never drift ahead of the canonical registry. ``registry``
+    defaults to the canonical ``domains/`` registry.
+    """
+    if registry is None:
+        registry = load_registry(_DEFAULT_DOMAINS_DIR)
+    return sorted(d for d in _ACTIVATED_DOMAINS if _resolve_pack_id(d, registry) is not None)

@@ -131,3 +131,81 @@ class TestActivationAllowlist:
     def test_activated_domains_is_a_bounded_set(self):
         # Guard against accidental fifth activation.
         assert len(da.activated_domains()) == 1
+
+
+# --- §5-I2 completion: activated_domains registry cross-check (ACTIVATED ⊆ RECOGNIZED) ---
+
+class TestActivatedSubsetOfRecognized:
+    def test_activated_domains_excludes_unrecognized_allowlist_id(self, monkeypatch):
+        # An allowlisted id that is NOT canonically recognized must never be
+        # reported by activated_domains() (drift wrinkle: ACTIVATED must ⊆ RECOGNIZED).
+        monkeypatch.setattr(da, "_ACTIVATED_DOMAINS",
+                            frozenset({"electronics_electrical", "ghost_domain"}))
+        result = da.activated_domains()
+        assert "ghost_domain" not in result
+        assert "electronics_electrical" in result
+
+    def test_activated_subset_of_recognized_real_registry(self):
+        reg = _repo_registry()
+        for d in da.activated_domains(reg):
+            assert da._resolve_pack_id(d, reg) is not None
+
+    def test_activated_domains_empty_when_registry_lacks_activated(self, tmp_path):
+        # If the canonical activated domain is absent from a registry, it is not
+        # reported as activated for that registry.
+        reg = _synthetic_registry(tmp_path, [_pack("unrelated")])
+        assert da.activated_domains(reg) == []
+
+
+# --- §5-I2 completion: default-load (registry=None) production path ----------
+
+class TestDefaultLoadPath:
+    def test_default_path_electronics_activated(self):
+        assert da.support_state("electronics_electrical") == da.ACTIVATED
+        assert da.is_activated("electronics_electrical") is True
+
+    def test_default_path_known_non_electronics_not_activated(self):
+        assert da.support_state("mechanical") == da.RECOGNIZED_NOT_ACTIVATED
+
+    def test_default_path_activated_domains(self):
+        assert da.activated_domains() == ["electronics_electrical"]
+
+
+# --- §5-I2 completion: web specialist admission bound to the engine policy ----
+
+class TestWebActivationBinding:
+    def test_web_admission_helper_accepts_activated_domain(self):
+        import web.app as appmod
+        assert appmod._admit_specialist_domain("electronics_electrical") == "electronics_electrical"
+
+    def test_web_admission_helper_refuses_recognized_not_activated(self):
+        # Specific error type so a missing helper (AttributeError) cannot false-pass.
+        import web.app as appmod
+        with pytest.raises(appmod.DomainNotActivatedError):
+            appmod._admit_specialist_domain("mechanical")
+
+    def test_web_admission_helper_refuses_unknown(self):
+        import web.app as appmod
+        with pytest.raises(appmod.DomainNotActivatedError):
+            appmod._admit_specialist_domain("banana")
+
+    def test_web_admission_bound_to_policy_under_deactivation(self, monkeypatch):
+        # Drift guard: if the engine policy no longer activates electronics, the web
+        # specialist-admission helper must NOT independently admit it.
+        import web.app as appmod
+        monkeypatch.setattr(da, "_ACTIVATED_DOMAINS", frozenset())
+        with pytest.raises(appmod.DomainNotActivatedError):
+            appmod._admit_specialist_domain("electronics_electrical")
+
+    def test_web_confirm_value_is_policy_activated(self):
+        # The domain the /start consent gate admits must be ACTIVATED by the policy.
+        import web.app as appmod
+        assert da.is_activated(appmod.DOMAIN_CONFIRM_VALUE) is True
+
+    def test_web_conflicting_domains_are_recognized_not_activated(self):
+        # The web classifier's conflicting-supported set must resolve as recognized
+        # but NOT activated under the engine policy.
+        import web.app as appmod
+        reg = _repo_registry()
+        for d in appmod.CONFLICTING_SUPPORTED_DOMAINS:
+            assert da.support_state(d, reg) == da.RECOGNIZED_NOT_ACTIVATED

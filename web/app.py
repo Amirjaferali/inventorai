@@ -14,6 +14,7 @@ from flask import (
     has_request_context, session as flask_session,
 )
 from engine.domain_rules import infer_domain
+from engine import domain_activation
 from engine.idea_state import (
     IdeaState, SuccessCriterion,
     CRITICALITY_FEASIBILITY_THREATENING, CRITICALITY_VALUE_ENHANCING,
@@ -830,7 +831,9 @@ UNSUPPORTED_DOMAIN_MESSAGE = (
 # Explicit electronics/electrical confirmation at the generic product boundary
 # (ADR-001: "Domain assignment is explicit or it does not occur"). The user must
 # affirmatively declare the supported domain; consent is never inferred from the
-# idea text. The checkbox submits this exact value.
+# idea text. The checkbox submits this exact value. This is the USER-CONSENT / UI
+# contract value; whether the confirmed domain is admitted to specialist RUNTIME is
+# decided by the canonical engine activation policy (see `_admit_specialist_domain`).
 DOMAIN_CONFIRM_VALUE = "electronics_electrical"
 CONFIRMATION_REQUIRED_MESSAGE = (
     "Please confirm that your idea is an electronics or electrical idea "
@@ -840,6 +843,29 @@ CONFIRMATION_REQUIRED_MESSAGE = (
 # a clearly different *supported* internal classification is not silently
 # relabeled as electronics. These are refused; no session is created.
 CONFLICTING_SUPPORTED_DOMAINS = {"mechanical", "medical_device", "software"}
+
+
+class DomainNotActivatedError(RuntimeError):
+    """Raised when specialist-runtime admission is attempted for a domain the
+    canonical engine activation policy does not currently activate."""
+
+
+def _admit_specialist_domain(domain):
+    """§5-I2 — single source of specialist-activation truth for the web layer.
+
+    Return ``domain`` iff the canonical engine activation policy
+    (``engine.domain_activation``) currently activates it; otherwise raise
+    ``DomainNotActivatedError``. This binds every specialist-session admission to
+    the engine policy so the web layer holds no competing activation decision: a
+    recognized-but-not-activated or unknown domain can never gain specialist
+    runtime here. Behavior-preserving today — ``electronics_electrical`` is
+    activated, so current electronics admission is unchanged.
+    """
+    if not domain_activation.is_activated(domain):
+        raise DomainNotActivatedError(
+            f"domain {domain!r} is not activated for specialist runtime"
+        )
+    return domain
 
 # --- Domain Gate / Entry UX Increment (post-PR #100 Increment Contract) --------
 # Bounded ambiguity resolution for the /start domain gate. The problem being
@@ -1371,8 +1397,11 @@ def start():
     # (None covers functional electronics ideas the signal classifier misses).
     # Admit: the session's domain is the explicitly confirmed supported domain.
     state = IdeaState(idea_id=str(uuid.uuid4()))
-    state.domain = DOMAIN_CONFIRM_VALUE
-    state.domain_signal = DOMAIN_CONFIRM_VALUE
+    # Specialist-runtime admission is bound to the canonical engine activation
+    # policy (§5-I2); DOMAIN_CONFIRM_VALUE is the user-consent value, and it is
+    # admitted only because the policy currently activates it.
+    state.domain = _admit_specialist_domain(DOMAIN_CONFIRM_VALUE)
+    state.domain_signal = state.domain
     # Increment 1 (Owner-Expert Question Boundary): the general /start flow is the
     # non-specialist owner flow and must use the committed Path N non-specialist-safe
     # question provider (NON_SPECIALIST_QUESTIONING_POLICY). This is the same
@@ -1456,8 +1485,9 @@ def start_ilt002_water_leak():
     if not idea_text:
         return redirect(url_for("index"))
     state = IdeaState(idea_id=str(uuid.uuid4()))
-    state.domain = "electronics_electrical"
-    state.domain_signal = "electronics_electrical"
+    # Specialist-runtime admission bound to the canonical engine activation policy (§5-I2).
+    state.domain = _admit_specialist_domain("electronics_electrical")
+    state.domain_signal = state.domain
     sid = str(uuid.uuid4())
     initial_result = run_iteration(state, idea_text)
     return _finalize_started_session(sid, state, initial_result, seed_idea=idea_text)
@@ -1468,8 +1498,9 @@ def start_ilt002_combination_lock():
     if not idea_text:
         return redirect(url_for("index"))
     state = IdeaState(idea_id=str(uuid.uuid4()))
-    state.domain = "electronics_electrical"
-    state.domain_signal = "electronics_electrical"
+    # Specialist-runtime admission bound to the canonical engine activation policy (§5-I2).
+    state.domain = _admit_specialist_domain("electronics_electrical")
+    state.domain_signal = state.domain
     sid = str(uuid.uuid4())
     initial_result = run_iteration(state, idea_text)
     return _finalize_started_session(sid, state, initial_result, seed_idea=idea_text)
@@ -1480,8 +1511,9 @@ def start_ilt002_combination_lock_path_n():
     if not idea_text:
         return redirect(url_for("index"))
     state = IdeaState(idea_id=str(uuid.uuid4()))
-    state.domain = "electronics_electrical"
-    state.domain_signal = "electronics_electrical"
+    # Specialist-runtime admission bound to the canonical engine activation policy (§5-I2).
+    state.domain = _admit_specialist_domain("electronics_electrical")
+    state.domain_signal = state.domain
     state.path = "N"
     sid = str(uuid.uuid4())
     initial_result = run_iteration(state, idea_text)
