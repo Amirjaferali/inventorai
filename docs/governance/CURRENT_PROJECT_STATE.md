@@ -511,8 +511,10 @@ AUTHORIZED / NOT STARTED.***
   **D-S5-I3-CLOSE**) — additive in-memory subsystem foundation (one project → zero-or-more subsystems → each may reference a
   canonical domain as metadata; support-state via the §5-I2 policy); scalar root domain + all persistence preserved; durable
   subsystem persistence / identity / display-name / subsystem-grain evidence-risk-validation remain **future / NOT
-  delivered**. **§5-I4 — EVIDENCE GATE NOT MET → SKIP at current evidence** (no Technology Capability Registry). Owner
-  architectural direction **D-INTEGRATION-READY-01** recorded (non-implementing future Phase-7 boundary). **Product-Foundation
+  delivered**. **§5-I4 — EVIDENCE GATE NOT MET → SKIP at current evidence** (no Technology Capability Registry). The owner's
+  integration-ready clarification (structured-output transfer + future result-return via governed adapters) is recorded
+  **against the existing Phase 7 — API and Integration Foundation** requirement, not as a new decision (D-FPC-MAP-06;
+  non-implementing; Phase 7 NOT AUTHORIZED). **Product-Foundation
   §5 as a whole is NOT complete** — §5-I1, §5-I2, and §5-I3 are closed. Next-eligible gate: **§5-CLOSE (§5 formal closure +
   GAP-1…GAP-4 governance reconciliation)** under continuing owner authorization — **NOT STARTED**; Phase 7 NOT AUTHORIZED.
 

@@ -154,19 +154,31 @@ The **implementation** is already merged (PR #398, merge `dac5696`). This **form
 governance closure** becomes authoritative only if/when this closure candidate is
 itself merged; until then it is a prepared closure record, not authoritative history.
 
-## 10. Owner architectural decision preserved (Integration-Ready — NOT implemented here)
+## 10. Owner clarification for the EXISTING Phase 7 — API and Integration Foundation (NOT a new decision; NOT implemented here)
 
-The owner established a durable architectural requirement recorded in
-`OWNER_DECISION_REGISTER.md` (**D-INTEGRATION-READY-01**): InventorAI must be an
-**integration-ready platform** — `InventorAI Core → Canonical Output Model →
-Integration / Export Layer → External Tools` — without coupling the core to any one
-vendor/tool; future connectors may use API / file export / webhook / CLI / MCP / direct
-link / connector-adapter mechanisms (external tools such as Wokwi are examples only);
-adding an integration must not require rewriting the reasoning engine, Domain Registry,
-or canonical project model. **This is preserved as an owner architectural decision and
-a future Phase-7 boundary requirement only.** No integration layer, API endpoint,
-Wokwi-specific code, or Phase-7 work is implemented, authorized, or started by this
-closure.
+The integration-ready architecture is **already canonical** in
+`PRODUCT_FOUNDATION_AND_COMMERCIAL_READINESS_REMEDIATION_PLAN.md` §5 **Phase 7 — API and
+Integration Foundation** (purpose: governed interoperability without coupling external
+applications to the core engine; architecture `Core Engine → Internal Service Layer →
+Versioned API Contracts → Integration Adapters → External Applications`; design coverage
+including inbound/outbound API, webhooks, file exchange, embedded integration, partner
+connectors, import/export contracts, and the integration-adapter contract; prohibition:
+no partner-specific code embedded in the core engine). Per **D-FPC-MAP-06**, no new
+independent architecture decision is created — this record does **not** introduce a
+parallel Integration-Ready decision.
+
+The owner's clarification, preserved here **as a clarification of that existing Phase-7
+requirement only**: Phase 7 must support the practical product use case in which a user
+can transfer structured InventorAI outputs to compatible external tools through governed
+integration/export mechanisms, and the architecture must preserve a future governed path
+for **receiving results back** from external tools (simulation / test / validation /
+external-processing results) where later authorized. Vendor-specific integrations must
+remain isolated behind adapters/connectors and must not be embedded into the reasoning
+engine, the canonical Domain Registry, the canonical project model, or core progression
+logic. External tools such as **Wokwi are examples only** — this authorizes no Wokwi
+integration, no vendor integration, no API endpoint, and **no Phase 7**. Phase 7 remains
+**NOT AUTHORIZED / NOT STARTED** and separately governed; nothing is implemented,
+authorized, or started by this closure.
 
 ## 11. Closure status and next governance step
 

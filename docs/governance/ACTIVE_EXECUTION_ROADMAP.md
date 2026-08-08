@@ -4851,11 +4851,17 @@ closure unless new evidence emerges before §5-CLOSE. No Technology Capability R
 validation; **GAP-2** D-S5-09 Phase-6 naming seam (Product-Foundation plan §11/§12 + `docs/GOVERNANCE_DOCUMENTS.md`);
 **GAP-3** D-S5-05 conceptual-vs-delivered wording; **GAP-4** roadmap synchronization.
 
-**Owner architectural decision preserved (non-implementing).** **D-INTEGRATION-READY-01** — InventorAI must be an
-integration-ready platform (`Core → Canonical Output Model → Integration/Export Layer → External Tools`) without vendor
-coupling; connectors via API / file export / webhook / CLI / MCP / direct link / adapter; Wokwi is an example only. Recorded
-as an owner architectural decision and future Phase-7 boundary requirement ONLY — no integration layer, API endpoint,
-Wokwi-specific code, or Phase 7 is implemented, authorized, or started.
+**Owner clarification for the EXISTING Phase 7 (non-implementing; no new decision).** The integration-ready architecture is
+already canonical in `PRODUCT_FOUNDATION_AND_COMMERCIAL_READINESS_REMEDIATION_PLAN.md` §5 **Phase 7 — API and Integration
+Foundation** (`Core Engine → Internal Service Layer → Versioned API Contracts → Integration Adapters → External
+Applications`; inbound/outbound API, webhooks, file exchange, embedded integration, partner connectors, import/export +
+integration-adapter contracts; no partner-specific code in the core engine). Per **D-FPC-MAP-06** no parallel Integration-
+Ready decision is created. Owner clarification preserved **as a clarification of that existing Phase-7 requirement only**:
+Phase 7 must support transferring structured InventorAI outputs to compatible external tools via governed integration/export
+mechanisms, and preserve a future governed path for receiving results back (simulation / test / validation / external-
+processing) where later authorized; vendor integrations stay isolated behind adapters/connectors and must not be embedded in
+the reasoning engine, canonical Domain Registry, canonical project model, or core progression logic. Wokwi is an example
+only. This authorizes no integration, no API endpoint, and **no Phase 7** — Phase 7 remains NOT AUTHORIZED / NOT STARTED.
 
 **Status after this entry.** §5-I3: **FORMALLY ACCEPTED AND CLOSED** (B; zero blockers; authoritative on merge of this
 candidate). §5-I4: **EVIDENCE GATE NOT MET / IMPLEMENTATION SKIPPED AT CURRENT EVIDENCE STATE**. **Product-Foundation §5:
