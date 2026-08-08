@@ -5057,3 +5057,65 @@ CLOSED; P7-C remains the Phase-7 contract-of-record; the Standing Phase-7 Author
 Phases 8/9/10, deployment/release, new-domain activation outside Phase-7 scope, and separately governed CAP/AISR/QTA/ACV/WS17/
 STG/PDF/Email/Output-Language remain NOT AUTHORIZED. Append-only; prior history not rewritten. This entry authorizes no push,
 PR, merge, or implementation.
+
+---
+
+## P7-I1 — Internal Read/Export Service Boundary IMPLEMENTED / INDEPENDENTLY REVIEWED (A) / MERGED (PR #403) / POST-MERGE VERIFIED / FORMALLY CLOSED (increment closure under Standing Phase-7 Authorization D-P7-STANDING-01)
+
+**Gate.** Owner-authorized **P7-I1 Post-Merge Closure Assessment and Governance Synchronization** gate. Read-only closure
+assessment + minimum governance synchronization. **Governance/documentation-only.** **Authorizes no implementation.**
+Authoritative live tip verified read-only `94ccccd4399847d5fc0fc477f24bed5145d9a7d3` (PR #403; parents
+`004109745604e9ee860a4c3342f6804d977dd710` + `8f30f4fa42420d6a87d13bc42d96573cb631a727`; merged tree
+`fba951ed86a269e2487352e206b3de65979e6e65` == independently-accepted implementation candidate tree → post-merge verified);
+working tree clean.
+
+**Increment lineage.** Bounded contract candidate `e5479e9` (independent verdict A + Owner-accepted) → **contract merged
+PR #402** `0041097` (tree `0d99df0`). Implementation candidate `acf0c46` (independent verdict **B — one required pre-merge
+correction: add canonical domain support-state to the Structured Export**) → corrected candidate `8f30f4f` (tree `fba951e`;
+independent re-review **FINAL VERDICT A** + Owner-accepted) → **implementation merged PR #403** `94ccccd`. Superseded
+candidate `acf0c46` is EVIDENCE ONLY — NOT accepted, NOT merged (tag `evidence/p7i1-impl-superseded-acf0c46`).
+
+**Delivered (verified live).** One thin Flask-free internal seam `engine/read_export_service.py` with two read-side use
+cases: (1) authorized durable **Project Read** returning the validated `ProjectRecordContract` via the durable
+`store.load_contract` path (IR-2); (2) a distinct deterministic **Structured Export** composed from durable record data AND
+the canonical domain support-state (`store.load_reconstruction_inputs` → `confirmed_domain` classified by
+`engine.domain_activation.support_state`; NULL/legacy → `unknown_or_unsupported`), semantically distinct from the Read, with
+no public/export version identity or field-name freeze (IR-6). Authorization consumes the existing `store.load_owner`
+ownership foundation + an explicit caller identity, fail-closed (durable owner present AND owner==account_id; NULL-owner not
+auto-authorized; IR-3/IR-5). The seam constructs no datastore (IR-1), is Flask-free (no request/session/SESSION_STORE), uses
+no `from_state(live_state)` (IR-2), leaks no raw rows / presentation shape, mutates no governed state, activates no domain,
+mutates no registry, adds no public API, and leaves `web/app.py` and all persistence/domain internals unchanged (IR-3/IR-4).
+Changed paths (implementation) = exactly `engine/read_export_service.py` + `tests/test_p7_i1_read_export_service.py` (+448).
+
+**Evidence (independently reproduced at the merged tip `94ccccd`).** Focused `tests/test_p7_i1_read_export_service.py`
+**22 passed**; regression anchors (P4-0 record-contract / P4-1a record-store / P4-2 reconstruction / P5-3 project ownership /
+deliverable assembler) **69 passed**; full suite **2047 passed / 1 skipped / 1 xfailed / 0 failed**. Every accepted P7-I1
+closure obligation classified DELIVERED AND VERIFIED (dedicated record
+`docs/governance/P7_I1_INTERNAL_READ_EXPORT_SERVICE_BOUNDARY_FORMAL_CLOSURE_RECORD.md`). Retained non-blocking observations
+preserved (post-auth load_contract exceptions reach only the durable owner — no enumeration leak; defensive
+`getattr(...,"assertions",[])` cosmetic; not every malformed-domain variant has a dedicated test; local bundle artifacts
+untracked; `acf0c46` evidence-only).
+
+**Governance synchronization (minimum; D-FPC-MAP-06).** (1) NEW dedicated closure record
+`docs/governance/P7_I1_INTERNAL_READ_EXPORT_SERVICE_BOUNDARY_FORMAL_CLOSURE_RECORD.md`. (2) `ACTIVE_INCREMENT_CONTRACT.md` —
+active-contract current-truth flips the P7-I1 candidate/pending state to IMPLEMENTED/REVIEWED(A)/MERGED/POST-MERGE
+VERIFIED/CLOSED and records P7-I2 next / NOT STARTED. (3) `CURRENT_PROJECT_STATE.md` — same current-truth pointer.
+`OWNER_DECISION_REGISTER.md` UNCHANGED — P7-I1 completion is an increment closure under the existing standing authorization
+`D-P7-STANDING-01`, not a new owner decision. No engine/web/domains/schema/migration/tests/dependencies/CI change; no
+implementation/test change.
+
+**Boundary.** **P7-I1 closure is an INCREMENT CLOSURE ONLY.** **Phase 7 is NOT closed — it remains OPEN / IN PROGRESS.** No
+public API exists; no external integration exists; no later Phase-7 obligation (API security, versioning, machine/API
+identity, scopes, rate limits, audit, adapters, import/export) is satisfied — all remain governed by P7-C and later accepted
+increments, and the mandatory **§25 Phase-7 Remaining-Obligation / Exit-Criteria Review** remains reserved before any
+P7-CLOSE. The **next-eligible Phase-7 increment is P7-I2 — Versioned Read/Export Public API + first-public-exposure security
+baseline — NOT STARTED**, requiring its own bounded contract + independent-review sequence under `D-P7-STANDING-01` before
+code begins.
+
+**Status after this entry.** P7-I1: **IMPLEMENTED / INDEPENDENTLY REVIEWED (A) / MERGED (PR #403, `94ccccd`) / POST-MERGE
+VERIFIED / FORMALLY ACCEPTED AND CLOSED** (authoritative on merge of this governance candidate). There is no active
+implementation increment. Phase 4 & Phase 5 remain FORMALLY CLOSED; the executed Phase-6 lane and Product-Foundation §5
+remain FORMALLY CLOSED; P7-C remains the Phase-7 contract-of-record; the Standing Phase-7 Authorization (`D-P7-STANDING-01`)
+remains GRANTED; **Phase 7 remains OPEN**. Phases 8/9/10, deployment/release, new-domain activation outside Phase-7 scope,
+and separately governed CAP/AISR/QTA/ACV/WS17/STG/PDF/Email/Output-Language remain NOT AUTHORIZED. Append-only; prior history
+not rewritten. This entry authorizes no push, PR, merge, or implementation.
