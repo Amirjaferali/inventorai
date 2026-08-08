@@ -5119,3 +5119,51 @@ remain FORMALLY CLOSED; P7-C remains the Phase-7 contract-of-record; the Standin
 remains GRANTED; **Phase 7 remains OPEN**. Phases 8/9/10, deployment/release, new-domain activation outside Phase-7 scope,
 and separately governed CAP/AISR/QTA/ACV/WS17/STG/PDF/Email/Output-Language remain NOT AUTHORIZED. Append-only; prior history
 not rewritten. This entry authorizes no push, PR, merge, or implementation.
+
+---
+
+## P7-I2 — Versioned Read/Export Public API BOUNDED INCREMENT CONTRACT — CORRECTED governance-only PUBLICATION CANDIDATE (PENDING INDEPENDENT PRE-MERGE RE-REVIEW) under Standing Phase-7 Authorization D-P7-STANDING-01
+
+**Gate.** Owner-authorized **P7-I2 Contract Correction** gate (pre-merge contract corrections only) under the Standing
+Phase-7 Authorization. **Authorizes no implementation.** Authoritative live base verified read-only
+`afb1ba06981838e0e982d792d764cf0281bd2cc0` (P7-I1 closure merge PR #404; tree `ef3c850`) — unchanged; working tree clean.
+Independent Pre-Merge Contract Review of candidate `4933c268aab1dc78a4c12870004920af4fb307e8` returned **B — required
+pre-merge corrections**. This corrected candidate is a fresh commit from the live base (new SHA/tree); `4933c26` is
+PRESERVED AS EVIDENCE — DO NOT MERGE (tag `evidence/p7i2-contract-superseded-4933c26`).
+
+**Required corrections integrated.** (1) **Pre-auth rate limiting** — a first-tier limiter runs against the *presented*
+credential identifier **before** secret verification, keyed on a bounded/normalized/hash-derived subject digest
+(login/email-digest precedent); unknown credentials and invalid secrets consume the **same** pre-auth bucket; oversized/junk
+identifiers cannot mint unbounded subjects; both tiers use the hardened atomic `record_rate_attempt`; **IP/network-origin
+limiting is NOT part of P7-I2** (broad distributed abuse control DEFERRED); pre-auth and post-auth (`api_read`) limiters kept
+distinct. (2) **Schema-initialization boundary** — `api_credentials`/`access_audit` are additive tables in the EXISTING
+`SqliteAccountStore` `__init__` schema lifecycle (`CREATE TABLE IF NOT EXISTS` under `BEGIN IMMEDIATE`); no route handler
+executes DDL/migration; store construction/schema stays outside the read/export operation; the truthful lazy-construction
+lifecycle is described (existing-constructor idempotent schema creation ≠ handler-owned migration); IR-1 lesson preserved.
+(3) **RED-plan additions** — expired-credential denial; rotation (issue-new → revoke-old → old denied / new accepted);
+pre-auth limit (count-before-auth + bounded-subject / no-unbounded-junk-subject); schema-boundary (no handler DDL, via
+call-boundary instrumentation, not raw-byte equality); correlation-id validation (malformed caller value replaced, not
+echoed). Non-blocking guidance applied where coherent: token-style fast-hash for the API secret (not password scrypt);
+deny credentials whose bound account is inactive/deleted.
+
+**Preserved (independently accepted, not reopened).** P7-I2 scope; two product surfaces; routes `GET /api/v1/projects/<id>`
++ `.../export`; GET-only; P7-I1 seam reuse; machine principal + machine↔owner authorization; credential issuance/storage/
+hashing (qualified)/revocation/expiry/rotation; single `project:read` scope; API + export version identity; compatibility/
+deprecation; public data-minimized representation; stable non-enumerating error envelope; correlation id; audit baseline +
+fail-closed audit policy; authenticated rate limit + rate-limit failure policy + parameters; request provenance;
+FDC-001 precedent-only; pagination/idempotency N/A; async deferred; P7-C obligation classification; likely implementation
+paths; D-FPC-MAP-06; Lean. **OWNER_DECISION_REGISTER unchanged — correct** (standing authorization; not a new owner decision).
+
+**Governance synchronization (minimum).** (1) `docs/governance/P7_I2_VERSIONED_READ_EXPORT_PUBLIC_API_INCREMENT_CONTRACT.md`
+(corrected contract). (2) `ACTIVE_INCREMENT_CONTRACT.md` — records the corrected P7-I2 candidate (pending review; NOT STARTED;
+gate lock ACTIVE). (3) `CURRENT_PROJECT_STATE.md` — minimal pointer. `OWNER_DECISION_REGISTER.md` UNCHANGED. No
+engine/web/domains/schema/migration/tests/dependencies/CI change; no code/routes/credentials created.
+
+**Status after this entry.** **P7-I2 bounded increment contract: CORRECTED PUBLICATION CANDIDATE — PENDING INDEPENDENT
+PRE-MERGE RE-REVIEW; NOT FINALLY ESTABLISHED FOR IMPLEMENTATION.** **P7-I2 implementation: NOT STARTED; Implementation Gate
+Lock ACTIVE.** Independent read-only pre-merge re-review is REQUIRED against the exact corrected candidate SHA/tree/bundle
+before merge. **P7-I3: NOT STARTED. Phase 7: OPEN.** P7-I1 remains FORMALLY CLOSED; P7-C remains the Phase-7
+contract-of-record; `D-P7-STANDING-01` remains GRANTED; the mandatory §25 Remaining-Obligation / Exit-Criteria Review
+remains reserved before any P7-CLOSE. Phases 8/9/10, deployment/release, new-domain activation, and separately governed
+CAP/AISR/QTA/ACV/WS17/STG/PDF/Email/Output-Language remain NOT AUTHORIZED. Append-only; prior history not rewritten. This
+entry authorizes no push, PR, merge, or implementation.
