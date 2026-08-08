@@ -598,7 +598,7 @@ nothing, authorizes nothing, and changes no critical path.
 | CAP-13 Component Thickness, Specification, and Safety Advisory | Dedicated thickness-and-safety feasibility gate → increment (defers to WS-PFV-001, D13) | CAP-01, CAP-08, CAP-09, CAP-10, CAP-11, CAP-12, CAP-14 | RECORDED — NOT AUTHORIZED |
 | CAP-14 2D Drawing, Static Image, and Multi-View Component Interpretation | Dedicated static-visual-intake and interpretation feasibility gate → increment | WS12, CAP-01, CAP-08, CAP-10, CAP-11, CAP-12, CAP-13 | RECORDED — NOT AUTHORIZED |
 
-The matrix is indicative sequencing only; it activates nothing. All fourteen capabilities remain
+The matrix is indicative sequencing only; it activates nothing. All eighteen capabilities (CAP-01…CAP-18) remain
 `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`.
 
 ## 3. Dependency map
@@ -659,7 +659,7 @@ capability may activate another automatically.
   requires, in order: repository evidence review; an increment contract; owner decisions; BASE RED where
   applicable; GREEN; independent verification; owner acceptance; and merge with formal status
   synchronization. No step may be skipped or combined without explicit owner authorization.
-- **R7 — Preservation.** Later agents MUST preserve all fourteen entries (CAP-01…CAP-14) exactly, unless
+- **R7 — Preservation.** Later agents MUST preserve all eighteen entries (CAP-01…CAP-18) exactly, unless
   the owner explicitly approves amendment, rejection, consolidation, or removal. No entry may be
   silently added, dropped, merged, or reworded.
 - **R8 — Relationship to committed authorities.** This register is subordinate to and does not amend:
@@ -693,11 +693,11 @@ Every future agent working on InventorAI (team lead, subagent, or Agent Teams te
 5. **Stop and request owner authorization** if an active task would: implement any registered
    capability; change its scope; merge two capabilities; remove or replace a capability; move its
    activation gate; or alter its protected boundaries.
-6. **Preserve all fourteen capability entries (CAP-01…CAP-14) across handovers** unless the owner explicitly authorizes
+6. **Preserve all eighteen capability entries (CAP-01…CAP-18) across handovers** unless the owner explicitly authorizes
    amendment, consolidation, rejection, replacement, or removal.
 
 ### A. Future-Agent Handover Checklist
-Every handover must record (for all fourteen capabilities, CAP-01…CAP-14):
+Every handover must record (for all eighteen capabilities, CAP-01…CAP-18):
 - [ ] register reviewed
 - [ ] active capability IDs identified
 - [ ] inactive capability IDs preserved
@@ -724,7 +724,7 @@ owner-approved contract.
 
 ### D. No-Silent-Omission Rule
 A future agent may **not** omit a registered capability from planning merely because it was not
-mentioned in the latest user message or handover. All fourteen entries (CAP-01…CAP-14) remain in force at all times.
+mentioned in the latest user message or handover. All eighteen entries (CAP-01…CAP-18) remain in force at all times.
 
 ### Capability review-tracking table
 
@@ -783,7 +783,7 @@ This register records capability concepts and their boundaries only. It authoriz
 RED, GREEN, contract execution, status change, persistence, schema, prompt, UI, database, registry,
 external-data/knowledge-source integration, visual-analysis, material-selection, thickness-calculation,
 engineering-analysis, CAD-generation, or architecture change, and starts/activates/resumes no Workstream.
-All fourteen capabilities are `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`. **This amendment activates
+All eighteen capabilities (CAP-01…CAP-18) are `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`. **This amendment activates
 none of CAP-12, CAP-13, or CAP-14: recording CAP-12 (Prototype Materials and Manufacturing
 Recommendation), CAP-13 (Component Thickness, Specification, and Safety Advisory), and CAP-14 (2D
 Drawing, Static Image, and Multi-View Component Interpretation) implements nothing, authorizes no
