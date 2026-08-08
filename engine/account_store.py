@@ -25,6 +25,18 @@ additively and behaviour-preservingly:
     increment (session revocation); email-verified marking; account status
     changes; token supersession.
 
+P7-I2 (established contract
+``docs/governance/P7_I2_VERSIONED_READ_EXPORT_PUBLIC_API_INCREMENT_CONTRACT.md``)
+adds, additively (contract §12 schema-initialization boundary — the new tables
+live in this EXISTING constructor-owned idempotent schema lifecycle; no API
+route handler performs DDL/migration):
+
+  * ``api_credentials`` — durable machine/API credentials: hash-only secret
+    storage (mirroring ``email_tokens``), one bound ``owner_account_id``,
+    explicit scopes, revocation and optional expiry.
+  * ``access_audit`` — the minimal durable access/security audit event store
+    (audit ≠ monitoring; no monitoring platform).
+
 No plaintext passwords, no raw tokens, and no session cookies are ever stored.
 All mutations are single atomic transactions. Timestamps are caller-provided
 (deterministic, testable) and MUST be canonical fixed-width ISO-8601 UTC strings
@@ -39,6 +51,10 @@ RESET = "reset"
 _TOKEN_TYPES = frozenset({VERIFICATION, RESET})
 
 ACCOUNT_STATUSES = frozenset({"active", "disabled", "deleted"})
+
+# P7-I2: machine/API credential lifecycle states (credential lifecycle only —
+# NOT account states; canonical account states above are unchanged).
+API_CREDENTIAL_STATUSES = frozenset({"active", "revoked"})
 
 # How long a blocked writer waits for the SQLite write lock before giving up.
 _BUSY_TIMEOUT_SECONDS = 30.0
@@ -90,6 +106,30 @@ _SCHEMA = (
         attempt_count INTEGER NOT NULL,
         expires_at    TEXT NOT NULL,
         PRIMARY KEY (subject_key, action)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS api_credentials (
+        credential_id    TEXT PRIMARY KEY,
+        secret_hash      TEXT NOT NULL,
+        owner_account_id TEXT NOT NULL,
+        scopes           TEXT NOT NULL,
+        status           TEXT NOT NULL DEFAULT 'active',
+        expires_at       TEXT,
+        revoked_at       TEXT,
+        created_at       TEXT NOT NULL,
+        FOREIGN KEY (owner_account_id) REFERENCES accounts(account_id)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS access_audit (
+        event_id      INTEGER PRIMARY KEY,
+        request_id    TEXT NOT NULL,
+        credential_id TEXT,
+        surface       TEXT NOT NULL,
+        outcome       TEXT NOT NULL,
+        project_id    TEXT,
+        created_at    TEXT NOT NULL
     )
     """,
 )
@@ -379,6 +419,77 @@ class SqliteAccountStore:
     def rate_limit_row_count(self) -> int:
         with self._read() as c:
             return c.execute("SELECT COUNT(*) FROM auth_rate_limits").fetchone()[0]
+
+    # --- P7-I2: machine/API credentials (hash-only at rest) -----------------
+    def create_api_credential(self, credential_id: str, secret_hash: str,
+                              owner_account_id: str, scopes: str,
+                              created_at: str, expires_at: str = None) -> str:
+        """Persist one machine/API credential: the caller supplies ONLY the
+        one-way ``secret_hash`` (mirroring ``email_tokens.token_hash``); the raw
+        secret is never seen or stored here. Bound to exactly one existing
+        ``owner_account_id``; ``scopes`` is a space-separated scope string;
+        ``expires_at`` (optional) is a canonical ISO-8601 UTC string."""
+        with self._write() as c:
+            c.execute(
+                "INSERT INTO api_credentials (credential_id, secret_hash, "
+                "owner_account_id, scopes, status, expires_at, revoked_at, "
+                "created_at) VALUES (?, ?, ?, ?, 'active', ?, NULL, ?)",
+                (credential_id, secret_hash, owner_account_id, scopes,
+                 expires_at, created_at))
+        return credential_id
+
+    _API_CREDENTIAL_COLS = ("credential_id, secret_hash, owner_account_id, "
+                            "scopes, status, expires_at, revoked_at, created_at")
+
+    def get_api_credential(self, credential_id: str):
+        """Read-only lookup by public ``credential_id``; None when unknown."""
+        with self._read() as c:
+            row = c.execute(
+                "SELECT " + self._API_CREDENTIAL_COLS +
+                " FROM api_credentials WHERE credential_id = ?",
+                (credential_id,)).fetchone()
+        if row is None:
+            return None
+        return {"credential_id": row[0], "secret_hash": row[1],
+                "owner_account_id": row[2], "scopes": row[3], "status": row[4],
+                "expires_at": row[5], "revoked_at": row[6], "created_at": row[7]}
+
+    def revoke_api_credential(self, credential_id: str, now_iso: str) -> int:
+        """Durably revoke a credential (idempotent). Returns rows changed
+        (0 when unknown or already revoked)."""
+        with self._write() as c:
+            cur = c.execute(
+                "UPDATE api_credentials SET status = 'revoked', revoked_at = ? "
+                "WHERE credential_id = ? AND status = 'active'",
+                (now_iso, credential_id))
+            return cur.rowcount
+
+    # --- P7-I2: minimal durable access/security audit -----------------------
+    def record_access_audit(self, request_id: str, surface: str, outcome: str,
+                            created_at: str, credential_id: str = None,
+                            project_id: str = None) -> None:
+        """Append one durable access/security audit event. Stores identifiers
+        and outcome classes only — never a secret, secret hash, or payload.
+        Raises on failure so the caller can fail closed (a public decision is
+        not served without its audit event)."""
+        with self._write() as c:
+            c.execute(
+                "INSERT INTO access_audit (request_id, credential_id, surface, "
+                "outcome, project_id, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+                (request_id, credential_id, surface, outcome, project_id,
+                 created_at))
+
+    def list_access_audit(self, limit: int = 100):
+        """Bounded newest-first read of audit events (test/operator evidence;
+        not a monitoring surface)."""
+        with self._read() as c:
+            rows = c.execute(
+                "SELECT event_id, request_id, credential_id, surface, outcome, "
+                "project_id, created_at FROM access_audit "
+                "ORDER BY event_id DESC LIMIT ?", (int(limit),)).fetchall()
+        return [{"event_id": r[0], "request_id": r[1], "credential_id": r[2],
+                 "surface": r[3], "outcome": r[4], "project_id": r[5],
+                 "created_at": r[6]} for r in rows]
 
     # --- lifecycle ----------------------------------------------------------
     def close(self) -> None:

@@ -2220,5 +2220,11 @@ def _run_config():
     }
 
 
+# P7-I2 (established contract, PR #405): mount the versioned read-only public
+# API blueprint. Registration only — all API behaviour lives in web/api_v1.py.
+from web.api_v1 import api_v1_bp as _api_v1_bp  # noqa: E402  (mount-time import)
+app.register_blueprint(_api_v1_bp)
+
+
 if __name__ == "__main__":
     app.run(**_run_config())
