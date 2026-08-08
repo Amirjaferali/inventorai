@@ -26,6 +26,7 @@ No web/persistence/activation code is exercised or required.
 
 import json
 import os
+import shutil
 import sys
 
 import pytest
@@ -208,3 +209,67 @@ class TestRealRegistryUnchanged:
     def test_electronics_status_unchanged(self):
         reg = load_registry(_repo_domains_dir())
         assert reg["electronics_electrical"]["status"] == "active"
+
+
+# --- Authoritative provenance-manifest guard (post-review remediation) ------
+#
+# load_registry() soft-gates provenance coverage on the manifest's presence so
+# isolated unit dirs still load. That leaves one repository/CI false-green: if the
+# authoritative domains/domain_provenance.json were deleted, coverage would silently
+# stop being enforced. This guard fixes THAT gap only — it asserts, against the real
+# repository domains/ configuration, that the manifest exists, has a valid records
+# structure, and covers every currently-registered v1.0 pack. Registered packs are
+# derived from the authoritative domain.json files (not a second hard-coded taxonomy).
+
+def _registered_v1_pack_ids(domains_dir):
+    """The v1.0 pack_ids the loader would register, derived from authoritative config."""
+    ids = []
+    for sub in sorted(os.listdir(domains_dir)):
+        pack_path = os.path.join(domains_dir, sub, "domain.json")
+        if not os.path.isfile(pack_path):
+            continue
+        with open(pack_path, encoding="utf-8") as fh:
+            data = json.load(fh)
+        if data.get("schema_version") == "1.0":
+            ids.append(data["pack_id"])
+    return ids
+
+
+def _assert_provenance_manifest_covers(domains_dir):
+    """Raise AssertionError unless a valid manifest covers all registered v1.0 packs."""
+    manifest = os.path.join(domains_dir, "domain_provenance.json")
+    assert os.path.isfile(manifest), f"authoritative provenance manifest missing: {manifest}"
+    with open(manifest, encoding="utf-8") as fh:
+        data = json.load(fh)
+    records = data.get("records")
+    assert isinstance(records, list) and records, "provenance 'records' must be a non-empty list"
+    covered = {r.get("pack_id") for r in records if isinstance(r, dict)}
+    registered = _registered_v1_pack_ids(domains_dir)
+    assert registered, f"no v1.0 packs found under {domains_dir}"
+    missing = [p for p in registered if p not in covered]
+    assert not missing, f"v1.0 packs lacking provenance coverage: {missing}"
+
+
+class TestAuthoritativeProvenanceManifestGuard:
+    def test_real_config_manifest_present_and_covers_registered_packs(self):
+        # Behavioral guard against the real repository configuration.
+        _assert_provenance_manifest_covers(_repo_domains_dir())
+
+    def test_missing_manifest_detected(self, tmp_path):
+        scratch = tmp_path / "domains"
+        shutil.copytree(_repo_domains_dir(), scratch)
+        os.remove(scratch / "domain_provenance.json")
+        with pytest.raises(AssertionError):
+            _assert_provenance_manifest_covers(str(scratch))
+
+    def test_broken_pack_coverage_detected(self, tmp_path):
+        scratch = tmp_path / "domains"
+        shutil.copytree(_repo_domains_dir(), scratch)
+        manifest = scratch / "domain_provenance.json"
+        data = json.loads(manifest.read_text(encoding="utf-8"))
+        # Drop coverage for one currently-registered v1.0 pack.
+        dropped = _registered_v1_pack_ids(str(scratch))[0]
+        data["records"] = [r for r in data["records"] if r.get("pack_id") != dropped]
+        manifest.write_text(json.dumps(data), encoding="utf-8")
+        with pytest.raises(AssertionError):
+            _assert_provenance_manifest_covers(str(scratch))
