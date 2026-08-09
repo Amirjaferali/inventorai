@@ -5574,3 +5574,53 @@ if/when independently reviewed, Owner-accepted, merged, and post-merge verified.
 only removes stale candidate/reserved wording. Phase 7 FORMALLY CLOSED; PSRR registration AUTHORITATIVE; PSRR EXECUTION NOT
 STARTED; Public Production BLOCKED as above; Phases 8/9/10 NOT AUTHORIZED. Append-only; prior history not rewritten. This
 entry authorizes no push, PR, merge, implementation, or deployment.
+
+
+---
+
+## P8-ENTRY-PL-BOUNDARY-01 — Phase-8 Privacy/Legal Entry Boundary Clarification — governance-only CANDIDATE (Owner decision D-P8-PL-01) — resolves the single ambiguity from P8-ENTRY-READINESS-DISCOVERY-01; activates no Phase 8 / Phase 10 / PSRR / billing work
+
+**Gate.** Owner-authorized governance-only **clarification** gate (P8-ENTRY-PL-BOUNDARY-01) resolving the one ambiguity the
+Phase-8 readiness discovery flagged: the §340 Phase-8 entry prerequisite "privacy and legal prerequisites accepted" vs the
+Phase-10 ownership of final public privacy/legal/commercial artifacts (§363–367). **NOT Phase 8 implementation; NOT a billing
+contract; NO payment-provider selection; NO pricing/subscription/entitlement implementation; NO Phase-10 execution; NO PSRR
+execution; NO legal advice; NO production readiness; NO deployment authorization.** Authoritative live tip verified read-only
+`3f6712f5e91c633e03889359178e55de5cc7d3bc` (unchanged since the discovery gate); boot OK; working tree clean at start.
+**DOCUMENTED NO-VALID-RED** (governance/documentation-only clarification; no executable RED invented).
+
+**D-FPC-MAP-06 — existing owners extended (no new framework).** The clarification is recorded as durable Owner decision
+**D-P8-PL-01** in the canonical `OWNER_DECISION_REGISTER.md` (which already owns OD-I/OD-N/OD-P/D-PSRR-01) and synced to the
+current-truth surfaces. **No new privacy, legal, or commercial-readiness framework is created;** remediation-plan §340 /
+§363–367 text is **preserved (not rewritten)** and authoritatively interpreted by D-P8-PL-01.
+
+**Clarified boundary (D-P8-PL-01).**
+- **A — Phase-8 ENTRY-LEVEL privacy/legal prerequisites** (design/architecture/legal-scope only): provider-neutral commercial
+  model — plans / subscriptions / entitlements / quotas / commercial-data model / account↔commercial-state relationships /
+  commercial data-handling boundaries (consistent with OD-O/OD-E) / cancellation-refund **state-model interfaces**. These are
+  design/scope acceptances required **before a Phase-8 contract/implementation proceeds** — not public legal documents.
+- **B — Phase-10 FINAL PUBLIC legal/release artifacts** remain Phase-10-owned and MUST NOT be pulled into Phase 8 to satisfy
+  entry: final Privacy Policy; final Terms; final payment terms; final refund policy; final consent/legal notices; trademark/
+  brand clearance; production legal/privacy/security readiness; release readiness; deployment authorization (§363–367, OD-P).
+- **C — PUBLIC PAID ACTIVATION (hard gate, unchanged):** building Phase-8 mechanics authorizes **NO** public paid activation
+  until applicable Phase-10 legal/readiness + **PSRR = GO/PASS** (D-PSRR-01) + governing separate Deployment Gate + explicit
+  Owner deployment authorization (OD-P).
+- **D — OD-I / OD-N preserved (substance unchanged):** OD-I (persistence [Phase 4 CLOSED] + accounts/authorization [Phase 5
+  CLOSED] before paid activation; no paid plan on in-memory storage); OD-N (plan/commercial status never alters technical
+  evaluation/safety/evidence/conclusions/progression — plan-neutral by construction).
+
+**Resulting authoritative interpretation.** (1) Phase 8 may proceed to **CONTRACT DEFINITION** once the bounded class-A
+entry-level privacy/legal *design* prerequisites are accepted. (2) Phase 8 does **not** require completion of the final
+Phase-10 public legal documents (class B) to define its commercial model. (3) **Phase 10 retains ownership** of final public
+legal/commercial/security/operational readiness. (4) Building Phase-8 mechanics does **not** authorize public paid activation.
+(5)–(7) This clarification activates **no** Phase-10 work, **no** PSRR work, and **no** billing implementation.
+
+**Governance synchronization (minimum; D-FPC-MAP-06).** `OWNER_DECISION_REGISTER.md` — new append-only decision **D-P8-PL-01**.
+`ACTIVE_INCREMENT_CONTRACT.md` + `CURRENT_PROJECT_STATE.md` — current-truth boundary clarification synced. This roadmap append.
+No engine/web/domains/schema/migration/tests/dependencies/CI change; no new framework file.
+
+**Boundary / status after this entry.** This clarification is a **governance-only candidate** — authoritative if/when
+independently reviewed, Owner-accepted, merged, and post-merge verified. **Phase 8 remains NOT AUTHORIZED / NOT STARTED**
+(a separate P8-C contract-definition gate and Owner authorization remain required — NOT created here). Phase 7 FORMALLY
+CLOSED; PSRR registration AUTHORITATIVE; PSRR EXECUTION NOT STARTED; Public Production BLOCKED until PSRR = GO/PASS +
+Deployment Gate + explicit Owner deployment authorization; **Phases 8/9/10 NOT AUTHORIZED**; current active implementation
+NONE. Append-only; prior history not rewritten. This entry authorizes no push, PR, merge, implementation, or deployment.
