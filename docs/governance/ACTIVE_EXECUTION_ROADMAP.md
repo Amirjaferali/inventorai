@@ -5167,3 +5167,71 @@ contract-of-record; `D-P7-STANDING-01` remains GRANTED; the mandatory §25 Remai
 remains reserved before any P7-CLOSE. Phases 8/9/10, deployment/release, new-domain activation, and separately governed
 CAP/AISR/QTA/ACV/WS17/STG/PDF/Email/Output-Language remain NOT AUTHORIZED. Append-only; prior history not rewritten. This
 entry authorizes no push, PR, merge, or implementation.
+
+---
+
+## P7-I2 — Versioned Read/Export Public API + first-public-exposure security baseline CONTRACT ESTABLISHED (PR #405) / IMPLEMENTED / INDEPENDENTLY REVIEWED (A) / MERGED (PR #406) / POST-MERGE VERIFIED / FORMALLY CLOSED (increment closure under Standing Phase-7 Authorization D-P7-STANDING-01) + governance recording-lag correction
+
+**Gate.** Owner-authorized **P7-I2 Formal Closure + Governance Synchronization** gate. Read-only closure assessment +
+minimum governance synchronization (including the PR-#405 recording-lag correction identified by independent review).
+**Governance/documentation-only. Authorizes no implementation.** Authoritative live tip verified read-only
+`5971b7a1c35186aa6bdb425b6846bd633d5f8b11` (PR #406; parents `7abdd06`+`cd46c7f`; merged tree
+`a299bce1cc6e58b873fb3e20a1e6f98a7b1ab1ae` == accepted implementation candidate tree → post-merge verified); working tree
+clean.
+
+**Lineage.** Corrected contract candidate `ed72131` (independent verdict A + Owner-accepted) → **contract merged PR #405**
+(branch tip `7abdd06`). Implementation candidate `cd46c7f` (independent implementation review verdict A + Owner-accepted) →
+**implementation merged PR #406** `5971b7a`. Superseded pre-review contract candidate `4933c26` is evidence only (NOT
+accepted).
+
+**Delivered (verified live).** A versioned read-only public API `web/api_v1.py` (blueprint `url_prefix="/api/v1"`, mounted
+in `web/app.py` by registration only): `GET /api/v1/projects/<project_id>` (Project Read) + `GET
+/api/v1/projects/<project_id>/export` (Structured Export), each **consuming the P7-I1 seam** `engine.read_export_service`
+(no business-logic duplication). First-public-exposure security baseline: a distinct machine/API principal
+(`Authorization`-header credential, never the browser session; bound to one `owner_account_id`; token-style hash-only
+secret; issuance/revocation/expiry/rotation + bound-account-status enforcement) with a single `project:read` scope; API +
+export version identity (`api_version` / `export_contract_version`); a stable non-enumerating error envelope (cross-owner ≡
+missing); request/correlation identity (malformed caller value replaced); a durable minimal access/security audit
+(`access_audit`, fail-closed on audit-write failure); two-tier rate limiting reusing the hardened atomic
+`record_rate_attempt` (pre-auth bounded/normalized/hash-derived subject of the presented credential id, before secret
+verification + post-auth `api_read`; both fail-closed). `api_credentials`/`access_audit` are additive tables in the EXISTING
+`SqliteAccountStore` schema lifecycle; no route handler performs DDL/migration; no project/business-state mutation; no
+writes/import; no P7-I3/adapters. Changed paths (implementation) = exactly `engine/account_store.py` + `web/api_v1.py` +
+`web/app.py` (mount) + `tests/test_p7_i2_public_api.py` (+1076 / −0).
+
+**Evidence (independently reproduced at the merged tip `5971b7a`).** P7-I2 focused `tests/test_p7_i2_public_api.py` **36
+passed**; P7-I1 + ownership + record-store regressions **52 passed**; full suite **2083 passed / 1 skipped / 1 xfailed / 0
+failed** (P7-I1-closed baseline 2047 + 36 P7-I2 tests). All 29 objective closure obligations classified DELIVERED AND
+VERIFIED (dedicated record `docs/governance/P7_I2_VERSIONED_READ_EXPORT_PUBLIC_API_FORMAL_CLOSURE_RECORD.md`).
+
+**Retained non-blocking observations (preserved, not blockers).** (1) governance recording lag after PR #405 — CORRECTED by
+this synchronization; (2) post-auth `api_read` limiter runs after the scope check; (3) residual micro-timing on unknown
+credential id; (4) `API_CREDENTIAL_STATUSES` currently inert/documentary (no Authorization-header request is denied before
+the limiter because there is no presented id); (5) `access_audit` is append-only with no retention/cleanup path — later
+obligation, retention NOT solved.
+
+**Governance synchronization (minimum; D-FPC-MAP-06).** (1) NEW dedicated closure record
+`docs/governance/P7_I2_VERSIONED_READ_EXPORT_PUBLIC_API_FORMAL_CLOSURE_RECORD.md`. (2) `ACTIVE_INCREMENT_CONTRACT.md` —
+current-truth corrected from the lagged "candidate pending" state to CONTRACT ESTABLISHED / IMPLEMENTED / REVIEWED (A) /
+MERGED (PR #406) / POST-MERGE VERIFIED / FORMALLY CLOSED, and records P7-I3 next / NOT STARTED. (3) `CURRENT_PROJECT_STATE.md`
+— same current-truth pointer. `OWNER_DECISION_REGISTER.md` UNCHANGED — P7-I2 execution and closure operate under the existing
+standing authorization `D-P7-STANDING-01`, not a new owner decision. No engine/web/domains/schema/migration/tests/
+dependencies/CI change; no implementation/test change.
+
+**Boundary.** **P7-I2 closure is an INCREMENT CLOSURE ONLY.** **Phase 7 is NOT closed — it remains OPEN / IN PROGRESS.** Not
+all Phase-7 obligations are complete (quotas, import/write, webhooks/file-exchange, integration adapters (P7-I3),
+partner/external sandbox, monitoring, broad abuse controls incl. IP/network-origin, and audit retention remain governed by
+P7-C and later increments). The mandatory **§25 Phase-7 Remaining-Obligation / Exit-Criteria Review remains RESERVED** and is
+NOT performed here. **PSRR is NOT started** and remains a future governance registration after Phase-7 formal closure (not
+lost, not pre-satisfied). The **next-eligible Phase-7 increment is P7-I3 — Canonical Export + Local/Reference Adapter Proof
+(outbound-only, non-mutating) — NOT STARTED**, requiring its own bounded contract + review sequence under `D-P7-STANDING-01`
+before code begins.
+
+**Status after this entry.** P7-I2: **CONTRACT ESTABLISHED / MERGED (PR #405) / IMPLEMENTED / INDEPENDENTLY REVIEWED (A) /
+OWNER ACCEPTED / MERGED (PR #406, `5971b7a`) / POST-MERGE VERIFIED / DELIVERED / FORMALLY ACCEPTED AND CLOSED** (authoritative
+on merge of this governance candidate). There is no active implementation increment. Phase 4 & Phase 5 remain FORMALLY
+CLOSED; the executed Phase-6 lane and Product-Foundation §5 remain FORMALLY CLOSED; P7-C remains the Phase-7 contract-of-
+record; P7-I1 remains FORMALLY CLOSED; `D-P7-STANDING-01` remains GRANTED; **Phase 7 remains OPEN**. Phases 8/9/10,
+deployment/release, new-domain activation outside Phase-7 scope, and separately governed CAP/AISR/QTA/ACV/WS17/STG/PDF/Email/
+Output-Language remain NOT AUTHORIZED. Append-only; prior history not rewritten. This entry authorizes no push, PR, merge, or
+implementation.

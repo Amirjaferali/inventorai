@@ -541,20 +541,25 @@ AUTHORIZED / NOT STARTED.***
   `load_reconstruction_inputs` + explicit caller identity, fail-closed, no `web/app.py`/persistence/domain change, no
   public API, no mutation; focused 22 / regression 69 / full 2047 passed, 0 failed; superseded candidate `acf0c46` is
   evidence only. **P7-I1 closure is an increment closure only — Phase 7 is NOT closed, no public API exists, and no
-  later Phase-7 obligation is satisfied** (§25 exit review reserved before P7-CLOSE). **Next-eligible Phase-7 increment:
-  P7-I2 — Versioned Read/Export Public API + first-public-exposure security baseline.** Its bounded contract is now
-  **DEFINED by a governance-only PUBLICATION CANDIDATE (corrected)** (`docs/governance/P7_I2_VERSIONED_READ_EXPORT_PUBLIC_API_INCREMENT_CONTRACT.md`;
-  supersedes pre-review candidate `4933c26`, evidence only) — authoritative if/when independently reviewed,
-  Owner-accepted, merged, and post-merge verified. It bounds a versioned read-only public API (`GET /api/v1/projects/<id>`
-  + `/export`) consuming the P7-I1 seam, with a distinct machine/API principal (never the browser session; bound to one
-  `owner_account_id`; token-style hash-only; revocation/expiry/rotation), a single `project:read` scope, API + export
-  version identity, a stable non-enumerating error envelope, correlation id, minimal audit, and **two-tier rate limiting**
-  (pre-auth on a bounded derived subject of the presented credential id, before secret verification; plus post-auth
-  `api_read`) reusing the hardened `record_rate_attempt` — all fail-closed; new tables additive in the existing store
-  schema lifecycle (no handler DDL); no writes/import/adapters/P7-I3; IP/network-origin limiting NOT part of P7-I2;
-  D-FPC-MAP-06 preserved. **P7-I2 bounded contract: DEFINED BY CANDIDATE — PENDING INDEPENDENT PRE-MERGE REVIEW; NOT
-  FINALLY ESTABLISHED. P7-I2 implementation is NOT STARTED; Implementation Gate Lock ACTIVE.** Phases 8/9/10, deployment,
-  and separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
+  later Phase-7 obligation is satisfied** (§25 exit review reserved before P7-CLOSE). **P7-I2 — Versioned Read/Export Public API + first-public-exposure security baseline** is now
+  **CONTRACT ESTABLISHED / MERGED (PR #405) / IMPLEMENTED / INDEPENDENTLY REVIEWED (A) / OWNER ACCEPTED / MERGED
+  (PR #406, merge `5971b7a`; parents `7abdd06`+`cd46c7f`; merged tree `a299bce`) / POST-MERGE VERIFIED / FORMALLY ACCEPTED
+  AND CLOSED** (increment closure under `D-P7-STANDING-01`; dedicated record
+  `docs/governance/P7_I2_VERSIONED_READ_EXPORT_PUBLIC_API_FORMAL_CLOSURE_RECORD.md`; authoritative if/when this governance
+  candidate is merged). It delivered a versioned read-only public API (`GET /api/v1/projects/<id>` + `/export`;
+  `web/api_v1.py` mounted in `web/app.py`) consuming the P7-I1 seam, with a distinct machine/API principal
+  (Authorization-header credential, never the browser session; bound to one `owner_account_id`; token-style hash-only;
+  issuance/revocation/expiry/rotation/account-status), a single `project:read` scope, API + export version identity, a
+  stable non-enumerating error envelope, correlation id, durable minimal access audit (fail-closed), and two-tier
+  fail-closed rate limiting (pre-auth bounded-subject + post-auth `api_read`) reusing the hardened `record_rate_attempt`;
+  additive `api_credentials`/`access_audit` tables in the existing store schema lifecycle (no handler DDL); no
+  writes/import/adapters/P7-I3; no project-state mutation. Reproduced at merged tip: P7-I2 focused 36 / regressions 52 /
+  full 2083 passed, 0 failed. Retained non-blocking observations (post-auth limiter after scope check; unknown-id
+  micro-timing; inert `API_CREDENTIAL_STATUSES`; `access_audit` retention NOT solved). **P7-I2 closure is an increment
+  closure only — Phase 7 remains OPEN; no remaining Phase-7 obligation is satisfied; the §25 exit review remains reserved
+  before P7-CLOSE.** **Next-eligible Phase-7 increment: P7-I3 — Canonical Export + Local/Reference Adapter Proof
+  (outbound-only, non-mutating) — NOT STARTED** (own bounded contract + review required). Phases 8/9/10, deployment, and
+  separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
   §5 as a whole is NOT complete** — §5-I1, §5-I2, and §5-I3 are closed. Next-eligible gate: **§5-CLOSE (§5 formal closure +
   GAP-1…GAP-4 governance reconciliation)** under continuing owner authorization — **NOT STARTED**; Phase 7 NOT AUTHORIZED.
 
