@@ -599,7 +599,14 @@ AUTHORIZED / NOT STARTED.***
   PRODUCTION; GOVERNANCE REGISTRATION AUTHORITATIVE. PSRR EXECUTION: NOT STARTED. Public Production: BLOCKED until PSRR =
   GO/PASS + the governing separate deployment gate + explicit Owner deployment authorization** (NO-GO/FAIL leaves the
   block). Current active implementation: NONE; next development work is NOT automatically activated by this synchronization.
-  No vendor selected; no production-readiness claim.
+  No vendor selected; no production-readiness claim. **Phase-8 privacy/legal entry boundary CLARIFIED** (Owner decision
+  **D-P8-PL-01**, governance-only, candidate): §340 "privacy and legal prerequisites accepted" = bounded **entry-level
+  design/architecture/legal-scope** rules accepted before a Phase-8 contract proceeds (provider-neutral commercial model:
+  plans/subscriptions/entitlements/quotas/commercial-data, cancellation/refund state-model interfaces) — it does NOT require
+  the final Phase-10 public legal artifacts (Privacy Policy / Terms / payment terms / refund policy / consent) merely to
+  DEFINE the commercial model; **Phase 10 retains ownership** of those. Building Phase-8 mechanics authorizes **NO public
+  paid activation** — blocked until applicable Phase-10 legal/readiness + PSRR = GO/PASS + governing Deployment Gate +
+  explicit Owner deployment authorization. **OD-I/OD-N unchanged.** Activates no Phase-10/PSRR/billing work.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
