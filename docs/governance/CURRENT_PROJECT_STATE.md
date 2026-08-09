@@ -589,9 +589,17 @@ AUTHORIZED / NOT STARTED.***
   Closure makes NO production/security/operations-readiness claim; the 17 deferred obligations remain future governed
   obligations with accepted triggers (Monitoring / broad abuse controls / partner sandbox / write-import / inbound /
   subsystem durable identity / async-webhook / real-vendor NOT delivered; access_audit retention = unresolved
-  operational observation, not a closure obligation). **NEXT MANDATORY GOVERNANCE GATE: PSRR Governance Registration**
-  (separate, after formal Phase-7 closure). **PSRR: NOT REGISTERED / NOT EXECUTED. Public production: BLOCKED until
-  PSRR = GO.** Phases 8/9/10, deployment, and separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
+  operational observation, not a closure obligation). **Phase 7 is now FORMALLY CLOSED**
+  (P7-CLOSE MERGED PR #412, merge `c15b7e7`; parents `1a8d4c7`+`db09fe4`; merged tree `5b25ccb`; POST-MERGE VERIFIED).
+  **PSRR — Production Security & Release Readiness — GOVERNANCE REGISTRATION is now the current gate (registration, NOT
+  execution)** (`docs/governance/PSRR_PRODUCTION_SECURITY_RELEASE_READINESS_REGISTRATION.md`; durable Owner decision
+  **D-PSRR-01**), registered as the named release gate operationalizing **OD-P / Phase-10** ownership (D-FPC-MAP-06:
+  existing owner extended — no competing framework). **PSRR: MANDATORY BEFORE PUBLIC PRODUCTION; GOVERNANCE REGISTRATION
+  CURRENT (candidate only until reviewed/accepted/merged/post-merge verified). PSRR EXECUTION: NOT STARTED. Public
+  Production: BLOCKED until PSRR = GO** (NO-GO/FAIL leaves the block). No vendor selected; no production-readiness claim.
+  Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
+  operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
+  separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
   §5 as a whole is NOT complete** — §5-I1, §5-I2, and §5-I3 are closed. Next-eligible gate: **§5-CLOSE (§5 formal closure +
   GAP-1…GAP-4 governance reconciliation)** under continuing owner authorization — **NOT STARTED**; Phase 7 NOT AUTHORIZED.
 
