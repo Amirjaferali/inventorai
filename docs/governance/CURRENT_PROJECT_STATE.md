@@ -633,9 +633,21 @@ AUTHORIZED / NOT STARTED.***
   guard + behavioral guard; assignment+audit atomic in one transaction; credential revocation plan-independent; internal
   identifiers not publicly exposed; security rate-limit ≠ commercial quota; API scope ≠ paid entitlement; plan entitlement ≠
   domain activation. Genuinely-RED 15-test matrix; full-suite verification mandatory for the implementation candidate.
-  **P8-I1 is CONTRACT CANDIDATE ONLY — NOT implemented / NOT AUTHORIZED / NOT STARTED**; a separate P8-I1 implementation
-  authorization/gate remains required. Owner/business decisions (plan names, prices, trial/refund/grandfathering/enterprise/
-  tax/proration/provider policies) remain deferred/REQUIRED, not decided; none blocks P8-I1.
+  The corrected P8-I1-C contract is now **ACCEPTED / MERGED (PR #417, merge `29f3aeb`; parent 2 = accepted candidate `b14396b`;
+  merged tree `7f36a13`) / POST-MERGE VERIFIED**, and **P8-I1 is now IMPLEMENTED as a governance-only IMPLEMENTATION
+  CANDIDATE (RED → GREEN)**: `engine/plan_catalog.py` (code-resident versioned declarative catalog; internal technical
+  default; neutral proof capability — not publicly exposed) + `engine/entitlement_service.py` (single Flask-free fail-closed
+  `evaluate_entitlement` derived-not-snapshot seam) + additive `engine/account_store.py` `commercial_assignments`/
+  `commercial_audit` (atomic assignment+audit) + `tests/test_p8_i1_plan_entitlement_foundation.py`. Genuine RED first, then
+  GREEN: **focused 17 / regressions 164 / full suite 2122 passed, 0 failed** (2105 baseline + 17). OD-N proven behaviorally +
+  engine-wide static import guard; fail-closed for unknown/malformed/catalog-error/missing/non-active account; valid active
+  account with no assignment → technical default; credential revocation plan-independent; NO payment/provider/quota/lifecycle/
+  proration/UI/domain-activation/public-paid-activation/real-paywall; changed paths exactly the REQUIRED allowlist.
+  **P8-I1 is an IMPLEMENTATION CANDIDATE ONLY — NOT closed; Phase 8 NOT complete / NOT billing-live / NOT paid-active**;
+  candidate-only until independent review → Owner acceptance → publication → PR → pre-merge check → merge → post-merge
+  verification → formal P8-I1 closure sync. Public paid activation stays blocked until Phase-10 legal/readiness + PSRR =
+  GO/PASS + Deployment Gate + explicit Owner deployment authorization. Owner/business decisions (plan names, prices, trial/
+  refund/grandfathering/enterprise/tax/proration/provider policies) remain deferred/REQUIRED; none blocks P8-I1.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation

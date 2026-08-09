@@ -132,6 +132,32 @@ _SCHEMA = (
         created_at    TEXT NOT NULL
     )
     """,
+    # P8-I1: commercial plan-identity assignment (one per account; plan identity
+    # ONLY — no lifecycle-state column and no period boundaries; those are
+    # deferred to P8-I3 per the accepted P8-I1 refinement). Additive/idempotent.
+    """
+    CREATE TABLE IF NOT EXISTS commercial_assignments (
+        account_id    TEXT PRIMARY KEY,
+        plan_id       TEXT NOT NULL,
+        plan_version  TEXT NOT NULL,
+        assigned_at   TEXT NOT NULL,
+        updated_at    TEXT NOT NULL,
+        FOREIGN KEY (account_id) REFERENCES accounts(account_id)
+    )
+    """,
+    # P8-I1: minimal, append-only commercial audit (assignment set/change only).
+    # DISTINCT from the security ``access_audit`` above; NOT a generic
+    # billing-event framework.
+    """
+    CREATE TABLE IF NOT EXISTS commercial_audit (
+        event_id    INTEGER PRIMARY KEY,
+        account_id  TEXT NOT NULL,
+        event_type  TEXT NOT NULL,
+        from_plan   TEXT,
+        to_plan     TEXT,
+        created_at  TEXT NOT NULL
+    )
+    """,
 )
 
 
@@ -290,6 +316,77 @@ class SqliteAccountStore:
                 "UPDATE accounts SET status = ?, deleted_at = ?, updated_at = ? "
                 "WHERE account_id = ?", (status, deleted_at, now_iso, account_id))
             return cur.rowcount
+
+    # --- commercial assignment (P8-I1: plan identity ONLY) ------------------
+    def get_commercial_assignment(self, account_id: str):
+        """Return the durable commercial plan-identity assignment for
+        ``account_id`` as a dict, or ``None`` when there is no assignment. A
+        ``None`` result is the legitimate legacy/default state — NOT an error;
+        the entitlement seam resolves it to the technical default. Carries plan
+        identity only (no lifecycle state / no period boundaries — deferred to
+        P8-I3)."""
+        with self._read() as c:
+            row = c.execute(
+                "SELECT account_id, plan_id, plan_version, assigned_at, updated_at "
+                "FROM commercial_assignments WHERE account_id = ?",
+                (account_id,)).fetchone()
+        if row is None:
+            return None
+        return {"account_id": row[0], "plan_id": row[1], "plan_version": row[2],
+                "assigned_at": row[3], "updated_at": row[4]}
+
+    def _append_commercial_audit(self, c, account_id, event_type, from_plan,
+                                 to_plan, now_iso):
+        """Append one minimal, append-only commercial-audit event on the SAME
+        open write connection ``c`` (so it commits/rolls back atomically with the
+        assignment mutation). Distinct from the security ``access_audit``."""
+        c.execute(
+            "INSERT INTO commercial_audit "
+            "(account_id, event_type, from_plan, to_plan, created_at) "
+            "VALUES (?, ?, ?, ?, ?)",
+            (account_id, event_type, from_plan, to_plan, now_iso))
+
+    def set_commercial_assignment(self, account_id: str, plan_id: str,
+                                  plan_version: str, now_iso: str):
+        """Upsert the commercial plan-identity assignment for ``account_id`` AND
+        append its commercial-audit event in the SAME ``BEGIN IMMEDIATE``
+        transaction — so a crash can never leave an unaudited or partial
+        commercial mutation. Stores plan identity only; validates nothing against
+        the catalog (unknown/malformed identities fail closed later at the
+        entitlement seam). Returns the stored ``(plan_id, plan_version)``."""
+        with self._write() as c:
+            prior = c.execute(
+                "SELECT plan_id, plan_version FROM commercial_assignments "
+                "WHERE account_id = ?", (account_id,)).fetchone()
+            if prior is None:
+                from_plan, event_type = None, "assigned"
+                c.execute(
+                    "INSERT INTO commercial_assignments "
+                    "(account_id, plan_id, plan_version, assigned_at, updated_at) "
+                    "VALUES (?, ?, ?, ?, ?)",
+                    (account_id, plan_id, plan_version, now_iso, now_iso))
+            else:
+                from_plan, event_type = "%s@%s" % (prior[0], prior[1]), "changed"
+                c.execute(
+                    "UPDATE commercial_assignments SET plan_id = ?, "
+                    "plan_version = ?, updated_at = ? WHERE account_id = ?",
+                    (plan_id, plan_version, now_iso, account_id))
+            self._append_commercial_audit(
+                c, account_id, event_type, from_plan,
+                "%s@%s" % (plan_id, plan_version), now_iso)
+        return (plan_id, plan_version)
+
+    def list_commercial_audit(self, account_id: str):
+        """Return the append-only commercial-audit events for ``account_id`` in
+        insertion order (assignment set/change only)."""
+        with self._read() as c:
+            rows = c.execute(
+                "SELECT event_id, account_id, event_type, from_plan, to_plan, "
+                "created_at FROM commercial_audit WHERE account_id = ? "
+                "ORDER BY event_id", (account_id,)).fetchall()
+        return [{"event_id": r[0], "account_id": r[1], "event_type": r[2],
+                 "from_plan": r[3], "to_plan": r[4], "created_at": r[5]}
+                for r in rows]
 
     # --- email tokens -------------------------------------------------------
     def create_email_token(self, token_id: str, account_id: str, token_type: str,
