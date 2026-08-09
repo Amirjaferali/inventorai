@@ -5235,3 +5235,52 @@ record; P7-I1 remains FORMALLY CLOSED; `D-P7-STANDING-01` remains GRANTED; **Pha
 deployment/release, new-domain activation outside Phase-7 scope, and separately governed CAP/AISR/QTA/ACV/WS17/STG/PDF/Email/
 Output-Language remain NOT AUTHORIZED. Append-only; prior history not rewritten. This entry authorizes no push, PR, merge, or
 implementation.
+
+---
+
+## P7-I3 — Canonical Export + Local/Reference Adapter Proof BOUNDED INCREMENT CONTRACT — CORRECTED governance-only PUBLICATION CANDIDATE (PENDING INDEPENDENT PRE-MERGE RE-REVIEW) under Standing Phase-7 Authorization D-P7-STANDING-01
+
+**Gate.** Owner-authorized **P7-I3 Contract Correction** gate (pre-merge contract corrections only) under the Standing
+Phase-7 Authorization. **Authorizes no implementation.** Authoritative live base verified read-only
+`3cb5dcd388bda700f93667800376ee49b7fb6fa6` (P7-I2 closure merge PR #407; tree `d1094d3`) — unchanged; working tree clean.
+Independent Pre-Merge Contract Review of candidate `51b8fc65a298324f69d7c12d29b158788217ecad` returned **B — required
+pre-merge corrections**. This corrected candidate is a fresh commit from the live base (new SHA/tree); `51b8fc6` is
+PRESERVED AS EVIDENCE — DO NOT MERGE (tag `evidence/p7i3-contract-superseded-51b8fc6`).
+
+**Five required corrections integrated.** (1) **Source export version identity** — removed the false "P7-I1 export
+identity"; P7-I1 has NO canonical export-version identity (IR-6 deferred); P7-I3 invents none; source provenance names the
+P7-I1 Structured Export seam and may carry explicit source contract/version metadata supplied at the boundary (e.g. P7-I2
+`export_contract_version`); unsupported-version failure applies only where explicit version metadata is supplied, else
+structural/semantic validation governs. (2) **Mandatory NON-EMPTY preservation floor** owned by the contract (not the
+adapter/transform/caller): top-level `idea_id`/`domain_support_state`/`assertion_count`; per-assertion `record_id`/
+`disposition`/`provenance`/`validation_status`; may preserve more, never less; equivalence can never pass with an empty
+set. (3) **Integrity/tamper protection + summary consistency** — validator fails on missing/duplicate assertion, `record_id`
+collision (no silent overwrite; `ProjectRecordContract.validate()` does not guarantee uniqueness strongly enough),
+`assertion_count`/`validation_summary`/`provenance_summary` row-inconsistency, or any floor-field change; summaries checked
+against transformed rows; validator independent of the transform; proof consumes the REAL P7-I1 export (no fake input);
+false-green guards frozen; RED plan expanded to 31 behaviors; result vocabulary minimal binary (valid/invalid); deterministic
+row order (no accidental dict-ordering reliance). (4) **File Exchange** reclassified **DEFERRED / NOT DELIVERED BY P7-I3**
+(an in-memory DTO is not file exchange; no file writing added). (5) **Reference/Test Harness** (DELIVERED BY P7-I3 IF
+IMPLEMENTED) **split** from **Partner/External-Integration Sandbox** (DEFERRED; not claimed).
+
+**Preserved (independently accepted, not reopened).** P7-I3 scope; canonical export source = P7-I1 Structured Export; no
+second output model; minimum-safe adapter contract; local/deterministic/network-free/vendor-neutral reference adapter;
+distinct reference DTO; semantic (not byte-order) validation; provenance = integration metadata not project truth; bounded
+explicit failure; project mutation NONE; inverse validation read-only / no import; external result UNTRUSTED BY DEFAULT;
+public API NONE; network NONE; vendor NO; retries/timeouts & secrets N/A; likely ≈ 1 adapter module + 1 test module;
+D-FPC-MAP-06 PASS; Lean PASS. **OWNER_DECISION_REGISTER unchanged — correct** (standing authorization; not a new decision;
+a real vendor selection would require a separate owner decision → none made).
+
+**Governance synchronization (minimum).** (1) `docs/governance/P7_I3_CANONICAL_EXPORT_LOCAL_REFERENCE_ADAPTER_PROOF_INCREMENT_CONTRACT.md`
+(corrected contract). (2) `ACTIVE_INCREMENT_CONTRACT.md` — records the corrected P7-I3 candidate (pending review; NOT STARTED;
+gate lock ACTIVE). (3) `CURRENT_PROJECT_STATE.md` — minimal pointer. `OWNER_DECISION_REGISTER.md` UNCHANGED. No
+engine/web/domains/schema/migration/tests/dependencies/CI change; no code/adapters created.
+
+**Status after this entry.** **P7-I3 bounded increment contract: CORRECTED PUBLICATION CANDIDATE — PENDING INDEPENDENT
+PRE-MERGE RE-REVIEW; NOT FINALLY ESTABLISHED FOR IMPLEMENTATION.** **P7-I3 implementation: NOT STARTED; Implementation Gate
+Lock ACTIVE.** Independent read-only pre-merge re-review is REQUIRED against the exact corrected candidate SHA/tree/bundle
+before merge. **Phase 7: OPEN.** P7-I1 & P7-I2 remain FORMALLY CLOSED; P7-C remains the Phase-7 contract-of-record;
+`D-P7-STANDING-01` remains GRANTED; the mandatory §25 Remaining-Obligation / Exit-Criteria Review remains RESERVED before any
+P7-CLOSE; PSRR remains a future governance registration after Phase-7 closure. Phases 8/9/10, deployment/release, new-domain
+activation, and separately governed CAP/AISR/QTA/ACV/WS17/STG/PDF/Email/Output-Language remain NOT AUTHORIZED. Append-only;
+prior history not rewritten. This entry authorizes no push, PR, merge, or implementation.
