@@ -24,7 +24,6 @@ import hashlib
 import importlib
 import json
 import logging
-import os
 
 import pytest
 
@@ -578,26 +577,62 @@ def test_exactly_two_public_api_routes_registered():
             assert methods == {"GET"}
 
 
-def test_no_p7_i3_adapter_or_outbound_vendor_code():
-    """The API module imports only the bounded allowlist (stdlib + Flask + the
-    existing engine/web modules) — no outbound HTTP client, no vendor SDK — and
-    no P7-I3 adapter module entered the engine."""
+def _collect_import_targets(tree):
+    """All import targets in an AST module: plain module names for ``import X``,
+    and — for ``from X import Y`` — BOTH the module ``X`` and the qualified
+    ``X.Y`` for each imported name. Recording the qualified name is what lets the
+    architectural-boundary guard detect ``from engine import export_adapter``
+    (whose ImportFrom module is only ``engine``), alongside
+    ``import engine.export_adapter`` and ``from engine.export_adapter import X``."""
     import ast
-    api = _api()
-    with open(api.__file__, "r", encoding="utf-8") as fh:
-        tree = ast.parse(fh.read())
     imported = set()
     for node in ast.walk(tree):
         if isinstance(node, ast.Import):
             imported.update(alias.name for alias in node.names)
         elif isinstance(node, ast.ImportFrom):
-            imported.add(node.module or "")
+            mod = node.module or ""
+            imported.add(mod)
+            for alias in node.names:
+                imported.add((mod + "." + alias.name) if mod else alias.name)
+    return imported
+
+
+def test_no_p7_i3_adapter_or_outbound_vendor_code():
+    """The API module imports only the bounded allowlist (stdlib + Flask + the
+    existing engine/web modules) — no outbound HTTP client, no vendor SDK — and
+    the P7-I2 public API remains independent of the outbound P7-I3 export adapter
+    (authorized/established under PR #408): the API module imports no adapter, in
+    ANY static form."""
+    import ast
+    api = _api()
+    with open(api.__file__, "r", encoding="utf-8") as fh:
+        tree = ast.parse(fh.read())
+    imported = _collect_import_targets(tree)
     allowed_tops = {"hashlib", "hmac", "re", "uuid", "flask", "engine", "web"}
     for mod in imported:
         assert mod.split(".")[0] in allowed_tops, mod
-    engine_dir = os.path.join(os.path.dirname(os.path.dirname(api.__file__)),
-                              "engine")
-    assert not [n for n in os.listdir(engine_dir) if "adapter" in n.lower()]
+    # Architectural boundary: no adapter / outbound-vendor module imported.
+    assert not [m for m in imported if "adapter" in m.lower()]
+
+
+def test_p7_i3_adapter_import_guard_detects_all_static_forms():
+    """The boundary guard's import-detection path (AST, not source grep) catches
+    every ordinary static import form of the P7-I3 adapter — including the
+    previously blind ``from engine import export_adapter`` — and does not falsely
+    flag a clean, adapter-free import set."""
+    import ast
+    for src in (
+        "import engine.export_adapter",
+        "from engine.export_adapter import ReferenceExportAdapter",
+        "from engine import export_adapter",
+    ):
+        targets = _collect_import_targets(ast.parse(src))
+        assert any("adapter" in m.lower() for m in targets), src
+    clean = _collect_import_targets(ast.parse(
+        "import hashlib\n"
+        "from flask import Blueprint\n"
+        "from engine import read_export_service\n"))
+    assert not [m for m in clean if "adapter" in m.lower()]
 
 
 # ===========================================================================
