@@ -168,8 +168,11 @@ def test_od_n_behavioral_technical_truth_is_plan_neutral(tmp_path):
 
 # 11 — OD-N engine-wide inverted-allowlist static import guard.
 def test_od_n_engine_wide_no_commercial_imports_outside_allowlist():
-    allowlist = {"entitlement_service"}                       # only the seam may import the catalog
-    commercial = {"plan_catalog", "entitlement_service"}
+    # Commercial seams permitted to import the commercial layer. Extended by
+    # P8-I2 to include the quota_service seam (which consumes entitlement_service
+    # + plan_catalog); the deterministic core still imports none of them.
+    allowlist = {"entitlement_service", "quota_service"}
+    commercial = {"plan_catalog", "entitlement_service", "quota_service"}
     engine_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "engine")
     offenders = []
     for fn in os.listdir(engine_dir):
