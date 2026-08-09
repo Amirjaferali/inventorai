@@ -643,11 +643,25 @@ AUTHORIZED / NOT STARTED.***
   engine-wide static import guard; fail-closed for unknown/malformed/catalog-error/missing/non-active account; valid active
   account with no assignment → technical default; credential revocation plan-independent; NO payment/provider/quota/lifecycle/
   proration/UI/domain-activation/public-paid-activation/real-paywall; changed paths exactly the REQUIRED allowlist.
-  **P8-I1 is an IMPLEMENTATION CANDIDATE ONLY — NOT closed; Phase 8 NOT complete / NOT billing-live / NOT paid-active**;
-  candidate-only until independent review → Owner acceptance → publication → PR → pre-merge check → merge → post-merge
-  verification → formal P8-I1 closure sync. Public paid activation stays blocked until Phase-10 legal/readiness + PSRR =
-  GO/PASS + Deployment Gate + explicit Owner deployment authorization. Owner/business decisions (plan names, prices, trial/
-  refund/grandfathering/enterprise/tax/proration/provider policies) remain deferred/REQUIRED; none blocks P8-I1.
+  **P8-I1 is now IMPLEMENTED / MERGED (PR #418, merge
+  `2bf389d`; parent 2 = accepted impl `f55ce02`; merged tree `814d15d`) / POST-MERGE VERIFIED** (full suite 2122 passed).
+  The next increment **P8-I2 — Commercial Usage Quotas / Limits** is now **DEFINED by a governance-only BOUNDED
+  IMPLEMENTATION-CONTRACT CANDIDATE** (`docs/governance/PHASE_8_I2_COMMERCIAL_USAGE_QUOTAS_INCREMENT_CONTRACT.md`;
+  authoritative if/when reviewed/accepted/merged/post-merge verified): provider-neutral usage-limit foundation — quota
+  subject **(account_id, meter)** (account principal, not browser/credential); declarative versioned quota policy in the
+  P8-I1 catalog (derived, no per-account snapshot); smallest technical window (lifetime/fixed-seconds; NOT final billing
+  cadence — P8-I3 owns that); new Flask-free fail-closed `engine/quota_service.py` seam with atomic evaluate-and-consume
+  (no oversubscription) + optional idempotency key; additive `commercial_usage`/`commercial_usage_idempotency` tables.
+  Binding: security rate-limit ≠ commercial quota (`record_rate_attempt` security-only); quota ≠ entitlement; API scope ≠
+  quota; credential revocation plan/quota-independent; domain entitlement ≠ activation. **HIGH-PRIORITY anti-lock-in:**
+  quotas never block reading/exporting/deleting existing Owner data; quota reduction is fail-safe/non-destructive. OD-N
+  engine-wide static + dynamic-import + behavioral guards; no lower quality for free users; no overage/provider/lifecycle/
+  proration/UI/public-surface/public-paid-activation. True prior-schema migration convention + genuinely-RED 21-test matrix.
+  **P8-I2 is CONTRACT CANDIDATE ONLY — NOT implemented / NOT AUTHORIZED / NOT STARTED**; a separate P8-I2 implementation
+  authorization/gate remains required. Public paid activation stays blocked until Phase-10 legal/readiness + PSRR = GO/PASS +
+  Deployment Gate + explicit Owner deployment authorization. Owner/business decisions (plan names, prices, quota values/
+  cadence, trial/refund/grandfathering/enterprise/tax/overage/proration/provider policies) remain deferred/REQUIRED; none
+  blocks P8-I2.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation

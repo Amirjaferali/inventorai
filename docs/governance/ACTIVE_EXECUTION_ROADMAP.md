@@ -5814,3 +5814,93 @@ safety check → merge → post-merge verification → formal P8-I1 closure/curr
 registration AUTHORITATIVE; PSRR EXECUTION NOT STARTED; Public Production BLOCKED until PSRR = GO/PASS + Deployment Gate +
 explicit Owner deployment authorization; P8-I2/I3/I4, Phases 9/10 NOT AUTHORIZED. Append-only; prior history not rewritten.
 This entry authorizes no push, PR, merge beyond this candidate, provider selection, or deployment.
+
+
+---
+
+## P8-I2-C — Commercial Usage Quotas / Limits — Bounded Implementation Contract — governance-only CANDIDATE — P8-I1 IMPLEMENTATION MERGED (PR #418); P8-I2 remains CONTRACT CANDIDATE ONLY / NOT IMPLEMENTED / NOT AUTHORIZED
+
+**Gate.** Owner-authorized governance-only **P8-I2 bounded implementation-contract** gate. Defines the smallest bounded
+P8-I2 increment: commercial usage-limit architecture, quota subject/policy/window models, atomic evaluate-and-consume,
+idempotency, the anti-lock-in data-access boundary, the security/API/OD-N separations, the future RED matrix, the
+anticipated-file allowlist, acceptance criteria. **CONTRACT ONLY — does NOT implement P8-I2.** No commercial quota values;
+no billing windows; no provider/payment; no lifecycle/proration; no pricing/usage UI; no public web/API surface; no public
+paid activation; no Phase-9/10; no PSRR; no deployment. Authoritative live tip verified read-only
+`2bf389ddaa16b6f92a9dd505e65987686f0531fa` (PR #418 merge of accepted P8-I1 implementation `f55ce02`; parent 2 = `f55ce02`;
+merged tree `814d15da06ce622588851d5bc4f0efa23907043f` == accepted P8-I1 impl tree → post-merge verified; only the PR-#418
+merge since); boot OK; clean. **DOCUMENTED NO-VALID-RED for this contract gate** (the contract defines the future P8-I2 RED
+tests).
+
+**Architecture (D-FPC-MAP-06; live-code-grounded).** New bounded Flask-free fail-closed seam `engine/quota_service.py`
+(`consume_quota`/`evaluate_quota` → `QuotaDecision`) reusing the P8-I1 entitlement seam (entitlement FIRST), the P8-I1
+code-resident versioned catalog, the account-store `_write()` `BEGIN IMMEDIATE` critical section, and account identity/
+`ACCOUNT_STATUSES`. NOT a BillingService/CommercialPlatform/SubscriptionManager/policy engine. **Quota subject =
+(account_id, meter)** — the account principal (NEVER browser session, NEVER API credential; a future API credential
+resolves to its existing `owner_account_id` and charges that account). **Quota policy = declarative data in the same
+versioned plan catalog** (parallel `quota_descriptor`; derived-at-evaluation; no per-account snapshot; no DB admin CRUD).
+**Window = smallest technical model** (`lifetime` or `fixed`/seconds via an injectable clock) — explicitly NOT the final
+marketed billing period (P8-I3 owns lifecycle/period mechanics; surfaced, not silent). **Outcomes:** allowed /
+denied_not_entitled / denied_quota_exhausted / denied_invalid_account_or_commercial_state / internal_fail_closed
+(machine-level only; no UI, no public API response contract).
+
+**Atomicity / idempotency / integer safety.** `consume_quota` does atomic evaluate-and-consume in ONE `BEGIN IMMEDIATE`
+(read counter → exhaustion check → increment + idempotency insert together) so concurrent writers cannot oversubscribe a
+hard cap (guarantees exactly SQLite BEGIN IMMEDIATE + single-connection + RLock; no over-claim). Optional `idempotency_key`
+(UNIQUE per account+meter+key) makes repeated identical consumption a no-op (retry double-charge prevention; bounded key
+table, not a payments framework). Positive bounded integer `amount` (default +1; negative/zero rejected); `remaining =
+max(0, limit-used)` (no negative/overflow); `0` = valid explicit deny-all; `UNLIMITED` = named sentinel (no magic int);
+missing/malformed policy → fail closed.
+
+**Never over-consume / security-first.** Entitlement denial, invalid/missing/disabled/deleted account, quota-exhausted, and
+technical-evaluation failure → NO increment. Security failures (invalid/revoked credential, failed authz, security
+rate-limit rejection, CSRF/auth) are rejected BEFORE `consume_quota` and never consume quota. Quota = accepted governed
+consumption, not attempts; failed technical operations not charged (neutral proof op has no external side effect →
+cross-resource atomicity deferred; no distributed-transaction invention).
+
+**HIGH-PRIORITY anti-lock-in / data-access boundary.** Commercial creation/consumption limits ≠ Owner data access/control
+rights. Quotas MAY gate CREATE/CONSUME of a governed commercial operation; MUST NOT block reading/exporting/deleting
+already-owned records or privacy/data-rights operations. Quota reduction below already-consumed usage is fail-safe: no
+deletion/truncation/corruption, no negative/overflow, no reset-fraud, no crash — existing Owner data stays fully
+accessible/deletable. Final portability/privacy/legal policy remains Phase-10-owned; the boundary is stated, not hidden.
+
+**OD-N (hard) + carried-forward observations.** Quota state must never affect scoring/evidence/progression/safety/
+conclusions/thresholds ("no lower quality for free users"). Guards: engine-wide inverted-allowlist static import guard
+EXTENDED so `quota_service` joins the commercial modules no `engine/*.py` may import except the seams; a NEW commercial
+dynamic-import prohibition under `engine/` (carried-forward P8-I1 dynamic-import observation); the behavioral neutrality
+guard. Technical evaluation stays NOT account-aware → static guard authoritative (no fabricated causal path). A **true
+prior-schema migration test** convention is now REQUIRED (carried-forward P8-I1 observation; not new-store→reopen).
+`_CATALOG`/quota data adds no runtime mutation/admin CRUD.
+
+**Schema (additive; per convention).** Idempotent `CREATE TABLE IF NOT EXISTS` `commercial_usage` (canonical counter:
+account_id+meter+window_key → used_count; PK+FK) + `commercial_usage_idempotency` (account_id+meter+idempotency_key; PK+FK).
+Counter = single canonical enforcement source; idempotency table auxiliary + transactionally consistent (no drift/competing
+truth). Fresh+existing DB safe; data untouched; rollback-safe; no `ALTER TABLE`; P8-I1 tables not rewritten. Bounded-growth
+honesty: counter bounded; idempotency table grows with distinct ops → retention is a documented Phase-10/later boundary, not
+solved here.
+
+**RED matrix (21) + allowlist.** `tests/test_p8_i2_commercial_quota.py`: allow-and-consume-once / exhausted-no-increment /
+not-entitled-no-consume / missing / disabled-deleted / malformed-policy fail-closed; rate-limit independence; API-scope &
+credential independence; revocation plan-independent; idempotent no-double-count; concurrent no-oversubscription;
+amount/integer safety; derived-not-snapshot; quota-decrease non-destructive; data readable/deletable when exhausted; OD-N
+truth invariance; engine-wide + dynamic-import isolation; true prior-schema migration; fresh-DB init; consumption rollback;
+failed-op no phantom charge. REQUIRED files: `engine/quota_service.py` (new), `engine/plan_catalog.py` (quota descriptors),
+`engine/account_store.py` (additive usage/idempotency tables + atomic methods), the P8-I2 test. PROHIBITED:
+`record_rate_attempt` repurposing/weakening, API scope changes, credential revocation changes, domain activation,
+scoring/progression/safety edits, payment/provider code, lifecycle/proration/period-rollover, pricing/plan/usage/checkout UI,
+any public web/API surface (STOP if unavoidable), overage/top-up/rollover, public paid activation, Phase 9/10, PSRR,
+deployment, dependency/CI, rewriting P8-I1 tables. Full-suite verification mandatory for the implementation candidate.
+
+**Governance synchronization (minimum; D-FPC-MAP-06).** NEW
+`PHASE_8_I2_COMMERCIAL_USAGE_QUOTAS_INCREMENT_CONTRACT.md`. `ACTIVE_INCREMENT_CONTRACT.md` + `CURRENT_PROJECT_STATE.md`
+current-truth synced (P8-I1 MERGED; P8-I2 contract candidate). `OWNER_DECISION_REGISTER.md` **UNCHANGED** (bounded
+implementation contract records no accepted Owner decision; precedent P7-I*/P8-I1). No engine/web/domains/schema/migration/
+tests/dependencies/CI change; only the dedicated contract doc + current-truth. **No Owner/business decision blocks P8-I2**
+(real quota counts, reset cadence, meter names, packaging, overage/rollover, enterprise limits, billing cadence deferred,
+not invented).
+
+**Boundary / status after this entry.** **P8-I2 is CONTRACT CANDIDATE ONLY — NOT implemented, NOT AUTHORIZED / NOT STARTED.**
+No code until P8-I2-C → independent review → Owner exact-candidate acceptance → merge → post-merge verification → a separate
+P8-I2 implementation authorization/gate. P8-I1 IMPLEMENTED/MERGED (PR #418); Phase 7 FORMALLY CLOSED; PSRR registration
+AUTHORITATIVE; PSRR EXECUTION NOT STARTED; Public Production BLOCKED until PSRR = GO/PASS + Deployment Gate + explicit Owner
+deployment authorization; P8-I3/I4, Phases 9/10 NOT AUTHORIZED; current active implementation NONE. Append-only; prior
+history not rewritten. This entry authorizes no push, PR, merge, implementation, provider selection, or deployment.
