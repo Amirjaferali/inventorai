@@ -5756,3 +5756,61 @@ verification → a separate P8-I1 implementation authorization/gate. Phase 7 FOR
 PSRR EXECUTION NOT STARTED; Public Production BLOCKED until PSRR = GO/PASS + Deployment Gate + explicit Owner deployment
 authorization; P8-I2/I3/I4, Phases 9/10 NOT AUTHORIZED; current active implementation NONE. Append-only; prior history not
 rewritten. This entry authorizes no push, PR, merge, implementation, provider selection, or deployment.
+
+
+---
+
+## P8-I1 — Plan & Entitlement Foundation — IMPLEMENTATION (RED → GREEN) — governance-only IMPLEMENTATION CANDIDATE — contract ACCEPTED/MERGED (PR #417); P8-I1 IMPLEMENTED but NOT closed; Phase 8 NOT complete / NOT paid-active
+
+**Gate.** Owner-authorized **P8-I1 implementation** gate under the accepted, merged, post-merge-verified corrected P8-I1-C
+bounded implementation contract (PR #417). RED-first → GREEN. **NOT billing; NO payment provider/checkout/charges/invoices/
+tax/webhooks/reconciliation; NO renewal/downgrade/cancellation/failed-payment/trial lifecycle; NO commercial quotas/metering;
+NO pricing/subscription/checkout UI; NO domain activation; NO Phase-9/10; NO PSRR; NO deployment; NO public paid activation.**
+Authoritative live tip verified read-only `29f3aebb93452015f2354e05f63a308c22726633` (PR #417 merge of accepted contract
+candidate `b14396b`; parent 2 = `b14396b`; merged tree `7f36a13b3e21b8ad4636a3a7cf8b5d1275ae5689` == accepted contract tree
+→ post-merge verified; only the PR-#417 merge since); boot OK; clean.
+
+**RED-first evidence.** `tests/test_p8_i1_plan_entitlement_foundation.py` written first and run on the accepted base:
+genuine RED — `ImportError: cannot import name 'plan_catalog' from 'engine'` (the commercial modules and the account-store
+`commercial_assignments` methods do not exist on base) — the intended missing behavior; no fabricated failure.
+
+**GREEN implementation (exactly the REQUIRED allowlist; live-code-grounded).** `engine/plan_catalog.py` (NEW — code-resident
+versioned declarative catalog; leaf module importing no engine module; internal technical default `__default_technical__@1`
+and a neutral internal proof capability, neither exposed via public API/UI; `CatalogError` fail-closed lookup);
+`engine/entitlement_service.py` (NEW — the single Flask-free fail-closed `evaluate_entitlement(account_store, account_id,
+capability) -> Decision` seam; effective entitlement DERIVED at evaluation, no stored snapshot; callers ask a capability
+question, no plan-name branching); `engine/account_store.py` (EXTENDED — additive idempotent `commercial_assignments`
+[plan identity only — no lifecycle/period columns] + minimal append-only `commercial_audit` [distinct from `access_audit`];
+`get_commercial_assignment` / `set_commercial_assignment` [assignment mutation + its audit event committed in the SAME
+`BEGIN IMMEDIATE` transaction via `_append_commercial_audit`] / `list_commercial_audit`); `tests/test_p8_i1_plan_entitlement_foundation.py`
+(NEW — the 15-item matrix, 17 tests incl. parametrized disabled/deleted + the audit-write test).
+
+**Fail-closed six-state + account-status (verified GREEN).** Valid active account, no assignment → technical default (NOT an
+error); explicit valid → deterministic derived; unknown plan / malformed assignment / catalog-descriptor failure / missing
+account / disabled+deleted account → fail closed (`EntitlementError`); **missing account is NOT defaulted**. Existing
+`ACCOUNT_STATUSES = {active, disabled, deleted}` used unchanged.
+
+**OD-N (verified GREEN).** Behavioral guard — a deterministic technical evaluation (`domain_activation.support_state`) is
+identical before/after assigning differing commercial identities. Engine-wide inverted-allowlist static import guard — no
+`engine/*.py` imports `plan_catalog`/`entitlement_service` except the seam (`entitlement_service`); `account_store` imports
+neither (correct dependency direction). Derived-not-snapshot — a reviewed catalog change flips the effective entitlement with
+no per-account rewrite. Atomicity — a forced audit failure rolls back both the assignment and audit (no unaudited/partial
+mutation). Credential revocation plan-independent; commercial assignment does not touch account/auth/credential state.
+
+**Test evidence.** RED (import error on base) → GREEN: **P8-I1 focused 17 passed**; directly-impacted regressions
+(P5-1/P5-2/P5-2-draft/P5-3/P4-1a record-store/P7-I1/P7-I2) **164 passed**; **full suite 2122 passed / 1 skipped / 1 xfailed /
+0 failed** (2105-passed baseline + 17 new P8-I1 tests; pre-existing skip/xfail/warnings). Changed paths = exactly
+`engine/plan_catalog.py` + `engine/entitlement_service.py` + `engine/account_store.py` + `tests/test_p8_i1_plan_entitlement_foundation.py`
+— the REQUIRED allowlist; no LIKELY/PROHIBITED file touched (no web/api scope, no routes/UI, no domain activation, no
+`record_rate_attempt` change, no scoring/progression/safety edit, no payment/provider/quota/lifecycle code, no dependency/CI).
+
+**Governance synchronization (minimum).** `ACTIVE_INCREMENT_CONTRACT.md` + `CURRENT_PROJECT_STATE.md` current-truth synced to
+the P8-I1 IMPLEMENTATION CANDIDATE + evidence. This roadmap append. **`OWNER_DECISION_REGISTER.md` UNCHANGED** (implementation
+candidate records no accepted Owner decision; precedent P7-I1/I2/I3). No P8-I1 closure is declared; Phase 8 is not complete.
+
+**Boundary / status after this entry.** **P8-I1 is an IMPLEMENTATION CANDIDATE ONLY — NOT closed; Phase 8 NOT complete, NOT
+billing-live, NOT paid-active.** Candidate-only until independent review → Owner acceptance → publication → PR → pre-merge
+safety check → merge → post-merge verification → formal P8-I1 closure/current-truth sync. Phase 7 FORMALLY CLOSED; PSRR
+registration AUTHORITATIVE; PSRR EXECUTION NOT STARTED; Public Production BLOCKED until PSRR = GO/PASS + Deployment Gate +
+explicit Owner deployment authorization; P8-I2/I3/I4, Phases 9/10 NOT AUTHORIZED. Append-only; prior history not rewritten.
+This entry authorizes no push, PR, merge beyond this candidate, provider selection, or deployment.
