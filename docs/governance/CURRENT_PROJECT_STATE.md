@@ -579,9 +579,19 @@ AUTHORIZED / NOT STARTED.***
   abuse controls / audit retention / partner sandbox / write-import / inbound / subsystem durable identity /
   async-webhook / real-vendor remain preserved trigger-deferred obligations). Reproduced live at `7fda709`: focused 80 /
   full 2105 passed, 0 failed. **The §25 review does NOT close Phase 7 and creates NO formal closure record — Phase 7
-  remains OPEN.** **Next-eligible Phase-7 step: a separate P7-CLOSE — Formal Phase-7 Closure gate (owner-run under
-  `D-P7-STANDING-01` §25 closure criteria) — NOT STARTED.** PSRR remains future (public production prohibited until
-  PSRR = GO). Phases 8/9/10, deployment, and separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
+  remains OPEN.** The §25 review is now **AUTHORITATIVE / MERGED (PR #411, merge `1a8d4c7`; parents `7fda709`+`dbe54e1`;
+  merged tree `909d7bf`) / POST-MERGE VERIFIED**. **P7-CLOSE — Formal Phase-7 Closure is now PERFORMED as a
+  governance-only CLOSURE CANDIDATE** (`docs/governance/PHASE_7_FORMAL_CLOSURE_RECORD.md`) under `D-P7-STANDING-01`,
+  preserving the authoritative §25 result verbatim (35 obligations: **18 DELIVERED AND VERIFIED / 17 INTENTIONALLY
+  DEFERRED WITH OWNER-REASON-TRIGGER / 0 NOT APPLICABLE / 0 STILL REQUIRED**; EXIT PASS). Reproduced live at `1a8d4c7`
+  (code byte-identical to the §25 tip): focused 80 / full 2105 passed, 0 failed. **Phase-7 closure is CANDIDATE ONLY
+  until independently reviewed, Owner-accepted, merged, and post-merge verified; only then is Phase 7 FORMALLY CLOSED.**
+  Closure makes NO production/security/operations-readiness claim; the 17 deferred obligations remain future governed
+  obligations with accepted triggers (Monitoring / broad abuse controls / partner sandbox / write-import / inbound /
+  subsystem durable identity / async-webhook / real-vendor NOT delivered; access_audit retention = unresolved
+  operational observation, not a closure obligation). **NEXT MANDATORY GOVERNANCE GATE: PSRR Governance Registration**
+  (separate, after formal Phase-7 closure). **PSRR: NOT REGISTERED / NOT EXECUTED. Public production: BLOCKED until
+  PSRR = GO.** Phases 8/9/10, deployment, and separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
   §5 as a whole is NOT complete** — §5-I1, §5-I2, and §5-I3 are closed. Next-eligible gate: **§5-CLOSE (§5 formal closure +
   GAP-1…GAP-4 governance reconciliation)** under continuing owner authorization — **NOT STARTED**; Phase 7 NOT AUTHORIZED.
 

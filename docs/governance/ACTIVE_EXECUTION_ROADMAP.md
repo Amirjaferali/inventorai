@@ -5414,3 +5414,59 @@ formal closure record. **Next-eligible: a separate P7-CLOSE — Formal Phase-7 C
 production prohibited until PSRR = GO). Phases 8/9/10, deployment/release, new-domain activation outside Phase-7 scope, and
 separately governed CAP/AISR/QTA/ACV/WS17/STG/PDF/Email/Output-Language remain NOT AUTHORIZED. Append-only; prior history not
 rewritten. This entry authorizes no push, PR, merge, or implementation.
+
+
+---
+
+## P7-CLOSE — PHASE 7 (API AND INTEGRATION FOUNDATION) FORMAL CLOSURE — governance-only CLOSURE CANDIDATE — §25 AUTHORITATIVE (PR #411); accepted Phase-7 scope formally complete under P7-C; EXIT PASS; Phase-7 closure CANDIDATE ONLY until merge/post-merge verification
+
+**Gate.** Owner-authorized **P7-CLOSE — Formal Phase-7 Closure** gate under the Standing Phase-7 Authorization
+`D-P7-STANDING-01` (which grants P7-CLOSE only after the mandatory §25 review and only on satisfied closure criteria,
+P7-C §25/§27). Read-only closure assessment + minimum current-truth synchronization + one governance-only closure
+candidate. **Governance/documentation-only; authorizes no implementation; makes NO production/security/operations-readiness
+claim; registers/executes NO PSRR; authorizes NO Phase 8/9/10 and no deployment/release.** Authoritative live tip verified
+read-only `1a8d4c70acf05f7d787d5ae24c26b6323b51b7a7` (PR #411 §25-review merge; parents `7fda709`+`dbe54e1`; merged tree
+`909d7bf3dce26bb4e5089ecaa38cffb09f502b60`); boot OK; working tree clean at closure start. No later Owner decision
+supersedes Phase-7 closure authority (ODR verified).
+
+**Closure preconditions (repository-verified).** P7-I1 FORMALLY CLOSED (PR #403 `94ccccd`); P7-I2 FORMALLY CLOSED (PR #406
+`5971b7a`); P7-I3 FORMALLY CLOSED (impl PR #409 `2ee60ec`; closure PR #410 `7fda709`). §25 Remaining-Obligation /
+Exit-Criteria Review AUTHORITATIVE — merged PR #411 (`1a8d4c7`), post-merge verified
+(`docs/governance/PHASE_7_REMAINING_OBLIGATION_EXIT_CRITERIA_REVIEW.md`).
+
+**§25 result preserved verbatim (NOT re-classified).** TOTAL original P7-C §18 obligations **35** = **18 DELIVERED AND
+VERIFIED** + **17 INTENTIONALLY DEFERRED WITH OWNER-REASON-TRIGGER** (each trigger unfired; NOT delivered) + **0 NOT
+APPLICABLE** + **0 STILL REQUIRED BEFORE PHASE-7 CLOSURE**. **PHASE-7 EXIT: PASS.**
+
+**Meaning.** Phase-7 formal closure means the **accepted Phase-7 scope is formally complete under P7-C** (read/export-first
+v1 = Project Read + Versioned Structured Output/Export; internal service seam; first-public-exposure security baseline;
+outbound canonical→adapter→vendor boundary with a local/reference proof). It does **NOT** mean production/security/
+operations readiness, PSRR passed, or delivery of any deferred obligation.
+
+**Deferred obligations preserved (17; NOT delivered).** Monitoring; broad Abuse Controls; Partner/External-Integration
+Sandbox; inbound external-submission provenance/persistence; deprecation event; HTTP idempotency (before writes); quotas
+beyond floor; retries/timeouts; import contracts; inbound API; file exchange; embedded integration; partner connectors;
+webhooks; subsystem durable identity/API; async/job model; pagination — all remain future governed obligations with their
+§25-authoritative triggers. Preserved distinctions: Audit≠Monitoring; rate-limit floor≠broad Abuse Controls; Reference/Test
+Harness≠Partner Sandbox; revocation/rotation≠complete secrets operations; PSRR≠§25. `access_audit` retention/cleanup remains
+an unresolved operational-lifecycle observation — §25-determined NOT a distinct closure obligation; NOT solved; NOT turned
+into implementation here.
+
+**Evidence.** Code byte-identical to the §25 tip `7fda709` (governance-docs-only since) → §25 full-suite evidence carries:
+**2105 passed / 1 skipped / 1 xfailed / 0 failed**. Fresh focused reproduction at `1a8d4c7`: **80 passed** (22+37+21). No
+test modified.
+
+**Governance synchronization (minimum; D-FPC-MAP-06).** NEW `docs/governance/PHASE_7_FORMAL_CLOSURE_RECORD.md` (consumes the
+authoritative §25 review; no duplicate register). `ACTIVE_INCREMENT_CONTRACT.md` + `CURRENT_PROJECT_STATE.md` current-truth
+synced to the Phase-7 closure candidate + PSRR-next boundary. `OWNER_DECISION_REGISTER.md` **UNCHANGED — CORRECT**: formal
+closure is execution of the already-granted `D-P7-STANDING-01` (P7-C §27 authorizes P7-CLOSE after the §25 review); no new
+durable Owner decision. No engine/web/domains/schema/migration/tests/dependencies/CI change.
+
+**Boundary / status after this entry.** **Phase-7 formal closure is CANDIDATE ONLY** — Phase 7 is **NOT** formally closed
+until this candidate is independently reviewed, Owner-accepted, merged, and post-merge verified; only then does **Phase 7 =
+FORMALLY CLOSED**. **NEXT MANDATORY GOVERNANCE GATE: PSRR Governance Registration** (separate; after formal Phase-7 closure) —
+NOT registered/executed here. **Public Production Deployment: BLOCKED until a future PSRR = GO.** **Phase 8 / Phase 9 /
+Phase 10: NOT AUTHORIZED** by this closure; no automatic progression. P7-I1/P7-I2/P7-I3 remain FORMALLY CLOSED; the §25
+review remains AUTHORITATIVE; P7-C remains the Phase-7 contract-of-record; `D-P7-STANDING-01` remains GRANTED. Separately
+governed CAP/AISR/QTA/ACV/WS17/STG/PDF/Email/Output-Language and new-domain activation outside Phase-7 scope remain NOT
+AUTHORIZED. Append-only; prior history not rewritten. This entry authorizes no push, PR, merge, or implementation.
