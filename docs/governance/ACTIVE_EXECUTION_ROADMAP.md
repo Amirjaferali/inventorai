@@ -5470,3 +5470,57 @@ Phase 10: NOT AUTHORIZED** by this closure; no automatic progression. P7-I1/P7-I
 review remains AUTHORITATIVE; P7-C remains the Phase-7 contract-of-record; `D-P7-STANDING-01` remains GRANTED. Separately
 governed CAP/AISR/QTA/ACV/WS17/STG/PDF/Email/Output-Language and new-domain activation outside Phase-7 scope remain NOT
 AUTHORIZED. Append-only; prior history not rewritten. This entry authorizes no push, PR, merge, or implementation.
+
+
+---
+
+## PSRR — Production Security & Release Readiness — GOVERNANCE REGISTRATION — governance-only CANDIDATE — Phase 7 FORMALLY CLOSED; PSRR named/scoped/hard-blocked (D-PSRR-01); PSRR execution NOT STARTED; Public Production BLOCKED until PSRR = GO
+
+**Gate.** Owner-mandated **PSRR Governance Registration** gate. Read-only ownership inspection + durable registration of
+the PSRR release gate + minimum current-truth synchronization + one governance-only candidate. **Governance/
+documentation-only; does NOT execute PSRR; performs no security scan / penetration test / configuration review; selects no
+vendor/tool; authorizes no deploy/release; claims no production readiness; authorizes no Phase 8/9/10.** Authoritative live
+tip verified read-only `c15b7e72272951a8e32d3065d96e7a24ebd1a993` (PR #412 Phase-7 formal-closure merge; parents
+`1a8d4c7`+`db09fe4`; merged tree `5b25ccb`); boot OK; working tree clean at registration start. **Phase 7: FORMALLY
+CLOSED** (post-merge verified).
+
+**D-FPC-MAP-06 — existing owner extended (no duplicate).** Canonical owner of production/release/security/operational
+readiness already exists: **Phase 10 — Commercial, Legal, Security and Operational Readiness** (remediation plan §363–367:
+security review, privacy review, production monitoring, observability, backup/restore drills, deployment controls, release
+readiness, production deployment authorization) + **OD-P** (ACCEPTED; production-readiness/deployment defined & evaluated in
+Phase 10 only; separate deployment gate + explicit owner deployment authorization REQUIRED; deferred until Phases 4–9
+formally completed). PSRR is registered as the **named release-readiness gate operationalizing OD-P's separate deployment
+gate within Phase-10 ownership** — consuming/deferring to it, creating NO competing framework, NO second readiness owner, NO
+duplicate register. OD-P's Phase-10 ownership and Phases-4–9-completion dependency remain binding (Phases 8/9 NOT complete);
+the actual PSRR definition-completion-evaluation remains Phase-10-owned.
+
+**Registered (D-PSRR-01).** WHAT PSRR is (formal, evidence-based cross-phase release gate); WHEN (**before first public
+production deployment**); the **hard block** (**Public Production BLOCKED until PSRR = GO**; NO-GO/FAIL leaves the block; no
+inference from phase-complete / tests-green / security-baseline-exists); **GO/NO-GO** outcomes; minimum future execution
+scope (37 capability areas — application/API security, authn/authz, ownership isolation, credential handling +
+revocation/rotation/expiry, secrets/config, production config, TLS, security headers, dependency/vuln scanning, data
+security + retention/deletion, privacy lifecycle, backup/restore/DR, audit logging, monitoring, alerting, abuse controls,
+rate-limit + distributed-abuse review, audit-retention policy, incident response, production logging, external/vendor
+integration security, infra/deployment config, env/secrets separation, security + penetration testing where warranted,
+release evidence package, independent review, formal GO/NO-GO); evidence requirement; independence via existing
+independent-review governance; **vendor neutrality (no vendor/tool selected)**.
+
+**Phase-7 §25 deferred security/ops items PRESERVED (NOT rewritten).** Monitoring, broad Abuse Controls, `access_audit`
+retention/cleanup, production secrets operations remain **NOT delivered / NOT solved**; PSRR MAY reassess them at execution
+but does NOT auto-implement; their §25 classification is unchanged. Audit≠Monitoring; rate-limit floor≠broad Abuse Controls;
+revocation/rotation≠complete production secrets operations — all preserved distinct.
+
+**Governance synchronization (minimum; D-FPC-MAP-06).** NEW
+`docs/governance/PSRR_PRODUCTION_SECURITY_RELEASE_READINESS_REGISTRATION.md` (subordinate to Phase 10 / OD-P; no competing
+framework). `ACTIVE_INCREMENT_CONTRACT.md` + `CURRENT_PROJECT_STATE.md` current-truth synced (current gate = PSRR
+Governance Registration, not execution; Phase 7 FORMALLY CLOSED). `OWNER_DECISION_REGISTER.md` **UPDATED** — one new durable
+row **D-PSRR-01** (public production prohibited until PSRR = GO; consistent with & subordinate to OD-P; not previously
+recorded as a named gate/hard-block). No engine/web/domains/schema/migration/tests/dependencies/CI change.
+
+**Boundary / status after this entry.** **PSRR governance registration is CANDIDATE ONLY** until independently reviewed,
+Owner-accepted, merged, and post-merge verified. **PSRR EXECUTION: NOT STARTED.** **Public Production Deployment: BLOCKED
+until PSRR = GO.** **Phase 7: FORMALLY CLOSED.** P7-I1/P7-I2/P7-I3 remain CLOSED; the §25 review remains AUTHORITATIVE;
+P7-C remains the Phase-7 contract-of-record; `D-P7-STANDING-01` remains GRANTED (Phase-7-scoped). **Phase 8 / Phase 9 /
+Phase 10: NOT AUTHORIZED** by this gate; no automatic progression. Separately governed CAP/AISR/QTA/ACV/WS17/STG/PDF/Email/
+Output-Language and new-domain activation remain NOT AUTHORIZED. Append-only; prior history not rewritten. This entry
+authorizes no push, PR, merge, implementation, or deployment.
