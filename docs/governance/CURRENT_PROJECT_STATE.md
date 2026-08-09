@@ -657,11 +657,26 @@ AUTHORIZED / NOT STARTED.***
   quotas never block reading/exporting/deleting existing Owner data; quota reduction is fail-safe/non-destructive. OD-N
   engine-wide static + dynamic-import + behavioral guards; no lower quality for free users; no overage/provider/lifecycle/
   proration/UI/public-surface/public-paid-activation. True prior-schema migration convention + genuinely-RED 21-test matrix.
-  **P8-I2 is CONTRACT CANDIDATE ONLY — NOT implemented / NOT AUTHORIZED / NOT STARTED**; a separate P8-I2 implementation
-  authorization/gate remains required. Public paid activation stays blocked until Phase-10 legal/readiness + PSRR = GO/PASS +
-  Deployment Gate + explicit Owner deployment authorization. Owner/business decisions (plan names, prices, quota values/
-  cadence, trial/refund/grandfathering/enterprise/tax/overage/proration/provider policies) remain deferred/REQUIRED; none
-  blocks P8-I2.
+  The P8-I2-C contract is now **ACCEPTED / MERGED (PR #419, merge `d3e950c`; parent 2 = accepted candidate `1f42714`; merged
+  tree `7c09f10`) / POST-MERGE VERIFIED**, and **P8-I2 is now IMPLEMENTED as a governance-only IMPLEMENTATION CANDIDATE
+  (RED → GREEN; verdict-B CORRECTED replacement candidate — supersedes the invalidated prior candidate `1490548`, evidence
+  only, NOT merged)**: new Flask-free fail-closed `engine/quota_service.py` + declarative versioned `quota_policy` in
+  `engine/plan_catalog.py` (derived, no per-account snapshot) + additive `engine/account_store.py` `commercial_usage`/
+  `commercial_usage_idempotency` tables with atomic evaluate-and-consume in one `BEGIN IMMEDIATE` + `tests/test_p8_i2_commercial_quota.py`
+  (P8-I1 OD-N guard extended). **Verdict-B corrections: R1 read-only `evaluate_quota` no longer fails open at exhaustion
+  (finite `used >= limit`, incl. zero-limit → `denied_quota_exhausted`/`allowed=False`/`remaining=0`, no mutation; UNLIMITED
+  unchanged); R2 accurate `consume_quota` docstring (QuotaError also for missing/invalid fixed-window time); + cleanups
+  (no `"None"` timestamp; idempotency across-windows documented).** RED-first: R1 tests FAIL on the invalid impl, PASS after
+  fix. GREEN: **focused 32 / regressions 141 / full suite 2123 passed / 3 skipped / 1 xfailed / 0 failed** (same-environment
+  base 2091 + 32, no regression). Re-verified unchanged: security rate-limit ≠ quota; entitlement ≠ quota; atomic hard-cap;
+  idempotency + same-key/different-amount conflict; anti-lock-in; OD-N static/behavioral/dynamic-import; revocation
+  independence; API scope unchanged; no domain activation; no public surface / no paywall / no provider/lifecycle/UI.
+  **P8-I2 is an IMPLEMENTATION CANDIDATE ONLY — NOT closed; Phase 8 NOT complete / NOT billing-live / NOT paid-active**;
+  candidate-only until independent review → Owner acceptance → publication → PR → pre-merge check → merge → post-merge
+  verification → formal P8-I2 closure sync. Public paid activation stays blocked until Phase-10 legal/readiness + PSRR =
+  GO/PASS + Deployment Gate + explicit Owner deployment authorization. Owner/business decisions (plan names, prices, quota
+  values/cadence, trial/refund/grandfathering/enterprise/tax/overage/proration/provider policies) remain deferred/REQUIRED;
+  none blocks P8-I2.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation

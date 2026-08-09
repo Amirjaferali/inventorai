@@ -5904,3 +5904,73 @@ P8-I2 implementation authorization/gate. P8-I1 IMPLEMENTED/MERGED (PR #418); Pha
 AUTHORITATIVE; PSRR EXECUTION NOT STARTED; Public Production BLOCKED until PSRR = GO/PASS + Deployment Gate + explicit Owner
 deployment authorization; P8-I3/I4, Phases 9/10 NOT AUTHORIZED; current active implementation NONE. Append-only; prior
 history not rewritten. This entry authorizes no push, PR, merge, implementation, provider selection, or deployment.
+
+
+---
+
+## P8-I2 — Commercial Usage Quotas / Limits — IMPLEMENTATION (RED → GREEN; verdict-B CORRECTED replacement) — governance-only IMPLEMENTATION CANDIDATE — supersedes invalidated prior candidate 1490548 (evidence only, NOT merged); P8-I2 IMPLEMENTED but NOT closed; Phase 8 NOT complete / NOT paid-active
+
+**Gate.** Owner-authorized **P8-I2 implementation — REQUIRED PRE-MERGE REMEDIATION** (independent review verdict **B — ACCEPT
+WITH REQUIRED PRE-MERGE CORRECTIONS**). Bounded remediation only — no redesign, no scope widening. Built FRESH from the
+unchanged authoritative base `d3e950cb5b34ee7fc0dd8522264fc412252236d3` (PR #419 merge of accepted P8-I2-C `1f42714`; merged
+tree `7c09f10` == accepted contract tree; verified read-only; boot OK). The prior candidate `1490548` (tree `e8d79d0`; bundle
+SHA-256 `ad3f01b4…000b`) is **evidence only — INVALIDATED, NOT accepted, NOT merged, NOT reused.** **NOT billing; NO payment
+provider/checkout/charges/invoices/tax/webhooks/reconciliation; NO renewal/downgrade/cancellation/failed-payment/proration/
+grandfathering lifecycle; NO overage/top-up/rollover; NO pricing/plan/usage/subscription/checkout UI; NO public web/API
+surface; NO public paid activation; NO Phase-9/10; NO PSRR; NO deployment.**
+
+**Verdict-B corrections applied.**
+- **R1 — fixed the FAIL-OPEN `evaluate_quota` at exhaustion.** The read-only path previously returned `allowed=True` even when
+  `used >= limit` (including an explicit zero-limit policy). Corrected: for a FINITE policy, `used >= limit` →
+  `denied_quota_exhausted` / `allowed=False` / `remaining=0` / **no mutation** (evaluate_quota stays strictly read-only);
+  UNLIMITED behavior unchanged. **RED-first proof:** two discriminating tests
+  (`test_evaluate_quota_denies_when_finite_limit_reached`, `test_evaluate_quota_denies_zero_limit_from_start`) **FAIL against
+  the invalid implementation** (evaluate_quota allowed an exhausted/zero-limit quota) and **PASS after the fix**; a third pins
+  UNLIMITED stays allowed.
+- **R2 — corrected the `consume_quota` docstring** to describe the actual fail-closed contract and that `QuotaError` also
+  arises from missing/invalid `now` when a fixed-window policy requires an integer epoch time source (no runtime change).
+- **Cleanups (adjacent, non-scope-widening):** (1) a lifetime consumption with `now=None` no longer persists the literal
+  string `"None"` as the usage timestamp (empty string when no clock is supplied; deterministic; no window-semantics change);
+  (2) documented idempotency-key across-windows semantics — one logical consumption keyed by (account, meter, key), so a
+  same-key replay in a LATER window returns the prior outcome and does not re-consume (a test pins this).
+
+**GREEN implementation (REQUIRED allowlist + the §15/§19-authorized guard extension).** `engine/quota_service.py` (NEW —
+Flask-free fail-closed `consume_quota`/`evaluate_quota` → `QuotaDecision`; entitlement FIRST; derived policy; atomic
+evaluate-and-consume; injectable clock; read path now denies exhaustion; imports only the commercial layer).
+`engine/plan_catalog.py` (EXTENDED — declarative versioned `quota_policy`/`meter_capability` + `QUOTA_PROOF_METER` +
+`UNLIMITED` named sentinel + internal technical test plans; no marketed names/values). `engine/account_store.py` (ADDITIVE —
+idempotent `commercial_usage` [canonical counter] + `commercial_usage_idempotency` tables; `get_commercial_usage`;
+`consume_commercial_quota` [evaluate + increment + idempotency in ONE `BEGIN IMMEDIATE`, primitive status strings, imports NO
+commercial module] + `_insert_quota_idempotency`). `tests/test_p8_i2_commercial_quota.py` (NEW — 32 tests: the 21-item matrix
++ the R1/cleanup discriminators). `tests/test_p8_i1_plan_entitlement_foundation.py` (bounded cross-increment amendment — the
+engine-wide OD-N inverted-allowlist guard recognises the `quota_service` seam).
+
+**Test evidence.** R1 RED against the invalid impl (2 discriminating failures) → GREEN after fix. **P8-I2 focused 32 passed**
+(all prior 27 + R1-A/B/C + 2 cleanups); directly-impacted regressions (P8-I1 + P5-1/P5-3 + P4-1a + P7-I1 + P7-I2 flask API)
+**141 passed**; **full suite 2123 passed / 3 skipped / 1 xfailed / 0 failed**. **No regression:** same-environment base
+(working tree = `d3e950c`, changes stashed) = **2091 passed / 3 skipped / 1 xfailed / 0 failed**; delta exactly **+32** (the
+new P8-I2 tests), same skips/xfail, 0 failures. (Environment note: the container's `flask`/`werkzeug` had been evicted since
+the P8-I1 gate and were reinstalled to run the flask-dependent web tests; hence the same-environment 2091 base is the correct
+comparison.) Changed paths = `engine/quota_service.py` + `engine/plan_catalog.py` + `engine/account_store.py` +
+`tests/test_p8_i2_commercial_quota.py` + the guard extension in `tests/test_p8_i1_plan_entitlement_foundation.py` — the
+REQUIRED allowlist + the authorized guard extension; no web/api scope, routes/UI, domain activation, `record_rate_attempt`
+change, scoring/progression/safety edit, payment/provider/lifecycle/proration/overage code, repo dependency, or CI.
+
+**Critical invariants re-verified unchanged.** Security rate-limit ≠ commercial quota (`record_rate_attempt` untouched;
+no `auth_rate_limits` coupling); entitlement ≠ quota; atomic final-slot (6-thread race on limit-2 admits exactly 2);
+idempotency incl. same-key/different-amount conflict; anti-lock-in (existing Owner data read/export/account-delete when quota
+exhausted; no record-store delete seam invented); true prior-schema additive migration; OD-N behavioral + engine-wide static
++ commercial dynamic-import guards; credential revocation plan/quota-independent; API scope independence; domain-activation
+separation; no public quota surface; no real paywall; no provider/payment/lifecycle/UI.
+
+**Governance synchronization (minimum).** `ACTIVE_INCREMENT_CONTRACT.md` + `CURRENT_PROJECT_STATE.md` current-truth synced to
+the P8-I2 CORRECTED IMPLEMENTATION CANDIDATE + evidence (prior candidate recorded evidence-only, NOT merged). This roadmap
+append. **`OWNER_DECISION_REGISTER.md` UNCHANGED** (implementation candidate records no accepted Owner decision). No P8-I2
+closure is declared; Phase 8 is not complete.
+
+**Boundary / status after this entry.** **P8-I2 is an IMPLEMENTATION CANDIDATE ONLY — NOT closed; Phase 8 NOT complete, NOT
+billing-live, NOT paid-active.** Candidate-only until independent review → Owner acceptance → publication → PR → pre-merge
+safety check → merge → post-merge verification → formal P8-I2 closure/current-truth sync. P8-I1 IMPLEMENTED/MERGED (PR #418);
+Phase 7 FORMALLY CLOSED; PSRR registration AUTHORITATIVE; PSRR EXECUTION NOT STARTED; Public Production BLOCKED until PSRR =
+GO/PASS + Deployment Gate + explicit Owner deployment authorization; P8-I3/I4, Phases 9/10 NOT AUTHORIZED. Append-only; prior
+history not rewritten. This entry authorizes no push, PR, merge beyond this candidate, provider selection, or deployment.

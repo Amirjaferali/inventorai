@@ -158,6 +158,32 @@ _SCHEMA = (
         created_at  TEXT NOT NULL
     )
     """,
+    # P8-I2: canonical commercial usage counter (one row per subject+window).
+    # This is the SINGLE authoritative enforcement source; NOT a financial ledger.
+    """
+    CREATE TABLE IF NOT EXISTS commercial_usage (
+        account_id  TEXT NOT NULL,
+        meter       TEXT NOT NULL,
+        window_key  TEXT NOT NULL,
+        used_count  INTEGER NOT NULL DEFAULT 0,
+        updated_at  TEXT NOT NULL,
+        PRIMARY KEY (account_id, meter, window_key),
+        FOREIGN KEY (account_id) REFERENCES accounts(account_id)
+    )
+    """,
+    # P8-I2: auxiliary retry-safety keys, transactionally consistent with the
+    # counter (no competing truth source). ``amount`` pins same-key replays.
+    """
+    CREATE TABLE IF NOT EXISTS commercial_usage_idempotency (
+        account_id      TEXT NOT NULL,
+        meter           TEXT NOT NULL,
+        idempotency_key TEXT NOT NULL,
+        amount          INTEGER NOT NULL,
+        consumed_at     TEXT NOT NULL,
+        PRIMARY KEY (account_id, meter, idempotency_key),
+        FOREIGN KEY (account_id) REFERENCES accounts(account_id)
+    )
+    """,
 )
 
 
@@ -387,6 +413,81 @@ class SqliteAccountStore:
         return [{"event_id": r[0], "account_id": r[1], "event_type": r[2],
                  "from_plan": r[3], "to_plan": r[4], "created_at": r[5]}
                 for r in rows]
+
+    # --- commercial usage quota (P8-I2: counter + retry idempotency) --------
+    def get_commercial_usage(self, account_id: str, meter: str, window_key: str) -> int:
+        """Return the canonical durable used-count for (account, meter, window),
+        or 0 when there is no row. Read-only; the counter is the single
+        authoritative enforcement source."""
+        with self._read() as c:
+            row = c.execute(
+                "SELECT used_count FROM commercial_usage "
+                "WHERE account_id = ? AND meter = ? AND window_key = ?",
+                (account_id, meter, window_key)).fetchone()
+        return row[0] if row else 0
+
+    def _insert_quota_idempotency(self, c, account_id, meter, idempotency_key,
+                                  amount, now_iso):
+        """Insert one retry-idempotency key on the SAME open write connection so it
+        commits/rolls back atomically with the counter mutation."""
+        c.execute(
+            "INSERT INTO commercial_usage_idempotency "
+            "(account_id, meter, idempotency_key, amount, consumed_at) "
+            "VALUES (?, ?, ?, ?, ?)",
+            (account_id, meter, idempotency_key, amount, now_iso))
+
+    def consume_commercial_quota(self, account_id, meter, window_key, unlimited,
+                                 limit, amount, now_iso, idempotency_key):
+        """Atomic evaluate-and-consume (one ``BEGIN IMMEDIATE`` critical section).
+        Commercial-layer-agnostic: takes primitive policy values and returns a
+        status string — this persistence layer imports NO commercial module.
+
+        Returns ``(status, used_count)`` where status is one of:
+        ``"allowed"`` (counter incremented), ``"allowed_idempotent_replay"`` (an
+        identical prior key → no second increment), ``"exhausted"`` (hard cap →
+        NO increment), or ``"conflict"`` (same key, different amount → NO
+        increment). ``used_count`` is the counter value AFTER any increment.
+        Concurrent final-slot writers serialise on the RESERVED lock, so a hard
+        cap can never be oversubscribed."""
+        with self._write() as c:
+            if idempotency_key is not None:
+                prior = c.execute(
+                    "SELECT amount FROM commercial_usage_idempotency "
+                    "WHERE account_id = ? AND meter = ? AND idempotency_key = ?",
+                    (account_id, meter, idempotency_key)).fetchone()
+                if prior is not None:
+                    row = self._read_usage_row(c, account_id, meter, window_key)
+                    used = row[0] if row else 0
+                    if prior[0] != amount:
+                        return ("conflict", used)          # same key, different amount
+                    return ("allowed_idempotent_replay", used)
+            row = self._read_usage_row(c, account_id, meter, window_key)
+            used = row[0] if row else 0
+            if not unlimited and used + amount > limit:
+                return ("exhausted", used)                 # hard cap → no write
+            new_used = used + amount
+            if row is None:
+                c.execute(
+                    "INSERT INTO commercial_usage "
+                    "(account_id, meter, window_key, used_count, updated_at) "
+                    "VALUES (?, ?, ?, ?, ?)",
+                    (account_id, meter, window_key, new_used, now_iso))
+            else:
+                c.execute(
+                    "UPDATE commercial_usage SET used_count = ?, updated_at = ? "
+                    "WHERE account_id = ? AND meter = ? AND window_key = ?",
+                    (new_used, now_iso, account_id, meter, window_key))
+            if idempotency_key is not None:
+                self._insert_quota_idempotency(c, account_id, meter,
+                                               idempotency_key, amount, now_iso)
+            return ("allowed", new_used)
+
+    @staticmethod
+    def _read_usage_row(c, account_id, meter, window_key):
+        return c.execute(
+            "SELECT used_count FROM commercial_usage "
+            "WHERE account_id = ? AND meter = ? AND window_key = ?",
+            (account_id, meter, window_key)).fetchone()
 
     # --- email tokens -------------------------------------------------------
     def create_email_token(self, token_id: str, account_id: str, token_type: str,
