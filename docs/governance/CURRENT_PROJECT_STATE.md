@@ -557,23 +557,22 @@ AUTHORIZED / NOT STARTED.***
   full 2083 passed, 0 failed. Retained non-blocking observations (post-auth limiter after scope check; unknown-id
   micro-timing; inert `API_CREDENTIAL_STATUSES`; `access_audit` retention NOT solved). **P7-I2 closure is an increment
   closure only — Phase 7 remains OPEN; no remaining Phase-7 obligation is satisfied; the §25 exit review remains reserved
-  before P7-CLOSE.** **Next-eligible Phase-7 increment: P7-I3 — Canonical Export + Local/Reference Adapter Proof
-  (outbound-only, non-mutating).** Its bounded contract is now **DEFINED by a governance-only PUBLICATION CANDIDATE
-  (corrected)** (`docs/governance/P7_I3_CANONICAL_EXPORT_LOCAL_REFERENCE_ADAPTER_PROOF_INCREMENT_CONTRACT.md`; supersedes
-  pre-review candidate `51b8fc6`, evidence only) — authoritative if/when independently reviewed, Owner-accepted, merged,
-  and post-merge verified. It bounds an outbound-only, non-mutating proof consuming the existing canonical P7-I1
-  Structured Export (no second output model; no invented export-version identity — P7-I1 has none per IR-6; source
-  provenance names the P7-I1 seam + any explicit supplied version metadata such as P7-I2 `export_contract_version`)
-  through a local/reference adapter — deterministic transform → structurally distinct representation → semantic
-  inverse/equivalence validation (not byte equality; validator independent of the transform) enforcing a contract-owned
-  NON-EMPTY mandatory preservation floor + integrity/tamper detection (missing/duplicate/`record_id`-collision/summary-row
-  inconsistency all fail) + integration provenance. Bounded fail-closed failure semantics; no vendor/network/public-API/
-  inbound-import/domain-activation/project-mutation/file-write; adapter output UNTRUSTED BY DEFAULT. File Exchange
-  DEFERRED (in-memory DTO ≠ file exchange); local Reference/Test Harness distinct from the DEFERRED Partner/External
-  Sandbox. Likely ≈ one adapter module + one test module; D-FPC-MAP-06 preserved (no registry/orchestrator/plugin).
-  **P7-I3 bounded contract: DEFINED BY CANDIDATE — PENDING INDEPENDENT PRE-MERGE REVIEW; NOT FINALLY ESTABLISHED. P7-I3
-  implementation is NOT STARTED; Implementation Gate Lock ACTIVE.** The §25 Phase-7 exit review remains reserved before
-  P7-CLOSE; PSRR remains future. Phases 8/9/10, deployment, and separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
+  before P7-CLOSE.** **P7-I3 — Canonical Export + Local/Reference Adapter Proof (outbound-only, non-mutating)** is now
+  **CONTRACT ESTABLISHED / MERGED (PR #408) / IMPLEMENTED / INDEPENDENTLY REVIEWED (A) / OWNER ACCEPTED / MERGED
+  (PR #409, merge `2ee60ec`; parents `c66a219`+`27e3104`; merged tree `76ce600`) / POST-MERGE VERIFIED / FORMALLY
+  ACCEPTED AND CLOSED** (increment closure under `D-P7-STANDING-01`; dedicated record
+  `docs/governance/P7_I3_CANONICAL_EXPORT_LOCAL_REFERENCE_ADAPTER_PROOF_FORMAL_CLOSURE_RECORD.md`; authoritative if/when
+  this governance candidate is merged). It delivered one local/deterministic/network-free/vendor-neutral reference
+  adapter (`engine/export_adapter.py`) consuming the canonical P7-I1 Structured Export → distinct flattened DTO →
+  independent semantic validation (non-empty preservation floor + integrity/tamper detection); outbound-only,
+  non-mutating, UNTRUSTED BY DEFAULT; no vendor/network/public-API/domain-activation. The P7-I2 amendment strengthened
+  (not weakened) the adapter-import boundary (allowlist + all security tests preserved). Reproduced at merged tip:
+  P7-I3 focused 21 / P7-I2 37 / combined 102 / full 2105 passed, 0 failed. Superseded candidates `51b8fc6` (contract)
+  and `8ee0551` (impl) are evidence only (remote tag not verified/present). **P7-I3 closure is an increment closure
+  only — Phase 7 remains OPEN; no remaining Phase-7 obligation is satisfied.** **Next-eligible Phase-7 step: the
+  mandatory §25 Phase-7 Remaining-Obligation / Exit-Criteria Review — NEXT ELIGIBLE AFTER P7-I3 FORMAL CLOSURE; NOT
+  STARTED / RESERVED.** PSRR remains future (public production prohibited until PSRR = GO). Phases 8/9/10, deployment,
+  and separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
   §5 as a whole is NOT complete** — §5-I1, §5-I2, and §5-I3 are closed. Next-eligible gate: **§5-CLOSE (§5 formal closure +
   GAP-1…GAP-4 governance reconciliation)** under continuing owner authorization — **NOT STARTED**; Phase 7 NOT AUTHORIZED.
 
