@@ -5524,3 +5524,53 @@ P7-C remains the Phase-7 contract-of-record; `D-P7-STANDING-01` remains GRANTED 
 Phase 10: NOT AUTHORIZED** by this gate; no automatic progression. Separately governed CAP/AISR/QTA/ACV/WS17/STG/PDF/Email/
 Output-Language and new-domain activation remain NOT AUTHORIZED. Append-only; prior history not rewritten. This entry
 authorizes no push, PR, merge, implementation, or deployment.
+
+
+---
+
+## PSRR GOVERNANCE REGISTRATION — POST-MERGE / CURRENT-TRUTH SYNCHRONIZATION (PR #413 MERGED & POST-MERGE VERIFIED) — supersedes the historical PR-#413 candidate entry's candidate-only wording (history preserved) — G-PSRR-POSTMERGE-CURRENT-TRUTH-SYNC-01
+
+**Gate.** Owner-authorized governance-only **post-merge current-truth synchronization** (G-PSRR-POSTMERGE-CURRENT-TRUTH-SYNC-01)
+closing the proven recording lag after PR #413. **NOT PSRR execution; NOT Phase 8/9/10 activation; no implementation /
+security scan / penetration test / deployment; no new readiness/security framework; no reopening of Phase 7.** Authoritative
+live tip verified read-only `6c0626e3ca659f90133a7df865e2a439f7b74f73` (PR #413 PSRR-registration merge; parents
+`c15b7e72272951a8e32d3065d96e7a24ebd1a993`+`a569f4bb92fb8b5828259f8674c03f15e1eaa8f3`; merged tree
+`4f1780ce42372cb6af71da771c52171c05ccece3` == accepted candidate tree; historical diffstat 5 files / +226 / −4); boot OK.
+**DOCUMENTED NO-VALID-RED** (governance/documentation-only reconciliation of already-proven post-merge repository state; no
+executable RED invented — document-consistency checks performed instead).
+
+**History preservation.** The historical PR-#413 candidate roadmap entry is **NOT rewritten** — its candidate wording was
+correct when authored. This is a **new superseding current-truth entry** stating the successful merge / post-merge
+verification and the resulting current state. No historical lifecycle wording (CANDIDATE / OPEN / NOT STARTED / RESERVED) is
+globally replaced; only now-stale **current-truth** surfaces and the one explicitly-known stale §25-RESERVED current-state
+sentence are corrected.
+
+**Now-authoritative current truth (Git-evidenced).**
+- **PHASE 7: FORMALLY CLOSED** (P7-CLOSE MERGED PR #412 `c15b7e7`, post-merge verified).
+- **PR #413: MERGED / POST-MERGE VERIFIED** (`6c0626e`).
+- **PSRR GOVERNANCE REGISTRATION: AUTHORITATIVE.** **D-PSRR-01: AUTHORITATIVE.**
+- **§25 Review: COMPLETE / AUTHORITATIVE** (PR #411); the §25 result is **unchanged** (35 obligations: 18 DELIVERED AND
+  VERIFIED / 17 INTENTIONALLY DEFERRED WITH OWNER-REASON-TRIGGER / 0 NOT APPLICABLE / 0 STILL REQUIRED; EXIT PASS) — **NOT
+  reclassified**.
+- **PSRR EXECUTION: NOT STARTED.** No production-readiness claim; no security claim; no vendor/tool selected.
+- **PUBLIC PRODUCTION: BLOCKED** until (1) PSRR = GO/PASS, (2) the governing separate deployment gate is passed, and
+  (3) explicit Owner deployment authorization is granted.
+- **PHASE 8 / PHASE 9 / PHASE 10: NOT AUTHORIZED.** **Current active implementation: NONE.** **Next development work is NOT
+  automatically activated by this synchronization.**
+- Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
+  operations) remain **NOT delivered / NOT solved**; PSRR may reassess, not auto-implement (Audit≠Monitoring; rate-limit
+  floor≠broad Abuse Controls preserved).
+
+**Governance synchronization (minimum; D-FPC-MAP-06 — no new register/framework; Phase-10/OD-P ownership unchanged).**
+`ACTIVE_INCREMENT_CONTRACT.md` — PSRR candidate→AUTHORITATIVE and the one stale current-truth §25-RESERVED sentence corrected
+to §25 COMPLETE/AUTHORITATIVE + P7-CLOSE COMPLETE + PSRR registration COMPLETE (historical increment-closure descriptions
+preserved). `CURRENT_PROJECT_STATE.md` — PSRR candidate→AUTHORITATIVE. `OWNER_DECISION_REGISTER.md` — D-PSRR-01 status
+condition marked satisfied (in-place status correction of the same row; no new decision). This roadmap append. No
+engine/web/domains/schema/migration/tests/dependencies/CI change; `PSRR_…_REGISTRATION.md` unchanged (no current-truth defect
+found there).
+
+**Boundary / status after this entry.** This synchronization is itself a **governance-only candidate** — authoritative
+if/when independently reviewed, Owner-accepted, merged, and post-merge verified. It changes no already-authoritative fact; it
+only removes stale candidate/reserved wording. Phase 7 FORMALLY CLOSED; PSRR registration AUTHORITATIVE; PSRR EXECUTION NOT
+STARTED; Public Production BLOCKED as above; Phases 8/9/10 NOT AUTHORIZED. Append-only; prior history not rewritten. This
+entry authorizes no push, PR, merge, implementation, or deployment.
