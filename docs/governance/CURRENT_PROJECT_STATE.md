@@ -606,7 +606,19 @@ AUTHORIZED / NOT STARTED.***
   the final Phase-10 public legal artifacts (Privacy Policy / Terms / payment terms / refund policy / consent) merely to
   DEFINE the commercial model; **Phase 10 retains ownership** of those. Building Phase-8 mechanics authorizes **NO public
   paid activation** — blocked until applicable Phase-10 legal/readiness + PSRR = GO/PASS + governing Deployment Gate +
-  explicit Owner deployment authorization. **OD-I/OD-N unchanged.** Activates no Phase-10/PSRR/billing work.
+  explicit Owner deployment authorization. **OD-I/OD-N unchanged.** Activates no Phase-10/PSRR/billing work. The **Phase-8
+  Formal Contract (P8-C) is now DEFINED by a governance-only CONTRACT CANDIDATE**
+  (`docs/governance/PHASE_8_SUBSCRIPTION_BILLING_ENTITLEMENTS_P8C_CONTRACT.md`; authoritative if/when reviewed/accepted/
+  merged/post-merge verified): canonical plan/subscription/entitlement architecture (hybrid entitlement via one Flask-free
+  fail-closed `evaluate_entitlement` seam consuming the existing account foundation — D-FPC-MAP-06, no new registry/manager/
+  adapter), the critical distinctions (security rate-limit ≠ commercial quota; API scope ≠ paid entitlement; plan access ≠
+  domain activation; subscription active ≠ production authorization; payment success ≠ technical progression; billing audit ≠
+  security monitoring), plan-neutral core (OD-N), data preserved on entitlement decrease (OD-O), provider neutrality (**no
+  provider selected; no prices set**), and the increment decomposition (**P8-I1 Plan & Entitlement Foundation [first, no
+  payment provider]** → P8-I2 Quotas → P8-I3 Lifecycle → P8-I4 Payment Provider Boundary → P8-CLOSE). **Phase 8 is CONTRACT
+  CANDIDATE ONLY — NOT implementation-started / NOT billing-live / NOT paid-active / NOT AUTHORIZED**; a separate P8
+  implementation authorization/gate remains required. Owner/business decisions (plan names, prices, trial/refund/
+  grandfathering/enterprise/tax/provider policies) recorded as REQUIRED, not decided.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation

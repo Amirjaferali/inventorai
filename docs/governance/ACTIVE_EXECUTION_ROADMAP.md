@@ -5624,3 +5624,66 @@ independently reviewed, Owner-accepted, merged, and post-merge verified. **Phase
 CLOSED; PSRR registration AUTHORITATIVE; PSRR EXECUTION NOT STARTED; Public Production BLOCKED until PSRR = GO/PASS +
 Deployment Gate + explicit Owner deployment authorization; **Phases 8/9/10 NOT AUTHORIZED**; current active implementation
 NONE. Append-only; prior history not rewritten. This entry authorizes no push, PR, merge, implementation, or deployment.
+
+
+---
+
+## P8-C — Formal Phase-8 Contract & Acceptance Criteria (Subscription, Billing and Entitlements) — governance-only CONTRACT CANDIDATE — Phase 8 remains CONTRACT CANDIDATE ONLY / NOT AUTHORIZED / NOT STARTED
+
+**Gate.** Owner-authorized governance-only **P8-C contract-definition** gate. Defines Phase-8 scope, boundaries,
+architecture ownership, sequencing, invariants, acceptance criteria, exclusions, the bounded implementation-increment
+decomposition, and the Owner/business decisions required. **Confers NO implementation authority.** NOT implementation; NO
+billing implementation; NO payment-provider selection; NO prices set; NO subscription activation; NO Phase-9/10 activation;
+NO PSRR execution; NO deployment. Authoritative live tip verified read-only `053a079b82154d40c6eb5bd9980a8f6204fd8348`
+(PR #415 merge of D-P8-PL-01 `178473f`); boot OK; working tree clean at authoring. **DOCUMENTED NO-VALID-RED**
+(governance/documentation-only; future implementation gates must define legitimate behavioral RED before GREEN).
+
+**Foundations (verified CLOSED).** Phase 4 (durable persistence), Phase 5 (accounts/auth/ownership/authorization), Phase 6
+(executed lane), Phase 7 (internal seam + versioned public API + machine/API identity) — all FORMALLY CLOSED. Commercial
+layer is greenfield (no billing/subscription/payment/entitlement/quota runtime exists; engine plan-neutral by construction).
+
+**Contract substance (dedicated record `docs/governance/PHASE_8_SUBSCRIPTION_BILLING_ENTITLEMENTS_P8C_CONTRACT.md`).**
+Answers Q1–Q25. Canonical **plan model** = durable versioned plan catalog (data, plan-neutral). **Subscription-state model**
+= durable account-bound deterministic state machine (free/active/past_due/canceled/expired/grandfathered). **Entitlement
+model** = HYBRID (durable subscription-state + plan catalog, DERIVED at evaluation) via one Flask-free fail-closed
+`evaluate_entitlement` seam (mirrors the read_export_service pattern). **D-FPC-MAP-06:** reuses account_store / record_store
+ownership / api_credentials / record_rate_attempt / access_audit / read_export_service; adds only one bounded entitlement
+seam + additive account-store schema (no new store; no BillingService/SubscriptionRegistry/EntitlementRegistry/QuotaManager/
+CommercialPlanManager/UsageMeter/PaymentAdapter/invoice subsystem). **Critical distinctions (binding, never conflated):**
+security rate-limit ≠ commercial usage quota; API scope ≠ paid entitlement; plan access ≠ domain activation; subscription
+active ≠ production authorization; payment success ≠ technical progression; enterprise ≠ relaxed safety/evidence; billing
+audit ≠ security monitoring. **Invariants:** OD-I (persistence+accounts-before-activation, binding); OD-N (plan-neutral
+technical truth — paid users never get "more favorable truth"; engine imports no commercial module + plan-neutrality guard
+test); OD-O (data PRESERVED on entitlement decrease — never silently deleted); D-P8-PL-01 (entry-level design vs Phase-10
+final legal); OD-P/Phase-10 ownership; D-PSRR-01 (production block); OD-K separation. **Fail-closed** entitlement/quota;
+technical evaluation never fails due to commercial state. **Provider neutrality:** no provider selected; **no prices set**
+(pricing architecture defined; actual prices = Owner decision).
+
+**Increment decomposition (smallest evidence-supported).** **P8-I1 — Plan & Entitlement Foundation** (recommended first;
+NO payment provider / checkout / card processing / live charges / invoices / tax) — proves Account → Commercial Plan
+Identity → Entitlement Evaluation → Governed Capability Access without external payment; strongly justified (zero payment
+risk, zero PCI scope, no provider lock-in, fully offline-testable, foundational; paid activation is blocked anyway). Then
+**P8-I2** Commercial Usage Quotas/Limits (distinct from security rate-limit) → **P8-I3** Subscription Lifecycle
+(renewal/upgrade/downgrade/cancellation/failed-payment/expiry/grandfathering mechanics; data preserved on decrease) →
+**P8-I4** Payment Provider Boundary (provider-neutral interface + idempotency + webhook security; NO provider selected) →
+**P8-CLOSE** (exit review; public paid activation still gated behind Phase-10 + PSRR + Deployment Gate + Owner deployment
+authorization). Each increment: own bounded contract, verified base, RED-first, GREEN, regression, Lean, independent review,
+separate Owner authorization.
+
+**Owner/business decisions REQUIRED (not decided here).** Plan names; prices/currency/billing-period; trial policy;
+free-vs-paid packaging; enterprise packaging; grandfathering policy; refund policy; tax/jurisdictions; failed-payment grace
+policy; over-limit-on-downgrade policy; whether/when to select a payment provider.
+
+**Governance synchronization (minimum; D-FPC-MAP-06).** NEW `PHASE_8_SUBSCRIPTION_BILLING_ENTITLEMENTS_P8C_CONTRACT.md`.
+`ACTIVE_INCREMENT_CONTRACT.md` + `CURRENT_PROJECT_STATE.md` current-truth synced. `OWNER_DECISION_REGISTER.md` **UNCHANGED**
+— this candidate records **no accepted** Owner decision (it identifies Owner decisions REQUIRED; the P7-C precedent recorded
+its contract-acceptance decision only at a later owner-acceptance/publication gate). No engine/web/domains/schema/migration/
+tests/dependencies/CI change; no new framework beyond the dedicated contract doc.
+
+**Boundary / status after this entry.** **Phase 8 is CONTRACT CANDIDATE ONLY — NOT implementation-started, NOT billing-live,
+NOT paid-active, NOT AUTHORIZED / NOT STARTED.** No implementation begins until P8-C → independent review → Owner
+exact-candidate acceptance → merge → post-merge verification → a separate P8 implementation authorization/gate. Phase 7
+FORMALLY CLOSED; PSRR registration AUTHORITATIVE; PSRR EXECUTION NOT STARTED; Public Production BLOCKED until PSRR = GO/PASS
++ Deployment Gate + explicit Owner deployment authorization; Phases 9/10 NOT AUTHORIZED; current active implementation NONE.
+Append-only; prior history not rewritten. This entry authorizes no push, PR, merge, implementation, provider selection, or
+deployment.
