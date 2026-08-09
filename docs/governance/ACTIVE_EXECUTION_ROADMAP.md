@@ -5353,3 +5353,64 @@ P7-I1 & P7-I2 remain FORMALLY CLOSED; `D-P7-STANDING-01` remains GRANTED; **Phas
 deployment/release, new-domain activation outside Phase-7 scope, and separately governed CAP/AISR/QTA/ACV/WS17/STG/PDF/Email/
 Output-Language remain NOT AUTHORIZED. Append-only; prior history not rewritten. This entry authorizes no push, PR, merge, or
 implementation.
+
+
+---
+
+## Phase-7 §25 REMAINING-OBLIGATION / EXIT-CRITERIA REVIEW — governance-only REVIEW CANDIDATE — P7-I1/P7-I2/P7-I3 CLOSED; all 35 §18 obligations classified; EXIT VERDICT PASS (eligibility only); Phase 7 remains OPEN
+
+**Gate.** Owner-authorized **Phase-7 §25 Remaining-Obligation / Exit-Criteria Review** gate. Read-only classification of
+every original Phase-7 obligation + one governance-only §25 review candidate. **Governance/documentation-only; authorizes no
+implementation; does NOT close Phase 7; creates NO formal closure record; registers/executes NO PSRR.** Authoritative live
+tip verified read-only `7fda709209f9c97d67bdaf752de7bda3a951ce15` (PR #410 P7-I3-closure merge; parents `2ee60ec`+`24dbe0f`;
+merged tree `e77d475508f53c6360a5a1b990f3e974842e7455`); boot OK; working tree clean at review start.
+
+**Increment status confirmed.** **P7-I1 CLOSED** (PR #403 `94ccccd`). **P7-I2 CLOSED** (PR #406 `5971b7a`). **P7-I3 CLOSED**
+(impl PR #409 `2ee60ec`; formal closure PR #410 `7fda709`, post-merge verified). **Phase 7: OPEN / IN PROGRESS.**
+
+**§25 classification (35 P7-C §18 obligations, reconstructed from the contract itself).**
+- **DELIVERED AND VERIFIED — 18:** resource model (v1); service boundary; public API boundary; API versioning;
+  authentication; machine/API identity; authorization/scopes; stable errors; request/correlation tracing; audit
+  (access/security); rate-limit protective floor; export contracts; adapter contract; outbound API (export); reference/test
+  harness; secrets (hash-only); revocation; compatibility (version identity + additive policy from v1).
+- **INTENTIONALLY DEFERRED WITH OWNER-REASON-TRIGGER — 17 (each trigger unfired; owner basis + reason + trigger recorded):**
+  monitoring; broad abuse controls; partner/external-integration sandbox; inbound external-submission provenance
+  (untrusted-by-default invariant holds vacuously — no inbound surface — persistence deferred); deprecation; HTTP
+  idempotency; quotas beyond floor; retries/timeouts; import contracts; inbound API; file exchange; embedded integration;
+  partner connectors; webhooks; subsystem durable identity/API; async/job model; pagination.
+- **NOT APPLICABLE TO ACCEPTED V1 — OWNER ACCEPTED — 0** (every deferred row carries a canonical trigger → B is precise).
+- **STILL REQUIRED BEFORE PHASE-7 CLOSURE — 0.**
+
+**Security/operations displacement (high-risk) — no displacement.** P7-C §10 exact text fixes the accepted first-exposure
+floor as basic audit + basic protective rate-limit (both DELIVERED) and explicitly separates Monitoring and broad Abuse
+Controls out as distinct preserved obligations. Classifying monitoring/broad-abuse/audit-retention as STILL REQUIRED would
+ADD a requirement the owner-accepted contract did not impose on read/export-first v1; honest label = deferred-with-trigger.
+Audit ≠ Monitoring; rate-limit floor ≠ all abuse controls; reference harness ≠ partner sandbox; revocation ≠ full secrets
+lifecycle — all kept distinct. Access-audit retention/cleanup maps to no distinct §18 row (operational lifecycle, PSRR/ops);
+no D. PSRR boundary PRESERVED — not registered/executed here; not used to bury any obligation (each operational obligation
+preserved with owner basis + trigger; public production BLOCKED until PSRR = GO). Write/import/idempotency/mutation-audit/
+concurrency all deferred-with-trigger (no v1 write surface), not N/A. Subsystem/async/webhook/real-vendor triggers all
+UNFIRED (P7-I3 outbound-only, non-mutating, synchronous, vendor-neutral; Wokwi not selected). File exchange not implemented
+(in-memory DTO ≠ file exchange). Outside-Phase-7 capabilities (CAP-15…18/AISR/QTA/WS17/STG/ACV/PDF/Email/Output-Language/
+Phase-8/9/10) recorded OUTSIDE the register, not classified.
+
+**Evidence (reproduced live at `7fda709`).** P7-I1+I2+I3 focused **80 passed** (22+37+21); full suite **2105 passed / 1
+skipped / 1 xfailed / 0 failed**; delivered modules present.
+
+**EXIT DECISION.** STILL REQUIRED COUNT = **0** → **PHASE-7 EXIT VERDICT: PASS — ELIGIBLE FOR A SEPARATE FORMAL PHASE-7
+CLOSURE GATE.** Eligibility only — NOT production readiness, NOT closure. Preserved trigger-deferred obligations re-activate
+at real public-production exposure / real integration, enforced by the standing PSRR = GO block and each recorded trigger.
+
+**Governance synchronization (minimum; D-FPC-MAP-06).** NEW `docs/governance/PHASE_7_REMAINING_OBLIGATION_EXIT_CRITERIA_REVIEW.md`
+(full 35-row classification + focused reviews + 20-point adversarial self-review). `ACTIVE_INCREMENT_CONTRACT.md` and
+`CURRENT_PROJECT_STATE.md` current-truth synced to the §25 review candidate + EXIT PASS. `OWNER_DECISION_REGISTER.md`
+UNCHANGED — every classification grounds in existing accepted decisions (`D-P7C-01` §§7–27, `D-P7-STANDING-01`, frozen P7-B
+D1–D12); no new durable Owner decision required. No engine/web/domains/schema/migration/tests/dependencies/CI change.
+
+**Boundary / status after this entry.** **Phase 7 remains OPEN.** The §25 review does NOT close Phase 7 and creates no
+formal closure record. **Next-eligible: a separate P7-CLOSE — Formal Phase-7 Closure gate (owner-run under D-P7-STANDING-01
+§25 closure criteria) — NOT STARTED.** P7-I1/P7-I2/P7-I3 remain FORMALLY CLOSED; P7-C remains the Phase-7 contract-of-record;
+`D-P7-STANDING-01` remains GRANTED. PSRR remains a future governance registration after Phase-7 formal closure (public
+production prohibited until PSRR = GO). Phases 8/9/10, deployment/release, new-domain activation outside Phase-7 scope, and
+separately governed CAP/AISR/QTA/ACV/WS17/STG/PDF/Email/Output-Language remain NOT AUTHORIZED. Append-only; prior history not
+rewritten. This entry authorizes no push, PR, merge, or implementation.

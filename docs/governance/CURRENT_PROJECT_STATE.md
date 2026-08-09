@@ -569,10 +569,19 @@ AUTHORIZED / NOT STARTED.***
   (not weakened) the adapter-import boundary (allowlist + all security tests preserved). Reproduced at merged tip:
   P7-I3 focused 21 / P7-I2 37 / combined 102 / full 2105 passed, 0 failed. Superseded candidates `51b8fc6` (contract)
   and `8ee0551` (impl) are evidence only (remote tag not verified/present). **P7-I3 closure is an increment closure
-  only — Phase 7 remains OPEN; no remaining Phase-7 obligation is satisfied.** **Next-eligible Phase-7 step: the
-  mandatory §25 Phase-7 Remaining-Obligation / Exit-Criteria Review — NEXT ELIGIBLE AFTER P7-I3 FORMAL CLOSURE; NOT
-  STARTED / RESERVED.** PSRR remains future (public production prohibited until PSRR = GO). Phases 8/9/10, deployment,
-  and separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
+  only — Phase 7 remains OPEN; no remaining Phase-7 obligation is satisfied.** P7-I3 formal closure MERGED (PR #410,
+  merge `7fda709`; parents `2ee60ec`+`24dbe0f`; merged tree `e77d475`) / POST-MERGE VERIFIED. **The mandatory §25
+  Phase-7 Remaining-Obligation / Exit-Criteria Review is now PERFORMED as a governance-only REVIEW CANDIDATE**
+  (`docs/governance/PHASE_7_REMAINING_OBLIGATION_EXIT_CRITERIA_REVIEW.md`; authoritative if/when reviewed, Owner-accepted,
+  merged). All **35 P7-C §18 obligations** classified: **18 DELIVERED AND VERIFIED / 17 INTENTIONALLY DEFERRED WITH
+  OWNER-REASON-TRIGGER (each trigger unfired) / 0 NOT APPLICABLE / 0 STILL REQUIRED** → **PHASE-7 EXIT VERDICT: PASS —
+  ELIGIBLE FOR A SEPARATE FORMAL PHASE-7 CLOSURE GATE** (eligibility only, NOT production readiness; monitoring / broad
+  abuse controls / audit retention / partner sandbox / write-import / inbound / subsystem durable identity /
+  async-webhook / real-vendor remain preserved trigger-deferred obligations). Reproduced live at `7fda709`: focused 80 /
+  full 2105 passed, 0 failed. **The §25 review does NOT close Phase 7 and creates NO formal closure record — Phase 7
+  remains OPEN.** **Next-eligible Phase-7 step: a separate P7-CLOSE — Formal Phase-7 Closure gate (owner-run under
+  `D-P7-STANDING-01` §25 closure criteria) — NOT STARTED.** PSRR remains future (public production prohibited until
+  PSRR = GO). Phases 8/9/10, deployment, and separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
   §5 as a whole is NOT complete** — §5-I1, §5-I2, and §5-I3 are closed. Next-eligible gate: **§5-CLOSE (§5 formal closure +
   GAP-1…GAP-4 governance reconciliation)** under continuing owner authorization — **NOT STARTED**; Phase 7 NOT AUTHORIZED.
 
