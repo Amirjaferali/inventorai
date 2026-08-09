@@ -615,10 +615,27 @@ AUTHORIZED / NOT STARTED.***
   domain activation; subscription active ≠ production authorization; payment success ≠ technical progression; billing audit ≠
   security monitoring), plan-neutral core (OD-N), data preserved on entitlement decrease (OD-O), provider neutrality (**no
   provider selected; no prices set**), and the increment decomposition (**P8-I1 Plan & Entitlement Foundation [first, no
-  payment provider]** → P8-I2 Quotas → P8-I3 Lifecycle → P8-I4 Payment Provider Boundary → P8-CLOSE). **Phase 8 is CONTRACT
-  CANDIDATE ONLY — NOT implementation-started / NOT billing-live / NOT paid-active / NOT AUTHORIZED**; a separate P8
-  implementation authorization/gate remains required. Owner/business decisions (plan names, prices, trial/refund/
-  grandfathering/enterprise/tax/provider policies) recorded as REQUIRED, not decided.
+  payment provider]** → P8-I2 Quotas → P8-I3 Lifecycle → P8-I4 Payment Provider Boundary → P8-CLOSE). **Phase 8 P8-C is ACCEPTED /
+  MERGED (PR #416, merge `5db47a2`; parent 2 = accepted candidate `1aed84a`; merged tree `d3ae4a5`) / POST-MERGE
+  VERIFIED.** The first Phase-8 increment **P8-I1 — Plan & Entitlement Foundation** is now **DEFINED by a governance-only
+  BOUNDED IMPLEMENTATION-CONTRACT CANDIDATE (CORRECTED — verdict-B remediation)**
+  (`docs/governance/PHASE_8_I1_PLAN_ENTITLEMENT_FOUNDATION_INCREMENT_CONTRACT.md`; supersedes prior candidate `2a4b65b`,
+  evidence only; authoritative if/when reviewed/accepted/merged/post-merge verified): smallest provider-neutral proof of
+  Account → Commercial Plan Identity → Entitlement Evaluation → Governed Capability Access (code-resident versioned plan
+  catalog + additive durable `commercial_assignments` [plan-identity only] + minimal atomic-with-audit `commercial_audit` +
+  one Flask-free fail-closed derived-entitlement seam + one neutral governed-capability proof; NO payment provider/checkout/
+  charges/invoices/tax/quota/lifecycle/proration/UI). Records an explicit, Owner-acceptance-conditional **bounded refinement
+  of P8-C** (catalog code-resident vs DB-durable; P8-I1 assignment = plan identity only, lifecycle states/period boundaries
+  deferred to P8-I3; honest future schema-evolution — no `ALTER TABLE` framework) — NOT a silent supersession; P8-C history
+  preserved. Fail-closed six-state model (legacy/default absence → default; unknown/malformed/catalog-error/missing-account/
+  disabled-deleted → fail closed; missing account NOT defaulted) using existing Phase-5 `ACCOUNT_STATUSES`; additive
+  idempotent migration existing+fresh DBs, rollback-safe. OD-N enforced by an engine-wide inverted-allowlist static import
+  guard + behavioral guard; assignment+audit atomic in one transaction; credential revocation plan-independent; internal
+  identifiers not publicly exposed; security rate-limit ≠ commercial quota; API scope ≠ paid entitlement; plan entitlement ≠
+  domain activation. Genuinely-RED 15-test matrix; full-suite verification mandatory for the implementation candidate.
+  **P8-I1 is CONTRACT CANDIDATE ONLY — NOT implemented / NOT AUTHORIZED / NOT STARTED**; a separate P8-I1 implementation
+  authorization/gate remains required. Owner/business decisions (plan names, prices, trial/refund/grandfathering/enterprise/
+  tax/proration/provider policies) remain deferred/REQUIRED, not decided; none blocks P8-I1.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation

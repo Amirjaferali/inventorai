@@ -5687,3 +5687,72 @@ FORMALLY CLOSED; PSRR registration AUTHORITATIVE; PSRR EXECUTION NOT STARTED; Pu
 + Deployment Gate + explicit Owner deployment authorization; Phases 9/10 NOT AUTHORIZED; current active implementation NONE.
 Append-only; prior history not rewritten. This entry authorizes no push, PR, merge, implementation, provider selection, or
 deployment.
+
+
+---
+
+## P8-I1-C (CORRECTED — verdict-B remediation) — Plan & Entitlement Foundation Bounded Implementation Contract — governance-only CANDIDATE — supersedes prior candidate 2a4b65b (evidence only); P8-I1 remains CONTRACT CANDIDATE ONLY / NOT IMPLEMENTED / NOT AUTHORIZED
+
+**Gate.** Owner-authorized remediation of the P8-I1-C bounded implementation contract (independent review verdict **B —
+ACCEPT WITH REQUIRED PRE-MERGE CORRECTIONS**). Contract-text remediation only — no redesign beyond the required
+corrections; no widened scope; no payment/provider/quota/lifecycle/UI. **CONTRACT ONLY — does NOT implement P8-I1.**
+Authoritative live tip verified read-only `5db47a2959507fa0cb8a4c717d32e617f23a08f0` (unchanged; prior candidate `2a4b65b`
+NOT merged); boot OK; clean. **DOCUMENTED NO-VALID-RED for this contract-remediation gate.** The prior candidate `2a4b65b`
+(tree `a166e43`) is **evidence only — NOT accepted, NOT merged, NOT reused**; this is a NEW candidate built fresh from base.
+
+**Corrections incorporated.**
+- **R1 — explicit bounded P8-C refinement (surfaced for Owner acceptance; NOT a silent supersession; P8-C history
+  preserved).** Refines three P8-C provisions **for P8-I1 only**: (1) plan catalog is **code-resident versioned declarative
+  data** (`engine/plan_catalog.py`) rather than DB-durable rows (P8-C §18/§5-Q1) — justified: no admin CRUD / config
+  surface exists; evolvable without per-account snapshots or migrations; (2) the P8-I1 `commercial_assignments` row carries
+  **plan identity only** — **no lifecycle-state column, no period boundaries**; (3) lifecycle states (`past_due/canceled/
+  expired/grandfathered`), period boundaries, and grandfathering/lifecycle mechanics are **deferred to P8-I3** (consistent
+  with P8-C's own decomposition). **Binding from P8-C retained:** plan identity, hybrid derived-not-snapshot entitlement,
+  single canonical seam, durable assignment via account-store schema, all invariants/distinctions, the full canonical
+  subscription-state model + period boundaries as the Phase-8 target owned by P8-I3. **Honest future schema-evolution:** the
+  repo uses additive `CREATE TABLE IF NOT EXISTS` with **no `ALTER TABLE` framework**; the contract does NOT imply lifecycle
+  columns can be added "for free" — **P8-I3 must separately choose an additive lifecycle/state table OR a designed idempotent
+  schema-evolution mechanism** (not decided now).
+- **R2 — engine-wide OD-N static guard (inverted allowlist).** No `engine/*.py` may import `plan_catalog`/
+  `entitlement_service`/any commercial symbol except a minimal explicit allowlist (`entitlement_service`; `account_store`
+  only if necessary; the specific neutral seam file only if touched); AST-scan all engine modules (P7-I3 precedent). The
+  behavioral OD-N guard (same technical inputs under differing commercial identities → identical technical evaluation)
+  remains separately required and complementary.
+- **R3 — complete fail-closed six-state model + account-status semantics.** States A legacy/default absence (valid active
+  account, no row → technical default; NOT an error) / B explicit valid / C unknown plan / D malformed / E catalog-descriptor
+  failure / F missing account — C/D/E/F **fail closed for every capability**; **missing account MUST NOT get the default
+  identity**. Account status uses the existing `ACCOUNT_STATUSES = {active, disabled, deleted}` — **disabled/deleted fail
+  closed** (no new status semantics). **No user-visible behavior change / no real paywall** outside the neutral proof seam.
+- **R4 — atomic assignment + audit.** P8-I1 permits assignment mutation, so the assignment change AND its `commercial_audit`
+  event commit in the **SAME `BEGIN IMMEDIATE` transaction** (no two-step; no unaudited/partial mutation); a meaningful
+  atomicity/rollback RED test is included. `commercial_audit` is minimal/append-only/distinct from security `access_audit` —
+  not an elaborate event system.
+- **Cleanups.** Neutral proof plan identifier is unmistakably internal/technical (not a marketable name) and **not exposed
+  via public API/UI**; **CREDENTIAL REVOCATION IS PLAN-INDEPENDENT** carried forward; anti-lock-in obligation retained
+  (P8-I2/I3/Phase-10 must address continued access/export of owner data after downgrade; entitlement decrease never silently
+  deletes owner data); **no proration/cancellation timing** in P8-I1 (later Owner/business decisions).
+
+**RED matrix (15, all genuinely RED on base `5db47a2`) + allowlist.** `tests/test_p8_i1_plan_entitlement_foundation.py`:
+legacy→default; valid→derived; unknown/malformed/catalog-error/missing-account/disabled-deleted → fail closed; derived-not-
+snapshot (risk-protective); capability-via-seam + no-plan-name-branching invariant; OD-N behavioral; OD-N engine-wide static;
+atomic assignment+audit rollback; existing-DB migration; fresh-DB init; ownership/auth unchanged + revocation plan-independent.
+REQUIRED files: `engine/plan_catalog.py` (new), `engine/entitlement_service.py` (new), `engine/account_store.py` (additive
+tables + atomic assignment/audit methods), the P8-I1 test. PROHIBITED: `web/api_v1.py` scope, `web/app.py` routes/packaging,
+any UI, exposing internal identifiers, domain activation, `record_rate_attempt` repurposing, engine scoring/progression/
+safety edits, payment/provider/quota/lifecycle/proration code, dependency/CI. Full-suite verification mandatory for the
+implementation candidate (green baseline 2105 passed).
+
+**Governance synchronization (minimum; D-FPC-MAP-06).** REPLACED
+`PHASE_8_I1_PLAN_ENTITLEMENT_FOUNDATION_INCREMENT_CONTRACT.md` with the corrected candidate (built fresh from base; prior
+candidate not merged, so no accepted history is rewritten). `ACTIVE_INCREMENT_CONTRACT.md` + `CURRENT_PROJECT_STATE.md`
+current-truth synced. **`OWNER_DECISION_REGISTER.md` UNCHANGED** — the R1 refinement is an implementation-architecture
+refinement surfaced via this candidate and accepted at its merge (not a separate standing Owner-level decision; not recorded
+authoritative pre-merge; consistent with the P7-I* increment-contract precedent). The accepted P8-C contract text is NOT
+edited. No engine/web/domains/schema/migration/tests/dependencies/CI change.
+
+**Boundary / status after this entry.** **P8-I1 is CONTRACT CANDIDATE ONLY — NOT implemented, NOT AUTHORIZED / NOT STARTED.**
+No code until this corrected P8-I1-C → independent review → Owner exact-candidate acceptance → merge → post-merge
+verification → a separate P8-I1 implementation authorization/gate. Phase 7 FORMALLY CLOSED; PSRR registration AUTHORITATIVE;
+PSRR EXECUTION NOT STARTED; Public Production BLOCKED until PSRR = GO/PASS + Deployment Gate + explicit Owner deployment
+authorization; P8-I2/I3/I4, Phases 9/10 NOT AUTHORIZED; current active implementation NONE. Append-only; prior history not
+rewritten. This entry authorizes no push, PR, merge, implementation, provider selection, or deployment.
