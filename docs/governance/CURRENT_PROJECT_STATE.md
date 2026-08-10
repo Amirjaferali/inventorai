@@ -16,12 +16,16 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
   (`git rev-parse origin/feature/atomic-json-session-persistence`). Do **not** trust a
   prose-pinned SHA.
   - **Current authoritative branch tip (last independently verified):**
-    `d37caef8cfc0e4c5e53275e6e126ec8247a26219` (Merge PR #421 — P8-I2 Commercial Usage Quotas formal closure /
-    current-truth sync; two-parent merge of `e3c65af` (base) + `7e3f17b` (candidate), tree
-    `d1a8208bb3efe401d9a9797d8cafd1a64703c83c`, post-merge verified) — always re-resolve the live tip from Git per
-    the rule above. (Prior pin `d9f888b` (PR #379, Phase-5 final closure) is superseded; the authoritative branch
-    has since merged §5-CLOSE, Phase-6/§5 closures, Phase-7 (P7-I1/I2/I3, §25, P7-CLOSE), PSRR registration,
-    D-P8-PL-01, P8-C, P8-I1, and P8-I2.)
+    `3a802fd84055f475feafcd55893da301af45c67d` (Merge PR #427 — P8-I4-I1 Provider-Neutral Payment Boundary Foundation;
+    two-parent merge of `fccd8955afdfdd5167c4b7a4f0dbe6c14d00127b` (base, PR #426 P8-I4-C) + `6f83e496ac236a798598d393d8dd79b9f9dfaf8d`
+    (candidate), tree `191709299943f8a87ec2ee8c287caf77a850e2f9`, post-merge verified) — always re-resolve the live tip from
+    Git per the rule above. (Prior pin `d37caef` (PR #421, P8-I2 formal closure) is superseded; the authoritative branch has
+    since merged the corrected P8-I3-C contract (PR #423), the P8-I3 implementation + formal closure (PR #424, merge
+    `cef9a52`), the P8-I4-C contract (merge PR #426, `fccd895`), and P8-I4-I1 (PR #427, `3a802fd`).)
+  - **Prior recorded tip (historical):** `d37caef8cfc0e4c5e53275e6e126ec8247a26219` (Merge PR #421 — P8-I2 Commercial Usage
+    Quotas formal closure / current-truth sync; two-parent merge of `e3c65af` (base) + `7e3f17b` (candidate), tree
+    `d1a8208bb3efe401d9a9797d8cafd1a64703c83c`, post-merge verified); superseded as the live tip by the P8-I3-C/P8-I3/P8-I4-C/
+    P8-I4-I1 merges (PRs #423–#427).
   - **Prior recorded tip (historical):** `402727a557edd7dbea3e92f477bf9cbefe74ea3e` (Merge PR #377 — P5-2 Authenticated
     Sessions / Verified Email / Account Recovery implementation + FORMAL CLOSURE; two-parent merge of `f84c87d` +
     `87c85c7`, tree `375db689`); superseded as the live tip by PR #378 (P5-2 closure sync) and PR #379 (P5-3
@@ -827,6 +831,31 @@ AUTHORIZED / NOT STARTED.***
   review → Owner acceptance → PR → pre-merge check → merge → post-merge verification → a dedicated P8-I4 closure gate. Phase 8
   OPEN; P8-CLOSE NOT STARTED; Phase 9 / Phase 10 NOT AUTHORIZED; PSRR EXECUTION NOT STARTED; public paid activation / production
   BLOCKED / NOT AUTHORIZED.
+  **P8-I4 — Payment Provider Boundary is now FORMALLY CLOSED (governance-only CLOSURE CANDIDATE; increment closure only —
+  authoritative if/when merged).** The accepted P8-I4-I1 implementation (independent review **verdict A — ACCEPT**) is
+  **MERGED (PR #427, merge `3a802fd84055f475feafcd55893da301af45c67d`; parents `fccd895` + `6f83e496…`; merged tree
+  `191709299…`; exact diffstat 10 files / +1175 / −5; post-merge `git diff --check` PASS) / POST-MERGE VERIFIED**; full suite
+  **2198 passed / 3 skipped / 1 xfailed / 0 failed** (cited, not re-run). **Evidence-triggered lanes deferred (NOT
+  triggered):** P8-I4-I2 verified webhook ingestion — DEFERRED; P8-I4-I3 reconciliation — DEFERRED; real-provider integration
+  — NOT STARTED; **provider selection — OPEN OWNER DECISION**; real payment collection — NOT ACTIVATED. Canonical record:
+  `docs/governance/P8_I4_PAYMENT_PROVIDER_BOUNDARY_FORMAL_CLOSURE_RECORD.md`. **Mandatory handoff:** formal P8-I4 closure does
+  **NOT** close Phase 8 — a separate cross-cutting obligation **`P8-AF` — Access, Licensing & Organization Foundation** is
+  **REGISTERED as the required next Phase-8 foundation gate, mandatory before `P8-CLOSE` / NOT IMPLEMENTED / NOT ACTIVATED /
+  NOT STARTED** (record: `docs/governance/P8_AF_ACCESS_LICENSING_ORGANIZATION_FOUNDATION_OBLIGATION.md`). `P8-AF` preserves
+  **Authentication ≠ Authorization ≠ Account identity ≠ Data ownership ≠ Commercial entitlement ≠ Subscription lifecycle ≠
+  Payment state ≠ Billing ownership** and **paying ≠ owning user data**; its registered (NON-ACTIVATED) future-readiness scope
+  covers individual access, a **7-DAY** (NOT 14) per-account trial preserving durable data on trial→paid (**automatic day-7
+  hard deletion NOT authorized**; 168h-vs-calendar semantics OPEN), a **global configurable promotional free period**
+  administrable **without a source-code change**, **Owner/Admin non-billed access** as an explicit auditable
+  authorization→entitlement grant (no bypass), **organization/institution licensing** with **named seats** (billing ownership
+  ≠ data ownership; seat reassignment never transfers prior-member data), enterprise/custom compatibility, a deterministic
+  **access-resolution precedence**, safe **quota composition** (P8-I2 remains the sole quota authority), and **no second
+  lifecycle state machine** (P8-I3 remains canonical; D-FPC-MAP-06). **No premature implementation** (no organizations/
+  memberships/seats/role/campaign table, admin UI, trial-duration constant, pricing, or SKUs). **Next gate: `P8-AF-C` —
+  Access, Licensing & Organization Foundation Contract (governance contract first; NO implementation before it is
+  independently reviewed and accepted).** **Phase 8 remains OPEN / NOT CLOSED; `P8-AF` / `P8-AF-C` / `P8-CLOSE` NOT STARTED;
+  Phase 9 / Phase 10 NOT AUTHORIZED; PSRR EXECUTION NOT STARTED; public paid activation / production BLOCKED / NOT
+  AUTHORIZED.**
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
