@@ -6336,3 +6336,73 @@ AUTHORIZED. Candidate only until independent review → Owner acceptance → mer
 Owner-authorized P8-I4 implementation gate (and, for real providers, a separate provider-selection decision). Append-only;
 prior history not rewritten. This entry authorizes no push, PR, merge beyond this candidate, P8-I4 implementation start,
 provider selection, or deployment.
+
+---
+
+## P8-I4-I1 — Provider-Neutral Payment Boundary Foundation — IMPLEMENTATION (RED → GREEN) — governance-only IMPLEMENTATION CANDIDATE — accepted P8-I4-C contract MERGED (PR #426); P8-I4 IMPLEMENTED (first increment) but NOT closed; NO real provider
+
+**Gate.** OWNER-AUTHORIZED **P8-I4-I1 implementation** gate on the accepted, merged, post-merge-verified P8-I4-C contract
+(PR #426). RED-first → GREEN. **NO real payment provider / SDK / HTTP client / checkout / pricing / billing-portal / webhook
+endpoint / signature-verification implementation / reconciliation worker / invoice / refund / tax / payment-method / card /
+production secrets / provider keys; NO P8-I4-I2; NO P8-I4-I3; NO real-provider sub-gate; NO Phase-9/10; NO PSRR; NO
+deployment; NO public commercial activation.** Authoritative live tip verified read-only
+`fccd8955afdfdd5167c4b7a4f0dbe6c14d00127b` (PR #426 merge of the accepted P8-I4-C contract `3ef92f3`; not newer); boot OK;
+clean.
+
+**Behavioral RED evidence.** The seven contract-defined boundary defects were reproduced against the implementation and each
+made a targeted test RED (the behavioral RED-catching demonstration): disable the store provider-event uniqueness → the
+concurrency same-event test fails (8/8 runs); disable the conflicting-fingerprint comparison → the conflicting-payload test
+fails (4/4); persist the raw payload/secret → the no-raw-payload test fails; bypass the cross-account mapping fail-closed →
+the cross-account test fails; split the dedupe + lifecycle into separate transactions → the atomicity test fails;
+non-deterministic fingerprint normalization → the fingerprint-determinism + duplicate tests fail; a provider-adapter import
+into a core module → the import-isolation test fails. (These double as the mandatory mutation probes; all restored
+byte-identical.)
+
+**GREEN implementation (bounded; live-code-grounded).** `engine/payment_provider_port.py` (NEW — provider-neutral
+`PaymentProviderPort` + `CanonicalOperation`/`ParsedProviderEvent` + a deterministic stdlib SHA-256 integrity fingerprint over
+a documented canonical field set [no raw payload / no secrets] + `ProviderBoundaryError`; no network/SDK). `engine/payment_fake_adapter.py`
+(NEW — two deterministic fakes A/B with DIFFERENT provider vocabularies mapping to the SAME canonical operations —
+replaceability; a fake authenticity secret [no production security]; configurable exception/timeout faults; NO network/SDK/
+vendor name). `engine/payment_ingestion.py` (NEW — the coordinator: verify+parse → provider→canonical map → durable mapping
+resolution → the P8-I3 authority's OWN transition function reused inside the store txn → atomic ingest; raw provider names
+never reach the P8-I3 log). `engine/account_store.py` (ADDITIVE — refactor `apply_lifecycle_event` into a behavior-preserving
+`_apply_lifecycle_in_txn` helper [P8-I3 unchanged], two `CREATE TABLE IF NOT EXISTS` tables `provider_mapping` +
+`provider_event_dedupe`, `put_provider_mapping`/`get_provider_mapping_account`/`get_provider_event`, and
+`ingest_provider_lifecycle_event` — provider-event dedupe + the SAME P8-I3 lifecycle mutation in ONE `BEGIN IMMEDIATE`, with a
+caller-supplied transition callback so the state machine stays out of the store; imports no commercial/provider module).
+`tests/test_p8_i4_i1_payment_provider_boundary.py` (NEW — 30 tests). `tests/test_p8_i1_..._foundation.py` +
+`tests/test_p8_i2_commercial_quota.py` (OD-N engine-wide guard extended to allowlist the three payment-boundary seams).
+
+**Corrections during implementation.** The initial coordinator computed the canonical transition BEFORE the store's dedupe
+check, so a duplicate event whose account had advanced was rejected as an invalid transition (flaky under concurrency). Fixed
+by moving the transition computation INSIDE the atomic store ingest (after the dedupe check) via a transition callback — the
+two-thread races are now deterministic across repeated runs.
+
+**Test evidence.** Behavioral RED (7 boundary defects) → GREEN: **P8-I4-I1 focused 30 passed**; Phase-8 regressions
+(P8-I1+I2+I3+I4-I1) **124 passed**; **full suite 2198 passed / 3 skipped / 1 xfailed / 0 failed** (2168 P8-I3-closure baseline
++ 30). Two-thread races confirmed deterministic across repeated runs. **Seven mutation probes** each turned a targeted test
+RED and were fully restored (files byte-identical; no mutation remains).
+
+**Critical invariants verified.** Two fakes satisfy one port (replaceability; a provider swap needs no change to P8-I1/I2/I3/
+Domain-Packs/evaluation); opaque external refs (no provider id is an internal primary identity); additive mapping + durable
+`(provider, provider_event_id)` dedupe (survives restart); strict idempotency (exact duplicate replays; same identity +
+different fingerprint FAILS CLOSED; same event id under different providers independent); rejected pre-acceptance event can
+later succeed after correction; NO raw payload / secret / card persisted; deterministic content-sensitive fingerprint; adapter
+exception/timeout → no mutation; canonical-mapping-only (a raw provider event name never enters the P8-I3 log); invalid
+lifecycle transition still rejected by the P8-I3 authority; **P8-I2 quota + P8-I1 entitlement authority unchanged**; atomic
+dedupe + lifecycle (forced rollback leaves neither); cross-account mapping isolation; OD-N (core imports no payment boundary;
+no provider/network import in the seam).
+
+**Governance synchronization (minimum).** `ACTIVE_INCREMENT_CONTRACT.md` + `CURRENT_PROJECT_STATE.md` current-truth synced to
+the P8-I4-I1 IMPLEMENTATION CANDIDATE + evidence. This roadmap append. **`OWNER_DECISION_REGISTER.md` UNCHANGED** (implementation
+candidate records no accepted Owner decision; the provider-selection + commercial decisions remain OPEN under the P8-I4-C
+register entry). No P8-I4 closure is declared; Phase 8 is not complete.
+
+**Boundary / status after this entry.** **P8-I4-I1 is an IMPLEMENTATION CANDIDATE ONLY — NOT closed; Phase 8 NOT complete, NOT
+billing-live, NOT paid-active.** **NO real provider selected; NO provider SDK; NO webhook.** **P8-I4-I2 (verified webhook
+ingestion) NOT STARTED; P8-I4-I3 (reconciliation) NOT STARTED; real-provider selection/integration sub-gate NOT STARTED (a
+separate Owner provider-selection decision is required).** Candidate-only until independent implementation review → Owner
+acceptance → publication → PR → pre-merge safety check → merge → post-merge verification → a dedicated closure gate. P8-CLOSE
+NOT STARTED; Phase 9 / Phase 10 NOT AUTHORIZED; PSRR EXECUTION NOT STARTED; public paid activation / production BLOCKED / NOT
+AUTHORIZED. Append-only; prior history not rewritten. This entry authorizes no push, PR, merge beyond this candidate, provider
+selection, P8-I4-I2/I3 start, or deployment.

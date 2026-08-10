@@ -41,7 +41,25 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — P8-I4-C CONTRACT CANDIDATE):** **Current contract-of-record (DEFINITION ONLY, no implementation
+**Status (current — P8-I4-I1 IMPLEMENTATION CANDIDATE):** The accepted **P8-I4-C** contract is **MERGED (PR #426, merge
+`fccd8955afdfdd5167c4b7a4f0dbe6c14d00127b`) / POST-MERGE VERIFIED**, and **P8-I4-I1 — Provider-Neutral Payment Boundary
+Foundation is now IMPLEMENTED as a governance-only IMPLEMENTATION CANDIDATE (RED → GREEN)**: `engine/payment_provider_port.py`
+(NEW port + canonical types + stdlib fingerprint) + `engine/payment_fake_adapter.py` (NEW two fakes A/B — replaceability) +
+`engine/payment_ingestion.py` (NEW coordinator) + additive `engine/account_store.py` (`_apply_lifecycle_in_txn` refactor
+[P8-I3 unchanged] + `provider_mapping` + `provider_event_dedupe` tables + mapping/ingest methods; atomic dedupe + P8-I3
+lifecycle in ONE `BEGIN IMMEDIATE`) + `tests/test_p8_i4_i1_payment_provider_boundary.py` (30 tests) + the OD-N guard
+extension. Behavioral RED (seven boundary defects) → GREEN: focused 30 / Phase-8 124 / **full suite 2198 passed / 3 skipped /
+1 xfailed / 0 failed**; seven mutation probes each turned a test RED and were fully restored (byte-identical); two-thread races
+deterministic. **NO real provider selected; NO provider SDK; NO webhook.** Preserved: canonical-mapping-only (raw provider name
+never enters the P8-I3 log); strict provider-event idempotency (conflicting fingerprint fails closed); P8-I1/I2/I3 authorities
+unchanged; anti-lockout; opaque refs; no raw payload/secret/card persisted; OD-N import isolation. **P8-I4-I1 is an
+IMPLEMENTATION CANDIDATE ONLY — NOT closed; Phase 8 NOT complete / NOT paid-active**; candidate-only until independent
+implementation review → Owner acceptance → PR → pre-merge check → merge → post-merge verification → a dedicated P8-I4 closure
+gate. **P8-I4-I2 (verified webhook ingestion) / P8-I4-I3 (reconciliation) / real-provider selection sub-gate: NOT STARTED**
+(real-provider work requires a separate Owner provider-selection decision). P8-CLOSE NOT STARTED; Phase 9 / Phase 10 NOT
+AUTHORIZED; PSRR EXECUTION NOT STARTED; production / public paid activation BLOCKED.
+
+**Immediately prior (retained as history — P8-I4-C CONTRACT CANDIDATE):** **Current contract-of-record (DEFINITION ONLY, no implementation
 authority): P8-I4-C — Payment Provider Boundary — Bounded Contract & Architecture** (governance/documentation-only CONTRACT
 CANDIDATE; base `f66ea96` (PR #425); dedicated contract
 `docs/governance/PHASE_8_I4_PAYMENT_PROVIDER_BOUNDARY_INCREMENT_CONTRACT.md`; authoritative if/when independently reviewed,

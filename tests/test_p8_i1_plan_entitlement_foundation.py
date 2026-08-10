@@ -172,9 +172,11 @@ def test_od_n_engine_wide_no_commercial_imports_outside_allowlist():
     # P8-I2 to include the quota_service seam (which consumes entitlement_service
     # + plan_catalog); the deterministic core still imports none of them.
     allowlist = {"entitlement_service", "quota_service",
-                 "subscription_lifecycle_service"}
+                 "subscription_lifecycle_service", "payment_provider_port",
+                 "payment_fake_adapter", "payment_ingestion"}
     commercial = {"plan_catalog", "entitlement_service", "quota_service",
-                  "subscription_lifecycle_service"}
+                  "subscription_lifecycle_service", "payment_provider_port",
+                  "payment_fake_adapter", "payment_ingestion"}
     engine_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "engine")
     offenders = []
     for fn in os.listdir(engine_dir):

@@ -800,6 +800,33 @@ AUTHORIZED / NOT STARTED.***
   provider-config file changed; a separate Owner-authorized P8-I4 implementation gate is required. Phase 8 OPEN; P8-CLOSE NOT
   STARTED; Phase 9 / Phase 10 NOT AUTHORIZED; PSRR EXECUTION NOT STARTED; public paid activation / production BLOCKED / NOT
   AUTHORIZED.
+  The P8-I4-C contract is **ACCEPTED / MERGED (PR #426, merge `fccd8955afdfdd5167c4b7a4f0dbe6c14d00127b`) / POST-MERGE
+  VERIFIED**, and **P8-I4-I1 — Provider-Neutral Payment Boundary Foundation is now IMPLEMENTED as a governance-only
+  IMPLEMENTATION CANDIDATE (RED → GREEN)**: `engine/payment_provider_port.py` (NEW — provider-neutral `PaymentProviderPort` +
+  `CanonicalOperation` + stdlib SHA-256 integrity fingerprint over a documented canonical field set [no raw payload/secrets]) +
+  `engine/payment_fake_adapter.py` (NEW — two deterministic fakes A/B, different provider vocabularies → same canonical
+  operations; no network/SDK/vendor) + `engine/payment_ingestion.py` (NEW — verify+parse → provider→canonical map → durable
+  mapping resolution → the P8-I3 transition authority reused inside the store txn → atomic ingest) + additive
+  `engine/account_store.py` (behavior-preserving `_apply_lifecycle_in_txn` refactor [P8-I3 unchanged] + two `CREATE TABLE IF NOT
+  EXISTS` tables `provider_mapping` + `provider_event_dedupe` + `put_provider_mapping`/`get_provider_mapping_account`/
+  `get_provider_event`/`ingest_provider_lifecycle_event` [provider-event dedupe + the SAME P8-I3 lifecycle mutation in ONE
+  `BEGIN IMMEDIATE`]; imports no commercial/provider module) + `tests/test_p8_i4_i1_payment_provider_boundary.py` (30 tests) +
+  the OD-N guard extension in the P8-I1/P8-I2 guards. Behavioral RED (seven boundary defects reproduced) → GREEN: **focused 30 /
+  Phase-8 124 / full suite 2198 passed / 3 skipped / 1 xfailed / 0 failed** (2168 baseline + 30). Seven mutation probes each
+  turned a targeted test RED and were fully restored (byte-identical); two-thread races deterministic. Verified: two fakes
+  satisfy one port (replaceability; provider swap needs no P8-I1/I2/I3/Domain-Pack change); opaque external refs; additive
+  mapping + durable `(provider, provider_event_id)` dedupe surviving restart; **strict idempotency** (exact duplicate replays;
+  same identity + different fingerprint FAILS CLOSED; same event id under different providers independent); rejected
+  pre-acceptance event can later succeed after correction; NO raw payload/secret/card persisted; deterministic content-sensitive
+  fingerprint; adapter exception/timeout → no mutation; canonical-mapping-only (raw provider name never enters the P8-I3 log);
+  invalid transition still rejected by P8-I3; **P8-I2 quota + P8-I1 entitlement authority unchanged**; atomic dedupe+lifecycle
+  (forced rollback leaves neither); cross-account mapping isolation; OD-N (core imports no payment boundary; no provider/network
+  import). **P8-I4-I1 is an IMPLEMENTATION CANDIDATE ONLY — NOT closed; NO real provider selected; NO provider SDK; NO webhook.**
+  **P8-I4-I2 (verified webhook ingestion) NOT STARTED; P8-I4-I3 (reconciliation) NOT STARTED; real-provider selection/integration
+  sub-gate NOT STARTED (separate Owner provider-selection decision required).** Candidate-only until independent implementation
+  review → Owner acceptance → PR → pre-merge check → merge → post-merge verification → a dedicated P8-I4 closure gate. Phase 8
+  OPEN; P8-CLOSE NOT STARTED; Phase 9 / Phase 10 NOT AUTHORIZED; PSRR EXECUTION NOT STARTED; public paid activation / production
+  BLOCKED / NOT AUTHORIZED.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
