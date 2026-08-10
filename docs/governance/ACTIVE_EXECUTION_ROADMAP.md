@@ -6839,3 +6839,70 @@ PSRR — NOT EXECUTED; deployment / production — NOT AUTHORIZED; public paid a
 only until independent review → Owner acceptance → merge → post-merge verification. Append-only; prior history not rewritten.
 This entry authorizes no push, PR, merge beyond this candidate, Phase-9/10 start, provider selection, commercial activation,
 PSRR execution, main reconciliation, or deployment.
+
+---
+
+## D3 — Pre-Phase-9 Core Domain-Neutrality — CONTRACT (Owner-authorized; fresh candidate) — governance-only CONTRACT CANDIDATE — covers D3-A / D3-B / D3-D; D3-C excluded (independently verified remediated); supersedes REJECTED draft `ed5eb14`; NO implementation; NO domain activation
+
+**Gate.** The **first Owner-authorized** D3 contract gate. **Authorization truth:** the Owner's authorization begins with the
+instruction that created THIS candidate; a **prior draft `ed5eb14596a3f99e5d6febc90f3ba70a1e91f995` was REJECTED
+(process/scope violation + correction required)** — it was **NOT** Owner-authorized, is **NOT** merged, and must never be
+pushed/published/PR'd/merged/amended/rebased or presented as accepted (preserved only as historical evidence). This candidate
+is **fresh** (new SHA + new tree), reusing only the **independently-reviewed technical substance**. **DOCUMENTED NO-VALID-RED —
+CONTRACT-ONLY GOVERNANCE GATE** (no runtime/test/Domain-Pack/web file changed; the future D3 implementation gate MUST use
+genuine RED→GREEN). Authoritative base verified read-only `00792af36e51808191690a4bf66f9b1a2644d477` (**PR #433 Phase-8 formal
+closure merge — already merged at this base; Phase 8 = FORMALLY CLOSED / AUTHORITATIVE**; parents `e7f7bc7` + `0839c3a`; tree
+`ed76558`); boot OK; not newer.
+
+**Scope.** IN: **D3-A** (`engine/safety_signal.py` — electronics-only `_MVP_DOMAIN` + unconditional electronics `domain_context`
+stamp), **D3-B** (`engine/path_n_questions.py` — non-specialist Path-N selection domain-blind / electronics-pinned), **D3-D**
+(`engine/domain_rules.py` — ungoverned hard-coded tie-break able to rank a `RECOGNIZED_NOT_ACTIVATED` domain above the activated
+electronics). OUT: **D3-C** (web admission bound to §5-I2 via `_admit_specialist_domain`; P6-1 labeling — independently verified
+remediated; `web/app.py` + `web/domain_label.py` unchanged absent fresh regression evidence); **D8 / `iot_electronics`**
+(Owner-reserved; deferred to the IoT-activation boundary; `domains/iot_electronics/**` untouched; not a D3 blocker); runtime/
+test implementation; IoT / any domain activation; Phase 9 / Phase 10; PSRR; OD-Q/`main`; deployment/production; commercial;
+QTA/ACV/PDF/Email/WS17/STG.
+
+**Required meaning of neutrality (binding).** The shared/core architecture can safely support another governed domain — NOT
+"electronics content is forbidden." Electronics safety cues + question content remain electronics-owned; the defect is
+shared/core behavior assuming electronics is the only possible governed domain.
+
+**Canonical owners reused (no duplicate; D-FPC-MAP-06).** `engine/domain_registry.py` (§5-I1, CLOSED — no duplicate registry
+hardening) + `engine/domain_activation.py` (§5-I2, CLOSED — `ACTIVATED`/`RECOGNIZED_NOT_ACTIVATED`/`UNKNOWN_OR_UNSUPPORTED`;
+live truth `_ACTIVATED_DOMAINS = {electronics_electrical}` = the ONLY activated specialist domain; recognition ≠ activation) are
+CONSUMED. Prohibits any second registry / activation policy / cross-domain model / orchestrator / question framework / routing
+framework.
+
+**Frozen invariants (12) + likely boundary.** Electronics-only activation preserved; recognized-not-activated never routed as
+activated by winning an inference score; non-electronics context never inherits electronics safety semantics; shared Path-N
+selection never silently assumes electronics when a domain identity is present; iot_electronics untouched; registry +
+activation remain canonical owners; OD-N + fail-closed preserved; existing electronics behavior semantically compatible
+(anchored to existing green regressions). Likely RED-driven boundary: `engine/safety_signal.py` + `engine/path_n_questions.py`
++ `engine/domain_rules.py` + focused tests; prohibited: `web/app.py`, `web/domain_label.py`, `domains/iot_electronics/**`, new
+packs/activation/persistence/schema/commercial/router/registry/orchestrator, broad Domain-Pack redesign, Phase-9 content.
+
+**Genuine RED→GREEN (future gate) + acceptance.** Per-defect behavioral RED (A: non-electronics context forced to electronics
+domain_context; B: shared Path-N incapable of honoring a non-electronics identity / serves electronics regardless; D:
+recognized-not-activated outranks activated) → GREEN; load-bearing mutation probes (bypass each guard → RED; restore
+byte-identical); no "delete the word electronics" tests. **23-item acceptance** incl. D3-A/B/D corrected, D3-C unchanged,
+iot_electronics untouched, no domain activated, electronics-only preserved, registry + activation reused, no duplicate owner,
+genuine RED→GREEN, load-bearing mutation, focused + full regressions green, truthful env skips, no persistence/schema/
+commercial coupling, `git diff --check` clean, independent implementation review ACCEPT, exact-candidate acceptance +
+SHA-preserving publication, **CREATE A MERGE COMMIT**, post-merge verification, remaining-obligation review, separate formal
+closure. ONE BOUNDED D3 INCREMENT; clean rollback (three engine modules + tests; no persistence/schema/web migration).
+
+**Owner decisions.** Product/policy decisions required before D3 implementation: **NONE**; explicit D3 implementation-gate
+authorization still required after contract acceptance. D8 Owner-reserved/deferred.
+
+**Governance synchronization (minimum).** NEW `D3_CORE_DOMAIN_NEUTRALITY_FORMAL_CONTRACT.md` + this roadmap append +
+`CURRENT_PROJECT_STATE.md` + `ACTIVE_INCREMENT_CONTRACT.md` (contract-of-record = D3 candidate, definition only; Phase 8 stated
+as already closed). **`OWNER_DECISION_REGISTER.md` UNCHANGED** (this is an execution-gate authorization, not a new durable
+product-policy decision; D8 remains Owner-reserved under the G-MPR-01-D entry). No runtime/test/Domain-Pack/schema/prompt/
+benchmark/web/CI file changed.
+
+**Boundary / status after this entry.** **D3 = CONTRACT CANDIDATE ONLY — becomes authoritative contract-of-record only if this
+exact accepted candidate is merged (create-a-merge-commit) and post-merge verified; D3 implementation NOT started / NOT
+authorized by this gate; NO domain activated; D8 OPEN / Owner-reserved.** **Phase 8 = FORMALLY CLOSED / AUTHORITATIVE.** Phase 9
+/ Phase 10 — NOT AUTHORIZED; IoT — NOT AUTHORIZED; PSRR — NOT EXECUTED; deployment / production — NOT AUTHORIZED. The rejected
+draft `ed5eb14` is superseded by this fresh candidate. Append-only; prior history not rewritten. This entry authorizes no push,
+PR, merge beyond this candidate, D3 implementation start, domain activation, D8 decision, Phase-9 start, or deployment.
