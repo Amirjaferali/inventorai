@@ -776,6 +776,30 @@ AUTHORIZED / NOT STARTED.***
   PHASE-8 GATE: `P8-I4` — Payment Provider Boundary — NOT STARTED (registered as next; no provider selected).**
   Phase 8 OPEN; P8-I4 / P8-CLOSE NOT STARTED; Phase 9 / Phase 10 NOT AUTHORIZED; PSRR EXECUTION NOT STARTED; public paid
   activation / production BLOCKED / NOT AUTHORIZED.
+  **P8-I4 — Payment Provider Boundary is now DEFINED by a governance-only CONTRACT CANDIDATE (P8-I4-C)** (dedicated contract
+  `docs/governance/PHASE_8_I4_PAYMENT_PROVIDER_BOUNDARY_INCREMENT_CONTRACT.md`; base `f66ea96` (PR #425); authoritative if/when
+  independently reviewed, Owner-accepted, merged, post-merge verified). It freezes the smallest provider-neutral payment
+  boundary — an adapter port (`InventorAI Core → P8-I1/I2/I3 authorities → Canonical Payment Provider Boundary → Provider
+  Adapter [UNTRUSTED] → External Provider`; core imports no provider module, OD-N); strict canonical↔provider vocabulary
+  separation (a raw provider event name never becomes a lifecycle event — adapters map to canonical P8-I3 operations via the
+  P8-I3 seam, preserving the cancellation-requested/effective and scheduled-plan-change distinctions; P8-I1/I2/I3 remain the
+  authorities); opaque canonical identities; additive provider-mapping + durable provider-event-dedupe persistence (no
+  `ALTER TABLE`/back-fill/destructive migration; no full payloads/secrets/card data); event-authenticity before canonical
+  mutation + a hard secrets boundary (production secret mgmt → PSRR/Phase-10); **HIGH-PRIORITY strict provider-event
+  idempotency — duplicate delivery = idempotent no-op, same `(provider, provider_event_id)` with a materially different payload
+  FAILS CLOSED** (resolving the P8-I3 non-blocking observation; the weaker P8-I3 replay is NOT inherited for provider events;
+  durable dedupe survives restart); one-transaction atomicity (dedupe + lifecycle mutation + mapping) where the SQLite model
+  supports it; a fail-closed catalogue; outage/timeout never silently mutates + reconciliation (reserved, evidence-triggered);
+  a **replaceability** acceptance property (Provider A→B changes only adapter/config/mapping, a fake second provider satisfies
+  the port); PCI architectural avoidance with **no compliance claim**; a 30-item future RED matrix; and a **fake-adapter-first
+  decomposition** (P8-I4-I1 port + fake/reference adapter + persistence → evidence-triggered verified-webhook seam →
+  evidence-triggered reconciliation seam → real-provider selection/integration sub-gate → P8-I4-CLOSE). Distinct from CAP-15 AI
+  Provider Abstraction (G-MPR-01-D D7). **NO provider selected** (Stripe/Paddle/PayPal/Apple/Google/other all unselected);
+  provider selection is an OPEN Owner decision and a registered prerequisite for real adapter work. **P8-I4 remains a CONTRACT
+  CANDIDATE ONLY — NOT started / NOT implemented / NOT authorized**; no runtime/test/Domain-Pack/schema/prompt/benchmark/web/CI/
+  provider-config file changed; a separate Owner-authorized P8-I4 implementation gate is required. Phase 8 OPEN; P8-CLOSE NOT
+  STARTED; Phase 9 / Phase 10 NOT AUTHORIZED; PSRR EXECUTION NOT STARTED; public paid activation / production BLOCKED / NOT
+  AUTHORIZED.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
