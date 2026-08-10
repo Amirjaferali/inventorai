@@ -735,10 +735,35 @@ AUTHORIZED / NOT STARTED.***
   **Clarification 2** equal-`effective_at` tie-break by durable event sequence (RED R35). All accepted properties preserved
   (5 states + implicit `none`; additive append-only event log + derived cache; no `ALTER TABLE`/back-fill/destructive rewrite;
   atomicity; idempotency/replay; injectable clock; provider neutrality; P8-I2 sole quota authority + no silent reset;
-  anti-lockout; P8-I4 owns real provider mapping; business policy Owner-owned). **P8-I3 remains a CONTRACT CANDIDATE ONLY —
-  NOT started / NOT implemented / NOT authorized**; no runtime/test/Domain-Pack/schema/prompt/benchmark file changed; no provider
-  selected; a separate Owner-authorized P8-I3 implementation gate is required. Phase 8 OPEN; P8-I4 / P8-CLOSE NOT STARTED;
-  Phase 9 / Phase 10 NOT AUTHORIZED; PSRR EXECUTION NOT STARTED; public paid activation / production BLOCKED / NOT AUTHORIZED.
+  anti-lockout; P8-I4 owns real provider mapping; business policy Owner-owned). The corrected P8-I3-C contract is
+  **ACCEPTED / MERGED (PR #423, merge `09743b91b764e5ac2956401d7a88c91df48d3d8b`) / POST-MERGE VERIFIED**, and **P8-I3 —
+  Subscription Lifecycle is now IMPLEMENTED as a governance-only IMPLEMENTATION CANDIDATE (RED → GREEN; verdict-B CORRECTED
+  replacement — supersedes the invalidated prior implementation candidate `4385a33`, EVIDENCE-ONLY / NOT MERGED)**:
+  `engine/subscription_lifecycle_service.py` (NEW seam; 5-state machine + implicit `none`; canonical provider-neutral events;
+  injectable clock; `apply_event`/`get_state` [read-only, §10 fail-closed]/`materialize_due` [authorized]/`rebuild_from_events`
+  [full reconstruction from the log]/`project_effective_entitlement`) + additive `engine/account_store.py` lifecycle tables
+  (append-only event log carrying the scheduled target plan + derived cache with `scheduled_event_id`; one-`BEGIN IMMEDIATE`
+  atomicity with **in-transaction** stale-effective_at guard, **in-transaction** pending-schedule exclusivity guard, and the
+  optimistic from-state guard; imports no commercial module) + `tests/test_p8_i3_subscription_lifecycle.py` (45 tests) + the
+  OD-N guard extension in the P8-I1/P8-I2 guards. **Verdict-B corrections implemented & mutation-proven:** RC-I1 atomic
+  pending-schedule exclusivity (in-txn; two concurrent scheduling events → exactly one durable, no silent loss); RC-I2 stale
+  `effective_at` checked IN-transaction against the latest committed state; RC-I3 causal coverage of the different-transition
+  conflict guard (deterministic cancel-vs-expire two-thread race); RC-I4 scheduled target plan persisted in the append-only
+  event log and reconstructable from the log alone; RC-I5 materialization idempotency bound to the durable scheduling
+  `event_id` (cross-epoch same-`effective_at` materializes separately; no old-event replay wedge); RC-I6 lifecycle READ seam
+  fails closed for missing/disabled/deleted accounts. Non-blocking: idempotency-key replay returns the prior result without
+  payload-equality validation (documented in `find_lifecycle_event` for future P8-I4 mapping). RED (behavioral: the six
+  reviewed defects reproduced) → GREEN: **P8-I3 focused 45 passed; Phase-8 94 passed; full suite 2168 passed / 3 skipped /
+  1 xfailed / 0 failed** (2123 baseline + 45). Six correction mutation probes each turned a targeted test RED and were fully
+  restored (byte-identical, no mutation remains); two-thread races confirmed deterministic across repeated runs. Preserved:
+  additive schema (no `ALTER TABLE`/back-fill/destructive rewrite); event-log source-of-truth; one-txn atomic rollback;
+  durable idempotency/replay; equal-`effective_at` `event_id` tie-break; injected clock; read/projection never writes; `none`
+  entitlement-neutral (no legacy downgrade); canonical `past_due` exits; unique cancellation mapping; P8-I2 sole quota authority
+  + no reset; anti-lockout; provider neutrality; OD-N. **P8-I3 is an IMPLEMENTATION CANDIDATE ONLY — NOT closed; Phase 8 NOT
+  complete / NOT billing-live / NOT paid-active**; no provider selected; candidate-only until independent implementation
+  re-review → Owner acceptance → PR → pre-merge check → merge → post-merge verification → a dedicated formal P8-I3 closure gate.
+  Phase 8 OPEN; P8-I4 / P8-CLOSE NOT STARTED; Phase 9 / Phase 10 NOT AUTHORIZED; PSRR EXECUTION NOT STARTED; public paid
+  activation / production BLOCKED / NOT AUTHORIZED.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation

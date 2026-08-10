@@ -171,8 +171,10 @@ def test_od_n_engine_wide_no_commercial_imports_outside_allowlist():
     # Commercial seams permitted to import the commercial layer. Extended by
     # P8-I2 to include the quota_service seam (which consumes entitlement_service
     # + plan_catalog); the deterministic core still imports none of them.
-    allowlist = {"entitlement_service", "quota_service"}
-    commercial = {"plan_catalog", "entitlement_service", "quota_service"}
+    allowlist = {"entitlement_service", "quota_service",
+                 "subscription_lifecycle_service"}
+    commercial = {"plan_catalog", "entitlement_service", "quota_service",
+                  "subscription_lifecycle_service"}
     engine_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "engine")
     offenders = []
     for fn in os.listdir(engine_dir):
