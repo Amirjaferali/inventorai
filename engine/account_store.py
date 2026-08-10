@@ -228,6 +228,43 @@ _SCHEMA = (
         FOREIGN KEY (account_id) REFERENCES accounts(account_id)
     )
     """,
+    # P8-I4-I1: provider-neutral account↔provider mapping. External references are
+    # OPAQUE strings; no provider id is an internal primary identity. Uniquely
+    # keyed by (provider, external_subscription_ref) so the same subscription ref
+    # can never map to two accounts (cross-account isolation). Additive; no secrets;
+    # no card data; no raw provider payload.
+    """
+    CREATE TABLE IF NOT EXISTS provider_mapping (
+        provider                  TEXT NOT NULL,
+        external_subscription_ref TEXT NOT NULL,
+        account_id                TEXT NOT NULL,
+        external_customer_ref     TEXT,
+        created_at                TEXT NOT NULL,
+        updated_at                TEXT NOT NULL,
+        PRIMARY KEY (provider, external_subscription_ref),
+        FOREIGN KEY (account_id) REFERENCES accounts(account_id)
+    )
+    """,
+    # P8-I4-I1: durable provider-event dedupe / integrity. Identity is
+    # (provider, provider_event_id) — the same event id under a different provider
+    # is a DISTINCT identity. ``fingerprint`` is a bounded deterministic digest of
+    # the canonicalized event fields (NEVER the raw payload; NO secrets). An exact
+    # re-delivery replays the prior outcome; a same-identity + different-fingerprint
+    # delivery FAILS CLOSED. Records ACCEPTED events only.
+    """
+    CREATE TABLE IF NOT EXISTS provider_event_dedupe (
+        provider              TEXT NOT NULL,
+        provider_event_id     TEXT NOT NULL,
+        fingerprint           TEXT NOT NULL,
+        account_id            TEXT NOT NULL,
+        canonical_event_type  TEXT NOT NULL,
+        outcome_state         TEXT,
+        lifecycle_event_id    INTEGER,
+        created_at            TEXT NOT NULL,
+        PRIMARY KEY (provider, provider_event_id),
+        FOREIGN KEY (account_id) REFERENCES accounts(account_id)
+    )
+    """,
 )
 
 
@@ -583,6 +620,41 @@ class SqliteAccountStore:
         ``"conflict_stale"`` / ``"account_missing"`` / ``"account_inactive"``. Any
         error rolls the whole mutation back."""
         with self._write() as c:
+            return self._apply_lifecycle_in_txn(
+                c, account_id, event_type=event_type,
+                expected_from_state=expected_from_state,
+                new_current_state=new_current_state, event_to_state=event_to_state,
+                effective_at=effective_at, recorded_at=recorded_at, reason=reason,
+                source=source, external_reference=external_reference,
+                idempotency_key=idempotency_key, is_scheduling=is_scheduling,
+                require_no_pending=require_no_pending,
+                event_sched_effective_at=event_sched_effective_at,
+                target_plan_id=target_plan_id,
+                target_plan_version=target_plan_version,
+                scheduled_to_state=scheduled_to_state,
+                scheduled_effective_at=scheduled_effective_at,
+                scheduled_event_type=scheduled_event_type,
+                scheduled_plan_id=scheduled_plan_id,
+                scheduled_plan_version=scheduled_plan_version, assignment=assignment)
+
+    def _apply_lifecycle_in_txn(self, c, account_id, *, event_type,
+                                expected_from_state, new_current_state,
+                                event_to_state, effective_at, recorded_at,
+                                reason=None, source=None, external_reference=None,
+                                idempotency_key=None, is_scheduling=False,
+                                require_no_pending=False,
+                                event_sched_effective_at=None, target_plan_id=None,
+                                target_plan_version=None, scheduled_to_state=None,
+                                scheduled_effective_at=None, scheduled_event_type=None,
+                                scheduled_plan_id=None, scheduled_plan_version=None,
+                                assignment=None):
+        """The P8-I3 lifecycle write body on an ALREADY-OPEN write connection ``c``
+        (inside a caller's ``BEGIN IMMEDIATE``). Identical guards/semantics to
+        :meth:`apply_lifecycle_event`; extracted (behavior-preserving) so the P8-I4
+        provider ingest can compose the SAME lifecycle mutation atomically with the
+        provider-event dedupe record in one transaction. Holds NO provider
+        knowledge."""
+        if True:
             acct = c.execute("SELECT status FROM accounts WHERE account_id = ?",
                              (account_id,)).fetchone()
             if acct is None:
@@ -661,6 +733,142 @@ class SqliteAccountStore:
                 scheduled_to_state, scheduled_effective_at, scheduled_event_type,
                 scheduled_plan_id, scheduled_plan_version, sched_eid)
             return ("applied", new_current_state, event_id)
+
+    # --- payment provider boundary (P8-I4-I1: mapping + event dedupe) --------
+    #
+    # Provider-neutral persistence + the ATOMIC provider-event ingest. Holds NO
+    # provider vocabulary and imports no provider adapter — adapters live in the
+    # isolated ``engine.payment_*`` boundary and never touch this store's tables
+    # directly; the P8-I4 coordinator passes only canonical, already-mapped values.
+
+    def put_provider_mapping(self, account_id, *, provider, external_subscription_ref,
+                             external_customer_ref, now_iso):
+        """Durably record/refresh an account↔provider mapping. Fail-closed:
+        missing/disabled/deleted account → denied; a blank/non-string external
+        subscription ref → denied; a (provider, external_subscription_ref) already
+        bound to a DIFFERENT account → cross-account conflict (no remap). Returns
+        ``"created"`` / ``"exists"`` / ``"account_missing"`` / ``"account_inactive"``
+        / ``"malformed_ref"`` / ``"cross_account_conflict"``."""
+        if (not isinstance(external_subscription_ref, str)
+                or not external_subscription_ref.strip()
+                or not isinstance(provider, str) or not provider.strip()):
+            return "malformed_ref"
+        with self._write() as c:
+            acct = c.execute("SELECT status FROM accounts WHERE account_id = ?",
+                             (account_id,)).fetchone()
+            if acct is None:
+                return "account_missing"
+            if acct[0] != "active":
+                return "account_inactive"
+            row = c.execute(
+                "SELECT account_id FROM provider_mapping WHERE provider = ? AND "
+                "external_subscription_ref = ?",
+                (provider, external_subscription_ref)).fetchone()
+            if row is not None:
+                if row[0] != account_id:
+                    return "cross_account_conflict"           # fail closed; no remap
+                c.execute(
+                    "UPDATE provider_mapping SET external_customer_ref = ?, "
+                    "updated_at = ? WHERE provider = ? AND external_subscription_ref = ?",
+                    (external_customer_ref, now_iso, provider, external_subscription_ref))
+                return "exists"
+            c.execute(
+                "INSERT INTO provider_mapping (provider, external_subscription_ref, "
+                "account_id, external_customer_ref, created_at, updated_at) "
+                "VALUES (?, ?, ?, ?, ?, ?)",
+                (provider, external_subscription_ref, account_id,
+                 external_customer_ref, now_iso, now_iso))
+            return "created"
+
+    def get_provider_mapping_account(self, provider, external_subscription_ref):
+        """Return the mapped ``account_id`` for (provider, external_subscription_ref)
+        or ``None``. Read-only lookup used by the coordinator; a blank ref → None."""
+        if (not isinstance(external_subscription_ref, str)
+                or not external_subscription_ref.strip()
+                or not isinstance(provider, str) or not provider.strip()):
+            return None
+        with self._read() as c:
+            row = c.execute(
+                "SELECT account_id FROM provider_mapping WHERE provider = ? AND "
+                "external_subscription_ref = ?",
+                (provider, external_subscription_ref)).fetchone()
+        return row[0] if row is not None else None
+
+    def get_provider_event(self, provider, provider_event_id):
+        """Return the durable dedupe record for (provider, provider_event_id) or
+        ``None``. Read-only."""
+        with self._read() as c:
+            row = c.execute(
+                "SELECT provider, provider_event_id, fingerprint, account_id, "
+                "canonical_event_type, outcome_state, lifecycle_event_id, created_at "
+                "FROM provider_event_dedupe WHERE provider = ? AND provider_event_id = ?",
+                (provider, provider_event_id)).fetchone()
+        if row is None:
+            return None
+        return {"provider": row[0], "provider_event_id": row[1], "fingerprint": row[2],
+                "account_id": row[3], "canonical_event_type": row[4],
+                "outcome_state": row[5], "lifecycle_event_id": row[6],
+                "created_at": row[7]}
+
+    def ingest_provider_lifecycle_event(self, account_id, *, provider,
+                                        provider_event_id, fingerprint,
+                                        canonical_event_type, now_iso, transition_fn,
+                                        effective_at, recorded_at, reason=None,
+                                        source=None, external_reference=None,
+                                        idempotency_key=None):
+        """ATOMIC (one ``BEGIN IMMEDIATE``): provider-event dedupe + the SAME P8-I3
+        lifecycle mutation, so a provider event is never half-applied (dedupe without
+        lifecycle, or lifecycle without dedupe). The lifecycle STATE MACHINE stays
+        with the caller: ``transition_fn(from_state) -> to_state | None`` is invoked
+        INSIDE the transaction against the committed in-transaction state (so a
+        duplicate is recognised BEFORE any transition is attempted, and a genuine
+        non-duplicate computes its transition from a consistent state). ``None`` →
+        invalid transition, fail closed. Dedupe records ACCEPTED events ONLY (a
+        pre-acceptance rejection persists no dedupe row, so a corrected redelivery
+        can still succeed). Returns ``(status, current_state, lifecycle_event_id)``;
+        ``status`` adds ``"provider_duplicate"`` (exact replay), ``"provider_conflict"``
+        (same identity, different fingerprint → FAIL CLOSED) and ``"invalid_transition"``
+        to the lifecycle statuses. The store imports no commercial module."""
+        with self._write() as c:
+            acct = c.execute("SELECT status FROM accounts WHERE account_id = ?",
+                             (account_id,)).fetchone()
+            if acct is None:
+                return ("account_missing", None, None)
+            if acct[0] != "active":
+                return ("account_inactive", None, None)
+            prior = c.execute(
+                "SELECT fingerprint, outcome_state, lifecycle_event_id FROM "
+                "provider_event_dedupe WHERE provider = ? AND provider_event_id = ?",
+                (provider, provider_event_id)).fetchone()
+            if prior is not None:
+                if prior[0] == fingerprint:
+                    return ("provider_duplicate", prior[1], prior[2])   # exact replay
+                return ("provider_conflict", None, None)               # fail closed
+            row = c.execute(
+                "SELECT current_state FROM subscription_lifecycle_state "
+                "WHERE account_id = ?", (account_id,)).fetchone()
+            from_state = row[0] if row is not None else "none"
+            to_state = transition_fn(from_state)           # caller's state machine
+            if to_state is None:
+                return ("invalid_transition", from_state, None)        # not recorded
+            status, state, event_id = self._apply_lifecycle_in_txn(
+                c, account_id, event_type=canonical_event_type,
+                expected_from_state=from_state, new_current_state=to_state,
+                event_to_state=to_state, effective_at=str(effective_at),
+                recorded_at=recorded_at, reason=reason, source=source,
+                external_reference=external_reference,
+                idempotency_key=idempotency_key, is_scheduling=False)
+            if status != "applied":
+                # pre-acceptance rejection → do NOT record dedupe (allow corrected
+                # redelivery). Nothing lifecycle was written (guards precede insert).
+                return (status, state, event_id)
+            c.execute(
+                "INSERT INTO provider_event_dedupe (provider, provider_event_id, "
+                "fingerprint, account_id, canonical_event_type, outcome_state, "
+                "lifecycle_event_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                (provider, provider_event_id, fingerprint, account_id,
+                 canonical_event_type, state, event_id, now_iso))
+            return ("applied", state, event_id)
 
     # --- commercial usage quota (P8-I2: counter + retry idempotency) --------
     def get_commercial_usage(self, account_id: str, meter: str, window_key: str) -> int:
