@@ -16,10 +16,12 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
   (`git rev-parse origin/feature/atomic-json-session-persistence`). Do **not** trust a
   prose-pinned SHA.
   - **Current authoritative branch tip (last independently verified):**
-    `d9f888bd0def7b3275cd04860dfa2e8cc1504111` (Merge PR #379 — P5-3 Project Ownership & Route Authorization
-    implementation and the FINAL FORMAL CLOSURE OF PHASE 5, post-merge verified, owner accepted; two-parent merge of
-    `b14c931` (base) + `a0997c3` (candidate), tree `e6a03ab`) — always re-resolve the live tip from Git per the rule
-    above.
+    `d37caef8cfc0e4c5e53275e6e126ec8247a26219` (Merge PR #421 — P8-I2 Commercial Usage Quotas formal closure /
+    current-truth sync; two-parent merge of `e3c65af` (base) + `7e3f17b` (candidate), tree
+    `d1a8208bb3efe401d9a9797d8cafd1a64703c83c`, post-merge verified) — always re-resolve the live tip from Git per
+    the rule above. (Prior pin `d9f888b` (PR #379, Phase-5 final closure) is superseded; the authoritative branch
+    has since merged §5-CLOSE, Phase-6/§5 closures, Phase-7 (P7-I1/I2/I3, §25, P7-CLOSE), PSRR registration,
+    D-P8-PL-01, P8-C, P8-I1, and P8-I2.)
   - **Prior recorded tip (historical):** `402727a557edd7dbea3e92f477bf9cbefe74ea3e` (Merge PR #377 — P5-2 Authenticated
     Sessions / Verified Email / Account Recovery implementation + FORMAL CLOSURE; two-parent merge of `f84c87d` +
     `87c85c7`, tree `375db689`); superseded as the live tip by PR #378 (P5-2 closure sync) and PR #379 (P5-3
@@ -67,7 +69,7 @@ status**, holds **no current per-item status values of its own**, and creates no
 | 1. Deliverable-Stabilization workstreams (WS1–WS17) | `DELIVERABLE_STABILIZATION_REMEDIATION_PLAN.md` §15 *Workstream status table* | Per-WS status + closure evidence, including **deferred / post-gate** entries (e.g. WS17 / AI Coach) | That tracker (§15) |
 | 2. Product-Foundation / Commercial-Readiness phase **structure** (Phase 0–10) | `PRODUCT_FOUNDATION_AND_COMMERCIAL_READINESS_REMEDIATION_PLAN.md` §4 objectives / §5 sequence & dependencies | Objectives, intended phase **structure**, sequence/dependencies, remediation intent — **NOT** current execution status | **Layer 3** (roadmap + formal closure records) — **NOT** this plan's header/adoption/status text |
 | 3. Active phase/sub-gate **execution status** (P4 / P5 / P6 — e.g. P6-1, D-P6-18) | `ACTIVE_EXECUTION_ROADMAP.md` (§4 live status + append-only tail) + formal closure records, subject to `ACTIVE_INCREMENT_CONTRACT.md` + `OWNER_DECISION_REGISTER.md` | Current lane / holds / authorized next action / phase-execution status | The latest authoritative roadmap entry (+ closure records) |
-| 4. Owner-added capability inventory (CAP-01…CAP-14) | `INVENTORAI_CAPABILITY_ENRICHMENT_REGISTER.md` | Recorded capabilities — all `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION` (**registration ≠ authorization**) | That register |
+| 4. Owner-added capability inventory (CAP-01…CAP-18) | `INVENTORAI_CAPABILITY_ENRICHMENT_REGISTER.md` | Recorded capabilities — all `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION` (**registration ≠ authorization**). Range corrected to CAP-01…CAP-18 under G-MPR-01-D D6 (the register extends through CAP-18; CAP-15…CAP-18 are equally tracked; earlier "CAP-01…CAP-14" enumerations are superseded as index range). | That register |
 | 5. Owner decisions & authorization state (OD-/D- numbers) | `OWNER_DECISION_REGISTER.md` | Owner decisions + separate-authorization requirements (**a recorded proposal is NOT execution authorization**) | That register |
 
 **Product-Foundation status caveat (important).** The Product-Foundation plan (Layer 2) is authoritative for
@@ -693,6 +695,30 @@ AUTHORIZED / NOT STARTED.***
   Owner/business decisions (plan names, prices, quota values/cadence,
   trial/refund/grandfathering/enterprise/tax/overage/proration/provider policies) remain deferred/REQUIRED; none blocks the
   closed P8-I2.
+  **G-MPR-01 — Master Phase & Roadmap Completeness Review (read-only) is now COMPLETE** (read-only master audit; no repository
+  change), and **G-MPR-01-D — Findings Disposition & Roadmap Registration** now durably registers its accepted findings
+  (governance-only candidate; dedicated record `docs/governance/G_MPR_01_D_FINDINGS_DISPOSITION_AND_ROADMAP_REGISTRATION.md`;
+  authoritative if/when independently reviewed, Owner-accepted, merged). **Finding F1 RESOLVED:** **P8-I1 — Plan & Entitlement
+  Foundation is now FORMALLY CLOSED via a dedicated late-registered formal closure record**
+  (`docs/governance/P8_I1_PLAN_ENTITLEMENT_FOUNDATION_FORMAL_CLOSURE_RECORD.md`) — closure-record documentation gap only; NO
+  P8-I1 implementation reopened; historical evidence cited not fabricated (implemented RED→GREEN, full suite 2122; merged
+  PR #418 `2bf389d`, merged tree `814d15d` == accepted impl tree; post-merge verified; independent-review letter-verdict
+  provenance disclosed per the PR #341 honesty precedent). **G-MPR-01-D dispositions registered (D1–D10):** D2 P8-I3
+  additive/backward-compatible lifecycle-persistence rule (contract constraint only); D3 mandatory **pre-Phase-9 Core
+  Domain-Neutrality Prerequisite Gate** (safety_signal / path_n_questions / web-admission literals / domain tie-break — future,
+  NOT before P8-I3); D4 future **Cross-Domain / Multi-Disciplinary Engineering Integration** gate (reference ≠ activation ≠
+  cross-domain evaluation; requires ≥2 activated domains; re-homes the stale "deferred to Phase 6" pointer); D5 re-homed
+  deferred capabilities (QTA + Output-Language implementation = ADD live homes; ACV / PDF / Email = MOVE off closed Phase-3/4/5
+  anchors; all NOT AUTHORIZED; UI≠Input≠Output Language≠QTA preserved); D6 CAP index range CAP-01…CAP-18; D7 real-vendor vs
+  CAP-15 (provider abstraction) vs async/webhook vs export adapters kept distinct; D8 `iot_electronics` legacy status registered
+  and **guarded (no deletion/migration/normalization/activation/repurposing without a separate gate)** — supersession vs
+  future-IoT-seed vs benchmark-only-legacy reserved to a later Owner decision; D9 OD-Q `main` reconciliation = mandatory future
+  gate before production (NOT before P8-I3); D10 governance-hygiene scoped corrections (this pinned-tip refresh; CAP range;
+  stale active-contract header) with history preserved. **With P8-I1 formally closed, the P8-I3 lifecycle-persistence rule
+  registered, and the G-MPR-01 findings durably registered, `P8-I3 — Subscription Lifecycle` is ELIGIBLE FOR OWNER
+  CONSIDERATION — NOT AUTHORIZED / NOT STARTED** (a separate Owner-authorized P8-I3 bounded implementation-contract gate is
+  required; eligibility ≠ authorization). Phase 8 remains OPEN; P8-I4 / P8-CLOSE NOT STARTED; Phase 9 / Phase 10 NOT AUTHORIZED;
+  PSRR EXECUTION NOT STARTED; public paid activation / production BLOCKED / NOT AUTHORIZED.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
