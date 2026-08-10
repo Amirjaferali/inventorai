@@ -1032,6 +1032,24 @@ AUTHORIZED / NOT STARTED.***
   merged (create-a-merge-commit) → post-merge verified → remaining-obligation review); **NO domain activated; D8 OPEN /
   Owner-reserved; Phase 8 = FORMALLY CLOSED; Phase 9 / Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED; deployment / production =
   NOT AUTHORIZED.**
+  **The D3 implementation is now ACCEPTED / MERGED (PR #435, merge `e51eaf7eee001ef6012579852c8da7cbeda8e144`; merge tree =
+  accepted candidate tree `f027c93`, post-merge verified; independent review ACCEPT WITH NON-BLOCKING OBSERVATIONS), and `D3` —
+  Core Domain-Neutrality is now FORMALLY CLOSED as a governance-only CLOSURE CANDIDATE** (prerequisite closure only;
+  authoritative if/when merged; dedicated record `docs/governance/D3_CORE_DOMAIN_NEUTRALITY_FORMAL_CLOSURE_RECORD.md`).
+  Live-verified at `e51eaf7`: D3-A (mechanical `domain_context` = mechanical; electronics preserved), D3-B (foreign domain served
+  None; electronics/None unchanged), D3-D (tie → electronics_electrical; recognition ≠ activation); fresh runs D3 focused 7 /
+  full suite 2258 passed / 3 skipped / 1 xfailed / 0 failed. Canonical owners consumed not duplicated (domain_registry §5-I1 +
+  domain_activation §5-I2); D3-C (`web/app.py`, `web/domain_label.py`) not reopened; D8 (`domains/iot_electronics/**`) untouched /
+  Owner-reserved; `activated_domains() == ['electronics_electrical']` (only). **Three mandatory future prerequisites REGISTERED
+  (not authorized here):** (1) **Path-N caller propagation** — `engine/progression_loop.py` must thread canonical domain identity
+  into the Path-N caller chain **BEFORE ANY SECOND / NON-ELECTRONICS DOMAIN ACTIVATION** (non-blocking today: electronics is the
+  only activated domain); (2) **multi-activated tie precedence** — a governed cross-activated-domain tie/conflict policy is
+  required **BEFORE MORE THAN ONE SPECIALIST DOMAIN CAN BE ACTIVATED** (the current `sorted(activated_tied)[0]` is deterministic
+  only with one activated domain); (3) **Phase-9 Capability Overlap & Preservation Audit** — required **BEFORE THE FIRST PHASE-9
+  ACTIVATION CONTRACT** (classify proposed capabilities against existing canonical owners; likely a Phase-9 Technical Quality
+  Standard). **D3 = FORMALLY CLOSED / AUTHORITATIVE (prerequisite closure only; no active D3 increment remains); Phase 9 remains
+  INACTIVE / NOT AUTHORIZED (D3 closure does NOT auto-open a Phase-9 contract or activate any domain); Phase 10 = NOT AUTHORIZED;
+  PSRR = NOT EXECUTED; deployment / production = NOT AUTHORIZED.**
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation

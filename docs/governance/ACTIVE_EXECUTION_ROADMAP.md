@@ -6967,3 +6967,66 @@ remaining-obligation review.** **NO domain activated** (electronics remains the 
 Owner-reserved**; Phase 9 / Phase 10 — NOT AUTHORIZED; PSRR — NOT EXECUTED; deployment / production — NOT AUTHORIZED. Append-only;
 prior history not rewritten. This entry authorizes no push, PR, merge beyond this candidate, D3 closure, domain activation, D8
 decision, Phase-9 start, or deployment.
+
+---
+
+## D3 — Pre-Phase-9 Core Domain-Neutrality — FORMAL CLOSURE + Remaining-Obligation Review — governance-only CLOSURE CANDIDATE — D3 FORMALLY CLOSED (prerequisite closure only); NO domain activated; three future prerequisites registered; Phase 9 NOT authorized
+
+**Gate.** OWNER-AUTHORIZED **governance-only** D3 formal-closure + remaining-obligation review, on the merged, post-merge-verified
+D3 implementation (PR #435). **DOCUMENTED NO-VALID-RED — GOVERNANCE-ONLY CLOSURE GATE** (no runtime/test file changed; D3-A/B/D
+RED→GREEN cited, not re-run; expected engine/web/domains/schemas/prompts/app-test diff ZERO). Authoritative base verified
+read-only `e51eaf7eee001ef6012579852c8da7cbeda8e144` (PR #435; parents `2dbde37a3c409356691a17fd868f90b087df417c` +
+`76552c1da2b520f8e58f8e22af2edf016d8f159c`; merge tree `f027c93677cf782d467b9eab60cbc43d5ee59e0a` == accepted candidate tree);
+boot OK; built in a disposable worktree (primary working tree + historical bundles untouched); not newer.
+
+**Lineage.** Contract PR #434 (merge `2dbde37`; accepted candidate `68fbcd2`; tree `8e34f83`; post-merge verified).
+Implementation PR #435 (merge `e51eaf7`; accepted candidate `76552c1`; tree `f027c93`; diffstat 7 files / +269 / −10; `git diff
+--check` CLEAN). Independent implementation review: **ACCEPT WITH NON-BLOCKING OBSERVATIONS**. Canonical record:
+`docs/governance/D3_CORE_DOMAIN_NEUTRALITY_FORMAL_CLOSURE_RECORD.md`.
+
+**Live-verified corrections (re-verified at `e51eaf7`).** D3-A: `SafetySignal.domain_context` reflects the actual session domain
+and is no longer force-mapped to electronics for a non-electronics context (mechanical→mechanical; electronics→electronics;
+electronics safety behavior preserved; no admission authority via domain_context). D3-B: the Path-N seam honors the optional
+canonical `domain` within the accepted boundary (electronics/None → electronics content; a recognized non-electronics identity →
+None, no leak). D3-D: `infer_domain` consumes §5-I2 activation so an ACTIVATED domain wins a tie over a RECOGNIZED_NOT_ACTIVATED
+one (`"the circuit and the catheter"` → electronics_electrical); recognition ≠ activation; admission authority stays with the
+activation policy. Fresh runs: **D3 focused 7 passed; full suite 2258 passed / 3 skipped / 1 xfailed / 0 failed** (3 skips =
+pre-existing Playwright/env-dependent, not passes).
+
+**Boundary invariants verified.** Canonical owners consumed, never duplicated (domain_registry §5-I1 + domain_activation §5-I2;
+no second registry/activation/router/orchestrator/question framework). **D3-C** `web/app.py` + `web/domain_label.py` absent from
+the merged diff / unchanged → **REMEDIATED / NOT A REMAINING D3 BLOCKER** (not reopened). **D8** `domains/iot_electronics/**`
+UNCHANGED / **Owner-reserved** (no disposition selected). **Activation:** `activated_domains() == ['electronics_electrical']`
+(only); mechanical/medical_device/software/iot_electronics NOT ACTIVATED. **No** auth/authz/credentials/billing/subscription/
+quota/AccessGrant/organization/persistence/retention/ownership/deployment diff (PSRR remains mandatory / NOT executed).
+
+**Three mandatory future prerequisites REGISTERED (NOT authorized here).** (1) **Path-N caller propagation** — `engine/progression_loop.py`
+has `domain` available (`get_question`/`get_display_question`) but calls `get_path_n_question(gap_type, iterations_open)` without
+threading it (legacy `domain=None`); non-blocking today (electronics is the only activated domain, so no non-electronics
+specialist session exists); **MANDATORY BEFORE ANY SECOND / NON-ELECTRONICS DOMAIN ACTIVATION** (thread canonical session/domain
+identity through the production Path-N caller chain so a foreign-domain session cannot inherit Electronics Path-N content).
+`engine/progression_loop.py` NOT modified. (2) **Multi-activated tie precedence** — `sorted(activated_tied)[0]` in
+`engine/domain_rules.py` is deterministic with one activated domain but would impose alphabetical precedence if >1 were activated
+and tied; **MANDATORY BEFORE MORE THAN ONE SPECIALIST DOMAIN CAN BE ACTIVATED** (a future activation contract must define a
+governed cross-activated-domain tie/conflict policy; alphabetical order must not silently become product precedence).
+`engine/domain_rules.py` NOT modified. (3) **Phase-9 Capability Overlap & Preservation Audit** — before the first Phase-9
+activation contract, classify proposed capabilities (Already Implemented / Already Governed-Planned / Partially Covered / Truly
+New Responsibility / Conflicts) against existing canonical owners (incl. §5-I3 cross-domain model, STG, Domain-Pack/benchmark
+governance, gap taxonomy, evidence provenance, maturity/readiness), likely target a Phase-9 Technical Quality Standard;
+activation-quality principle preserved (correct domain questions; gap/contradiction detection; evidence-vs-assumption
+separation; deterministic checks; known-unknowns). NOT implemented here.
+
+**Governance synchronization (minimum).** NEW `D3_CORE_DOMAIN_NEUTRALITY_FORMAL_CLOSURE_RECORD.md` + this roadmap append +
+`CURRENT_PROJECT_STATE.md` + `ACTIVE_INCREMENT_CONTRACT.md` current-truth sync. **`OWNER_DECISION_REGISTER.md` UNCHANGED** (D3
+closure records no new accepted Owner product-policy decision — consistent with Phase-7/Phase-8/P8-I*/P8-AF closure precedent;
+the three future prerequisites are governance-registered engineering obligations, not Owner product decisions). No
+runtime/test/Domain-Pack/schema/prompt/benchmark/web/CI file changed (ZERO runtime/test diff).
+
+**Boundary / status after this entry.** **D3 = FORMALLY CLOSED / AUTHORITATIVE** (prerequisite closure only; authoritative
+if/when this governance candidate is merged); no active D3 increment remains. **NO domain activated; D3-C not reopened; D8
+Owner-reserved.** **Phase 9 remains INACTIVE / NOT AUTHORIZED** — D3 closure does NOT auto-open a Phase-9 implementation
+contract; Phase 9 requires separate Owner authorization + the Phase-9 entry/audit gates (§9) and, when a second/non-electronics
+domain is proposed, the §7–§8 activation prerequisites. Phase 10 — NOT AUTHORIZED; PSRR — NOT EXECUTED; OD-Q/`main`
+reconciliation — separate pre-production gate; deployment / production — NOT AUTHORIZED. Candidate only until independent review
+→ Owner acceptance → merge (create-a-merge-commit) → post-merge verification. Append-only; prior history not rewritten. This
+entry authorizes no push, PR, merge beyond this candidate, domain activation, D8 decision, Phase-9 start, or deployment.
