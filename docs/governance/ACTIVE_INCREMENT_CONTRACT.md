@@ -41,12 +41,23 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — G-MPR-01-D):** **There is NO active *implementation* contract-of-record.** The current gate is
-**G-MPR-01-D — Findings Disposition & Roadmap Registration** (governance/documentation-only; base `d37caef`), which
-registers the accepted G-MPR-01 findings, **formally closes P8-I1** via a dedicated late-registered closure record, and
-records the P8-I3 lifecycle-persistence rule. **`P8-I3 — Subscription Lifecycle` is ELIGIBLE FOR OWNER CONSIDERATION — NOT
-AUTHORIZED / NOT STARTED** (separate Owner-authorized P8-I3 contract gate required). Phase 8 OPEN; Phase 9 / Phase 10 NOT
-AUTHORIZED; PSRR EXECUTION NOT STARTED; production / public paid activation BLOCKED. (Header note: this "Active contract"
+**Status (current — P8-I3-C CORRECTED):** **Current contract-of-record (DEFINITION ONLY, no implementation authority):
+P8-I3-C — Subscription Lifecycle — Bounded Implementation Contract (CORRECTED — verdict-B remediation)**
+(governance/documentation-only CONTRACT CANDIDATE; base `0a19daf` (PR #422); dedicated contract
+`docs/governance/PHASE_8_I3_SUBSCRIPTION_LIFECYCLE_INCREMENT_CONTRACT.md`; authoritative if/when independently re-reviewed,
+Owner-accepted, merged, post-merge verified). It **supersedes the prior candidate `ead186d`** (independent review verdict
+**B — ACCEPT WITH REQUIRED PRE-MERGE CORRECTIONS**; INVALIDATED / NOT MERGEABLE / EVIDENCE-ONLY / NOT MERGED; preserved as
+evidence). Corrections applied: **RC-1** `none` entitlement-neutral (no silent legacy downgrade); **RC-2** canonical
+`past_due` exits (`subscription_expired`/`subscription_cancelled`); **RC-3** unique cancellation-request mapping
+(`subscription_change_scheduled` reserved for PLAN changes only); + due-scheduled-transition materialization and
+equal-`effective_at` tie-break clarifications. It defines the smallest safe provider-neutral, additive, backward-compatible,
+deterministic, auditable, account-scoped lifecycle state model + persistence/service boundaries (subordinate to P8-C §6 and
+the closed P8-I1/P8-I2 foundations; honoring G-MPR-01-D D2). **There is NO active *implementation* contract-of-record;
+P8-I3-C confers NO implementation authorization** — a separate Owner-authorized P8-I3 implementation gate is required.
+**P8-I3 remains NOT STARTED / NOT IMPLEMENTED / NOT AUTHORIZED.** Immediately prior: G-MPR-01-D (findings disposition;
+formally closed P8-I1; registered the P8-I3 persistence rule + future gates) — MERGED (PR #422). Phase 8 OPEN; P8-I4 /
+P8-CLOSE NOT STARTED; Phase 9 / Phase 10 NOT AUTHORIZED; PSRR EXECUTION NOT STARTED; production / public paid activation
+BLOCKED. (Header note: this "Active contract"
 section previously still labeled **D-P6-18 — Global UI Language** as the status line; that increment is
 **FORMALLY ACCEPTED AND CLOSED** — see below — and is preserved as history, not the current active gate; the running current
 truth is in the paragraph that follows and in `CURRENT_PROJECT_STATE.md` + `ACTIVE_EXECUTION_ROADMAP.md`.)

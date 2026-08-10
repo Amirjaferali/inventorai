@@ -788,3 +788,28 @@ NOT AUTHORIZED / NOT STARTED** (a separate Owner-authorized P8-I3 bounded implem
 ≠ authorization). Phase 8 OPEN; P8-I4 / P8-CLOSE NOT STARTED; Phase 9 / Phase 10 NOT AUTHORIZED; PSRR EXECUTION NOT STARTED;
 public paid activation / production BLOCKED / NOT AUTHORIZED. All production blockers (Phase-10 legal/readiness, PSRR = GO/PASS,
 Deployment Gate, explicit Owner deployment authorization) preserved and unweakened.
+
+## P8-I3-C — Subscription Lifecycle Contract (CORRECTED — verdict-B remediation; supersedes `ead186d`; contract candidate; no new accepted decision; lifecycle Owner decisions remain OPEN)
+
+Governance/documentation-only **corrected** contract candidate; base `0a19daf74c344f2f497ccebac2440dd1f9d42b2d` (PR #422).
+Canonical record: `docs/governance/PHASE_8_I3_SUBSCRIPTION_LIFECYCLE_INCREMENT_CONTRACT.md`. **Supersedes the prior candidate
+`ead186d88747a33ff04d69768041efdcb51615bb`** (independent review verdict **B — ACCEPT WITH REQUIRED PRE-MERGE CORRECTIONS**;
+**INVALIDATED / NOT MERGEABLE / EVIDENCE-ONLY / NOT MERGED**; review history preserved). Corrections: **RC-1** `none`
+entitlement-neutral (no silent legacy downgrade — TECHNICAL BACKWARD-COMPATIBILITY RULE, not commercial policy); **RC-2**
+canonical `past_due` exits (`subscription_expired`/`subscription_cancelled`; grace-exhaustion = reason field); **RC-3** unique
+cancellation-request mapping (`subscription_change_scheduled` = PLAN changes only, no aliasing); + due-scheduled-transition
+materialization and equal-`effective_at` tie-break clarifications. **This register entry records NO new accepted Owner
+decision** and **does not duplicate P8-C §8** — it enumerates the still-OPEN lifecycle Owner decisions and the non-commercial
+TECHNICAL SAFETY / BACKWARD-COMPATIBILITY defaults. **DOCUMENTED NO-VALID-RED — CONTRACT-CORRECTION-ONLY GATE.** P8-I3 remains
+NOT STARTED / NOT IMPLEMENTED / NOT AUTHORIZED; no provider selected.
+
+| Item | Status | Impl. authority | Source |
+|---|---|---|---|
+| P8-I3-C corrected contract candidate (lifecycle state model + additive persistence + entitlement/quota/account boundaries + provider-neutral event boundary) | CONTRACT CANDIDATE (definition only); supersedes `ead186d` (evidence-only) | **NONE** (separate Owner-authorized P8-I3 implementation gate required) | P8-I3-C record; P8-C §6; G-MPR-01-D D2 |
+| Cancellation timing (immediate vs period-end), grace length & during-grace entitlement, proration, downgrade/upgrade effective timing, trial availability/duration, grandfathering, over-limit-on-downgrade behavior | **OPEN — REQUIRED OWNER/BUSINESS DECISION** (subordinate to P8-C §8; not duplicated) | NONE | P8-I3-C §9; P8-C §8 |
+| Payment-provider selection | **OPEN** (P8-I4 boundary; not selected) | NONE | P8-I3-C §8/§15; P8-C §6 |
+| TCR-0 (`none` = existing P8-I1 entitlement preserved; no silent downgrade) + TSD-2…5 (past_due retains until explicit effective transition; cancellation defaults to requested/scheduled effective; over-limit-on-downgrade = preserve+block-new; terminal canceled/expired never block existing-data read/export/delete) | **RECORDED — NOT COMMERCIAL POLICY** (non-destructive / no-lockout / backward-compatible technical defaults; Owner sets actual policy) | NONE | P8-I3-C §6/§9 |
+
+**Boundary.** This entry authorizes no implementation, starts no increment, selects no provider, and weakens no production
+block. Owner business policy (P8-C §8 + the lifecycle refinements above) remains unresolved and must not be silently decided by
+the technical implementation. Public paid activation / production remain BLOCKED / NOT AUTHORIZED.
