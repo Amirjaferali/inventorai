@@ -6090,3 +6090,58 @@ fabricated.
 selects no provider, reconciles no `main`, executes no PSRR, and weakens no production block. Append-only; prior history not
 rewritten. This entry authorizes no push, PR, merge beyond this candidate, P8-I3 start, provider selection, `main`
 reconciliation, or deployment.
+
+---
+
+## P8-I3-C — Subscription Lifecycle — Bounded Implementation Contract — governance/documentation-only CONTRACT CANDIDATE (CORRECTED — verdict-B remediation; supersedes `ead186d`) — P8-I3 remains NOT STARTED / NOT IMPLEMENTED / NOT AUTHORIZED
+
+**Gate.** OWNER-AUTHORIZED CONTRACT-CORRECTION gate for **P8-I3-C — Subscription Lifecycle**. The prior candidate
+`ead186d88747a33ff04d69768041efdcb51615bb` received independent review **verdict B — ACCEPT WITH REQUIRED PRE-MERGE
+CORRECTIONS** and is **INVALIDATED / NOT MERGEABLE / EVIDENCE-ONLY / NOT MERGED** (preserved as a git object + delivered
+bundle — not deleted). This corrected candidate applies the required corrections and preserves every property that passed
+review. **DOCUMENTED NO-VALID-RED — CONTRACT-CORRECTION-ONLY GATE.** Authoritative base verified read-only
+`0a19daf74c344f2f497ccebac2440dd1f9d42b2d` (PR #422; tree `843e2ee854e4514724c7c9fbaf7c5dbe83f43bd1`; not newer than the
+prior candidate's base); boot OK; clean. Governance documents ONLY — no `engine/**`, `web/**`, `tests/**`, `domains/**`,
+`schemas/**`, `prompts/**`, `benchmark/**`, dependency, CI, migration, API, adapter, or deployment file touched. No payment
+provider selected. Phase-8 order preserved (P8-I1 → P8-I2 → G-MPR-01/disposition → **P8-I3 contract; NOT started** → P8-I4 →
+P8-CLOSE).
+
+**Corrections applied.**
+- **RC-1 (BLOCKING) — `none` entitlement-neutral.** Lifecycle `none` no longer projects to the default plan. It **preserves
+  the existing P8-I1 entitlement resolution unchanged**: assigned plan if a valid commercial assignment exists, else
+  `default_plan_identity()`. **No silent legacy downgrade / reassignment / rewrite.** Only the **terminal** states
+  `canceled`/`expired` may project to the default technical entitlement (subject to anti-lock-in). Stated as a **TECHNICAL
+  BACKWARD-COMPATIBILITY RULE — NOT COMMERCIAL POLICY** (TCR-0); RED matrix R22/R30 pin it.
+- **RC-2 — canonical `past_due` exit events.** `past_due`→`expired` is driven by `subscription_expired`; `past_due`→`canceled`
+  by `subscription_cancelled`. The free-form "grace-exhausted / cancellation effective" pseudo-events are removed;
+  grace-exhaustion is a `reason`/provenance field, not a transition event name. RED matrix R34 pins it.
+- **RC-3 — unique cancellation-request mapping.** `cancellation_requested` is the single canonical cancellation-request event
+  (may carry a future `effective_at`); `subscription_cancelled` is the effective cancellation; `subscription_change_scheduled`
+  is **reserved for scheduled PLAN changes and MUST NOT alias a cancellation request.** No aliasing/duplicate semantics. RED
+  matrix R19/R21 pin it.
+- **Clarification 1 — due-scheduled-transition materialization.** A due transition becomes durable only via an **authorized
+  lifecycle-processing operation** (append the canonical event + update derived state in one `BEGIN IMMEDIATE`); a
+  **read/projection MUST NOT silently write** (it may project a due transition for display but never mutate); the event log
+  remains the source of truth and the derived state must equal the event-log replay after materialization. Scheduler/provider
+  execution deferred/out-of-scope. RED matrix R31/R36 pin it.
+- **Clarification 2 — equal-`effective_at` tie-break.** Two valid events with identical `effective_at` are ordered
+  deterministically by the durable event sequence (`event_id`). RED matrix R35 pins it.
+
+**Preserved accepted properties (unchanged).** 5 stored states + implicit `none`; additive persistence; append-only event log
+as source of truth; derived current-state cache; no `ALTER TABLE`; no back-fill; no destructive rewrite; one `BEGIN IMMEDIATE`
+per event append + derived-state update; event/state atomicity; deterministic rebuild; idempotency; replay protection;
+out-of-order rejection; injectable clock; provider neutrality; account fail-closed; cross-account protection; **P8-I2 sole quota
+authority**; no silent quota reset; read/export/delete anti-lockout; **P8-I4 owns real provider mapping**; business policy
+remains Owner-owned; no provider selected.
+
+**Governance synchronization (minimum).** CORRECTED P8-I3-C contract (`docs/governance/PHASE_8_I3_SUBSCRIPTION_LIFECYCLE_INCREMENT_CONTRACT.md`)
++ this roadmap append + `CURRENT_PROJECT_STATE.md` + `ACTIVE_INCREMENT_CONTRACT.md` (contract-of-record = corrected P8-I3-C,
+definition only) + `OWNER_DECISION_REGISTER.md` subordinate pointer (no new accepted decision). The prior candidate `ead186d`
+is recorded SUPERSEDED / INVALIDATED FOR MERGE / EVIDENCE-ONLY; its review history is preserved.
+
+**Boundary / status after this entry.** **P8-I3 is a CONTRACT CANDIDATE ONLY (CORRECTED) — NOT started, NOT implemented, NOT
+authorized.** No runtime/test/Domain-Pack/schema/prompt/benchmark file changed; no provider selected. P8-I4 / P8-CLOSE NOT
+STARTED; Phase 9 / Phase 10 NOT AUTHORIZED; PSRR EXECUTION NOT STARTED; public paid activation / production BLOCKED / NOT
+AUTHORIZED. Candidate only until independent re-review → Owner acceptance → merge → post-merge verification → a **separate**
+Owner-authorized P8-I3 implementation gate. Append-only; prior history not rewritten. This entry authorizes no push, PR, merge
+beyond this candidate, P8-I3 implementation start, provider selection, or deployment.

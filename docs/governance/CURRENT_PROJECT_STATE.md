@@ -719,6 +719,26 @@ AUTHORIZED / NOT STARTED.***
   CONSIDERATION — NOT AUTHORIZED / NOT STARTED** (a separate Owner-authorized P8-I3 bounded implementation-contract gate is
   required; eligibility ≠ authorization). Phase 8 remains OPEN; P8-I4 / P8-CLOSE NOT STARTED; Phase 9 / Phase 10 NOT AUTHORIZED;
   PSRR EXECUTION NOT STARTED; public paid activation / production BLOCKED / NOT AUTHORIZED.
+  **P8-I3 — Subscription Lifecycle is now DEFINED by a governance-only CORRECTED CONTRACT CANDIDATE (P8-I3-C — verdict-B
+  remediation)** (dedicated contract `docs/governance/PHASE_8_I3_SUBSCRIPTION_LIFECYCLE_INCREMENT_CONTRACT.md`; base `0a19daf`
+  (PR #422); authoritative if/when independently re-reviewed, Owner-accepted, merged, post-merge verified). It **supersedes the
+  prior candidate `ead186d`**, which received independent review **verdict B — ACCEPT WITH REQUIRED PRE-MERGE CORRECTIONS** and
+  is **INVALIDATED / NOT MERGEABLE / EVIDENCE-ONLY / NOT MERGED** (preserved as evidence, not deleted). **Corrections applied:**
+  **RC-1** lifecycle `none` is **ENTITLEMENT-NEUTRAL** — it preserves the existing P8-I1 resolution unchanged (assigned plan if
+  a valid assignment exists, else `default_plan_identity()`); **no silent legacy downgrade/reassignment/rewrite**; only terminal
+  `canceled`/`expired` project to default (TECHNICAL BACKWARD-COMPATIBILITY RULE — NOT commercial policy; RED R22/R30). **RC-2**
+  canonical `past_due` exits — `subscription_expired` (→expired) and `subscription_cancelled` (→canceled); grace-exhaustion is a
+  `reason` field, not a pseudo-event (RED R34). **RC-3** unique cancellation mapping — `cancellation_requested` is the single
+  request event, `subscription_cancelled` the effective transition, `subscription_change_scheduled` reserved for PLAN changes
+  only (no aliasing; RED R19/R21). **Clarification 1** due-scheduled transitions materialize only via an authorized lifecycle
+  operation (one `BEGIN IMMEDIATE`); read/projection never silently writes; event log stays source of truth (RED R31/R36).
+  **Clarification 2** equal-`effective_at` tie-break by durable event sequence (RED R35). All accepted properties preserved
+  (5 states + implicit `none`; additive append-only event log + derived cache; no `ALTER TABLE`/back-fill/destructive rewrite;
+  atomicity; idempotency/replay; injectable clock; provider neutrality; P8-I2 sole quota authority + no silent reset;
+  anti-lockout; P8-I4 owns real provider mapping; business policy Owner-owned). **P8-I3 remains a CONTRACT CANDIDATE ONLY —
+  NOT started / NOT implemented / NOT authorized**; no runtime/test/Domain-Pack/schema/prompt/benchmark file changed; no provider
+  selected; a separate Owner-authorized P8-I3 implementation gate is required. Phase 8 OPEN; P8-I4 / P8-CLOSE NOT STARTED;
+  Phase 9 / Phase 10 NOT AUTHORIZED; PSRR EXECUTION NOT STARTED; public paid activation / production BLOCKED / NOT AUTHORIZED.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
