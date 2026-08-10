@@ -260,7 +260,16 @@ def _detect(text, domain):
         return None
     lowered = text.lower()
     sentences = _sentences(lowered)
-    domain_context = domain if domain == _MVP_DOMAIN else _MVP_DOMAIN
+    # D3-A (core domain-neutrality): the produced signal's ``domain_context``
+    # reflects the ACTUAL session domain — already resolved upstream by the
+    # canonical admission / recognition authority (§5-I2) — and is NEVER
+    # force-mapped to the electronics MVP for a non-electronics context. A missing
+    # domain falls back to the electronics MVP default (the only activated
+    # specialist domain — a backward-compatible default, not an electronics-only
+    # assumption imposed on a non-electronics context). The electronics-specific
+    # safety CUES remain electronics-owned; only the domain-context mislabelling of
+    # a non-electronics context is corrected here.
+    domain_context = domain if domain else _MVP_DOMAIN
     for i, sentence in enumerate(sentences):
         hit = _same_sentence_hit(sentence, domain)
         if hit is not None:

@@ -41,8 +41,27 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — contract-of-record = D3 Core Domain-Neutrality CONTRACT CANDIDATE, definition only; NO active
-implementation increment; Phase 8 already FORMALLY CLOSED):** **`Phase 8` — Subscription, Billing and Entitlements is FORMALLY
+**Status (current — D3 Core Domain-Neutrality IMPLEMENTATION CANDIDATE; Phase 8 already FORMALLY CLOSED):** The accepted **D3
+contract is MERGED (PR #434, merge `2dbde37a3c409356691a17fd868f90b087df417c`; merge tree = accepted candidate tree, post-merge
+verified)**, and **`D3` — Core Domain-Neutrality is now IMPLEMENTED as a governance-only IMPLEMENTATION CANDIDATE (RED →
+GREEN)**: minimum-path corrections to exactly three existing engine seams + one new focused test — **D3-A**
+`engine/safety_signal.py` (`domain_context` reflects the actual §5-I2 session domain, no longer force-mapped to the electronics
+MVP for a non-electronics context; electronics safety cues unchanged); **D3-B** `engine/path_n_questions.py` (`get_served_question`
+/ `get_path_n_question` honor an optional canonical `domain` identity; Electronics-owned artifact served only for Electronics /
+`None`; a non-electronics identity is not silently served Electronics content); **D3-D** `engine/domain_rules.py` (`infer_domain`
+consumes §5-I2 activation so an ACTIVATED domain wins a tie and a RECOGNIZED_NOT_ACTIVATED domain never becomes routing/admission
+authority). Canonical owners consumed, never duplicated (`domain_registry.py` §5-I1 + `domain_activation.py` §5-I2). Behavioral
+RED (4 seam defects) → GREEN: **D3 focused 7 / focused regressions 167 / web consumers 87 (2 skipped) / full suite 2258 passed /
+3 skipped / 1 xfailed / 0 failed** (2251 baseline + 7); three load-bearing mutation probes each turned the targeted test RED and
+were restored byte-identical. Scope invariants proven: only the three engine seams + the new test changed; D3-C (`web/app.py` +
+`web/domain_label.py`) UNCHANGED; D8 (`domains/iot_electronics/**`) UNCHANGED; `activated_domains() == ['electronics_electrical']`
+(only); no persistence/schema/commercial/quota/AccessGrant/auth diff. **D3 = IMPLEMENTATION CANDIDATE ONLY — NOT closed** (formal
+closure is a separate gate after independent review → Owner acceptance → merge (create-a-merge-commit) → post-merge verification
+→ remaining-obligation review); **NO domain activated; D8 OPEN / Owner-reserved; Phase 8 = FORMALLY CLOSED; Phase 9 / Phase 10 =
+NOT AUTHORIZED; PSRR = NOT EXECUTED; deployment / production = NOT AUTHORIZED.** There is no other active implementation
+increment.
+
+**Immediately prior (retained as history — D3 contract-of-record, definition only):** **`Phase 8` — Subscription, Billing and Entitlements is FORMALLY
 CLOSED / AUTHORITATIVE** (technical-foundation phase; no active increment remains) — **P8-CLOSE merged PR #433
 (`00792af36e51808191690a4bf66f9b1a2644d477`)**; dedicated record `docs/governance/PHASE_8_FORMAL_CLOSURE_RECORD.md`. **`D3` —
 Core Domain-Neutrality is now DEFINED by a governance-only CONTRACT CANDIDATE** (Owner-authorized fresh gate; the Owner's

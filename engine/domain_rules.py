@@ -4,6 +4,7 @@ MVP: 3 rules maximum per MVP_SCOPE_FREEZE.md
 """
 
 from engine.domain_registry import load_registry
+from engine import domain_activation
 _REGISTRY = load_registry("domains/")
 
 # DEPRECATED: authority moved to registry — Step 5 (AB-005). Remove in Step 7.
@@ -17,9 +18,20 @@ def infer_domain(idea_text: str) -> str | None:
 	}
 	if not scores or max(scores.values()) == 0:
 		return None
-	# Tie-breaker priority: medical_device > electronics_electrical > mechanical > software
-	priority = ["medical_device", "electronics_electrical", "mechanical", "software"]
 	best_score = max(scores.values())
+	tied = [d for d in scores if scores[d] == best_score]
+	# D3-D (core domain-neutrality): on a classification tie, an ACTIVATED domain
+	# outranks a RECOGNIZED_NOT_ACTIVATED one — a recognized-but-not-activated pack
+	# can NEVER become effective activated routing/admission authority through this
+	# shared inference seam via an ungoverned literal. Consumes the canonical §5-I2
+	# activation policy (engine/domain_activation.py); deterministic (sorted). When
+	# no tied domain is activated (an edge case that yields no admissible domain
+	# regardless of ordering), the prior deterministic priority order is preserved
+	# for backward compatibility.
+	activated_tied = sorted(d for d in tied if domain_activation.is_activated(d, _REGISTRY))
+	if activated_tied:
+		return activated_tied[0]
+	priority = ["medical_device", "electronics_electrical", "mechanical", "software"]
 	for domain in priority:
 		if scores.get(domain, 0) == best_score:
 			return domain

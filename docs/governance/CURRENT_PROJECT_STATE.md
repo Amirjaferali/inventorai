@@ -1010,6 +1010,28 @@ AUTHORIZED / NOT STARTED.***
   (blocks IoT activation only); Phase 8 = FORMALLY CLOSED / AUTHORITATIVE; Phase 9 / Phase 10 = NOT AUTHORIZED; PSRR = NOT
   EXECUTED; deployment / production = NOT AUTHORIZED.** Owner product/policy decisions required before D3 implementation: NONE —
   only explicit D3 implementation-gate authorization after contract acceptance.
+  **The D3 contract is now ACCEPTED / MERGED (PR #434, merge `2dbde37a3c409356691a17fd868f90b087df417c`; merge tree = accepted
+  candidate tree, post-merge verified), and `D3` — Core Domain-Neutrality is now IMPLEMENTED as a governance-only IMPLEMENTATION
+  CANDIDATE (RED → GREEN)** — the three shared-core couplings corrected via minimum-path edits to exactly three existing engine
+  seams + one new focused test: **D3-A** `engine/safety_signal.py` (the signal's `domain_context` reflects the actual §5-I2
+  session domain and is no longer force-mapped to the electronics MVP for a non-electronics context; electronics-owned safety
+  CUES unchanged); **D3-B** `engine/path_n_questions.py` (`get_served_question` / `get_path_n_question` gain an optional canonical
+  `domain` identity; the Electronics-owned Path-N artifact is served only for the Electronics domain or the `None` default, and a
+  recognized non-electronics identity is not silently served Electronics content — no parallel question framework); **D3-D**
+  `engine/domain_rules.py` (`infer_domain` consumes the §5-I2 activation policy so an ACTIVATED domain wins a classification tie
+  and a RECOGNIZED_NOT_ACTIVATED domain can never become effective activated routing/admission authority; prior priority kept
+  only as a backward-compatible no-activated-tie fallback). Canonical owners **consumed, never duplicated** (`domain_registry.py`
+  §5-I1 + `domain_activation.py` §5-I2; no new registry/activation/router/orchestrator/question framework). Behavioral RED (4
+  seam defects, grounded in the real seams; no "delete the word electronics" tests) → GREEN: **D3 focused 7 / focused
+  regressions 167 / web-admission consumers 87 (2 skipped) / full suite 2258 passed / 3 skipped / 1 xfailed / 0 failed** (2251
+  baseline + 7); **three load-bearing mutation probes** each turned the targeted test RED and were restored byte-identical.
+  **Scope invariants proven:** changed paths = the three engine seams + the new test only; `web/app.py` + `web/domain_label.py`
+  (D3-C) UNCHANGED; `domains/iot_electronics/**` (D8) UNCHANGED; `activated_domains() == ['electronics_electrical']` (only);
+  no persistence/schema/commercial/quota/AccessGrant/auth diff; OD-N + fail-closed preserved. **D3 = IMPLEMENTATION CANDIDATE
+  ONLY — NOT closed** (D3 formal closure is a separate gate after this candidate is independently reviewed → Owner-accepted →
+  merged (create-a-merge-commit) → post-merge verified → remaining-obligation review); **NO domain activated; D8 OPEN /
+  Owner-reserved; Phase 8 = FORMALLY CLOSED; Phase 9 / Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED; deployment / production =
+  NOT AUTHORIZED.**
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
