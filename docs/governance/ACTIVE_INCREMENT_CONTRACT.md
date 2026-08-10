@@ -41,8 +41,26 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — P8-I3-C CORRECTED):** **Current contract-of-record (DEFINITION ONLY, no implementation authority):
-P8-I3-C — Subscription Lifecycle — Bounded Implementation Contract (CORRECTED — verdict-B remediation)**
+**Status (current — P8-I3 IMPLEMENTATION CANDIDATE, CORRECTED):** The accepted **corrected P8-I3-C** contract is **MERGED
+(PR #423, merge `09743b91b764e5ac2956401d7a88c91df48d3d8b`) / POST-MERGE VERIFIED**, and **P8-I3 — Subscription Lifecycle is
+now IMPLEMENTED as a governance-only IMPLEMENTATION CANDIDATE (RED → GREEN; verdict-B CORRECTED — supersedes the invalidated
+prior implementation candidate `4385a33`, EVIDENCE-ONLY / NOT MERGED)**: `engine/subscription_lifecycle_service.py` (NEW seam)
++ additive `engine/account_store.py` lifecycle tables/methods (append-only event log source-of-truth carrying the scheduled
+target plan + derived cache; one-`BEGIN IMMEDIATE` atomicity with **in-transaction** stale-effective_at + pending-schedule
+exclusivity + from-state guards) + `tests/test_p8_i3_subscription_lifecycle.py` (45 tests) + the OD-N guard extension.
+Verdict-B corrections RC-I1..RC-I6 implemented and mutation-proven (pending-schedule exclusivity; in-txn stale check;
+different-transition conflict guard causally tested; scheduled target plan in the event log + reconstructable; event-id-scoped
+materialization idempotency; lifecycle reads fail closed for missing/disabled/deleted). Behavioral RED → GREEN: focused 45 /
+Phase-8 94 / **full suite 2168 passed / 3 skipped / 1 xfailed / 0 failed**; six correction mutation probes each turned a test
+RED and were fully restored (byte-identical); two-thread races deterministic. Preserved: `none` entitlement-neutral,
+canonical `past_due` exits, unique cancellation mapping, P8-I2 sole quota authority + no reset, anti-lockout, provider
+neutrality, OD-N. **P8-I3 is an IMPLEMENTATION CANDIDATE ONLY — NOT closed; Phase 8 NOT complete / NOT billing-live / NOT
+paid-active**; no provider selected; candidate-only until independent re-review → Owner acceptance → PR → pre-merge check →
+merge → post-merge verification → a dedicated formal P8-I3 closure gate. P8-I4 / P8-CLOSE NOT STARTED; Phase 9 / Phase 10 NOT
+AUTHORIZED; PSRR EXECUTION NOT STARTED; production / public paid activation BLOCKED.
+
+**Immediately prior (retained as history):** the corrected P8-I3-C contract-of-record (definition only) —
+**P8-I3-C — Subscription Lifecycle — Bounded Implementation Contract (CORRECTED — verdict-B remediation)**
 (governance/documentation-only CONTRACT CANDIDATE; base `0a19daf` (PR #422); dedicated contract
 `docs/governance/PHASE_8_I3_SUBSCRIPTION_LIFECYCLE_INCREMENT_CONTRACT.md`; authoritative if/when independently re-reviewed,
 Owner-accepted, merged, post-merge verified). It **supersedes the prior candidate `ead186d`** (independent review verdict

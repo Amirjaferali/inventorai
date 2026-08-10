@@ -6145,3 +6145,74 @@ STARTED; Phase 9 / Phase 10 NOT AUTHORIZED; PSRR EXECUTION NOT STARTED; public p
 AUTHORIZED. Candidate only until independent re-review → Owner acceptance → merge → post-merge verification → a **separate**
 Owner-authorized P8-I3 implementation gate. Append-only; prior history not rewritten. This entry authorizes no push, PR, merge
 beyond this candidate, P8-I3 implementation start, provider selection, or deployment.
+
+---
+
+## P8-I3 — Subscription Lifecycle — IMPLEMENTATION (RED → GREEN; verdict-B CORRECTED; supersedes `4385a33`) — governance-only IMPLEMENTATION CANDIDATE — P8-I3 IMPLEMENTED but NOT closed; Phase 8 NOT complete / NOT paid-active
+
+**Gate.** OWNER-AUTHORIZED CORRECTION of the P8-I3 implementation. The prior implementation candidate
+`4385a33cdcec692fcee233c3f02abbfa13b4b828` received independent review **verdict B — ACCEPT WITH REQUIRED PRE-MERGE
+CORRECTIONS** and is **INVALIDATED / NOT MERGEABLE / EVIDENCE-ONLY / NOT MERGED** (preserved as a git object + delivered
+bundle). This corrected candidate is built **directly on the authoritative base** (not stacked on the invalidated candidate).
+Authoritative live tip verified read-only `09743b91b764e5ac2956401d7a88c91df48d3d8b` (PR #423 merge of the accepted corrected
+P8-I3-C contract `a9ddcce`; not newer); boot OK; clean. Governance-guarded scope: `engine/` seam + additive `account_store` +
+`tests/` + OD-N guard extensions + current-truth docs. **NO payment provider/checkout/webhooks; NO Domain-Pack/schema/prompt/
+benchmark/web change; NO P8-I4/P8-CLOSE; NO Phase-9/10; NO PSRR; NO deployment; NO public paid activation.**
+
+**Behavioral RED (not ImportError — subsystem already existed).** New tests reproduced the six independently-confirmed defects
+on the prior implementation: **D2** the store appended a stale `effective_at` (no in-txn check); **D4** the scheduled target
+plan was absent from the event log (derived-cache only); **D5** the materialization key `materialize:<effective_at>` collided
+across epochs, wedging a new same-`effective_at` cancellation; **D6** lifecycle reads returned `none`/data for
+missing/disabled accounts (fail-open). **D1** scheduling-race and **D3** conflict-guard causal gaps were demonstrated
+deterministically by the mutation probes (removing the in-txn guard fails the two-thread tests). Exact failing tests recorded
+in the candidate report.
+
+**GREEN corrections.**
+- **RC-I1** — atomic pending-schedule exclusivity: the store checks the committed pending schedule **inside the
+  `BEGIN IMMEDIATE`** (`require_no_pending` + `prior_pending`), so a second conflicting scheduling event fails closed; the
+  service no longer relies on a pre-read. Deterministic two-thread `cancellation_requested` vs `subscription_change_scheduled`
+  test → exactly one pending schedule.
+- **RC-I2** — the stale-`effective_at` guard is now **in-transaction** against the latest committed `current_since` (which now
+  advances to the event effective time on every applied transition); a stale append fails closed durably.
+- **RC-I3** — added a deterministic two-thread different-transition race (cancel vs expire) proving the from-state guard; the
+  mutation probe removing that guard now fails this test (previously the guard's removal left all tests green).
+- **RC-I4** — the append-only event carries `sched_effective_at` + `target_plan_id`/`target_plan_version`; `rebuild_from_events`
+  reconstructs the full pending schedule (incl. target plan) from the log ALONE, equal to the durable derived cache.
+- **RC-I5** — materialization idempotency is bound to the durable scheduling `event_id` (`scheduled_event_id` column;
+  `materialize:<event_id>`), so the same `effective_at` reused in a later epoch materializes as a distinct new event; repeated
+  materialization of the same scheduled event stays idempotent.
+- **RC-I6** — the lifecycle read seam (`get_state`, `list_events`, `rebuild_*`) fails closed for missing/disabled/deleted
+  accounts at the service boundary; the low-level store rebuild primitive stays account-unaware.
+- **Non-blocking (documented, not silently changed):** idempotency-key replay returns the prior recorded outcome without
+  payload-equality validation — annotated in `find_lifecycle_event` for future P8-I4 mapping.
+
+**Changed paths (bounded).** `engine/subscription_lifecycle_service.py` (NEW seam, corrected) + `engine/account_store.py`
+(ADDITIVE lifecycle tables/methods, corrected — the two new tables' initial definitions carry the added columns; no
+`ALTER TABLE`, no back-fill, no destructive migration; existing P8-I1/P8-I2/account tables untouched) +
+`tests/test_p8_i3_subscription_lifecycle.py` (45 tests: 35 original + 10 correction/race/rebuild/read-fail-closed) +
+`tests/test_p8_i1_plan_entitlement_foundation.py` + `tests/test_p8_i2_commercial_quota.py` (OD-N guard seam allowlist) +
+current-truth docs.
+
+**Test evidence.** Behavioral RED → GREEN: **P8-I3 focused 45 passed; Phase-8 regressions 94 passed; full suite 2168 passed /
+3 skipped / 1 xfailed / 0 failed** (2123 baseline + 45). Two-thread race tests confirmed **deterministic** across repeated
+runs. **Six correction mutation probes** (remove pending-schedule guard; remove in-txn stale check; remove from-state guard;
+omit target plan from event log; revert materialization key to `effective_at`; bypass lifecycle-read fail-closed) each turned
+the targeted test RED and were **fully restored (files byte-identical, sha256sum -c OK — no mutation remains).**
+
+**Preserved accepted behavior.** Additive schema; event-log source-of-truth; derived cache; one-`BEGIN IMMEDIATE` write with
+rollback atomicity; durable account-scoped idempotency; true replay; equal-`effective_at` `event_id` tie-break; injected clock;
+read/projection never writes; authorized materialization writes atomically; `none` entitlement-neutral; legacy non-default
+assignment preserved; canonical `past_due` exits; unique `cancellation_requested` semantics; P8-I2 sole quota authority; no
+quota reset; anti-lockout; provider neutrality; account identity reuse; no provider payload/secrets; P8-I4 not started.
+
+**Governance synchronization (minimum).** `ACTIVE_INCREMENT_CONTRACT.md` + `CURRENT_PROJECT_STATE.md` synced to the CORRECTED
+P8-I3 IMPLEMENTATION CANDIDATE (prior candidate `4385a33` recorded superseded/evidence-only). This roadmap append.
+**`OWNER_DECISION_REGISTER.md` UNCHANGED** (implementation candidate records no accepted Owner decision). No P8-I3 closure is
+declared; Phase 8 is not complete.
+
+**Boundary / status after this entry.** **P8-I3 is an IMPLEMENTATION CANDIDATE ONLY (CORRECTED) — NOT closed; Phase 8 NOT
+complete, NOT billing-live, NOT paid-active.** Candidate-only until independent re-review → Owner exact-candidate acceptance →
+publication → PR → pre-merge safety check → merge → post-merge verification → a dedicated formal P8-I3 closure gate. No
+provider selected. P8-I4 / P8-CLOSE NOT STARTED; Phase 9 / Phase 10 NOT AUTHORIZED; PSRR EXECUTION NOT STARTED; public
+production BLOCKED until PSRR = GO/PASS + Deployment Gate + explicit Owner deployment authorization. Append-only; prior history
+not rewritten. This entry authorizes no push, PR, merge beyond this candidate, P8-I4 start, provider selection, or deployment.

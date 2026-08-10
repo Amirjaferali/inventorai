@@ -184,6 +184,50 @@ _SCHEMA = (
         FOREIGN KEY (account_id) REFERENCES accounts(account_id)
     )
     """,
+    # P8-I3: append-only subscription-lifecycle event log — the SOURCE OF TRUTH
+    # and the lifecycle audit (distinct from access_audit and commercial_audit).
+    # ``event_id`` is the durable monotonic sequence and the equal-effective_at
+    # tie-break authority. ``reason`` carries provenance (e.g. 'grace_exhausted')
+    # and is NEVER an event type. ``external_reference`` is opaque/provider-neutral
+    # (no provider payload). Additive; existing tables are untouched.
+    """
+    CREATE TABLE IF NOT EXISTS subscription_lifecycle_events (
+        event_id             INTEGER PRIMARY KEY,
+        account_id           TEXT NOT NULL,
+        event_type           TEXT NOT NULL,
+        from_state           TEXT,
+        to_state             TEXT NOT NULL,
+        effective_at         TEXT NOT NULL,
+        recorded_at          TEXT NOT NULL,
+        reason               TEXT,
+        source               TEXT,
+        external_reference   TEXT,
+        idempotency_key      TEXT,
+        sched_effective_at   TEXT,
+        target_plan_id       TEXT,
+        target_plan_version  TEXT,
+        UNIQUE (account_id, idempotency_key),
+        FOREIGN KEY (account_id) REFERENCES accounts(account_id)
+    )
+    """,
+    # P8-I3: derived current-state cache (one row per account). ALWAYS a
+    # deterministic function of the event log (the log stays authoritative). A
+    # single pending scheduled transition may be recorded here.
+    """
+    CREATE TABLE IF NOT EXISTS subscription_lifecycle_state (
+        account_id             TEXT PRIMARY KEY,
+        current_state          TEXT NOT NULL,
+        current_since          TEXT NOT NULL,
+        scheduled_to_state     TEXT,
+        scheduled_effective_at TEXT,
+        scheduled_event_type   TEXT,
+        scheduled_plan_id      TEXT,
+        scheduled_plan_version TEXT,
+        scheduled_event_id     INTEGER,
+        updated_at             TEXT NOT NULL,
+        FOREIGN KEY (account_id) REFERENCES accounts(account_id)
+    )
+    """,
 )
 
 
@@ -413,6 +457,210 @@ class SqliteAccountStore:
         return [{"event_id": r[0], "account_id": r[1], "event_type": r[2],
                  "from_plan": r[3], "to_plan": r[4], "created_at": r[5]}
                 for r in rows]
+
+    # --- subscription lifecycle (P8-I3: append-only event log + derived state) --
+    #
+    # This store layer is a purely MECHANICAL, atomic, fail-closed primitive:
+    # account existence/active check + durable idempotency + optimistic
+    # from-state guard + append-event + upsert-derived-state (+ optional
+    # coordinated plan-assignment change) in ONE ``BEGIN IMMEDIATE``. It holds NO
+    # lifecycle state-machine policy (that lives in
+    # ``engine.subscription_lifecycle_service``) and imports no commercial module,
+    # preserving the OD-N dependency direction.
+
+    def get_lifecycle_state_row(self, account_id: str):
+        """Return the derived current-state row for ``account_id`` as a dict, or
+        ``None`` when no lifecycle row exists (the implicit ``none`` state).
+        Low-level and account-UNAWARE (deterministic rebuild primitive); §10
+        account fail-closed is enforced at the service boundary, not here."""
+        with self._read() as c:
+            row = c.execute(
+                "SELECT account_id, current_state, current_since, "
+                "scheduled_to_state, scheduled_effective_at, scheduled_event_type, "
+                "scheduled_plan_id, scheduled_plan_version, scheduled_event_id, "
+                "updated_at FROM subscription_lifecycle_state WHERE account_id = ?",
+                (account_id,)).fetchone()
+        if row is None:
+            return None
+        return {"account_id": row[0], "current_state": row[1],
+                "current_since": row[2], "scheduled_to_state": row[3],
+                "scheduled_effective_at": row[4], "scheduled_event_type": row[5],
+                "scheduled_plan_id": row[6], "scheduled_plan_version": row[7],
+                "scheduled_event_id": row[8], "updated_at": row[9]}
+
+    def list_lifecycle_events(self, account_id: str):
+        """Return the append-only lifecycle events for ``account_id`` in durable
+        sequence order (``event_id``). Read-only; the log is the source of truth
+        and carries the scheduled target plan (RC-I4). Low-level/account-unaware."""
+        with self._read() as c:
+            rows = c.execute(
+                "SELECT event_id, account_id, event_type, from_state, to_state, "
+                "effective_at, recorded_at, reason, source, external_reference, "
+                "idempotency_key, sched_effective_at, target_plan_id, "
+                "target_plan_version FROM subscription_lifecycle_events "
+                "WHERE account_id = ? ORDER BY event_id", (account_id,)).fetchall()
+        return [{"event_id": r[0], "account_id": r[1], "event_type": r[2],
+                 "from_state": r[3], "to_state": r[4], "effective_at": r[5],
+                 "recorded_at": r[6], "reason": r[7], "source": r[8],
+                 "external_reference": r[9], "idempotency_key": r[10],
+                 "sched_effective_at": r[11], "target_plan_id": r[12],
+                 "target_plan_version": r[13]}
+                for r in rows]
+
+    def find_lifecycle_event(self, account_id: str, idempotency_key: str):
+        """Return the prior lifecycle event for (account, idempotency_key) as a
+        dict, or ``None``. Durable replay lookup (account-scoped), so a duplicate
+        event is recognised before any transition re-validation.
+
+        NOTE (idempotency-payload semantics — see P8-I4 mapping): replay is keyed
+        by (account_id, idempotency_key) identity ONLY; it returns the prior
+        recorded outcome and does NOT validate payload equality. The accepted
+        P8-I3-C contract permits prior-result replay; a future payload-consistency
+        check (if any) is a P8-I4 concern and must not silently change this."""
+        if idempotency_key is None:
+            return None
+        with self._read() as c:
+            row = c.execute(
+                "SELECT event_id, event_type, to_state FROM "
+                "subscription_lifecycle_events WHERE account_id = ? AND "
+                "idempotency_key = ?", (account_id, idempotency_key)).fetchone()
+        if row is None:
+            return None
+        return {"event_id": row[0], "event_type": row[1], "to_state": row[2]}
+
+    def _upsert_lifecycle_state(self, c, account_id, current_state, current_since,
+                                updated_at, scheduled_to_state,
+                                scheduled_effective_at, scheduled_event_type,
+                                scheduled_plan_id, scheduled_plan_version,
+                                scheduled_event_id):
+        """Upsert the derived current-state row on the open write connection ``c``
+        (so it commits/rolls back atomically with the event append). ``current_since``
+        is passed pre-computed by the caller (advances to the event effective time
+        on every applied transition; preserved for a scheduling event)."""
+        prior = c.execute(
+            "SELECT account_id FROM subscription_lifecycle_state WHERE account_id = ?",
+            (account_id,)).fetchone()
+        if prior is None:
+            c.execute(
+                "INSERT INTO subscription_lifecycle_state "
+                "(account_id, current_state, current_since, scheduled_to_state, "
+                "scheduled_effective_at, scheduled_event_type, scheduled_plan_id, "
+                "scheduled_plan_version, scheduled_event_id, updated_at) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (account_id, current_state, current_since, scheduled_to_state,
+                 scheduled_effective_at, scheduled_event_type, scheduled_plan_id,
+                 scheduled_plan_version, scheduled_event_id, updated_at))
+        else:
+            c.execute(
+                "UPDATE subscription_lifecycle_state SET current_state = ?, "
+                "current_since = ?, scheduled_to_state = ?, scheduled_effective_at = ?, "
+                "scheduled_event_type = ?, scheduled_plan_id = ?, "
+                "scheduled_plan_version = ?, scheduled_event_id = ?, updated_at = ? "
+                "WHERE account_id = ?",
+                (current_state, current_since, scheduled_to_state,
+                 scheduled_effective_at, scheduled_event_type, scheduled_plan_id,
+                 scheduled_plan_version, scheduled_event_id, updated_at, account_id))
+
+    def apply_lifecycle_event(self, account_id, *, event_type, expected_from_state,
+                              new_current_state, event_to_state, effective_at,
+                              recorded_at, reason=None, source=None,
+                              external_reference=None, idempotency_key=None,
+                              is_scheduling=False, require_no_pending=False,
+                              event_sched_effective_at=None, target_plan_id=None,
+                              target_plan_version=None, scheduled_to_state=None,
+                              scheduled_effective_at=None, scheduled_event_type=None,
+                              scheduled_plan_id=None, scheduled_plan_version=None,
+                              assignment=None):
+        """Atomically (one ``BEGIN IMMEDIATE``): fail-closed account check → durable
+        idempotency → **in-transaction** stale-effective_at guard (RC-I2) →
+        **in-transaction** pending-schedule exclusivity guard (RC-I1) → optimistic
+        ``expected_from_state`` guard → append the lifecycle event (carrying the
+        scheduled target plan, RC-I4) → optionally coordinate a P8-I1 assignment
+        change → upsert the derived current state (recording ``scheduled_event_id``,
+        RC-I5). ``current_since`` advances to ``effective_at`` on every applied
+        transition (a scheduling event preserves it). Returns ``(status,
+        current_state, event_id)``: ``"applied"`` / ``"idempotent_replay"`` /
+        ``"conflict_stale"`` / ``"account_missing"`` / ``"account_inactive"``. Any
+        error rolls the whole mutation back."""
+        with self._write() as c:
+            acct = c.execute("SELECT status FROM accounts WHERE account_id = ?",
+                             (account_id,)).fetchone()
+            if acct is None:
+                return ("account_missing", None, None)
+            if acct[0] != "active":
+                return ("account_inactive", None, None)
+            if idempotency_key is not None:
+                prior = c.execute(
+                    "SELECT to_state FROM subscription_lifecycle_events "
+                    "WHERE account_id = ? AND idempotency_key = ?",
+                    (account_id, idempotency_key)).fetchone()
+                if prior is not None:
+                    return ("idempotent_replay", prior[0], None)
+            row = c.execute(
+                "SELECT current_state, current_since, scheduled_effective_at "
+                "FROM subscription_lifecycle_state WHERE account_id = ?",
+                (account_id,)).fetchone()
+            actual_from = row[0] if row is not None else "none"
+            prior_since = row[1] if row is not None else None
+            prior_pending = row[2] if row is not None else None
+            # RC-I2 — in-transaction stale guard against the latest committed state.
+            if prior_since is not None and int(effective_at) < int(prior_since):
+                return ("conflict_stale", actual_from, None)
+            # RC-I1 — in-transaction pending-schedule exclusivity: a second
+            # scheduling event conflicting with an already-committed pending
+            # schedule fails closed (no silent overwrite / silent loss).
+            if require_no_pending and prior_pending is not None:
+                return ("conflict_stale", actual_from, None)
+            # Optimistic from-state guard (different-transition race → one wins).
+            if actual_from != expected_from_state:
+                return ("conflict_stale", actual_from, None)
+            cur = c.execute(
+                "INSERT INTO subscription_lifecycle_events "
+                "(account_id, event_type, from_state, to_state, effective_at, "
+                "recorded_at, reason, source, external_reference, idempotency_key, "
+                "sched_effective_at, target_plan_id, target_plan_version) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (account_id, event_type, expected_from_state, event_to_state,
+                 effective_at, recorded_at, reason, source, external_reference,
+                 idempotency_key, event_sched_effective_at, target_plan_id,
+                 target_plan_version))
+            event_id = cur.lastrowid
+            if assignment is not None:
+                plan_id, plan_version = assignment
+                prior_a = c.execute(
+                    "SELECT plan_id, plan_version FROM commercial_assignments "
+                    "WHERE account_id = ?", (account_id,)).fetchone()
+                if prior_a is None:
+                    from_plan, ev = None, "assigned"
+                    c.execute(
+                        "INSERT INTO commercial_assignments "
+                        "(account_id, plan_id, plan_version, assigned_at, updated_at) "
+                        "VALUES (?, ?, ?, ?, ?)",
+                        (account_id, plan_id, plan_version, recorded_at, recorded_at))
+                else:
+                    from_plan, ev = "%s@%s" % (prior_a[0], prior_a[1]), "changed"
+                    c.execute(
+                        "UPDATE commercial_assignments SET plan_id = ?, "
+                        "plan_version = ?, updated_at = ? WHERE account_id = ?",
+                        (plan_id, plan_version, recorded_at, account_id))
+                self._append_commercial_audit(
+                    c, account_id, ev, from_plan,
+                    "%s@%s" % (plan_id, plan_version), recorded_at)
+            if is_scheduling:
+                # State unchanged; preserve current_since; record the scheduling
+                # event's id so materialization idempotency is epoch-unique (RC-I5).
+                since = prior_since if prior_since is not None else effective_at
+                sched_eid = event_id
+            else:
+                # A concrete transition advances current_since and clears any
+                # pending schedule (scheduled_* left None by the caller).
+                since = effective_at
+                sched_eid = None
+            self._upsert_lifecycle_state(
+                c, account_id, new_current_state, since, recorded_at,
+                scheduled_to_state, scheduled_effective_at, scheduled_event_type,
+                scheduled_plan_id, scheduled_plan_version, sched_eid)
+            return ("applied", new_current_state, event_id)
 
     # --- commercial usage quota (P8-I2: counter + retry idempotency) --------
     def get_commercial_usage(self, account_id: str, meter: str, window_key: str) -> int:
