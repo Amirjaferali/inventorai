@@ -41,7 +41,31 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — contract-of-record = P8-AF-C, definition only; NO active implementation contract):** **`P8-AF` — Access,
+**Status (current — P8-AF-I1 IMPLEMENTATION CANDIDATE):** The accepted **P8-AF-C** contract is **MERGED (PR #429, merge
+`06683179f843b71f8d151f0c3c5647778b4b0acf`) / POST-MERGE VERIFIED**, and **P8-AF-I1 — Canonical Access-Grant +
+Access-Resolution Foundation is now IMPLEMENTED as a governance-only IMPLEMENTATION CANDIDATE (RED → GREEN)** — the FIRST and
+SMALLEST P8-AF increment, proving ONLY the canonical access-composition seam. `engine/access_grant.py` (NEW — a LEAF immutable,
+source-neutral, provider-neutral `AccessGrant` value object whose fixed slots forbid quota/provider/credential/pricing/
+data-ownership fields; fail-closed `make_access_grant(...)`; pure `is_effective_at`/`exclusion_reason`; imports no engine
+module) + `engine/access_resolver.py` (NEW — the SINGLE deterministic, pure, read-only `resolve_access(grants, *, now)` →
+immutable `AccessResolution`; **REFERENCES** the P8-I1 authority via `plan_catalog.entitlement_descriptor` for entitlement
+IDENTITY validation only — never reads capabilities, never redefines entitlement; imports only `access_grant` + `plan_catalog`)
++ the OD-N guard extension recognizing both as commercial seams. **Minimal safe precedence (P8-AF-C §6; no invented business
+priority):** zero effective grants → DENY; all-one-distinct-entitlement → GRANT that single entitlement (one quota path, never
+additive); **competing distinct entitlements → FAIL CLOSED** (precedence deferred). Behavioral RED (import-absent + six
+mutation probes) → GREEN: **focused 30 / Phase-8 154 / full suite 2228 passed / 3 skipped / 1 xfailed / 0 failed** (2198
+baseline + 30); six probes each turned a test RED and were restored byte-identical. Verified: no double quota; explainable
+provenance; resolver mutates nothing and consumes NO quota/lifecycle/account/payment; entitlement REFERENCED not redefined; NO
+provider coupling; **NO authentication bypass** (no hardcoded Owner; privileged-looking subject/source confers nothing); **NO
+data-ownership inference** (access ≠ ownership); injected epoch time only; order-independent determinism; fail-closed on
+malformed/ambiguous input; **no new persistence/schema**; P8-I1/I2/I3/I4 authorities unchanged. **P8-AF-I1 is an IMPLEMENTATION
+CANDIDATE ONLY — NOT closed; P8-AF NOT closed.** **Organization / membership / named seats — DEFERRED / NOT STARTED; campaign
+configuration — DEFERRED / NOT STARTED; Owner/Admin authorization seam — DEFERRED / NOT STARTED; trial activation — NOT
+STARTED.** **P8-AF-C = CLOSED / AUTHORITATIVE; P8-AF-I1 = IMPLEMENTATION CANDIDATE; P8-AF = NOT CLOSED; `P8-CLOSE` = NOT
+STARTED; Phase 8 = NOT CLOSED;** NO provider selected; NO access model activated. Phase 9 / Phase 10 NOT AUTHORIZED; PSRR
+EXECUTION NOT STARTED; production / public paid activation BLOCKED / NOT AUTHORIZED.
+
+**Immediately prior (retained as history — contract-of-record = P8-AF-C, definition only):** **`P8-AF` — Access,
 Licensing & Organization Foundation is now DEFINED by a governance-only CONTRACT CANDIDATE (P8-AF-C)** (dedicated record
 `docs/governance/P8_AF_ACCESS_LICENSING_ORGANIZATION_FOUNDATION_CONTRACT.md`; base `61ff4a85989dfc8d9881764597d5d7dc415da213`,
 PR #428). It defines the smallest canonical architecture — a provider-neutral, source-neutral **Access-Grant model** + a single
