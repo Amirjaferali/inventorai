@@ -41,7 +41,23 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — P8-I3 FORMALLY CLOSED):** **There is NO active implementation increment.** **P8-I3 — Subscription
+**Status (current — P8-I4-C CONTRACT CANDIDATE):** **Current contract-of-record (DEFINITION ONLY, no implementation
+authority): P8-I4-C — Payment Provider Boundary — Bounded Contract & Architecture** (governance/documentation-only CONTRACT
+CANDIDATE; base `f66ea96` (PR #425); dedicated contract
+`docs/governance/PHASE_8_I4_PAYMENT_PROVIDER_BOUNDARY_INCREMENT_CONTRACT.md`; authoritative if/when independently reviewed,
+Owner-accepted, merged, post-merge verified). It freezes the smallest provider-neutral payment boundary (adapter port;
+canonical↔provider separation; opaque canonical identities; additive mapping/dedupe persistence; event-authenticity + hard
+secrets boundary; **strict provider-event idempotency incl. conflicting-payload fail-closed** — resolving the P8-I3
+non-blocking observation; atomicity; P8-I1/I2/I3 authority preserved with adapters mapping to the P8-I3 lifecycle seam;
+fail-closed catalogue; outage/reconciliation rules; replaceability acceptance property; PCI architectural avoidance with no
+compliance claim; a 30-item future RED matrix; fake-adapter-first decomposition). **NO provider selected** — provider
+selection is an OPEN Owner decision and a registered prerequisite for real adapter work. **P8-I4-C confers NO implementation
+authorization; P8-I4 remains NOT STARTED / NOT IMPLEMENTED / NOT AUTHORIZED** — a separate Owner-authorized P8-I4
+implementation gate (starting with the fake/reference-adapter P8-I4-I1) is required. Immediately prior: **P8-I3 — Subscription
+Lifecycle FORMALLY CLOSED** (PR #424 `cef9a52`). Phase 8 OPEN; P8-CLOSE NOT STARTED; Phase 9 / Phase 10 NOT AUTHORIZED; PSRR
+EXECUTION NOT STARTED; production / public paid activation BLOCKED / NOT AUTHORIZED.
+
+**Immediately prior (retained as history):** **P8-I3 — Subscription
 Lifecycle is FORMALLY ACCEPTED AND CLOSED** (increment closure only): corrected implementation candidate
 `8e600c0674bfeb7be96fd6875b68de1da02eae2f` (initial verdict B → corrected re-reviewed **A**) **MERGED (PR #424, merge
 `cef9a522dfae53493ceb1b47bd9faf409617e13e`; parents `09743b9` + `8e600c0`; merged tree `3d1586e…` == accepted candidate tree)

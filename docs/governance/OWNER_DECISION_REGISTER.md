@@ -813,3 +813,24 @@ NOT STARTED / NOT IMPLEMENTED / NOT AUTHORIZED; no provider selected.
 **Boundary.** This entry authorizes no implementation, starts no increment, selects no provider, and weakens no production
 block. Owner business policy (P8-C §8 + the lifecycle refinements above) remains unresolved and must not be silently decided by
 the technical implementation. Public paid activation / production remain BLOCKED / NOT AUTHORIZED.
+
+## P8-I4-C — Payment Provider Boundary Contract (contract candidate; no new accepted decision; provider selection + commercial decisions remain OPEN)
+
+Governance/documentation-only contract candidate; base `f66ea96c77e64deea8ebc1b4bb9766df985e703e` (PR #425). Canonical record:
+`docs/governance/PHASE_8_I4_PAYMENT_PROVIDER_BOUNDARY_INCREMENT_CONTRACT.md`. **This register entry records NO new accepted
+Owner decision** (a contract candidate carries none) and **does not duplicate P8-C §8 / P8-I3-C §9** — it registers, truthfully,
+the OPEN provider-selection dependency and the OPEN commercial decisions the technical provider-boundary contract deliberately
+does **not** decide. **DOCUMENTED NO-VALID-RED — CONTRACT-ONLY GOVERNANCE GATE.** P8-I4 remains NOT STARTED / NOT IMPLEMENTED /
+NOT AUTHORIZED; **no payment provider selected**. P8-I4 (commercial payment-provider boundary) is DISTINCT from CAP-15 AI
+Provider Abstraction (G-MPR-01-D D7).
+
+| Item | Status | Impl. authority | Source |
+|---|---|---|---|
+| P8-I4-C contract candidate (provider-neutral port + adapter boundary + canonical mapping + additive mapping/dedupe persistence + authenticity/secrets boundary + strict provider-event idempotency + atomicity + replaceability) | CONTRACT CANDIDATE (definition only) | **NONE** (separate Owner-authorized P8-I4 implementation gate required; starting with the fake/reference-adapter P8-I4-I1) | P8-I4-C record; P8-C §6; P8-I3-C |
+| **Payment-provider selection** (Stripe / Paddle / PayPal / Apple / Google / other) | **OPEN — REQUIRED OWNER DECISION**; **NO provider selected**; registered as a **prerequisite for real (non-fake) adapter work** | NONE | P8-I4-C §10/§18 |
+| Marketed plan names; prices; currency; billing cadence; trial; grace; proration; refunds; tax/jurisdictions; cancellation timing; grandfathering; enterprise billing; over-limit-downgrade; invoice requirements; payment methods; dunning | **OPEN — REQUIRED OWNER/BUSINESS DECISION** (subordinate to P8-C §8 / P8-I3-C §9; not duplicated) | NONE | P8-I4-C §18; P8-C §8 |
+| Strict provider-event idempotency (conflicting duplicate payload fails closed) | **RECORDED — TECHNICAL BOUNDARY DECISION (not commercial policy)**; resolves the P8-I3 idempotency-payload non-blocking observation for provider events | NONE | P8-I4-C §7 |
+
+**Boundary.** This entry authorizes no implementation, starts no increment, selects no provider, integrates no provider, and
+weakens no production block. Real-provider work is BLOCKED pending a separate Owner provider-selection decision. Public paid
+activation / production remain BLOCKED / NOT AUTHORIZED.

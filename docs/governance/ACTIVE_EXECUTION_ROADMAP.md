@@ -6266,3 +6266,73 @@ paid activation BLOCKED until applicable Phase-10 legal/readiness + PSRR = GO/PA
 Owner deployment authorization. Payment provider NOT INTEGRATED. Production NOT AUTHORIZED. PSRR EXECUTION NOT STARTED. P8-I4 /
 P8-CLOSE / Phases 9/10 NOT STARTED / NOT AUTHORIZED here. Append-only; prior history not rewritten. This entry authorizes no
 push, PR, merge beyond this candidate, P8-I4 start, provider selection, or deployment.
+
+---
+
+## P8-I4-C — Payment Provider Boundary — Bounded Contract & Architecture — governance/documentation-only CONTRACT CANDIDATE — P8-I4 remains NOT STARTED / NOT IMPLEMENTED / NOT AUTHORIZED; NO provider selected
+
+**Gate.** OWNER-AUTHORIZED CONTRACT-DEFINITION gate **P8-I4-C**. Defines the smallest provider-neutral payment boundary for
+**P8-I4 — Payment Provider Boundary**; **implements nothing**, adds no provider SDK, creates no checkout/webhook endpoint, and
+selects no provider. **DOCUMENTED NO-VALID-RED — CONTRACT-ONLY GOVERNANCE GATE.** Authoritative base verified read-only
+`f66ea96c77e64deea8ebc1b4bb9766df985e703e` (PR #425; tree `c676228681a0f74285d8f64645ecbb0e643d5e49`); boot OK; clean.
+Governance documents ONLY — no `engine/**`, `web/**`, `tests/**`, `domains/**`, `schemas/**`, `prompts/**`, `benchmark/**`,
+dependency, CI, migration, API, adapter, or provider-config file touched. Phase-8 order preserved: P8-I1 → P8-I2 →
+G-MPR-01/disposition → P8-I3 (CLOSED) → **P8-I4 (contract defined here; NOT started)** → P8-CLOSE.
+
+**Deliverable.** NEW dedicated contract `docs/governance/PHASE_8_I4_PAYMENT_PROVIDER_BOUNDARY_INCREMENT_CONTRACT.md`,
+subordinate to P8-C §6 and the CLOSED P8-I1/P8-I2/P8-I3 foundations, reusing the P7-I3 canonical→adapter→vendor
+(UNTRUSTED-BY-DEFAULT) precedent (D-FPC-MAP-06). Distinct from CAP-15 AI Provider Abstraction (G-MPR-01-D D7).
+
+**Architecture decisions (frozen by the contract).** (1) An **adapter boundary**: `InventorAI Core → Commercial/Subscription
+Domain (P8-I1/I2/I3 authorities) → Canonical Payment Provider Boundary (PaymentProviderPort + canonical operations) →
+Provider Adapter (UNTRUSTED) → External Provider`. Core imports no provider module (OD-N); no provider SDK object/payload/
+signature/status/ID/event-name/error leaks into core. (2) Strict **canonical vs provider vocabulary** separation; a raw
+provider event name NEVER becomes a lifecycle event — it is mapped to a canonical **P8-I3** operation preserving the
+`cancellation_requested` / `subscription_cancelled` / `subscription_change_scheduled` / `subscription_expired` distinctions;
+adapters call the P8-I3 seam and never mutate tables directly (P8-I1/I2/I3 remain the authorities). (3) **Opaque canonical
+identities** (account_id primary; provider key; external customer/subscription/transaction/event refs opaque; internal
+idempotency key); no provider id becomes internal primary identity. (4) **Additive** provider-mapping + durable
+provider-event-dedupe persistence (no `ALTER TABLE`/back-fill/destructive migration; no full payloads/secrets/card data). (5)
+**Event authenticity** required before canonical mutation (adapter-isolated; no algorithm/provider chosen; not implemented).
+(6) **HIGH-PRIORITY idempotency** — resolves the P8-I3 non-blocking observation for provider events: duplicate delivery =
+idempotent no-op returning the prior canonical outcome; **same `(provider, provider_event_id)` with a materially different
+payload FAILS CLOSED** (the stricter semantic — the weaker P8-I3 replay is NOT inherited); durable dedupe survives restart. (7)
+**Atomicity** — dedupe record + canonical lifecycle mutation + mapping update coordinated in one transaction where the SQLite
+model supports it (not implemented). (8) **Fail-closed** catalogue (unknown provider / malformed ref / bad authenticity /
+unsupported event / missing mapping / disabled-deleted account / conflicting duplicate / invalid transition / stale event /
+adapter exception / ambiguous mapping). (9) Provider **outage/timeout** never silently mutates; retries idempotent; uncertain
+outcomes → reconciliation (reserved, evidence-triggered), not guessing. (10) **Replaceability** acceptance property (Provider A
+→ B changes only adapter/config/mapping — not P8-I1/I2/I3/Domain-Packs/evaluation/canonical model; a fake second provider
+satisfies the same port). (11) **PCI architectural avoidance** (hosted/tokenized checkout keeps card data off-platform) with
+**no compliance claim** (certification → PSRR/Phase-10). (12) Backend abstraction only — no pricing/checkout/portal/subscription
+UI, no invoices/receipts.
+
+**Implementation decomposition (derived; fake-adapter-first).** P8-I4-C → **P8-I4-I1** (provider-neutral port + fake/reference
+adapter + mapping/dedupe persistence; NO real vendor/network/secrets) → **P8-I4-I2** verified webhook ingestion seam
+(evidence-triggered / separately gated per Phase-7 §25 + P8-C — NOT authorized now) → **P8-I4-I3** reconciliation seam
+(evidence-triggered) → **real-provider selection/integration sub-gate** (requires a **separate Owner provider-selection
+decision**) → **P8-I4-CLOSE**. Nothing self-activates.
+
+**Provider-selection status.** **NO provider selected** (Stripe/Paddle/PayPal/Apple/Google/other all unselected). Provider
+selection is an **OPEN Owner/business/technical decision**; real (non-fake) adapter work is **BLOCKED** until it is accepted —
+registered truthfully as a dependency (no provider inferred).
+
+**Future RED matrix.** A 30-item matrix (+ repo-evidenced additions: OD-N guard extends to a payment-provider seam allowlist;
+fake second provider satisfies the port; provider swap = adapter/config only) documented for P8-I4-I1 — NOT implemented here.
+
+**Owner/business decisions preserved OPEN.** Provider selection + all commercial policy (plan names, prices, currency, cadence,
+trial, grace, proration, refunds, tax/jurisdictions, cancellation timing, grandfathering, enterprise, over-limit-downgrade,
+invoice requirements, payment methods, dunning) — subordinate to P8-C §8 / P8-I3-C §9; not duplicated.
+
+**Governance synchronization (minimum).** NEW P8-I4-C contract + this roadmap append + `CURRENT_PROJECT_STATE.md` +
+`ACTIVE_INCREMENT_CONTRACT.md` (contract-of-record = P8-I4-C, definition only) + a subordinate `OWNER_DECISION_REGISTER.md`
+pointer entry (P8-I4-C carries **no** new accepted decision; the provider-selection dependency + commercial decisions remain
+OPEN).
+
+**Boundary / status after this entry.** **P8-I4 is a CONTRACT CANDIDATE ONLY — NOT started, NOT implemented, NOT authorized;
+NO provider selected.** No runtime/test/Domain-Pack/schema/prompt/benchmark/web/CI/provider-config file changed. P8-CLOSE NOT
+STARTED; Phase 9 / Phase 10 NOT AUTHORIZED; PSRR EXECUTION NOT STARTED; public paid activation / production BLOCKED / NOT
+AUTHORIZED. Candidate only until independent review → Owner acceptance → merge → post-merge verification → a **separate**
+Owner-authorized P8-I4 implementation gate (and, for real providers, a separate provider-selection decision). Append-only;
+prior history not rewritten. This entry authorizes no push, PR, merge beyond this candidate, P8-I4 implementation start,
+provider selection, or deployment.
