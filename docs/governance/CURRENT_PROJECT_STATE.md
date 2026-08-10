@@ -883,6 +883,33 @@ AUTHORIZED / NOT STARTED.***
   separate Owner-authorized `P8-AF` implementation gate is required. **P8-I4 = CLOSED / AUTHORITATIVE; P8-AF-C = FORMAL CONTRACT
   CANDIDATE; P8-AF implementation = NOT STARTED; `P8-CLOSE` = NOT STARTED; Phase 8 = NOT CLOSED;** Phase 9 / Phase 10 NOT
   AUTHORIZED; PSRR EXECUTION NOT STARTED; public paid activation / production BLOCKED / NOT AUTHORIZED.
+  The P8-AF-C contract is **ACCEPTED / MERGED (PR #429, merge `06683179f843b71f8d151f0c3c5647778b4b0acf`) / POST-MERGE
+  VERIFIED**, and **P8-AF-I1 — Canonical Access-Grant + Access-Resolution Foundation is now IMPLEMENTED as a governance-only
+  IMPLEMENTATION CANDIDATE (RED → GREEN)** — the FIRST and SMALLEST P8-AF increment, proving ONLY the canonical
+  access-composition seam: `engine/access_grant.py` (NEW — a LEAF immutable, source-neutral, provider-neutral `AccessGrant`
+  value object [`__slots__` forbid quota/provider/credential/pricing/data-ownership fields] built via a fail-closed
+  `make_access_grant(...)`, plus pure `is_effective_at`/`exclusion_reason`; imports no engine module) + `engine/access_resolver.py`
+  (NEW — the SINGLE deterministic, pure, read-only `resolve_access(grants, *, now)` → immutable `AccessResolution`; composes
+  effective grants; **REFERENCES** the P8-I1 authority via `plan_catalog.entitlement_descriptor` to validate entitlement
+  IDENTITY only — never reads capabilities, never redefines entitlement; imports only `access_grant` + `plan_catalog`) + the
+  OD-N guard extension recognizing both as commercial seams. **Minimal safe precedence (P8-AF-C §6; no invented business
+  priority):** zero effective grants → DENY; all-one-distinct-entitlement → GRANT that single entitlement (one quota-policy
+  path, never additive); **competing distinct entitlements → FAIL CLOSED** (precedence deferred). Behavioral RED
+  (import-absent + six mutation probes: remove expiry check / drop deterministic tie-break / invent precedence winner / add
+  provider import / bypass malformed-input rejection / remove now-injection validation) → GREEN: **focused 30 / Phase-8 154 /
+  full suite 2228 passed / 3 skipped / 1 xfailed / 0 failed** (2198 baseline + 30). Six mutation probes each turned a targeted
+  test RED and were restored byte-identical. Verified: no double quota; provenance explains selection/exclusion; resolver
+  mutates nothing and consumes NO quota/lifecycle/account/payment; entitlement REFERENCED not redefined; NO provider coupling;
+  **NO authentication bypass** (a privileged-looking subject/source confers nothing; no hardcoded Owner); **NO data-ownership
+  inference** (access ≠ ownership); injected epoch time only; order-independent determinism; fail-closed on malformed/ambiguous
+  input; **no new persistence/schema**; P8-I1/I2/I3/I4 authorities unchanged. **P8-AF-I1 is an IMPLEMENTATION CANDIDATE ONLY —
+  NOT closed; P8-AF NOT closed.** **Organization / membership / named seats — DEFERRED / NOT STARTED; campaign configuration —
+  DEFERRED / NOT STARTED; Owner/Admin authorization seam — DEFERRED / NOT STARTED; trial activation — NOT STARTED.**
+  Candidate-only until independent implementation review → Owner acceptance → PR → pre-merge check → merge → post-merge
+  verification → subsequent P8-AF increments (only if a later gate proves a seam necessary) → a dedicated P8-AF closure gate →
+  P8-CLOSE. **P8-AF-C = CLOSED / AUTHORITATIVE; P8-AF-I1 = IMPLEMENTATION CANDIDATE; P8-AF = NOT CLOSED; `P8-CLOSE` = NOT
+  STARTED; Phase 8 = NOT CLOSED;** Phase 9 / Phase 10 NOT AUTHORIZED; PSRR EXECUTION NOT STARTED; public paid activation /
+  production BLOCKED / NOT AUTHORIZED.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation

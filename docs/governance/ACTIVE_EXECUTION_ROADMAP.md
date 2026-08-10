@@ -6552,3 +6552,83 @@ BLOCKED / NOT AUTHORIZED. Candidate only until independent review → Owner acce
 separate Owner-authorized `P8-AF` implementation gate. Append-only; prior history not rewritten. This entry authorizes no push,
 PR, merge beyond this candidate, `P8-AF` implementation start, provider selection, access-model activation, `P8-CLOSE`, or
 deployment.
+
+---
+
+## P8-AF-I1 — Canonical Access-Grant + Access-Resolution Foundation — IMPLEMENTATION (RED → GREEN) — governance-only IMPLEMENTATION CANDIDATE — accepted P8-AF-C contract MERGED (PR #429); P8-AF IMPLEMENTED (first increment) but NOT closed; NO organization/seat/campaign/role/trial runtime
+
+**Gate.** OWNER-AUTHORIZED **P8-AF-I1 implementation** gate on the accepted, merged, post-merge-verified P8-AF-C contract
+(PR #429). RED-first → GREEN. The FIRST and SMALLEST increment under P8-AF-C: proves the canonical access-composition seam
+ONLY. **NO organization / membership / seat / seat-capacity / seat-assignment / campaign-config / promotional-runtime /
+trial-runtime-policy / Owner-Admin role / RBAC / enterprise-billing / SSO / domain-onboarding / bulk-invite / admin-UI /
+pricing / plan / payment-provider / new-payment-state / new-quota-counter / new-lifecycle-state-machine code; NO new durable
+persistence / schema; NO P8-AF closure; NO P8-CLOSE; NO Phase-9/10; NO PSRR; NO deployment; NO access-model activation.**
+Authoritative live tip verified read-only `06683179f843b71f8d151f0c3c5647778b4b0acf` (PR #429 merge of the accepted P8-AF-C
+contract `4737587`; parents `61ff4a8` + `4737587`; tree `c1a21f7`; not newer); boot OK; clean.
+
+**Behavioral RED evidence.** The modules were absent on the base (genuine import RED). The behavioral RED was then demonstrated
+by six load-bearing mutation probes, each turning a targeted test RED and each restored byte-identical: remove the grant
+expiry upper-bound → the expired-grant-denies test fails; drop the deterministic `min(grant_id)` tie-break (input-order
+dependent selection) → the order-independence test fails; invent a precedence winner instead of failing closed on competing
+distinct entitlements → the competing-entitlements-fail-closed test fails; add a payment-provider import into the resolver →
+the resolver-imports-are-reference-only test fails (the focused test was strengthened during probing to inspect `ImportFrom`
+bound names, since an allowlisted seam legitimately may import a commercial module and the engine-wide OD-N guard therefore
+does not constrain the resolver's provider-neutrality — that guarantee is enforced by the focused test); remove the
+non-`AccessGrant` input rejection → the malformed-input-fails-closed test fails; remove the injected-`now` int/bool validation
+→ the time-injection test fails.
+
+**GREEN implementation (bounded; live-code-grounded).** `engine/access_grant.py` (NEW — a LEAF value object: an immutable
+`AccessGrant` [`__slots__`: grant_id · subject · source · entitlement_reference `(plan_id, plan_version)` · effective_from ·
+effective_until · status · provenance] built only via a fail-closed `make_access_grant(...)` validator, plus pure
+`is_effective_at(grant, now)` / `exclusion_reason(grant, now)`; the fixed slots structurally forbid quota counters /
+provider ids / raw provider data / credentials / pricing / data-ownership fields; imports NO engine module). `engine/access_resolver.py`
+(NEW — the SINGLE deterministic, pure, read-only `resolve_access(grants, *, now)` returning an immutable `AccessResolution`
+[granted · entitlement_reference · selected_grant_id · reason · contributing_grant_ids · excluded]; composes effective grants;
+REFERENCES the P8-I1 authority via `plan_catalog.entitlement_descriptor` to validate a grant's entitlement IDENTITY only —
+never reading capability booleans, never redefining entitlements; imports ONLY `access_grant` + `plan_catalog`). **Minimal
+safe precedence (P8-AF-C §6; no invented business priority):** zero effective grants → DENY (`no_effective_grant`); effective
+grants all one distinct entitlement → GRANT that single entitlement (one quota-policy path, never additive/double-counted);
+effective grants spanning >1 distinct entitlement → **DENY / FAIL CLOSED** (`ambiguous_competing_entitlements_precedence_deferred`).
+`tests/test_p8_af_i1_access_grant_resolution.py` (NEW — 30 tests). `tests/test_p8_i1_plan_entitlement_foundation.py` +
+`tests/test_p8_i2_commercial_quota.py` (the OD-N engine-wide inverted-allowlist guard extended to recognize `access_grant` +
+`access_resolver` as commercial seams — the deterministic core imports none of them).
+
+**Critical invariants verified.** One valid in-window grant resolves; expired / not-yet-effective / revoked / inactive grants
+deny with explained provenance; multiple same-entitlement grants → ONE entitlement reference (no double quota); provenance
+identifies the selected source and excluded grants; resolver mutates no input; resolver imports/consumes NO quota / lifecycle /
+account / payment module (reference-only); entitlement authority REFERENCED not redefined (unknown identity → fail closed;
+result carries a catalog identity, never a capability descriptor); NO provider coupling (leaf grant cannot carry provider
+fields); NO authentication bypass (a privileged-looking subject/source confers nothing; only an effective grant grants access);
+NO data-ownership inference (the resolution exposes only access/entitlement, never a cross-account read permission); injected
+epoch time only (wall-clock never read; `now=None`/`bool` → fail closed); input-order-independent deterministic result;
+competing distinct entitlements fail closed; malformed grants / non-grant inputs fail closed; NO persistence/schema required;
+**P8-I1/I2/I3/I4 authorities unchanged.**
+
+**Boundaries preserved.** P8-I1 remains plan/entitlement authority (referenced, not duplicated); P8-I2 remains the sole quota
+authority (no counter created/incremented/reset/summed); P8-I3 remains the sole subscription-lifecycle authority (no trial/
+campaign/seat state machine); P8-I4 remains the provider-neutral payment boundary (no provider SDK/identifier/ingestion/
+webhook/reconciliation imported); OD-N import isolation preserved and extended; anti-lock-in + data-ownership unchanged;
+**automatic day-7 hard deletion NOT introduced**; no email/account-id/source/provider string confers access; no hardcoded
+Owner account.
+
+**Test evidence.** Behavioral RED (import-absent + six mutation probes) → GREEN: **P8-AF-I1 focused 30 passed**; Phase-8
+regressions (P8-I1+I2+I3+I4-I1+AF-I1) **154 passed**; **full suite 2228 passed / 3 skipped / 1 xfailed / 0 failed** (2198
+P8-I4-closure baseline + 30). **Six mutation probes** each turned a targeted test RED and were fully restored (files
+byte-identical; no mutation remains). No new dependency; no `web/` / `templates/` / `domains/` / `schemas/` / `prompts/` /
+payment-adapter change.
+
+**Governance synchronization (minimum).** NEW `engine/access_grant.py` + `engine/access_resolver.py` +
+`tests/test_p8_af_i1_access_grant_resolution.py`; OD-N guard extension in the P8-I1/P8-I2 test files; `CURRENT_PROJECT_STATE.md`
++ `ACTIVE_INCREMENT_CONTRACT.md` current-truth synced to the P8-AF-I1 IMPLEMENTATION CANDIDATE + evidence; this roadmap append.
+**`OWNER_DECISION_REGISTER.md` UNCHANGED** (an implementation candidate records no accepted Owner decision; the OPEN decisions
+remain governed by the P8-I3-C / P8-I4-C entries and the P8-AF-C contract).
+
+**Boundary / status after this entry.** **P8-AF-I1 is an IMPLEMENTATION CANDIDATE ONLY — NOT closed; P8-AF NOT closed; Phase 8
+NOT complete, NOT billing-live, NOT paid-active.** **Organization / membership / named seats — DEFERRED / NOT STARTED;
+campaign configuration — DEFERRED / NOT STARTED; Owner/Admin authorization seam — DEFERRED / NOT STARTED; trial activation —
+NOT STARTED.** P8-AF-C = CLOSED / AUTHORITATIVE. Candidate-only until independent implementation review → Owner acceptance →
+publication → PR → pre-merge safety check → merge → post-merge verification → subsequent P8-AF increments (only if a later gate
+proves a seam necessary) → a dedicated P8-AF closure gate → P8-CLOSE. P8-CLOSE NOT STARTED; Phase 9 / Phase 10 NOT AUTHORIZED;
+PSRR EXECUTION NOT STARTED; public paid activation / production BLOCKED / NOT AUTHORIZED. Append-only; prior history not
+rewritten. This entry authorizes no push, PR, merge beyond this candidate, further P8-AF increment start, access-model
+activation, P8-CLOSE, or deployment.

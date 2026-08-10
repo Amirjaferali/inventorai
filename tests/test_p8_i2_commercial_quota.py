@@ -289,10 +289,12 @@ def test_od_n_technical_truth_invariant_to_quota(tmp_path):
 def test_engine_wide_commercial_isolation_includes_quota():
     allowlist = {"entitlement_service", "quota_service",
                  "subscription_lifecycle_service", "payment_provider_port",
-                 "payment_fake_adapter", "payment_ingestion"}             # commercial seams
+                 "payment_fake_adapter", "payment_ingestion",
+                 "access_grant", "access_resolver"}                       # commercial seams
     commercial = {"plan_catalog", "entitlement_service", "quota_service",
                   "subscription_lifecycle_service", "payment_provider_port",
-                  "payment_fake_adapter", "payment_ingestion"}
+                  "payment_fake_adapter", "payment_ingestion",
+                  "access_grant", "access_resolver"}
     engine_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "engine")
     static_offenders, dynamic_offenders = [], []
     for fn in os.listdir(engine_dir):
