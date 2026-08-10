@@ -985,10 +985,31 @@ AUTHORIZED / NOT STARTED.***
   PSRR GO/PASS); `main` = stale/unreconciled, OD-Q reconciliation a separate pre-production gate (NOT a closure blocker, NOT
   performed). **Phase-8 closure authorizes NOTHING downstream** (no Phase 9/10, no real provider, no commercial launch, no
   pricing/trial/organization/seat/campaign/Owner-Admin activation, no PSRR execution, no main reconciliation, no deployment/
-  production/public paid activation). **P8-C / P8-I1 / P8-I2 / P8-I3 / P8-I4 / P8-AF = CLOSED / AUTHORITATIVE; Phase 8 = FORMAL
-  CLOSURE CANDIDATE → FORMALLY CLOSED / AUTHORITATIVE if/when merged (technical-foundation phase; no active increment
-  remains);** Phase 9 / Phase 10 NOT AUTHORIZED; PSRR EXECUTION NOT STARTED; public paid activation / production BLOCKED / NOT
-  AUTHORIZED.
+  production/public paid activation). **P8-C / P8-I1 / P8-I2 / P8-I3 / P8-I4 / P8-AF = CLOSED / AUTHORITATIVE; Phase 8 =
+  FORMALLY CLOSED / AUTHORITATIVE (technical-foundation phase; no active increment remains) — P8-CLOSE merged PR #433
+  (`00792af36e51808191690a4bf66f9b1a2644d477`);** Phase 9 / Phase 10 NOT AUTHORIZED; PSRR EXECUTION NOT STARTED; public paid
+  activation / production BLOCKED / NOT AUTHORIZED.
+  **Pre-Phase-9 domain-neutrality (D3) — Owner-authorized CONTRACT CANDIDATE (fresh).** The Owner has now authorized ONE bounded
+  governance-only D3 contract gate; that authorization begins with the current instruction. (A prior draft candidate
+  `ed5eb14596a3f99e5d6febc90f3ba70a1e91f995` was **REJECTED — process/scope violation + correction required**; it is NOT
+  Owner-authorized, NOT merged, must never be pushed/published/merged/amended, and is preserved only as historical evidence;
+  this candidate is fresh with a new SHA + new tree and reuses only the independently-reviewed technical substance.) **D3 — Core
+  Domain-Neutrality is now DEFINED by a governance-only CONTRACT CANDIDATE** (dedicated record:
+  `docs/governance/D3_CORE_DOMAIN_NEUTRALITY_FORMAL_CONTRACT.md`) covering exactly **D3-A** (`engine/safety_signal.py`), **D3-B**
+  (`engine/path_n_questions.py`), **D3-D** (`engine/domain_rules.py`), and explicitly **excluding D3-C** (independently verified
+  remediated by §5-I2 `domain_activation.py` + P6-1 `domain_label.py`; `web/app.py` + `web/domain_label.py` unchanged absent
+  fresh regression evidence). It **consumes — never duplicates** — the CLOSED canonical owners `engine/domain_registry.py`
+  (§5-I1) + `engine/domain_activation.py` (§5-I2; `electronics_electrical` = the ONLY activated specialist domain; recognition ≠
+  activation). Required meaning of neutrality: the core can safely support another governed domain (NOT "electronics content
+  forbidden"). Frozen invariants (12); likely RED-driven boundary = the three engine modules + focused tests; prohibited:
+  `web/app.py`, `web/domain_label.py`, `domains/iot_electronics/**`, new packs/activation/persistence/schema/commercial/router.
+  ONE BOUNDED D3 INCREMENT; genuine RED→GREEN + load-bearing mutation probes + create-a-merge-commit + post-merge verification
+  required at implementation. **DOCUMENTED NO-VALID-RED** for this contract gate. **D3 = CONTRACT CANDIDATE ONLY — it becomes
+  the authoritative contract-of-record only if this exact accepted candidate is merged and post-merge verified; D3
+  implementation = NOT started / NOT authorized by this gate; NO domain activated; D8 / `iot_electronics` = OPEN / Owner-reserved
+  (blocks IoT activation only); Phase 8 = FORMALLY CLOSED / AUTHORITATIVE; Phase 9 / Phase 10 = NOT AUTHORIZED; PSRR = NOT
+  EXECUTED; deployment / production = NOT AUTHORIZED.** Owner product/policy decisions required before D3 implementation: NONE —
+  only explicit D3 implementation-gate authorization after contract acceptance.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation

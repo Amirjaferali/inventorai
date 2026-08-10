@@ -41,7 +41,29 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — NO active implementation increment; Phase 8 FORMALLY CLOSED via P8-CLOSE):** **`Phase 8` — Subscription,
+**Status (current — contract-of-record = D3 Core Domain-Neutrality CONTRACT CANDIDATE, definition only; NO active
+implementation increment; Phase 8 already FORMALLY CLOSED):** **`Phase 8` — Subscription, Billing and Entitlements is FORMALLY
+CLOSED / AUTHORITATIVE** (technical-foundation phase; no active increment remains) — **P8-CLOSE merged PR #433
+(`00792af36e51808191690a4bf66f9b1a2644d477`)**; dedicated record `docs/governance/PHASE_8_FORMAL_CLOSURE_RECORD.md`. **`D3` —
+Core Domain-Neutrality is now DEFINED by a governance-only CONTRACT CANDIDATE** (Owner-authorized fresh gate; the Owner's
+authorization begins with the current instruction — a prior draft `ed5eb14` was REJECTED / process-scope violation / NOT
+authorized / NOT merged, preserved only as historical evidence; this candidate is fresh with a new SHA + new tree). Dedicated
+record `docs/governance/D3_CORE_DOMAIN_NEUTRALITY_FORMAL_CONTRACT.md`; base `00792af…`. It covers exactly **D3-A**
+(`engine/safety_signal.py`), **D3-B** (`engine/path_n_questions.py`), **D3-D** (`engine/domain_rules.py`); **excludes D3-C**
+(independently verified remediated by §5-I2 + P6-1). It **consumes — never duplicates** — `engine/domain_registry.py` (§5-I1)
++ `engine/domain_activation.py` (§5-I2; `electronics_electrical` = the ONLY activated specialist domain; recognition ≠
+activation). Frozen invariants (12); ONE BOUNDED D3 INCREMENT; likely RED-driven boundary = the three engine modules + focused
+tests; prohibited: `web/app.py`, `web/domain_label.py`, `domains/iot_electronics/**`, new packs/activation/persistence/schema/
+commercial/router. Genuine RED→GREEN + load-bearing mutation + create-a-merge-commit + post-merge verification required at
+implementation; 23-item acceptance criteria frozen. **DOCUMENTED NO-VALID-RED** for this contract gate. **There is NO active
+implementation increment.** Owner product/policy decisions required before D3 implementation: **NONE** (only explicit D3
+implementation-gate authorization after contract acceptance). **D3 = CONTRACT CANDIDATE ONLY — becomes authoritative
+contract-of-record only if this exact accepted candidate is merged (create-a-merge-commit) and post-merge verified; D3
+implementation = NOT STARTED / NOT AUTHORIZED by this gate; NO domain activated; D8 / `iot_electronics` = OPEN / Owner-reserved
+(blocks IoT activation only); Phase 8 = FORMALLY CLOSED / AUTHORITATIVE; Phase 9 / Phase 10 = NOT AUTHORIZED; PSRR = NOT
+EXECUTED; deployment / production = NOT AUTHORIZED.**
+
+**Immediately prior (retained as history — Phase 8 formal closure candidate status when written):** **`Phase 8` — Subscription,
 Billing and Entitlements is FORMALLY CLOSED** as a governance-only CLOSURE CANDIDATE (P8-CLOSE; a technical-foundation phase
 closure; authoritative if/when merged; dedicated record `docs/governance/PHASE_8_FORMAL_CLOSURE_RECORD.md`; base
 `e7f7bc7e1f17550dc83d658976a07462de434e17`, PR #432). The Phase-8 Remaining-Obligation / Exit-Criteria Review returned **A —
