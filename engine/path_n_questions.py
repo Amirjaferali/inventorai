@@ -22,6 +22,12 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 
+# The committed non-specialist Path-N artifact is Electronics-OWNED content; it is
+# served only for the Electronics domain (or the backward-compatible ``None``
+# default). This constant is the domain the artifact belongs to — NOT a shared-core
+# assumption that Electronics is the only possible domain (D3-B).
+_ELECTRONICS_DOMAIN = "electronics_electrical"
+
 _ARTIFACT_PATH = (
     Path(__file__).resolve().parent.parent
     / "docs" / "governance" / "path_n_content_config"
@@ -67,12 +73,24 @@ class ServedQuestion:
     design_gap_id: str
 
 
-def get_served_question(gap_type: str, iterations_open: int) -> "ServedQuestion | None":
+def get_served_question(gap_type: str, iterations_open: int,
+                        domain: "str | None" = None) -> "ServedQuestion | None":
     """Return the atomically-bound approved Path N ServedQuestion for gap_type
     (WS11 D4), or None if gap_type has no Path N mapping (the §8 Stage 3
     fallthrough). Reads the committed artifact read-only (load-once) and fails
     loudly with no fallback on a malformed committed entry (b3a5fba §5). The
-    ServedQuestion's three fields come from one entry in a single read."""
+    ServedQuestion's three fields come from one entry in a single read.
+
+    D3-B (core domain-neutrality): the shared selection seam honors the canonical
+    ``domain`` identity. The committed artifact is Electronics-OWNED content, so it
+    is served ONLY for the Electronics domain or the backward-compatible ``None``
+    default (existing callers unchanged). A recognized non-electronics domain
+    identity is NOT silently served Electronics content — the seam returns ``None``
+    so the caller's existing fallthrough governs and the canonical per-domain
+    Domain-Pack question ownership remains authoritative (no parallel question
+    framework/registry is introduced)."""
+    if domain is not None and domain != _ELECTRONICS_DOMAIN:
+        return None
     gaps = _load_content()
     variants = gaps.get(gap_type)
     if not variants:
@@ -99,11 +117,13 @@ def get_served_question(gap_type: str, iterations_open: int) -> "ServedQuestion 
     return ServedQuestion(question_id=question_id, text=text, design_gap_id=gap_type)
 
 
-def get_path_n_question(gap_type: str, iterations_open: int) -> str | None:
+def get_path_n_question(gap_type: str, iterations_open: int,
+                        domain: "str | None" = None) -> str | None:
     """Backward-compatible text accessor (WS11 D4.3): returns the served
     question's text for gap_type, or None if unmapped. This is a thin wrapper over
     ``get_served_question`` and is no longer an independent question-identity
     source. Its return contract (text | None; fail-loud on unusable text) is
-    unchanged."""
-    served = get_served_question(gap_type, iterations_open)
+    unchanged. D3-B: the optional canonical ``domain`` identity is threaded through
+    to the domain-aware selection seam (default ``None`` = existing behavior)."""
+    served = get_served_question(gap_type, iterations_open, domain=domain)
     return served.text if served is not None else None
