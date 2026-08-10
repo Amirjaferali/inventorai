@@ -41,7 +41,34 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — P8-I4-I1 IMPLEMENTATION CANDIDATE):** The accepted **P8-I4-C** contract is **MERGED (PR #426, merge
+**Status (current — NO active implementation contract; P8-I4 FORMALLY CLOSED / P8-AF REQUIRED NEXT):** **P8-I4 — Payment
+Provider Boundary is FORMALLY CLOSED** as a governance-only CLOSURE CANDIDATE (increment closure only — authoritative if/when
+merged). The accepted P8-I4-I1 implementation (independent review **verdict A — ACCEPT**) is **MERGED (PR #427, merge
+`3a802fd84055f475feafcd55893da301af45c67d`; parents `fccd895` + `6f83e496…`; merged tree `191709299…`; exact diffstat 10
+files / +1175 / −5) / POST-MERGE VERIFIED**; full suite **2198 passed / 3 skipped / 1 xfailed / 0 failed** (cited, not
+re-run). Evidence-triggered lanes are **deferred / NOT triggered** (P8-I4-I2 verified webhook ingestion; P8-I4-I3
+reconciliation; real-provider integration NOT STARTED; **provider selection OPEN OWNER DECISION**; real payment collection NOT
+ACTIVATED). Canonical record: `docs/governance/P8_I4_PAYMENT_PROVIDER_BOUNDARY_FORMAL_CLOSURE_RECORD.md`. **Mandatory
+handoff:** formal P8-I4 closure does **NOT** close Phase 8 — a separate cross-cutting obligation **`P8-AF` — Access, Licensing
+& Organization Foundation** is **REGISTERED as the required next Phase-8 foundation gate, mandatory before `P8-CLOSE` / NOT
+IMPLEMENTED / NOT ACTIVATED / NOT STARTED** (record:
+`docs/governance/P8_AF_ACCESS_LICENSING_ORGANIZATION_FOUNDATION_OBLIGATION.md`; preserves **Authentication ≠ Authorization ≠
+Account identity ≠ Data ownership ≠ Commercial entitlement ≠ Subscription lifecycle ≠ Payment state ≠ Billing ownership** and
+**paying ≠ owning user data**; NON-ACTIVATED future-readiness scope = individual access, a **7-DAY** (NOT 14) per-account
+trial preserving durable data on trial→paid [**automatic day-7 hard deletion NOT authorized**; 168h-vs-calendar semantics
+OPEN], a **global configurable promotional free period** administrable **without a source-code change**, **Owner/Admin
+non-billed access** as an explicit auditable authorization→entitlement grant [no bypass], **organization/named-seat
+licensing** [billing ownership ≠ data ownership; seat reassignment never transfers prior-member data], enterprise/custom
+compatibility, a deterministic **access-resolution precedence**, safe **quota composition** [P8-I2 remains the sole quota
+authority], and **no second lifecycle state machine** [P8-I3 remains canonical; D-FPC-MAP-06]). **There is NO active
+implementation contract.** **Expected next gate: `P8-AF-C` — Access, Licensing & Organization Foundation Contract (governance
+contract first; NO implementation before it is independently reviewed and accepted).** **Phase 8 remains OPEN / NOT CLOSED;
+`P8-AF` / `P8-AF-C` / `P8-CLOSE` NOT STARTED; NO real provider selected; NO provider SDK; NO webhook; NO trial/promotional/
+Owner-Admin/organization access activated; NO roles/organizations/seats/campaign implemented; NO automatic trial-data
+deletion.** Phase 9 / Phase 10 NOT AUTHORIZED; PSRR EXECUTION NOT STARTED; production / public paid activation BLOCKED / NOT
+AUTHORIZED.
+
+**Immediately prior (retained as history — P8-I4-I1 IMPLEMENTATION CANDIDATE):** The accepted **P8-I4-C** contract is **MERGED (PR #426, merge
 `fccd8955afdfdd5167c4b7a4f0dbe6c14d00127b`) / POST-MERGE VERIFIED**, and **P8-I4-I1 — Provider-Neutral Payment Boundary
 Foundation is now IMPLEMENTED as a governance-only IMPLEMENTATION CANDIDATE (RED → GREEN)**: `engine/payment_provider_port.py`
 (NEW port + canonical types + stdlib fingerprint) + `engine/payment_fake_adapter.py` (NEW two fakes A/B — replaceability) +

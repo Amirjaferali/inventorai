@@ -834,3 +834,33 @@ Provider Abstraction (G-MPR-01-D D7).
 **Boundary.** This entry authorizes no implementation, starts no increment, selects no provider, integrates no provider, and
 weakens no production block. Real-provider work is BLOCKED pending a separate Owner provider-selection decision. Public paid
 activation / production remain BLOCKED / NOT AUTHORIZED.
+
+## P8-I4 formal closure + `P8-AF` mandatory-obligation registration (increment closure records no new commercial decision; the P8-AF mandate is a genuinely-absent explicit Owner direction — NON-ACTIVATING)
+
+Registered by the OWNER-AUTHORIZED governance-only **P8-I4-CLOSE** gate; base `3a802fd84055f475feafcd55893da301af45c67d`
+(PR #427; parents `fccd895` + `6f83e496…`; tree `191709299…`). Canonical records:
+`docs/governance/P8_I4_PAYMENT_PROVIDER_BOUNDARY_FORMAL_CLOSURE_RECORD.md` and
+`docs/governance/P8_AF_ACCESS_LICENSING_ORGANIZATION_FOUNDATION_OBLIGATION.md`. **The P8-I4 increment closure records NO new
+accepted Owner commercial decision** (consistent with the P8-I1/I2/I3 increment-closure precedent — evidentiary closure leaves
+the ODR's commercial rows unchanged; provider selection and all commercial policy remain OPEN under the P8-I4-C / P8-I3-C
+entries above). This entry records ONLY the **genuinely-absent, explicit Owner direction** that a separate Phase-8
+architectural-foundation obligation, **`P8-AF` — Access, Licensing & Organization Foundation**, is **mandatory before
+`P8-CLOSE`**, and its **directional / NON-ACTIVATING** future-readiness preferences. **DOCUMENTED — GOVERNANCE-ONLY
+REGISTRATION; NO IMPLEMENTATION AUTHORITY; NO ACTIVATION.**
+
+| Item | Status | Impl. authority | Source |
+|---|---|---|---|
+| **P8-I4 — Payment Provider Boundary** (P8-I4-C contract merged PR #426; P8-I4-I1 implementation review verdict A, merged PR #427, post-merge verified) | **FORMALLY CLOSED** (increment closure only; authoritative if/when this governance candidate is merged) | NONE | P8-I4 closure record; roadmap P8-I4-CLOSE entry |
+| P8-I4-I2 (verified webhook ingestion) / P8-I4-I3 (reconciliation) / real-provider integration | **NOT TRIGGERED / DEFERRED / NOT STARTED** (evidence-triggered; a deferred lane is not unfinished mandatory work) | NONE | P8-I4-C decomposition; closure record §6 |
+| **Payment-provider selection** (Stripe / Paddle / PayPal / Apple / Google / other) | **OPEN — REQUIRED OWNER DECISION**; NO provider selected (unchanged) | NONE | P8-I4-C §10/§18 |
+| Real payment collection | **NOT ACTIVATED** | NONE | P8-I4 closure record §7 |
+| **`P8-AF` — Access, Licensing & Organization Foundation** = **mandatory Phase-8 foundation gate before `P8-CLOSE`** (explicit Owner direction; genuinely absent before this entry) | **REGISTERED / REQUIRED / NOT IMPLEMENTED / NOT ACTIVATED / NOT STARTED** | NONE (next gate is `P8-AF-C` — contract first) | P8-AF obligation record; this gate |
+| `P8-AF` core principle — **Authentication ≠ Authorization ≠ Account identity ≠ Data ownership ≠ Commercial entitlement ≠ Subscription lifecycle ≠ Payment state ≠ Billing ownership**; **paying ≠ owning user data** | **RECORDED — BINDING ARCHITECTURAL PRINCIPLE (not commercial policy)** | NONE | P8-AF record §2 |
+| `P8-AF` directional preferences — **7-DAY** (NOT 14) per-account trial preserving durable data on trial→paid; **automatic day-7 hard deletion NOT authorized** (separate retention policy); trial 168h-vs-calendar semantics **OPEN**; **global configurable promotional free access** administrable **without a source-code change**; **Owner/Admin non-billed access** as explicit auditable authorization→entitlement (no bypass); **organization/named-seat licensing** with billing-ownership ≠ data-ownership and safe seat reassignment; enterprise/custom compatibility; deterministic **access-resolution precedence**; safe **quota composition** (P8-I2 sole quota authority); **no second lifecycle machine** (P8-I3 canonical; D-FPC-MAP-06) | **REGISTERED — NON-ACTIVATING future-readiness DIRECTION; NO commercial policy / price / provider / schema decided** | NONE | P8-AF record §3–§5 |
+
+**Boundary.** This entry authorizes no implementation, starts no increment, selects/integrates no provider, activates no
+trial / promotional / Owner-Admin / organization / enterprise access, creates no role/organization/seat/campaign schema, sets
+no trial-duration constant, implements no automatic trial-data deletion, and weakens no production block. `P8-AF` /
+`P8-AF-C` / `P8-CLOSE` — NOT STARTED. Phase 8 remains OPEN / NOT CLOSED. Phase 9 / Phase 10 — NOT AUTHORIZED; PSRR EXECUTION —
+NOT STARTED; public paid activation / production — BLOCKED / NOT AUTHORIZED. Prior ODR rows and evidence are unchanged; the
+still-OPEN commercial/provider decisions remain governed by the P8-I3-C / P8-I4-C entries above.

@@ -6406,3 +6406,77 @@ acceptance → publication → PR → pre-merge safety check → merge → post-
 NOT STARTED; Phase 9 / Phase 10 NOT AUTHORIZED; PSRR EXECUTION NOT STARTED; public paid activation / production BLOCKED / NOT
 AUTHORIZED. Append-only; prior history not rewritten. This entry authorizes no push, PR, merge beyond this candidate, provider
 selection, P8-I4-I2/I3 start, or deployment.
+
+---
+
+## P8-I4 — Payment Provider Boundary — FORMAL CLOSURE + mandatory P8-AF registration — governance-only CLOSURE CANDIDATE — P8-I4 FORMALLY CLOSED (increment only); Phase 8 NOT CLOSED; NO real provider; P8-AF registered as required next Phase-8 foundation gate
+
+**Gate.** OWNER-AUTHORIZED **governance-only** P8-I4-CLOSE gate: formally close the completed **P8-I4 — Payment Provider
+Boundary**, preserve the deferred evidence-triggered payment lanes, and **register a separate mandatory Phase-8 foundation
+obligation (`P8-AF`)** so InventorAI can later support multiple commercial/access models WITHOUT redesigning the core account/
+entitlement/ownership/lifecycle/payment architecture. **DOCUMENTED NO-VALID-RED — GOVERNANCE-ONLY CLOSURE GATE** (no runtime/
+test file changed; the P8-I4-I1 RED→GREEN is cited, not re-run). Authoritative base verified read-only
+`3a802fd84055f475feafcd55893da301af45c67d` (PR #427; parents `fccd8955afdfdd5167c4b7a4f0dbe6c14d00127b` +
+`6f83e496ac236a798598d393d8dd79b9f9dfaf8d`; tree `191709299943f8a87ec2ee8c287caf77a850e2f9`); boot OK; clean; not newer.
+
+**P8-I4 closure evidence (accepted; cited, not re-run).** Contract **P8-I4-C** merged **PR #426**
+(`fccd8955afdfdd5167c4b7a4f0dbe6c14d00127b`, post-merge verified). Accepted implementation candidate P8-I4-I1
+`6f83e496ac236a798598d393d8dd79b9f9dfaf8d` — independent review **verdict A — ACCEPT**; merged **PR #427** (merge `3a802fd`;
+merged tree `191709299…`); **exact diffstat 10 files / 1175 insertions / 5 deletions**; post-merge `git diff --check` PASS.
+Behavioral RED (seven boundary defects) → GREEN: **focused 30**, **Phase-8 124**, **P8-I3 refactor safety 45**, **full suite
+2198 passed / 3 skipped / 1 xfailed / 0 failed**; seven mutation probes each turned a test RED and were fully restored
+(byte-identical); two-thread races deterministic. Delivered ONLY: provider-neutral `PaymentProviderPort` + canonical
+operations; two fake/reference adapters (A/B) satisfying one port (replaceability); deterministic stdlib SHA-256 fingerprint
+(no raw payload/secret/card); canonical-mapping-only ingestion (a raw provider event name never enters the P8-I3 log);
+additive `provider_mapping` + durable `provider_event_dedupe`; strict provider-event idempotency (same identity + different
+fingerprint FAILS CLOSED); atomic dedupe + P8-I3 lifecycle in ONE `BEGIN IMMEDIATE`; fail-closed catalogue; opaque external
+refs; OD-N import isolation extended to the three payment seams. **P8-I1/I2/I3 authorities unchanged / not duplicated.**
+
+**Evidence-triggered sub-gate verdicts (deferred — NOT triggered).** **P8-I4-I2** verified webhook ingestion — **NOT
+TRIGGERED / DEFERRED**; **P8-I4-I3** reconciliation — **NOT TRIGGERED / DEFERRED**; **real-provider integration** — **NOT
+TRIGGERED / NOT STARTED**; **provider selection** — **OPEN OWNER DECISION** (no provider selected); **real payment
+collection** — **NOT ACTIVATED**. A deferred evidence-triggered lane is NOT unfinished mandatory implementation.
+
+**Formal closure assertions (recorded).** P8-I4-I1 = COMPLETE / MERGED / POST-MERGE VERIFIED; P8-I4-I2 / P8-I4-I3 = NOT
+TRIGGERED / DEFERRED; real-provider = NOT STARTED; provider selection = OPEN; real payment collection = NOT ACTIVATED; **P8-I4
+= FORMALLY CLOSED**; **Phase 8 = NOT CLOSED**; Phase 9 / Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED; production = NOT
+AUTHORIZED. Canonical record: `docs/governance/P8_I4_PAYMENT_PROVIDER_BOUNDARY_FORMAL_CLOSURE_RECORD.md`.
+
+**Mandatory Phase-8 handoff — `P8-AF` registered (NOT implemented / NOT activated / NOT started).** Formal P8-I4 closure MUST
+NOT allow Phase 8 to close. A separate bounded cross-cutting foundation obligation, **`P8-AF` — Access, Licensing &
+Organization Foundation**, is **registered as the required next Phase-8 foundation gate, mandatory before `P8-CLOSE`**
+(canonical record: `docs/governance/P8_AF_ACCESS_LICENSING_ORGANIZATION_FOUNDATION_OBLIGATION.md`). It is **NOT** part of the
+Payment Provider Boundary. Its binding core principle: **Authentication ≠ Authorization ≠ Account identity ≠ Data ownership ≠
+Commercial entitlement ≠ Subscription lifecycle ≠ Payment state ≠ Billing ownership**, and **paying for access does not
+automatically confer ownership of user data.** Registered future-readiness scope (architectural-foundation level only; NONE
+activated or implemented): individual access; a **7-DAY** (NOT 14) per-account trial preserving durable user-owned data on
+trial→paid (with **automatic day-7 hard deletion NOT authorized**, trial time-semantics 168h-vs-calendar OPEN, and pre-use
+notice/retention a separate accepted policy); a **global configurable promotional free-access** period administrable **without
+a source-code change**, deterministic within its window, provider-free, non-identity-rewriting, non-destructive, coexisting
+with paid/trial; **Owner/Admin non-billed access** as an explicit auditable authorization→entitlement grant (never a secret/
+auth/payment/ownership/privacy bypass; conceptually separate from authentication identity); **organization/institution
+licensing** with **named seats** (individual authenticated members; separately attributable data; organization-admin bounded
+controls) where **billing ownership ≠ data ownership** and **seat reassignment never transfers a prior member's data**;
+**enterprise/custom** compatibility; a deterministic/explicit/testable **access-resolution precedence**; safe **quota
+composition** (P8-I2 remains the sole quota authority); and **no second lifecycle state machine** (P8-I3 remains the canonical
+lifecycle authority; D-FPC-MAP-06). **No premature implementation:** no organizations/memberships/seats/role/campaign table,
+no admin UI, no trial-duration constant, no pricing/SKUs/enterprise plans are created. **Next gate: `P8-AF-C` — Access,
+Licensing & Organization Foundation Contract (governance contract first; NO implementation before it is independently reviewed
+and accepted).**
+
+**Governance synchronization (minimum).** NEW `P8_I4_PAYMENT_PROVIDER_BOUNDARY_FORMAL_CLOSURE_RECORD.md` + NEW
+`P8_AF_ACCESS_LICENSING_ORGANIZATION_FOUNDATION_OBLIGATION.md` + this roadmap append + `CURRENT_PROJECT_STATE.md` +
+`ACTIVE_INCREMENT_CONTRACT.md` current-truth sync + a single **subordinate `OWNER_DECISION_REGISTER.md` registration entry**
+recording the genuinely-absent explicit Owner direction that `P8-AF` is mandatory before `P8-CLOSE` and that its foundation
+options are directional / **non-activating** (no commercial policy, price, provider, or schema decided). No runtime/test/
+Domain-Pack/schema/prompt/benchmark/web/CI/provider-config file changed.
+
+**Boundary / status after this entry.** **P8-I4 = FORMALLY CLOSED (increment closure only; authoritative if/when this
+governance candidate is merged). Phase 8 = NOT CLOSED / NOT complete / NOT billing-live / NOT paid-active.** **P8-AF =
+REQUIRED NEXT PHASE-8 FOUNDATION GATE / NOT IMPLEMENTED / NOT ACTIVATED / NOT STARTED.** `P8-AF-C` / `P8-CLOSE` — NOT STARTED.
+**NO real provider selected; NO provider SDK; NO webhook; NO trial/promotional/Owner-Admin/organization access activated; NO
+automatic trial-data deletion; NO roles/organizations/seats/campaign implemented.** Phase 9 / Phase 10 — NOT AUTHORIZED; PSRR
+EXECUTION — NOT STARTED; public paid activation / production — BLOCKED / NOT AUTHORIZED. Candidate only until independent
+review → Owner acceptance → merge → post-merge verification. Append-only; prior history not rewritten. This entry authorizes
+no push, PR, merge beyond this candidate, P8-AF/P8-AF-C/P8-CLOSE start, provider selection, access-option activation, or
+deployment.
