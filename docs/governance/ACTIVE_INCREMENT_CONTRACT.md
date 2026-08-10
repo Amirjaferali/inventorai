@@ -41,7 +41,24 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — D3 Core Domain-Neutrality IMPLEMENTATION CANDIDATE; Phase 8 already FORMALLY CLOSED):** The accepted **D3
+**Status (current — NO active implementation increment; D3 FORMALLY CLOSED; Phase 8 already FORMALLY CLOSED; Phase 9 INACTIVE /
+NOT AUTHORIZED):** **`D3` — Pre-Phase-9 Core Domain-Neutrality is FORMALLY CLOSED** as a governance-only CLOSURE CANDIDATE
+(prerequisite closure only; authoritative if/when merged; dedicated record
+`docs/governance/D3_CORE_DOMAIN_NEUTRALITY_FORMAL_CLOSURE_RECORD.md`; base `e51eaf7eee001ef6012579852c8da7cbeda8e144`, PR #435).
+Contract PR #434 (`2dbde37`) + implementation PR #435 (`e51eaf7`; merge tree = accepted candidate tree `f027c93`, post-merge
+verified; independent review ACCEPT WITH NON-BLOCKING OBSERVATIONS). D3-A/B/D live-verified; D3 focused 7 / full suite 2258
+passed / 3 skipped / 1 xfailed / 0 failed. Canonical owners consumed not duplicated (domain_registry §5-I1 + domain_activation
+§5-I2); D3-C not reopened; D8 untouched / Owner-reserved; `activated_domains() == ['electronics_electrical']` (only). **Three
+mandatory future prerequisites REGISTERED (not authorized here):** Path-N caller propagation (before any second / non-electronics
+domain activation); multi-activated tie precedence (before more than one specialist domain is activated); Phase-9 Capability
+Overlap & Preservation Audit (before the first Phase-9 activation contract). **`OWNER_DECISION_REGISTER.md` UNCHANGED. There is
+NO active implementation increment.** **D3 = FORMALLY CLOSED / AUTHORITATIVE (prerequisite closure only); Phase 8 = FORMALLY
+CLOSED; Phase 9 = INACTIVE / NOT AUTHORIZED (D3 closure does NOT auto-open a Phase-9 contract or activate any domain); D8 = OPEN
+/ Owner-reserved; Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED; deployment / production = NOT AUTHORIZED.** The next state is:
+D3 prerequisite formally closed; Phase 9 remains inactive pending separate Owner authorization and the Phase-9 entry/audit
+gates.
+
+**Immediately prior (retained as history — D3 IMPLEMENTATION CANDIDATE):** The accepted **D3
 contract is MERGED (PR #434, merge `2dbde37a3c409356691a17fd868f90b087df417c`; merge tree = accepted candidate tree, post-merge
 verified)**, and **`D3` — Core Domain-Neutrality is now IMPLEMENTED as a governance-only IMPLEMENTATION CANDIDATE (RED →
 GREEN)**: minimum-path corrections to exactly three existing engine seams + one new focused test — **D3-A**
