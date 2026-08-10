@@ -910,6 +910,33 @@ AUTHORIZED / NOT STARTED.***
   P8-CLOSE. **P8-AF-C = CLOSED / AUTHORITATIVE; P8-AF-I1 = IMPLEMENTATION CANDIDATE; P8-AF = NOT CLOSED; `P8-CLOSE` = NOT
   STARTED; Phase 8 = NOT CLOSED;** Phase 9 / Phase 10 NOT AUTHORIZED; PSRR EXECUTION NOT STARTED; public paid activation /
   production BLOCKED / NOT AUTHORIZED.
+  **P8-AF-I1 is now MERGED / POST-MERGE VERIFIED (PR #430, merge `1ac9c603b14a172a737f3577791e9f23a46533bd`), and the
+  Remaining-Obligation / Closure-Eligibility Review returned verdict B** (one mandatory pre-closure correction: the
+  contract-required uniform-subject invariant, P8-AF-C §5.1 "given an authenticated account"). **P8-AF-I2 — Subject-Scoped
+  Access Resolution is now IMPLEMENTED as a governance-only CORRECTIVE IMPLEMENTATION CANDIDATE (RED → GREEN)**: the canonical
+  resolver is now `resolve_access(grants, *, subject, now)` — a **required** authenticated `subject`; **subject scoping runs
+  BEFORE entitlement composition**; a foreign-subject grant (`grant.subject != subject`) is excluded **INERTLY** (never
+  contributes, never denies, never raises) with explicit `foreign_subject` provenance (the smallest-ambiguity behavior —
+  raising would let another account deny/DoS this subject); an empty/missing subject is **NEVER** a wildcard (no `*`/`ALL`/
+  `GLOBAL`); the post-filter precedence is UNCHANGED (zero → DENY; one distinct entitlement → GRANT; competing distinct → FAIL
+  CLOSED). `AccessGrant` UNCHANGED (existing `subject` field sufficed); no persistence/schema; single runtime file changed
+  (`engine/access_resolver.py`). Behavioral RED (mixed-subject composition demo against the merged I1 + 22 RED subject-scoped
+  tests + six mutation probes: remove subject check / invert it / scope-after-composition / empty-subject-wildcard /
+  first-grant-subject / drop provenance) → GREEN: **P8-AF-I2 focused 23 / P8-AF-I1+I2 53 / Phase-8 177 / full suite 2251
+  passed / 3 skipped / 1 xfailed / 0 failed** (2228 baseline + 23); six probes each turned a test RED and were restored
+  byte-identical. Verified: cross-account grants never compose; foreign grant cannot rescue a denied subject; **no
+  authentication behavior introduced** (subject is an already-authenticated identity; no email/password/session inspection; no
+  hardcoded Owner); **no data-ownership implication** (access ≠ ownership); order-independent; `[effective_from,
+  effective_until)` FROZEN (from inclusive, until exclusive); P8-I1/I2/I3/I4 authorities unchanged; OD-N guards unweakened.
+  **Deferred (Review classifications preserved): duplicate durable grant-identity rule = DEFERRED UNTIL FIRST PERSISTENCE
+  INCREMENT; direct-`AccessGrant(...)` constructor hardening = DEFERRED BEFORE FIRST REAL RUNTIME CALLER; global/scope
+  (campaign) grant semantics = NOT STARTED / DEFERRED (account-scoped resolution only).** **P8-AF-I2 is a CORRECTIVE
+  IMPLEMENTATION CANDIDATE ONLY — uniform-subject isolation IMPLEMENTED IN CANDIDATE; P8-AF NOT closed.** Organization /
+  membership / named seats — NOT STARTED / DEFERRED; campaign — NOT STARTED / DEFERRED; Owner/Admin seam — NOT STARTED /
+  DEFERRED; trial activation — NOT STARTED. Candidate-only until independent review → Owner acceptance → PR → pre-merge check →
+  merge → post-merge verification → the P8-AF formal closure gate → P8-CLOSE. **P8-AF-I1 = MERGED/POST-MERGE VERIFIED;
+  P8-AF-I2 = CORRECTIVE IMPLEMENTATION CANDIDATE; P8-AF = NOT CLOSED; `P8-CLOSE` = NOT STARTED; Phase 8 = NOT CLOSED;** Phase 9
+  / Phase 10 NOT AUTHORIZED; PSRR EXECUTION NOT STARTED; public paid activation / production BLOCKED / NOT AUTHORIZED.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation

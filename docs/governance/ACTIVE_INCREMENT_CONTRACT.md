@@ -41,7 +41,31 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — P8-AF-I1 IMPLEMENTATION CANDIDATE):** The accepted **P8-AF-C** contract is **MERGED (PR #429, merge
+**Status (current — P8-AF-I2 CORRECTIVE IMPLEMENTATION CANDIDATE):** **P8-AF-I1** is **MERGED (PR #430, merge
+`1ac9c603b14a172a737f3577791e9f23a46533bd`) / POST-MERGE VERIFIED**; the Remaining-Obligation / Closure-Eligibility Review
+returned **verdict B** (one mandatory pre-closure correction — the contract-required uniform-subject invariant, P8-AF-C §5.1
+"given an authenticated account"). **P8-AF-I2 — Subject-Scoped Access Resolution is now IMPLEMENTED as a governance-only
+CORRECTIVE IMPLEMENTATION CANDIDATE (RED → GREEN)**: the canonical resolver is now `resolve_access(grants, *, subject, now)`
+(required authenticated `subject`); **subject scoping runs BEFORE entitlement composition**; a foreign-subject grant is
+excluded **INERTLY** (never contributes/denies/raises) with explicit `foreign_subject` provenance (smallest-ambiguity — raising
+would let another account deny/DoS this subject); an empty/missing subject is **NEVER** a wildcard; the post-filter precedence
+is UNCHANGED (zero → DENY; one distinct entitlement → GRANT; competing distinct → FAIL CLOSED). `AccessGrant` UNCHANGED; single
+runtime file changed (`engine/access_resolver.py`); no persistence/schema; no new dependency. Behavioral RED (mixed-subject
+composition demo against merged I1 + 22 RED subject-scoped tests + six mutation probes) → GREEN: **focused 23 / P8-AF-I1+I2 53 /
+Phase-8 177 / full suite 2251 passed / 3 skipped / 1 xfailed / 0 failed** (2228 baseline + 23); six probes each turned a test
+RED and were restored byte-identical. Verified: cross-account grants never compose; foreign grant cannot rescue a denied
+subject; **no authentication behavior** (subject already-authenticated; no email/password/session; no hardcoded Owner); **no
+data-ownership implication** (access ≠ ownership); order-independent; `[effective_from, effective_until)` FROZEN; P8-I1/I2/I3/I4
+authorities unchanged; OD-N unweakened. **Deferred (Review classifications): duplicate durable grant-identity rule = DEFERRED
+UNTIL FIRST PERSISTENCE INCREMENT; direct-constructor hardening = DEFERRED BEFORE FIRST REAL RUNTIME CALLER; global/scope
+(campaign) semantics = NOT STARTED / DEFERRED.** **P8-AF-I2 is a CORRECTIVE IMPLEMENTATION CANDIDATE ONLY — uniform-subject
+isolation IMPLEMENTED IN CANDIDATE; P8-AF NOT closed.** Organization / membership / named seats — NOT STARTED / DEFERRED;
+campaign — NOT STARTED / DEFERRED; Owner/Admin seam — NOT STARTED / DEFERRED; trial activation — NOT STARTED. **P8-AF-I1 =
+MERGED/POST-MERGE VERIFIED; P8-AF-I2 = CORRECTIVE IMPLEMENTATION CANDIDATE; P8-AF = NOT CLOSED; `P8-CLOSE` = NOT STARTED;
+Phase 8 = NOT CLOSED;** NO provider selected; NO access model activated. Phase 9 / Phase 10 NOT AUTHORIZED; PSRR EXECUTION NOT
+STARTED; production / public paid activation BLOCKED / NOT AUTHORIZED.
+
+**Immediately prior (retained as history — P8-AF-I1 IMPLEMENTATION CANDIDATE):** The accepted **P8-AF-C** contract is **MERGED (PR #429, merge
 `06683179f843b71f8d151f0c3c5647778b4b0acf`) / POST-MERGE VERIFIED**, and **P8-AF-I1 — Canonical Access-Grant +
 Access-Resolution Foundation is now IMPLEMENTED as a governance-only IMPLEMENTATION CANDIDATE (RED → GREEN)** — the FIRST and
 SMALLEST P8-AF increment, proving ONLY the canonical access-composition seam. `engine/access_grant.py` (NEW — a LEAF immutable,

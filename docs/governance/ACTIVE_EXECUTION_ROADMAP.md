@@ -6632,3 +6632,82 @@ proves a seam necessary) → a dedicated P8-AF closure gate → P8-CLOSE. P8-CLO
 PSRR EXECUTION NOT STARTED; public paid activation / production BLOCKED / NOT AUTHORIZED. Append-only; prior history not
 rewritten. This entry authorizes no push, PR, merge beyond this candidate, further P8-AF increment start, access-model
 activation, P8-CLOSE, or deployment.
+
+---
+
+## P8-AF-I2 — Subject-Scoped Access Resolution — CORRECTIVE IMPLEMENTATION (RED → GREEN) — governance-only IMPLEMENTATION CANDIDATE — merged P8-AF-I1 (PR #430) corrected for the contract-required uniform-subject invariant; P8-AF still NOT closed
+
+**Gate.** OWNER-AUTHORIZED **P8-AF-I2 corrective implementation** gate on the merged, post-merge-verified P8-AF-I1 (PR #430).
+The Remaining-Obligation / Closure-Eligibility Review (verdict B) established the ONE mandatory pre-closure correction: the
+canonical resolver `resolve_access(grants, *, now)` did not bind resolution to one authenticated subject (P8-AF-C §5.1 —
+"given an authenticated account"), so grants of DIFFERENT subjects sharing an entitlement identity could compose into one
+decision (a latent cross-account access vector — §4/§13/§20 #5/#6). RED-first → GREEN. **NO organization / membership / seat /
+seat-capacity / seat-assignment / campaign-config / promotional-runtime / trial-activation / Owner-Admin-role / RBAC /
+enterprise-billing / SSO / domain-onboarding / pricing / payment / quota-counter / new-lifecycle-state / access-grant-
+persistence / durable-grant-identity / schema / admin-UI code.** Authoritative live tip verified read-only
+`1ac9c603b14a172a737f3577791e9f23a46533bd` (PR #430 merge of the accepted P8-AF-I1 `b597850`; parents `06683179` +
+`b597850`; tree `c8f095c`; not newer); boot OK; clean.
+
+**Behavioral RED evidence.** Against the merged P8-AF-I1, a direct demonstration composed two ACTIVE grants for
+`account-A` and `account-B` sharing the same entitlement into ONE `granted=True` decision (`contributing=('gA','gB')`) — the
+cross-account composition defect — and the subject-scoped API was absent (`resolve_access() got an unexpected keyword argument
+'subject'`). The new subject-scoped tests all failed against the merged code (22 RED). The behavioral RED was then confirmed by
+six load-bearing mutation probes, each turning a targeted test RED and each restored byte-identical: remove the subject
+equality check; invert it (compare wrong subject); scope AFTER composition (drop the pre-composition `continue`); allow an
+empty/missing subject as a wildcard; use the first grant's subject instead of the explicit resolution subject; drop the
+`foreign_subject` provenance label.
+
+**GREEN implementation (bounded; single runtime file).** `engine/access_resolver.py` — `resolve_access(grants, *, subject,
+now)` (required keyword `subject`). Fail closed on an empty/non-string/bool `subject` (an empty/missing subject is **NEVER** a
+wildcard/global selector; no `"*"`/`"ALL"`/`"GLOBAL"` magic). **Subject scoping runs BEFORE entitlement composition:** a grant
+whose `subject` differs from the resolution `subject` is FOREIGN and excluded **INERTLY** — it never contributes, never denies,
+and never raises — recorded only as an explicit `foreign_subject` provenance entry. This is the **smallest-ambiguity**
+behavior: raising on a foreign grant would itself let another account influence (deny / DoS / error) this subject's resolution,
+i.e. become a cross-account vector; inert exclusion gives a foreign grant ZERO influence on the decision. The post-filter
+precedence rule is UNCHANGED from P8-AF-I1 (zero effective → DENY; one distinct entitlement → GRANT; competing distinct →
+FAIL CLOSED). `AccessGrant` is UNCHANGED (its existing `subject` field sufficed; no `organization_id`/`seat_id`/`campaign_id`/
+`role_id`/provider field added). No persistence/schema; no new dependency. `tests/test_p8_af_i2_subject_scoped_resolution.py`
+(NEW — 23 tests). `tests/test_p8_af_i1_access_grant_resolution.py` (the merged I1 tests mechanically updated to pass the now
+mandatory `subject`; the strengthened import-guard test unchanged in intent).
+
+**Critical invariants verified.** Subject A ignores a Subject B grant (foreign excluded); same entitlement + different subjects
+never compose (only A's grant contributes); a foreign grant cannot rescue a denied Subject A; a foreign grant affects
+provenance only as an explicit exclusion; matching-subject valid grant still grants / expired still denies / competing
+distinct still fail closed; subject must be a non-empty canonical string (None/empty/whitespace/bool/int/tuple → fail closed);
+empty subject is not a wildcard; order-independent under subject scope; list/tuple/generator deterministic; resolver mutates
+nothing; **no authentication behavior introduced** (imports no account/credential/session module; the subject is an
+already-authenticated canonical identity passed in — the resolver authenticates nothing, inspects no email/password/session,
+hardcodes no Owner, and never picks a subject from the grants); **no cross-account data-ownership implication** (access ≠
+ownership); scoping precedes composition (a foreign different-entitlement grant never creates ambiguity for the subject);
+non-`AccessGrant` input and non-int `now` still fail closed; **`[effective_from, effective_until)` FROZEN** (from inclusive,
+until exclusive — tested at both boundaries; runtime behavior unchanged). **P8-I1/I2/I3/I4 authorities unchanged;** OD-N guards
+unchanged and unweakened.
+
+**Deferred items preserved (Remaining-Obligation Review classifications).** Duplicate durable grant-identity conflict
+semantics — **DEFERRED UNTIL FIRST PERSISTENCE INCREMENT** (no grant persistence exists). Direct-`AccessGrant(...)`
+constructor validation-bypass hardening — **DEFERRED BEFORE FIRST REAL RUNTIME CALLER** (no runtime caller; malformed values
+still fail closed; not expanded here). Global/scope (campaign) grant semantics — **NOT STARTED / DEFERRED** to a separately
+authorized source-model gate (account-scoped resolution only for now; any non-matching-subject grant is simply foreign).
+
+**Test evidence.** Behavioral RED (mixed-subject composition demo + 22 RED subject-scoped tests + six mutation probes) →
+GREEN: **P8-AF-I2 focused 23 passed**; P8-AF-I1+I2 **53 passed**; Phase-8 regressions (I1+I2+I3+I4-I1+AF-I1+AF-I2) **177
+passed**; **full suite 2251 passed / 3 skipped / 1 xfailed / 0 failed** (2228 P8-AF-I1 baseline + 23). Six mutation probes each
+turned a targeted test RED and were fully restored (files byte-identical). No `web/`/`templates/`/`domains/`/`schemas/`/
+`prompts/`/payment-adapter/account_store change; no new dependency; no persistence/schema.
+
+**Governance synchronization (minimum).** Modified `engine/access_resolver.py` + NEW
+`tests/test_p8_af_i2_subject_scoped_resolution.py` + updated `tests/test_p8_af_i1_access_grant_resolution.py` (mandatory-subject
+call adaptation); `CURRENT_PROJECT_STATE.md` + `ACTIVE_INCREMENT_CONTRACT.md` current-truth synced; this roadmap append.
+**`OWNER_DECISION_REGISTER.md` UNCHANGED** (a corrective implementation candidate records no accepted Owner decision; the
+time-boundary freeze is an existing tested deterministic convention, not a new Owner/business decision).
+
+**Boundary / status after this entry.** **P8-AF-I2 is a CORRECTIVE IMPLEMENTATION CANDIDATE ONLY — uniform-subject isolation
+IMPLEMENTED IN CANDIDATE; P8-AF NOT closed; Phase 8 NOT complete, NOT billing-live, NOT paid-active.** **Organization /
+membership / named seats — NOT STARTED / DEFERRED; campaign — NOT STARTED / DEFERRED; Owner/Admin seam — NOT STARTED /
+DEFERRED; trial activation — NOT STARTED.** Duplicate durable grant-identity rule — DEFERRED UNTIL FIRST PERSISTENCE INCREMENT;
+direct-constructor hardening — DEFERRED BEFORE FIRST REAL RUNTIME CALLER; `[effective_from, effective_until)` — PRESERVED /
+FROZEN AS FOUNDATION SEMANTICS. P8-AF-I1 = MERGED / POST-MERGE VERIFIED. Candidate-only until independent implementation review
+→ Owner acceptance → publication → PR → pre-merge safety check → merge → post-merge verification → the P8-AF formal closure
+gate → P8-CLOSE. P8-CLOSE NOT STARTED; Phase 9 / Phase 10 NOT AUTHORIZED; PSRR EXECUTION NOT STARTED; public paid activation /
+production BLOCKED / NOT AUTHORIZED. Append-only; prior history not rewritten. This entry authorizes no push, PR, merge beyond
+this candidate, further P8-AF increment start, access-model activation, P8-AF closure, P8-CLOSE, or deployment.

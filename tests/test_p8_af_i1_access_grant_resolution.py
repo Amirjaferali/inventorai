@@ -46,7 +46,7 @@ def _grant(gid="g1", subject="acct-1", source="__ref_source_alpha__",
 
 # 1 — one valid, in-window active grant resolves access to its entitlement.
 def test_single_valid_grant_resolves_access():
-    r = ar.resolve_access([_grant(effective_until=_EPOCH + 1)], now=_EPOCH)
+    r = ar.resolve_access([_grant(effective_until=_EPOCH + 1)], subject="acct-1", now=_EPOCH)
     assert r.granted is True
     assert r.entitlement_reference == _ENT_A
     assert r.selected_grant_id == "g1"
@@ -54,7 +54,7 @@ def test_single_valid_grant_resolves_access():
 
 # 2 — expired grant (now >= effective_until) does not resolve access.
 def test_expired_grant_denies():
-    r = ar.resolve_access([_grant(effective_from=0, effective_until=_EPOCH)], now=_EPOCH)
+    r = ar.resolve_access([_grant(effective_from=0, effective_until=_EPOCH)], subject="acct-1", now=_EPOCH)
     assert r.granted is False
     assert r.entitlement_reference is None
     assert any("expired" in reason for _, reason in r.excluded)
@@ -62,7 +62,7 @@ def test_expired_grant_denies():
 
 # 2b — not-yet-effective grant (now < effective_from) does not resolve access.
 def test_not_yet_effective_grant_denies():
-    r = ar.resolve_access([_grant(effective_from=_EPOCH + 10)], now=_EPOCH)
+    r = ar.resolve_access([_grant(effective_from=_EPOCH + 10)], subject="acct-1", now=_EPOCH)
     assert r.granted is False
     assert any("not_yet_effective" in reason for _, reason in r.excluded)
 
@@ -70,7 +70,7 @@ def test_not_yet_effective_grant_denies():
 # 3 — revoked / inactive grant does not resolve access.
 @pytest.mark.parametrize("status", ["revoked", "inactive"])
 def test_revoked_or_inactive_grant_denies(status):
-    r = ar.resolve_access([_grant(status=status)], now=_EPOCH)
+    r = ar.resolve_access([_grant(status=status)], subject="acct-1", now=_EPOCH)
     assert r.granted is False
     assert any(status in reason for _, reason in r.excluded)
 
@@ -79,7 +79,7 @@ def test_revoked_or_inactive_grant_denies(status):
 #     access granted, exactly ONE entitlement reference (no double allowance).
 def test_multiple_same_entitlement_grants_single_reference():
     grants = [_grant(gid="g1"), _grant(gid="g2", source="__ref_source_beta__")]
-    r = ar.resolve_access(grants, now=_EPOCH)
+    r = ar.resolve_access(grants, subject="acct-1", now=_EPOCH)
     assert r.granted is True
     assert r.entitlement_reference == _ENT_A
     assert set(r.contributing_grant_ids) == {"g1", "g2"}
@@ -91,7 +91,7 @@ def test_multiple_same_entitlement_grants_single_reference():
 def test_provenance_explains_selection_and_exclusions():
     grants = [_grant(gid="active", effective_until=_EPOCH + 5),
               _grant(gid="stale", effective_until=_EPOCH)]   # expired
-    r = ar.resolve_access(grants, now=_EPOCH)
+    r = ar.resolve_access(grants, subject="acct-1", now=_EPOCH)
     assert r.granted is True and r.selected_grant_id == "active"
     assert r.reason == "single_effective_entitlement"
     assert ("stale", ) == tuple(gid for gid, _ in r.excluded)
@@ -102,7 +102,7 @@ def test_resolver_does_not_mutate_input():
     g = _grant(effective_until=_EPOCH + 1)
     snapshot = (g.grant_id, g.subject, g.source, g.entitlement_reference,
                 g.effective_from, g.effective_until, g.status, g.provenance)
-    ar.resolve_access([g], now=_EPOCH)
+    ar.resolve_access([g], subject="acct-1", now=_EPOCH)
     assert (g.grant_id, g.subject, g.source, g.entitlement_reference,
             g.effective_from, g.effective_until, g.status, g.provenance) == snapshot
 
@@ -132,7 +132,7 @@ def test_resolver_imports_are_reference_only():
 #     (a downstream P8-I2 policy select, never additive).
 def test_no_double_quota_composition():
     grants = [_grant(gid="g1"), _grant(gid="g2")]
-    r = ar.resolve_access(grants, now=_EPOCH)
+    r = ar.resolve_access(grants, subject="acct-1", now=_EPOCH)
     assert r.granted is True
     # A single entitlement reference — the sole P8-I2 quota-policy path.
     assert r.entitlement_reference == _ENT_A
@@ -144,13 +144,13 @@ def test_no_double_quota_composition():
 def test_unknown_entitlement_identity_fails_closed():
     bad = _grant(ent=("__no_such_plan__", "9"))
     with pytest.raises(ar.AccessResolverError):
-        ar.resolve_access([bad], now=_EPOCH)
+        ar.resolve_access([bad], subject="acct-1", now=_EPOCH)
 
 
 # 9b — the resolver never fabricates capabilities: it returns only a catalog
 #      identity, never a capability descriptor.
 def test_resolution_carries_identity_not_capabilities():
-    r = ar.resolve_access([_grant()], now=_EPOCH)
+    r = ar.resolve_access([_grant()], subject="acct-1", now=_EPOCH)
     assert not hasattr(r, "capabilities")
     assert r.entitlement_reference in (_ENT_A,)
 
@@ -179,20 +179,20 @@ def test_no_provider_coupling():
 def test_no_auth_bypass_from_privileged_looking_fields():
     r = ar.resolve_access(
         [_grant(subject="owner@example.com", source="owner_admin",
-                status="revoked")], now=_EPOCH)
+                status="revoked")], subject="owner@example.com", now=_EPOCH)
     assert r.granted is False
     # And an ACTIVE grant grants access purely mechanically — the decision does
     # not depend on the subject/source strings meaning anything special.
     r2 = ar.resolve_access(
         [_grant(subject="nobody", source="__ref_source_alpha__",
-                effective_until=_EPOCH + 1)], now=_EPOCH)
+                effective_until=_EPOCH + 1)], subject="nobody", now=_EPOCH)
     assert r2.granted is True
 
 
 # 12 — data ownership is NOT inferred from an access grant: the resolution
 #      exposes only access/entitlement, never a cross-account data permission.
 def test_no_data_ownership_inference():
-    r = ar.resolve_access([_grant(subject="acct-A")], now=_EPOCH)
+    r = ar.resolve_access([_grant(subject="acct-A")], subject="acct-A", now=_EPOCH)
     for forbidden in ("owns", "owner", "can_read", "data_access", "content"):
         assert not hasattr(r, forbidden)
 
@@ -200,17 +200,17 @@ def test_no_data_ownership_inference():
 # 13 — fixed injected time is used; wall-clock is never read (now must be given).
 def test_now_must_be_injected_integer():
     with pytest.raises(ar.AccessResolverError):
-        ar.resolve_access([_grant()], now=None)
+        ar.resolve_access([_grant()], subject="acct-1", now=None)
     with pytest.raises(ar.AccessResolverError):
-        ar.resolve_access([_grant()], now=True)             # bool is not an epoch int
+        ar.resolve_access([_grant()], subject="acct-1", now=True)             # bool is not an epoch int
 
 
 # 14 — input ordering does not alter the deterministic result.
 def test_order_independence():
     a = _grant(gid="a", effective_until=_EPOCH + 1)
     b = _grant(gid="b", effective_until=_EPOCH + 1)
-    r1 = ar.resolve_access([a, b], now=_EPOCH)
-    r2 = ar.resolve_access([b, a], now=_EPOCH)
+    r1 = ar.resolve_access([a, b], subject="acct-1", now=_EPOCH)
+    r2 = ar.resolve_access([b, a], subject="acct-1", now=_EPOCH)
     assert (r1.granted, r1.entitlement_reference, r1.selected_grant_id,
             tuple(sorted(r1.contributing_grant_ids))) == \
            (r2.granted, r2.entitlement_reference, r2.selected_grant_id,
@@ -222,12 +222,12 @@ def test_order_independence():
 def test_competing_distinct_entitlements_fail_closed():
     grants = [_grant(gid="g1", ent=_ENT_A),
               _grant(gid="g2", ent=_ENT_B)]
-    r = ar.resolve_access(grants, now=_EPOCH)
+    r = ar.resolve_access(grants, subject="acct-1", now=_EPOCH)
     assert r.granted is False
     assert r.entitlement_reference is None
     assert "ambiguous" in r.reason and "precedence_deferred" in r.reason
     # order-independent: swapping does not pick a "winner".
-    r2 = ar.resolve_access(list(reversed(grants)), now=_EPOCH)
+    r2 = ar.resolve_access(list(reversed(grants)), subject="acct-1", now=_EPOCH)
     assert r2.granted is False and r2.entitlement_reference is None
 
 
@@ -255,14 +255,14 @@ def test_malformed_grant_fails_closed(kw):
 # 15c — a non-AccessGrant element in the input fails closed.
 def test_non_grant_input_fails_closed():
     with pytest.raises(ar.AccessResolverError):
-        ar.resolve_access([{"grant_id": "g1"}], now=_EPOCH)
+        ar.resolve_access([{"grant_id": "g1"}], subject="acct-1", now=_EPOCH)
 
 
 # 16 — no persistence/schema is required: resolution is a pure function over
 #      in-memory grants (no account_store argument, no DB).
 def test_resolution_needs_no_persistence():
     # Zero grants → deterministic deny, no store, no I/O.
-    r = ar.resolve_access([], now=_EPOCH)
+    r = ar.resolve_access([], subject="acct-1", now=_EPOCH)
     assert r.granted is False and r.reason == "no_effective_grant"
 
 

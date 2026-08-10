@@ -81,13 +81,28 @@ def _validate_entitlement_identity(reference):
         raise AccessResolverError("unknown entitlement identity: %r" % (reference, )) from exc
 
 
-def resolve_access(grants, *, now):
-    """Resolve the effective access decision for ``grants`` at the injected epoch
-    instant ``now``. Returns an :class:`AccessResolution`. Raises
-    :class:`AccessResolverError` (fail closed) for a non-int ``now``, a
-    non-:class:`AccessGrant` element, or a grant whose entitlement identity is not
-    in the P8-I1 catalog. Never mutates input, quota, lifecycle, account, or
-    provider state."""
+def resolve_access(grants, *, subject, now):
+    """Resolve the effective access decision for one AUTHENTICATED ``subject`` over
+    ``grants`` at the injected epoch instant ``now`` (P8-AF-C §5.1 — "given an
+    authenticated account"). Returns an :class:`AccessResolution`. Raises
+    :class:`AccessResolverError` (fail closed) for an empty/non-string ``subject``,
+    a non-int ``now``, a non-:class:`AccessGrant` element, or a matching-subject
+    grant whose entitlement identity is not in the P8-I1 catalog.
+
+    SUBJECT ISOLATION (binding, §4/§13): a grant whose ``subject`` differs from the
+    resolution ``subject`` is FOREIGN and is excluded INERTLY — it never
+    contributes, never denies, and never raises — recorded only as an explicit
+    ``foreign_subject`` provenance entry. This is the smallest-ambiguity behavior:
+    raising on a foreign grant would itself let another account influence (deny /
+    DoS / error) this subject's resolution, i.e. become a cross-account vector. An
+    empty/missing subject is NEVER a wildcard/global selector. Subject scoping runs
+    BEFORE entitlement composition, so a foreign account's grant can never enter the
+    entitlement competition or change this subject's decision. ``subject`` is an
+    already-authenticated canonical identity supplied by the auth/account layer;
+    this resolver performs NO authentication. Never mutates input, quota, lifecycle,
+    account, or provider state."""
+    if not isinstance(subject, str) or isinstance(subject, bool) or not subject.strip():
+        raise AccessResolverError("subject must be a non-empty authenticated identity")
     if not isinstance(now, int) or isinstance(now, bool):
         raise AccessResolverError("now must be an integer epoch time")
 
@@ -98,6 +113,11 @@ def resolve_access(grants, *, now):
 
     effective, excluded = [], []
     for g in materialized:
+        if g.subject != subject:
+            # Foreign-subject grant → inert; scoping precedes composition so it
+            # never influences this subject's decision (not even to deny/error).
+            excluded.append((g.grant_id, "foreign_subject"))
+            continue
         if _ag.is_effective_at(g, now):
             _validate_entitlement_identity(g.entitlement_reference)   # reference, fail closed
             effective.append(g)
