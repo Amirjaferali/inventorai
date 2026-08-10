@@ -41,7 +41,28 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — NO active implementation increment; P8-AF FORMALLY CLOSED):** **`P8-AF` — Access, Licensing &
+**Status (current — NO active implementation increment; Phase 8 FORMALLY CLOSED via P8-CLOSE):** **`Phase 8` — Subscription,
+Billing and Entitlements is FORMALLY CLOSED** as a governance-only CLOSURE CANDIDATE (P8-CLOSE; a technical-foundation phase
+closure; authoritative if/when merged; dedicated record `docs/governance/PHASE_8_FORMAL_CLOSURE_RECORD.md`; base
+`e7f7bc7e1f17550dc83d658976a07462de434e17`, PR #432). The Phase-8 Remaining-Obligation / Exit-Criteria Review returned **A —
+ELIGIBLE FOR P8-CLOSE**. **Obligation closure matrix (all CLOSED / AUTHORITATIVE):** P8-C; P8-I1; P8-I2; P8-I3; P8-I4 (no
+provider selected); P8-AF. **All mandatory Phase-8 exit criteria PASS**; N/A (contract-designed): real provider =
+OWNER-SELECTION-TRIGGERED, P8-I4-I2 verified webhook + P8-I4-I3 reconciliation = EVIDENCE-TRIGGERED / DEFERRED, public paid
+activation = OUTSIDE Phase 8. Delivered FOUNDATION ONLY (no commercial launch): plan-identity/entitlement + quota (sole
+authority) + subscription-lifecycle mechanics + provider-neutral payment boundary + access-grant/resolution + subject-scoped
+composition + fail-closed ambiguity; full suite 2251 passed / 3 skipped / 1 xfailed / 0 failed. **There is NO active
+implementation increment.** Preserved OPEN/DEFERRED (none blocked closure): all Owner business decisions (plan names / pricing
+/ currency / cadence / trial policy / packaging / enterprise / grandfathering / refunds / tax / grace / over-limit-downgrade /
+provider selection / proration / cancellation timing); P8-AF future activation guards; trial / global-promo / Owner-Admin /
+organization-named-seat / enterprise runtime; deferred capability lanes (QTA/ACV/PDF/Email/WS17/STG). PSRR = REGISTERED /
+MANDATORY BEFORE PUBLIC PRODUCTION / NOT EXECUTED; `main`/OD-Q reconciliation = separate pre-production gate (not a blocker,
+not performed). **Phase-8 closure authorizes nothing downstream.** **P8-C / P8-I1 / P8-I2 / P8-I3 / P8-I4 / P8-AF = CLOSED /
+AUTHORITATIVE; Phase 8 = FORMAL CLOSURE CANDIDATE → FORMALLY CLOSED / AUTHORITATIVE if/when merged;** NO provider selected; NO
+commercial model activated. **Next gate: separately authorized — Phase 9 is NOT AUTHORIZED and requires explicit Owner
+authorization; no gate is auto-activated by Phase-8 closure.** Phase 9 / Phase 10 NOT AUTHORIZED; PSRR EXECUTION NOT STARTED;
+production / public paid activation BLOCKED / NOT AUTHORIZED.
+
+**Immediately prior (retained as history — P8-AF FORMALLY CLOSED):** **`P8-AF` — Access, Licensing &
 Organization Foundation is FORMALLY CLOSED** as a governance-only CLOSURE CANDIDATE (foundation-obligation closure only;
 authoritative if/when merged). **P8-AF-I2** (uniform-subject correction) is **MERGED (PR #431, merge
 `1132cfe8fde16a8c3a5784a2b1351a43620eda94`) / POST-MERGE VERIFIED** (independent review A); the P8-AF-C §22 closure criteria
