@@ -6480,3 +6480,75 @@ EXECUTION — NOT STARTED; public paid activation / production — BLOCKED / NOT
 review → Owner acceptance → merge → post-merge verification. Append-only; prior history not rewritten. This entry authorizes
 no push, PR, merge beyond this candidate, P8-AF/P8-AF-C/P8-CLOSE start, provider selection, access-option activation, or
 deployment.
+
+---
+
+## P8-AF-C — Access, Licensing & Organization Foundation Contract — governance-only CONTRACT CANDIDATE — defines the canonical access-grant + single access-resolution architecture composing P8-I1/I2/I3/I4; NO access model activated; NO implementation
+
+**Gate.** OWNER-AUTHORIZED **contract-only** P8-AF-C gate fulfilling the registered `P8-AF` obligation (mandatory before
+`P8-CLOSE`). Defines the smallest canonical architecture — an **Access-Grant model** + a single deterministic
+**effective-access resolution seam** — that lets InventorAI later support (each under a separate gate) individual access, a
+**7-day** per-account trial, a global configurable promotional free period, Owner/Admin non-billed access,
+organization/institution licensing, named seats, enterprise/custom agreements, deterministic access precedence, safe quota +
+lifecycle composition, billing-ownership ≠ data-ownership separation, and provider independence. **DOCUMENTED NO-VALID-RED —
+CONTRACT-ONLY GOVERNANCE GATE.** No runtime/test/Domain-Pack/schema/prompt/benchmark/web/CI/provider-config file changed; no
+access model activated. Authoritative base verified read-only `61ff4a85989dfc8d9881764597d5d7dc415da213` (PR #428; parents
+`3a802fd` + `1da9d2d`; tree `95d9aa4624cb9ab6505976433fd3324678078369`); boot OK; clean; not newer.
+
+**Authority boundaries (composition, not duplication; D-FPC-MAP-06).** **P8-I1** remains the plan/entitlement authority;
+**P8-I2** remains the sole commercial usage/quota authority; **P8-I3** remains the canonical subscription-lifecycle authority
+(incl. `trialing`); **P8-I4** remains the provider-neutral payment boundary. **P8-AF composes** these via one resolver + an
+access-grant model; it creates **no** second plan catalog, quota counter, or lifecycle/seat/campaign state machine. Binding
+core separation preserved: **Authentication ≠ Authorization ≠ Account identity ≠ Organization membership ≠ Seat assignment ≠
+Data ownership ≠ Commercial entitlement ≠ Subscription lifecycle ≠ Payment state ≠ Billing ownership**; **paying ≠ owning user
+data; organization pays ≠ may read member content; seat assignment ≠ content visibility; billing admin ≠ content admin.**
+
+**Contract content (definition only; 23 sections).** Single access-resolution authority (no scattering across templates /
+payment adapters / lifecycle / organization / quota / ad-hoc role checks); a provider-neutral, source-neutral **Access-Grant**
+(subject · source/reason · entitlement reference [P8-I1, never redefined] · effective_from/until · status · provenance ·
+optional org/seat ref — candidate fields, finalized at implementation) with the invariant that **effective access is
+explainable and traceable to its source**; a **deterministic precedence/composition rule** on access-availability /
+feature-entitlement / quota-authority / expiry-revocation / audit-provenance that prevents double quota, plan-identity
+corruption, unrelated quota reset, accidental downgrade, hidden bypass, and ambiguous revocation (concrete ordering of
+not-yet-activated sources deferred to the enabling increment); **7-day** trial foundation reusing the P8-I3 `trialing` state
+(168h-vs-calendar OPEN; no runtime constant); a **global configurable promotional campaign** operable **without a source-code
+change** (deterministic activation/expiry; provider-free; no auto data deletion at end; coexists with paid; UTC-epoch time);
+**Owner/Admin non-billed access** as authenticated-account → explicit authorization → entitlement grant (minimal
+authorization/role seam reserved; no full RBAC; no bypass); a canonical **organization** concept (separate from account /
+billing / membership / seat / content ownership); a **membership** seam (individual accounts retained; narrow status only);
+**named seats** as the preferred licensing foundation (seat = entitlement assignment, not an account/data-container/owner; no
+shared credentials; not concurrent-use); **seat capacity/assignment/release/reassignment** with the binding invariant that
+**reassignment never transfers a prior member's data**; **billing ownership ≠ data ownership** with any org/instructor
+visibility requiring separately-governed permission; **enterprise/custom** compatibility and the (1) Individual / (2)
+Organization-Named-Seats / (3) Enterprise-Custom family without three account systems; **quota composition** referencing the
+sole P8-I2 authority (one policy per decision; no double count/reset); **lifecycle composition** with no competing state
+machine (P8-I3 canonical); **audit/provenance + deterministic revocation** (revocation removes effective access, never data);
+**data ownership/portability** preserved (anti-lock-in + OD-O + Phase-4 privacy; **automatic day-7 hard deletion NOT
+authorized**; retention a separate accepted policy; a recordable pre-use notice/consent capability without duplicating consent
+systems); the **smallest implementation increment** (likely Access-Grant model + resolver + provenance against fake sources;
+org/seat/campaign/role seams contracted-but-deferred unless needed to avoid redesign); a **12-item RED→GREEN acceptance
+matrix** (trial→paid preserves data; campaign start/end resolution; paid+campaign coexistence; seat grants access; seat
+reassignment ≠ data transfer; org payer ≠ read member content; Owner/Admin ≠ auth bypass; deterministic precedence; quota not
+double-counted; revocation removes access not data; provider independence; restart durability); the **OPEN owner/business
+decisions** (kept OPEN, none invented); **P8-AF closure criteria**; and the **explicit production/payment/Phase-9-10 blocks**.
+
+**Open owner/business decisions preserved OPEN.** 7-day semantics (168h vs calendar); trial eligibility/repeat rules;
+post-trial retention duration; trial notice wording; campaign dates/eligibility/paid-user treatment; Owner/Admin scope;
+organization & seat pricing / counts / reassignment frequency; org data-visibility & instructor/supervisor permissions;
+enterprise billing; invoice/SSO requirements; **provider selection**; payment methods; pricing/currency/tax; refunds/
+proration/dunning — subordinate to P8-C §8 / P8-I3-C §9 / P8-I4-C §18; not duplicated; recording authorizes nothing.
+
+**Governance synchronization (minimum).** NEW `P8_AF_ACCESS_LICENSING_ORGANIZATION_FOUNDATION_CONTRACT.md` + this roadmap
+append + `CURRENT_PROJECT_STATE.md` + `ACTIVE_INCREMENT_CONTRACT.md` (contract-of-record = P8-AF-C, definition only).
+**`OWNER_DECISION_REGISTER.md` UNCHANGED** — a contract candidate carries no new accepted Owner decision; the P8-AF mandate is
+already registered (P8-I4-CLOSE entry) and the OPEN decisions remain governed by the P8-I3-C / P8-I4-C entries.
+
+**Boundary / status after this entry.** **P8-I4 = CLOSED / AUTHORITATIVE. P8-AF-C = FORMAL CONTRACT CANDIDATE (definition
+only; NOT started / NOT implemented / NOT authorized). P8-AF implementation = NOT STARTED. `P8-CLOSE` = NOT STARTED. Phase 8 =
+NOT CLOSED.** NO provider selected; NO access model activated; NO organization/membership/seat/role/campaign/access-grant/
+pricing/enterprise-billing runtime code or schema; NO trial/promotional/Owner-Admin/organization activation; NO automatic
+trial-data deletion. Phase 9 / Phase 10 — NOT AUTHORIZED; PSRR EXECUTION — NOT STARTED; public paid activation / production —
+BLOCKED / NOT AUTHORIZED. Candidate only until independent review → Owner acceptance → merge → post-merge verification → a
+separate Owner-authorized `P8-AF` implementation gate. Append-only; prior history not rewritten. This entry authorizes no push,
+PR, merge beyond this candidate, `P8-AF` implementation start, provider selection, access-model activation, `P8-CLOSE`, or
+deployment.

@@ -41,7 +41,32 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — NO active implementation contract; P8-I4 FORMALLY CLOSED / P8-AF REQUIRED NEXT):** **P8-I4 — Payment
+**Status (current — contract-of-record = P8-AF-C, definition only; NO active implementation contract):** **`P8-AF` — Access,
+Licensing & Organization Foundation is now DEFINED by a governance-only CONTRACT CANDIDATE (P8-AF-C)** (dedicated record
+`docs/governance/P8_AF_ACCESS_LICENSING_ORGANIZATION_FOUNDATION_CONTRACT.md`; base `61ff4a85989dfc8d9881764597d5d7dc415da213`,
+PR #428). It defines the smallest canonical architecture — a provider-neutral, source-neutral **Access-Grant model** + a single
+deterministic **effective-access resolution seam** — that **composes** P8-I1 (entitlement) / P8-I2 (sole quota authority) /
+P8-I3 (canonical lifecycle, incl. `trialing`) / P8-I4 (payment boundary) **without duplicating** any of them (D-FPC-MAP-06),
+preserving **Authentication ≠ Authorization ≠ Account identity ≠ Organization membership ≠ Seat assignment ≠ Data ownership ≠
+Commercial entitlement ≠ Subscription lifecycle ≠ Payment state ≠ Billing ownership** and **paying ≠ owning user data**.
+Contracted (definition only): a single resolver (no scattered access decisions); an access-grant traceable to its source; a
+**deterministic precedence rule** (no double quota / plan-identity corruption / accidental downgrade / hidden bypass /
+ambiguous revocation); a **7-day** trial reusing P8-I3 `trialing` (168h-vs-calendar OPEN; no runtime constant; trial→paid
+preserves data); a **global configurable promotional campaign** operable **without a source-code change**; **Owner/Admin
+non-billed access** as authorization→entitlement (no bypass; minimal role seam, no RBAC platform); canonical **organization /
+membership / named-seat** capacity-assignment-reassignment (**reassignment never transfers prior-member data**; **billing
+ownership ≠ data ownership**); enterprise/custom compatibility; safe **quota** + **lifecycle composition**; **audit/provenance +
+deterministic revocation** (removes access, never data); preserved **data ownership** (**automatic day-7 hard deletion NOT
+authorized**; retention a separate policy); the **smallest implementation increment**; a **12-item RED→GREEN acceptance
+matrix**; the **OPEN owner/business decisions**; **P8-AF closure criteria**; and **explicit production/payment/Phase-9-10
+blocks**. **There is NO active implementation contract** (P8-AF-C is definition only; a separate Owner-authorized `P8-AF`
+implementation gate is required, and it must select only the smallest necessary seams). **P8-I4 = CLOSED / AUTHORITATIVE;
+P8-AF-C = FORMAL CONTRACT CANDIDATE; P8-AF implementation = NOT STARTED; `P8-CLOSE` = NOT STARTED; Phase 8 = NOT CLOSED;** NO
+provider selected; NO access model activated; NO organization/membership/seat/role/campaign/access-grant/pricing/
+enterprise-billing runtime code or schema. Phase 9 / Phase 10 NOT AUTHORIZED; PSRR EXECUTION NOT STARTED; production / public
+paid activation BLOCKED / NOT AUTHORIZED.
+
+**Immediately prior (retained as history — P8-I4 FORMAL CLOSURE / P8-AF REQUIRED NEXT):** **P8-I4 — Payment
 Provider Boundary is FORMALLY CLOSED** as a governance-only CLOSURE CANDIDATE (increment closure only — authoritative if/when
 merged). The accepted P8-I4-I1 implementation (independent review **verdict A — ACCEPT**) is **MERGED (PR #427, merge
 `3a802fd84055f475feafcd55893da301af45c67d`; parents `fccd895` + `6f83e496…`; merged tree `191709299…`; exact diffstat 10

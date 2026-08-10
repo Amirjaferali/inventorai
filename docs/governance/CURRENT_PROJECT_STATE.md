@@ -856,6 +856,33 @@ AUTHORIZED / NOT STARTED.***
   independently reviewed and accepted).** **Phase 8 remains OPEN / NOT CLOSED; `P8-AF` / `P8-AF-C` / `P8-CLOSE` NOT STARTED;
   Phase 9 / Phase 10 NOT AUTHORIZED; PSRR EXECUTION NOT STARTED; public paid activation / production BLOCKED / NOT
   AUTHORIZED.**
+  **`P8-AF` is now DEFINED by a governance-only CONTRACT CANDIDATE (P8-AF-C)** (dedicated contract record:
+  `docs/governance/P8_AF_ACCESS_LICENSING_ORGANIZATION_FOUNDATION_CONTRACT.md`; base `61ff4a85989dfc8d9881764597d5d7dc415da213`,
+  PR #428 — which merged the P8-I4-CLOSE candidate `1da9d2d`). It defines the smallest canonical architecture — a
+  provider-neutral, source-neutral **Access-Grant model** + a single deterministic **effective-access resolution seam** — that
+  **composes** P8-I1 (entitlement) / P8-I2 (sole quota authority) / P8-I3 (canonical lifecycle, incl. `trialing`) / P8-I4
+  (payment boundary) **without duplicating** any of them (D-FPC-MAP-06). Contracted (definition only): a single resolver (no
+  scattering of access decisions), an access-grant with the invariant that **effective access is explainable/traceable to its
+  source**, a **deterministic precedence rule** (access-availability / feature-entitlement / quota-authority / expiry-revocation
+  / audit-provenance) preventing double quota / plan-identity corruption / accidental downgrade / hidden bypass / ambiguous
+  revocation; a **7-day** trial reusing P8-I3 `trialing` (168h-vs-calendar OPEN; no runtime constant; trial→paid preserves data);
+  a **global configurable promotional campaign** operable **without a source-code change** (deterministic activation/expiry;
+  provider-free; no auto data deletion at end; coexists with paid; UTC-epoch); **Owner/Admin non-billed access** as
+  authenticated-account → explicit authorization → entitlement grant (minimal role seam; no RBAC platform; no bypass);
+  canonical **organization** + **membership** + **named-seat** capacity/assignment/reassignment (seat = entitlement, not an
+  account/data-container; **reassignment never transfers prior-member data**; **billing ownership ≠ data ownership**);
+  enterprise/custom compatibility and the Individual / Org-Named-Seats / Enterprise family without three account systems; safe
+  **quota composition** and **lifecycle composition**; **audit/provenance + deterministic revocation** (removes access, never
+  data); preserved **data ownership** (anti-lock-in + OD-O + Phase-4 privacy; **automatic day-7 hard deletion NOT authorized**;
+  retention a separate policy; a recordable notice/consent capability without duplicating consent systems); the **smallest
+  implementation increment** (likely access-grant model + resolver + provenance; org/seat/campaign/role seams
+  contracted-but-deferred unless needed); a **12-item RED→GREEN acceptance matrix**; the **OPEN owner/business decisions** (kept
+  OPEN); **P8-AF closure criteria**; and **explicit production/payment/Phase-9-10 blocks**. **P8-AF-C is a CONTRACT CANDIDATE
+  ONLY — definition only; NOT started / NOT implemented / NOT authorized; NO provider selected; NO access model activated; NO
+  organization/membership/seat/role/campaign/access-grant/pricing/enterprise-billing runtime code or schema created.** A
+  separate Owner-authorized `P8-AF` implementation gate is required. **P8-I4 = CLOSED / AUTHORITATIVE; P8-AF-C = FORMAL CONTRACT
+  CANDIDATE; P8-AF implementation = NOT STARTED; `P8-CLOSE` = NOT STARTED; Phase 8 = NOT CLOSED;** Phase 9 / Phase 10 NOT
+  AUTHORIZED; PSRR EXECUTION NOT STARTED; public paid activation / production BLOCKED / NOT AUTHORIZED.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
