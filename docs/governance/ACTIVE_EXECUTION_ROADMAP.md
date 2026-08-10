@@ -5974,3 +5974,61 @@ safety check → merge → post-merge verification → formal P8-I2 closure/curr
 Phase 7 FORMALLY CLOSED; PSRR registration AUTHORITATIVE; PSRR EXECUTION NOT STARTED; Public Production BLOCKED until PSRR =
 GO/PASS + Deployment Gate + explicit Owner deployment authorization; P8-I3/I4, Phases 9/10 NOT AUTHORIZED. Append-only; prior
 history not rewritten. This entry authorizes no push, PR, merge beyond this candidate, provider selection, or deployment.
+
+---
+
+## P8-I2 — Commercial Usage Quotas / Limits — FORMAL CLOSURE / CURRENT-TRUTH SYNC (governance/documentation-only closure candidate; authoritative if/when independently reviewed, Owner-accepted, and merged)
+
+**Gate.** OWNER-AUTHORIZED GOVERNANCE CLOSURE GATE — **P8-I2 Formal Closure / Current-Truth Sync**. Governance/
+documentation-only. Verified live authoritative tip = `e3c65afcee1127d3dd75e4860ccb9480f7223f16` (PR #420) before any change.
+**DOCUMENTED NO-VALID-RED** — a formal closure recorded after an already-independently-tested, merged, post-merge-verified
+implementation; no new behavioral RED is created or expected.
+
+**Verdict.** **P8-I2 — Commercial Usage Quotas / Limits: FORMALLY ACCEPTED AND CLOSED** (increment closure only; authoritative
+if/when this governance candidate is merged). Dedicated closure record created:
+`docs/governance/P8_I2_COMMERCIAL_USAGE_QUOTAS_FORMAL_CLOSURE_RECORD.md`.
+
+**Lineage (verified read-only at the merged tip).** Accepted bounded contract P8-I2-C — merged PR #419 (`d3e950c`). Initial
+implementation candidate `1490548` (tree `e8d79d0`) received independent review **verdict B — ACCEPT WITH REQUIRED PRE-MERGE
+CORRECTIONS** (material fail-open `evaluate_quota` at exhaustion) → **INVALIDATED / EVIDENCE-ONLY / NOT MERGED**. Corrected
+accepted candidate `6f269acb2ebda129d220d0387693a659db48bd1a` (parent `d3e950c`; tree `65d1a660b61f975d5d9614452aeefc97f300212e`;
+R1 fail-open corrected, R2 docstring corrected, two adjacent cleanups) — independent re-review **verdict A**; Owner
+exact-candidate acceptance. Merge PR #420 `e3c65af` (parent 1 `d3e950c`; parent 2 `6f269ac`; merged tree
+`65d1a66` == accepted candidate tree → post-merge verified). Changed implementation paths (exactly 8): `engine/quota_service.py`
+(NEW) + `engine/plan_catalog.py` + `engine/account_store.py` + `tests/test_p8_i2_commercial_quota.py` (NEW) +
+`tests/test_p8_i1_plan_entitlement_foundation.py` (OD-N guard extension) + the three current-truth docs; diffstat 897/−8.
+
+**Post-merge evidence (reproduced at `e3c65af`).** Focused `tests/test_p8_i2_commercial_quota.py` → **32 passed / 0 failed**;
+full suite → **2123 passed / 3 skipped / 1 xfailed / 0 failed**.
+
+**Process-deviation record (truthful; not hidden).** **PR #420 was merged BEFORE the planned pre-merge safety check ran — a
+process deviation.** The pre-merge safety check did **not** occur; this record does **not** claim it did. Mitigated by an
+expanded post-merge identity verification proving exact merge parents (`d3e950c` + `6f269ac`), merged tree
+`65d1a66` == accepted-candidate tree, exactly the 8 changed paths, diffstat 897/−8, a clean diff-check, post-merge focused
+tests green (32), and post-merge full suite green (2123 / 0 failed). A **process** matter, not a code defect; history not
+rewritten.
+
+**Non-blocking observations preserved for G-MPR-01 (NOT fixed here).** (1) The recurring `iot_electronics` domain-pack
+skipped-warning (`domains/iot_electronics/domain.json` skipped because `schema_version=None`; expected `'1.0'`) — preserved
+for the G-MPR-01 Domain Pack Inventory & Activation Audit. (2) The prior P8-I1 closure-record ambiguity — P8-I1 was closed via
+current-truth/roadmap synchronization without a dedicated formal closure record (unlike P7-I*/S5-I*) — recorded for G-MPR-01
+disposition. (3) P8-I2 proves the architecture through a neutral internal proof meter only; no repository-authorized
+user-facing capability may yet be quota-restricted.
+
+**Mandatory next gate & P8-I3 status.** **NEXT GOVERNANCE GATE = `G-MPR-01` — Master Phase & Roadmap Completeness Review
+(read-only) — REGISTERED / MANDATORY / NOT YET EXECUTED.** Execution **STOPS before P8-I3**: **P8-I3 — Subscription Lifecycle
+is NOT STARTED** and remains pending until G-MPR-01 is completed and any resulting Owner-approved roadmap changes are resolved.
+**P8-I4 — Payment Provider Boundary: NOT STARTED. P8-CLOSE: NOT STARTED. Phase 8 remains OPEN.** G-MPR-01 is registered only
+here (not executed).
+
+**Governance synchronization.** `docs/governance/P8_I2_COMMERCIAL_USAGE_QUOTAS_FORMAL_CLOSURE_RECORD.md` (NEW) +
+`ACTIVE_INCREMENT_CONTRACT.md` + `CURRENT_PROJECT_STATE.md` current-truth synced to **P8-I2 FORMALLY CLOSED / G-MPR-01
+MANDATORY NEXT / P8-I3 NOT STARTED**. This roadmap append. **`OWNER_DECISION_REGISTER.md` UNCHANGED** (increment closure
+registers no new durable Owner decision — consistent with the P7-I*/increment-closure precedent).
+
+**Boundary / status after this entry.** **P8-I2 FORMALLY CLOSED (increment closure only).** Phase 8 NOT closed / NOT complete
+/ NOT billing-live / NOT paid-active. Public paid activation BLOCKED until applicable Phase-10 legal/readiness + PSRR = GO/PASS
++ governing Deployment Gate + explicit Owner deployment authorization. Payment provider NOT INTEGRATED. Production NOT
+AUTHORIZED. PSRR EXECUTION NOT STARTED. G-MPR-01 / P8-I3 / P8-I4 / P8-CLOSE / Phases 9/10 NOT EXECUTED / NOT AUTHORIZED here.
+Append-only; prior history not rewritten. This entry authorizes no push, PR, merge beyond this candidate, provider selection,
+G-MPR-01 execution, P8-I3 start, or deployment.

@@ -671,12 +671,28 @@ AUTHORIZED / NOT STARTED.***
   base 2091 + 32, no regression). Re-verified unchanged: security rate-limit ≠ quota; entitlement ≠ quota; atomic hard-cap;
   idempotency + same-key/different-amount conflict; anti-lock-in; OD-N static/behavioral/dynamic-import; revocation
   independence; API scope unchanged; no domain activation; no public surface / no paywall / no provider/lifecycle/UI.
-  **P8-I2 is an IMPLEMENTATION CANDIDATE ONLY — NOT closed; Phase 8 NOT complete / NOT billing-live / NOT paid-active**;
-  candidate-only until independent review → Owner acceptance → publication → PR → pre-merge check → merge → post-merge
-  verification → formal P8-I2 closure sync. Public paid activation stays blocked until Phase-10 legal/readiness + PSRR =
-  GO/PASS + Deployment Gate + explicit Owner deployment authorization. Owner/business decisions (plan names, prices, quota
-  values/cadence, trial/refund/grandfathering/enterprise/tax/overage/proration/provider policies) remain deferred/REQUIRED;
-  none blocks P8-I2.
+  **P8-I2 — Commercial Usage Quotas / Limits is now IMPLEMENTED / INDEPENDENTLY REVIEWED (initial B → corrected candidate
+  re-reviewed A) / OWNER-ACCEPTED / MERGED (PR #420, merge `e3c65afcee1127d3dd75e4860ccb9480f7223f16`; parent 1 `d3e950c`;
+  parent 2 = accepted corrected candidate `6f269acb2ebda129d220d0387693a659db48bd1a`; merged tree
+  `65d1a660b61f975d5d9614452aeefc97f300212e` == accepted candidate tree) / POST-MERGE VERIFIED / FORMALLY ACCEPTED AND
+  CLOSED** (increment closure only; dedicated record `docs/governance/P8_I2_COMMERCIAL_USAGE_QUOTAS_FORMAL_CLOSURE_RECORD.md`;
+  **DOCUMENTED NO-VALID-RED** — governance/documentation-only closure after an already-tested merged implementation; closure
+  authoritative if/when this governance candidate is merged). The invalidated prior candidate `1490548` (verdict B,
+  fail-open `evaluate_quota`) remains EVIDENCE-ONLY / NOT MERGED. Post-merge evidence reproduced at `e3c65af`: focused 32
+  passed; full suite 2123 passed / 3 skipped / 1 xfailed / 0 failed. **Process-deviation recorded truthfully:** PR #420 was
+  merged BEFORE the planned pre-merge safety check ran (the check did NOT occur; not claimed to have occurred), mitigated by
+  an expanded post-merge identity verification (exact parents; merged-tree == accepted-candidate-tree; exactly the changed
+  paths; diffstat 897/−8; clean diff-check; post-merge tests green). **P8-I2 closure is an increment closure only — it does
+  NOT close Phase 8, does NOT start P8-I3/P8-I4, does NOT enable public paid activation, and registers/executes no PSRR.**
+  **MANDATORY next governance gate: `G-MPR-01` — Master Phase & Roadmap Completeness Review (read-only) — REGISTERED / NOT
+  YET EXECUTED; execution STOPS before P8-I3. P8-I3 — Subscription Lifecycle: NOT STARTED. P8-I4 — Payment Provider Boundary:
+  NOT STARTED. P8-CLOSE: NOT STARTED. Phase 8 remains OPEN.** Preserved for G-MPR-01: the recurring `iot_electronics`
+  domain-pack skipped-warning (`schema_version=None`; NOT fixed here) and the prior P8-I1 closure-record ambiguity (P8-I1
+  closed via current-truth/roadmap sync without a dedicated formal closure record). Public paid activation stays blocked
+  until Phase-10 legal/readiness + PSRR = GO/PASS + Deployment Gate + explicit Owner deployment authorization.
+  Owner/business decisions (plan names, prices, quota values/cadence,
+  trial/refund/grandfathering/enterprise/tax/overage/proration/provider policies) remain deferred/REQUIRED; none blocks the
+  closed P8-I2.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
