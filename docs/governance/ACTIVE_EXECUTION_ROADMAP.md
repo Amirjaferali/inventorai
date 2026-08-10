@@ -6032,3 +6032,61 @@ registers no new durable Owner decision — consistent with the P7-I*/increment-
 AUTHORIZED. PSRR EXECUTION NOT STARTED. G-MPR-01 / P8-I3 / P8-I4 / P8-CLOSE / Phases 9/10 NOT EXECUTED / NOT AUTHORIZED here.
 Append-only; prior history not rewritten. This entry authorizes no push, PR, merge beyond this candidate, provider selection,
 G-MPR-01 execution, P8-I3 start, or deployment.
+
+---
+
+## G-MPR-01-D — Findings Disposition & Roadmap Registration — governance/documentation-only CANDIDATE — converts accepted G-MPR-01 findings into durable records; formally closes P8-I1 (late record); registers P8-I3 persistence rule + future gates; starts NOTHING
+
+**Gate.** OWNER-AUTHORIZED GOVERNANCE-ONLY gate **G-MPR-01-D**. Converts the accepted findings of the completed
+**G-MPR-01 — Master Phase & Roadmap Completeness Review** (read-only master audit; no repository change) into durable,
+authoritative governance records so they cannot be forgotten. **Governance documents ONLY** — no `engine/**`, `web/**`,
+`tests/**`, `domains/**`, `schemas/**`, `prompts/**`, `benchmark/**`, dependency, CI, migration, API, adapter, or deployment
+file touched. **DOCUMENTED NO-VALID-RED — GOVERNANCE-ONLY GATE.** Authoritative base verified read-only
+`d37caef8cfc0e4c5e53275e6e126ec8247a26219` (PR #421; tree `d1a8208bb3efe401d9a9797d8cafd1a64703c83c`); boot OK; clean.
+**Phase-8 order preserved:** P8-I1 → P8-I2 → G-MPR-01/disposition → P8-I3 → P8-I4 → P8-CLOSE (no Phase-9 work inserted before
+P8-I3; P8-I3 NOT started).
+
+**New governance artifacts.** (1) `docs/governance/P8_I1_PLAN_ENTITLEMENT_FOUNDATION_FORMAL_CLOSURE_RECORD.md` — NEW dedicated
+P8-I1 formal closure record (late registration; finding F1). (2)
+`docs/governance/G_MPR_01_D_FINDINGS_DISPOSITION_AND_ROADMAP_REGISTRATION.md` — NEW disposition/findings-registration record
+(D1–D10). Current-truth synced: `ACTIVE_INCREMENT_CONTRACT.md`, `CURRENT_PROJECT_STATE.md`, `OWNER_DECISION_REGISTER.md`
+(D-GMPR-01-D-D1…D10), and this roadmap append.
+
+**P8-I1 FORMAL CLOSURE (F1 — RESOLVED).** P8-I1 — Plan & Entitlement Foundation is **FORMALLY CLOSED** via the new dedicated
+record — **closure-record documentation gap only; NO implementation reopened.** Historical evidence cited (not fabricated):
+contract PR #417 `29f3aeb`; accepted impl `f55ce02` (tree `814d15d`); impl merge **PR #418 `2bf389d`** (merged tree
+`814d15d` == accepted impl tree → post-merge verified); RED (ImportError on base) → GREEN focused 17 / regressions 164 / full
+suite **2122 passed / 1 skipped / 1 xfailed / 0 failed**. The record explicitly distinguishes **IMPLEMENTATION COMPLETION
+(historical)** from **LATE FORMAL CLOSURE-RECORD REGISTRATION (this gate)**, and discloses honestly that a distinct
+independent-review verdict-letter artifact for the P8-I1 implementation is not separately locatable (asserted in current-truth;
+owner acceptance evidenced by the PR #418 merge) — mirroring the `OWNER_DECISION_REGISTER.md` PR #341 honesty precedent; no
+letter verdict fabricated. The closure standard (implemented + owner-accepted-via-merge + post-merge-verified) is satisfied.
+
+**Registered dispositions (D1–D10; future obligations only).** D1 P8-I1 closure (above). D2 **P8-I3 lifecycle persistence
+rule** — bounded, additive, backward-compatible; preserve account/entitlement/quota/existing durable data; idempotent
+evolution; existing DBs readable; NO destructive migration / NO implicit rewrite; rollback/recovery reasoning in the P8-I3
+contract (constraint only; no schema designed). D3 **pre-Phase-9 Core Domain-Neutrality Prerequisite Gate** — mandatory before
+the first non-electronics activation; inspects `engine/safety_signal.py` (`_MVP_DOMAIN`/electrical cues/label forcing),
+`engine/path_n_questions.py` (electronics-pinned/domain-blind), scattered web-admission literals, hard-coded domain tie-break;
+NOT before P8-I3; not implemented now. D4 **Cross-Domain / Multi-Disciplinary Engineering Integration** future gate — reference
+≠ activation ≠ cross-domain evaluation; ≥2 activated domains; re-homes the stale runtime "deferred to Phase 6" pointer (code
+comment correction deferred to a future authorized code gate). D5 **deferred-capability re-homing** — QTA + Output-Language
+implementation = ADD live homes; ACV/PDF/Email = MOVE off closed Phase-3/4/5 anchors; all NOT AUTHORIZED; UI≠Input≠Output
+Language≠QTA preserved. D6 **CAP index range** CAP-01…CAP-18. D7 **real-vendor vs CAP-15** (abstraction) vs async/webhook vs
+export-adapters — kept distinct. D8 **`iot_electronics`** legacy status registered + **guarded** (no deletion/migration/
+normalization/activation/repurposing without a separate gate; semantic disposition reserved to Owner). D9 **OD-Q `main`
+reconciliation** = mandatory future gate before production (not before P8-I3; no `main` merge/push/branch here). D10
+**governance-hygiene** scoped corrections (pinned tip → `d37caef`; CAP range; stale active-contract header) with history
+preserved.
+
+**Governance consistency (verified).** All status statements agree: P8-I1 FORMALLY CLOSED; P8-I2 CLOSED/AUTHORITATIVE
+(unchanged); G-MPR-01 read-only review COMPLETE, findings now REGISTERED; **P8-I3 ELIGIBLE FOR OWNER CONSIDERATION — NOT
+AUTHORIZED / NOT STARTED**; P8-I4 / P8-CLOSE NOT STARTED; Phase 8 OPEN; Phase 9 / Phase 10 NOT AUTHORIZED; PSRR EXECUTION NOT
+STARTED; production / public paid activation BLOCKED / NOT AUTHORIZED. No domain activation; `iot_electronics` untouched and
+guarded; no runtime/test/Domain-Pack/schema/prompt/benchmark file changed; no bundle/evidence deleted; P8-I1 evidence not
+fabricated.
+
+**Boundary / status after this entry.** This gate registers future obligations only. It starts no phase, activates no domain,
+selects no provider, reconciles no `main`, executes no PSRR, and weakens no production block. Append-only; prior history not
+rewritten. This entry authorizes no push, PR, merge beyond this candidate, P8-I3 start, provider selection, `main`
+reconciliation, or deployment.
