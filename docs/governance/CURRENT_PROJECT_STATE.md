@@ -937,6 +937,29 @@ AUTHORIZED / NOT STARTED.***
   merge → post-merge verification → the P8-AF formal closure gate → P8-CLOSE. **P8-AF-I1 = MERGED/POST-MERGE VERIFIED;
   P8-AF-I2 = CORRECTIVE IMPLEMENTATION CANDIDATE; P8-AF = NOT CLOSED; `P8-CLOSE` = NOT STARTED; Phase 8 = NOT CLOSED;** Phase 9
   / Phase 10 NOT AUTHORIZED; PSRR EXECUTION NOT STARTED; public paid activation / production BLOCKED / NOT AUTHORIZED.
+  **P8-AF-I2 is now MERGED / POST-MERGE VERIFIED (PR #431, merge `1132cfe8fde16a8c3a5784a2b1351a43620eda94`; independent review
+  A), and `P8-AF` — Access, Licensing & Organization Foundation is now FORMALLY CLOSED as a governance-only CLOSURE CANDIDATE**
+  (foundation-obligation closure only; authoritative if/when merged; dedicated record:
+  `docs/governance/P8_AF_ACCESS_LICENSING_ORGANIZATION_FOUNDATION_FORMAL_CLOSURE_RECORD.md`). **All four P8-AF-C §22 closure
+  criteria are satisfied:** (a) P8-AF-C reviewed/accepted/merged (PR #429)/post-merge verified; (b) the minimum increment(s)
+  implemented with genuine RED→GREEN via **P8-AF-I1 + P8-AF-I2**, proving the architecture can represent and resolve the models
+  safely without activating any (trial/campaign/persistence items N/A — evidence-triggered); (c) authority boundaries (§4) +
+  binding invariants (§6/§13/§16/§17/§18) demonstrated and unweakened (account/data isolation now enforced; OD-N unweakened);
+  (d) this closure record produced. **Delivered foundation (backend composition only; NO runtime activation):** canonical
+  source-neutral `AccessGrant`; one deterministic read-only `resolve_access(grants, *, subject, now)` seam; provenance; P8-I1
+  entitlement reuse; P8-I2 quota non-interference; P8-I3 lifecycle non-interference; P8-I4 provider independence;
+  authenticated-subject-scoped resolution + cross-account grant isolation; fail-closed competing-entitlement ambiguity;
+  deterministic injected-time; **`[effective_from, effective_until)` FROZEN** (from inclusive, until exclusive). **Deferred —
+  remain deferred (no activation):** organization identity / membership / named seats / seat persistence / campaign config /
+  global promotional-free-access runtime / Owner-Admin authorization seam / 7-day trial activation (automatic day-7 hard
+  deletion NOT AUTHORIZED) / enterprise-custom billing / SSO-domain onboarding / concurrent licensing — ALL NOT STARTED /
+  DEFERRED. **Future hardening/triggers preserved:** direct-`AccessGrant` constructor hardening BEFORE first real runtime
+  caller; durable duplicate grant-identity rule BEFORE first persistence; separately governed precedence BEFORE a second real
+  source; global/scope semantics separately governed; data ownership independent of billing/grant/access. **P8-AF-C = CLOSED /
+  AUTHORITATIVE; P8-AF-I1 = CLOSED / AUTHORITATIVE; P8-AF-I2 = CLOSED / AUTHORITATIVE; P8-AF = FORMALLY CLOSED / AUTHORITATIVE
+  (foundation-obligation closure only). Phase 8 = NOT CLOSED; next Phase-8 gate = the separate Phase-8 Remaining-Obligation /
+  Exit-Criteria Review and `P8-CLOSE` = NOT STARTED;** Phase 9 / Phase 10 NOT AUTHORIZED; PSRR EXECUTION NOT STARTED; public
+  paid activation / production BLOCKED / NOT AUTHORIZED.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation

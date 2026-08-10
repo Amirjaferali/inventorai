@@ -6711,3 +6711,66 @@ FROZEN AS FOUNDATION SEMANTICS. P8-AF-I1 = MERGED / POST-MERGE VERIFIED. Candida
 gate → P8-CLOSE. P8-CLOSE NOT STARTED; Phase 9 / Phase 10 NOT AUTHORIZED; PSRR EXECUTION NOT STARTED; public paid activation /
 production BLOCKED / NOT AUTHORIZED. Append-only; prior history not rewritten. This entry authorizes no push, PR, merge beyond
 this candidate, further P8-AF increment start, access-model activation, P8-AF closure, P8-CLOSE, or deployment.
+
+---
+
+## P8-AF — Access, Licensing & Organization Foundation — FORMAL CLOSURE — governance-only CLOSURE CANDIDATE — P8-AF FORMALLY CLOSED (foundation-obligation closure only); Phase 8 NOT CLOSED; no access model activated
+
+**Gate.** OWNER-AUTHORIZED **governance-only** P8-AF formal closure gate on the merged, post-merge-verified P8-AF-I2 (PR #431).
+Closes the registered `P8-AF` obligation (mandatory before `P8-CLOSE`). **DOCUMENTED NO-VALID-RED — GOVERNANCE-ONLY CLOSURE
+GATE** (no runtime/test file changed; the P8-AF-I1 + P8-AF-I2 RED→GREEN is cited, not re-run; expected runtime/code/test diff
+ZERO). Authoritative base verified read-only `1132cfe8fde16a8c3a5784a2b1351a43620eda94` (PR #431; parents
+`1ac9c603b14a172a737f3577791e9f23a46533bd` + `16a9d66228a179a4334eef2ba0e523e47f223545`; tree
+`0ecd7def6f0abc779bdfdbd496025ec10a8ef8d1`); boot OK; clean; not newer.
+
+**Closure basis.** The P8-AF Remaining-Obligation / Closure-Eligibility Review returned **verdict B** — one small corrective
+increment required (the contract-required uniform-subject / authenticated-account isolation in the canonical resolver, P8-AF-C
+§5.1). **P8-AF-I2 — Subject-Scoped Access Resolution** implemented and independently verified that invariant (review **A —
+ACCEPT**, which stated that upon Owner acceptance + merge + post-merge verification of that exact candidate, P8-AF is ELIGIBLE
+FOR FORMAL CLOSURE); those conditions are now satisfied (merge `1132cfe`; merged tree == accepted candidate tree; diffstat 6
+files / +402 / −29; roadmap numstat 79/0; `git diff --check` PASS; full suite 2251 passed / 3 skipped / 1 xfailed / 0 failed).
+
+**P8-AF-C §22 closure criteria — ALL SATISFIED (evidence-backed).** (a) P8-AF-C independently reviewed, Owner-accepted, merged
+(PR #429), post-merge verified — **PASS**. (b) necessary minimum increment(s) implemented with genuine RED→GREEN from the §20
+matrix, proving the architecture can represent and resolve the models safely WITHOUT activating any — **PASS via P8-AF-I1 +
+P8-AF-I2** (foundation composition + provenance + P8-I1/I2/I3/I4 non-interference + provider independence + no-auth-bypass +
+no-double-quota + fail-closed ambiguity + the multi-subject/cross-account isolation dimension added by I2; trial/campaign/
+persistence items remain N/A — evidence-triggered, representable without redesign). (c) authority boundaries (§4) + binding
+invariants (§6, §13, §16, §17, §18) demonstrated and unweakened — **PASS** (account/data isolation now enforced; OD-N guards
+unweakened). (d) dedicated P8-AF formal closure record produced — **PASS** (`docs/governance/
+P8_AF_ACCESS_LICENSING_ORGANIZATION_FOUNDATION_FORMAL_CLOSURE_RECORD.md`).
+
+**Delivered foundation (backend composition only; NO runtime activation).** Canonical source-neutral `AccessGrant`; one
+deterministic read-only `resolve_access(grants, *, subject, now)` seam; provenance/explainability; P8-I1 entitlement authority
+reuse; P8-I2 quota non-interference; P8-I3 lifecycle non-interference; P8-I4 provider independence; authenticated-subject-scoped
+resolution; cross-account grant isolation (foreign-subject grants excluded INERTLY); fail-closed competing-entitlement
+ambiguity; deterministic injected-time; **`[effective_from, effective_until)` FROZEN** (from inclusive, until exclusive). No
+persistence/schema; no runtime/web caller.
+
+**Deferred capabilities — REMAIN DEFERRED (no activation by this closure).** Organization identity / membership / named seats /
+seat persistence / campaign configuration / global promotional-free-access runtime / Owner-Admin authorization seam / 7-day
+trial activation (automatic day-7 hard deletion NOT AUTHORIZED) / enterprise-custom billing / SSO-domain onboarding /
+concurrent licensing — ALL **NOT STARTED / DEFERRED**. **Future hardening/trigger obligations preserved:** (1) direct
+`AccessGrant` constructor hardening BEFORE the first real runtime caller (an adversarial raw subject with custom `__eq__`
+could match — not a closure blocker, no caller exists); (2) durable duplicate grant-identity conflict rule BEFORE the first
+persistence increment; (3) a separately governed precedence rule BEFORE a second real access source (campaign/seat/Owner-Admin/
+enterprise) — precedence NOT invented now; (4) global/non-account scope semantics separately governed before any global grant
+(no wildcard subject exists); (5) data ownership remains independent (billing/grant/access ≠ permission to read another
+account's content).
+
+**Governance synchronization (minimum).** NEW `P8_AF_ACCESS_LICENSING_ORGANIZATION_FOUNDATION_FORMAL_CLOSURE_RECORD.md` + this
+roadmap append + `CURRENT_PROJECT_STATE.md` + `ACTIVE_INCREMENT_CONTRACT.md` current-truth sync. **`OWNER_DECISION_REGISTER.md`
+UNCHANGED** (foundation-obligation closure records no new accepted Owner decision — consistent with the P8-I1/I2/I3/I4 closure
+precedent; the P8-AF mandate + directional options remain under the P8-I4-CLOSE register entry; OPEN commercial/provider
+decisions remain under the P8-I3-C / P8-I4-C entries). No runtime/test/Domain-Pack/schema/prompt/benchmark/web/CI/
+provider-config file changed.
+
+**Boundary / status after this entry.** **P8-AF-C = CLOSED / AUTHORITATIVE; P8-AF-I1 = CLOSED / AUTHORITATIVE; P8-AF-I2 =
+CLOSED / AUTHORITATIVE; P8-AF = FORMALLY CLOSED / AUTHORITATIVE** (foundation-obligation closure only; authoritative if/when
+this governance candidate is merged). **Phase 8 = NOT CLOSED / NOT complete / NOT billing-live / NOT paid-active.** No access/
+licensing/organization/commercial model activated; no provider selected. **Next Phase-8 gate: the separate Phase-8
+Remaining-Obligation / Exit-Criteria Review and `P8-CLOSE` — NOT STARTED.** Phase 9 / Phase 10 — NOT AUTHORIZED; PSRR EXECUTION
+— NOT STARTED; public paid activation / production — BLOCKED / NOT AUTHORIZED. Candidate only until independent review → Owner
+acceptance → merge → post-merge verification. Append-only; prior history not rewritten. This entry authorizes no push, PR,
+merge beyond this candidate, access-model activation, `P8-CLOSE` / Phase-8-exit start, Phase 9/10, PSRR execution, or
+deployment.
