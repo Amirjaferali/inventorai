@@ -759,9 +759,21 @@ AUTHORIZED / NOT STARTED.***
   additive schema (no `ALTER TABLE`/back-fill/destructive rewrite); event-log source-of-truth; one-txn atomic rollback;
   durable idempotency/replay; equal-`effective_at` `event_id` tie-break; injected clock; read/projection never writes; `none`
   entitlement-neutral (no legacy downgrade); canonical `past_due` exits; unique cancellation mapping; P8-I2 sole quota authority
-  + no reset; anti-lockout; provider neutrality; OD-N. **P8-I3 is an IMPLEMENTATION CANDIDATE ONLY — NOT closed; Phase 8 NOT
-  complete / NOT billing-live / NOT paid-active**; no provider selected; candidate-only until independent implementation
-  re-review → Owner acceptance → PR → pre-merge check → merge → post-merge verification → a dedicated formal P8-I3 closure gate.
+  + no reset; anti-lockout; provider neutrality; OD-N. **P8-I3 — Subscription Lifecycle is now INDEPENDENTLY REVIEWED
+  (initial B → corrected candidate re-reviewed A) / OWNER-ACCEPTED / MERGED (PR #424, merge
+  `cef9a522dfae53493ceb1b47bd9faf409617e13e`; parent 1 `09743b9`; parent 2 = accepted corrected candidate
+  `8e600c0674bfeb7be96fd6875b68de1da02eae2f`; merged tree `3d1586e4076f3b2cbd3fe6e1ff1b7f9799085f7a` == accepted candidate
+  tree) / POST-MERGE VERIFIED (Pre-Merge Safety Check PASS; Post-Merge Verification PASS) / FORMALLY ACCEPTED AND CLOSED**
+  (increment closure only; dedicated record `docs/governance/P8_I3_SUBSCRIPTION_LIFECYCLE_FORMAL_CLOSURE_RECORD.md`;
+  **DOCUMENTED NO-VALID-RED — GOVERNANCE-ONLY FORMAL CLOSURE GATE**; closure authoritative if/when this governance candidate
+  is merged). Diffstat 8 files / 1416 insertions / 10 deletions; RC-I1…RC-I6 corrections merged; RED→GREEN focused 45 /
+  Phase-8 94 / full suite 2168 passed / 3 skipped / 1 xfailed / 0 failed. The invalidated prior implementation candidate
+  `4385a33` (verdict B) remains EVIDENCE-ONLY / NOT MERGED (absent from official ancestry; not rewritten as accepted history).
+  Preserved non-blocking observations: idempotency-key replay returns the prior outcome without payload-equality validation
+  (account-scoped; accepted under P8-I3; carried to P8-I4 for provider-event mapping); a future deterministic store-level
+  stale-expected-state test may add coverage (do not reopen P8-I3). **P8-I3 closure is an increment closure only — it does
+  NOT close Phase 8, does NOT start P8-I4, selects NO payment provider, and enables NO public paid activation.** **NEXT
+  PHASE-8 GATE: `P8-I4` — Payment Provider Boundary — NOT STARTED (registered as next; no provider selected).**
   Phase 8 OPEN; P8-I4 / P8-CLOSE NOT STARTED; Phase 9 / Phase 10 NOT AUTHORIZED; PSRR EXECUTION NOT STARTED; public paid
   activation / production BLOCKED / NOT AUTHORIZED.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets

@@ -6216,3 +6216,53 @@ publication → PR → pre-merge safety check → merge → post-merge verificat
 provider selected. P8-I4 / P8-CLOSE NOT STARTED; Phase 9 / Phase 10 NOT AUTHORIZED; PSRR EXECUTION NOT STARTED; public
 production BLOCKED until PSRR = GO/PASS + Deployment Gate + explicit Owner deployment authorization. Append-only; prior history
 not rewritten. This entry authorizes no push, PR, merge beyond this candidate, P8-I4 start, provider selection, or deployment.
+
+---
+
+## P8-I3 — Subscription Lifecycle — FORMAL CLOSURE / CURRENT-TRUTH SYNC (governance/documentation-only closure candidate; authoritative if/when independently reviewed, Owner-accepted, and merged)
+
+**Gate.** OWNER-AUTHORIZED GOVERNANCE CLOSURE GATE — **P8-I3 Formal Closure / Current-Truth Synchronization**. Governance/
+documentation-only. Verified live authoritative tip = `cef9a522dfae53493ceb1b47bd9faf409617e13e` (PR #424) before any change.
+**DOCUMENTED NO-VALID-RED — GOVERNANCE-ONLY FORMAL CLOSURE GATE** (a formal closure recorded after an already-independently-
+tested, merged, post-merge-verified implementation; no new behavioral RED is created).
+
+**Verdict.** **P8-I3 — Subscription Lifecycle: FORMALLY ACCEPTED AND CLOSED** (increment closure only; authoritative if/when
+this governance candidate is merged). Dedicated closure record created:
+`docs/governance/P8_I3_SUBSCRIPTION_LIFECYCLE_FORMAL_CLOSURE_RECORD.md`.
+
+**Lineage (verified read-only at the merged tip).** Accepted corrected contract P8-I3-C — merged PR #423 (`09743b9`; prior
+verdict-B contract `ead186d` evidence-only). Initial implementation candidate `4385a33` received independent review **verdict
+B** (six defects) → **INVALIDATED / EVIDENCE-ONLY / NOT MERGED** (absent from official ancestry; not rewritten as accepted
+history). Corrected accepted candidate `8e600c0674bfeb7be96fd6875b68de1da02eae2f` (parent `09743b9`; tree `3d1586e…`; RC-I1…
+RC-I6 corrected) — independent re-review **verdict A**; Owner exact-candidate acceptance. Merge **PR #424 `cef9a52`** (parents
+`09743b9` + `8e600c0`; merged tree `3d1586e4076f3b2cbd3fe6e1ff1b7f9799085f7a` == accepted candidate tree → post-merge
+verified; **Pre-Merge Safety Check PASS; Post-Merge Verification PASS**). Changed paths (exactly 8): the lifecycle seam +
+additive account-store tables/methods + the P8-I3 test module + the two OD-N guard extensions + the three current-truth docs;
+diffstat **8 files / 1416 insertions / 10 deletions**; `git diff --check` clean.
+
+**Evidence (cited, not re-run).** Behavioral RED (the six reviewed defects reproduced) → GREEN: focused **45**; Phase-8
+regressions **94**; full suite **2168 passed / 3 skipped / 1 xfailed / 0 failed**. Two-thread races deterministic across
+repeated runs; six correction mutation probes each turned a targeted test RED and were fully restored (byte-identical).
+
+**Non-blocking observations preserved (NOT reopening P8-I3).** (1) Idempotency-key replay returns the prior outcome without
+payload-equality validation — account-scoped, no conflicting replay write, accepted under P8-I3, **carried to P8-I4** for
+provider-event-mapping review. (2) A future deterministic store-level stale-expected-state test may add coverage; the guard
+itself is verified correct — do not reopen P8-I3. (3) Prior invalid candidate `4385a33` remains EVIDENCE-ONLY. (4) The
+`iot_electronics` skipped-pack warning is unchanged (preserved for G-MPR-01).
+
+**Mandatory next gate & P8-I4 status.** **NEXT PHASE-8 GATE = `P8-I4` — Payment Provider Boundary — NOT STARTED** (registered
+as next; **no provider selected**; provider selection is a separate justified gate). P8-CLOSE remains after the increments.
+**P8-I4 is NOT started or authorized to begin by this closure.**
+
+**Governance synchronization.** `docs/governance/P8_I3_SUBSCRIPTION_LIFECYCLE_FORMAL_CLOSURE_RECORD.md` (NEW) +
+`ACTIVE_INCREMENT_CONTRACT.md` + `CURRENT_PROJECT_STATE.md` current-truth synced to **P8-I3 FORMALLY CLOSED / P8-I4 NEXT
+(NOT STARTED)**. This roadmap append. **`OWNER_DECISION_REGISTER.md` UNCHANGED** (increment closure registers no new durable
+Owner decision — consistent with the P8-I1 / P8-I2 increment-closure precedent; the P8-I3-C still-open Owner/business
+decisions remain recorded under the earlier P8-I3-C register entry).
+
+**Boundary / status after this entry.** **P8-I3 FORMALLY CLOSED (increment closure only).** Phase 8 NOT closed / NOT complete
+/ NOT billing-live / NOT paid-active. No payment provider selected; no checkout/webhook/pricing/refund/tax decision. Public
+paid activation BLOCKED until applicable Phase-10 legal/readiness + PSRR = GO/PASS + governing Deployment Gate + explicit
+Owner deployment authorization. Payment provider NOT INTEGRATED. Production NOT AUTHORIZED. PSRR EXECUTION NOT STARTED. P8-I4 /
+P8-CLOSE / Phases 9/10 NOT STARTED / NOT AUTHORIZED here. Append-only; prior history not rewritten. This entry authorizes no
+push, PR, merge beyond this candidate, P8-I4 start, provider selection, or deployment.

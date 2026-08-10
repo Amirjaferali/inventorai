@@ -41,7 +41,22 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — P8-I3 IMPLEMENTATION CANDIDATE, CORRECTED):** The accepted **corrected P8-I3-C** contract is **MERGED
+**Status (current — P8-I3 FORMALLY CLOSED):** **There is NO active implementation increment.** **P8-I3 — Subscription
+Lifecycle is FORMALLY ACCEPTED AND CLOSED** (increment closure only): corrected implementation candidate
+`8e600c0674bfeb7be96fd6875b68de1da02eae2f` (initial verdict B → corrected re-reviewed **A**) **MERGED (PR #424, merge
+`cef9a522dfae53493ceb1b47bd9faf409617e13e`; parents `09743b9` + `8e600c0`; merged tree `3d1586e…` == accepted candidate tree)
+/ POST-MERGE VERIFIED (Pre-Merge Safety Check PASS; Post-Merge Verification PASS)**; dedicated record
+`docs/governance/P8_I3_SUBSCRIPTION_LIFECYCLE_FORMAL_CLOSURE_RECORD.md` (**DOCUMENTED NO-VALID-RED — GOVERNANCE-ONLY FORMAL
+CLOSURE GATE**). RED→GREEN focused 45 / Phase-8 94 / full suite 2168 passed / 3 skipped / 1 xfailed / 0 failed; diffstat 8
+files / 1416 / −10. The invalidated prior implementation candidate `4385a33` (verdict B) remains EVIDENCE-ONLY / NOT MERGED.
+Non-blocking observations preserved (idempotency-payload replay carried to P8-I4; optional future store-level stale test — do
+not reopen P8-I3). **P8-I3 closure is an increment closure only — it does NOT close Phase 8, does NOT start P8-I4, selects NO
+payment provider, and enables NO public paid activation.** **NEXT PHASE-8 GATE: `P8-I4` — Payment Provider Boundary — NOT
+STARTED / NOT AUTHORIZED to begin by this closure (no provider selected).** Phase 8 OPEN; P8-CLOSE NOT STARTED; Phase 9 /
+Phase 10 NOT AUTHORIZED; PSRR EXECUTION NOT STARTED; production / public paid activation BLOCKED.
+
+**Immediately prior (retained as history):** the P8-I3 IMPLEMENTATION CANDIDATE (CORRECTED). The accepted **corrected
+P8-I3-C** contract is **MERGED
 (PR #423, merge `09743b91b764e5ac2956401d7a88c91df48d3d8b`) / POST-MERGE VERIFIED**, and **P8-I3 — Subscription Lifecycle is
 now IMPLEMENTED as a governance-only IMPLEMENTATION CANDIDATE (RED → GREEN; verdict-B CORRECTED — supersedes the invalidated
 prior implementation candidate `4385a33`, EVIDENCE-ONLY / NOT MERGED)**: `engine/subscription_lifecycle_service.py` (NEW seam)
