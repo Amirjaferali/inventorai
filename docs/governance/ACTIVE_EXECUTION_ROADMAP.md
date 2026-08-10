@@ -6774,3 +6774,68 @@ Remaining-Obligation / Exit-Criteria Review and `P8-CLOSE` — NOT STARTED.** Ph
 acceptance → merge → post-merge verification. Append-only; prior history not rewritten. This entry authorizes no push, PR,
 merge beyond this candidate, access-model activation, `P8-CLOSE` / Phase-8-exit start, Phase 9/10, PSRR execution, or
 deployment.
+
+---
+
+## P8-CLOSE — Phase 8 (Subscription, Billing and Entitlements) — FORMAL CLOSURE — governance-only CLOSURE CANDIDATE — Phase 8 FORMALLY CLOSED as a technical-foundation phase (authoritative if/when merged); NO commercial launch; NO downstream phase authorized
+
+**Gate.** OWNER-AUTHORIZED **governance-only** P8-CLOSE gate — the Phase-8 exit gate after the increments, on the merged,
+post-merge-verified P8-AF closure (PR #432). **DOCUMENTED NO-VALID-RED — GOVERNANCE-ONLY FORMAL CLOSURE GATE** (no runtime
+behavior introduced; increment RED→GREEN cited, not re-run; expected engine/tests/web/templates/domains/payment-adapter diff
+ZERO). Authoritative base verified read-only `e7f7bc7e1f17550dc83d658976a07462de434e17` (PR #432; parents
+`1132cfe8fde16a8c3a5784a2b1351a43620eda94` + `f3f509a63491975acefb5c2297b4eb428c8d39d3`; tree
+`87471f08f185e646f1ce490001849625a2419e83`); boot OK; clean; not newer.
+
+**Closure basis.** The strict read-only Phase-8 Remaining-Obligation / Exit-Criteria Review returned **A — PHASE 8 ELIGIBLE
+FOR P8-CLOSE; NO ADDITIONAL IMPLEMENTATION REQUIRED**, re-verified here against accepted governance (P8-C §6/§7/§8/§11).
+
+**Phase-8 obligation closure matrix (evidence-cited).** **P8-C** CLOSED/AUTHORITATIVE; **P8-I1** CLOSED/AUTHORITATIVE
+(`P8_I1_…FORMAL_CLOSURE_RECORD.md`); **P8-I2** CLOSED/AUTHORITATIVE (`P8_I2_…`; PR #421); **P8-I3** CLOSED/AUTHORITATIVE
+(`P8_I3_…`; PR #424 `cef9a52`); **P8-I4** CLOSED/AUTHORITATIVE (`P8_I4_…`; P8-I4-I1 PR #427 `3a802fd`; NO provider selected);
+**P8-AF** CLOSED/AUTHORITATIVE (`P8_AF_…FORMAL_CLOSURE_RECORD.md`; P8-AF-I1 PR #430 + P8-AF-I2 PR #431 + closure PR #432
+`e7f7bc7`). No active Phase-8 increment remains.
+
+**Phase-8 exit-criteria matrix (re-verified — all mandatory PASS).** Increments implemented/reviewed/merged/verified — PASS;
+mandatory P8-AF closed before P8-CLOSE — PASS; fail-closed entitlement/quota — PASS; plan-neutrality (OD-N engine-wide guard) —
+PASS; data-preservation on decrease — PASS; quota-exceeded fails closed without altering technical truth — PASS; commercial
+audit distinct from `access_audit` — PASS; API entitlement in addition to Phase-7 scope — PASS; no regression (full suite 2251
+passed / 3 skipped / 1 xfailed / 0 failed) — PASS; no provider lock-in — PASS; no Phase-10/PSRR/deployment overclaim, no public
+paid activation — PASS. **N/A (contract-designed):** real provider integration = OWNER-SELECTION-TRIGGERED; verified webhook
+(P8-I4-I2) + reconciliation (P8-I4-I3) = EVIDENCE-TRIGGERED / DEFERRED; public paid activation = OUTSIDE Phase 8.
+
+**Delivered foundation (FOUNDATION ONLY; NO commercial launch).** Commercial plan-identity/entitlement (P8-I1) + quota/usage
+(P8-I2, sole quota authority) + subscription-lifecycle mechanics with data preservation (P8-I3) + provider-neutral payment
+boundary (P8-I4, no provider selected) + access-grant/access-resolution + subject-scoped composition + fail-closed ambiguity
+(P8-AF); commercial audit separation; entitlement/quota fail-closed; no degradation of deterministic technical truth across
+plan tiers (OD-N).
+
+**Preserved OPEN / DEFERRED (none blocked closure).** Owner business decisions (plan names / pricing / currency / cadence /
+trial policy / packaging / enterprise terms / grandfathering / refunds / tax / grace / over-limit-downgrade / provider
+selection / proration / cancellation timing) — REMAIN OPEN, deferred to commercial activation / provider selection / launch;
+NONE blocked Phase-8 technical-foundation closure. Real provider — NOT selected / NOT integrated (separate Owner
+provider-selection gate). P8-AF future activation guards (constructor hardening before first runtime caller; durable
+duplicate-grant-id before first persistence; separately governed precedence before a second real source; global/scope
+semantics before global grant; billing/access ≠ content ownership) — PRESERVED as future triggers, NOT completed work. Trial /
+global promo / Owner-Admin / organization-named-seat / enterprise — architecture-ready, runtime NOT STARTED / DEFERRED
+(automatic day-7 hard deletion NOT AUTHORIZED; 168h-vs-calendar OPEN). Deferred capability lanes (QTA / ACV / PDF / Email /
+WS17 / STG / other) — OUTSIDE Phase-8 closure, not activated.
+
+**PSRR / main / downstream boundaries.** PSRR — REGISTERED / MANDATORY BEFORE PUBLIC PRODUCTION / NOT EXECUTED (Phase-8 closure
+is NOT PSRR GO/PASS). `main` — stale/unreconciled/non-authoritative; OD-Q reconciliation a separate future pre-production/
+release gate, NOT a closure blocker, NOT performed here. **Phase-8 closure DOES NOT authorize Phase 9, Phase 10, real provider
+integration, commercial launch, pricing/trial/organization/seat/campaign/Owner-Admin activation, PSRR execution, main
+reconciliation, deployment, production, or public paid activation.**
+
+**Governance synchronization (minimum).** NEW `PHASE_8_FORMAL_CLOSURE_RECORD.md` + this roadmap append +
+`CURRENT_PROJECT_STATE.md` + `ACTIVE_INCREMENT_CONTRACT.md` current-truth sync. **`OWNER_DECISION_REGISTER.md` UNCHANGED**
+(Phase-8 formal closure records no new accepted Owner decision — consistent with the Phase-7 and P8-I1/I2/I3/I4/AF closure
+precedent). No runtime/test/Domain-Pack/schema/prompt/benchmark/web/CI/provider-config file changed (ZERO runtime/test diff).
+
+**Boundary / status after this entry.** **Phase 8 = FORMAL CLOSURE CANDIDATE** (authoritative only if/when this exact
+candidate is merged and post-merge verified; then **Phase 8 = FORMALLY CLOSED / AUTHORITATIVE** as a technical-foundation
+phase, with P8-C / P8-I1 / P8-I2 / P8-I3 / P8-I4 / P8-AF all CLOSED / AUTHORITATIVE and no active increment remaining). NOT
+billing-live; NOT paid-active; NO provider selected; NO commercial model activated. **Phase 9 / Phase 10 — NOT AUTHORIZED;
+PSRR — NOT EXECUTED; deployment / production — NOT AUTHORIZED; public paid activation — BLOCKED / NOT AUTHORIZED.** Candidate
+only until independent review → Owner acceptance → merge → post-merge verification. Append-only; prior history not rewritten.
+This entry authorizes no push, PR, merge beyond this candidate, Phase-9/10 start, provider selection, commercial activation,
+PSRR execution, main reconciliation, or deployment.

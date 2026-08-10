@@ -960,6 +960,35 @@ AUTHORIZED / NOT STARTED.***
   (foundation-obligation closure only). Phase 8 = NOT CLOSED; next Phase-8 gate = the separate Phase-8 Remaining-Obligation /
   Exit-Criteria Review and `P8-CLOSE` = NOT STARTED;** Phase 9 / Phase 10 NOT AUTHORIZED; PSRR EXECUTION NOT STARTED; public
   paid activation / production BLOCKED / NOT AUTHORIZED.
+  **The Phase-8 Remaining-Obligation / Exit-Criteria Review returned A — ELIGIBLE FOR P8-CLOSE, and `Phase 8` — Subscription,
+  Billing and Entitlements is now FORMALLY CLOSED as a governance-only CLOSURE CANDIDATE (P8-CLOSE)** — a **technical-foundation
+  phase** closure (authoritative if/when merged; dedicated record: `docs/governance/PHASE_8_FORMAL_CLOSURE_RECORD.md`; base
+  `e7f7bc7e1f17550dc83d658976a07462de434e17`, PR #432 — which merged the P8-AF closure `f3f509a`). **Obligation closure matrix
+  (all CLOSED / AUTHORITATIVE, evidence-cited):** P8-C; P8-I1; P8-I2 (PR #421); P8-I3 (PR #424 `cef9a52`); P8-I4 (P8-I4-I1 PR
+  #427 `3a802fd`; NO provider selected); P8-AF (PR #430 + #431 + closure PR #432 `e7f7bc7`). **All mandatory Phase-8 exit
+  criteria PASS** (increments merged/verified; fail-closed entitlement+quota; plan-neutrality via OD-N; data-preservation on
+  decrease; commercial audit distinct from `access_audit`; no regression — full suite 2251 passed / 3 skipped / 1 xfailed / 0
+  failed; no provider lock-in; no PSRR/deployment/paid-activation overclaim); **N/A (contract-designed):** real provider =
+  OWNER-SELECTION-TRIGGERED, verified webhook (P8-I4-I2) + reconciliation (P8-I4-I3) = EVIDENCE-TRIGGERED / DEFERRED, public
+  paid activation = OUTSIDE Phase 8. **Delivered FOUNDATION ONLY (no commercial launch):** plan-identity/entitlement +
+  quota/usage (sole quota authority) + subscription-lifecycle mechanics with data preservation + provider-neutral payment
+  boundary (no provider) + access-grant/resolution + subject-scoped composition + fail-closed ambiguity; commercial audit
+  separation; no degradation of deterministic technical truth across plan tiers. **Preserved OPEN / DEFERRED (none blocked
+  closure):** all Owner business decisions (plan names / pricing / currency / cadence / trial policy / packaging / enterprise /
+  grandfathering / refunds / tax / grace / over-limit-downgrade / provider selection / proration / cancellation timing) — remain
+  OPEN, deferred to activation/provider-selection/launch; P8-AF future activation guards (constructor hardening before first
+  runtime caller; durable duplicate-grant-id before first persistence; separately governed precedence before a second real
+  source; global/scope semantics before a global grant; billing/access ≠ content ownership) — future triggers, NOT completed;
+  trial / global promo / Owner-Admin / organization-named-seat / enterprise — architecture-ready, runtime NOT STARTED /
+  DEFERRED (automatic day-7 hard deletion NOT AUTHORIZED; 168h-vs-calendar OPEN); deferred capability lanes (QTA/ACV/PDF/Email/
+  WS17/STG) — OUTSIDE Phase 8. **PSRR = REGISTERED / MANDATORY BEFORE PUBLIC PRODUCTION / NOT EXECUTED** (Phase-8 closure ≠
+  PSRR GO/PASS); `main` = stale/unreconciled, OD-Q reconciliation a separate pre-production gate (NOT a closure blocker, NOT
+  performed). **Phase-8 closure authorizes NOTHING downstream** (no Phase 9/10, no real provider, no commercial launch, no
+  pricing/trial/organization/seat/campaign/Owner-Admin activation, no PSRR execution, no main reconciliation, no deployment/
+  production/public paid activation). **P8-C / P8-I1 / P8-I2 / P8-I3 / P8-I4 / P8-AF = CLOSED / AUTHORITATIVE; Phase 8 = FORMAL
+  CLOSURE CANDIDATE → FORMALLY CLOSED / AUTHORITATIVE if/when merged (technical-foundation phase; no active increment
+  remains);** Phase 9 / Phase 10 NOT AUTHORIZED; PSRR EXECUTION NOT STARTED; public paid activation / production BLOCKED / NOT
+  AUTHORIZED.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
