@@ -7092,3 +7092,73 @@ prerequisites and the Domain Registry hardening (D-P6-14 / §5-I1, already CLOSE
 deployment / production — NOT AUTHORIZED. The rejected candidate `6a3e25d` remains historical rejected evidence only, unmodified.
 Append-only; prior history not rewritten. This entry authorizes no push, PR, merge beyond this candidate, domain activation, D8
 decision, Phase-9 start, deterministic-calculation implementation, Output-Language implementation, or deployment.
+
+---
+
+## P9-E1 / P9-PREREQ-A — Path-N Production Caller Domain Propagation — governance-only IMPLEMENTATION CONTRACT CANDIDATE — Phase 9 begins at this bounded gate only; NO domain activated
+
+**Gate.** OWNER-AUTHORIZED **governance-only** creation of the P9-E1 implementation contract candidate — the mandatory
+D3-registered prerequisite **P9-PREREQ-A (Path-N production caller propagation)**, now carried by the authoritative P9-QS §16.
+The Owner authorization begins Phase 9 **only at this bounded contract gate**. Authoritative base
+`f08dd2e0319b2777c47dad9cdb49c05d106bc7a0` (live tip re-verified; two-parent merge PR #437 of `99c0855` + the corrected P9-QS
+candidate `2f435c68`; **P9-QS now AUTHORITATIVE**; boot OK; built in a disposable worktree — primary working tree + historical
+bundles untouched; not newer). **CONTRACT CANDIDATE ONLY** — authoritative only if independently reviewed, Owner-accepted,
+merged, and post-merge verified. **No runtime/test change and no domain activation is performed or authorized here** (expected
+runtime/test/schema/prompt/benchmark/web diff ZERO — governance docs only).
+
+**Live evidence (independently verified at `f08dd2e`; the prerequisite is STILL REQUIRED).** The Path-N selection seam is already
+domain-aware (`engine/path_n_questions.py`: `get_served_question(..., domain=None)` returns `None` for a non-electronics domain,
+line 92–93; `get_path_n_question(..., domain=None)` forwards it, line 128). **The production callers drop the domain:**
+`engine/progression_loop.py` `get_question` calls `get_path_n_question(gap_type, iterations_open)` at **line 232**, and
+`get_display_question` calls it at **line 269** and **lines 273–274**, none threading the in-scope `domain` parameter — so the
+Electronics-owned Path-N artifact is served regardless of session domain (backward-compatible `None` default). Canonical domain
+identity IS available at every caller: `web/app.py:1566` and `engine/progression_loop.py:904/944/981` pass `state.domain` into
+`get_question`/`get_display_question`; `scripts/run_cli.py:79` likewise. The three sites above are the **complete** set of
+production callers of the seam (no direct `get_served_question` production caller exists outside the wrapper), so threading
+`domain` there closes the gap fully; **no hidden domain-blind path remains.** Behavioral proof executed at `f08dd2e`:
+`get_question("mechanical", "MECHANISM_COMPLETENESS", 0, path="N")` returns the **Electronics artifact text** (domain-blind) while
+the domain-aware seam already yields `None` for `"mechanical"`; `support_state("mechanical") == "recognized_not_activated"`,
+`support_state("electronics_electrical") == "activated"`.
+
+**Bounded implementation scope (for the LATER, separately-run implementation gate — NOT executed here).** Thread the canonical
+`domain` (already the first parameter of both callers) into exactly three `get_path_n_question(...)` call sites in
+`engine/progression_loop.py` (line 232; line 269; lines 273–274) as `domain=domain`. No signature change; no change to the seam,
+artifact, registry, activation policy, web routes, or CLI. The Electronics/`None` stall-reframe path is preserved exactly and
+correctly suppressed (falls through to the generic variant, no `_STALL_REFRAME`) for a recognized-not-activated foreign domain.
+
+**RED test design (specified; NOT implemented here).** Behavioral tests (proposed
+`tests/test_p9e1_path_n_caller_domain_propagation.py`) using neutral fixture domain `"mechanical"` and gap `MECHANISM_COMPLETENESS`
+(present in both artifact and generic `QUESTIONS`; texts differ): **RED-1** — `get_question("mechanical", …, path="N")` must equal
+the generic variant, not the Electronics artifact text (RED on baseline → GREEN after fix); **RED-2** — `get_display_question`
+foreign-domain path must not return the Electronics text or `_STALL_REFRAME` (RED on baseline → GREEN); **GREEN-guards** —
+Electronics/`None` artifact text and stall reframe unchanged. Load-bearing mutation probe per corrected site at the implementation
+gate.
+
+**Acceptance criteria (implementation gate).** All 15 Owner-required criteria plus one repository-evidenced addition (stall-reframe
+preserved for Electronics/`None` and suppressed for a foreign recognized domain, proven by test) — see the dedicated contract
+record `docs/governance/P9_E1_PATH_N_CALLER_DOMAIN_PROPAGATION_CONTRACT.md` §5. Key invariants: Electronics behavior unchanged;
+a recognized-not-activated domain reaches the domain-aware path **without activation**; unsupported-domain semantics honest; **no
+new domain activated**; no new shared-core domain branching; no duplicate router; §5-I2 activation policy / D8 / D4 / P9-E2
+untouched; focused RED→GREEN; full regression green; P9-QS quality rules preserved.
+
+**Explicit non-goals / gate separation.** P9-E1 MUST NOT: redesign Path-N; add a second router; add/modify Domain Registry logic;
+activate or select any domain (no Mechanical, no IoT, no "first future domain"); modify §5-I2 activation policy; add domain-specific
+`if/elif` to shared core; add Mechanical/IoT content; modify Domain Packs unless live evidence proves absolutely necessary;
+broaden into **P9-E2 / P9-PREREQ-B** (`sorted(activated_tied)[0]` tie precedence — separate future gate; live-verified separable);
+broaden into **D4** (multi-domain composition — later gate); touch **D8** (`domains/iot_electronics/**` — Owner-reserved);
+implement deterministic calculations, CAP-12, CAP-13, WS-PFV, STG, or Output-Language; start Phase 10; execute PSRR; or touch
+deployment/production. If any becomes inseparable during implementation, STOP and report the coupling.
+
+**Governance synchronization (minimum).** NEW `P9_E1_PATH_N_CALLER_DOMAIN_PROPAGATION_CONTRACT.md` + this roadmap append +
+`CURRENT_PROJECT_STATE.md` + `ACTIVE_INCREMENT_CONTRACT.md` current-truth sync. **`OWNER_DECISION_REGISTER.md` UNCHANGED** (P9-E1 is
+a governance-registered engineering prerequisite, not a new accepted Owner product-policy decision — consistent with
+D3/P8-AF/P8-CLOSE/P9-QS candidate precedent). No runtime/test/Domain-Pack/schema/prompt/benchmark/web/CI file changed (ZERO
+runtime/test diff).
+
+**Boundary / status after this entry.** **P9-E1 = IMPLEMENTATION CONTRACT CANDIDATE ONLY** — authoritative only if/when merged and
+post-merge verified; the P9-E1 runtime implementation + tests are a **separate later gate, NOT authorized here**. **Phase 9 has
+begun ONLY through this bounded P9-E1 contract gate.** **NO new domain activated** (`activated_domains() == ['electronics_electrical']`);
+**no domain selected**; **P9-E2 NOT implemented**; **D4 NOT executed**; **D8 Owner-reserved**; deterministic calculations / CAP-12 /
+CAP-13 / WS-PFV / STG / Output-Language NOT implemented; Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED; deployment / production =
+NOT AUTHORIZED. Append-only; prior history not rewritten. This entry authorizes no push, PR, merge beyond this candidate, domain
+activation/selection, D8 decision, P9-E2/D4 execution, or deployment.
