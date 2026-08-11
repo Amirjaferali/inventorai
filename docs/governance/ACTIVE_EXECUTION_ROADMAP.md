@@ -7220,3 +7220,66 @@ NO domain selected; P9-E2 NOT implemented; D4 NOT executed; D8 Owner-reserved;**
 CAP-13 / WS-PFV / STG / Output-Language NOT implemented; Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED; deployment / production =
 NOT AUTHORIZED. Append-only; prior history not rewritten. This entry authorizes no push, PR, or merge beyond this candidate, no
 domain activation/selection, no D8 decision, and no P9-E2/D4 execution.
+
+---
+
+## P9-E1 / P9-PREREQ-A — Path-N Production Caller Domain Propagation — FORMAL CLOSURE — governance-only CLOSURE CANDIDATE — P9-E1 SATISFIED; NO domain activated; Phase 9 does NOT auto-advance
+
+**Gate.** OWNER-AUTHORIZED **governance-only** formal closure of P9-E1 / P9-PREREQ-A on the merged, post-merge-verified
+implementation. **DOCUMENTED NO-VALID-RED — GOVERNANCE-ONLY CLOSURE GATE** (no runtime/test file changed; the P9-E1 RED→GREEN
+occurred at implementation time, is cited + independently re-reproduced, not re-created; expected engine/web/domains/schemas/
+prompts/benchmark/app-test diff ZERO). Authoritative base verified read-only `f22085066d8a0b2b1e90c04c6808f44f606316e6` (PR #439;
+parent 1 `8fbc239c98ab89e596554a8c52c7e7b1c5b22ad5` + parent 2 `8ebc1c1a72b024bd7aac677bbd2419d81027c324`; merge tree
+`14c286bac77efdaff1dd89cbbe9e8b42f5672962` == accepted candidate tree); boot OK; built in a disposable worktree (primary working
+tree + historical bundles untouched); not newer.
+
+**Lineage.** Contract PR #438 (merge `8fbc239`; accepted candidate `3b485131`; post-merge verified). Implementation PR #439
+(merge `f22085066d8a0b2b1e90c04c6808f44f606316e6`; accepted candidate `8ebc1c1a`; merge tree `14c286ba` == candidate tree;
+diffstat 5 files / +251 / −5; `git diff --check` CLEAN). Independent implementation review: **ACCEPT WITH NON-BLOCKING
+OBSERVATIONS / ELIGIBLE FOR OWNER EXACT-CANDIDATE ACCEPTANCE**. Canonical record:
+`docs/governance/P9_E1_PATH_N_CALLER_DOMAIN_PROPAGATION_FORMAL_CLOSURE_RECORD.md`.
+
+**Live-verified authoritative runtime state (re-verified at `f220850`).** `support_state("mechanical") ==
+"recognized_not_activated"`; `activated_domains() == ['electronics_electrical']` (only). A foreign recognized-not-activated
+domain on the Path-N flow no longer receives the Electronics Path-N artifact text (`get_question` → generic fallthrough) nor the
+Electronics `_STALL_REFRAME` at exhaustion (`get_display_question` → generic fallthrough); Electronics artifact text + stall
+reframe intact; `domain=None` seam default intact. Exactly the three P9-E1 production `get_path_n_question(...)` sites in
+`engine/progression_loop.py` are threaded with `domain=domain`; no hidden production caller exists.
+
+**RED→GREEN + mutation evidence (recorded honestly).** RED parent `8fbc239`: RED-1 (foreign domain served Electronics artifact
+text) + RED-2 (foreign domain served Electronics `_STALL_REFRAME`) FAILED pre-fix for the intended reason; all 6 focused tests
+GREEN at the authoritative implementation. Independently reproduced mutation matrix: site 1 alone → RED; site 2 alone → GREEN;
+site 3 alone → GREEN; sites 2+3 jointly → RED; all 3 → RED. **Sites 2 and 3 are JOINTLY (not individually) load-bearing** — the
+reframe fires only when both exhaustion reads are non-None and equal, so either domain-aware read alone suppresses the erroneous
+foreign reframe (defense-in-depth); the joint absence (the original defect) is caught by RED-2. This record does not claim each
+site is individually RED-sensitive. Fresh full suite at `f220850`: **2264 passed / 3 skipped / 1 xfailed / 0 failed / 0 errors**
+(2258 parent baseline + 6 new; 3 skips pre-existing, not passes; no required P9-E1 test skipped).
+
+**Boundary invariants verified.** Canonical owners consumed, never duplicated (`engine/path_n_questions.py` seam UNCHANGED;
+domain identity threaded by the caller only). **P9-E2** (`engine/domain_rules.py` `sorted(activated_tied)[0]`),
+**activation policy** (`engine/domain_activation.py`), and **D8** (`domains/iot_electronics/**`) all UNCHANGED base→merge. No
+persistence/schema/commercial/quota/AccessGrant/auth/web/prompt/benchmark diff.
+
+**Phase-9 completeness checklist for P9-E1 (no APPLICABLE/GAP remains).** (1) Engineering knowledge quality — NOT APPLICABLE TO
+THIS GATE; (2) Technical truthfulness / known-unknown — PASS; (3) Specialization without shared-core coupling — PASS; (4)
+Pre-activation qualification — DEFERRED TO DOMAIN QUALIFICATION GATE; (5) Cross-domain interaction/composition — DEFERRED TO
+P9-E2 / D4 AS APPLICABLE; (6) Materials/manufacturing/prototype extensibility — DEFERRED TO CAP-12/CAP-13/WS-PFV; (7)
+Deterministic calculations / units — DEFERRED TO SEPARATE GOVERNED FUTURE GATE; (8) Knowledge sources / provenance / licensing —
+DEFERRED TO DOMAIN QUALIFICATION AND FUTURE KNOWLEDGE-SOURCE GOVERNANCE; (9) Nth-domain extensibility — PASS; (10) End-to-end
+disciplined engineering reasoning chain — PASS FOR P9-E1 SCOPE.
+
+**Governance synchronization (minimum).** NEW `P9_E1_PATH_N_CALLER_DOMAIN_PROPAGATION_FORMAL_CLOSURE_RECORD.md` + this roadmap
+append + `CURRENT_PROJECT_STATE.md` + `ACTIVE_INCREMENT_CONTRACT.md` current-truth sync. **`OWNER_DECISION_REGISTER.md`
+UNCHANGED** (prerequisite closure records no new accepted Owner product-policy decision — consistent with D3 / P8-CLOSE closure
+precedent). No runtime/test/Domain-Pack/schema/prompt/benchmark/web/CI file changed (ZERO runtime/test diff).
+
+**Boundary / status after this entry.** **P9-E1 / P9-PREREQ-A = FORMALLY CLOSED / SATISFIED / AUTHORITATIVE** (prerequisite
+closure only; authoritative if/when this governance candidate is merged and post-merge verified); no active P9-E1 increment
+remains. **NO new domain activated; NO domain selected; Electronics remains the only activated specialist domain; recognition ≠
+activation.** **P9-E2 / P9-PREREQ-B remains SEPARATE / UNSATISFIED / NOT STARTED; D4 SEPARATE / UNEXECUTED; D8 Owner-reserved;**
+deterministic calculations / CAP-12 / CAP-13 / WS-PFV / STG / Output-Language NOT implemented; Phase 10 = NOT AUTHORIZED; PSRR =
+NOT EXECUTED; deployment / production = NOT AUTHORIZED. Closing P9-E1 does **not** auto-advance Phase 9 or authorize any
+activation; the recommended next major gate is **P9-E2 / P9-PREREQ-B — Multi-Activated Domain Tie/Conflict Precedence** (separately
+governed; NOT started). Candidate only until independent review → Owner acceptance → merge (create-a-merge-commit) → post-merge
+verification. Append-only; prior history not rewritten. This entry authorizes no push, PR, merge beyond this candidate, domain
+activation/selection, D8 decision, or P9-E2/D4 execution.

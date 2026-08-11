@@ -1113,6 +1113,27 @@ AUTHORIZED / NOT STARTED.***
   test only (plus governance current-truth registration, per D3 implementation precedent); NO new domain activated
   (`activated_domains() == ['electronics_electrical']`); NO domain selected; P9-E2 NOT implemented; D4 NOT executed; D8
   Owner-reserved; Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED; deployment / production = NOT AUTHORIZED.**
+  **The P9-E1 implementation is now AUTHORITATIVE (merged PR #439, tip `f22085066d8a0b2b1e90c04c6808f44f606316e6` = two-parent
+  merge of base `8fbc239` + the accepted implementation candidate `8ebc1c1a`; merge tree `14c286ba` == candidate tree; 5 files /
+  +251 / −5; `git diff --check` clean; independent review ACCEPT WITH NON-BLOCKING OBSERVATIONS), and `P9-E1` / `P9-PREREQ-A` —
+  Path-N Production Caller Domain Propagation is now FORMALLY CLOSED / SATISFIED as a governance-only CLOSURE CANDIDATE**
+  (prerequisite closure only; authoritative if/when merged; record
+  `docs/governance/P9_E1_PATH_N_CALLER_DOMAIN_PROPAGATION_FORMAL_CLOSURE_RECORD.md`). Live-verified at `f220850`:
+  `support_state("mechanical") == "recognized_not_activated"`; `activated_domains() == ['electronics_electrical']`; a foreign
+  recognized-not-activated domain on the Path-N flow no longer receives the Electronics artifact text (`get_question` → generic)
+  nor the Electronics `_STALL_REFRAME` at exhaustion (`get_display_question` → generic); Electronics + `domain=None` behavior
+  intact; exactly the three production `get_path_n_question(...)` sites threaded with `domain=domain`; no hidden caller. RED→GREEN
+  (RED parent `8fbc239`: RED-1 foreign artifact text + RED-2 foreign stall reframe → all 6 GREEN); independently reproduced
+  mutation matrix (site 1 alone → RED; site 2 alone → GREEN; site 3 alone → GREEN; sites 2+3 jointly → RED; all 3 → RED — **sites
+  2+3 jointly, not individually, load-bearing; recorded honestly**); fresh full suite **2264 passed / 3 skipped / 1 xfailed / 0
+  failed** (2258 baseline + 6 new). Phase-9 completeness checklist for P9-E1: no APPLICABLE/GAP remains. **`engine/domain_rules.py`
+  (P9-E2 tie-break), `engine/domain_activation.py` (activation policy), and `domains/iot_electronics/**` (D8) UNCHANGED
+  base→merge.** **P9-E1 / P9-PREREQ-A = FORMALLY CLOSED / SATISFIED (authoritative if/when this closure candidate is merged and
+  post-merge verified); `OWNER_DECISION_REGISTER.md` unchanged; ZERO runtime/test diff in the closure gate; NO new domain
+  activated; NO domain selected; Electronics remains the only activated specialist domain; recognition ≠ activation; P9-E2 /
+  P9-PREREQ-B = SEPARATE / UNSATISFIED / NOT STARTED; D4 = SEPARATE / UNEXECUTED; D8 Owner-reserved; Phase 10 = NOT AUTHORIZED;
+  PSRR = NOT EXECUTED; deployment / production = NOT AUTHORIZED.** Closing P9-E1 does NOT auto-advance Phase 9; recommended next
+  major gate = **P9-E2 / P9-PREREQ-B — Multi-Activated Domain Tie/Conflict Precedence** (separately governed; NOT started).
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
