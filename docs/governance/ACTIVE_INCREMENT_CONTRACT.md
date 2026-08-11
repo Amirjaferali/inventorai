@@ -41,8 +41,32 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — IMPLEMENTATION CANDIDATE, RED→GREEN; runtime increment present; Phase 9 proceeding only within the bounded
-P9-E1 gate):** **The `P9-E1` / `P9-PREREQ-A` — Path-N Production Caller Domain Propagation is now IMPLEMENTED as an IMPLEMENTATION
+**Status (current — governance-only FORMAL CLOSURE CANDIDATE; NO active increment; Phase 9 does NOT auto-advance):** **`P9-E1` /
+`P9-PREREQ-A` — Path-N Production Caller Domain Propagation is FORMALLY CLOSED / SATISFIED** as a governance-only CLOSURE CANDIDATE
+(prerequisite closure only; authoritative if/when merged; dedicated record
+`docs/governance/P9_E1_PATH_N_CALLER_DOMAIN_PROPAGATION_FORMAL_CLOSURE_RECORD.md`; authoritative base
+`f22085066d8a0b2b1e90c04c6808f44f606316e6`, PR #439). Implementation lineage: contract PR #438 (`8fbc239`; candidate `3b485131`) +
+implementation PR #439 (`f220850`; candidate `8ebc1c1a`; merge tree `14c286ba` == candidate tree; diffstat 5 files / +251 / −5;
+`git diff --check` CLEAN; independent review ACCEPT WITH NON-BLOCKING OBSERVATIONS). Live-verified at `f220850`:
+`support_state("mechanical") == "recognized_not_activated"`; `activated_domains() == ['electronics_electrical']`; a foreign
+recognized-not-activated domain on the Path-N flow no longer receives the Electronics artifact text (`get_question`) nor the
+Electronics `_STALL_REFRAME` at exhaustion (`get_display_question`); Electronics + `domain=None` behavior intact; exactly the
+three production `get_path_n_question(...)` sites threaded, no hidden caller. RED→GREEN (RED parent `8fbc239`: RED-1 foreign
+artifact text + RED-2 foreign stall reframe → all 6 GREEN); independently reproduced mutation matrix (site 1 alone → RED; site 2
+alone → GREEN; site 3 alone → GREEN; sites 2+3 jointly → RED; all 3 → RED — **sites 2+3 jointly, not individually, load-bearing;
+recorded honestly**); fresh full suite **2264 passed / 3 skipped / 1 xfailed / 0 failed** (2258 baseline + 6 new). Phase-9
+completeness checklist for P9-E1: no APPLICABLE/GAP remains (truthfulness / no-shared-core-coupling / Nth-domain extensibility /
+end-to-end reasoning = PASS; knowledge-quality = NOT APPLICABLE; qualification / composition / materials / calculations /
+knowledge-sources = DEFERRED to their governed gates). **`OWNER_DECISION_REGISTER.md` UNCHANGED. There is NO active increment.**
+**P9-E1 / P9-PREREQ-A = FORMALLY CLOSED / SATISFIED / AUTHORITATIVE (prerequisite closure only); NO new domain activated; NO
+domain selected; Electronics remains the only activated specialist domain; recognition ≠ activation; P9-E2 / P9-PREREQ-B =
+SEPARATE / UNSATISFIED / NOT STARTED (`sorted(activated_tied)[0]` untouched); D4 = SEPARATE / UNEXECUTED; D8 = OPEN /
+Owner-reserved; Phase 8 = FORMALLY CLOSED; Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED; deployment / production = NOT
+AUTHORIZED.** The recommended next major gate is **P9-E2 / P9-PREREQ-B — Multi-Activated Domain Tie/Conflict Precedence**
+(separately governed; NOT started; closing P9-E1 does NOT auto-advance to it or authorize any activation).
+
+**Immediately prior (retained as history — P9-E1 IMPLEMENTATION CANDIDATE; merged AUTHORITATIVE via PR #439 `f220850`):**
+**The `P9-E1` / `P9-PREREQ-A` — Path-N Production Caller Domain Propagation is now IMPLEMENTED as an IMPLEMENTATION
 CANDIDATE** on authoritative base `8fbc239c98ab89e596554a8c52c7e7b1c5b22ad5` (PR #438 made the P9-E1 contract AUTHORITATIVE). The
 bounded runtime fix threads the canonical `domain` (already the first parameter of both callers) into the existing three
 `get_path_n_question(...)` calls in `engine/progression_loop.py` as `domain=domain` — (1) `get_question` (path=="N") selection,
