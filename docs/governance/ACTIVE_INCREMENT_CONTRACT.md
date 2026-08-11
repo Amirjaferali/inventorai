@@ -41,7 +41,34 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — governance-only FORMAL CLOSURE CANDIDATE; NO active increment; Phase 9 does NOT auto-advance):** **`P9-E1` /
+**Status (current — governance-only CONTRACT CANDIDATE, contract-first; NO active runtime increment; NO domain activated):**
+**`P9-E2` / `P9-PREREQ-B` — Multi-Activated Domain Tie/Conflict Precedence is DEFINED by a governance-only CONTRACT CANDIDATE**
+(record: `docs/governance/P9_E2_MULTI_ACTIVATED_DOMAIN_TIE_PRECEDENCE_CONTRACT.md`; authoritative base
+`05184f9166fa3a9e45a3384be5bafccc86e05ebe` — PR #440 made the P9-E1 formal closure AUTHORITATIVE). This is the mandatory
+D3-registered prerequisite **P9-PREREQ-B** carried by the authoritative P9-QS §16; **contract-first only — no runtime/test change,
+no domain activation, no domain selection.** **Live evidence (verified at `05184f91`): still required** —
+`engine/domain_rules.py::infer_domain` lines 31–33 pick `sorted(activated_tied)[0]` (incidental alphabetical precedence among
+ACTIVATED tied domains; plus the line-34 `priority` literal for the no-activated-tie fallback); reachable only when ≥2 specialist
+domains are activated and tie. Behaviorally proven read-only (monkeypatched `_ACTIVATED_DOMAINS`, restored; no real activation): a
+clean `mechanical`+`medical_device` activated tie returns `mechanical` purely alphabetically. **Critical representation finding:**
+`infer_domain` returns `str | None`, which cannot honestly express an ambiguous tie / tied candidate set / no-governed-winner /
+genuine multi-domain (Case 4) — so the contract explicitly calls out a bounded, **separately-reviewed representation sub-gate
+`P9-E2-R`** rather than hiding it. Precedence policy: Case 1 (single winner) unchanged; Case 3 (tie, no governed precedence) →
+explicit ambiguous/unresolved outcome (safe default, no silent pick); Case 4 → surface D4 need truthfully; forbidden answers =
+alphabetical/file/registration/iteration/dict order, hardcoded Electronics preference, model guess, silent default. RED-1…RED-6
+designed (not implemented); Phase-9 completeness checklist fully dispositioned (no APPLICABLE/GAP). **First-new-domain implication
+(verified): Electronics is already activated, so the first new-domain activation creates a >1-activated state — P9-E2 is a
+MANDATORY prerequisite before the first actual new-domain activation.** **Governance-only scope:** the new contract doc +
+append-only roadmap entry + this current-truth sync + `CURRENT_PROJECT_STATE.md`; **`OWNER_DECISION_REGISTER.md` UNCHANGED; ZERO
+runtime/test/domain/schema/prompt/benchmark/web diff.** **P9-E2 = CONTRACT CANDIDATE ONLY — authoritative only if this exact
+accepted candidate is merged and post-merge verified; the P9-E2 runtime, the P9-E2-R representation sub-gate, and their tests are
+separate later gates, NOT authorized here; NO new domain activated (`activated_domains() == ['electronics_electrical']`); NO domain
+selected; P9-E1 remains FORMALLY CLOSED / SATISFIED; D4 = SEPARATE / UNEXECUTED; D8 = OPEN / Owner-reserved; Phase 8 = FORMALLY
+CLOSED; Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED; deployment / production = NOT AUTHORIZED.** The next state is: independent
+review of this exact contract candidate → Owner acceptance → merge → post-merge verification → a separate P9-E2 (+ P9-E2-R)
+implementation gate.
+
+**Immediately prior (retained as history — P9-E1 FORMALLY CLOSED / SATISFIED / AUTHORITATIVE via PR #440 `05184f91`):** **`P9-E1` /
 `P9-PREREQ-A` — Path-N Production Caller Domain Propagation is FORMALLY CLOSED / SATISFIED** as a governance-only CLOSURE CANDIDATE
 (prerequisite closure only; authoritative if/when merged; dedicated record
 `docs/governance/P9_E1_PATH_N_CALLER_DOMAIN_PROPAGATION_FORMAL_CLOSURE_RECORD.md`; authoritative base

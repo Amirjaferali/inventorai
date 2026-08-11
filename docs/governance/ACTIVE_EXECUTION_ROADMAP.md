@@ -7283,3 +7283,72 @@ activation; the recommended next major gate is **P9-E2 / P9-PREREQ-B — Multi-A
 governed; NOT started). Candidate only until independent review → Owner acceptance → merge (create-a-merge-commit) → post-merge
 verification. Append-only; prior history not rewritten. This entry authorizes no push, PR, merge beyond this candidate, domain
 activation/selection, D8 decision, or P9-E2/D4 execution.
+
+---
+
+## P9-E2 / P9-PREREQ-B — Multi-Activated Domain Tie/Conflict Precedence — governance-only IMPLEMENTATION CONTRACT CANDIDATE (CONTRACT-FIRST) — NO domain activated/selected; NOT implemented
+
+**Gate.** OWNER-AUTHORIZED **contract-first, governance-only** creation of the P9-E2 implementation contract candidate — the
+mandatory D3-registered prerequisite **P9-PREREQ-B (governed multi-activated-domain tie/conflict precedence)** carried by the
+authoritative P9-QS §16. Authoritative base `05184f9166fa3a9e45a3384be5bafccc86e05ebe` (live tip re-verified; PR #440 = two-parent
+merge of the P9-E1 implementation merge `f220850` + the P9-E1 closure candidate `6c3c65a6`; merge tree `b8b5462f` == closure tree;
+**P9-E1 / P9-PREREQ-A now FORMALLY CLOSED / SATISFIED / AUTHORITATIVE**; boot OK; `activated_domains() == ['electronics_electrical']`;
+built in a disposable worktree — primary working tree + historical bundles untouched; not newer). **CONTRACT CANDIDATE ONLY** —
+authoritative only if independently reviewed, Owner-accepted, merged, and post-merge verified. **No runtime/test change, no domain
+activation, no domain selection performed or authorized** (expected runtime/test/domain/schema/prompt/benchmark/web diff ZERO).
+*(Baseline note: the Owner-supplied expected tip was a 39-char transcription of this same PR #440 merge; the verified 40-char live
+tip is the intended post-P9-E1-closure state, not a stale baseline.)*
+
+**Live evidence (independently verified at `05184f91`; the obligation is STILL REQUIRED).** `engine/domain_rules.py::infer_domain`
+lines 31–33 pick `sorted(activated_tied)[0]` — **incidental lexical/alphabetical precedence** among ACTIVATED tied domains; a
+second ungoverned literal `priority = ["medical_device","electronics_electrical","mechanical","software"]` (line 34) is the
+no-activated-tie fallback. Only `electronics_electrical` is activated (`_ACTIVATED_DOMAINS` frozenset), so `activated_tied` has ≤1
+element and the risky path is **UNREACHABLE today**; it becomes reachable when **≥2 specialist domains are activated and tie**.
+Behavioral proof (read-only; `_ACTIVATED_DOMAINS` monkeypatched in a throwaway process and restored; NO real activation, NO file
+change): clean tie `"gear and catheter"` (mechanical=1, medical_device=1) with both simulated-activated → `infer_domain` returns
+`mechanical` = alphabetically-first (no semantic justification); an Electronics-involved simulated tie picks Electronics only by
+alphabetical coincidence. `infer_domain` callers: `web/app.py:1363`, `scripts/run_cli.py:35`.
+
+**Representation finding (critical; §6 of the contract).** `infer_domain` returns `str | None`, which **cannot truthfully express**
+an ambiguous activated tie, the tied candidate set, a no-governed-winner outcome, or a genuine multi-domain (Case 4) need.
+Collapsing any of these into a single `str` (incidental pick) or `None` (conflating "ambiguous tie" with "no match") would be
+dishonest. The contract therefore **explicitly calls out a bounded, separately-reviewed representation sub-gate `P9-E2-R`**
+(additive, backward-compatible inference-result extension) as a prerequisite for honest Case-3/Case-4 behavior — not hidden.
+
+**Precedence policy (contract §5).** Case 1 (single activated winner) unchanged; Case 2 (governed precedence table) requires a
+separate Owner decision and MUST NOT be invented by the implementation; **Case 3 (tie, no governed precedence) → explicit
+ambiguous/unresolved outcome preserving the tied activated candidate set (safe default)**; Case 4 (genuine multi-domain) → surface
+the D4 need truthfully, never collapse to one domain. Forbidden tie answers: alphabetical/file/registration/iteration/dict order,
+hardcoded Electronics preference, model guess, silent default, hidden fallback. **No LLM tie-breaking; no fabricated confidence.**
+
+**RED design (designed, NOT implemented).** RED-1 incidental/alphabetical exposure; RED-2 order-independent determinism; RED-3 no
+hidden Electronics favoritism; RED-4 recognition-only exclusion (D3-D); RED-5 ambiguity honesty (no fabricated winner); RED-6 D4
+boundary (no single-domain collapse). Activated ties simulated via a bounded self-restoring test double of `_ACTIVATED_DOMAINS`
+using recognized packs (`mechanical`,`medical_device`) — NO real new domain activated.
+
+**Phase-9 completeness checklist (all 10 dispositioned; no APPLICABLE/GAP).** (2) truthfulness, (3) no shared-core coupling, (4)
+qualification cases, (5) no-hidden-precedence/no-silent-overwrite, (9) Nth-domain extensibility, (10) end-to-end reasoning =
+APPLICABLE/PASS (by design); (1) knowledge quality = NOT APPLICABLE; (5-composition) = DEFERRED TO D4; (6) = DEFERRED TO
+CAP-12/CAP-13/WS-PFV; (7) = DEFERRED TO SEPARATE CALCULATION GATE; (8) = DEFERRED TO KNOWLEDGE-SOURCE GOVERNANCE. The P9-E2-R
+representation is an explicit bounded sub-gate, not an unresolved gap.
+
+**First-new-domain implication (verified; recorded).** Electronics is already activated, so activating the **first** new
+non-electronics specialist domain creates a >1-activated state and makes the tie path reachable — **P9-E2 is a MANDATORY
+prerequisite before the first actual new-domain activation.** No activation performed or authorized here.
+
+**Scope / hard-STOP (contract §16).** Likely implementation owner: `engine/domain_rules.py` + bounded P9-E2-R result + focused
+tests (+ minimal backward-compatible caller adaptation only if evidenced). HARD STOP (report) if implementation would require
+domain activation, D4, Domain-Pack redesign, a new global orchestrator, schema migration beyond bounded P9-E2-R, or any D8 change.
+
+**Governance synchronization (minimum).** NEW `P9_E2_MULTI_ACTIVATED_DOMAIN_TIE_PRECEDENCE_CONTRACT.md` + this roadmap append +
+`CURRENT_PROJECT_STATE.md` + `ACTIVE_INCREMENT_CONTRACT.md` current-truth sync. **`OWNER_DECISION_REGISTER.md` UNCHANGED** (a
+contract candidate records no new accepted Owner product-policy decision — consistent with D3/P9-QS/P9-E1 candidate precedent). No
+runtime/test/Domain-Pack/schema/prompt/benchmark/web/CI file changed (ZERO runtime/test diff).
+
+**Boundary / status after this entry.** **P9-E2 / P9-PREREQ-B = CONTRACT CANDIDATE ONLY (contract-first) — NOT implemented; the
+P9-E2 runtime, the P9-E2-R representation sub-gate, and their tests are separate later gates, NOT authorized here.** **P9-E1 /
+P9-PREREQ-A remains FORMALLY CLOSED / SATISFIED.** **NO new domain activated (`activated_domains() == ['electronics_electrical']`);
+NO domain selected; D4 SEPARATE / UNEXECUTED; D8 Owner-reserved;** deterministic calculations / CAP-12 / CAP-13 / WS-PFV / STG /
+Output-Language NOT implemented; Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED; deployment / production = NOT AUTHORIZED. Append-only;
+prior history not rewritten. This entry authorizes no push, PR, merge beyond this candidate, domain activation/selection, D8
+decision, or D4 execution.

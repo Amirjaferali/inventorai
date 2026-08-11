@@ -1134,6 +1134,30 @@ AUTHORIZED / NOT STARTED.***
   P9-PREREQ-B = SEPARATE / UNSATISFIED / NOT STARTED; D4 = SEPARATE / UNEXECUTED; D8 Owner-reserved; Phase 10 = NOT AUTHORIZED;
   PSRR = NOT EXECUTED; deployment / production = NOT AUTHORIZED.** Closing P9-E1 does NOT auto-advance Phase 9; recommended next
   major gate = **P9-E2 / P9-PREREQ-B — Multi-Activated Domain Tie/Conflict Precedence** (separately governed; NOT started).
+  **The P9-E1 formal closure is now AUTHORITATIVE (merged PR #440, tip `05184f9166fa3a9e45a3384be5bafccc86e05ebe` = two-parent
+  merge of the P9-E1 implementation merge `f220850` + the closure candidate `6c3c65a6`; merge tree `b8b5462f` == closure tree), and
+  the next bounded Phase-9 prerequisite `P9-E2` / `P9-PREREQ-B` — Multi-Activated Domain Tie/Conflict Precedence is now DEFINED by a
+  governance-only CONTRACT CANDIDATE (contract-first).** P9-E2 (record:
+  `docs/governance/P9_E2_MULTI_ACTIVATED_DOMAIN_TIE_PRECEDENCE_CONTRACT.md`) governs the deterministic, truthful behavior when two
+  or more ACTIVATED specialist domains tie/conflict. **Live evidence (verified at `05184f91`): still required** —
+  `engine/domain_rules.py::infer_domain` lines 31–33 pick `sorted(activated_tied)[0]` (incidental alphabetical precedence among
+  ACTIVATED tied domains; plus the line-34 `priority` literal no-activated-tie fallback); reachable only when ≥2 specialist domains
+  are activated and tie (unreachable today — only `electronics_electrical` activated). Behaviorally proven read-only
+  (`_ACTIVATED_DOMAINS` monkeypatched then restored; NO real activation, NO file change): a clean `mechanical`+`medical_device`
+  activated tie returns `mechanical` purely alphabetically. **Critical representation finding:** `infer_domain` returns `str |
+  None`, which cannot honestly express an ambiguous tie / tied candidate set / no-governed-winner / genuine multi-domain (Case 4);
+  the contract explicitly calls out a bounded, **separately-reviewed representation sub-gate `P9-E2-R`** rather than hiding it.
+  Precedence policy: Case 1 (single winner) unchanged; Case 3 (tie, no governed precedence) → explicit ambiguous/unresolved outcome
+  (safe default, no silent pick); Case 4 → surface D4 need truthfully; forbidden answers = alphabetical/file/registration/iteration/
+  dict order, hardcoded Electronics preference, model guess, silent default. RED-1…RED-6 designed (not implemented); Phase-9
+  completeness checklist fully dispositioned (no APPLICABLE/GAP); **first-new-domain implication (verified): Electronics is already
+  activated, so the first new-domain activation creates a >1-activated state — P9-E2 is a MANDATORY prerequisite before the first
+  actual new-domain activation.** **P9-E2 = CONTRACT CANDIDATE ONLY (contract-first) — authoritative only if this exact accepted
+  candidate is merged and post-merge verified; the P9-E2 runtime, the P9-E2-R representation sub-gate, and their tests are separate
+  later gates, NOT authorized here; `OWNER_DECISION_REGISTER.md` unchanged; ZERO runtime/test/domain/schema/prompt/benchmark/web
+  diff; NO new domain activated (`activated_domains() == ['electronics_electrical']`); NO domain selected; P9-E1 remains FORMALLY
+  CLOSED / SATISFIED; D4 = SEPARATE / UNEXECUTED; D8 Owner-reserved; Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED; deployment /
+  production = NOT AUTHORIZED.**
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
