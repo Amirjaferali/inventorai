@@ -1075,6 +1075,25 @@ AUTHORIZED / NOT STARTED.***
   DEFERRED and NOT an activation prerequisite; D8 Owner-reserved; Phase 9 remains INACTIVE / NOT AUTHORIZED (accepting the
   standard does NOT open a Phase-9 implementation contract); Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED; deployment /
   production = NOT AUTHORIZED.**
+  **P9-QS is now AUTHORITATIVE (merged PR #437, tip `f08dd2e0319b2777c47dad9cdb49c05d106bc7a0` = two-parent merge of `99c0855` +
+  the corrected P9-QS candidate `2f435c68`, post-merge verified), and Phase 9 has BEGUN — but only through the newly authorized
+  bounded `P9-E1` / `P9-PREREQ-A` contract gate, now DEFINED by a governance-only IMPLEMENTATION CONTRACT CANDIDATE.** P9-E1
+  (record: `docs/governance/P9_E1_PATH_N_CALLER_DOMAIN_PROPAGATION_CONTRACT.md`) closes the mandatory D3-registered Path-N
+  production-caller domain-propagation prerequisite carried by P9-QS §16. **Live evidence (verified at `f08dd2e`): the prerequisite
+  is STILL REQUIRED** — the Path-N seam is already domain-aware (`engine/path_n_questions.py`) but the production callers in
+  `engine/progression_loop.py` drop the in-scope `domain` at three `get_path_n_question(...)` sites (line 232 in `get_question`;
+  lines 269 and 273–274 in `get_display_question`), so a recognized-not-activated foreign-domain Path-N session
+  (`get_question("mechanical", "MECHANISM_COMPLETENESS", 0, path="N")`) is served the Electronics artifact text while the seam
+  already returns `None` for that domain; canonical domain identity is available at every caller (`web/app.py:1566`,
+  `progression_loop.py:904/944/981`, `scripts/run_cli.py:79` pass `state.domain`), and those three seam calls are the complete
+  production-caller set. **Bounded implementation (LATER, separate gate — NOT executed here):** thread `domain=domain` into those
+  three sites only; no signature/seam/registry/activation/web/CLI change; Electronics/`None` behavior and stall reframe preserved
+  and correctly suppressed for a foreign domain; behavioral RED→GREEN tests with the neutral `"mechanical"` fixture. **P9-E1 =
+  IMPLEMENTATION CONTRACT CANDIDATE ONLY — authoritative only if this exact accepted candidate is merged and post-merge verified;
+  the P9-E1 runtime + tests are a separate later gate, NOT authorized here; `OWNER_DECISION_REGISTER.md` unchanged; ZERO
+  runtime/test/schema/prompt/benchmark/web diff; NO new domain activated (`activated_domains() == ['electronics_electrical']`); NO
+  domain selected; P9-E2 / P9-PREREQ-B NOT implemented (separate future gate; `sorted(activated_tied)[0]` untouched); D4 NOT
+  executed; D8 Owner-reserved; Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED; deployment / production = NOT AUTHORIZED.**
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation

@@ -41,7 +41,32 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — governance-only CONTRACT CANDIDATE; NO active implementation increment; Phase 9 INACTIVE / NOT AUTHORIZED):**
+**Status (current — governance-only IMPLEMENTATION CONTRACT CANDIDATE; NO active runtime increment; Phase 9 BEGUN at this bounded
+gate only):** **The `P9-E1` / `P9-PREREQ-A` — Path-N Production Caller Domain Propagation implementation is DEFINED by a
+governance-only CONTRACT CANDIDATE** (record: `docs/governance/P9_E1_PATH_N_CALLER_DOMAIN_PROPAGATION_CONTRACT.md`; authoritative
+base `f08dd2e0319b2777c47dad9cdb49c05d106bc7a0` — PR #437 made P9-QS AUTHORITATIVE). This is the mandatory D3-registered
+prerequisite **P9-PREREQ-A** now carried by the authoritative P9-QS §16; the Owner authorization **begins Phase 9 only at this
+bounded contract gate.** **Live evidence (verified at `f08dd2e`): the prerequisite is STILL REQUIRED** — the Path-N seam is
+already domain-aware (`engine/path_n_questions.py`), but the production callers in `engine/progression_loop.py` drop the in-scope
+`domain` at three `get_path_n_question(...)` sites (line 232 in `get_question`; lines 269 and 273–274 in `get_display_question`),
+so `get_question("mechanical", "MECHANISM_COMPLETENESS", 0, path="N")` returns the Electronics artifact text (domain-blind) while
+the seam already yields `None` for `"mechanical"`. Canonical domain identity is available at every caller (`web/app.py:1566`,
+`engine/progression_loop.py:904/944/981`, `scripts/run_cli.py:79` all pass `state.domain`); those three seam calls are the
+complete production-caller set. **Bounded implementation (LATER, separate gate — NOT executed here):** thread `domain=domain` into
+those three sites only; no signature/seam/registry/activation/web/CLI change; Electronics/`None` behavior and stall reframe
+preserved exactly, correctly suppressed for a recognized-not-activated foreign domain. **RED design:** behavioral tests with the
+neutral fixture `"mechanical"` on gap `MECHANISM_COMPLETENESS` (RED on baseline → GREEN after propagation) plus Electronics
+GREEN-guards; not implemented in this gate. **Governance-only scope:** the new contract doc + append-only roadmap entry + this
+current-truth sync + `CURRENT_PROJECT_STATE.md`; **`OWNER_DECISION_REGISTER.md` UNCHANGED; ZERO runtime/test/schema/prompt/
+benchmark/web/CI diff.** **P9-E1 = IMPLEMENTATION CONTRACT CANDIDATE ONLY — authoritative only if this exact accepted candidate is
+merged (create-a-merge-commit) and post-merge verified; the P9-E1 runtime + tests are a separate later gate, NOT authorized here;
+NO new domain activated (`activated_domains() == ['electronics_electrical']`); NO domain selected; P9-E2 NOT implemented; D4 NOT
+executed; D8 = OPEN / Owner-reserved; Phase 8 = FORMALLY CLOSED; Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED; deployment /
+production = NOT AUTHORIZED.** Owner product/policy decisions required before P9-E1 acceptance: NONE — only independent review →
+Owner acceptance → merge → post-merge verification, then a separate P9-E1 implementation gate. The next state is: P9-E1 contract
+reviewed; if accepted+merged, a separate P9-E1 implementation gate performs the bounded propagation with RED→GREEN tests.
+
+**Immediately prior (retained as history — P9-QS AUTHORITATIVE / merged PR #437 `f08dd2e`):**
 **The `P9-QS` — Phase-9 Technical Quality Standard is DEFINED by a CORRECTED governance-only CONTRACT CANDIDATE** (record:
 `docs/governance/P9_QS_PHASE_9_TECHNICAL_QUALITY_STANDARD_CONTRACT.md`; authoritative base
 `99c08555351e031bd3cc11f536cf558c91dc0c32`). It is the corrected reissue that **supersedes the REJECTED prior candidate
