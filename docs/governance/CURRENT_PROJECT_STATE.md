@@ -1094,6 +1094,25 @@ AUTHORIZED / NOT STARTED.***
   runtime/test/schema/prompt/benchmark/web diff; NO new domain activated (`activated_domains() == ['electronics_electrical']`); NO
   domain selected; P9-E2 / P9-PREREQ-B NOT implemented (separate future gate; `sorted(activated_tied)[0]` untouched); D4 NOT
   executed; D8 Owner-reserved; Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED; deployment / production = NOT AUTHORIZED.**
+  **The P9-E1 contract is now AUTHORITATIVE (merged PR #438, tip `8fbc239c98ab89e596554a8c52c7e7b1c5b22ad5` = two-parent merge of
+  `f08dd2e` + the P9-E1 contract candidate `3b485131`), and `P9-E1` / `P9-PREREQ-A` — Path-N Production Caller Domain Propagation
+  is now IMPLEMENTED as an IMPLEMENTATION CANDIDATE (RED→GREEN).** The bounded runtime fix threads the canonical `domain` (already
+  the first parameter of both callers) into the existing three `get_path_n_question(...)` calls in `engine/progression_loop.py`
+  as `domain=domain` — `get_question` (path=="N") selection and the two `get_display_question` exhaustion reads
+  (`current`/`previous`); `engine/path_n_questions.py` unchanged; no domain branching, no second router, no
+  activation-policy/Registry/Domain-Pack/D8/P9-E2 change. Behavioral RED→GREEN via
+  `tests/test_p9e1_path_n_caller_domain_propagation.py` (6 tests): baseline RED-1 (`get_question` foreign recognized domain served
+  Electronics artifact text) + RED-2 (`get_display_question` foreign domain served the Electronics `_STALL_REFRAME`) both FAILED
+  pre-edit → GREEN post-edit; guards preserve Electronics artifact text + stall reframe + the `domain=None` seam default, and
+  assert the fixture `mechanical` is `recognized_not_activated`/not-activated. Per-site proof (honest): site-1 mutation
+  individually caught; sites 2+3 jointly load-bearing (either domain-aware reframe read alone suppresses the erroneous foreign
+  reframe — defense-in-depth), joint site-2+3 mutation (the original defect) caught by RED-2; no probe left in the candidate.
+  **Full suite fresh: 2264 passed / 3 skipped / 1 xfailed / 0 failed** (2258 baseline + 6 new). **P9-E1 = IMPLEMENTATION CANDIDATE
+  ONLY — authoritative only if this exact accepted candidate is merged and post-merge verified; formal P9-E1 closure is a separate
+  subsequent gate; `OWNER_DECISION_REGISTER.md` unchanged; changed runtime/test paths = `engine/progression_loop.py` + the new
+  test only (plus governance current-truth registration, per D3 implementation precedent); NO new domain activated
+  (`activated_domains() == ['electronics_electrical']`); NO domain selected; P9-E2 NOT implemented; D4 NOT executed; D8
+  Owner-reserved; Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED; deployment / production = NOT AUTHORIZED.**
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation

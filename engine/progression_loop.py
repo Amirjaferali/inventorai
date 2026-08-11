@@ -229,7 +229,11 @@ def get_question(domain: str, gap_type: str, iterations_open: int,
     """
     if path == "N":
         from engine.path_n_questions import get_path_n_question
-        path_n_q = get_path_n_question(gap_type, iterations_open)
+        # P9-E1: propagate the canonical session domain the caller already holds
+        # into the domain-aware Path-N seam. A recognized non-electronics domain
+        # then receives None here (seam-owned) and falls through to the generic
+        # variant; Electronics and the None default are unchanged.
+        path_n_q = get_path_n_question(gap_type, iterations_open, domain=domain)
         if path_n_q is not None:
             return path_n_q
         variants = QUESTIONS[gap_type]
@@ -266,12 +270,17 @@ def get_display_question(domain: str, gap_type: str, iterations_open: int,
     """
     if path == "N" and iterations_open > 0:
         from engine.path_n_questions import get_path_n_question
-        current = get_path_n_question(gap_type, iterations_open)
+        # P9-E1: propagate the canonical session domain into the domain-aware
+        # Path-N seam for the exhaustion comparison too. For a recognized
+        # non-electronics domain both reads are None, so the Electronics-specific
+        # stall reframe is correctly NOT fired and control falls through to the
+        # generic variant; Electronics and the None default are unchanged.
+        current = get_path_n_question(gap_type, iterations_open, domain=domain)
         # Path N serves Stage 2 gaps; a clamp (current == the previous
         # iteration's question) marks variant exhaustion → reframe instead of a
         # verbatim repeat. Stage 3 gaps return None here and are unaffected.
         if current is not None and current == get_path_n_question(
-            gap_type, iterations_open - 1
+            gap_type, iterations_open - 1, domain=domain
         ):
             return _STALL_REFRAME
     return get_question(domain, gap_type, iterations_open, path=path)

@@ -41,8 +41,31 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — governance-only IMPLEMENTATION CONTRACT CANDIDATE; NO active runtime increment; Phase 9 BEGUN at this bounded
-gate only):** **The `P9-E1` / `P9-PREREQ-A` — Path-N Production Caller Domain Propagation implementation is DEFINED by a
+**Status (current — IMPLEMENTATION CANDIDATE, RED→GREEN; runtime increment present; Phase 9 proceeding only within the bounded
+P9-E1 gate):** **The `P9-E1` / `P9-PREREQ-A` — Path-N Production Caller Domain Propagation is now IMPLEMENTED as an IMPLEMENTATION
+CANDIDATE** on authoritative base `8fbc239c98ab89e596554a8c52c7e7b1c5b22ad5` (PR #438 made the P9-E1 contract AUTHORITATIVE). The
+bounded runtime fix threads the canonical `domain` (already the first parameter of both callers) into the existing three
+`get_path_n_question(...)` calls in `engine/progression_loop.py` as `domain=domain` — (1) `get_question` (path=="N") selection,
+(2) `get_display_question` exhaustion `current` read, (3) `get_display_question` exhaustion `previous` read; no signature change,
+**`engine/path_n_questions.py` unchanged**, no domain branching, no second router, no activation-policy/Registry/Domain-Pack/D8/
+P9-E2 change. **RED→GREEN** via the new behavioral `tests/test_p9e1_path_n_caller_domain_propagation.py` (6 tests): baseline RED-1
+(`get_question` foreign recognized domain served Electronics artifact text) + RED-2 (`get_display_question` foreign domain served
+the Electronics `_STALL_REFRAME`) both FAILED pre-edit and are GREEN post-edit; guards preserve Electronics artifact text, the
+Electronics stall reframe, the `domain=None` seam default, and assert the fixture `mechanical` is `recognized_not_activated` /
+not-activated. **Per-site proof (honest):** site-1 mutation is individually caught; sites 2+3 are *jointly* load-bearing (either
+domain-aware reframe read alone suppresses the erroneous foreign reframe — defense-in-depth), and the joint site-2+3 mutation (the
+original defect) is caught by RED-2; both threaded for a domain-consistent comparison per contract §3; no probe left in the
+candidate. **Full suite fresh: 2264 passed / 3 skipped / 1 xfailed / 0 failed** (2258 baseline + 6 new). **Scope:**
+`engine/progression_loop.py` + the new test + governance current-truth registration (this file + roadmap append +
+`CURRENT_PROJECT_STATE.md`, per D3 implementation precedent); **`OWNER_DECISION_REGISTER.md` UNCHANGED;
+`activated_domains() == ['electronics_electrical']`.** **P9-E1 = IMPLEMENTATION CANDIDATE ONLY — NOT closed** (formal closure is a
+separate gate after independent review → Owner acceptance → merge (create-a-merge-commit) → post-merge verification); **NO new
+domain activated; NO domain selected; P9-E2 NOT implemented; D4 NOT executed; D8 = OPEN / Owner-reserved; Phase 8 = FORMALLY
+CLOSED; Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED; deployment / production = NOT AUTHORIZED.** The next state is: independent
+review of this exact candidate → Owner acceptance → merge → post-merge verification → a separate bounded P9-E1 formal-closure gate.
+
+**Immediately prior (retained as history — P9-E1 CONTRACT CANDIDATE, definition only; merged AUTHORITATIVE via PR #438 `8fbc239`):**
+**The `P9-E1` / `P9-PREREQ-A` — Path-N Production Caller Domain Propagation implementation is DEFINED by a
 governance-only CONTRACT CANDIDATE** (record: `docs/governance/P9_E1_PATH_N_CALLER_DOMAIN_PROPAGATION_CONTRACT.md`; authoritative
 base `f08dd2e0319b2777c47dad9cdb49c05d106bc7a0` — PR #437 made P9-QS AUTHORITATIVE). This is the mandatory D3-registered
 prerequisite **P9-PREREQ-A** now carried by the authoritative P9-QS §16; the Owner authorization **begins Phase 9 only at this
