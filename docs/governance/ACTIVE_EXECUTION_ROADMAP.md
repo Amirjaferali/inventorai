@@ -7162,3 +7162,61 @@ begun ONLY through this bounded P9-E1 contract gate.** **NO new domain activated
 CAP-13 / WS-PFV / STG / Output-Language NOT implemented; Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED; deployment / production =
 NOT AUTHORIZED. Append-only; prior history not rewritten. This entry authorizes no push, PR, merge beyond this candidate, domain
 activation/selection, D8 decision, P9-E2/D4 execution, or deployment.
+
+---
+
+## P9-E1 / P9-PREREQ-A — Path-N Production Caller Domain Propagation — IMPLEMENTATION CANDIDATE (RED→GREEN) — NO domain activated; NOT yet closed
+
+**Gate.** OWNER-AUTHORIZED bounded **runtime implementation** of the authoritative P9-E1 contract (merged PR #438). Authoritative
+base `8fbc239c98ab89e596554a8c52c7e7b1c5b22ad5` (live tip re-verified; two-parent merge PR #438 of `f08dd2e` + the P9-E1 contract
+candidate `3b485131`; **P9-E1 and P9-QS both AUTHORITATIVE**; boot OK; built in a disposable worktree — primary working tree +
+historical bundles untouched; not newer). **IMPLEMENTATION CANDIDATE ONLY** — authoritative only if independently reviewed,
+Owner-accepted, merged (create-a-merge-commit), and post-merge verified; **formal P9-E1 closure is a separate subsequent gate.**
+
+**Live defect reconfirmed at `8fbc239` (before edit).** The Path-N seam (`engine/path_n_questions.py`) is already domain-aware
+(`get_served_question`/`get_path_n_question` return `None` for a recognized non-electronics domain). The three production caller
+sites in `engine/progression_loop.py` omitted `domain=domain`, so `get_question("mechanical", "MECHANISM_COMPLETENESS", 0,
+path="N")` returned the Electronics artifact text (domain-blind) while the seam already returned `None` for `"mechanical"`;
+`support_state("mechanical") == "recognized_not_activated"`; no hidden fourth production caller exists.
+
+**Bounded runtime change (minimum-path).** `engine/progression_loop.py` — threaded the canonical `domain` (already the first
+parameter of both callers) into the existing three `get_path_n_question(...)` calls as `domain=domain`: (1) `get_question`
+(path=="N") selection; (2) `get_display_question` exhaustion `current` read; (3) `get_display_question` exhaustion `previous`
+read. No signature change; **`engine/path_n_questions.py` unchanged**; no domain-specific branching; no second router; no
+activation-policy change; no Domain Registry change; no Domain-Pack change; D8 untouched; P9-E2 untouched.
+
+**RED→GREEN evidence (behavioral; new focused test `tests/test_p9e1_path_n_caller_domain_propagation.py`, 6 tests).** On the
+authoritative baseline (pre-edit): **RED-1** (`get_question` foreign recognized domain served Electronics artifact text) FAILED;
+**RED-2** (`get_display_question` foreign recognized domain served the Electronics `_STALL_REFRAME` at variant exhaustion) FAILED;
+4 guards PASSED (fixture honesty — `mechanical` asserted `recognized_not_activated`/not-activated; Electronics artifact preserved;
+Electronics stall reframe preserved; `domain=None` seam backward-compatible). After the propagation: **all 6 GREEN**; behavioral
+proofs — `get_question("mechanical", …, path="N")` == generic fallthrough; `get_question("electronics_electrical", …)` == artifact
+(unchanged); `activated_domains() == ['electronics_electrical']` unchanged.
+
+**Per-site mutation proof (honest matrix; no probe left in the candidate).** Removing `domain=domain` at **site 1**
+(`get_question`) alone → focused set RED (individually load-bearing). Removing it at **site 2 or site 3** (the
+`get_display_question` reframe `current`/`previous` reads) *individually* → focused set GREEN (behavior preserved): the reframe
+fires only when both reads are non-None and equal, so making either read domain-aware alone drives one operand to `None` and
+already suppresses the erroneous foreign-domain reframe — a defense-in-depth property. Removing it at **sites 2+3 jointly** (the
+original `get_display_question` defect) → RED-2 RED (caught); removing at **all three** (full baseline) → RED-1+RED-2 RED.
+**Transparency note:** sites 2 and 3 are therefore *jointly* (not individually) load-bearing; both are threaded so the reframe
+comparison stays domain-consistent per contract §3. A behavioral test cannot catch a single site-2/site-3 omission because it
+introduces no defect (catching it would require prohibited source inspection). All probes restored byte-identical.
+
+**Full regression (fresh).** `pytest -q`: **2264 passed / 3 skipped / 1 xfailed / 0 failed / 0 errors** (= the P9-QS/P9-E1 baseline
+2258 + the 6 new focused P9-E1 tests; 3 skips = pre-existing Playwright/env-dependent, not passes; 1 xfailed = pre-existing). No
+regression.
+
+**Scope invariants proven.** Changed runtime/test paths = `engine/progression_loop.py` + the new focused test only; governance
+current-truth registration = this roadmap append + `ACTIVE_INCREMENT_CONTRACT.md` + `CURRENT_PROJECT_STATE.md` (D3 implementation
+precedent). **`OWNER_DECISION_REGISTER.md` UNCHANGED.** No Domain-Pack diff; no activation-policy diff (`domain_activation.py`
+untouched); no Domain Registry diff; no D8 (`domains/iot_electronics/**`) diff; no P9-E2 (`domain_rules.py`
+`sorted(activated_tied)[0]`) diff; no D4 diff; no web/schema/prompt expansion. `activated_domains() == ['electronics_electrical']`
+(only).
+
+**Boundary / status after this entry.** **P9-E1 = IMPLEMENTATION CANDIDATE ONLY — NOT closed** (formal closure is a separate gate
+after independent review → Owner acceptance → merge (create-a-merge-commit) → post-merge verification). **NO new domain activated;
+NO domain selected; P9-E2 NOT implemented; D4 NOT executed; D8 Owner-reserved;** deterministic calculations / Units / CAP-12 /
+CAP-13 / WS-PFV / STG / Output-Language NOT implemented; Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED; deployment / production =
+NOT AUTHORIZED. Append-only; prior history not rewritten. This entry authorizes no push, PR, or merge beyond this candidate, no
+domain activation/selection, no D8 decision, and no P9-E2/D4 execution.
