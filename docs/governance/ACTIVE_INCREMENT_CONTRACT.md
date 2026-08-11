@@ -41,8 +41,36 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — NO active implementation increment; D3 FORMALLY CLOSED; Phase 8 already FORMALLY CLOSED; Phase 9 INACTIVE /
-NOT AUTHORIZED):** **`D3` — Pre-Phase-9 Core Domain-Neutrality is FORMALLY CLOSED** as a governance-only CLOSURE CANDIDATE
+**Status (current — governance-only CONTRACT CANDIDATE; NO active implementation increment; Phase 9 INACTIVE / NOT AUTHORIZED):**
+**The `P9-QS` — Phase-9 Technical Quality Standard is DEFINED by a CORRECTED governance-only CONTRACT CANDIDATE** (record:
+`docs/governance/P9_QS_PHASE_9_TECHNICAL_QUALITY_STANDARD_CONTRACT.md`; authoritative base
+`99c08555351e031bd3cc11f536cf558c91dc0c32`). It is the corrected reissue that **supersedes the REJECTED prior candidate
+`6a3e25df79bfe2399474a1ecf9154ca3ccfbe307`** (which remains **historical rejected evidence only — NOT modified / NOT merged /
+NOT reused**); this is a NEW independent candidate from the current authoritative parent, not an amendment of the rejected SHA.
+Corrections applied: **B1** — the future deterministic-calculation capability is assigned **no CAP number** (an unnumbered
+*future deterministic-calculation adapter gate*); `CAP-06` is repository-canonical for the *Multi-Axis Invention Readiness
+Dashboard* and MUST NOT be reused for it. **B2** — the **Output-Language override capability is DEFERRED / NOT IMPLEMENTED / NOT
+AUTHORIZED / separately governed (D-P6-17 is the accepted decision, not the capability) and is NOT a pre-new-domain activation
+prerequisite**; the actual repository-authoritative pre-new-domain prerequisite is the separate **Domain Registry validation
+hardening (D-P6-14 / §5-I1, already CLOSED)**. Non-blocking O1 (audit/addendum/sweep = session-level review/development inputs,
+not committed repository authority), O2 (`P9-PREREQ-A/B` are convenient labels for the already-D3-registered obligations, not
+pre-existing canonical identifiers), and O3 (§4b references the existing **D13 knowledge-governance / evidence-governance /
+licensing** family, reference/reuse only) also addressed. The standard expresses the Domain Capability Contract **through** the
+canonical Domain Registry (§5-I1; no second registry), preserves the activation-quality principle, and keeps every deferred item
+(deterministic-calculation adapter, Units, CAP-12/CAP-13/WS-PFV, D4, D8, Output-Language) as REFERENCE-ONLY / DEFERRED.
+**Governance-only scope:** the new contract doc + append-only roadmap entry + this current-truth sync +
+`CURRENT_PROJECT_STATE.md`; **`OWNER_DECISION_REGISTER.md` UNCHANGED; ZERO runtime/test/schema/prompt/benchmark/web/CI diff.**
+**P9-QS = CONTRACT CANDIDATE ONLY — it becomes the authoritative contract-of-record only if this exact accepted candidate is
+merged (create-a-merge-commit) and post-merge verified; there is NO active implementation increment; NO domain activated; the
+future deterministic-calculation capability remains UNNUMBERED / DEFERRED; Output-Language remains separately governed / DEFERRED
+and NOT an activation prerequisite; D8 = OPEN / Owner-reserved; Phase 8 = FORMALLY CLOSED; Phase 9 = INACTIVE / NOT AUTHORIZED
+(accepting this standard does NOT open a Phase-9 implementation contract); Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED;
+deployment / production = NOT AUTHORIZED.** Owner product/policy decisions required before P9-QS acceptance: NONE — only
+independent review → Owner acceptance → merge → post-merge verification. The next state is: P9-QS reviewed; Phase 9 remains
+inactive pending separate Owner authorization plus the Phase-9 entry gates (and, for a second/non-electronics domain, the
+P9-PREREQ-A/B prerequisites and the already-CLOSED Domain Registry hardening D-P6-14 / §5-I1).
+
+**Immediately prior (retained as history — D3 FORMALLY CLOSED):** **`D3` — Pre-Phase-9 Core Domain-Neutrality is FORMALLY CLOSED** as a governance-only CLOSURE CANDIDATE
 (prerequisite closure only; authoritative if/when merged; dedicated record
 `docs/governance/D3_CORE_DOMAIN_NEUTRALITY_FORMAL_CLOSURE_RECORD.md`; base `e51eaf7eee001ef6012579852c8da7cbeda8e144`, PR #435).
 Contract PR #434 (`2dbde37`) + implementation PR #435 (`e51eaf7`; merge tree = accepted candidate tree `f027c93`, post-merge

@@ -7030,3 +7030,65 @@ domain is proposed, the §7–§8 activation prerequisites. Phase 10 — NOT AUT
 reconciliation — separate pre-production gate; deployment / production — NOT AUTHORIZED. Candidate only until independent review
 → Owner acceptance → merge (create-a-merge-commit) → post-merge verification. Append-only; prior history not rewritten. This
 entry authorizes no push, PR, merge beyond this candidate, domain activation, D8 decision, Phase-9 start, or deployment.
+
+---
+
+## P9-QS — Phase-9 Technical Quality Standard — governance-only CONTRACT CANDIDATE (CORRECTED; supersedes rejected `6a3e25d`) — NOT authoritative unless merged; Phase 9 NOT authorized
+
+**Gate.** OWNER-AUTHORIZED **governance-only** creation of a single consolidated Phase-9 Technical Quality Standard contract
+candidate, on authoritative base `99c08555351e031bd3cc11f536cf558c91dc0c32` (live-tip verified; boot OK; built in a disposable
+worktree — primary working tree + historical bundles untouched; not newer). **CONTRACT CANDIDATE ONLY** — it becomes
+repository-authoritative only if independently reviewed, Owner-accepted, merged (create-a-merge-commit), and post-merge verified.
+It authorizes **no** Phase-9 start, no domain activation, no runtime/test/schema/prompt/benchmark/web change (expected such diff
+ZERO — governance docs only).
+
+**Correction lineage (this is the corrected reissue).** The immediately prior P9-QS candidate `6a3e25df79bfe2399474a1ecf9154ca3ccfbe307`
+was **REJECTED** for governance inconsistency and **remains historical rejected evidence only — NOT modified, NOT merged, NOT
+reused**. This is a **NEW independent candidate created from the current authoritative parent** (`99c0855`), not an amendment of
+the rejected SHA. Two blocking findings fixed: **B1** — the rejected draft mis-assigned the canonical identifier `CAP-06` (which
+is repository-canonical for the *Multi-Axis Invention Readiness Dashboard*) to deterministic engineering calculations; the
+corrected candidate assigns the future deterministic-calculation capability **no CAP number** (an unnumbered *future
+deterministic-calculation adapter gate*, §13) and states `CAP-06` MUST NOT be reused for it. **B2** — the rejected draft
+overclaimed that the Output-Language override capability is a repository-authoritative pre-new-domain activation prerequisite;
+the corrected candidate states Output-Language is **DEFERRED / NOT IMPLEMENTED / NOT AUTHORIZED / separately governed** (D-P6-17
+is the accepted *decision*, not the capability) and is **NOT** an activation prerequisite, and identifies the actual
+repository-authoritative pre-new-domain prerequisite as the separate **Domain Registry validation hardening (D-P6-14 / §5-I1,
+already CLOSED)**. Three non-blocking observations also addressed: **O1** — the audit/addendum/sweep are described as
+session-level **review/development inputs, not committed repository authority**; **O2** — the short labels **P9-PREREQ-A /
+P9-PREREQ-B** are stated as convenient P9-QS labels for the already-D3-registered obligations, not pre-existing canonical
+identifiers; **O3** — a new §4b cross-references the existing **D13 knowledge-governance / evidence-governance / licensing**
+family for future Domain-Pack knowledge sources (reference/reuse only — no new framework, no CAP-12/CAP-13/WS-PFV duplication).
+
+**Scope (governance docs only).** NEW `docs/governance/P9_QS_PHASE_9_TECHNICAL_QUALITY_STANDARD_CONTRACT.md` (the corrected
+standard) + this roadmap append + `CURRENT_PROJECT_STATE.md` + `ACTIVE_INCREMENT_CONTRACT.md` current-truth sync.
+**`OWNER_DECISION_REGISTER.md` UNCHANGED** (a contract candidate records no new accepted Owner product-policy decision —
+consistent with the D3 / P8-AF / P8-CLOSE contract-candidate precedent). **ZERO** runtime/test/Domain-Pack/schema/prompt/
+benchmark/web/CI diff.
+
+**Standard content (candidate).** One consolidated Phase-9 Technical Quality Standard: state-separation (recognition ≠
+qualification ≠ authorization ≠ activation ≠ composition ≠ Phase-10/PSRR); activation-quality principle preserved (correct domain
+questions; gap/contradiction detection; evidence-vs-assumption separation; deterministic checks; graceful degradation on
+known-unknowns); Domain Capability Contract expressed **through** the canonical Domain Registry (§5-I1) with **no** second
+registry; knowledge-source/provenance/licensing reuse via the D13 family (§4b, reference only); evidence/assumption/contradiction
+reuse of the canonical owners; boundary/qualification tests with regression; versioning/backward-compat; lifecycle/deactivation;
+extensibility; and explicit REFERENCE-ONLY / DEFERRED placeholders for the future deterministic-calculation adapter gate
+(unnumbered, §13), Units/Dimensional handling (§12), prototype/manufacturing capabilities (CAP-12/CAP-13/WS-PFV — separate, not
+duplicated, §14), D4 cross-domain integration (requires ≥2 activated domains, §15), D8 iot_electronics (Owner-reserved, §17), and
+Output-Language (separately governed, §18). Canonical owners preserved, never duplicated (§20).
+
+**Future-prerequisite labels (not new authority).** The standard reuses the three D3-registered obligations under convenient
+P9-QS labels: **P9-PREREQ-A** = the D3-registered Path-N production-caller propagation obligation (MANDATORY before the first
+second / non-electronics domain activation); **P9-PREREQ-B** = the D3-registered multi-activated-domain tie/conflict-precedence
+obligation (MANDATORY before more than one specialist domain is activated); and the D3-registered Phase-9 Capability Overlap &
+Preservation Audit obligation (satisfied by the completed read-only audit + addendum inputs). These labels create no new
+authority and re-home no canonical owner.
+
+**Boundary / status after this entry.** **P9-QS = CONTRACT CANDIDATE ONLY** — authoritative only if/when merged and post-merge
+verified. **NO domain activated; D8 Owner-reserved; the future deterministic-calculation capability remains UNNUMBERED /
+DEFERRED; Output-Language remains separately governed / DEFERRED and is NOT an activation prerequisite.** **Phase 9 remains
+INACTIVE / NOT AUTHORIZED** — accepting this standard does NOT open a Phase-9 implementation contract; Phase 9 requires separate
+Owner authorization plus the Phase-9 entry gates and, when a second/non-electronics domain is proposed, the P9-PREREQ-A/B
+prerequisites and the Domain Registry hardening (D-P6-14 / §5-I1, already CLOSED). Phase 10 — NOT AUTHORIZED; PSRR — NOT EXECUTED;
+deployment / production — NOT AUTHORIZED. The rejected candidate `6a3e25d` remains historical rejected evidence only, unmodified.
+Append-only; prior history not rewritten. This entry authorizes no push, PR, merge beyond this candidate, domain activation, D8
+decision, Phase-9 start, deterministic-calculation implementation, Output-Language implementation, or deployment.

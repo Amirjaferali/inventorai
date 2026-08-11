@@ -1050,6 +1050,31 @@ AUTHORIZED / NOT STARTED.***
   Standard). **D3 = FORMALLY CLOSED / AUTHORITATIVE (prerequisite closure only; no active D3 increment remains); Phase 9 remains
   INACTIVE / NOT AUTHORIZED (D3 closure does NOT auto-open a Phase-9 contract or activate any domain); Phase 10 = NOT AUTHORIZED;
   PSRR = NOT EXECUTED; deployment / production = NOT AUTHORIZED.**
+  **Phase-9 preparation — Capability Overlap & Preservation Audit + Architecture/Extensibility Addendum COMPLETED (read-only), and
+  the Phase-9 Technical Quality Standard is now DEFINED by a CORRECTED governance-only CONTRACT CANDIDATE (P9-QS).** The read-only
+  audit + addendum (session-level **review/development inputs, not committed repository authority**) concluded that 5 of 6
+  proposed Phase-9 capabilities reuse existing canonical owners and only a future deterministic-calculation capability is
+  genuinely new, favoring one consolidated standard. **P9-QS** (record:
+  `docs/governance/P9_QS_PHASE_9_TECHNICAL_QUALITY_STANDARD_CONTRACT.md`) is the corrected reissue that **supersedes the REJECTED
+  prior candidate `6a3e25df79bfe2399474a1ecf9154ca3ccfbe307`** (which **remains historical rejected evidence only — NOT modified /
+  NOT merged / NOT reused**); this is a NEW independent candidate from authoritative parent `99c0855`. Corrections applied:
+  **B1** — the future deterministic-calculation capability is assigned **no CAP number** (unnumbered *future deterministic-calculation
+  adapter gate*); `CAP-06` is repository-canonical for the *Multi-Axis Invention Readiness Dashboard* and MUST NOT be reused for
+  it. **B2** — the **Output-Language override capability is DEFERRED / NOT IMPLEMENTED / NOT AUTHORIZED / separately governed
+  (D-P6-17 is the accepted decision, not the capability) and is NOT a pre-new-domain activation prerequisite**; the actual
+  repository-authoritative pre-new-domain prerequisite is the separate **Domain Registry validation hardening (D-P6-14 / §5-I1,
+  already CLOSED)**. Non-blocking: **O1** audit-as-input wording; **O2** `P9-PREREQ-A/B` stated as convenient labels for the
+  already-D3-registered obligations (not pre-existing canonical identifiers); **O3** a §4b reference to the existing **D13
+  knowledge-governance / evidence-governance / licensing** family for future Domain-Pack knowledge sources (reference/reuse only,
+  no new framework, no CAP-12/CAP-13/WS-PFV duplication). The standard expresses the Domain Capability Contract **through** the
+  canonical Domain Registry (§5-I1; no second registry), preserves the activation-quality principle, and keeps all deferred items
+  (deterministic-calculation adapter, Units, CAP-12/CAP-13/WS-PFV, D4, D8, Output-Language) as REFERENCE-ONLY / DEFERRED
+  placeholders. **P9-QS = CONTRACT CANDIDATE ONLY — authoritative only if this exact accepted candidate is merged and post-merge
+  verified; `OWNER_DECISION_REGISTER.md` unchanged; NO runtime/test/schema/prompt/benchmark/web diff; NO domain activated; the
+  future deterministic-calculation capability remains UNNUMBERED / DEFERRED; Output-Language remains separately governed /
+  DEFERRED and NOT an activation prerequisite; D8 Owner-reserved; Phase 9 remains INACTIVE / NOT AUTHORIZED (accepting the
+  standard does NOT open a Phase-9 implementation contract); Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED; deployment /
+  production = NOT AUTHORIZED.**
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
