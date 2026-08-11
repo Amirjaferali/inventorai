@@ -11,7 +11,31 @@ from engine.idea_state import (
     MECHANISM_COMPLETENESS, PHYSICAL_FEASIBILITY, BOUNDARY_AMBIGUITY,
     PROBLEM_MECHANISM_FIT, ASSUMPTION_INVENTORY,
 )
-from engine.domain_rules import infer_domain
+from engine.domain_rules import (
+    infer_domain, classify_domain, DomainClassification, DomainResultKind,
+    DomainAmbiguityReason,
+)
+
+
+def _none_result(_t):
+    """P9-E2-R test double: the canonical classifier yields NONE."""
+    return DomainClassification(kind=DomainResultKind.NONE)
+
+
+def _single_result(domain):
+    """P9-E2-R test double factory: the canonical classifier yields SINGLE(domain)."""
+    return lambda _t: DomainClassification(
+        kind=DomainResultKind.SINGLE, selected_domain=domain)
+
+
+def _multi_result(_t):
+    """P9-E2-R test double: a genuine multi-domain result (marker only; no D4).
+    Registry-recognized candidates, no activation required for MULTI_DOMAIN_NEEDS_D4."""
+    return DomainClassification(
+        kind=DomainResultKind.MULTI_DOMAIN_NEEDS_D4,
+        candidates=("mechanical", "medical_device"),
+        reason=DomainAmbiguityReason.MULTI_DOMAIN,
+    )
 
 
 def test_start_ilt002_water_leak_forces_electronics_domain():
@@ -560,7 +584,7 @@ def test_start_without_confirmation_refused_even_when_inference_none(monkeypatch
     # confirmation; without confirmation it is refused and no session is created.
     client = app.test_client()
     before = set(SESSION_STORE)
-    monkeypatch.setattr("web.app.infer_domain", lambda _t: None)
+    monkeypatch.setattr("web.app.classify_domain", _none_result)
     resp = _start_post(client, "something with no recognizable signals", confirm=False)
     assert resp.status_code == 200
     assert CONFIRMATION_REQUIRED_MESSAGE in resp.get_data(as_text=True)
@@ -572,7 +596,7 @@ def test_start_refuses_unexpected_inference_value_defensively(monkeypatch):
     # or converted to electronics.
     client = app.test_client()
     before = set(SESSION_STORE)
-    monkeypatch.setattr("web.app.infer_domain", lambda _t: "quantum_widgets")
+    monkeypatch.setattr("web.app.classify_domain", _multi_result)
     resp = _start_post(client, "an idea the boundary scores oddly")
     assert resp.status_code == 200
     assert _ERROR_HTML in resp.get_data(as_text=True)
@@ -586,7 +610,7 @@ def test_start_does_not_fall_back_to_electronics_on_refusal(monkeypatch):
     before_electronics = sum(
         1 for v in SESSION_STORE.values() if v["state"].domain == "electronics_electrical"
     )
-    monkeypatch.setattr("web.app.infer_domain", lambda _t: "mechanical")
+    monkeypatch.setattr("web.app.classify_domain", _single_result("mechanical"))
     resp = _start_post(client, "a mechanical idea forced through the boundary")
     assert resp.status_code == 200
     after_electronics = sum(
@@ -658,7 +682,7 @@ def test_index_error_surface_renders_stable_refusal_message(monkeypatch):
     # The {{ error }} surface still renders the stable refusal message exactly
     # when /start refuses a non-electronics activation.
     client = app.test_client()
-    monkeypatch.setattr("web.app.infer_domain", lambda _t: "mechanical")
+    monkeypatch.setattr("web.app.classify_domain", _multi_result)
     body = _start_post(client, "a mechanical idea forced through the boundary").get_data(as_text=True)
     assert _ERROR_HTML in body
 
@@ -698,7 +722,7 @@ def test_water_leak_admitted_even_if_inference_is_none(monkeypatch):
     # returns None (as it would after substring matching is corrected later),
     # the confirmed water-leak idea is admitted.
     client = app.test_client()
-    monkeypatch.setattr("web.app.infer_domain", lambda _t: None)
+    monkeypatch.setattr("web.app.classify_domain", _none_result)
     sid = _admitted_sid(_start_post(client, WATER_LEAK_IDEA))
     assert SESSION_STORE[sid]["state"].domain == "electronics_electrical"
 
@@ -787,7 +811,11 @@ def test_confirmation_never_relabels_conflicting_domain():
 def test_unexpected_classifier_value_refused_even_with_confirmation(monkeypatch):
     client = app.test_client()
     before = set(SESSION_STORE)
-    monkeypatch.setattr("web.app.infer_domain", lambda _t: "quantum_widgets")
+    # P9-E2-R: an unadmittable (richer-kind) classification fails closed even under
+    # explicit confirmation — no session, never relabeled electronics. (An
+    # out-of-scope SINGLE value like "quantum_widgets" is now impossible to
+    # construct — see the invariant tests in tests/test_p9e2r_result_representation.)
+    monkeypatch.setattr("web.app.classify_domain", _multi_result)
     resp = _start_post(client, "an idea the boundary scores oddly")
     assert resp.status_code == 200
     assert _ERROR_HTML in resp.get_data(as_text=True)

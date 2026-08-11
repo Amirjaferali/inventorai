@@ -41,8 +41,40 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — governance-only CONTRACT CANDIDATE, contract-first, CORRECTED; NO active runtime increment; NO domain
-activated):** **`P9-E2-R` — Ambiguity / Multi-Domain Result Representation (bounded sub-gate) is DEFINED by a CORRECTED
+**Status (current — IMPLEMENTATION CANDIDATE, RED→GREEN, architecture-affecting; runtime increment present; NO domain activated):**
+**`P9-E2-R` — Ambiguity / Multi-Domain Result Representation is now IMPLEMENTED as an IMPLEMENTATION CANDIDATE** on authoritative
+base `3434c2350b4c08cabcc362d175947a311070b493` (PR #442 made the corrected P9-E2-R contract AUTHORITATIVE). Minimum-sufficient
+representation seam (NO tie-policy change): `engine/domain_rules.py` gains `DomainResultKind {SINGLE, NONE, AMBIGUOUS_TIE,
+MULTI_DOMAIN_NEEDS_D4}`, deterministic `DomainAmbiguityReason`, `AmbiguousDomainResultError`, and an immutable frozen
+`DomainClassification` with all invariants enforced at construction (registry-valid SINGLE + empty candidates; NONE empty; tie/multi
+no-winner + ≥2 unique registry-recognized canonical-sorted candidates + deterministic reason; AMBIGUOUS_TIE all-activated (D3-D);
+mutual exclusion; canonical order ≠ precedence). Canonical `classify_domain(...)` is the single classifier owner (today SINGLE/NONE
+only — behavior-equivalent, no tie detection); legacy `infer_domain(...) -> str | None` is a thin wrapper, **total over SINGLE/NONE
+and FAIL-LOUD (`AmbiguousDomainResultError`) over richer kinds**. `web/app.py` `/start` and `scripts/run_cli.py` migrated to
+**dispatch by `result.kind`** (never truthiness/string comparison of the object): SINGLE byte-identical, NONE unchanged,
+AMBIGUOUS_TIE + MULTI_DOMAIN_NEEDS_D4 **fail closed** via an existing safe surface (no session/no electronics admission/no winner/no
+D4/no new UX/no implied multi-domain analysis); `state.domain` remains a resolved string. `engine/domain_activation._resolve_pack_id`
+gains a **defensive fail-loud `TypeError`** for non-string domain ids (a `DomainClassification` can never be silently swallowed;
+None/empty preserved). `ARCHITECTURE_GUARDRAILS.md` §9 reconciled (classify_domain = richer canonical entry; infer_domain
+legacy/fail-loud; new admission callers must use classify_domain; one owner) with deliberate guardrail tests; the frozen `str |
+None` signature test is NOT weakened. **RED→GREEN** via new `tests/test_p9e2r_result_representation.py` (19) + 4 guardrail tests
+(RED-R1…R11 + invariant/immutability/mutual-exclusion/duplicate/deterministic-reason/defensive-boundary), all GREEN; activated ties
+simulated with self-restoring `_ACTIVATED_DOMAINS` doubles (NO real activation). **Six load-bearing mutation probes** all caught RED
+(wrapper fail-loud; `/start` AMBIGUOUS; `/start` MULTI; defensive boundary; canonical-order; **migrated-monkeypatch detachment** —
+the six `web.app.infer_domain` monkeypatches were migrated to `web.app.classify_domain` and proven still load-bearing), byte-restored.
+**Fresh full suite: 2287 passed / 3 skipped / 1 xfailed / 0 failed** (2264 baseline + 23 new). **Scope:** the 8 runtime/test/guardrail
+paths + governance current-truth registration (roadmap + this file + `CURRENT_PROJECT_STATE.md`, per D3 implementation precedent);
+**`OWNER_DECISION_REGISTER.md` UNCHANGED**; no persistence/schema/public-API/export/Domain-Pack change; no P9-E2 tie-policy change;
+`activated_domains() == ['electronics_electrical']`. Phase-9 completeness checklist: no acceptance-relevant APPLICABLE/GAP. **P9-E2-R
+= IMPLEMENTATION CANDIDATE ONLY — NOT closed** (formal closure, if precedent requires, is a separate gate after independent review →
+Owner acceptance → merge → post-merge verification); **NO new domain activated; NO domain selected; P9-E2 tie precedence remains a
+separate later runtime gate; P9-E1 remains FORMALLY CLOSED / SATISFIED; D4 = SEPARATE / UNEXECUTED; D8 = OPEN / Owner-reserved; Phase
+8 = FORMALLY CLOSED; Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED; deployment / production = NOT AUTHORIZED.** The next state is:
+independent review of this exact implementation candidate → Owner acceptance → merge → post-merge verification → (if precedent
+requires) a separate P9-E2-R formal-closure gate.
+
+**Immediately prior (retained as history — P9-E2-R CONTRACT CANDIDATE, corrected; merged AUTHORITATIVE via PR #442 `3434c23`):**
+**`P9-E2-R` — Ambiguity / Multi-Domain Result Representation (bounded sub-gate) is DEFINED by a CORRECTED
 governance-only CONTRACT CANDIDATE** (record: `docs/governance/P9_E2_R_AMBIGUITY_MULTI_DOMAIN_RESULT_REPRESENTATION_CONTRACT.md`;
 authoritative base `47fce397dfd21175a0012b652f8dde6548e31432`). It is the corrected reissue that **supersedes the Grill-REJECTED
 prior candidate `1b817f06e7d86b3af6e44b298bcf7a31102e5e32`** (which remains **immutable historical evidence only — NOT amended /

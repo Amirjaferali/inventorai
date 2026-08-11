@@ -13,7 +13,7 @@ from flask import (
     Flask, request, redirect, url_for, render_template,
     has_request_context, session as flask_session,
 )
-from engine.domain_rules import infer_domain
+from engine.domain_rules import classify_domain, DomainResultKind
 from engine import domain_activation
 from engine.idea_state import (
     IdeaState, SuccessCriterion,
@@ -1356,11 +1356,28 @@ def start():
     # session is created.
     if request.form.get("domain_confirm") != DOMAIN_CONFIRM_VALUE:
         return render_template("index.html", error=CONFIRMATION_REQUIRED_MESSAGE)
-    # Bounded conflict check using the unchanged deterministic classifier: the
-    # explicit confirmation is the primary domain declaration, but it must not
-    # silently override clear conflicting classification evidence.
-    # infer_domain(), the registry loader, and all domain packs are unchanged.
-    domain = infer_domain(idea_text)
+    # Bounded conflict check using the canonical deterministic classifier
+    # (P9-E2-R): dispatch by result KIND, never by truthiness / string identity of
+    # the structured result. classify_domain() today yields only SINGLE / NONE
+    # (behavior-equivalent to the prior infer_domain string); the richer kinds are
+    # dormant until the later, separate P9-E2 tie-precedence runtime produces them.
+    classification = classify_domain(idea_text)
+    if classification.kind is DomainResultKind.AMBIGUOUS_TIE:
+        # Fail closed: an ambiguous activated tie is NOT a single supported domain.
+        # It must never enter the None classifier-miss fallback (which admits
+        # electronics), never admit a winner, never create a session. Existing safe
+        # surface; no new UX (P9-E2-R 7/14).
+        return render_template("index.html", error=UNSUPPORTED_DOMAIN_MESSAGE)
+    if classification.kind is DomainResultKind.MULTI_DOMAIN_NEEDS_D4:
+        # Fail closed: a genuine multi-domain idea is NOT admissible as one domain,
+        # and D4 is NOT executed here. No implication that multi-domain analysis
+        # occurred. Existing safe surface; no new UX (P9-E2-R 7/14/16).
+        return render_template("index.html", error=UNSUPPORTED_DOMAIN_MESSAGE)
+    # SINGLE -> the resolved registry domain string; NONE -> None. This reproduces
+    # the exact prior infer_domain value for every currently-reachable input, so the
+    # SINGLE/NONE admission behavior below is byte-for-byte unchanged.
+    domain = (classification.selected_domain
+              if classification.kind is DomainResultKind.SINGLE else None)
     lowered = idea_text.lower()
     # Domain Gate / Entry UX Increment (post-PR #100 Increment Contract). Bounded
     # ambiguity resolution, ordered so that explicit confirmation resolves only

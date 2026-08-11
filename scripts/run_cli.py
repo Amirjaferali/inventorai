@@ -12,7 +12,7 @@ from engine.summary import build_summary
 
 from engine.idea_state import IdeaState, Gap, MECHANISM_COMPLETENESS, OPEN
 from engine.progression_loop import run_iteration
-from engine.domain_rules import infer_domain
+from engine.domain_rules import classify_domain, DomainResultKind
 
 MAX_ITERATIONS = 5
 
@@ -31,8 +31,26 @@ def run_cli():
 
     print()
 
-    # Step 2: Infer domain
-    domain = infer_domain(idea)
+    # Step 2: Classify domain (P9-E2-R: dispatch by result KIND; never stringify
+    # the structured result, never treat a richer kind as a single domain).
+    classification = classify_domain(idea)
+    if classification.kind in (DomainResultKind.AMBIGUOUS_TIE,
+                               DomainResultKind.MULTI_DOMAIN_NEEDS_D4):
+        # Explicit bounded stop: never print an arbitrary winner, never treat this
+        # as a single domain, never activate a domain, never execute D4. No
+        # implication that multi-domain analysis occurred. (Dormant until the later,
+        # separate P9-E2 tie-precedence runtime produces these kinds.)
+        print()
+        print("─" * 60)
+        print("CANNOT DETERMINE A SINGLE SUPPORTED DOMAIN")
+        print("─" * 60)
+        print("This MVP supports electronics/electrical ideas only, and this idea")
+        print("could not be resolved to a single supported domain.")
+        print("─" * 60)
+        return
+    # SINGLE -> resolved registry domain string; NONE -> None (unchanged behavior).
+    domain = (classification.selected_domain
+              if classification.kind is DomainResultKind.SINGLE else None)
     print(f"Domain inferred: {domain or 'unknown'}")
 
     # Step 3: Check scope

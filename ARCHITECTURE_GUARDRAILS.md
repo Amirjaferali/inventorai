@@ -100,11 +100,27 @@ must remain pure and deterministic. No AI calls permitted. Ever.
 
 ## 9. Classification Independence
 
-infer_domain() signature must remain stable:
+The canonical domain classifier is `classify_domain(idea_text) -> DomainClassification`
+(P9-E2-R) — the single classifier owner in `engine/domain_rules.py`. It returns an
+immutable `DomainClassification` whose `kind` is one of SINGLE / NONE /
+AMBIGUOUS_TIE / MULTI_DOMAIN_NEEDS_D4. Today it yields only SINGLE / NONE
+(behavior-equivalent to the historical string classifier); the richer kinds are
+representable but produced only by the later, separate P9-E2 tie-precedence runtime.
+
+`infer_domain()` remains the LEGACY compatibility surface and its signature stays
+stable:
     def infer_domain(idea_text: str) -> str | None
 
-Current keyword-based implementation is MVP-only.
-Future ML/LLM replacement must not require changes to progression_loop.py.
+Reconciliation (P9-E2-R §4.1): `infer_domain` is a thin wrapper over
+`classify_domain` and is **total over SINGLE/NONE** (SINGLE -> selected domain
+string; NONE -> None) and **intentionally fail-loud (raises
+`AmbiguousDomainResultError`) over the richer kinds** — a governed, deliberate
+refinement, NOT drift. It NEVER returns None / an arbitrary domain for a richer
+kind. **New production admission callers MUST consume `classify_domain` and
+dispatch by `kind`; they MUST NOT use the legacy `infer_domain` wrapper.** There is
+exactly ONE classifier owner (`infer_domain` delegates to `classify_domain`; no
+duplicate classification logic). Current keyword-based implementation is MVP-only;
+a future ML/LLM replacement must not require changes to progression_loop.py.
 
 ## 10. Technical Debt Register
 
