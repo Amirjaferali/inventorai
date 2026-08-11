@@ -7352,3 +7352,62 @@ NO domain selected; D4 SEPARATE / UNEXECUTED; D8 Owner-reserved;** deterministic
 Output-Language NOT implemented; Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED; deployment / production = NOT AUTHORIZED. Append-only;
 prior history not rewritten. This entry authorizes no push, PR, merge beyond this candidate, domain activation/selection, D8
 decision, or D4 execution.
+
+---
+
+## P9-E2-R — Ambiguity / Multi-Domain Result Representation — governance-only IMPLEMENTATION CONTRACT CANDIDATE (CORRECTED; supersedes Grill-rejected `1b817f06`) — CONTRACT-FIRST; NO domain activated/selected
+
+**Gate.** OWNER-AUTHORIZED **contract-first, governance-only** corrected reissue of the P9-E2-R representation sub-gate contract
+(called out by the authoritative P9-E2 §6), incorporating all MATERIAL findings of the Mandatory adversarial Grill. Authoritative
+base `47fce397dfd21175a0012b652f8dde6548e31432` (live tip re-verified; PR #441 = merge of `05184f91` + P9-E2 candidate `1d29a26f`;
+merge tree `1f3cbf99` == candidate tree; **P9-E2 contract AUTHORITATIVE**; P9-E1 FORMALLY CLOSED / SATISFIED; boot OK;
+`activated_domains() == ['electronics_electrical']`; built in a disposable worktree — primary working tree + historical bundles
+untouched; not newer). **CONTRACT CANDIDATE ONLY.** **No runtime/test change, no domain activation, no domain selection** (expected
+runtime/test/domain/web/CLI/schema/prompt/benchmark diff ZERO).
+
+**Correction lineage.** The prior candidate `1b817f06e7d86b3af6e44b298bcf7a31102e5e32` was **REJECTED for publication by the
+Mandatory Grill (GRILL FAIL — MATERIAL CONTRACT CORRECTION REQUIRED)** and **remains immutable historical evidence only — NOT
+amended, NOT merged, NOT reused**. This is a **NEW independent candidate from the current authoritative parent**, not a repair.
+
+**Material corrections incorporated (Grill ledger, contract §22).** (1) legacy `infer_domain` wrapper **FAILS LOUD** (raises a
+dedicated bounded exception, never silent `None`/arbitrary domain) on AMBIGUOUS_TIE / MULTI_DOMAIN_NEEDS_D4, total over SINGLE/NONE
+(§4); (2) **RED-R9** (wrapper fail-loud) (§20); (3) **mandatory migration of all six `web.app.infer_domain` monkeypatch surfaces**
+(`tests/test_web_app.py` 563/575/589/661/701/790) with load-bearing proof so tests do not silently detach (§7.3); (4)
+**architecture-guardrail reconciliation** of the frozen `infer_domain -> str | None` vs the fail-loud richer-kind behavior — update
+`ARCHITECTURE_GUARDRAILS.md`, record `classify_domain` as richer canonical entry, no guardrail silently weakened (§4.1); (5)
+`classify_domain()` richer canonical entry with **one classifier owner** (§3); (6)(7) **web + CLI dispatch by `result.kind`**, never
+truthiness/string comparison of the structured object (§7/§7.1/§7.2); (8) **RED-R10** `/start × MULTI_DOMAIN_NEEDS_D4`; (9)
+**RED-R11** CLI bounded stop (§20); (10) **`state.domain` remains a resolved domain string, never `DomainClassification`** (§10);
+(11) strengthened invariants — unique candidate ids, ≥2 candidates for AMBIGUOUS_TIE/MULTI, all-AMBIGUOUS_TIE-candidates-activated,
+selected/candidate mutual exclusion, duplicate rejection, immutable result (§11); (12) **deterministic/non-LLM `reason`** enum/code
+(§12); (13) **defensive fail-loud type boundary** so a `DomainClassification` cannot be silently swallowed by `str`-expecting
+activation/domain-id code (`domain_activation._resolve_pack_id` returns None for non-str) (§19); (14) **line-34 future Nth-domain
+fallthrough hazard registered** as a mandatory obligation before first new Nth-domain registration/activation (no hazard today —
+all 4 packs in the list) (§21); (15) future implementation **classified as architecture-affecting / higher-governance** (§22); (16)
+D4 remains **marker-only** and public/CLI wording must not imply multi-domain analysis occurred (§16/§18). Additional Grill finding
+folded in: the wrapper fail-loud (#1) and frozen-signature guardrail (#4) tension is reconciled explicitly (§4.1).
+
+**Confirmed gap (verified at `47fce39`).** `infer_domain -> str | None` conflates no-match/recognized-unsupported/activated-tie/
+candidate-set/multi-domain; `web/app.py` `/start` admits `domain is None` as an electronics session (lines 1393–1394), so an
+ambiguous tie as `None` would be silently admitted as electronics; a structured object would break the string comparisons + SINGLE
+path and stringify in the CLI. Guardrail freezes the `str | None` signature (`ARCHITECTURE_GUARDRAILS.md` 103–104, TEST 5).
+Reachability: activated tie **unreachable today** (only electronics activated).
+
+**Architecture (retained, minimum-sufficient).** `DomainResultKind {SINGLE, NONE, AMBIGUOUS_TIE, MULTI_DOMAIN_NEEDS_D4}` +
+immutable frozen `DomainClassification` owned by `engine/domain_rules.py`; canonical `classify_domain(...)` (today SINGLE/NONE
+only, behavior-equivalent); legacy fail-loud `infer_domain` wrapper; one classifier owner; no new framework/router/registry/
+activation-engine/schema. RED-R1…R11 + additional invariant/mutation/monkeypatch-load-bearing/type-boundary tests. Phase-9
+completeness checklist fully dispositioned (no acceptance-relevant APPLICABLE/GAP).
+
+**Governance synchronization (minimum).** NEW `P9_E2_R_AMBIGUITY_MULTI_DOMAIN_RESULT_REPRESENTATION_CONTRACT.md` (corrected) + this
+roadmap append + `CURRENT_PROJECT_STATE.md` + `ACTIVE_INCREMENT_CONTRACT.md` current-truth sync. **`OWNER_DECISION_REGISTER.md`
+UNCHANGED.** No runtime/test/Domain-Pack/web/CLI/schema/prompt/benchmark/CI file changed (ZERO runtime/test diff).
+
+**Boundary / status after this entry.** **P9-E2-R = CONTRACT CANDIDATE ONLY (contract-first, corrected) — NOT implemented; the
+P9-E2-R runtime + tests are a separate later architecture-affecting gate, NOT authorized here.** The Grill-rejected `1b817f06`
+remains immutable historical evidence only. **P9-E2 (tie precedence) remains a separate later runtime gate; P9-E1 remains FORMALLY
+CLOSED / SATISFIED.** **NO new domain activated (`activated_domains() == ['electronics_electrical']`); NO domain selected; D4
+SEPARATE / UNEXECUTED; D8 Owner-reserved;** deterministic calculations / CAP-12 / CAP-13 / WS-PFV / STG / Output-Language NOT
+implemented; Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED; deployment / production = NOT AUTHORIZED. Append-only; prior history
+not rewritten. This entry authorizes no push, PR, merge beyond this candidate, domain activation/selection, D8 decision, D4
+execution, or any P9-E2/P9-E2-R runtime implementation.

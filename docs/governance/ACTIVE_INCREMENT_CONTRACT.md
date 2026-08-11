@@ -41,8 +41,42 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — governance-only CONTRACT CANDIDATE, contract-first; NO active runtime increment; NO domain activated):**
-**`P9-E2` / `P9-PREREQ-B` — Multi-Activated Domain Tie/Conflict Precedence is DEFINED by a governance-only CONTRACT CANDIDATE**
+**Status (current — governance-only CONTRACT CANDIDATE, contract-first, CORRECTED; NO active runtime increment; NO domain
+activated):** **`P9-E2-R` — Ambiguity / Multi-Domain Result Representation (bounded sub-gate) is DEFINED by a CORRECTED
+governance-only CONTRACT CANDIDATE** (record: `docs/governance/P9_E2_R_AMBIGUITY_MULTI_DOMAIN_RESULT_REPRESENTATION_CONTRACT.md`;
+authoritative base `47fce397dfd21175a0012b652f8dde6548e31432`). It is the corrected reissue that **supersedes the Grill-REJECTED
+prior candidate `1b817f06e7d86b3af6e44b298bcf7a31102e5e32`** (which remains **immutable historical evidence only — NOT amended /
+NOT merged / NOT reused**); a NEW independent candidate from the current authoritative parent, incorporating all MATERIAL Mandatory
+Grill findings. **Contract-first only — no runtime/test change, no domain activation, no domain selection.** Corrections applied
+(contract §22 ledger): legacy `infer_domain` wrapper **FAILS LOUD** (raises a dedicated bounded exception, never silent
+`None`/arbitrary domain) on AMBIGUOUS_TIE/MULTI_DOMAIN_NEEDS_D4, total over SINGLE/NONE (§4) + **RED-R9**; **all six
+`web.app.infer_domain` monkeypatch surfaces migrated + proven load-bearing** (§7.3); **architecture-guardrail reconciliation** of
+the frozen `str | None` vs fail-loud richer kinds (§4.1); `classify_domain` richer canonical entry, one classifier owner (§3);
+**web + CLI dispatch by `result.kind`** (never truthiness/string comparison of the object) (§7) + **RED-R10** (`/start × MULTI`) +
+**RED-R11** (CLI bounded stop); **`state.domain` remains a resolved string** (§10); strengthened invariants (unique ids, ≥2
+candidates, all-activated, mutual exclusion, duplicate rejection, immutable) (§11); **deterministic non-LLM `reason`** (§12);
+**defensive fail-loud type boundary** vs silent `DomainClassification` swallowing (§19); **line-34 future Nth-domain fallthrough
+hazard registered** as a mandatory pre-Nth-domain obligation (§21); future implementation **classified architecture-affecting /
+higher-governance** (§22); D4 marker-only, no-analysis-implied wording (§16/§18). **Confirmed gap (verified at `47fce39`):**
+`infer_domain -> str | None` conflates the truths and `web/app.py /start` admits `domain is None` as an electronics session
+(lines 1393–1394); guardrail freezes the `str | None` signature; activated tie unreachable today (only electronics activated).
+**Architecture (retained, minimum-sufficient):** `DomainResultKind {SINGLE, NONE, AMBIGUOUS_TIE, MULTI_DOMAIN_NEEDS_D4}` +
+immutable `DomainClassification` + canonical `classify_domain(...)` + legacy fail-loud `infer_domain` wrapper; no new
+framework/router/registry/activation-engine/schema. RED-R1…R11 + additional invariant/mutation/monkeypatch-load-bearing/
+type-boundary tests designed (not implemented). Phase-9 completeness checklist fully dispositioned (no acceptance-relevant
+APPLICABLE/GAP). **Governance-only scope:** the new contract doc + append-only roadmap entry + this current-truth sync +
+`CURRENT_PROJECT_STATE.md`; **`OWNER_DECISION_REGISTER.md` UNCHANGED; ZERO runtime/test/domain/web/CLI/schema/prompt/benchmark
+diff.** **P9-E2-R = CONTRACT CANDIDATE ONLY — authoritative only if this exact accepted candidate is merged and post-merge
+verified; the P9-E2-R runtime + tests are a separate later architecture-affecting gate, NOT authorized here; the Grill-rejected
+`1b817f06` remains immutable historical evidence only; NO new domain activated (`activated_domains() == ['electronics_electrical']`);
+NO domain selected; P9-E2 tie precedence remains a separate later runtime gate; P9-E1 remains FORMALLY CLOSED / SATISFIED; D4 =
+SEPARATE / UNEXECUTED; D8 = OPEN / Owner-reserved; Phase 8 = FORMALLY CLOSED; Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED;
+deployment / production = NOT AUTHORIZED.** The next state is: independent review of this exact corrected contract candidate →
+Owner acceptance → merge → post-merge verification → a separate P9-E2-R implementation gate.
+
+**Immediately prior (retained as history — P9-E2 CONTRACT CANDIDATE, definition only; merged AUTHORITATIVE via PR #441
+`47fce39`):** **`P9-E2` / `P9-PREREQ-B` — Multi-Activated Domain Tie/Conflict Precedence is DEFINED by a governance-only CONTRACT
+CANDIDATE**
 (record: `docs/governance/P9_E2_MULTI_ACTIVATED_DOMAIN_TIE_PRECEDENCE_CONTRACT.md`; authoritative base
 `05184f9166fa3a9e45a3384be5bafccc86e05ebe` — PR #440 made the P9-E1 formal closure AUTHORITATIVE). This is the mandatory
 D3-registered prerequisite **P9-PREREQ-B** carried by the authoritative P9-QS §16; **contract-first only — no runtime/test change,

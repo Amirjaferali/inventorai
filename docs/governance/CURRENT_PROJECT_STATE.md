@@ -1158,6 +1158,31 @@ AUTHORIZED / NOT STARTED.***
   diff; NO new domain activated (`activated_domains() == ['electronics_electrical']`); NO domain selected; P9-E1 remains FORMALLY
   CLOSED / SATISFIED; D4 = SEPARATE / UNEXECUTED; D8 Owner-reserved; Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED; deployment /
   production = NOT AUTHORIZED.**
+  **The P9-E2 contract is AUTHORITATIVE (merged PR #441, tip `47fce397dfd21175a0012b652f8dde6548e31432`), and the bounded `P9-E2-R`
+  — Ambiguity / Multi-Domain Result Representation sub-gate is now DEFINED by a CORRECTED governance-only CONTRACT CANDIDATE
+  (contract-first) that supersedes the Grill-REJECTED prior candidate `1b817f06e7d86b3af6e44b298bcf7a31102e5e32`** (which remains
+  **immutable historical evidence only — NOT amended / NOT merged / NOT reused**). The corrected candidate (record:
+  `docs/governance/P9_E2_R_AMBIGUITY_MULTI_DOMAIN_RESULT_REPRESENTATION_CONTRACT.md`) incorporates all MATERIAL Mandatory Grill
+  findings: legacy `infer_domain` wrapper **FAILS LOUD** (raises, never silent `None`) on AMBIGUOUS_TIE/MULTI_DOMAIN_NEEDS_D4 +
+  RED-R9; **all six `web.app.infer_domain` monkeypatch surfaces migrated + load-bearing** (test_web_app.py 563/575/589/661/701/790);
+  **architecture-guardrail reconciliation** (frozen `str | None` vs fail-loud richer kinds); `classify_domain` richer canonical
+  entry with one classifier owner; **web + CLI dispatch by `result.kind`** (never truthiness/string comparison) + RED-R10
+  (`/start × MULTI`) + RED-R11 (CLI bounded stop); **`state.domain` remains a resolved string**; strengthened invariants (unique
+  ids, ≥2 candidates, all-activated, mutual exclusion, duplicate rejection, immutable); **deterministic non-LLM `reason`**;
+  **defensive fail-loud type boundary** vs silent `DomainClassification` swallowing; **line-34 future Nth-domain fallthrough hazard
+  registered** as a mandatory pre-Nth-domain obligation (no hazard today); future implementation **classified
+  architecture-affecting / higher-governance**; D4 marker-only, no-analysis-implied wording. **Confirmed gap (verified at
+  `47fce39`):** `infer_domain -> str | None` conflates the truths and `web/app.py /start` admits `domain is None` as an electronics
+  session (lines 1393–1394); guardrail freezes the `str | None` signature; activated tie unreachable today (only electronics
+  activated). Architecture retained (minimum-sufficient): `DomainResultKind {SINGLE, NONE, AMBIGUOUS_TIE, MULTI_DOMAIN_NEEDS_D4}` +
+  immutable `DomainClassification` + canonical `classify_domain(...)` + legacy fail-loud `infer_domain` wrapper. Phase-9
+  completeness checklist fully dispositioned (no acceptance-relevant APPLICABLE/GAP). **P9-E2-R = CORRECTED CONTRACT CANDIDATE ONLY
+  (contract-first) — authoritative only if this exact accepted candidate is merged and post-merge verified; the P9-E2-R runtime +
+  tests are a separate later architecture-affecting gate, NOT authorized here; the Grill-rejected `1b817f06` remains immutable
+  historical evidence only; `OWNER_DECISION_REGISTER.md` unchanged; ZERO runtime/test/domain/web/CLI/schema diff; NO new domain
+  activated (`activated_domains() == ['electronics_electrical']`); NO domain selected; P9-E2 tie precedence remains a separate later
+  runtime gate; P9-E1 remains FORMALLY CLOSED / SATISFIED; D4 = SEPARATE / UNEXECUTED; D8 Owner-reserved; Phase 10 = NOT AUTHORIZED;
+  PSRR = NOT EXECUTED; deployment / production = NOT AUTHORIZED.**
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
