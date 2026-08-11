@@ -1226,6 +1226,39 @@ AUTHORIZED / NOT STARTED.***
   schema/guardrail diff in the closure gate; P9-E2 tie precedence remains a separate later runtime gate; P9-E1 remains FORMALLY
   CLOSED / SATISFIED; D4 = SEPARATE / UNEXECUTED; D8 Owner-reserved; Phase 10 = NOT AUTHORIZED; PSRR = REGISTERED / NOT EXECUTED;
   deployment / production = NOT AUTHORIZED.**
+  **`P9-E2` / `P9-PREREQ-B` — Multi-Activated Domain Tie/Conflict Precedence is now IMPLEMENTED as a CORRECTED IMPLEMENTATION
+  CANDIDATE**, built fresh from the authoritative parent `c11482db7240b5ac628e77cd061f8d5de6df40ee` (live tip re-verified; 0 newer),
+  and it **supersedes the REJECTED prior candidate `3255c4ba1ca6ae50e0c3f20d7f0d4c8ef1fa223c`** (Mandatory Grill `GRILL FAIL —
+  MATERIAL CONTRACT CORRECTION REQUIRED`: sound runtime, but a FALSE `/start` strong-unsupported "masked for all real ties"
+  reachability claim, an omitted achievable distinguishing RED-E2-10, and a misdescribed multi-activation `/start` delta). `3255c4ba`
+  is immutable rejected evidence — NOT reused/amended/rebased/built upon. Bounded runtime change via the canonical `classify_domain`
+  seam (CF-1): `len(activated_tied) == 0` → unchanged priority fallback; `== 1` → `SINGLE`; **`>= 2` → `AMBIGUOUS_TIE(selected=None,
+  candidates=canonical activated tied set, reason=EQUAL_SCORE)`** — no arbitrary/alphabetical/Electronics/LLM winner;
+  `MULTI_DOMAIN_NEEDS_D4` NOT manufactured (D4 separate); only ACTIVATED domains in the set (D3-D). **CORRECTED reachability truth:**
+  `/start` calls `classify_domain` FIRST and fails an `AMBIGUOUS_TIE` closed to UNSUPPORTED (200, no session) BEFORE the separate
+  `_has_strong_unsupported_evidence` gate, which is an independent later layer over SINGLE/NONE inputs only; a multi-activated tie
+  therefore fails closed via the ambiguity branch regardless of strong-unsupported token membership (verified against source:
+  `strong("circuit and hinge") == strong("hinge and app") == False`). **RED→GREEN:** NEW
+  `tests/test_p9e2_multi_activated_tie_precedence.py` (20 tests) — 12 distinguishing RED on parent incl. **E2-10 a REAL `/start`
+  production-path RED** (`circuit and hinge` under an elec+mech double → parent ADMITS an electronics session (302); candidate fails
+  closed 200 UNSUPPORTED, no session), **E2-10b** (`hinge and app` mech+sw → parent GUIDANCE; candidate UNSUPPORTED), **E2-11**
+  (`gear and catheter` mech+med → CLI bounded stop) + 8 honest GREEN GUARDS; **9 load-bearing mutation probes all CAUGHT RED**
+  (bytecode-isolated), incl. NEW probe 9 (neutralize real `/start` AMBIGUOUS branch → E2-10/10b RED). **Full suite 2307 passed /
+  3 skipped / 1 xfailed / 0 failed** (= 2287 parent + 20). **Scope:** `engine/domain_rules.py` (tie branch + corrected docstring) +
+  the NEW test + governance current-truth (roadmap + `ACTIVE_INCREMENT_CONTRACT.md` + this file); **`web/app.py` ZERO diff** (runtime
+  found safe); ZERO diff `scripts/run_cli.py`, `engine/domain_activation.py`, `ARCHITECTURE_GUARDRAILS.md`,
+  `OWNER_DECISION_REGISTER.md`, `domains/**`, `schemas/**`, `database/**`. **Backward-compat (truthful):** electronics-only activation
+  today → ≥2 activated tie production-unreachable → ZERO current production delta; under a FUTURE governed second-domain activation,
+  non-intercepted ties change OLD incidental-SINGLE/possible-admission → NEW AMBIGUOUS_TIE/fail-closed — an INTENDED future
+  correction, not a regression; `/start` is NOT universally "unchanged" under future multi-activation. **Carry-forwards:** CF-2 &
+  CF-3 retained; CF-5 Retrospective Adversarial Architecture Audit remains a future pre-activation obligation; **NEW CF-6 — Web
+  pre-classifier / strong-unsupported reachability & admission interaction (distinct from CF-2), a FUTURE
+  PRE-SECOND-DOMAIN-ACTIVATION obligation, NOT executed here.** **`OWNER_DECISION_REGISTER.md` UNCHANGED. P9-E2 = CORRECTED
+  IMPLEMENTATION CANDIDATE ONLY — NOT closed / NOT authoritative; NO domain activated (`activated_domains() ==
+  ['electronics_electrical']`); NO domain selected; MULTI_DOMAIN_NEEDS_D4 NOT manufactured; D4 = SEPARATE / UNEXECUTED; D8
+  Owner-reserved; Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED; deployment / production = NOT AUTHORIZED.** Next required gate: a
+  **NEW Mandatory Grill on this exact new candidate** (any material finding rejects it as-is — NEW SHA/tree/bundle/Grill/independent
+  review, no amendment).
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
