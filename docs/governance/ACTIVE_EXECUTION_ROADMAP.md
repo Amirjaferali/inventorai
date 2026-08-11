@@ -7411,3 +7411,71 @@ SEPARATE / UNEXECUTED; D8 Owner-reserved;** deterministic calculations / CAP-12 
 implemented; Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED; deployment / production = NOT AUTHORIZED. Append-only; prior history
 not rewritten. This entry authorizes no push, PR, merge beyond this candidate, domain activation/selection, D8 decision, D4
 execution, or any P9-E2/P9-E2-R runtime implementation.
+
+---
+
+## P9-E2-R — Ambiguity / Multi-Domain Result Representation — IMPLEMENTATION CANDIDATE (RED→GREEN) — architecture-affecting; NO domain activated; NOT yet closed
+
+**Gate.** OWNER-AUTHORIZED bounded **runtime implementation** of the authoritative P9-E2-R representation sub-gate (merged PR #442),
+classified **architecture-affecting / higher-governance** (it changes the runtime classification contract, production admission
+callers, the compatibility seam, architecture guardrails, and test surfaces). Authoritative base
+`3434c2350b4c08cabcc362d175947a311070b493` (live tip re-verified; PR #442 = two-parent merge of `47fce397` + the corrected
+P9-E2-R contract candidate `3cbb16b6`; merge tree `05831989` == candidate tree; **P9-E2-R contract AUTHORITATIVE**; P9-E2
+contract authoritative; P9-E1 FORMALLY CLOSED / SATISFIED; boot OK; `activated_domains() == ['electronics_electrical']`; built in a
+disposable worktree — primary working tree + historical bundles untouched; not newer). **IMPLEMENTATION CANDIDATE ONLY** —
+authoritative only if independently reviewed, Owner-accepted, merged (create-a-merge-commit), and post-merge verified; formal
+closure (if precedent requires) is a separate subsequent gate.
+
+**Bounded implementation (minimum-sufficient; representation seam only — NO tie-policy change).** `engine/domain_rules.py`: added
+`DomainResultKind {SINGLE, NONE, AMBIGUOUS_TIE, MULTI_DOMAIN_NEEDS_D4}`, `DomainAmbiguityReason` (deterministic non-LLM enum),
+`AmbiguousDomainResultError(RuntimeError)`, and an immutable frozen `DomainClassification` whose `__post_init__` mechanically
+enforces every accepted invariant (SINGLE exactly-one registry-valid domain + empty candidates; NONE empty; AMBIGUOUS_TIE/MULTI
+no winner, ≥2 unique registry-recognized candidates in canonical sorted order [duplicates rejected], deterministic reason;
+AMBIGUOUS_TIE every candidate activated (D3-D); selected/candidate mutual exclusion; canonical order ≠ precedence). The canonical
+`classify_domain(idea_text) -> DomainClassification` is the single classifier owner; **today it yields only SINGLE / NONE**
+(behavior-equivalent to the historical classifier — NO tie detection is added; that is the separate later P9-E2 runtime). Legacy
+`infer_domain(idea_text) -> str | None` is a thin wrapper: total over SINGLE/NONE, **FAILS LOUD** (`AmbiguousDomainResultError`,
+not `AssertionError`) over the richer kinds, never a silent `None`/arbitrary domain. `web/app.py` `/start` and `scripts/run_cli.py`
+migrated to consume `classify_domain` and **dispatch by `result.kind`** (never truthiness/string comparison of the object): SINGLE
+→ resolved domain string (behavior byte-identical); NONE → existing fallback; AMBIGUOUS_TIE and MULTI_DOMAIN_NEEDS_D4 → **fail
+closed** via the existing safe surface (web: `UNSUPPORTED_DOMAIN_MESSAGE`, no session, never the None fallback, never a winner, no
+D4; CLI: explicit bounded stop, no arbitrary winner, no object stringification), no new UX, no implication that multi-domain
+analysis occurred. `state.domain` remains a resolved string (never the object). `engine/domain_activation._resolve_pack_id` gained
+a **defensive fail-loud boundary** (raises `TypeError` for a non-string domain id so a `DomainClassification` can never be silently
+swallowed as "unknown"; None/empty-string behavior preserved). `ARCHITECTURE_GUARDRAILS.md` §9 reconciled (classify_domain =
+richer canonical entry; infer_domain legacy/fail-loud; new admission callers must use classify_domain; one classifier owner) with
+deliberate guardrail tests added — the frozen `str | None` signature test is NOT weakened.
+
+**RED→GREEN evidence (behavioral).** New `tests/test_p9e2r_result_representation.py` (19 tests) + 4 guardrail tests. RED-R1
+ambiguity≠None/single; RED-R2 `/start` ambiguity fail-closed; RED-R3 multi≠single; RED-R4 candidate-order determinism / ordering≠
+precedence; RED-R5 recognized-not-activated exclusion; RED-R6 genuine NONE preserved; RED-R7 line-34 fallback preserved
+(`infer_domain("gear and catheter") == "medical_device"`); RED-R8 ≥3-way tie full set; RED-R9 wrapper fail-loud + total over
+SINGLE/NONE; RED-R10 `/start × MULTI` fail-closed; RED-R11 CLI bounded stop; plus invariant/immutability/mutual-exclusion/
+duplicate-rejection/deterministic-reason/defensive-boundary tests. All GREEN; genuine RED at baseline (the representation +
+classify_domain did not exist; `/start`/CLI consumed the `str | None` seam that could not represent ambiguity). Activated ties are
+simulated with self-restoring `_ACTIVATED_DOMAINS` doubles — **NO real domain activated**.
+
+**Load-bearing mutation probes (all caught RED; byte-restored).** (1) wrapper fail-loud→silent None; (2) `/start` AMBIGUOUS branch
+neutralized; (3) `/start` MULTI branch neutralized; (4) defensive activation boundary removed; (5) canonical-order enforcement
+removed; (6) **migrated-monkeypatch detachment** — bypassing the patched `web.app.classify_domain` turns the migrated web tests RED
+(proving they still exercise the real admission classifier; no silent test detachment).
+
+**Full regression (fresh).** `pytest -q`: **2287 passed / 3 skipped / 1 xfailed / 0 failed / 0 errors** (= 2264 baseline + 23 new;
+3 skips pre-existing Playwright/env, not passes; 1 xfailed pre-existing). No regression.
+
+**Scope invariants proven.** Changed paths = `engine/domain_rules.py`, `engine/domain_activation.py`, `web/app.py`,
+`scripts/run_cli.py`, `tests/test_web_app.py` (six `web.app.infer_domain` monkeypatches migrated to `web.app.classify_domain` +
+proven load-bearing), NEW `tests/test_p9e2r_result_representation.py`, `tests/test_architecture_guardrails.py`,
+`ARCHITECTURE_GUARDRAILS.md`, plus governance current-truth registration (this roadmap append + `ACTIVE_INCREMENT_CONTRACT.md` +
+`CURRENT_PROJECT_STATE.md`, per D3 implementation precedent). **`OWNER_DECISION_REGISTER.md` UNCHANGED.** No DB/session-schema /
+persisted `confirmed_domain` / reconstruction / public-API / export / integration / Domain-Pack change (the structured result is
+internal; `state.domain` stays a string). No P9-E2 tie-policy change (`sorted(activated_tied)[0]` selection behavior preserved). No
+D4 execution; `domains/iot_electronics/**` (D8) untouched. `activated_domains() == ['electronics_electrical']` (only).
+
+**Boundary / status after this entry.** **P9-E2-R = IMPLEMENTATION CANDIDATE ONLY — NOT closed** (formal closure, if precedent
+requires, is a separate gate after independent review → Owner acceptance → merge → post-merge verification). **NO new domain
+activated; NO domain selected; P9-E2 tie precedence remains a separate later runtime gate; P9-E1 remains FORMALLY CLOSED /
+SATISFIED; D4 SEPARATE / UNEXECUTED; D8 Owner-reserved;** deterministic calculations / CAP-12 / CAP-13 / WS-PFV / STG /
+Output-Language NOT implemented; Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED; deployment / production = NOT AUTHORIZED.
+Append-only; prior history not rewritten. This entry authorizes no push, PR, or merge beyond this candidate, no domain
+activation/selection, no D8 decision, and no P9-E2/D4 execution.

@@ -1,8 +1,44 @@
 import ast, inspect, os, sys, uuid
 import pytest
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
-from engine.domain_rules import infer_domain
+from engine.domain_rules import (
+    infer_domain, classify_domain, DomainClassification, DomainResultKind,
+    DomainAmbiguityReason, AmbiguousDomainResultError,
+)
 from engine.idea_state import IdeaState
+
+
+class TestGuardrails_Sec9_ClassifierReconciliation:
+    """GUARDRAILS §9 (P9-E2-R §4.1): classify_domain() is the richer canonical
+    entry; infer_domain() remains the LEGACY wrapper — total over SINGLE/NONE and
+    fail-loud over richer kinds. One classifier owner; the frozen str|None signature
+    is preserved for currently-reachable inputs and must NOT be silently weakened."""
+
+    def test_classify_domain_is_canonical_richer_entry(self):
+        r = classify_domain("a voltage sensor circuit")
+        assert isinstance(r, DomainClassification)
+        assert r.kind in DomainResultKind
+
+    def test_infer_domain_still_str_or_none_for_reachable_inputs(self):
+        # The frozen guardrail signature holds for every currently-reachable input.
+        for inp in ["ESP32 soil moisture IoT greenhouse", "completely unrelated", "",
+                    "gear and catheter"]:
+            r = infer_domain(inp)
+            assert r is None or isinstance(r, str)
+
+    def test_infer_domain_fails_loud_on_richer_kinds(self, monkeypatch):
+        import engine.domain_rules as drm
+        multi = DomainClassification(
+            kind=DomainResultKind.MULTI_DOMAIN_NEEDS_D4,
+            candidates=("mechanical", "medical_device"),
+            reason=DomainAmbiguityReason.MULTI_DOMAIN)
+        monkeypatch.setattr(drm, "classify_domain", lambda _t: multi)
+        with pytest.raises(AmbiguousDomainResultError):
+            drm.infer_domain("x")
+
+    def test_single_classifier_owner(self):
+        # infer_domain delegates to classify_domain (no duplicate classifier logic).
+        assert "classify_domain" in inspect.getsource(infer_domain)
 
 class TestGuardrails_Sec3_InferDomainSignature:
     """GUARDRAILS §3/§8: infer_domain() signature must remain stable."""

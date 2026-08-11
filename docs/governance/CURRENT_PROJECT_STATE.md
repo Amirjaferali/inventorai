@@ -1183,6 +1183,29 @@ AUTHORIZED / NOT STARTED.***
   activated (`activated_domains() == ['electronics_electrical']`); NO domain selected; P9-E2 tie precedence remains a separate later
   runtime gate; P9-E1 remains FORMALLY CLOSED / SATISFIED; D4 = SEPARATE / UNEXECUTED; D8 Owner-reserved; Phase 10 = NOT AUTHORIZED;
   PSRR = NOT EXECUTED; deployment / production = NOT AUTHORIZED.**
+  **The corrected P9-E2-R contract is now AUTHORITATIVE (merged PR #442, tip `3434c2350b4c08cabcc362d175947a311070b493` = two-parent
+  merge of `47fce397` + the corrected candidate `3cbb16b6`; merge tree `05831989` == candidate tree), and `P9-E2-R` — Ambiguity /
+  Multi-Domain Result Representation is now IMPLEMENTED as an IMPLEMENTATION CANDIDATE (RED→GREEN; architecture-affecting).** The
+  minimum-sufficient representation seam (NO tie-policy change): `engine/domain_rules.py` adds `DomainResultKind {SINGLE, NONE,
+  AMBIGUOUS_TIE, MULTI_DOMAIN_NEEDS_D4}`, deterministic `DomainAmbiguityReason`, `AmbiguousDomainResultError`, and an immutable frozen
+  `DomainClassification` (all invariants enforced at construction); canonical `classify_domain(...)` = single classifier owner (today
+  SINGLE/NONE only, behavior-equivalent); legacy `infer_domain(...) -> str | None` = thin wrapper, total over SINGLE/NONE and
+  FAIL-LOUD over richer kinds. `web/app.py` `/start` + `scripts/run_cli.py` migrated to dispatch by `result.kind` (never
+  truthiness/string comparison): SINGLE byte-identical, NONE unchanged, AMBIGUOUS_TIE + MULTI_DOMAIN_NEEDS_D4 fail closed via an
+  existing safe surface (no session / no electronics admission / no winner / no D4 / no new UX / no implied multi-domain analysis);
+  `state.domain` stays a resolved string. `engine/domain_activation._resolve_pack_id` gains a defensive fail-loud `TypeError` for
+  non-string domain ids. `ARCHITECTURE_GUARDRAILS.md` §9 reconciled (classify_domain richer canonical entry; infer_domain legacy /
+  fail-loud; new admission callers must use classify_domain; one owner) — frozen `str | None` signature test NOT weakened. RED→GREEN
+  via `tests/test_p9e2r_result_representation.py` (19) + 4 guardrail tests (RED-R1…R11 + invariants); six load-bearing mutation probes
+  caught RED incl. the migrated-monkeypatch detachment (the six `web.app.infer_domain` monkeypatches migrated to
+  `web.app.classify_domain`, proven load-bearing); **fresh full suite 2287 passed / 3 skipped / 1 xfailed / 0 failed** (2264 baseline
+  + 23 new). Activated ties simulated with self-restoring `_ACTIVATED_DOMAINS` doubles (NO real activation). Phase-9 completeness
+  checklist: no acceptance-relevant APPLICABLE/GAP. **P9-E2-R = IMPLEMENTATION CANDIDATE ONLY — authoritative only if this exact
+  accepted candidate is merged and post-merge verified; formal closure (if precedent requires) is a separate subsequent gate;
+  `OWNER_DECISION_REGISTER.md` unchanged; no persistence/schema/public-API/export/Domain-Pack change; NO P9-E2 tie-policy change; NO
+  new domain activated (`activated_domains() == ['electronics_electrical']`); NO domain selected; P9-E2 tie precedence remains a
+  separate later runtime gate; P9-E1 remains FORMALLY CLOSED / SATISFIED; D4 = SEPARATE / UNEXECUTED; D8 Owner-reserved; Phase 10 =
+  NOT AUTHORIZED; PSRR = NOT EXECUTED; deployment / production = NOT AUTHORIZED.**
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation

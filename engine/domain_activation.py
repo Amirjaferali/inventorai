@@ -48,7 +48,17 @@ def _resolve_pack_id(domain, registry):
     Recognition-only: this never grants activation. An empty/blank/non-string value
     is unrecognized.
     """
-    if not isinstance(domain, str) or not domain.strip():
+    if domain is None:
+        return None
+    if not isinstance(domain, str):
+        # P9-E2-R defensive boundary (19): a DomainClassification / result object
+        # (or any non-string) must NEVER be silently coerced to an "unknown domain".
+        # Fail loud so a programming mistake that leaks a structured result into the
+        # activation/registry layer aborts instead of losing truth silently.
+        raise TypeError(
+            f"domain identifier must be a string, got {type(domain).__name__} "
+            "(P9-E2-R defensive boundary)")
+    if not domain.strip():
         return None
     if domain in registry:
         return domain
