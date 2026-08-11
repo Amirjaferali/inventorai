@@ -1206,6 +1206,26 @@ AUTHORIZED / NOT STARTED.***
   new domain activated (`activated_domains() == ['electronics_electrical']`); NO domain selected; P9-E2 tie precedence remains a
   separate later runtime gate; P9-E1 remains FORMALLY CLOSED / SATISFIED; D4 = SEPARATE / UNEXECUTED; D8 Owner-reserved; Phase 10 =
   NOT AUTHORIZED; PSRR = NOT EXECUTED; deployment / production = NOT AUTHORIZED.**
+  **The authoritative repository parent remains `b42a3e6c246b98d425460f80d91d8de12d554039` (PR #443; P9-E2-R implementation
+  authoritative), and `P9-E2-R` — Ambiguity / Multi-Domain Result Representation is now FORMALLY CLOSED / SATISFIED as a
+  governance-only CLOSURE CANDIDATE** (record:
+  `docs/governance/P9_E2_R_AMBIGUITY_MULTI_DOMAIN_RESULT_REPRESENTATION_FORMAL_CLOSURE_RECORD.md`). **The closure candidate is NOT
+  yet authoritative and NOT yet merged; the candidate SHA is not a live authoritative tip** — closure becomes authoritative only
+  after Mandatory Grill → independent external exact-candidate review → Owner exact-candidate acceptance → SHA-preserving
+  publication → PR → pre-merge verification → CREATE A MERGE COMMIT → post-merge verification. P9-E2-R established the representation
+  seam only — it **did NOT implement the P9-E2 tie policy** (`classify_domain` constructs SINGLE/NONE only; richer kinds
+  representable/consumable but classifier-produced only via the separate later P9-E2 runtime; `sorted(activated_tied)[0]` +
+  priority fallback unchanged; no multi-domain analysis). Fresh closure evidence at `b42a3e6`: full suite 2287 passed / 3 skipped /
+  1 xfailed / 0 failed; focused 37 passed; six load-bearing mutation probes all CAUGHT RED. **NO new domain activation**
+  (`activated_domains() == ['electronics_electrical']`); **NO domain selected.** **The Retrospective Adversarial Architecture Audit
+  is now REGISTERED by this candidate as a future PRE-ACTIVATION obligation (A/B/C/D/E classification; material C/D/E
+  dispositioned/independently validated BEFORE first new-domain activation) — NOT executed.** Carry-forward: CF-1 P9-E2 runtime tie
+  policy still pending; CF-2 shared AMBIGUOUS/MULTI public message NON-BLOCKING (carried to P9-E2); CF-3 non-activated priority
+  fallback (`engine/domain_rules.py` line 142) — no reachable defect today, MANDATORY before first Nth-domain
+  registration/activation; CF-4 D4 remains separate. **`OWNER_DECISION_REGISTER.md` unchanged; ZERO runtime/test/domain/web/CLI/
+  schema/guardrail diff in the closure gate; P9-E2 tie precedence remains a separate later runtime gate; P9-E1 remains FORMALLY
+  CLOSED / SATISFIED; D4 = SEPARATE / UNEXECUTED; D8 Owner-reserved; Phase 10 = NOT AUTHORIZED; PSRR = REGISTERED / NOT EXECUTED;
+  deployment / production = NOT AUTHORIZED.**
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation

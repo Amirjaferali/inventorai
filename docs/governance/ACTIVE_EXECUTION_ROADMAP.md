@@ -7479,3 +7479,77 @@ SATISFIED; D4 SEPARATE / UNEXECUTED; D8 Owner-reserved;** deterministic calculat
 Output-Language NOT implemented; Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED; deployment / production = NOT AUTHORIZED.
 Append-only; prior history not rewritten. This entry authorizes no push, PR, or merge beyond this candidate, no domain
 activation/selection, no D8 decision, and no P9-E2/D4 execution.
+
+---
+
+## P9-E2-R — Ambiguity / Multi-Domain Result Representation — FORMAL CLOSURE — governance-only CLOSURE CANDIDATE — bounded representation sub-gate SATISFIED; NO domain activated; P9-E2 runtime still separate
+
+**Gate.** OWNER-AUTHORIZED **governance-only** formal closure of the bounded P9-E2-R representation sub-gate on its merged,
+post-merge-verified implementation. **DOCUMENTED NO-VALID-RED — GOVERNANCE-ONLY CLOSURE GATE** (no runtime/test file changed; the
+P9-E2-R RED→GREEN + six mutation probes are cited and **freshly re-reproduced**, not re-created; expected engine/web/CLI/domains/
+schemas/persistence/API/guardrail/test diff ZERO). Authoritative pre-closure parent verified read-only
+`b42a3e6c246b98d425460f80d91d8de12d554039` (PR #443; parent 1 `3434c2350b4c08cabcc362d175947a311070b493` + parent 2
+`813bc5aa421746a4510b2cf601f5ac362b5d4468`; merge tree `35a58482e78e86ad43aba8375f61add1a785316d` == accepted candidate tree);
+boot OK; built in a disposable worktree (primary working tree + historical bundles untouched); not newer.
+
+**Lineage.** Contract PR #442 (merge `3434c235`; accepted corrected candidate `3cbb16b6`; post-merge verified). Implementation PR
+#443 (merge `b42a3e6`; accepted candidate `813bc5aa`; merge tree `35a58482` == candidate tree; diffstat 11 files / +725 / −48;
+`git diff --check` CLEAN). Independent implementation review ACCEPT WITH NON-BLOCKING OBSERVATIONS; implementation Grill PASS WITH
+NON-BLOCKING HARDENING. Canonical record:
+`docs/governance/P9_E2_R_AMBIGUITY_MULTI_DOMAIN_RESULT_REPRESENTATION_FORMAL_CLOSURE_RECORD.md`.
+
+**Established (representation seam only).** `DomainResultKind {SINGLE, NONE, AMBIGUOUS_TIE, MULTI_DOMAIN_NEEDS_D4}`; immutable frozen
+`DomainClassification` (all invariants enforced at construction); canonical `classify_domain(...)` (single classifier owner); legacy
+fail-loud `infer_domain(...)`; Web `/start` + CLI dispatch-by-kind with fail-closed richer-kind handling. **P9-E2-R DID NOT
+IMPLEMENT THE P9-E2 TIE POLICY** — `classify_domain` constructs **SINGLE/NONE only** (verified, non-comment); AMBIGUOUS_TIE /
+MULTI_DOMAIN_NEEDS_D4 are representable/safely consumable but become classifier-produced only via the separate later P9-E2 runtime.
+No multi-domain analysis exists; `MULTI_DOMAIN_NEEDS_D4` is a truthful marker; `sorted(activated_tied)[0]` + priority fallback
+unchanged.
+
+**Fresh closure evidence (reproduced at `b42a3e6`).** Full suite **2287 passed / 3 skipped / 1 xfailed / 0 failed / 0 errors**
+(2264 baseline + 23; skips not passes). Focused `tests/test_p9e2r_result_representation.py` + `tests/test_architecture_guardrails.py`
+**37 passed**. **Six load-bearing mutation probes all CAUGHT RED, bytes restored** (wrapper fail-loud; `/start` AMBIGUOUS; `/start`
+MULTI; defensive activation type-boundary; canonical candidate-order; migrated-monkeypatch detachment — the six
+`web.app.infer_domain`→`web.app.classify_domain` surfaces remain load-bearing).
+
+**Closed acceptance behavior (re-verified).** One classifier owner; legacy wrapper total over SINGLE/NONE and fail-loud over richer
+kinds (never silent None/arbitrary domain); Web/CLI dispatch by kind; `state.domain` a resolved string (never the object);
+defensive activation boundary rejects non-string objects; canonical order ≠ precedence; no new Result framework; no duplicate
+owner; **`activated_domains() == ['electronics_electrical']`**; P9-E2 separate; D4 separate/unexecuted; D8 Owner-reserved
+(`domains/iot_electronics/**` untouched); Phase 10 NOT AUTHORIZED; PSRR REGISTERED / NOT EXECUTED; deployment/production NOT
+AUTHORIZED.
+
+**Phase-9 completeness checklist (no acceptance-relevant APPLICABLE/GAP).** (1) NOT APPLICABLE; (2) truthfulness — APPLICABLE/PASS;
+(3) no shared-core coupling — APPLICABLE/PASS; (4) pre-activation qualification — APPLICABLE/PASS; (5) representation/ambiguity
+safety APPLICABLE/PASS, actual composition DEFERRED TO D4; (6) materials — DEFERRED (CAP-12/13/WS-PFV); (7) calculations —
+DEFERRED; (8) knowledge sources — DEFERRED (D13); (9) Nth-domain extensibility — APPLICABLE/PASS (≥3-way; CF-3 hazard carried); (10)
+end-to-end reasoning — APPLICABLE/PASS.
+
+**Carry-forward obligations (NOT erased by closure).** **CF-1** P9-E2 runtime tie policy still pending (replace
+`sorted(activated_tied)[0]` via the `classify_domain` seam; not implemented here). **CF-2** shared AMBIGUOUS/MULTI public message —
+NON-BLOCKING for P9-E2-R closure; carried to P9-E2 (verify truthful messaging / honor UI-boundary sub-gate before richer states are
+user-reachable). **CF-3** non-activated priority fallback inside `classify_domain` (currently `engine/domain_rules.py` line 142) —
+no reachable defect today; MANDATORY to resolve BEFORE first Nth-domain registration/activation that could exercise an omitted-pack
+fallthrough; not repaired here. **CF-4** D4 remains the separate owner for actual multi-domain composition; marker only.
+**CF-5 — Retrospective Adversarial Architecture Audit REGISTERED HERE as a FUTURE PRE-ACTIVATION OBLIGATION** (Gate 0: previously
+NOT YET REPOSITORY-REGISTERED): inspect inherited architecture → classify findings A/B/C/D/E → dispose C/D/E as governed (C =
+prerequisite before trigger reachable; D = corrective gate before continuing affected work; E = explicit architecture/Owner
+decision; any C/D/E requires independent validation before reopening closed architecture) → MUST be completed / material findings
+dispositioned BEFORE first new-domain activation. **NOT executed here; no findings created; no closed phase reopened; no domain
+activated.**
+
+**Governance synchronization (minimum).** NEW `P9_E2_R_..._FORMAL_CLOSURE_RECORD.md` + this roadmap append + `CURRENT_PROJECT_STATE.md`
++ `ACTIVE_INCREMENT_CONTRACT.md` current-truth sync. **`OWNER_DECISION_REGISTER.md` UNCHANGED** (prerequisite/sub-gate closure
+records no new accepted Owner product-policy decision — consistent with P9-E1 / D3 closure precedent). No runtime/test/Domain-Pack/
+schema/persistence/API/web/CLI/guardrail file changed (ZERO runtime/test diff).
+
+**Boundary / status after this entry.** **P9-E2-R = FORMALLY CLOSED / SATISFIED (bounded representation sub-gate; authoritative
+if/when this governance candidate is merged and post-merge verified)**; no active P9-E2-R increment remains. **NO new domain
+activated; NO domain selected; P9-E2 tie precedence remains a separate later runtime gate; P9-E1 remains FORMALLY CLOSED /
+SATISFIED; D4 SEPARATE / UNEXECUTED; D8 Owner-reserved;** deterministic calculations / CAP-12 / CAP-13 / WS-PFV / STG /
+Output-Language / knowledge-source functionality NOT implemented; Phase 10 = NOT AUTHORIZED; PSRR = REGISTERED / NOT EXECUTED;
+deployment / production = NOT AUTHORIZED. **This closure candidate still requires Mandatory Grill → independent external
+exact-candidate review → Owner exact-candidate acceptance → SHA-preserving publication → PR → pre-merge verification → CREATE A
+MERGE COMMIT → post-merge verification before P9-E2-R may be declared authoritatively closed.** Append-only; prior history not
+rewritten. This entry authorizes no push, PR, merge beyond this candidate, domain activation/selection, D8 decision, D4 execution,
+Retrospective-Audit execution, or any P9-E2/P9-E2-R runtime work.

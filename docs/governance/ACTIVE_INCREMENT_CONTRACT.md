@@ -41,7 +41,37 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — IMPLEMENTATION CANDIDATE, RED→GREEN, architecture-affecting; runtime increment present; NO domain activated):**
+**Status (current — governance-only FORMAL CLOSURE CANDIDATE; NOT YET AUTHORITATIVE; NOT YET FORMALLY CLOSED; NO active runtime
+increment; NO domain activated):** **`P9-E2-R` — Ambiguity / Multi-Domain Result Representation (bounded representation sub-gate)
+is FORMALLY CLOSED / SATISFIED as a governance-only CLOSURE CANDIDATE** (record:
+`docs/governance/P9_E2_R_AMBIGUITY_MULTI_DOMAIN_RESULT_REPRESENTATION_FORMAL_CLOSURE_RECORD.md`; authoritative pre-closure parent
+`b42a3e6c246b98d425460f80d91d8de12d554039`, PR #443). **This is a governance-only closure candidate — it is NOT yet authoritative
+and P9-E2-R is NOT yet formally closed; closure becomes authoritative only after: Mandatory Grill → independent external
+exact-candidate review → Owner exact-candidate acceptance → SHA-preserving publication → PR → pre-merge verification → CREATE A
+MERGE COMMIT → post-merge verification.** Implementation lineage: contract PR #442 (`3434c235`; candidate `3cbb16b6`) +
+implementation PR #443 (`b42a3e6`; candidate `813bc5aa`; merge tree `35a58482` == candidate tree; diffstat 11 files / +725 / −48;
+`git diff --check` CLEAN). **P9-E2-R established the representation seam only — it DID NOT implement the P9-E2 tie policy**
+(`classify_domain` constructs SINGLE/NONE only; AMBIGUOUS_TIE / MULTI_DOMAIN_NEEDS_D4 representable/consumable but classifier-
+produced only via the separate later P9-E2 runtime; `sorted(activated_tied)[0]` + priority fallback unchanged; no multi-domain
+analysis). Fresh closure evidence reproduced at `b42a3e6`: full suite **2287 passed / 3 skipped / 1 xfailed / 0 failed**; focused
+`test_p9e2r_result_representation.py` + `test_architecture_guardrails.py` **37 passed**; **six load-bearing mutation probes all
+CAUGHT RED** (wrapper fail-loud; `/start` AMBIGUOUS; `/start` MULTI; defensive activation boundary; canonical order;
+migrated-monkeypatch detachment), bytes restored. Closed acceptance behavior re-verified: one classifier owner; legacy wrapper
+total over SINGLE/NONE + fail-loud over richer kinds; Web/CLI dispatch by kind; `state.domain` a resolved string; defensive
+activation type boundary; canonical order ≠ precedence; no new framework / duplicate owner; `activated_domains() ==
+['electronics_electrical']`. Phase-9 completeness checklist: no acceptance-relevant APPLICABLE/GAP. **Carry-forward (not erased):**
+CF-1 P9-E2 runtime tie policy still pending; CF-2 shared AMBIGUOUS/MULTI public message NON-BLOCKING, carried to P9-E2; CF-3
+non-activated priority fallback (`engine/domain_rules.py` line 142) — no reachable defect today, MANDATORY before first Nth-domain
+registration/activation; CF-4 D4 separate owner for actual composition; **CF-5 Retrospective Adversarial Architecture Audit now
+REGISTERED as a future PRE-ACTIVATION obligation (A/B/C/D/E classification; material C/D/E dispositioned/independently validated
+BEFORE first new-domain activation) — NOT executed here.** **`OWNER_DECISION_REGISTER.md` UNCHANGED. There is NO active runtime
+increment.** **NO new domain activated; NO domain selected; P9-E2 tie precedence remains a separate later runtime gate; P9-E1
+remains FORMALLY CLOSED / SATISFIED; D4 = SEPARATE / UNEXECUTED; D8 = OPEN / Owner-reserved; Phase 8 = FORMALLY CLOSED; Phase 10 =
+NOT AUTHORIZED; PSRR = REGISTERED / NOT EXECUTED; deployment / production = NOT AUTHORIZED.** The next required gate is the
+**Mandatory Grill on this exact immutable closure candidate**; any material Grill finding rejects this candidate as-is (NEW
+SHA/tree/bundle/Grill/independent review — no amendment).
+
+**Immediately prior (retained as history — P9-E2-R IMPLEMENTATION CANDIDATE; merged AUTHORITATIVE via PR #443 `b42a3e6`):**
 **`P9-E2-R` — Ambiguity / Multi-Domain Result Representation is now IMPLEMENTED as an IMPLEMENTATION CANDIDATE** on authoritative
 base `3434c2350b4c08cabcc362d175947a311070b493` (PR #442 made the corrected P9-E2-R contract AUTHORITATIVE). Minimum-sufficient
 representation seam (NO tie-policy change): `engine/domain_rules.py` gains `DomainResultKind {SINGLE, NONE, AMBIGUOUS_TIE,
