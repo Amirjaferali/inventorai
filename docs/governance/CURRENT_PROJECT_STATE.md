@@ -1458,6 +1458,20 @@ AUTHORIZED / NOT STARTED.***
   remains BLOCKED.** The only production-relevant record this gate is the D1/D2 ODR entry; ZERO runtime/test/Web/CLI/domain/activation
   diff. Next required gate: **Mandatory Grill on this exact corrective-contract candidate**; then, once authoritative, the bounded
   CF5-F002/CF-6 implementation.
+  **CF5-F002 / CF-6 corrective contract is now AMENDED (Amendment 01, §14).** The implementation gate correctly STOPPED (§2): the
+  `web/app.py`-only allowlist cannot implement a user-complete D1/D2 flow (`web/templates/index.html:26` hardcodes `domain_confirm
+  value="electronics_electrical"` — the sole consent control; no D2 chooser exists). Amendment 01 widens the production allowlist to
+  the minimum mechanically required — `web/app.py` (+ bounded two-step `/start` seam if needed) + `web/templates/index.html` (dynamic
+  consent control) + one bounded D2 domain-choice template ONLY IF evidence requires + focused tests — and extends the acceptance
+  matrix with real rendered-UI GREEN (U1 present classifier-selected activated domain; U2 NONE + ≥2 activated → present only activated
+  domains for explicit choice+confirm; U3 ratified NONE + exactly-one activated → explicit confirmation; U4 rendered backward-compat;
+  U5 UI-language independence) + mutation probes m11/m12. **D1/D2 and the ratified single-domain NONE case are PRESERVED EXACTLY**
+  (policy unchanged; only implementation scope + acceptance evidence widened). Still forbidden: classifier/activation-policy/set
+  change, domain activation, Domain-Pack change, D4, D8, broad engine/CLI/unrelated-UI work, schema/persistence change,
+  implementation-gate ODR change. `OWNER_DECISION_REGISTER.md` UNCHANGED. **AMENDMENT CANDIDATE ONLY — CF5-F002 / CF-6 / CF-2 / CF-5
+  NOT closed; no domain activated; `activated_domains() == ['electronics_electrical']`; first new-domain activation remains BLOCKED.**
+  ZERO runtime/test/Web/CLI/domain/activation/ODR diff this gate. Next required gate: **Mandatory Grill of this amendment candidate**;
+  then, once authoritative, the CF5-F002/CF-6 implementation re-runs against the amended §14.1 allowlist + §4/§14.2 matrix.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation

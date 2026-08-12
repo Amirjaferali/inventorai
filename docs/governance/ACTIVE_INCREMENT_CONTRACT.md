@@ -41,7 +41,28 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — CF5-F002 / CF-6 CORRECTIVE IMPLEMENTATION CONTRACT CANDIDATE + Owner decisions D1/D2 recorded; governance-only;
+**Status (current — CF5-F002 / CF-6 CORRECTIVE CONTRACT AMENDMENT 01 (scope re-scope) CANDIDATE; governance-only; implementation NOT
+started; NO domain activated):** **`CF5-F002` / `CF-6` corrective contract is AMENDED (Amendment 01, §14)** on authoritative base
+`0124ac336c654caaa6f89b44e3d55a947e6bb2c6` (PR #453 made the corrective contract authoritative; 0 newer). The prior implementation
+gate correctly **STOPPED (§2)**: the `web/app.py`-only allowlist cannot implement a user-complete D1/D2 flow — `web/templates/
+index.html:26` hardcodes `domain_confirm value="electronics_electrical"` (the sole consent control) and no D2 chooser exists.
+Amendment 01 widens the production allowlist to the **minimum mechanically required** — `web/app.py` (incl. a bounded two-step
+`/start` presentation seam if needed) + `web/templates/index.html` (dynamic consent control) + one bounded D2 domain-choice template
+ONLY IF evidence requires + focused tests — and extends the acceptance matrix with **real rendered-UI GREEN** (U1 present
+classifier-selected activated domain for confirmation; U2 NONE + ≥2 activated → present only activated domains for explicit
+choice+confirm; U3 ratified NONE + exactly-one activated → explicit confirmation; U4 rendered backward-compat; U5 UI-language
+independence) + mutation probes m11/m12. **D1/D2 and the ratified single-domain NONE case are PRESERVED EXACTLY** (policy unchanged;
+only implementation scope + acceptance evidence widened). `OWNER_DECISION_REGISTER.md` UNCHANGED (D-CF5-F002-01 already authoritative;
+no new Owner decision). Still forbidden: classifier/activation-policy/set change, domain activation, Domain-Pack change, D4, D8, broad
+engine/CLI/unrelated-UI-framework work, schema/persistence change, implementation-gate ODR change. **AMENDMENT CANDIDATE ONLY —
+CF5-F002 / CF-6 / CF-2 / CF-5 NOT closed; no domain activated; `activated_domains() == ['electronics_electrical']`; first new-domain
+activation remains BLOCKED.** ZERO runtime/test/Web/CLI/domain/activation/ODR diff this gate. Next required gate: **Mandatory Grill of
+this amendment candidate**; then, once authoritative, the CF5-F002/CF-6 implementation re-runs against the amended §14.1 allowlist +
+§4/§14.2 matrix.
+
+**Immediately prior (CF5-F002/CF-6 corrective implementation contract + D1/D2 — AUTHORITATIVE via PR #453; retained as history;
+implementation gate STOPPED at §2, prompting Amendment 01 above):**
+**Status (prior — CF5-F002 / CF-6 CORRECTIVE IMPLEMENTATION CONTRACT CANDIDATE + Owner decisions D1/D2 recorded; governance-only;
 implementation NOT started; NO domain activated):** **`CF5-F002` / `CF-6` — Web `/start` multi-domain admission is DEFINED by a
 bounded governance-only CORRECTIVE IMPLEMENTATION CONTRACT CANDIDATE** (record:
 `docs/governance/CF5_F002_CF6_WEB_ADMISSION_CORRECTIVE_CONTRACT.md`) on authoritative base

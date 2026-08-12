@@ -8229,3 +8229,50 @@ implementation is the subsequent gate. **P9-E2 FORMALLY CLOSED / AUTHORITATIVE; 
 CF-2/CF-3/CF-6 PENDING; D4 SEPARATE; D8 Owner-reserved;** Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED; deployment/production =
 NOT AUTHORIZED. Append-only; prior history not rewritten. This entry authorizes no push, PR, merge beyond this candidate, no
 implementation, no domain selection/qualification/registration/activation, and no CF-6/CF-2/CF-3/D4/D8 execution.
+
+---
+
+## CF5-F002 / CF-6 — Web `/start` Multi-Domain Admission — CORRECTIVE CONTRACT AMENDMENT 01 (implementation-scope + acceptance re-scope) — governance-only CANDIDATE — implementation NOT started; NO domain activated
+
+**Gate.** OWNER-AUTHORIZED **governance-only** amendment of the authoritative CF5-F002/CF-6 corrective implementation contract
+(`docs/governance/CF5_F002_CF6_WEB_ADMISSION_CORRECTIVE_CONTRACT.md`, PR #453) to authorize the **minimum mechanically required**
+implementation scope after the implementation gate correctly STOPPED (§2). Authoritative base
+`0124ac336c654caaa6f89b44e3d55a947e6bb2c6` (freshly fetched; 0 newer); boot OK; `activated_domains() == ['electronics_electrical']`;
+disposable worktree (primary tree + historical bundles untouched).
+
+**Why (mechanical evidence).** The `web/app.py`-only production allowlist cannot implement a **user-complete** Owner D1/D2 flow:
+`web/templates/index.html:26` is `<input type="checkbox" name="domain_confirm" value="electronics_electrical" required>` — a fixed
+electronics value and the sole `/start` consent control; `web/app.py` cannot change what the form submits, so a real user cannot
+confirm a classifier-selected non-electronics activated domain (D1), and there is no chooser for the NONE + ≥2-activated case (D2). A
+`web/app.py`-only change would be *safe* (no mislabel/500/untruthful/suppression) but leaves the multi-domain flow user-unreachable,
+failing §11 "activation-set broadening works correctly." The template was NOT part of the validated defect boundary (validation §2 =
+`web/app.py` only) but IS mechanically required to realize the ratified D1/D2 policy.
+
+**Amendment 01 (§14).** (§14.1) Widens the production allowlist to the minimum: `web/app.py` (incl. a bounded two-step `/start`
+presentation seam if evidence requires) + `web/templates/index.html` (generalize the single hardcoded consent control to present/
+carry the classifier-selected activated domain) + one bounded D2 domain-choice template (e.g. `web/templates/domain_choice.html`)
+**ONLY IF** a separate surface is mechanically required + `tests/test_cf5_f002_web_admission_multidomain.py`. The §8 forbidden list
+and all other fences remain in force. (§14.2) Extends the acceptance matrix with real rendered-UI GREEN — **U1** present
+classifier-selected activated domain for explicit confirm; **U2** NONE + ≥2 activated → present ONLY activated domains for explicit
+choice+confirm (recognized-not-activated absent); **U3** ratified NONE + exactly-one activated → explicit confirmation (electronics
+backward-compat identical); **U4** rendered backward-compatibility; **U5** UI-language independence of presentation — plus mutation
+probes **m11** (re-hardcode electronics-only consent / drop classified-domain presentation → U1/U3 regress) and **m12** (offer a
+recognized-not-activated domain in the D2 choice set → U2 regresses). (§14.3) Stale-comment hygiene scope unchanged (the two
+`web/app.py` comments). (§14.4) **D1/D2 and the ratified single-domain NONE case PRESERVED EXACTLY**; CF-6 (§5) / CF-2 (§6)
+dispositions unchanged (NOT closed).
+
+**Preserved / non-effects.** `OWNER_DECISION_REGISTER.md` **UNCHANGED** (D-CF5-F002-01 already authoritative; no new Owner decision —
+the policy is preserved, only implementation scope + acceptance evidence widened). No classifier/activation-policy/set change; no
+domain activation/selection/registration; no Domain-Pack change; no D4/D8; no broad engine/CLI/unrelated-UI work; no schema/
+persistence change. CF5-F002 = OPEN C; CF5-F003 = CLOSED; CF5-F001/F004 = OPEN C; CF-5 = OPEN; CF-6/CF-2 = PENDING/separate (NOT
+closed); D4 SEPARATE; D8 Owner-reserved; `activated_domains() == ['electronics_electrical']`; **first new-domain activation remains
+BLOCKED**. ZERO runtime/test/Web/CLI/domain/Registry/activation/schema/persistence/API/guardrail/ODR diff this gate.
+
+**Boundary / status after this entry.** **CF5-F002/CF-6 corrective contract Amendment 01 = AUTHORITATIVE-CONTRACT AMENDMENT CANDIDATE
+ONLY; implementation NOT started; F002/CF-6/CF-2/CF-5 NOT closed.** Still requires Mandatory Grill → independent external
+exact-candidate review → Owner acceptance → SHA-preserving publication → PR → pre/post-merge verification. After authoritative, the
+bounded CF5-F002/CF-6 implementation re-runs against the amended §14.1 allowlist + §4/§14.2 acceptance matrix. **P9-E2 FORMALLY
+CLOSED / AUTHORITATIVE; P9-QS AUTHORITATIVE; CF-5 OPEN; CF5-F001/F004 open C; CF-2/CF-3/CF-6 PENDING; D4 SEPARATE; D8 Owner-reserved;**
+Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED; deployment/production = NOT AUTHORIZED. Append-only; prior history not rewritten. This
+entry authorizes no push, PR, merge beyond this candidate, no implementation, no domain selection/qualification/registration/
+activation, and no CF-6/CF-2/CF-3/D4/D8 execution.
