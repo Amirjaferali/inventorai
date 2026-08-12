@@ -3,12 +3,92 @@ Domain Rules — lightweight electronics/electrical only.
 MVP: 3 rules maximum per MVP_SCOPE_FREEZE.md
 """
 
+import re
+
 from engine.domain_registry import load_registry
 from engine import domain_activation
 _REGISTRY = load_registry("domains/")
 
 from dataclasses import dataclass
 from enum import Enum
+
+
+# CF5-F003 corrective matching semantics (base corrective contract §4 + Amendment 01 §A3).
+# Deterministic, domain-neutral, N-domain capable; consulted ONLY by classify_domain().
+# Tokenizer: maximal ASCII-alphanumeric runs; punctuation/whitespace are delimiters
+# (so "ESP32." / "(LED)" / "drug-delivery" -> "esp32" / "led" / "drug","delivery").
+_TOKEN_RE = re.compile(r"[a-z0-9]+")
+
+
+def _single_word_matches(sig_token, token_set):
+    """§4.2/§4.3: a single-word signal matches an input token equal to it, or its
+    bounded plural ``+"s"`` / ``+"es"`` -- and NOTHING else (no stemming / fuzzy /
+    edit-distance / substring / ``+ies`` / irregular morphology)."""
+    return (sig_token in token_set
+            or (sig_token + "s") in token_set
+            or (sig_token + "es") in token_set)
+
+
+def _phrase_matches(sig_tokens, tokens):
+    """§4.5: a multi-word signal matches only as a contiguous whole-token sequence;
+    the bounded ``+"s"``/``+"es"`` plural is permitted on the FINAL token only. No
+    token skipping, no reordering; intermediate tokens match exactly."""
+    n = len(sig_tokens)
+    last = sig_tokens[-1]
+    for i in range(len(tokens) - n + 1):
+        if all(tokens[i + j] == sig_tokens[j] for j in range(n - 1)):
+            t = tokens[i + n - 1]
+            if t == last or t == (last + "s") or t == (last + "es"):
+                return True
+    return False
+
+
+def _present_signal_count(pack, tokens, token_set):
+    """Number of DISTINCT registered signals of ``pack`` present in the tokenized
+    text -- the domain's classification score. Computed as the cardinality of the
+    UNION (Amendment 01 §A3, AT-MOST-ONCE / set membership) of:
+
+      (i)  base matches -- signals matched by the whole-token + bounded-plural rule
+           (single-word via exact/``+s``/``+es``; multi-word via contiguous token
+           sequence with bounded plural on the final token); and
+      (ii) same-domain registered containment -- every single-word registered signal
+           ``X`` such that a registered container signal ``Y`` of the SAME pack is a
+           BASE match (present via ANY authorized base form, incl. its bounded plural
+           -- plural-container aware), with ``X != Y`` and ``X`` a substring of the
+           registered signal string ``Y``.
+
+    Each registered signal is counted at most once (a signal already base-matched is
+    not re-credited via containment -- no double count). Containment is same-domain
+    only (the loop is within one pack): no cross-domain leakage (e.g. electronics
+    ``sensor`` is never credited from medical ``biosensor``); the container ``Y`` must
+    be a registered signal (no credit inside a non-registered word, so
+    ``controlled``/``knowledge``/``ecosystem`` never match); the contained ``X`` must
+    be a registered same-domain single-word signal that is a substring of ``Y``. The
+    containment credit never exceeds the single boolean contribution the same signal
+    could have supplied through parent substring matching (Amendment 01 §A3a)."""
+    base_present = set()
+    single_word = {}  # registered single-word signal string -> its lone token
+    for item in pack["classification_signals"]:
+        sig = item["signal"].lower()
+        sig_tokens = _TOKEN_RE.findall(sig)
+        if not sig_tokens:
+            continue
+        if len(sig_tokens) == 1:
+            single_word[sig] = sig_tokens[0]
+            if _single_word_matches(sig_tokens[0], token_set):
+                base_present.add(sig)
+        else:
+            if _phrase_matches(sig_tokens, tokens):
+                base_present.add(sig)
+    present = set(base_present)
+    # (ii) same-domain registered containment, plural-container aware, at-most-once.
+    # Container Y ranges over BASE matches only (containment is not itself chained);
+    # X is a same-domain registered single-word signal that is a substring of Y.
+    for y in base_present:
+        for x_sig, _x_tok in single_word.items():
+            if x_sig != y and x_sig in y:
+                present.add(x_sig)
+    return len(present)
 
 
 class DomainResultKind(Enum):
@@ -118,9 +198,10 @@ def classify_domain(idea_text: str) -> "DomainClassification":
     one domain is ever activated-tied, so the AMBIGUOUS_TIE branch is
     production-unreachable today; it becomes reachable only under a future governed
     second-domain activation (or a bounded self-restoring activation test double)."""
-    text = idea_text.lower()
+    tokens = _TOKEN_RE.findall(idea_text.lower())
+    token_set = set(tokens)
     scores = {
-        pack_id: sum(1 for item in pack["classification_signals"] if item["signal"] in text)
+        pack_id: _present_signal_count(pack, tokens, token_set)
         for pack_id, pack in _REGISTRY.items()
     }
     if not scores or max(scores.values()) == 0:

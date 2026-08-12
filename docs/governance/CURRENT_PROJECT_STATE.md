@@ -1382,6 +1382,28 @@ AUTHORIZED / NOT STARTED.***
   this amendment gate; `activated_domains() == ['electronics_electrical']`.** **Amendment 01 = AMENDMENT CANDIDATE ONLY;
   implementation NOT started.** This exact candidate has passed the Creator Mandatory Grill; the next required gate is **independent
   external exact-candidate review of this exact immutable CF5-F003 amendment candidate**.
+  **CF5-F003 Amendment 01 is now AUTHORITATIVE (merged PR #449; live tip `107d2eb08e9cdf14dade12a46693cf5dd2dd1533`; two-parent merge
+  of `cfdc58cc` + Amendment 01 candidate `c26f676c`; merge tree `fcc00cd5` == candidate tree; 0 newer). A bounded CF5-F003
+  IMPLEMENTATION CANDIDATE now implements the base corrective contract v2 + Amendment 01 in `engine/domain_rules.py::classify_domain`:
+  raw-substring scoring is replaced by deterministic whole-token matching over `[a-z0-9]+` tokens (exact / bounded `+s` / `+es`),
+  contiguous multi-word phrase matching (bounded plural on the final token only), and same-domain registered containment preservation
+  credited AT-MOST-ONCE / set-membership, fired when the container is present via ANY authorized base form (incl. its bounded plural —
+  plural-container aware), never cross-domain and never inside a non-registered word (`_TOKEN_RE` + `_single_word_matches` /
+  `_phrase_matches` / `_present_signal_count`; `import re`). Tie policy / fallback / `DomainClassification` semantics / fail-loud
+  `infer_domain` / D3-D UNCHANGED. RED→GREEN: NEW `tests/test_cf5_f003_classifier_matching_semantics.py` (74 tests) — 8 RED (false
+  positives controlled/compiled/knowledge→led, patriotic→iot, concurrent→current, hearth→heart; real Web `/start` bypass; real CLI
+  incorrect-confirmation) fail on pre-fix `107d2eb`, pass after; GREEN preservation (singular+plural, multi-word/punctuation,
+  containment singular + plural-container, cross-domain non-leakage biosensor/biosensors→medical, at-most-once parity singular+plural,
+  genuinely executed 0/1/2/3+ activation + Web session cleanup, Web/CLI parity). Full suite: **2381 passed / 3 skipped / 1 xfailed /
+  0 failed** (2307 baseline + 74 new; no regression). Mutation suite (8, all CAUGHT RED, bytecode-isolated, bytes restored):
+  substring-restore / `+s` removal / `+es` removal / punctuation regression / containment removal / cross-domain+non-registered
+  containment leak / non-idempotent double-count / exact-token-only container (plural-container M1). Adversarial differential sweep:
+  281-input corpus, 20 categorized deltas, **0 UNEXPLAINED**. Scope = `engine/domain_rules.py` (matching/scoring) + the new focused
+  test + this current-truth sync; ZERO diff to web/CLI/safety-signal/activation/registry/Domain-Pack/schemas/persistence/API/
+  guardrails/`OWNER_DECISION_REGISTER.md`. `activated_domains() == ['electronics_electrical']`; no activation change.
+  **IMPLEMENTATION CANDIDATE ONLY — CF5-F003 NOT closed** (closure is a later gate after independent review → Owner acceptance →
+  merge → post-merge verification). CF5-F001 / CF5-F002 / CF5-F004 remain UNCHANGED open C; CF-5 remains OPEN; first new-domain
+  activation remains BLOCKED. Next required gate: **Mandatory Grill of this exact implementation candidate.**
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation

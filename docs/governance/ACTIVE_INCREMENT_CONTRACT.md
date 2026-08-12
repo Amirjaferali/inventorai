@@ -41,7 +41,39 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — CF5-F003 CONTRACT AMENDMENT 01 CANDIDATE; governance-only; implementation NOT started; NO domain activated):**
+**Status (current — CF5-F003 IMPLEMENTATION CANDIDATE (base contract v2 + Amendment 01); RED→GREEN; NOT merged; CF5-F003 NOT
+closed; NO domain activated):** **`CF5-F003` — Classifier Matching Semantics is IMPLEMENTED by a bounded IMPLEMENTATION CANDIDATE**
+on authoritative base `107d2eb08e9cdf14dade12a46693cf5dd2dd1533` (live tip; two-parent merge of `cfdc58cc` + Amendment 01 candidate
+`c26f676c`; merge tree `fcc00cd5` == Amendment 01 tree; 0 newer). The bounded runtime change replaces the raw-substring scoring in
+`engine/domain_rules.py::classify_domain` with deterministic **whole-token** matching over `[a-z0-9]+` tokens (exact / bounded
+`+s` / `+es`), **contiguous multi-word** phrase matching (bounded plural on the final token only), and **same-domain registered
+containment preservation** credited **AT-MOST-ONCE / set-membership** and fired when the container is present via **any authorized
+base form (incl. its bounded plural — plural-container aware, Amendment 01 §A3/§A3a)**; **no cross-domain containment leakage**; no
+credit inside a non-registered word. New module-level `_TOKEN_RE` + `_single_word_matches` / `_phrase_matches` /
+`_present_signal_count`; `import re` added. **Tie policy (0→fallback / 1→SINGLE / ≥2→AMBIGUOUS_TIE), the non-activated priority
+fallback list, `DomainClassification` semantics, the P9-E2-R fail-loud `infer_domain` wrapper, and D3-D precedence are UNCHANGED.**
+**RED→GREEN evidence:** NEW `tests/test_cf5_f003_classifier_matching_semantics.py` (74 tests) — 8 RED (false positives
+`controlled`/`compiled`/`knowledge`→`led`, `patriotic`→`iot`, `concurrent`→`current`, `hearth`→`heart`; a real Web `/start`
+guidance-bypass; a real CLI incorrect-confirmation) fail on the pre-fix parent `107d2eb` and pass after the fix; GREEN preservation
+(singular+plural, multi-word/punctuation, containment singular + **plural-container**, cross-domain non-leakage `biosensor`/
+`biosensors`→medical, **at-most-once parity** singular+plural, genuinely-executed **0/1/2/3+** activation with Web session cleanup,
+Web/CLI parity). **Full regression:** `pytest -q` = **2381 passed / 3 skipped / 1 xfailed / 0 failed** (= 2307 parent baseline + 74
+new; no existing-test regression; no deleted test; no new skip/xfail). **Mutation suite (8, all CAUGHT RED, bytecode-isolated, bytes
+restored):** substring-restore; `+s` removal; `+es` removal; punctuation regression; containment removal; cross-domain/non-registered
+containment leak; non-idempotent double-count; exact-token-only container (plural-container M1). **Adversarial differential sweep:**
+281-input corpus, 20 parent-vs-candidate deltas ALL categorized (F003 false-positive/accepted-compound-loss; cross-domain-leakage
+correction; authorized phrase/tokenization expansion), **0 UNEXPLAINED**. **Scope:** `engine/domain_rules.py` (matching/scoring only)
++ the new focused test + this governance current-truth sync. **ZERO diff:** `web/app.py`, `scripts/run_cli.py`,
+`engine/safety_signal.py`, `engine/domain_activation.py`, Domain Registry, Domain-Pack signal data, tie policy, fallback priority,
+`ARCHITECTURE_GUARDRAILS.md`, `OWNER_DECISION_REGISTER.md`, schemas, persistence, API. `activated_domains() ==
+['electronics_electrical']`; NO activation change. **IMPLEMENTATION CANDIDATE ONLY — CF5-F003 NOT closed** (closure is a later gate
+after independent review → Owner acceptance → merge → post-merge verification). CF5-F001 / CF5-F002 / CF5-F004 remain UNCHANGED open
+C; CF-5 remains OPEN; first new-domain activation remains BLOCKED. Next required gate: **Mandatory Grill of this exact implementation
+candidate.**
+
+**Immediately prior (CF5-F003 Amendment 01 CONTRACT candidate — now AUTHORITATIVE via PR #449, merge `107d2eb`; retained as
+history):**
+**Status (prior — CF5-F003 CONTRACT AMENDMENT 01 CANDIDATE; governance-only; implementation NOT started; NO domain activated):**
 **`CF5-F003` Amendment 01 — Same-Domain Containment Preservation is DEFINED by a governance-only CONTRACT AMENDMENT CANDIDATE**
 (record: `docs/governance/CF5_F003_CLASSIFIER_MATCHING_SEMANTICS_CORRECTIVE_CONTRACT_AMENDMENT_01.md`) on authoritative base
 `cfdc58cc798d02b8d9f50030b627a8302e0de889` (PR #448 made the corrected CF5-F003 corrective contract v2 AUTHORITATIVE; 0 newer). The
