@@ -41,7 +41,34 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — CF5-F003 FORMALLY CLOSED; governance-only closure sync; NO domain activated):** **`CF5-F003` — Classifier
+**Status (current — CF5-F002 INDEPENDENT VALIDATION CANDIDATE; governance-only; VALIDATION ONLY — NO remediation authorized;
+NO domain activated):** **`CF5-F002` — Web `/start` Electronics-Only Admission is INDEPENDENTLY VALIDATED by a governance-only
+VALIDATION CANDIDATE** (record: `docs/governance/CF5_F002_WEB_START_ADMISSION_INDEPENDENT_VALIDATION_RECORD.md`) on
+authoritative parent `e5f7d42c5a2c7ff6590816a87cd9f5ca3f650da0` (PR #451 made CF5-F003 formal closure AUTHORITATIVE; 0 newer),
+per audit-contract §7 (validation separated from remediation). **Validated defect:** the `/start` admission surface hardcodes a
+single-activated-domain (electronics-only) admission architecture — consent + admitted domain are the constant
+`DOMAIN_CONFIRM_VALUE` (`web/app.py:837`, `:1420`); hardcoded `domain != "electronics_electrical"` branch + static
+`CONFLICTING_SUPPORTED_DOMAINS` (`:1391`, `:845`); static strong-unsupported vocabulary encoding registered domains' signals as
+permanently unsupported (`:897-919`; CF-6/NB-4); "electronics and electrical ideas only" public copy (CF-2). **Classification
+C RETAINED ON EVIDENCE** (real production `/start` probes, isolated DB + self-restoring activation doubles, session cleanup
+PASS): today every probed outcome is correct and truthful (activated-electronics admission; NONE fallback under explicit
+confirmation; recognized-but-not-activated refused; real AMBIGUOUS_TIE production-unreachable; UI-language independent);
+under an elec+mech double the surface fails four ways — activation state has zero effect on outcomes; activated-domain signals
+refused as "unsupported"; **`a hinge that you plug in` → SINGLE(mechanical) [ACTIVATED] yet ADMITTED as an
+`electronics_electrical` session (cross-domain mislabeling)**; no consent path for any second domain. **Trigger (narrowed):**
+first moment `activated_domains() != ['electronics_electrical']` (extensionally = second-specialist-domain activation today);
+NOT registration, NOT recognition. **CF-6:** partly owned; single "CF5-F002 / CF-6 Web-admission lane" validated; no duplicate
+framework. **CF-2:** separate, co-triggered; no message defect reachable today. **Stale `SUBSTRINGS` comment
+(`web/app.py:870-884`):** partly stale, comment-only, zero runtime consequence, owner F002/CF-6 lane CONFIRMED, NOT edited.
+**Remediation required NOW: NO; pre-trigger corrective gate: YES (binding C obligation before any activation gate changes the
+activation set); Owner multi-domain consent/admission UX policy required at that future gate, NONE now.**
+**CF5-F003 remains CLOSED; CF5-F001 / CF5-F004 remain OPEN C; CF-5 remains OPEN; first new-domain activation remains
+BLOCKED.** `OWNER_DECISION_REGISTER.md` UNCHANGED; ZERO runtime/test/domain/schema/web/CLI/guardrail diff;
+`activated_domains() == ['electronics_electrical']`. **VALIDATION CANDIDATE ONLY — remediation NOT authorized; corrective
+contract NOT created.** Next required gate: **Mandatory Grill on this exact validation candidate.**
+
+**Immediately prior (CF5-F003 formal closure — retained as history):**
+**Status (prior — CF5-F003 FORMALLY CLOSED; governance-only closure sync; NO domain activated):** **`CF5-F003` — Classifier
 Matching Semantics is FORMALLY CLOSED.** The VALIDATED **D** defect (raw-substring classifier false positives) is corrected in the
 AUTHORITATIVE runtime: `engine/domain_rules.py::classify_domain` performs deterministic whole-token matching (`[a-z0-9]+`; exact /
 bounded `+s` / `+es`), contiguous multi-word phrase matching (bounded plural on the final token only), and at-most-once /
