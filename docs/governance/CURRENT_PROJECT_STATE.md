@@ -1404,6 +1404,24 @@ AUTHORIZED / NOT STARTED.***
   **IMPLEMENTATION CANDIDATE ONLY — CF5-F003 NOT closed** (closure is a later gate after independent review → Owner acceptance →
   merge → post-merge verification). CF5-F001 / CF5-F002 / CF5-F004 remain UNCHANGED open C; CF-5 remains OPEN; first new-domain
   activation remains BLOCKED. Next required gate: **Mandatory Grill of this exact implementation candidate.**
+  **CF5-F003 is now FORMALLY CLOSED.** The implementation is AUTHORITATIVE via **PR #450 → tip
+  `0563843445c55ab1d3b5dcf2bd1e995d131b419f`** (two-parent create-a-merge-commit of `107d2eb` + exact Grill-passed implementation
+  candidate `6cd1fbbf532a57c4b7fa40ea7732d85ea3469273`; **authoritative tree `5d3f0a40bf422f570848e050e1664a4d8616b14e` ==
+  implementation-candidate tree** — post-merge content byte-identical; 0 newer). The VALIDATED **D** defect (raw-substring classifier
+  false positives) is corrected in the authoritative runtime (whole-token `[a-z0-9]+` exact/`+s`/`+es`; contiguous multi-word;
+  at-most-once plural-container-aware same-domain containment; no cross-domain leakage). Closure evidence: full suite **2381 passed /
+  3 skipped / 1 xfailed / 0 failed**; 8 RED→GREEN; 8 mutation probes caught; differential sweep 281 inputs / 0 unexplained; Mandatory
+  Grill PASS; Independent External Review ACCEPT WITH NON-BLOCKING OBSERVATIONS; Owner acceptance; SHA-preserving publication; PR #450;
+  post-merge verification PASS. `activated_domains() == ['electronics_electrical']`; P9-E2 tie/fallback + `DomainClassification`
+  unchanged. **Non-blocking carry-forward (registered once in ACTIVE_EXECUTION_ROADMAP; NOT F003 obligations):** (NMF-1) phrase-
+  contiguity mutation-coverage gap (runtime CORRECT — `delivery drug`→NONE, `machines learning`→NONE; committed mutation suite lacks
+  reorder/intermediate-plural negatives) → bounded TEST-HARDENING follow-up; (stale `SUBSTRINGS` comment in
+  `web/app.py::_admit_specialist_domain`, Web runtime zero-diff) → bounded DOCUMENTATION/COMMENT-HYGIENE follow-up in the CF5-F002 /
+  CF-6 Web-admission lane; the `iot_electronics` schema/load warning is UNRELATED and keeps its existing owner. Rejected evidence
+  preserved immutable: `a29789a9` (impl — containment-loss tie flips), `0f48df20` (amendment — double-count), `5ebc927d` (amendment —
+  plural-container gap + over-broad invariant). **CF5-F001 / CF5-F002 / CF5-F004 remain OPEN C; CF-5 remains OPEN (F003 closure does
+  NOT close CF-5); first new-domain activation remains BLOCKED.** This closure gate is governance-only: ZERO runtime / test / domain /
+  Web / CLI / `OWNER_DECISION_REGISTER.md` diff.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
