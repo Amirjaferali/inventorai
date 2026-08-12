@@ -7958,3 +7958,71 @@ P9-QS AUTHORITATIVE; CF-5 OPEN; CF5-F001/F002/F004 open C; CF-2/CF-3/CF-6 PENDIN
 AUTHORIZED; PSRR = NOT EXECUTED; deployment/production = NOT AUTHORIZED. Append-only; prior history (incl. the rejected
 implementation and the two rejected amendment drafts) not rewritten. This entry authorizes no push, PR, merge beyond this candidate,
 no implementation, no domain selection/qualification/registration/activation, and no CF-1..CF-6/D4/D8 execution.
+
+---
+
+## CF5-F003 — Classifier Matching Semantics — IMPLEMENTATION CANDIDATE (base contract v2 + Amendment 01) — RED→GREEN — CF5-F003 NOT closed; NO domain activated
+
+**Gate.** OWNER-AUTHORIZED bounded **implementation** of the authoritative CF5-F003 corrective contract v2
+(`docs/governance/CF5_F003_CLASSIFIER_MATCHING_SEMANTICS_CORRECTIVE_CONTRACT.md`) **+ Amendment 01**
+(`..._AMENDMENT_01.md`, AUTHORITATIVE via PR #449). Authoritative base `107d2eb08e9cdf14dade12a46693cf5dd2dd1533` (live tip;
+two-parent merge of `cfdc58cc` + Amendment 01 candidate `c26f676c`; merge tree `fcc00cd5` == candidate tree; 0 newer); boot OK;
+`activated_domains() == ['electronics_electrical']`; disposable worktree (primary tree + historical bundles untouched).
+**IMPLEMENTATION CANDIDATE ONLY** — authoritative only if independently reviewed, Owner-accepted, merged (create-a-merge-commit),
+and post-merge verified. **Does NOT close CF5-F003 or CF-5.**
+
+**Bounded runtime change (minimum-path).** `engine/domain_rules.py::classify_domain` — raw substring scoring (`item["signal"] in
+text`) replaced by deterministic **whole-token** matching: tokenize the lowercased text on `[a-z0-9]+`; a single-word signal `S`
+matches a token equal to `S` or the bounded plural `S+"s"`/`S+"es"` (the ONLY inflection); a multi-word signal matches a contiguous
+token subsequence with the bounded plural on the FINAL token only; PLUS **same-domain registered containment preservation**
+(Amendment 01 §A3): for each domain, score = cardinality of the UNION (AT-MOST-ONCE / set membership) of base matches and every
+single-word same-domain registered signal `X` contained in a registered container `Y` present via ANY authorized base form (incl.
+bounded plural — **plural-container aware**), `X != Y`, `X` substring of `Y`; **no cross-domain containment** and **no credit inside a
+non-registered word**. New module-level `_TOKEN_RE` + `_single_word_matches` / `_phrase_matches` / `_present_signal_count`; `import
+re` added. **Tie policy (0→fallback / 1→SINGLE / ≥2→AMBIGUOUS_TIE), the non-activated priority fallback list,
+`DomainClassification` semantics, the P9-E2-R fail-loud `infer_domain` wrapper, and D3-D precedence are UNCHANGED.** Canonical
+`classify_domain` remains the sole classifier owner; Web `/start` and CLI are unchanged consumers (ZERO production diff).
+
+**RED→GREEN evidence (behavioral).** NEW `tests/test_cf5_f003_classifier_matching_semantics.py` (74 tests). RED reproduced on the
+authoritative parent `107d2eb` (8 failed pre-fix): false positives `controlled`/`compiled`/`knowledge`→`led`, `patriotic`→`iot`,
+`concurrent`→`current`, `hearth`→`heart` (must not classify); a **real Web `/start`** case (`a hearth warmer` currently emits the
+medical-conflict mechanism guidance via a false `medical_device` classification — post-fix it does not); a **real CLI** case
+(`concurrent tasks` currently mis-prints `Domain inferred: electronics_electrical` — post-fix `unknown`). All GREEN after the fix.
+GREEN preservation: singular+plural across packs; multi-word + punctuation (`drug-delivery`, `ESP32.`, `(LED)`); the mandatory
+`a system of gears and levers` → Mechanical; **containment singular** (`implantable sensor`→medical; `application`+sensor→software)
+and **plural-container** (`applications with a sensor`→software; `implantables in a sensor`→medical; `medical implantables with a
+circuit`→medical); **cross-domain non-leakage** (`biosensor`/`biosensors`→medical, electronics `sensor` scored 0); **at-most-once
+parity** singular+plural (`an implant that is implantable in a sensor circuit` / `implants implantables sensors circuits` →
+electronics, medical scores 2 not 3; `app application`… → electronics); **genuinely executed 0/1/2/3+** activated-domain scenarios via
+self-restoring `_ACTIVATED_DOMAINS` doubles (independent assertions); AMBIGUOUS_TIE; recognized-not-activated priority; Web/CLI
+parity with session cleanup; a `+es`-path load-bearing guard (`several diagnosises` → medical).
+
+**Load-bearing mutation probes (8; all CAUGHT RED; bytecode-isolated; bytes restored).** (A) restore raw substring → false
+positives return; (B) remove `+s` bounded plural → plurals lost; (C) remove `+es` → `several diagnosises` fails; (D) punctuation
+regression (tokenizer keeps punctuation) → `ESP32.` fails; (E) remove containment preservation → `implantable sensor` → Electronics
+regression; (F) cross-domain / non-registered-word containment leak → `biosensor` → Electronics leakage; (G) non-idempotent
+score-increment containment credit → at-most-once parity regresses (`implant … implantable … sensor circuit` flips
+electronics→medical); (H) exact-token-only container match → plural-container cases regress (`applications with a sensor` flips
+software→electronics). Each proves a distinct semantic is load-bearing.
+
+**Full regression (fresh).** `pytest -q`: **2381 passed / 3 skipped / 1 xfailed / 0 failed** (= 2307 parent baseline + 74 new; 3
+skips pre-existing; 1 xfailed pre-existing). No existing-test regression; no deleted test; no new skip/xfail.
+
+**Adversarial differential sweep.** 281-input corpus (all signals singular+plural+pairs, phrases, false positives, containment,
+compounds); real implemented `classify_domain` vs the proven-faithful raw-substring parent reference; **20 deltas ALL categorized**
+(F003 false-positive / accepted-compound-loss; cross-domain-leakage correction `biosensor`; authorized phrase/tokenization
+expansion `clinical trial` / `drug-delivery`); **0 UNEXPLAINED** (any would be blocking).
+
+**Scope invariants proven.** Production change = `engine/domain_rules.py` (matching semantics only) + NEW focused test file +
+governance current-truth registration (this roadmap append + `ACTIVE_INCREMENT_CONTRACT.md` + `CURRENT_PROJECT_STATE.md`). **ZERO
+diff:** `web/app.py`, `scripts/run_cli.py`, `engine/safety_signal.py`, `engine/domain_activation.py`, Domain Registry, Domain-Pack
+signal data, `ARCHITECTURE_GUARDRAILS.md`, `OWNER_DECISION_REGISTER.md`, schemas, persistence, API. No fallback-priority/tie-policy
+change; no activation change; `activated_domains() == ['electronics_electrical']`.
+
+**Boundary / status after this entry.** **CF5-F003 = IMPLEMENTATION CANDIDATE ONLY — NOT closed** (formal closure is a separate later
+gate after independent review → Owner acceptance → merge → post-merge verification). **CF5-F001 / CF5-F002 / CF5-F004 remain
+UNCHANGED open C findings; CF-5 remains OPEN.** No new domain activated/selected; first new-domain activation remains BLOCKED. D4
+SEPARATE; D8 Owner-reserved; Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED; deployment/production = NOT AUTHORIZED. Append-only;
+prior history not rewritten. This entry authorizes no push, PR, or merge beyond this candidate, no domain activation/selection, and
+no CF5-F001/F002/F004 / CF-6 / CF-2 / CF-3 / D4 / D8 work. Next required gate: **Mandatory Grill of this exact implementation
+candidate.**
