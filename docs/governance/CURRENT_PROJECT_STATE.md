@@ -1259,6 +1259,43 @@ AUTHORIZED / NOT STARTED.***
   Owner-reserved; Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED; deployment / production = NOT AUTHORIZED.** Next required gate: a
   **NEW Mandatory Grill on this exact new candidate** (any material finding rejects it as-is — NEW SHA/tree/bundle/Grill/independent
   review, no amendment).
+  **The P9-E2 implementation is now AUTHORITATIVE (merged PR #445, tip `f33663710d6edf506a082b1bfa2f02e9c3fef7ac` = two-parent merge
+  of `c11482db…` + the accepted corrected candidate `85fda813…`; merge tree `0bffe3f7…` == candidate tree; scope 5 files / +546 /
+  −17; `git diff --check` CLEAN; 0 newer), and `P9-E2` / `P9-PREREQ-B` — Multi-Activated Domain Tie/Conflict Precedence is now
+  FORMALLY CLOSED / SATISFIED as a governance-only CLOSURE CANDIDATE** (record:
+  `docs/governance/P9_E2_MULTI_ACTIVATED_DOMAIN_TIE_PRECEDENCE_FORMAL_CLOSURE_RECORD.md`). **The closure candidate is NOT yet
+  authoritative and NOT yet merged; the candidate SHA is not a live authoritative tip** — closure becomes authoritative only after
+  Mandatory Grill → independent external exact-candidate review → Owner exact-candidate acceptance → SHA-preserving publication → PR
+  → pre-merge verification → CREATE A MERGE COMMIT → post-merge verification. Accepted implementation review chain: rejected
+  candidate `3255c4ba` (Grill FAIL — never published/accepted/merged; not an ancestor) → accepted corrected candidate `85fda813`
+  (built from `c11482d`) → Grill PASS WITH NON-BLOCKING HARDENING (blocking NONE) → independent review ACCEPT WITH NON-BLOCKING
+  OBSERVATIONS (blocking NONE) → Owner-accepted → published → PR #445 → post-merge verified. Bounded tie-precedence policy via the
+  canonical `classify_domain` seam (CF-1 SATISFIED): 0 activated tied → non-activated priority fallback unchanged; 1 → SINGLE; ≥2 →
+  AMBIGUOUS_TIE(selected=None, complete canonical activated set, EQUAL_SCORE); no arbitrary/alphabetical/Electronics/LLM winner;
+  MULTI_DOMAIN_NEEDS_D4 NOT fabricated (D4 separate); only ACTIVATED domains (D3-D). Fresh closure evidence reproduced at `f336637`:
+  full suite **2307 passed / 3 skipped / 1 xfailed / 0 failed**; focused **57 passed**; **nine load-bearing mutation probes all
+  CAUGHT RED**, bytes restored. Canonical-owner reconciliation: `classify_domain` = canonical owner; `infer_domain` = legacy
+  fail-loud wrapper (later authoritative P9-E2-R architecture governs the name evolution; old P9-E2 contract NOT rewritten/amended).
+  **Carry-forward:** CF-1 SATISFIED by this gate's subject; **CF-2** shared AMBIGUOUS/MULTI public message PENDING; **CF-3**
+  non-activated priority fallback PENDING (retained for backward compatibility; before first Nth-domain registration/activation);
+  CF-4 D4 separate; **CF-5** Retrospective Adversarial Architecture Audit PENDING (MANDATORY before first new-domain activation);
+  **CF-6** Web pre-classifier / strong-unsupported reachability & admission interaction PENDING (PRE-SECOND-SPECIALIST-DOMAIN
+  ACTIVATION; distinct from CF-2). Independent-review/Grill non-blocking observations carried forward, not discarded: NB-1
+  stale/layered P9-E2-R wording (reconciled below); NB-2 substring signal matching (`led`/`web`; pre-existing/unchanged; carried to
+  P9-QS / Retrospective Audit / CF-3/CF-6); NB-3 one mutation probe partly caught by construction invariants (non-blocking
+  test-hardening; tests unchanged); NB-4 strong-unsupported vocabulary vs future activated domains (CF-6; Web unchanged); NB-5
+  `domains/iot_electronics/domain.json` schema warning/skip (D8/IoT Owner-reserved; `domains/iot_electronics/**` untouched).
+  **`OWNER_DECISION_REGISTER.md` UNCHANGED; ZERO runtime/test/domain/Registry/activation/web/CLI/schema/guardrail diff in this
+  closure gate.** **NO new domain activated (`activated_domains() == ['electronics_electrical']`); NO domain selected; P9-E2-R
+  remains FORMALLY CLOSED / SATISFIED; P9-E1 remains FORMALLY CLOSED / SATISFIED; D4 = SEPARATE / UNEXECUTED; D8 Owner-reserved;
+  Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED; deployment / production = NOT AUTHORIZED.** The next required gate is the
+  **Mandatory Grill on this exact immutable closure candidate**.
+  **NB-1 present-truth reconciliation (P9-E2-R):** the earlier P9-E2-R block above (authored before PR #444) describes P9-E2-R
+  formal closure as a governance-only closure candidate "NOT yet authoritative and NOT yet merged." That historical wording is
+  **retained as legitimate history**; the **present, current truth is that the P9-E2-R formal closure is now AUTHORITATIVE** — its
+  closure candidate `6bf749db` was merged via **PR #444** into `c11482db…` (the P9-E2 implementation parent), so `P9-E2-R` is
+  FORMALLY CLOSED / AUTHORITATIVE at the live authoritative tip. No historical evidence is rewritten; only the present status is made
+  unambiguous.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
