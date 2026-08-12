@@ -41,7 +41,56 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — CF5-F003 CORRECTED CORRECTIVE CONTRACT CANDIDATE; governance-only; implementation NOT started; NO active
+**Status (current — CF5-F003 CONTRACT AMENDMENT 01 CANDIDATE; governance-only; implementation NOT started; NO domain activated):**
+**`CF5-F003` Amendment 01 — Same-Domain Containment Preservation is DEFINED by a governance-only CONTRACT AMENDMENT CANDIDATE**
+(record: `docs/governance/CF5_F003_CLASSIFIER_MATCHING_SEMANTICS_CORRECTIVE_CONTRACT_AMENDMENT_01.md`) on authoritative base
+`cfdc58cc798d02b8d9f50030b627a8302e0de889` (PR #448 made the corrected CF5-F003 corrective contract v2 AUTHORITATIVE; 0 newer). The
+CF5-F003 implementation candidate `a29789a948829133812d1a80b297e9b5b907cdc1` (whole-token + bounded plural; Creator Grill PASS WITH
+NON-BLOCKING HARDENING) was **REJECTED by Independent External Review — MATERIAL CORRECTION REQUIRED**, blocking finding
+**CONTAINMENT-LOSS TIE FLIPS** (`an implantable sensor`: medical → electronics because whole-token drops the `implant`⊂`implantable`
+same-domain reinforcement, ties electronics, and activated precedence flips it; likewise `application`+sensor → electronics via
+`app`⊂`application`). `a29789a9` is immutable rejected evidence (NOT published/merged/reused; not an ancestor of this amendment).
+The blocking finding is a **contract-level** gap; this amendment corrects the CONTRACT. **Complete containment inventory (5 pairs):**
+SAME-domain `implant`⊂`implantable`(med) + `app`⊂`application`(soft) [regressions → preserve], `monitoring`⊂`patient_monitoring`
+[neutral]; CROSS-domain `sensor`⊂`biosensor` [improvement — biosensor now correctly medical; do NOT restore], `neural`⊂
+`neural network` [neutral]; the full graph was re-enumerated mechanically (exactly 5 pairs; no new relation after plural/phrase
+normalization; no chained containment; no signal in >1 container). **Amended semantics — Design A (bounded same-domain
+registered-signal containment preservation, AT-MOST-ONCE, plural-container aware):** retain the base whole-token + `+s`/`+es` rule
+PLUS — when a registered container signal `Y` of domain `D` is present via ANY authorized base form (`Y` matched by the base rule:
+exact `Y` / `Y+"s"` / `Y+"es"` for single-word, or a multi-word `Y`'s authorized token sequence), also credit same-domain registered
+single-word signals `X` with `X` substring of `Y`; nothing else, counted as a set UNION (at most once). Verified this gate: restores
+`an implantable sensor` → medical and `application`+sensor → software AND their plural-container forms (`applications with a sensor` →
+software; `implantables in a sensor` → medical); does NOT restore arbitrary substrings (container must be a REGISTERED signal, so
+controlled/knowledge/ecosystem stay false) or cross-domain containment (`biosensor`/`biosensors` stay medical). **P9-E2 tie policy,
+priority fallback, `DomainClassification` semantics, D3-D UNCHANGED; no Domain-Pack edit.** Designs A–E evaluated; A recommended
+(minimal, technical, domain-neutral, N-domain). The containment credit is **AT-MOST-ONCE / set-membership** (a signal already matched
+as a standalone base token is NOT credited again). **Containment-credit invariant (M2 — narrow, replaces the withdrawn global
+claim):** a signal's containment contribution is set-based/at-most-once, cannot duplicate a base contribution, cannot be cross-domain,
+cannot arise from a non-registered container, and cannot exceed the single boolean contribution the same signal could have supplied
+via parent substring matching. **The over-broad global claim "a domain's Design-A score never exceeds parent on any input" is FALSE
+and WITHDRAWN** — authorized phrase/tokenization recognition (e.g. `clinical_trial` in `clinical trial`, `drug delivery` in
+`drug-delivery`) legitimately produces new matches, so the COMPLETE classifier score may exceed parent; only the containment
+contribution is bounded. **Two earlier drafts REJECTED:** `0f48df20` (unqualified score increment → A3-OVER-CREDIT / CONTAINMENT
+DOUBLE-COUNT) and `5ebc927d` (EXACT-token-only container trigger → **M1 plural-container containment loss** `applications with a
+sensor` → electronics; and **M2 over-broad global invariant**), both immutable rejected evidence, neither an ancestor. This candidate
+triggers containment on any authorized container base form (incl. bounded plural) and states only the narrow invariant. The
+underscore-signal reviewer observation (`clinical_trial`/`patient_monitoring` "unmatchable") was mechanically **DISPROVED** (same
+tokenizer applies to signal and input → matched); contract NOT modified to accommodate it. **Owner-policy: NONE required** (technical
+preservation; no new routing policy) → `OWNER_DECISION_REGISTER.md` UNCHANGED. Strengthened evidence required of the future
+implementation: singular- AND plural-container GREEN cases + at-most-once parity cases (singular and plural: `an implant that is
+implantable in a sensor circuit` / `implants implantables sensors circuits` → electronics, medical 2 not 3); original REDs preserved;
+genuinely executed 0/1/2/3+ activation coverage + Web session cleanup; mutation probes for same-domain-containment removal /
+cross-domain over-broadening / non-registered-word containment / non-idempotent double-count / **exact-token-only container match
+(plural-container loss)**. **CF5-F003 = VALIDATED D / OPEN; impl `a29789a9` REJECTED (containment tie flips); amendment drafts
+`0f48df20` REJECTED (double-count) and `5ebc927d` REJECTED (plural-container gap + over-broad invariant); CF5-F001 / CF5-F002 /
+CF5-F004 remain UNCHANGED open C; CF-5 remains OPEN.** ZERO runtime/test/domain/schema/web/CLI/guardrail diff; `activated_domains() ==
+['electronics_electrical']`; NO domain selected; first new-domain activation remains BLOCKED. **This amendment = AMENDMENT CANDIDATE
+ONLY; implementation NOT started.** This exact candidate has passed the Creator Mandatory Grill; the next required gate is
+**independent external exact-candidate review**; any material finding rejects it as-is (NEW SHA/tree/bundle — no in-place amendment).
+
+**Immediately prior (CF5-F003 corrected corrective contract — retained as history; v2 merged AUTHORITATIVE via PR #448 `cfdc58cc`;
+its whole-token-only rule superseded by Amendment 01 above after the implementation `a29789a9` was independently REJECTED):**
+**Status (prior — CF5-F003 CORRECTED CORRECTIVE CONTRACT CANDIDATE; governance-only; implementation NOT started; NO active
 runtime increment; NO domain activated):** **`CF5-F003` — Classifier Matching Semantics corrective gate is DEFINED by a corrected
 governance-only CORRECTIVE CONTRACT CANDIDATE** (record: `docs/governance/CF5_F003_CLASSIFIER_MATCHING_SEMANTICS_CORRECTIVE_CONTRACT.md`)
 on authoritative base `8c38812086cfd3c17bc61ad47bba94e8b7a9de8d` (PR #447 made the CF-5 Audit contract AUTHORITATIVE; 0 newer). The
