@@ -7831,3 +7831,55 @@ AUTHORIZED; PSRR = NOT EXECUTED; deployment / production = NOT AUTHORIZED. **Thi
 verification → CREATE A MERGE COMMIT → post-merge verification before the CF-5 Audit execution gate may begin.** Append-only; prior
 history not rewritten. This entry authorizes no push, PR, merge beyond this candidate, no Audit execution, no domain
 selection/qualification/activation, and no CF-6/CF-2/CF-3/P9-QS/D4/D8 execution.
+
+---
+
+## CF5-F003 — Classifier Matching Semantics — Corrective Gate — CORRECTED CONTRACT CANDIDATE (supersedes REJECTED `9857ba3e`) — implementation NOT started; NO domain activated
+
+**Gate.** OWNER-AUTHORIZED **governance-only** corrected corrective contract for CF-5 finding **CF5-F003** (VALIDATED **D**). The
+prior candidate `9857ba3e21a8bbd8d73bcde83cb85b7744d0f85b` was **REJECTED by Mandatory Grill** (`GRILL FAIL — MATERIAL CORRECTION
+REQUIRED`, blocking finding **BF-1**: its strict *exact whole-token / no plural inference* rule would regress ~76 signals' plural
+forms — `LEDs`/`sensors`/`circuits`/`gears`/`levers`/`catheters`/`apps`/`databases` → NONE, and `a system of gears and levers` →
+Mechanical→Software flip — contradicting its own preservation requirement). **BF-1 is a contract-design defect, not a new runtime
+finding.** `9857ba3e` is immutable rejected evidence (not amended/reused/advanced; retained in history). This corrected candidate is
+built fresh from authoritative parent `8c38812086cfd3c17bc61ad47bba94e8b7a9de8d` (PR #447; 0 newer; rejected SHA NOT an ancestor);
+boot OK; `activated_domains() == ['electronics_electrical']`; disposable worktree (primary tree + historical bundles untouched).
+Canonical record: `docs/governance/CF5_F003_CLASSIFIER_MATCHING_SEMANTICS_CORRECTIVE_CONTRACT.md`.
+
+**BF-1 correction (bounded plural-preserving whole-token rule).** Tokenize lowercased text on `[a-z0-9]+`; a single-word signal `S`
+matches an input token equal to `S`, **or the bounded plural `S+"s"` / `S+"es"` — and nothing else** (no stemming/fuzzy/edit-
+distance/substring/`+ies`/irregular morphology). Multi-word signals match a contiguous whole-token sequence with the bounded plural
+on the final token only. **Collision guard (validated this gate): the false positives stay FALSE** because matching is whole-token,
+not substring (`controlled`↛`led`, `compiled`↛`led`, `patriotic`↛`iot`, `concurrent`↛`current`, `hearth`↛`heart`). **Plural
+inventory reproduced (tip `8c38812`):** 76 single-word signals + 5 multi-word; only `diagnosis` ends in a sibilant (its irregular
+plural `diagnoses` is not caught by the current substring rule either → no obligation); `esp32` numeric (`esp32s`); no cross-pack
+`+s`/`+es` collision. Acceptance boundary: eliminate arbitrary in-word substring matches (incl. benign `subsystem`/`ecosystem`→
+`system` reductions) while preserving legitimate singular + bounded-plural whole-token matches; rare prefixed forms
+(`misdiagnosis`→`diagnosis`) are NOT required (out of scope; not a pack-data edit).
+
+**Required evidence.** RED (controlled/compiled/iot/concurrent/medical collisions + real Web `/start` bypass/admission and real CLI
+incorrect-confirmation, real classifier). **GREEN preservation — MANDATORY, explicitly repairs BF-1:** valid plurals classify
+correctly — Electronics `LEDs`/`sensors`/`circuits`/`resistors`/`PCBs`; Mechanical `gears`/`levers`; Medical `catheters`; Software
+`apps`/`databases`/`APIs`; plus singular, punctuation-adjacent tokens, multi-word signals, existing per-domain recognition,
+0/1/2/3+ activated, AMBIGUOUS_TIE, recognized-not-activated, Web/CLI parity; **mandatory `a system of gears and levers` stays
+Mechanical (no Software flip).** Mutation probes: restore substring; remove token anchoring; remove plural preservation; over-broad
+plural rule (a false positive returns); punctuation regression; short-token loss; Web/CLI bypass.
+
+**Preservation & scope.** Canonical `classify_domain` sole owner (Web/CLI consumers; no duplicate matcher); `DomainClassification`
+semantics; P9-E2-R fail-loud wrapper; P9-E2 tie policy; D3-D precedence; recognized-not-activated; no new MULTI producer; no
+activation change. Scope = `engine/domain_rules.py` matching + focused tests. **Forbidden:** Web admission redesign (F002/CF-6),
+safety-signal redesign (F001), fallback-priority redesign (F004), activation, D4, D8, Domain-Pack signal-data edits.
+
+**Governance disposition.** CF5-F003 = **VALIDATED D; corrective gate OPEN**; previous `9857ba3e` = REJECTED (BF-1); CF5-F001 /
+CF5-F002 / CF5-F004 remain UNCHANGED open C; CF-5 remains OPEN; no domain activated/selected; first new-domain activation remains
+BLOCKED. **`OWNER_DECISION_REGISTER.md` UNCHANGED** (bounded technical matching rule within existing architecture; no new Owner
+product-policy decision — D3/P9-QS/P9-E1/CF-5 precedent). ZERO runtime/test/domain/schema/persistence/API/web/CLI/guardrail diff
+this gate.
+
+**Boundary / status after this entry.** **CF5-F003 corrected corrective contract = CANDIDATE ONLY; IMPLEMENTATION NOT STARTED** (does
+not claim the fix is implemented). Still requires Mandatory Grill → independent external exact-candidate review → Owner
+exact-candidate acceptance → SHA-preserving publication → PR → pre-merge verification → CREATE A MERGE COMMIT → post-merge
+verification. **P9-E2 remains FORMALLY CLOSED / AUTHORITATIVE; P9-QS AUTHORITATIVE; CF-5 OPEN; CF5-F001/F002/F004 open C; CF-2/CF-3/
+CF-6 PENDING; D4 SEPARATE; D8 Owner-reserved;** Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED; deployment/production = NOT
+AUTHORIZED. Append-only; prior history (incl. the rejected candidate) not rewritten. This entry authorizes no push, PR, merge beyond
+this candidate, no implementation, no domain selection/qualification/registration/activation, and no CF-1..CF-6/D4/D8 execution.
