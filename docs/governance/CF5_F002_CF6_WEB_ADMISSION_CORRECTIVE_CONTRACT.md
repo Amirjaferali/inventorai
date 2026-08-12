@@ -152,6 +152,11 @@ documentation cleanup.
 
 ## §8. Scope fence (later implementation)
 
+> **[SUPERSEDED IN PART BY §14 — Amendment 01.]** The `web/app.py`-only production allowlist below was found mechanically
+> insufficient for a user-complete D1/D2 flow (the consent/choice UI cannot be produced from `web/app.py` alone). **§14 (Amendment
+> 01) governs on conflict** and widens the allowlist to include `web/templates/index.html` and a bounded D2 chooser template /
+> two-step `/start` presentation seam. The forbidden list and all other fences below remain in force.
+
 **Allowed production path (minimal, evidence-backed):** `web/app.py` (the `/start` admission surface: message constants, the consent
 constant, the admission branch, the strong-unsupported gate, the admission call, and the two stale comments). **Focused tests:** a
 NEW `tests/test_cf5_f002_web_admission_multidomain.py` (and/or mechanically-justified additions to existing Web-admission tests). If
@@ -212,3 +217,77 @@ runtime / test / Web / CLI / domain / Registry / activation / schema / persisten
 Mandatory Grill on this exact candidate**; any material finding rejects it as-is (fresh candidate from the authoritative parent — no
 in-place amendment). After this contract is authoritative, the bounded CF5-F002/CF-6 **implementation** is the subsequent separately
 governed gate.
+
+---
+
+## §14. Amendment 01 — Minimum implementation-scope + acceptance re-scope (governance-only)
+
+**Why.** The CF5-F002/CF-6 implementation gate correctly **STOPPED (contract §8 / gate §2)**: the `web/app.py`-only production
+allowlist cannot implement a **user-complete** Owner D1/D2 flow. Mechanical evidence (authoritative tip `0124ac33`): the sole `/start`
+consent control, `web/templates/index.html:26`, is `<input type="checkbox" name="domain_confirm" value="electronics_electrical"
+required>` — a **fixed** electronics value; `web/app.py` cannot change what the form submits, so a real user cannot confirm a
+classifier-selected non-electronics activated domain (D1) and there is **no chooser** for the NONE + ≥2-activated case (D2). A
+`web/app.py`-only change would make the flow *safe* (no cross-domain mislabel, no HTTP 500, truthful copy, activation-aware
+strong-unsupported) but leaves the multi-domain flow **user-unreachable**, failing §11 "activation-set broadening works correctly."
+This amendment authorizes ONLY the minimum additional scope, and preserves **D1/D2 exactly** (§2 unchanged). It is
+**governance-only** — no implementation, no domain activation, no classifier/activation-policy change, no D4, no D8, no
+CF5-F002/CF-6/CF-5 closure. `OWNER_DECISION_REGISTER.md` is **UNCHANGED** (D-CF5-F002-01 already authoritative; no new Owner
+decision).
+
+**§14.1 Amended production allowlist (supersedes §8's allowlist; the §8 forbidden list and all other fences remain in force).**
+The later implementation's allowed production paths are the **minimum mechanically required**:
+- `web/app.py` — the `/start` admission surface (as in §8) **plus**, if evidence requires it, a bounded **two-step `/start`
+  presentation seam** (classify → present the classifier-selected activated domain / activated-domain chooser → explicit
+  confirmation → admit); no new unrelated route, no new engine/CLI call, no schema/persistence field.
+- `web/templates/index.html` — generalize the single hardcoded `domain_confirm` control so it can present/carry the
+  classifier-selected **activated** domain for explicit confirmation (D1). Under `['electronics_electrical']` the rendered result
+  MUST be behaviorally identical to today (electronics confirmation), i.e. **no user-visible regression**.
+- **One bounded D2 domain-choice template** (e.g. `web/templates/domain_choice.html`) **ONLY IF** a separate presentation surface is
+  mechanically required to present the activated-domain choice set for the NONE + ≥2-activated case; if the same generalized
+  `index.html` can carry the choice set without a new template, the new template MUST NOT be added (minimum-path). The
+  implementation gate records which of the two it used and why.
+- `tests/test_cf5_f002_web_admission_multidomain.py` (and/or mechanically-justified additions to existing Web-admission tests).
+
+**Still forbidden (unchanged from §8):** canonical classifier semantic change; activation-policy/set change; domain
+activation/selection/registration; Domain-Pack change; D4 execution; D8 change; broad engine redesign; unrelated CLI redesign;
+**unrelated UI-framework work** (only the bounded consent/choice controls above); schema/persistence change; any ODR change in the
+implementation gate. Any production path beyond this amended allowlist → the implementation gate **STOPs before expanding scope** and
+reports the evidence.
+
+**§14.2 Extended acceptance matrix — real rendered UI GREEN (adds to §4; §4 outcome/session-domain assertions still required).**
+In addition to the §4 A-G matrix (proved via `/start` POST + self-restoring activation doubles), the later implementation MUST prove,
+against the **real rendered `/start` UI** (Flask test client asserting rendered HTML, not only POST outcomes):
+- **U1 (D1 present-for-confirm).** When the canonical classifier resolves exactly one **activated** specialist domain, the rendered
+  `/start` surface **presents that classifier-selected domain** and offers **explicit confirm/decline** for exactly that domain; a
+  confirm submission carrying that domain admits it and **persists that exact domain**; no auto-admit; no manual chooser is shown when
+  one valid activated domain was already resolved.
+- **U2 (D2 choose-then-confirm).** On `NONE` with **≥2 activated** specialist domains, the rendered surface **presents only the
+  currently activated specialist domains** as the choice set (recognized-but-not-activated domains absent), the user explicitly
+  chooses one and then explicitly confirms it, and the admitted session **persists the chosen+confirmed domain**; no silent
+  fallback/default.
+- **U3 (ratified single-domain NONE).** On `NONE` with **exactly one** activated specialist domain (electronics OR a non-electronics
+  domain), the rendered surface presents that sole activated domain for **explicit confirmation** (not auto-admitted); on
+  `['electronics_electrical']` this is behaviorally identical to today's governed `NONE`→Electronics explicit-consent behavior
+  (**backward compatibility**, no user-visible regression).
+- **U4 (rendered backward-compatibility).** Under `['electronics_electrical']`, the rendered `/start` consent UI is behaviorally
+  identical to the authoritative parent (electronics confirmation); the amendment adds capability that is exercised only when the
+  activation set broadens.
+- **U5 (UI-language independence of presentation).** The presented domain / choice set and the admission outcome do not depend on
+  `ui_lang` (labels may localize, but the offered domains, the classification, and the persisted session-domain do not change).
+The §9 mutation set is extended with: **(m11)** a template/route mutation that re-hardcodes the electronics-only consent control (or
+drops the classified-domain presentation) → U1/U3 regress; **(m12)** a mutation that offers a recognized-but-not-activated domain in
+the D2 choice set → U2 regresses. Each CAUGHT RED.
+
+**§14.3 Stale-comment hygiene (unchanged scope).** §7 is unchanged (the two `web/app.py` comments). No template documentation
+cleanup is authorized beyond the bounded consent/choice control generalization itself.
+
+**§14.4 Preserved.** D1/D2 (§2) and the ratified single-domain NONE case (D3 / §2 derived corner) are **preserved exactly** — this
+amendment widens only the implementation scope and the acceptance evidence, not the policy. CF-6 (§5) and CF-2 (§6) dispositions are
+unchanged (CF-6/CF-2 NOT closed). CF5-F002 remains **OPEN C**; CF5-F003 CLOSED; CF5-F001/F004 OPEN C; CF-5 OPEN; `activated_domains()
+== ['electronics_electrical']`; **first new-domain activation remains BLOCKED**. This amendment is governance-only: **ZERO** runtime /
+test / Web / CLI / domain / Registry / activation / schema / persistence / API / guardrail / `OWNER_DECISION_REGISTER.md` diff.
+
+**§14.5 Status & next gate.** This amendment is a **governance-only CANDIDATE**; it authorizes no implementation. After it is
+authoritative (Mandatory Grill → independent external exact-candidate review → Owner acceptance → SHA-preserving publication → PR →
+pre/post-merge verification), the bounded CF5-F002/CF-6 **implementation** re-runs against the amended §14.1 allowlist and §4+§14.2
+acceptance matrix.
