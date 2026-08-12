@@ -7553,3 +7553,137 @@ exact-candidate review → Owner exact-candidate acceptance → SHA-preserving p
 MERGE COMMIT → post-merge verification before P9-E2-R may be declared authoritatively closed.** Append-only; prior history not
 rewritten. This entry authorizes no push, PR, merge beyond this candidate, domain activation/selection, D8 decision, D4 execution,
 Retrospective-Audit execution, or any P9-E2/P9-E2-R runtime work.
+
+---
+
+## P9-E2 / P9-PREREQ-B — Multi-Activated Domain Tie/Conflict Precedence — CORRECTED IMPLEMENTATION CANDIDATE (supersedes REJECTED `3255c4ba`) — NO domain activated; NOT closed
+
+**Provenance / why a fresh candidate.** The prior P9-E2 implementation candidate `3255c4ba1ca6ae50e0c3f20d7f0d4c8ef1fa223c`
+was **REJECTED** by Mandatory Grill (`GRILL FAIL — MATERIAL CONTRACT CORRECTION REQUIRED`): its runtime policy was sound, but its
+committed acceptance/governance evidence carried a **false reachability claim** ("every real multi-activated tie idea contains a
+non-electronics signal token that is a `_STRONG_UNSUPPORTED_WORDS` member" → the `/start` AMBIGUOUS branch is "masked for all real
+ties"), it **omitted an achievable distinguishing RED-E2-10** on the real `/start` path, and it **misdescribed the `/start`
+behavioral delta** under future multi-activation as "unchanged." `3255c4ba` remains **immutable rejected evidence** and is NOT
+reused, amended, rebased, or built upon. This entry records a **completely fresh candidate created directly from the authoritative
+parent `c11482db7240b5ac628e77cd061f8d5de6df40ee`** (rejected SHA is NOT an ancestor), re-applying only the correct runtime policy
+plus corrected acceptance/governance evidence.
+
+**Gate.** OWNER-AUTHORIZED bounded **runtime implementation** of the authoritative P9-E2 tie-precedence policy through the canonical
+P9-E2-R classifier seam `engine/domain_rules.py::classify_domain(...)` (P9-E2-R closure CF-1). Authoritative base
+`c11482db7240b5ac628e77cd061f8d5de6df40ee` (live tip re-verified: `feature/atomic-json-session-persistence` == `c11482d`, 0 newer;
+P9-E2-R FORMALLY CLOSED / AUTHORITATIVE via PR #444; boot OK; `activated_domains() == ['electronics_electrical']`; built in a
+disposable worktree — primary working tree + historical bundles untouched). **IMPLEMENTATION CANDIDATE ONLY** — authoritative only
+if independently reviewed, Owner-accepted, merged (create-a-merge-commit), and post-merge verified.
+
+**Canonical-owner reconciliation (unchanged from the P9-E2 contract).** `classify_domain(...)` is the ONE canonical classifier
+owner (P9-E2-R); `infer_domain(...)` is the legacy fail-loud wrapper. CF-1 directs P9-E2 to replace the `sorted(activated_tied)[0]`
+incidental winner via the `classify_domain` seam. This implementation lives in `classify_domain`; no second
+classifier/router/precedence-engine/result-framework/scoring system is introduced.
+
+**Bounded runtime change (minimum-path).** `engine/domain_rules.py::classify_domain` — the activated-tie branch is split:
+`len(activated_tied) == 0` → unchanged non-activated priority fallback; `len == 1` → `SINGLE(activated_tied[0])` (unchanged, Case
+1 / D3-D); **`len >= 2` → `AMBIGUOUS_TIE(selected_domain=None, candidates=tuple(activated_tied)` [already sorted → canonical order],
+`reason=DomainAmbiguityReason.EQUAL_SCORE)`** (Case 3). No arbitrary / alphabetical / registration / dict-order winner; no
+Electronics preference; no LLM tie-break; no invented semantic precedence. **MULTI_DOMAIN_NEEDS_D4 is representable but is NOT
+manufactured** (deterministic equal-score evidence cannot distinguish a genuine multi-domain need from ordinary equal-score
+ambiguity; D4 remains separate/unexecuted). Only ACTIVATED domains form the candidate set (recognition ≠ activation; D3-D
+preserved). The `classify_domain` docstring is corrected to state that it now DOES produce AMBIGUOUS_TIE for ≥2 activated tied
+domains (the prior "yields only SINGLE/NONE" wording is superseded).
+
+**CORRECTED Web `/start` reachability truth (replaces the rejected false claim).** `/start` calls `classify_domain(idea_text)`
+**FIRST** and dispatches an `AMBIGUOUS_TIE` (and `MULTI_DOMAIN_NEEDS_D4`) to a fail-closed `UNSUPPORTED_DOMAIN_MESSAGE`
+(200, no session) **BEFORE** the separate `_has_strong_unsupported_evidence(...)` gate is evaluated. Therefore a multi-activated
+tie fails closed via the ambiguity branch **regardless of whether its tokens are strong-unsupported words**; the strong-unsupported
+gate is an **independent, later layer** that governs only `SINGLE` / `NONE` (single-domain or classifier-miss) inputs. Two valid,
+non-overgeneralized classes exist and are both tested: **(A)** some inputs ARE intercepted by the strong-unsupported heuristic
+(e.g. a lone medical token "catheter" → a SINGLE/priority result refused by that gate); **(B)** valid multi-activated tie inputs
+whose tokens are NOT strong-unsupported words reach `classify_domain` and produce `AMBIGUOUS_TIE` (verified against source:
+`_has_strong_unsupported_evidence("circuit and hinge") == False` and `("hinge and app") == False`). The rejected candidate's
+"masked for all real ties" premise is FALSE and is corrected here.
+
+**Web reachability matrix (source-verified).** `circuit and catheter` → strong-unsupported = **True** (a strong token present; and
+under an elec+med activation double the `/start` AMBIGUOUS branch would fire first anyway). `circuit and hinge` → strong-unsupported
+= **False**; under an elec+mech double reaches `classify_domain` → AMBIGUOUS_TIE. `hinge and app` → strong-unsupported = **False**;
+under a mech+sw double reaches `classify_domain` → AMBIGUOUS_TIE. The pre-classifier heuristic and the domain classifier are
+**separate layers**, with the classifier's ambiguity dispatch ordered first in `/start`.
+
+**RED→GREEN evidence (behavioral).** NEW `tests/test_p9e2_multi_activated_tie_precedence.py` (20 tests). **12 distinguishing RED**
+reproduced on the authoritative parent `c11482d` (bytecode-isolated) and GREEN after the fix: **RED-E2-1** (≥2 activated tie not an
+incidental/alphabetical SINGLE), **RED-E2-2** (AMBIGUOUS_TIE), **RED-E2-3** (complete activated candidate set), **RED-E2-4** (no
+Electronics favoritism), **RED-E2-5** (recognized-not-activated excluded from the tie set), **RED-E2-6** (permutation/order
+independence → canonical candidates), **RED-E2-7** (≥3-way full activated set), **RED-E2-8** (selected_domain None + deterministic
+EQUAL_SCORE reason), **RED-E2-9** (real classify-produced ambiguity → legacy `infer_domain` fails loud),
+**RED-E2-10** (**REAL `/start` production-path distinguishing RED**: `circuit and hinge` under an elec+mech double — on parent
+`classify_domain` → incidental SINGLE(electronics_electrical) and `/start` **ADMITS an electronics session (302 + session created)**;
+after the fix → AMBIGUOUS_TIE and `/start` fails closed **200 UNSUPPORTED, no session, no None-fallback admission**),
+**RED-E2-10b** (non-Electronics pair `hinge and app` under a mech+sw double — parent → SINGLE(mechanical) → `/start`
+MECHANISM_GUIDANCE; after the fix → AMBIGUOUS_TIE → UNSUPPORTED fail-closed), **RED-E2-11** (real classifier ambiguity
+`gear and catheter` under a mech+med double → CLI bounded stop "CANNOT DETERMINE A SINGLE SUPPORTED DOMAIN" instead of the parent's
+"Domain inferred: mechanical"). RED-E2-10/10b/11 drive the **real production classifier through the route/CLI** (no injected
+`DomainClassification`). Honestly labeled **GREEN GUARDS** (GREEN on both parent and candidate): E2-12 (D4 never manufactured),
+strong-unsupported class-A interception (lone medical token), strong-unsupported class-B non-interception (source truth), one
+activated-in-tie → SINGLE, zero-activated tie → priority fallback unchanged, no-signal → NONE, electronics-only unchanged, plus the
+activation-baseline honesty check.
+
+**Load-bearing mutation probes (all 9 CAUGHT RED; bytes restored; `PYTHONDONTWRITEBYTECODE=1` + `__pycache__` cleared between
+mutations; each failure causally verified).** (1) restore alphabetical/incidental SINGLE winner; (2) collapse AMBIGUOUS_TIE to NONE;
+(3) drop one activated candidate (3-way → 2); (4) drop the D3-D activation filter (include recognized-not-activated); (5) introduce
+Electronics preference; (6) break canonical candidate ordering; (7) detach Web AMBIGUOUS/MULTI dispatch (→ P9-E2-R RED-R2/RED-R10
+RED); (8) `infer_domain` returns None on real ambiguity; **(9) NEW — neutralize the REAL `/start` AMBIGUOUS fail-closed branch with a
+non-strong-unsupported real tie input (→ RED-E2-10/10b RED)**.
+
+**Full regression (fresh, exact-pin env Flask 3.1.3 / pytest 9.1.1).** `pytest -q`: **2307 passed / 3 skipped / 1 xfailed / 0
+failed / 0 errors** (= 2287 parent baseline + 20 new; the 3 skips are pre-existing env/Playwright, not passes; 1 xfailed
+pre-existing). No regression, no deleted tests, no new skip/xfail.
+
+**Backward-compatibility (corrected — truthful; do NOT describe `/start` as universally "unchanged").** With the current real
+activation state `activated_domains() == ['electronics_electrical']`, `activated_tied` never has ≥2 elements in production, so the
+new branch is **production-unreachable today → ZERO current production behavior delta** (reachable only via bounded self-restoring
+activation doubles). **Under a FUTURE governed second-specialist-domain activation**, valid tie inputs that are **not** intercepted
+by the strong-unsupported pre-gate change from **OLD: incidental SINGLE winner / possible single-domain admission path** to **NEW:
+AMBIGUOUS_TIE / fail-closed no-admission** (Web and CLI). **This is an INTENDED future behavioral correction (elimination of the
+incidental winner / silent electronics admission), NOT an accidental regression.** Unchanged: no signal → NONE; Electronics-only →
+SINGLE(electronics); one recognized-not-activated signal → SINGLE via priority; tie among recognized-not-activated → priority
+SINGLE; one activated among tied recognized → SINGLE; normal Web/CLI Electronics-only flow.
+
+**Scope invariants proven.** Changed paths = `engine/domain_rules.py` (classify_domain tie branch + corrected docstring) + NEW
+`tests/test_p9e2_multi_activated_tie_precedence.py` + governance current-truth registration (this roadmap append +
+`ACTIVE_INCREMENT_CONTRACT.md` + `CURRENT_PROJECT_STATE.md`). **`web/app.py` ZERO diff** (the Grill found the runtime safe; the
+correction is evidence/governance + stronger tests, not a web change). **ZERO diff:** `scripts/run_cli.py`,
+`engine/domain_activation.py`, `ARCHITECTURE_GUARDRAILS.md`, `OWNER_DECISION_REGISTER.md`, Domain Registry, Domain-Packs,
+`domains/iot_electronics/**`, `schemas/**`, `database/**`, persistence/API surfaces. No real activation change; no D4; no UI copy;
+no priority-fallback change. `activated_domains() == ['electronics_electrical']` (only).
+
+**Phase-9 completeness checklist (item 10 reconsidered).** (1) NOT APPLICABLE; (2) truthfulness — APPLICABLE/PASS (incidental tie
+winner eliminated; reachability language corrected to source truth); (3) no shared-core coupling — APPLICABLE/PASS (one
+domain-neutral len-based classifier; no per-domain branching); (4) pre-activation qualification — APPLICABLE/PASS; (5)
+ambiguity/no-hidden-precedence — APPLICABLE/PASS, actual composition DEFERRED TO D4; (6) materials — DEFERRED (CAP-12/13/WS-PFV);
+(7) calculations — DEFERRED; (8) knowledge sources — DEFERRED (D13); (9) Nth-domain extensibility — APPLICABLE/PASS (arbitrary ≥2
+activated sets incl. ≥3-way, no pair-specific logic; CF-3 explicit); (10) end-to-end reasoning — **APPLICABLE/PASS for the P9-E2
+tie-policy correctness that is in scope AND tested through the real Web/CLI path (RED-E2-10/10b/11)**; the **future
+first-second-domain Web pre-classifier interaction is DEFERRED to the governed CF-6 pre-activation obligation** (not claimed
+complete here).
+
+**Carry-forward obligations.** **CF-2** shared AMBIGUOUS/MULTI public-message truthfulness — retained; obligation before first
+relevant multi-activation (AMBIGUOUS_TIE stays production-unreachable until a 2nd domain is activated; `/start` message truthful
+today). **CF-3** non-activated priority fallback inside `classify_domain` — retained unchanged; MANDATORY to resolve before first
+Nth-domain registration/activation. **CF-5** Retrospective Adversarial Architecture Audit — remains a FUTURE PRE-ACTIVATION
+obligation (inspect inherited architecture → classify A/B/C/D/E → dispose as governed); MANDATORY before first new-domain
+**activation**; NOT executed here. **CF-6 — NEW — Web pre-classifier / strong-unsupported reachability interaction (distinct from
+CF-2 message wording).** Before first second-specialist-domain activation, review and disposition the interaction between the Web
+`/start` strong-unsupported pre-classifier heuristics and multi-domain / ambiguity classification, covering: which domain signals
+are intercepted before `classify_domain`; which reach `classify_domain`; consistency between Web and CLI/core classification;
+truthful fail-closed behavior; no hidden Electronics admission; no bypass of `AMBIGUOUS_TIE`; and whether the existing
+unsupported-domain copy remains truthful. **FUTURE PRE-ACTIVATION OBLIGATION — NOT executed in this candidate; authorizes no Web
+redesign and no domain activation; must be completed/dispositioned before first second-specialist-domain activation.** CF-2, CF-3,
+and CF-6 are separate and are NOT collapsed.
+
+**Boundary / status after this entry.** **P9-E2 = CORRECTED IMPLEMENTATION CANDIDATE ONLY — NOT closed, NOT authoritative** (formal
+closure is a separate later gate after independent review → Owner acceptance → merge → post-merge verification). The rejected
+`3255c4ba` remains immutable rejected evidence. **NO new domain activated; NO domain selected; MULTI_DOMAIN_NEEDS_D4 NOT
+manufactured; D4 SEPARATE / UNEXECUTED; D8 Owner-reserved;** deterministic calculations / CAP-12 / CAP-13 / WS-PFV / STG /
+knowledge-source NOT implemented; Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED; deployment / production = NOT AUTHORIZED.
+**Next required gate: NEW Mandatory Grill on the new exact candidate**, then independent external exact-candidate review → Owner
+acceptance → SHA-preserving publication → PR → pre-merge verification → CREATE A MERGE COMMIT → post-merge verification. Append-only;
+prior history not rewritten. This entry authorizes no push, PR, or merge beyond this candidate, no domain activation/selection, no
+D8 decision, no D4 execution, no CF-5/CF-6 execution, and no Retrospective-Audit execution.

@@ -41,8 +41,43 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — governance-only FORMAL CLOSURE CANDIDATE; NOT YET AUTHORITATIVE; NOT YET FORMALLY CLOSED; NO active runtime
-increment; NO domain activated):** **`P9-E2-R` — Ambiguity / Multi-Domain Result Representation (bounded representation sub-gate)
+**Status (current — P9-E2 CORRECTED IMPLEMENTATION CANDIDATE; NOT closed / NOT authoritative; NO domain activated):**
+**`P9-E2` / `P9-PREREQ-B` — Multi-Activated Domain Tie/Conflict Precedence — is IMPLEMENTED as a CORRECTED IMPLEMENTATION CANDIDATE**
+built fresh from authoritative parent `c11482db7240b5ac628e77cd061f8d5de6df40ee` (live tip re-verified; 0 newer). It **supersedes the
+REJECTED prior candidate `3255c4ba1ca6ae50e0c3f20d7f0d4c8ef1fa223c`** (Mandatory Grill `GRILL FAIL — MATERIAL CONTRACT CORRECTION
+REQUIRED`: sound runtime, but a FALSE `/start` strong-unsupported "masked for all real ties" reachability claim, an omitted
+achievable distinguishing RED-E2-10, and a misdescribed multi-activation `/start` delta); `3255c4ba` remains immutable rejected
+evidence and is NOT reused/amended/rebased/built upon. **Bounded runtime change (via the canonical `classify_domain` seam, CF-1):**
+`len(activated_tied) == 0` → unchanged priority fallback; `== 1` → `SINGLE`; **`>= 2` → `AMBIGUOUS_TIE(selected_domain=None,
+candidates=canonical activated tied set, reason=EQUAL_SCORE)`** — no arbitrary/alphabetical/registration/dict winner, no Electronics
+preference, no LLM, `MULTI_DOMAIN_NEEDS_D4` NOT manufactured (D4 separate). Only ACTIVATED domains form the set (D3-D).
+**CORRECTED reachability truth:** `/start` calls `classify_domain` FIRST and fails an `AMBIGUOUS_TIE` closed to `UNSUPPORTED`
+(200, no session) BEFORE the separate `_has_strong_unsupported_evidence` gate; that gate is an independent later layer over
+SINGLE/NONE inputs only, so a multi-activated tie fails closed via the ambiguity branch regardless of strong-unsupported token
+membership (verified: `strong("circuit and hinge") == strong("hinge and app") == False`). **RED→GREEN:** NEW
+`tests/test_p9e2_multi_activated_tie_precedence.py` (20 tests) — 12 distinguishing RED on parent (E2-1..9, **E2-10 a REAL `/start`
+production-path RED**: `circuit and hinge` under an elec+mech double → parent ADMITS an electronics session (302), candidate fails
+closed 200 UNSUPPORTED; **E2-10b** `hinge and app` mech+sw → parent GUIDANCE, candidate UNSUPPORTED; **E2-11** `gear and catheter`
+mech+med → CLI bounded stop) + 8 honest GREEN GUARDS. **9 load-bearing mutation probes all CAUGHT RED** (incl. NEW probe 9:
+neutralize the real `/start` AMBIGUOUS branch → E2-10/10b RED; probe 7: detach Web AMBIGUOUS/MULTI dispatch → P9-E2-R R2/R10 RED),
+bytecode-isolated, bytes restored. **Full suite 2307 passed / 3 skipped / 1 xfailed / 0 failed** (= 2287 parent + 20). **Scope:**
+`engine/domain_rules.py` (tie branch + corrected docstring) + the NEW test + governance current-truth (roadmap + this file +
+`CURRENT_PROJECT_STATE.md`); **`web/app.py` ZERO diff** (runtime found safe; correction is evidence/governance + stronger tests);
+ZERO diff `scripts/run_cli.py`, `engine/domain_activation.py`, `ARCHITECTURE_GUARDRAILS.md`, `OWNER_DECISION_REGISTER.md`,
+`domains/**`, `schemas/**`, `database/**`. **Backward-compat (truthful):** current activation is electronics-only so ≥2 activated
+tie is production-unreachable → ZERO current production delta; under a FUTURE governed second-domain activation, non-intercepted
+ties change OLD incidental-SINGLE/possible-single-domain-admission → NEW AMBIGUOUS_TIE/fail-closed — an INTENDED future correction,
+not a regression; `/start` is NOT universally "unchanged" under future multi-activation. **Carry-forwards:** CF-2 (public-message
+truthfulness) retained; CF-3 (Nth-domain priority/fallback) retained; CF-5 (Retrospective Adversarial Architecture Audit) remains a
+future pre-activation obligation; **NEW CF-6 — Web pre-classifier / strong-unsupported reachability & admission interaction
+(distinct from CF-2), a FUTURE PRE-SECOND-DOMAIN-ACTIVATION obligation, NOT executed here.** **`OWNER_DECISION_REGISTER.md`
+UNCHANGED.** **P9-E2 = CORRECTED IMPLEMENTATION CANDIDATE ONLY — NOT closed / NOT authoritative; NO domain activated; NO domain
+selected; MULTI_DOMAIN_NEEDS_D4 NOT manufactured; D4 SEPARATE / UNEXECUTED; D8 Owner-reserved; Phase 10 NOT AUTHORIZED; PSRR NOT
+EXECUTED; deployment/production NOT AUTHORIZED.** The next required gate is a **NEW Mandatory Grill on this exact new candidate**;
+any material Grill finding rejects it as-is (NEW SHA/tree/bundle/Grill/independent review — no amendment).
+
+**Immediately prior (P9-E2-R closure candidate — retained as history; superseded as CURRENT status by the P9-E2 implementation
+candidate above; P9-E2-R closure evidence itself unchanged):** **`P9-E2-R` — Ambiguity / Multi-Domain Result Representation (bounded representation sub-gate)
 is FORMALLY CLOSED / SATISFIED as a governance-only CLOSURE CANDIDATE** (record:
 `docs/governance/P9_E2_R_AMBIGUITY_MULTI_DOMAIN_RESULT_REPRESENTATION_FORMAL_CLOSURE_RECORD.md`; authoritative pre-closure parent
 `b42a3e6c246b98d425460f80d91d8de12d554039`, PR #443). **This is a governance-only closure candidate — it is NOT yet authoritative

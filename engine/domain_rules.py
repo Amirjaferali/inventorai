@@ -108,13 +108,16 @@ class DomainClassification:
 
 
 def classify_domain(idea_text: str) -> "DomainClassification":
-    """Canonical domain classifier (P9-E2-R). The single source of classification
-    truth (one classifier owner). TODAY it yields only ``SINGLE`` / ``NONE`` --
-    behavior-equivalent to the historical ``infer_domain`` string result -- and it
-    introduces NO tie detection (that is the later, separate P9-E2 tie-precedence
-    runtime). The richer kinds (AMBIGUOUS_TIE / MULTI_DOMAIN_NEEDS_D4) are
-    representable by ``DomainClassification`` but are NOT produced here, so no
-    currently-unreachable behavior is made reachable by P9-E2-R."""
+    """Canonical domain classifier (P9-E2-R representation seam; P9-E2 tie policy).
+    The single source of classification truth (one classifier owner). It yields
+    ``SINGLE`` / ``NONE`` and -- since P9-E2 -- ``AMBIGUOUS_TIE`` when TWO OR MORE
+    ACTIVATED domains are equally top-scored (governed tie precedence: no winner,
+    fail closed downstream). ``MULTI_DOMAIN_NEEDS_D4`` remains representable but is
+    NOT produced here (D4 multi-domain composition is a separate, unexecuted gate).
+    With the current real activation state (``electronics_electrical`` only) at most
+    one domain is ever activated-tied, so the AMBIGUOUS_TIE branch is
+    production-unreachable today; it becomes reachable only under a future governed
+    second-domain activation (or a bounded self-restoring activation test double)."""
     text = idea_text.lower()
     scores = {
         pack_id: sum(1 for item in pack["classification_signals"] if item["signal"] in text)
@@ -128,17 +131,28 @@ def classify_domain(idea_text: str) -> "DomainClassification":
     # outranks a RECOGNIZED_NOT_ACTIVATED one -- a recognized-but-not-activated
     # pack can NEVER become effective activated routing/admission authority through
     # this shared inference seam via an ungoverned literal. Consumes the canonical
-    # 5-I2 activation policy; deterministic (sorted). With exactly one activated
-    # specialist domain this yields a single domain -- P9-E2-R does NOT change this
-    # tie behavior (representation seam only); governed multi-activated precedence
-    # is the separate P9-E2 gate.
+    # 5-I2 activation policy; deterministic (sorted). Exactly one activated tied
+    # domain yields SINGLE (unchanged); two or more is the governed P9-E2 tie.
     activated_tied = sorted(d for d in tied if domain_activation.is_activated(d, _REGISTRY))
-    if activated_tied:
+    if len(activated_tied) == 1:
+        # Case 1 (D3-D): a single activated domain among the tied set -> SINGLE.
         return DomainClassification(
             kind=DomainResultKind.SINGLE, selected_domain=activated_tied[0])
-    # No activated tied domain: preserve the prior deterministic priority order for
-    # backward compatibility (line-34 fallback, unchanged; see P9-E2-R 21 for the
-    # registered future Nth-domain obligation).
+    if len(activated_tied) >= 2:
+        # Case 3 (P9-E2 governed tie precedence): two or more ACTIVATED domains are
+        # equally top-scored -> a genuine ambiguous tie with NO winner. There is no
+        # arbitrary / alphabetical / registration / dict-order winner, no Electronics
+        # preference, and no LLM tie-break. MULTI_DOMAIN_NEEDS_D4 is NOT manufactured
+        # (deterministic equal-score evidence cannot distinguish a genuine
+        # multi-domain need from ordinary equal-score ambiguity; D4 stays separate).
+        # ``activated_tied`` is already sorted -> canonical order, NOT precedence.
+        return DomainClassification(
+            kind=DomainResultKind.AMBIGUOUS_TIE,
+            candidates=tuple(activated_tied),
+            reason=DomainAmbiguityReason.EQUAL_SCORE)
+    # Case 0: no activated tied domain -- preserve the prior deterministic priority
+    # order for backward compatibility (fallback unchanged; CF-3 registers the
+    # future Nth-domain registration/activation obligation).
     priority = ["medical_device", "electronics_electrical", "mechanical", "software"]
     for domain in priority:
         if scores.get(domain, 0) == best_score:
