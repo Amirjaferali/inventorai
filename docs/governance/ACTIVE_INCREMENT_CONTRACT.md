@@ -41,7 +41,29 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — CF5-F002 INDEPENDENT VALIDATION CANDIDATE; governance-only; VALIDATION ONLY — NO remediation authorized;
+**Status (current — CF5-F002 / CF-6 CORRECTIVE IMPLEMENTATION CONTRACT CANDIDATE + Owner decisions D1/D2 recorded; governance-only;
+implementation NOT started; NO domain activated):** **`CF5-F002` / `CF-6` — Web `/start` multi-domain admission is DEFINED by a
+bounded governance-only CORRECTIVE IMPLEMENTATION CONTRACT CANDIDATE** (record:
+`docs/governance/CF5_F002_CF6_WEB_ADMISSION_CORRECTIVE_CONTRACT.md`) on authoritative base
+`8d8dc1541568b7debedb51e094b15004964c333f` (PR #452 — CF5-F002 validation merge; 0 newer). CF5-F002 is VALIDATED **C** (present
+defect NONE; exact trigger `activated_domains() != ['electronics_electrical']`). This gate **records Owner decisions D1/D2** in
+`OWNER_DECISION_REGISTER.md` as **D-CF5-F002-01** — **D1** consent = "confirm classifier-selected activated domain" (no auto-admit;
+persist classified+confirmed); **D2** `NONE` under >1 activated domain = "require explicit user choice" among activated domains (no
+silent fallback), with `['electronics_electrical']` backward-compat preserved; **D3** Electronics-absent derives from the activation
+set (no special case, no 500) — bounded consent/admission policy only (no multi-domain orchestration / activation / D4 / D8). The
+contract fences the later implementation to `web/app.py` (`/start` admission) + a focused test, defines the full RED→GREEN matrix
+(A electronics-only backward-compat; B elec+one-additional; C non-electronics-only; D 3+; E truthful messaging; F session-domain
+integrity; G UI-language independence), the CF-6 shared-surface facets (strong-unsupported activation-awareness, no hidden
+electronics admission, no AMBIGUOUS_TIE bypass — CF-6 NOT auto-closed), the co-triggered CF-2 messaging facet (CF-2 NOT closed),
+bounded stale-comment hygiene (`SUBSTRINGS` + SINGLE/NONE-only), 10 mutation probes, and a 0-unexplained-delta differential sweep.
+**Forbidden:** classifier semantic change, activation-set change, domain activation, Domain-Pack change, D4, D8, broad engine/CLI/UI
+work. **CORRECTIVE CONTRACT CANDIDATE ONLY — CF5-F002 / CF-6 / CF-2 / CF-5 NOT closed; no domain activated;
+`activated_domains() == ['electronics_electrical']`.** ZERO runtime/test/Web/CLI/domain/activation diff this gate (the only
+production-relevant record is the D1/D2 ODR entry). Next required gate: **Mandatory Grill of this exact contract candidate**; then,
+once authoritative, the bounded CF5-F002/CF-6 implementation.
+
+**Immediately prior (CF5-F002 independent validation — AUTHORITATIVE via PR #452; retained as history):**
+**Status (prior — CF5-F002 INDEPENDENT VALIDATION CANDIDATE; governance-only; VALIDATION ONLY — NO remediation authorized;
 NO domain activated):** **`CF5-F002` — Web `/start` Electronics-Only Admission is INDEPENDENTLY VALIDATED by a governance-only
 VALIDATION CANDIDATE** (record: `docs/governance/CF5_F002_WEB_START_ADMISSION_INDEPENDENT_VALIDATION_RECORD.md`) on
 authoritative parent `e5f7d42c5a2c7ff6590816a87cd9f5ca3f650da0` (PR #451 made CF5-F003 formal closure AUTHORITATIVE; 0 newer),

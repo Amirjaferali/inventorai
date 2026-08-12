@@ -8161,3 +8161,71 @@ domain selection/qualification/registration/activation, and no CF5-F001/F004 / C
 **P9-E2 FORMALLY CLOSED / AUTHORITATIVE; P9-QS AUTHORITATIVE;** Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED;
 deployment/production = NOT AUTHORIZED. Append-only; prior history not rewritten. Next required gate: **Mandatory Grill on
 this exact validation candidate.**
+
+---
+
+## CF5-F002 / CF-6 — Web `/start` Multi-Domain Admission — CORRECTIVE IMPLEMENTATION CONTRACT + Owner decisions D1/D2 — governance-only CANDIDATE — implementation NOT started; NO domain activated
+
+**Gate.** OWNER-AUTHORIZED **governance-only** pre-trigger corrective implementation contract for CF-5 finding **CF5-F002**
+(independently VALIDATED **C**, PR #452) and its shared-surface **CF-6** facets, plus authoritative recording of Owner consent/
+admission decisions **D1/D2**. Authoritative base `8d8dc1541568b7debedb51e094b15004964c333f` (freshly fetched; 0 newer); boot OK;
+`activated_domains() == ['electronics_electrical']`; disposable worktree (primary tree + historical bundles untouched). Canonical
+record: `docs/governance/CF5_F002_CF6_WEB_ADMISSION_CORRECTIVE_CONTRACT.md`.
+
+**Validated defect (restated).** `web/app.py` `/start` hardcodes single-activated-domain (electronics-only) admission: (1) consent
+constant `DOMAIN_CONFIRM_VALUE="electronics_electrical"` + constant-valued `_admit_specialist_domain(DOMAIN_CONFIRM_VALUE)`
+(`:837/:1420`); (2) `domain != "electronics_electrical"` branch + `CONFLICTING_SUPPORTED_DOMAINS` (`:1391/:845`); (3) static
+strong-unsupported vocabulary (`:897-919`, CF-6); (4) electronics-only public copy (`:826-829/:954-959`, CF-2). Present defect NONE
+(extensionally equivalent under `['electronics_electrical']`); exact trigger the first moment `activated_domains() !=
+['electronics_electrical']`. Mandatory pre-trigger prerequisite (audit §8 C-policy).
+
+**Owner decisions recorded (`OWNER_DECISION_REGISTER.md` D-CF5-F002-01; the one justified ODR change this gate).** **D1** consent =
+"confirm classifier-selected activated domain" (present it, explicit confirm/decline, no auto-admit, persist classified+confirmed;
+no manual selection when the classifier resolved one valid activated domain; AMBIGUOUS_TIE fail-closed unless separately governed).
+**D2** `NONE` under >1 activated domain = "require explicit user choice" among currently activated domains, then confirm, persist
+chosen+confirmed (no silent Electronics/default fallback); `['electronics_electrical']` backward-compat preserved. **D3** (mechanical
+consequence) Electronics-absent derives from the activation set (no special case, no `DomainNotActivatedError`/500). Derived corner:
+`NONE` with exactly one activated domain → that sole domain under explicit consent. Bounded policy only — no multi-domain
+orchestration / activation / D4 / D8; earlier deferrals (OD-F/G/H, D-P6-03/06/15, D-S5-04) preserved, not rewritten.
+
+**Contract scope.** Later implementation fenced to `web/app.py` (`/start` admission surface) + a NEW focused test
+(`tests/test_cf5_f002_web_admission_multidomain.py` and/or justified additions). Full GREEN matrix A-G: **A** electronics-only
+backward-compat (byte-identical, no regression); **B** elec+one-additional (confirm classified domain; NONE→explicit choice;
+recognized-not-activated inadmissible; strong-unsupported must not suppress an activated domain; AMBIGUOUS_TIE fail-closed);
+**C** non-electronics-only (no electronics special case; no 500); **D** 3+ activated (domain-neutral, no fixed list, no D4);
+**E** truthful activation-derived messaging; **F** session-domain integrity (no cross-domain mislabel); **G** UI-language
+independence. RED (r1-r6: refused activated domain / electronics mislabel / no second-domain confirm / stale vocab blocking activated
+domain / electronics-absent 500 / untruthful copy) via real Flask `/start` + self-restoring activation doubles. 10 mutation probes
+(hardcoded confirm value; hardcoded branch; wrong session-domain; consent bypass; hidden NONE default; inactive domain offered;
+strong-unsupported override; AMBIGUOUS_TIE admission; electronics-absent crash; UI-language coupling), each CAUGHT RED. Broad
+parent-vs-impl differential sweep, every delta categorized, 0 unexplained. Full regression green.
+
+**CF-6 relationship.** Same surface/trigger; NOT a duplicate framework. Included facets: strong-unsupported activation-awareness,
+no hidden electronics admission, no AMBIGUOUS_TIE bypass, no activated-domain suppression by stale vocabulary. Remaining CF-6 scope
+(general Web/CLI pre-classifier consistency beyond `/start` admission) stays separate; **CF-6 NOT auto-closed** (audit §13); exact
+discharge criteria stated at implementation closure.
+
+**CF-2 relationship.** Co-triggered, NOT absorbed. Only the messaging needed for truthful admission under broadened activation is in
+scope; **CF-2 NOT closed**; residual CF-2 obligations remain separate.
+
+**Stale-comment hygiene (bounded, same surface).** The `SUBSTRINGS`/`app`⊂`appliance` comment (`web/app.py:870-884`, false since
+CF5-F003) and the SINGLE/NONE-only "dormant" narrative (`:1361-1363`, stale since P9-E2) corrected in the later implementation only.
+No unrelated documentation cleanup.
+
+**Forbidden (later implementation).** Canonical classifier semantic change; activation-policy/set change; domain
+activation/selection/registration; Domain-Pack change; D4 execution; D8 change; broad engine/CLI/UI redesign; schema/persistence
+change. Implementation-gate ODR diff = ZERO.
+
+**Governance disposition.** CF5-F002 = OPEN C — corrective contract candidate (this record); CF5-F003 = CLOSED; CF5-F001 / CF5-F004
+= OPEN C; CF-5 = OPEN; CF-6 / CF-2 = PENDING/separate (shared-surface facets governed here, not closed); D4 SEPARATE; D8
+Owner-reserved; bounded portion of D-GMPR-01-D-D3. `OWNER_DECISION_REGISTER.md` records D-CF5-F002-01 (justified). ZERO
+runtime/test/Web/CLI/domain/Registry/activation/schema/persistence/API/guardrail diff this gate. `activated_domains() ==
+['electronics_electrical']`; NO domain selected/registered/activated; **first new-domain activation remains BLOCKED**.
+
+**Boundary / status after this entry.** **CF5-F002 / CF-6 corrective implementation contract = CANDIDATE ONLY; implementation NOT
+started; F002 / CF-6 / CF-2 / CF-5 NOT closed.** Still requires Mandatory Grill → independent external exact-candidate review →
+Owner acceptance → SHA-preserving publication → PR → pre/post-merge verification. After authoritative, the bounded CF5-F002/CF-6
+implementation is the subsequent gate. **P9-E2 FORMALLY CLOSED / AUTHORITATIVE; P9-QS AUTHORITATIVE; CF-5 OPEN; CF5-F001/F004 open C;
+CF-2/CF-3/CF-6 PENDING; D4 SEPARATE; D8 Owner-reserved;** Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED; deployment/production =
+NOT AUTHORIZED. Append-only; prior history not rewritten. This entry authorizes no push, PR, merge beyond this candidate, no
+implementation, no domain selection/qualification/registration/activation, and no CF-6/CF-2/CF-3/D4/D8 execution.

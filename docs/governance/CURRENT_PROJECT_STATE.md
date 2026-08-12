@@ -1441,6 +1441,23 @@ AUTHORIZED / NOT STARTED.***
   future gate (none now).** CF5-F003 remains CLOSED; CF5-F001 / CF5-F004 remain OPEN C; CF-5 remains OPEN; first new-domain activation
   remains BLOCKED; `OWNER_DECISION_REGISTER.md` UNCHANGED; ZERO runtime/test/Web/CLI/domain/activation diff this gate. Next required
   gate: **Mandatory Grill on this exact validation candidate**.
+  **CF5-F002 / CF-6 corrective implementation contract is now DEFINED (governance-only candidate) and Owner decisions D1/D2 are
+  recorded** (`OWNER_DECISION_REGISTER.md` **D-CF5-F002-01**; record `docs/governance/CF5_F002_CF6_WEB_ADMISSION_CORRECTIVE_CONTRACT.md`)
+  on base `8d8dc1541568b7debedb51e094b15004964c333f` (PR #452; 0 newer). CF5-F002 = VALIDATED **C** (present defect NONE; exact
+  trigger `activated_domains() != ['electronics_electrical']`). **D1** = confirm classifier-selected activated domain (no auto-admit;
+  persist classified+confirmed); **D2** = `NONE` under >1 activated domain → explicit user choice among activated domains (no silent
+  fallback), `['electronics_electrical']` backward-compat preserved; **D3** = Electronics-absent derives from the activation set (no
+  special case, no HTTP 500). The contract fences the later implementation to `web/app.py` (`/start` admission) + a focused test,
+  defines the RED→GREEN matrix (A backward-compat; B elec+one-additional; C non-electronics-only; D 3+; E truthful messaging; F
+  session-domain integrity; G UI-language independence), dispositions the CF-6 shared-surface facets (CF-6 NOT auto-closed) and the
+  co-triggered CF-2 messaging facet (CF-2 NOT closed), includes bounded stale-comment hygiene, 10 mutation probes, and a
+  0-unexplained-delta differential sweep. Forbidden: classifier/activation-policy/Domain-Pack change, domain activation, D4, D8, broad
+  engine/CLI/UI work. This is a bounded portion of the Pre-Phase-9 Core Domain-Neutrality gate **D-GMPR-01-D-D3** (Web-admission
+  literals only; safety_signal=CF5-F001, tie-break=CF5-F004 not discharged). **CORRECTIVE CONTRACT CANDIDATE ONLY — CF5-F002 / CF-6 /
+  CF-2 / CF-5 NOT closed; no domain activated; `activated_domains() == ['electronics_electrical']`; first new-domain activation
+  remains BLOCKED.** The only production-relevant record this gate is the D1/D2 ODR entry; ZERO runtime/test/Web/CLI/domain/activation
+  diff. Next required gate: **Mandatory Grill on this exact corrective-contract candidate**; then, once authoritative, the bounded
+  CF5-F002/CF-6 implementation.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation

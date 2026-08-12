@@ -864,3 +864,26 @@ no trial-duration constant, implements no automatic trial-data deletion, and wea
 `P8-AF-C` / `P8-CLOSE` — NOT STARTED. Phase 8 remains OPEN / NOT CLOSED. Phase 9 / Phase 10 — NOT AUTHORIZED; PSRR EXECUTION —
 NOT STARTED; public paid activation / production — BLOCKED / NOT AUTHORIZED. Prior ODR rows and evidence are unchanged; the
 still-OPEN commercial/provider decisions remain governed by the P8-I3-C / P8-I4-C entries above.
+
+---
+
+## CF5-F002 / CF-6 — Bounded Web `/start` Multi-Domain Consent/Admission Policy (pre-trigger corrective prerequisite)
+
+Governance/documentation-only registration of a bounded Owner decision needed to freeze the CF5-F002 / CF-6 pre-trigger corrective
+implementation contract. Canonical evidence: `docs/governance/CF5_F002_CF6_WEB_ADMISSION_CORRECTIVE_CONTRACT.md` and the CF5-F002
+independent validation record `docs/governance/CF5_F002_WEB_START_ADMISSION_INDEPENDENT_VALIDATION_RECORD.md` (PR #452). **Scope
+guard:** this resolves ONLY the bounded `/start` consent/admission behavior required for the pre-trigger correction; it authorizes
+**no** general multi-domain orchestration, **no** domain selection/registration/activation, **no** D4, **no** D8, and **no** unrelated
+UX expansion. It does **not** rewrite or erase the earlier decisions that deferred multi-domain consent/admission (**OD-F/G/H**,
+**D-P6-03/06/15**, **D-S5-04**) — those remain historically valid; this decision supplies the narrow policy they explicitly left to
+the pre-trigger gate.
+
+| ID | Subject | Status | Impl. authority | Blocks first new-domain activation? | Evidence |
+|---|---|---|---|---|---|
+| D-CF5-F002-01 | **Bounded multi-domain `/start` consent/admission policy.** **D1 — consent model = "Confirm classifier-selected domain":** when the canonical classifier resolves exactly one **activated** specialist domain, `/start` presents that domain, the user explicitly confirms/declines, no auto-admit, and the persisted session-domain equals the classified+confirmed domain; no manual selection when the classifier already resolved one valid activated domain; `AMBIGUOUS_TIE` fail-closed unless separately governed. **D2 — NONE under multi-domain activation = "Require explicit user choice":** when classification is `NONE` and **>1** specialist domain is activated, present only currently activated domains, the user explicitly chooses one and confirms, persist chosen+confirmed; **no silent Electronics/default fallback**. **Backward compatibility:** under `['electronics_electrical']`, preserve the current governed `NONE`→Electronics explicit-consent behavior unchanged. **D3 (mechanical consequence, not a new decision):** Electronics-absent activation derives behavior from the canonical activated-domain set — no Electronics special case, no accidental `DomainNotActivatedError`/HTTP 500. **Derived corner:** `NONE` with exactly one activated domain (any) → offer that sole domain under explicit consent (domain-neutral generalization of today's behavior). | **ACCEPTED — bounded consent/admission policy for the CF5-F002/CF-6 pre-trigger corrective contract** (authoritative if/when this governance candidate is independently reviewed, Owner-accepted, merged, and post-merge verified) | NONE (contract-only; the corrective **implementation** is a separate later gate) | **Yes** — the CF5-F002/CF-6 corrective implementation is a mandatory pre-trigger prerequisite before `activated_domains() != ['electronics_electrical']` | `CF5_F002_CF6_WEB_ADMISSION_CORRECTIVE_CONTRACT.md` §2; validation record; D-GMPR-01-D-D3 |
+
+**Boundary.** This entry records a bounded consent/admission product policy and authorizes no implementation, no runtime/Web/test
+change, no domain selection/registration/activation, no D4/D8, and no CF5-F002 / CF-6 / CF-2 / CF-5 closure. It is a bounded portion
+of the mandatory Pre-Phase-9 Core Domain-Neutrality gate **D-GMPR-01-D-D3** (the Web-admission literals), and does not discharge that
+gate's other couplings (`engine/safety_signal.py` = CF5-F001; `engine/path_n_questions.py`; hard-coded tie-break = CF5-F004/CF-3).
+`activated_domains() == ['electronics_electrical']`; first new-domain activation remains BLOCKED.
