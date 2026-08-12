@@ -1318,6 +1318,29 @@ AUTHORIZED / NOT STARTED.***
   ['electronics_electrical']`); NO domain selected; first new-domain activation remains BLOCKED behind CF-5 completion, per-domain
   P9-QS qualification, CF-6, CF-2, CF-3, D8 (if IoT), and explicit Owner activation authorization.** The next required gate is the
   **Mandatory Grill on this exact immutable CF-5 contract candidate**.
+  **The CF-5 Audit contract is now AUTHORITATIVE (merged PR #447, tip `8c38812086cfd3c17bc61ad47bba94e8b7a9de8d`; 0 newer), the CF-5
+  Retrospective Adversarial Architecture Audit (Execution Gate 1) was RUN read-only producing four material findings (CF5-F001
+  shared-core electronics-specific `safety_signal`; CF5-F002 Web `/start` electronics-only admission / CF-6; CF5-F003 classifier
+  substring false positives; CF5-F004 hardcoded non-activated priority fallback / CF-3), and CF5-F003 was independently validated
+  D — Material current issue, reachable now.** A first CF5-F003 corrective contract candidate `9857ba3e21a8bbd8d73bcde83cb85b7744d0f85b`
+  was **REJECTED by Mandatory Grill (BF-1: its strict exact-whole-token / no-plural-inference rule would regress ~76 signals' plural
+  forms and flip `a system of gears and levers` Mechanical→Software).** **The corrected CF5-F003 corrective contract is now DEFINED
+  by a governance-only CORRECTED CORRECTIVE CONTRACT CANDIDATE** (record:
+  `docs/governance/CF5_F003_CLASSIFIER_MATCHING_SEMANTICS_CORRECTIVE_CONTRACT.md`), built fresh from `8c38812` (rejected `9857ba3e`
+  NOT an ancestor). It replaces the rejected rule with a **bounded plural-preserving whole-token matcher** (tokenize on `[a-z0-9]+`;
+  single-word signal matches a token equal to the signal or its bounded plural `+"s"`/`+"es"`, nothing else; multi-word = contiguous
+  whole-token sequence, bounded plural on the final token only). Collision guard validated (false positives `controlled`/`compiled`/
+  `patriotic`/`concurrent`/`hearth` stay false — whole-token, not substring); plural inventory reproduced (76 single-word + 5
+  multi-word signals; `diagnosis` sibilant irregular-plural not caught today → no obligation; no cross-pack `+s`/`+es` collision).
+  Mandatory GREEN preservation explicitly repairs BF-1 (`LEDs`/`sensors`/`circuits`/`resistors`/`PCBs`; `gears`/`levers`;
+  `catheters`; `apps`/`databases`/`APIs`; `a system of gears and levers` stays Mechanical) plus RED (real Web/CLI reproductions) and
+  mutation probes (over-broad plural rule → RED). **It implements NOTHING**; scope = `engine/domain_rules.py` matching only; it does
+  NOT solve F001/F002/F004, does NOT close CF-5, activates no domain. **CF5-F003 = VALIDATED D / corrective gate OPEN; prior
+  `9857ba3e` = REJECTED (BF-1); CF5-F001 / CF5-F002 / CF5-F004 remain UNCHANGED open C findings; CF-5 remains OPEN.** **`OWNER_
+  DECISION_REGISTER.md` UNCHANGED; ZERO runtime/test/domain/schema/web/CLI/guardrail diff; `activated_domains() ==
+  ['electronics_electrical']`; NO domain selected; first new-domain activation remains BLOCKED.** **CF5-F003 corrected corrective
+  contract = CANDIDATE ONLY; IMPLEMENTATION NOT STARTED.** The next required gate is the **Mandatory Grill on this exact immutable
+  corrected CF5-F003 contract candidate**.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation

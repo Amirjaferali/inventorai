@@ -41,7 +41,41 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — CF-5 AUDIT CONTRACT/ENTRY CANDIDATE; governance-only; Audit NOT executed; NO active runtime increment; NO
+**Status (current — CF5-F003 CORRECTED CORRECTIVE CONTRACT CANDIDATE; governance-only; implementation NOT started; NO active
+runtime increment; NO domain activated):** **`CF5-F003` — Classifier Matching Semantics corrective gate is DEFINED by a corrected
+governance-only CORRECTIVE CONTRACT CANDIDATE** (record: `docs/governance/CF5_F003_CLASSIFIER_MATCHING_SEMANTICS_CORRECTIVE_CONTRACT.md`)
+on authoritative base `8c38812086cfd3c17bc61ad47bba94e8b7a9de8d` (PR #447 made the CF-5 Audit contract AUTHORITATIVE; 0 newer). The
+CF-5 Audit (Execution Gate 1) ran read-only and produced four material findings (CF5-F001 shared-core electronics-specific
+`safety_signal`; CF5-F002 Web `/start` electronics-only admission / CF-6; CF5-F003 classifier substring false positives; CF5-F004
+hardcoded non-activated priority fallback / CF-3). **CF5-F003 was independently validated D — Material current issue, reachable
+now** (`signal in text` substring scoring matches short signals inside unrelated words: `controlled`→`led`, `compiled`→`led`,
+`patriotic`→`iot`, `concurrent`→`current`, `hearth`→`heart`; effects: incorrect classification, untruthful CLI confirmation, Web
+`/start` bypass/admission). **The first CF5-F003 corrective contract candidate `9857ba3e21a8bbd8d73bcde83cb85b7744d0f85b` was
+REJECTED by Mandatory Grill (BF-1: its strict exact-whole-token / no-plural-inference rule would regress ~76 signals' plural forms
+and flip `a system of gears and levers` Mechanical→Software).** This corrected candidate replaces the rejected rule with a
+**bounded plural-preserving whole-token matcher**: tokenize on `[a-z0-9]+`; a single-word signal matches a token equal to the
+signal or its bounded plural `+"s"`/`+"es"` (nothing else — no stemming/fuzzy/substring/`+ies`); multi-word signals match a
+contiguous whole-token sequence (bounded plural on the final token only). Collision guard validated (false positives stay false —
+whole-token, not substring); plural inventory reproduced (76 single-word + 5 multi-word signals; only `diagnosis` sibilant, its
+irregular plural not caught today → no obligation; no cross-pack `+s`/`+es` collision). Required GREEN preservation is MANDATORY and
+explicitly repairs BF-1 (`LEDs`/`sensors`/`circuits`/`resistors`/`PCBs`; `gears`/`levers`; `catheters`; `apps`/`databases`/`APIs`;
+`a system of gears and levers` stays Mechanical), plus RED (real Web/CLI reproductions) and mutation probes (incl. over-broad plural
+rule → RED). **It implements NOTHING** and is scoped to `engine/domain_rules.py` matching only. **Forbidden:** Web admission redesign
+(F002/CF-6), safety-signal redesign (F001), fallback-priority redesign (F004), activation, D4, D8, Domain-Pack signal-data edits.
+Preservation: canonical `classify_domain` sole owner (Web/CLI consumers, no duplicate matcher); `DomainClassification` semantics;
+P9-E2-R fail-loud wrapper; P9-E2 tie policy; D3-D precedence; recognized-not-activated; no new MULTI producer; no activation change.
+**CF5-F003 = VALIDATED D / corrective gate OPEN; prior `9857ba3e` = REJECTED (BF-1); CF5-F001 / CF5-F002 / CF5-F004 remain UNCHANGED
+open C; CF-5 remains OPEN.** **`OWNER_DECISION_REGISTER.md` UNCHANGED** (bounded technical matching rule; no new Owner
+product-policy decision — D3/P9-QS/P9-E1/CF-5 precedent). ZERO runtime/test/domain/schema/web/CLI/guardrail diff;
+`activated_domains() == ['electronics_electrical']`; NO domain selected; first new-domain activation remains BLOCKED. **CF5-F003
+corrected corrective contract = CANDIDATE ONLY; IMPLEMENTATION NOT STARTED.** The next required gate is the **Mandatory Grill on this
+exact immutable corrected CF5-F003 contract candidate**; any material Grill finding rejects it as-is (NEW SHA/tree/bundle/Grill/
+independent review — no amendment).
+
+**Immediately prior (CF-5 Audit contract/entry candidate — retained as history; merged AUTHORITATIVE via PR #447 `8c38812`; CF-5
+Audit subsequently executed (Gate 1) producing CF5-F001..F004; superseded as CURRENT status by the corrected CF5-F003 corrective
+contract candidate above):**
+**Status (prior — CF-5 AUDIT CONTRACT/ENTRY CANDIDATE; governance-only; Audit NOT executed; NO active runtime increment; NO
 domain activated):** **`CF-5` — Retrospective Adversarial Architecture Audit is DEFINED by a governance-only CONTRACT / ENTRY
 CANDIDATE** (record: `docs/governance/CF5_RETROSPECTIVE_ADVERSARIAL_ARCHITECTURE_AUDIT_CONTRACT.md`) on authoritative base
 `54a5565bdcdfa37ff247ceb9e806bd5b2b42cb9d` (PR #446 made P9-E2 formal closure AUTHORITATIVE; 0 newer). CF-5 was registered
