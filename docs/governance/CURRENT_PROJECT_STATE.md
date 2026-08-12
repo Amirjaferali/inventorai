@@ -1296,6 +1296,28 @@ AUTHORIZED / NOT STARTED.***
   closure candidate `6bf749db` was merged via **PR #444** into `c11482db…` (the P9-E2 implementation parent), so `P9-E2-R` is
   FORMALLY CLOSED / AUTHORITATIVE at the live authoritative tip. No historical evidence is rewritten; only the present status is made
   unambiguous.
+  **P9-E2 formal closure is now AUTHORITATIVE (merged PR #446, tip `54a5565bdcdfa37ff247ceb9e806bd5b2b42cb9d` = two-parent merge of
+  `f336637` + the accepted P9-E2 closure candidate `23f746fa`; merge tree `cf4198c5` == closure candidate tree; 0 newer), so
+  `P9-E2` / `P9-PREREQ-B` is FORMALLY CLOSED / SATISFIED / AUTHORITATIVE. The next governed step (Phase-9 pre-activation sequencing
+  Gate 0) is the mandatory `CF-5` Retrospective Adversarial Architecture Audit, which is now DEFINED by a governance-only
+  CONTRACT / ENTRY CANDIDATE** (record: `docs/governance/CF5_RETROSPECTIVE_ADVERSARIAL_ARCHITECTURE_AUDIT_CONTRACT.md`). CF-5 was
+  registered (P9-E2-R closure §5; re-affirmed P9-E2 closure §7) and is MANDATORY before first new-domain activation; it is generic
+  to inherited architecture and requires no selected domain to enter. The candidate defines Audit entry, minimum scope
+  (shared-core; Registry; activation; classifier ownership `classify_domain`; scoring/signals; hardcoded fallback (CF-3); Web
+  strong-unsupported (CF-6); public-message truthfulness (CF-2); Web/CLI/core consistency; persistence; domain isolation;
+  schema/version; extensibility; hidden Electronics assumptions; test architecture; reachable-on-activation debt), the preserved
+  A/B/C/D/E finding taxonomy (no new taxonomy), the independent-validation requirement for C/D/E before reopening closed
+  architecture, the correction-gate policy (C → pre-trigger prerequisite; D → bounded corrective gate; E → STOP for
+  architecture/Owner decision), and Audit completion criteria. **It does NOT execute the Audit, produce findings, or
+  select/qualify/activate any domain.** Separation preserved (none discharged): P9-QS AUTHORITATIVE (per-domain qualification
+  separate, selection-first); CF-6 PENDING PRE-SECOND-SPECIALIST-DOMAIN ACTIVATION; CF-2 / CF-3 separate trigger-bound; D8
+  Owner-reserved; D4 separate. Recommended partial-order: CF-5 → domain selection → per-domain P9-QS → CF-6/CF-2/CF-3 → explicit
+  Owner activation authorization. **`OWNER_DECISION_REGISTER.md` UNCHANGED; ZERO runtime/test/domain/Registry/activation/web/CLI/
+  schema/guardrail diff in this contract gate.** **CF-5 = CONTRACT/ENTRY CANDIDATE ONLY — Audit NOT executed; execution NOT yet
+  authorized; the candidate does not claim the Audit is ACTIVE/COMPLETE/PASSED. NO new domain activated (`activated_domains() ==
+  ['electronics_electrical']`); NO domain selected; first new-domain activation remains BLOCKED behind CF-5 completion, per-domain
+  P9-QS qualification, CF-6, CF-2, CF-3, D8 (if IoT), and explicit Owner activation authorization.** The next required gate is the
+  **Mandatory Grill on this exact immutable CF-5 contract candidate**.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation

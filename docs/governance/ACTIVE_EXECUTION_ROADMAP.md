@@ -7777,3 +7777,57 @@ exact-candidate acceptance → SHA-preserving publication → PR → pre-merge v
 verification before P9-E2 may be declared authoritatively closed.** Append-only; prior history not rewritten. This entry authorizes
 no push, PR, merge beyond this candidate, domain activation/selection, D8 decision, D4 execution, CF-5/CF-6 execution,
 Retrospective-Audit execution, or any further P9-E2 runtime work.
+
+---
+
+## CF-5 — Retrospective Adversarial Architecture Audit — governance-only CONTRACT / ENTRY CANDIDATE — Audit NOT executed; NO domain activated
+
+**Gate.** OWNER-CONTINUATION-AUTHORIZED **governance-only** creation of the bounded contract/entry artifact for the mandatory
+**CF-5 — Retrospective Adversarial Architecture Audit** (registered by the P9-E2-R closure record §5 and re-affirmed by the P9-E2
+closure record §7; MANDATORY before first new-domain activation). **CONTRACT/ENTRY CANDIDATE ONLY** — it defines Audit entry,
+scope, finding taxonomy, validation, correction-gate policy, and completion criteria; it does **NOT** execute the Audit, produce
+findings, or select/qualify/activate any domain. Authoritative parent verified read-only `54a5565bdcdfa37ff247ceb9e806bd5b2b42cb9d`
+(PR #446 = two-parent merge of `f336637` + accepted P9-E2 closure candidate `23f746fa`; merge tree `cf4198c5` == closure candidate
+tree; 0 newer); boot OK; `activated_domains() == ['electronics_electrical']`; built in a disposable worktree (primary working tree
++ historical bundles untouched).
+
+**Established (governance-only).** Canonical record: `docs/governance/CF5_RETROSPECTIVE_ADVERSARIAL_ARCHITECTURE_AUDIT_CONTRACT.md`.
+CF-5 is **generic to inherited architecture** and does NOT require a selected next domain to enter (a future selection may inform
+later targeted checks only). Minimum mandatory Audit scope (execution-time): A shared-core; B Domain Registry; C activation
+mechanism; D classifier ownership (`classify_domain` sole owner); E scoring/signals (seed NB-2); F hardcoded fallback priority
+(CF-3 concerns); G Web strong-unsupported layer (CF-6 concerns); H public-message truthfulness (CF-2); I Web/CLI/core consistency;
+J persistence/session state; K domain isolation; L schema/version governance (seed NB-5); M domain-pack extensibility; N hidden
+Electronics assumptions; O test architecture (seed NB-3); P reachable-on-activation deferred debt; plus any newly discovered area.
+**Finding taxonomy preserved exactly (no new taxonomy):** A no-issue / B hardening-future / C material-latent-not-reachable / D
+material-current-reachable / E architectural-contradiction; **any C/D/E requires independent validation before reopening closed
+architecture**, validation separated from remediation; correction-gate policy (C → pre-trigger prerequisite; D → bounded
+corrective gate before affected work continues; E → STOP for explicit architecture/Owner decision), all corrective work bounded
+with contract/implementation separation, exact-candidate identity, SHA-preserving publication, and pre/post-merge verification.
+**Audit completion criteria** enumerated (all areas reviewed; every finding classified; C/D/E independently validated; every D
+corrected or its work blocked; every E has an explicit architecture/Owner decision; every C has a binding pre-trigger obligation;
+all activation-relevant material findings dispositioned; Audit closure record merged/post-merge verified; activation unchanged).
+The Audit CONTRACT does NOT complete CF-5.
+
+**Separation preserved (no obligation discharged).** **P9-QS** contract AUTHORITATIVE (PR #437); per-domain qualification separate,
+per-domain, domain-selection-first. **CF-6** remains PENDING PRE-SECOND-SPECIALIST-DOMAIN-ACTIVATION (CF-5 completion does not
+declare CF-6 executed). **CF-2** and **CF-3** remain separate trigger-bound obligations (not discharged by CF-5). **D8**
+Owner-reserved; IoT warning observable as evidence only; no IoT remediation/activation. **D4** separate. Recommended partial-order
+sequence: CF-5 Audit → domain selection → per-domain P9-QS → trigger-bound CF-6/CF-2/CF-3 → explicit Owner activation
+authorization; the contract preserves repository partial-ordering rather than inventing strict sequencing.
+
+**Scope invariants proven.** Changed paths = NEW `CF5_RETROSPECTIVE_ADVERSARIAL_ARCHITECTURE_AUDIT_CONTRACT.md` + this roadmap
+append + `ACTIVE_INCREMENT_CONTRACT.md` + `CURRENT_PROJECT_STATE.md` current-truth sync. **`OWNER_DECISION_REGISTER.md` UNCHANGED**
+(a contract candidate records no new accepted Owner product-policy decision — consistent with D3 / P9-QS / P9-E1 candidate
+precedent; CF-5 is an already-Owner-mandated registered obligation, not a new product-policy decision). ZERO
+runtime/engine/test/domain/Registry/activation/web/CLI/schema/persistence/API/architecture-guardrail diff. `activated_domains() ==
+['electronics_electrical']`; NO domain selected/qualified/activated.
+
+**Boundary / status after this entry.** **CF-5 = CONTRACT / ENTRY CANDIDATE ONLY — Audit NOT executed; Audit execution NOT yet
+authorized.** The candidate does not claim the Audit is ACTIVE / COMPLETE / PASSED. **NO new domain activated; NO domain selected;
+P9-E2 remains FORMALLY CLOSED / AUTHORITATIVE; P9-QS AUTHORITATIVE; CF-2 / CF-3 / CF-6 PENDING; D4 SEPARATE / UNEXECUTED; D8
+Owner-reserved;** CAP-12 / CAP-13 / WS-PFV / deterministic-calculations / knowledge-source NOT implemented; Phase 10 = NOT
+AUTHORIZED; PSRR = NOT EXECUTED; deployment / production = NOT AUTHORIZED. **This contract candidate still requires Mandatory Grill
+→ independent external exact-candidate review → Owner exact-candidate acceptance → SHA-preserving publication → PR → pre-merge
+verification → CREATE A MERGE COMMIT → post-merge verification before the CF-5 Audit execution gate may begin.** Append-only; prior
+history not rewritten. This entry authorizes no push, PR, merge beyond this candidate, no Audit execution, no domain
+selection/qualification/activation, and no CF-6/CF-2/CF-3/P9-QS/D4/D8 execution.

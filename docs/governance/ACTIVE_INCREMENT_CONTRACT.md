@@ -41,8 +41,30 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — P9-E2 FORMAL-CLOSURE CANDIDATE; governance-only; NOT yet formally closed; NO active runtime increment; NO
-domain activated):** **`P9-E2` / `P9-PREREQ-B` — Multi-Activated Domain Tie/Conflict Precedence (bounded tie-precedence runtime
+**Status (current — CF-5 AUDIT CONTRACT/ENTRY CANDIDATE; governance-only; Audit NOT executed; NO active runtime increment; NO
+domain activated):** **`CF-5` — Retrospective Adversarial Architecture Audit is DEFINED by a governance-only CONTRACT / ENTRY
+CANDIDATE** (record: `docs/governance/CF5_RETROSPECTIVE_ADVERSARIAL_ARCHITECTURE_AUDIT_CONTRACT.md`) on authoritative base
+`54a5565bdcdfa37ff247ceb9e806bd5b2b42cb9d` (PR #446 made P9-E2 formal closure AUTHORITATIVE; 0 newer). CF-5 was registered
+(P9-E2-R closure §5, re-affirmed P9-E2 closure §7) and is MANDATORY before first new-domain activation; it is **generic to
+inherited architecture and requires no selected domain to enter.** The candidate defines Audit entry, minimum scope (shared-core;
+Registry; activation; classifier ownership; scoring/signals; hardcoded fallback (CF-3); Web strong-unsupported (CF-6);
+public-message truthfulness (CF-2); Web/CLI/core consistency; persistence; domain isolation; schema/version; extensibility; hidden
+Electronics assumptions; test architecture; reachable-on-activation debt), the **preserved A/B/C/D/E finding taxonomy** (no new
+taxonomy), the **independent-validation requirement for C/D/E before reopening closed architecture**, the correction-gate policy
+(C → pre-trigger prerequisite; D → bounded corrective gate; E → STOP for architecture/Owner decision), and Audit completion
+criteria. **It does NOT execute the Audit, produce findings, or select/qualify/activate any domain.** Separation preserved (none
+discharged): P9-QS AUTHORITATIVE (per-domain qualification separate, selection-first); CF-6 PENDING PRE-SECOND-SPECIALIST-DOMAIN
+ACTIVATION; CF-2 / CF-3 separate trigger-bound; D8 Owner-reserved; D4 separate. Recommended partial-order: CF-5 → domain selection
+→ per-domain P9-QS → CF-6/CF-2/CF-3 → explicit Owner activation authorization. **`OWNER_DECISION_REGISTER.md` UNCHANGED** (contract
+candidate records no new accepted Owner product-policy decision — D3/P9-QS/P9-E1 precedent). ZERO runtime/test/domain/Registry/
+activation/web/CLI/schema/guardrail diff; `activated_domains() == ['electronics_electrical']`; NO domain selected. **CF-5 =
+CONTRACT/ENTRY CANDIDATE ONLY — Audit NOT executed; execution NOT yet authorized; the candidate does not claim the Audit is ACTIVE/
+COMPLETE/PASSED.** The next required gate is the **Mandatory Grill on this exact immutable CF-5 contract candidate**; any material
+Grill finding rejects it as-is (NEW SHA/tree/bundle/Grill/independent review — no amendment).
+
+**Immediately prior (P9-E2 formal-closure candidate — retained as history; merged AUTHORITATIVE via PR #446 `54a5565`; P9-E2 now
+FORMALLY CLOSED / AUTHORITATIVE; superseded as CURRENT status by the CF-5 contract candidate above):**
+**`P9-E2` / `P9-PREREQ-B` — Multi-Activated Domain Tie/Conflict Precedence (bounded tie-precedence runtime
 gate) is FORMALLY CLOSED / SATISFIED as a governance-only CLOSURE CANDIDATE** (record:
 `docs/governance/P9_E2_MULTI_ACTIVATED_DOMAIN_TIE_PRECEDENCE_FORMAL_CLOSURE_RECORD.md`). Authoritative implementation parent
 `f33663710d6edf506a082b1bfa2f02e9c3fef7ac` (PR #445; parent 1 `c11482db…` + parent 2 accepted candidate `85fda813…`; merge tree
