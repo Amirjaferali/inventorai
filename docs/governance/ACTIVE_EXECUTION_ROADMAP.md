@@ -8091,3 +8091,73 @@ selection/qualification/registration/activation, and no CF5-F001/F002/F004 / CF-
 CLOSED / AUTHORITATIVE; P9-QS AUTHORITATIVE; CF-5 OPEN; CF5-F001/F002/F004 open C; CF-2/CF-3/CF-6 PENDING; D4 SEPARATE; D8
 Owner-reserved;** Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED; deployment/production = NOT AUTHORIZED. Append-only; prior history
 (incl. the three rejected candidates) not rewritten.
+
+---
+
+## CF5-F002 — Web `/start` Electronics-Only Admission — INDEPENDENT VALIDATION — governance-only VALIDATION CANDIDATE — classification C RETAINED ON EVIDENCE; NO remediation authorized; NO domain activated
+
+**Gate.** OWNER-AUTHORIZED **governance-only INDEPENDENT VALIDATION** of CF-5 finding **CF5-F002** (audit-contract §7:
+validation separated from remediation). **VALIDATION ONLY** — authorizes NO remediation, NO corrective implementation contract,
+NO runtime/Web/CLI/test change, NO domain selection/registration/activation, NO CF-6 execution, NO CF-2 execution, NO D4/D8
+work. Authoritative parent verified read-only `e5f7d42c5a2c7ff6590816a87cd9f5ca3f650da0` (PR #451 — CF5-F003 formal-closure
+merge; freshly fetched; 0 newer); boot OK; `activated_domains() == ['electronics_electrical']`. Canonical record:
+`docs/governance/CF5_F002_WEB_START_ADMISSION_INDEPENDENT_VALIDATION_RECORD.md`.
+
+**Validated defect statement.** The Web `/start` admission surface (`web/app.py`) hardcodes a single-activated-domain
+(electronics/electrical-only) admission architecture that does not consume the canonical activation set as a set: (1) the only
+representable consent + every admitted session's domain is the constant `DOMAIN_CONFIRM_VALUE = "electronics_electrical"`
+(`web/app.py:837`, `:1420`); (2) the hardcoded `domain != "electronics_electrical"` branch + static
+`CONFLICTING_SUPPORTED_DOMAINS` (`:1391`, `:845`); (3) the static strong-unsupported vocabulary encoding registered domains'
+signals as permanently unsupported (`:897-919`; CF-6/NB-4); (4) "electronics and electrical ideas only" public copy
+(`:826-829`, `:954-959`; CF-2). `_admit_specialist_domain` (`:853-868`) itself correctly binds to the §5-I2 activation policy;
+the defect is that every caller passes the hardcoded electronics constant. Category: inherited architectural debt producing a
+latent defect.
+
+**Validation evidence (real production `/start`, Flask test client, pinned env; isolated scratchpad DB; bounded
+self-restoring activation doubles per the committed P9-E2 test mechanism; NO repository state changed; real activation
+verified restored after every probe; NO persistent session pollution).** (A) activated Electronics → 302 admitted
+electronics; confirm-required enforced. (B) NONE-signal idea → governed None-fallback admission under explicit confirmation
+(truthful; ADR-001). (C) real `AMBIGUOUS_TIE` is production-unreachable today (`circuit and hinge` → D3-D
+SINGLE(electronics)); under an elec+mech double it → AMBIGUOUS_TIE → `/start` 200 UNSUPPORTED fail-closed, no session.
+(D) recognized-but-not-activated: `a hinge` → SINGLE(mechanical) → GUIDANCE, no session; strong-word `a gear`/`a catheter` →
+UNSUPPORTED, no session; messages truthful today. (E) second-domain hypothetical (elec+mech double): the hardcoded admission
+becomes incorrect four ways — activation state has ZERO effect on outcomes (activated-mechanical `a hinge` byte-identical to
+non-activated, copy untruthful); activated-domain signals refused as "unsupported" (`a gearbox for a bicycle`); **`a hinge
+that you plug in` → classifier SINGLE(mechanical) [ACTIVATED] yet `/start` ADMITS an `electronics_electrical` session —
+cross-domain session mislabeling**; no consent path exists for any second domain. (F) 3-way triple double → complete-set
+AMBIGUOUS_TIE → fail-closed; `MULTI_DOMAIN_NEEDS_D4` constructed nowhere in `engine/domain_rules.py`; its `/start` branch
+dormant fail-closed; D4 NOT executed. (G) UI-language independence PASS (`/start` reads no `ui_lang`; `ar` probes
+byte-identical outcomes). (EDGE) activation set without electronics → unhandled `DomainNotActivatedError` → 500 fail-loud, no
+session, no durable write (trigger-analysis evidence only). (H) session cleanup PASS.
+
+**Classification & trigger.** **CF5-F002 = C — Material latent issue, NOT currently reachable — RETAINED ON EVIDENCE** (not
+inherited): no reachable defect under `['electronics_electrical']`; mandatory pre-trigger prerequisite proven by (E). Not
+B/D/E. **Trigger (narrowed):** the first moment the canonical activation set differs from `['electronics_electrical']` —
+under the current state this IS second-specialist-domain activation (historical wording extensionally correct); NOT
+registration (already-registered domains refused correctly today), NOT classifier recognition, NOT any admission
+configuration (none exists — constants). **CF-6:** partly owned — CF-6 covers the pre-classifier/strong-unsupported facets;
+F002 is broader on the admission architecture (consent constant, hardcoded branch, constant-valued admission call); the
+existing single "CF5-F002 / CF-6 Web-admission lane" is validated correct; no duplicate framework; CF-5 completion must not
+auto-declare CF-6 executed. **CF-2:** separate, co-triggered; no message defect reachable today; the shared copy becomes
+untruthful at the F002 trigger — CF-2-owned, NOT absorbed. **Stale `SUBSTRINGS` comment (`web/app.py:870-884`):** partly
+stale comment-only hygiene (SUBSTRINGS claim + `app`⊂`appliance` example FALSE post-F003; `monitoring`→medical example still
+TRUE); ZERO runtime consequence; canonical owner CF5-F002 / CF-6 lane CONFIRMED; NOT edited here; companion stale comment at
+`web/app.py:1361-1363` ("yields only SINGLE / NONE") noted, same lane, comment-only. **F003 effect on F002:** none on the
+admission architecture; F003 only re-routed some raw inputs between branches and rendered the comment stale.
+
+**Disposition.** Corrective remediation required NOW: **NO**. **Pre-trigger corrective gate required: YES (binding C
+obligation)** — a bounded CF5-F002 / CF-6 Web-admission corrective gate MUST close before any activation gate makes
+`activated_domains() != ['electronics_electrical']`. Owner policy (multi-domain consent/admission UX) required before or
+within that future corrective contract; NONE required now; `OWNER_DECISION_REGISTER.md` UNCHANGED.
+
+**Governance disposition.** **CF5-F002 = OPEN C — INDEPENDENTLY VALIDATED (candidate).** CF5-F003 remains CLOSED; CF5-F001 /
+CF5-F004 remain UNCHANGED OPEN C; **CF-5 remains OPEN**; CF-2/CF-3/CF-6 PENDING; D4 SEPARATE; D8 Owner-reserved; no domain
+activated/selected; **first new-domain activation remains BLOCKED.** ZERO
+runtime/test/domain/schema/persistence/API/Web/CLI/guardrail diff this gate.
+
+**Boundary / status after this entry.** VALIDATION CANDIDATE ONLY — it prescribes no implementation design beyond the defect
+boundary and starts no corrective work. This entry authorizes no push, PR, or merge beyond this candidate, no remediation, no
+domain selection/qualification/registration/activation, and no CF5-F001/F004 / CF-6 / CF-2 / CF-3 / D4 / D8 execution.
+**P9-E2 FORMALLY CLOSED / AUTHORITATIVE; P9-QS AUTHORITATIVE;** Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED;
+deployment/production = NOT AUTHORIZED. Append-only; prior history not rewritten. Next required gate: **Mandatory Grill on
+this exact validation candidate.**

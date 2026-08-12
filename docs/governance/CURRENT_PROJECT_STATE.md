@@ -1422,6 +1422,25 @@ AUTHORIZED / NOT STARTED.***
   plural-container gap + over-broad invariant). **CF5-F001 / CF5-F002 / CF5-F004 remain OPEN C; CF-5 remains OPEN (F003 closure does
   NOT close CF-5); first new-domain activation remains BLOCKED.** This closure gate is governance-only: ZERO runtime / test / domain /
   Web / CLI / `OWNER_DECISION_REGISTER.md` diff.
+  **CF5-F002 is now INDEPENDENTLY VALIDATED by a governance-only VALIDATION CANDIDATE** (record:
+  `docs/governance/CF5_F002_WEB_START_ADMISSION_INDEPENDENT_VALIDATION_RECORD.md`; parent `e5f7d42c5a2c7ff6590816a87cd9f5ca3f650da0`,
+  PR #451; audit-contract §7 — validation separated from remediation; VALIDATION ONLY, remediation NOT authorized). Validated defect:
+  the Web `/start` admission surface hardcodes a single-activated-domain (electronics-only) admission architecture (constant consent /
+  admitted domain `DOMAIN_CONFIRM_VALUE`; hardcoded `domain != "electronics_electrical"` branch + static conflict set; static
+  strong-unsupported vocabulary; "electronics only" public copy). **Classification C RETAINED ON EVIDENCE**: real production `/start`
+  probes (isolated DB, self-restoring activation doubles, session cleanup PASS) show every currently-reachable outcome correct and
+  truthful under `['electronics_electrical']`, while an elec+mech activation double mechanically demonstrates the post-trigger defect —
+  activation state has zero effect on admission outcomes; activated-domain signals refused as "unsupported"; a
+  SINGLE(mechanical)-classified idea ADMITTED as an `electronics_electrical` session (cross-domain mislabeling); no consent path for
+  any second domain. Trigger (narrowed): the first moment `activated_domains() != ['electronics_electrical']` (extensionally =
+  second-specialist-domain activation today); NOT registration, NOT recognition. CF-6 partly owns the pre-classifier facets (single
+  "CF5-F002 / CF-6 Web-admission lane" validated; no duplicate framework); CF-2 separate, co-triggered, no message defect reachable
+  today. Stale `SUBSTRINGS` comment (`web/app.py:870-884`): partly stale, comment-only, zero runtime consequence, F002/CF-6 lane owner
+  CONFIRMED, NOT edited. **Remediation required NOW: NO; a binding pre-trigger CF5-F002 / CF-6 Web-admission corrective gate is
+  REQUIRED before any activation gate changes the activation set; Owner multi-domain consent/admission UX policy is required at that
+  future gate (none now).** CF5-F003 remains CLOSED; CF5-F001 / CF5-F004 remain OPEN C; CF-5 remains OPEN; first new-domain activation
+  remains BLOCKED; `OWNER_DECISION_REGISTER.md` UNCHANGED; ZERO runtime/test/Web/CLI/domain/activation diff this gate. Next required
+  gate: **Mandatory Grill on this exact validation candidate**.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
