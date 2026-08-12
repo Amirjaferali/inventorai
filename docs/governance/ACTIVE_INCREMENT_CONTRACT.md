@@ -41,8 +41,38 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — P9-E2 CORRECTED IMPLEMENTATION CANDIDATE; NOT closed / NOT authoritative; NO domain activated):**
-**`P9-E2` / `P9-PREREQ-B` — Multi-Activated Domain Tie/Conflict Precedence — is IMPLEMENTED as a CORRECTED IMPLEMENTATION CANDIDATE**
+**Status (current — P9-E2 FORMAL-CLOSURE CANDIDATE; governance-only; NOT yet formally closed; NO active runtime increment; NO
+domain activated):** **`P9-E2` / `P9-PREREQ-B` — Multi-Activated Domain Tie/Conflict Precedence (bounded tie-precedence runtime
+gate) is FORMALLY CLOSED / SATISFIED as a governance-only CLOSURE CANDIDATE** (record:
+`docs/governance/P9_E2_MULTI_ACTIVATED_DOMAIN_TIE_PRECEDENCE_FORMAL_CLOSURE_RECORD.md`). Authoritative implementation parent
+`f33663710d6edf506a082b1bfa2f02e9c3fef7ac` (PR #445; parent 1 `c11482db…` + parent 2 accepted candidate `85fda813…`; merge tree
+`0bffe3f7…` == candidate tree; 0 newer). **This is a governance-only closure candidate — NOT yet authoritative and P9-E2 is NOT yet
+formally closed; closure becomes authoritative only after: Mandatory Grill → independent external exact-candidate review → Owner
+exact-candidate acceptance → SHA-preserving publication → PR → pre-merge verification → CREATE A MERGE COMMIT → post-merge
+verification.** Implementation lineage: contract PR #441 (`47fce397`; candidate `1d29a26f`); rejected candidate `3255c4ba` (Grill
+FAIL — never published/accepted/merged; not an ancestor) → accepted corrected candidate `85fda813` (built from `c11482d`) → Grill
+**PASS WITH NON-BLOCKING HARDENING** (blocking NONE) → independent review **ACCEPT WITH NON-BLOCKING OBSERVATIONS** (blocking NONE)
+→ Owner-accepted → published → PR #445 (5 files / +546 / −17; `git diff --check` CLEAN) → post-merge verified. **Bounded
+tie-precedence policy via the canonical `classify_domain` seam (CF-1 SATISFIED):** `len(activated_tied) == 0` → non-activated
+priority fallback retained unchanged; `== 1` → `SINGLE`; **`>= 2` → `AMBIGUOUS_TIE(selected=None, complete canonical activated tied
+set, reason=EQUAL_SCORE)`** — no arbitrary/alphabetical/registration/dict winner, no Electronics preference, no LLM; `MULTI_DOMAIN_
+NEEDS_D4` NOT fabricated (D4 separate); only ACTIVATED domains (D3-D). Fresh closure evidence reproduced at `f336637`: full suite
+**2307 passed / 3 skipped / 1 xfailed / 0 failed**; focused **57 passed**; **nine load-bearing mutation probes all CAUGHT RED**,
+bytes restored. Canonical-owner reconciliation: `classify_domain` = canonical owner, `infer_domain` = legacy fail-loud wrapper
+(later authoritative P9-E2-R architecture governs the name evolution; the old P9-E2 contract is NOT rewritten/amended). **Carry-forward
+(not erased):** CF-1 SATISFIED by this gate's subject; CF-2 shared AMBIGUOUS/MULTI public message PENDING; CF-3 non-activated
+priority fallback PENDING (retained for backward compatibility; before first Nth-domain registration/activation); CF-4 D4 separate;
+CF-5 Retrospective Adversarial Architecture Audit PENDING (MANDATORY before first new-domain activation); CF-6 Web
+pre-classifier/strong-unsupported reachability & admission interaction PENDING (PRE-SECOND-SPECIALIST-DOMAIN ACTIVATION; distinct
+from CF-2). Non-blocking observations NB-1…NB-5 carried forward (not discarded). **`OWNER_DECISION_REGISTER.md` UNCHANGED. There is
+NO active runtime increment.** **NO new domain activated; NO domain selected; P9-E2-R remains FORMALLY CLOSED / SATISFIED; P9-E1
+remains FORMALLY CLOSED / SATISFIED; D4 = SEPARATE / UNEXECUTED; D8 = Owner-reserved; Phase 10 = NOT AUTHORIZED; PSRR = NOT
+EXECUTED; deployment / production = NOT AUTHORIZED.** The next required gate is the **Mandatory Grill on this exact immutable closure
+candidate**; any material Grill finding rejects it as-is (NEW SHA/tree/bundle/Grill/independent review — no amendment).
+
+**Immediately prior (P9-E2 implementation candidate — retained as history; merged AUTHORITATIVE via PR #445 `f336637`; superseded as
+CURRENT status by the P9-E2 formal-closure candidate above):**
+**`P9-E2` / `P9-PREREQ-B` — Multi-Activated Domain Tie/Conflict Precedence — was IMPLEMENTED as a CORRECTED IMPLEMENTATION CANDIDATE**
 built fresh from authoritative parent `c11482db7240b5ac628e77cd061f8d5de6df40ee` (live tip re-verified; 0 newer). It **supersedes the
 REJECTED prior candidate `3255c4ba1ca6ae50e0c3f20d7f0d4c8ef1fa223c`** (Mandatory Grill `GRILL FAIL — MATERIAL CONTRACT CORRECTION
 REQUIRED`: sound runtime, but a FALSE `/start` strong-unsupported "masked for all real ties" reachability claim, an omitted
