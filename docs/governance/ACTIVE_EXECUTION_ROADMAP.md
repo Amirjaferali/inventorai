@@ -8026,3 +8026,68 @@ SEPARATE; D8 Owner-reserved; Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED; dep
 prior history not rewritten. This entry authorizes no push, PR, or merge beyond this candidate, no domain activation/selection, and
 no CF5-F001/F002/F004 / CF-6 / CF-2 / CF-3 / D4 / D8 work. Next required gate: **Mandatory Grill of this exact implementation
 candidate.**
+
+---
+
+## CF5-F003 — Classifier Matching Semantics — FORMAL CLOSURE (governance-only) — CF5-F003 CLOSED; CF-5 remains OPEN; NO domain activated
+
+**Gate.** OWNER-AUTHORIZED **governance-only** formal closure of CF-5 finding **CF5-F003** (VALIDATED **D**). Authoritative tip
+`0563843445c55ab1d3b5dcf2bd1e995d131b419f` (freshly fetched; 0 newer); boot OK; `activated_domains() == ['electronics_electrical']`;
+disposable worktree (primary tree + historical bundles untouched). **This entry records closure truthfully; it changes NO runtime,
+test, domain, Web, CLI, schema, persistence, API, guardrail, or `OWNER_DECISION_REGISTER.md` content.**
+
+**Closure eligibility (mechanically verified this gate — ALL satisfied).** VALIDATED D raw-substring false-positive defect corrected
+in AUTHORITATIVE runtime; whole-token / bounded `+s` / `+es`; contiguous multi-word; same-domain registered containment;
+plural-container containment; at-most-once / set-membership scoring; cross-domain containment leakage prevented; original false
+positives eliminated; singular/plural preservation; genuinely executed 0/1/2/3+ activation evidence; Web parity; CLI parity; Web
+session cleanup; mutation evidence (8 probes, all caught); adversarial differential 0 unexplained deltas; full regression green
+(**2381 passed / 3 skipped / 1 xfailed / 0 failed**); authoritative merge + post-merge verification complete; no unauthorized domain
+activation; P9-E2 tie/fallback semantics unchanged.
+
+**Authoritative implementation of record.** PR #450 → merge `0563843445c55ab1d3b5dcf2bd1e995d131b419f` (two-parent
+create-a-merge-commit of `107d2eb08e9cdf14dade12a46693cf5dd2dd1533` + exact Grill-passed implementation candidate
+`6cd1fbbf532a57c4b7fa40ea7732d85ea3469273`); **authoritative tree `5d3f0a40bf422f570848e050e1664a4d8616b14e` ==
+implementation-candidate tree** (post-merge content byte-identical to the accepted candidate — strongest post-merge verification).
+Governance chain of record: Mandatory Grill PASS; Independent External Review **ACCEPT WITH NON-BLOCKING OBSERVATIONS**; exact Owner
+acceptance; SHA-preserving publication; PR #450; post-merge verification PASS.
+
+**Non-blocking carry-forward observations (registered here ONCE; canonical; NOT duplicated elsewhere; NOT CF5-F003 obligations).**
+
+- **NMF-1 — phrase-contiguity mutation-coverage gap.** *Disposition:* **B — bounded non-blocking follow-up (TEST-HARDENING).** The
+  shipped runtime is CORRECT and satisfies base-contract §4.5 (contiguous, ordered, final-token-plural-only): verified this gate
+  `delivery drug` → NONE (reorder rejected), `machines learning` → NONE (intermediate/first-token pluralization rejected), while
+  `machine learnings` → software (bounded plural on the FINAL token, permitted). The observation is that the *committed* mutation
+  suite lacks explicit reorder / intermediate-token-pluralization negatives, so such a mutation could survive; this is a test-suite
+  strengthening, not a behavior or contract defect, and does NOT block CF5-F003 closure. *Canonical owner:* CF-5 remediation
+  (test-hardening). *Trigger / earliest gate:* a bounded standalone test-only hardening gate (or folded into the next CF-5-scoped
+  test gate). *Blocking:* NO. *Relationship to CF5-F003 closure:* non-blocking; runtime already correct; coverage-only.
+
+- **Stale `SUBSTRINGS` comment (`web/app.py::_admit_specialist_domain`).** *Disposition:* **bounded non-blocking
+  DOCUMENTATION/COMMENT-HYGIENE follow-up.** A pre-existing historical comment states `infer_domain()` matches classification signals
+  "as SUBSTRINGS" (with an `app`⊂`appliance` example) that is now inaccurate as a description of current behavior after CF5-F003
+  (matching is whole-token). CF5-F003 intentionally left Web runtime ZERO-diff; the comment does not affect behavior. *Canonical
+  owner:* CF5-F002 / CF-6 (Web-admission lane — the comment lives in the `/start` admission code that F002/CF-6 governs).
+  *Trigger / earliest gate:* the next CF5-F002 / CF-6 Web-admission gate (or a bounded doc-hygiene pass). *Blocking:* NO.
+  *Relationship to CF5-F003 closure:* incidental (F003 rendered the comment stale) but NOT an F003 obligation; Web production code is
+  correctly untouched here.
+
+- **`iot_electronics` schema/load warning.** UNRELATED to CF5-F003; NOT absorbed into F003 closure; retains its existing governance
+  owner.
+
+**Rejected-evidence trail preserved (immutable; not erased or rewritten; none an ancestor of the authoritative implementation).**
+`a29789a948829133812d1a80b297e9b5b907cdc1` (implementation — REJECTED by Independent Review, containment-loss tie flips);
+`0f48df20f121f70f6edbfe2b94a14b7a593b77d4` (Amendment 01 draft — REJECTED, A3-over-credit / containment double-count);
+`5ebc927d46bd2d954a18ca71cd6eb558663811d6` (Amendment 01 draft — REJECTED by Independent Review, M1 plural-container gap + M2
+over-broad global invariant).
+
+**Governance disposition.** **CF5-F003 = CLOSED.** CF5-F001 / CF5-F002 / CF5-F004 remain **UNCHANGED OPEN C**; **CF-5 remains OPEN**
+(closing F003 does NOT close CF-5 and triggers no downstream activation); no domain activated/selected; **first new-domain activation
+remains BLOCKED.** `OWNER_DECISION_REGISTER.md` UNCHANGED. ZERO runtime/test/domain/schema/persistence/API/Web/CLI/guardrail diff this
+gate.
+
+**Boundary / status after this entry.** CF5-F003 formally CLOSED as a truthful governance record over the authoritative runtime; this
+entry authorizes no push, PR, or merge beyond this closure candidate, no implementation change, no domain
+selection/qualification/registration/activation, and no CF5-F001/F002/F004 / CF-6 / CF-2 / CF-3 / D4 / D8 work. **P9-E2 FORMALLY
+CLOSED / AUTHORITATIVE; P9-QS AUTHORITATIVE; CF-5 OPEN; CF5-F001/F002/F004 open C; CF-2/CF-3/CF-6 PENDING; D4 SEPARATE; D8
+Owner-reserved;** Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED; deployment/production = NOT AUTHORIZED. Append-only; prior history
+(incl. the three rejected candidates) not rewritten.

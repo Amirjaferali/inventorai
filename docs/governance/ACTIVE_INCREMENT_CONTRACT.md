@@ -41,7 +41,33 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — CF5-F003 IMPLEMENTATION CANDIDATE (base contract v2 + Amendment 01); RED→GREEN; NOT merged; CF5-F003 NOT
+**Status (current — CF5-F003 FORMALLY CLOSED; governance-only closure sync; NO domain activated):** **`CF5-F003` — Classifier
+Matching Semantics is FORMALLY CLOSED.** The VALIDATED **D** defect (raw-substring classifier false positives) is corrected in the
+AUTHORITATIVE runtime: `engine/domain_rules.py::classify_domain` performs deterministic whole-token matching (`[a-z0-9]+`; exact /
+bounded `+s` / `+es`), contiguous multi-word phrase matching (bounded plural on the final token only), and at-most-once /
+set-membership same-domain registered containment preservation fired on any authorized container base form (plural-container aware),
+with no cross-domain leakage and no non-registered-word credit. **Authoritative implementation merge PR #450 → tip
+`0563843445c55ab1d3b5dcf2bd1e995d131b419f`** (two-parent create-a-merge-commit of `107d2eb` + exact Grill-passed implementation
+candidate `6cd1fbbf532a57c4b7fa40ea7732d85ea3469273`; **merge/authoritative tree `5d3f0a40bf422f570848e050e1664a4d8616b14e` ==
+implementation-candidate tree** — post-merge content byte-identical to the accepted candidate; 0 newer). Evidence of record: 8 RED
+(false positives + real Web `/start` + real CLI) RED-before/GREEN-after; GREEN preservation (singular+plural, multi-word/punctuation,
+containment singular + plural-container, cross-domain non-leakage, at-most-once parity, genuinely executed 0/1/2/3+ activation + Web
+session cleanup, Web/CLI parity); **full regression `2381 passed / 3 skipped / 1 xfailed / 0 failed`**; 8 mutation probes all caught
+(bytecode-isolated, bytes restored); adversarial differential sweep 281 inputs / 20 categorized deltas / **0 unexplained**; Mandatory
+Grill PASS; Independent External Review ACCEPT WITH NON-BLOCKING OBSERVATIONS; exact Owner acceptance; SHA-preserving publication; PR
+#450; post-merge verification PASS. `activated_domains() == ['electronics_electrical']` (no activation change); P9-E2 tie/fallback
+semantics and `DomainClassification` unchanged. **Non-blocking carry-forward (registered once in the roadmap; NOT F003 obligations):**
+(NMF-1) phrase-contiguity mutation-coverage gap — runtime is CORRECT (`delivery drug`→NONE, `machines learning`→NONE), only the
+committed mutation suite lacks reorder/intermediate-pluralization negatives → bounded TEST-HARDENING follow-up; (stale `SUBSTRINGS`
+comment in `web/app.py::_admit_specialist_domain`) — Web runtime intentionally zero-diff → bounded DOCUMENTATION/COMMENT-HYGIENE
+follow-up in the CF5-F002 / CF-6 Web-admission lane. The pre-existing `iot_electronics` schema/load warning is UNRELATED to F003 and
+keeps its existing owner. **CF5-F001 / CF5-F002 / CF5-F004 remain OPEN C; CF-5 remains OPEN (F003 closure does NOT close CF-5); first
+new-domain activation remains BLOCKED.** Rejected evidence preserved immutable: `a29789a9` (impl — containment-loss tie flips),
+`0f48df20` (amendment — double-count), `5ebc927d` (amendment — plural-container gap + over-broad invariant). This closure gate is
+**governance-only**: ZERO runtime / test / domain / Web / CLI / `OWNER_DECISION_REGISTER.md` diff.
+
+**Immediately prior (CF5-F003 implementation candidate — now AUTHORITATIVE via PR #450 `0563843`; retained as history):**
+**Status (prior — CF5-F003 IMPLEMENTATION CANDIDATE (base contract v2 + Amendment 01); RED→GREEN; NOT merged; CF5-F003 NOT
 closed; NO domain activated):** **`CF5-F003` — Classifier Matching Semantics is IMPLEMENTED by a bounded IMPLEMENTATION CANDIDATE**
 on authoritative base `107d2eb08e9cdf14dade12a46693cf5dd2dd1533` (live tip; two-parent merge of `cfdc58cc` + Amendment 01 candidate
 `c26f676c`; merge tree `fcc00cd5` == Amendment 01 tree; 0 newer). The bounded runtime change replaces the raw-substring scoring in
