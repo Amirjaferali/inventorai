@@ -8934,3 +8934,44 @@ first new-domain activation remains BLOCKED** behind remaining CF-6, CF-2, the o
 D8 (if IoT), and explicit Owner activation authorization. Append-only; prior history not rewritten. This entry
 authorizes no push, PR, merge beyond this candidate, no runtime/test change, no domain activation, and no D4/D8/ODR
 change. **Next required gate: Mandatory Grill on this exact closure candidate.**
+
+---
+
+## D-GMPR-01-D-D4 — Amendment 01 — bounded governance-only scope-meaning clarification (cross-domain engineering compatibility) — NOT a new gate; NON-ACTIVATING; D4 sequencing unchanged; NO domain activated
+
+**Gate.** Bounded governance-only clarification amendment to the existing canonical owner **`D-GMPR-01-D-D4`** on
+authoritative base `bb7e73264d484561c8e1b3f264d2eceefc0cf394` (**PR #465 merge — the CF-5 umbrella formal-closure
+candidate `9894d64c` merged and post-merge verified → `CF-5 = FORMALLY CLOSED` is now AUTHORITATIVE**; freshly fetched;
+0 newer). Basis: a read-only repository-first discovery (this session; no file changed) established the Owner's
+cross-domain engineering-compatibility / system-composition intent as **`ALREADY RECORDED — PARTIALLY COVERED`**, with
+`D-GMPR-01-D-D4` the canonical owner, §5-I3 / the P9-QS D4 placeholder / WS-PFV-001 supporting non-owning records, and
+a HIGH duplication risk if a new standalone record were created. Canonical amendment location:
+`docs/governance/OWNER_DECISION_REGISTER.md` — the `D-GMPR-01-D-D4` row (pointer annotation) + the new
+"**Substance (D-GMPR-01-D-D4 — Amendment 01)**" block in the same G-MPR-01-D section (same decision identity; **no new
+decision ID, no new document, no new workstream**). ZERO runtime/test/Web/CLI/domain/registry/activation/schema/
+persistence diff this gate.
+
+**Amendment substance (summary; the ODR block is canonical).** (1) D4's registered "shared-constraint propagation /
+conflicts / trade-offs / unified assessment" **includes governed system-level engineering compatibility across
+participating domains** (mutual compatibility as ONE product/system), not merely detecting that multiple domains are
+present. (2) **Per-domain PASS ≠ system-level PASS**: future D4 surfaces cross-domain incompatibility, unresolved
+interface assumptions, contradictions, conflicts, unowned/orphan requirements, and explicit Known Unknowns instead of
+silently composing independent domain PASS states. (3) Semantic classes considered where applicable + Owner examples
+preserved as **ILLUSTRATIVE ONLY / NON-BINDING** (no frozen checklist). (4) **No correctness guarantee**: D4 reduces the
+chance a major/root incompatibility goes unnoticed; truthful Known-Unknowns route to WS-PFV-001-lineage physical
+validation. (5) **Five-way distinction preserved**: recognition ≠ qualification (P9-QS) ≠ activation (§5-I2) ≠
+cross-domain evaluation (D4) ≠ physical/specialist validation. (6) **Extensibility**: future domains/technologies join
+the same governed composition model without core redesign or domain-specific hardcoding as composition authority.
+(7) **No implementation architecture / no pipeline committed** (requirement/semantic level only).
+
+**Boundary / status after this entry (no over-closure; nothing activated).** D4 remains **REGISTERED (future gate) /
+NOT AUTHORIZED**, sequencing unchanged (≥2 activated domains / governed §5-I4 successor; not before P8-I3). This entry
+authorizes **NO** D4 implementation, **NO** domain registration/activation (incl. `mechanical`), **NO** `iot_electronics`
+change (D8 Owner-reserved), **NO** Phase 10 / PSRR / deployment. It is **NOT a prerequisite expansion**: it adds no new
+blocker to and does not delay the Phase-9 next-domain decision or Mechanical P9-QS qualification; CF-6 / CF-2 / the
+`path_n_questions` D-GMPR coupling stay in their existing lanes; NMF-1/FU-1 unchanged. `activated_domains() ==
+['electronics_electrical']`; **first new-domain activation remains BLOCKED** behind its existing prerequisites. The
+**next Owner gate is unchanged: the Phase-9 next-domain selection decision** (per the committed partial-order). This
+amendment becomes authoritative ONLY if/when this exact candidate is merged (create-a-merge-commit) and post-merge
+verified through the governed lifecycle. Append-only; prior history not rewritten. **Next required gate: Mandatory
+Grill on this exact candidate.**

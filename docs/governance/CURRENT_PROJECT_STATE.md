@@ -1585,6 +1585,25 @@ AUTHORIZED / NOT STARTED.***
   first new-domain activation remains BLOCKED.** Canonical record:
   `CF5_RETROSPECTIVE_ADVERSARIAL_ARCHITECTURE_AUDIT_FORMAL_CLOSURE_RECORD.md`. Next gate: Mandatory Grill on that exact
   candidate.
+  **CF-5 closure MERGED (PR #465, tip `bb7e73264d484561c8e1b3f264d2eceefc0cf394`; merge tree == closure-candidate tree)
+  → `CF-5 = FORMALLY CLOSED` is AUTHORITATIVE. D-GMPR-01-D-D4 — Amendment 01 CANDIDATE recorded (bounded
+  governance-only scope-meaning clarification; NOT a new gate; NON-ACTIVATING).** Canonical substance:
+  `OWNER_DECISION_REGISTER.md` "Substance (D-GMPR-01-D-D4 — Amendment 01)" block + row pointer (same decision identity;
+  no new owner/document/workstream — anti-duplication per D-FPC-MAP-06, following a read-only discovery verdict
+  `ALREADY RECORDED — PARTIALLY COVERED`). It clarifies that D4's registered shared-constraint propagation / conflicts /
+  unified assessment includes governed **system-level engineering compatibility across participating domains** (mutual
+  compatibility as ONE product/system, not mere multi-domain presence detection); that **per-domain PASS ≠ system-level
+  PASS** (future D4 surfaces incompatibilities, unresolved interface assumptions, contradictions, unowned/orphan
+  requirements, and explicit Known Unknowns); Owner examples ILLUSTRATIVE ONLY / NON-BINDING; **no defect-free-product
+  guarantee** (truthful Known-Unknowns route to WS-PFV-001-lineage physical/specialist validation); five-way distinction
+  preserved (recognition ≠ qualification ≠ activation ≠ cross-domain evaluation ≠ physical validation); future-domain
+  extensibility without hardcoded composition authority; **no implementation architecture / pipeline committed**.
+  **Non-effects:** D4 stays REGISTERED (future gate) / NOT AUTHORIZED with unchanged sequencing (≥2 activated domains);
+  NO domain registration/activation; NOT a prerequisite expansion (adds no blocker to and does not delay the Phase-9
+  next-domain decision or Mechanical P9-QS); CF-6 / CF-2 / `path_n_questions` coupling / NMF-1 / FU-1 unchanged;
+  `activated_domains() == ['electronics_electrical']`; first new-domain activation remains BLOCKED. **The next Owner
+  gate is unchanged: the Phase-9 next-domain selection decision.** Authoritative ONLY if/when this exact candidate is
+  merged + post-merge verified. Next required gate: Mandatory Grill on this exact candidate.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
