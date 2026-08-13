@@ -8821,3 +8821,71 @@ CF-5 OPEN; CF-6 OPEN (facets (i)–(iv) discharged only); CF-2 OPEN; D4 SEPARATE
 obligation binds before any pack-schema/provenance work capable of changing the recognized-registry set**; Phase 10 NOT
 AUTHORIZED; PSRR NOT EXECUTED; deployment/production NOT AUTHORIZED. Append-only; prior history not rewritten. This entry
 authorizes no push, PR, merge beyond this candidate, no domain registration/activation, and no D4/D8/ODR change.
+
+---
+
+## CF5-F004 — Hardcoded Non-Activated Priority Fallback — FORMAL CLOSURE — governance-only CLOSURE CANDIDATE — CF5-F004 CLOSED over the authoritative runtime; CF-3 DISCHARGED; D-GMPR-01-D-D3 tie-break coupling DISCHARGED; CF-5 / CF-6 / CF-2 NOT closed; NO domain activated
+
+**Gate.** Governance-only formal post-merge disposition of **CF5-F004** under the authoritative corrective contract
+(PR #462, Owner decisions D-CF5-F004-01) and the merged independent-validation record (PR #461), on authoritative base
+`80e5d78dd4e1b2128ba84fa24726fa9b89ea1a75` (PR #463 merge; freshly fetched; 0 newer); boot OK; `activated_domains() ==
+['electronics_electrical']`. ZERO runtime / test / Web / CLI / domain / registry / activation / schema / persistence /
+`OWNER_DECISION_REGISTER.md` diff this gate (fulfillment of D-CF5-F004-01 is recorded here per the F001/F002 closure
+convention; no ODR row change is mechanically required).
+
+**Implementation of record.** PR #463 → tip `80e5d78d` — a two-parent SHA-preserving merge of `0e4312e5` (contract tip) +
+the Grill-passed implementation candidate `3f5f54f890df9a53db5e3212401aeda35da49b0e`; **merge tree
+`25ca8a51b6709f5fab6c29e80aa1692185d409c5` == implementation-candidate tree (diff = 0 lines)**. Lineage: Mandatory Grill
+PASS WITH NON-BLOCKING OBSERVATIONS (blocking NONE) → independent external exact-candidate review **ACCEPT** (with the
+disclosed M5 test strengthening and D2 comparator widening under review) → Owner exact-candidate acceptance (Owner
+authored + merged PR #463 of the exact SHA) → SHA-preserving merge → **post-merge verification PASS re-run in THIS gate**:
+boot OK; full governed suite **2442 passed / 3 skipped / 1 xfailed / 0 failed**; focused **14/14**.
+
+**Retrospective RED-evidence narrative correction (non-destructive; narrative only).** The independent implementation
+reviewer mechanically measured the FROZEN focused test file against the clean parent as **9 failed / 5 passed** — not the
+previously recorded narrative "8 failed / 6 passed". Both numbers are honest measurements of different states: the 8/6
+figure was captured BEFORE the in-gate M5 strengthening (the frozen file's Web-dispatch test gained a parent-failing
+honest-precondition assert), and R6's frozen form also carries an arm-A expectation that fails on the parent.
+**Re-verified mechanically in THIS gate: the frozen test file on the clean parent `0e4312e5` = 9 failed / 5 passed.**
+Earlier records are preserved unchanged as historical evidence; this correction is recorded here and in the current-state
+owners only. **This correction does NOT change implementation correctness, does NOT change the candidate identity
+(`3f5f54f8…` / tree `25ca8a51…`), does NOT require reimplementation, and does NOT alter the independent ACCEPT verdict.**
+
+**Closure verification (contract §8 criteria all hold; carried evidence).** Authoritative behavior: registry-derived
+zero-activated candidate membership (no hardcoded membership gate); the bounded legacy precedence compatibility layer
+(`medical_device > electronics_electrical > mechanical > software`) applying ONLY among the existing four legacy domains;
+sole new registered top scorer → truthful deterministic `SINGLE`; unresolved zero-activated tie →
+`UNRESOLVED_NON_ACTIVATED_TIE` with the COMPLETE canonical candidate set, deterministic ordering/reason, no arbitrary
+winner, and NO activation requirement; P9-E2 `AMBIGUOUS_TIE` remains activated-only and unchanged; `MULTI_DOMAIN_NEEDS_D4`
+NOT reused (rationale recorded); `infer_domain` compatibility unchanged / fail-loud for richer kinds; Web and CLI consumer
+changes bounded to the existing fail-closed dispatch surfaces. Carried implementation evidence: mutations **7/7 CAUGHT**;
+**D1 real-registry differential = ZERO deltas** (OD2 lock incl. `/start` guidance flavor); **D2 simulated-registry
+differential = only categorized F004 arm-A/arm-B corrections, 0 unexplained**; full suite 2442/3/1/0 pre- and post-merge.
+**Disposition: CF5-F004 = FORMALLY CLOSED over the authoritative runtime** (authoritative if/when this closure candidate
+is merged and post-merge verified), tied to the PR #463 authoritative implementation.
+
+**CF-3 discharge (per OD3).** **CF-3 — the P9-E2-R carry-forward obligation on the non-activated priority fallback inside
+`classify_domain` ("MANDATORY to resolve BEFORE first Nth-domain registration/activation that could exercise an
+omitted-pack fallthrough") — is DISCHARGED / RESOLVED by this closure**: the omitted-pack fallthrough and
+silent-displacement arms are corrected in the authoritative runtime, exactly the surface CF-3 registered. CF-3 and F004
+remain distinct historical records; both close together here, at F004 formal closure, exactly as OD3 requires.
+
+**D-GMPR-01-D-D3 coupling discharge (precise).** The **hard-coded tie-break coupling** of the Pre-Phase-9 Core
+Domain-Neutrality gate (the CF5-F004/CF-3 item) is **DISCHARGED**. With the `web/app.py` admission portion (F002), the
+`engine/safety_signal.py` coupling (F001), and this tie-break coupling all discharged, the remaining D-GMPR-01-D-D3
+coupling — `engine/path_n_questions.py` electronics-owned content ownership at activation time — **remains OPEN and is NOT
+discharged here**; no other D-GMPR obligation is touched.
+
+**Boundary / status after this entry (no over-closure).** **CF5-F001 / CF5-F002 = FORMALLY CLOSED; CF5-F003 = CLOSED;
+CF5-F004 = FORMALLY CLOSED (conditional on this candidate's own merge + post-merge verification); CF-3 = DISCHARGED
+(same condition).** **CF-5 remains OPEN** (its own separate formal-closure gate must still confirm audit completion
+criteria); **CF-6 remains OPEN** (facets (i)–(iv) discharged only); **CF-2 remains OPEN**; the
+`engine/path_n_questions.py` D-GMPR coupling remains OPEN; D4 SEPARATE / UNEXECUTED; D8 Owner-reserved; Phase 10 NOT
+AUTHORIZED; PSRR NOT EXECUTED; deployment/production NOT AUTHORIZED. `activated_domains() ==
+['electronics_electrical']`; **NO domain registered/activated; closing F004/CF-3 authorizes NO registration or
+activation; first new-domain activation remains BLOCKED** behind remaining CF-6, CF-2, CF-5 completion, per-domain P9-QS
+qualification, the open D-GMPR coupling, D8 (if IoT), and explicit Owner activation authorization; OD1's
+before-any-registry-set-changing-work binding is SATISFIED by this closure for F004 (the remediation is complete) while
+pack-schema/provenance work itself remains separately ungoverned-here and unauthorized. Append-only; prior history not
+rewritten. This entry authorizes no push, PR, merge beyond this candidate, no runtime/test change, no domain activation,
+no D4/D8, and no CF-5 / CF-6 / CF-2 closure. **Next required gate: Mandatory Grill on this exact closure candidate.**

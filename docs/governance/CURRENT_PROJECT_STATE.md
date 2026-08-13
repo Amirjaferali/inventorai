@@ -1564,6 +1564,16 @@ AUTHORIZED / NOT STARTED.***
   suite 2442/3/1/0; ZERO ODR diff. IMPLEMENTATION CANDIDATE ONLY — Grill → independent review → Owner acceptance →
   publication → PR → verification still required; CF5-F004 / CF-3 NOT closed (OD3); first new-domain activation remains
   BLOCKED (OD1 binds earlier).
+  **CF5-F004 implementation MERGED and post-merge verified; FORMAL CLOSURE CANDIDATE recorded.** PR #463 → tip
+  `80e5d78d` (SHA-preserving merge of accepted candidate `3f5f54f8`; merge tree == candidate tree; post-merge re-verified
+  this gate: suite 2442/3/1/0, focused 14/14, boot OK). **CF5-F004 = FORMALLY CLOSED over the authoritative runtime;
+  CF-3 = DISCHARGED/RESOLVED; D-GMPR-01-D-D3 hard-coded tie-break coupling = DISCHARGED** (per OD3; each conditional on
+  the closure candidate's own merge + verification; the `path_n_questions.py` D-GMPR coupling remains OPEN).
+  **Retrospective RED-narrative correction (non-destructive):** frozen focused file = 9 failed / 5 passed on the clean
+  parent (mechanically re-verified); earlier 8/6 narrative measured the pre-M5-strengthening file; no change to
+  implementation correctness, candidate identity, or the ACCEPT verdict. **No over-closure: CF-5 / CF-6 / CF-2 remain
+  OPEN; closing F004/CF-3 authorizes NO registration/activation; first new-domain activation remains BLOCKED; D4/D8/
+  Phase 10/PSRR/deployment unchanged.**
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
