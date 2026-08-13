@@ -1622,6 +1622,26 @@ AUTHORIZED / NOT STARTED.***
   not authorize its own implementation — every future increment needs separate explicit Owner authorization.
   Authoritative ONLY if/when this exact candidate is merged + post-merge verified. Next required gate: Mandatory Grill
   on this exact candidate.
+  **P9-MECH-QC MERGED (PR #467, tip `90b1b00f0bd384911735a55340ee15829a77bbad`; merge tree == candidate tree) →
+  AUTHORITATIVE; `mechanical` SELECTED (D-P9-MECH-01). OD-M2 = RESOLVED (`D-P9-MECH-02`, Option B-hardened,
+  Mechanical-specific) and the P9-MECH-I1 increment CONTRACT CANDIDATE recorded** (canonical record:
+  `P9_MECH_I1_TRUTHFUL_CAPABILITY_COVERAGE_DECLARATION_CONTRACT.md`; OD-M2 recorded inside the contract gate — no
+  standalone gate). OD-M2 substance: no safety-cue family required for qualification PROVIDED declarations state
+  safety-signal derivation NOT COVERED, qualification records mark the absent family an ACTIVATION BLOCKER (no
+  unannotated "QUALIFIED" claim), and a governed Mechanical family (F001 seam; provenance-tagged vocabulary; focused/
+  negative/mutation tests; electronics non-degradation) is complete, merged, and verified BEFORE any Owner activation
+  authorization for `mechanical`; Mechanical-only; nothing else modified/closed. **P9-MECH-I1 = smallest coherent
+  first increment: the truthful declaration foundation** — Mechanical capability contract + coverage declaration as
+  one additive pack-metadata artifact (electronics-parity shape; concept-level claims only; mandatory NOT-COVERED
+  list incl. the OD-M2 statement; provenance-tagged; §5-I1 loader-safety mechanically verified) + focused tests
+  (parent RED proof, GREEN pins, negative tests, mutations m1–m6, classification-corpus byte-identity differentials,
+  full suite). Deferred: rule nuances; signal-quality/AB-006 + dormant-`weight` disposition; boundary tests; question
+  sufficiency; label; safety family (pre-activation gate). **Implementation NOT authorized by the contract** —
+  separate Owner authorization required. Mechanical NOT qualified / NOT activated; registry set unchanged; CF-6 /
+  CF-2 / D-GMPR coupling / NMF-1 / FU-1 / D4 / D8 / Phase 10 / PSRR / deployment untouched; `activated_domains() ==
+  ['electronics_electrical']`; first new-domain activation remains BLOCKED (for `mechanical` incl. OD-M2 clause 3).
+  Authoritative ONLY if/when this exact candidate is merged + post-merge verified. Next required gate: Mandatory
+  Grill on this exact candidate.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
