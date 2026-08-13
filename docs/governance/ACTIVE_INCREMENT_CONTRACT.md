@@ -41,7 +41,24 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — CF5-F002 / CF-6 BOUNDED CORRECTIVE IMPLEMENTATION CANDIDATE (amended contract §14); NO domain activated;
+**Status (current — CF5-F002 FORMAL CLOSURE CANDIDATE; governance-only; CF-6 facets (i)–(iv) discharged; CF-6 / CF-2 / CF-5 NOT
+closed; NO domain activated):** the CF5-F002/CF-6 bounded corrective implementation is **MERGED and post-merge verified** —
+PR #455 → authoritative tip `9683f64b8467705f3bb1715c4b86b7a14a96f397`, a SHA-preserving two-parent merge of `2861f548` + the
+Grill-passed, independently-reviewed (ACCEPT WITH NON-BLOCKING OBSERVATIONS), Owner-accepted exact candidate
+`34103a2600200d0cc671510bd494739a107f929d`; merge tree `88aaba3a` == candidate tree; post-merge full suite 2415 passed / 3
+skipped / 1 xfailed / 0 failed; boot OK; `activated_domains() == ['electronics_electrical']`. All contract §11 closure criteria
+verified mechanically (see the roadmap CLOSURE entry) → **this candidate records CF5-F002 = FORMALLY CLOSED over the
+authoritative runtime** (authoritative if/when this closure candidate is merged and post-merge verified). CF-6 facets (i)–(iv)
+discharged; remaining CF-6 (general Web/CLI pre-classifier consistency beyond `/start`; legacy fixed-domain ILT-002 routes) and
+CF-2 (all non-`/start`-flow public copy; localization of the generalized copy) remain OPEN and separately gated. Follow-ups
+registered once: FU-1 empty-activation-branch defensive test (CF-5 lane); FU-2 human-quality/localized non-electronics labels
+(CF-2/Arabic lane). Governance-only: ZERO runtime / test / Web / CLI / domain / activation / schema / persistence / ODR diff.
+No push / PR / merge / activation / D4 / D8 / CF-6 / CF-2 / CF-5 closure is authorized by this candidate. Next required gate:
+**Mandatory Grill on this exact closure candidate** → independent external exact-candidate review → Owner acceptance →
+SHA-preserving publication → PR → pre/post-merge verification.
+
+**Immediately prior (CF5-F002/CF-6 bounded corrective implementation — MERGED via PR #455; retained as history):**
+**Status (prior — CF5-F002 / CF-6 BOUNDED CORRECTIVE IMPLEMENTATION CANDIDATE (amended contract §14); NO domain activated;
 F002 / CF-6 / CF-2 / CF-5 NOT closed):** the bounded CF5-F002/CF-6 **implementation** was executed fresh from the authoritative
 parent `2861f5488aac438648af5f2a06d113d0b1720858` (PR #454 made Amendment 01 authoritative; 0 newer) against the amended §14.1
 allowlist and the §4 A–G + §14.2 U1–U5 acceptance matrix. Changed paths: `web/app.py` (activation-set-derived `/start` admission:

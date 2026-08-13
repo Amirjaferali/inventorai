@@ -1484,6 +1484,16 @@ AUTHORIZED / NOT STARTED.***
   review → Owner acceptance → SHA-preserving publication → PR → pre/post-merge verification still required; CF5-F002 / CF-6 / CF-2 /
   CF-5 NOT closed; `activated_domains() == ['electronics_electrical']`; NO domain activated; first new-domain activation remains
   BLOCKED.**
+  **CF5-F002 implementation MERGED and post-merge verified; FORMAL CLOSURE CANDIDATE recorded.** PR #455 → tip `9683f64b`
+  (SHA-preserving merge of the Grill-passed, independently-reviewed, Owner-accepted exact candidate `34103a26`; merge tree ==
+  candidate tree; post-merge suite 2415/3/1/0; boot OK). All contract §11 criteria verified → **CF5-F002 = FORMALLY CLOSED over
+  the authoritative runtime** (authoritative if/when the closure candidate is merged and post-merge verified). CF-6 facets
+  (i)–(iv) discharged; remaining CF-6 (Web/CLI pre-classifier consistency beyond `/start`; legacy ILT-002 fixed-domain routes)
+  and CF-2 (non-`/start` public copy; generalized-copy localization) remain OPEN and separately gated; CF-5 remains OPEN.
+  Follow-ups registered once: FU-1 empty-activation defensive test (CF-5 lane); FU-2 non-electronics label quality/localization
+  (CF-2/Arabic lane). `activated_domains() == ['electronics_electrical']`; NO domain activated; first new-domain activation
+  remains BLOCKED behind the remaining pre-trigger prerequisites (CF5-F001, CF5-F004, remaining CF-6, CF-2, CF-3, per-domain
+  P9-QS, D8 if IoT, explicit Owner activation authorization).
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation

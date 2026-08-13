@@ -8349,3 +8349,74 @@ PENDING / NOT closed; D4 SEPARATE / UNEXECUTED; D8 Owner-reserved; `activated_do
 selected/registered/activated; first new-domain activation remains BLOCKED;** Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED;
 deployment/production = NOT AUTHORIZED. Append-only; prior history not rewritten. This entry authorizes no push, PR, merge,
 activation, D4, D8, ODR change, or closure beyond this candidate.
+
+---
+
+## CF5-F002 — Web `/start` Multi-Domain Admission — FORMAL CLOSURE — governance-only CLOSURE CANDIDATE — CF5-F002 CLOSED over the authoritative runtime; CF-6 facets (i)–(iv) discharged; CF-6 / CF-2 / CF-5 NOT closed; NO domain activated
+
+**Gate.** Governance-only formal post-merge disposition of **CF5-F002** under the authoritative corrective contract
+(`docs/governance/CF5_F002_CF6_WEB_ADMISSION_CORRECTIVE_CONTRACT.md` + Amendment 01 §14) on authoritative base
+`9683f64b8467705f3bb1715c4b86b7a14a96f397` (PR #455 merge; freshly fetched; 0 newer); boot OK; `activated_domains() ==
+['electronics_electrical']`. ZERO runtime / test / Web / CLI / domain / Registry / activation / schema / persistence / API /
+guardrail / `OWNER_DECISION_REGISTER.md` diff this gate.
+
+**Implementation of record.** PR #455 → tip `9683f64b` — a two-parent SHA-preserving merge of `2861f548` (Amendment 01 tip) +
+the Grill-passed implementation candidate `34103a2600200d0cc671510bd494739a107f929d`; **merge tree
+`88aaba3a03ec01720b35cd56b21cbb8e2d641a87` == implementation-candidate tree (diff = 0 lines)**. Lineage: Mandatory Grill **PASS
+WITH NON-BLOCKING OBSERVATIONS (blocking: NONE)** → Independent External Review **ACCEPT WITH NON-BLOCKING OBSERVATIONS**
+(recorded in the Owner-authored PR #455 of the exact candidate SHA) → Owner exact-candidate acceptance (Owner authored + merged
+PR #455 naming the exact SHA/parent/tree) → SHA-preserving merge → **post-merge verification PASS on `9683f64b`** (boot OK;
+`activated_domains() == ['electronics_electrical']`; full governed suite **2415 passed / 3 skipped / 1 xfailed / 0 failed**).
+Prior artifacts `ce4fc39c…`, `4f859c62…`, `59e87acc…` remain Owner-declared INVALID NON-EVIDENCE — none is an ancestor;
+preserved immutable, never reused.
+
+**Mechanical §11 closure verification (ALL criteria hold).** D1/D2/D3 implemented exactly (§4 A–G + §14.2 U1–U5 GREEN, 34/34,
+real Flask `/start` + rendered UI); electronics-only behavior preserved (§4.A/U4 — differential sweep: ALL 66 electronics-only
+cases outcome-, marker- and control-identical to the pre-implementation parent; 17 backward-compat pins pass on BOTH sides);
+activation-set broadening correct (§4.B/D — user-complete D1 confirm + D2 choose-then-confirm flows); Electronics-absence
+correct (§4.C — no special case, no `DomainNotActivatedError`/500); no cross-domain session mislabel (§4.F); no hidden fallback
+under `NONE` multi-activation (§4.B/C); activated-domain choices derive solely from the canonical activation set
+(recognized-but-not-activated never offered/admitted); public admission messaging truthful (§4.E — byte-identical historical
+copy under `['electronics_electrical']`); CF-6 overlap dispositioned per §5 (below; CF-6 NOT auto-closed); §7 stale comments
+corrected; RED r1–r6 reproduced on the clean parent; mutation probes m1–m12 (+ supplementary m11b) 13/13 CAUGHT with
+byte-restoration; differential sweep 396 cases / 0 unexplained; full suite green pre- and post-merge; Grill PASS; independent
+external review ACCEPT; Owner acceptance; SHA-preserving merge; post-merge verification PASS.
+**Disposition: CF5-F002 = FORMALLY CLOSED over the authoritative runtime.** The mandatory pre-trigger prerequisite that the
+`/start` admission surface be activation-set-derived BEFORE any activation gate makes `activated_domains() !=
+['electronics_electrical']` is SATISFIED for this surface.
+
+**CF-6 facet disposition (contract §5 — exact statement required at closure).** **Discharged by PR #455:** (i) the
+pre-classifier / strong-unsupported interaction insofar as it suppresses an ACTIVATED domain (activation-aware vocabulary
+families; probes r4/m7); (ii) no hidden Electronics admission of a non-electronics classification (r2; §4.F); (iii) no
+`AMBIGUOUS_TIE` bypass (fail-closed under 2- and 3-way activated ties; m8); (iv) no activated-domain suppression by stale
+unsupported vocabulary (r4; §4.B). **Remaining OPEN (CF-6 NOT closed; audit §13 governs):** the general Web/CLI pre-classifier
+consistency audit beyond the `/start` admission surface — including the CLI pre-classifier path and the legacy fixed-domain
+ILT-002 routes (which retain governed hardcoded electronics literals outside this surface) — and any other CF-6 scope not on
+this admission surface. CF-6 closes only via its own later governed gate confirming its full stated scope.
+
+**CF-2 residual obligations (contract §6 — exact statement required at closure).** Discharged here: ONLY this admission flow's
+copy (activation-derived, truthful, byte-identical under electronics-only). **Remaining OPEN (CF-2 NOT closed):** public-message
+truthfulness on every other surface — CLI copy; legacy ILT-002 route copy; templates/pages outside the `/start` admission flow
+that assert or imply electronics-only support; localization of the generalized admission copy (the truthful non-electronics-only
+copy is currently English-only; Arabic strings exist only for the electronics-only state — within the accepted narrow-Arabic
+limitation until CF-2's own gate); and any other public "electronics only" assertion. CF-2 remains trigger-bound and separate.
+
+**Non-blocking observations carried forward (registered ONCE; from the Mandatory Grill and the independent external review).**
+**FU-1** — add a defensive test for the (documented-unreachable) empty-activation-set refusal branch (test-hardening follow-up;
+CF-5 lane). **FU-2** — human-quality and localized presentation labels for non-electronics activated domains (labels are
+currently deterministic English humanizations of the domain id; presentation-only; user-visible only if/when the activation set
+broadens; CF-2 / Arabic-RTL lane). Recorded as history, no follow-up required: the reviewed-and-accepted bounded reconciliation
+of three existing Web-admission tie-test assertions (fail-closed semantics unchanged), and the supplementary template mutation
+probe m11b (strengthening beyond the contracted set).
+
+**Boundary / status after this entry.** **CF5-F002 = FORMALLY CLOSED** (authoritative if/when this closure candidate is merged
+and post-merge verified). **CF5-F003 = CLOSED; CF5-F001 / CF5-F004 = OPEN C; CF-5 = OPEN (F002 closure does NOT close CF-5);
+CF-6 = OPEN (facets (i)–(iv) discharged only); CF-2 = OPEN; CF-3 registered; D4 SEPARATE / UNEXECUTED; D8 Owner-reserved.**
+The bounded Web-admission portion of the Pre-Phase-9 Core Domain-Neutrality gate **D-GMPR-01-D-D3** is satisfied; its other
+couplings (`engine/safety_signal.py` = CF5-F001; `engine/path_n_questions.py`; hard-coded tie-break = CF5-F004/CF-3) remain
+OPEN and are NOT discharged. `activated_domains() == ['electronics_electrical']`; **NO domain selected/registered/activated;
+first new-domain activation remains BLOCKED** behind the remaining pre-trigger prerequisites (CF5-F001, CF5-F004, remaining
+CF-6, CF-2, CF-3, per-domain P9-QS qualification, D8 if IoT, and explicit Owner activation authorization). Phase 10 = NOT
+AUTHORIZED; PSRR = NOT EXECUTED; deployment/production = NOT AUTHORIZED. Append-only; prior history not rewritten. This entry
+authorizes no push, PR, merge beyond this candidate, no runtime/test change, no domain activation, no D4/D8, no ODR change,
+and no CF-6 / CF-2 / CF-5 closure.
