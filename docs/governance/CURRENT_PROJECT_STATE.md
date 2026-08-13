@@ -1494,6 +1494,19 @@ AUTHORIZED / NOT STARTED.***
   (CF-2/Arabic lane). `activated_domains() == ['electronics_electrical']`; NO domain activated; first new-domain activation
   remains BLOCKED behind the remaining pre-trigger prerequisites (CF5-F001, CF5-F004, remaining CF-6, CF-2, CF-3, per-domain
   P9-QS, D8 if IoT, explicit Owner activation authorization).
+  **CF5-F001 INDEPENDENTLY VALIDATED (record candidate).** Independent validation (separate session) returned **ACCEPT WITH
+  NON-BLOCKING OBSERVATIONS** (NB-R1 electronics-only live-vs-cold-load detection divergence via the `engine/safety_signal.py:272`
+  missing-domain fallback — preserved as a mandatory corrective-contract disposition item; NB-R2 equivalent-trigger binding;
+  NB-R3 cues legitimately electronics-owned, defect = placement/exposure/no seam; NB-R4 legacy electronics cold-load after
+  hypothetical electronics deactivation). **CF5-F001 = OPEN C — INDEPENDENTLY VALIDATED**; no presently reachable
+  non-electronics manifestation; multi-domain defect latent Class C; remediation NOT required now; the bounded pre-trigger
+  corrective prerequisite remains unless explicitly re-dispositioned by a governed, recorded Owner decision (which cannot
+  silently waive the activation blocker or CF-5 completion). Binding trigger: before the first point a non-electronics-domain
+  session can be produced by a production surface and reach the safety-signal derivation (activation-set broadening = current
+  enabler; import/write/migration/continuation/reconstruction = equivalent future enablers; registration alone and empty
+  activation are NOT triggers). Architecture selection OPEN (frozen only in the corrective-contract gate). FU-1 remains a
+  separate CF-5-lane follow-up. Canonical record: `CF5_F001_SAFETY_SIGNAL_INDEPENDENT_VALIDATION_RECORD.md`. Next gate:
+  Mandatory Grill on that exact candidate; then the bounded CF5-F001 corrective contract (separately governed).
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
