@@ -41,7 +41,32 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — CF5-F002 FORMAL CLOSURE CANDIDATE; governance-only; CF-6 facets (i)–(iv) discharged; CF-6 / CF-2 / CF-5 NOT
+**Status (current — CF5-F001 INDEPENDENT VALIDATION RECORD CANDIDATE; governance-only; validation only, no remediation; NO
+domain activated):** the completed CF5-F001 independent validation (genuinely separate session; verdict **ACCEPT WITH
+NON-BLOCKING OBSERVATIONS**, NB-R1…NB-R4, blocking NONE) is recorded by a governance-only candidate on authoritative base
+`2daf5c70d8fd86a3b63001fce675eeac252495ed` (PR #456 merge; 0 newer). Canonical record:
+`docs/governance/CF5_F001_SAFETY_SIGNAL_INDEPENDENT_VALIDATION_RECORD.md`. **CF5-F001 = OPEN C — INDEPENDENTLY VALIDATED**:
+residual shared-core electronics coupling in `engine/safety_signal.py` (`_MVP_DOMAIN`; electronics-gated
+`_has_electrical_context`; shared-core electronics context/cue families; no per-domain seam; the `:272` missing-domain
+fallback as a contract-time examination item); the corrected D3-A history is NOT reopened. No presently reachable
+non-electronics manifestation (multi-domain defect latent Class C); **NB-R1** (presently reachable electronics-only
+live-vs-cold-load detection divergence via the `:272` fallback) preserved as a MANDATORY corrective-contract disposition
+item, not overturning Class C. Binding trigger (precision-corrected): before the first point a non-electronics-domain
+session can be produced by a production surface and reach the safety-signal derivation — current enabler = activation-set
+broadening; equivalent future enablers per NB-R2; registration alone and empty activation are NOT triggers (the trigger is
+deliberately NOT `activated_domains() != ['electronics_electrical']`). Architecture selection OPEN (PARAMETERIZE = leading
+candidate only; frozen in the later corrective-contract gate); backward compatibility = behavioral/differential electronics
+parity + the WS2/Increment-6 frozen surfaces; NB-R3/NB-R4 preserved; CF-2 / CF-3(F004) / CF-6 / CAP-13 / Path-N / Domain
+Packs / WS2 / anti-duplication fenced; FU-1 outside F001 (registered once, CF-5 lane); Owner re-disposition only via an
+explicit governed, recorded Owner decision that cannot silently waive the pre-trigger blocker or CF-5 completion.
+Governance-only: ZERO runtime / test / Web / CLI / domain / activation / schema / persistence / ODR diff. **Remediation NOT
+required now; the bounded pre-trigger corrective prerequisite remains; first new-domain activation remains BLOCKED.** No
+push / PR / merge / corrective contract / remediation / activation / D4 / D8 is authorized by this candidate. Next required
+gate: **Mandatory Grill on this exact validation-record candidate**; after authoritative, the bounded CF5-F001 corrective
+contract is the subsequent separately governed gate.
+
+**Immediately prior (CF5-F002 formal closure — MERGED via PR #456; retained as history):**
+**Status (prior — CF5-F002 FORMAL CLOSURE CANDIDATE; governance-only; CF-6 facets (i)–(iv) discharged; CF-6 / CF-2 / CF-5 NOT
 closed; NO domain activated):** the CF5-F002/CF-6 bounded corrective implementation is **MERGED and post-merge verified** —
 PR #455 → authoritative tip `9683f64b8467705f3bb1715c4b86b7a14a96f397`, a SHA-preserving two-parent merge of `2861f548` + the
 Grill-passed, independently-reviewed (ACCEPT WITH NON-BLOCKING OBSERVATIONS), Owner-accepted exact candidate

@@ -8420,3 +8420,63 @@ CF-6, CF-2, CF-3, per-domain P9-QS qualification, D8 if IoT, and explicit Owner 
 AUTHORIZED; PSRR = NOT EXECUTED; deployment/production = NOT AUTHORIZED. Append-only; prior history not rewritten. This entry
 authorizes no push, PR, merge beyond this candidate, no runtime/test change, no domain activation, no D4/D8, no ODR change,
 and no CF-6 / CF-2 / CF-5 closure.
+
+---
+
+## CF5-F001 — Shared-Core Electronics-Specific Safety Signal — INDEPENDENT VALIDATION — governance-only CANDIDATE — classification C retained on evidence; validation only, no remediation; NO domain activated
+
+**Gate.** Governance/documentation-only **INDEPENDENT VALIDATION RECORD candidate** for CF-5 finding **CF5-F001**, recording the
+completed independent validation — verdict **ACCEPT WITH NON-BLOCKING OBSERVATIONS (NB-R1…NB-R4; blocking: NONE)** — performed in
+a genuinely separate session (Lean §5 independence) over the executing-agent disposition analysis and its two Mandatory Grills
+(Grill #1 FAIL — corrected; corrected-replacement Grill #2 PASS WITH NON-BLOCKING OBSERVATIONS). Authoritative base
+`2daf5c70d8fd86a3b63001fce675eeac252495ed` (PR #456 merge; freshly fetched; 0 newer); boot OK; `activated_domains() ==
+['electronics_electrical']`. Canonical record: `docs/governance/CF5_F001_SAFETY_SIGNAL_INDEPENDENT_VALIDATION_RECORD.md`.
+ZERO runtime / test / Web / CLI / domain / Registry / activation / schema / persistence / API / guardrail /
+`OWNER_DECISION_REGISTER.md` diff this gate.
+
+**Validated finding (exact scope).** `engine/safety_signal.py` residual shared-core electronics coupling: `_MVP_DOMAIN`
+constant (`:55`); electronics-gated mandatory context check `_has_electrical_context` (`:206-209`) with `_ELECTRICAL_TERMS`
+(`:115-120`) as the only non-electronics context; electronics context/cue families in shared core (`:60-112`) with NO
+per-domain seam; the `:272` missing-domain `domain_context` fallback held as an explicit contract-time examination item.
+**Already-corrected D3-A history (the unconditional electronics `domain_context` force-mapping, fixed by the merged
+D-GMPR-01-D-D3 implementation) must NOT be reopened.** **CF5-F001 = OPEN C — INDEPENDENTLY VALIDATED.**
+
+**Present state (precision-corrected).** No presently reachable non-electronics F001 manifestation exists (verified across Web
+`/start` post-F002, ILT-002 routes, CLI, P4-2 reconstruction, `domain`/`domain_signal` fallback, deliverable routes, evidence
+scripts); **F001's multi-domain defect remains latent Class C.** **NB-R1** is a presently reachable **electronics-only
+live-vs-cold-load behavioral inconsistency**: durable cold-load restores no `domain`/`domain_signal`, the `:272` fallback
+executes, and safety-signal detection can change after reload. NB-R1 does NOT overturn Class C and does NOT require immediate
+remediation, but is preserved as a MANDATORY explicit corrective-contract disposition item.
+
+**Trigger (binding; precision-corrected).** The F001 pre-trigger obligation applies **before the first point where a session
+whose domain is a non-electronics specialist domain can be produced by a production surface and can reach the safety-signal
+derivation**. Current concrete enabler: broadening canonical activation to admit a non-electronics specialist domain.
+Equivalent future enablers (NB-R2): any import/write/migration/continuation/reconstruction path or other production surface
+capable of minting such a session (the reconstruction `setattr` seam is the existing concrete example; validate-on-load is a
+contract consideration). **Registration alone: NOT a trigger. Empty activation: NOT a trigger** — the trigger is deliberately
+NOT encoded as `activated_domains() != ['electronics_electrical']`.
+
+**Ownership / architecture / compatibility.** Canonical owners consumed, never duplicated (activation §5-I2; recognition
+§5-I1; Domain Packs — no safety-cue schema exists). **NB-R3:** electronics cues are legitimately electronics-owned; the defect
+is placement / unconditional exposure / missing per-domain seam. **Architecture selection remains OPEN** (PARAMETERIZE =
+analysis-level leading candidate only; frozen only in the later corrective-contract gate, where the silent-absence-vs-truthful-
+note Owner question is resolved). Backward compatibility: WS2 + Increment-6 freeze the public API, `SafetySignal` fields,
+output shape, provenance/validation constants, excerpt behavior, and the `_session_meta.inventor_stated_safety_signals` JSON
+location; detection internals are change-controlled, not immutable; the binding invariant is behavioral/differential
+electronics parity. **NB-R4:** legacy electronics cold-load after a hypothetical electronics deactivation must be
+dispositioned by the corrective contract.
+
+**Fences.** CF-2 / CF-3(F004) / CF-6 / CAP-13 / Path-N / Domain Packs / WS2 / Phase-9 anti-duplication all fenced per the
+record §10 (the CLI's §5-I2-bypassing electronics literal belongs to the CF-6 remainder lane, NOT F001). **FU-1 remains
+outside F001**, registered ONCE in its existing CF-5-lane home. **Owner re-disposition boundary:** only an explicit governed
+Owner decision, recorded in ODR/governance as applicable, can re-disposition F001 — it cannot silently waive the pre-trigger
+activation blocker or the CF-5 completion requirement, and must leave a binding recorded disposition.
+
+**Boundary / status after this entry.** **CF5-F001 = OPEN C — INDEPENDENTLY VALIDATED (candidate); remediation NOT required
+now; the binding bounded pre-trigger corrective prerequisite remains unless explicitly re-dispositioned through governance;
+NO architecture chosen; NO remediation/implementation/code authorization created.** CF5-F002 = FORMALLY CLOSED; CF5-F003 =
+CLOSED; CF5-F004 = OPEN C; CF-5 = OPEN; CF-6 = OPEN (facets (i)–(iv) discharged only); CF-2 = OPEN; D4 SEPARATE / UNEXECUTED;
+D8 Owner-reserved; `activated_domains() == ['electronics_electrical']`; **first new-domain activation remains BLOCKED**;
+Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED; deployment/production = NOT AUTHORIZED. Append-only; prior history not
+rewritten. This entry authorizes no push, PR, or merge beyond this candidate, no corrective contract, no remediation, no
+domain activation, and no D4/D8/ODR change. **Next required gate: Mandatory Grill on this exact validation-record candidate.**
