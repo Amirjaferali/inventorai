@@ -190,7 +190,12 @@ def test_red_e2_10_start_real_tie_fails_closed_electronics_pair(activate):
     resp = _start_post(client, f"{_ELEC} and {_MECH}")
     assert resp.status_code == 200                          # NOT a 302 admission
     assert set(web_app.SESSION_STORE) == before             # no session created
-    assert web_app.UNSUPPORTED_DOMAIN_MESSAGE in resp.get_data(as_text=True)
+    # Fail closed via the ambiguity branch. Since CF5-F002 §4.E the refusal
+    # copy is activation-derived (truthful under a broadened activation set),
+    # so the fail-closed message is asserted through the same activation-aware
+    # seam rather than the historical electronics-only constant.
+    assert web_app._unsupported_domain_message(
+        domain_activation.activated_domains()) in resp.get_data(as_text=True)
 
 
 def test_red_e2_10b_start_real_tie_fails_closed_non_electronics_pair(activate):
@@ -206,7 +211,10 @@ def test_red_e2_10b_start_real_tie_fails_closed_non_electronics_pair(activate):
     body = resp.get_data(as_text=True)
     assert resp.status_code == 200
     assert set(web_app.SESSION_STORE) == before             # no session
-    assert web_app.UNSUPPORTED_DOMAIN_MESSAGE in body       # fail closed via ambiguity
+    # Fail closed via the ambiguity branch (CF5-F002 §4.E: activation-derived
+    # truthful refusal copy replaces the electronics-only constant here).
+    assert web_app._unsupported_domain_message(
+        domain_activation.activated_domains()) in body
     assert web_app.MECHANISM_GUIDANCE_MESSAGE not in body   # NOT the parent guidance path
 
 

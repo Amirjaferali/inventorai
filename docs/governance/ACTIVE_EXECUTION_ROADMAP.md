@@ -8276,3 +8276,76 @@ CLOSED / AUTHORITATIVE; P9-QS AUTHORITATIVE; CF-5 OPEN; CF5-F001/F004 open C; CF
 Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED; deployment/production = NOT AUTHORIZED. Append-only; prior history not rewritten. This
 entry authorizes no push, PR, merge beyond this candidate, no implementation, no domain selection/qualification/registration/
 activation, and no CF-6/CF-2/CF-3/D4/D8 execution.
+
+---
+
+## CF5-F002 / CF-6 — Web `/start` Multi-Domain Admission — BOUNDED CORRECTIVE IMPLEMENTATION CANDIDATE (amended contract §14) — NO domain activated; F002 / CF-6 / CF-2 / CF-5 NOT closed
+
+**Gate.** OWNER-AUTHORIZED bounded **implementation** of the authoritative CF5-F002/CF-6 corrective contract
+(`docs/governance/CF5_F002_CF6_WEB_ADMISSION_CORRECTIVE_CONTRACT.md`, PR #453) as amended by Amendment 01 (§14, PR #454), executed
+fresh from the authoritative parent `2861f5488aac438648af5f2a06d113d0b1720858` (PR #454 merge; freshly fetched; 0 newer); boot OK;
+`activated_domains() == ['electronics_electrical']`. Three prior implementation-session artifacts (`ce4fc39c…`, `4f859c62…`,
+and `59e87acc…`) were Owner-declared INVALID NON-EVIDENCE; none is an ancestor of this candidate, none is reused, and none
+is referenced as evidence — this candidate was created directly from the authoritative parent with every evidence artifact
+(RED, GREEN, mutations, differential sweep, full suite) regenerated fresh against it.
+
+**Implemented (amended allowlist §14.1; D1/D2/D3 EXACTLY as recorded in D-CF5-F002-01).** `web/app.py` `/start` admission surface
+generalized to consume the canonical activation set (`engine.domain_activation.activated_domains()` / `is_activated` via the
+preserved single §5-I2 gate `_admit_specialist_domain`) and the canonical classifier (`classify_domain`) as sole sources of truth:
+(1) the hardcoded consent constant is no longer read by `/start` — the admitted value is always the activation-derived,
+classified-or-chosen, explicitly confirmed `target` (`DOMAIN_CONFIRM_VALUE` survives ONLY as a legacy constant for the fixed-domain
+ILT-002 routes/tests); (2) the hardcoded `domain != "electronics_electrical"` branch is replaced by activation-set membership (D1)
+with a bounded two-step presentation seam (classify → present classifier-selected activated domain, or activated-domain chooser on
+NONE + ≥2 activated → explicit confirmation → admit); (3) the strong-unsupported vocabulary is partitioned by evidenced registry
+domain and is activation-aware — a family whose domain is ACTIVATED no longer fires (CF-6 facet), never-registered families
+(drone/solar/robotics/agriculture) always fire; (4) public admission copy is activation-derived and truthful — byte-identical
+historical copy under `['electronics_electrical']`, truthful enumeration otherwise (bounded CF-2 facet only). The one-step
+sole-activated-domain consent flow (checkbox carrying the sole activated domain) is preserved and domain-neutral (D3 + derived
+corner: NONE + exactly-one activated → that sole domain under explicit consent; Electronics-absent → no special case, no 500).
+`web/templates/index.html` generalizes the single hardcoded `domain_confirm` control (sole-domain checkbox value derived from the
+activation set; D1 present-for-confirm control; bounded D2 radio chooser rendered from ONLY the activated set). **No separate
+`domain_choice.html` template was added — the generalized `index.html` carries the D2 choice set (minimum-path, §14.1).** The
+electronics-only weak-conflict lay-corroboration path (post-PR #100 Entry-UX increment) is preserved unchanged for the governed
+electronics-only one-step flow; under a broadened activation set a recognized-but-not-activated classification is refused fail-closed
+(never offered, never admitted, never relabeled). §7 stale-comment hygiene applied (the SUBSTRINGS/`app`⊂`appliance` narrative and
+the SINGLE/NONE-only "dormant" narrative corrected in place). New focused test file
+`tests/test_cf5_f002_web_admission_multidomain.py` (34 tests). Mechanically-justified adjustments to THREE existing Web-admission
+tie tests (`tests/test_p9e2_multi_activated_tie_precedence.py` RED-E2-10/10b, `tests/test_p9e2r_result_representation.py` RED-R2):
+their load-bearing assertions (fail-closed, 200, no session, not the guidance path) are unchanged; only the incidental
+message-identity assertion (the historical electronics-only refusal constant under multi-activation doubles) now asserts the same
+fail-closed refusal through the activation-derived truthful-copy seam that contract §4.E mandates.
+
+**Evidence.** RED (§9 r1–r6): pre-fix, on the authoritative parent, 17 tests of the new file fail — the six designated RED probes
+(r1 activated-second-domain still refused; r2 wrong-electronics-session mislabel admitted; r3 no second-domain confirmation path;
+r4 stale vocabulary blocking an ACTIVATED domain; r5 Electronics-absent `DomainNotActivatedError` → HTTP 500; r6 untruthful
+"electronics only" copy) plus 11 dependent matrix tests — while all 17 electronics-only backward-compatibility pins pass on the
+parent. GREEN: post-fix the full §4 A–G matrix + §14.2 U1–U5 rendered-UI matrix pass (34/34) via the real Flask `/start` (POST
+outcomes + rendered HTML), self-restoring `_ACTIVATED_DOMAINS` doubles (real activation state asserted unchanged), persisted
+session-domain correctness, recognized-but-not-activated inadmissibility, `AMBIGUOUS_TIE` fail-closed, 3+ activated domain-neutral
+behavior, UI-language independence, and session cleanup (no `SESSION_STORE`/durable-DB pollution; per-test isolated store).
+**Mutations (§9 m1–m10 + §14.2 m11/m12, plus one supplementary template probe m11b): 13/13 CAUGHT RED**, each applied to source,
+run against the governed Web-admission test set, then byte-restored (sha256-verified) with bytecode caches cleared. **Differential
+sweep:** authoritative-parent `/start` vs implementation over 6 activation states × 11 ideas × 6 form variants = **396 cases; every
+delta categorized** (100 backward-compatible-unchanged — including ALL 66 electronics-only cases; 31 activated-second-domain
+correction; 42 strong-unsupported activation-awareness; 215 messaging truthfulness; 8 Electronics-absent graceful); **0 unexplained
+deltas**. **Full governed suite: 2415 passed / 3 skipped / 1 xfailed / 0 failed** (authoritative-parent baseline 2381/3/1 + 34 new).
+No dependency change (`requirements.txt` untouched); no engine / CLI / domain / Registry / activation / schema / persistence / API /
+guardrail / ODR diff (the frozen "web must not import the registry directly" guardrail is preserved — labels derive from the domain
+id; recognition uses the existing `engine.domain_rules.is_known_domain` seam).
+
+**CF-6 disposition (contract §5 — candidate-level; final statement belongs to the later closure gate).** Facets (i)–(iv)
+implemented by this candidate: strong-unsupported activation-awareness; no hidden Electronics admission of a non-electronics
+classification; no `AMBIGUOUS_TIE` bypass; no activated-domain suppression by stale vocabulary. Remaining CF-6 scope (general
+Web/CLI pre-classifier consistency beyond `/start` admission) stays OPEN/separate; **CF-6 is NOT closed.** **CF-2 disposition
+(§6):** only this admission flow's copy was made activation-truthful; residual CF-2 obligations (all other public copy surfaces,
+e.g. the electronics-specific index translation strings under a future broadened activation set beyond this flow, CLI copy, and any
+other "electronics only" assertions) remain OPEN/separate; **CF-2 is NOT closed.**
+
+**Boundary / status after this entry.** **CF5-F002/CF-6 bounded corrective implementation = CANDIDATE ONLY.** Still requires
+**Mandatory Grill on this exact candidate → independent external exact-candidate review → Owner exact-candidate acceptance →
+SHA-preserving publication → PR → pre-merge verification → CREATE A MERGE COMMIT → post-merge verification** before CF5-F002 may be
+dispositioned per contract §11. **CF5-F002 remains OPEN C; CF5-F003 CLOSED; CF5-F001 / CF5-F004 OPEN C; CF-5 OPEN; CF-6 / CF-2
+PENDING / NOT closed; D4 SEPARATE / UNEXECUTED; D8 Owner-reserved; `activated_domains() == ['electronics_electrical']`; NO domain
+selected/registered/activated; first new-domain activation remains BLOCKED;** Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED;
+deployment/production = NOT AUTHORIZED. Append-only; prior history not rewritten. This entry authorizes no push, PR, merge,
+activation, D4, D8, ODR change, or closure beyond this candidate.

@@ -1472,6 +1472,18 @@ AUTHORIZED / NOT STARTED.***
   NOT closed; no domain activated; `activated_domains() == ['electronics_electrical']`; first new-domain activation remains BLOCKED.**
   ZERO runtime/test/Web/CLI/domain/activation/ODR diff this gate. Next required gate: **Mandatory Grill of this amendment candidate**;
   then, once authoritative, the CF5-F002/CF-6 implementation re-runs against the amended §14.1 allowlist + §4/§14.2 matrix.
+  **CF5-F002 / CF-6 bounded corrective implementation CANDIDATE now exists** (fresh from authoritative parent `2861f548`, amended
+  allowlist §14.1): `web/app.py` `/start` derives admission from the canonical activation set + classifier (D1 present-for-confirm;
+  D2 explicit activated-domain choice on NONE + ≥2 activated; D3 no Electronics special case / no 500; activation-aware
+  strong-unsupported vocabulary; truthful activation-derived copy; §7 comment hygiene); `web/templates/index.html` generalizes the
+  consent control and carries the bounded D2 chooser (no separate template — minimum-path); NEW
+  `tests/test_cf5_f002_web_admission_multidomain.py` (34 tests) + bounded fail-closed-assertion adjustments to three existing tie
+  tests. Evidence: RED r1–r6 on the parent; GREEN 34/34; mutations 13/13 CAUGHT (m1–m12 + m11b), bytes restored; differential sweep
+  396 cases / 0 unexplained (all 66 electronics-only cases unchanged); full suite 2415 passed / 3 skipped / 1 xfailed / 0 failed;
+  ODR/engine/schema/dependency diff ZERO. **IMPLEMENTATION CANDIDATE ONLY — Mandatory Grill → independent external exact-candidate
+  review → Owner acceptance → SHA-preserving publication → PR → pre/post-merge verification still required; CF5-F002 / CF-6 / CF-2 /
+  CF-5 NOT closed; `activated_domains() == ['electronics_electrical']`; NO domain activated; first new-domain activation remains
+  BLOCKED.**
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
