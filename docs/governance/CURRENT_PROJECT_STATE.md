@@ -1545,6 +1545,16 @@ AUTHORIZED / NOT STARTED.***
   distinct, both discharge only at F004 formal closure; architecture OPEN; remediation trigger-bound; Owner questions
   (schema-work binding; precedence preserve-vs-replace; CF-3 timing) preserved for the contract gate. Canonical record:
   `CF5_F004_PRIORITY_FALLBACK_INDEPENDENT_VALIDATION_RECORD.md`. Next gate: Mandatory Grill on that exact candidate.
+  **CF5-F004 validation record MERGED (PR #461, tip `5dc50557`); CORRECTIVE CONTRACT CANDIDATE + D-CF5-F004-01
+  recorded.** Owner decisions: OD1 remediation binds before any registry-set-changing pack-schema/provenance WORK; OD2
+  legacy 4-domain precedence preserved (differential lock) + no invented winner / no silent erasure for future domains;
+  OD3 CF-3 + D-GMPR-01-D-D3 discharge only at F004 formal closure. Architecture selected: registry-derived membership +
+  bounded legacy-compatibility layer + arm-A SINGLE(sole top) + arm-B NEW fail-closed `UNRESOLVED_NON_ACTIVATED_TIE`
+  (AMBIGUOUS_TIE untouched) + bounded `/start`/CLI fail-closed dispatch; `infer_domain` unchanged-and-pinned. Evidence
+  contract: RED R1–R7, GREEN + determinism probe, mutations m1–m6, d1 ZERO deltas / d2 categorized, full suite. CONTRACT
+  CANDIDATE ONLY — implementation NOT authorized; CF5-F004/CF-3 NOT closed; first new-domain activation remains BLOCKED.
+  Canonical record: `CF5_F004_PRIORITY_FALLBACK_CORRECTIVE_CONTRACT.md`. Next gate: Mandatory Grill on that exact
+  candidate.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
