@@ -15,18 +15,46 @@
 <p>{{ t('UI_B_INDEX_003') }}</p>
 <p class="session-note">{{ t('UI_SENS_INDEX_04') }}</p>
 <p class="session-note" style="font-size:12px;color:#666">{{ t('UI_SENS_INDEX_05') }} <a href="/data-and-session">{{ t('UI_B_BASE_003') }}</a>.</p>
-<p>{{ t('UI_B_INDEX_004') }}</p>
+{# CF5-F002 (Amendment 01 §14.1): the scope copy and the consent control derive
+   from the canonical activation set (context supplied by _render_start_page).
+   Under ['electronics_electrical'] the rendered result is the historical
+   electronics page (U4 backward compatibility). #}
+<p>{% if start_is_electronics_only %}{{ t('UI_B_INDEX_004') }}{% else %}{{ start_scope_sentence }}{% endif %}</p>
 {% if error %}<p class="error">{{ error }}</p>{% endif %}
 <form method="POST" action="/start">
 <label for="idea" style="display:block;margin-bottom:6px;font-size:14px">{{ t('UI_B_INDEX_005') }}</label>
-<textarea id="idea" name="idea" rows="4" placeholder="{{ t('UI_B_INDEX_006') }}" required
-  data-draft-field="idea" data-draft-scope="__seed__" data-draft-context="seed" data-draft-context-version="v1" data-draft-account="{{ account_context }}"></textarea>
+<textarea id="idea" name="idea" rows="4" placeholder="{% if start_is_electronics_only %}{{ t('UI_B_INDEX_006') }}{% else %}{{ start_placeholder }}{% endif %}" required
+  data-draft-field="idea" data-draft-scope="__seed__" data-draft-context="seed" data-draft-context-version="v1" data-draft-account="{{ account_context }}">{% if start_carry_idea %}{{ start_carry_idea }}{% endif %}</textarea>
 <br>
-<label style="display:block;margin-top:12px;font-size:14px">
-<input type="checkbox" name="domain_confirm" value="electronics_electrical" required>
-{{ t('UI_B_INDEX_007') }}
+{% if start_choice_domains %}
+{# D2/U2: NONE + >=2 activated — explicit choice among ONLY the currently
+   activated specialist domains (recognized-but-not-activated domains are never
+   offered). The chosen domain still requires explicit confirmation. #}
+<fieldset style="margin-top:12px;border:1px solid #ccc;border-radius:4px;padding:8px 12px">
+<legend style="font-size:14px">{{ start_choice_prompt }}</legend>
+{% for d in start_choice_domains %}
+<label style="display:block;margin-top:6px;font-size:14px">
+<input type="radio" name="domain_choice" value="{{ d }}" required>
+{{ start_domain_labels[d] }}
 </label>
+{% endfor %}
+</fieldset>
+{% elif start_present_domain %}
+{# D1/U1: present the classifier-selected (or D2 chosen) ACTIVATED domain for
+   explicit confirm/decline; no manual chooser once one valid activated domain
+   is resolved. #}
+{% if start_carried_choice %}<input type="hidden" name="domain_choice" value="{{ start_carried_choice }}">{% endif %}
+<label style="display:block;margin-top:12px;font-size:14px">
+<input type="checkbox" name="domain_confirm" value="{{ start_present_domain }}" required>
+{{ start_present_confirm_label }}
+</label>
+{% elif start_sole_domain %}
+<label style="display:block;margin-top:12px;font-size:14px">
+<input type="checkbox" name="domain_confirm" value="{{ start_sole_domain }}" required>
+{% if start_sole_domain == 'electronics_electrical' %}{{ t('UI_B_INDEX_007') }}{% else %}{{ start_confirm_label }}{% endif %}
+</label>
+{% endif %}
 <button type="submit">{{ t('UI_B_INDEX_008') }}</button>
 </form>
-<p style="color:#888;font-size:13px">{{ t('UI_B_INDEX_009') }}</p>
+<p style="color:#888;font-size:13px">{% if start_is_electronics_only %}{{ t('UI_B_INDEX_009') }}{% else %}{{ start_supported_note }}{% endif %}</p>
 {% endblock %}

@@ -229,7 +229,10 @@ def test_red_r2_start_ambiguous_tie_fails_closed(activate, monkeypatch):
     # never admitted as an electronics session
     assert all(v["state"].domain == "electronics_electrical"
                for v in web_app.SESSION_STORE.values()) or not web_app.SESSION_STORE
-    assert web_app.UNSUPPORTED_DOMAIN_MESSAGE in resp.get_data(as_text=True)
+    # Fail closed (CF5-F002 §4.E: the refusal copy is activation-derived and
+    # truthful under the doubled activation set, not the electronics-only text).
+    assert web_app._unsupported_domain_message(
+        domain_activation.activated_domains()) in resp.get_data(as_text=True)
 
 
 def test_red_r10_start_multi_domain_fails_closed(monkeypatch):

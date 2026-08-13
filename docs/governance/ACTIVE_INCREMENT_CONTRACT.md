@@ -41,7 +41,30 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — CF5-F002 / CF-6 CORRECTIVE CONTRACT AMENDMENT 01 (scope re-scope) CANDIDATE; governance-only; implementation NOT
+**Status (current — CF5-F002 / CF-6 BOUNDED CORRECTIVE IMPLEMENTATION CANDIDATE (amended contract §14); NO domain activated;
+F002 / CF-6 / CF-2 / CF-5 NOT closed):** the bounded CF5-F002/CF-6 **implementation** was executed fresh from the authoritative
+parent `2861f5488aac438648af5f2a06d113d0b1720858` (PR #454 made Amendment 01 authoritative; 0 newer) against the amended §14.1
+allowlist and the §4 A–G + §14.2 U1–U5 acceptance matrix. Changed paths: `web/app.py` (activation-set-derived `/start` admission:
+D1 confirm-classifier-selected-activated-domain with a bounded two-step presentation seam; D2 explicit choice among ONLY activated
+domains on NONE + ≥2 activated; D3 no Electronics special case / no 500; activation-aware strong-unsupported vocabulary; truthful
+activation-derived copy; §7 stale-comment hygiene), `web/templates/index.html` (generalized consent control + bounded D2 chooser;
+NO separate `domain_choice.html` — minimum-path), NEW `tests/test_cf5_f002_web_admission_multidomain.py` (34 tests), and
+mechanically-justified fail-closed-assertion adjustments to three existing Web-admission tie tests (message-identity → the
+activation-derived truthful refusal seam; load-bearing fail-closed/no-session assertions unchanged). Evidence: RED r1–r6 fail on
+the parent for the validated defect reasons (incl. the Electronics-absent 500) while all 17 electronics-only backward-compat pins
+pass on the parent; GREEN 34/34; mutation probes m1–m12 (+ supplementary m11b) 13/13 CAUGHT, bytes sha256-restored; differential
+sweep parent-vs-implementation 396 cases, all deltas categorized (100 unchanged incl. ALL 66 electronics-only cases; 31
+activated-second-domain correction; 42 strong-unsupported activation-awareness; 215 messaging truthfulness; 8 Electronics-absent
+graceful), 0 unexplained; full governed suite 2415 passed / 3 skipped / 1 xfailed / 0 failed; no dependency / engine / CLI /
+domain / Registry / activation / schema / persistence / API / guardrail / ODR diff. CF-6 facets (i)–(iv) implemented at candidate
+level; CF-6 / CF-2 NOT closed; residuals recorded in the roadmap entry. **IMPLEMENTATION CANDIDATE ONLY — still requires Mandatory
+Grill on this exact candidate → independent external exact-candidate review → Owner exact-candidate acceptance → SHA-preserving
+publication → PR → pre/post-merge verification.** `activated_domains() == ['electronics_electrical']`; NO domain activated; first
+new-domain activation remains BLOCKED; no push / PR / merge / activation / D4 / D8 / ODR change / closure is authorized by this
+candidate.
+
+**Immediately prior (CF5-F002/CF-6 Amendment 01 — AUTHORITATIVE via PR #454; retained as history):**
+**Status (prior — CF5-F002 / CF-6 CORRECTIVE CONTRACT AMENDMENT 01 (scope re-scope) CANDIDATE; governance-only; implementation NOT
 started; NO domain activated):** **`CF5-F002` / `CF-6` corrective contract is AMENDED (Amendment 01, §14)** on authoritative base
 `0124ac336c654caaa6f89b44e3d55a947e6bb2c6` (PR #453 made the corrective contract authoritative; 0 newer). The prior implementation
 gate correctly **STOPPED (§2)**: the `web/app.py`-only allowlist cannot implement a user-complete D1/D2 flow — `web/templates/

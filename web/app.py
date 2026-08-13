@@ -13,7 +13,7 @@ from flask import (
     Flask, request, redirect, url_for, render_template,
     has_request_context, session as flask_session,
 )
-from engine.domain_rules import classify_domain, DomainResultKind
+from engine.domain_rules import classify_domain, DomainResultKind, is_known_domain
 from engine import domain_activation
 from engine.idea_state import (
     IdeaState, SuccessCriterion,
@@ -821,28 +821,111 @@ def _handle_criticality_action(entry, state, sid):
     return _reject()
 
 # Option B product-boundary enforcement (DOMAIN_SCOPE_OWNER_RESOLUTION_OPTION_B).
-# Current generic product-runtime activation is limited to electronics/electrical.
-# Stable, exact refusal message — does not expose the internally inferred domain.
+# Historical electronics-only refusal copy — served EXACTLY (byte-identical) while
+# `['electronics_electrical']` is the whole activation set; under any broadened
+# activation set the truthful activation-derived copy is composed instead
+# (CF5-F002 §4.E — bounded CF-2 facet only; CF-2 is NOT closed here).
 UNSUPPORTED_DOMAIN_MESSAGE = (
     "InventorAI currently supports electronics and electrical ideas only. "
     "Please describe an electronics or electrical invention."
 )
 
-# Explicit electronics/electrical confirmation at the generic product boundary
-# (ADR-001: "Domain assignment is explicit or it does not occur"). The user must
-# affirmatively declare the supported domain; consent is never inferred from the
-# idea text. The checkbox submits this exact value. This is the USER-CONSENT / UI
-# contract value; whether the confirmed domain is admitted to specialist RUNTIME is
-# decided by the canonical engine activation policy (see `_admit_specialist_domain`).
+# Explicit domain confirmation at the generic product boundary (ADR-001: "Domain
+# assignment is explicit or it does not occur"; Owner decision D-CF5-F002-01 D1).
+# The user must affirmatively confirm the domain; consent is never inferred from
+# the idea text. Since CF5-F002 the confirm control's value is DERIVED from the
+# canonical activation set / classifier (no hardcoded constant on the /start
+# path); whether the confirmed domain is admitted to specialist RUNTIME remains
+# decided solely by the canonical engine activation policy
+# (see `_admit_specialist_domain`). DOMAIN_CONFIRM_VALUE survives ONLY as the
+# historical electronics consent value for legacy consumers (ILT-002 fixed-domain
+# routes / existing tests); POST /start no longer reads it.
 DOMAIN_CONFIRM_VALUE = "electronics_electrical"
 CONFIRMATION_REQUIRED_MESSAGE = (
     "Please confirm that your idea is an electronics or electrical idea "
     "before starting."
 )
-# Bounded conflict check: explicit confirmation is the primary declaration, but
-# a clearly different *supported* internal classification is not silently
-# relabeled as electronics. These are refused; no session is created.
+# Historical bounded conflict set (electronics-only activation state). Kept for
+# legacy consumers; the /start path now derives the equivalent membership test
+# from the canonical recognition + activation seams
+# (`_is_recognized_not_activated`), which equals this constant's membership
+# under `['electronics_electrical']`.
 CONFLICTING_SUPPORTED_DOMAINS = {"mechanical", "medical_device", "software"}
+
+
+def _activated_specialist_domains():
+    """CF5-F002 (D3): the canonical activated specialist-domain set for the
+    /start admission surface — read at request time from the §5-I2 activation
+    policy (`engine.domain_activation.activated_domains()`), never cached and
+    never hardcoded, so admission behavior always derives from the activation
+    set with no Electronics special case."""
+    return domain_activation.activated_domains()
+
+
+def _domain_label(domain):
+    """Human-readable presentation label for a specialist domain, derived
+    deterministically from the domain id (domain-neutral; no fixed list; no
+    direct registry access from the web layer — the frozen architecture
+    boundary). Presentation only: labels never affect classification,
+    activation, admission, or the persisted session-domain."""
+    return domain.replace("_", " ").title()
+
+
+def _is_recognized_not_activated(domain, activated):
+    """True when ``domain`` is registry-recognized (via the canonical
+    `engine.domain_rules.is_known_domain` seam) but NOT currently activated —
+    the activation-derived generalization of the historical electronics-only
+    CONFLICTING_SUPPORTED_DOMAINS membership test (equivalent to it under
+    `['electronics_electrical']`). Recognition never grants admission (§5-I2)."""
+    return is_known_domain(domain) and domain not in set(activated)
+
+
+def _supported_domains_phrase(activated):
+    """Truthful natural-language enumeration of the activated domains."""
+    labels = [_domain_label(d) for d in activated]
+    if len(labels) == 1:
+        return labels[0]
+    return ", ".join(labels[:-1]) + " or " + labels[-1]
+
+
+def _unsupported_domain_message(activated):
+    """Activation-derived refusal copy (§4.E). Byte-identical to the historical
+    electronics-only message under `['electronics_electrical']`; truthful
+    (never "electronics only") under any broadened activation set."""
+    if activated == ["electronics_electrical"]:
+        return UNSUPPORTED_DOMAIN_MESSAGE
+    if not activated:
+        return ("InventorAI has no specialist domain available right now. "
+                "Please try again later.")
+    return (
+        "InventorAI currently supports " + _supported_domains_phrase(activated)
+        + " ideas only. Please describe an invention in a supported domain."
+    )
+
+
+def _confirmation_required_message(domain):
+    """Consent-required copy for the sole-activated-domain one-step form.
+    Byte-identical to the historical message for electronics."""
+    if domain == "electronics_electrical":
+        return CONFIRMATION_REQUIRED_MESSAGE
+    return ("Please confirm that your idea is a " + _domain_label(domain)
+            + " idea before starting.")
+
+
+def _present_confirm_message(domain):
+    """D1/U1: prompt shown when the classifier-selected (or explicitly chosen)
+    ACTIVATED domain is presented for explicit confirm/decline."""
+    return ("Your idea appears to belong to the " + _domain_label(domain)
+            + " domain. Please confirm this domain to start, or revise your "
+            "description.")
+
+
+# D2/U2: prompt shown with the explicit activated-domain choice set when the
+# classifier resolves NONE and two or more specialist domains are activated.
+DOMAIN_CHOICE_MESSAGE = (
+    "Your description did not clearly match one supported domain. Please choose "
+    "the domain that best fits your idea, then confirm it."
+)
 
 
 class DomainNotActivatedError(RuntimeError):
@@ -870,53 +953,77 @@ def _admit_specialist_domain(domain):
 # --- Domain Gate / Entry UX Increment (post-PR #100 Increment Contract) --------
 # Bounded ambiguity resolution for the /start domain gate. The problem being
 # fixed (see the merged evidence record + Increment Contract §3, §7.C, §10):
-# `infer_domain()` matches classification signals as SUBSTRINGS, so ordinary lay
-# wording produces spurious *conflicting-supported-domain* classifications that
+# ordinary lay wording can produce spurious WEAK *conflicting-supported-domain*
+# classifications (e.g. the generic word "monitoring" -> medical_device) that
 # the gate then hard-rejects even though the idea is a genuine electronics/
-# electrical one and the owner explicitly confirmed that domain — e.g. "app" is a
-# substring of "appliance" (-> software), and the generic word "monitoring" ->
-# medical_device. This increment lets the explicit confirmation resolve such
-# WEAK/ambiguous conflicts, while STRONG unsupported-domain evidence is never
-# overridden. It adds NO domain, activates no technology family, changes no
-# classifier/registry/domain pack, and makes no safety/feasibility/compliance
-# claim. Matching is word/token based (not substring) precisely so that markers
+# electrical one and the owner explicitly confirmed that domain. (Historically
+# the classifier also matched signals as raw SUBSTRINGS — e.g. "app" inside
+# "appliance" -> software — but since the CF5-F003 corrective the canonical
+# classifier matches whole tokens only; that spurious-substring source is gone.)
+# This increment lets the explicit confirmation resolve such WEAK/ambiguous
+# conflicts, while STRONG unsupported-domain evidence is never overridden. It
+# adds NO domain, activates no technology family, changes no classifier/
+# registry/domain pack, and makes no safety/feasibility/compliance claim.
+# Matching here is word/token based (not substring) precisely so that markers
 # like "app" cannot fire inside "appliance" and "medical" cannot fire inside
 # "medicine".
 _TOKEN_RE = re.compile(r"[a-z0-9]+")
 
-# Strong, unambiguous NON-electronics evidence. When present, the idea clearly
-# belongs to an unsupported domain (medical / mechanical / software / drone /
-# solar / robotics / agriculture); the explicit electronics confirmation must
-# NOT override it (Increment Contract §7.C, §10, §15). Matched against word
-# tokens. Words that ALSO carry ordinary electronics meanings are deliberately
-# EXCLUDED so valid electronics ideas are not rejected (independent-review
-# boundary fix): NOT "pulse" (pulse circuits/signals), NOT "algorithm"
-# (embedded/electronics control wording), NOT "diagnostic"/"diagnostics"
-# (electronics self-diagnostics) — only the medical noun/verb forms
+# Strong, unambiguous evidence of a specific NON-ACTIVATED technology family.
+# When present, the idea clearly belongs to a domain outside the activation set;
+# explicit confirmation must NOT override it (Increment Contract §7.C, §10, §15).
+# CF5-F002 / CF-6 facet: each word group is keyed by the registry domain it
+# evidences (or None for never-registered families), and a group counts as
+# STRONG-UNSUPPORTED only while its domain is NOT in the canonical activation
+# set — stale vocabulary can never suppress an ACTIVATED domain. Under the
+# current activation state `['electronics_electrical']` every group below is
+# active, i.e. behavior is unchanged. Matched against word tokens. Words that
+# ALSO carry ordinary electronics meanings are deliberately EXCLUDED so valid
+# electronics ideas are not rejected (independent-review boundary fix): NOT
+# "pulse" (pulse circuits/signals), NOT "algorithm" (embedded/electronics
+# control wording), NOT "diagnostic"/"diagnostics" (electronics
+# self-diagnostics) — only the medical noun/verb forms
 # diagnosis/diagnose/diagnoses/diagnosing are strong.
-_STRONG_UNSUPPORTED_WORDS = frozenset({
+_STRONG_UNSUPPORTED_WORD_FAMILIES = {
     # medical_device / health (note: NOT "monitoring" — that is a weak/ambiguous
     # term per §10 — and NOT "medicine")
-    "medical", "cardiac", "heart", "blood", "insulin", "glucose",
-    "clinical", "surgical", "surgery", "implant", "implantable", "prosthetic",
-    "catheter", "stent", "biosensor", "patient", "dementia", "therapeutic",
-    "respiratory", "neural", "retinal", "orthopedic",
-    "diagnosis", "diagnose", "diagnoses", "diagnosing",
-    "hearing", "wearable", "fever", "rehabilitation",
-    # mechanical
-    "mechanical", "gear", "gearbox", "gearing", "shaft", "bearing", "torque",
-    "piston", "pulley", "hydraulic", "crankshaft", "camshaft",
-    # software
-    "software", "api", "backend", "frontend", "database", "sql",
-    # drone / solar / robotics / agriculture (non-activated families, §6/§15)
-    "drone", "solar", "crop", "crops", "agriculture", "agricultural",
-    "pesticide", "herbicide", "irrigation", "farm", "farms",
-    "robot", "robots", "robotic", "robotics",
-})
-# Strong multi-word markers; matched as substrings of the full text.
-_STRONG_UNSUPPORTED_SUBSTRINGS = (
-    "machine learning", "neural network", "body temperature",
+    "medical_device": frozenset({
+        "medical", "cardiac", "heart", "blood", "insulin", "glucose",
+        "clinical", "surgical", "surgery", "implant", "implantable",
+        "prosthetic", "catheter", "stent", "biosensor", "patient", "dementia",
+        "therapeutic", "respiratory", "neural", "retinal", "orthopedic",
+        "diagnosis", "diagnose", "diagnoses", "diagnosing",
+        "hearing", "wearable", "fever", "rehabilitation",
+    }),
+    "mechanical": frozenset({
+        "mechanical", "gear", "gearbox", "gearing", "shaft", "bearing",
+        "torque", "piston", "pulley", "hydraulic", "crankshaft", "camshaft",
+    }),
+    "software": frozenset({
+        "software", "api", "backend", "frontend", "database", "sql",
+    }),
+    # drone / solar / robotics / agriculture (never-registered families, §6/§15):
+    # not resolvable to any registry domain, so they can never become activated
+    # and always remain strong-unsupported.
+    None: frozenset({
+        "drone", "solar", "crop", "crops", "agriculture", "agricultural",
+        "pesticide", "herbicide", "irrigation", "farm", "farms",
+        "robot", "robots", "robotic", "robotics",
+    }),
+}
+# Strong multi-word markers; matched as substrings of the full text, keyed by
+# the registry domain they evidence (same activation-awareness as above).
+_STRONG_UNSUPPORTED_SUBSTRING_FAMILIES = (
+    ("machine learning", "software"),
+    ("neural network", "software"),
+    ("body temperature", "medical_device"),
 )
+# Legacy flat views (exact same members as before the CF5-F002 partition) for
+# existing consumers/tests that inspect the vocabulary as a whole.
+_STRONG_UNSUPPORTED_WORDS = frozenset().union(
+    *_STRONG_UNSUPPORTED_WORD_FAMILIES.values())
+_STRONG_UNSUPPORTED_SUBSTRINGS = tuple(
+    s for s, _family in _STRONG_UNSUPPORTED_SUBSTRING_FAMILIES)
 
 # Lay household-electrical MECHANISM evidence. Presence indicates a genuine
 # electrical mechanism written in non-specialist words, so the idea is admitted
@@ -959,16 +1066,34 @@ MECHANISM_GUIDANCE_MESSAGE = (
 )
 
 
-def _has_strong_unsupported_evidence(lowered_text: str) -> bool:
-    """True when the text carries clear, unambiguous NON-electronics evidence.
+def _has_strong_unsupported_evidence(lowered_text: str, activated=None) -> bool:
+    """True when the text carries clear, unambiguous evidence of a technology
+    family whose domain is NOT currently activated (CF5-F002 / CF-6 facet: a
+    vocabulary group is skipped once its domain is in the canonical activation
+    set, so stale vocabulary never suppresses an ACTIVATED domain). With the
+    current activation state `['electronics_electrical']` every group counts,
+    i.e. behavior is exactly the historical one.
 
     Word/token based so short markers never fire inside unrelated words (e.g.
     "app" inside "appliance", "medical" inside "medicine"). Read-only; no state.
+    ``activated`` may be the already-derived activated-domain collection; when
+    omitted it is read from the canonical activation policy.
     """
+    if activated is None:
+        activated = _activated_specialist_domains()
+    activated_set = set(activated)
     tokens = set(_TOKEN_RE.findall(lowered_text))
-    if tokens & _STRONG_UNSUPPORTED_WORDS:
-        return True
-    return any(s in lowered_text for s in _STRONG_UNSUPPORTED_SUBSTRINGS)
+    for family, words in _STRONG_UNSUPPORTED_WORD_FAMILIES.items():
+        if family is not None and family in activated_set:
+            continue
+        if tokens & words:
+            return True
+    for substring, family in _STRONG_UNSUPPORTED_SUBSTRING_FAMILIES:
+        if family is not None and family in activated_set:
+            continue
+        if substring in lowered_text:
+            return True
+    return False
 
 
 def _lay_electrical_evidence_count(lowered_text: str) -> int:
@@ -980,9 +1105,73 @@ def _lay_electrical_evidence_count(lowered_text: str) -> int:
     tokens = set(_TOKEN_RE.findall(lowered_text))
     return len(tokens & _LAY_ELECTRICAL_WORDS)
 
+def _render_start_page(error=None, status=None, present_domain=None,
+                       choice_domains=None, carry_idea=None, carried_choice=None):
+    """CF5-F002 (Amendment 01 §14.1): single renderer for the /start admission
+    surface (`index.html`). Supplies the activation-derived consent context so
+    the rendered consent control always presents/carries a domain from the
+    canonical activation set — never a hardcoded constant. Rendering modes:
+
+      * default             — the start form; with exactly ONE activated domain
+                              it carries that sole domain's explicit-consent
+                              checkbox (behaviorally identical to the historical
+                              electronics page under `['electronics_electrical']`,
+                              U4); with >= 2 activated domains consent is
+                              collected after classification (two-step seam).
+      * present_domain      — D1/U1: present the classifier-selected (or D2
+                              chosen) ACTIVATED domain for explicit
+                              confirm/decline; `carried_choice` re-carries a D2
+                              choice through the confirm submission.
+      * choice_domains      — D2/U2: present ONLY the currently activated
+                              specialist domains as an explicit choice set.
+
+    Presentation only: no session, no admission, no persistence.
+    """
+    activated = _activated_specialist_domains()
+    sole = activated[0] if len(activated) == 1 else None
+    is_elec_only = (activated == ["electronics_electrical"])
+    labels = {d: _domain_label(d) for d in activated}
+    if present_domain is not None and present_domain not in labels:
+        labels[present_domain] = _domain_label(present_domain)
+    generalized = None
+    if not is_elec_only:
+        phrase = _supported_domains_phrase(activated) if activated else None
+        generalized = {
+            "start_scope_sentence": (
+                (phrase + " ideas are currently supported. Before starting, "
+                 "please confirm the domain your idea belongs to.")
+                if phrase else
+                "No specialist domain is currently available."),
+            "start_placeholder": "Describe your invention...",
+            "start_supported_note": (
+                ("Currently supported: " + phrase + " ideas.")
+                if phrase else "Currently supported: none."),
+            "start_confirm_label": (
+                ("I confirm that this idea is primarily a "
+                 + labels[sole] + " idea.") if sole is not None else None),
+        }
+    rendered = render_template(
+        "index.html", error=error,
+        start_sole_domain=sole,
+        start_is_electronics_only=is_elec_only,
+        start_domain_labels=labels,
+        start_present_domain=present_domain,
+        start_present_confirm_label=(
+            ("I confirm that my idea belongs to the "
+             + labels[present_domain] + " domain.")
+            if present_domain is not None else None),
+        start_choice_domains=choice_domains,
+        start_choice_prompt=(
+            "Choose your idea's domain:" if choice_domains else None),
+        start_carry_idea=carry_idea,
+        start_carried_choice=carried_choice,
+        **(generalized or {}))
+    return rendered if status is None else (rendered, status)
+
+
 @app.route("/", methods=["GET"])
 def index():
-    return render_template("index.html")
+    return _render_start_page()
 
 
 # --- P5-1: account registration (foundation only; NO login/session/ownership) --
@@ -1351,73 +1540,126 @@ def start():
     idea_text = request.form.get("idea", "").strip()
     if not idea_text:
         return redirect(url_for("index"))
-    # Explicit electronics/electrical confirmation is required (ADR-001 explicit
-    # assignment). Consent is never inferred from the idea text; without it no
-    # session is created.
-    if request.form.get("domain_confirm") != DOMAIN_CONFIRM_VALUE:
-        return render_template("index.html", error=CONFIRMATION_REQUIRED_MESSAGE)
-    # Bounded conflict check using the canonical deterministic classifier
-    # (P9-E2-R): dispatch by result KIND, never by truthiness / string identity of
-    # the structured result. classify_domain() today yields only SINGLE / NONE
-    # (behavior-equivalent to the prior infer_domain string); the richer kinds are
-    # dormant until the later, separate P9-E2 tie-precedence runtime produces them.
+    # CF5-F002 (Owner decision D-CF5-F002-01, D1/D2/D3): the /start admission
+    # surface derives ALL domain behavior from the canonical activation set
+    # (engine.domain_activation, §5-I2) and the canonical classifier
+    # (engine.domain_rules.classify_domain) — no hardcoded electronics
+    # constant, branch, or special case. `_admit_specialist_domain` remains the
+    # single activation gate at the admission point.
+    activated = _activated_specialist_domains()
+    confirm = request.form.get("domain_confirm")
+    choice = request.form.get("domain_choice")
+    if not activated:
+        # Defensive fail-closed boundary: with no activated specialist domain
+        # nothing is admissible. Unreachable under any governed activation state.
+        return _render_start_page(error=_unsupported_domain_message(activated))
+    sole = activated[0] if len(activated) == 1 else None
+    if sole is not None and confirm != sole:
+        # Exactly ONE activated domain: the one-step form carries that sole
+        # domain's explicit confirmation (ADR-001 explicit assignment; D1/U3).
+        # Consent is never inferred from the idea text; without it no session
+        # is created. Behaviorally identical to the historical electronics-only
+        # flow under `['electronics_electrical']`.
+        return _render_start_page(error=_confirmation_required_message(sole))
+    # Canonical deterministic classification (P9-E2-R): dispatch by result KIND,
+    # never by truthiness / string identity of the structured result.
+    # classify_domain() yields SINGLE / NONE and — since P9-E2 — AMBIGUOUS_TIE
+    # when two or more ACTIVATED domains are equally top-scored (reachable only
+    # under a broadened activation set, exercised today via bounded activation
+    # doubles); MULTI_DOMAIN_NEEDS_D4 remains representable but is never
+    # produced (D4 is a separate, unexecuted gate) — its branch stays dormant
+    # and fail-closed.
     classification = classify_domain(idea_text)
     if classification.kind is DomainResultKind.AMBIGUOUS_TIE:
-        # Fail closed: an ambiguous activated tie is NOT a single supported domain.
-        # It must never enter the None classifier-miss fallback (which admits
-        # electronics), never admit a winner, never create a session. Existing safe
-        # surface; no new UX (P9-E2-R 7/14).
-        return render_template("index.html", error=UNSUPPORTED_DOMAIN_MESSAGE)
+        # Fail closed: an ambiguous activated tie is NOT a single supported
+        # domain. It must never enter the None classifier-miss fallback, never
+        # admit a winner, never create a session (P9-E2-R 7/14; §4.B/D).
+        return _render_start_page(error=_unsupported_domain_message(activated))
     if classification.kind is DomainResultKind.MULTI_DOMAIN_NEEDS_D4:
-        # Fail closed: a genuine multi-domain idea is NOT admissible as one domain,
-        # and D4 is NOT executed here. No implication that multi-domain analysis
-        # occurred. Existing safe surface; no new UX (P9-E2-R 7/14/16).
-        return render_template("index.html", error=UNSUPPORTED_DOMAIN_MESSAGE)
-    # SINGLE -> the resolved registry domain string; NONE -> None. This reproduces
-    # the exact prior infer_domain value for every currently-reachable input, so the
-    # SINGLE/NONE admission behavior below is byte-for-byte unchanged.
+        # Fail closed: a genuine multi-domain idea is NOT admissible as one
+        # domain, and D4 is NOT executed here. No implication that multi-domain
+        # analysis occurred (P9-E2-R 7/14/16).
+        return _render_start_page(error=_unsupported_domain_message(activated))
+    # SINGLE -> the resolved registry domain string; NONE -> None.
     domain = (classification.selected_domain
               if classification.kind is DomainResultKind.SINGLE else None)
     lowered = idea_text.lower()
-    # Domain Gate / Entry UX Increment (post-PR #100 Increment Contract). Bounded
-    # ambiguity resolution, ordered so that explicit confirmation resolves only
-    # WEAK/ambiguous conflicts and never overrides strong unsupported evidence.
-    if _has_strong_unsupported_evidence(lowered):
-        # Clearly a non-electronics idea (medical / mechanical / software /
-        # drone / solar / robotics / agriculture). The confirmation checkbox
-        # cannot override this; refuse with the stable unsupported message
-        # (§7.C, §10, §15).
-        return render_template("index.html", error=UNSUPPORTED_DOMAIN_MESSAGE)
-    if domain != "electronics_electrical":
-        if domain in CONFLICTING_SUPPORTED_DOMAINS:
-            # A weak/ambiguous conflicting supported-domain classification
-            # (e.g. the generic word "monitoring", or the substring "app"
-            # inside "appliance") with no strong unsupported evidence. Resolve
-            # toward electronics ONLY with corroborating lay electrical
-            # mechanism evidence; a medical_device conflict requires MORE
-            # corroboration than one lay token (§7.C, §10 — confirmation is
-            # never an unconditional override). Otherwise guide the owner
-            # toward naming the electrical mechanism instead of a bare hard
-            # rejection (§7.B, §7.E). No session is created on guidance.
+    # Domain Gate / Entry UX Increment (post-PR #100 Increment Contract),
+    # activation-aware since CF5-F002 (CF-6 facet): vocabulary evidencing a
+    # domain that is NOW ACTIVATED no longer fires, so stale vocabulary can
+    # never suppress an activated domain; families outside the activation set
+    # still refuse, and explicit confirmation cannot override them
+    # (§7.C, §10, §15).
+    if _has_strong_unsupported_evidence(lowered, activated):
+        return _render_start_page(error=_unsupported_domain_message(activated))
+    if domain is not None and domain in activated:
+        # D1 — the classifier resolved exactly one ACTIVATED specialist domain:
+        # that classified domain (and only it) is the admissible target.
+        target = domain
+    elif domain is not None:
+        # Recognized-but-not-activated (or unexpected) classification.
+        if (sole == "electronics_electrical"
+                and _is_recognized_not_activated(domain, activated)):
+            # Domain Gate / Entry UX Increment weak-conflict resolution,
+            # preserved unchanged for the governed electronics-only one-step
+            # flow (§4.A backward compatibility): a weak/ambiguous conflicting
+            # supported-domain classification (e.g. the generic word
+            # "monitoring") with no strong unsupported evidence resolves toward
+            # the explicitly confirmed electronics domain ONLY with
+            # corroborating lay electrical mechanism evidence; a medical_device
+            # conflict requires MORE corroboration than one lay token (§7.C,
+            # §10 — confirmation is never an unconditional override). Otherwise
+            # guide the owner toward naming the electrical mechanism instead of
+            # a bare hard rejection (§7.B, §7.E). No session on guidance.
             required = (_MEDICAL_CONFLICT_LAY_MINIMUM
                         if domain == "medical_device" else 1)
             if _lay_electrical_evidence_count(lowered) < required:
-                return render_template("index.html", error=MECHANISM_GUIDANCE_MESSAGE)
-        elif domain is not None:
-            # Unexpected / unknown classifier value — refuse defensively,
-            # regardless of any lay wording.
-            return render_template("index.html", error=UNSUPPORTED_DOMAIN_MESSAGE)
-        # domain is None: preserve the existing explicit-confirmation fallback
-        # admission (unchanged behavior).
-    # electronics_electrical, sufficiently corroborated lay electrical
-    # mechanism, or None-fallback is admitted under explicit confirmation
-    # (None covers functional electronics ideas the signal classifier misses).
-    # Admit: the session's domain is the explicitly confirmed supported domain.
+                return _render_start_page(error=MECHANISM_GUIDANCE_MESSAGE)
+            target = sole
+        else:
+            # §4.B/C/F: a recognized-but-not-activated domain is never offered
+            # and never admitted (no cross-domain relabeling); unexpected
+            # classifier values are refused defensively.
+            return _render_start_page(error=_unsupported_domain_message(activated))
+    else:
+        # NONE — classifier miss.
+        if sole is not None:
+            # Derived corner (D2 backward-compat + D3): with exactly one
+            # activated domain, offer that sole domain under the explicit
+            # consent already validated above. Under `['electronics_electrical']`
+            # this is the unchanged governed NONE->Electronics
+            # explicit-consent admission (covers functional ideas the signal
+            # classifier misses).
+            target = sole
+        elif choice in activated:
+            # D2 — the user explicitly chose one of the currently activated
+            # specialist domains; it still requires explicit confirmation below.
+            target = choice
+        else:
+            # D2 — no (valid) choice yet: present ONLY the currently activated
+            # specialist domains as the explicit choice set. No silent
+            # Electronics/default fallback; no session. A forged choice outside
+            # the activation set lands here (never admitted).
+            return _render_start_page(
+                error=DOMAIN_CHOICE_MESSAGE, choice_domains=activated,
+                carry_idea=idea_text)
+    if confirm != target:
+        # Explicit consent for the resolved target domain (D1/D2/U1: no
+        # auto-admit). Present exactly the target for confirm/decline; a
+        # missing or mismatched confirmation (including one for a DIFFERENT
+        # activated domain) never admits and never relabels (§4.F).
+        return _render_start_page(
+            error=_present_confirm_message(target), present_domain=target,
+            carried_choice=(choice if choice == target else None),
+            carry_idea=idea_text)
+    # Admit: the persisted session-domain is exactly the classified-or-chosen
+    # AND explicitly confirmed ACTIVATED domain (§4.F — no cross-domain
+    # mislabeling).
     state = IdeaState(idea_id=str(uuid.uuid4()))
-    # Specialist-runtime admission is bound to the canonical engine activation
-    # policy (§5-I2); DOMAIN_CONFIRM_VALUE is the user-consent value, and it is
-    # admitted only because the policy currently activates it.
-    state.domain = _admit_specialist_domain(DOMAIN_CONFIRM_VALUE)
+    # Specialist-runtime admission remains bound to the canonical engine
+    # activation policy (§5-I2) at this single gate; the target is admitted
+    # only because the policy currently activates it.
+    state.domain = _admit_specialist_domain(target)
     state.domain_signal = state.domain
     # Increment 1 (Owner-Expert Question Boundary): the general /start flow is the
     # non-specialist owner flow and must use the committed Path N non-specialist-safe
@@ -1448,7 +1690,7 @@ def start():
             reconstruction_inputs=_reconstruction_inputs(idea_text, state),
             owner_account_id=owner_account_id)
     except Exception:
-        return render_template("index.html", error=SERVICE_UNAVAILABLE_MESSAGE), 503
+        return _render_start_page(error=SERVICE_UNAVAILABLE_MESSAGE, status=503)
     SESSION_STORE[sid] = {"state": state, "last_result": initial_result, "transcript": [],
                           # Draft Level 2: a truthful ONE-SHOT seed-accepted signal.
                           # Set only here at successful /start; the first session
@@ -1486,7 +1728,7 @@ def _finalize_started_session(sid, state, initial_result, seed_idea=None):
             ProjectRecordContract.from_state(state), project_id=sid,
             reconstruction_inputs=_reconstruction_inputs(seed_idea, state))
     except Exception:
-        return render_template("index.html", error=SERVICE_UNAVAILABLE_MESSAGE), 503
+        return _render_start_page(error=SERVICE_UNAVAILABLE_MESSAGE, status=503)
     SESSION_STORE[sid] = {"state": state, "last_result": initial_result, "transcript": [],
                           # Draft Level 2: a truthful ONE-SHOT seed-accepted signal.
                           # Set only here at successful /start; the first session
