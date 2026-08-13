@@ -1555,6 +1555,15 @@ AUTHORIZED / NOT STARTED.***
   CANDIDATE ONLY — implementation NOT authorized; CF5-F004/CF-3 NOT closed; first new-domain activation remains BLOCKED.
   Canonical record: `CF5_F004_PRIORITY_FALLBACK_CORRECTIVE_CONTRACT.md`. Next gate: Mandatory Grill on that exact
   candidate.
+  **CF5-F004 contract MERGED (PR #462, tip `0e4312e5`); BOUNDED IMPLEMENTATION CANDIDATE recorded.** Registry-derived
+  zero-activated membership + bounded legacy-four compatibility layer (OD2); arm-A truthful SINGLE(sole top); arm-B NEW
+  `UNRESOLVED_NON_ACTIVATED_TIE` (complete set; no winner; AMBIGUOUS_TIE untouched); bounded `/start`/CLI fail-closed
+  dispatch; `infer_domain` unchanged-and-pinned; MULTI_DOMAIN_NEEDS_D4 non-reuse recorded. Evidence: RED R1/R2/R7/R8 +
+  pins R3–R6; GREEN 14/14 (determinism probe; vocabulary-clean Web dispatch test — M5 masking caught in-gate and
+  corrected, disclosed); mutations 7/7 CAUGHT; D1 ZERO deltas / D2 categorized (3 arm-A + 4 arm-B, 0 unexplained); full
+  suite 2442/3/1/0; ZERO ODR diff. IMPLEMENTATION CANDIDATE ONLY — Grill → independent review → Owner acceptance →
+  publication → PR → verification still required; CF5-F004 / CF-3 NOT closed (OD3); first new-domain activation remains
+  BLOCKED (OD1 binds earlier).
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation

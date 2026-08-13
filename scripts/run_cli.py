@@ -35,7 +35,10 @@ def run_cli():
     # the structured result, never treat a richer kind as a single domain).
     classification = classify_domain(idea)
     if classification.kind in (DomainResultKind.AMBIGUOUS_TIE,
-                               DomainResultKind.MULTI_DOMAIN_NEEDS_D4):
+                               DomainResultKind.MULTI_DOMAIN_NEEDS_D4,
+                               DomainResultKind.UNRESOLVED_NON_ACTIVATED_TIE):
+        # CF5-F004: the zero-activated unresolved tie joins the existing
+        # bounded stop — never an arbitrary winner, never a proceed.
         # Explicit bounded stop: never print an arbitrary winner, never treat this
         # as a single domain, never activate a domain, never execute D4. No
         # implication that multi-domain analysis occurred. (Dormant until the later,
