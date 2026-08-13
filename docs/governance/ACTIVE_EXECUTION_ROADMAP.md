@@ -8667,3 +8667,48 @@ authorization). Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED; deployment/produ
 history not rewritten. This entry authorizes no push, PR, merge beyond this candidate, no runtime/test change, no domain
 activation, no D4/D8, no ODR change, and no F004 / CF-5 / CF-6 / CF-2 / CF-3 closure. **Next required gate: Mandatory
 Grill on this exact closure candidate.**
+
+---
+
+## CF5-F004 — Hardcoded Non-Activated Priority Fallback — INDEPENDENT VALIDATION — governance-only CANDIDATE — classification C retained on evidence; validation only, no remediation; NO domain activated
+
+**Gate.** Governance/documentation-only **INDEPENDENT VALIDATION RECORD candidate** for CF-5 finding **CF5-F004**, recording
+the completed independent validation — verdict **ACCEPT WITH NON-BLOCKING OBSERVATIONS (blocking: NONE)** — performed in a
+genuinely separate session over the executing-agent disposition analysis and its Grill. Authoritative base
+`e39f667a934f0702301ab71d5b17a6b1121a4ecf` (PR #460 merge; freshly fetched; 0 newer); boot OK; `activated_domains() ==
+['electronics_electrical']`. Canonical record: `docs/governance/CF5_F004_PRIORITY_FALLBACK_INDEPENDENT_VALIDATION_RECORD.md`.
+ZERO runtime / test / Web / CLI / domain / Registry / activation / schema / persistence / API / guardrail / ODR diff.
+
+**Validated finding.** The hardcoded non-activated priority fallback literal in `engine/domain_rules.py::classify_domain`
+Case 0 (`:234-242`) — an un-owned, registry-unsynchronized 4-id policy literal producing every recognized-but-not-activated
+SINGLE result. **CF5-F004 = OPEN C — INDEPENDENTLY VALIDATED** (real material defect, currently dormant). **F004 and CF-3
+are distinct records over the same residual surface; both discharge only at eventual F004 formal closure.** Exact failure
+arms: (1) registered pack outside the literal as sole top scorer → silent NONE fallthrough; (2) omitted registered pack
+tied with a legacy literal member → silent legacy-member award. Dangerous Web chain: registered-but-omitted pack →
+classifier NONE → sole-electronics `/start` consent path → possible electronics-labeled persisted session. **Not reachable
+today** (recognized registry set == literal set, mechanically verified; `iot_electronics` schema-skipped/unregistered).
+
+**Trigger (binding).** The **first successful recognized-registry-set change** — new-pack registration; a schema+provenance
+change causing a previously skipped pack to register (`iot_electronics` corner); or rename/removal skew of a literal
+member. **Registration IS the trigger; activation is NOT the trigger and is too late; empty activation is NOT a trigger.**
+The pre-trigger obligation therefore binds EARLIER than the activation boundary.
+
+**Preserved.** Closed behavior NOT reopened (D3-D; P9-E2; CF5-F003; CF5-F002 admission). Canonical owners unchanged
+(classification = `classify_domain`, sole owner; recognition = Registry §5-I1; activation = §5-I2; activated-tie precedence
+= D3-D/P9-E2). Backward compatibility: current 4-domain outputs differentially locked (RED-R7 + F002 parity pins);
+determinism mandatory; `infer_domain` frozen contract honored. **Architecture OPEN; remediation trigger-bound, NOT
+required now; bounded corrective contract required only after this record is authoritative.** Registry skip-warning remains
+outside F004; IoT vocabulary / `_LAY_ELECTRICAL_WORDS` / missing IoT strong-unsupported family = examination inputs only.
+**Owner-policy questions preserved OPEN for the contract gate:** (1) bind the obligation before any pack-schema work capable
+of causing registration?; (2) preserve or replace the legacy precedence order for future packs (explicit Owner decision)?;
+(3) CF-3 discharge only at F004 formal closure (confirmed as carried).
+
+**Boundary / status after this entry.** **CF5-F004 = OPEN C — INDEPENDENTLY VALIDATED (candidate); remediation NOT required
+now; NO architecture chosen; NO corrective contract / implementation / code authorization created.** CF5-F001 / CF5-F002 =
+FORMALLY CLOSED; CF5-F003 = CLOSED; CF-5 = OPEN; CF-6 = OPEN (facets (i)–(iv) discharged only); CF-2 = OPEN; CF-3
+registered/retained (distinct); D-GMPR-01-D-D3 tie-break coupling OPEN until F004 closure; D4 SEPARATE / UNEXECUTED; D8
+Owner-reserved; `activated_domains() == ['electronics_electrical']`; **first new-domain activation remains BLOCKED**, and
+the F004 pre-trigger obligation additionally binds before any first registry-set change; Phase 10 NOT AUTHORIZED; PSRR NOT
+EXECUTED; deployment/production NOT AUTHORIZED. Append-only; prior history not rewritten. This entry authorizes no push,
+PR, or merge beyond this candidate, no corrective contract, no remediation, no domain activation, and no D4/D8/ODR change.
+**Next required gate: Mandatory Grill on this exact validation-record candidate.**

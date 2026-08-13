@@ -1536,6 +1536,15 @@ AUTHORIZED / NOT STARTED.***
   obligations; FU-1 unchanged (CF-5 lane). **CF5-F004 / CF-5 / CF-6 / CF-2 / CF-3 remain OPEN; `activated_domains() ==
   ['electronics_electrical']`; NO domain activated; first new-domain activation remains BLOCKED** behind CF5-F004,
   remaining CF-6, CF-2, CF-3, per-domain P9-QS, D8 (if IoT), and explicit Owner activation authorization.
+  **CF5-F001 closure MERGED (PR #460, tip `e39f667a`) → CF5-F001 = FORMALLY CLOSED. CF5-F004 INDEPENDENTLY VALIDATED
+  (record candidate).** Verdict ACCEPT WITH NON-BLOCKING OBSERVATIONS. **CF5-F004 = OPEN C — INDEPENDENTLY VALIDATED**: the
+  un-owned non-activated priority fallback literal (`classify_domain` Case 0); failure arms = omitted-pack sole-top →
+  silent NONE, omitted-pack tie → silent legacy-member award; dangerous chain = omitted pack → NONE → sole-electronics
+  `/start` consent → possible electronics-labeled session; not reachable today (registry == literal). **Trigger = first
+  successful recognized-registry-set change — registration IS the trigger; activation is NOT and is too late.** F004/CF-3
+  distinct, both discharge only at F004 formal closure; architecture OPEN; remediation trigger-bound; Owner questions
+  (schema-work binding; precedence preserve-vs-replace; CF-3 timing) preserved for the contract gate. Canonical record:
+  `CF5_F004_PRIORITY_FALLBACK_INDEPENDENT_VALIDATION_RECORD.md`. Next gate: Mandatory Grill on that exact candidate.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation

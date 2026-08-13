@@ -41,7 +41,29 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — CF5-F001 FORMAL CLOSURE CANDIDATE; governance-only; F004 / CF-5 / CF-6 / CF-2 / CF-3 NOT closed; NO
+**Status (current — CF5-F004 INDEPENDENT VALIDATION RECORD CANDIDATE; governance-only; validation only, no remediation; NO
+domain activated):** the CF5-F001 formal closure is **MERGED and post-merge verified** (PR #460 → authoritative tip
+`e39f667a934f0702301ab71d5b17a6b1121a4ecf`; merge tree == closure-candidate tree → **CF5-F001 = FORMALLY CLOSED**). This
+gate records the completed CF5-F004 independent validation (genuinely separate session; verdict **ACCEPT WITH NON-BLOCKING
+OBSERVATIONS**, blocking NONE) in a governance-only candidate. Canonical record:
+`docs/governance/CF5_F004_PRIORITY_FALLBACK_INDEPENDENT_VALIDATION_RECORD.md`. **CF5-F004 = OPEN C — INDEPENDENTLY
+VALIDATED**: the un-owned, registry-unsynchronized non-activated priority fallback literal
+(`engine/domain_rules.py::classify_domain` Case 0); failure arms = omitted-pack sole-top → silent NONE, and omitted-pack
+tie → silent legacy-member award; dangerous chain = omitted pack → NONE → sole-electronics `/start` consent → possible
+electronics-labeled session; not reachable today (registry set == literal set). Trigger = first successful
+recognized-registry-set change (registration IS trigger; activation NOT trigger/too late; empty activation NOT trigger).
+F004 and CF-3 distinct; both discharge only at F004 formal closure. Closed D3-D/P9-E2/CF5-F003/CF5-F002 behavior not
+reopened; canonical owners unchanged; 4-domain outputs + determinism + `infer_domain` contract locked; architecture OPEN;
+remediation trigger-bound; corrective contract required only after this record is authoritative; Owner questions (schema-
+work binding; precedence preserve-vs-replace; CF-3 discharge timing) preserved OPEN. Governance-only: ZERO
+runtime/test/Web/CLI/domain/Registry/activation/schema/persistence/ODR diff. First new-domain activation remains BLOCKED;
+the F004 pre-trigger obligation additionally binds before any first registry-set change. Next required gate: **Mandatory
+Grill on this exact validation-record candidate**; then independent external exact-candidate review → Owner acceptance →
+SHA-preserving publication → PR → pre/post-merge verification; after authoritative, the bounded CF5-F004 corrective
+contract gate.
+
+**Immediately prior (CF5-F001 formal closure — MERGED via PR #460; retained as history):**
+**Status (prior — CF5-F001 FORMAL CLOSURE CANDIDATE; governance-only; F004 / CF-5 / CF-6 / CF-2 / CF-3 NOT closed; NO
 domain activated):** the CF5-F001 bounded corrective implementation is **MERGED and post-merge verified** — PR #459 →
 authoritative tip `9af877c405fcb637ff9b040573be0e26c87e46bf`, a SHA-preserving two-parent merge of `b06ae404` + the
 Grill-passed, independently-reviewed (ACCEPT — incl. the disclosed §4 `domain_signal`-only narrowing and the D3-A pin
