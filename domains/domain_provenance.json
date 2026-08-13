@@ -60,6 +60,19 @@
       ]
     },
     {
+      "record_id": "mechanical:PR002",
+      "pack_id": "mechanical",
+      "tier": 1,
+      "source_name": "InventorAI governance records — P9-MECH-QC + P9-MECH-I1 truthful declared-scope baseline",
+      "source_type": "governance_record",
+      "standard_number": null,
+      "jurisdiction": null,
+      "version_or_edition": "P9-MECH-QC (merged PR #467); P9-MECH-I1 contract (merge 89985218ad441260eba3f00b5450b4623d3968ac)",
+      "url": null,
+      "notes": "Provenance for the P9-MECH-I1 additive capability_declaration and coverage_declaration in the mechanical pack (contract docs/governance/P9_MECH_I1_TRUTHFUL_CAPABILITY_COVERAGE_DECLARATION_CONTRACT.md; OD-M2 = D-P9-MECH-02, Option B-hardened). The declared covered scope is grounded exclusively in the pack's existing signals, gap types, and questions (mechanical:PR001 lineage) and in current runtime behavior; every unimplemented capability is declared NOT COVERED or a known unknown. Declaration-only metadata: not consumed by the classifier or registry recognition; adds no runtime capability.",
+      "cross_domain_usage": []
+    },
+    {
       "record_id": "medical_device:PR001",
       "pack_id": "medical_device",
       "tier": 1,
