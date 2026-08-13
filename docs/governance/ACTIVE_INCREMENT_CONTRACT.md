@@ -41,7 +41,24 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — CF5-F001 BOUNDED CORRECTIVE IMPLEMENTATION CANDIDATE; CF5-F001 NOT closed; NO domain activated):** the
+**Status (current — CF5-F001 FORMAL CLOSURE CANDIDATE; governance-only; F004 / CF-5 / CF-6 / CF-2 / CF-3 NOT closed; NO
+domain activated):** the CF5-F001 bounded corrective implementation is **MERGED and post-merge verified** — PR #459 →
+authoritative tip `9af877c405fcb637ff9b040573be0e26c87e46bf`, a SHA-preserving two-parent merge of `b06ae404` + the
+Grill-passed, independently-reviewed (ACCEPT — incl. the disclosed §4 `domain_signal`-only narrowing and the D3-A pin
+reconciliation), Owner-accepted exact candidate `d5edd1a39a26e3041eb417012951e2c7dab116d0`; merge tree `e98034ee` ==
+candidate tree; post-merge full suite 2428 passed / 3 skipped / 1 xfailed / 0 failed; boot OK. All contract §9 closure
+criteria verified mechanically (see the roadmap CLOSURE entry) → **this candidate records CF5-F001 = FORMALLY CLOSED over
+the authoritative runtime** (authoritative if/when this closure candidate is merged and post-merge verified). NB-R1
+eliminated with the accepted narrowing (P4 non-resume preserved); NB-R2/R3/R4 dispositioned; the D-GMPR-01-D-D3
+`safety_signal` coupling DISCHARGED (its other couplings remain governed by their own records); observations memorialized
+without new obligations; FU-1 unchanged (CF-5 lane). Governance-only: ZERO runtime / test / Web / CLI / domain /
+activation / schema / persistence / ODR diff. No push / PR / merge / activation / D4 / D8 / F004 / CF-5 / CF-6 / CF-2 /
+CF-3 closure is authorized by this candidate. Next required gate: **Mandatory Grill on this exact closure candidate** →
+independent external exact-candidate review → Owner acceptance → SHA-preserving publication → PR → pre/post-merge
+verification.
+
+**Immediately prior (CF5-F001 bounded corrective implementation — MERGED via PR #459; retained as history):**
+**Status (prior — CF5-F001 BOUNDED CORRECTIVE IMPLEMENTATION CANDIDATE; CF5-F001 NOT closed; NO domain activated):** the
 CF5-F001 corrective contract is **MERGED and post-merge verified** (PR #458 → authoritative tip
 `b06ae40460dce987024fd224610554fdbbcaabc3`; merge tree == contract-candidate tree) and its bounded implementation was
 executed fresh from that parent. Changed paths: `engine/safety_signal.py` (governed domain-keyed cue/context-family seam —

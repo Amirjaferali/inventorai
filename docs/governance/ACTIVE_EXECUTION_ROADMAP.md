@@ -8600,3 +8600,70 @@ Owner-reserved; `activated_domains() == ['electronics_electrical']`; **first new
 Phase 10 NOT AUTHORIZED; PSRR NOT EXECUTED; deployment/production NOT AUTHORIZED. FU-1 unchanged (outside F001; CF-5
 lane). Append-only; prior history not rewritten. This entry authorizes no push, PR, merge beyond this candidate, no domain
 activation, and no D4/D8/ODR change.
+
+---
+
+## CF5-F001 — Shared-Core Electronics-Specific Safety Signal — FORMAL CLOSURE — governance-only CLOSURE CANDIDATE — CF5-F001 CLOSED over the authoritative runtime; F004 / CF-5 / CF-6 / CF-2 / CF-3 NOT closed; NO domain activated
+
+**Gate.** Governance-only formal post-merge disposition of **CF5-F001** under the authoritative corrective contract
+(`docs/governance/CF5_F001_SAFETY_SIGNAL_CORRECTIVE_CONTRACT.md`, PR #458) and the merged independent-validation record
+(PR #457), on authoritative base `9af877c405fcb637ff9b040573be0e26c87e46bf` (PR #459 merge; freshly fetched; 0 newer); boot
+OK; `activated_domains() == ['electronics_electrical']`. ZERO runtime / test / Web / CLI / domain / Registry / activation /
+schema / persistence / API / guardrail / `OWNER_DECISION_REGISTER.md` diff this gate.
+
+**Implementation of record.** PR #459 → tip `9af877c4` — a two-parent SHA-preserving merge of `b06ae404` (contract tip) +
+the Grill-passed implementation candidate `d5edd1a39a26e3041eb417012951e2c7dab116d0`; **merge tree
+`e98034eee9a01fe220b06c22dbfc8d80bbd1fa5f` == implementation-candidate tree (diff = 0 lines)**. Lineage: Mandatory Grill
+**PASS WITH NON-BLOCKING OBSERVATIONS (blocking: NONE)** → independent external exact-candidate review **ACCEPT** (with the
+disclosed §4 `domain_signal`-only narrowing and the D3-A pin reconciliation explicitly under review) → Owner
+exact-candidate acceptance (Owner authored + merged PR #459 of the exact SHA) → SHA-preserving merge → **post-merge
+verification PASS on `9af877c4`** (boot OK; `activated_domains() == ['electronics_electrical']`; full governed suite
+**2428 passed / 3 skipped / 1 xfailed / 0 failed**, re-run in this gate).
+
+**Mechanical closure verification (ALL contract §9 criteria hold).** The validated shared-core electronics coupling is
+remediated: detection content is consumed ONLY through the governed domain-keyed cue/context-family seam
+(`_DOMAIN_CUE_FAMILIES`; PARAMETERIZE per the merged contract §3), with the electronics family byte-preserved as the sole
+populated entry and NO per-domain seam gap remaining; a session domain without a governed family truthfully derives no
+signals and its deliverable block carries the truthful capability-scope statement (electronics output byte-unchanged);
+electronics behavior preserved (§6.A/§7.d1 — live-electronics parent-vs-implementation differential = ZERO deltas; all
+prior safety-signal and D3 pins green). **NB-R1 dispositioned and eliminated** with the independently accepted
+**`domain_signal`-only narrowing**: the cold-load seam restores the safety-relevant identity from the already-persisted
+creation-validated `confirmed_domain` onto `domain_signal` ONLY, while `state.domain` deliberately remains the committed
+P4-1b-2a non-resume guard anchor — **P4 non-resume behavior preserved and pinned in both directions** (cold-loaded sessions
+remain unanswerable; no second durable append; the governed restart-durability test green). Legacy/NULL envelopes fail-safe
+unchanged; no schema/migration. **NB-R2** honored: the equivalent-future-trigger binding of the validation record remains
+in force (any production surface capable of minting a non-electronics session inherits the pre-trigger obligation; the
+reconstruction seam remains the recorded concrete example). **NB-R3** honored: the electronics cue vocabulary is
+byte-preserved and remains electronics-owned; only placement/exposure/seam were corrected. **NB-R4** dispositioned: the
+seam keys on domain IDENTITY, never activation — historical sessions keep deriving their own domain's signals truthfully
+(pinned under an electronics-absent activation double). Contract evidence obligations satisfied: RED r1–r4 on the clean
+parent (real-Flask NB-R1 reproduction via the accepted-answer channel); GREEN 13/13 (§6 A–F); mutations 7/7 CAUGHT
+(m1–m6 + supplementary m5b) with sha256 byte-restoration; differentials d1 = ZERO deltas / d2 = only categorized NB-R1
+corrections / d3 = 45/45 categorized family-seam corrections, 0 unexplained; full suite green pre- and post-merge. **No
+duplicate safety framework, no Domain-Pack schema change, no domain activation, no classifier/activation-policy change**
+(fence diffs = 0 lines).
+**Disposition: CF5-F001 = FORMALLY CLOSED over the authoritative runtime** (authoritative if/when this closure candidate is
+merged and post-merge verified). The `engine/safety_signal.py` coupling of the Pre-Phase-9 Core Domain-Neutrality gate
+**D-GMPR-01-D-D3** is DISCHARGED; that gate's remaining couplings (`engine/path_n_questions.py` electronics-owned content
+ownership at activation time, and the CF5-F004/CF-3 tie-break lane) remain governed by their own records.
+
+**Non-blocking observations memorialized (registered ONCE; no new obligations invented).** (i) The §4
+`domain_signal`-only narrowing is the accepted implementation of record — any future gate widening cold-load identity
+restoration (e.g. full session resume) belongs to the P4-2/Phase-5 lane, which already owns it (no new obligation).
+(ii) The D3-A pin reconciliation is accepted history (load-bearing invariant preserved). (iii) The historical evidence
+scripts under `docs/governance/evidence/**` predate this change and must not be used as post-change parity baselines
+(caveat recorded; no new obligation). (iv) The open P9-QS input recorded by the contract §3 — whether a new domain must
+ship a governed safety-cue family before activation — remains with the per-domain P9-QS qualification lane (already
+registered there by the contract; not a new obligation). **FU-1 remains outside F001**, registered ONCE in its existing
+CF-5-lane home (the CF5-F002 formal-closure entry).
+
+**Boundary / status after this entry.** **CF5-F001 = FORMALLY CLOSED** (conditional on this candidate's own merge +
+post-merge verification). **CF5-F002 = FORMALLY CLOSED; CF5-F003 = CLOSED; CF5-F004 = OPEN C (NOT closed); CF-5 = OPEN
+(F001 closure does NOT close CF-5); CF-6 = OPEN (facets (i)–(iv) discharged only); CF-2 = OPEN; CF-3 registered; D4
+SEPARATE / UNEXECUTED; D8 Owner-reserved.** `activated_domains() == ['electronics_electrical']`; **NO domain
+selected/registered/activated; first new-domain activation remains BLOCKED** behind the remaining pre-trigger prerequisites
+(CF5-F004, remaining CF-6, CF-2, CF-3, per-domain P9-QS qualification, D8 if IoT, and explicit Owner activation
+authorization). Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED; deployment/production = NOT AUTHORIZED. Append-only; prior
+history not rewritten. This entry authorizes no push, PR, merge beyond this candidate, no runtime/test change, no domain
+activation, no D4/D8, no ODR change, and no F004 / CF-5 / CF-6 / CF-2 / CF-3 closure. **Next required gate: Mandatory
+Grill on this exact closure candidate.**
