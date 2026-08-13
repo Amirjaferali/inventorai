@@ -8712,3 +8712,59 @@ the F004 pre-trigger obligation additionally binds before any first registry-set
 EXECUTED; deployment/production NOT AUTHORIZED. Append-only; prior history not rewritten. This entry authorizes no push,
 PR, or merge beyond this candidate, no corrective contract, no remediation, no domain activation, and no D4/D8/ODR change.
 **Next required gate: Mandatory Grill on this exact validation-record candidate.**
+
+---
+
+## CF5-F004 — Hardcoded Non-Activated Priority Fallback — CORRECTIVE IMPLEMENTATION CONTRACT + Owner decisions OD1/OD2/OD3 — governance-only CANDIDATE — implementation NOT started; NO domain activated
+
+**Gate.** Governance-only **corrective implementation contract candidate** for CF-5 finding **CF5-F004** (independently
+VALIDATED C, record merged PR #461), plus authoritative recording of Owner decisions **OD1/OD2/OD3** as **D-CF5-F004-01**
+(the one justified ODR change this gate; the implementation gate makes ZERO ODR change — D-CF5-F002-01 precedent).
+Authoritative base `5dc5055746eaeabc5c92550b1dc10ac66860d7cc` (PR #461 SHA-preserving merge; merge tree ==
+validation-candidate tree; freshly fetched; 0 newer); boot OK; `activated_domains() == ['electronics_electrical']`.
+Canonical record: `docs/governance/CF5_F004_PRIORITY_FALLBACK_CORRECTIVE_CONTRACT.md`. ZERO runtime / test / Web / CLI /
+domain / registry / activation / schema / persistence diff this gate.
+
+**Owner decisions recorded (D-CF5-F004-01).** **OD1** pre-trigger binding: remediation complete BEFORE any
+pack-schema/provenance work whose successful result could change the recognized-registry set (earlier than registration).
+**OD2** legacy precedence preserved for the existing four domains (no user-visible change; differential lock); for future
+registered domains NO invented arbitrary winner and NO silent erasure/displacement. **OD3** CF-3 + D-GMPR-01-D-D3 tie-break
+coupling discharge only at eventual F004 formal closure.
+
+**Architecture selected (contract §3; minimum repository-compatible).** Registry-derived candidate membership (no
+hardcoded membership list decides who can win) + an explicit bounded legacy-compatibility precedence layer (the existing
+4-id order, byte-preserved, applying ONLY among the legacy four — OD2) + arm-A resolution SINGLE(sole top scorer) + arm-B
+resolution via a NEW fail-closed `DomainResultKind` (working name `UNRESOLVED_NON_ACTIVATED_TIE`; complete canonical
+candidate set; deterministic reason; no winner; NO activation requirement — explicitly distinct from the untouched
+activated-only `AMBIGUOUS_TIE`). Mechanical necessity of the new kind proven by elimination (silent displacement /
+invented winner / silent-erasure NONE / weakening the closed P9-E2-R AMBIGUOUS_TIE invariant all fail). Bounded
+fail-closed consumer dispatch ONLY: `/start` adds the new kind to its existing refusal dispatch (mechanically required —
+today an unrecognized kind falls to the NONE consent path = the validated dangerous chain); the CLI bounded-stop tuple
+gains the new kind; `infer_domain` unchanged (already fails loud on every richer kind — pinned).
+
+**Contract scope.** Allowed: `engine/domain_rules.py` (Case-0 replacement + new kind + invariants ONLY) + bounded `/start`
+dispatch addition + bounded CLI tuple addition + NEW `tests/test_cf5_f004_priority_fallback_extensibility.py`
+(self-restoring in-process `_REGISTRY` doubles; no pack files) + justified test additions. Forbidden: second
+classifier/registry source; pack/registry schema or data change; activation change; any alteration of AMBIGUOUS_TIE /
+D3-D / P9-E2 / CF5-F003 / F002 semantics; `infer_domain` change; order-nondeterminism; skip-warning; IoT vocabulary
+(examination inputs only); D4/D8; implementation-gate ODR diff. STOP before any scope expansion.
+
+**Required evidence.** RED R1–R7 (arm-A NONE fallthrough; arm-B silent displacement; legacy-four pins; D3-D pin; P9-E2
+pin; `infer_domain` pin; real `/start` registry-double chain — parent admits an omitted pack's idea as an
+electronics-labeled session via NONE consent, candidate yields SINGLE(new domain) → refused by the CLOSED F002 flow).
+GREEN matrix + new-kind construction invariants + determinism probe (shuffled registry iteration) + guardrails. Mutations
+m1–m6 each CAUGHT (fallthrough reintroduced; displacement reintroduced; arbitrary winner; order dependence; `/start`
+dispatch dropped; AMBIGUOUS_TIE invariant weakened). Differentials: d1 full current-registry corpus = ZERO deltas (OD2
+lock incl. guidance flavor); d2 simulated-registry corpus = only categorized arm corrections; 0 unexplained. Full suite
+green with exact counts.
+
+**Boundary / status after this entry.** **CF5-F004 corrective contract = CANDIDATE ONLY; implementation NOT started;
+CF5-F004 / CF-3 NOT closed.** Still requires Mandatory Grill → independent external exact-candidate review → Owner
+exact-candidate acceptance → SHA-preserving publication → PR → pre/post-merge verification; after authoritative, the
+bounded CF5-F004 implementation is the subsequent separately governed gate. CF5-F001/F002 FORMALLY CLOSED; CF5-F003
+CLOSED; CF-5 OPEN; CF-6 OPEN (facets (i)–(iv) discharged only); CF-2 OPEN; CF-3 registered (OD3 timing); D4 SEPARATE /
+UNEXECUTED; D8 Owner-reserved; `activated_domains() == ['electronics_electrical']`; **first new-domain activation remains
+BLOCKED, and per OD1 the F004 obligation binds before any pack-schema/provenance work capable of changing the
+recognized-registry set**; Phase 10 NOT AUTHORIZED; PSRR NOT EXECUTED; deployment/production NOT AUTHORIZED. Append-only;
+prior history not rewritten. This entry authorizes no push, PR, merge beyond this candidate, no implementation, no domain
+registration/activation, and no D4/D8 execution. **Next required gate: Mandatory Grill on this exact contract candidate.**

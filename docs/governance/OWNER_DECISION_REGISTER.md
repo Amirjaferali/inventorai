@@ -887,3 +887,22 @@ change, no domain selection/registration/activation, no D4/D8, and no CF5-F002 /
 of the mandatory Pre-Phase-9 Core Domain-Neutrality gate **D-GMPR-01-D-D3** (the Web-admission literals), and does not discharge that
 gate's other couplings (`engine/safety_signal.py` = CF5-F001; `engine/path_n_questions.py`; hard-coded tie-break = CF5-F004/CF-3).
 `activated_domains() == ['electronics_electrical']`; first new-domain activation remains BLOCKED.
+
+---
+
+## CF5-F004 — Non-Activated Fallback Extensibility Policy (pre-trigger corrective prerequisite)
+
+Governance/documentation-only registration of the bounded Owner decisions needed to freeze the CF5-F004 corrective
+implementation contract. Canonical evidence: `docs/governance/CF5_F004_PRIORITY_FALLBACK_CORRECTIVE_CONTRACT.md` §2 and the
+merged independent-validation record `docs/governance/CF5_F004_PRIORITY_FALLBACK_INDEPENDENT_VALIDATION_RECORD.md`
+(PR #461). **Scope guard:** these decisions resolve ONLY the bounded fallback-extensibility policy required for the
+pre-trigger correction; they authorize NO domain registration/activation, NO pack-schema work, NO D4/D8, and NO change to
+the closed D3-D / P9-E2 / CF5-F003 / CF5-F002 behavior.
+
+| ID | Subject | Status | Impl. authority | Evidence |
+|---|---|---|---|---|
+| D-CF5-F004-01 | **Bounded fallback-extensibility policy.** **OD1 — pre-trigger binding (safer sequencing):** F004 remediation MUST be complete before any pack-schema/provenance work whose successful result could change the recognized-registry set (earlier than actual registration). **OD2 — legacy precedence:** current legacy precedence outcomes for the existing four recognized domains (`medical_device > electronics_electrical > mechanical > software`, zero-activated) are preserved — no change to current user-visible classification/guidance flavor; for FUTURE registered domains no new arbitrary winner rule may be invented, and a registered top-scoring domain must never be silently erased or displaced merely because its id is absent from a hardcoded list. **OD3 — CF-3 discharge timing:** CF-3 and the D-GMPR-01-D-D3 hard-coded tie-break coupling discharge only at eventual F004 formal closure. | **ACCEPTED — bounded policy for the CF5-F004 corrective contract** (authoritative if/when this governance candidate completes the review/acceptance/merge lifecycle) | NONE (contract-only; the corrective implementation is a separate later gate with ZERO ODR diff) | Contract §2; validation record §10 |
+
+**Boundary.** This entry records bounded policy and authorizes no implementation, no runtime/test change, no domain
+registration/activation, no pack-schema work, and no CF5-F004 / CF-3 / CF-5 / CF-6 / CF-2 closure.
+`activated_domains() == ['electronics_electrical']`; first new-domain activation remains BLOCKED.

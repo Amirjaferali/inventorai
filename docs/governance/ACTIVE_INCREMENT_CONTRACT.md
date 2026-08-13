@@ -41,7 +41,26 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — CF5-F004 INDEPENDENT VALIDATION RECORD CANDIDATE; governance-only; validation only, no remediation; NO
+**Status (current — CF5-F004 CORRECTIVE IMPLEMENTATION CONTRACT CANDIDATE + D-CF5-F004-01; governance-only; implementation
+NOT started; NO domain activated):** the CF5-F004 independent validation record is **MERGED and post-merge verified**
+(PR #461 → authoritative tip `5dc5055746eaeabc5c92550b1dc10ac66860d7cc`; merge tree == candidate tree → **CF5-F004 = OPEN
+C — INDEPENDENTLY VALIDATED**). This gate records the bounded corrective contract candidate
+(`docs/governance/CF5_F004_PRIORITY_FALLBACK_CORRECTIVE_CONTRACT.md`) and the Owner decisions **D-CF5-F004-01**
+(OD1 pre-trigger binding before any registry-set-changing pack-schema/provenance WORK; OD2 legacy 4-domain precedence
+preserved + no invented winner / no silent erasure for future domains; OD3 CF-3 + D-GMPR-01-D-D3 discharge only at F004
+formal closure). Architecture selected (§3): registry-derived membership + explicit bounded legacy-compatibility layer +
+arm-A SINGLE(sole top scorer) + arm-B NEW fail-closed `UNRESOLVED_NON_ACTIVATED_TIE` kind (mechanical necessity proven;
+AMBIGUOUS_TIE untouched) + bounded `/start`/CLI fail-closed dispatch additions; `infer_domain` unchanged-and-pinned.
+Allowlist/forbidden per contract §4; evidence R1–R7 / GREEN+determinism / m1–m6 / d1 ZERO-delta + d2 categorized / full
+suite per §5–§6. Governance-only: ZERO runtime/test/Web/CLI/domain/registry/activation/schema/persistence diff; ODR change
+= D-CF5-F004-01 ONLY (implementation gate = ZERO ODR). **CONTRACT CANDIDATE ONLY — CF5-F004 / CF-3 NOT closed;
+implementation NOT authorized; first new-domain activation remains BLOCKED (and OD1 binds earlier).** Next required gate:
+**Mandatory Grill on this exact contract candidate**; then independent external exact-candidate review → Owner acceptance
+→ SHA-preserving publication → PR → pre/post-merge verification; after authoritative, the bounded CF5-F004 implementation
+gate.
+
+**Immediately prior (CF5-F004 independent validation — MERGED via PR #461; retained as history):**
+**Status (prior — CF5-F004 INDEPENDENT VALIDATION RECORD CANDIDATE; governance-only; validation only, no remediation; NO
 domain activated):** the CF5-F001 formal closure is **MERGED and post-merge verified** (PR #460 → authoritative tip
 `e39f667a934f0702301ab71d5b17a6b1121a4ecf`; merge tree == closure-candidate tree → **CF5-F001 = FORMALLY CLOSED**). This
 gate records the completed CF5-F004 independent validation (genuinely separate session; verdict **ACCEPT WITH NON-BLOCKING
