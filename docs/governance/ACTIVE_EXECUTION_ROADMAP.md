@@ -8768,3 +8768,56 @@ BLOCKED, and per OD1 the F004 obligation binds before any pack-schema/provenance
 recognized-registry set**; Phase 10 NOT AUTHORIZED; PSRR NOT EXECUTED; deployment/production NOT AUTHORIZED. Append-only;
 prior history not rewritten. This entry authorizes no push, PR, merge beyond this candidate, no implementation, no domain
 registration/activation, and no D4/D8 execution. **Next required gate: Mandatory Grill on this exact contract candidate.**
+
+---
+
+## CF5-F004 — Hardcoded Non-Activated Priority Fallback — BOUNDED CORRECTIVE IMPLEMENTATION CANDIDATE (merged contract) — CF5-F004 / CF-3 NOT closed; NO domain activated
+
+**Gate.** OWNER-AUTHORIZED bounded **implementation** of the authoritative CF5-F004 corrective contract
+(`docs/governance/CF5_F004_PRIORITY_FALLBACK_CORRECTIVE_CONTRACT.md`, merged PR #462; Owner decisions D-CF5-F004-01
+authoritative), executed fresh from the authoritative parent `0e4312e50a2d166465c4ce17819b47711d720785` (PR #462
+SHA-preserving merge; merge tree == contract-candidate tree; freshly fetched; 0 newer); boot OK; `activated_domains() ==
+['electronics_electrical']`. **ZERO ODR diff this gate** (D-CF5-F004-01 already authoritative).
+
+**Implemented (contract §3).** `engine/domain_rules.py`: Case 0 replaced — zero-activated candidate membership derives from
+the canonical registry (the scored top-tied set; no hardcoded membership list decides who can win); the historical
+precedence `medical_device > electronics_electrical > mechanical > software` survives ONLY as the explicit bounded
+`_LEGACY_ZERO_ACTIVATED_PRECEDENCE` compatibility layer, consulted solely when EVERY tied domain is a legacy member (OD2 —
+it can never exclude, erase, or displace a newly registered domain); arm A: a sole top-scoring registered domain →
+truthful deterministic `SINGLE`; arm B: any zero-activated tie the legacy layer cannot resolve → **NEW result kind
+`UNRESOLVED_NON_ACTIVATED_TIE`** (final identifier == the contract working name; ≥2 registry-recognized candidates,
+COMPLETE canonical sorted set, deterministic `EQUAL_SCORE` reason, no winner, NO activation requirement) — the
+activated-only `AMBIGUOUS_TIE` invariant is UNTOUCHED (in-code note + m6/invariant pins). Recorded in code and tests why
+`MULTI_DOMAIN_NEEDS_D4` is NOT reused (equal-score evidence ≠ multi-domain composition; false D4 semantics; closed P9-E2
+policy already rejects manufacturing it). `web/app.py`: ONLY the new kind added to the existing `/start` fail-closed
+refusal dispatch (an unrecognized kind would otherwise fall to the NONE consent path — the validated dangerous chain).
+`scripts/run_cli.py`: ONLY the new kind added to the existing bounded-stop tuple. `infer_domain` UNCHANGED (fails loud on
+the new kind through its existing richer-result path — pinned). NEW
+`tests/test_cf5_f004_priority_fallback_extensibility.py` (14 tests; self-restoring in-process `_REGISTRY` doubles with
+vocabulary-clean simulated packs — no pack files, no loader change).
+
+**Evidence.** RED on the clean parent: R1 arm-A NONE fallthrough; R2 arm-B silent legacy displacement; R7 real `/start`
+chain (vocabulary-clean tokens; parent 302-admits an omitted pack's idea as an electronics session via NONE consent;
+candidate refuses); R8 (reviewer N2) ≥3-way mixed tie with EXACT candidate-set equality — 8 tests fail pre-fix; pins R3
+(legacy four outputs incl. `gear and catheter → medical_device`), R4 (D3-D), R5 (P9-E2 AMBIGUOUS_TIE), R6 (`infer_domain`
+totality + fail-loud) pass pre- and post-fix. GREEN: **14/14** (matrix + new-kind construction invariants incl.
+AMBIGUOUS_TIE-stays-activated-only + shuffled-registry determinism probe + focused Web dispatch test with a
+vocabulary-clean tie [the "gear" strong-vocab masking was caught in-gate by mutation M5 surviving, and the test was
+strengthened to "hinge" — disclosure] + focused CLI bounded-stop test). **Mutations M1–M7: 7/7 CAUGHT** (arm-A
+fallthrough; arm-B displacement; arbitrary winner; iteration-order dependence; `/start` dispatch dropped; AMBIGUOUS_TIE
+invariant weakened; ≥3-way subsetting), bytes sha256-restored. **Differentials: D1 real current-registry corpus
+(classification + real `/start` outcomes + guidance-flavor markers) = ZERO deltas (OD2 lock); D2 simulated future-registry
+corpus = 3 arm-A + 4 arm-B categorized corrections (incl. two parent NONE→electronics-admission chains eliminated), 4
+unchanged, 0 unexplained.** **Full governed suite: 2442 passed / 3 skipped / 1 xfailed / 0 failed** (parent baseline
+2428/3/1 + 14 new; architecture/neutrality guardrails green). `git diff --check` clean. No pack/registry-schema/loader/
+activation/classifier-matching (CF5-F003)/D3-D/P9-E2/F002-admission/IoT-vocabulary/ODR diff.
+
+**Boundary / status after this entry.** **CF5-F004 = OPEN C — implementation candidate; CF5-F004 / CF-3 NOT closed;
+D-GMPR-01-D-D3 tie-break coupling OPEN (discharge only at F004 formal closure, OD3).** Still requires Mandatory Grill →
+independent external exact-candidate review → Owner exact-candidate acceptance → SHA-preserving publication → PR →
+pre/post-merge verification; formal closure is a separate later gate. CF5-F001/F002 FORMALLY CLOSED; CF5-F003 CLOSED;
+CF-5 OPEN; CF-6 OPEN (facets (i)–(iv) discharged only); CF-2 OPEN; D4 SEPARATE / UNEXECUTED; D8 Owner-reserved;
+`activated_domains() == ['electronics_electrical']`; **first new-domain activation remains BLOCKED, and per OD1 the F004
+obligation binds before any pack-schema/provenance work capable of changing the recognized-registry set**; Phase 10 NOT
+AUTHORIZED; PSRR NOT EXECUTED; deployment/production NOT AUTHORIZED. Append-only; prior history not rewritten. This entry
+authorizes no push, PR, merge beyond this candidate, no domain registration/activation, and no D4/D8/ODR change.

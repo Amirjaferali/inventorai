@@ -92,11 +92,24 @@ def _present_signal_count(pack, tokens, token_set):
 
 
 class DomainResultKind(Enum):
-    """The four canonical domain-classification result kinds (P9-E2-R)."""
+    """The canonical domain-classification result kinds (P9-E2-R, extended by
+    the CF5-F004 corrective contract §3.4).
+
+    ``UNRESOLVED_NON_ACTIVATED_TIE`` (CF5-F004, merged contract PR #462): a
+    ZERO-ACTIVATED top-score tie that the bounded legacy compatibility layer
+    cannot resolve (it involves a non-legacy registered domain, or only
+    non-legacy domains). Fail-closed: complete canonical candidate set, no
+    winner, deterministic reason, NO activation requirement — deliberately
+    DISTINCT from the P9-E2 ``AMBIGUOUS_TIE`` (whose activated-only invariant
+    is untouched). ``MULTI_DOMAIN_NEEDS_D4`` is NOT reused for this case:
+    equal-score evidence does not establish multi-domain composition, reuse
+    would manufacture false D4 semantics, and the closed P9-E2 policy already
+    rejects manufacturing that kind from equal-score evidence."""
     SINGLE = "single"
     NONE = "none"
     AMBIGUOUS_TIE = "ambiguous_tie"
     MULTI_DOMAIN_NEEDS_D4 = "multi_domain_needs_d4"
+    UNRESOLVED_NON_ACTIVATED_TIE = "unresolved_non_activated_tie"
 
 
 class DomainAmbiguityReason(Enum):
@@ -169,7 +182,7 @@ class DomainClassification:
                 raise ValueError("NONE must have no candidate set")
             if self.reason is not None:
                 raise ValueError("NONE must not carry an ambiguity reason")
-        else:  # AMBIGUOUS_TIE or MULTI_DOMAIN_NEEDS_D4
+        else:  # AMBIGUOUS_TIE, MULTI_DOMAIN_NEEDS_D4 or UNRESOLVED_NON_ACTIVATED_TIE
             if self.selected_domain is not None:
                 raise ValueError("a tie/multi result must not carry a selected winner")
             if len(cands) < 2:
@@ -179,12 +192,24 @@ class DomainClassification:
             if not isinstance(self.reason, DomainAmbiguityReason):
                 raise ValueError("a tie/multi result requires a deterministic reason code")
             if self.kind is DomainResultKind.AMBIGUOUS_TIE:
+                # P9-E2-R invariant UNTOUCHED by CF5-F004: AMBIGUOUS_TIE stays
+                # activated-only (D3-D); the zero-activated unresolved tie uses
+                # its own kind above, which carries NO activation requirement.
                 if not all(domain_activation.is_activated(c, _REGISTRY) for c in cands):
                     raise ValueError("all AMBIGUOUS_TIE candidates must be activated (D3-D)")
 
 
 
 # DEPRECATED: authority moved to registry — Step 5 (AB-005). Remove in Step 7.
+
+# CF5-F004 (merged contract §3.2; Owner OD2): the historical zero-activated
+# precedence, preserved EXACTLY and ONLY as a bounded compatibility layer among
+# these four legacy ids. It is a precedence order, NOT a membership gate: it is
+# consulted solely when every top-tied domain is a legacy member, so it can
+# never exclude, erase, or displace a newly registered domain.
+_LEGACY_ZERO_ACTIVATED_PRECEDENCE = (
+    "medical_device", "electronics_electrical", "mechanical", "software")
+_LEGACY_ZERO_ACTIVATED_PRECEDENCE_SET = frozenset(_LEGACY_ZERO_ACTIVATED_PRECEDENCE)
 
 
 def classify_domain(idea_text: str) -> "DomainClassification":
@@ -231,15 +256,42 @@ def classify_domain(idea_text: str) -> "DomainClassification":
             kind=DomainResultKind.AMBIGUOUS_TIE,
             candidates=tuple(activated_tied),
             reason=DomainAmbiguityReason.EQUAL_SCORE)
-    # Case 0: no activated tied domain -- preserve the prior deterministic priority
-    # order for backward compatibility (fallback unchanged; CF-3 registers the
-    # future Nth-domain registration/activation obligation).
-    priority = ["medical_device", "electronics_electrical", "mechanical", "software"]
-    for domain in priority:
-        if scores.get(domain, 0) == best_score:
-            return DomainClassification(
-                kind=DomainResultKind.SINGLE, selected_domain=domain)
-    return DomainClassification(kind=DomainResultKind.NONE)
+    # Case 0 (CF5-F004 corrective, merged contract §3; Owner D-CF5-F004-01):
+    # zero-activated resolution derives candidate membership from the canonical
+    # registry — the scored top-tied set itself — so NO hardcoded membership
+    # list decides whether a registered domain can win (the prior 4-id literal
+    # silently dropped an unlisted sole top scorer to NONE and silently awarded
+    # a legacy member on a mixed tie: the validated F004 failure arms).
+    if len(tied) == 1:
+        # Arm A: a SOLE top-scoring registered domain is the truthful,
+        # deterministic SINGLE result regardless of legacy-list membership
+        # (a unique top score is the classifier's existing winner semantics,
+        # not an invented precedence).
+        return DomainClassification(
+            kind=DomainResultKind.SINGLE, selected_domain=tied[0])
+    # Legacy compatibility layer (OD2): the historical zero-activated
+    # precedence medical_device > electronics_electrical > mechanical >
+    # software survives ONLY as an explicit bounded order AMONG the legacy
+    # four — reproducing today's outputs exactly for every current-registry
+    # input — and can never exclude, erase, or displace a non-legacy
+    # registered domain (it is consulted only when EVERY tied domain is a
+    # legacy member).
+    tied_set = set(tied)
+    if tied_set <= _LEGACY_ZERO_ACTIVATED_PRECEDENCE_SET:
+        for domain in _LEGACY_ZERO_ACTIVATED_PRECEDENCE:
+            if domain in tied_set:
+                return DomainClassification(
+                    kind=DomainResultKind.SINGLE, selected_domain=domain)
+    # Arm B: a zero-activated tie involving a non-legacy registered domain (or
+    # only non-legacy domains) has no governed precedence — no winner may be
+    # invented and no candidate silently erased (OD2). Fail closed with the
+    # COMPLETE canonical candidate set; downstream consumers dispatch this
+    # kind to their existing refusal/bounded-stop surfaces, and the legacy
+    # infer_domain wrapper fails loud on it (its frozen contract).
+    return DomainClassification(
+        kind=DomainResultKind.UNRESOLVED_NON_ACTIVATED_TIE,
+        candidates=tuple(sorted(tied)),
+        reason=DomainAmbiguityReason.EQUAL_SCORE)
 
 
 def infer_domain(idea_text: str) -> str | None:

@@ -41,7 +41,27 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — CF5-F004 CORRECTIVE IMPLEMENTATION CONTRACT CANDIDATE + D-CF5-F004-01; governance-only; implementation
+**Status (current — CF5-F004 BOUNDED CORRECTIVE IMPLEMENTATION CANDIDATE; CF5-F004 / CF-3 NOT closed; NO domain
+activated):** the CF5-F004 corrective contract is **MERGED and post-merge verified** (PR #462 → authoritative tip
+`0e4312e50a2d166465c4ce17819b47711d720785`; merge tree == contract-candidate tree; D-CF5-F004-01 authoritative) and its
+bounded implementation was executed fresh from that parent. Changed paths: `engine/domain_rules.py` (registry-derived
+zero-activated membership; bounded `_LEGACY_ZERO_ACTIVATED_PRECEDENCE` compatibility layer among the legacy four only —
+OD2; arm-A truthful SINGLE(sole top scorer); arm-B NEW `UNRESOLVED_NON_ACTIVATED_TIE` kind — complete canonical set, no
+winner, no activation requirement, AMBIGUOUS_TIE activated-only invariant untouched; MULTI_DOMAIN_NEEDS_D4 non-reuse
+recorded), `web/app.py` (bounded `/start` fail-closed dispatch addition only), `scripts/run_cli.py` (bounded-stop tuple
+addition only), NEW `tests/test_cf5_f004_priority_fallback_extensibility.py` (14 tests; in-process registry doubles;
+vocabulary-clean packs). `infer_domain` unchanged-and-pinned. Evidence: RED R1/R2/R7/R8 on the clean parent (incl. the
+real NONE→electronics-admission chain) with pins R3–R6 green both sides; GREEN 14/14 incl. determinism probe and the
+strengthened vocabulary-clean Web dispatch test (M5 initially survived via "gear" strong-vocab masking — caught in-gate,
+test corrected, disclosed); mutations M1–M7 7/7 CAUGHT, bytes restored; differentials D1 = ZERO deltas (real registry,
+classification + /start + guidance flavor) and D2 = 3 arm-A + 4 arm-B categorized corrections / 0 unexplained; full suite
+**2442 passed / 3 skipped / 1 xfailed / 0 failed** (baseline 2428/3/1 + 14). ZERO ODR diff. **IMPLEMENTATION CANDIDATE
+ONLY — still requires Mandatory Grill → independent external exact-candidate review → Owner acceptance → SHA-preserving
+publication → PR → pre/post-merge verification; CF5-F004 / CF-3 NOT closed (OD3); first new-domain activation remains
+BLOCKED (and OD1 binds earlier).**
+
+**Immediately prior (CF5-F004 corrective contract + D-CF5-F004-01 — MERGED via PR #462; retained as history):**
+**Status (prior — CF5-F004 CORRECTIVE IMPLEMENTATION CONTRACT CANDIDATE + D-CF5-F004-01; governance-only; implementation
 NOT started; NO domain activated):** the CF5-F004 independent validation record is **MERGED and post-merge verified**
 (PR #461 → authoritative tip `5dc5055746eaeabc5c92550b1dc10ac66860d7cc`; merge tree == candidate tree → **CF5-F004 = OPEN
 C — INDEPENDENTLY VALIDATED**). This gate records the bounded corrective contract candidate

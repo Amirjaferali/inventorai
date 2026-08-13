@@ -1610,6 +1610,14 @@ def start():
         # domain, and D4 is NOT executed here. No implication that multi-domain
         # analysis occurred (P9-E2-R 7/14/16).
         return _render_start_page(error=_unsupported_domain_message(activated))
+    if classification.kind is DomainResultKind.UNRESOLVED_NON_ACTIVATED_TIE:
+        # CF5-F004 (merged contract §3.5): a zero-activated tie the legacy
+        # compatibility layer cannot resolve is NOT admissible as one domain
+        # and must NEVER fall through to the NONE consent path (the validated
+        # dangerous chain: silent NONE -> sole-electronics consent -> a
+        # mislabeled electronics session). Same existing fail-closed refusal
+        # surface; no admission/UX change.
+        return _render_start_page(error=_unsupported_domain_message(activated))
     # SINGLE -> the resolved registry domain string; NONE -> None.
     domain = (classification.selected_domain
               if classification.kind is DomainResultKind.SINGLE else None)
