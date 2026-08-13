@@ -969,3 +969,28 @@ the closed D3-D / P9-E2 / CF5-F003 / CF5-F002 behavior.
 **Boundary.** This entry records bounded policy and authorizes no implementation, no runtime/test change, no domain
 registration/activation, no pack-schema work, and no CF5-F004 / CF-3 / CF-5 / CF-6 / CF-2 closure.
 `activated_domains() == ['electronics_electrical']`; first new-domain activation remains BLOCKED.
+
+---
+
+## P9-MECH-QC — Mechanical Domain Selection & P9-QS Qualification Contract (selection recorded inside the contract gate)
+
+Governance/documentation-only registration recorded by the Mechanical P9-QS Qualification Contract gate (canonical
+record: `docs/governance/P9_MECHANICAL_DOMAIN_QUALIFICATION_CONTRACT.md`; base `c4abe0207c34f15e89438cc931c114db9d2e6225`).
+Per repository precedent (D-CF5-F002-01 / D-CF5-F004-01), the Owner decision is recorded inside the contract gate that
+operates under it — **no standalone selection gate exists or is implied**. **Scope guard:** this decision authorizes
+Mechanical qualification planning/governance ONLY; it authorizes NO qualification completion, NO activation, NO domain
+registration, NO recognized-registry change, NO D4 execution, NO D8, NO CF-6/CF-2/D-GMPR closure, NO Phase 10, NO PSRR,
+NO deployment.
+
+| ID | Subject | Status | Impl. authority | Evidence |
+|---|---|---|---|---|
+| D-P9-MECH-01 | **Phase-9 next-domain selection: `mechanical`.** The Owner SELECTS `mechanical` (an ALREADY-RECOGNIZED §5-I1 pack) as the next specialist domain to pursue through Phase-9 P9-QS qualification. **Binding separations:** selection ≠ qualification (this decision does not declare or schedule qualification completion); qualification ≠ activation (even successful qualification does NOT activate `mechanical`; activation remains a separate, explicitly-Owner-authorized §5-I2 gate behind ALL existing prerequisites — remaining CF-6, CF-2, the open D-GMPR `path_n_questions` coupling, NMF-1/FU-1 disposition, D8 if implicated, and explicit Owner activation authorization); the recognized-registry set is UNCHANGED by this decision. **Extensibility-claim boundary:** a future successful Mechanical qualification proves ONLY qualification-extensibility for an already-recognized domain; it does NOT prove registration-extensibility for future fifth/sixth/new domains — independent future testing of genuinely-new-domain registration extensibility is explicitly preserved. **Preserved boundaries:** D4 REGISTERED / NOT AUTHORIZED (Amendment 01 semantics untouched); D8 Owner-reserved; CF-6 OPEN; CF-2 OPEN; D-GMPR `path_n_questions` coupling OPEN; Phase 10 NOT AUTHORIZED; PSRR NOT EXECUTED; deployment NOT AUTHORIZED. `activated_domains() == ['electronics_electrical']`. | **ACCEPTED — selection + qualification-planning authorization only** (authoritative if/when this contract candidate completes the review/acceptance/merge lifecycle) | NONE (contract-only; every future Mechanical qualification implementation increment requires its own separate explicit Owner authorization) | Contract §2; the read-only sequencing determination preceding this gate |
+
+**Open Owner decision surfaced by this contract (NOT decided here):** **OD-M2** — safety-cue-family timing for
+Mechanical qualification: (a) governed Mechanical safety-cue family REQUIRED before qualification; (b) qualification may
+complete with the truthful empty-family state but a governed family is REQUIRED before activation (the registered
+pre-activation input made concrete); or (c) another explicitly governed treatment. Recorded OPEN in contract §11; no
+Mechanical qualification declaration may be made until OD-M2 is decided.
+
+**Boundary.** This entry records the selection decision and authorizes no implementation, no runtime/test/pack/registry
+change, no qualification declaration, and no activation. First new-domain activation remains BLOCKED.

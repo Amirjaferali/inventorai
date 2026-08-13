@@ -8975,3 +8975,50 @@ blocker to and does not delay the Phase-9 next-domain decision or Mechanical P9-
 amendment becomes authoritative ONLY if/when this exact candidate is merged (create-a-merge-commit) and post-merge
 verified through the governed lifecycle. Append-only; prior history not rewritten. **Next required gate: Mandatory
 Grill on this exact candidate.**
+
+---
+
+## P9-MECH-QC — Mechanical Domain Selection (D-P9-MECH-01) + P9-QS Qualification CONTRACT — governance-only CONTRACT CANDIDATE — Mechanical NOT qualified; NOT activated; registry UNCHANGED
+
+**Gate.** Governance-only contract gate on authoritative base `c4abe0207c34f15e89438cc931c114db9d2e6225` (PR #466 merge
+— D-GMPR-01-D-D4 Amendment 01 AUTHORITATIVE; freshly fetched; 0 newer; clean tree). Canonical record:
+`docs/governance/P9_MECHANICAL_DOMAIN_QUALIFICATION_CONTRACT.md`. Records the Owner selection **`D-P9-MECH-01`**
+(`mechanical` = next Phase-9 P9-QS qualification target) INSIDE the contract gate per the D-CF5-F002-01/D-CF5-F004-01
+precedent — **no standalone selection gate**. ZERO runtime/test/Web/CLI/domain-pack/registry/activation/schema/
+persistence diff this gate. **DOCUMENTED NO-VALID-RED.**
+
+**Repository-first reconstruction (verified, not assumed).** Mechanical is genuinely recognized (19 classification /
+17 substance signals with provenance and declared CROSS-DOMAIN + LOW-SPECIFICITY AB-006 candidate flags; 3 gap types /
+10 verbatim-migrated questions) but NOT qualification-grade where P9-QS quality lives: **degenerate `modifier_value`-only
+rule nuances** (vs electronics full shape), **no `coverage_declaration`** (electronics has one), substance depth 17 vs
+53, aliases `["mechanical"]` only, **no safety-cue family** (`_DOMAIN_CUE_FAMILIES` electronics-only), **no Tier-1
+public label** (truthful neutral Tier-0 fallback today), Path-N seam Electronics-OWNED behind the open D-GMPR-01-D-D3
+coupling. **VERIFIED shared-core facts:** `classify_domain` scores by matched-set cardinality — per-signal `weight`
+metadata is dormant (truthfulness disposition required by contract §8.4); the F003 plural matcher is domain-generic
+(the advisory "electronics-specific plural alias in shared core" claim is NOT verified as stated; adjacent
+electronics-only web lay-vocabulary stays in its fenced CF-6/CF-2 lanes).
+
+**Contract substance (summary; the record is canonical).** §5 truthful Mechanical Domain Capability Contract via
+existing §5-I1 ownership; §6 real (non-placeholder) rule nuances required; §7 coverage declaration REQUIRED at
+electronics governance parity; §8 signal-quality evidence (AB-006 candidate flags reused; vocabulary-truthful plural
+behavior; weight-metadata truthfulness disposition); §9 mechanical↔electronics boundary-test classes (clearly-each /
+mixed / low-evidence / tied / negative / legacy-OD2) with **D4 separation binding**; §10 electronics non-degradation
+(full suite + byte-parity differential corpus); §11 safety-cue family — **OPEN Owner decision OD-M2 surfaced, NOT
+decided** (before-qualification vs before-activation vs other governed treatment; repository truth registers only the
+pre-activation input); §12 pack-question sufficiency IN contract / `path_n_questions.py` seam remediation stays in the
+OPEN D-GMPR lane; §13 truthful Tier-1 EN/AR Mechanical label at a future authorized gate — CF-2 NOT over-closed; §14
+output truthfulness with WS-PFV-001 routing (referenced only); §15 exact qualification-evidence package; §16 explicit
+activation separation; §17 extensibility-claim boundary (qualification-extensibility ONLY — no registration-
+extensibility / fifth-domain / D4 / IoT / universal-scalability claim); §18 D4 Amendment 01 boundary (no composition
+implementation); §19 verified latent-risk register with per-item ownership classification (no duplicate owners); §20
+P9-QS completeness-dimension mapping (performance/observability and security/abuse non-material here, with reasons);
+§21 canonical-owner reuse (no new registry/ledger/engine/tracker); §22 change surface + stop conditions.
+
+**Boundary / status after this entry.** **Mechanical = SELECTED (D-P9-MECH-01, conditional on this candidate's merge);
+NOT QUALIFIED; NOT ACTIVATED; recognized-registry set UNCHANGED.** The contract does not authorize its own
+implementation — every future Mechanical qualification increment requires separate explicit Owner authorization. OD-M2
+OPEN. CF-6 OPEN; CF-2 OPEN; D-GMPR `path_n_questions` coupling OPEN; NMF-1/FU-1 unchanged; D4 REGISTERED / NOT
+AUTHORIZED; D8 Owner-reserved; Phase 10 NOT AUTHORIZED; PSRR NOT EXECUTED; deployment NOT AUTHORIZED.
+`activated_domains() == ['electronics_electrical']`; **first new-domain activation remains BLOCKED** behind its
+existing prerequisites. Append-only; prior history not rewritten. This entry authorizes no push, PR, or merge beyond
+this candidate. **Next required gate: Mandatory Grill on this exact contract candidate.**

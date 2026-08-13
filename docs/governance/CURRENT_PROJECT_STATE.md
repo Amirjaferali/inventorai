@@ -1604,6 +1604,24 @@ AUTHORIZED / NOT STARTED.***
   `activated_domains() == ['electronics_electrical']`; first new-domain activation remains BLOCKED. **The next Owner
   gate is unchanged: the Phase-9 next-domain selection decision.** Authoritative ONLY if/when this exact candidate is
   merged + post-merge verified. Next required gate: Mandatory Grill on this exact candidate.
+  **D4 Amendment 01 MERGED (PR #466, tip `c4abe0207c34f15e89438cc931c114db9d2e6225`; merge tree == candidate tree) →
+  Amendment 01 AUTHORITATIVE; D4 remains REGISTERED / NOT AUTHORIZED. P9-MECH-QC CANDIDATE recorded: Owner selection
+  `D-P9-MECH-01` (`mechanical` = next Phase-9 P9-QS qualification target) + the Mechanical P9-QS Qualification
+  Contract** (canonical record: `P9_MECHANICAL_DOMAIN_QUALIFICATION_CONTRACT.md`; selection recorded inside the
+  contract gate — no standalone selection gate). **Selection ≠ qualification ≠ activation; registry UNCHANGED;
+  Mechanical NOT qualified, NOT activated.** Verified qualification gaps the contract binds: degenerate rule nuances;
+  missing coverage declaration; substance depth 17 vs electronics 53; no safety-cue family; no Tier-1 public label;
+  pack-question sufficiency unproven; dormant classifier `weight` metadata requiring truthfulness disposition (the
+  advisory "electronics-specific plural alias in shared core" claim NOT verified — the F003 matcher is domain-generic).
+  **OPEN Owner decision OD-M2: Mechanical safety-cue-family timing (before qualification vs before activation vs other
+  governed treatment) — surfaced, not decided; qualification cannot be declared until decided.** Boundaries preserved:
+  CF-6 OPEN; CF-2 OPEN; D-GMPR `path_n_questions` coupling OPEN (pack-content sufficiency is in-contract; seam
+  remediation stays in the D-GMPR lane); NMF-1/FU-1 unchanged; D4/D8/Phase 10/PSRR/deployment unchanged;
+  qualification-extensibility claim ONLY (no registration-extensibility / fifth-domain / universal-scalability claim);
+  `activated_domains() == ['electronics_electrical']`; first new-domain activation remains BLOCKED. The contract does
+  not authorize its own implementation — every future increment needs separate explicit Owner authorization.
+  Authoritative ONLY if/when this exact candidate is merged + post-merge verified. Next required gate: Mandatory Grill
+  on this exact candidate.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation

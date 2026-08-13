@@ -41,7 +41,34 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — D-GMPR-01-D-D4 AMENDMENT 01 CANDIDATE — bounded governance-only scope-meaning clarification; NOT a
+**Status (current — P9-MECH-QC: MECHANICAL SELECTION + P9-QS QUALIFICATION CONTRACT CANDIDATE — governance-only;
+Mechanical NOT qualified / NOT activated; registry UNCHANGED):** the D-GMPR-01-D-D4 Amendment 01 is **MERGED and
+post-merge verified** (PR #466 → authoritative tip `c4abe0207c34f15e89438cc931c114db9d2e6225`; merge tree ==
+candidate tree `2694a424` → **Amendment 01 AUTHORITATIVE**; D4 remains REGISTERED / NOT AUTHORIZED). This gate records
+the **Mechanical P9-QS Qualification Contract candidate** (canonical record:
+`docs/governance/P9_MECHANICAL_DOMAIN_QUALIFICATION_CONTRACT.md`) and, inside it, the Owner selection **`D-P9-MECH-01`**
+(`mechanical` = next Phase-9 qualification target; selection ≠ qualification ≠ activation; registry unchanged;
+qualification-extensibility claim only — NO registration-extensibility claim; no standalone selection gate, per the
+D-CF5-F002-01/D-CF5-F004-01 recording precedent). Contract defines the exact future evidence required before
+`mechanical` may be declared P9-QS QUALIFIED: truthful capability declaration via existing §5-I1 ownership; real
+(non-placeholder) rule nuances; coverage declaration at electronics governance parity; signal-quality evidence (AB-006
+candidate flags reused; truthful plural-matching behavior; **verified dormant `weight` metadata** truthfulness
+disposition); mechanical↔electronics boundary tests with binding D4 separation; electronics non-degradation
+(full-suite + byte-parity differentials); pack-question sufficiency (the `path_n_questions.py` seam stays in the OPEN
+D-GMPR lane); truthful Tier-1 EN/AR label at a future authorized gate (CF-2 NOT over-closed); output truthfulness with
+WS-PFV-001 routing (referenced only); exact §15 qualification-evidence package. **OPEN Owner decision OD-M2 surfaced,
+NOT decided: Mechanical safety-cue-family timing (before qualification vs before activation vs other governed
+treatment) — no qualification declaration until decided.** The contract does NOT qualify or activate Mechanical, does
+NOT authorize its own implementation (each increment needs separate Owner authorization), and preserves CF-6 / CF-2 /
+D-GMPR coupling / NMF-1 / FU-1 / D4 / D8 / Phase 10 / PSRR / deployment boundaries unchanged. Governance-only: ZERO
+runtime/test/Web/CLI/domain-pack/registry/activation/schema/persistence diff. `activated_domains() ==
+['electronics_electrical']`; first new-domain activation remains BLOCKED. Authoritative ONLY if/when this exact
+candidate is merged and post-merge verified. Next required gate: **Mandatory Grill on this exact candidate** →
+independent external exact-candidate review → Owner acceptance → SHA-preserving publication → PR → pre/post-merge
+verification.
+
+**Immediately prior (D-GMPR-01-D-D4 Amendment 01 — MERGED via PR #466; retained as history):**
+**Status (prior — D-GMPR-01-D-D4 AMENDMENT 01 CANDIDATE — bounded governance-only scope-meaning clarification; NOT a
 new gate; NON-ACTIVATING; NO domain activated):** the CF-5 umbrella formal closure is **MERGED and post-merge verified**
 (PR #465 → authoritative tip `bb7e73264d484561c8e1b3f264d2eceefc0cf394`; merge tree == closure-candidate tree →
 **`CF-5 = FORMALLY CLOSED` is AUTHORITATIVE**; carry-forwards preserved: CF-6 remainder OPEN; CF-2 OPEN;
