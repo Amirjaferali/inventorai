@@ -41,7 +41,28 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — CF5-F001 INDEPENDENT VALIDATION RECORD CANDIDATE; governance-only; validation only, no remediation; NO
+**Status (current — CF5-F001 CORRECTIVE IMPLEMENTATION CONTRACT CANDIDATE; governance-only; implementation NOT started; NO
+domain activated):** the CF5-F001 independent validation record is **MERGED and post-merge verified** (PR #457 → authoritative
+tip `17ff20cd18267b71ed2ce615ae144d4e94729ab3`, SHA-preserving merge of accepted candidate `23eb12b5`; merge tree ==
+candidate tree). This gate records the bounded **corrective implementation contract candidate**
+(`docs/governance/CF5_F001_SAFETY_SIGNAL_CORRECTIVE_CONTRACT.md`): direction **PARAMETERIZE** (evidence-settled via the
+merged D3-B pattern; electronics cue vocabulary byte-preserved as the sole family; seam keys on domain identity — NB-R4
+disposition; no new Owner decision — the §8 policy question is settled by committed truthfulness authority, wording =
+implementation detail; the family-before-activation question is an explicitly-preserved open P9-QS input); **NB-R1
+dispositioned mechanically** (cold-load seam `web/app.py::_cold_load_entry` restores `domain`/`domain_signal` from the
+already-persisted creation-validated `confirmed_domain`; legacy/NULL envelopes fail-safe unchanged; no schema/migration);
+allowlist = `engine/safety_signal.py` + bounded `_cold_load_entry` + bounded `_s15` scope statement + focused tests
+(+ template only if mechanically required); forbidden = second framework, pack schema/data, classifier/activation,
+store schema, Path-N, CAP-13, D4/D8, ODR, de-electronicsifying cues. Evidence: GREEN A–F incl. electronics live
+differential parity (d1 = ZERO deltas) and NB-R1 elimination; RED r1–r4 (STOP if irreproducible); mutations m1–m6 CAUGHT;
+differentials d1–d3 with 0 unexplained; full suite green. Governance-only: ZERO runtime/test/Web/CLI/domain/activation/
+schema/persistence/ODR diff this gate. **CONTRACT CANDIDATE ONLY — CF5-F001 NOT closed; implementation NOT authorized;
+first new-domain activation remains BLOCKED.** Next required gate: **Mandatory Grill on this exact contract candidate**;
+then independent external exact-candidate review → Owner acceptance → SHA-preserving publication → PR → pre/post-merge
+verification; after authoritative, the bounded CF5-F001 implementation gate.
+
+**Immediately prior (CF5-F001 independent validation — MERGED via PR #457; retained as history):**
+**Status (prior — CF5-F001 INDEPENDENT VALIDATION RECORD CANDIDATE; governance-only; validation only, no remediation; NO
 domain activated):** the completed CF5-F001 independent validation (genuinely separate session; verdict **ACCEPT WITH
 NON-BLOCKING OBSERVATIONS**, NB-R1…NB-R4, blocking NONE) is recorded by a governance-only candidate on authoritative base
 `2daf5c70d8fd86a3b63001fce675eeac252495ed` (PR #456 merge; 0 newer). Canonical record:
