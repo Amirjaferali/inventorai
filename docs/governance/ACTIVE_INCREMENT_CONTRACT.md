@@ -41,7 +41,34 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — P9-MECH-QC: MECHANICAL SELECTION + P9-QS QUALIFICATION CONTRACT CANDIDATE — governance-only;
+**Status (current — P9-MECH-I1: OD-M2 RESOLVED + TRUTHFUL CAPABILITY & COVERAGE DECLARATION INCREMENT CONTRACT
+CANDIDATE — governance-only; implementation NOT started; Mechanical NOT qualified / NOT activated):** the P9-MECH-QC
+contract is **MERGED and post-merge verified** (PR #467 → authoritative tip
+`90b1b00f0bd384911735a55340ee15829a77bbad`; merge tree == candidate tree `0147109e` → **P9-MECH-QC AUTHORITATIVE**;
+`mechanical` SELECTED via D-P9-MECH-01). This gate records **OD-M2 = RESOLVED** (`D-P9-MECH-02`, Owner-approved
+**Option B-hardened, Mechanical-specific**: no family required for qualification PROVIDED the declarations state
+safety-signal derivation NOT COVERED, every qualification record marks the absent family an ACTIVATION BLOCKER, and a
+governed family through the F001 seam with full evidence lands before any Owner activation authorization for
+`mechanical`; Mechanical-only; nothing else modified/closed) and the **P9-MECH-I1 increment CONTRACT** (canonical
+record: `docs/governance/P9_MECH_I1_TRUTHFUL_CAPABILITY_COVERAGE_DECLARATION_CONTRACT.md`): smallest coherent first
+increment = the truthful declaration foundation — Mechanical capability contract + coverage declaration as ONE
+additive pack-metadata artifact (electronics-parity shape; concept-level claims only; mandatory NOT-COVERED list incl.
+the OD-M2 clause-1 statement; provenance-tagged; loader-safety mechanically verified: §5-I1 validation is
+required-fields-only and electronics already carries `coverage_declaration`) + focused tests (parent RED proof; GREEN
+shape/truthfulness/OD-M2 pins; negative tests; mutations m1–m6; classification-corpus byte-identity differentials;
+full suite; `git diff --check`). Deferred to later increments: rule nuances; signal-quality/AB-006 + dormant-`weight`
+disposition; boundary tests; question sufficiency; label; safety family (pre-activation gate). **The implementation is
+NOT authorized by this contract** — separate explicit Owner authorization + governed lifecycle required. Boundaries
+preserved: no qualification claim; no activation; registry membership unchanged; CF-6 / CF-2 / D-GMPR coupling /
+NMF-1 / FU-1 / D4 / D8 / Phase 10 / PSRR / deployment untouched. Governance-only: ZERO
+runtime/test/pack/registry/Web/CLI/activation/schema/persistence diff. `activated_domains() ==
+['electronics_electrical']`; first new-domain activation remains BLOCKED (for `mechanical` incl. OD-M2 clause 3).
+Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next required gate: **Mandatory
+Grill on this exact candidate** → independent external exact-candidate review → Owner acceptance → SHA-preserving
+publication → PR → pre/post-merge verification.
+
+**Immediately prior (P9-MECH-QC — MERGED via PR #467; retained as history):**
+**Status (prior — P9-MECH-QC: MECHANICAL SELECTION + P9-QS QUALIFICATION CONTRACT CANDIDATE — governance-only;
 Mechanical NOT qualified / NOT activated; registry UNCHANGED):** the D-GMPR-01-D-D4 Amendment 01 is **MERGED and
 post-merge verified** (PR #466 → authoritative tip `c4abe0207c34f15e89438cc931c114db9d2e6225`; merge tree ==
 candidate tree `2694a424` → **Amendment 01 AUTHORITATIVE**; D4 remains REGISTERED / NOT AUTHORIZED). This gate records

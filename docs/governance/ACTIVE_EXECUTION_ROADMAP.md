@@ -9022,3 +9022,45 @@ AUTHORIZED; D8 Owner-reserved; Phase 10 NOT AUTHORIZED; PSRR NOT EXECUTED; deplo
 `activated_domains() == ['electronics_electrical']`; **first new-domain activation remains BLOCKED** behind its
 existing prerequisites. Append-only; prior history not rewritten. This entry authorizes no push, PR, or merge beyond
 this candidate. **Next required gate: Mandatory Grill on this exact contract candidate.**
+
+---
+
+## P9-MECH-I1 — OD-M2 RESOLVED (D-P9-MECH-02) + Truthful Capability & Coverage Declaration increment CONTRACT — governance-only CONTRACT CANDIDATE — implementation NOT started; Mechanical NOT qualified; NOT activated
+
+**Gate.** Governance-only increment-contract gate on authoritative base `90b1b00f0bd384911735a55340ee15829a77bbad`
+(PR #467 merge — P9-MECH-QC AUTHORITATIVE; freshly fetched; 0 newer; clean tree). Canonical record:
+`docs/governance/P9_MECH_I1_TRUTHFUL_CAPABILITY_COVERAGE_DECLARATION_CONTRACT.md`. Records **OD-M2 = RESOLVED**
+(`D-P9-MECH-02`, Owner-approved **Option B-hardened, Mechanical-specific**: family NOT required for qualification
+PROVIDED (1) declarations state safety-signal derivation NOT COVERED, (2) any qualification record marks the absent
+family an ACTIVATION BLOCKER — no unannotated "QUALIFIED" claim, (3) a governed family through the F001 seam with
+full evidence is REQUIRED before any Owner activation authorization for `mechanical`; Mechanical-only; nothing else
+modified/closed) — recorded inside this contract gate, **no standalone OD-M2 gate**. ZERO runtime/test/pack/registry/
+Web/CLI/activation/schema/persistence diff this candidate. **DOCUMENTED NO-VALID-RED.**
+
+**Selected first increment (repository-derived smallest coherent unit).** **P9-MECH-I1 = the truthful declaration
+foundation**: Mechanical capability contract + coverage declaration as ONE additive pack-metadata artifact
+(electronics-precedent `coverage_declaration` shape: covered/not-covered/limitations; concept-level claims only;
+mandatory NOT-COVERED list incl. the OD-M2 clause-1 safety-derivation statement and the unsupported-expertise
+exclusions; provenance-tagged) + a NEW focused test file pinning shape, truthfulness, the OD-M2 statement,
+recognized-set stability (four v1.0 packs; iot_electronics stays D8-skipped), electronics byte-freeze, and
+determinism. **Mechanically verified enabling fact:** §5-I1 registry validation is required-fields-only and the
+electronics pack already carries a tolerated `coverage_declaration` → additive declaration fields are loader-safe with
+zero engine change. Capability+coverage are inseparable (one pack artifact; P9-QS §4 expressed through it; OD-M2
+clause 1 names both); everything else is explicitly deferred: rule nuances (behavior-affecting, own
+observable-effect evidence), signal-quality/AB-006 + dormant-`weight` disposition (classifier-consumed fields /
+cross-pack reach), boundary tests, question sufficiency, label, safety family (pre-activation gate per OD-M2).
+Evidence defined proportionately: parent RED deficiency proof; focused GREEN; negative tests; mutations m1–m6 (each
+must flip RED, incl. removing the OD-M2 statement and inserting an FEA-style unsupported claim); classification-corpus
+byte-identity differentials; full-suite regression; `git diff --check`; benchmark/UI/performance classes explicitly
+not required with reasons.
+
+**Boundary / status after this entry.** OD-M2 RESOLVED (conditional on this candidate's merge); **P9-MECH-I1
+implementation NOT authorized by this contract** — it requires separate explicit Owner authorization and the full
+governed lifecycle. Mechanical NOT qualified (no "QUALIFIED" claim exists or is permitted unannotated per OD-M2
+clause 2); NOT activated; recognized-registry set UNCHANGED; dormant `weight` metadata untouched and not implied
+runtime-active; CF-6 OPEN; CF-2 OPEN; D-GMPR `path_n_questions` coupling OPEN; NMF-1/FU-1 unchanged; D4 REGISTERED /
+NOT AUTHORIZED; D8 Owner-reserved (iot_electronics untouched); Phase 10 NOT AUTHORIZED; PSRR NOT EXECUTED; deployment
+NOT AUTHORIZED. `activated_domains() == ['electronics_electrical']`; **first new-domain activation remains BLOCKED**
+(for `mechanical`, now explicitly incl. OD-M2 clause 3). Append-only; prior history not rewritten. This entry
+authorizes no push, PR, or merge beyond this candidate. **Next required gate: Mandatory Grill on this exact contract
+candidate.**

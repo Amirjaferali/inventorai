@@ -990,7 +990,31 @@ NO deployment.
 Mechanical qualification: (a) governed Mechanical safety-cue family REQUIRED before qualification; (b) qualification may
 complete with the truthful empty-family state but a governed family is REQUIRED before activation (the registered
 pre-activation input made concrete); or (c) another explicitly governed treatment. Recorded OPEN in contract §11; no
-Mechanical qualification declaration may be made until OD-M2 is decided.
+Mechanical qualification declaration may be made until OD-M2 is decided. **[SUPERSEDED — OD-M2 is now RESOLVED by the
+Owner as Option B-hardened, Mechanical-specific: see `D-P9-MECH-02` in the P9-MECH-I1 section below. This annotation
+changes no history; contract §11's arm (b) is the decided arm, with the three binding hardening clauses recorded in
+D-P9-MECH-02.]**
 
 **Boundary.** This entry records the selection decision and authorizes no implementation, no runtime/test/pack/registry
 change, no qualification declaration, and no activation. First new-domain activation remains BLOCKED.
+
+---
+
+## P9-MECH-I1 — OD-M2 Resolution + First Mechanical Increment Contract (recorded inside the contract gate)
+
+Governance/documentation-only registration recorded by the P9-MECH-I1 increment-contract gate (canonical record:
+`docs/governance/P9_MECH_I1_TRUTHFUL_CAPABILITY_COVERAGE_DECLARATION_CONTRACT.md`; base
+`90b1b00f0bd384911735a55340ee15829a77bbad` — PR #467 merge, P9-MECH-QC AUTHORITATIVE). Per repository precedent, the
+Owner decision is recorded inside the contract gate that operates under it — **no standalone OD-M2 gate**. **Scope
+guard:** this entry resolves ONLY the OD-M2 timing policy and defines the bounded P9-MECH-I1 increment; it authorizes NO
+implementation in this candidate (the P9-MECH-I1 implementation requires its own separate explicit Owner authorization),
+NO qualification declaration, NO activation, NO registry change, NO safety-family implementation, NO D4/D8, NO
+CF-6/CF-2/D-GMPR closure, NO Phase 10 / PSRR / deployment.
+
+| ID | Subject | Status | Impl. authority | Evidence |
+|---|---|---|---|---|
+| D-P9-MECH-02 | **OD-M2 RESOLVED — Mechanical safety-cue-family timing: Option B-hardened (Mechanical-specific).** A governed Mechanical safety-cue family is **NOT required** for `mechanical` to be declared P9-QS QUALIFIED, PROVIDED ALL of: **(1)** the Mechanical capability and coverage declarations explicitly declare inventor-stated safety-signal derivation **NOT COVERED** pending a governed Mechanical safety-cue family; **(2)** any Mechanical qualification record prominently records the absent family as an outstanding **ACTIVATION BLOCKER** for `mechanical` — no unannotated or misleading "QUALIFIED" claim; **(3)** a governed Mechanical safety-cue family — via the existing `engine/safety_signal.py` F001 per-domain seam, with provenance-tagged hazard vocabulary, focused tests, negative tests, mutation/adversarial tests, and electronics non-degradation evidence — is **REQUIRED and MUST be complete, merged, and post-merge verified BEFORE any Owner activation authorization for `mechanical`** (a separate future evidence-bearing gate; NOT implemented by P9-MECH-I1). **Mechanical-only:** creates/waives/predetermines NO safety-cue-family policy for any other current or future domain; modifies/closes NOTHING of P9-QS, F001, CF-6, CF-2, D-GMPR, D4, D8, Phase 10, PSRR, deployment. | **ACCEPTED — RESOLVED (authoritative if/when this contract candidate completes the review/acceptance/merge lifecycle)** | NONE (policy only; the safety-family gate and P9-MECH-I1 implementation each need separate authorization) | Contract §2; P9-MECH-QC §11; the read-only OD-M2 analysis preceding this gate |
+
+**Boundary.** This entry records the OD-M2 resolution and the increment-contract registration only.
+`activated_domains() == ['electronics_electrical']`; Mechanical NOT qualified, NOT activated; first new-domain
+activation remains BLOCKED (now explicitly including OD-M2 clause 3 for `mechanical`).
