@@ -41,7 +41,29 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — CF5-F004 BOUNDED CORRECTIVE IMPLEMENTATION CANDIDATE; CF5-F004 / CF-3 NOT closed; NO domain
+**Status (current — CF5-F004 FORMAL CLOSURE CANDIDATE; governance-only; CF-5 / CF-6 / CF-2 NOT closed; NO domain
+activated):** the CF5-F004 bounded corrective implementation is **MERGED and post-merge verified** — PR #463 →
+authoritative tip `80e5d78dd4e1b2128ba84fa24726fa9b89ea1a75`, a SHA-preserving two-parent merge of `0e4312e5` + the
+Grill-passed, independently-reviewed (ACCEPT), Owner-accepted exact candidate `3f5f54f890df9a53db5e3212401aeda35da49b0e`;
+merge tree `25ca8a51` == candidate tree; post-merge verification re-run this gate (boot OK; full suite **2442 passed / 3
+skipped / 1 xfailed / 0 failed**; focused 14/14). All contract §8 closure criteria verified → **this candidate records
+CF5-F004 = FORMALLY CLOSED over the authoritative runtime, CF-3 = DISCHARGED/RESOLVED, and the D-GMPR-01-D-D3 hard-coded
+tie-break coupling = DISCHARGED** (all per OD3; each conditional on this closure candidate's own merge + post-merge
+verification; the `engine/path_n_questions.py` D-GMPR coupling remains OPEN). **Retrospective RED-narrative correction
+(non-destructive):** the frozen focused test file measures **9 failed / 5 passed** on the clean parent (re-verified
+mechanically this gate) — the earlier "8 failed / 6 passed" narrative measured the pre-M5-strengthening file; the
+correction changes no implementation correctness, no candidate identity, no reimplementation need, and no ACCEPT verdict.
+Architecture truth carried: registry-derived membership; bounded legacy-four compatibility layer; sole-top SINGLE;
+`UNRESOLVED_NON_ACTIVATED_TIE` complete-set fail-closed kind (no activation requirement); AMBIGUOUS_TIE untouched
+activated-only; MULTI_DOMAIN_NEEDS_D4 not reused; `infer_domain` unchanged fail-loud; bounded Web/CLI dispatch.
+Governance-only: ZERO runtime/test/Web/CLI/domain/registry/activation/schema/persistence/ODR diff. **No over-closure:
+CF-5 / CF-6 / CF-2 remain OPEN; closing F004/CF-3 authorizes NO registration or activation; first new-domain activation
+remains BLOCKED; D4/D8/Phase 10/PSRR/deployment unchanged.** Next required gate: **Mandatory Grill on this exact closure
+candidate** → independent external exact-candidate review → Owner acceptance → SHA-preserving publication → PR →
+pre/post-merge verification.
+
+**Immediately prior (CF5-F004 bounded corrective implementation — MERGED via PR #463; retained as history):**
+**Status (prior — CF5-F004 BOUNDED CORRECTIVE IMPLEMENTATION CANDIDATE; CF5-F004 / CF-3 NOT closed; NO domain
 activated):** the CF5-F004 corrective contract is **MERGED and post-merge verified** (PR #462 → authoritative tip
 `0e4312e50a2d166465c4ce17819b47711d720785`; merge tree == contract-candidate tree; D-CF5-F004-01 authoritative) and its
 bounded implementation was executed fresh from that parent. Changed paths: `engine/domain_rules.py` (registry-derived
