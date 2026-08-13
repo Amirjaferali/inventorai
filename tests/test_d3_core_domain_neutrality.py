@@ -50,11 +50,20 @@ _TRIGGER = "The battery insulation may malfunction and cause harm."
 
 
 def test_d3a_non_electronics_domain_context_not_forced_electronics():
+    # CF5-F001 reconciliation (corrective contract merged PR #458; disclosed
+    # per the F002 precedent): this test's original PRECONDITION — a
+    # non-electronics-domain session deriving an electronics-cue signal — was
+    # itself the unconditional-exposure defect the F001 correction removes
+    # (r2): a domain with no governed safety-cue family now derives NO signals.
+    # The LOAD-BEARING D3-A invariant is unchanged and still asserted here: a
+    # non-electronics session domain is NEVER force-mapped to an
+    # electronics-labeled signal. Post-F001 that holds in the strongest form —
+    # no signal exists at all to mislabel — and the electronics/legacy labeling
+    # paths keep their own pins (the test below and the CF5-F001 seam suite).
     signals = safety_signal.derive_inventor_stated_safety_signals(
         _state(_TRIGGER, _RECOGNIZED_NOT_ACTIVATED))
-    assert len(signals) == 1, "cue behavior must be reached for the RED to be valid"
-    # RED (pre-fix): domain_context is force-mapped to electronics_electrical.
-    assert signals[0].domain_context == _RECOGNIZED_NOT_ACTIVATED
+    assert signals == ()                       # no family -> nothing derived
+    assert not any(s.domain_context == _ACTIVATED for s in signals)
 
 
 def test_d3a_electronics_domain_context_preserved():

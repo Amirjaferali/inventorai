@@ -41,7 +41,28 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — CF5-F001 CORRECTIVE IMPLEMENTATION CONTRACT CANDIDATE; governance-only; implementation NOT started; NO
+**Status (current — CF5-F001 BOUNDED CORRECTIVE IMPLEMENTATION CANDIDATE; CF5-F001 NOT closed; NO domain activated):** the
+CF5-F001 corrective contract is **MERGED and post-merge verified** (PR #458 → authoritative tip
+`b06ae40460dce987024fd224610554fdbbcaabc3`; merge tree == contract-candidate tree) and its bounded implementation was
+executed fresh from that parent. Changed paths: `engine/safety_signal.py` (governed domain-keyed cue/context-family seam —
+PARAMETERIZE; electronics family byte-preserved sole entry; domain-identity keying = NB-R4; additive
+`has_governed_safety_cue_family`), `engine/deliverable_assembler.py` (bounded `_s15` truthful capability-scope statement,
+electronics output byte-unchanged), `web/app.py` (bounded `_cold_load_entry` NB-R1 restoration from persisted
+`confirmed_domain`), NEW `tests/test_cf5_f001_safety_signal_domain_seam.py` (13 tests), one load-bearing-proved D3-A pin
+reconciliation. **Disclosed §4 narrowing (mechanically forced; reviewer attention):** identity restored on `domain_signal`
+ONLY — `state.domain` is the committed P4-1b-2a non-resume guard anchor and restoring it re-enabled resume-answering
+(caught by the governed restart-durability test); the narrowing is a strict subset, pinned in both directions.
+`deliverable.html` untouched (existing surface sufficed). Evidence: RED r1–r4 on the clean parent (4 + 3 dependent fail;
+5 pins pass); GREEN 13/13; mutations 7/7 CAUGHT (m1–m6 + m5b), bytes restored; differentials d1 = ZERO live-electronics
+deltas, d2 = only NB-R1 corrections (resume blocked in both trees), d3 = 45/45 family-seam corrections, 0 unexplained;
+full suite **2428 passed / 3 skipped / 1 xfailed / 0 failed** (baseline 2415/3/1 + 13). No dependency / pack / classifier /
+activation / schema / Path-N / CAP-13 / D4 / D8 / ODR diff; WS2/Increment-6 frozen surfaces preserved. **IMPLEMENTATION
+CANDIDATE ONLY — still requires Mandatory Grill → independent external exact-candidate review → Owner acceptance →
+SHA-preserving publication → PR → pre/post-merge verification; CF5-F001 NOT closed; first new-domain activation remains
+BLOCKED.**
+
+**Immediately prior (CF5-F001 corrective contract — MERGED via PR #458; retained as history):**
+**Status (prior — CF5-F001 CORRECTIVE IMPLEMENTATION CONTRACT CANDIDATE; governance-only; implementation NOT started; NO
 domain activated):** the CF5-F001 independent validation record is **MERGED and post-merge verified** (PR #457 → authoritative
 tip `17ff20cd18267b71ed2ce615ae144d4e94729ab3`, SHA-preserving merge of accepted candidate `23eb12b5`; merge tree ==
 candidate tree). This gate records the bounded **corrective implementation contract candidate**

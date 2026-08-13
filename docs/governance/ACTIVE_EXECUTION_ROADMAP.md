@@ -8538,3 +8538,65 @@ OPEN; CF-6 OPEN (facets (i)–(iv) discharged only); CF-2 OPEN; D4 SEPARATE / UN
 AUTHORIZED; PSRR NOT EXECUTED; deployment/production NOT AUTHORIZED. FU-1 unchanged (outside F001; CF-5 lane). Append-only;
 prior history not rewritten. This entry authorizes no push, PR, merge beyond this candidate, no implementation, no domain
 activation, and no D4/D8/ODR change.
+
+---
+
+## CF5-F001 — Shared-Core Electronics-Specific Safety Signal — BOUNDED CORRECTIVE IMPLEMENTATION CANDIDATE (merged contract) — CF5-F001 NOT closed; NO domain activated
+
+**Gate.** OWNER-AUTHORIZED bounded **implementation** of the authoritative CF5-F001 corrective contract
+(`docs/governance/CF5_F001_SAFETY_SIGNAL_CORRECTIVE_CONTRACT.md`, merged PR #458), executed fresh from the authoritative
+parent `b06ae40460dce987024fd224610554fdbbcaabc3` (PR #458 SHA-preserving merge; merge tree == contract-candidate tree;
+freshly fetched; 0 newer); boot OK; `activated_domains() == ['electronics_electrical']`.
+
+**Implemented (contract §2–§6).** `engine/safety_signal.py`: the governed **domain-keyed cue/context-family seam**
+(`_DOMAIN_CUE_FAMILIES`; PARAMETERIZE) with the electronics family byte-preserved as the sole populated entry; context and
+cue consultation generalized through the seam (`_has_domain_context`; historical `_has_electrical_context` preserved as a
+thin electronics-family wrapper); a domain with NO governed family derives no signals; the seam keys on domain IDENTITY,
+never activation (NB-R4 disposition); the missing-domain legacy fallback (`domain_context` electronics default) retained as
+the governed §5 disposition, reachable only for legacy/NULL-envelope states; additive read-only capability query
+`has_governed_safety_cue_family()`. `engine/deliverable_assembler.py` (bounded `_s15` only): the truthful
+**capability-scope statement** (`capability_scope="no_governed_safety_cue_family"` + non-detection-scoped empty statement)
+rendered ONLY for a session domain with no governed family — electronics output byte-unchanged. `web/app.py` (bounded
+`_cold_load_entry` only): **NB-R1 restoration** of the safety-relevant identity from the already-persisted
+creation-validated `confirmed_domain`; legacy/NULL envelopes fail-safe unchanged; no schema/migration.
+**`web/templates/deliverable.html` NOT touched** (the existing `empty_statement` surface sufficed — recorded per contract §5).
+
+**Disclosed mechanically-forced narrowing of contract §4 (for independent review).** The contract letter mandated restoring
+`domain` AND `domain_signal`; the implementation restores **`domain_signal` ONLY**. Mechanical proof: the committed
+P4-1b-2a non-resume guarantee anchors on `state.domain is None` as the cold-load marker
+(`web/app.py::submit_answer` guard) — restoring `state.domain` re-enabled resume-answering across restarts (caught by the
+existing governed test `test_obs_b_restart_durability_new_context`), violating a committed bounded-increment boundary, and
+also altered a non-safety surface (cold-load question display). The narrowing is a strict subset of the mandated
+restoration, is the smallest change that fixes NB-R1 while preserving every committed boundary, and is MORE faithful to the
+contract's own "the safety-relevant domain identity … and ONLY that" objective. Pinned by tests in both directions
+(identity restored on `domain_signal`; `state.domain` stays None; cold-loaded sessions remain unanswerable with no second
+durable append). One existing D3-A pin test was reconciled with load-bearing proof (F002-precedent disclosure): its
+PRECONDITION (a non-electronics session deriving an electronics-cue signal) was itself the corrected unconditional-exposure
+defect; its load-bearing invariant (no electronics force-mapping for a non-electronics context) is preserved and asserted
+in the strongest form.
+
+**Evidence.** RED (contract §7, on the clean parent): r1 (missing capability-scope statement), r2 (unconditional
+electronics-cue exposure to a foreign domain), r3 (real-Flask NB-R1: live signal lost after durable cold-load; reproduced
+via the accepted-answer channel so the domain loss is the isolated cause), r4 (cold-load identity absent) — 4 designated
+RED + 3 dependent matrix tests fail pre-fix; 5 pins pass pre-fix. GREEN: **13/13** new focused tests (§6 A–F incl.
+electronics shape/empty-statement parity, family-less no-crash/no-stamping, domain-identity keying under an
+electronics-absent double, legacy `:272` fallback unchanged, legacy NULL-envelope fail-safe, verbatim non-electronics
+restoration, non-resume boundary pin, capability query). **Mutations: 7/7 CAUGHT** (m1 seam bypass; m2 family leak; m3
+restoration dropped; m4 wrong restored value; m5 scope-statement suppression; m5b electronics parity break; m6 frozen JSON
+location), bytes sha256-restored, bytecode caches cleared. **Differentials: d1 live-electronics parent-vs-impl over a
+15-text cue/negation/pair/duplicate corpus = ZERO deltas; d2 real-Flask cold-load corpus = every delta categorized
+NB-R1-correction (cold converges to live; identity on `domain_signal` only; resume blocked in BOTH trees); d3
+non-electronics corpus (3 domains × 15 texts) = 45/45 categorized family-seam corrections (parent derived foreign-domain
+signals in 9 cases → 0), 0 unexplained.** **Full governed suite: 2428 passed / 3 skipped / 1 xfailed / 0 failed** (parent
+baseline 2415/3/1 + 13 new). `git diff --check` clean. No dependency / Domain-Pack / classifier / activation / store-schema
+/ Path-N / CAP-13 / D4 / D8 / ODR diff; frozen WS2/Increment-6 surfaces preserved.
+
+**Boundary / status after this entry.** **CF5-F001 bounded corrective implementation = CANDIDATE ONLY; CF5-F001 NOT
+closed.** Still requires Mandatory Grill → independent external exact-candidate review (with explicit attention to the
+disclosed §4 narrowing and the D3-A pin reconciliation) → Owner exact-candidate acceptance → SHA-preserving publication →
+PR → pre/post-merge verification; formal closure is a separate later gate. CF5-F002 FORMALLY CLOSED; CF5-F003 CLOSED;
+CF5-F004 OPEN C; CF-5 OPEN; CF-6 OPEN (facets (i)–(iv) discharged only); CF-2 OPEN; D4 SEPARATE / UNEXECUTED; D8
+Owner-reserved; `activated_domains() == ['electronics_electrical']`; **first new-domain activation remains BLOCKED**;
+Phase 10 NOT AUTHORIZED; PSRR NOT EXECUTED; deployment/production NOT AUTHORIZED. FU-1 unchanged (outside F001; CF-5
+lane). Append-only; prior history not rewritten. This entry authorizes no push, PR, merge beyond this candidate, no domain
+activation, and no D4/D8/ODR change.
