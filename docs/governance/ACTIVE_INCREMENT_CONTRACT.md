@@ -41,7 +41,34 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — CF-5 FORMAL CLOSURE CANDIDATE; governance-only; CF-6 / CF-2 / path_n_questions coupling NOT closed; NO
+**Status (current — D-GMPR-01-D-D4 AMENDMENT 01 CANDIDATE — bounded governance-only scope-meaning clarification; NOT a
+new gate; NON-ACTIVATING; NO domain activated):** the CF-5 umbrella formal closure is **MERGED and post-merge verified**
+(PR #465 → authoritative tip `bb7e73264d484561c8e1b3f264d2eceefc0cf394`; merge tree == closure-candidate tree →
+**`CF-5 = FORMALLY CLOSED` is AUTHORITATIVE**; carry-forwards preserved: CF-6 remainder OPEN; CF-2 OPEN;
+`path_n_questions` D-GMPR coupling OPEN; NMF-1 + FU-1 re-homed as pre-activation test-hardening; P9-QS separate). This
+gate records a **bounded clarification amendment to the existing canonical owner `D-GMPR-01-D-D4`** (Cross-Domain /
+Multi-Disciplinary Engineering Integration): canonical substance in `docs/governance/OWNER_DECISION_REGISTER.md`
+("Substance (D-GMPR-01-D-D4 — Amendment 01)" block + row pointer annotation; **same decision identity — no new decision
+ID/document/workstream**), synchronized append-only in `ACTIVE_EXECUTION_ROADMAP.md` and in
+`CURRENT_PROJECT_STATE.md`. Substance: D4's registered shared-constraint propagation / conflicts / unified assessment
+**includes governed system-level engineering compatibility across participating domains** (mutual compatibility as ONE
+product/system, not mere multi-domain presence detection); **per-domain PASS ≠ system-level PASS** (future D4 surfaces
+incompatibilities, unresolved interface assumptions, contradictions, unowned/orphan requirements, and explicit Known
+Unknowns rather than silently composing PASS states); Owner examples preserved **ILLUSTRATIVE ONLY / NON-BINDING**;
+**no defect-free-product guarantee** (truthful Known-Unknowns route to WS-PFV-001-lineage physical/specialist
+validation); five-way distinction preserved (recognition ≠ qualification ≠ activation ≠ cross-domain evaluation ≠
+physical validation); future-domain extensibility without core redesign or domain-specific hardcoded composition
+authority; **no implementation architecture / no pipeline committed**. **Non-effects:** D4 remains REGISTERED (future
+gate) / NOT AUTHORIZED, sequencing unchanged; NO domain registration/activation (incl. `mechanical`); NO
+`iot_electronics` change; NO D8 / Phase 10 / PSRR / deployment; **NOT a prerequisite expansion — adds no new blocker to
+and does not delay the Phase-9 next-domain decision or Mechanical P9-QS qualification** (the next Owner gate is
+unchanged: Phase-9 next-domain selection). Governance-only: ZERO
+runtime/test/Web/CLI/domain/registry/activation/schema/persistence diff. Authoritative ONLY if/when this exact candidate
+is merged and post-merge verified. Next required gate: **Mandatory Grill on this exact candidate** → independent
+external exact-candidate review → Owner acceptance → SHA-preserving publication → PR → pre/post-merge verification.
+
+**Immediately prior (CF-5 umbrella formal closure — MERGED via PR #465; retained as history):**
+**Status (prior — CF-5 FORMAL CLOSURE CANDIDATE; governance-only; CF-6 / CF-2 / path_n_questions coupling NOT closed; NO
 domain activated):** the CF5-F004 formal closure is **MERGED and post-merge verified** (PR #464 → authoritative tip
 `fcc9e37ec4ef981f30d5a2009fa5244cfb3b040d`; merge tree == closure-candidate tree → **CF5-F004 = FORMALLY CLOSED; CF-3 =
 DISCHARGED (F004 surface only); D-GMPR-01-D-D3 tie-break coupling = DISCHARGED**). This gate records the **CF-5 umbrella

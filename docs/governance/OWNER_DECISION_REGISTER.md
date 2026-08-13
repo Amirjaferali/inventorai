@@ -774,7 +774,7 @@ preserved (P8-I1 → P8-I2 → G-MPR-01/disposition → P8-I3 → P8-I4 → P8-C
 | D-GMPR-01-D-D1 | **P8-I1 formal closure gap (F1) — ADD dedicated record.** P8-I1 formally closed via a late-registered dedicated closure record; documentation gap only; no implementation reopened; historical evidence cited not fabricated (impl RED→GREEN full suite 2122; merged PR #418 `2bf389d`, merged tree `814d15d` == accepted impl tree; post-merge verified; independent-review letter-verdict provenance disclosed per the PR #341 precedent). | RESOLVED | NONE | Resolve as part of this disposition | `P8_I1_..._FORMAL_CLOSURE_RECORD.md` |
 | D-GMPR-01-D-D2 | **P8-I3 lifecycle-persistence rule.** P8-I3 MUST use a bounded additive backward-compatible strategy (additive lifecycle table(s) or a justified additive extension); preserve account identity / entitlement (P8-I1) / quota (P8-I2) / existing durable records; idempotent evolution; existing DBs remain readable; NO destructive migration / NO implicit rewrite; rollback/recovery reasoning MUST be in the P8-I3 contract. No schema designed/implemented here. | REGISTERED (contract constraint) | NONE | Binding on the future P8-I3 contract | G-MPR-01 §N; F-matrix |
 | D-GMPR-01-D-D3 | **Pre-Phase-9 Core Domain-Neutrality Prerequisite Gate (MANDATORY future gate).** Before the first non-electronics Phase-9 activation, remove/govern electronics-core couplings: `engine/safety_signal.py` (`_MVP_DOMAIN`, electrical-only cues, label forcing), `engine/path_n_questions.py` (electronics-pinned, domain-blind), scattered web-admission literals, hard-coded domain tie-break. MANDATORY before first additional domain activation; NOT before P8-I3; not implemented now. | REGISTERED (future gate) | NONE — LEVEL 1 | **No** | G-MPR-01 §H/§J; F2/F3 |
-| D-GMPR-01-D-D4 | **Cross-Domain / Multi-Disciplinary Engineering Integration (future gate; NOT AUTHORIZED).** One invention across multiple domains with domain-specific truth preserved: multiple subsystems; dependency representation; conflicts; trade-offs; shared-constraint propagation; unified assessment; no silent cross-domain truth overwrite; canonical cross-domain output. **DOMAIN REFERENCE ≠ DOMAIN ACTIVATION ≠ CROSS-DOMAIN EVALUATION.** Placement: after Phase-9 activation maturity (≥2 activated domains) or as a governed successor to skipped §5-I4; not before P8-I3. Re-homes the stale runtime "deferred to Phase 6" pointer (code comment correction deferred to a future authorized code gate). | REGISTERED (future gate) | NONE | **No** | G-MPR-01 §I; F4/F14 |
+| D-GMPR-01-D-D4 | **Cross-Domain / Multi-Disciplinary Engineering Integration (future gate; NOT AUTHORIZED).** One invention across multiple domains with domain-specific truth preserved: multiple subsystems; dependency representation; conflicts; trade-offs; shared-constraint propagation; unified assessment; no silent cross-domain truth overwrite; canonical cross-domain output. **DOMAIN REFERENCE ≠ DOMAIN ACTIVATION ≠ CROSS-DOMAIN EVALUATION.** Placement: after Phase-9 activation maturity (≥2 activated domains) or as a governed successor to skipped §5-I4; not before P8-I3. Re-homes the stale runtime "deferred to Phase 6" pointer (code comment correction deferred to a future authorized code gate). **[Scope MEANING clarified by Amendment 01 — see the "Substance (D-GMPR-01-D-D4 — Amendment 01)" block below this table. Clarifying-only / NON-ACTIVATING: same decision identity (no second owner); D4 remains REGISTERED (future gate) / NOT AUTHORIZED; sequencing unchanged; the amendment adds NO new blocker to the Phase-9 next-domain decision or Mechanical P9-QS qualification.]** | REGISTERED (future gate) | NONE | **No** | G-MPR-01 §I; F4/F14 |
 | D-GMPR-01-D-D5 | **Deferred-capability re-homing (all remain NOT AUTHORIZED).** QTA + Output-Language implementation = ADD live future homes (previously un-homed); ACV / PDF Download / Email Delivery = MOVE off their now-closed Phase-3/4/5 anchors to live successor gates; existing prerequisite sequencing preserved. Distinctions preserved: **UI Language ≠ Input Language ≠ Output Language ≠ QTA** (do not collapse). | REGISTERED (re-homed) | NONE | **No** | G-MPR-01 §C; OD-U/OD-T; D-P6-17 |
 | D-GMPR-01-D-D6 | **CAP index range alignment (F8).** Register range is **CAP-01…CAP-18**; master-obligation/index "CAP-01…CAP-14" references corrected to CAP-01…CAP-18. No capability deleted/renumbered/changed in substance. | RESOLVED | NONE | **No** | `INVENTORAI_CAPABILITY_ENRICHMENT_REGISTER.md`; F8 |
 | D-GMPR-01-D-D7 | **Real-vendor vs CAP-15 distinction (F9).** Keep distinct (not merged): A provider abstraction/replaceability (CAP-15); B actual real-vendor integration activation (P7 §25 trigger-deferred; no vendor selected); C async/webhook (P7 §25 rows 32/34); D external export/integration adapters (P7-I3 boundary). Different triggers/owners; avoid duplicate tracking. | CLARIFIED | NONE | **No** | G-MPR-01 §C/§K; F9 |
@@ -788,6 +788,69 @@ NOT AUTHORIZED / NOT STARTED** (a separate Owner-authorized P8-I3 bounded implem
 ≠ authorization). Phase 8 OPEN; P8-I4 / P8-CLOSE NOT STARTED; Phase 9 / Phase 10 NOT AUTHORIZED; PSRR EXECUTION NOT STARTED;
 public paid activation / production BLOCKED / NOT AUTHORIZED. All production blockers (Phase-10 legal/readiness, PSRR = GO/PASS,
 Deployment Gate, explicit Owner deployment authorization) preserved and unweakened.
+
+**Substance (D-GMPR-01-D-D4 — Amendment 01 — scope-meaning clarification; clarifying-only; NON-ACTIVATING; same decision identity).**
+Bounded governance-only amendment extending the existing canonical owner `D-GMPR-01-D-D4` per D-FPC-MAP-06 — it creates
+**no new gate, no new canonical owner, no second Owner-decision identity, no new workstream/roadmap/tracker, and no
+competing composition authority**. Basis: a read-only repository-first discovery established the Owner's cross-domain
+engineering-compatibility intent as `ALREADY RECORDED — PARTIALLY COVERED` with `D-GMPR-01-D-D4` as canonical owner.
+
+**A. Core scope meaning (clarified, not broadened).** D4's registered "shared-constraint propagation; conflicts;
+trade-offs; unified assessment" **includes governed system-level engineering compatibility across the participating
+domains** — evaluating whether the participating engineering domains are mutually compatible as ONE product/system —
+**not merely detecting that multiple domains are present** in one invention.
+
+**B. Per-domain PASS ≠ system-level PASS.** Individually acceptable specialist-domain outputs do **NOT** automatically
+imply that the combined product/system is acceptable. Future D4 must **surface** cross-domain incompatibility,
+unresolved subsystem/interface assumptions, dependency inconsistencies, contradictions, system-level conflicts,
+unowned/orphan requirements (requirements assigned to no participating subsystem/domain), and explicit Known Unknowns —
+rather than silently treating independent per-domain PASS states as a system-level PASS (consistent with the already
+registered "no silent cross-domain truth overwrite").
+
+**C. Considered where applicable (semantic classes, requirement level only):** cross-domain constraints;
+subsystem/interface assumptions; dependency consistency; contradiction detection; shared constraints; unowned or orphan
+requirements; engineering-interface verification; system-level conflicts; explicit Known Unknowns; and matters
+requiring later simulation, prototype, laboratory testing, certification, or specialist review.
+
+**D. Illustrative examples — ILLUSTRATIVE ONLY, NON-EXHAUSTIVE, NON-BINDING.** These preserve the Owner's intended
+meaning and **MUST NOT be read as a frozen checklist, fixed rules, or the future D4 contract's scope**: electrical
+power/current/voltage capability versus mechanical load/demand; dimensional, packaging, weight, mounting, or
+physical-fit compatibility; thermal limits across subsystems; sensor/control-loop timing compatibility;
+communication/data-rate/latency assumptions; hardware/software interface compatibility; material/environmental
+assumptions; one discipline depending on an assumption contradicted by another; safety requirements or constraints
+conflicting across disciplines; requirements not assigned to any participating subsystem/domain; and
+manufacturing/assembly implications created by cross-domain choices.
+
+**E. Truthful limitation (no correctness guarantee).** D4 does **NOT** guarantee a defect-free design or manufactured
+product. Its purpose is to **reduce the chance that a major/root engineering incompatibility goes unnoticed** merely
+because each specialist domain independently produced an acceptable result. Where evidence cannot be established in
+software, future D4 must preserve truthful Known-Unknown status and route to the separately governed physical-validation
+paths (WS-PFV-001 lineage: simulation / prototype / laboratory / certification / specialist review) instead of asserting
+system-level acceptability.
+
+**F. Five-way distinction preserved (extends the registered tri-distinction; collapses nothing):** domain
+**recognition** ≠ domain **qualification** (per-domain P9-QS) ≠ domain **activation** (§5-I2) ≠ **cross-domain
+evaluation/composition** (D4) ≠ **prototype/simulation/laboratory/certification/specialist validation** (WS-PFV-001
+lineage). Supporting owners (§5-I3 subsystem-model foundation; the P9-QS D4 placeholder / composition-authority
+separation; WS-PFV-001) remain unchanged, un-absorbed, and non-owning.
+
+**G. Future extensibility.** The future composition model must **not** assume only the currently known domains: future
+specialist domains and technologies must be able to participate in the **same governed composition model** without core
+redesign and without domain-specific hardcoding becoming the composition authority.
+
+**H. No implementation architecture defined.** This amendment stays at the requirement/semantic level. It commits **no**
+implementation mechanism and **no** pipeline shape (in particular, no `Specialist Domain Analysis → Canonical Domain
+Outputs → Cross-Domain Review → System Result` pipeline — that shape is not authoritative repository truth and is not
+made so here). Architecture is decided only at the future, separately governed D4 contract/implementation gates.
+
+**I. Non-effects (all preserved verbatim).** D4 remains **REGISTERED (future gate) / NOT AUTHORIZED**; its sequencing is
+unchanged (after Phase-9 activation maturity / ≥2 activated domains, or as a governed successor to skipped §5-I4; not
+before P8-I3); it remains a separately governed future gate. This amendment authorizes **NO** D4 implementation, **NO**
+domain registration or activation (including `mechanical`), **NO** `iot_electronics` change (D-GMPR-01-D-D8 guard
+untouched; D8 Owner-reserved), **NO** Phase 10, **NO** PSRR execution, and **NO** deployment. It is **NOT** a
+prerequisite expansion: it adds **no new blocker** to, and does not delay or absorb, the Phase-9 next-domain decision or
+Mechanical P9-QS qualification, and it leaves CF-6, CF-2, and the `path_n_questions` D-GMPR coupling in their existing
+lanes. First new-domain activation remains BLOCKED behind its existing, unchanged prerequisites.
 
 ## P8-I3-C — Subscription Lifecycle Contract (CORRECTED — verdict-B remediation; supersedes `ead186d`; contract candidate; no new accepted decision; lifecycle Owner decisions remain OPEN)
 
