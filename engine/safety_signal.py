@@ -118,6 +118,40 @@ _ELECTRICAL_TERMS = (
     "overvoltage", "relay", "sensor", "microcontroller", "capacitor",
     "resistor", "power", "fuse", "breaker",
 )
+# --- CF5-F001 governed domain-keyed cue/context-family seam ------------------------
+# (Corrective contract §3 — PARAMETERIZE; merged PR #458.) Detection content is
+# consumed ONLY through this seam, keyed by the session's canonical domain id.
+# The electronics family is the sole populated entry and its vocabulary above is
+# byte-preserved (NB-R3: the cues are legitimately electronics-owned content; the
+# corrected defect was shared-core placement / unconditional multi-domain
+# exposure / the missing seam — never the vocabulary itself). A domain with no
+# governed family derives NO signals (the deliverable surface carries the
+# truthful capability-scope statement instead). The seam keys on domain
+# IDENTITY, never on activation state (NB-R4 disposition): activation gates
+# admission, not historical derivation, so a legacy session keeps deriving its
+# own domain's signals truthfully. Adding a family for a future governed domain
+# happens only through that domain's own separately authorized gate.
+_DOMAIN_CUE_FAMILIES = {
+    _MVP_DOMAIN: {
+        "owner": _MVP_DOMAIN,
+        "failure": _FAILURE_CUES,
+        "subject": _SUBJECT_CUES,
+        "consequence": _CONSEQUENCE_CUES,
+        "context_terms": _ELECTRICAL_TERMS,
+    },
+}
+
+
+def has_governed_safety_cue_family(domain) -> bool:
+    """Additive read-only capability query (contract §5): True iff the given
+    session-domain id has a governed safety cue/context family. ``None``
+    (missing session domain) applies the governed legacy electronics default
+    (the contract §5 ``domain_context`` fallback disposition — reachable only
+    for legacy/NULL-envelope cold loads) and therefore reports the electronics
+    family."""
+    return (domain if domain else _MVP_DOMAIN) in _DOMAIN_CUE_FAMILIES
+
+
 # Negation guards: if present, the SENTENCE is NOT treated as a safety signal
 # (Workstream 2: applied sentence-scoped, and to either sentence of a pair).
 _NEGATION_CUES = (
@@ -203,59 +237,72 @@ def _domain_of(state):
     return domain
 
 
-def _has_electrical_context(lowered, domain):
-    if domain == _MVP_DOMAIN:
+def _has_domain_context(lowered, domain, family):
+    """CF5-F001 seam: the mandatory context element is satisfied by the session
+    domain OWNING the consulted family (the generalization of the historical
+    ``domain == _MVP_DOMAIN`` electronics branch — byte-equivalent behavior for
+    electronics sessions), otherwise by a family context term in the inventor's
+    own text (unchanged legacy behavior for a missing session domain)."""
+    if domain == family["owner"]:
         return True
-    return any(_cue_in(lowered, term) for term in _ELECTRICAL_TERMS)
+    return any(_cue_in(lowered, term) for term in family["context_terms"])
 
 
-def _same_sentence_hit(sentence, domain):
+def _has_electrical_context(lowered, domain):
+    """Historical electronics-context check, preserved as a thin compatibility
+    wrapper over the governed electronics family (CF5-F001 seam)."""
+    return _has_domain_context(lowered, domain, _DOMAIN_CUE_FAMILIES[_MVP_DOMAIN])
+
+
+def _same_sentence_hit(sentence, domain, family):
     """Conservative same-sentence conjunction: failure + subject + consequence
-    all within ONE sentence, sentence not vetoed, electrical context satisfied
-    by the session domain or by an electrical term in the sentence."""
+    all within ONE sentence, sentence not vetoed, domain context satisfied
+    by the session domain owning the family or by a family context term in the
+    sentence."""
     if _vetoed(sentence):
         return None
-    failure = _first_cue_in_sentence(sentence, _FAILURE_CUES)
-    subject = _first_cue_in_sentence(sentence, _SUBJECT_CUES)
-    consequence = _first_cue_in_sentence(sentence, _CONSEQUENCE_CUES)
+    failure = _first_cue_in_sentence(sentence, family["failure"])
+    subject = _first_cue_in_sentence(sentence, family["subject"])
+    consequence = _first_cue_in_sentence(sentence, family["consequence"])
     if failure is None or subject is None or consequence is None:
         return None
-    if not _has_electrical_context(sentence, domain):
+    if not _has_domain_context(sentence, domain, family):
         return None
     return subject, failure, consequence
 
 
-def _pair_hit(first, second, domain):
+def _pair_hit(first, second, domain, family):
     """Bounded adjacent-sentence pairing (contract §5): condition→consequence
     ONLY, immediately adjacent sentences of the SAME source text — sentence N
     carries the failure/invalid-use cue, sentence N+1 the consequence cue, the
     safety-relevant subject in either; a guard hit in EITHER sentence vetoes
-    the pair; electrical context is satisfied over the pair. Two unrelated
+    the pair; domain context is satisfied over the pair. Two unrelated
     hazard mentions never pair (failure and consequence are both required)."""
     if _vetoed(first) or _vetoed(second):
         return None
-    failure = _first_cue_in_sentence(first, _FAILURE_CUES)
+    failure = _first_cue_in_sentence(first, family["failure"])
     if failure is None:
         return None
-    consequence = _first_cue_in_sentence(second, _CONSEQUENCE_CUES)
+    consequence = _first_cue_in_sentence(second, family["consequence"])
     if consequence is None:
         return None
-    subject = (_first_cue_in_sentence(first, _SUBJECT_CUES)
-               or _first_cue_in_sentence(second, _SUBJECT_CUES))
+    subject = (_first_cue_in_sentence(first, family["subject"])
+               or _first_cue_in_sentence(second, family["subject"]))
     if subject is None:
         return None
-    if not _has_electrical_context(first + " " + second, domain):
+    if not _has_domain_context(first + " " + second, domain, family):
         return None
     return subject, failure, consequence
 
 
-def _detect(text, domain):
+def _detect(text, domain, family):
     """Return (subject, failure, consequence, domain_context) if ``text`` is a
-    conservative inventor-stated safety signal, else None. Read-only, pure,
-    deterministic: sentences are evaluated in order; the first qualifying
-    sentence, or the first qualifying immediately-adjacent
-    condition→consequence pair, wins. Pairing never crosses source texts —
-    this function only ever sees ONE source record's text."""
+    conservative inventor-stated safety signal under the given governed
+    cue/context family, else None. Read-only, pure, deterministic: sentences
+    are evaluated in order; the first qualifying sentence, or the first
+    qualifying immediately-adjacent condition→consequence pair, wins. Pairing
+    never crosses source texts — this function only ever sees ONE source
+    record's text."""
     if not text or not isinstance(text, str):
         return None
     lowered = text.lower()
@@ -271,11 +318,11 @@ def _detect(text, domain):
     # a non-electronics context is corrected here.
     domain_context = domain if domain else _MVP_DOMAIN
     for i, sentence in enumerate(sentences):
-        hit = _same_sentence_hit(sentence, domain)
+        hit = _same_sentence_hit(sentence, domain, family)
         if hit is not None:
             return hit[0], hit[1], hit[2], domain_context
         if i + 1 < len(sentences):
-            hit = _pair_hit(sentence, sentences[i + 1], domain)
+            hit = _pair_hit(sentence, sentences[i + 1], domain, family)
             if hit is not None:
                 return hit[0], hit[1], hit[2], domain_context
     return None
@@ -322,6 +369,17 @@ def derive_inventor_stated_safety_signals(state) -> Tuple[SafetySignal, ...]:
     statement that the idea is safe, unsafe, risk-free, or verified.
     """
     domain = _domain_of(state)
+    # CF5-F001 (corrective contract §3/§5): consult the governed domain-keyed
+    # cue/context family. A missing session domain applies the governed legacy
+    # electronics default (the §5 fallback disposition — reachable only for
+    # legacy/NULL-envelope cold loads now that admission and the NB-R1
+    # cold-load restoration both carry the session domain); a domain with NO
+    # governed family derives no signals — the deliverable surface then
+    # carries the truthful capability-scope statement. The lookup keys on
+    # domain IDENTITY, never on activation state (NB-R4).
+    family = _DOMAIN_CUE_FAMILIES.get(domain if domain else _MVP_DOMAIN)
+    if family is None:
+        return ()
     signals = []
     n = 1
     seen = set()  # exact-duplicate statements (contract §4): first source wins
@@ -330,7 +388,7 @@ def derive_inventor_stated_safety_signals(state) -> Tuple[SafetySignal, ...]:
         if key in seen:
             continue
         seen.add(key)
-        hit = _detect(text, domain)
+        hit = _detect(text, domain, family)
         if hit is None:
             continue
         subject, failure, consequence, domain_context = hit

@@ -28,7 +28,8 @@ from engine.validation_plan import derive_validation_plan
 # Safety-Aware first increment (PR #120 contract): additive, read-only,
 # advisory-only inventor-stated safety-signal derivation. Changes no prior
 # section, no criticality, no Section 6 risk, and no RequirementLandscape.risks.
-from engine.safety_signal import derive_inventor_stated_safety_signals
+from engine.safety_signal import (
+    derive_inventor_stated_safety_signals, has_governed_safety_cue_family)
 
 PACKAGE_VERSION = "1.0.0"
 SCHEMA_ID       = "fdc-001-mvp-v1"
@@ -502,6 +503,16 @@ _STEP_ADVISORIES = {
 }
 
 
+# CF5-F001 (corrective contract §5/§6.C): truthful capability-scope statement
+# rendered ONLY when the session's domain has no governed safety-cue family
+# (never for electronics — live-electronics differential parity requires the
+# committed detection-scoped empty statement below to stay byte-identical).
+_SAFETY_SIGNALS_NO_FAMILY = (
+    "Inventor-stated safety-signal derivation is not yet available for this "
+    "idea's domain: no governed safety-signal vocabulary exists for it, so no "
+    "inventor-stated safety signals were derived. This is NOT a determination "
+    "that the idea is safe, unsafe, risk-free, or verified."
+)
 _SAFETY_SIGNALS_EMPTY = (
     "No inventor-stated safety signals were derived from the recorded statements. "
     "This is NOT a determination that the idea is safe, unsafe, risk-free, or "
@@ -534,7 +545,7 @@ def _s15(state):
             "caution_text":         s.caution_text,
             "statement":            s.statement,
         })
-    return {
+    block = {
         "title":           "Inventor-Stated Safety Signals",
         "signals":         rendered,
         "total":           len(rendered),
@@ -546,6 +557,16 @@ def _s15(state):
             "engineering, or legal determination."
         ),
     }
+    # CF5-F001 (contract §5/§6.C): a session domain with NO governed safety-cue
+    # family gets the truthful capability-scope statement (the detection-scoped
+    # empty text would imply detection ran meaningfully). Additive and
+    # conditional — an electronics (or governed-legacy missing-domain) session
+    # renders exactly the block above, unchanged.
+    _dom = getattr(state, "domain", None) or getattr(state, "domain_signal", None)
+    if not has_governed_safety_cue_family(_dom):
+        block["empty_statement"] = _SAFETY_SIGNALS_NO_FAMILY
+        block["capability_scope"] = "no_governed_safety_cue_family"
+    return block
 
 
 def _s14(state):

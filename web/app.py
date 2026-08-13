@@ -483,6 +483,36 @@ def _cold_load_entry(sid):
     try:
         contract = _get_store().load_contract(sid)   # scoped by sid==project_id
         state = contract.to_state()
+        # CF5-F001 NB-R1 (bounded cold-load identity restoration; corrective
+        # contract §4): restore the SAFETY-RELEVANT session-domain identity
+        # from the ALREADY-PERSISTED, creation-validated reconstruction inputs
+        # (`confirmed_domain`) — and ONLY that. Without it a cold-loaded
+        # session diverges from live safety-signal detection (the validated
+        # NB-R1 live-vs-cold-load inconsistency). MECHANICALLY-FORCED
+        # NARROWING of the contract §4 letter (disclosed for review): the
+        # identity is restored onto `domain_signal` ONLY — the safety
+        # derivation's `_domain_of` fallback consumes it — while `state.domain`
+        # deliberately stays absent, because the committed P4-1b-2a
+        # non-resume guard (`submit_answer`: "state.domain is None" = the
+        # cold-load marker) anchors the governed fail-closed guarantee that a
+        # cold-loaded session cannot be answered (complete resume = P4-2, out
+        # of scope). Restoring `state.domain` would silently re-enable
+        # resume-answering across restarts — a governed-boundary violation —
+        # and would also alter non-safety surfaces (question display). This
+        # narrowing is a strict subset of the mandated restoration and the
+        # smallest change that fixes NB-R1 while preserving every committed
+        # boundary. Legacy/partial envelopes (NULL reconstruction columns)
+        # restore nothing and keep the prior behavior (fail-safe; no
+        # migration; no schema change; identity restoration is not admission
+        # and implies no activation). `path` and broader cold-load fidelity
+        # remain governed by the P4 lanes.
+        try:
+            inputs = _get_store().load_reconstruction_inputs(sid)
+        except Exception:
+            inputs = None
+        restored_domain = (inputs or {}).get("confirmed_domain")
+        if restored_domain:
+            state.domain_signal = restored_domain
     except Exception:
         # Fail closed. Storage/contract errors are translated to the generic
         # unavailable behaviour at this web boundary; no user content is logged.

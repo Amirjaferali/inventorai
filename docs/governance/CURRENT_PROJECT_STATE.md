@@ -1518,6 +1518,15 @@ AUTHORIZED / NOT STARTED.***
   unexplained), full suite. **CONTRACT CANDIDATE ONLY — CF5-F001 = OPEN C — INDEPENDENTLY VALIDATED; implementation NOT
   authorized; ODR unchanged; first new-domain activation remains BLOCKED.** Canonical record:
   `CF5_F001_SAFETY_SIGNAL_CORRECTIVE_CONTRACT.md`. Next gate: Mandatory Grill on that exact contract candidate.
+  **CF5-F001 contract MERGED (PR #458, tip `b06ae404`); BOUNDED IMPLEMENTATION CANDIDATE recorded.** Domain-keyed
+  cue/context-family seam implemented (electronics byte-preserved; domain-identity keying; capability query); truthful
+  capability-scope statement for family-less domains (electronics output unchanged); NB-R1 cold-load restoration from
+  persisted `confirmed_domain` — **restored on `domain_signal` ONLY (disclosed mechanically-forced §4 narrowing:
+  `state.domain` is the committed P4-1b-2a non-resume guard anchor; restoring it re-enabled resume-answering)**; one
+  load-bearing-proved D3-A pin reconciliation. Evidence: RED r1–r4; GREEN 13/13; mutations 7/7 CAUGHT; differentials d1=0
+  deltas / d2 NB-R1-only / d3 45/45 family-seam, 0 unexplained; full suite 2428/3/1/0. IMPLEMENTATION CANDIDATE ONLY —
+  Grill → independent review (attention: §4 narrowing + D3-A reconciliation) → Owner acceptance → publication → PR →
+  verification still required; CF5-F001 NOT closed; first new-domain activation remains BLOCKED.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
