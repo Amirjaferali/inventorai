@@ -1507,6 +1507,17 @@ AUTHORIZED / NOT STARTED.***
   activation are NOT triggers). Architecture selection OPEN (frozen only in the corrective-contract gate). FU-1 remains a
   separate CF-5-lane follow-up. Canonical record: `CF5_F001_SAFETY_SIGNAL_INDEPENDENT_VALIDATION_RECORD.md`. Next gate:
   Mandatory Grill on that exact candidate; then the bounded CF5-F001 corrective contract (separately governed).
+  **CF5-F001 validation record MERGED (PR #457, tip `17ff20cd`); CORRECTIVE CONTRACT CANDIDATE recorded.** Direction
+  **PARAMETERIZE** (evidence-settled, D3-B pattern; electronics cues byte-preserved; domain-identity keying = NB-R4
+  disposition; no new Owner decision; family-before-activation preserved as an open P9-QS input). **NB-R1 mechanically
+  located and dispositioned**: `web/app.py::_cold_load_entry` → `record_contract.to_state()` restores no domain; the
+  contract mandates restoring `domain`/`domain_signal` from the already-persisted `confirmed_domain` (legacy/NULL envelopes
+  fail-safe; no schema/migration). Allowlist: `engine/safety_signal.py` seam + bounded `_cold_load_entry` + bounded `_s15`
+  truthful capability-scope statement + focused tests. Required evidence: electronics live differential parity (zero
+  deltas), NB-R1 elimination, family-less-domain truthful behavior, RED r1–r4, mutations m1–m6, differentials d1–d3 (0
+  unexplained), full suite. **CONTRACT CANDIDATE ONLY — CF5-F001 = OPEN C — INDEPENDENTLY VALIDATED; implementation NOT
+  authorized; ODR unchanged; first new-domain activation remains BLOCKED.** Canonical record:
+  `CF5_F001_SAFETY_SIGNAL_CORRECTIVE_CONTRACT.md`. Next gate: Mandatory Grill on that exact contract candidate.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation

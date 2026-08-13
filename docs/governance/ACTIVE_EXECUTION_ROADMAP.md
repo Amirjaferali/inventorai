@@ -8480,3 +8480,61 @@ D8 Owner-reserved; `activated_domains() == ['electronics_electrical']`; **first 
 Phase 10 = NOT AUTHORIZED; PSRR = NOT EXECUTED; deployment/production = NOT AUTHORIZED. Append-only; prior history not
 rewritten. This entry authorizes no push, PR, or merge beyond this candidate, no corrective contract, no remediation, no
 domain activation, and no D4/D8/ODR change. **Next required gate: Mandatory Grill on this exact validation-record candidate.**
+
+---
+
+## CF5-F001 — Shared-Core Electronics-Specific Safety Signal — CORRECTIVE IMPLEMENTATION CONTRACT — governance-only CANDIDATE — implementation NOT started; NO domain activated
+
+**Gate.** Governance-only **corrective implementation contract candidate** for CF-5 finding **CF5-F001** (independently
+VALIDATED C, record merged PR #457). Authoritative base `17ff20cd18267b71ed2ce615ae144d4e94729ab3` (PR #457 SHA-preserving
+merge of validation candidate `23eb12b5`; merge tree == candidate tree; freshly fetched; 0 newer); boot OK;
+`activated_domains() == ['electronics_electrical']`. Canonical record:
+`docs/governance/CF5_F001_SAFETY_SIGNAL_CORRECTIVE_CONTRACT.md`. ZERO runtime/test/Web/CLI/domain/Registry/activation/
+schema/persistence/API/guardrail/ODR diff this gate.
+
+**Architecture decision (evidence-settled; no new Owner decision).** Direction = **PARAMETERIZE**: one governed domain-keyed
+cue/context-family seam inside `engine/safety_signal.py` (electronics family byte-preserved as sole entry; seam keys on
+domain identity, not activation — also the NB-R4 disposition), per the merged D3-B pattern ("no parallel framework"; foreign
+domain → no content; per-domain ownership governs later). KEEP fails the objective; MOVE/DELEGATE require an unauthorized
+Domain-Pack schema gate with no activated consumer. The validation-record §8 policy question (silent no-signals vs truthful
+note for a family-less domain) is settled by committed truthfulness authority (F002 §4.E class; P6-1; truthful-state
+increments): the truthful capability-scope statement is contract-mandated behavior; its wording is implementation detail;
+whether a new domain MUST ship a family before activation is an explicitly-preserved open P9-QS/activation-gate input.
+`OWNER_DECISION_REGISTER.md` UNCHANGED (CF5-F003-contract precedent).
+
+**NB-R1 disposition (mechanically located).** Seam = `web/app.py::_cold_load_entry` → `record_contract.to_state()` (restores
+only `idea_id`+assertions; no `domain`/`domain_signal`) → cold-loaded SESSION_STORE entry reaches the deliverable routes →
+context gate loses its domain branch and `engine/safety_signal.py:272` falls back. Required correction (minimum-path): the
+cold-load seam restores `domain`/`domain_signal` from the ALREADY-PERSISTED creation-validated `confirmed_domain`
+reconstruction input, and only that; legacy/NULL envelopes unchanged (fail-safe; no schema/migration); `path` restoration
+and broader cold-load fidelity stay with the P4 lanes; consequential cold-load-converges-to-live deltas enumerated in the
+differential.
+
+**Contract scope (implementation allowlist).** `engine/safety_signal.py` (family seam + context generalization + additive
+capability query + governed `:272` legacy-fallback disposition) + `web/app.py` (ONLY `_cold_load_entry` NB-R1 restoration) +
+`engine/deliverable_assembler.py` (ONLY the bounded `_s15` truthful capability-scope statement) + NEW
+`tests/test_cf5_f001_safety_signal_domain_seam.py` (+ load-bearing-proved additions to existing safety/D3 tests) +
+`web/templates/deliverable.html` ONLY IF mechanically required. Forbidden: second safety framework; Domain-Pack
+schema/data; classifier/activation change; record-contract/store schema or migration; scoring/§6/§13/risks/readiness;
+Path-N; CAP-13; CF-2/CF-6 surfaces beyond scope; D4/D8; ILT-002 routes; de-electronicsifying the cue vocabulary (NB-R3);
+implementation-gate ODR diff. Any additional path → STOP before expanding scope.
+
+**Required evidence.** GREEN matrix A–F (electronics live differential parity; NB-R1 eliminated with legacy fail-safe;
+family-less domain → no signals + truthful scope statement, even with electronics vocabulary in text; domain-identity
+keying (NB-R4); frozen surfaces preserved; determinism). RED r1–r4 (missing scope statement; unconditional exposure; real
+Flask live-vs-cold signal loss; `:272`-fallback labeling) must fail pre-fix for the validated reasons — if irreproducible,
+STOP and report the evidence conflict. Mutations m1–m6 each CAUGHT (re-hardcoded gate; family leak; restoration dropped;
+wrong restored domain; scope-statement suppression/parity break; frozen-surface mutation), bytes sha256-restored.
+Differentials: d1 live electronics parent-vs-impl = ZERO deltas; d2 cold-load corpus = only categorized NB-R1 corrections;
+d3 activation-double corpus = only categorized family-seam corrections; 0 unexplained. Full governed suite green with exact
+counts.
+
+**Boundary / status after this entry.** **CF5-F001 corrective contract = CANDIDATE ONLY; implementation NOT started;
+CF5-F001 NOT closed.** Still requires Mandatory Grill → independent external exact-candidate review → Owner exact-candidate
+acceptance → SHA-preserving publication → PR → pre/post-merge verification; after authoritative, the bounded CF5-F001
+implementation is the subsequent separately governed gate. CF5-F002 FORMALLY CLOSED; CF5-F003 CLOSED; CF5-F004 OPEN C; CF-5
+OPEN; CF-6 OPEN (facets (i)–(iv) discharged only); CF-2 OPEN; D4 SEPARATE / UNEXECUTED; D8 Owner-reserved;
+`activated_domains() == ['electronics_electrical']`; **first new-domain activation remains BLOCKED**; Phase 10 NOT
+AUTHORIZED; PSRR NOT EXECUTED; deployment/production NOT AUTHORIZED. FU-1 unchanged (outside F001; CF-5 lane). Append-only;
+prior history not rewritten. This entry authorizes no push, PR, merge beyond this candidate, no implementation, no domain
+activation, and no D4/D8/ODR change.
