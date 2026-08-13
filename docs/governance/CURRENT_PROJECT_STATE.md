@@ -1527,6 +1527,15 @@ AUTHORIZED / NOT STARTED.***
   deltas / d2 NB-R1-only / d3 45/45 family-seam, 0 unexplained; full suite 2428/3/1/0. IMPLEMENTATION CANDIDATE ONLY —
   Grill → independent review (attention: §4 narrowing + D3-A reconciliation) → Owner acceptance → publication → PR →
   verification still required; CF5-F001 NOT closed; first new-domain activation remains BLOCKED.
+  **CF5-F001 implementation MERGED and post-merge verified; FORMAL CLOSURE CANDIDATE recorded.** PR #459 → tip `9af877c4`
+  (SHA-preserving merge of the Grill-passed, independently-reviewed, Owner-accepted exact candidate `d5edd1a3`; merge tree
+  == candidate tree; post-merge suite 2428/3/1/0; boot OK). All contract §9 criteria verified → **CF5-F001 = FORMALLY
+  CLOSED over the authoritative runtime** (authoritative if/when the closure candidate is merged and post-merge verified).
+  NB-R1 eliminated via the accepted `domain_signal`-only narrowing (P4 non-resume preserved, pinned both directions);
+  NB-R2/R3/R4 dispositioned; D-GMPR-01-D-D3 `safety_signal` coupling DISCHARGED; observations memorialized without new
+  obligations; FU-1 unchanged (CF-5 lane). **CF5-F004 / CF-5 / CF-6 / CF-2 / CF-3 remain OPEN; `activated_domains() ==
+  ['electronics_electrical']`; NO domain activated; first new-domain activation remains BLOCKED** behind CF5-F004,
+  remaining CF-6, CF-2, CF-3, per-domain P9-QS, D8 (if IoT), and explicit Owner activation authorization.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
