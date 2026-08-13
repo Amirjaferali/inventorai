@@ -1574,6 +1574,17 @@ AUTHORIZED / NOT STARTED.***
   implementation correctness, candidate identity, or the ACCEPT verdict. **No over-closure: CF-5 / CF-6 / CF-2 remain
   OPEN; closing F004/CF-3 authorizes NO registration/activation; first new-domain activation remains BLOCKED; D4/D8/
   Phase 10/PSRR/deployment unchanged.**
+  **CF5-F004 closure MERGED (PR #464, tip `fcc9e37e`) → CF5-F004 = FORMALLY CLOSED; CF-3 = DISCHARGED (F004 surface
+  only); D-GMPR tie-break coupling = DISCHARGED. CF-5 UMBRELLA FORMAL CLOSURE CANDIDATE recorded.** Finding matrix
+  terminal (F001/F002/F004 FORMALLY CLOSED; F003 CLOSED; no E findings); audit §9 criteria verified with the honestly
+  recorded summary-level-run-record limitation (reliance flagged for the independent reviewer); fresh verification: boot
+  OK, activation unchanged, suite 2442/3/1/0. **Disposition: `CF-5 = FORMALLY CLOSED` — authoritative ONLY after the
+  closure candidate's own merge + post-merge verification.** Surviving carry-forwards preserved: CF-6 remainder OPEN;
+  CF-2 OPEN; `path_n_questions` D-GMPR coupling OPEN; NMF-1 + FU-1 re-homed as pre-activation test-hardening; P9-QS
+  separate; D4/D8/Phase 10/PSRR/deployment unchanged; **CF-5 closure authorizes NO domain registration/activation —
+  first new-domain activation remains BLOCKED.** Canonical record:
+  `CF5_RETROSPECTIVE_ADVERSARIAL_ARCHITECTURE_AUDIT_FORMAL_CLOSURE_RECORD.md`. Next gate: Mandatory Grill on that exact
+  candidate.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation

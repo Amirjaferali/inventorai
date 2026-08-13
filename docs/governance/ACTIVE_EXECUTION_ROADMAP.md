@@ -8889,3 +8889,48 @@ before-any-registry-set-changing-work binding is SATISFIED by this closure for F
 pack-schema/provenance work itself remains separately ungoverned-here and unauthorized. Append-only; prior history not
 rewritten. This entry authorizes no push, PR, merge beyond this candidate, no runtime/test change, no domain activation,
 no D4/D8, and no CF-5 / CF-6 / CF-2 closure. **Next required gate: Mandatory Grill on this exact closure candidate.**
+
+---
+
+## CF-5 — Retrospective Adversarial Architecture Audit — FORMAL CLOSURE — governance-only CLOSURE CANDIDATE — CF-5 CLOSED; CF-6 / CF-2 / path_n_questions D-GMPR coupling NOT closed; NO domain activated
+
+**Gate.** Governance-only formal closure of the **CF-5 Retrospective Adversarial Architecture Audit** on authoritative base
+`fcc9e37ec4ef981f30d5a2009fa5244cfb3b040d` (PR #464 merge — CF5-F004 FORMALLY CLOSED / CF-3 DISCHARGED; freshly fetched;
+0 newer). Fresh verification this gate: boot OK; `activated_domains() == ['electronics_electrical']` (§9 criterion 10);
+full suite **2442 passed / 3 skipped / 1 xfailed / 0 failed**. Canonical record:
+`docs/governance/CF5_RETROSPECTIVE_ADVERSARIAL_ARCHITECTURE_AUDIT_FORMAL_CLOSURE_RECORD.md`. ZERO
+runtime/test/Web/CLI/domain/registry/activation/schema/persistence/ODR diff this gate.
+
+**Finding matrix — terminal states (nothing reopened).** CF5-F001 C → validated (PR #457) → contract (PR #458) → impl
+(PR #459) → **FORMALLY CLOSED** (PR #460). CF5-F002 C → validated (PR #452) → contract+D-CF5-F002-01 (PR #453) →
+Amendment 01 (PR #454) → impl (PR #455) → **FORMALLY CLOSED** (PR #456; CF-6 facets (i)–(iv) discharged only). CF5-F003
+D → contract v2 + Amendment 01 (PRs #448/#449) → impl (PR #450) → **CLOSED** (PR #451). CF5-F004 C → validated (PR #461)
+→ contract+D-CF5-F004-01 (PR #462) → impl (PR #463) → **FORMALLY CLOSED** (PR #464), with **CF-3 DISCHARGED/RESOLVED
+limited exactly to the F004 residual classifier surface** and the D-GMPR-01-D-D3 hard-coded tie-break coupling
+DISCHARGED. No E findings; no unclassified finding.
+
+**Audit §9 completion criteria — ALL verified** (per the canonical record §4), including the honest **recorded
+limitation**: the committed audit-run record (Execution Gate 1 — "RUN read-only producing four material findings",
+ratified through every subsequent merged gate PR #448–#464) is summary-level; no dedicated per-area §10-depth artifact
+was separately committed; this closure relies on that ratified declaration and flags the reliance explicitly for the
+independent reviewer.
+
+**Disposition. `CF-5 = FORMALLY CLOSED`** — authoritative ONLY if/when this closure candidate is merged
+(create-a-merge-commit) and post-merge verified.
+
+**Carry-forwards SURVIVING CF-5 closure (preserved once; not absorbed; nothing new).** CF-6 OPEN (remainder incl. the
+CLI §5-I2-bypass literal); CF-2 OPEN; `engine/path_n_questions.py` D-GMPR coupling OPEN; **NMF-1 + FU-1** re-homed as
+bounded non-blocking pre-activation test-hardening items (earliest gate: a bounded standalone test-only hardening gate or
+the pre-activation readiness review); registry skip-warning, IoT vocabulary/examination inputs, and the `iot_electronics`
+schema warning retain their existing owners; per-domain P9-QS (incl. the safety-cue-family question) separate; durable
+Owner decisions D-CF5-F002-01 / D-CF5-F004-01 (incl. OD1) unaffected.
+
+**Boundary / status after this entry (no over-closure).** CF5-F001/F002/F004 FORMALLY CLOSED; CF5-F003 CLOSED; CF-3
+DISCHARGED (F004 surface only); **CF-5 = FORMALLY CLOSED (conditional on this candidate's own merge + post-merge
+verification); CF-6 OPEN; CF-2 OPEN; path_n_questions D-GMPR coupling OPEN; D4 SEPARATE / UNEXECUTED; D8 Owner-reserved;
+Phase 10 NOT AUTHORIZED; PSRR NOT EXECUTED; deployment/production NOT AUTHORIZED.** `activated_domains() ==
+['electronics_electrical']`; **NO domain registered/activated; CF-5 closure authorizes NO registration or activation;
+first new-domain activation remains BLOCKED** behind remaining CF-6, CF-2, the open D-GMPR coupling, per-domain P9-QS,
+D8 (if IoT), and explicit Owner activation authorization. Append-only; prior history not rewritten. This entry
+authorizes no push, PR, merge beyond this candidate, no runtime/test change, no domain activation, and no D4/D8/ODR
+change. **Next required gate: Mandatory Grill on this exact closure candidate.**

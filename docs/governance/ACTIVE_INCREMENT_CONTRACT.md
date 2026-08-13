@@ -41,7 +41,27 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — CF5-F004 FORMAL CLOSURE CANDIDATE; governance-only; CF-5 / CF-6 / CF-2 NOT closed; NO domain
+**Status (current — CF-5 FORMAL CLOSURE CANDIDATE; governance-only; CF-6 / CF-2 / path_n_questions coupling NOT closed; NO
+domain activated):** the CF5-F004 formal closure is **MERGED and post-merge verified** (PR #464 → authoritative tip
+`fcc9e37ec4ef981f30d5a2009fa5244cfb3b040d`; merge tree == closure-candidate tree → **CF5-F004 = FORMALLY CLOSED; CF-3 =
+DISCHARGED (F004 surface only); D-GMPR-01-D-D3 tie-break coupling = DISCHARGED**). This gate records the **CF-5 umbrella
+FORMAL CLOSURE candidate** (canonical record:
+`docs/governance/CF5_RETROSPECTIVE_ADVERSARIAL_ARCHITECTURE_AUDIT_FORMAL_CLOSURE_RECORD.md`): finding matrix terminal
+(F001/F002/F004 FORMALLY CLOSED; F003 CLOSED; no E findings; nothing reopened); all audit §9 completion criteria verified
+— including the honestly recorded limitation that the committed audit-run record is summary-level (ratified through PRs
+#448–#464; per-area §10-depth artifact not separately committed; reliance flagged for the independent reviewer); fresh
+verification this gate (boot OK; activation unchanged; full suite **2442 passed / 3 skipped / 1 xfailed / 0 failed**).
+**Disposition: `CF-5 = FORMALLY CLOSED` — authoritative ONLY after this candidate's own merge + post-merge
+verification.** Carry-forwards preserved (CF-6 remainder; CF-2; `path_n_questions` D-GMPR coupling; NMF-1 + FU-1
+re-homed as pre-activation test-hardening; fenced observations retain owners; P9-QS separate; durable Owner decisions
+unaffected). **No over-closure: CF-5 closure authorizes NO domain registration/activation; first new-domain activation
+remains BLOCKED; D4/D8/Phase 10/PSRR/deployment unchanged.** Governance-only: ZERO
+runtime/test/Web/CLI/domain/registry/activation/schema/persistence/ODR diff. Next required gate: **Mandatory Grill on
+this exact closure candidate** → independent external exact-candidate review → Owner acceptance → SHA-preserving
+publication → PR → pre/post-merge verification.
+
+**Immediately prior (CF5-F004 formal closure — MERGED via PR #464; retained as history):**
+**Status (prior — CF5-F004 FORMAL CLOSURE CANDIDATE; governance-only; CF-5 / CF-6 / CF-2 NOT closed; NO domain
 activated):** the CF5-F004 bounded corrective implementation is **MERGED and post-merge verified** — PR #463 →
 authoritative tip `80e5d78dd4e1b2128ba84fa24726fa9b89ea1a75`, a SHA-preserving two-parent merge of `0e4312e5` + the
 Grill-passed, independently-reviewed (ACCEPT), Owner-accepted exact candidate `3f5f54f890df9a53db5e3212401aeda35da49b0e`;
