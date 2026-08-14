@@ -9589,3 +9589,55 @@ EN/AR label; CF-6; CF-2; explicit Owner activation authorization. No Tier-1/CF-6
 `activated_domains() == ['electronics_electrical']`; first new-domain activation remains BLOCKED. Append-only;
 prior history not rewritten. **Next required gate: Mandatory Grill on this exact candidate**, then the governed
 lifecycle.
+
+---
+
+## CF-6 / CF-2 — CLI Shared-Facet Scoping Contract — governance-only CORRECTED CANDIDATE (first candidate `71c16d53` REJECTED, preserved) — implementation NOT started; ILT-002 facet deferred; Tier-1 label untouched; Mechanical NOT ACTIVATED; ODR UNCHANGED
+
+**Gate.** Governance-only joint scoping contract on authoritative base
+`2b985844f093b2730fa6618e6ee2d29e32c87af8` (PR #486 — SHA-preserving merge of the accepted CF-5 NMF-1/FU-1
+test-hardening candidate `1ea78443` onto `91f4e5c6`; merge tree `2d43c53e` == candidate tree; POST-MERGE PASS;
+freshly fetched; 0 newer; clean tree) — NMF-1/FU-1 DISCHARGED; full suite **2573/3/1/0** fresh. Canonical record:
+`docs/governance/CF6_CF2_CLI_SHARED_FACET_SCOPING_CONTRACT.md`. **Candidate lineage:** first scoping candidate
+`71c16d533f5c5ac014e669d16f8f65ee13192c2a` independently REJECTED — two material defects: (1) a fabricated/
+misattributed quotation ("a jointly-authorized gate that explicitly names both owners" — real text is in
+`P9_MECHANICAL_DOMAIN_QUALIFICATION_CONTRACT.md` §12, the D-GMPR/Mechanical lane, wrongly attributed to
+`CF5_F002_CF6_WEB_ADMISSION_CORRECTIVE_CONTRACT.md` §5, which contains no such sentence); (2) technically
+mischaracterized the ILT-002 legacy routes as "bypassing classification/activation entirely" — `_admit_specialist_
+domain` DOES enforce `domain_activation.is_activated(domain)` (verified), so activation is NOT bypassed, only
+classification/domain-selection of the submitted idea text is — preserved as immutable rejected evidence. THIS
+corrected candidate from the SAME parent removes the fabricated quotation (replaced with an explicitly-labeled
+inference from the F002 precedent's actual behavior), corrects the ILT-002 characterization (hardcoded domain
+selection / classifier bypass, activation enforcement already correctly in place via `_admit_specialist_domain`,
+consistent with `OWNER_DECISION_REGISTER.md` D-S5-03), and explicitly reconciles the P9-MECH-SF contract's "one
+CLI-literal facet" summary as INCOMPLETE (not invalid — that summary's CLI-facet description remains accurate;
+ILT-002 was simply not enumerated there). **`OWNER_DECISION_REGISTER.md` UNCHANGED.**
+
+**Dependency-graph reconstruction (substance unchanged from the rejected candidate).** Of the three remaining
+non-Owner blockers (Tier-1 label; CF-6; CF-2): the label cannot proceed (P9-MECH-QC §13: truthful only at
+activation-readiness — correctly last). CF-6/CF-2 share TWO code-level facets: the CLI's hardcoded electronics-
+only domain check (`scripts/run_cli.py` — never consults `activated_domains()` at all, a genuine activation-truth
+bypass), and the three ILT-002 legacy routes' hardcoded domain selection (`web/app.py` — activation-bound via
+`_admit_specialist_domain`, but the submitted idea text is never classified). One JOINT gate (explicitly naming
+both owners) may operate on a shared facet without closing either lane, by inference from the F002/CF-6 precedent's
+actual behavior (its §5 discharged shared facets for both CF-6 and CF-2 together while explicitly stating CF-6
+was NOT auto-declared complete).
+
+**Scoping decision (unchanged).** Given the ILT-002 routes touch **nine** existing test files (a durability/
+persistence-adjacent P4-1b-2a-lane surface) versus the CLI literal's **four**, this contract bounds its future
+implementation to **the CLI facet only**. The ILT-002 facet is named, evidenced, technically corrected, and
+explicitly DEFERRED to its own future joint gate — not combined here, not silently dropped; its future gate must
+NOT add a duplicate activation check (already enforced).
+
+**Delivered (exactly, governance-only, corrected).** The bounded future CLI-facet implementation's exact
+definition; a preliminary reconciliation sweep naming the six existing CLI-touching tests across four files; the
+corrected overlap matrix with an explicit activation-enforcement column; explicit non-effects (no CF-6/CF-2
+full-lane closure; no ILT-002 touch; no Tier-1 work; no Mechanical activation). **Expected discharge effect: NONE**
+— this scoping contract discharges nothing; it only fences the future implementation gate. **ZERO runtime/test/
+pack/registry/activation diff this candidate.**
+
+**Boundary / status.** Implementation NOT authorized by this contract. `MECHANICAL = P9-QS QUALIFIED — WITH
+ACTIVATION BLOCKERS; NOT ACTIVATED` unchanged; Electronics unaffected; `activated_domains() ==
+['electronics_electrical']`; no D4/D8/THERM-01/Phase 10/PSRR/deployment; no P9 closure. Append-only; prior
+history not rewritten. **Next required gate: Mandatory Grill on this exact scoping candidate**, then the governed
+lifecycle; thereafter the separately-authorized CLI-facet implementation gate.

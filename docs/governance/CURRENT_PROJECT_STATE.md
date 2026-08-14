@@ -1882,6 +1882,32 @@ AUTHORIZED / NOT STARTED.***
   CF-2 work performed; `scripts/run_cli.py` untouched; no D4/D8/THERM-01/Phase 10/PSRR/deployment; no P9 closure.
   `activated_domains() == ['electronics_electrical']`. Authoritative ONLY if/when this exact candidate is merged +
   post-merge verified. Next required gate: Mandatory Grill on this exact candidate.
+  **CF-5 NMF-1/FU-1 test-hardening MERGED (PR #486, base `2b985844f093b2730fa6618e6ee2d29e32c87af8`; merge tree ==
+  candidate tree `2d43c53e`) — NMF-1/FU-1 DISCHARGED; three non-Owner blockers remain (Tier-1 label; CF-6; CF-2).
+  CF-6/CF-2 CLI SHARED-FACET SCOPING CONTRACT — CORRECTED CANDIDATE recorded** (canonical record:
+  `CF6_CF2_CLI_SHARED_FACET_SCOPING_CONTRACT.md`; `OWNER_DECISION_REGISTER.md` UNCHANGED). **Lineage: first
+  scoping candidate `71c16d53` independently REJECTED** — a fabricated/misattributed quotation (falsely
+  attributed to `CF5_F002_CF6_WEB_ADMISSION_CORRECTIVE_CONTRACT.md` §5; the real text lives in
+  `P9_MECHANICAL_DOMAIN_QUALIFICATION_CONTRACT.md` §12, an unrelated D-GMPR/Mechanical context) and a technical
+  mischaracterization of the ILT-002 legacy routes as bypassing activation (`_admit_specialist_domain` DOES
+  enforce `domain_activation.is_activated`, verified; only classification/domain-selection of the submitted idea
+  text is bypassed, consistent with `OWNER_DECISION_REGISTER.md` D-S5-03) — **preserved immutable; this corrected
+  candidate from the SAME parent removes the fabricated quote** (replaced with an explicitly-labeled inference
+  from the F002 precedent's actual behavior) **and corrects the ILT-002 characterization**, reconciling the
+  P9-MECH-SF contract's "one CLI-literal facet" summary as INCOMPLETE (not invalid). Dependency graph unchanged in
+  substance: Tier-1 label correctly last; CF-6/CF-2 share TWO code-level facets — the CLI's hardcoded
+  electronics-only check (`scripts/run_cli.py`, a genuine activation-truth bypass — never consults
+  `activated_domains()`) and the ILT-002 routes' hardcoded domain selection (`web/app.py`, activation-BOUND via
+  `_admit_specialist_domain`; only classification is bypassed). One joint gate naming both owners may operate on
+  a shared facet without closing either lane. **Scoped to the CLI facet only** (4 touching test files vs.
+  ILT-002's 9, a durability/persistence-adjacent P4-1b-2a surface) — ILT-002 explicitly DEFERRED to its own
+  future joint gate, technically corrected, with an explicit instruction against adding a duplicate activation
+  check there. Delivers the bounded future CLI-facet implementation's exact definition and a preliminary
+  reconciliation sweep (6 tests / 4 files). **Expected discharge effect of THIS contract: NONE.** ZERO
+  runtime/test/pack/registry/activation diff; implementation NOT authorized. `MECHANICAL = P9-QS QUALIFIED — WITH
+  ACTIVATION BLOCKERS; NOT ACTIVATED` unchanged; `activated_domains() == ['electronics_electrical']`. No Tier-1
+  label work; no ILT-002 touch; no Mechanical activation. Authoritative ONLY if/when this exact candidate is
+  merged + post-merge verified. Next required gate: Mandatory Grill on this exact candidate.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation

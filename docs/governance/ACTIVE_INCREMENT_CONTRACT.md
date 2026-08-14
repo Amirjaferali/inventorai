@@ -41,7 +41,38 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — CF-5 NMF-1/FU-1 BOUNDED TEST-HARDENING EXECUTION CANDIDATE — both DISCHARGED conditional on
+**Status (current — CF-6/CF-2 CLI SHARED-FACET SCOPING CONTRACT — CORRECTED CANDIDATE (first candidate `71c16d53`
+REJECTED, preserved) — governance-only; implementation NOT started; ILT-002 facet deferred; Tier-1 label untouched;
+Mechanical NOT ACTIVATED; ODR UNCHANGED):** the CF-5 NMF-1/FU-1 test-hardening candidate is **MERGED and
+post-merge verified** (PR #486 → authoritative base `2b985844f093b2730fa6618e6ee2d29e32c87af8`, parents `91f4e5c6`
++ accepted candidate `1ea78443`, merge tree `2d43c53e` == candidate tree) — NMF-1/FU-1 DISCHARGED; three non-Owner
+blockers remain (Tier-1 label; CF-6; CF-2). **Lineage:** first scoping candidate `71c16d53` independently REJECTED
+— a fabricated/misattributed quotation (falsely attributed to `CF5_F002_CF6_WEB_ADMISSION_CORRECTIVE_CONTRACT.md`
+§5; the real text is in `P9_MECHANICAL_DOMAIN_QUALIFICATION_CONTRACT.md` §12, an unrelated D-GMPR/Mechanical
+context) and a technical mischaracterization of the ILT-002 routes as bypassing activation (`_admit_specialist_
+domain` DOES enforce `domain_activation.is_activated`, verified; only classification/domain-selection is
+bypassed, consistent with `OWNER_DECISION_REGISTER.md` D-S5-03) — preserved immutable; this corrected candidate
+from the SAME parent removes the fabricated quote (replaced with an explicitly-labeled inference from the F002
+precedent's actual behavior), corrects the ILT-002 characterization, and reconciles the P9-MECH-SF contract's
+"one CLI-literal facet" summary as INCOMPLETE (not invalid). Dependency graph unchanged in substance: label
+correctly last; CF-6/CF-2 share TWO code-level facets — the CLI's hardcoded electronics-only check (a genuine
+activation-truth bypass — the CLI never consults `activated_domains()`) and the ILT-002 routes' hardcoded domain
+selection (activation-BOUND via `_admit_specialist_domain`; only classification is bypassed). One joint gate
+naming both owners may operate on a shared facet without closing either lane (inference from the F002/CF-6
+precedent's behavior). **Scoped to the CLI facet only** (4 touching test files vs. ILT-002's 9, a
+durability/persistence-adjacent P4-1b-2a surface) — ILT-002 explicitly DEFERRED to its own future joint gate,
+technically corrected, with an explicit instruction that its future gate must NOT add a duplicate activation
+check. Delivers (governance only): the bounded future CLI-facet implementation's exact definition; a preliminary
+six-test/four-file reconciliation sweep; explicit non-effects. **Expected discharge effect of THIS contract:
+NONE** — it fences the future implementation only. **ZERO runtime/test/pack/registry/activation diff.**
+Implementation NOT authorized by this contract. `MECHANICAL = P9-QS QUALIFIED — WITH ACTIVATION BLOCKERS; NOT
+ACTIVATED` unchanged; `activated_domains() == ['electronics_electrical']`. Authoritative ONLY if/when this exact
+candidate is merged and post-merge verified. Next required gate: **Mandatory Grill on this exact candidate** →
+independent external exact-candidate review → Owner acceptance → SHA-preserving publication → PR → pre/post-merge
+verification; thereafter the separately-authorized CLI-facet implementation gate.
+
+**Immediately prior (CF-5 NMF-1/FU-1 test-hardening gate — MERGED via PR #486 `2b985844`; retained as history):**
+**Status (prior — CF-5 NMF-1/FU-1 BOUNDED TEST-HARDENING EXECUTION CANDIDATE — both DISCHARGED conditional on
 merge; Mechanical NOT ACTIVATED; ODR UNCHANGED):** the P9-MECH-SF formal closure is **MERGED and post-merge
 verified** (PR #485 → authoritative base `91f4e5c6ad69964d01328e1502ab04d1d76aa0c0`, parents `1a23552b` +
 accepted closure candidate `c25c8438`, merge tree `36e2c030` == candidate tree) — OD-M2 clause 3 is DISCHARGED;
