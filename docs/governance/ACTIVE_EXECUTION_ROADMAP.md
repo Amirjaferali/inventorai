@@ -9393,3 +9393,63 @@ CAP-12/13; WS-PFV-001; D4 REGISTERED / NOT AUTHORIZED; D8 Owner-reserved; Phase 
 AUTHORIZED. Append-only; prior history not rewritten. **Next required gate: Mandatory Grill on this exact
 candidate**; after its merge, the next Owner decisions are the activation-blocker gates (the OD-M2 clause-3
 safety-family gate first among them), each separately authorized.
+
+---
+
+## P9-MECH-SF — Governed Mechanical Safety-Cue Family (OD-M2 Clause 3) — governance-only CONTRACT — CORRECTED CANDIDATE (first candidate `cfab650f` REJECTED, preserved) — implementation NOT started; Mechanical NOT ACTIVATED; ODR UNCHANGED
+
+**Gate.** Governance-only contract gate on authoritative base `cac658d70b841772b1a496b60b65a2da4309814a` (PR #482 —
+SHA-preserving merge of the accepted terminal qualification record `dd7b4878` onto `ac8ac2d9`; merge tree `178c5dbb`
+== candidate tree; POST-MERGE PASS → **`MECHANICAL = P9-QS QUALIFIED — WITH ACTIVATION BLOCKERS; NOT ACTIVATED`**
+authoritative; freshly fetched; 0 newer; clean tree). Canonical record:
+`docs/governance/P9_MECH_SAFETY_CUE_FAMILY_CONTRACT.md`. **Candidate lineage:** first contract candidate
+`cfab650fedbbaa4d5fa60db4bea1fa84575aae62` independently REJECTED — sole material defect: its "exhaustive" §4 flip
+inventory missed the CERTAIN I5 full-pack hash flip
+(`tests/test_p9_mech_i5_question_sufficiency.py::test_pack_bytes_frozen_incl_i4_validity_anchor` byte-pins the
+mechanical pack, which the mandatory declaration cascade changes) and omitted that file from the permitted
+reconciliation set — preserved as immutable rejected evidence; THIS corrected candidate is created from the SAME
+parent with exactly that correction plus the reviewer's non-blocking precision clarifications (F001 `test_red_r1`
+upgraded to CERTAIN — mechanical is its family-less example; the remaining vocabulary-conditional F001 derive-()
+pins named explicitly; the I1 forbidden-covered lexicon guard restated as an explicit implementation constraint).
+**`OWNER_DECISION_REGISTER.md` UNCHANGED** (OD-M2/D-P9-MECH-02 already requires this family; the contract
+implements the recorded decision). ZERO runtime/test/pack/registry/activation diff this candidate. **DOCUMENTED
+NO-VALID-RED.**
+
+**Blocker dependency graph (reconstructed; unchanged in substance from the rejected candidate).** The five
+non-Owner activation blockers are mutually INDEPENDENT: (1) OD-M2 clause-3 safety-cue family = the only
+Mechanical-lane engineering-content blocker, named "first among them" by the qualification record → THIS lane,
+NEXT; (2) Tier-1 EN/AR label = activation-readiness edge, correctly LAST of the technical blockers (labels become
+truthful only when the domain is served); (3) CF-6 / (4) CF-2 = separate shared-surface lanes with NO technical
+dependency on Mechanical readiness (they share one CLI facet — a future CLI gate may discharge facets of both per
+the F002 precedent; not combined here or with this lane); (5) NMF-1/FU-1 = bounded test-only carry-forwards,
+disposition REQUIRED no later than the pre-activation readiness review (their registered earliest gates; not
+absorbed). (6) Explicit Owner activation authorization = last, Owner-only. Hidden-prerequisite sweep: NONE beyond
+the recorded six (P9-QS qualified; D-GMPR-01-D-D3 fully discharged; D8 not implicated; pack lifecycle status ≠
+activation; the §5-I2 allowlist edit IS the activation gate).
+
+**Contract substance (summary; the record is canonical).** One bounded implementation increment: (a) additive
+`mechanical` entry in the F001 `_DOMAIN_CUE_FAMILIES` seam (exact electronics-precedent shape) with NEW
+provenance-tagged hazard vocabulary authored under objective criteria (§3: hazard-class-relevant, lay-accessible,
+detection-scoped only — never a safety determination; equality-pinned; no electronics-vocabulary collision; no
+thermal claim; and the covered wording MUST pass the existing I1 forbidden-covered lexicon guard — no
+thermal/certification/simulation/tolerance-stack or similar unsupported-expertise terms); (b) the MANDATORY
+truthfulness cascade — the merged declarations' "NOT COVERED pending…" safety statements are replaced by a truthful
+detection-scoped covered statement in the SAME increment (an untruthful interim state is unacceptable); (c) new
+focused evidence file; (d) additive provenance record; (e) the EXHAUSTIVELY ENUMERATED reconciliation set (§4,
+corrected): SIX certain family-presence flips (the I1/I2/I3/I4 absence pins + the F001 capability-query pin + F001
+`test_red_r1`, whose family-less example is mechanical), FIVE certain declaration-truthfulness surfaces (I1
+declaration pins; I2 + I3 frozen-field hashes; BOTH mechanical full-pack hash anchors — the I4 corpus validity
+anchor AND the I5 `test_pack_bytes_frozen_incl_i4_validity_anchor` pin — re-frozen under ONE
+signal-inventory-unchanged proof; no corpus rebuild unless the actual signal inventory changes), and FOUR
+vocabulary-conditional derive-() pins (D3-A; F001 `test_red_r2`; the F001 family-less-loop MECH branch; the F001
+MECH-envelope cold-load pin) — all protected by the no-collision rule; an EXACT permitted-reconciliation-file list
+(the five Mechanical evidence files + the F001 seam file + the D3 file); mandatory pre-freeze flip-sweep; anything
+beyond = STOP.
+
+**Boundary / status after this entry.** Implementation NOT authorized by this contract (separate Owner authorization
++ governed lifecycle required). On the FUTURE lane closure: OD-M2 clause-3 blocker = DISCHARGED; remaining
+activation blockers = label, CF-6, CF-2, NMF-1/FU-1 disposition, explicit Owner activation authorization — none
+moved here. **Mechanical remains NOT ACTIVATED**; Electronics unaffected; no D4/D8/THERM-01/Phase 10/PSRR/
+deployment; no P9 closure. `activated_domains() == ['electronics_electrical']`; first new-domain activation remains
+BLOCKED. Append-only; prior history not rewritten. Authoritative ONLY if/when this exact candidate is merged and
+post-merge verified. **Next required gate: Mandatory Grill on this exact contract candidate.**
