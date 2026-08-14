@@ -9356,3 +9356,40 @@ D4 REGISTERED / NOT AUTHORIZED; D8 Owner-reserved; Phase 10 NOT AUTHORIZED; PSRR
 AUTHORIZED. `activated_domains() == ['electronics_electrical']`; first new-domain activation remains BLOCKED.
 Append-only; prior history not rewritten. Authoritative ONLY if/when this exact candidate is merged and post-merge
 verified. **Next required gate: Mandatory Grill on this exact closure candidate.**
+
+---
+
+## P9-MECH — TERMINAL §15/§16 QUALIFICATION RECORD — governance-only CANDIDATE — MECHANICAL = P9-QS QUALIFIED WITH ACTIVATION BLOCKERS (conditional on merge); NOT ACTIVATED; ODR UNCHANGED
+
+**Gate.** Governance-only terminal qualification gate on authoritative base
+`ac8ac2d9fd17135befb990890dd57e838c24b671` (SHA-preserving merge of the accepted D-GMPR-D3-PN closure `be40cc90`
+onto `17a4aca4`; merge tree `9a2da541` == candidate tree; POST-MERGE PASS → **D-GMPR-01-D-D3 FULLY DISCHARGED
+authoritative**; freshly fetched; 0 newer; clean tree). Canonical record:
+`docs/governance/P9_MECH_QUALIFICATION_RECORD.md`. Fresh verification this gate: all six Mechanical evidence suites
+**104 passed**; full suite **2546/3/1/0**; activation state unchanged; OD-M2 clause-1 statement + §8.4 annotation
+verified in the merged pack; safety family truthfully absent. ZERO runtime/test/pack/registry/activation/schema/
+persistence/ODR diff. **DOCUMENTED NO-VALID-RED.**
+
+**Determination (authoritative ONLY after this candidate's own merge + post-merge verification).** Every P9-MECH-QC
+§15 criterion is evidence-proven with exact authoritative SHAs (criterion matrix in the record §2): declarations +
+nuances + coverage (I1 `f595fb60`/I2 `3d51bb1c`); 104 focused deterministic tests; per-increment mutation evidence
+all CAUGHT; full-suite + electronics byte-parity non-degradation at every increment; I4 terminal boundary corpus
+(`3fe23a8c`) valid (inventory anchor intact); provenance PR001–PR004; determinism; web/CLI N/A-with-reason;
+OD-M2-per-B-hardened (clause 1 = I1 declarations; clause 2 = THIS record's prominent annotation; clause 3 =
+ACTIVATION-ONLY). **§12(a) DISCHARGED (I5 `baee2542`); §12(b) NOW RECORDED COMPLETE** (its D-GMPR dependency fully
+discharged at `ac8ac2d9`; service factual and evidence-proven). **§8.4 CONFIRMED** (pack annotation stands; weight
+unread by runtime; cross-pack residual stays with its shared-core owner). P9-QS §7 dual proof holds. Therefore:
+
+> **`MECHANICAL = P9-QS QUALIFIED — WITH ACTIVATION BLOCKERS`** (OD-M2 clause-2 annotation carried prominently — no
+> unannotated QUALIFIED claim exists).
+
+**OUTSTANDING ACTIVATION BLOCKERS (prominent; none waived):** (1) OD-M2 clause-3 governed Mechanical safety-cue
+family (NOT started; NOT executed here); (2) Tier-1 EN/AR label (activation-readiness edge); (3) CF-6 OPEN; (4) CF-2
+OPEN; (5) NMF-1/FU-1 disposition; (6) explicit Owner activation authorization (§5-I2). Qualification ≠ authorization
+≠ activation (P9-QS §2); `activated_domains() == ['electronics_electrical']`; **Mechanical NOT ACTIVATED; first
+new-domain activation remains BLOCKED.** Separate owners unaffected: dormant-weight cross-pack residual;
+`progression_loop.py` comment hygiene (registered at the D-GMPR closure; not a §15 criterion); THERM-01;
+CAP-12/13; WS-PFV-001; D4 REGISTERED / NOT AUTHORIZED; D8 Owner-reserved; Phase 10 / PSRR / deployment NOT
+AUTHORIZED. Append-only; prior history not rewritten. **Next required gate: Mandatory Grill on this exact
+candidate**; after its merge, the next Owner decisions are the activation-blocker gates (the OD-M2 clause-3
+safety-family gate first among them), each separately authorized.

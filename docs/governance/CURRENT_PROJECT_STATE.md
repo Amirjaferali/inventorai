@@ -1778,6 +1778,23 @@ AUTHORIZED / NOT STARTED.***
   first new-domain activation remains BLOCKED. Authoritative ONLY if/when this exact candidate is merged +
   post-merge verified. Next required gate: Mandatory Grill on this exact closure candidate; after its merge, the
   Mechanical lane's next gate is the TERMINAL §15/§16 evidence-package/closure contract (separately authorized).
+  **D-GMPR-D3-PN closure MERGED (merge `ac8ac2d9fd17135befb990890dd57e838c24b671`; merge tree == candidate tree
+  `9a2da541`) → D-GMPR-01-D-D3 = FULLY DISCHARGED authoritative; §12(b) unblocked. P9-MECH TERMINAL §15/§16
+  QUALIFICATION RECORD CANDIDATE recorded** (canonical record: `P9_MECH_QUALIFICATION_RECORD.md`;
+  `OWNER_DECISION_REGISTER.md` UNCHANGED): every §15 criterion evidence-proven with exact SHAs; fresh verification —
+  104 mechanical evidence tests, full suite 2546/3/1/0; **§12(b) recorded COMPLETE** (dependency fully discharged;
+  service factual and evidence-proven); **§8.4 CONFIRMED**; OD-M2 per B-hardened satisfied for qualification
+  (clause 1 = declarations; clause 2 = the record's PROMINENT activation-blocker annotation; clause 3 =
+  ACTIVATION-ONLY, not executed). Determination (authoritative ONLY after this candidate's own merge + post-merge
+  verification): **`MECHANICAL = P9-QS QUALIFIED — WITH ACTIVATION BLOCKERS`**, relative to the truthful declared
+  concept-level scope. **Outstanding activation blockers (none waived): OD-M2 clause-3 governed safety-cue family
+  (NOT started); Tier-1 EN/AR label; CF-6; CF-2; NMF-1/FU-1; explicit Owner activation authorization.**
+  Qualification ≠ authorization ≠ activation; Mechanical NOT ACTIVATED; `activated_domains() ==
+  ['electronics_electrical']`; first new-domain activation remains BLOCKED. Separate owners unaffected
+  (dormant-weight residual; progression_loop comment hygiene; THERM-01; CAP-12/13; WS-PFV-001; D4; D8; Phase 10;
+  PSRR; deployment). Authoritative ONLY if/when this exact candidate is merged + post-merge verified. Next required
+  gate: Mandatory Grill on this exact candidate; thereafter the next Owner decisions are the activation-blocker
+  gates (the safety-family gate first among them), each separately authorized.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
