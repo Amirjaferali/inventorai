@@ -9240,3 +9240,46 @@ AUTHORIZED; PSRR NOT EXECUTED; deployment NOT AUTHORIZED. `activated_domains() =
 new-domain activation remains BLOCKED. Append-only; prior history not rewritten. Authoritative ONLY if/when this
 exact candidate is merged and post-merge verified. **Next required gate: Mandatory Grill on this exact contract
 candidate.**
+
+---
+
+## P9-MECH-I5 — §12 Question-Sufficiency Evidence + D-GMPR Dependency Disposition — governance-only increment-CONTRACT CANDIDATE — implementation NOT started; D-GMPR NOT absorbed; Mechanical NOT qualified / NOT activated; ODR UNCHANGED
+
+**Gate.** Governance-only contract gate on authoritative base `c7c9e413ac142a919b68868280cdddc5af8dce39` (merge of
+`64145819` + accepted P9-MECH-I4 implementation `3fe23a8c`; merge tree `8f321993` == candidate tree → **the terminal
+§9 boundary corpus is AUTHORITATIVE**; suite 2515/3/1/0; freshly fetched; 0 newer; clean tree). Canonical record:
+`docs/governance/P9_MECH_I5_QUESTION_SUFFICIENCY_EVIDENCE_CONTRACT.md`. **`OWNER_DECISION_REGISTER.md` UNCHANGED.**
+ZERO runtime/test/pack/registry/Web/CLI diff this candidate. **DOCUMENTED NO-VALID-RED.**
+
+**Decisive reconstruction (mechanically verified).** The D-GMPR blocker is REAL in current code
+(`engine/path_n_questions.py` returns None for non-electronics — Electronics-OWNED artifact; remediation = the OPEN
+`D-GMPR-01-D-D3` coupling's own gate, itself MANDATORY pre-activation per the D3 lineage). BUT the canonical
+pack-question path is domain-generic and WORKS for mechanical today: `get_domain_question` reads `gap_type_mappings`
+and is runtime-consumed at `progression_loop.py:243` (proven live; latent while unactivated). **§12 therefore splits
+exactly as P9-MECH-QC §12 anticipated:** §12(a) pack-content sufficiency = Mechanical-owned, EXECUTABLE NOW through
+the canonical path; §12(b) non-specialist Path-N service = D-GMPR-BLOCKED, disposition-only. Selection = A-with-
+recorded-disposition; rejected: D-GMPR-first (not dependency-required for (a); shared-core owner; already on the
+pre-activation path — sequencing it first would idle the qualification lane), disposition-only (leaves (a)
+undischarged), other (none — the obligation map is exhausted). I4-corpus terminality respected: THIS increment
+touches NO pack bytes (the mechanical hash is the I4 validity anchor); any evidence-forced future content change =
+separate gate with corpus re-validation + freeze reconciliation.
+
+**Contract substance (summary; the record is canonical).** P9-MECH-I5 = ONE new evidence-only test file + the formal
+§12(b) disposition in closure governance surfaces. Evidence pins: full gap-type coverage; ordered progression +
+index clamping against the pack's own arrays; calibration guard (equality-pinned question texts; I1 NOT-COVERED
+classes as yardstick); non-specialist wording evidence on the committed text; provenance lineage; fail-safe pins
+(unknown gap/domain → None; no cross-domain leakage); the D-GMPR seam pinned AS the recorded blocker
+(path_n_questions → None for mechanical, so future remediation surfaces visibly); recognition/activation separation;
+engine byte-hashes (domain_rules, progression_loop, path_n_questions) + five pack hashes; determinism. Mutations
+m1–m6 incl. a path_n_questions tamper proving the seam pin is load-bearing. No parent-RED (evidence-only). STOP
+conditions incl. any seam-repair pressure and any evidence-forced pack change.
+
+**Boundary / status after this entry.** P9-MECH-I5 implementation NOT authorized by this contract (separate Owner
+authorization + governed lifecycle required). §12(b) remains D-GMPR-owned and OPEN; CF-6 OPEN; CF-2 OPEN; safety
+family + Tier-1 label PRE-ACTIVATION (OD-M2 B-hardened intact); dormant-weight cross-pack residual shared-core-owned;
+THERM-01 future-only; D4 REGISTERED / NOT AUTHORIZED; D8 Owner-reserved; Phase 10 NOT AUTHORIZED; PSRR NOT EXECUTED;
+deployment NOT AUTHORIZED. After I5 closure the qualification lane reduces to the TERMINAL §15/§16 package/closure
+(conditional on OD-M2 clauses and the §12(b) disposition). Mechanical NOT qualified / NOT activated;
+`activated_domains() == ['electronics_electrical']`; first new-domain activation remains BLOCKED. Append-only; prior
+history not rewritten. Authoritative ONLY if/when this exact candidate is merged and post-merge verified. **Next
+required gate: Mandatory Grill on this exact contract candidate.**

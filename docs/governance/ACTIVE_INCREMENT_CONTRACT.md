@@ -41,7 +41,34 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — P9-MECH-I4: TERMINAL CROSS-DOMAIN BOUNDARY-EVIDENCE CORPUS (§9) INCREMENT CONTRACT CANDIDATE —
+**Status (current — P9-MECH-I5: §12 QUESTION-SUFFICIENCY EVIDENCE + D-GMPR DEPENDENCY DISPOSITION INCREMENT CONTRACT
+CANDIDATE — governance-only; implementation NOT started; D-GMPR NOT absorbed; Mechanical NOT qualified / NOT
+activated; ODR UNCHANGED):** the P9-MECH-I4 **implementation** is **MERGED and post-merge verified** (merge
+`c7c9e413ac142a919b68868280cdddc5af8dce39`, parents `64145819` + accepted implementation candidate `3fe23a8c`, merge
+tree `8f321993` == candidate tree → the TERMINAL §9 boundary corpus is AUTHORITATIVE: 20 evidence pins incl. five
+score-parity-proven ties and a three-way, the corrected eight-text legacy corpus verbatim, and inventory-anchored
+terminality; suite 2515/3/1/0; zero runtime change). This gate records the **P9-MECH-I5 increment CONTRACT
+candidate** (canonical record: `docs/governance/P9_MECH_I5_QUESTION_SUFFICIENCY_EVIDENCE_CONTRACT.md`). Decisive
+verified basis: the D-GMPR blocker is REAL (`path_n_questions.py` still returns None for non-electronics; remediation
+= the OPEN D-GMPR-01-D-D3 gate, itself mandatory pre-activation), BUT the canonical pack-question path
+(`get_domain_question`, runtime-consumed by `progression_loop`) is domain-generic and serves mechanical today —
+**§12 splits: §12(a) pack-content sufficiency EXECUTABLE NOW; §12(b) non-specialist Path-N service D-GMPR-BLOCKED,
+disposition-only**. I5 = ONE new evidence-only test file (coverage/progression/calibration/wording/provenance/
+fail-safe pins; the seam pinned AS the recorded blocker; engine hashes incl. path_n_questions; five pack hashes;
+determinism; mutations m1–m6) + the formal §12(b) disposition in closure governance surfaces — NO pack bytes touched
+(the mechanical hash is the I4 corpus validity anchor); any evidence-forced content change = separate future gate
+with corpus re-validation. After I5 closure the qualification lane reduces to the TERMINAL §15/§16 package/closure.
+**The implementation is NOT authorized by this contract.** Mechanical NOT qualified / NOT activated; D-GMPR / CF-6 /
+CF-2 / safety family / label / weight-residual / THERM-01 / D4 / D8 / Phase 10 / PSRR / deployment unchanged.
+Governance-only: ZERO runtime/test/pack/registry/Web/CLI diff; `OWNER_DECISION_REGISTER.md` UNCHANGED.
+`activated_domains() == ['electronics_electrical']`; first new-domain activation remains BLOCKED. Authoritative ONLY
+if/when this exact candidate is merged and post-merge verified. Next required gate: **Mandatory Grill on this exact
+candidate** → independent external exact-candidate review → Owner acceptance → SHA-preserving publication → PR →
+pre/post-merge verification.
+
+**Immediately prior (P9-MECH-I4 contract gate — contract MERGED via `64145819`; implementation MERGED via
+`c7c9e413`; retained as history):**
+**Status (prior — P9-MECH-I4: TERMINAL CROSS-DOMAIN BOUNDARY-EVIDENCE CORPUS (§9) INCREMENT CONTRACT CANDIDATE —
 governance-only; implementation NOT started; Mechanical NOT qualified / NOT activated; ODR UNCHANGED):** the
 P9-MECH-I3 **implementation** is **MERGED and post-merge verified** (merge
 `b0be35bb8771aea6ed7edbebcf13b5d106227dbc`, parents `b99dd2f6` + accepted implementation candidate `32165caf`, merge
