@@ -3,12 +3,16 @@
 Authoritative contract:
 docs/governance/P9_E1_PATH_N_CALLER_DOMAIN_PROPAGATION_CONTRACT.md (merged PR #438).
 
-The Path-N selection seam (engine/path_n_questions.py) is already domain-aware
-(D3-B): it returns None for a recognized non-electronics domain. P9-E1 closes the
-remaining gap — the production callers inside engine/progression_loop.py
-(get_question / get_display_question) must PROPAGATE the canonical session domain
-they already hold into that seam, instead of relying on the backward-compatible
-domain=None default that serves Electronics-owned content to every domain.
+The Path-N selection seam (engine/path_n_questions.py) is domain-aware (D3-B).
+At P9-E1 time it returned None for every recognized non-electronics domain; the
+D-GMPR-D3-PN remediation (DGMPR_D3_PATH_N_DOMAIN_NEUTRAL_SERVICE_CONTRACT.md)
+later made it a domain-neutral canonical seam serving each mapped domain its OWN
+committed artifact (mechanical included), with reconciliations #3/#5 disclosed
+in RED1/RED2 below. P9-E1's own subject is unchanged — the production callers
+inside engine/progression_loop.py (get_question / get_display_question)
+PROPAGATE the canonical session domain they already hold into that seam, instead
+of relying on the backward-compatible domain=None default that would serve
+Electronics-owned content to every domain.
 
 These tests are BEHAVIORAL: each asserts a concrete selection behavior through the
 real production functions (no source inspection, no monkeypatching of the seam).
@@ -83,9 +87,17 @@ def test_red1_get_question_foreign_domain_not_served_electronics_text():
     result = progression_loop.get_question(
         _RECOGNIZED_NOT_ACTIVATED, gap, 0, path="N")
 
-    # RED (pre-fix): the caller drops domain → Electronics artifact text is served.
+    # D-GMPR-D3-PN reconciliation #5 (disclosed; DGMPR_D3_PATH_N_DOMAIN_NEUTRAL_
+    # SERVICE_CONTRACT.md §5): pre-remediation the foreign domain fell through to
+    # the generic bank (`result == generic_text`). The domain-neutral canonical
+    # seam now serves mechanical its OWN artifact text. BOTH anti-Electronics
+    # truths are preserved: never Electronics text, never Electronics content.
     assert result != electronics_text
-    assert result == generic_text
+    mechanical_text = path_n_questions.get_path_n_question(
+        gap, 0, domain=_RECOGNIZED_NOT_ACTIVATED)
+    assert mechanical_text is not None
+    assert result == mechanical_text
+    assert result != generic_text
 
 
 # ------------------------------------------------------------------- RED-2 -------
@@ -102,12 +114,20 @@ def test_red2_get_display_question_foreign_domain_no_electronics_stall_reframe()
     result = progression_loop.get_display_question(
         _RECOGNIZED_NOT_ACTIVATED, gap, it, path="N")
 
-    # RED (pre-fix): the caller drops domain → Electronics exhaustion fires the
-    # Electronics stall reframe (or serves Electronics artifact text) for a foreign
-    # domain. After propagation → generic fallthrough.
-    assert result != progression_loop._STALL_REFRAME
+    # D-GMPR-D3-PN reconciliation #3 (disclosed; DGMPR_D3_PATH_N_DOMAIN_NEUTRAL_
+    # SERVICE_CONTRACT.md §5): pre-remediation the foreign domain was never
+    # served, so exhaustion could not fire the reframe and control fell to the
+    # generic bank. With mechanical served its OWN artifact, the DOMAIN-NEUTRAL
+    # stall reframe now truthfully fires at mechanical variant exhaustion. The
+    # anti-Electronics truth is preserved: the result is never Electronics
+    # artifact text, and the reframe text itself is domain-neutral (it contains
+    # no electronics vocabulary — asserted below), so nothing Electronics-
+    # specific is served to a foreign domain.
+    assert result == progression_loop._STALL_REFRAME
     assert result != electronics_text
-    assert result == generic_text
+    assert result != generic_text
+    for electronics_only in ("circuit", "electrical", "electronic", "voltage"):
+        assert electronics_only not in result.lower()
 
 
 # ------------------------------------------------- GREEN guard: Electronics ------

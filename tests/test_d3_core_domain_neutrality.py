@@ -79,9 +79,19 @@ def test_d3a_electronics_domain_context_preserved():
 # domain. Electronics (and the None default) keep serving Electronics-owned content.
 def test_d3b_seam_honors_non_electronics_domain_identity():
     gap = _some_electronics_gap_type()
-    # A non-electronics recognized domain must NOT receive Electronics Path-N content.
+    # D-GMPR-D3-PN reconciliation #4 (disclosed; DGMPR_D3_PATH_N_DOMAIN_NEUTRAL_
+    # SERVICE_CONTRACT.md §5): pre-remediation this pin asserted `served is None`
+    # (mechanical received nothing). The domain-neutral canonical seam now serves
+    # mechanical its OWN committed artifact. The ORIGINAL LOAD-BEARING TRUTH is
+    # preserved in its intended form: a non-electronics recognized domain must
+    # NEVER receive ELECTRONICS Path-N content.
     served = path_n_questions.get_served_question(gap, 0, domain=_RECOGNIZED_NOT_ACTIVATED)
-    assert served is None
+    electronics = path_n_questions.get_served_question(gap, 0, domain=_ACTIVATED)
+    assert served is not None
+    # Mechanical-owned content, never the Electronics entry:
+    assert served.question_id.startswith("mechanical:")
+    assert served.question_id != electronics.question_id
+    assert served.text != electronics.text
 
 
 def test_d3b_electronics_and_default_preserved():
