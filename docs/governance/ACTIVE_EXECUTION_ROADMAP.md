@@ -9318,3 +9318,41 @@ NOT AUTHORIZED; PSRR NOT EXECUTED; deployment NOT AUTHORIZED. `activated_domains
 first new-domain activation remains BLOCKED. Append-only; prior history not rewritten. Authoritative ONLY if/when
 this exact candidate is merged and post-merge verified. **Next required gate: Mandatory Grill on this exact
 corrected contract candidate.**
+
+---
+
+## D-GMPR-D3-PN — FORMAL CLOSURE — governance-only CLOSURE CANDIDATE — path_n_questions coupling DISCHARGED; D-GMPR-01-D-D3 FULLY DISCHARGED; §12(b) UNBLOCKED (not closed); Mechanical NOT qualified / NOT activated; ODR UNCHANGED
+
+**Gate.** Governance-only formal closure of the D-GMPR-D3-PN lane on authoritative base
+`17a4aca421752ddcd9004a1e929f3d2506438c75` (SHA-preserving merge of the accepted implementation candidate
+`add3561f` onto `96559534`; merge tree `7852244d` == candidate tree; POST-MERGE PASS; freshly fetched; 0 newer; clean
+tree). Canonical record: `docs/governance/DGMPR_D3_PATH_N_DOMAIN_NEUTRAL_SERVICE_FORMAL_CLOSURE_RECORD.md`. Fresh
+verification this gate: mechanical served its own committed artifact through the canonical seam; electronics + None
+default unchanged (`N-MC-1`); software → None fail-safe; `support_state("mechanical") == "recognized_not_activated"`;
+`activated_domains() == ['electronics_electrical']`; focused+reconciled suites 44 passed; full suite **2546 passed /
+3 skipped / 1 xfailed / 0 failed**. ZERO runtime/test/pack/registry/activation/schema/persistence/ODR diff this gate.
+**DOCUMENTED NO-VALID-RED.**
+
+**Closure statements (authoritative ONLY after this candidate's own merge + post-merge verification).** (1) The
+D-GMPR-D3-PN implementation is AUTHORITATIVE. (2) The `engine/path_n_questions.py` coupling of `D-GMPR-01-D-D3` is
+**DISCHARGED** — and with the web-admission (CF5-F002), `safety_signal` (CF5-F001), and hard-coded tie-break
+(CF5-F004) couplings already discharged, **`D-GMPR-01-D-D3` is FULLY DISCHARGED** for its registered scope. (3)
+**P9-MECH §12(b) is UNBLOCKED by D-GMPR and factually served — UNBLOCKED ≠ CLOSED**: its recording as complete
+belongs to the Mechanical lane's own terminal §15/§16 gate. (4) Mechanical remains NOT QUALIFIED (terminal §15/§16
+package outstanding incl. §12(b) recording, §8.4 confirmation, OD-M2 clause-2 annotation duty) and NOT ACTIVATED
+(OD-M2 clause 3 safety family, Tier-1 label, CF-6, CF-2, NMF-1/FU-1, per-domain P9-QS completion, explicit Owner
+activation authorization all outstanding). (5) Electronics preserved (34/34 byte-identical served capture; artifact
+byte-frozen; packs/callers unchanged). **Reviewer observations preserved as non-blocking observations:**
+bounded-resolution durability partly rests on structural/hash test guards (the repository's standard mechanism);
+stale `progression_loop.py` P9-E1-era comments DEFERRED to a future bounded comment-hygiene gate (the file was
+byte-frozen by the contract); entry-level malformed-artifact serve-time checks intentionally inherited (load-level
+per-domain fail-loud + cache isolation are the remediation's new guarantees). Correction lineage preserved: rejected
+contract candidate `4d6e4785` remains immutable rejected evidence.
+
+**Boundary / status after this entry (no over-closure).** Closes ONLY the D-GMPR-D3-PN lane; moves NO other D-GMPR
+or Phase-9 obligation. §15/§16 TERMINAL and next in the Mechanical lane (separately authorized); CF-6 OPEN; CF-2
+OPEN; dormant-weight cross-pack residual shared-core; safety family + label PRE-ACTIVATION; THERM-01 future-only;
+D4 REGISTERED / NOT AUTHORIZED; D8 Owner-reserved; Phase 10 NOT AUTHORIZED; PSRR NOT EXECUTED; deployment NOT
+AUTHORIZED. `activated_domains() == ['electronics_electrical']`; first new-domain activation remains BLOCKED.
+Append-only; prior history not rewritten. Authoritative ONLY if/when this exact candidate is merged and post-merge
+verified. **Next required gate: Mandatory Grill on this exact closure candidate.**
