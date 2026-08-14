@@ -73,6 +73,19 @@
       "cross_domain_usage": []
     },
     {
+      "record_id": "mechanical:PR003",
+      "pack_id": "mechanical",
+      "tier": 1,
+      "source_name": "InventorAI governance records — P9-MECH-I2 qualification-grade rule-nuance metadata",
+      "source_type": "governance_record",
+      "standard_number": null,
+      "jurisdiction": null,
+      "version_or_edition": "P9-MECH-I2 contract (merge 6881db3454d4e05ca6d343249a7e78e7d8aa2f6e)",
+      "url": null,
+      "notes": "Provenance for the P9-MECH-I2 in-place enrichment of the mechanical pack's three rule_nuances entries (contract docs/governance/P9_MECH_I2_QUALIFICATION_GRADE_RULE_NUANCES_CONTRACT.md). Canonical sources: the pack's own gap_type_mappings (mechanical:PR001 lineage) and the P9-MECH-I1 declared scope (mechanical:PR002). Metadata-only: the modifier_value sequence is preserved byte-identically; get_active_rules output is unchanged for every pack; rule_nuances have no downstream runtime consumer; no runtime behavior is created or implied.",
+      "cross_domain_usage": []
+    },
+    {
       "record_id": "medical_device:PR001",
       "pack_id": "medical_device",
       "tier": 1,

@@ -330,13 +330,28 @@
   ],
   "rule_nuances": [
     {
-      "modifier_value": "MECHANISM_COMPLETENESS"
+      "rule_id": "mechanical:RN001",
+      "description": "Active gap rule marking the Mechanical Mechanism Completeness gap type: the inventor's description is examined, at concept level only, for what moves, connects, or transfers force, using the pack's governed questions for this gap type.",
+      "layer": 1,
+      "modifier_type": "active_gap_rule_marker",
+      "modifier_value": "MECHANISM_COMPLETENESS",
+      "provenance_ref": "mechanical:PR003"
     },
     {
-      "modifier_value": "PHYSICAL_FEASIBILITY"
+      "rule_id": "mechanical:RN002",
+      "description": "Active gap rule marking the Mechanical Physical Feasibility gap type: the inventor's stated physical principle (e.g. leverage, spring tension, gear ratio, friction) and stated operating constraints are examined at concept level only, using the pack's governed questions for this gap type.",
+      "layer": 1,
+      "modifier_type": "active_gap_rule_marker",
+      "modifier_value": "PHYSICAL_FEASIBILITY",
+      "provenance_ref": "mechanical:PR003"
     },
     {
-      "modifier_value": "BOUNDARY_AMBIGUITY"
+      "rule_id": "mechanical:RN003",
+      "description": "Active gap rule marking the Mechanical Boundary Ambiguity gap type: what the mechanism does not do or cover, and its concrete physical differentiation from existing mechanical approaches, are examined at concept level only, using the pack's governed questions for this gap type.",
+      "layer": 2,
+      "modifier_type": "active_gap_rule_marker",
+      "modifier_value": "BOUNDARY_AMBIGUITY",
+      "provenance_ref": "mechanical:PR003"
     }
   ],
   "journey_extension": {
@@ -409,6 +424,7 @@
     "cross_domain_signals": "valve, pressure, compression, actuator documented as legitimate cross-domain concepts. Context ownership declared per signal. Not deleted. AB-006 candidates.",
     "ab006_candidates": "mechanism, force, bar, bracket, fastener, locking retained for behavioral equivalence. Flagged for AB-006 Domain Signal Quality Review.",
     "questions_source": "MECHANICAL_QUESTIONS confirmed in domain_rules.py. All questions migrated verbatim.",
-    "p9_mech_i1_declarations": "P9-MECH-I1 (P9_MECH_I1_TRUTHFUL_CAPABILITY_COVERAGE_DECLARATION_CONTRACT.md): capability_declaration and coverage_declaration added as additive, declaration-only metadata under provenance record mechanical:PR002. Runtime behavior unchanged: these fields are not classifier inputs; dormant per-signal weight/layer metadata remains dormant and is not implied runtime-active; mechanical remains NOT QUALIFIED and NOT ACTIVATED after I1 alone (OD-M2 clause 2: no unannotated QUALIFIED claim)."
+    "p9_mech_i1_declarations": "P9-MECH-I1 (P9_MECH_I1_TRUTHFUL_CAPABILITY_COVERAGE_DECLARATION_CONTRACT.md): capability_declaration and coverage_declaration added as additive, declaration-only metadata under provenance record mechanical:PR002. Runtime behavior unchanged: these fields are not classifier inputs; dormant per-signal weight/layer metadata remains dormant and is not implied runtime-active; mechanical remains NOT QUALIFIED and NOT ACTIVATED after I1 alone (OD-M2 clause 2: no unannotated QUALIFIED claim).",
+    "p9_mech_i2_rule_nuances": "P9-MECH-I2 (P9_MECH_I2_QUALIFICATION_GRADE_RULE_NUANCES_CONTRACT.md): the three rule_nuances entries were enriched IN PLACE to qualification-grade full shape under provenance record mechanical:PR003, with the modifier_value values, order, and count preserved byte-identically. Runtime inertness: rule_nuances are governed pack metadata; the sole runtime reader is engine/domain_rules.py get_active_rules, which projects only modifier_value values and has no downstream runtime consumer today; this enrichment therefore creates no runtime behavior. modifier_type 'active_gap_rule_marker' records what these entries mechanically are — governed markers enumerating the pack's own gap types (the migrated hardcoded-branch lineage) — and is deliberately NOT electronics' 'additional_signal_required' requirement-marker semantic. Any future rule-nuance consumption is a separate shared-core gate; nothing is authorized here."
   }
 }
