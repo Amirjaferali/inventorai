@@ -99,6 +99,19 @@
       "cross_domain_usage": []
     },
     {
+      "record_id": "mechanical:PR005",
+      "pack_id": "mechanical",
+      "tier": 1,
+      "source_name": "InventorAI governance records — P9-MECH-SF governed Mechanical safety-cue family",
+      "source_type": "governance_record",
+      "standard_number": null,
+      "jurisdiction": null,
+      "version_or_edition": "P9-MECH-SF corrected contract (merge d1b79ef4548211dc5e6c881f8c27d994827a4591)",
+      "url": null,
+      "notes": "Provenance for the governed Mechanical safety-cue family (OD-M2 clause 3 / D-P9-MECH-02; contract docs/governance/P9_MECH_SAFETY_CUE_FAMILY_CONTRACT.md §3). The authored hazard vocabulary in engine/safety_signal.py is grounded in recognized mechanical hazard classes — crush/pinch/nip points, shear points, entanglement, stored-energy release (springs/pressure), fracture and ejection of parts, falling/striking loads, and failed protective functions (guards) — phrased lay-accessibly for inventor-stated statements. Detection-scoped ONLY: cues mark inventor-STATED safety-relevant statements for required-independent-validation labeling; never a safety determination, certification, or compliance conclusion; no thermal vocabulary (THERM-01 untouched). Also covers the same-increment declaration truthfulness cascade in domains/mechanical/domain.json. Evidence: tests/test_p9_mech_safety_cue_family.py.",
+      "cross_domain_usage": []
+    },
+    {
       "record_id": "medical_device:PR001",
       "pack_id": "medical_device",
       "tier": 1,

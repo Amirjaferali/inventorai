@@ -41,7 +41,35 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — P9-MECH-SF: GOVERNED MECHANICAL SAFETY-CUE FAMILY CONTRACT — CORRECTED CANDIDATE (first
+**Status (current — P9-MECH-SF IMPLEMENTATION CANDIDATE — the governed Mechanical safety-cue family EXISTS in this
+candidate (OD-M2 clause 3 executed as contracted); Mechanical NOT ACTIVATED; ODR UNCHANGED):** the corrected
+P9-MECH-SF contract is **MERGED and post-merge verified** (PR #483 → authoritative base
+`d1b79ef4548211dc5e6c881f8c27d994827a4591`, parents `cac658d7` + corrected contract candidate `349856de`, merge
+tree `a1d11991` == candidate tree; first contract candidate `cfab650f` remains preserved immutable rejected
+evidence). This gate DELIVERS the contract's ONE bounded increment exactly: the additive governed `mechanical`
+F001-seam family in `engine/safety_signal.py` (electronics-precedent shape; provenance-tagged hazard vocabulary
+54/44/45/23 cues under §3 — hazard-class grounded, lay-accessible, detection-scoped ONLY, equality-pinned, zero
+electronics-identity collision, zero thermal vocabulary; electronics family/constants/None-default
+byte-preserved); the MANDATORY same-increment declaration truthfulness cascade in the mechanical pack (the two
+"NOT COVERED pending…" statements → the truthful detection-scoped boundary statement; covered detection entry +
+supported category added; "safety determination" stays NOT COVERED; I1 lexicon guard passes; signals/gap
+types/nuances/aliases byte-frozen by canonical-hash proof); NEW 23-test evidence file
+`tests/test_p9_mech_safety_cue_family.py`; additive `mechanical:PR005`; and EXACTLY the §4 reconciliations in
+EXACTLY the seven permitted files (I1–I4 absence pins flipped; F001 capability-query + r1 reconciled with
+`software` as the family-less example; I1 declaration pins re-pinned; I2/I3 declaration hashes re-frozen
+b5452a99…/9dd7a4cc…; I4 AND I5 pack anchors re-frozen a8a56450… under the ONE signal-inventory-unchanged proof, no
+corpus rebuild; the four vocabulary-conditional derive-() pins verified UN-flipped with disclosed premise
+comments). Evidence: RED/GREEN; 24/24 electronics + None derivation-corpus byte-parity; full suite **2569 / 3 / 1
+/ 0** (baseline 2546 + 23 new, zero regressions); mutations m1–m10 ALL CAUGHT right-reason (pycache discipline;
+byte-verified restoration); flip sweep grep-proven clean; scope exactly the contract set. DETECTION only — never a
+safety determination; THERM-01 untouched; admission untouched; **Mechanical NOT ACTIVATED**; `activated_domains()
+== ['electronics_electrical']`. OD-M2 clause-3 blocker discharge happens ONLY at the lane closure after this
+candidate merges + post-merge verifies. Authoritative ONLY if/when this exact candidate is merged and post-merge
+verified. Next required gate: **Mandatory Grill on this exact candidate** → independent external exact-candidate
+review → Owner acceptance → SHA-preserving publication → PR → pre/post-merge verification.
+
+**Immediately prior (P9-MECH-SF corrected contract gate — MERGED via PR #483 `d1b79ef4`; retained as history):**
+**Status (prior — P9-MECH-SF: GOVERNED MECHANICAL SAFETY-CUE FAMILY CONTRACT — CORRECTED CANDIDATE (first
 candidate `cfab650f` REJECTED, preserved) — OD-M2 CLAUSE 3; governance-only; implementation NOT started; Mechanical
 NOT ACTIVATED; ODR UNCHANGED):** the terminal qualification record is **MERGED and post-merge verified** (PR #482 →
 authoritative tip `cac658d70b841772b1a496b60b65a2da4309814a`, parents `ac8ac2d9` + accepted candidate `dd7b4878`,

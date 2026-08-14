@@ -9453,3 +9453,56 @@ moved here. **Mechanical remains NOT ACTIVATED**; Electronics unaffected; no D4/
 deployment; no P9 closure. `activated_domains() == ['electronics_electrical']`; first new-domain activation remains
 BLOCKED. Append-only; prior history not rewritten. Authoritative ONLY if/when this exact candidate is merged and
 post-merge verified. **Next required gate: Mandatory Grill on this exact contract candidate.**
+
+---
+
+## P9-MECH-SF — Governed Mechanical Safety-Cue Family — IMPLEMENTATION CANDIDATE (OD-M2 clause 3 executed as contracted) — Mechanical NOT ACTIVATED; ODR UNCHANGED
+
+**Gate.** Implementation gate under the AUTHORITATIVE corrected P9-MECH-SF contract (PR #483 → base
+`d1b79ef4548211dc5e6c881f8c27d994827a4591`, parents `cac658d7` + corrected contract candidate `349856de`, merge tree
+`a1d11991` == candidate tree; POST-MERGE PASS; freshly fetched; 0 newer; clean tree). Owner-directed execution of the
+contract's ONE bounded increment. **`OWNER_DECISION_REGISTER.md` UNCHANGED.**
+
+**Delivered (contract §2, exactly).** (a) The additive governed `mechanical` entry in the F001
+`_DOMAIN_CUE_FAMILIES` seam in `engine/safety_signal.py` — exact electronics-precedent shape
+(owner/failure/subject/consequence/context_terms), NEW provenance-tagged hazard vocabulary constants
+(`_MECH_FAILURE_CUES` 54 / `_MECH_SUBJECT_CUES` 44 / `_MECH_CONSEQUENCE_CUES` 45 / `_MECH_CONTEXT_TERMS` 23; §3
+criteria: hazard-class grounded — crush/pinch/nip, shear, entanglement, stored energy, fracture/ejection,
+falling/striking loads, failed protective functions; lay-accessible; detection-scoped ONLY; equality-pinned; ZERO
+electronics-identity terms — collision-guarded; ZERO thermal vocabulary); derivation logic, electronics family and
+constants, and the legacy None-default byte-preserved. (b) The MANDATORY same-increment declaration truthfulness
+cascade in `domains/mechanical/domain.json`: the two OD-M2 clause-1 "NOT COVERED pending…" statements replaced by
+the truthful detection-scoped safety-boundary statement; ONE covered detection entry + ONE supported category
+added; "safety determination" remains NOT COVERED; declaration key shape unchanged; the I1 forbidden-covered
+lexicon guard passes; signals/gap types/nuances/aliases byte-frozen (canonical hashes 860ce084…/c14ae2d5…/
+857820ed…/bc7f35e4… identical). (c) NEW evidence file `tests/test_p9_mech_safety_cue_family.py` (23 tests:
+presence, shape, equality pins, collision guard, THERM boundary, GREEN same-sentence + adjacent-pair derivation,
+never-electronics-labeled, negation/attribution guards, standing collision-guard texts, automatic S15 statement
+drop with NO assembler change, electronics family-hash + behavior parity, cascade exactness + completeness,
+declaration↔family consistency, the signal-inventory-unchanged proof, provenance, activation honesty, determinism,
+self-integrity). (d) Additive `mechanical:PR005` manifest record. (e) EXACTLY the contract-§4 reconciliations in
+EXACTLY the seven permitted files, each with in-file disclosure: the four I1–I4 absence pins flipped to
+governed-present; the F001 capability-query and `test_red_r1` pins reconciled (family-less examples switched to
+`software`); I1 declaration/OD-M2/concept pins re-pinned; I2 + I3 `_FROZEN_MECH_FIELDS` capability/coverage hashes
+re-frozen (b5452a99…/9dd7a4cc…); BOTH the I4 AND I5 mechanical full-pack anchors re-frozen at `a8a56450…` under the
+ONE signal-inventory-unchanged proof (NO corpus rebuild — declarations are not signals); the four
+vocabulary-conditional derive-() pins verified UN-flipped (D3-A; F001 r2; the F001 family-less loop; the
+MECH-envelope cold-load) with the D3/F001 premise comments truthfully disclosed.
+
+**Evidence.** RED on clean parent (family False; hazard texts derive `()`); GREEN (family True; mechanical-labeled
+requires-independent-validation signals; S15 statement drops automatically); electronics protection: 24/24
+pre/post derivation-corpus rows byte-identical (electronics + None-default), family constants hash-pinned
+(1cc29b79…); full governed suite **2569 passed / 3 skipped / 1 xfailed / 0 failed** (parent baseline 2546/3/1/0 +
+23 new, zero regressions); mutation battery m1–m10 ALL CAUGHT right-reason with byte-verified restoration and
+pycache discipline (cue-class removal; electronics-vocabulary injection; electronics-family tamper; cascade
+revert; reconciled-pin tamper; forced electronics labeling; provenance omission; false capability advertisement;
+wrong domain mapping; nondeterminism). Flip sweep: grep-proven zero stale pins; changed-file set exactly the
+contract scope.
+
+**Boundary / status.** DETECTION only — never a safety determination, certification, or compliance conclusion;
+THERM-01 untouched (no thermal vocabulary or claim); admission/activation untouched — **Mechanical remains NOT
+ACTIVATED**; `activated_domains() == ['electronics_electrical']`; first new-domain activation remains BLOCKED. No
+label/CF-6/CF-2/NMF-1/FU-1 work; no D4/D8/Phase 10/PSRR/deployment; no P9 closure. OD-M2 clause-3 blocker
+discharge happens ONLY at this lane's closure after this candidate is merged and post-merge verified — nothing is
+discharged by this entry. Append-only; prior history not rewritten. **Next required gate: Mandatory Grill on this
+exact implementation candidate**, then the governed lifecycle.

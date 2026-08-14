@@ -50,9 +50,17 @@ _FROZEN_ENGINE_SHA256 = {
     "engine/domain_rules.py": "5df2ae26b0a6e78f37bb467d1d8b3d377596f9fcbbc7f869d1ed1ac5b5ab204b",
     "engine/progression_loop.py": "bbb49b49f388dba2f0b906a79bdd656de23b33ec7101bd9d9da9c290ae45c4c5",
 }
-# The mechanical pack hash IS this corpus's inventory validity anchor (I3 state).
+# The mechanical pack hash IS this corpus's inventory validity anchor.
+# P9-MECH-SF reconciliation (contract §4 item 10, disclosed): re-frozen after
+# the mandatory declaration truthfulness cascade under the corpus's OWN
+# validity terms — the classification/substance SIGNAL INVENTORY is proven
+# byte-unchanged (canonical hashes 860ce084…/c14ae2d5… pinned in
+# tests/test_p9_mech_safety_cue_family.py::test_signal_inventory_unchanged_proof
+# and re-checked by the I2 frozen-field pins), so the corpus stays valid and
+# NO corpus rebuild was required or performed. Declaration bytes are the only
+# pack change.
 _FROZEN_PACK_SHA256 = {
-    "mechanical": "ae9db65c3d69635368c9d8f708ad76a94293e715c9c92b7c953aea83f9cacb5d",
+    "mechanical": "a8a564506f00b886a7ffd7a85ee46749932bff65cca33d86bec0d7d8c64cec06",
     "electronics_electrical": "3539cfc62710da92f12ac529c07ddaea85011536e5c9f88efb2e2303bb1b964c",
     "medical_device": "6070cf9281a7a376780175e7e1d3879be598384bcaf4dc370e56f7bf613e3ade",
     "software": "1c9cefa14641c079ddb5c21c59f398866adf43561101743b67e611936a67e3a7",
@@ -350,8 +358,11 @@ def test_recognition_is_not_activation():
     assert is_activated("electronics_electrical") is True
 
 
-def test_mechanical_safety_family_remains_absent():
-    assert has_governed_safety_cue_family("mechanical") is False
+def test_mechanical_safety_family_now_governed():
+    """P9-MECH-SF reconciliation (contract §4 item 4, disclosed): the I4-era
+    absence pin flipped — the governed Mechanical safety-cue family exists
+    (evidence: tests/test_p9_mech_safety_cue_family.py)."""
+    assert has_governed_safety_cue_family("mechanical") is True
 
 
 def test_deterministic_repeated_classification():
