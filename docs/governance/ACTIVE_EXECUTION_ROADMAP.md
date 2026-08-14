@@ -9641,3 +9641,60 @@ ACTIVATION BLOCKERS; NOT ACTIVATED` unchanged; Electronics unaffected; `activate
 ['electronics_electrical']`; no D4/D8/THERM-01/Phase 10/PSRR/deployment; no P9 closure. Append-only; prior
 history not rewritten. **Next required gate: Mandatory Grill on this exact scoping candidate**, then the governed
 lifecycle; thereafter the separately-authorized CLI-facet implementation gate.
+
+---
+
+## CF-6 / CF-2 — CLI Shared-Facet — IMPLEMENTATION CANDIDATE (facet delivered as contracted) — ILT-002 deferred; Tier-1 label untouched; Mechanical NOT ACTIVATED; ODR UNCHANGED
+
+**Gate.** Implementation gate under the AUTHORITATIVE corrected CF-6/CF-2 CLI shared-facet scoping contract
+(PR #487 → base `305961aefe70056e94fa7d6f3260eb6bfc08840d`, parents `2b985844` + accepted corrected scoping
+candidate `f496d731`, merge tree `20a10ca2` == candidate tree; POST-MERGE PASS; freshly fetched; 0 newer; clean
+tree). Owner-directed execution of the contract's §4 bounded increment. **`OWNER_DECISION_REGISTER.md`
+UNCHANGED.**
+
+**Delivered (contract §4, exactly).** `scripts/run_cli.py`'s hardcoded `if domain != "electronics_electrical":`
+scope check replaced with `activated = domain_activation.activated_domains(); if domain not in activated:` —
+admissibility now derives from the canonical activation policy (`engine.domain_activation`, reused unchanged; no
+new admission mechanism, no second consent framework), mirroring the CF5-F002 Web `/start` fix. Two small local
+presentation helpers (`_cli_domain_label`, `_cli_supported_domains_phrase`) mirror the shape of
+`web/app.py::_domain_label`/`_supported_domains_phrase` WITHOUT importing web/app.py — the CLI stays decoupled
+from the web module, consulting only `engine.domain_activation` directly. **Electronics-only refusal/confirmation
+copy is preserved byte-identical** (wrapped in an explicit `activated == ["electronics_electrical"]` branch,
+mirroring `_unsupported_domain_message`'s own conditional-byte-identity pattern); a truthful multi-domain branch
+and a truthful empty-activation branch were added, never asserting "electronics only" when that is untrue. The
+classifier-dispatch richer-kind branches (AMBIGUOUS_TIE / MULTI_DOMAIN_NEEDS_D4 / UNRESOLVED_NON_ACTIVATED_TIE),
+the iteration loop, and the summary output are UNTOUCHED. Four new pinned tests added to the SAME reconciliation
+file the contract named (`tests/test_cf5_f003_classifier_matching_semantics.py`): electronics-only byte-identical
+refusal copy; multi-activated admits a legitimately-activated non-electronics domain; multi-activated refuses an
+unactivated classified domain with truthful copy; empty-activation refuses with no silent Electronics fallback.
+
+**ILT-002 / Tier-1 / activation — untouched (verified).** `web/app.py` (incl. the three ILT-002 routes and
+`_admit_specialist_domain`), `web/domain_label.py`, every engine file, every domain pack, and every other
+existing test are byte-unchanged this candidate — confirmed via diff (`git diff --name-only` returns exactly
+`scripts/run_cli.py` + the one reconciliation test file). No activation-check was added to the ILT-002 routes (per
+the corrected contract: their activation enforcement via `_admit_specialist_domain` already exists and is not
+duplicated).
+
+**Evidence.** Fresh exhaustive sweep (repeated, not just the contract's preview) confirmed exactly the same six
+pre-existing CLI-touching tests across the same four files, none flipped: focused run of all four files **134
+passed** (130 pre-existing + 4 new, zero flips). Full governed suite **2577 passed / 3 skipped / 1 xfailed / 0
+failed** (base 2573 + 4 new; zero regressions). Empirical pre-pin verification of all five behavior branches
+(electronics-only proceed; electronics-only refuse with byte-identical copy; multi-activated proceed for a
+legitimately-activated domain; multi-activated refuse for an unactivated domain with truthful copy;
+empty-activation refuse with truthful no-domain-available copy, no Electronics fallback). Mutation battery m1–m6
+(byte-verified restoration, `__pycache__` cleared before each): reintroduced hardcoded electronics-only truth;
+bypassed canonical activated-domain truth; accepted an unactivated classified domain; emitted stale
+electronics-only copy on the multi-domain branch; silently fell back to Electronics on empty activation;
+mishandled the multi-activated confirmation copy — ALL CAUGHT right-reason. Post-restore re-green confirmed
+(`scripts/run_cli.py` final sha256 `10cf04a1…034c705`).
+
+**Facet discharge status (conditional on this candidate's merge + post-merge verification).** **CF-6's CLI facet
+= DISCHARGED. CF-2's CLI facet = DISCHARGED.** Neither tracker is closed as a whole: **CF-6 remains OPEN** (the
+ILT-002 facet + any not-yet-named pre-classifier-consistency remainder); **CF-2 remains OPEN** (the ILT-002
+facet, Arabic localization of the generalized copy, the non-`/start` template/page sweep, and any other public
+electronics-only assertion). ILT-002 is explicitly NOT discharged, NOT implied discharged, and NOT touched — it
+remains its own separately-scoped future joint gate exactly as the corrected contract deferred it. **Mechanical
+remains NOT ACTIVATED**; `activated_domains() == ['electronics_electrical']`; Tier-1 label untouched (still
+deferred to activation-readiness); no D4/D8/THERM-01/Phase 10/PSRR/deployment; no P9 closure. Append-only; prior
+history not rewritten. **Next required gate: Mandatory Grill on this exact implementation candidate**, then the
+governed lifecycle.

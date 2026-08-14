@@ -13,8 +13,26 @@ from engine.summary import build_summary
 from engine.idea_state import IdeaState, Gap, MECHANISM_COMPLETENESS, OPEN
 from engine.progression_loop import run_iteration
 from engine.domain_rules import classify_domain, DomainResultKind
+from engine import domain_activation
 
 MAX_ITERATIONS = 5
+
+
+def _cli_domain_label(domain):
+    """Human-readable presentation label for a specialist domain (presentation
+    only; never affects classification or activation). Mirrors the web layer's
+    `_domain_label` shape (`web/app.py`) without importing it — this CLI stays
+    decoupled from the web module, consulting only the canonical
+    `engine.domain_activation` activation source directly."""
+    return domain.replace("_", " ").title()
+
+
+def _cli_supported_domains_phrase(activated):
+    """Truthful natural-language enumeration of the activated domains."""
+    labels = [_cli_domain_label(d) for d in activated]
+    if len(labels) == 1:
+        return labels[0]
+    return ", ".join(labels[:-1]) + " or " + labels[-1]
 
 def run_cli():
     print("=" * 60)
@@ -56,21 +74,39 @@ def run_cli():
               if classification.kind is DomainResultKind.SINGLE else None)
     print(f"Domain inferred: {domain or 'unknown'}")
 
-    # Step 3: Check scope
-    if domain != "electronics_electrical":
+    # Step 3: Check scope — CF-6/CF-2 CLI shared-facet fix: admissibility derives
+    # from the canonical activation policy (engine.domain_activation), never a
+    # hardcoded domain literal (mirrors the CF5-F002 fix already applied to the
+    # Web /start surface, engine.domain_activation.activated_domains(), reused
+    # unchanged). Byte-identical under ['electronics_electrical'] (today's only
+    # governed activation state); truthful under any broadened activation set
+    # (reachable only via a bounded test double today).
+    activated = domain_activation.activated_domains()
+    if domain not in activated:
         print()
         print("─" * 60)
         print("OUTSIDE MVP SCOPE")
         print("─" * 60)
-        print("This MVP supports electronics/electrical ideas only.")
-        print("Your idea domain was not recognized as electronics.")
-        print()
-        print("Supported signals include: sensor, circuit, WiFi,")
-        print("microcontroller, IoT, voltage, current, PCB, etc.")
+        if activated == ["electronics_electrical"]:
+            print("This MVP supports electronics/electrical ideas only.")
+            print("Your idea domain was not recognized as electronics.")
+            print()
+            print("Supported signals include: sensor, circuit, WiFi,")
+            print("microcontroller, IoT, voltage, current, PCB, etc.")
+        elif not activated:
+            print("No specialist domain is available right now.")
+            print("Please try again later.")
+        else:
+            print("This MVP currently supports " +
+                  _cli_supported_domains_phrase(activated) + " ideas only.")
+            print("Your idea domain was not recognized as a supported domain.")
         print("─" * 60)
         return
 
-    print("Domain confirmed: electronics/electrical")
+    if domain == "electronics_electrical":
+        print("Domain confirmed: electronics/electrical")
+    else:
+        print(f"Domain confirmed: {_cli_domain_label(domain)}")
     print()
 
     # Step 4-5: Initialize state
