@@ -1842,6 +1842,24 @@ AUTHORIZED / NOT STARTED.***
   candidate merges + post-merge verifies; remaining activation blockers (Tier-1 EN/AR label, CF-6, CF-2,
   NMF-1/FU-1 disposition, explicit Owner activation authorization) unmoved. Authoritative ONLY if/when this exact
   candidate is merged + post-merge verified. Next required gate: Mandatory Grill on this exact candidate.
+  **P9-MECH-SF implementation MERGED (PR #484, base `1a23552b75d68fac3741876651669e6192180b50`; merge tree ==
+  candidate tree `85a920e6`) — the governed Mechanical safety-cue family EXISTS and is authoritative. P9-MECH-SF
+  FORMAL CLOSURE CANDIDATE recorded** (canonical record: `P9_MECH_SF_FORMAL_CLOSURE_RECORD.md`;
+  `OWNER_DECISION_REGISTER.md` UNCHANGED): fresh verification — family True (software/medical still False);
+  focused suites 23/18/17/18/20/16, F001 **13** (accurate count, correcting the Creator report's "15"
+  transcription error per the independent review), D3 7, D-GMPR 15; full suite **2569 passed / 3 skipped / 1
+  xfailed / 0 failed**; declaration cascade complete; signal inventory byte-unchanged; both pack anchors
+  `a8a56450…`; PR005 present; `activated_domains() == ['electronics_electrical']`; `support_state("mechanical")
+  == "recognized_not_activated"`. Conditional on this closure candidate's own merge + post-merge verification:
+  **OD-M2 clause 3 (D-P9-MECH-02) = DISCHARGED** — evidence discharge only; no activation authorization granted,
+  implied, or advanced; **`MECHANICAL = P9-QS QUALIFIED — WITH ACTIVATION BLOCKERS; NOT ACTIVATED`** persists with
+  the blocker set reduced by exactly one. Five reviewer observations preserved as observations (F001 count;
+  context_terms shape-parity/unreachable; PR002 origin vs PR005 cascade lineage; inherited
+  conservative-miss/negation semantics; additive governance note). Remaining activation blockers — Tier-1 EN/AR
+  label, CF-6, CF-2, NMF-1/FU-1 disposition (due no later than the pre-activation readiness review), explicit
+  Owner activation authorization — none waived, combined, or executed here. Governance-only candidate: ZERO
+  runtime/test/pack/provenance/registry/activation/ODR diff. Authoritative ONLY if/when this exact candidate is
+  merged + post-merge verified. Next required gate: Mandatory Grill on this exact candidate.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation

@@ -41,7 +41,31 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — P9-MECH-SF IMPLEMENTATION CANDIDATE — the governed Mechanical safety-cue family EXISTS in this
+**Status (current — P9-MECH-SF FORMAL CLOSURE CANDIDATE — OD-M2 clause-3 activation blocker = DISCHARGED
+conditional on this candidate's own merge; Mechanical NOT ACTIVATED; ODR UNCHANGED):** the P9-MECH-SF
+implementation is **MERGED and post-merge verified** (PR #484 → authoritative base
+`1a23552b75d68fac3741876651669e6192180b50`, parents `d1b79ef4` + accepted implementation candidate `2269d2d4`,
+merge tree `85a920e6` == candidate tree) — the governed Mechanical safety-cue family EXISTS and is authoritative.
+This gate records the **formal closure candidate** (canonical record:
+`docs/governance/P9_MECH_SF_FORMAL_CLOSURE_RECORD.md`): fresh verification at this base (family True; focused
+suites 23/18/17/18/20/16 + F001 **13** [the accurate count, correcting the Creator report's transcription error
+per the independent review] + D3 7 + D-GMPR 15; full suite **2569/3/1/0**; cascade complete; signal inventory
+unchanged `860ce084…`/`c14ae2d5…`; pack anchors `a8a56450…`; PR005 present; `activated_domains() ==
+['electronics_electrical']`; `support_state("mechanical") == "recognized_not_activated"`) → conditional on this
+candidate's merge + post-merge verification, **OD-M2 clause 3 (D-P9-MECH-02) is DISCHARGED** — evidence discharge
+only; NO activation authorization granted, implied, or advanced. Status unchanged in kind: **`MECHANICAL = P9-QS
+QUALIFIED — WITH ACTIVATION BLOCKERS; NOT ACTIVATED`** (the blocker set shrinks by exactly one). Five reviewer
+observations preserved as observations (F001 count; context_terms shape-parity/unreachable; PR002 origin vs PR005
+cascade lineage; inherited conservative-miss/negation semantics; additive governance note) — none converted into a
+blocker. Remaining activation blockers (none waived/combined/executed here): Tier-1 EN/AR label; CF-6; CF-2;
+NMF-1/FU-1 disposition (due no later than the pre-activation readiness review); explicit Owner activation
+authorization. Governance-only: ZERO runtime/test/pack/provenance/registry/activation/ODR diff. Authoritative ONLY
+if/when this exact candidate is merged and post-merge verified. Next required gate: **Mandatory Grill on this
+exact candidate** → independent external exact-candidate review → Owner acceptance → SHA-preserving publication →
+PR → pre/post-merge verification.
+
+**Immediately prior (P9-MECH-SF implementation gate — MERGED via PR #484 `1a23552b`; retained as history):**
+**Status (prior — P9-MECH-SF IMPLEMENTATION CANDIDATE — the governed Mechanical safety-cue family EXISTS in this
 candidate (OD-M2 clause 3 executed as contracted); Mechanical NOT ACTIVATED; ODR UNCHANGED):** the corrected
 P9-MECH-SF contract is **MERGED and post-merge verified** (PR #483 → authoritative base
 `d1b79ef4548211dc5e6c881f8c27d994827a4591`, parents `cac658d7` + corrected contract candidate `349856de`, merge
