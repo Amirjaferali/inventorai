@@ -86,6 +86,19 @@
       "cross_domain_usage": []
     },
     {
+      "record_id": "mechanical:PR004",
+      "pack_id": "mechanical",
+      "tier": 1,
+      "source_name": "InventorAI governance records — P9-MECH-I3 signal-quality dispositions",
+      "source_type": "governance_record",
+      "standard_number": null,
+      "jurisdiction": null,
+      "version_or_edition": "P9-MECH-I3 contract (merge b99dd2f63b017164deb01025ae42c89bc0cab383)",
+      "url": null,
+      "notes": "Provenance for the P9-MECH-I3 evidence-based signal-quality dispositions (contract docs/governance/P9_MECH_I3_SIGNAL_QUALITY_AB006_DISPOSITION_CONTRACT.md), including the multi-word replacement classification signal 'locking mechanism' (narrowing of the former single-word 'locking'; captures genuine mechanical locking-mechanism phrasing under the F003 contiguous whole-token + bounded-final-plural semantics while no longer matching software locking prose). Evidence corpus and bidirectional pins live in tests/test_p9_mech_i3_signal_quality.py. No engine change; no weight-semantics change; dormant weight/layer values carried over unchanged.",
+      "cross_domain_usage": []
+    },
+    {
       "record_id": "medical_device:PR001",
       "pack_id": "medical_device",
       "tier": 1,
