@@ -9506,3 +9506,39 @@ label/CF-6/CF-2/NMF-1/FU-1 work; no D4/D8/Phase 10/PSRR/deployment; no P9 closur
 discharge happens ONLY at this lane's closure after this candidate is merged and post-merge verified — nothing is
 discharged by this entry. Append-only; prior history not rewritten. **Next required gate: Mandatory Grill on this
 exact implementation candidate**, then the governed lifecycle.
+
+---
+
+## P9-MECH-SF — FORMAL CLOSURE CANDIDATE — OD-M2 clause-3 activation blocker = DISCHARGED (conditional on this candidate's own merge); Mechanical NOT ACTIVATED; ODR UNCHANGED
+
+**Gate.** Governance/documentation-only formal-closure gate on authoritative base
+`1a23552b75d68fac3741876651669e6192180b50` (PR #484 — SHA-preserving merge of the accepted P9-MECH-SF
+implementation candidate `2269d2d4` onto `d1b79ef4`; merge tree `85a920e6` == candidate tree; POST-MERGE PASS;
+freshly fetched; 0 newer; clean tree). Canonical record: `docs/governance/P9_MECH_SF_FORMAL_CLOSURE_RECORD.md`.
+**`OWNER_DECISION_REGISTER.md` UNCHANGED** (closure-gate convention). ZERO
+runtime/test/pack/provenance/registry/activation diff. **DOCUMENTED NO-VALID-RED.**
+
+**Fresh verification at this base.** Family query True for mechanical (False preserved for software/medical);
+focused suites 23/18/17/18/20/16 (safety-family, I1–I5), CF5-F001 **13** (the accurate count — the implementation
+Creator report's "15" was a transcription error, corrected on the independent reviewer's observation), D3 7,
+D-GMPR 15 — all green; full governed suite **2569 passed / 3 skipped / 1 xfailed / 0 failed**; declaration cascade
+complete (no stale NOT-COVERED-pending wording anywhere in the pack); signal inventory byte-unchanged
+(`860ce084…`/`c14ae2d5…`); both re-frozen pack anchors verified `a8a56450…`; `mechanical:PR005` present;
+`activated_domains() == ['electronics_electrical']`; `support_state("mechanical") == "recognized_not_activated"`.
+
+**Closure (conditional on this candidate's merge + post-merge verification).** The governed Mechanical safety-cue
+family EXISTS, is merged, and is post-merge verified → **OD-M2 clause 3 (D-P9-MECH-02) — activation blocker #1 —
+is DISCHARGED at this closure gate**, discharging evidence only: no activation authorization is granted, implied,
+or advanced. Qualification status unchanged in kind: **`MECHANICAL = P9-QS QUALIFIED — WITH ACTIVATION BLOCKERS;
+NOT ACTIVATED`** — the blocker set shrinks by exactly one. Five reviewer observations preserved as observations
+(F001 count correction; context_terms shape-parity/unreachable truthfully documented; PR002 origin vs PR005
+cascade lineage layering; inherited conservative-miss/negation semantics; additive governance note) — none
+converted into a blocker, none silently dropped.
+
+**Remaining activation blockers (reconstructed; none waived, combined, or executed here):** Tier-1 EN/AR label
+(activation-readiness edge, last technical blocker); CF-6; CF-2; NMF-1/FU-1 disposition (due no later than the
+pre-activation readiness review); explicit Owner activation authorization (§5-I2 allowlist gate). Residuals with
+separate owners unaffected: dormant-weight cross-pack; progression_loop comment hygiene; THERM-01; CAP-12/13;
+WS-PFV-001; D4 REGISTERED / NOT AUTHORIZED; D8 Owner-reserved; Phase 10 / PSRR / deployment NOT AUTHORIZED; no P9
+closure. Append-only; prior history not rewritten. **Next required gate: Mandatory Grill on this exact
+candidate**, then the governed lifecycle.
