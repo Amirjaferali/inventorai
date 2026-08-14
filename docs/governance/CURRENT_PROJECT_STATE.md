@@ -1795,6 +1795,33 @@ AUTHORIZED / NOT STARTED.***
   PSRR; deployment). Authoritative ONLY if/when this exact candidate is merged + post-merge verified. Next required
   gate: Mandatory Grill on this exact candidate; thereafter the next Owner decisions are the activation-blocker
   gates (the safety-family gate first among them), each separately authorized.
+  **Terminal qualification record MERGED (PR #482, tip `cac658d70b841772b1a496b60b65a2da4309814a`; merge tree ==
+  candidate tree `178c5dbb`) → `MECHANICAL = P9-QS QUALIFIED — WITH ACTIVATION BLOCKERS; NOT ACTIVATED`
+  authoritative (qualification blockers NONE; activation blockers: OD-M2 clause-3 safety family, Tier-1 EN/AR
+  label, CF-6, CF-2, NMF-1/FU-1 disposition, explicit Owner activation authorization). P9-MECH-SF CONTRACT —
+  CORRECTED CANDIDATE recorded** (canonical record: `P9_MECH_SAFETY_CUE_FAMILY_CONTRACT.md`;
+  `OWNER_DECISION_REGISTER.md` UNCHANGED) — the FIRST activation-blocker gate per the qualification record's
+  ordering. **Lineage: first candidate `cfab650f` independently REJECTED** — its "exhaustive" flip inventory
+  missed the CERTAIN I5 full-pack hash flip (`test_pack_bytes_frozen_incl_i4_validity_anchor` byte-pins the
+  mechanical pack, which the mandatory declaration cascade changes) and omitted the I5 file from the permitted
+  reconciliation files — **preserved immutable; this corrected candidate from the SAME parent fixes exactly that**
+  plus the non-blocking precision clarifications (F001 `test_red_r1` = CERTAIN with mechanical as its family-less
+  example; the four vocabulary-conditional derive-() pins named; the I1 forbidden-covered lexicon guard restated
+  as an implementation constraint). Dependency graph unchanged: the five non-Owner blockers mutually independent;
+  safety family first; label last (activation-readiness edge); CF-6/CF-2 separate shared-surface lanes (shared CLI
+  facet; F002 facet precedent); NMF-1/FU-1 disposition due no later than the pre-activation readiness review;
+  hidden-prerequisite sweep clean beyond the recorded six. Contract: one bounded implementation — additive
+  F001-seam `mechanical` family under objective vocabulary criteria (hazard-class relevant; lay-accessible;
+  detection-scoped — never a safety determination; no electronics collision; no thermal claim; I1-lexicon-guard
+  compatible) PLUS the mandatory declaration truthfulness cascade in the same increment, with the CORRECTED
+  exhaustive reconciliation set (6 certain family-presence flips incl. F001 `test_red_r1`; 5 certain declaration
+  surfaces incl. BOTH mechanical full-pack anchors — the I4 validity anchor AND the I5 pack-bytes pin — re-frozen
+  under one signal-inventory-unchanged proof, no corpus rebuild unless the actual signal inventory changes; 4
+  vocabulary-conditional derive-() pins; an exact 7-file permitted-reconciliation list; pre-freeze flip-sweep
+  mandatory; extras = STOP). Implementation NOT authorized by the contract. Mechanical remains NOT ACTIVATED;
+  Electronics unaffected; boundaries unchanged; `activated_domains() == ['electronics_electrical']`; first
+  new-domain activation remains BLOCKED. Authoritative ONLY if/when this exact candidate is merged + post-merge
+  verified. Next required gate: Mandatory Grill on this exact candidate.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation

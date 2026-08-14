@@ -41,7 +41,47 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — P9-MECH TERMINAL §15/§16 QUALIFICATION RECORD CANDIDATE — governance-only; MECHANICAL = P9-QS
+**Status (current — P9-MECH-SF: GOVERNED MECHANICAL SAFETY-CUE FAMILY CONTRACT — CORRECTED CANDIDATE (first
+candidate `cfab650f` REJECTED, preserved) — OD-M2 CLAUSE 3; governance-only; implementation NOT started; Mechanical
+NOT ACTIVATED; ODR UNCHANGED):** the terminal qualification record is **MERGED and post-merge verified** (PR #482 →
+authoritative tip `cac658d70b841772b1a496b60b65a2da4309814a`, parents `ac8ac2d9` + accepted candidate `dd7b4878`,
+merge tree `178c5dbb` == candidate tree → **`MECHANICAL = P9-QS QUALIFIED — WITH ACTIVATION BLOCKERS; NOT
+ACTIVATED`** authoritative; qualification blockers NONE; the six activation blockers recorded). This gate records
+the **P9-MECH-SF contract — CORRECTED candidate** (canonical record:
+`docs/governance/P9_MECH_SAFETY_CUE_FAMILY_CONTRACT.md`) — the FIRST activation-blocker gate per the qualification
+record's own ordering. **Lineage:** first candidate `cfab650f` independently REJECTED (sole material defect: the
+"exhaustive" §4 flip inventory missed the CERTAIN I5 full-pack hash flip —
+`test_pack_bytes_frozen_incl_i4_validity_anchor` byte-pins the mechanical pack, which the mandatory declaration
+cascade changes — and omitted `tests/test_p9_mech_i5_question_sufficiency.py` from the permitted reconciliation
+files) and preserved immutable; this corrected candidate from the SAME parent fixes exactly that plus the
+non-blocking precision clarifications (F001 `test_red_r1` = CERTAIN, mechanical being its family-less example; the
+four vocabulary-conditional F001/D3 derive-() pins named explicitly; the I1 forbidden-covered lexicon guard
+restated as an implementation constraint). Dependency graph (unchanged): the five non-Owner blockers are mutually
+independent; safety family first (the only Mechanical-lane engineering-content item); label last
+(activation-readiness edge); CF-6/CF-2 separate shared-surface lanes (shared CLI facet dischargeable per the F002
+facet precedent); NMF-1/FU-1 disposition due no later than the pre-activation readiness review;
+hidden-prerequisite sweep clean. Contract: ONE bounded implementation — the additive F001-seam `mechanical` family
+(electronics-precedent shape; objective vocabulary criteria — hazard-class relevant, lay-accessible,
+detection-scoped, no electronics collision, no thermal claim, I1-lexicon-guard compatible) PLUS the mandatory
+declaration truthfulness cascade in the same increment + new evidence file + additive provenance + the CORRECTED
+EXHAUSTIVE reconciliation set: 6 certain family-presence flips (I1/I2/I3/I4 absence pins + F001 capability-query +
+F001 `test_red_r1`); 5 certain declaration surfaces (I1 declaration pins; I2/I3 frozen-field hashes; BOTH
+mechanical full-pack anchors — I4 corpus validity anchor AND the I5 pack-bytes pin — re-frozen under ONE
+signal-inventory-unchanged proof, no corpus rebuild unless the actual signal inventory changes); 4
+vocabulary-conditional derive-() pins (D3-A; F001 `test_red_r2`; the F001 family-less-loop MECH branch; the F001
+MECH-envelope cold-load pin); an EXACT permitted-reconciliation-file list (7 files); mandatory pre-freeze
+flip-sweep; anything beyond = STOP. **Implementation NOT authorized by this contract.** On the future lane
+closure, OD-M2 clause-3 = DISCHARGED with the remaining blockers (label, CF-6, CF-2, NMF-1/FU-1, Owner
+authorization) restated — none moved here. Mechanical NOT ACTIVATED; Electronics unaffected; no
+D4/D8/THERM-01/Phase 10/PSRR/deployment; no P9 closure. Governance-only: ZERO
+runtime/test/pack/registry/activation/ODR diff. `activated_domains() == ['electronics_electrical']`; first
+new-domain activation remains BLOCKED. Authoritative ONLY if/when this exact candidate is merged and post-merge
+verified. Next required gate: **Mandatory Grill on this exact candidate** → independent external exact-candidate
+review → Owner acceptance → SHA-preserving publication → PR → pre/post-merge verification.
+
+**Immediately prior (P9-MECH terminal qualification gate — record MERGED via PR #482 `cac658d7`; retained as
+history):**
+**Status (prior — P9-MECH TERMINAL §15/§16 QUALIFICATION RECORD CANDIDATE — governance-only; MECHANICAL = P9-QS
 QUALIFIED WITH ACTIVATION BLOCKERS conditional on merge; NOT ACTIVATED; ODR UNCHANGED):** the D-GMPR-D3-PN **formal
 closure** is **MERGED and post-merge verified** (merge `ac8ac2d9fd17135befb990890dd57e838c24b671`, parents
 `17a4aca4` + accepted closure candidate `be40cc90`, merge tree `9a2da541` == candidate tree → **D-GMPR-01-D-D3 =
