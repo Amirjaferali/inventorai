@@ -9201,3 +9201,42 @@ Owner-reserved; Phase 10 NOT AUTHORIZED; PSRR NOT EXECUTED; deployment NOT AUTHO
 ['electronics_electrical']`; first new-domain activation remains BLOCKED. Append-only; prior history not rewritten.
 Authoritative ONLY if/when this exact candidate is merged and post-merge verified. **Next required gate: Mandatory
 Grill on this exact contract candidate.**
+
+---
+
+## P9-MECH-I4 — Terminal Cross-Domain Boundary-Evidence Corpus (§9) — governance-only increment-CONTRACT CANDIDATE — implementation NOT started; Mechanical NOT qualified / NOT activated; ODR UNCHANGED
+
+**Gate.** Governance-only contract gate on authoritative base `b0be35bb8771aea6ed7edbebcf13b5d106227dbc` (merge of
+`b99dd2f6` + accepted P9-MECH-I3 implementation `32165caf`; merge tree `551a03e1` == candidate tree → the
+evidence-based signal-quality dispositions are AUTHORITATIVE; suite 2495/3/1/0; freshly fetched; 0 newer; clean tree).
+Canonical record: `docs/governance/P9_MECH_I4_TERMINAL_BOUNDARY_CORPUS_CONTRACT.md`. **`OWNER_DECISION_REGISTER.md`
+UNCHANGED.** ZERO runtime/test/pack/registry/Web/CLI diff this candidate. **DOCUMENTED NO-VALID-RED.**
+
+**Dependency proof (committed truth, not summaries).** The authoritative I3 contract deferred the §9 terminal corpus
+until signal content froze; I3 is merged, so §9 is the unique remaining UNBLOCKED qualification-lane obligation:
+§12 stays blocked-side (open D-GMPR seam), §15/§16 terminal (require §9 + the §12 disposition + OD-M2 conditions),
+§11/§13 pre-activation, dormant-weight cross-pack residual shared-core-owned, thermal THERM-01-owned. Complete
+obligation map recorded in contract §2.
+
+**Contract substance (summary; the record is canonical).** P9-MECH-I4 = the TERMINAL committed §9 boundary corpus as
+ONE new deterministic focused test file — EVIDENCE ONLY, zero runtime change (no pack/engine/web/provenance edit; all
+existing tests untouched — expected prior-freeze reconciliation = NONE, any conflict → STOP). Corpus validity is
+bound to the exact authoritative I3 signal inventory (any future inventory change invalidates and re-validates the
+corpus). Required classes: positive Mechanical journeys; Mechanical-vs-Electronics/Software/Medical hard cases (I3
+corrected classes pinned at corrected outcomes; documented residuals pinned AS residuals); EXPLICIT tie cases
+(activated-tie via D3-D; legacy zero-activated precedence classes; ≥ one three-way; ties proven ties-by-construction
+via score-parity assertions); mixed-domain cases (classification only — no D4 semantics); NONE/unknown/generic
+ambiguity incl. empty input; adversarial synonyms (honest recall boundaries labeled); the corrected EIGHT-text legacy
+corpus embedded verbatim; sibling non-degradation + engine byte-hash + pack sha256 + recognized-set + activation +
+safety-family-absent anchors. No parent-RED (evidence-only); integrity via truthful-label justifications and mutation
+probes m1–m6 (label flip; engine tamper; mechanical-pack tamper; sibling tamper; class deletion; tie-weakening — each
+must flip a specific pin RED).
+
+**Boundary / status after this entry.** P9-MECH-I4 implementation NOT authorized by this contract (separate Owner
+authorization + governed lifecycle required). Mechanical NOT qualified / NOT activated; classifier semantics and tie
+policy untouched; weight dormant; CF-6 OPEN; CF-2 OPEN; D-GMPR coupling OPEN; NMF-1/FU-1 unchanged; safety family +
+Tier-1 label PRE-ACTIVATION; THERM-01 future-only; D4 REGISTERED / NOT AUTHORIZED; D8 Owner-reserved; Phase 10 NOT
+AUTHORIZED; PSRR NOT EXECUTED; deployment NOT AUTHORIZED. `activated_domains() == ['electronics_electrical']`; first
+new-domain activation remains BLOCKED. Append-only; prior history not rewritten. Authoritative ONLY if/when this
+exact candidate is merged and post-merge verified. **Next required gate: Mandatory Grill on this exact contract
+candidate.**
