@@ -9152,3 +9152,52 @@ D4 REGISTERED / NOT AUTHORIZED; D8 Owner-reserved; Phase 10 NOT AUTHORIZED; PSRR
 AUTHORIZED. `activated_domains() == ['electronics_electrical']`; first new-domain activation remains BLOCKED.
 Append-only; prior history not rewritten. Authoritative ONLY if/when this exact candidate is merged and post-merge
 verified. **Next required gate: Mandatory Grill on this exact contract candidate.**
+
+---
+
+## P9-MECH-I3 — Signal-Quality / AB-006 Evidence & Disposition — governance-only increment-CONTRACT CANDIDATE — implementation NOT started; Mechanical NOT qualified / NOT activated; ODR UNCHANGED
+
+**Gate.** Governance-only contract gate on authoritative base `4037a67d037287c3244129a41ba2b14dba139a0d` (merge of
+`6881db34` + accepted P9-MECH-I2 implementation `3d51bb1c`; merge tree `5f2860b3` == candidate tree → **P9-MECH-I2
+FORMALLY part of authoritative truth**; freshly fetched; 0 newer; clean tree). Canonical record:
+`docs/governance/P9_MECH_I3_SIGNAL_QUALITY_AB006_DISPOSITION_CONTRACT.md`. **`OWNER_DECISION_REGISTER.md` UNCHANGED.**
+ZERO runtime/test/pack/registry/Web/CLI diff this candidate. **DOCUMENTED NO-VALID-RED.**
+
+**Decisive reconstruction (mechanically verified).** Canonical consumed-field map: `classify_domain` consumes ONLY
+`classification_signals[].signal` under F003 semantics, scores by cardinality, then D3-D/F004 arms; `weight`/`layer`/
+`provenance_ref`/`rule_nuances`/`gap_type_mappings` are NOT classification inputs; `substance_signals` ARE separately
+runtime-consumed by `progression_loop.assess_response` (latent for mechanical while unactivated; classification flavor
+is live). **Dormant `weight`:** present on all four packs with differing inventories (0.15–0.9), read by NO runtime
+code — cross-pack shared-schema metadata; the Mechanical §8.4 truthfulness share is ALREADY discharged by the merged
+I1 pack-level annotation (closure-gate confirmation pending); the cross-pack residual belongs to a separate
+shared-core governance gate and is NOT absorbed. **AB-006:** CLOSED WITH DEFERRED ITEMS; live flags recorded in the
+mechanical pack (`mechanism`, `force`, `bar`, `bracket`, `fastener`, `locking` + cross-domain context ownerships
+`valve`/`pressure`/`compression`/`actuator`) — consumed as evidence inputs, not reopened. **A-vs-B-vs-C:**
+signal-quality and weight are TWO separate responsibilities (weight is shared-core; combining would smuggle a
+cross-pack policy into a Mechanical gate); terminal §9 boundary corpus stays LATER (would go stale before signal
+content freezes); question sufficiency stays blocked-side (open D-GMPR). **Selected: P9-MECH-I3 = signal-quality/
+AB-006 evidence & disposition alone.**
+
+**Contract substance (summary; the record is canonical).** Evidence-based per-signal dispositions (retain-with-
+evidence / narrow / replace / remove / add-discriminative / reclassify / no-safe-correction — nothing pre-decided) for
+the six AB-006 flags + four context ownerships, driven by a mandatory parent-RED difficult-case corpus (mech-vs-elec/
+software/medical; mixed; generic false-attraction; missed concepts; adversarial synonyms; ambiguity; none/unknown)
+proving REAL defects — future-keyword assertion tests forbidden. Allowed: mechanical `classification_signals` +
+`substance_signals` + ONE disposition note + additive provenance + NEW test file. Forbidden: ALL engine files
+(byte-hash-pinned: F003 matcher / F004 arms / D3-D / accessors / progression_loop), other packs, retained-signal
+`weight`/`layer` values (no normalization — cross-pack owner), I1 declarations, I2 nuances, ODR. Expected runtime
+differential: BOUNDED, CATEGORIZED, ZERO unexplained (F004 precedent); hard invariants: electronics/software/medical
+single-domain corpora byte-identical, NONE stays NONE, tie architecture + OD2 legacy-precedence rule untouched (any
+legacy-four tie-outcome flip individually disclosed; rule-contradiction → STOP — OWNER DECISION REQUIRED).
+Anti-win-rate rule binding (signal quality ≠ keyword count; additions need discriminative evidence + provenance +
+context; final inventory equality-pinned anti-stuffing). Mutations m1–m10 incl. corpus-label-gaming and engine-tamper
+probes. STOP conditions incl. any cross-pack edit, declaration-falsifying disposition, or weight-activation pressure.
+
+**Boundary / status after this entry.** P9-MECH-I3 implementation NOT authorized by this contract (separate Owner
+authorization + governed lifecycle required). Mechanical NOT qualified / NOT activated; recognized set unchanged;
+CF-6 OPEN; CF-2 OPEN; D-GMPR coupling OPEN; NMF-1/FU-1 unchanged; safety family + Tier-1 label PRE-ACTIVATION;
+THERM-01 future-only; dormant-weight cross-pack residual with its shared owner; D4 REGISTERED / NOT AUTHORIZED; D8
+Owner-reserved; Phase 10 NOT AUTHORIZED; PSRR NOT EXECUTED; deployment NOT AUTHORIZED. `activated_domains() ==
+['electronics_electrical']`; first new-domain activation remains BLOCKED. Append-only; prior history not rewritten.
+Authoritative ONLY if/when this exact candidate is merged and post-merge verified. **Next required gate: Mandatory
+Grill on this exact contract candidate.**
