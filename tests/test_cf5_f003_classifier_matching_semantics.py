@@ -282,6 +282,41 @@ def test_green_none_when_no_signal():
     assert classify_domain("a plain idea with no signal").kind is DomainResultKind.NONE
 
 
+# --------------------------------------------- NMF-1 (test-hardening carry-forward)
+# CF-5 Audit closure record (docs/governance/
+# CF5_RETROSPECTIVE_ADVERSARIAL_ARCHITECTURE_AUDIT_FORMAL_CLOSURE_RECORD.md §6):
+# "NMF-1 -- phrase-contiguity mutation-coverage gap ... Disposition: B -- bounded
+# non-blocking follow-up (TEST-HARDENING). The shipped runtime is CORRECT and
+# satisfies base-contract §4.5 (contiguous, ordered, final-token-plural-only) ...
+# the committed mutation suite lacks explicit reorder / intermediate-token-
+# pluralization negatives, so such a mutation could survive; this is a
+# test-suite strengthening, not a behavior or contract defect." These three
+# pins are that missing coverage, over the exact registered contiguous
+# multi-word phrases ("drug delivery" / "machine learning") the base-contract
+# §4.5 phrase-matching semantics govern -- runtime behavior UNCHANGED by this
+# file; no engine/domain edit.
+def test_nmf1_reorder_of_registered_phrase_rejected():
+    """A reordering of the registered contiguous phrase ("drug delivery" ->
+    "delivery drug") is NOT contiguous-phrase matching and must not classify."""
+    assert classify_domain("delivery drug").kind is DomainResultKind.NONE
+
+
+def test_nmf1_intermediate_token_pluralization_rejected():
+    """Bounded pluralization applies to the FINAL token of a registered phrase
+    only (base-contract §4.5); pluralizing an earlier/intermediate token
+    ("machine learning" -> "machines learning") must not classify."""
+    assert classify_domain("machines learning").kind is DomainResultKind.NONE
+
+
+def test_nmf1_final_token_pluralization_still_permitted():
+    """Companion positive pin (the permitted case NMF-1 contrasts against):
+    pluralizing the FINAL token of the registered phrase is the bounded,
+    permitted form and still classifies software."""
+    r = classify_domain("machine learnings")
+    assert r.kind is DomainResultKind.SINGLE
+    assert r.selected_domain == "software"
+
+
 # ----------------------------------------------------- GREEN: Web/CLI parity ------
 def test_green_web_electronics_admitted_unchanged():
     from web import app as web_app
