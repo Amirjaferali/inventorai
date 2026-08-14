@@ -41,7 +41,33 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — D-GMPR-D3-PN: PATH-N DOMAIN-NEUTRAL SERVICE REMEDIATION CONTRACT CANDIDATE (CORRECTED;
+**Status (current — D-GMPR-D3-PN FORMAL CLOSURE CANDIDATE — governance-only; path_n_questions coupling DISCHARGED /
+D-GMPR-01-D-D3 FULLY DISCHARGED conditional on this candidate's merge; §12(b) UNBLOCKED not closed; Mechanical NOT
+qualified / NOT activated; ODR UNCHANGED):** the D-GMPR-D3-PN **implementation** is **MERGED and post-merge
+verified** (merge `17a4aca421752ddcd9004a1e929f3d2506438c75`, parents `96559534` + accepted implementation candidate
+`add3561f`, merge tree `7852244d` == candidate tree → the domain-neutral canonical Path-N seam, the verbatim
+mechanical artifact, the 15-test evidence file, and EXACTLY the five enumerated reconciliations are AUTHORITATIVE;
+electronics byte-identical 34/34; suite 2546/3/1/0). This gate records the **FORMAL CLOSURE candidate** (canonical
+record: `docs/governance/DGMPR_D3_PATH_N_DOMAIN_NEUTRAL_SERVICE_FORMAL_CLOSURE_RECORD.md`): (1) implementation
+AUTHORITATIVE; (2) the `path_n_questions` coupling of `D-GMPR-01-D-D3` DISCHARGED — the LAST open coupling, so
+**D-GMPR-01-D-D3 = FULLY DISCHARGED** for its registered scope (web-admission/safety_signal/tie-break discharged by
+F002/F001/F004); (3) **P9-MECH §12(b) UNBLOCKED and factually served — UNBLOCKED ≠ CLOSED** (recorded complete only
+at the Mechanical lane's terminal §15/§16 gate); (4) Mechanical NOT QUALIFIED (terminal §15/§16 outstanding incl.
+§12(b) recording, §8.4 confirmation, OD-M2 clause-2 duty) and NOT ACTIVATED (OD-M2 clause 3 safety family, Tier-1
+label, CF-6, CF-2, NMF-1/FU-1, P9-QS completion, explicit Owner activation authorization outstanding); (5)
+Electronics preserved. Reviewer observations preserved as NON-BLOCKING observations: structural/hash-guard-backed
+bounded resolution; stale `progression_loop.py` comments deferred to a future bounded comment-hygiene gate (file was
+byte-frozen); inherited entry-level malformed-artifact serve-time semantics. Governance-only: ZERO
+runtime/test/pack/registry/activation/schema/persistence/ODR diff. `activated_domains() ==
+['electronics_electrical']`; first new-domain activation remains BLOCKED. Authoritative ONLY if/when this exact
+candidate is merged and post-merge verified. Next required gate: **Mandatory Grill on this exact closure candidate**
+→ independent external exact-candidate review → Owner acceptance → SHA-preserving publication → PR → pre/post-merge
+verification. After this closure merges, the Mechanical lane's next gate is the TERMINAL §15/§16 evidence-package/
+closure contract (separately authorized).
+
+**Immediately prior (D-GMPR-D3-PN corrected contract — MERGED via `96559534`; implementation MERGED via `17a4aca4`;
+retained as history):**
+**Status (prior — D-GMPR-D3-PN: PATH-N DOMAIN-NEUTRAL SERVICE REMEDIATION CONTRACT CANDIDATE (CORRECTED;
 supersedes rejected `4d6e4785`) — shared-core D-GMPR gate; governance-only; implementation NOT started;
 D-GMPR-01-D-D3 NOT discharged; Mechanical NOT qualified / NOT activated; ODR UNCHANGED):** the P9-MECH-I5
 **implementation** is **MERGED and post-merge verified** (merge `0dca782e5d4f32d403ad79c64ba469f07e46e600`, merge

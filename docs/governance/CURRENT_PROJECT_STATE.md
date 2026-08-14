@@ -1759,6 +1759,25 @@ AUTHORIZED / NOT STARTED.***
   `activated_domains() == ['electronics_electrical']`; first new-domain activation remains BLOCKED. Authoritative
   ONLY if/when this exact candidate is merged + post-merge verified. Next required gate: Mandatory Grill on this
   exact corrected candidate.
+  **D-GMPR-D3-PN corrected contract MERGED (merge `96559534`) and its IMPLEMENTATION MERGED and post-merge verified
+  (merge `17a4aca421752ddcd9004a1e929f3d2506438c75`, merge tree == candidate tree `7852244d`; suite 2546/3/1/0;
+  electronics byte-identical 34/34): the domain-neutral canonical Path-N seam, the verbatim mechanical artifact,
+  the 15-test evidence file, and exactly the five enumerated reconciliations are AUTHORITATIVE. D-GMPR-D3-PN FORMAL
+  CLOSURE CANDIDATE recorded** (canonical record: `DGMPR_D3_PATH_N_DOMAIN_NEUTRAL_SERVICE_FORMAL_CLOSURE_RECORD.md`;
+  `OWNER_DECISION_REGISTER.md` UNCHANGED): the `path_n_questions` coupling of `D-GMPR-01-D-D3` = DISCHARGED — the
+  LAST open coupling, so **D-GMPR-01-D-D3 = FULLY DISCHARGED** for its registered scope (conditional on this
+  candidate's own merge + post-merge verification; web-admission/safety_signal/tie-break were discharged by
+  F002/F001/F004). **P9-MECH §12(b) = UNBLOCKED and factually served — UNBLOCKED ≠ CLOSED** (recorded complete only
+  at the Mechanical lane's terminal §15/§16 gate). Mechanical remains NOT QUALIFIED (terminal §15/§16 outstanding
+  incl. §12(b) recording, §8.4 confirmation, OD-M2 clause-2 annotation duty) and NOT ACTIVATED (OD-M2 clause 3
+  safety family, Tier-1 label, CF-6, CF-2, NMF-1/FU-1, per-domain P9-QS completion, explicit Owner activation
+  authorization all outstanding). Electronics preserved. Reviewer observations preserved as non-blocking:
+  structural/hash-guarded bounded resolution; stale `progression_loop.py` comments deferred to a future bounded
+  comment-hygiene gate; inherited entry-level malformed-artifact serve-time semantics. Rejected `4d6e4785` remains
+  immutable rejected evidence. Boundaries otherwise unchanged; `activated_domains() == ['electronics_electrical']`;
+  first new-domain activation remains BLOCKED. Authoritative ONLY if/when this exact candidate is merged +
+  post-merge verified. Next required gate: Mandatory Grill on this exact closure candidate; after its merge, the
+  Mechanical lane's next gate is the TERMINAL §15/§16 evidence-package/closure contract (separately authorized).
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
