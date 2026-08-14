@@ -60,9 +60,14 @@ def test_d3a_non_electronics_domain_context_not_forced_electronics():
     # electronics-labeled signal. Post-F001 that holds in the strongest form —
     # no signal exists at all to mislabel — and the electronics/legacy labeling
     # paths keep their own pins (the test below and the CF5-F001 seam suite).
+    # P9-MECH-SF disclosure (contract §4 item 12): mechanical now HAS a
+    # governed family; this () pin stays truthfully un-flipped because the
+    # electronics-flavored trigger text matches no mechanical subject cue (the
+    # family's evidence file asserts this text affirmatively). The load-bearing
+    # never-electronics-labeled invariant is unchanged.
     signals = safety_signal.derive_inventor_stated_safety_signals(
         _state(_TRIGGER, _RECOGNIZED_NOT_ACTIVATED))
-    assert signals == ()                       # no family -> nothing derived
+    assert signals == ()             # no mechanical cue match -> nothing derived
     assert not any(s.domain_context == _ACTIVATED for s in signals)
 
 

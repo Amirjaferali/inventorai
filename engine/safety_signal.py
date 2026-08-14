@@ -118,19 +118,103 @@ _ELECTRICAL_TERMS = (
     "overvoltage", "relay", "sensor", "microcontroller", "capacitor",
     "resistor", "power", "fuse", "breaker",
 )
+# --- P9-MECH-SF governed Mechanical safety-cue family -------------------------------
+# (OD-M2 clause 3 / D-P9-MECH-02; contract
+# docs/governance/P9_MECH_SAFETY_CUE_FAMILY_CONTRACT.md §2–§3; provenance
+# mechanical:PR005.) Authored under the contract's objective criteria: grounded
+# in recognized mechanical hazard classes — crush/pinch/nip points, shear
+# points, entanglement, stored-energy release (springs/pressure), fracture and
+# ejection of parts, falling/striking loads, and failed protective functions
+# (guards) — phrased lay-accessibly for inventor-stated statements. Finite,
+# token-anchored, lowercase; no stemming (the WS2 precedent). Detection-scoped
+# ONLY: these cues mark inventor-STATED safety-relevant statements for
+# required-independent-validation labeling — never a safety determination.
+# Generic failure/invalid-use phrasing ("fails to", "malfunction", …) is
+# domain-neutral English shared with the electronics precedent by construction;
+# the electronics IDENTITY vocabulary (electrical context terms and distinctly
+# electrical subjects/consequences) appears NOWHERE in this family — the
+# evidence-file collision guard pins that disjointness. No thermal vocabulary.
+_MECHANICAL_DOMAIN = "mechanical"
+_MECH_FAILURE_CUES = (
+    # generic inventor-stated failure / invalid-use conditions
+    "should not be used", "must not be used", "do not use",
+    "cannot be safely", "can not be safely", "not be safely",
+    "if it fails", "if this fails", "fails to", "fail to", "failed to",
+    "failure to", "malfunction", "does not work",
+    # mechanical failure-mode phrasing (hazard-class grounded)
+    "jams", "jammed", "seizes", "seized", "binds up",
+    "comes loose", "come loose", "came loose",
+    "breaks", "breaks off", "broke", "snaps", "snapped",
+    "shatters", "shattered", "cracks", "cracked",
+    "wears out", "worn out", "gives way", "gave way",
+    "slips", "slipped", "detaches", "detached",
+    "tips over", "tipped over", "collapses", "collapsed",
+    "flies off", "fly off", "flew off",
+    # failed-protective-function conditions (finite phrases, mirroring the
+    # electronics "isolation fails"/"protection fails" precedent)
+    "guard fails", "brake fails", "latch fails", "lock fails", "catch fails",
+    "guard is removed", "guard is missing", "without the guard",
+)
+_MECH_SUBJECT_CUES = (
+    "pinch point", "pinch points", "nip point", "nip points",
+    "crush point", "crush points", "crush zone",
+    "moving part", "moving parts", "rotating part", "rotating parts",
+    "spinning parts", "spinning blade", "rotating blade",
+    "blade", "blades", "cutter", "cutting edge", "sharp edge", "sharp edges",
+    "shear point", "shear points",
+    "entanglement", "entanglement point",
+    "stored energy", "spring under tension", "compressed spring",
+    "loaded spring", "spring tension",
+    "high pressure", "pressurized", "pressurised",
+    "heavy load", "suspended load", "falling object", "falling objects",
+    "flying debris", "ejected part", "ejected parts", "projectile",
+    "counterweight",
+    "guard", "safety guard", "machine guard",
+)
+_MECH_CONSEQUENCE_CUES = (
+    "injury", "injuries", "injure", "injured",
+    "harm", "amputation", "amputate", "amputated",
+    "laceration", "lacerations",
+    "crush a finger", "crush fingers", "crush a hand", "crush someone",
+    "crushed", "crushing injury",
+    "lose a finger", "losing a finger", "lose fingers",
+    "broken bone", "broken bones", "fractured",
+    "caught in", "get caught", "trapped", "trap a hand", "trap fingers",
+    "entangled", "struck by", "strike someone", "hit someone",
+    "fall on someone", "falls on someone", "land on someone",
+    "unsafe", "safety risk", "create a risk", "creates a risk",
+    "danger", "dangerous",
+    "puncture", "impale", "impaled", "severed", "sever a",
+)
+# Mechanical context vocabulary (family-shape parity with the electronics
+# precedent). At present the mechanical family is only ever consulted when the
+# session domain IS "mechanical" (the seam's owner branch then satisfies
+# context directly), so these terms are shape-complete context vocabulary that
+# the current call graph does not reach — declared truthfully, not claimed as
+# live behavior.
+_MECH_CONTEXT_TERMS = (
+    "gear", "gears", "gearbox", "lever", "pulley", "spring", "shaft",
+    "bearing", "linkage", "mechanism", "hinge", "clamp", "crank",
+    "flywheel", "conveyor", "roller", "piston", "clutch",
+    "chain drive", "belt drive", "cam", "ratchet", "winch",
+)
+
 # --- CF5-F001 governed domain-keyed cue/context-family seam ------------------------
 # (Corrective contract §3 — PARAMETERIZE; merged PR #458.) Detection content is
 # consumed ONLY through this seam, keyed by the session's canonical domain id.
-# The electronics family is the sole populated entry and its vocabulary above is
-# byte-preserved (NB-R3: the cues are legitimately electronics-owned content; the
-# corrected defect was shared-core placement / unconditional multi-domain
-# exposure / the missing seam — never the vocabulary itself). A domain with no
+# The electronics family's vocabulary above is byte-preserved (NB-R3: the cues
+# are legitimately electronics-owned content; the corrected defect was
+# shared-core placement / unconditional multi-domain exposure / the missing
+# seam — never the vocabulary itself). The governed Mechanical family was added
+# through its own separately authorized gate (P9-MECH-SF — OD-M2 clause 3),
+# exactly as this seam's design anticipated; recognition/qualification of a
+# domain is NOT activation, and admission is untouched. A domain with no
 # governed family derives NO signals (the deliverable surface carries the
 # truthful capability-scope statement instead). The seam keys on domain
 # IDENTITY, never on activation state (NB-R4 disposition): activation gates
 # admission, not historical derivation, so a legacy session keeps deriving its
-# own domain's signals truthfully. Adding a family for a future governed domain
-# happens only through that domain's own separately authorized gate.
+# own domain's signals truthfully. Adding a family for any further governed
+# domain happens only through that domain's own separately authorized gate.
 _DOMAIN_CUE_FAMILIES = {
     _MVP_DOMAIN: {
         "owner": _MVP_DOMAIN,
@@ -138,6 +222,13 @@ _DOMAIN_CUE_FAMILIES = {
         "subject": _SUBJECT_CUES,
         "consequence": _CONSEQUENCE_CUES,
         "context_terms": _ELECTRICAL_TERMS,
+    },
+    _MECHANICAL_DOMAIN: {
+        "owner": _MECHANICAL_DOMAIN,
+        "failure": _MECH_FAILURE_CUES,
+        "subject": _MECH_SUBJECT_CUES,
+        "consequence": _MECH_CONSEQUENCE_CUES,
+        "context_terms": _MECH_CONTEXT_TERMS,
     },
 }
 

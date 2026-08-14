@@ -61,8 +61,16 @@ _FROZEN_ENGINE_SHA256 = {
     "engine/path_n_questions.py": "a1a682d38293defd4b351e6238aeb870b4f765eaf3fc0f105c4932f75286ce7f",
 }
 _FROZEN_PACK_SHA256 = {
-    # mechanical: the I4 terminal-corpus validity anchor — MUST stay byte-frozen here.
-    "mechanical": "ae9db65c3d69635368c9d8f708ad76a94293e715c9c92b7c953aea83f9cacb5d",
+    # mechanical: the I4 terminal-corpus validity anchor. P9-MECH-SF
+    # reconciliation (contract §4 item 11 — the corrected contract's added
+    # certain flip, disclosed): re-frozen after the mandatory declaration
+    # truthfulness cascade under the SAME signal-inventory-unchanged proof as
+    # the I4 anchor (canonical classification/substance hashes 860ce084…/
+    # c14ae2d5… pinned in tests/test_p9_mech_safety_cue_family.py); no corpus
+    # rebuild — declaration bytes are the only pack change. Engine hashes,
+    # other-pack hashes, question-inventory pins, and this file's test
+    # inventory are untouched.
+    "mechanical": "a8a564506f00b886a7ffd7a85ee46749932bff65cca33d86bec0d7d8c64cec06",
     "electronics_electrical": "3539cfc62710da92f12ac529c07ddaea85011536e5c9f88efb2e2303bb1b964c",
     "medical_device": "6070cf9281a7a376780175e7e1d3879be598384bcaf4dc370e56f7bf613e3ade",
     "software": "1c9cefa14641c079ddb5c21c59f398866adf43561101743b67e611936a67e3a7",

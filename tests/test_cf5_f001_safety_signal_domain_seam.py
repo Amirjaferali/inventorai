@@ -4,11 +4,20 @@ Authoritative contract:
 ``docs/governance/CF5_F001_SAFETY_SIGNAL_CORRECTIVE_CONTRACT.md`` (merged PR
 #458), implementing the independently validated finding (validation record
 merged PR #457): a governed domain-keyed safety cue/context-family seam
-(PARAMETERIZE; electronics family byte-preserved as the sole entry; the seam
-keys on domain IDENTITY, never activation — NB-R4), the bounded NB-R1
-cold-load domain restoration from the already-persisted ``confirmed_domain``,
-and the truthful capability-scope statement for a session domain with no
-governed family.
+(PARAMETERIZE; electronics family byte-preserved; the seam keys on domain
+IDENTITY, never activation — NB-R4), the bounded NB-R1 cold-load domain
+restoration from the already-persisted ``confirmed_domain``, and the truthful
+capability-scope statement for a session domain with no governed family.
+
+P9-MECH-SF RECONCILIATION (contract §4 items 5-6 + 13-15, disclosed): the
+governed MECHANICAL family now exists through its own separately authorized
+gate (exactly as this seam anticipated), so mechanical is no longer this
+file's family-less example: the capability-query pin moved mechanical to the
+True set, and the family-less example tests below switched to ``software`` (a
+still-family-less domain) — each pin's load-bearing truth is preserved
+unchanged. The vocabulary-conditional derive-() pins (r2; the MECH-envelope
+cold-load) were verified UN-flipped: the mechanical vocabulary matches none of
+their texts (its evidence file asserts those texts affirmatively).
 
 Behavioral tests only. Multi-domain states are exercised via directly
 constructed ``IdeaState`` domains and bounded self-restoring activation
@@ -100,8 +109,11 @@ def test_baseline_real_activation_unchanged():
 def test_red_r1_family_less_domain_gets_truthful_scope_statement():
     """r1: a session domain with NO governed safety-cue family must carry the
     truthful capability-scope statement, not the electronics detection-scoped
-    empty statement (which would imply detection ran meaningfully)."""
-    block = _signals_block(_state(MECH, "A folding ladder hinge idea"))
+    empty statement (which would imply detection ran meaningfully).
+    P9-MECH-SF reconciliation (contract §4 item 6, disclosed): mechanical now
+    HAS a governed family, so the family-less example switched to ``software``
+    — the pin's load-bearing truth is unchanged."""
+    block = _signals_block(_state("software", "A daily planner app idea"))
     assert block["signals"] == []
     assert block.get("capability_scope") == "no_governed_safety_cue_family"
     assert _DETECTION_EMPTY_MARKER not in block["empty_statement"].lower()
@@ -192,9 +204,11 @@ def test_green_electronics_block_unchanged_shape_and_empty_statement():
 
 def test_green_family_less_domain_never_crashes_or_stamps_electronics():
     """§6.C: family-less domains yield no signals for ANY text — no crash, no
-    electronics domain_context stamping."""
+    electronics domain_context stamping. P9-MECH-SF reconciliation (contract
+    §4 item 14, disclosed): the first loop's example switched from mechanical
+    (now family-governed) to ``software``; the second loop is unchanged."""
     for text in ("", "plain words", HAZARD_WITH_TERMS, ANSWER_NO_TERMS):
-        st = _state(MECH, text)
+        st = _state("software", text)
         assert derive_inventor_stated_safety_signals(st) == ()
     for domain in ("medical_device", "software", "unknown_future_domain"):
         st = _state(domain, HAZARD_WITH_TERMS)
@@ -245,8 +259,10 @@ def test_green_legacy_null_envelope_cold_load_fail_safe():
 def test_green_cold_load_restores_stored_domain_verbatim():
     """§4/m4 guard: the restoration source is the persisted confirmed_domain,
     verbatim — a stored non-electronics domain is restored as itself (identity
-    restoration, not admission; no activation implied) and stays family-less
-    for derivation."""
+    restoration, not admission; no activation implied). P9-MECH-SF disclosure
+    (contract §4 item 15): mechanical now has a governed family, so the
+    derive-() pin below holds because the seed text carries no mechanical
+    cues (verified un-flipped), no longer because the domain is family-less."""
     client = app.test_client()
     sid = "cf5f001-mech-envelope-sid"
     st = IdeaState(idea_id="cf5f001-mech")
@@ -270,8 +286,13 @@ def test_green_cold_load_restores_stored_domain_verbatim():
 
 
 def test_green_capability_query():
+    """P9-MECH-SF reconciliation (contract §4 item 5, disclosed): mechanical
+    moved from the False loop to the True set — its governed family now exists
+    (evidence: tests/test_p9_mech_safety_cue_family.py). The electronics/None
+    True pins and the remaining-domain False pins are unchanged."""
     from engine.safety_signal import has_governed_safety_cue_family
     assert has_governed_safety_cue_family(ELEC) is True
     assert has_governed_safety_cue_family(None) is True     # governed legacy default
-    for d in (MECH, "medical_device", "software", "anything_else"):
+    assert has_governed_safety_cue_family(MECH) is True     # P9-MECH-SF
+    for d in ("medical_device", "software", "anything_else"):
         assert has_governed_safety_cue_family(d) is False

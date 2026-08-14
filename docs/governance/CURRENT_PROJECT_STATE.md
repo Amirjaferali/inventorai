@@ -1822,6 +1822,26 @@ AUTHORIZED / NOT STARTED.***
   Electronics unaffected; boundaries unchanged; `activated_domains() == ['electronics_electrical']`; first
   new-domain activation remains BLOCKED. Authoritative ONLY if/when this exact candidate is merged + post-merge
   verified. Next required gate: Mandatory Grill on this exact candidate.
+  **Corrected P9-MECH-SF contract MERGED (PR #483, base `d1b79ef4548211dc5e6c881f8c27d994827a4591`; merge tree ==
+  candidate tree `a1d11991`; rejected first candidate `cfab650f` preserved immutable). P9-MECH-SF IMPLEMENTATION
+  CANDIDATE recorded** (`OWNER_DECISION_REGISTER.md` UNCHANGED): the governed Mechanical safety-cue family now
+  EXISTS in this candidate — additive `mechanical` entry in the F001 `_DOMAIN_CUE_FAMILIES` seam
+  (`engine/safety_signal.py`; provenance `mechanical:PR005`; hazard-class-grounded, lay-accessible,
+  detection-scoped vocabulary 54/44/45/23 cues; equality-pinned; zero electronics-identity collision; zero
+  thermal vocabulary; electronics family/constants/None-default byte-preserved — 24/24 derivation-corpus
+  byte-parity) PLUS the mandatory same-increment declaration truthfulness cascade (detection-scoped covered
+  statement; "safety determination" stays NOT COVERED; I1 lexicon guard passes; signals/gap
+  types/nuances/aliases byte-frozen by canonical-hash proof) + NEW 23-test evidence file + EXACTLY the contract-§4
+  reconciliations in exactly the seven permitted files (I1–I4 absence pins flipped; F001 capability-query/r1
+  reconciled; I2/I3 declaration hashes re-frozen; I4+I5 pack anchors re-frozen `a8a56450…` under one
+  signal-inventory-unchanged proof, no corpus rebuild; conditional derive-() pins verified un-flipped). Full suite
+  **2569 passed / 3 skipped / 1 xfailed / 0 failed** (baseline 2546 + 23 new); mutations m1–m10 all caught
+  right-reason. DETECTION only — never a safety determination; THERM-01 untouched; admission untouched;
+  **Mechanical remains NOT ACTIVATED**; `activated_domains() == ['electronics_electrical']`; first new-domain
+  activation remains BLOCKED. OD-M2 clause-3 blocker discharge happens ONLY at the lane closure after this
+  candidate merges + post-merge verifies; remaining activation blockers (Tier-1 EN/AR label, CF-6, CF-2,
+  NMF-1/FU-1 disposition, explicit Owner activation authorization) unmoved. Authoritative ONLY if/when this exact
+  candidate is merged + post-merge verified. Next required gate: Mandatory Grill on this exact candidate.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation

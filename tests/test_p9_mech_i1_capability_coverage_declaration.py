@@ -10,6 +10,18 @@ ZERO runtime-behavior change. Anti-overclaim protection is an EXACT-CONTENT pin
 (any added or paraphrased covered claim — FEA, "thermal simulation", or any
 other unsupported expertise, however worded — flips the equality pins RED); the
 lexicon guard is defense-in-depth only, not the primary protection.
+
+P9-MECH-SF RECONCILIATION (contract §4 items 6-7, disclosed): the governed
+Mechanical safety-cue family now EXISTS (merge lineage of the corrected
+P9-MECH-SF contract, base ``d1b79ef4``), so this file's I1-era safety pins
+were reconciled: the family-absence pin flipped to the governed-present state;
+the OD-M2 clause-1 "NOT COVERED pending…" statement pins were re-pinned to the
+truthful detection-scoped cascade statements; the covered/supported equality
+pins gained EXACTLY the detection entry; and "safety-signal derivation" left
+the mandatory NOT-COVERED concepts (detection is now covered — "safety
+determination" remains NOT COVERED, unchanged). Every non-safety pin is
+byte-identical to its I1 value. Evidence for the family itself lives in
+``tests/test_p9_mech_safety_cue_family.py``.
 """
 
 import hashlib
@@ -48,24 +60,38 @@ _APPROVED_COVERED_AREAS = [
     "Concept-level boundary and differentiation reasoning versus existing mechanical approaches",
     "Mechanical mechanism completeness as a reasoning quality assessment",
     "Gap detection for the pack's governed gap types (MECHANISM_COMPLETENESS, PHYSICAL_FEASIBILITY, BOUNDARY_AMBIGUITY)",
+    # P9-MECH-SF cascade (the ONLY covered addition; detection-scoped, never a
+    # safety determination):
+    "Detection of inventor-stated mechanical safety signals via the governed "
+    "Mechanical safety-cue family: flags safety-relevant failure statements "
+    "the inventor has already made (e.g. crush, pinch, entanglement, "
+    "stored-energy release, part ejection) for required independent "
+    "validation — detection only, never a safety determination",
 ]
 _APPROVED_SUPPORTED_ANALYSIS = [
     "concept_level_mechanism_completeness",
     "concept_level_physical_feasibility_reasoning",
     "concept_level_boundary_differentiation",
     "governed_gap_type_question_service",
+    "inventor_stated_safety_signal_detection",   # P9-MECH-SF cascade
 ]
 
+# P9-MECH-SF reconciliation: the OD-M2 clause-1 statement was REPLACED by the
+# truthful detection-scoped safety-boundary statement; these fragments pin the
+# replacement in BOTH declarations (safety determination stays NOT COVERED).
 _ODM2_SUBSTRINGS = (
-    "inventor-stated safety-signal derivation",
-    "NOT COVERED",
-    "governed Mechanical safety-cue family",
+    "Safety determination of any kind is NOT COVERED",
+    "governed Mechanical safety-cue family (mechanical:PR005)",
+    "safety-signal DETECTION only",
+    "requires independent validation",
+    "never a determination that the idea is safe or unsafe",
 )
 
 # Mandatory NOT-COVERED concepts (contract §4 deliverable (a); checked as case-insensitive
-# substrings over the joined not_covered_areas text).
+# substrings over the joined not_covered_areas text). P9-MECH-SF reconciliation:
+# "safety-signal derivation" left this list — detection is now truthfully
+# covered by the governed family; "safety determination" remains, unchanged.
 _MANDATORY_NOT_COVERED_CONCEPTS = (
-    "safety-signal derivation",
     "fea",
     "fatigue",
     "tolerance",
@@ -293,8 +319,9 @@ def test_mechanical_recognition_identity_unchanged():
 
 class _StubState:
     """Minimal read-only state for the derive seam: mechanical session domain
-    with inventor text present — a governed family would have vocabulary to
-    inspect, an absent family must yield () regardless."""
+    with inventor text present. Pre-P9-MECH-SF this file pinned the truthful
+    ABSENCE of a governed family (derive == () regardless of the text); the
+    family now exists, so the same stub proves governed-present detection."""
 
     domain = "mechanical"
     domain_signal = "mechanical"
@@ -303,9 +330,16 @@ class _StubState:
     acknowledged_unknowns = ()
 
 
-def test_safety_family_remains_absent_for_mechanical():
-    assert has_governed_safety_cue_family("mechanical") is False
-    assert derive_inventor_stated_safety_signals(_StubState()) == ()
+def test_safety_family_now_governed_for_mechanical():
+    """P9-MECH-SF reconciliation (contract §4 item 1, disclosed): the I1-era
+    ``test_safety_family_remains_absent_for_mechanical`` absence pin flipped —
+    the governed family exists; the stub's inventor-stated hazard text now
+    derives exactly one mechanical-labeled, validation-required signal."""
+    assert has_governed_safety_cue_family("mechanical") is True
+    signals = derive_inventor_stated_safety_signals(_StubState())
+    assert len(signals) == 1
+    assert signals[0].domain_context == "mechanical"
+    assert signals[0].validation_status == "requires_independent_validation"
 
 
 def test_activation_state_unchanged():
