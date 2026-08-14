@@ -41,7 +41,31 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — D-GMPR-D3-PN FORMAL CLOSURE CANDIDATE — governance-only; path_n_questions coupling DISCHARGED /
+**Status (current — P9-MECH TERMINAL §15/§16 QUALIFICATION RECORD CANDIDATE — governance-only; MECHANICAL = P9-QS
+QUALIFIED WITH ACTIVATION BLOCKERS conditional on merge; NOT ACTIVATED; ODR UNCHANGED):** the D-GMPR-D3-PN **formal
+closure** is **MERGED and post-merge verified** (merge `ac8ac2d9fd17135befb990890dd57e838c24b671`, parents
+`17a4aca4` + accepted closure candidate `be40cc90`, merge tree `9a2da541` == candidate tree → **D-GMPR-01-D-D3 =
+FULLY DISCHARGED authoritative**; §12(b) unblocked). This gate records the **terminal qualification record
+candidate** (canonical record: `docs/governance/P9_MECH_QUALIFICATION_RECORD.md`): every P9-MECH-QC §15 criterion
+evidence-proven with exact SHAs (I1 `f595fb60`; I2 `3d51bb1c`; I3 `32165caf`; I4 `3fe23a8c`; I5 `baee2542`; D-GMPR
+impl `add3561f`); fresh verification at this base — 104 mechanical evidence tests + full suite 2546/3/1/0; **§12(b)
+NOW RECORDED COMPLETE** (dependency fully discharged; service factual); **§8.4 CONFIRMED** (annotation stands;
+weight unread; cross-pack residual with its shared-core owner); OD-M2 per B-hardened (clause 1 = I1 declarations;
+clause 2 = the record's PROMINENT header annotation — no unannotated QUALIFIED claim; clause 3 = ACTIVATION-ONLY,
+not executed). Determination, authoritative ONLY after this candidate's own merge + post-merge verification:
+**`MECHANICAL = P9-QS QUALIFIED — WITH ACTIVATION BLOCKERS`**, declared relative to the truthful declared
+concept-level scope. **OUTSTANDING ACTIVATION BLOCKERS (none waived): OD-M2 clause-3 safety-cue family; Tier-1
+EN/AR label; CF-6; CF-2; NMF-1/FU-1; explicit Owner activation authorization.** Qualification ≠ authorization ≠
+activation; `activated_domains() == ['electronics_electrical']`; Mechanical NOT ACTIVATED; first new-domain
+activation remains BLOCKED. Separate owners unaffected (weight residual; progression_loop comment hygiene; THERM-01;
+CAP-12/13; WS-PFV-001; D4; D8; Phase 10; PSRR; deployment). Governance-only: ZERO runtime/test/pack/registry/
+activation/schema/persistence/ODR diff. Authoritative ONLY if/when this exact candidate is merged and post-merge
+verified. Next required gate: **Mandatory Grill on this exact candidate** → independent external exact-candidate
+review → Owner acceptance → SHA-preserving publication → PR → pre/post-merge verification; thereafter the next Owner
+decisions are the activation-blocker gates (safety-family first among them), each separately authorized.
+
+**Immediately prior (D-GMPR-D3-PN closure gate — closure MERGED via `ac8ac2d9`; retained as history):**
+**Status (prior — D-GMPR-D3-PN FORMAL CLOSURE CANDIDATE — governance-only; path_n_questions coupling DISCHARGED /
 D-GMPR-01-D-D3 FULLY DISCHARGED conditional on this candidate's merge; §12(b) UNBLOCKED not closed; Mechanical NOT
 qualified / NOT activated; ODR UNCHANGED):** the D-GMPR-D3-PN **implementation** is **MERGED and post-merge
 verified** (merge `17a4aca421752ddcd9004a1e929f3d2506438c75`, parents `96559534` + accepted implementation candidate
