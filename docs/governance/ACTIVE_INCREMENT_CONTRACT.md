@@ -41,7 +41,36 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — P9-MECH-I5: §12 QUESTION-SUFFICIENCY EVIDENCE + D-GMPR DEPENDENCY DISPOSITION INCREMENT CONTRACT
+**Status (current — D-GMPR-D3-PN: PATH-N DOMAIN-NEUTRAL SERVICE REMEDIATION CONTRACT CANDIDATE (CORRECTED;
+supersedes rejected `4d6e4785`) — shared-core D-GMPR gate; governance-only; implementation NOT started;
+D-GMPR-01-D-D3 NOT discharged; Mechanical NOT qualified / NOT activated; ODR UNCHANGED):** the P9-MECH-I5
+**implementation** is **MERGED and post-merge verified** (merge `0dca782e5d4f32d403ad79c64ba469f07e46e600`, merge
+tree `cb95fc97` == candidate tree → §12(a) question-content sufficiency evidence AUTHORITATIVE; §12(b) formally
+D-GMPR-blocked; suite 2531/3/1/0). **Correction lineage:** the prior D-GMPR-D3-PN candidate `4d6e4785` was
+independently **REJECTED** (enumerated only three of the FIVE existing-test flips its end-state forces — omitting
+the D3-B seam-identity pin (`test_d3b_seam_honors_non_electronics_domain_identity`, mechanical→None) and the P9-E1
+RED1 generic-fallback equality (`result == generic_text`), and falsely stating RED1 would keep passing); preserved
+as immutable rejected evidence. This gate records the **CORRECTED contract candidate** (canonical record:
+`docs/governance/DGMPR_D3_PATH_N_DOMAIN_NEUTRAL_SERVICE_CONTRACT.md`): architecture preserved exactly (one
+canonical seam; unchanged signatures; domain-keyed committed artifacts; electronics + None default byte-identical;
+artifact-less/unknown domains fail-safe None; verbatim-projection mechanical artifact with EXPLICIT metadata-key
+shape; bounded canonical-identity domain→artifact resolution — no raw-string file paths; no wrapper; no
+progression_loop/domain_rules change); reconciliation set corrected to the EXACT FIVE flips (I5 blocker pin; I5
+path_n hash; P9-E1 RED2; D3-B seam-identity pin; P9-E1 RED1), each reconciled with disclosure while preserving the
+anti-Electronics load-bearing truths, re-proven by a broad pin search (all nine other seam-consuming test files use
+only the None/electronics default; the sole path_n hash pin is I5's); anything beyond the five = STOP. Allowed
+reconciliation paths now include `tests/test_d3_core_domain_neutrality.py`. I4 terminal corpus: NO revalidation.
+**Implementation NOT authorized by this contract.** D-GMPR-01-D-D3 discharged only at this lane's own closure (then
+unblocking §12(b)). Mechanical NOT qualified / NOT activated; §15/§16 open; boundaries unchanged. Governance-only:
+ZERO runtime/test/pack diff; `OWNER_DECISION_REGISTER.md` UNCHANGED. `activated_domains() ==
+['electronics_electrical']`; first new-domain activation remains BLOCKED. Authoritative ONLY if/when this exact
+candidate is merged and post-merge verified. Next required gate: **Mandatory Grill on this exact corrected
+candidate** → independent external exact-candidate review → Owner acceptance → SHA-preserving publication → PR →
+pre/post-merge verification.
+
+**Immediately prior (P9-MECH-I5 contract gate — contract MERGED via `8ec39acf`; implementation MERGED via
+`0dca782e`; retained as history):**
+**Status (prior — P9-MECH-I5: §12 QUESTION-SUFFICIENCY EVIDENCE + D-GMPR DEPENDENCY DISPOSITION INCREMENT CONTRACT
 CANDIDATE — governance-only; implementation NOT started; D-GMPR NOT absorbed; Mechanical NOT qualified / NOT
 activated; ODR UNCHANGED):** the P9-MECH-I4 **implementation** is **MERGED and post-merge verified** (merge
 `c7c9e413ac142a919b68868280cdddc5af8dce39`, parents `64145819` + accepted implementation candidate `3fe23a8c`, merge

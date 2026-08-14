@@ -1740,6 +1740,25 @@ AUTHORIZED / NOT STARTED.***
   activated; boundaries unchanged; `activated_domains() == ['electronics_electrical']`; first new-domain
   activation remains BLOCKED. Authoritative ONLY if/when this exact candidate is merged + post-merge verified.
   Next required gate: Mandatory Grill on this exact candidate.
+  **P9-MECH-I5 contract MERGED (merge `8ec39acf`) and its IMPLEMENTATION MERGED and post-merge verified (merge
+  `0dca782e5d4f32d403ad79c64ba469f07e46e600`, merge tree == candidate tree `cb95fc97`; suite 2531/3/1/0): §12(a)
+  question-content sufficiency evidence AUTHORITATIVE; §12(b) formally D-GMPR-blocked. D-GMPR-D3-PN CORRECTED
+  CONTRACT CANDIDATE recorded (supersedes the independently REJECTED `4d6e4785`, preserved as immutable rejected
+  evidence — its defect: enumerated only three of the FIVE existing-test flips its end-state forces, omitting the
+  D3-B seam-identity pin and the P9-E1 RED1 generic-fallback equality, and falsely stating RED1 keeps passing).**
+  Canonical record: `DGMPR_D3_PATH_N_DOMAIN_NEUTRAL_SERVICE_CONTRACT.md` (`OWNER_DECISION_REGISTER.md` UNCHANGED).
+  Architecture preserved exactly: ONE canonical seam, unchanged signatures, domain-keyed committed artifacts;
+  electronics + None default byte-identical; artifact-less recognized + unknown domains fail-safe None; mechanical
+  artifact = VERBATIM projection of the I5-proven pack questions with an EXPLICIT metadata-key shape; bounded
+  canonical-identity domain→artifact resolution (no raw-string file paths). Reconciliation set corrected to the
+  EXACT FIVE flips — I5 blocker pin; I5 path_n hash; P9-E1 RED2; D3-B `test_d3b_seam_honors_non_electronics_
+  domain_identity`; P9-E1 RED1 — each reconciled with disclosure preserving the anti-Electronics load-bearing
+  truths; broad pin search re-proves no sixth flip; anything beyond the five = STOP. I4 terminal corpus: NO
+  revalidation. Implementation NOT authorized by the contract; D-GMPR-01-D-D3 discharged only at this lane's own
+  closure (then unblocking §12(b)). Mechanical NOT qualified / NOT activated; §15/§16 open; boundaries unchanged;
+  `activated_domains() == ['electronics_electrical']`; first new-domain activation remains BLOCKED. Authoritative
+  ONLY if/when this exact candidate is merged + post-merge verified. Next required gate: Mandatory Grill on this
+  exact corrected candidate.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation

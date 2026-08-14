@@ -9283,3 +9283,38 @@ deployment NOT AUTHORIZED. After I5 closure the qualification lane reduces to th
 `activated_domains() == ['electronics_electrical']`; first new-domain activation remains BLOCKED. Append-only; prior
 history not rewritten. Authoritative ONLY if/when this exact candidate is merged and post-merge verified. **Next
 required gate: Mandatory Grill on this exact contract candidate.**
+
+---
+
+## D-GMPR-D3-PN — Path-N Domain-Neutral Service Remediation — governance-only CONTRACT CANDIDATE (CORRECTED; supersedes rejected `4d6e4785`) — implementation NOT started; D-GMPR-01-D-D3 NOT discharged; Mechanical NOT qualified / NOT activated; ODR UNCHANGED
+
+**Gate.** Governance-only contract gate on authoritative base `0dca782e5d4f32d403ad79c64ba469f07e46e600` (P9-MECH-I5
+implementation merged; suite 2531/3/1/0; freshly verified; clean tree). **Correction lineage:** prior candidate
+`4d6e4785d753576d1879656be1ce8979f5f6eabb` was independently **REJECTED — MATERIAL CORRECTION REQUIRED** — its own
+required end-state forces exactly FIVE existing-test flips but it enumerated only three, omitting (4) D3-B
+`test_d3b_seam_honors_non_electronics_domain_identity` (asserts mechanical→None at the seam) and (5) P9-E1
+`test_red1_…_not_served_electronics_text` (also asserts `result == generic_text`, which breaks when mechanical
+receives its own artifact text) — and it falsely stated RED1 would keep passing. The rejected SHA is preserved as
+immutable rejected evidence, NOT amended/reused/published. This candidate is a FRESH correction from the same
+authoritative parent: architecture preserved exactly (one canonical seam; unchanged signatures; domain-keyed
+committed artifacts; electronics + None default byte-identical; artifact-less recognized + unknown domains fail-safe
+None; verbatim-projection mechanical artifact; no wrapper; no progression_loop/domain_rules change); the
+reconciliation set corrected to the EXACT FIVE flips (I5 blocker pin; I5 path_n hash; P9-E1 RED2; D3-B seam-identity
+pin; P9-E1 RED1 generic-fallback equality — each reconciled with disclosure while PRESERVING the anti-Electronics
+load-bearing truths; anything beyond these = STOP), re-proven by a broad pin search (all nine other seam-consuming
+test files use only the None/electronics default and reference no non-electronics domain; the only path_n hash pin
+is I5's). Additions per review: exact mechanical-artifact metadata keys specified (metadata/gaps shape;
+domain/source/provenance_ref/contract/generated_by_gate); bounded domain→artifact path-resolution rule (canonical
+registry identity; no raw-string file paths; no registry redesign). Allowed reconciliation paths now include
+`tests/test_d3_core_domain_neutrality.py`. I4 terminal corpus: NO revalidation (inventory-scoped; its pinned engine
+files and packs untouched). Canonical record: `docs/governance/DGMPR_D3_PATH_N_DOMAIN_NEUTRAL_SERVICE_CONTRACT.md`.
+**`OWNER_DECISION_REGISTER.md` UNCHANGED.** ZERO runtime/test/pack diff this candidate. **DOCUMENTED NO-VALID-RED.**
+
+**Boundary / status after this entry.** Implementation NOT authorized by this contract. D-GMPR-01-D-D3 discharged
+only at this lane's own closure (then unblocking P9-MECH §12(b), recordable at a subsequent Mechanical-lane gate).
+Mechanical NOT qualified / NOT activated; §15/§16 open; safety family + Tier-1 label PRE-ACTIVATION; CF-6 OPEN; CF-2
+OPEN; weight-residual shared-core; THERM-01 future-only; D4 REGISTERED / NOT AUTHORIZED; D8 Owner-reserved; Phase 10
+NOT AUTHORIZED; PSRR NOT EXECUTED; deployment NOT AUTHORIZED. `activated_domains() == ['electronics_electrical']`;
+first new-domain activation remains BLOCKED. Append-only; prior history not rewritten. Authoritative ONLY if/when
+this exact candidate is merged and post-merge verified. **Next required gate: Mandatory Grill on this exact
+corrected contract candidate.**
