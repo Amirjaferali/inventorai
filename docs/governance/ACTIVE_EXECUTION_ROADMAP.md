@@ -9107,3 +9107,48 @@ NMF-1/FU-1 unchanged; D4 REGISTERED / NOT AUTHORIZED; D8 Owner-reserved; Phase 1
 deployment NOT AUTHORIZED. `activated_domains() == ['electronics_electrical']`; first new-domain activation remains
 BLOCKED. Append-only; prior history not rewritten. Authoritative ONLY if/when this exact candidate is merged and
 post-merge verified. **Next required gate: Mandatory Grill on this exact candidate.**
+
+---
+
+## P9-MECH-I2 — Qualification-Grade Rule Nuances — governance-only increment-CONTRACT CANDIDATE — implementation NOT started; Mechanical NOT qualified / NOT activated; ODR UNCHANGED
+
+**Gate.** Governance-only contract gate on authoritative base `a52656d1ce78e67641685d86fa7a946cd92d2ff4` (merge of
+`f7ed7448` + corrected D-THERM-01 candidate `3c2ee0bc`; merge tree `ba3a18dc` == candidate tree → **D-THERM-01 /
+THERM-01 AUTHORITATIVE** as future-path preservation only; freshly fetched; 0 newer; clean tree). Canonical record:
+`docs/governance/P9_MECH_I2_QUALIFICATION_GRADE_RULE_NUANCES_CONTRACT.md`. **`OWNER_DECISION_REGISTER.md` UNCHANGED**
+(no Owner decision conveyed or needed). ZERO runtime/test/pack/registry/Web/CLI diff this candidate. **DOCUMENTED
+NO-VALID-RED.**
+
+**Decisive reconstruction (mechanically verified).** `rule_nuances` are registry-validated (element keys NOT frozen —
+enrichment loader-safe) and read ONLY by `engine/domain_rules.py::get_active_rules`, which **has ZERO callers** —
+nuances are runtime-inert beyond the accessor seam for EVERY pack, electronics included. Accessor baselines frozen for
+all four packs. Electronics nuance semantics (requirement markers, `additional_signal_required`) differ from
+mechanical/software/medical (gap-type-id markers) and MUST NOT be conflated. **P9-MECH-QC §6(d) divergence disclosed:**
+"observable effect" is satisfiable ONLY at the accessor seam; demanding downstream behavior would force inventing a
+shared-core consumption path (NOT a Mechanical increment; NOT authorized); the contract binds the truthful
+accessor-seam reading plus a mandatory no-downstream-consumer disclosure. Complete remaining-obligation map recorded
+(contract §2): §6 nuances = NEXT (this contract); §8 signal-quality/AB-006 + dormant-`weight` disposition = LATER
+(classifier-consumed fields; separate); §9 boundary evidence = LATER (after content is final); §12 questions = LATER /
+partially blocked behind the OPEN D-GMPR coupling; §13 label + §11 safety family (OD-M2) = PRE-ACTIVATION only; §15
+package/§16 closure = terminal; §10 non-degradation + provenance/truthfulness = per-increment; thermal = THERM-01
+owner (untouched).
+
+**Contract substance (summary; the record is canonical).** P9-MECH-I2 = truthful full-shape enrichment of the three
+mechanical rule_nuances IN PLACE (exact modifier_value strings/order/count preserved → accessor output byte-identical),
+electronics-parity shape (rule_id/description/layer/modifier_type/provenance_ref) with TRUTHFUL modifier_type semantics
+(governed active-gap-rule markers — not a false copy of electronics' semantic), descriptions grounded only in existing
+gap-type content + I1 declared scope (no unsupported expertise; no thermal claim), provenance via the existing manifest
+(additive record only if needed; existing records byte-untouched), and a mandatory in-pack disclosure that no
+downstream nuance consumer exists today (future consumption = separate shared-core gate). **Expected runtime
+differential: ZERO** (accessor pins for all four packs; classifier corpus; registry set; full suite). Evidence: parent
+RED; focused GREEN pins incl. exact-content description equality (anti-paraphrase); negative tests; mutations m1–m9;
+differential sweep; `git diff --check`.
+
+**Boundary / status after this entry.** P9-MECH-I2 implementation NOT authorized by this contract (separate Owner
+authorization + governed lifecycle required). Mechanical NOT qualified (obligations §8/§9/§12/§15 remain; OD-M2
+clause 2 unannotated-claim bar stands) / NOT activated; recognized set unchanged; dormant `weight` untouched; AB-006
+flags stay in the §8 lane; CF-6 OPEN; CF-2 OPEN; D-GMPR coupling OPEN; NMF-1/FU-1 unchanged; THERM-01 future-only;
+D4 REGISTERED / NOT AUTHORIZED; D8 Owner-reserved; Phase 10 NOT AUTHORIZED; PSRR NOT EXECUTED; deployment NOT
+AUTHORIZED. `activated_domains() == ['electronics_electrical']`; first new-domain activation remains BLOCKED.
+Append-only; prior history not rewritten. Authoritative ONLY if/when this exact candidate is merged and post-merge
+verified. **Next required gate: Mandatory Grill on this exact contract candidate.**

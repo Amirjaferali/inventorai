@@ -41,7 +41,36 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — D-THERM-01: FUTURE THERMAL CAPABILITY PRESERVATION CANDIDATE (CORRECTED; supersedes rejected
+**Status (current — P9-MECH-I2: QUALIFICATION-GRADE RULE NUANCES INCREMENT CONTRACT CANDIDATE — governance-only;
+implementation NOT started; Mechanical NOT qualified / NOT activated; ODR UNCHANGED):** the corrected D-THERM-01
+candidate is **MERGED and post-merge verified** (merge `a52656d1ce78e67641685d86fa7a946cd92d2ff4`, parents `f7ed7448`
++ accepted corrected candidate `3c2ee0bc`, merge tree `ba3a18dc` == candidate tree → **D-THERM-01 / register section
+THERM-01 AUTHORITATIVE** — future-path preservation only; the rejected `247cb6b9` remains immutable rejected
+evidence). This gate records the **P9-MECH-I2 increment CONTRACT candidate** (canonical record:
+`docs/governance/P9_MECH_I2_QUALIFICATION_GRADE_RULE_NUANCES_CONTRACT.md`): the smallest coherent next Mechanical
+qualification increment after I1 = truthful full-shape enrichment of the three degenerate mechanical `rule_nuances`
+IN PLACE — exact modifier_value strings/order/count preserved so the sole runtime read
+(`get_active_rules`, mechanically verified to have **ZERO callers**; nuances are runtime-inert beyond that accessor
+seam for EVERY pack incl. electronics) stays byte-identical for all four packs; electronics-parity shape with
+TRUTHFUL modifier_type semantics (governed active-gap-rule markers, not a false copy of electronics' requirement-
+marker semantic); descriptions grounded only in existing gap-type content + I1 declared scope (no unsupported
+expertise; no thermal claim — THERM-01 untouched); provenance via the existing manifest; mandatory
+no-downstream-consumer disclosure (P9-MECH-QC §6(d) "observable effect" truthfully bound to the accessor seam —
+divergence disclosed; any future consumption = separate shared-core gate, NOT authorized). Expected runtime
+differential ZERO; evidence = parent RED, focused GREEN pins (incl. exact-content description equality), negative
+tests, mutations m1–m9, differential sweep, full suite, `git diff --check`. Deferred and NOT absorbed: §8
+signal-quality/AB-006 + dormant-`weight` disposition (LATER; classifier-consumed fields); §9 boundary evidence
+(LATER); §12 questions (LATER / partially blocked behind the OPEN D-GMPR coupling); §13 label + §11 safety family
+(PRE-ACTIVATION only per OD-M2); §15/§16 package+closure (terminal). **The implementation is NOT authorized by this
+contract.** Mechanical NOT qualified / NOT activated; CF-6 / CF-2 / D-GMPR coupling / NMF-1 / FU-1 / D4 / D8 /
+Phase 10 / PSRR / deployment unchanged. Governance-only: ZERO runtime/test/pack/registry/Web/CLI diff;
+`OWNER_DECISION_REGISTER.md` UNCHANGED. `activated_domains() == ['electronics_electrical']`; first new-domain
+activation remains BLOCKED. Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next
+required gate: **Mandatory Grill on this exact candidate** → independent external exact-candidate review → Owner
+acceptance → SHA-preserving publication → PR → pre/post-merge verification.
+
+**Immediately prior (D-THERM-01 corrected candidate — MERGED via `a52656d1`; retained as history):**
+**Status (prior — D-THERM-01: FUTURE THERMAL CAPABILITY PRESERVATION CANDIDATE (CORRECTED; supersedes rejected
 `247cb6b9`) — governance-only register amendment; NON-ACTIVATING; Mechanical NOT qualified / NOT activated):** the
 P9-MECH-I1 **implementation** is **MERGED and post-merge verified** (merge
 `f7ed74484234ae1e85f3db35ebfac7ebeb847288`, parents `89985218` + accepted implementation candidate `f595fb60`, merge
