@@ -9542,3 +9542,50 @@ separate owners unaffected: dormant-weight cross-pack; progression_loop comment 
 WS-PFV-001; D4 REGISTERED / NOT AUTHORIZED; D8 Owner-reserved; Phase 10 / PSRR / deployment NOT AUTHORIZED; no P9
 closure. Append-only; prior history not rewritten. **Next required gate: Mandatory Grill on this exact
 candidate**, then the governed lifecycle.
+
+---
+
+## CF-5 — NMF-1 / FU-1 Bounded Test-Hardening — EXECUTION CANDIDATE (both DISCHARGED conditional on merge); Mechanical NOT ACTIVATED; ODR UNCHANGED
+
+**Gate.** Bounded, additive, TEST-ONLY implementation candidate on authoritative base
+`91f4e5c6ad69964d01328e1502ab04d1d76aa0c0` (PR #485 — SHA-preserving merge of the accepted P9-MECH-SF formal
+closure candidate `c25c8438` onto `1a23552b`; merge tree `36e2c030` == candidate tree; POST-MERGE PASS; freshly
+fetched; 0 newer; clean tree). Canonical record: `docs/governance/CF5_NMF1_FU1_TEST_HARDENING_DISPOSITION_RECORD.md`.
+This is the "bounded standalone test-only hardening gate" the CF-5 Audit closure record named as NMF-1/FU-1's
+earliest available gate. **`OWNER_DECISION_REGISTER.md` UNCHANGED** (execution of an already-accepted disposition
+option; no new Owner policy).
+
+**Dependency-graph determination.** Of the four remaining non-Owner activation blockers (Tier-1 EN/AR label; CF-6;
+CF-2; NMF-1/FU-1 disposition), all mutually independent: the label cannot proceed now (P9-MECH-QC §13: truthful
+only at activation-readiness — correctly LAST); CF-6/CF-2 are each broad, not-yet-scoped lanes with separate
+owners and no standalone contract yet defining a bounded next increment (they share one facet — the CLI
+electronics literal, `scripts/run_cli.py` — dischargeable together per the F002 facet-discharge precedent, but
+that joint gate needs its own future scoping contract); **NMF-1/FU-1 is the smallest, already-fully-specified,
+lowest-risk item** — its exact scope was named at registration (CF-5 Audit closure record §6) and its earliest
+gate ("a bounded standalone test-only hardening gate") is already sanctioned, requiring no further scoping
+contract.
+
+**Delivered (exactly).** NMF-1: three new pinned tests in `tests/test_cf5_f003_classifier_matching_semantics.py`
+(reorder rejection "delivery drug"→NONE; intermediate-token-pluralization rejection "machines learning"→NONE; the
+permitted final-token-pluralization contrast "machine learnings"→software). FU-1: one new pinned test in `tests/
+test_cf5_f002_web_admission_multidomain.py` (`test_fu1_empty_activation_set_refuses_closed`, exercising the
+`web/app.py::start` `if not activated:` fail-closed boundary via the file's existing bounded `activate()` double
+— HTTP 200, no session, truthful refusal copy, no electronics-only copy). **ZERO engine/web/CLI/domain/pack/
+provenance/registry/activation/schema/persistence diff** — the runtime required no change (NMF-1's own "shipped
+runtime is CORRECT" claim empirically reconfirmed for all four new assertions before pinning).
+
+**Evidence.** Focused: 112 passed (108 pre-existing + 4 new) across the two touched files. Full governed suite
+**2573 passed / 3 skipped / 1 xfailed / 0 failed** (base 2569 + 4 new; zero regressions). Mutation probes
+(byte-verified restoration, pycache cleared before each): reorder-tolerance in `_phrase_matches` CAUGHT;
+intermediate-token-pluralization tolerance CAUGHT; wrong empty-activation refusal message CAUGHT. Post-restore
+re-green confirmed.
+
+**Disposition.** **NMF-1 = DISCHARGED (executed). FU-1 = DISCHARGED (executed).** Conditional on this candidate's
+merge + post-merge verification. Mechanical's own blocker set is UNCHANGED by this gate (NMF-1/FU-1 are CF-5-lane
+carry-forwards referenced by, not owned by, the Mechanical qualification lane): **`MECHANICAL = P9-QS QUALIFIED —
+WITH ACTIVATION BLOCKERS; NOT ACTIVATED`** persists unchanged in kind. Remaining activation blockers: Tier-1
+EN/AR label; CF-6; CF-2; explicit Owner activation authorization. No Tier-1/CF-6/CF-2 work performed or implied;
+`scripts/run_cli.py` untouched; no D4/D8/THERM-01/Phase 10/PSRR/deployment; no P9 closure; no activation change.
+`activated_domains() == ['electronics_electrical']`; first new-domain activation remains BLOCKED. Append-only;
+prior history not rewritten. **Next required gate: Mandatory Grill on this exact candidate**, then the governed
+lifecycle.

@@ -1860,6 +1860,28 @@ AUTHORIZED / NOT STARTED.***
   Owner activation authorization — none waived, combined, or executed here. Governance-only candidate: ZERO
   runtime/test/pack/provenance/registry/activation/ODR diff. Authoritative ONLY if/when this exact candidate is
   merged + post-merge verified. Next required gate: Mandatory Grill on this exact candidate.
+  **P9-MECH-SF formal closure MERGED (PR #485, base `91f4e5c6ad69964d01328e1502ab04d1d76aa0c0`; merge tree ==
+  candidate tree `36e2c030`) — OD-M2 clause 3 DISCHARGED; Mechanical remains P9-QS QUALIFIED WITH ACTIVATION
+  BLOCKERS, NOT ACTIVATED, four non-Owner blockers remaining. CF-5 NMF-1/FU-1 BOUNDED TEST-HARDENING EXECUTION
+  CANDIDATE recorded** (canonical record: `CF5_NMF1_FU1_TEST_HARDENING_DISPOSITION_RECORD.md`;
+  `OWNER_DECISION_REGISTER.md` UNCHANGED): dependency graph reconstructed — Tier-1 label correctly LAST (P9-MECH-QC
+  §13, truthful only at activation-readiness); CF-6/CF-2 broad not-yet-scoped separate-owner lanes sharing one
+  CLI-literal facet (dischargeable together per the F002 precedent, needing their own future scoping contract);
+  **NMF-1/FU-1 determined the smallest, already-fully-specified, lowest-risk next item**, requiring no further
+  scoping contract (its own registration text already bounds it exactly). Delivered the CF-5-sanctioned "bounded
+  standalone test-only hardening gate": NMF-1 — 3 new pinned tests (reorder rejection; intermediate-token-
+  pluralization rejection; permitted final-token contrast) in `tests/test_cf5_f003_classifier_matching_
+  semantics.py`; FU-1 — 1 new pinned test (empty-activation-set fail-closed boundary) in `tests/
+  test_cf5_f002_web_admission_multidomain.py`. ZERO engine/web/CLI/domain/pack/provenance/registry/activation
+  diff; runtime required no change (empirically reconfirmed already-correct before pinning). Full suite **2573
+  passed / 3 skipped / 1 xfailed / 0 failed** (base 2569 + 4 new); mutation probes (reorder tolerance;
+  intermediate-token pluralization tolerance; wrong refusal message) all caught with byte-verified restoration.
+  **NMF-1 = DISCHARGED (executed); FU-1 = DISCHARGED (executed)** conditional on this candidate's merge +
+  post-merge verification; Mechanical's own blocker set unchanged (NMF-1/FU-1 are CF-5-lane items). Remaining
+  activation blockers: Tier-1 EN/AR label; CF-6; CF-2; explicit Owner activation authorization. No Tier-1/CF-6/
+  CF-2 work performed; `scripts/run_cli.py` untouched; no D4/D8/THERM-01/Phase 10/PSRR/deployment; no P9 closure.
+  `activated_domains() == ['electronics_electrical']`. Authoritative ONLY if/when this exact candidate is merged +
+  post-merge verified. Next required gate: Mandatory Grill on this exact candidate.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation

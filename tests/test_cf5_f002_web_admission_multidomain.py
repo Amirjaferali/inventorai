@@ -458,3 +458,26 @@ def test_g_u5_ui_language_does_not_alter_admission_or_domains(activate, client):
     assert 'value="medical_device"' not in body
     resp = _post(client, MECH_IDEA, confirm=MECH)
     assert _admitted_domain(resp) == MECH
+
+
+# --------------------------------------------- FU-1 (test-hardening carry-forward)
+# CF-5 Audit closure record (docs/governance/
+# CF5_RETROSPECTIVE_ADVERSARIAL_ARCHITECTURE_AUDIT_FORMAL_CLOSURE_RECORD.md §6):
+# "FU-1 -- add a defensive test for the (documented-unreachable) empty-
+# activation-set refusal branch (test-hardening follow-up; CF-5 lane)." The
+# branch is `web/app.py::start`'s `if not activated:` defensive fail-closed
+# boundary (comment there: "Unreachable under any governed activation state" --
+# every governed activation state carries at least electronics). This test
+# exercises it via the SAME bounded, self-restoring activation double used
+# throughout this file (`activate()` with zero domains), NOT a new mechanism.
+# Runtime behavior UNCHANGED by this file; no web/app.py edit.
+def test_fu1_empty_activation_set_refuses_closed(activate, client):
+    activate()   # zero activated domains -- the documented-unreachable state
+    assert domain_activation.activated_domains() == []
+    before = set(SESSION_STORE)
+    resp = _post(client, MECH_IDEA)
+    assert resp.status_code == 200                 # controlled refusal, no 500
+    assert set(SESSION_STORE) == before             # no session created
+    body = resp.get_data(as_text=True)
+    assert "no specialist domain available" in body
+    assert "electronics and electrical ideas only" not in body   # not the truthful-electronics copy

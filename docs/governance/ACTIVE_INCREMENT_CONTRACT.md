@@ -41,7 +41,36 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — P9-MECH-SF FORMAL CLOSURE CANDIDATE — OD-M2 clause-3 activation blocker = DISCHARGED
+**Status (current — CF-5 NMF-1/FU-1 BOUNDED TEST-HARDENING EXECUTION CANDIDATE — both DISCHARGED conditional on
+merge; Mechanical NOT ACTIVATED; ODR UNCHANGED):** the P9-MECH-SF formal closure is **MERGED and post-merge
+verified** (PR #485 → authoritative base `91f4e5c6ad69964d01328e1502ab04d1d76aa0c0`, parents `1a23552b` +
+accepted closure candidate `c25c8438`, merge tree `36e2c030` == candidate tree) — OD-M2 clause 3 is DISCHARGED;
+Mechanical remains `P9-QS QUALIFIED — WITH ACTIVATION BLOCKERS; NOT ACTIVATED` with four non-Owner blockers
+remaining (Tier-1 EN/AR label; CF-6; CF-2; NMF-1/FU-1 disposition). This gate reconstructs their dependency graph
+(all mutually independent; label correctly LAST — P9-MECH-QC §13 truthful only at activation-readiness; CF-6/CF-2
+each broad not-yet-scoped lanes with separate owners, sharing one CLI-literal facet dischargeable together per
+the F002 precedent but needing their own future scoping contract; **NMF-1/FU-1 = the smallest, already-fully-
+specified, lowest-risk item — no further scoping needed**) and DELIVERS the "bounded standalone test-only
+hardening gate" the CF-5 Audit closure record named as their earliest gate (canonical record:
+`docs/governance/CF5_NMF1_FU1_TEST_HARDENING_DISPOSITION_RECORD.md`). Delivered: NMF-1 — 3 new pinned tests in
+`tests/test_cf5_f003_classifier_matching_semantics.py` (reorder rejection; intermediate-token-pluralization
+rejection; the permitted final-token contrast); FU-1 — 1 new pinned test in `tests/
+test_cf5_f002_web_admission_multidomain.py` (empty-activation-set fail-closed boundary via the file's existing
+`activate()` double). **ZERO engine/web/CLI/domain/pack/provenance/registry/activation/schema/persistence diff**
+— runtime required no change. Evidence: focused 112 (108 + 4 new); full suite **2573 passed / 3 skipped / 1
+xfailed / 0 failed** (base 2569 + 4, zero regressions); mutation probes (reorder tolerance; intermediate-token
+pluralization tolerance; wrong refusal message) ALL CAUGHT with byte-verified restoration. **NMF-1 = DISCHARGED
+(executed); FU-1 = DISCHARGED (executed)** — conditional on this candidate's merge + post-merge verification;
+Mechanical's own blocker set unchanged by this gate (NMF-1/FU-1 are CF-5-lane items, not Mechanical-lane items).
+Remaining activation blockers after this gate: Tier-1 EN/AR label; CF-6; CF-2; explicit Owner activation
+authorization. No Tier-1/CF-6/CF-2 work performed; `scripts/run_cli.py` untouched; no D4/D8/THERM-01/Phase
+10/PSRR/deployment; no P9 closure; no activation change. `activated_domains() == ['electronics_electrical']`.
+Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next required gate:
+**Mandatory Grill on this exact candidate** → independent external exact-candidate review → Owner acceptance →
+SHA-preserving publication → PR → pre/post-merge verification.
+
+**Immediately prior (P9-MECH-SF formal closure gate — MERGED via PR #485 `91f4e5c6`; retained as history):**
+**Status (prior — P9-MECH-SF FORMAL CLOSURE CANDIDATE — OD-M2 clause-3 activation blocker = DISCHARGED
 conditional on this candidate's own merge; Mechanical NOT ACTIVATED; ODR UNCHANGED):** the P9-MECH-SF
 implementation is **MERGED and post-merge verified** (PR #484 → authoritative base
 `1a23552b75d68fac3741876651669e6192180b50`, parents `d1b79ef4` + accepted implementation candidate `2269d2d4`,
