@@ -344,10 +344,71 @@
     "traversal_hints": null,
     "multi_domain_signals": null
   },
+  "capability_declaration": {
+    "supported_analysis_categories": [
+      "concept_level_mechanism_completeness",
+      "concept_level_physical_feasibility_reasoning",
+      "concept_level_boundary_differentiation",
+      "governed_gap_type_question_service"
+    ],
+    "unsupported_categories": [
+      "Safety: inventor-stated safety-signal derivation is NOT COVERED pending a governed Mechanical safety-cue family (OD-M2 / D-P9-MECH-02); no safety determination of any kind is made",
+      "Stress or FEA (finite-element) analysis and fatigue analysis",
+      "Tolerance/GD&T verification and tolerance stack analysis",
+      "Materials-selection engineering and material certification",
+      "Manufacturing process validation and manufacturability assessment",
+      "CAD verification and dimensional or physical-fit verification",
+      "Regulatory approval, machinery-safety certification, and compliance determinations",
+      "Production cost and supply chain validation",
+      "Physical testing of any kind, including thermal behavior and thermal simulation"
+    ],
+    "supported_gap_types": [
+      "MECHANISM_COMPLETENESS",
+      "PHYSICAL_FEASIBILITY",
+      "BOUNDARY_AMBIGUITY"
+    ],
+    "evidence_expectations": [
+      "Inventor-stated descriptions of the mechanism, its parts, and its operating principle in the inventor's own words",
+      "Evidence is distinguished from assumption by the existing record and decision owners; provenance is preserved verbatim",
+      "Open points are served as questions from the pack's governed gap types; unanswered points remain recorded gaps, never inferred answers"
+    ],
+    "known_unknowns": [
+      "Whether the described mechanism performs as intended cannot be established in software; it remains a known unknown requiring later physical or specialist validation through the separately governed validation workstream",
+      "Real-world loads, wear, environmental conditions, and failure behavior are outside what this pack can observe and remain unknowns unless the inventor supplies evidence"
+    ],
+    "provenance_ref": "mechanical:PR002"
+  },
+  "coverage_declaration": {
+    "covered_areas": [
+      "Concept-level explanation of the mechanical mechanism: what moves, connects, or transfers force",
+      "Concept-level physical-feasibility reasoning against the inventor's stated principles (e.g. leverage, spring tension, gear ratio, friction)",
+      "Concept-level boundary and differentiation reasoning versus existing mechanical approaches",
+      "Mechanical mechanism completeness as a reasoning quality assessment",
+      "Gap detection for the pack's governed gap types (MECHANISM_COMPLETENESS, PHYSICAL_FEASIBILITY, BOUNDARY_AMBIGUITY)"
+    ],
+    "not_covered_areas": [
+      "Safety: inventor-stated safety-signal derivation is NOT COVERED pending a governed Mechanical safety-cue family (OD-M2 / D-P9-MECH-02); its absence is an activation blocker for this pack, and no safety determination of any kind is made",
+      "Stress or FEA (finite-element) analysis and fatigue analysis",
+      "Tolerance/GD&T verification and tolerance stack analysis",
+      "Materials-selection engineering and material certification",
+      "Manufacturing process validation and manufacturability assessment",
+      "CAD verification and dimensional or physical-fit verification",
+      "Regulatory approval, machinery-safety certification, and compliance determinations",
+      "Production cost and supply chain validation",
+      "Physical testing of any kind, including thermal behavior and thermal simulation"
+    ],
+    "known_limitations": [
+      "Early-concept stage only — not suitable for detailed engineering or production-ready designs",
+      "Parent-level mechanical breadth without sub-domain depth; specialist-level engineering review is out of scope",
+      "Questions are calibrated for concept validation, not specialist engineering review",
+      "What cannot be established in software remains an explicit unknown requiring later physical or specialist validation; richer declared metadata does not increase runtime capability"
+    ]
+  },
   "_governance_notes": {
     "rule_nuances_absent": "AB-006-A Step 1b (corrected): rule_nuances populated with MECHANISM_COMPLETENESS, PHYSICAL_FEASIBILITY, and BOUNDARY_AMBIGUITY, migrated from hardcoded get_active_rules() mechanical branch in domain_rules.py. BOUNDARY_AMBIGUITY was omitted in original Step 1b commit 5eb514c — corrected here. No invented fields added.",
     "cross_domain_signals": "valve, pressure, compression, actuator documented as legitimate cross-domain concepts. Context ownership declared per signal. Not deleted. AB-006 candidates.",
     "ab006_candidates": "mechanism, force, bar, bracket, fastener, locking retained for behavioral equivalence. Flagged for AB-006 Domain Signal Quality Review.",
-    "questions_source": "MECHANICAL_QUESTIONS confirmed in domain_rules.py. All questions migrated verbatim."
+    "questions_source": "MECHANICAL_QUESTIONS confirmed in domain_rules.py. All questions migrated verbatim.",
+    "p9_mech_i1_declarations": "P9-MECH-I1 (P9_MECH_I1_TRUTHFUL_CAPABILITY_COVERAGE_DECLARATION_CONTRACT.md): capability_declaration and coverage_declaration added as additive, declaration-only metadata under provenance record mechanical:PR002. Runtime behavior unchanged: these fields are not classifier inputs; dormant per-signal weight/layer metadata remains dormant and is not implied runtime-active; mechanical remains NOT QUALIFIED and NOT ACTIVATED after I1 alone (OD-M2 clause 2: no unannotated QUALIFIED claim)."
   }
 }
