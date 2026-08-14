@@ -1642,6 +1642,29 @@ AUTHORIZED / NOT STARTED.***
   ['electronics_electrical']`; first new-domain activation remains BLOCKED (for `mechanical` incl. OD-M2 clause 3).
   Authoritative ONLY if/when this exact candidate is merged + post-merge verified. Next required gate: Mandatory
   Grill on this exact candidate.
+  **P9-MECH-I1 contract MERGED (merge `89985218`) and its IMPLEMENTATION MERGED and post-merge verified (merge
+  `f7ed74484234ae1e85f3db35ebfac7ebeb847288`, merge tree == candidate tree `1f9b9579`; suite 2460/3/1/0): the truthful
+  Mechanical capability/coverage declaration (incl. the OD-M2 clause-1 statement that inventor-stated safety-signal
+  derivation is NOT COVERED pending a governed Mechanical safety-cue family) is AUTHORITATIVE; runtime behavior
+  byte-unchanged; Mechanical remains NOT QUALIFIED / NOT ACTIVATED. D-THERM-01 CANDIDATE recorded (CORRECTED —
+  supersedes the independently REJECTED `247cb6b9`, preserved as immutable rejected evidence; sole defect was a
+  register `## 6.` heading capturing the six historical CAP-12/CAP-13/CAP-14 section-6 cross-references):**
+  Owner-directed anti-forgetting registration — bounded R7 amendment (register section **`THERM-01`**, deliberately
+  non-numeric and globally unique; the six historical references stay byte-identical and un-re-bound) to
+  `INVENTORAI_CAPABILITY_ENRICHMENT_REGISTER.md` preserving a governed future path for thermal capability (no new CAP
+  entry; CAP-01…CAP-18 unchanged). Four-way distinction never conflated: thermal advisory = CAP-13 (consumer only);
+  thermal ANALYSIS = future producer riding the P9-QS §13 deterministic-calculation adapter lineage + §12 units
+  integrity; thermal SIMULATION = still §1A-excluded by default — §1A's pre-existing GENERIC revisit permission
+  (evidence + contract + owner authorization) is exercisable for thermal ONLY through the explicit mandatory thermal
+  feasibility/contract gate with Owner authorization; physical validation = WS-PFV-001. Consumers referenced, nothing
+  absorbed (CAP-12; CAP-13; D4 as eventual system-level cross-domain coordinator — NOT AUTHORIZED; ADR-002
+  `THERMAL_MANAGEMENT` = future gap-taxonomy concept only, not an analysis owner). Binding truthfulness: no governed
+  thermal simulation/analysis/prediction exists today; P9-MECH-I1 NOT-COVERED unchanged; registration creates no
+  capability, qualifies nothing, activates nothing; no certified-truth thermal claims; no CFD/FEA/solver implied;
+  mandatory feasibility-gate checklist before ANY implementation; no architecture pre-authorized. Boundaries unchanged
+  (CF-6 / CF-2 / D-GMPR coupling OPEN; NMF-1/FU-1; D4/D8/Phase 10/PSRR/deployment); `activated_domains() ==
+  ['electronics_electrical']`; first new-domain activation remains BLOCKED. Authoritative ONLY if/when this exact
+  candidate is merged + post-merge verified. Next required gate: Mandatory Grill on this exact candidate.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation

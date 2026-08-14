@@ -798,3 +798,88 @@ verified; Workstreams 13/14/15 remain NOT STARTED; the AI Coach (WS17) remains B
 electronics/electrical-only. The Phase A branch remains fixed at `57e2fac8`; PR #167 and PR #162 remain
 untouched. Every implementation of any capability requires separate explicit owner authorization and the
 full gated chain in R6.
+
+## THERM-01 — Future Thermal Analysis / Thermal Simulation Capability (governed future path; Owner-approved amendment; NON-ACTIVATING)
+
+**Amendment authority and status.** Owner-directed anti-forgetting registration (ODR **`D-THERM-01`**; this is the
+explicit owner approval R7 requires for a register amendment). **NON-ACTIVATING and NON-AUTHORIZING** — recording this
+section implements nothing, authorizes nothing, and is subordinate exactly as the register header states. It adds **no
+new CAP entry** (the CAP-01…CAP-18 range and count are unchanged; D-GMPR-01-D-D6 preserved), creates **no new
+workstream, framework, or owner**, and deliberately carries a **non-numeric designation (`THERM-01`)** so that no
+pre-existing numeric cross-reference in this register (including the six historical section-6 feasibility-gate
+cross-references in the CAP-12 / CAP-13 / CAP-14 entries and matrix rows, which are left byte-untouched and are NOT
+re-bound, repaired, or reinterpreted here) can resolve to this section.
+
+**Purpose (anti-forgetting).** The authoritative Mechanical P9-MECH-I1 declaration truthfully lists thermal behavior
+and thermal simulation as NOT COVERED, and the §1A legacy exclusions intentionally exclude multi-physics/
+thermal-structural simulation engines. Those statements are correct for current runtime capability and remain
+unchanged. This section exists so that the truthful exclusion does NOT become an accidental permanent omission: it
+preserves one governed future path for thermal capability, with existing owners kept authoritative for their parts.
+
+**Four-way distinction (binding; these MUST NOT be conflated).**
+1. **Thermal consideration / advisory** — temperature and heat as advisory inputs, constraints, and assumptions;
+   warnings when thermal information is missing. **Existing owner: CAP-13** (heat among its recorded assumption
+   inputs; the *Heat and pressure* mandatory warning category; `UNABLE TO RECOMMEND` on insufficient temperature/
+   environment inputs), within CAP-12's evidence boundaries. Already covered; unchanged here; CAP-13 owns advisory
+   consumption WITHOUT thereby owning any solver.
+2. **Thermal analysis** — governed calculation or estimation of thermal behavior (heat-source/heat-generation
+   reasoning; heat-transfer reasoning; temperature-rise and thermal-margin estimation). A **producer** capability that
+   NO existing record explicitly owns. It is preserved HERE as a future feasibility subject which, if ever pursued,
+   rides the EXISTING future deterministic-calculation adapter gate lineage (P9-QS §13, reference-only, deliberately
+   unnumbered) together with Units & Dimensional Integrity (P9-QS §12) — no second calculation framework is created,
+   and §1A exclusion 2's rule stands: only a narrowly bounded deterministic calculation is even eligible, and only
+   under separate evidence, contract, and owner authorization.
+3. **Thermal simulation** — numerical thermal modeling (CFD, conjugate heat transfer, spatial temperature
+   distribution, transient simulation). This REMAINS inside §1A legacy exclusions 1–2 as an intentional risk control —
+   **excluded by default**. §1A already carried a GENERIC revisit permission for its exclusions (revisitable only
+   under separate evidence, contract, and owner authorization); what this section adds is the **explicit
+   thermal-specific preservation and feasibility path** — the mandatory thermal feasibility/contract gate below —
+   through which (and only through which, with explicit Owner authorization) that generic permission may ever be
+   exercised for thermal simulation. Thermal simulation is preserved as a feasibility question DISTINCT from thermal
+   analysis and is never implied by it.
+4. **Physical validation** — measurements, sensors, thermal testing, prototype validation. **Existing owner:
+   WS-PFV-001**, unchanged. Relationship: future thermal analysis/simulation (if ever implemented) would produce
+   governed SOFTWARE evidence; WS-PFV-001 may validate that evidence PHYSICALLY; the two responsibilities are never
+   merged.
+
+**Consumers (dependency references only; nothing absorbed).** **CAP-13** = advisory/specification consumer of thermal
+evidence (never a solver). **CAP-12** = consumer of thermal evidence for material selection, manufacturing
+recommendation, and prototype feasibility (its non-goals — no thermal-suitability claim without required evidence —
+unchanged). **D4** (`D-GMPR-01-D-D4` + Amendment 01) = the eventual SYSTEM-LEVEL cross-domain consumer/coordinator
+where thermal behavior becomes a cross-domain compatibility concern (electronics heat vs enclosure; component heat vs
+material; cooling vs mechanical packaging; thermal expansion vs fit/tolerance; battery/power vs heat) — referenced
+only; D4 remains REGISTERED / NOT AUTHORIZED and is not invoked here. **Completeness note:** ADR-002's
+`THERMAL_MANAGEMENT` entry is a future gap-taxonomy CONCEPT for a hypothetical child domain (a question/gap-type idea,
+not an analysis capability); it is NOT a thermal-analysis owner and is unchanged by this section.
+
+**Preserved future boundary.** Subject to the feasibility gate below and separate authorization, a future governed
+thermal capability MAY include (future feasibility subjects — promised to be CONSIDERED, never promised to be
+implemented): heat-source/heat-generation reasoning; steady-state thermal estimation; transient thermal behavior where
+feasible; temperature rise; thermal margin; heat-transfer paths; conduction; convection; radiation when relevant;
+cooling requirements; interface thermal resistance where supportable; ambient/environment effects; thermal constraints
+on materials/components; interaction with Mechanical / Electronics / materials / enclosure decisions; explicit Known
+Unknowns; confidence/evidence boundaries; and mandatory specialist or physical validation where software inference is
+insufficient.
+
+**Present-capability truthfulness (binding).** Current InventorAI does NOT perform governed thermal simulation, thermal
+analysis, or temperature/heat prediction. The Mechanical P9-MECH-I1 NOT-COVERED status remains truthful and unchanged.
+Registration here creates NO runtime capability, does NOT qualify Mechanical, does NOT activate Mechanical, and changes
+no declaration. No calculated thermal result may ever be presented as certified engineering truth without the required
+future evidence and validation; no CFD / FEA / solver capability is implied unless separately implemented and validated
+under the gate below.
+
+**Mandatory future thermal feasibility/contract gate (required before ANY thermal implementation).** A separate,
+Owner-authorized gate MUST determine at minimum: whether the capability should be rule-based, equation-based,
+numerical-solver-based, external-tool-assisted, or hybrid; supported thermal problem classes; required physical inputs;
+units and dimensional consistency (P9-QS §12); material-property sources (governed source/licensing review — the same
+boundary class as CAP-12/CAP-13); boundary conditions; heat-transfer coefficients; geometry requirements; uncertainty
+treatment; validation datasets; acceptable error bounds; specialist-review requirements; regulatory/safety
+implications; whether CFD/FEA-style computation is justified at all (the §1A exclusion revisit decision); compute/
+performance cost; security implications of any external solver/tool; and failure / `UNABLE TO DETERMINE` behavior.
+**No implementation architecture is pre-authorized.**
+
+**Non-authorization (restated for this section).** Registration is not implementation authorization (R5); every future
+implementation requires the full R6 gated chain. This section does not alter Mechanical P9-QS status, qualification, or
+activation; does not touch `_ACTIVATED_DOMAINS`, runtime, domain packs, classifier, registry, questions, or the safety
+family; does not close CF-6, CF-2, or the D-GMPR coupling; does not authorize D4; does not alter D8; and does not
+authorize Phase 10, PSRR, or deployment.
