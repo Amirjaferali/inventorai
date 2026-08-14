@@ -1702,6 +1702,25 @@ AUTHORIZED / NOT STARTED.***
   activated; boundaries unchanged; `activated_domains() == ['electronics_electrical']`; first new-domain activation
   remains BLOCKED. Authoritative ONLY if/when this exact candidate is merged + post-merge verified. Next required
   gate: Mandatory Grill on this exact candidate.
+  **P9-MECH-I3 contract MERGED (merge `b99dd2f6`) and its IMPLEMENTATION MERGED and post-merge verified (merge
+  `b0be35bb8771aea6ed7edbebcf13b5d106227dbc`, merge tree == candidate tree `551a03e1`; suite 2495/3/1/0): the
+  evidence-based signal-quality dispositions are AUTHORITATIVE (`mechanism` removed from classification; `locking` →
+  multi-word `locking mechanism` under PR004; `force`/`bar` removed from substance; retentions evidence-recorded;
+  bounded categorized differential, zero unexplained; engine byte-frozen; OD2 precedence rule untouched).
+  P9-MECH-I4 increment CONTRACT CANDIDATE recorded** (canonical record:
+  `P9_MECH_I4_TERMINAL_BOUNDARY_CORPUS_CONTRACT.md`; `OWNER_DECISION_REGISTER.md` UNCHANGED): the unique remaining
+  UNBLOCKED qualification-lane obligation — the TERMINAL §9 cross-domain boundary corpus, buildable now that I3 froze
+  the signal inventory. Scope: ONE new deterministic focused test file, EVIDENCE ONLY, zero runtime change; corpus
+  validity bound to the exact I3 inventory; classes incl. positive journeys, per-sibling hard cases, EXPLICIT
+  score-parity-proven tie cases, mixed-domain (classification only — no D4), NONE/unknown/ambiguity, adversarial
+  synonyms with honest recall labels, the corrected EIGHT-text legacy corpus verbatim, and sibling/engine/activation
+  invariance anchors; integrity via truthful-label justifications + mutation probes m1–m6; expected prior-freeze
+  reconciliation = NONE (conflict → STOP). Deferred: §12 questions (blocked-side, open D-GMPR); §15/§16 terminal
+  package/closure; safety family + label (pre-activation per OD-M2); dormant-weight cross-pack residual (shared-core
+  owner). Implementation NOT authorized by the contract. Mechanical NOT qualified / NOT activated; boundaries
+  unchanged; `activated_domains() == ['electronics_electrical']`; first new-domain activation remains BLOCKED.
+  Authoritative ONLY if/when this exact candidate is merged + post-merge verified. Next required gate: Mandatory
+  Grill on this exact candidate.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation

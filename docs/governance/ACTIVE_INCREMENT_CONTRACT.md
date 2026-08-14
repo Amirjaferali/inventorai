@@ -41,7 +41,35 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — P9-MECH-I3: SIGNAL-QUALITY / AB-006 EVIDENCE & DISPOSITION INCREMENT CONTRACT CANDIDATE —
+**Status (current — P9-MECH-I4: TERMINAL CROSS-DOMAIN BOUNDARY-EVIDENCE CORPUS (§9) INCREMENT CONTRACT CANDIDATE —
+governance-only; implementation NOT started; Mechanical NOT qualified / NOT activated; ODR UNCHANGED):** the
+P9-MECH-I3 **implementation** is **MERGED and post-merge verified** (merge
+`b0be35bb8771aea6ed7edbebcf13b5d106227dbc`, parents `b99dd2f6` + accepted implementation candidate `32165caf`, merge
+tree `551a03e1` == candidate tree → the evidence-based signal-quality dispositions are AUTHORITATIVE: `mechanism`
+removed from classification; `locking` → multi-word `locking mechanism` (PR004); `force`/`bar` removed from substance;
+all retentions evidence-recorded; suite 2495/3/1/0; bounded categorized differential with zero unexplained deltas;
+engine byte-frozen). This gate records the **P9-MECH-I4 increment CONTRACT candidate** (canonical record:
+`docs/governance/P9_MECH_I4_TERMINAL_BOUNDARY_CORPUS_CONTRACT.md`): the unique remaining UNBLOCKED qualification-lane
+obligation — the TERMINAL §9 boundary corpus, now buildable because I3 froze the signal inventory (the I3 contract's
+own deferral condition). Scope: ONE new deterministic focused test file, EVIDENCE ONLY, zero runtime change; corpus
+validity bound to the exact I3 inventory; required classes incl. positive journeys, per-sibling hard cases, EXPLICIT
+ties proven by score-parity construction, mixed-domain (classification only, no D4), NONE/unknown/ambiguity,
+adversarial synonyms with honest recall labels, the corrected EIGHT-text legacy corpus verbatim, and sibling/engine/
+activation invariance anchors; no parent-RED (evidence-only) — integrity via truthful-label justification rules and
+mutation probes m1–m6; expected prior-freeze reconciliation = NONE (any existing-test conflict → STOP). Deferred, NOT
+absorbed: §12 question sufficiency (blocked-side, open D-GMPR); §15/§16 terminal package/closure; §11 safety family +
+§13 label (PRE-ACTIVATION per OD-M2); dormant-weight cross-pack residual (shared-core owner); THERM-01 future-only.
+**The implementation is NOT authorized by this contract.** Mechanical NOT qualified / NOT activated; classifier
+semantics and tie policy untouched; CF-6 / CF-2 / D-GMPR / D4 / D8 / Phase 10 / PSRR / deployment unchanged.
+Governance-only: ZERO runtime/test/pack/registry/Web/CLI diff; `OWNER_DECISION_REGISTER.md` UNCHANGED.
+`activated_domains() == ['electronics_electrical']`; first new-domain activation remains BLOCKED. Authoritative ONLY
+if/when this exact candidate is merged and post-merge verified. Next required gate: **Mandatory Grill on this exact
+candidate** → independent external exact-candidate review → Owner acceptance → SHA-preserving publication → PR →
+pre/post-merge verification.
+
+**Immediately prior (P9-MECH-I3 contract gate — contract MERGED via `b99dd2f6`; implementation MERGED via
+`b0be35bb`; retained as history):**
+**Status (prior — P9-MECH-I3: SIGNAL-QUALITY / AB-006 EVIDENCE & DISPOSITION INCREMENT CONTRACT CANDIDATE —
 governance-only; implementation NOT started; Mechanical NOT qualified / NOT activated; ODR UNCHANGED):** the
 P9-MECH-I2 **implementation** is **MERGED and post-merge verified** (merge
 `4037a67d037287c3244129a41ba2b14dba139a0d`, parents `6881db34` + accepted implementation candidate `3d51bb1c`, merge
