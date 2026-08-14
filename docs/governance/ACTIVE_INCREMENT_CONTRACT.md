@@ -41,7 +41,37 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — P9-MECH-I1: OD-M2 RESOLVED + TRUTHFUL CAPABILITY & COVERAGE DECLARATION INCREMENT CONTRACT
+**Status (current — D-THERM-01: FUTURE THERMAL CAPABILITY PRESERVATION CANDIDATE (CORRECTED; supersedes rejected
+`247cb6b9`) — governance-only register amendment; NON-ACTIVATING; Mechanical NOT qualified / NOT activated):** the
+P9-MECH-I1 **implementation** is **MERGED and post-merge verified** (merge
+`f7ed74484234ae1e85f3db35ebfac7ebeb847288`, parents `89985218` + accepted implementation candidate `f595fb60`, merge
+tree `1f9b9579` == candidate tree → the truthful Mechanical capability/coverage declaration incl. the OD-M2 clause-1
+NOT-COVERED safety statement is AUTHORITATIVE; suite 2460/3/1/0; runtime behavior byte-unchanged; Mechanical remains
+NOT QUALIFIED / NOT ACTIVATED). **Correction lineage:** the prior thermal-preservation candidate `247cb6b9` was
+independently **REJECTED** (sole material defect: its `## 6.` register heading silently captured the six historical
+CAP-12/CAP-13/CAP-14 section-6 feasibility-gate cross-references) and is preserved as immutable rejected evidence;
+this fresh candidate from the same parent preserves the reviewed substance under the deliberately NON-NUMERIC register
+designation **`THERM-01`** (globally unique; the six historical references stay byte-identical and un-re-bound). This
+gate records the **Owner-directed anti-forgetting registration `D-THERM-01`** — a bounded R7 amendment (register
+section `THERM-01`) to `INVENTORAI_CAPABILITY_ENRICHMENT_REGISTER.md` preserving a governed FUTURE path for thermal
+capability (**no new CAP entry**; CAP-01…CAP-18 unchanged): four-way distinction never conflated (advisory = CAP-13,
+consumer only; thermal ANALYSIS = future producer riding P9-QS §13 deterministic-calculation lineage + §12 units
+integrity; thermal SIMULATION = still §1A-excluded by default — §1A's pre-existing GENERIC revisit permission
+(evidence + contract + owner authorization) is now exercisable for thermal ONLY through the explicit mandatory thermal
+feasibility/contract gate; physical validation = WS-PFV-001); consumers referenced not absorbed (CAP-12, CAP-13, D4 as
+eventual system-level coordinator — NOT AUTHORIZED; ADR-002 `THERMAL_MANAGEMENT` = gap-taxonomy concept only); future
+MAY-include boundary recorded as feasibility subjects, not promises; binding truthfulness (no governed thermal
+capability exists today; P9-MECH-I1 NOT-COVERED unchanged; registration ≠ capability/qualification/activation; no
+certified-truth thermal claims; no CFD/FEA/solver implied); mandatory feasibility-gate checklist before ANY
+implementation; no architecture pre-authorized. Governance-only: ZERO runtime/test/pack/registry/Web/CLI diff.
+`activated_domains() == ['electronics_electrical']`; first new-domain activation remains BLOCKED. Authoritative ONLY
+if/when this exact candidate is merged and post-merge verified. Next required gate: **Mandatory Grill on this exact
+candidate** → independent external exact-candidate review → Owner acceptance → SHA-preserving publication → PR →
+pre/post-merge verification.
+
+**Immediately prior (P9-MECH-I1 contract gate — contract MERGED via the `89985218` merge; implementation MERGED via
+`f7ed7448`; retained as history):**
+**Status (prior — P9-MECH-I1: OD-M2 RESOLVED + TRUTHFUL CAPABILITY & COVERAGE DECLARATION INCREMENT CONTRACT
 CANDIDATE — governance-only; implementation NOT started; Mechanical NOT qualified / NOT activated):** the P9-MECH-QC
 contract is **MERGED and post-merge verified** (PR #467 → authoritative tip
 `90b1b00f0bd384911735a55340ee15829a77bbad`; merge tree == candidate tree `0147109e` → **P9-MECH-QC AUTHORITATIVE**;

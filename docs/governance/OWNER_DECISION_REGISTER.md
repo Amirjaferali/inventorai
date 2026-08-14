@@ -1018,3 +1018,26 @@ CF-6/CF-2/D-GMPR closure, NO Phase 10 / PSRR / deployment.
 **Boundary.** This entry records the OD-M2 resolution and the increment-contract registration only.
 `activated_domains() == ['electronics_electrical']`; Mechanical NOT qualified, NOT activated; first new-domain
 activation remains BLOCKED (now explicitly including OD-M2 clause 3 for `mechanical`).
+
+---
+
+## THERM — Future Thermal Capability Preservation (Owner-directed register amendment; recorded inside this gate)
+
+Governance/documentation-only registration on base `f7ed74484234ae1e85f3db35ebfac7ebeb847288` (P9-MECH-I1
+implementation merged and post-merge verified; Mechanical NOT qualified / NOT activated). Canonical substance:
+`docs/governance/INVENTORAI_CAPABILITY_ENRICHMENT_REGISTER.md` section **`THERM-01`** (Owner-approved R7 amendment;
+deliberately NON-NUMERIC designation so no pre-existing numeric register cross-reference — including the six
+historical CAP-12/CAP-13/CAP-14 section-6 feasibility-gate references, left byte-untouched — can resolve to it; NO new
+CAP entry — CAP-01…CAP-18 unchanged per D-GMPR-01-D-D6). A prior candidate `247cb6b9b4c311c3f42b78e3030c049d86b70229`
+was independently REJECTED for a section-designation collision (its `§6` heading silently captured those historical
+references) and is preserved as immutable rejected evidence; this candidate is a fresh correction from the same
+authoritative parent with the reviewed substantive content preserved. **Scope guard:** anti-forgetting registration
+only; authorizes NO thermal implementation, NO solver/CFD/FEA work, NO Mechanical qualification/activation, NO
+registry/pack/runtime change, NO CF-6/CF-2/D-GMPR closure, NO D4/D8, NO Phase 10 / PSRR / deployment.
+
+| ID | Subject | Status | Impl. authority | Evidence |
+|---|---|---|---|---|
+| D-THERM-01 | **Future Thermal Analysis / Thermal Simulation Capability — governed future path preserved (anti-forgetting).** The truthful P9-MECH-I1 NOT-COVERED thermal exclusion MUST NOT become an accidental permanent omission. **Four-way distinction preserved (never conflated):** (1) thermal consideration/advisory — existing owner **CAP-13** (heat assumption inputs; Heat-and-pressure warning category; `UNABLE TO RECOMMEND`), consumer only, never a solver; (2) **thermal analysis** (heat-generation/heat-transfer reasoning; temperature-rise/thermal-margin estimation) — producer capability owned by NO existing record, preserved as a future feasibility subject riding the existing P9-QS §13 deterministic-calculation adapter gate lineage + §12 units integrity (no second calculation framework; §1A exclusion 2's narrow-bounded-deterministic rule stands); (3) **thermal simulation** (CFD/conjugate/spatial/transient) — REMAINS inside the §1A legacy exclusions as a risk control, excluded by default; §1A already carried a GENERIC revisit permission (separate evidence + contract + owner authorization), and D-THERM-01 adds the EXPLICIT thermal-specific preservation/feasibility path through which alone that permission may ever be exercised for thermal simulation, preserved as a feasibility question DISTINCT from analysis; (4) physical validation — existing owner **WS-PFV-001** (software-evidence producer vs physical validator never merged). **Consumers referenced, nothing absorbed:** CAP-13 advisory consumer; CAP-12 materials/manufacturing/prototype consumer; **D4** eventual system-level cross-domain consumer/coordinator (referenced only; NOT AUTHORIZED); ADR-002's `THERMAL_MANAGEMENT` noted as a future gap-taxonomy concept only — NOT a thermal-analysis owner. **Truthfulness binding:** current InventorAI performs NO governed thermal simulation/analysis/prediction; registration creates no runtime capability, qualifies nothing, activates nothing; no thermal result may be presented as certified engineering truth without future evidence/validation; no CFD/FEA/solver implied. **Mandatory future thermal feasibility/contract gate** (method class; problem classes; inputs; units; property sources incl. licensing; boundary conditions; coefficients; geometry; uncertainty; validation datasets; error bounds; specialist review; regulatory/safety; CFD-justification; cost; external-tool security; UNABLE-TO-DETERMINE behavior) required before ANY implementation; no architecture pre-authorized. | **ACCEPTED — Owner-directed registration (authoritative if/when this candidate completes the review/acceptance/merge lifecycle)** | NONE | Register THERM-01 section; P9-MECH-I1 declaration; P9-QS §12/§13; CAP-12/CAP-13; WS-PFV-001; D-GMPR-01-D-D4 Amendment 01; ADR-002 |
+
+**Boundary.** `activated_domains() == ['electronics_electrical']`; Mechanical NOT qualified / NOT activated; first
+new-domain activation remains BLOCKED. This entry authorizes no implementation of any kind.

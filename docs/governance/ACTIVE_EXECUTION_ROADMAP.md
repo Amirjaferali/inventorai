@@ -9064,3 +9064,46 @@ NOT AUTHORIZED. `activated_domains() == ['electronics_electrical']`; **first new
 (for `mechanical`, now explicitly incl. OD-M2 clause 3). Append-only; prior history not rewritten. This entry
 authorizes no push, PR, or merge beyond this candidate. **Next required gate: Mandatory Grill on this exact contract
 candidate.**
+
+---
+
+## D-THERM-01 — Future Thermal Capability Preservation — governance-only register-amendment CANDIDATE (CORRECTED; supersedes rejected `247cb6b9`) — NON-ACTIVATING; no thermal implementation; Mechanical NOT qualified / NOT activated
+
+**Gate.** Governance-only anti-forgetting gate on authoritative base `f7ed74484234ae1e85f3db35ebfac7ebeb847288`
+(P9-MECH-I1 implementation merged; merge tree `1f9b9579` == candidate tree; freshly fetched; 0 newer; clean tree).
+**Correction lineage:** a prior candidate `247cb6b9b4c311c3f42b78e3030c049d86b70229` was independently reviewed and
+**REJECTED — MATERIAL CORRECTION REQUIRED** (sole material defect: its new register heading `## 6.` silently captured
+the six pre-existing CAP-12/CAP-13/CAP-14 `(§6)` feasibility-gate cross-references, creating a misleading in-document
+binding); it is preserved as immutable rejected evidence, NOT amended, NOT reused, NOT published. This candidate is a
+FRESH correction from the same authoritative parent: the reviewed substantive content is preserved and the register
+section now carries the deliberately NON-NUMERIC designation **`THERM-01`** (repository precedent: the register's
+lettered/named sections, e.g. `## R.`), proven globally unique, so no pre-existing numeric cross-reference can resolve
+to it; the six historical section-6 references remain byte-identical to the parent and are NOT repaired, re-bound, or
+reinterpreted in this gate (they stay historical dangling references with their existing meaning).
+
+**Repository-first anti-duplication verdict (unchanged from review-accepted substance):** thermal capability =
+**PARTIALLY COVERED** — advisory consumption owned by CAP-13, physical validation by WS-PFV-001, system-level
+cross-domain thermal compatibility an illustrative future D4 subject, the generic calculation seam reserved by P9-QS
+§12/§13, and multi-physics/thermal-structural SIMULATION recorded as a §1A durable exclusion carrying only the GENERIC
+revisit permission (separate evidence + contract + owner authorization); thermal ANALYSIS as a producer capability was
+owned by no record, and no EXPLICIT thermal-specific preservation/feasibility path existed. Smallest correct
+candidate: bounded Owner-approved R7 amendment (register section `THERM-01`; **no new CAP entry**, CAP-01…CAP-18
+unchanged; no new workstream/framework/owner) + ODR row **`D-THERM-01`** + this append + AIC/CPS sync. ADR-002's
+`THERMAL_MANAGEMENT` dispositioned as a future gap-taxonomy concept only (not an analysis owner). ZERO
+runtime/test/pack/registry/Web/CLI diff. **DOCUMENTED NO-VALID-RED.**
+
+**Substance (summary; register THERM-01 section canonical).** Four-way distinction preserved (advisory=CAP-13 /
+analysis=future producer riding P9-QS §13+§12 / simulation=still §1A-excluded by default, its generic revisit
+permission exercisable for thermal ONLY through the explicit mandatory thermal feasibility gate with Owner
+authorization / physical validation=WS-PFV-001); consumers referenced not absorbed (CAP-13, CAP-12, D4); future
+MAY-include boundary list recorded as feasibility subjects (not promises); binding present-capability truthfulness (no
+governed thermal simulation/analysis today; P9-MECH-I1 NOT-COVERED unchanged; registration ≠ capability/qualification/
+activation; no certified-truth thermal claims; no CFD/FEA implied); mandatory feasibility/contract-gate checklist
+before ANY implementation; no architecture pre-authorized.
+
+**Boundary / status after this entry.** Authorizes NO thermal implementation and no change to any present truth.
+Mechanical NOT qualified / NOT activated; recognized set unchanged; CF-6 OPEN; CF-2 OPEN; D-GMPR coupling OPEN;
+NMF-1/FU-1 unchanged; D4 REGISTERED / NOT AUTHORIZED; D8 Owner-reserved; Phase 10 NOT AUTHORIZED; PSRR NOT EXECUTED;
+deployment NOT AUTHORIZED. `activated_domains() == ['electronics_electrical']`; first new-domain activation remains
+BLOCKED. Append-only; prior history not rewritten. Authoritative ONLY if/when this exact candidate is merged and
+post-merge verified. **Next required gate: Mandatory Grill on this exact candidate.**
