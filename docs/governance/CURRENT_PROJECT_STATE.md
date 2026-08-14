@@ -1721,6 +1721,25 @@ AUTHORIZED / NOT STARTED.***
   unchanged; `activated_domains() == ['electronics_electrical']`; first new-domain activation remains BLOCKED.
   Authoritative ONLY if/when this exact candidate is merged + post-merge verified. Next required gate: Mandatory
   Grill on this exact candidate.
+  **P9-MECH-I4 contract MERGED (merge `64145819`) and its IMPLEMENTATION MERGED and post-merge verified (merge
+  `c7c9e413ac142a919b68868280cdddc5af8dce39`, merge tree == candidate tree `8f321993`; suite 2515/3/1/0; zero
+  runtime change): the TERMINAL §9 boundary corpus is AUTHORITATIVE (score-parity-proven ties incl. a three-way;
+  corrected eight-text legacy corpus verbatim; inventory-anchored terminality). P9-MECH-I5 increment CONTRACT
+  CANDIDATE recorded** (canonical record: `P9_MECH_I5_QUESTION_SUFFICIENCY_EVIDENCE_CONTRACT.md`;
+  `OWNER_DECISION_REGISTER.md` UNCHANGED). Decisive verified basis: the D-GMPR blocker is REAL
+  (`path_n_questions.py` still returns None for non-electronics; remediation = the OPEN D-GMPR-01-D-D3 gate,
+  itself mandatory pre-activation), BUT the canonical pack-question path (`get_domain_question`, runtime-consumed
+  by `progression_loop`) is domain-generic and serves mechanical today — **§12 splits: §12(a) pack-content
+  sufficiency EXECUTABLE NOW; §12(b) non-specialist Path-N service D-GMPR-BLOCKED, disposition-only (owner named;
+  nothing performed)**. I5 = ONE new evidence-only test file (coverage/progression/calibration/wording/provenance/
+  fail-safe pins; the seam pinned AS the recorded blocker; engine hashes incl. path_n_questions; five pack hashes;
+  determinism; mutations m1–m6) + the formal §12(b) disposition in closure governance surfaces; NO pack bytes
+  touched (I4 corpus validity anchor preserved); any evidence-forced content change = separate future gate. After
+  I5 closure the qualification lane reduces to the TERMINAL §15/§16 package/closure (conditional on OD-M2 clauses
+  and the §12(b) disposition). Implementation NOT authorized by the contract. Mechanical NOT qualified / NOT
+  activated; boundaries unchanged; `activated_domains() == ['electronics_electrical']`; first new-domain
+  activation remains BLOCKED. Authoritative ONLY if/when this exact candidate is merged + post-merge verified.
+  Next required gate: Mandatory Grill on this exact candidate.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
