@@ -1,0 +1,57 @@
+{
+  "metadata": {
+    "domain": "mechanical",
+    "source": "domains/mechanical/domain.json — verbatim from gap_type_mappings (question_id/text/order copied 1:1; no content authorship)",
+    "provenance_ref": "mechanical:PR001",
+    "contract": "DGMPR_D3_PATH_N_DOMAIN_NEUTRAL_SERVICE_CONTRACT.md",
+    "generated_by_gate": "D-GMPR-D3-PN implementation"
+  },
+  "gaps": {
+    "MECHANISM_COMPLETENESS": [
+      {
+        "question_id": "mechanical:MECHANISM_COMPLETENESS:Q1",
+        "text": "Describe the physical steps your mechanism takes to achieve its function."
+      },
+      {
+        "question_id": "mechanical:MECHANISM_COMPLETENESS:Q2",
+        "text": "What moves, connects, or transfers force?"
+      },
+      {
+        "question_id": "mechanical:MECHANISM_COMPLETENESS:Q3",
+        "text": "What are the individual mechanical components and how does each one contribute to the overall motion or function?"
+      },
+      {
+        "question_id": "mechanical:MECHANISM_COMPLETENESS:Q4",
+        "text": "If someone tried to build your mechanism tomorrow with no further explanation, what physical detail would be missing?"
+      }
+    ],
+    "PHYSICAL_FEASIBILITY": [
+      {
+        "question_id": "mechanical:PHYSICAL_FEASIBILITY:Q1",
+        "text": "What physical principle does your mechanism rely on? (e.g. leverage, spring tension, gear ratio, friction)"
+      },
+      {
+        "question_id": "mechanical:PHYSICAL_FEASIBILITY:Q2",
+        "text": "What are the material or force constraints your mechanism must operate within?"
+      }
+    ],
+    "BOUNDARY_AMBIGUITY": [
+      {
+        "question_id": "mechanical:BOUNDARY_AMBIGUITY:Q1",
+        "text": "What does your mechanism specifically NOT do or NOT cover?"
+      },
+      {
+        "question_id": "mechanical:BOUNDARY_AMBIGUITY:Q2",
+        "text": "State at least one clear mechanical boundary."
+      },
+      {
+        "question_id": "mechanical:BOUNDARY_AMBIGUITY:Q3",
+        "text": "Name one existing mechanical approach similar to yours."
+      },
+      {
+        "question_id": "mechanical:BOUNDARY_AMBIGUITY:Q4",
+        "text": "What makes yours different in a concrete, physical way?"
+      }
+    ]
+  }
+}

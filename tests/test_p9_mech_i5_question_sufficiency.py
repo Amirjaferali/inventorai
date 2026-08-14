@@ -8,13 +8,14 @@ through the CANONICAL generic question path (``engine.domain_rules.
 get_domain_question``, runtime-consumed by ``engine/progression_loop.py``).
 No second question service, no Path-N wrapper, no seam repair.
 
-§12(b) STATUS (binding evidence, not permission): the non-specialist Path-N
-service for Mechanical remains BLOCKED by the OPEN ``D-GMPR-01-D-D3`` coupling —
-``engine/path_n_questions.py`` serves the Electronics-OWNED committed artifact
-only and returns ``None`` for a mechanical domain identity. The pin below
-asserts that blocker AS a blocker so its future remediation (at the D-GMPR
-gate, its own owner) surfaces visibly. Activation-grade §12 completion remains
-conditional on that gate.
+§12(b) STATUS (reconciled under D-GMPR-D3-PN — DGMPR_D3_PATH_N_DOMAIN_NEUTRAL_
+SERVICE_CONTRACT.md §5, reconciliation #1): the original blocker pin here
+asserted that ``engine/path_n_questions.py`` returned ``None`` for a mechanical
+domain identity and was WRITTEN to flip at the D-GMPR gate. That gate's
+implementation made the canonical seam domain-neutral, so the pin below now
+asserts the REMEDIATED behavior (mechanical served its own verbatim committed
+artifact; electronics/None unchanged). §12(b)'s activation-grade completion
+remains recordable only at the D-GMPR lane's own closure.
 
 WORDING-SUFFICIENCY CRITERIA (defined BEFORE evaluation; each is asserted
 mechanically where checkable and recorded as reviewed evidence where semantic):
@@ -54,7 +55,10 @@ _PROV_PATH = os.path.join(_DOMAINS, "domain_provenance.json")
 _FROZEN_ENGINE_SHA256 = {
     "engine/domain_rules.py": "5df2ae26b0a6e78f37bb467d1d8b3d377596f9fcbbc7f869d1ed1ac5b5ab204b",
     "engine/progression_loop.py": "bbb49b49f388dba2f0b906a79bdd656de23b33ec7101bd9d9da9c290ae45c4c5",
-    "engine/path_n_questions.py": "1dcd218af527c8a4433a4e46c858b2114afb239a544cbbebea0da819319b7282",
+    # D-GMPR-D3-PN reconciliation #2 (disclosed; DGMPR_D3_PATH_N_DOMAIN_NEUTRAL_
+    # SERVICE_CONTRACT.md §5): the seam hash is re-frozen at the remediated
+    # domain-neutral seam. domain_rules/progression_loop hashes are UNCHANGED.
+    "engine/path_n_questions.py": "a1a682d38293defd4b351e6238aeb870b4f765eaf3fc0f105c4932f75286ce7f",
 }
 _FROZEN_PACK_SHA256 = {
     # mechanical: the I4 terminal-corpus validity anchor — MUST stay byte-frozen here.
@@ -116,7 +120,7 @@ def test_evidence_class_inventory_complete():
     expected_tests = [
         "test_content_keyed_cross_domain_leakage_protection",
         "test_deterministic_repeated_service",
-        "test_dgmpr_seam_blocker_still_present",
+        "test_dgmpr_seam_remediated_mechanical_served",
         "test_engine_files_byte_frozen",
         "test_evidence_class_inventory_complete",
         "test_exact_ordered_progression_and_clamping",
@@ -262,14 +266,20 @@ def test_content_keyed_cross_domain_leakage_protection():
 # ---------------------------------------------------------------- §12(b) D-GMPR blocker pin
 
 
-def test_dgmpr_seam_blocker_still_present():
-    # BLOCKER EVIDENCE, not permission: the Electronics-OWNED Path-N artifact
-    # serves electronics/None only; a mechanical identity receives None. When
-    # the future D-GMPR gate remediates the seam, THIS pin fails visibly and
-    # must be reconciled under that gate's own contract.
+def test_dgmpr_seam_remediated_mechanical_served():
+    # D-GMPR-D3-PN reconciliation #1 (disclosed; DGMPR_D3_PATH_N_DOMAIN_NEUTRAL_
+    # SERVICE_CONTRACT.md §5): the former blocker pin (mechanical → None) was
+    # WRITTEN to flip at the D-GMPR gate and is replaced by the remediated-
+    # behavior pin — mechanical is now served its OWN verbatim committed artifact
+    # through the canonical seam, while electronics and the None default remain
+    # served unchanged. §12(b)'s activation-grade completion is recordable only
+    # at that lane's closure, not here.
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        assert get_served_question("MECHANISM_COMPLETENESS", 0, domain="mechanical") is None
+        served = get_served_question("MECHANISM_COMPLETENESS", 0, domain="mechanical")
+        assert served is not None
+        assert served.question_id == "mechanical:MECHANISM_COMPLETENESS:Q1"
+        assert served.text == _EXPECTED_QUESTIONS["MECHANISM_COMPLETENESS"][0]
         assert get_served_question("MECHANISM_COMPLETENESS", 0, domain=None) is not None
         assert (
             get_served_question("MECHANISM_COMPLETENESS", 0, domain="electronics_electrical")
