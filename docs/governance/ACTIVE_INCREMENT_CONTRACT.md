@@ -41,7 +41,40 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — P9-MECH-I2: QUALIFICATION-GRADE RULE NUANCES INCREMENT CONTRACT CANDIDATE — governance-only;
+**Status (current — P9-MECH-I3: SIGNAL-QUALITY / AB-006 EVIDENCE & DISPOSITION INCREMENT CONTRACT CANDIDATE —
+governance-only; implementation NOT started; Mechanical NOT qualified / NOT activated; ODR UNCHANGED):** the
+P9-MECH-I2 **implementation** is **MERGED and post-merge verified** (merge
+`4037a67d037287c3244129a41ba2b14dba139a0d`, parents `6881db34` + accepted implementation candidate `3d51bb1c`, merge
+tree `5f2860b3` == candidate tree → the qualification-grade mechanical rule nuances are AUTHORITATIVE; suite
+2477/3/1/0; runtime differential zero; accessor outputs unchanged for every pack). This gate records the **P9-MECH-I3
+increment CONTRACT candidate** (canonical record:
+`docs/governance/P9_MECH_I3_SIGNAL_QUALITY_AB006_DISPOSITION_CONTRACT.md`): the smallest coherent next qualification
+increment = evidence-based disposition of the recorded AB-006 mechanical signal-quality flags (`mechanism`, `force`,
+`bar`, `bracket`, `fastener`, `locking`) + evidence verification of the declared cross-domain context ownerships
+(`valve`, `pressure`, `compression`, `actuator`), driven by a mandatory parent-RED difficult-case corpus proving REAL
+defects (future-keyword assertion tests forbidden), with per-signal outcomes (retain-with-evidence / narrow / replace
+/ remove / add-discriminative / reclassify / no-safe-correction) derived at implementation — nothing pre-decided.
+Verified basis: `classify_domain` consumes ONLY `classification_signals[].signal` (cardinality scoring; F003/F004/
+D3-D untouched and byte-hash-pinned); `substance_signals` separately consumed by `assess_response` (latent for
+mechanical); dormant `weight` is cross-pack shared-schema metadata — its Mechanical §8.4 truthfulness share is
+already discharged by the merged I1 annotation and its cross-pack residual belongs to a separate shared-core gate
+(NOT absorbed; A-vs-B-vs-C decided: two separate responsibilities). Expected runtime differential: BOUNDED and
+CATEGORIZED with ZERO unexplained deltas; hard invariants: electronics/software/medical single-domain corpora
+byte-identical; NONE stays NONE; tie architecture + OD2 legacy-precedence rule untouched (contradiction → STOP —
+OWNER DECISION REQUIRED); anti-win-rate rule binding (inventory equality-pinned; no keyword stuffing). Deferred, NOT
+absorbed: terminal §9 boundary corpus (after I3 freezes content); §12 questions (blocked-side, open D-GMPR); §13
+label + §11 safety family (PRE-ACTIVATION per OD-M2); §15/§16 package + closure; dormant-weight cross-pack residual
+(shared owner). **The implementation is NOT authorized by this contract.** Mechanical NOT qualified / NOT activated;
+CF-6 / CF-2 / D-GMPR / THERM-01 / CAP-12 / CAP-13 / WS-PFV-001 / D4 / D8 / Phase 10 / PSRR / deployment unchanged.
+Governance-only: ZERO runtime/test/pack/registry/Web/CLI diff; `OWNER_DECISION_REGISTER.md` UNCHANGED.
+`activated_domains() == ['electronics_electrical']`; first new-domain activation remains BLOCKED. Authoritative ONLY
+if/when this exact candidate is merged and post-merge verified. Next required gate: **Mandatory Grill on this exact
+candidate** → independent external exact-candidate review → Owner acceptance → SHA-preserving publication → PR →
+pre/post-merge verification.
+
+**Immediately prior (P9-MECH-I2 contract gate — contract MERGED via `6881db34`; implementation MERGED via
+`4037a67d`; retained as history):**
+**Status (prior — P9-MECH-I2: QUALIFICATION-GRADE RULE NUANCES INCREMENT CONTRACT CANDIDATE — governance-only;
 implementation NOT started; Mechanical NOT qualified / NOT activated; ODR UNCHANGED):** the corrected D-THERM-01
 candidate is **MERGED and post-merge verified** (merge `a52656d1ce78e67641685d86fa7a946cd92d2ff4`, parents `f7ed7448`
 + accepted corrected candidate `3c2ee0bc`, merge tree `ba3a18dc` == candidate tree → **D-THERM-01 / register section
