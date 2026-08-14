@@ -91,9 +91,17 @@ _APPROVED_NUANCES = [
 ]
 
 # --- Frozen canonical hashes of every OTHER mechanical field (byte-frozen in I2). ---
+# P9-MECH-I3 mechanically-forced adjustment (disclosed): the classification_signals
+# and substance_signals hashes below were re-frozen at the I3-authorized values —
+# the AUTHORITATIVE P9-MECH-I3 contract owns exactly those two lists (evidence-based
+# AB-006 dispositions), so the I2-era freeze of them was an increment-scoped
+# protection that I3 legitimately supersedes. The load-bearing purpose is preserved:
+# every other field stays frozen at its I2 value, and the two adjusted fields are
+# now pinned MORE strongly by tests/test_p9_mech_i3_signal_quality.py's
+# exact-content inventory equality pins.
 _FROZEN_MECH_FIELDS = {
-    "classification_signals": "c9c5a5d739bd88141bab4f81f0b190d96973d0c8b4a2ef7d737217b627f9fb69",
-    "substance_signals": "f8861c18093cb29d566034c9613b176b7149e8b777c18767049a192433523ce3",
+    "classification_signals": "860ce084389c842e3dc2b5771651bb145579cc19a6c53f303f198ea8419c498e",
+    "substance_signals": "c14ae2d504479d191f91a16c960d065400479b4ce6238757fb5ab4cb1b094ac5",
     "gap_type_mappings": "857820ed6be7a25fa9200756b4453487b87144b45fc2fafb9fcd53158ef2e7f2",
     "aliases": "bc7f35e42f32845fad8c2d2e0c5c3ed39a84e54673f351eb581e9d8b38368bd2",
     "capability_declaration": "87f3c677d1699ff5fd1d6ab8d0ab5a7e896f7fa70887f82fd6304b9155f63054",
