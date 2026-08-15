@@ -1973,6 +1973,26 @@ AUTHORIZED / NOT STARTED.***
   ['electronics_electrical']`; **Mechanical remains NOT ACTIVATED**; Tier-1 label untouched. Authoritative ONLY
   if/when this exact candidate is merged + post-merge verified. Next required gate: Mandatory Grill on this exact
   candidate.
+  **CF-6/CF-2 ILT-002 Owner-decision MERGED (PR #490, base `1fe05e098c5ecf53b63088e12e71549635ead70b`; merge tree
+  == candidate tree `bcb012b1`) — `D-CF6CF2-ILT002-01` authoritative. CF-6 FULL-SCOPE FORMAL CLOSURE CANDIDATE
+  recorded** (canonical record: `CF6_FULL_SCOPE_FORMAL_CLOSURE_RECORD.md`; `OWNER_DECISION_REGISTER.md`
+  UNCHANGED). Reconstructed CF-6 scope (adopted from the fullest, earliest authoritative statement,
+  `P9_E2_MULTI_ACTIVATED_DOMAIN_TIE_PRECEDENCE_FORMAL_CLOSURE_RECORD.md` §7): strong-unsupported heuristics ×
+  classifier reachability × activated-domain admission × ambiguity handling × Web/CLI/core consistency × (shared
+  CF-2) public-message truthfulness. **Full-scope adversarial sweep** (independent read-only discovery + personal
+  classification, six-category scheme) covered every domain-literal, every classifier/activation/admission call
+  site, second-registry search, template copy, persistence seams, question-selection branching, session-creation
+  scripts, `infer_domain` references. **Result: ZERO `SHARED-CONSUMER — DEFECT` items** — every match resolved to
+  canonical behavior, a governed exception (the F002-reviewed `web/app.py:1639` branch; ILT-002 routes/tooling),
+  an already-closed separate tracker (`D-GMPR-01-D-D3`; `CF5-F001`; `CF-3`/`CF5-F004`), legitimate domain-specific
+  content, or genuinely out-of-scope material (`DOMAIN_CONFIRM_VALUE`, confirmed zero production readers;
+  `scripts/run_summary_demo.py`, never touches the classifier/activation chain). CLI facet DISCHARGED; ILT-002
+  facet RESOLVED BY OWNER DECISION. **Determination: `CF-6 = FULLY DISCHARGED` for its authoritative
+  reconstructed scope**, conditional on merge + post-merge verification. Full suite **2577 passed / 3 skipped / 1
+  xfailed / 0 failed** (fresh, unchanged; ZERO runtime diff this candidate). **CF-2 remains globally OPEN**
+  (untouched); Tier-1 label untouched; **Mechanical remains NOT ACTIVATED**; `activated_domains() ==
+  ['electronics_electrical']`; Phase 9 remains OPEN. Authoritative ONLY if/when this exact candidate is merged +
+  post-merge verified. Next required gate: Mandatory Grill on this exact candidate.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation

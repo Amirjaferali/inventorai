@@ -41,7 +41,41 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — CF-6/CF-2 ILT-002 FIXED-DOMAIN PROTOCOL — OWNER DECISION RECORDED (`D-CF6CF2-ILT002-01`) —
+**Status (current — CF-6 FULL-SCOPE FORMAL CLOSURE CANDIDATE — `CF-6 = FULLY DISCHARGED` conditional on merge; CF-2
+remains OPEN; Tier-1 untouched; Mechanical NOT ACTIVATED; ODR UNCHANGED):** the CF-6/CF-2 ILT-002 Owner-decision
+candidate is **MERGED and post-merge verified** (PR #490 → authoritative base
+`1fe05e098c5ecf53b63088e12e71549635ead70b`, parents `3570863e` + accepted candidate `a3e4300d`, merge tree
+`bcb012b1` == candidate tree) — `D-CF6CF2-ILT002-01` authoritative. This gate performs the mandatory CF-6
+full-scope confirming closure (canonical record: `docs/governance/CF6_FULL_SCOPE_FORMAL_CLOSURE_RECORD.md`).
+**Reconstructed CF-6 scope** (adopted from `P9_E2_MULTI_ACTIVATED_DOMAIN_TIE_PRECEDENCE_FORMAL_CLOSURE_RECORD.md`
+§7, the fullest earliest authoritative statement): Web `/start` strong-unsupported heuristics × canonical-
+classifier reachability × activated-domain admission × ambiguity handling × Web/CLI/core consistency × (shared
+with CF-2) public-message truthfulness. **Full-scope adversarial sweep** (independent read-only Explore-agent
+discovery + personal classification of every match, six-category scheme): exhaustively covered every
+`"electronics_electrical"` literal, every classifier/activation/admission call site, second-registry search,
+template copy, cold-load/persistence seams, question-selection branching, every session-creation-capable script,
+and every `infer_domain` reference across `web/* engine/* scripts/*`. **Result: ZERO `SHARED-CONSUMER — DEFECT`
+items.** Every match resolved to canonical behavior (single classifier, single activation source, activation-
+derived copy/templates, generic domain propagation, fail-closed cold-load restore, every session-creation site
+tracing to `_admit_specialist_domain` or verbatim persisted-domain restoration), a governed exception (the
+F002-reviewed weak-conflict branch at `web/app.py:1639`, explicitly comment-tagged "CF5-F002 (CF-6 facet)"; the
+three ILT-002 routes; the E-2/ILT-002 tooling), an already-closed separate tracker (`D-GMPR-01-D-D3`; `CF5-F001`;
+`CF-3`/`CF5-F004`), legitimate domain-specific scoring content, or genuinely out-of-scope material (`DOMAIN_
+CONFIRM_VALUE` — zero production readers, confirmed; `scripts/run_summary_demo.py` — never touches the
+classifier/activation/admission chain; a stale test-file comment). **CLI facet: DISCHARGED** (merge `6524e792…`).
+**ILT-002 facet: RESOLVED BY OWNER DECISION, not a defect** (merge `1fe05e09…`). **Determination: `CF-6 = FULLY
+DISCHARGED` for its authoritative reconstructed scope**, conditional on merge + post-merge verification. Full
+suite **2577 passed / 3 skipped / 1 xfailed / 0 failed** (fresh, unchanged; ZERO runtime/test/pack/registry/
+activation/schema/persistence diff this candidate — no mutation probes needed, no new behavior asserted).
+**CF-2 remains globally OPEN** (own full-scope sweep, ILT-002 residual truthfulness question, Arabic
+localization, non-`/start` sweep all untouched). Tier-1 label untouched; **Mechanical remains NOT ACTIVATED**;
+`activated_domains() == ['electronics_electrical']`; Phase 9 remains OPEN. No D4/D8/THERM-01/Phase 10/PSRR/
+deployment. Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next required
+gate: **Mandatory Grill on this exact candidate** → independent external exact-candidate review → Owner
+acceptance → SHA-preserving publication → PR → pre/post-merge verification.
+
+**Immediately prior (CF-6/CF-2 ILT-002 Owner-decision gate — MERGED via PR #490 `1fe05e09`; retained as history):**
+**Status (prior — CF-6/CF-2 ILT-002 FIXED-DOMAIN PROTOCOL — OWNER DECISION RECORDED (`D-CF6CF2-ILT002-01`) —
 governance-only; classifier-consistency ambiguity RESOLVED; CF-6/CF-2 remain OPEN; Tier-1 untouched; Mechanical
 NOT ACTIVATED):** the CF-6/CF-2 ILT-002 reconstruction & correction candidate is **MERGED and post-merge
 verified** (PR #489 → authoritative base `3570863ef9519f123c76fb1f165452e4935365e3`, parents `6524e792` +
