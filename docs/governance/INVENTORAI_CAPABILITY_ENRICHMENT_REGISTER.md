@@ -883,3 +883,34 @@ implementation requires the full R6 gated chain. This section does not alter Mec
 activation; does not touch `_ACTIVATED_DOMAINS`, runtime, domain packs, classifier, registry, questions, or the safety
 family; does not close CF-6, CF-2, or the D-GMPR coupling; does not authorize D4; does not alter D8; and does not
 authorize Phase 10, PSRR, or deployment.
+
+---
+
+## L2SC-01 — Layer-2 Scoring-Correction Domain-Scope Completeness (anti-forgetting; pre-second-domain-activation residual; NON-ACTIVATING)
+
+Registered inside the CF-2 full-remainder reconstruction gate (canonical record:
+`docs/governance/CF2_CLI_REMAINDER_TRUTHFULNESS_CONTRACT.md` §7; base
+`5355ed54cbba17c16b5716865c1dc82e8b141941`). Deliberately NON-NUMERIC designation (mirroring the `THERM-01`
+precedent) so no pre-existing numeric register cross-reference can resolve to it; NO new CAP entry —
+CAP-01…CAP-18 unchanged.
+
+**Finding.** `engine/progression_loop.py:415` (the "Layer-2 bounded scoring correction," Owner-authorized
+2026-07-11) requires an electronics/electrical domain substance signal (whole-word match, same sentence as a
+qualifying causal connective) before its specific scoring bonus applies. This is internal scoring logic — never
+rendered to any user or operator — independently confirmed NOT a CF-2 public-message-truthfulness matter and NOT
+a CF-6 classifier/activation-admission-consistency matter (CF-6 is `FULLY DISCHARGED` and is not reopened by
+this registration).
+
+**Why this matters (anti-forgetting only).** If/when a second domain is ever Owner-activated, ideas in that
+domain would never benefit from this specific Layer-2 scoring correction — a scoring-completeness gap for future
+domains, distinct from any admission/truthfulness concern. This registration exists ONLY so the gap is not
+silently forgotten before any future second-domain-activation readiness review; it creates no obligation to act
+now.
+
+**Non-authorization (restated for this section).** Registration is not implementation authorization. This
+section authorizes NO scoring-logic change, NO Layer-2 rule generalization, NO Mechanical (or any other domain)
+extension of the correction, and does not alter Mechanical P9-QS status, qualification, or activation; does not
+touch `_ACTIVATED_DOMAINS`, runtime, domain packs, classifier, registry, questions, or the safety family; does
+not close or reopen CF-6; does not close CF-2; does not touch the D-GMPR coupling; does not authorize D4; does
+not alter D8; and does not authorize Phase 10, PSRR, or deployment. Any future work on this item requires its
+own separately authorized, bounded gate.

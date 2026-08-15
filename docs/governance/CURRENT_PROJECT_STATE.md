@@ -1993,6 +1993,28 @@ AUTHORIZED / NOT STARTED.***
   (untouched); Tier-1 label untouched; **Mechanical remains NOT ACTIVATED**; `activated_domains() ==
   ['electronics_electrical']`; Phase 9 remains OPEN. Authoritative ONLY if/when this exact candidate is merged +
   post-merge verified. Next required gate: Mandatory Grill on this exact candidate.
+  **CF-6 full-scope closure MERGED (PR #491, base `5355ed54cbba17c16b5716865c1dc82e8b141941`; merge tree ==
+  candidate tree `8d6aeb75`) — `CF-6 = FULLY DISCHARGED` authoritative; CF-2 remains OPEN. CF-2 PUBLIC-MESSAGE
+  TRUTHFULNESS FULL-REMAINDER RECONSTRUCTION & BOUNDED CLI IMPLEMENTATION CONTRACT recorded** (canonical record:
+  `CF2_CLI_REMAINDER_TRUTHFULNESS_CONTRACT.md`; `OWNER_DECISION_REGISTER.md` UNCHANGED). Full repository-wide
+  public-copy sweep (prose search beyond the bare identifier, all 13 templates, the 252-key `ui_text.py`
+  catalogue, `domain_label.py`, every `web/app.py` message constant) found every `/start`-flow message-CONTENT
+  truthfulness concern already correctly gated (the discharged F002 pattern). **Two confirmed CF-2 defects, both
+  `scripts/run_cli.py`:** the unconditional startup banner (`:39-41`, "Scope: Electronics/Electrical, Level 0-2")
+  and the richer-kind bounded-stop message (`:64-70`), both outside the already-merged CLI facet's scope, exact
+  current content verified this gate. **One deferred CF-2-class item:** all five `/start`-flow error-path
+  messages bypass localization entirely (English-only regardless of language) — corrected/broadened
+  characterization vs. the prior "electronics-only-state-only" text. ILT-002 session presentation resolved
+  TRUTHFUL (describes the actual review conducted, not a classification claim); `D-CF6CF2-ILT002-01` unchanged.
+  `engine/progression_loop.py:415` classified OUTSIDE CF-2/CF-6 (Owner-authorized internal scoring logic) and
+  registered as new anti-forgetting entry **`L2SC-01`** in `INVENTORAI_CAPABILITY_ENRICHMENT_REGISTER.md`
+  (THERM-01 precedent; no implementation authorized). **Determination: governance-only BOUNDED IMPLEMENTATION
+  CONTRACT** (not closure, not implementation) bounding a future CLI-only remediation increment; Arabic gap and
+  `L2SC-01` explicitly deferred/registered separately, not folded in. ZERO runtime/test/pack/registry/activation
+  diff; implementation NOT authorized. `CF-6 = FULLY DISCHARGED` unchanged; `MECHANICAL = P9-QS QUALIFIED — WITH
+  ACTIVATION BLOCKERS; NOT ACTIVATED` unchanged; `activated_domains() == ['electronics_electrical']`; Tier-1
+  label untouched. Authoritative ONLY if/when this exact candidate is merged + post-merge verified. Next required
+  gate: Mandatory Grill on this exact candidate.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation

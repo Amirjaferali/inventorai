@@ -41,7 +41,41 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — CF-6 FULL-SCOPE FORMAL CLOSURE CANDIDATE — `CF-6 = FULLY DISCHARGED` conditional on merge; CF-2
+**Status (current — CF-2 PUBLIC-MESSAGE TRUTHFULNESS FULL-REMAINDER RECONSTRUCTION & BOUNDED CLI IMPLEMENTATION
+CONTRACT — governance-only; implementation NOT started; Arabic-localization gap deferred; `L2SC-01` registered
+separately; CF-6 not reopened; Tier-1 untouched; Mechanical NOT ACTIVATED; ODR UNCHANGED):** the CF-6 full-scope
+closure candidate is **MERGED and post-merge verified** (PR #491 → authoritative base
+`5355ed54cbba17c16b5716865c1dc82e8b141941`, parents `1fe05e09` + accepted candidate `11d9450f`, merge tree
+`8d6aeb75` == candidate tree) — `CF-6 = FULLY DISCHARGED` authoritative; CF-2 remains OPEN. This gate performs
+the mandatory CF-2 full-remainder reconstruction (canonical record:
+`docs/governance/CF2_CLI_REMAINDER_TRUTHFULNESS_CONTRACT.md`). **Reconstructed CF-2 scope:** AMBIGUOUS_TIE/
+MULTI_DOMAIN_NEEDS_D4 user-facing treatment; generic unsupported messaging; future public reachability;
+misleading domain claims; CLI copy; ILT-002 route copy; non-`/start` templates; Arabic localization; any other
+public electronics-only assertion. **Full repository-wide sweep** (prose search beyond the bare identifier +
+personal re-verification of every match): every `web/app.py` `/start`-flow message-CONTENT truthfulness concern
+already correctly gated (the discharged F002 pattern); all 13 templates swept (12 clean; `index.html`'s 5
+occurrences bilingual + activation-gated). **Two confirmed CF-2 defects, both `scripts/run_cli.py`:** the
+unconditional startup banner (`:39-41`) and the richer-kind bounded-stop message (`:64-70`) — both outside the
+already-merged CLI facet's scope, verified at exact current content. **One deferred CF-2-class item (materially
+different responsibility):** all five `/start`-flow error-path messages bypass localization entirely (English-
+only regardless of language) — broader/more precise than the prior "electronics-only-state-only" characterization
+(corrected here as a later clarification). **ILT-002 presentation:** TRUTHFUL (session "Review type" label
+describes the actual review conducted, not a classification claim) — `D-CF6CF2-ILT002-01` unchanged. **`engine/
+progression_loop.py:415`:** classified OUTSIDE CF-2/CF-6 (Owner-authorized internal scoring logic, not public
+copy) — registered as NEW anti-forgetting entry **`L2SC-01`** (THERM-01 precedent; non-numeric; no CAP entry; no
+implementation). **Determination: governance-only BOUNDED IMPLEMENTATION CONTRACT created** (not closure, not
+implementation) — §8 bounds a future CLI-only remediation increment (byte-identical electronics-only output;
+truthful generalized/empty-activation copy; richer-kind dispatch logic untouched; full test/mutation
+enumeration). Arabic gap and `L2SC-01` explicitly NOT folded into this increment. **ZERO runtime/test/pack/
+registry/activation diff.** Implementation NOT authorized by this contract. `CF-6 = FULLY DISCHARGED` unchanged,
+not reopened; `MECHANICAL = P9-QS QUALIFIED — WITH ACTIVATION BLOCKERS; NOT ACTIVATED` unchanged; `activated_
+domains() == ['electronics_electrical']`; Tier-1 label untouched. Authoritative ONLY if/when this exact candidate
+is merged and post-merge verified. Next required gate: **Mandatory Grill on this exact candidate** →
+independent external exact-candidate review → Owner acceptance → SHA-preserving publication → PR → pre/post-merge
+verification; thereafter the separately-authorized CLI-remainder implementation gate.
+
+**Immediately prior (CF-6 full-scope closure gate — MERGED via PR #491 `5355ed54`; retained as history):**
+**Status (prior — CF-6 FULL-SCOPE FORMAL CLOSURE CANDIDATE — `CF-6 = FULLY DISCHARGED` conditional on merge; CF-2
 remains OPEN; Tier-1 untouched; Mechanical NOT ACTIVATED; ODR UNCHANGED):** the CF-6/CF-2 ILT-002 Owner-decision
 candidate is **MERGED and post-merge verified** (PR #490 → authoritative base
 `1fe05e098c5ecf53b63088e12e71549635ead70b`, parents `3570863e` + accepted candidate `a3e4300d`, merge tree

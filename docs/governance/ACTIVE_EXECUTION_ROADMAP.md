@@ -9860,3 +9860,62 @@ candidate). Tier-1 label untouched (still deferred to activation-readiness). **M
 `activated_domains() == ['electronics_electrical']`. Phase 9 remains OPEN. No D4/D8/THERM-01/Phase 10/PSRR/
 deployment. ZERO runtime/test/pack/registry/activation/schema/persistence diff. Append-only; prior history not
 rewritten. **Next required gate: Mandatory Grill on this exact candidate**, then the governed lifecycle.
+
+---
+
+## CF-2 — Public-Message Truthfulness Full-Remainder Reconstruction & Bounded CLI Implementation Contract — governance-only CANDIDATE (implementation NOT started; Arabic-localization gap deferred; L2SC-01 registered separately; CF-6 not reopened; Tier-1 untouched; Mechanical NOT ACTIVATED)
+
+**Gate.** Governance-only contract on authoritative base `5355ed54cbba17c16b5716865c1dc82e8b141941` (PR #491 —
+SHA-preserving merge of the accepted CF-6 full-scope closure candidate `11d9450f` onto `1fe05e09`; merge tree
+`8d6aeb75` == candidate tree; POST-MERGE PASS; freshly fetched; 0 newer; clean tree) — `CF-6 = FULLY DISCHARGED`
+authoritative; CF-2 remains OPEN. Canonical record:
+`docs/governance/CF2_CLI_REMAINDER_TRUTHFULNESS_CONTRACT.md`. **`OWNER_DECISION_REGISTER.md` UNCHANGED.**
+
+**CF-2 reconstructed scope.** Adopted from the CF-5 audit contract area H plus the fuller P9-E2/F002 carry-
+forward formulations: AMBIGUOUS_TIE/MULTI_DOMAIN_NEEDS_D4 user-facing treatment; generic unsupported messaging;
+future public reachability; misleading domain claims; CLI copy; ILT-002 route copy; non-`/start` templates;
+Arabic localization of generalized copy; any other public electronics-only assertion.
+
+**Full repository-wide public-copy sweep** (independent read-only discovery, prose search beyond the bare
+identifier, plus this session's personal re-verification of every ambiguous match — exact current code content,
+exact gating logic): covered every `web/*.py`/`engine/*.py`/`scripts/*.py` prose match; all 13
+`web/templates/*.html` files; the full 252-key `web/ui_text.py` catalogue (EN/AR parity programmatically
+confirmed complete); `web/domain_label.py` in full; `scripts/run_summary_demo.py` in full; every `_MESSAGE = `
+constant in `web/app.py` and its localization-mechanism participation.
+
+**Result.** Every `web/app.py` `/start`-flow message-CONTENT truthfulness concern is already correctly gated
+(`UNSUPPORTED_DOMAIN_MESSAGE`, `CONFIRMATION_REQUIRED_MESSAGE`, `MECHANISM_GUIDANCE_MESSAGE` all verified this
+gate to fire ONLY when truthful — the discharged F002 pattern; `DOMAIN_CHOICE_MESSAGE`/`SERVICE_UNAVAILABLE_
+MESSAGE` already domain-neutral). All 13 templates swept; 12 of 13 have zero "electronics" occurrences; `index.
+html`'s 5 occurrences are bilingual AND activation-gated — CANONICAL. **Two confirmed CF-2 defects, both in
+`scripts/run_cli.py`:** the unconditional startup banner (`:39-41`, "Scope: Electronics/Electrical, Level 0-2")
+and the richer-kind bounded-stop message (`:64-70`, unconditional "This MVP supports electronics/electrical
+ideas only"), both verified at exact current content this gate, both outside what the already-merged CLI facet
+touched (which correctly left richer-kind dispatch untouched). **One CF-2-class defect of materially different
+responsibility, DEFERRED to its own future gate:** all five `/start`-flow error-path message constants bypass
+`ui_lang`/localization entirely (English-only regardless of language selection) — broader and more precisely
+characterized than the prior record's "Arabic strings exist only for electronics-only state" (fresh tracing found
+NO Arabic variant exists for ANY of the five, corrected here as a later clarification, not an invalidation).
+
+**ILT-002 presentation:** resolved TRUTHFUL this gate — the session-page "Review type: Electronics-informed
+review" label truthfully describes the actual review conducted (not a classification claim on submitted text);
+`D-CF6CF2-ILT002-01` unchanged.
+
+**`engine/progression_loop.py:415`:** classified OUTSIDE CF-2 and OUTSIDE CF-6 — an Owner-authorized internal
+scoring-correction rule, not public copy, not admission/activation-truth. Registered as a NEW anti-forgetting
+entry **`L2SC-01`** in `INVENTORAI_CAPABILITY_ENRICHMENT_REGISTER.md` (mirroring the THERM-01 precedent;
+non-numeric designation; NO CAP entry; NO implementation authorized).
+
+**Determination.** CF-2 runtime/public-copy defects remain (the two CLI items) → **GOVERNANCE-ONLY BOUNDED
+IMPLEMENTATION CONTRACT created, NOT a closure candidate, and NOT an implementation.** The contract's §8 bounds a
+future CLI-only remediation increment (byte-identical electronics-only output preserved; truthful generalized
+copy for broader/empty activation; richer-kind dispatch logic itself untouched; full required-test enumeration
+incl. negative assertions and mutation-probe expectations). The Arabic-localization gap and L2SC-01 are both
+named, evidenced, and explicitly NOT folded into this increment.
+
+**Boundary / status.** Implementation NOT authorized by this contract. `CF-6 = FULLY DISCHARGED` unchanged, not
+reopened. `MECHANICAL = P9-QS QUALIFIED — WITH ACTIVATION BLOCKERS; NOT ACTIVATED` unchanged; `activated_
+domains() == ['electronics_electrical']`; Tier-1 label untouched; no D4/D8/THERM-01/Phase 10/PSRR/deployment; no
+P9 closure. ZERO runtime/test/pack/registry/activation diff this candidate. Append-only; prior history not
+rewritten. **Next required gate: Mandatory Grill on this exact candidate**, then the governed lifecycle;
+thereafter the separately-authorized CLI-remainder implementation gate.
