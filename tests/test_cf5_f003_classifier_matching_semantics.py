@@ -397,3 +397,166 @@ def test_green_cli_empty_activation_refuses_no_silent_electronics_fallback(activ
     assert "No specialist domain is available right now." in out
     assert "Domain confirmed" not in out
     assert "electronics/electrical ideas only" not in out
+
+
+# ============================================================================
+# CF-2 CLI remainder (governed by
+# docs/governance/CF2_CLI_REMAINDER_TRUTHFULNESS_CONTRACT.md §4/§8): the two
+# previously-unconditional CLI copy sites — the startup banner and the
+# richer-kind (AMBIGUOUS_TIE/MULTI_DOMAIN_NEEDS_D4/UNRESOLVED_NON_ACTIVATED_TIE)
+# bounded-stop message — now derive from the SAME `activated` value computed
+# once at the top of `run_cli()` via `domain_activation.activated_domains()`
+# (no new/second source of truth). Byte-identical under
+# ['electronics_electrical']; truthful generalized copy under any broadened or
+# empty activation set. The richer-kind DISPATCH LOGIC (which branch fires)
+# is unchanged — only the copy inside the existing branch changed.
+# ============================================================================
+
+from engine.domain_rules import DomainClassification, DomainAmbiguityReason
+
+_CF2_ELEC = "circuit"     # electronics_electrical-only single-pack signal
+_CF2_MECH = "gear"        # mechanical-only single-pack signal
+_CF2_MED = "catheter"     # medical_device-only single-pack signal
+
+
+# --------------------------------------------------- 1. banner: electronics-only
+def test_green_cli_banner_electronics_only_byte_identical(monkeypatch, capsys):
+    """Positive pin: today's real (electronics-only) activation prints the
+    historical byte-identical banner scope line."""
+    mod = _load_run_cli()
+    monkeypatch.setattr(builtins, "input", lambda *_a, **_k: "")
+    mod.run_cli()
+    out = capsys.readouterr().out
+    assert "  Scope: Electronics/Electrical, Level 0-2" in out
+
+
+# --------------------------------------------------- 2. banner: multi-activated
+def test_green_cli_banner_multi_activated_truthful_generalized(activate, monkeypatch, capsys):
+    """A broadened activation set makes the banner name the real activated
+    domains — never the stale electronics-only claim."""
+    mod = _load_run_cli()
+    activate("electronics_electrical", "mechanical")
+    monkeypatch.setattr(builtins, "input", lambda *_a, **_k: "")
+    mod.run_cli()
+    out = capsys.readouterr().out
+    assert "  Scope: Electronics Electrical or Mechanical, Level 0-2" in out
+    assert "Scope: Electronics/Electrical, Level 0-2" not in out
+
+
+# --------------------------------------------------- 3. banner: empty activation
+def test_green_cli_banner_empty_activation_truthful(activate, monkeypatch, capsys):
+    """Empty activation set (documented-unreachable in production; test-double
+    only): the banner makes no domain-support claim at all."""
+    mod = _load_run_cli()
+    activate()
+    monkeypatch.setattr(builtins, "input", lambda *_a, **_k: "")
+    mod.run_cli()
+    out = capsys.readouterr().out
+    assert "  Scope: No specialist domain available right now" in out
+    assert "Electronics/Electrical" not in out
+
+
+# --------------------------------------- 4. richer-kind: electronics-only pin ---
+def test_green_cli_richer_kind_electronics_only_byte_identical(monkeypatch, capsys):
+    """Positive pin: under today's real (electronics-only) activation, the
+    richer-kind bounded-stop message stays byte-identical to the historical
+    hardcoded text. `classify_domain` is white-box monkeypatched to return a
+    richer kind (MULTI_DOMAIN_NEEDS_D4 — its invariants carry no activation
+    requirement, unlike AMBIGUOUS_TIE) purely to drive the print branch under
+    test; this does NOT claim the kind is classifier-reachable today (it is
+    not — see `test_green_guard_e2_12_d4_not_manufactured`)."""
+    mod = _load_run_cli()
+    fake = DomainClassification(
+        kind=DomainResultKind.MULTI_DOMAIN_NEEDS_D4,
+        candidates=("electronics_electrical", "mechanical"),
+        reason=DomainAmbiguityReason.EQUAL_SCORE)
+    monkeypatch.setattr(mod, "classify_domain", lambda *_a, **_k: fake)
+    monkeypatch.setattr(builtins, "input", lambda *_a, **_k: "anything")
+    mod.run_cli()
+    out = capsys.readouterr().out
+    assert "This MVP supports electronics/electrical ideas only, and this idea" in out
+    assert "could not be resolved to a single supported domain." in out
+    assert "Domain inferred:" not in out
+    assert "Domain confirmed" not in out
+
+
+# --------------------------------- 5. richer-kind: multi-activated truthful ----
+def test_green_cli_richer_kind_multi_activated_truthful_generalized(activate, monkeypatch, capsys):
+    """A broadened activation set makes the richer-kind message name the real
+    activated domains — never the stale 'electronics/electrical ideas only'
+    claim. Same white-box `classify_domain` double as test 4, scoped to the
+    now-activated pair."""
+    mod = _load_run_cli()
+    activate("electronics_electrical", "mechanical")
+    fake = DomainClassification(
+        kind=DomainResultKind.MULTI_DOMAIN_NEEDS_D4,
+        candidates=("electronics_electrical", "mechanical"),
+        reason=DomainAmbiguityReason.EQUAL_SCORE)
+    monkeypatch.setattr(mod, "classify_domain", lambda *_a, **_k: fake)
+    monkeypatch.setattr(builtins, "input", lambda *_a, **_k: "anything")
+    mod.run_cli()
+    out = capsys.readouterr().out
+    assert ("This MVP currently supports Electronics Electrical or Mechanical "
+            "ideas only, and this idea") in out
+    assert "could not be resolved to a single supported domain." in out
+    assert "electronics/electrical ideas only" not in out
+
+
+# ------------------------------------- 6. richer-kind: empty activation --------
+def test_green_cli_richer_kind_empty_activation_truthful(activate, monkeypatch, capsys):
+    """Empty activation set: the richer-kind message makes no domain-support
+    claim at all. UNRESOLVED_NON_ACTIVATED_TIE carries no activation
+    requirement in its invariants, so it is used here (white-box double) to
+    drive the print branch under test."""
+    mod = _load_run_cli()
+    activate()
+    fake = DomainClassification(
+        kind=DomainResultKind.UNRESOLVED_NON_ACTIVATED_TIE,
+        candidates=("electronics_electrical", "mechanical"),
+        reason=DomainAmbiguityReason.EQUAL_SCORE)
+    monkeypatch.setattr(mod, "classify_domain", lambda *_a, **_k: fake)
+    monkeypatch.setattr(builtins, "input", lambda *_a, **_k: "anything")
+    mod.run_cli()
+    out = capsys.readouterr().out
+    assert "No specialist domain is available right now, and this idea" in out
+    assert "could not be resolved to a single supported domain." in out
+    assert "electronics/electrical ideas only" not in out
+    assert "Electronics/Electrical" not in out
+
+
+# ------------------------------- 7. richer-kind dispatch LOGIC unchanged -------
+def test_green_cli_richer_kind_dispatch_logic_unchanged_real_classifier(activate, monkeypatch, capsys):
+    """Re-pin: the REAL classifier (not monkeypatched) still reaches the exact
+    same bounded-stop dispatch branch for a genuine AMBIGUOUS_TIE — only the
+    printed copy changed (now truthfully naming the activated pair), never
+    which branch fires, never an arbitrary winner, never a silent proceed.
+    Mirrors `test_red_e2_11_cli_real_tie_bounded_stop`'s proven real-tie
+    construction with the now-broadened, now-truthful copy."""
+    mod = _load_run_cli()
+    activate("mechanical", "medical_device")
+    monkeypatch.setattr(builtins, "input", lambda *_a, **_k: f"{_CF2_MECH} and {_CF2_MED}")
+    mod.run_cli()
+    out = capsys.readouterr().out
+    assert "CANNOT DETERMINE A SINGLE SUPPORTED DOMAIN" in out
+    assert "Domain inferred:" not in out
+    assert "Domain confirmed" not in out
+    assert ("This MVP currently supports Mechanical or Medical Device ideas "
+            "only, and this idea") in out
+    assert "electronics/electrical ideas only" not in out
+
+
+# ------------------------------- 8. explicit combined negative assertions ------
+def test_green_cli_no_stale_electronics_literal_anywhere_when_broadened(activate, monkeypatch, capsys):
+    """Explicit negative assertion across a full broadened-activation run that
+    reaches BOTH the banner and (via a legitimately admitted, non-electronics
+    activated domain) the confirmed-domain step: neither of the two fixed
+    defect sites' historical hardcoded literals appear anywhere in the full
+    captured output once activation is broadened past electronics-only."""
+    mod = _load_run_cli()
+    activate("electronics_electrical", "mechanical")
+    monkeypatch.setattr(builtins, "input", lambda *_a, **_k: f"a {_CF2_MECH} and pulley hoist with a crankshaft drive")
+    mod.run_cli()
+    out = capsys.readouterr().out
+    assert "Domain confirmed: Mechanical" in out
+    assert "electronics/electrical ideas only" not in out
+    assert "Scope: Electronics/Electrical" not in out

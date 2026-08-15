@@ -2015,6 +2015,34 @@ AUTHORIZED / NOT STARTED.***
   ACTIVATION BLOCKERS; NOT ACTIVATED` unchanged; `activated_domains() == ['electronics_electrical']`; Tier-1
   label untouched. Authoritative ONLY if/when this exact candidate is merged + post-merge verified. Next required
   gate: Mandatory Grill on this exact candidate.
+  **CF-2 CLI Remainder Truthfulness Implementation — CANDIDATE, base `de85d1010df8aaff8a67fb6f3d4a7ab5c93936bb`
+  (PR #492, parents `5355ed54` + accepted contract candidate `27af00b5`; merge tree == candidate tree; POST-MERGE
+  PASS).** Implements ONLY `docs/governance/CF2_CLI_REMAINDER_TRUTHFULNESS_CONTRACT.md` §8: both confirmed
+  `scripts/run_cli.py` defects (the unconditional startup banner and the richer-kind bounded-stop message) now
+  derive from a single `activated = domain_activation.activated_domains()` computed once at the top of
+  `run_cli()` and reused across the banner, the richer-kind dispatch copy, and the pre-existing Step-3 admission
+  check (no new/second source of truth). Byte-identical under `['electronics_electrical']`; truthful generalized
+  copy for a broadened activation set; truthful no-domain-available copy for the empty-activation edge case. The
+  richer-kind dispatch LOGIC itself (which branch fires for `AMBIGUOUS_TIE`/`MULTI_DOMAIN_NEEDS_D4`/
+  `UNRESOLVED_NON_ACTIVATED_TIE`) is UNCHANGED — only the printed copy inside the existing branches changed. The
+  unrelated CLI FINAL SUMMARY indentation/printing bug was explicitly NOT touched (outside this contract). 8
+  required focused tests added to `tests/test_cf5_f003_classifier_matching_semantics.py` (electronics-only
+  byte-identical pins for both sites; broadened- and empty-activation truthful-copy pins for both sites; real-
+  classifier richer-kind dispatch-logic re-pin; an explicit combined negative-assertion test). 4 mandatory
+  mutation probes (reintroduce each hardcoded literal at both sites; neutralize the broadened-activation branch;
+  corrupt the electronics-only branch) each independently CAUGHT after a full `__pycache__` clear, then reverted
+  with SHA-256-verified byte-identical restoration. Full governed suite **2585 passed / 3 skipped / 1 xfailed / 0
+  failed** (2577 baseline + 8 new). Changed paths strictly `scripts/run_cli.py` +
+  `tests/test_cf5_f003_classifier_matching_semantics.py` only — no `web/*`, no ILT-002 route, no E-2 tooling, no
+  `engine/*` (incl. `progression_loop.py`/L2SC-01, untouched), no domain pack, no persistence, no classifier/
+  activation change. `OWNER_DECISION_REGISTER.md` UNCHANGED (implementation gate, not an Owner decision). Arabic-
+  localization gap (§5 of the contract) explicitly NOT addressed here and NOT claimed exhaustively re-swept this
+  gate — remains its own open future increment. `CF-2` remains OPEN overall (only this narrow two-defect
+  increment is discharged by this candidate, at its own future closure); `CF-6 = FULLY DISCHARGED` unchanged, not
+  reopened; `MECHANICAL = P9-QS QUALIFIED — WITH ACTIVATION BLOCKERS; NOT ACTIVATED` unchanged; `activated_
+  domains() == ['electronics_electrical']`; Tier-1 label untouched; no D4/D8/THERM-01/Phase 10/PSRR/deployment;
+  no P9 closure. Authoritative ONLY if/when this exact candidate is merged + post-merge verified. Next required
+  gate: Mandatory Grill on this exact candidate.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation

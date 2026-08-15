@@ -9919,3 +9919,60 @@ domains() == ['electronics_electrical']`; Tier-1 label untouched; no D4/D8/THERM
 P9 closure. ZERO runtime/test/pack/registry/activation diff this candidate. Append-only; prior history not
 rewritten. **Next required gate: Mandatory Grill on this exact candidate**, then the governed lifecycle;
 thereafter the separately-authorized CLI-remainder implementation gate.
+
+---
+
+## CF-2 — CLI Remainder Truthfulness Implementation — bounded runtime candidate (§8 of the CF-2 CLI remainder contract; two defects only; Arabic gap deferred; L2SC-01 not touched; CF-6 not reopened; Tier-1 untouched; Mechanical NOT ACTIVATED; ODR UNCHANGED)
+
+**Gate.** Bounded implementation on authoritative base `de85d1010df8aaff8a67fb6f3d4a7ab5c93936bb` (PR #492 —
+SHA-preserving merge of the accepted CF-2 CLI remainder contract candidate `27af00b5` onto `5355ed54`; merge tree
+== candidate tree; POST-MERGE PASS; freshly fetched; 0 newer; clean tree). Implements ONLY
+`docs/governance/CF2_CLI_REMAINDER_TRUTHFULNESS_CONTRACT.md` §8 — the two confirmed `scripts/run_cli.py` defects
+(unconditional startup banner; unconditional richer-kind bounded-stop message), nothing else.
+
+**Exact change.** `activated = domain_activation.activated_domains()` is now computed once at the top of
+`run_cli()` and reused for the startup banner, the richer-kind dispatch copy (inside the existing
+`AMBIGUOUS_TIE`/`MULTI_DOMAIN_NEEDS_D4`/`UNRESOLVED_NON_ACTIVATED_TIE` branch), and the pre-existing Step-3
+admission check (no new/second source of truth — the same canonical seam already established by the CF-6 CLI
+facet gate). Both sites now branch three ways: byte-identical text under `['electronics_electrical']`; a
+truthful generalized phrase (`_cli_supported_domains_phrase`) under any broader activation set; a truthful
+no-domain-available line under the empty-activation edge case. The richer-kind dispatch LOGIC — which branch
+fires — is completely unchanged; only the printed copy inside the existing branches changed. The unrelated CLI
+FINAL SUMMARY indentation/printing bug was explicitly identified and explicitly NOT touched (outside this
+contract's scope).
+
+**Tests.** 8 new focused tests added to `tests/test_cf5_f003_classifier_matching_semantics.py`: electronics-only
+byte-identical pins for both defect sites; broadened-activation truthful-copy pins for both sites (naming the
+real activated domains, asserting the stale electronics-only literal is absent); empty-activation truthful-copy
+pins for both sites; a real-classifier (not monkeypatched) re-pin of the richer-kind dispatch LOGIC using a
+genuine `AMBIGUOUS_TIE`; an explicit combined negative-assertion test asserting neither historical hardcoded
+literal appears anywhere in a full broadened-activation run. Two richer-kind copy pins use a white-box
+`classify_domain` monkeypatch double (`MULTI_DOMAIN_NEEDS_D4`/`UNRESOLVED_NON_ACTIVATED_TIE` constructed
+directly) to drive the print branch under test in isolation — explicitly NOT a claim that those kinds are
+classifier-reachable today (they are not; see `test_green_guard_e2_12_d4_not_manufactured`).
+
+**Mutation/adversarial probes — all 4 CAUGHT.** `__pycache__` cleared before each: (1) reintroduce the old
+unconditional startup banner — 3 tests failed as expected; (2) reintroduce the old unconditional richer-kind
+message — 3 tests failed as expected; (3) neutralize the broadened-activation banner branch (collapse it to the
+electronics-only text) — 2 tests failed as expected; (4) corrupt the electronics-only richer-kind branch — 1 test
+failed as expected. Each mutation reverted and restoration byte-verified via SHA-256 before proceeding.
+
+**Suite result.** Full governed suite **2585 passed / 3 skipped / 1 xfailed / 0 failed** (2577 baseline + 8 new;
+0 regressions).
+
+**Scope discipline.** Changed paths strictly `scripts/run_cli.py` and
+`tests/test_cf5_f003_classifier_matching_semantics.py`. Untouched: every `web/*` file, every ILT-002 route, every
+E-2 tooling script, every `engine/*` file (including `engine/progression_loop.py`/L2SC-01), every domain pack,
+persistence, the classifier, activation logic, D4/D8/THERM-01, the Tier-1 label, Arabic localization, Mechanical
+activation. `OWNER_DECISION_REGISTER.md` UNCHANGED (this is an implementation gate executing an already-recorded
+contract, not a new Owner decision).
+
+**Boundary / status.** This candidate discharges ONLY its own narrow two-defect increment (at its own future
+closure) — it does NOT close CF-2 overall (the Arabic-localization gap, §5 of the contract, remains open and is
+explicitly not re-swept or claimed exhaustive here); does NOT reopen or alter CF-6 (`CF-6 = FULLY DISCHARGED`
+stands); does NOT touch `D-CF6CF2-ILT002-01` or the ILT-002 routes; does NOT touch the Tier-1 label; does NOT
+activate Mechanical; no D4/D8/THERM-01/Phase 10/PSRR/deployment; no P9 closure. `activated_domains() ==
+['electronics_electrical']` unchanged. `MECHANICAL = P9-QS QUALIFIED — WITH ACTIVATION BLOCKERS; NOT ACTIVATED`
+unchanged. Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Append-only; prior
+history not rewritten. **Next required gate: Mandatory Grill on this exact candidate**, then the governed
+lifecycle.

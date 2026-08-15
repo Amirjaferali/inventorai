@@ -35,9 +35,24 @@ def _cli_supported_domains_phrase(activated):
     return ", ".join(labels[:-1]) + " or " + labels[-1]
 
 def run_cli():
+    # CF-2 CLI remainder fix: the canonical activation truth is computed ONCE,
+    # up front, and reused for every public-copy surface in this run (the
+    # startup banner AND the richer-kind bounded-stop message below, AND the
+    # Step-3 admission check) — the SAME canonical source
+    # (engine.domain_activation.activated_domains()) already established by
+    # the CF-6 CLI facet fix, no new/second source of truth. Byte-identical
+    # under ['electronics_electrical'] (today's only governed activation
+    # state); truthful under any broadened or empty activation set (reachable
+    # only via a bounded test double today).
+    activated = domain_activation.activated_domains()
     print("=" * 60)
     print("  InventorAI — Progression Engine MVP")
-    print("  Scope: Electronics/Electrical, Level 0-2")
+    if activated == ["electronics_electrical"]:
+        print("  Scope: Electronics/Electrical, Level 0-2")
+    elif not activated:
+        print("  Scope: No specialist domain available right now")
+    else:
+        print("  Scope: " + _cli_supported_domains_phrase(activated) + ", Level 0-2")
     print("=" * 60)
     print()
 
@@ -65,7 +80,13 @@ def run_cli():
         print("─" * 60)
         print("CANNOT DETERMINE A SINGLE SUPPORTED DOMAIN")
         print("─" * 60)
-        print("This MVP supports electronics/electrical ideas only, and this idea")
+        if activated == ["electronics_electrical"]:
+            print("This MVP supports electronics/electrical ideas only, and this idea")
+        elif not activated:
+            print("No specialist domain is available right now, and this idea")
+        else:
+            print("This MVP currently supports " +
+                  _cli_supported_domains_phrase(activated) + " ideas only, and this idea")
         print("could not be resolved to a single supported domain.")
         print("─" * 60)
         return
@@ -80,8 +101,8 @@ def run_cli():
     # Web /start surface, engine.domain_activation.activated_domains(), reused
     # unchanged). Byte-identical under ['electronics_electrical'] (today's only
     # governed activation state); truthful under any broadened activation set
-    # (reachable only via a bounded test double today).
-    activated = domain_activation.activated_domains()
+    # (reachable only via a bounded test double today). Reuses the SAME
+    # `activated` computed at the top of this function.
     if domain not in activated:
         print()
         print("─" * 60)
