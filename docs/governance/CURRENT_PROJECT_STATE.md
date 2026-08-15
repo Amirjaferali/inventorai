@@ -1954,6 +1954,25 @@ AUTHORIZED / NOT STARTED.***
   diff. Authoritative ONLY if/when this exact candidate is merged + post-merge verified. Next required gate:
   Mandatory Grill on this exact candidate. No further ILT-002 gate should be attempted until the Owner reviews
   this record.
+  **CF-6/CF-2 ILT-002 reconstruction MERGED (PR #489, base `3570863ef9519f123c76fb1f165452e4935365e3`; merge
+  tree == candidate tree `d3bab7fd`). Owner decision RECORDED — `OWNER_DECISION_REGISTER.md` entry
+  `D-CF6CF2-ILT002-01`** (per the D-CF5-F002-01/D-P9-MECH-02/D-THERM-01 ODR-entry precedent; no duplicate
+  governance framework): the three `start_ilt002_*` routes remain intentional fixed-domain scenario/evidence
+  routes; their hardcoded `electronics_electrical` selection is a governed protocol invariant, NOT a classifier
+  defect; activation enforcement via `_admit_specialist_domain()` unchanged; no classifier-driven routing without
+  a future explicit Owner decision; no duplicate activation checks; existing ILT-002/E-2 evidence semantics and
+  persistence meaning preserved unchanged; the prior CF-6 classifier-consistency ambiguity RESOLVED in favor of
+  the fixed-domain protocol (ILT-002 classifier-remediation item narrowly removed from CF-6's technical-
+  remediation list); explicitly NOT a global closure of CF-6 or CF-2, NOT a waiver of either tracker's unrelated
+  remainder, NOT Mechanical activation, NOT Tier-1 authorization, NOT Phase 9 closure. **CF-6 remains OPEN**
+  (open-ended full-scope confirmation unaffected). **CF-2 remains OPEN** — the independent-review-identified
+  truthfulness question (generic session/public label possibly displaying "electronics" for arbitrary text on an
+  unlinked fixed-domain route) explicitly PRESERVED, unresolved, for CF-2's own future full-scope sweep; ILT-002
+  route-copy item stays on its residual list; Arabic localization + non-`/start` sweep untouched. ZERO
+  runtime/test/pack/registry/activation/schema/persistence diff. `activated_domains() ==
+  ['electronics_electrical']`; **Mechanical remains NOT ACTIVATED**; Tier-1 label untouched. Authoritative ONLY
+  if/when this exact candidate is merged + post-merge verified. Next required gate: Mandatory Grill on this exact
+  candidate.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
