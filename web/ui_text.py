@@ -66,6 +66,30 @@ _MESSAGE_KEYS = {
         "UI_B_SESSION_040",
     ("Current working snapshot selected for this temporary session. It has not "
      "been permanently saved or approved."): "UI_B_DELIV_105",
+    # CF-2 Arabic-localization remainder: the five /start-flow error-path
+    # constants (web/app.py) previously bypassed this mechanism entirely and
+    # always rendered in English. Registered here unchanged (storage stays
+    # English; only display localises), matching the existing pattern above.
+    ("InventorAI currently supports electronics and electrical ideas only. "
+     "Please describe an electronics or electrical invention."):
+        "UI_B_START_010",
+    ("Please confirm that your idea is an electronics or electrical idea "
+     "before starting."): "UI_B_START_011",
+    ("InventorAI currently supports electronics and electrical ideas only. Your "
+     "description does not yet clearly show the electrical mechanism. Try adding a "
+     "simple phrase describing how it works electrically — for example that it uses "
+     "a sensor, current, switch, circuit, power, plug, or microcontroller."):
+        "UI_B_START_012",
+    ("Your description did not clearly match one supported domain. Please choose "
+     "the domain that best fits your idea, then confirm it."): "UI_B_START_013",
+    ("This service is temporarily unavailable. Please try again in a moment."):
+        "UI_B_START_014",
+    # CF-2: the two success-criteria raw rejection messages (web/app.py
+    # `_reject`) had the same bypass shape as the five /start messages above.
+    ("A submitted experiment is not part of the current plan. "
+     "No changes were saved."): "UI_B_SC_007",
+    ("A criterion exceeds the 1000-character "
+     "limit. No changes were saved."): "UI_B_SC_008",
 }
 
 
@@ -161,6 +185,106 @@ UI_STRINGS = {
     "UI_B_INDEX_009": {
         "en": "Currently supported: electronics and electrical ideas.",
         "ar": "المدعوم حاليًا: الأفكار في الإلكترونيات والكهرباء.",
+    },
+
+    # --- index.html: CF-2 Arabic-localization remainder — activation-aware -----
+    # /start copy (web/app.py `_unsupported_domain_message`,
+    # `_confirmation_required_message`, `_present_confirm_message`, and the
+    # `_render_start_page` generalized-context strings). English is UNCHANGED
+    # (composed dynamically as before, byte-identical); these keys supply the
+    # Arabic side ONLY, consulted directly by those functions. Per the CF-2
+    # Fast Track boundary, the broadened-activation (2+ domains) Arabic copy is
+    # deliberately DOMAIN-NEUTRAL — it never names a specific non-electronics
+    # domain in Arabic (that would require new Tier-1 label translation work,
+    # out of scope here and explicitly forbidden by the governing contract) —
+    # while still truthfully describing the real state (never an
+    # electronics-only claim, never a false single-domain implication). The
+    # empty-activation Arabic copy needs no domain name at all. Both broadened
+    # and empty-activation states are reachable only via a bounded activation
+    # test double today (real activation remains `['electronics_electrical']`).
+    # --- /start-flow raw error-path constants (web/app.py `_MESSAGE_KEYS`) ----
+    # Registered via `localize_message()`, same mechanism as UI_B_SESSION_039/040
+    # above — the English source constant is the dict key; these are its
+    # Arabic (and, redundantly but harmlessly, restated English) variants.
+    "UI_B_START_010": {  # UNSUPPORTED_DOMAIN_MESSAGE
+        "en": ("InventorAI currently supports electronics and electrical ideas only. "
+               "Please describe an electronics or electrical invention."),
+        "ar": ("يدعم InventorAI حاليًا أفكار الإلكترونيات والكهرباء فقط. يرجى وصف "
+               "اختراع في مجال الإلكترونيات أو الكهرباء."),
+    },
+    "UI_B_START_011": {  # CONFIRMATION_REQUIRED_MESSAGE
+        "en": ("Please confirm that your idea is an electronics or electrical idea "
+               "before starting."),
+        "ar": "يرجى تأكيد أن فكرتك هي فكرة في الإلكترونيات أو الكهرباء قبل البدء.",
+    },
+    "UI_B_START_012": {  # MECHANISM_GUIDANCE_MESSAGE
+        "en": ("InventorAI currently supports electronics and electrical ideas only. Your "
+               "description does not yet clearly show the electrical mechanism. Try adding a "
+               "simple phrase describing how it works electrically — for example that it uses "
+               "a sensor, current, switch, circuit, power, plug, or microcontroller."),
+        "ar": ("يدعم InventorAI حاليًا أفكار الإلكترونيات والكهرباء فقط. لا يوضح وصفك "
+               "بعد الآلية الكهربائية بشكل واضح. حاول إضافة عبارة بسيطة تصف كيف تعمل "
+               "كهربائيًا — على سبيل المثال أنها تستخدم مستشعرًا أو تيارًا أو مفتاحًا أو "
+               "دائرة أو طاقة أو قابسًا أو متحكمًا دقيقًا."),
+    },
+    "UI_B_START_013": {  # DOMAIN_CHOICE_MESSAGE
+        "en": ("Your description did not clearly match one supported domain. Please choose "
+               "the domain that best fits your idea, then confirm it."),
+        "ar": ("لم يتطابق وصفك بوضوح مع مجال مدعوم واحد. يرجى اختيار المجال الأنسب "
+               "لفكرتك، ثم تأكيده."),
+    },
+    "UI_B_START_014": {  # SERVICE_UNAVAILABLE_MESSAGE
+        "en": "This service is temporarily unavailable. Please try again in a moment.",
+        "ar": "هذه الخدمة غير متاحة مؤقتًا. يرجى المحاولة مرة أخرى بعد قليل.",
+    },
+
+    "UI_B_START_020": {  # unsupported-domain, empty activation
+        "en": "InventorAI has no specialist domain available right now. Please try again later.",
+        "ar": "لا يتوفر لدى InventorAI أي مجال متخصص حاليًا. يرجى المحاولة لاحقًا.",
+    },
+    "UI_B_START_021": {  # unsupported-domain, broadened (2+) activation — domain-neutral
+        "en": "InventorAI currently supports more than one specialist domain. Please describe an invention in a supported domain.",
+        "ar": "يدعم InventorAI حاليًا أكثر من مجال متخصص واحد. يرجى وصف اختراع ضمن أحد المجالات المدعومة.",
+    },
+    "UI_B_START_022": {  # confirmation-required, broadened single-non-electronics-domain activation — domain-neutral
+        "en": "Please confirm that your idea belongs to the supported domain before starting.",
+        "ar": "يرجى تأكيد أن فكرتك تنتمي إلى المجال المدعوم قبل البدء.",
+    },
+    "UI_B_START_023": {  # present-confirm, electronics-only (byte-content-equivalent to the EN concatenation)
+        "en": "Your idea appears to belong to the Electronics Electrical domain. Please confirm this domain to start, or revise your description.",
+        "ar": "يبدو أن فكرتك تنتمي إلى مجال الإلكترونيات والكهرباء. يرجى تأكيد هذا المجال للبدء، أو تعديل الوصف.",
+    },
+    "UI_B_START_024": {  # present-confirm, broadened (non-electronics) activation — domain-neutral
+        "en": "A supported domain was recognized for your idea. Please confirm this domain to start, or revise your description.",
+        "ar": "تم التعرف على مجال مدعوم لفكرتك. يرجى تأكيد هذا المجال للبدء، أو تعديل الوصف.",
+    },
+    "UI_B_START_025": {  # start_scope_sentence, empty activation
+        "en": "No specialist domain is currently available.",
+        "ar": "لا يتوفر حاليًا أي مجال متخصص.",
+    },
+    "UI_B_START_026": {  # start_scope_sentence, broadened (2+) activation — domain-neutral
+        "en": "More than one specialist domain is currently supported. Before starting, please confirm the domain your idea belongs to.",
+        "ar": "يُدعم حاليًا أكثر من مجال متخصص واحد. قبل البدء، يرجى تأكيد المجال الذي تنتمي إليه فكرتك.",
+    },
+    "UI_B_START_027": {  # start_placeholder, any non-electronics-only activation state
+        "en": "Describe your invention...",
+        "ar": "صف اختراعك...",
+    },
+    "UI_B_START_028": {  # start_supported_note, empty activation
+        "en": "Currently supported: none.",
+        "ar": "المدعوم حاليًا: لا شيء.",
+    },
+    "UI_B_START_029": {  # start_supported_note, broadened (2+) activation — domain-neutral
+        "en": "Currently supported: more than one specialist domain.",
+        "ar": "المدعوم حاليًا: أكثر من مجال متخصص واحد.",
+    },
+    "UI_B_START_030": {  # start_confirm_label, broadened single-non-electronics-domain activation — domain-neutral
+        "en": "I confirm that this idea is primarily a supported-domain idea.",
+        "ar": "أؤكد أن هذه الفكرة هي في الأساس فكرة ضمن المجال المدعوم.",
+    },
+    "UI_B_START_031": {  # start_choice_prompt (domain-neutral already in English; unchanged, added for AR)
+        "en": "Choose your idea's domain:",
+        "ar": "اختر مجال فكرتك:",
     },
 
     # --- index.html + data_session.html + success_criteria.html: sensitive -----
@@ -295,6 +419,18 @@ UI_STRINGS = {
         "ar": "لا توجد حاليًا تجارب مقترحة متاحة لهذه الجلسة.",
     },
     "UI_B_SC_006": {"en": "Back to the assessment", "ar": "العودة إلى التقييم"},
+    # CF-2 Arabic-localization remainder: the two raw `_reject()` rejection
+    # messages (web/app.py `save_success_criteria`) previously bypassed
+    # localization entirely. Registered via `_MESSAGE_KEYS` (storage stays
+    # English; only display localises), same pattern as UI_B_SESSION_039/040.
+    "UI_B_SC_007": {
+        "en": "A submitted experiment is not part of the current plan. No changes were saved.",
+        "ar": "التجربة المُرسلة ليست جزءًا من الخطة الحالية. لم يتم حفظ أي تغييرات.",
+    },
+    "UI_B_SC_008": {
+        "en": "A criterion exceeds the 1000-character limit. No changes were saved.",
+        "ar": "يتجاوز أحد المعايير الحد الأقصى البالغ 1000 حرف. لم يتم حفظ أي تغييرات.",
+    },
 
     # --- login.html (Category A) ----------------------------------------------
     "UI_A_LOGIN_001": {"en": "Sign in", "ar": "تسجيل الدخول"},
