@@ -1926,6 +1926,34 @@ AUTHORIZED / NOT STARTED.***
   `activated_domains() == ['electronics_electrical']`; Tier-1 label untouched. No D4/D8/THERM-01/Phase
   10/PSRR/deployment; no P9 closure. Authoritative ONLY if/when this exact candidate is merged + post-merge
   verified. Next required gate: Mandatory Grill on this exact candidate.
+  **CF-6/CF-2 CLI implementation MERGED (PR #488, base `6524e792786644d3053aeac650bdfa7888ad0653`; merge tree ==
+  candidate tree `4b8b191f`) — CF-6's and CF-2's CLI facets DISCHARGED; both trackers remain globally OPEN.
+  ILT-002 SHARED-FACET RECONSTRUCTION & CORRECTION — CORRECTED CANDIDATE recorded** (canonical record:
+  `CF6_CF2_ILT002_FACET_RECONSTRUCTION_AND_CORRECTION_RECORD.md`; `OWNER_DECISION_REGISTER.md` UNCHANGED).
+  **Lineage: first candidate `cad135c5` self-Grilled and self-REJECTED** — a post-freeze re-sweep found two
+  omitted consumer-tooling files (`scripts/e2_exact_matcher.py`, `scripts/e2_path_n_smoke_runner.sh`), same
+  conclusion strengthened, not changed — preserved immutable; this corrected candidate completes the sweep
+  table. **CRITICAL CORRECTION:** the ILT-002 legacy routes' hardcoded electronics domain selection is GOVERNED,
+  INTENTIONAL, TESTED behavior (`test_governed_ilt002_routes_remain_electronics_pinned_after_restriction`
+  explicitly requires it regardless of submitted content; a companion test pins the exact domain-specific
+  downstream question text; the separate ILT-002 evidence-ledger governance apparatus confirms these are
+  fixed-domain scenario routes) — NOT a technical-debt bug like the CLI facet was. **Corrected-candidate
+  addition:** `scripts/e2_path_n_smoke_runner.sh`, a SECOND independent Owner-authorized E-2 Path N
+  fixed-response/exact-match smoke-evidence procedure, also depends on this route's fixed domain — further
+  corroborating evidence. Activation enforcement already fully exists via `_admit_specialist_domain`/D-S5-03,
+  unchanged. Exhaustive hidden-surface sweep: three routes confirmed exhaustive; a fresh repo-wide `ilt002`
+  reference sweep found exactly the routes plus the two consumer-tooling scripts (both out of scope); all nine
+  previously-identified test files individually classified, none requiring change; persisted `confirmed_domain`
+  and the question-text pin confirmed load-bearing; zero hash pins; the P4-1b-2a durability coupling out of
+  scope and not reopened; zero template/copy surface found (CF-2's "route copy" item reassessed likely moot, not
+  closed). **Determination: NO implementation gate created or authorized** — further ILT-002 work requires an
+  explicit Owner decision on whether the fixed-domain design should ever change. **CF-6 remains globally OPEN**
+  (ILT-002 now Owner-input-pending); **CF-2 remains globally OPEN** (ILT-002 reassessed likely moot but not
+  closed; Arabic localization + non-`/start` sweep outstanding). Tier-1 label untouched; **Mechanical remains NOT
+  ACTIVATED**; `activated_domains() == ['electronics_electrical']`. ZERO runtime/test/pack/registry/activation/ODR
+  diff. Authoritative ONLY if/when this exact candidate is merged + post-merge verified. Next required gate:
+  Mandatory Grill on this exact candidate. No further ILT-002 gate should be attempted until the Owner reviews
+  this record.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation

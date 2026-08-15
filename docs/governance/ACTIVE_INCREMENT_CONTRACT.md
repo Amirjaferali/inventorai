@@ -41,7 +41,47 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — CF-6/CF-2 CLI SHARED-FACET IMPLEMENTATION CANDIDATE — facet DISCHARGED for both trackers
+**Status (current — CF-6/CF-2 ILT-002 SHARED-FACET RECONSTRUCTION & CORRECTION — CORRECTED CANDIDATE (first
+candidate `cad135c5` self-rejected, preserved) — governance-only; NO implementation authorized; Owner decision
+required before any further ILT-002 gate; Tier-1 untouched; Mechanical NOT ACTIVATED; ODR UNCHANGED):** the
+CF-6/CF-2 CLI shared-facet implementation is **MERGED and post-merge verified** (PR #488 → authoritative base
+`6524e792786644d3053aeac650bdfa7888ad0653`, parents `305961ae` + accepted CLI implementation candidate `6f1ad899`,
+merge tree `4b8b191f` == candidate tree) — CF-6's and CF-2's CLI facets are DISCHARGED; both trackers remain
+globally OPEN. **Lineage:** first reconstruction candidate `cad135c5` self-Grilled and self-REJECTED — a
+post-freeze re-sweep found two consumer-tooling files (`scripts/e2_exact_matcher.py`,
+`scripts/e2_path_n_smoke_runner.sh`) the frozen candidate's hidden-surface table had omitted, even though
+including them only strengthens the same conclusion — preserved immutable; this corrected candidate from the SAME
+parent completes the sweep table. This gate performs the mandatory ILT-002 hidden-surface reconstruction
+(canonical record:
+`docs/governance/CF6_CF2_ILT002_FACET_RECONSTRUCTION_AND_CORRECTION_RECORD.md`) and finds a **CRITICAL
+CORRECTION**: the ILT-002 legacy routes' hardcoded `"electronics_electrical"` domain selection is GOVERNED,
+INTENTIONAL, TESTED behavior — `tests/test_web_app.py::test_governed_ilt002_routes_remain_electronics_pinned_
+after_restriction` explicitly asserts these routes must stay electronics-pinned regardless of submitted content;
+a companion test pins the exact downstream domain-specific question text; commit-history and the separate
+ILT-002 evidence-ledger governance apparatus confirm these are fixed-domain scenario routes whose transcripts
+depend on the fixed domain — NOT a technical-debt bug analogous to the CLI facet. **Corrected-candidate finding:**
+a SECOND, independent, Owner-authorized "E-2 Path N smoke runner" (`scripts/e2_path_n_smoke_runner.sh`) also
+depends on this exact route's fixed domain via a verbatim fixed-response/exact-match evidence procedure —
+further corroborating the governed design. Activation enforcement already fully exists
+(`_admit_specialist_domain` → `is_activated`, per D-S5-03, unchanged from the prior gate's finding). Exhaustive
+hidden-surface sweep: three routes confirmed exhaustive (no fourth); a fresh repo-wide `ilt002` reference sweep
+across `web/ engine/ scripts/` found exactly the routes plus the two consumer-tooling scripts (both OUT OF SCOPE);
+the nine previously-identified test files individually classified, none requiring change; persisted
+`confirmed_domain` and the question-text pin confirmed load-bearing; zero hash/snapshot pins exist; the P4-1b-2a
+durability coupling confirmed out of scope and not reopened; zero template/copy surface found (CF-2's "route
+copy" item reassessed likely moot, not closed). **Determination: NO implementation gate created or authorized**
+— any further ILT-002 work requires an explicit Owner decision on whether the fixed-domain design should ever
+change. **CF-6 remains globally OPEN** (ILT-002 item now Owner-input-pending); **CF-2 remains globally OPEN**
+(ILT-002 item reassessed likely moot but not closed; Arabic localization + non-`/start` sweep fully outstanding).
+Tier-1 label untouched. **Mechanical remains NOT ACTIVATED**; `activated_domains() ==
+['electronics_electrical']`. ZERO runtime/test/pack/registry/activation/ODR diff. Authoritative ONLY if/when this
+exact candidate is merged and post-merge verified. Next required gate: **Mandatory Grill on this exact
+candidate** → independent external exact-candidate review → Owner acceptance → SHA-preserving publication → PR →
+pre/post-merge verification. No further ILT-002 gate should be attempted until the Owner reviews this record.
+
+**Immediately prior (CF-6/CF-2 CLI shared-facet implementation gate — MERGED via PR #488 `6524e792`; retained as
+history):**
+**Status (prior — CF-6/CF-2 CLI SHARED-FACET IMPLEMENTATION CANDIDATE — facet DISCHARGED for both trackers
 conditional on merge; ILT-002 deferred; Tier-1 untouched; Mechanical NOT ACTIVATED; ODR UNCHANGED):** the corrected
 CF-6/CF-2 CLI shared-facet scoping contract is **MERGED and post-merge verified** (PR #487 → authoritative base
 `305961aefe70056e94fa7d6f3260eb6bfc08840d`, parents `2b985844` + accepted corrected scoping candidate `f496d731`,

@@ -9698,3 +9698,71 @@ remains NOT ACTIVATED**; `activated_domains() == ['electronics_electrical']`; Ti
 deferred to activation-readiness); no D4/D8/THERM-01/Phase 10/PSRR/deployment; no P9 closure. Append-only; prior
 history not rewritten. **Next required gate: Mandatory Grill on this exact implementation candidate**, then the
 governed lifecycle.
+
+---
+
+## CF-6 / CF-2 — ILT-002 Shared-Facet RECONSTRUCTION & CORRECTION — governance-only CORRECTED CANDIDATE (first candidate `cad135c5` self-rejected, preserved) — NO implementation authorized; Owner decision required before any further ILT-002 gate; Tier-1 label untouched; Mechanical NOT ACTIVATED; ODR UNCHANGED
+
+**Gate.** Governance-only reconstruction/correction record on authoritative base
+`6524e792786644d3053aeac650bdfa7888ad0653` (PR #488 — SHA-preserving merge of the accepted CF-6/CF-2 CLI
+shared-facet implementation candidate `6f1ad899` onto `305961ae`; merge tree `4b8b191f` == candidate tree;
+POST-MERGE PASS; freshly fetched; 0 newer; clean tree) — the CLI shared facet is DISCHARGED for both CF-6 and
+CF-2 (both trackers remain globally OPEN). Canonical record:
+`docs/governance/CF6_CF2_ILT002_FACET_RECONSTRUCTION_AND_CORRECTION_RECORD.md`. **Candidate lineage:** a first
+reconstruction candidate `cad135c5f75233dc3fd175d93f0a5a28fe197eed` was self-Grilled and self-REJECTED — the
+mandatory hidden-surface sweep's own post-freeze re-check found two consumer-tooling files the frozen candidate's
+table had omitted (`scripts/e2_exact_matcher.py`, `scripts/e2_path_n_smoke_runner.sh` — the latter an
+Owner-authorized E-2 Path N fixed-response smoke-evidence runner that POSTs to
+`/start_ilt002_combination_lock_path_n`), even though including them only strengthens the same conclusion —
+preserved as immutable self-rejected evidence. THIS corrected candidate from the SAME parent completes the sweep
+table. **`OWNER_DECISION_REGISTER.md` UNCHANGED.**
+
+**Critical finding (material correction to the prior "ILT-002 facet" characterization; strengthened this
+candidate).** A full mandatory hidden-surface sweep proved the ILT-002 legacy routes' hardcoded
+`"electronics_electrical"` domain selection is **GOVERNED, INTENTIONAL, and TESTED** behavior — NOT a
+technical-debt bug analogous to the CLI facet. `tests/test_web_app.py::test_governed_ilt002_routes_remain_
+electronics_pinned_after_restriction` explicitly submits domain-neutral text and asserts these routes must STILL
+succeed and stay `electronics_electrical` regardless of content; `test_start_ilt002_water_leak_forces_electronics_
+domain` pins the exact electronics-specific downstream question text; commit-history and governance-apparatus
+evidence (`AB-006_FINAL_CLOSURE_RECORD.md`, `AUTHORIZATION_REVIEW.md`, the `ILT002_EXECUTION_GUIDE.md`/
+`ILT002_FORM_T.md` lineage) show these are fixed-domain scenario routes serving a dedicated ILT-002 evidence-
+ledger protocol whose transcripts depend on the fixed domain. **Corrected-candidate addition:** the mandatory
+sweep also found `scripts/e2_path_n_smoke_runner.sh` — a SECOND, independent, Owner-authorized "E-2 Path N smoke
+runner (Gate B, B-2)" that POSTs a fixed, verbatim, Owner-authorized response array
+(`E2_OPERATIONAL_PROCEDURE.md` §6/§7.2, "no substitution permitted") to
+`/start_ilt002_combination_lock_path_n` and produces an exact-match evidence verdict — this SECOND procedure ALSO
+depends on the route's fixed electronics domain, further corroborating that changing domain-selection would
+break more than one Owner-authorized evidence procedure. The P4-1b-2a REV1 Owner disposition that durably backed
+these routes is scoped only to persistence/token mechanics and neither froze nor authorizes changing
+domain-selection.
+
+**Reassessed obligations.** Activation enforcement already fully exists on all three routes (`_admit_specialist_
+domain` → `domain_activation.is_activated`, consistent with D-S5-03) — confirmed, unchanged from the prior
+gate's finding. CF-6's ILT-002 concern is NOT actionable as a bounded technical fix without contradicting a
+governed, tested, dual-protocol-serving invariant. CF-2's "ILT-002 route copy" residual item is reassessed as
+likely MOOT — zero template or copy surface tied to these routes was found; the resulting session page truthfully
+reflects the actually-stored (by-design) electronics domain. Neither reassessment CLOSES anything — each
+tracker's own future full-scope closure gate must confirm.
+
+**Exhaustive hidden-surface sweep (complete table in the canonical record).** Three routes exhaustively confirmed
+(fresh grep, no fourth route anywhere in the repository); a fresh repo-wide `ilt002` reference sweep across
+`web/ engine/ scripts/` found exactly the routes plus the two consumer-tooling scripts (both classified OUT OF
+SCOPE, the smoke runner as corroborating evidence); the nine previously-identified test files re-confirmed and
+individually classified — none require any change today; the persisted `confirmed_domain` reconstruction input
+and the downstream domain-specific question-text pin confirmed load-bearing; zero hash/snapshot pins exist; the
+P4-1b-2a durability coupling confirmed out of scope for any domain-selection question and not reopened.
+
+**Determination.** **NO implementation gate is created or authorized.** Per anti-duplication guidance and
+CLAUDE.md's stop-condition discipline, this record STOPS before implementation: not because prior governance
+already fully scopes ILT-002 (it explicitly deferred it, unscoped), but because fresh evidence disproves the
+premise that a bounded technical fix exists to scope. Any further ILT-002 gate requires an **explicit Owner
+decision** on whether the evidence-ledger routes' fixed-domain design should ever change, and under what
+protocol-preserving terms — a genuine product/protocol policy question this record surfaces but does not decide.
+
+**Boundary / status.** **CF-6 remains globally OPEN** (ILT-002 item now Owner-input-pending; open-ended remainder
+otherwise unaffected). **CF-2 remains globally OPEN** (ILT-002 item reassessed likely moot but not closed; Arabic
+localization and non-`/start` template sweep fully outstanding). Tier-1 label untouched, still deferred until
+activation-readiness. **Mechanical remains NOT ACTIVATED**; `activated_domains() == ['electronics_electrical']`;
+no D4/D8/THERM-01/Phase 10/PSRR/deployment; no P9 closure. ZERO runtime/test/pack/registry/activation diff.
+Append-only; prior history not rewritten. **Next required gate: Mandatory Grill on this exact candidate**, then
+the governed lifecycle. No further ILT-002 gate should be attempted until the Owner reviews this record's §3/§9.
