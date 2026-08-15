@@ -9766,3 +9766,42 @@ activation-readiness. **Mechanical remains NOT ACTIVATED**; `activated_domains()
 no D4/D8/THERM-01/Phase 10/PSRR/deployment; no P9 closure. ZERO runtime/test/pack/registry/activation diff.
 Append-only; prior history not rewritten. **Next required gate: Mandatory Grill on this exact candidate**, then
 the governed lifecycle. No further ILT-002 gate should be attempted until the Owner reviews this record's §3/§9.
+
+---
+
+## CF-6 / CF-2 — ILT-002 Fixed-Domain Protocol — OWNER DECISION RECORDED (`D-CF6CF2-ILT002-01`) — resolves the classifier-consistency ambiguity; CF-6/CF-2 remain OPEN; Tier-1 label untouched; Mechanical NOT ACTIVATED
+
+**Gate.** Governance-only Owner-decision registration on authoritative base
+`3570863ef9519f123c76fb1f165452e4935365e3` (PR #489 — SHA-preserving merge of the accepted corrected CF-6/CF-2
+ILT-002 reconstruction candidate `0587c7b6` onto `6524e792`; merge tree `d3bab7fd` == candidate tree; POST-MERGE
+PASS; freshly fetched; 0 newer; clean tree). Canonical decision record: `OWNER_DECISION_REGISTER.md` entry
+`D-CF6CF2-ILT002-01`, per repository precedent (the D-CF5-F002-01 / D-P9-MECH-02 / D-THERM-01 pattern — an ODR
+table row recording the decision, referencing the pre-existing evidentiary record as canonical substance, no
+duplicate governance framework created).
+
+**Owner decision recorded (exactly, all eight points).** (1) the three `start_ilt002_*` routes remain intentional
+fixed-domain scenario/evidence routes; (2) their hardcoded `electronics_electrical` domain selection is a
+governed protocol invariant, NOT a classifier defect; (3) activation enforcement via `_admit_specialist_domain()`
+continues unchanged; (4) no classifier-driven routing without a future explicit Owner decision; (5) no duplicate
+activation checks; (6) existing ILT-002/E-2 evidence semantics and persistence meaning preserved unchanged; (7)
+the prior CF-6 classifier-consistency ambiguity is RESOLVED in favor of the fixed-domain protocol — the ILT-002
+classifier-remediation item is narrowly removed from CF-6's technical-remediation list; (8) explicitly NOT a
+global closure of CF-6 or CF-2, NOT a waiver of either tracker's unrelated remainder, NOT Mechanical activation,
+NOT Tier-1 authorization, NOT Phase 9 closure.
+
+**CF-6 effect (narrow).** The ILT-002 domain-selection item is removed from CF-6's technical-remediation list —
+it is no longer treated as a bug requiring a fix. **CF-6 remains OPEN**: its open-ended "full stated scope"
+confirmation (CF-5 Audit contract §13) is unaffected and still requires CF-6's own future closing gate; nothing
+here globally closes it.
+
+**CF-2 effect (narrow, residual preserved).** The independent-review-identified truthfulness question — whether a
+generic session/public label could display "electronics" for arbitrary text posted to an unlinked fixed-domain
+route — is explicitly PRESERVED, unresolved, for CF-2's own future full-scope/public-message sweep. This decision
+does not discharge it and does not claim it is resolved. **CF-2 remains OPEN**: the ILT-002 route-copy item stays
+on its residual list; Arabic localization and the non-`/start` template sweep are entirely untouched.
+
+**Boundary / status.** ZERO runtime/test/pack/registry/activation/schema/persistence diff — no ILT-002 route,
+`_admit_specialist_domain`, E-2 tooling, engine, or test file touched. `activated_domains() ==
+['electronics_electrical']`; **Mechanical remains NOT ACTIVATED**; Tier-1 label untouched (still deferred to
+activation-readiness); no D4/D8/THERM-01/Phase 10/PSRR/deployment; no P9 closure. Append-only; prior history not
+rewritten. **Next required gate: Mandatory Grill on this exact candidate**, then the governed lifecycle.

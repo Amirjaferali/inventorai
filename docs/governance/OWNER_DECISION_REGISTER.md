@@ -1041,3 +1041,31 @@ registry/pack/runtime change, NO CF-6/CF-2/D-GMPR closure, NO D4/D8, NO Phase 10
 
 **Boundary.** `activated_domains() == ['electronics_electrical']`; Mechanical NOT qualified / NOT activated; first
 new-domain activation remains BLOCKED. This entry authorizes no implementation of any kind.
+
+---
+
+## CF-6 / CF-2 — ILT-002 Fixed-Domain Protocol Decision (resolves the reconstruction-flagged classifier-consistency ambiguity)
+
+Governance/documentation-only registration of the Owner's explicit decision resolving the ambiguity flagged by
+`docs/governance/CF6_CF2_ILT002_FACET_RECONSTRUCTION_AND_CORRECTION_RECORD.md` (merge
+`6524e792786644d3053aeac650bdfa7888ad0653` → `0587c7b6` → PR #489, authoritative tip
+`3570863ef9519f123c76fb1f165452e4935365e3`): that record's mandatory hidden-surface sweep found the three
+`start_ilt002_*` legacy routes' hardcoded `electronics_electrical` domain selection is governed, intentional, and
+tested (`tests/test_web_app.py::test_governed_ilt002_routes_remain_electronics_pinned_after_restriction` and its
+companion pin) — but stopped short of implementation, determining that any further ILT-002 gate required an
+explicit Owner decision on whether that fixed-domain design should ever change. **Scope guard:** this entry
+resolves ONLY the narrow question the reconstruction record raised — whether ILT-002 domain-selection is a
+classifier defect requiring remediation. It authorizes **no** implementation, **no** runtime/Web/CLI/test/domain/
+activation/schema/persistence change, **no** E-2 tooling change, **no** Mechanical activation, **no** Tier-1
+label work, and **no** global closure of CF-6 or CF-2 (each remains OPEN — see Boundary).
+
+| ID | Subject | Status | Impl. authority | Evidence |
+|---|---|---|---|---|
+| D-CF6CF2-ILT002-01 | **ILT-002 fixed-domain design is a governed protocol invariant, not a classifier defect.** The Owner decides: **(1)** the three `start_ilt002_*` routes remain intentionally fixed-domain scenario/evidence routes; **(2)** their hardcoded `electronics_electrical` domain selection is a governed protocol invariant, not a classifier defect — it is NOT to be treated as CF-6 technical-remediation debt; **(3)** they continue to pass through canonical activation enforcement via `_admit_specialist_domain()` (`domain_activation.is_activated`) exactly as today, unchanged; **(4)** no classifier-driven routing is to be introduced into these routes unless a future explicit Owner decision changes the protocol itself; **(5)** no duplicate activation checks are to be added to them; **(6)** existing ILT-002 evidence-ledger semantics, the separate Owner-authorized E-2 Path N smoke-evidence procedure (`scripts/e2_path_n_smoke_runner.sh`), and all current persistence meaning (the durably-stored `confirmed_domain`, downstream NB-R1 cold-load restoration, and the domain-specific question-text pin) are preserved unchanged; **(7)** the prior CF-6 ambiguity over whether ILT-002 must classify submitted text is RESOLVED in favor of the fixed-domain protocol — the ILT-002 classifier-remediation item is narrowly removed from CF-6's technical-remediation list (nothing else in CF-6's open-ended remainder is affected); **(8)** this decision does NOT globally close CF-6, does NOT globally close CF-2, does NOT waive CF-6's unrelated remainder, does NOT waive CF-2's Arabic-localization or non-`/start` public-message remainder, does NOT activate Mechanical, does NOT authorize Tier-1, and does NOT close Phase 9. **CF-2 residual preserved, not discharged:** the independent-review-identified question — whether a generic session/public label could display "electronics" for arbitrary text posted to an unlinked fixed-domain route — remains an OPEN question for CF-2's own future full-scope/public-message sweep; this decision does not answer it and does not claim it is resolved. | **ACCEPTED — RESOLVED (authoritative if/when this governance candidate completes the review/acceptance/merge lifecycle)** | NONE (decision-only; any future ILT-002 protocol change requires its own separate explicit Owner authorization and its own governed implementation gate) | `CF6_CF2_ILT002_FACET_RECONSTRUCTION_AND_CORRECTION_RECORD.md` §3/§9 (the reconstruction that raised this question); `tests/test_web_app.py::test_governed_ilt002_routes_remain_electronics_pinned_after_restriction`; `web/app.py::_admit_specialist_domain`; D-S5-03 |
+
+**Boundary.** `activated_domains() == ['electronics_electrical']`; Mechanical NOT qualified / NOT activated; first
+new-domain activation remains BLOCKED. **CF-6 remains OPEN** — narrowed by removing the ILT-002 classifier-
+remediation item, but not closed: its open-ended "full stated scope" confirmation (per the CF-5 Audit contract
+§13) is unaffected and still requires CF-6's own future closing gate. **CF-2 remains OPEN** — the ILT-002 route-
+copy item stays under CF-2's residual list pending the truthfulness question above; Arabic localization and the
+non-`/start` template sweep are entirely untouched. This entry authorizes no implementation of any kind.

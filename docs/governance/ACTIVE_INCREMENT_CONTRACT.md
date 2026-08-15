@@ -41,7 +41,37 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — CF-6/CF-2 ILT-002 SHARED-FACET RECONSTRUCTION & CORRECTION — CORRECTED CANDIDATE (first
+**Status (current — CF-6/CF-2 ILT-002 FIXED-DOMAIN PROTOCOL — OWNER DECISION RECORDED (`D-CF6CF2-ILT002-01`) —
+governance-only; classifier-consistency ambiguity RESOLVED; CF-6/CF-2 remain OPEN; Tier-1 untouched; Mechanical
+NOT ACTIVATED):** the CF-6/CF-2 ILT-002 reconstruction & correction candidate is **MERGED and post-merge
+verified** (PR #489 → authoritative base `3570863ef9519f123c76fb1f165452e4935365e3`, parents `6524e792` +
+accepted corrected reconstruction candidate `0587c7b6`, merge tree `d3bab7fd` == candidate tree). This gate
+records the Owner's explicit decision resolving that record's flagged ambiguity, per repository precedent (the
+D-CF5-F002-01/D-P9-MECH-02/D-THERM-01 ODR-entry pattern — no duplicate governance framework):
+`OWNER_DECISION_REGISTER.md` entry **`D-CF6CF2-ILT002-01`**. **Owner decision (all eight points, exact):** the
+three `start_ilt002_*` routes remain intentional fixed-domain scenario/evidence routes; their hardcoded
+`electronics_electrical` selection is a governed protocol invariant, NOT a classifier defect; activation
+enforcement via `_admit_specialist_domain()` continues unchanged; no classifier-driven routing without a future
+explicit Owner decision; no duplicate activation checks; existing ILT-002/E-2 evidence semantics and persistence
+meaning preserved unchanged; the prior CF-6 classifier-consistency ambiguity is RESOLVED in favor of the
+fixed-domain protocol (the ILT-002 classifier-remediation item narrowly removed from CF-6's technical-remediation
+list); explicitly NOT a global closure of CF-6 or CF-2, NOT a waiver of either tracker's unrelated remainder, NOT
+Mechanical activation, NOT Tier-1 authorization, NOT Phase 9 closure. **CF-6 effect:** the ILT-002 item is
+removed from its technical-remediation list; **CF-6 remains OPEN** (open-ended full-scope confirmation
+unaffected, own future closing gate required). **CF-2 effect:** the independent-review-identified truthfulness
+question (whether a generic session/public label could display "electronics" for arbitrary text on an unlinked
+fixed-domain route) is explicitly PRESERVED, unresolved, for CF-2's own future full-scope sweep; **CF-2 remains
+OPEN** (ILT-002 route-copy item stays on its residual list; Arabic localization + non-`/start` sweep untouched).
+**ZERO runtime/test/pack/registry/activation/schema/persistence diff** — no ILT-002 route, `_admit_specialist_
+domain`, E-2 tooling, engine, or test file touched. `activated_domains() == ['electronics_electrical']`;
+**Mechanical remains NOT ACTIVATED**; Tier-1 label untouched. No D4/D8/THERM-01/Phase 10/PSRR/deployment; no P9
+closure. Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next required gate:
+**Mandatory Grill on this exact candidate** → independent external exact-candidate review → Owner acceptance →
+SHA-preserving publication → PR → pre/post-merge verification.
+
+**Immediately prior (CF-6/CF-2 ILT-002 reconstruction & correction gate — MERGED via PR #489 `3570863e`; retained
+as history):**
+**Status (prior — CF-6/CF-2 ILT-002 SHARED-FACET RECONSTRUCTION & CORRECTION — CORRECTED CANDIDATE (first
 candidate `cad135c5` self-rejected, preserved) — governance-only; NO implementation authorized; Owner decision
 required before any further ILT-002 gate; Tier-1 untouched; Mechanical NOT ACTIVATED; ODR UNCHANGED):** the
 CF-6/CF-2 CLI shared-facet implementation is **MERGED and post-merge verified** (PR #488 → authoritative base
