@@ -9805,3 +9805,58 @@ on its residual list; Arabic localization and the non-`/start` template sweep ar
 ['electronics_electrical']`; **Mechanical remains NOT ACTIVATED**; Tier-1 label untouched (still deferred to
 activation-readiness); no D4/D8/THERM-01/Phase 10/PSRR/deployment; no P9 closure. Append-only; prior history not
 rewritten. **Next required gate: Mandatory Grill on this exact candidate**, then the governed lifecycle.
+
+---
+
+## CF-6 — FULL-SCOPE FORMAL CLOSURE — CANDIDATE (`CF-6 = FULLY DISCHARGED` conditional on merge); CF-2 remains OPEN; Tier-1 label untouched; Mechanical NOT ACTIVATED; ODR UNCHANGED
+
+**Gate.** Governance-only full-scope confirming closure gate on authoritative base
+`1fe05e098c5ecf53b63088e12e71549635ead70b` (PR #490 — SHA-preserving merge of the accepted CF-6/CF-2 ILT-002
+Owner-decision candidate `a3e4300d` onto `3570863e`; merge tree `bcb012b1` == candidate tree; POST-MERGE PASS;
+freshly fetched; 0 newer; clean tree) — `D-CF6CF2-ILT002-01` is authoritative. Canonical record:
+`docs/governance/CF6_FULL_SCOPE_FORMAL_CLOSURE_RECORD.md`. **`OWNER_DECISION_REGISTER.md` UNCHANGED** (evidence-
+based closure determination, not a new product-policy decision — the CF5-F001/F002/F004/CF-5-Audit closure
+convention).
+
+**CF-6 reconstructed scope.** Adopted from `P9_E2_MULTI_ACTIVATED_DOMAIN_TIE_PRECEDENCE_FORMAL_CLOSURE_RECORD.md`
+§7 (the fullest, earliest, most specific authoritative statement, consistent with every later document): the
+interaction between Web `/start` strong-unsupported heuristics, canonical-classifier reachability, activated-
+domain admission, ambiguity handling, Web/CLI/core consistency, and (shared with CF-2) public-message
+truthfulness. Six facets synthesized: pre/post-classifier ordering; strong-unsupported vocabulary vs the
+activation set; activated-domain admission (no hidden Electronics admission); ambiguity handling (no
+`AMBIGUOUS_TIE` bypass); session creation / fail-closed behavior; Web/CLI/core consistency.
+
+**Full-scope adversarial sweep.** An independent read-only Explore-agent sweep exhaustively grepped every
+`"electronics_electrical"` literal, every `classify_domain`/`activated_domains`/`is_activated`/
+`_admit_specialist_domain` call site, any second activated-domains registry, every template "electronics"
+occurrence, cold-load/persistence seams, question-selection domain branching, every session-creation-capable
+script, and every `infer_domain` reference across `web/*`, `engine/*`, `scripts/*`. This session personally
+re-read full context for every ambiguous match and classified each into the six-category scheme (Legitimate
+domain-specific / Governed exception / Shared-consumer canonical / Shared-consumer defect / Historical
+non-executable / Outside CF-6). **Result: zero `SHARED-CONSUMER — DEFECT` items found.** Every match resolved to:
+canonical behavior (the single classifier, the single activation source, activation-derived copy/templates,
+generic domain propagation in progression_loop/deliverable_assembler, fail-closed cold-load restoration in
+session_reconstruction.py, every session-creation write site tracing to `_admit_specialist_domain` or verbatim
+persisted-domain restoration); a governed exception (the F002-reviewed weak-conflict-resolution branch at
+`web/app.py:1639`, explicitly comment-tagged "activation-aware since CF5-F002 (CF-6 facet)"; the three ILT-002
+routes; the E-2/ILT-002 tooling scripts); an already-closed separate tracker (`D-GMPR-01-D-D3` for the Path-N
+legacy default; `CF5-F001` for the safety-signal MVP default; `CF-3`/`CF5-F004` for the legacy zero-activated
+precedence tuple); legitimate domain-specific scoring-rule content (`progression_loop.py:415`); or genuinely
+out-of-scope material (`DOMAIN_CONFIRM_VALUE` — confirmed zero production readers, test-convenience-only across
+~20 files; `scripts/run_summary_demo.py` — a standalone offline demo script that never touches the classifier/
+activation/admission chain at all; a stale test-file comment).
+
+**CLI facet: DISCHARGED** (merge `6524e792…`). **ILT-002 facet: RESOLVED BY OWNER DECISION, not a defect** (merge
+`1fe05e09…`, `D-CF6CF2-ILT002-01`).
+
+**Determination: CF-6 = FULLY DISCHARGED for its authoritative reconstructed scope**, conditional on this
+candidate's own merge and post-merge verification. Full suite **2577 passed / 3 skipped / 1 xfailed / 0 failed**
+(fresh, unchanged — zero runtime diff this candidate; no mutation probes needed since no runtime behavior is
+asserted new or changed).
+
+**Boundary / status.** **CF-2 remains globally OPEN** (its own full-scope sweep, the ILT-002 residual truthfulness
+question, Arabic localization, and the non-`/start` template sweep are untouched and NOT discharged by this
+candidate). Tier-1 label untouched (still deferred to activation-readiness). **Mechanical remains NOT ACTIVATED**;
+`activated_domains() == ['electronics_electrical']`. Phase 9 remains OPEN. No D4/D8/THERM-01/Phase 10/PSRR/
+deployment. ZERO runtime/test/pack/registry/activation/schema/persistence diff. Append-only; prior history not
+rewritten. **Next required gate: Mandatory Grill on this exact candidate**, then the governed lifecycle.
