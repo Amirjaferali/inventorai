@@ -41,38 +41,63 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — CF-2 PUBLIC-MESSAGE TRUTHFULNESS FULL-REMAINDER RECONSTRUCTION & BOUNDED CLI IMPLEMENTATION
-CONTRACT — governance-only; implementation NOT started; Arabic-localization gap deferred; `L2SC-01` registered
-separately; CF-6 not reopened; Tier-1 untouched; Mechanical NOT ACTIVATED; ODR UNCHANGED):** the CF-6 full-scope
-closure candidate is **MERGED and post-merge verified** (PR #491 → authoritative base
-`5355ed54cbba17c16b5716865c1dc82e8b141941`, parents `1fe05e09` + accepted candidate `11d9450f`, merge tree
-`8d6aeb75` == candidate tree) — `CF-6 = FULLY DISCHARGED` authoritative; CF-2 remains OPEN. This gate performs
-the mandatory CF-2 full-remainder reconstruction (canonical record:
-`docs/governance/CF2_CLI_REMAINDER_TRUTHFULNESS_CONTRACT.md`). **Reconstructed CF-2 scope:** AMBIGUOUS_TIE/
-MULTI_DOMAIN_NEEDS_D4 user-facing treatment; generic unsupported messaging; future public reachability;
-misleading domain claims; CLI copy; ILT-002 route copy; non-`/start` templates; Arabic localization; any other
-public electronics-only assertion. **Full repository-wide sweep** (prose search beyond the bare identifier +
-personal re-verification of every match): every `web/app.py` `/start`-flow message-CONTENT truthfulness concern
-already correctly gated (the discharged F002 pattern); all 13 templates swept (12 clean; `index.html`'s 5
-occurrences bilingual + activation-gated). **Two confirmed CF-2 defects, both `scripts/run_cli.py`:** the
-unconditional startup banner (`:39-41`) and the richer-kind bounded-stop message (`:64-70`) — both outside the
-already-merged CLI facet's scope, verified at exact current content. **One deferred CF-2-class item (materially
-different responsibility):** all five `/start`-flow error-path messages bypass localization entirely (English-
-only regardless of language) — broader/more precise than the prior "electronics-only-state-only" characterization
-(corrected here as a later clarification). **ILT-002 presentation:** TRUTHFUL (session "Review type" label
-describes the actual review conducted, not a classification claim) — `D-CF6CF2-ILT002-01` unchanged. **`engine/
-progression_loop.py:415`:** classified OUTSIDE CF-2/CF-6 (Owner-authorized internal scoring logic, not public
-copy) — registered as NEW anti-forgetting entry **`L2SC-01`** (THERM-01 precedent; non-numeric; no CAP entry; no
-implementation). **Determination: governance-only BOUNDED IMPLEMENTATION CONTRACT created** (not closure, not
-implementation) — §8 bounds a future CLI-only remediation increment (byte-identical electronics-only output;
-truthful generalized/empty-activation copy; richer-kind dispatch logic untouched; full test/mutation
-enumeration). Arabic gap and `L2SC-01` explicitly NOT folded into this increment. **ZERO runtime/test/pack/
-registry/activation diff.** Implementation NOT authorized by this contract. `CF-6 = FULLY DISCHARGED` unchanged,
-not reopened; `MECHANICAL = P9-QS QUALIFIED — WITH ACTIVATION BLOCKERS; NOT ACTIVATED` unchanged; `activated_
-domains() == ['electronics_electrical']`; Tier-1 label untouched. Authoritative ONLY if/when this exact candidate
-is merged and post-merge verified. Next required gate: **Mandatory Grill on this exact candidate** →
-independent external exact-candidate review → Owner acceptance → SHA-preserving publication → PR → pre/post-merge
-verification; thereafter the separately-authorized CLI-remainder implementation gate.
+**Status (current — CF-2 CLI REMAINDER TRUTHFULNESS IMPLEMENTATION — bounded runtime candidate; two defects only;
+Arabic-localization gap deferred; `L2SC-01` not touched; CF-6 not reopened; Tier-1 untouched; Mechanical NOT
+ACTIVATED; ODR UNCHANGED):** the CF-2 CLI remainder contract candidate is **MERGED and post-merge verified** (PR
+#492 → authoritative base `de85d1010df8aaff8a67fb6f3d4a7ab5c93936bb`, parents `5355ed54` + accepted candidate
+`27af00b5`, merge tree == candidate tree) — this gate implements ONLY
+`docs/governance/CF2_CLI_REMAINDER_TRUTHFULNESS_CONTRACT.md` §8. **Exact change:**
+`activated = domain_activation.activated_domains()` computed once at the top of `scripts/run_cli.py::run_cli()`,
+reused across the startup banner, the richer-kind (`AMBIGUOUS_TIE`/`MULTI_DOMAIN_NEEDS_D4`/
+`UNRESOLVED_NON_ACTIVATED_TIE`) bounded-stop message, and the pre-existing Step-3 admission check — byte-
+identical under `['electronics_electrical']`; truthful generalized copy under a broader activation set; truthful
+no-domain-available copy under the empty-activation edge case. The richer-kind dispatch LOGIC (which branch
+fires) is unchanged — only the printed copy inside the existing branches changed. The unrelated CLI FINAL
+SUMMARY indentation/printing bug was explicitly NOT touched (outside this contract). **Tests:** 8 new focused
+tests in `tests/test_cf5_f003_classifier_matching_semantics.py` (electronics-only byte-identical pins for both
+sites; broadened- and empty-activation truthful-copy pins for both sites; a real-classifier richer-kind dispatch-
+logic re-pin; an explicit combined negative-assertion test). **Mutation probes:** all 4 required probes CAUGHT
+(old banner literal; old richer-kind literal; neutralized broadened-activation branch; corrupted electronics-only
+branch), each reverted with SHA-256-verified byte-identical restoration. **Suite:** 2585 passed / 3 skipped / 1
+xfailed / 0 failed (2577 baseline + 8 new; 0 regressions). **Scope:** changed paths strictly `scripts/run_cli.py`
++ `tests/test_cf5_f003_classifier_matching_semantics.py`; every `web/*`, ILT-002 route, E-2 tooling script,
+`engine/*` file (incl. `progression_loop.py`/L2SC-01), domain pack, persistence, classifier, and activation
+surface untouched. `OWNER_DECISION_REGISTER.md` UNCHANGED. **Boundary:** discharges ONLY this narrow two-defect
+increment (at its own future closure) — does NOT close CF-2 overall (the Arabic-localization gap remains open,
+not re-swept here); does NOT reopen CF-6 (`CF-6 = FULLY DISCHARGED` stands); does NOT touch
+`D-CF6CF2-ILT002-01`; does NOT touch the Tier-1 label; does NOT activate Mechanical; no D4/D8/THERM-01/Phase
+10/PSRR/deployment; no P9 closure. `activated_domains() == ['electronics_electrical']` unchanged. Authoritative
+ONLY if/when this exact candidate is merged and post-merge verified. Next required gate: **Mandatory Grill on
+this exact candidate** → independent external exact-candidate review → Owner acceptance → SHA-preserving
+publication → PR → pre/post-merge verification.
+
+**Immediately prior (CF-2 public-message truthfulness full-remainder reconstruction & bounded CLI implementation
+contract gate — MERGED via PR #492 `de85d101`; retained as history):** the CF-6 full-scope closure candidate is
+**MERGED and post-merge verified** (PR #491 → authoritative base `5355ed54cbba17c16b5716865c1dc82e8b141941`,
+parents `1fe05e09` + accepted candidate `11d9450f`, merge tree `8d6aeb75` == candidate tree) — `CF-6 = FULLY
+DISCHARGED` authoritative; CF-2 remains OPEN. This gate performed the mandatory CF-2 full-remainder
+reconstruction (canonical record: `docs/governance/CF2_CLI_REMAINDER_TRUTHFULNESS_CONTRACT.md`). **Reconstructed
+CF-2 scope:** AMBIGUOUS_TIE/MULTI_DOMAIN_NEEDS_D4 user-facing treatment; generic unsupported messaging; future
+public reachability; misleading domain claims; CLI copy; ILT-002 route copy; non-`/start` templates; Arabic
+localization; any other public electronics-only assertion. **Full repository-wide sweep** (prose search beyond
+the bare identifier + personal re-verification of every match): every `web/app.py` `/start`-flow message-CONTENT
+truthfulness concern already correctly gated (the discharged F002 pattern); all 13 templates swept (12 clean;
+`index.html`'s 5 occurrences bilingual + activation-gated). **Two confirmed CF-2 defects, both
+`scripts/run_cli.py`:** the unconditional startup banner (`:39-41`) and the richer-kind bounded-stop message
+(`:64-70`) — both outside the already-merged CLI facet's scope, verified at exact current content. **One
+deferred CF-2-class item (materially different responsibility):** all five `/start`-flow error-path messages
+bypass localization entirely (English-only regardless of language) — broader/more precise than the prior
+"electronics-only-state-only" characterization (corrected here as a later clarification). **ILT-002
+presentation:** TRUTHFUL (session "Review type" label describes the actual review conducted, not a
+classification claim) — `D-CF6CF2-ILT002-01` unchanged. **`engine/progression_loop.py:415`:** classified
+OUTSIDE CF-2/CF-6 (Owner-authorized internal scoring logic, not public copy) — registered as NEW anti-forgetting
+entry **`L2SC-01`** (THERM-01 precedent; non-numeric; no CAP entry; no implementation). **Determination:
+governance-only BOUNDED IMPLEMENTATION CONTRACT created** (not closure, not implementation) — §8 bounds a future
+CLI-only remediation increment (byte-identical electronics-only output; truthful generalized/empty-activation
+copy; richer-kind dispatch logic untouched; full test/mutation enumeration). Arabic gap and `L2SC-01` explicitly
+NOT folded into this increment. **ZERO runtime/test/pack/registry/activation diff.** `CF-6 = FULLY DISCHARGED`
+unchanged, not reopened; `MECHANICAL = P9-QS QUALIFIED — WITH ACTIVATION BLOCKERS; NOT ACTIVATED` unchanged;
+`activated_domains() == ['electronics_electrical']`; Tier-1 label untouched.
 
 **Immediately prior (CF-6 full-scope closure gate — MERGED via PR #491 `5355ed54`; retained as history):**
 **Status (prior — CF-6 FULL-SCOPE FORMAL CLOSURE CANDIDATE — `CF-6 = FULLY DISCHARGED` conditional on merge; CF-2
