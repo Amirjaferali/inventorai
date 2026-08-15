@@ -334,3 +334,66 @@ def test_green_cli_electronics_proceeds(monkeypatch, capsys):
     mod.run_cli()
     out = capsys.readouterr().out
     assert "Domain inferred: electronics_electrical" in out
+
+
+# --------------------------------------- CF-6/CF-2 CLI shared-facet (governed
+# by docs/governance/CF6_CF2_CLI_SHARED_FACET_SCOPING_CONTRACT.md §4): the CLI
+# admission truth now derives from `engine.domain_activation.activated_domains()`
+# (reused unchanged, no new admission mechanism), never a hardcoded domain
+# literal — mirroring the CF5-F002 Web `/start` fix. Electronics-only behavior
+# is byte-identical (proven by the pre-existing pins above, unchanged); these
+# new pins cover the previously-untested truthful/multi-domain/unactivated/
+# empty-activation branches.
+def test_green_cli_electronics_only_refusal_copy_byte_identical(monkeypatch, capsys):
+    """Electronics-only activation (today's real state): the refusal copy for
+    a non-electronics-classified idea remains byte-identical to the historical
+    hardcoded text."""
+    mod = _load_run_cli()
+    monkeypatch.setattr(builtins, "input", lambda *_a, **_k: "a gear and pulley hoist with a crankshaft drive")
+    mod.run_cli()
+    out = capsys.readouterr().out
+    assert "This MVP supports electronics/electrical ideas only." in out
+    assert "Your idea domain was not recognized as electronics." in out
+    assert "Supported signals include: sensor, circuit, WiFi," in out
+
+
+def test_green_cli_multi_activated_admits_legitimately_activated_domain(activate, monkeypatch, capsys):
+    """A classified domain that IS in a broadened activated set must proceed —
+    the activation-derived truth does not falsely reject it."""
+    mod = _load_run_cli()
+    activate("electronics_electrical", "mechanical")
+    monkeypatch.setattr(builtins, "input", lambda *_a, **_k: "a gear and pulley hoist with a crankshaft drive")
+    mod.run_cli()
+    out = capsys.readouterr().out
+    assert "Domain inferred: mechanical" in out
+    assert "Domain confirmed: Mechanical" in out
+    assert "OUTSIDE MVP SCOPE" not in out
+
+
+def test_green_cli_multi_activated_refuses_unactivated_classified_domain(activate, monkeypatch, capsys):
+    """A classified domain that is recognized but NOT in the activated set
+    remains refused, with truthful (non-electronics-pinned) multi-domain copy."""
+    mod = _load_run_cli()
+    activate("electronics_electrical", "mechanical")
+    monkeypatch.setattr(builtins, "input", lambda *_a, **_k: "a catheter guide with an implantable stent")
+    mod.run_cli()
+    out = capsys.readouterr().out
+    assert "OUTSIDE MVP SCOPE" in out
+    assert "This MVP currently supports Electronics Electrical or Mechanical ideas only." in out
+    assert "electronics/electrical ideas only" not in out   # not the stale electronics-pinned copy
+    assert "Domain confirmed" not in out
+
+
+def test_green_cli_empty_activation_refuses_no_silent_electronics_fallback(activate, monkeypatch, capsys):
+    """Empty activation set (documented-unreachable in production; test-double
+    only): an electronics-classified idea is still refused — no silent
+    fallback admits it — with truthful no-domain-available copy."""
+    mod = _load_run_cli()
+    activate()
+    monkeypatch.setattr(builtins, "input", lambda *_a, **_k: "an electronics circuit with sensors")
+    mod.run_cli()
+    out = capsys.readouterr().out
+    assert "OUTSIDE MVP SCOPE" in out
+    assert "No specialist domain is available right now." in out
+    assert "Domain confirmed" not in out
+    assert "electronics/electrical ideas only" not in out

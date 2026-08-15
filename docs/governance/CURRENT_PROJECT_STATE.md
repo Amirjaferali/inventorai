@@ -1908,6 +1908,24 @@ AUTHORIZED / NOT STARTED.***
   ACTIVATION BLOCKERS; NOT ACTIVATED` unchanged; `activated_domains() == ['electronics_electrical']`. No Tier-1
   label work; no ILT-002 touch; no Mechanical activation. Authoritative ONLY if/when this exact candidate is
   merged + post-merge verified. Next required gate: Mandatory Grill on this exact candidate.
+  **Corrected CF-6/CF-2 CLI scoping contract MERGED (PR #487, base
+  `305961aefe70056e94fa7d6f3260eb6bfc08840d`; merge tree == candidate tree `20a10ca2`). CF-6/CF-2 CLI
+  SHARED-FACET IMPLEMENTATION CANDIDATE recorded** (`OWNER_DECISION_REGISTER.md` UNCHANGED): delivered the
+  contract's §4 bounded increment — `scripts/run_cli.py`'s hardcoded `if domain != "electronics_electrical":`
+  replaced with activation-derived admissibility (`domain_activation.activated_domains()`, reused unchanged; no
+  new admission mechanism); local presentation helpers mirroring `web/app.py`'s shape without importing it;
+  Electronics-only copy byte-identical (explicit conditional branch); truthful multi-domain/empty-activation copy
+  added; classifier-dispatch richer-kind branches untouched. Four new pinned tests in the contract-named
+  reconciliation file. **ILT-002, `web/domain_label.py`, every engine file, every domain pack, and every other
+  test byte-unchanged** (diff confirms exactly 2 files touched). Fresh exhaustive sweep: same six pre-existing CLI
+  tests, zero flips; focused **134** (130 + 4 new); full suite **2577 passed / 3 skipped / 1 xfailed / 0 failed**
+  (base 2573 + 4, zero regressions); mutations m1–m6 all caught with byte-verified restoration. **CF-6's CLI
+  facet = DISCHARGED; CF-2's CLI facet = DISCHARGED** — neither tracker closed as a whole: **CF-6 remains OPEN**
+  (ILT-002 + open-ended remainder); **CF-2 remains OPEN** (ILT-002, Arabic localization, non-`/start` sweep).
+  ILT-002 not touched, not discharged, not implied discharged. **Mechanical remains NOT ACTIVATED**;
+  `activated_domains() == ['electronics_electrical']`; Tier-1 label untouched. No D4/D8/THERM-01/Phase
+  10/PSRR/deployment; no P9 closure. Authoritative ONLY if/when this exact candidate is merged + post-merge
+  verified. Next required gate: Mandatory Grill on this exact candidate.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation

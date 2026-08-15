@@ -41,7 +41,33 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — CF-6/CF-2 CLI SHARED-FACET SCOPING CONTRACT — CORRECTED CANDIDATE (first candidate `71c16d53`
+**Status (current — CF-6/CF-2 CLI SHARED-FACET IMPLEMENTATION CANDIDATE — facet DISCHARGED for both trackers
+conditional on merge; ILT-002 deferred; Tier-1 untouched; Mechanical NOT ACTIVATED; ODR UNCHANGED):** the corrected
+CF-6/CF-2 CLI shared-facet scoping contract is **MERGED and post-merge verified** (PR #487 → authoritative base
+`305961aefe70056e94fa7d6f3260eb6bfc08840d`, parents `2b985844` + accepted corrected scoping candidate `f496d731`,
+merge tree `20a10ca2` == candidate tree). This gate DELIVERS the contract's §4 bounded increment exactly:
+`scripts/run_cli.py`'s hardcoded `if domain != "electronics_electrical":` replaced with activation-derived
+admissibility (`domain_activation.activated_domains()`, reused unchanged; no new admission mechanism); two local
+presentation helpers mirroring `web/app.py`'s shape WITHOUT importing it; Electronics-only refusal/confirmation
+copy byte-identical (explicit conditional branch); truthful multi-domain and empty-activation copy added;
+classifier-dispatch richer-kind branches untouched. Four new pinned tests in the SAME contract-named reconciliation
+file (`tests/test_cf5_f003_classifier_matching_semantics.py`). **ILT-002 (`web/app.py`, incl.
+`_admit_specialist_domain`), `web/domain_label.py`, every engine file, every domain pack, and every other test are
+byte-unchanged** (diff confirms exactly 2 files touched). Evidence: fresh exhaustive sweep confirmed the same six
+pre-existing CLI tests, zero flips; focused **134** (130 + 4 new); full suite **2577 passed / 3 skipped / 1
+xfailed / 0 failed** (base 2573 + 4, zero regressions); mutations m1–m6 (hardcode reintroduction; activation-truth
+bypass; unactivated-domain acceptance; stale copy; silent Electronics fallback; confirmation-copy mishandling) ALL
+CAUGHT with byte-verified restoration. **CF-6's CLI facet = DISCHARGED; CF-2's CLI facet = DISCHARGED** — neither
+tracker closed as a whole: **CF-6 remains OPEN** (ILT-002 + open-ended remainder); **CF-2 remains OPEN** (ILT-002,
+Arabic localization, non-`/start` sweep). ILT-002 NOT touched, NOT discharged, NOT implied discharged — its own
+future joint gate, unchanged. **Mechanical NOT ACTIVATED**; `activated_domains() == ['electronics_electrical']`;
+Tier-1 label untouched. No D4/D8/THERM-01/Phase 10/PSRR/deployment; no P9 closure. Authoritative ONLY if/when this
+exact candidate is merged and post-merge verified. Next required gate: **Mandatory Grill on this exact
+candidate** → independent external exact-candidate review → Owner acceptance → SHA-preserving publication → PR →
+pre/post-merge verification.
+
+**Immediately prior (CF-6/CF-2 CLI scoping-contract gate — MERGED via PR #487 `305961ae`; retained as history):**
+**Status (prior — CF-6/CF-2 CLI SHARED-FACET SCOPING CONTRACT — CORRECTED CANDIDATE (first candidate `71c16d53`
 REJECTED, preserved) — governance-only; implementation NOT started; ILT-002 facet deferred; Tier-1 label untouched;
 Mechanical NOT ACTIVATED; ODR UNCHANGED):** the CF-5 NMF-1/FU-1 test-hardening candidate is **MERGED and
 post-merge verified** (PR #486 → authoritative base `2b985844f093b2730fa6618e6ee2d29e32c87af8`, parents `91f4e5c6`
