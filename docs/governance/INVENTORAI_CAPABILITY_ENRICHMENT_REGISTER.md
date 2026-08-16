@@ -914,3 +914,49 @@ touch `_ACTIVATED_DOMAINS`, runtime, domain packs, classifier, registry, questio
 not close or reopen CF-6; does not close CF-2; does not touch the D-GMPR coupling; does not authorize D4; does
 not alter D8; and does not authorize Phase 10, PSRR, or deployment. Any future work on this item requires its
 own separately authorized, bounded gate.
+
+## L10N-RH-01 — Pre-Mechanical-Activation Localization Regression-Hardening Residual (anti-forgetting; pre-second-domain-activation residual; NON-ACTIVATING)
+
+Registered inside the CF-2 formal closure gate (canonical record:
+`docs/governance/CF2_FULL_SCOPE_FORMAL_CLOSURE_RECORD.md` §5/§7; base
+`6c168a62df4754c0ecea7e99ff6316b66c6dfdb7`). Deliberately NON-NUMERIC designation (mirroring the `THERM-01`/
+`L2SC-01` precedent) so no pre-existing numeric register cross-reference can resolve to it; NO new CAP entry —
+CAP-01…CAP-18 unchanged.
+
+**Finding.** The CF-2 Arabic Localization Remainder Fast Track candidate's independent external review returned
+**ACCEPT WITH NON-BLOCKING OBSERVATIONS** (no material defect; current shipped Arabic copy independently
+confirmed truthful) but raised three related future-facing observations, none of which is a current-behavior
+defect:
+
+1. **Arabic broadened-activation negative-semantic-guard gap.** A reviewer mutation that flipped the
+   broadened-activation (2+ specialist domains) Arabic copy into a false electronics-only claim survived the
+   current full test suite. Current shipped Arabic copy for this state was independently re-inspected and
+   confirmed correct — this is a test-COVERAGE gap (the suite does not yet catch that specific class of
+   regression), not a behavior defect.
+2. **`SERVICE_UNAVAILABLE` localization-path regression-guard gap.** A mutation bypassing the canonical
+   `ui_text.localize_message()` helper at the `SERVICE_UNAVAILABLE_MESSAGE` call sites (`web/app.py`) survived
+   both the focused and full test suite. Current wiring was independently inspected and confirmed correct — same
+   class of gap as (1).
+3. **Present-confirm Arabic checkbox-label wording.** The Arabic present-confirm checkbox
+   (`start_present_confirm_label`, broadened-activation branch) reuses prompt-style wording rather than a
+   first-person consent affirmation. Content remains truthful; English behavior is correct and unaffected; this
+   path is NOT production-reachable under today's real `['electronics_electrical']`-only activation state (it
+   requires 2+ activated domains, exercised only via a bounded test double today).
+
+**Why this matters (anti-forgetting only).** All three observations concern states that are either currently
+unreachable in production (broadened/empty activation, present-confirm under 2+ domains) or a test-suite
+strength gap rather than a shipped defect. If/when a second domain is ever Owner-activated, these states become
+genuinely reachable for the first time, and (1)/(2)'s weaker regression coverage and (3)'s wording nuance become
+worth reassessing before or alongside that activation. This registration exists ONLY so these three related,
+already-identified, non-blocking items are not silently forgotten before any future second-domain-activation
+readiness review; it creates no obligation to act now, and none of the three blocked CF-2's own closure (see
+`CF2_FULL_SCOPE_FORMAL_CLOSURE_RECORD.md` §5).
+
+**Non-authorization (restated for this section).** Registration is not implementation authorization. This
+section authorizes NO test-hardening implementation, NO wording change to any Arabic or English string, NO
+Mechanical (or any other domain) activation, and does not alter Mechanical P9-QS status, qualification, or
+activation; does not touch `_ACTIVATED_DOMAINS`, runtime, domain packs, classifier, registry, questions, or the
+safety family; does not close or reopen CF-6; does not reopen CF-2 (closed by the same gate that registers this
+item — see `CF2_FULL_SCOPE_FORMAL_CLOSURE_RECORD.md`); does not touch `D-CF6CF2-ILT002-01`, `L2SC-01`, or the
+Tier-1 label; does not authorize D4; does not alter D8; and does not authorize Phase 10, PSRR, or deployment.
+Any future work on this item requires its own separately authorized, bounded gate.

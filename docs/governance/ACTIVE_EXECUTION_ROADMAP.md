@@ -10053,3 +10053,65 @@ implementation beyond this bounded increment; the unrelated CLI FINAL SUMMARY in
 untouched. Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Append-only; prior
 history not rewritten. **Next required gate: Mandatory Grill on this exact candidate**, then the governed
 lifecycle; thereafter the separately-authorized CF-2 concise formal closure gate.
+
+---
+
+## CF-2 — Full-Scope Formal Closure — `CF-2 = FORMALLY CLOSED / FULLY DISCHARGED FOR ITS AUTHORITATIVE RECONSTRUCTED SCOPE` (governance-only closure candidate; CF-6 not reopened; ILT-002 not reopened; `L2SC-01` not resolved; new `L10N-RH-01` anti-forgetting entry; Tier-1 untouched; Mechanical NOT ACTIVATED; ODR UNCHANGED)
+
+**Gate.** Governance-only closure on authoritative base `6c168a62df4754c0ecea7e99ff6316b66c6dfdb7` (PR #494 —
+SHA-preserving merge of the accepted CF-2 Arabic Localization Remainder Fast Track candidate `c2a08dc` onto
+`cccbf30`; merge tree `1fa85f2e` == candidate tree; candidate→merge diff EMPTY; POST-MERGE PASS; freshly
+fetched; 0 newer; clean tree). This gate closes CF-2 using the authoritative evidence already accumulated across
+the CLI-remediation gates (PR #492/#493) and the Arabic-localization-remediation gate (PR #494) — it performs no
+new repository-wide reconstruction and reimplements nothing. Canonical record:
+`docs/governance/CF2_FULL_SCOPE_FORMAL_CLOSURE_RECORD.md`.
+
+**Obligations discharged (cited, not re-derived).** CLI remediation: `scripts/run_cli.py`'s startup banner and
+richer-kind bounded-stop message derive from the single canonical `domain_activation.activated_domains()` seam,
+byte-identical electronics-only, truthful under broadened/empty activation, dispatch logic unchanged; 8 tests, 4
+mutation probes CAUGHT; suite 2585/3/1/0 at that gate. Arabic-localization remediation: the five raw `/start`
+error constants, `_present_confirm_message()`, the six generalized-context strings, and the two
+`success_criteria` reject messages now all route through the canonical `ui_text.py` mechanism, byte-identical EN
+default, domain-neutral truthful AR for broadened/empty activation; 31 tests, 4 mutation probes CAUGHT; suite
+2616/3/1/0 at that gate (2585 baseline + 31 new); independently reviewed — ACCEPT WITH NON-BLOCKING
+OBSERVATIONS, SAFE FOR OWNER ACCEPTANCE UNCHANGED: YES, EN backward compatibility across 420 scenarios (zero
+differences), EN/AR admission-outcome parity across 288 scenario pairs (zero mismatches).
+
+**ILT-002 — previously-open CF-2 question now resolved by citation.** `D-CF6CF2-ILT002-01` explicitly preserved
+an OPEN CF-2 question: whether a generic session/public label could display "electronics" for arbitrary text
+posted to an unlinked fixed-domain route. `CF2_CLI_REMAINDER_TRUTHFULNESS_CONTRACT.md` §6 (already merged,
+predating this closure) answered it: ILT-002 routes' `state.domain` is ALWAYS `electronics_electrical` by fixed-
+domain design, never derived from posted text, so the "Review type:" label truthfully describes the kind of
+review conducted, not a classification claim. TRUTHFUL; no CF-2 remediation surface; `D-CF6CF2-ILT002-01` itself
+is NOT reopened, altered, or reinterpreted by this citation.
+
+**Deferred-surface determination (restated, not re-litigated).** `web/templates/decision_workspace.html`
+(standalone, zero `base.html`/`ui_lang` wiring) and `web/api_v1.py`'s `_ERROR_MESSAGES` (JSON surface, no
+`ui_lang` concept) remain confirmed OUTSIDE CF-2 — neither makes a domain-support claim, so neither carries
+CF-2's specific truthfulness risk. A future general-localization-completeness initiative, not CF-2, would cover
+them if ever authorized.
+
+**Anti-forgetting registration.** The Arabic gate's independent reviewer's three non-blocking observations
+(Arabic broadened-activation negative-semantic-guard test-coverage gap; `SERVICE_UNAVAILABLE` localization-path
+regression-guard test-coverage gap; present-confirm Arabic checkbox wording, not production-reachable today) are
+consolidated into one NEW, non-numeric anti-forgetting entry — **`L10N-RH-01`** — in
+`INVENTORAI_CAPABILITY_ENRICHMENT_REGISTER.md` (mirroring the `THERM-01`/`L2SC-01` precedent). Registration
+only; no implementation; not framed as an unresolved CF-2 defect; none of the three blocked this closure.
+
+**Closure statement.** `CF-2 = FORMALLY CLOSED / FULLY DISCHARGED FOR ITS AUTHORITATIVE RECONSTRUCTED SCOPE` —
+every user/operator-facing domain-support claim across `/start`, CLI, ILT-002, `success_criteria`, and
+generalized copy is truthful today and remains truthful under any future broadened activation state. This does
+NOT mean all Arabic text everywhere in InventorAI is localized, that all future-domain localization hardening is
+complete, that Mechanical is activated, or that Phase 9 is closed.
+
+**Boundary / status.** Changed paths: the new closure record, the new `L10N-RH-01` register section, and this
+roadmap/`ACTIVE_INCREMENT_CONTRACT.md`/`CURRENT_PROJECT_STATE.md` sync — ZERO runtime/test/pack/registry/
+activation/schema/persistence diff. `OWNER_DECISION_REGISTER.md` UNCHANGED. Does NOT reopen `CF-6` (`FULLY
+DISCHARGED` stands); does NOT touch `D-CF6CF2-ILT002-01` or the ILT-002 routes; does NOT resolve or implement
+`L2SC-01`; does NOT implement Tier-1; does NOT activate Mechanical; no D4/D8/THERM-01/Phase 10/PSRR/deployment;
+no P9 closure. `activated_domains() == ['electronics_electrical']` unchanged; `MECHANICAL = P9-QS QUALIFIED —
+WITH ACTIVATION BLOCKERS; NOT ACTIVATED` unchanged. Authoritative ONLY if/when this exact candidate is merged
+and post-merge verified. Append-only; prior history not rewritten. **Next required gate: Mandatory Grill on this
+exact candidate**, then the governed lifecycle; thereafter, in order: `L2SC-01`; the Tier-1 EN/AR label;
+`L10N-RH-01` reassessment as applicable; explicit Owner Mechanical activation authorization; Mechanical
+activation + verification; Phase 9 formal closure.

@@ -41,9 +41,43 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — CF-2 ARABIC LOCALIZATION REMAINDER (FAST TRACK) — presentation-only bounded runtime
-candidate; raw `/start` + success-criteria error paths, present-confirm, generalized-context strings; CF-6 not
-reopened; Tier-1 untouched; Mechanical NOT ACTIVATED; ODR UNCHANGED):** the CF-2 CLI remainder implementation
+**Status (current — CF-2 FULL-SCOPE FORMAL CLOSURE — governance-only closure candidate; `CF-2 = FORMALLY CLOSED
+/ FULLY DISCHARGED FOR ITS AUTHORITATIVE RECONSTRUCTED SCOPE`; CF-6 not reopened; ILT-002 not reopened; `L2SC-01`
+not resolved; Tier-1 untouched; Mechanical NOT ACTIVATED; ODR UNCHANGED):** the CF-2 Arabic Localization
+Remainder Fast Track candidate is **MERGED and post-merge verified** (PR #494 → authoritative base
+`6c168a62df4754c0ecea7e99ff6316b66c6dfdb7`, parents `cccbf30` + accepted candidate `c2a08dc`, merge tree ==
+candidate tree; candidate→merge diff EMPTY) — full governed suite at that gate 2616 passed / 3 skipped / 1
+xfailed / 0 failed, independently reviewed (ACCEPT WITH NON-BLOCKING OBSERVATIONS, SAFE FOR OWNER ACCEPTANCE
+UNCHANGED: YES). This gate closes CF-2 using the authoritative evidence already accumulated across the CLI
+remediation (PR #492/#493) and Arabic-localization remediation (PR #494) gates — it does NOT reconstruct or
+reimplement either. **Canonical record:** `docs/governance/CF2_FULL_SCOPE_FORMAL_CLOSURE_RECORD.md`. **ILT-002
+open question resolved:** `D-CF6CF2-ILT002-01` preserved an explicitly OPEN CF-2 question (whether a generic
+session label could display "electronics" for arbitrary text on a fixed-domain route); this closure cites the
+already-existing evidence (`CF2_CLI_REMAINDER_TRUTHFULNESS_CONTRACT.md` §6) that answered it — `state.domain` on
+ILT-002 routes is ALWAYS `electronics_electrical` by fixed-domain design, never derived from posted text, so the
+label describes the kind of review conducted, not a classification claim. TRUTHFUL; no CF-2 remediation surface;
+`D-CF6CF2-ILT002-01` itself not reopened, altered, or reinterpreted. **Deferred-surface determination restated
+(not re-litigated):** `decision_workspace.html` and `api_v1.py::_ERROR_MESSAGES` remain OUTSIDE CF-2 (no domain-
+support claim; general localization-completeness, not CF-2 truthfulness). **Anti-forgetting registration:** one
+new consolidated, non-numeric entry **`L10N-RH-01`** in `INVENTORAI_CAPABILITY_ENRICHMENT_REGISTER.md`,
+consolidating the Arabic gate's three independent-review non-blocking observations (broadened-activation
+negative-semantic-guard test gap; `SERVICE_UNAVAILABLE` regression-guard test gap; present-confirm Arabic
+checkbox wording, not production-reachable today) — registration only, NOT implemented, NOT framed as an
+unresolved CF-2 defect, none of the three blocked this closure. **Changed paths:** this new closure record + the
+new `L10N-RH-01` register section + `ACTIVE_EXECUTION_ROADMAP.md`/`ACTIVE_INCREMENT_CONTRACT.md`/
+`CURRENT_PROJECT_STATE.md` sync — ZERO runtime/test/pack/registry/activation/schema/persistence diff.
+`OWNER_DECISION_REGISTER.md` UNCHANGED. **Boundary:** does NOT reopen `CF-6` (`FULLY DISCHARGED` stands); does
+NOT touch `D-CF6CF2-ILT002-01` or the ILT-002 routes; does NOT resolve or implement `L2SC-01`; does NOT
+implement Tier-1; does NOT activate Mechanical; no D4/D8/THERM-01/Phase 10/PSRR/deployment; no P9 closure.
+`activated_domains() == ['electronics_electrical']` unchanged. Authoritative ONLY if/when this exact candidate is
+merged and post-merge verified. Next required gate: **Mandatory Grill on this exact candidate** → independent
+external exact-candidate review → Owner acceptance → SHA-preserving publication → PR → pre/post-merge
+verification; thereafter, in order: `L2SC-01`; the Tier-1 EN/AR label; `L10N-RH-01` reassessment as applicable;
+explicit Owner Mechanical activation authorization; Mechanical activation + verification; Phase 9 formal
+closure.
+
+**Immediately prior (CF-2 Arabic Localization Remainder (Fast Track) implementation gate — MERGED via PR #494
+`6c168a62`; retained as history):** the CF-2 CLI remainder implementation
 candidate is **MERGED and post-merge verified** (PR #493 → authoritative base
 `cccbf30cf6a851b0c7291c95c159f74520105d99`, parents `de85d101` + accepted candidate `23064fe`, merge tree ==
 candidate tree) — this Fast Track gate combines reconstruction → implementation → tests → governance sync →

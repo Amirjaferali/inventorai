@@ -2082,6 +2082,38 @@ AUTHORIZED / NOT STARTED.***
   scope-boundary judgment call is left for that closure gate to independently confirm). Authoritative ONLY
   if/when this exact candidate is merged + post-merge verified. Next required gate: Mandatory Grill on this
   exact candidate.
+  **CF-2 FULL-SCOPE FORMAL CLOSURE — CANDIDATE, base `6c168a62df4754c0ecea7e99ff6316b66c6dfdb7`** (PR #494,
+  parents `cccbf30` + accepted Arabic Localization Remainder candidate `c2a08dc`; merge tree == candidate tree;
+  candidate→merge diff EMPTY; POST-MERGE PASS; suite at that gate 2616 passed / 3 skipped / 1 xfailed / 0 failed,
+  independently reviewed — ACCEPT WITH NON-BLOCKING OBSERVATIONS, SAFE FOR OWNER ACCEPTANCE UNCHANGED: YES; EN
+  backward compatibility across 420 scenarios zero differences; EN/AR admission-outcome parity across 288
+  scenario pairs zero mismatches). This gate closes CF-2 using the evidence already accumulated across the CLI
+  remediation (PR #492/#493) and Arabic-localization remediation (PR #494) — no new repository-wide
+  reconstruction, no reimplementation. Canonical record:
+  `docs/governance/CF2_FULL_SCOPE_FORMAL_CLOSURE_RECORD.md`. **ILT-002's previously-open CF-2 question resolved
+  by citation:** `D-CF6CF2-ILT002-01` preserved an OPEN question — whether a generic session label could display
+  "electronics" for arbitrary text on a fixed-domain route; `CF2_CLI_REMAINDER_TRUTHFULNESS_CONTRACT.md` §6
+  (already merged) answered it — ILT-002 `state.domain` is ALWAYS `electronics_electrical` by fixed-domain
+  design, never derived from posted text, so the label describes the review conducted, not a classification
+  claim; TRUTHFUL, no CF-2 surface; `D-CF6CF2-ILT002-01` not reopened/altered/reinterpreted. **Deferred-surface
+  determination restated (not re-litigated):** `decision_workspace.html` and `api_v1.py::_ERROR_MESSAGES` remain
+  confirmed OUTSIDE CF-2 (no domain-support claim). **Anti-forgetting registration:** the Arabic gate's three
+  independent-review non-blocking observations (broadened-activation Arabic negative-semantic-guard test gap;
+  `SERVICE_UNAVAILABLE` localization-path regression-guard test gap; present-confirm Arabic checkbox wording, not
+  production-reachable today) are consolidated into one NEW non-numeric entry **`L10N-RH-01`** in
+  `INVENTORAI_CAPABILITY_ENRICHMENT_REGISTER.md` (THERM-01/L2SC-01 precedent) — registration only, not
+  implemented, not framed as an unresolved CF-2 defect, none blocked this closure. **Closure statement: `CF-2 =
+  FORMALLY CLOSED / FULLY DISCHARGED FOR ITS AUTHORITATIVE RECONSTRUCTED SCOPE`** — every user/operator-facing
+  domain-support claim across `/start`, CLI, ILT-002, success-criteria, and generalized copy is truthful today
+  and remains truthful under any future broadened activation state. Does NOT mean all Arabic text everywhere is
+  localized, all future-domain localization hardening is complete, Mechanical is activated, or Phase 9 is
+  closed. ZERO runtime/test/pack/registry/activation/schema/persistence diff; `OWNER_DECISION_REGISTER.md`
+  UNCHANGED; `CF-6 = FULLY DISCHARGED` unchanged, not reopened; `D-CF6CF2-ILT002-01` unchanged; `L2SC-01` not
+  resolved; Tier-1 untouched; Mechanical NOT ACTIVATED; `activated_domains() == ['electronics_electrical']`.
+  Authoritative ONLY if/when this exact candidate is merged + post-merge verified. Next required gate: Mandatory
+  Grill on this exact candidate; thereafter, in order: `L2SC-01`; the Tier-1 EN/AR label; `L10N-RH-01`
+  reassessment as applicable; explicit Owner Mechanical activation authorization; Mechanical activation +
+  verification; Phase 9 formal closure.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
