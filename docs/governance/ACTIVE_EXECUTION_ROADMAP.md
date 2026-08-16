@@ -9976,3 +9976,80 @@ activate Mechanical; no D4/D8/THERM-01/Phase 10/PSRR/deployment; no P9 closure. 
 unchanged. Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Append-only; prior
 history not rewritten. **Next required gate: Mandatory Grill on this exact candidate**, then the governed
 lifecycle.
+
+---
+
+## CF-2 — Arabic Localization Remainder (Fast Track) — presentation-only bounded runtime candidate (raw `/start` + success-criteria error paths, present-confirm, generalized-context strings; combined reconstruction→implementation→tests→governance→freeze→Grill; CF-6 not reopened; Tier-1 untouched; Mechanical NOT ACTIVATED; ODR UNCHANGED)
+
+**Gate.** Fast Track bounded implementation on authoritative base
+`cccbf30cf6a851b0c7291c95c159f74520105d99` (PR #493 — SHA-preserving merge of the accepted CF-2 CLI remainder
+implementation candidate `23064fe` onto `de85d101`; merge tree == candidate tree; POST-MERGE PASS; freshly
+fetched; 0 newer; clean tree).
+
+**Fresh sweep result.** An independent read-only sweep (personally re-verified) confirmed and extended the known
+residual list: five raw `/start`-flow message constants bypassed `ui_text.localize_message()` entirely
+(`UNSUPPORTED_DOMAIN_MESSAGE`, `CONFIRMATION_REQUIRED_MESSAGE`, `MECHANISM_GUIDANCE_MESSAGE`,
+`DOMAIN_CHOICE_MESSAGE`, `SERVICE_UNAVAILABLE_MESSAGE`); `_present_confirm_message()` and the six
+`_render_start_page` generalized-context strings (`start_scope_sentence`, `start_placeholder`,
+`start_supported_note`, `start_confirm_label`, `start_present_confirm_label`, `start_choice_prompt`) were always
+raw English regardless of `ui_lang`; the two `save_success_criteria` `_reject()` messages had the same bypass
+shape. `web/domain_label.py` and the ILT-002 "Review type" label reconfirmed truthful/bilingual (no defect,
+`D-CF6CF2-ILT002-01` unchanged) — a stale/inaccurate *comment* at `session.html:101-107` was found and is named
+as evidence only, not edited (no functional defect; outside the visible-copy-only mandate).
+
+**Fix.** All eight sites now route through the canonical `ui_text.py` mechanism — no parallel translation
+registry. The five static messages use `localize_message()`/`_MESSAGE_KEYS` (new keys `UI_B_START_010..014`,
+`UI_B_SC_007..008` — identical pattern to the pre-existing `ANSWER_REQUIRED_MESSAGE` wiring). The three dynamic
+producer functions (`_unsupported_domain_message`, `_confirmation_required_message`, `_present_confirm_message`)
+and `_render_start_page`'s generalized-context block gained a `lang` parameter defaulting to `"en"` — every
+existing caller that omits it is byte-identical to before; Arabic uses new fixed catalogue keys
+(`UI_B_START_020..031`). Broadened-activation (2+ domains) Arabic copy is deliberately domain-neutral — it never
+names a specific non-electronics domain in Arabic (new Tier-1 label translation is explicitly out of scope) —
+while remaining truthful about the real state (never an electronics-only claim). Multi-/zero-activation states
+are exercised only via the bounded `domain_activation._ACTIVATED_DOMAINS` test double; real activation remains
+`['electronics_electrical']`.
+
+**Tests.** 31 new focused tests in new file `tests/test_cf2_arabic_localization_remainder.py`: EN byte-identity
+pins and AR localized/no-leak pins for all eight fixed sites; present-confirm electronics/broadened matrix
+(tightened mid-gate to assert the `<p class="error">` paragraph specifically, after a mutation probe exposed
+that a looser "anywhere in body" assertion could be masked by the separately-rendered checkbox label); empty-
+activation coverage; RTL/`dir` template check; a catalogue-honesty guard (every new key bilingual, every
+`_MESSAGE_KEYS` registration resolves); an admission-outcome-unaffected-by-language re-pin.
+
+**Mutation probes — all 4 CAUGHT** (`__pycache__` cleared before each, SHA-256-verified restoration after):
+(1) reintroduce a raw-English `/start` error path — 2 tests failed; (2) remove an Arabic catalogue key — 2 tests
+failed (including the catalogue-honesty guard); (3) bypass `localize_message()` in the success-criteria reject
+path — 1 test failed; (4) corrupt present-confirm electronics-only byte-identity — initially NOT caught by the
+original looser assertion (a genuine test-quality gap the probe itself surfaced), fixed by tightening the
+assertion to the isolated error paragraph, then re-run and confirmed CAUGHT.
+
+**Suite.** Full governed suite **2616 passed / 3 skipped / 1 xfailed / 0 failed** (2585 baseline + 31 new; 0
+regressions).
+
+**Scope discipline.** Changed paths: `web/app.py`, `web/ui_text.py`, the one new test file, governance sync
+only. Byte-verified zero diff: `OWNER_DECISION_REGISTER.md`, `INVENTORAI_CAPABILITY_ENRICHMENT_REGISTER.md`
+(L2SC-01), `web/domain_label.py`, every `engine/*` file, `web/templates/session.html`. No classifier, activation,
+persistence, session-identity, or routing/admission semantics touched — Fast Track remained safe throughout (no
+fail-closed-to-full-gate trigger encountered).
+
+**Two NEW residuals found this gate, explicitly OUTSIDE CF-2's own scope (named, evidenced, deferred — not
+bundled in, not silently dropped):** `web/templates/decision_workspace.html` (standalone `<html lang="en">`,
+zero `base.html`/`t()`/`ui_lang` wiring, ~35 hardcoded English strings — a materially larger, separate
+localization undertaking) and `web/api_v1.py`'s `_ERROR_MESSAGES` (a JSON REST surface with no `ui_lang` concept
+at all). Neither asserts a domain-support claim, so neither carries CF-2's specific truthfulness risk —
+classified as a general site-wide localization-completeness gap, not a CF-2 defect; left for a future gate to
+independently confirm that boundary judgment.
+
+**CF-2 closure assessment.** CF-2's own reconstructed authoritative scope (domain-claim truthfulness across
+`/start`, CLI, ILT-002, success-criteria, and generalized copy) has NO remaining residuals found this gate — CF-2
+implementation obligations appear fully discharged, pending a separate concise formal closure step. This
+candidate does NOT itself close CF-2.
+
+**Boundary / status.** `OWNER_DECISION_REGISTER.md` UNCHANGED (implementation gate, not an Owner decision).
+`CF-6 = FULLY DISCHARGED` unchanged, not reopened; `D-CF6CF2-ILT002-01` unchanged; `L2SC-01`/
+`engine/progression_loop.py` untouched; Tier-1 label untouched; Mechanical NOT ACTIVATED; `activated_domains()
+== ['electronics_electrical']` unchanged; no D4/D8/THERM-01/Phase 10/PSRR/deployment; no P9 closure; no Arabic
+implementation beyond this bounded increment; the unrelated CLI FINAL SUMMARY indentation bug (out of scope)
+untouched. Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Append-only; prior
+history not rewritten. **Next required gate: Mandatory Grill on this exact candidate**, then the governed
+lifecycle; thereafter the separately-authorized CF-2 concise formal closure gate.

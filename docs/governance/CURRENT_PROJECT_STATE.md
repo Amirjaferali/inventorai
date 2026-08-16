@@ -2043,6 +2043,45 @@ AUTHORIZED / NOT STARTED.***
   domains() == ['electronics_electrical']`; Tier-1 label untouched; no D4/D8/THERM-01/Phase 10/PSRR/deployment;
   no P9 closure. Authoritative ONLY if/when this exact candidate is merged + post-merge verified. Next required
   gate: Mandatory Grill on this exact candidate.
+  **CF-2 Arabic Localization Remainder (Fast Track) — CANDIDATE, base
+  `cccbf30cf6a851b0c7291c95c159f74520105d99`** (PR #493, parents `de85d101` + accepted candidate `23064fe`; merge
+  tree == candidate tree; POST-MERGE PASS). A fresh repository-wide sweep confirmed and extended the known Arabic
+  residual: five raw `/start`-flow error-path constants (`UNSUPPORTED_DOMAIN_MESSAGE`,
+  `CONFIRMATION_REQUIRED_MESSAGE`, `MECHANISM_GUIDANCE_MESSAGE`, `DOMAIN_CHOICE_MESSAGE`,
+  `SERVICE_UNAVAILABLE_MESSAGE`) bypassed `ui_text.localize_message()` entirely; `_present_confirm_message()` and
+  the six `_render_start_page` generalized-context strings (`start_scope_sentence`, `start_placeholder`,
+  `start_supported_note`, `start_confirm_label`, `start_present_confirm_label`, `start_choice_prompt`) were
+  always raw English regardless of `ui_lang`; the two `save_success_criteria` `_reject()` messages had the same
+  bypass shape. **Fixed, presentation-only, Fast Track (single combined candidate):** all eight now route through
+  the canonical mechanism — the five static messages via `ui_text.localize_message()`/`_MESSAGE_KEYS` (new keys
+  `UI_B_START_010..014`, `UI_B_SC_007..008`, same pattern as `ANSWER_REQUIRED_MESSAGE`); the three dynamic
+  producer functions and the six generalized-context strings via a new `lang` parameter (default `"en"`
+  preserves EXACT prior byte-identical behavior; Arabic uses new fixed catalogue keys `UI_B_START_020..031`).
+  Broadened-activation (2+ domains) Arabic copy is deliberately domain-neutral (no new Tier-1 label translation
+  invented — out of scope). 31 new focused tests in new file
+  `tests/test_cf2_arabic_localization_remainder.py`; 4 targeted mutation probes (raw-English-path reintroduction,
+  catalogue-key removal, canonical-helper bypass, present-confirm byte-identity corruption) each independently
+  caught, reverted with SHA-256-verified restoration. Full governed suite **2616 passed / 3 skipped / 1 xfailed /
+  0 failed** (2585 baseline + 31 new; 0 regressions). Changed paths: `web/app.py`, `web/ui_text.py`, the one new
+  test file, plus this governance sync — no classifier/activation/persistence/routing/admission change; ILT-002
+  routes and `D-CF6CF2-ILT002-01` untouched (confirmed still truthful this gate; a stale/inaccurate *comment* at
+  `web/templates/session.html:101-107` was found and is flagged as evidence, NOT edited — no functional defect,
+  outside this gate's visible-copy-only mandate); `L2SC-01`/`engine/progression_loop.py` untouched; Tier-1
+  untouched; Mechanical NOT ACTIVATED; `CF-6 = FULLY DISCHARGED` unchanged. `OWNER_DECISION_REGISTER.md`
+  UNCHANGED (implementation gate). **Two NEW residuals found this gate's fresh sweep, explicitly OUTSIDE CF-2's
+  own domain-truthfulness scope (named, evidenced, deferred — not silently dropped, not bundled in):**
+  `web/templates/decision_workspace.html` (a standalone `<html lang="en">` page, no `base.html` inheritance, no
+  `t()`/`ui_lang` wiring at all, ~35 hardcoded English strings — a materially larger, separate localization
+  undertaking) and `web/api_v1.py`'s `_ERROR_MESSAGES` (a JSON REST surface with no `ui_lang` concept at all).
+  Neither asserts an electronics/domain-support claim, so neither carries CF-2's specific truthfulness risk —
+  classified as a general site-wide localization-completeness gap, not a CF-2 defect. **CF-2 closure
+  assessment:** CF-2's own reconstructed authoritative scope (domain-claim truthfulness across `/start`, CLI,
+  ILT-002, success-criteria, and generalized copy) now has NO remaining residuals found this gate — CF-2
+  implementation obligations appear fully discharged, pending a separate concise formal closure step (NOT
+  declared inside this Fast Track candidate, per its own instruction, given the decision_workspace.html/api_v1.py
+  scope-boundary judgment call is left for that closure gate to independently confirm). Authoritative ONLY
+  if/when this exact candidate is merged + post-merge verified. Next required gate: Mandatory Grill on this
+  exact candidate.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation

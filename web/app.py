@@ -918,10 +918,25 @@ def _supported_domains_phrase(activated):
     return ", ".join(labels[:-1]) + " or " + labels[-1]
 
 
-def _unsupported_domain_message(activated):
+def _unsupported_domain_message(activated, lang="en"):
     """Activation-derived refusal copy (§4.E). Byte-identical to the historical
     electronics-only message under `['electronics_electrical']`; truthful
-    (never "electronics only") under any broadened activation set."""
+    (never "electronics only") under any broadened activation set.
+
+    CF-2 Arabic-localization remainder: `lang="en"` (the default) preserves
+    this function's EXACT prior behavior byte-for-byte — no caller that
+    omits `lang` observes any change. Arabic uses fixed catalogue copy: the
+    electronics-only and empty-activation branches translate the real EN
+    state; the broadened (2+) branch is deliberately domain-neutral (no
+    Tier-1 label translation invented here — out of scope; see
+    `docs/governance/CF2_CLI_REMAINDER_TRUTHFULNESS_CONTRACT.md` §4 boundary,
+    reused for this facet)."""
+    if ui_text.normalize(lang) == "ar":
+        if activated == ["electronics_electrical"]:
+            return ui_text.text("UI_B_START_010", lang)
+        if not activated:
+            return ui_text.text("UI_B_START_020", lang)
+        return ui_text.text("UI_B_START_021", lang)
     if activated == ["electronics_electrical"]:
         return UNSUPPORTED_DOMAIN_MESSAGE
     if not activated:
@@ -933,18 +948,34 @@ def _unsupported_domain_message(activated):
     )
 
 
-def _confirmation_required_message(domain):
+def _confirmation_required_message(domain, lang="en"):
     """Consent-required copy for the sole-activated-domain one-step form.
-    Byte-identical to the historical message for electronics."""
+    Byte-identical to the historical message for electronics.
+
+    CF-2 Arabic-localization remainder: see `_unsupported_domain_message`
+    docstring for the `lang` contract (default-`en` byte-identity; Arabic
+    domain-neutral for any non-electronics sole domain)."""
+    if ui_text.normalize(lang) == "ar":
+        if domain == "electronics_electrical":
+            return ui_text.text("UI_B_START_011", lang)
+        return ui_text.text("UI_B_START_022", lang)
     if domain == "electronics_electrical":
         return CONFIRMATION_REQUIRED_MESSAGE
     return ("Please confirm that your idea is a " + _domain_label(domain)
             + " idea before starting.")
 
 
-def _present_confirm_message(domain):
+def _present_confirm_message(domain, lang="en"):
     """D1/U1: prompt shown when the classifier-selected (or explicitly chosen)
-    ACTIVATED domain is presented for explicit confirm/decline."""
+    ACTIVATED domain is presented for explicit confirm/decline.
+
+    CF-2 Arabic-localization remainder: see `_unsupported_domain_message`
+    docstring for the `lang` contract (default-`en` byte-identity; Arabic
+    domain-neutral for any non-electronics domain)."""
+    if ui_text.normalize(lang) == "ar":
+        if domain == "electronics_electrical":
+            return ui_text.text("UI_B_START_023", lang)
+        return ui_text.text("UI_B_START_024", lang)
     return ("Your idea appears to belong to the " + _domain_label(domain)
             + " domain. Please confirm this domain to start, or revise your "
             "description.")
@@ -1163,36 +1194,70 @@ def _render_start_page(error=None, status=None, present_domain=None,
     labels = {d: _domain_label(d) for d in activated}
     if present_domain is not None and present_domain not in labels:
         labels[present_domain] = _domain_label(present_domain)
+    # CF-2 Arabic-localization remainder: computed once, reused for every
+    # generalized-context string below (`start_scope_sentence`,
+    # `start_placeholder`, `start_supported_note`, `start_confirm_label`,
+    # `start_present_confirm_label`, `start_choice_prompt`) — these six
+    # previously bypassed localization entirely (always raw English). English
+    # output below is UNCHANGED (byte-identical); Arabic uses fixed catalogue
+    # copy, domain-neutral wherever the underlying content would otherwise
+    # require translating a non-electronics domain name (out of scope — see
+    # `_unsupported_domain_message`).
+    lang = _current_ui_lang()
+    is_ar = ui_text.normalize(lang) == "ar"
     generalized = None
     if not is_elec_only:
         phrase = _supported_domains_phrase(activated) if activated else None
-        generalized = {
-            "start_scope_sentence": (
-                (phrase + " ideas are currently supported. Before starting, "
-                 "please confirm the domain your idea belongs to.")
-                if phrase else
-                "No specialist domain is currently available."),
-            "start_placeholder": "Describe your invention...",
-            "start_supported_note": (
-                ("Currently supported: " + phrase + " ideas.")
-                if phrase else "Currently supported: none."),
-            "start_confirm_label": (
-                ("I confirm that this idea is primarily a "
-                 + labels[sole] + " idea.") if sole is not None else None),
-        }
+        if is_ar:
+            generalized = {
+                "start_scope_sentence": (
+                    ui_text.text("UI_B_START_026", lang) if phrase else
+                    ui_text.text("UI_B_START_025", lang)),
+                "start_placeholder": ui_text.text("UI_B_START_027", lang),
+                "start_supported_note": (
+                    ui_text.text("UI_B_START_029", lang) if phrase else
+                    ui_text.text("UI_B_START_028", lang)),
+                "start_confirm_label": (
+                    ui_text.text("UI_B_START_030", lang)
+                    if sole is not None else None),
+            }
+        else:
+            generalized = {
+                "start_scope_sentence": (
+                    (phrase + " ideas are currently supported. Before starting, "
+                     "please confirm the domain your idea belongs to.")
+                    if phrase else
+                    "No specialist domain is currently available."),
+                "start_placeholder": "Describe your invention...",
+                "start_supported_note": (
+                    ("Currently supported: " + phrase + " ideas.")
+                    if phrase else "Currently supported: none."),
+                "start_confirm_label": (
+                    ("I confirm that this idea is primarily a "
+                     + labels[sole] + " idea.") if sole is not None else None),
+            }
+    if present_domain is None:
+        present_confirm_label = None
+    elif is_ar:
+        present_confirm_label = ui_text.text(
+            "UI_B_START_023" if present_domain == "electronics_electrical"
+            else "UI_B_START_024", lang)
+    else:
+        present_confirm_label = ("I confirm that my idea belongs to the "
+                                  + labels[present_domain] + " domain.")
+    choice_prompt = (
+        (ui_text.text("UI_B_START_031", lang) if is_ar
+         else "Choose your idea's domain:")
+        if choice_domains else None)
     rendered = render_template(
         "index.html", error=error,
         start_sole_domain=sole,
         start_is_electronics_only=is_elec_only,
         start_domain_labels=labels,
         start_present_domain=present_domain,
-        start_present_confirm_label=(
-            ("I confirm that my idea belongs to the "
-             + labels[present_domain] + " domain.")
-            if present_domain is not None else None),
+        start_present_confirm_label=present_confirm_label,
         start_choice_domains=choice_domains,
-        start_choice_prompt=(
-            "Choose your idea's domain:" if choice_domains else None),
+        start_choice_prompt=choice_prompt,
         start_carry_idea=carry_idea,
         start_carried_choice=carried_choice,
         **(generalized or {}))
@@ -1579,10 +1644,14 @@ def start():
     activated = _activated_specialist_domains()
     confirm = request.form.get("domain_confirm")
     choice = request.form.get("domain_choice")
+    # CF-2 Arabic-localization remainder: computed once, reused at every
+    # message-producing call site below (same reuse discipline already
+    # established for `activated`).
+    lang = _current_ui_lang()
     if not activated:
         # Defensive fail-closed boundary: with no activated specialist domain
         # nothing is admissible. Unreachable under any governed activation state.
-        return _render_start_page(error=_unsupported_domain_message(activated))
+        return _render_start_page(error=_unsupported_domain_message(activated, lang))
     sole = activated[0] if len(activated) == 1 else None
     if sole is not None and confirm != sole:
         # Exactly ONE activated domain: the one-step form carries that sole
@@ -1590,7 +1659,7 @@ def start():
         # Consent is never inferred from the idea text; without it no session
         # is created. Behaviorally identical to the historical electronics-only
         # flow under `['electronics_electrical']`.
-        return _render_start_page(error=_confirmation_required_message(sole))
+        return _render_start_page(error=_confirmation_required_message(sole, lang))
     # Canonical deterministic classification (P9-E2-R): dispatch by result KIND,
     # never by truthiness / string identity of the structured result.
     # classify_domain() yields SINGLE / NONE and — since P9-E2 — AMBIGUOUS_TIE
@@ -1604,12 +1673,12 @@ def start():
         # Fail closed: an ambiguous activated tie is NOT a single supported
         # domain. It must never enter the None classifier-miss fallback, never
         # admit a winner, never create a session (P9-E2-R 7/14; §4.B/D).
-        return _render_start_page(error=_unsupported_domain_message(activated))
+        return _render_start_page(error=_unsupported_domain_message(activated, lang))
     if classification.kind is DomainResultKind.MULTI_DOMAIN_NEEDS_D4:
         # Fail closed: a genuine multi-domain idea is NOT admissible as one
         # domain, and D4 is NOT executed here. No implication that multi-domain
         # analysis occurred (P9-E2-R 7/14/16).
-        return _render_start_page(error=_unsupported_domain_message(activated))
+        return _render_start_page(error=_unsupported_domain_message(activated, lang))
     if classification.kind is DomainResultKind.UNRESOLVED_NON_ACTIVATED_TIE:
         # CF5-F004 (merged contract §3.5): a zero-activated tie the legacy
         # compatibility layer cannot resolve is NOT admissible as one domain
@@ -1617,7 +1686,7 @@ def start():
         # dangerous chain: silent NONE -> sole-electronics consent -> a
         # mislabeled electronics session). Same existing fail-closed refusal
         # surface; no admission/UX change.
-        return _render_start_page(error=_unsupported_domain_message(activated))
+        return _render_start_page(error=_unsupported_domain_message(activated, lang))
     # SINGLE -> the resolved registry domain string; NONE -> None.
     domain = (classification.selected_domain
               if classification.kind is DomainResultKind.SINGLE else None)
@@ -1629,7 +1698,7 @@ def start():
     # still refuse, and explicit confirmation cannot override them
     # (§7.C, §10, §15).
     if _has_strong_unsupported_evidence(lowered, activated):
-        return _render_start_page(error=_unsupported_domain_message(activated))
+        return _render_start_page(error=_unsupported_domain_message(activated, lang))
     if domain is not None and domain in activated:
         # D1 — the classifier resolved exactly one ACTIVATED specialist domain:
         # that classified domain (and only it) is the admissible target.
@@ -1652,13 +1721,14 @@ def start():
             required = (_MEDICAL_CONFLICT_LAY_MINIMUM
                         if domain == "medical_device" else 1)
             if _lay_electrical_evidence_count(lowered) < required:
-                return _render_start_page(error=MECHANISM_GUIDANCE_MESSAGE)
+                return _render_start_page(
+                    error=ui_text.localize_message(MECHANISM_GUIDANCE_MESSAGE, lang))
             target = sole
         else:
             # §4.B/C/F: a recognized-but-not-activated domain is never offered
             # and never admitted (no cross-domain relabeling); unexpected
             # classifier values are refused defensively.
-            return _render_start_page(error=_unsupported_domain_message(activated))
+            return _render_start_page(error=_unsupported_domain_message(activated, lang))
     else:
         # NONE — classifier miss.
         if sole is not None:
@@ -1679,15 +1749,15 @@ def start():
             # Electronics/default fallback; no session. A forged choice outside
             # the activation set lands here (never admitted).
             return _render_start_page(
-                error=DOMAIN_CHOICE_MESSAGE, choice_domains=activated,
-                carry_idea=idea_text)
+                error=ui_text.localize_message(DOMAIN_CHOICE_MESSAGE, lang),
+                choice_domains=activated, carry_idea=idea_text)
     if confirm != target:
         # Explicit consent for the resolved target domain (D1/D2/U1: no
         # auto-admit). Present exactly the target for confirm/decline; a
         # missing or mismatched confirmation (including one for a DIFFERENT
         # activated domain) never admits and never relabels (§4.F).
         return _render_start_page(
-            error=_present_confirm_message(target), present_domain=target,
+            error=_present_confirm_message(target, lang), present_domain=target,
             carried_choice=(choice if choice == target else None),
             carry_idea=idea_text)
     # Admit: the persisted session-domain is exactly the classified-or-chosen
@@ -1728,7 +1798,9 @@ def start():
             reconstruction_inputs=_reconstruction_inputs(idea_text, state),
             owner_account_id=owner_account_id)
     except Exception:
-        return _render_start_page(error=SERVICE_UNAVAILABLE_MESSAGE, status=503)
+        return _render_start_page(
+            error=ui_text.localize_message(SERVICE_UNAVAILABLE_MESSAGE, _current_ui_lang()),
+            status=503)
     SESSION_STORE[sid] = {"state": state, "last_result": initial_result, "transcript": [],
                           # Draft Level 2: a truthful ONE-SHOT seed-accepted signal.
                           # Set only here at successful /start; the first session
@@ -1766,7 +1838,9 @@ def _finalize_started_session(sid, state, initial_result, seed_idea=None):
             ProjectRecordContract.from_state(state), project_id=sid,
             reconstruction_inputs=_reconstruction_inputs(seed_idea, state))
     except Exception:
-        return _render_start_page(error=SERVICE_UNAVAILABLE_MESSAGE, status=503)
+        return _render_start_page(
+            error=ui_text.localize_message(SERVICE_UNAVAILABLE_MESSAGE, _current_ui_lang()),
+            status=503)
     SESSION_STORE[sid] = {"state": state, "last_result": initial_result, "transcript": [],
                           # Draft Level 2: a truthful ONE-SHOT seed-accepted signal.
                           # Set only here at successful /start; the first session
@@ -2095,7 +2169,11 @@ def save_success_criteria(sid):
             "success_criteria.html", sid=sid, experiments=plan["items"],
             stale_notice=plan.get("stale_criteria_notice"),
             field_prefix=_CRITERION_FIELD_PREFIX, max_length=MAX_CRITERION_LENGTH,
-            error=message,
+            # CF-2 Arabic-localization remainder: `message` is always one of
+            # this function's two known English literals below, registered in
+            # `ui_text._MESSAGE_KEYS`; localize_message() fails open (passes
+            # through unchanged) for anything unregistered.
+            error=ui_text.localize_message(message, _current_ui_lang()),
         ), 400
 
     # Validate before any write: reject unknown/stale ids and over-limit input.
