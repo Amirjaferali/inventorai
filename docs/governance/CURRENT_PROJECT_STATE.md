@@ -2114,6 +2114,35 @@ AUTHORIZED / NOT STARTED.***
   Grill on this exact candidate; thereafter, in order: `L2SC-01`; the Tier-1 EN/AR label; `L10N-RH-01`
   reassessment as applicable; explicit Owner Mechanical activation authorization; Mechanical activation +
   verification; Phase 9 formal closure.
+  **L2SC-01 SUBSTANCE-SIGNAL PLURAL-ALIAS DOMAIN-COMPLETENESS — MATERIAL CORRECTION, base
+  `c8e7af24adf2cee31104abc9c810d38e05569c52`** (PR #495, parents `6c168a6` + accepted CF-2 closure candidate
+  `4b45a3e`; merge tree == candidate tree). Independent external review **REJECTED** the first bounded contract
+  candidate `219f7c10c4ba23f795f0461dd831f71052469e65` (defect **MD-1**: 9 authorized Mechanical plural aliases
+  were selected using only "is this the grammatically normal plural?", without screening verb-form/idiom/
+  meaning-shift false-positive risk — demonstrated: "the gasket seals the joint", "the latch springs open", "the
+  operator loses their bearings", "the plant gears up"). Rejected SHA preserved immutable, unpushed, unamended
+  at `refs/rejected/l2sc01-plural-alias-contract-219f7c1`. This gate returns to the exact parent and creates a
+  corrected candidate; what independent review already accepted (reconstruction, domain-generic finding, Option
+  B, electronics migration, `L2SC-02`) is NOT reopened. **Corrected, narrower alias set: 3 of 15 authorized**
+  (`piston`/`valve`/`actuator` — no verb form or idiom found; each empirically re-verified to still reproduce
+  the original `WARN`-vs-`PASS` divergence in a clean sentence); **12 of 15 excluded** with reason
+  (`spring`/`seal`/`gear` — verb collision; `bearing` — idiom; `lever` — idiom; `hydraulic`/`pneumatic` —
+  field-noun shift; `pressure`/`torque`/`friction` — mass noun/idiom; `compression` — corrected pack-scoping-
+  independent rationale; `mechanism` — reclassified to excluded, pre-existing `AB-006` low-specificity flag).
+  Governance-text corrections: alias-map direction stated consistently as `alias → canonical signal`; the
+  rejected candidate's inaccurate duplicate-JSON-key claim withdrawn and replaced with a truthful, scoped
+  description; structural-vs-semantic validation limits stated honestly; migration-safety strengthened with
+  re-verified no-overlap evidence against `mechanical`/`medical_device`/`software`. Corrected test/mutation
+  contracts add authorized-alias false-positive guards, rejected-alias negative guards, and a 5th mandatory
+  mutation probe protecting against MD-1 recurring. **ZERO runtime/test/pack/registry/activation/schema/
+  persistence diff** (suite re-verified unchanged: 2616 passed / 3 skipped / 1 xfailed / 0 failed).
+  `OWNER_DECISION_REGISTER.md` UNCHANGED; `CF-2 = FORMALLY CLOSED` and `CF-6 = FULLY DISCHARGED` both unchanged,
+  not reopened; `D-CF6CF2-ILT002-01`/`L10N-RH-01`/`L2SC-02` untouched; Tier-1 untouched; Mechanical NOT
+  ACTIVATED; `activated_domains() == ['electronics_electrical']`. Authoritative ONLY if/when this exact
+  candidate is merged + post-merge verified. Next required gate: Mandatory Grill on this exact candidate;
+  thereafter the separately-authorized, HIGH-RISK `L2SC-01` bounded implementation gate (full create→freeze→
+  Grill→independent-review→Owner-acceptance→publication→PR→pre/post-merge-verification lifecycle — Fast Track
+  explicitly NOT authorized for that future gate).
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation

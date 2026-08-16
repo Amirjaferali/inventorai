@@ -10115,3 +10115,76 @@ and post-merge verified. Append-only; prior history not rewritten. **Next requir
 exact candidate**, then the governed lifecycle; thereafter, in order: `L2SC-01`; the Tier-1 EN/AR label;
 `L10N-RH-01` reassessment as applicable; explicit Owner Mechanical activation authorization; Mechanical
 activation + verification; Phase 9 formal closure.
+
+---
+
+## L2SC-01 — Substance-Signal Plural-Alias Domain-Completeness — Bounded Implementation Contract, MATERIAL CORRECTION of rejected candidate `219f7c1` (governance-only; implements nothing; NO Owner architecture decision required)
+
+**Gate.** Independent external review **REJECTED** the first bounded contract candidate
+`219f7c10c4ba23f795f0461dd831f71052469e65` (verdict: MATERIAL CORRECTION REQUIRED, defect **MD-1**). That
+candidate authorized 9 Mechanical plural aliases using only "is this the grammatically normal plural of an
+authorized signal?" — insufficient, since a plural surface form can independently function as a common verb,
+idiom, or unrelated meaning. Demonstrated false positives: "the gasket **seals** the joint", "the latch
+**springs** open", "the operator loses their **bearings**", "the plant **gears** up". Under the rejected set,
+these could incorrectly rescue a generic-verb-trap response from `ASSERTED` to `REASONED`, and `WARN` to `PASS`,
+without the text establishing genuine Mechanical substance. The rejected SHA is preserved **immutable**,
+unpushed, unamended, at `refs/rejected/l2sc01-plural-alias-contract-219f7c1`. This gate returns to the exact
+authoritative parent `c8e7af24adf2cee31104abc9c810d38e05569c52` and creates a fresh, corrected candidate.
+
+**What independent review already accepted — not reopened.** The reconstruction itself; the domain-generic
+substance-signal finding; the exact hardcoded-map gap; the WARN/PASS divergence proof; the rejection of Option A
+(nested per-signal aliases — would reopen the closed §5-I1 element-shape-validation surface) and Option C
+(engine-hardcoded expansion); the selection of **Option B** (top-level, pack-scoped
+`substance_signal_plural_aliases`, mirroring the existing pack-level `aliases` precedent); electronics
+migration; the `L2SC-02` registration; every protected boundary. None of this is re-derived or redesigned here —
+only the alias-safety criterion and its downstream data/text are corrected.
+
+**Corrected Mechanical alias set — narrower than before.** Applying the stricter criterion (a candidate alias
+must not be a common verb form, idiom, or unrelated meaning of comparable prominence to the electronics
+precedent's own "hall"/"chip"/"display"/"esp" exclusions — a normal English plural is NOT sufficient by itself),
+all 15 current `mechanical` substance signals were re-classified. **3 of 15 authorized:** `piston`→`pistons`,
+`valve`→`valves`, `actuator`→`actuators` (no verb form, no idiom found for any of the three; empirically
+re-verified this gate that each still reproduces the original `WARN`-vs-`PASS` divergence in a clean qualifying
+sentence). **12 of 15 excluded**, with reason: `spring`/`seal`/`gear` (common third-person-verb collision —
+reviewer-demonstrated); `bearing` (established idiom, "loses their bearings" — reviewer-demonstrated); `lever`
+("levers of power/influence" idiom); `hydraulic`/`pneumatic` (adjectival — plural shifts to a field/discipline
+noun); `pressure`/`torque`/`friction` (mass/non-count nouns in technical usage, plus idiomatic meaning-shift for
+`pressure`/`friction` — "under pressures", "trade frictions"); `compression` (re-evaluated under the corrected,
+pack-scoping-independent rationale — §10 of the contract — "chest compressions" remains a real intra-session
+lexical-ambiguity risk even though Option B is pack-scoped); `mechanism` (RECLASSIFIED from the rejected
+candidate's inclusion — its own singular already carries a pre-existing Owner-flagged `AB-006` low-specificity
+caveat, and its plural is prone to generic, non-substantive usage such as "coping mechanisms").
+
+**Governance-text corrections (independent-review-required, beyond the alias table).** Alias-map direction now
+stated consistently everywhere as `alias → canonical signal` (e.g. `"pistons": "piston"`). The rejected
+candidate's inaccurate claim that duplicate JSON keys "cannot be represented at the JSON level" is withdrawn —
+`json.load`'s pre-existing last-value-wins duplicate-key behavior applies to every field in every pack today,
+not newly introduced by this proposal, and raw duplicate-key detection is explicitly classified OUTSIDE this
+bounded increment. The contract now states truthfully that structural validation proves only that an alias
+TARGET exists in the same pack — never that the pairing is SEMANTICALLY correct — which is governed by the
+reviewed allow-list and tests alone. Migration-safety strengthened with independently re-verified evidence: none
+of the 8 existing hardcoded electronics plural-alias singulars appears as a `signal` in `mechanical`,
+`medical_device`, or `software`.
+
+**Corrected test/mutation contracts.** New required test categories: authorized-alias false-positive guards
+(each of the 3 survivors gets an adversarial non-substance context test); rejected-alias guards (each of the 12
+exclusions, including all 4 reviewer-demonstrated cases, gets a negative test proving it does NOT gain
+`REASONED` from its surface form alone). New mandatory mutation probe #5: introduce one known-ambiguous excluded
+alias into the authorized map → the corresponding false-positive guard test must go RED — directly protects
+against MD-1 recurring.
+
+**Suite/scope.** Full governed suite re-verified unchanged: **2616 passed / 3 skipped / 1 xfailed / 0 failed**.
+Changed paths: the revised contract (same canonical file path, corrected content, new SHA), the `L2SC-01`
+amendment (now citing the rejected SHA) and `L2SC-02` registration in the capability register, and this
+roadmap/`ACTIVE_INCREMENT_CONTRACT.md`/`CURRENT_PROJECT_STATE.md` sync — **ZERO runtime/test/pack/registry/
+activation/schema/persistence diff**. `OWNER_DECISION_REGISTER.md` UNCHANGED.
+
+**Boundary / status.** Does NOT reopen `CF-2` (`FORMALLY CLOSED` stands) or `CF-6` (`FULLY DISCHARGED` stands);
+does NOT touch `D-CF6CF2-ILT002-01`; does NOT touch `L10N-RH-01`; does NOT expand `L2SC-02`; does NOT implement
+Tier-1; does NOT activate Mechanical; no D4/D8/THERM-01/Phase 10/PSRR/deployment; no P9 closure.
+`activated_domains() == ['electronics_electrical']` unchanged. Authoritative ONLY if/when this exact candidate
+is merged and post-merge verified. Append-only; prior history not rewritten. **Next required gate: Mandatory
+Grill on this exact candidate**, then the governed lifecycle; thereafter the separately-authorized, HIGH-RISK
+`L2SC-01` bounded implementation gate (its own full create→freeze→Grill→independent-review→Owner-acceptance→
+publication→PR→pre/post-merge-verification lifecycle — Fast Track explicitly NOT authorized for that future
+gate).
