@@ -2265,6 +2265,29 @@ AUTHORIZED / NOT STARTED.***
   before and after every probe. **Phase 9 remains OPEN.** Next required gate: a bounded, separately authorized
   `L10N-RH-01` remediation gate (or an explicit Owner decision to defer its observations past activation) — the
   Tier-1 EN/AR label gate becomes eligible only after that.
+  **L10N-RH-01 BOUNDED REMEDIATION, base `585d1f8d02d4e16f8154c66d2e3297958735ef16`** (PR #499, merging accepted,
+  corrected reassessment candidate `283326885441749ca21570c10f16eec0f8cab07c` onto
+  `3b7783f19d7b1ee9f6618342a00ed47362b35ac4`; merge tree == candidate tree, diff empty). **Risk: LOW-RISK
+  CONTROLLED**, confirmed by the implementation — exactly one data-only string changed
+  (`web/ui_text.py`'s `UI_B_START_024`); `web/app.py` and `engine/domain_activation.py` byte-unchanged.
+  **Observation #1 (`UI_B_START_026`) = REMEDIATED** — new load-bearing test with independently hardcoded
+  literal content checks; mutation proof (false electronics-only claim → RED; restored → GREEN).
+  **Observation #2 (`SERVICE_UNAVAILABLE` seam) = REMEDIATED** — new parametrized test exercises both
+  authoritative call sites (`web/app.py:1802`, `:1842`) via a forced durable-store failure; mutation proof
+  (both bypassed → RED; restored → GREEN). **Observation #3 = REMEDIATED at the corrected surface**
+  (`start_present_confirm_label`/`UI_B_START_024`, broadened-activation branch — NOT `UI_B_START_030`); rewritten
+  to a domain-neutral first-person consent affirmation matching `UI_B_START_030`'s register;
+  `UI_B_START_023`/`UI_B_START_030` confirmed byte-unchanged; mutation proof (reverted → RED; restored → GREEN).
+  **Suite: 2684 passed / 3 skipped / 1 xfailed / 0 failed** (baseline 2677/3/1/0; delta +7, 0 regressions).
+  `activated_domains()` (real function, sorted list) returns `['electronics_electrical']`, verified before/after
+  every probe — Mechanical remains NOT ACTIVATED. No Tier-1 label implemented; `web/domain_label.py` untouched.
+  `L2SC-02` remains registration-only, outside activation-readiness. **Changed paths:** `web/ui_text.py` (one
+  data-only entry), new focused test file, new dedicated remediation record
+  (`docs/governance/L10N_RH01_BOUNDED_REMEDIATION_RECORD.md`), and this roadmap/AIC/CPS/capability-register sync.
+  `OWNER_DECISION_REGISTER.md` UNCHANGED. **`L10N-RH-01` = IMPLEMENTED / READY FOR FORMAL CLOSURE** — NOT claimed
+  FORMALLY CLOSED; a separate closure gate remains required. **Phase 9 remains OPEN.** Next required gate:
+  Mandatory Grill on this exact candidate, then the governed lifecycle. After merge, the eligible next steps are
+  a separate `L10N-RH-01` formal closure gate and/or the Tier-1 EN/AR Mechanical public label gate.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation

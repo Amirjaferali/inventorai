@@ -10420,3 +10420,52 @@ candidate is merged and post-merge verified. Append-only; prior history not rewr
 bounded, separately authorized `L10N-RH-01` remediation gate (or an explicit Owner decision to defer its
 observations past activation) — the Tier-1 EN/AR label gate becomes eligible only after that; Mechanical
 activation itself requires its own, later, explicit Owner authorization, neither requested nor implied here.
+
+## L10N-RH-01 — Bounded Remediation (LOW-RISK CONTROLLED; implements the 3 registered observations; Mechanical NOT ACTIVATED; Tier-1 NOT AUTHORIZED)
+
+Base: `585d1f8d02d4e16f8154c66d2e3297958735ef16` (PR #499 — SHA-preserving merge of the accepted, corrected
+L10N-RH-01 reassessment candidate `283326885441749ca21570c10f16eec0f8cab07c` onto
+`3b7783f19d7b1ee9f6618342a00ed47362b35ac4`; merge tree == candidate tree, diff empty). Full detail:
+`docs/governance/L10N_RH01_BOUNDED_REMEDIATION_RECORD.md`.
+
+**Risk classification: LOW-RISK CONTROLLED**, confirmed by the actual implementation — exactly one data-only
+string changed (`web/ui_text.py`'s `UI_B_START_024`); `web/app.py` and `engine/domain_activation.py` byte-
+unchanged; zero classifier/admission/activation/scoring/progression/persistence/security/API change.
+
+**Observation #1 (`UI_B_START_026` negative-semantic-guard gap) = REMEDIATED.** New load-bearing test
+(`tests/test_l10n_rh01_remediation.py::test_red_broadened_scope_sentence_ar_independent_semantic_guard`) uses
+independently hardcoded literal content checks, not derived from `ui_text.UI_STRINGS`. Mutation proof: a false
+electronics-only Arabic claim injected into `UI_B_START_026` → RED (caught); restored byte-identically
+(`sha256sum` verified) → GREEN.
+
+**Observation #2 (`SERVICE_UNAVAILABLE` localization-path regression-guard gap) = REMEDIATED.** New parametrized
+test exercises BOTH authoritative production call sites (`web/app.py:1802` inside `start()`; `web/app.py:1842`
+inside `_finalize_started_session()`, reached via `/start_ilt002_water_leak`) through a forced durable-store
+failure (monkeypatched `_get_store()`), not `localize_message()` in isolation. Mutation proof: both call sites
+bypassed to the raw English constant → RED for both parametrized cases; restored byte-identically → GREEN.
+
+**Observation #3 (present-confirm Arabic checkbox wording) = REMEDIATED — corrected surface.** The authoritative
+surface is `start_present_confirm_label`/`UI_B_START_024` (broadened-activation branch), NOT `UI_B_START_030`/
+`start_confirm_label` (a different, unaffected, already-correct template variable). `UI_B_START_024` rewritten
+from prompt/instruction style ("A supported domain was recognized... Please confirm...") to a domain-neutral
+first-person consent affirmation ("I confirm that this idea belongs to the domain that was recognized for it." /
+"أؤكد أن هذه الفكرة تنتمي إلى المجال الذي تم التعرف عليه لها."), matching `UI_B_START_030`'s already-accepted
+register. No domain named in either language — no Tier-1 translation work. `UI_B_START_023` (electronics-only,
+already accepted, production-reachable) and `UI_B_START_030` confirmed byte-unchanged, not opportunistically
+touched. Mutation proof: `UI_B_START_024` reverted to the old prompt-style wording → RED; restored → GREEN.
+
+**Suite.** Focused file (`tests/test_l10n_rh01_remediation.py`): 7 passed. Relevant localization/web tests: 76
+passed (31 + 45). Full governed suite: **2684 passed / 3 skipped / 1 xfailed / 0 failed** (baseline 2677/3/1/0;
+delta +7 passed, 0 regressions).
+
+**Boundary / status.** `activated_domains()` (the real function — a sorted list, not the internal
+`_ACTIVATED_DOMAINS` frozenset) returns `['electronics_electrical']`, verified before/after every mutation probe
+— **Mechanical remains NOT ACTIVATED**. No Tier-1 label implemented; `web/domain_label.py` untouched. `L2SC-02`
+remains registration-only, outside activation-readiness, not touched. **`L10N-RH-01` = IMPLEMENTED / READY FOR
+FORMAL CLOSURE** — NOT claimed FORMALLY CLOSED by this candidate; a separate formal closure gate is required per
+this repository's established convention. **Phase 9 remains OPEN.** `OWNER_DECISION_REGISTER.md` UNCHANGED.
+**Changed paths:** `web/ui_text.py` (one data-only entry), the new focused test file, the new dedicated
+remediation record, and this roadmap/AIC/CPS/capability-register sync. Authoritative ONLY if/when this exact
+candidate is merged and post-merge verified. **Next required gate: Mandatory Grill on this exact candidate**,
+then the governed lifecycle. After this merges, the eligible next steps are a separate `L10N-RH-01` formal
+closure gate and/or the **Tier-1 EN/AR Mechanical public label** gate — neither authorized or performed here.

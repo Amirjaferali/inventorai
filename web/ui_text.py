@@ -255,8 +255,12 @@ UI_STRINGS = {
         "ar": "يبدو أن فكرتك تنتمي إلى مجال الإلكترونيات والكهرباء. يرجى تأكيد هذا المجال للبدء، أو تعديل الوصف.",
     },
     "UI_B_START_024": {  # present-confirm, broadened (non-electronics) activation — domain-neutral
-        "en": "A supported domain was recognized for your idea. Please confirm this domain to start, or revise your description.",
-        "ar": "تم التعرف على مجال مدعوم لفكرتك. يرجى تأكيد هذا المجال للبدء، أو تعديل الوصف.",
+        # L10N-RH-01 Observation #3 remediation: first-person consent
+        # affirmation (matching UI_B_START_030's register) rather than
+        # prompt/instruction wording. Still domain-neutral (no Tier-1
+        # translation) and truthful.
+        "en": "I confirm that this idea belongs to the domain that was recognized for it.",
+        "ar": "أؤكد أن هذه الفكرة تنتمي إلى المجال الذي تم التعرف عليه لها.",
     },
     "UI_B_START_025": {  # start_scope_sentence, empty activation
         "en": "No specialist domain is currently available.",
