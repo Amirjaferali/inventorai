@@ -10312,3 +10312,55 @@ remains OPEN** — not closed by the rejected candidate, not closed by this corr
 this exact candidate is merged and post-merge verified. Append-only; prior history not rewritten. **Next required
 gate: Mandatory Grill on this exact candidate**, then the governed lifecycle (bundle, independent review, Owner
 acceptance, publication, PR, pre/post-merge verification — no push, no PR performed by this gate itself).
+
+## L2SC-01 — Substance-Signal Plural-Alias Domain-Completeness — FORMAL CLOSURE, MATERIAL CORRECTION of rejected closure candidate `360f541` (defect MD-C1) (governance-only; closes L2SC-01; implements nothing; Mechanical NOT ACTIVATED; L2SC-02/Tier-1/L10N-RH-01 unaffected)
+
+The first closure-record candidate, `360f541caa075a3fd899bfd41ee48304e965f491`, was independently **REJECTED**
+(verdict: CLOSURE INVALID — MATERIAL CORRECTION REQUIRED, defect **MD-C1**): its residual-obligations list
+incorrectly claimed `CF-6` and `CF-2`/the ILT-002 public-message question remained live "OPEN" residuals after
+L2SC-01 closure — contradicting the authoritative current status (`CF-6 = FULLY DISCHARGED` per
+`CF6_FULL_SCOPE_FORMAL_CLOSURE_RECORD.md` §6; `CF-2 = FORMALLY CLOSED` per
+`CF2_FULL_SCOPE_FORMAL_CLOSURE_RECORD.md` §8, which already resolved the ILT-002 route-copy question) and this
+same record's own closure statements elsewhere. The reviewer independently confirmed L2SC-01 itself is
+closure-ready and every other part of the record — runtime implementation, MD-A correction, tests, mutation
+probes, architecture exit criteria — correct; only the residual-list contradiction required correction. That
+candidate is preserved **immutable, unpushed, unamended** at `refs/rejected/l2sc01-formal-closure-360f541`.
+
+Base: `b8e1274c027707a38a85216b0ef7b43a1eda5e1c` (PR #497 — SHA-preserving merge of the accepted L2SC-01 runtime
+implementation MATERIAL CORRECTION candidate `9399f9d179a547bc6a9cc3ea25f8d2a6b1c2c490` onto
+`c1cb421d73c53d24cc381ca9238e29613ca7e996`; merge tree `6c6aac98156985286a1d802b6c2d3e0e522795a9` == candidate
+tree; candidate→merge diff EMPTY — independently re-verified this gate). Fresh verification: focused L2SC-01 file
+60 passed; causal-connective file 178 passed; full governed suite **2677 passed / 3 skipped / 1 xfailed / 0
+failed**. Runtime/data confirmed unchanged from this gate (governance-only correction — the corrected closure
+candidate touches only `docs/governance/L2SC01_FORMAL_CLOSURE_RECORD.md` §7.C/§10 plus this AIC/roadmap/CPS
+sync).
+
+**Closure determination: CLOSURE JUSTIFIED.** Full exit-criteria matrix, MD-A/MD-1 closure evidence, mutation
+evidence summary, architectural exit check, and residual-obligation review performed against the frozen contract
+`docs/governance/L2SC01_SUBSTANCE_SIGNAL_PLURAL_ALIAS_INCREMENT_CONTRACT.md` §15 — full detail in the dedicated
+closure record `docs/governance/L2SC01_FORMAL_CLOSURE_RECORD.md`. All in-scope §15 criteria satisfied: registry
+field + accessor + engine consumption implemented exactly per the frozen 3-pair set; Electronics byte/behavior-
+identical; the WARN-vs-PASS divergence proven closed for the authorized pairs; every §12/§13 test and probe
+passes (including the corrected, now-behavioral MD-1/MD-A recurrence guard); full suite green; independent review
+accepted the exact frozen SHA; Owner acceptance evidenced by the completed merge lifecycle. No in-scope residual
+remains open — `L2SC-02`, Tier-1 EN/AR, and `L10N-RH-01` are confirmed separate, unaffected obligations, not
+components of L2SC-01's own closure.
+
+**`L2SC-01` — Substance-Signal Plural-Alias Domain-Completeness — is now FORMALLY CLOSED**, effective on this
+candidate's own merge and post-merge verification. Rejected candidates `714d538fca7b22cb84e3b18802dcf27aa42e5707`
+and `219f7c10c4ba23f795f0461dd831f71052469e65` remain immutable rejected evidence at their respective
+`refs/rejected/*`, never authoritative implementation, not erased, not amended.
+
+**Boundary / status.** Governance/documentation-only: this closure record + roadmap/AIC/CPS sync + a closure note
+in the capability register's `L2SC-01` entry — **ZERO runtime/test/pack/registry/activation/schema/persistence
+diff** (verified via `git diff --name-only` against base `b8e1274`). Does NOT reopen `CF-2` (`FORMALLY CLOSED`
+stands) or `CF-6` (`FULLY DISCHARGED` stands); does NOT touch `D-CF6CF2-ILT002-01`; does NOT expand `L2SC-02`
+(still registration-only); does NOT implement Tier-1 (still pending); does NOT perform the `L10N-RH-01`
+reassessment (still pending); does NOT activate Mechanical —
+`activated_domains() == ['electronics_electrical']` unchanged; no D4/D8/THERM-01/Phase 10/PSRR/deployment.
+**Phase 9 remains OPEN** — later roadmap obligations remain. `OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative
+ONLY if/when this exact candidate is merged and post-merge verified. Append-only; prior history not rewritten.
+**Next required gate: Mandatory Grill on this exact candidate**, then the governed lifecycle (bundle, independent
+review, Owner acceptance, publication, PR, pre/post-merge verification — no push, no PR performed by this gate
+itself). After this closure merges, the next roadmap item is the **Tier-1 EN/AR Mechanical public label** — not
+authorized or performed here.

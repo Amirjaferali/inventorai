@@ -2197,6 +2197,38 @@ AUTHORIZED / NOT STARTED.***
   `activated_domains() == ['electronics_electrical']`. **`L2SC-01` remains OPEN** — not closed by the rejected
   candidate, not closed by this correction. Authoritative ONLY if/when this exact candidate is merged and
   post-merge verified. Next required gate: Mandatory Grill on this exact candidate, then the governed lifecycle.
+  **L2SC-01 SUBSTANCE-SIGNAL PLURAL-ALIAS DOMAIN-COMPLETENESS — FORMAL CLOSURE, MATERIAL CORRECTION of rejected
+  closure candidate `360f541caa075a3fd899bfd41ee48304e965f491` (defect MD-C1).** The first closure-record
+  candidate was independently REJECTED — its residual-obligations list incorrectly claimed `CF-6` and `CF-2`
+  remained live "OPEN" residuals after L2SC-01 closure, contradicting the authoritative current status (`CF-6 =
+  FULLY DISCHARGED`, `CF-2 = FORMALLY CLOSED`) and the record's own closure statements. The reviewer independently
+  confirmed L2SC-01 itself closure-ready and every other part correct. Rejected candidate preserved immutable at
+  `refs/rejected/l2sc01-formal-closure-360f541`. Corrected candidate, base
+  `b8e1274c027707a38a85216b0ef7b43a1eda5e1c`** (PR #497, merging accepted correction candidate
+  `9399f9d179a547bc6a9cc3ea25f8d2a6b1c2c490` onto `c1cb421d73c53d24cc381ca9238e29613ca7e996`; merge tree ==
+  candidate tree; diff EMPTY). A full Remaining-Obligation / Exit-Criteria Review against the frozen contract's
+  §15 closure criteria found **CLOSURE JUSTIFIED** — full detail in
+  `docs/governance/L2SC01_FORMAL_CLOSURE_RECORD.md`. Registry field + accessor + engine consumption implemented
+  exactly per the frozen 3-pair Mechanical set; Electronics byte/behavior-identical; WARN-vs-PASS divergence
+  proven closed; every §12/§13 test and probe passes (mutation probe 5 now caught via a genuine behavioral guard,
+  not map-equality alone); full suite green (2677/3/1/0, fresh-verified); independent review accepted the exact
+  frozen SHA; Owner acceptance evidenced by the completed merge lifecycle. Architectural exit check: no defect —
+  Domain Registry remains the sole structural validator, alias ownership pack-scoped, shared engine domain-
+  neutral, exactly one live alias source, no morphology, no cross-domain leakage, no classifier/admission/
+  activation change, no new duplicate ownership seam, no hash-pin weakening. Residual-obligation review: no
+  in-scope item open — `L2SC-02`/Tier-1/`L10N-RH-01` confirmed separate, unaffected. **`L2SC-01` is now FORMALLY
+  CLOSED**, effective on this candidate's own merge and post-merge verification. Rejected candidates `714d538`,
+  `219f7c1`, and closure candidate `360f541` (defect MD-C1) remain immutable rejected evidence, never
+  authoritative implementation. **Changed paths:** the corrected closure record, this roadmap/AIC/CPS sync, and a
+  closure note in the capability register — **ZERO
+  runtime/test/pack/registry/activation/schema/persistence diff**. `OWNER_DECISION_REGISTER.md` UNCHANGED.
+  **Boundary:** does NOT reopen `CF-2` or `CF-6`; does NOT touch `D-CF6CF2-ILT002-01`; does NOT expand `L2SC-02`
+  (still registration-only); does NOT implement Tier-1 (still pending); does NOT perform the `L10N-RH-01`
+  reassessment (still pending); does NOT activate Mechanical; `activated_domains() ==
+  ['electronics_electrical']`. **Phase 9 remains OPEN.** Authoritative ONLY if/when this exact candidate is
+  merged and post-merge verified. Next required gate: Mandatory Grill on this exact candidate, then the governed
+  lifecycle. After this closure merges, the next roadmap item is the **Tier-1 EN/AR Mechanical public label** —
+  not authorized or performed here.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
