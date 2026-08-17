@@ -52,14 +52,24 @@ _PROV_PATH = os.path.join(_DOMAINS, "domain_provenance.json")
 
 # ---------------------------------------------------------------- invariance anchors
 
+# L2SC-01 reconciliation (disclosed; see test_p9_mech_i3_signal_quality.py's
+# own reconciliation comment for the full domain_rules/progression_loop
+# disclosure). engine/path_n_questions.py is untouched by L2SC-01 — hash
+# unchanged.
 _FROZEN_ENGINE_SHA256 = {
-    "engine/domain_rules.py": "5df2ae26b0a6e78f37bb467d1d8b3d377596f9fcbbc7f869d1ed1ac5b5ab204b",
-    "engine/progression_loop.py": "bbb49b49f388dba2f0b906a79bdd656de23b33ec7101bd9d9da9c290ae45c4c5",
+    "engine/domain_rules.py": "1977418f2de1cf98e2bba003ebbf1e262310bcbfce348ca88887ceb6c629f86c",
+    "engine/progression_loop.py": "a8e1ffdf9accf3ed57fc6c32d51c7e77ce9e260c0d39a8ec3030e2635ff03dc3",
     # D-GMPR-D3-PN reconciliation #2 (disclosed; DGMPR_D3_PATH_N_DOMAIN_NEUTRAL_
     # SERVICE_CONTRACT.md §5): the seam hash is re-frozen at the remediated
     # domain-neutral seam. domain_rules/progression_loop hashes are UNCHANGED.
     "engine/path_n_questions.py": "a1a682d38293defd4b351e6238aeb870b4f765eaf3fc0f105c4932f75286ce7f",
 }
+# L2SC-01 reconciliation (disclosed; docs/governance/L2SC01_SUBSTANCE_SIGNAL_
+# PLURAL_ALIAS_INCREMENT_CONTRACT.md §10): mechanical and electronics_electrical
+# re-frozen after adding the authorized, additive-only
+# `substance_signal_plural_aliases` field to each — signal inventory, question-
+# inventory pins, and this file's own test inventory are untouched (same
+# signal-inventory-unchanged proof cited below).
 _FROZEN_PACK_SHA256 = {
     # mechanical: the I4 terminal-corpus validity anchor. P9-MECH-SF
     # reconciliation (contract §4 item 11 — the corrected contract's added
@@ -70,8 +80,8 @@ _FROZEN_PACK_SHA256 = {
     # rebuild — declaration bytes are the only pack change. Engine hashes,
     # other-pack hashes, question-inventory pins, and this file's test
     # inventory are untouched.
-    "mechanical": "a8a564506f00b886a7ffd7a85ee46749932bff65cca33d86bec0d7d8c64cec06",
-    "electronics_electrical": "3539cfc62710da92f12ac529c07ddaea85011536e5c9f88efb2e2303bb1b964c",
+    "mechanical": "901dd7188ddefda9cbe69a835cc64959c1d55debfe61b262d720abd904069e79",
+    "electronics_electrical": "53f431e38a70c2b621e19afb7323ad9bc4732c6c4151ea6b8c46a3214f098dfb",
     "medical_device": "6070cf9281a7a376780175e7e1d3879be598384bcaf4dc370e56f7bf613e3ade",
     "software": "1c9cefa14641c079ddb5c21c59f398866adf43561101743b67e611936a67e3a7",
     "iot_electronics": "f04c825ad25dea0c6db2ee310649fe377329f30c5461f2756019104013e53406",

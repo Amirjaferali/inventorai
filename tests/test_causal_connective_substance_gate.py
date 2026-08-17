@@ -146,15 +146,16 @@ def test_connective_with_surrounding_punctuation_still_matches():
 # ---------------------------------------------------------------------------
 
 def test_substance_signals_match_only_as_whole_words():
-    from engine.domain_rules import get_substance_signals
+    from engine.domain_rules import get_substance_signals, get_substance_signal_plural_aliases
     toks = set(get_substance_signals(D))
+    aliases = get_substance_signal_plural_aliases(D)
     # Direct signals match as words.
-    assert _has_whole_word_substance("the sensor and the relay", toks)
+    assert _has_whole_word_substance("the sensor and the relay", toks, aliases)
     # Substring fragments inside larger words never match.
     for trap in ("nice", "device", "which", "called", "enabled",
                  "especially", "shall", "relayed", "hallway", "iceberg",
                  "sliced", "displayed", "espresso"):
-        assert not _has_whole_word_substance(trap, toks), trap
+        assert not _has_whole_word_substance(trap, toks, aliases), trap
 
 
 _SUBSTRING_TRAP_SENTENCES = [
@@ -177,40 +178,53 @@ def test_substring_only_fake_substance_never_qualifies(label, text):
 
 
 # ---------------------------------------------------------------------------
-# (5) Explicit safe plural alias map (generic suffix folding is NOT ratified).
+# (5) Explicit safe plural alias map — L2SC-01: pack-scoped registry-owned
+# source (docs/governance/L2SC01_SUBSTANCE_SIGNAL_PLURAL_ALIAS_INCREMENT_
+# CONTRACT.md), NOT a shared-engine hardcoded map. Generic suffix folding
+# remains NOT ratified.
 # ---------------------------------------------------------------------------
 
 def test_explicit_plural_map_is_exactly_the_authorized_pairs():
-    from engine.progression_loop import _SUBSTANCE_PLURAL_ALIASES
-    assert _SUBSTANCE_PLURAL_ALIASES == {
+    from engine.domain_rules import get_substance_signal_plural_aliases
+    aliases = get_substance_signal_plural_aliases(D)
+    assert aliases == {
         "sensors": "sensor", "relays": "relay", "resistors": "resistor",
         "batteries": "battery", "capacitors": "capacitor", "motors": "motor",
         "leds": "led", "ics": "ic",
     }
     # "hall", "chip", "display", and "esp" deliberately have no plural alias.
     for excluded in ("halls", "chips", "displays", "esps"):
-        assert excluded not in _SUBSTANCE_PLURAL_ALIASES, excluded
+        assert excluded not in aliases, excluded
 
 
 def test_explicit_plural_map_recognizes_only_the_authorized_pairs():
-    from engine.domain_rules import get_substance_signals
+    from engine.domain_rules import get_substance_signals, get_substance_signal_plural_aliases
     toks = set(get_substance_signals(D))
+    aliases = get_substance_signal_plural_aliases(D)
     # The eight authorized plural forms match (and their singulars still do).
     for plural in ("sensors", "relays", "resistors", "batteries",
                    "capacitors", "motors", "leds", "ics"):
-        assert _has_whole_word_substance(plural, toks), plural
+        assert _has_whole_word_substance(plural, toks, aliases), plural
     for singular in ("sensor", "relay", "resistor", "battery",
                      "capacitor", "motor", "led", "ic"):
-        assert _has_whole_word_substance(singular, toks), singular
+        assert _has_whole_word_substance(singular, toks, aliases), singular
     # No generic suffix stripping: non-whitelisted plurals and inflections
     # never match, including the independently demonstrated false folds.
     for rejected in ("ices", "halls", "chips", "displays", "buses",
                      "classes", "glasses", "statuses", "series", "analyses",
                      "relaying", "displaying"):
-        assert not _has_whole_word_substance(rejected, toks), rejected
+        assert not _has_whole_word_substance(rejected, toks, aliases), rejected
     # The map never invents vocabulary: non-signal plurals stay unmatched.
     for nonsignal in ("parts", "areas", "things", "wires", "cases"):
-        assert not _has_whole_word_substance(nonsignal, toks), nonsignal
+        assert not _has_whole_word_substance(nonsignal, toks, aliases), nonsignal
+
+
+def test_plural_alias_map_is_pack_scoped_not_shared_engine_hardcode():
+    """L2SC-01: confirms there is exactly ONE live source of plural-alias
+    data (the domain pack registry) — the historical shared-engine constant
+    no longer exists at all."""
+    import engine.progression_loop as pl
+    assert not hasattr(pl, "_SUBSTANCE_PLURAL_ALIASES")
 
 
 _UNSAFE_PLURAL_REJECTION_SENTENCES = [
@@ -380,7 +394,7 @@ def test_existing_no_domain_reasoned_path_unchanged():
 
 def test_gate_helper_returns_false_for_empty_signal_set():
     assert _connective_whole_word_substance_gate(
-        "fan must continue because sensor reads high", set()) is False
+        "fan must continue because sensor reads high", set(), {}) is False
 
 
 # ---------------------------------------------------------------------------

@@ -2143,6 +2143,60 @@ AUTHORIZED / NOT STARTED.***
   thereafter the separately-authorized, HIGH-RISK `L2SC-01` bounded implementation gate (full create→freeze→
   Grill→independent-review→Owner-acceptance→publication→PR→pre/post-merge-verification lifecycle — Fast Track
   explicitly NOT authorized for that future gate).
+  **L2SC-01 SUBSTANCE-SIGNAL PLURAL-ALIAS DOMAIN-COMPLETENESS — RUNTIME IMPLEMENTATION, base
+  `c1cb421d73c53d24cc381ca9238e29613ca7e996`** (PR #496, merging corrected contract candidate `021da23` onto
+  `c8e7af24`). Owner-authorized, HIGH-RISK implementation of the frozen contract exactly as accepted — no
+  redesign, no architecture reopening. Implements Option B: `engine/domain_registry.py` gains fail-closed
+  structural validation for the optional `substance_signal_plural_aliases` field (non-object field, empty/
+  invalid key, empty/invalid target, dangling target all rejected at load); `engine/domain_rules.py` gains
+  `get_substance_signal_plural_aliases(domain)` mirroring `get_substance_signals`; `engine/progression_loop.py`
+  retires the hardcoded electronics-only `_SUBSTANCE_PLURAL_ALIASES` map — exactly one live alias source remains
+  (the domain pack itself); `domains/electronics_electrical/domain.json` migrates the 8 historical pairs;
+  `domains/mechanical/domain.json` adds exactly the 3 contract-authorized pairs (`piston`, `valve`, `actuator`),
+  the other 12 signals unaliased. New focused test file (36 tests) plus updates to
+  `tests/test_causal_connective_substance_gate.py`; disclosed byte-freeze reconciliation across 5
+  `tests/test_p9_mech_i*.py` files, limited to the 4 intentionally-changed files' pins. **Suite: 2653 passed / 3
+  skipped / 1 xfailed / 0 failed** (baseline 2616/3/1/0; delta +37 passed, 0 regressions). All 5 mandatory
+  mutation probes CAUGHT (genuine RED observed, each byte-verified reverted): remove `pistons` alias → parity
+  RED; bypass accessor with restored hardcoded map → Mechanical parity RED; reintroduce suffix stripping →
+  rejected-alias guards RED; dangling alias target → registry load fails closed RED; inject `seals→seal` into
+  the authorized map → disjointness/no-suffix guards RED. **Changed paths:** the 3 engine files, the 2 domain
+  packs, the new + updated test files, the 5 reconciled pin files, and this roadmap/AIC/CPS sync — the frozen
+  contract file itself UNCHANGED. `OWNER_DECISION_REGISTER.md` UNCHANGED (no new Owner decision). **Boundary:**
+  does NOT reopen `CF-2` (`FORMALLY CLOSED` stands) or `CF-6` (`FULLY DISCHARGED` stands); does NOT touch
+  `D-CF6CF2-ILT002-01`; `L10N-RH-01` still pending; `L2SC-02` still registration-only; Tier-1 still pending;
+  Mechanical NOT ACTIVATED; `activated_domains() == ['electronics_electrical']`. **`L2SC-01` is NOT formally
+  closed by this candidate** — implementation only; closure is a separate, later determination against the
+  contract's own closure criteria (§15). Authoritative ONLY if/when this exact candidate is merged and
+  post-merge verified. Next required gate: Mandatory Grill on this exact candidate, then the governed lifecycle
+  (independent review, Owner acceptance, SHA-preserving publication, PR, pre/post-merge verification).
+  **L2SC-01 SUBSTANCE-SIGNAL PLURAL-ALIAS DOMAIN-COMPLETENESS — RUNTIME IMPLEMENTATION MATERIAL CORRECTION of
+  rejected candidate `714d538fca7b22cb84e3b18802dcf27aa42e5707`, defect MD-A.** Independent external review
+  REJECTED that runtime implementation candidate — reviewer independently reconfirmed the runtime implementation
+  itself correct (registry validation, accessor ownership, single alias source, electronics migration, exact
+  3-pair Mechanical set, no rejected aliases/morphology, cross-domain isolation, end-to-end parity); the rejection
+  was scoped narrowly to the mandated MD-1 recurrence guard NOT being load-bearing — in 10 of 12 rejected-alias
+  adversarial sentences the alias word sat on the wrong directional side of its connective (never inspected by
+  the gate), so those guards passed regardless of alias state, and mutation probe 5 was CAUGHT only via
+  map-equality assertions, never a behavioral guard. Rejected SHA preserved immutable, unpushed, unamended at
+  `refs/rejected/l2sc01-runtime-impl-714d538`. This gate returns to the exact authoritative parent
+  `c1cb421d73c53d24cc381ca9238e29613ca7e996` and reapplies the runtime/data changes byte-identically (verified via
+  `sha256sum` for all 5 runtime/data files — zero diff); ONLY `tests/test_l2sc01_substance_signal_plural_alias.py`
+  changes. All 10 vacuous sentences replaced with direction-correct constructions verified free of causal-pattern
+  and other-substance confounds; a new explicit three-way differential proof (clean map ASSERTED / poisoned map
+  REASONED / neutral-control map ASSERTED) added for all 12 excluded signals via `unittest.mock.patch`; §12.C
+  tests renamed/re-documented honestly as sentence-boundary/directional-discipline guards, not plural-specific
+  false-positive guards — no contract scope expansion. **Hash-pin reconciliation: NONE required** (runtime/data
+  byte-identical to `714d538`; existing pins remain valid). **Suite: 2677 passed / 3 skipped / 1 xfailed / 0
+  failed** (prior baseline 2653/3/1/0; delta +24 passed, 0 regressions). All 5 mutation probes re-run CAUGHT;
+  probe 5's protection is now independently, behaviorally provable via the poisoned-map differential tests.
+  **Changed paths:** the focused test file and this roadmap/AIC/CPS sync only — the frozen contract file, all 5
+  runtime/data files, and all other test files byte-identical to `714d538`. `OWNER_DECISION_REGISTER.md`
+  UNCHANGED. **Boundary:** does NOT reopen `CF-2` or `CF-6`; does NOT touch `D-CF6CF2-ILT002-01`; `L10N-RH-01`
+  still pending; `L2SC-02` still registration-only; Tier-1 still pending; Mechanical NOT ACTIVATED;
+  `activated_domains() == ['electronics_electrical']`. **`L2SC-01` remains OPEN** — not closed by the rejected
+  candidate, not closed by this correction. Authoritative ONLY if/when this exact candidate is merged and
+  post-merge verified. Next required gate: Mandatory Grill on this exact candidate, then the governed lifecycle.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation

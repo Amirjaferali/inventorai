@@ -46,9 +46,11 @@ _DOMAINS = os.path.join(_REPO, "domains")
 
 # ---------------------------------------------------------------- invariance anchors
 
+# L2SC-01 reconciliation (disclosed; see test_p9_mech_i3_signal_quality.py's
+# own reconciliation comment for the full engine-file disclosure).
 _FROZEN_ENGINE_SHA256 = {
-    "engine/domain_rules.py": "5df2ae26b0a6e78f37bb467d1d8b3d377596f9fcbbc7f869d1ed1ac5b5ab204b",
-    "engine/progression_loop.py": "bbb49b49f388dba2f0b906a79bdd656de23b33ec7101bd9d9da9c290ae45c4c5",
+    "engine/domain_rules.py": "1977418f2de1cf98e2bba003ebbf1e262310bcbfce348ca88887ceb6c629f86c",
+    "engine/progression_loop.py": "a8e1ffdf9accf3ed57fc6c32d51c7e77ce9e260c0d39a8ec3030e2635ff03dc3",
 }
 # The mechanical pack hash IS this corpus's inventory validity anchor.
 # P9-MECH-SF reconciliation (contract §4 item 10, disclosed): re-frozen after
@@ -59,9 +61,16 @@ _FROZEN_ENGINE_SHA256 = {
 # and re-checked by the I2 frozen-field pins), so the corpus stays valid and
 # NO corpus rebuild was required or performed. Declaration bytes are the only
 # pack change.
+# L2SC-01 reconciliation (disclosed; docs/governance/L2SC01_SUBSTANCE_SIGNAL_
+# PLURAL_ALIAS_INCREMENT_CONTRACT.md §10): mechanical re-frozen after adding
+# the authorized, additive-only `substance_signal_plural_aliases` field (3
+# pairs: piston/valve/actuator). classification_signals/substance_signals
+# content is byte-unchanged (same signal-inventory proof cited above, which
+# this reconciliation does not disturb); electronics_electrical re-frozen for
+# the same reason as I1.
 _FROZEN_PACK_SHA256 = {
-    "mechanical": "a8a564506f00b886a7ffd7a85ee46749932bff65cca33d86bec0d7d8c64cec06",
-    "electronics_electrical": "3539cfc62710da92f12ac529c07ddaea85011536e5c9f88efb2e2303bb1b964c",
+    "mechanical": "901dd7188ddefda9cbe69a835cc64959c1d55debfe61b262d720abd904069e79",
+    "electronics_electrical": "53f431e38a70c2b621e19afb7323ad9bc4732c6c4151ea6b8c46a3214f098dfb",
     "medical_device": "6070cf9281a7a376780175e7e1d3879be598384bcaf4dc370e56f7bf613e3ade",
     "software": "1c9cefa14641c079ddb5c21c59f398866adf43561101743b67e611936a67e3a7",
     "iot_electronics": "f04c825ad25dea0c6db2ee310649fe377329f30c5461f2756019104013e53406",

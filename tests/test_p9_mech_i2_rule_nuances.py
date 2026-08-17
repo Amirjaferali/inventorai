@@ -114,8 +114,10 @@ _FROZEN_MECH_FIELDS = {
 }
 
 # --- Other-pack byte pins (unchanged since P9-MECH-I1; re-frozen for I2). ---
+# L2SC-01 reconciliation (disclosed; see test_p9_mech_i1_capability_coverage_
+# declaration.py's own reconciliation comment for the full disclosure).
 _FROZEN_PACK_SHA256 = {
-    "electronics_electrical": "3539cfc62710da92f12ac529c07ddaea85011536e5c9f88efb2e2303bb1b964c",
+    "electronics_electrical": "53f431e38a70c2b621e19afb7323ad9bc4732c6c4151ea6b8c46a3214f098dfb",
     "medical_device": "6070cf9281a7a376780175e7e1d3879be598384bcaf4dc370e56f7bf613e3ade",
     "software": "1c9cefa14641c079ddb5c21c59f398866adf43561101743b67e611936a67e3a7",
     "iot_electronics": "f04c825ad25dea0c6db2ee310649fe377329f30c5461f2756019104013e53406",

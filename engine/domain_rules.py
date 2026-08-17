@@ -355,6 +355,20 @@ def get_substance_signals(domain: str) -> list:
         return [s["signal"] for s in pack.get("substance_signals", [])]
     return []
 
+
+def get_substance_signal_plural_aliases(domain: str) -> dict:
+    """L2SC-01 (docs/governance/L2SC01_SUBSTANCE_SIGNAL_PLURAL_ALIAS_INCREMENT_
+    CONTRACT.md §5/§7): registry accessor mirroring `get_substance_signals`'s
+    ownership pattern. Returns the requested domain's OWN explicit plural-alias
+    map (``{alias: canonical_signal}``) — never merged, derived, or borrowed
+    from another pack. An unknown domain or a pack with no
+    `substance_signal_plural_aliases` field returns an empty dict (absence is
+    valid and backward compatible)."""
+    pack = _REGISTRY.get(domain)
+    if pack:
+        return dict(pack.get("substance_signal_plural_aliases", {}))
+    return {}
+
 def get_domain_question(domain: str, gap_type: str, iterations_open: int) -> str | None:
     """
     Return a domain-specific question for gap_type, or None to trigger generic fallback.

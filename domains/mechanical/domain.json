@@ -214,6 +214,11 @@
       "provenance_ref": "mechanical:PR001"
     }
   ],
+  "substance_signal_plural_aliases": {
+    "pistons": "piston",
+    "valves": "valve",
+    "actuators": "actuator"
+  },
   "gap_type_mappings": [
     {
       "gap_type_id": "MECHANISM_COMPLETENESS",
