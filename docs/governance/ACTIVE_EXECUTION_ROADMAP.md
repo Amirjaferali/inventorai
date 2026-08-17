@@ -10510,3 +10510,39 @@ rewritten. **Next required gate: Mandatory Grill on this exact candidate**, then
 independent review, Owner acceptance, publication, PR, pre/post-merge verification — no push, no PR performed by
 this gate itself). After this closure merges, the next roadmap item is the **Tier-1 EN/AR Mechanical public
 label** — not authorized or performed here.
+
+## Tier-1 EN/AR Mechanical Public Label — Activation-Readiness Edge (implements contract §13/Requirement 9; Mechanical NOT ACTIVATED; Owner activation authorization NOT granted; Phase 9 OPEN)
+
+Base: `7cb5b6e726a726bba223fd997d9d94905173091f` (PR #501 — SHA-preserving merge of the accepted L10N-RH-01 formal
+closure candidate `0b5e238c39a74b6a207bb04114f0ce0664318136` onto `c163a9d61d18434fa5cd6a68e01aa6a033ac7ce4`; merge
+tree == candidate tree, diff empty). Full detail:
+`docs/governance/TIER1_MECHANICAL_PUBLIC_LABEL_IMPLEMENTATION_RECORD.md`.
+
+**Activation-readiness matrix independently reconfirmed this gate: 14 PASS** (the prior 13, plus `L10N-RH-01` now
+`FORMALLY CLOSED / DISCHARGED`) **/ 1 outside-scope** (`L2SC-02`) **/ 1 Owner-decision-required** (explicit
+Mechanical activation authorization — searched `OWNER_DECISION_REGISTER.md` fresh; only `D-P9-MECH-01` exists,
+explicitly "selection + qualification-planning authorization only," NOT activation — still pending).
+
+**Implementation:** added a truthful Tier-1 Mechanical public label
+(`"Mechanical-informed review"` / `"مراجعة مستنيرة بمجال الميكانيكا"`) to the existing canonical owner
+`web/domain_label.py::_PUBLIC_DOMAIN_LABELS`, structurally parallel to the existing electronics entry; updated
+the module's own boundary docstring so it remains truthful (a Tier-1 label now reflects labeling-readiness, not
+activation). **No-activation-leak independently traced and proven**: the `/start` domain picker is wired
+exclusively to `activated_domains()` via a separate, lower-tier helper that does not read this dict; 4 new
+regression tests guard this (Mechanical not in `activated_domains()`; not offered in the picker; still rejected
+at the entry gate; canonical owner not duplicated into the picker helper).
+
+**Tests:** focused `tests/test_p6_1_truthful_domain_labeling.py` — 30 passed (8 new). Related +
+activation-boundary — 53 passed. Full governed suite: **2691 passed / 3 skipped / 1 xfailed / 0 failed** (+7 net
+new vs. the 2684 baseline). Mutation/differential proof: mutated the new Mechanical entry → RED (2 focused tests
+failed) → restored → byte-identical SHA-256 confirmed → GREEN (30 passed).
+
+**Boundary / status.** `engine/domain_activation.py` byte-unchanged; `activated_domains()` returns
+`['electronics_electrical']`, verified live this gate — **Mechanical remains NOT ACTIVATED**. No
+classifier/admission/scoring/progression file touched. `UI_B_START_024` left unchanged (no interaction with this
+gate). **L10N-RH-01 remains `FORMALLY CLOSED / DISCHARGED`**, unaffected. **Phase 9 remains OPEN.**
+`OWNER_DECISION_REGISTER.md` UNCHANGED — this implements an already-authorized contract requirement (§13), no new
+Owner decision required. Authoritative ONLY if/when this exact candidate is merged and post-merge verified.
+**Next required gate: Mandatory Grill on this exact candidate**, then the governed lifecycle. After this merges,
+the next Owner decision point is **explicit Mechanical activation authorization** — not authorized or performed
+here.

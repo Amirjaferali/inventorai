@@ -41,41 +41,60 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — L10N-RH-01 FORMAL CLOSURE; governance-only, implements nothing; `L10N-RH-01` = FORMALLY
-CLOSED / DISCHARGED; Tier-1 NOT implemented; Mechanical NOT ACTIVATED; Phase 9 OPEN; ODR UNCHANGED):** Base
-`c163a9d61d18434fa5cd6a68e01aa6a033ac7ce4` (PR #500 — SHA-preserving merge of the accepted L10N-RH-01 bounded
-remediation candidate `783571f412b11b50e785e78943528c7c01a27e0e` onto
-`585d1f8d02d4e16f8154c66d2e3297958735ef16`; merge tree == candidate tree, diff empty). Full detail:
-`docs/governance/L10N_RH01_FORMAL_CLOSURE_RECORD.md`.
+**Status (current — TIER-1 EN/AR MECHANICAL PUBLIC LABEL; activation-readiness edge; LOW/MEDIUM-RISK
+CONTROLLED; implements contract §13/Requirement 9; Mechanical NOT ACTIVATED; Owner activation authorization NOT
+granted; Phase 9 OPEN; ODR UNCHANGED):** Base `7cb5b6e726a726bba223fd997d9d94905173091f` (PR #501 —
+SHA-preserving merge of the accepted L10N-RH-01 formal closure candidate
+`0b5e238c39a74b6a207bb04114f0ce0664318136` onto `c163a9d61d18434fa5cd6a68e01aa6a033ac7ce4`; merge tree ==
+candidate tree, diff empty). Full detail:
+`docs/governance/TIER1_MECHANICAL_PUBLIC_LABEL_IMPLEMENTATION_RECORD.md`.
 
-**Closure eligibility independently proven** from the registration's own non-authorization clause (a bounded
-remediation gate was required — now merged and verified in the tree) and fresh re-verification this gate
-(`tests/test_l10n_rh01_remediation.py`: 7 passed; `web/ui_text.py`'s `UI_B_START_024` confirmed corrected in the
-checked-out tree). All 3 registered observations confirmed **REMEDIATED**: (1) `UI_B_START_026` negative-
-semantic-guard gap; (2) `SERVICE_UNAVAILABLE` localization-path regression-guard gap (both call sites); (3)
-present-confirm Arabic checkbox wording (`start_present_confirm_label`/`UI_B_START_024`). No fourth observation;
-"transport wording precision" reconfirmed not a registered item; `UI_B_START_030` reconfirmed byte-unchanged.
+**Activation-readiness matrix independently reconfirmed this gate: 14 PASS** (the prior 13 + `L10N-RH-01` now
+`FORMALLY CLOSED / DISCHARGED`) **/ 1 outside-scope** (`L2SC-02`) **/ 1 Owner-decision-required** (explicit
+Mechanical activation authorization — `OWNER_DECISION_REGISTER.md` searched fresh; only `D-P9-MECH-01` exists,
+explicitly qualification-planning-only, NOT activation — still pending, not granted here).
 
-**Two non-blocking residual observations preserved (do not reopen this closure):** (1) `UI_B_START_024`'s dual-
-surface consumption (error paragraph + checkbox label share one catalog entry) — pre-existing shape, future
-separately authorized split if ever needed. (2) Observation #1's test-assertion precision — for the registered
-mutation class, the negative assertion is the one that actually catches it; the positive assertion still passes
-under that mutation because the same true-claim phrase also appears, unrelatedly, in `UI_B_START_029` — a
-test-hardening refinement for a future gate, not a current defect.
+**Implementation:** added a truthful Tier-1 Mechanical public label to the existing canonical owner
+`web/domain_label.py::_PUBLIC_DOMAIN_LABELS` — `"Mechanical-informed review"` /
+`"مراجعة مستنيرة بمجال الميكانيكا"`, structurally parallel to the existing electronics entry, derived from
+`domains/mechanical/domain.json`'s `display_name` and the standard Arabic engineering term for the field
+(parallel to `الإلكترونيات`). Updated the module's own boundary docstring so it remains truthful after this
+change (Tier-1 = labeling-readiness, not activation).
 
-**`L10N-RH-01` — Pre-Mechanical-Activation Localization Regression-Hardening Residual — is now `FORMALLY CLOSED
-/ DISCHARGED`**, effective on this candidate's own merge and post-merge verification.
+**No-activation-leak independently traced and proven:** the `/start` domain picker (`index.html`'s
+`start_choice_domains`) is wired exclusively to `engine.domain_activation.activated_domains()` via a separate,
+lower-tier local helper (`web/app.py::_domain_label()`, plain `.title()` casing) that never reads
+`_PUBLIC_DOMAIN_LABELS`; confirmed live: `webapp._domain_label("mechanical") == "Mechanical"`, distinct from the
+Tier-1 catalog string. `public_domain_label()`'s only two call sites render a name for a domain value the caller
+already possesses — they never enumerate or offer domains.
 
-**Boundary / status.** Governance/documentation-only — **ZERO runtime/test/pack/registry/activation/schema/
-persistence diff**. Full suite re-verified unchanged this gate: 2684 passed / 3 skipped / 1 xfailed / 0 failed.
-`activated_domains()` (real function, sorted list) returns `['electronics_electrical']`, verified live this gate
-— Mechanical remains NOT ACTIVATED. **Tier-1 EN/AR Mechanical public label becomes the next pre-activation
-gate** — not authorized or performed here. Explicit Owner Mechanical activation authorization remains separate,
-later. **Phase 9 remains OPEN.** `OWNER_DECISION_REGISTER.md` UNCHANGED. **Changed paths:** the new closure
-record, this AIC/roadmap/CPS sync, and a closure note in the capability register's `L10N-RH-01` entry.
+**Boundary / status.** `engine/domain_activation.py` byte-unchanged; `activated_domains()` returns
+`['electronics_electrical']`, verified live this gate — **Mechanical remains NOT ACTIVATED**. No
+classifier/admission/scoring/progression file touched. `UI_B_START_024` left unchanged (no interaction).
+**L10N-RH-01 remains `FORMALLY CLOSED / DISCHARGED`**, unaffected. **Phase 9 remains OPEN.**
+`OWNER_DECISION_REGISTER.md` UNCHANGED — this implements an already-authorized contract requirement, no new
+Owner decision required. **Changed paths:** `web/domain_label.py`, `tests/test_p6_1_truthful_domain_labeling.py`,
+the new implementation record, and this AIC/roadmap/CPS sync. Full suite re-verified this gate: **2691 passed /
+3 skipped / 1 xfailed / 0 failed** (+7 net new vs. the 2684 baseline). Mutation/differential proof: mutated the
+new Mechanical entry → RED (2 focused tests) → restored → byte-identical SHA-256 confirmed → GREEN (30 passed).
 Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next required gate:
 **Mandatory Grill on this exact candidate** → independent external exact-candidate review → Owner acceptance →
-SHA-preserving publication → PR → pre/post-merge verification.
+SHA-preserving publication → PR → pre/post-merge verification. After this merges, the next Owner decision point
+is **explicit Mechanical activation authorization** — not authorized or performed here.
+
+**Immediately prior (L10N-RH-01 formal closure gate, candidate `0b5e238` — accepted and merged via PR #501
+`7cb5b6e`; retained as history):** governance-only, implemented nothing; `L10N-RH-01` = FORMALLY CLOSED /
+DISCHARGED; closure eligibility independently proven from the registration's own non-authorization clause (a
+bounded remediation gate was required — merged and verified in the tree) and fresh re-verification
+(`tests/test_l10n_rh01_remediation.py`: 7 passed; `web/ui_text.py`'s `UI_B_START_024` confirmed corrected). All 3
+registered observations confirmed REMEDIATED: (1) `UI_B_START_026` negative-semantic-guard gap; (2)
+`SERVICE_UNAVAILABLE` localization-path regression-guard gap (both call sites); (3) present-confirm Arabic
+checkbox wording (`start_present_confirm_label`/`UI_B_START_024`). No fourth observation; "transport wording
+precision" reconfirmed not a registered item; `UI_B_START_030` reconfirmed byte-unchanged. Two non-blocking
+residual observations preserved (`UI_B_START_024` dual-surface consumption; Observation #1's test-assertion
+precision — the negative assertion is the one that actually catches the registered mutation). Governance/
+documentation-only — zero runtime/test/pack/registry/activation/schema/persistence diff. Full suite unchanged:
+2684 passed / 3 skipped / 1 xfailed / 0 failed.
 
 **Immediately prior (L10N-RH-01 bounded remediation gate, candidate `783571f` — accepted and merged via PR #500
 `c163a9d`; retained as history):** LOW-RISK CONTROLLED; implemented the 3 registered observations; `L10N-RH-01` =
