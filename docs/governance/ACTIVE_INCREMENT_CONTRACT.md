@@ -41,40 +41,79 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — L2SC-01 SUBSTANCE-SIGNAL PLURAL-ALIAS DOMAIN-COMPLETENESS — RUNTIME IMPLEMENTATION MATERIAL
-CORRECTION of rejected candidate `714d538`, defect MD-A; governance/test-only, runtime UNCHANGED from `714d538`;
-CF-2 not reopened; CF-6 not reopened; `L2SC-02` unchanged; Tier-1 untouched; Mechanical NOT ACTIVATED; ODR
-UNCHANGED):** independent external review **REJECTED** the runtime implementation candidate
-`714d538fca7b22cb84e3b18802dcf27aa42e5707` (verdict: MATERIAL CORRECTION REQUIRED, defect **MD-A** — the mandated
-MD-1 recurrence guard was not load-bearing: in 10 of 12 rejected-alias adversarial sentences the alias word sat
-on the wrong directional side of its connective, never inspected by the gate, so those guards passed regardless
-of alias state). The reviewer independently reconfirmed the runtime implementation itself correct — Domain
-Registry validation, accessor ownership, single alias source, Electronics migration, the exact 3-pair Mechanical
-set, absence of rejected aliases/morphology, cross-domain isolation, and end-to-end parity all stand. That
-candidate is preserved **immutable, unpushed, unamended** at `refs/rejected/l2sc01-runtime-impl-714d538`. This
-gate returns to the exact authoritative parent `c1cb421d73c53d24cc381ca9238e29613ca7e996` and reapplies the
-runtime/data changes from `714d538` **byte-identically** (verified via `sha256sum` for all 5 runtime/data files —
-zero diff) — only `tests/test_l2sc01_substance_signal_plural_alias.py` changes. All 10 vacuous sentences replaced
-with direction-correct constructions, individually verified free of `_CAUSAL_STRUCTURE_PATTERNS`/other-substance
+**Status (current — L2SC-01 SUBSTANCE-SIGNAL PLURAL-ALIAS DOMAIN-COMPLETENESS — FORMAL CLOSURE, MATERIAL
+CORRECTION of rejected closure candidate `360f541`, defect MD-C1; governance-only, implements nothing; CF-2 not
+reopened; CF-6 not reopened; `L2SC-02` unchanged; Tier-1 untouched; `L10N-RH-01` untouched; Mechanical NOT
+ACTIVATED; ODR UNCHANGED):** The first closure-record candidate,
+`360f541caa075a3fd899bfd41ee48304e965f491`, was independently **REJECTED** (verdict: CLOSURE INVALID — MATERIAL
+CORRECTION REQUIRED, defect **MD-C1** — its residual-obligations list incorrectly claimed `CF-6` and `CF-2`/the
+ILT-002 public-message question remained live "OPEN" residuals, contradicting the authoritative current status
+(`CF-6 = FULLY DISCHARGED`, `CF-2 = FORMALLY CLOSED`) and the same record's own closure statements). The reviewer
+independently confirmed L2SC-01 itself is closure-ready and every other part of the record correct. That
+candidate is preserved **immutable, unpushed, unamended** at `refs/rejected/l2sc01-formal-closure-360f541`. THIS
+candidate returns to the exact authoritative parent `b8e1274c027707a38a85216b0ef7b43a1eda5e1c` and corrects only
+the closure record's residual list — full detail in `docs/governance/L2SC01_FORMAL_CLOSURE_RECORD.md` §10/§7.C.
+
+Base `b8e1274c027707a38a85216b0ef7b43a1eda5e1c` (PR #497 —
+SHA-preserving merge of the accepted L2SC-01 runtime implementation MATERIAL CORRECTION candidate
+`9399f9d179a547bc6a9cc3ea25f8d2a6b1c2c490` onto `c1cb421d73c53d24cc381ca9238e29613ca7e996`; merge tree ==
+candidate tree; candidate→merge diff EMPTY — independently re-verified this gate). A full Remaining-Obligation /
+Exit-Criteria Review was performed against the frozen contract's §15 closure criteria — full detail in the
+dedicated closure record `docs/governance/L2SC01_FORMAL_CLOSURE_RECORD.md`. **Determination: CLOSURE JUSTIFIED.**
+All in-scope criteria satisfied: registry field + accessor + engine consumption implemented exactly per the
+frozen 3-pair Mechanical set (`piston`/`valve`/`actuator`); Electronics byte/behavior-identical (8 historical
+pairs); the WARN-vs-PASS divergence proven closed for the authorized pairs through the real gap-closure state
+machine; every §12/§13 test and probe passes, including the now-genuinely-behavioral MD-1/MD-A recurrence guard
+(mutation probe 5 caught via `test_red_mechanical_rejected_alias_never_grants_reasoned[seal/verb-...]`, not
+map-equality alone); full suite green (**2677 passed / 3 skipped / 1 xfailed / 0 failed**, fresh-verified this
+gate); independent review accepted the exact frozen SHA; Owner acceptance evidenced by the completed merge
+lifecycle. Architectural exit check found no defect (Domain Registry remains the sole structural validator,
+alias ownership is pack-scoped, the shared engine is domain-neutral, exactly one live alias source exists, no
+morphology, no cross-domain leakage, no classifier/admission/activation change, no new duplicate ownership seam,
+no hash-pin weakening). Residual-obligation review found no in-scope item still open — `L2SC-02`, Tier-1 EN/AR,
+and `L10N-RH-01` are confirmed separate, unaffected obligations.
+
+**`L2SC-01` — Substance-Signal Plural-Alias Domain-Completeness — is now FORMALLY CLOSED**, effective on this
+candidate's own merge and post-merge verification. Rejected candidates
+`714d538fca7b22cb84e3b18802dcf27aa42e5707`, `219f7c10c4ba23f795f0461dd831f71052469e65`, and closure candidate
+`360f541caa075a3fd899bfd41ee48304e965f491` (defect MD-C1) all remain immutable rejected evidence at their
+respective `refs/rejected/*` — never authoritative implementation, not erased, not amended. **Changed paths:**
+the corrected closure record, this AIC/roadmap/CPS sync, and a closure note in the
+capability register's `L2SC-01` entry — **ZERO runtime/test/pack/registry/activation/schema/persistence diff**
+(verified via `git diff --name-only`). `OWNER_DECISION_REGISTER.md` UNCHANGED (no new Owner decision required).
+**Boundary:** does NOT reopen `CF-2` (`FORMALLY CLOSED` stands) or `CF-6` (`FULLY DISCHARGED` stands); does NOT
+touch `D-CF6CF2-ILT002-01`; does NOT expand `L2SC-02` (still registration-only); does NOT implement Tier-1 (still
+pending); does NOT perform the `L10N-RH-01` reassessment (still pending); does NOT activate Mechanical
+(`activated_domains() == ['electronics_electrical']` unchanged); no D4/D8/THERM-01/Phase 10/PSRR/deployment.
+**Phase 9 remains OPEN** — later roadmap obligations remain. Authoritative ONLY if/when this exact candidate is
+merged and post-merge verified. Next required gate: **Mandatory Grill on this exact candidate** → independent
+external exact-candidate review → Owner acceptance → SHA-preserving publication → PR → pre/post-merge
+verification. After this closure merges, the next roadmap item is the **Tier-1 EN/AR Mechanical public label** —
+not authorized or performed here.
+
+**Immediately prior (L2SC-01 runtime implementation MATERIAL CORRECTION gate, candidate `9399f9d` — accepted and
+merged via PR #497 `b8e1274`; retained as history):** independent external review REJECTED the runtime
+implementation candidate `714d538fca7b22cb84e3b18802dcf27aa42e5707` (verdict: MATERIAL CORRECTION REQUIRED,
+defect **MD-A** — the mandated MD-1 recurrence guard was not load-bearing: in 10 of 12 rejected-alias adversarial
+sentences the alias word sat on the wrong directional side of its connective, never inspected by the gate, so
+those guards passed regardless of alias state). The reviewer independently reconfirmed the runtime implementation
+itself correct — Domain Registry validation, accessor ownership, single alias source, Electronics migration, the
+exact 3-pair Mechanical set, absence of rejected aliases/morphology, cross-domain isolation, and end-to-end
+parity all stand. That candidate is preserved **immutable, unpushed, unamended** at
+`refs/rejected/l2sc01-runtime-impl-714d538`. The corrected candidate `9399f9d` returned to the exact authoritative
+parent `c1cb421d73c53d24cc381ca9238e29613ca7e996` and reapplied the runtime/data changes from `714d538`
+**byte-identically** (verified via `sha256sum` for all 5 runtime/data files — zero diff) — only
+`tests/test_l2sc01_substance_signal_plural_alias.py` changed. All 10 vacuous sentences replaced with
+direction-correct constructions, individually verified free of `_CAUSAL_STRUCTURE_PATTERNS`/other-substance
 confounds; a new explicit three-way differential proof (clean map ASSERTED / poisoned map REASONED / neutral-
 control map ASSERTED) added for all 12 excluded signals via `unittest.mock.patch`; §12.C tests renamed/re-
 documented honestly as sentence-boundary/directional-discipline guards (not plural-specific false-positive
-guards), per the reviewer's separate §12.C observation — no contract scope expansion. **Hash-pin reconciliation:
-NONE required** — runtime/data byte-identical to `714d538`, whose pins remain valid unchanged (verified: all 5
-`tests/test_p9_mech_i*.py` files pass without modification). **Suite:** focused L2SC-01 file 60 passed (was 36;
-+24); full governed suite **2677 passed / 3 skipped / 1 xfailed / 0 failed** (prior baseline 2653/3/1/0; delta
-+24 passed, 0 regressions). All 5 mutation probes re-run CAUGHT; probe 5 is now independently, behaviorally
-provable via the poisoned-map differential tests, not inferred from map-content assertions alone. **Changed
-paths:** `tests/test_l2sc01_substance_signal_plural_alias.py` and this AIC/roadmap/CPS sync only — the frozen
-contract file, all 5 runtime/data files, and all other test files are byte-identical to `714d538`.
-`OWNER_DECISION_REGISTER.md` UNCHANGED. **Boundary:** does NOT reopen `CF-2` (`FORMALLY CLOSED` stands) or `CF-6`
-(`FULLY DISCHARGED` stands); does NOT touch `D-CF6CF2-ILT002-01`; does NOT touch `L10N-RH-01` (still pending);
-does NOT expand `L2SC-02` (still registration-only); does NOT implement Tier-1 (still pending); does NOT activate
-Mechanical (`activated_domains() == ['electronics_electrical']` unchanged); no D4/D8/THERM-01/Phase 10/PSRR/
-deployment; no P9 closure. **`L2SC-01` remains OPEN** — not closed by the rejected candidate, not closed by this
-correction. Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next required
-gate: **Mandatory Grill on this exact candidate** → independent external exact-candidate review → Owner
-acceptance → SHA-preserving publication → PR → pre/post-merge verification.
+guards). **Hash-pin reconciliation: NONE required** — runtime/data byte-identical to `714d538`, whose pins
+remained valid unchanged. **Suite:** focused L2SC-01 file 60 passed (was 36; +24); full governed suite 2677
+passed / 3 skipped / 1 xfailed / 0 failed (prior baseline 2653/3/1/0; delta +24 passed, 0 regressions). All 5
+mutation probes re-run CAUGHT; probe 5 independently, behaviorally provable via the poisoned-map differential
+tests, not inferred from map-content assertions alone. Independently re-reviewed, accepted, published
+SHA-preserving, and merged (PR #497, base `b8e1274`; merge tree == candidate tree).
 
 **Immediately prior (L2SC-01 runtime implementation gate, candidate `714d538` — REJECTED by independent review,
 defect MD-A; preserved immutable at `refs/rejected/l2sc01-runtime-impl-714d538`; retained as history):**

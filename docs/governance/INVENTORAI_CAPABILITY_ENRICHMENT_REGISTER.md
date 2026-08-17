@@ -960,6 +960,23 @@ byte-identically (verified) and replaces only the defective test sentences with 
 plus an explicit poisoned-map/neutral-control differential proof. **`L2SC-01` remains OPEN** — not closed by
 either candidate.
 
+**Formal closure note.** The corrected candidate, `9399f9d179a547bc6a9cc3ea25f8d2a6b1c2c490`, was independently
+re-reviewed, accepted, and merged (PR #497, base `b8e1274c027707a38a85216b0ef7b43a1eda5e1c`; merge tree ==
+candidate tree). A dedicated closure gate performed the full Remaining-Obligation / Exit-Criteria Review against
+the frozen contract's §15 closure criteria and found **CLOSURE JUSTIFIED** — see
+`docs/governance/L2SC01_FORMAL_CLOSURE_RECORD.md` for the complete exit-criteria matrix, MD-A closure evidence,
+mutation evidence, architectural exit check, and residual-obligation review. (The first closure-record candidate,
+`360f541caa075a3fd899bfd41ee48304e965f491`, was independently REJECTED — defect MD-C1: its residual list
+incorrectly claimed `CF-6`/`CF-2` remained live "OPEN" residuals, contradicting their authoritative closed/
+discharged status; corrected in the merged closure record, and preserved immutable at
+`refs/rejected/l2sc01-formal-closure-360f541`.) **`L2SC-01` — Substance-Signal Plural-Alias Domain-Completeness —
+is now FORMALLY CLOSED**, effective on the closure candidate's own merge and post-merge verification. The
+authorized alias set remains exactly 3 of 15 Mechanical signals (`piston`/`valve`/`actuator`) — this closure does
+not claim linguistic completeness, only that this narrow, reviewed subset is safe and correctly implemented.
+Rejected candidates `714d538`, the earlier `219f7c1` contract candidate, and closure candidate `360f541` all
+remain immutable rejected evidence, never authoritative implementation. `L2SC-02` remains separately registered,
+registration-only, unaffected by this closure.
+
 ## L2SC-02 — Whole-Word Substance-Matcher Multi-Word-Signal Limitation (anti-forgetting; NON-ACTIVATING; NOT a Mechanical-activation blocker)
 
 Registered inside the L2SC-01 Bounded Contract gate (canonical record:
