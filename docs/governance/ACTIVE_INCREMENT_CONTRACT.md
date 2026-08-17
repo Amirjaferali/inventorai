@@ -41,10 +41,54 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — CF-2 FULL-SCOPE FORMAL CLOSURE — governance-only closure candidate; `CF-2 = FORMALLY CLOSED
-/ FULLY DISCHARGED FOR ITS AUTHORITATIVE RECONSTRUCTED SCOPE`; CF-6 not reopened; ILT-002 not reopened; `L2SC-01`
-not resolved; Tier-1 untouched; Mechanical NOT ACTIVATED; ODR UNCHANGED):** the CF-2 Arabic Localization
-Remainder Fast Track candidate is **MERGED and post-merge verified** (PR #494 → authoritative base
+**Status (current — L2SC-01 SUBSTANCE-SIGNAL PLURAL-ALIAS DOMAIN-COMPLETENESS — bounded implementation
+contract, MATERIAL CORRECTION of rejected candidate `219f7c1`; governance-only, implements nothing; NO Owner
+architecture decision required; CF-2 not reopened; CF-6 not reopened; `L2SC-02` unchanged; Tier-1 untouched;
+Mechanical NOT ACTIVATED; ODR UNCHANGED):** independent external review **REJECTED** the first bounded contract
+candidate `219f7c10c4ba23f795f0461dd831f71052469e65` (verdict: MATERIAL CORRECTION REQUIRED, defect **MD-1** —
+it authorized 9 Mechanical plural aliases using only "is this the grammatically normal plural?", without
+screening for verb-form/idiom/meaning-shift false-positive risk; demonstrated examples: "the gasket seals the
+joint", "the latch springs open", "the operator loses their bearings", "the plant gears up"). That candidate is
+preserved **immutable, unpushed, unamended** at `refs/rejected/l2sc01-plural-alias-contract-219f7c1`. This gate
+returns to the exact authoritative parent `c8e7af24adf2cee31104abc9c810d38e05569c52` (PR #495, parents `6c168a6`
++ accepted CF-2 closure candidate `4b45a3e`; merge tree == candidate tree) and creates a corrected candidate —
+what independent review already accepted (the reconstruction, the domain-generic finding, Option B's selection,
+electronics migration, `L2SC-02`) is NOT reopened or re-derived. **Corrected alias set — narrower than before:
+3 of 15 Mechanical signals authorized** (`piston`, `valve`, `actuator` — no verb form, no idiom found; each
+empirically re-verified to still reproduce the original `WARN`-vs-`PASS` divergence in a clean qualifying
+sentence); **12 of 15 excluded** (`spring`/`seal`/`gear` — common-verb collision, reviewer-demonstrated;
+`bearing` — idiom "loses their bearings", reviewer-demonstrated; `lever` — "levers of power/influence" idiom;
+`hydraulic`/`pneumatic` — adjectival field-noun shift; `pressure`/`torque`/`friction` — mass/non-count nouns +
+idiomatic shift; `compression` — re-evaluated under a corrected, pack-scoping-independent rationale, "chest
+compressions" remains a real intra-session ambiguity; `mechanism` — RECLASSIFIED to excluded, its singular
+already carries a pre-existing `AB-006` low-specificity flag and its plural is prone to generic non-substantive
+usage). **Governance-text corrections beyond the alias table:** alias-map direction now stated consistently as
+`alias → canonical signal` everywhere; the rejected candidate's inaccurate duplicate-JSON-key claim withdrawn
+and replaced with a truthful, scoped description (`json.load`'s pre-existing last-value-wins behavior; raw
+duplicate-key detection explicitly classified OUTSIDE this bounded increment); the contract now states
+truthfully that structural validation proves only that an alias target EXISTS, never that the pairing is
+SEMANTICALLY correct; migration-safety strengthened with independently re-verified evidence that none of the 8
+existing electronics plural-alias singulars appears in `mechanical`/`medical_device`/`software`. **Corrected
+test/mutation contracts:** new required authorized-alias false-positive guards and rejected-alias negative
+guards; a new 5th mandatory mutation probe (introduce a known-ambiguous excluded alias into the authorized map
+→ must go RED) directly protecting against MD-1 recurring. **Suite:** re-verified unchanged, 2616 passed / 3
+skipped / 1 xfailed / 0 failed. **Changed paths:** the revised contract (same file path, corrected content, new
+SHA), the `L2SC-01` amendment (now citing the rejected SHA) + `L2SC-02` registration in the capability register,
+and this AIC/roadmap/CPS sync — **ZERO runtime/test/pack/registry/activation/schema/persistence diff**.
+`OWNER_DECISION_REGISTER.md` UNCHANGED. **Boundary:** does NOT reopen `CF-2` (`FORMALLY CLOSED` stands) or
+`CF-6` (`FULLY DISCHARGED` stands); does NOT touch `D-CF6CF2-ILT002-01`; does NOT touch `L10N-RH-01`; does NOT
+expand `L2SC-02`; does NOT implement Tier-1; does NOT activate Mechanical
+(`activated_domains() == ['electronics_electrical']` unchanged); no D4/D8/THERM-01/Phase 10/PSRR/deployment; no
+P9 closure. Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next required
+gate: **Mandatory Grill on this exact candidate** → independent external exact-candidate review → Owner
+acceptance → SHA-preserving publication → PR → pre/post-merge verification; thereafter the separately-
+authorized, HIGH-RISK `L2SC-01` bounded implementation gate (its own full create→freeze→Grill→independent-
+review→Owner-acceptance→publication→PR→pre/post-merge-verification lifecycle — Fast Track explicitly NOT
+authorized for that future gate).
+
+**Immediately prior (CF-2 Full-Scope Formal Closure gate — MERGED via PR #495 `c8e7af24`; retained as
+history):** the CF-2 Arabic Localization Remainder Fast Track candidate is **MERGED and post-merge verified**
+(PR #494 → authoritative base
 `6c168a62df4754c0ecea7e99ff6316b66c6dfdb7`, parents `cccbf30` + accepted candidate `c2a08dc`, merge tree ==
 candidate tree; candidate→merge diff EMPTY) — full governed suite at that gate 2616 passed / 3 skipped / 1
 xfailed / 0 failed, independently reviewed (ACCEPT WITH NON-BLOCKING OBSERVATIONS, SAFE FOR OWNER ACCEPTANCE

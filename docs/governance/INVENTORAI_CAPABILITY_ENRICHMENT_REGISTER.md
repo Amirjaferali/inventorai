@@ -915,6 +915,63 @@ not close or reopen CF-6; does not close CF-2; does not touch the D-GMPR couplin
 not alter D8; and does not authorize Phase 10, PSRR, or deployment. Any future work on this item requires its
 own separately authorized, bounded gate.
 
+**Reconstruction Amendment (L2SC-01 Bounded Contract gate, base `c8e7af24adf2cee31104abc9c810d38e05569c52`).**
+The original Finding above is preserved verbatim above — it accurately reflected what was known at registration
+time. A dedicated read-only reconstruction gate has since traced the exact code and empirically confirmed a MORE
+PRECISE finding, which supersedes the original Finding's framing without erasing it: **the Layer-2 correction's
+substance-signal lookup (`engine.domain_rules.get_substance_signals(domain)`) is ALREADY fully domain-generic,
+not electronics-specific** — it reads each domain's own registry-owned `substance_signals`, and Mechanical's
+pack already carries 15 populated signals that already receive the correction correctly in singular form. The
+CONFIRMED, narrow, externally-meaningful gap is specifically the hardcoded, electronics-only 8-pair
+`_SUBSTANCE_PLURAL_ALIASES` map inside `engine/progression_loop.py`: a Mechanical response relying solely on a
+new causal connective plus a PLURAL-only substance word can receive `ASSERTED` where its singular equivalent
+receives `REASONED` — reproduced end-to-end through the real gap-closure state machine as a genuine
+`WARN`-vs-`PASS` divergence. This amendment does not implement anything; L2SC-01 itself remains OPEN.
+
+**Independent-review correction note.** A first bounded contract candidate (`219f7c10c4ba23f795f0461dd831f71052469e65`)
+proposing 9 authorized Mechanical plural aliases was **REJECTED by independent external review** (verdict:
+MATERIAL CORRECTION REQUIRED, defect MD-1 — the candidate authorized aliases using "is this the grammatically
+normal plural?" alone, without screening for verb-form/idiom/meaning-shift false-positive risk; demonstrated
+examples: "the gasket seals the joint", "the latch springs open", "the operator loses their bearings", "the
+plant gears up"). That candidate is preserved immutable, unpushed, at
+`refs/rejected/l2sc01-plural-alias-contract-219f7c1` and is NOT amended or built upon. A corrected contract,
+applying a stricter alias-safety criterion, authorizes only **3** of the 15 Mechanical signals for plural
+aliasing (`piston`, `valve`, `actuator`) — narrower than the rejected candidate's 9 — with the remaining 12
+explicitly excluded on verb-form/idiom/mass-noun/meaning-shift grounds. Current canonical record:
+`docs/governance/L2SC01_SUBSTANCE_SIGNAL_PLURAL_ALIAS_INCREMENT_CONTRACT.md`.
+
+## L2SC-02 — Whole-Word Substance-Matcher Multi-Word-Signal Limitation (anti-forgetting; NON-ACTIVATING; NOT a Mechanical-activation blocker)
+
+Registered inside the L2SC-01 Bounded Contract gate (canonical record:
+`docs/governance/L2SC01_SUBSTANCE_SIGNAL_PLURAL_ALIAS_INCREMENT_CONTRACT.md` §16 and its preceding, rejected-and-
+corrected predecessor; base `c8e7af24adf2cee31104abc9c810d38e05569c52`). Deliberately NON-NUMERIC-prefixed,
+grouped in the same `L2SC` family as `L2SC-01` (same underlying `engine.progression_loop._has_whole_word_
+substance` matching mechanism), with its own `-02` suffix so it is separately trackable and never conflated with
+`L2SC-01`'s own (distinct) plural-alias gap. NO new CAP entry — CAP-01…CAP-18 unchanged.
+
+**Finding.** The Layer-2 causal-connective substance-signal matcher tokenizes on single alphanumeric runs
+(`_SUBSTANCE_WORD_RE = re.compile(r"[a-z0-9]+")`) and checks single-token membership. A domain-pack
+`substance_signals` entry whose `signal` value is itself MULTIPLE words (confirmed: `software`'s
+`"static analysis"`) can never match this whole-word check, in singular or plural form, for ANY domain that has
+such a signal. **`mechanical` has ZERO multi-word substance signals** (independently verified) — this finding
+does NOT affect Mechanical activation-readiness and is explicitly NOT a component of `L2SC-01`'s bounded
+implementation scope.
+
+**Why this matters (anti-forgetting only).** If a future domain pack (or a future edit to an existing pack, e.g.
+`software`) relies on a multi-word substance signal reaching a REASONED classification through the Layer-2 gate,
+that signal will silently never qualify via this path (though it may still qualify via the pre-existing,
+domain-neutral `_CAUSAL_STRUCTURE_PATTERNS` path, which is unaffected). This registration exists only so the
+limitation is not forgotten if/when `software` (or any future multi-word-signal domain) becomes activation-
+relevant; it creates no obligation to act now and is independent of Mechanical's own activation timeline.
+
+**Non-authorization (restated for this section).** Registration is not implementation authorization. This
+section authorizes NO matcher change, NO multi-word tokenization support, NO Mechanical (or any other domain)
+data change, and does not alter Mechanical P9-QS status, qualification, or activation; does not touch
+`_ACTIVATED_DOMAINS`, runtime, domain packs, classifier, registry, questions, or the safety family; does not
+close or reopen CF-6 or CF-2; does not touch `L2SC-01`'s own scope or its bounded contract; does not authorize
+D4; does not alter D8; and does not authorize Phase 10, PSRR, or deployment. Any future work on this item
+requires its own separately authorized, bounded gate.
+
 ## L10N-RH-01 — Pre-Mechanical-Activation Localization Regression-Hardening Residual (anti-forgetting; pre-second-domain-activation residual; NON-ACTIVATING)
 
 Registered inside the CF-2 formal closure gate (canonical record:
