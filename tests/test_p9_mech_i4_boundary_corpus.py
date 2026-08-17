@@ -24,7 +24,18 @@ TERMINALITY / VALIDITY SCOPE (binding statements):
     UNGOVERNED.
   * Mixed-domain cases are CLASSIFICATION-boundary evidence only: no D4 /
     composition semantics are invoked, simulated, or implied. Mechanical
-    remains NOT QUALIFIED and NOT ACTIVATED.
+    remains NOT QUALIFIED.
+
+Reconciliation note (Mechanical Activation Execution Gate): mechanical is now
+REALLY activated in production (`activated_domains() ==
+['electronics_electrical', 'mechanical']`). Per this file's own terminality
+rule ("any future authorized ... change invalidates this terminal corpus"),
+the corpus entries whose expected outcome depended on mechanical being
+recognized-but-not-activated (D3-D precedence, or an activated-vs-activated
+tie against electronics) are updated below to their real current outcome,
+each annotated at the point of change; entries independent of activation
+state are unchanged. The signal-inventory byte pins and non-activation-
+dependent boundary evidence remain otherwise unchanged and still authoritative.
 """
 
 import hashlib
@@ -120,7 +131,10 @@ _CLASS_LOCKING_MECHANISM = [
 _CLASS_VS_ELECTRONICS = [
     ("ESP32 sensor circuit with WiFi", "single", "electronics_electrical"),
     ("a resistor and a capacitor on a circuit board", "single", "electronics_electrical"),
-    ("a linear actuator with a servo circuit", "single", "electronics_electrical"),  # elec>mech tie precedence
+    # Mechanical Activation Execution Gate: both electronics_electrical and
+    # mechanical are now activated -> a real activated-tie (AMBIGUOUS_TIE),
+    # not a SINGLE electronics precedence win.
+    ("a linear actuator with a servo circuit", "ambiguous_tie", None),
     ("a purely mechanical hand crank winch with a pulley", "single", "mechanical"),
 ]
 
@@ -134,8 +148,10 @@ _CLASS_VS_SOFTWARE = [
 
 # Class 5 — Mechanical vs Medical hard cases (medical context ownership + precedence).
 _CLASS_VS_MEDICAL = [
-    ("an artificial heart valve implant", "single", "medical_device"),
-    ("a replacement heart valve", "single", "medical_device"),  # tie; medical > mechanical precedence
+    ("an artificial heart valve implant", "single", "medical_device"),  # not a tie; unaffected by activation
+    # Mechanical Activation Execution Gate: mechanical is now activated;
+    # D3-D resolves this real (non-tie) score difference to mechanical.
+    ("a replacement heart valve", "single", "mechanical"),
     ("a valve that regulates water flow in pipes", "single", "mechanical"),
 ]
 
@@ -145,13 +161,15 @@ _CLASS_TIES = [
     # legacy zero-activated precedence: mechanical > software
     ("a pulley and a database", ("single", "mechanical"), {"mechanical": 1, "software": 1}),
     ("a lever and an app", ("single", "mechanical"), {"mechanical": 1, "software": 1}),
-    # legacy precedence: medical_device > mechanical
-    ("gear and catheter", ("single", "medical_device"), {"mechanical": 1, "medical_device": 1}),
-    # activated-domain tie (D3-D): the sole ACTIVATED domain wins the tie
-    ("circuit and hinge", ("single", "electronics_electrical"),
+    # Mechanical Activation Execution Gate: mechanical is now activated -> D3-D
+    # (the ACTIVATED domain wins the tie), not legacy medical_device precedence.
+    ("gear and catheter", ("single", "mechanical"), {"mechanical": 1, "medical_device": 1}),
+    # BOTH domains are now activated -> a real activated-tie (AMBIGUOUS_TIE),
+    # not a D3-D single-activated-domain win.
+    ("circuit and hinge", ("ambiguous_tie", None),
      {"electronics_electrical": 1, "mechanical": 1}),
-    # THREE-WAY legacy tie: medical_device > electronics > mechanical > software
-    ("gear and catheter and app", ("single", "medical_device"),
+    # THREE-WAY: mechanical is the sole ACTIVATED candidate among the tie -> D3-D.
+    ("gear and catheter and app", ("single", "mechanical"),
      {"mechanical": 1, "medical_device": 1, "software": 1}),
 ]
 
@@ -197,8 +215,12 @@ _CLASS_LEGACY_8 = [
     ("ESP32 sensor circuit with WiFi", "single", "electronics_electrical"),
     ("a catheter for veins", "single", "medical_device"),
     ("an app to organize daily schedules", "single", "software"),
-    ("gear and catheter", "single", "medical_device"),
-    ("circuit and hinge", "single", "electronics_electrical"),
+    # Mechanical Activation Execution Gate: `mechanical` is now activated —
+    # D3-D resolves this tie against the still-not-activated medical_device.
+    ("gear and catheter", "single", "mechanical"),
+    # Both electronics_electrical and mechanical are now activated -> a real
+    # activated-tie (AMBIGUOUS_TIE), no longer a SINGLE electronics win.
+    ("circuit and hinge", "ambiguous_tie", None),
     ("nothing recognizable at all", "none", None),
     ("a system of gears and levers", "single", "mechanical"),
 ]
@@ -284,10 +306,15 @@ def test_explicit_ties_proven_by_score_parity():
         assert _outcome(text) == expected_outcome, text
 
 
-def test_three_way_tie_resolved_by_legacy_precedence():
+def test_three_way_tie_resolved_by_activation_now_not_legacy_precedence():
+    # Mechanical Activation Execution Gate: mechanical is now the sole
+    # ACTIVATED candidate among this three-way score tie, so D3-D resolves it
+    # directly — the legacy zero-activated precedence path (medical_device >
+    # electronics > mechanical > software) is no longer exercised by this
+    # input at all.
     text = "gear and catheter and app"
     assert _scores(text) == {"mechanical": 1, "medical_device": 1, "software": 1}
-    assert _outcome(text) == ("single", "medical_device")
+    assert _outcome(text) == ("single", "mechanical")
 
 
 def test_mixed_domain_classification_only():
@@ -355,15 +382,21 @@ def test_recognized_set_and_activation_state():
     assert sorted(registry) == [
         "electronics_electrical", "mechanical", "medical_device", "software",
     ]
-    assert activated_domains() == ["electronics_electrical"]
+    assert activated_domains() == ["electronics_electrical", "mechanical"]
 
 
 def test_recognition_is_not_activation():
-    # Classification identity confers NO activation: mechanical classifies (class 1)
-    # yet remains recognized-not-activated; electronics remains the sole activated domain.
+    # Classification identity confers NO activation by itself: medical_device
+    # classifies (class 5) yet remains recognized-not-activated. Mechanical is
+    # now really activated via the separate, explicit Mechanical Activation
+    # Execution Gate — not because it classifies — so mechanical classifying
+    # (class 1) is shown alongside its (now true) activation, not as a
+    # counter-example.
     assert _outcome("A gear and pulley hoist with a crankshaft drive") == ("single", "mechanical")
-    assert support_state("mechanical") == "recognized_not_activated"
-    assert is_activated("mechanical") is False
+    assert is_activated("mechanical") is True
+    assert _outcome("a catheter for veins") == ("single", "medical_device")
+    assert support_state("medical_device") == "recognized_not_activated"
+    assert is_activated("medical_device") is False
     assert is_activated("electronics_electrical") is True
 
 

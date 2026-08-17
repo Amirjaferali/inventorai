@@ -89,8 +89,11 @@ def _signals_block(state):
 
 def _started_answered_session(client):
     """Real /start + real answer flow; returns sid with one durable accepted
-    answer carrying ANSWER_NO_TERMS."""
-    r = client.post("/start", data={"idea": SEED_IDEA, "domain_confirm": ELEC},
+    answer carrying ANSWER_NO_TERMS. SEED_IDEA classifies as NONE; with 2
+    activated domains (Mechanical Activation Execution Gate) the D2 branch
+    additionally requires an explicit domain_choice."""
+    r = client.post("/start", data={"idea": SEED_IDEA, "domain_confirm": ELEC,
+                                     "domain_choice": ELEC},
                     follow_redirects=False)
     assert r.status_code == 302
     sid = r.headers["Location"].rsplit("/", 1)[-1]
@@ -102,7 +105,7 @@ def _started_answered_session(client):
 
 # --------------------------------------------------------- fixture honesty -------
 def test_baseline_real_activation_unchanged():
-    assert domain_activation.activated_domains() == [ELEC]
+    assert domain_activation.activated_domains() == [ELEC, "mechanical"]
 
 
 # =========================================================================== RED

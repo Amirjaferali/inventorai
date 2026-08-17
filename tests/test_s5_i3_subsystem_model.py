@@ -84,11 +84,14 @@ class TestRootDomainPreserved:
 # --- Subsystem domain reference is metadata, never activation ----------------
 
 class TestSubsystemReferenceIsNotActivation:
-    def test_mechanical_subsystem_not_activated(self):
+    def test_mechanical_subsystem_now_activated(self):
+        # Mechanical Activation Execution Gate: mechanical is now really
+        # activated in production. test_software_subsystem_not_activated below
+        # covers the still-not-activated case generically.
         state = _electronics_project()
         sub = sm.add_subsystem(state, "a", domain="mechanical")
-        assert sm.subsystem_support_state(sub, _reg()) == da.RECOGNIZED_NOT_ACTIVATED
-        assert sm.is_subsystem_domain_activated(sub, _reg()) is False
+        assert sm.subsystem_support_state(sub, _reg()) == da.ACTIVATED
+        assert sm.is_subsystem_domain_activated(sub, _reg()) is True
 
     def test_software_subsystem_not_activated(self):
         state = _electronics_project()
@@ -132,10 +135,10 @@ class TestCrossDomainComposition:
         subs = sm.project_subsystems(state)
         assert len(subs) == 3
         states = [sm.subsystem_support_state(s, _reg()) for s in subs]
-        assert states == [da.ACTIVATED, da.RECOGNIZED_NOT_ACTIVATED, da.RECOGNIZED_NOT_ACTIVATED]
-        # Only electronics is activated across the whole project.
+        # Mechanical Activation Execution Gate: mechanical is now activated.
+        assert states == [da.ACTIVATED, da.ACTIVATED, da.RECOGNIZED_NOT_ACTIVATED]
         activated = [s for s in subs if sm.is_subsystem_domain_activated(s, _reg())]
-        assert [s.domain for s in activated] == ["electronics_electrical"]
+        assert [s.domain for s in activated] == ["electronics_electrical", "mechanical"]
 
     def test_empty_subsystem_collection(self):
         state = _electronics_project()

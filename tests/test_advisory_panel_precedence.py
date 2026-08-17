@@ -327,7 +327,14 @@ def test_safety_signals_surface_unchanged():
         SESSION_STORE.pop(sid, None)
 
 
-def test_domain_gate_holds_electronics_only():
+def test_domain_gate_holds_electronics_only(monkeypatch):
+    # Pinned to the electronics-only activation state this file's scope is
+    # about; mechanical is now really activated in production (Mechanical
+    # Activation Execution Gate) and would legitimately admit the gearbox
+    # idea via its own confirmation — out of scope for this test file.
+    from engine import domain_activation
+    monkeypatch.setattr(domain_activation, "_ACTIVATED_DOMAINS",
+                         frozenset({"electronics_electrical"}))
     before = set(SESSION_STORE)
     resp = _start("a gearbox with a rotating shaft and bearing torque")
     assert resp.status_code == 200

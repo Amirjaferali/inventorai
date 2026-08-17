@@ -337,7 +337,14 @@ def test_engine_raw_reason_strings_unchanged_upstream():
         assert token in src, token
 
 
-def test_deliverable_and_safety_and_domain_gate_unchanged():
+def test_deliverable_and_safety_and_domain_gate_unchanged(monkeypatch):
+    # Pinned to the electronics-only activation state for the domain-gate
+    # check below; mechanical is now really activated in production
+    # (Mechanical Activation Execution Gate) and would legitimately admit a
+    # gearbox idea via its own confirmation.
+    from engine import domain_activation
+    monkeypatch.setattr(domain_activation, "_ACTIVATED_DOMAINS",
+                         frozenset({"electronics_electrical"}))
     sid = _session()
     try:
         state = SESSION_STORE[sid]["state"]

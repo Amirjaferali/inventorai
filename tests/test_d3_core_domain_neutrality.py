@@ -38,7 +38,15 @@ def _state(text, domain):
 
 # Guard: keep the baseline the D3 contract assumes (electronics is the only
 # activated specialist domain; the recognized pack is NOT activated).
-def test_activation_baseline_preserved():
+def test_activation_baseline_preserved(monkeypatch):
+    # `_RECOGNIZED_NOT_ACTIVATED = "mechanical"` is intentionally kept as-is
+    # (not swapped to another domain) because other tests in this file rely on
+    # mechanical's own governed safety-cue family / Path-N artifact content.
+    # Mechanical is now really activated (Mechanical Activation Execution
+    # Gate); this test is pinned to the electronics-only precondition it
+    # actually needs, locally, rather than relying on the real baseline.
+    monkeypatch.setattr(domain_activation, "_ACTIVATED_DOMAINS",
+                         frozenset({"electronics_electrical"}))
     assert domain_activation.is_activated(_ACTIVATED) is True
     assert domain_activation.is_activated(_RECOGNIZED_NOT_ACTIVATED) is False
 

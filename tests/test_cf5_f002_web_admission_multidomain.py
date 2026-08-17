@@ -99,8 +99,9 @@ def _admitted_domain(resp):
 
 # --------------------------------------------------------- fixture honesty -------
 def test_baseline_real_activation_unchanged():
-    # No real domain is activated by this file's doubles.
-    assert domain_activation.activated_domains() == [ELEC]
+    # No real domain is activated by this file's doubles beyond the true
+    # production activation set.
+    assert domain_activation.activated_domains() == [ELEC, "mechanical"]
 
 
 # =========================================================================== RED
@@ -182,14 +183,23 @@ def test_red_r6_public_copy_truthful_after_broadening(activate, client):
 
 # ================================================ §4.A backward compatibility ===
 # Current Electronics-only activation — NO user-visible regression. These pin the
-# authoritative-parent behavior; they pass before AND after the change.
+# authoritative-parent behavior. Mechanical Activation Execution Gate: real
+# production activation now also includes `mechanical`; this section is
+# reconstructed here via the file's own `activate` double (electronics-only)
+# to keep proving the ORIGINAL electronics-only-scoped claim in isolation from
+# the real baseline (real 2-domain behavior is covered by the RED/dedicated
+# tests elsewhere in this file, e.g. test_red_r2_no_wrong_electronics_session_
+# for_activated_domain, which independently proves mechanical is never
+# silently admitted as electronics).
 
-def test_a_electronics_idea_admitted_with_confirmation(client):
+def test_a_electronics_idea_admitted_with_confirmation(client, activate):
+    activate(ELEC)
     resp = _post(client, ELEC_IDEA, confirm=ELEC)
     assert _admitted_domain(resp) == ELEC
 
 
-def test_a_no_confirmation_refused_exact_message_no_session(client):
+def test_a_no_confirmation_refused_exact_message_no_session(client, activate):
+    activate(ELEC)
     before = set(SESSION_STORE)
     resp = _post(client, ELEC_IDEA)
     assert resp.status_code == 200
@@ -197,12 +207,14 @@ def test_a_no_confirmation_refused_exact_message_no_session(client):
     assert set(SESSION_STORE) == before
 
 
-def test_a_none_fallback_admitted_as_electronics_with_confirmation(client):
+def test_a_none_fallback_admitted_as_electronics_with_confirmation(client, activate):
+    activate(ELEC)
     resp = _post(client, NONE_IDEA, confirm=ELEC)
     assert _admitted_domain(resp) == ELEC
 
 
-def test_a_recognized_not_activated_weak_conflict_guided_no_session(client):
+def test_a_recognized_not_activated_weak_conflict_guided_no_session(client, activate):
+    activate(ELEC)
     before = set(SESSION_STORE)
     resp = _post(client, MECH_IDEA, confirm=ELEC)
     assert resp.status_code == 200
@@ -210,7 +222,8 @@ def test_a_recognized_not_activated_weak_conflict_guided_no_session(client):
     assert set(SESSION_STORE) == before
 
 
-def test_a_strong_unsupported_refused_unchanged_no_session(client):
+def test_a_strong_unsupported_refused_unchanged_no_session(client, activate):
+    activate(ELEC)
     before = set(SESSION_STORE)
     resp = _post(client, MED_IDEA, confirm=ELEC)
     assert resp.status_code == 200
@@ -218,16 +231,18 @@ def test_a_strong_unsupported_refused_unchanged_no_session(client):
     assert set(SESSION_STORE) == before
 
 
-def test_a_corroborated_lay_electrical_admission_unchanged(client):
+def test_a_corroborated_lay_electrical_admission_unchanged(client, activate):
     # The governed Entry-UX weak-conflict resolution is preserved byte-for-byte
-    # under the current electronics-only activation state.
+    # under the electronics-only activation state.
+    activate(ELEC)
     resp = _post(client, MECH_IDEA_LAY, confirm=ELEC)
     assert _admitted_domain(resp) == ELEC
 
 
-def test_a_u4_rendered_consent_ui_backward_compatible(client):
+def test_a_u4_rendered_consent_ui_backward_compatible(client, activate):
     """U4: under ['electronics_electrical'] the rendered consent UI is
     behaviorally identical to the authoritative parent."""
+    activate(ELEC)
     body = client.get("/").get_data(as_text=True)
     assert 'name="domain_confirm"' in body
     assert 'value="electronics_electrical"' in body

@@ -63,11 +63,15 @@ def _runtime_non_specialist_early_questions():
 # --------------------------------------------------------------------------
 
 def test_start_initializes_path_n():
+    # This idea classifies as NONE; with 2 activated domains (Mechanical
+    # Activation Execution Gate) the D2 branch additionally requires an
+    # explicit domain_choice.
     client = app.test_client()
     resp = client.post(
         "/start",
         data={"idea": "A small electronic reminder gadget for medicine times",
-              "domain_confirm": "electronics_electrical"},
+              "domain_confirm": "electronics_electrical",
+              "domain_choice": "electronics_electrical"},
         follow_redirects=False,
     )
     assert resp.status_code == 302
@@ -236,10 +240,13 @@ def test_start_renders_path_n_question_end_to_end():
     client = app.test_client()
 
     # --- Phase A: fresh /start through the real route + real render ---
+    # This idea classifies as NONE; with 2 activated domains the D2 branch
+    # additionally requires an explicit domain_choice.
     resp = client.post(
         "/start",
         data={"idea": "A small electronic reminder gadget for medicine times",
-              "domain_confirm": "electronics_electrical"},
+              "domain_confirm": "electronics_electrical",
+              "domain_choice": "electronics_electrical"},
         follow_redirects=False,
     )
     assert resp.status_code == 302

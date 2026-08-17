@@ -71,8 +71,9 @@ def activate(monkeypatch):
 
 # --------------------------------------------------------- fixture honesty -------
 def test_baseline_real_activation_unchanged():
-    # No real domain is activated by this file's doubles.
-    assert domain_activation.activated_domains() == ["electronics_electrical"]
+    # No real domain is activated by this file's doubles beyond the true
+    # production activation set.
+    assert domain_activation.activated_domains() == ["electronics_electrical", "mechanical"]
 
 
 # ----------------------------------------------------------------- RED-E2-1 ------

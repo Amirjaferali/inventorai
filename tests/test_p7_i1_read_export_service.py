@@ -198,7 +198,7 @@ def test_export_record_content_grounded_no_invented_data(tmp_path):
 
 @pytest.mark.parametrize("domain,expected", [
     ("electronics_electrical", domain_activation.ACTIVATED),
-    ("mechanical", domain_activation.RECOGNIZED_NOT_ACTIVATED),
+    ("medical_device", domain_activation.RECOGNIZED_NOT_ACTIVATED),
     ("totally_unknown_xyz", domain_activation.UNKNOWN_OR_UNSUPPORTED),
 ])
 def test_export_domain_support_state_grounded(tmp_path, domain, expected):
@@ -220,10 +220,10 @@ def test_export_null_legacy_domain_is_unknown_unsupported(tmp_path):
 def test_export_does_not_activate_domain_or_mutate_registry(tmp_path):
     s = _store(tmp_path, confirmed_domain="electronics_electrical")
     before_activated = domain_activation.activated_domains()
-    before_mech = domain_activation.support_state("mechanical")
+    before_mech = domain_activation.support_state("medical_device")
     seam.produce_project_export(s, "p1", OWNER)
     assert domain_activation.activated_domains() == before_activated
-    assert domain_activation.support_state("mechanical") == before_mech
+    assert domain_activation.support_state("medical_device") == before_mech
     assert before_mech == domain_activation.RECOGNIZED_NOT_ACTIVATED
 
 

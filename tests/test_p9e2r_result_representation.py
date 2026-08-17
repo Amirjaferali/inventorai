@@ -26,7 +26,8 @@ from engine.domain_rules import (
 )
 
 _ACTIVATED = "electronics_electrical"
-_RECOGNIZED_NOT_ACTIVATED = "mechanical"
+_ACTIVATED_2 = "mechanical"
+_RECOGNIZED_NOT_ACTIVATED = "medical_device"
 
 
 @pytest.fixture
@@ -40,7 +41,7 @@ def activate(monkeypatch):
 
 # --------------------------------------------------------- fixture honesty -------
 def test_baseline_only_electronics_activated():
-    assert domain_activation.activated_domains() == [_ACTIVATED]
+    assert domain_activation.activated_domains() == [_ACTIVATED, _ACTIVATED_2]
     assert domain_activation.support_state(_RECOGNIZED_NOT_ACTIVATED) == \
         domain_activation.RECOGNIZED_NOT_ACTIVATED
 
@@ -111,8 +112,13 @@ def test_red_r6_genuine_none_preserved():
 
 
 # ------------------------------------------------------------------ RED-R7 -------
-def test_red_r7_line34_priority_fallback_preserved():
-    # No activated tied domain -> the unchanged line-34 priority literal governs.
+def test_red_r7_line34_priority_fallback_preserved(activate):
+    # No activated tied domain among {mechanical, medical_device} -> the
+    # unchanged line-34 priority literal governs. Real production activation
+    # now includes mechanical too, so this precondition is reconstructed here
+    # via the file's own activation double (electronics-only), not the real
+    # baseline.
+    activate("electronics_electrical")
     assert infer_domain("gear and catheter") == "medical_device"
     assert classify_domain("gear and catheter").kind is DomainResultKind.SINGLE
     # electronics single path also unchanged
@@ -237,6 +243,12 @@ def test_red_r2_start_ambiguous_tie_fails_closed(activate, monkeypatch):
 
 def test_red_r10_start_multi_domain_fails_closed(monkeypatch):
     from web import app as web_app
+    # Pin to the electronics-only baseline this test's `UNSUPPORTED_DOMAIN_
+    # MESSAGE` byte-identity assertion below depends on; real production
+    # activation now includes mechanical too, which broadens the composed
+    # refusal copy (§4.E) without weakening the fail-closed guarantee itself.
+    monkeypatch.setattr(domain_activation, "_ACTIVATED_DOMAINS",
+                         frozenset({"electronics_electrical"}))
     multi = DomainClassification(kind=DomainResultKind.MULTI_DOMAIN_NEEDS_D4,
                                  candidates=("mechanical", "medical_device"),
                                  reason=DomainAmbiguityReason.MULTI_DOMAIN)

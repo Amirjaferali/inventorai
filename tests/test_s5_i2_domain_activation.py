@@ -42,11 +42,17 @@ class TestRealRegistrySupportState:
         assert da.support_state("electronics_electrical", _repo_registry()) == da.ACTIVATED
         assert da.is_activated("electronics_electrical", _repo_registry()) is True
 
-    @pytest.mark.parametrize("pack_id", ["mechanical", "medical_device", "software"])
+    @pytest.mark.parametrize("pack_id", ["medical_device", "software"])
     def test_recognized_non_electronics_not_activated(self, pack_id):
+        # `mechanical` is now ACTIVATED (Mechanical Activation Execution
+        # Gate) — see test_electronics_and_mechanical_are_activated below.
         st = da.support_state(pack_id, _repo_registry())
         assert st == da.RECOGNIZED_NOT_ACTIVATED
         assert da.is_activated(pack_id, _repo_registry()) is False
+
+    def test_electronics_and_mechanical_are_activated(self):
+        assert da.support_state("mechanical", _repo_registry()) == da.ACTIVATED
+        assert da.is_activated("mechanical", _repo_registry()) is True
 
     def test_recognized_not_activated_is_distinct_from_unknown(self):
         reg = _repo_registry()
@@ -125,12 +131,14 @@ class TestPackStatusIsNotActivation:
 
 
 class TestActivationAllowlist:
-    def test_only_electronics_is_activated(self):
-        assert da.activated_domains() == ["electronics_electrical"]
+    def test_activated_allowlist_matches_policy(self):
+        # Mechanical Activation Execution Gate: real allowlist is now
+        # ["electronics_electrical", "mechanical"].
+        assert da.activated_domains() == ["electronics_electrical", "mechanical"]
 
     def test_activated_domains_is_a_bounded_set(self):
-        # Guard against accidental fifth activation.
-        assert len(da.activated_domains()) == 1
+        # Guard against accidental third activation.
+        assert len(da.activated_domains()) == 2
 
 
 # --- §5-I2 completion: activated_domains registry cross-check (ACTIVATED ⊆ RECOGNIZED) ---
@@ -165,10 +173,10 @@ class TestDefaultLoadPath:
         assert da.is_activated("electronics_electrical") is True
 
     def test_default_path_known_non_electronics_not_activated(self):
-        assert da.support_state("mechanical") == da.RECOGNIZED_NOT_ACTIVATED
+        assert da.support_state("medical_device") == da.RECOGNIZED_NOT_ACTIVATED
 
     def test_default_path_activated_domains(self):
-        assert da.activated_domains() == ["electronics_electrical"]
+        assert da.activated_domains() == ["electronics_electrical", "mechanical"]
 
 
 # --- §5-I2 completion: web specialist admission bound to the engine policy ----
@@ -179,10 +187,13 @@ class TestWebActivationBinding:
         assert appmod._admit_specialist_domain("electronics_electrical") == "electronics_electrical"
 
     def test_web_admission_helper_refuses_recognized_not_activated(self):
-        # Specific error type so a missing helper (AttributeError) cannot false-pass.
+        # Specific error type so a missing helper (AttributeError) cannot
+        # false-pass. `mechanical` is now activated (see
+        # test_web_admission_helper_accepts_activated_domain-style coverage);
+        # `medical_device` remains recognized-not-activated.
         import web.app as appmod
         with pytest.raises(appmod.DomainNotActivatedError):
-            appmod._admit_specialist_domain("mechanical")
+            appmod._admit_specialist_domain("medical_device")
 
     def test_web_admission_helper_refuses_unknown(self):
         import web.app as appmod
@@ -203,9 +214,14 @@ class TestWebActivationBinding:
         assert da.is_activated(appmod.DOMAIN_CONFIRM_VALUE) is True
 
     def test_web_conflicting_domains_are_recognized_not_activated(self):
-        # The web classifier's conflicting-supported set must resolve as recognized
-        # but NOT activated under the engine policy.
+        # `web.app.CONFLICTING_SUPPORTED_DOMAINS` is documented (web/app.py) as
+        # a historical bounded conflict set kept for legacy consumers — POST
+        # /start no longer reads it. `mechanical` (a member) is now really
+        # activated (Mechanical Activation Execution Gate); the other members
+        # remain recognized-but-not-activated, asserted individually here
+        # rather than looping the whole legacy set blindly.
         import web.app as appmod
         reg = _repo_registry()
-        for d in appmod.CONFLICTING_SUPPORTED_DOMAINS:
+        assert da.support_state("mechanical", reg) == da.ACTIVATED
+        for d in appmod.CONFLICTING_SUPPORTED_DOMAINS - {"mechanical"}:
             assert da.support_state(d, reg) == da.RECOGNIZED_NOT_ACTIVATED

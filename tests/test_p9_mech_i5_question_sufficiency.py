@@ -309,9 +309,13 @@ def test_dgmpr_seam_remediated_mechanical_served():
 
 
 def test_recognition_activation_separation():
-    assert support_state("mechanical") == "recognized_not_activated"
-    assert is_activated("mechanical") is False
-    assert activated_domains() == ["electronics_electrical"]
+    # Mechanical Activation Execution Gate: mechanical is now really
+    # activated. `medical_device` preserves the "recognition alone does not
+    # confer activation" principle this test guards.
+    assert support_state("medical_device") == "recognized_not_activated"
+    assert is_activated("medical_device") is False
+    assert is_activated("mechanical") is True
+    assert activated_domains() == ["electronics_electrical", "mechanical"]
 
 
 def test_engine_files_byte_frozen():

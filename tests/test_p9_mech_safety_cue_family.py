@@ -475,10 +475,13 @@ def test_provenance_record_pr005():
 # ---------------------------------------------------------------- activation honesty
 
 
-def test_activation_state_unchanged():
-    assert activated_domains() == [ELEC]
-    assert support_state(MECH) == "recognized_not_activated"
-    assert is_activated(MECH) is False
+def test_activation_state_now_includes_mechanical():
+    # Mechanical Activation Execution Gate: mechanical is now really
+    # activated in production — the governed safety-cue family this file
+    # covers is no longer gated behind a recognized-but-inactive domain.
+    assert activated_domains() == [ELEC, MECH]
+    assert support_state(MECH) == "activated"
+    assert is_activated(MECH) is True
     assert is_activated(ELEC) is True
 
 
@@ -504,7 +507,7 @@ def test_deterministic_repeated_derivation():
 
 
 _EXPECTED_TESTS = [
-    "test_activation_state_unchanged",
+    "test_activation_state_now_includes_mechanical",
     "test_declaration_and_family_consistent",
     "test_declaration_cascade_complete_no_stale_pending_statement",
     "test_declaration_cascade_exact_content",

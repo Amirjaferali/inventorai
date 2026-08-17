@@ -17,8 +17,10 @@ Binding boundaries (D-S5-03 / §5-C1):
     is NOT runtime activation. REGISTERED != USER-ACTIVE. Activation is decided ONLY
     by the explicit allowlist below, never by pack status, pack existence, pack
     loading, registry membership, alias resolution, or metadata.
-  * Only ``electronics_electrical`` is currently activated. Activating any further
-    domain is a future, separately-authorized gate (Phase 9) — NOT done here.
+  * ``electronics_electrical`` and ``mechanical`` are activated per explicit Owner
+    authorization (Mechanical Activation Execution Gate; P9_MECHANICAL_DOMAIN_
+    QUALIFICATION_CONTRACT.md §16, Requirement 12). Activating any further domain
+    remains a future, separately-authorized gate.
 
 Alias handling is recognition-only: an alias resolves to its canonical ``pack_id``
 for the RECOGNIZED determination; activation is then decided by the canonical
@@ -33,10 +35,10 @@ ACTIVATED = "activated"
 RECOGNIZED_NOT_ACTIVATED = "recognized_not_activated"
 UNKNOWN_OR_UNSUPPORTED = "unknown_or_unsupported"
 
-# The ONLY currently activated specialist domain. Explicit and deliberately
-# separate from pack lifecycle status. Adding an entry here is a future,
-# separately-authorized domain-activation gate — it is NOT changed by §5-I2.
-_ACTIVATED_DOMAINS = frozenset({"electronics_electrical"})
+# The currently activated specialist domains. Explicit and deliberately separate
+# from pack lifecycle status. Adding an entry here is a separately-authorized
+# domain-activation gate — it is NOT changed by §5-I2 itself.
+_ACTIVATED_DOMAINS = frozenset({"electronics_electrical", "mechanical"})
 
 _DEFAULT_DOMAINS_DIR = "domains/"
 

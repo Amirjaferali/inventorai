@@ -9,7 +9,15 @@ resolution; Electronics + the None default byte-identical; mechanical served its
 OWN committed artifact — a VERBATIM projection of the I5-proven pack questions;
 artifact-less recognized domains, unknown domains, and traversal-shaped strings
 fail-safe to None; per-domain caches isolated; no wrapper, no second service.
-Mechanical remains recognized_not_activated and NOT QUALIFIED throughout.
+
+Reconciliation note (Mechanical Activation Execution Gate): mechanical is now
+REALLY activated in production (`engine.domain_activation.activated_domains()
+== ['electronics_electrical', 'mechanical']`) and remains NOT QUALIFIED
+(P9-QS qualification is a separate, still-unauthorized gate). The single test
+below that specifically pins the pre-activation "recognized_not_activated"
+state is reconstructed via a local activation double so this file's Path-N
+service-neutrality claims (which do not themselves depend on activation
+state) remain otherwise unchanged.
 """
 
 import hashlib
@@ -237,7 +245,13 @@ def test_evidence_inventory_and_critical_pins_intact():
 # ---------------------------------------------------------------- recognition / activation
 
 
-def test_mechanical_service_does_not_activate_mechanical():
+def test_mechanical_service_does_not_activate_mechanical(monkeypatch):
+    # Pinned to the pre-activation state this specific claim is about; see the
+    # module docstring's reconciliation note. Real production activation now
+    # includes mechanical.
+    from engine import domain_activation
+    monkeypatch.setattr(domain_activation, "_ACTIVATED_DOMAINS",
+                         frozenset({"electronics_electrical"}))
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         assert get_served_question("MECHANISM_COMPLETENESS", 0, domain="mechanical") is not None

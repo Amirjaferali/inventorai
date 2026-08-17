@@ -99,8 +99,12 @@ _LEGACY_PINS = [
     ("ESP32 sensor circuit with WiFi", "single", "electronics_electrical"),
     ("a catheter for veins", "single", "medical_device"),
     ("an app to organize daily schedules", "single", "software"),
-    ("gear and catheter", "single", "medical_device"),
-    ("circuit and hinge", "single", "electronics_electrical"),
+    # Mechanical Activation Execution Gate: `mechanical` is now activated —
+    # D3-D resolves this tie against the still-not-activated medical_device.
+    ("gear and catheter", "single", "mechanical"),
+    # Both electronics_electrical and mechanical are now activated -> a real
+    # activated-tie (P9-E2 AMBIGUOUS_TIE), no longer a SINGLE electronics win.
+    ("circuit and hinge", "ambiguous_tie", None),
     ("nothing recognizable at all", "none", None),
     ("a system of gears and levers", "single", "mechanical"),
 ]
@@ -127,14 +131,16 @@ _PROTECTED_OUTCOMES = [
     ("a wall bracket for hanging shelves", "single", "mechanical"),
     ("a quick release fastener for bicycle wheels", "single", "mechanical"),
     ("a valve that regulates water flow in pipes", "single", "mechanical"),
-    # cross-domain ownership structurally protected by precedence (medical > mech; elec > mech):
-    ("an artificial heart valve implant", "single", "medical_device"),
-    ("a replacement heart valve", "single", "medical_device"),
-    ("a linear actuator with a servo circuit", "single", "electronics_electrical"),
+    # Mechanical Activation Execution Gate: `mechanical` is now activated, so
+    # entries that previously won by precedence-over-a-non-activated-mechanical
+    # now reflect real D3-D/tie outcomes with mechanical genuinely in the mix.
+    ("an artificial heart valve implant", "single", "medical_device"),  # not a tie; unaffected
+    ("a replacement heart valve", "single", "mechanical"),
+    ("a linear actuator with a servo circuit", "ambiguous_tie", None),
     # EXPLICIT tie cases preserved (OD2 legacy precedence rule untouched):
     ("a pulley and a database", "single", "mechanical"),
     ("a lever and an app", "single", "mechanical"),
-    ("gear and catheter", "single", "medical_device"),
+    ("gear and catheter", "single", "mechanical"),
     # NONE / unknown boundary:
     ("a better way to organize my day", "none", None),
     ("nothing recognizable at all", "none", None),
@@ -343,7 +349,7 @@ def test_recognized_set_and_activation_unchanged():
         "electronics_electrical", "mechanical", "medical_device", "software",
     ]
     assert "iot_electronics" not in registry
-    assert activated_domains() == ["electronics_electrical"]
+    assert activated_domains() == ["electronics_electrical", "mechanical"]
 
 
 def test_safety_family_now_governed_for_mechanical():

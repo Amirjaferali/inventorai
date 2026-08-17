@@ -10546,3 +10546,50 @@ Owner decision required. Authoritative ONLY if/when this exact candidate is merg
 **Next required gate: Mandatory Grill on this exact candidate**, then the governed lifecycle. After this merges,
 the next Owner decision point is **explicit Mechanical activation authorization** — not authorized or performed
 here.
+
+## Mechanical Activation Execution Gate (Owner-authorized; HIGH-ASSURANCE runtime-state change; Mechanical now ACTIVE; Phase 9 OPEN; Phase 10/deployment NOT AUTHORIZED)
+
+Owner authorization (verbatim): "I explicitly approve activation of the Mechanical domain within InventorAI and
+authorize proceeding to the Mechanical activation execution gate." Base:
+`18a97da735e68763c7fab6488613cde1dff4675f` (PR #502 — SHA-preserving merge of the accepted Tier-1 EN/AR Mechanical
+public label candidate `e635c9f038a58cf117f64f0ac4d7852ce9338062` onto
+`7cb5b6e726a726bba223fd997d9d94905173091f`; merge tree == candidate tree, diff empty). Full detail:
+`docs/governance/MECHANICAL_ACTIVATION_EXECUTION_RECORD.md`.
+
+**Final pre-activation readiness independently reconfirmed: all prerequisites PASS**, explicit Owner activation
+authorization now present. **Canonical activation mechanism** (sole gate): `engine/domain_activation.py::
+_ACTIVATED_DOMAINS`, changed from `frozenset({"electronics_electrical"})` to
+`frozenset({"electronics_electrical", "mechanical"})` — one line, plus a truthfulness update to the module's own
+boundary docstring. No other engine/classifier/admission/scoring/progression/persistence/security/Tier-1-label
+file touched.
+
+**Real user-flow + Tier-1 real-surface verification (live, not test-double only):** a real Mechanical idea
+confirmed as `mechanical` admits (302, `state.domain == "mechanical"`); the same idea confirmed as
+`electronics_electrical` (wrong domain) re-prompts, never cross-labels; electronics regression unaffected. The
+Tier-1 label renders on the real session page — EN `"Mechanical-informed review"`, AR
+`"مراجعة مستنيرة بمجال الميكانيكا"` (no simultaneous EN+AR). **L10N-RH-01 residual reachability check: Classification
+A (non-material/non-blocking)** — the broadened-activation strings are truthful and become true precisely because
+2 domains are now activated (this is exactly what L10N-RH-01 hardened them for); no STOP required.
+
+**Test-suite reconciliation:** activating a second domain removed the single-domain `/start` shortcut for every
+idea, breaking 113 pre-existing tests — each individually triaged (obsolete-premise-now-correct /
+still-valid-text-only-changed / legacy-scoped-pinned-in-isolation), none blindly relaxed. Discovered and disclosed
+(not silently fixed): a pre-existing "§4.A backward compatibility" weak-conflict branch (and the medical-device
+lay-token corroboration mechanism nested inside it) is now provably dead code for any input — an intended,
+pre-documented consequence of activation, not a regression. Full governed suite: **2696 passed / 3 skipped / 1
+xfailed / 0 failed** (+5 net new vs. the 2691 baseline).
+
+**Mutation/adversarial sweep (all 4 required mutations, byte-restored after each):** (A) remove mechanical from
+the allowlist → RED → restored; (B) inject an unintended extra domain → RED → restored; (C) break Mechanical
+picker/admission exposure while leaving the allowlist unchanged → RED → restored; (D) break real Mechanical
+Tier-1 rendering → RED → restored. Full suite GREEN after all four restorations.
+
+**Boundary / status.** `activated_domains() == ['electronics_electrical', 'mechanical']`, verified live —
+**Mechanical is now ACTIVE**. Mechanical NOT qualified (P9-QS qualification remains a separate future gate).
+Tier-1 label unchanged/authoritative. L10N-RH-01 remains `FORMALLY CLOSED / DISCHARGED`. **Phase 9 remains OPEN.**
+Phase 10 / PSRR / deployment remain NOT AUTHORIZED. No third domain activated or implied.
+`OWNER_DECISION_REGISTER.md` — new row `D-P9-MECH-03` (explicit Owner activation authorization + execution,
+following the existing `D-P9-MECH-<NN>` sequencing). Authoritative ONLY if/when this exact candidate is merged and
+post-merge verified. **Next required gate: Mandatory Grill on this exact candidate**, then the governed lifecycle.
+After this merges, the next eligible steps are Mechanical activation post-merge verification and/or a future
+Mechanical P9-QS qualification gate — neither authorized or performed here.

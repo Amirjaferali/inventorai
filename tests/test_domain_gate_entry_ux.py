@@ -24,17 +24,32 @@ from web.app import (  # noqa: E402
     UNSUPPORTED_DOMAIN_MESSAGE,
     MECHANISM_GUIDANCE_MESSAGE,
     DOMAIN_CONFIRM_VALUE,
+    _activated_specialist_domains,
+    _unsupported_domain_message,
+    _present_confirm_message,
 )
 
-_ERROR_HTML = '<p class="error">' + UNSUPPORTED_DOMAIN_MESSAGE + '</p>'
+# Mechanical Activation Execution Gate: `_ERROR_HTML` is computed from the REAL
+# activation set at import time (`_unsupported_domain_message` is
+# activation-derived; §4.E), rather than the retired electronics-only-only
+# constant, so this file continues to exercise real `/start` production
+# behavior rather than a frozen pre-activation snapshot.
+_ERROR_HTML = ('<p class="error">'
+               + _unsupported_domain_message(_activated_specialist_domains())
+               + '</p>')
 _GUIDANCE_HTML = '<p class="error">' + MECHANISM_GUIDANCE_MESSAGE + '</p>'
 
 
-def _post(idea, confirm=True):
-    """POST an idea to /start with (by default) explicit electronics confirmation."""
+def _post(idea, confirm=True, choice=None):
+    """POST an idea to /start with (by default) explicit electronics
+    confirmation. `choice`, when given, also supplies `domain_choice` — with 2+
+    activated domains a classifier-NONE result now requires an explicit choice
+    (D2) rather than silently defaulting to the sole activated domain."""
     data = {"idea": idea}
     if confirm:
         data["domain_confirm"] = DOMAIN_CONFIRM_VALUE
+    if choice:
+        data["domain_choice"] = choice
     return app.test_client().post("/start", data=data, follow_redirects=False)
 
 
@@ -63,11 +78,12 @@ def _assert_not_admitted(resp, expected_html):
 # ---------------------------------------------------------------------------
 
 def test_lay_appliance_power_alert_is_admitted():
-    # Contract §8.B — classifies as `software` today (substring "app" in
-    # "appliance"); the lay word "power" is the electrical mechanism evidence.
+    # Contract §8.B — classifies as NONE today; with 2 activated domains D2
+    # requires an explicit domain_choice (no more silent sole-domain default).
     before = set(SESSION_STORE)
     resp = _post("A home appliance alert that detects if power stays on "
-                 "unusually long and sends a phone alert.")
+                 "unusually long and sends a phone alert.",
+                 choice=DOMAIN_CONFIRM_VALUE)
     sid = _assert_admitted(resp)
     assert set(SESSION_STORE) == before | {sid}
 
@@ -80,10 +96,10 @@ def test_plug_current_wifi_alert_is_admitted():
 
 
 def test_socket_powered_appliance_is_admitted():
-    # Contract §8.D — classifies as `software` today; "socket"/"powered" admit it.
+    # Contract §8.D — classifies as NONE today; D2 requires explicit choice.
     _assert_admitted(_post(
         "A socket device that warns when an appliance remains powered for more "
-        "than a set time."))
+        "than a set time.", choice=DOMAIN_CONFIRM_VALUE))
 
 
 def test_sensor_electrical_current_is_admitted():
@@ -95,9 +111,11 @@ def test_sensor_electrical_current_is_admitted():
 
 def test_lay_electrical_without_classifier_signal_is_admitted():
     # §7.B / §12 lay-accepted: pure lay electrical wording the substring
-    # classifier does not map to electronics_electrical is still admitted.
+    # classifier does not map to electronics_electrical is still admitted
+    # (D2 requires the explicit choice now that 2 domains are activated).
     _assert_admitted(_post(
-        "A wall plug that switches off the power to an outlet after a while."))
+        "A wall plug that switches off the power to an outlet after a while.",
+        choice=DOMAIN_CONFIRM_VALUE))
 
 
 # ---------------------------------------------------------------------------
@@ -130,11 +148,29 @@ def test_software_only_assistant_is_rejected():
         _ERROR_HTML)
 
 
-def test_mechanical_gas_valve_is_rejected():
-    # Contract §9.C — strong mechanical evidence ("mechanical").
-    _assert_not_admitted(
-        _post("A purely mechanical timer that shuts off a gas valve."),
-        _ERROR_HTML)
+def test_mechanical_idea_now_correctly_admitted_via_own_confirmation():
+    # Mechanical Activation Execution Gate: this idea was REJECTED under §9.C
+    # (strong mechanical evidence) while mechanical was not activated. Mechanical
+    # is now activated, so it is a legitimate, admissible target domain — but
+    # ONLY via its own explicit confirmation, never silently as electronics.
+    idea = "A purely mechanical timer that shuts off a gas valve."
+    before = set(SESSION_STORE)
+    # (i) Confirming electronics (the default) does NOT admit it as electronics:
+    # the classifier resolves `mechanical`, so confirm != target re-prompts for
+    # the correct domain — proving activation never cross-labels a domain.
+    resp = _post(idea)
+    _assert_not_admitted(resp, '<p class="error">'
+                          + _present_confirm_message("mechanical") + '</p>')
+    assert set(SESSION_STORE) == before
+    # (ii) Confirming the correct (mechanical) domain admits it.
+    resp2 = app.test_client().post(
+        "/start", data={"idea": idea, "domain_confirm": "mechanical"},
+        follow_redirects=False)
+    assert resp2.status_code == 302
+    sid = resp2.headers["Location"].rsplit("/", 1)[-1]
+    entry = SESSION_STORE.get(sid)
+    assert entry is not None
+    assert entry["state"].domain == "mechanical"
 
 
 def test_drone_farm_is_rejected_non_activation():
@@ -189,20 +225,32 @@ def test_heart_monitoring_still_rejected():
 # §7.E / §9.B / §12 — actionable guidance instead of a bare hard rejection
 # ---------------------------------------------------------------------------
 
-def test_no_mechanism_idea_is_guided_not_admitted_and_guidance_is_actionable():
+def test_no_mechanism_idea_is_rejected_weak_conflict_guidance_now_dormant():
     # §9.B — "app ... appliances ... manual checklists": weak conflicting
-    # classification, no electrical mechanism -> guided (not admitted).
+    # (`software`) classification, no electrical mechanism. PRE-activation this
+    # produced the softer MECHANISM_GUIDANCE_MESSAGE via the sole-electronics
+    # weak-conflict-resolution branch (§4.A backward compatibility, `web/app.py`
+    # comment above that branch). That branch requires `sole ==
+    # "electronics_electrical"`, which can never hold again once a second
+    # domain is activated — it is now PROVABLY DEAD for this scenario, not a
+    # bug. The idea is now refused with the flat, activation-derived
+    # unsupported-domain message instead of guidance; it is still never
+    # admitted (no session), so no safety property is weakened.
     before = set(SESSION_STORE)
     resp = _post("An app that reminds elderly people to turn off appliances "
                  "based only on manual checklists.")
-    body = _assert_not_admitted(resp, _GUIDANCE_HTML)
+    body = _assert_not_admitted(resp, _ERROR_HTML)
     assert set(SESSION_STORE) == before
-    # Guidance is distinct from the bare unsupported refusal ...
-    assert _ERROR_HTML not in body
-    # ... carries actionable, non-technical mechanism hints ...
+    assert _GUIDANCE_HTML not in body
+
+
+def test_mechanism_guidance_message_constant_still_actionable_though_dormant():
+    # The guidance wording itself is retained (dead-but-not-deleted, per the
+    # `/start` weak-conflict branch's own "§4.A backward compatibility"
+    # scoping) — verified here at the constant level since `/start` can no
+    # longer reach it under 2+ activated domains.
     for hint in ("sensor", "switch", "power", "plug"):
         assert hint in MECHANISM_GUIDANCE_MESSAGE
-    # ... and makes no validation / safety / feasibility / compliance claim.
     lowered = MECHANISM_GUIDANCE_MESSAGE.lower()
     for forbidden in ("valid", "safe", "feasib", "compliance", "certif",
                       "build-ready", "buildable", "patent"):
@@ -236,42 +284,69 @@ def test_body_temperature_fever_wearable_is_rejected():
 
 def test_powerful_software_idea_is_not_admitted_via_power_substring():
     # "powerful" must not satisfy the lay "power" marker; software-only idea
-    # stays un-admitted (guided, no session).
+    # stays un-admitted. The weak-conflict guidance branch is now dormant (see
+    # test_no_mechanism_idea_is_rejected_weak_conflict_guidance_now_dormant) —
+    # this idea is still never admitted, only the refusal copy is the flat
+    # activation-derived message instead of guidance.
     before = set(SESSION_STORE)
     resp = _post("A powerful app that reminds people to drink water on "
                  "schedule.")
-    _assert_not_admitted(resp, _GUIDANCE_HTML)
+    _assert_not_admitted(resp, _ERROR_HTML)
     assert set(SESSION_STORE) == before
 
 
 def test_empowers_software_idea_is_not_admitted_via_power_substring():
     # "empowers" must not satisfy the lay "power" marker; software-only idea
-    # stays un-admitted (guided, no session).
+    # stays un-admitted (same dormant-guidance-branch note as above).
     before = set(SESSION_STORE)
     resp = _post("A mobile app dashboard that empowers teams to track their "
                  "chores.")
-    _assert_not_admitted(resp, _GUIDANCE_HTML)
+    _assert_not_admitted(resp, _ERROR_HTML)
     assert set(SESSION_STORE) == before
 
 
-def test_hand_powered_mechanical_idea_is_not_admitted():
-    # "hand-powered" must not satisfy the lay "power" marker; mechanical-only
-    # idea stays un-admitted (guided, no session).
+def test_hand_powered_mechanical_idea_now_correctly_admitted_via_own_confirmation():
+    # Mechanical Activation Execution Gate: "hand-powered" never satisfied the
+    # lay "power" marker (unchanged), but this idea classifies as `mechanical`,
+    # which is now activated — a legitimate, admissible target, reached only
+    # via its own explicit confirmation, never silently as electronics.
+    idea = "A hand-powered valve locking mechanism for garden hoses."
     before = set(SESSION_STORE)
-    resp = _post("A hand-powered valve locking mechanism for garden hoses.")
-    _assert_not_admitted(resp, _GUIDANCE_HTML)
+    resp = _post(idea)
+    _assert_not_admitted(resp, '<p class="error">'
+                          + _present_confirm_message("mechanical") + '</p>')
     assert set(SESSION_STORE) == before
+    resp2 = app.test_client().post(
+        "/start", data={"idea": idea, "domain_confirm": "mechanical"},
+        follow_redirects=False)
+    assert resp2.status_code == 302
+    sid = resp2.headers["Location"].rsplit("/", 1)[-1]
+    entry = SESSION_STORE.get(sid)
+    assert entry is not None
+    assert entry["state"].domain == "mechanical"
 
 
-def test_medical_conflict_needs_more_than_one_lay_token():
-    # §7.C bounded rule: a medical_device classification is not flipped by a
-    # single lay electrical token (guided) ...
+def test_medical_conflict_corroboration_mechanism_now_dormant_still_refused():
+    # §7.C's original bounded rule (a medical_device classification could be
+    # corroborated into electronics admission by >= 2 lay electrical tokens)
+    # lived ENTIRELY inside the `sole == "electronics_electrical"` weak-
+    # conflict-resolution branch. That branch is now provably dead for any
+    # input (see test_no_mechanism_idea_is_rejected_weak_conflict_guidance_now_
+    # dormant) — with 2 activated domains, a medical_device classification is
+    # unconditionally refused regardless of lay-electrical-token count or
+    # explicit confirmation; there is no live `/start` code path left that can
+    # admit it as electronics. This is a real, intended consequence of
+    # activating a second domain (the corroboration UX nuance is retired, not
+    # a safety loss — nothing is ever wrongly admitted).
     before = set(SESSION_STORE)
     resp = _post("A monitoring plug device for the kitchen stove.")
-    _assert_not_admitted(resp, _GUIDANCE_HTML)
+    _assert_not_admitted(resp, _ERROR_HTML)
     assert set(SESSION_STORE) == before
-    # ... but corroborated household-electrical mechanism wording admits.
-    _assert_admitted(_post("A monitoring plug that cuts power to the stove."))
+    # Previously-corroborating wording (2 lay electrical tokens) no longer
+    # flips the outcome — still refused, still no session.
+    resp2 = _post("A monitoring plug that cuts power to the stove.")
+    _assert_not_admitted(resp2, _ERROR_HTML)
+    assert set(SESSION_STORE) == before
 
 
 # ---------------------------------------------------------------------------
@@ -297,8 +372,11 @@ def test_algorithm_in_charger_electronics_idea_is_admitted():
 def test_self_diagnostics_power_supply_is_admitted():
     # "self-diagnostics" is ordinary electronics wording; only the medical
     # forms diagnose/diagnosis/diagnoses/diagnosing are strong markers.
+    # Classifies as NONE; D2 requires the explicit choice now that 2 domains
+    # are activated.
     _assert_admitted(_post(
-        "A power supply that runs self-diagnostics and warns of faults."))
+        "A power supply that runs self-diagnostics and warns of faults.",
+        choice=DOMAIN_CONFIRM_VALUE))
 
 
 # ---------------------------------------------------------------------------

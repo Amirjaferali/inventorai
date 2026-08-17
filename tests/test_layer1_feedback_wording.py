@@ -449,7 +449,13 @@ def _start(idea, confirm=True):
     return app.test_client().post("/start", data=data, follow_redirects=False)
 
 
-def test_unsupported_domain_rejection_unchanged():
+def test_unsupported_domain_rejection_unchanged(monkeypatch):
+    # Pinned to the electronics-only activation state; mechanical is now
+    # really activated in production (Mechanical Activation Execution Gate)
+    # and would legitimately admit the gearbox idea via its own confirmation.
+    from engine import domain_activation
+    monkeypatch.setattr(domain_activation, "_ACTIVATED_DOMAINS",
+                         frozenset({"electronics_electrical"}))
     before = set(SESSION_STORE)
     resp = _start("a gearbox with a rotating shaft and bearing torque")
     assert resp.status_code == 200

@@ -2336,6 +2336,35 @@ AUTHORIZED / NOT STARTED.***
   Next required gate: Mandatory Grill on this exact candidate, then the governed lifecycle. After this merges,
   the next Owner decision point is explicit Mechanical activation authorization — not authorized or performed
   here.
+  **MECHANICAL ACTIVATION EXECUTION GATE, base `18a97da735e68763c7fab6488613cde1dff4675f`** (PR #502, merging
+  accepted Tier-1 EN/AR Mechanical public label candidate `e635c9f038a58cf117f64f0ac4d7852ce9338062` onto
+  `7cb5b6e726a726bba223fd997d9d94905173091f`; merge tree == candidate tree, diff empty). Owner authorization
+  (verbatim): "I explicitly approve activation of the Mechanical domain within InventorAI and authorize proceeding
+  to the Mechanical activation execution gate." Final pre-activation readiness independently reconfirmed: all
+  prerequisites PASS. Canonical mechanism (sole gate): `engine/domain_activation.py::_ACTIVATED_DOMAINS` changed
+  from `frozenset({"electronics_electrical"})` to `frozenset({"electronics_electrical", "mechanical"})` — one
+  line, plus a docstring truthfulness update; no other engine/classifier/admission/scoring/progression/
+  persistence/security/Tier-1-label file touched. Real user-flow verification (live): a Mechanical idea confirmed
+  as `mechanical` admits (302, `state.domain == "mechanical"`); confirmed as the wrong domain it re-prompts, never
+  cross-labels; electronics regression unaffected. Tier-1 real-surface verification (live): EN
+  `"Mechanical-informed review"` and AR `"مراجعة مستنيرة بمجال الميكانيكا"` both render on the real session page (no
+  simultaneous EN+AR). **L10N-RH-01 residual reachability: Classification A (non-material/non-blocking)** — the
+  broadened-activation strings are truthful and become true precisely because 2 domains are now activated; no
+  STOP required. Activating a second domain removed the single-domain `/start` shortcut for every idea, breaking
+  113 pre-existing tests — each individually triaged (obsolete-premise-now-correct / still-valid-text-only-changed
+  / legacy-scoped-pinned-in-isolation), none blindly relaxed; a pre-existing "§4.A backward compatibility"
+  weak-conflict branch (and its nested medical-device lay-token corroboration mechanism) is now provably dead code
+  for any input — disclosed as an intended, pre-documented consequence of activation, not a regression. Full
+  suite: **2696 passed / 3 skipped / 1 xfailed / 0 failed** (+5 net new). Mutation/adversarial sweep (4 required
+  mutations, byte-restored after each): remove-mechanical → RED; inject-extra-domain → RED; break-admission-while-
+  allowlist-unchanged → RED; break-Tier1-rendering → RED; full suite GREEN after all restorations.
+  `activated_domains() == ['electronics_electrical', 'mechanical']`, verified live — **Mechanical is now ACTIVE**.
+  Mechanical NOT qualified (P9-QS remains a separate future gate). `OWNER_DECISION_REGISTER.md` — new row
+  `D-P9-MECH-03` (explicit Owner activation authorization + execution, following the existing `D-P9-MECH-<NN>`
+  sequencing). **Phase 9 remains OPEN.** Phase 10 / PSRR / deployment remain NOT AUTHORIZED. No third domain
+  activated or implied. Next required gate: Mandatory Grill on this exact candidate, then the governed lifecycle.
+  After this merges, the next eligible steps are Mechanical activation post-merge verification and/or a future
+  Mechanical P9-QS qualification gate — neither authorized or performed here.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
