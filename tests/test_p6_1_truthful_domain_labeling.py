@@ -29,6 +29,8 @@ from web.domain_label import public_domain_label
 
 EN_ELECTRONICS = "Electronics-informed review"
 AR_ELECTRONICS = "مراجعة مستنيرة بمجال الإلكترونيات"
+EN_MECHANICAL = "Mechanical-informed review"
+AR_MECHANICAL = "مراجعة مستنيرة بمجال الميكانيكا"
 EN_GENERAL = "General idea review"
 AR_GENERAL = "مراجعة عامة للفكرة"
 RAW_PACK_ID = "electronics_electrical"
@@ -66,15 +68,32 @@ def test_resolver_maps_runtime_domain_to_tier1_bilingual():
     assert lbl == {"en": EN_ELECTRONICS, "ar": AR_ELECTRONICS}
 
 
+# --- Tier-1 EN/AR Mechanical public label (P9-MECH-QC §13; activation-readiness
+# edge — labeling readiness only, NOT runtime activation; see §16) ------------
+def test_resolver_maps_mechanical_to_tier1_bilingual():
+    lbl = public_domain_label("mechanical")
+    assert lbl == {"en": EN_MECHANICAL, "ar": AR_MECHANICAL}
+
+
+def test_mechanical_label_distinct_from_electronics_label():
+    elec = public_domain_label("electronics_electrical")
+    mech = public_domain_label("mechanical")
+    assert elec != mech
+    assert elec["en"] != mech["en"]
+    assert elec["ar"] != mech["ar"]
+
+
 @pytest.mark.parametrize("value", [
-    None, "", "   ", "mechanical", "medical_device", "software", "iot_electronics",
-    "electronics", "ELECTRONICS_ELECTRICAL", "unknown-thing", 123, {"x": 1},
+    None, "", "   ", "medical_device", "software", "iot_electronics",
+    "electronics", "ELECTRONICS_ELECTRICAL", "MECHANICAL", "unknown-thing",
+    123, {"x": 1},
 ])
 def test_resolver_falls_back_to_general_never_electronics(value):
     lbl = public_domain_label(value)
     assert lbl == {"en": EN_GENERAL, "ar": AR_GENERAL}
     # NEVER silently electronics for an unknown/invalid/unsupported id.
     assert EN_ELECTRONICS not in lbl.values()
+    assert EN_MECHANICAL not in lbl.values()
 
 
 def test_resolver_never_emits_tier2_3_4_wording():
@@ -185,3 +204,69 @@ def test_electronics_entry_and_session_flow_still_functional(client):
     sid = _start(client)
     assert client.get("/session/" + sid).status_code == 200
     assert client.get("/session/" + sid + "/deliverable").status_code == 200
+
+
+# ===============================================================================
+# Tier-1 EN/AR Mechanical public label (P9_MECHANICAL_DOMAIN_QUALIFICATION_
+# CONTRACT.md §13, Requirement 9 — "activation-readiness edge"). A truthful
+# Tier-1 label now exists for `mechanical` in the SAME canonical resolver used
+# for electronics. Contract §16 (Requirement 12) is explicit: labeling readiness
+# is NOT activation. `mechanical` is not runtime-reachable via a real `/start`
+# session today (no admission path resolves `state.domain == "mechanical"`), so
+# the session-surface test below uses the same bounded SESSION_STORE test-double
+# pattern as `test_session_fallback_general_when_domain_missing` above to reach
+# the render path directly, exactly as that established convention allows.
+# ===============================================================================
+
+def test_session_page_shows_english_mechanical_label_via_test_double(client):
+    """A live in-memory session whose state carries `domain="mechanical"` must
+    render the Mechanical Tier-1 English label (single-language surface rule
+    unchanged) — this does not exercise any real admission/activation path."""
+    from engine.idea_state import IdeaState
+    sid = "p61-tier1-label-test-sid"
+    st = IdeaState(idea_id=sid)
+    st.maturity_level = 2
+    st.current_stage = 3
+    st.domain = "mechanical"
+    SESSION_STORE[sid] = {"state": st, "last_result": None, "transcript": []}
+    try:
+        body = client.get("/session/" + sid).get_data(as_text=True)
+        assert EN_MECHANICAL in body
+        assert AR_MECHANICAL not in body         # owner decision: no simultaneous AR
+        assert "Domain: mechanical" not in body   # raw pack id not leaked as old-style wording
+    finally:
+        SESSION_STORE.pop(sid, None)
+
+
+def test_mechanical_not_in_activated_domains():
+    """Adding the Tier-1 label must not move `activated_domains()` at all."""
+    import engine.domain_activation as domain_activation
+    assert domain_activation.activated_domains() == ["electronics_electrical"]
+    assert "mechanical" not in domain_activation.activated_domains()
+
+
+def test_mechanical_not_offered_in_start_domain_picker(client):
+    """The `/start` entry page's domain choice set is driven exclusively by
+    `activated_domains()`, never by the Tier-1 label catalog — adding a
+    Mechanical label must not make Mechanical a selectable/offered domain."""
+    body = client.get("/start").get_data(as_text=True)
+    assert EN_MECHANICAL not in body
+    assert 'value="mechanical"' not in body
+
+
+def test_mechanical_idea_still_rejected_at_entry_gate(client):
+    """Posting a clearly-Mechanical idea with domain_confirm=mechanical is still
+    rejected at the gate (no session created) — the label never widens admission."""
+    r = client.post("/start", data={
+        "idea": "A mechanical latch uses a spring and a lever to release a hinge.",
+        "domain_confirm": "mechanical"})
+    assert r.status_code == 200
+    assert "/session/" not in (r.headers.get("Location") or "")
+
+
+def test_mechanical_label_owner_is_unique_not_duplicated_in_picker_helper():
+    """The picker's separate, lower-tier `_domain_label()` helper (raw
+    `.title()`-cased, `web/app.py`) must never independently reproduce the
+    canonical Tier-1 Mechanical wording — there is exactly one owner."""
+    assert webapp._domain_label("mechanical") == "Mechanical"
+    assert webapp._domain_label("mechanical") != EN_MECHANICAL

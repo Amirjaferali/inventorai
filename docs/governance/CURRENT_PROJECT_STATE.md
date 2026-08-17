@@ -2313,6 +2313,29 @@ AUTHORIZED / NOT STARTED.***
   pre-activation gate** — not authorized or performed here; explicit Owner Mechanical activation authorization
   remains separate, later. **Phase 9 remains OPEN.** Next required gate: Mandatory Grill on this exact candidate,
   then the governed lifecycle.
+  **TIER-1 EN/AR MECHANICAL PUBLIC LABEL, base `7cb5b6e726a726bba223fd997d9d94905173091f`** (PR #501, merging
+  accepted L10N-RH-01 formal closure candidate `0b5e238c39a74b6a207bb04114f0ce0664318136` onto
+  `c163a9d61d18434fa5cd6a68e01aa6a033ac7ce4`; merge tree == candidate tree, diff empty). Activation-readiness
+  matrix independently reconfirmed fresh this gate: **14 PASS** (the prior 13, plus `L10N-RH-01` now `FORMALLY
+  CLOSED / DISCHARGED`) **/ 1 outside-scope** (`L2SC-02`) **/ 1 Owner-decision-required** (explicit Mechanical
+  activation authorization — `OWNER_DECISION_REGISTER.md` searched fresh; only `D-P9-MECH-01` exists, explicitly
+  qualification-planning-only, NOT activation — still pending). Implemented a truthful Tier-1 Mechanical public
+  label (`"Mechanical-informed review"` / `"مراجعة مستنيرة بمجال الميكانيكا"`) in the existing canonical owner
+  `web/domain_label.py::_PUBLIC_DOMAIN_LABELS`, structurally parallel to the electronics entry; updated the
+  module's own boundary docstring to remain truthful (Tier-1 = labeling-readiness, not activation). No-activation-
+  leak independently traced: the `/start` picker is wired exclusively to `activated_domains()` via a separate
+  helper that never reads this dict — confirmed live (`webapp._domain_label("mechanical") == "Mechanical"`,
+  distinct from the Tier-1 string). 8 new regression tests added (focused file: 30 passed); full suite:
+  **2691 passed / 3 skipped / 1 xfailed / 0 failed** (+7 net new). Mutation/differential proof: mutated the new
+  entry → RED (2 focused tests) → restored → byte-identical SHA-256 confirmed → GREEN. `engine/domain_
+  activation.py` byte-unchanged; `activated_domains()` returns `['electronics_electrical']`, verified live —
+  **Mechanical remains NOT ACTIVATED**. No classifier/admission/scoring/progression file touched.
+  `UI_B_START_024` left unchanged. **L10N-RH-01 remains `FORMALLY CLOSED / DISCHARGED`**, unaffected.
+  `OWNER_DECISION_REGISTER.md` UNCHANGED — this implements an already-authorized contract requirement (P9_
+  MECHANICAL_DOMAIN_QUALIFICATION_CONTRACT.md §13), no new Owner decision required. **Phase 9 remains OPEN.**
+  Next required gate: Mandatory Grill on this exact candidate, then the governed lifecycle. After this merges,
+  the next Owner decision point is explicit Mechanical activation authorization — not authorized or performed
+  here.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation

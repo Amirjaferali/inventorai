@@ -10,20 +10,33 @@ Boundaries (contract §4 / §10; D-P6-02 / D-P6-07):
     evaluation, and reads NO client-provided text. Callers pass the trusted
     server value (``state.domain`` / ``state.domain_signal`` / a package
     ``capability_id`` derived from them), never request/query/form input.
-  * Only the RUNTIME-OPERATED domain (``electronics_electrical``) has a Tier-1
-    public label. Every other value — missing, None, unknown, invalid, or an
-    unsupported/non-runtime pack id (mechanical / medical_device / software /
+  * A Tier-1 public label reflects truthful-labeling readiness, NOT runtime
+    activation. ``electronics_electrical`` is both RUNTIME-OPERATED and
+    Tier-1-labeled. ``mechanical`` is Tier-1-labeled per
+    P9_MECHANICAL_DOMAIN_QUALIFICATION_CONTRACT.md §13 (Requirement 9) once
+    Mechanical activation-readiness was reached, but is NOT runtime-activated —
+    ``engine.domain_activation.activated_domains()`` stays ``['electronics_electrical']``
+    (contract §16, Requirement 12: labeling never activates a domain). This
+    resolver has no bearing on domain selectability; the ``/start`` domain
+    picker is driven solely by ``activated_domains()`` (see ``web/app.py``),
+    never by this dict. Every other value — missing, None, unknown, invalid,
+    or an unsupported/non-qualified pack id (medical_device / software /
     iot_electronics) — resolves to the neutral Tier-0 "General idea review"
-    fallback and NEVER silently to electronics.
+    fallback and NEVER silently to electronics or mechanical.
   * Tier 0-1 only. No Tier-2/3/4 wording ("Specialist", "Expert", "Professional",
     "Certified", "Licensed", ...) is ever produced.
 """
 
-# Tier-1 public labels — keyed by RUNTIME-OPERATED domain id only.
+# Tier-1 public labels — keyed by domain id. Presence here means truthful-
+# labeling readiness, NOT activation (see module docstring; contract §16).
 _PUBLIC_DOMAIN_LABELS = {
     "electronics_electrical": {
         "en": "Electronics-informed review",
         "ar": "مراجعة مستنيرة بمجال الإلكترونيات",
+    },
+    "mechanical": {
+        "en": "Mechanical-informed review",
+        "ar": "مراجعة مستنيرة بمجال الميكانيكا",
     },
 }
 
