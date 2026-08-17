@@ -10364,3 +10364,59 @@ ONLY if/when this exact candidate is merged and post-merge verified. Append-only
 review, Owner acceptance, publication, PR, pre/post-merge verification — no push, no PR performed by this gate
 itself). After this closure merges, the next roadmap item is the **Tier-1 EN/AR Mechanical public label** — not
 authorized or performed here.
+
+## L10N-RH-01 Reassessment & Mechanical Activation-Readiness Review, MATERIAL CORRECTION of rejected candidate `7e810e6` (governance-only; read-only reassessment; L10N-RH-01 NOT discharged; Tier-1 NOT implemented; Mechanical NOT ACTIVATED)
+
+The first reassessment-record candidate, `7e810e6be88234cf2a0508167770307130a8a1d1`, was independently
+**REJECTED** (verdict: MATERIAL CORRECTION REQUIRED — Observation #3 misidentified `UI_B_START_030`
+(`start_confirm_label`) as the defective surface, describing it as "generic vs. domain-specific wording";
+neither the surface nor the defect class is authoritative). Every other finding — Observations #1 and #2, the
+overall determination, the activation-readiness matrix, and all protected boundaries — was independently
+confirmed correct. That candidate is preserved **immutable, unpushed, unamended** at
+`refs/rejected/l10n-rh01-reassessment-7e810e6`.
+
+Base: `3b7783f19d7b1ee9f6618342a00ed47362b35ac4` (PR #498, merging L2SC-01 formal closure candidate `937163c`
+onto `b8e1274c027707a38a85216b0ef7b43a1eda5e1c`; merge tree == candidate tree, diff empty). Triggered by
+`L10N-RH-01`'s own registered reassessment trigger ("before or alongside" second-domain-activation readiness),
+now that L2SC-01 is formally closed. Full detail:
+`docs/governance/L10N_RH01_REASSESSMENT_AND_MECHANICAL_ACTIVATION_READINESS_RECORD.md`.
+
+A prior gate in this session correctly **STOPPED** before implementing the Tier-1 EN/AR Mechanical public label,
+citing `P9_MECHANICAL_DOMAIN_QUALIFICATION_CONTRACT.md` §13's explicit precondition that the label may replace
+the neutral Tier-0 fallback "only when the label becomes truthful (i.e. not before activation-readiness)."
+
+**L10N-RH-01 reassessment: all 3 originally-registered observations reconfirmed STILL PRESENT**, via fresh,
+byte-restored mutation probes this gate — (1) the broadened-activation Arabic negative-semantic-guard gap
+(`UI_B_START_026`) still uncaught by the existing tautological assertion (31/31 tests still passed against an
+injected false electronics-only claim); (2) the `SERVICE_UNAVAILABLE` `localize_message()` bypass at
+`web/app.py`'s two call sites still uncaught by the full governed suite (2677/2677 still passed against a
+bypassed call site); (3) the present-confirm Arabic checkbox wording (`start_present_confirm_label`,
+broadened-activation branch, `UI_B_START_024`) — prompt/instruction style ("A supported domain was recognized...
+Please confirm...") rather than the first-person consent-affirmation style its English sibling uses — unchanged,
+still not production-reachable under today's single-domain activation (`UI_B_START_030`/`start_confirm_label` is
+a different, unaffected template variable, already correctly first-person in both languages). Both probed files
+verified `sha256sum`-identical to their pre-probe state after restoration; full suite reconfirmed green.
+**`L10N-RH-01` = STILL PRESENT / NOT DISCHARGED.** Remediation NOT performed here (registration itself requires
+"its own separately authorized, bounded gate"); a bounded remediation proposal (targeting `UI_B_START_024`'s
+wording register, domain-neutral, no Tier-1 translation work) is recorded for that future gate, not executed.
+
+**Mechanical activation-readiness matrix (13 PASS, 1 OPEN, 1 outside scope, 1 Owner-decision-required):** D3,
+P9-MECH-SF safety-cue family, CF-2, CF-6, ILT-002, L2SC-01, Path-N/domain-threading (`D-GMPR-D3-PN`), the
+hard-coded electronics tie-break coupling (`D-GMPR-01-D-D3`/CF5-F004), CF5-F001/F002/F003 classifier/admission
+boundaries, and NMF-1+FU-1 are all confirmed **PASS** (independently re-verified this gate against their own
+closure/discharge records). `L10N-RH-01` is **OPEN**. `L2SC-02` is confirmed **OUTSIDE ACTIVATION-READINESS**
+(its own registration: "NOT a Mechanical-activation blocker"). Explicit Owner Mechanical activation authorization
+is **OWNER DECISION REQUIRED** — not requested, implied, or made by this record. **Tier-1 EN/AR label = WAITING
+ON ACTIVATION-READINESS** (not yet "ready to implement next" — one open item, `L10N-RH-01`, remains before every
+other technical/governance readiness condition is satisfied).
+
+**Boundary / status.** Read-only reassessment; both mutation probes byte-verified reverted; `git diff --name-only`
+confirms this candidate touches only `docs/governance/*.md`. Does NOT reopen `CF-2` (`FORMALLY CLOSED` stands),
+`CF-6` (`FULLY DISCHARGED` stands), or `L2SC-01` (`FORMALLY CLOSED` stands); does NOT expand `L2SC-02` (still
+registration-only, outside activation-readiness); does NOT implement the Tier-1 label; does NOT activate
+Mechanical — `activated_domains() == ['electronics_electrical']` unchanged, verified before and after every
+probe. **Phase 9 remains OPEN.** `OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY if/when this exact
+candidate is merged and post-merge verified. Append-only; prior history not rewritten. **Next required gate:** a
+bounded, separately authorized `L10N-RH-01` remediation gate (or an explicit Owner decision to defer its
+observations past activation) — the Tier-1 EN/AR label gate becomes eligible only after that; Mechanical
+activation itself requires its own, later, explicit Owner authorization, neither requested nor implied here.

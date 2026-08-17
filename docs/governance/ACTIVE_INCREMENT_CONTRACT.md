@@ -41,10 +41,67 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — L2SC-01 SUBSTANCE-SIGNAL PLURAL-ALIAS DOMAIN-COMPLETENESS — FORMAL CLOSURE, MATERIAL
-CORRECTION of rejected closure candidate `360f541`, defect MD-C1; governance-only, implements nothing; CF-2 not
-reopened; CF-6 not reopened; `L2SC-02` unchanged; Tier-1 untouched; `L10N-RH-01` untouched; Mechanical NOT
-ACTIVATED; ODR UNCHANGED):** The first closure-record candidate,
+**Status (current — L10N-RH-01 REASSESSMENT & MECHANICAL ACTIVATION-READINESS REVIEW, MATERIAL CORRECTION of
+rejected candidate `7e810e6`; governance-only, read-only reassessment, implements nothing; `L10N-RH-01` NOT
+discharged; Tier-1 NOT implemented; Mechanical NOT ACTIVATED; CF-2/CF-6/L2SC-01 not reopened; ODR UNCHANGED):**
+The first reassessment-record candidate, `7e810e6be88234cf2a0508167770307130a8a1d1`, was independently
+**REJECTED** (verdict: MATERIAL CORRECTION REQUIRED — Observation #3 misidentified `UI_B_START_030`
+(`start_confirm_label`) as the defective surface and "generic vs. domain-specific wording" as the defect class;
+neither is authoritative). Every other finding — Observations #1/#2, the overall determination, the
+activation-readiness matrix, and all protected boundaries — was independently confirmed correct. That candidate
+is preserved **immutable, unpushed, unamended** at `refs/rejected/l10n-rh01-reassessment-7e810e6`.
+
+Base `3b7783f19d7b1ee9f6618342a00ed47362b35ac4` (PR #498, merging accepted L2SC-01 formal closure candidate
+`937163c205b2d0586dc541c573bdd945ecf1b623` onto `b8e1274c027707a38a85216b0ef7b43a1eda5e1c`; merge tree ==
+candidate tree, diff empty). Triggered by `L10N-RH-01`'s own registered reassessment trigger, now that L2SC-01 is
+formally closed. Full detail:
+`docs/governance/L10N_RH01_REASSESSMENT_AND_MECHANICAL_ACTIVATION_READINESS_RECORD.md`.
+
+A prior gate correctly STOPPED before implementing the Tier-1 EN/AR Mechanical public label, citing
+`P9_MECHANICAL_DOMAIN_QUALIFICATION_CONTRACT.md` §13's explicit precondition — the label may replace the neutral
+Tier-0 fallback "only when the label becomes truthful (i.e. not before activation-readiness)." This gate performs
+the next prerequisite: reassessing `L10N-RH-01` and determining Mechanical's overall activation-readiness.
+
+**`L10N-RH-01` reassessment: all 3 originally-registered observations reconfirmed STILL PRESENT** via fresh,
+byte-restored mutation probes this gate: (1) the broadened-activation Arabic negative-semantic-guard gap
+(`UI_B_START_026`) — 31/31 tests still passed against an injected false electronics-only claim, since the only
+existing assertion compares against the same dict being mutated; (2) the `SERVICE_UNAVAILABLE`
+`localize_message()` bypass at `web/app.py`'s two call sites — the full governed suite (2677/2677) still passed
+against a bypassed call site; (3) the present-confirm Arabic checkbox wording (`start_present_confirm_label`,
+broadened-activation branch, `UI_B_START_024`) — prompt/instruction style rather than first-person consent-
+affirmation style, unlike its English sibling — unchanged, still not production-reachable under today's
+single-domain activation (`UI_B_START_030`/`start_confirm_label` is a different, unaffected template variable).
+Both probed files (`web/ui_text.py`, `web/app.py`) verified `sha256sum`-identical to their pre-probe state after
+restoration; full suite reconfirmed green throughout. **`L10N-RH-01` = STILL PRESENT / NOT DISCHARGED.**
+Remediation NOT performed here — the registration itself requires "its own separately authorized, bounded gate";
+a bounded remediation proposal (retargeting `UI_B_START_024`'s wording register only, domain-neutral, no Tier-1
+translation work) is recorded for that future gate, not executed.
+
+**Mechanical activation-readiness matrix (13 PASS / 1 OPEN / 1 outside scope / 1 Owner-decision-required):** D3,
+P9-MECH-SF safety-cue family, CF-2, CF-6, ILT-002, L2SC-01, Path-N/domain-threading (`D-GMPR-D3-PN`), the
+hard-coded electronics tie-break coupling (`D-GMPR-01-D-D3`/CF5-F004), CF5-F001/F002/F003 classifier/admission
+boundaries, and NMF-1+FU-1 are all independently re-verified **PASS** this gate against their own closure/
+discharge records. `L10N-RH-01` is **OPEN**. `L2SC-02` confirmed **OUTSIDE ACTIVATION-READINESS** (its own
+registration: "NOT a Mechanical-activation blocker"). Explicit Owner Mechanical activation authorization is
+**OWNER DECISION REQUIRED** — not requested, implied, or made by this record; the eventual decision needed is a
+separate, explicit Owner authorization to add `"mechanical"` to `_ACTIVATED_DOMAINS`, governed by the existing
+§5-I2 allowlist gate pattern. **Tier-1 EN/AR label = WAITING ON ACTIVATION-READINESS** — not yet "ready to
+implement next," since `L10N-RH-01` remains the one open item before every other technical/governance readiness
+condition is satisfied.
+
+**Boundary / status.** Read-only reassessment; both mutation probes byte-verified reverted; `git diff --name-only`
+confirms only `docs/governance/*.md` paths changed. Does NOT reopen `CF-2` (`FORMALLY CLOSED` stands), `CF-6`
+(`FULLY DISCHARGED` stands), or `L2SC-01` (`FORMALLY CLOSED` stands); does NOT expand `L2SC-02` (still
+registration-only); does NOT implement the Tier-1 label; does NOT activate Mechanical —
+`activated_domains() == ['electronics_electrical']` unchanged, verified before and after every probe. **Phase 9
+remains OPEN.** `OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY if/when this exact candidate is merged
+and post-merge verified. Next required gate: a bounded, separately authorized `L10N-RH-01` remediation gate (or
+an explicit Owner decision to defer its observations past activation) — the Tier-1 EN/AR label gate becomes
+eligible only after that.
+
+**Immediately prior (L2SC-01 formal closure gate, MATERIAL CORRECTION of rejected closure candidate `360f541`,
+defect MD-C1 — accepted and merged via PR #498 `3b7783f`; retained as history):** The first closure-record
+candidate,
 `360f541caa075a3fd899bfd41ee48304e965f491`, was independently **REJECTED** (verdict: CLOSURE INVALID — MATERIAL
 CORRECTION REQUIRED, defect **MD-C1** — its residual-obligations list incorrectly claimed `CF-6` and `CF-2`/the
 ILT-002 public-message question remained live "OPEN" residuals, contradicting the authoritative current status
