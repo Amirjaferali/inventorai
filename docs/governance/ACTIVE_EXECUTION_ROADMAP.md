@@ -10469,3 +10469,44 @@ remediation record, and this roadmap/AIC/CPS/capability-register sync. Authorita
 candidate is merged and post-merge verified. **Next required gate: Mandatory Grill on this exact candidate**,
 then the governed lifecycle. After this merges, the eligible next steps are a separate `L10N-RH-01` formal
 closure gate and/or the **Tier-1 EN/AR Mechanical public label** gate — neither authorized or performed here.
+
+## L10N-RH-01 — FORMAL CLOSURE (governance-only; closes L10N-RH-01; Mechanical NOT ACTIVATED; Tier-1 NOT AUTHORIZED; Phase 9 OPEN)
+
+Base: `c163a9d61d18434fa5cd6a68e01aa6a033ac7ce4` (PR #500 — SHA-preserving merge of the accepted L10N-RH-01
+bounded remediation candidate `783571f412b11b50e785e78943528c7c01a27e0e` onto
+`585d1f8d02d4e16f8154c66d2e3297958735ef16`; merge tree == candidate tree, diff empty). Full detail:
+`docs/governance/L10N_RH01_FORMAL_CLOSURE_RECORD.md`.
+
+**Closure eligibility independently proven from repository truth:** the L10N-RH-01 registration's own non-
+authorization clause required "its own separately authorized, bounded gate" for any remediation — now merged and
+verified in the tree. All 3 registered observations confirmed **REMEDIATED**: (1) `UI_B_START_026` negative-
+semantic-guard gap; (2) `SERVICE_UNAVAILABLE` localization-path regression-guard gap (both `web/app.py` call
+sites); (3) present-confirm Arabic checkbox wording (`start_present_confirm_label`/`UI_B_START_024`, broadened-
+activation branch). No fourth observation introduced; "transport wording precision" reconfirmed absent from the
+governance corpus, not a registered item. `UI_B_START_030` reconfirmed unaffected, byte-identical.
+
+**Two non-blocking residual observations preserved (do not reopen this closure):** (1) `UI_B_START_024`'s dual-
+surface consumption by both the error paragraph and the checkbox label — a pre-existing architectural shape, not
+introduced by the remediation; splitting the two roles into separate catalog keys is a future, separately
+authorized change if ever needed. (2) Observation #1's test-assertion precision — independently re-verified this
+gate that for the registered mutation class, the **negative assertion** (absence of a false electronics-only
+claim) is the one that actually catches the mutation; the positive assertion continues to pass under that same
+mutation because the identical true-claim phrase also appears, unrelatedly, in `UI_B_START_029`'s content — a
+test-hardening refinement for a future gate, not a current defect.
+
+**`L10N-RH-01` — Pre-Mechanical-Activation Localization Regression-Hardening Residual — is now `FORMALLY CLOSED
+/ DISCHARGED`**, effective on this candidate's own merge and post-merge verification.
+
+**Boundary / status.** Governance/documentation-only: this closure record + roadmap/AIC/CPS sync + a closure
+note in the capability register's `L10N-RH-01` entry — **ZERO runtime/test/pack/registry/activation/schema/
+persistence diff** (verified via `git diff --name-only` against base `c163a9d`). Full governed suite re-verified
+unchanged this gate: **2684 passed / 3 skipped / 1 xfailed / 0 failed**. `activated_domains()` (the real
+function, a sorted list) returns `['electronics_electrical']`, verified live this gate — **Mechanical remains
+NOT ACTIVATED**; no activation implied or advanced. **Tier-1 EN/AR Mechanical public label becomes the next
+pre-activation gate** — NOT authorized or performed here. Explicit Owner Mechanical activation authorization
+remains separate, later, not implied. **Phase 9 remains OPEN.** `OWNER_DECISION_REGISTER.md` UNCHANGED.
+Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Append-only; prior history not
+rewritten. **Next required gate: Mandatory Grill on this exact candidate**, then the governed lifecycle (bundle,
+independent review, Owner acceptance, publication, PR, pre/post-merge verification — no push, no PR performed by
+this gate itself). After this closure merges, the next roadmap item is the **Tier-1 EN/AR Mechanical public
+label** — not authorized or performed here.

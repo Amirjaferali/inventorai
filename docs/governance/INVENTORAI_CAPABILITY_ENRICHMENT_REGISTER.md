@@ -1066,3 +1066,16 @@ affirmation, matching `UI_B_START_030`'s already-accepted register; `UI_B_START_
 untouched, out of scope. No Tier-1 domain-specific translation work was performed. **`L10N-RH-01` = IMPLEMENTED /
 READY FOR FORMAL CLOSURE** — this note does not itself close `L10N-RH-01`; a separate formal closure gate
 remains required per this repository's convention.
+
+**Closure note.** A dedicated formal closure gate (base `c163a9d61d18434fa5cd6a68e01aa6a033ac7ce4`, PR #500 —
+the merge of the accepted bounded remediation candidate `783571f412b11b50e785e78943528c7c01a27e0e`; full detail in
+`docs/governance/L10N_RH01_FORMAL_CLOSURE_RECORD.md`) independently re-verified all 3 observations above
+REMEDIATED and found no unresolved material defect under this item's registered scope. **`L10N-RH-01` is now
+`FORMALLY CLOSED / DISCHARGED`**, effective on this closure candidate's own merge and post-merge verification.
+Two non-blocking residual observations (the `UI_B_START_024` dual-surface consumption by both the present-confirm
+paragraph and checkbox label; and a test-assertion precision note for Observation #1's positive marker, confounded
+by unrelated overlap with `UI_B_START_029`) are preserved in `L10N_RH01_FORMAL_CLOSURE_RECORD.md` §4 for a future,
+separately authorized gate — neither reopens or qualifies this closure. Mechanical remains NOT ACTIVATED
+(`activated_domains() == ['electronics_electrical']`); no Owner Mechanical activation authorization is implied,
+requested, or made by this closure note. The Tier-1 EN/AR Mechanical public label becomes the next pre-activation
+roadmap gate — not authorized or performed here. Phase 9 remains OPEN. `OWNER_DECISION_REGISTER.md` UNCHANGED.

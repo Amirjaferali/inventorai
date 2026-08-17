@@ -2288,6 +2288,31 @@ AUTHORIZED / NOT STARTED.***
   FORMALLY CLOSED; a separate closure gate remains required. **Phase 9 remains OPEN.** Next required gate:
   Mandatory Grill on this exact candidate, then the governed lifecycle. After merge, the eligible next steps are
   a separate `L10N-RH-01` formal closure gate and/or the Tier-1 EN/AR Mechanical public label gate.
+  **L10N-RH-01 FORMAL CLOSURE, base `c163a9d61d18434fa5cd6a68e01aa6a033ac7ce4`** (PR #500, merging accepted
+  bounded remediation candidate `783571f412b11b50e785e78943528c7c01a27e0e` onto
+  `585d1f8d02d4e16f8154c66d2e3297958735ef16`; merge tree == candidate tree, diff empty). Closure eligibility
+  independently proven: the registration's own non-authorization clause required a bounded remediation gate —
+  now merged and verified in the tree; fresh re-verification this gate confirms `tests/test_l10n_rh01_
+  remediation.py` (7 passed) and `web/ui_text.py`'s corrected `UI_B_START_024` content are actually present.
+  All 3 registered observations confirmed **REMEDIATED**: (1) `UI_B_START_026` negative-semantic-guard gap; (2)
+  `SERVICE_UNAVAILABLE` localization-path regression-guard gap (both call sites); (3) present-confirm Arabic
+  checkbox wording (`start_present_confirm_label`/`UI_B_START_024`). No fourth observation; "transport wording
+  precision" reconfirmed not a registered item; `UI_B_START_030` reconfirmed byte-unchanged. **Two non-blocking
+  residual observations preserved** (do not reopen this closure): (1) `UI_B_START_024`'s dual-surface consumption
+  (error paragraph + checkbox label share one catalog entry) — pre-existing shape, future separately authorized
+  split if ever needed; (2) Observation #1's test-assertion precision — for the registered mutation class, the
+  negative assertion is the one that actually catches it, while the positive assertion still passes under that
+  mutation because the same true-claim phrase also appears, unrelatedly, in `UI_B_START_029` — a test-hardening
+  refinement for a future gate, not a current defect. **`L10N-RH-01` — Pre-Mechanical-Activation Localization
+  Regression-Hardening Residual — is now `FORMALLY CLOSED / DISCHARGED`**, effective on this candidate's own
+  merge and post-merge verification. **Changed paths:** the new closure record, this roadmap/AIC/CPS sync, and a
+  closure note in the capability register — **ZERO runtime/test/pack/registry/activation/schema/persistence
+  diff**. Full suite re-verified unchanged: 2684 passed / 3 skipped / 1 xfailed / 0 failed. `activated_domains()`
+  (real function, sorted list) returns `['electronics_electrical']`, verified live this gate — Mechanical remains
+  NOT ACTIVATED. `OWNER_DECISION_REGISTER.md` UNCHANGED. **Tier-1 EN/AR Mechanical public label becomes the next
+  pre-activation gate** — not authorized or performed here; explicit Owner Mechanical activation authorization
+  remains separate, later. **Phase 9 remains OPEN.** Next required gate: Mandatory Grill on this exact candidate,
+  then the governed lifecycle.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
