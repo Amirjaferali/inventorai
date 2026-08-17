@@ -2229,6 +2229,42 @@ AUTHORIZED / NOT STARTED.***
   merged and post-merge verified. Next required gate: Mandatory Grill on this exact candidate, then the governed
   lifecycle. After this closure merges, the next roadmap item is the **Tier-1 EN/AR Mechanical public label** —
   not authorized or performed here.
+  **L10N-RH-01 REASSESSMENT & MECHANICAL ACTIVATION-READINESS REVIEW, MATERIAL CORRECTION of rejected candidate
+  `7e810e6be88234cf2a0508167770307130a8a1d1`.** The first reassessment-record candidate was independently
+  REJECTED — Observation #3 misidentified `UI_B_START_030` (`start_confirm_label`) as the defective surface and
+  "generic vs. domain-specific wording" as the defect class; neither is authoritative. Every other finding
+  (Observations #1/#2, the overall determination, the activation-readiness matrix, all protected boundaries) was
+  independently confirmed correct. Rejected candidate preserved immutable at
+  `refs/rejected/l10n-rh01-reassessment-7e810e6`. Corrected candidate, base
+  `3b7783f19d7b1ee9f6618342a00ed47362b35ac4`** (PR #498, merging L2SC-01 formal closure candidate
+  `937163c205b2d0586dc541c573bdd945ecf1b623` onto `b8e1274c027707a38a85216b0ef7b43a1eda5e1c`; merge tree ==
+  candidate tree, diff empty). A prior gate correctly STOPPED before implementing the Tier-1 EN/AR Mechanical
+  public label (`P9_MECHANICAL_DOMAIN_QUALIFICATION_CONTRACT.md` §13: label may replace the Tier-0 fallback "only
+  when the label becomes truthful, i.e. not before activation-readiness"). This gate reassesses `L10N-RH-01` and
+  Mechanical's overall activation-readiness. **All 3 originally-registered L10N-RH-01 observations reconfirmed
+  STILL PRESENT** via fresh, byte-restored mutation probes: (1) broadened-activation Arabic negative-semantic-
+  guard gap (`UI_B_START_026`) — 31/31 tests still passed against an injected false electronics-only claim; (2)
+  `SERVICE_UNAVAILABLE` `localize_message()` bypass at `web/app.py`'s call sites — full suite (2677/2677) still
+  passed against a bypassed call site; (3) present-confirm Arabic checkbox wording
+  (`start_present_confirm_label`, broadened-activation branch, `UI_B_START_024`) — prompt/instruction style
+  rather than first-person consent-affirmation style, unchanged, still not production-reachable (single-domain
+  activation; `UI_B_START_030`/`start_confirm_label` is a different, unaffected variable). Both probed files
+  verified byte-identical after restoration; full suite reconfirmed green. **`L10N-RH-01` = STILL PRESENT / NOT
+  DISCHARGED**; remediation NOT performed here (requires its own separately authorized, bounded gate); a bounded
+  remediation proposal (retargeting `UI_B_START_024`'s wording register, domain-neutral, no Tier-1 translation
+  work) recorded, not executed. **Activation-readiness matrix: 13 PASS** (D3, P9-MECH-SF safety-cue family, CF-2, CF-6, ILT-002,
+  L2SC-01, Path-N/domain-threading, hard-coded electronics tie-break coupling, CF5-F001/F002/F003/F004
+  classifier/admission boundaries, NMF-1+FU-1) **/ 1 OPEN** (`L10N-RH-01`) **/ 1 outside scope** (`L2SC-02` — not
+  a Mechanical-activation blocker) **/ 1 Owner-decision-required** (explicit Mechanical activation authorization,
+  never implied). **Tier-1 EN/AR label = WAITING ON ACTIVATION-READINESS** — not yet "ready to implement next,"
+  since `L10N-RH-01` remains the one open item. **Changed paths:** the new reassessment record and this
+  roadmap/AIC/CPS sync only — **ZERO runtime/test/pack/registry/activation/schema/persistence diff** (both
+  mutation probes byte-verified reverted, not left in any candidate). `OWNER_DECISION_REGISTER.md` UNCHANGED.
+  **Boundary:** does NOT reopen `CF-2`, `CF-6`, or `L2SC-01`; does NOT expand `L2SC-02`; does NOT implement
+  Tier-1; does NOT activate Mechanical; `activated_domains() == ['electronics_electrical']` unchanged, verified
+  before and after every probe. **Phase 9 remains OPEN.** Next required gate: a bounded, separately authorized
+  `L10N-RH-01` remediation gate (or an explicit Owner decision to defer its observations past activation) — the
+  Tier-1 EN/AR label gate becomes eligible only after that.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
