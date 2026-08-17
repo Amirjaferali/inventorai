@@ -67,7 +67,14 @@ def _exhaustion_iteration(gap):
 # Incorporates the independent review's non-blocking recommendation: assert the
 # foreign fixture is recognized_not_activated (and not activated), so the RED can
 # never be mistaken for an activation.
-def test_fixture_is_recognized_not_activated():
+def test_fixture_is_recognized_not_activated(monkeypatch):
+    # `_RECOGNIZED_NOT_ACTIVATED = "mechanical"` is kept as-is (other tests in
+    # this file rely on mechanical's own committed Path-N artifact); pinned
+    # locally to the electronics-only precondition this specific claim needs,
+    # since mechanical is now really activated in production (Mechanical
+    # Activation Execution Gate).
+    monkeypatch.setattr(domain_activation, "_ACTIVATED_DOMAINS",
+                         frozenset({_ACTIVATED}))
     assert domain_activation.support_state(_RECOGNIZED_NOT_ACTIVATED) == \
         domain_activation.RECOGNIZED_NOT_ACTIVATED
     assert domain_activation.is_activated(_RECOGNIZED_NOT_ACTIVATED) is False

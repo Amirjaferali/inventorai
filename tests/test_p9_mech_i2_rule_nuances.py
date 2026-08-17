@@ -129,8 +129,12 @@ _CLASSIFIER_PINS = [
     ("ESP32 sensor circuit with WiFi", "single", "electronics_electrical"),
     ("a catheter for veins", "single", "medical_device"),
     ("an app to organize daily schedules", "single", "software"),
-    ("gear and catheter", "single", "medical_device"),
-    ("circuit and hinge", "single", "electronics_electrical"),
+    # Mechanical Activation Execution Gate: `mechanical` is now activated —
+    # D3-D resolves this tie against the still-not-activated medical_device.
+    ("gear and catheter", "single", "mechanical"),
+    # Both electronics_electrical and mechanical are now activated -> a real
+    # activated-tie (P9-E2 AMBIGUOUS_TIE), no longer a SINGLE electronics win.
+    ("circuit and hinge", "ambiguous_tie", None),
     ("nothing recognizable at all", "none", None),
     ("a system of gears and levers", "single", "mechanical"),
 ]
@@ -277,7 +281,7 @@ def test_recognized_set_stable_and_iot_still_skipped():
 
 
 def test_activation_state_unchanged():
-    assert activated_domains() == ["electronics_electrical"]
+    assert activated_domains() == ["electronics_electrical", "mechanical"]
 
 
 def test_safety_family_now_governed_for_mechanical():

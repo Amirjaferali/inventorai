@@ -101,7 +101,7 @@ def test_baseline_real_activation_unchanged():
     internal _ACTIVATED_DOMAINS constant) returns a list, not a frozenset —
     confirmed here so later assertions in this file use the correct type."""
     result = domain_activation.activated_domains()
-    assert result == ["electronics_electrical"]
+    assert result == ["electronics_electrical", "mechanical"]
     assert isinstance(result, list)
 
 

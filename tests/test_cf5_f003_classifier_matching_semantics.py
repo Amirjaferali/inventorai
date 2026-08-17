@@ -344,11 +344,14 @@ def test_green_cli_electronics_proceeds(monkeypatch, capsys):
 # is byte-identical (proven by the pre-existing pins above, unchanged); these
 # new pins cover the previously-untested truthful/multi-domain/unactivated/
 # empty-activation branches.
-def test_green_cli_electronics_only_refusal_copy_byte_identical(monkeypatch, capsys):
-    """Electronics-only activation (today's real state): the refusal copy for
-    a non-electronics-classified idea remains byte-identical to the historical
-    hardcoded text."""
+def test_green_cli_electronics_only_refusal_copy_byte_identical(activate, monkeypatch, capsys):
+    """Electronics-only activation: the refusal copy for a non-electronics-
+    classified idea remains byte-identical to the historical hardcoded text.
+    Real production activation now also includes `mechanical`; reconstructed
+    here via the file's own `activate` double (electronics-only) to keep
+    proving the original electronics-only-scoped claim in isolation."""
     mod = _load_run_cli()
+    activate("electronics_electrical")
     monkeypatch.setattr(builtins, "input", lambda *_a, **_k: "a gear and pulley hoist with a crankshaft drive")
     mod.run_cli()
     out = capsys.readouterr().out
@@ -420,10 +423,13 @@ _CF2_MED = "catheter"     # medical_device-only single-pack signal
 
 
 # --------------------------------------------------- 1. banner: electronics-only
-def test_green_cli_banner_electronics_only_byte_identical(monkeypatch, capsys):
-    """Positive pin: today's real (electronics-only) activation prints the
-    historical byte-identical banner scope line."""
+def test_green_cli_banner_electronics_only_byte_identical(activate, monkeypatch, capsys):
+    """Positive pin: under the electronics-only activation state, the banner
+    prints the historical byte-identical scope line. Real production
+    activation now also includes `mechanical`; reconstructed here via the
+    file's own `activate` double."""
     mod = _load_run_cli()
+    activate("electronics_electrical")
     monkeypatch.setattr(builtins, "input", lambda *_a, **_k: "")
     mod.run_cli()
     out = capsys.readouterr().out
@@ -457,15 +463,18 @@ def test_green_cli_banner_empty_activation_truthful(activate, monkeypatch, capsy
 
 
 # --------------------------------------- 4. richer-kind: electronics-only pin ---
-def test_green_cli_richer_kind_electronics_only_byte_identical(monkeypatch, capsys):
-    """Positive pin: under today's real (electronics-only) activation, the
+def test_green_cli_richer_kind_electronics_only_byte_identical(activate, monkeypatch, capsys):
+    """Positive pin: under the electronics-only activation state, the
     richer-kind bounded-stop message stays byte-identical to the historical
     hardcoded text. `classify_domain` is white-box monkeypatched to return a
     richer kind (MULTI_DOMAIN_NEEDS_D4 — its invariants carry no activation
     requirement, unlike AMBIGUOUS_TIE) purely to drive the print branch under
     test; this does NOT claim the kind is classifier-reachable today (it is
-    not — see `test_green_guard_e2_12_d4_not_manufactured`)."""
+    not — see `test_green_guard_e2_12_d4_not_manufactured`). Real production
+    activation now also includes `mechanical`; reconstructed here via the
+    file's own `activate` double."""
     mod = _load_run_cli()
+    activate("electronics_electrical")
     fake = DomainClassification(
         kind=DomainResultKind.MULTI_DOMAIN_NEEDS_D4,
         candidates=("electronics_electrical", "mechanical"),

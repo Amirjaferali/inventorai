@@ -76,7 +76,7 @@ def activate(monkeypatch):
 
 
 def test_baseline_real_state_unchanged():
-    assert domain_activation.activated_domains() == [ELEC]
+    assert domain_activation.activated_domains() == [ELEC, "mechanical"]
     assert NEWDOM not in drm._REGISTRY
 
 
@@ -93,23 +93,29 @@ def test_red_r1_sole_top_new_domain_is_truthful_single(registry_double):
 def test_red_r2_mixed_tie_not_silently_displaced(registry_double):
     """R2 (arm B): a registered non-legacy domain tied with a legacy
     non-activated domain must yield the fail-closed unresolved kind with the
-    COMPLETE candidate set — the parent silently awards the legacy member."""
+    COMPLETE candidate set — the parent silently awards the legacy member.
+    Mechanical Activation Execution Gate: `mechanical` is now activated, so
+    "gear" would win the tie outright via D3-D rather than exercising this
+    zero-activated-tie kind; "catheter" (medical_device, still not activated)
+    preserves the original zero-activated-tie scenario."""
     registry_double({NEWDOM: _NEW_PACK})
-    c = classify_domain("a loom and a gear")
+    c = classify_domain("a loom and a catheter")
     assert c.kind is DomainResultKind.UNRESOLVED_NON_ACTIVATED_TIE
     assert c.selected_domain is None
-    assert c.candidates == ("mechanical", NEWDOM)
+    assert c.candidates == ("medical_device", NEWDOM)
     assert c.reason is DomainAmbiguityReason.EQUAL_SCORE
 
 
 def test_red_r8_three_way_tie_exact_complete_candidate_set(registry_double):
     """R8 (reviewer N2): a >=3-way zero-activated mixed tie must carry the
     EXACT complete candidate set — equality, not merely count, so a
-    subsetting bug (3 -> 2) is caught."""
+    subsetting bug (3 -> 2) is caught. `mechanical` is now activated (see
+    test_red_r2 above), so this uses "app" (software, still not activated)
+    as the third zero-activated leg instead."""
     registry_double({NEWDOM: _NEW_PACK})
-    c = classify_domain("a loom, a gear and a catheter")
+    c = classify_domain("a loom, a catheter and an app")
     assert c.kind is DomainResultKind.UNRESOLVED_NON_ACTIVATED_TIE
-    assert c.candidates == ("mechanical", "medical_device", NEWDOM)
+    assert c.candidates == ("medical_device", "software", NEWDOM)
 
 
 def test_red_r7_start_no_none_based_electronics_admission(registry_double):
@@ -134,8 +140,11 @@ def test_red_r7_start_no_none_based_electronics_admission(registry_double):
 
 # ============================================================== pins (R3-R6) ====
 def test_r3_legacy_four_domain_priority_pinned():
-    """R3 (OD2): legacy zero-activated outputs unchanged on the real registry."""
-    assert infer_domain("gear and catheter") == "medical_device"
+    """R3 (OD2): legacy zero-activated outputs unchanged on the real registry,
+    EXCEPT where `mechanical`'s real activation now correctly wins a tie via
+    D3-D (Mechanical Activation Execution Gate) — a real, intended behavior
+    change, not a legacy-priority regression."""
+    assert infer_domain("gear and catheter") == "mechanical"
     assert infer_domain("an app to organize daily schedules") == "software"
     assert infer_domain("a gear lever hinge") == "mechanical"
     assert classify_domain("ESP32 sensor circuit").selected_domain == ELEC
@@ -167,7 +176,7 @@ def test_r6_infer_domain_compatibility_pinned(registry_double, monkeypatch):
     assert infer_domain("nothing recognizable at all") is None
     registry_double({NEWDOM: _NEW_PACK})
     assert infer_domain("a loom with a spindle") == NEWDOM   # SINGLE passes through
-    unresolved = classify_domain("a loom and a gear")
+    unresolved = classify_domain("a loom and a catheter")
     assert unresolved.kind is DomainResultKind.UNRESOLVED_NON_ACTIVATED_TIE
     monkeypatch.setattr(drm, "classify_domain", lambda _t: unresolved)
     with pytest.raises(AmbiguousDomainResultError):
@@ -229,18 +238,19 @@ def test_green_new_kind_construction_invariants():
 
 def test_green_focused_web_dispatch_fail_closed(registry_double):
     """Focused Web test: the new kind takes the existing fail-closed refusal
-    dispatch at /start — no session for the mixed-tie input. The input is
-    deliberately VOCABULARY-CLEAN ("hinge", not "gear": "gear" is a
-    strong-unsupported word whose pre-classifier refusal would mask a dropped
-    dispatch and make this test pass for the wrong reason — the M5 guard)."""
+    dispatch at /start — no session for the mixed-tie input. `mechanical` is
+    now activated (Mechanical Activation Execution Gate), so "hinge"/"gear"
+    vocabulary would win a tie outright via D3-D instead of exercising this
+    zero-activated-tie kind; "catheter" (medical_device, still not activated)
+    preserves the original zero-activated-tie scenario."""
     registry_double({NEWDOM: _NEW_PACK})
-    c = classify_domain("a loom and a hinge")
+    c = classify_domain("a loom and a catheter")
     assert c.kind is DomainResultKind.UNRESOLVED_NON_ACTIVATED_TIE  # honest precondition
     from web.app import app, SESSION_STORE
     client = app.test_client()
     before = set(SESSION_STORE)
     resp = client.post("/start",
-                       data={"idea": "a loom and a hinge",
+                       data={"idea": "a loom and a catheter",
                              "domain_confirm": ELEC},
                        follow_redirects=False)
     assert resp.status_code == 200          # fail-closed refusal, never a 302 consent admission
@@ -249,14 +259,16 @@ def test_green_focused_web_dispatch_fail_closed(registry_double):
 
 def test_green_focused_cli_bounded_stop(registry_double, monkeypatch, capsys):
     """Focused CLI test: the new kind follows the existing bounded-stop
-    handling (no arbitrary winner printed, no proceed)."""
+    handling (no arbitrary winner printed, no proceed). `mechanical` is now
+    activated, so "catheter" (medical_device) replaces "gear" to keep this a
+    genuine zero-activated tie (see test_red_r2 above)."""
     path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                         "..", "scripts", "run_cli.py")
     spec = importlib.util.spec_from_file_location("run_cli_f004", path)
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     registry_double({NEWDOM: _NEW_PACK})
-    monkeypatch.setattr(builtins, "input", lambda *_a, **_k: "a loom and a gear")
+    monkeypatch.setattr(builtins, "input", lambda *_a, **_k: "a loom and a catheter")
     mod.run_cli()
     out = capsys.readouterr().out
     assert "CANNOT DETERMINE A SINGLE SUPPORTED DOMAIN" in out

@@ -93,7 +93,7 @@ def _error_paragraph(body):
 
 # --------------------------------------------------------- fixture honesty -------
 def test_baseline_real_activation_unchanged():
-    assert domain_activation.activated_domains() == [ELEC]
+    assert domain_activation.activated_domains() == [ELEC, "mechanical"]
 
 
 # ============================================================= catalogue honesty
@@ -112,16 +112,23 @@ def test_new_catalogue_keys_bilingual_and_registered():
 
 
 # ===================================================== 1/5. static /start errors
-def test_green_en_unsupported_domain_byte_identical(client):
+# Mechanical Activation Execution Gate: real production activation now
+# includes `mechanical`, which broadens `_unsupported_domain_message`'s
+# composed copy. These byte-identity tests are reconstructed here via the
+# file's own `activate` double (electronics-only) to keep proving the
+# original electronics-only-scoped claim in isolation.
+def test_green_en_unsupported_domain_byte_identical(client, activate):
     """English UI (default): electronics-only refusal stays byte-identical."""
+    activate(ELEC)
     resp = _post(client, MECH_IDEA_STRONG, confirm=ELEC)
     body = resp.get_data(as_text=True)
     assert UNSUPPORTED_DOMAIN_MESSAGE in body
 
 
-def test_green_ar_unsupported_domain_localized_no_english_leak(client):
+def test_green_ar_unsupported_domain_localized_no_english_leak(client, activate):
     """Arabic UI: same real refusal renders the Arabic catalogue string, and
     the raw English constant is NOT present anywhere in the response."""
+    activate(ELEC)
     _set_lang(client, "ar")
     resp = _post(client, MECH_IDEA_STRONG, confirm=ELEC)
     body = resp.get_data(as_text=True)
@@ -129,13 +136,18 @@ def test_green_ar_unsupported_domain_localized_no_english_leak(client):
     assert ui_text.UI_STRINGS["UI_B_START_010"]["ar"] in body
 
 
-def test_green_en_confirmation_required_byte_identical(client):
+def test_green_en_confirmation_required_byte_identical(client, activate):
+    # CONFIRMATION_REQUIRED_MESSAGE is the sole-activated-domain one-step
+    # form's message — only reachable when exactly one domain is activated;
+    # reconstructed here via the file's own `activate` double.
+    activate(ELEC)
     resp = _post(client, ELEC_IDEA)
     body = resp.get_data(as_text=True)
     assert CONFIRMATION_REQUIRED_MESSAGE in body
 
 
-def test_green_ar_confirmation_required_localized_no_english_leak(client):
+def test_green_ar_confirmation_required_localized_no_english_leak(client, activate):
+    activate(ELEC)
     _set_lang(client, "ar")
     resp = _post(client, ELEC_IDEA)
     body = resp.get_data(as_text=True)
@@ -143,15 +155,20 @@ def test_green_ar_confirmation_required_localized_no_english_leak(client):
     assert ui_text.UI_STRINGS["UI_B_START_011"]["ar"] in body
 
 
-def test_green_en_mechanism_guidance_byte_identical(client):
+def test_green_en_mechanism_guidance_byte_identical(client, activate):
     # A weak/ambiguous mechanical-conflict idea with NO lay-electrical
-    # corroboration triggers the guidance branch (unchanged dispatch logic).
+    # corroboration triggers the guidance branch (unchanged dispatch logic) —
+    # only reachable when the sole activated domain is electronics
+    # (`sole == "electronics_electrical"`); reconstructed here via the file's
+    # own `activate` double.
+    activate(ELEC)
     resp = _post(client, MECH_IDEA, confirm=ELEC)
     body = resp.get_data(as_text=True)
     assert MECHANISM_GUIDANCE_MESSAGE in body
 
 
-def test_green_ar_mechanism_guidance_localized_no_english_leak(client):
+def test_green_ar_mechanism_guidance_localized_no_english_leak(client, activate):
+    activate(ELEC)
     _set_lang(client, "ar")
     resp = _post(client, MECH_IDEA, confirm=ELEC)
     body = resp.get_data(as_text=True)
@@ -394,7 +411,7 @@ def test_green_guard_lang_default_preserves_signature_compatible_call(client):
 
 # ============================================ 10. classifier/activation/D-CF6CF2 =
 def test_green_guard_real_activation_state_unchanged():
-    assert domain_activation.activated_domains() == [ELEC]
+    assert domain_activation.activated_domains() == [ELEC, "mechanical"]
 
 
 def test_green_guard_ilt002_review_type_label_unchanged(client):

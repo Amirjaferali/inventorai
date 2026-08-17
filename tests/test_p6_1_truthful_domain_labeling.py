@@ -238,11 +238,28 @@ def test_session_page_shows_english_mechanical_label_via_test_double(client):
         SESSION_STORE.pop(sid, None)
 
 
-def test_mechanical_not_in_activated_domains():
-    """Adding the Tier-1 label must not move `activated_domains()` at all."""
+def test_tier1_label_alone_does_not_activate_mechanical(monkeypatch):
+    """Historical claim of the Tier-1-label gate, preserved in isolation: adding
+    the Tier-1 label (that gate's ONLY change) does not itself move
+    `activated_domains()`. Reconstructed here via a local pin to that gate's
+    exact pre-activation state — mechanical was subsequently, separately, and
+    explicitly Owner-authorized for real activation (Mechanical Activation
+    Execution Gate); see test_mechanical_idea_now_activated_via_real_
+    activation_not_label below for the current real state."""
     import engine.domain_activation as domain_activation
+    monkeypatch.setattr(domain_activation, "_ACTIVATED_DOMAINS",
+                         frozenset({"electronics_electrical"}))
     assert domain_activation.activated_domains() == ["electronics_electrical"]
     assert "mechanical" not in domain_activation.activated_domains()
+
+
+def test_mechanical_now_really_activated_not_by_label_alone():
+    """Current real state: mechanical IS activated — but this is the effect of
+    the separate, explicit Mechanical Activation Execution Gate, never the
+    Tier-1 label by itself (see the pinned test above, which proves the label
+    alone never moved activation)."""
+    import engine.domain_activation as domain_activation
+    assert domain_activation.activated_domains() == ["electronics_electrical", "mechanical"]
 
 
 def test_mechanical_not_offered_in_start_domain_picker(client):
@@ -254,14 +271,38 @@ def test_mechanical_not_offered_in_start_domain_picker(client):
     assert 'value="mechanical"' not in body
 
 
-def test_mechanical_idea_still_rejected_at_entry_gate(client):
-    """Posting a clearly-Mechanical idea with domain_confirm=mechanical is still
-    rejected at the gate (no session created) — the label never widens admission."""
+def test_tier1_label_alone_did_not_widen_admission_at_entry_gate(client, monkeypatch):
+    """Historical claim of the Tier-1-label gate, preserved in isolation: with
+    ONLY the Tier-1 label added (not real activation), a clearly-Mechanical
+    idea confirmed as mechanical was still rejected at the gate (no session) —
+    the label alone never widened admission. Reconstructed here via a local
+    pin to that gate's exact pre-activation state."""
+    import engine.domain_activation as domain_activation
+    monkeypatch.setattr(domain_activation, "_ACTIVATED_DOMAINS",
+                         frozenset({"electronics_electrical"}))
     r = client.post("/start", data={
         "idea": "A mechanical latch uses a spring and a lever to release a hinge.",
         "domain_confirm": "mechanical"})
     assert r.status_code == 200
     assert "/session/" not in (r.headers.get("Location") or "")
+
+
+def test_mechanical_idea_now_admitted_via_real_activation_not_label(client):
+    """Current real state: the SAME idea, confirmed as mechanical, is now
+    admitted — the effect of the separate, explicit Mechanical Activation
+    Execution Gate (real allowlist change), never the Tier-1 label by itself
+    (see the pinned test above)."""
+    before = set(SESSION_STORE)
+    r = client.post("/start", data={
+        "idea": "A mechanical latch uses a spring and a lever to release a hinge.",
+        "domain_confirm": "mechanical"}, follow_redirects=False)
+    assert r.status_code == 302
+    sid = r.headers["Location"].rsplit("/", 1)[-1]
+    entry = SESSION_STORE.get(sid)
+    assert entry is not None
+    assert entry["state"].domain == "mechanical"
+    SESSION_STORE.pop(sid, None)
+    assert set(SESSION_STORE) == before
 
 
 def test_mechanical_label_owner_is_unique_not_duplicated_in_picker_helper():

@@ -198,8 +198,15 @@ def _start(idea, confirm=True):
     return app.test_client().post("/start", data=data, follow_redirects=False)
 
 
-def test_domain_gate_still_rejects_unsupported_and_admits_electronics():
-    # Regression: importing/adding the scaffolding surface changes no gate behavior.
+def test_domain_gate_still_rejects_unsupported_and_admits_electronics(monkeypatch):
+    # Regression: importing/adding the scaffolding surface changes no gate
+    # behavior. Pinned to the electronics-only activation state; mechanical is
+    # now really activated in production (Mechanical Activation Execution
+    # Gate) and would legitimately admit the gearbox idea via its own
+    # confirmation.
+    from engine import domain_activation
+    monkeypatch.setattr(domain_activation, "_ACTIVATED_DOMAINS",
+                         frozenset({"electronics_electrical"}))
     before = set(SESSION_STORE)
     resp = _start("a gearbox with a rotating shaft and bearing torque")
     assert resp.status_code == 200

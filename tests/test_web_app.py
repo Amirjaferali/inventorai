@@ -5,6 +5,8 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."
 from web.app import (
     app, SESSION_STORE, UNSUPPORTED_DOMAIN_MESSAGE,
     CONFIRMATION_REQUIRED_MESSAGE, DOMAIN_CONFIRM_VALUE,
+    _activated_specialist_domains, _unsupported_domain_message,
+    _present_confirm_message, DOMAIN_CHOICE_MESSAGE,
 )
 from engine.idea_state import (
     IdeaState, Evidence, REASONED, Gap, OPEN, PARTIAL, CLOSED, AcknowledgedUnknown,
@@ -510,15 +512,27 @@ def test_stage3_rendered_browser_flow_form_persists_through_partial():
 # Refused requests create no session and are never relabeled as electronics.
 # ---------------------------------------------------------------------------
 
-_ERROR_HTML = '<p class="error">' + UNSUPPORTED_DOMAIN_MESSAGE + '</p>'
+# Mechanical Activation Execution Gate: `_ERROR_HTML` is computed from the REAL
+# activation set at import time (`_unsupported_domain_message` is
+# activation-derived; §4.E) rather than the retired electronics-only-only
+# constant, so this file continues to exercise real `/start` production
+# behavior.
+_ERROR_HTML = ('<p class="error">'
+               + _unsupported_domain_message(_activated_specialist_domains())
+               + '</p>')
 
 
-def _start_post(client, idea, confirm=True):
+def _start_post(client, idea, confirm=True, choice=None):
     # Existing Option B refusal/admission tests exercise the bounded conflict
     # check, so they post WITH explicit electronics confirmation by default.
+    # `choice`, when given, also supplies `domain_choice` — required since
+    # Mechanical activation (2 activated domains) whenever the classifier does
+    # not resolve a single domain (D2).
     data = {"idea": idea}
     if confirm:
         data["domain_confirm"] = "electronics_electrical"
+    if choice:
+        data["domain_choice"] = choice
     return client.post("/start", data=data, follow_redirects=False)
 
 
@@ -536,20 +550,39 @@ def test_start_admits_electronics_idea():
     assert set(SESSION_STORE) == before | {sid}
 
 
-def test_start_refuses_mechanical_idea_and_creates_no_session():
+def test_mechanical_idea_confirmed_as_electronics_is_reprompted_not_admitted():
+    # Mechanical Activation Execution Gate: mechanical is now activated, so
+    # this idea is a legitimate admissible target — but confirming it as
+    # electronics (the wrong domain) never admits it as electronics; it
+    # re-prompts for the correct (mechanical) confirmation instead. No
+    # cross-domain relabeling ever occurs.
     client = app.test_client()
     before = set(SESSION_STORE)
     idea = "a gearbox with a rotating shaft and bearing torque"
-    # Infrastructure inference still identifies the domain ...
     assert infer_domain(idea) == "mechanical"
-    # ... but the product boundary refuses it.
     resp = _start_post(client, idea)
     assert resp.status_code == 200
     body = resp.get_data(as_text=True)
-    assert _ERROR_HTML in body                       # exact stable message rendered
-    assert "Location" not in resp.headers             # no redirect to a session
-    assert set(SESSION_STORE) == before               # no new session created
+    assert '<p class="error">' + _present_confirm_message("mechanical") + '</p>' in body
+    assert "Location" not in resp.headers
+    assert set(SESSION_STORE) == before
     assert "mechanical" not in [v["state"].domain for v in SESSION_STORE.values()]
+
+
+def test_mechanical_idea_confirmed_as_mechanical_is_admitted():
+    # The same idea, confirmed with its own (now-activated) domain, admits.
+    client = app.test_client()
+    before = set(SESSION_STORE)
+    idea = "a gearbox with a rotating shaft and bearing torque"
+    resp = client.post("/start", data={"idea": idea, "domain_confirm": "mechanical"},
+                        follow_redirects=False)
+    assert resp.status_code == 302
+    sid = resp.headers["Location"].rsplit("/", 1)[-1]
+    entry = SESSION_STORE.get(sid)
+    assert entry is not None
+    assert entry["state"].domain == "mechanical"
+    assert entry["state"].domain_signal == "mechanical"
+    assert set(SESSION_STORE) == before | {sid}
 
 
 def test_start_refuses_medical_device_idea_and_creates_no_session():
@@ -580,14 +613,15 @@ def test_start_refuses_software_idea_and_creates_no_session():
 
 
 def test_start_without_confirmation_refused_even_when_inference_none(monkeypatch):
-    # Under explicit confirmation, a None-classified idea is admitted ONLY with
-    # confirmation; without confirmation it is refused and no session is created.
+    # A None-classified idea with 2 activated domains requires an explicit D2
+    # domain_choice (not just confirmation); with neither, it is refused and no
+    # session is created.
     client = app.test_client()
     before = set(SESSION_STORE)
     monkeypatch.setattr("web.app.classify_domain", _none_result)
     resp = _start_post(client, "something with no recognizable signals", confirm=False)
     assert resp.status_code == 200
-    assert CONFIRMATION_REQUIRED_MESSAGE in resp.get_data(as_text=True)
+    assert DOMAIN_CHOICE_MESSAGE in resp.get_data(as_text=True)
     assert set(SESSION_STORE) == before
 
 
@@ -657,10 +691,13 @@ def test_refusals_persist_no_non_electronics_domain():
 # user-entered content, so these assertions target purely static product copy.
 # ---------------------------------------------------------------------------
 
-def test_index_page_states_electronics_only_support():
+def test_index_page_states_currently_activated_domain_support():
+    # Mechanical Activation Execution Gate: the supported-domains statement is
+    # activation-derived (truthful for any activated set), not a fixed
+    # electronics-only string.
     client = app.test_client()
     body = client.get("/").get_data(as_text=True)
-    assert "Currently supported: electronics and electrical ideas." in body
+    assert "Currently supported: Electronics Electrical or Mechanical ideas." in body
 
 
 def test_index_page_does_not_advertise_other_domains():
@@ -672,10 +709,12 @@ def test_index_page_does_not_advertise_other_domains():
     assert "software" not in body
 
 
-def test_index_page_placeholder_is_electronics_aligned():
+def test_index_page_placeholder_is_domain_neutral_under_broadened_activation():
+    # With 2+ activated domains the placeholder is the domain-neutral,
+    # pre-hardened (L10N-RH-01) copy — not the electronics-specific string.
     client = app.test_client()
     body = client.get("/").get_data(as_text=True)
-    assert "Describe your electronics or electrical invention..." in body
+    assert "Describe your invention..." in body
 
 
 def test_index_error_surface_renders_stable_refusal_message(monkeypatch):
@@ -720,29 +759,37 @@ def test_water_leak_admitted_even_if_inference_is_none(monkeypatch):
     # Proves admission rests on explicit confirmation + the bounded conflict
     # rule, NOT on the accidental 'led' substring: even when the classifier
     # returns None (as it would after substring matching is corrected later),
-    # the confirmed water-leak idea is admitted.
+    # the confirmed water-leak idea is admitted. With 2 activated domains a
+    # NONE classification additionally requires the explicit D2 domain_choice.
     client = app.test_client()
     monkeypatch.setattr("web.app.classify_domain", _none_result)
-    sid = _admitted_sid(_start_post(client, WATER_LEAK_IDEA))
+    sid = _admitted_sid(_start_post(client, WATER_LEAK_IDEA,
+                                     choice="electronics_electrical"))
     assert SESSION_STORE[sid]["state"].domain == "electronics_electrical"
 
 
 def test_functional_electronics_paraphrase_admitted_when_confirmed():
     # A functional electronics idea with no component keywords infers None, yet
-    # is admitted because the user explicitly confirmed the domain.
+    # is admitted because the user explicitly confirmed the domain (+ D2
+    # domain_choice, required now that 2 domains are activated).
     idea = "A gadget that watches for a problem and warns the homeowner right away"
     assert infer_domain(idea) is None              # no signal keyword present
     client = app.test_client()
-    sid = _admitted_sid(_start_post(client, idea))
+    sid = _admitted_sid(_start_post(client, idea, choice="electronics_electrical"))
     assert SESSION_STORE[sid]["state"].domain == "electronics_electrical"
 
 
 def test_no_confirmation_creates_no_session():
+    # The real (unmocked) classifier resolves ESP32 wording to SINGLE
+    # electronics_electrical (D1): with no confirmation posted, this is now the
+    # D1 present-confirm re-prompt, not the old generic sole-domain message.
     client = app.test_client()
     before = set(SESSION_STORE)
     resp = _start_post(client, "ESP32 microcontroller circuit", confirm=False)
     assert resp.status_code == 200
-    assert CONFIRMATION_REQUIRED_MESSAGE in resp.get_data(as_text=True)
+    assert ('<p class="error">'
+            + _present_confirm_message("electronics_electrical") + '</p>'
+            in resp.get_data(as_text=True))
     assert "Location" not in resp.headers
     assert set(SESSION_STORE) == before
 
@@ -781,14 +828,18 @@ def test_confirmed_medical_idea_refused_and_no_session():
     assert set(SESSION_STORE) == before
 
 
-def test_confirmed_mechanical_idea_refused_and_no_session():
+def test_confirmed_as_electronics_mechanical_idea_reprompted_not_admitted():
+    # Mechanical is now activated — confirming this idea as electronics (the
+    # wrong domain) never admits it as electronics; it re-prompts for the
+    # correct (mechanical) confirmation. No session is created either way.
     client = app.test_client()
     before = set(SESSION_STORE)
     idea = "a gearbox with a rotating shaft and bearing torque"
     assert infer_domain(idea) == "mechanical"
     resp = _start_post(client, idea)
     assert resp.status_code == 200
-    assert _ERROR_HTML in resp.get_data(as_text=True)
+    assert ('<p class="error">' + _present_confirm_message("mechanical") + '</p>'
+            in resp.get_data(as_text=True))
     assert set(SESSION_STORE) == before
 
 
@@ -822,13 +873,27 @@ def test_unexpected_classifier_value_refused_even_with_confirmation(monkeypatch)
     assert set(SESSION_STORE) == before
 
 
-def test_index_page_states_scope_and_has_confirmation_control():
+def test_index_page_states_scope_under_broadened_activation():
+    # With 2+ activated domains, consent is collected AFTER classification
+    # (the two-step D1/D2 seam; see `_render_start_page`'s own docstring) — the
+    # bare landing page states scope but no longer carries a pre-checked
+    # single-domain confirmation control (see the companion test below for
+    # where that control now appears).
     client = app.test_client()
     body = client.get("/").get_data(as_text=True)
-    # current scope stated
-    assert "Electronics and electrical ideas are currently supported." in body
-    # required confirmation control present
+    assert ("Electronics Electrical or Mechanical ideas are currently "
+            "supported. Before starting, please confirm the domain your idea "
+            "belongs to.") in body
+
+
+def test_start_response_carries_confirmation_control_for_resolved_domain():
+    # The confirmation control now appears on the POST /start response once
+    # the classifier resolves a target domain (D1), not on the bare GET /.
+    client = app.test_client()
+    resp = _start_post(client, "ESP32 microcontroller circuit", confirm=False)
+    body = resp.get_data(as_text=True)
     assert 'name="domain_confirm"' in body
     assert 'value="electronics_electrical"' in body
     assert "required" in body
-    assert "I confirm that this idea is primarily an electronics or electrical idea." in body
+    assert ("I confirm that my idea belongs to the Electronics Electrical domain."
+            in body)

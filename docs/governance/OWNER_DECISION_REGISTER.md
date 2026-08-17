@@ -1021,6 +1021,25 @@ activation remains BLOCKED (now explicitly including OD-M2 clause 3 for `mechani
 
 ---
 
+## Mechanical Activation Execution Gate — explicit Owner activation authorization (recorded inside this gate)
+
+Governance/documentation-only registration recorded by the Mechanical Activation Execution Gate itself (canonical
+record: `docs/governance/MECHANICAL_ACTIVATION_EXECUTION_RECORD.md`; base
+`18a97da735e68763c7fab6488613cde1dff4675f` — PR #502 merge, Tier-1 EN/AR Mechanical public label AUTHORITATIVE).
+Per repository precedent (`D-P9-MECH-01`, `D-P9-MECH-02`), the Owner decision is recorded inside the gate that
+executes under it — no standalone pre-gate. ID follows the existing `D-P9-MECH-<NN>` sequencing (next after
+`D-P9-MECH-02`); no new ID format invented.
+
+| ID | Subject | Status | Impl. authority | Evidence |
+|---|---|---|---|---|
+| D-P9-MECH-03 | **Explicit Owner Mechanical activation authorization — §5-I2 allowlist execution.** The Owner explicitly authorizes activating `mechanical` via the sole canonical §5-I2 mechanism (`engine/domain_activation.py::_ACTIVATED_DOMAINS`), satisfying the last remaining prerequisite named in `D-P9-MECH-01`/`D-P9-MECH-02` ("explicit Owner activation authorization... a separate, explicitly-Owner-authorized §5-I2 gate"). Owner statement (verbatim): "I explicitly approve activation of the Mechanical domain within InventorAI and authorize proceeding to the Mechanical activation execution gate." **Scope guard:** authorizes ONLY the bounded allowlist change (`_ACTIVATED_DOMAINS = frozenset({"electronics_electrical", "mechanical"})`) and its necessary test-suite reconciliation; authorizes NO classifier/admission/scoring/progression/persistence/security/Tier-1-label change, NO third domain, NO D4, NO Phase 10, NO PSRR, NO deployment. Mechanical P9-QS qualification itself remains a SEPARATE, still-unauthorized future gate (activation ≠ qualification, per `D-P9-MECH-01`'s own binding separation, preserved unchanged). | **ACCEPTED — EXECUTED** (authoritative if/when this candidate completes the review/acceptance/merge lifecycle) | NONE beyond this gate's own bounded scope (any future third-domain activation, or Mechanical P9-QS qualification, requires its own separate explicit Owner authorization) | This record; `MECHANICAL_ACTIVATION_EXECUTION_RECORD.md` §1/§4/§5/§13 |
+
+**Boundary.** `activated_domains() == ['electronics_electrical', 'mechanical']` (real, verified live). Mechanical
+NOT qualified (P9-QS qualification remains a separate future gate). Phase 9 remains OPEN. Phase 10 / PSRR /
+deployment remain NOT AUTHORIZED. D4 / D8 unaffected.
+
+---
+
 ## THERM — Future Thermal Capability Preservation (Owner-directed register amendment; recorded inside this gate)
 
 Governance/documentation-only registration on base `f7ed74484234ae1e85f3db35ebfac7ebeb847288` (P9-MECH-I1

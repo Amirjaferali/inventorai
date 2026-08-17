@@ -85,7 +85,17 @@ def test_form_method_post_action_start():
     assert 'method="POST"' in tag and 'action="/start"' in tag, "form must remain POST to /start"
 
 
-def test_domain_confirm_checkbox_unchanged():
+def test_domain_confirm_checkbox_unchanged(monkeypatch):
+    # This legacy single-domain markup exists only on the bare `GET /` when
+    # exactly one domain is activated (the sole-domain one-step consent form);
+    # with 2+ activated domains (Mechanical Activation Execution Gate),
+    # consent is deferred to the POST /start response instead (see
+    # tests/test_web_app.py::test_start_response_carries_confirmation_
+    # control_for_resolved_domain for that real-multi-domain coverage).
+    # Pinned here to preserve this legacy-markup regression guard in isolation.
+    from engine import domain_activation
+    monkeypatch.setattr(domain_activation, "_ACTIVATED_DOMAINS",
+                         frozenset({"electronics_electrical"}))
     body = _entry_body()
     assert re.search(r'<input\b[^>]*type="checkbox"[^>]*name="domain_confirm"[^>]*value="electronics_electrical"'
                      r'|<input\b[^>]*name="domain_confirm"[^>]*value="electronics_electrical"', body), \
@@ -101,7 +111,14 @@ def test_header_temporary_session_and_learn_more():
     assert 'href="/data-and-session"' in hdr and "Learn more" in hdr, "header Learn more link must remain"
 
 
-def test_pinned_existing_copy_preserved():
+def test_pinned_existing_copy_preserved(monkeypatch):
+    # PINNED_SUPPORT is the electronics-only-activation copy; with 2+
+    # activated domains the truthful, broadened copy renders instead (see
+    # PINNED_SUPPORT's own module-level comment history). Pinned here to
+    # preserve this legacy-copy regression guard in isolation.
+    from engine import domain_activation
+    monkeypatch.setattr(domain_activation, "_ACTIVATED_DOMAINS",
+                         frozenset({"electronics_electrical"}))
     body = _entry_body()
     assert PINNED_INTRO in body, "pre-existing intro copy must remain (copy-debt, unchanged)"
     assert PINNED_SUPPORT in body, "pre-existing support line must remain"
