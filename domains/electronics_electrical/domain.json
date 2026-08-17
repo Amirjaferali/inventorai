@@ -82,6 +82,16 @@
     {"signal": "ultrasonic",      "layer": 1, "context": "sound waves above 20kHz human hearing threshold",                      "provenance_ref": "electronics_electrical:PR001"},
     {"signal": "capacitive",      "layer": 1, "context": "sensing principle based on changes in electrical capacitance",         "provenance_ref": "electronics_electrical:PR001"}
   ],
+  "substance_signal_plural_aliases": {
+    "sensors": "sensor",
+    "relays": "relay",
+    "resistors": "resistor",
+    "batteries": "battery",
+    "capacitors": "capacitor",
+    "motors": "motor",
+    "leds": "led",
+    "ics": "ic"
+  },
   "gap_type_mappings": [
     {"gap_type_id": "MECHANISM_COMPLETENESS", "domain_label": "Circuit Mechanism Completeness",   "layer": 1, "questions": [{"question_id": "electronics_electrical:MECHANISM_COMPLETENESS:Q1", "text": "Describe how your electronic circuit achieves its intended function — what happens electrically from input to output?", "layer": 1, "order": 1, "provenance_ref": "electronics_electrical:PR001"}, {"question_id": "electronics_electrical:MECHANISM_COMPLETENESS:Q2", "text": "What electronic components are central to your mechanism, and what role does each play?", "layer": 1, "order": 2, "provenance_ref": "electronics_electrical:PR001"}, {"question_id": "electronics_electrical:MECHANISM_COMPLETENESS:Q3", "text": "What signal or energy transformation does your circuit perform?", "layer": 1, "order": 3, "provenance_ref": "electronics_electrical:PR001"}, {"question_id": "electronics_electrical:MECHANISM_COMPLETENESS:Q4", "text": "Which part of your circuit is most critical to achieving the intended function, and why?", "layer": 2, "order": 4, "provenance_ref": "electronics_electrical:PR001"}], "provenance_ref": "electronics_electrical:PR001"},
     {"gap_type_id": "PHYSICAL_FEASIBILITY",   "domain_label": "Electrical Physical Feasibility", "layer": 1, "questions": [{"question_id": "electronics_electrical:PHYSICAL_FEASIBILITY:Q1", "text": "What provides the energy or power for your design to operate?", "layer": 1, "order": 1, "provenance_ref": "electronics_electrical:PR001"}, {"question_id": "electronics_electrical:PHYSICAL_FEASIBILITY:Q2", "text": "Do you know of any electrical requirements your design depends on (such as voltage, current, frequency, or similar constraints)? If not, what information would you need to determine them?", "layer": 1, "order": 2, "provenance_ref": "electronics_electrical:PR001"}, {"question_id": "electronics_electrical:PHYSICAL_FEASIBILITY:Q3", "text": "Are there any known electrical constraints that your design must stay within to function correctly?", "layer": 2, "order": 3, "provenance_ref": "electronics_electrical:PR001"}], "provenance_ref": "electronics_electrical:PR001"},

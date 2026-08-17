@@ -41,10 +41,55 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — L2SC-01 SUBSTANCE-SIGNAL PLURAL-ALIAS DOMAIN-COMPLETENESS — bounded implementation
-contract, MATERIAL CORRECTION of rejected candidate `219f7c1`; governance-only, implements nothing; NO Owner
-architecture decision required; CF-2 not reopened; CF-6 not reopened; `L2SC-02` unchanged; Tier-1 untouched;
-Mechanical NOT ACTIVATED; ODR UNCHANGED):** independent external review **REJECTED** the first bounded contract
+**Status (current — L2SC-01 SUBSTANCE-SIGNAL PLURAL-ALIAS DOMAIN-COMPLETENESS — RUNTIME IMPLEMENTATION MATERIAL
+CORRECTION of rejected candidate `714d538`, defect MD-A; governance/test-only, runtime UNCHANGED from `714d538`;
+CF-2 not reopened; CF-6 not reopened; `L2SC-02` unchanged; Tier-1 untouched; Mechanical NOT ACTIVATED; ODR
+UNCHANGED):** independent external review **REJECTED** the runtime implementation candidate
+`714d538fca7b22cb84e3b18802dcf27aa42e5707` (verdict: MATERIAL CORRECTION REQUIRED, defect **MD-A** — the mandated
+MD-1 recurrence guard was not load-bearing: in 10 of 12 rejected-alias adversarial sentences the alias word sat
+on the wrong directional side of its connective, never inspected by the gate, so those guards passed regardless
+of alias state). The reviewer independently reconfirmed the runtime implementation itself correct — Domain
+Registry validation, accessor ownership, single alias source, Electronics migration, the exact 3-pair Mechanical
+set, absence of rejected aliases/morphology, cross-domain isolation, and end-to-end parity all stand. That
+candidate is preserved **immutable, unpushed, unamended** at `refs/rejected/l2sc01-runtime-impl-714d538`. This
+gate returns to the exact authoritative parent `c1cb421d73c53d24cc381ca9238e29613ca7e996` and reapplies the
+runtime/data changes from `714d538` **byte-identically** (verified via `sha256sum` for all 5 runtime/data files —
+zero diff) — only `tests/test_l2sc01_substance_signal_plural_alias.py` changes. All 10 vacuous sentences replaced
+with direction-correct constructions, individually verified free of `_CAUSAL_STRUCTURE_PATTERNS`/other-substance
+confounds; a new explicit three-way differential proof (clean map ASSERTED / poisoned map REASONED / neutral-
+control map ASSERTED) added for all 12 excluded signals via `unittest.mock.patch`; §12.C tests renamed/re-
+documented honestly as sentence-boundary/directional-discipline guards (not plural-specific false-positive
+guards), per the reviewer's separate §12.C observation — no contract scope expansion. **Hash-pin reconciliation:
+NONE required** — runtime/data byte-identical to `714d538`, whose pins remain valid unchanged (verified: all 5
+`tests/test_p9_mech_i*.py` files pass without modification). **Suite:** focused L2SC-01 file 60 passed (was 36;
++24); full governed suite **2677 passed / 3 skipped / 1 xfailed / 0 failed** (prior baseline 2653/3/1/0; delta
++24 passed, 0 regressions). All 5 mutation probes re-run CAUGHT; probe 5 is now independently, behaviorally
+provable via the poisoned-map differential tests, not inferred from map-content assertions alone. **Changed
+paths:** `tests/test_l2sc01_substance_signal_plural_alias.py` and this AIC/roadmap/CPS sync only — the frozen
+contract file, all 5 runtime/data files, and all other test files are byte-identical to `714d538`.
+`OWNER_DECISION_REGISTER.md` UNCHANGED. **Boundary:** does NOT reopen `CF-2` (`FORMALLY CLOSED` stands) or `CF-6`
+(`FULLY DISCHARGED` stands); does NOT touch `D-CF6CF2-ILT002-01`; does NOT touch `L10N-RH-01` (still pending);
+does NOT expand `L2SC-02` (still registration-only); does NOT implement Tier-1 (still pending); does NOT activate
+Mechanical (`activated_domains() == ['electronics_electrical']` unchanged); no D4/D8/THERM-01/Phase 10/PSRR/
+deployment; no P9 closure. **`L2SC-01` remains OPEN** — not closed by the rejected candidate, not closed by this
+correction. Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next required
+gate: **Mandatory Grill on this exact candidate** → independent external exact-candidate review → Owner
+acceptance → SHA-preserving publication → PR → pre/post-merge verification.
+
+**Immediately prior (L2SC-01 runtime implementation gate, candidate `714d538` — REJECTED by independent review,
+defect MD-A; preserved immutable at `refs/rejected/l2sc01-runtime-impl-714d538`; retained as history):**
+Owner-authorized runtime implementation of the frozen
+`docs/governance/L2SC01_SUBSTANCE_SIGNAL_PLURAL_ALIAS_INCREMENT_CONTRACT.md`. Base
+`c1cb421d73c53d24cc381ca9238e29613ca7e996` (PR #496). Implemented Option B exactly as frozen across
+`engine/domain_registry.py`, `engine/domain_rules.py`, `engine/progression_loop.py`, both domain packs, a new
+36-test focused file, and disclosed byte-freeze reconciliation across 5 `test_p9_mech_i*.py` files. Full suite at
+that gate: 2653 passed / 3 skipped / 1 xfailed / 0 failed, all 5 mutation probes reported CAUGHT. Independent
+review later found probe 5 and the §12.D adversarial guards were not genuinely load-bearing (defect MD-A, see
+current status above) — the runtime implementation itself was NOT found defective and is carried forward
+byte-identically into the corrected candidate above.
+
+**Immediately prior (L2SC-01 bounded contract gate, MATERIAL CORRECTION of rejected candidate `219f7c1` —
+governance-only, implements nothing; retained as history):** independent external review **REJECTED** the first bounded contract
 candidate `219f7c10c4ba23f795f0461dd831f71052469e65` (verdict: MATERIAL CORRECTION REQUIRED, defect **MD-1** —
 it authorized 9 Mechanical plural aliases using only "is this the grammatically normal plural?", without
 screening for verb-form/idiom/meaning-shift false-positive risk; demonstrated examples: "the gasket seals the

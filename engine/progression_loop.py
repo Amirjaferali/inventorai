@@ -18,7 +18,9 @@ NOT responsible for:
 
 import re
 import warnings
-from engine.domain_rules import get_substance_signals, is_known_domain
+from engine.domain_rules import (
+    get_substance_signals, get_substance_signal_plural_aliases, is_known_domain,
+)
 from engine.idea_state import (
     IdeaState, Evidence, Gap, IterationLog, AcknowledgedUnknown,
     PHYSICAL_FEASIBILITY, BOUNDARY_AMBIGUITY, MECHANISM_COMPLETENESS,
@@ -494,41 +496,39 @@ _NEW_CONNECTIVE_RES_RESULT_FIRST = tuple(
     _connective_regex(c) for c in _NEW_CAUSAL_CONNECTIVES_RESULT_FIRST)
 
 
-# EXPLICIT SAFE PLURAL MAP (owner-authorized final correction 2026-07-11).
-# Generic suffix stripping (-s / -es / -ies) is NOT ratified: independent
-# probing demonstrated false-positive folds such as "ices"→"ic",
-# "halls"→"hall", non-electronics "chips", and verbal "displays". Plural
-# recognition is therefore limited to this explicit, conservative alias map.
-# These are MATCHING ALIASES ONLY: they modify no domain pack or registry
-# data, add no vocabulary, and are never derived dynamically from suffix
-# rules. "hall", "chip", "display", and "esp" deliberately have NO plural
-# alias unless separately authorized later.
-_SUBSTANCE_PLURAL_ALIASES = {
-    "sensors":    "sensor",
-    "relays":     "relay",
-    "resistors":  "resistor",
-    "batteries":  "battery",
-    "capacitors": "capacitor",
-    "motors":     "motor",
-    "leds":       "led",
-    "ics":        "ic",
-}
+# L2SC-01 (owner-authorized; docs/governance/L2SC01_SUBSTANCE_SIGNAL_PLURAL_
+# ALIAS_INCREMENT_CONTRACT.md): plural-alias ownership lives in each domain
+# pack's own registry-owned `substance_signal_plural_aliases` field (read via
+# `engine.domain_rules.get_substance_signal_plural_aliases(domain)`), NOT in
+# this shared engine module. There is exactly ONE live source of plural-alias
+# data — the domain pack — for every domain, including electronics (whose
+# historical 8-pair map was migrated into `domains/electronics_electrical/
+# domain.json` unchanged). Generic suffix stripping (-s / -es / -ies) remains
+# NOT ratified: independent probing previously demonstrated false-positive
+# folds such as "ices"→"ic", "halls"→"hall", non-electronics "chips", and
+# verbal "displays" — plural recognition stays limited to each pack's
+# explicit, conservative, Owner-reviewed alias map. These are MATCHING
+# ALIASES ONLY: they modify no classifier/activation data, add no
+# classification vocabulary, and are never derived dynamically from suffix
+# rules.
 
 
-def _has_whole_word_substance(text_lower, substance_tokens):
+def _has_whole_word_substance(text_lower, substance_tokens, plural_aliases):
     """
     Whole-word substance-signal detection with an explicit safe plural map.
     Tokenizes on alphanumeric runs, so substring fragments inside larger
     words never match ("ic" in "nice"/"device"/"which", "led" in
     "called"/"enabled", "esp" in "especially", "hall" in "shall").
-    A plural form matches ONLY via _SUBSTANCE_PLURAL_ALIASES and only when
-    its singular is an authorized registry signal — no suffix stripping, no
-    stemming, no vocabulary addition. Deterministic; no side effects.
+    A plural form matches ONLY via the caller-supplied `plural_aliases`
+    (the CURRENT domain's own registry-owned map — see L2SC-01) and only
+    when its singular is an authorized registry signal — no suffix
+    stripping, no stemming, no vocabulary addition, no cross-domain
+    borrowing. Deterministic; no side effects.
     """
     for w in _SUBSTANCE_WORD_RE.findall(text_lower):
         if w in substance_tokens:
             return True
-        singular = _SUBSTANCE_PLURAL_ALIASES.get(w)
+        singular = plural_aliases.get(w)
         if singular is not None and singular in substance_tokens:
             return True
     return False
@@ -587,7 +587,7 @@ def _gate_directional_segment(r_lower, spans, match, cause_first, connective):
     return None                        # spans a sentence boundary
 
 
-def _connective_whole_word_substance_gate(r_lower, substance_tokens):
+def _connective_whole_word_substance_gate(r_lower, substance_tokens, plural_aliases):
     """
     New-connective gate (TRUE SENTENCE-BOUNDED): an authorized new
     connective present as a whole word AND a whole-word (explicit safe
@@ -598,8 +598,10 @@ def _connective_whole_word_substance_gate(r_lower, substance_tokens):
     of different occurrences are never combined. Returns False whenever the
     substance check is disabled (empty/unknown domain or empty signal list)
     — this path never fires without domain substance authority, so
-    domain="" and unknown-domain behavior is unchanged. Deterministic; no
-    side effects.
+    domain="" and unknown-domain behavior is unchanged. `plural_aliases` is
+    the CURRENT domain's own registry-owned plural-alias map (L2SC-01) —
+    never a different domain's, never merged across domains. Deterministic;
+    no side effects.
     """
     if not substance_tokens:
         return False
@@ -613,7 +615,7 @@ def _connective_whole_word_substance_gate(r_lower, substance_tokens):
                 segment = _gate_directional_segment(
                     r_lower, spans, m, cause_first, connective)
                 if segment is not None and _has_whole_word_substance(
-                        segment, substance_tokens):
+                        segment, substance_tokens, plural_aliases):
                     return True
     return False
 
@@ -640,6 +642,9 @@ def assess_response(response: str, domain: str = "") -> str:
     substance_tokens = set(
         get_substance_signals(domain)
     )
+    # L2SC-01: the CURRENT domain's own registry-owned plural-alias map —
+    # never a different domain's, never merged, never derived automatically.
+    plural_aliases = get_substance_signal_plural_aliases(domain)
     # AB-006-D: fail-explicit observability for empty/unknown domain
     if not domain:
         warnings.warn(
@@ -674,7 +679,8 @@ def assess_response(response: str, domain: str = "") -> str:
     # existing _CAUSAL_STRUCTURE_PATTERNS. The trap is unchanged for every
     # input that does not qualify for the new gate. REASONED is still granted
     # only at path C below, after the existing causal path.
-    new_connective_gate = _connective_whole_word_substance_gate(r_lower, substance_tokens)
+    new_connective_gate = _connective_whole_word_substance_gate(
+        r_lower, substance_tokens, plural_aliases)
     if _is_generic_verb_trap(r_lower) and not new_connective_gate:
         return ASSERTED
     has_causal = _has_causal_structure(r_lower)

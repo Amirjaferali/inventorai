@@ -168,6 +168,40 @@ def _validate_domain_v1(data: dict, path: str) -> None:
             raise RegistryLoadError(
                 f"rule_nuances[{i}] must be an object in {path}"
             )
+    # L2SC-01 — optional, pack-scoped explicit plural-alias map (contract
+    # docs/governance/L2SC01_SUBSTANCE_SIGNAL_PLURAL_ALIAS_INCREMENT_CONTRACT.md
+    # §5-§8): mirrors the existing top-level `aliases` (pack-id) precedent.
+    # Structural validation only — it proves an alias TARGET exists in this
+    # SAME pack's substance_signals, never that the pairing is semantically
+    # correct (that is governed by the reviewed allow-list and tests, §8 of
+    # the contract). Absence is valid for every pack (optional, additive).
+    if "substance_signal_plural_aliases" in data:
+        plural_aliases = data["substance_signal_plural_aliases"]
+        if not isinstance(plural_aliases, dict):
+            raise RegistryLoadError(
+                f"Field 'substance_signal_plural_aliases' must be an object in {path}"
+            )
+        signal_values = {
+            s.get("signal") for s in data["substance_signals"]
+            if isinstance(s, dict)
+        }
+        for alias_key, target in plural_aliases.items():
+            if not isinstance(alias_key, str) or not alias_key.strip():
+                raise RegistryLoadError(
+                    f"substance_signal_plural_aliases key '{alias_key}' must be "
+                    f"a non-empty string in {path}"
+                )
+            if not isinstance(target, str) or not target.strip():
+                raise RegistryLoadError(
+                    f"substance_signal_plural_aliases['{alias_key}'] value must "
+                    f"be a non-empty string in {path}"
+                )
+            if target not in signal_values:
+                raise RegistryLoadError(
+                    f"substance_signal_plural_aliases['{alias_key}'] targets "
+                    f"'{target}', which is not a substance_signals[].signal "
+                    f"value in the SAME pack in {path}"
+                )
 
 
 

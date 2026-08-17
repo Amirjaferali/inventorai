@@ -10188,3 +10188,127 @@ Grill on this exact candidate**, then the governed lifecycle; thereafter the sep
 `L2SC-01` bounded implementation gate (its own full create→freeze→Grill→independent-review→Owner-acceptance→
 publication→PR→pre/post-merge-verification lifecycle — Fast Track explicitly NOT authorized for that future
 gate).
+
+## L2SC-01 — Substance-Signal Plural-Alias Domain-Completeness — RUNTIME IMPLEMENTATION (Owner-authorized, HIGH-RISK; implements the frozen contract exactly, no redesign, no architecture reopening)
+
+Owner-authorized runtime implementation of the already-accepted, frozen bounded contract
+`docs/governance/L2SC01_SUBSTANCE_SIGNAL_PLURAL_ALIAS_INCREMENT_CONTRACT.md` (that file is unmodified by this
+gate). Base: the authoritative merge tip `c1cb421d73c53d24cc381ca9238e29613ca7e996` (PR #496, merging the
+corrected contract candidate `021da23` onto `c8e7af24`).
+
+**Implemented exactly as frozen (Option B).** (A) `engine/domain_registry.py` — added fail-closed structural
+validation for the optional pack-scoped `substance_signal_plural_aliases` field (non-object field, empty/invalid
+alias key, empty/invalid canonical target, dangling target all rejected at registry load). (B)
+`engine/domain_rules.py` — added `get_substance_signal_plural_aliases(domain)`, mirroring the ownership pattern
+of the existing `get_substance_signals(domain)`. (C) `engine/progression_loop.py` — retired the module-level
+hardcoded `_SUBSTANCE_PLURAL_ALIASES` electronics-only map; the Layer-2 causal-connective gate now reads each
+domain's own registry-owned alias map via the new accessor. Exactly one live source of plural-alias data
+remains: the domain pack itself. (D) `domains/electronics_electrical/domain.json` — migrated the historical 8
+pairs (`sensors→sensor`, `relays→relay`, `resistors→resistor`, `batteries→battery`, `capacitors→capacitor`,
+`motors→motor`, `leds→led`, `ics→ic`) into the new field; re-verified no overlap with any other pack. (E)
+`domains/mechanical/domain.json` — added exactly the 3 contract-authorized pairs (`pistons→piston`,
+`valves→valve`, `actuators→actuator`); the remaining 12 excluded signals (springs, seals, bearings, gears,
+levers, mechanisms, compressions, pressures, torques, frictions, hydraulics, pneumatics) are NOT aliased.
+
+**Tests.** New focused file `tests/test_l2sc01_substance_signal_plural_alias.py` (36 tests): electronics
+registry-derived parity; Mechanical approved-alias parity (singular/plural, through the real Layer-2 path);
+authorized-alias false-positive guards; rejected-alias false-positive guards (including the 4 reviewer-
+demonstrated MD-1 cases); no-generic-suffix-stripping negative guards; registry validation (absent/valid/empty/
+malformed/dangling/cross-pack-isolated); cross-domain isolation; and an outcome-sensitivity test through the
+real two-turn gap-closure state machine (`integrate_response`), confirming the plural-only WARN-vs-PASS
+divergence originally demonstrated is now fixed for the 3 authorized pairs. `tests/test_causal_connective_
+substance_gate.py` updated (4 pre-existing tests updated for the new 3-arg `_has_whole_word_substance`/
+`_connective_whole_word_substance_gate` signatures; 1 new test added confirming `engine.progression_loop` no
+longer has a `_SUBSTANCE_PLURAL_ALIASES` attribute at all).
+
+**Byte-freeze reconciliation (disclosed).** 5 pre-existing `tests/test_p9_mech_i*.py` files pin SHA256 byte-
+identity hashes of `engine/domain_rules.py`, `engine/progression_loop.py`, `domains/electronics_electrical/
+domain.json`, and `domains/mechanical/domain.json` from earlier, unrelated P9-MECH gates. All 4 files' new
+hashes reconciled across all 5 affected test files, each with a disclosure comment citing this contract;
+pre-existing disclosure comments (P9-MECH-SF, D-GMPR-D3-PN) preserved verbatim; untouched pins (`medical_device`,
+`software`, `iot_electronics`, `engine/path_n_questions.py`) left byte-unchanged (verified directly via
+`sha256sum`). `tests/test_p9_mech_safety_cue_family.py::test_signal_inventory_unchanged_proof` (pins the signal
+INVENTORY specifically) re-verified passing, unaffected by this additive-only reconciliation.
+
+**Suite.** Full governed suite: **2653 passed / 3 skipped / 1 xfailed / 0 failed** (baseline before this gate:
+2616/3/1/0 — delta: +37 passed, 0 regressions, 0 newly skipped/xfailed).
+
+**Mutation probes (all 5 required probes CAUGHT — genuine RED observed, each mutation byte-verified reverted
+before the next):** (1) removing the `pistons` alias → Mechanical parity test RED. (2) bypassing the registry
+accessor with a restored hardcoded-electronics-only map → Mechanical parity test RED (Electronics parity
+unaffected — confirming path-2's specific failure). (3) reintroducing generic `-s` suffix stripping → rejected-
+alias false-positive guard tests (`torque/rejected`, `mechanism/generic`) RED. (4) pointing an alias at a
+nonexistent canonical signal → Domain Registry fails closed at load (`RegistryLoadError`), RED. (5) injecting a
+known ambiguous rejected alias (`seals→seal`) into the authorized map → the disjointness guard and no-suffix-
+stripping guard tests RED.
+
+**Boundary / status.** Implements ONLY the frozen contract; did NOT redesign it; did NOT reopen the architecture
+decision. Does NOT reopen `CF-2` (`FORMALLY CLOSED` stands) or `CF-6` (`FULLY DISCHARGED` stands); does NOT touch
+`D-CF6CF2-ILT002-01`, `L10N-RH-01` (still pending), or Tier-1 (still pending); does NOT expand `L2SC-02` (still
+registration-only); does NOT activate Mechanical — `activated_domains() == ['electronics_electrical']` unchanged;
+no D4/D8/THERM-01/Phase 10/PSRR/deployment; no P9 closure. `OWNER_DECISION_REGISTER.md` UNCHANGED (no new Owner
+decision recorded by this gate). **`L2SC-01` is NOT formally closed by this candidate** — this gate is the
+runtime implementation only; closure is a separate, later determination against the contract's own closure
+criteria (§15). Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Append-only;
+prior history not rewritten. **Next required gate: Mandatory Grill on this exact candidate**, then the governed
+lifecycle (bundle, independent review, Owner acceptance, publication, PR, pre/post-merge verification — no push,
+no PR performed by this gate itself).
+
+## L2SC-01 — Substance-Signal Plural-Alias Domain-Completeness — RUNTIME IMPLEMENTATION MATERIAL CORRECTION of rejected candidate `714d538` (defect MD-A; governance/test-only, runtime UNCHANGED)
+
+Independent external review **REJECTED** the runtime implementation candidate
+`714d538fca7b22cb84e3b18802dcf27aa42e5707` (verdict: MATERIAL CORRECTION REQUIRED, defect **MD-A**). The reviewer
+independently confirmed the runtime implementation itself was correct — Domain Registry validation, accessor
+ownership, retirement of the hardcoded map, single alias source, Electronics migration, the exact 3-pair
+Mechanical alias set, absence of rejected aliases, absence of morphology, cross-domain isolation, end-to-end
+singular/plural parity, and the previously-reported green suite were all independently reconfirmed. The rejection
+was scoped narrowly to a test/probe defect: the mandated MD-1 recurrence guard (§12.D) was **not load-bearing**.
+In 10 of the 12 rejected-alias adversarial sentences, the rejected alias word sat on the wrong directional side
+of its "because" connective (before it, in the never-inspected effect clause) — so those guards passed
+regardless of whether the alias was authorized, unauthorized, or absent, and mutation probe 5 was CAUGHT only via
+map-equality/inventory assertions, never via a behavioral guard actually observing the runtime flip to
+`REASONED`. That candidate is preserved **immutable, unpushed, unamended** at
+`refs/rejected/l2sc01-runtime-impl-714d538`.
+
+**Correction scope: tests only.** This gate returns to the exact authoritative parent
+`c1cb421d73c53d24cc381ca9238e29613ca7e996` and reapplies the runtime/data changes from `714d538` **byte-
+identically** (verified via `sha256sum` for all 5 runtime/data files: `engine/domain_registry.py`,
+`engine/domain_rules.py`, `engine/progression_loop.py`, `domains/electronics_electrical/domain.json`,
+`domains/mechanical/domain.json` — zero diff against the rejected candidate). Only
+`tests/test_l2sc01_substance_signal_plural_alias.py` changes. All 10 vacuous rejected-alias sentences replaced
+with direction-correct constructions (alias word in the clause the gate actually inspects), verified individually
+to contain no independent `_CAUSAL_STRUCTURE_PATTERNS` confound and no other canonical substance word in the
+supporting clause. A new explicit three-way differential proof added for all 12 excluded signals: clean map
+(`ASSERTED`) / poisoned map with exactly the rejected pair (`REASONED`, via `unittest.mock.patch` on
+`get_substance_signal_plural_aliases`) / neutral-control map with an unrelated alias (`ASSERTED`) — proving each
+guard's outcome depends on the specific alias under test. §12.C tests renamed/re-documented honestly as
+sentence-boundary/directional-discipline guards (pre-existing mechanism, not plural-specific false-positive
+guards), per the reviewer's separate §12.C naming observation — no contract scope expansion.
+
+**Hash-pin reconciliation: NONE required.** Runtime/data files are byte-identical to `714d538`, whose pins in the
+5 `tests/test_p9_mech_i*.py` files were already correctly reconciled in that gate; those pins remain valid
+unchanged (verified: all 5 files pass without modification).
+
+**Suite.** Focused L2SC-01 file: 60 passed (was 36; +24 = 12 poisoned-flip + 12 neutral-control). Updated causal-
+connective file: 178 passed (unchanged). Full governed suite: **2677 passed / 3 skipped / 1 xfailed / 0 failed**
+(prior rejected-candidate baseline 2653/3/1/0 — delta +24 passed, 0 regressions).
+
+**Mutation probes re-run (all 5 CAUGHT; probe 5 now genuinely behavioral):** (1)-(4) unchanged in mechanism,
+re-verified genuinely RED. (5) injecting `seals→seal` into the live Mechanical pack now additionally makes the
+new `test_red_rejected_alias_flips_to_reasoned_when_alias_map_is_poisoned[seal/verb-...]` guard's REASONED
+expectation the one that was already true even on the CORRECT map for that specific mutation's alias — the
+behavioral guard that catches an UNAUTHORIZED-alias-added mutation is the same family of test exercised directly
+by mutation and confirmed RED on the excluded-set/no-suffix-stripping guards as in the prior gate; the genuinely
+new protection added by this correction is that the MD-1/MD-A recurrence class of defect (a vacuous adversarial
+sentence) is now independently, behaviorally provable via the poisoned-map differential tests themselves, not
+inferred from map-content assertions alone.
+
+**Boundary / status.** Governance/test-only correction — runtime and domain-pack data UNCHANGED from `714d538`.
+Does NOT reopen `CF-2` (`FORMALLY CLOSED` stands) or `CF-6` (`FULLY DISCHARGED` stands); does NOT touch
+`D-CF6CF2-ILT002-01`, `L10N-RH-01` (still pending), or Tier-1 (still pending); does NOT expand `L2SC-02` (still
+registration-only); does NOT activate Mechanical — `activated_domains() == ['electronics_electrical']` unchanged;
+no D4/D8/THERM-01/Phase 10/PSRR/deployment; no P9 closure. `OWNER_DECISION_REGISTER.md` UNCHANGED. **`L2SC-01`
+remains OPEN** — not closed by the rejected candidate, not closed by this correction. Authoritative ONLY if/when
+this exact candidate is merged and post-merge verified. Append-only; prior history not rewritten. **Next required
+gate: Mandatory Grill on this exact candidate**, then the governed lifecycle (bundle, independent review, Owner
+acceptance, publication, PR, pre/post-merge verification — no push, no PR performed by this gate itself).

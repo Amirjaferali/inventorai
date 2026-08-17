@@ -940,6 +940,26 @@ aliasing (`piston`, `valve`, `actuator`) — narrower than the rejected candidat
 explicitly excluded on verb-form/idiom/mass-noun/meaning-shift grounds. Current canonical record:
 `docs/governance/L2SC01_SUBSTANCE_SIGNAL_PLURAL_ALIAS_INCREMENT_CONTRACT.md`.
 
+**Runtime implementation note.** The frozen contract above has since been Owner-authorized for runtime
+implementation (base `c1cb421d73c53d24cc381ca9238e29613ca7e996`, PR #496) and implemented exactly as frozen —
+see `docs/governance/ACTIVE_EXECUTION_ROADMAP.md` for the full implementation record. The engine-hardcoded
+`_SUBSTANCE_PLURAL_ALIASES` map described above no longer exists; plural-alias data now lives exclusively in
+each domain pack's own `substance_signal_plural_aliases` field, read via
+`engine.domain_rules.get_substance_signal_plural_aliases(domain)`. **`L2SC-01` is NOT formally closed by this
+implementation candidate** — closure remains a separate, later determination against the contract's own closure
+criteria (§15).
+
+**Runtime implementation correction note (defect MD-A).** The implementation candidate referenced above,
+`714d538fca7b22cb84e3b18802dcf27aa42e5707`, was **REJECTED by independent external review** — not for a runtime
+defect (the runtime implementation was independently reconfirmed correct) but because the mandated MD-1
+recurrence guard (§12.D of the frozen contract) was not load-bearing: 10 of its 12 rejected-alias adversarial
+test sentences placed the alias word on the directional side of the connective the Layer-2 gate never inspects,
+so those guards passed irrespective of alias state. That candidate is preserved immutable, unpushed, at
+`refs/rejected/l2sc01-runtime-impl-714d538`. A corrected candidate reapplies the runtime/data changes
+byte-identically (verified) and replaces only the defective test sentences with direction-correct constructions
+plus an explicit poisoned-map/neutral-control differential proof. **`L2SC-01` remains OPEN** — not closed by
+either candidate.
+
 ## L2SC-02 — Whole-Word Substance-Matcher Multi-Word-Signal Limitation (anti-forgetting; NON-ACTIVATING; NOT a Mechanical-activation blocker)
 
 Registered inside the L2SC-01 Bounded Contract gate (canonical record:

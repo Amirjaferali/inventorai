@@ -45,8 +45,16 @@ _MECH_PATH = os.path.join(_DOMAINS, "mechanical", "domain.json")
 _PROV_PATH = os.path.join(_DOMAINS, "domain_provenance.json")
 
 # --- Frozen byte-identity pins for every OTHER pack (P9-MECH-I1 forbids touching them). ---
+# L2SC-01 reconciliation (disclosed; docs/governance/L2SC01_SUBSTANCE_SIGNAL_
+# PLURAL_ALIAS_INCREMENT_CONTRACT.md §10): electronics_electrical re-frozen
+# after adding the authorized, additive-only `substance_signal_plural_aliases`
+# field (the 8 historical pairs migrated from the retired engine-hardcoded
+# map). classification_signals/substance_signals content is byte-unchanged
+# (see tests/test_p9_mech_safety_cue_family.py::test_signal_inventory_
+# unchanged_proof, unaffected by this reconciliation). medical_device/
+# software/iot_electronics hashes are untouched.
 _FROZEN_PACK_SHA256 = {
-    "electronics_electrical": "3539cfc62710da92f12ac529c07ddaea85011536e5c9f88efb2e2303bb1b964c",
+    "electronics_electrical": "53f431e38a70c2b621e19afb7323ad9bc4732c6c4151ea6b8c46a3214f098dfb",
     "medical_device": "6070cf9281a7a376780175e7e1d3879be598384bcaf4dc370e56f7bf613e3ade",
     "software": "1c9cefa14641c079ddb5c21c59f398866adf43561101743b67e611936a67e3a7",
     "iot_electronics": "f04c825ad25dea0c6db2ee310649fe377329f30c5461f2756019104013e53406",
