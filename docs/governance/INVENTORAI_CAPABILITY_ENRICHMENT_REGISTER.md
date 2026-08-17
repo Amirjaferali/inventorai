@@ -1054,3 +1054,15 @@ safety family; does not close or reopen CF-6; does not reopen CF-2 (closed by th
 item — see `CF2_FULL_SCOPE_FORMAL_CLOSURE_RECORD.md`); does not touch `D-CF6CF2-ILT002-01`, `L2SC-01`, or the
 Tier-1 label; does not authorize D4; does not alter D8; and does not authorize Phase 10, PSRR, or deployment.
 Any future work on this item requires its own separately authorized, bounded gate.
+
+**Remediation note.** A reassessment gate (triggered by L2SC-01's formal closure) confirmed all 3 observations
+above STILL PRESENT, then a bounded, LOW-RISK CONTROLLED remediation gate implemented load-bearing fixes for all
+3 — full detail in `docs/governance/L10N_RH01_BOUNDED_REMEDIATION_RECORD.md`. Observation #1
+(`UI_B_START_026`) and Observation #2 (`SERVICE_UNAVAILABLE` call-site coverage) are remediated with new
+mutation-tested regression guards; current shipped behavior for both was unchanged (only test coverage added).
+Observation #3's authoritative surface is `start_present_confirm_label`/`UI_B_START_024` (broadened-activation
+branch) — `UI_B_START_024` was rewritten from prompt/instruction wording to a domain-neutral first-person consent
+affirmation, matching `UI_B_START_030`'s already-accepted register; `UI_B_START_023` and `UI_B_START_030` remain
+untouched, out of scope. No Tier-1 domain-specific translation work was performed. **`L10N-RH-01` = IMPLEMENTED /
+READY FOR FORMAL CLOSURE** — this note does not itself close `L10N-RH-01`; a separate formal closure gate
+remains required per this repository's convention.

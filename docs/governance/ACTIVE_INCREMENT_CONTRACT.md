@@ -41,21 +41,51 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — L10N-RH-01 REASSESSMENT & MECHANICAL ACTIVATION-READINESS REVIEW, MATERIAL CORRECTION of
-rejected candidate `7e810e6`; governance-only, read-only reassessment, implements nothing; `L10N-RH-01` NOT
-discharged; Tier-1 NOT implemented; Mechanical NOT ACTIVATED; CF-2/CF-6/L2SC-01 not reopened; ODR UNCHANGED):**
-The first reassessment-record candidate, `7e810e6be88234cf2a0508167770307130a8a1d1`, was independently
-**REJECTED** (verdict: MATERIAL CORRECTION REQUIRED — Observation #3 misidentified `UI_B_START_030`
-(`start_confirm_label`) as the defective surface and "generic vs. domain-specific wording" as the defect class;
-neither is authoritative). Every other finding — Observations #1/#2, the overall determination, the
-activation-readiness matrix, and all protected boundaries — was independently confirmed correct. That candidate
-is preserved **immutable, unpushed, unamended** at `refs/rejected/l10n-rh01-reassessment-7e810e6`.
+**Status (current — L10N-RH-01 BOUNDED REMEDIATION; LOW-RISK CONTROLLED; implements the 3 registered
+observations; `L10N-RH-01` = IMPLEMENTED / READY FOR FORMAL CLOSURE (not itself claimed FORMALLY CLOSED); Tier-1
+NOT implemented; Mechanical NOT ACTIVATED; ODR UNCHANGED):** Base
+`585d1f8d02d4e16f8154c66d2e3297958735ef16` (PR #499 — SHA-preserving merge of the accepted, corrected L10N-RH-01
+reassessment candidate `283326885441749ca21570c10f16eec0f8cab07c` onto
+`3b7783f19d7b1ee9f6618342a00ed47362b35ac4`; merge tree == candidate tree, diff empty). Full detail:
+`docs/governance/L10N_RH01_BOUNDED_REMEDIATION_RECORD.md`. Risk classification LOW-RISK CONTROLLED, confirmed by
+the actual implementation: exactly one data-only string changed (`web/ui_text.py`'s `UI_B_START_024`);
+`web/app.py` and `engine/domain_activation.py` byte-unchanged.
 
-Base `3b7783f19d7b1ee9f6618342a00ed47362b35ac4` (PR #498, merging accepted L2SC-01 formal closure candidate
-`937163c205b2d0586dc541c573bdd945ecf1b623` onto `b8e1274c027707a38a85216b0ef7b43a1eda5e1c`; merge tree ==
-candidate tree, diff empty). Triggered by `L10N-RH-01`'s own registered reassessment trigger, now that L2SC-01 is
-formally closed. Full detail:
-`docs/governance/L10N_RH01_REASSESSMENT_AND_MECHANICAL_ACTIVATION_READINESS_RECORD.md`.
+**Observation #1 (`UI_B_START_026`) = REMEDIATED** — new load-bearing test using independently hardcoded literal
+content checks; mutation proof (false electronics-only claim injected → RED; restored → GREEN).
+**Observation #2 (`SERVICE_UNAVAILABLE` seam) = REMEDIATED** — new parametrized test exercises BOTH authoritative
+production call sites (`web/app.py:1802`, `web/app.py:1842`) via a forced durable-store failure; mutation proof
+(both call sites bypassed → RED for both; restored → GREEN). **Observation #3 (present-confirm wording) =
+REMEDIATED at the corrected surface** — `start_present_confirm_label`/`UI_B_START_024` (broadened-activation
+branch), NOT `UI_B_START_030`/`start_confirm_label`; rewritten from prompt/instruction style to a domain-neutral
+first-person consent affirmation matching `UI_B_START_030`'s already-accepted register; `UI_B_START_023` and
+`UI_B_START_030` confirmed byte-unchanged; mutation proof (reverted to old wording → RED; restored → GREEN).
+
+**Suite:** focused file 7 passed; relevant localization/web tests 76 passed; full governed suite **2684 passed /
+3 skipped / 1 xfailed / 0 failed** (baseline 2677/3/1/0; delta +7 passed, 0 regressions). `activated_domains()`
+(the real function — a sorted list) returns `['electronics_electrical']`, verified before/after every probe —
+Mechanical remains NOT ACTIVATED. No Tier-1 label implemented; `web/domain_label.py` untouched. `L2SC-02`
+remains registration-only, outside activation-readiness. **Changed paths:** `web/ui_text.py` (one data-only
+entry), the new focused test file, the new dedicated remediation record, and this AIC/roadmap/CPS/capability-
+register sync. `OWNER_DECISION_REGISTER.md` UNCHANGED. **Phase 9 remains OPEN.** Authoritative ONLY if/when this
+exact candidate is merged and post-merge verified. Next required gate: **Mandatory Grill on this exact
+candidate** → independent external exact-candidate review → Owner acceptance → SHA-preserving publication → PR →
+pre/post-merge verification. After this merges, the eligible next steps are a separate `L10N-RH-01` formal
+closure gate and/or the **Tier-1 EN/AR Mechanical public label** gate — neither authorized or performed here.
+
+**Immediately prior (L10N-RH-01 reassessment gate, MATERIAL CORRECTION of rejected candidate `7e810e6` — accepted
+and merged via PR #499 `585d1f8`; retained as history):** The first reassessment-record candidate,
+`7e810e6be88234cf2a0508167770307130a8a1d1`, was independently **REJECTED** (verdict: MATERIAL CORRECTION
+REQUIRED — Observation #3 misidentified `UI_B_START_030` (`start_confirm_label`) as the defective surface and
+"generic vs. domain-specific wording" as the defect class; neither is authoritative). Every other finding —
+Observations #1/#2, the overall determination, the activation-readiness matrix, and all protected boundaries —
+was independently confirmed correct. That candidate is preserved **immutable, unpushed, unamended** at
+`refs/rejected/l10n-rh01-reassessment-7e810e6`. The corrected candidate `2833268` returned to the exact
+authoritative parent `3b7783f19d7b1ee9f6618342a00ed47362b35ac4` and corrected Observation #3's identification to
+`UI_B_START_024`/`start_present_confirm_label` (broadened-activation branch), with defect class prompt/
+instruction wording vs. first-person consent — retargeting the remediation proposal accordingly, explicitly
+ruling out domain-specific Tier-1 translation work. Independently re-reviewed, accepted, published SHA-preserving,
+and merged (PR #499, base `585d1f8`; merge tree == candidate tree).
 
 A prior gate correctly STOPPED before implementing the Tier-1 EN/AR Mechanical public label, citing
 `P9_MECHANICAL_DOMAIN_QUALIFICATION_CONTRACT.md` §13's explicit precondition — the label may replace the neutral
