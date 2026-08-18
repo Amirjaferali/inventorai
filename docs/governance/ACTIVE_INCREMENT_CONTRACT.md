@@ -41,58 +41,62 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — MECHANICAL ACTIVATION EXECUTION GATE; Owner-authorized; HIGH-ASSURANCE runtime-state change;
-Mechanical now ACTIVE; Phase 9 OPEN; Phase 10/deployment NOT AUTHORIZED; ODR — new row `D-P9-MECH-03`):** Owner
-authorization (verbatim): "I explicitly approve activation of the Mechanical domain within InventorAI and
-authorize proceeding to the Mechanical activation execution gate." Base:
-`18a97da735e68763c7fab6488613cde1dff4675f` (PR #502 — SHA-preserving merge of the accepted Tier-1 EN/AR Mechanical
-public label candidate `e635c9f038a58cf117f64f0ac4d7852ce9338062` onto
-`7cb5b6e726a726bba223fd997d9d94905173091f`; merge tree == candidate tree, diff empty). Full detail:
+**Status (current — CORRECTED MECHANICAL P9-QS QUALIFICATION GOVERNANCE CANDIDATE; governance-only; MATERIAL
+CORRECTION of rejected candidate `c63724b`; Mechanical P9-QS qualification SATISFIED; Phase 9 OPEN; Phase
+10/deployment NOT AUTHORIZED; ODR — new row `D-P9-MECH-04`):** Base: `5a1d2c15ad680b8b80304b51a3885fac42e32f56`
+(PR #503 merge — Mechanical activation, authoritative). The prior qualification-status candidate,
+`c63724b3e7f8e5fa5e5ada8739f3d80f8319efb7`, was independently **REJECTED** (verdict: MATERIAL CORRECTION
+REQUIRED — MD-1: `OWNER_DECISION_REGISTER.md` row `D-P9-MECH-03` was left asserting qualification "remains a
+SEPARATE, still-unauthorized future gate," contradicting the already-merged qualification evidence; MD-2: the
+candidate falsely cited `MECHANICAL_ACTIVATION_EXECUTION_RECORD.md` §15 as the source of that stale claim, which
+contains no such text). The reviewer explicitly confirmed the substantive qualification determination itself was
+correct — the rejection was governance-truth/attribution only. That candidate is preserved **immutable, unpushed,
+unamended** at `refs/rejected/mechanical-p9qs-status-c63724b`. This corrected candidate returns to the exact
+authoritative parent (not the rejected candidate) and corrects both defects: `D-P9-MECH-04` clarifies
+`D-P9-MECH-03` without retroactively broadening its authorization scope, and the disclosure now cites the actual
+four stale-text locations (`ACTIVE_EXECUTION_ROADMAP.md`, this file, `CURRENT_PROJECT_STATE.md`,
+`OWNER_DECISION_REGISTER.md`'s own `D-P9-MECH-03` row). Full detail:
+`docs/governance/MECHANICAL_P9QS_QUALIFICATION_STATUS_RECORD.md`.
+
+**Determination (independently reconstructed from primary sources, not carried forward from the rejected
+candidate's summary):** `P9_MECH_QUALIFICATION_RECORD.md` (commit `dd7b487`) and
+`P9_MECH_SF_FORMAL_CLOSURE_RECORD.md` (commit `c25c843`) — both merged BEFORE Mechanical activation — jointly
+declared `MECHANICAL = P9-QS QUALIFIED — WITH ACTIVATION BLOCKERS`, naming six blockers. All six are independently
+reconfirmed discharged: (1) Mechanical safety-cue family; (2) Tier-1 EN/AR public label (commit `e635c9f`); (3)
+CF-6 full-scope closure; (4) CF-2 full-scope closure; (5) NMF-1+FU-1 test hardening; (6) explicit Owner activation
+authorization (`D-P9-MECH-03`, ACCEPTED — EXECUTED). Per P9-QS §2's own binding separations (activation ≠
+qualification, neither retroactively creates the other), the correct current determination is **Mechanical P9-QS
+qualification = SATISFIED** on the live activated runtime. `activated_domains() ==
+['electronics_electrical', 'mechanical']`, verified live. This implies NO new implementation, NO Phase 9 closure,
+NO Phase 10 authorization, NO PSRR, NO deployment. **Phase 9 remains OPEN** — the next gate is a Phase 9
+Remaining-Obligation / Exit-Criteria Review (per repository precedent: Phase 7 §25, Phase 8's own review, D3's
+closure + Remaining-Obligation Review), not automatically Phase 9 formal closure.
+
+**Correction scope:** governance-only (ODR, this file, roadmap, CPS, the dedicated status record). Zero
+runtime/test/classifier/scoring/progression/persistence/security diff. Full governed suite re-verified unchanged
+at the same baseline as the rejected candidate's parent. **Changed paths:** `OWNER_DECISION_REGISTER.md` (new row
+`D-P9-MECH-04` + non-destructive annotation on `D-P9-MECH-03`), `ACTIVE_EXECUTION_ROADMAP.md` (appended corrective
+note), this file, `CURRENT_PROJECT_STATE.md` (appended corrective note),
+`MECHANICAL_P9QS_QUALIFICATION_STATUS_RECORD.md` (rewritten fresh). Authoritative ONLY if/when this exact
+candidate is merged and post-merge verified. Next required gate: **Mandatory Grill on this exact candidate**, then
+the governed lifecycle.
+
+**Immediately prior (Mechanical Activation Execution Gate, candidate `ca6575f` — accepted and merged via PR #503
+`5a1d2c1`; retained as history):** Owner-authorized, HIGH-ASSURANCE runtime-state change. Owner authorization
+(verbatim): "I explicitly approve activation of the Mechanical domain within InventorAI and authorize proceeding
+to the Mechanical activation execution gate." Canonical mechanism: `engine/domain_activation.py::
+_ACTIVATED_DOMAINS`, changed to `frozenset({"electronics_electrical", "mechanical"})` (one line + docstring
+truthfulness update). Real user-flow + Tier-1 real-surface verification passed live; L10N-RH-01 residual
+reachability Classification A (non-blocking). Test-suite reconciliation: 113 pre-existing tests individually
+triaged (none blindly relaxed); full governed suite **2696 passed / 3 skipped / 1 xfailed / 0 failed**. All 4
+required mutations RED→restored, full suite GREEN after restoration. **Boundary / status as originally recorded
+at this gate:** `activated_domains() == ['electronics_electrical', 'mechanical']` — Mechanical ACTIVE. *(Note: this
+gate's original text additionally asserted "Mechanical NOT qualified (P9-QS remains a separate future gate)" —
+that clause is corrected by the current active contract above and by `D-P9-MECH-04`; it was accurate as a
+forward-looking statement at the time but did not account for already-merged qualification evidence. This
+gate's activation scope and authorization are otherwise unchanged.)* `OWNER_DECISION_REGISTER.md` — new row
+`D-P9-MECH-03` (explicit Owner activation authorization + execution). Full detail:
 `docs/governance/MECHANICAL_ACTIVATION_EXECUTION_RECORD.md`.
-
-**Final pre-activation readiness independently reconfirmed:** all prior prerequisites PASS, explicit Owner
-activation authorization now present (§1 of the record).
-
-**Canonical activation mechanism (sole gate, reconstructed from repository truth):** `engine/domain_activation.py::
-_ACTIVATED_DOMAINS`, changed from `frozenset({"electronics_electrical"})` to
-`frozenset({"electronics_electrical", "mechanical"})` — one line, plus a truthfulness update to the module's own
-boundary docstring. No pack-status flip, migration, or activation-time hook exists or was needed; Mechanical's
-runtime seams (`domain_rules.py`, `path_n_questions.py`, `safety_signal.py`'s P9-MECH-SF family) were already
-domain-parametric and keyed on identity, not the allowlist.
-
-**Real user-flow + Tier-1 real-surface verification (live):** a real Mechanical idea confirmed as `mechanical`
-admits (302, `state.domain == "mechanical"`); confirmed as the wrong domain (`electronics_electrical`) it
-re-prompts, never cross-labels; electronics regression unaffected. Tier-1 label renders on the real session page —
-EN `"Mechanical-informed review"`, AR `"مراجعة مستنيرة بمجال الميكانيكا"` (no simultaneous EN+AR). **L10N-RH-01
-residual reachability: Classification A (non-material/non-blocking)** — the broadened-activation strings are
-truthful and become true precisely because 2 domains are now activated; no STOP required.
-
-**Test-suite reconciliation (bulk of the diff):** activating a second domain removed the single-domain `/start`
-shortcut for every idea (not just Mechanical), breaking 113 pre-existing tests — each individually triaged
-(obsolete-premise-now-correct / still-valid-text-only-changed / legacy-scoped-pinned-in-isolation via a local
-`activate`/`monkeypatch` double), none blindly relaxed. Disclosed, not silently fixed: a pre-existing "§4.A
-backward compatibility" weak-conflict branch (and the nested medical-device lay-token corroboration mechanism) is
-now provably dead code for any input — an intended, pre-documented consequence of activation, not a regression.
-Full governed suite: **2696 passed / 3 skipped / 1 xfailed / 0 failed** (+5 net new vs. the 2691 baseline).
-
-**Mutation/adversarial sweep (all 4 required mutations, byte-restored after each):** (A) remove mechanical from
-the allowlist → RED → restored; (B) inject an unintended extra domain → RED → restored; (C) break Mechanical
-picker/admission exposure while leaving the allowlist unchanged → RED → restored; (D) break real Mechanical
-Tier-1 rendering → RED → restored. Full suite GREEN after all four restorations.
-
-**Boundary / status.** `activated_domains() == ['electronics_electrical', 'mechanical']`, verified live —
-**Mechanical is now ACTIVE**. Mechanical NOT qualified (P9-QS remains a separate future gate).
-`engine/domain_rules.py`, `progression_loop.py`, `path_n_questions.py`, `safety_signal.py`, `domain_registry.py`,
-`web/domain_label.py`, persistence, and security-relevant code byte-unchanged. `web/app.py` byte-unchanged (no
-permanent change; only the byte-restored mutation-C probe touched it temporarily). Tier-1 label unchanged.
-L10N-RH-01 remains `FORMALLY CLOSED / DISCHARGED`. **Phase 9 remains OPEN.** Phase 10 / PSRR / deployment remain
-NOT AUTHORIZED. No third domain activated or implied. **Changed paths:** `engine/domain_activation.py` + 31 test
-files (per-file disclosed in the record) + this record + AIC/roadmap/CPS sync +
-`OWNER_DECISION_REGISTER.md` (new row `D-P9-MECH-03` only). Authoritative ONLY if/when this exact candidate is
-merged and post-merge verified. Next required gate: **Mandatory Grill on this exact candidate** → independent
-external exact-candidate review → Owner acceptance → SHA-preserving publication → PR → pre/post-merge
-verification. After this merges, the next eligible steps are Mechanical activation post-merge verification and/or
-a future Mechanical P9-QS qualification gate — neither authorized or performed here.
 
 **Immediately prior (Tier-1 EN/AR Mechanical public label gate, candidate `e635c9f` — accepted and merged via PR
 #502 `18a97da`; retained as history):** activation-readiness edge; implemented contract §13/Requirement 9; added

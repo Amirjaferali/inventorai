@@ -10593,3 +10593,18 @@ following the existing `D-P9-MECH-<NN>` sequencing). Authoritative ONLY if/when 
 post-merge verified. **Next required gate: Mandatory Grill on this exact candidate**, then the governed lifecycle.
 After this merges, the next eligible steps are Mechanical activation post-merge verification and/or a future
 Mechanical P9-QS qualification gate — neither authorized or performed here.
+
+---
+
+## Corrective governance-truth note (appended; does not edit the entry above)
+
+The line above reading "Mechanical NOT qualified (P9-QS qualification remains a separate future gate)" is
+**STALE as a live/current-tense claim.** It was accurate as a forward-looking statement at the time this entry
+was written, but did not account for evidence already merged before it: `P9_MECH_QUALIFICATION_RECORD.md`
+(commit `dd7b487`) and `P9_MECH_SF_FORMAL_CLOSURE_RECORD.md` (commit `c25c843`) jointly declared
+`MECHANICAL = P9-QS QUALIFIED — WITH ACTIVATION BLOCKERS`, and all six named activation blockers are now
+independently confirmed discharged. Current authoritative status: **Mechanical P9-QS qualification is
+SATISFIED** on the live activated runtime. See `OWNER_DECISION_REGISTER.md` row `D-P9-MECH-04` and
+`MECHANICAL_P9QS_QUALIFICATION_STATUS_RECORD.md` for the full governance-truth correction. This note corrects
+attribution/currency only — it authorizes no implementation, no Phase 9 closure, no Phase 10, no PSRR, no
+deployment. Phase 9 remains OPEN (a Remaining-Obligation / Exit-Criteria Review remains the next gate).
