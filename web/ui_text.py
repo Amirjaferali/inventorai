@@ -561,6 +561,9 @@ UI_STRINGS = {
         "en": "Sign out of all sessions",
         "ar": "تسجيل الخروج من كل الجلسات",
     },
+    # P10-D3a: truthful PROJECT-SCOPED export label (contract §5). Deliberately
+    # names one project only — never "my data" / "account" / "all my data".
+    "UI_A_ACCOUNT_012": {"en": "Export project", "ar": "تصدير بيانات المشروع"},
     "UI_A_ACCOUNT_011": {
         "en": ("Signing in manages your account only. It does not save, own, or "
                "move any project to your account — projects remain accessed by "
