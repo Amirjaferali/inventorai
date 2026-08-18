@@ -10654,3 +10654,34 @@ AUTHORIZED. No third domain activated or implied; D4/D8 untouched. Authoritative
 candidate is merged and post-merge verified. Next required gate: **Mandatory Grill on this exact candidate**,
 then the governed lifecycle. After this merges, the next eligible step is a fresh **Phase 9 Remaining-Obligation
 / Exit-Criteria Review** — not authorized or performed here.
+
+---
+
+## Fresh Phase 9 Remaining-Obligation / Exit-Criteria Review (post-correction reassessment) — PHASE 9 CLOSURE ELIGIBILITY: ELIGIBLE — Phase 9 remains OPEN; NOT closed by this record
+
+**Gate.** Read-only reassessment on authoritative tip `1a0f6ee` (PR #505 merge — Phase 9 vacuous picker test
+corrective implementation, authoritative). Full detail:
+`docs/governance/P9_REMAINING_OBLIGATION_EXIT_CRITERIA_REVIEW_ELIGIBLE_RECORD.md`.
+
+**Result.** Independently reconfirmed the prior sole MUST-FIX (the vacuous picker test) is genuinely discharged on
+the merged tip — the old test no longer exists; the corrected `test_start_domain_picker_offers_only_activated_domains`
+uses a real `POST /start` flow, no monkeypatch/skip/xfail, and was re-proven load-bearing via a fresh mutation
+probe (RED on mutation, byte-identical restoration, GREEN again). Rebuilt the complete Phase 9 obligation matrix
+fresh (not carried forward): D3, P9-QS, P9-E1, P9-E2, P9-E2-R, Mechanical qualification, Mechanical safety-cue
+family, L2SC-01, L10N-RH-01, Tier-1 label, Mechanical activation, corrected P9-QS governance, and the vacuous-
+picker corrective gate — all DISCHARGED. Five known non-blocking debts unchanged (stale `classify_domain`
+docstring, 4 historical test-file comments, `UI_B_START_024` wording, missing real E2E Tier-1 chain test, CLI
+real-banner coverage). D4, D8, and IoT/drone/renewable future domains confirmed OUTSIDE this Phase 9's closure
+scope. Fresh stale-truth sweep: **STALE / UNSUPPORTED live-current count = 0.** Safety/determinism sweep: PASS,
+no regression. Full governed suite: **2696 passed / 3 skipped / 1 xfailed / 0 failed** — unchanged. Focused
+Phase-9-relevant (13 files): 295 passed.
+
+**Verdict: PHASE 9 CLOSURE ELIGIBILITY: ELIGIBLE.** Zero MUST-FIX, zero material conflict.
+
+**Boundary / status.** Per this gate's own governing instructions, an eligibility finding does NOT close Phase 9.
+**Phase 9 remains OPEN.** No Phase 9 formal closure is performed, authorized, or implied. Phase 10 / PSRR /
+deployment remain NOT AUTHORIZED. No third domain activated or implied; D4/D8 untouched. `OWNER_DECISION_REGISTER.md`
+UNCHANGED. Governance-only; zero runtime/test/classifier/scoring/progression/persistence/security diff.
+Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next required gate:
+**Mandatory Grill on this exact candidate**, then the governed lifecycle. After this merges, the next eligible
+step is a separate, Owner-authorized **Phase 9 formal closure** gate — not authorized or performed here.
