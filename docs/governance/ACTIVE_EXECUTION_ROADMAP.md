@@ -10724,3 +10724,47 @@ Authoritative ONLY if/when this exact candidate is merged and post-merge verifie
 **Mandatory Grill on this exact candidate**, then the governed lifecycle. After this merges, no further Phase 9
 gate is expected; Phase 10, PSRR, deployment, and any future domain-activation workstream each require their own
 separate, explicit Owner authorization — none authorized, started, or implied here.
+
+---
+
+## Phase 10 — Commercial, Legal, Security and Operational Readiness — P10-C Governance Entry Contract (candidate; Owner-authorized bounded governance-only gate; coordination/consolidation model, NOT superseding)
+
+**Gate.** Owner explicitly selected Phase 10 as the next governed workstream (post-Phase-9, post-Phase-6-
+reconciliation) and authorized ONLY this bounded governance-only gate: `CREATE → FREEZE EXACT SHA → CREATOR
+GRILL`, no implementation. Base: `f91a82565dce0cbeae323be89dedd6a68c55e61d` (PR #507 merge, authoritative).
+Full detail: `docs/governance/PHASE_10_COMMERCIAL_LEGAL_SECURITY_OPERATIONAL_READINESS_P10C_CONTRACT.md`.
+
+**Authority model.** Follows the established `PHASE_7_API_AND_INTEGRATION_FOUNDATION_P7C_CONTRACT.md` /
+`PHASE_8_SUBSCRIPTION_BILLING_ENTITLEMENTS_P8C_CONTRACT.md` phase-entry-contract convention. **Coordinates and
+consolidates existing governance only — creates no new ownership, supersedes nothing.** Every Phase-10
+obligation (§4 of the contract) is classified against its canonical source (`OD-P`, `D-PSRR-01`, `P8C` §5 item
+25, the remediation plan) using the repository's `D-FPC-MAP-06` consume/extend model, matching P7C/P8C's own
+identical framing: "Every obligation is retained; none is deleted or silently superseded."
+
+**Entry criteria.** Phases 4–9 formally closed — independently reconfirmed (including the Phase-6 lane closure,
+commit `0254240`/PR #391, and the distinct Product-Foundation §5 closure, commit `afdcf7f`, both confirmed
+ancestors of this base). Entry-criteria satisfaction does NOT itself authorize implementation; `OD-P`'s separate
+deployment gate + explicit Owner deployment authorization remain independently required.
+
+**PSRR relationship preserved exactly.** PSRR is consumed within Phase-10 ownership; execution is NOT required
+at Phase-10 entry; it becomes mandatory before first public production deployment (unmoved trigger).
+
+**No frozen future sequence.** The contract registers obligation dependencies, trigger conditions, and a
+gate-selection rule (evidence-based, smallest sufficient, Owner-selected) for the next Phase-10 sub-increment —
+it does not name or pre-select one, and no successor gate is automatically authorized by this contract's
+closure.
+
+**Proposition-level revalidation registry only.** Three specific, evidence-backed superseded propositions are
+registered (Security Architecture's stale "anonymous-only" auth-state claim; Disaster Recovery Scenario-3's
+`main`-branch-centric premise; Data Retention's "in-memory session store only" claim) — none of the five
+architecture documents (Security, Observability, Disaster Recovery, Data Retention, Cost Governance) is declared
+stale in whole.
+
+**Boundary / status.** Governance-only; zero runtime/test/classifier/scoring/progression/persistence/security
+diff. `OWNER_DECISION_REGISTER.md` UNCHANGED. Does NOT authorize: Phase-10 implementation; PSRR execution;
+deployment; production activation; legal-artifact drafting; payment-provider selection/integration; auth
+changes; trial/commercial behavior changes; monitoring/observability implementation; security-hardening
+implementation; D4; D8; IoT; any domain activation; or Phase-9 debt cleanup. Does NOT declare Phase 10 complete
+or entered beyond this governance layer. Authoritative ONLY if/when this exact candidate is merged and
+post-merge verified. Next required gate: **Mandatory Creator Grill on this exact candidate**, then Independent
+External Review — not performed here.
