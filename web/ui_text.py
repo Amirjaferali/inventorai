@@ -564,6 +564,26 @@ UI_STRINGS = {
     # P10-D3a: truthful PROJECT-SCOPED export label (contract §5). Deliberately
     # names one project only — never "my data" / "account" / "all my data".
     "UI_A_ACCOUNT_012": {"en": "Export project", "ar": "تصدير بيانات المشروع"},
+    # P10-D3b: truthful DEACTIVATION vocabulary (contract §4). Deliberately says
+    # deactivate/disable — never delete/erase; data is explicitly NOT removed.
+    "UI_A_DEACT_001": {"en": "Deactivate Account", "ar": "تعطيل الحساب"},
+    "UI_A_DEACT_002": {
+        "en": ("Deactivating disables sign-in for this account. Your projects "
+               "and account data are not removed."),
+        "ar": ("تعطيل الحساب يوقف تسجيل الدخول إلى هذا الحساب. لا تتم إزالة "
+               "مشاريعك وبيانات حسابك."),
+    },
+    "UI_A_DEACT_003": {"en": "Current password", "ar": "كلمة المرور الحالية"},
+    "UI_A_DEACT_004": {
+        "en": ("Account deactivation was not performed. Please check your "
+               "password and try again."),
+        "ar": ("لم يتم تعطيل الحساب. يرجى التحقق من كلمة المرور والمحاولة "
+               "مرة أخرى."),
+    },
+    "UI_A_DEACT_005": {
+        "en": "Your account has been deactivated. Sign-in is now disabled for it.",
+        "ar": "تم تعطيل حسابك. تسجيل الدخول إليه معطّل الآن.",
+    },
     "UI_A_ACCOUNT_011": {
         "en": ("Signing in manages your account only. It does not save, own, or "
                "move any project to your account — projects remain accessed by "

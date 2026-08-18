@@ -1414,9 +1414,9 @@ def _issue_reset(account, now):
               "/reset/" + raw))
 
 
-def _render_login(error=False, status=200):
+def _render_login(error=False, status=200, deactivated=False):
     return render_template(
-        "login.html", login_error=error,
+        "login.html", login_error=error, deactivated=deactivated,
         login_failed_en=LOGIN_FAILED_MESSAGE_EN,
         login_failed_ar=LOGIN_FAILED_MESSAGE_AR), status
 
@@ -1425,7 +1425,10 @@ def _render_login(error=False, status=200):
 def login_form():
     if _current_account():
         return redirect(url_for("account_home"))
-    return _render_login()
+    # P10-D3b: truthful post-deactivation notice (display-only; no mutation and
+    # no account detail — the flag comes solely from the redirect query string).
+    return _render_login(
+        deactivated=(request.args.get("notice") == "deactivated"))
 
 
 @app.route("/login", methods=["POST"])
@@ -1526,6 +1529,68 @@ def account_project_export(project_id):
     response.headers["Content-Disposition"] = (
         'attachment; filename="inventorai-project-%s-export.json"' % project_id)
     return response
+
+
+@app.route("/account/deactivate", methods=["POST"])
+def account_deactivate():
+    """P10-D3b — Account Deactivation (established contract
+    ``docs/governance/P10_D3B_ACCOUNT_DEACTIVATION_INCREMENT_CONTRACT.md``,
+    merged PR #512).
+
+    ONE self-service account state transition: the authenticated account holder
+    DEACTIVATES their own account. This is deactivation, NOT deletion: exactly
+    one ``accounts`` row changes (``status`` -> ``"deleted"``, ``deleted_at``
+    stamped, ``updated_at``/``session_epoch`` updated) via the EXISTING bounded
+    store primitives ``set_status`` + ``increment_session_epoch``; no row in any
+    table is removed and no retention behaviour changes.
+
+    Guard order (fail closed, ``logout_all`` precedent): authenticated
+    ``_current_account()`` -> ``_csrf_valid()`` -> password re-entry verified
+    with the EXISTING ``verify_password`` helper. A failed guard mutates
+    NOTHING. POST only — no GET/query-param mutation.
+
+    Enforcement after success is the EXISTING status-gated machinery, consumed
+    not duplicated: ``validate_session`` fails closed (``inactive``) for every
+    session of a non-active account (primary mechanism — the epoch bump is
+    defense-in-depth only, contract §3 S-3); login requires an active account;
+    ``web/api_v1.py`` refuses credentials whose bound account is non-active, so
+    API credentials become unusable WITHOUT being individually revoked or
+    deleted (contract §6.5). Partial-failure semantics (contract §3 S-5): if
+    the epoch bump fails after ``set_status`` succeeded, the account IS
+    deactivated and every session still dies on its next request — no false
+    rollback claim. Unexpected failure before mutation returns a bare generic
+    503 (no traceback/internal detail). No ``access_audit`` write (§6.6 —
+    Phase-7 §25 disposition preserved, not extended). No reactivation path."""
+    account = _current_account()
+    if not account:
+        return redirect(url_for("login_form"))
+    if not _csrf_valid():
+        return _csrf_reject()
+    if not _acct.verify_password(account["password_hash"],
+                                 request.form.get("password", "")):
+        # Safe generic failure; nothing mutated (contract §5).
+        return render_template("account.html", account=account,
+                               csrf_token=_session_csrf(),
+                               notice="deactivate_failed",
+                               owned_projects=_owned_projects(account)), 403
+    now_iso = _iso(_utc_now())
+    try:
+        if _get_account_store().set_status(
+                account["account_id"], "deleted", now_iso) != 1:
+            raise RuntimeError("account row not updated")
+    except Exception:
+        # Fail closed (contract §3 S-5): bare generic 503 — never a traceback,
+        # internal detail, or false success.
+        return app.response_class(status=503)
+    try:
+        _get_account_store().increment_session_epoch(account["account_id"], now_iso)
+    except Exception:
+        pass    # defense-in-depth only: status alone already ends every session
+    ui_lang = flask_session.get("ui_lang")   # D-P6-18: preserve UI-language choice
+    flask_session.clear()
+    if ui_lang == "ar":
+        flask_session["ui_lang"] = "ar"
+    return redirect(url_for("login_form", notice="deactivated"))
 
 
 @app.route("/logout", methods=["POST"])
