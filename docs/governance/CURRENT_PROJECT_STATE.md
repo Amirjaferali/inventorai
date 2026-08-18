@@ -2359,12 +2359,20 @@ AUTHORIZED / NOT STARTED.***
   mutations, byte-restored after each): remove-mechanical → RED; inject-extra-domain → RED; break-admission-while-
   allowlist-unchanged → RED; break-Tier1-rendering → RED; full suite GREEN after all restorations.
   `activated_domains() == ['electronics_electrical', 'mechanical']`, verified live — **Mechanical is now ACTIVE**.
-  Mechanical NOT qualified (P9-QS remains a separate future gate). `OWNER_DECISION_REGISTER.md` — new row
-  `D-P9-MECH-03` (explicit Owner activation authorization + execution, following the existing `D-P9-MECH-<NN>`
-  sequencing). **Phase 9 remains OPEN.** Phase 10 / PSRR / deployment remain NOT AUTHORIZED. No third domain
-  activated or implied. Next required gate: Mandatory Grill on this exact candidate, then the governed lifecycle.
-  After this merges, the next eligible steps are Mechanical activation post-merge verification and/or a future
-  Mechanical P9-QS qualification gate — neither authorized or performed here.
+  Mechanical NOT qualified (P9-QS remains a separate future gate). *(Corrective governance-truth note, added at the
+  CORRECTED Mechanical P9-QS Qualification Governance Candidate gate — see `OWNER_DECISION_REGISTER.md` row
+  `D-P9-MECH-04` and `MECHANICAL_P9QS_QUALIFICATION_STATUS_RECORD.md`: this clause is STALE as a live/current-tense
+  claim. `P9_MECH_QUALIFICATION_RECORD.md` (`dd7b487`) and `P9_MECH_SF_FORMAL_CLOSURE_RECORD.md` (`c25c843`),
+  both merged before this entry was written, jointly declared `MECHANICAL = P9-QS QUALIFIED — WITH ACTIVATION
+  BLOCKERS`; all six named blockers are now independently confirmed discharged. Current authoritative status:
+  **Mechanical P9-QS qualification is SATISFIED** on the live activated runtime. This note corrects
+  attribution/currency only — no new implementation, no Phase 9 closure, no Phase 10, no PSRR, no deployment;
+  Phase 9 remains OPEN pending a Remaining-Obligation / Exit-Criteria Review.)* `OWNER_DECISION_REGISTER.md` — new
+  row `D-P9-MECH-03` (explicit Owner activation authorization + execution, following the existing
+  `D-P9-MECH-<NN>` sequencing). **Phase 9 remains OPEN.** Phase 10 / PSRR / deployment remain NOT AUTHORIZED. No
+  third domain activated or implied. Next required gate: Mandatory Grill on this exact candidate, then the
+  governed lifecycle. After this merges, the next eligible steps are Mechanical activation post-merge verification
+  and/or a future Mechanical P9-QS qualification gate — neither authorized or performed here.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
