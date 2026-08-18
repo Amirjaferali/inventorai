@@ -2423,6 +2423,24 @@ AUTHORIZED / NOT STARTED.***
   none authorized, started, or implied. `OWNER_DECISION_REGISTER.md` UNCHANGED (Phase 8 formal-closure
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
+
+- **Phase 10 — P10-C Governance Entry Contract (candidate, PR pending), base `f91a825` (PR #507, authoritative).**
+  Owner explicitly authorized ONLY this bounded governance-only gate (`CREATE → FREEZE EXACT SHA → CREATOR
+  GRILL`, no implementation). Follows the established P7C/P8C phase-entry-contract convention. **Coordinates/
+  consolidates existing governance only** — `OD-P`, `D-PSRR-01`, `P8C` §5 item 25, and the remediation plan
+  remain canonical owners; every obligation retained via `D-FPC-MAP-06` consume/extend classification, none
+  superseded. Entry criteria (Phases 4-9 closed, including the Phase-6 lane `0254240`/PR #391 + distinct
+  Product-Foundation §5 closure `afdcf7f`) independently reconfirmed satisfied; satisfaction does NOT itself
+  authorize implementation — `OD-P`'s separate deployment gate + explicit Owner deployment authorization remain
+  independently required. PSRR relationship unmoved: consumed within Phase-10 ownership, execution NOT required
+  at entry, mandatory before first public production deployment. No frozen future sub-increment sequence — only
+  dependencies/triggers/a gate-selection rule registered. Proposition-level-only revalidation registry (three
+  specific superseded claims: Security Architecture's stale auth-state framing, Disaster Recovery Scenario-3's
+  `main`-branch premise, Data Retention's "in-memory only" claim) — no architecture document declared stale in
+  whole. `OWNER_DECISION_REGISTER.md` UNCHANGED. Governance-only; zero runtime/test diff. Does NOT authorize
+  Phase-10 implementation, PSRR execution, deployment, or any commercial/auth/security-hardening/monitoring
+  implementation. Does NOT declare Phase 10 complete or entered beyond this governance layer. Full detail:
+  `docs/governance/PHASE_10_COMMERCIAL_LEGAL_SECURITY_OPERATIONAL_READINESS_P10C_CONTRACT.md`.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation

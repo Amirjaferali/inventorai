@@ -41,10 +41,47 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — PHASE 9 FORMAL CLOSURE; governance-only; PHASE 9 = FORMALLY CLOSED / AUTHORITATIVE,
-conditional on merge + post-merge verification):** Base: `833f657d24d0d8d6d679cd3935ab9fb84c1f50ec` (PR #506
-merge — Fresh Phase 9 Remaining-Obligation / Exit-Criteria Review, authoritative; verdict ELIGIBLE, zero
-MUST-FIX, zero material conflict). Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
+**Status (current — PHASE 10 P10-C GOVERNANCE ENTRY CONTRACT; Owner-authorized bounded governance-only gate;
+coordination/consolidation model; NOT superseding; Phase 10 NOT implemented, NOT entered beyond this governance
+layer):** Base: `f91a82565dce0cbeae323be89dedd6a68c55e61d` (PR #507 merge — Post-Phase-9 Next Governed State
+review, authoritative). Full detail: `docs/governance/PHASE_10_COMMERCIAL_LEGAL_SECURITY_OPERATIONAL_
+READINESS_P10C_CONTRACT.md`.
+
+**Authorization scope (Owner-granted, strictly bounded).** `CREATE → FREEZE EXACT SHA → CREATOR GRILL` only; no
+implementation beyond this candidate. Follows the established P7C/P8C phase-entry-contract convention.
+**Coordinates/consolidates existing governance only** — `OD-P`, `D-PSRR-01`, `P8C` §5 item 25, and the
+remediation plan remain the canonical owners; every obligation is retained via `D-FPC-MAP-06` consume/extend
+classification, none deleted or superseded.
+
+**Entry criteria.** Phases 4–9 formally closed, independently reconfirmed (Phase-6 lane closure `0254240`/PR
+#391 + distinct Product-Foundation §5 closure `afdcf7f`, both confirmed ancestors of this base). Satisfaction
+of entry criteria does NOT itself authorize implementation; `OD-P`'s separate deployment gate + explicit Owner
+deployment authorization remain independently required.
+
+**PSRR relationship unmoved.** Consumed within Phase-10 ownership; execution NOT required at Phase-10 entry;
+mandatory before first public production deployment.
+
+**No frozen future sequence.** Registers obligation dependencies, triggers, and a gate-selection rule
+(evidence-based, smallest sufficient, Owner-selected) — no successor sub-increment is named or automatically
+authorized.
+
+**Proposition-level revalidation only.** Three specific superseded propositions registered (Security
+Architecture's stale auth-state claim; Disaster Recovery Scenario-3's `main`-branch premise; Data Retention's
+"in-memory only" claim) — no architecture document declared stale in whole.
+
+**Boundary / status.** Governance-only; zero runtime/test/classifier/scoring/progression/persistence/security
+diff. `OWNER_DECISION_REGISTER.md` UNCHANGED. Does NOT authorize Phase-10 implementation, PSRR execution,
+deployment, legal-artifact drafting, payment-provider work, auth/commercial/trial changes,
+monitoring/observability or security-hardening implementation, D4, D8, IoT, domain activation, or Phase-9 debt
+cleanup. Does NOT declare Phase 10 complete or entered beyond this governance layer. Authoritative ONLY if/when
+this exact candidate is merged and post-merge verified. Next required gate: **Mandatory Creator Grill on this
+exact candidate**, then Independent External Review.
+
+**Immediately prior (Phase 9 Formal Closure, candidate `8874d08` — accepted and merged via PR #506 `833f657`;
+retained as history):** governance-only; PHASE 9 = FORMALLY CLOSED / AUTHORITATIVE. Base:
+`833f657d24d0d8d6d679cd3935ab9fb84c1f50ec` (PR #506 merge — Fresh Phase 9 Remaining-Obligation / Exit-Criteria
+Review, authoritative; verdict ELIGIBLE, zero MUST-FIX, zero material conflict). Full detail:
+`docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
 **Reconfirmation at this exact tip.** MUST-FIX count = 0; material conflict count = 0; former vacuous
 picker-test blocker remains discharged; no new evidence invalidates eligibility; `activated_domains() ==
