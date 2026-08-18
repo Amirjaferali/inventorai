@@ -2358,12 +2358,62 @@ from engine import decision_workspace as fdc001_dw
 # Dedicated in-memory store for FDC-001 decision records (non-durable).
 FDC001_DECISIONS = {}
 
+# P10-D2: app-layer ownership metadata ONLY (no change to
+# engine/decision_workspace.py, no durable persistence, no new identity
+# system). did -> authenticated owner_account_id, or None for an anonymously
+# created decision (whose access is instead bound to the creating browser's
+# own signed Flask session, tracked under "fdc001_created" below).
+FDC001_DECISION_OWNERS = {}
+
+
+def _fdc001_authorized(did):
+    """True iff the current caller may access decision ``did``. An owned
+    decision requires the authenticated, active account that created it
+    (server-side account_id == stored owner); an anonymous (owner is None)
+    decision requires ``did`` to be present in the CREATING browser's own
+    signed session ("fdc001_created") — a different anonymous session with
+    only the same ``did`` is never authorized. Fails closed on any missing/
+    malformed/unexpected state. Bare ``did`` possession is NEVER sufficient."""
+    if did not in FDC001_DECISION_OWNERS:
+        return False
+    owner = FDC001_DECISION_OWNERS[did]
+    if owner is not None:
+        account = _current_account()
+        return account is not None and account["account_id"] == owner
+    return did in flask_session.get("fdc001_created", [])
+
+
+def _fdc001_get_authorized(did):
+    """Return the FDC001_DECISIONS record for ``did`` iff it exists AND the
+    current caller is authorized for it; otherwise None (fails closed)."""
+    record = FDC001_DECISIONS.get(did)
+    if record is None or not _fdc001_authorized(did):
+        return None
+    return record
+
+
+def _deny_fdc001():
+    """One generic, non-enumerating denial for every failed Decision Workspace
+    access (missing, non-owner, foreign-anonymous-session) — byte-identical to
+    the pre-existing "start a new decision" redirect, so a denial never
+    discloses whether the decision exists."""
+    return redirect(url_for("decision_workspace_start"))
+
 
 @app.route("/decision-workspace", methods=["GET"])
 def decision_workspace_start():
     record = fdc001_dw.DecisionRecord()
-    FDC001_DECISIONS[record.decision_id] = record
-    return redirect(url_for("decision_workspace_view", did=record.decision_id))
+    did = record.decision_id
+    FDC001_DECISIONS[did] = record
+    account = _current_account()
+    if account is not None:
+        FDC001_DECISION_OWNERS[did] = account["account_id"]
+    else:
+        FDC001_DECISION_OWNERS[did] = None
+        created = flask_session.get("fdc001_created", [])
+        created.append(did)
+        flask_session["fdc001_created"] = created
+    return redirect(url_for("decision_workspace_view", did=did))
 
 
 def _render_decision_workspace(record, error=None, status=200):
@@ -2381,17 +2431,17 @@ def _render_decision_workspace(record, error=None, status=200):
 
 @app.route("/decision-workspace/<did>", methods=["GET"])
 def decision_workspace_view(did):
-    record = FDC001_DECISIONS.get(did)
+    record = _fdc001_get_authorized(did)
     if record is None:
-        return redirect(url_for("decision_workspace_start"))
+        return _deny_fdc001()
     return _render_decision_workspace(record)
 
 
 @app.route("/decision-workspace/<did>/input", methods=["POST"])
 def decision_workspace_add_input(did):
-    record = FDC001_DECISIONS.get(did)
+    record = _fdc001_get_authorized(did)
     if record is None:
-        return redirect(url_for("decision_workspace_start"))
+        return _deny_fdc001()
     candidate_id = request.form.get("candidate_id", "").strip()
     candidate_ids = [candidate_id] if candidate_id else []
     try:
@@ -2411,9 +2461,9 @@ def decision_workspace_add_input(did):
 
 @app.route("/decision-workspace/<did>/constraint", methods=["POST"])
 def decision_workspace_add_constraint(did):
-    record = FDC001_DECISIONS.get(did)
+    record = _fdc001_get_authorized(did)
     if record is None:
-        return redirect(url_for("decision_workspace_start"))
+        return _deny_fdc001()
     candidate_id = request.form.get("candidate_id", "").strip()
     candidate_ids = [candidate_id] if candidate_id else []
     try:
@@ -2432,9 +2482,9 @@ def decision_workspace_add_constraint(did):
 
 @app.route("/decision-workspace/<did>/gap", methods=["POST"])
 def decision_workspace_gap_action(did):
-    record = FDC001_DECISIONS.get(did)
+    record = _fdc001_get_authorized(did)
     if record is None:
-        return redirect(url_for("decision_workspace_start"))
+        return _deny_fdc001()
     action = request.form.get("action", "").strip()
     gap_id = request.form.get("gap_id", "").strip()
     try:
@@ -2472,9 +2522,9 @@ def decision_workspace_gap_action(did):
 
 @app.route("/decision-workspace/<did>/evidence", methods=["POST"])
 def decision_workspace_add_evidence(did):
-    record = FDC001_DECISIONS.get(did)
+    record = _fdc001_get_authorized(did)
     if record is None:
-        return redirect(url_for("decision_workspace_start"))
+        return _deny_fdc001()
     candidate_id = request.form.get("candidate_id", "").strip()
     candidate_ids = [candidate_id] if candidate_id else []
     try:
@@ -2500,9 +2550,9 @@ def decision_workspace_add_evidence(did):
 
 @app.route("/decision-workspace/<did>/gap-assessment", methods=["POST"])
 def decision_workspace_gap_assessment(did):
-    record = FDC001_DECISIONS.get(did)
+    record = _fdc001_get_authorized(did)
     if record is None:
-        return redirect(url_for("decision_workspace_start"))
+        return _deny_fdc001()
     evidence_ids = [e.strip() for e in request.form.getlist("evidence_ids")
                     if e.strip()]
     try:
@@ -2523,9 +2573,9 @@ def decision_workspace_gap_assessment(did):
 
 @app.route("/decision-workspace/<did>/preference", methods=["POST"])
 def decision_workspace_preference(did):
-    record = FDC001_DECISIONS.get(did)
+    record = _fdc001_get_authorized(did)
     if record is None:
-        return redirect(url_for("decision_workspace_start"))
+        return _deny_fdc001()
     action = request.form.get("action", "").strip()
     try:
         if action == "set":
@@ -2544,9 +2594,9 @@ def decision_workspace_preference(did):
 
 @app.route("/decision-workspace/<did>/candidate", methods=["POST"])
 def decision_workspace_dispose_candidate(did):
-    record = FDC001_DECISIONS.get(did)
+    record = _fdc001_get_authorized(did)
     if record is None:
-        return redirect(url_for("decision_workspace_start"))
+        return _deny_fdc001()
     try:
         record.dispose_candidate(
             request.form.get("candidate_id", "").strip(),
@@ -2562,9 +2612,9 @@ def decision_workspace_dispose_candidate(did):
 
 @app.route("/decision-workspace/<did>/export", methods=["GET"])
 def decision_workspace_export(did):
-    record = FDC001_DECISIONS.get(did)
+    record = _fdc001_get_authorized(did)
     if record is None:
-        return redirect(url_for("decision_workspace_start"))
+        return _deny_fdc001()
     # Deterministic, safe attachment filename derived from the decision id.
     filename = "fdc001-decision-%s.json" % record.decision_id
     response = app.response_class(
