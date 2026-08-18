@@ -41,10 +41,41 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — P10-D3a SELF-SERVICE PROJECT EXPORT: bounded increment CONTRACT candidate; DEFINITION ONLY;
-NO implementation authorized):** Base: `bc85424afc0c90e8e1bfb17dd413c326f7a3ff69` (PR #509 merge — P10-D2
-Decision Workspace Access-Control Remediation, authoritative; independently re-verified: parents `3f92d57e…` /
-`871135d1…`, tree `62303523e27c02b531fbffacade6f3b7eb6a2998`, empty candidate→merge diff). Full detail:
+**Status (current — P10-D3b ACCOUNT DEACTIVATION: bounded increment CONTRACT candidate; DEFINITION ONLY;
+NO implementation authorized):** Base: `d649a4df5889cf037096014ce69d362adb2fb00b` (PR #511 merge — P10-D3a
+Self-Service Project Export implementation, authoritative; independently re-verified: parents `1a87bf58…` /
+`4c5f325f…`, tree `acd8c16ab3012904505d6c5be31255f51595bd09`, empty candidate→merge diff). Full detail:
+`docs/governance/P10_D3B_ACCOUNT_DEACTIVATION_INCREMENT_CONTRACT.md`.
+
+**Authorization scope (Owner-granted, strictly bounded).** ONE governance-candidate session: `VERIFY → CREATE
+P10-D3b CONTRACT CANDIDATE → FREEZE EXACT SHA → CREATOR GRILL → SHA-PRESERVING BUNDLE`. **No runtime code, no
+account-behavior change, no push, no PR, no PSRR, no deployment.** Allowed paths for THIS candidate:
+`docs/governance/` only.
+
+**Technically truthful framing (binding).** Account DEACTIVATION only: the existing bounded store primitive
+`set_status(account_id, "deleted", now_iso)` gains a reachable self-service authenticated trigger (POST +
+CSRF + password re-entry). Explicitly NOT physical deletion, NOT data erasure, NOT retention cleanup, NOT legal
+"right to erasure" compliance. No row deleted anywhere; all 14 durable table families preserved; append-only
+stores untouched; Phase-7 §25 consumed as fact only. No reactivation path defined.
+
+**Verified foundation.** At the base tip: `validate_session` fails closed on any non-active status (primary
+session-invalidation mechanism); login requires `status == "active"` (generic 401); `web/api_v1.py` requires
+the credential's bound account to be `"active"` — so API access already dies with deactivation and
+per-credential revocation is excluded as unnecessary; `verify_password` + `_csrf_valid()`/`_csrf_reject()` are
+the reused seams; `increment_session_epoch` is defense-in-depth only. All nine registered stop conditions
+probed; none triggered.
+
+**Boundary / status.** Governance-only; zero runtime/test diff. `OWNER_DECISION_REGISTER.md` UNCHANGED.
+Creating or merging this contract **does NOT authorize implementation**; implementation needs separate explicit
+Owner authorization. No automatic successor (no P10-D3c). No PSRR trigger. No deployment authority. No
+physical-deletion authority. Authoritative ONLY if/when this exact candidate is merged and post-merge verified.
+Next required gate: **Mandatory Creator Grill on this exact candidate**, then Independent External Review.
+
+**Immediately prior (P10-D3a — contract candidate `452b9ded`, accepted and MERGED via PR #510, tip
+`1a87bf58b892b2924a91727a7b3fc4425d909db7`; implementation candidate `4c5f325f`, accepted and MERGED via PR
+#511, tip `d649a4df5889cf037096014ce69d362adb2fb00b`; both now AUTHORITATIVE; retained as history):** Base at
+contract drafting: `bc85424afc0c90e8e1bfb17dd413c326f7a3ff69` (PR #509 merge — P10-D2 Decision Workspace
+Access-Control Remediation, authoritative). Full detail:
 `docs/governance/P10_D3A_SELF_SERVICE_PROJECT_EXPORT_INCREMENT_CONTRACT.md`.
 
 **Authorization scope (Owner-granted, strictly bounded).** ONE governance-candidate session: `VERIFY → CREATE

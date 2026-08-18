@@ -2424,7 +2424,41 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
-- **Phase 10 — P10-D3a Self-Service Project Export: bounded increment CONTRACT (candidate, PR pending; DEFINITION
+- **Phase 10 — P10-D3b Account Deactivation: bounded increment CONTRACT (candidate, PR pending; DEFINITION ONLY —
+  NO implementation authorized), base `d649a4df5889cf037096014ce69d362adb2fb00b` (PR #511, authoritative).**
+  Owner authorized ONE governance-candidate session (`VERIFY → CREATE P10-D3b CONTRACT CANDIDATE → FREEZE EXACT
+  SHA → CREATOR GRILL → SHA-PRESERVING BUNDLE`); no runtime code, no account-behavior change, no push, no PR.
+  **Technically truthful framing (binding):** account DEACTIVATION only — the existing bounded store primitive
+  `set_status(account_id, "deleted", now_iso)` gains a reachable self-service authenticated trigger (POST + CSRF
+  + password re-entry via existing `verify_password`); explicitly NOT physical deletion, NOT data erasure, NOT
+  retention cleanup, NOT legal "right to erasure" compliance. Verified foundation at base (all from source, none
+  from memory): `validate_session` fails closed (`"inactive"`) for any non-active status and `_current_account()`
+  pops the session — ALL sessions die on next request (primary mechanism); login requires `status == "active"`
+  (generic 401); `web/api_v1.py::_authenticate` requires the bound account to be `"active"`, so existing API
+  credentials already fail after deactivation — per-credential revocation excluded as technically unnecessary;
+  `increment_session_epoch` required as defense-in-depth only; CSRF via existing `_csrf_valid()`/`_csrf_reject()`
+  (the `/logout-all` precedent); only `DELETE FROM` in `engine/` remains rate-limit cleanup. All nine registered
+  stop conditions probed at base; none triggered. Truthful label mandated: `Deactivate Account` / `تعطيل الحساب`;
+  prohibited: `Delete Account`, `Erase Account Data`, `Delete All My Data`, `Right to Erasure`, and Arabic
+  equivalents. All 14 durable table families preserved physically; append-only stores untouched; **Phase-7 §25
+  PRESERVED** (no deactivation `access_audit` event — recorded as a deliberate truthful limitation); no
+  reactivation path defined. `OWNER_DECISION_REGISTER.md` UNCHANGED. Governance-only; zero runtime/test diff.
+  Contract merge does NOT authorize implementation; no automatic successor; no PSRR; no deployment; no
+  physical-deletion authority. Full detail:
+  `docs/governance/P10_D3B_ACCOUNT_DEACTIVATION_INCREMENT_CONTRACT.md`.
+
+- **Phase 10 — P10-D3a Self-Service Project Export: contract MERGED (PR #510, tip `1a87bf58…`) + implementation
+  MERGED / AUTHORITATIVE (PR #511, tip `d649a4df5889cf037096014ce69d362adb2fb00b`).** Implementation candidate
+  `4c5f325fb20ce0ecf508d1ebce8b38ed9dc83262` (parent `1a87bf58…`, tree `acd8c16a…`) Owner-accepted at that exact
+  SHA after Creator Grill PASS and Independent External Review `ACCEPT WITH NON-BLOCKING OBSERVATIONS`; merge
+  identity independently re-verified (parents `1a87bf58…`/`4c5f325f…`, tree `acd8c16a…`, empty candidate→merge
+  diff). Scope: 4 files, +407/−1. One browser/session-authenticated PROJECT-SCOPED export route
+  (`GET /account/projects/<project_id>/export`) consuming the canonical P7-I1 seam unmodified; seam's stricter
+  NULL-owner denial binding; generic non-enumerating denial; fail-closed 503; canonical payload unwrapped as
+  `application/json`; EN/AR project-scoped labels; `/api/` route set unchanged; no `access_audit` write. RED
+  9/9/0 → GREEN 18/18; full suite 2736/0/3/1. Authorizes NO successor gate.
+
+- **(superseded history) Phase 10 — P10-D3a Self-Service Project Export: bounded increment CONTRACT (was: candidate, PR pending; DEFINITION
   ONLY — NO implementation authorized), base `bc85424afc0c90e8e1bfb17dd413c326f7a3ff69` (PR #509, authoritative).**
   Owner authorized ONE governance-candidate session (`VERIFY → CREATE CONTRACT CANDIDATE → FREEZE EXACT SHA →
   CREATOR GRILL → SHA-PRESERVING BUNDLE`); no runtime code, no `web/app.py` change, no implementation tests.

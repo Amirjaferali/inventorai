@@ -10841,3 +10841,67 @@ cleanup, account-wide export, audit export, API credential issuance, legal/priva
 conclusion. Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next required
 gate: **Mandatory Creator Grill on this exact candidate**, then Independent External Review — the latter not
 performed here.
+
+---
+
+## Phase 10 — P10-D3a contract + implementation CLOSED / AUTHORITATIVE (synchronization entry)
+
+**P10-D3a contract.** Candidate `452b9dedeffb17ca83a1817c455abd401171ee23` Owner-accepted at that exact SHA and
+merged via **PR #510**, tip `1a87bf58b892b2924a91727a7b3fc4425d909db7` (empty candidate→merge diff —
+independently re-verified). `docs/governance/P10_D3A_SELF_SERVICE_PROJECT_EXPORT_INCREMENT_CONTRACT.md` is
+authoritative.
+
+**P10-D3a implementation (CLOSED / AUTHORITATIVE).** Under separate explicit Owner implementation
+authorization, candidate `4c5f325fb20ce0ecf508d1ebce8b38ed9dc83262` (parent `1a87bf58…`, tree
+`acd8c16ab3012904505d6c5be31255f51595bd09`) was Owner-accepted at that exact SHA after Creator Grill PASS and
+Independent External Review `ACCEPT WITH NON-BLOCKING OBSERVATIONS`, and merged via **PR #511**, tip
+`d649a4df5889cf037096014ce69d362adb2fb00b` (first parent `1a87bf58…`, second parent `4c5f325f…`, merge tree
+`acd8c16a…`, empty candidate→merge diff — independently re-verified). Scope: 4 files, +407/−1 (`web/app.py`,
+`web/ui_text.py`, `web/templates/account.html`, `tests/test_p10_d3a_self_service_project_export.py`). One
+browser/session-authenticated PROJECT-SCOPED export route (`GET /account/projects/<project_id>/export`)
+consuming the canonical P7-I1 seam unmodified; RED 9/9/0 → GREEN 18/18; full suite 2736/0/3/1;
+`/api/` route set unchanged. This closure authorizes NO successor gate.
+
+---
+
+## Phase 10 — P10-D3b Account Deactivation — bounded increment CONTRACT (candidate; definition only; NO implementation authorized)
+
+**Gate.** Owner authorized ONE governance-candidate session: `VERIFY → CREATE P10-D3b CONTRACT CANDIDATE →
+FREEZE EXACT SHA → CREATOR GRILL → SHA-PRESERVING BUNDLE`. **No runtime code, no account-behavior change, no
+push, no PR, no PSRR, no deployment.** Base: `d649a4df5889cf037096014ce69d362adb2fb00b` (PR #511 merge,
+authoritative). Full detail: `docs/governance/P10_D3B_ACCOUNT_DEACTIVATION_INCREMENT_CONTRACT.md`.
+
+**Technically truthful framing (binding).** The gate is ACCOUNT DEACTIVATION — the existing bounded store
+primitive `set_status(account_id, "deleted", now_iso)` gains a reachable self-service authenticated trigger.
+It is explicitly NOT physical deletion, NOT account-data erasure, NOT retention cleanup, and NOT legal
+"right to erasure" compliance; no row in any table is removed and no retention claim is made.
+
+**Verified runtime foundation (all re-verified at base, none from memory).** `set_status` validates against
+`ACCOUNT_STATUSES = {"active","disabled","deleted"}`, stamps/clears `deleted_at`, touches no other column, and
+deletes nothing; `validate_session` fails closed (`"inactive"`) for any non-active status and
+`_current_account()` pops the session — so ALL sessions of a deactivated account die on their next request
+(primary mechanism); `login_submit` accepts only an active account (generic 401 otherwise);
+`web/api_v1.py::_authenticate` requires the bound account's status to be `"active"`, so existing API
+credentials of a deactivated account already fail generically — per-credential revocation is NOT technically
+required and is excluded as write-fanout; `increment_session_epoch` exists and is required only as
+defense-in-depth; `verify_password` and the `_csrf_valid()`/`_csrf_reject()` pattern (used by
+`/logout`/`/logout-all`/`/account/resend-verification`) are reusable — no second password or CSRF subsystem.
+The only `DELETE FROM` in `engine/` remains rate-limit cleanup. All nine registered stop conditions probed at
+the base tip; none triggered.
+
+**Truthful label mandated.** `Deactivate Account` / Arabic equivalent (e.g. `تعطيل الحساب`) that does not imply
+erasure. Prohibited: `Delete Account`, `Erase Account Data`, `Delete All My Data`, `Right to Erasure`,
+"permanent data deletion", and Arabic equivalents.
+
+**Data preservation explicit.** All 14 durable table families preserved physically (only the one `accounts`
+row's `status`/`deleted_at`/`updated_at`/`session_epoch` columns change). Append-only stores
+(`subscription_lifecycle_events`, `commercial_audit`, `provider_event_dedupe`, `access_audit`) neither
+written, deleted, nor reinterpreted. **Phase-7 §25 PRESERVED** — consumed as current fact only; the absence of
+a deactivation audit event is recorded as a deliberate, truthful limitation. No reactivation path is defined.
+
+**Boundary / status.** Governance-only; zero runtime/test diff. `OWNER_DECISION_REGISTER.md` UNCHANGED.
+Creating or merging this contract **does NOT authorize implementation** — implementation requires separate
+explicit Owner authorization. No automatic successor (no P10-D3c). No PSRR trigger. No deployment authority.
+No physical-deletion authority now or later. Authoritative ONLY if/when this exact candidate is merged and
+post-merge verified. Next required gate: **Mandatory Creator Grill on this exact candidate**, then Independent
+External Review — the latter not performed here.
