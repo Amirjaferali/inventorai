@@ -41,10 +41,49 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — PHASE 10 P10-C GOVERNANCE ENTRY CONTRACT; Owner-authorized bounded governance-only gate;
-coordination/consolidation model; NOT superseding; Phase 10 NOT implemented, NOT entered beyond this governance
-layer):** Base: `f91a82565dce0cbeae323be89dedd6a68c55e61d` (PR #507 merge — Post-Phase-9 Next Governed State
-review, authoritative). Full detail: `docs/governance/PHASE_10_COMMERCIAL_LEGAL_SECURITY_OPERATIONAL_
+**Status (current — P10-D3a SELF-SERVICE PROJECT EXPORT: bounded increment CONTRACT candidate; DEFINITION ONLY;
+NO implementation authorized):** Base: `bc85424afc0c90e8e1bfb17dd413c326f7a3ff69` (PR #509 merge — P10-D2
+Decision Workspace Access-Control Remediation, authoritative; independently re-verified: parents `3f92d57e…` /
+`871135d1…`, tree `62303523e27c02b531fbffacade6f3b7eb6a2998`, empty candidate→merge diff). Full detail:
+`docs/governance/P10_D3A_SELF_SERVICE_PROJECT_EXPORT_INCREMENT_CONTRACT.md`.
+
+**Authorization scope (Owner-granted, strictly bounded).** ONE governance-candidate session: `VERIFY → CREATE
+CONTRACT CANDIDATE → FREEZE EXACT SHA → CREATOR GRILL → SHA-PRESERVING BUNDLE`. **No runtime code, no
+`web/app.py` change, no implementation tests, no PSRR, no deployment.** Allowed paths for THIS candidate:
+`docs/governance/` only.
+
+**Corrective lineage.** The Independent External Reviewer rejected the earlier combined `P10-D3` proposal on two
+material grounds only: (1) self-service export and account deactivation must be **separate increments**; (2)
+`P10-D3a` requires **its own committed candidate contract** before implementation authorization. This contract
+answers both. **`P10-D3b — Account Deactivation` remains a separate future increment — NOT authorized, NOT
+scoped, NOT started.**
+
+**Subject.** Define the boundary for one browser/session-authenticated self-service **project** export surface in
+`web/app.py` consuming the existing canonical seam `engine.read_export_service.produce_project_export` with the
+identity from the existing `_current_account()` seam. Evidence at base: `web/app.py` does not consume the seam at
+all; the only shipped consumer (`web/api_v1.py`, P7-I2) demands a machine Bearer credential whose issuance helper
+has no shipped call site; `/session/<sid>/deliverable` is a distinct surface requiring a live in-memory session.
+The increment would add **reachability**, not a new capability.
+
+**Truthful label required.** Project-scoped wording only (`Export project` / `Export project data`); `Export my
+data` / `Export account` / `Export all my data` / legal subject-access framing explicitly prohibited, in `en` and
+`ar` alike.
+
+**Phase-7 §25 PRESERVED.** No browser-surface `access_audit` write; the closed disposition is consumed as fact,
+never reopened or reclassified. Recorded as a deliberate, truthful limitation.
+
+**Boundary / status.** Governance-only; zero runtime/test diff. `OWNER_DECISION_REGISTER.md` UNCHANGED. Creating
+or merging this contract **does NOT authorize implementation**; implementation needs separate explicit Owner
+authorization. No automatic successor gate. No PSRR trigger. No deployment authority (`OD-P`'s separate
+deployment gate **and** explicit Owner deployment authorization both remain independently required and
+unsatisfied). Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next required
+gate: **Mandatory Creator Grill on this exact candidate**, then Independent External Review.
+
+**Immediately prior (Phase 10 P10-C entry contract — candidate `36145016`, accepted and MERGED via PR #508, tip
+`3f92d57e49a8d6b01b0c6a7184ec7b1442b87e8a`; now AUTHORITATIVE — and P10-D2 implementation — candidate
+`871135d1`, accepted and MERGED via PR #509, tip `bc85424a`; now AUTHORITATIVE; both retained as history):**
+Base at P10-C drafting: `f91a82565dce0cbeae323be89dedd6a68c55e61d` (PR #507 merge — Post-Phase-9 Next Governed
+State review, authoritative). Full detail: `docs/governance/PHASE_10_COMMERCIAL_LEGAL_SECURITY_OPERATIONAL_
 READINESS_P10C_CONTRACT.md`.
 
 **Authorization scope (Owner-granted, strictly bounded).** `CREATE → FREEZE EXACT SHA → CREATOR GRILL` only; no

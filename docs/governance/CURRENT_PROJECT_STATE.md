@@ -2424,7 +2424,44 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
-- **Phase 10 — P10-C Governance Entry Contract (candidate, PR pending), base `f91a825` (PR #507, authoritative).**
+- **Phase 10 — P10-D3a Self-Service Project Export: bounded increment CONTRACT (candidate, PR pending; DEFINITION
+  ONLY — NO implementation authorized), base `bc85424afc0c90e8e1bfb17dd413c326f7a3ff69` (PR #509, authoritative).**
+  Owner authorized ONE governance-candidate session (`VERIFY → CREATE CONTRACT CANDIDATE → FREEZE EXACT SHA →
+  CREATOR GRILL → SHA-PRESERVING BUNDLE`); no runtime code, no `web/app.py` change, no implementation tests.
+  **Corrective lineage:** the Independent External Reviewer rejected the earlier combined `P10-D3` proposal on two
+  material grounds only — export and deactivation must be **separate increments**, and `P10-D3a` needs **its own
+  committed candidate contract** before implementation authorization. **`P10-D3b — Account Deactivation` remains a
+  separate future increment — NOT authorized, NOT scoped, NOT started.** Subject: define the boundary for one
+  browser/session-authenticated self-service **project** export surface in `web/app.py` consuming the existing
+  canonical seam `engine.read_export_service.produce_project_export` with the identity from the existing
+  `_current_account()` seam. Verified evidence at base: `web/app.py` does not reference the seam at all; the only
+  shipped consumer (`web/api_v1.py`, P7-I2) requires a machine Bearer credential whose issuance helper
+  `issue_api_credential` has **no shipped call site**; `/session/<sid>/deliverable` is a distinct surface requiring
+  a live in-memory session. The increment would add **reachability**, not a new capability. Registered
+  constraints: consume the canonical export payload unchanged; inherit the seam's **stricter** NULL-owner denial
+  (legacy/anonymous projects not exportable here) without reconciling it against `_project_authorized`; do **not**
+  mount under `/api/` (an existing test asserts exactly two `/api/` routes) and do not reuse the P7-I2
+  `api_version` / `export_contract_version` wire identity; no persistence/schema/migration change; GET needs no
+  CSRF; new UI strings require **both** `en` and `ar`. Truthful label mandated (`Export project` / `Export project
+  data`); `Export my data` / `Export account` / `Export all my data` / legal subject-access framing prohibited.
+  **Phase-7 §25 PRESERVED** — no browser-surface `access_audit` write; the closed disposition is consumed as
+  current fact only, never reopened or reclassified; the resulting absence of browser-surface audit is recorded as
+  a deliberate, truthful limitation. `OWNER_DECISION_REGISTER.md` UNCHANGED. Governance-only; zero runtime/test
+  diff. Creating or merging this contract **does NOT authorize implementation** — that needs separate explicit
+  Owner authorization. No automatic successor gate; no PSRR trigger; no deployment authority. Full detail:
+  `docs/governance/P10_D3A_SELF_SERVICE_PROJECT_EXPORT_INCREMENT_CONTRACT.md`.
+
+- **Phase 10 — P10-D2 Decision Workspace Access-Control Remediation: MERGED / AUTHORITATIVE (PR #509, tip
+  `bc85424afc0c90e8e1bfb17dd413c326f7a3ff69`).** Implementation candidate `871135d16eccd1e0507538dc30666b9bac1a8c6a`
+  Owner-accepted at that exact SHA; merge identity independently re-verified (parents `3f92d57e…` / `871135d1…`,
+  tree `62303523e27c02b531fbffacade6f3b7eb6a2998`, empty candidate→merge diff). Scope: 2 files, +334/−20
+  (`web/app.py`, `tests/test_p10_d2_decision_workspace_access_control.py`). Bare possession of a Decision Workspace
+  `did` no longer authorizes access; `engine/decision_workspace.py` byte-unchanged; anonymous FDC-001 journey
+  preserved. Authorizes **no** successor gate. (A preceding read-only P10-D1 data-lifecycle factual inventory
+  diagnosis produced findings only — no candidate, no runtime change, no authorization.)
+
+- **Phase 10 — P10-C Governance Entry Contract: MERGED / AUTHORITATIVE (candidate `36145016`, PR #508, tip
+  `3f92d57e49a8d6b01b0c6a7184ec7b1442b87e8a`), base `f91a825` (PR #507, authoritative).**
   Owner explicitly authorized ONLY this bounded governance-only gate (`CREATE → FREEZE EXACT SHA → CREATOR
   GRILL`, no implementation). Follows the established P7C/P8C phase-entry-contract convention. **Coordinates/
   consolidates existing governance only** — `OD-P`, `D-PSRR-01`, `P8C` §5 item 25, and the remediation plan

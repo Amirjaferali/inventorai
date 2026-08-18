@@ -10768,3 +10768,76 @@ implementation; D4; D8; IoT; any domain activation; or Phase-9 debt cleanup. Doe
 or entered beyond this governance layer. Authoritative ONLY if/when this exact candidate is merged and
 post-merge verified. Next required gate: **Mandatory Creator Grill on this exact candidate**, then Independent
 External Review — not performed here.
+
+---
+
+## Phase 10 — P10-C CLOSED / AUTHORITATIVE; P10-D2 CLOSED / AUTHORITATIVE (synchronization entry)
+
+**P10-C.** The Phase-10 governance entry contract candidate `36145016bbae1b5634ebd919659467af63969e34` was
+Owner-accepted at that exact SHA and merged via **PR #508**, tip `3f92d57e49a8d6b01b0c6a7184ec7b1442b87e8a`.
+`docs/governance/PHASE_10_COMMERCIAL_LEGAL_SECURITY_OPERATIONAL_READINESS_P10C_CONTRACT.md` is therefore
+**authoritative**. Its §10 gate-selection rule (evidence-based, smallest sufficient scope, Owner-selected; no
+successor pre-named) governs every Phase-10 sub-increment.
+
+**P10-D1.** A read-only Phase-10 data-lifecycle factual inventory diagnosis was performed and independently
+accepted after two rounds of material correction. It produced **findings only** — no candidate, no runtime
+change, no authorization.
+
+**P10-D2 — Decision Workspace Access-Control Remediation (CLOSED / AUTHORITATIVE).** Implementation candidate
+`871135d16eccd1e0507538dc30666b9bac1a8c6a` was Owner-accepted at that exact SHA and merged via **PR #509**, tip
+`bc85424afc0c90e8e1bfb17dd413c326f7a3ff69` (first parent `3f92d57e…`, second parent `871135d1…`, tree
+`62303523e27c02b531fbffacade6f3b7eb6a2998`, empty candidate→merge diff — independently re-verified). Scope: 2
+files, +334/−20 (`web/app.py`, `tests/test_p10_d2_decision_workspace_access_control.py`). Bare possession of a
+Decision Workspace `did` no longer authorizes access; `engine/decision_workspace.py` is byte-unchanged; the
+anonymous FDC-001 journey is preserved. This closure authorizes **no** successor gate.
+
+---
+
+## Phase 10 — P10-D3a Self-Service Project Export — bounded increment CONTRACT (candidate; definition only; NO implementation authorized)
+
+**Gate.** Owner authorized ONE governance-candidate session: `VERIFY → CREATE CONTRACT CANDIDATE → FREEZE EXACT
+SHA → CREATOR GRILL → SHA-PRESERVING BUNDLE`. **No runtime code, no `web/app.py` change, no implementation
+tests.** Base: `bc85424afc0c90e8e1bfb17dd413c326f7a3ff69` (PR #509 merge, authoritative). Full detail:
+`docs/governance/P10_D3A_SELF_SERVICE_PROJECT_EXPORT_INCREMENT_CONTRACT.md`.
+
+**Corrective lineage.** The Independent External Reviewer rejected the earlier combined `P10-D3` proposal on two
+material grounds only: export and deactivation must be **separate increments**, and `P10-D3a` requires **its own
+committed candidate contract** before implementation authorization. This contract is the corrected response to
+both. **`P10-D3b — Account Deactivation` remains a separate future increment — NOT authorized, NOT scoped,
+NOT started.**
+
+**Subject (evidence-grounded).** A real, owner-scoped durable Structured Export exists
+(`engine.read_export_service.produce_project_export`) but is reachable by **no shipped human-facing path**:
+`web/app.py` does not consume the seam at all; the only shipped consumer (`web/api_v1.py`, P7-I2) requires a
+machine Bearer credential whose issuance helper `issue_api_credential` has **no shipped call site**; and
+`/session/<sid>/deliverable` is a different surface that requires a live in-memory session. The increment adds
+**reachability**, not a new capability.
+
+**Architecture constraints registered.** Consume the existing `_current_account()` and durable-ownership models
+unchanged; consume the canonical export payload unchanged; inherit the seam's **stricter** NULL-owner denial
+(legacy/anonymous projects are not exportable here) without "reconciling" it against `_project_authorized`; do
+**not** mount under `/api/` (an existing test asserts exactly two `/api/` routes) and do not reuse the P7-I2
+`api_version` / `export_contract_version` wire identity; no persistence/schema/migration change; GET requires no
+CSRF; new UI strings must carry **both** `en` and `ar` variants.
+
+**Truthful product label required.** Project-scoped wording only (`Export project` / `Export project data`).
+Explicitly prohibited: `Export my data`, `Export account`, `Export all my data`, or any legal subject-access
+framing — the payload contains one project's assertions and domain support-state, and no account, credential,
+commercial, subscription, provider, audit, or cross-project data.
+
+**Phase-7 §25 PRESERVED (not rewritten).** P10-D3a writes **no** `access_audit` event from the browser surface.
+`access_audit` is append-only with retention/cleanup explicitly deferred under Phase-7 §25; extending it to a new
+surface would enlarge an append-only table whose retention question is open and would reclassify a **closed**
+disposition. The current factual state is consumed only; the disposition is not reopened. This limitation is
+recorded deliberately and truthfully.
+
+**Boundary / status.** Governance-only; zero runtime/test/classifier/scoring/progression/persistence/security
+diff. `OWNER_DECISION_REGISTER.md` UNCHANGED. Creating or merging this contract **does NOT authorize
+implementation** — implementation requires separate explicit Owner authorization. No automatic successor gate.
+**No PSRR trigger** (PSRR remains triggered before first public production deployment). **No deployment
+authority** (`OD-P`'s separate deployment gate **and** explicit Owner deployment authorization both remain
+independently required and unsatisfied). Does NOT authorize Account Deactivation, physical deletion, retention
+cleanup, account-wide export, audit export, API credential issuance, legal/privacy drafting, or any GDPR/PDPL
+conclusion. Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next required
+gate: **Mandatory Creator Grill on this exact candidate**, then Independent External Review — the latter not
+performed here.
