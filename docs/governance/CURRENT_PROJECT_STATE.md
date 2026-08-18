@@ -2373,6 +2373,24 @@ AUTHORIZED / NOT STARTED.***
   third domain activated or implied. Next required gate: Mandatory Grill on this exact candidate, then the
   governed lifecycle. After this merges, the next eligible steps are Mechanical activation post-merge verification
   and/or a future Mechanical P9-QS qualification gate — neither authorized or performed here.
+
+- **Phase 9 Remaining-Obligation / Exit-Criteria Review (read-only) + Phase 9 Vacuous Picker Test Corrective
+  Implementation (candidate, PR pending), base `48b8177` (PR #504, authoritative).** The read-only review
+  independently reconfirmed the full Phase 9 obligation matrix DISCHARGED/AUTHORITATIVE (D3, P9-QS, P9-E1, P9-E2,
+  P9-E2-R, Mechanical qualification, safety-cue family, L2SC-01, L10N-RH-01, Tier-1 label, Mechanical activation,
+  corrected P9-QS governance) and returned **PHASE 9 CLOSURE ELIGIBILITY: NOT YET ELIGIBLE**, naming exactly ONE
+  MUST-FIX blocker: `test_mechanical_not_offered_in_start_domain_picker` (`GET /start` → 405, vacuous assertions;
+  stale premise now that Mechanical is correctly activated). All other known debts confirmed NON-BLOCKING/OUTSIDE
+  PHASE 9; D4/D8/IoT/drone/renewable confirmed outside this Phase 9's closure scope. No candidate created by the
+  review itself. The corrective gate renamed the test to
+  `test_start_domain_picker_offers_only_activated_domains`, rewrote it to exercise the real `POST /start` D2
+  picker path and assert the offered set equals `activated_domains()` exactly, and mutation-proved it load-bearing
+  (remove-mechanical → RED; add-unintended-domain → RED; both restored byte-identically). **Changed file:
+  `tests/test_p6_1_truthful_domain_labeling.py` only** — zero production diff. Full suite unchanged: 2696 passed /
+  3 skipped / 1 xfailed / 0 failed. `OWNER_DECISION_REGISTER.md` UNCHANGED. **Phase 9 remains OPEN** — closure
+  eligibility is NOT declared by this candidate; a fresh Remaining-Obligation / Exit-Criteria Review is the next
+  gate. Phase 10 / PSRR / deployment remain NOT AUTHORIZED. Full detail:
+  `docs/governance/P9_VACUOUS_PICKER_TEST_CORRECTIVE_RECORD.md`.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
