@@ -37,7 +37,7 @@ form{display:inline-block;margin:6px 8px 0 0}
   {% if owned_projects %}
     <ul style="padding-left:18px;font-size:14px">
       {% for pid in owned_projects %}
-      <li><a href="/session/{{ pid }}">{{ t('UI_A_ACCOUNT_007') }}</a> <span style="color:#888">({{ pid[:8] }}…)</span></li>
+      <li><a href="/session/{{ pid }}">{{ t('UI_A_ACCOUNT_007') }}</a> · <a href="/account/projects/{{ pid }}/export">{{ t('UI_A_ACCOUNT_012') }}</a> <span style="color:#888">({{ pid[:8] }}…)</span></li>
       {% endfor %}
     </ul>
   {% else %}

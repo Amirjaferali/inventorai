@@ -3,6 +3,7 @@ InventorAI Web Interface (Phase H-A)
 Thin web shell only. Engine called as library.
 SESSION_STORE: in-memory, non-production, temporary.
 """
+import json
 import os
 import re
 import secrets
@@ -41,6 +42,9 @@ from engine.deliverable_assembler import assemble_deliverable
 import sqlite3
 from engine.record_store import SqliteRecordStore, StoreError
 from engine.record_contract import ProjectRecordContract
+# P10-D3a (established contract, PR #510): the canonical internal read/export
+# seam (P7-I1), consumed UNMODIFIED by the browser self-service export route.
+from engine import read_export_service as _read_export
 # P5-1 — Account & Credential Foundation (Phase 5, Option A). Additive account
 # persistence + pure credential helpers + a development email sink. NO login /
 # authenticated session / project ownership here (those are P5-2 / P5-3).
@@ -1472,6 +1476,56 @@ def _owned_projects(account):
         return _get_store().project_ids_for_owner(account["account_id"])
     except Exception:
         return []
+
+
+@app.route("/account/projects/<project_id>/export", methods=["GET"])
+def account_project_export(project_id):
+    """P10-D3a — Self-Service Project Export (established contract
+    ``docs/governance/P10_D3A_SELF_SERVICE_PROJECT_EXPORT_INCREMENT_CONTRACT.md``,
+    merged PR #510).
+
+    ONE browser/session-authenticated, PROJECT-SCOPED export: the signed-in
+    durable OWNER downloads the canonical Structured Export of one owned project.
+    The route is pure glue — identity comes from the existing validated
+    ``_current_account()`` seam and the decision + payload come from the existing
+    canonical P7-I1 seam ``produce_project_export``, consumed UNMODIFIED (§S-3).
+    The seam's STRICTER durable-owner rule is binding here (§6.2): a NULL-owner
+    legacy/anonymous project is denied — this route never falls back to the more
+    permissive ``_project_authorized`` capability helper.
+
+    Denial is ONE generic, non-enumerating response (§S-4): anonymous callers,
+    non-owners, missing projects, and NULL-owner projects all receive the exact
+    same ``_deny_project()`` redirect, so a denial never reveals whether a
+    project exists or who owns it. Any unexpected failure FAILS CLOSED (§S-4b):
+    a bare generic 503 with no traceback, exception text, or partial payload.
+
+    The success response is the seam dict serialized directly as
+    ``application/json`` with a deterministic project-scoped attachment filename
+    (§S-4a): no wrapper key, no API-v1 envelope, no HTML, no transformation. No
+    API credential is required or consulted; no ``access_audit`` event is
+    written (§6.4 — the deferred Phase-7 §25 disposition is preserved, not
+    extended); nothing durable is created or mutated."""
+    account = _current_account()
+    if account is None:
+        return _deny_project()
+    try:
+        export = _read_export.produce_project_export(
+            _get_store(), project_id, account["account_id"])
+        body = json.dumps(export)
+    except _read_export.ProjectAccessDenied:
+        return _deny_project()
+    except Exception:
+        # Fail closed (§S-4b): generic, empty-bodied 503 — never a traceback,
+        # internal detail, or partial export served as success.
+        return app.response_class(status=503)
+    response = app.response_class(
+        response=body,
+        status=200,
+        mimetype="application/json",
+    )
+    response.headers["Content-Disposition"] = (
+        'attachment; filename="inventorai-project-%s-export.json"' % project_id)
+    return response
 
 
 @app.route("/logout", methods=["POST"])
