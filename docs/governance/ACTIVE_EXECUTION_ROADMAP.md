@@ -10608,3 +10608,49 @@ SATISFIED** on the live activated runtime. See `OWNER_DECISION_REGISTER.md` row 
 `MECHANICAL_P9QS_QUALIFICATION_STATUS_RECORD.md` for the full governance-truth correction. This note corrects
 attribution/currency only — it authorizes no implementation, no Phase 9 closure, no Phase 10, no PSRR, no
 deployment. Phase 9 remains OPEN (a Remaining-Obligation / Exit-Criteria Review remains the next gate).
+
+---
+
+## Phase 9 Remaining-Obligation / Exit-Criteria Review — read-only — PHASE 9 CLOSURE ELIGIBILITY: NOT YET ELIGIBLE
+
+**Gate.** Read-only Remaining-Obligation / Exit-Criteria Review on authoritative tip `48b8177` (PR #504 merge).
+Reconstructed the full Phase 9 obligation matrix (D3, P9-QS, P9-E1, P9-E2, P9-E2-R, Mechanical qualification,
+Mechanical safety-cue family, L2SC-01, L10N-RH-01, Tier-1 label, Mechanical activation, corrected P9-QS
+governance) — all independently reconfirmed DISCHARGED/AUTHORITATIVE. Exactly ONE MUST-FIX blocker identified:
+`tests/test_p6_1_truthful_domain_labeling.py::test_mechanical_not_offered_in_start_domain_picker` — a falsely
+vacuous test (`GET /start` → 405, assertions pass regardless of real picker content) with a stale premise
+(Mechanical is now correctly activated and IS offered). All other known debts (stale `classify_domain` docstring,
+4 historical test-file comments, `UI_B_START_024` wording, missing real E2E Tier-1 chain test, CLI real-banner
+coverage) remain NON-BLOCKING or OUTSIDE PHASE 9, unchanged from prior classification. D4/D8/IoT-drone-renewable
+future domains confirmed OUTSIDE current Phase 9 closure scope (Mechanical is the sole domain-activation
+workstream this repository's Phase 9 was actually executed against; no document conditions this Phase 9's closure
+on additional domains). Full suite reconfirmed unchanged: 2696/3/1/0. Governance-only; zero runtime/test diff (no
+file changed by the review itself). **No candidate created** by this review, per its own governing instructions.
+Next gate: the bounded vacuous-picker-test corrective implementation gate (below).
+
+---
+
+## Phase 9 Vacuous Picker Test — Corrective Implementation — LOW-RISK; test-only; ZERO production diff
+
+**Gate.** Corrects the sole MUST-FIX blocker identified by the Remaining-Obligation / Exit-Criteria Review above.
+Base: `48b81773f9ee68ca9d897931a43271609c3bdeac` (PR #504 merge, authoritative). Full detail:
+`docs/governance/P9_VACUOUS_PICKER_TEST_CORRECTIVE_RECORD.md`.
+
+**Correction.** `test_mechanical_not_offered_in_start_domain_picker` renamed to
+`test_start_domain_picker_offers_only_activated_domains`; rewritten to POST a real NONE-classifying idea to
+`/start` (the real D2 explicit-choice picker path, `choice_domains=activated` at `web/app.py:1753`) and assert the
+offered `domain_choice` set equals `activated_domains()` exactly (`{"electronics_electrical", "mechanical"}`),
+excluding recognized-but-not-activated domains (`medical_device`, `software`). Load-bearing proof: mutation
+removing `mechanical` from the allowlist → RED; mutation adding an unintended `software` → RED; both restored
+byte-identically (`sha256sum` confirmed, `git diff --stat` empty after restoration). Test GREEN before and after.
+
+**Boundary / status.** **Changed file: `tests/test_p6_1_truthful_domain_labeling.py` only** — zero production/
+classifier/scoring/progression/persistence/security/schema/registry diff. Focused: 32 passed (net count
+unchanged — one test corrected in place). Relevant activation/picker/admission suite: 138 passed. Full governed
+suite: **2696 passed / 3 skipped / 1 xfailed / 0 failed** — unchanged. `OWNER_DECISION_REGISTER.md` UNCHANGED.
+**Phase 9 remains OPEN** — this candidate does NOT declare closure-eligibility; that requires a fresh
+Remaining-Obligation / Exit-Criteria Review as a separate later gate. Phase 10 / PSRR / deployment remain NOT
+AUTHORIZED. No third domain activated or implied; D4/D8 untouched. Authoritative ONLY if/when this exact
+candidate is merged and post-merge verified. Next required gate: **Mandatory Grill on this exact candidate**,
+then the governed lifecycle. After this merges, the next eligible step is a fresh **Phase 9 Remaining-Obligation
+/ Exit-Criteria Review** — not authorized or performed here.

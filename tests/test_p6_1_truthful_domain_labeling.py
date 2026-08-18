@@ -262,13 +262,26 @@ def test_mechanical_now_really_activated_not_by_label_alone():
     assert domain_activation.activated_domains() == ["electronics_electrical", "mechanical"]
 
 
-def test_mechanical_not_offered_in_start_domain_picker(client):
-    """The `/start` entry page's domain choice set is driven exclusively by
-    `activated_domains()`, never by the Tier-1 label catalog — adding a
-    Mechanical label must not make Mechanical a selectable/offered domain."""
-    body = client.get("/start").get_data(as_text=True)
-    assert EN_MECHANICAL not in body
-    assert 'value="mechanical"' not in body
+def test_start_domain_picker_offers_only_activated_domains(client):
+    """The `/start` entry page's real D2 explicit-choice picker (rendered on a
+    NONE-classified idea, per `web/app.py`'s `choice_domains=activated`) is
+    driven exclusively by `activated_domains()`, never by the Tier-1 label
+    catalog or the full domain-registry recognized set. `/start` is POST-only
+    (a bare GET never reaches this picker), so this exercises the real
+    production POST flow. Corrects a prior vacuous version of this test that
+    used `client.get("/start")` (405, generic error page) and so passed
+    regardless of real picker content; also corrects that prior version's now-
+    stale premise (written before Mechanical's real, explicit Owner-authorized
+    activation) that Mechanical must NOT be offered — Mechanical is now
+    genuinely activated and is correctly offered."""
+    import engine.domain_activation as domain_activation
+    idea = "A gadget that watches for a problem and warns the homeowner right away"
+    body = client.post("/start", data={"idea": idea}).get_data(as_text=True)
+    offered = set(re.findall(r'name="domain_choice" value="([^"]+)"', body))
+    assert offered == set(domain_activation.activated_domains())
+    assert offered == {"electronics_electrical", "mechanical"}
+    assert 'value="medical_device"' not in body
+    assert 'value="software"' not in body
 
 
 def test_tier1_label_alone_did_not_widen_admission_at_entry_gate(client, monkeypatch):

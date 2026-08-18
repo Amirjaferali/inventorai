@@ -41,9 +41,43 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — CORRECTED MECHANICAL P9-QS QUALIFICATION GOVERNANCE CANDIDATE; governance-only; MATERIAL
-CORRECTION of rejected candidate `c63724b`; Mechanical P9-QS qualification SATISFIED; Phase 9 OPEN; Phase
-10/deployment NOT AUTHORIZED; ODR — new row `D-P9-MECH-04`):** Base: `5a1d2c15ad680b8b80304b51a3885fac42e32f56`
+**Status (current — PHASE 9 VACUOUS PICKER TEST CORRECTIVE IMPLEMENTATION; LOW-RISK; test-only; ZERO production
+diff; corrects the sole MUST-FIX blocker from the Phase 9 Remaining-Obligation / Exit-Criteria Review; Phase 9
+OPEN):** Base: `48b81773f9ee68ca9d897931a43271609c3bdeac` (PR #504 merge — corrected Mechanical P9-QS
+qualification governance, authoritative). Full detail:
+`docs/governance/P9_VACUOUS_PICKER_TEST_CORRECTIVE_RECORD.md`.
+
+**Preceding review (read-only, no candidate created).** A Phase 9 Remaining-Obligation / Exit-Criteria Review on
+this same base independently reconfirmed the full Phase 9 obligation matrix DISCHARGED/AUTHORITATIVE (D3, P9-QS,
+P9-E1, P9-E2, P9-E2-R, Mechanical qualification, safety-cue family, L2SC-01, L10N-RH-01, Tier-1 label, Mechanical
+activation, corrected P9-QS governance) and returned **PHASE 9 CLOSURE ELIGIBILITY: NOT YET ELIGIBLE**, naming
+exactly ONE MUST-FIX blocker: a vacuous test. All other known debts remained NON-BLOCKING / OUTSIDE PHASE 9. D4,
+D8, and IoT/drone/renewable future domains confirmed outside this Phase 9's closure scope (Mechanical is the sole
+domain-activation workstream this repository's Phase 9 was executed against).
+
+**Defect and correction.** `tests/test_p6_1_truthful_domain_labeling.py::
+test_mechanical_not_offered_in_start_domain_picker` called `client.get("/start")` — `/start` is POST-only, so this
+received Flask's generic 405 page and the assertions passed vacuously regardless of real picker content; its
+premise was also stale (Mechanical is now correctly activated and IS offered). Renamed to
+`test_start_domain_picker_offers_only_activated_domains`; rewritten to POST a real NONE-classifying idea to
+`/start` (the real D2 picker path, `choice_domains=activated` at `web/app.py:1753`) and assert the offered
+`domain_choice` set equals `activated_domains()` exactly. Mutation-proved load-bearing: removing `mechanical` from
+the allowlist → RED; adding an unintended `software` → RED; both restored byte-identically.
+
+**Boundary / status.** **Changed file: `tests/test_p6_1_truthful_domain_labeling.py` only** — zero production/
+classifier/scoring/progression/persistence/security/schema/registry diff (confirmed via `git diff --stat` and
+`sha256sum` on the mutation-probed file after restoration). Focused: 32 passed (net count unchanged). Relevant
+suite: 138 passed. Full governed suite: **2696 passed / 3 skipped / 1 xfailed / 0 failed** — unchanged.
+`OWNER_DECISION_REGISTER.md` UNCHANGED. **Phase 9 remains OPEN** — this candidate does NOT declare closure-
+eligibility. Phase 10 / PSRR / deployment remain NOT AUTHORIZED. No third domain activated or implied; D4/D8
+untouched. Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next required gate:
+**Mandatory Grill on this exact candidate**, then the governed lifecycle. After this merges, the next eligible
+step is a fresh **Phase 9 Remaining-Obligation / Exit-Criteria Review** — not authorized or performed here.
+
+**Immediately prior (CORRECTED Mechanical P9-QS Qualification Governance Candidate, candidate `f01e2a5` —
+accepted and merged via PR #504 `48b8177`; retained as history):** MATERIAL CORRECTION of rejected candidate
+`c63724b` (preserved immutable, unpushed, unamended at `refs/rejected/mechanical-p9qs-status-c63724b`). Base:
+`5a1d2c15ad680b8b80304b51a3885fac42e32f56`
 (PR #503 merge — Mechanical activation, authoritative). The prior qualification-status candidate,
 `c63724b3e7f8e5fa5e5ada8739f3d80f8319efb7`, was independently **REJECTED** (verdict: MATERIAL CORRECTION
 REQUIRED — MD-1: `OWNER_DECISION_REGISTER.md` row `D-P9-MECH-03` was left asserting qualification "remains a
