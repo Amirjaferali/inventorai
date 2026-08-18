@@ -2391,6 +2391,22 @@ AUTHORIZED / NOT STARTED.***
   eligibility is NOT declared by this candidate; a fresh Remaining-Obligation / Exit-Criteria Review is the next
   gate. Phase 10 / PSRR / deployment remain NOT AUTHORIZED. Full detail:
   `docs/governance/P9_VACUOUS_PICKER_TEST_CORRECTIVE_RECORD.md`.
+
+- **Fresh Phase 9 Remaining-Obligation / Exit-Criteria Review (post-correction reassessment, candidate, PR
+  pending), base `1a0f6ee` (PR #505, authoritative).** Independently reconfirmed the prior sole MUST-FIX (vacuous
+  picker test) genuinely discharged on the merged tip — old test gone; corrected
+  `test_start_domain_picker_offers_only_activated_domains` uses a real `POST /start` flow, re-proven load-bearing
+  via a fresh mutation probe this gate. Rebuilt the complete Phase 9 obligation matrix fresh: D3, P9-QS, P9-E1,
+  P9-E2, P9-E2-R, Mechanical qualification, safety-cue family, L2SC-01, L10N-RH-01, Tier-1 label, Mechanical
+  activation, corrected P9-QS governance, vacuous-picker corrective gate — all DISCHARGED. Five known non-blocking
+  debts unchanged; D4/D8/IoT/drone/renewable confirmed outside this Phase 9's closure scope. Fresh stale-truth
+  sweep: STALE/UNSUPPORTED live-current count = 0. Safety/determinism sweep PASS. Full suite unchanged: 2696
+  passed / 3 skipped / 1 xfailed / 0 failed. **Verdict: PHASE 9 CLOSURE ELIGIBILITY: ELIGIBLE.** Per this gate's
+  own governing instructions, an eligibility finding does NOT close Phase 9 — **Phase 9 remains OPEN**; no formal
+  closure performed, authorized, or implied. Phase 10 / PSRR / deployment remain NOT AUTHORIZED.
+  `OWNER_DECISION_REGISTER.md` UNCHANGED. Governance-only; zero runtime/test diff. Next eligible step (not
+  performed here) is a separate, Owner-authorized Phase 9 formal closure gate. Full detail:
+  `docs/governance/P9_REMAINING_OBLIGATION_EXIT_CRITERIA_REVIEW_ELIGIBLE_RECORD.md`.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation
