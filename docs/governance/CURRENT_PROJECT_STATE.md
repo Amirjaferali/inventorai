@@ -2407,6 +2407,22 @@ AUTHORIZED / NOT STARTED.***
   `OWNER_DECISION_REGISTER.md` UNCHANGED. Governance-only; zero runtime/test diff. Next eligible step (not
   performed here) is a separate, Owner-authorized Phase 9 formal closure gate. Full detail:
   `docs/governance/P9_REMAINING_OBLIGATION_EXIT_CRITERIA_REVIEW_ELIGIBLE_RECORD.md`.
+
+- **Phase 9 — Formal Closure (candidate, PR pending), base `833f657` (PR #506, authoritative).**
+  **PHASE 9 = FORMALLY CLOSED / AUTHORITATIVE** (conditional on this exact candidate merging and post-merge
+  verification). Reconfirmed at this exact tip: MUST-FIX count 0, material conflict count 0, former vacuous
+  picker-test blocker remains discharged, `activated_domains() == ['electronics_electrical', 'mechanical']`
+  verified live, full suite unchanged 2696/3/1/0, safety/determinism sweep re-run with no regression. **What
+  Phase 9 delivered:** D3, P9-E1/P9-PREREQ-A, P9-E2/P9-PREREQ-B, P9-E2-R, Mechanical P9-QS qualification (zero
+  open/blocked criteria), Mechanical safety-cue family, L2SC-01, L10N-RH-01, Tier-1 EN/AR Mechanical public
+  label, Mechanical activation, and the vacuous-picker corrective gate — all CLOSED/DISCHARGED/AUTHORITATIVE.
+  `Mechanical = ACTIVE. Mechanical P9-QS = SATISFIED.` Five known non-blocking debts (stale `classify_domain`
+  docstring; 4 historical test-file comments; `UI_B_START_024` wording; missing real E2E Tier-1 chain test; CLI
+  real-banner coverage) remain explicitly preserved, live, post-Phase-9 debt — NOT claimed fixed. D4, D8,
+  IoT/drone/renewable/other future domains, Phase 10, PSRR, and deployment remain explicitly outside/deferred —
+  none authorized, started, or implied. `OWNER_DECISION_REGISTER.md` UNCHANGED (Phase 8 formal-closure
+  precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
+  count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
   Phase-7 §25 deferred security/ops items (Monitoring; broad Abuse Controls; `access_audit` retention; production secrets
   operations) remain NOT delivered / NOT solved — PSRR may reassess, not auto-implement. Phases 8/9/10, deployment, and
   separately governed capabilities remain NOT AUTHORIZED. (The now-superseded §5-open wording below is retained as history.) **Product-Foundation

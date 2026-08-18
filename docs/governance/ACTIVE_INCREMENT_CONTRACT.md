@@ -41,8 +41,37 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — FRESH PHASE 9 REMAINING-OBLIGATION / EXIT-CRITERIA REVIEW; post-correction reassessment;
-read-only; PHASE 9 CLOSURE ELIGIBILITY: ELIGIBLE; Phase 9 remains OPEN, NOT closed by this record):** Base:
+**Status (current — PHASE 9 FORMAL CLOSURE; governance-only; PHASE 9 = FORMALLY CLOSED / AUTHORITATIVE,
+conditional on merge + post-merge verification):** Base: `833f657d24d0d8d6d679cd3935ab9fb84c1f50ec` (PR #506
+merge — Fresh Phase 9 Remaining-Obligation / Exit-Criteria Review, authoritative; verdict ELIGIBLE, zero
+MUST-FIX, zero material conflict). Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
+
+**Reconfirmation at this exact tip.** MUST-FIX count = 0; material conflict count = 0; former vacuous
+picker-test blocker remains discharged; no new evidence invalidates eligibility; `activated_domains() ==
+['electronics_electrical', 'mechanical']` verified live; full suite unchanged 2696/3/1/0; safety/determinism
+sweep re-run this gate with no regression.
+
+**What Phase 9 delivered.** The Mechanical domain-activation workstream: D3, P9-E1/P9-PREREQ-A, P9-E2/
+P9-PREREQ-B, P9-E2-R, Mechanical P9-QS qualification (zero open/blocked criteria), the Mechanical safety-cue
+family, L2SC-01, L10N-RH-01, the Tier-1 EN/AR Mechanical public label, explicit Owner-authorized Mechanical
+activation, and the vacuous-picker-test corrective gate — all CLOSED/DISCHARGED/AUTHORITATIVE. `Mechanical =
+ACTIVE. Mechanical P9-QS = SATISFIED.` Five known non-blocking debts (stale `classify_domain` docstring, 4
+historical test-file comments, `UI_B_START_024` wording, missing real E2E Tier-1 chain test, CLI real-banner
+coverage) remain explicitly preserved, live, post-Phase-9 debt — NOT claimed fixed. D4, D8, IoT/drone/renewable/
+other future domains, Phase 10, PSRR, and deployment remain explicitly outside/deferred — none authorized,
+started, or implied by this closure.
+
+**Boundary / status.** Governance-only; zero runtime/test/classifier/scoring/progression/persistence/security
+diff. `OWNER_DECISION_REGISTER.md` UNCHANGED — formal closure of an already-authorized, already-executed,
+already-qualified phase, not a new Owner decision (Phase 8 formal-closure precedent). Governance truth sweep:
+STALE/UNSUPPORTED live-current count = 0. Authoritative ONLY if/when this exact candidate is merged and
+post-merge verified. Next required gate: **Mandatory Grill on this exact candidate**, then the governed
+lifecycle. After this merges, no further Phase 9 gate is expected; Phase 10, PSRR, deployment, and any future
+domain-activation workstream each require their own separate, explicit Owner authorization.
+
+**Immediately prior (Fresh Phase 9 Remaining-Obligation / Exit-Criteria Review, candidate `c513293` — accepted
+and merged via PR #506 `833f657`; retained as history):** post-correction reassessment; read-only; returned
+**PHASE 9 CLOSURE ELIGIBILITY: ELIGIBLE**; Phase 9 remained OPEN (not closed by that record). Base:
 `1a0f6ee8d1af91e7e078aaa96e7c63782fc9a3c2` (PR #505 merge — Phase 9 vacuous picker test corrective
 implementation, authoritative). Full detail:
 `docs/governance/P9_REMAINING_OBLIGATION_EXIT_CRITERIA_REVIEW_ELIGIBLE_RECORD.md`.
