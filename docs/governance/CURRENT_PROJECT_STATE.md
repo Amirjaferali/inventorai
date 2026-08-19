@@ -2424,7 +2424,32 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
-- **Phase 10 — P10-DEP1 LOCAL DEPENDENCY-AUDIT FOUNDATION (Owner-authorized bounded tooling/evidence
+- **Phase 10 — P10-RL1 RELEASE-READINESS CHECKLIST FOUNDATION (Owner-authorized bounded governance/status
+  candidate, PR pending; RUNTIME CODE REQUIRED: NO), base `b1a0196aaf1f6892996c618c69cb341872ecaf52`
+  (PR #526 merge — P10-DEP1, authoritative; parents `8563320b…`/`ec0795d9…`, merge tree `96cf5857…` =
+  candidate tree, empty candidate→merge diff — independently re-verified).** Delivers
+  `docs/governance/PHASE_10_RELEASE_READINESS_CHECKLIST.md` — a readiness TRUTH SURFACE (NOT an approval
+  gate; owns no decision; canonical-owner check found no prior checklist and preserved PSRR/P10-C/ODR
+  ownership): 58 source-traced items (RL-A1…RL-G8) under the bounded eight-status vocabulary; all seven
+  local foundations verified LIVE before being marked; foundations ≠ production readiness; SEC2 residual
+  gaps and DEP1 point-in-time + `tests/requirements-draft-l2.txt` TEST-ONLY nuances preserved; legal/tax/
+  commercial items DEFERRED/COMMERCIAL-DECISION-REQUIRED (nothing concluded); all providers NOT SELECTED;
+  PSRR REGISTERED ≠ TRIGGERED ≠ EXECUTED ≠ GO (`PSRR TRIGGERED: NO`; the checklist triggers nothing);
+  deployment distinct; `PAID ACTIVATION AUTHORIZED: NO`; **`PHASE 10 CLOSURE ELIGIBLE NOW: NO`** with a
+  full blocking summary. Validation: `tests/test_p10_rl1_release_readiness_checklist.py` (10 invariants;
+  structural RED 10/10-absent → GREEN 10/10; two pre-freeze precision fixes — explicit sources for two
+  rows, negation-aware provider guard). Full suite 2864/3/1/0 (prior 2854 + 10 new, zero regressions;
+  zero runtime/schema/dependency diff). `OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY if/when
+  this exact candidate is merged and post-merge verified.
+
+- **Phase 10 — P10-DEP1 LOCAL DEPENDENCY-AUDIT FOUNDATION: MERGED / AUTHORITATIVE (candidate `ec0795d9…`
+  Owner-accepted at that exact SHA, PR #526, tip `b1a0196aaf1f6892996c618c69cb341872ecaf52`; parents
+  `8563320b…`/`ec0795d9…`, merge tree `96cf5857…` = candidate tree, empty candidate→merge diff —
+  independently re-verified).** The audit wrapper, offline tooling tests, and point-in-time zero-findings
+  evidence are authoritative; formal production dependency review remains PSRR-time. (Original
+  candidate-stage bullet retained below as history.)
+
+- **(superseded history) Phase 10 — P10-DEP1 LOCAL DEPENDENCY-AUDIT FOUNDATION (was: Owner-authorized bounded tooling/evidence
   candidate, PR pending), base `8563320b626b8590f10cbf252c9eba0a03b6fbd6` (PR #525 merge — P10-SEC2,
   authoritative; parents `9d6bf3d9…`/`516128b7…`, merge tree `c3626080…` = candidate tree, empty
   candidate→merge diff — independently re-verified).** Dependency truth: `requirements.txt` is the single

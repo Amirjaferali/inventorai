@@ -11639,3 +11639,56 @@ payment/legal/tax change. PAID ACTIVATION AUTHORIZED: NO (`D-P8-PL-01 class C`);
 EXECUTION AUTHORIZED: NO; DEPLOYMENT AUTHORIZED: NO (`OD-P`). `OWNER_DECISION_REGISTER.md` UNCHANGED. No
 auto-activated successor (P10-C §10). Authoritative ONLY if/when this exact candidate is merged and
 post-merge verified. Next required step: **Independent External Review of this exact SHA + bundle**.
+
+---
+
+## P10-RL1 — Release-Readiness Checklist Foundation (Owner-authorized bounded governance/status candidate)
+
+**Base:** `b1a0196aaf1f6892996c618c69cb341872ecaf52` (PR #526 merge — P10-DEP1 dependency-audit foundation,
+authoritative; independently re-verified: parents `8563320b…`/`ec0795d9…`, merge tree `96cf5857…` equal to
+the accepted candidate tree, empty candidate→merge diff). **P10-DEP1 synchronization (recorded here per
+repository convention):** the P10-DEP1 candidate `ec0795d9…` was Owner-accepted at that exact SHA and
+MERGED via PR #526 — AUTHORITATIVE (local dependency-audit foundation; point-in-time zero-findings
+evidence).
+
+**Canonical-owner / overlap check (mandatory, performed).** NO existing release/launch/go-live checklist
+existed. Adjacent canonical owners preserved, not duplicated: PSRR registration (PSRR scope/trigger/
+GO/NO-GO), P10-C §4 + remediation plan (obligation inventory), ODR gates `OD-P`/`D-PSRR-01`/`D-P8-PL-01`
+(authorization), the merged gate records (each foundation). The new artifact is a readiness TRUTH SURFACE
+that owns no decision and approves nothing.
+
+**Delivered (this candidate).** `docs/governance/PHASE_10_RELEASE_READINESS_CHECKLIST.md` — 58
+source-traced readiness items (RL-A1…RL-G8) across seven areas, each with ID/status/authoritative
+source/current-truth/blocks fields, under the banner `RELEASE READINESS CHECKLIST FOUNDATION ≠ RELEASE
+APPROVAL` and the bounded eight-status vocabulary with exact semantics (no vague statuses). All seven
+local foundations (P10-BR1/OB1/SEC1/IR1/DOC1/SEC2/DEP1) verified LIVE at this base before being marked
+IMPLEMENTED LOCAL FOUNDATION (files + runtime markers + the PR #520–#526 first-parent merge chain).
+Load-bearing distinctions preserved and TEST-ENFORCED: local foundations never imply production readiness;
+P10-SEC2 residual gaps stay visible (legacy ILT-002 start routes and criticality/decision-workspace free
+text transport-bounded ONLY; never "all inputs fully hardened"); P10-DEP1 stays POINT-IN-TIME ONLY with NO
+continuous scanning / NO auto-remediation, and the separate TEST-ONLY `tests/requirements-draft-l2.txt`
+declaration (playwright pins) is recorded as NOT covered by the P10-DEP1 audit run; local backup ≠
+production backup; local observability ≠ production monitoring; internal IR ≠ customer support (no SLA);
+HSTS deferred; legal/privacy/retention/tax/commercial items all DEFERRED — EXTERNAL ADVISER REQUIRED or
+COMMERCIAL DECISION REQUIRED (nothing concluded); every provider row NOT SELECTED (none invented); PSRR
+REGISTERED ≠ TRIGGERED ≠ EXECUTED ≠ GO with `PSRR TRIGGERED: NO` and the explicit statement that this
+checklist does not trigger it; deployment authorization distinct (`OD-P` two-part); gate sequence stated;
+`PAID ACTIVATION AUTHORIZED: NO`; **`PHASE 10 CLOSURE ELIGIBLE NOW: NO`** with the blocking summary
+indexing every adviser/commercial/provider/PSRR/deployment blocker.
+
+**Validation.** `tests/test_p10_rl1_release_readiness_checklist.py` — 10 structural invariants (single
+canonical artifact; not-an-approval banner; bounded vocabulary; per-row source traceability across all 58
+rows; PSRR four-state distinction; blocked gates; no readiness overclaims — "release ready"/"production
+ready"/"PSRR complete"/"GDPR compliant"/"dependencies secure" etc. forbidden; SEC2/DEP1 nuance guards;
+negation-aware provider-selection guard). Structural RED: 10/10 fail with the artifact absent; GREEN
+10/10. Two pre-freeze precision corrections: two checklist rows' "same"-shorthand sources made explicit
+(document corrected to satisfy the traceability invariant), and one test regex made negation-aware so the
+truthful "NOT SELECTED" state is never flagged. Full suite: 2864 passed / 3 skipped / 1 xfailed / 0
+failures (prior 2854 + 10 new; zero regressions; zero runtime/schema/dependency diff).
+
+**Boundaries (binding).** Truth surface only — creates no legal requirement, tax conclusion, provider
+selection, commercial policy, security standard, or release authority; Phase 10 remains OPEN; PAID
+ACTIVATION AUTHORIZED: NO (`D-P8-PL-01 class C`); PSRR TRIGGERED: NO; PSRR EXECUTION AUTHORIZED: NO;
+DEPLOYMENT AUTHORIZED: NO (`OD-P`). `OWNER_DECISION_REGISTER.md` UNCHANGED. No auto-activated successor
+(P10-C §10). Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next
+required step: **Independent External Review of this exact SHA + bundle**.

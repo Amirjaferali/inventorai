@@ -41,10 +41,53 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — P10-DEP1 LOCAL DEPENDENCY-AUDIT FOUNDATION: Owner-authorized bounded tooling/evidence
-candidate):** Base: `8563320b626b8590f10cbf252c9eba0a03b6fbd6` (PR #525 merge — P10-SEC2 input hardening,
-authoritative; independently re-verified: parents `9d6bf3d9…` / `516128b7…`, merge tree `c3626080…` equal
+**Status (current — P10-RL1 RELEASE-READINESS CHECKLIST FOUNDATION: Owner-authorized bounded
+governance/status candidate; RUNTIME CODE REQUIRED: NO):** Base:
+`b1a0196aaf1f6892996c618c69cb341872ecaf52` (PR #526 merge — P10-DEP1 dependency-audit foundation,
+authoritative; independently re-verified: parents `8563320b…` / `ec0795d9…`, merge tree `96cf5857…` equal
 to the accepted candidate tree, empty candidate→merge diff).
+
+**Objective.** The smallest deterministic release-readiness TRUTH SURFACE:
+`docs/governance/PHASE_10_RELEASE_READINESS_CHECKLIST.md` — 58 source-traced readiness items (RL-A1…RL-G8)
+across technical/operational/security-infrastructure/legal-privacy/commercial-tax/provider/gates, using
+the bounded status vocabulary (`IMPLEMENTED LOCAL FOUNDATION` / `OPEN` / `DEFERRED — EXTERNAL ADVISER
+REQUIRED` / `PROVIDER-DEPENDENT` / `COMMERCIAL DECISION REQUIRED` / `PSRR-TIME` / `DEPLOYMENT-TIME` /
+`BLOCKED`, each precisely defined; no vague statuses). Banner (binding): `RELEASE READINESS CHECKLIST
+FOUNDATION ≠ RELEASE APPROVAL`; PSRR GO/NO-GO remains a separate future gate. Canonical-owner check
+performed: NO prior release/launch/go-live checklist existed; the artifact is a truth INDEX that owns no
+decision (PSRR scope/trigger/GO → PSRR registration; obligation inventory → P10-C §4 + remediation plan;
+authorization gates → ODR `OD-P`/`D-PSRR-01`/`D-P8-PL-01`; foundations → their merged gate records).
+All seven local foundations (BR1/OB1/SEC1/IR1/DOC1/SEC2/DEP1) verified LIVE at this base (files, runtime
+markers, and the PR #520–#526 first-parent merge chain) — never copied from summaries. Load-bearing
+nuances preserved and TEST-ENFORCED: foundations ≠ production readiness; SEC2 residual gaps visible
+(legacy ILT-002 routes + criticality/decision-workspace text transport-bounded ONLY; never "all inputs
+fully hardened"); DEP1 point-in-time-only + no continuous scanning + no auto-remediation + the
+`tests/requirements-draft-l2.txt` TEST-ONLY declaration (playwright pins) recorded as NOT covered by the
+P10-DEP1 audit run; local backup ≠ production backup; local observability ≠ production monitoring;
+internal IR ≠ customer support/SLAs; HSTS deferred; PSRR registered ≠ triggered ≠ executed ≠ GO (this
+checklist triggers nothing); deployment authorization distinct; paid activation BLOCKED; adviser-dependent
+items never marked implemented; provider items all NOT SELECTED (no provider invented).
+
+**Validation.** `tests/test_p10_rl1_release_readiness_checklist.py` — 10 structural invariants (single
+canonical artifact; not-an-approval banner; bounded status vocabulary with no vague statuses; per-row
+source traceability across all 58 rows; PSRR four-state distinction + untriggered; deployment/paid-
+activation/closure-NO lines; no readiness overclaims; SEC2/DEP1 nuances; negation-aware provider check).
+Structural RED: 10/10 fail with the checklist absent; GREEN 10/10 (two pre-freeze precision fixes: two
+rows' "same"-shorthand sources made explicit — the doc fixed to satisfy the invariant; one test regex made
+negation-aware for "NOT SELECTED"). Full suite green (exact counts in the roadmap entry).
+
+**Phase-10 closure assessment:** `PHASE 10 CLOSURE ELIGIBLE NOW: NO` (source-backed blockers indexed in
+the checklist's blocking summary). **Boundaries:** zero runtime/schema/dependency diff; no legal/tax
+conclusion; no provider selection; no commercial policy; PAID ACTIVATION AUTHORIZED: NO; PSRR TRIGGERED:
+NO; DEPLOYMENT AUTHORIZED: NO. `OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY if/when this
+exact candidate is merged and post-merge verified. Next required step: **Independent External Review of
+this exact SHA + bundle**.
+
+**Immediately prior (P10-DEP1 LOCAL DEPENDENCY-AUDIT FOUNDATION — candidate `ec0795d9…` Owner-accepted at
+that exact SHA and MERGED via PR #526, tip `b1a0196aaf1f6892996c618c69cb341872ecaf52`; now AUTHORITATIVE;
+retained as history):** Base: `8563320b626b8590f10cbf252c9eba0a03b6fbd6` (PR #525 merge — P10-SEC2 input
+hardening, authoritative; independently re-verified: parents `9d6bf3d9…` / `516128b7…`, merge tree
+`c3626080…` equal to the accepted candidate tree, empty candidate→merge diff).
 
 **Objective.** The smallest provider-neutral LOCAL dependency-audit foundation. Dependency-model truth
 (verified at base): `requirements.txt` is the SINGLE authoritative dependency source (pinned Flask==3.1.3
@@ -72,8 +115,7 @@ ENVIRONMENT TOOLING only — not added to `requirements.txt`, imported by no app
 enforcement/Dependabot/Snyk claim; `LOCAL AUDIT FOUNDATION: IMPLEMENTED` ≠ `FORMAL PRODUCTION
 DEPENDENCY/VULNERABILITY REVIEW: PSRR-TIME` (items 12–13 unsatisfied); zero runtime/schema diff; PAID
 ACTIVATION AUTHORIZED: NO; PSRR TRIGGERED: NO; DEPLOYMENT AUTHORIZED: NO. `OWNER_DECISION_REGISTER.md`
-UNCHANGED. Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next
-required step: **Independent External Review of this exact SHA + bundle**.
+UNCHANGED. MERGED via PR #526 (tip `b1a0196a…`) and post-merge verified — AUTHORITATIVE.
 
 **Immediately prior (P10-SEC2 BOUNDED INPUT-HARDENING INCREMENT — candidate `516128b7…` Owner-accepted at
 that exact SHA and MERGED via PR #525, tip `8563320b626b8590f10cbf252c9eba0a03b6fbd6`; now AUTHORITATIVE;
