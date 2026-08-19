@@ -11215,3 +11215,54 @@ payment/tax-provider or MoR selection, no paid activation, no enterprise feature
 infrastructure, no PSRR trigger, no deployment authority; no auto-activated successor (P10-C §10).
 Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next required step:
 Independent External Review of this exact SHA + bundle.
+
+---
+
+## Phase 10 — OD-CJ1 acceptance MERGED / AUTHORITATIVE (PR #518); P10-LT1 External Legal & Tax Input Commissioning Gate (candidate; governance-only; commissions questions, answers nothing)
+
+**OD-CJ1 acceptance merged (PR #518 sync).** Corrected candidate #3
+`ec2ff7f0bf8ca6d0614735717384ba887f859228` (superseding `7fe33ebb…` and `00e7f249…`, both preserved as
+immutable evidence) was Owner-accepted at that exact SHA and merged via **PR #518**, tip
+`5dfc35e34bbfc9a8681d575a7e26613a5038c674` (first parent `b98561b8…`, second parent `ec2ff7f0…`, merge tree
+`76b05623…` equal to the candidate tree, empty candidate→merge diff — independently re-verified). OD-CJ1
+(Kuwait starting jurisdiction; USD base currency; B2C+B2B eligibility; recurring + automatic-collection
+direction; PAYMENT METHOD ≠ PAYMENT PROVIDER with Visa/Mastercard/Apple Pay/KNET compatibility direction and
+wallet no-foreclosure; provider/tax/MoR neutrality; P8-I4 §15 PCI-avoidance reference; paid activation
+BLOCKED; external legal/tax register OPEN) is AUTHORITATIVE and unaltered. **Milestone standing: all five
+gate-registered decisions (OD-J1, OD-J2, OD-DR1, OD-DR2, OD-CJ1) are accepted and merged.** A subsequent
+read-only Phase-10 remaining-obligations reconstruction at this tip determined `PHASE 10 STATUS: OPEN` and
+selected the commissioning gate below as the next smallest sufficient governed step.
+
+**P10-LT1 — External Legal & Tax Input Commissioning Gate (this candidate).** Governance-only. Purpose: TO
+DEFINE THE EXACT QUESTIONS, FACT PACKAGE, REQUIRED ADVISER QUALIFICATIONS, ANSWER FORMAT, AND
+INTAKE/ACCEPTANCE PROTOCOL FOR EXTERNAL LEGAL AND TAX/ACCOUNTING INPUT — answering nothing, concluding
+nothing, drafting nothing, selecting no adviser/firm/provider. Contents: a 27-item external LEGAL question
+register (LQ-01…LQ-27: entity/contracting identity/disclosures; privacy-regime applicability incl. Kuwait
+PDPL and GDPR as QUESTIONS; data-rights scope incl. legal implementation of accepted OD-DR1/OD-DR2; B2C
+consumer protection incl. recurring-consent/refund/cooling-off/local-currency display; B2B terms; subscription/
+payment disclosures incl. Apple Pay/KNET/card-scheme specifics); a 13-item TAX/ACCOUNTING register
+(TQ-01…TQ-13: registrations; VAT/GST if any; cross-border; B2C-vs-B2B; reverse-charge/withholding;
+invoicing/records; USD acceptability; presentation; digital-service rules; MoR impact and MoR-vs-direct fact
+needs); a fully cited repository-authoritative adviser FACT PACK (product, users, jurisdictional/currency/
+method intents, actual data processing, deactivation-vs-erasure and export truths, no-live-billing/transfer
+truths, PCI-avoidance principle, legal-artifact absence, OD-A temporary-name status); bounded adviser
+QUALIFICATIONS (legal counsel: Kuwait commercial/consumer, privacy, digital-subscription, cross-border; tax/
+accounting adviser: Kuwait tax, digital services, cross-border B2C/B2B, invoicing; optional privacy-specialist
+lane — no firm/person selected); a mandatory structured ANSWER FORMAT (14 fields incl. mandatory-vs-
+recommended classification and adviser credentials); the INTAKE PROTOCOL `EXTERNAL RESPONSE → SOURCE
+VERIFICATION → INTERNAL MAPPING → OWNER REVIEW → GOVERNANCE CANDIDATE → CREATOR GRILL → INDEPENDENT REVIEW →
+OWNER ACCEPTANCE` with external advice classified as EVIDENCE/INPUT never automatic authority; and the
+CONFLICT/SUPERSESSION rule (no merging of disagreeing advice; Owner escalation; supersession only via explicit
+governance acceptance; history preserved). Full detail:
+`docs/governance/P10_LT1_EXTERNAL_LEGAL_TAX_INPUT_COMMISSIONING_GATE.md`.
+
+**Boundaries.** No legal-artifact drafting (Privacy Policy/Terms/Subscription/Refund/Cookie/payment/consent/
+B2B/data-processing/contact disclosures — draftable only after accepted external input); no commercial-policy
+decisions (price/frequency/trials/grace/dunning/refunds/cancellation/renewal/discounts/B2B pricing/packaging/
+methods/provider/MoR — counsel-needed assumptions register as OWNER INPUT REQUIRED); no provider/infrastructure
+selections (OD-J2 delegated gate separate); PAID ACTIVATION AUTHORIZED: NO (`D-P8-PL-01 class C` not satisfied
+by this gate); PSRR TRIGGERED: NO; PSRR EXECUTION AUTHORIZED: NO; DEPLOYMENT AUTHORIZED: NO. External-input
+register operationalized, NOT closed; P8C §5 / P8-I4 deferred registers remain open; OD decisions unaltered.
+Governance-only; zero runtime/test diff; no auto-activated successor (P10-C §10). Authoritative ONLY if/when
+this exact candidate is merged and post-merge verified. Next required step: Independent External Review of
+this exact SHA + bundle.

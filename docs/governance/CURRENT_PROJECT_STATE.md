@@ -2424,7 +2424,48 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
-- **Phase 10 — OD-CJ1 ACCEPTANCE AT STRATEGY LEVEL (candidate, PR pending; governance-only; authorizes
+- **Phase 10 — P10-LT1 EXTERNAL LEGAL & TAX INPUT COMMISSIONING GATE (candidate, PR pending; governance-only;
+  commissions questions, answers nothing; authorizes nothing), base
+  `5dfc35e34bbfc9a8681d575a7e26613a5038c674` (PR #518, authoritative).** Owner-selected under P10-C §10 after
+  a read-only remaining-obligations reconstruction at this tip (`PHASE 10 STATUS: OPEN`; every high-priority
+  legal-track blocker awaits external professional input). **Purpose:** define the exact questions, fact
+  package, adviser qualifications, answer format, and intake/acceptance protocol for external legal and
+  tax/accounting input — operationalizing (not duplicating, not closing) the Jurisdiction & Data-Rights gate
+  §5 register. **Contents:** 27-item LEGAL question register LQ-01…LQ-27 (entity/contracting identity/
+  disclosures; Kuwait PDPL / GDPR applicability as QUESTIONS; data-rights scope incl. legal implementation of
+  accepted OD-DR1/OD-DR2; B2C consumer protection incl. recurring consent/refunds/cooling-off/local-currency
+  display; B2B terms; subscription/payment disclosures incl. Apple Pay/KNET/card-scheme specifics); 13-item
+  TAX/ACCOUNTING register TQ-01…TQ-13 (registrations; VAT/GST if any; cross-border; B2C-vs-B2B;
+  reverse-charge/withholding; invoicing/records; USD acceptability; presentation; digital-service rules; MoR
+  impact + MoR-vs-direct fact needs); fully cited repository-authoritative adviser FACT PACK; bounded adviser
+  QUALIFICATIONS (legal counsel: Kuwait commercial/consumer, privacy, digital-subscription, cross-border;
+  tax/accounting adviser: Kuwait tax, digital services, cross-border B2C/B2B, invoicing; optional
+  privacy-specialist lane; NO firm/person selected); mandatory 14-field structured ANSWER FORMAT; INTAKE
+  PROTOCOL (`EXTERNAL RESPONSE → SOURCE VERIFICATION → INTERNAL MAPPING → OWNER REVIEW → GOVERNANCE CANDIDATE
+  → CREATOR GRILL → INDEPENDENT REVIEW → OWNER ACCEPTANCE`; advice = EVIDENCE/INPUT, never automatic
+  authority; no implementation from an adviser answer alone); CONFLICT/SUPERSESSION rule (no merging; Owner
+  escalation; supersession only via explicit governance acceptance; history preserved). **Boundaries:** no
+  legal/tax question answered; no regime claimed applicable; no legal artifact drafted (Privacy Policy /
+  Terms / Subscription / Refund / Cookie / payment / consent / B2B / data-processing / contact disclosures
+  draftable only after accepted input); no commercial-policy decision (counsel-needed assumptions =
+  OWNER INPUT REQUIRED); no payment/tax-provider, MoR, hosting, or region selection (OD-J2 delegated gate
+  separate); PAID ACTIVATION AUTHORIZED: NO (`D-P8-PL-01 class C` unsatisfied by this gate); PSRR TRIGGERED:
+  NO; DEPLOYMENT AUTHORIZED: NO; external-input register OPEN (operationalized, not closed); P8C §5 / P8-I4
+  deferred registers open; OD-J1/J2/DR1/DR2/CJ1 unaltered. Full detail:
+  `docs/governance/P10_LT1_EXTERNAL_LEGAL_TAX_INPUT_COMMISSIONING_GATE.md`. Governance-only; zero
+  runtime/test diff; no auto-successor.
+
+- **Phase 10 — OD-CJ1 ACCEPTANCE: MERGED / AUTHORITATIVE (corrected candidate #3 `ec2ff7f0`, PR #518, tip
+  `5dfc35e34bbfc9a8681d575a7e26613a5038c674`; parents `b98561b8…`/`ec2ff7f0…`, merge tree `76b05623…` =
+  candidate tree, empty candidate→merge diff — independently re-verified; superseded candidates `7fe33ebb…`
+  and `00e7f249…` preserved as immutable evidence).** OD-CJ1 (Kuwait starting jurisdiction; USD base
+  currency; B2C+B2B; recurring + automatic-collection direction; PAYMENT METHOD ≠ PAYMENT PROVIDER with
+  Visa/Mastercard/Apple Pay/KNET compatibility direction; provider/tax/MoR neutrality; P8-I4 §15
+  PCI-avoidance reference; paid activation BLOCKED; external legal/tax register OPEN) is ACCEPTED AT STRATEGY
+  LEVEL and authoritative. **All five gate-registered decisions (OD-J1, OD-J2, OD-DR1, OD-DR2, OD-CJ1) are
+  now accepted and merged.** (Original candidate-stage bullet retained below as history.)
+
+- **(superseded history) Phase 10 — OD-CJ1 ACCEPTANCE AT STRATEGY LEVEL (was: candidate, PR pending; governance-only; authorizes
   nothing), base `b98561b847884557cc90c7c6600644ae23abf4c5` (PR #517, authoritative).** Records **KUWAIT AS
   THE CURRENT INTENDED COMMERCIAL STARTING JURISDICTION** — strictly a commercial starting-position intent
   fact for later external legal/tax analysis; the tax-scope component remains **DEFERRED PENDING EXTERNAL
