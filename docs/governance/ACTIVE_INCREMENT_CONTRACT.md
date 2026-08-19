@@ -41,9 +41,39 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — PHASE 10 OD-CJ1 ACCEPTANCE AT STRATEGY LEVEL: governance-only candidate; accepts the
-commercial-jurisdiction/tax-scope position registered by the merged Jurisdiction & Data-Rights gate;
-authorizes nothing):** Base: `b98561b847884557cc90c7c6600644ae23abf4c5` (PR #517 merge — OD-DR2 acceptance,
+**Status (current — P10-LT1 EXTERNAL LEGAL & TAX INPUT COMMISSIONING GATE: governance-only candidate;
+commissions questions, answers nothing; authorizes nothing):** Base:
+`5dfc35e34bbfc9a8681d575a7e26613a5038c674` (PR #518 merge — OD-CJ1 acceptance candidate #3 `ec2ff7f0…`,
+authoritative; independently re-verified: parents `b98561b8…` / `ec2ff7f0…`, merge tree `76b05623…` equal to
+the accepted candidate tree, empty candidate→merge diff). Full detail:
+`docs/governance/P10_LT1_EXTERNAL_LEGAL_TAX_INPUT_COMMISSIONING_GATE.md`.
+
+**Purpose.** Operationalizes the Jurisdiction & Data-Rights gate §5 external-input register (not duplicated,
+not closed): defines the 27-item external LEGAL question register (LQ-01…LQ-27), the 13-item TAX/ACCOUNTING
+register (TQ-01…TQ-13), a fully cited repository-authoritative adviser fact pack, bounded adviser
+qualifications (no firm/person selected), the mandatory 14-field structured answer format, the intake
+protocol (`EXTERNAL RESPONSE → SOURCE VERIFICATION → INTERNAL MAPPING → OWNER REVIEW → GOVERNANCE CANDIDATE →
+CREATOR GRILL → INDEPENDENT REVIEW → OWNER ACCEPTANCE`; advice = EVIDENCE/INPUT, never automatic authority),
+and the conflict/supersession rule. **No question is answered; no regime is claimed applicable; no legal/tax
+conclusion is made; no legal artifact is drafted.**
+
+**Sync carried.** OD-CJ1 acceptance MERGED/AUTHORITATIVE via PR #518 (identity above, independently
+re-verified; superseded candidates `7fe33ebb…`/`00e7f249…` preserved as evidence). All five gate-registered
+decisions (OD-J1, OD-J2, OD-DR1, OD-DR2, OD-CJ1) are accepted and merged; a read-only remaining-obligations
+reconstruction at this tip returned `PHASE 10 STATUS: OPEN` and selected P10-LT1 as the next smallest
+sufficient governed step.
+
+**Boundaries.** No legal-artifact drafting; no commercial-policy decisions (counsel-needed assumptions
+register as OWNER INPUT REQUIRED); no payment/tax-provider, MoR, hosting, or region selection (OD-J2
+delegated gate separate); PAID ACTIVATION AUTHORIZED: NO (`D-P8-PL-01 class C` unsatisfied by this gate);
+PSRR TRIGGERED: NO; DEPLOYMENT AUTHORIZED: NO; P8C §5 / P8-I4 deferred registers open; OD decisions
+unaltered. Governance-only; zero runtime/test diff; no auto-activated successor (P10-C §10). Authoritative
+ONLY if/when this exact candidate is merged and post-merge verified. Next required step: **Independent
+External Review of this exact SHA + bundle**.
+
+**Immediately prior (OD-CJ1 acceptance — corrected candidate #3 `ec2ff7f0`, accepted and MERGED via PR #518,
+tip `5dfc35e34bbfc9a8681d575a7e26613a5038c674`; now AUTHORITATIVE; retained as history):** Base:
+`b98561b847884557cc90c7c6600644ae23abf4c5` (PR #517 merge — OD-DR2 acceptance,
 authoritative; independently re-verified: parents `46756528…` / `a9b3aee2…`, merge tree `8654270e…` equal to
 the accepted candidate tree). Full detail:
 `docs/governance/evidence/phase10_owner_decisions/OD-CJ1_COMMERCIAL_JURISDICTION_TAX_SCOPE.md` and the new
