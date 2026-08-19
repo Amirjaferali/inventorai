@@ -10975,3 +10975,60 @@ deployment, PSRR. No auto-activated successor (future outcomes depend on actual 
 pre-authorized). No PSRR trigger (remains "BEFORE FIRST PUBLIC PRODUCTION DEPLOYMENT"). No deployment
 authority (OD-P two-part gate unsatisfied). Authoritative ONLY if/when this exact candidate is merged and
 post-merge verified. Next required step: Independent External Review of this exact SHA + bundle.
+
+---
+
+## Phase 10 — Jurisdiction & Data-Rights Owner-Decision Gate MERGED / AUTHORITATIVE; OD-J1 + OD-J2 ACCEPTED (candidate; governance-only)
+
+**Gate merged.** The Jurisdiction & Data-Rights Owner-Decision Gate candidate
+`ca4956c2e85c8173d2717a18a8f94fb558903a16` was Owner-accepted at that exact SHA (Independent External Review
+`ACCEPT WITH NON-BLOCKING OBSERVATIONS`; Independent Reviewer Grill PASS) and merged via **PR #514**, tip
+`022e5b75cb0e7bc9ee248f20aed5df7da1368989` (first parent `07389b24…`, second parent `ca4956c2…`, merge tree
+`39e2ee43…` equal to the candidate tree — independently re-verified). The gate's decision registrations and
+external legal-input register are AUTHORITATIVE.
+
+**OD-J1 — ACCEPTED (this candidate).** *GCC-first commercial marketing; globally open user availability from
+launch; global-ready product from the outset.* GCC-first is marketing/commercial SEQUENCING only — explicitly
+NOT GCC-only, NOT Kuwait-only, NOT a geographic access restriction, NOT an architecture limitation.
+**InventorAI is NOT intended to be geo-restricted at launch: non-GCC users may access, register, and use the
+product from launch**, subject only to later lawfully-required restrictions established through separate
+legal/governance processes; intended usable worldwide. Intended for both INDIVIDUAL and INSTITUTIONAL use —
+scope intent only; NO institutional tenancy, enterprise administration, organizational contracts, Layer 5,
+Stage 6, B2B implementation, institutional pricing, or institutional compliance features are activated;
+consumer-vs-institutional terms unification remains a future legal/commercial determination. Product/market
+intent only — NOT a legal conclusion of clearance in any jurisdiction.
+
+**OD-J2 — ACCEPTED AT STRATEGY LEVEL (this candidate).** *Minimum practical infrastructure now, clean
+expansion seams later.* May begin with a practical single production hosting region; must preserve future
+flexibility (provider migration, additional regions, regional data residency, jurisdiction-driven or
+institutional hosting requirements, global expansion); must avoid permanent coupling to one provider, region,
+country, or jurisdiction-specific storage assumption. **NOT decided:** any provider (AWS/Azure/Google
+Cloud/other) or region (Bahrain/UAE/Saudi/EU/US/other) — initial provider+region selection is **DELEGATED TO A
+LATER, SEPARATELY AUTHORIZED INFRASTRUCTURE GATE** (accepted delegation, not ambiguity). GCC-focused rollout
+does NOT require GCC hosting; no data-location commitment inside or outside the GCC. "Global-ready" ≠
+multi-region/active-active/sharding/multi-provider now — no architectural foreclosure, no over-engineering.
+
+**Identifier disambiguation.** P10 OD-J1/OD-J2 are Jurisdiction & Data-Rights decisions, DISTINCT from the
+earlier Phase-1 accepted OD-J ("Product role model"); the Phase-1 decision is not modified; identifiers are
+kept unchanged. Register: `OWNER_DECISION_REGISTER.md` new Phase-10 section (this candidate); evidence:
+`docs/governance/evidence/phase10_owner_decisions/OD-J1_OD-J2_JURISDICTION_AND_HOSTING.md`.
+
+**P10-D3b historical stat correction (numeric only).** The previously recorded P10-D3b implementation stat
+`+487/-1` (appearing in the merged gate's §2 and two earlier sync entries) is **superseded by the
+repository-verified `+487/-3`** — candidate `a751cb3b1ffb882ea8596cefafe7ef1a9222cd81`, authoritative merge
+`07389b24ce9c4a606526315f2c19118f292f04db`, correct scope `5 files changed, 487 insertions(+), 3 deletions(-)`.
+The already-merged gate file is deliberately NOT byte-edited (historical preservation); live status surfaces
+are corrected. P10-D3b is NOT reopened, modified, or reinterpreted.
+
+**Remaining decisions preserved.** OD-DR1 (deletion/erasure position), OD-DR2 (account-wide access/export
+position), OD-CJ1 (commercial jurisdiction/tax scope) remain REGISTERED AND UNRESOLVED; OD-A continues to
+govern the brand/name dependency (no duplicate, no rename). The gate's external legal-input register remains
+open — OD-J1/OD-J2 supply the intent facts that future external counsel will evaluate; NO privacy-regime
+applicability, lawful basis, consent/cookie requirement, retention/erasure/portability requirement, or tax
+treatment is decided.
+
+**Boundary / status.** Governance-only; zero runtime/test diff. No infrastructure implementation authorized
+(the infrastructure gate is future and separate); no geo-restriction mechanism; no institutional feature; no
+legal drafting; no PSRR trigger; no deployment authority; no auto-activated successor gate (P10-C §10).
+Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next required step:
+Independent External Review of this exact SHA + bundle.

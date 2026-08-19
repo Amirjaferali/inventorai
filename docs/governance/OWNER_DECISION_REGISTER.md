@@ -1091,3 +1091,24 @@ remediation item, but not closed: its open-ended "full stated scope" confirmatio
 §13) is unaffected and still requires CF-6's own future closing gate. **CF-2 remains OPEN** — the ILT-002 route-
 copy item stays under CF-2's residual list pending the truthfulness question above; Arabic localization and the
 non-`/start` template sweep are entirely untouched. This entry authorizes no implementation of any kind.
+
+## Phase 10 — Jurisdiction & Data-Rights owner decisions OD-J1 / OD-J2 (ACCEPTED; recorded under the merged P10 gate)
+
+Accepted under the authoritative `P10_JURISDICTION_AND_DATA_RIGHTS_OWNER_DECISION_GATE.md` (merged PR #514,
+tip `022e5b75cb0e7bc9ee248f20aed5df7da1368989`), which had registered both as unresolved. **Identifier
+disambiguation:** these Phase-10 Jurisdiction & Data-Rights decisions **OD-J1 / OD-J2 are distinct from the
+earlier Phase-1 accepted decision OD-J** ("Product role model", row above); the historical Phase-1 decision is
+not modified. **OD-DR1, OD-DR2, and OD-CJ1 remain REGISTERED AND UNRESOLVED** in the P10 gate; OD-A continues
+to govern the brand/name dependency.
+
+| ID | Subject | Status | Phase/WS | Impl. authority | Evidence |
+|---|---|---|---|---|---|
+| OD-J1 | **Launch markets / user-residence and user scope** — GCC-first commercial *marketing* sequencing only; **NOT geo-restricted at launch**: users outside the GCC may access, register, and use the product from launch (subject only to later lawfully-required restrictions established through separate legal/governance processes); intended usable worldwide (GCC, Middle East, Europe, Asia, Africa, North America, South America, Oceania); intended for both INDIVIDUAL and INSTITUTIONAL use (public, inventors, researchers, students, companies, universities, authorities, institutions, organizations) — product/market intent only, NOT a legal clearance conclusion, and NO institutional tenancy/enterprise-administration/organizational-contract/B2B/institutional-pricing/compliance feature is activated. Canonical statement: *GCC-first commercial marketing; globally open user availability from launch; global-ready product from the outset.* | ACCEPTED | Phase 10 | NONE | phase10_owner_decisions/OD-J1_OD-J2_JURISDICTION_AND_HOSTING.md |
+| OD-J2 | **Hosting / data-location strategy** — *minimum practical infrastructure now, clean expansion seams later*: may begin with a practical single production hosting region; architecture must preserve future flexibility (provider migration, additional regions, regional data residency, jurisdiction-driven or customer-specific hosting, global expansion) and avoid permanent coupling to one provider/region/country/jurisdiction-specific storage assumption. **NOT decided:** any provider (AWS/Azure/Google Cloud/other) or any production region (Bahrain/UAE/Saudi Arabia/Europe/US/other) — initial provider+region selection is **DELEGATED TO A LATER, SEPARATELY AUTHORIZED INFRASTRUCTURE GATE** (an accepted delegation, not an ambiguity). GCC-focused rollout does NOT mean GCC hosting; no data-location commitment inside or outside the GCC is made. "Global-ready" does NOT mean multi-region/active-active/sharding/multi-provider now — avoid architectural foreclosure without over-engineering the first release. | ACCEPTED AT STRATEGY LEVEL | Phase 10 | NONE (infrastructure gate separately authorized) | phase10_owner_decisions/OD-J1_OD-J2_JURISDICTION_AND_HOSTING.md |
+
+**Legal boundary.** OD-J1/OD-J2 are business/product/technical intent for later legal analysis; they decide NO
+privacy-regime applicability (GDPR / any GCC or other national PDPL / EU or other law), no lawful basis, no
+consent/cookie requirement, no retention/erasure/portability requirement, and no tax treatment — all remain
+subject to the gate's external legal-input register. **D3b stat correction carried in this same candidate:**
+the previously recorded P10-D3b diff stat `+487/-1` is superseded by the repository-verified `+487/-3`
+(candidate `a751cb3b…`, merge `07389b24…`; numeric correction only — P10-D3b not reopened).
