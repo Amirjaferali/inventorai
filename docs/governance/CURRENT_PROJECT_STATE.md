@@ -2424,7 +2424,68 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
-- **Phase 10 — OD-DR2 ACCEPTANCE AT STRATEGY LEVEL (candidate, PR pending; governance-only; authorizes
+- **Phase 10 — OD-CJ1 ACCEPTANCE AT STRATEGY LEVEL (candidate, PR pending; governance-only; authorizes
+  nothing), base `b98561b847884557cc90c7c6600644ae23abf4c5` (PR #517, authoritative).** Records **KUWAIT AS
+  THE CURRENT INTENDED COMMERCIAL STARTING JURISDICTION** — strictly a commercial starting-position intent
+  fact for later external legal/tax analysis; the tax-scope component remains **DEFERRED PENDING EXTERNAL
+  LEGAL/TAX DETERMINATION AND SEPARATE OWNER AUTHORIZATION**. Kuwait is NOT a final legal-entity,
+  incorporation, tax-nexus, VAT/GST/sales-tax, Merchant-of-Record, invoicing, or withholding/reverse-charge
+  answer. **Paid-activation hard gate preserved (load-bearing):** public paid activation remains BLOCKED /
+  NOT AUTHORIZED under `D-P8-PL-01 class C`; Phase-10 legal/readiness items, external legal/tax input,
+  payment/refund/subscription terms, `PSRR = GO/PASS` (`D-PSRR-01`), the separate Deployment Gate, and
+  explicit Owner deployment authorization (`OD-P`) remain independently required — none satisfied by OD-CJ1.
+  External legal/tax register remains OPEN. Commercial customer eligibility includes BOTH **B2C individuals
+  and B2B companies/organizations** (OD-J1 §2.3 cross-referenced as the user-type authority, not duplicated)
+  with the rule **COMMERCIAL CUSTOMER ELIGIBILITY ≠ ENTERPRISE FEATURE ACTIVATION** — no enterprise
+  tenancy/workspaces/administration/pricing/purchase-order/procurement/invoicing/tax-exemption/
+  reverse-charge/withholding/support workflow activated or decided. Commercial model direction: **RECURRING
+  SUBSCRIPTION with AUTOMATIC RECURRING PAYMENT COLLECTION** — direction only; billing frequency, price,
+  trials, grace, retries, suspension, renewal, cancellation, refunds, chargebacks, card storage,
+  tokenization, and provider-specific billing all undecided/unauthorized. References the EXISTING **P8-I4
+  Payment Provider Boundary** (`InventorAI commercial domain → canonical provider-neutral PaymentProviderPort`
+  (`engine/payment_provider_port.py`) `→ external payment provider`) without creating/renaming/duplicating/
+  expanding it; **payment-provider, tax-provider, and Merchant-of-Record neutrality** preserved
+  (NO-FORECLOSURE / ARCHITECTURE-PRESERVATION PRINCIPLES ONLY — never build/prepare/schema/route/job
+  instructions); **USD decided as the INITIAL / BASE COMMERCIAL PRICING AND BILLING CURRENCY (Owner
+  decision, strategy level)** — initial pricing and subscription billing may use USD; strictly a
+  commercial pricing/billing starting decision that infers NO US commercial/legal-entity/tax
+  jurisdiction, NO US hosting, NO US-only customers, NO US payment provider, and satisfies NO future
+  local-currency display / invoice-currency / consumer-protection / accounting / tax-display
+  requirement (external legal/tax/accounting determination remains required); **multi-currency
+  remains DEFERRED / NOT ACTIVATED** (no-foreclosure/architecture-preservation only — no additional
+  currencies, conversion, FX-rate logic, currency selector, regional mapping, multi-currency
+  settlement/accounting, or currency-specific tax logic; future currencies require a separately
+  governed commercial decision/gate). **P8C §5 / P8-I4 deferred business decisions are CONSUMED BY, NOT CLOSED BY, OD-CJ1**
+  — commercial readiness is NOT complete. **Jurisdiction separation rule:** USER RESIDENCE ≠ CUSTOMER
+  LOCATION ≠ COMMERCIAL ENTITY JURISDICTION ≠ HOSTING LOCATION ≠ PAYMENT-PROVIDER LOCATION ≠ TAX
+  JURISDICTION ≠ COMMERCIAL CURRENCY — Kuwait-start ≠ Kuwait-only users/companies/hosting; GCC-first ≠ GCC-only tax; OD-J1/OD-J2
+  unchanged. Escalation rule only (binding commercial/payment/tax/accounting requirements escalate to Owner +
+  external legal counsel + external tax/accounting adviser; no regime conclusion). **Payment-method compatibility direction (PAYMENT METHOD ≠ PAYMENT PROVIDER, load-bearing):**
+  Visa/Mastercard/major cards, Apple Pay, and KNET (where commercially/technically applicable to the Kuwait
+  starting market) — DIRECTION ONLY, nothing implemented or activated; Apple Pay intent ≠ Apple as provider;
+  Visa/Mastercard compatibility ≠ gateway/provider selection; KNET compatibility ≠ KNET/Kuwait-gateway
+  provider selection, with NO lock-in (not Kuwait-only customers/capability/provider, no permanent
+  dependency, no assumed recurring-billing support); Google Pay/additional wallets/other methods FUTURE
+  NO-FORECLOSURE ONLY; per-method recurring-subscription support (initial payment, renewal,
+  authorization/consent, saved-payment token, method update, failed-payment, retries, cancellation,
+  refunds) verified at the future provider gate — no method guaranteed now; consistent with the EXISTING
+  P8-I4 §15 PCI architectural-avoidance principle (hosted/provider-tokenized checkout; raw PAN/CVV
+  off-platform; NO PCI-compliance claim; referenced, not duplicated; no tokenization designed; no card data
+  stored); the P8-I4 deferred `payment methods` register is CONSUMED BUT NOT CLOSED. **Milestone:** all five
+  gate-registered decisions (OD-J1, OD-J2, OD-DR1, OD-DR2, OD-CJ1) now carry accepted rows; the external
+  legal-input register stays OPEN. Register: `OWNER_DECISION_REGISTER.md` new OD-CJ1 section; evidence:
+  `docs/governance/evidence/phase10_owner_decisions/OD-CJ1_COMMERCIAL_JURISDICTION_TAX_SCOPE.md`.
+  Governance-only; zero runtime/test diff; no PSRR; no deployment; no auto-successor.
+
+- **Phase 10 — OD-DR2 ACCEPTANCE: MERGED / AUTHORITATIVE (candidate `a9b3aee2`, PR #517, tip
+  `b98561b847884557cc90c7c6600644ae23abf4c5`; parents `46756528…`/`a9b3aee2…`, merge tree `8654270e…` =
+  candidate tree — independently re-verified).** OD-DR2 (account-wide export DEFERRED pending external legal
+  determination + separate Owner authorization; project-scoped export truth preserved; useful-output-
+  portability future priority; product export ≠ legal data access; no-foreclosure architecture principle;
+  database-dump assumption rejected) is ACCEPTED AT STRATEGY LEVEL. (Original candidate-stage bullet retained
+  below as history.)
+
+- **(superseded history) Phase 10 — OD-DR2 ACCEPTANCE AT STRATEGY LEVEL (was: candidate, PR pending; governance-only; authorizes
   nothing), base `46756528509beebefc86ee399f331a796cbae6f2` (PR #516, authoritative).** **Account-wide
   self-service export is DEFERRED PENDING EXTERNAL LEGAL DETERMINATION AND SEPARATE OWNER AUTHORIZATION.**
   Current export truth exact and preserved: the only authorized P10-D3a self-service export remains

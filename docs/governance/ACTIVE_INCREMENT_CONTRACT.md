@@ -41,9 +41,56 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — PHASE 10 OD-DR2 ACCEPTANCE AT STRATEGY LEVEL: governance-only candidate; accepts the
-account-wide data-access/export position registered by the merged Jurisdiction & Data-Rights gate; authorizes
-nothing):** Base: `46756528509beebefc86ee399f331a796cbae6f2` (PR #516 merge — OD-DR1 acceptance,
+**Status (current — PHASE 10 OD-CJ1 ACCEPTANCE AT STRATEGY LEVEL: governance-only candidate; accepts the
+commercial-jurisdiction/tax-scope position registered by the merged Jurisdiction & Data-Rights gate;
+authorizes nothing):** Base: `b98561b847884557cc90c7c6600644ae23abf4c5` (PR #517 merge — OD-DR2 acceptance,
+authoritative; independently re-verified: parents `46756528…` / `a9b3aee2…`, merge tree `8654270e…` equal to
+the accepted candidate tree). Full detail:
+`docs/governance/evidence/phase10_owner_decisions/OD-CJ1_COMMERCIAL_JURISDICTION_TAX_SCOPE.md` and the new
+OD-CJ1 section of `OWNER_DECISION_REGISTER.md`.
+
+**OD-CJ1 — ACCEPTED AT STRATEGY LEVEL.** Records KUWAIT AS THE CURRENT INTENDED COMMERCIAL STARTING
+JURISDICTION — a commercial starting-position intent fact only, for later external legal/tax analysis; the
+tax-scope component remains DEFERRED pending external legal/tax determination + separate Owner authorization.
+Kuwait ≠ final entity/incorporation/tax-nexus/VAT/MoR/invoicing/withholding answer. **Paid activation remains
+BLOCKED / NOT AUTHORIZED under `D-P8-PL-01 class C`** — Phase-10 legal/readiness items, external legal/tax
+input, payment/refund/subscription terms, `PSRR = GO/PASS` (`D-PSRR-01`), the separate Deployment Gate, and
+Owner deployment authorization (`OD-P`) all remain independently required. External legal/tax register OPEN.
+B2C + B2B commercial eligibility recorded (OD-J1 §2.3 cross-referenced, not duplicated); COMMERCIAL CUSTOMER
+ELIGIBILITY ≠ ENTERPRISE FEATURE ACTIVATION — no enterprise/B2B feature, workflow, or pricing activated.
+Recurring-subscription + automatic-collection direction only — every billing parameter except the USD
+base currency undecided. EXISTING
+P8-I4 boundary referenced (commercial domain → provider-neutral `PaymentProviderPort` → external provider) —
+not created/renamed/duplicated/expanded; payment-provider, tax-provider, and Merchant-of-Record neutrality
+preserved (no-foreclosure principles only — never build instructions); **USD decided as the initial/base commercial pricing and billing currency (strategy level)** — a
+commercial starting decision only, inferring NO US jurisdiction/hosting/tax/customers/provider and
+satisfying no future local-currency/invoice/consumer-protection/accounting/tax-display requirement;
+multi-currency remains DEFERRED / NOT ACTIVATED (no-foreclosure only; no FX/conversion/selector/
+mapping/settlement/accounting/currency-tax logic; future currencies need a separate gate). **P8C §5 / P8-I4 deferred decisions CONSUMED, NOT CLOSED.**
+Jurisdiction separation rule preserved (user residence ≠ customer location ≠ entity jurisdiction ≠ hosting ≠
+provider location ≠ tax jurisdiction ≠ commercial currency; Kuwait-start ≠ Kuwait-only anything; OD-J1/OD-J2 unchanged).
+Escalation rule only — no VAT/GST/sales-tax/withholding/registration/invoicing conclusion.
+
+**Payment-method direction (PAYMENT METHOD ≠ PAYMENT PROVIDER).** Intended compatibility:
+Visa/Mastercard/major cards, Apple Pay, KNET (Kuwait starting market, no lock-in) — direction only, nothing
+implemented; Apple Pay ≠ Apple as provider, Visa/Mastercard ≠ gateway selection, KNET ≠ provider selection;
+Google Pay/wallets/other methods future no-foreclosure only; recurring-capability per method verified at
+the future provider gate; consistent with the EXISTING P8-I4 §15 PCI architectural-avoidance principle
+(hosted/tokenized; raw PAN/CVV off-platform; NO compliance claim; referenced, not duplicated); the P8-I4
+deferred `payment methods` register is CONSUMED, NOT CLOSED.
+
+**Milestone.** All five gate-registered decisions (OD-J1, OD-J2, OD-DR1, OD-DR2, OD-CJ1) now carry accepted
+rows; the gate's external legal-input register remains OPEN.
+
+**Boundary / status.** Governance-only; zero runtime/test diff. No billing/tax implementation, no provider or
+MoR selection, no paid activation, no enterprise feature, no legal/tax drafting, no infrastructure, no PSRR
+trigger, no deployment authority; no auto-activated successor (P10-C §10). Authoritative ONLY if/when this
+exact candidate is merged and post-merge verified. Next required step: **Independent External Review of this
+exact SHA + bundle**.
+
+**Immediately prior (OD-DR2 acceptance — candidate `a9b3aee2`, accepted and MERGED via PR #517, tip
+`b98561b847884557cc90c7c6600644ae23abf4c5`; now AUTHORITATIVE; retained as history):** Base:
+`46756528509beebefc86ee399f331a796cbae6f2` (PR #516 merge — OD-DR1 acceptance,
 authoritative; independently re-verified: parents `f35a3999…` / `13c9f7d1…`, merge tree `5a02ad1c…` equal to
 the accepted candidate tree). Full detail:
 `docs/governance/evidence/phase10_owner_decisions/OD-DR2_ACCOUNT_WIDE_DATA_ACCESS_EXPORT_POSITION.md` and the
