@@ -41,10 +41,50 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — PHASE 10 JURISDICTION & DATA-RIGHTS OWNER-DECISION GATE: governance-only candidate;
-decision REGISTRATION only — nothing decided, drafted, implemented, or authorized):** Base:
-`07389b24ce9c4a606526315f2c19118f292f04db` (PR #513 merge — P10-D3b Account Deactivation implementation,
-authoritative; independently re-verified: parents `46c80714…` / `a751cb3b…`, tree
+**Status (current — PHASE 10 OD-J1 + OD-J2 ACCEPTANCE: governance-only candidate; accepts two Owner decisions
+registered by the merged Jurisdiction & Data-Rights gate; carries the D3b stat correction; authorizes
+nothing):** Base: `022e5b75cb0e7bc9ee248f20aed5df7da1368989` (PR #514 merge — Jurisdiction & Data-Rights
+Owner-Decision Gate, authoritative; independently re-verified: parents `07389b24…` / `ca4956c2…`, merge tree
+`39e2ee43…` equal to the accepted candidate tree). Full detail:
+`docs/governance/evidence/phase10_owner_decisions/OD-J1_OD-J2_JURISDICTION_AND_HOSTING.md` and the new
+Phase-10 section of `OWNER_DECISION_REGISTER.md`.
+
+**OD-J1 — ACCEPTED.** Canonical statement: *GCC-first commercial marketing; globally open user availability
+from launch; global-ready product from the outset.* GCC-first is marketing SEQUENCING only (not GCC-only, not
+Kuwait-only, not a geographic or architectural restriction); **non-GCC users may access, register, and use the
+product from launch** (subject only to later lawfully-required restrictions via separate legal/governance
+processes); intended worldwide; intended for both INDIVIDUAL and INSTITUTIONAL use with NO institutional
+feature activation (no tenancy, enterprise admin, org contracts, Layer 5, Stage 6, B2B implementation,
+institutional pricing, or compliance features). Product/market intent only — NOT a legal clearance conclusion.
+
+**OD-J2 — ACCEPTED AT STRATEGY LEVEL.** *Minimum practical infrastructure now, clean expansion seams later*:
+single practical production region permitted initially; future flexibility preserved (provider migration,
+regions, residency, jurisdiction/customer-driven hosting, global expansion); no permanent coupling to one
+provider/region/country/storage-jurisdiction assumption. **No provider and no region is selected** — initial
+provider+region choice is DELEGATED to a later, separately authorized infrastructure gate (accepted
+delegation). GCC rollout does NOT imply GCC hosting; no data-location commitment either way. "Global-ready" ≠
+multi-region/active-active/sharding/multi-provider now.
+
+**Identifier disambiguation.** P10 OD-J1/OD-J2 (Jurisdiction & Data-Rights) are DISTINCT from Phase-1's
+accepted OD-J ("Product role model"); the historical decision is untouched; identifiers unchanged.
+
+**D3b stat correction (numeric only).** Prior recorded P10-D3b stat `+487/-1` superseded by repository-verified
+`+487/-3` (candidate `a751cb3b…`, merge `07389b24…`, `5 files changed, 487 insertions(+), 3 deletions(-)`);
+the merged gate file is deliberately NOT byte-edited; live surfaces corrected; D3b NOT reopened.
+
+**Preserved unresolved.** OD-DR1, OD-DR2, OD-CJ1 remain REGISTERED AND UNRESOLVED; OD-A continues to govern
+brand/name; the gate's external legal-input register remains open — NO privacy-regime applicability, lawful
+basis, consent/cookie requirement, retention/erasure/portability requirement, or tax treatment is decided.
+
+**Boundary / status.** Governance-only; zero runtime/test diff. No infrastructure implementation, no
+geo-restriction mechanism, no institutional feature, no legal drafting, no PSRR trigger, no deployment
+authority, no auto-activated successor (P10-C §10). Authoritative ONLY if/when this exact candidate is merged
+and post-merge verified. Next required step: **Independent External Review of this exact SHA + bundle**.
+
+**Immediately prior (Jurisdiction & Data-Rights Owner-Decision Gate — candidate `ca4956c2`, accepted and
+MERGED via PR #514, tip `022e5b75cb0e7bc9ee248f20aed5df7da1368989`; now AUTHORITATIVE; retained as history):**
+Base at gate drafting: `07389b24ce9c4a606526315f2c19118f292f04db` (PR #513 merge — P10-D3b Account
+Deactivation implementation, authoritative; independently re-verified: parents `46c80714…` / `a751cb3b…`, tree
 `886d06f605bf08b36b765a96a528bd42047af0de`, empty candidate→merge diff). Full detail:
 `docs/governance/P10_JURISDICTION_AND_DATA_RIGHTS_OWNER_DECISION_GATE.md`.
 

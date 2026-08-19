@@ -2424,7 +2424,37 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
-- **Phase 10 — Jurisdiction & Data-Rights Owner-Decision Gate (candidate, PR pending; governance-only; decision
+- **Phase 10 — OD-J1 + OD-J2 ACCEPTANCE (candidate, PR pending; governance-only; accepts the two Owner
+  decisions registered by the merged Jurisdiction & Data-Rights gate; authorizes nothing), base
+  `022e5b75cb0e7bc9ee248f20aed5df7da1368989` (PR #514, authoritative).** **OD-J1 — ACCEPTED:** *GCC-first
+  commercial marketing; globally open user availability from launch; global-ready product from the outset* —
+  GCC-first is marketing sequencing only (not GCC-only/Kuwait-only, not a geographic or architectural
+  restriction); **non-GCC users may access, register, and use the product from launch** (subject only to later
+  lawfully-required restrictions via separate legal/governance processes); intended worldwide; intended for
+  both INDIVIDUAL and INSTITUTIONAL use with NO institutional feature activation (no tenancy/enterprise
+  admin/org contracts/Layer 5/Stage 6/B2B/institutional pricing/compliance features); product/market intent
+  only — NOT legal clearance. **OD-J2 — ACCEPTED AT STRATEGY LEVEL:** *minimum practical infrastructure now,
+  clean expansion seams later* — single practical production region permitted initially; flexibility preserved
+  (provider migration, regions, residency, jurisdiction/customer-driven hosting, global expansion); no
+  permanent provider/region/country/storage-jurisdiction coupling; **no provider or region selected** —
+  initial provider+region choice DELEGATED to a later, separately authorized infrastructure gate (accepted
+  delegation); GCC rollout does NOT imply GCC hosting; no data-location commitment either way; "global-ready"
+  ≠ multi-region/active-active/sharding/multi-provider now. **Disambiguation:** P10 OD-J1/OD-J2 are DISTINCT
+  from Phase-1's accepted OD-J (Product role model; untouched). **D3b stat correction carried:** `+487/−1`
+  superseded by repository-verified `+487/−3` (merged gate file deliberately not byte-edited). **Preserved
+  unresolved:** OD-DR1, OD-DR2, OD-CJ1; OD-A governs brand/name; the gate's external legal-input register
+  remains open — no privacy-regime applicability, lawful basis, consent/cookie, retention/erasure/portability,
+  or tax decision. Register: `OWNER_DECISION_REGISTER.md` new Phase-10 section; evidence:
+  `docs/governance/evidence/phase10_owner_decisions/OD-J1_OD-J2_JURISDICTION_AND_HOSTING.md`. Governance-only;
+  zero runtime/test diff; no infrastructure implementation; no PSRR; no deployment; no auto-successor.
+
+- **Phase 10 — Jurisdiction & Data-Rights Owner-Decision Gate: MERGED / AUTHORITATIVE (candidate `ca4956c2`,
+  PR #514, tip `022e5b75cb0e7bc9ee248f20aed5df7da1368989`; parents `07389b24…`/`ca4956c2…`, merge tree
+  `39e2ee43…` = candidate tree — independently re-verified).** Its decision registrations (OD-J1, OD-J2,
+  OD-DR1, OD-DR2, OD-CJ1, OD-B1→OD-A) and external legal-input register are authoritative. (Original
+  candidate-stage bullet retained below as history.)
+
+- **(superseded history) Phase 10 — Jurisdiction & Data-Rights Owner-Decision Gate (was: candidate, PR pending; governance-only; decision
   REGISTRATION only — nothing decided, drafted, implemented, or authorized), base
   `07389b24ce9c4a606526315f2c19118f292f04db` (PR #513, authoritative).** Owner-selected under P10-C §10 after a
   read-only Remaining-Obligations review (`ALL PHASE-10 EXIT CRITERIA SATISFIED: NO`; PSRR NOT triggered;
@@ -2452,7 +2482,9 @@ AUTHORIZED / NOT STARTED.***
   `a751cb3b1ffb882ea8596cefafe7ef1a9222cd81` (parent `46c80714…`, tree `886d06f6…`) Owner-accepted at that
   exact SHA after Contract Compliance PASS, Creator Grill PASS, Independent External Review `ACCEPT WITH
   NON-BLOCKING OBSERVATIONS`, Independent Reviewer Grill PASS; merge identity independently re-verified
-  (parents `46c80714…`/`a751cb3b…`, tree `886d06f6…`, empty candidate→merge diff). Scope: 5 files, +487/−1.
+  (parents `46c80714…`/`a751cb3b…`, tree `886d06f6…`, empty candidate→merge diff). Scope: 5 files, +487/−3
+  (corrected: an earlier entry recorded `+487/−1`; the repository-verified figure is `5 files changed,
+  487 insertions(+), 3 deletions(-)` — numeric correction only, D3b not reopened).
   Delivered `POST /account/deactivate`: authenticated + CSRF + password re-entry (existing seams only);
   status→`"deleted"` + `deleted_at` stamp via existing `set_status`; epoch bump as defense-in-depth; all
   sessions/logins/API credentials fail via existing status gates (credentials retained, unrevoked); **no row
