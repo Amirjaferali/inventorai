@@ -41,8 +41,43 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — P10-IR1 TECHNICAL INCIDENT RESPONSE FOUNDATION: Owner-authorized bounded
-governance/runbook candidate; RUNTIME CODE REQUIRED: NO):** Base:
+**Status (current — P10-DOC1 DATA-RETENTION & COST-GOVERNANCE TRUTH REPAIR: Owner-authorized bounded
+documentation/governance truth-repair candidate; RUNTIME CODE REQUIRED: NO):** Base:
+`1816512326bae32f072c3816b78ab56fbb657b2e` (PR #523 merge — P10-IR1 incident-response foundation,
+authoritative; independently re-verified: parents `ee933718…` / `fb7a0313…`, merge tree `a4378a7a…` equal
+to the accepted candidate tree, empty candidate→merge diff).
+
+**Objective.** Repair the last two P10-C §9-registered stale documents to current truth (both verified
+byte-unchanged since their original generation commit `79c9c5e`):
+`docs/DATA_RETENTION_POLICY.md` — current data inventory (durable SQLite accounts/tokens/credentials/
+projects/records/audit + in-memory live progression state + client-only localStorage 7-day TTL + stream-only
+operational logs); what actually happens (indefinite durable retention, deactivation-tombstone-only exit,
+the sole automatic deletion = expired auth-rate-limit cleanup, local backups inherit everything, no
+retention/erasure lifecycle); superseded claims kept as labeled history ("No PII collected" — accounts
+exist and the GDPR/PDPL-review trigger FIRED, now commissioned as OPEN LQ-04…LQ-11; "in-memory only";
+"Anthropic API receives descriptions" — NO live external transfer, `AI_ADVISORY_ENABLED = False`); and the
+banner `RETENTION POLICY SUBSTANCE: OPEN — EXTERNAL LEGAL/TAX INPUT REQUIRED` with NO invented duration.
+`docs/COST_GOVERNANCE_PLAN.md` — current cost reality (NO live paid usage; dormant disabled AI path with
+`max_tokens: 150` and no API key; no kill switch / spending ceiling / cost accumulator / iteration hard
+stop — each prior claim individually labeled NOT IMPLEMENTED; commercial tables = scaffolding, no live
+billing; paid activation BLOCKED `D-P8-PL-01 class C`); historical controls retained as
+PLANNED / NOT IMPLEMENTED design input; provider costs PROVIDER-DEPENDENT/deferred.
+
+**Validation.** `tests/test_p10_doc1_retention_cost_truth.py` (11 doc-invariant checks, whitespace-
+normalized; superseded claims must stay labeled; no prescriptive retention duration; retention substance
+OPEN; controls never claimed active; doc truth tied to source truth — kill-switch absence, disabled AI
+path, rate-limit-only deletion, real 7-day TTL). Structural RED: 9/11 fail against the unrepaired
+documents; GREEN 11/11. Full suite green (exact counts in the roadmap entry).
+
+**Boundaries (binding):** no retention/deletion/erasure rule created; no legal/tax conclusion; no legal
+duration; zero runtime/schema diff; deactivation ≠ erasure preserved; OD-DR1/OD-DR2 unaltered; PAID
+ACTIVATION AUTHORIZED: NO; PSRR TRIGGERED: NO; DEPLOYMENT AUTHORIZED: NO. `OWNER_DECISION_REGISTER.md`
+UNCHANGED. Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next
+required step: **Independent External Review of this exact SHA + bundle**.
+
+**Immediately prior (P10-IR1 TECHNICAL INCIDENT RESPONSE FOUNDATION — candidate `fb7a0313…`
+Owner-accepted at that exact SHA and MERGED via PR #523, tip `1816512326bae32f072c3816b78ab56fbb657b2e`;
+now AUTHORITATIVE; retained as history; RUNTIME CODE REQUIRED: NO):** Base:
 `ee93371808803c488eeba59bf83fcfbb20fccc2a` (PR #522 merge — P10-SEC1 security headers, authoritative;
 independently re-verified: parents `9e46e75b…` / `cb950881…`, merge tree `98076d4e…` equal to the accepted
 candidate tree, empty candidate→merge diff).
@@ -70,9 +105,8 @@ fail with the runbook absent; GREEN 9/9).
 **Truth classification:** `INTERNAL TECHNICAL INCIDENT RESPONSE: IMPLEMENTED` (internal foundation) —
 while `CUSTOMER-FACING SUPPORT MODEL: OPEN` and `LEGAL/PRIVACY INCIDENT NOTICE RULES: OPEN — EXTERNAL
 COUNSEL REQUIRED` (never collapsed). PSRR item 27 is informed, not satisfied. PAID ACTIVATION AUTHORIZED:
-NO; PSRR TRIGGERED: NO; DEPLOYMENT AUTHORIZED: NO. `OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative
-ONLY if/when this exact candidate is merged and post-merge verified. Next required step: **Independent
-External Review of this exact SHA + bundle**.
+NO; PSRR TRIGGERED: NO; DEPLOYMENT AUTHORIZED: NO. `OWNER_DECISION_REGISTER.md` UNCHANGED. MERGED via PR
+#523 (tip `18165123…`) and post-merge verified — AUTHORITATIVE.
 
 **Immediately prior (P10-SEC1 SECURITY HEADERS & PROVIDER-NEUTRAL HARDENING INCREMENT — candidate
 `cb950881…` Owner-accepted at that exact SHA and MERGED via PR #522, tip

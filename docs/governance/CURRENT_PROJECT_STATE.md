@@ -2424,7 +2424,37 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
-- **Phase 10 — P10-IR1 TECHNICAL INCIDENT RESPONSE FOUNDATION (Owner-authorized bounded governance/runbook
+- **Phase 10 — P10-DOC1 DATA-RETENTION & COST-GOVERNANCE TRUTH REPAIR (Owner-authorized bounded
+  documentation/governance candidate, PR pending; RUNTIME CODE REQUIRED: NO), base
+  `1816512326bae32f072c3816b78ab56fbb657b2e` (PR #523 merge — P10-IR1, authoritative; parents
+  `ee933718…`/`fb7a0313…`, merge tree `a4378a7a…` = candidate tree, empty candidate→merge diff —
+  independently re-verified).** Repairs the last two P10-C §9 stale documents to current truth (each
+  statement revalidated against source): `docs/DATA_RETENTION_POLICY.md` (current data inventory; indefinite
+  durable retention truth; Deactivation-only exit, DEACTIVATION ≠ PHYSICAL DELETION; sole automatic deletion
+  = expired rate-limit cleanup; superseded "No PII"/"in-memory"/"Anthropic transfer" claims kept as labeled
+  history; GDPR/PDPL-review trigger recorded as FIRED and OPEN via LQ-04…LQ-11; banner `RETENTION POLICY
+  SUBSTANCE: OPEN — EXTERNAL LEGAL/TAX INPUT REQUIRED`; NO invented duration) and
+  `docs/COST_GOVERNANCE_PLAN.md` (NO live paid usage; kill switch / token caps / iteration hard stop /
+  cost ceiling / budgets / alerts each labeled NOT IMPLEMENTED — hard-stop absence verified in
+  `engine/progression_loop.py`; historical controls = PLANNED design input requiring re-decision before any
+  re-enablement; provider costs deferred). Validation: `tests/test_p10_doc1_retention_cost_truth.py` (11
+  checks; doc truth tied to source truth; structural RED 9/11 vs unrepaired docs → GREEN 11/11). Full suite
+  2830/3/1/0 (prior 2819 + 11 new, zero regressions). **With this candidate all five P10-C §9 architecture
+  documents are truth-labeled — the §9 revalidation debt is CLOSED at documentation level.** No
+  retention/erasure rule or legal conclusion created; OD-DR1/OD-DR2 unaltered; registers OPEN; PAID
+  ACTIVATION AUTHORIZED: NO; PSRR TRIGGERED: NO; DEPLOYMENT AUTHORIZED: NO; Phase 10 OPEN.
+  `OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY if/when this exact candidate is merged and
+  post-merge verified.
+
+- **Phase 10 — P10-IR1 TECHNICAL INCIDENT RESPONSE FOUNDATION: MERGED / AUTHORITATIVE (candidate
+  `fb7a0313…` Owner-accepted at that exact SHA, PR #523, tip `1816512326bae32f072c3816b78ab56fbb657b2e`;
+  parents `ee933718…`/`fb7a0313…`, merge tree `a4378a7a…` = candidate tree, empty candidate→merge diff —
+  independently re-verified).** The internal incident-response runbook and its structural test suite are
+  authoritative: `INTERNAL TECHNICAL INCIDENT RESPONSE: IMPLEMENTED`; `CUSTOMER-FACING SUPPORT MODEL:
+  OPEN`; `LEGAL/PRIVACY INCIDENT NOTICE RULES: OPEN — EXTERNAL COUNSEL REQUIRED`. (Original
+  candidate-stage bullet retained below as history.)
+
+- **(superseded history) Phase 10 — P10-IR1 TECHNICAL INCIDENT RESPONSE FOUNDATION (was: Owner-authorized bounded governance/runbook
   candidate, PR pending; RUNTIME CODE REQUIRED: NO), base `ee93371808803c488eeba59bf83fcfbb20fccc2a`
   (PR #522 merge — P10-SEC1, authoritative; parents `9e46e75b…`/`cb950881…`, merge tree `98076d4e…` =
   candidate tree, empty candidate→merge diff — independently re-verified).** Delivers
