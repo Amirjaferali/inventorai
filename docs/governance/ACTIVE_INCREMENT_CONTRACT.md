@@ -41,9 +41,41 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — PHASE 10 OD-J1 + OD-J2 ACCEPTANCE: governance-only candidate; accepts two Owner decisions
-registered by the merged Jurisdiction & Data-Rights gate; carries the D3b stat correction; authorizes
-nothing):** Base: `022e5b75cb0e7bc9ee248f20aed5df7da1368989` (PR #514 merge — Jurisdiction & Data-Rights
+**Status (current — PHASE 10 OD-DR1 ACCEPTANCE AT STRATEGY LEVEL: governance-only candidate; accepts the
+physical-deletion/erasure product position registered by the merged Jurisdiction & Data-Rights gate;
+authorizes nothing):** Base: `f35a399960b131e79f390c8eff2a6e95b29726a0` (PR #515 merge — OD-J1/OD-J2
+acceptance, authoritative; independently re-verified: parents `022e5b75…` / `aed0cdf2…`, merge tree
+`25d839f0…` equal to the accepted candidate tree). Full detail:
+`docs/governance/evidence/phase10_owner_decisions/OD-DR1_PHYSICAL_DELETION_ERASURE_POSITION.md` and the new
+OD-DR1 section of `OWNER_DECISION_REGISTER.md`.
+
+**OD-DR1 — ACCEPTED AT STRATEGY LEVEL.** Current authorized account-exit capability remains **Account
+Deactivation** (P10-D3b preserved; the `"deleted"` status is a tombstone/non-active marker, NOT physical
+erasure; a future true erasure capability must use distinct terminology/state). **Physical deletion/erasure is
+DEFERRED PENDING EXTERNAL LEGAL DETERMINATION AND SEPARATE OWNER AUTHORIZATION** — no implementation, no
+retention-behavior change. Future principles recorded non-authorizingly (explicit request, identity
+re-verification, pending state, configurable grace/notice — the ~1-month/~1-week/~1-day preference is a
+NON-BINDING future UX preference and never a liability waiver — cancellation before finalization, conditional
+export opportunity that does NOT touch OD-DR2, truthful final-state communication, minimum necessary
+non-content-bearing processing evidence that can never reconstruct erased content). Delete-every-row is
+explicitly NOT assumed (six-way classifiability requirement). **Deferral does NOT suspend existing legal
+obligations** — binding erasure/data-subject requests escalate to Owner + external counsel as exceptions.
+Subscription expiry/non-payment and inactivity are NOT deletion requests. Institutional deletion authority
+reserved. A separate future **technical deletion-impact gate** (all stores incl. backups/replicas/derived
+copies) is prerequisite to any implementation authorization.
+
+**Preserved.** OD-DR2 and OD-CJ1 remain REGISTERED AND UNRESOLVED; OD-J1/OD-J2 authoritative and unchanged;
+OD-A governs brand/name; project-scoped export (P10-D3a) remains the only authoritative export; P10-D3b not
+reopened.
+
+**Boundary / status.** Governance-only; zero runtime/test diff. No deletion implementation, retention logic,
+account-wide export, institutional functionality, legal drafting, infrastructure, PSRR trigger, or deployment
+authority; no auto-activated successor (P10-C §10). Authoritative ONLY if/when this exact candidate is merged
+and post-merge verified. Next required step: **Independent External Review of this exact SHA + bundle**.
+
+**Immediately prior (OD-J1 + OD-J2 acceptance — candidate `aed0cdf2`, accepted and MERGED via PR #515, tip
+`f35a399960b131e79f390c8eff2a6e95b29726a0`; now AUTHORITATIVE; retained as history):** Base:
+`022e5b75cb0e7bc9ee248f20aed5df7da1368989` (PR #514 merge — Jurisdiction & Data-Rights
 Owner-Decision Gate, authoritative; independently re-verified: parents `07389b24…` / `ca4956c2…`, merge tree
 `39e2ee43…` equal to the accepted candidate tree). Full detail:
 `docs/governance/evidence/phase10_owner_decisions/OD-J1_OD-J2_JURISDICTION_AND_HOSTING.md` and the new

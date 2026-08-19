@@ -2424,7 +2424,44 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
-- **Phase 10 — OD-J1 + OD-J2 ACCEPTANCE (candidate, PR pending; governance-only; accepts the two Owner
+- **Phase 10 — OD-DR1 ACCEPTANCE AT STRATEGY LEVEL (candidate, PR pending; governance-only; authorizes
+  nothing), base `f35a399960b131e79f390c8eff2a6e95b29726a0` (PR #515, authoritative).** Current authorized
+  account-exit capability remains **Account Deactivation** (P10-D3b preserved; the `"deleted"` status is a
+  tombstone/non-active marker, NOT physical erasure — no wording may describe it as physical deletion; a
+  future true erasure capability must use distinct terminology/state). **Physical deletion / erasure is
+  DEFERRED PENDING EXTERNAL LEGAL DETERMINATION AND SEPARATE OWNER AUTHORIZATION**; no implementation, no
+  retention-behavior change. Future-capability principles recorded (non-authorizing): explicit user request;
+  identity re-verification; pending-deletion state; configurable grace/recovery + notice schedule (the
+  Owner's ~1-month/~1-week/~1-day notice preference is a NON-BINDING future UX preference — not a legal
+  requirement, retention period, or compliance proof; notices must never be described as liability waiver or
+  waiver of statutory rights); cancellation before finalization; conditional truthful export opportunity
+  ("where legally and operationally appropriate" — does not resolve or expand OD-DR2); truthful final-state
+  communication; **minimum necessary, non-content-bearing deletion-processing evidence** (must not contain or
+  permit reconstruction of erased content; must not become a hidden backup; legal basis/duration
+  undetermined). Delete-every-row explicitly NOT assumed — six-way classifiability required (erasable /
+  lawfully retained / requires legal determination / append-only audit / commercial-accounting /
+  security-fraud evidence). **Deferral does NOT suspend existing legal obligations** — a legally binding
+  erasure/data-subject request received before the capability exists escalates to the Owner + external
+  counsel as an exception (escalation rule only; no regime-applicability conclusion). Subscription
+  expiry/non-renewal/non-payment and account inactivity are NOT deletion requests. Institutional deletion
+  authority reserved to a later institutional/legal gate (no institutional feature activated). A separate
+  future **technical deletion-impact gate** — inventorying accounts, projects, records, ownership references,
+  email tokens, API credentials, audit records, append-only ledgers, lifecycle events,
+  commercial/subscription/provider records, backups, replicas, derived copies/logs — is prerequisite to any
+  future implementation authorization. **Preserved:** OD-DR2 and OD-CJ1 REGISTERED AND UNRESOLVED; OD-J1/
+  OD-J2 authoritative; OD-A governs brand/name; project-scoped export remains the only authoritative export.
+  Register: `OWNER_DECISION_REGISTER.md` new OD-DR1 section; evidence:
+  `docs/governance/evidence/phase10_owner_decisions/OD-DR1_PHYSICAL_DELETION_ERASURE_POSITION.md`.
+  Governance-only; zero runtime/test diff; no PSRR; no deployment; no auto-successor.
+
+- **Phase 10 — OD-J1 + OD-J2 ACCEPTANCE: MERGED / AUTHORITATIVE (candidate `aed0cdf2`, PR #515, tip
+  `f35a399960b131e79f390c8eff2a6e95b29726a0`; parents `022e5b75…`/`aed0cdf2…`, merge tree `25d839f0…` =
+  candidate tree — independently re-verified).** OD-J1 (GCC-first marketing; globally open availability from
+  launch; individual + institutional intended scope) and OD-J2 (strategy-level provider-neutral hosting;
+  provider/region delegated to a future infrastructure gate) are ACCEPTED; the P10-D3b `+487/−3` stat
+  correction is carried. (Original candidate-stage bullet retained below as history.)
+
+- **(superseded history) Phase 10 — OD-J1 + OD-J2 ACCEPTANCE (was: candidate, PR pending; governance-only; accepts the two Owner
   decisions registered by the merged Jurisdiction & Data-Rights gate; authorizes nothing), base
   `022e5b75cb0e7bc9ee248f20aed5df7da1368989` (PR #514, authoritative).** **OD-J1 — ACCEPTED:** *GCC-first
   commercial marketing; globally open user availability from launch; global-ready product from the outset* —

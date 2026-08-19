@@ -11032,3 +11032,50 @@ treatment is decided.
 legal drafting; no PSRR trigger; no deployment authority; no auto-activated successor gate (P10-C §10).
 Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next required step:
 Independent External Review of this exact SHA + bundle.
+
+---
+
+## Phase 10 — OD-J1/OD-J2 acceptance MERGED / AUTHORITATIVE; OD-DR1 ACCEPTED AT STRATEGY LEVEL (candidate; governance-only)
+
+**OD-J1/OD-J2 acceptance merged.** Candidate `aed0cdf2ce065df784cb4720cae17f64b89ed091` was Owner-accepted at
+that exact SHA (Independent External Review `ACCEPT WITH NON-BLOCKING OBSERVATIONS`; Independent Reviewer
+Grill PASS) and merged via **PR #515**, tip `f35a399960b131e79f390c8eff2a6e95b29726a0` (first parent
+`022e5b75…`, second parent `aed0cdf2…`, merge tree `25d839f0…` equal to the candidate tree — independently
+re-verified). OD-J1 (GCC-first marketing; globally open availability from launch; individual + institutional
+intended scope) and OD-J2 (strategy-level provider-neutral hosting; provider/region delegated) are ACCEPTED
+and authoritative, including the carried P10-D3b `+487/−3` stat correction.
+
+**OD-DR1 — ACCEPTED AT STRATEGY LEVEL (this candidate).** Current authorized account-exit capability remains
+**Account Deactivation** (P10-D3b, preserved; the `"deleted"` status is a tombstone/non-active marker, NOT
+physical erasure — no wording may describe it as physical deletion; a future true erasure capability must use
+distinct terminology/state). **Physical deletion / erasure is DEFERRED PENDING EXTERNAL LEGAL DETERMINATION
+AND SEPARATE OWNER AUTHORIZATION** — no implementation authorized, no current retention behavior changed.
+Future-capability principles recorded (non-authorizing): explicit request, identity re-verification,
+pending-deletion state, configurable grace/recovery + notice schedule, cancellation before finalization,
+conditional truthful export opportunity, truthful final-state communication, minimum necessary
+non-content-bearing processing evidence. The Owner's ~1-month/~1-week/~1-day notice preference is a
+**NON-BINDING future UX preference** — not a legal requirement, retention period, binding timeline, or
+compliance proof — and notices must never be described as liability waiver or waiver of statutory rights.
+Deletion evidence must not contain or permit reconstruction of erased content and must not become a hidden
+backup; its legal basis/duration is undetermined. Future deletion must NOT assume delete-every-row — a
+six-way classifiability requirement (erasable / lawfully-retained / requires-legal-determination /
+append-only-audit / commercial-accounting / security-fraud evidence) is registered. **Deferral does NOT
+suspend existing legal obligations**: a legally binding erasure/data-subject request arriving before the
+capability exists must be escalated to the Owner + external counsel as an exception (escalation rule only —
+no regime-applicability conclusion). Subscription expiry/non-renewal/non-payment and account inactivity are
+NOT deletion requests. Institutional deletion authority is reserved to a later institutional/legal gate — no
+institutional feature activated. A separate **technical deletion-impact gate** (inventorying accounts,
+projects, records, ownership references, email tokens, API credentials, audit records, append-only ledgers,
+lifecycle events, commercial/subscription/provider records, backups, replicas, derived copies/logs; each
+classified erasable / lawfully retained / requires legal determination) is REQUIRED before any future
+implementation authorization — the deletion algorithm is not designed now.
+
+**Preserved.** OD-DR2 (account-wide access/export — project-scoped export remains the only authoritative
+export) and OD-CJ1 (commercial jurisdiction/tax) remain REGISTERED AND UNRESOLVED. OD-A governs brand/name.
+Register: `OWNER_DECISION_REGISTER.md` new OD-DR1 section (this candidate); evidence:
+`docs/governance/evidence/phase10_owner_decisions/OD-DR1_PHYSICAL_DELETION_ERASURE_POSITION.md`.
+
+**Boundary / status.** Governance-only; zero runtime/test diff. No deletion implementation, retention logic,
+account-wide export, institutional functionality, legal drafting, infrastructure work, PSRR trigger, or
+deployment authority; no auto-activated successor (P10-C §10). Authoritative ONLY if/when this exact candidate
+is merged and post-merge verified. Next required step: Independent External Review of this exact SHA + bundle.
