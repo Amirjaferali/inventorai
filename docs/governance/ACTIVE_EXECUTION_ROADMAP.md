@@ -11308,3 +11308,53 @@ posture. PAID ACTIVATION AUTHORIZED: NO (`D-P8-PL-01 class C`); PSRR TRIGGERED: 
 AUTHORIZED: NO; DEPLOYMENT AUTHORIZED: NO (`OD-P`). `OWNER_DECISION_REGISTER.md` UNCHANGED. No
 auto-activated successor (P10-C §10). Authoritative ONLY if/when this exact candidate is merged and
 post-merge verified. Next required step: **Independent External Review of this exact SHA + bundle**.
+
+---
+
+## P10-OB1 — Provider-Neutral Observability Foundation Increment (Owner-authorized bounded implementation candidate)
+
+**Base:** `571cede0fdaec297319c95ba5c6042733767f811` (PR #520 merge — P10-BR1 backup/restore increment,
+authoritative; independently re-verified: parents `56ba1044…`/`5736150…`, merge tree `b9c3dbf5…` equal to the
+accepted candidate tree, empty candidate→merge diff). **P10-BR1 synchronization (recorded here per
+repository convention):** the P10-BR1 candidate `5736150…` was Owner-accepted at that exact SHA and MERGED
+via PR #520 — AUTHORITATIVE. The P10-C §4 "backup/restore drills" obligation now stands at
+`LOCAL CAPABILITY IMPLEMENTED + DRILL-VERIFIED` (production/offsite backup posture remains future,
+provider-dependent, separately governed).
+
+**Selection.** Owner-selected from the P10-RV1 revalidation ranking (the P10-C §4 monitoring/observability
+row was NOT STARTED: no logging framework, no health surface, no metrics/alerts anywhere).
+
+**Delivered (this candidate).** ONE minimal truthful health/readiness surface `GET /health` (web/app.py):
+deterministic, machine-readable, unauthenticated, session-free, side-effect-free, data-minimized — exactly
+two bounded enum fields (`status`, `database`); 200 while local runtime dependencies are usable or simply
+not yet lazily initialized (`database: ok|uninitialized`), 503 only on real local dependency failure
+(`database: error`); the probe NEVER creates a file/schema/row (initialized stores probed via existing
+public read-only reads; an existing DB file opened strictly read-only for a catalog read; a missing file =
+normal lazy pre-first-use state). Plus the smallest structured operational-logging seam
+(`web/observability.py`, stdlib `logging` only): JSON-line events with stable keys, strict field ALLOWLIST
+(`component/outcome/error_class/detail_code/count/duration_ms`), per-field value grammars (lowercase dotted
+identifiers; exception-class shape for `error_class`) rejecting emails, free-form user text, paths, IPs,
+session identifiers, and common secret shapes (an adversarial probe caught a secret-shaped value passing a
+looser draft grammar BEFORE freeze; the grammar was tightened and the rejection is now test-enforced);
+`emit()` never raises. Initial event scope minimal: `health.db_probe_failed` (bounded exception CLASS name
+only). Tests: `tests/test_p10_ob1_observability_foundation.py`, 17 focused tests RED-first (RED: 17/17
+blocked at collection, `ImportError` on the absent `web.observability` — precisely the missing capability;
+GREEN 17/17). Relevant regression 213 passed; full suite 2792 passed / 3 skipped / 1 xfailed / 0 failures
+(prior 2775 + 17 new; zero regressions). `docs/OBSERVABILITY_ARCHITECTURE.md` truth-labeled (IMPLEMENTED NOW
+vs NOT DECIDED/NOT IMPLEMENTED vs HISTORICAL/TARGET DESIGN — the historical M-01…M-21 / AE-01…AE-20
+taxonomy is retained as labeled future design input, NOT implemented).
+
+**Truthful P10-C §4 classification.** Monitoring/observability =
+`PARTIAL — PROVIDER-NEUTRAL FOUNDATION IMPLEMENTED`. Live production monitoring, alerting, dashboards,
+error-tracking, log destination/retention/rotation/aggregation: NOT implemented, NOT decided —
+provider-dependent future work; PSRR items 20–22/28 remain future verification.
+
+**Boundaries (binding).** Data-truth preserved and test-proven: NEW IP COLLECTION: NO; NEW USER-AGENT
+COLLECTION: NO; NEW DEVICE/NETWORK METADATA: NO; NEW ANALYTICS: NO; NEW BEHAVIORAL TRACKING: NO; NEW
+THIRD-PARTY TELEMETRY: NO; NEW USER CONTENT/EMAIL/TOKEN/SECRET IN OPERATIONAL LOGS: NO. Zero
+schema/migration diff; durable audit tables preserved, not duplicated; no provider/monitoring-vendor
+selection; no retention policy; no security-header change (P10-SEC1 separate); no backup/restore change;
+no payment/legal/tax change. PAID ACTIVATION AUTHORIZED: NO (`D-P8-PL-01 class C`); PSRR TRIGGERED: NO;
+PSRR EXECUTION AUTHORIZED: NO; DEPLOYMENT AUTHORIZED: NO (`OD-P`). `OWNER_DECISION_REGISTER.md` UNCHANGED.
+No auto-activated successor (P10-C §10). Authoritative ONLY if/when this exact candidate is merged and
+post-merge verified. Next required step: **Independent External Review of this exact SHA + bundle**.

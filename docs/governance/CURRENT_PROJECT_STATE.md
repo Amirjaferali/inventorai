@@ -2424,7 +2424,39 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
-- **Phase 10 — P10-BR1 DURABLE-DATABASE BACKUP & RESTORE DRILL INCREMENT (Owner-authorized bounded
+- **Phase 10 — P10-OB1 PROVIDER-NEUTRAL OBSERVABILITY FOUNDATION INCREMENT (Owner-authorized bounded
+  implementation candidate, PR pending), base `571cede0fdaec297319c95ba5c6042733767f811` (PR #520 merge —
+  P10-BR1, authoritative; parents `56ba1044…`/`5736150…`, merge tree `b9c3dbf5…` = candidate tree, empty
+  candidate→merge diff — independently re-verified).** Delivers ONE minimal truthful health/readiness
+  surface `GET /health` (deterministic, unauthenticated, session-free, side-effect-free, data-minimized;
+  200 `database: ok|uninitialized` / 503 `database: error`; probe never creates a file/schema/row) and the
+  smallest structured operational-logging seam `web/observability.py` (stdlib `logging` only; JSON lines;
+  strict field ALLOWLIST with per-field value grammars rejecting emails, free-form text, paths, IPs, session
+  identifiers, and common secret shapes — a pre-freeze adversarial probe caught and closed a secret-shaped
+  value passing a looser draft grammar; `emit()` never raises; initial event scope: `health.db_probe_failed`
+  with bounded exception class name only). Tests RED-first (17/17 blocked at collection on the absent
+  module → GREEN 17/17); relevant regression 213 passed; full suite 2792/3/1/0 (prior 2775 + 17 new, zero
+  regressions). `docs/OBSERVABILITY_ARCHITECTURE.md` truth-labeled (IMPLEMENTED NOW vs NOT DECIDED vs
+  HISTORICAL/TARGET; M-01…M-21/AE-01…AE-20 retained as labeled unimplemented design input). **Truthful
+  P10-C §4 classification: monitoring/observability = PARTIAL — PROVIDER-NEUTRAL FOUNDATION IMPLEMENTED**
+  (live production monitoring/alerting/dashboards absent; destination/retention NOT decided; PSRR items
+  future verification). Data-truth preserved and test-proven (no IP/user-agent/device metadata/analytics/
+  tracking/third-party telemetry/user content/email/token/secret in operational logs). Zero schema diff;
+  durable audit tables preserved, not duplicated; no provider selection; no security-header change; no
+  backup/restore change. PAID ACTIVATION AUTHORIZED: NO; PSRR TRIGGERED: NO; DEPLOYMENT AUTHORIZED: NO.
+  `OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY if/when this exact candidate is merged and
+  post-merge verified.
+
+- **Phase 10 — P10-BR1 DURABLE-DATABASE BACKUP & RESTORE DRILL INCREMENT: MERGED / AUTHORITATIVE (candidate
+  `5736150…` Owner-accepted at that exact SHA, PR #520, tip `571cede0fdaec297319c95ba5c6042733767f811`;
+  parents `56ba1044…`/`5736150…`, merge tree `b9c3dbf5…` = candidate tree, empty candidate→merge diff —
+  independently re-verified).** The provider-neutral SQLite backup/restore/validation/parity seam
+  (`engine/backup_service.py`), its 21-test suite, the PASSED 12-point local restore drill evidence, and the
+  bounded DR-plan truth repair are authoritative. P10-C §4 "backup/restore drills" now stands at
+  `LOCAL CAPABILITY IMPLEMENTED + DRILL-VERIFIED` (production/offsite posture remains future,
+  provider-dependent, separately governed). (Original candidate-stage bullet retained below as history.)
+
+- **(superseded history) Phase 10 — P10-BR1 DURABLE-DATABASE BACKUP & RESTORE DRILL INCREMENT (was: Owner-authorized bounded
   implementation candidate, PR pending), base `56ba10446626af1d8c2e188b2f8982b1265a5078` (PR #519 merge —
   P10-LT1, authoritative; parents `5dfc35e3…`/`aead7fcc…`, merge tree `a694c08d…`, empty candidate→merge
   diff — independently re-verified).** Owner-selected after the P10-RV1 read-only technical revalidation

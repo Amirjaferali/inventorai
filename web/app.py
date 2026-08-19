@@ -33,6 +33,8 @@ from web.gap_labels import (
     get_session_disclosure, friendly_gap_name,
 )
 from web import ui_text
+from web import observability as _obs
+from urllib.request import pathname2url as _pathname2url
 from engine.deliverable_assembler import assemble_deliverable
 # P4-1b-1 (G-P4-1B-1-DOC-01 / PR #358): the merged P4-1a durable store and the
 # P4-0 record contract, used ONLY to durably create and cold-load a NEW project
@@ -228,6 +230,50 @@ def _get_account_store():
             os.makedirs(directory, exist_ok=True)
         _ACCOUNT_STORE = SqliteAccountStore(path)
     return _ACCOUNT_STORE
+
+
+# --- P10-OB1: minimal provider-neutral health/readiness surface ----------------
+def _database_health():
+    """Non-mutating local-dependency probe (P10-OB1). Answers only: are the
+    required LOCAL runtime dependencies usable right now?
+
+    Never creates a file, schema, or row: already-initialized application
+    stores are probed with existing PUBLIC read-only reads; an existing but
+    not-yet-opened database file is opened strictly read-only for a trivial
+    read; a missing file reports ``"uninitialized"`` (the lazy runtime creates
+    it on first real use, so absence is a normal pre-first-use state, not a
+    failure). Returns ``"ok"`` | ``"uninitialized"`` | ``"error"``. It proves
+    nothing about external providers, payment, hosting, security, PSRR, legal
+    readiness, or deployment readiness."""
+    try:
+        probed = False
+        if _ACCOUNT_STORE is not None:
+            _ACCOUNT_STORE.count_accounts()
+            probed = True
+        if _STORE is not None:
+            _STORE.project_ids()
+            probed = True
+        if probed:
+            return "ok"
+        path = _resolve_db_path()
+        if not os.path.isfile(path):
+            return "uninitialized"
+        conn = sqlite3.connect(
+            "file:%s?mode=ro" % _pathname2url(os.path.abspath(path)),
+            uri=True)
+        try:
+            # A trivial catalog read: forces a real page-1 read (a corrupt or
+            # non-SQLite file fails here) while remaining strictly read-only.
+            conn.execute("SELECT count(*) FROM sqlite_master").fetchone()
+        finally:
+            conn.close()
+        return "ok"
+    except Exception as exc:
+        # Bounded operational diagnostics only: the exception CLASS name —
+        # never message text, a path, or user data (P10-OB1 data-minimization).
+        _obs.emit("health.db_probe_failed", level="warning",
+                  component="health", error_class=type(exc).__name__)
+        return "error"
 
 
 def _utc_now():
@@ -1266,6 +1312,24 @@ def _render_start_page(error=None, status=None, present_domain=None,
         start_carried_choice=carried_choice,
         **(generalized or {}))
     return rendered if status is None else (rendered, status)
+
+
+@app.route("/health", methods=["GET"])
+def health():
+    """P10-OB1 — the single minimal health/readiness surface. Deterministic,
+    machine-readable, unauthenticated, session-free, side-effect-free, and
+    data-minimized: exactly two bounded enum fields, no user data, no secrets,
+    no filesystem/database details, no versions, no stack traces. 200 while
+    the local runtime dependencies are usable (or simply not yet lazily
+    initialized); 503 only on a real local dependency failure. Local health
+    is NOT production/deployment readiness and is no authorization signal."""
+    db_state = _database_health()
+    body = {"status": "ok" if db_state != "error" else "unavailable",
+            "database": db_state}
+    return app.response_class(
+        response=json.dumps(body, sort_keys=True),
+        status=200 if db_state != "error" else 503,
+        mimetype="application/json")
 
 
 @app.route("/", methods=["GET"])
