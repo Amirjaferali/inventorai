@@ -11130,3 +11130,88 @@ change, no connector/adapter/delivery mechanism, no institutional functionality,
 infrastructure, no PSRR trigger, no deployment authority; no auto-activated successor (P10-C §10).
 Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next required step:
 Independent External Review of this exact SHA + bundle.
+
+---
+
+## Phase 10 — OD-DR2 acceptance MERGED / AUTHORITATIVE; OD-CJ1 ACCEPTED AT STRATEGY LEVEL (candidate; governance-only)
+
+**OD-DR2 acceptance merged.** Candidate `a9b3aee2107b5cd157e79af82d556eb27ce44ae8` was Owner-accepted at that
+exact SHA and merged via **PR #517**, tip `b98561b847884557cc90c7c6600644ae23abf4c5` (first parent
+`46756528…`, second parent `a9b3aee2…`, merge tree `8654270e…` equal to the candidate tree — independently
+re-verified). OD-DR2 (account-wide export DEFERRED; project-scoped export truth preserved; useful-output-
+portability priority; database-dump rejected) is ACCEPTED AT STRATEGY LEVEL and authoritative.
+
+**OD-CJ1 — ACCEPTED AT STRATEGY LEVEL (this candidate).** Records **KUWAIT AS THE CURRENT INTENDED COMMERCIAL
+STARTING JURISDICTION** — strictly A COMMERCIAL STARTING-POSITION INTENT FACT supplied for later external
+legal/tax analysis; the tax-scope component remains **DEFERRED PENDING EXTERNAL LEGAL/TAX DETERMINATION AND
+SEPARATE OWNER AUTHORIZATION**. Kuwait is NOT a final legal-entity, incorporation, tax-nexus,
+VAT/GST/sales-tax, Merchant-of-Record, invoicing, or withholding/reverse-charge answer. **Paid-activation
+hard gate preserved (load-bearing):** public paid activation remains BLOCKED / NOT AUTHORIZED under
+`D-P8-PL-01 class C`; the independently required conditions — applicable Phase-10 legal/readiness items,
+external legal/tax input, payment/refund/subscription terms, `PSRR = GO/PASS` under `D-PSRR-01`, the separate
+Deployment Gate, and explicit Owner deployment authorization under `OD-P` — are none of them satisfied by
+OD-CJ1; no PSRR trigger, no deployment, no paid activation. **External legal/tax register remains OPEN**
+(payment/refund/subscription terms, tax treatment/jurisdiction, invoicing, cross-border obligations).
+Commercial customer eligibility includes BOTH **B2C and B2B** (cross-referencing OD-J1 §2.3, not duplicating
+it) under the rule **COMMERCIAL CUSTOMER ELIGIBILITY ≠ ENTERPRISE FEATURE ACTIVATION** — no
+enterprise/institutional feature or B2B-specific billing/tax workflow is activated or decided. Commercial
+model direction: **RECURRING SUBSCRIPTION with AUTOMATIC RECURRING PAYMENT COLLECTION** — direction only; no
+frequency, price, trial, grace, retry, suspension, renewal, cancellation, refund, chargeback,
+card-storage, tokenization, or provider-specific mechanism decided or authorized. References the EXISTING
+**P8-I4 Payment Provider Boundary** (`InventorAI commercial domain → canonical provider-neutral
+PaymentProviderPort` (`engine/payment_provider_port.py`) `→ external payment provider`) without creating,
+renaming, duplicating, or expanding it — no new Commercial/Billing Layer invented; **payment-provider
+neutrality** preserved (no Stripe/PayPal/Adyen/Paddle/Apple/Google/local-Kuwait/bank/other vendor);
+**tax-provider and Merchant-of-Record neutrality** preserved (NO-FORECLOSURE / ARCHITECTURE-PRESERVATION
+PRINCIPLES ONLY — explicitly not build/prepare/pre-implementation/schema/route/job/infrastructure
+instructions); **USD decided as the INITIAL / BASE COMMERCIAL PRICING AND BILLING CURRENCY (Owner decision,
+strategy level)** — initial pricing and subscription billing may use USD as the starting commercial
+currency; strictly a commercial pricing/billing starting decision that infers NO US
+commercial/legal-entity/tax jurisdiction, NO US hosting, NO US-only customers, NO US payment
+provider, and satisfies NO future local-currency display / invoice-currency / consumer-protection /
+accounting / tax-display requirement (all remain subject to external legal/tax/accounting
+determination); **multi-currency remains DEFERRED / NOT ACTIVATED** — only no-foreclosure /
+architecture-preservation for future multi-currency is kept (no additional currencies, currency
+conversion, FX-rate logic, currency selector, regional currency mapping, multi-currency
+settlement/accounting, or currency-specific tax logic; future currencies require a separately
+governed commercial decision/gate). **P8C §5 / P8-I4 deferred
+business decisions are CONSUMED BY, NOT CLOSED BY, OD-CJ1** — commercial readiness is NOT complete.
+**Jurisdiction separation rule:** USER RESIDENCE ≠ CUSTOMER LOCATION ≠ COMMERCIAL ENTITY JURISDICTION ≠
+HOSTING LOCATION ≠ PAYMENT-PROVIDER LOCATION ≠ TAX JURISDICTION ≠ COMMERCIAL CURRENCY — Kuwait-start ≠ Kuwait-only users, Kuwait-
+only companies, or Kuwait hosting; GCC-first marketing ≠ GCC-only tax treatment; OD-J1/OD-J2 preserved
+unchanged. **Escalation rule:** deferral suspends no legally applicable obligation — binding
+commercial/payment/tax/accounting requirements escalate to Owner + external legal counsel + external
+tax/accounting adviser; no conclusion that any VAT/GST/sales-tax/withholding/reverse-charge/registration/
+invoicing requirement currently applies.
+
+**Payment-method compatibility direction (Owner decision; `PAYMENT METHOD ≠ PAYMENT PROVIDER`,
+load-bearing).** Intended compatibility: Visa/major cards, Mastercard/major cards, Apple Pay, and KNET
+where commercially and technically applicable to the Kuwait starting market — COMPATIBILITY DIRECTION
+ONLY; nothing implemented or activated. Adjacent clarifications preserved: Apple Pay intent ≠ Apple
+selected as provider; Visa/Mastercard compatibility ≠ Visa/Mastercard selected as gateway/provider; KNET
+compatibility ≠ KNET or any Kuwait gateway selected as provider. KNET carries NO lock-in (not Kuwait-only
+customers, capability, or provider; no permanent dependency; no assumption KNET supports every
+recurring-billing use case; no KNET implementation authorized). Google Pay, additional wallets, and other
+local/regional/international methods: FUTURE NO-FORECLOSURE ONLY. Payment-method support for recurring
+subscription (initial payment; renewal; authorization/consent; saved-payment reference/token; method
+update; failed-payment handling; retries; cancellation; refunds) must be verified at the future
+payment-provider implementation/selection gate — no method guaranteed now. Consistent with the EXISTING
+P8-I4 §15 principle — 'Security / PCI boundary (architectural avoidance; NO compliance claim)':
+hosted/provider-tokenized checkout keeps raw payment-card credentials (full PAN, CVV) off-platform, with
+only the bounded reference/token exposed to InventorAI — referenced, not duplicated; NO PCI-compliance
+claim; no tokenization designed; no card data stored; exact PCI/payment-security obligations remain subject
+to later provider selection, security review, and legal/compliance determination. The P8-I4 deferred
+`payment methods` register is CONSUMED BUT NOT CLOSED — actual implementation, provider-method
+compatibility, recurring support, and final enabled methods remain separately governed.
+
+**Milestone.** With OD-CJ1 accepted, **all five decisions registered by the Jurisdiction & Data-Rights gate
+(OD-J1, OD-J2, OD-DR1, OD-DR2, OD-CJ1) carry accepted rows** in `OWNER_DECISION_REGISTER.md`. The gate's
+external legal-input register remains OPEN — acceptance of intents does not close external legal/tax review.
+Register: `OWNER_DECISION_REGISTER.md` new OD-CJ1 section (this candidate); evidence:
+`docs/governance/evidence/phase10_owner_decisions/OD-CJ1_COMMERCIAL_JURISDICTION_TAX_SCOPE.md`.
+
+**Boundary / status.** Governance-only; zero runtime/test diff. No billing/tax implementation, no
+payment/tax-provider or MoR selection, no paid activation, no enterprise feature, no legal/tax drafting, no
+infrastructure, no PSRR trigger, no deployment authority; no auto-activated successor (P10-C §10).
+Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next required step:
+Independent External Review of this exact SHA + bundle.
