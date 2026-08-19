@@ -41,10 +41,45 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — P10-SEC1 SECURITY HEADERS & PROVIDER-NEUTRAL HARDENING INCREMENT: Owner-authorized
-bounded implementation candidate):** Base: `9e46e75b283a7a451bd19106861a7ac3de01a8dc` (PR #521 merge —
-P10-OB1 observability foundation, authoritative; independently re-verified: parents `571cede0…` /
-`9048c132…`, merge tree `2b501cec…` equal to the accepted candidate tree, empty candidate→merge diff).
+**Status (current — P10-IR1 TECHNICAL INCIDENT RESPONSE FOUNDATION: Owner-authorized bounded
+governance/runbook candidate; RUNTIME CODE REQUIRED: NO):** Base:
+`ee93371808803c488eeba59bf83fcfbb20fccc2a` (PR #522 merge — P10-SEC1 security headers, authoritative;
+independently re-verified: parents `9e46e75b…` / `cb950881…`, merge tree `98076d4e…` equal to the accepted
+candidate tree, empty candidate→merge diff).
+
+**Objective.** The smallest provider-neutral INTERNAL technical incident-response foundation:
+`docs/governance/PHASE_10_INTERNAL_TECHNICAL_INCIDENT_RESPONSE_RUNBOOK.md` — narrow incident definition;
+SEV-1…SEV-4 severity model (each with triggers/examples/action/escalation/closure; qualitative urgency
+only — no SLA, no response-time clock, no customer commitment); truthful role semantics (Owner + governed
+execution agents; no invented staff); the flow `DETECT → CLASSIFY → CONTAIN → PRESERVE EVIDENCE → DIAGNOSE
+→ RECOVER → VERIFY → CLOSE / ESCALATE`; real-signals-only detection (P10-OB1 `/health` + logging seam,
+audit tables, tests, human reports — with an explicit does-NOT-exist list: no metrics/alerts/paging/
+external monitoring); existing-mechanism containment (epoch revocation, status gating, SHA/state
+preservation, DB-copy isolation — NO new kill switch); database path tied to authoritative P10-BR1
+(isolate → validate → restore-to-new-target → parity → Owner-authorized repoint); availability path tied
+to P10-OB1 (truthful ok/uninitialized/error semantics; data-minimization holds during incidents); security
+path tied to P10-SEC1 + existing auth controls; the MANDATORY legal/privacy boundary (`ESCALATE TO OWNER +
+QUALIFIED EXTERNAL COUNSEL WHEN AVAILABLE`; technical team does NOT determine legal applicability; no
+legal deadline; no automatic notification; LQ register stays OPEN); `CUSTOMER COMMUNICATION:
+OWNER-APPROVED ONLY` (no final templates, no promises); minimal evidence-record template + `IR-YYYYMMDD-NN`
+IDs (file-based, no new table/schema); closure criteria (technical closure ≠ legal closure) and reopen
+rule; IR/DR boundary (IR coordinates, `DISASTER_RECOVERY_PLAN.md` recovers — no duplication). Structural
+invariants enforced by `tests/test_p10_ir1_incident_runbook_structure.py` (9 checks; structural RED: 9/9
+fail with the runbook absent; GREEN 9/9).
+
+**Truth classification:** `INTERNAL TECHNICAL INCIDENT RESPONSE: IMPLEMENTED` (internal foundation) —
+while `CUSTOMER-FACING SUPPORT MODEL: OPEN` and `LEGAL/PRIVACY INCIDENT NOTICE RULES: OPEN — EXTERNAL
+COUNSEL REQUIRED` (never collapsed). PSRR item 27 is informed, not satisfied. PAID ACTIVATION AUTHORIZED:
+NO; PSRR TRIGGERED: NO; DEPLOYMENT AUTHORIZED: NO. `OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative
+ONLY if/when this exact candidate is merged and post-merge verified. Next required step: **Independent
+External Review of this exact SHA + bundle**.
+
+**Immediately prior (P10-SEC1 SECURITY HEADERS & PROVIDER-NEUTRAL HARDENING INCREMENT — candidate
+`cb950881…` Owner-accepted at that exact SHA and MERGED via PR #522, tip
+`ee93371808803c488eeba59bf83fcfbb20fccc2a`; now AUTHORITATIVE; retained as history):** Base:
+`9e46e75b283a7a451bd19106861a7ac3de01a8dc` (PR #521 merge — P10-OB1 observability foundation,
+authoritative; independently re-verified: parents `571cede0…` / `9048c132…`, merge tree `2b501cec…` equal
+to the accepted candidate tree, empty candidate→merge diff).
 
 **Objective.** One centralized provider-neutral response-hardening seam (`after_request`, setdefault
 semantics) applying to every response: the smallest inventory-supported CSP (`default-src 'none';
@@ -67,9 +102,8 @@ zero template/static changes were needed (the inventory proved none required).
 
 **Boundaries (binding):** headers ≠ security review, ≠ PSRR execution (item 11 remains future PSRR
 verification), ≠ TLS posture, ≠ compliance claim. PAID ACTIVATION AUTHORIZED: NO; PSRR TRIGGERED: NO;
-DEPLOYMENT AUTHORIZED: NO. `OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY if/when this exact
-candidate is merged and post-merge verified. Next required step: **Independent External Review of this
-exact SHA + bundle**.
+DEPLOYMENT AUTHORIZED: NO. `OWNER_DECISION_REGISTER.md` UNCHANGED. MERGED via PR #522 (tip `ee933718…`)
+and post-merge verified — AUTHORITATIVE.
 
 **Immediately prior (P10-OB1 PROVIDER-NEUTRAL OBSERVABILITY FOUNDATION INCREMENT — candidate `9048c132…`
 Owner-accepted at that exact SHA and MERGED via PR #521, tip `9e46e75b283a7a451bd19106861a7ac3de01a8dc`;
