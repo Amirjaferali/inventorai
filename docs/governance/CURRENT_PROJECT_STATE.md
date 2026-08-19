@@ -2424,7 +2424,38 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
-- **Phase 10 — P10-OB1 PROVIDER-NEUTRAL OBSERVABILITY FOUNDATION INCREMENT (Owner-authorized bounded
+- **Phase 10 — P10-SEC1 SECURITY HEADERS & PROVIDER-NEUTRAL HARDENING INCREMENT (Owner-authorized bounded
+  implementation candidate, PR pending), base `9e46e75b283a7a451bd19106861a7ac3de01a8dc` (PR #521 merge —
+  P10-OB1, authoritative; parents `571cede0…`/`9048c132…`, merge tree `2b501cec…` = candidate tree, empty
+  candidate→merge diff — independently re-verified).** Delivers ONE centralized `after_request`
+  response-hardening seam (setdefault semantics) applying to EVERY response (HTML/JSON/redirect/4xx/5xx/
+  static/`/health`): the smallest inventory-supported CSP `default-src 'none'; script-src 'self';
+  style-src 'unsafe-inline'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'` (no
+  `'unsafe-eval'`, no wildcard/host/scheme sources, no reporting endpoint), `X-Content-Type-Options:
+  nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin`. Grounded in a
+  mandatory pre-RED CSP compatibility inventory (zero inline script bodies/handlers; only same-origin
+  static `local_draft.js`; inline-styles-only styling — the sole justified `'unsafe-inline'`, style-src
+  only; zero external origins/fetch/frames; same-origin forms) — zero template/static changes needed.
+  **HSTS DEFERRED — TRUSTED HTTPS/PROXY CONTEXT NOT YET AUTHORITATIVE** (no forwarded-header trust/ProxyFix
+  added; not a defect under this scope). Tests RED-first (15/18 failed for the absent header set; 3
+  pre-existing-truth guards; GREEN 18/18); relevant regression 214 passed; full suite 2810/3/1/0 (prior
+  2792 + 18 new, zero regressions; auth/CSRF/forms/export/health/static-JS re-proven with headers active).
+  `docs/SECURITY_ARCHITECTURE.md` truth-labeled (headers IMPLEMENTED NOW; HSTS DEFERRED; stale claims
+  labeled; Pre-Release Checklist SUPERSEDED BY PSRR). Headers ≠ security review ≠ PSRR ≠ TLS posture ≠
+  compliance claim. Zero schema diff; no provider/network dependency; no auth/session/CSRF/observability/
+  backup/payment/legal change. PAID ACTIVATION AUTHORIZED: NO; PSRR TRIGGERED: NO; DEPLOYMENT AUTHORIZED:
+  NO. `OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY if/when this exact candidate is merged
+  and post-merge verified.
+
+- **Phase 10 — P10-OB1 PROVIDER-NEUTRAL OBSERVABILITY FOUNDATION INCREMENT: MERGED / AUTHORITATIVE
+  (candidate `9048c132…` Owner-accepted at that exact SHA, PR #521, tip
+  `9e46e75b283a7a451bd19106861a7ac3de01a8dc`; parents `571cede0…`/`9048c132…`, merge tree `2b501cec…` =
+  candidate tree, empty candidate→merge diff — independently re-verified).** The `/health` surface, the
+  `web/observability.py` structured logging seam, and the truth-labeled observability architecture are
+  authoritative. P10-C §4 monitoring/observability stands at `PARTIAL — PROVIDER-NEUTRAL FOUNDATION
+  IMPLEMENTED`. (Original candidate-stage bullet retained below as history.)
+
+- **(superseded history) Phase 10 — P10-OB1 PROVIDER-NEUTRAL OBSERVABILITY FOUNDATION INCREMENT (was: Owner-authorized bounded
   implementation candidate, PR pending), base `571cede0fdaec297319c95ba5c6042733767f811` (PR #520 merge —
   P10-BR1, authoritative; parents `56ba1044…`/`5736150…`, merge tree `b9c3dbf5…` = candidate tree, empty
   candidate→merge diff — independently re-verified).** Delivers ONE minimal truthful health/readiness

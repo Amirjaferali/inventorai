@@ -41,10 +41,41 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — P10-OB1 PROVIDER-NEUTRAL OBSERVABILITY FOUNDATION INCREMENT: Owner-authorized bounded
-implementation candidate):** Base: `571cede0fdaec297319c95ba5c6042733767f811` (PR #520 merge — P10-BR1
-backup/restore increment, authoritative; independently re-verified: parents `56ba1044…` / `5736150…`, merge
-tree `b9c3dbf5…` equal to the accepted candidate tree, empty candidate→merge diff).
+**Status (current — P10-SEC1 SECURITY HEADERS & PROVIDER-NEUTRAL HARDENING INCREMENT: Owner-authorized
+bounded implementation candidate):** Base: `9e46e75b283a7a451bd19106861a7ac3de01a8dc` (PR #521 merge —
+P10-OB1 observability foundation, authoritative; independently re-verified: parents `571cede0…` /
+`9048c132…`, merge tree `2b501cec…` equal to the accepted candidate tree, empty candidate→merge diff).
+
+**Objective.** One centralized provider-neutral response-hardening seam (`after_request`, setdefault
+semantics) applying to every response: the smallest inventory-supported CSP (`default-src 'none';
+script-src 'self'; style-src 'unsafe-inline'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'`
+— no `'unsafe-eval'`, no wildcard/host/scheme sources, no reporting endpoint), `X-Content-Type-Options:
+nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin`. **HSTS DEFERRED —
+REQUIRES TRUSTED PRODUCTION HTTPS CONTEXT** (no TLS termination/trusted-proxy truth exists; no forwarded-
+header trust added; no ProxyFix). Grounded in the mandatory pre-RED CSP compatibility inventory: zero
+inline script bodies/handlers; only same-origin static `local_draft.js`; inline-styles-only styling (the
+sole, narrowly justified `'unsafe-inline'`, style-src only); zero external origins/fetch/frames/base/
+data:/javascript: URLs; same-origin form actions.
+
+**Owner authorization:** explicit, verbatim, scoped to `RECONSTRUCTION → CSP INVENTORY → RED → IMPLEMENT →
+GREEN → REGRESSION → FULL SUITE → FREEZE → TRUTH SWEEP → CREATOR GRILL → BUNDLE`; no
+push/PR/merge/deploy/PSRR. **Allowed paths:** the `_SECURITY_HEADERS` seam in `web/app.py`,
+`tests/test_p10_sec1_security_headers.py` (new), `docs/SECURITY_ARCHITECTURE.md` (truth-labeling), and the
+three active governance surfaces. **Forbidden:** everything else — zero schema diff; zero change to
+auth/session/CSRF semantics, observability, backup/restore, payment/legal/tax, deployment, providers;
+zero template/static changes were needed (the inventory proved none required).
+
+**Boundaries (binding):** headers ≠ security review, ≠ PSRR execution (item 11 remains future PSRR
+verification), ≠ TLS posture, ≠ compliance claim. PAID ACTIVATION AUTHORIZED: NO; PSRR TRIGGERED: NO;
+DEPLOYMENT AUTHORIZED: NO. `OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY if/when this exact
+candidate is merged and post-merge verified. Next required step: **Independent External Review of this
+exact SHA + bundle**.
+
+**Immediately prior (P10-OB1 PROVIDER-NEUTRAL OBSERVABILITY FOUNDATION INCREMENT — candidate `9048c132…`
+Owner-accepted at that exact SHA and MERGED via PR #521, tip `9e46e75b283a7a451bd19106861a7ac3de01a8dc`;
+now AUTHORITATIVE; retained as history):** Base: `571cede0fdaec297319c95ba5c6042733767f811` (PR #520 merge
+— P10-BR1 backup/restore increment, authoritative; independently re-verified: parents `56ba1044…` /
+`5736150…`, merge tree `b9c3dbf5…` equal to the accepted candidate tree, empty candidate→merge diff).
 
 **Objective.** The smallest provider-neutral observability foundation: ONE truthful health/readiness surface
 (`GET /health` — deterministic, unauthenticated, session-free, side-effect-free, data-minimized; 200 with
@@ -72,9 +103,8 @@ security/commercial evidence layer — preserved, not duplicated.
 **Truthful P10-C §4 classification after this gate:** monitoring/observability =
 `PARTIAL — PROVIDER-NEUTRAL FOUNDATION IMPLEMENTED` (live production monitoring/alerting/dashboards still
 absent and provider-dependent; PSRR items remain future verification). PAID ACTIVATION AUTHORIZED: NO; PSRR
-TRIGGERED: NO; DEPLOYMENT AUTHORIZED: NO. `OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY if/when
-this exact candidate is merged and post-merge verified. Next required step: **Independent External Review of
-this exact SHA + bundle**.
+TRIGGERED: NO; DEPLOYMENT AUTHORIZED: NO. `OWNER_DECISION_REGISTER.md` UNCHANGED. MERGED via PR #521 (tip
+`9e46e75b…`) and post-merge verified — AUTHORITATIVE.
 
 **Immediately prior (P10-BR1 DURABLE-DATABASE BACKUP & RESTORE DRILL INCREMENT — candidate `5736150…`
 Owner-accepted at that exact SHA and MERGED via PR #520, tip `571cede0fdaec297319c95ba5c6042733767f811`; now

@@ -11358,3 +11358,54 @@ no payment/legal/tax change. PAID ACTIVATION AUTHORIZED: NO (`D-P8-PL-01 class C
 PSRR EXECUTION AUTHORIZED: NO; DEPLOYMENT AUTHORIZED: NO (`OD-P`). `OWNER_DECISION_REGISTER.md` UNCHANGED.
 No auto-activated successor (P10-C §10). Authoritative ONLY if/when this exact candidate is merged and
 post-merge verified. Next required step: **Independent External Review of this exact SHA + bundle**.
+
+---
+
+## P10-SEC1 — Security Headers & Provider-Neutral Hardening Increment (Owner-authorized bounded implementation candidate)
+
+**Base:** `9e46e75b283a7a451bd19106861a7ac3de01a8dc` (PR #521 merge — P10-OB1 observability foundation,
+authoritative; independently re-verified: parents `571cede0…`/`9048c132…`, merge tree `2b501cec…` equal to
+the accepted candidate tree, empty candidate→merge diff). **P10-OB1 synchronization (recorded here per
+repository convention):** the P10-OB1 candidate `9048c132…` was Owner-accepted at that exact SHA and MERGED
+via PR #521 — AUTHORITATIVE; the P10-C §4 monitoring/observability row stands at
+`PARTIAL — PROVIDER-NEUTRAL FOUNDATION IMPLEMENTED`.
+
+**Selection.** Owner-selected from the P10-RV1 revalidation ranking (security headers were NOT IMPLEMENTED
+anywhere; PSRR item 11 is future verification, not implementation).
+
+**Mandatory pre-RED CSP compatibility inventory (verified at this base):** zero inline `<script>` bodies;
+zero inline event handlers; the ONLY script is same-origin static `web/static/js/local_draft.js`
+(`<script defer src>` in index.html/session.html); styling is inline-only (`<style>` blocks in all 13
+templates + widespread `style=` attributes — moving them would be redesign); zero external
+script/style/img/font/connect origins; zero CSS `url()` loads; zero fetch/XHR; zero iframes/`<base>`/
+`data:`/`javascript:` URLs/eval-like constructs; all form actions same-origin relative; zero external
+links. Therefore: no template/static change needed, no nonce/hash plumbing needed, `'unsafe-inline'`
+needed ONLY for style-src.
+
+**Delivered (this candidate).** ONE centralized `after_request` response-hardening seam in `web/app.py`
+(setdefault semantics — never overwrites a route-set header), applying to EVERY response (HTML, JSON,
+redirects, 4xx/5xx, static files, `/health`):
+`Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'unsafe-inline';
+frame-ancestors 'none'; base-uri 'none'; form-action 'self'` (no `'unsafe-eval'`; no wildcard/host/scheme
+sources; no reporting endpoint); `X-Content-Type-Options: nosniff`; `X-Frame-Options: DENY` (no legitimate
+framing exists; consistent with `frame-ancestors 'none'`); `Referrer-Policy: strict-origin-when-cross-origin`.
+**HSTS DEFERRED — TRUSTED HTTPS/PROXY CONTEXT NOT YET AUTHORITATIVE** (no TLS termination or trusted-proxy
+semantics exist; no forwarded-header trust or ProxyFix added; not a defect under this scope; deferred to
+the future production/infrastructure gate). Tests: `tests/test_p10_sec1_security_headers.py`, 18 focused
+tests RED-first (RED: 15/18 failed for the absent header set; the 3 passing were pre-existing-truth
+regression guards — HSTS already absent, no inline scripts, same-origin sources; GREEN 18/18). Relevant
+regression 214 passed; full suite 2810 passed / 3 skipped / 1 xfailed / 0 failures (prior 2792 + 18 new;
+zero regressions — auth/CSRF/forms/export-attachment/health/static-JS all re-proven with headers active).
+Manual probes: header set present on 200/302/404/405/503/static/JSON; HSTS absent even on a
+secure-context test request; post-implementation inline rescan clean. `docs/SECURITY_ARCHITECTURE.md`
+truth-labeled (headers IMPLEMENTED NOW; HSTS DEFERRED; stale input-validation/abuse/rotation claims
+labeled; Pre-Release Checklist recorded as SUPERSEDED BY PSRR — execution PSRR-ONLY).
+
+**Boundaries (binding).** Headers ≠ security review ≠ PSRR execution ≠ TLS posture ≠ compliance claim.
+PSRR item 11 remains future PSRR verification. Zero schema diff; zero template/static diff; no
+auth/session/CSRF semantic change; no observability change beyond none; no backup/restore change; no
+payment/legal/tax change; no provider/CDN/reporting dependency (new network coupling: ZERO). PAID
+ACTIVATION AUTHORIZED: NO (`D-P8-PL-01 class C`); PSRR TRIGGERED: NO; PSRR EXECUTION AUTHORIZED: NO;
+DEPLOYMENT AUTHORIZED: NO (`OD-P`). `OWNER_DECISION_REGISTER.md` UNCHANGED. No auto-activated successor
+(P10-C §10). Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next
+required step: **Independent External Review of this exact SHA + bundle**.
