@@ -11409,3 +11409,59 @@ ACTIVATION AUTHORIZED: NO (`D-P8-PL-01 class C`); PSRR TRIGGERED: NO; PSRR EXECU
 DEPLOYMENT AUTHORIZED: NO (`OD-P`). `OWNER_DECISION_REGISTER.md` UNCHANGED. No auto-activated successor
 (P10-C §10). Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next
 required step: **Independent External Review of this exact SHA + bundle**.
+
+---
+
+## P10-IR1 — Technical Incident Response Foundation (Owner-authorized bounded governance/runbook candidate)
+
+**Base:** `ee93371808803c488eeba59bf83fcfbb20fccc2a` (PR #522 merge — P10-SEC1 security headers,
+authoritative; independently re-verified: parents `9e46e75b…`/`cb950881…`, merge tree `98076d4e…` equal to
+the accepted candidate tree, empty candidate→merge diff). **P10-SEC1 synchronization (recorded here per
+repository convention):** the P10-SEC1 candidate `cb950881…` was Owner-accepted at that exact SHA and
+MERGED via PR #522 — AUTHORITATIVE (security-header seam live; HSTS deferred pending trusted HTTPS/proxy
+context).
+
+**Runtime-code determination (load-bearing): RUNTIME CODE REQUIRED: NO.** Reconstruction confirmed every
+mechanism the runbook needs already exists (P10-OB1 `/health` + logging seam; P10-BR1 backup/restore/
+validation/parity; P10-SEC1 headers; epoch/status revocation seams; DR plan Scenario 7; durable audit
+tables), and NO incident-response/severity framework existed anywhere (no duplicate created). Zero runtime
+diff; RED/GREEN runtime tests NOT APPLICABLE — replaced by the repository's established doc-invariant
+structural-test convention.
+
+**Delivered (this candidate).** `docs/governance/PHASE_10_INTERNAL_TECHNICAL_INCIDENT_RESPONSE_RUNBOOK.md`
+— the smallest INTERNAL provider-neutral incident-response foundation: narrow incident definition (with
+explicit non-incident exclusions); SEV-1…SEV-4 model, each with objective triggers/examples/required
+action/escalation/closure evidence (qualitative urgency ONLY — no SLA, no response-time clock, no legal
+deadline, no customer promise); truthful roles (Owner + governed execution agents; Incident Coordinator /
+Executor / Reviewer semantics — no invented staff); `DETECT → CLASSIFY → CONTAIN → PRESERVE EVIDENCE →
+DIAGNOSE → RECOVER → VERIFY → CLOSE / ESCALATE` with per-stage rules; real-signals-only detection plus an
+explicit does-NOT-exist list (no metrics/alerts/paging/external monitoring); existing-mechanism containment
+(NO new kill switch); database path bound to authoritative P10-BR1 (preserve-original → validate-backup →
+restore-to-isolated-target → parity → Owner-authorized repoint; no offsite/retention claims); availability
+path bound to P10-OB1 (truthful ok/uninitialized/error semantics; data-minimization preserved during
+diagnosis); security path bound to P10-SEC1 + existing auth controls (evidence-first; epoch/status
+revocation; secret rotation consequence recorded; never a legal breach determination); MANDATORY
+legal/privacy boundary — `ESCALATE TO OWNER + QUALIFIED EXTERNAL COUNSEL WHEN AVAILABLE`, technical team
+does NOT determine legal applicability, no automatic notification, LQ register stays OPEN, OD-DR1/OD-DR2
+escalation rules unmodified; `CUSTOMER COMMUNICATION: OWNER-APPROVED ONLY` (no templates, no promises);
+minimal evidence-record template + `IR-YYYYMMDD-NN` IDs under `docs/governance/evidence/incidents/`
+(file-based — NO new table/schema); closure criteria (technical closure ≠ legal closure) + reopen rule;
+IR/DR boundary (IR coordinates; DR recovers; no duplication). Structural invariants enforced by
+`tests/test_p10_ir1_incident_runbook_structure.py` — 9 checks covering §23 of the authorization (severity
+completeness; P10-BR1/OB1/SEC1 references; verbatim boundary language; no SLA/percentage/deadline promise
+patterns; no fictional-capability claims; no new schema). Structural RED: 9/9 fail with the runbook
+absent; GREEN: 9/9. Full suite: 2819 passed / 3 skipped / 1 xfailed / 0 failures (prior 2810 + 9 new;
+zero regressions) — run despite the governance-only diff per the repository's high-assurance pattern.
+
+**Truth classification.** `INTERNAL TECHNICAL INCIDENT RESPONSE: IMPLEMENTED` (internal foundation);
+`CUSTOMER-FACING SUPPORT MODEL: OPEN` (NOT closed by this gate); `LEGAL/PRIVACY INCIDENT NOTICE RULES:
+OPEN — EXTERNAL COUNSEL REQUIRED`. PSRR item 27 (incident-response readiness) is informed, NOT satisfied.
+
+**Boundaries (binding).** No SLA/uptime/refund/compensation/notification commitments; no legal
+applicability or breach determination; no customer-facing artifact; no provider/monitoring/paging
+dependency; no kill switch; no schema change; no change to P10-BR1/P10-OB1/P10-SEC1 or any runtime
+behavior; no payment/legal/tax implementation. PAID ACTIVATION AUTHORIZED: NO (`D-P8-PL-01 class C`);
+PSRR TRIGGERED: NO; PSRR EXECUTION AUTHORIZED: NO; DEPLOYMENT AUTHORIZED: NO (`OD-P`).
+`OWNER_DECISION_REGISTER.md` UNCHANGED. No auto-activated successor (P10-C §10). Authoritative ONLY
+if/when this exact candidate is merged and post-merge verified. Next required step: **Independent External
+Review of this exact SHA + bundle**.

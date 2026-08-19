@@ -2424,7 +2424,37 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
-- **Phase 10 — P10-SEC1 SECURITY HEADERS & PROVIDER-NEUTRAL HARDENING INCREMENT (Owner-authorized bounded
+- **Phase 10 — P10-IR1 TECHNICAL INCIDENT RESPONSE FOUNDATION (Owner-authorized bounded governance/runbook
+  candidate, PR pending; RUNTIME CODE REQUIRED: NO), base `ee93371808803c488eeba59bf83fcfbb20fccc2a`
+  (PR #522 merge — P10-SEC1, authoritative; parents `9e46e75b…`/`cb950881…`, merge tree `98076d4e…` =
+  candidate tree, empty candidate→merge diff — independently re-verified).** Delivers
+  `docs/governance/PHASE_10_INTERNAL_TECHNICAL_INCIDENT_RESPONSE_RUNBOOK.md`: narrow incident definition;
+  SEV-1…SEV-4 (triggers/examples/action/escalation/closure each; qualitative urgency only — no SLA/
+  response-time/legal deadline/customer promise); truthful roles (no invented staff); `DETECT → CLASSIFY →
+  CONTAIN → PRESERVE EVIDENCE → DIAGNOSE → RECOVER → VERIFY → CLOSE / ESCALATE`; real-signals-only
+  detection with explicit does-NOT-exist list; existing-mechanism containment (no new kill switch); DB
+  path bound to P10-BR1 (isolate/validate/restore-to-new-target/parity/Owner-authorized repoint);
+  availability path bound to P10-OB1; security path bound to P10-SEC1 + existing auth controls; MANDATORY
+  `ESCALATE TO OWNER + QUALIFIED EXTERNAL COUNSEL WHEN AVAILABLE` legal/privacy boundary (no legal
+  applicability determination, no automatic notification, LQ register OPEN, OD-DR1/OD-DR2 unmodified);
+  `CUSTOMER COMMUNICATION: OWNER-APPROVED ONLY`; evidence-record template + `IR-YYYYMMDD-NN` file-based
+  IDs (no new schema); closure (technical ≠ legal) + reopen rules; IR/DR boundary. Structural invariants:
+  `tests/test_p10_ir1_incident_runbook_structure.py` (structural RED 9/9-absent → GREEN 9/9). Full suite
+  2819/3/1/0 (prior 2810 + 9 new, zero regressions). **Truth classification: INTERNAL TECHNICAL INCIDENT
+  RESPONSE = IMPLEMENTED; CUSTOMER-FACING SUPPORT MODEL = OPEN; LEGAL/PRIVACY INCIDENT NOTICE RULES =
+  OPEN — EXTERNAL COUNSEL REQUIRED** (PSRR item 27 informed, not satisfied). PAID ACTIVATION AUTHORIZED:
+  NO; PSRR TRIGGERED: NO; DEPLOYMENT AUTHORIZED: NO. `OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative
+  ONLY if/when this exact candidate is merged and post-merge verified.
+
+- **Phase 10 — P10-SEC1 SECURITY HEADERS & PROVIDER-NEUTRAL HARDENING INCREMENT: MERGED / AUTHORITATIVE
+  (candidate `cb950881…` Owner-accepted at that exact SHA, PR #522, tip
+  `ee93371808803c488eeba59bf83fcfbb20fccc2a`; parents `9e46e75b…`/`cb950881…`, merge tree `98076d4e…` =
+  candidate tree, empty candidate→merge diff — independently re-verified).** The centralized
+  response-hardening seam (CSP/nosniff/X-Frame-Options/Referrer-Policy on every response; HSTS DEFERRED
+  pending trusted HTTPS/proxy context) and the truth-labeled security architecture are authoritative.
+  (Original candidate-stage bullet retained below as history.)
+
+- **(superseded history) Phase 10 — P10-SEC1 SECURITY HEADERS & PROVIDER-NEUTRAL HARDENING INCREMENT (was: Owner-authorized bounded
   implementation candidate, PR pending), base `9e46e75b283a7a451bd19106861a7ac3de01a8dc` (PR #521 merge —
   P10-OB1, authoritative; parents `571cede0…`/`9048c132…`, merge tree `2b501cec…` = candidate tree, empty
   candidate→merge diff — independently re-verified).** Delivers ONE centralized `after_request`
