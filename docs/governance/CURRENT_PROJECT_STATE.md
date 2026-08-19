@@ -2424,7 +2424,41 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
-- **Phase 10 — P10-LT1 EXTERNAL LEGAL & TAX INPUT COMMISSIONING GATE (candidate, PR pending; governance-only;
+- **Phase 10 — P10-BR1 DURABLE-DATABASE BACKUP & RESTORE DRILL INCREMENT (Owner-authorized bounded
+  implementation candidate, PR pending), base `56ba10446626af1d8c2e188b2f8982b1265a5078` (PR #519 merge —
+  P10-LT1, authoritative; parents `5dfc35e3…`/`aead7fcc…`, merge tree `a694c08d…`, empty candidate→merge
+  diff — independently re-verified).** Owner-selected after the P10-RV1 read-only technical revalidation
+  (`PHASE 10 STATUS: OPEN`; the P10-C §4 "backup/restore drills" row was NOT STARTED and the durable SQLite
+  DB had no recovery path). Delivers `engine/backup_service.py` — provider-neutral, filesystem-local,
+  standard-library-only SQLite-consistent backup/restore/validation/parity seam (`backup_database` via the
+  SQLite online-backup API, read-only source, fail-closed, guarded explicit overwrite, no partial output,
+  NEVER a raw copy of a live DB file; `validate_sqlite_database` with `PRAGMA quick_check` + schema
+  inventory; `restore_database` to a SEPARATE explicit target; `database_parity_report` with schema +
+  per-table row-count parity, names/counts only) — plus `tests/test_p10_br1_backup_restore.py` (21 focused
+  tests, RED-first: 21/21 failed at collection on the absent module; GREEN 21/21), full suite 2775/3/1/0
+  (baseline 2754 + 21 new, zero regressions), a PASSED evidenced 12-point local restore drill
+  (`docs/governance/evidence/phase10_p10_br1/P10_BR1_RESTORE_DRILL_EVIDENCE.md`; 15 durable tables derived
+  live, never hard-coded; synthetic data; no live path touched; no `.db` committed), and bounded
+  `docs/DISASTER_RECOVERY_PLAN.md` truth repair (Scenario 3 authoritative-branch fix, Scenario 4
+  durable-vs-ephemeral fix, new Scenario 7 durable-database backup/restore). **Boundaries:** LOCAL capability
+  + drill only — no production scheduling/offsite/cloud backup, no retention/deletion policy (legal-gated;
+  OD-DR1/OD-DR2 unaltered), no encryption redesign, no provider/hosting selection, ZERO schema/migration
+  diff, no account/export/deactivation/retention/payment semantic change; local drill ≠ production backup
+  posture. External legal/tax registers remain OPEN — operationally `DEFERRED PENDING EXTERNAL ADVISER
+  AVAILABILITY — NOT CLOSED`. PAID ACTIVATION AUTHORIZED: NO; PSRR TRIGGERED: NO; DEPLOYMENT AUTHORIZED: NO.
+  `OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY if/when this exact candidate is merged and
+  post-merge verified.
+
+- **Phase 10 — P10-LT1 EXTERNAL LEGAL & TAX INPUT COMMISSIONING GATE: MERGED / AUTHORITATIVE (candidate
+  `aead7fcc…` Owner-accepted at that exact SHA, PR #519, tip `56ba10446626af1d8c2e188b2f8982b1265a5078`;
+  parents `5dfc35e3…`/`aead7fcc…`, merge tree `a694c08d…` = candidate tree, empty candidate→merge diff —
+  independently re-verified).** The external LEGAL (LQ-01…LQ-27) and TAX/ACCOUNTING (TQ-01…TQ-13) question
+  registers, adviser fact pack, qualifications, 14-field answer format, intake protocol, and
+  conflict/supersession rule are authoritative. Both registers remain **OPEN** — no adviser engaged; the
+  generated external adviser packages are preparation only. (Original candidate-stage bullet retained below
+  as history.)
+
+- **(superseded history) Phase 10 — P10-LT1 EXTERNAL LEGAL & TAX INPUT COMMISSIONING GATE (was: candidate, PR pending; governance-only;
   commissions questions, answers nothing; authorizes nothing), base
   `5dfc35e34bbfc9a8681d575a7e26613a5038c674` (PR #518, authoritative).** Owner-selected under P10-C §10 after
   a read-only remaining-obligations reconstruction at this tip (`PHASE 10 STATUS: OPEN`; every high-priority
