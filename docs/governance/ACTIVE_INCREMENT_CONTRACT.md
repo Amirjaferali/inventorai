@@ -41,10 +41,45 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — P10-SEC2 BOUNDED INPUT-HARDENING INCREMENT: Owner-authorized bounded implementation
-candidate):** Base: `9d6bf3d9753585f3f825f6b30b045657bdfc8195` (PR #524 merge — P10-DOC1 truth repair,
-authoritative; independently re-verified: parents `18165123…` / `ed7c5405…`, merge tree `b2fa5498…` equal
+**Status (current — P10-DEP1 LOCAL DEPENDENCY-AUDIT FOUNDATION: Owner-authorized bounded tooling/evidence
+candidate):** Base: `8563320b626b8590f10cbf252c9eba0a03b6fbd6` (PR #525 merge — P10-SEC2 input hardening,
+authoritative; independently re-verified: parents `9d6bf3d9…` / `516128b7…`, merge tree `c3626080…` equal
 to the accepted candidate tree, empty candidate→merge diff).
+
+**Objective.** The smallest provider-neutral LOCAL dependency-audit foundation. Dependency-model truth
+(verified at base): `requirements.txt` is the SINGLE authoritative dependency source (pinned Flask==3.1.3
++ pytest==9.1.1, runtime+test, sha256 `e0707b64…`); no pyproject/lockfiles/Pipfile/setup/Docker/workflow/
+pip-install scripts exist; the Codespace's 46 globally installed packages are ENVIRONMENT packages, not
+project dependencies. Selected mechanism: **pip-audit** (local CLI over OSV/PyPI advisories — local
+execution, machine-readable output, non-zero exit on findings/errors, PSRR-reusable, zero runtime
+coupling; no hosted vendor). Delivered: `scripts/run_dependency_audit.py` (repo-root resolution from any
+cwd; evidence header with repo SHA + input SHA-256 + UTC timestamp + tool identity; clear `TOOL MISSING`
+exit 3; missing-input exit 2; tool exit status preserved VERBATIM — findings and advisory-network failures
+never converted into a clean PASS; no secret echo; no remediation capability) + 9 deterministic tooling
+tests (offline fake-tool simulation via the documented `INVENTORAI_AUDIT_TOOL_MODULE` tooling seam; RED
+8/9 with the wrapper absent — the passer is the already-true no-runtime-contamination guard; GREEN 9/9) +
+the immutable POINT-IN-TIME evidence record
+(`docs/governance/evidence/phase10_p10_dep1/P10_DEP1_POINT_IN_TIME_AUDIT_EVIDENCE.md`).
+
+**Live audit (network AVAILABLE at execution):** pip-audit 2.10.1 against `requirements.txt` @ base SHA —
+exit 0; 2 direct + 9 transitive = 11 packages scanned; findings 0 → `POINT-IN-TIME AUDIT: ZERO KNOWN
+FINDINGS AT EXECUTION TIME` (2026-08-19T21:24:47Z; NEVER "secure", NEVER permanent). `pip check`: "No
+broken requirements found." `DEPENDENCY REMEDIATION REQUIRED: NO` at this instant. pip-audit installed as
+ENVIRONMENT TOOLING only — not added to `requirements.txt`, imported by no application module
+(test-enforced).
+
+**Boundaries (binding):** no auto-remediation/upgrade/pin change; no hosted vendor/continuous-scanning/CI-
+enforcement/Dependabot/Snyk claim; `LOCAL AUDIT FOUNDATION: IMPLEMENTED` ≠ `FORMAL PRODUCTION
+DEPENDENCY/VULNERABILITY REVIEW: PSRR-TIME` (items 12–13 unsatisfied); zero runtime/schema diff; PAID
+ACTIVATION AUTHORIZED: NO; PSRR TRIGGERED: NO; DEPLOYMENT AUTHORIZED: NO. `OWNER_DECISION_REGISTER.md`
+UNCHANGED. Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next
+required step: **Independent External Review of this exact SHA + bundle**.
+
+**Immediately prior (P10-SEC2 BOUNDED INPUT-HARDENING INCREMENT — candidate `516128b7…` Owner-accepted at
+that exact SHA and MERGED via PR #525, tip `8563320b626b8590f10cbf252c9eba0a03b6fbd6`; now AUTHORITATIVE;
+retained as history):** Base: `9d6bf3d9753585f3f825f6b30b045657bdfc8195` (PR #524 merge — P10-DOC1 truth
+repair, authoritative; independently re-verified: parents `18165123…` / `ed7c5405…`, merge tree
+`b2fa5498…` equal to the accepted candidate tree, empty candidate→merge diff).
 
 **Objective.** The smallest input-hardening protecting against unbounded/pathological input, grounded in a
 full input-surface inventory: (A) ONE transport bound — `MAX_CONTENT_LENGTH` = 128 KiB (standard Werkzeug
@@ -74,8 +109,7 @@ only; NOT WAF/DoS-prevention/proxy-limit/OWASP/complete-abuse-prevention; PSRR i
 headers on all rejections incl. 413, values unchanged, HSTS still deferred; P10-OB1/BR1/IR1/DOC1
 untouched; no new log events, no raw-input logging; no dependency/provider/schema change. PAID ACTIVATION
 AUTHORIZED: NO; PSRR TRIGGERED: NO; DEPLOYMENT AUTHORIZED: NO. `OWNER_DECISION_REGISTER.md` UNCHANGED.
-Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next required step:
-**Independent External Review of this exact SHA + bundle**.
+MERGED via PR #525 (tip `8563320b…`) and post-merge verified — AUTHORITATIVE.
 
 **Immediately prior (P10-DOC1 DATA-RETENTION & COST-GOVERNANCE TRUTH REPAIR — candidate `ed7c5405…`
 Owner-accepted at that exact SHA and MERGED via PR #524, tip `9d6bf3d9753585f3f825f6b30b045657bdfc8195`;

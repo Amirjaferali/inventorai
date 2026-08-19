@@ -70,6 +70,19 @@ gate; `includeSubDomains`/`preload` additionally need separate authorization.
   broad limiter and per-session token budgets. Broad abuse controls remain
   NOT CLAIMED DELIVERED (PSRR §8 preserved; PSRR items 23–25 reassess).
 
+## Dependency auditing — LOCAL FOUNDATION IMPLEMENTED (P10-DEP1)
+`scripts/run_dependency_audit.py` audits the single authoritative dependency
+declaration (`requirements.txt`: Flask + pytest, pinned) with local,
+provider-neutral `pip-audit` (OSV/PyPI advisories): evidence header
+(repo SHA, input SHA-256, timestamp), tool exit status preserved verbatim —
+findings and advisory-network failures are never converted into a clean
+result; no automatic remediation. pip-audit is environment TOOLING only,
+never a runtime dependency. A clean run is POINT-IN-TIME only (see
+`docs/governance/evidence/phase10_p10_dep1/P10_DEP1_POINT_IN_TIME_AUDIT_
+EVIDENCE.md`). NOT continuous scanning, NOT hosted monitoring, NOT CI
+enforcement, NOT the formal production dependency/vulnerability review —
+that remains PSRR-time (items 12–13).
+
 ## Pre-Release Checklist — SUPERSEDED BY PSRR (execution is PSRR-ONLY)
 The old checklist (no hardcoded secrets; no eval; HTTPS enforced; .env not
 committed; DEBUG off in production; pip audit) is subsumed by the registered

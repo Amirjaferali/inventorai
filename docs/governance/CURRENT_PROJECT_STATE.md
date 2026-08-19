@@ -2424,7 +2424,34 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
-- **Phase 10 — P10-SEC2 BOUNDED INPUT-HARDENING INCREMENT (Owner-authorized bounded implementation
+- **Phase 10 — P10-DEP1 LOCAL DEPENDENCY-AUDIT FOUNDATION (Owner-authorized bounded tooling/evidence
+  candidate, PR pending), base `8563320b626b8590f10cbf252c9eba0a03b6fbd6` (PR #525 merge — P10-SEC2,
+  authoritative; parents `9d6bf3d9…`/`516128b7…`, merge tree `c3626080…` = candidate tree, empty
+  candidate→merge diff — independently re-verified).** Dependency truth: `requirements.txt` is the single
+  authoritative source (pinned Flask==3.1.3 + pytest==9.1.1; no pyproject/locks/Docker/CI); environment vs
+  project packages distinguished. Mechanism: local provider-neutral `pip-audit` (OSV/PyPI) — installed as
+  ENVIRONMENT TOOLING only, never a runtime dependency (test-enforced). Delivers
+  `scripts/run_dependency_audit.py` (evidence header with repo SHA + input sha256 + timestamp; TOOL
+  MISSING exit 3; tool exit preserved verbatim — findings/network failures never converted to clean PASS;
+  POINT-IN-TIME labeling; no remediation capability) + 9 offline tooling tests (RED 8/9 wrapper-absent →
+  GREEN 9/9) + immutable evidence record. **Live audit (network AVAILABLE): pip-audit 2.10.1, 11 packages
+  (2 direct), findings 0, exit 0 → POINT-IN-TIME AUDIT: ZERO KNOWN FINDINGS AT EXECUTION TIME
+  (2026-08-19T21:24:47Z; not "secure", not permanent); pip check clean; DEPENDENCY REMEDIATION REQUIRED:
+  NO at this instant.** `LOCAL AUDIT FOUNDATION: IMPLEMENTED` ≠ formal production dependency review
+  (PSRR items 12–13, unsatisfied). Full suite 2854/3/1/0 (prior 2845 + 9 new, zero regressions; runtime
+  dependencies unchanged). No auto-remediation/hosted-vendor/continuous-scanning/CI claim; zero
+  runtime/schema diff. PAID ACTIVATION AUTHORIZED: NO; PSRR TRIGGERED: NO; DEPLOYMENT AUTHORIZED: NO.
+  `OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY if/when this exact candidate is merged and
+  post-merge verified.
+
+- **Phase 10 — P10-SEC2 BOUNDED INPUT-HARDENING INCREMENT: MERGED / AUTHORITATIVE (candidate `516128b7…`
+  Owner-accepted at that exact SHA, PR #525, tip `8563320b626b8590f10cbf252c9eba0a03b6fbd6`; parents
+  `9d6bf3d9…`/`516128b7…`, merge tree `c3626080…` = candidate tree, empty candidate→merge diff —
+  independently re-verified).** The 128 KiB transport bound, the 20,000-char free-text bound with NUL
+  rejection on the two primary free-text surfaces, and the truthfully updated security architecture are
+  authoritative. (Original candidate-stage bullet retained below as history.)
+
+- **(superseded history) Phase 10 — P10-SEC2 BOUNDED INPUT-HARDENING INCREMENT (was: Owner-authorized bounded implementation
   candidate, PR pending), base `9d6bf3d9753585f3f825f6b30b045657bdfc8195` (PR #524 merge — P10-DOC1,
   authoritative; parents `18165123…`/`ed7c5405…`, merge tree `b2fa5498…` = candidate tree, empty
   candidate→merge diff — independently re-verified).** Grounded in a full input-surface inventory (stale
