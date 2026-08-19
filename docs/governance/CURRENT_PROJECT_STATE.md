@@ -2424,7 +2424,32 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
-- **Phase 10 — P10-RL1 RELEASE-READINESS CHECKLIST FOUNDATION (Owner-authorized bounded governance/status
+- **Phase 10 — P10-SEC3 DECISION-WORKSPACE FREE-TEXT HARDENING RESIDUAL EXTENSION (Owner-authorized
+  bounded technical-continuation candidate, PR pending), base `e031ecddb390577988041fa2f3214b78fbf34211`
+  (PR #527 merge — P10-RL1, authoritative; parents `b1a0196a…`/`01650517…`, merge tree `4f3646d2…` =
+  candidate tree, empty candidate→merge diff — independently re-verified).** Executed under the Owner's
+  technical-continuation direction (advisers not engaged ≠ development frozen; adviser-dependent items stay
+  truthfully OPEN/DEFERRED). Closes the largest documented RL-A6 residual by extending the CANONICAL
+  P10-SEC2 guard: one helper `_dw_free_text_reject` (reusing `_free_text_error`: 20,000-char cap + NUL
+  REJECTION; never truncation; Arabic/Unicode/multiline verbatim) on ALL SEVEN Decision Workspace POST
+  surfaces, using the family's existing 400 error convention, after the non-enumerating ownership denial
+  and before any engine call (zero mutation on rejection; engine semantics unmasked). Remaining residuals
+  truthfully documented (legacy ILT-002 start routes + criticality rationale = transport-bounded ONLY).
+  Tests RED-first (10/15 base failures for the absent guard; 5 preservation guards; two harness realities
+  corrected pre-implementation) → GREEN 15/15; RL1/SEC2 structural suites green post-sync; full suite
+  2879/3/1/0 (prior 2864 + 15 new, zero regressions). Zero schema/dependency diff; no legal/tax/commercial/
+  provider assumption. PAID ACTIVATION AUTHORIZED: NO; PSRR TRIGGERED: NO; DEPLOYMENT AUTHORIZED: NO.
+  `OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY if/when this exact candidate is merged and
+  post-merge verified.
+
+- **Phase 10 — P10-RL1 RELEASE-READINESS CHECKLIST FOUNDATION: MERGED / AUTHORITATIVE (candidate
+  `01650517…` Owner-accepted at that exact SHA, PR #527, tip `e031ecddb390577988041fa2f3214b78fbf34211`;
+  parents `b1a0196a…`/`01650517…`, merge tree `4f3646d2…` = candidate tree, empty candidate→merge diff —
+  independently re-verified).** The release-readiness truth surface (58 items) and its structural suite are
+  authoritative; `PHASE 10 CLOSURE ELIGIBLE NOW: NO` stands. (Original candidate-stage bullet retained
+  below as history.)
+
+- **(superseded history) Phase 10 — P10-RL1 RELEASE-READINESS CHECKLIST FOUNDATION (was: Owner-authorized bounded governance/status
   candidate, PR pending; RUNTIME CODE REQUIRED: NO), base `b1a0196aaf1f6892996c618c69cb341872ecaf52`
   (PR #526 merge — P10-DEP1, authoritative; parents `8563320b…`/`ec0795d9…`, merge tree `96cf5857…` =
   candidate tree, empty candidate→merge diff — independently re-verified).** Delivers
