@@ -123,6 +123,49 @@ app.config.update(
     PERMANENT_SESSION_LIFETIME=__import__("datetime").timedelta(
         seconds=_auth.ABSOLUTE_TIMEOUT_SECONDS),
 )
+# P10-SEC1: ONE centralized provider-neutral response-hardening seam. Every
+# response (HTML, JSON, redirects, 4xx/5xx, static files, /health) receives the
+# same bounded security-header set. The CSP is the smallest policy supported by
+# the verified compatibility inventory of this application:
+#   * default-src 'none'      — deny-by-default; the app loads no images, fonts,
+#                               media, or remote assets and makes no fetch/XHR;
+#   * script-src 'self'       — the ONLY script is the same-origin static
+#                               web/static/js/local_draft.js; ZERO inline script
+#                               bodies and ZERO inline event handlers exist, so
+#                               'unsafe-inline' is NOT granted for scripts;
+#   * style-src 'unsafe-inline' — narrowly justified: every template styles
+#                               itself via inline <style> blocks/attributes and
+#                               no external stylesheet exists; removing this
+#                               would be a UI redesign outside this gate;
+#   * frame-ancestors 'none'  — no legitimate framing exists (clickjacking
+#                               denial, consistent with X-Frame-Options: DENY);
+#   * base-uri 'none'; form-action 'self' — no <base> tag; all forms post to
+#                               same-origin relative paths.
+# No 'unsafe-eval'. No wildcard/host/scheme sources. No reporting endpoint.
+# HSTS is deliberately ABSENT: no TLS termination or trusted-proxy semantics
+# exist in this repository, so emitting Strict-Transport-Security anywhere
+# would assert an HTTPS posture that does not exist (DEFERRED to the future
+# production/infrastructure gate). `setdefault` keeps the seam additive: a
+# route that explicitly sets one of these headers is never overwritten. These
+# headers harden responses; they do NOT constitute a security review, PSRR
+# execution, TLS posture, or any compliance claim.
+_SECURITY_HEADERS = (
+    ("Content-Security-Policy",
+     "default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; "
+     "frame-ancestors 'none'; base-uri 'none'; form-action 'self'"),
+    ("X-Content-Type-Options", "nosniff"),
+    ("X-Frame-Options", "DENY"),
+    ("Referrer-Policy", "strict-origin-when-cross-origin"),
+)
+
+
+@app.after_request
+def _apply_security_headers(response):
+    for name, value in _SECURITY_HEADERS:
+        response.headers.setdefault(name, value)
+    return response
+
+
 # Presentation-only Jinja filter: translate an internal gap-type ID to a short
 # inventor-friendly label for the few session-page surfaces that render raw
 # reference/context IDs. Non-gap values pass through unchanged. Display only.
