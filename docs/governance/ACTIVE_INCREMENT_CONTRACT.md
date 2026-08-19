@@ -41,8 +41,45 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — P10-DOC1 DATA-RETENTION & COST-GOVERNANCE TRUTH REPAIR: Owner-authorized bounded
-documentation/governance truth-repair candidate; RUNTIME CODE REQUIRED: NO):** Base:
+**Status (current — P10-SEC2 BOUNDED INPUT-HARDENING INCREMENT: Owner-authorized bounded implementation
+candidate):** Base: `9d6bf3d9753585f3f825f6b30b045657bdfc8195` (PR #524 merge — P10-DOC1 truth repair,
+authoritative; independently re-verified: parents `18165123…` / `ed7c5405…`, merge tree `b2fa5498…` equal
+to the accepted candidate tree, empty candidate→merge diff).
+
+**Objective.** The smallest input-hardening protecting against unbounded/pathological input, grounded in a
+full input-surface inventory: (A) ONE transport bound — `MAX_CONTENT_LENGTH` = 128 KiB (standard Werkzeug
+413; covers a worst-case 4-byte-UTF-8 at-limit free-text field ≈ 80 KiB plus form overhead) applying to
+every surface; (B) ONE semantic free-text bound — `MAX_FREE_TEXT_CHARS` = 20,000 characters (justified
+from PRESENT product behavior: an order of magnitude above every legitimate description in repository
+evidence; deliberately NOT the stale documented 10,000 figure) plus NUL-byte REJECTION, on the two primary
+free-text surfaces only: `/start` idea text (400 via this surface's existing form-error convention,
+bilingual EN/AR fixed copy, no input echo) and `/session/<sid>` answer/action text (400 via that route's
+existing plain-text-tuple convention), enforced BEFORE any classification, session creation, or durable
+write. `NULL BYTE POLICY: REJECT` (silent stripping could change user intent). NO silent truncation, NO
+general control-character sanitizer, NO ASCII-only rule — Arabic/Unicode/multiline/punctuation pass
+untouched (test-proven end-to-end verbatim storage). Legacy fixed-domain ILT-002 start routes remain
+transport-bounded only (historical evidence surfaces, behavior preserved). Auth fields (email/password/
+tokens) deliberately unchanged (normalized/hashed/rate-limited already; MIN_PASSWORD_LENGTH intact);
+success criteria already capped (1000); API v1 is GET-only → JSON-body hardening JUSTIFIED N/A; no file
+upload exists.
+
+**Evidence.** RED 9/15 failed at base for the absent protections (6 preservation guards deliberately
+green; one harness fix — a false-pass from an unrecognized action name — corrected before implementation).
+GREEN 15/15. Manual probes: normal/at-limit 302; over-limit/NUL 400 with headers, EN and AR localized, no
+echo; 413 with headers; HSTS still absent. Relevant regression 288 passed. Full suite green (exact counts
+in the roadmap entry). `docs/SECURITY_ARCHITECTURE.md` truthfully updated (bounds = robustness controls
+only; NOT WAF/DoS-prevention/proxy-limit/OWASP/complete-abuse-prevention; PSRR item 1 still reassesses).
+
+**Boundaries (binding):** no auth/CSRF/session/export/deactivation semantic change (test-proven); P10-SEC1
+headers on all rejections incl. 413, values unchanged, HSTS still deferred; P10-OB1/BR1/IR1/DOC1
+untouched; no new log events, no raw-input logging; no dependency/provider/schema change. PAID ACTIVATION
+AUTHORIZED: NO; PSRR TRIGGERED: NO; DEPLOYMENT AUTHORIZED: NO. `OWNER_DECISION_REGISTER.md` UNCHANGED.
+Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next required step:
+**Independent External Review of this exact SHA + bundle**.
+
+**Immediately prior (P10-DOC1 DATA-RETENTION & COST-GOVERNANCE TRUTH REPAIR — candidate `ed7c5405…`
+Owner-accepted at that exact SHA and MERGED via PR #524, tip `9d6bf3d9753585f3f825f6b30b045657bdfc8195`;
+now AUTHORITATIVE; retained as history; RUNTIME CODE REQUIRED: NO):** Base:
 `1816512326bae32f072c3816b78ab56fbb657b2e` (PR #523 merge — P10-IR1 incident-response foundation,
 authoritative; independently re-verified: parents `ee933718…` / `fb7a0313…`, merge tree `a4378a7a…` equal
 to the accepted candidate tree, empty candidate→merge diff).
@@ -72,8 +109,7 @@ documents; GREEN 11/11. Full suite green (exact counts in the roadmap entry).
 **Boundaries (binding):** no retention/deletion/erasure rule created; no legal/tax conclusion; no legal
 duration; zero runtime/schema diff; deactivation ≠ erasure preserved; OD-DR1/OD-DR2 unaltered; PAID
 ACTIVATION AUTHORIZED: NO; PSRR TRIGGERED: NO; DEPLOYMENT AUTHORIZED: NO. `OWNER_DECISION_REGISTER.md`
-UNCHANGED. Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next
-required step: **Independent External Review of this exact SHA + bundle**.
+UNCHANGED. MERGED via PR #524 (tip `9d6bf3d9…`) and post-merge verified — AUTHORITATIVE.
 
 **Immediately prior (P10-IR1 TECHNICAL INCIDENT RESPONSE FOUNDATION — candidate `fb7a0313…`
 Owner-accepted at that exact SHA and MERGED via PR #523, tip `1816512326bae32f072c3816b78ab56fbb657b2e`;

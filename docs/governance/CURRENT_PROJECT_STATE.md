@@ -2424,7 +2424,37 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
-- **Phase 10 — P10-DOC1 DATA-RETENTION & COST-GOVERNANCE TRUTH REPAIR (Owner-authorized bounded
+- **Phase 10 — P10-SEC2 BOUNDED INPUT-HARDENING INCREMENT (Owner-authorized bounded implementation
+  candidate, PR pending), base `9d6bf3d9753585f3f825f6b30b045657bdfc8195` (PR #524 merge — P10-DOC1,
+  authoritative; parents `18165123…`/`ed7c5405…`, merge tree `b2fa5498…` = candidate tree, empty
+  candidate→merge diff — independently re-verified).** Grounded in a full input-surface inventory (stale
+  claims verified absent at base: no 10k cap, no NUL handling, no sanitizer). Delivers (A) transport bound
+  `MAX_CONTENT_LENGTH` = 128 KiB (standard 413, P10-SEC1 headers intact) on every surface and (B) semantic
+  bound `MAX_FREE_TEXT_CHARS` = 20,000 chars + `NULL BYTE POLICY: REJECT` via one bilingual helper on the
+  two primary free-text surfaces (`/start` idea, `/session/<sid>` answer/action text), enforced before any
+  classification/session/durable write, using each surface's EXISTING error convention (form-error 400 /
+  plain-text-tuple 400); the 20,000 value justified from present product behavior, NOT the stale 10,000
+  figure. NO silent truncation; NO control-character sanitizer; NO ASCII-only rule —
+  Arabic/Unicode/multiline preserved verbatim end-to-end (test-proven). Legacy ILT-002 start routes
+  transport-bounded only; auth fields unchanged; API v1 GET-only → JSON hardening JUSTIFIED N/A. RED 9/15
+  (absent protections; one harness false-pass caught and fixed pre-implementation) → GREEN 15/15; manual
+  probes EN+AR localized rejections with headers, 413 with headers, HSTS absent; relevant regression 288
+  passed; full suite 2845/3/1/0 (prior 2830 + 15 new, zero regressions). `docs/SECURITY_ARCHITECTURE.md`
+  truthfully updated (robustness controls only — NOT WAF/DoS-prevention/proxy/OWASP/complete-abuse; PSRR
+  item 1 still reassesses). No auth/CSRF/session/export semantic change; SEC1/OB1/BR1/IR1/DOC1 untouched;
+  no dependency/provider/schema change. PAID ACTIVATION AUTHORIZED: NO; PSRR TRIGGERED: NO; DEPLOYMENT
+  AUTHORIZED: NO. `OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY if/when this exact candidate
+  is merged and post-merge verified.
+
+- **Phase 10 — P10-DOC1 DATA-RETENTION & COST-GOVERNANCE TRUTH REPAIR: MERGED / AUTHORITATIVE (candidate
+  `ed7c5405…` Owner-accepted at that exact SHA, PR #524, tip `9d6bf3d9753585f3f825f6b30b045657bdfc8195`;
+  parents `18165123…`/`ed7c5405…`, merge tree `b2fa5498…` = candidate tree, empty candidate→merge diff —
+  independently re-verified).** Both documents truth-labeled and authoritative; retention substance remains
+  `OPEN — EXTERNAL LEGAL/TAX INPUT REQUIRED`; **all five P10-C §9 architecture documents are now
+  truth-labeled — the §9 revalidation debt is CLOSED at documentation level.** (Original candidate-stage
+  bullet retained below as history.)
+
+- **(superseded history) Phase 10 — P10-DOC1 DATA-RETENTION & COST-GOVERNANCE TRUTH REPAIR (was: Owner-authorized bounded
   documentation/governance candidate, PR pending; RUNTIME CODE REQUIRED: NO), base
   `1816512326bae32f072c3816b78ab56fbb657b2e` (PR #523 merge — P10-IR1, authoritative; parents
   `ee933718…`/`fb7a0313…`, merge tree `a4378a7a…` = candidate tree, empty candidate→merge diff —

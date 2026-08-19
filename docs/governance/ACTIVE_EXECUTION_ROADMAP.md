@@ -11531,3 +11531,56 @@ adviser availability); PAID ACTIVATION AUTHORIZED: NO; PSRR TRIGGERED: NO; PSRR 
 DEPLOYMENT AUTHORIZED: NO; Phase 10 remains OPEN. `OWNER_DECISION_REGISTER.md` UNCHANGED. No
 auto-activated successor (P10-C §10). Authoritative ONLY if/when this exact candidate is merged and
 post-merge verified. Next required step: **Independent External Review of this exact SHA + bundle**.
+
+---
+
+## P10-SEC2 — Bounded Input-Hardening Increment (Owner-authorized bounded implementation candidate)
+
+**Base:** `9d6bf3d9753585f3f825f6b30b045657bdfc8195` (PR #524 merge — P10-DOC1 truth repair, authoritative;
+independently re-verified: parents `18165123…`/`ed7c5405…`, merge tree `b2fa5498…` equal to the accepted
+candidate tree, empty candidate→merge diff). **P10-DOC1 synchronization (recorded here per repository
+convention):** the P10-DOC1 candidate `ed7c5405…` was Owner-accepted at that exact SHA and MERGED via PR
+#524 — AUTHORITATIVE; all five P10-C §9 architecture documents are now truth-labeled.
+
+**Input-surface inventory (verified at this base, load-bearing).** `/start` idea text: free text, no cap,
+CHANGE YES. `/session/<sid>` answer/action text: free text, no cap, CHANGE YES. Success criteria: already
+capped 1000 — NO. Register/login/recover/reset/deactivation email+password: normalized/hashed/
+rate-limited, generic non-enumerating errors, MIN_PASSWORD_LENGTH=12 — NO (transport-bounded).
+Decision-workspace fields and criticality texts — NO (transport-bounded; field caps deferrable).
+`/ui-language`, tokens, path params — validated/looked-up — NO. API v1 — GET-only, no request body —
+JSON hardening JUSTIFIED N/A. File upload — none exists. Headers/cookies — signed session only — NO.
+Whole-request transport bound — ABSENT — CHANGE YES. Stale-claim verification: 10,000-CHARACTER CAP
+IMPLEMENTED: NO; NULL-BYTE HANDLING IMPLEMENTED: NO; GENERAL CONTROL-CHARACTER SANITIZATION IMPLEMENTED:
+NO (all three confirmed absent at base before implementation).
+
+**Delivered (this candidate).** (A) Transport bound: `MAX_CONTENT_LENGTH` = 128 KiB (app config) —
+standard Werkzeug 413 on every surface; value justified as worst-case 4-byte-UTF-8 at-limit free text
+(≈80 KiB) plus form overhead. (B) Semantic bound: `MAX_FREE_TEXT_CHARS` = 20,000 characters + NUL-byte
+REJECTION via one helper `_free_text_error` (bilingual EN/AR fixed copy; never echoes input), applied at
+`/start` (400 via the surface's existing form-error convention) and `/session/<sid>` (400 via the route's
+existing plain-text-tuple convention), BEFORE any classification/session/durable write. The 20,000 value
+is justified from PRESENT product behavior (an order of magnitude above every legitimate description in
+repository evidence) — deliberately NOT the stale documented 10,000. `NULL BYTE POLICY: REJECT` (stripping
+could change user intent). NO silent truncation; NO general control-character sanitizer; NO ASCII-only
+rule — Arabic/Unicode/multiline/punctuation preserved and stored verbatim (end-to-end test). Legacy
+ILT-002 fixed-domain start routes: transport-bounded only (historical evidence surfaces preserved). Auth
+fields deliberately unchanged.
+
+**Evidence.** RED: 9/15 failed at base precisely for the absent protections (6 preservation guards
+deliberately green at base; one test-harness false-pass — an unrecognized action name — caught and
+corrected BEFORE implementation). GREEN: 15/15. Manual probes: normal + exactly-at-limit ideas 302;
+over-limit and NUL 400 with full P10-SEC1 headers, localized EN and AR, no raw-input echo; 413 with full
+headers; HSTS absent everywhere. Relevant regression (SEC1/OB1/BR1/DOC1/IR1/D3a/D3b/P5×3/P7-I2/
+containment/durable-append/validation-plan): 288 passed. Full suite: 2845 passed / 3 skipped / 1 xfailed /
+0 failures (prior 2830 + 15 new; zero regressions). `docs/SECURITY_ARCHITECTURE.md` truthfully updated:
+bounds are robustness controls only — NOT WAF, NOT DoS prevention, NOT proxy limits, NOT OWASP compliance,
+NOT complete abuse prevention; PSRR item 1 still reassesses input security.
+
+**Boundaries (binding).** No auth/CSRF/session/export/deactivation semantic change (test-proven); P10-SEC1
+header values unchanged and present on all rejections including 413; HSTS remains deferred; P10-OB1
+observability unexpanded (no new events; no raw-input/PII logging); P10-BR1/IR1/DOC1 untouched; no
+retention/legal change; no dependency, provider coupling, or schema change. PAID ACTIVATION AUTHORIZED:
+NO (`D-P8-PL-01 class C`); PSRR TRIGGERED: NO; PSRR EXECUTION AUTHORIZED: NO; DEPLOYMENT AUTHORIZED: NO
+(`OD-P`). `OWNER_DECISION_REGISTER.md` UNCHANGED. No auto-activated successor (P10-C §10). Authoritative
+ONLY if/when this exact candidate is merged and post-merge verified. Next required step: **Independent
+External Review of this exact SHA + bundle**.

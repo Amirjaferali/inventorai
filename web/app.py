@@ -122,6 +122,13 @@ app.config.update(
     SESSION_COOKIE_SECURE=_is_production(),
     PERMANENT_SESSION_LIFETIME=__import__("datetime").timedelta(
         seconds=_auth.ABSOLUTE_TIMEOUT_SECONDS),
+    # P10-SEC2: one transport-level request-body bound. 128 KiB comfortably
+    # covers the largest legitimate payload (a MAX_FREE_TEXT_CHARS free-text
+    # field at worst-case 4-byte UTF-8 ≈ 80 KiB, plus small form fields) while
+    # rejecting pathological bodies with Werkzeug's standard 413. This bounds
+    # transport size only — it is NOT a WAF, NOT DoS prevention, and NOT a
+    # production proxy limit.
+    MAX_CONTENT_LENGTH=128 * 1024,
 )
 # P10-SEC1: ONE centralized provider-neutral response-hardening seam. Every
 # response (HTML, JSON, redirects, 4xx/5xx, static files, /health) receives the
@@ -164,6 +171,42 @@ def _apply_security_headers(response):
     for name, value in _SECURITY_HEADERS:
         response.headers.setdefault(name, value)
     return response
+
+
+# P10-SEC2: one semantic free-text bound for the two primary free-text
+# surfaces (the /start idea text and the /session/<sid> answer/action text).
+# 20,000 characters is justified from PRESENT product behavior — an order of
+# magnitude above every legitimate description observed in repository evidence
+# (governed ILT-002 transcripts and tests use well under 2,000 characters) —
+# and deliberately NOT the stale 10,000 figure from historical documentation.
+# Policy: EXPLICIT rejection only — never silent truncation, never stripping,
+# never normalization. NUL (\x00) is rejected as invalid product content
+# (silent stripping could change user intent). Newlines, tabs, punctuation,
+# Arabic, and all other legitimate Unicode pass untouched; there is NO general
+# control-character sanitizer and NO ASCII-only rule.
+MAX_FREE_TEXT_CHARS = 20000
+
+
+def _free_text_error(value, lang):
+    """Return None when `value` is acceptable free text, else a bounded
+    bilingual rejection message (fixed catalogue copy, `_unsupported_domain_
+    message` precedent). Rejects ONLY: length > MAX_FREE_TEXT_CHARS, or an
+    embedded NUL byte. Never mutates the value; never echoes it back."""
+    if len(value) > MAX_FREE_TEXT_CHARS:
+        if lang == "ar":
+            return ("النص المُدخل أطول من الحد المسموح (%d حرفًا). "
+                    "لم يتم حفظ أي شيء — يُرجى تقصير النص وإعادة الإرسال."
+                    % MAX_FREE_TEXT_CHARS)
+        return ("The submitted text is longer than the allowed limit "
+                "(%d characters). Nothing was saved - please shorten the "
+                "text and submit again." % MAX_FREE_TEXT_CHARS)
+    if "\x00" in value:
+        if lang == "ar":
+            return ("النص المُدخل يحتوي على رمز غير صالح. "
+                    "لم يتم حفظ أي شيء — يُرجى إزالة الرمز وإعادة الإرسال.")
+        return ("The submitted text contains an invalid character. Nothing "
+                "was saved - please remove it and submit again.")
+    return None
 
 
 # Presentation-only Jinja filter: translate an internal gap-type ID to a short
@@ -1861,6 +1904,14 @@ def start():
     idea_text = request.form.get("idea", "").strip()
     if not idea_text:
         return redirect(url_for("index"))
+    # P10-SEC2: bounded free-text hardening — explicit rejection (400, this
+    # surface's existing form-error convention), never truncation; runs before
+    # ANY classification, session creation, or durable write. The legacy
+    # fixed-domain ILT-002 start routes are historical evidence surfaces and
+    # remain transport-bounded only (MAX_CONTENT_LENGTH).
+    _input_error = _free_text_error(idea_text, _current_ui_lang())
+    if _input_error is not None:
+        return _render_start_page(error=_input_error, status=400)
     # CF5-F002 (Owner decision D-CF5-F002-01, D1/D2/D3): the /start admission
     # surface derives ALL domain behavior from the canonical activation set
     # (engine.domain_activation, §5-I2) and the canonical classifier
@@ -2450,6 +2501,12 @@ def submit_answer(sid):
     if action not in INTERACTION_ACTIONS:
         return ("Unrecognized session action. No change was made.", 400)
     response = request.form.get("response", "").strip()
+    # P10-SEC2: bounded free-text hardening for BOTH the answered path and the
+    # non-answer action-metadata path — explicit rejection using this route's
+    # existing plain-text 400 convention; before any state or durable change.
+    _input_error = _free_text_error(response, _current_ui_lang())
+    if _input_error is not None:
+        return (_input_error, 400)
 
     if action != ACTION_ANSWERED:
         # Non-answer action: record as additive in-memory metadata only. This
