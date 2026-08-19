@@ -41,9 +41,42 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — PHASE 10 OD-DR1 ACCEPTANCE AT STRATEGY LEVEL: governance-only candidate; accepts the
-physical-deletion/erasure product position registered by the merged Jurisdiction & Data-Rights gate;
-authorizes nothing):** Base: `f35a399960b131e79f390c8eff2a6e95b29726a0` (PR #515 merge — OD-J1/OD-J2
+**Status (current — PHASE 10 OD-DR2 ACCEPTANCE AT STRATEGY LEVEL: governance-only candidate; accepts the
+account-wide data-access/export position registered by the merged Jurisdiction & Data-Rights gate; authorizes
+nothing):** Base: `46756528509beebefc86ee399f331a796cbae6f2` (PR #516 merge — OD-DR1 acceptance,
+authoritative; independently re-verified: parents `f35a3999…` / `13c9f7d1…`, merge tree `5a02ad1c…` equal to
+the accepted candidate tree). Full detail:
+`docs/governance/evidence/phase10_owner_decisions/OD-DR2_ACCOUNT_WIDE_DATA_ACCESS_EXPORT_POSITION.md` and the
+new OD-DR2 section of `OWNER_DECISION_REGISTER.md`.
+
+**OD-DR2 — ACCEPTED AT STRATEGY LEVEL.** Account-wide self-service export is **DEFERRED PENDING EXTERNAL
+LEGAL DETERMINATION AND SEPARATE OWNER AUTHORIZATION**. Current export truth exact: P10-D3a remains
+PROJECT-SCOPED EXPORT under its truthful-label contract (never described as final-output/account/"Export my
+data"/account-wide); Decision Workspace and P7-I2 exports unchanged; no surface expanded; no secrets exposed.
+Future product priority (direction only): **USEFUL OUTPUT PORTABILITY OF FINAL PROJECT OUTPUTS / RESULTS** —
+no surface created, no format selected. Product Export ≠ Legal Data Access/Portability (neither substitutes
+for the other; no regime conclusion). No-foreclosure = architecture preservation ONLY (not a build
+instruction). Deferral does NOT suspend legal obligations — binding data-access/portability requests escalate
+to Owner + external counsel. OD-DR1/P10-D3b untouched. Normal product-export exclusion defaults registered
+(secrets/credentials/tokens/security metadata/other-user/institutional data never auto-exposed; append-only
+stores + backups/replicas/derived copies classified separately). localStorage drafts are client-only truth.
+Future strong identity/authorization principle recorded, not designed. NO institutional export authority or
+feature. Format-neutral — no PDF/email/cloud/vendor delivery, connector, adapter, or integration. P7-I3
+architecture referenced (Core → Canonical Output Model → Integration/Export Layer → External Tools); no
+second canonical model. **Database-dump assumption explicitly REJECTED.**
+
+**Preserved.** OD-CJ1 remains REGISTERED AND UNRESOLVED; OD-J1/OD-J2 and OD-DR1 accepted and unchanged; OD-A
+governs brand/name.
+
+**Boundary / status.** Governance-only; zero runtime/test diff. No export implementation, no
+connector/delivery mechanism, no institutional functionality, no legal drafting, no infrastructure, no PSRR
+trigger, no deployment authority; no auto-activated successor (P10-C §10). Authoritative ONLY if/when this
+exact candidate is merged and post-merge verified. Next required step: **Independent External Review of this
+exact SHA + bundle**.
+
+**Immediately prior (OD-DR1 acceptance — candidate `13c9f7d1`, accepted and MERGED via PR #516, tip
+`46756528509beebefc86ee399f331a796cbae6f2`; now AUTHORITATIVE; retained as history):** Base:
+`f35a399960b131e79f390c8eff2a6e95b29726a0` (PR #515 merge — OD-J1/OD-J2
 acceptance, authoritative; independently re-verified: parents `022e5b75…` / `aed0cdf2…`, merge tree
 `25d839f0…` equal to the accepted candidate tree). Full detail:
 `docs/governance/evidence/phase10_owner_decisions/OD-DR1_PHYSICAL_DELETION_ERASURE_POSITION.md` and the new
