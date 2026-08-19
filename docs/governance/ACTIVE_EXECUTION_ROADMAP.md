@@ -11266,3 +11266,45 @@ register operationalized, NOT closed; P8C §5 / P8-I4 deferred registers remain 
 Governance-only; zero runtime/test diff; no auto-activated successor (P10-C §10). Authoritative ONLY if/when
 this exact candidate is merged and post-merge verified. Next required step: Independent External Review of
 this exact SHA + bundle.
+
+---
+
+## P10-BR1 — Durable-Database Backup & Restore Drill Increment (Owner-authorized bounded implementation candidate)
+
+**Base:** `56ba10446626af1d8c2e188b2f8982b1265a5078` (PR #519 merge — P10-LT1 commissioning gate,
+authoritative; independently re-verified: parents `5dfc35e3…`/`aead7fcc…`, merge tree `a694c08d…`, empty
+candidate→merge diff). **P10-LT1 synchronization (recorded here per repository convention):** the P10-LT1
+candidate `aead7fcc…` was Owner-accepted at that exact SHA and MERGED via PR #519 — AUTHORITATIVE; both
+external legal/tax question registers remain OPEN, now operationally classified `DEFERRED PENDING EXTERNAL
+ADVISER AVAILABILITY — NOT CLOSED` (no adviser engaged; the adviser packages are preparation only; no new
+Owner decision required to restate this).
+
+**Selection.** Owner-selected after the P10-RV1 read-only technical/operational revalidation at this tip
+(`PHASE 10 STATUS: OPEN`): the P10-C §4 "backup/restore drills" obligation was NOT STARTED, no DR scenario
+covered the durable SQLite database, and this was the only top-ranked gate closing a full §4 row with zero
+legal/tax, provider, or PSRR dependency.
+
+**Delivered (this candidate).** `engine/backup_service.py` — provider-neutral, filesystem-local,
+standard-library SQLite backup/restore/validation/parity seam: `backup_database` (SQLite online-backup API;
+read-only source; fail-closed on missing/invalid source — never silent empty-DB creation, never a raw copy
+of a live DB file; explicit guarded overwrite; no partial output survives failure), `validate_sqlite_database`
+(`PRAGMA quick_check` + schema inventory, fail-closed), `restore_database` (validates first; SEPARATE
+explicit target; explicit guarded overwrite only), `database_parity_report` (full schema-object + per-table
+row-count parity; names/counts only — never contents). `tests/test_p10_br1_backup_restore.py` — 21 focused
+tests, RED-first (RED: 21/21 fail at collection, `ModuleNotFoundError: engine.backup_service` — precisely the
+absent capability; GREEN: 21/21 pass). Full suite: 2775 passed / 3 skipped / 1 xfailed / 0 failures
+(prior baseline 2754 + 21 new; zero regressions). Evidenced 12-point local restore drill PASSED
+(`docs/governance/evidence/phase10_p10_br1/P10_BR1_RESTORE_DRILL_EVIDENCE.md`; 15 durable tables derived
+live from `sqlite_master`, never hard-coded; synthetic data; no live path touched; no `.db` committed).
+`docs/DISASTER_RECOVERY_PLAN.md` truthfully synchronized (Scenario 3 authoritative-branch correction;
+Scenario 4 durable-vs-ephemeral correction; new bounded Scenario 7 durable-database backup/restore).
+
+**Boundaries (binding).** LOCAL provider-neutral capability + drill ONLY: no production backup scheduling;
+no offsite/cloud backup; no retention/deletion policy (legal-gated — OD-DR1/OD-DR2 unaltered; backup handling
+under any data-rights regime stays with the open external legal register); no encryption redesign; no
+provider/hosting selection; no monitoring/observability work; no schema change (ZERO migrations); no
+account/export/deactivation/retention/payment semantic change. Local verified drill ≠ production backup
+posture. PAID ACTIVATION AUTHORIZED: NO (`D-P8-PL-01 class C`); PSRR TRIGGERED: NO; PSRR EXECUTION
+AUTHORIZED: NO; DEPLOYMENT AUTHORIZED: NO (`OD-P`). `OWNER_DECISION_REGISTER.md` UNCHANGED. No
+auto-activated successor (P10-C §10). Authoritative ONLY if/when this exact candidate is merged and
+post-merge verified. Next required step: **Independent External Review of this exact SHA + bundle**.

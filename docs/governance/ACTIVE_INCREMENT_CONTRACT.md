@@ -41,8 +41,44 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — P10-LT1 EXTERNAL LEGAL & TAX INPUT COMMISSIONING GATE: governance-only candidate;
-commissions questions, answers nothing; authorizes nothing):** Base:
+**Status (current — P10-BR1 DURABLE-DATABASE BACKUP & RESTORE DRILL INCREMENT: Owner-authorized bounded
+implementation candidate):** Base: `56ba10446626af1d8c2e188b2f8982b1265a5078` (PR #519 merge — P10-LT1
+commissioning gate, authoritative; independently re-verified: parents `5dfc35e3…` / `aead7fcc…`, merge tree
+`a694c08d…`, empty candidate→merge diff).
+
+**Objective.** The smallest provider-neutral, filesystem-local, SQLite-consistent backup + restore +
+validation + parity capability for the durable datastore (`INVENTORAI_DB_PATH`; all durable tables of both
+stores — inventory derived live from `sqlite_master`, 15 at authoring, never hard-coded), plus one evidenced
+local restore drill. Selected by the Owner from the P10-RV1 read-only technical revalidation (the
+"backup/restore drills" P10-C §4 row was NOT STARTED and the durable DB had no recovery path).
+
+**Owner authorization:** explicit, verbatim, scoped to `RECONSTRUCTION → RED → IMPLEMENT → GREEN → FOCUSED →
+FULL SUITE → RESTORE DRILL → FREEZE → TRUTH SWEEP → CREATOR GRILL → BUNDLE`; no push/PR/merge/deploy.
+**Allowed paths:** `engine/backup_service.py` (new), `tests/test_p10_br1_backup_restore.py` (new),
+`docs/DISASTER_RECOVERY_PLAN.md` (bounded truth repair), the P10-BR1 drill evidence record, and the three
+active governance surfaces. **Forbidden:** everything else — zero schema/migration diff; zero change to
+account/export/deactivation/retention semantics, web UX, API behavior, payment/commercial logic.
+
+**Delivered behavior (tested):** `backup_database` (SQLite online-backup API — never a raw live-file copy;
+read-only source; fail-closed on missing/invalid source; no silent empty-DB creation; explicit guarded
+overwrite; no partial output), `validate_sqlite_database` (`PRAGMA quick_check` + schema inventory,
+fail-closed), `restore_database` (validated restore to a SEPARATE explicit target), `database_parity_report`
+(schema + per-table row-count parity; names/counts only). 21 focused tests (RED-first), full suite green,
+and a PASSED 12-point local restore drill
+(`docs/governance/evidence/phase10_p10_br1/P10_BR1_RESTORE_DRILL_EVIDENCE.md`).
+
+**Non-goals / boundaries (binding):** NO production backup scheduling, offsite/cloud backup, retention or
+deletion policy (legal-gated; OD-DR1/OD-DR2 untouched), encryption redesign, provider/hosting selection,
+monitoring, security headers, PSRR execution, or deployment. Local verified drill ≠ production backup
+posture. External legal/tax registers remain OPEN (deferred pending adviser availability). PAID ACTIVATION
+AUTHORIZED: NO; PSRR TRIGGERED: NO; DEPLOYMENT AUTHORIZED: NO. `OWNER_DECISION_REGISTER.md` UNCHANGED
+(implementation authorization, not a new strategy decision). Authoritative ONLY if/when this exact candidate
+is merged and post-merge verified. Next required step: **Independent External Review of this exact SHA +
+bundle**.
+
+**Immediately prior (P10-LT1 EXTERNAL LEGAL & TAX INPUT COMMISSIONING GATE — accepted and MERGED via PR
+#519, tip `56ba10446626af1d8c2e188b2f8982b1265a5078`; now AUTHORITATIVE; retained as history; commissions
+questions, answers nothing; authorizes nothing):** Base:
 `5dfc35e34bbfc9a8681d575a7e26613a5038c674` (PR #518 merge — OD-CJ1 acceptance candidate #3 `ec2ff7f0…`,
 authoritative; independently re-verified: parents `b98561b8…` / `ec2ff7f0…`, merge tree `76b05623…` equal to
 the accepted candidate tree, empty candidate→merge diff). Full detail:
@@ -67,9 +103,8 @@ sufficient governed step.
 register as OWNER INPUT REQUIRED); no payment/tax-provider, MoR, hosting, or region selection (OD-J2
 delegated gate separate); PAID ACTIVATION AUTHORIZED: NO (`D-P8-PL-01 class C` unsatisfied by this gate);
 PSRR TRIGGERED: NO; DEPLOYMENT AUTHORIZED: NO; P8C §5 / P8-I4 deferred registers open; OD decisions
-unaltered. Governance-only; zero runtime/test diff; no auto-activated successor (P10-C §10). Authoritative
-ONLY if/when this exact candidate is merged and post-merge verified. Next required step: **Independent
-External Review of this exact SHA + bundle**.
+unaltered. Governance-only; zero runtime/test diff; no auto-activated successor (P10-C §10). MERGED via PR
+#519 (tip `56ba1044…`) and post-merge verified — AUTHORITATIVE.
 
 **Immediately prior (OD-CJ1 acceptance — corrected candidate #3 `ec2ff7f0`, accepted and MERGED via PR #518,
 tip `5dfc35e34bbfc9a8681d575a7e26613a5038c674`; now AUTHORITATIVE; retained as history):** Base:
