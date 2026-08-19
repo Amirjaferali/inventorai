@@ -11584,3 +11584,58 @@ NO (`D-P8-PL-01 class C`); PSRR TRIGGERED: NO; PSRR EXECUTION AUTHORIZED: NO; DE
 (`OD-P`). `OWNER_DECISION_REGISTER.md` UNCHANGED. No auto-activated successor (P10-C §10). Authoritative
 ONLY if/when this exact candidate is merged and post-merge verified. Next required step: **Independent
 External Review of this exact SHA + bundle**.
+
+---
+
+## P10-DEP1 — Local Dependency-Audit Foundation (Owner-authorized bounded tooling/evidence candidate)
+
+**Base:** `8563320b626b8590f10cbf252c9eba0a03b6fbd6` (PR #525 merge — P10-SEC2 input hardening,
+authoritative; independently re-verified: parents `9d6bf3d9…`/`516128b7…`, merge tree `c3626080…` equal to
+the accepted candidate tree, empty candidate→merge diff). **P10-SEC2 synchronization (recorded here per
+repository convention):** the P10-SEC2 candidate `516128b7…` was Owner-accepted at that exact SHA and
+MERGED via PR #525 — AUTHORITATIVE (transport 128 KiB bound + 20,000-char free-text bound + NUL rejection
+live).
+
+**Dependency-model truth (verified at this base).** `requirements.txt` is the SINGLE authoritative
+dependency source — pinned `Flask==3.1.3` + `pytest==9.1.1` (runtime + test; sha256 `e0707b64…`); NO
+pyproject.toml, lock files, Pipfile, setup.py/cfg, Docker declarations, CI workflows, or pip-install
+scripts exist; the execution environment's 46 globally installed packages are ENVIRONMENT packages, not
+project dependencies (declared-vs-installed distinguished; installed versions match the pins).
+
+**Selected mechanism:** `pip-audit` (local provider-neutral CLI over OSV/PyPI advisory sources) — local
+execution, machine-readable output available, deterministic non-zero exit on findings/errors, scans the
+declared set via `-r requirements.txt`, PSRR-reusable, zero application-runtime coupling; NO hosted
+scanning vendor. Installed as ENVIRONMENT TOOLING ONLY — deliberately NOT added to `requirements.txt`, and
+a test enforces that no `web/`/`engine/` module imports it.
+
+**Delivered (this candidate).** `scripts/run_dependency_audit.py` — smallest wrapper: repo-root resolution
+from any cwd; deterministic evidence header (repository SHA, dependency-input SHA-256, UTC timestamp, tool
+identity, exact command); missing-input exit 2; clear `TOOL MISSING` exit 3; the audit tool's own exit
+status preserved VERBATIM (findings exit and advisory-network failures are NEVER converted into a clean
+PASS); explicit POINT-IN-TIME labeling on success; no secret echo; no remediation capability of any kind.
+`tests/test_p10_dep1_dependency_audit.py` — 9 deterministic offline tooling tests (fake audit modules via
+the documented `INVENTORAI_AUDIT_TOOL_MODULE` tooling seam: correct-input targeting + SHA/hash evidence,
+any-cwd operation, tool-missing semantics, findings exit-code propagation without suppression,
+network-failure never-clean, no-env-secret leakage, no-dependency-mutation + no-remediation-verbs source
+guard, no-runtime-contamination guard). RED: 8/9 failed with the wrapper absent (the passer is the
+already-true contamination guard); GREEN: 9/9.
+
+**Live audit (ADVISORY NETWORK ACCESS: AVAILABLE).** pip-audit **2.10.1**, OSV/PyPI advisories,
+`python3 -m pip_audit -r requirements.txt` at base SHA `8563320b…`, 2026-08-19T21:24:47Z (wrapper re-run
+21:27:11Z): exit **0**; **2 direct / 11 total packages scanned** (flask 3.1.3, pytest 9.1.1, pluggy 1.6.0,
+blinker 1.9.0, click 8.4.2, iniconfig 2.3.0, itsdangerous 2.2.0, jinja2 3.1.6, markupsafe 3.0.3, pygments
+2.21.0, werkzeug 3.1.8); **findings 0** → `POINT-IN-TIME AUDIT: ZERO KNOWN FINDINGS AT EXECUTION TIME` —
+never "secure", never permanent. `pip check`: "No broken requirements found." (exit 0).
+`DEPENDENCY REMEDIATION REQUIRED: NO` at this instant. Immutable evidence:
+`docs/governance/evidence/phase10_p10_dep1/P10_DEP1_POINT_IN_TIME_AUDIT_EVIDENCE.md`.
+`docs/SECURITY_ARCHITECTURE.md` truthfully updated (local foundation ≠ PSRR items 12–13; no continuous
+scanning / hosted monitoring / CI enforcement / automatic remediation claimed). Full suite: 2854 passed /
+3 skipped / 1 xfailed / 0 failures (prior 2845 + 9 new; zero regressions; runtime dependencies unchanged).
+
+**Boundaries (binding).** `LOCAL AUDIT FOUNDATION: IMPLEMENTED`; `FORMAL PRODUCTION
+DEPENDENCY/VULNERABILITY REVIEW: PSRR-TIME` (items 12–13 unsatisfied). No auto-remediation; no version/pin
+change; no hosted vendor; no Dependabot/Snyk/CI claim; zero application-runtime/schema diff; no
+payment/legal/tax change. PAID ACTIVATION AUTHORIZED: NO (`D-P8-PL-01 class C`); PSRR TRIGGERED: NO; PSRR
+EXECUTION AUTHORIZED: NO; DEPLOYMENT AUTHORIZED: NO (`OD-P`). `OWNER_DECISION_REGISTER.md` UNCHANGED. No
+auto-activated successor (P10-C §10). Authoritative ONLY if/when this exact candidate is merged and
+post-merge verified. Next required step: **Independent External Review of this exact SHA + bundle**.
