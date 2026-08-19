@@ -2424,7 +2424,47 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
-- **Phase 10 — OD-DR1 ACCEPTANCE AT STRATEGY LEVEL (candidate, PR pending; governance-only; authorizes
+- **Phase 10 — OD-DR2 ACCEPTANCE AT STRATEGY LEVEL (candidate, PR pending; governance-only; authorizes
+  nothing), base `46756528509beebefc86ee399f331a796cbae6f2` (PR #516, authoritative).** **Account-wide
+  self-service export is DEFERRED PENDING EXTERNAL LEGAL DETERMINATION AND SEPARATE OWNER AUTHORIZATION.**
+  Current export truth exact and preserved: the only authorized P10-D3a self-service export remains
+  **PROJECT-SCOPED EXPORT** under its truthful-label contract (never described as final-output / account /
+  "Export my data" / account-wide export); FDC-001 Decision Workspace export and P7-I2 API export unchanged;
+  verified at base: exactly three export routes, none account-wide, none exposing secrets/credentials.
+  **Owner future product priority (direction only): USEFUL OUTPUT PORTABILITY OF FINAL PROJECT OUTPUTS /
+  RESULTS** — no surface created, nothing modified, no format selected; existing D3a is NOT described as
+  final-output export. **Product Export ≠ Legal Data Access/Portability** — neither substitutes for the
+  other; no regime-applicability conclusion. **No-foreclosure principle** = architecture preservation ONLY
+  (explicitly not a build/prepare/pre-implement/schema/route/job/bulk-infrastructure instruction).
+  **Deferral does NOT suspend legally applicable data-access/portability obligations** — binding requests
+  escalate to Owner + external counsel as exceptions (escalation rule only). OD-DR1 not modified/reopened;
+  P10-D3b not reinterpreted; OD-DR1's conditional export opportunity neither expanded nor foreclosed.
+  **Normal product-export exclusion defaults** (not legal conclusions): password hashes, credential
+  secrets/records, verification/reset tokens, session/security metadata, fraud/abuse indicators, rate-limit
+  records, operational metadata, provider internals, third-party/other-user data, and unauthorized
+  institution-owned data are never auto-exposed; `subscription_lifecycle_events` / `commercial_audit` /
+  `provider_event_dedupe` / `access_audit` / backups / replicas / derived copies classified separately.
+  localStorage drafts remain client-only (server export must not claim completeness over them). Future
+  strong identity/authorization verification principle recorded (ownership, compromised-session,
+  exfiltration, institutional/administrator authority) — not designed. **NO INSTITUTIONAL EXPORT AUTHORITY;
+  NO INSTITUTIONAL FEATURE** (reserved). Third-party/other-user protection preserved. **Format-neutral** —
+  no PDF/email/cloud/vendor delivery, connector, adapter, or integration authorized. P7-I3 architecture
+  referenced verbatim (`InventorAI Core → Canonical Output Model (P7-I1 Structured Export) →
+  Integration/Export Layer (P7-I3 adapter boundary) → External Tools`); no second canonical model.
+  **`user export = dump every database row` explicitly REJECTED** — useful output portability, not database
+  dump. **Preserved:** OD-CJ1 REGISTERED AND UNRESOLVED; OD-J1/OD-J2 and OD-DR1 accepted and unchanged;
+  OD-A governs brand/name. Register: `OWNER_DECISION_REGISTER.md` new OD-DR2 section; evidence:
+  `docs/governance/evidence/phase10_owner_decisions/OD-DR2_ACCOUNT_WIDE_DATA_ACCESS_EXPORT_POSITION.md`.
+  Governance-only; zero runtime/test diff; no PSRR; no deployment; no auto-successor.
+
+- **Phase 10 — OD-DR1 ACCEPTANCE: MERGED / AUTHORITATIVE (candidate `13c9f7d1`, PR #516, tip
+  `46756528509beebefc86ee399f331a796cbae6f2`; parents `f35a3999…`/`13c9f7d1…`, merge tree `5a02ad1c…` =
+  candidate tree — independently re-verified).** OD-DR1 (physical deletion/erasure DEFERRED pending external
+  legal determination + separate Owner authorization; Account Deactivation remains the only exit capability;
+  tombstone ≠ erasure; escalation rule for binding requests; future technical deletion-impact gate required)
+  is ACCEPTED AT STRATEGY LEVEL. (Original candidate-stage bullet retained below as history.)
+
+- **(superseded history) Phase 10 — OD-DR1 ACCEPTANCE AT STRATEGY LEVEL (was: candidate, PR pending; governance-only; authorizes
   nothing), base `f35a399960b131e79f390c8eff2a6e95b29726a0` (PR #515, authoritative).** Current authorized
   account-exit capability remains **Account Deactivation** (P10-D3b preserved; the `"deleted"` status is a
   tombstone/non-active marker, NOT physical erasure — no wording may describe it as physical deletion; a
