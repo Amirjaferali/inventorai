@@ -41,10 +41,43 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — P10-D3b ACCOUNT DEACTIVATION: bounded increment CONTRACT candidate; DEFINITION ONLY;
-NO implementation authorized):** Base: `d649a4df5889cf037096014ce69d362adb2fb00b` (PR #511 merge — P10-D3a
-Self-Service Project Export implementation, authoritative; independently re-verified: parents `1a87bf58…` /
-`4c5f325f…`, tree `acd8c16ab3012904505d6c5be31255f51595bd09`, empty candidate→merge diff). Full detail:
+**Status (current — PHASE 10 JURISDICTION & DATA-RIGHTS OWNER-DECISION GATE: governance-only candidate;
+decision REGISTRATION only — nothing decided, drafted, implemented, or authorized):** Base:
+`07389b24ce9c4a606526315f2c19118f292f04db` (PR #513 merge — P10-D3b Account Deactivation implementation,
+authoritative; independently re-verified: parents `46c80714…` / `a751cb3b…`, tree
+`886d06f605bf08b36b765a96a528bd42047af0de`, empty candidate→merge diff). Full detail:
+`docs/governance/P10_JURISDICTION_AND_DATA_RIGHTS_OWNER_DECISION_GATE.md`.
+
+**Authorization scope (Owner-granted, strictly bounded).** ONE governance-candidate session: `RECONSTRUCT →
+CREATE GOVERNANCE CANDIDATE → FREEZE EXACT SHA → GOVERNANCE TRUTH SWEEP → CREATOR GRILL → SHA-PRESERVING
+BUNDLE`. **No legal drafting (Privacy Policy / Terms / consent / cookie notice / payment terms / IP terms), no
+deletion/erasure workflow, no account-wide export, no PSRR, no deployment, no payment-provider selection, no
+monitoring/backup/security implementation.** Allowed paths for THIS candidate: `docs/governance/` only.
+
+**Purpose.** Repository evidence is INSUFFICIENT to determine legal-regime applicability (no registered launch
+country, user-residence scope, commercial jurisdiction, or hosting/data-location assumption; the P10-C §9
+GDPR/PDPL open question is triggered and unresolved). This gate REGISTERS the blocking Owner decisions
+(OD-J1 launch markets; OD-J2 hosting/data location; OD-DR1 deletion/erasure position; OD-DR2 account-wide
+access/export position; OD-CJ1 commercial jurisdiction/tax scope; OD-B1 referencing the EXISTING OD-A brand
+authority) and the external legal-input requests (GDPR/PDPL applicability if any; policy/terms/consent/cookie
+requirements; data-subject-rights scope; user-content/IP terms; payment/refund terms) — answering none of
+them. `OWNER_DECISION_REGISTER.md` UNCHANGED (it indexes accepted decisions only).
+
+**Sync carried.** Records `P10-D3b IMPLEMENTATION AUTHORITATIVE: YES` (PR #513, tip `07389b24…`, identity
+independently re-verified) without reopening or modifying D3b. Account Deactivation ≠ Physical Deletion;
+P10-D3a project-scoped export unchanged.
+
+**Boundary / status.** Governance-only; zero runtime/test diff. No auto-activated successor gate — the next
+step depends on actual Owner answers, each separately authorized (P10-C §10). No PSRR trigger; no deployment
+authority. Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next required
+step: **Independent External Review of this exact SHA + bundle**.
+
+**Immediately prior (P10-D3b — contract candidate `e5e27f38`, accepted and MERGED via PR #512, tip
+`46c80714a35e5c6cf289b4d807d6f7a31d17cf5d`; implementation candidate `a751cb3b`, accepted and MERGED via PR
+#513, tip `07389b24ce9c4a606526315f2c19118f292f04db`; both now AUTHORITATIVE; retained as history):** Base at
+contract drafting: `d649a4df5889cf037096014ce69d362adb2fb00b` (PR #511 merge — P10-D3a Self-Service Project
+Export implementation, authoritative; independently re-verified: parents `1a87bf58…` / `4c5f325f…`, tree
+`acd8c16ab3012904505d6c5be31255f51595bd09`, empty candidate→merge diff). Full detail:
 `docs/governance/P10_D3B_ACCOUNT_DEACTIVATION_INCREMENT_CONTRACT.md`.
 
 **Authorization scope (Owner-granted, strictly bounded).** ONE governance-candidate session: `VERIFY → CREATE
