@@ -11465,3 +11465,69 @@ PSRR TRIGGERED: NO; PSRR EXECUTION AUTHORIZED: NO; DEPLOYMENT AUTHORIZED: NO (`O
 `OWNER_DECISION_REGISTER.md` UNCHANGED. No auto-activated successor (P10-C §10). Authoritative ONLY
 if/when this exact candidate is merged and post-merge verified. Next required step: **Independent External
 Review of this exact SHA + bundle**.
+
+---
+
+## P10-DOC1 — Data-Retention & Cost-Governance Truth Repair (Owner-authorized bounded documentation/governance candidate)
+
+**Base:** `1816512326bae32f072c3816b78ab56fbb657b2e` (PR #523 merge — P10-IR1 incident-response foundation,
+authoritative; independently re-verified: parents `ee933718…`/`fb7a0313…`, merge tree `a4378a7a…` equal to
+the accepted candidate tree, empty candidate→merge diff). **P10-IR1 synchronization (recorded here per
+repository convention):** the P10-IR1 candidate `fb7a0313…` was Owner-accepted at that exact SHA and MERGED
+via PR #523 — AUTHORITATIVE (`INTERNAL TECHNICAL INCIDENT RESPONSE: IMPLEMENTED`; customer-facing support
+model and legal/privacy notice rules remain OPEN). Selected as the recommended next gate by the P10-RR2
+read-only reconstruction at this tip.
+
+**Runtime-code determination: RUNTIME CODE REQUIRED: NO.** Zero runtime/schema diff.
+
+**Delivered (this candidate).** The last two P10-C §9-registered stale documents repaired to current truth
+(both were verified byte-unchanged since generation commit `79c9c5e`; every material statement
+independently revalidated against source this session — nothing reused merely because it was written):
+
+* `docs/DATA_RETENTION_POLICY.md` — banner `RETENTION POLICY SUBSTANCE: OPEN — EXTERNAL LEGAL/TAX INPUT
+  REQUIRED`; current verified data inventory (durable SQLite account/token/credential/project/record/audit
+  tables; signed-cookie sessions; in-memory live progression state; client-only localStorage drafts with
+  the real 7-day TTL; stream-only no-PII operational logs; git-controlled fixtures); what actually happens
+  (indefinite durable retention — no enforced lifecycle; Deactivation-only exit with DEACTIVATION ≠
+  PHYSICAL DELETION; the ONLY automatic deletion = bounded expired auth-rate-limit cleanup; project-scoped
+  export only; local backups inherit all data, no backup retention; no offsite backup); what does NOT
+  exist (no erasure path, no finalized audit/backup retention, no legally approved periods, the historical
+  log-retention tiers never implemented); superseded claims preserved as labeled history — "No PII
+  collected in MVP" (accounts exist; the "GDPR/PDPL review required before adding accounts" trigger FIRED
+  and is commissioned as OPEN LQ-04…LQ-11 under merged P10-LT1), "in-memory session store" inventory,
+  "Anthropic API receives descriptions" (NO live external transfer; `AI_ADVISORY_ENABLED = False`; dormant
+  path unreachable without a source change). NO retention duration, deletion deadline, or erasure schedule
+  is created; no legal conclusion is made.
+* `docs/COST_GOVERNANCE_PLAN.md` — current cost reality: NO live paid usage of any kind (AI disabled with
+  a dormant no-key `max_tokens: 150` path; dev-sink email; no payment/hosting/monitoring/backup provider);
+  consequently no runtime cost control exists and each prior claim is individually corrected — kill switch
+  NOT IMPLEMENTED (no `INVENTORAI_KILL_SWITCH` check exists), 4000/1000-token caps NOT IMPLEMENTED,
+  15-iteration hard stop NOT IMPLEMENTED (verified absent from `engine/progression_loop.py`), $0.25
+  cumulative ceiling NOT IMPLEMENTED, budgets/alerts NOT IMPLEMENTED/MOOT; commercial tables truthfully
+  labeled scaffolding (no live billing; paid activation BLOCKED `D-P8-PL-01 class C`); historical controls
+  retained as PLANNED / NOT IMPLEMENTED design input with re-decision required before any AI/paid
+  re-enablement; provider costs PROVIDER-DEPENDENT/deferred (OD-J2 gate).
+
+**Validation.** `tests/test_p10_doc1_retention_cost_truth.py` — 11 doc-invariant checks
+(whitespace-normalized; superseded claims must remain labeled within context windows; no prescriptive
+retention-duration pattern; retention substance OPEN; historical controls never claimed active; and doc
+truth TIED to source truth: kill-switch absence in `web/app.py`, `AI_ADVISORY_ENABLED = False` +
+`max_tokens: 150` in `engine/ai_advisor.py`, DELETE-FROM-only-for-`auth_rate_limits` across `engine/`, the
+real `TTL_MS` in `local_draft.js` — so a future runtime change cannot silently re-stale the documents).
+Structural RED: 9/11 fail against the unrepaired documents (the 2 passers are the already-true source
+cross-checks, deliberate regression guards); GREEN: 11/11. Full suite: 2830 passed / 3 skipped / 1 xfailed
+/ 0 failures (prior 2819 + 11 new; zero regressions).
+
+**Result.** With this candidate, ALL FIVE P10-C §9 architecture documents are truth-labeled
+(SECURITY_ARCHITECTURE — P10-SEC1; OBSERVABILITY_ARCHITECTURE — P10-OB1; DISASTER_RECOVERY_PLAN — P10-BR1;
+DATA_RETENTION_POLICY + COST_GOVERNANCE_PLAN — this gate): the §9 proposition-level revalidation debt is
+CLOSED at the documentation level. `DATA_RETENTION_POLICY TRUTH STATUS: CURRENT` with
+`RETENTION POLICY SUBSTANCE: OPEN — EXTERNAL ADVISER REQUIRED`; `COST_GOVERNANCE_PLAN TRUTH STATUS:
+CURRENT` (which does NOT mean production cost controls exist — none do).
+
+**Boundaries (binding).** No retention/deletion/erasure rule; no legal/tax conclusion or duration; no
+runtime/schema change; OD-DR1/OD-DR2 unaltered; external legal/tax registers remain OPEN (deferred pending
+adviser availability); PAID ACTIVATION AUTHORIZED: NO; PSRR TRIGGERED: NO; PSRR EXECUTION AUTHORIZED: NO;
+DEPLOYMENT AUTHORIZED: NO; Phase 10 remains OPEN. `OWNER_DECISION_REGISTER.md` UNCHANGED. No
+auto-activated successor (P10-C §10). Authoritative ONLY if/when this exact candidate is merged and
+post-merge verified. Next required step: **Independent External Review of this exact SHA + bundle**.
