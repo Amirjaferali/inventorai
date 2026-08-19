@@ -10905,3 +10905,73 @@ explicit Owner authorization. No automatic successor (no P10-D3c). No PSRR trigg
 No physical-deletion authority now or later. Authoritative ONLY if/when this exact candidate is merged and
 post-merge verified. Next required gate: **Mandatory Creator Grill on this exact candidate**, then Independent
 External Review — the latter not performed here.
+
+---
+
+## Phase 10 — P10-D3b contract + implementation CLOSED / AUTHORITATIVE (synchronization entry)
+
+**P10-D3b contract.** Candidate `e5e27f3848e8df6d8532d07379a823528a26ddc6` Owner-accepted at that exact SHA and
+merged via **PR #512**, tip `46c80714a35e5c6cf289b4d807d6f7a31d17cf5d` (empty candidate→merge diff —
+independently re-verified). `docs/governance/P10_D3B_ACCOUNT_DEACTIVATION_INCREMENT_CONTRACT.md` is
+authoritative.
+
+**P10-D3b implementation (CLOSED / AUTHORITATIVE).** Under separate explicit Owner implementation
+authorization, candidate `a751cb3b1ffb882ea8596cefafe7ef1a9222cd81` (parent `46c80714…`, tree
+`886d06f605bf08b36b765a96a528bd42047af0de`) was Owner-accepted at that exact SHA after Contract Compliance
+PASS, Creator Grill PASS, and Independent External Review `ACCEPT WITH NON-BLOCKING OBSERVATIONS`, and merged
+via **PR #513**, tip `07389b24ce9c4a606526315f2c19118f292f04db` (first parent `46c80714…`, second parent
+`a751cb3b…`, merge tree `886d06f6…`, empty candidate→merge diff — independently re-verified). Scope: 5 files,
++487/−1. Delivered: `POST /account/deactivate` (authenticated + CSRF + password re-entry; existing
+`set_status`/`increment_session_epoch` primitives; all sessions/logins/API credentials fail via existing
+status gates; NO row deleted anywhere; truthful EN/AR deactivation wording; no reactivation path). Focused
+18/18 GREEN (RED 14/4/0 first); full suite 2754/0/3/1. **Account Deactivation ≠ Physical Deletion** — data is
+retained. This closure authorizes NO successor gate. A subsequent read-only Phase-10 Remaining-Obligations
+review determined `ALL PHASE-10 EXIT CRITERIA SATISFIED: NO` (legal artifacts, formal security/privacy
+reviews, monitoring/observability, backup/restore, deployment controls, brand clearance, support/incident
+model all NOT STARTED; PSRR NOT triggered; deployment NOT authorized), and a read-only Privacy / Legal
+Readiness Assessment identified the blocking dependency set now registered by the gate below.
+
+---
+
+## Phase 10 — Jurisdiction & Data-Rights Owner-Decision Gate (candidate; governance-only; decision REGISTRATION only — nothing decided, drafted, implemented, or authorized)
+
+**Gate.** Owner selected this bounded governance-only gate under P10-C §10: `RECONSTRUCT → CREATE GOVERNANCE
+CANDIDATE → FREEZE EXACT SHA → GOVERNANCE TRUTH SWEEP → CREATOR GRILL → SHA-PRESERVING BUNDLE`. Base:
+`07389b24ce9c4a606526315f2c19118f292f04db` (PR #513 merge, authoritative). Full detail:
+`docs/governance/P10_JURISDICTION_AND_DATA_RIGHTS_OWNER_DECISION_GATE.md`.
+
+**Purpose.** Repository evidence is INSUFFICIENT to determine legal-regime applicability: no launch country,
+user-residence scope, commercial jurisdiction, or hosting/data-location assumption is registered anywhere; the
+`DATA_RETENTION_POLICY.md` "GDPR/PDPL review required before adding accounts" clause (P10-C §9, load-bearing)
+is triggered and unresolved. No legal artifact can be truthfully scoped before these facts exist. The gate
+REGISTERS the blocking Owner decisions and external legal-input requests — it answers none of them.
+
+**Owner Decision Set registered (all UNRESOLVED; no answer proposed):** OD-J1 launch markets / user-residence
+scope; OD-J2 hosting / data location (delegation allowed); OD-DR1 physical deletion/erasure product position
+(no implementation authorized by any later answer; Account Deactivation ≠ Physical Deletion unchanged);
+OD-DR2 account-wide data access/export position (P10-D3a project-scoped export unchanged); OD-CJ1 commercial
+jurisdiction / tax scope (before paid activation; consumed with P8C §5 / P8-I4 deferred business registers);
+OD-B1 references the EXISTING OD-A brand authority (final name deferred; no duplicate decision; no rename).
+`OWNER_DECISION_REGISTER.md` indexes accepted decisions only and is therefore UNCHANGED; rows are appended
+only when the Owner later ACCEPTS answers through separately authorized gates.
+
+**External legal-input requests registered (inputs to obtain, NOT conclusions; each conditioned on
+OD-J1/OD-J2):** GDPR applicability if any; national PDPL/privacy regime(s) if any; Privacy Policy / Terms /
+consent / cookie-notice requirements; data-subject-rights requirements (access, portability/export,
+deletion/erasure, retention); user-content/IP terms (within OD-D/OD-E boundaries); payment/refund/subscription
+terms before paid activation.
+
+**Data-truth baseline preserved (each item revalidated at base):** accounts store real user data; project/
+record content server-side; export project-scoped only; deactivation retains data; no physical deletion/
+erasure; no enforced retention; no live analytics; no IP/device metadata collection; no live payment provider;
+no live production email provider; AI external transfer disabled (hardcoded); NO live third-party transfer
+path without a source-code change; browser drafts client-side localStorage only; supabase schema
+historical/non-live.
+
+**Boundary / status.** Governance-only; zero runtime/test diff. Explicit non-decisions: applicable law, lawful
+basis, consent requirements, retention periods, deletion/erasure implementation, account-wide export
+implementation, Privacy Policy text, Terms text, payment/refund language, tax treatment, hosting provider,
+deployment, PSRR. No auto-activated successor (future outcomes depend on actual Owner answers; none
+pre-authorized). No PSRR trigger (remains "BEFORE FIRST PUBLIC PRODUCTION DEPLOYMENT"). No deployment
+authority (OD-P two-part gate unsatisfied). Authoritative ONLY if/when this exact candidate is merged and
+post-merge verified. Next required step: Independent External Review of this exact SHA + bundle.

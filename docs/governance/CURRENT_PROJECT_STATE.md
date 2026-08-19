@@ -2424,7 +2424,43 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
-- **Phase 10 — P10-D3b Account Deactivation: bounded increment CONTRACT (candidate, PR pending; DEFINITION ONLY —
+- **Phase 10 — Jurisdiction & Data-Rights Owner-Decision Gate (candidate, PR pending; governance-only; decision
+  REGISTRATION only — nothing decided, drafted, implemented, or authorized), base
+  `07389b24ce9c4a606526315f2c19118f292f04db` (PR #513, authoritative).** Owner-selected under P10-C §10 after a
+  read-only Remaining-Obligations review (`ALL PHASE-10 EXIT CRITERIA SATISFIED: NO`; PSRR NOT triggered;
+  deployment NOT authorized) and a read-only Privacy / Legal Readiness Assessment. **Finding:** repository
+  evidence is INSUFFICIENT to determine legal-regime applicability — no launch country, user-residence scope,
+  commercial jurisdiction, or hosting/data-location assumption is registered anywhere; the P10-C §9 GDPR/PDPL
+  open question is triggered and unresolved; no legal artifact can be truthfully scoped before these facts
+  exist. **Registers (all UNRESOLVED; no answer proposed):** OD-J1 launch markets / user-residence scope;
+  OD-J2 hosting / data location (delegation allowed); OD-DR1 physical deletion/erasure product position (no
+  implementation authorized by any later answer; Account Deactivation ≠ Physical Deletion); OD-DR2
+  account-wide data access/export position (P10-D3a project-scoped export unchanged); OD-CJ1 commercial
+  jurisdiction / tax scope (before paid activation); OD-B1 references the EXISTING OD-A brand authority (no
+  duplicate decision, no rename). **External legal-input requests registered** (each conditioned on
+  OD-J1/OD-J2; none stated as a conclusion): GDPR / national PDPL applicability if any; Privacy Policy /
+  Terms / consent / cookie-notice requirements; data-subject-rights scope (access, portability/export,
+  deletion/erasure, retention); user-content/IP terms (OD-D/OD-E boundaries); payment/refund/subscription
+  terms. Data-truth baseline revalidated at base (no live third-party transfer path without source change; no
+  analytics; no live payment/email provider; AI transfer disabled; no enforced retention; no physical
+  deletion). `OWNER_DECISION_REGISTER.md` UNCHANGED (indexes accepted decisions only). Governance-only; zero
+  runtime/test diff. No auto-activated successor; no PSRR trigger; no deployment authority. Full detail:
+  `docs/governance/P10_JURISDICTION_AND_DATA_RIGHTS_OWNER_DECISION_GATE.md`.
+
+- **Phase 10 — P10-D3b Account Deactivation: contract MERGED (PR #512, tip `46c80714…`) + implementation
+  MERGED / AUTHORITATIVE (PR #513, tip `07389b24ce9c4a606526315f2c19118f292f04db`).** Implementation candidate
+  `a751cb3b1ffb882ea8596cefafe7ef1a9222cd81` (parent `46c80714…`, tree `886d06f6…`) Owner-accepted at that
+  exact SHA after Contract Compliance PASS, Creator Grill PASS, Independent External Review `ACCEPT WITH
+  NON-BLOCKING OBSERVATIONS`, Independent Reviewer Grill PASS; merge identity independently re-verified
+  (parents `46c80714…`/`a751cb3b…`, tree `886d06f6…`, empty candidate→merge diff). Scope: 5 files, +487/−1.
+  Delivered `POST /account/deactivate`: authenticated + CSRF + password re-entry (existing seams only);
+  status→`"deleted"` + `deleted_at` stamp via existing `set_status`; epoch bump as defense-in-depth; all
+  sessions/logins/API credentials fail via existing status gates (credentials retained, unrevoked); **no row
+  deleted in any of the 14 durable table families** (count-parity proven); truthful EN/AR wording (`Deactivate
+  Account` / `تعطيل الحساب`); no reactivation path. Focused 18/18 GREEN (RED 14/4/0 first); full suite
+  2754/0/3/1. **Account Deactivation ≠ Physical Deletion.** Authorizes NO successor gate.
+
+- **(superseded history) Phase 10 — P10-D3b Account Deactivation: bounded increment CONTRACT (was: candidate, PR pending; DEFINITION ONLY —
   NO implementation authorized), base `d649a4df5889cf037096014ce69d362adb2fb00b` (PR #511, authoritative).**
   Owner authorized ONE governance-candidate session (`VERIFY → CREATE P10-D3b CONTRACT CANDIDATE → FREEZE EXACT
   SHA → CREATOR GRILL → SHA-PRESERVING BUNDLE`); no runtime code, no account-behavior change, no push, no PR.
