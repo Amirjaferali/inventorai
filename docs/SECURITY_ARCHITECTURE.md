@@ -40,11 +40,26 @@ gate; `includeSubDomains`/`preload` additionally need separate authorization.
   (`engine/ai_advisor.py`: `AI_ADVISORY_ENABLED = False`). PSRR item 8
   reassesses secrets operations.
 
-## Input Validation — PARTIAL (labels per P10-RV1 revalidation)
+## Input Validation — PARTIAL (labels per P10-RV1 revalidation; hardened by P10-SEC2)
 - IMPLEMENTED: Jinja autoescape everywhere (zero `| safe`); no `eval()`/
   `exec()` anywhere; success-criteria fields capped at 1000 chars.
-- NOT IMPLEMENTED (historical claim): a global 10000-char input cap and
-  null-byte/control-character stripping — PSRR item 1 reassesses.
+- IMPLEMENTED NOW (P10-SEC2): a transport-level request-body bound
+  (`MAX_CONTENT_LENGTH` = 128 KiB → standard 413, security headers intact)
+  on every surface; a semantic free-text bound (`MAX_FREE_TEXT_CHARS` =
+  20,000 chars — justified from present product behavior, deliberately NOT
+  the stale historical 10,000 figure) with NUL-byte REJECTION on the two
+  primary free-text surfaces (`/start` idea text; `/session/<sid>`
+  answer/action text). Explicit rejection only — never silent truncation,
+  never stripping; Arabic/Unicode/multiline/punctuation pass untouched (no
+  general control-character sanitizer, no ASCII-only rule). Legacy
+  fixed-domain ILT-002 start routes remain transport-bounded only
+  (historical evidence surfaces, behavior preserved).
+- These bounds are robustness controls only: NOT a WAF, NOT DoS prevention,
+  NOT a production proxy limit, NOT OWASP-compliance, NOT complete abuse
+  prevention — PSRR item 1 still reassesses input security at release time.
+- HISTORICAL — SUPERSEDED (was "NOT IMPLEMENTED"): the old unqualified
+  "10000-char cap + null-byte stripping" claim; the implemented posture
+  above (different limit; rejection, not stripping) replaces it.
 - HISTORICAL/MOOT while AI is disabled: LLM output schema validation.
 
 ## Abuse Protection — PARTIAL
