@@ -45,6 +45,20 @@ form{display:inline-block;margin:6px 8px 0 0}
   {% endif %}
 </section>
 
+<section aria-labelledby="deactivate-h">
+  <h2 id="deactivate-h" style="font-size:16px;color:#2c3e50;margin-top:22px">{{ t('UI_A_DEACT_001') }}</h2>
+  {% if notice == 'deactivate_failed' %}
+    <p class="status warn" role="alert">{{ t('UI_A_DEACT_004') }}</p>
+  {% endif %}
+  <p class="truthful">{{ t('UI_A_DEACT_002') }}</p>
+  <form method="POST" action="/account/deactivate">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <label for="deactivate-password">{{ t('UI_A_DEACT_003') }}</label>
+    <input type="password" id="deactivate-password" name="password" required autocomplete="current-password">
+    <button type="submit">{{ t('UI_A_DEACT_001') }}</button>
+  </form>
+</section>
+
 <div>
   <form method="POST" action="/logout">
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">

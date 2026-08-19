@@ -14,6 +14,9 @@ button{margin-top:16px;padding:10px 24px;background:#2c3e50;color:#fff;border:no
 {% block content %}
 <div class="auth-wrap">
 <h1>{{ t('UI_A_LOGIN_001') }}</h1>
+{% if deactivated %}
+  <p class="status" role="status" aria-live="polite">{{ t('UI_A_DEACT_005') }}</p>
+{% endif %}
 {% if login_error %}
   <p class="form-error" role="alert">{{ t('UI_A_MSG_LOGIN') }}</p>
 {% endif %}
