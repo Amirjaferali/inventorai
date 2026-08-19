@@ -41,10 +41,46 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — P10-BR1 DURABLE-DATABASE BACKUP & RESTORE DRILL INCREMENT: Owner-authorized bounded
-implementation candidate):** Base: `56ba10446626af1d8c2e188b2f8982b1265a5078` (PR #519 merge — P10-LT1
-commissioning gate, authoritative; independently re-verified: parents `5dfc35e3…` / `aead7fcc…`, merge tree
-`a694c08d…`, empty candidate→merge diff).
+**Status (current — P10-OB1 PROVIDER-NEUTRAL OBSERVABILITY FOUNDATION INCREMENT: Owner-authorized bounded
+implementation candidate):** Base: `571cede0fdaec297319c95ba5c6042733767f811` (PR #520 merge — P10-BR1
+backup/restore increment, authoritative; independently re-verified: parents `56ba1044…` / `5736150…`, merge
+tree `b9c3dbf5…` equal to the accepted candidate tree, empty candidate→merge diff).
+
+**Objective.** The smallest provider-neutral observability foundation: ONE truthful health/readiness surface
+(`GET /health` — deterministic, unauthenticated, session-free, side-effect-free, data-minimized; 200 with
+`database: ok|uninitialized`, 503 only on real local dependency failure; probe never creates a
+file/schema/row) plus the smallest structured operational-logging seam (`web/observability.py`, stdlib
+`logging` only: JSON lines, strict field ALLOWLIST `component/outcome/error_class/detail_code/count/
+duration_ms`, per-field value grammars rejecting emails, free-form text, paths, IPs, session identifiers,
+and common secret shapes; `emit()` never raises). Selected by the Owner from the P10-RV1 revalidation (the
+P10-C §4 monitoring/observability row was NOT STARTED).
+
+**Owner authorization:** explicit, verbatim, scoped to `RECONSTRUCTION → RED → IMPLEMENT → GREEN →
+REGRESSION → FULL SUITE → FREEZE → TRUTH SWEEP → CREATOR GRILL → BUNDLE`; no push/PR/merge/deploy/PSRR.
+**Allowed paths:** `web/observability.py` (new), the `/health` route + `_database_health()` probe in
+`web/app.py`, `tests/test_p10_ob1_observability_foundation.py` (new), `docs/OBSERVABILITY_ARCHITECTURE.md`
+(truth-labeling), and the three active governance surfaces. **Forbidden:** everything else — zero
+schema/migration diff; zero change to payment/subscription/account/deactivation/export/legal/tax semantics,
+backup/restore (P10-BR1), or security headers (P10-SEC1 remains a separate future gate).
+
+**Data-minimization boundary (load-bearing, test-proven):** no IP, user-agent, device/network metadata,
+geography, email, user/project content, password, token, session ID, or API credential is newly collected,
+emitted, or exposed; no analytics, behavioral tracking, third-party telemetry, or provider SDK; log
+destination/retention/rotation/aggregation NOT decided. The durable audit tables remain the separate
+security/commercial evidence layer — preserved, not duplicated.
+
+**Truthful P10-C §4 classification after this gate:** monitoring/observability =
+`PARTIAL — PROVIDER-NEUTRAL FOUNDATION IMPLEMENTED` (live production monitoring/alerting/dashboards still
+absent and provider-dependent; PSRR items remain future verification). PAID ACTIVATION AUTHORIZED: NO; PSRR
+TRIGGERED: NO; DEPLOYMENT AUTHORIZED: NO. `OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY if/when
+this exact candidate is merged and post-merge verified. Next required step: **Independent External Review of
+this exact SHA + bundle**.
+
+**Immediately prior (P10-BR1 DURABLE-DATABASE BACKUP & RESTORE DRILL INCREMENT — candidate `5736150…`
+Owner-accepted at that exact SHA and MERGED via PR #520, tip `571cede0fdaec297319c95ba5c6042733767f811`; now
+AUTHORITATIVE; retained as history):** Base: `56ba10446626af1d8c2e188b2f8982b1265a5078` (PR #519 merge —
+P10-LT1 commissioning gate, authoritative; independently re-verified: parents `5dfc35e3…` / `aead7fcc…`,
+merge tree `a694c08d…`, empty candidate→merge diff).
 
 **Objective.** The smallest provider-neutral, filesystem-local, SQLite-consistent backup + restore +
 validation + parity capability for the durable datastore (`INVENTORAI_DB_PATH`; all durable tables of both
@@ -72,9 +108,8 @@ deletion policy (legal-gated; OD-DR1/OD-DR2 untouched), encryption redesign, pro
 monitoring, security headers, PSRR execution, or deployment. Local verified drill ≠ production backup
 posture. External legal/tax registers remain OPEN (deferred pending adviser availability). PAID ACTIVATION
 AUTHORIZED: NO; PSRR TRIGGERED: NO; DEPLOYMENT AUTHORIZED: NO. `OWNER_DECISION_REGISTER.md` UNCHANGED
-(implementation authorization, not a new strategy decision). Authoritative ONLY if/when this exact candidate
-is merged and post-merge verified. Next required step: **Independent External Review of this exact SHA +
-bundle**.
+(implementation authorization, not a new strategy decision). MERGED via PR #520 (tip `571cede0…`) and
+post-merge verified — AUTHORITATIVE.
 
 **Immediately prior (P10-LT1 EXTERNAL LEGAL & TAX INPUT COMMISSIONING GATE — accepted and MERGED via PR
 #519, tip `56ba10446626af1d8c2e188b2f8982b1265a5078`; now AUTHORITATIVE; retained as history; commissions
