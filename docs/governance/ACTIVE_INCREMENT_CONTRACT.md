@@ -41,12 +41,46 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — P10-SEC3 DECISION-WORKSPACE FREE-TEXT HARDENING RESIDUAL EXTENSION: Owner-authorized
-bounded technical-continuation candidate):** Base: `e031ecddb390577988041fa2f3214b78fbf34211` (PR #527
-merge — P10-RL1 release-readiness checklist, authoritative; independently re-verified: parents
-`b1a0196a…` / `01650517…`, merge tree `4f3646d2…` equal to the accepted candidate tree, empty
-candidate→merge diff). Executed under the Owner's technical-continuation direction: development continues
-where repository truth permits; adviser-dependent items stay truthfully OPEN/DEFERRED.
+**Status (current — P10-SEC4 DECISION-WORKSPACE ENGINE-ERROR ECHO BOUNDING: Owner-authorized bounded
+technical-continuation candidate):** Base: `19fca422d90a84baef2d312ac3b3a247bf41e3f4` (PR #528 merge —
+P10-SEC3 free-text hardening, authoritative; independently re-verified: parents `e031ecdd…` /
+`91e48c20…`, merge tree `0ce1ae8d…` equal to the accepted candidate tree, empty candidate→merge diff).
+Executed under the Owner's technical-continuation direction (advisers still not engaged; their items
+truthfully OPEN/DEFERRED; unrelated technical work continues).
+
+**Objective.** Bound the USER-REFLECTED copy of deterministic engine diagnostics in the Decision Workspace
+400 error convention. Confirmed base behavior (source + live probe): ~15 `DecisionError` sites in
+`engine/decision_workspace.py` legitimately `%r`-echo the offending enum/id value; those fields are
+user-controlled and deliberately NOT free-text-guarded (ids/enums, not content), so a pathological value up
+to the 128 KiB transport bound was reflected VERBATIM into the 400 page (autoescaped — no markup executes,
+proven — but a 50,000-char probe produced a 62 KB reflected error page). Fix: web-layer ONLY — one helper
+`_dw_bounded_error(prefix, exc)` (`_DW_ERROR_ECHO_BOUND` = 300 chars + explicit " … [diagnostic truncated]"
+marker, never silent) replacing the seven `"<X> rejected: %s" % exc` call sites. Engine seam untouched:
+exception messages remain byte-complete (test-pinned); short legitimate diagnostics render verbatim
+(test-pinned); autoescape, P10-SEC3 guard precedence, and P10-SEC1 headers preserved (test-pinned).
+Reviewer residuals dispositioned: criticality rationale remains BLOCKED/DEFERRED (honest RED/GREEN needs
+the heavyweight ws1-completed flow — disproportionate); legacy ILT-002 start routes confirmed from source
+as deliberately preserved legacy/evidence-compat surfaces — NOT modified.
+
+**Evidence.** RED 6/11 failed at base precisely for the absent bounding (5 deliberate preservation guards
+green; one test-order expectation corrected pre-freeze — the engine validates `gap_id` first, so the junk
+belongs in the first-checked field). GREEN 11/11; SEC1+SEC2+SEC3+SEC4 combined 59 passed; full suite 2890
+passed / 3 skipped / 1 xfailed / 0 failures (prior 2879 + 11 new; zero regressions). Zero engine/schema/
+dependency/template diff; checklist unchanged (no row overclaimed; RL-A6 remains truthful).
+
+**Boundaries:** paid activation BLOCKED; PSRR NOT TRIGGERED; DEPLOYMENT NOT AUTHORIZED; legal/tax registers
+OPEN (nothing here needed their answers); no provider/commercial decision. `OWNER_DECISION_REGISTER.md`
+UNCHANGED. Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next required
+step: **Independent External Review of this exact SHA + bundle**.
+
+**Immediately prior (P10-SEC3 DECISION-WORKSPACE FREE-TEXT HARDENING RESIDUAL EXTENSION — candidate
+`91e48c20…` Owner-accepted at that exact SHA and MERGED via PR #528, tip
+`19fca422d90a84baef2d312ac3b3a247bf41e3f4`; now AUTHORITATIVE; retained as history):** Base:
+`e031ecddb390577988041fa2f3214b78fbf34211` (PR #527 merge — P10-RL1 release-readiness checklist,
+authoritative; independently re-verified: parents `b1a0196a…` / `01650517…`, merge tree `4f3646d2…` equal
+to the accepted candidate tree, empty candidate→merge diff). Executed under the Owner's
+technical-continuation direction: development continues where repository truth permits; adviser-dependent
+items stay truthfully OPEN/DEFERRED.
 
 **Objective.** Close the largest documented P10-SEC2 residual (authoritative checklist row RL-A6:
 "criticality/decision-workspace free text are transport-bounded ONLY") by extending the CANONICAL P10-SEC2
@@ -70,8 +104,7 @@ encoded.
 
 **Boundaries:** paid activation BLOCKED; PSRR NOT TRIGGERED; DEPLOYMENT NOT AUTHORIZED; legal/tax registers
 OPEN (deferred pending advisers — this gate needs none of their answers). `OWNER_DECISION_REGISTER.md`
-UNCHANGED. Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next required
-step: **Independent External Review of this exact SHA + bundle**.
+UNCHANGED. MERGED via PR #528 (tip `19fca422…`) and post-merge verified — AUTHORITATIVE.
 
 **Immediately prior (P10-RL1 RELEASE-READINESS CHECKLIST FOUNDATION — candidate `01650517…` Owner-accepted
 at that exact SHA and MERGED via PR #527, tip `e031ecddb390577988041fa2f3214b78fbf34211`; now

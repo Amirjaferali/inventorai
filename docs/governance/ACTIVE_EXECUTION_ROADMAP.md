@@ -11739,3 +11739,48 @@ advisers); no commercial decision; no provider selection; no PSRR trigger/execut
 paid activation (`D-P8-PL-01 class C`); Phase 10 OPEN. `OWNER_DECISION_REGISTER.md` UNCHANGED. No
 auto-activated successor (P10-C §10). Authoritative ONLY if/when this exact candidate is merged and
 post-merge verified. Next required step: **Independent External Review of this exact SHA + bundle**.
+
+---
+
+## P10-SEC4 — Decision-Workspace Engine-Error Echo Bounding (Owner-authorized bounded technical-continuation candidate)
+
+**Base:** `19fca422d90a84baef2d312ac3b3a247bf41e3f4` (PR #528 merge — P10-SEC3 free-text hardening,
+authoritative; independently re-verified: parents `e031ecdd…`/`91e48c20…`, merge tree `0ce1ae8d…` equal to
+the accepted candidate tree, empty candidate→merge diff). **P10-SEC3 synchronization (recorded here per
+repository convention):** the P10-SEC3 candidate `91e48c20…` was Owner-accepted at that exact SHA and
+MERGED via PR #528 — AUTHORITATIVE (all seven Decision Workspace POST free-text surfaces field-bounded).
+
+**Gate selection (technical-continuation cycle).** The Independent Reviewer's three technical observations
+were investigated from source, not assumed: (A) criticality rationale — remains BLOCKED/DEFERRED (honest
+RED/GREEN requires the heavyweight ws1-completed behavioral flow; disproportionate to value; still a
+documented transport-bounded residual); (B) engine error-echo — CONFIRMED by live probe: ~15 deterministic
+`DecisionError` sites `%r`-echo user-controlled enum/id values, and a 50,000-char `claim_class` produced a
+62 KB 400 page reflecting the junk verbatim (autoescaped — `<script>` proven escaped; no vulnerability
+claimed; a real reflected-junk/error-quality issue bounded only by the 128 KiB transport cap); (C) legacy
+ILT-002 start routes — confirmed from source as deliberately preserved legacy/evidence-compat surfaces;
+NOT modified. Selected: (B), the smallest materially useful gate. Canonical owner: the Decision Workspace
+route family's EXISTING error convention in `web/app.py` — bounded extension, no engine change, no new
+subsystem, zero redesign. No adviser/commercial/provider/PSRR/deployment dependency.
+
+**Delivered (this candidate).** One helper `_dw_bounded_error(prefix, exc)` + constant
+`_DW_ERROR_ECHO_BOUND = 300` in `web/app.py`, replacing the seven `"<X> rejected: %s" % exc` call sites
+(Input/Constraint/Gap action/Evidence/Gap assessment/Preference action/Candidate disposition). Semantics:
+render-only bound — messages over 300 chars are truncated with the EXPLICIT marker " … [diagnostic
+truncated]" (never silent); short legitimate diagnostics render VERBATIM; the engine seam and its exception
+messages remain byte-complete (test-pinned by raising `DecisionError` directly and asserting the full
+50,000-char value is still present at the seam); Jinja autoescape, P10-SEC3 free-text guard precedence, and
+P10-SEC1 headers preserved (each test-pinned). Tests:
+`tests/test_p10_sec4_dw_error_echo_bounding.py` — 11 focused tests RED-first (RED: 6/11 failed at base
+precisely for the absent bounding — junk echoed on four representative surfaces, unbounded page size,
+missing helper; 5 deliberate preservation guards green at base; one pre-freeze test-order correction: the
+engine validates `gap_id` before `assessment`, so the junk probe belongs in the first-checked field).
+GREEN: 11/11. SEC1+SEC2+SEC3+SEC4 combined regression: 59 passed. Full suite: 2890 passed / 3 skipped /
+1 xfailed / 0 failures (prior 2879 + 11 new; zero regressions). Zero engine/schema/dependency/template
+diff. The release-readiness checklist is unchanged — no row claimed error-echo bounding, RL-A6 remains
+truthful, and no residual was silently closed.
+
+**Boundaries (binding).** No legal/tax conclusion; registers OPEN (deferred pending advisers); no
+commercial decision; no provider selection; no PSRR trigger/execution; no deployment; no paid activation
+(`D-P8-PL-01 class C`); Phase 10 OPEN. `OWNER_DECISION_REGISTER.md` UNCHANGED. No auto-activated successor
+(P10-C §10). Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next
+required step: **Independent External Review of this exact SHA + bundle**.

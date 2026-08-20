@@ -2683,6 +2683,27 @@ def _deny_fdc001():
     return redirect(url_for("decision_workspace_start"))
 
 
+# P10-SEC4: the engine's deterministic DecisionError diagnostics legitimately
+# %r-echo the offending enum/id value. Those fields are user-controlled and are
+# NOT free-text-guarded (deliberately — they are ids/enums, not content), so a
+# pathological value can be as large as the transport bound allows and would be
+# reflected verbatim (autoescaped, but still kilobytes of junk) into the 400
+# page. The bound below applies to the RENDERED copy ONLY: the engine seam and
+# its exception messages remain byte-complete, short legitimate diagnostics
+# render verbatim, and truncation is always explicit — never silent.
+_DW_ERROR_ECHO_BOUND = 300
+
+
+def _dw_bounded_error(prefix, exc):
+    """Return the route family's conventional '<Prefix>: <engine message>'
+    error string with the user-reflected copy bounded at
+    ``_DW_ERROR_ECHO_BOUND`` characters (explicit truncation marker)."""
+    message = "%s: %s" % (prefix, exc)
+    if len(message) > _DW_ERROR_ECHO_BOUND:
+        message = message[:_DW_ERROR_ECHO_BOUND] + " … [diagnostic truncated]"
+    return message
+
+
 def _dw_free_text_reject(record, *field_names):
     """P10-SEC3: bounded free-text guard for Decision Workspace form fields —
     reuses the canonical P10-SEC2 helper `_free_text_error` (explicit
@@ -2756,7 +2777,7 @@ def decision_workspace_add_input(did):
     except fdc001_dw.DecisionError as exc:
         # The record is left unmodified; show a concise bounded error.
         return _render_decision_workspace(
-            record, error="Input rejected: %s" % exc, status=400)
+            record, error=_dw_bounded_error("Input rejected", exc), status=400)
     return redirect(url_for("decision_workspace_view", did=did))
 
 
@@ -2780,7 +2801,7 @@ def decision_workspace_add_constraint(did):
         )
     except fdc001_dw.DecisionError as exc:
         return _render_decision_workspace(
-            record, error="Constraint rejected: %s" % exc, status=400)
+            record, error=_dw_bounded_error("Constraint rejected", exc), status=400)
     return redirect(url_for("decision_workspace_view", did=did))
 
 
@@ -2823,7 +2844,7 @@ def decision_workspace_gap_action(did):
             raise fdc001_dw.DecisionError("unknown gap action: %r" % action)
     except fdc001_dw.DecisionError as exc:
         return _render_decision_workspace(
-            record, error="Gap action rejected: %s" % exc, status=400)
+            record, error=_dw_bounded_error("Gap action rejected", exc), status=400)
     return redirect(url_for("decision_workspace_view", did=did))
 
 
@@ -2856,7 +2877,7 @@ def decision_workspace_add_evidence(did):
         )
     except fdc001_dw.DecisionError as exc:
         return _render_decision_workspace(
-            record, error="Evidence rejected: %s" % exc, status=400)
+            record, error=_dw_bounded_error("Evidence rejected", exc), status=400)
     return redirect(url_for("decision_workspace_view", did=did))
 
 
@@ -2882,7 +2903,7 @@ def decision_workspace_gap_assessment(did):
         )
     except fdc001_dw.DecisionError as exc:
         return _render_decision_workspace(
-            record, error="Gap assessment rejected: %s" % exc, status=400)
+            record, error=_dw_bounded_error("Gap assessment rejected", exc), status=400)
     return redirect(url_for("decision_workspace_view", did=did))
 
 
@@ -2906,7 +2927,7 @@ def decision_workspace_preference(did):
             raise fdc001_dw.DecisionError("unknown preference action: %r" % action)
     except fdc001_dw.DecisionError as exc:
         return _render_decision_workspace(
-            record, error="Preference action rejected: %s" % exc, status=400)
+            record, error=_dw_bounded_error("Preference action rejected", exc), status=400)
     return redirect(url_for("decision_workspace_view", did=did))
 
 
@@ -2929,7 +2950,7 @@ def decision_workspace_dispose_candidate(did):
         )
     except fdc001_dw.DecisionError as exc:
         return _render_decision_workspace(
-            record, error="Candidate disposition rejected: %s" % exc, status=400)
+            record, error=_dw_bounded_error("Candidate disposition rejected", exc), status=400)
     return redirect(url_for("decision_workspace_view", did=did))
 
 
