@@ -11784,3 +11784,61 @@ commercial decision; no provider selection; no PSRR trigger/execution; no deploy
 (`D-P8-PL-01 class C`); Phase 10 OPEN. `OWNER_DECISION_REGISTER.md` UNCHANGED. No auto-activated successor
 (P10-C §10). Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next
 required step: **Independent External Review of this exact SHA + bundle**.
+
+## P10-DBT1 — Phase-9 Registered-Debt Remediation (Owner-authorized bounded technical-continuation candidate)
+
+**Base:** `8626a3e59b6efbd6d976143f23e5a7f3da26b096` (PR #529 merge — P10-SEC4 error-echo bounding,
+authoritative; independently re-verified: parents `19fca422…`/`5829dcb2…`, merge tree `7d88fd5c…` equal to
+the accepted candidate tree, empty candidate→merge diff). **P10-SEC4 synchronization (recorded here per
+repository convention):** the P10-SEC4 candidate `5829dcb2…` was Owner-accepted at that exact SHA and
+MERGED via PR #529 — AUTHORITATIVE (Decision-Workspace rendered engine diagnostics bounded at 300 chars
+with an explicit truncation marker; engine seam byte-complete).
+
+**Gate selection (technical-continuation cycle).** Residual reassessment from source, not chat memory:
+(A) criticality rationale — remains BLOCKED/DEFERRED (honest RED/GREEN still requires the heavyweight
+ws1-completed behavioral flow; disproportionate; still a documented transport-bounded residual); (B) legacy
+ILT-002 start routes — remain deliberately preserved legacy/evidence-compat surfaces (source comment at
+`web/app.py:2109`); NOT modified; (C) other error/reflection surfaces outside the Decision Workspace —
+swept every `error=` construction site in `web/app.py`: all non-DW rejection paths use fixed/localized
+literals only (`save_success_criteria` proven fixed-copy; zero `% exc` interpolation remains); residual C
+is CLOSED with no SEC4 generalization warranted. Selected instead: the highest-value ACTIONABLE-NOW work
+found in the registered-technical-debt sweep — **`PHASE_9_FORMAL_CLOSURE_RECORD.md` §5** (items 1, 2, 4,
+5; item 3 excluded — separately dispositioned by `L10N_RH01_FORMAL_CLOSURE_RECORD.md`). Preconditions
+verified live: `_ACTIVATED_DOMAINS == {electronics_electrical, mechanical}` (Mechanical really activated),
+making §5(1)/(2)'s "production-unreachable / NOT ACTIVATED / not runtime-reachable" claims genuinely false
+and §5(4)/(5)'s missing real-state tests a live gap on an active user-facing domain. Canonical owners: a
+new single-purpose test file for the real-state pins (the existing files are deliberately double-based);
+in-place truth repairs at the five registered stale sites. Zero runtime code change; zero redesign.
+
+**Delivered (this candidate).** (a) §5(4): `tests/test_p10_dbt1_phase9_debt_remediation.py` — the single
+REAL admission→Tier-1-render E2E chain test for Mechanical with NO activation/session doubles anywhere:
+real classifier on a mechanical idea → real `/start` consent offer (`domain_confirm=mechanical`, no session
+before consent) → real confirmed admission (302) → persisted `state.domain == "mechanical"` → real session
+render showing the Tier-1 English label "Mechanical-informed review" (AR variant absent per the
+single-language surface rule; raw pack id not leaked; never mislabeled electronics), plus a real-activation
+precondition pin and a resolver-coupling pin. (b) §5(5): real-activation CLI banner test — the
+multi-activated scope line ("Electronics Electrical or Mechanical, Level 0-2") pinned against the REAL
+state for the first time (previously pinned only under the self-restoring activation double). (c) §5(1):
+`classify_domain` docstring truth repair in `engine/domain_rules.py` — DOCSTRING-ONLY (AST proven identical
+modulo docstrings); the three evidence anchors byte-pinning that file
+(`test_p9_mech_i3/i4/i5`) re-frozen with the governed-reconciliation disclosure convention. (d) §5(2):
+the four registered stale comments repaired to explicit historical framing with current-state truth
+(tie-precedence file's self-contradiction fixed — it asserted `['electronics_electrical', 'mechanical']`
+while claiming electronics-only; i5 and safety-cue verdicts preserved verbatim as historical evidence;
+`test_p6_1` now forward-points to the real-chain test); five truth-guard tests keep every repair from
+regressing, and one guard pins that the §5 REGISTER itself stays untouched ("This closure does NOT claim
+any of them fixed" survives verbatim — remediation is recorded here, never by rewriting the frozen
+closure record). Tests: 10 focused tests; honest RED split — the five truth guards failed at base
+precisely against the stale text; the five real-state pins are gap-filling and their honesty was proven by
+mutation (m1: deactivating mechanical kills the E2E/precondition/banner tests; m2: corrupting the Tier-1
+EN label kills the E2E/resolver tests; both reverted). Touched-file + adjacent regression: 263 passed.
+Full suite: 2900 passed / 3 skipped / 1 xfailed / 0 failures (prior 2890 + 10 new; zero regressions).
+Zero runtime-behavior diff (docstring/comment/hash-pin/test changes only).
+
+**Boundaries (binding).** No legal/tax conclusion; registers OPEN (deferred pending advisers); no
+commercial decision; no provider selection; no PSRR trigger/execution; no deployment; no paid activation
+(`D-P8-PL-01 class C`); Phase 10 OPEN. §5 items NOT addressed here remain live debt: item 3 (separately
+dispositioned) — and residual A stays DEFERRED, residual B untouched. `OWNER_DECISION_REGISTER.md`
+UNCHANGED. No auto-activated successor (P10-C §10). Authoritative ONLY if/when this exact candidate is
+merged and post-merge verified. Next required step: **Independent External Review of this exact SHA +
+bundle**.

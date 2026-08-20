@@ -211,11 +211,16 @@ def test_electronics_entry_and_session_flow_still_functional(client):
 # CONTRACT.md §13, Requirement 9 — "activation-readiness edge"). A truthful
 # Tier-1 label now exists for `mechanical` in the SAME canonical resolver used
 # for electronics. Contract §16 (Requirement 12) is explicit: labeling readiness
-# is NOT activation. `mechanical` is not runtime-reachable via a real `/start`
-# session today (no admission path resolves `state.domain == "mechanical"`), so
-# the session-surface test below uses the same bounded SESSION_STORE test-double
-# pattern as `test_session_fallback_general_when_domain_missing` above to reach
-# the render path directly, exactly as that established convention allows.
+# is NOT activation. At the time of this gate, `mechanical` was not
+# runtime-reachable via a real `/start` session (no admission path then resolved
+# `state.domain == "mechanical"`), so the session-surface test below uses the
+# same bounded SESSION_STORE test-double pattern as
+# `test_session_fallback_general_when_domain_missing` above to reach the render
+# path directly, exactly as that established convention allows. Mechanical has
+# since been activated by a later governed Phase-9 gate; the REAL no-doubles
+# admission→Tier-1-render chain is covered end-to-end by
+# tests/test_p10_dbt1_phase9_debt_remediation.py, and this double-based
+# render-path unit test remains valid as-is.
 # ===============================================================================
 
 def test_session_page_shows_english_mechanical_label_via_test_double(client):

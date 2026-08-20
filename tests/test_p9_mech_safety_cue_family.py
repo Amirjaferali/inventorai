@@ -20,7 +20,10 @@ This file is the focused evidence for the ONE bounded implementation increment:
 Detection semantics are the unchanged F001 semantics: cues mark
 inventor-STATED safety-relevant statements for required-independent-validation
 labeling — NEVER a safety determination, certification, or compliance
-conclusion. Mechanical remains NOT ACTIVATED; admission is untouched.
+conclusion. At the time of this gate, Mechanical was NOT ACTIVATED and admission
+was untouched; Mechanical was subsequently activated by a later governed Phase-9
+gate (see docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md). The detection
+semantics recorded here are unchanged by that activation.
 """
 
 import hashlib
