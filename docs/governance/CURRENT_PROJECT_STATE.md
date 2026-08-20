@@ -2424,7 +2424,32 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
-- **Phase 10 — P10-SEC3 DECISION-WORKSPACE FREE-TEXT HARDENING RESIDUAL EXTENSION (Owner-authorized
+- **Phase 10 — P10-SEC4 DECISION-WORKSPACE ENGINE-ERROR ECHO BOUNDING (Owner-authorized bounded
+  technical-continuation candidate, PR pending), base `19fca422d90a84baef2d312ac3b3a247bf41e3f4` (PR #528
+  merge — P10-SEC3, authoritative; parents `e031ecdd…`/`91e48c20…`, merge tree `0ce1ae8d…` = candidate
+  tree, empty candidate→merge diff — independently re-verified).** Reviewer residuals investigated from
+  source: criticality rationale BLOCKED/DEFERRED (ws1-completed flow needed for honest testing); legacy
+  ILT-002 routes confirmed deliberately preserved — untouched; engine error-echo CONFIRMED by live probe
+  (50,000-char `claim_class` → 62 KB 400 page reflecting the junk verbatim; autoescaped, no markup
+  execution — no vulnerability claimed). Delivers the render-only bound: `_dw_bounded_error` +
+  `_DW_ERROR_ECHO_BOUND = 300` replacing the seven `"<X> rejected: %s" % exc` call sites — truncation
+  always explicit (" … [diagnostic truncated]"); short diagnostics verbatim; engine exception messages
+  byte-complete at the seam (test-pinned); autoescape/SEC3-precedence/SEC1-headers preserved
+  (test-pinned). Tests RED-first (6/11 base failures for the absent bounding; 5 preservation guards; one
+  pre-freeze test-order correction — engine checks `gap_id` first) → GREEN 11/11; SEC1–SEC4 combined 59
+  passed; full suite 2890/3/1/0 (prior 2879 + 11 new, zero regressions). Zero engine/schema/dependency
+  diff; checklist unchanged (no row overclaimed). PAID ACTIVATION AUTHORIZED: NO; PSRR TRIGGERED: NO;
+  DEPLOYMENT AUTHORIZED: NO. `OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY if/when this exact
+  candidate is merged and post-merge verified.
+
+- **Phase 10 — P10-SEC3 DECISION-WORKSPACE FREE-TEXT HARDENING RESIDUAL EXTENSION: MERGED / AUTHORITATIVE
+  (candidate `91e48c20…` Owner-accepted at that exact SHA, PR #528, tip
+  `19fca422d90a84baef2d312ac3b3a247bf41e3f4`; parents `e031ecdd…`/`91e48c20…`, merge tree `0ce1ae8d…` =
+  candidate tree, empty candidate→merge diff — independently re-verified).** The `_dw_free_text_reject`
+  guard on all seven Decision Workspace POST surfaces and the truthfully narrowed RL-A6 row are
+  authoritative. (Original candidate-stage bullet retained below as history.)
+
+- **(superseded history) Phase 10 — P10-SEC3 DECISION-WORKSPACE FREE-TEXT HARDENING RESIDUAL EXTENSION (was: Owner-authorized
   bounded technical-continuation candidate, PR pending), base `e031ecddb390577988041fa2f3214b78fbf34211`
   (PR #527 merge — P10-RL1, authoritative; parents `b1a0196a…`/`01650517…`, merge tree `4f3646d2…` =
   candidate tree, empty candidate→merge diff — independently re-verified).** Executed under the Owner's
