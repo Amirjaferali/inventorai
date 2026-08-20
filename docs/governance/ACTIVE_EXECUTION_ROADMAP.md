@@ -12195,3 +12195,50 @@ selection; no legal/tax conclusion; no new domain. `OWNER_DECISION_REGISTER.md` 
 ONLY if/when this exact candidate is merged and post-merge verified. Next required step: **Independent
 External Review of this exact SHA + bundle** (per §5B.13, a governance-only review; an independent smoke
 run applies).
+
+## GAP-SYNC-01 — Governance/Wording Truth Synchronization (Owner-authorized bounded LEVEL-2 candidate)
+
+**Base:** `38da08dae389f74279082e1341e220dbc0f80851` (PR #536 merge — GOV-RBR1, authoritative;
+independently re-verified: parents `bf7fe7ce…`/`1759b148…`, merge tree `1aa5c469…` equal to the accepted
+candidate tree, empty candidate→merge diff). **GOV-RBR1 synchronization (recorded per convention):** the
+governance-only candidate `1759b148…` was Owner-accepted at that exact SHA and MERGED via PR #536 —
+**GOV-RBR1 AUTHORITATIVE: YES**; LEAN §5B (Risk-Based Independent Review & Evidence Reuse) is now the
+standing review-optimization authority, and this is the first gate operating under it. The Owner also
+accepted the read-only Product Completion Reconstruction diagnosis: **CORE PRODUCT FUNCTIONALLY
+COMPLETE: YES; NEW CORE IMPLEMENTATION REQUIRED NOW: NO** (a capability statement only — NOT
+secure/production-ready/legally-compliant/PSRR/deployment-approved).
+
+**Authorized scope (wording/truth only; ZERO executable behavior).** Six confirmed residuals
+synchronized: (O1) §5B.1 lifecycle attribution corrected — the enumerated Creator lifecycle derives from
+the §5A self-review obligation PLUS the established authoritative per-gate lifecycle (obligations
+unchanged); (O2) §5B.13↔§5B.3 aligned — where Independent External Review is required, the independent
+Universal Guardrail Smoke remains part of the 5B.3 universal minimum and is NOT optional for
+governance-only candidates (and never substitutes for other evidence); (O3) §5B.3 item (9) clarified —
+"where meaningful" preserves probe-design judgment ONLY and never removes the Reviewer Grill, escalation
+authority, or any mandatory requirement, nor forces artificial probes; (O4) §5B.6 clarified — the
+qualitative triggers remain conservative precisely BECAUSE the reviewer-judgment catch-all and
+unconditional escalation remain controlling (no numeric thresholds invented); (O5) §5B.15 provenance
+wording — local-only rejected-evidence artifacts are recorded as such and never described as
+independently remote-verifiable; (PC3-O2) the stale conservative inline comment at
+`engine/session_reconstruction.py` (~line 205, "never rehydrated into SESSION_STORE") corrected to the
+narrow authoritative rule (reconstruction itself never rehydrates; the SOLE authorized later consumer is
+the governed P10-PC3 establishment route) — COMMENT-ONLY.
+
+**Zero-behavior proof & evidence.** `engine/session_reconstruction.py` AST identical to base (comments
+never enter the AST — mechanically proven); reconstruction-lane + guardrail-framework targeted suites 79
+passed; `UNIVERSAL GUARDRAIL SMOKE: PASS`; **Creator full-suite decision (recorded per Owner §7, no
+silent reinterpretation):** §5B.1 mandates the Creator full suite "for every meaningful implementation
+candidate"; this wording-only candidate changes zero executable behavior and is NOT an implementation
+candidate under that clause — however, because a runtime file's bytes changed (comment-only), the full
+suite was run CONSERVATIVELY anyway: 2951 passed / 3 skipped / 1 xfailed / 0 failures (identical to the
+authoritative baseline; zero regressions). Adversarial governance truth sweep UNSUPPORTED MATERIAL
+CLAIMS: 0.
+
+**Boundaries (binding).** No rule weakened (every O-edit is a clarification in the conservative
+direction); no route/state/persistence/resume/auth/ownership/schema/template/guardrail/test-semantic/
+domain change; no new governance standard (canonical LEAN owner amended in place); no product feature;
+no Space or any new domain implementation; no Phase-10 closure; no PSRR; no deployment; no paid
+activation; no provider selection; no legal/tax conclusion. `OWNER_DECISION_REGISTER.md` UNCHANGED.
+Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next required step:
+**Independent External Review of this exact SHA + bundle** (governance-only path per §5B.13 incl. the
+mandatory independent smoke).

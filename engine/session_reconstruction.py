@@ -202,9 +202,13 @@ def _reconstruct(store, project_id: str):
     # validated by the evidence load above).
     idea_id = store.load_contract(project_id).idea_id
 
-    # Fresh, local, canonical state — never rehydrated into SESSION_STORE and never
-    # shared with any live session. Path N bypasses the AI advisor inside
-    # run_iteration (deterministic), so no external AI/network is invoked.
+    # Fresh, local, canonical state — RECONSTRUCTION ITSELF never rehydrates it
+    # into SESSION_STORE and never shares it with any live session; the SOLE
+    # authorized consumer that may LATER place the returned state into
+    # SESSION_STORE is the governed P10-PC3 explicit writable-resume
+    # establishment route (see the module docstring). Path N bypasses the AI
+    # advisor inside run_iteration (deterministic), so no external AI/network
+    # is invoked.
     state = IdeaState(idea_id=idea_id)
     setattr(state, "domain", domain)     # matches /start's dynamic domain attribute
     state.domain_signal = domain

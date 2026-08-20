@@ -215,7 +215,9 @@ repeated execution only; it removes no obligation in §3–§5A and §12's non-w
 guarantee applies to this amendment itself.
 
 **5B.1 Creator evidence (definition).** CREATOR EVIDENCE is evidence produced against
-the exact frozen candidate SHA by the authoring session (the §5A lifecycle: base
+the exact frozen candidate SHA by the authoring session (the lifecycle established by
+the §5A self-review obligation PLUS the established authoritative per-gate lifecycle
+of the governed workflow: base
 verification → pre-smoke → RED → implementation → GREEN → targeted regression →
 mutation/adversarial probes → post-smoke → FULL SUITE → differential sweep →
 governance truth sweep → freeze → Creator Grill → SHA-preserving bundle). Creator
@@ -236,7 +238,11 @@ verification; (4) authoritative-base verification; (5) diff/scope verification;
 (6) an independent Universal Guardrail Smoke run; (7) source-of-truth review of
 material changed claims; (8) critical targeted tests for the changed risk surface;
 (9) at least one independent reviewer-designed adversarial probe where meaningful;
-(10) Reviewer Grill; (11) an exact final verdict.
+(10) Reviewer Grill; (11) an exact final verdict. In item (9), "where meaningful"
+preserves reviewer judgment about probe design ONLY: it never removes the Reviewer
+Grill, the reviewer's escalation authority, or any other mandatory review
+requirement, and it never forces an artificial probe where none is genuinely
+meaningful.
 
 **5B.4 LEVEL 1 (§3 high-risk).** The Reviewer additionally runs independently: the
 Universal Smoke, the critical targeted suites, adversarial probes, AND the FULL
@@ -265,7 +271,11 @@ change; regression suspicion; test-collection change; flaky or unexplained resul
 candidate repaired after a prior rejection; a newly discovered material defect
 class; source-of-truth inconsistency; or reviewer judgment that the full suite is
 necessary. Reviewer discretion may ALWAYS escalate; nothing in this section may be
-read as preventing a reviewer from running more tests.
+read as preventing a reviewer from running more tests. The qualitative triggers
+(e.g. "broad runtime scope", "regression suspicion") remain deliberately
+conservative precisely BECAUSE the reviewer-judgment catch-all and the
+unconditional escalation authority remain controlling; they are not replaced by
+numeric thresholds unless repository authority later requires it.
 
 **5B.7 LEVEL 3 / low-risk (§3–§4).** The existing LEVEL/DEPTH rules apply
 unchanged: where independent external review is not required by governance it is
@@ -316,8 +326,11 @@ changes, the review normally verifies: source-of-truth; exact SHA/bundle; scope;
 contradictions; authority/supersession; governance completeness; and Reviewer
 Grill. Runtime suites are not run merely because markdown changed — UNLESS the
 governance candidate asserts runtime evidence requiring reproduction or a 5B.6
-trigger exists. An independent Universal Smoke run may still be required when the
-candidate claims no invariant impact.
+trigger exists. Where Independent External Review is required, the independent
+Universal Guardrail Smoke run remains part of the 5B.3 universal minimum and is
+NOT optional for governance-only candidates; nothing in this clause makes the
+smoke discretionary in a required review, and the smoke never substitutes for any
+other required evidence.
 
 **5B.14 No silent review downgrade.** No agent may label a candidate LEVEL 2 merely
 to avoid the full suite: the review tier must be source-backed against §3. A
@@ -327,7 +340,10 @@ authority.
 
 **5B.15 Quality floor (never removed by this amendment):** mandatory Creator Grill;
 Independent Reviewer Grill where required; exact frozen SHA; immutable rejected
-evidence; SHA-preserving bundle; Owner exact-SHA acceptance; merge-commit-only
+evidence (whose preservation may be LOCAL to the Creator environment and its
+bundle artifacts — local-only rejected-evidence artifacts are recorded as such and
+are never described as independently remote-verifiable);
+SHA-preserving bundle; Owner exact-SHA acceptance; merge-commit-only
 publication; pre/post-merge verification; source-of-truth mode with UNSUPPORTED
 MATERIAL CLAIMS = 0; the Universal Smoke; and the reviewer's escalation authority.
 

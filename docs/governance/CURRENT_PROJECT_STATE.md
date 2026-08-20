@@ -2424,7 +2424,31 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
-- **Governance — GOV-RBR1 RISK-BASED INDEPENDENT REVIEW & EVIDENCE REUSE (Owner-authorized
+- **Governance — GAP-SYNC-01 WORDING TRUTH SYNCHRONIZATION (Owner-authorized bounded LEVEL-2
+  candidate, PR pending), base `38da08dae389f74279082e1341e220dbc0f80851` (PR #536 merge — GOV-RBR1,
+  authoritative; parents `bf7fe7ce…`/`1759b148…`, merge tree `1aa5c469…` = candidate tree, empty
+  candidate→merge diff — independently re-verified).** First gate under authoritative LEAN §5B.
+  Owner-accepted diagnosis stands: CORE PRODUCT FUNCTIONALLY COMPLETE: YES; NEW CORE IMPLEMENTATION
+  REQUIRED NOW: NO (capability statement only). Synchronizes six confirmed wording/truth residuals with
+  ZERO executable behavior: §5B.1 lifecycle attribution (O1); §5B.13↔§5B.3 smoke non-optionality where
+  review is required (O2); §5B.3(9) "where meaningful" scope (O3); §5B.6 qualitative-trigger
+  conservatism rationale (O4); §5B.15 local-only rejected-evidence provenance wording (O5); and the
+  stale `session_reconstruction.py` inline comment corrected to the narrow sole-authorized-consumer
+  rule (PC3-O2; COMMENT-ONLY, AST proven identical). Evidence: targeted suites 79 passed; smoke PASS;
+  conservative full suite 2951/3/1/0 (identical to baseline; §5B.1 obligation determination recorded
+  openly); truth sweep UNSUPPORTED: 0. PAID ACTIVATION AUTHORIZED: NO; PSRR TRIGGERED: NO; DEPLOYMENT
+  AUTHORIZED: NO. `OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY if/when this exact
+  candidate is merged and post-merge verified.
+
+- **Governance — GOV-RBR1 RISK-BASED INDEPENDENT REVIEW & EVIDENCE REUSE: MERGED / AUTHORITATIVE
+  (governance-only candidate `1759b148…` Owner-accepted at that exact SHA, PR #536, tip
+  `38da08dae389f74279082e1341e220dbc0f80851`; parents `bf7fe7ce…`/`1759b148…`, merge tree `1aa5c469…` =
+  candidate tree, empty candidate→merge diff — independently re-verified).** LEAN §5B is the standing
+  review-optimization authority (evidence reuse with verified identity; LEVEL-1 full suite mandatory;
+  LEVEL-2 conditional reuse with 15 triggers; unconditional reviewer escalation; quality floor).
+  (Original candidate-stage bullet retained below as history.)
+
+- **(superseded history) Governance — GOV-RBR1 RISK-BASED INDEPENDENT REVIEW & EVIDENCE REUSE (was: Owner-authorized
   GOVERNANCE-ONLY amendment candidate, PR pending), base `bf7fe7ce1b180ecfe78c1d790b6c4e6eb63ce159`
   (PR #535 merge — P10-PC3 repair, authoritative; parents `cfad3feb…`/`be8bba16…`, merge tree
   `c3876b5a…` = candidate tree, empty candidate→merge diff — independently re-verified).** Amends the

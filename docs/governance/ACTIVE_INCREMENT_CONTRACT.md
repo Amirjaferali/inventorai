@@ -41,8 +41,39 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — GOV-RBR1 RISK-BASED INDEPENDENT REVIEW & EVIDENCE REUSE: Owner-authorized
-GOVERNANCE-ONLY amendment candidate):** Base: `bf7fe7ce1b180ecfe78c1d790b6c4e6eb63ce159` (PR #535 merge —
+**Status (current — GAP-SYNC-01 GOVERNANCE/WORDING TRUTH SYNCHRONIZATION: Owner-authorized bounded
+LEVEL-2 candidate):** Base: `38da08dae389f74279082e1341e220dbc0f80851` (PR #536 merge — GOV-RBR1,
+authoritative; independently re-verified: parents `bf7fe7ce…` / `1759b148…`, merge tree `1aa5c469…` equal
+to the accepted candidate tree, empty candidate→merge diff). First gate operating under authoritative
+LEAN §5B. Owner-accepted diagnosis stands: CORE PRODUCT FUNCTIONALLY COMPLETE: YES; NEW CORE
+IMPLEMENTATION REQUIRED NOW: NO.
+
+**Objective.** Synchronize the six confirmed wording/truth residuals with ZERO executable behavior
+change: GOV-RBR1 reviewer O1 (§5B.1 lifecycle attribution: §5A obligation PLUS the established per-gate
+lifecycle), O2 (§5B.13↔§5B.3: independent smoke NOT optional where Independent Review is required), O3
+(§5B.3(9) "where meaningful" = probe-design judgment only; removes nothing mandatory), O4 (§5B.6
+qualitative triggers stay conservative because the catch-all + unconditional escalation remain
+controlling), O5 (§5B.15: local-only rejected-evidence artifacts never described as independently
+remote-verifiable), and PC3-O2 (the stale "never rehydrated into SESSION_STORE" inline comment in
+`engine/session_reconstruction.py` corrected to the narrow sole-authorized-consumer rule — COMMENT-ONLY,
+AST proven identical). Canonical LEAN owner amended in place; no new standard; no duplicate authority.
+
+**Evidence.** AST identity proof for the code file; targeted reconstruction+framework suites 79 passed;
+smoke PASS; conservative full suite 2951 passed / 3 skipped / 1 xfailed / 0 failures (identical to
+baseline; §5B.1 full-suite-obligation determination recorded openly: not an implementation candidate,
+run anyway because a runtime file's bytes changed); truth sweep UNSUPPORTED MATERIAL CLAIMS: 0.
+
+**Boundaries:** zero behavior; no rule weakening (all clarifications conservative-direction); no product
+feature; no new domain; paid activation BLOCKED; PSRR NOT TRIGGERED; DEPLOYMENT NOT AUTHORIZED; legal/tax
+registers OPEN. `OWNER_DECISION_REGISTER.md` UNCHANGED. Review tier: LEVEL 2 (Owner-directed; not
+downgraded). Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next
+required step: **Independent External Review of this exact SHA + bundle** (§5B.13 governance-only path
+incl. mandatory independent smoke).
+
+**Immediately prior (GOV-RBR1 RISK-BASED INDEPENDENT REVIEW & EVIDENCE REUSE — governance-only candidate
+`1759b148…` Owner-accepted at that exact SHA and MERGED via PR #536, tip
+`38da08dae389f74279082e1341e220dbc0f80851`; now AUTHORITATIVE; retained as history):** Base:
+`bf7fe7ce1b180ecfe78c1d790b6c4e6eb63ce159` (PR #535 merge —
 P10-PC3 True Writable Resume repair implementation, authoritative; independently re-verified: parents
 `cfad3feb…` / `be8bba16…`, merge tree `c3876b5a…` equal to the accepted candidate tree, empty
 candidate→merge diff).
