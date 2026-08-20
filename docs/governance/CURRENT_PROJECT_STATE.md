@@ -2424,7 +2424,41 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
-- **Phase 10 — P10-PC1 USER-VISIBLE RECONSTRUCTED REVIEW STATE (Owner-authorized bounded
+- **Phase 10 — P10-UG1 UNIVERSAL CORE GUARDRAIL & SMOKE FRAMEWORK (Owner-authorized bounded
+  framework candidate, PR pending), base `da4e7a474df7c245e69f1f8e529f04abf5e60444` (PR #531 merge —
+  P10-PC1, authoritative; parents `f0843878…`/`eb196210…`, merge tree `79beb341…` = candidate tree,
+  empty candidate→merge diff — independently re-verified).** Delivers the durable universal safety layer
+  for ALL future candidates: `tests/universal_guardrail_manifest.py` (17 guards — 16 BLOCKING
+  UG-CORE-01…15 + UG-META-01, 1 OBSERVATION UG-OBS-01 — composing EXISTING canonical tests by node id;
+  zero duplication; zero existing tests modified); `scripts/run_universal_smoke.py` (the one canonical
+  command; inventory-integrity collect check — missing canonical test = always BLOCK; blocking
+  failure/error/skip = BLOCK with guard/invariant/owner/remedy attribution; observations reported, never
+  blocking; standardized `UNIVERSAL GUARDRAIL SMOKE: PASS`/`: BLOCK`; PASS means ONLY core invariants
+  preserved under this suite — never secure/production-ready/legally-compliant/PSRR-complete/
+  deployment-approved/bug-free); `docs/governance/INVENTORAI_UNIVERSAL_CORE_GUARDRAIL_SMOKE_STANDARD.md`
+  (standard: categories, extension process, review escalation subordinate to the LEAN protocol §4/§5,
+  prohibited interpretations); `tests/test_p10_ug1_universal_guardrail_framework.py` (9 framework guards
+  incl. the PINNED blocking inventory — guard removal/downgrade fails the governed full suite — and
+  hermetic runner-semantics tests). Review-tier truth: LEVEL-1/DEPTH-2 independent review stays
+  mandatory; DEPTH-3 lighter path already exists; any re-tiering = PROPOSED FUTURE REVIEW-TIER
+  AMENDMENT: OWNER DECISION REQUIRED — nothing weakened. Evidence: RED 9/9 + three grep-proven gaps;
+  GREEN 9/9; smoke 68+1 canonical test items in 4.8–7.2s (≈2.4% of suite; strict subset); probes P1
+  (real violation → BLOCK, correct attribution), P2 (observation → PASS, no false BLOCK), P3 (guard
+  deletion → pinned inventory fails the suite); full suite 2919/3/1/0 (prior 2910 + 9 new). PAID
+  ACTIVATION AUTHORIZED: NO; PSRR TRIGGERED: NO; DEPLOYMENT AUTHORIZED: NO.
+  `OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY if/when this exact candidate is merged and
+  post-merge verified.
+
+- **Phase 10 — P10-PC1 USER-VISIBLE RECONSTRUCTED REVIEW STATE: MERGED / AUTHORITATIVE
+  (candidate `eb196210…` Owner-accepted at that exact SHA, PR #531, tip
+  `da4e7a474df7c245e69f1f8e529f04abf5e60444`; parents `f0843878…`/`eb196210…`, merge tree `79beb341…` =
+  candidate tree, empty candidate→merge diff — independently re-verified).** Cold-loaded sessions render
+  the true Level-1 reconstructed review state (Tier-1 domain label, true maturity, open gaps, read-only
+  question, answer count) under the exact authorized claim, EN/AR, fail-closed; the dead-end form is
+  suppressed and the non-resume guard preserved and strengthened. (Original candidate-stage bullet
+  retained below as history.)
+
+- **(superseded history) Phase 10 — P10-PC1 USER-VISIBLE RECONSTRUCTED REVIEW STATE (was: Owner-authorized bounded
   product-capability candidate, PR pending), base `f0843878794ae9c0f4647cadf8fa8a323ea4af9d` (PR #530
   merge — P10-DBT1, authoritative; parents `8626a3e5…`/`41bf30c7…`, merge tree `69c0efea…` = candidate
   tree, empty candidate→merge diff — independently re-verified).** Product Completion Reconstruction
