@@ -55,6 +55,14 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
 {% endif %}
 <h1>InventorAI</h1>
 
+{# P10-PC3: truthful resumed-mode banner — this is a reconstructed            #}
+{# continuation of the durable project, NEVER a restored original session.    #}
+{% if resumed_project %}
+<p id="resumed-banner" style="background:#eef7f2;border:1px solid #b5d9c6;border-radius:4px;padding:8px 12px;margin:8px 0;font-size:13px;color:#20553c" role="status">
+  {{ t('UI_B_SESSION_047') }}
+</p>
+{% endif %}
+
 <div class="disclosure">{{ session_disclosure }}</div>
 
 {# Increment 3 (R-3/R-5): compact, presentation-only Next Development Step callout.
@@ -170,6 +178,14 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
   {% endif %}
   <div style="font-size:13px;margin-top:8px">{{ t('UI_B_SESSION_045') }} <span id="recon-answer-count">{{ reconstructed_review.answers_count }}</span></div>
   <div style="font-size:12px;color:#666;margin-top:8px">{{ t('UI_B_SESSION_046') }}</div>
+  {# P10-PC3: explicit writable-resume establishment (POST; never automatic  #}
+  {# on GET). Offered only to eligible projects; the route re-validates      #}
+  {# ownership, reconstruction, activation, and completion from scratch.     #}
+  {% if reconstructed_review.resume_eligible %}
+  <form method="POST" action="/session/{{ sid }}/resume" style="margin-top:10px">
+    <button type="submit" id="resume-project">{{ t('UI_B_SESSION_048') }}</button>
+  </form>
+  {% endif %}
   {# The fail-closed not-saved message stays VISIBLE on a reconstructed view    #}
   {# (the form that normally hosts it is suppressed here).                      #}
   {% if answer_error %}<p id="answer-error" role="alert" class="answer-error" style="color:#c0392b;font-size:13px;margin:8px 0 0 0">{{ answer_error }}</p>{% endif %}

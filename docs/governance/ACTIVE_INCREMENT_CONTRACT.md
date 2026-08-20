@@ -41,8 +41,42 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — P10-PC3-C TRUE WRITABLE RESUME CONTRACT: Owner-authorized GOVERNANCE-ONLY
-candidate):** Base: `aed5cb79f53e47c5e36e0fce6228288bfae8c014` (PR #533 merge — P10-PC2 cold-load
+**Status (current — P10-PC3 TRUE WRITABLE RESUME IMPLEMENTATION, REPAIR CANDIDATE after Independent
+Review REJECT):** Base: `cfad3febdcb886a5efa316a023d31b31d31568ac` (PR #534 merge — P10-PC3-C contract,
+authoritative; independently re-verified). Governed by the merged
+`P10_PC3_TRUE_WRITABLE_RESUME_INCREMENT_CONTRACT.md` (reviewer O1–O4 incorporated as its append-only
+§17). **Prior implementation candidate `ee8a0dad…` REJECTED by Independent External Review — blocking
+defect B1 (record-id collision after resume with interleaved non-answer history: the length-derived
+ledger mint could re-mint a persisted `rec_N`, making the N+1 durable append fail permanently);
+preserved unamended on `p10-pc3-rejected-evidence` as immutable rejected evidence. This repair
+candidate's parent is the exact authoritative base.**
+
+**Objective.** All rejected-candidate behavior preserved (explicit establishment POST; zero durable
+writes at establishment; GET read-only; ownership first; canonical replay only; fresh transient context;
+no fabricated history; token/idempotency reused wholesale; completed/deactivated refusals; PC1/PC2
+preserved; EN/AR wording; UG-CORE-07 preserved; UG-CORE-08 successor; UG-CORE-16) PLUS the B1 repair:
+the canonical ledger mint (`engine/idea_state.py record_interaction`) now derives the next id from the
+ledger's MAX existing numeric `rec_N` (+1) — byte-identical for every live contiguous ledger
+(max == len; equivalence test-pinned), collision-free for reconstructed sparse ledgers (the ledger max
+IS the durable max). No schema change; no resume-only allocator; no renumbering. UG-CORE-16
+STRENGTHENED with the two interleaved-history tests; N3 docstrings state the narrow sole-consumer
+rehydration rule; N2 recorded as reviewer-checklist residual only.
+
+**Evidence.** B1 RED 3/4 at the defective implementation (reviewer's exact class reproduced live);
+GREEN 22/22; mutations m8 (defective allocator restored → B1 tests fail) and m9 (max-id reuse →
+equivalence pin fails) killed; m4 re-verified; sparse duplicate-retry probe exactly-once
+(`rec_1, rec_3, rec_4`); pre/post smoke PASS (17+1 guards, 76+1 items, 4.9s); ledger-lane regression
+104 passed; full suite 2951 passed / 3 skipped / 1 xfailed / 0 failures (prior 2929 + 22 new).
+
+**Boundaries:** unchanged binding set; paid activation BLOCKED; PSRR NOT TRIGGERED; DEPLOYMENT NOT
+AUTHORIZED; legal/tax registers OPEN; no provider/commercial decision; no new domain.
+`OWNER_DECISION_REGISTER.md` UNCHANGED. Review tier: **LEVEL 1** — formal Independent External Review
+required. Authoritative ONLY if/when this exact candidate is merged and post-merge verified.
+
+**Immediately prior (P10-PC3-C TRUE WRITABLE RESUME CONTRACT — governance-only candidate `783becf2…`
+Owner-accepted at that exact SHA and MERGED via PR #534, tip `cfad3feb…`; AUTHORITATIVE as the canonical
+contract; retained as history):** Base: `aed5cb79f53e47c5e36e0fce6228288bfae8c014` (PR #533 merge —
+P10-PC2 cold-load
 deliverable fidelity, authoritative; independently re-verified: parents `edae7f30…` / `4218ed0b…`, merge
 tree `77fc4b81…` equal to the accepted candidate tree, empty candidate→merge diff).
 

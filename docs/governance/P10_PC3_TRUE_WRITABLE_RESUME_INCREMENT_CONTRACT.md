@@ -304,3 +304,30 @@ payment; email provider; enterprise tenancy; multi-device sync beyond durable
 truth; collaborative editing; offline; push; PSRR; deployment; monitoring
 redesign; unrelated hardening; new domain activation; D4; D8; Decision
 Workspace integration; unrelated technical debt.
+
+---
+
+## 17. Reviewer corrections O1–O4 (append-only; carried forward at the P10-PC3 implementation gate)
+
+Accepted as NON-BLOCKING by the Owner at P10-PC3-C exact-SHA acceptance and
+incorporated here without amending the accepted contract SHA (this section was
+appended by the P10-PC3 implementation candidate):
+
+- **O1 — Guard attribution:** in §1, `test_obs_b_restart_durability_new_context`
+  belongs to **UG-CORE-07** (persistence durability + forged-POST fail-closed),
+  while **UG-CORE-08** composes `test_cold_render_makes_no_durable_write` +
+  `test_non_resume_guard_untouched`. Disposition executed by the
+  implementation: UG-CORE-07 PRESERVED UNCHANGED (its assertions remain true —
+  un-established cold pages stay formless and forged POSTs fail closed);
+  UG-CORE-08 superseded IN PLACE by its establishment-boundary successor plus
+  the new UG-CORE-16 resume-integrity guard.
+- **O2 — Anonymous access:** the current NULL-owner authorization rule is
+  sid-capability access, not a signed-cookie binding; §7's illustration is
+  corrected accordingly. No narrowing of access semantics is authorized.
+- **O3 — LEAN citations:** risk LEVEL definitions are in protocol **§3**;
+  **§4** concerns review depth; **§5** concerns independent-review policy.
+  §14's citation reads accordingly (LEVEL 1 per §3; depth per §4; formal
+  independence per §5).
+- **O4 — Evidence labeling:** §13 comprises **1 RED base-prohibition item**
+  (cold project cannot continue answering) plus **11 future GREEN items**,
+  not 12 RED items.

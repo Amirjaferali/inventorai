@@ -717,6 +717,16 @@ UI_STRINGS = {
         "en": "Answering is unavailable in this reconstructed view.",
         "ar": "الإجابة غير متاحة في هذا العرض المُعاد بناؤه.",
     },
+    # P10-PC3: truthful writable-resume wording (Owner-approved semantics —
+    # "reconstructed continuation", never "restored original session").
+    "UI_B_SESSION_047": {
+        "en": "Resumed project — reconstructed continuation",
+        "ar": "تم استئناف المشروع — متابعة مُعاد بناؤها",
+    },
+    "UI_B_SESSION_048": {
+        "en": "Resume this project and continue answering",
+        "ar": "استئناف هذا المشروع ومتابعة الإجابة",
+    },
 
     # --- deliverable.html chrome (Category B) ---------------------------------
     "UI_B_DELIV_001": {"en": "Package version:", "ar": "إصدار الحزمة:"},

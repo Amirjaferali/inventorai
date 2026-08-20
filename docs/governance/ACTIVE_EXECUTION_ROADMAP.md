@@ -12070,3 +12070,72 @@ provider selection; no legal/tax conclusion; no new domain activation. `OWNER_DE
 UNCHANGED. Authoritative as CONTRACT only if/when this exact candidate is merged and post-merge
 verified; recording it authorizes nothing. Next required step: **Independent External Review of this
 exact SHA + bundle**.
+
+## P10-PC3 — True Writable Resume IMPLEMENTATION (repair candidate after Independent Review REJECT)
+
+**Base:** `cfad3febdcb886a5efa316a023d31b31d31568ac` (PR #534 merge — P10-PC3-C contract, authoritative;
+independently re-verified: parents `aed5cb79…`/`783becf2…`, merge tree `7f2eb723…`, empty
+candidate→merge diff). **P10-PC3-C synchronization:** contract candidate `783becf2…` Owner-accepted and
+MERGED via PR #534 — AUTHORITATIVE as the canonical implementation contract; reviewer O1–O4 carried
+forward (incorporated as the contract's append-only §17 in this candidate; accepted SHA unamended).
+
+**REJECTED PRIOR CANDIDATE (immutable evidence).** The first P10-PC3 implementation candidate
+`ee8a0dadd27a38aa6ee7ca18a85b8f4505e8ce2c` was REJECTED by formal Independent External Review
+(SAFE FOR OWNER EXACT-SHA ACCEPTANCE: NO). **Rejection reason — blocking defect B1:** record-id collision
+after resume with interleaved non-answer history. Non-answer structured actions consume in-memory
+`rec_N` identifiers without durable persistence; after restart the reconstructed ledger holds only the
+durable answered subset, so the length-derived mint (`rec_{len+1}` in `engine/idea_state.py
+record_interaction`) could re-mint an already-persisted id → durable append failed with
+`UNIQUE constraint failed: records.project_id, records.record_id` and no retry could ever succeed —
+violating the contract's exactly-once N+1 requirement and leaving UG-CORE-16 incomplete. The rejected
+SHA is preserved unamended on branch `p10-pc3-rejected-evidence` with its original bundle
+(`p10-pc3-ee8a0da.bundle`, SHA-256 `344769a0…`) as rejected-candidate evidence only. This repair
+candidate's parent is the exact authoritative base, not the rejected SHA.
+
+**B1 diagnosis (source-cited, performed before any code).** Mint authority: `engine/idea_state.py`
+`record_interaction` (`rec_{len(self.assertions)+1}`) — the sole ledger mint. The store's
+`new_record_id()` is a DIFFERENT canonical concept (`"rec-" + uuid4`, explicitly "distinct from the
+P4-0 sequence form `rec_{n}`") — not this ledger's owner; using it would change the id form. `seq` is
+order, not identity. Sparse `rec_N` is explicitly supported ("non-contiguous values are expected and
+valid", P4-1b-2b; `test_non_contiguous_rec_n_supported`). Durable uniqueness:
+`PRIMARY KEY (project_id, record_id)`. **Selected minimum fix:** the canonical mint derives the next id
+from the ledger's MAX existing numeric `rec_N` (+1), never its length. Equivalence proof for live
+sessions: ids are minted here sequentially, so every live ledger is contiguous 1..N and max == len —
+live behavior byte-identical (test-pinned by the pure-answered equivalence pin and the unchanged 2951
+suite). For a reconstructed ledger the max IS the durable max → collision-free forever. NO schema
+change; NO resume-only allocator; NO renumbering; NO id-form change.
+
+**Delivered (this repair candidate).** Everything the rejected candidate delivered (explicit
+`POST /session/<sid>/resume` establishment; zero durable writes at establishment; GET read-only;
+ownership first; canonical replay only; fresh transient context; no fabricated history;
+token/idempotency reused wholesale; completed/deactivated/legacy refusals; PC1/PC2 preserved; EN/AR
+Owner-approved wording; UG-CORE-07 preserved; UG-CORE-08 establishment-boundary successor; UG-CORE-16
+added; pinned inventory updated) PLUS: (a) the B1 fix at the canonical mint site (above); (b) four new
+B1 tests — the reviewer's exact reproduction (answered → non-answer → answered → restart → resume →
+N+1 appends once, no stuck retry), denser multi-interleave sparse history, restart-after-repaired-resume
+(collision-free indefinitely), and the pure-answered equivalence pin; (c) UG-CORE-16 STRENGTHENED with
+the two interleaved-history tests as blocking canonical tests; (d) reviewer N3: the
+`session_reconstruction` module + accessor docstrings now state the narrow authoritative rule (the SOLE
+authorized SESSION_STORE consumer is the governed establishment route; no unrestricted rehydration);
+(e) reviewer N1 adopted: evidence counts below are from the exact frozen files; (f) reviewer N2 recorded
+as a reviewer-checklist residual only (UG framework self-protection boundary — pre-existing documented
+design boundary; NOT expanded here); N4 no action.
+
+**Evidence (exact frozen-file counts, N1).** Rejected-file baseline (18 tests): 13 RED / 5 green at
+base (reviewer-verified). This candidate's frozen file: 22 tests. B1 RED at the re-applied defective
+implementation: 3 RED (collision class reproduced live — durable count stuck, honest fail-closed) /
+1 green (the equivalence pin). After the fix: GREEN 22/22. Mutations: m8 (defective length-derived
+allocator restored) killed by the B1 tests; m9 (max+0 → historical-id reuse) killed broadly incl. the
+equivalence pin; m4 re-verified on the repaired candidate (ownership bypass → cross-account test);
+sparse-history duplicate-retry probe: 4× same-token retry after sparse resume → durable ids
+`rec_1, rec_3, rec_4`, exactly once, idempotent. Pre-implementation smoke PASS; post-implementation
+smoke PASS (17 blocking + 1 observation guards; 42 canonical nodes → 76 + 1 items; 4.9s; zero
+observations). Persistence/ledger-lane regression 104 passed; full suite: 2951 passed / 3 skipped /
+1 xfailed / 0 failures (prior 2929 + 22 new; zero regressions).
+
+**Boundaries (binding).** Unchanged from the rejected candidate's binding set: no schema/token/auth
+redesign; no parallel subsystem; PC1/PC2 preserved; no Phase-10 closure; no PSRR; no deployment; no
+paid activation; no provider selection; no legal/tax conclusion; no new domain.
+`OWNER_DECISION_REGISTER.md` UNCHANGED. Review tier: **LEVEL 1**. Authoritative ONLY if/when this exact
+candidate is merged and post-merge verified. Next required step: **formal Independent External Review of
+this exact SHA + bundle**.

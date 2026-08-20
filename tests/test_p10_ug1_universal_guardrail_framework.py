@@ -46,6 +46,11 @@ _REQUIRED_BLOCKING_IDS = (
     "UG-CORE-01", "UG-CORE-02", "UG-CORE-03", "UG-CORE-04", "UG-CORE-05",
     "UG-CORE-06", "UG-CORE-07", "UG-CORE-08", "UG-CORE-09", "UG-CORE-10",
     "UG-CORE-11", "UG-CORE-12", "UG-CORE-13", "UG-CORE-14", "UG-CORE-15",
+    # P10-PC3 governed framework change (contract §12; pinned in the same
+    # candidate per the UG standard §6): UG-CORE-08 superseded in place by
+    # its establishment-boundary successor; UG-CORE-16 (resume integrity)
+    # added; UG-CORE-07 preserved unchanged (reviewer O1 disposition).
+    "UG-CORE-16",
     "UG-META-01",
 )
 _REQUIRED_OBSERVATION_IDS = ("UG-OBS-01",)

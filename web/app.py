@@ -2183,6 +2183,55 @@ def _draft_context_id(question):
         return "intake"
     return hashlib.sha256(basis.encode("utf-8")).hexdigest()[:16]
 
+@app.route("/session/<sid>/resume", methods=["POST"])
+def resume_project(sid):
+    """P10-PC3 — TRUE WRITABLE RESUME: explicit establishment of a NEW
+    transient writable context for the SAME durable project (implements
+    docs/governance/P10_PC3_TRUE_WRITABLE_RESUME_INCREMENT_CONTRACT.md).
+
+    Canonical sequence: ownership check -> deterministic reconstruction
+    (single canonical replay) -> validation/eligibility -> establishment.
+    Establishment performs ZERO durable writes (reconstruction is read-only);
+    the first durable write after resume can only be a valid new user action
+    through the UNCHANGED accepted-answer pipeline. GET never establishes.
+    The original in-memory session is NOT restored (transcript, last_result,
+    non-answer actions, criticality stage stay absent — never fabricated);
+    this is a reconstructed continuation. Every failure path fails closed to
+    the truthful read-only view (never a 500, never a fabricated writable
+    state); denials stay generic and non-enumerating."""
+    if not _project_authorized(sid):
+        return _deny_project()
+    entry = SESSION_STORE.get(sid)
+    if entry is not None and getattr(entry["state"], "domain", None) is not None:
+        # Already live or already established: idempotent no-op.
+        return redirect(url_for("show_session", sid=sid))
+    try:
+        _recon = reconstruct_readonly_state(_get_store(), sid)
+    except Exception:
+        _recon = None
+    if _recon is None or _recon.review.level != 1 or _recon.state is None:
+        # Legacy/version-mismatch/corrupt/unavailable: read-only view remains.
+        return redirect(url_for("show_session", sid=sid))
+    rstate = _recon.state
+    if not domain_activation.is_activated(getattr(rstate, "domain", None)):
+        return redirect(url_for("show_session", sid=sid))
+    if rstate.maturity_level >= 2 and not rstate.get_open_gaps():
+        # Completed project: truthful completion/deliverable surfaces remain;
+        # a completed journey never reopens into a writable question flow.
+        return redirect(url_for("show_session", sid=sid))
+    # Establishment: the replayed canonical IdeaState (domain/path set by the
+    # canonical replay from the persisted inputs; ledger restored verbatim)
+    # becomes the state of a FRESH transient entry. A fresh answer token is
+    # minted lazily on next render; nothing historical-transient is fabricated.
+    SESSION_STORE[sid] = {
+        "state": rstate,
+        "last_result": None,
+        "transcript": [],
+        "resumed_project": True,
+    }
+    return redirect(url_for("show_session", sid=sid))
+
+
 @app.route("/session/<sid>", methods=["GET"])
 def show_session(sid):
     if not _project_authorized(sid):
@@ -2219,6 +2268,16 @@ def show_session(sid):
                     "open_gaps": list(_recon.open_gaps),
                     "next_question": _recon.next_question,
                     "answers_count": len(_recon.accepted_answer_evidence),
+                    # P10-PC3: writable-resume eligibility for the explicit
+                    # establishment button (display precheck only; the POST
+                    # route re-validates from scratch). Completed projects
+                    # (maturity >= 2, no open gaps) never reopen. Fields come
+                    # from the Level-1 review snapshot; the display domain is
+                    # the persisted confirmed identity on domain_signal.
+                    "resume_eligible": bool(
+                        (_recon.maturity_level < 2 or _recon.open_gaps)
+                        and domain_activation.is_activated(
+                            getattr(state, "domain_signal", None))),
                 }
         except Exception:
             reconstructed_review = None
@@ -2327,6 +2386,11 @@ def show_session(sid):
             reconstructed_review["maturity_level"] if reconstructed_review
             else state.maturity_level),
         reconstructed_review=reconstructed_review,
+        # P10-PC3: truthful mode banner for an explicitly resumed project
+        # ("reconstructed continuation" — NEVER "restored original session").
+        # Transient presentation flag only; set solely by the establishment
+        # route below.
+        resumed_project=bool(entry.get("resumed_project")),
         session_disclosure=get_session_disclosure(_current_ui_lang()),
         closed_gaps=closed_gaps,
         interaction_ack=ui_text.localize_deep(

@@ -2424,7 +2424,38 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
-- **Phase 10 — P10-PC3-C TRUE WRITABLE RESUME CONTRACT (Owner-authorized GOVERNANCE-ONLY candidate,
+- **Phase 10 — P10-PC3 TRUE WRITABLE RESUME IMPLEMENTATION, REPAIR CANDIDATE (Owner-authorized
+  LEVEL-1; PR pending), base `cfad3febdcb886a5efa316a023d31b31d31568ac` (PR #534 merge — P10-PC3-C
+  contract, authoritative; parents `aed5cb79…`/`783becf2…`, merge tree `7f2eb723…` = candidate tree,
+  empty candidate→merge diff — independently re-verified).** **Prior implementation candidate
+  `ee8a0dad…` REJECTED by formal Independent External Review — blocking defect B1**: record-id
+  collision after resume with interleaved non-answer history (length-derived ledger mint could re-mint
+  a persisted `rec_N`; the N+1 durable append failed permanently on the PRIMARY KEY); rejected SHA
+  preserved unamended on `p10-pc3-rejected-evidence`; this repair candidate's parent is the exact base.
+  Repair: the canonical mint (`engine/idea_state.py record_interaction`) now uses MAX existing numeric
+  `rec_N` + 1 — byte-identical live (contiguous ledgers: max == len, equivalence test-pinned),
+  collision-free after reconstruction (ledger max = durable max); no schema change, no resume-only
+  allocator, no renumbering. All rejected-candidate behavior preserved (explicit establishment; zero
+  durable writes at establishment; canonical replay only; token/idempotency reused; PC1/PC2 preserved;
+  EN/AR wording; UG-CORE-07 preserved; UG-CORE-08 successor; UG-CORE-16 now STRENGTHENED with the two
+  interleaved-history blocking tests). Reviewer N1 adopted (exact frozen-file counts: rejected file 18
+  tests = 13 RED / 5 green at base, reviewer-verified; this file 22 tests; B1 RED 3/4 at the defective
+  implementation); N2 recorded as reviewer-checklist residual only; N3 narrow sole-consumer rehydration
+  docstrings; N4 no action. Evidence: GREEN 22/22; mutations m8/m9 killed (defective allocator; max-id
+  reuse) + m4 re-verified; sparse duplicate-retry probe exactly-once (`rec_1, rec_3, rec_4`); pre/post
+  smoke PASS (17+1 guards, 76+1 items, 4.9s); ledger-lane regression 104; full suite 2951/3/1/0 (prior
+  2929 + 22 new). PAID ACTIVATION AUTHORIZED: NO; PSRR TRIGGERED: NO; DEPLOYMENT AUTHORIZED: NO.
+  `OWNER_DECISION_REGISTER.md` UNCHANGED. LEVEL 1 — formal Independent External Review required.
+  Authoritative ONLY if/when this exact candidate is merged and post-merge verified.
+
+- **Phase 10 — P10-PC3-C TRUE WRITABLE RESUME CONTRACT: MERGED / AUTHORITATIVE
+  (governance-only candidate `783becf2…` Owner-accepted at that exact SHA, PR #534, tip
+  `cfad3febdcb886a5efa316a023d31b31d31568ac`; parents `aed5cb79…`/`783becf2…`, merge tree `7f2eb723…` =
+  candidate tree, empty candidate→merge diff — independently re-verified).** The canonical True Writable
+  Resume implementation contract is authoritative; reviewer O1–O4 accepted non-blocking and carried
+  forward. (Original candidate-stage bullet retained below as history.)
+
+- **(superseded history) Phase 10 — P10-PC3-C TRUE WRITABLE RESUME CONTRACT (was: Owner-authorized GOVERNANCE-ONLY candidate,
   PR pending), base `aed5cb79f53e47c5e36e0fce6228288bfae8c014` (PR #533 merge — P10-PC2, authoritative;
   parents `edae7f30…`/`4218ed0b…`, merge tree `77fc4b81…` = candidate tree, empty candidate→merge diff —
   independently re-verified).** Creates `docs/governance/P10_PC3_TRUE_WRITABLE_RESUME_INCREMENT_

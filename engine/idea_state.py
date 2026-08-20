@@ -341,7 +341,20 @@ class IdeaState:
         # existing display behavior (web.responsibility_labels) — never fabricated.
         if responsibility is None and provenance == OWNER_STATED:
             responsibility = OWNER_INPUT
-        record_id = f"rec_{len(self.assertions) + 1}"   # stable; append-only
+        # P10-PC3 B1 repair (Independent Review): the next id derives from the
+        # ledger's MAX existing rec_N, not its length. For every live ledger
+        # (ids minted here sequentially, hence contiguous 1..N) max == len, so
+        # live behavior is byte-identical. For a RECONSTRUCTED ledger (the
+        # durable answered subset restored verbatim after a restart — sparse,
+        # because non-answer actions consume ids without durable persistence),
+        # the ledger max IS the durable max, so a resumed append can never
+        # re-mint an already-persisted rec_N (PRIMARY KEY (project_id,
+        # record_id) collision). Historical ids are never reused or renumbered.
+        _max_n = max((int(r.record_id[4:]) for r in self.assertions
+                      if isinstance(r.record_id, str)
+                      and r.record_id.startswith("rec_")
+                      and r.record_id[4:].isdigit()), default=0)
+        record_id = f"rec_{_max_n + 1}"                 # stable; append-only
         record = AssertionRecord(
             record_id=record_id, disposition=action, content=content,
             gap_context=gap_context, iteration=iteration, provenance=provenance,
