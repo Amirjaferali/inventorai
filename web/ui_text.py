@@ -685,6 +685,38 @@ UI_STRINGS = {
         "en": "That answer could not be saved just now. Please try again.",
         "ar": "تعذّر حفظ هذه الإجابة الآن. يرجى المحاولة مرة أخرى.",
     },
+    # P10-PC1: cold-load Level-1 reconstructed review-state panel. The 042
+    # English sentence is the EXACT product claim authorized by the merged
+    # P4-2 Level-1 gate (engine/session_reconstruction.py module contract);
+    # the Arabic rendering is the same claim localized, adding no new claim.
+    "UI_B_SESSION_041": {
+        "en": "Saved project — read-only reconstructed review state",
+        "ar": "مشروع محفوظ — حالة مراجعة مُعاد بناؤها للقراءة فقط",
+    },
+    "UI_B_SESSION_042": {
+        "en": ("View a read-only reconstruction of this idea's current review "
+               "state, recomputed from its saved inputs and accepted answers. "
+               "This is not a resumed session."),
+        "ar": ("اعرض إعادة بناء للقراءة فقط لحالة المراجعة الحالية لهذه الفكرة، "
+               "محسوبة من مدخلاتها المحفوظة وإجاباتها المقبولة. "
+               "هذه ليست جلسة مستأنفة."),
+    },
+    "UI_B_SESSION_043": {
+        "en": "Open gaps:",
+        "ar": "الفجوات المفتوحة:",
+    },
+    "UI_B_SESSION_044": {
+        "en": "Current question (read-only):",
+        "ar": "السؤال الحالي (للقراءة فقط):",
+    },
+    "UI_B_SESSION_045": {
+        "en": "Accepted answers replayed:",
+        "ar": "الإجابات المقبولة المُعاد تشغيلها:",
+    },
+    "UI_B_SESSION_046": {
+        "en": "Answering is unavailable in this reconstructed view.",
+        "ar": "الإجابة غير متاحة في هذا العرض المُعاد بناؤه.",
+    },
 
     # --- deliverable.html chrome (Category B) ---------------------------------
     "UI_B_DELIV_001": {"en": "Package version:", "ar": "إصدار الحزمة:"},

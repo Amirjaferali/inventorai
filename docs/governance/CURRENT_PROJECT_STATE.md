@@ -2424,7 +2424,35 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
-- **Phase 10 — P10-DBT1 PHASE-9 REGISTERED-DEBT REMEDIATION (Owner-authorized bounded
+- **Phase 10 — P10-PC1 USER-VISIBLE RECONSTRUCTED REVIEW STATE (Owner-authorized bounded
+  product-capability candidate, PR pending), base `f0843878794ae9c0f4647cadf8fa8a323ea4af9d` (PR #530
+  merge — P10-DBT1, authoritative; parents `8626a3e5…`/`41bf30c7…`, merge tree `69c0efea…` = candidate
+  tree, empty candidate→merge diff — independently re-verified).** Product Completion Reconstruction
+  executed from repository truth (full journey live-driven: consent admission → deterministic Q&A with
+  PASS/WARN → LEVEL 0→1→2 → criticality step → 19-section deliverable; DW + export; accounts; API v1;
+  EN/AR). Sharpest verified gap: after any restart a saved project rendered a FALSE display (generic
+  domain label, reset level-0 maturity, no gaps/question) plus an always-failing answer form, while the
+  merged P4-2 Level-1 reconstruction engine (PR #369, exact authorized claim, "no UI" boundary) had ZERO
+  production call sites. Delivers: the cold-loaded session page now renders the TRUE reconstructed review
+  state (Tier-1 domain label display-only; true maturity/progress; localized open gaps; read-only current
+  question; accepted-answer count) under the EXACT authorized claim, bilingual EN/AR
+  (UI_B_SESSION_041–046), dead-end form suppressed, all failure paths fail-closed to the prior page;
+  `state.domain` stays absent and the P4-1b-2a non-resume guard is preserved and STRENGTHENED (one
+  disclosed reconciliation in test_p4_1b2a). Writable continuation remains OUT — registered next product
+  step requiring its own Owner-authorized contract. Evidence: honest RED 7/10; GREEN 10/10; mutations
+  m1/m2/m3 each killed the right tests; real user-path dump EN+AR matched the live pre-restart state;
+  full suite 2910/3/1/0 (prior 2900 + 10 new). PAID ACTIVATION AUTHORIZED: NO; PSRR TRIGGERED: NO;
+  DEPLOYMENT AUTHORIZED: NO. `OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY if/when this
+  exact candidate is merged and post-merge verified.
+
+- **Phase 10 — P10-DBT1 PHASE-9 REGISTERED-DEBT REMEDIATION: MERGED / AUTHORITATIVE
+  (candidate `41bf30c7…` Owner-accepted at that exact SHA, PR #530, tip
+  `f0843878794ae9c0f4647cadf8fa8a323ea4af9d`; parents `8626a3e5…`/`41bf30c7…`, merge tree `69c0efea…` =
+  candidate tree, empty candidate→merge diff — independently re-verified).** The §5 remediation (real
+  E2E chain + real banner pins; docstring/comment truth repairs; register untouched) is authoritative.
+  (Original candidate-stage bullet retained below as history.)
+
+- **(superseded history) Phase 10 — P10-DBT1 PHASE-9 REGISTERED-DEBT REMEDIATION (was: Owner-authorized bounded
   technical-continuation candidate, PR pending), base `8626a3e59b6efbd6d976143f23e5a7f3da26b096` (PR #529
   merge — P10-SEC4, authoritative; parents `19fca422…`/`5829dcb2…`, merge tree `7d88fd5c…` = candidate
   tree, empty candidate→merge diff — independently re-verified).** Residuals reassessed from source:

@@ -105,7 +105,10 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
   {# exists on this surface yet, so the English variant renders here; the AR variant #}
   {# stays canonical in the resolver for a future language-aware surface            #}
   {# (non-blocking follow-up). No extra RTL region is introduced.                   #}
-  {% set _dl = state.domain | public_domain_label %}
+  {# P10-PC1: a Level-1 reconstructed cold view labels the TRUE persisted      #}
+  {# confirmed domain (display only; `state.domain` stays absent — the         #}
+  {# committed non-resume marker is untouched).                                #}
+  {% set _dl = (reconstructed_review.domain if reconstructed_review else state.domain) | public_domain_label %}
   {{ t('UI_B_SESSION_010') }} {{ _dl[ui_lang] }}
 </div>
 
@@ -115,9 +118,11 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
 </div>
 
 <div class="progress-section">
-  <div class="progress-label">{{ t('UI_B_SESSION_011A') }}{{ state.maturity_level + 1 }}{{ t('UI_B_SESSION_011B') }}</div>
+  {# P10-PC1: display_maturity_level equals state.maturity_level on live      #}
+  {# sessions and the TRUE reconstructed level on a Level-1 cold view.        #}
+  <div class="progress-label">{{ t('UI_B_SESSION_011A') }}{{ (display_maturity_level | default(state.maturity_level)) + 1 }}{{ t('UI_B_SESSION_011B') }}</div>
   <div class="progress-track">
-    <div class="progress-fill" style="width:{{ ((state.maturity_level + 1) / 3 * 100)|int }}%"></div>
+    <div class="progress-fill" style="width:{{ (((display_maturity_level | default(state.maturity_level)) + 1) / 3 * 100)|int }}%"></div>
   </div>
 </div>
 
@@ -142,7 +147,35 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
 </div>
 {% endif %}
 
-{% if state.maturity_level < 2 or open_gaps %}
+{# P10-PC1: Level-1 reconstructed READ-ONLY review state for a cold-loaded     #}
+{# session (P4-2 Level-1 surfaced; authorized product claim rendered exactly). #}
+{# The in-progress answer form is deliberately NOT rendered here: answering a  #}
+{# reconstructed view is not available (the committed P4-1b-2a non-resume      #}
+{# guard also holds server-side).                                              #}
+{% if reconstructed_review %}
+<div id="reconstructed-review" class="gap-guidance" style="background:#f4f8fb;border-color:#b3d1ff">
+  <div class="gap-guidance-heading">{{ t('UI_B_SESSION_041') }}</div>
+  <div class="gap-guidance-text">{{ t('UI_B_SESSION_042') }}</div>
+  {% if reconstructed_review.open_gaps %}
+  <div style="font-size:13px;margin-top:8px"><strong>{{ t('UI_B_SESSION_043') }}</strong>
+    <ul style="margin:6px 0 0 0;padding-left:18px;font-size:13px;color:#555">
+      {% for g in reconstructed_review.open_gaps %}<li>{{ g | gap_display }}</li>{% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+  {% if reconstructed_review.next_question %}
+  <div style="font-size:13px;margin-top:8px"><strong>{{ t('UI_B_SESSION_044') }}</strong>
+    <p class="question" style="margin:6px 0 0 0">{{ reconstructed_review.next_question }}</p>
+  </div>
+  {% endif %}
+  <div style="font-size:13px;margin-top:8px">{{ t('UI_B_SESSION_045') }} <span id="recon-answer-count">{{ reconstructed_review.answers_count }}</span></div>
+  <div style="font-size:12px;color:#666;margin-top:8px">{{ t('UI_B_SESSION_046') }}</div>
+  {# The fail-closed not-saved message stays VISIBLE on a reconstructed view    #}
+  {# (the form that normally hosts it is suppressed here).                      #}
+  {% if answer_error %}<p id="answer-error" role="alert" class="answer-error" style="color:#c0392b;font-size:13px;margin:8px 0 0 0">{{ answer_error }}</p>{% endif %}
+</div>
+
+{% elif state.maturity_level < 2 or open_gaps %}
 
 {% if gap_type and current_gap_label %}
 <div class="gap-guidance">
