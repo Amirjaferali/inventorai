@@ -12022,3 +12022,51 @@ legal/tax conclusion; no commercial decision; no provider selection; no PSRR tri
 deployment; no paid activation (`D-P8-PL-01 class C`); no new domain activation; Phase 10 OPEN.
 `OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY if/when this exact candidate is merged and
 post-merge verified. Next required step: **Independent External Review of this exact SHA + bundle**.
+
+## P10-PC3-C — True Writable Resume CONTRACT (Owner-authorized governance-only candidate)
+
+**Base:** `aed5cb79f53e47c5e36e0fce6228288bfae8c014` (PR #533 merge — P10-PC2 cold-load deliverable
+fidelity, authoritative; independently re-verified: parents `edae7f30…`/`4218ed0b…`, merge tree
+`77fc4b81…` equal to the accepted candidate tree, empty candidate→merge diff). **P10-PC2 synchronization
+(recorded here per repository convention):** the P10-PC2 candidate `4218ed0b…` was Owner-accepted at that
+exact SHA and MERGED via PR #533 — AUTHORITATIVE (the cold deliverable equals the pre-restart live
+package modulo the wall-clock stamp; direct bookmarks survive restarts; exact-claim banner EN/AR).
+
+**Authorization & scope.** Owner directive "P10-PC3-C — TRUE WRITABLE RESUME CONTRACT": create + freeze
++ Creator Grill a GOVERNANCE-ONLY contract candidate; **NO IMPLEMENTATION AUTHORIZED** (no runtime code,
+no resume behavior, no SESSION_STORE rehydration, no token/auth/schema/API change, no guardrail change).
+Baseline universal smoke on the base: `UNIVERSAL GUARDRAIL SMOKE: PASS` (16 blocking + 1 observation
+guards; 34 canonical nodes → 68 + 1 items; 7.5s; zero observations).
+
+**Delivered (this candidate).** `docs/governance/P10_PC3_TRUE_WRITABLE_RESUME_INCREMENT_CONTRACT.md` —
+the canonical contract for the highest-value remaining product capability. Contents: the source-cited
+reconstruction of the current non-resume boundary (P4-2 Level-1 read-only contract; the committed
+`state.domain is None` cold marker and `submit_answer` refusal; the `_cold_load_entry` domain_signal-only
+narrowing; the pinned guard tests; UG-CORE-08; durable-vs-memory truth; the stateless sid-bound answer
+token + durable idempotency identity + content fingerprint + confirm-by-reload C3; ownership gates);
+binding resume semantics (project identity continuity; NEW transient context, never "restored original
+session"; canonical-replay-only state derivation; never-fabricated transient fields; current
+question/maturity/domain determination; verbatim ledger restoration never re-appended; exactly-once
+N+1 append); the token/idempotency contract (reuse-only; establishment-gated submissions; restart-safe
+duplicate protection via the DURABLE identity); the SESSION_STORE rehydration contract (explicit owned
+non-durable establishment POST; field-source table; `state.domain` set ONLY at establishment; zero
+durable writes; first durable write = a valid new user action); the replay-then-continue canonical
+sequence with prohibited parallel engines; ownership/auth outcomes (resume never increases access);
+read-only vs writable mode separation (PC1/PC2 preserved as default and fallback; prohibited misleading
+wording); durable-history integrity; multi-tab/retry deterministic outcomes (no distributed locking;
+no duplicate durable answer; no silent progression corruption); the fail-closed failure/recovery table;
+eligibility rules; the REQUIRED governed Universal-Guardrail evolution (answer C: a SUCCESSOR guard pair
+replacing UG-CORE-08's canonical tests while preserving the full safety intent PLUS a new resume-
+integrity blocking guard — framework change to be executed only inside the future implementation
+candidate per the UG standard §6/§7; nothing changed now); the 12 mandatory future RED items and 9
+adversarial probes; contract success criteria; architectural boundaries and exclusions; and the review
+tier: **LEVEL 1 — implementation requires a separate explicit Owner implementation authorization AND
+formal Independent External Review (LEAN protocol §4/§5)**.
+
+**Boundaries (binding).** This candidate is governance-only: zero runtime/test/guardrail diff. Writable
+resume remains NOT IMPLEMENTED and NOT AUTHORIZED; the committed non-resume guard remains fully in
+force. No Phase-10 closure; no PSRR; no deployment; no paid activation (`D-P8-PL-01 class C`); no
+provider selection; no legal/tax conclusion; no new domain activation. `OWNER_DECISION_REGISTER.md`
+UNCHANGED. Authoritative as CONTRACT only if/when this exact candidate is merged and post-merge
+verified; recording it authorizes nothing. Next required step: **Independent External Review of this
+exact SHA + bundle**.

@@ -41,8 +41,37 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — P10-PC2 COLD-LOAD DELIVERABLE FIDELITY: Owner-authorized bounded product-capability
-candidate):** Base: `edae7f30cf512773ab06022376d0ddc7011570a9` (PR #532 merge — P10-UG1 Universal Core
+**Status (current — P10-PC3-C TRUE WRITABLE RESUME CONTRACT: Owner-authorized GOVERNANCE-ONLY
+candidate):** Base: `aed5cb79f53e47c5e36e0fce6228288bfae8c014` (PR #533 merge — P10-PC2 cold-load
+deliverable fidelity, authoritative; independently re-verified: parents `edae7f30…` / `4218ed0b…`, merge
+tree `77fc4b81…` equal to the accepted candidate tree, empty candidate→merge diff).
+
+**Objective.** Create the canonical governance contract for TRUE WRITABLE RESUME —
+`docs/governance/P10_PC3_TRUE_WRITABLE_RESUME_INCREMENT_CONTRACT.md` — WITHOUT implementing anything:
+source-cited non-resume boundary reconstruction; binding resume semantics (project-identity continuity in
+a NEW transient context; canonical-replay-only state; never-fabricated transients; exactly-once N+1
+append); token/idempotency reuse contract; explicit non-durable SESSION_STORE establishment contract;
+replay-then-continue sequence with prohibited parallel engines; ownership/mode/failure/eligibility/
+concurrency rules; the REQUIRED future governed Universal-Guardrail evolution (successor guard pair for
+UG-CORE-08 + new resume-integrity guard — executed only inside the future implementation candidate); 12
+mandatory RED items + 9 adversarial probes; success criteria; exclusions. Review tier for implementation:
+**LEVEL 1** (LEAN protocol §4/§5) — separate explicit Owner implementation authorization AND formal
+Independent External Review required. Baseline smoke on the base: PASS (7.5s; zero observations).
+
+**Evidence.** Governance-only diff (contract + the three governance surfaces; zero runtime/test/guardrail
+change); adversarial governance truth sweep UNSUPPORTED MATERIAL CLAIMS: 0; full suite unchanged by
+construction (no test/code paths touched) and re-verified at candidate.
+
+**Boundaries:** NO implementation; writable resume remains NOT AUTHORIZED; the committed non-resume guard
+fully in force; no guardrail change; paid activation BLOCKED; PSRR NOT TRIGGERED; DEPLOYMENT NOT
+AUTHORIZED; legal/tax registers OPEN; no provider/commercial decision. `OWNER_DECISION_REGISTER.md`
+UNCHANGED. Authoritative as CONTRACT only if/when this exact candidate is merged and post-merge verified.
+Next required step: **Independent External Review of this exact SHA + bundle**.
+
+**Immediately prior (P10-PC2 COLD-LOAD DELIVERABLE FIDELITY — candidate `4218ed0b…` Owner-accepted at
+that exact SHA and MERGED via PR #533, tip `aed5cb79f53e47c5e36e0fce6228288bfae8c014`; now
+AUTHORITATIVE; retained as history):** Base: `edae7f30cf512773ab06022376d0ddc7011570a9` (PR #532 merge —
+P10-UG1 Universal Core
 Guardrail & Smoke Framework, authoritative; independently re-verified: parents `da4e7a47…` /
 `c12671ee…`, merge tree `52a43240…` equal to the accepted candidate tree, empty candidate→merge diff).
 Executed under the Owner's second Product Completion Reconstruction directive.

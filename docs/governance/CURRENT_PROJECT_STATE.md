@@ -2424,7 +2424,34 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
-- **Phase 10 — P10-PC2 COLD-LOAD DELIVERABLE FIDELITY (Owner-authorized bounded product-capability
+- **Phase 10 — P10-PC3-C TRUE WRITABLE RESUME CONTRACT (Owner-authorized GOVERNANCE-ONLY candidate,
+  PR pending), base `aed5cb79f53e47c5e36e0fce6228288bfae8c014` (PR #533 merge — P10-PC2, authoritative;
+  parents `edae7f30…`/`4218ed0b…`, merge tree `77fc4b81…` = candidate tree, empty candidate→merge diff —
+  independently re-verified).** Creates `docs/governance/P10_PC3_TRUE_WRITABLE_RESUME_INCREMENT_
+  CONTRACT.md` — the canonical contract for the highest-value remaining product capability — WITHOUT
+  implementing anything: source-cited non-resume boundary; binding resume semantics (project-identity
+  continuity in a NEW transient context — never "restored original session"; canonical-replay-only
+  state; never-fabricated transients; exactly-once N+1 append); token/idempotency reuse; explicit
+  non-durable SESSION_STORE establishment; replay-then-continue with prohibited parallel engines;
+  ownership/mode/failure/eligibility/concurrency contracts; REQUIRED future governed UG evolution
+  (successor guard pair for UG-CORE-08 + new resume-integrity guard, executed only inside the future
+  implementation candidate); 12 mandatory RED items + 9 adversarial probes; success criteria;
+  exclusions. Implementation review tier: **LEVEL 1** (LEAN §4/§5) — separate explicit Owner
+  implementation authorization AND formal Independent External Review required. Baseline smoke PASS
+  (7.5s, zero observations). Governance-only diff; truth sweep UNSUPPORTED: 0. WRITABLE RESUME REMAINS
+  NOT IMPLEMENTED / NOT AUTHORIZED; the committed non-resume guard is fully in force. PAID ACTIVATION
+  AUTHORIZED: NO; PSRR TRIGGERED: NO; DEPLOYMENT AUTHORIZED: NO. `OWNER_DECISION_REGISTER.md` UNCHANGED.
+  Authoritative as CONTRACT only if/when this exact candidate is merged and post-merge verified.
+
+- **Phase 10 — P10-PC2 COLD-LOAD DELIVERABLE FIDELITY: MERGED / AUTHORITATIVE
+  (candidate `4218ed0b…` Owner-accepted at that exact SHA, PR #533, tip
+  `aed5cb79f53e47c5e36e0fce6228288bfae8c014`; parents `edae7f30…`/`4218ed0b…`, merge tree `77fc4b81…` =
+  candidate tree, empty candidate→merge diff — independently re-verified).** The cold deliverable now
+  equals the pre-restart live package modulo the wall-clock stamp; direct bookmarks survive restarts;
+  exact-claim banner EN/AR; read-only and fail-closed everywhere. (Original candidate-stage bullet
+  retained below as history.)
+
+- **(superseded history) Phase 10 — P10-PC2 COLD-LOAD DELIVERABLE FIDELITY (was: Owner-authorized bounded product-capability
   candidate, PR pending), base `edae7f30cf512773ab06022376d0ddc7011570a9` (PR #532 merge — P10-UG1,
   authoritative; parents `da4e7a47…`/`c12671ee…`, merge tree `52a43240…` = candidate tree, empty
   candidate→merge diff — independently re-verified).** Second Product Completion Reconstruction: P10-PC1
