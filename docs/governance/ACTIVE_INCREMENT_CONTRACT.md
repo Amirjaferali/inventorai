@@ -41,8 +41,44 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — P10-PC1 USER-VISIBLE RECONSTRUCTED REVIEW STATE: Owner-authorized bounded
-product-capability candidate):** Base: `f0843878794ae9c0f4647cadf8fa8a323ea4af9d` (PR #530 merge —
+**Status (current — P10-UG1 UNIVERSAL CORE GUARDRAIL & SMOKE FRAMEWORK: Owner-authorized bounded
+framework candidate):** Base: `da4e7a474df7c245e69f1f8e529f04abf5e60444` (PR #531 merge — P10-PC1
+user-visible reconstructed review state, authoritative; independently re-verified: parents `f0843878…` /
+`eb196210…`, merge tree `79beb341…` equal to the accepted candidate tree, empty candidate→merge diff).
+
+**Objective.** One durable, repository-enforced universal safety layer for ALL future candidates:
+(a) `tests/universal_guardrail_manifest.py` — machine-checkable inventory of 17 guards (16 BLOCKING
+UG-CORE-01…15 + UG-META-01; 1 OBSERVATION UG-OBS-01) composing EXISTING canonical tests by node id (zero
+duplication; zero existing tests modified or moved); (b) `scripts/run_universal_smoke.py` — the one
+canonical command with inventory-integrity collect check (missing canonical test = always BLOCK),
+blocking semantics (failure/error/skip = BLOCK with guard/invariant/owner/remedy attribution),
+observation semantics (reported, never blocks), and the standardized verdict
+`UNIVERSAL GUARDRAIL SMOKE: PASS` / `: BLOCK` (PASS means ONLY: CORE INVARIANTS PRESERVED UNDER THIS
+SUITE — never secure/production-ready/legally-compliant/PSRR-complete/deployment-approved/bug-free);
+(c) `docs/governance/INVENTORAI_UNIVERSAL_CORE_GUARDRAIL_SMOKE_STANDARD.md` — the governance standard
+(categories, extension process, review escalation subordinate to LEAN protocol §4/§5, prohibited
+interpretations, relationships); (d) `tests/test_p10_ug1_universal_guardrail_framework.py` — 9 framework
+guards incl. the PINNED blocking inventory (self-protection: guard removal/downgrade fails the governed
+full suite) and hermetic runner-semantics tests. Review-tier truth recorded: LEVEL-1/DEPTH-2 independent
+review stays mandatory; DEPTH-3 lighter path already exists in the standing protocol; any re-tiering is
+PROPOSED FUTURE REVIEW-TIER AMENDMENT: OWNER DECISION REQUIRED — nothing weakened here.
+
+**Evidence.** RED 9/9 at base + three grep-proven framework gaps; GREEN 9/9; smoke 68+1 canonical test
+items in 4.8–7.2s (≈2.4% of the 2919-test suite; strict subset); probes P1 (real violation → BLOCK with
+correct attribution), P2 (observation failure → PASS, no false BLOCK), P3 (guard deletion → pinned
+inventory fails the suite); full suite 2919 passed / 3 skipped / 1 xfailed / 0 failures (prior 2910 + 9
+new).
+
+**Boundaries:** smoke PASS has no release semantics; paid activation BLOCKED; PSRR NOT TRIGGERED;
+DEPLOYMENT NOT AUTHORIZED; legal/tax registers OPEN; no provider/commercial decision; no new domain
+activation; no next product capability. `OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY
+if/when this exact candidate is merged and post-merge verified. Next required step: **Independent
+External Review of this exact SHA + bundle**.
+
+**Immediately prior (P10-PC1 USER-VISIBLE RECONSTRUCTED REVIEW STATE — candidate `eb196210…`
+Owner-accepted at that exact SHA and MERGED via PR #531, tip
+`da4e7a474df7c245e69f1f8e529f04abf5e60444`; now AUTHORITATIVE; retained as history):** Base:
+`f0843878794ae9c0f4647cadf8fa8a323ea4af9d` (PR #530 merge —
 P10-DBT1 Phase-9 registered-debt remediation, authoritative; independently re-verified: parents
 `8626a3e5…` / `41bf30c7…`, merge tree `69c0efea…` equal to the accepted candidate tree, empty
 candidate→merge diff). Executed under the Owner's Product Completion Reconstruction directive (one bounded

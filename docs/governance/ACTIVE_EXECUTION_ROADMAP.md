@@ -11899,3 +11899,67 @@ no provider selection; no PSRR trigger/execution; no deployment; no paid activat
 no new domain activation; Phase 10 OPEN. `OWNER_DECISION_REGISTER.md` UNCHANGED. No auto-activated
 successor. Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next required
 step: **Independent External Review of this exact SHA + bundle**.
+
+## P10-UG1 — Universal Core Guardrail & Smoke Framework (Owner-authorized bounded framework candidate)
+
+**Base:** `da4e7a474df7c245e69f1f8e529f04abf5e60444` (PR #531 merge — P10-PC1 user-visible reconstructed
+review state, authoritative; independently re-verified: parents `f0843878…`/`eb196210…`, merge tree
+`79beb341…` equal to the accepted candidate tree, empty candidate→merge diff). **P10-PC1 synchronization
+(recorded here per repository convention):** the P10-PC1 candidate `eb196210…` was Owner-accepted at that
+exact SHA and MERGED via PR #531 — AUTHORITATIVE (cold-loaded sessions render the true Level-1
+reconstructed review state under the exact authorized claim, EN/AR, fail-closed).
+
+**Protection inventory (reconstructed before design).** Existing guards classified: REUSE DIRECTLY —
+`tests/test_architecture_guardrails.py` (ARCHITECTURE_GUARDRAILS enforcement: classifier canonicalization,
+IdeaState field stability, domain-agnostic engine, structural AI boundary) and the canonical per-gate
+suites (P4-1b/P4-2 persistence+replay, P5-3 ownership, P6-1 labels, P7-I3 export, S5-I2 activation,
+CF5-F002/F003 admission/classifier, FDC-001, P10-SEC1/SEC2, P10-DBT1 real-state pins, P10-PC1 read-only
+recon); COMPOSE INTO UNIVERSAL SUITE — the representative nodes now referenced by the guard manifest;
+GATE-SPECIFIC ONLY — everything else in the 2900+ suite; DOCUMENTATION-ONLY — `docs/
+WORKFLOW_PROTECTION_STANDARD.md` (INV-001…010; benchmark-era; parity runner preserved, never invoked) and
+`scripts/e2_path_n_smoke_runner.sh` (preserved E-2 evidence artifact — remains prohibited to run);
+DUPLICATE/SUPERSEDED — none created. RED framework gaps proven at base: no canonical smoke entry point, no
+machine-checkable guard inventory, no standardized PASS/BLOCK verdict (all three grep-evidenced), and the
+9 framework tests failed at base.
+
+**Delivered (this candidate).** (1) `tests/universal_guardrail_manifest.py` — machine-checkable inventory
+of 17 guards (16 BLOCKING: UG-CORE-01…15 + UG-META-01; 1 OBSERVATION: UG-OBS-01), each with GUARD ID /
+OWNER / INVARIANT / BLOCKING CONDITION / CANONICAL TESTS (node-id composition — zero duplication) /
+RATIONALE / INTRODUCED BY. (2) `scripts/run_universal_smoke.py` — the ONE canonical command
+(`python scripts/run_universal_smoke.py`): inventory-integrity collect check (missing/renamed canonical
+test = always BLOCK), blocking execution (failure/error/skip = BLOCK with guard attribution, invariant,
+owner, remedy), observation execution (reported, never blocks), standardized verdict
+`UNIVERSAL GUARDRAIL SMOKE: PASS` / `: BLOCK` with the mandatory meaning line (PASS = CORE INVARIANTS
+PRESERVED UNDER THIS SUITE — explicitly NOT secure / production ready / legally compliant / PSRR complete /
+deployment approved / bug-free); exit 0/1/2; deterministic, offline, provider-free; alternate-manifest env
+seam `INVENTORAI_UG_MANIFEST` (tooling/test only, DEP1 precedent). (3)
+`docs/governance/INVENTORAI_UNIVERSAL_CORE_GUARDRAIL_SMOKE_STANDARD.md` — purpose/scope/categories/
+blocking semantics/canonical command/extension process/review escalation/prohibited interpretations/
+relationships (gate tests, full suite, Grill, Independent Review, Owner acceptance, PSRR/deployment).
+(4) `tests/test_p10_ug1_universal_guardrail_framework.py` — 9 framework guards: manifest structure,
+PINNED blocking inventory (removal/downgrade fails the governed full suite), collectability of every
+canonical node, hermetic runner semantics (BLOCK on blocking failure, BLOCK on missing canonical test,
+PASS with OBSERVATION on non-blocking failure), runner output contract, standard structure, and
+subset-of-governed-suite. **Review-tier truth (§17 answer, recorded):** the standing
+`LEAN_GOVERNANCE_AND_AGENT_CONTINUITY_PROTOCOL.md` §4/§5 mandates independent review for LEVEL-1 changes
+and bounded independent review for DEPTH-2 increments, with an existing lighter DEPTH-3 path for low-risk
+maintenance inside a contract; per-candidate Owner directives additionally required Independent External
+Review for every gate in this lane. NOTHING is weakened: the standard maps HIGH-SENSITIVITY→the existing
+mandatory tiers and records any future re-tiering as **PROPOSED FUTURE REVIEW-TIER AMENDMENT: OWNER
+DECISION REQUIRED**.
+
+**Evidence.** RED 9/9 framework tests failed at base + three grep-proven gaps. GREEN 9/9. Smoke run:
+16 blocking guards → 68 canonical test items + 1 observation item (34 manifest nodes), runtime 4.8–7.2s
+(≈2.4% of the 2919-test governed suite; strict subset). Probes: (P1) real invariant violation
+(mechanical deactivated) → BLOCK attributing UG-CORE-03/04/15 with the banner drift correctly reported as
+OBSERVATION; (P2) CLI banner copy broken → runner exit 0, PASS with UG-OBS-01 OBSERVATION (no false
+BLOCK); (P3) deleting a blocking guard from the manifest → the pinned-inventory framework test FAILS the
+governed suite (self-weakening blocked); all reverted. Full suite: 2919 passed / 3 skipped / 1 xfailed /
+0 failures (prior 2910 + 9 new; zero regressions; zero existing tests modified or moved).
+
+**Boundaries (binding).** Smoke PASS has NO release semantics; PSRR NOT TRIGGERED; DEPLOYMENT NOT
+AUTHORIZED; paid activation BLOCKED (`D-P8-PL-01 class C`); no provider selection; no legal/tax
+conclusion; registers OPEN; no new domain activation; no next product capability; Phase 10 OPEN; no
+review requirement weakened. `OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY if/when this
+exact candidate is merged and post-merge verified. Next required step: **Independent External Review of
+this exact SHA + bundle**.
