@@ -41,8 +41,41 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — P10-RL1 RELEASE-READINESS CHECKLIST FOUNDATION: Owner-authorized bounded
-governance/status candidate; RUNTIME CODE REQUIRED: NO):** Base:
+**Status (current — P10-SEC3 DECISION-WORKSPACE FREE-TEXT HARDENING RESIDUAL EXTENSION: Owner-authorized
+bounded technical-continuation candidate):** Base: `e031ecddb390577988041fa2f3214b78fbf34211` (PR #527
+merge — P10-RL1 release-readiness checklist, authoritative; independently re-verified: parents
+`b1a0196a…` / `01650517…`, merge tree `4f3646d2…` equal to the accepted candidate tree, empty
+candidate→merge diff). Executed under the Owner's technical-continuation direction: development continues
+where repository truth permits; adviser-dependent items stay truthfully OPEN/DEFERRED.
+
+**Objective.** Close the largest documented P10-SEC2 residual (authoritative checklist row RL-A6:
+"criticality/decision-workspace free text are transport-bounded ONLY") by extending the CANONICAL P10-SEC2
+guard — no new subsystem, no redesign: one helper `_dw_free_text_reject` reusing `_free_text_error`
+(20,000-char cap + NUL rejection; explicit rejection, never truncation/stripping; Arabic/Unicode/multiline
+untouched) applied to ALL SEVEN Decision Workspace POST surfaces (`/input` text+provenance; `/constraint`
+text+provenance; `/gap` rationale; `/evidence` text/provenance/method/source_label/evidence_version/
+limitations; `/gap-assessment` rationale+resolution_rationale; `/preference` rationale; `/candidate`
+disposition_reason+disposition_basis), using the route family's EXISTING error convention
+(`_render_decision_workspace(..., status=400)`), running AFTER the non-enumerating ownership denial and
+BEFORE any engine call (zero mutation on rejection; engine semantics unmasked). Remaining residuals stay
+truthfully documented: the legacy fixed-domain ILT-002 start routes and the criticality rationale remain
+transport-bounded ONLY (RL-A6 row updated accordingly; still NOT "all inputs fully hardened").
+
+**Evidence.** RED 10/15 failed at base for the absent guard (5 deliberate preservation guards green; two
+harness realities corrected pre-implementation: seeded DecisionRecord inputs → delta-based mutation checks;
+engine id/enum 400s → guard-message assertions so every RED fails for the right reason and guard precedence
+is proven). GREEN 15/15. Checklist/SEC2/RL1 invariant suites green post-sync. Full suite green (exact
+counts in the roadmap entry). Zero schema/dependency diff; no legal/tax/commercial/provider assumption
+encoded.
+
+**Boundaries:** paid activation BLOCKED; PSRR NOT TRIGGERED; DEPLOYMENT NOT AUTHORIZED; legal/tax registers
+OPEN (deferred pending advisers — this gate needs none of their answers). `OWNER_DECISION_REGISTER.md`
+UNCHANGED. Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next required
+step: **Independent External Review of this exact SHA + bundle**.
+
+**Immediately prior (P10-RL1 RELEASE-READINESS CHECKLIST FOUNDATION — candidate `01650517…` Owner-accepted
+at that exact SHA and MERGED via PR #527, tip `e031ecddb390577988041fa2f3214b78fbf34211`; now
+AUTHORITATIVE; retained as history; RUNTIME CODE REQUIRED: NO):** Base:
 `b1a0196aaf1f6892996c618c69cb341872ecaf52` (PR #526 merge — P10-DEP1 dependency-audit foundation,
 authoritative; independently re-verified: parents `8563320b…` / `ec0795d9…`, merge tree `96cf5857…` equal
 to the accepted candidate tree, empty candidate→merge diff).
@@ -74,7 +107,8 @@ source traceability across all 58 rows; PSRR four-state distinction + untriggere
 activation/closure-NO lines; no readiness overclaims; SEC2/DEP1 nuances; negation-aware provider check).
 Structural RED: 10/10 fail with the checklist absent; GREEN 10/10 (two pre-freeze precision fixes: two
 rows' "same"-shorthand sources made explicit — the doc fixed to satisfy the invariant; one test regex made
-negation-aware for "NOT SELECTED"). Full suite green (exact counts in the roadmap entry).
+negation-aware for "NOT SELECTED"). Full suite green (exact counts in the roadmap entry). MERGED via PR
+#527 (tip `e031ecdd…`) and post-merge verified — AUTHORITATIVE.
 
 **Phase-10 closure assessment:** `PHASE 10 CLOSURE ELIGIBLE NOW: NO` (source-backed blockers indexed in
 the checklist's blocking summary). **Boundaries:** zero runtime/schema/dependency diff; no legal/tax

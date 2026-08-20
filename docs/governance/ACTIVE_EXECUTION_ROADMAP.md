@@ -11692,3 +11692,50 @@ ACTIVATION AUTHORIZED: NO (`D-P8-PL-01 class C`); PSRR TRIGGERED: NO; PSRR EXECU
 DEPLOYMENT AUTHORIZED: NO (`OD-P`). `OWNER_DECISION_REGISTER.md` UNCHANGED. No auto-activated successor
 (P10-C §10). Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next
 required step: **Independent External Review of this exact SHA + bundle**.
+
+---
+
+## P10-SEC3 — Decision-Workspace Free-Text Hardening Residual Extension (Owner-authorized bounded technical-continuation candidate)
+
+**Base:** `e031ecddb390577988041fa2f3214b78fbf34211` (PR #527 merge — P10-RL1 release-readiness checklist,
+authoritative; independently re-verified: parents `b1a0196a…`/`01650517…`, merge tree `4f3646d2…` equal to
+the accepted candidate tree, empty candidate→merge diff). **P10-RL1 synchronization (recorded here per
+repository convention):** the P10-RL1 candidate `01650517…` was Owner-accepted at that exact SHA and MERGED
+via PR #527 — AUTHORITATIVE. **Execution direction (Owner, governing):** development continues where
+repository truth permits; adviser-dependent obligations remain truthfully OPEN/DEFERRED and continue to
+block their downstream gates; adviser unavailability does not stop unrelated technical work.
+
+**Gate selection (technical-continuation cycle).** Reconstructed technically-executable work at this tip;
+selected the single highest-value item: the largest documented P10-SEC2 residual (authoritative checklist
+row RL-A6 recorded decision-workspace free text as transport-bounded ONLY). Canonical-owner check: extends
+the EXISTING P10-SEC2 guard seam (`_free_text_error`) — no new subsystem, no redesign, no duplicate owner.
+Requires no adviser conclusion, no commercial decision, no provider, no PSRR, no deployment. Alternatives
+deferred: criticality-rationale guarding (would require the heavyweight ws1-completed behavioral flow to
+test honestly — remains a documented residual); legacy ILT-002 start routes (historical evidence surfaces,
+deliberately preserved, transport-bounded); Phase-9 non-blocking debts (lower user value).
+
+**Delivered (this candidate).** One helper `_dw_free_text_reject(record, *fields)` in `web/app.py` reusing
+the canonical P10-SEC2 `_free_text_error` (MAX_FREE_TEXT_CHARS=20,000 cap + NUL REJECTION; explicit
+rejection only — never truncation/stripping/normalization; Arabic/Unicode/multiline pass untouched and are
+stored verbatim), applied to ALL SEVEN Decision Workspace POST surfaces and their free-text fields:
+`/input` (text, provenance), `/constraint` (text, provenance), `/gap` (rationale), `/evidence` (text,
+provenance, method, source_label, evidence_version, limitations), `/gap-assessment` (rationale,
+resolution_rationale), `/preference` (rationale), `/candidate` (disposition_reason, disposition_basis).
+Rejections use the route family's EXISTING error convention (`_render_decision_workspace(…, status=400)`,
+bilingual guard message, no input echo), run AFTER the non-enumerating ownership denial (denial still
+discloses nothing) and BEFORE any engine call (zero mutation on rejection; engine's own validation
+semantics unmasked and test-pinned). Tests: `tests/test_p10_sec3_dw_free_text_hardening.py` — 15 focused
+tests RED-first (RED: 10/15 failed at base precisely for the absent guard; the 5 passers are deliberate
+preservation guards; two harness realities corrected BEFORE implementation: fresh DecisionRecords ship
+with seeded owner-context inputs → delta-based mutation checks, and base 400s from engine id/enum rules →
+guard-message assertions proving guard precedence). GREEN: 15/15. Checklist row RL-A6 truthfully updated
+(decision-workspace now field-bounded via P10-SEC3; REMAINING residuals: legacy ILT-002 start routes and
+the criticality rationale stay transport-bounded ONLY; still NOT "all inputs fully hardened") with the
+RL1/SEC2 structural suites re-verified green. Full suite: 2879 passed / 3 skipped / 1 xfailed / 0 failures
+(prior 2864 + 15 new; zero regressions). Zero schema/dependency diff.
+
+**Boundaries (binding).** No legal/tax conclusion encoded or assumed; registers OPEN (deferred pending
+advisers); no commercial decision; no provider selection; no PSRR trigger/execution; no deployment; no
+paid activation (`D-P8-PL-01 class C`); Phase 10 OPEN. `OWNER_DECISION_REGISTER.md` UNCHANGED. No
+auto-activated successor (P10-C §10). Authoritative ONLY if/when this exact candidate is merged and
+post-merge verified. Next required step: **Independent External Review of this exact SHA + bundle**.

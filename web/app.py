@@ -2683,6 +2683,21 @@ def _deny_fdc001():
     return redirect(url_for("decision_workspace_start"))
 
 
+def _dw_free_text_reject(record, *field_names):
+    """P10-SEC3: bounded free-text guard for Decision Workspace form fields —
+    reuses the canonical P10-SEC2 helper `_free_text_error` (explicit
+    rejection only: MAX_FREE_TEXT_CHARS cap + NUL rejection; never truncation,
+    stripping, or normalization; Arabic/Unicode/multiline untouched) and this
+    route family's EXISTING error convention. Runs AFTER the non-enumerating
+    ownership denial and BEFORE any engine call, so a rejection mutates
+    nothing and discloses nothing. Returns a 400 response or None."""
+    for name in field_names:
+        err = _free_text_error(request.form.get(name, ""), _current_ui_lang())
+        if err is not None:
+            return _render_decision_workspace(record, error=err, status=400)
+    return None
+
+
 @app.route("/decision-workspace", methods=["GET"])
 def decision_workspace_start():
     record = fdc001_dw.DecisionRecord()
@@ -2725,6 +2740,9 @@ def decision_workspace_add_input(did):
     record = _fdc001_get_authorized(did)
     if record is None:
         return _deny_fdc001()
+    _rej = _dw_free_text_reject(record, "text", "provenance")
+    if _rej is not None:
+        return _rej
     candidate_id = request.form.get("candidate_id", "").strip()
     candidate_ids = [candidate_id] if candidate_id else []
     try:
@@ -2747,6 +2765,9 @@ def decision_workspace_add_constraint(did):
     record = _fdc001_get_authorized(did)
     if record is None:
         return _deny_fdc001()
+    _rej = _dw_free_text_reject(record, "text", "provenance")
+    if _rej is not None:
+        return _rej
     candidate_id = request.form.get("candidate_id", "").strip()
     candidate_ids = [candidate_id] if candidate_id else []
     try:
@@ -2768,6 +2789,9 @@ def decision_workspace_gap_action(did):
     record = _fdc001_get_authorized(did)
     if record is None:
         return _deny_fdc001()
+    _rej = _dw_free_text_reject(record, "rationale")
+    if _rej is not None:
+        return _rej
     action = request.form.get("action", "").strip()
     gap_id = request.form.get("gap_id", "").strip()
     try:
@@ -2808,6 +2832,11 @@ def decision_workspace_add_evidence(did):
     record = _fdc001_get_authorized(did)
     if record is None:
         return _deny_fdc001()
+    _rej = _dw_free_text_reject(record, "text", "provenance", "method",
+                                "source_label", "evidence_version",
+                                "limitations")
+    if _rej is not None:
+        return _rej
     candidate_id = request.form.get("candidate_id", "").strip()
     candidate_ids = [candidate_id] if candidate_id else []
     try:
@@ -2836,6 +2865,9 @@ def decision_workspace_gap_assessment(did):
     record = _fdc001_get_authorized(did)
     if record is None:
         return _deny_fdc001()
+    _rej = _dw_free_text_reject(record, "rationale", "resolution_rationale")
+    if _rej is not None:
+        return _rej
     evidence_ids = [e.strip() for e in request.form.getlist("evidence_ids")
                     if e.strip()]
     try:
@@ -2859,6 +2891,9 @@ def decision_workspace_preference(did):
     record = _fdc001_get_authorized(did)
     if record is None:
         return _deny_fdc001()
+    _rej = _dw_free_text_reject(record, "rationale")
+    if _rej is not None:
+        return _rej
     action = request.form.get("action", "").strip()
     try:
         if action == "set":
@@ -2878,6 +2913,11 @@ def decision_workspace_preference(did):
 @app.route("/decision-workspace/<did>/candidate", methods=["POST"])
 def decision_workspace_dispose_candidate(did):
     record = _fdc001_get_authorized(did)
+    if record is not None:
+        _rej = _dw_free_text_reject(record, "disposition_reason",
+                                    "disposition_basis")
+        if _rej is not None:
+            return _rej
     if record is None:
         return _deny_fdc001()
     try:
