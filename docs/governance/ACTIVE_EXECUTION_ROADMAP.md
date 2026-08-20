@@ -12312,3 +12312,61 @@ Independent External Review per §5B.13 (incl. the MANDATORY independent Univers
 mechanical full-suite rerun absent a §5B.6 trigger). `OWNER_DECISION_REGISTER.md` UNCHANGED.
 Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next required step:
 Independent External Review of this exact SHA + bundle.
+
+---
+
+## PHASE 10 — FORMAL CLOSURE RECORD (Owner-authorized GOVERNANCE-ONLY candidate)
+
+**Base:** `adfe203a84a66028b7a1f943920084108f6cc48c` (PR #538 merge — P10-CL0, authoritative;
+independently re-verified live: first parent `2f77e8e8…`, second parent `deeb046e…`, merge tree
+`2b62bf57…` = accepted candidate tree, empty candidate→merge diff). **P10-CL0 synchronization (recorded
+per convention):** candidate `deeb046e783f3f1626fe27a27a5ba5e7ab72a76c` Owner-accepted at exact SHA and
+MERGED via PR #538 — AUTHORITATIVE. Independent Review: ACCEPT WITH NON-BLOCKING OBSERVATIONS
+(NB1–NB11); Reviewer Grill PASS; post-merge smoke PASS. **Owner decision at acceptance:
+`OD-P10-CL0-STRUCTURE` = OPTION 2 — ACCEPTED.**
+
+**Delivered (this candidate).** New `docs/governance/PHASE_10_FORMAL_CLOSURE_RECORD.md` — the
+separately authorized Phase-10 formal-closure instrument (P10-C §11 correctly cited as
+increment-closure only, per NB2) declaring **PHASE 10 FORMALLY CLOSED** under Option 2, effective ONLY
+when merged and post-merge verified. Contents: authoritative base; purpose/scope; complete gate lineage
+(PRs #508–#538, first-parent verified from Git); P10-CL0 authoritative lineage; the Option-2 decision
+preserved verbatim; the FINAL obligation disposition matrix re-verified LIVE at this base (NOT copied
+from P10-CL0) with **no `UNRESOLVED — CLOSURE BLOCKING` row and no deferred item converted to
+COMPLETE**; completed-vs-deferred summary with exact destination lanes (P10-LT1 external legal/tax
+intake with LQ-01…LQ-27 / TQ-01…TQ-13 registers OPEN; OD-J2 §3.2 delegated infrastructure gate scoped
+per NB1 to hosting provider + production region ONLY, other provider surfaces at their canonical
+owners; PSRR; OD-P two-part deployment gate; `D-P8-PL-01 class C` commercial activation gate; OD-A
+brand/trademark gate; post-first-release DOMEX-D1 lane); legal/tax, commercial, provider, and brand
+residual statuses preserved verbatim; PSRR separation (REGISTERED / NOT TRIGGERED / NOT EXECUTED;
+closure-precedes-PSRR stated as a supported conclusion, not a quotation — NB3); deployment separation
+(OD-P verbatim); paid-activation separation (`D-P8-PL-01 class C` binding — NB8 conservative posture);
+future-domain deferral preserved (DOMEX-D1 after first release; OD-H order unchanged); NB1–NB11
+dispositioned (NB1/NB2/NB3/NB4/NB6/NB7/NB9 RESOLVED IN THIS CLOSURE RECORD; NB5 partially resolved +
+carried; NB8/NB10/NB11 CARRIED FORWARD NON-BLOCKING — none dropped); explicit closure meaning
+(governed preparatory/technical/readiness-structuring work complete within authorized scope; no
+constitutive blocker remains) and explicit closure non-meaning (NOT production-ready / legally
+approved / tax-cleared / commercially activated / PSRR-passed / deployment-approved /
+provider-selected / brand-cleared / paid-charging-authorized / future-domain-authorized / bug-free /
+security-complete); next permitted gate identified NOT opened: **FR-GS1 — First-Release Post-Phase-10
+Gate Selection** (Owner decision; must determine whether deployment intent — the PSRR trigger fact —
+now exists and/or whether to commission the external advisers per P10-LT1). Surfaces synchronized:
+`CURRENT_PROJECT_STATE.md` (P10-CL0 rotated to MERGED/AUTHORITATIVE with history; closure-candidate
+entry), `ACTIVE_INCREMENT_CONTRACT.md` (active contract rotated), `PHASE_10_RELEASE_READINESS_CHECKLIST.md`
+(RL-G1 → closure truth; blocking-summary box updated with explicit supersession note; all other pins
+preserved), and ONE narrowly justified pinned-line update in
+`tests/test_p10_rl1_release_readiness_checklist.py` (the factually superseded "PHASE 10 CLOSURE
+ELIGIBLE NOW: NO" pin replaced by the protective closure-truth pin "PHASE-10 CLOSURE ≠ RELEASE
+APPROVAL"; justification comment recorded in the test).
+
+**Evidence.** Smoke PASS at base (pre-candidate) and re-verified at candidate; RL1 structural suite
+green at candidate; **FULL SUITE at the candidate: 2951 passed / 3 skipped / 1 xfailed / 0 failures**
+(run conservatively under §5B because one governance-pinning test line changed); adversarial governance
+truth sweep UNSUPPORTED MATERIAL CLAIMS: 0.
+
+**Boundaries.** Closure ≠ legal/tax/commercial readiness ≠ PSRR ≠ deployment ≠ paid activation; PSRR
+NOT triggered by this candidate; DEPLOYMENT AUTHORIZED: NO; PAID ACTIVATION AUTHORIZED: NO; no
+provider selection; no pricing/refund/trial/dunning decision; no brand clearance; no future-domain
+implementation; no runtime/schema/guardrail change. `OWNER_DECISION_REGISTER.md` UNCHANGED (Phase-8/9
+closure precedent; NB8 register housekeeping remains future). Authoritative ONLY if/when this exact
+candidate is merged and post-merge verified. Next required step: Independent External Review of this
+exact SHA + bundle.

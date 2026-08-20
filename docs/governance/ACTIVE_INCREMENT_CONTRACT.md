@@ -41,8 +41,40 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — P10-CL0 PHASE-10 CLOSURE-PRECONDITION CONSOLIDATION & OPEN-OBLIGATION DISPOSITION
-GATE: Owner-authorized GOVERNANCE-ONLY LEVEL-2 candidate):** Base:
+**Status (current — PHASE 10 FORMAL CLOSURE RECORD: Owner-authorized GOVERNANCE-ONLY candidate):**
+Base: `adfe203a84a66028b7a1f943920084108f6cc48c` (PR #538 merge — P10-CL0, authoritative; independently
+re-verified live: first parent `2f77e8e8…`, second parent `deeb046e…`, merge tree `2b62bf57…` = accepted
+candidate tree, empty candidate→merge diff).
+
+**Objective.** Create `docs/governance/PHASE_10_FORMAL_CLOSURE_RECORD.md` — the separately authorized
+Phase-10 formal-closure instrument (P10-C §11 is increment-closure only, per P10-CL0-NB2) — declaring
+**PHASE 10 FORMALLY CLOSED** under the Owner-accepted `OD-P10-CL0-STRUCTURE` OPTION 2, with: the final
+obligation disposition matrix re-verified LIVE at this base (no `UNRESOLVED — CLOSURE BLOCKING` row; no
+deferred item converted to COMPLETE); complete gate lineage (PRs #508–#538); explicit closure meaning
+and non-meaning; all P10-CL0 NB1–NB11 dispositioned (none dropped); and the next permitted gate
+identified but NOT opened (FR-GS1 — First-Release Post-Phase-10 Gate Selection; PSRR NOT triggered by
+closure). Allowed paths: the new closure record + `ACTIVE_EXECUTION_ROADMAP.md` +
+`CURRENT_PROJECT_STATE.md` + `ACTIVE_INCREMENT_CONTRACT.md` + `PHASE_10_RELEASE_READINESS_CHECKLIST.md`
++ ONE narrowly justified pinned-line update in `tests/test_p10_rl1_release_readiness_checklist.py`
+(the "PHASE 10 CLOSURE ELIGIBLE NOW: NO" pin is factually superseded by the Owner-accepted P10-CL0
+eligibility determination + Option-2 decision; the replacement pin preserves the test's protective
+purpose). Forbidden: all runtime/schema/guardrail paths; `OWNER_DECISION_REGISTER.md`.
+
+**Evidence.** Governance-only diff + the one-line test-pin update; smoke PASS at base and re-verified at
+candidate; RL1 structural suite green at candidate; FULL SUITE run at the candidate (conservative §5B
+posture because a test file changed); adversarial governance truth sweep UNSUPPORTED MATERIAL CLAIMS: 0.
+
+**Boundaries:** closure ≠ legal/tax/commercial readiness ≠ PSRR ≠ deployment ≠ paid activation; PSRR
+remains REGISTERED / NOT TRIGGERED / NOT EXECUTED; OD-P two-part deployment control preserved;
+`D-P8-PL-01 class C` preserved; no provider selection; no pricing/refund/trial/dunning decision; no
+brand clearance (OD-A in force); no future-domain work (DOMEX-D1 deferred until after first release).
+`OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY if/when this exact candidate is merged and
+post-merge verified. Next required step: **Independent External Review of this exact SHA + bundle**.
+
+**Immediately prior (P10-CL0 PHASE-10 CLOSURE-PRECONDITION CONSOLIDATION & OPEN-OBLIGATION DISPOSITION
+GATE — governance-only candidate `deeb046e…` Owner-accepted at that exact SHA and MERGED via PR #538,
+tip `adfe203a84a66028b7a1f943920084108f6cc48c`; now AUTHORITATIVE; Owner decision at acceptance:
+`OD-P10-CL0-STRUCTURE` = OPTION 2 — ACCEPTED; retained as history):** Base:
 `2f77e8e8b633497adee6ea32a6002a7c5860979e` (PR #537 merge — GAP-SYNC-01, authoritative; independently
 re-verified live: first parent `38da08da…`, second parent `087c1d18…`, merge tree `0d337986…` equal to
 the accepted candidate tree, empty candidate→merge diff).
