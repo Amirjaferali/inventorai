@@ -30,7 +30,12 @@ Hard boundaries (fail-closed, no false-green):
   * a bounded replay limit (`MAX_ACCEPTED_ANSWER_REPLAY`) is enforced; exceeding it
     fails closed (`ReconstructionReplayLimitError`) with no partial state;
   * NO durable or in-memory mutation of any kind (no DB write, no envelope change,
-    no record reorder, no `SESSION_STORE` rehydration, no live-`IdeaState` change);
+    no record reorder, no live-`IdeaState` change); reconstruction itself never
+    rehydrates `SESSION_STORE` — the SOLE authorized consumer that may place a
+    returned `ReconstructedReadonlySession.state` into `SESSION_STORE` is the
+    governed P10-PC3 explicit writable-establishment route (`web/app.py`
+    `resume_project`, per P10_PC3_TRUE_WRITABLE_RESUME_INCREMENT_CONTRACT.md);
+    no other caller may do so and this permits no unrestricted rehydration;
   * outputs are NOT durable and are NOT validated by reconstruction — the snapshot
     only carries a reserved `outputs_validated=False` marker (FPC-02 is NOT
     implemented here);
@@ -121,11 +126,16 @@ class ReconstructedReadonlySession:
     use ONLY (e.g. assembling the truthful cold-load deliverable).
 
     Obligations on the caller (binding, mirrors the module contract):
-      * ``state`` must never be rehydrated into ``SESSION_STORE``, shared with
-        a live session, mutated, answered against, or durably persisted;
+      * ``state`` must never be shared with a live session, mutated by a
+        read-only consumer, or durably persisted; the SOLE caller authorized
+        to place it into ``SESSION_STORE`` is the governed P10-PC3 explicit
+        writable-establishment route (see the module docstring) — every other
+        consumer treats it as render-only;
       * ``state`` is ``None`` whenever ``review.level`` is 0 (fail-closed
         fallback — there is no reconstructed state to render);
-      * this is NOT a resumed session and enables no continuation."""
+      * reconstruction itself is NOT a resumed session and enables no
+        continuation; continuation exists only through the governed
+        establishment route."""
     review: ReconstructedReviewState
     state: object
 

@@ -118,6 +118,11 @@ GUARDS = [
         "introduced_by": "ARCHITECTURE_GUARDRAILS §4 (composed by P10-UG1)",
     },
     {
+        # P10-PC3 disposition (reviewer O1 carried forward): UG-CORE-07 is
+        # PRESERVED UNCHANGED — its canonical restart-durability test asserts
+        # the UN-ESTABLISHED cold page offers no form/token and a forged POST
+        # fails closed, which remains exactly true after writable resume
+        # (resume requires explicit establishment; see UG-CORE-08/-16).
         "guard_id": "UG-CORE-07",
         "owner": "web/app.py submit_answer + engine/record_store.py",
         "invariant": ("Accepted answers persist durably (persist-before-"
@@ -133,19 +138,58 @@ GUARDS = [
         "introduced_by": "P4-1b-2a (composed by P10-UG1)",
     },
     {
+        # P10-PC3 governed successor (contract §12 / Owner directive §14):
+        # the former blanket "writable resume stays deactivated" assertion is
+        # SUPERSEDED — writable continuation now exists, but ONLY through the
+        # explicit, ownership-checked, non-durable establishment POST. The
+        # safety intent is preserved and strengthened, never deleted: an
+        # UN-ESTABLISHED cold view stays read-only and unanswerable, GET never
+        # writes durably, and establishment itself performs no durable write.
         "guard_id": "UG-CORE-08",
-        "owner": "web/app.py show_session cold-load + engine/session_reconstruction.py",
-        "invariant": ("Reconstructed cold views are READ-ONLY: rendering writes "
-                      "nothing durable, `state.domain` stays absent, and "
-                      "writable resume stays deactivated."),
+        "owner": ("web/app.py show_session cold-load + resume_project + "
+                  "engine/session_reconstruction.py"),
+        "invariant": ("Un-established reconstructed cold views are READ-ONLY "
+                      "and unanswerable (no form/token; forged POSTs fail "
+                      "closed; rendering writes nothing durable); writable "
+                      "continuation exists ONLY through the explicit, "
+                      "ownership-checked establishment POST, which itself "
+                      "performs zero durable writes."),
         "blocking": True,
-        "blocking_condition": "read-only render or non-resume guard test fails",
+        "blocking_condition": ("read-only render, un-established guard, or "
+                               "establishment-boundary test fails"),
         "canonical_tests": [
             "tests/test_p10_pc1_reconstructed_review_ui.py::test_cold_render_makes_no_durable_write",
             "tests/test_p10_pc1_reconstructed_review_ui.py::test_non_resume_guard_untouched",
+            "tests/test_p10_pc3_true_writable_resume.py::test_unestablished_cold_state_remains_unanswerable",
+            "tests/test_p10_pc3_true_writable_resume.py::test_establishment_is_explicit_and_non_durable",
         ],
-        "rationale": "Accidental writable-resume activation is a governed-boundary violation.",
-        "introduced_by": "P10-PC1 (composed by P10-UG1)",
+        "rationale": ("Un-governed writable-resume activation was a boundary "
+                      "violation; the governed capability must stay explicit, "
+                      "owned, and non-durable at establishment."),
+        "introduced_by": "P10-PC1 (composed by P10-UG1; superseded by P10-PC3)",
+    },
+    {
+        "guard_id": "UG-CORE-16",
+        "owner": ("web/app.py resume_project + submit_answer + "
+                  "engine/record_store.py (durable idempotency)"),
+        "invariant": ("Resume integrity: historical accepted answers are never "
+                      "re-appended; after resume, answer N+1 appends exactly "
+                      "once under the durable idempotency model; no transient "
+                      "history is fabricated; restart-after-resume resumes "
+                      "again correctly from durable truth."),
+        "blocking": True,
+        "blocking_condition": "any resume-integrity test fails",
+        "canonical_tests": [
+            "tests/test_p10_pc3_true_writable_resume.py::test_prior_answers_unchanged_and_n_plus_1_appends_exactly_once",
+            "tests/test_p10_pc3_true_writable_resume.py::test_b1_interleaved_nonanswer_history_resume_appends_safely",
+            "tests/test_p10_pc3_true_writable_resume.py::test_b1_multiple_interleaved_nonanswers_and_sparse_ids",
+            "tests/test_p10_pc3_true_writable_resume.py::test_duplicate_retry_does_not_reappend",
+            "tests/test_p10_pc3_true_writable_resume.py::test_restart_after_resume_resumes_again",
+            "tests/test_p10_pc3_true_writable_resume.py::test_no_fabricated_history_in_resumed_context",
+        ],
+        "rationale": ("The durable ledger is the product's memory; resume must "
+                      "never duplicate, rewrite, or fabricate it."),
+        "introduced_by": "P10-PC3",
     },
     {
         "guard_id": "UG-CORE-09",
