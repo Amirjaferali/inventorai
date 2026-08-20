@@ -126,7 +126,7 @@ security standard, or release authority.
 |---|---|---|---|---|
 | RL-G1 | Phase 10 closure | FORMAL CLOSURE RECORD CREATED (authoritative on merge) | `docs/governance/PHASE_10_FORMAL_CLOSURE_RECORD.md`; P10-CL0 (PR #538, `OD-P10-CL0-STRUCTURE` Option 2) | PHASE 10 FORMALLY CLOSED under Option 2 when the closure record is merged and post-merge verified; closure binds every open obligation to its hard-blocking lane and converts NOTHING to complete; PHASE-10 CLOSURE ≠ RELEASE APPROVAL |
 | RL-G2 | PSRR REGISTERED | IMPLEMENTED LOCAL FOUNDATION (registration only) | `PSRR_..._REGISTRATION.md` | registered; 37-item minimum scope |
-| RL-G3 | PSRR TRIGGERED | OPEN (NOT TRIGGERED) | PSRR registration §4 | trigger = intent to reach FIRST PUBLIC PRODUCTION DEPLOYMENT; nothing has moved it; this checklist does not trigger it |
+| RL-G3 | PSRR TRIGGERED | TRIGGER CONDITION MET (OD-FR1) — EXECUTION NOT AUTHORIZED / NOT STARTED | PSRR registration §4; OD-FR1 (durably recorded in `docs/governance/PSRR_C1_PSRR_EXECUTION_CONTRACT.md` §2) | trigger = intent to reach FIRST PUBLIC PRODUCTION DEPLOYMENT; OD-FR1 (Owner intent = YES) establishes that fact; execution remains separately authorized; this checklist does not trigger it |
 | RL-G4 | PSRR EXECUTED | OPEN (NOT EXECUTED) | PSRR registration §4 | — |
 | RL-G5 | PSRR GO/NO-GO | OPEN (NO GO EXISTS) | same §5–§6 | public production BLOCKED until PSRR = GO |
 | RL-G6 | Deployment authorization | BLOCKED | OD-P (ODR) | separate deployment gate + explicit Owner authorization, both required |
@@ -151,4 +151,6 @@ PHASE-10 CLOSURE ≠ RELEASE APPROVAL — every deferred obligation stays in its
 (The earlier "PHASE 10 CLOSURE ELIGIBLE NOW: NO" line was superseded by the Owner-accepted P10-CL0
 eligibility determination and Option-2 structure decision, PR #538.)
 PAID ACTIVATION AUTHORIZED: NO        PSRR TRIGGERED: NO        DEPLOYMENT AUTHORIZED: NO
+("PSRR TRIGGERED: NO" = PSRR gate execution has NOT begun and is NOT authorized. Per RL-G3, the §4
+trigger CONDITION is now met by the OD-FR1 Owner intent; execution requires separate authorization.)
 ```

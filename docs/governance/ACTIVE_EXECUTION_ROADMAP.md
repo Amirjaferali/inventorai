@@ -12370,3 +12370,78 @@ implementation; no runtime/schema/guardrail change. `OWNER_DECISION_REGISTER.md`
 closure precedent; NB8 register housekeeping remains future). Authoritative ONLY if/when this exact
 candidate is merged and post-merge verified. Next required step: Independent External Review of this
 exact SHA + bundle.
+
+---
+
+## PSRR-C1 — PSRR Execution Contract (Owner-authorized GOVERNANCE-ONLY candidate)
+
+**Base:** `aab8f365f1bd37523dbbbf970533f8e5ecf3ce42` (PR #539 merge — Phase-10 Formal Closure,
+authoritative; independently re-verified live: first parent `adfe203a…`, second parent `3ac06dca…`,
+merge tree `4d76957f…` = accepted candidate tree, empty candidate→merge diff; post-merge smoke PASS;
+post-merge RL1 10 passed). **Phase-10 Formal Closure synchronization (recorded per convention):**
+candidate `3ac06dca305f2c36bd3c50ccd26daf70bafda802` Owner-accepted at exact SHA and MERGED via
+PR #539 — **PHASE 10 FORMALLY CLOSED: YES; OPTION 2 CLOSURE STRUCTURE AUTHORITATIVE** (closure ≠
+legal/tax/commercial readiness ≠ PSRR ≠ deployment ≠ paid activation ≠ release approval). Independent
+Review: ACCEPT WITH NON-BLOCKING OBSERVATIONS (PHASE10-CLOSE-N1…N6 carried forward; independent full
+suite 2951/3/1/0).
+
+**Post-closure accepted read-only gates at this tip (session-level; first durable record here and in
+the PSRR-C1 contract):** FR-GS1 — First-Release Post-Phase-10 Gate Selection (determined: trigger =
+Owner intent; parallel lanes = adviser intake / brand / infrastructure; a FREE first public deployment
+is structurally permitted by current authority but skips no legal/brand/PSRR/deployment requirement;
+next gate = Owner decision OD-FR1) and the PSRR Entry Reconstruction (entry CONDITIONAL; application-
+layer tranche startable once execution is authorized; provider-dependent tranche gated on
+infrastructure facts; next gate = PSRR-C1).
+
+**Owner decisions recorded durably by this candidate (first repository recording; ODR row additions =
+future housekeeping per the NB8 pattern):** (1) **OD-FR1 — FIRST PUBLIC PRODUCTION DEPLOYMENT INTENT:
+YES** — establishes ONLY the PSRR §4 trigger FACT; PSRR: REGISTERED — TRIGGER CONDITION MET BY OWNER
+INTENT — EXECUTION NOT AUTHORIZED / NOT STARTED; parallel Owner authorization to begin the P10-LT1
+external legal/tax adviser commissioning (Owner-side act; no internal legal/tax conclusions; unrelated
+technical work never blocked). (2) **Owner tax-governance foundation:** no Kuwait-specific
+platform/subscription tax is assumed or activated; no invented tax charged or displayed; no hard-coded
+never-taxed assumption; future tax treatment remains configuration-driven and activatable only under
+then-current applicable law, platform/store rules, transaction jurisdiction, payment/MoR structure, or
+a separately authorized commercial decision; FOUNDATION/NO-FORECLOSURE only (consistent with P8-I4
+`PaymentProviderPort` + OD-CJ1 — nothing implemented); user-facing UX may show only actually
+applicable taxes/fees; transaction-level tax distinguished from entity/accounting obligations (only
+the product-development question is resolved: SPECULATIVE TAX IMPLEMENTATION REQUIRED NOW: NO);
+official-source research first, professional tax validation reserved for material unresolved questions
+or where a formal opinion is required before commercial activation; **TQ-01…TQ-13 preserved OPEN**
+with the amended resolution pathway (never erased; commercial/paid-activation blocks unchanged).
+
+**Delivered (this candidate — governance-only, five documentation surfaces, zero runtime/test
+diff).** New `docs/governance/PSRR_C1_PSRR_EXECUTION_CONTRACT.md`: complete 37-item execution matrix
+(per-item tranche, current state from live RL rows, evidence, method, dependency, owner, start-now,
+GO-blocking, deployment-blocking, outstanding-risk treatment); application-layer tranche EXECUTABLE
+IMMEDIATELY once execution is authorized (items 1–7, app halves of 8/14/23–25, 11, 12, 13, 15-controls,
+20, 27, 29, 30, 33 — executable work never deferred because provider items remain open);
+provider-dependent tranche (9, 10, 17–19 production form, 21, 22, 26, 28, 31, 32, 34 + production
+halves + HSTS reassessment) runnable fully in parallel once infrastructure facts exist; legal/policy
+treatment (controls verifiable now; substance adviser-open; §9 outstanding-risk register eligibility
+determined at items 35–37, not pre-decided; legal artifacts + brand block DEPLOYMENT regardless of
+GO); GO/NO-GO model preserved verbatim (only recorded GO + OD-P deployment gate + explicit Owner
+deployment authorization removes the public-production block); infrastructure-gate relationship with
+**OD-J2 §3.2 kept to its exact scope (hosting provider + production region ONLY)** and the named
+governance gap registered — proposed **INFRA-G1 — Production Infrastructure Selection & Configuration
+Gate** for TLS/proxy (P10-SEC1 owner), monitoring (P10-OB1), backup (P10-BR1), email
+(`engine/email_sender.py`) — identified, NOT opened, nothing selected; payment/MoR explicitly outside
+INFRA-G1. Surfaces synchronized: `CURRENT_PROJECT_STATE.md` (closure rotated to MERGED/AUTHORITATIVE
+with history; PSRR-C1 entry), `ACTIVE_INCREMENT_CONTRACT.md` (rotation),
+`PHASE_10_RELEASE_READINESS_CHECKLIST.md` (RL-G3 → trigger-condition-met truth with OD-FR1 source;
+blocking-box semantic note "PSRR TRIGGERED: NO = gate execution not begun/authorized"; every pinned
+invariant preserved — RL1 suite green; no test change).
+
+**Evidence.** Smoke PASS at base (pre-candidate) and re-verified at candidate; RL1 structural suite
+green at candidate; **Creator full-suite determination (§5B.1, recorded openly):** zero executable
+bytes change and no §5B.6 trigger — full suite NOT rerun; the authoritative full-suite truth
+2951 passed / 3 skipped / 1 xfailed / 0 failures stands from the Phase-10 closure gate at this same
+tree lineage and its independent reviewer reproduction. Adversarial governance truth sweep UNSUPPORTED
+MATERIAL CLAIMS: 0.
+
+**Boundaries.** PSRR EXECUTION NOT AUTHORIZED / NOT STARTED (separate Owner authorization against the
+frozen contract required); DEPLOYMENT AUTHORIZED: NO; PAID ACTIVATION AUTHORIZED: NO (`D-P8-PL-01
+class C`); no provider/vendor/tool selection; no tax implementation; no legal/tax conclusion; no
+brand selection; no future-domain work (DOMEX-D1 deferred). `OWNER_DECISION_REGISTER.md` UNCHANGED.
+Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next required step:
+Independent External Review of this exact SHA + bundle (§5B.13 incl. mandatory independent smoke).

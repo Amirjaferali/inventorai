@@ -41,7 +41,46 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — PHASE 10 FORMAL CLOSURE RECORD: Owner-authorized GOVERNANCE-ONLY candidate):**
+**Status (current — PSRR-C1 PSRR EXECUTION CONTRACT: Owner-authorized GOVERNANCE-ONLY candidate):**
+Base: `aab8f365f1bd37523dbbbf970533f8e5ecf3ce42` (PR #539 merge — Phase-10 Formal Closure,
+authoritative; independently re-verified live: first parent `adfe203a…`, second parent `3ac06dca…`,
+merge tree `4d76957f…` = accepted candidate tree, empty candidate→merge diff). **PHASE 10 FORMALLY
+CLOSED — OPTION 2 AUTHORITATIVE.**
+
+**Objective.** ONE governance-only candidate creating
+`docs/governance/PSRR_C1_PSRR_EXECUTION_CONTRACT.md`: the PSRR 37-item registered minimum scope
+instantiated into an item-by-item execution contract (application-layer / provider-dependent /
+policy-legal / final-evidence / decision tranches; per-item evidence, method, dependency, owner,
+start-now, GO-blocking, deployment-blocking, and outstanding-risk treatment); first durable recording
+of `OD-FR1` (deployment intent = YES — PSRR §4 trigger FACT only) and of the Owner tax-governance
+foundation (no speculative tax implementation; configuration-driven future treatment as no-foreclosure
+only; TQ registers preserved OPEN with amended resolution pathway); infrastructure-gate relationship
+with OD-J2 §3.2 kept to its exact scope (hosting + region) and the INFRA-G1 selection-gate governance
+gap named (nothing opened or selected); GO/NO-GO model preserved verbatim; execution / deployment /
+paid-activation separations intact. Allowed paths: the new contract +
+`ACTIVE_EXECUTION_ROADMAP.md` + `CURRENT_PROJECT_STATE.md` + `ACTIVE_INCREMENT_CONTRACT.md` +
+`PHASE_10_RELEASE_READINESS_CHECKLIST.md` (RL-G3 trigger-truth sync only, pins preserved). Forbidden:
+all runtime/test/schema/guardrail paths; `OWNER_DECISION_REGISTER.md`; any provider selection; any tax
+implementation; starting PSRR execution.
+
+**Evidence.** Governance-only docs diff; smoke PASS at base and re-verified at candidate; RL1
+structural suite green at candidate; §5B.1 Creator full-suite determination recorded openly (zero
+executable bytes — not an implementation candidate; no §5B.6 trigger; authoritative full-suite truth
+2951/3/1/0 stands from the Phase-10 closure gate and its independent reproduction); adversarial
+governance truth sweep UNSUPPORTED MATERIAL CLAIMS: 0.
+
+**Boundaries:** PSRR EXECUTION NOT AUTHORIZED / NOT STARTED (requires separate Owner authorization
+against the frozen contract); DEPLOYMENT AUTHORIZED: NO (OD-P two-part preserved); PAID ACTIVATION
+AUTHORIZED: NO (`D-P8-PL-01 class C` preserved); SPECULATIVE TAX IMPLEMENTATION REQUIRED NOW: NO; no
+provider/vendor/tool selection; no legal/tax conclusion; no future-domain work.
+`OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY if/when this exact candidate is merged and
+post-merge verified. Next required step: **Independent External Review of this exact SHA + bundle**
+(§5B.13 path incl. the mandatory independent smoke).
+
+**Immediately prior (PHASE 10 FORMAL CLOSURE RECORD — governance-only candidate `3ac06dca…`
+Owner-accepted at that exact SHA and MERGED via PR #539, tip
+`aab8f365f1bd37523dbbbf970533f8e5ecf3ce42`; now AUTHORITATIVE — PHASE 10 FORMALLY CLOSED, OPTION 2
+STRUCTURE AUTHORITATIVE; retained as history):**
 Base: `adfe203a84a66028b7a1f943920084108f6cc48c` (PR #538 merge — P10-CL0, authoritative; independently
 re-verified live: first parent `2f77e8e8…`, second parent `deeb046e…`, merge tree `2b62bf57…` = accepted
 candidate tree, empty candidate→merge diff).

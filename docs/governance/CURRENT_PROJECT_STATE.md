@@ -2424,7 +2424,46 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
-- **Phase 10 — FORMAL CLOSURE RECORD (Owner-authorized GOVERNANCE-ONLY candidate, PR pending), base
+- **PSRR-C1 — PSRR EXECUTION CONTRACT (Owner-authorized GOVERNANCE-ONLY candidate, PR pending), base
+  `aab8f365f1bd37523dbbbf970533f8e5ecf3ce42` (PR #539 merge — Phase-10 Formal Closure, authoritative;
+  first parent `adfe203a…`, second parent `3ac06dca…`, merge tree `4d76957f…` = accepted candidate tree,
+  empty candidate→merge diff — independently re-verified live).** Creates
+  `docs/governance/PSRR_C1_PSRR_EXECUTION_CONTRACT.md`: the registered PSRR 37-item minimum scope
+  instantiated item-by-item (tranches: application-layer EXECUTABLE NOW; provider/production-dependent;
+  policy/legal-dependent; final evidence/independent review; GO/NO-GO decision) with evidence model
+  (§9), independence (§10), and vendor neutrality (§11) preserved; **first durable repository recording
+  of `OD-FR1` — FIRST PUBLIC PRODUCTION DEPLOYMENT INTENT: YES** (establishes ONLY the PSRR §4 trigger
+  FACT; PSRR: REGISTERED — TRIGGER CONDITION MET BY OWNER INTENT — EXECUTION NOT AUTHORIZED / NOT
+  STARTED; parallel Owner authorization to begin the P10-LT1 external legal/tax adviser commissioning,
+  Owner-side); **durable recording of the Owner tax-governance foundation** (no speculative Kuwait
+  platform/subscription tax implementation; no invented tax charged/displayed; no hard-coded
+  never-taxed assumption; configuration-driven future tax treatment as FOUNDATION/NO-FORECLOSURE only,
+  consistent with P8-I4 `PaymentProviderPort` + OD-CJ1; transaction-tax vs entity-accounting
+  distinction; official-source research first with professional validation reserved; TQ-01…TQ-13
+  preserved OPEN with amended resolution pathway — never erased); infrastructure-gate relationship
+  (OD-J2 §3.2 exact scope = hosting provider + production region ONLY; named governance gap registered:
+  proposed INFRA-G1 for TLS/proxy, monitoring, backup, email surfaces under their canonical owners —
+  identified, NOT opened, nothing selected); GO/NO-GO model preserved verbatim; PSRR
+  execution/deployment/paid-activation separations intact. RL checklist RL-G3 row + blocking-box note
+  synchronized to the trigger-condition-met truth (all pinned invariants preserved; RL1 suite green).
+  Governance-only; zero runtime/test diff. PSRR EXECUTION STARTED: NO; DEPLOYMENT AUTHORIZED: NO; PAID
+  ACTIVATION AUTHORIZED: NO. `OWNER_DECISION_REGISTER.md` UNCHANGED (OD-FR1 row = future housekeeping,
+  NB8 pattern). Authoritative ONLY if/when this exact candidate is merged and post-merge verified.
+
+- **Phase 10 — FORMAL CLOSURE RECORD: MERGED / AUTHORITATIVE (candidate
+  `3ac06dca305f2c36bd3c50ccd26daf70bafda802` Owner-accepted at that exact SHA, PR #539, tip
+  `aab8f365f1bd37523dbbbf970533f8e5ecf3ce42`; first parent `adfe203a…`, second parent `3ac06dca…`,
+  merge tree `4d76957f…` = candidate tree, empty candidate→merge diff — independently re-verified;
+  post-merge smoke PASS; post-merge RL1 10 passed).** **PHASE 10 FORMALLY CLOSED: YES — OPTION 2
+  CLOSURE STRUCTURE AUTHORITATIVE** (closure ≠ legal/tax/commercial readiness ≠ PSRR ≠ deployment ≠
+  paid activation ≠ release approval; no deferred obligation completed by closure). Independent Review:
+  ACCEPT WITH NON-BLOCKING OBSERVATIONS (PHASE10-CLOSE-N1…N6 carried forward; independent full suite
+  2951/3/1/0). Subsequent accepted read-only gates at this tip: **FR-GS1** (next gate = Owner decision
+  OD-FR1; free-vs-paid deployment relationship determined) and the **PSRR Entry Reconstruction** (PSRR
+  TRIGGER FACT: TRUE upon OD-FR1; entry CONDITIONAL; next gate PSRR-C1). (Original candidate-stage
+  bullet retained below as history.)
+
+- **(superseded history) Phase 10 — FORMAL CLOSURE RECORD (was: Owner-authorized GOVERNANCE-ONLY candidate, PR pending), base
   `adfe203a84a66028b7a1f943920084108f6cc48c` (PR #538 merge — P10-CL0, authoritative; first parent
   `2f77e8e8…`, second parent `deeb046e…`, merge tree `2b62bf57…` = accepted candidate tree, empty
   candidate→merge diff — independently re-verified live).** Creates
