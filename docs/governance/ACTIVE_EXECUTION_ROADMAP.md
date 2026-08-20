@@ -12139,3 +12139,59 @@ paid activation; no provider selection; no legal/tax conclusion; no new domain.
 `OWNER_DECISION_REGISTER.md` UNCHANGED. Review tier: **LEVEL 1**. Authoritative ONLY if/when this exact
 candidate is merged and post-merge verified. Next required step: **formal Independent External Review of
 this exact SHA + bundle**.
+
+## GOV-RBR1 — Risk-Based Independent Review & Evidence Reuse (Owner-authorized governance-only amendment candidate)
+
+**Base:** `bf7fe7ce1b180ecfe78c1d790b6c4e6eb63ce159` (PR #535 merge — P10-PC3 True Writable Resume repair
+implementation, authoritative; independently re-verified: parents `cfad3feb…`/`be8bba16…`, merge tree
+`c3876b5a…` equal to the accepted candidate tree, empty candidate→merge diff). **P10-PC3 synchronization
+(recorded here per repository convention):** the repair candidate `be8bba16…` was Owner-accepted at that
+exact SHA and MERGED via PR #535 — **P10-PC3 AUTHORITATIVE: YES.** True Writable Resume is live: a
+returning user explicitly resumes an eligible durable project and continues the deterministic journey
+with exactly-once durable appends (B1 repaired at the canonical mint). The previously rejected candidate
+`ee8a0dad…` remains immutable rejected evidence (local branch `p10-pc3-rejected-evidence` + its bundle,
+per reviewer O1). **P10-PC3 reviewer observations carried forward:** O1 retained (rejected-evidence
+record local); O2 — one stale conservative inline comment in `engine/session_reconstruction.py` — is
+DEFERRED to the next code-touching synchronization (this candidate is governance-only by authorization
+and touches no code); O3 adopted (full-suite truth `2951/3/1/0` is the authoritative count; the "104
+passed lane" grouping was environment-selection dependent); O4 adopted (same-token same-content retry
+messaging after target-gap shift is pre-existing C3 behavior — scope not expanded).
+
+**Authorization & scope.** Owner directive "RISK-BASED INDEPENDENT REVIEW & EVIDENCE REUSE" —
+GOVERNANCE-ONLY amendment; no runtime implementation, no product change, no guardrail change, no review
+waiver. Baseline smoke on the base: `UNIVERSAL GUARDRAIL SMOKE: PASS`.
+
+**Canonical owner decision.** Review policy is owned by
+`LEAN_GOVERNANCE_AND_AGENT_CONTINUITY_PROTOCOL.md` (§3 change-risk levels; §4 review depth; §5
+independent-review policy; §5A adversarial self-review). Per the Owner's preference the amendment is made
+IN the canonical owner — new **§5B "Risk-Based Independent Review & Evidence Reuse"** — rather than as an
+overlapping standard; no duplicate governance authority is created; the Universal Guardrail standard's
+§7 (which defers to the protocol) is untouched.
+
+**Delivered (this candidate).** LEAN protocol §5B (16 clauses): CREATOR EVIDENCE definition with
+unchanged Creator obligations (full lifecycle incl. mandatory Creator full suite); evidence reuse only
+after independent identity verification (exact SHA/parent/tree/bundle SHA-256/prerequisite/diff/no
+post-evidence mutation) and never as blind trust; the 11-item universal review minimum never replaced by
+Creator evidence; LEVEL 1 — Reviewer full suite remains mandatory (only subsumed-sub-suite skipping
+permitted); LEVEL 2 — conditional reuse of Creator full-suite evidence under conjunctive conditions A–H
+with the standardized report line; 15 explicit LEVEL-2 full-suite triggers plus unconditional reviewer
+escalation authority; LEVEL 3 unchanged (no mechanical escalation, no removal of directed review);
+repair-after-REJECT conservative rule (re-test the blocking defect + new adversarial probing; LEVEL-1
+repair full suite mandatory; LEVEL-2 prior rejection is itself a trigger); Universal Smoke role bounded
+(fast filter, never a full-suite substitute); no-duplicate-testing rule with recorded substitution;
+reviewer value shifted to novel adversarial work with the PC3/B1 lesson codified truthfully (found by a
+NEW reviewer-designed scenario; the LEVEL-1 full-suite rerun still valuable — no overclaim); mandatory
+review evidence-reporting table (SOURCE/RERUN/REASON/RESULT with the three standard labels);
+governance-only review optimization (no runtime suites merely for markdown, with smoke/trigger
+exceptions); no silent review downgrade (tier must be source-backed against §3; downgrades need explicit
+authority); the explicit quality floor; and the performance objective (less duplicate execution, more
+reviewer novelty, same-or-higher defect detection; no artificial SLA).
+
+**Boundaries (binding).** Governance-only diff (protocol §5B + the three governance surfaces); zero
+runtime/test/guardrail change; nothing in §5B weakens §3–§5A, the UG framework, Owner exact-SHA
+acceptance, merge integrity, or any mandatory review; §12's non-weakening guarantee applies to the
+amendment itself. No Phase-10 closure; no PSRR; no deployment; no paid activation; no provider
+selection; no legal/tax conclusion; no new domain. `OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative
+ONLY if/when this exact candidate is merged and post-merge verified. Next required step: **Independent
+External Review of this exact SHA + bundle** (per §5B.13, a governance-only review; an independent smoke
+run applies).
