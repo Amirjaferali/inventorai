@@ -2,6 +2,16 @@
 
 **Status:** READINESS TRUTH SURFACE (candidate until merged and post-merge verified).
 **Base at authoring:** `b1a0196aaf1f6892996c618c69cb341872ecaf52` (PR #526 merge — P10-DEP1, authoritative).
+**Point-in-time refresh (P10-CL0):** stale point-in-time values refreshed at base
+`2f77e8e8b633497adee6ea32a6002a7c5860979e` (PR #537 merge — GAP-SYNC-01, authoritative): RL-A1 suite
+counts (fresh live run at that base) and new row RL-A10 (product-completion gates merged after this
+checklist's authoring base: P10-DBT1/PC1/UG1/PC2/PC3, PRs #530–#535; plus governance GOV-RBR1 PR #536
+and GAP-SYNC-01 PR #537). No gate status changed by the refresh: PSRR remains NOT TRIGGERED / NOT
+EXECUTED; deployment remains not authorized; paid activation remains hard-blocked; all legal/tax rows
+remain DEFERRED — EXTERNAL ADVISER REQUIRED; all provider rows remain NOT SELECTED. The Phase-10
+closure-disposition matrix lives at
+`docs/governance/P10_CL0_PHASE10_CLOSURE_PRECONDITION_CONSOLIDATION_GATE.md` (dispositions PROPOSED,
+Owner-decidable; this checklist remains the per-row truth surface and owns no decision).
 **Structural invariants:** enforced by `tests/test_p10_rl1_release_readiness_checklist.py`.
 
 ```
@@ -33,7 +43,7 @@ security standard, or release authority.
 
 | ID | Item | Status | Source (section) | Current truth / boundary | Blocks |
 |---|---|---|---|---|---|
-| RL-A1 | Full application test suite | IMPLEMENTED LOCAL FOUNDATION | `tests/` (full suite) | 2854 passed / 3 skipped / 1 xfailed / 0 failures at this base (live run) | — |
+| RL-A1 | Full application test suite | IMPLEMENTED LOCAL FOUNDATION | `tests/` (full suite) | 2951 passed / 3 skipped / 1 xfailed / 0 failures at the P10-CL0 refresh base `2f77e8e8…` (fresh live run; earlier authoring-base value 2854/3/1/0 superseded as point-in-time) | — |
 | RL-A2 | Authentication/session foundations | IMPLEMENTED LOCAL FOUNDATION | `web/app.py`; `engine/account_store.py`; `engine/auth_session.py` | register/login/verify/recover/reset/logout-all; scrypt; epoch revocation; HttpOnly/SameSite/production-gated Secure | production auth posture: PSRR-TIME |
 | RL-A3 | Authorization/ownership isolation | IMPLEMENTED LOCAL FOUNDATION | P5-3; P7-I2; `web/api_v1.py` | owner-only project access; non-enumerating denials | formal review: PSRR-TIME (items 4–5) |
 | RL-A4 | CSRF protection | IMPLEMENTED LOCAL FOUNDATION | `web/app.py` `_csrf_valid` | token check on state-changing routes | — |
@@ -42,6 +52,7 @@ security standard, or release authority.
 | RL-A7 | Dependency-audit foundation | IMPLEMENTED LOCAL FOUNDATION | P10-DEP1; `scripts/run_dependency_audit.py`; evidence `docs/governance/evidence/phase10_p10_dep1/` | POINT-IN-TIME ONLY: pip-audit 2.10.1, 11 packages from `requirements.txt`, 0 findings at 2026-08-19T21:24:47Z — advisory data changes; NO continuous scanning; NO auto-remediation; NOTE: `tests/requirements-draft-l2.txt` is a separate TEST-ONLY declaration (playwright pins) NOT covered by that audit run | formal review: PSRR-TIME (items 12–13) |
 | RL-A8 | Project/export/deactivation behavior | IMPLEMENTED LOCAL FOUNDATION | P10-D3a/P10-D3b (merged PRs #511/#513) | project-scoped export; deactivation = status tombstone, NOT physical erasure | account-wide export / erasure: RL-D4/RL-D5 |
 | RL-A9 | Persistence/integrity safeguards | IMPLEMENTED LOCAL FOUNDATION | `engine/account_store.py`; `engine/record_store.py` | durable SQLite, BEGIN IMMEDIATE transactions, fail-closed stores | production datastore topology: DEPLOYMENT-TIME |
+| RL-A10 | Product completion (restart story) + universal guardrails + Phase-9 debts | IMPLEMENTED LOCAL FOUNDATION | P10-DBT1/P10-PC1/P10-UG1/P10-PC2/P10-PC3 (PRs #530–#535); `scripts/run_universal_smoke.py`; `tests/universal_guardrail_manifest.py` | read-only reconstructed review state, truthful cold-load deliverable, governed explicit writable resume; universal guardrail smoke (blocking guards + attribution); Phase-9 registered debts remediated; capability truth only — does NOT imply production readiness | — |
 
 ## B. Operational
 

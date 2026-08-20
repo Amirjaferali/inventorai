@@ -2424,7 +2424,42 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
-- **Governance — GAP-SYNC-01 WORDING TRUTH SYNCHRONIZATION (Owner-authorized bounded LEVEL-2
+- **Phase 10 — P10-CL0 CLOSURE-PRECONDITION CONSOLIDATION & OPEN-OBLIGATION DISPOSITION GATE
+  (Owner-authorized GOVERNANCE-ONLY LEVEL-2 candidate, PR pending), base
+  `2f77e8e8b633497adee6ea32a6002a7c5860979e` (PR #537 merge — GAP-SYNC-01, authoritative; first parent
+  `38da08da…`, second parent `087c1d18…`, merge tree `0d337986…` = accepted candidate tree, empty
+  candidate→merge diff — independently re-verified live).** Consolidates every remaining Phase-10
+  obligation into an explicit closure-disposition matrix (all eleven P10-C §4 rows, subdivided per the
+  P10-RL1 truth surface; dispositions PROPOSED — authoritative only on Owner acceptance); synchronizes
+  GOV-RBR1 (PR #536) and GAP-SYNC-01 (PR #537) authoritative statuses and the Owner-accepted Product
+  Completion diagnosis (CORE PRODUCT FUNCTIONALLY COMPLETE: YES; NEW CORE IMPLEMENTATION REQUIRED NOW:
+  NO); durably records the read-only SPACE-D1 and Domain Expansion Strategy Reconstruction diagnoses
+  with the explicit deferral (DOMEX-D1 DEFERRED UNTIL AFTER FIRST RELEASE; no SPACE-C1/IOT-C1/
+  Renewable/Drone contract; NO current future-domain implementation authorized; OD-H priority order
+  unchanged); registers GAP-SYNC-01-NB1/NB2/NB3 (non-blocking, deferred; NB3 namespacing adopted);
+  refreshes the P10-RL1 checklist point-in-time facts (RL-A1 → 2951/3/1/0 fresh live run at this base;
+  new RL-A10 product-completion row; header refresh note — all pinned invariants preserved, structural
+  suite green); isolates the single Owner structure decision `OD-P10-CL0-STRUCTURE` (Option 1 hold-open
+  vs Option 2 close-with-dispositions); and determines PHASE 10 CLOSURE ELIGIBLE AFTER OWNER
+  ACCEPTANCE: YES (conditional on that decision; formal closure record remains a separate future gate —
+  NOT created). PSRR remains REGISTERED / NOT TRIGGERED / NOT EXECUTED; DEPLOYMENT AUTHORIZED: NO
+  (OD-P two-part preserved); PAID ACTIVATION AUTHORIZED: NO (`D-P8-PL-01 class C` preserved); no
+  provider selected; no legal/tax conclusion. Governance-only; zero runtime/test/schema/guardrail diff.
+  `OWNER_DECISION_REGISTER.md` UNCHANGED. Full detail:
+  `docs/governance/P10_CL0_PHASE10_CLOSURE_PRECONDITION_CONSOLIDATION_GATE.md`. Authoritative ONLY
+  if/when this exact candidate is merged and post-merge verified.
+
+- **Governance — GAP-SYNC-01 WORDING TRUTH SYNCHRONIZATION: MERGED / AUTHORITATIVE (candidate
+  `087c1d18341daf71a92e1369b9b084b3a0fb94f8` Owner-accepted at that exact SHA, PR #537, tip
+  `2f77e8e8b633497adee6ea32a6002a7c5860979e`; first parent `38da08da…`, second parent `087c1d18…`,
+  merge tree `0d337986…` = candidate tree, empty candidate→merge diff — independently re-verified).**
+  The six wording/truth residuals (GOV-RBR1 O1–O5 + PC3-O2 comment-only correction) are synchronized in
+  the canonical owners. Independent Review: ACCEPT WITH NON-BLOCKING OBSERVATIONS (NB1–NB3 carried
+  forward, registered at P10-CL0); first §5B evidence-reuse review (`FULL SUITE: CREATOR EVIDENCE
+  REUSED — INDEPENDENT RERUN NOT TRIGGERED`). (Original candidate-stage bullet retained below as
+  history.)
+
+- **(superseded history) Governance — GAP-SYNC-01 WORDING TRUTH SYNCHRONIZATION (was: Owner-authorized bounded LEVEL-2
   candidate, PR pending), base `38da08dae389f74279082e1341e220dbc0f80851` (PR #536 merge — GOV-RBR1,
   authoritative; parents `bf7fe7ce…`/`1759b148…`, merge tree `1aa5c469…` = candidate tree, empty
   candidate→merge diff — independently re-verified).** First gate under authoritative LEAN §5B.
