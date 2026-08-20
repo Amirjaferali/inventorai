@@ -41,7 +41,45 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — PSRR-C1 PSRR EXECUTION CONTRACT: Owner-authorized GOVERNANCE-ONLY candidate):**
+**Status (current — PSRR APPLICATION-LAYER TRANCHE EXECUTION RECORD: Owner-authorized GOVERNANCE-ONLY
+recording candidate):** Base: `274652a51c2132500c8c6b79e5666932f4ba77da` (PR #540 merge — PSRR-C1,
+authoritative; independently re-verified live: first parent `aab8f365…`, second parent `2b694597…`,
+merge tree `be57a33a…` = accepted candidate tree, empty candidate→merge diff).
+
+**Objective.** ONE governance-only recording candidate creating
+`docs/governance/PSRR_APPLICATION_LAYER_TRANCHE_EXECUTION_RECORD.md`: the Owner-accepted,
+independently reviewed PSRR application-layer tranche recorded as EXECUTED (scope owner = PSRR-C1
+§5.1; grouped-rows-vs-items precision per reviewer OBS-5: 17 grouped execution rows / 19 contract line
+entries / 21 distinct PSRR item numbers; registered PSRR minimum remains 37); reviewed evidence
+recorded faithfully (Creator targeted 207 passed; Creator AND Independent full suites both 2951/3/1/0
+— the independent rerun escalated under GOV-RBR1 after an environment-caused smoke BLOCK that was NOT
+a candidate defect; smokes PASS; fresh dependency audit zero known findings, point-in-time; zero
+runtime modification during execution; RUNTIME IMPLEMENTATION REQUIRED: NO); reviewer observations
+OBS-1…OBS-5 dispositioned (OBS-1 CSRF claim-accuracy correction recorded — resume does NOT use the
+answer-flow HMAC mechanism; OBS-5 resolved in-record; OBS-2/3/4 carried forward non-blocking, nothing
+implemented); PSRR-C1 N1/N2/N3 preserved; remaining PSRR work enumerated (provider tranche, production
+halves, policy substance, items 35–37) with PSRR GO ELIGIBLE: NO and PSRR COMPLETE: NO. Allowed paths:
+the new record + `ACTIVE_EXECUTION_ROADMAP.md` + `CURRENT_PROJECT_STATE.md` +
+`ACTIVE_INCREMENT_CONTRACT.md` + `PHASE_10_RELEASE_READINESS_CHECKLIST.md` (RL-G4 partial-execution
+truth only, pins preserved). Forbidden: all runtime/test/schema/guardrail paths;
+`OWNER_DECISION_REGISTER.md`; implementing any observation; additional PSRR execution; INFRA-G1;
+provider selection.
+
+**Evidence.** Governance-only docs diff; smoke PASS at base and re-verified at candidate; RL1
+structural suite green at candidate; §5B.1 determination recorded openly (zero executable bytes — not
+an implementation candidate; no §5B.6 trigger; the authoritative full-suite truth 2951/3/1/0 stands
+from BOTH the Creator tranche run and the Independent Reviewer rerun at this exact tip); adversarial
+governance truth sweep UNSUPPORTED MATERIAL CLAIMS: 0.
+
+**Boundaries:** records execution state only — PSRR NOT COMPLETE; NO GO; DEPLOYMENT AUTHORIZED: NO;
+PAID ACTIVATION AUTHORIZED: NO; no provider selection; no observation implemented; no additional
+tranche executed; no future-domain work. `OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY
+if/when this exact candidate is merged and post-merge verified. Next required step: **Independent
+External Review of this exact SHA + bundle** (§5B.13 incl. mandatory independent smoke).
+
+**Immediately prior (PSRR-C1 PSRR EXECUTION CONTRACT — governance-only candidate `2b694597…`
+Owner-accepted at that exact SHA and MERGED via PR #540, tip
+`274652a51c2132500c8c6b79e5666932f4ba77da`; now AUTHORITATIVE; retained as history):**
 Base: `aab8f365f1bd37523dbbbf970533f8e5ecf3ce42` (PR #539 merge — Phase-10 Formal Closure,
 authoritative; independently re-verified live: first parent `adfe203a…`, second parent `3ac06dca…`,
 merge tree `4d76957f…` = accepted candidate tree, empty candidate→merge diff). **PHASE 10 FORMALLY
