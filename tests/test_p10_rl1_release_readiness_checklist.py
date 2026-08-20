@@ -87,7 +87,12 @@ def test_deployment_and_paid_activation_remain_blocked():
     text = _norm()
     assert "DEPLOYMENT AUTHORIZED: NO" in text
     assert "PAID ACTIVATION AUTHORIZED: NO" in text
-    assert "PHASE 10 CLOSURE ELIGIBLE NOW: NO" in text
+    # Narrow pin update (Phase-10 formal closure gate): the original
+    # "PHASE 10 CLOSURE ELIGIBLE NOW: NO" pin was factually superseded by the
+    # Owner-accepted P10-CL0 eligibility determination and the OD-P10-CL0-STRUCTURE
+    # Option-2 decision (PR #538). The protective purpose is preserved by pinning
+    # the closure-truth line that still forbids reading closure as approval.
+    assert "PHASE-10 CLOSURE ≠ RELEASE APPROVAL" in text
 
 
 def test_foundations_never_imply_production_readiness():

@@ -2424,8 +2424,40 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
-- **Phase 10 — P10-CL0 CLOSURE-PRECONDITION CONSOLIDATION & OPEN-OBLIGATION DISPOSITION GATE
-  (Owner-authorized GOVERNANCE-ONLY LEVEL-2 candidate, PR pending), base
+- **Phase 10 — FORMAL CLOSURE RECORD (Owner-authorized GOVERNANCE-ONLY candidate, PR pending), base
+  `adfe203a84a66028b7a1f943920084108f6cc48c` (PR #538 merge — P10-CL0, authoritative; first parent
+  `2f77e8e8…`, second parent `deeb046e…`, merge tree `2b62bf57…` = accepted candidate tree, empty
+  candidate→merge diff — independently re-verified live).** Creates
+  `docs/governance/PHASE_10_FORMAL_CLOSURE_RECORD.md`: **PHASE 10 FORMALLY CLOSED** under the
+  Owner-accepted `OD-P10-CL0-STRUCTURE` **OPTION 2** (every incomplete obligation explicitly bound to a
+  pre-existing authoritative hard-blocking lane; NO deferred item converted to COMPLETE; closure ≠
+  legal/tax/commercial readiness ≠ PSRR ≠ deployment ≠ paid activation) — effective ONLY when this
+  candidate is merged and post-merge verified. Final obligation matrix re-verified LIVE at this base
+  (no `UNRESOLVED — CLOSURE BLOCKING` row); closure authority = Owner authorization + merged P10-CL0
+  (P10-C §11 correctly cited as increment-closure only, per NB2); complete gate lineage PRs #508–#538;
+  P10-CL0 NB1–NB11 dispositioned (NB1/NB2/NB3/NB4/NB6/NB7/NB9 resolved in the record; NB5 partially +
+  carried; NB8/NB10/NB11 carried forward non-blocking — none dropped); next permitted gate identified
+  (NOT opened): FR-GS1 — First-Release Post-Phase-10 Gate Selection (Owner decision; PSRR NOT triggered
+  by closure). RL checklist gate rows synchronized (RL-G1 → formally-closed-on-merge truth; blocking
+  summary box updated; `tests/test_p10_rl1_release_readiness_checklist.py` narrowly updated on its one
+  superseded pinned line — justification recorded). PSRR remains REGISTERED / NOT TRIGGERED / NOT
+  EXECUTED; DEPLOYMENT AUTHORIZED: NO; PAID ACTIVATION AUTHORIZED: NO (`D-P8-PL-01 class C`); no
+  provider selected; no legal/tax conclusion; DOMEX-D1 remains deferred until after first release.
+  `OWNER_DECISION_REGISTER.md` UNCHANGED (Phase-8/9 closure precedent; NB8 housekeeping future).
+  Authoritative ONLY if/when this exact candidate is merged and post-merge verified.
+
+- **Phase 10 — P10-CL0 CLOSURE-PRECONDITION CONSOLIDATION & OPEN-OBLIGATION DISPOSITION GATE: MERGED /
+  AUTHORITATIVE (candidate `deeb046e783f3f1626fe27a27a5ba5e7ab72a76c` Owner-accepted at that exact SHA,
+  PR #538, tip `adfe203a84a66028b7a1f943920084108f6cc48c`; first parent `2f77e8e8…`, second parent
+  `deeb046e…`, merge tree `2b62bf57…` = candidate tree, empty candidate→merge diff — independently
+  re-verified).** Independent Review: ACCEPT WITH NON-BLOCKING OBSERVATIONS (NB1–NB11 carried forward);
+  Reviewer Grill PASS; post-merge smoke PASS. **Owner decision at acceptance: `OD-P10-CL0-STRUCTURE` =
+  OPTION 2 — ACCEPTED** (future formal closure binds every remaining OPEN/DEFERRED obligation to its
+  already-authoritative hard-blocking lane; closure ≠ legal/tax/commercial readiness ≠ PSRR ≠
+  deployment ≠ paid activation). (Original candidate-stage bullet retained below as history.)
+
+- **(superseded history) Phase 10 — P10-CL0 CLOSURE-PRECONDITION CONSOLIDATION & OPEN-OBLIGATION DISPOSITION GATE
+  (was: Owner-authorized GOVERNANCE-ONLY LEVEL-2 candidate, PR pending), base
   `2f77e8e8b633497adee6ea32a6002a7c5860979e` (PR #537 merge — GAP-SYNC-01, authoritative; first parent
   `38da08da…`, second parent `087c1d18…`, merge tree `0d337986…` = accepted candidate tree, empty
   candidate→merge diff — independently re-verified live).** Consolidates every remaining Phase-10

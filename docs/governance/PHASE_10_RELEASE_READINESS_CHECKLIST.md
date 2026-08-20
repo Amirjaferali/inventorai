@@ -124,7 +124,7 @@ security standard, or release authority.
 
 | ID | Gate | Status | Source | Current truth |
 |---|---|---|---|---|
-| RL-G1 | Phase 10 closure | OPEN | P10-C §11 | Phase 10 remains OPEN |
+| RL-G1 | Phase 10 closure | FORMAL CLOSURE RECORD CREATED (authoritative on merge) | `docs/governance/PHASE_10_FORMAL_CLOSURE_RECORD.md`; P10-CL0 (PR #538, `OD-P10-CL0-STRUCTURE` Option 2) | PHASE 10 FORMALLY CLOSED under Option 2 when the closure record is merged and post-merge verified; closure binds every open obligation to its hard-blocking lane and converts NOTHING to complete; PHASE-10 CLOSURE ≠ RELEASE APPROVAL |
 | RL-G2 | PSRR REGISTERED | IMPLEMENTED LOCAL FOUNDATION (registration only) | `PSRR_..._REGISTRATION.md` | registered; 37-item minimum scope |
 | RL-G3 | PSRR TRIGGERED | OPEN (NOT TRIGGERED) | PSRR registration §4 | trigger = intent to reach FIRST PUBLIC PRODUCTION DEPLOYMENT; nothing has moved it; this checklist does not trigger it |
 | RL-G4 | PSRR EXECUTED | OPEN (NOT EXECUTED) | PSRR registration §4 | — |
@@ -146,6 +146,9 @@ PROVIDER-DEPENDENT item needed for production (RL-B2/B3, RL-C2/C3/C5, RL-E4/E5, 
 PSRR-TIME items (RL-C1, C6…C10); the gate chain RL-G3…G8.
 
 ```
-PHASE 10 CLOSURE ELIGIBLE NOW: NO
+PHASE 10: FORMALLY CLOSED UNDER OD-P10-CL0-STRUCTURE OPTION 2 (on merge of the closure record).
+PHASE-10 CLOSURE ≠ RELEASE APPROVAL — every deferred obligation stays in its hard-blocking lane.
+(The earlier "PHASE 10 CLOSURE ELIGIBLE NOW: NO" line was superseded by the Owner-accepted P10-CL0
+eligibility determination and Option-2 structure decision, PR #538.)
 PAID ACTIVATION AUTHORIZED: NO        PSRR TRIGGERED: NO        DEPLOYMENT AUTHORIZED: NO
 ```
