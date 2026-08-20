@@ -2424,7 +2424,44 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
-- **PSRR-C1 — PSRR EXECUTION CONTRACT (Owner-authorized GOVERNANCE-ONLY candidate, PR pending), base
+- **PSRR — APPLICATION-LAYER TRANCHE EXECUTION RECORD (Owner-authorized GOVERNANCE-ONLY recording
+  candidate, PR pending), base `274652a51c2132500c8c6b79e5666932f4ba77da` (PR #540 merge — PSRR-C1,
+  authoritative; first parent `aab8f365…`, second parent `2b694597…`, merge tree `be57a33a…` = accepted
+  candidate tree, empty candidate→merge diff — independently re-verified live).** Durably records the
+  Owner-accepted, independently reviewed PSRR application-layer execution:
+  `docs/governance/PSRR_APPLICATION_LAYER_TRANCHE_EXECUTION_RECORD.md` — APPLICATION-LAYER TRANCHE:
+  EXECUTED; review: INDEPENDENTLY ACCEPTED WITH NON-BLOCKING OBSERVATIONS; RUNTIME IMPLEMENTATION
+  REQUIRED: NO; PSRR GO ELIGIBLE: NO; PSRR COMPLETE: NO. Scope precision per reviewer OBS-5 (grouped
+  execution rows 17 vs 19 contract line entries vs 21 distinct PSRR item numbers; PSRR-C1 §5.1 remains
+  the scope owner; the registered PSRR minimum remains 37 items). Evidence: Creator targeted suites 207
+  passed; Creator full suite 2951/3/1/0 (fresh) and **Independent full suite 2951/3/1/0 (rerun under
+  GOV-RBR1 escalation after an environment-caused smoke BLOCK — missing review-environment
+  dependencies, NOT a candidate defect; final independent smoke PASS)**; Creator smoke PASS pre+post;
+  fresh dependency audit zero known findings (2026-08-20T23:00:17Z, point-in-time); zero runtime file
+  modification during execution. Reviewer observations carried forward without implementation: OBS-1
+  CSRF claim-accuracy correction (recorded truth: token-CSRF on governed account routes; sid-bound HMAC
+  tokens on answer flows where implemented; **resume does NOT use that HMAC mechanism**; other
+  owned-session/DW mutations rely on SameSite=Lax + durable ownership/fail-closed authorization; no
+  working exploit identified), OBS-2 success-criteria NUL-policy residual, OBS-3 werkzeug
+  transitive-pin hygiene, OBS-4 finalized-500 header test evidence, OBS-5 resolved in-record; PSRR-C1
+  N1/N2/N3 preserved. RL-G4 row synchronized (PARTIALLY EXECUTED — application-layer tranche only; all
+  pins preserved; RL1 suite green). PSRR remains NOT COMPLETE; provider-dependent + policy-substance +
+  items 35–37 remain; DEPLOYMENT AUTHORIZED: NO; PAID ACTIVATION AUTHORIZED: NO; INFRA-G1 identified
+  only; no provider selected. `OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY if/when this
+  exact candidate is merged and post-merge verified.
+
+- **PSRR-C1 — PSRR EXECUTION CONTRACT: MERGED / AUTHORITATIVE (candidate
+  `2b6945976a90573cf4e2532bf7494ef1d9de0549` Owner-accepted at that exact SHA, PR #540, tip
+  `274652a51c2132500c8c6b79e5666932f4ba77da`; first parent `aab8f365…`, second parent `2b694597…`,
+  merge tree `be57a33a…` = candidate tree, empty candidate→merge diff — independently re-verified;
+  post-merge smoke PASS; post-merge RL1 10 passed).** Independent Review: ACCEPT WITH NON-BLOCKING
+  OBSERVATIONS (PSRR-C1-N1/N2/N3 carried); `FULL SUITE: CREATOR EVIDENCE REUSED — INDEPENDENT RERUN NOT
+  TRIGGERED`. The PSRR execution contract is the authoritative scope owner; OD-FR1 and the Owner
+  tax-governance foundation are durably recorded in it. Subsequent Owner authorization executed the
+  application-layer tranche (see the recording candidate above). (Original candidate-stage bullet
+  retained below as history.)
+
+- **(superseded history) PSRR-C1 — PSRR EXECUTION CONTRACT (was: Owner-authorized GOVERNANCE-ONLY candidate, PR pending), base
   `aab8f365f1bd37523dbbbf970533f8e5ecf3ce42` (PR #539 merge — Phase-10 Formal Closure, authoritative;
   first parent `adfe203a…`, second parent `3ac06dca…`, merge tree `4d76957f…` = accepted candidate tree,
   empty candidate→merge diff — independently re-verified live).** Creates

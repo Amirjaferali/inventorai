@@ -12445,3 +12445,64 @@ class C`); no provider/vendor/tool selection; no tax implementation; no legal/ta
 brand selection; no future-domain work (DOMEX-D1 deferred). `OWNER_DECISION_REGISTER.md` UNCHANGED.
 Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next required step:
 Independent External Review of this exact SHA + bundle (§5B.13 incl. mandatory independent smoke).
+
+---
+
+## PSRR — Application-Layer Tranche Execution + Recording Candidate (Owner-authorized GOVERNANCE-ONLY)
+
+**Base:** `274652a51c2132500c8c6b79e5666932f4ba77da` (PR #540 merge — PSRR-C1, authoritative;
+independently re-verified live: first parent `aab8f365…`, second parent `2b694597…`, merge tree
+`be57a33a…` = accepted candidate tree, empty candidate→merge diff; post-merge smoke PASS; post-merge
+RL1 10 passed). **PSRR-C1 synchronization (recorded per convention):** candidate
+`2b6945976a90573cf4e2532bf7494ef1d9de0549` Owner-accepted at exact SHA and MERGED via PR #540 —
+AUTHORITATIVE. Independent Review: ACCEPT WITH NON-BLOCKING OBSERVATIONS (PSRR-C1-N1/N2/N3 carried);
+`FULL SUITE: CREATOR EVIDENCE REUSED — INDEPENDENT RERUN NOT TRIGGERED`.
+
+**Owner-authorized PSRR execution — application-layer tranche (bounded scope per PSRR-C1 §5.1):**
+executed at this tip with ZERO runtime modification. Evidence: 11 targeted suites 207 passed
+(auth/authorization/ownership/API/headers/input-hardening/containment/IR/dep-audit structure); fresh
+`run_dependency_audit.py` — zero known findings at 2026-08-20T23:00:17Z (point-in-time; requirements
+sha256 `e0707b64…`); fresh Creator full suite 2951 passed / 3 skipped / 1 xfailed / 0 failed; Creator
+smoke PASS; 8-probe adversarial battery (fail-closed unauth access; 401 on real API routes without/with
+garbage Bearer; headers on 404; 413 transport bound; non-enumerating login; NUL 400; cookie posture
+SameSite=Lax + HttpOnly + production-gated Secure verified live) — initial probe discrepancies
+diagnosed as probe defects / verified design, not gaps. Result: 17 grouped execution rows PASS / 0
+OPEN / 0 BLOCKED within the tranche; RUNTIME IMPLEMENTATION REQUIRED: NO; the §7 implementation stop
+rule never engaged. **Independent External Review: ACCEPT WITH NON-BLOCKING OBSERVATIONS; Reviewer
+Grill PASS; the Reviewer INDEPENDENTLY RERAN the full suite (GOV-RBR1 escalation — reviewer discretion
+plus an initial environment-caused smoke BLOCK from missing review-environment dependencies, resolved
+by provisioning requirements; NOT a candidate defect) with exact reproduction 2951/3/1/0; final
+independent smoke PASS.** Owner accepted the execution results (tranche only — explicitly NOT PSRR GO,
+NOT PSRR completion, NOT provider/policy completion, NOT deployment or paid-activation authority).
+
+**Delivered (this recording candidate — governance-only, five documentation surfaces, zero
+runtime/test diff).** New `docs/governance/PSRR_APPLICATION_LAYER_TRANCHE_EXECUTION_RECORD.md`
+(state block: PSRR-C1 AUTHORITATIVE; APPLICATION-LAYER TRANCHE EXECUTED; review INDEPENDENTLY ACCEPTED
+WITH NON-BLOCKING OBSERVATIONS; RUNTIME IMPLEMENTATION REQUIRED NO; PSRR GO ELIGIBLE NO; PSRR COMPLETE
+NO; DEPLOYMENT NO; PAID ACTIVATION NO); OBS-5 scope precision recorded (17 grouped rows / 19 contract
+line entries / 21 distinct PSRR item numbers; PSRR-C1 §5.1 owns the scope; PSRR minimum remains 37
+items — no "PSRR has 17 items" statement exists); reviewer observations dispositioned WITHOUT
+implementation — **OBS-1 CSRF claim-accuracy correction recorded as reviewed truth (token-CSRF on
+governed account routes; sid-bound HMAC tokens on answer flows where implemented; resume does NOT use
+that HMAC mechanism; other owned-session/DW mutations rely on SameSite=Lax + durable
+ownership/fail-closed authorization; no working exploit identified)**, OBS-2 success-criteria
+NUL-policy residual, OBS-3 werkzeug transitive-pin hygiene, OBS-4 finalized-500 header test evidence
+(all carried forward non-blocking), OBS-5 resolved in-record; PSRR-C1 N1/N2/N3 preserved; tranche
+residual-risk entries registered for the future item-35 package; remaining PSRR work enumerated
+(provider-dependent tranche; production halves + HSTS reassessment; policy substance 15/16/26-legal;
+items 35–37). Surfaces synchronized: `CURRENT_PROJECT_STATE.md` (PSRR-C1 rotated to
+MERGED/AUTHORITATIVE with history; recording-candidate entry), `ACTIVE_INCREMENT_CONTRACT.md`
+(rotation), `PHASE_10_RELEASE_READINESS_CHECKLIST.md` (RL-G4 → PARTIALLY EXECUTED — APPLICATION-LAYER
+TRANCHE ONLY; every pinned invariant preserved; no test change).
+
+**Evidence (this candidate).** Smoke PASS at base and re-verified at candidate; RL1 structural suite
+green at candidate; §5B.1 Creator full-suite determination recorded openly (zero executable bytes; no
+§5B.6 trigger; authoritative full-suite truth 2951/3/1/0 stands from BOTH the Creator tranche run and
+the Independent rerun at this exact tip). Adversarial governance truth sweep UNSUPPORTED MATERIAL
+CLAIMS: 0.
+
+**Boundaries.** PSRR NOT COMPLETE; NO GO; no additional tranche executed; INFRA-G1 identified only; no
+provider selected; no observation implemented; DEPLOYMENT AUTHORIZED: NO; PAID ACTIVATION AUTHORIZED:
+NO (`D-P8-PL-01 class C`); no future-domain work. `OWNER_DECISION_REGISTER.md` UNCHANGED.
+Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next required step:
+Independent External Review of this exact SHA + bundle (§5B.13 incl. mandatory independent smoke).
