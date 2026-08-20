@@ -12242,3 +12242,73 @@ activation; no provider selection; no legal/tax conclusion. `OWNER_DECISION_REGI
 Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next required step:
 **Independent External Review of this exact SHA + bundle** (governance-only path per §5B.13 incl. the
 mandatory independent smoke).
+
+---
+
+## P10-CL0 — Phase-10 Closure-Precondition Consolidation & Open-Obligation Disposition Gate (Owner-authorized GOVERNANCE-ONLY candidate)
+
+**Base:** `2f77e8e8b633497adee6ea32a6002a7c5860979e` (PR #537 merge — GAP-SYNC-01, authoritative;
+independently re-verified live: first parent `38da08da…`, second parent `087c1d18…`, merge tree
+`0d337986…` = accepted candidate tree, empty candidate→merge diff). **GAP-SYNC-01 synchronization
+(recorded here per repository convention):** the GAP-SYNC-01 candidate
+`087c1d18341daf71a92e1369b9b084b3a0fb94f8` was Owner-accepted at that exact SHA and MERGED via PR #537
+— AUTHORITATIVE. Independent Review: ACCEPT WITH NON-BLOCKING OBSERVATIONS; first LEAN §5B
+evidence-reuse review (`FULL SUITE: CREATOR EVIDENCE REUSED — INDEPENDENT RERUN NOT TRIGGERED`);
+non-blocking observations NB1–NB3 carried forward and registered by this gate.
+
+**Selection.** Owner-selected after two accepted read-only diagnoses at this tip: (1) the SPACE-D1
+feasibility audit + Domain Expansion Strategy Reconstruction (all future-domain work explicitly
+deferred until after first release; no priority change; recorded durably by this gate); (2) the
+First-Release / Phase-10 Reconstruction (`PHASE 10 CLOSURE ELIGIBLE: NO`; `TECHNICAL IMPLEMENTATION
+STILL REQUIRED BEFORE CLOSURE: NO`; next gate = P10-CL0).
+
+**Delivered (this candidate — governance-only, five documentation surfaces, zero runtime/test diff).**
+New `docs/governance/P10_CL0_PHASE10_CLOSURE_PRECONDITION_CONSOLIDATION_GATE.md`: authoritative-status
+synchronization (GOV-RBR1 PR #536; GAP-SYNC-01 PR #537; Product Completion diagnosis CORE PRODUCT
+FUNCTIONALLY COMPLETE: YES / NEW CORE IMPLEMENTATION REQUIRED NOW: NO); durable record of the read-only
+SPACE-D1 diagnosis (`SPACE FEASIBILITY: NEEDS ARCHITECTURAL WORK`; concept-level pack conditionally
+feasible; `CORE REDESIGN REQUIRED: NO`; timing AFTER FIRST RELEASE) and the Domain Expansion Strategy
+Reconstruction (ONE STABLE CORE + EXTENSIBLE SPECIALIZED DOMAIN PACKS confirmed as deliberate original
+design; IoT = OD-H priority #1 with inert legacy pack, runtime NOT AUTHORIZED; Drone #2; Renewable #3
+— planning only, packs NOT AUTHORIZED; Space = bucket #4; the Space-exposed seams are reusable
+cross-domain capabilities) with the explicit deferral: DOMEX-D1 DEFERRED UNTIL AFTER FIRST RELEASE; no
+SPACE-C1/IOT-C1/Renewable/Drone contract; NO current future-domain implementation authorized; OD-H
+order unchanged; carry-forward register (GAP-SYNC-01-NB1/NB2 non-blocking deferred; NB3 gate-prefixed
+namespacing adopted; PC3-N2 residual); the complete Phase-10 closure-disposition matrix over every
+P10-C §4 obligation row (subdivided per the P10-RL1 truth surface; dispositions PROPOSED — COMPLETE
+rows 4a/6a/7a/8a/13; all remaining rows deferred ONLY to already-registered authoritative lanes: PSRR /
+OD-P deployment gate / OD-J2 infrastructure gate / P10-LT1 external legal-tax intake / `D-P8-PL-01
+class C` commercial activation gate / OD-A brand-trademark gate; no `UNRESOLVED — CLOSURE BLOCKING`
+row); the §9 A-vs-B legal-disposition determination (neither reading self-executes; closure-compatible
+deferral of adviser-dependent rows requires ONE explicit Owner structure decision); the isolated Owner
+decision `OD-P10-CL0-STRUCTURE` (Option 1 hold-open vs Option 2 close-with-dispositions — the ONLY
+decision needed for closure structure; no pricing/provider/deployment/adviser choice requested); and
+the eligibility determination **PHASE 10 CLOSURE ELIGIBLE AFTER P10-CL0 OWNER ACCEPTANCE: YES
+(conditional on that decision)** — the formal Phase-10 closure record is NOT created (separate future
+gate per P10-C §11). Canonical surfaces synchronized: `CURRENT_PROJECT_STATE.md` (GAP-SYNC-01 rotated
+to MERGED/AUTHORITATIVE with history; P10-CL0 candidate entry), `ACTIVE_INCREMENT_CONTRACT.md` (active
+contract rotated), `PHASE_10_RELEASE_READINESS_CHECKLIST.md` (point-in-time refresh ONLY: RL-A1 →
+2951 passed / 3 skipped / 1 xfailed / 0 failures via a fresh live full-suite run at this base; new
+RL-A10 product-completion row; refresh note; NO gate-status change — `PHASE 10 CLOSURE ELIGIBLE NOW:
+NO` preserved verbatim; all pinned structural invariants preserved).
+
+**Evidence.** Pre-candidate `UNIVERSAL GUARDRAIL SMOKE: PASS` at base; fresh full-suite live run at
+base: 2951 passed / 3 skipped / 1 xfailed / 0 failures (69.7s); post-candidate smoke re-verified PASS;
+`tests/test_p10_rl1_release_readiness_checklist.py` green at candidate (focused suite required because
+this candidate edits the pinned checklist); **Creator full-suite obligation determination (§5B.1,
+recorded openly, no silent reinterpretation):** zero executable bytes change — NOT an implementation
+candidate under §5B.1; the base full-suite run above evidences the refreshed RL-A1 FACT, not a §5B.1
+obligation. Adversarial governance truth sweep UNSUPPORTED MATERIAL CLAIMS: 0.
+
+**Boundaries.** PSRR remains REGISTERED / NOT TRIGGERED / NOT EXECUTED (trigger unmoved; this gate
+does not trigger it; under current authority Phase-10 closure MAY precede PSRR execution — P10-C §6);
+OD-P two-part deployment control preserved verbatim (closure authorizes NO deployment); `D-P8-PL-01
+class C` preserved verbatim (closure authorizes NO paid activation); no provider selection; no
+legal/tax conclusion; no legal-artifact drafting; no commercial-policy decision; no future-domain
+implementation (no DOMEX-D1/SPACE-C1/IOT-C1/Renewable contract); no formal Phase-10 closure record; no
+overlapping closure standard (P10-C §4 remains the obligation owner; P10-RL1 remains the truth
+surface; PSRR registration remains the PSRR owner). LEVEL 2 governance-only under LEAN §3/§4;
+Independent External Review per §5B.13 (incl. the MANDATORY independent Universal Guardrail Smoke; no
+mechanical full-suite rerun absent a §5B.6 trigger). `OWNER_DECISION_REGISTER.md` UNCHANGED.
+Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next required step:
+Independent External Review of this exact SHA + bundle.

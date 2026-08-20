@@ -41,8 +41,50 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — GAP-SYNC-01 GOVERNANCE/WORDING TRUTH SYNCHRONIZATION: Owner-authorized bounded
-LEVEL-2 candidate):** Base: `38da08dae389f74279082e1341e220dbc0f80851` (PR #536 merge — GOV-RBR1,
+**Status (current — P10-CL0 PHASE-10 CLOSURE-PRECONDITION CONSOLIDATION & OPEN-OBLIGATION DISPOSITION
+GATE: Owner-authorized GOVERNANCE-ONLY LEVEL-2 candidate):** Base:
+`2f77e8e8b633497adee6ea32a6002a7c5860979e` (PR #537 merge — GAP-SYNC-01, authoritative; independently
+re-verified live: first parent `38da08da…`, second parent `087c1d18…`, merge tree `0d337986…` equal to
+the accepted candidate tree, empty candidate→merge diff).
+
+**Objective.** ONE governance-only candidate that: (1) synchronizes authoritative statuses (GOV-RBR1
+PR #536; GAP-SYNC-01 PR #537; Owner-accepted Product Completion diagnosis — CORE PRODUCT FUNCTIONALLY
+COMPLETE: YES / NEW CORE IMPLEMENTATION REQUIRED NOW: NO); (2) durably records the read-only SPACE-D1
+and Domain Expansion Strategy Reconstruction diagnoses with the explicit deferral (DOMEX-D1 DEFERRED
+UNTIL AFTER FIRST RELEASE; no SPACE-C1/IOT-C1/Renewable/Drone contract; NO current future-domain
+implementation authorized; OD-H planning priority order unchanged); (3) registers GAP-SYNC-01-NB1/NB2/
+NB3 (non-blocking; NB3 gate-prefixed namespacing adopted); (4) refreshes the P10-RL1 checklist
+point-in-time facts without changing any gate status (RL-A1 suite counts from a fresh live run at this
+base — 2951 passed / 3 skipped / 1 xfailed / 0 failures; new RL-A10 product-completion row; all pinned
+invariants preserved and the structural suite green); (5) builds the complete Phase-10
+closure-disposition matrix over every P10-C §4 obligation row with only authoritative named destination
+lanes (PSRR / deployment gate / OD-J2 infrastructure gate / external legal-tax intake / commercial
+activation gate / brand-trademark gate); (6) isolates the single Owner structure decision
+`OD-P10-CL0-STRUCTURE` (Option 1 hold-open vs Option 2 close-with-dispositions); and (7) determines
+PHASE 10 CLOSURE ELIGIBLE AFTER OWNER ACCEPTANCE: YES, conditional on that decision. The formal
+Phase-10 closure record is NOT created (separate future gate per P10-C §11). Allowed paths: the new
+gate document + `ACTIVE_EXECUTION_ROADMAP.md` + `CURRENT_PROJECT_STATE.md` +
+`ACTIVE_INCREMENT_CONTRACT.md` + `PHASE_10_RELEASE_READINESS_CHECKLIST.md` ONLY. Forbidden: all
+runtime/test/schema/guardrail paths; `OWNER_DECISION_REGISTER.md`.
+
+**Evidence.** Governance-only diff (five documentation surfaces); smoke PASS at base and re-verified at
+candidate; fresh full-suite live run at base 2951/3/1/0 (evidence for the RL-A1 refreshed fact; §5B.1
+Creator full-suite obligation NOT triggered — zero executable bytes change, recorded openly); P10-RL1
+structural invariant suite green at candidate; adversarial governance truth sweep UNSUPPORTED MATERIAL
+CLAIMS: 0.
+
+**Boundaries:** no runtime implementation; no PSRR trigger/execution; no deployment; no paid activation
+(`D-P8-PL-01 class C` preserved); no provider selection; no legal/tax conclusion; no future-domain
+implementation (no DOMEX-D1/SPACE-C1/IOT-C1/Renewable contract); no formal Phase-10 closure record; no
+new closure standard (P10-C §4 remains the obligation owner; P10-RL1 remains the truth surface).
+`OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY if/when this exact candidate is merged and
+post-merge verified. Next required step: **Independent External Review of this exact SHA + bundle**
+(governance-only path per §5B.13 incl. the mandatory independent smoke).
+
+**Immediately prior (GAP-SYNC-01 GOVERNANCE/WORDING TRUTH SYNCHRONIZATION — governance-only candidate
+`087c1d18…` Owner-accepted at that exact SHA and MERGED via PR #537, tip
+`2f77e8e8b633497adee6ea32a6002a7c5860979e`; now AUTHORITATIVE; retained as history):** Base:
+`38da08dae389f74279082e1341e220dbc0f80851` (PR #536 merge — GOV-RBR1,
 authoritative; independently re-verified: parents `bf7fe7ce…` / `1759b148…`, merge tree `1aa5c469…` equal
 to the accepted candidate tree, empty candidate→merge diff). First gate operating under authoritative
 LEAN §5B. Owner-accepted diagnosis stands: CORE PRODUCT FUNCTIONALLY COMPLETE: YES; NEW CORE
