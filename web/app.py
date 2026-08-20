@@ -61,6 +61,7 @@ from engine.email_sender import DevMemoryEmailSender
 # engine; web only persists these additive envelope inputs).
 from engine.session_reconstruction import (
     RECONSTRUCTION_VERSION,
+    reconstruct_readonly_state,
     reconstruct_review_state,
 )
 # Increment 3 (R-5): the SAME shared public derivation that feeds the deliverable
@@ -2396,8 +2397,31 @@ def show_deliverable(sid):
         return _deny_project()
     entry = SESSION_STORE.get(sid)
     if not entry:
-        return redirect(url_for("index"))
+        # P10-PC2: a direct deliverable link to a saved project must survive a
+        # restart exactly like the session page does (P4-1b-1 cold-load; same
+        # generic fail-closed redirect when no durable state exists).
+        entry = _cold_load_entry(sid)
+        if not entry:
+            return redirect(url_for("index"))
+        SESSION_STORE[sid] = entry
     state = entry["state"]
+    # P10-PC2: on a cold-loaded session (committed marker: state.domain is
+    # None) assemble the deliverable from the Level-1 deterministic READ-ONLY
+    # reconstruction, so the report states the project's TRUE progress instead
+    # of the reset minimal state. Display-only: the reconstructed IdeaState is
+    # never rehydrated into SESSION_STORE, never mutated, never answerable
+    # (the non-resume guard is untouched). Any failure (Level-0 fallback,
+    # ContractError, replay limit, store unavailability) keeps the prior
+    # behavior — never a 500, never a false reconstruction claim.
+    reconstructed_deliverable = False
+    if getattr(state, "domain", None) is None:
+        try:
+            _recon = reconstruct_readonly_state(_get_store(), sid)
+            if _recon.review.level == 1 and _recon.state is not None:
+                state = _recon.state
+                reconstructed_deliverable = True
+        except Exception:
+            reconstructed_deliverable = False
     package = assemble_deliverable(state)
     eligible = package["_session_meta"]["deliverable_eligible"]
     return render_template(
@@ -2405,6 +2429,7 @@ def show_deliverable(sid):
         sid=sid,
         package=package,
         eligible=eligible,
+        reconstructed_deliverable=reconstructed_deliverable,
         # G-UX-SNAPSHOT-DECISION: single-use, per-sid "Keep current snapshot"
         # acknowledgement, popped here so it renders once after the Post/Redirect/Get
         # and never repeats on a later plain GET. None on every normal load.

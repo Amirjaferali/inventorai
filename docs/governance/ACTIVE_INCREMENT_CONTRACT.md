@@ -41,8 +41,42 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — P10-UG1 UNIVERSAL CORE GUARDRAIL & SMOKE FRAMEWORK: Owner-authorized bounded
-framework candidate):** Base: `da4e7a474df7c245e69f1f8e529f04abf5e60444` (PR #531 merge — P10-PC1
+**Status (current — P10-PC2 COLD-LOAD DELIVERABLE FIDELITY: Owner-authorized bounded product-capability
+candidate):** Base: `edae7f30cf512773ab06022376d0ddc7011570a9` (PR #532 merge — P10-UG1 Universal Core
+Guardrail & Smoke Framework, authoritative; independently re-verified: parents `da4e7a47…` /
+`c12671ee…`, merge tree `52a43240…` equal to the accepted candidate tree, empty candidate→merge diff).
+Executed under the Owner's second Product Completion Reconstruction directive.
+
+**Objective.** Make the deliverable — the product's primary output — truthful after a restart. BEFORE
+(live-evidenced): a direct deliverable bookmark to a saved project redirected away, and the rehydrated
+cold deliverable was FALSE in ten sections (claimed the problem was never established, HIGH Level-0 risk,
+zero gaps/requirements/assumptions, lost prototype plan). AFTER: `show_deliverable` cold-loads via the
+existing `_cold_load_entry` and assembles the package from the Level-1 deterministic READ-ONLY
+reconstruction — the cold package equals the pre-restart live package modulo the wall-clock stamp
+(STRONG test-pinned parity) — under the exact authorized claim banner (EN/AR; UI_B_SESSION_041/042),
+fail-closed on every failure path. Canonical extension only: `_reconstruct` extraction (verbatim; the
+merged `reconstruct_review_state` review is byte-identical, test-pinned) + additive
+`reconstruct_readonly_state` returning the frozen review+state pair with binding read-only obligations +
+VERBATIM restoration of the durably persisted interaction ledger (persisted `AssertionRecord`s, `rec_N`
+preserved; no re-derivation; non-durable non-answer dispositions honestly not synthesized). Writable
+continuation remains OUT (HIGH-VALUE BUT REQUIRES OWNER CONTRACT; guard intact and test-pinned).
+
+**Evidence.** Baseline universal smoke PASS (9.1s) and post-implementation smoke PASS (6.0s; zero
+observations; no guard touched). Honest RED 7/10 at base; GREEN 10/10; mutations m1 (drop ledger
+restore → parity test dies) and m2 (suppress banner → EN+AR claim tests die), both reverted; real user
+path verified live (direct cold bookmark → 200 truthful report, EN+AR banners); targeted regression 192
+passed; full suite 2929 passed / 3 skipped / 1 xfailed / 0 failures (prior 2919 + 10 new).
+
+**Boundaries:** no resume; no progression/schema change; no Guardrail change; paid activation BLOCKED;
+PSRR NOT TRIGGERED; DEPLOYMENT NOT AUTHORIZED; legal/tax registers OPEN; no provider/commercial decision.
+`OWNER_DECISION_REGISTER.md` UNCHANGED. Review tier: LEVEL 2 / DEPTH 2 (LEAN protocol §4). Authoritative
+ONLY if/when this exact candidate is merged and post-merge verified. Next required step: **Independent
+External Review of this exact SHA + bundle**.
+
+**Immediately prior (P10-UG1 UNIVERSAL CORE GUARDRAIL & SMOKE FRAMEWORK — candidate `c12671ee…`
+Owner-accepted at that exact SHA and MERGED via PR #532, tip
+`edae7f30cf512773ab06022376d0ddc7011570a9`; now AUTHORITATIVE; retained as history):** Base:
+`da4e7a474df7c245e69f1f8e529f04abf5e60444` (PR #531 merge — P10-PC1
 user-visible reconstructed review state, authoritative; independently re-verified: parents `f0843878…` /
 `eb196210…`, merge tree `79beb341…` equal to the accepted candidate tree, empty candidate→merge diff).
 

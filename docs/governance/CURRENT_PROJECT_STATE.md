@@ -2424,7 +2424,35 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
-- **Phase 10 — P10-UG1 UNIVERSAL CORE GUARDRAIL & SMOKE FRAMEWORK (Owner-authorized bounded
+- **Phase 10 — P10-PC2 COLD-LOAD DELIVERABLE FIDELITY (Owner-authorized bounded product-capability
+  candidate, PR pending), base `edae7f30cf512773ab06022376d0ddc7011570a9` (PR #532 merge — P10-UG1,
+  authoritative; parents `da4e7a47…`/`c12671ee…`, merge tree `52a43240…` = candidate tree, empty
+  candidate→merge diff — independently re-verified).** Second Product Completion Reconstruction: P10-PC1
+  confirmed SOLVED and removed from the gap list; the sharpest remaining live-evidenced gap was the
+  deliverable after restart — a direct bookmark redirected away, and the rehydrated cold report was FALSE
+  in ten sections (problem "not yet established", HIGH Level-0 risk, zero gaps/requirements/assumptions,
+  lost prototype plan). Delivers: `show_deliverable` cold-load fallback (existing `_cold_load_entry`) +
+  package assembled from the Level-1 deterministic READ-ONLY reconstruction via the additive canonical
+  accessor `reconstruct_readonly_state` (verbatim `_reconstruct` extraction — merged
+  `reconstruct_review_state` review byte-identical, test-pinned) + VERBATIM restoration of the durably
+  persisted interaction ledger (persisted `AssertionRecord`s, `rec_N` preserved; no re-derivation) +
+  exact-claim banner EN/AR; every failure path fail-closed; STRONG parity pin: cold package equals the
+  pre-restart live package modulo the wall-clock stamp. Writable continuation remains OUT — HIGH-VALUE
+  BUT REQUIRES OWNER CONTRACT (guard intact). Universal smoke PASS pre (9.1s) and post (6.0s); honest RED
+  7/10; GREEN 10/10; mutations m1/m2 kill the right tests; real user path verified (direct cold bookmark
+  → truthful report, EN+AR); targeted regression 192; full suite 2929/3/1/0 (prior 2919 + 10 new). PAID
+  ACTIVATION AUTHORIZED: NO; PSRR TRIGGERED: NO; DEPLOYMENT AUTHORIZED: NO. `OWNER_DECISION_REGISTER.md`
+  UNCHANGED. Authoritative ONLY if/when this exact candidate is merged and post-merge verified.
+
+- **Phase 10 — P10-UG1 UNIVERSAL CORE GUARDRAIL & SMOKE FRAMEWORK: MERGED / AUTHORITATIVE
+  (candidate `c12671ee…` Owner-accepted at that exact SHA, PR #532, tip
+  `edae7f30cf512773ab06022376d0ddc7011570a9`; parents `da4e7a47…`/`c12671ee…`, merge tree `52a43240…` =
+  candidate tree, empty candidate→merge diff — independently re-verified).** The guard manifest (17
+  guards), canonical runner `python scripts/run_universal_smoke.py`, standard, and pinned self-protection
+  are authoritative; every meaningful future candidate runs the smoke pre and post. (Original
+  candidate-stage bullet retained below as history.)
+
+- **(superseded history) Phase 10 — P10-UG1 UNIVERSAL CORE GUARDRAIL & SMOKE FRAMEWORK (was: Owner-authorized bounded
   framework candidate, PR pending), base `da4e7a474df7c245e69f1f8e529f04abf5e60444` (PR #531 merge —
   P10-PC1, authoritative; parents `f0843878…`/`eb196210…`, merge tree `79beb341…` = candidate tree,
   empty candidate→merge diff — independently re-verified).** Delivers the durable universal safety layer

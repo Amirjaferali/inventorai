@@ -114,6 +114,33 @@ def _level0(idea_id, status, evidence):
     )
 
 
+@dataclass(frozen=True)
+class ReconstructedReadonlySession:
+    """P10-PC2 additive accessor result: the Level-1 review snapshot PLUS the
+    fresh canonical ``IdeaState`` the replay produced, for READ-ONLY render
+    use ONLY (e.g. assembling the truthful cold-load deliverable).
+
+    Obligations on the caller (binding, mirrors the module contract):
+      * ``state`` must never be rehydrated into ``SESSION_STORE``, shared with
+        a live session, mutated, answered against, or durably persisted;
+      * ``state`` is ``None`` whenever ``review.level`` is 0 (fail-closed
+        fallback — there is no reconstructed state to render);
+      * this is NOT a resumed session and enables no continuation."""
+    review: ReconstructedReviewState
+    state: object
+
+
+def reconstruct_readonly_state(store, project_id: str) -> "ReconstructedReadonlySession":
+    """P10-PC2: deterministically reconstruct the read-only review snapshot AND
+    the fresh canonical ``IdeaState`` behind it (same single replay; no second
+    subsystem). Identical fail-closed/limit/ContractError semantics to
+    ``reconstruct_review_state`` — which remains byte-for-byte unchanged in
+    behavior (it returns exactly the ``review`` element). Performs NO mutation
+    of any kind."""
+    review, state = _reconstruct(store, project_id)
+    return ReconstructedReadonlySession(review=review, state=state)
+
+
 def reconstruct_review_state(store, project_id: str) -> ReconstructedReviewState:
     """Deterministically reconstruct the read-only review state for one project.
 
@@ -122,6 +149,12 @@ def reconstruct_review_state(store, project_id: str) -> ReconstructedReviewState
     otherwise); propagates the canonical ``ContractError`` on malformed durable
     content; raises ``ReconstructionReplayLimitError`` when the accepted-answer
     replay count exceeds the bound. Performs NO mutation of any kind."""
+    return _reconstruct(store, project_id)[0]
+
+
+def _reconstruct(store, project_id: str):
+    """Shared single replay (P10-PC2 extraction — verbatim P4-2 Level-1 logic;
+    no behavior change). Returns ``(review, state_or_None)``."""
     # Load the accepted-answer evidence FIRST (project-scoped, seq order). This
     # validates the durable contract, so a malformed/corrupt/cyclic history raises
     # the canonical ContractError here — before any Level-0 shortcut — and yields
@@ -131,7 +164,7 @@ def reconstruct_review_state(store, project_id: str) -> ReconstructedReviewState
     inputs = store.load_reconstruction_inputs(project_id)
     if inputs is None:
         # Legacy project (all reconstruction columns NULL) or unknown project.
-        return _level0(None, STATUS_NO_METADATA, evidence)
+        return _level0(None, STATUS_NO_METADATA, evidence), None
 
     seed = inputs.get("seed_idea_text")
     domain = inputs.get("confirmed_domain")
@@ -139,16 +172,16 @@ def reconstruct_review_state(store, project_id: str) -> ReconstructedReviewState
     version = inputs.get("engine_contract_version")
     if seed is None or domain is None or path is None or version is None:
         # A partially-populated envelope is not sufficient to reconstruct.
-        return _level0(None, STATUS_NO_METADATA, evidence)
+        return _level0(None, STATUS_NO_METADATA, evidence), None
 
     if version != RECONSTRUCTION_VERSION:
         # Do not replay under current rules; do not migrate or silently upgrade.
-        return _level0(None, STATUS_VERSION_MISMATCH, evidence)
+        return _level0(None, STATUS_VERSION_MISMATCH, evidence), None
 
     if path != SUPPORTED_PATH:
         # Non-Path-N / unsupported path: fail closed BEFORE any replay, so no AI
         # advisor and no network path is ever reached.
-        return _level0(None, STATUS_UNSUPPORTED_PATH, evidence)
+        return _level0(None, STATUS_UNSUPPORTED_PATH, evidence), None
 
     if len(evidence) > MAX_ACCEPTED_ANSWER_REPLAY:
         raise ReconstructionReplayLimitError(
@@ -171,6 +204,19 @@ def reconstruct_review_state(store, project_id: str) -> ReconstructedReviewState
     for record in evidence:                                     # then answers (seq order)
         last_result = progression_loop.run_iteration(state, record.content)
 
+    # P10-PC2: restore the durably persisted interaction ledger VERBATIM onto
+    # the fresh state — these are the very ``AssertionRecord`` values created
+    # live and persisted (``rec_N`` preserved, authoritative seq order); no
+    # re-derivation, no synthesis. ``run_iteration`` never appends ledger
+    # records (that is the web layer's Increment-2 job), so without this the
+    # reconstructed state replays progression truthfully but loses the
+    # recorded-answer ledger that the deliverable's requirement landscape and
+    # validation plan are assembled from. Non-epistemic by the ledger's own
+    # contract: gaps, maturity, stage, and next question are unaffected.
+    # (Non-answer dispositions were never durably persisted; the reconstructed
+    # ledger honestly carries the durable subset only.)
+    state.assertions = list(evidence)
+
     open_gaps = tuple(sorted(g.gap_type for g in state.get_open_gaps()))
     next_question = (last_result or {}).get("question")
 
@@ -187,4 +233,4 @@ def reconstruct_review_state(store, project_id: str) -> ReconstructedReviewState
         current_stage=state.current_stage,
         open_gaps=open_gaps,
         next_question=next_question,
-    )
+    ), state
