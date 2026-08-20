@@ -219,10 +219,11 @@ def classify_domain(idea_text: str) -> "DomainClassification":
     ACTIVATED domains are equally top-scored (governed tie precedence: no winner,
     fail closed downstream). ``MULTI_DOMAIN_NEEDS_D4`` remains representable but is
     NOT produced here (D4 multi-domain composition is a separate, unexecuted gate).
-    With the current real activation state (``electronics_electrical`` only) at most
-    one domain is ever activated-tied, so the AMBIGUOUS_TIE branch is
-    production-unreachable today; it becomes reachable only under a future governed
-    second-domain activation (or a bounded self-restoring activation test double)."""
+    Since the governed post-Phase-9 Mechanical activation, TWO domains
+    (``electronics_electrical``, ``mechanical``) are activated in production, so the
+    AMBIGUOUS_TIE branch is production-reachable for an equally top-scored
+    electronics/mechanical idea. (Historically, under the electronics-only
+    activation state, the branch was unreachable outside bounded test doubles.)"""
     tokens = _TOKEN_RE.findall(idea_text.lower())
     token_set = set(tokens)
     scores = {

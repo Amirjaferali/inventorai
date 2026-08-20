@@ -41,8 +41,45 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — P10-SEC4 DECISION-WORKSPACE ENGINE-ERROR ECHO BOUNDING: Owner-authorized bounded
-technical-continuation candidate):** Base: `19fca422d90a84baef2d312ac3b3a247bf41e3f4` (PR #528 merge —
+**Status (current — P10-DBT1 PHASE-9 REGISTERED-DEBT REMEDIATION: Owner-authorized bounded
+technical-continuation candidate):** Base: `8626a3e59b6efbd6d976143f23e5a7f3da26b096` (PR #529 merge —
+P10-SEC4 error-echo bounding, authoritative; independently re-verified: parents `19fca422…` /
+`5829dcb2…`, merge tree `7d88fd5c…` equal to the accepted candidate tree, empty candidate→merge diff).
+Executed under the Owner's technical-continuation direction (advisers still not engaged; their items
+truthfully OPEN/DEFERRED; unrelated technical work continues).
+
+**Objective.** Remediate the post-Phase-9 debts registered in `PHASE_9_FORMAL_CLOSURE_RECORD.md` §5
+(items 1, 2, 4, 5; item 3 excluded — separately dispositioned by `L10N_RH01_FORMAL_CLOSURE_RECORD.md`).
+Preconditions verified live: Mechanical is really activated, so the registered stale claims are genuinely
+false and the missing real-state tests are a live gap on an active user-facing domain. Delivered:
+(§5(4)) the single REAL admission→Tier-1-render E2E chain test for Mechanical — no activation/session
+doubles anywhere: real classification → real `/start` consent offer → real confirmed admission →
+`state.domain == "mechanical"` → real session render of the Tier-1 EN label (AR absent per the
+single-language rule; no raw-id leak; never mislabeled electronics); (§5(5)) the real-activation CLI
+banner pin ("Electronics Electrical or Mechanical, Level 0-2" against the REAL state); (§5(1)) a
+DOCSTRING-ONLY truth repair of `classify_domain` (AST proven identical modulo docstrings) with the three
+byte-pin evidence anchors (i3/i4/i5) re-frozen under the disclosed-reconciliation convention; (§5(2)) the
+four registered stale comments repaired to explicit historical framing (recorded verdicts preserved
+verbatim; the tie-precedence file's self-contradiction fixed; `test_p6_1` forward-points to the real
+chain). Five truth guards prevent regression, and one guard pins the §5 register itself untouched.
+Residuals dispositioned this cycle: criticality rationale remains BLOCKED/DEFERRED; legacy ILT-002 routes
+untouched; non-DW error surfaces swept — all fixed-copy, residual CLOSED, no SEC4 generalization.
+
+**Evidence.** Honest RED split: 5 truth guards failed at base precisely against the stale text; 5
+real-state pins gap-filling with mutation-proven honesty (m1 deactivate-mechanical and m2 corrupt-label
+each kill the right tests; reverted). Touched + adjacent regression 263 passed; full suite 2900 passed /
+3 skipped / 1 xfailed / 0 failures (prior 2890 + 10 new; zero regressions). Zero runtime-behavior diff
+(docstring/comment/hash-pin/test changes only).
+
+**Boundaries:** paid activation BLOCKED; PSRR NOT TRIGGERED; DEPLOYMENT NOT AUTHORIZED; legal/tax registers
+OPEN (nothing here needed their answers); no provider/commercial decision. `OWNER_DECISION_REGISTER.md`
+UNCHANGED. Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next required
+step: **Independent External Review of this exact SHA + bundle**.
+
+**Immediately prior (P10-SEC4 DECISION-WORKSPACE ENGINE-ERROR ECHO BOUNDING — candidate `5829dcb2…`
+Owner-accepted at that exact SHA and MERGED via PR #529, tip
+`8626a3e59b6efbd6d976143f23e5a7f3da26b096`; now AUTHORITATIVE; retained as history):** Base:
+`19fca422d90a84baef2d312ac3b3a247bf41e3f4` (PR #528 merge —
 P10-SEC3 free-text hardening, authoritative; independently re-verified: parents `e031ecdd…` /
 `91e48c20…`, merge tree `0ce1ae8d…` equal to the accepted candidate tree, empty candidate→merge diff).
 Executed under the Owner's technical-continuation direction (advisers still not engaged; their items

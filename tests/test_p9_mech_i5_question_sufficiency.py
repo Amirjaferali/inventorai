@@ -33,7 +33,11 @@ mechanically where checkable and recorded as reviewed evidence where semantic):
 VERDICT (recorded): all ten committed questions PASS W1–W6 — §12(a) wording
 sufficiency is supported by evidence; nothing was rewritten or patched.
 
-Mechanical remains NOT QUALIFIED and NOT ACTIVATED; §15/§16 remain open.
+At the time of this gate's recorded evidence run, Mechanical was NOT QUALIFIED
+and NOT ACTIVATED (§15/§16 then open). Mechanical was subsequently qualified and
+activated by later governed Phase-9 gates (see
+docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md); the recorded verdict above is
+historical evidence, unchanged by that activation.
 """
 
 import hashlib
@@ -56,8 +60,12 @@ _PROV_PATH = os.path.join(_DOMAINS, "domain_provenance.json")
 # own reconciliation comment for the full domain_rules/progression_loop
 # disclosure). engine/path_n_questions.py is untouched by L2SC-01 — hash
 # unchanged.
+# P10-DBT1 reconciliation (disclosed; PHASE_9_FORMAL_CLOSURE_RECORD.md §5
+# item 1): domain_rules.py re-frozen after a DOCSTRING-ONLY truth repair of
+# classify_domain (stale "production-unreachable today" claim; AST proven
+# identical modulo docstrings — zero behavior change).
 _FROZEN_ENGINE_SHA256 = {
-    "engine/domain_rules.py": "1977418f2de1cf98e2bba003ebbf1e262310bcbfce348ca88887ceb6c629f86c",
+    "engine/domain_rules.py": "0e47326ad92a6e5b0a63eb06db9e3ad96ae72c9aaf64471dd21621265b1db1ab",
     "engine/progression_loop.py": "a8e1ffdf9accf3ed57fc6c32d51c7e77ce9e260c0d39a8ec3030e2635ff03dc3",
     # D-GMPR-D3-PN reconciliation #2 (disclosed; DGMPR_D3_PATH_N_DOMAIN_NEUTRAL_
     # SERVICE_CONTRACT.md §5): the seam hash is re-frozen at the remediated

@@ -16,11 +16,14 @@ preference; no LLM tie-break; ``MULTI_DOMAIN_NEEDS_D4`` is NOT manufactured (D4 
 separate, unexecuted gate).
 
 Multi-activated ties are simulated with bounded, self-restoring test doubles of the
-5-I2 activation allowlist (``domain_activation._ACTIVATED_DOMAINS``). NO real domain
-is activated; the real runtime state remains
-``activated_domains() == ['electronics_electrical']`` (asserted below), so the
-AMBIGUOUS_TIE branch is production-unreachable today and is exercised only through
-these bounded doubles.
+5-I2 activation allowlist (``domain_activation._ACTIVATED_DOMAINS``); the doubles
+keep every combination deterministic and no test here activates a real domain. The
+real runtime state is now ``activated_domains() ==
+['electronics_electrical', 'mechanical']`` (asserted below), under which the
+AMBIGUOUS_TIE branch is production-reachable for an equally top-scored
+electronics/mechanical idea. (Historical note: when this file was authored only
+``electronics_electrical`` was activated and the branch was reachable solely
+through these bounded doubles; the doubled scenarios above remain valid as-is.)
 
 Signal tokens below are verified against the live registry
 (``domains/*/domain.json`` classification_signals): each is a single-pack signal.

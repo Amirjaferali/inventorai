@@ -2424,7 +2424,38 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
-- **Phase 10 — P10-SEC4 DECISION-WORKSPACE ENGINE-ERROR ECHO BOUNDING (Owner-authorized bounded
+- **Phase 10 — P10-DBT1 PHASE-9 REGISTERED-DEBT REMEDIATION (Owner-authorized bounded
+  technical-continuation candidate, PR pending), base `8626a3e59b6efbd6d976143f23e5a7f3da26b096` (PR #529
+  merge — P10-SEC4, authoritative; parents `19fca422…`/`5829dcb2…`, merge tree `7d88fd5c…` = candidate
+  tree, empty candidate→merge diff — independently re-verified).** Residuals reassessed from source:
+  criticality rationale still BLOCKED/DEFERRED; legacy ILT-002 routes still deliberately preserved —
+  untouched; non-DW error surfaces swept — every non-DW rejection path uses fixed/localized literals only
+  (zero `% exc` interpolation remains), residual CLOSED, no SEC4 generalization. Selected gate:
+  `PHASE_9_FORMAL_CLOSURE_RECORD.md` §5 registered debts (items 1, 2, 4, 5; item 3 separately
+  dispositioned by L10N_RH01). Precondition verified live: Mechanical really activated. Delivers:
+  §5(4) the single REAL admission→Tier-1-render E2E chain test for Mechanical (no activation/session
+  doubles anywhere: real classify → consent offer → confirmed admission → `state.domain == "mechanical"`
+  → Tier-1 EN label rendered, AR absent, no raw-id leak); §5(5) the real-activation CLI banner pin;
+  §5(1) DOCSTRING-ONLY `classify_domain` truth repair (AST proven identical modulo docstrings; i3/i4/i5
+  byte-pin anchors re-frozen under the disclosed-reconciliation convention); §5(2) the four registered
+  stale comments repaired to explicit historical framing (recorded verdicts preserved verbatim;
+  tie-precedence self-contradiction fixed; `test_p6_1` forward-points to the real chain); five truth
+  guards + one guard pinning the §5 register itself untouched. Honest RED split (5 truth guards failed at
+  base against the stale text; 5 real-state pins mutation-proven — m1 deactivate-mechanical, m2
+  corrupt-label each kill the right tests); touched + adjacent regression 263 passed; full suite
+  2900/3/1/0 (prior 2890 + 10 new, zero regressions). Zero runtime-behavior diff. PAID ACTIVATION
+  AUTHORIZED: NO; PSRR TRIGGERED: NO; DEPLOYMENT AUTHORIZED: NO. `OWNER_DECISION_REGISTER.md` UNCHANGED.
+  Authoritative ONLY if/when this exact candidate is merged and post-merge verified.
+
+- **Phase 10 — P10-SEC4 DECISION-WORKSPACE ENGINE-ERROR ECHO BOUNDING: MERGED / AUTHORITATIVE
+  (candidate `5829dcb2…` Owner-accepted at that exact SHA, PR #529, tip
+  `8626a3e59b6efbd6d976143f23e5a7f3da26b096`; parents `19fca422…`/`5829dcb2…`, merge tree `7d88fd5c…` =
+  candidate tree, empty candidate→merge diff — independently re-verified).** The render-only
+  `_dw_bounded_error` bound (300 chars, explicit truncation marker, engine seam byte-complete) on all
+  seven Decision Workspace rejection call sites is authoritative. (Original candidate-stage bullet
+  retained below as history.)
+
+- **(superseded history) Phase 10 — P10-SEC4 DECISION-WORKSPACE ENGINE-ERROR ECHO BOUNDING (was: Owner-authorized bounded
   technical-continuation candidate, PR pending), base `19fca422d90a84baef2d312ac3b3a247bf41e3f4` (PR #528
   merge — P10-SEC3, authoritative; parents `e031ecdd…`/`91e48c20…`, merge tree `0ce1ae8d…` = candidate
   tree, empty candidate→merge diff — independently re-verified).** Reviewer residuals investigated from

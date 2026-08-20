@@ -59,8 +59,12 @@ _DOMAINS = os.path.join(_REPO, "domains")
 
 # L2SC-01 reconciliation (disclosed; see test_p9_mech_i3_signal_quality.py's
 # own reconciliation comment for the full engine-file disclosure).
+# P10-DBT1 reconciliation (disclosed; PHASE_9_FORMAL_CLOSURE_RECORD.md §5
+# item 1): domain_rules.py re-frozen after a DOCSTRING-ONLY truth repair of
+# classify_domain (stale "production-unreachable today" claim; AST proven
+# identical modulo docstrings — zero behavior change).
 _FROZEN_ENGINE_SHA256 = {
-    "engine/domain_rules.py": "1977418f2de1cf98e2bba003ebbf1e262310bcbfce348ca88887ceb6c629f86c",
+    "engine/domain_rules.py": "0e47326ad92a6e5b0a63eb06db9e3ad96ae72c9aaf64471dd21621265b1db1ab",
     "engine/progression_loop.py": "a8e1ffdf9accf3ed57fc6c32d51c7e77ce9e260c0d39a8ec3030e2635ff03dc3",
 }
 # The mechanical pack hash IS this corpus's inventory validity anchor.
