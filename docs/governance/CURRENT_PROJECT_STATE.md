@@ -2424,7 +2424,37 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
-- **Phase 10 — P10-PC3 TRUE WRITABLE RESUME IMPLEMENTATION, REPAIR CANDIDATE (Owner-authorized
+- **Governance — GOV-RBR1 RISK-BASED INDEPENDENT REVIEW & EVIDENCE REUSE (Owner-authorized
+  GOVERNANCE-ONLY amendment candidate, PR pending), base `bf7fe7ce1b180ecfe78c1d790b6c4e6eb63ce159`
+  (PR #535 merge — P10-PC3 repair, authoritative; parents `cfad3feb…`/`be8bba16…`, merge tree
+  `c3876b5a…` = candidate tree, empty candidate→merge diff — independently re-verified).** Amends the
+  canonical review-policy owner IN PLACE — `LEAN_GOVERNANCE_AND_AGENT_CONTINUITY_PROTOCOL.md` new §5B —
+  to cut duplicative review execution with zero reduction of mandatory review: Creator obligations
+  unchanged (incl. mandatory Creator full suite); evidence reuse only after independent exact-identity
+  verification, never blind trust; 11-item universal review minimum; LEVEL 1 Reviewer full suite
+  mandatory; LEVEL 2 conditional reuse (conditions A–H) with 15 explicit full-suite triggers and
+  unconditional reviewer escalation; conservative repair-after-REJECT rule; bounded smoke role;
+  no-duplicate-testing with recorded substitution; reviewer value shifted to novel adversarial work
+  (PC3/B1 lesson codified truthfully — B1 was found by a NEW reviewer-designed scenario while the
+  LEVEL-1 full-suite rerun stayed valuable); mandatory auditable evidence table; governance-only review
+  optimization; no silent tier downgrade; explicit quality floor. No overlapping standard; UG standard
+  untouched. P10-PC3 reviewer O1–O4 dispositioned (O2 stale inline comment DEFERRED to the next
+  code-touching synchronization). Governance-only diff; smoke PASS at base and candidate; full suite
+  unchanged at candidate; truth sweep UNSUPPORTED: 0. PAID ACTIVATION AUTHORIZED: NO; PSRR TRIGGERED:
+  NO; DEPLOYMENT AUTHORIZED: NO. `OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY if/when
+  this exact candidate is merged and post-merge verified.
+
+- **Phase 10 — P10-PC3 TRUE WRITABLE RESUME: MERGED / AUTHORITATIVE
+  (repair candidate `be8bba16…` Owner-accepted at that exact SHA, PR #535, tip
+  `bf7fe7ce1b180ecfe78c1d790b6c4e6eb63ce159`; parents `cfad3feb…`/`be8bba16…`, merge tree `c3876b5a…` =
+  candidate tree, empty candidate→merge diff — independently re-verified).** True Writable Resume is
+  live: explicit establishment of a fresh transient writable context for an eligible durable project,
+  exactly-once durable N+1 appends (B1 repaired at the canonical mint: MAX rec_N + 1), PC1/PC2
+  preserved, UG-CORE-07 preserved, UG-CORE-08 successor + UG-CORE-16 blocking. The earlier rejected
+  candidate `ee8a0dad…` remains immutable rejected evidence. (Original candidate-stage bullet retained
+  below as history.)
+
+- **(superseded history) Phase 10 — P10-PC3 TRUE WRITABLE RESUME IMPLEMENTATION, REPAIR CANDIDATE (was: Owner-authorized
   LEVEL-1; PR pending), base `cfad3febdcb886a5efa316a023d31b31d31568ac` (PR #534 merge — P10-PC3-C
   contract, authoritative; parents `aed5cb79…`/`783becf2…`, merge tree `7f2eb723…` = candidate tree,
   empty candidate→merge diff — independently re-verified).** **Prior implementation candidate

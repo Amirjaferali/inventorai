@@ -41,8 +41,41 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — P10-PC3 TRUE WRITABLE RESUME IMPLEMENTATION, REPAIR CANDIDATE after Independent
-Review REJECT):** Base: `cfad3febdcb886a5efa316a023d31b31d31568ac` (PR #534 merge — P10-PC3-C contract,
+**Status (current — GOV-RBR1 RISK-BASED INDEPENDENT REVIEW & EVIDENCE REUSE: Owner-authorized
+GOVERNANCE-ONLY amendment candidate):** Base: `bf7fe7ce1b180ecfe78c1d790b6c4e6eb63ce159` (PR #535 merge —
+P10-PC3 True Writable Resume repair implementation, authoritative; independently re-verified: parents
+`cfad3feb…` / `be8bba16…`, merge tree `c3876b5a…` equal to the accepted candidate tree, empty
+candidate→merge diff).
+
+**Objective.** Amend the CANONICAL review-policy owner in place —
+`LEAN_GOVERNANCE_AND_AGENT_CONTINUITY_PROTOCOL.md` new **§5B** — to reduce duplicative review execution
+without reducing any mandatory review: Creator obligations unchanged (full lifecycle incl. mandatory
+Creator full suite); evidence reuse only after independent exact-identity verification and never as blind
+trust; an 11-item universal review minimum never replaced by Creator evidence; LEVEL 1 Reviewer full
+suite mandatory; LEVEL 2 conditional reuse (conjunctive conditions A–H) with 15 explicit full-suite
+triggers plus unconditional reviewer escalation; conservative repair-after-REJECT rule; bounded Universal
+Smoke role; no-duplicate-testing rule with recorded substitution; reviewer value shifted to novel
+adversarial work (PC3/B1 lesson codified truthfully); mandatory auditable evidence-reporting table;
+governance-only review optimization; no silent review downgrade; explicit quality floor; performance
+objective without artificial SLA. No overlapping standard created; UG standard untouched. P10-PC3
+reviewer O1–O4 dispositioned (O2 — the stale `session_reconstruction` inline comment — DEFERRED to the
+next code-touching synchronization; this candidate touches no code).
+
+**Evidence.** Governance-only diff (protocol §5B + three governance surfaces); baseline smoke PASS at
+base and re-verified at candidate; full suite re-verified unchanged at candidate; adversarial governance
+truth sweep UNSUPPORTED MATERIAL CLAIMS: 0.
+
+**Boundaries:** no runtime implementation; no product change; no guardrail change; no review waiver;
+§12's non-weakening guarantee applies to this amendment itself; paid activation BLOCKED; PSRR NOT
+TRIGGERED; DEPLOYMENT NOT AUTHORIZED; legal/tax registers OPEN; no provider/commercial decision; no new
+domain. `OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY if/when this exact candidate is merged
+and post-merge verified. Next required step: **Independent External Review of this exact SHA + bundle**.
+
+**Immediately prior (P10-PC3 TRUE WRITABLE RESUME IMPLEMENTATION, REPAIR — candidate `be8bba16…`
+Owner-accepted at that exact SHA and MERGED via PR #535, tip
+`bf7fe7ce1b180ecfe78c1d790b6c4e6eb63ce159`; now AUTHORITATIVE; the earlier rejected candidate
+`ee8a0dad…` remains immutable rejected evidence; retained as history):** Base:
+`cfad3febdcb886a5efa316a023d31b31d31568ac` (PR #534 merge — P10-PC3-C contract,
 authoritative; independently re-verified). Governed by the merged
 `P10_PC3_TRUE_WRITABLE_RESUME_INCREMENT_CONTRACT.md` (reviewer O1–O4 incorporated as its append-only
 §17). **Prior implementation candidate `ee8a0dad…` REJECTED by Independent External Review — blocking
