@@ -11963,3 +11963,62 @@ conclusion; registers OPEN; no new domain activation; no next product capability
 review requirement weakened. `OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY if/when this
 exact candidate is merged and post-merge verified. Next required step: **Independent External Review of
 this exact SHA + bundle**.
+
+## P10-PC2 — Cold-Load Deliverable Fidelity (Owner-authorized bounded product-capability candidate)
+
+**Base:** `edae7f30cf512773ab06022376d0ddc7011570a9` (PR #532 merge — P10-UG1 Universal Core Guardrail &
+Smoke Framework, authoritative; independently re-verified: parents `da4e7a47…`/`c12671ee…`, merge tree
+`52a43240…` equal to the accepted candidate tree, empty candidate→merge diff). **P10-UG1 synchronization
+(recorded here per repository convention):** the P10-UG1 candidate `c12671ee…` was Owner-accepted at that
+exact SHA and MERGED via PR #532 — AUTHORITATIVE; the Universal Guardrail framework and
+`python scripts/run_universal_smoke.py` are now the standing pre/post check for every meaningful
+candidate.
+
+**Directive & smoke discipline.** Executed under the Owner's second Product Completion Reconstruction
+directive (product-value-first). Pre-selection baseline smoke on the authoritative base:
+`UNIVERSAL GUARDRAIL SMOKE: PASS` (34 manifest nodes; 68 blocking + 1 observation items; 9.1s; zero
+observations). Post-implementation smoke at candidate: `PASS` (6.0s; zero observations; no guard touched).
+
+**Product reconstruction & selection.** The journey was re-driven live; P10-PC1 confirmed SOLVED
+(truthful cold session page; read-only; non-resume guard intact; EN/AR correct) and removed from the gap
+list. Sharpest remaining gap, live-evidenced by a section-by-section package diff: after a restart the
+DELIVERABLE — the product's primary output — was FALSE in ten sections (§2 claimed "INCOMPLETE — problem
+statement not yet established" when established; §6 reported a HIGH "Level 0" risk; §3/§4/§5 dropped all
+gap detail, requirements, and assumptions; §10/§11 lost next steps and the prototype plan; §13/meta
+degraded), and a DIRECT deliverable bookmark redirected away entirely (no cold-load fallback in
+`show_deliverable`). Writable continuation was independently re-assessed and remains
+**HIGH-VALUE BUT REQUIRES OWNER CONTRACT** (P4-2 Level-1 record lists it as not provided; the committed
+P4-1b-2a guard makes re-enabling it a governed-boundary violation) — NOT selected, NOT crossed. Decision
+Workspace confirmed STANDALONE BUT COMPLETE (no repository record registers integration intent).
+Review tier: LEVEL 2 / DEPTH 2 (LEAN protocol §4) — bounded independent review required (plus the Owner's
+per-candidate directive).
+
+**Delivered (this candidate).** (a) `engine/session_reconstruction.py` — additive canonical extension:
+the P4-2 Level-1 replay body extracted VERBATIM into `_reconstruct` (behavior-identical;
+`reconstruct_review_state` returns exactly its review element — test-pinned equality); new
+`reconstruct_readonly_state(store, sid)` returns the frozen `ReconstructedReadonlySession(review, state)`
+carrying the fresh replayed `IdeaState` for READ-ONLY render use, with binding caller obligations (never
+rehydrated into SESSION_STORE, never mutated, never answerable); the durably persisted interaction ledger
+is restored VERBATIM onto the fresh state (the very persisted `AssertionRecord`s, `rec_N` preserved, seq
+order — no re-derivation; non-answer dispositions were never durable and are honestly not synthesized).
+(b) `web/app.py show_deliverable` — cold-load fallback via the existing `_cold_load_entry` (direct
+bookmarks survive restarts with the same generic non-enumerating redirect for unknown projects), and on
+the committed cold marker the package is assembled from the Level-1 reconstruction; every failure path
+(Level-0, ContractError, replay limit, store unavailability) fails closed to the prior behavior — never a
+500, never a false claim. (c) `web/templates/deliverable.html` — reconstruction banner reusing the exact
+authorized claim keys (UI_B_SESSION_041/042; EN/AR); absent on live pages. (d)
+`tests/test_p10_pc2_deliverable_cold_fidelity.py` — 10 tests; honest RED 7/10 at base (direct-GET
+redirect, false sections, absent claim/accessor); the STRONG parity pin asserts the cold package equals
+the pre-restart live package modulo the wall-clock stamp; preservation pins: live unchanged, fail-closed,
+no durable write on cold render, `reconstruct_review_state` byte-identical review, unknown-project
+redirect unchanged. Mutations: m1 (drop ledger restore) kills the parity test; m2 (suppress banner) kills
+the EN+AR claim tests; both reverted. Real user path verified live: direct cold bookmark → 200 truthful
+18.5 KB report with EN and AR banners. Targeted regression 192 passed; full suite 2929 passed / 3
+skipped / 1 xfailed / 0 failures (prior 2919 + 10 new; zero regressions).
+
+**Boundaries (binding).** No writable continuation/resume (unchanged, guard intact); no engine
+progression change; no schema/DDL change; no Guardrail-framework change (smoke PASS pre and post); no
+legal/tax conclusion; no commercial decision; no provider selection; no PSRR trigger/execution; no
+deployment; no paid activation (`D-P8-PL-01 class C`); no new domain activation; Phase 10 OPEN.
+`OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY if/when this exact candidate is merged and
+post-merge verified. Next required step: **Independent External Review of this exact SHA + bundle**.
