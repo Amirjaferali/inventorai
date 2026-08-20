@@ -490,11 +490,22 @@ def test_obs_b_restart_durability_new_context(db_path):
     assert any(r.content == first for r in survived), "accepted answer survives a full restart"
     # A new answered submission on the cold-loaded session fails closed cleanly
     # (no 500, no second durable event) — resume-answering is out of scope.
+    # P10-PC1 reconciliation (disclosed): the cold-loaded page now renders the
+    # Level-1 READ-ONLY reconstructed review state and deliberately no longer
+    # offers an answering form or token — a STRENGTHENING of this recorded
+    # limitation (previously the cold page showed a form whose submissions
+    # always failed). The guarantee under test is unchanged and asserted
+    # directly: even a FORGED direct POST fails closed with a redirect and no
+    # second durable event.
     client2 = app.test_client()
-    tok2 = _get_token(client2, sid)
+    cold_html = _render(client2, sid).get_data(as_text=True)
+    assert _token_from_html(cold_html) is None, (
+        "the reconstructed cold page must not offer an answering token")
+    assert 'name="response"' not in cold_html, (
+        "the reconstructed cold page must not offer an answering form")
     r = client2.post(f"/session/{sid}",
                      data={"response": "Attempt to keep answering after restart.",
-                           "action": "answered", "answer_token": tok2},
+                           "action": "answered", "answer_token": "forged-token"},
                      follow_redirects=False)
     assert r.status_code in (301, 302), "resume-answer must fail closed with a redirect, never a 500"
     assert len(_durable_answers(db_path, sid)) == 1, (

@@ -11842,3 +11842,60 @@ dispositioned) — and residual A stays DEFERRED, residual B untouched. `OWNER_D
 UNCHANGED. No auto-activated successor (P10-C §10). Authoritative ONLY if/when this exact candidate is
 merged and post-merge verified. Next required step: **Independent External Review of this exact SHA +
 bundle**.
+
+## P10-PC1 — User-Visible Reconstructed Review State (Owner-authorized bounded product-capability candidate)
+
+**Base:** `f0843878794ae9c0f4647cadf8fa8a323ea4af9d` (PR #530 merge — P10-DBT1 Phase-9 registered-debt
+remediation, authoritative; independently re-verified: parents `8626a3e5…`/`41bf30c7…`, merge tree
+`69c0efea…` equal to the accepted candidate tree, empty candidate→merge diff). **P10-DBT1 synchronization
+(recorded here per repository convention):** the P10-DBT1 candidate `41bf30c7…` was Owner-accepted at that
+exact SHA and MERGED via PR #530 — AUTHORITATIVE (§5 items 1, 2, 4, 5 remediated; real E2E chain + real
+banner pins; truth repairs; register untouched).
+
+**Directive.** Executed under the Owner's Product Completion Reconstruction directive: full product/user-
+journey reconstruction from repository truth, capability inventory, gap classification, and exactly ONE
+bounded product-capability gate.
+
+**Gate selection (product reconstruction).** The end-to-end journey was live-driven from source (landing →
+consent admission → deterministic Q&A with PASS/WARN feedback → LEVEL 0→1→2 progression → structured
+criticality step → 19-section deliverable → snapshot/success criteria; Decision Workspace + JSON export;
+account register/login/account/export; API v1 (machine-credential, by design); EN/AR RTL). The sharpest
+verified product gap: after ANY server restart, opening a saved project rendered a FALSE display — generic
+domain label, reset level-0 maturity, no gaps, no question — plus an answer form whose every submission
+failed with a "try again" message, while the merged P4-2 Level-1 deterministic read-only reconstruction
+(`engine.session_reconstruction.reconstruct_review_state`, PR #369, with an exact authorized product claim
+in its module contract and "no UI" recorded as that gate's boundary) had ZERO production call sites.
+Canonical owner: the existing `show_session` cold-load path + the merged P4-2 Level-1 engine — pure
+extension, no new subsystem, zero redesign, no external dependency. Writable continuation (true resume)
+remains explicitly OUT (the P4-2 Level-1 record lists it as not provided; the committed P4-1b-2a
+non-resume guard is preserved and STRENGTHENED here); it is the registered next product step requiring its
+own Owner-authorized contract.
+
+**Delivered (this candidate).** On a cold-loaded session whose Level-1 reconstruction succeeds, the session
+page now renders the TRUE reconstructed review state: Tier-1 domain label (from the persisted confirmed
+domain, display-only — `state.domain` stays absent; the committed cold-load marker and fail-closed guard
+untouched), true maturity label and progress, open gaps (localized), the current next question
+(read-only), and the accepted-answer count — under the EXACT authorized claim ("… This is not a resumed
+session."), bilingual EN/AR via the established `ui_text` catalogue (keys UI_B_SESSION_041–046); the
+dead-end answer form is suppressed on reconstructed views (the fail-closed not-saved message stays visible
+if a forged POST occurs). Fail-closed everywhere: Level-0 fallback (legacy envelope/version
+mismatch/unsupported path), reconstruction exceptions, and store unavailability all keep the prior cold
+page — never a 500, never a false reconstruction claim. Files: `web/app.py` (reconstruction context +
+display overrides), `web/templates/session.html` (panel + three-way branch + truthful meta/progress),
+`web/ui_text.py` (6 bilingual keys), `tests/test_p10_pc1_reconstructed_review_ui.py` (10 tests), one
+disclosed reconciliation in `tests/test_p4_1b2a_durable_answer_append.py` (the restart test scraped a
+token from the cold page's form; the form is now deliberately absent — the test now asserts the
+STRENGTHENED limitation directly: no token/form offered, forged POST still fails closed, no second durable
+event). Evidence: honest RED 7/10 failed at base (6 missing product behaviors + absent web import), 3
+preservation pins green; GREEN 10/10; mutations m1 (claim wording), m2 (hardcoded count), m3 (wrong domain
+source) each killed exactly the right tests and were reverted; real user-path dump verified EN + AR
+(reconstruction matched the live pre-restart state: maturity 1, PHYSICAL_FEASIBILITY open, 3 answers);
+targeted session-surface regression 223 passed / 1 skipped; full suite 2910 passed / 3 skipped / 1 xfailed / 0
+failures (prior 2900 + 10 new; zero regressions beyond the disclosed reconciliation).
+
+**Boundaries (binding).** No writable continuation/resume; no restore of `state.domain`; no engine change;
+no schema/DDL change; no new subsystem; no legal/tax conclusion (registers OPEN); no commercial decision;
+no provider selection; no PSRR trigger/execution; no deployment; no paid activation (`D-P8-PL-01 class C`);
+no new domain activation; Phase 10 OPEN. `OWNER_DECISION_REGISTER.md` UNCHANGED. No auto-activated
+successor. Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next required
+step: **Independent External Review of this exact SHA + bundle**.

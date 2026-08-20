@@ -41,8 +41,42 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — P10-DBT1 PHASE-9 REGISTERED-DEBT REMEDIATION: Owner-authorized bounded
-technical-continuation candidate):** Base: `8626a3e59b6efbd6d976143f23e5a7f3da26b096` (PR #529 merge —
+**Status (current — P10-PC1 USER-VISIBLE RECONSTRUCTED REVIEW STATE: Owner-authorized bounded
+product-capability candidate):** Base: `f0843878794ae9c0f4647cadf8fa8a323ea4af9d` (PR #530 merge —
+P10-DBT1 Phase-9 registered-debt remediation, authoritative; independently re-verified: parents
+`8626a3e5…` / `41bf30c7…`, merge tree `69c0efea…` equal to the accepted candidate tree, empty
+candidate→merge diff). Executed under the Owner's Product Completion Reconstruction directive (one bounded
+product gate; advisers still not engaged; their items truthfully OPEN/DEFERRED).
+
+**Objective.** Surface the merged-but-invisible P4-2 Level-1 deterministic READ-ONLY reconstruction
+(`engine.session_reconstruction.reconstruct_review_state` — merged PR #369 with "no UI" as that gate's
+recorded boundary and an exact authorized product claim; ZERO production call sites before this gate) on
+the cold-loaded session page. BEFORE: after any server restart a saved project rendered a FALSE display
+(generic domain label, reset level-0 maturity, no gaps, no question) plus an answer form whose every
+submission failed with a "try again" message. AFTER: the page renders the TRUE reconstructed review state —
+Tier-1 domain label (display-only from the persisted confirmed domain; `state.domain` stays absent and the
+committed P4-1b-2a non-resume guard is preserved and STRENGTHENED), true maturity label/progress, localized
+open gaps, the read-only current question, and the accepted-answer count — under the EXACT authorized claim
+("… This is not a resumed session."), bilingual EN/AR (ui_text keys UI_B_SESSION_041–046), with the
+dead-end form suppressed and every failure path (Level-0 fallback, exceptions, store unavailability)
+fail-closed to the prior page. Writable continuation remains OUT — the registered next product step
+requiring its own Owner-authorized contract.
+
+**Evidence.** Honest RED 7/10 at base; GREEN 10/10; mutations m1/m2/m3 each killed exactly the right tests
+(reverted); real user-path dump EN + AR matched the live pre-restart state (maturity 1,
+PHYSICAL_FEASIBILITY open, 3 answers replayed); one disclosed reconciliation
+(`test_obs_b_restart_durability_new_context` now asserts the strengthened no-form/no-token cold page and
+the unchanged forged-POST fail-closed guarantee); targeted session-surface regression 223 passed / 1 skipped; full
+suite 2910 passed / 3 skipped / 1 xfailed / 0 failures (prior 2900 + 10 new).
+
+**Boundaries:** paid activation BLOCKED; PSRR NOT TRIGGERED; DEPLOYMENT NOT AUTHORIZED; legal/tax registers
+OPEN; no provider/commercial decision; no engine/schema change; no resume. `OWNER_DECISION_REGISTER.md`
+UNCHANGED. Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next required
+step: **Independent External Review of this exact SHA + bundle**.
+
+**Immediately prior (P10-DBT1 PHASE-9 REGISTERED-DEBT REMEDIATION — candidate `41bf30c7…` Owner-accepted
+at that exact SHA and MERGED via PR #530, tip `f0843878794ae9c0f4647cadf8fa8a323ea4af9d`; now
+AUTHORITATIVE; retained as history):** Base: `8626a3e59b6efbd6d976143f23e5a7f3da26b096` (PR #529 merge —
 P10-SEC4 error-echo bounding, authoritative; independently re-verified: parents `19fca422…` /
 `5829dcb2…`, merge tree `7d88fd5c…` equal to the accepted candidate tree, empty candidate→merge diff).
 Executed under the Owner's technical-continuation direction (advisers still not engaged; their items

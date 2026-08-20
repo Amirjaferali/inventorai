@@ -59,7 +59,10 @@ from engine.email_sender import DevMemoryEmailSender
 # P4-2 Level-1: the exact supported reconstruction/engine-contract version stamp
 # persisted at project creation (read-only reconstruction lives entirely in the
 # engine; web only persists these additive envelope inputs).
-from engine.session_reconstruction import RECONSTRUCTION_VERSION
+from engine.session_reconstruction import (
+    RECONSTRUCTION_VERSION,
+    reconstruct_review_state,
+)
 # Increment 3 (R-5): the SAME shared public derivation that feeds the deliverable
 # section, imported as a module-level name so one selection feeds both surfaces.
 from engine.idea_development_outputs import derive_next_development_step
@@ -2196,6 +2199,28 @@ def show_session(sid):
         SESSION_STORE[sid] = entry
     state = entry["state"]
     last_result = entry.get("last_result")
+    # P10-PC1: surface the merged P4-2 Level-1 deterministic READ-ONLY
+    # reconstruction on cold-loaded sessions (the committed cold-load marker is
+    # `state.domain is None`; live /start sessions always carry a domain).
+    # Display-only: `state.domain` is NOT restored, the P4-1b-2a non-resume
+    # guard is untouched, and any reconstruction failure (Level-0 fallback,
+    # ContractError, replay-limit, store unavailability) fails closed to the
+    # prior cold-load page — never a 500, never a false reconstruction claim.
+    reconstructed_review = None
+    if getattr(state, "domain", None) is None:
+        try:
+            _recon = reconstruct_review_state(_get_store(), sid)
+            if _recon.level == 1 and _recon.reconstructed:
+                reconstructed_review = {
+                    "domain": getattr(state, "domain_signal", None),
+                    "maturity_level": _recon.maturity_level,
+                    "current_stage": _recon.current_stage,
+                    "open_gaps": list(_recon.open_gaps),
+                    "next_question": _recon.next_question,
+                    "answers_count": len(_recon.accepted_answer_evidence),
+                }
+        except Exception:
+            reconstructed_review = None
     INTAKE_QUESTION = "Describe your invention in more detail — what specific problem does it solve, and how does it solve it?"
 
     gap_type = select_next_gap(state)
@@ -2291,7 +2316,16 @@ def show_session(sid):
         # the actual question), so they follow ui_lang via the presentation map.
         gap_labels=ui_text.localize_deep(gap_labels, _current_ui_lang()),
         current_gap_label=ui_text.localize_deep(current_gap_label, _current_ui_lang()),
-        maturity_label=get_maturity_label(state.maturity_level, _current_ui_lang()),
+        # P10-PC1: on a Level-1 reconstructed cold view, the stage/progress
+        # displays show the TRUE reconstructed maturity instead of the reset
+        # minimal-state value (display only; state is unchanged).
+        maturity_label=get_maturity_label(
+            reconstructed_review["maturity_level"] if reconstructed_review
+            else state.maturity_level, _current_ui_lang()),
+        display_maturity_level=(
+            reconstructed_review["maturity_level"] if reconstructed_review
+            else state.maturity_level),
+        reconstructed_review=reconstructed_review,
         session_disclosure=get_session_disclosure(_current_ui_lang()),
         closed_gaps=closed_gaps,
         interaction_ack=ui_text.localize_deep(
