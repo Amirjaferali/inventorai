@@ -422,6 +422,24 @@ _WEB_REASONED = (
     "triggers the relay which disconnects the load. "
     "This mechanism relies on Ohm's law and uses an LM393 comparator IC."
 )
+# PVCG-R2-I gap-appropriate inputs for the rendered Stage-3 flow (contract
+# §3.2/§3.4). Each is REASONED under the EXISTING quality rules and addresses
+# the governed question of the gap it is given to.
+_WEB_BOUNDARY_ANSWER = (
+    "It does not cover gas leaks, which means those hazards stay outside its "
+    "scope, and unlike an existing breaker the current sensing core cannot be "
+    "replaced."
+)
+_WEB_PMF_ANSWER = (
+    "The problem is that people miss micro-faults and it matters because the "
+    "equipment burns out, therefore this design solves it rather than a plain "
+    "fuse and the sensor triggers earlier."
+)
+_WEB_AI_ANSWER = (
+    "I am assuming the shunt resistor stays accurate, because the sensor "
+    "calibration was never re-checked, therefore that assumption is untested "
+    "and unverified."
+)
 _FORM_MARKER = 'name="response"'
 _SUBMIT_MARKER = ">Submit</button>"
 _COMPLETION_MARKER = "You have worked through the key questions for your idea."
@@ -474,7 +492,13 @@ def test_stage3_rendered_browser_flow_form_persists_through_partial():
     seed_direct_session_envelope(sid, _stage3_state)  # explicit P4-1b-2a durable envelope
     try:
         client = app.test_client()
-        answered_post(client, sid, {"response": _WEB_REASONED})
+        # PVCG-R2-I defect-dependent input correction (contract §3.2/§3.4): this
+        # rendered flow previously answered the boundary, PMF and AI gaps with
+        # one MECHANISM-shaped answer, so each closed only through manufactured
+        # satisfaction. Only the INPUT changes — each turn now answers the
+        # question actually on screen. Every rendering/routing assertion target
+        # below is unchanged.
+        answered_post(client, sid, {"response": _WEB_BOUNDARY_ANSWER})
         state = SESSION_STORE[sid]["state"]
         assert state.current_stage == 3
         assert state.get_gap(PROBLEM_MECHANISM_FIT).status == "OPEN"
@@ -482,20 +506,20 @@ def test_stage3_rendered_browser_flow_form_persists_through_partial():
         assert _FORM_MARKER in body and _SUBMIT_MARKER in body
         assert _PMF_Q1 in body and _PMF_HEADING in body and _PMF_GUIDANCE in body
         assert _COMPLETION_MARKER not in body and _CLOSING_FRAGMENT not in body
-        answered_post(client, sid, {"response": _WEB_REASONED})
+        answered_post(client, sid, {"response": _WEB_PMF_ANSWER})
         assert state.get_gap(PROBLEM_MECHANISM_FIT).status == "PARTIAL"
         body = client.get(f"/session/{sid}").get_data(as_text=True)
         assert _FORM_MARKER in body and _SUBMIT_MARKER in body
         assert _PMF_HEADING in body and _PMF_GUIDANCE in body
         assert _COMPLETION_MARKER not in body
-        answered_post(client, sid, {"response": _WEB_REASONED})
+        answered_post(client, sid, {"response": _WEB_PMF_ANSWER})
         assert state.get_gap(PROBLEM_MECHANISM_FIT).status == "CLOSED"
         assert state.get_gap(ASSUMPTION_INVENTORY).status == "OPEN"
         body = client.get(f"/session/{sid}").get_data(as_text=True)
         assert _FORM_MARKER in body and _SUBMIT_MARKER in body
         assert _AI_Q1 in body and _AI_HEADING_RENDERED in body and _AI_GUIDANCE in body
         assert _COMPLETION_MARKER not in body
-        answered_post(client, sid, {"response": _WEB_REASONED})
+        answered_post(client, sid, {"response": _WEB_AI_ANSWER})
         assert state.get_gap(ASSUMPTION_INVENTORY).status == "PARTIAL"
         body = client.get(f"/session/{sid}").get_data(as_text=True)
         assert _FORM_MARKER in body and _SUBMIT_MARKER in body

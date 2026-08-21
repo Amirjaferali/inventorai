@@ -18,10 +18,28 @@ from engine.progression_loop import integrate_response
 from engine.deliverable_assembler import assemble_deliverable
 from web.app import app, SESSION_STORE
 
-# REASONED response: causal structure ("measures", "when ", "causes"), len >= 40.
+# PVCG-R2-I defect-dependent input correction (contract §3.2/§3.4). The single
+# previous REASONED_RESP was a MECHANISM-shaped answer served to all three
+# Stage-3 gaps; it was captured as PMF / AI / EGA evidence only through
+# manufactured satisfaction. It is replaced by three REASONED answers, one per
+# Stage-3 gap, each addressing the governed question that gap actually asks.
+# Every assertion target is unchanged: an accepted response is captured on the
+# gap it was given to, and does not leak to another gap.
+# Each is REASONED under the EXISTING quality rules (causal structure via
+# "measures", substance signals present, len >= 40) — R2 changes no quality rule.
 REASONED_RESP = (
-    "The mechanism measures the soil moisture continuously, and when the reading "
-    "drops below the set threshold it causes the relay to switch the pump on."
+    "The problem is that the soil dries out and the plants suffer, which "
+    "matters to the grower, and this design solves it because the sensor "
+    "measures moisture continuously and triggers the pump."
+)
+REASONED_RESP_AI = (
+    "I am assuming the moisture sensor stays calibrated all season, and that "
+    "assumption is untested because nobody measures the drift over the year."
+)
+REASONED_RESP_EGA = (
+    "Installing this needs irrigation engineering knowledge and firmware "
+    "skills, because the controller measures the sensor signal and drives the "
+    "pump relay."
 )
 
 
@@ -54,16 +72,16 @@ def test_1_pmf_reasoned_response_stored_on_pmf_gap():
 
 def test_2_assumption_inventory_response_stored_on_ai_gap():
     s = _state(); _add_gap(s, ASSUMPTION_INVENTORY)
-    integrate_response(s, ASSUMPTION_INVENTORY, "q", REASONED_RESP)
+    integrate_response(s, ASSUMPTION_INVENTORY, "q", REASONED_RESP_AI)
     g = s.get_gap(ASSUMPTION_INVENTORY)
-    assert len(g.evidence) == 1 and g.evidence[0].content == REASONED_RESP
+    assert len(g.evidence) == 1 and g.evidence[0].content == REASONED_RESP_AI
 
 
 def test_3_expertise_gap_response_stored_on_ega_gap():
     s = _state(); _add_gap(s, EXPERTISE_GAP_AWARENESS)
-    integrate_response(s, EXPERTISE_GAP_AWARENESS, "q", REASONED_RESP)
+    integrate_response(s, EXPERTISE_GAP_AWARENESS, "q", REASONED_RESP_EGA)
     g = s.get_gap(EXPERTISE_GAP_AWARENESS)
-    assert len(g.evidence) == 1 and g.evidence[0].content == REASONED_RESP
+    assert len(g.evidence) == 1 and g.evidence[0].content == REASONED_RESP_EGA
 
 
 def test_4_evidence_does_not_leak_across_gaps():

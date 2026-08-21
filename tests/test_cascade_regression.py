@@ -27,9 +27,58 @@ from engine.idea_state import (
     ASSERTED, REASONED,
     PROGRESSING,
 )
-from engine.progression_loop import run_iteration
+from engine.progression_loop import run_iteration, select_next_gap
 
 _CLOSING_Q_FRAGMENT = "NOT do or NOT cover"
+
+# PVCG-R2-I defect-dependent input correction (contract §3.2/§3.4). The cascade
+# suite previously drove EVERY gap — boundary, PMF, AI, EGA — with one
+# MECHANISM-shaped answer; those gaps closed only through manufactured
+# satisfaction. The routing assertions (which gap opens next, which question is
+# delivered, what the iteration log records) are unchanged; only the INPUT is
+# replaced, with an answer that addresses the gap actually being served.
+# Each is REASONED under the EXISTING quality rules.
+_GAP_APPROPRIATE_ANSWER = {
+    MECHANISM_COMPLETENESS: (
+        "The sensor detects voltage drop across the shunt resistor. "
+        "When the measured voltage falls below the threshold, the comparator "
+        "triggers the relay which disconnects the load. "
+        "This mechanism relies on Ohm's law and uses an LM393 comparator IC."
+    ),
+    PHYSICAL_FEASIBILITY: (
+        "It draws a few milliamps from the supply because the comparator stays "
+        "powered, therefore the temperature range and the resistor tolerance "
+        "are the physical limits it must respect."
+    ),
+    BOUNDARY_AMBIGUITY: (
+        "It does not cover gas leaks, which means those hazards stay outside "
+        "its scope, and unlike an existing breaker the current sensing core "
+        "cannot be replaced."
+    ),
+    PROBLEM_MECHANISM_FIT: (
+        "The problem is that people miss micro-faults and it matters because "
+        "the equipment burns out, therefore this design solves it rather than "
+        "a plain fuse and the sensor triggers earlier."
+    ),
+    ASSUMPTION_INVENTORY: (
+        "I am assuming the shunt resistor stays accurate, because the sensor "
+        "calibration was never re-checked, therefore that assumption is "
+        "untested and unverified."
+    ),
+    EXPERTISE_GAP_AWARENESS: (
+        "It needs power electronics expertise and firmware knowledge, because "
+        "the relay and the comparator must be certified, therefore I would "
+        "consult a safety engineer."
+    ),
+}
+
+
+def _advance(state):
+    """One iteration answered with an input appropriate to the SERVED gap."""
+    served = select_next_gap(state)
+    answer = _GAP_APPROPRIATE_ANSWER.get(served,
+                                         _GAP_APPROPRIATE_ANSWER[MECHANISM_COMPLETENESS])
+    return run_iteration(state, answer)
 
 _REASONED_RESPONSE = (
     "The sensor detects voltage drop across the shunt resistor. "
@@ -269,8 +318,8 @@ class TestStage3Reachability:
         No manual state manipulation.
         """
         state = self._make_state_s2_almost_complete()
-        run_iteration(state, self._REASONED)
-        run_iteration(state, self._REASONED)
+        _advance(state)
+        _advance(state)
 
         assert state.maturity_level == 2, (
             f"maturity_level={state.maturity_level}, expected 2"
@@ -287,8 +336,8 @@ class TestStage3Reachability:
         maturity_level 2 must open PROBLEM_MECHANISM_FIT — no extra submission.
         """
         state = self._make_state_s2_almost_complete()
-        run_iteration(state, self._REASONED)           # BOUNDARY_AMBIGUITY OPEN -> PARTIAL
-        result = run_iteration(state, self._REASONED)  # BA -> CLOSED; Stage 3; PMF opens
+        _advance(state)           # BOUNDARY_AMBIGUITY OPEN -> PARTIAL
+        result = _advance(state)  # BA -> CLOSED; Stage 3; PMF opens
 
         pmf_gaps = [g for g in state.gaps if g.gap_type == PROBLEM_MECHANISM_FIT]
         assert len(pmf_gaps) > 0, (
@@ -309,8 +358,8 @@ class TestStage3Reachability:
         question, not the Stage 2 closing prompt.
         """
         state = self._make_state_s2_almost_complete()
-        run_iteration(state, self._REASONED)
-        result = run_iteration(state, self._REASONED)
+        _advance(state)
+        result = _advance(state)
 
         question = result.get("question")
         assert question is not None, "REGRESSION: no question delivered at Stage 3 opening"
@@ -368,11 +417,11 @@ class TestStage3RoutingRegression:
 
     def test_final_stage2_response_opens_pmf_same_call(self):
         state = self._make_boundary_state()
-        run_iteration(state, self._REASONED)
+        _advance(state)
         assert state.maturity_level == 1
         assert state.current_stage == 2
         assert state.get_gap(PROBLEM_MECHANISM_FIT) is None
-        result = run_iteration(state, self._REASONED)
+        result = _advance(state)
         assert self._status(state, BOUNDARY_AMBIGUITY) == CLOSED
         assert state.maturity_level == 2
         assert state.current_stage == 3
@@ -383,24 +432,24 @@ class TestStage3RoutingRegression:
 
     def test_stage3_cascade_pmf_ai_ega_full_routing(self):
         state = self._make_boundary_state()
-        run_iteration(state, self._REASONED)
-        run_iteration(state, self._REASONED)
-        run_iteration(state, self._REASONED)
+        _advance(state)
+        _advance(state)
+        _advance(state)
         assert self._status(state, PROBLEM_MECHANISM_FIT) == PARTIAL
-        r_ai = run_iteration(state, self._REASONED)
+        r_ai = _advance(state)
         assert self._status(state, PROBLEM_MECHANISM_FIT) == CLOSED
         assert self._status(state, ASSUMPTION_INVENTORY) == OPEN
         assert r_ai["gap_targeted"] == ASSUMPTION_INVENTORY
         assert r_ai["question"] == self._AI_Q1
-        run_iteration(state, self._REASONED)
+        _advance(state)
         assert self._status(state, ASSUMPTION_INVENTORY) == PARTIAL
-        r_ega = run_iteration(state, self._REASONED)
+        r_ega = _advance(state)
         assert self._status(state, ASSUMPTION_INVENTORY) == CLOSED
         assert self._status(state, EXPERTISE_GAP_AWARENESS) == OPEN
         assert r_ega["gap_targeted"] == EXPERTISE_GAP_AWARENESS
-        run_iteration(state, self._REASONED)
+        _advance(state)
         assert self._status(state, EXPERTISE_GAP_AWARENESS) == PARTIAL
-        run_iteration(state, self._REASONED)
+        _advance(state)
         assert self._status(state, EXPERTISE_GAP_AWARENESS) == CLOSED
         for log in state.iteration_log:
             assert self._CLOSING_FRAGMENT not in (log.question_asked or "")

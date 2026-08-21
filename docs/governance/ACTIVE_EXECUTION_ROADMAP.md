@@ -13148,3 +13148,125 @@ domain expansion, versioning, Render, `main` reconciliation and deployment all r
 `OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY if/when this exact candidate is merged and
 post-merge verified. Next required step: Independent External Review of this exact SHA + bundle, then a
 SEPARATE Owner execution authorization before any R2-I work begins.
+
+---
+
+## PVCG-R2-I — Gap-Relevance / Manufactured-Satisfaction Hardening IMPLEMENTATION (Owner-authorized implementation candidate)
+
+**Authority.** `docs/governance/PVCG_R2_C_GAP_RELEVANCE_HARDENING_CONTRACT.md` is now
+**AUTHORITATIVE** (PR #548, merge `4d746d15a3025802d0ad601b4501473e06b1140b`; independently re-verified
+live on all four criteria: first parent `c70bad19…`, second parent `e394f962…`, merge tree
+`b8441675…`, empty candidate→merge diff, zero later commits on
+`origin/feature/atomic-json-session-persistence`). This gate implements §4 within §2.4, §2.5, §3.2–§3.7,
+§5, §6, §8 and §9 and exceeds none of them.
+
+**Disposition.** `PVCG-R2-I IMPLEMENTED / CANDIDATE — NOT AUTHORITATIVE UNTIL MERGED`.
+`PVCG-R2-C AUTHORITATIVE: YES`. `PVCG-R3 NOT STARTED`. `PVCG-R4 NOT STARTED`. `PVCG SATISFIED: NO`.
+`MINIMUM LAUNCH-CONFORMANCE SET SATISFIED: NO`. No release, deployment or readiness claim.
+
+**Base.** `4d746d15a3025802d0ad601b4501473e06b1140b`, resolved live from
+`origin/feature/atomic-json-session-persistence`, working tree clean.
+
+**What was built.** One new pure module `engine/gap_relevance.py` (~190 lines, `re` only, no state, no
+I/O, no clock, no randomness, no network, no model call) exposing `addresses_gap(response, gap_type)`
+and `GOVERNED_GAP_TYPES`; and ONE narrow call at the EXISTING answer→gap seam
+`engine.progression_loop.integrate_response`. No second progression pipeline, no parallel evaluation
+path, no new truth source, no new architecture. Gap priority, maturity thresholds, stage transitions,
+question ordering, Path N, domain activation, persistence, R1 reconstruction and correction/
+supersession are untouched.
+
+**Mechanism, described truthfully.** It is **LEXICAL** and deterministic: per-gap intent-marker
+families derived from the vocabulary of the six governed questions in `progression_loop.QUESTIONS`.
+Bare domain vocabulary (sensor, relay, capacitor, resistor, voltage, current, microcontroller …) and
+bare causal connectives (because, therefore, since, thus) are deliberately EXCLUDED from every family,
+because PVCG-R2-C §4 declares them insufficient on their own. It is **not** a semantic component: it
+does not interpret an answer, does not stabilise paraphrase, and does not carry across languages. An
+Arabic mechanism answer is NOT recognised, and that bound is asserted in the test record
+(`test_non_english_paraphrase_is_not_recognised_r3_bound`) rather than concealed. Stabilising
+equivalent wording is PVCG-R3 and remains NOT STARTED and NOT AUTHORIZED.
+
+**Fail-closed, never punitive.** When the response does not address the served gap the gap status is
+left exactly as it was, the three satisfaction side effects (`known_mechanism`, `known_problem`,
+Stage-3 evidence capture) are withheld, and the seam returns `WARN` with
+`"<GAP> not addressed — this answer does not respond to the question that was asked"`. It is never
+converted into `BLOCK`, a contradiction, an input-validation failure, a quality downgrade, or a claim
+that the inventor is wrong. The assessed quality tier is unchanged. Gap creation and the unconditional
+acknowledged-unknown parallel track both still run — the guard sits after them.
+
+**RED, re-measured independently at the authoritative base (not carried over from the non-candidate
+diagnostic SHA `5154bcf4…`, which stays unpublished and was not cherry-picked).**
+New file `tests/test_pvcg_r2i_gap_relevance.py`, 189 tests: **123 failed / 66 passed** at
+`4d746d15`, of which **112 are behavioural-defect failures** at the live seam and **11 are caused
+solely by the not-yet-existing module**. Directly reproduced defect at the base: one signal-rich,
+causally-structured, off-topic answer is rated `REASONED` and, served twice against each gap in turn,
+takes ALL SIX gap types `OPEN → PARTIAL → CLOSED`, sets `known_mechanism` for
+`MECHANISM_COMPLETENESS`, sets `known_problem`, and is captured as Stage-3 evidence for all three
+Stage-3 gaps. **GREEN at the candidate: 189/189.**
+
+**Pin reconciliation (DEP-1, §2.4/§2.5) — ONE bounded reconciliation.** Pre-R2 pinned digest
+`a8e1ffdf9accf3ed57fc6c32d51c7e77ce9e260c0d39a8ec3030e2635ff03dc3` recorded and proven to match the
+base file. Post-R2-I digest
+`07c9bff500662de54ac0f7388c1f2e13a721549c6f4943cde865b98a22c525d6`. THREE pin locations held the old
+value and all three were updated — `tests/test_p9_mech_i3_signal_quality.py`,
+`tests/test_p9_mech_i4_boundary_corpus.py`, `tests/test_p9_mech_i5_question_sufficiency.py` — each with
+a disclosed reconciliation comment that preserves the prior digest as historical evidence. The guard
+`test_engine_files_byte_frozen` is unchanged, not skipped, not xfailed, and passes against the NEW
+value in all three files (54 passed). `engine/domain_rules.py` (`0e47326a…`) and
+`engine/path_n_questions.py` (`a1a682d3…`) are byte-UNCHANGED. The `engine/progression_loop.py` diff is
+confined to the authorized seam: one import, one `addresses_gap` call, three side effects conditioned
+on it, one fail-closed return — no other function in the file is touched.
+
+**DEP-2 fixture reconciliation — twelve test files, ASSERTION-TARGET CHANGES: 0.** Every corrected
+fixture was proven against all five §3.4 conditions before modification. Ledger:
+
+| # | source test file | served gap(s) | original input | why defect-dependent | replacement | assertion target BEFORE | AFTER | CROSS-FILE / EVIDENCE IMPACT | duplicated elsewhere | committed artifact refers | generator embeds |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | `test_progression_benchmark.py` | MECHANISM | bare noun `"sensor"` | a single domain noun answers nothing; only manufactured satisfaction moved the gap | `"It has a few parts."` (still ASSERTED) | ASSERTED response moves OPEN gap to PARTIAL | identical | none | no | no | no |
+| 2 | `test_causal_connective_substance_gate.py` (3 sites) | MECHANISM | `"Fan must continue because sensor still reads high temperature…"` | describes a temperature condition, not HOW it works | `"The controller opens the relay because the sensor still reads high temperature…"` (still REASONED via the same Layer-2 gate) | OPEN→PARTIAL only, then REASONED follow-up closes; transcript/ledger verbatim | identical | the gate's canonical quality corpus (lines 90/371/378/548/784) is byte-UNCHANGED — those exercise `assess_response` only | within-file only | no | no |
+| 3 | `test_l2sc01_substance_signal_plural_alias.py` | MECHANISM | `"It has a mechanism."` | answers nothing; reached PARTIAL only through manufactured satisfaction | `"It has a mechanism with some moving parts."` (still ASSERTED) | plural/singular outcome sensitivity both PASS | identical | none | no | no | no |
+| 4 | `test_stage3_evidence_deliverable.py` | PMF, AI, EGA | one MECHANISM-shaped `REASONED_RESP` for all three | a mechanism answer captured as PMF/AI/EGA evidence is manufactured satisfaction | three REASONED answers, one per Stage-3 governed question | accepted response captured on its own gap; no leak across gaps | identical | none | no | no | no |
+| 5 | `test_cascade_regression.py` (16 call sites) | BOUNDARY, PMF, AI, EGA | one MECHANISM `_REASONED` for every gap | same | `_GAP_APPROPRIATE_ANSWER[served]` via `_advance(state)` | routing: which gap opens next, which question, iteration-log record | identical | the two `known_mechanism` state seeds are byte-UNCHANGED | no | no | no |
+| 6 | `test_web_app.py` | BOUNDARY, PMF, AI | one MECHANISM `_WEB_REASONED` for the rendered Stage-3 flow | same | three gap-appropriate answers | rendered form/question/heading/guidance and gap transitions | identical | none | no | no | no |
+| 7 | `test_structured_criticality.py` | FEASIBILITY, BOUNDARY, PMF, AI, EGA | `BASE (+ danger clause)` for every gap | the WS1 journey completed only because one mechanism answer satisfied five gaps it does not address | `gap_appropriate(text, served_gap)` appends the served gap's clause ONLY when the text does not already address it | WS4 criticality capture, wordings, rendering, protected invariants | identical | `BASE`, `IDEA_WS1`, `DANGER_BY_ITERATION`, `ITERATION_7_STATEMENT` remain BYTE-IDENTICAL; iteration 7 already addresses the boundary question and is therefore left untouched — verified by `test_p2_iteration7_statement_recorded_verbatim` | the SAME defect pattern exists in 5 WS1 test files; the correction helper is defined ONCE here and imported by the others rather than duplicated | 44 committed artifacts across 7 trees embed the WS1 sentence — **none regenerated, none modified** | 7 generator/harness scripts embed it — **none modified** |
+| 8 | `test_unified_risk_safety_presentation.py` | as above | as above | as above | imports `gap_appropriate` from `test_structured_criticality` | safety-signal derivation, §6/§13 rendering, linkage | identical | as row 7 | reuses the shared helper | none | none |
+| 9 | `test_requirement_landscape_synthesis.py` | as above | as above | as above | imports the shared helper; `VARIANTS` / `DISTINCT_STATEMENTS` rebuilt from the clause map | repetition collapse + owner-approved count sentence; byte-verbatim statements; row total | identical (the repetition-collapse behaviour) | **declared value change:** `EXPECTED_CORE_REPEATS = 8` was itself an artifact of manufactured satisfaction — one identical sentence accepted as the answer to eight different questions — and cannot exist in a truthful post-R2 journey. Replaced by `REPEATED_STATEMENT` (the two PMF turns) with `EXPECTED_REPEAT_COUNT = 2` and `EXPECTED_CORE_ROWS = 1`. `EXPECTED_ROW_TOTAL` stays **13**. The assertion TARGET is unchanged; only the fixture-derived expected values moved | reuses the shared helper | none | none |
+| 10 | `test_deliverable_hygiene.py` | as above | as above | as above; the journey silently stalled at maturity 1 and never reached the completion branch its fixture documents | `_run_journey(..., gap_aware=True)` for the WS1 journey ONLY | every hygiene assertion | identical | the ASSERTED / positive / no-answer / unknown-action journeys are NOT gap-aware and are byte-unchanged | reuses the shared helper | none | none |
+| 11 | `test_actionable_validation_plan.py` | as above | as above | as above | imports the shared helper | validation-plan derivation and requirement linkage | identical | as row 7 | reuses the shared helper | none | none |
+| 12 | `test_acknowledged_unknowns.py` | FEASIBILITY → MECHANISM | a MECHANISM answer served to `PHYSICAL_FEASIBILITY` | the answer describes HOW it works; serving it to feasibility advanced that gap only through manufactured satisfaction | response byte-VERBATIM; the SERVED GAP corrected to `MECHANISM_COMPLETENESS` | acknowledged-unknown recorded AND progression unchanged | identical | none | no | no | no |
+
+`ASSERTION-TARGET CHANGES: 0`. No test was deleted, skipped, xfailed, or had an assertion weakened.
+**COMMITTED EVIDENCE TREES REMAIN FROZEN** — `git status docs/governance/evidence/` is empty; zero
+artifacts regenerated, rewritten or synchronized. **GENERATOR/HARNESS MODIFICATION: NOT AUTHORIZED and
+NONE PERFORMED** — all 7 embedding scripts (`reproduce_baseline.py`, `regenerate_and_compare.py`,
+`generate_ws3_artifacts.py`, `generate_ws4_artifacts.py`, `generate_ws5_artifacts.py`,
+`generate_ws6_artifacts.py`, `generate_ws7_artifacts.py`) are classified **HISTORICAL-ONLY / FROZEN**
+and are byte-unchanged. Per §3.7 the live fixture provenance comment is updated truthfully and its
+provenance is preserved: `BASE` is still recorded as copied verbatim from the WS3 harness, with the
+R2-I reconciliation stated alongside it.
+
+**Declared residual (not concealed).** `test_progression_benchmark.py::test_B1` sends the same bare
+noun `"sensor"` and asserts only `WARN`. Under R2 it still returns `WARN`, but now for the
+not-addressed reason rather than the asserted-only reason. It does NOT fail, so §3.4 condition 2 is not
+met and the fixture was **left alone** as the contract requires. Recorded here so the change in why it
+passes is visible.
+
+**Verification.** Universal Guardrail Smoke **PASS** (17 blocking guards, 76 canonical tests; no guard
+weakened). Targeted suite over the 19 required files: **755 passed / 0 failed**. PVCG-R1 focused suite
+**26/26 GREEN with the R1 test file byte-UNCHANGED**. Full suite **3210 passed / 3 skipped / 1 xfailed
+/ 0 failed** (3021 pre-existing + 189 new), with `gunicorn 26.1.0` resolvable on `PATH` so the
+serving-stack access-log tests EXECUTE rather than skip (Python 3.11.15, Flask 3.1.3, SQLite 3.45.1).
+Twelve mandatory Creator mutations — bypass the guard, always-relevant, always-irrelevant, ignore
+`gap_type`, admit all technical text, let repetition accumulate, restore pre-R2 manufactured
+satisfaction, break the legitimate mechanism answer, break the legitimate boundary answer, bypass the
+pin reconciliation, let relevance override quality, and alter the R1 acknowledged-unknown track —
+**12 KILLED / 0 SURVIVED**, each restored byte-identically (SHA-256 verified). Two supplementary weak
+probes (removing four mechanism markers; removing three boundary phrases) survived and are recorded as
+**EQUIVALENT MUTANTS**: proven to produce **zero** verdict changes across the full 10-answer × 6-gap
+matrix, i.e. the families carry redundancy, not that a defect went undetected.
+
+**Not done and not authorized:** PVCG-R3 (semantic stability, EN/AR equivalence), PVCG-R4, full
+Adaptive Questioning, skip/reorder/add, WS10/WS11/WS12 activation, Stage-3 evaluator integration, any
+LLM/NLP subsystem, embeddings, vector store or model-based adjudication, domain expansion, versioning,
+Render, `main` reconciliation, deployment, provider selection. No second truth source and no duplicate
+progression state were created. `OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY if/when this
+exact candidate is merged and post-merge verified.

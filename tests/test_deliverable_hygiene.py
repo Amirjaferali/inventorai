@@ -47,6 +47,11 @@ from web.app import app, SESSION_STORE, DOMAIN_CONFIRM_VALUE
 from engine.deliverable_assembler import assemble_deliverable
 from engine.idea_state import IdeaState, Gap, OPEN
 from engine.safety_signal import derive_inventor_stated_safety_signals
+from engine.progression_loop import select_next_gap
+# PVCG-R2-I defect-dependent input correction (contract §3.2/§3.4):
+# the shared WS1 gap-appropriate extension helper, defined once in
+# test_structured_criticality.py and reused here rather than duplicated.
+from test_structured_criticality import gap_appropriate
 
 # --------------------------------------------------------------------------
 # Contract-bound identifiers (contract §7; owner authorization §4)
@@ -251,7 +256,7 @@ ASSERTED_ANSWER = (
 ASSERTED_ITERATIONS = 4
 
 
-def _run_journey(idea, answer_for_iteration, max_iterations):
+def _run_journey(idea, answer_for_iteration, max_iterations, gap_aware=False):
     """Drive the committed Flask session flow to (at most) max_iterations and
     return (inventor_inputs, state, package, deliverable_html). Uses only the
     real committed routes and the real assembler — nothing is mocked."""
@@ -268,6 +273,16 @@ def _run_journey(idea, answer_for_iteration, max_iterations):
         action, text = answer_for_iteration(i)
         if action is None:
             break
+        if gap_aware and action == "answered":
+            # PVCG-R2-I defect-dependent input correction (contract §3.2/§3.4).
+            # Opt-in per journey: only the WS1 baseline journey answered every
+            # gap with the same MECHANISM statement and therefore relied on
+            # manufactured satisfaction. Without this the journey silently
+            # stalls at maturity 1 and never reaches the completion branch this
+            # fixture documents. The served gap's clause is appended only when
+            # the text does not already address that gap.
+            text = gap_appropriate(
+                text, select_next_gap(SESSION_STORE[sid]["state"]))
         inputs.append(text)
         answered_post(client, sid, {"response": text, "action": action})
     state = SESSION_STORE[sid]["state"]
@@ -288,7 +303,8 @@ def ws1_journey():
         if i == UNKNOWN_ITERATION:
             return "unknown", UNKNOWN_TEXT
         return "answered", BASE_ANSWER + DANGER_BY_ITERATION.get(i, "")
-    inputs, state, package, html = _run_journey(IDEA_WS1, answers, MAX_ITERATIONS)
+    inputs, state, package, html = _run_journey(IDEA_WS1, answers, MAX_ITERATIONS,
+                                               gap_aware=True)
     return {"inputs": inputs, "state": state, "package": package, "html": html}
 
 

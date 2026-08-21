@@ -46,6 +46,11 @@ import pytest
 
 from web.app import app, SESSION_STORE, DOMAIN_CONFIRM_VALUE
 from engine.deliverable_assembler import assemble_deliverable
+from engine.progression_loop import select_next_gap
+# PVCG-R2-I: the shared WS1 gap-appropriate extension helper, defined
+# once in test_structured_criticality.py and reused here.
+from test_structured_criticality import (
+    GAP_APPROPRIATE_CLAUSE, gap_appropriate)
 from engine.requirement_landscape import derive_requirement_landscape
 from engine.idea_state import (
     IdeaState,
@@ -78,10 +83,42 @@ UNKNOWN_ITERATION = 5
 UNKNOWN_TEXT = "I don't know yet."
 MAX_ITERATIONS = 30
 
-# The six distinct WS1-journey statements (byte-identical vocabulary only).
-VARIANTS = [CORE + suffix for suffix in DANGER_BY_ITERATION.values()]
+# --- PVCG-R2-I defect-dependent input correction (authoritative contract
+# docs/governance/PVCG_R2_C_GAP_RELEVANCE_HARDENING_CONTRACT.md §3.2/§3.4) ----
+# PROVENANCE PRESERVED: IDEA_WS1, CORE and DANGER_BY_ITERATION above are
+# BYTE-IDENTICAL to the committed WS1/WS3 harness. What changed: the journey
+# used to answer the feasibility, boundary and all three Stage-3 questions with
+# the same MECHANISM statement, and those gaps closed only because the pre-R2
+# engine allowed an unrelated answer to satisfy them. The old
+# `EXPECTED_CORE_REPEATS = 8` was itself an artifact of that manufactured
+# satisfaction: one identical sentence accepted as the answer to eight
+# different questions. Under the R2 truth condition a truthful journey cannot
+# contain that repetition, so the journey now appends the served gap's clause
+# when — and only when — the text does not already address that gap. The
+# repetition behaviour under test is unchanged and is now anchored on the
+# statement that legitimately repeats (the two PMF turns).
+_CLAUSE_FEASIBILITY = GAP_APPROPRIATE_CLAUSE["PHYSICAL_FEASIBILITY"]
+_CLAUSE_BOUNDARY = GAP_APPROPRIATE_CLAUSE["BOUNDARY_AMBIGUITY"]
+_CLAUSE_PMF = GAP_APPROPRIATE_CLAUSE["PROBLEM_MECHANISM_FIT"]
+_CLAUSE_AI = GAP_APPROPRIATE_CLAUSE["ASSUMPTION_INVENTORY"]
+_CLAUSE_EGA = GAP_APPROPRIATE_CLAUSE["EXPERTISE_GAP_AWARENESS"]
+
+# The distinct WS1-journey statements (byte-identical vocabulary only).
+VARIANTS = [
+    CORE + DANGER_BY_ITERATION[3],
+    CORE + DANGER_BY_ITERATION[4] + _CLAUSE_FEASIBILITY,
+    CORE + DANGER_BY_ITERATION[6] + _CLAUSE_FEASIBILITY,
+    CORE + DANGER_BY_ITERATION[7],
+    CORE + _CLAUSE_BOUNDARY,
+    CORE + _CLAUSE_PMF,
+    CORE + _CLAUSE_AI,
+    CORE + _CLAUSE_EGA,
+]
 DISTINCT_STATEMENTS = [CORE] + VARIANTS + [UNKNOWN_TEXT]
-EXPECTED_CORE_REPEATS = 8          # owner-pinned count for the WS1 journey
+# The statement the corrected journey records byte-identically more than once.
+REPEATED_STATEMENT = CORE + _CLAUSE_PMF
+EXPECTED_REPEAT_COUNT = 2          # the two PROBLEM_MECHANISM_FIT turns
+EXPECTED_CORE_ROWS = 1             # CORE alone is now the iteration-2 answer
 EXPECTED_ROW_TOTAL = 13
 
 # --- Contract §7 owner-approved exact public wordings (byte-exact) -----------
@@ -178,7 +215,9 @@ def ws1_journey():
         if i == UNKNOWN_ITERATION:
             action, text = "unknown", UNKNOWN_TEXT
         else:
-            action, text = "answered", CORE + DANGER_BY_ITERATION.get(i, "")
+            action, text = "answered", gap_appropriate(
+                CORE + DANGER_BY_ITERATION.get(i, ""),
+                select_next_gap(SESSION_STORE[sid]["state"]))
         answered_post(client, sid, {"response": text, "action": action})
     else:
         pytest.fail("fixture defect: WS1 journey did not complete")
@@ -189,10 +228,11 @@ def ws1_journey():
     if len(rows) != EXPECTED_ROW_TOTAL:
         pytest.fail("fixture defect: WS1 journey produced %d Section 13 rows, "
                     "expected %d" % (len(rows), EXPECTED_ROW_TOTAL))
-    if statements.count(CORE) != EXPECTED_CORE_REPEATS:
+    if statements.count(REPEATED_STATEMENT) != EXPECTED_REPEAT_COUNT:
         pytest.fail("fixture defect: WS1 journey produced %d byte-identical "
-                    "core rows, expected %d"
-                    % (statements.count(CORE), EXPECTED_CORE_REPEATS))
+                    "repeats of the repeated statement, expected %d"
+                    % (statements.count(REPEATED_STATEMENT),
+                       EXPECTED_REPEAT_COUNT))
     if set(statements) != set(DISTINCT_STATEMENTS):
         pytest.fail("fixture defect: WS1 journey statement set drifted from "
                     "the recorded baseline")
@@ -278,7 +318,7 @@ def test_p3_statements_byte_verbatim_and_untruncated(ws1_journey):
     _, package, _ = ws1_journey
     statements = [r["statement"]
                   for r in package["section_13_requirement_landscape"]["requirements"]]
-    assert statements.count(CORE) == EXPECTED_CORE_REPEATS
+    assert statements.count(CORE) == EXPECTED_CORE_ROWS
     for stmt in DISTINCT_STATEMENTS:
         assert stmt in statements
 
@@ -337,10 +377,10 @@ def test_r1_exact_repeat_rendered_once_with_owner_count_wording(ws1_journey):
     _, _, html = ws1_journey
     sec = _section13(html)
     counts = _standalone_counts(sec, DISTINCT_STATEMENTS)
-    expected_sentence = REPETITION_SENTENCE.format(n=EXPECTED_CORE_REPEATS)
-    assert counts[CORE] == 1, (
+    expected_sentence = REPETITION_SENTENCE.format(n=EXPECTED_REPEAT_COUNT)
+    assert counts[REPEATED_STATEMENT] == 1, (
         "the byte-identical statement must be presented once (found %d "
-        "standalone renderings)" % counts[CORE])
+        "standalone renderings)" % counts[REPEATED_STATEMENT])
     assert expected_sentence in sec, (
         "missing owner-approved repetition wording: %r" % expected_sentence)
 

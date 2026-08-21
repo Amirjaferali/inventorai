@@ -41,15 +41,57 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — PVCG-R2-C: GAP-RELEVANCE HARDENING CONTRACT / RECONCILIATION GATE;
+**Status (current — PVCG-R2-I: GAP-RELEVANCE / MANUFACTURED-SATISFACTION HARDENING IMPLEMENTATION;
+Owner-authorized IMPLEMENTATION gate under the now-AUTHORITATIVE PVCG-R2-C contract).** Base:
+`4d746d15a3025802d0ad601b4501473e06b1140b` (PR #548 merge — PVCG-R2-C, AUTHORITATIVE; re-resolved live
+from `origin/feature/atomic-json-session-persistence` and independently re-verified: first parent
+`c70bad19…`, second parent `e394f962…`, merge tree `b8441675…`, empty candidate→merge diff, zero later
+commits).
+
+**Disposition: `PVCG-R2-I IMPLEMENTED / CANDIDATE — NOT AUTHORITATIVE UNTIL MERGED`.**
+`PVCG-R2-C AUTHORITATIVE: YES`. PVCG-R3 NOT STARTED; PVCG-R4 NOT STARTED; PVCG SATISFIED: NO; MINIMUM
+LAUNCH-CONFORMANCE SET SATISFIED: NO. No release-readiness or deployment claim.
+
+**Governing authority.** `docs/governance/PVCG_R2_C_GAP_RELEVANCE_HARDENING_CONTRACT.md` §4 (product
+truth), §2.4/§2.5 (one bounded pin reconciliation), §3.2–§3.7 (defect-dependent fixture correction,
+five-part scope test, eleven-field ledger, evidence-tree default freeze, generator classification,
+truthful provenance comments), §5 (non-goals), §6 (implementation bounds and progression isolation),
+§8 (RED/GREEN shape) and §9 (full-suite reconciliation rule). Nothing beyond it was built.
+
+**Implementation.** One new pure deterministic module `engine/gap_relevance.py` (`re` only; no state,
+I/O, clock, randomness, network or model call) exposing `addresses_gap(response, gap_type)` and
+`GOVERNED_GAP_TYPES`, plus ONE narrow call at the EXISTING answer→gap seam `integrate_response`. The
+mechanism is **LEXICAL and deterministic**, derived from the vocabulary of the six governed questions,
+with bare domain vocabulary and bare causal connectives deliberately excluded. It makes **no semantic,
+meaning-level or cross-language claim**; the Arabic-paraphrase bound is asserted in the test record.
+Fail-closed means *not eligible to satisfy or close* — never BLOCK, contradiction, validation failure
+or quality downgrade. Eligibility is not quality.
+
+**Evidence.** RED re-measured at the authoritative base: 123 failed / 66 passed (112 behavioural, 11
+module-absent); GREEN 189/189. Pin `a8e1ffdf…` → `07c9bff5…` reconciled in all three pin locations with
+disclosed comments preserving the prior digest; the byte-freeze guard is unchanged and green.
+Twelve test files corrected under the five-part scope test with `ASSERTION-TARGET CHANGES: 0`; the
+eleven-field ledger is recorded in `ACTIVE_EXECUTION_ROADMAP.md`. Committed WS1–WS7 evidence trees
+REMAIN FROZEN (zero regenerated); all seven generator/harness scripts classified HISTORICAL-ONLY /
+FROZEN and none modified. Smoke PASS; targeted 19-file suite 755 passed; PVCG-R1 26/26 with its test
+file byte-unchanged; full suite 3210 passed / 3 skipped / 1 xfailed / 0 failed with gunicorn 26.1.0 on
+PATH; 12 mandatory mutations KILLED / 0 SURVIVED (two supplementary probes proven EQUIVALENT MUTANTS).
+`OWNER_DECISION_REGISTER.md` UNCHANGED. `UNSUPPORTED MATERIAL CLAIMS: 0`.
+
+---
+
+**Superseded (retained as history) — PVCG-R2-C: GAP-RELEVANCE HARDENING CONTRACT / RECONCILIATION GATE;
+MERGED AND AUTHORITATIVE via PR #548, merge `4d746d15a3025802d0ad601b4501473e06b1140b`.**
 Owner-authorized GOVERNANCE-ONLY gate under the Owner's Option-B decision on the PVCG-R2 dependency
-conflict).** Base: `c70bad196de73fc27c21a3e1bd8438f1eab41958` (PR #547 merge — PVCG-R1, AUTHORITATIVE;
+conflict. Base: `c70bad196de73fc27c21a3e1bd8438f1eab41958` (PR #547 merge — PVCG-R1, AUTHORITATIVE;
 re-resolved live and independently re-verified: first parent `9d2b6515…`, second parent `5d563203…`,
 merge tree `24b57a2f…`, empty candidate→merge diff).
 
-**Disposition: `PVCG-R2-C GOVERNANCE CANDIDATE — NOT AUTHORITATIVE UNTIL MERGED`.**
-**PVCG-R2-I IMPLEMENTATION: NOT STARTED / NOT AUTHORIZED** — it requires this contract to be
-authoritative AND a separate Owner execution authorization. PVCG-R3 NOT STARTED; PVCG-R4 NOT STARTED;
+**Historical disposition as recorded at the time (superseded — this contract is now AUTHORITATIVE and
+PVCG-R2-I is the current gate): `PVCG-R2-C GOVERNANCE CANDIDATE — NOT AUTHORITATIVE UNTIL MERGED`.**
+**PVCG-R2-I IMPLEMENTATION: NOT STARTED / NOT AUTHORIZED** (as recorded then) — it required this
+contract to be authoritative AND a separate Owner execution authorization, both of which have since
+been satisfied. PVCG-R3 NOT STARTED; PVCG-R4 NOT STARTED;
 PVCG SATISFIED: NO; MINIMUM LAUNCH-CONFORMANCE SET SATISFIED: NO. No release-readiness claim.
 
 **Objective.** A bounded PVCG-R2 implementation was attempted and STOPPED before freeze on two

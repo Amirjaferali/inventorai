@@ -2424,6 +2424,51 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
+- **PVCG-R2-I — GAP-RELEVANCE / MANUFACTURED-SATISFACTION HARDENING IMPLEMENTATION (Owner-authorized
+  implementation candidate, PR pending), base `4d746d15a3025802d0ad601b4501473e06b1140b` (PR #548
+  merge — PVCG-R2-C, AUTHORITATIVE; independently re-verified live on all four merge criteria: first
+  parent `c70bad19…`, second parent `e394f962…`, merge tree `b8441675…`, empty candidate→merge diff,
+  zero later commits).** Disposition: **`PVCG-R2-I IMPLEMENTED / CANDIDATE — NOT AUTHORITATIVE UNTIL
+  MERGED`**; `PVCG-R2-C AUTHORITATIVE: YES`. Implements the R2 product truth frozen by
+  `PVCG_R2_C_GAP_RELEVANCE_HARDENING_CONTRACT.md` §4 and exceeds no part of §2.4/§2.5/§3.2–§3.7/§5/§6/
+  §8/§9. **Shape:** one new pure module `engine/gap_relevance.py` (`re` only; no state, I/O, clock,
+  randomness, network or model call) exposing `addresses_gap(response, gap_type)`, plus ONE narrow call
+  at the EXISTING answer→gap seam `integrate_response`. No second pipeline, no parallel evaluation, no
+  new truth source, no duplicate progression state. **Truthfully LEXICAL, not semantic:** per-gap
+  intent-marker families drawn from the six governed questions, with bare domain vocabulary and bare
+  causal connectives deliberately excluded because §4 declares them insufficient alone; it does not
+  interpret answers, stabilise paraphrase, or carry across languages — the Arabic-paraphrase bound is
+  asserted in the test record, not concealed. Stabilising equivalent wording is **PVCG-R3, NOT
+  STARTED**. **Fail-closed, never punitive:** an answer that does not address the served gap leaves the
+  gap status untouched, withholds `known_mechanism` / `known_problem` / Stage-3 evidence capture, and
+  returns `WARN` with a question-focused reason — never BLOCK, contradiction, validation failure or
+  quality downgrade; gap creation and the unconditional acknowledged-unknown track still run.
+  **RED re-measured at the authoritative base** (the non-candidate diagnostic SHA `5154bcf4…` was NOT
+  reused, cherry-picked or published): **123 failed / 66 passed**, of which **112 behavioural-defect
+  failures** and **11 module-absent failures**; the defect is directly reproduced — one signal-rich
+  off-topic `REASONED` sentence closes **all six** gap types and sets both known-elements and all three
+  Stage-3 evidence captures. **GREEN 189/189.** **Pin (DEP-1):** pre-R2 `a8e1ffdf…` → post-R2-I
+  `07c9bff5…`, updated in **all three** locations that held it (`test_p9_mech_i3_signal_quality.py`,
+  `test_p9_mech_i4_boundary_corpus.py`, `test_p9_mech_i5_question_sufficiency.py`) with disclosed
+  comments preserving the prior digest; `test_engine_files_byte_frozen` unchanged and green against the
+  new value (54 passed); `domain_rules.py` and `path_n_questions.py` byte-UNCHANGED; the engine diff is
+  confined to the authorized seam. **Fixtures (DEP-2):** twelve test files corrected, each proven
+  against all five §3.4 conditions, full eleven-field ledger in `ACTIVE_EXECUTION_ROADMAP.md`;
+  **`ASSERTION-TARGET CHANGES: 0`**; nothing deleted, skipped, xfailed or weakened. **COMMITTED
+  EVIDENCE TREES REMAIN FROZEN** — zero artifacts regenerated (44 artifacts across 7 trees embed the
+  WS1 sentence and none was touched); all **7** generator/harness scripts classified HISTORICAL-ONLY /
+  FROZEN and **none modified**. The live WS1 provenance comment was updated truthfully with provenance
+  preserved (§3.7). One residual is declared, not hidden: `test_progression_benchmark.py::test_B1` does
+  not fail and was therefore left alone, though it now passes for a different reason. **Verification:**
+  smoke PASS; targeted 19-file suite **755 passed / 0 failed**; **PVCG-R1 26/26 GREEN with its test
+  file byte-UNCHANGED**; full suite **3210 passed / 3 skipped / 1 xfailed / 0 failed** (gunicorn 26.1.0
+  on PATH so serving-stack tests execute rather than skip); **12 mandatory mutations KILLED / 0
+  SURVIVED**, all restored byte-identically, plus two supplementary probes recorded as EQUIVALENT
+  MUTANTS (zero verdict changes across the 10×6 matrix). PVCG-R3 NOT STARTED; PVCG-R4 NOT STARTED;
+  WS10/WS11/WS12 not activated; no LLM/NLP subsystem; Stage-3 evaluator not integrated; Render not
+  reopened; `main` not reconciled; PVCG SATISFIED: NO; MINIMUM LAUNCH-CONFORMANCE SET SATISFIED: NO; no
+  deployment or readiness claim. `OWNER_DECISION_REGISTER.md` UNCHANGED.
+
 - **PVCG-R2-C — GAP-RELEVANCE HARDENING CONTRACT / RECONCILIATION GATE (Owner-authorized
   GOVERNANCE-ONLY candidate, PR pending), base `c70bad196de73fc27c21a3e1bd8438f1eab41958` (PR #547
   merge — PVCG-R1, AUTHORITATIVE; independently re-verified live on all four merge criteria).**
