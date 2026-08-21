@@ -13000,7 +13000,7 @@ misdescribed as an answer. (4) `tests/test_pvcg_r1_durable_epistemic_memory.py`:
 REAL Flask application against a REAL on-disk SQLite store and then reconstructs **in a separate
 Python interpreter** (`subprocess`), so no result can be produced by surviving in-memory objects.
 
-**Evidence.** RED at the authoritative base with the final tests: **14 failed / 10 passed** (the 10
+**Evidence.** RED at the authoritative base with the final tests: **16 failed / 10 passed** (the 10
 passing are the control, the in-session preconditions, backward compatibility and the
 no-second-truth-source guards — no manufactured RED) → GREEN **26/26**. **8 mutation probes, all
 killed**, both mutated files sha256-verified byte-restored: replaying the full ledger; reverting the

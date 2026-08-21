@@ -2436,7 +2436,7 @@ AUTHORIZED / NOT STARTED.***
   **No schema change, no migration, no second truth source** (`AcknowledgedUnknown` proven DERIVED and
   test-pinned as never persisted; `pending` is an existing field on the record; the store still holds
   exactly `projects` + `records`). Backward compatibility proven: answered-only projects reconstruct
-  identically and missing historical non-answer records are never fabricated. Evidence: RED 14 failed
+  identically and missing historical non-answer records are never fabricated. Evidence: RED 16 failed
   / 10 passed → GREEN 26/26, with every restart assertion reconstructing in a SEPARATE interpreter
   against the real on-disk SQLite store; 8 mutation probes killed with byte-restoration verified;
   targeted regressions 326 passed (16-file persistence selection) and 285 passed / 1 xfailed (19-file

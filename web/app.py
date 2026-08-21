@@ -2283,10 +2283,15 @@ def resume_project(sid):
     the first durable write after resume can only be a valid new user action
     through the UNCHANGED accepted-answer pipeline. GET never establishes.
     The original in-memory session is NOT restored (transcript, last_result,
-    non-answer actions, criticality stage stay absent — never fabricated);
-    this is a reconstructed continuation. Every failure path fails closed to
-    the truthful read-only view (never a 500, never a fabricated writable
-    state); denials stay generic and non-enumerating."""
+    the transient non-answer action/display metadata in `interaction_actions`,
+    criticality stage stay absent — never fabricated); this is a reconstructed
+    continuation. PVCG-R1 precision: the DURABLE non-answer ledger records
+    (`unknown` / `deferred` / `provisional_assumption` / `specialist_requested`
+    / `evidence_requested`) ARE reconstructed, verbatim, by the canonical
+    reconstruction above — it is only their transient/display metadata that is
+    absent. Every failure path fails closed to the truthful read-only view
+    (never a 500, never a fabricated writable state); denials stay generic and
+    non-enumerating."""
     if not _project_authorized(sid):
         return _deny_project()
     entry = SESSION_STORE.get(sid)
