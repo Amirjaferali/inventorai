@@ -2424,6 +2424,39 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
+- **PVCG-R2-I (T-1b REPAIR) — STRUCTURAL-OPERATIVITY CLASSIFICATION REPAIR (repair candidate, PR
+  pending), parent `58ef39714630455c9713fb045bc66c3490eb4bf8` (the rejected T-1 repair candidate,
+  preserved unchanged; itself a child of the rejected R2-I candidate `2f2897ce…`, also preserved).**
+  Focused Independent Re-Review returned `REJECT` on ONE blocking finding, **T-1b — the structural
+  non-operativity proof is unsound for 9 of 11 excluded phrases**; everything else passed.
+  **WITHDRAWN, NOT DEFENDED:** the claim that each excluded phrase contains a same-family companion and
+  therefore can never decide eligibility is false for phrase → word pairs. **Root cause:** phrase
+  markers are matched by **SUBSTRING**, word markers by **TOKEN**, so a phrase can match inside a
+  larger alphanumeric run where the companion token is dissolved — e.g. `ztake for grantedz` contains
+  the phrase but tokenises to `{ztake, for, grantedz}`. The old helper tokenised the entry text in
+  isolation and never exercised that case. **This is a coverage-classification and governance-truth
+  defect, NOT a runtime defect.** **T-1b RED at the rejected SHA:** all nine
+  (`take for granted`, `taking for granted`, `taken for granted`, `cannot be replaced`,
+  `would need to learn`, `step by step`, `power consumption`, `temperature range`, `would not solve`)
+  flip `addresses_gap` from `True` to `False` when the phrase alone is removed. **Corrected split,
+  re-measured from repository execution rather than copied from the review: `OPERATIVE ENTRIES: 262`,
+  `STRUCTURALLY SHADOWED ENTRIES: 2`**, with isolated positive probes for all 262. The two retained
+  shadows are genuine PHRASE → PHRASE containments (`power requirements` → `power requirement`,
+  `physical limits` → `physical limit`), re-verified structurally and by execution against
+  token-dissolving probes. **Test repair:** `_necessary_companion()` returns only phrase companions;
+  the universal assertion is replaced by a phrase→phrase containment test, a token-dissolving
+  adversarial test, and a standing guard that no phrase→word exclusion can return; probe generation
+  refuses at collection to exclude any entry lacking both an isolating probe and a sound companion.
+  **Sweep:** 264 processed / **264 KILLED** / 0 SURVIVED / 0 skipped / **0 LOADFAIL** / restore
+  **264/264**. Prior survivors M8b and M9b remain KILLED. **Runtime and pins untouched:**
+  `gap_relevance.py` and `progression_loop.py` byte-identical to the parent, digest still
+  `07c9bff5…`, all three P9 pin files byte-identical, `SECOND PIN RECONCILIATION: NO`.
+  **Verification:** marker coverage 566; R2-I behavioural 189; R1 26/26 byte-unchanged; P9 pins 54;
+  targeted 1321; smoke PASS; full suite **3776 passed / 3 skipped / 1 xfailed / 0 failed** with
+  gunicorn 26.1.0 on PATH. Non-blocking observations deliberately untouched. `PVCG-R2-C AUTHORITATIVE:
+  YES`; `PVCG-R2-I AUTHORITATIVE: NO`; PVCG-R3/R4 NOT STARTED; PVCG SATISFIED: NO; MINIMUM
+  LAUNCH-CONFORMANCE SET SATISFIED: NO; no deployment claim.
+
 - **PVCG-R2-I (T-1 REPAIR) — MUTATION-ADEQUACY REPAIR OF THE MARKER TABLES (repair candidate, PR
   pending), parent `2f2897ce40c119ea202d6519e59e2d887c3fb7c1` (the rejected R2-I candidate, preserved
   unchanged as immutable reviewed evidence).** Independent External Review returned `REJECT` on ONE
@@ -2442,10 +2475,18 @@ AUTHORIZED / NOT STARTED.***
   any foreign-family marker (with a self-test proving the validator works), and guards that no
   undeclared domain noun, no bare causal connective, and no dense pile of either is ever eligible.
   **Accounting:** 264 declared entries (230 words + 34 phrases, no cross-family duplicates); **253
-  independently operative**; **11 structurally non-operative for eligibility** — each a phrase that
-  contains another entry of its own family, so its removal cannot change any verdict for **any** input
-  (a proof over the whole input space, not a corpus sample), all eleven still protected by the
-  inventory guard. **Complete single-marker sweep: 264 processed / 264 KILLED / 0 SURVIVED / 0 skipped,
+  independently operative**; **11 structurally non-operative for eligibility** — **that split and its
+  universal proof are WITHDRAWN AND CORRECTED (T-1b)**. Root cause: phrase markers match by
+  **substring**, word markers by **token**, so phrase → word containment does NOT prove universal
+  shadowing (a phrase can match inside a larger alphanumeric run where the companion token is
+  dissolved). Re-measured from repository execution: **262 operative / 2 structurally shadowed**. The
+  nine reclassified — `take for granted`, `taking for granted`, `taken for granted`,
+  `cannot be replaced`, `would need to learn`, `step by step`, `power consumption`,
+  `temperature range`, `would not solve` — each flipped `addresses_gap` when removed and now carry
+  isolated probes. The two retained shadows are genuine phrase → phrase containments
+  (`power requirements` → `power requirement`, `physical limits` → `physical limit`), re-verified
+  structurally and by execution. All 264 remain protected by the exact-match inventory guard. This is
+  a coverage-classification and governance-truth repair, **not a runtime defect**. **Complete single-marker sweep: 264 processed / 264 KILLED / 0 SURVIVED / 0 skipped,
   restore byte-identical** — `SINGLE-MARKER REMOVAL COVERAGE: COMPLETE`. A first sweep pass reporting
   255/255 with 9 harness-skipped entries was **discarded as untrustworthy** (stale-bytecode artifact:
   equal-length removals within one mtime second could reuse a cached `.pyc`); it was re-run with

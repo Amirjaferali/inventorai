@@ -13,9 +13,9 @@ Input contract   : the public predicate `engine.gap_relevance.addresses_gap` and
                    the declared marker tables, read ONLY to enumerate what must
                    be covered. No Flask, no database, no network, no filesystem.
 Output contract  : one parameterized positive probe per independently operative
-                   entry; cross-family exclusivity for the same probes; a
-                   structural non-operativity proof for every excluded entry;
-                   and structural guards on the tables themselves.
+                   entry; cross-family exclusivity for the same probes; a sound
+                   PHRASE-to-PHRASE substring proof for the only entries that
+                   may be excluded; and structural guards on the tables.
 Prohibited       : asserting on line numbers or on any implementation detail
                    other than the declared marker tables; probes that are not
                    isolated (a probe containing a second same-family entry would
@@ -33,6 +33,25 @@ review demonstrated real live-seam behaviour changes from single-marker removals
 that the previous suite did not detect. Equivalence is now claimed ONLY where it
 is proven structurally over all inputs (see `SHADOWED_ENTRIES`), never by corpus
 sampling.
+
+SECOND WITHDRAWN CLAIM (T-1b)
+-----------------------------
+The first version of this file excluded ELEVEN entries from behavioural coverage,
+asserting that each "contains another entry of its own family, so every text
+containing it necessarily contains the companion". **That proof was unsound for
+the nine PHRASE -> WORD cases and is withdrawn.** Phrase markers are matched by
+SUBSTRING; word markers are matched by TOKEN. A phrase can therefore match inside
+a larger alphanumeric run in which the companion token is dissolved — e.g.
+"ztake for grantedz" contains the phrase but tokenises to {ztake, for, grantedz},
+so no "granted" token exists and the phrase alone decides eligibility. All nine
+were re-measured at the rejected SHA `58ef3971…`, confirmed to flip
+`addresses_gap` when removed, and are now OPERATIVE with isolated probes.
+
+Only PHRASE -> PHRASE containment survives as a universal shadow, because both
+sides use the same substring rule. Exactly two remain, each independently
+re-verified: `power requirements` -> `power requirement` and `physical limits` ->
+`physical limit`. This is a classification and coverage repair; the relevance
+algorithm itself is unchanged and was never at fault.
 """
 
 import re
@@ -165,17 +184,43 @@ def _all_entries():
 
 
 def _necessary_companion(entry, gap_type):
-    """Return a same-family entry that EVERY text containing `entry` must also
-    contain, or None. This is a structural fact about the entries themselves —
-    it holds for all inputs, not for a sampled corpus."""
-    tokens = set(_WORD_RE.findall(entry))
-    for other in DECLARED_WORDS[gap_type]:
-        if other != entry and other in tokens:
-            return other
+    """Return a same-family PHRASE that every text containing `entry` must also
+    contain, or None.
+
+    WITHDRAWN AND CORRECTED (T-1b). The earlier version of this helper also
+    returned a same-family WORD whose token appeared in the entry text, and the
+    suite asserted from that that the entry could never decide eligibility. That
+    was UNSOUND and is withdrawn: phrase markers match by SUBSTRING while word
+    markers match by TOKEN, so a phrase can match inside a larger alphanumeric
+    run in which the companion token is dissolved and therefore absent. Example:
+    "ztake for grantedz" contains the phrase "take for granted" as a substring
+    but tokenises to {ztake, for, grantedz} — no "granted" token. The phrase
+    alone decides eligibility there.
+
+    Only PHRASE -> PHRASE containment is a sound universal shadow, because both
+    sides are matched by the same substring rule: if the shorter phrase is a
+    substring of the longer, then every text containing the longer necessarily
+    contains the shorter.
+    """
+    if entry not in DECLARED_PHRASES.get(gap_type, ()):
+        return None
     for other in DECLARED_PHRASES.get(gap_type, ()):
         if other != entry and other in entry:
             return other
     return None
+
+
+def _probe_variants(entry, gap_type):
+    """Candidate isolating probes for `entry`, most natural first.
+
+    For a phrase, a second variant wraps the phrase in adjacent word characters.
+    That preserves the phrase substring exactly while dissolving any companion
+    word token, which is what makes an isolated probe possible for the nine
+    entries T-1b reclassified as operative.
+    """
+    yield f"{CARRIER} {entry}."
+    if entry in DECLARED_PHRASES.get(gap_type, ()):
+        yield f"{CARRIER} z{entry}z."
 
 
 def _build_probes():
@@ -187,30 +232,36 @@ def _build_probes():
     """
     operative, shadowed = [], []
     for gap_type, entry, kind in _all_entries():
-        probe = f"{CARRIER} {entry}."
-        own = _family_hits(probe, gap_type)
-        foreign = {
-            other: _family_hits(probe, other)
-            for other in GOVERNED_GAP_TYPES if other != gap_type
-        }
-        foreign = {k: v for k, v in foreign.items() if v}
-        if foreign:
-            raise AssertionError(
-                "probe generation failed: the isolated probe for "
-                f"{gap_type}/{entry!r} also carries markers of another family: "
-                f"{foreign}. Fix the carrier or the marker tables — an "
-                "unisolated probe would let a marker-removal mutant survive."
-            )
-        if own == {entry}:
-            operative.append((gap_type, entry, kind, probe))
+        isolated = None
+        last = None
+        for probe in _probe_variants(entry, gap_type):
+            last = probe
+            foreign = {
+                other: _family_hits(probe, other)
+                for other in GOVERNED_GAP_TYPES if other != gap_type
+            }
+            foreign = {k: v for k, v in foreign.items() if v}
+            if foreign:
+                raise AssertionError(
+                    "probe generation failed: the candidate probe for "
+                    f"{gap_type}/{entry!r} carries markers of another family: "
+                    f"{foreign}. An unisolated probe would let a marker-removal "
+                    "mutant survive."
+                )
+            if _family_hits(probe, gap_type) == {entry}:
+                isolated = probe
+                break
+        if isolated is not None:
+            operative.append((gap_type, entry, kind, isolated))
             continue
         companion = _necessary_companion(entry, gap_type)
-        if companion is None or own != {entry, companion}:
+        if companion is None:
             raise AssertionError(
-                "probe generation failed: the probe for "
-                f"{gap_type}/{entry!r} carries same-family markers {sorted(own)} "
-                "with no single structural companion explaining it. It cannot "
-                "be used as isolated coverage."
+                "probe generation failed: no isolating probe could be built for "
+                f"{gap_type}/{entry!r} (last attempt carried "
+                f"{sorted(_family_hits(last, gap_type))}) and it has no sound "
+                "phrase-to-phrase structural companion. It must not be silently "
+                "excluded from coverage."
             )
         shadowed.append((gap_type, entry, kind, companion))
     return operative, shadowed
@@ -337,20 +388,49 @@ class TestStructurallyNonOperativeEntries:
 
     @pytest.mark.parametrize("gap_type,entry,kind,companion", SHADOWED_ENTRIES,
                              ids=_ids(SHADOWED_ENTRIES))
-    def test_entry_can_never_decide_eligibility_alone(self, gap_type, entry,
-                                                      kind, companion):
-        """`companion` is contained in `entry` itself, so EVERY text containing
-        `entry` contains `companion` too. Removing `entry` therefore cannot
-        change any verdict for any input. This is a proof over the whole input
-        space — not the corpus inference that was withdrawn."""
-        assert companion != entry
-        in_tokens = companion in set(_WORD_RE.findall(entry))
-        in_text = companion in entry
-        assert in_tokens or in_text, (
-            f"{entry!r} does not structurally contain {companion!r}"
+    def test_shadow_is_phrase_to_phrase_substring_containment(
+            self, gap_type, entry, kind, companion):
+        """The ONLY sound universal shadow: both sides are phrases, matched by
+        the same substring rule, and the companion is a substring of the entry.
+        Every text containing `entry` therefore contains `companion`, for every
+        input — so removing `entry` cannot change any verdict.
+
+        Phrase -> WORD containment is explicitly NOT accepted here (T-1b): word
+        markers match by token, so a phrase can match inside a larger
+        alphanumeric run where the companion token is dissolved."""
+        assert kind == "phrase", (
+            f"{entry!r} is a {kind}; only phrases may be structurally shadowed"
         )
-        assert companion in _family_hits(f"{CARRIER} {entry}.", gap_type)
-        assert addresses_gap(f"{CARRIER} {entry}.", gap_type) is True
+        assert companion in DECLARED_PHRASES[gap_type], (
+            f"companion {companion!r} is not a phrase — phrase-to-word "
+            "containment does not establish a universal shadow"
+        )
+        assert companion != entry
+        assert companion in entry, (
+            f"{entry!r} does not contain {companion!r} as a substring"
+        )
+
+    @pytest.mark.parametrize("gap_type,entry,kind,companion", SHADOWED_ENTRIES,
+                             ids=_ids(SHADOWED_ENTRIES))
+    def test_shadow_survives_token_dissolving_attack(self, gap_type, entry,
+                                                     kind, companion):
+        """Adversarial check of the shadow: even when surrounding word tokens
+        are dissolved, the companion phrase is still matched, so the entry is
+        genuinely never the sole reason for eligibility."""
+        for probe in (f"{CARRIER} {entry}.",
+                      f"{CARRIER} z{entry}z.",
+                      f"{CARRIER} abc{entry}xyz."):
+            assert companion in _family_hits(probe, gap_type)
+            assert addresses_gap(probe, gap_type) is True
+
+    def test_no_phrase_to_word_shadow_claim_survives(self):
+        """Guards the T-1b repair itself: no entry may be excluded from
+        behavioural coverage on phrase-to-word grounds ever again."""
+        for gap_type, entry, kind, companion in SHADOWED_ENTRIES:
+            assert companion not in DECLARED_WORDS[gap_type], (
+                f"{entry!r} is excluded on a phrase-to-word companion "
+                f"({companion!r}) — that reasoning is unsound"
+            )
 
 
 # ---------------------------------------------------------------------------

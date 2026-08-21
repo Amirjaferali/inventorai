@@ -41,7 +41,32 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — PVCG-R2-I (T-1 REPAIR): MUTATION-ADEQUACY REPAIR OF THE MARKER TABLES).** Parent:
+**Status (current — PVCG-R2-I (T-1b REPAIR): STRUCTURAL-OPERATIVITY CLASSIFICATION REPAIR).** Parent:
+`58ef39714630455c9713fb045bc66c3490eb4bf8` — the rejected T-1 repair candidate, preserved unchanged as
+immutable reviewed evidence, itself a child of the rejected R2-I candidate
+`2f2897ce40c119ea202d6519e59e2d887c3fb7c1`, also preserved unchanged.
+
+**Blocking finding repaired: T-1b.** The prior structural non-operativity proof was unsound for 9 of
+11 excluded phrases. Root cause: phrase markers match by **substring**, word markers by **token**, so
+phrase → word containment does NOT establish universal behavioural shadowing. Withdrawn, not defended.
+All nine were re-measured at the rejected SHA — each flips `addresses_gap` when removed — and are now
+OPERATIVE with isolated probes that preserve the phrase substring while dissolving the companion token.
+Corrected split, re-measured from repository execution: **262 operative / 2 structurally shadowed**,
+the two being genuine PHRASE → PHRASE containments, independently re-verified structurally and by
+execution. Coverage-classification and governance-truth repair only — **NOT a runtime defect**.
+
+**Runtime and pins untouched:** `engine/gap_relevance.py` and `engine/progression_loop.py`
+byte-identical to the parent; digest still
+`07c9bff500662de54ac0f7388c1f2e13a721549c6f4943cde865b98a22c525d6`; all three P9 pin files
+byte-identical; `SECOND PIN RECONCILIATION: NO`. Sweep: 264 processed / 264 KILLED / 0 SURVIVED / 0
+LOADFAIL / restore 264/264. Prior survivors M8b and M9b remain KILLED. Marker coverage 566; R2-I 189;
+R1 26/26 byte-unchanged; P9 pins 54; targeted 1321; smoke PASS; full suite 3776 / 3 / 1 / 0 with
+gunicorn on PATH. `UNSUPPORTED MATERIAL CLAIMS: 0`.
+
+---
+
+**Superseded (retained as history) — PVCG-R2-I (T-1 REPAIR): MUTATION-ADEQUACY REPAIR OF THE MARKER
+TABLES; frozen as `58ef3971…` and REJECTED on finding T-1b; preserved unchanged.** Parent:
 `2f2897ce40c119ea202d6519e59e2d887c3fb7c1` — the rejected R2-I candidate, preserved unchanged as
 immutable reviewed evidence (not amended, rebased or squashed). Authoritative R2-C base:
 `4d746d15a3025802d0ad601b4501473e06b1140b` (PR #548).
@@ -64,8 +89,14 @@ so deleting a marker leaves its probe in place to fail. One machine-isolated pos
 independently operative entry, a cross-family exclusivity probe for each, collection-time failure if
 any probe is not isolated (with a validator self-test), and negative guards against domain vocabulary
 or causal connectives ever acting as universal relevance signals. 264 declared entries: 253
-independently operative, 11 structurally non-operative for eligibility with their companions named and
-proven over all inputs. Complete single-marker sweep: **264 processed / 264 KILLED / 0 SURVIVED / 0
+independently operative and 11 structurally non-operative — **that split is WITHDRAWN and CORRECTED
+(T-1b)**: the universal proof was unsound for the nine PHRASE → WORD cases because phrase markers match
+by SUBSTRING while word markers match by TOKEN, so phrase → word containment does not establish
+universal shadowing. Re-measured from repository execution the split is **262 operative / 2
+structurally shadowed**, the two being genuine PHRASE → PHRASE containments
+(`power requirements` → `power requirement`, `physical limits` → `physical limit`). The nine
+reclassified phrases now carry isolated positive probes. Coverage-classification and governance-truth
+repair only — NOT a runtime defect. Complete single-marker sweep: **264 processed / 264 KILLED / 0 SURVIVED / 0
 skipped**, restore byte-identical; an earlier 255/255 pass with 9 harness-skips was discarded as a
 stale-bytecode measurement artifact and re-run clean. Both prior survivors are named from retained
 Creator-local evidence and are now KILLED.

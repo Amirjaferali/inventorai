@@ -13330,17 +13330,37 @@ eliminated, not documented around:
   noun may ever be eligible for more than one family.
 
 **Operative-entry accounting.** 264 declared entries — 230 words, 34 phrases, across the six governed
-families, with **no cross-family duplicates**. Of these, **253 are independently operative** (an
-isolated probe exists whose eligibility depends on that entry alone) and **11 are structurally
-non-operative for eligibility**: each is a phrase that *contains* another entry of its own family, so
-every text containing it necessarily contains the companion and its removal cannot change any verdict
-for any input. That is a proof over the whole input space, not a corpus sample — the distinction the
-withdrawn claim failed to make. The eleven, with their proven companions:
-`take for granted` / `taking for granted` / `taken for granted` → `granted`; `cannot be replaced` →
-`replaced`; `would need to learn` → `learn`; `step by step` → `step`; `power requirements` →
-`power requirement`; `power consumption` → `consumption`; `temperature range` → `temperature`;
-`physical limits` → `physical limit`; `would not solve` → `solve`. All eleven are still protected
-against accidental deletion by the declared-inventory guard.
+families, with **no cross-family duplicates**.
+
+> **WITHDRAWN AND CORRECTED (T-1b, found by focused Independent Re-Review of candidate
+> `58ef3971…`).** This paragraph previously recorded **253 independently operative / 11 structurally
+> non-operative**, and asserted for all eleven that "each is a phrase that contains another entry of
+> its own family, so every text containing it necessarily contains the companion and its removal
+> cannot change any verdict for any input". **That universal proof is unsound for the nine
+> PHRASE → WORD cases and is withdrawn.** Root cause, stated plainly: **phrase markers are matched by
+> SUBSTRING while word markers are matched by TOKEN**, so phrase → word containment does NOT establish
+> universal behavioural shadowing — a phrase can match inside a larger alphanumeric run in which the
+> companion token is dissolved and therefore absent. The corrected split is recorded below. **This is
+> a coverage-classification and governance-truth defect, NOT a runtime defect**: the relevance
+> algorithm is unchanged and was never at fault.
+
+**Corrected split, re-measured from repository execution (not copied from the review):**
+**`OPERATIVE ENTRIES: 262`** and **`STRUCTURALLY SHADOWED ENTRIES: 2`**.
+
+The **nine reclassified as OPERATIVE**, each now carrying its own isolated positive probe —
+`take for granted`, `taking for granted`, `taken for granted`, `cannot be replaced`,
+`would need to learn`, `step by step`, `power consumption`, `temperature range`, `would not solve`.
+Each was re-measured at the rejected SHA `58ef3971…` with a probe that preserves the exact phrase
+substring while dissolving the companion word token (adjacent word characters), and each **flipped
+`addresses_gap` from `True` to `False` when the phrase alone was removed** — so each can independently
+decide eligibility **[EXEC]**.
+
+The **two retained shadows are PHRASE → PHRASE only**, independently re-verified structurally and by
+execution: `power requirements` → `power requirement` and `physical limits` → `physical limit`. Both
+sides are matched by the same substring rule, so every text containing the longer phrase necessarily
+contains the shorter one; removal of the longer changed no verdict under three probes including
+token-dissolving forms. All 264 entries — operative and shadowed alike — remain protected against
+accidental deletion by the exact-match declared-inventory guard.
 
 **Complete single-marker mutation sweep (`[EXEC]`).** Every one of the 264 entries removed in turn from
 `engine/gap_relevance.py`, the focused coverage suite run, and the file restored:
@@ -13402,3 +13422,94 @@ not repair authority.
 activated; no LLM/NLP subsystem; Stage-3 evaluator not integrated; Render not reopened; `main` not
 reconciled; PVCG NOT SATISFIED; minimum launch-conformance set NOT SATISFIED; no deployment or
 readiness claim.
+
+---
+
+## PVCG-R2-I (T-1b REPAIR) — structural-operativity classification repair
+
+**Why.** Focused Independent Re-Review of `58ef39714630455c9713fb045bc66c3490eb4bf8` returned
+`VERDICT: REJECT` on ONE blocking finding, **T-1b — the structural non-operativity proof is unsound for
+9 of the 11 excluded phrases**. Everything else in that candidate passed. Both prior SHAs
+(`2f2897ce…` and `58ef3971…`) are preserved unchanged as immutable rejected evidence; neither was
+amended, rebased or squashed.
+
+**Withdrawn, not defended.** The prior claim — *each excluded phrase contains another entry of its own
+family, therefore removing it cannot change any verdict for any input* — is **false for
+phrase → word relationships**. Root cause: **phrase markers are matched by SUBSTRING; word markers are
+matched by TOKEN.** A phrase can therefore match inside a larger alphanumeric run in which the
+companion word token is dissolved and absent, so the phrase alone decides eligibility there. The
+earlier helper derived the companion by tokenising the entry text *in isolation*, which never exercised
+that case. **This is a coverage-classification and governance-truth defect, NOT a runtime defect** —
+the relevance algorithm is unchanged and was never at fault.
+
+**T-1b RED, measured at the rejected SHA `58ef3971…` `[EXEC]`.** For each of the nine, a probe that
+preserves the exact phrase substring while dissolving the companion token (adjacent word characters)
+was constructed, then the phrase alone was removed from the table:
+
+| entry | companion word | phrase substring present | companion token present | eligible before | after removal |
+|---|---|---|---|---|---|
+| `take for granted` | `granted` | yes | **no** | `True` | **`False`** |
+| `taking for granted` | `granted` | yes | **no** | `True` | **`False`** |
+| `taken for granted` | `granted` | yes | **no** | `True` | **`False`** |
+| `cannot be replaced` | `replaced` | yes | **no** | `True` | **`False`** |
+| `would need to learn` | `learn` | yes | **no** | `True` | **`False`** |
+| `step by step` | `step` | yes | **no** | `True` | **`False`** |
+| `power consumption` | `consumption` | yes | **no** | `True` | **`False`** |
+| `temperature range` | `temperature` | yes | **no** | `True` | **`False`** |
+| `would not solve` | `solve` | yes | **no** | `True` | **`False`** |
+
+All nine independently alter behaviour. The reviewer's finding is confirmed exactly.
+`T-1b RED → GREEN: PROVEN` — each of the nine now carries an isolated positive probe in the suite, and
+the 264-entry sweep below kills every one of them.
+
+**Corrected classification, re-measured from repository execution (not copied from the review):**
+`OPERATIVE ENTRIES: 262`, `STRUCTURALLY SHADOWED ENTRIES: 2`,
+`ALL OPERATIVE ENTRIES HAVE ISOLATED POSITIVE PROBES: YES`.
+
+**The two retained shadows, independently re-verified.** `power requirements` → `power requirement`
+and `physical limits` → `physical limit`. Both are PHRASE → PHRASE: the companion is a substring of the
+entry and both sides use the same substring rule, so every text containing the longer necessarily
+contains the shorter. Verified structurally **and** by execution — removing the longer phrase changed
+no verdict across three probes including token-dissolving forms (`z…z`, `abc…xyz`). Neither was
+retained merely to match the reviewer's expected count; repository truth was re-measured first.
+
+**Test-architecture repair (`tests/test_pvcg_r2i_marker_coverage.py`, tests only).**
+`_necessary_companion()` now returns **only** a same-family PHRASE companion and returns `None` for
+every word; the old universal assertion is replaced by
+`test_shadow_is_phrase_to_phrase_substring_containment`, which fails if a shadow's companion is a word,
+plus `test_shadow_survives_token_dissolving_attack` and a standing guard
+`test_no_phrase_to_word_shadow_claim_survives` so the unsound reasoning cannot return. Probe generation
+now tries a token-dissolving variant for phrases and **refuses at collection** to exclude any entry that
+has no isolating probe and no sound phrase → phrase companion.
+
+**Complete single-entry sweep, re-run with the clean-run controls plus explicit load verification
+(`[EXEC]`):**
+
+```
+PROCESSED               : 264
+KILLED                  : 264
+SURVIVED                : 0
+SKIPPED (no literal)    : 0
+LOADFAIL/NOTAPPLIED     : 0
+RESTORE BYTE-IDENTICAL  : 264/264
+```
+
+**Prior survivors remain killed** (Creator-local execution evidence, unchanged in status): M8b
+(`detects`, `detect`, `senses`, `sense`) → KILLED; M9b (`does not`, `doesn't`, `not cover`) → KILLED.
+
+**Runtime immutability.** `engine/gap_relevance.py` and `engine/progression_loop.py` are
+**byte-identical to the parent `58ef3971…`**; the progression-loop digest remains
+`07c9bff500662de54ac0f7388c1f2e13a721549c6f4943cde865b98a22c525d6`; all three P9 pin files are
+byte-identical. `SECOND PIN RECONCILIATION: NO`.
+
+**Verification.** Marker coverage **566 passed**; R2-I behavioural **189 passed**; PVCG-R1 **26/26**
+with its file byte-unchanged; three P9 pin suites **54 passed**; targeted R2 regression **1321
+passed**; `UNIVERSAL GUARDRAIL SMOKE: PASS`; full suite **3776 passed / 3 skipped / 1 xfailed / 0
+failed** with `gunicorn 26.1.0` on `PATH`.
+
+**Out of scope and deliberately untouched:** lexical cross-talk, phrase substring boundary behaviour,
+the broad `"does not"` / `"doesn't"` markers, WS1 helper coupling, the acknowledged-unknown fixture
+coverage shift, and the `battery` question-derived marker. No fixture, generator, evidence artifact or
+`OWNER_DECISION_REGISTER.md` change; the fixture ledger stands and `ASSERTION-TARGET CHANGES: 0` holds.
+`PVCG-R2-C AUTHORITATIVE: YES`; `PVCG-R2-I AUTHORITATIVE: NO`; PVCG-R3/R4 NOT STARTED; PVCG NOT
+SATISFIED; minimum launch-conformance set NOT SATISFIED; no deployment claim.
