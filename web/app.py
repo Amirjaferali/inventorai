@@ -11,7 +11,7 @@ import tempfile
 import uuid
 from urllib.parse import urlparse as _urlparse
 from flask import (
-    Flask, request, redirect, url_for, render_template,
+    Flask, request, redirect, url_for, render_template, make_response,
     has_request_context, session as flask_session,
 )
 from engine.domain_rules import classify_domain, DomainResultKind, is_known_domain
@@ -175,6 +175,63 @@ def _apply_security_headers(response):
     for name, value in _SECURITY_HEADERS:
         response.headers.setdefault(name, value)
     return response
+
+
+# EMAIL-H1 (OBS-P5-2-01, application-controlled portion): the emailed
+# verification and reset links carry the RAW token in the URL path. The URL-token
+# architecture, token hashing, TTLs, single-use consumption and generic failure
+# behaviour are all UNCHANGED here; this seam hardens only what the application
+# itself governs about those two responses:
+#   * Referrer-Policy: no-referrer — a token-bearing page must never hand its own
+#     URL (and therefore the token) to any outbound navigation. This tightens the
+#     global `strict-origin-when-cross-origin` default for THESE responses only;
+#     the global baseline is unchanged for every other route, and the `setdefault`
+#     seam above deliberately never overwrites a route-set header.
+#   * Cache-Control: no-store — the token-bearing response must not be written to
+#     a browser or intermediary cache. `no-store` is the complete directive for
+#     this purpose; no legacy `Pragma` companion is added because nothing in this
+#     repository targets an HTTP/1.0 cache and an untested directive would be an
+#     unsupported claim.
+# PROVIDER/PROXY ACCESS-LOG TOKEN EXPOSURE IS NOT ADDRESSED HERE and remains OPEN:
+# what a hosting provider or reverse proxy records in its access logs is outside
+# application control and must be verified before a production email-provider or
+# reverse-proxy deployment.
+_TOKEN_BEARING_RESPONSE_HEADERS = (
+    ("Referrer-Policy", "no-referrer"),
+    ("Cache-Control", "no-store"),
+)
+
+# The endpoints whose URL path contains a raw single-use token.
+_TOKEN_BEARING_ENDPOINTS = frozenset(
+    ("verify_email", "reset_form", "reset_submit"))
+
+
+def _token_bearing(body, status=200):
+    """Return ``body`` as a response carrying the token-bearing hardening headers.
+
+    Set explicitly (not `setdefault`) so the tightened values win over the global
+    baseline for these responses only."""
+    response = make_response(body, status)
+    for name, value in _TOKEN_BEARING_RESPONSE_HEADERS:
+        response.headers[name] = value
+    return response
+
+
+@app.context_processor
+def _inject_safe_language_switch_target():
+    """EMAIL-H1: the shared shell's language links carry ``next=<current path>``.
+
+    On a token-bearing page that would reflect the RAW token into a rendered
+    anchor href. For those endpoints only, the language switch returns to the
+    landing page instead; everywhere else the behaviour is unchanged. Switching
+    language on a reset/verify page therefore leaves that page — the emailed link
+    remains valid and can simply be reopened (nothing is consumed by rendering)."""
+    target = "/"
+    if has_request_context():
+        target = request.path
+        if request.endpoint in _TOKEN_BEARING_ENDPOINTS:
+            target = "/"
+    return {"lang_switch_next": target}
 
 
 # P10-SEC2: one semantic free-text bound for the two primary free-text
@@ -1821,7 +1878,7 @@ def verify_email(token):
             verified = True
     except Exception:
         verified = False
-    return render_template("verify_result.html", verified=verified)
+    return _token_bearing(render_template("verify_result.html", verified=verified))
 
 
 @app.route("/recover", methods=["GET"])
@@ -1855,7 +1912,8 @@ def recover_submit():
 
 @app.route("/reset/<token>", methods=["GET"])
 def reset_form(token):
-    return render_template("reset.html", token=token, form_error=None, done=False)
+    return _token_bearing(
+        render_template("reset.html", form_error=None, done=False))
 
 
 @app.route("/reset/<token>", methods=["POST"])
@@ -1869,11 +1927,11 @@ def reset_submit(token):
     confirm = request.form.get("password_confirm", "")
     ok, _reason = _acct.validate_password(password)
     if not ok:
-        return render_template("reset.html", token=token,
-                               form_error="password_invalid", done=False), 400
+        return _token_bearing(render_template(
+            "reset.html", form_error="password_invalid", done=False), 400)
     if password != confirm:
-        return render_template("reset.html", token=token,
-                               form_error="password_mismatch", done=False), 400
+        return _token_bearing(render_template(
+            "reset.html", form_error="password_mismatch", done=False), 400)
     now = _utc_now()
     account_id = None
     try:
@@ -1886,13 +1944,14 @@ def reset_submit(token):
     except Exception:
         account_id = None
     if not account_id:
-        return render_template("reset.html", token=token,
-                               form_error="token_invalid", done=False), 400
+        return _token_bearing(render_template(
+            "reset.html", form_error="token_invalid", done=False), 400)
     _ui_lang = flask_session.get("ui_lang")   # D-P6-18: preserve UI-language choice
     flask_session.clear()   # never auto-sign-in on reset
     if _ui_lang == "ar":
         flask_session["ui_lang"] = "ar"
-    return render_template("reset.html", token=token, form_error=None, done=True)
+    return _token_bearing(
+        render_template("reset.html", form_error=None, done=True))
 
 
 @app.route("/data-and-session", methods=["GET"])

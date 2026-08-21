@@ -2424,6 +2424,69 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
+- **EMAIL-H1 (REPAIR) — OBS-P5-2-01 BOUNDED TOKEN-EXPOSURE HARDENING (Owner-authorized repair
+  candidate, PR pending), base `602ccd39da59c1d93aa0f99afa2df5f662896503` (PR #545 merge —
+  INFRA-G1-P1, authoritative; independently re-verified live).** Supersedes **TWO** REJECTED
+  candidates, both preserved unchanged as immutable rejected evidence and neither merged, amended,
+  rebased, reused or published: `3cea988e41afbc32dfb7e91eee150d6947c2796e` (first candidate) and
+  `687a626b1312a0fc073fb76cea56bb4db5050a84` (first repair — rejected on the single blocking finding
+  **B-1**, the truth and strength of the modified INFRA-G1-R2 guard; the second review independently
+  confirmed the EMAIL-H1 security implementation itself sound). Both are held on local branches
+  (`email-h1-rejected-evidence`, `email-h1-repair-candidate`) — local-only artifacts, never described
+  as remotely verifiable. The first Independent Review had confirmed the engineering sound (RED 8/6, GREEN 14/14, headers,
+  reflection removal, reset/verify/auth semantics, smoke, full suite 2983/3/1/0) but REJECTED on two
+  blocking findings, both now remediated. **BLOCKING-1 — repository-controlled Gunicorn access-log
+  token leak: INDEPENDENTLY REPRODUCED by me before repair** (`"GET /reset/<RAW_TOKEN> HTTP/1.1"` and
+  the `/verify` equivalent written to the access log by the governed
+  `gunicorn -c gunicorn.conf.py web.app:app` stack; 2 raw-token occurrences). Fixed in
+  `gunicorn.conf.py` by a stdlib `logging.Filter` (`_TokenPathRedactingFilter`) attached to the
+  `gunicorn.access` logger in the `post_fork` worker hook (plus a defensive `when_ready`): the atoms
+  dict is sanitized so any segment after `/verify/` or `/reset/` becomes `[REDACTED]`. **Redaction,
+  not suppression** — `accesslog`/`errorlog` stay `"-"`, ordinary routes keep full logging, token
+  routes remain logged in redacted form, and no record is ever dropped; no new logging platform, no
+  dependency, no proxy assumption, no topology change (workers=1, threads=1, preload_app=False,
+  reload=False all unchanged and re-verified). **BLOCKING-2 — false docstring corrected:**
+  `test_verify_result_does_not_reflect_the_raw_token` no longer claims the property was "already true
+  before this gate"; it now states accurately that the verify page DID reflect the raw token through
+  the shared shell's `next=request.path` language links and that the test fails at base. **NB-1
+  guard added** (reviewer-demonstrated gap): `/login` must still return `next=/login` while token
+  pages return `next=/`. NB-2/NB-3/NB-4 carried forward, not expanded. One conflicting pre-existing
+  guard was corrected rather than worked around: the INFRA-G1-R2 config test forbade the word "token"
+  in ANY config string, which the new redaction docstrings legitimately use. The corrected guard
+  (a) keeps the forbidden-term list unchanged and applies it with NO exception to every operative
+  (non-docstring) string; (b) applies that SAME list to function/class docstrings minus exactly one
+  narrowly authorized word, `token`, so `secret` / `sqlite` / `/var/data` / `db_path` / `password` /
+  `api_key` — and the separate `debug` check — all remain enforced inside docstrings; and (c) adds an
+  ADDITIVE companion test scanning EVERY string, the module docstring included, for credential-shaped
+  literals. This is deliberately **NOT** described as "strictly stronger" and does **not** claim to
+  remove no protection: the docstring `token` exception is an intentional narrow reduction, and the
+  module docstring remains outside the term checks exactly as at base (NB-4, unchanged). Differential
+  matrix — 15 cases: the single intended relaxation (`token` alone in a function docstring) passes and
+  all 14 forbidden cases fail; 7 of those 14 (`api_key`, `password`, `secret`, `db_path`, `sqlite`,
+  `/var/data`, `debug` in a function docstring) passed the superseded rejected guard and fail here.
+  Evidence (all re-run fresh on THIS candidate): access-log RED 7 failed / 1 passed and hardening
+  RED 9 failed / 7 passed at the authoritative base → GREEN 8/8 and 16/16, including a real
+  `gunicorn` boot whose base failure is exactly `RAW_TOKEN not in text`; guard RED 1 failed / 17
+  passed → corrected guard GREEN 20/20; B-1 reproduced before correcting it (previous guard FAILS and
+  the superseded rejected guard PASSES on `api_key`/`password` in a function docstring); **ten
+  mutation probes killed** (global accesslog disable; filter dropping records; verify-route miss;
+  post_fork removal; collapsing all language links to `/`; docstring-hidden 40-hex secret; second
+  env-var read; forbidden operative string; `api_key` in a function docstring; the `token` waiver
+  leaking into an operative string), every mutated file sha256-verified byte-restored; targeted
+  regressions 72 passed and 333 passed / 1 skipped; smoke PASS; **full suite
+  2995 passed / 3 skipped / 1 xfailed / 0 failed**. Reviewer non-blocking findings NB-A…NB-E:
+  CARRIED FORWARD, not expanded. **OBS-P5-2-01 DISPOSITION (three distinct
+  surfaces): FLASK/PYTHON APPLICATION LOGS — no raw token (test-pinned); REPOSITORY-CONTROLLED
+  GUNICORN ACCESS LOG — HARDENED / VERIFIED; PROVIDER/REVERSE-PROXY ACCESS-LOG BEHAVIOR — OPEN, MUST
+  BE VERIFIED AT THE FUTURE PROVIDER-DEPENDENT GATE.** Browser-history exposure remains inherent to
+  the URL-token architecture. **OBS-P5-2-01 IS NOT FULLY CLOSED.** All accepted EMAIL-H1 behaviour
+  preserved (no-referrer; no-store; no HTML reflection; reset posts to the current token URL; token
+  pages carry no token-bearing `next`; ordinary localization intact; CSP/X-Frame-Options/nosniff
+  unchanged; no HSTS; no ProxyFix; no third-party resources; TTL/hashing/rate-limits/replay/session
+  revocation/email-sender abstraction unchanged; no provider integration; Render not reopened).
+  `OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY if/when this exact candidate is merged
+  and post-merge verified.
+
 - **INFRA-G1-P1 — RENDER PROVISIONING & NON-PUBLIC VERIFICATION CONTRACT (Owner-authorized
   GOVERNANCE-ONLY candidate, PR pending), base `5e68a59cefe8fa47b5fbc201387b1e785820a86a` (PR #544
   merge — INFRA-G1-R2, authoritative; first parent `306f3499…`, second parent `5326481955…`, merge tree
