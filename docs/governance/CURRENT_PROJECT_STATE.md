@@ -2424,6 +2424,47 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
+- **PVCG-R2-I (T-1 REPAIR) — MUTATION-ADEQUACY REPAIR OF THE MARKER TABLES (repair candidate, PR
+  pending), parent `2f2897ce40c119ea202d6519e59e2d887c3fb7c1` (the rejected R2-I candidate, preserved
+  unchanged as immutable reviewed evidence).** Independent External Review returned `REJECT` on ONE
+  blocking defect class, **T-1 — mutation adequacy / governance truth**, while confirming the runtime
+  implementation itself substantively correct. **WITHDRAWN CLAIM:** the rejected candidate called two
+  surviving supplementary mutants **EQUIVALENT MUTANTS** on 10×6 corpus evidence and inferred family
+  **redundancy**; a finite corpus cannot establish equivalence over the input space, so both statements
+  are withdrawn as unsound — the same derived-measurement failure mode as the earlier B-1 defect.
+  **Creator-reproduced RED at the rejected SHA:** removing `actuates`/`actuate` flips the live seam from
+  `PASS`/`CLOSED` to `WARN`/`OPEN`, and removing the `not cover` phrase flips `PARTIAL` to `OPEN` —
+  both with the 189-test R2-I suite still fully passing, i.e. genuinely undetected. **REPAIR (tests +
+  governance only):** new `tests/test_pvcg_r2i_marker_coverage.py` pins a **DECLARED MARKER INVENTORY**
+  (probes generated from the declaration, never from the live tables, so a deleted marker keeps its
+  failing probe), adds one machine-isolated positive probe per independently operative entry plus a
+  cross-family exclusivity probe, **fails at collection** if any probe carries a second same-family or
+  any foreign-family marker (with a self-test proving the validator works), and guards that no
+  undeclared domain noun, no bare causal connective, and no dense pile of either is ever eligible.
+  **Accounting:** 264 declared entries (230 words + 34 phrases, no cross-family duplicates); **253
+  independently operative**; **11 structurally non-operative for eligibility** — each a phrase that
+  contains another entry of its own family, so its removal cannot change any verdict for **any** input
+  (a proof over the whole input space, not a corpus sample), all eleven still protected by the
+  inventory guard. **Complete single-marker sweep: 264 processed / 264 KILLED / 0 SURVIVED / 0 skipped,
+  restore byte-identical** — `SINGLE-MARKER REMOVAL COVERAGE: COMPLETE`. A first sweep pass reporting
+  255/255 with 9 harness-skipped entries was **discarded as untrustworthy** (stale-bytecode artifact:
+  equal-length removals within one mtime second could reuse a cached `.pyc`); it was re-run with
+  bytecode caching disabled and caches purged per iteration. **Prior survivors named** from the
+  retained Creator-local mutation script (`[EXEC]`, not repository fact, and distinct from the new
+  reproducible evidence): M8b removed mechanism words `detects`/`detect`/`senses`/`sense`, M9b removed
+  boundary phrases `does not`/`doesn't`/`not cover` — **both now KILLED**. Only `not cover` overlaps the
+  reviewer's independently chosen examples; no mutation identity is invented. **Implementation
+  untouched:** `gap_relevance.py` and `progression_loop.py` byte-identical to the rejected SHA, digest
+  still `07c9bff5…`, **P9-MECH-I3 pin not touched again** (all three pin files byte-unchanged). One
+  negative guard initially failed on `battery` and was investigated: NOT a defect — it is declared by
+  exactly one family and taken verbatim from that family's governed question ("power requirement and
+  source"), the other nineteen probed nouns are eligible for nothing, so the over-strong test premise
+  was corrected and the implementation left alone. No fixture, generator, evidence artifact or
+  `OWNER_DECISION_REGISTER.md` change; the earlier fixture ledger stands and `ASSERTION-TARGET CHANGES:
+  0` still holds. Prior non-blocking observations deliberately NOT acted on. `PVCG-R2-C AUTHORITATIVE:
+  YES`; `PVCG-R2-I AUTHORITATIVE: NO`; PVCG-R3/R4 NOT STARTED; PVCG SATISFIED: NO; MINIMUM
+  LAUNCH-CONFORMANCE SET SATISFIED: NO; no deployment claim.
+
 - **PVCG-R2-I — GAP-RELEVANCE / MANUFACTURED-SATISFACTION HARDENING IMPLEMENTATION (Owner-authorized
   implementation candidate, PR pending), base `4d746d15a3025802d0ad601b4501473e06b1140b` (PR #548
   merge — PVCG-R2-C, AUTHORITATIVE; independently re-verified live on all four merge criteria: first
@@ -2463,8 +2504,11 @@ AUTHORIZED / NOT STARTED.***
   smoke PASS; targeted 19-file suite **755 passed / 0 failed**; **PVCG-R1 26/26 GREEN with its test
   file byte-UNCHANGED**; full suite **3210 passed / 3 skipped / 1 xfailed / 0 failed** (gunicorn 26.1.0
   on PATH so serving-stack tests execute rather than skip); **12 mandatory mutations KILLED / 0
-  SURVIVED**, all restored byte-identically, plus two supplementary probes recorded as EQUIVALENT
-  MUTANTS (zero verdict changes across the 10×6 matrix). PVCG-R3 NOT STARTED; PVCG-R4 NOT STARTED;
+  SURVIVED**, all restored byte-identically, plus two supplementary probes that survived and were
+  recorded as EQUIVALENT MUTANTS on 10×6 corpus evidence — **that equivalence claim is WITHDRAWN as
+  unsound** (T-1, found by Independent External Review; a finite corpus cannot establish equivalence
+  over the input space, and single-marker removals were shown to change real live-seam behaviour while
+  surviving that suite). Corrected evidence is in the PVCG-R2-I (T-1 repair) bullet above. PVCG-R3 NOT STARTED; PVCG-R4 NOT STARTED;
   WS10/WS11/WS12 not activated; no LLM/NLP subsystem; Stage-3 evaluator not integrated; Render not
   reopened; `main` not reconciled; PVCG SATISFIED: NO; MINIMUM LAUNCH-CONFORMANCE SET SATISFIED: NO; no
   deployment or readiness claim. `OWNER_DECISION_REGISTER.md` UNCHANGED.

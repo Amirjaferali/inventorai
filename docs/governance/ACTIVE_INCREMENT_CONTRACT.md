@@ -41,8 +41,48 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — PVCG-R2-I: GAP-RELEVANCE / MANUFACTURED-SATISFACTION HARDENING IMPLEMENTATION;
-Owner-authorized IMPLEMENTATION gate under the now-AUTHORITATIVE PVCG-R2-C contract).** Base:
+**Status (current — PVCG-R2-I (T-1 REPAIR): MUTATION-ADEQUACY REPAIR OF THE MARKER TABLES).** Parent:
+`2f2897ce40c119ea202d6519e59e2d887c3fb7c1` — the rejected R2-I candidate, preserved unchanged as
+immutable reviewed evidence (not amended, rebased or squashed). Authoritative R2-C base:
+`4d746d15a3025802d0ad601b4501473e06b1140b` (PR #548).
+
+**Disposition: `PVCG-R2-I IMPLEMENTED / CANDIDATE — NOT AUTHORITATIVE UNTIL MERGED`.**
+`PVCG-R2-C AUTHORITATIVE: YES`. `PVCG-R2-I AUTHORITATIVE: NO`.
+
+**Defect repaired.** Independent External Review returned `REJECT` on ONE blocking defect class,
+**T-1 — mutation adequacy / governance truth**, while confirming the runtime implementation itself
+substantively correct. The prior record called two surviving supplementary mutants EQUIVALENT MUTANTS
+on 10×6 corpus evidence and inferred family redundancy; **both claims are withdrawn as unsound** — a
+finite corpus cannot establish equivalence over the input space. The Creator independently reproduced
+the reviewer's finding at the rejected SHA: removing `actuates`/`actuate` flips the live seam from
+`PASS`/`CLOSED` to `WARN`/`OPEN`, and removing `not cover` flips `PARTIAL` to `OPEN`, both with the
+189-test R2-I suite still fully green.
+
+**Repair (tests + governance truth only).** New `tests/test_pvcg_r2i_marker_coverage.py` pins a
+DECLARED MARKER INVENTORY and generates probes from that declaration rather than from the live tables,
+so deleting a marker leaves its probe in place to fail. One machine-isolated positive probe per
+independently operative entry, a cross-family exclusivity probe for each, collection-time failure if
+any probe is not isolated (with a validator self-test), and negative guards against domain vocabulary
+or causal connectives ever acting as universal relevance signals. 264 declared entries: 253
+independently operative, 11 structurally non-operative for eligibility with their companions named and
+proven over all inputs. Complete single-marker sweep: **264 processed / 264 KILLED / 0 SURVIVED / 0
+skipped**, restore byte-identical; an earlier 255/255 pass with 9 harness-skips was discarded as a
+stale-bytecode measurement artifact and re-run clean. Both prior survivors are named from retained
+Creator-local evidence and are now KILLED.
+
+**Implementation and pin untouched.** `engine/gap_relevance.py` and `engine/progression_loop.py` are
+byte-identical to the rejected SHA; the progression-loop digest stays
+`07c9bff500662de54ac0f7388c1f2e13a721549c6f4943cde865b98a22c525d6` and the P9-MECH-I3 pin was NOT
+reconciled again. No fixture, generator, evidence artifact or `OWNER_DECISION_REGISTER.md` change;
+`ASSERTION-TARGET CHANGES: 0` still holds. `UNSUPPORTED MATERIAL CLAIMS: 0`.
+
+---
+
+**Superseded (retained as history) — PVCG-R2-I: GAP-RELEVANCE / MANUFACTURED-SATISFACTION HARDENING
+IMPLEMENTATION, frozen as `2f2897ce…` and REJECTED by Independent External Review on defect class T-1
+(mutation adequacy / governance truth); preserved unchanged as immutable reviewed evidence and repaired
+by the current gate above.**
+Owner-authorized IMPLEMENTATION gate under the now-AUTHORITATIVE PVCG-R2-C contract. Base:
 `4d746d15a3025802d0ad601b4501473e06b1140b` (PR #548 merge — PVCG-R2-C, AUTHORITATIVE; re-resolved live
 from `origin/feature/atomic-json-session-persistence` and independently re-verified: first parent
 `c70bad19…`, second parent `e394f962…`, merge tree `b8441675…`, empty candidate→merge diff, zero later
@@ -75,7 +115,10 @@ eleven-field ledger is recorded in `ACTIVE_EXECUTION_ROADMAP.md`. Committed WS1�
 REMAIN FROZEN (zero regenerated); all seven generator/harness scripts classified HISTORICAL-ONLY /
 FROZEN and none modified. Smoke PASS; targeted 19-file suite 755 passed; PVCG-R1 26/26 with its test
 file byte-unchanged; full suite 3210 passed / 3 skipped / 1 xfailed / 0 failed with gunicorn 26.1.0 on
-PATH; 12 mandatory mutations KILLED / 0 SURVIVED (two supplementary probes proven EQUIVALENT MUTANTS).
+PATH; 12 mandatory behavioural mutations KILLED / 0 SURVIVED. The two supplementary probes that
+survived were recorded as EQUIVALENT MUTANTS on corpus evidence; **that claim is WITHDRAWN as
+unsound** (a finite corpus cannot establish equivalence) — see the PVCG-R2-I (T-1 repair) status
+block above for the corrected mutation truth.
 `OWNER_DECISION_REGISTER.md` UNCHANGED. `UNSUPPORTED MATERIAL CLAIMS: 0`.
 
 ---
