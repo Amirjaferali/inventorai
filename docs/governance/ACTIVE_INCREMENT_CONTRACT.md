@@ -41,8 +41,63 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — INFRA-G1-P1 RENDER PROVISIONING & NON-PUBLIC VERIFICATION CONTRACT:
-Owner-authorized GOVERNANCE-ONLY candidate):** Base: `5e68a59cefe8fa47b5fbc201387b1e785820a86a`
+**Status (current — EMAIL-H1 REPAIR 2: OBS-P5-2-01 bounded token-exposure hardening + B-1 guard-truth
+correction; Owner-authorized narrow repair after the second Independent Review REJECT):** Base:
+`602ccd39da59c1d93aa0f99afa2df5f662896503` (PR #545 merge — INFRA-G1-P1, authoritative; re-verified
+live from `origin/feature/atomic-json-session-persistence`). Supersedes TWO rejected candidates, both
+preserved unchanged and neither merged: `3cea988e41afbc32dfb7e91eee150d6947c2796e` (first) and
+`687a626b1312a0fc073fb76cea56bb4db5050a84` (second). This candidate is built FRESH from the
+authoritative base; neither rejected SHA was amended, rebased, reused, or published.
+
+**Objective.** Re-apply the independently confirmed EMAIL-H1 hardening and remediate the ONE blocking
+finding of the second review, without reopening EMAIL-H1 architecture or Gunicorn logging design:
+
+* **B-1 (the only blocking finding).** The superseded repair excluded ALL docstrings from the
+  INFRA-G1-R2 forbidden-term check and described that as "strictly stronger" / "removes no
+  protection". That claim was FALSE: terms such as `api_key` and `password` inside an ordinary
+  function docstring were caught by the previous guard and passed the superseded one. Reproduced here
+  before correcting. The corrected guard restores docstring term-scanning with exactly one narrowly
+  authorized waiver (`token`), keeps the operative-string check unchanged, and keeps the
+  credential-shaped-literal scan as ADDITIVE coverage. All "strictly stronger" / "removes no
+  protection" wording is removed and replaced with the factual description.
+
+Independently confirmed and NOT disturbed (carried through unchanged from the superseded repair):
+(BLOCKING-1) the repository-controlled Gunicorn access log wrote raw verification/reset tokens —
+fixed by a `logging.Filter` on `gunicorn.access` installed in `post_fork` that redacts the path
+segment after `/verify/` or `/reset/` while PRESERVING ordinary access logging (no global disable, no
+dropped records, topology unchanged); (BLOCKING-2) the false "already true before this gate" docstring
+corrected; NB-1 ordinary-route language-switch guard. Allowed paths: `gunicorn.conf.py`, `web/app.py`,
+`web/templates/{reset,base}.html`, `tests/test_email_h1_token_link_exposure_hardening.py`,
+`tests/test_email_h1_access_log_token_redaction.py`,
+`tests/test_infra_render_production_serving.py` (one conflicting guard corrected — see the roadmap
+entry for the exact, non-overstated net effect), and three governance surfaces. Forbidden: provider
+integration, Render reopening, ProxyFix, HSTS, schema/TTL/hashing change, topology change. Reviewer
+non-blocking findings NB-A…NB-E are CARRIED FORWARD, not expanded.
+
+**Evidence (all re-run fresh on THIS candidate).** EMAIL-H1 RED at the authoritative base with the
+final tests: access-log **7 failed / 1 passed**, hardening **9 failed / 7 passed** → GREEN **8/8** and
+**16/16** (including a real `gunicorn` boot). Guard RED: the previous INFRA-G1-R2 guard against the
+truthful recreated configuration = **1 failed / 17 passed** → corrected guard GREEN **20/20**.
+**Differential guard matrix: 15 cases, all as intended** — 1 permitted (`token` alone in a function
+docstring), 14 rejected, of which **7 were wrongly allowed by the superseded rejected guard**.
+**10 mutation probes, all killed**, every mutated file sha256-verified byte-restored. Targeted
+regressions **72 passed** (serving + EMAIL-H1 + RL-1 + architecture guardrails) and **333 passed /
+1 skipped** (auth / session / security / localization / reconstruction). `UNIVERSAL GUARDRAIL SMOKE:
+PASS`. Full suite **2995 passed / 3 skipped / 1 xfailed / 0 failed** (2994 lineage + the one new
+docstring-term guard). `git diff --check` clean.
+
+**Disposition (binding, three surfaces).** FLASK/PYTHON APPLICATION LOGS: no raw token.
+REPOSITORY-CONTROLLED GUNICORN ACCESS LOG: HARDENED / VERIFIED. PROVIDER/REVERSE-PROXY ACCESS-LOG
+BEHAVIOR: OPEN — MUST BE VERIFIED AT THE FUTURE PROVIDER-DEPENDENT GATE. Browser-history exposure
+inherent and open. **OBS-P5-2-01 IS NOT FULLY CLOSED.**
+
+**Boundaries:** no email provider; Render not reopened; no deployment; PSRR COMPLETE: NO; PSRR GO
+ELIGIBLE: NO; PAID ACTIVATION AUTHORIZED: NO. `OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative
+ONLY if/when this exact candidate is merged and post-merge verified. Next required step: **Independent
+External Re-Review of this exact SHA + bundle**.
+
+**Immediately prior (INFRA-G1-P1 RENDER PROVISIONING & NON-PUBLIC VERIFICATION CONTRACT:
+Owner-authorized GOVERNANCE-ONLY candidate; MERGED via PR #545; retained as history):** Base: `5e68a59cefe8fa47b5fbc201387b1e785820a86a`
 (PR #544 merge — INFRA-G1-R2, authoritative; independently re-verified live: first parent
 `306f3499…`, second parent `5326481955…`, merge tree `4bdbaa06…` = accepted candidate tree, empty
 candidate→merge diff).

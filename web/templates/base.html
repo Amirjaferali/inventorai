@@ -36,8 +36,8 @@ a.skip-link:focus{left:8px;top:8px;position:fixed}
    submit-buttons. #}
 <nav class="ui-lang-selector" aria-label="{{ t('UI_LANG_MENU_LABEL') }}">
   <span class="ui-lang-label">{{ t('UI_LANG_MENU_LABEL') }}:</span>
-  {% if ui_lang == 'en' %}<span class="ui-lang-active" lang="en" aria-current="true">English</span>{% else %}<a href="{{ url_for('set_ui_language', lang='en', next=request.path) }}" lang="en">English</a>{% endif %}
-  {% if ui_lang == 'ar' %}<span class="ui-lang-active" lang="ar" aria-current="true">العربية</span>{% else %}<a href="{{ url_for('set_ui_language', lang='ar', next=request.path) }}" lang="ar">العربية</a>{% endif %}
+  {% if ui_lang == 'en' %}<span class="ui-lang-active" lang="en" aria-current="true">English</span>{% else %}<a href="{{ url_for('set_ui_language', lang='en', next=lang_switch_next) }}" lang="en">English</a>{% endif %}
+  {% if ui_lang == 'ar' %}<span class="ui-lang-active" lang="ar" aria-current="true">العربية</span>{% else %}<a href="{{ url_for('set_ui_language', lang='ar', next=lang_switch_next) }}" lang="ar">العربية</a>{% endif %}
 </nav>
 <main id="main-content">
 {% block content %}{% endblock %}

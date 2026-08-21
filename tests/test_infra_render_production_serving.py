@@ -33,6 +33,18 @@ CONF = os.path.join(ROOT, "gunicorn.conf.py")
 REQUIREMENTS = os.path.join(ROOT, "requirements.txt")
 PYTHON_VERSION_FILE = os.path.join(ROOT, ".python-version")
 
+# The AUTHORITATIVE forbidden configuration terms. Membership is unchanged from
+# the original guard; it is lifted to module scope only so the operative-string
+# check and the docstring check derive from ONE list instead of two copies.
+_FORBIDDEN_CONFIG_TERMS = ("secret", "sqlite", "/var/data", "db_path",
+                           "password", "token", "api_key")
+
+# The ONLY term the docstring check waives, and only in a docstring: EMAIL-H1
+# documents access-log token redaction, so the word must be writable in prose.
+# Operative strings waive nothing. Adding any further entry here would weaken
+# the guard and requires its own authorization.
+_DOCSTRING_ALLOWED_TERMS = ("token",)
+
 # Dependency families that must NOT appear from this gate (scope guard).
 _FORBIDDEN_DEPENDENCY_TOKENS = (
     "psycopg", "postgres", "mysql", "sqlalchemy", "alembic", "django",
@@ -171,8 +183,57 @@ def _conf_code_tree():
     return ast.Module(body=body, type_ignores=[])
 
 
+def _docstring_node_ids(tree):
+    """Identities of the FUNCTION and CLASS docstring constants in `tree`.
+
+    The MODULE docstring is not included here because `_conf_code_tree()` has
+    already removed it — that exclusion is pre-existing base behaviour and is
+    unchanged by this gate. Identity (not value) is used so an operative string
+    that merely happens to equal a docstring is still scanned as operative."""
+    ids = set()
+    for node in ast.walk(tree):
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef,
+                             ast.ClassDef)):
+            body = getattr(node, "body", [])
+            if (body and isinstance(body[0], ast.Expr)
+                    and isinstance(body[0].value, ast.Constant)
+                    and isinstance(body[0].value.value, str)):
+                ids.add(id(body[0].value))
+    return ids
+
+
 def _conf_code_strings():
+    """Every string constant outside the module docstring — operative strings
+    AND function/class docstrings. This is the ORIGINAL scanning scope and is
+    deliberately unchanged: the debug/reload guard below keeps applying to
+    documentation prose exactly as it always did."""
     return [n.value for n in ast.walk(_conf_code_tree())
+            if isinstance(n, ast.Constant) and isinstance(n.value, str)]
+
+
+def _conf_operative_strings():
+    """String constants that are OPERATIVE CODE — `_conf_code_strings()` minus
+    the function/class docstrings. The FULL forbidden-term list applies here,
+    with no exception of any kind."""
+    tree = _conf_code_tree()
+    doc_ids = _docstring_node_ids(tree)
+    return [n.value for n in ast.walk(tree)
+            if isinstance(n, ast.Constant) and isinstance(n.value, str)
+            and id(n) not in doc_ids]
+
+
+def _conf_docstring_strings():
+    """The function/class docstrings of `gunicorn.conf.py`."""
+    tree = _conf_code_tree()
+    doc_ids = _docstring_node_ids(tree)
+    return [n.value for n in ast.walk(tree)
+            if isinstance(n, ast.Constant) and isinstance(n.value, str)
+            and id(n) in doc_ids]
+
+
+def _all_conf_strings():
+    """EVERY string constant in the file, module docstring included."""
+    return [n.value for n in ast.walk(ast.parse(_read(CONF)))
             if isinstance(n, ast.Constant) and isinstance(n.value, str)]
 
 
@@ -239,13 +300,43 @@ def test_no_hsts_header_is_emitted():
 
 def test_production_config_reads_only_the_platform_port():
     """AST-level: the executable configuration consults exactly one environment
-    variable — PORT. No secret and no database path is read or embedded."""
+    variable — PORT. No secret and no database path is read or embedded.
+
+    The forbidden-term list is unchanged from the original guard and applies to
+    operative strings with NO exception."""
     assert _conf_environ_keys() == ["PORT"], _conf_environ_keys()
-    for value in _conf_code_strings():
+    for value in _conf_operative_strings():
         lowered = value.lower()
-        for forbidden in ("secret", "sqlite", "/var/data", "db_path",
-                          "password", "token", "api_key"):
+        for forbidden in _FORBIDDEN_CONFIG_TERMS:
             assert forbidden not in lowered, value
+
+
+def test_production_config_docstrings_carry_no_forbidden_term_except_token():
+    """Documentation is NOT exempt from the forbidden-term guard.
+
+    The SAME authoritative `_FORBIDDEN_CONFIG_TERMS` list is applied to every
+    function/class docstring, minus exactly one narrowly justified word:
+    ``token``. EMAIL-H1 legitimately DOCUMENTS access-log token redaction, so
+    the concept must be nameable in prose; every other governed term — secret,
+    sqlite, /var/data, db_path, password, api_key — stays rejected in
+    docstrings exactly as before. This is a narrow exception, not a blanket
+    docstring exemption."""
+    for value in _conf_docstring_strings():
+        lowered = value.lower()
+        for forbidden in _FORBIDDEN_CONFIG_TERMS:
+            if forbidden in _DOCSTRING_ALLOWED_TERMS:
+                continue
+            assert forbidden not in lowered, value
+
+
+def test_production_config_embeds_no_credential_shaped_literal_anywhere():
+    """ADDITIVE coverage on top of the two term checks above: scans EVERY string
+    in the file — the module docstring included, which the term checks do not
+    reach — for a literal that could be a real secret (long hex or base64-ish
+    runs). Documentation may name a concept; it may never carry a value."""
+    for value in _all_conf_strings():
+        assert not re.search(r"[A-Fa-f0-9]{32,}", value), value
+        assert not re.search(r"[A-Za-z0-9+/]{40,}={0,2}", value), value
 
 
 def test_production_config_does_not_enable_debug_or_reload():

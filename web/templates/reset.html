@@ -27,7 +27,7 @@ button{margin-top:16px;padding:10px 24px;background:#2c3e50;color:#fff;border:no
   {% elif form_error == 'token_invalid' %}
     <p class="form-error" role="alert">{{ t('UI_A_RESET_004') }}</p>
   {% endif %}
-  <form method="POST" action="/reset/{{ token }}">
+  <form method="POST">
     <label for="password">{{ t('UI_A_RESET_005') }}</label>
     <input type="password" id="password" name="password" autocomplete="new-password" minlength="12" required>
     <label for="password_confirm">{{ t('UI_A_RESET_006') }}</label>

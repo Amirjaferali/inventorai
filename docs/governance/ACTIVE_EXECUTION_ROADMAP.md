@@ -12831,3 +12831,129 @@ or horizontal scaling; no ProxyFix; no HSTS; OPS-SM1 EXECUTED: NO; PSRR COMPLETE
 NO; DEPLOYMENT AUTHORIZED: NO; PAID ACTIVATION AUTHORIZED: NO; no new domain and no DOMEX work.
 `OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY if/when this exact candidate is merged and
 post-merge verified. Next required step: Independent External Review of this exact SHA + bundle.
+
+---
+
+## EMAIL-H1 (REPAIR) — OBS-P5-2-01 Bounded Token-Exposure Hardening (Owner-authorized repair candidate after Independent Review REJECT)
+
+**Base:** `602ccd39da59c1d93aa0f99afa2df5f662896503` (PR #545 merge — INFRA-G1-P1, authoritative;
+re-resolved live before any work). **Rejected predecessors — TWO, both preserved UNCHANGED, neither
+merged, neither amended/rebased/reused/published:** `3cea988e41afbc32dfb7e91eee150d6947c2796e`
+(first candidate; VERDICT REJECT on BLOCKING-1 access-log leak + BLOCKING-2 false docstring) and
+`687a626b1312a0fc073fb76cea56bb4db5050a84` (first repair; VERDICT REJECT on the single blocking
+finding **B-1** — the modified INFRA-G1-R2 guard's truth and strength). Both are held on local
+branches (`email-h1-rejected-evidence`, `email-h1-repair-candidate`) — local-only artifacts, never
+described as independently remote-verifiable. Because neither was merged, this candidate re-applies
+the accepted EMAIL-H1 content onto the live base FRESH and adds the B-1 correction.
+
+**What the reviewer confirmed sound (not redesigned here):** exact identity; RED 8 failed / 6 passed;
+GREEN 14/14; token-route headers; raw-HTML reflection removal; reset semantics; the language-switch
+fix; auth semantics; Universal Guardrail Smoke; independently reproduced full suite 2983/3/1/0.
+
+**BLOCKING-1 — repository-controlled Gunicorn access-log token leak. INDEPENDENTLY REPRODUCED
+BEFORE REPAIR:** starting the authoritative command `gunicorn -c gunicorn.conf.py web.app:app` and
+requesting the two token routes produced access-log lines containing the RAW token
+(`"GET /reset/<RAW_TOKEN> HTTP/1.1"`, `"GET /verify/<RAW_TOKEN> HTTP/1.1"`; 2 occurrences). The prior
+governance sentence "no application logging of the raw token" was therefore FALSE for the governed
+production serving stack, and this surface is repository-controlled — not a provider residual.
+**Fix (`gunicorn.conf.py`):** a stdlib `logging.Filter` (`_TokenPathRedactingFilter`) attached to the
+`gunicorn.access` logger inside the `post_fork` worker hook (with a defensive `when_ready`), which
+sanitizes Gunicorn's atoms dict so any segment after `/verify/` or `/reset/` is replaced by
+`[REDACTED]`; percent-encoded tokens are covered because the whole segment is replaced.
+**Deliberately REDACTION, not suppression:** `accesslog = "-"` and `errorlog = "-"` are unchanged,
+ordinary routes keep full access logging, token routes remain logged in redacted form, and the filter
+always returns True so no record is ever dropped — globally disabling access logs would destroy
+observability that P10-OB1 and the provider-dependent PSRR items depend on. No new logging platform,
+no dependency, no reverse-proxy assumption, no Render-specific code, no ProxyFix, no HSTS. Topology
+re-verified unchanged: workers 1, threads 1, `preload_app` False, `reload` False.
+
+**Mandatory real-serving-stack test.** New `tests/test_email_h1_access_log_token_redaction.py` (8
+tests): six exercise the exact repository-controlled logging seam (request-line, `/verify` route, `U`
+and `f` atoms, percent-encoded segment, ordinary path untouched, idempotent hook installation, and a
+guard that access logging is not globally disabled), and one BOOTS THE REAL SERVER with the governed
+command and inspects the actual access log. **RED at base: 7 failed / 1 passed** (the single pass is
+the not-globally-disabled guard, true at base as well — no vacuous test). **GREEN: 8/8.** The
+end-to-end test's base failure was confirmed to be exactly `assert RAW_TOKEN not in text`, not an
+infrastructure error. A test-harness defect found during construction (`LogRecord(args=<single-key
+dict>)` raises `KeyError 0`) was fixed in the helper rather than worked around.
+
+**BLOCKING-2 — incorrect test docstring. CORRECTED.**
+`test_verify_result_does_not_reflect_the_raw_token` no longer claims "already true before this gate";
+it now records accurately that `verify_result.html` never rendered the token itself but the shared
+shell's `next=request.path` language links reflected the RAW token into an anchor href on that page,
+so the test FAILS at base and passes only with the `lang_switch_next` fix. No behaviour change.
+
+**NB-1 (added, reviewer-justified).** Two complementary guards: an ordinary route (`/login`) must
+still produce `next=/login`, and token pages must produce `next=/` with no raw token. A mutation
+collapsing every route's target to `/` is now caught (previously the whole suite still passed).
+**NB-2 (partial third-party regex), NB-3 (404/405 token-bearing URL headers), NB-4 (the AST helper
+excludes the MODULE docstring from the term checks — restated precisely: function and class
+docstrings ARE scanned; only the module docstring is outside the term checks, and it is covered by
+the credential-shaped-literal scan): CARRIED FORWARD, not expanded** — no source truth shows a
+material security requirement compelling action in this repair.
+
+**One conflicting pre-existing guard corrected (disclosed; net effect stated factually, NOT as
+"strictly stronger").** The INFRA-G1-R2 test `test_production_config_reads_only_the_platform_port`
+forbade the substring "token" in ANY string constant of `gunicorn.conf.py`, which the new redaction
+docstrings legitimately use. The corrected guard does three things:
+
+1. **Operative (non-docstring) strings — unchanged and undiminished.** The authoritative
+   `_FORBIDDEN_CONFIG_TERMS` list (`secret`, `sqlite`, `/var/data`, `db_path`, `password`, `token`,
+   `api_key`) is unchanged in membership and applies with **no exception**.
+2. **Function/class docstrings — still scanned, one narrow waiver.** The SAME list is applied to
+   docstrings, waiving exactly one word — `token` — because EMAIL-H1 legitimately DOCUMENTS
+   access-log token redaction. Every other governed term still fails inside a docstring, and the
+   separate `debug`/`reload` string check keeps its original full scope (docstrings included).
+3. **Credential-shaped literals — additive.** `test_production_config_embeds_no_credential_shaped_
+   literal_anywhere` scans EVERY string, the module docstring included, for long hex / base64-ish
+   runs. It is ADDITIVE coverage, not a substitute for the term checks.
+
+**Truthful net effect.** This is **not** "strictly stronger" and does **not** "remove no protection":
+the docstring `token` waiver is an intentional, narrow reduction. The module docstring also remains
+outside the term checks — pre-existing base behaviour recorded as NB-4 and unchanged by this gate;
+it is covered by the credential-shaped scan only. **Differential guard matrix (15 cases, run against
+base / superseded-rejected / this candidate):** the one intended relaxation (`token` alone in a
+function docstring) passes; all 14 forbidden cases fail — including the **7 cases that the superseded
+rejected guard wrongly allowed** (`api_key`, `password`, `secret`, `db_path`, `sqlite`, `/var/data`
+and `debug` inside a function docstring), which is precisely the reviewer's B-1 finding, reproduced
+here before the correction and closed by it.
+
+**Evidence (all re-run fresh on THIS candidate).** EMAIL-H1 RED measured at the authoritative base
+with the final tests: access-log **7 failed / 1 passed**; hardening **9 failed / 7 passed** → GREEN
+**8/8** and **16/16**. Guard RED: the previous INFRA-G1-R2 guard against the truthful recreated
+configuration = **1 failed / 17 passed** (it rejected the legitimate `token` docstring — the genuine
+and only justification for touching it) → corrected guard GREEN **20/20**. **B-1 reproduced before
+correction:** with `api_key`/`password` injected into an ordinary function docstring, the previous
+guard FAILS and the superseded rejected guard PASSES. **Ten mutation probes, all killed** (accesslog
+disabled globally; filter dropping records; redaction missing `/verify`; `post_fork` hook removed; all
+language links collapsed to `/`; 40-hex secret hidden in a function docstring; second environment
+variable read; forbidden term in an operative string; **`api_key` in a function docstring — the B-1
+class**; **the `token` waiver leaking into an operative string**) — every mutated file sha256-verified
+byte-restored. Targeted regressions: **72 passed** (serving + both EMAIL-H1 suites + P10-RL1 +
+architecture guardrails) and **333 passed / 1 skipped** (P5-1/P5-2/P5-3 auth incl. reset
+success/failure/replay and session revocation, P10-SEC1 headers, P10-D3b deactivation, D-P6-18
+language, localization, session/resume/reconstruction, observability). `UNIVERSAL GUARDRAIL SMOKE:
+PASS`. **Full suite: 2995 passed / 3 skipped / 1 xfailed / 0 failed** (2994 lineage + the one new
+docstring-term guard). `git diff --check` clean.
+
+**Reviewer non-blocking findings — CARRIED FORWARD, NOT EXPANDED:** NB-A duplicated-slash malformed
+sensitive URL; NB-B case / near-miss route variants; NB-C token-like query string on an unrelated
+route; NB-D the Gunicorn end-to-end environment conditional; NB-E pre-existing `_issue_reset` wording.
+None was touched by this candidate.
+
+**OBS-P5-2-01 DISPOSITION — three distinct surfaces, stated separately.**
+`FLASK/PYTHON APPLICATION LOGS: NO RAW TOKEN (test-pinned).`
+`REPOSITORY-CONTROLLED GUNICORN ACCESS-LOG PORTION: HARDENED / VERIFIED.`
+`PROVIDER/REVERSE-PROXY ACCESS-LOG BEHAVIOR: OPEN — MUST BE VERIFIED AT THE FUTURE PROVIDER-DEPENDENT
+GATE.` Browser-history exposure remains inherent to the URL-token architecture and unchanged.
+**OBS-P5-2-01 IS NOT FULLY CLOSED.** OBS-P5-2-02 untouched.
+
+**Preserved (verified by regression).** `Referrer-Policy: no-referrer` and `Cache-Control: no-store`
+on every token-bearing rendered path; no raw token in rendered verify/reset HTML; the reset form still
+posts to the current token URL without reflection; token-page language links carry no token path;
+ordinary localization functional; CSP / X-Frame-Options / nosniff unchanged; no HSTS; no ProxyFix; no
+third-party resources; token TTL, hashing and storage unchanged; rate limits unchanged; reset, replay
+and session-revocation semantics unchanged; email-sender abstraction unchanged; no provider
+integration; Render NOT reopened. `OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY if/when
+this exact candidate is merged and post-merge verified. Next required step: Independent External
+Re-Review of this exact SHA + bundle.
