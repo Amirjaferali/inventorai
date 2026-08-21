@@ -13513,3 +13513,69 @@ coverage shift, and the `battery` question-derived marker. No fixture, generator
 `OWNER_DECISION_REGISTER.md` change; the fixture ledger stands and `ASSERTION-TARGET CHANGES: 0` holds.
 `PVCG-R2-C AUTHORITATIVE: YES`; `PVCG-R2-I AUTHORITATIVE: NO`; PVCG-R3/R4 NOT STARTED; PVCG NOT
 SATISFIED; minimum launch-conformance set NOT SATISFIED; no deployment claim.
+
+---
+
+## PVCG-R2 — AUTHORITATIVE CLOSURE (governance-only closure candidate)
+
+**Authority.** PVCG-R2-I is now AUTHORITATIVE: PR #549, merge
+`1ce2c89630b9bdbfdedb15ee85eafa410a03632a`, independently re-verified this gate from a fresh fetch —
+first parent `4d746d15…` (prior authoritative base), second parent `60cc5f48…` (exact accepted
+candidate), merge tree `476629b6…`, candidate→merge diff EMPTY, zero later commits on
+`origin/feature/atomic-json-session-persistence`, working tree clean. PVCG-R2-C remains AUTHORITATIVE:
+PR #548, merge `4d746d15…`, second parent `e394f962…`, candidate→merge diff EMPTY, ancestor of the live
+tip — re-verified from repository lineage rather than copied.
+
+**Disposition.** `PVCG-R2 CLOSURE CANDIDATE — NOT AUTHORITATIVE UNTIL MERGED`. The closure statements
+live in the dedicated record `docs/governance/PVCG_R2_FORMAL_CLOSURE_RECORD.md` (established
+`<GATE>_FORMAL_CLOSURE_RECORD.md` convention) and take effect only on merge and post-merge
+verification.
+
+**What is closed, and only this.** The bounded R2 objective frozen by
+`PVCG_R2_C_GAP_RELEVANCE_HARDENING_CONTRACT.md` §4 — an answer may influence gap satisfaction only when
+sufficiently relevant to the specific served gap, and generic substance, domain vocabulary, causal
+wording or signal density alone must not manufacture satisfaction. Nothing wider.
+
+**Closure evidence, executed against the MERGED tree `[EXEC]`:** signal-rich off-topic answers blocked
+across all six gaps (the answer still assessing `REASONED`); cross-gap reuse blocked across the full
+6×6 off-diagonal; five repetitions cannot manufacture closure; legitimate relevant answers still reach
+`CLOSED` for all six gaps; a weak-but-relevant answer keeps its pre-R2 `ASSERTED` → `WARN` / `PARTIAL`
+outcome; fail-closed is non-punitive (never `BLOCK`); `known_mechanism`, `known_problem` and Stage-3
+evidence capture are gated; the decision is deterministic over 12 repetitions; the ACTUAL served gap is
+used; the lexical bound is stated in the module and pinned by test; an Arabic mechanism answer is NOT
+recognised, so R3 semantic equivalence remains unresolved. PVCG-R1 focused **26/26** with its test file
+byte-unchanged. The P9-MECH-I3 pin is live: the pinned value at the tip equals the measured digest of
+`engine/progression_loop.py` (`07c9bff5…`), guard suites **54 passed**. Final coverage truth re-measured
+from the merged tree: **`FINAL OPERATIVE ENTRY COUNT: 262`**, **`FINAL STRUCTURALLY SHADOWED ENTRY
+COUNT: 2`** (both PHRASE → PHRASE), **`NON-EQUIVALENT SURVIVING SINGLE-MARKER MUTANTS: 0`**, sweep
+264 processed / 264 KILLED / 0 SURVIVED / 0 LOADFAIL / restore 264/264. Full suite at the tip **3776
+passed / 3 skipped / 1 xfailed / 0 failed** with gunicorn 26.1.0 on `PATH`; `UNIVERSAL GUARDRAIL SMOKE:
+PASS`.
+
+**Rejected-candidate history preserved, never authoritative.** `2f2897ce…` (REJECTED, defect class
+T-1) and `58ef3971…` (REJECTED, finding T-1b) are immutable historical review evidence. They appear in
+the tip's history only because the accepted candidate `60cc5f48…` is their descendant; that does not
+make either authoritative — the authoritative content is the merge tree `476629b6…`. Both
+governance-truth defects they carried were corrected BEFORE merge and the corrections are present in
+the merged state: the unsound corpus-based "equivalent mutants" claim, and the unsound phrase → word
+shadow claim behind the 253/11 split. Both were classification and governance-truth defects, **not
+runtime defects**.
+
+**R2 IS NOT R3.** This closure does not prove semantic equivalence, multilingual semantic stability,
+EN/AR behavioural equivalence, paraphrase equivalence, LLM/NLP semantic understanding, or full adaptive
+questioning. The merged mechanism is lexical and deterministic and its inability to stabilise
+equivalent wording or another language is a declared known bound. **`PVCG-R3 NOT STARTED`** — naming it
+as next authorizes nothing.
+
+**Carried forward as OPEN / NON-BLOCKING (not repaired here, not authorized work):** lexical cross-talk;
+the broad `"does not"` / `"doesn't"` boundary phrases; substring/token boundary asymmetry; WS1 helper
+coupling in the corrected journey fixtures; the acknowledged-unknown fixture coverage shift; `battery`
+as a question-derived marker; and `test_progression_benchmark.py::test_B1` now passing for a different
+reason. Each is future-governed if ever addressed.
+
+**Scope.** Governance/documentation only — one new closure record plus this entry and the two status
+surfaces. No `engine/`, `web/`, `tests/`, `domains/`, `scripts/`, evidence-tree, generator, deployment
+or Render path; `main` not reconciled; `OWNER_DECISION_REGISTER.md` UNCHANGED. `PVCG SATISFIED: NO`;
+`MINIMUM LAUNCH-CONFORMANCE SET SATISFIED: NO`; `DEPLOYMENT AUTHORIZED: NO`. Next authorized
+workstream after this closure becomes authoritative: **PVCG-R3 — Semantic Stability**, still NOT
+STARTED and opened only by the Owner through the established workflow.
