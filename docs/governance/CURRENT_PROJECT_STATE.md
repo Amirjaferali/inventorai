@@ -2424,7 +2424,33 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
-- **PVCG-R1 — DURABLE EPISTEMIC MEMORY (Owner-authorized IMPLEMENTATION candidate, PR pending), base
+- **PVCG-R2-C — GAP-RELEVANCE HARDENING CONTRACT / RECONCILIATION GATE (Owner-authorized
+  GOVERNANCE-ONLY candidate, PR pending), base `c70bad196de73fc27c21a3e1bd8438f1eab41958` (PR #547
+  merge — PVCG-R1, AUTHORITATIVE; independently re-verified live on all four merge criteria).**
+  Disposition: **`PVCG-R2-C GOVERNANCE CANDIDATE — NOT AUTHORITATIVE UNTIL MERGED`**. New
+  `docs/governance/PVCG_R2_C_GAP_RELEVANCE_HARDENING_CONTRACT.md` governs exactly two dependencies
+  that stopped the R2 implementation gate before freeze, per the Owner's **Option B** decision.
+  **DEP-1:** the `engine/progression_loop.py` SHA-256 byte pin
+  (`tests/test_p9_mech_i3_signal_quality.py:75-78`, enforced by `test_engine_files_byte_frozen`) under
+  authoritative P9-MECH-I3 is recorded live and **NOT weakened**; R2-I gets ONE BOUNDED reconciliation
+  — re-freeze the exact post-R2 digest, prove no unrelated progression-loop behaviour changed, never
+  delete/skip/xfail the guard — explicitly **not** future unrestricted edit rights. Precedent
+  established from repository history (pin introduced `32165ca`, reconciled `9399f9d`, reconciled
+  `41bf30c`). **DEP-2:** fixtures whose INPUT encodes manufactured satisfaction may have only that
+  input replaced with a gap-appropriate answer, with a mandatory seven-field differential ledger and
+  **`ASSERTION-TARGET CHANGES: 0`**; deleting tests, weakening assertions, skip/xfail, and broadening
+  the guard to re-admit the defective fixture are forbidden. The R2 product truth is frozen
+  (`uncertain relevance ≠ satisfied`, fail-closed but never punitive). All diagnostic figures are
+  labelled **EXECUTED EVIDENCE at the non-candidate diagnostic SHA `5154bcf4…`** — preserved, not in
+  this candidate's lineage, never to be published — and are **not** promoted to repository fact.
+  Zero runtime/test/fixture/pin diff; smoke PASS; full suite 3021/3/1/0 re-run at this base;
+  `UNSUPPORTED MATERIAL CLAIMS: 0`. **PVCG-R2-I NOT STARTED / NOT AUTHORIZED** (needs this contract
+  authoritative + a separate Owner execution authorization). **PVCG-R3 NOT STARTED. PVCG-R4 NOT
+  STARTED. PVCG SATISFIED: NO. MINIMUM LAUNCH-CONFORMANCE SET SATISFIED: NO.** No release-readiness
+  claim; Render not reopened; `main` not reconciled; `OWNER_DECISION_REGISTER.md` unchanged.
+
+- **PVCG-R1 — DURABLE EPISTEMIC MEMORY (MERGED AND AUTHORITATIVE via PR #547, merge
+  `c70bad196de73fc27c21a3e1bd8438f1eab41958`; superseded history), base
   `9d2b651588dc6879948e89aac3ec43c8c7c873d7` (PR #546 merge — EMAIL-H1, AUTHORITATIVE; independently
   re-verified live on all four merge criteria).** Disposition:
   **`PVCG-R1 IMPLEMENTED / CANDIDATE — NOT AUTHORITATIVE UNTIL MERGED`.** The five governed non-answer

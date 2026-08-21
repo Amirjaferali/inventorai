@@ -41,8 +41,49 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — PVCG-R1: DURABLE EPISTEMIC MEMORY; Owner-authorized implementation gate after the
-approved amended PVCG Minimum Launch-Conformance Set).** Base:
+**Status (current — PVCG-R2-C: GAP-RELEVANCE HARDENING CONTRACT / RECONCILIATION GATE;
+Owner-authorized GOVERNANCE-ONLY gate under the Owner's Option-B decision on the PVCG-R2 dependency
+conflict).** Base: `c70bad196de73fc27c21a3e1bd8438f1eab41958` (PR #547 merge — PVCG-R1, AUTHORITATIVE;
+re-resolved live and independently re-verified: first parent `9d2b6515…`, second parent `5d563203…`,
+merge tree `24b57a2f…`, empty candidate→merge diff).
+
+**Disposition: `PVCG-R2-C GOVERNANCE CANDIDATE — NOT AUTHORITATIVE UNTIL MERGED`.**
+**PVCG-R2-I IMPLEMENTATION: NOT STARTED / NOT AUTHORIZED** — it requires this contract to be
+authoritative AND a separate Owner execution authorization. PVCG-R3 NOT STARTED; PVCG-R4 NOT STARTED;
+PVCG SATISFIED: NO; MINIMUM LAUNCH-CONFORMANCE SET SATISFIED: NO. No release-readiness claim.
+
+**Objective.** A bounded PVCG-R2 implementation was attempted and STOPPED before freeze on two
+governance dependencies. This gate governs exactly those two and freezes the R2 product truth, without
+implementing anything.
+
+* **DEP-1 — byte-pin reconciliation.** `engine/progression_loop.py` is SHA-256 byte-pinned at
+  `tests/test_p9_mech_i3_signal_quality.py:75-78` and enforced by `test_engine_files_byte_frozen`
+  (line 313) under the authoritative P9-MECH-I3 contract. The pin is recorded LIVE and is **NOT
+  weakened, relaxed, or removed**. R2-I receives ONE BOUNDED reconciliation: update the pinned digest
+  only as part of the authorized R2 change, re-freeze the exact post-R2 digest, prove no unrelated
+  progression-loop behaviour changed, and preserve the guard. Precedent is established from repository
+  history, not prose: pin introduced `32165ca`, reconciled `9399f9d` (L2SC-01), reconciled `41bf30c`
+  (P10-DBT1).
+* **DEP-2 — defect-dependent fixture correction.** Only fixtures whose INPUT encodes manufactured
+  satisfaction may be corrected, and only by replacing that input with a gap-appropriate answer while
+  the assertion target and test purpose are preserved. A seven-field fixture-differential ledger is
+  mandatory with **`ASSERTION-TARGET CHANGES: 0`**; any needed assertion-target change forces a STOP
+  for Owner review.
+
+**Frozen R2 product truth.** A response may influence gap satisfaction only when it is sufficiently
+relevant to the specific served gap/question context; generic substance, domain vocabulary, causal
+language or signal density alone is insufficient for an unrelated gap; the decision is deterministic
+and fail-closed — `uncertain relevance ≠ satisfied` — and is never converted into BLOCK, a
+contradiction, or an input-validation failure.
+
+**Evidence discipline.** Every diagnostic figure is labelled EXECUTED EVIDENCE reproducible at the
+NON-CANDIDATE diagnostic SHA `5154bcf40673e19805410d3199f86089da2c810a` (preserved, not in this
+candidate's lineage, never to be published) and is NOT promoted to repository fact. This candidate
+changes zero executable bytes; smoke PASS; full suite 3021 passed / 3 skipped / 1 xfailed / 0 failed
+re-run at this base; `UNSUPPORTED MATERIAL CLAIMS: 0`.
+
+**Superseded (retained as history) — PVCG-R1: DURABLE EPISTEMIC MEMORY; MERGED AND AUTHORITATIVE via
+PR #547.** Base:
 `9d2b651588dc6879948e89aac3ec43c8c7c873d7` (PR #546 merge — EMAIL-H1, AUTHORITATIVE; re-resolved live
 from `origin/feature/atomic-json-session-persistence` and independently re-verified: first parent
 `602ccd39…`, second parent `f4ee27d1…`, merge tree `2aa371a1…`, empty candidate→merge diff).
