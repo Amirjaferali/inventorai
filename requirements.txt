@@ -7,10 +7,19 @@
 #   pytest  — the test runner for the tests/ suite
 # Everything else imported by the codebase is in the Python standard library.
 #
+# INFRA-G1-R2 (the bounded implementation under the authoritative INFRA-G1-R1
+# contract) adds ONE further pinned package that is NOT imported by the
+# codebase but is required to SERVE it in production:
+#   gunicorn — the production WSGI server (see `gunicorn.conf.py`: exactly one
+#              worker and one thread, preserving the single thread-bound SQLite
+#              connection). It is provider-neutral and is never used by the
+#              development path (`web/app.py _run_config`), which is unchanged.
+#
 # Versions are pinned to the exact set proven to install and run the governed suite
 # green in a clean isolated environment (Python 3.11). Transitive dependencies
 # (Werkzeug, Jinja2, click, itsdangerous, MarkupSafe, iniconfig, pluggy, packaging)
 # are resolved by pip; add a constraints.txt only if stricter transitive pinning is
 # later shown to be genuinely required.
 Flask==3.1.3
+gunicorn==26.1.0
 pytest==9.1.1

@@ -41,8 +41,42 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — INFRA-G1-R1 HOSTING/REGION SELECTION RECORDING + BOUNDED RENDER
-DEPLOYMENT-PREPARATION CONTRACT: Owner-authorized GOVERNANCE-ONLY candidate):** Base:
+**Status (current — INFRA-G1-R2 RENDER PRODUCTION-SERVING (WSGI) BOUNDED IMPLEMENTATION:
+Owner-authorized implementation candidate):** Base: `306f3499a2bd51e9d7047c9ffd5c4f091d2ca696`
+(PR #543 merge — INFRA-G1-R1, authoritative; independently re-verified live: first parent
+`9b3bc28e…`, second parent `458c1316…`, merge tree `b5df6a4a…` = accepted candidate tree, empty
+candidate→merge diff).
+
+**Objective.** Implement ONLY the INFRA-G1-R1 §4/§13 production-serving scope: a diagnosed production
+WSGI server (**Gunicorn**, selected on measured evidence over Waitress — see the roadmap entry), a
+provider-neutral `gunicorn.conf.py` pinning workers=1 / threads=1 / `preload_app=False` /
+`reload=False` / `bind=0.0.0.0:$PORT`, a pinned `gunicorn==26.1.0` dependency, a `.python-version`
+pin (`3.11`), and 18 AST/behaviour tests proving the WSGI target, the single-worker/single-thread
+invariant, PORT consumption, dev-server separation, and the security non-regressions. No `render.yaml`
+(dashboard configuration suffices; provider coupling avoided). Allowed paths: `gunicorn.conf.py`,
+`.python-version`, `requirements.txt`, `tests/test_infra_render_production_serving.py`,
+`tests/test_p10_rl1_release_readiness_checklist.py` (synchronized guardrail strengthening),
+`PHASE_10_RELEASE_READINESS_CHECKLIST.md`, `ACTIVE_EXECUTION_ROADMAP.md`, `CURRENT_PROJECT_STATE.md`,
+`ACTIVE_INCREMENT_CONTRACT.md`. Forbidden: `web/`, `engine/`, `domains/`, schemas, provisioning, DNS,
+TLS, secrets, `OWNER_DECISION_REGISTER.md`.
+
+**Evidence.** RED reconstructed at the exact base with the final test file — 14 failed / 4 passed
+(reviewer-reproduced; the earlier “15/3” figure is withdrawn as non-reproducible) → GREEN 18/18; live end-to-end gunicorn serve (200 on `/health`
+and `/`; CSP present; HSTS absent; 1 worker; worker thread count 1); 12 mutation probes killed; fresh
+dependency audit ZERO known findings; targeted regressions 159 passed; smoke PASS pre+post; **full
+suite 2969 passed / 3 skipped / 1 xfailed / 0 failed**; adversarial implementation truth sweep
+UNSUPPORTED MATERIAL CLAIMS: 0.
+
+**Boundaries:** development path unchanged; no ProxyFix/HSTS/forwarded-header trust; no SQLite/schema/
+ORM change; no email/monitoring/payment dependency; INFRASTRUCTURE PROVISIONED: NO; PUBLIC DEPLOYMENT
+STARTED: NO; OPS-SM1 EXECUTED: NO; PSRR COMPLETE: NO; PSRR GO ELIGIBLE: NO; DEPLOYMENT AUTHORIZED: NO;
+PAID ACTIVATION AUTHORIZED: NO. `OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY if/when this
+exact candidate is merged and post-merge verified. Next required step: **Independent External Review of
+this exact SHA + bundle** (LEVEL 1 implementation path — reviewer full suite mandatory under §5B).
+
+**Immediately prior (INFRA-G1-R1 — governance-only candidate `458c1316…` Owner-accepted at that exact
+SHA and MERGED via PR #543, tip `306f3499a2bd51e9d7047c9ffd5c4f091d2ca696`; now AUTHORITATIVE;
+OD-INFRA-1 RENDER / OD-INFRA-2 FRANKFURT durably recorded; retained as history):** Base:
 `9b3bc28ebeea68963b836bb508141dc3228092f7` (PR #542 merge — INFRA-G1-C, authoritative; independently
 re-verified live: first parent `88c5f4d5…`, second parent `e79a2300…`, merge tree `3c1a48cb…` =
 accepted candidate tree, empty candidate→merge diff).

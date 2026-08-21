@@ -33,7 +33,10 @@ security standard, or release authority.
 * `OPEN` — known obligation, currently unresolved.
 * `DEFERRED — EXTERNAL ADVISER REQUIRED` — cannot be truthfully concluded without qualified external
   legal/tax input (registers OPEN; no adviser engaged).
-* `PROVIDER-DEPENDENT` — requires selecting/configuring a production provider (none is selected).
+* `PROVIDER-DEPENDENT` — requires selecting and/or configuring a production provider. Nothing is
+  provisioned or configured anywhere. Where a provider has been Owner-SELECTED under a governing gate,
+  the row records that selection explicitly; selection is never provisioning, configuration, or
+  completion.
 * `COMMERCIAL DECISION REQUIRED` — needs an explicit Owner commercial-policy decision.
 * `PSRR-TIME` — must be reassessed/executed at the formal PSRR gate.
 * `DEPLOYMENT-TIME` — cannot be completed before a real deployment configuration/environment exists.
@@ -43,7 +46,7 @@ security standard, or release authority.
 
 | ID | Item | Status | Source (section) | Current truth / boundary | Blocks |
 |---|---|---|---|---|---|
-| RL-A1 | Full application test suite | IMPLEMENTED LOCAL FOUNDATION | `tests/` (full suite) | 2951 passed / 3 skipped / 1 xfailed / 0 failures at the P10-CL0 refresh base `2f77e8e8…` (fresh live run; earlier authoring-base value 2854/3/1/0 superseded as point-in-time) | — |
+| RL-A1 | Full application test suite | IMPLEMENTED LOCAL FOUNDATION | `tests/` (full suite) | 2969 passed / 3 skipped / 1 xfailed / 0 failures at the INFRA-G1-R2 implementation candidate over base `306f3499…` (fresh live run; the +18 are the production-serving contract tests; earlier point-in-time values 2951/3/1/0 and 2854/3/1/0 superseded) | — |
 | RL-A2 | Authentication/session foundations | IMPLEMENTED LOCAL FOUNDATION | `web/app.py`; `engine/account_store.py`; `engine/auth_session.py` | register/login/verify/recover/reset/logout-all; scrypt; epoch revocation; HttpOnly/SameSite/production-gated Secure | production auth posture: PSRR-TIME |
 | RL-A3 | Authorization/ownership isolation | IMPLEMENTED LOCAL FOUNDATION | P5-3; P7-I2; `web/api_v1.py` | owner-only project access; non-enumerating denials | formal review: PSRR-TIME (items 4–5) |
 | RL-A4 | CSRF protection | IMPLEMENTED LOCAL FOUNDATION | `web/app.py` `_csrf_valid` | token check on state-changing routes | — |
@@ -112,8 +115,8 @@ security standard, or release authority.
 
 | ID | Item | Status | Source | Current truth |
 |---|---|---|---|---|
-| RL-F1 | Hosting provider | PROVIDER-DEPENDENT | OD-J2 §3.2 | NOT SELECTED (delegated gate) |
-| RL-F2 | Deployment region | PROVIDER-DEPENDENT | OD-J2 §3.2 | NOT SELECTED |
+| RL-F1 | Hosting provider | PROVIDER-DEPENDENT | OD-J2 §3.2; INFRA-G1-R1 (OD-INFRA-1) | Owner-SELECTED: Render (OD-INFRA-1, INFRA-G1-R1) — NOT PROVISIONED, NOT CONFIGURED, no account/resource exists |
+| RL-F2 | Deployment region | PROVIDER-DEPENDENT | OD-J2 §3.2; INFRA-G1-R1 (OD-INFRA-2) | Owner-SELECTED: Frankfurt (OD-INFRA-2, INFRA-G1-R1) — NOT PROVISIONED; no legal/tax/data-residency conclusion is implied |
 | RL-F3 | Reverse-proxy/TLS provider | PROVIDER-DEPENDENT | P10-SEC1 boundaries | NOT SELECTED |
 | RL-F4 | Monitoring provider | PROVIDER-DEPENDENT | P10-OB1 boundaries | NOT SELECTED |
 | RL-F5 | Backup provider | PROVIDER-DEPENDENT | P10-BR1 boundaries | NOT SELECTED |
