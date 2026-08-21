@@ -13083,12 +13083,21 @@ gap-appropriate answer while the assertion target and test purpose are preserved
 weakening assertions, skipping/xfailing, broadening the guard to re-admit the defective fixture, and
 rewriting unrelated tests are all forbidden. The prior fixture-preservation authority is now **named
 exactly and reconciled explicitly**: `STRUCTURED_CRITICALITY_CAPTURE_INCREMENT_CONTRACT.md` **§11**
-(line 99, *"the reused WS1 journey (byte-identical inputs)"*), **§12** (line 101, the GREEN acceptance
-criteria the same reused journey must satisfy) and **F4** (line 117, *"WS1/WS2/WS3 evidence trees
-byte-identical"*), plus the live fixture comment at `tests/test_structured_criticality.py:69`. For
-**PVCG-R2-I only**, and **only** for fixture inputs proven defect-dependent, that byte-identical /
-untouched-input requirement is **superseded to the minimum extent necessary** — the prior authority
-remains historical evidence and this is **not** general permission to rewrite fixtures. A **five-part
+(line 99, *"the reused WS1 journey (byte-identical inputs)"*), **§12** (spanning lines 101–110, whose
+Correctness criterion at **line 105** reads *"never-interacted requirements remain byte-identical to
+today … — **asserted on the untouched WS1 journey**"*) and **F4** (line 117, *"WS1/WS2/WS3 evidence
+trees byte-identical"*), plus the live fixture comment at `tests/test_structured_criticality.py:69`.
+**Correction (B-3):** an earlier revision of the contract asserted that the literal phrase *"untouched
+WS1 journey"* did **not** appear in §12 and carried the obligation on §11 and F4 alone. That was
+**false** and is withdrawn — §12 does contain it, at line 105, and §12 is now **explicitly inside the
+reconciled/superseded set** rather than reached by implication through §11. For **PVCG-R2-I only**, and
+**only** for fixture inputs proven defect-dependent, the preservation requirements in **§11**, the
+**§12 criterion predicated on the untouched WS1 journey**, the **live fixture comment**, and **F4 to
+the minimum extent directly affected** are **superseded only as necessary** to replace defect-dependent
+inputs with gap-appropriate inputs — the prior authority remains historical evidence, the remainder of
+§12's acceptance criteria stand in full, and this is **not** general permission to rewrite WS1 evidence
+or fixtures. **F4 supersession is not broadened**: it ceases to bar the fixture-input correction
+itself and authorizes no evidence regeneration. A **five-part
 fixture-scope test** must be proven per fixture, and the differential ledger is expanded to **eleven
 fields** including an explicit **CROSS-FILE / EVIDENCE IMPACT** field plus duplication, committed-
 artifact and generator/harness impact — required because the WS1-style input is shared, not local:

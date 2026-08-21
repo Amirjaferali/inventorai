@@ -170,7 +170,8 @@ condition holds, those inputs are **no longer valid evidence** for the post-R2 t
 
 The largest affected group reuses a Workstream-1 baseline journey whose header states it was *"copied
 verbatim from the committed Workstream 3 evidence harness … **do not edit**"*
-(`tests/test_structured_criticality.py`, line 69) **[REPO]**.
+(`tests/test_structured_criticality.py`, comment block lines 66–69, with *"do not edit"* at line 69;
+that same block cites *"contract §11: the reused WS1 journey"*) **[REPO]**.
 
 ### §3.1a Prior fixture-preservation authority — named exactly (B-2)
 
@@ -180,31 +181,59 @@ That comment is **not** a casual note. It restates binding prior authority in
 | Locus | Verified wording | Where |
 |---|---|---|
 | **§11 — RED gate** | *"using the reused WS1 journey (**byte-identical inputs**) and direct real-path fixtures"* | line 99 |
-| **§12 — GREEN gate** | *"GREEN gate (correctness + usability acceptance criteria)"* — the head-side acceptance criteria that the same reused WS1 journey must satisfy | line 101 |
+| **§12 — GREEN gate** | *"never-interacted requirements remain byte-identical to today (`UNDETERMINED`/`system-derived`, existing wording — **asserted on the untouched WS1 journey**)"* | §12 spans lines 101–110; the phrase is at **line 105** |
 | **F4** | *"WS1/WS2/WS3 evidence trees **byte-identical** (F4)"* | line 117 |
 
-> **Precision note.** §12's own heading and body state the GREEN acceptance criteria; the literal
-> phrase "untouched WS1 journey" does not appear there. The byte-identical/untouched obligation is
-> carried by **§11** (inputs) and **F4** (evidence trees), reinforced by the live fixture comment. This
-> contract relies on those exact loci and does not attribute wording to §12 that §12 does not contain.
+> **Correction (B-3) — withdrawal of a false precision note.** An earlier revision of this contract
+> stated that §12's heading and body state the GREEN acceptance criteria and that *"the literal phrase
+> 'untouched WS1 journey' does not appear there"*, and on that basis carried the byte-identical /
+> untouched obligation on **§11** and **F4** alone. **That statement was false and is withdrawn.**
+> Re-verified directly against the authoritative repository: `## 12. GREEN gate` begins at line 101 and
+> `## 13.` begins at line 111, so **§12 spans lines 101–110**; the *Correctness* paragraph at **line
+> 105** — inside §12 — contains the literal phrase **`asserted on the untouched WS1 journey`**.
+> §12 is therefore **part of the prior fixture-preservation / evidence authority in its own right**,
+> not merely the head-side companion of §11, and it must be reconciled for PVCG-R2-I. The earlier
+> narrower framing must not be relied on by any reviewer or by R2-I. No wording is attributed to any
+> locus that the locus does not contain: each cell above quotes the verified text at the cited line.
 
 ### §3.1b Narrow supersession / reconciliation of that authority
 
-**For PVCG-R2-I only, and only for fixture inputs proven to depend on manufactured satisfaction, the
-prior byte-identical / untouched-input preservation requirement (§11 inputs; the live fixture comment;
-and F4 only insofar as an artifact is separately authorized under §3.5) is SUPERSEDED to the minimum
-extent necessary to replace those defect-dependent inputs with gap-appropriate inputs.**
+**Binding rule.** For **PVCG-R2-I only**, and **only** for fixture inputs proven to depend on
+manufactured satisfaction, the prior preservation requirements in **§11**, the **§12 acceptance
+criterion predicated on the untouched WS1 journey**, the **live fixture provenance/preservation
+comment**, and **F4 to the minimum extent directly affected** are **SUPERSEDED only as necessary to
+replace defect-dependent inputs with gap-appropriate inputs.**
+
+The reconciled set is exactly:
+
+| # | Reconciled locus | Citation |
+|---|---|---|
+| 1 | **§11** — the reused WS1 journey, *byte-identical inputs* | `STRUCTURED_CRITICALITY_CAPTURE_INCREMENT_CONTRACT.md` line 99 |
+| 2 | **§12** — the acceptance criterion predicated on the *untouched WS1 journey* | same file, line 105 (§12 = lines 101–110) |
+| 3 | **the live fixture provenance/preservation comment** | `tests/test_structured_criticality.py`, comment block lines 66–69; *"do not edit"* at line 69 |
+| 4 | **F4** — only to the minimum extent directly affected | `STRUCTURED_CRITICALITY_CAPTURE_INCREMENT_CONTRACT.md` line 117 |
+
+**§12 is explicitly inside this reconciled set (B-3).** It is not reached by implication through §11,
+and it is not omitted.
 
 Bounding conditions, all binding:
 
 * The supersession reaches **only** inputs that satisfy every test in §3.4. It reaches nothing else.
+* Superseding the §12 criterion means **only** that a *defect-dependent* WS1 input may be replaced. The
+  rest of §12 — every other correctness, usability and protection acceptance criterion — stands in
+  full, and the never-interacted `UNDETERMINED`/`system-derived` semantics that criterion protects are
+  **not** changed by R2. R2-I proves that separately or STOPS.
 * The prior authority **remains historical evidence** and is not deleted, rewritten, or invalidated.
   It remains the correct account of what WS1–WS4 required at their own gates.
-* This is **NOT** general permission to rewrite fixtures. Outside the proven defect-dependent set, the
-  byte-identical/untouched requirement stands unchanged.
-* F4's evidence-tree obligation is **NOT** superseded by this clause on its own — see §3.5, where
-  committed evidence trees remain frozen by default and any synchronization needs its own Owner
-  authorization.
+* This is **NOT** general permission to rewrite WS1 evidence or fixtures. Outside the proven
+  defect-dependent set, the byte-identical/untouched requirement stands unchanged.
+* **F4 supersession is NOT broadened by this clause.** *"To the minimum extent directly affected"*
+  means only that F4 ceases to be a bar to the authorized **fixture-input** correction itself. It does
+  **not** authorize regenerating, rewriting, or synchronizing any committed WS1–WS7 evidence artifact.
+  `COMMITTED EVIDENCE TREES REMAIN FROZEN` by default — see §3.5. If a future R2-I fixture change makes
+  historical evidence materially false, unreproducible, or misleading, R2-I **STOPS** and obtains
+  separate Owner authorization before any regeneration or rewrite. Evidence is never silently
+  synchronized.
 
 ### §3.2 Authorization granted to R2-I
 

@@ -2440,11 +2440,17 @@ AUTHORIZED / NOT STARTED.***
   **`domain_rules.py` only** and left `progression_loop.py` UNCHANGED — still establishing per-key
   digest reconciliation under explicit later governance as an established mechanism. **DEP-2:** the
   prior fixture-preservation authority is named exactly (`STRUCTURED_CRITICALITY_CAPTURE_INCREMENT_
-  CONTRACT.md` §11 line 99 "byte-identical inputs", §12 line 101 GREEN criteria, F4 line 117 "WS1/WS2/
-  WS3 evidence trees byte-identical", plus `tests/test_structured_criticality.py:69`) and **explicitly
+  CONTRACT.md` §11 line 99 "byte-identical inputs", §12 — spanning lines 101–110, whose line-105
+  criterion reads "asserted on the untouched WS1 journey" — F4 line 117 "WS1/WS2/WS3 evidence trees
+  byte-identical", plus `tests/test_structured_criticality.py:69`) and **explicitly
   superseded for R2-I only, and only for proven defect-dependent inputs, to the minimum extent
   necessary** — the prior authority remains historical evidence and this is not general permission to
-  rewrite fixtures. A five-part fixture-scope test is required per fixture; the differential ledger is
+  rewrite WS1 evidence or fixtures. **Correction (B-3):** an earlier revision claimed the phrase
+  "untouched WS1 journey" did **not** appear in §12 and rested the obligation on §11/F4 alone; that was
+  **false**, is withdrawn, and §12 is now **explicitly inside the reconciled/superseded set** (the rest
+  of §12's acceptance criteria stand in full). **F4 supersession is not broadened** — it reaches only
+  the minimum extent directly affected by the fixture-input correction and authorizes no evidence
+  regeneration. A five-part fixture-scope test is required per fixture; the differential ledger is
   expanded to **eleven fields** including **CROSS-FILE / EVIDENCE IMPACT**, duplication, committed-
   artifact and generator/harness impact (the WS1 input is shared: executed scoping found **5 test
   files, 44 committed evidence artifacts across 7 evidence trees, 7 generator/harness scripts**);
