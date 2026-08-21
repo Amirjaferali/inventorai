@@ -12570,3 +12570,79 @@ OBS-1…OBS-4 residuals; GAP-SYNC-01-NB1/NB2; PC3-N2). `OWNER_DECISION_REGISTER.
 Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next required
 step: Independent External Review of this exact SHA + bundle (§5B.13 incl. mandatory independent
 smoke).
+
+---
+
+## INFRA-G1-R1 — Hosting/Region Selection Recording + Bounded Render Deployment-Preparation Contract (Owner-authorized GOVERNANCE-ONLY candidate)
+
+**Base:** `9b3bc28ebeea68963b836bb508141dc3228092f7` (PR #542 merge — INFRA-G1-C, authoritative;
+independently re-verified live: first parent `88c5f4d5…`, second parent `e79a2300…`, merge tree
+`3c1a48cb…` = accepted candidate tree, empty candidate→merge diff). **INFRA-G1-C synchronization
+(recorded per convention):** candidate `e79a2300cf5fa35de49d019c98c9b15d22095dc1` Owner-accepted at
+exact SHA and MERGED via PR #542 — AUTHORITATIVE; Independent Review ACCEPT WITH NON-BLOCKING
+OBSERVATIONS (INFRA-REV-O1/O2/O3 carried forward by identifier).
+
+**Owner-accepted read-only gates at this tip (first durable record here + in the INFRA-G1-R1
+document):** (1) **Provider Evaluation** — external research with dated search-sourced provider facts
+(egress proxy blocked direct provider sites; every unverified detail labeled); Tier A = Render
+(Frankfurt) and Fly.io (fra); Tier B = Railway / Hetzner / AWS EC2 me-central-1 (with the news-sourced
+mid-2026 AWS Bahrain regional-availability context flagged as a fact, not a conclusion); Tier C =
+ephemeral-filesystem platforms (SQLite unsupported) and Azure App Service SMB-share risk; preferred =
+Render, second = Fly.io; SQLite preserved everywhere; no selection made at that gate. (2) **Render
+Implementation Diagnosis** — repository-verified: single `INVENTORAI_DB_PATH` file (production
+hard-fail when unset); SQLITE ON RENDER: SUPPORTED with environment-only configuration; serving
+posture finding = ONE bounded change (production WSGI, single-worker/single-thread, no app-code
+change) requiring separate authorization; forwarded-header trust NOT required (no absolute URLs, no
+IP logic; Secure cookie config-driven); `/health` acceptable as-is; JSON logging platform-compatible;
+audit script needs no disk (cron-safe); email provider needed before PUBLIC release, not before
+provisioning; CODE CHANGE REQUIRED: MIXED. (3) **Owner selection decision** under INFRA-G1-C §2:
+**HOSTING = RENDER; REGION = FRANKFURT — OWNER SELECTED** (Fly.io = preferred fallback only;
+selection-only authority; no provisioning/DNS/TLS/runtime/migration/deployment/payment/tax authority).
+
+**Delivered (this candidate — governance-only, four documentation surfaces, zero runtime/test
+diff).** New
+`docs/governance/INFRA_G1_R1_HOSTING_REGION_SELECTION_AND_RENDER_DEPLOYMENT_PREPARATION_CONTRACT.md`:
+§1 durable Owner selection record (OD-INFRA-1 RENDER / OD-INFRA-2 FRANKFURT — OWNER SELECTED under the
+INFRA-G1-C §2 mechanism; rationale recorded; Frankfurt draws NO legal/tax/data-residency/sovereignty/
+compliance/commercial conclusion; OD-INFRA-3…6 remain OPEN; ODR rows = NB8 housekeeping); §2 exact
+authority boundary (recording + future-contract definition ONLY — no provisioning/implementation/
+deployment/PSRR-PASS/OPS-SM1/email/payment effect); §3 SQLite contract (SUPPORTED; migration NO;
+app-logic change NO; provisioning verification duties pinned incl. in-mount proof and hard-fail
+preservation; production value NOT set); §4 WSGI contract (built-in server not acceptable publicly;
+single-instance/single-worker/single-thread on Render PORT; Gunicorn MAY be evaluated, no dependency
+pre-authorized; RUNTIME IMPLEMENTATION NOT AUTHORIZED); §5 artifacts (version pin REQUIRED; start
+declaration REQUIRED; render.yaml OPTIONAL; none created); §6 proxy/TLS (trust NONE; ProxyFix NO;
+Secure-cookie config-driven; HSTS reassessment-only; future forwarded-trust needs new diagnosis); §7
+production-config matrix (ENV/SECRET_KEY/DB_PATH required; NO secret values recorded; free-tier disks
+excluded); §8 health-check acceptance with future 200/503 evidence duty; §9 backup contract (Render
+snapshots NEVER sufficient alone; governed `backup_service.py` + off-provider copy + production
+restore drill + parity + snapshot confirmation; retention consumed only from the policy lane); §10
+monitoring/logging (P10-OB1 preserved; items 21–22 REMAIN OPEN; platform logs NOT durable; items
+26/28 open); §11 email separation (before-provisioning NO / before-public-release YES; OD-INFRA-6
+open; nothing selected); §12 OPS-SM1 (REGISTERED ONLY; audit needs no disk; nothing scheduled); §13
+future bounded implementation scope + exclusions (no DB migration/domain-model/auth/payment/tax/
+email/monitoring/backup-provider/HSTS/ProxyFix-without-diagnosis/public deployment); §14 future
+provisioning scope (non-public verification deployment etc. — NOT authorized here); §15 PSRR mapping
+(feeds items 9/10/11-reassessment/17–19/21–22/26/28/31–32/34-env + production halves of 7/8/14/23–25;
+NOTHING marked PASS; APPLICATION-LAYER TRANCHE remains AUTHORITATIVE EVIDENCE); §16 observation
+carry-forward (INFRA-REV-O1/O2/O3, PSRR-C1-N1/N2/N3, REV-REC-O1/O2/O3, OBS-1…OBS-4 residuals,
+GAP-SYNC-01-NB1/NB2, PC3-N2 — none silently resolved). Surfaces synchronized:
+`CURRENT_PROJECT_STATE.md` (INFRA-G1-C rotated to MERGED/AUTHORITATIVE with history; INFRA-G1-R1
+entry), `ACTIVE_INCREMENT_CONTRACT.md` (rotation). RL checklist deliberately UNCHANGED (hosting
+selection does not flip any RL row's status semantics: RL-F1/F2 use the PROVIDER-DEPENDENT vocabulary
+whose "NOT SELECTED" truth-cell update is owed at the next checklist-touching gate — recorded here to
+avoid staleness ambiguity; the pinned adviser/provider structural invariants and the "NOT SELECTED"
+pin constrain that update and it is NOT performed in this candidate).
+
+**Evidence.** Smoke PASS at base (pre-candidate) and re-verified at candidate; §5B.1 Creator
+full-suite determination recorded openly (zero executable bytes; no §5B.6 trigger; authoritative
+full-suite truth 2951/3/1/0 stands on this lineage). Adversarial governance truth sweep UNSUPPORTED
+MATERIAL CLAIMS: 0.
+
+**Boundaries.** INFRASTRUCTURE PROVISIONED: NO; RUNTIME IMPLEMENTATION AUTHORIZED: NO (no WSGI, no
+dependency, no render.yaml, no version-pin artifact created); no Render resource/DNS/TLS/secret
+creation; no email/payment/monitoring/backup provider selection; OPS-SM1 EXECUTED: NO; PSRR COMPLETE:
+NO; PSRR GO ELIGIBLE: NO; DEPLOYMENT AUTHORIZED: NO; PAID ACTIVATION AUTHORIZED: NO; no future-domain
+work. `OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY if/when this exact candidate is
+merged and post-merge verified. Next required step: Independent External Review of this exact SHA +
+bundle (§5B.13 incl. mandatory independent smoke).
