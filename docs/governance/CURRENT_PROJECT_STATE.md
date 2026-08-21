@@ -2435,15 +2435,32 @@ AUTHORIZED / NOT STARTED.***
   authoritative P9-MECH-I3 is recorded live and **NOT weakened**; R2-I gets ONE BOUNDED reconciliation
   — re-freeze the exact post-R2 digest, prove no unrelated progression-loop behaviour changed, never
   delete/skip/xfail the guard — explicitly **not** future unrestricted edit rights. Precedent
-  established from repository history (pin introduced `32165ca`, reconciled `9399f9d`, reconciled
-  `41bf30c`). **DEP-2:** fixtures whose INPUT encodes manufactured satisfaction may have only that
-  input replaced with a gap-appropriate answer, with a mandatory seven-field differential ledger and
-  **`ASSERTION-TARGET CHANGES: 0`**; deleting tests, weakening assertions, skip/xfail, and broadening
-  the guard to re-admit the defective fixture are forbidden. The R2 product truth is frozen
+  established from repository history with corrected precision: the `progression_loop.py` digest was
+  introduced at `32165ca` and **reconciled ONCE, at `9399f9d`**; the later `41bf30c` update changed
+  **`domain_rules.py` only** and left `progression_loop.py` UNCHANGED — still establishing per-key
+  digest reconciliation under explicit later governance as an established mechanism. **DEP-2:** the
+  prior fixture-preservation authority is named exactly (`STRUCTURED_CRITICALITY_CAPTURE_INCREMENT_
+  CONTRACT.md` §11 line 99 "byte-identical inputs", §12 line 101 GREEN criteria, F4 line 117 "WS1/WS2/
+  WS3 evidence trees byte-identical", plus `tests/test_structured_criticality.py:69`) and **explicitly
+  superseded for R2-I only, and only for proven defect-dependent inputs, to the minimum extent
+  necessary** — the prior authority remains historical evidence and this is not general permission to
+  rewrite fixtures. A five-part fixture-scope test is required per fixture; the differential ledger is
+  expanded to **eleven fields** including **CROSS-FILE / EVIDENCE IMPACT**, duplication, committed-
+  artifact and generator/harness impact (the WS1 input is shared: executed scoping found **5 test
+  files, 44 committed evidence artifacts across 7 evidence trees, 7 generator/harness scripts**);
+  **`ASSERTION-TARGET CHANGES: 0`** with a STOP for Owner review otherwise. **Committed WS1–WS7
+  evidence trees REMAIN FROZEN by default** — no silent regeneration; a materially-false artifact
+  forces identify → explain → STOP → request separate Owner authorization. Every affected generator is
+  **classified only** (unaffected / historical-only-frozen / requires-future-authorization) and **no
+  generator is modified**. A "verbatim / byte-identical / untouched / do not edit" comment made false
+  by an authorized correction **must** be updated truthfully with provenance preserved. The R2 product truth is frozen
   (`uncertain relevance ≠ satisfied`, fail-closed but never punitive). All diagnostic figures are
-  labelled **EXECUTED EVIDENCE at the non-candidate diagnostic SHA `5154bcf4…`** — preserved, not in
-  this candidate's lineage, never to be published — and are **not** promoted to repository fact.
-  Zero runtime/test/fixture/pin diff; smoke PASS; full suite 3021/3/1/0 re-run at this base;
+  labelled **Creator-local executed diagnostic evidence** at the **unpublished** non-candidate
+  diagnostic commit `5154bcf4…` — preserved, not in this candidate's lineage, **not externally
+  retrievable or reproducible by SHA alone**, never to be published merely for reproducibility — and
+  are **not** promoted to repository fact; R2-I re-measures independently.
+  Zero runtime/test/fixture/pin/generator diff; smoke PASS; full suite 3021/3/1/0 re-run at this base
+  with `gunicorn 26.1.0` on `PATH` so the serving-stack tests executed rather than skipped;
   `UNSUPPORTED MATERIAL CLAIMS: 0`. **PVCG-R2-I NOT STARTED / NOT AUTHORIZED** (needs this contract
   authoritative + a separate Owner execution authorization). **PVCG-R3 NOT STARTED. PVCG-R4 NOT
   STARTED. PVCG SATISFIED: NO. MINIMUM LAUNCH-CONFORMANCE SET SATISFIED: NO.** No release-readiness

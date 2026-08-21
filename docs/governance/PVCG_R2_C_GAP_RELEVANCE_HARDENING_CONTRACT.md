@@ -23,7 +23,7 @@ independently re-verified on all four merge criteria: first parent
 | Class | Meaning |
 |---|---|
 | **[REPO]** | Authoritative repository fact, citable to a committed file and location. |
-| **[EXEC]** | **Executed diagnostic evidence** produced by a run in this session. Reproducible at the stated non-candidate diagnostic SHA. **It is NOT promoted to permanent repository fact by being recorded here.** |
+| **[EXEC]** | **Creator-local executed diagnostic evidence** produced by a run in this session. It is **NOT** externally retrievable or reproducible by SHA alone (the diagnostic commit is unpublished — §1.1), and it is **NOT promoted to permanent repository fact by being recorded here.** R2-I must re-measure independently. |
 | **[OWNER]** | An Owner decision or directive. |
 | **[OPEN]** | Unresolved; owed to a later gate. |
 
@@ -50,7 +50,11 @@ says so. It is preserved as immutable diagnostic evidence only.
 * It is **NOT** in this candidate's lineage (verified: it is not an ancestor of the authoritative
   base, and this candidate's single parent is the authoritative base) **[REPO]**.
 * It must **NOT** be published, merged, reviewed as a candidate, or built upon.
-* Its purpose is solely to make the **[EXEC]** evidence in §4 reproducible.
+* **It is Creator-local and unpublished.** It exists only in the Creator's working repository, so it is
+  **NOT externally retrievable or reproducible by SHA alone**. All findings derived from it are
+  therefore classified **Creator-local executed diagnostic evidence** — never repository fact, and
+  never independently verifiable merely by citing the SHA. **It must not be published just to make
+  those findings reproducible**; R2-I re-measures independently instead.
 
 ---
 
@@ -86,23 +90,38 @@ prevent. R2 adds a distinct, additive eligibility axis and changes none of those
 
 ### §2.3 Precedent — verified from repository history, not from prose
 
-The pinned digest has been reconciled **twice** under later authorized gates **[REPO]**:
+**Corrected characterization (B-1).** An earlier draft of this contract stated that the
+`engine/progression_loop.py` digest had been reconciled **twice**. That was **false** and is withdrawn.
+Independently re-derived here by reading the pinned value out of every commit that touched the pin
+file, per key **[REPO]**:
 
-| Event | Commit | Gate |
-|---|---|---|
-| Pin introduced | `32165ca` | P9-MECH-I3 implementation |
-| Digest reconciled (1st) | `9399f9d` | L2SC-01 runtime implementation |
-| Digest reconciled (2nd) | `41bf30c` | P10-DBT1 Phase-9 registered-debt remediation |
+| Commit | Gate | `engine/progression_loop.py` | `engine/domain_rules.py` |
+|---|---|---|---|
+| `32165ca` | P9-MECH-I3 implementation | introduced (`<absent>` → `bbb49b49…`) | introduced (`<absent>` → `5df2ae26…`) |
+| `9399f9d` | L2SC-01 runtime implementation | **reconciled** (`bbb49b49…` → `a8e1ffdf…`) | reconciled (`5df2ae26…` → `1977418f…`) |
+| `41bf30c` | P10-DBT1 Phase-9 registered-debt remediation | **UNCHANGED** (`a8e1ffdf…` → `a8e1ffdf…`) | reconciled (`1977418f…` → `0e47326a…`) |
 
-Each reconciliation is disclosed in the pin's own comment block **[REPO]**. Re-freezing under an
-explicitly authorized later gate is therefore an **established governed procedure**, not a novelty.
+Therefore, stated truthfully:
 
-> **NB-R2C-1 (non-blocking observation, disclosed, NOT fixed here).** The pin comment cites
-> "`L2SC01_SUBSTANCE_SIGNAL_PLURAL_ALIAS_INCREMENT_CONTRACT.md §10`" for the first reconciliation, but
-> §10 of that document is titled *"Compression rationale — corrected (survives pack scoping)"* and does
-> not discuss the pin **[REPO]**. The reconciliation **did** occur (commit `9399f9d`, above); only the
-> section cross-reference appears inaccurate. Recorded for a future documentation-synchronization gate;
-> **no correction is authorized here.**
+* the **`engine/progression_loop.py` pin reconciliation precedent exists and occurred ONCE**, at
+  `9399f9d` **[REPO]**;
+* the broader `_FROZEN_ENGINE_SHA256` protection block **was** later updated again at `41bf30c`, but
+  that later change concerned **`engine/domain_rules.py` only**, not `engine/progression_loop.py`
+  **[REPO]**;
+* this history still establishes that **exact digest reconciliation under explicit later governance is
+  an established repository mechanism** **[REPO]** — which is the only proposition DEP-1 relies on.
+
+The precedent count is **not** overstated, and the R2-I authorization in §2.4/§2.5 is **not** weakened
+by the correction: one prior reconciliation of this exact key, plus a live protection block that has
+demonstrably been reconciled per-key under later authorized gates, is sufficient basis for the single
+bounded R2 reconciliation authorized below.
+
+> **NB-R2C-1 (non-blocking observation, recorded, NOT fixed here, and NOT relied upon).** The pin
+> comment's cross-reference to the L2SC-01 contract does not resolve to a section discussing the pin.
+> Independent review indicates this stale-reference defect is **broader than previously described**
+> **[OPEN]**, so it is **not reused as evidence anywhere in this contract** — the DEP-1 precedent above
+> rests solely on the per-key digest history re-derived from commits, not on that cross-reference. No
+> unrelated documentation-synchronization repair is in scope for this gate.
 
 ### §2.4 What R2-I is authorized to do — and only this
 
@@ -153,6 +172,40 @@ The largest affected group reuses a Workstream-1 baseline journey whose header s
 verbatim from the committed Workstream 3 evidence harness … **do not edit**"*
 (`tests/test_structured_criticality.py`, line 69) **[REPO]**.
 
+### §3.1a Prior fixture-preservation authority — named exactly (B-2)
+
+That comment is **not** a casual note. It restates binding prior authority in
+`docs/governance/STRUCTURED_CRITICALITY_CAPTURE_INCREMENT_CONTRACT.md` **[REPO]**:
+
+| Locus | Verified wording | Where |
+|---|---|---|
+| **§11 — RED gate** | *"using the reused WS1 journey (**byte-identical inputs**) and direct real-path fixtures"* | line 99 |
+| **§12 — GREEN gate** | *"GREEN gate (correctness + usability acceptance criteria)"* — the head-side acceptance criteria that the same reused WS1 journey must satisfy | line 101 |
+| **F4** | *"WS1/WS2/WS3 evidence trees **byte-identical** (F4)"* | line 117 |
+
+> **Precision note.** §12's own heading and body state the GREEN acceptance criteria; the literal
+> phrase "untouched WS1 journey" does not appear there. The byte-identical/untouched obligation is
+> carried by **§11** (inputs) and **F4** (evidence trees), reinforced by the live fixture comment. This
+> contract relies on those exact loci and does not attribute wording to §12 that §12 does not contain.
+
+### §3.1b Narrow supersession / reconciliation of that authority
+
+**For PVCG-R2-I only, and only for fixture inputs proven to depend on manufactured satisfaction, the
+prior byte-identical / untouched-input preservation requirement (§11 inputs; the live fixture comment;
+and F4 only insofar as an artifact is separately authorized under §3.5) is SUPERSEDED to the minimum
+extent necessary to replace those defect-dependent inputs with gap-appropriate inputs.**
+
+Bounding conditions, all binding:
+
+* The supersession reaches **only** inputs that satisfy every test in §3.4. It reaches nothing else.
+* The prior authority **remains historical evidence** and is not deleted, rewritten, or invalidated.
+  It remains the correct account of what WS1–WS4 required at their own gates.
+* This is **NOT** general permission to rewrite fixtures. Outside the proven defect-dependent set, the
+  byte-identical/untouched requirement stands unchanged.
+* F4's evidence-tree obligation is **NOT** superseded by this clause on its own — see §3.5, where
+  committed evidence trees remain frozen by default and any synchronization needs its own Owner
+  authorization.
+
 ### §3.2 Authorization granted to R2-I
 
 R2-I **MAY** correct **only** those fixtures whose existing **input** encodes manufactured
@@ -172,20 +225,88 @@ R2-I **MUST NOT**:
 
 ### §3.3 Mandatory fixture-differential ledger (binding on R2-I)
 
-For **every** changed test fixture, R2-I must publish a ledger row containing:
+For **every** changed test fixture, R2-I must publish a ledger row containing **all eleven** fields:
 
-1. the original fixture answer (verbatim);
-2. the served gap;
-3. why the original answer depended on manufactured satisfaction;
-4. the replacement gap-appropriate answer (verbatim);
-5. the assertion target **before**;
-6. the assertion target **after**;
-7. explicit confirmation that assertion semantics did not change.
+1. **source test file**;
+2. **served gap**;
+3. the **original fixture answer** (verbatim);
+4. **why it depended on manufactured satisfaction**;
+5. the **replacement gap-appropriate answer** (verbatim);
+6. the **assertion target BEFORE**;
+7. the **assertion target AFTER**;
+8. **CROSS-FILE / EVIDENCE IMPACT**;
+9. whether the **same fixture/input is duplicated elsewhere**;
+10. whether any **committed evidence artifact refers to or embeds it**;
+11. whether a **generator/harness embeds the old input**.
 
 Required result: **`ASSERTION-TARGET CHANGES: 0`**.
 
-If any assertion target must change, R2-I **STOPS** and seeks Owner review before freeze. It may not
-be resolved by the implementing agent.
+If any assertion target must change, R2-I **STOPS FOR OWNER REVIEW** before freeze. It may not be
+resolved by the implementing agent.
+
+Fields 8–11 are mandatory because the WS1-style journey input is **shared**, not local. Executed
+scoping at this base, recorded as **[EXEC]** so R2-I re-measures rather than trusting it: the WS1 base
+sentence appears in **5 test files**, **44 committed evidence artifacts across 7 evidence trees**
+(`workstream1_deliverable_baseline` … `workstream7_actionable_validation_plan`), and **7
+generator/harness scripts**. A fixture edit is therefore never self-contained by default.
+
+### §3.4 Fixture-scope rule — all five must be proven
+
+R2-I may modify a fixture **only** when **every** one of these is proven for that fixture:
+
+1. the existing fixture input **relies on the manufactured-satisfaction defect**;
+2. the **R2 truth condition causes the fixture to fail for that reason** (and not for another);
+3. the **original assertion target remains valid**;
+4. **only** the input necessary to truthfully address the served gap is changed;
+5. **assertion semantics remain unchanged**.
+
+Failing any one of the five, the fixture is **out of scope** and must be left alone.
+
+### §3.5 Committed WS1–WS7 evidence trees — DEFAULT FREEZE
+
+**`COMMITTED EVIDENCE TREES REMAIN FROZEN`.** Regeneration of committed WS1–WS7 evidence trees is
+**NOT** authorized by this contract, automatically or otherwise. R2-I may correct defect-dependent
+test-fixture inputs **without** rewriting historical evidence artifacts.
+
+If a changed fixture makes a committed evidence artifact or a generator claim **materially false,
+unreproducible, or misleading**, R2-I must:
+
+1. identify the **exact affected artifact**;
+2. identify the **exact generator/harness**, if any;
+3. explain **why leaving it unchanged would be untruthful**;
+4. **STOP before any regeneration or evidence rewrite**;
+5. **request Owner authorization** for the evidence synchronization as a separate decision.
+
+Historical evidence must remain **distinguishable from current post-R2 behaviour**. Silent regeneration
+is prohibited.
+
+### §3.6 Generator / harness classification rule
+
+R2-I must inspect `docs/governance/evidence/workstream3_deliverable_hygiene/generate_ws3_artifacts.py`
+and every other committed generator or harness that embeds or reproduces the old WS1-style input, and
+**classify each one** as exactly one of:
+
+* **unaffected**;
+* **historical-only and frozen**;
+* **requires future evidence-synchronization authorization**.
+
+Classification is mandatory; acting on the third class is **not** authorized here. Executed scoping at
+this base identified **7 such scripts** **[EXEC]** — `generate_ws3_artifacts.py`,
+`generate_ws4_artifacts.py`, `generate_ws5_artifacts.py`, `generate_ws6_artifacts.py`,
+`generate_ws7_artifacts.py`, `reproduce_baseline.py`, and `regenerate_and_compare.py`. **R2-C modifies
+none of them**, and R2-I may not modify any of them without a separate Owner authorization.
+
+### §3.7 Stale "do not edit / byte-identical" comments must be corrected truthfully
+
+If R2-I changes a fixture whose source comment claims the input is *copied verbatim*, *byte-identical*,
+*untouched*, or *do not edit*, and that statement becomes **false** after the authorized correction,
+R2-I **must update that comment/documentation truthfully in the same candidate**.
+
+The replacement wording must **preserve historical provenance** — conceptually: *originally copied from
+the WS1 evidence harness; later explicitly reconciled under PVCG-R2 because the original input encoded
+manufactured satisfaction*.
+
+**Do not erase history. Do not leave a false "byte-identical / untouched" claim standing.**
 
 ---
 
@@ -205,7 +326,8 @@ inventor's answer is wrong.
 
 ### §4.1 Executed diagnostic evidence supporting the requirement
 
-Reproducible at the non-candidate diagnostic SHA `5154bcf4…`; **[EXEC]**, not repository fact:
+**Creator-local executed diagnostic evidence** produced at the unpublished non-candidate diagnostic
+commit `5154bcf4…`; **[EXEC]**, not repository fact and not externally reproducible by SHA alone:
 
 * At the authoritative base, one signal-rich, causally-structured sentence that answers nothing
   (*"The circuit uses a sensor and a relay and a capacitor and a resistor, and the voltage increases
@@ -344,6 +466,13 @@ Zero executable bytes change in this candidate, so §5B.1's full-suite Creator-e
 met by an implementation change; the authoritative full-suite truth
 (**3021 passed / 3 skipped / 1 xfailed / 0 failed**) stands from the merged PVCG-R1 lineage and was
 independently re-run at this base during this gate **[EXEC]**.
+
+**Environment precondition for that figure (stated truthfully, not implementation scope).** The
+serving-stack access-log tests EXECUTE only when `gunicorn` is resolvable on `PATH`; where it is not,
+they SKIP and the skipped/passed split differs. The figure above was measured in an environment where
+`gunicorn 26.1.0` was on `PATH`, so those tests ran rather than skipped **[EXEC]**. Any later
+re-measurement must state its own `PATH` precondition rather than assuming this one. R2-I must not
+convert this precondition into implementation scope.
 
 Next required step after Owner acceptance: SHA-preserving publication, then a **separate** Owner
 execution authorization before any R2-I work begins.

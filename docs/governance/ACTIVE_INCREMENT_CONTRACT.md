@@ -62,13 +62,23 @@ implementing anything.
   weakened, relaxed, or removed**. R2-I receives ONE BOUNDED reconciliation: update the pinned digest
   only as part of the authorized R2 change, re-freeze the exact post-R2 digest, prove no unrelated
   progression-loop behaviour changed, and preserve the guard. Precedent is established from repository
-  history, not prose: pin introduced `32165ca`, reconciled `9399f9d` (L2SC-01), reconciled `41bf30c`
-  (P10-DBT1).
+  history, not prose, with corrected precision: the `progression_loop.py` digest was introduced at
+  `32165ca` and **reconciled ONCE, at `9399f9d`** (L2SC-01); the later `41bf30c` (P10-DBT1) update
+  changed **`domain_rules.py` only** and left `progression_loop.py` UNCHANGED. That still establishes
+  per-key digest reconciliation under explicit later governance as an established mechanism.
 * **DEP-2 — defect-dependent fixture correction.** Only fixtures whose INPUT encodes manufactured
   satisfaction may be corrected, and only by replacing that input with a gap-appropriate answer while
-  the assertion target and test purpose are preserved. A seven-field fixture-differential ledger is
-  mandatory with **`ASSERTION-TARGET CHANGES: 0`**; any needed assertion-target change forces a STOP
-  for Owner review.
+  the assertion target and test purpose are preserved. The prior authority is named exactly
+  (`STRUCTURED_CRITICALITY_CAPTURE_INCREMENT_CONTRACT.md` §11 / §12 / F4 and
+  `tests/test_structured_criticality.py:69`) and **explicitly superseded for R2-I only, and only for
+  proven defect-dependent inputs, to the minimum extent necessary**; it remains historical evidence and
+  this is not general permission to rewrite fixtures. A five-part fixture-scope test applies per
+  fixture; the differential ledger carries **eleven fields** including **CROSS-FILE / EVIDENCE
+  IMPACT**; **`ASSERTION-TARGET CHANGES: 0`** with a STOP for Owner review otherwise. Committed WS1–WS7
+  evidence trees **remain frozen by default** (no silent regeneration; materially-false artifacts force
+  a STOP and a separate authorization), every affected generator/harness is **classified only** and
+  none is modified, and any resulting false "byte-identical / untouched / do not edit" comment must be
+  corrected truthfully with provenance preserved.
 
 **Frozen R2 product truth.** A response may influence gap satisfaction only when it is sufficiently
 relevant to the specific served gap/question context; generic substance, domain vocabulary, causal
