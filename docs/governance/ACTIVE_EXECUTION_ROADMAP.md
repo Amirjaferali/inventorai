@@ -12506,3 +12506,67 @@ provider selected; no observation implemented; DEPLOYMENT AUTHORIZED: NO; PAID A
 NO (`D-P8-PL-01 class C`); no future-domain work. `OWNER_DECISION_REGISTER.md` UNCHANGED.
 Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next required step:
 Independent External Review of this exact SHA + bundle (§5B.13 incl. mandatory independent smoke).
+
+---
+
+## INFRA-G1-C — Production Infrastructure & Provider Selection Contract (Owner-authorized GOVERNANCE-ONLY candidate)
+
+**Base:** `88c5f4d5d3d3a5afb508b5f26852fd9e13d7ece9` (PR #541 merge — PSRR application-layer
+recording, authoritative; independently re-verified live: first parent `274652a5…`, second parent
+`382d6733…`, merge tree `9452481f…` = accepted candidate tree, empty candidate→merge diff).
+**Recording-merge synchronization (per convention):** candidate
+`382d67335399954ee7b1f30bd4885e10a559e689` Owner-accepted at exact SHA and MERGED via PR #541 —
+AUTHORITATIVE; APPLICATION-LAYER TRANCHE: AUTHORITATIVE EVIDENCE; Independent Review ACCEPT WITH
+NON-BLOCKING OBSERVATIONS (REV-REC-O1/O2/O3 carried forward). **Owner-accepted read-only
+Infrastructure/Provider Tranche Reconstruction at this tip:** remaining provider tranche mapped
+item-by-item; OD-J2 §3.2 confirmed = hosting provider + production region ONLY; adjacent surfaces
+classified for fold-in coordination without authority duplication; FREE PUBLIC RELEASE REQUIRES
+PAYMENT PROVIDER: NO / PAID ACTIVATION REQUIRES PAYMENT-MoR: YES (source-backed); next gate =
+INFRA-G1-C.
+
+**Delivered (this candidate — governance-only, four documentation surfaces, zero runtime/test
+diff).** New `docs/governance/INFRA_G1_C_PRODUCTION_INFRASTRUCTURE_PROVIDER_SELECTION_CONTRACT.md`:
+authority boundary (OD-J2 §3.2 core preserved EXACTLY — hosting + region, nothing added; adjacent
+surfaces = selection/configuration COORDINATION only with canonical boundary owners preserved —
+P10-SEC1, P10-OB1, P10-BR1, email dev-sink boundary, RL-C1/PSRR §8; payment/MoR/pricing/tax/paid
+activation/deployment authorization/legal conclusions/future domains OUT of scope); provider-surface
+matrix (per-surface: canonical owner, dependent PSRR items, evidence-before-acceptance, separate
+future Owner selection decision, hosting-first sequencing, shared security/data-region/portability/
+lock-in/cost criteria); hosting/region minimum criteria (region availability, data-residency FACTS
+only, persistent storage for the canonical SQLite topology, TLS termination, secrets, monitoring,
+backup, logging, network controls, rollback support, lock-in/portability with REQUIRED exit path,
+cost transparency, reliability, export/migration evidence); TLS/proxy requirements (termination
+responsibility, trusted-proxy boundary per P10-SEC1 §12, Secure-cookie production gate, HSTS
+reassessment trigger = trusted HTTPS/proxy exists); monitoring/alerting requirements (P10-OB1 seam,
+thresholds/routing to P10-IR1, retention awareness, data minimization); backup/restore/DR
+requirements (production drills extending P10-BR1; retention VALUES remain policy-open — consumed,
+never created); production email requirements (separate from the dev-sink truth); secrets/logging
+operations requirements (rotation/emergency procedures, environment separation, log-sink review);
+seven possible-code diagnostic gates each pinned `DIAGNOSIS REQUIRED BEFORE CODE: YES / SEPARATE
+OWNER IMPLEMENTATION AUTHORIZATION: REQUIRED` (items 9, 11-HSTS, 14-topology, 21/22-integration,
+26-cleanup, 31-tooling, 23–25 broad abuse controls); **OPS-SM1 — Security Maintenance & Vulnerability
+Monitoring Operations Gate REGISTERED (not executed; nothing built)** — Owner principle preserved (no
+automatic production changes without validation; safe-environment testing first; governed release;
+PSRR revalidation only when required); existing foundation named (P10-DEP1 point-in-time audit,
+RL-C6, full suite + smoke harness, P10-IR1 response path); dependencies = INFRA-G1 facts; timing =
+operational no later than first public production deployment unless a later Owner decision changes
+it; policy/legal separation; PSRR dependency mapping with state preserved (**no provider-dependent
+PSRR item becomes PASS from contract existence**; PSRR COMPLETE: NO; GO ELIGIBLE: NO); free-vs-paid
+separation preserved verbatim. Surfaces synchronized: `CURRENT_PROJECT_STATE.md` (recording rotated
+to MERGED/AUTHORITATIVE with history; INFRA-G1-C entry), `ACTIVE_INCREMENT_CONTRACT.md` (rotation).
+RL checklist UNCHANGED this gate (no status flip exists: providers remain NOT SELECTED; gate rows
+already truthful).
+
+**Evidence.** Smoke PASS at base and re-verified at candidate; §5B.1 Creator full-suite determination
+recorded openly (zero executable bytes; no §5B.6 trigger; authoritative full-suite truth 2951/3/1/0
+stands from the Creator + Independent application-layer runs on this lineage). Adversarial governance
+truth sweep UNSUPPORTED MATERIAL CLAIMS: 0.
+
+**Boundaries.** PROVIDER SELECTED: NO (no provider named, evaluated, or chosen anywhere); no
+infrastructure provisioning; RUNTIME IMPLEMENTATION STARTED: NO; OPS-SM1 EXECUTED: NO; PSRR COMPLETE:
+NO; PSRR GO ELIGIBLE: NO; DEPLOYMENT AUTHORIZED: NO; PAID ACTIVATION AUTHORIZED: NO (`D-P8-PL-01
+class C`); no future-domain work. All open observations carried (PSRR-C1-N1/N2/N3; REV-REC-O1/O2/O3;
+OBS-1…OBS-4 residuals; GAP-SYNC-01-NB1/NB2; PC3-N2). `OWNER_DECISION_REGISTER.md` UNCHANGED.
+Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next required
+step: Independent External Review of this exact SHA + bundle (§5B.13 incl. mandatory independent
+smoke).

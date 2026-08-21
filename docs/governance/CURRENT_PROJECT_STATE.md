@@ -2424,7 +2424,46 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
-- **PSRR — APPLICATION-LAYER TRANCHE EXECUTION RECORD (Owner-authorized GOVERNANCE-ONLY recording
+- **INFRA-G1-C — PRODUCTION INFRASTRUCTURE & PROVIDER SELECTION CONTRACT (Owner-authorized
+  GOVERNANCE-ONLY candidate, PR pending), base `88c5f4d5d3d3a5afb508b5f26852fd9e13d7ece9` (PR #541
+  merge — PSRR application-layer recording, authoritative; first parent `274652a5…`, second parent
+  `382d6733…`, merge tree `9452481f…` = accepted candidate tree, empty candidate→merge diff —
+  independently re-verified live).** Creates
+  `docs/governance/INFRA_G1_C_PRODUCTION_INFRASTRUCTURE_PROVIDER_SELECTION_CONTRACT.md`: the contract
+  for the OD-J2 §3.2 delegated gate — **core preserved exactly: hosting provider + production region,
+  OD-J2 not rewritten or expanded** — plus selection/configuration COORDINATION criteria for the
+  adjacent surfaces (TLS/proxy, monitoring/alerting, backup/restore, email, secrets/logging ops) with
+  their canonical boundary owners preserved (P10-SEC1, P10-OB1, P10-BR1, email dev-sink boundary,
+  RL-C1/PSRR §8); provider-surface matrix (dependent PSRR items, security/data-region/portability/
+  lock-in/evidence criteria, per-surface separate future Owner selection decisions, hosting-first
+  sequencing); hosting/region criteria (14 minimum criteria incl. exit/migration path); TLS/proxy,
+  monitoring, backup/DR, email, secrets/logging requirement sections; seven possible-code diagnostic
+  gates each pinned `DIAGNOSIS REQUIRED BEFORE CODE: YES / SEPARATE OWNER IMPLEMENTATION AUTHORIZATION:
+  REQUIRED`; **OPS-SM1 — Security Maintenance & Vulnerability Monitoring Operations Gate REGISTERED
+  (not executed, nothing built)** with the Owner principle (no automatic production changes without
+  validation; safe-environment testing; governed release; PSRR revalidation only when required) and
+  timing (operational no later than first public production deployment unless a later Owner decision
+  changes it); policy/legal separation (retention/erasure/regime/artifacts remain OPEN — consumed,
+  never created); PSRR state preserved (no provider-dependent item PASS from contract existence; PSRR
+  COMPLETE: NO; GO ELIGIBLE: NO); free-vs-paid separation preserved (free release needs NO payment
+  provider; paid activation needs payment/MoR under `D-P8-PL-01 class C`); payment/MoR/pricing/tax/
+  deployment authorization explicitly OUT of scope. NO provider selected; NO provisioning; zero
+  runtime/test diff. All open observations carried forward. `OWNER_DECISION_REGISTER.md` UNCHANGED.
+  Authoritative ONLY if/when this exact candidate is merged and post-merge verified.
+
+- **PSRR — APPLICATION-LAYER TRANCHE EXECUTION RECORD: MERGED / AUTHORITATIVE (candidate
+  `382d67335399954ee7b1f30bd4885e10a559e689` Owner-accepted at that exact SHA, PR #541, tip
+  `88c5f4d5d3d3a5afb508b5f26852fd9e13d7ece9`; first parent `274652a5…`, second parent `382d6733…`,
+  merge tree `9452481f…` = candidate tree, empty candidate→merge diff — independently re-verified).**
+  APPLICATION-LAYER TRANCHE: AUTHORITATIVE EVIDENCE. Independent Review: ACCEPT WITH NON-BLOCKING
+  OBSERVATIONS (REV-REC-O1 RL-G3/box wording pin-update future; REV-REC-O2 reused-evidence provenance
+  precision; REV-REC-O3 stale "last independently verified tip" prose pin housekeeping — all carried).
+  PSRR COMPLETE: NO; PSRR GO ELIGIBLE: NO. Subsequent Owner-accepted read-only gate at this tip: the
+  Infrastructure/Provider Tranche Reconstruction (next gate = INFRA-G1-C; free release requires NO
+  payment provider; OD-J2 §3.2 confirmed = hosting + region only). (Original candidate-stage bullet
+  retained below as history.)
+
+- **(superseded history) PSRR — APPLICATION-LAYER TRANCHE EXECUTION RECORD (was: Owner-authorized GOVERNANCE-ONLY recording
   candidate, PR pending), base `274652a51c2132500c8c6b79e5666932f4ba77da` (PR #540 merge — PSRR-C1,
   authoritative; first parent `aab8f365…`, second parent `2b694597…`, merge tree `be57a33a…` = accepted
   candidate tree, empty candidate→merge diff — independently re-verified live).** Durably records the
