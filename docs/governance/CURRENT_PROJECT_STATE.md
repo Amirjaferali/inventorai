@@ -2424,6 +2424,136 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
+- **PVCG-R2-I (T-1b REPAIR) — STRUCTURAL-OPERATIVITY CLASSIFICATION REPAIR (repair candidate, PR
+  pending), parent `58ef39714630455c9713fb045bc66c3490eb4bf8` (the rejected T-1 repair candidate,
+  preserved unchanged; itself a child of the rejected R2-I candidate `2f2897ce…`, also preserved).**
+  Focused Independent Re-Review returned `REJECT` on ONE blocking finding, **T-1b — the structural
+  non-operativity proof is unsound for 9 of 11 excluded phrases**; everything else passed.
+  **WITHDRAWN, NOT DEFENDED:** the claim that each excluded phrase contains a same-family companion and
+  therefore can never decide eligibility is false for phrase → word pairs. **Root cause:** phrase
+  markers are matched by **SUBSTRING**, word markers by **TOKEN**, so a phrase can match inside a
+  larger alphanumeric run where the companion token is dissolved — e.g. `ztake for grantedz` contains
+  the phrase but tokenises to `{ztake, for, grantedz}`. The old helper tokenised the entry text in
+  isolation and never exercised that case. **This is a coverage-classification and governance-truth
+  defect, NOT a runtime defect.** **T-1b RED at the rejected SHA:** all nine
+  (`take for granted`, `taking for granted`, `taken for granted`, `cannot be replaced`,
+  `would need to learn`, `step by step`, `power consumption`, `temperature range`, `would not solve`)
+  flip `addresses_gap` from `True` to `False` when the phrase alone is removed. **Corrected split,
+  re-measured from repository execution rather than copied from the review: `OPERATIVE ENTRIES: 262`,
+  `STRUCTURALLY SHADOWED ENTRIES: 2`**, with isolated positive probes for all 262. The two retained
+  shadows are genuine PHRASE → PHRASE containments (`power requirements` → `power requirement`,
+  `physical limits` → `physical limit`), re-verified structurally and by execution against
+  token-dissolving probes. **Test repair:** `_necessary_companion()` returns only phrase companions;
+  the universal assertion is replaced by a phrase→phrase containment test, a token-dissolving
+  adversarial test, and a standing guard that no phrase→word exclusion can return; probe generation
+  refuses at collection to exclude any entry lacking both an isolating probe and a sound companion.
+  **Sweep:** 264 processed / **264 KILLED** / 0 SURVIVED / 0 skipped / **0 LOADFAIL** / restore
+  **264/264**. Prior survivors M8b and M9b remain KILLED. **Runtime and pins untouched:**
+  `gap_relevance.py` and `progression_loop.py` byte-identical to the parent, digest still
+  `07c9bff5…`, all three P9 pin files byte-identical, `SECOND PIN RECONCILIATION: NO`.
+  **Verification:** marker coverage 566; R2-I behavioural 189; R1 26/26 byte-unchanged; P9 pins 54;
+  targeted 1321; smoke PASS; full suite **3776 passed / 3 skipped / 1 xfailed / 0 failed** with
+  gunicorn 26.1.0 on PATH. Non-blocking observations deliberately untouched. `PVCG-R2-C AUTHORITATIVE:
+  YES`; `PVCG-R2-I AUTHORITATIVE: NO`; PVCG-R3/R4 NOT STARTED; PVCG SATISFIED: NO; MINIMUM
+  LAUNCH-CONFORMANCE SET SATISFIED: NO; no deployment claim.
+
+- **PVCG-R2-I (T-1 REPAIR) — MUTATION-ADEQUACY REPAIR OF THE MARKER TABLES (repair candidate, PR
+  pending), parent `2f2897ce40c119ea202d6519e59e2d887c3fb7c1` (the rejected R2-I candidate, preserved
+  unchanged as immutable reviewed evidence).** Independent External Review returned `REJECT` on ONE
+  blocking defect class, **T-1 — mutation adequacy / governance truth**, while confirming the runtime
+  implementation itself substantively correct. **WITHDRAWN CLAIM:** the rejected candidate called two
+  surviving supplementary mutants **EQUIVALENT MUTANTS** on 10×6 corpus evidence and inferred family
+  **redundancy**; a finite corpus cannot establish equivalence over the input space, so both statements
+  are withdrawn as unsound — the same derived-measurement failure mode as the earlier B-1 defect.
+  **Creator-reproduced RED at the rejected SHA:** removing `actuates`/`actuate` flips the live seam from
+  `PASS`/`CLOSED` to `WARN`/`OPEN`, and removing the `not cover` phrase flips `PARTIAL` to `OPEN` —
+  both with the 189-test R2-I suite still fully passing, i.e. genuinely undetected. **REPAIR (tests +
+  governance only):** new `tests/test_pvcg_r2i_marker_coverage.py` pins a **DECLARED MARKER INVENTORY**
+  (probes generated from the declaration, never from the live tables, so a deleted marker keeps its
+  failing probe), adds one machine-isolated positive probe per independently operative entry plus a
+  cross-family exclusivity probe, **fails at collection** if any probe carries a second same-family or
+  any foreign-family marker (with a self-test proving the validator works), and guards that no
+  undeclared domain noun, no bare causal connective, and no dense pile of either is ever eligible.
+  **Accounting:** 264 declared entries (230 words + 34 phrases, no cross-family duplicates); **253
+  independently operative**; **11 structurally non-operative for eligibility** — **that split and its
+  universal proof are WITHDRAWN AND CORRECTED (T-1b)**. Root cause: phrase markers match by
+  **substring**, word markers by **token**, so phrase → word containment does NOT prove universal
+  shadowing (a phrase can match inside a larger alphanumeric run where the companion token is
+  dissolved). Re-measured from repository execution: **262 operative / 2 structurally shadowed**. The
+  nine reclassified — `take for granted`, `taking for granted`, `taken for granted`,
+  `cannot be replaced`, `would need to learn`, `step by step`, `power consumption`,
+  `temperature range`, `would not solve` — each flipped `addresses_gap` when removed and now carry
+  isolated probes. The two retained shadows are genuine phrase → phrase containments
+  (`power requirements` → `power requirement`, `physical limits` → `physical limit`), re-verified
+  structurally and by execution. All 264 remain protected by the exact-match inventory guard. This is
+  a coverage-classification and governance-truth repair, **not a runtime defect**. **Complete single-marker sweep: 264 processed / 264 KILLED / 0 SURVIVED / 0 skipped,
+  restore byte-identical** — `SINGLE-MARKER REMOVAL COVERAGE: COMPLETE`. A first sweep pass reporting
+  255/255 with 9 harness-skipped entries was **discarded as untrustworthy** (stale-bytecode artifact:
+  equal-length removals within one mtime second could reuse a cached `.pyc`); it was re-run with
+  bytecode caching disabled and caches purged per iteration. **Prior survivors named** from the
+  retained Creator-local mutation script (`[EXEC]`, not repository fact, and distinct from the new
+  reproducible evidence): M8b removed mechanism words `detects`/`detect`/`senses`/`sense`, M9b removed
+  boundary phrases `does not`/`doesn't`/`not cover` — **both now KILLED**. Only `not cover` overlaps the
+  reviewer's independently chosen examples; no mutation identity is invented. **Implementation
+  untouched:** `gap_relevance.py` and `progression_loop.py` byte-identical to the rejected SHA, digest
+  still `07c9bff5…`, **P9-MECH-I3 pin not touched again** (all three pin files byte-unchanged). One
+  negative guard initially failed on `battery` and was investigated: NOT a defect — it is declared by
+  exactly one family and taken verbatim from that family's governed question ("power requirement and
+  source"), the other nineteen probed nouns are eligible for nothing, so the over-strong test premise
+  was corrected and the implementation left alone. No fixture, generator, evidence artifact or
+  `OWNER_DECISION_REGISTER.md` change; the earlier fixture ledger stands and `ASSERTION-TARGET CHANGES:
+  0` still holds. Prior non-blocking observations deliberately NOT acted on. `PVCG-R2-C AUTHORITATIVE:
+  YES`; `PVCG-R2-I AUTHORITATIVE: NO`; PVCG-R3/R4 NOT STARTED; PVCG SATISFIED: NO; MINIMUM
+  LAUNCH-CONFORMANCE SET SATISFIED: NO; no deployment claim.
+
+- **PVCG-R2-I — GAP-RELEVANCE / MANUFACTURED-SATISFACTION HARDENING IMPLEMENTATION (Owner-authorized
+  implementation candidate, PR pending), base `4d746d15a3025802d0ad601b4501473e06b1140b` (PR #548
+  merge — PVCG-R2-C, AUTHORITATIVE; independently re-verified live on all four merge criteria: first
+  parent `c70bad19…`, second parent `e394f962…`, merge tree `b8441675…`, empty candidate→merge diff,
+  zero later commits).** Disposition: **`PVCG-R2-I IMPLEMENTED / CANDIDATE — NOT AUTHORITATIVE UNTIL
+  MERGED`**; `PVCG-R2-C AUTHORITATIVE: YES`. Implements the R2 product truth frozen by
+  `PVCG_R2_C_GAP_RELEVANCE_HARDENING_CONTRACT.md` §4 and exceeds no part of §2.4/§2.5/§3.2–§3.7/§5/§6/
+  §8/§9. **Shape:** one new pure module `engine/gap_relevance.py` (`re` only; no state, I/O, clock,
+  randomness, network or model call) exposing `addresses_gap(response, gap_type)`, plus ONE narrow call
+  at the EXISTING answer→gap seam `integrate_response`. No second pipeline, no parallel evaluation, no
+  new truth source, no duplicate progression state. **Truthfully LEXICAL, not semantic:** per-gap
+  intent-marker families drawn from the six governed questions, with bare domain vocabulary and bare
+  causal connectives deliberately excluded because §4 declares them insufficient alone; it does not
+  interpret answers, stabilise paraphrase, or carry across languages — the Arabic-paraphrase bound is
+  asserted in the test record, not concealed. Stabilising equivalent wording is **PVCG-R3, NOT
+  STARTED**. **Fail-closed, never punitive:** an answer that does not address the served gap leaves the
+  gap status untouched, withholds `known_mechanism` / `known_problem` / Stage-3 evidence capture, and
+  returns `WARN` with a question-focused reason — never BLOCK, contradiction, validation failure or
+  quality downgrade; gap creation and the unconditional acknowledged-unknown track still run.
+  **RED re-measured at the authoritative base** (the non-candidate diagnostic SHA `5154bcf4…` was NOT
+  reused, cherry-picked or published): **123 failed / 66 passed**, of which **112 behavioural-defect
+  failures** and **11 module-absent failures**; the defect is directly reproduced — one signal-rich
+  off-topic `REASONED` sentence closes **all six** gap types and sets both known-elements and all three
+  Stage-3 evidence captures. **GREEN 189/189.** **Pin (DEP-1):** pre-R2 `a8e1ffdf…` → post-R2-I
+  `07c9bff5…`, updated in **all three** locations that held it (`test_p9_mech_i3_signal_quality.py`,
+  `test_p9_mech_i4_boundary_corpus.py`, `test_p9_mech_i5_question_sufficiency.py`) with disclosed
+  comments preserving the prior digest; `test_engine_files_byte_frozen` unchanged and green against the
+  new value (54 passed); `domain_rules.py` and `path_n_questions.py` byte-UNCHANGED; the engine diff is
+  confined to the authorized seam. **Fixtures (DEP-2):** twelve test files corrected, each proven
+  against all five §3.4 conditions, full eleven-field ledger in `ACTIVE_EXECUTION_ROADMAP.md`;
+  **`ASSERTION-TARGET CHANGES: 0`**; nothing deleted, skipped, xfailed or weakened. **COMMITTED
+  EVIDENCE TREES REMAIN FROZEN** — zero artifacts regenerated (44 artifacts across 7 trees embed the
+  WS1 sentence and none was touched); all **7** generator/harness scripts classified HISTORICAL-ONLY /
+  FROZEN and **none modified**. The live WS1 provenance comment was updated truthfully with provenance
+  preserved (§3.7). One residual is declared, not hidden: `test_progression_benchmark.py::test_B1` does
+  not fail and was therefore left alone, though it now passes for a different reason. **Verification:**
+  smoke PASS; targeted 19-file suite **755 passed / 0 failed**; **PVCG-R1 26/26 GREEN with its test
+  file byte-UNCHANGED**; full suite **3210 passed / 3 skipped / 1 xfailed / 0 failed** (gunicorn 26.1.0
+  on PATH so serving-stack tests execute rather than skip); **12 mandatory mutations KILLED / 0
+  SURVIVED**, all restored byte-identically, plus two supplementary probes that survived and were
+  recorded as EQUIVALENT MUTANTS on 10×6 corpus evidence — **that equivalence claim is WITHDRAWN as
+  unsound** (T-1, found by Independent External Review; a finite corpus cannot establish equivalence
+  over the input space, and single-marker removals were shown to change real live-seam behaviour while
+  surviving that suite). Corrected evidence is in the PVCG-R2-I (T-1 repair) bullet above. PVCG-R3 NOT STARTED; PVCG-R4 NOT STARTED;
+  WS10/WS11/WS12 not activated; no LLM/NLP subsystem; Stage-3 evaluator not integrated; Render not
+  reopened; `main` not reconciled; PVCG SATISFIED: NO; MINIMUM LAUNCH-CONFORMANCE SET SATISFIED: NO; no
+  deployment or readiness claim. `OWNER_DECISION_REGISTER.md` UNCHANGED.
+
 - **PVCG-R2-C — GAP-RELEVANCE HARDENING CONTRACT / RECONCILIATION GATE (Owner-authorized
   GOVERNANCE-ONLY candidate, PR pending), base `c70bad196de73fc27c21a3e1bd8438f1eab41958` (PR #547
   merge — PVCG-R1, AUTHORITATIVE; independently re-verified live on all four merge criteria).**

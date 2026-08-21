@@ -21,6 +21,7 @@ import warnings
 from engine.domain_rules import (
     get_substance_signals, get_substance_signal_plural_aliases, is_known_domain,
 )
+from engine.gap_relevance import addresses_gap
 from engine.idea_state import (
     IdeaState, Evidence, Gap, IterationLog, AcknowledgedUnknown,
     PHYSICAL_FEASIBILITY, BOUNDARY_AMBIGUITY, MECHANISM_COMPLETENESS,
@@ -714,6 +715,15 @@ def integrate_response(
     transition_result: PASS | WARN | BLOCK
     """
     quality = assess_response(response, state.domain)
+    # PVCG-R2-I (authoritative contract PVCG_R2_C_GAP_RELEVANCE_HARDENING_
+    # CONTRACT.md §4/§6): satisfaction eligibility for the SERVED gap. A
+    # response that does not address the gap that was actually asked about may
+    # not influence that gap's satisfaction, no matter how much generic
+    # technical substance, domain vocabulary or causal language it carries.
+    # Deterministic, fail-closed, lexical (see engine/gap_relevance.py for the
+    # stated bound); it is eligibility only and never a quality judgement, a
+    # BLOCK, a contradiction, or an input-validation failure.
+    relevant = addresses_gap(response, gap_type)
     evidence = Evidence(
         content=response,
         quality=quality,
@@ -721,12 +731,12 @@ def integrate_response(
     )
 
     # Update known elements
-    if gap_type == MECHANISM_COMPLETENESS:
+    if relevant and gap_type == MECHANISM_COMPLETENESS:
         if state.known_mechanism is None or quality >= state.known_mechanism.quality:
             state.known_mechanism = evidence
 
     # أي evidence في المراحل المبكرة تُثبت المشكلة ضمنياً
-    if state.known_problem is None and quality >= REASONED:  # RISK-002
+    if relevant and state.known_problem is None and quality >= REASONED:  # RISK-002
         state.known_problem = evidence
 
     # Update gap status
@@ -748,10 +758,20 @@ def integrate_response(
     # "Accepted" = REASONED or better (the quality tier that advances a gap);
     # ASSERTED and empty/whitespace responses are NOT recorded. Append-only:
     # no effect on gap.status, quality, transition, or return value.
-    if (gap_type in STAGE_3_GAP_TYPES
+    if (relevant
+            and gap_type in STAGE_3_GAP_TYPES
             and response.strip()
             and quality in (REASONED, DEMONSTRATED)):
         gap.evidence.append(evidence)
+
+    # PVCG-R2-I fail-closed exit. The answer is recorded and its assessed
+    # quality is unchanged; it is simply not eligible to satisfy or close THIS
+    # gap, so the gap status is left exactly as it was. Deliberately placed
+    # after gap creation and after the unconditional acknowledged-unknown
+    # track, both of which R2 does not govern.
+    if not relevant:
+        return "WARN", (f"{gap_type} not addressed — this answer does not "
+                        f"respond to the question that was asked")
 
     if quality == DEMONSTRATED:
         gap.status = CLOSED

@@ -92,9 +92,17 @@ class TestIntegrateResponseGapStatus:
         assert transition == "WARN"
 
     def test_B2_asserted_response_gap_becomes_partial(self):
+        # PVCG-R2-I defect-dependent input correction (contract §3.2/§3.4):
+        # the previous input was the bare domain noun "sensor", which answers
+        # nothing and advanced the gap only through manufactured satisfaction.
+        # Replaced with the smallest input that is still ASSERTED quality but
+        # actually addresses the served MECHANISM_COMPLETENESS question. The
+        # assertion target — an ASSERTED response moves an OPEN gap to PARTIAL
+        # — is unchanged.
         state = make_state()
         state.gaps.append(make_gap(MECHANISM_COMPLETENESS, OPEN))
-        integrate_response(state, MECHANISM_COMPLETENESS, "question", "sensor")
+        integrate_response(state, MECHANISM_COMPLETENESS, "question",
+                           "It has a few parts.")
         gap = state.get_gap(MECHANISM_COMPLETENESS)
         assert gap.status == PARTIAL
 

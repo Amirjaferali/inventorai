@@ -470,8 +470,16 @@ def test_first_new_gate_reasoned_answer_moves_open_gap_to_partial_only():
     state = IdeaState(idea_id="gate-t1")
     state.domain = D
     state.iteration = 1
-    answer = ("Fan must continue because sensor still reads high temperature "
-              "and enclosure has not cooled.")
+    # PVCG-R2-I defect-dependent input correction (contract §3.2/§3.4): the
+    # previous input described a temperature condition and did not answer the
+    # served MECHANISM_COMPLETENESS question ("HOW does it work"), so it
+    # advanced the gap only through manufactured satisfaction. Rewritten so the
+    # SAME Layer-2 connective+substance gate is exercised (authorized
+    # connective "because" + whole-word substance in the supporting clause,
+    # length >= 40) while the answer now addresses the served gap. Assertion
+    # targets unchanged.
+    answer = ("The controller opens the relay because the sensor still reads "
+              "high temperature and the enclosure has not cooled.")
     transition, reason = integrate_response(
         state, MECHANISM_COMPLETENESS, "How does it work?", answer)
     gap = state.get_gap(MECHANISM_COMPLETENESS)
@@ -485,10 +493,13 @@ def test_reasoned_follow_up_closes_partial_gap():
     state = IdeaState(idea_id="gate-t2")
     state.domain = D
     state.iteration = 1
-    first = ("Fan must continue because sensor still reads high temperature "
-             "and enclosure has not cooled.")
-    followup = ("The relay contacts may weld due to the motor inrush current "
-                "exceeding their rated capacity.")
+    # PVCG-R2-I defect-dependent input correction (contract §3.2/§3.4) — see
+    # the note in the preceding test. Both turns now address the served
+    # MECHANISM_COMPLETENESS question while still exercising the Layer-2 gate.
+    first = ("The controller opens the relay because the sensor still reads "
+             "high temperature and the enclosure has not cooled.")
+    followup = ("The relay contacts disconnect the motor because the inrush "
+                "current exceeds their rated capacity.")
     integrate_response(state, MECHANISM_COMPLETENESS, "q", first)
     state.iteration = 2
     transition, reason = integrate_response(
@@ -552,8 +563,12 @@ def test_answered_flow_keeps_transcript_and_ledger_verbatim():
     try:
         entry = SESSION_STORE[sid]
         state = entry["state"]
-        answer = ("Fan must continue because sensor still reads high "
-                  "temperature and enclosure has not cooled.")
+        # PVCG-R2-I defect-dependent input correction (contract §3.2/§3.4) —
+        # same correction as the two integrate_response tests above; the answer
+        # now addresses the served MECHANISM_COMPLETENESS question while still
+        # exercising the Layer-2 connective+substance gate.
+        answer = ("The controller opens the relay because the sensor still "
+                  "reads high temperature and the enclosure has not cooled.")
         r = answered_post(app.test_client(), sid, {"action": "answered", "response": answer})
         assert r.status_code in (301, 302)
         # Exactly one new transcript record, byte-for-byte verbatim.

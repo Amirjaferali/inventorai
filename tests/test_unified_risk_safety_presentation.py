@@ -51,6 +51,11 @@ import pytest
 
 from web.app import app, SESSION_STORE, DOMAIN_CONFIRM_VALUE
 from engine.deliverable_assembler import assemble_deliverable
+from engine.progression_loop import select_next_gap
+# PVCG-R2-I defect-dependent input correction (contract §3.2/§3.4): the
+# shared WS1 gap-appropriate extension helper, defined once in
+# test_structured_criticality.py and reused here rather than duplicated.
+from test_structured_criticality import gap_appropriate
 from engine.safety_signal import derive_inventor_stated_safety_signals
 from engine.idea_state import DEMONSTRATED
 
@@ -143,7 +148,9 @@ def ws1_journey():
         if i == UNKNOWN_ITERATION:
             action, text = "unknown", UNKNOWN_TEXT
         else:
-            action, text = "answered", BASE + DANGER_BY_ITERATION.get(i, "")
+            action, text = "answered", gap_appropriate(
+                BASE + DANGER_BY_ITERATION.get(i, ""),
+                select_next_gap(SESSION_STORE[sid]["state"]))
         answered_post(client, sid, {"response": text, "action": action})
     else:
         pytest.fail("fixture defect: WS1 journey did not complete")

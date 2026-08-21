@@ -429,7 +429,13 @@ def test_green_outcome_sensitivity_plural_now_closes_gap_like_singular():
     """End-to-end, through the real gap-closure state machine: the
     originally-demonstrated WARN-vs-PASS divergence for a plural-only
     Mechanical substance word is now fixed for an authorized pair."""
-    weak = "It has a mechanism."
+    # PVCG-R2-I defect-dependent input correction (contract §3.2/§3.4): the
+    # previous first turn ("It has a mechanism.") answers nothing and only
+    # reached PARTIAL through manufactured satisfaction. Replaced with the
+    # smallest input that is still ASSERTED quality but addresses the served
+    # MECHANISM_COMPLETENESS question. The plural-vs-singular outcome-
+    # sensitivity assertion target is unchanged.
+    weak = "It has a mechanism with some moving parts."
     plural_only = ("The mechanism engages because the pistons mesh with the "
                    "drive shaft smoothly and reliably.")
     singular_only = ("The mechanism engages because the piston meshes with "

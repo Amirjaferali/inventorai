@@ -46,6 +46,11 @@ from engine.idea_state import (
 )
 from engine.requirement_landscape import derive_requirement_landscape
 from engine.validation_plan import derive_validation_plan
+from engine.progression_loop import select_next_gap
+# PVCG-R2-I defect-dependent input correction (contract §3.2/§3.4):
+# the shared WS1 gap-appropriate extension helper, defined once in
+# test_structured_criticality.py and reused here rather than duplicated.
+from test_structured_criticality import gap_appropriate
 from web.app import app, SESSION_STORE, DOMAIN_CONFIRM_VALUE
 
 # ---------------------------------------------------------------------------
@@ -151,7 +156,9 @@ def _run_ws1_journey():
         if i == UNKNOWN_ITERATION:
             action, text = "unknown", UNKNOWN_TEXT
         else:
-            action, text = "answered", BASE_ANSWER + DANGER_BY_ITERATION.get(i, "")
+            action, text = "answered", gap_appropriate(
+                BASE_ANSWER + DANGER_BY_ITERATION.get(i, ""),
+                select_next_gap(SESSION_STORE[sid]["state"]))
         answered_post(client, sid, {"response": text, "action": action})
     state = SESSION_STORE[sid]["state"]
     package = assemble_deliverable(state)

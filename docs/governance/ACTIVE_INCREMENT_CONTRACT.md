@@ -41,15 +41,131 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — PVCG-R2-C: GAP-RELEVANCE HARDENING CONTRACT / RECONCILIATION GATE;
+**Status (current — PVCG-R2-I (T-1b REPAIR): STRUCTURAL-OPERATIVITY CLASSIFICATION REPAIR).** Parent:
+`58ef39714630455c9713fb045bc66c3490eb4bf8` — the rejected T-1 repair candidate, preserved unchanged as
+immutable reviewed evidence, itself a child of the rejected R2-I candidate
+`2f2897ce40c119ea202d6519e59e2d887c3fb7c1`, also preserved unchanged.
+
+**Blocking finding repaired: T-1b.** The prior structural non-operativity proof was unsound for 9 of
+11 excluded phrases. Root cause: phrase markers match by **substring**, word markers by **token**, so
+phrase → word containment does NOT establish universal behavioural shadowing. Withdrawn, not defended.
+All nine were re-measured at the rejected SHA — each flips `addresses_gap` when removed — and are now
+OPERATIVE with isolated probes that preserve the phrase substring while dissolving the companion token.
+Corrected split, re-measured from repository execution: **262 operative / 2 structurally shadowed**,
+the two being genuine PHRASE → PHRASE containments, independently re-verified structurally and by
+execution. Coverage-classification and governance-truth repair only — **NOT a runtime defect**.
+
+**Runtime and pins untouched:** `engine/gap_relevance.py` and `engine/progression_loop.py`
+byte-identical to the parent; digest still
+`07c9bff500662de54ac0f7388c1f2e13a721549c6f4943cde865b98a22c525d6`; all three P9 pin files
+byte-identical; `SECOND PIN RECONCILIATION: NO`. Sweep: 264 processed / 264 KILLED / 0 SURVIVED / 0
+LOADFAIL / restore 264/264. Prior survivors M8b and M9b remain KILLED. Marker coverage 566; R2-I 189;
+R1 26/26 byte-unchanged; P9 pins 54; targeted 1321; smoke PASS; full suite 3776 / 3 / 1 / 0 with
+gunicorn on PATH. `UNSUPPORTED MATERIAL CLAIMS: 0`.
+
+---
+
+**Superseded (retained as history) — PVCG-R2-I (T-1 REPAIR): MUTATION-ADEQUACY REPAIR OF THE MARKER
+TABLES; frozen as `58ef3971…` and REJECTED on finding T-1b; preserved unchanged.** Parent:
+`2f2897ce40c119ea202d6519e59e2d887c3fb7c1` — the rejected R2-I candidate, preserved unchanged as
+immutable reviewed evidence (not amended, rebased or squashed). Authoritative R2-C base:
+`4d746d15a3025802d0ad601b4501473e06b1140b` (PR #548).
+
+**Disposition: `PVCG-R2-I IMPLEMENTED / CANDIDATE — NOT AUTHORITATIVE UNTIL MERGED`.**
+`PVCG-R2-C AUTHORITATIVE: YES`. `PVCG-R2-I AUTHORITATIVE: NO`.
+
+**Defect repaired.** Independent External Review returned `REJECT` on ONE blocking defect class,
+**T-1 — mutation adequacy / governance truth**, while confirming the runtime implementation itself
+substantively correct. The prior record called two surviving supplementary mutants EQUIVALENT MUTANTS
+on 10×6 corpus evidence and inferred family redundancy; **both claims are withdrawn as unsound** — a
+finite corpus cannot establish equivalence over the input space. The Creator independently reproduced
+the reviewer's finding at the rejected SHA: removing `actuates`/`actuate` flips the live seam from
+`PASS`/`CLOSED` to `WARN`/`OPEN`, and removing `not cover` flips `PARTIAL` to `OPEN`, both with the
+189-test R2-I suite still fully green.
+
+**Repair (tests + governance truth only).** New `tests/test_pvcg_r2i_marker_coverage.py` pins a
+DECLARED MARKER INVENTORY and generates probes from that declaration rather than from the live tables,
+so deleting a marker leaves its probe in place to fail. One machine-isolated positive probe per
+independently operative entry, a cross-family exclusivity probe for each, collection-time failure if
+any probe is not isolated (with a validator self-test), and negative guards against domain vocabulary
+or causal connectives ever acting as universal relevance signals. 264 declared entries: 253
+independently operative and 11 structurally non-operative — **that split is WITHDRAWN and CORRECTED
+(T-1b)**: the universal proof was unsound for the nine PHRASE → WORD cases because phrase markers match
+by SUBSTRING while word markers match by TOKEN, so phrase → word containment does not establish
+universal shadowing. Re-measured from repository execution the split is **262 operative / 2
+structurally shadowed**, the two being genuine PHRASE → PHRASE containments
+(`power requirements` → `power requirement`, `physical limits` → `physical limit`). The nine
+reclassified phrases now carry isolated positive probes. Coverage-classification and governance-truth
+repair only — NOT a runtime defect. Complete single-marker sweep: **264 processed / 264 KILLED / 0 SURVIVED / 0
+skipped**, restore byte-identical; an earlier 255/255 pass with 9 harness-skips was discarded as a
+stale-bytecode measurement artifact and re-run clean. Both prior survivors are named from retained
+Creator-local evidence and are now KILLED.
+
+**Implementation and pin untouched.** `engine/gap_relevance.py` and `engine/progression_loop.py` are
+byte-identical to the rejected SHA; the progression-loop digest stays
+`07c9bff500662de54ac0f7388c1f2e13a721549c6f4943cde865b98a22c525d6` and the P9-MECH-I3 pin was NOT
+reconciled again. No fixture, generator, evidence artifact or `OWNER_DECISION_REGISTER.md` change;
+`ASSERTION-TARGET CHANGES: 0` still holds. `UNSUPPORTED MATERIAL CLAIMS: 0`.
+
+---
+
+**Superseded (retained as history) — PVCG-R2-I: GAP-RELEVANCE / MANUFACTURED-SATISFACTION HARDENING
+IMPLEMENTATION, frozen as `2f2897ce…` and REJECTED by Independent External Review on defect class T-1
+(mutation adequacy / governance truth); preserved unchanged as immutable reviewed evidence and repaired
+by the current gate above.**
+Owner-authorized IMPLEMENTATION gate under the now-AUTHORITATIVE PVCG-R2-C contract. Base:
+`4d746d15a3025802d0ad601b4501473e06b1140b` (PR #548 merge — PVCG-R2-C, AUTHORITATIVE; re-resolved live
+from `origin/feature/atomic-json-session-persistence` and independently re-verified: first parent
+`c70bad19…`, second parent `e394f962…`, merge tree `b8441675…`, empty candidate→merge diff, zero later
+commits).
+
+**Disposition: `PVCG-R2-I IMPLEMENTED / CANDIDATE — NOT AUTHORITATIVE UNTIL MERGED`.**
+`PVCG-R2-C AUTHORITATIVE: YES`. PVCG-R3 NOT STARTED; PVCG-R4 NOT STARTED; PVCG SATISFIED: NO; MINIMUM
+LAUNCH-CONFORMANCE SET SATISFIED: NO. No release-readiness or deployment claim.
+
+**Governing authority.** `docs/governance/PVCG_R2_C_GAP_RELEVANCE_HARDENING_CONTRACT.md` §4 (product
+truth), §2.4/§2.5 (one bounded pin reconciliation), §3.2–§3.7 (defect-dependent fixture correction,
+five-part scope test, eleven-field ledger, evidence-tree default freeze, generator classification,
+truthful provenance comments), §5 (non-goals), §6 (implementation bounds and progression isolation),
+§8 (RED/GREEN shape) and §9 (full-suite reconciliation rule). Nothing beyond it was built.
+
+**Implementation.** One new pure deterministic module `engine/gap_relevance.py` (`re` only; no state,
+I/O, clock, randomness, network or model call) exposing `addresses_gap(response, gap_type)` and
+`GOVERNED_GAP_TYPES`, plus ONE narrow call at the EXISTING answer→gap seam `integrate_response`. The
+mechanism is **LEXICAL and deterministic**, derived from the vocabulary of the six governed questions,
+with bare domain vocabulary and bare causal connectives deliberately excluded. It makes **no semantic,
+meaning-level or cross-language claim**; the Arabic-paraphrase bound is asserted in the test record.
+Fail-closed means *not eligible to satisfy or close* — never BLOCK, contradiction, validation failure
+or quality downgrade. Eligibility is not quality.
+
+**Evidence.** RED re-measured at the authoritative base: 123 failed / 66 passed (112 behavioural, 11
+module-absent); GREEN 189/189. Pin `a8e1ffdf…` → `07c9bff5…` reconciled in all three pin locations with
+disclosed comments preserving the prior digest; the byte-freeze guard is unchanged and green.
+Twelve test files corrected under the five-part scope test with `ASSERTION-TARGET CHANGES: 0`; the
+eleven-field ledger is recorded in `ACTIVE_EXECUTION_ROADMAP.md`. Committed WS1–WS7 evidence trees
+REMAIN FROZEN (zero regenerated); all seven generator/harness scripts classified HISTORICAL-ONLY /
+FROZEN and none modified. Smoke PASS; targeted 19-file suite 755 passed; PVCG-R1 26/26 with its test
+file byte-unchanged; full suite 3210 passed / 3 skipped / 1 xfailed / 0 failed with gunicorn 26.1.0 on
+PATH; 12 mandatory behavioural mutations KILLED / 0 SURVIVED. The two supplementary probes that
+survived were recorded as EQUIVALENT MUTANTS on corpus evidence; **that claim is WITHDRAWN as
+unsound** (a finite corpus cannot establish equivalence) — see the PVCG-R2-I (T-1 repair) status
+block above for the corrected mutation truth.
+`OWNER_DECISION_REGISTER.md` UNCHANGED. `UNSUPPORTED MATERIAL CLAIMS: 0`.
+
+---
+
+**Superseded (retained as history) — PVCG-R2-C: GAP-RELEVANCE HARDENING CONTRACT / RECONCILIATION GATE;
+MERGED AND AUTHORITATIVE via PR #548, merge `4d746d15a3025802d0ad601b4501473e06b1140b`.**
 Owner-authorized GOVERNANCE-ONLY gate under the Owner's Option-B decision on the PVCG-R2 dependency
-conflict).** Base: `c70bad196de73fc27c21a3e1bd8438f1eab41958` (PR #547 merge — PVCG-R1, AUTHORITATIVE;
+conflict. Base: `c70bad196de73fc27c21a3e1bd8438f1eab41958` (PR #547 merge — PVCG-R1, AUTHORITATIVE;
 re-resolved live and independently re-verified: first parent `9d2b6515…`, second parent `5d563203…`,
 merge tree `24b57a2f…`, empty candidate→merge diff).
 
-**Disposition: `PVCG-R2-C GOVERNANCE CANDIDATE — NOT AUTHORITATIVE UNTIL MERGED`.**
-**PVCG-R2-I IMPLEMENTATION: NOT STARTED / NOT AUTHORIZED** — it requires this contract to be
-authoritative AND a separate Owner execution authorization. PVCG-R3 NOT STARTED; PVCG-R4 NOT STARTED;
+**Historical disposition as recorded at the time (superseded — this contract is now AUTHORITATIVE and
+PVCG-R2-I is the current gate): `PVCG-R2-C GOVERNANCE CANDIDATE — NOT AUTHORITATIVE UNTIL MERGED`.**
+**PVCG-R2-I IMPLEMENTATION: NOT STARTED / NOT AUTHORIZED** (as recorded then) — it required this
+contract to be authoritative AND a separate Owner execution authorization, both of which have since
+been satisfied. PVCG-R3 NOT STARTED; PVCG-R4 NOT STARTED;
 PVCG SATISFIED: NO; MINIMUM LAUNCH-CONFORMANCE SET SATISFIED: NO. No release-readiness claim.
 
 **Objective.** A bounded PVCG-R2 implementation was attempted and STOPPED before freeze on two

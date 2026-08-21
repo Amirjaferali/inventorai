@@ -61,12 +61,27 @@ import pytest
 
 from web.app import app, SESSION_STORE, DOMAIN_CONFIRM_VALUE
 from engine.deliverable_assembler import assemble_deliverable
+from engine.gap_relevance import addresses_gap
+from engine.progression_loop import select_next_gap
 from engine.requirement_landscape import derive_requirement_landscape
 
-# --- Byte-identical Workstream 1 baseline journey inputs (contract §11: the
-# reused WS1 journey; copied verbatim from the committed Workstream 3
+# --- Workstream 1 baseline journey inputs -----------------------------------
+# PROVENANCE (preserved): copied verbatim from the committed Workstream 3
 # evidence harness docs/governance/evidence/workstream3_deliverable_hygiene/
-# generate_ws3_artifacts.py — do not edit) -----------------------------------
+# generate_ws3_artifacts.py, under STRUCTURED_CRITICALITY_CAPTURE_INCREMENT_
+# CONTRACT.md §11 ("the reused WS1 journey (byte-identical inputs)").
+# The three constants below — IDEA_WS1, BASE and DANGER_BY_ITERATION — are
+# still BYTE-IDENTICAL to that harness and must not be edited.
+# TRUTH UPDATE (PVCG-R2-I, required by PVCG_R2_C_GAP_RELEVANCE_HARDENING_
+# CONTRACT.md §3.7): the older form of this comment said the WS1 journey inputs
+# as a whole are untouched. That is no longer the whole truth. Under the
+# authoritative R2 truth condition the journey can no longer answer the
+# feasibility, boundary and Stage-3 questions with this MECHANISM statement, so
+# `gap_appropriate()` below extends the text for the SERVED gap — and only when
+# it does not already address that gap. The §11/§12/F4 byte-identical
+# preservation requirement is superseded for PVCG-R2-I only, and only for these
+# proven defect-dependent inputs (contract §3.1b). Nothing here is general
+# permission to rewrite WS1 evidence or fixtures.
 IDEA_WS1 = (
     "A smart plug-in safety device that senses appliance current and voltage "
     "with a microcontroller and disconnects a relay to warn about dangerous "
@@ -84,6 +99,48 @@ DANGER_BY_ITERATION = {
     7: (" The current sensing accuracy is essential; the buzzer volume and "
         "alert timing are adjustable."),
 }
+# --- PVCG-R2-I defect-dependent input correction (authoritative contract
+# docs/governance/PVCG_R2_C_GAP_RELEVANCE_HARDENING_CONTRACT.md §3.2/§3.4) ----
+# PROVENANCE PRESERVED: BASE, IDEA_WS1 and DANGER_BY_ITERATION above remain
+# BYTE-IDENTICAL to the committed Workstream 3 evidence harness. What changed is
+# only this: the WS1 journey used to answer EVERY gap — physical feasibility,
+# boundary, and all three Stage-3 gaps — with the same MECHANISM answer, and
+# those gaps closed only because the pre-R2 engine let an unrelated answer
+# satisfy them (manufactured satisfaction). Under the R2 truth condition that is
+# no longer possible, so the journey needs an input that truthfully answers the
+# question actually being asked. The clause for the SERVED gap is appended, and
+# ONLY when the text does not already address that gap — so every already-
+# gap-appropriate turn (notably the iteration-7 essential/adjustable statement,
+# which addresses the boundary question) stays byte-verbatim.
+GAP_APPROPRIATE_CLAUSE = {
+    "PHYSICAL_FEASIBILITY": (
+        " The device draws only a few milliamps from the mains supply, and the "
+        "shunt resistor tolerance and its temperature range are the physical "
+        "limits it must respect."),
+    "BOUNDARY_AMBIGUITY": (
+        " It does not cover gas leaks or overheating ovens, which means those "
+        "hazards stay outside its scope, and unlike an ordinary breaker the "
+        "current sensing core cannot be replaced."),
+    "PROBLEM_MECHANISM_FIT": (
+        " The problem is that people leave faulty appliances plugged in and it "
+        "matters because a fire can start, therefore this solves it rather "
+        "than a plain fuse."),
+    "ASSUMPTION_INVENTORY": (
+        " I am assuming the shunt resistor stays accurate over the years, and "
+        "that assumption is still untested and unverified."),
+    "EXPERTISE_GAP_AWARENESS": (
+        " Building it needs power electronics expertise and firmware "
+        "knowledge, and I would need to consult a certified safety engineer."),
+}
+
+
+def gap_appropriate(text, served_gap):
+    """Return `text`, extended only if it does not address the served gap."""
+    if not served_gap or addresses_gap(text, served_gap):
+        return text
+    return text + GAP_APPROPRIATE_CLAUSE.get(served_gap, "")
+
+
 UNKNOWN_ITERATION = 5
 UNKNOWN_TEXT = "I don't know yet."
 MAX_ITERATIONS = 30
@@ -160,7 +217,9 @@ def _drive_ws1_journey_to_completion(client, sid):
         if i == UNKNOWN_ITERATION:
             action, text = "unknown", UNKNOWN_TEXT
         else:
-            action, text = "answered", BASE + DANGER_BY_ITERATION.get(i, "")
+            action, text = "answered", gap_appropriate(
+                BASE + DANGER_BY_ITERATION.get(i, ""),
+                select_next_gap(SESSION_STORE[sid]["state"]))
         answered_post(client, sid, {"response": text, "action": action})
     pytest.fail("fixture defect: WS1 journey did not reach the completion "
                 "branch within %d iterations" % MAX_ITERATIONS)

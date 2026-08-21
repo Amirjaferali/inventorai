@@ -6,7 +6,7 @@ Authorization: Owner-authorized 2026-06-06
 import pytest
 from engine.idea_state import (
     IdeaState, AcknowledgedUnknown,
-    PHYSICAL_FEASIBILITY, BOUNDARY_AMBIGUITY,
+    PHYSICAL_FEASIBILITY, BOUNDARY_AMBIGUITY, MECHANISM_COMPLETENESS,
     ASSERTED, REASONED, PARTIAL,
 )
 from engine.progression_loop import (
@@ -145,9 +145,18 @@ class TestProgressionUnchanged:
         from engine.progression_loop import assess_response as ar
         quality = ar(r, "electronics_electrical")
         assert quality == REASONED, f"Test response must be REASONED, got {quality}"
-        result, reason = integrate_response(state, PHYSICAL_FEASIBILITY, "Q?", r)
+        # PVCG-R2-I defect-dependent input correction (authoritative contract
+        # docs/governance/PVCG_R2_C_GAP_RELEVANCE_HARDENING_CONTRACT.md
+        # §3.2/§3.4): the response is byte-verbatim and still REASONED, but it
+        # describes HOW the mechanism works, so serving it to
+        # PHYSICAL_FEASIBILITY advanced that gap only through manufactured
+        # satisfaction. It is now served to the gap it actually answers. The
+        # subject of this regression — the acknowledged-unknown parallel track
+        # alongside unchanged progression — and every assertion target are
+        # unchanged.
+        result, reason = integrate_response(state, MECHANISM_COMPLETENESS, "Q?", r)
         assert result == "WARN"
-        assert state.get_gap(PHYSICAL_FEASIBILITY).status == PARTIAL
+        assert state.get_gap(MECHANISM_COMPLETENESS).status == PARTIAL
         assert len(state.acknowledged_unknowns) == 1
         assert "i do not yet know" in state.acknowledged_unknowns[0].category_basis
 
