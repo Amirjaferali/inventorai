@@ -2424,7 +2424,51 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
-- **INFRA-G1-R2 — RENDER PRODUCTION-SERVING (WSGI) BOUNDED IMPLEMENTATION (Owner-authorized
+- **INFRA-G1-P1 — RENDER PROVISIONING & NON-PUBLIC VERIFICATION CONTRACT (Owner-authorized
+  GOVERNANCE-ONLY candidate, PR pending), base `5e68a59cefe8fa47b5fbc201387b1e785820a86a` (PR #544
+  merge — INFRA-G1-R2, authoritative; first parent `306f3499…`, second parent `5326481955…`, merge tree
+  `4bdbaa06…` = accepted candidate tree, empty candidate→merge diff — independently re-verified live).**
+  Creates `docs/governance/INFRA_G1_P1_RENDER_PROVISIONING_NON_PUBLIC_VERIFICATION_CONTRACT.md`: the
+  SPECIFICATION for the first real Render resource plus the post-provision verification PROCEDURE —
+  **creating nothing** (a separate Owner execution authorization is required before any resource
+  exists). Contents: fixed Owner decisions carried unchanged (RENDER / FRANKFURT; no legal/tax/
+  residency inference); the authoritative runtime posture re-read at this base (gunicorn 26.1.0;
+  `gunicorn -c gunicorn.conf.py web.app:app`; workers=1; threads=1; preload/reload False; PORT
+  consumed; Python 3.11; `INVENTORAI_DB_PATH` sole DB owner with production hard-fail; `/health`; no
+  forwarded-header trust; JSON logs); the PSRR provider/production mapping **re-derived from PSRR-C1
+  §5.2 and the authoritative application-layer record** (items 9, 10, 17–19, 21, 22, 26, 28, 31, 32,
+  34-env + production halves of 7/8/14/23–25 + item-11 HSTS reassessment) split into
+  provable-now / provable-after-more-configuration / deferred, with **no item closed**; a 22-row
+  provisioning specification in which **no Render mechanic is classified as officially verified**
+  (official Render documentation is unreachable from the authoring environment — the egress proxy
+  blocks `render.com`, re-attempted at authoring time — so every provider-specific fact is OWNER
+  CONFIGURATION REQUIRED or TO BE CONFIRMED DURING PROVISIONING); a 10-point BLOCKING SQLite
+  persistence contract; the backup boundary (a disk is NOT backup readiness; P10-BR1 remains owner);
+  the monitoring boundary (items 21–22 OPEN; OPS-SM1 REGISTERED ONLY, nothing scheduled);
+  **AUTO-DEPLOY: OFF**; the secret matrix (`INVENTORAI_ENV`/`INVENTORAI_SECRET_KEY`/`INVENTORAI_DB_PATH`
+  before first boot — the secret to be Owner-generated and never placed in the repository); the email
+  boundary (not needed for this gate; **required before public release**); a 20-step non-public
+  verification procedure (defined, NOT executed); and the load-bearing public-access boundary — **a
+  platform-assigned service URL is NOT public release, NOT deployment authorization, and NOT PSRR
+  GO**. Governance-only; zero runtime/test diff. RENDER RESOURCE CREATED: NO; PERSISTENT DISK: NO; DNS:
+  NO; PRODUCTION SECRETS: NO; PRODUCTION EMAIL: NO; PUBLIC DEPLOYMENT: NO; OPS-SM1 EXECUTED: NO; PSRR
+  COMPLETE: NO; PSRR GO ELIGIBLE: NO; DEPLOYMENT AUTHORIZED: NO; PAID ACTIVATION AUTHORIZED: NO. All
+  carry-forwards preserved (NB-1…NB-4; start-command verification; unverified Render facts; OD-INFRA-1/2
+  ODR rows still owed). `OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY if/when this exact
+  candidate is merged and post-merge verified.
+
+- **INFRA-G1-R2 — RENDER PRODUCTION-SERVING (WSGI) BOUNDED IMPLEMENTATION: MERGED / AUTHORITATIVE
+  (repair candidate `5326481955ae63ba6740cb2f02fff8d368d4a46e` Owner-accepted at that exact SHA,
+  PR #544, tip `5e68a59cefe8fa47b5fbc201387b1e785820a86a`; first parent `306f3499…`, second parent
+  `5326481955…`, merge tree `4bdbaa06…` = candidate tree, empty candidate→merge diff — independently
+  re-verified).** The production serving posture (gunicorn 26.1.0; workers=1; threads=1;
+  preload/reload False; Render PORT consumed; `web.app:app`; Python pin 3.11; SQLite architecture
+  unchanged; no ProxyFix; no HSTS; no `render.yaml`) is authoritative. The earlier candidate
+  `36eb4102a00e7d00fa732572d6dbb76b6c2694a4` remains SUPERSEDED evidence and must not be published.
+  Focused re-review: ACCEPT WITH NON-BLOCKING OBSERVATIONS (NB-1…NB-4 carried forward).
+  (Original candidate-stage bullet retained below as history.)
+
+- **(superseded history) INFRA-G1-R2 — RENDER PRODUCTION-SERVING (WSGI) BOUNDED IMPLEMENTATION (was: Owner-authorized
   implementation candidate, PR pending), base `306f3499a2bd51e9d7047c9ffd5c4f091d2ca696` (PR #543
   merge — INFRA-G1-R1, authoritative; first parent `9b3bc28e…`, second parent `458c1316…`, merge tree
   `b5df6a4a…` = accepted candidate tree, empty candidate→merge diff — independently re-verified

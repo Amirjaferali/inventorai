@@ -41,8 +41,44 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — INFRA-G1-R2 RENDER PRODUCTION-SERVING (WSGI) BOUNDED IMPLEMENTATION:
-Owner-authorized implementation candidate):** Base: `306f3499a2bd51e9d7047c9ffd5c4f091d2ca696`
+**Status (current — INFRA-G1-P1 RENDER PROVISIONING & NON-PUBLIC VERIFICATION CONTRACT:
+Owner-authorized GOVERNANCE-ONLY candidate):** Base: `5e68a59cefe8fa47b5fbc201387b1e785820a86a`
+(PR #544 merge — INFRA-G1-R2, authoritative; independently re-verified live: first parent
+`306f3499…`, second parent `5326481955…`, merge tree `4bdbaa06…` = accepted candidate tree, empty
+candidate→merge diff).
+
+**Objective.** ONE governance-only candidate creating
+`docs/governance/INFRA_G1_P1_RENDER_PROVISIONING_NON_PUBLIC_VERIFICATION_CONTRACT.md` — the
+provisioning SPECIFICATION for the first real Render resource plus the post-provision verification
+PROCEDURE, creating and configuring NOTHING (a separate Owner execution authorization is required
+before any resource exists). Includes: fixed OD-INFRA-1/2 decisions carried unchanged; the
+authoritative runtime posture re-read at this base; the PSRR provider/production mapping re-derived
+from PSRR-C1 §5.2 and the application-layer record (no item closed); a 22-row provisioning
+specification with every provider mechanic classified OWNER CONFIGURATION REQUIRED or TO BE CONFIRMED
+DURING PROVISIONING (official Render documentation is unreachable from this environment — nothing is
+promoted to verified); a 10-point BLOCKING SQLite persistence contract; backup, monitoring, email and
+public-access boundaries; AUTO-DEPLOY OFF; the secret matrix with no values; and a 20-step non-public
+verification procedure. Allowed paths: the new contract + `ACTIVE_EXECUTION_ROADMAP.md` +
+`CURRENT_PROJECT_STATE.md` + `ACTIVE_INCREMENT_CONTRACT.md` ONLY. Forbidden: all runtime/test/schema/
+guardrail paths; `OWNER_DECISION_REGISTER.md`; any resource creation, DNS, TLS, secret, email,
+payment, or deployment action.
+
+**Evidence.** Governance-only docs diff; smoke PASS at base and re-verified at candidate; §5B.1
+determination recorded openly (zero executable bytes — not an implementation candidate; no §5B.6
+trigger; the authoritative full-suite truth 2969/3/1/0 stands from the merged INFRA-G1-R2 lineage and
+its independent reproduction); adversarial governance truth sweep UNSUPPORTED MATERIAL CLAIMS: 0.
+
+**Boundaries:** RENDER RESOURCE CREATED: NO; PERSISTENT DISK CREATED: NO; DNS CONFIGURED: NO;
+PRODUCTION SECRETS CONFIGURED: NO; PRODUCTION EMAIL CONFIGURED: NO; PUBLIC DEPLOYMENT STARTED: NO;
+OPS-SM1 EXECUTED: NO; PSRR COMPLETE: NO; PSRR GO ELIGIBLE: NO; DEPLOYMENT AUTHORIZED: NO; PAID
+ACTIVATION AUTHORIZED: NO; no runtime/database change; no future-domain work.
+`OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY if/when this exact candidate is merged and
+post-merge verified. Next required step: **Independent External Review of this exact SHA + bundle**
+(§5B.13 incl. mandatory independent smoke).
+
+**Immediately prior (INFRA-G1-R2 — repair candidate `5326481955…` Owner-accepted at that exact SHA and
+MERGED via PR #544, tip `5e68a59cefe8fa47b5fbc201387b1e785820a86a`; now AUTHORITATIVE; the earlier
+`36eb4102…` remains superseded evidence and must not be published; retained as history):** Base: `306f3499a2bd51e9d7047c9ffd5c4f091d2ca696`
 (PR #543 merge — INFRA-G1-R1, authoritative; independently re-verified live: first parent
 `9b3bc28e…`, second parent `458c1316…`, merge tree `b5df6a4a…` = accepted candidate tree, empty
 candidate→merge diff).
