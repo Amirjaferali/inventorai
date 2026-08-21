@@ -12743,3 +12743,91 @@ ProxyFix; no HSTS; no debug/auto-reload; no multi-worker/multi-thread serving; n
 PSRR COMPLETE: NO; PSRR GO ELIGIBLE: NO; DEPLOYMENT AUTHORIZED: NO; PAID ACTIVATION AUTHORIZED: NO.
 `OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY if/when this exact candidate is merged and
 post-merge verified. Next required step: Independent External Review of this exact SHA + bundle.
+
+---
+
+## INFRA-G1-P1 — Render Provisioning & Non-Public Verification Contract (Owner-authorized GOVERNANCE-ONLY candidate)
+
+**Base:** `5e68a59cefe8fa47b5fbc201387b1e785820a86a` (PR #544 merge — INFRA-G1-R2, authoritative;
+independently re-verified live: first parent `306f3499…`, second parent `5326481955…`, merge tree
+`4bdbaa06…` = accepted candidate tree, empty candidate→merge diff). **INFRA-G1-R2 synchronization
+(per convention):** the repair candidate `5326481955ae63ba6740cb2f02fff8d368d4a46e` was Owner-accepted
+at that exact SHA and MERGED via PR #544 — AUTHORITATIVE; focused Independent Re-Review ACCEPT WITH
+NON-BLOCKING OBSERVATIONS (NB-1…NB-4); the superseded candidate
+`36eb4102a00e7d00fa732572d6dbb76b6c2694a4` remains rejected/superseded evidence and must not be
+published. The authoritative production serving posture is now: gunicorn 26.1.0; start command
+`gunicorn -c gunicorn.conf.py web.app:app`; workers 1; threads 1; `preload_app` False; `reload` False;
+Render `PORT` consumed; WSGI target `web.app:app`; Python pin 3.11; SQLite architecture unchanged; no
+ProxyFix; no HSTS; no `render.yaml`.
+
+**Delivered (this candidate — governance-only, four documentation surfaces, zero runtime/test diff).**
+New `docs/governance/INFRA_G1_P1_RENDER_PROVISIONING_NON_PUBLIC_VERIFICATION_CONTRACT.md`: an
+EXECUTION-BOUNDED specification — creating the service, the disk, or any environment variable requires
+a SEPARATE Owner execution authorization against this frozen contract. §1 fixed Owner decisions
+(RENDER / FRANKFURT; no legal/tax/residency/sovereignty/compliance/commercial inference). §2 the
+authoritative runtime posture re-read from source at this base (each row cited). §3 the PSRR
+provider/production mapping **RE-DERIVED from PSRR-C1 §5.2 and the authoritative application-layer
+execution record rather than carried on trust** — items 9, 10, 17, 18, 19, 21, 22, 26, 28, 31, 32,
+34(environment) plus the production halves of 7, 8, 14, 23, 24, 25 plus the item-11 HSTS reassessment
+(the re-derivation reproduced the earlier list exactly) — split per item into PROVABLE DURING
+INFRA-G1-P1 / PROVABLE ONLY AFTER ADDITIONAL PROVIDER CONFIGURATION / DEFERRED, with **no PSRR item
+closed by the contract**. §4 a 22-row provisioning specification: **official Render documentation is
+NOT reachable from the authoring environment (the session egress proxy blocks `render.com`; a direct
+fetch was attempted and refused at authoring time), so NO Render mechanic is classified
+`VERIFIED — OFFICIAL RENDER SOURCE`** — every provider-specific value is `OWNER CONFIGURATION REQUIRED`
+or `TO BE CONFIRMED DURING PROVISIONING`, and indirect knowledge is not promoted; repository/runtime
+facts (start command, health path, Python pin, DB-path ownership, forwarded-header posture) are
+separately marked `VERIFIED — REPOSITORY/RUNTIME`; the branch to deploy is the authoritative governing
+branch (OD-Q keeps `main` STALE/UNRECONCILED); the free tier is excluded. §5 a ten-point **BLOCKING**
+SQLite persistence contract (disk actually mounted; `INVENTORAI_DB_PATH` inside the mount; file
+physically there; data survives restart; data survives redeploy; exactly one worker; exactly one
+thread; no horizontal scaling or second replica; no ephemeral production DB path; no stray database
+outside the mount) with the production hard-fail preserved. §6 backup boundary — **a persistent disk is
+NOT backup readiness**; obtainable evidence is disk persistence, an application-level governed backup +
+parity report, a scratch-path restore, and an OBSERVED statement of provider snapshot capability;
+scheduling, off-provider copies, encryption, retention values and a full DR drill remain owed (P10-BR1
+canonical owner; retention stays in the policy lane, nothing invented). §7 monitoring boundary — record
+only what is natively observed; alerting/routing/uptime/log-retention remain owed; **PSRR items 21–22
+OPEN**; **OPS-SM1 REGISTERED ONLY — NOT EXECUTED** (no cron, no schedule, no automated alert). §8
+**AUTO-DEPLOY: OFF**, justified from the governed SHA-frozen change lifecycle and the OPS-SM1
+no-unvalidated-production-change principle. §9 secret matrix — `INVENTORAI_ENV`,
+`INVENTORAI_SECRET_KEY` (**Owner must generate**; platform secret store only; never in the repository,
+logs, or the document) and `INVENTORAI_DB_PATH` before first boot; `PORT` platform-supplied; email and
+monitoring credentials out of scope for this gate. §10 email boundary — not selected, not configured,
+not claimed; blocking point recorded as **BEFORE FIRST PUBLIC RELEASE**. §11 a 20-step non-public
+verification procedure (build; gunicorn start; runtime version; HTTPS observation; `/health` 200; `/`
+200; CSP present; **HSTS absent recorded truthfully**; DB path proof; write/read; restart persistence;
+redeploy persistence; one worker; one thread; no dev server; no auto-reload; no ProxyFix; no secrets in
+logs; no stray DB; governed backup + parity + scratch restore; snapshot-capability observation;
+monitoring observation; explicit not-released record) — **DEFINED, NOT EXECUTED**. §12 the load-bearing
+public-access boundary: **a platform-assigned service URL is NOT public production deployment, NOT
+first public release, and NOT PSRR GO** — no announcement, promotion, production DNS, or release
+description during this gate; the PSRR §5 public-production block, OD-P's two-part deployment control
+and `D-P8-PL-01 class C` all remain in force. §13 carry-forward register. §14 review path (LEVEL 2
+governance-only; §5B.13 with mandatory independent smoke).
+
+**Evidence.** Smoke PASS at base and re-verified at the candidate; §5B.1 Creator full-suite
+determination recorded openly (zero executable bytes; no §5B.6 trigger; the authoritative full-suite
+truth 2969 passed / 3 skipped / 1 xfailed / 0 failed stands from the merged INFRA-G1-R2 lineage and its
+independent reproduction); `git diff --check` clean; adversarial governance truth sweep UNSUPPORTED
+MATERIAL CLAIMS: 0.
+
+**Carry-forwards preserved (none silently closed).** NB-1 superseded-candidate remote-comparison
+limitation; **NB-2 the historical "159 targeted regressions" figure is NOT durable evidence** (no
+reconstructable set membership) — the focused, broader targeted, smoke and full-suite results are the
+authoritative evidence; **NB-3 the dependency-audit runner must report TOOL MISSING rather than
+false-clean when `pip_audit` is unavailable** (owed at the next audit-touching gate); NB-4 the
+production-config AST helper intentionally excludes module docstrings; R2-REV-NB-START-COMMAND (verify
+the dashboard start command at provisioning); the unverified Render external facts (snapshot
+schedule/retention, minimum disk size, bandwidth, cron billing, workspace fees, `.python-version`
+acceptance form, region immutability) — OWED AT PROVISIONING; **OD-INFRA-1/2 ODR rows still owed**;
+plus PSRR-C1-N1/N2/N3, REV-REC-O1/O2/O3, INFRA-REV-O1/O2/O3, application-layer OBS-1…OBS-4 and the nine
+tranche residual risks, GAP-SYNC-01-NB1/NB2, PC3-N2.
+
+**Boundaries.** No Render service, disk, environment variable, DNS record, custom TLS, production
+secret, or production email created or configured; no payment/MoR; no runtime or database change
+(`web/`, `engine/` untouched; no SQLite migration; no PostgreSQL/Redis); no multi-worker, multi-thread
+or horizontal scaling; no ProxyFix; no HSTS; OPS-SM1 EXECUTED: NO; PSRR COMPLETE: NO; PSRR GO ELIGIBLE:
+NO; DEPLOYMENT AUTHORIZED: NO; PAID ACTIVATION AUTHORIZED: NO; no new domain and no DOMEX work.
+`OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY if/when this exact candidate is merged and
+post-merge verified. Next required step: Independent External Review of this exact SHA + bundle.
