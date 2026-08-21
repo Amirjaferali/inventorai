@@ -12646,3 +12646,100 @@ NO; PSRR GO ELIGIBLE: NO; DEPLOYMENT AUTHORIZED: NO; PAID ACTIVATION AUTHORIZED:
 work. `OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY if/when this exact candidate is
 merged and post-merge verified. Next required step: Independent External Review of this exact SHA +
 bundle (§5B.13 incl. mandatory independent smoke).
+
+---
+
+## INFRA-G1-R2 — Render Production-Serving (WSGI) Bounded Implementation (Owner-authorized implementation candidate; PRECISION-REPAIR candidate)
+
+**Base:** `306f3499a2bd51e9d7047c9ffd5c4f091d2ca696` (PR #543 merge — INFRA-G1-R1, authoritative;
+independently re-verified live: first parent `9b3bc28e…`, second parent `458c1316…`, merge tree
+`b5df6a4a…` = accepted candidate tree, empty candidate→merge diff). **Gate provenance (corrected):**
+**INFRA-G1-R1** is the merged, authoritative GOVERNANCE contract (hosting/region selection recording —
+OD-INFRA-1 RENDER, OD-INFRA-2 FRANKFURT — plus the bounded deployment-preparation contract);
+**INFRA-G1-R2** is THIS bounded IMPLEMENTATION performed under it. Earlier implementation artifacts
+that self-identified as "INFRA-G1-R1" are corrected in this candidate.
+
+**Repair lineage.** The first implementation candidate `36eb4102a00e7d00fa732572d6dbb76b6c2694a4` was
+independently reviewed — ACCEPT WITH NON-BLOCKING OBSERVATIONS; Reviewer Grill PASS; technical
+implementation PASS; independent full suite 2969 passed / 3 skipped / 1 xfailed / 0 failed — but
+carried 3 unsupported material claims, so the Owner withheld publication and authorized THIS repair
+candidate from the exact authoritative base. `36eb4102…` is preserved UNCHANGED as reviewed evidence
+(local branch `infra-g1r2-reviewed-evidence`; local-only artifact, never described as remotely
+verifiable). This repair corrects provenance/precision ONLY: **no runtime behaviour is changed** — the
+`gunicorn.conf.py` settings, the pinned dependency, the Python pin, the WSGI target, and the SQLite
+architecture are byte-equivalent in effect to the reviewed candidate.
+
+**Reviewer observation dispositions.** OBS-1 gate-label misattribution — **RESOLVED** (labels corrected
+in `gunicorn.conf.py`, `tests/test_infra_render_production_serving.py`, the `requirements.txt` comment
+block and RL-A1; R1 now appears only as the contract/base). OBS-2 RED evidence mismatch — **RESOLVED**:
+RED was reconstructed fresh at the exact base **using the FINAL test file** and is **14 failed / 4
+passed**, exactly reproducing the reviewer; the earlier "15 failed / 3 passed" was measured against a
+superseded draft of that file (three crude text assertions were later replaced by AST/behavioural ones)
+and is **withdrawn as non-reproducible**. The load-bearing truth is unchanged: the pre-implementation
+base fails the production-serving contract. OBS-3 Render documentation overclaim — **RESOLVED**: the
+`.python-version` major.minor acceptance detail is now recorded as an **EXTERNAL PROVIDER FACT — TO BE
+CONFIRMED AT PROVISIONING** (search-sourced only; direct official-documentation fetch is blocked by the
+session egress proxy and was NOT independently reproduced). `.python-version = 3.11` is retained on
+REPOSITORY evidence (it matches the tested runtime 3.11.15 and is test-pinned to the running
+interpreter). OBS-4 CONFIGURED guard gap — **RESOLVED** as a one-line, directly relevant strengthening
+with focused evidence: an audit of all 17 provider-dependent rows found **zero** un-negated
+`CONFIGURED` occurrences (no semantics conflict), a falsified row (`— NOT PROVISIONED, CONFIGURED`)
+**passed** the guard as it stood (gap confirmed) and **fails** with the added assertion, and the
+truthful state stays green. OBS-5 dashboard start command not repository-pinned — **CARRIED FORWARD**
+(`render.yaml` deliberately NOT added; the Render dashboard start command
+`gunicorn -c gunicorn.conf.py web.app:app` must be verified during provisioning). OBS-6 RL-F1/F2
+summary imprecision — **RESOLVED**: the two rows carry DIFFERENT qualifiers (RL-F1 "NOT PROVISIONED,
+NOT CONFIGURED, no account/resource exists"; RL-F2 "NOT PROVISIONED; no legal/tax/data-residency
+conclusion is implied") and all summaries now state them separately; the underlying checklist rows were
+not rewritten. OBS-7 Owner authorization provenance — **ACCURATELY RECORDED**: this implementation gate
+is Owner-authorized by the Owner instruction that commissioned it, first durably recorded here; no
+earlier repository provenance is claimed.
+
+**Delivered (unchanged in substance from the reviewed candidate).** Provider-neutral
+`gunicorn.conf.py`: `workers = 1`; `threads = 1`; `preload_app = False` (the thread-bound SQLite
+connection is created inside the worker, never in the master before fork); `reload = False`;
+`bind = "0.0.0.0:%s" % os.environ.get("PORT", "10000")` (platform port consumed; default deliberately
+not the development port); logs to stdout/stderr; no secret, no database path, no provider-specific
+setting; documented start command `gunicorn -c gunicorn.conf.py web.app:app`. `requirements.txt` pins
+`gunicorn==26.1.0` with the header comment corrected (a SERVING dependency, not an imported one).
+`.python-version` = `3.11`. **No `render.yaml`.** `tests/test_infra_render_production_serving.py` — 18
+AST/behavioural tests (WSGI target; workers/threads; preload; reload; PORT consumption across two
+distinct values plus a safe default and a never-5000 assertion; AST proof of no `.run(...)` call and no
+Flask/werkzeug serving import; dev path unchanged; no ProxyFix/forwarded-header trust; behavioural
+proof that no response carries `Strict-Transport-Security`; AST proof the config reads exactly one
+environment variable and embeds no secret/DB-path/token; no debug/reload/spew).
+
+**WSGI selection (unchanged, measured).** Gunicorn `--workers 1 --threads 1` → exactly ONE worker
+process with ONE OS thread; Waitress `--threads=1` → TWO OS threads in one process, so it cannot
+express the governed invariant → rejected on the invariant; no repository-native alternative existed.
+
+**Evidence (all re-run fresh on THIS candidate).** RED 14 failed / 4 passed at the exact base with the
+final test file → GREEN 18/18. **12 mutation probes, all killed:** workers=2; threads=4;
+preload_app=True; reload=True; hard-coded `0.0.0.0:5000`; unpinned `gunicorn`; forbidden dependency
+family; wrong Python pin; RL row claiming PROVISIONED; uncited Owner selection; bare `SELECTED`; and
+the new falsified `CONFIGURED` state. Fresh dependency audit after the dependency change: **ZERO known
+findings** (point-in-time). Targeted regressions: **159 passed**. `UNIVERSAL GUARDRAIL SMOKE: PASS`.
+**Full suite: 2969 passed / 3 skipped / 1 xfailed / 0 failed.** `git diff --check` clean.
+
+**RL synchronization.** RL-A1 → 2969/3/1/0 at the INFRA-G1-R2 candidate; RL-F1/F2 record the Owner
+selections with their own distinct qualifiers (above); the `PROVIDER-DEPENDENT` vocabulary entry
+clarified; the pinned guardrail test **strengthened twice over** — a recorded selection must cite its
+governing gate AND state `NOT PROVISIONED`, while bare `SELECTED`, `COMPLETE`, un-negated `PROVISIONED`
+and un-negated `CONFIGURED` are all forbidden on every provider-dependent row. `PSRR TRIGGERED: NO`,
+`DEPLOYMENT AUTHORIZED: NO`, `PAID ACTIVATION AUTHORIZED: NO`, `PHASE-10 CLOSURE ≠ RELEASE APPROVAL`
+preserved verbatim.
+
+**Carry-forwards.** R2-REV-NB-START-COMMAND: the Render dashboard start command must be verified at
+provisioning (no `render.yaml`). Render UNVERIFIED external facts (snapshot schedule/retention, minimum
+disk size, bandwidth, cron billing, workspace fees, `.python-version` acceptance form) — OWED AT
+PROVISIONING; nothing marked verified. OD-INFRA-1/2 Owner-Decision-Register rows — STILL OWED
+(`OWNER_DECISION_REGISTER.md` untouched). All prior observations preserved: PSRR-C1-N1/N2/N3;
+REV-REC-O1/O2/O3; INFRA-REV-O1/O2/O3; application-layer OBS-1…OBS-4; GAP-SYNC-01-NB1/NB2; PC3-N2.
+
+**Boundaries.** No Render resource, account, DNS, TLS, or production secret; INFRASTRUCTURE PROVISIONED:
+NO; PUBLIC DEPLOYMENT STARTED: NO; OPS-SM1 EXECUTED: NO; no email/monitoring/payment provider selected
+or depended upon; no SQLite/schema/ORM/connection-model change; `web/` and `engine/` untouched; no
+ProxyFix; no HSTS; no debug/auto-reload; no multi-worker/multi-thread serving; no future-domain work;
+PSRR COMPLETE: NO; PSRR GO ELIGIBLE: NO; DEPLOYMENT AUTHORIZED: NO; PAID ACTIVATION AUTHORIZED: NO.
+`OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY if/when this exact candidate is merged and
+post-merge verified. Next required step: Independent External Review of this exact SHA + bundle.

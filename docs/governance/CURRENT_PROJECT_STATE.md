@@ -2424,8 +2424,62 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
-- **INFRA-G1-R1 — HOSTING/REGION SELECTION RECORDING + BOUNDED RENDER DEPLOYMENT-PREPARATION CONTRACT
-  (Owner-authorized GOVERNANCE-ONLY candidate, PR pending), base
+- **INFRA-G1-R2 — RENDER PRODUCTION-SERVING (WSGI) BOUNDED IMPLEMENTATION (Owner-authorized
+  implementation candidate, PR pending), base `306f3499a2bd51e9d7047c9ffd5c4f091d2ca696` (PR #543
+  merge — INFRA-G1-R1, authoritative; first parent `9b3bc28e…`, second parent `458c1316…`, merge tree
+  `b5df6a4a…` = accepted candidate tree, empty candidate→merge diff — independently re-verified
+  live).** Implements ONLY the INFRA-G1-R1 §4/§13 production-serving scope. **WSGI selection
+  (diagnosed, not assumed): Gunicorn** — chosen on empirical evidence that `gunicorn --workers 1
+  --threads 1` yields exactly ONE worker process with exactly ONE OS thread, whereas Waitress at
+  `--threads=1` was measured running 2 OS threads (accept + worker), so it cannot express the governed
+  invariant cleanly; no other repository-present alternative exists. Delivered: new provider-neutral
+  `gunicorn.conf.py` (workers=1; threads=1; `preload_app=False` so the thread-bound SQLite connection
+  is created inside the worker, never in the master; `reload=False`; `bind=0.0.0.0:$PORT` with a safe
+  non-5000 default; stdout/stderr logs; no secret, no DB path, no provider-specific setting);
+  `requirements.txt` pins `gunicorn==26.1.0` (header comment corrected — it is a serving dependency,
+  not an imported one); `.python-version` = `3.11` (matches the tested runtime 3.11.15 — repository evidence; the exact
+  acceptance/interpretation of the major.minor form by the platform is an EXTERNAL PROVIDER FACT — TO BE
+  CONFIRMED AT PROVISIONING, not independently verified here); NO `render.yaml` (dashboard configuration suffices; provider-specific artifact
+  deliberately avoided); new `tests/test_infra_render_production_serving.py` (18 tests, AST- and
+  behaviour-based). Evidence: RED reconstructed at the exact base with the FINAL test file — 14 failed / 4 passed (independently reproduced by the reviewer; the earlier “15/3” was measured against a superseded draft of the test file and is withdrawn) → GREEN 18/18; end-to-end live serve with the
+  repository config (HTTP 200 on `/health` and `/`, CSP present, **HSTS absent**, master+1 worker,
+  worker thread count = 1); 12 mutation probes all killed (workers=2, threads=4, preload=True,
+  reload=True, hard-coded 5000, unpinned gunicorn, forbidden dependency family, wrong Python pin, plus
+  four on the strengthened RL pin including the newly closed CONFIGURED gap); fresh dependency audit ZERO known findings; targeted regressions
+  159 passed; smoke PASS; **full suite 2969 passed / 3 skipped / 1 xfailed / 0 failed** (+18). Dev path
+  UNCHANGED (`_run_config` still `threaded=False`, port 5000 — test-pinned); no ProxyFix; no HSTS; no
+  forwarded-header trust; no SQLite/schema/ORM change; no email/monitoring/payment dependency. RL
+  synchronization performed because this change touches those truth cells: RL-A1 → 2969/3/1/0; RL-F1
+  → `Owner-SELECTED: Render (OD-INFRA-1, INFRA-G1-R1) — NOT PROVISIONED, NOT CONFIGURED, no
+  account/resource exists`; RL-F2 → `Owner-SELECTED: Frankfurt (OD-INFRA-2, INFRA-G1-R1) — NOT
+  PROVISIONED; no legal/tax/data-residency conclusion is implied` (the two rows carry different
+  qualifiers — earlier summaries that attributed identical wording to both are corrected here); the
+  PROVIDER-DEPENDENT vocabulary clarified and the pinned guardrail test **strengthened** (a recorded
+  selection must cite its gate AND state NOT PROVISIONED; bare `SELECTED`, `COMPLETE`, un-negated
+  `PROVISIONED`, and now un-negated `CONFIGURED` remain forbidden). INFRASTRUCTURE PROVISIONED: NO; PUBLIC DEPLOYMENT: NO;
+  OPS-SM1: NOT EXECUTED; PSRR COMPLETE: NO; PSRR GO ELIGIBLE: NO; DEPLOYMENT AUTHORIZED: NO; PAID
+  ACTIVATION AUTHORIZED: NO. `OWNER_DECISION_REGISTER.md` UNCHANGED (OD-INFRA-1/2 rows remain owed).
+  This REPAIR candidate supersedes the reviewed candidate `36eb4102a00e7d00fa732572d6dbb76b6c2694a4`,
+  which is preserved unchanged as reviewed evidence (ACCEPT WITH NON-BLOCKING OBSERVATIONS; reviewer
+  full suite 2969/3/1/0); the repair corrects provenance/precision only and changes no runtime
+  behaviour. This implementation gate is Owner-authorized by the Owner instruction that commissioned
+  it; no earlier repository provenance for that authorization is claimed. Authoritative ONLY if/when
+  this exact candidate is merged and post-merge verified.
+
+- **INFRA-G1-R1 — HOSTING/REGION SELECTION RECORDING + BOUNDED RENDER DEPLOYMENT-PREPARATION CONTRACT:
+  MERGED / AUTHORITATIVE (candidate `458c1316056054569f45b7c9faf033a53391abd9` Owner-accepted at that
+  exact SHA, PR #543, tip `306f3499a2bd51e9d7047c9ffd5c4f091d2ca696`; first parent `9b3bc28e…`, second
+  parent `458c1316…`, merge tree `b5df6a4a…` = candidate tree, empty candidate→merge diff —
+  independently re-verified).** OD-INFRA-1 RENDER and OD-INFRA-2 FRANKFURT are the durably recorded
+  Owner selections; the bounded Render deployment-preparation contracts are authoritative. Independent
+  Review: ACCEPT WITH NON-BLOCKING OBSERVATIONS (RL-F1/F2 staleness — **addressed by the implementation
+  candidate above**; `_run_config` port-5000 handling — **addressed via the new production path, dev
+  path deliberately unchanged**; Render UNVERIFIED external facts — still owed at provisioning;
+  OD-INFRA-1/2 ODR rows — still owed at the next ODR-touching gate). (Original candidate-stage bullet
+  retained below as history.)
+
+- **(superseded history) INFRA-G1-R1 — HOSTING/REGION SELECTION RECORDING + BOUNDED RENDER DEPLOYMENT-PREPARATION CONTRACT
+  (was: Owner-authorized GOVERNANCE-ONLY candidate, PR pending), base
   `9b3bc28ebeea68963b836bb508141dc3228092f7` (PR #542 merge — INFRA-G1-C, authoritative; first parent
   `88c5f4d5…`, second parent `e79a2300…`, merge tree `3c1a48cb…` = accepted candidate tree, empty
   candidate→merge diff — independently re-verified live).** Creates

@@ -130,8 +130,17 @@ def test_adviser_and_provider_items_not_marked_done():
             assert not re.search(
                 r"\|\s*IMPLEMENTED LOCAL FOUNDATION\s*\+?\s*\|", line), line
         if "PROVIDER-DEPENDENT" in line and "| RL-" in line:
-            # "NOT SELECTED" is the truthful state; a bare "SELECTED" or a
-            # completion claim on a provider-dependent row is forbidden
-            assert not re.search(r"(?<!NOT )\bSELECTED\b", line), line
+            # A provider-dependent row may state EITHER "NOT SELECTED" or an
+            # Owner selection recorded under a governing gate ("Owner-SELECTED"
+            # + an INFRA-/OD- citation). Any other bare "SELECTED", any
+            # completion claim, and any un-negated provisioning claim remain
+            # forbidden — selection is never provisioning or completion.
+            for match in re.finditer(r"(?<!NOT )(?<!Owner-)\bSELECTED\b", line):
+                raise AssertionError(line)
+            if "Owner-SELECTED" in line:
+                assert re.search(r"(INFRA-G1-R1|OD-INFRA-\d)", line), line
+                assert "NOT PROVISIONED" in line, line
             assert "COMPLETE" not in line, line
+            assert not re.search(r"(?<!NOT )\bPROVISIONED\b", line), line
+            assert not re.search(r"(?<!NOT )\bCONFIGURED\b", line), line
     assert "NOT SELECTED" in _text()          # provider truth stated plainly
