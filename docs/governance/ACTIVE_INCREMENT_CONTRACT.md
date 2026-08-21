@@ -41,10 +41,47 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — PSRR APPLICATION-LAYER TRANCHE EXECUTION RECORD: Owner-authorized GOVERNANCE-ONLY
-recording candidate):** Base: `274652a51c2132500c8c6b79e5666932f4ba77da` (PR #540 merge — PSRR-C1,
-authoritative; independently re-verified live: first parent `aab8f365…`, second parent `2b694597…`,
-merge tree `be57a33a…` = accepted candidate tree, empty candidate→merge diff).
+**Status (current — INFRA-G1-C PRODUCTION INFRASTRUCTURE & PROVIDER SELECTION CONTRACT:
+Owner-authorized GOVERNANCE-ONLY candidate):** Base: `88c5f4d5d3d3a5afb508b5f26852fd9e13d7ece9`
+(PR #541 merge — PSRR application-layer recording, authoritative; independently re-verified live:
+first parent `274652a5…`, second parent `382d6733…`, merge tree `9452481f…` = accepted candidate tree,
+empty candidate→merge diff).
+
+**Objective.** ONE governance-only candidate creating
+`docs/governance/INFRA_G1_C_PRODUCTION_INFRASTRUCTURE_PROVIDER_SELECTION_CONTRACT.md`: the OD-J2 §3.2
+delegated gate's contract (core preserved exactly — hosting provider + production region; OD-J2 not
+rewritten/expanded) plus selection/configuration coordination criteria for TLS/proxy, monitoring/
+alerting, backup/restore, email, and secrets/logging operations with all canonical boundary owners
+preserved (P10-SEC1, P10-OB1, P10-BR1, email boundary, RL-C1/PSRR §8); per-surface selection criteria,
+evidence-before-acceptance obligations, portability/lock-in requirements, per-surface separate future
+Owner selection decisions, hosting-first sequencing; seven possible-code diagnostic gates (each:
+DIAGNOSIS REQUIRED BEFORE CODE / SEPARATE OWNER IMPLEMENTATION AUTHORIZATION REQUIRED); OPS-SM1
+registered (not executed; nothing built); policy/legal separation (substance consumed, never created);
+PSRR dependency mapping with state preserved (no item PASS from contract existence); free-vs-paid
+separation preserved; payment/MoR/pricing/tax/deployment authorization excluded. Allowed paths: the
+new contract + `ACTIVE_EXECUTION_ROADMAP.md` + `CURRENT_PROJECT_STATE.md` +
+`ACTIVE_INCREMENT_CONTRACT.md` ONLY. Forbidden: all runtime/test/schema/guardrail paths;
+`OWNER_DECISION_REGISTER.md`; any provider naming/evaluation/selection; any provisioning.
+
+**Evidence.** Governance-only docs diff; smoke PASS at base and re-verified at candidate; §5B.1
+determination recorded openly (zero executable bytes — not an implementation candidate; no §5B.6
+trigger; authoritative full-suite truth 2951/3/1/0 stands from the Creator + Independent runs at the
+application-layer tranche on this lineage); adversarial governance truth sweep UNSUPPORTED MATERIAL
+CLAIMS: 0.
+
+**Boundaries:** PROVIDER SELECTED: NO; RUNTIME IMPLEMENTATION STARTED: NO; OPS-SM1 EXECUTED: NO; PSRR
+COMPLETE: NO; PSRR GO ELIGIBLE: NO; DEPLOYMENT AUTHORIZED: NO; PAID ACTIVATION AUTHORIZED: NO
+(`D-P8-PL-01 class C`); no future-domain work. `OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative
+ONLY if/when this exact candidate is merged and post-merge verified. Next required step: **Independent
+External Review of this exact SHA + bundle** (§5B.13 incl. mandatory independent smoke).
+
+**Immediately prior (PSRR APPLICATION-LAYER TRANCHE EXECUTION RECORD — governance-only candidate
+`382d6733…` Owner-accepted at that exact SHA and MERGED via PR #541, tip
+`88c5f4d5d3d3a5afb508b5f26852fd9e13d7ece9`; now AUTHORITATIVE — APPLICATION-LAYER TRANCHE:
+AUTHORITATIVE EVIDENCE; retained as history):** Base: `274652a51c2132500c8c6b79e5666932f4ba77da`
+(PR #540 merge — PSRR-C1, authoritative; independently re-verified live: first parent `aab8f365…`,
+second parent `2b694597…`, merge tree `be57a33a…` = accepted candidate tree, empty candidate→merge
+diff).
 
 **Objective.** ONE governance-only recording candidate creating
 `docs/governance/PSRR_APPLICATION_LAYER_TRANCHE_EXECUTION_RECORD.md`: the Owner-accepted,
