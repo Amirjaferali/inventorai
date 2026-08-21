@@ -64,6 +64,11 @@ _MESSAGE_KEYS = {
         "UI_B_SESSION_039",
     "That answer could not be saved just now. Please try again.":
         "UI_B_SESSION_040",
+    # PVCG-R1: the durable-failure message for the five non-answer actions
+    # (same mechanism as UI_B_SESSION_040; separate string so a deferred or
+    # "I don't know" action is not misdescribed as an answer).
+    "That response could not be saved just now. Please try again.":
+        "UI_B_SESSION_049",
     ("Current working snapshot selected for this temporary session. It has not "
      "been permanently saved or approved."): "UI_B_DELIV_105",
     # CF-2 Arabic-localization remainder: the five /start-flow error-path
@@ -680,6 +685,10 @@ UI_STRINGS = {
     "UI_B_SESSION_039": {
         "en": "Enter an answer, or choose one of the response options below.",
         "ar": "أدخل إجابة، أو اختر أحد خيارات الرد أدناه.",
+    },
+    "UI_B_SESSION_049": {
+        "en": "That response could not be saved just now. Please try again.",
+        "ar": "تعذّر حفظ هذا الرد الآن. يرجى المحاولة مرة أخرى.",
     },
     "UI_B_SESSION_040": {
         "en": "That answer could not be saved just now. Please try again.",

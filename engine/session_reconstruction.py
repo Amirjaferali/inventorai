@@ -198,9 +198,12 @@ def _reconstruct(store, project_id: str):
             "accepted-answer replay count %d exceeds the bound %d"
             % (len(evidence), MAX_ACCEPTED_ANSWER_REPLAY))
 
-    # idea_id for the FRESH reconstruction state (the durable contract is already
-    # validated by the evidence load above).
-    idea_id = store.load_contract(project_id).idea_id
+    # The FULL validated durable contract (the evidence load above already
+    # validated it). PVCG-R1: this single read supplies BOTH the `idea_id` and
+    # the complete durable ledger — no second read, no second store, no second
+    # truth source.
+    contract = store.load_contract(project_id)
+    idea_id = contract.idea_id
 
     # Fresh, local, canonical state — RECONSTRUCTION ITSELF never rehydrates it
     # into SESSION_STORE and never shares it with any live session; the SOLE
@@ -224,12 +227,20 @@ def _reconstruct(store, project_id: str):
     # re-derivation, no synthesis. ``run_iteration`` never appends ledger
     # records (that is the web layer's Increment-2 job), so without this the
     # reconstructed state replays progression truthfully but loses the
-    # recorded-answer ledger that the deliverable's requirement landscape and
+    # recorded ledger that the deliverable's requirement landscape and
     # validation plan are assembled from. Non-epistemic by the ledger's own
     # contract: gaps, maturity, stage, and next question are unaffected.
-    # (Non-answer dispositions were never durably persisted; the reconstructed
-    # ledger honestly carries the durable subset only.)
-    state.assertions = list(evidence)
+    #
+    # PVCG-R1: the ledger is restored from the FULL durable contract, so the
+    # governed non-answer dispositions (`unknown`, `deferred`,
+    # `provisional_assumption`, `specialist_requested`, `evidence_requested`)
+    # reconstruct with their recorded meaning instead of being silently dropped.
+    # The REPLAY above deliberately still consumes ONLY `evidence` (the
+    # `answered` subset), so progression is byte-identically unchanged: a
+    # non-answer record is restored as recorded truth and is NEVER replayed,
+    # assessed, or allowed to move a gap, maturity, or the stage. Records
+    # absent from the durable history stay absent — nothing is fabricated.
+    state.assertions = list(contract.assertions)
 
     open_gaps = tuple(sorted(g.gap_type for g in state.get_open_gaps()))
     next_question = (last_result or {}).get("question")

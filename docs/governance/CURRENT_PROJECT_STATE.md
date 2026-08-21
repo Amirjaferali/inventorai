@@ -2424,8 +2424,33 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
-- **EMAIL-H1 (REPAIR) — OBS-P5-2-01 BOUNDED TOKEN-EXPOSURE HARDENING (Owner-authorized repair
-  candidate, PR pending), base `602ccd39da59c1d93aa0f99afa2df5f662896503` (PR #545 merge —
+- **PVCG-R1 — DURABLE EPISTEMIC MEMORY (Owner-authorized IMPLEMENTATION candidate, PR pending), base
+  `9d2b651588dc6879948e89aac3ec43c8c7c873d7` (PR #546 merge — EMAIL-H1, AUTHORITATIVE; independently
+  re-verified live on all four merge criteria).** Disposition:
+  **`PVCG-R1 IMPLEMENTED / CANDIDATE — NOT AUTHORITATIVE UNTIL MERGED`.** The five governed non-answer
+  epistemic dispositions (`unknown`, `deferred`, `provisional_assumption`, `specialist_requested`,
+  `evidence_requested`) now travel the EXISTING canonical durable seam (`append_record`) with a
+  content-derived idempotency identity and persist-before-acknowledge, and
+  `engine/session_reconstruction.py` restores the ledger from the FULL durable contract while the
+  REPLAY still consumes only the answered subset — so progression is byte-identically unchanged.
+  **No schema change, no migration, no second truth source** (`AcknowledgedUnknown` proven DERIVED and
+  test-pinned as never persisted; `pending` is an existing field on the record; the store still holds
+  exactly `projects` + `records`). Backward compatibility proven: answered-only projects reconstruct
+  identically and missing historical non-answer records are never fabricated. Evidence: RED 16 failed
+  / 10 passed → GREEN 26/26, with every restart assertion reconstructing in a SEPARATE interpreter
+  against the real on-disk SQLite store; 8 mutation probes killed with byte-restoration verified;
+  targeted regressions 326 passed (16-file persistence selection) and 285 passed / 1 xfailed (19-file
+  core-loop selection); smoke PASS; **full suite 3021 passed / 3 skipped / 1 xfailed / 0 failed**.
+  Two self-found defects disclosed and fixed: a test fixture that leaked `os.environ` /
+  `sys.modules["web.*"]` and broke 8 unrelated tests, and a duplicate `UI_B_SESSION_041` catalogue key
+  that silently resolved the new message to the wrong text (moved to the free `UI_B_SESSION_049`;
+  catalogue now audited duplicate-free). **PVCG SATISFIED: NO. MINIMUM LAUNCH-CONFORMANCE SET
+  SATISFIED: NO. R2 / R3 / R4: NOT STARTED.** No release classification changed; Render not reopened;
+  no production email provider; `main` not reconciled; `OWNER_DECISION_REGISTER.md` unchanged.
+
+- **EMAIL-H1 (REPAIR) — OBS-P5-2-01 BOUNDED TOKEN-EXPOSURE HARDENING (MERGED AND AUTHORITATIVE via
+  PR #546, merge `9d2b651588dc6879948e89aac3ec43c8c7c873d7`; superseded history), base
+  `602ccd39da59c1d93aa0f99afa2df5f662896503` (PR #545 merge —
   INFRA-G1-P1, authoritative; independently re-verified live).** Supersedes **TWO** REJECTED
   candidates, both preserved unchanged as immutable rejected evidence and neither merged, amended,
   rebased, reused or published: `3cea988e41afbc32dfb7e91eee150d6947c2796e` (first candidate) and

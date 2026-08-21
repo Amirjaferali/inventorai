@@ -41,8 +41,57 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — EMAIL-H1 REPAIR 2: OBS-P5-2-01 bounded token-exposure hardening + B-1 guard-truth
-correction; Owner-authorized narrow repair after the second Independent Review REJECT):** Base:
+**Status (current — PVCG-R1: DURABLE EPISTEMIC MEMORY; Owner-authorized implementation gate after the
+approved amended PVCG Minimum Launch-Conformance Set).** Base:
+`9d2b651588dc6879948e89aac3ec43c8c7c873d7` (PR #546 merge — EMAIL-H1, AUTHORITATIVE; re-resolved live
+from `origin/feature/atomic-json-session-persistence` and independently re-verified: first parent
+`602ccd39…`, second parent `f4ee27d1…`, merge tree `2aa371a1…`, empty candidate→merge diff).
+
+**Disposition: `PVCG-R1 IMPLEMENTED / CANDIDATE — NOT AUTHORITATIVE UNTIL MERGED`.** PVCG itself is
+NOT closed; R2 (gap relevance), R3 (semantic stability) and R4 (correction/invalidation) remain
+PENDING and unimplemented. This gate makes **no** release-readiness claim of any kind.
+
+**Objective.** Route the five already-governed NON-ANSWER epistemic dispositions — `unknown`,
+`deferred`, `provisional_assumption`, `specialist_requested`, `evidence_requested` — through the
+EXISTING canonical durable seam so they survive a process restart and reconstruct with their recorded
+meaning. PVCG established (and this gate re-verified from the live repository) that these were
+accepted in-session but lost across restart, while `answered` already persisted.
+
+**No schema change and no migration were required.** `engine/record_contract.py` `_ASSERTION_FIELDS`
+already carries `disposition`, `content`, `gap_context`, `iteration`, `provenance`,
+`validation_status`, `quality`, `pending`, `responsibility`, `resolves_gap`, `contradicts`,
+`supersedes`, `superseded_by`; `SqliteRecordStore.append_record` / `load_contract` are
+disposition-agnostic. Only `load_accepted_answer_evidence` filters to `answered`, and it is unchanged.
+
+**Delivered (three runtime surfaces + one test file).**
+* `web/app.py` — the non-answer branch now mints its record against a throwaway ledger view, computes
+  a content-derived idempotency identity (`_interaction_idempotency_key`, same HMAC construction and
+  same `idempotency_key` column as the answered path, own domain-separator label), appends through
+  `append_record`, and publishes the single ledger delta to live memory ONLY after the durable append
+  commits (persist-before-acknowledge). On `IntegrityError` it confirms by reload before treating a
+  retry as an idempotent no-op; on any durable failure live memory is unchanged and nothing is
+  acknowledged. A separate `INTERACTION_NOT_SAVED_MESSAGE` is used so a deferred / "I don't know"
+  action is never misdescribed as an answer.
+* `engine/session_reconstruction.py` — the ledger is restored from the FULL validated durable contract
+  (one existing read, already performed for `idea_id`) instead of the answered-only subset. **The
+  replay still consumes ONLY the answered subset**, so progression is byte-identically unchanged and a
+  non-answer record is never replayed, assessed, or allowed to move a gap, maturity, or the stage.
+* `web/ui_text.py` — the new message registered under a FREE key (`UI_B_SESSION_049`) with EN + AR.
+* `tests/test_pvcg_r1_durable_epistemic_memory.py` — 26 integrated tests whose restart half runs in a
+  SEPARATE interpreter against the real on-disk SQLite store.
+
+**Derived state stays derived (no second truth source).** `AcknowledgedUnknown` is deterministically
+re-derived by the existing replay from durable answered content — proven, and pinned by a test that
+also asserts it is never written as a durable record. `pending` (evidence / specialist) is an existing
+field ON the assertion record and therefore persists with it, not beside it. Readiness, gaps, maturity
+and stage remain derived. The durable store still holds exactly two tables (`projects`, `records`).
+
+**Backward compatibility.** Answered-only projects reconstruct identically (maturity, open gaps,
+ledger, empty acknowledged-unknowns); no new required field; no old row invalidated; missing
+historical non-answer records are NEVER fabricated — historical loss stays historical loss.
+
+**Superseded (retained as history) — EMAIL-H1 REPAIR 2: OBS-P5-2-01 bounded token-exposure hardening
++ B-1 guard-truth correction; MERGED AND AUTHORITATIVE via PR #546.** Base:
 `602ccd39da59c1d93aa0f99afa2df5f662896503` (PR #545 merge — INFRA-G1-P1, authoritative; re-verified
 live from `origin/feature/atomic-json-session-persistence`). Supersedes TWO rejected candidates, both
 preserved unchanged and neither merged: `3cea988e41afbc32dfb7e91eee150d6947c2796e` (first) and
