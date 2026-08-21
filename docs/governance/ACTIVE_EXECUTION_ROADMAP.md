@@ -12957,3 +12957,83 @@ and session-revocation semantics unchanged; email-sender abstraction unchanged; 
 integration; Render NOT reopened. `OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY if/when
 this exact candidate is merged and post-merge verified. Next required step: Independent External
 Re-Review of this exact SHA + bundle.
+
+---
+
+## PVCG-R1 — Durable Epistemic Memory (Owner-authorized IMPLEMENTATION candidate)
+
+**Base:** `9d2b651588dc6879948e89aac3ec43c8c7c873d7` (PR #546 merge — EMAIL-H1, AUTHORITATIVE;
+re-resolved live from `origin/feature/atomic-json-session-persistence` before any work and
+independently re-verified on all four criteria: first parent `602ccd39da59c1d93aa0f99afa2df5f662896503`,
+second parent `f4ee27d19a17b8596179259ee5bf69f2bc660a19`, merge tree
+`2aa371a1585bc6271d45b95039369e579fca95fa`, empty candidate→merge diff). EMAIL-H1 is NOT reopened.
+
+**Disposition.** `PVCG-R1 IMPLEMENTED / CANDIDATE — NOT AUTHORITATIVE UNTIL MERGED`. This entry makes
+no claim that PVCG is satisfied, that the Minimum Launch-Conformance Set is satisfied, or that any
+release type is ready. **R2 (gap relevance), R3 (semantic stability) and R4 (correction /
+invalidation) are NOT implemented and remain pending separate gates.**
+
+**Problem, re-verified from the live repository before any code change.** The five governed
+non-answer dispositions (`unknown`, `deferred`, `provisional_assumption`, `specialist_requested`,
+`evidence_requested`) were accepted in-session and written to the in-memory `AssertionRecord` ledger,
+but the ONLY call site of `SqliteRecordStore.append_record` was the accepted-answer path
+(`web/app.py`), so they were lost at process restart; `engine/session_reconstruction.py` additionally
+restored the ledger from the answered-only subset. `answered` already persisted and reconstructed.
+
+**No schema change, no migration, no new store.** The canonical contract already represents every
+required field and the store is disposition-agnostic; only the answered-only *filter* used for replay
+needed to stay where it was. Nothing was invented to make the design look cleaner.
+
+**Delivered.** (1) `web/app.py`: the non-answer branch mints its record against a throwaway ledger
+view, derives a content-based idempotency identity with the SAME HMAC construction and the SAME
+`idempotency_key` column as the answered path (own domain-separator label, because the answered token
+is retained across renders and would collide across genuinely different actions), appends through
+`append_record`, and publishes exactly one ledger delta to live memory only AFTER the durable commit;
+`IntegrityError` is confirmed by reload before being treated as an idempotent no-op; any durable
+failure leaves live memory untouched and acknowledges nothing. (2)
+`engine/session_reconstruction.py`: the ledger is restored from the FULL validated durable contract
+(the read already performed for `idea_id`), while the REPLAY still consumes only the answered subset.
+(3) `web/ui_text.py`: a distinct, localized durable-failure message so a non-answer action is not
+misdescribed as an answer. (4) `tests/test_pvcg_r1_durable_epistemic_memory.py`: 26 integrated tests.
+
+**Lowest realistic integrated proof (PVCG §11 / this gate §6).** Every restart assertion drives the
+REAL Flask application against a REAL on-disk SQLite store and then reconstructs **in a separate
+Python interpreter** (`subprocess`), so no result can be produced by surviving in-memory objects.
+
+**Evidence.** RED at the authoritative base with the final tests: **14 failed / 10 passed** (the 10
+passing are the control, the in-session preconditions, backward compatibility and the
+no-second-truth-source guards — no manufactured RED) → GREEN **26/26**. **8 mutation probes, all
+killed**, both mutated files sha256-verified byte-restored: replaying the full ledger; reverting the
+ledger restoration; dropping the idempotency key; acknowledging before persisting; a non-answer record
+claiming `resolves_gap`; a disposition rewritten to `answered`; an idempotency key that ignores the
+action; an evidence request promoted to `DEMONSTRATED`. Targeted regressions: **326 passed** over a
+recorded 16-file persistence/reconstruction/ledger selection and **285 passed / 1 xfailed** over a
+recorded 19-file core-loop selection. `UNIVERSAL GUARDRAIL SMOKE: PASS` (not weakened). Full suite
+**3021 passed / 3 skipped / 1 xfailed / 0 failed** (2995 base + the 26 new R1 tests). Environment
+relevant to persistence: Python 3.11.15, SQLite library 3.45.1, Flask 3.1.3, no `INVENTORAI_DB_PATH`
+or `INVENTORAI_ENV` set in the ambient shell (each test binds its own temporary database).
+
+**Two defects found and fixed during this gate, both disclosed rather than hidden.** (a) The first
+version of the new test fixture mutated `os.environ` and `sys.modules["web.*"]` without restoring
+them, which broke 8 unrelated tests in the full suite; the interference was reproduced in isolation,
+proven to be the fixture's fault and not the product's, and fixed by snapshotting and restoring both.
+(b) The new localized message was first registered under `UI_B_SESSION_041`, a key **already in use**
+by "Saved project — read-only reconstructed review state"; the duplicate silently resolved to the
+wrong text. Caught by the new test, moved to the free key `UI_B_SESSION_049`, and the catalogue is now
+audited duplicate-free (286 entries, 0 duplicates).
+
+**Core-loop non-regression (§12).** `engine/progression_loop.py`, `domain_rules.py`, `scoring.py`,
+`stage3_evaluator.py`, `question_intent_registry.py`, `question_aware_evaluation.py`,
+`controlled_unknown_progression.py`, `subsystem_model.py`, `idea_state.py`, `derived_readiness.py`,
+`domain_registry.py`, `domain_activation.py` and `path_n_questions.py` are ALL byte-unchanged from the
+base. The PVCG core-loop behavioural probes were re-run and reproduce the PVCG baseline exactly
+(determinism holds; adaptivity unchanged; irrelevant-state invariance unchanged; the four non-answer
+actions still leave the next-question decision untouched).
+
+**Boundaries.** No second persistence store, no parallel JSON truth, no cache-as-authority, no
+duplicate epistemic ledger, no schema change, no migration. Question selection, gap priority, scoring,
+semantic recognition, Stage 3, WS10/WS11/WS12, contradiction behaviour, versioning, domain rules,
+`rule_nuances` and the LLM boundary are untouched; no deferred capability was activated. No release
+classification changed. Render NOT reopened; no production email provider; `main` NOT reconciled;
+`OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY if/when this exact candidate is merged and
+post-merge verified. Next required step: Independent External Review of this exact SHA + bundle.

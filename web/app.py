@@ -769,6 +769,13 @@ ANSWER_REQUIRED_MESSAGE = "Enter an answer, or choose one of the response option
 # reuse, or an unavailable durable append). It reveals nothing about the token
 # mechanism, the durable store, or any user content — fail closed, then retry.
 ANSWER_NOT_SAVED_MESSAGE = "That answer could not be saved just now. Please try again."
+# PVCG-R1: the durable-failure message for the five NON-ANSWER actions. It is a
+# separate string because calling "I don't know" / "defer" an *answer* would
+# misdescribe what the owner actually did; the answered message above is
+# unchanged. Registered in `ui_text._MESSAGE_KEYS` so it localises like its
+# answered counterpart.
+INTERACTION_NOT_SAVED_MESSAGE = (
+    "That response could not be saved just now. Please try again.")
 # G-UX-SNAPSHOT-DECISION: truthful, temporary-session acknowledgement for the
 # "Keep current snapshot" post-output decision. It selects the CURRENT deterministic
 # working snapshot for this temporary session only — it does not serialize, duplicate,
@@ -927,6 +934,28 @@ def _answer_idempotency_key(sid, token):
     token) truncated to >= 128 bits. Project-bound; token-derived; one-way (the
     raw token is not stored). This is NOT the engine record_id."""
     msg = _canonical_message(sid, token)
+    return _p2a_hmac.new(_answer_secret(), msg,
+                         _p2a_hashlib.sha256).hexdigest()[:_ANSWER_HMAC_HEX_LEN]
+
+
+def _interaction_idempotency_key(sid, action, gap_context, iteration, content):
+    """PVCG-R1: the durable idempotency identity of ONE accepted NON-ANSWER
+    interaction — HMAC-SHA-256(secret, canonical(sid, action, gap_context,
+    iteration, content)) truncated to the same >= 128 bits as the answered key.
+
+    It reuses the answered path's construction (`_canonical_message` +
+    `_answer_secret`) with its own domain-separator label, and is stored in the
+    SAME additive `idempotency_key` column under the SAME partial UNIQUE index.
+    It is NOT the engine `record_id` (which stays `rec_N`).
+
+    Why the event fields rather than the answered token: the answered token is
+    RETAINED across renders until an accepted answer consumes it, so two
+    genuinely DIFFERENT non-answer actions would share one token and collide.
+    A non-answer action never advances `state.iteration`, so a refresh, retry,
+    or double-submit reproduces all five fields exactly and is recognised as the
+    same event, while a different action / gap / text yields a different key."""
+    msg = _canonical_message("pvcg-r1-interaction", sid, action,
+                             gap_context or "", str(iteration), content or "")
     return _p2a_hmac.new(_answer_secret(), msg,
                          _p2a_hashlib.sha256).hexdigest()[:_ANSWER_HMAC_HEX_LEN]
 
@@ -2700,6 +2729,53 @@ def submit_answer(sid):
         # or evidence. The journey truthfully redisplays the same (still-open)
         # question with an honest acknowledgement rather than feigning progress.
         gap_ctx = select_next_gap(state)
+        # Increment 2 + PVCG-R1: the disposition record on the IdeaState ledger,
+        # now written through the CANONICAL durable seam. It adds NO epistemic
+        # movement (no assess/score/gap/maturity/transcript change) — it records,
+        # truthfully, that the owner took this non-answer action against the
+        # still-open question, and that record now survives a process restart.
+        #
+        # PERSIST BEFORE ACKNOWLEDGE (the answered path's proven shape): the
+        # record is minted against a throwaway ledger view so LIVE state is
+        # untouched until the durable append commits. A metadata-only action
+        # changes nothing else on the state, so publication is exactly the one
+        # ledger append — no whole-state swap and no object identity is
+        # disturbed. On any durable failure live memory is left unchanged and
+        # nothing is acknowledged.
+        _minter = IdeaState(idea_id=state.idea_id)
+        _minter.assertions = list(state.assertions)
+        new_record = _minter.record_interaction(
+            action=action, content=response or "",
+            gap_context=gap_ctx, iteration=state.iteration,
+        )
+        idem_key = _interaction_idempotency_key(
+            sid, action, gap_ctx, state.iteration, response or "")
+        fingerprint = _answer_fingerprint(sid, gap_ctx, action, response or "")
+        try:
+            _get_store().append_record(sid, new_record, idempotency_key=idem_key)
+        except sqlite3.IntegrityError:
+            # Never auto-classify an IntegrityError as a duplicate: reload and
+            # confirm the SAME accepted content under the SAME idempotency
+            # identity before treating a retry as an idempotent no-op.
+            try:
+                prior = _get_store().record_payload_for_idempotency_key(
+                    sid, idem_key)
+            except StoreError:
+                prior = None
+            if prior is not None and _payload_answer_fingerprint(sid, prior) == fingerprint:
+                # Same event resubmitted (refresh / retry / double-submit): no
+                # second durable truth and no second in-memory record.
+                entry["_interaction_ack"] = _NON_ANSWER_ACK[action]
+                return redirect(url_for("show_session", sid=sid))
+            entry["_answer_error"] = INTERACTION_NOT_SAVED_MESSAGE
+            return redirect(url_for("show_session", sid=sid))
+        except StoreError:
+            # Durable append unavailable (including an absent project envelope):
+            # fail closed; live memory unchanged; nothing is acknowledged.
+            entry["_answer_error"] = INTERACTION_NOT_SAVED_MESSAGE
+            return redirect(url_for("show_session", sid=sid))
+        # Durable success — publish the single ledger delta into LIVE memory.
+        state.assertions.append(new_record)
         entry.setdefault("interaction_actions", []).append({
             "action": action,
             "iteration": state.iteration,
@@ -2707,14 +2783,6 @@ def submit_answer(sid):
             "text": response or None,
         })
         entry["_interaction_ack"] = _NON_ANSWER_ACK[action]
-        # Increment 2: durable disposition record on the IdeaState ledger. This
-        # adds NO epistemic movement (no assess/score/gap/maturity/transcript
-        # change) — it only records, truthfully and durably, that the owner took
-        # this non-answer action against the still-open question.
-        state.record_interaction(
-            action=action, content=response or "",
-            gap_context=gap_ctx, iteration=state.iteration,
-        )
         return redirect(url_for("show_session", sid=sid))
 
     # ANSWERED — P4-1b-2a (G-P4-1B-2A-B3-CONTRACT-AMENDMENT-01, OPTION A):
