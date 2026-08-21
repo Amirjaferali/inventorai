@@ -13037,3 +13037,114 @@ semantic recognition, Stage 3, WS10/WS11/WS12, contradiction behaviour, versioni
 classification changed. Render NOT reopened; no production email provider; `main` NOT reconciled;
 `OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY if/when this exact candidate is merged and
 post-merge verified. Next required step: Independent External Review of this exact SHA + bundle.
+
+---
+
+## PVCG-R2-C — Gap-Relevance Hardening Contract / Reconciliation Gate (Owner-authorized GOVERNANCE-ONLY candidate)
+
+**Base:** `c70bad196de73fc27c21a3e1bd8438f1eab41958` (PR #547 merge — PVCG-R1, AUTHORITATIVE;
+re-resolved live from `origin/feature/atomic-json-session-persistence` before drafting and
+independently re-verified on all four merge criteria: first parent `9d2b651588dc6879948e89aac3ec43c8c7c873d7`,
+second parent `5d563203207d81b49076a98d2ddc8c4411c574de`, merge tree
+`24b57a2fcb9cfdaf2e958c5d03f68f4e4a06cfdc`, empty candidate→merge diff).
+
+**Disposition.** `PVCG-R2-C GOVERNANCE CANDIDATE — NOT AUTHORITATIVE UNTIL MERGED`. **PVCG-R2-I is NOT
+STARTED and NOT AUTHORIZED**; it requires this contract to be authoritative AND a separate Owner
+execution authorization. PVCG SATISFIED: NO. MINIMUM LAUNCH-CONFORMANCE SET SATISFIED: NO. No
+Controlled / Public / Commercial release-readiness claim is made or implied.
+
+**Why this gate exists.** A bounded PVCG-R2 implementation was attempted and **stopped before freeze**
+on two governance dependencies an implementation gate has no authority to resolve. The Owner selected
+**Option B — split R2 into a governance contract gate first**. This candidate governs exactly those two
+dependencies and freezes the R2 product truth; it authorizes no code.
+
+**Non-candidate diagnostic SHA.** `5154bcf40673e19805410d3199f86089da2c810a` is a NON-CANDIDATE
+diagnostic commit (its own message says so; the full suite is RED at it). It is preserved as immutable
+diagnostic evidence, is **not** in this candidate's lineage (verified: not an ancestor of the base;
+this candidate's single parent is the base), and must not be published, merged, or built upon.
+
+**Delivered (governance-only; three documentation surfaces, zero runtime/test/fixture/pin diff).** New
+`docs/governance/PVCG_R2_C_GAP_RELEVANCE_HARDENING_CONTRACT.md`. §0 an evidence-class legend that keeps
+executed diagnostic findings from being promoted to repository fact. §2 **DEP-1** — the
+`engine/progression_loop.py` SHA-256 byte pin held at `tests/test_p9_mech_i3_signal_quality.py:75-78`
+and enforced by `test_engine_files_byte_frozen` (line 313) under the authoritative P9-MECH-I3 contract
+is recorded as live and NOT weakened; the precedent for reconciling it is established from repository
+history rather than prose, and stated with corrected precision: the `engine/progression_loop.py`
+digest was introduced at `32165ca` and **reconciled ONCE, at `9399f9d`** (L2SC-01); the broader
+`_FROZEN_ENGINE_SHA256` block was updated again at `41bf30c` (P10-DBT1) but that later change concerned
+**`engine/domain_rules.py` only** and left the `progression_loop.py` digest UNCHANGED — which still
+establishes exact per-key digest reconciliation under explicit later governance as an established
+repository mechanism; R2-I is authorized to update the pinned digest **only** as part of the
+explicitly authorized R2 change, must re-freeze the exact post-R2 digest, must prove no unrelated
+progression-loop behaviour changed, and must never weaken, delete, skip, or `xfail` the protection —
+the authorization is ONE BOUNDED RECONCILIATION, not future unrestricted edit rights. §3 **DEP-2** —
+fixtures whose INPUT encodes manufactured satisfaction may have that input replaced with a
+gap-appropriate answer while the assertion target and test purpose are preserved; deleting tests,
+weakening assertions, skipping/xfailing, broadening the guard to re-admit the defective fixture, and
+rewriting unrelated tests are all forbidden. The prior fixture-preservation authority is now **named
+exactly and reconciled explicitly**: `STRUCTURED_CRITICALITY_CAPTURE_INCREMENT_CONTRACT.md` **§11**
+(line 99, *"the reused WS1 journey (byte-identical inputs)"*), **§12** (spanning lines 101–110, whose
+Correctness criterion at **line 105** reads *"never-interacted requirements remain byte-identical to
+today … — **asserted on the untouched WS1 journey**"*) and **F4** (line 117, *"WS1/WS2/WS3 evidence
+trees byte-identical"*), plus the live fixture comment at `tests/test_structured_criticality.py:69`.
+**Correction (B-3):** an earlier revision of the contract asserted that the literal phrase *"untouched
+WS1 journey"* did **not** appear in §12 and carried the obligation on §11 and F4 alone. That was
+**false** and is withdrawn — §12 does contain it, at line 105, and §12 is now **explicitly inside the
+reconciled/superseded set** rather than reached by implication through §11. For **PVCG-R2-I only**, and
+**only** for fixture inputs proven defect-dependent, the preservation requirements in **§11**, the
+**§12 criterion predicated on the untouched WS1 journey**, the **live fixture comment**, and **F4 to
+the minimum extent directly affected** are **superseded only as necessary** to replace defect-dependent
+inputs with gap-appropriate inputs — the prior authority remains historical evidence, the remainder of
+§12's acceptance criteria stand in full, and this is **not** general permission to rewrite WS1 evidence
+or fixtures. **F4 supersession is not broadened**: it ceases to bar the fixture-input correction
+itself and authorizes no evidence regeneration. A **five-part
+fixture-scope test** must be proven per fixture, and the differential ledger is expanded to **eleven
+fields** including an explicit **CROSS-FILE / EVIDENCE IMPACT** field plus duplication, committed-
+artifact and generator/harness impact — required because the WS1-style input is shared, not local:
+executed scoping found it in **5 test files, 44 committed evidence artifacts across 7 evidence trees,
+and 7 generator/harness scripts**. **`ASSERTION-TARGET CHANGES: 0`** stands, and any needed change
+forces a STOP for Owner review. **Committed WS1–WS7 evidence trees REMAIN FROZEN by default** — R2-I may
+correct fixture inputs without rewriting historical artifacts, and if a change would make a committed
+artifact or generator claim materially false, unreproducible or misleading, R2-I must identify the
+artifact and generator, explain the untruthfulness, **STOP before any regeneration**, and request a
+separate Owner authorization; silent regeneration is prohibited and historical evidence must stay
+distinguishable from post-R2 behaviour. Every affected generator/harness must be **classified** as
+unaffected / historical-only-and-frozen / requires-future-evidence-synchronization — classification
+only; **R2-C modifies no generator**. Finally, where an authorized fixture correction makes a
+"copied verbatim / byte-identical / untouched / do not edit" comment false, R2-I **must** update that
+comment truthfully while preserving provenance — history is not erased and no false claim is left
+standing. §4 the frozen R2 product truth, including
+`uncertain relevance != satisfied` as fail-closed-but-never-punitive. §5 the explicit non-goals. §6 the
+implementation bounds (smallest deterministic seam at the EXISTING answer→gap seam; no broad new
+architecture). §7 WS10/WS11/WS12 remain dormant — reference of ideas permitted, activation is not, and
+WS10 has no committed registry artifact in any case. §8 the required R2-I RED/GREEN shape including
+unchanged R1. §9 the full-suite reconciliation rule. §10 the status ledger. §11 the review path.
+
+**Disclosed non-blocking observation (NB-R2C-1, recorded, NOT fixed, NOT relied upon).** The byte-pin
+comment's cross-reference to the L2SC-01 contract does not resolve to a section discussing the pin, and
+independent review indicates the stale-reference defect is broader than previously described. It is
+therefore **not reused as evidence anywhere in the contract** — the DEP-1 precedent rests solely on the
+per-key digest history re-derived from commits. No unrelated doc-sync repair is in scope for this gate.
+
+**Evidence classification.** The manufactured-satisfaction reproduction, the RED **36 failed / 5
+passed** and GREEN **41/41** figures, the **59 affected items across 14 files**, and the WS1
+per-iteration eligibility trace are all recorded as **Creator-local executed diagnostic evidence** at an
+**unpublished** non-candidate diagnostic commit — **not externally retrievable or reproducible by SHA
+alone**, and explicitly NOT promoted to repository fact. The diagnostic commit must not be published
+merely to make them reproducible; R2-I re-measures independently.
+
+**Evidence for THIS candidate.** Zero executable bytes changed; `UNIVERSAL GUARDRAIL SMOKE: PASS` and
+the full suite **3021 passed / 3 skipped / 1 xfailed / 0 failed** independently re-run at this base
+during this gate — measured with `gunicorn 26.1.0` resolvable on `PATH`, so the serving-stack
+access-log tests EXECUTED rather than skipping (where `gunicorn` is absent from `PATH` those tests SKIP
+and the passed/skipped split differs; this precondition is stated as truth, not as R2 scope);
+`git diff --check` clean; adversarial governance truth sweep `UNSUPPORTED MATERIAL CLAIMS: 0`.
+
+**Boundaries.** No runtime file, no test file, no test fixture, no relevance module, no pin update, and
+no progression-loop change in this candidate. PVCG-R3 (semantic stability / EN-AR equivalence),
+PVCG-R4 (correction/invalidation), full Adaptive Questioning, skip/reorder/add, WS10/WS11/WS12
+activation, Stage-3 evaluator integration, contradiction engine, any LLM/NLP subsystem or embeddings,
+domain expansion, versioning, Render, `main` reconciliation and deployment all remain NOT AUTHORIZED.
+`OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY if/when this exact candidate is merged and
+post-merge verified. Next required step: Independent External Review of this exact SHA + bundle, then a
+SEPARATE Owner execution authorization before any R2-I work begins.

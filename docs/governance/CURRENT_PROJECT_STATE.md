@@ -2424,7 +2424,56 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
-- **PVCG-R1 — DURABLE EPISTEMIC MEMORY (Owner-authorized IMPLEMENTATION candidate, PR pending), base
+- **PVCG-R2-C — GAP-RELEVANCE HARDENING CONTRACT / RECONCILIATION GATE (Owner-authorized
+  GOVERNANCE-ONLY candidate, PR pending), base `c70bad196de73fc27c21a3e1bd8438f1eab41958` (PR #547
+  merge — PVCG-R1, AUTHORITATIVE; independently re-verified live on all four merge criteria).**
+  Disposition: **`PVCG-R2-C GOVERNANCE CANDIDATE — NOT AUTHORITATIVE UNTIL MERGED`**. New
+  `docs/governance/PVCG_R2_C_GAP_RELEVANCE_HARDENING_CONTRACT.md` governs exactly two dependencies
+  that stopped the R2 implementation gate before freeze, per the Owner's **Option B** decision.
+  **DEP-1:** the `engine/progression_loop.py` SHA-256 byte pin
+  (`tests/test_p9_mech_i3_signal_quality.py:75-78`, enforced by `test_engine_files_byte_frozen`) under
+  authoritative P9-MECH-I3 is recorded live and **NOT weakened**; R2-I gets ONE BOUNDED reconciliation
+  — re-freeze the exact post-R2 digest, prove no unrelated progression-loop behaviour changed, never
+  delete/skip/xfail the guard — explicitly **not** future unrestricted edit rights. Precedent
+  established from repository history with corrected precision: the `progression_loop.py` digest was
+  introduced at `32165ca` and **reconciled ONCE, at `9399f9d`**; the later `41bf30c` update changed
+  **`domain_rules.py` only** and left `progression_loop.py` UNCHANGED — still establishing per-key
+  digest reconciliation under explicit later governance as an established mechanism. **DEP-2:** the
+  prior fixture-preservation authority is named exactly (`STRUCTURED_CRITICALITY_CAPTURE_INCREMENT_
+  CONTRACT.md` §11 line 99 "byte-identical inputs", §12 — spanning lines 101–110, whose line-105
+  criterion reads "asserted on the untouched WS1 journey" — F4 line 117 "WS1/WS2/WS3 evidence trees
+  byte-identical", plus `tests/test_structured_criticality.py:69`) and **explicitly
+  superseded for R2-I only, and only for proven defect-dependent inputs, to the minimum extent
+  necessary** — the prior authority remains historical evidence and this is not general permission to
+  rewrite WS1 evidence or fixtures. **Correction (B-3):** an earlier revision claimed the phrase
+  "untouched WS1 journey" did **not** appear in §12 and rested the obligation on §11/F4 alone; that was
+  **false**, is withdrawn, and §12 is now **explicitly inside the reconciled/superseded set** (the rest
+  of §12's acceptance criteria stand in full). **F4 supersession is not broadened** — it reaches only
+  the minimum extent directly affected by the fixture-input correction and authorizes no evidence
+  regeneration. A five-part fixture-scope test is required per fixture; the differential ledger is
+  expanded to **eleven fields** including **CROSS-FILE / EVIDENCE IMPACT**, duplication, committed-
+  artifact and generator/harness impact (the WS1 input is shared: executed scoping found **5 test
+  files, 44 committed evidence artifacts across 7 evidence trees, 7 generator/harness scripts**);
+  **`ASSERTION-TARGET CHANGES: 0`** with a STOP for Owner review otherwise. **Committed WS1–WS7
+  evidence trees REMAIN FROZEN by default** — no silent regeneration; a materially-false artifact
+  forces identify → explain → STOP → request separate Owner authorization. Every affected generator is
+  **classified only** (unaffected / historical-only-frozen / requires-future-authorization) and **no
+  generator is modified**. A "verbatim / byte-identical / untouched / do not edit" comment made false
+  by an authorized correction **must** be updated truthfully with provenance preserved. The R2 product truth is frozen
+  (`uncertain relevance ≠ satisfied`, fail-closed but never punitive). All diagnostic figures are
+  labelled **Creator-local executed diagnostic evidence** at the **unpublished** non-candidate
+  diagnostic commit `5154bcf4…` — preserved, not in this candidate's lineage, **not externally
+  retrievable or reproducible by SHA alone**, never to be published merely for reproducibility — and
+  are **not** promoted to repository fact; R2-I re-measures independently.
+  Zero runtime/test/fixture/pin/generator diff; smoke PASS; full suite 3021/3/1/0 re-run at this base
+  with `gunicorn 26.1.0` on `PATH` so the serving-stack tests executed rather than skipped;
+  `UNSUPPORTED MATERIAL CLAIMS: 0`. **PVCG-R2-I NOT STARTED / NOT AUTHORIZED** (needs this contract
+  authoritative + a separate Owner execution authorization). **PVCG-R3 NOT STARTED. PVCG-R4 NOT
+  STARTED. PVCG SATISFIED: NO. MINIMUM LAUNCH-CONFORMANCE SET SATISFIED: NO.** No release-readiness
+  claim; Render not reopened; `main` not reconciled; `OWNER_DECISION_REGISTER.md` unchanged.
+
+- **PVCG-R1 — DURABLE EPISTEMIC MEMORY (MERGED AND AUTHORITATIVE via PR #547, merge
+  `c70bad196de73fc27c21a3e1bd8438f1eab41958`; superseded history), base
   `9d2b651588dc6879948e89aac3ec43c8c7c873d7` (PR #546 merge — EMAIL-H1, AUTHORITATIVE; independently
   re-verified live on all four merge criteria).** Disposition:
   **`PVCG-R1 IMPLEMENTED / CANDIDATE — NOT AUTHORITATIVE UNTIL MERGED`.** The five governed non-answer
