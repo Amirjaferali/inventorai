@@ -2424,7 +2424,48 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
-- **INFRA-G1-C — PRODUCTION INFRASTRUCTURE & PROVIDER SELECTION CONTRACT (Owner-authorized
+- **INFRA-G1-R1 — HOSTING/REGION SELECTION RECORDING + BOUNDED RENDER DEPLOYMENT-PREPARATION CONTRACT
+  (Owner-authorized GOVERNANCE-ONLY candidate, PR pending), base
+  `9b3bc28ebeea68963b836bb508141dc3228092f7` (PR #542 merge — INFRA-G1-C, authoritative; first parent
+  `88c5f4d5…`, second parent `e79a2300…`, merge tree `3c1a48cb…` = accepted candidate tree, empty
+  candidate→merge diff — independently re-verified live).** Creates
+  `docs/governance/INFRA_G1_R1_HOSTING_REGION_SELECTION_AND_RENDER_DEPLOYMENT_PREPARATION_CONTRACT.md`:
+  **durable record of the Owner infrastructure selections under INFRA-G1-C §2 — OD-INFRA-1 HOSTING
+  PROVIDER: RENDER; OD-INFRA-2 PRODUCTION REGION: FRANKFURT — OWNER SELECTED** (Fly.io recorded as
+  preferred fallback only, NOT selected; no legal/tax/data-residency/sovereignty/commercial conclusion
+  drawn from Frankfurt; OD-INFRA-3…6 remain OPEN; ODR rows = NB8 housekeeping); plus the bounded
+  future contracts, all repository-verified: SQLite/persistent-disk (SUPPORTED; `INVENTORAI_DB_PATH`
+  owner; planning mount `/var/data`; NO migration; NO app-logic change; provisioning must prove
+  in-mount + restart/redeploy survival + hard-fail preserved); production serving (current built-in
+  Flask server NOT acceptable publicly; future single-instance/single-worker/single-thread WSGI on
+  Render `PORT`; no dependency pre-authorized; RUNTIME IMPLEMENTATION NOT AUTHORIZED); trusted
+  proxy/TLS (forwarded-header trust NONE; ProxyFix NOT required; Secure-cookie config-driven; HSTS
+  reassessment-only); production-config matrix (ENV/SECRET_KEY/DB_PATH required; no secret values
+  recorded); `/health` accepted as-is; backup/restore (Render snapshots never sufficient alone;
+  governed `backup_service.py` + off-provider copy + production restore drill required; retention
+  policy-open); monitoring/logging (items 21–22, 26/28 REMAIN OPEN; platform logs not durable); email
+  separation (provider NOT needed before provisioning; NEEDED before public release; OD-INFRA-6 open);
+  OPS-SM1 registered-only (audit script needs no disk); future bounded implementation scope (WSGI
+  dependency + start artifact + version pin; exclusions incl. DB migration/HSTS/ProxyFix/public
+  deployment) and future provisioning scope (non-public verification deployment etc.) — NEITHER
+  authorized by this candidate; PSRR mapping with nothing marked PASS. Governance-only; zero
+  runtime/test diff. All open observations carried (incl. INFRA-REV-O1/O2/O3 by identifier).
+  `OWNER_DECISION_REGISTER.md` UNCHANGED. Authoritative ONLY if/when this exact candidate is merged
+  and post-merge verified.
+
+- **INFRA-G1-C — PRODUCTION INFRASTRUCTURE & PROVIDER SELECTION CONTRACT: MERGED / AUTHORITATIVE
+  (candidate `e79a2300cf5fa35de49d019c98c9b15d22095dc1` Owner-accepted at that exact SHA, PR #542,
+  tip `9b3bc28ebeea68963b836bb508141dc3228092f7`; first parent `88c5f4d5…`, second parent `e79a2300…`,
+  merge tree `3c1a48cb…` = candidate tree, empty candidate→merge diff — independently re-verified).**
+  Independent Review: ACCEPT WITH NON-BLOCKING OBSERVATIONS (INFRA-REV-O1/O2/O3 carried forward by
+  identifier). The infrastructure/provider selection contract is the authoritative selection
+  mechanism; OPS-SM1 registered. Subsequent Owner-accepted read-only gates at this tip: the Provider
+  Evaluation (Tier A = Render/Fly; preferred = Render Frankfurt) and the Render Implementation
+  Diagnosis (SQLite SUPPORTED; code change MIXED — one bounded WSGI/start change + small artifacts;
+  ProxyFix not required), followed by the Owner selections now recorded at INFRA-G1-R1. (Original
+  candidate-stage bullet retained below as history.)
+
+- **(superseded history) INFRA-G1-C — PRODUCTION INFRASTRUCTURE & PROVIDER SELECTION CONTRACT (was: Owner-authorized
   GOVERNANCE-ONLY candidate, PR pending), base `88c5f4d5d3d3a5afb508b5f26852fd9e13d7ece9` (PR #541
   merge — PSRR application-layer recording, authoritative; first parent `274652a5…`, second parent
   `382d6733…`, merge tree `9452481f…` = accepted candidate tree, empty candidate→merge diff —

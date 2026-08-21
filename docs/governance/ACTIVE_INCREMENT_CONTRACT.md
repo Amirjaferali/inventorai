@@ -41,8 +41,49 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — INFRA-G1-C PRODUCTION INFRASTRUCTURE & PROVIDER SELECTION CONTRACT:
-Owner-authorized GOVERNANCE-ONLY candidate):** Base: `88c5f4d5d3d3a5afb508b5f26852fd9e13d7ece9`
+**Status (current — INFRA-G1-R1 HOSTING/REGION SELECTION RECORDING + BOUNDED RENDER
+DEPLOYMENT-PREPARATION CONTRACT: Owner-authorized GOVERNANCE-ONLY candidate):** Base:
+`9b3bc28ebeea68963b836bb508141dc3228092f7` (PR #542 merge — INFRA-G1-C, authoritative; independently
+re-verified live: first parent `88c5f4d5…`, second parent `e79a2300…`, merge tree `3c1a48cb…` =
+accepted candidate tree, empty candidate→merge diff).
+
+**Objective.** ONE governance-only candidate creating
+`docs/governance/INFRA_G1_R1_HOSTING_REGION_SELECTION_AND_RENDER_DEPLOYMENT_PREPARATION_CONTRACT.md`
+that (A) durably records the Owner selections under INFRA-G1-C §2 — **OD-INFRA-1 HOSTING: RENDER;
+OD-INFRA-2 REGION: FRANKFURT** (Fly.io = fallback only; no legal/tax/residency/commercial conclusion;
+OD-INFRA-3…6 remain OPEN) — and (B) defines the bounded future Render deployment-preparation
+contracts: SQLite/persistent-disk (SUPPORTED; no migration; env-only; provisioning verification
+duties); production serving/WSGI (built-in server not acceptable publicly; future
+single-worker/single-thread posture; no dependency pre-authorized; implementation NOT authorized
+here); infrastructure artifacts (version pin REQUIRED, start declaration REQUIRED, render.yaml
+OPTIONAL — none created); trusted-proxy/TLS truth (no forwarded trust; ProxyFix NO; HSTS
+reassessment-only); production-config matrix (no secret values); health-check acceptance;
+backup/restore duties (snapshots never sufficient alone; governed backup + off-provider + restore
+drill; retention policy-open); monitoring/logging (items 21–22/26/28 OPEN; logs not durable); email
+separation (needed before public release, not before provisioning); OPS-SM1 registered-only; the
+exact next implementation-gate scope + exclusions and the future provisioning scope (neither
+authorized); PSRR mapping with nothing PASS. Allowed paths: the new record +
+`ACTIVE_EXECUTION_ROADMAP.md` + `CURRENT_PROJECT_STATE.md` + `ACTIVE_INCREMENT_CONTRACT.md` ONLY.
+Forbidden: all runtime/test/schema/guardrail paths; `OWNER_DECISION_REGISTER.md`; any dependency/
+artifact creation; any provisioning/DNS/TLS/secrets; any provider selection beyond recording the two
+Owner selections.
+
+**Evidence.** Governance-only docs diff; smoke PASS at base and re-verified at candidate; §5B.1
+determination recorded openly (zero executable bytes — not an implementation candidate; no §5B.6
+trigger; authoritative full-suite truth 2951/3/1/0 stands on this lineage); adversarial governance
+truth sweep UNSUPPORTED MATERIAL CLAIMS: 0.
+
+**Boundaries:** INFRASTRUCTURE PROVISIONED: NO; RUNTIME IMPLEMENTATION AUTHORIZED: NO; OPS-SM1
+EXECUTED: NO; PSRR COMPLETE: NO; PSRR GO ELIGIBLE: NO; DEPLOYMENT AUTHORIZED: NO; PAID ACTIVATION
+AUTHORIZED: NO; no email/payment selection; no future-domain work. `OWNER_DECISION_REGISTER.md`
+UNCHANGED. Authoritative ONLY if/when this exact candidate is merged and post-merge verified. Next
+required step: **Independent External Review of this exact SHA + bundle** (§5B.13 incl. mandatory
+independent smoke).
+
+**Immediately prior (INFRA-G1-C PRODUCTION INFRASTRUCTURE & PROVIDER SELECTION CONTRACT —
+governance-only candidate `e79a2300…` Owner-accepted at that exact SHA and MERGED via PR #542, tip
+`9b3bc28ebeea68963b836bb508141dc3228092f7`; now AUTHORITATIVE; retained as history):** Base:
+`88c5f4d5d3d3a5afb508b5f26852fd9e13d7ece9`
 (PR #541 merge — PSRR application-layer recording, authoritative; independently re-verified live:
 first parent `274652a5…`, second parent `382d6733…`, merge tree `9452481f…` = accepted candidate tree,
 empty candidate→merge diff).
