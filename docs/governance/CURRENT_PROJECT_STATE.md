@@ -2424,6 +2424,41 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
+- **PVCG-R2 — AUTHORITATIVE CLOSURE (governance-only closure candidate, PR pending), base
+  `1ce2c89630b9bdbfdedb15ee85eafa410a03632a`.** **`PVCG-R2-I AUTHORITATIVE: YES`** — PR #549,
+  independently re-verified this gate from a fresh fetch: first parent `4d746d15…`, second parent
+  `60cc5f48…` (exact accepted candidate), merge tree `476629b6…`, candidate→merge diff EMPTY, zero
+  later commits, working tree clean. **`PVCG-R2-C AUTHORITATIVE: YES`** — PR #548, merge `4d746d15…`,
+  second parent `e394f962…`, diff EMPTY, ancestor of the live tip (re-verified from lineage, not
+  copied). Disposition: **`PVCG-R2 CLOSURE CANDIDATE — NOT AUTHORITATIVE UNTIL MERGED`**; the closure
+  statements live in `docs/governance/PVCG_R2_FORMAL_CLOSURE_RECORD.md`. **Closure evidence executed
+  against the MERGED tree:** off-topic signal-rich answers blocked across all six gaps; 6×6 cross-gap
+  reuse blocked; five repetitions cannot manufacture closure; legitimate answers still close; weak-but-
+  relevant keeps its pre-R2 outcome; fail-closed never BLOCK; `known_mechanism` / `known_problem` /
+  Stage-3 capture gated; deterministic; the actual served gap is used; the lexical bound is stated and
+  pinned; an Arabic answer is not recognised so R3 remains unresolved. **`FINAL OPERATIVE ENTRY COUNT:
+  262`**, **`FINAL STRUCTURALLY SHADOWED ENTRY COUNT: 2`** (both PHRASE → PHRASE), **`NON-EQUIVALENT
+  SURVIVING SINGLE-MARKER MUTANTS: 0`**, sweep 264/264 killed, 0 LOADFAIL, restore 264/264. **PVCG-R1
+  AUTHORITATIVE: YES; REGRESSION GREEN 26/26** with its test file byte-unchanged — R1 and R2 are
+  cumulative and R2 supersedes nothing. **P9-MECH-I3 pin live**: pinned value == measured digest
+  `07c9bff5…`, guard suites 54 passed. Full suite at the tip **3776 passed / 3 skipped / 1 xfailed / 0
+  failed** with gunicorn 26.1.0 on PATH; smoke PASS. **Rejected history preserved, never
+  authoritative:** `2f2897ce…` (REJECTED, T-1) and `58ef3971…` (REJECTED, T-1b) are immutable review
+  evidence inside the accepted chain; the authoritative content is the merge tree. Both governance-truth
+  defects (the corpus-based "equivalent mutants" claim; the phrase → word shadow claim behind the
+  253/11 split) were corrected **before** merge and are recorded as withdrawn — classification and
+  governance-truth defects, **not runtime defects**. **R2 IS NOT R3:** no semantic equivalence, no
+  multilingual stability, no EN/AR equivalence, no paraphrase equivalence, no LLM/NLP understanding, no
+  adaptive questioning. Carried forward OPEN / NON-BLOCKING (not repaired, not authorized): lexical
+  cross-talk; broad `"does not"` / `"doesn't"`; substring/token boundary asymmetry; WS1 helper coupling;
+  acknowledged-unknown fixture coverage shift; `battery` question-derived marker;
+  `test_progression_benchmark.py::test_B1` passing for a different reason. Governance/documentation
+  only — no runtime, test, fixture, generator, evidence, deployment or Render path; `main` not
+  reconciled; `OWNER_DECISION_REGISTER.md` UNCHANGED. `PVCG-R3 NOT STARTED`; `PVCG-R4 NOT STARTED`;
+  `PVCG SATISFIED: NO`; `MINIMUM LAUNCH-CONFORMANCE SET SATISFIED: NO`; `DEPLOYMENT AUTHORIZED: NO`.
+  Next authorized workstream once this closure is authoritative: **PVCG-R3 — Semantic Stability**
+  (still NOT STARTED; naming it authorizes nothing).
+
 - **PVCG-R2-I (T-1b REPAIR) — STRUCTURAL-OPERATIVITY CLASSIFICATION REPAIR (repair candidate, PR
   pending), parent `58ef39714630455c9713fb045bc66c3490eb4bf8` (the rejected T-1 repair candidate,
   preserved unchanged; itself a child of the rejected R2-I candidate `2f2897ce…`, also preserved).**

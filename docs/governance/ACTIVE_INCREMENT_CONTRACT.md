@@ -41,7 +41,30 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — PVCG-R2-I (T-1b REPAIR): STRUCTURAL-OPERATIVITY CLASSIFICATION REPAIR).** Parent:
+**Status (current — PVCG-R2: AUTHORITATIVE CLOSURE; governance-only closure gate).** Base:
+`1ce2c89630b9bdbfdedb15ee85eafa410a03632a` (PR #549 merge — PVCG-R2-I, AUTHORITATIVE; re-resolved live
+from `origin/feature/atomic-json-session-persistence` and independently re-verified: first parent
+`4d746d15…`, second parent `60cc5f48…`, merge tree `476629b6…`, empty candidate→merge diff, zero later
+commits).
+
+**Disposition: `PVCG-R2 CLOSURE CANDIDATE — NOT AUTHORITATIVE UNTIL MERGED`.**
+`PVCG-R2-C AUTHORITATIVE: YES`. `PVCG-R2-I AUTHORITATIVE: YES`. The closure statements live in
+`docs/governance/PVCG_R2_FORMAL_CLOSURE_RECORD.md` and take effect only on merge and post-merge
+verification.
+
+**Scope.** Governance/documentation ONLY. No `engine/`, `web/`, `tests/`, `domains/`, `scripts/`,
+evidence-tree, generator, deployment or Render path; `main` not reconciled;
+`OWNER_DECISION_REGISTER.md` UNCHANGED. R2 closure closes ONLY R2: `PVCG-R3 NOT STARTED`,
+`PVCG-R4 NOT STARTED`, `PVCG SATISFIED: NO`, `MINIMUM LAUNCH-CONFORMANCE SET SATISFIED: NO`,
+`DEPLOYMENT AUTHORIZED: NO`. R1 and R2 are cumulative: `PVCG-R1 AUTHORITATIVE: YES`,
+`PVCG-R1 REGRESSION: GREEN` (26/26, test file byte-unchanged). Final coverage truth re-measured from
+the merged tree: 262 operative / 2 structurally shadowed / 0 non-equivalent surviving single-marker
+mutants. `UNSUPPORTED MATERIAL CLAIMS: 0`.
+
+---
+
+**Superseded (retained as history) — PVCG-R2-I (T-1b REPAIR): STRUCTURAL-OPERATIVITY CLASSIFICATION
+REPAIR; ACCEPTED as `60cc5f48…` and MERGED AND AUTHORITATIVE via PR #549, merge `1ce2c896…`.** Parent:
 `58ef39714630455c9713fb045bc66c3490eb4bf8` — the rejected T-1 repair candidate, preserved unchanged as
 immutable reviewed evidence, itself a child of the rejected R2-I candidate
 `2f2897ce40c119ea202d6519e59e2d887c3fb7c1`, also preserved unchanged.
