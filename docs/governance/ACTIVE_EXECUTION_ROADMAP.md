@@ -14240,6 +14240,23 @@ failure — recorded rather than worked around. Every `[EXEC]` finding came from
 against `engine/` that modified no repository file and added no fixture; the reviewer should re-measure
 them independently. PVCG-R4-I must measure everything on its own frozen state.
 
+**Mandatory Creator Grill — lineage preserved, nothing rewritten.** The first frozen candidate
+`c19ecd72c3d040125a008131a5af18314074a0fe` was **REJECTED BY THE CREATOR'S OWN GRILL** on three defects
+and is preserved unchanged and unpublished as immutable evidence (branch
+`pvcg-r4c-grill-rejected-c19ecd72`); it was never amended, rebased, squashed or recreated. The defects:
+**CG-1 (unsupported material claim)** — a verbatim quote was attributed to BOTH `engine/record_contract.py`
+and `engine/record_store.py`, but only the former contains that exact string; the two headers state the
+same P4-2 assignment in different words and are now quoted **separately**. **CG-2 (material omission)** —
+the WPS-001 INV-004 citation was truncated at *"stored gap status … never backward"*, concealing its
+governing second clause *"truth that can decrease lives in DERIVED readiness, not in stored gap status"*,
+which bears directly on the requirement that evaluation may decrease; the full sentence is now quoted and
+new **§8.1** resolves the apparent conflict explicitly (replay builds a FRESH state forward and replaces
+the prior state wholesale, so a weaker outcome is a property of the NEW run and never a backward
+transition — INV-004 unweakened, and lowering a stored status in place is a rejection condition).
+**CG-3 (wording hazard)** — "record-targeted correction" sat beside the prohibition on "targeted"
+recomputation without disambiguation; new **§2.4.2** separates the two senses and states that a
+record-targeted correction is ALWAYS followed by a full replay of the entire amended stream.
+
 **Scope.** Governance/documentation only — one new contract document plus this entry and the two status
 surfaces. No `engine/`, `web/`, `tests/`, `domains/`, `scripts/`, evidence-tree, generator, deployment or
 Render path; `RUNTIME DELTA: 0`, `TEST DELTA: 0`, `PACK DELTA: 0`, `PIN DELTA: 0`; `main` not reconciled;

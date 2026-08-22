@@ -116,10 +116,28 @@ deployment or Render path; `main` not reconciled; `OWNER_DECISION_REGISTER.md` U
 is not a verdict the Creator may self-award:
 
 ```
-Creator Grill unsupported-material-claim finding (this candidate) : 0
-Independent review of this candidate                             : NOT YET PERFORMED,
-                                                                   as at the time of its submission
+Creator Grill on first frozen candidate c19ecd72c3d040125a008131a5af18314074a0fe:
+  VERDICT  = REJECTED BY CREATOR GRILL
+  Defects  = CG-1 (quote mis-attributed to engine/record_store.py),
+             CG-2 (WPS-001 INV-004 citation truncated, hiding the clause governing decrease),
+             CG-3 ("record-targeted" undisambiguated from prohibited "targeted" recomputation)
+  SHA preserved unchanged and unpublished as immutable evidence.
+
+Creator Grill on THIS candidate (the CG-1/CG-2/CG-3 child):
+  unsupported-material-claim finding = 0
+
+Independent review of this candidate : NOT YET PERFORMED,
+                                       as at the time of its submission
 ```
+
+The rejected SHA was never amended, rebased, squashed or recreated. CG-1 is repaired by quoting the two
+runtime headers separately; CG-2 by quoting WPS-001 INV-004 in full and adding **§8.1**, which resolves
+the apparent conflict with the decrease requirement (replay builds a FRESH state forward and replaces the
+prior state wholesale, so a weaker outcome is a property of the NEW run, never a backward transition;
+lowering a stored status in place is a rejection condition); CG-3 by adding **§2.4.2**, which separates
+"record-targeted correction" (REQUIRED — which input is withdrawn) from "targeted re-evaluation"
+(PROHIBITED — how much is recomputed) and states that a record-targeted correction is ALWAYS followed by
+a full replay of the entire amended stream.
 
 ---
 

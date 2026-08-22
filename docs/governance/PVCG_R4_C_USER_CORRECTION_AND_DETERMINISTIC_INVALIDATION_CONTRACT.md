@@ -96,7 +96,7 @@ to R4 merely because the wording differs.**
 
 | Element | Canonical owner | Citation |
 |---|---|---|
-| Stale-output invalidation | **P4-2** | `engine/record_contract.py` and `engine/record_store.py` scope-boundary headers, both live runtime code: *"**P4-2 owns** full deterministic rebuild/replay from accepted source inputs, deterministic output records, and stale-output invalidation"* **[REPO]** |
+| Stale-output invalidation | **P4-2** | Two live runtime scope-boundary headers, quoted separately because their wording differs. `engine/record_contract.py`: *"**P4-2 owns** full deterministic rebuild/replay from accepted source inputs, deterministic output records, and stale-output invalidation"* **[REPO]**. `engine/record_store.py`: *"**P4-2 (NOT here):** deterministic replay, durable output records, stale-output invalidation, full re-evaluation"* **[REPO]**. The same assignment, stated twice in committed code |
 | Durable output records; source→output binding | **`P4-OBL-OUTPUT-01`** (Owner: Phase 4; Earliest: P4-2; Sep-auth: required) | `PHASE_4_…ENTRY_DECISION.md` deferred-obligations **[REPO]** |
 | Deterministic rebuild + full re-evaluation from accepted inputs | **`P4-OBL-REEVAL-01`**, **`D-P4-05`** | same **[REPO]** |
 | Revision-difference visibility / "What changed?" UX | **Phase-3C** + FPC-02 | FPC-02 map entry **[REPO]** |
@@ -106,7 +106,7 @@ to R4 merely because the wording differs.**
 | Deterministic full replay engine | **P4-2 Level-1 — IMPLEMENTED, MERGED, CLOSED (PR #369)** | `engine/session_reconstruction.py` replays the seed then accepted answers in `seq` order through the **unchanged** `progression_loop.run_iteration` **[REPO]** |
 | Readiness permitted to decrease on supersession | **Increment 2 — IMPLEMENTED** | `engine/derived_readiness.py` `_is_active`; `tests/test_increment_2_truthful_state.py::test_verified_readiness_false_when_verified_superseded_by_unvalidated` **[REPO]** |
 | Recompute-on-read of all derived artifacts | **IMPLEMENTED** | deliverable assembled fresh per request; `keep-snapshot` *"NEVER serializes/duplicates/versions"*; readiness *"never serialized … always re-derived"* **[REPO]** |
-| Forward-only gap lifecycle | **WPS-001 INV-004** | `EPISTEMIC_FOUNDATION_DESIGN_DECISION.md`: *"The forward-only gap lifecycle (WPS-001 INV-004) is preserved: stored gap status … never backward"* **[REPO]** |
+| Forward-only gap lifecycle | **WPS-001 INV-004** | `EPISTEMIC_FOUNDATION_DESIGN_DECISION.md`, quoted in full because its second clause governs §8 RP-5: *"The forward-only gap lifecycle (WPS-001 INV-004) is preserved: **stored gap status is never moved backward; truth that can decrease lives in DERIVED readiness, not in stored gap status.**"* **[REPO]** — see §8.1 |
 
 ### §2.2 TRUE R4 CONFORMANCE RESIDUALS — what R4 must cause to become true
 
@@ -140,6 +140,18 @@ types, scoring changes; the AI Coach (**WS17**); **TDVP**.
 **§2.4.1 "Bounded" is defined, so it cannot drift [OWNER: OD-R4-03].** Everywhere in this contract and
 in any successor R4 document, **"bounded" means bounded SCOPE and bounded AUTHORIZATION. It never means
 targeted partial recomputation.**
+
+**§2.4.2 "Targeted" is disambiguated, because the word carries two unrelated senses here.**
+
+| Phrase | Sense | Status |
+|---|---|---|
+| **record-targeted correction** (§6 C-1) | the user's correction action **names one prior source record** by its `record_id` | **REQUIRED.** This is about *which input is withdrawn*, and says nothing about how much is recomputed |
+| **targeted / partial / selective re-evaluation** (§2.4) | recomputing **only the state believed to depend** on the changed input | **PROHIBITED** |
+
+**A record-targeted correction is always followed by a FULL replay of the entire amended stream (§8
+RP-1).** Naming one record narrows *what was withdrawn*; it never narrows *what is recomputed*. No
+wording in this contract may be read as authorizing partial recomputation, and R4-I MUST NOT use the
+precision of C-1 as a licence to recompute less than the whole stream.
 
 ### §2.5 DEFERRED — recorded, not repaired here
 
@@ -334,6 +346,27 @@ state or cached output, and it is NOT the current `derive_readiness` readiness r
 state. R4-I MUST NOT reach into live state and adjust `gap.status`, `known_mechanism`, `known_problem`,
 `maturity_level` or `current_stage` directly. **Every progression-state change must arrive through
 replay.** Direct mutation is a rejection condition.
+
+**§8.1 — The apparent conflict with WPS-001 INV-004, resolved explicitly rather than left for a
+reviewer to find.** `EPISTEMIC_FOUNDATION_DESIGN_DECISION.md` states, in full: *"The forward-only gap
+lifecycle (WPS-001 INV-004) is preserved: **stored gap status is never moved backward; truth that can
+decrease lives in DERIVED readiness, not in stored gap status.**"* **[REPO]**. Read carelessly, that
+second clause appears to forbid **RP-5**'s requirement that a gap status may be weaker after a
+correction. **It does not, and the distinction is binding:**
+
+* **INV-004 constrains transitions WITHIN one accumulating run.** No stored gap status may be moved
+  backward in place — `CLOSED` may never become `PARTIAL` or `OPEN` by mutation. That is exactly the
+  hazard §10 exists to make unreachable.
+* **Replay does not transition anything.** `engine/session_reconstruction.py` builds a **fresh**
+  `IdeaState` and rebuilds forward from the amended stream **[REPO]**. Every gap in the reconstructed
+  state moves only OPEN→PARTIAL→CLOSED, forward, within that run. The reconstructed state then
+  **replaces** the prior state wholesale (**RP-4**); the prior state is not edited.
+* **Therefore a weaker outcome is a property of the NEW run, not a backward transition in the old one.**
+  INV-004 is preserved exactly, unweakened, and unamended by this contract.
+
+R4-I MUST state this distinction explicitly in its evidence and MUST NOT satisfy **RP-5** by mutating a
+stored gap status downward. Any design that lowers a stored status in place is a **rejection
+condition**, regardless of how the resulting value compares.
 
 **RP-5 — Decrease is permitted and must be provable [OWNER: OD-R4-06].** Where the corrected stream no
 longer supports a prior conclusion, gap status, maturity, readiness and evaluation MUST be free to be
