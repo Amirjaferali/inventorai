@@ -14511,7 +14511,11 @@ files byte-unchanged; R3 focused **579 passed**, byte-unchanged; P9 pin suites *
 **20 passed / 1 skipped**, byte-unchanged; `UNIVERSAL GUARDRAIL SMOKE: PASS`; full suite **4418 passed /
 3 skipped / 1 xfailed / 0 failed** under the §18 precondition (Python 3.11.15, Flask 3.1.3, SQLite
 3.45.1, gunicorn 26.1.0 on `PATH`; pytest 9.1.1, which the precondition does not pin — disclosed rather
-than left implicit). §20 reconciliation **4355 + 63 = 4418**, exactly the one new R4-I test file.
+than left implicit). §20 reconciliation **4355 + 63 = 4418**, exactly the one new R4-I test file. The
+**4418** and the **63** are fresh measurements on this merged tree; the **4355** baseline was measured on
+`c3d9e2d9…` (the R4-C merge tip) at the start of the R4-I gate — **not** on `18a90f9b…` — and carries
+back only by the argument that PR #554 was governance-only and added no test. Stated rather than left
+implicit.
 
 **Criterion 3, measured in both halves with the distinction preserved.** (A) The §3.2 scenario exactly
 as written — retraction wording submitted as ORDINARY answers — still leaves the material present and
@@ -14562,6 +14566,19 @@ targeted partial invalidation and no contradiction engine. **`PVCG SATISFIED: NO
 **`FULL MLC DEFINITION FROZEN: NO`** — consistent with `PVCG_R3_C` §1.2 and `PVCG_R4_C` §21, no
 committed document defines PVCG or enumerates the Minimum Launch-Conformance Set, so R4's membership is
 `[OWNER]`, not `[REPO]`.
+
+**Mandatory Creator Grill — one REJECT, lineage preserved.** The first frozen closure candidate
+`08561f9e6eeee9f720994815a56875ca35cd460b` was **REJECTED BY THE CREATOR'S OWN GRILL** on **CG-2 (an
+unsupported material claim)** and is preserved unchanged and unpublished as immutable evidence (branch
+`pvcg-r4-closure-grill-rejected-08561f9e`); it was never amended, rebased, squashed or recreated. The
+defect: the record attributed the **4355** baseline to a re-measurement on `18a90f9b…`, the R3-closure
+merge. **No suite was ever run on `18a90f9b…` in this lineage.** The baseline was measured on
+`c3d9e2d9…`, the R4-C merge tip, at the start of the R4-I gate. The total (**4418**) and the new-file
+count (**63**) were fresh measurements and remain so; only the baseline's provenance was misattributed.
+Repaired by stating each of the three figures' provenance separately, saying explicitly that the
+baseline was **NOT** measured on `18a90f9b…`, and giving the carry-over argument (PR #554 was
+governance-only, `TEST DELTA: 0`, so it added no test between the tips) rather than leaving it implicit.
+The arithmetic was correct throughout; the claim about where it came from was not.
 
 **Scope.** Governance/documentation only — one new closure record plus this entry and the two status
 surfaces. No `engine/`, `web/`, `tests/`, `domains/`, `scripts/`, evidence-tree, generator, deployment

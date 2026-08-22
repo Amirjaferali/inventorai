@@ -312,9 +312,19 @@ locations. **Nothing in this record is a carried figure restated as fresh.**
 declared. `pytest` is 9.1.1; the precondition does not pin a pytest version, and this is disclosed
 rather than left implicit.
 
-**§20 reconciliation.** The R3-closure baseline **4355** (itself re-measured on `18a90f9b…` earlier in
-this lineage) **+ 63** — exactly `tests/test_pvcg_r4i_correction_and_invalidation.py`, the single new
-test file — **= 4418**, the measured total. No other file contributed a test.
+**§20 reconciliation, with the baseline's provenance stated exactly.** **4355 + 63 = 4418.**
+
+* The **4418** total is a **fresh measurement on the merged tree `5ed09180…` this gate [EXEC]**.
+* The **63** is a fresh measurement of `tests/test_pvcg_r4i_correction_and_invalidation.py`, the single
+  new test file, on the same tree **[EXEC]**.
+* The **4355** baseline was measured **on `c3d9e2d98ba7b6c9b3a9d9d316e6d572122d8a8e`** — the PVCG-R4-C
+  merge tip — at the start of the PVCG-R4-I implementation gate **[EXEC]**. **It was NOT measured on the
+  R3-closure merge `18a90f9b…`, and this record does not claim otherwise.** It carries back to
+  `18a90f9b…` only by argument, not by measurement: PR #554 was **governance-documentation only**
+  (`RUNTIME DELTA: 0`, `TEST DELTA: 0`), so it added no test between the two tips. That is the same
+  carry-over discipline `PVCG_R3_C` §21 used, and it is stated here rather than left implicit.
+
+No file other than the one new R4-I test file contributed a test.
 
 ---
 

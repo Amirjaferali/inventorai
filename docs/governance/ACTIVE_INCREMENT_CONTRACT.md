@@ -70,7 +70,9 @@ scope), §21 (no rendered criterion) and §13 E-1 (constrains the affordance, do
 **26** (file byte-unchanged vs both `18a90f9b…` and `c3d9e2d9…`); R2 **189** + **566** (byte-unchanged);
 R3 **579** (byte-unchanged); P9 **54**; WPS-001 **20 passed / 1 skipped** (byte-unchanged); smoke
 **PASS**; full suite **4418 passed / 3 skipped / 1 xfailed / 0 failed**; §20 reconciliation
-**4355 + 63 = 4418**. Criterion 3 measured in both halves: the §3.2 scenario as written is unchanged
+**4355 + 63 = 4418** — the **4418** and **63** measured fresh on this merged tree, the **4355** baseline
+measured on `c3d9e2d9…` (the R4-C merge tip), **not** on `18a90f9b…`, carrying back only because PR #554
+was governance-only. Criterion 3 measured in both halves: the §3.2 scenario as written is unchanged
 **by design** (§6 C-1 forbids inferring a correction from wording — a committed test pins it), while the
 governed correction path clears **all seven** measured withdrawn-basis field paths — a strict superset
 of the four §3.2 named — and surfaces the marker. The §3.2 count of four is **not** rewritten.
@@ -96,10 +98,24 @@ addressed**; bundle extra-ref hygiene; the deferred rendered UX; and R3's N-2 / 
 **Verdict provenance, kept distinct.** `UNSUPPORTED MATERIAL CLAIMS` is an INDEPENDENT-REVIEWER field:
 
 ```
-Creator Grill unsupported-material-claim finding (this candidate) : 0
-Independent review of this closure candidate                     : NOT YET PERFORMED,
-                                                                   as at the time of its submission
+Creator Grill on the first frozen closure candidate 08561f9e6eeee9f720994815a56875ca35cd460b:
+  VERDICT = REJECTED BY CREATOR GRILL
+  Defect  = CG-2, unsupported material claim: the 4355 baseline was attributed to a
+            re-measurement on 18a90f9b (the R3-closure merge). No suite was ever run
+            on that tip; it was measured on c3d9e2d9, the R4-C merge tip.
+  SHA preserved unchanged and unpublished as immutable evidence.
+
+Creator Grill on THIS candidate (the CG-2 child):
+  unsupported-material-claim finding = 0
+
+Independent review of this closure candidate : NOT YET PERFORMED,
+                                               as at the time of its submission
 ```
+
+The rejected SHA was never amended, rebased, squashed or recreated. CG-2 is repaired by stating each
+figure's provenance separately, saying explicitly that the baseline was NOT measured on `18a90f9b…`, and
+giving the carry-over argument (PR #554 was governance-only, `TEST DELTA: 0`) rather than leaving it
+implicit. The arithmetic was correct throughout; the claim about where it came from was not.
 
 ---
 
