@@ -41,7 +41,115 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — PVCG-R3-I (REPAIR): focused repair after Independent External Review REJECT).**
+**Status (current — PVCG-R3: AUTHORITATIVE CLOSURE; governance-only closure gate).** Base:
+`d046b3e5449f5f91f5f719686e7e207ceda2f06c` (PR #552 merge — PVCG-R3-I, AUTHORITATIVE; live tip
+re-fetched from `origin/feature/atomic-json-session-persistence` and independently re-verified: first
+parent `7b7aa2f12a7429fbb309c2f4a7e13d7b83ebdd60`, second parent
+`4978c969357200721199c811fede2d40d59e95ac` — the exact Owner-accepted candidate — merge tree
+`db87b7cbdc5c681d10e8e905b5d81a9f2c29cd7c` identical to the candidate tree, empty candidate→merge diff,
+zero later commits, working tree clean).
+
+**Disposition: `PVCG-R3 CLOSURE CANDIDATE — NOT AUTHORITATIVE UNTIL MERGED`.**
+`PVCG-R3-C AUTHORITATIVE: YES` (PR #551). `PVCG-R3-I AUTHORITATIVE: YES` (PR #552). The closure
+statements live in `docs/governance/PVCG_R3_FORMAL_CLOSURE_RECORD.md` and take effect only on merge and
+post-merge verification.
+
+**Why this gate exists, cited.** `PVCG_R3_C_SEMANTIC_STABILITY_CONTRACT.md` §19 requires as criterion
+**10** *"a formal closure record merged, exactly as R2 required"*, so the implementation merge alone does
+not close R3. Supersession check: no competing closure rule exists in committed governance, and no
+`PVCG_R3_FORMAL_CLOSURE_RECORD.md` previously existed.
+
+**All ten §19 criteria resolved; 1–9 re-measured on the merged tree.** §7.3 **313 registered-surface
+anchor comparisons / 0 material mismatches** — each remaining surface of a concept compared against a
+common anchor, Σ(n−1) = 313 executed over 56 concepts and 369 surfaces, with §7.3's every-pair property
+following transitively; the 1,174 exhaustive pairs were NOT executed; D-1 **0/6**. §10.2 categories 1–11
+and the §16 controls are exercised by `TestAdversarialCategories`, `TestNegativeControls` and
+`TestCausalTokenBoundary` in the 579-test R3-I suite. **All eight §10.1 properties carry a named
+locator** — the complete map is closure record **§4.1**; earlier statements named only four. Inside the
+R3-I suite: cross-gap protection by `TestAdversarialCategories::test_8_cross_gap_reuse_creates_no_off_diagonal_closure`
+with `TestNegativeControls::test_8`, fail-closed by `TestNegativeControls::test_2`–`::test_6`, and
+determinism by `TestDeterminismAndProhibitions`. In other authoritative suites: gap-specific relevance by
+the 6×6 closure control, **repetition protection** by
+`TestRed3RepetitionCannotManufactureSatisfaction::test_five_repetitions_of_an_irrelevant_answer_never_close`
+and **non-punitive rejection** by `TestFailClosedIsNotPunitive::test_irrelevant_answer_never_returns_block`
+— all three in `tests/test_pvcg_r2i_gap_relevance.py` — plus R1 durable memory by the R1 suite and the
+P9-MECH pins by the three P9 suites. **Criterion 4 status unchanged: MET**; the two newly cited
+properties were already green and only the citation was missing. Pin `3cbd7684…` enforced green by the three P9 suites with `domain_rules.py`,
+`path_n_questions.py` and all five packs byte-identical; R1 **26** (file byte-unchanged); R2 **189** +
+**566** (file byte-unchanged); P9 **54**; smoke **PASS**; full suite **4355 passed / 3 skipped /
+1 xfailed / 0 failed**, §18 reconciliation 3776 **+579**. The mutation sweep **257 / 254 KILLED /
+0 SURVIVED / 3 LOADFAIL, restore 257/257** is recorded as **carried, independently reviewer-reproduced**
+evidence from `0f1404f0…`, not re-measured this gate — the merge tree equals the accepted candidate tree
+and the registry and frozen oracle are byte-identical across that lineage.
+
+**Defect dispositions (PVCG-R3-I implementation lineage): B-1 CLOSED, B-2 CLOSED, U-1 CLOSED, U-2
+CLOSED, R3-I-O1 CLOSED.** Rejected candidate `1ce9ef34…` and every superseded SHA preserved unchanged
+and unpublished.
+
+**Closure-gate dispositions (this gate): CLOSURE-O1 CLOSED, CLOSURE-O2 CLOSED, CLOSURE-O3 CLOSED;
+N-P1 CLOSED, N-P2 CLOSED, N-P3 CLOSED; N-P4 NO REPAIR OWED.**
+
+**Label namespace — disambiguated, no merged history rewritten.** Two review rounds each numbered from
+`O-1`, in different namespaces. The implementation-lineage observation is written **R3-I-O1**; the
+closure-gate observations are written **CLOSURE-O1 / CLOSURE-O2 / CLOSURE-O3**. The merged PVCG-R3-I
+entries retained below keep the original `O-1` label **verbatim** — merged history is authoritative for
+what it says and was not renamed. Full mapping: closure record §3.1.
+
+**Residuals carried forward, OPEN / NON-BLOCKING, and NOT R4 authorization:** **N-2** (the 40-character
+acknowledged-unknown threshold — pre-existing, byte-unchanged, fail-closed in direction, outside the
+§7.3 quantifier) and **U-4** (a single Arabic connective in English prose granting causal structure —
+by design under §10.2/9). Neither appears in any §19 criterion.
+
+**Scope.** Governance/documentation ONLY. No `engine/`, `web/`, `tests/`, `domains/`, `scripts/`,
+evidence-tree, generator, deployment or Render path; `PIN DELTA: 0`; `main` not reconciled;
+`OWNER_DECISION_REGISTER.md` UNCHANGED. R3 closure closes ONLY R3: `PVCG-R4 NOT STARTED`,
+`FULL ADAPTIVE QUESTIONING ACTIVATED: NO`, `TDVP IMPLEMENTATION STARTED: NO`, `PVCG SATISFIED: NO`,
+`MINIMUM LAUNCH-CONFORMANCE SET SATISFIED: NO`, `DEPLOYMENT AUTHORIZED: NO`.
+
+**Verdict provenance, kept distinct.** `UNSUPPORTED MATERIAL CLAIMS` is an INDEPENDENT-REVIEWER field and
+is not a verdict the Creator may self-award. Stated separately:
+
+```
+Creator Grill unsupported-material-claim finding (this candidate)  : 0
+
+Independent closure review — candidate a477ead76d5d57c61da2f15eb1ff1eadfbd8da5e
+  VERDICT                     = ACCEPT WITH NON-BLOCKING OBSERVATIONS
+  UNSUPPORTED MATERIAL CLAIMS = 0
+  Observations raised         = CLOSURE-O1, CLOSURE-O2, CLOSURE-O3
+
+Independent closure RE-REVIEW — candidate ebd94ab0ebaba224b93aea4e16b9e72ea89d52bc
+  VERDICT                     = ACCEPT WITH NON-BLOCKING OBSERVATIONS
+  UNSUPPORTED MATERIAL CLAIMS = 0
+  CLOSURE-O1 = PASS   CLOSURE-O2 = PASS   CLOSURE-O3 = PASS
+  Findings raised             = N-P1, N-P2, N-P3, N-P4
+
+THIS candidate — N-P1 / N-P2 / N-P3 micro-precision child of ebd94ab0…
+  INDEPENDENTLY REVIEWED      = NO, as at the time of its submission
+```
+
+Each count is attributed to the exact SHA it was issued against, so the statement does not go stale as
+the lineage grows — the defect recorded as **N-P3**. `a477ead7…` carried the CLOSURE-O1 (criterion-4
+locator), CLOSURE-O2 (anchor-comparison wording) and CLOSURE-O3 (provenance separation) observations;
+its child **`ebd94ab0…` WAS itself independently re-reviewed**, returning ACCEPT WITH NON-BLOCKING
+OBSERVATIONS with all three confirmed PASS and four further findings N-P1…N-P4. **This candidate carries
+only the N-P1/N-P2/N-P3 governance-prose repairs and has NOT itself received a focused re-review; it
+must not be cited as reviewed.**
+
+**N-P4 — reviewer-environment limitation, not a defect.** The reviewer could not re-execute the
+application suites because **Flask was unavailable in the reviewer's environment**. Not a product
+defect, not a closure defect, not a §19 criterion failure. R3-C §18 declares the execution precondition
+(Python 3.11.15, Flask 3.1.3, SQLite 3.45.1, gunicorn 26.1.0 on `PATH`) and every recorded suite result
+was measured in an environment satisfying it. **No repair is made and none is owed.**
+
+**This micro-precision repair is governance prose only:** `RUNTIME DELTA: 0`, `TEST DELTA: 0`,
+`PACK DELTA: 0`, `PIN DELTA: 0`; no `engine/`, `web/`, `tests/`, `domains/` or `scripts/` file changed,
+so the previously established suite evidence carries forward unchanged and is **not** re-run or
+re-claimed.
+
+---
+
+**Superseded (retained as history) — PVCG-R3-I (REPAIR): focused repair after Independent External
+Review REJECT; MERGED AND AUTHORITATIVE via PR #552, merge `d046b3e5…`.**
 Base: `7b7aa2f12a7429fbb309c2f4a7e13d7b83ebdd60` (PR #551 merge — PVCG-R3-C, AUTHORITATIVE;
 re-resolved live and independently re-verified on all four merge criteria before any repair work).
 
