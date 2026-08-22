@@ -41,7 +41,108 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — PVCG-R3: AUTHORITATIVE CLOSURE; governance-only closure gate).** Base:
+**Status (current — PVCG-R4-C: USER CORRECTION AND DETERMINISTIC INVALIDATION — CONFORMANCE CONTRACT;
+governance-only contract gate).** Base: `18a90f9b0aa85d05317bed5aaa596e19716c6557` — the live
+authoritative tip of `origin/feature/atomic-json-session-persistence`, independently re-fetched and
+re-verified on all four merge criteria before drafting (PR #553; first parent
+`d046b3e5449f5f91f5f719686e7e207ceda2f06c`; second parent `0fa8fbd83ee2b3a8de165eaaa1a9fd0d4e64c290` —
+the exact Owner-accepted R3 closure candidate; merge tree `5101c167c91a87184e701e3236f1aa62be8be376`
+identical to the candidate tree; candidate→merge diff EMPTY; zero later commits; clean tree).
+**`PVCG-R3 FORMALLY CLOSED: YES`.**
+
+**Disposition: `PVCG-R4-C CONTRACT CANDIDATE — NOT AUTHORITATIVE UNTIL MERGED`.** Governance-only; it
+authorizes no code. Even on merge it authorizes **no implementation** — PVCG-R4-I requires its own
+separate explicit Owner execution authorization, as R2-I and R3-I did. The contract lives at
+`docs/governance/PVCG_R4_C_USER_CORRECTION_AND_DETERMINISTIC_INVALIDATION_CONTRACT.md`.
+
+**PVCG-R4 is a CONFORMANCE GATE, not a capability owner (OD-R4-01 / OD-R4-02).**
+`IMPLEMENTATION OWNER: FPC-02 / P4-2` (with D17 / D-AISR-06 / D-P4-05); `PVCG CONFORMANCE OWNER:
+PVCG-R4`. No parallel state model, record type, persistence schema, replay engine or dependency model is
+created — preserving `D-FPC-MAP-02` and `D-FPC-MAP-06` (*"DO NOT CREATE A NEW PARALLEL MODEL — EXTEND OR
+CONSUME THE EXISTING CANONICAL MODEL"*).
+
+**Frozen defect (§3).** A user who discovers previously supplied accepted material was wrong cannot
+withdraw it; corrective/retraction language does not invalidate the earlier authoritative progression
+state; conclusions therefore stay current although their basis was withdrawn. Demonstrated through the
+runtime path: three Stage-2 gaps CLOSED at maturity 2 / stage 3, then four retraction iterations change
+nothing, and the withdrawn mechanism appears in **four** deliverable locations including the prototype &
+test plan. Mitigations credited: `deliverable_eligible=False`, `derived_verified_ready=False`, unknowns
+surfaced — a truthfulness-of-basis defect, not a false-readiness defect.
+
+**Required semantics.** Explicit record-targeted correction (never inferred from wording);
+non-destructive supersession with retention, expressed as a forward `supersedes` edge because the durable
+store has **no `UPDATE` statement at all**, inverse derived on load; **full deterministic replay** of the
+amended accepted-source stream through the unchanged `run_iteration`; live-state replacement only via
+replay; readiness/maturity/evaluation **permitted to decrease** with at least one measured decrease
+required; atomic deterministic failure/rollback; truthful withdrawal marker on the established
+surface-and-retain idiom; **no schema migration** (`contradicts`/`supersedes`/`superseded_by` already in
+`_ASSERTION_FIELDS`, already serialized and already validated on load).
+
+**Prohibited, not merely unscoped.** Targeted/partial/selective re-evaluation (`D-AISR-06`; Phase-4 entry
+decision §12; OD-R4-03); any dependency graph; a full contradiction engine (OD-R4-04); destructive
+history mutation; reopening ordinary CLOSED gaps through the forward path (OD-R4-07). **"Bounded" is
+defined as bounded SCOPE and bounded AUTHORIZATION — never targeted partial recomputation.**
+
+**CLOSED-gap precondition (§10).** `integrate_response` called on an already-CLOSED gap yields
+`status=PARTIAL` with `closed_at` still set. **Not a live defect** — its sole runtime caller is inside
+`run_iteration`, whose `gap_type` comes from `select_next_gap`, which returns only OPEN/PARTIAL. The
+contract requires it be made unreachable by construction before any reprocessing, preserving WPS-001
+INV-004, and mandates non-vacuous INV-004 coverage because the only dedicated test skips on its own
+corpus.
+
+**R1/R2/R3 protection (OD-R4-10)** is specified clause by clause in §§11–13, including EN/AR correction
+equivalence — measured at this base, EN and AR corrections produced identical transitions and identical
+resulting state.
+
+**Phase 4 (OD-R4-08).** Remains FORMALLY CLOSED within its implemented boundary and is **NOT reopened
+generally**; the Owner authorized only a narrowly bounded post-closure P4-2 extension limited to the R4
+conformance obligation.
+
+**Creator evidence provenance.** **No test suite was executed for this candidate and no suite figure is
+claimed.** The drafting container has Python 3.11.15 but neither `pytest` nor `flask`, so the §18-class
+precondition is not satisfied here — a Creator-environment limitation, recorded rather than worked
+around. All `[EXEC]` findings are read-only `engine/` probes the reviewer should re-measure. R4-I must
+measure independently on its own frozen state.
+
+**Scope.** Governance/documentation ONLY. `RUNTIME DELTA: 0`, `TEST DELTA: 0`, `PACK DELTA: 0`,
+`PIN DELTA: 0`; no `engine/`, `web/`, `tests/`, `domains/`, `scripts/`, evidence-tree, generator,
+deployment or Render path; `main` not reconciled; `OWNER_DECISION_REGISTER.md` UNCHANGED.
+`PVCG-R4 IMPLEMENTATION STARTED: NO`; `FPC-02 / P4-2 REMAINS IMPLEMENTATION OWNER: YES`;
+`TARGETED PARTIAL INVALIDATION AUTHORIZED: NO`; `FULL CONTRADICTION ENGINE AUTHORIZED: NO`;
+`TDVP STARTED: NO`; `PVCG SATISFIED: NO`; `FULL MLC DEFINITION FROZEN: NO`;
+`MINIMUM LAUNCH-CONFORMANCE SET SATISFIED: NO`; `DEPLOYMENT AUTHORIZED: NO`.
+
+**Verdict provenance, kept distinct.** `UNSUPPORTED MATERIAL CLAIMS` is an INDEPENDENT-REVIEWER field and
+is not a verdict the Creator may self-award:
+
+```
+Creator Grill on first frozen candidate c19ecd72c3d040125a008131a5af18314074a0fe:
+  VERDICT  = REJECTED BY CREATOR GRILL
+  Defects  = CG-1 (quote mis-attributed to engine/record_store.py),
+             CG-2 (WPS-001 INV-004 citation truncated, hiding the clause governing decrease),
+             CG-3 ("record-targeted" undisambiguated from prohibited "targeted" recomputation)
+  SHA preserved unchanged and unpublished as immutable evidence.
+
+Creator Grill on THIS candidate (the CG-1/CG-2/CG-3 child):
+  unsupported-material-claim finding = 0
+
+Independent review of this candidate : NOT YET PERFORMED,
+                                       as at the time of its submission
+```
+
+The rejected SHA was never amended, rebased, squashed or recreated. CG-1 is repaired by quoting the two
+runtime headers separately; CG-2 by quoting WPS-001 INV-004 in full and adding **§8.1**, which resolves
+the apparent conflict with the decrease requirement (replay builds a FRESH state forward and replaces the
+prior state wholesale, so a weaker outcome is a property of the NEW run, never a backward transition;
+lowering a stored status in place is a rejection condition); CG-3 by adding **§2.4.2**, which separates
+"record-targeted correction" (REQUIRED — which input is withdrawn) from "targeted re-evaluation"
+(PROHIBITED — how much is recomputed) and states that a record-targeted correction is ALWAYS followed by
+a full replay of the entire amended stream.
+
+---
+
+**Superseded (retained as history) — PVCG-R3: AUTHORITATIVE CLOSURE; governance-only closure gate;
+MERGED AND AUTHORITATIVE via PR #553, merge `18a90f9b…`.** Base:
 `d046b3e5449f5f91f5f719686e7e207ceda2f06c` (PR #552 merge — PVCG-R3-I, AUTHORITATIVE; live tip
 re-fetched from `origin/feature/atomic-json-session-persistence` and independently re-verified: first
 parent `7b7aa2f12a7429fbb309c2f4a7e13d7b83ebdd60`, second parent
