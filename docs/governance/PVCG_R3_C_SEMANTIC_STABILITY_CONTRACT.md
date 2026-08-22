@@ -663,10 +663,12 @@ record's own §1 shows it was executed against the tip **`1ce2c896…`** / the f
 correct comparison baseline for this lineage, because `ca98099e…` is the SHA-preserving merge of
 `25cf419c…` whose entire delta over `1ce2c896…` is **4 governance documents, +332 / -1, with zero
 `engine/`, `web/`, `tests/`, `domains/` or `scripts/` change** (independently re-verified this gate)
-**[REPO]**. The Creator did **not** execute the full suite at `ca98099e…`; the independent external
-reviewer subsequently measured it **directly on the frozen R3-C candidate `6f7720ab…`** and obtained
-the same **3776 / 3 / 1 / 0** (§21). R3-I must nevertheless **re-measure the full suite itself on its
-own frozen state** rather than inherit either number.
+**[REPO]**. The Creator did **not** execute the full suite at `ca98099e…`. Two later measurements were
+made directly on a frozen R3-C candidate rather than inherited: the independent external reviewer
+measured **3776 / 3 / 1 / 0** on candidate `6f7720ab…`, and the Creator measured **3776 passed /
+3 skipped / 1 xfailed / 0 failed** on the review-repair candidate under the environment precondition
+above, re-run on this record's final tree **[EXEC]** (§21 records both). R3-I must nevertheless **re-measure the full suite itself on its
+own frozen state** rather than inherit any of these numbers.
 
 Any delta must be reconciled test-by-test with a stated cause; an unexplained delta is a rejection
 condition. A skipped serving-stack test reported as a
@@ -737,11 +739,16 @@ Creator did **not** execute the full suite at the authoritative base `ca98099e�
 review, and no statement here or in §18 may be read as claiming otherwise. The `3776 / 3 / 1 / 0`
 figure originates from `PVCG_R2_FORMAL_CLOSURE_RECORD.md` §5, measured on the R2 closure lineage
 (`1ce2c896…` / candidate `25cf419c…`), and carries to this base only because the intervening R2 closure
-merge is governance-only (§18). The **independent external reviewer subsequently measured the full
-suite directly on the frozen R3-C candidate `6f7720ab51a58e83270f2b28bcf6d650d5661bc4`** and obtained
-**3776 passed / 3 skipped / 1 xfailed / 0 failed**, so from that review onward the figure is
-independently established *at the candidate* rather than inherited. R3-I must still re-measure on its
-own frozen state (§18).
+merge is governance-only (§18). Two later measurements were then made **directly on a frozen R3-C
+candidate**, so the figure no longer rests on the carry-over argument at all:
+
+| Who | Measured on | Result |
+|---|---|---|
+| Independent external reviewer | frozen candidate `6f7720ab51a58e83270f2b28bcf6d650d5661bc4` | 3776 passed / 3 skipped / 1 xfailed / 0 failed |
+| Creator, this review-repair gate **[EXEC]** | this record's own frozen tree (re-run after this section reached its final text) | 3776 passed / 3 skipped / 1 xfailed / 0 failed |
+
+Both were run under the §18 environment precondition (Python 3.11.15, Flask 3.1.3, SQLite 3.45.1,
+gunicorn 26.1.0 on `PATH`). R3-I must still re-measure on its own frozen state (§18).
 
 Every **[EXEC]** finding in §2 and §3 was produced by read-only probes that modified no repository file
 and added no test fixture; a reviewer should re-measure independently rather than accept them as
