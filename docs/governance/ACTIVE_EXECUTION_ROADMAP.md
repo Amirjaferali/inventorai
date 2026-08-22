@@ -14348,12 +14348,12 @@ the retained PVCG-R3-I bullet in `CURRENT_PROJECT_STATE.md`. **`PACK DELTA: 0`**
 `domains/*/domain.json` byte-identical; the correction path is domain-neutral and a committed test
 asserts it contains no domain token.
 
-**Verification on the frozen candidate, measured — not carried.** Focused R4-I **38 passed**;
+**Verification on the frozen candidate, measured — not carried.** Focused R4-I **52 passed**;
 PVCG-R1 **26 passed** with its test file byte-unchanged; R2 behavioural **189 passed** and R2 marker
 coverage **566 passed**, both files byte-unchanged; R3 focused **579 passed**, file byte-unchanged;
-P9 pin suites **54 passed**; `UNIVERSAL GUARDRAIL SMOKE: PASS`; full suite **4393 passed / 3 skipped /
+P9 pin suites **54 passed**; `UNIVERSAL GUARDRAIL SMOKE: PASS`; full suite **4407 passed / 3 skipped /
 1 xfailed / 0 failed** under the §18 precondition (Python 3.11.15, Flask 3.1.3, SQLite 3.45.1,
-gunicorn 26.1.0 on `PATH`). **§20 reconciliation: baseline 4355 + 38 = 4393**, exactly the one new R4-I
+gunicorn 26.1.0 on `PATH`). **§20 reconciliation: baseline 4355 + 52 = 4407**, exactly the one new R4-I
 test file and nothing else. The baseline `4355 / 3 / 1 / 0` was itself re-measured on this candidate's
 own base tip in this session rather than carried from prose.
 
@@ -14371,8 +14371,44 @@ Repaired by registering the acknowledgement in `_DEEP_AR` as well, and by replac
 with two that exercise the real path — one per-helper, one end-to-end through the live client with the
 UI language actually switched (using the route's real `lang` field). **Guard-removal proof:** with the
 `_DEEP_AR` registration temporarily removed, both new tests FAIL; with it restored, both pass — the
-coverage is real, not vacuous. Focused R4-I therefore stands at **38**, and the §20 reconciliation at
-**4355 + 38 = 4393**.
+coverage is real, not vacuous. Focused R4-I stood at **38** at that point, with the §20 reconciliation
+at **4355 + 38 = 4393** — stated as the CG-1 stage's own figures; the NB-1/NB-2 microrepair below
+supersedes them with the current **52** / **4355 + 52 = 4407**.
+
+**NB-1 / NB-2 microrepair (Owner-directed, bounded).** The Independent External Review of
+`4dc7c3290a8bf9b72a87ad017e1e94181f6b9799` returned **ACCEPT WITH NON-BLOCKING OBSERVATIONS**,
+`UNSUPPORTED MATERIAL CLAIMS = 0`, and `SAFE FOR OWNER EXACT-SHA ACCEPTANCE: YES`. The Owner directed
+one tightly bounded child repairing **NB-1 and NB-2 only**; **NB-3 and NB-4 are deliberately NOT
+addressed**, and the reviewed SHA is preserved unchanged and unpublished as immutable evidence
+(branch `pvcg-r4i-reviewed-4dc7c329`), never amended, rebased, squashed or recreated.
+
+**NB-1 — a factually false replay-failure message, now truthful.** The contract's
+persist-before-acknowledge ordering (§6 C-6) commits the durable append BEFORE the replay, so on the
+reviewer-reproduced path — append succeeds, replay fails, live state untouched, record committed, next
+load applies it — the wording *"Nothing was changed"* was **false about accepted-source history**. That
+path now uses a separate message stating exactly what is true: the correction was saved; the page could
+not be updated just now; what is shown has not changed yet; it will be applied the next time the project
+loads. **No durable rollback is claimed, and the contract's persistence ordering was NOT altered to make
+the old wording true.** The pre-durable failure paths keep the original wording, where *"Nothing was
+changed"* remains correct. Registered as `UI_B_CORRECT_004` in `ui_text._MESSAGE_KEYS` — the map the
+`_answer_error` slot actually uses — with an Arabic equivalent, and proven on the real render path in
+both languages.
+
+**NB-2 — correction-POST token parity.** `POST /session/<sid>/correct` mutates accepted durable state
+but did not take the `answer_token` its closest functional peer `submit_answer` requires. It now takes
+the SAME token, validated by the SAME canonical `_valid_answer_token` (a stateless HMAC binding the
+`sid`), placed **FIRST in the route — before parsing, minting, the durable append and the replay** — so
+a token failure can never reach the store. Missing, malformed, forged and cross-session tokens all fail
+closed with no durable correction record, no supersession edge, no replay and no live-state change.
+**No second CSRF or token model is introduced, `_project_authorized` is unchanged, and no other
+session-scoped POST route was altered.**
+
+**Guard-removal proof for both.** With the token check removed, five NB-2 tests FAIL; with the message
+reverted to the old wording, three NB-1 tests FAIL; with both repairs in place all fourteen pass — the
+coverage is real, not vacuous. Focused R4-I therefore stands at **52**, and the §20 reconciliation at
+**4355 + 52 = 4407**. `PIN DELTA from 4dc7c329: 0` — `engine/progression_loop.py` is untouched by this
+microrepair and its digest remains `c268cd63…`; `PACK DELTA: 0`; `DOMAIN-RULE DELTA: 0`. Exactly three
+paths changed: `web/app.py`, `web/ui_text.py`, `tests/test_pvcg_r4i_correction_and_invalidation.py`.
 
 **Scope.** `PVCG-R4 AUTHORITATIVELY SATISFIED: NO`; `FPC-02 / P4-2 REMAINS IMPLEMENTATION OWNER: YES`;
 `PVCG-R4 REMAINS CONFORMANCE OWNER ONLY: YES`; `TARGETED PARTIAL INVALIDATION AUTHORIZED: NO`;

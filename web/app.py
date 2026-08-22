@@ -790,6 +790,18 @@ CORRECTION_INCOMPLETE_MESSAGE = (
     "Select which of your earlier answers to withdraw, and enter the "
     "corrected answer."
 )
+# NB-1 (Independent External Review). The durable append happens BEFORE the
+# replay (the contract's persist-before-acknowledge ordering, §6 C-6), so once
+# the append has committed, "Nothing was changed" is FALSE: accepted-source
+# history DID change. This message is used ONLY on that post-durable path. It
+# claims no rollback of the durable append — the append stands, and the next
+# successful load applies it through reconstruction (§9 F-4).
+CORRECTION_SAVED_NOT_YET_APPLIED_MESSAGE = (
+    "Your correction was saved, but the page could not be updated just now. "
+    "What you see below has not changed yet. Your correction will be applied "
+    "the next time this project loads."
+)
+
 CORRECTION_APPLIED_ACK = (
     "Your earlier answer was withdrawn and kept in the project history. "
     "Everything shown has been recomputed from your remaining answers."
@@ -2647,6 +2659,22 @@ def correct_answer(sid):
         return redirect(url_for("index"))
     state = entry["state"]
 
+    # NB-2 (Independent External Review) — TOKEN PARITY with the closest
+    # functional peer, `submit_answer`. This route mutates accepted durable
+    # state, so it takes the SAME mandatory server-issued token, validated by
+    # the SAME canonical `_valid_answer_token` (stateless HMAC binding the sid,
+    # so a missing / malformed / forged / cross-session token all fail closed).
+    # No second CSRF or token model is introduced and `_project_authorized`
+    # above is unchanged.
+    #
+    # Placed FIRST, before parsing, staging, minting or any durable call, so a
+    # token failure can never reach the store: no durable correction record, no
+    # supersession edge, no replay, and no live-state change. The rejection is
+    # generic and discloses nothing about the token mechanism.
+    if not _valid_answer_token(sid, request.form.get("answer_token", "")):
+        entry["_answer_error"] = CORRECTION_NOT_APPLIED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+
     target_id = (request.form.get("supersedes_record_id") or "").strip()
     response = (request.form.get("response") or "").strip()
 
@@ -2728,9 +2756,16 @@ def correct_answer(sid):
     if _recon is None or _recon.review.level != 1 or _recon.state is None:
         # §9 F-2/F-3: replay did not produce a state, so live memory is left
         # EXACTLY as it was — never partially replaced — and the correction is
-        # not reported as applied. The durable stream stays valid and
+        # not reported as APPLIED. The durable stream stays valid and
         # re-loadable, so the next load applies it (§9 F-4).
-        entry["_answer_error"] = CORRECTION_NOT_APPLIED_MESSAGE
+        #
+        # NB-1: the durable append ALREADY committed above, so this path must
+        # NOT say "Nothing was changed" — that would be factually false about
+        # accepted-source history. The message states what is true: the
+        # correction was saved, the live view was not updated, and it will be
+        # applied on the next successful load. No durable rollback is claimed,
+        # and the contract's persistence ordering is unchanged.
+        entry["_answer_error"] = CORRECTION_SAVED_NOT_YET_APPLIED_MESSAGE
         return redirect(url_for("show_session", sid=sid))
 
     # §8 RP-4 — ATOMIC live-state replacement. The replayed state REPLACES the

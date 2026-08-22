@@ -88,11 +88,11 @@ R3-closure roadmap gate entries, the retained R3-I blocks here and in `CURRENT_P
 **`PACK DELTA: 0`** — `domain_rules.py`, `path_n_questions.py` and all five packs byte-identical; the
 correction path is domain-neutral, asserted by test.
 
-**Verification on the frozen candidate — measured, not carried.** Focused R4-I **38 passed**; R1
+**Verification on the frozen candidate — measured, not carried.** Focused R4-I **52 passed**; R1
 **26** (file byte-unchanged); R2 **189** + **566** (both byte-unchanged); R3 **579** (byte-unchanged);
-P9 **54**; `UNIVERSAL GUARDRAIL SMOKE: PASS`; full suite **4393 passed / 3 skipped / 1 xfailed /
+P9 **54**; `UNIVERSAL GUARDRAIL SMOKE: PASS`; full suite **4407 passed / 3 skipped / 1 xfailed /
 0 failed** under the §18 precondition (Python 3.11.15, Flask 3.1.3, SQLite 3.45.1, gunicorn 26.1.0).
-**§20 reconciliation: 4355 baseline + 38 = 4393**, exactly the one new test file — and the baseline was
+**§20 reconciliation: 4355 baseline + 52 = 4407**, exactly the one new test file — and the baseline was
 itself re-measured on this candidate's own base in this session.
 
 **Scope.** `FPC-02 / P4-2 REMAINS IMPLEMENTATION OWNER: YES`; `PVCG-R4 REMAINS CONFORMANCE OWNER ONLY:
@@ -105,10 +105,24 @@ YES`; `TARGETED PARTIAL INVALIDATION AUTHORIZED: NO`; `DEPENDENCY GRAPH ADDED: N
 **Verdict provenance, kept distinct.** `UNSUPPORTED MATERIAL CLAIMS` is an INDEPENDENT-REVIEWER field:
 
 ```
-Creator Grill unsupported-material-claim finding (this candidate) : 0
-Independent review of this candidate                             : NOT YET PERFORMED,
-                                                                   as at the time of its submission
+Independent External Review — candidate 4dc7c3290a8bf9b72a87ad017e1e94181f6b9799
+  VERDICT                     = ACCEPT WITH NON-BLOCKING OBSERVATIONS
+  UNSUPPORTED MATERIAL CLAIMS = 0
+  SAFE FOR OWNER EXACT-SHA ACCEPTANCE = YES
+  Observations raised         = NB-1, NB-2, NB-3, NB-4
+  Owner disposition           = acceptance WITHHELD pending a bounded child
+                                repairing NB-1 and NB-2 ONLY
+
+THIS candidate — the NB-1/NB-2 microrepair child of 4dc7c329…
+  NB-1 = REPAIRED   NB-2 = REPAIRED
+  NB-3 = NOT ADDRESSED (out of the authorized repair scope)
+  NB-4 = NOT ADDRESSED (out of the authorized repair scope)
+  Creator Grill unsupported-material-claim finding = 0
+  INDEPENDENTLY RE-REVIEWED   = NO, as at the time of its submission
 ```
+
+`4dc7c329…` is preserved unchanged and unpublished as immutable review evidence (branch
+`pvcg-r4i-reviewed-4dc7c329`); it was never amended, rebased, squashed or recreated.
 
 ---
 

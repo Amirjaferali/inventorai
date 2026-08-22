@@ -104,6 +104,12 @@ _MESSAGE_KEYS = {
     ("Your earlier answer was withdrawn and kept in the project history. "
      "Everything shown has been recomputed from your remaining answers."):
         "UI_B_CORRECT_003",
+    # NB-1: the post-durable replay-failure notice. Rendered through the
+    # `_answer_error` slot, which `show_session` localises with
+    # `localize_message`, so it is registered HERE — the map that path uses.
+    ("Your correction was saved, but the page could not be updated just now. "
+     "What you see below has not changed yet. Your correction will be applied "
+     "the next time this project loads."): "UI_B_CORRECT_004",
 }
 
 
@@ -461,6 +467,14 @@ UI_STRINGS = {
     "UI_B_CORRECT_002": {
         "en": "Select which of your earlier answers to withdraw, and enter the corrected answer.",
         "ar": "اختر أي إجابة سابقة تريد سحبها، ثم اكتب الإجابة المصحّحة.",
+    },
+    "UI_B_CORRECT_004": {
+        "en": ("Your correction was saved, but the page could not be updated just now. "
+               "What you see below has not changed yet. Your correction will be applied "
+               "the next time this project loads."),
+        "ar": ("تم حفظ تصحيحك، لكن تعذّر تحديث الصفحة الآن. "
+               "وما تراه بالأسفل لم يتغيّر بعد. وسيُطبَّق تصحيحك "
+               "عند تحميل المشروع في المرة القادمة."),
     },
     "UI_B_CORRECT_003": {
         "en": ("Your earlier answer was withdrawn and kept in the project history. "

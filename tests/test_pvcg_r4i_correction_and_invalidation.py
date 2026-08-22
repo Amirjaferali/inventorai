@@ -83,9 +83,17 @@ def _answer(client, sid, response):
         "answer_token": _token(client, sid)})
 
 
-def _correct(client, sid, record_id, response):
-    return client.post("/session/" + sid + "/correct", data={
-        "supersedes_record_id": record_id, "response": response})
+_UNSET = object()
+
+
+def _correct(client, sid, record_id, response, token=_UNSET):
+    """NB-2: the correction POST carries the SAME canonical answer_token as
+    `submit_answer`. Pass `token=` explicitly to exercise a failure case."""
+    data = {"supersedes_record_id": record_id, "response": response}
+    data["answer_token"] = _token(client, sid) if token is _UNSET else token
+    if data["answer_token"] is None:
+        data.pop("answer_token")
+    return client.post("/session/" + sid + "/correct", data=data)
 
 
 def _store():
@@ -639,3 +647,181 @@ class TestTNeutralityAndStructure:
                                   iteration=3)
         assert r.supersedes == [] and r.superseded_by is None
         assert r.record_id == "rec_1"
+
+
+# =========================================================================
+# NB-1 — the post-durable replay-failure message must be TRUTHFUL.
+#
+# The contract's persist-before-acknowledge ordering (§6 C-6) commits the
+# durable append BEFORE the replay, so on this path accepted-source history HAS
+# changed. Saying "Nothing was changed" would be factually false. The ordering
+# itself is NOT altered to make the old wording true.
+# =========================================================================
+class TestNB1TruthfulReplayFailureMessage:
+
+    def _forced_replay_failure(self, client, monkeypatch):
+        sid = _start(client)
+        target = _answered_ids(sid)[-1]
+        before_state = SESSION_STORE[sid]["state"]
+        before_snapshot = _snapshot(before_state)
+        before_ids = _answered_ids(sid)
+        token = _token(client, sid)
+        monkeypatch.setattr(
+            webapp, "reconstruct_readonly_state",
+            lambda *a, **k: (_ for _ in ()).throw(RuntimeError("replay down")))
+        r = _correct(client, sid, target, MECH_CORRECTED, token=token)
+        assert r.status_code == 302
+        return sid, target, before_state, before_snapshot, before_ids
+
+    def test_durable_append_succeeded_and_the_correction_is_present(
+            self, client, monkeypatch):
+        sid, target, _, _, before_ids = self._forced_replay_failure(client, monkeypatch)
+        after_ids = _answered_ids(sid)
+        assert len(after_ids) == len(before_ids) + 1, (
+            "the durable append committed before the replay — history DID change")
+        by_id = {r.record_id: r for r in _store().load_accepted_answer_evidence(sid)}
+        assert by_id[target].superseded_by is not None
+
+    def test_live_state_is_left_exactly_unchanged(self, client, monkeypatch):
+        sid, _, before_state, before_snapshot, _ = self._forced_replay_failure(
+            client, monkeypatch)
+        assert SESSION_STORE[sid]["state"] is before_state
+        assert _snapshot(SESSION_STORE[sid]["state"]) == before_snapshot
+
+    def test_the_english_message_does_not_claim_nothing_changed(
+            self, client, monkeypatch):
+        sid, _, _, _, _ = self._forced_replay_failure(client, monkeypatch)
+        msg = SESSION_STORE[sid].get("_answer_error")
+        assert msg == webapp.CORRECTION_SAVED_NOT_YET_APPLIED_MESSAGE
+        assert "Nothing was changed" not in msg, (
+            "durable accepted-source history DID change on this path")
+        assert msg != webapp.CORRECTION_NOT_APPLIED_MESSAGE
+        low = msg.lower()
+        assert "saved" in low                      # recorded durably
+        assert "not changed yet" in low            # live state untouched
+        assert "next time this project loads" in low   # applied on next load
+        for claim in ("undone", "reverted", "rolled back", "discarded"):
+            assert claim not in low, "no durable rollback may be claimed"
+
+    def test_the_english_message_renders_to_an_english_reader(
+            self, client, monkeypatch):
+        sid, _, _, _, _ = self._forced_replay_failure(client, monkeypatch)
+        monkeypatch.undo()
+        body = client.get("/session/" + sid).get_data(as_text=True)
+        assert webapp.CORRECTION_SAVED_NOT_YET_APPLIED_MESSAGE in body
+        assert "Nothing was changed" not in body
+
+    def test_the_arabic_message_conveys_the_same_state_on_the_real_render_path(
+            self, client, monkeypatch):
+        from web import ui_text
+        msg = webapp.CORRECTION_SAVED_NOT_YET_APPLIED_MESSAGE
+        ar = ui_text.localize_message(msg, "ar")
+        assert ar != msg, ("_answer_error is rendered with localize_message, so "
+                           "the message must be registered in that map")
+        assert client.post("/ui-language", data={"lang": "ar"}).status_code == 302
+        sid, _, _, _, _ = self._forced_replay_failure(client, monkeypatch)
+        monkeypatch.undo()
+        body = client.get("/session/" + sid).get_data(as_text=True)
+        assert msg not in body, "the English message must not reach an Arabic reader"
+        assert ar[:20] in body, "the Arabic message must be rendered"
+
+    def test_the_next_successful_load_applies_the_durable_correction(
+            self, client, monkeypatch):
+        sid, _, _, before_snapshot, _ = self._forced_replay_failure(client, monkeypatch)
+        monkeypatch.undo()
+        SESSION_STORE.pop(sid)                      # simulate the next load
+        recon = reconstruct_readonly_state(_store(), sid)
+        assert recon.review.level == 1
+        assert recon.review.withdrawn_source_records == 1
+        assert _snapshot(recon.state) != before_snapshot, (
+            "the promise the message makes must actually hold")
+
+
+# =========================================================================
+# NB-2 — the correction POST takes the SAME canonical answer_token as
+# `submit_answer`, validated BEFORE any durable or live mutation.
+# =========================================================================
+class TestNB2CorrectionTokenParity:
+
+    def _fixture(self, client):
+        sid = _start(client)
+        return sid, _answered_ids(sid)[-1]
+
+    def _unchanged(self, sid, before_ids, before_state, before_snapshot):
+        assert _answered_ids(sid) == before_ids, "no durable correction record"
+        assert SESSION_STORE[sid]["state"] is before_state, "no live-state change"
+        assert _snapshot(SESSION_STORE[sid]["state"]) == before_snapshot
+
+    def _reject_case(self, client, token):
+        sid, target = self._fixture(client)
+        before_ids = _answered_ids(sid)
+        before_state = SESSION_STORE[sid]["state"]
+        before_snapshot = _snapshot(before_state)
+        r = _correct(client, sid, target, MECH_CORRECTED, token=token)
+        assert r.status_code == 302
+        self._unchanged(sid, before_ids, before_state, before_snapshot)
+        assert SESSION_STORE[sid].get("_interaction_ack") is None
+        return sid
+
+    def test_it_reuses_the_existing_canonical_token_helper(self):
+        import inspect
+        src = inspect.getsource(webapp.correct_answer)
+        assert "_valid_answer_token(sid," in src, "reuse, not a second mechanism"
+        assert "_project_authorized" in src, "existing authorization preserved"
+        for invented in ("csrf_token", "correction_token", "_issue_correction"):
+            assert invented not in src, "no second CSRF/token model"
+
+    def test_token_is_validated_before_any_durable_or_live_mutation(self):
+        import inspect
+        src = inspect.getsource(webapp.correct_answer)
+        assert src.index("_valid_answer_token") < src.index("append_record"), (
+            "token validation must precede the durable append")
+        assert src.index("_valid_answer_token") < src.index("record_interaction"), (
+            "token validation must precede minting")
+
+    def test_valid_token_succeeds(self, client):
+        sid, target = self._fixture(client)
+        before = len(_answered_ids(sid))
+        r = _correct(client, sid, target, MECH_CORRECTED)   # canonical token
+        assert r.status_code == 302
+        assert SESSION_STORE[sid].get("_answer_error") is None
+        assert len(_answered_ids(sid)) == before + 1
+
+    def test_missing_token_fails_closed(self, client):
+        self._reject_case(client, token=None)
+
+    def test_malformed_token_fails_closed(self, client):
+        for bad in ("", "not-a-token", "abc.def.ghi", "."):
+            self._reject_case(client, token=bad)
+
+    def test_forged_token_fails_closed(self, client):
+        sid, _ = self._fixture(client)
+        good = _token(client, sid)
+        nonce, sep, sig = good.partition(webapp._ANSWER_TOKEN_SEP)
+        forged = nonce + sep + ("0" * len(sig))
+        assert forged != good
+        self._reject_case(client, token=forged)
+
+    def test_cross_session_token_fails_closed(self, client):
+        other = _start(client)                       # a DIFFERENT live session
+        foreign = _token(client, other)
+        sid, target = self._fixture(client)
+        before_ids = _answered_ids(sid)
+        before_state = SESSION_STORE[sid]["state"]
+        before_snapshot = _snapshot(before_state)
+        r = _correct(client, sid, target, MECH_CORRECTED, token=foreign)
+        assert r.status_code == 302
+        self._unchanged(sid, before_ids, before_state, before_snapshot)
+
+    def test_ordinary_valid_correction_semantics_are_unchanged(self, client):
+        sid, target = self._fixture(client)
+        before = {r.record_id: r.content
+                  for r in _store().load_accepted_answer_evidence(sid)}
+        _correct(client, sid, target, MECH_CORRECTED)
+        after = {r.record_id: r for r in _store().load_accepted_answer_evidence(sid)}
+        assert after[target].content == before[target], "retained verbatim"
+        assert after[target].superseded_by is not None
+        assert SESSION_STORE[sid].get("_interaction_ack") == webapp.CORRECTION_APPLIED_ACK
+        live = SESSION_STORE[sid]["state"]
+        if live.known_mechanism is not None:
+            assert live.known_mechanism.content != MECH_STRONG
