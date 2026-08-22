@@ -2424,8 +2424,33 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
-- **PVCG — AUTHORITATIVE CLOSURE OF THE R1–R4 PROGRAM (governance-only closure CANDIDATE), base
-  `ca9fb4be818f62a7e78a72ce6c97c707bba9807c`** (PR #556 merge — PVCG-R4 FORMAL CLOSURE, AUTHORITATIVE;
+- **TDVP — POST-PVCG RECONCILIATION (governance-only reconciliation CANDIDATE), base
+  `2da8a6a3bb832bf3326c4cb7cc9e1dc8a99499e7`** (PR #557 merge — PVCG FINAL, AUTHORITATIVE; live tip
+  re-verified: parents `ca9fb4be…` / `106d3b52…`, merge tree `cdbf4c36…` == candidate tree, empty diff,
+  zero later commits). Disposition: **`TDVP RECONCILIATION CANDIDATE — NOT AUTHORITATIVE UNTIL
+  MERGED`**; record `docs/governance/TDVP_POST_PVCG_RECONCILIATION_RECORD.md`; discharges the merged
+  PVCG closure record's §7.4 reconciliation clause; authorizes NO implementation. **OUTCOME A — NO NEW
+  PROGRAM REQUIRED:** all ten provisional topics eliminated as new-workstream candidates (owners: WS6
+  Requirements; domain rules + P9-QS + STG; GroundedRisk linkage with propagation still PROHIBITED;
+  Increment-2 evidence axes + CAP-11; WS7 + FPC-01; D13 + AISR + FPC-04 + WS-PFV-001; P9-QS + registry;
+  deliverable + P7-I1 + FPC-04A; P7-I1/P7-I3 vendor-neutral one-way export with inbound ingestion
+  directionally AISR/STG; the WS8–WS17 family with WS10/WS11 dormant and the eight-document
+  `FULL ADAPTIVE QUESTIONING ACTIVATED: NO` fence). **TRUE RESIDUAL GAP COUNT: 0**; surviving residual
+  facts all owned (quantified-requirement fields = WS6 extension, post-release; STG depth; AISR/STG
+  ingestion; Phase-3C/FPC-02 rendered UX preserved un-absorbed). **One optional Owner decision
+  surfaced** (admit the WS6 quantified-requirements extension), none recorded;
+  `OWNER_DECISION_REGISTER.md` UNCHANGED. **TDVP program name RETIRED effective on merge**; no
+  numbering carried; every disposition `PLANNED / GOVERNED — NOT YET IMPLEMENTATION-AUTHORIZED`.
+  `RUNTIME/TEST/PIN/PACK/DOMAIN-RULE DELTA: 0`; PVCG not reopened; `main` not reconciled;
+  `TDVP IMPLEMENTATION STARTED: NO`; `PSRR GO: NO`; `DEPLOYMENT AUTHORIZED: NO`;
+  `PRODUCTION AUTHORIZED: NO`.
+
+- **PVCG — AUTHORITATIVE CLOSURE OF THE R1–R4 PROGRAM — MERGED AND AUTHORITATIVE via PR #557, merge
+  `2da8a6a3…`; the text below is retained as the CANDIDATE-TIME historical record.** *Current truth:
+  `PVCG FORMALLY CLOSED: YES`; `PVCG SATISFIED: YES` (bounded R1–R4 scope) — the candidate-time
+  disposition line below is superseded by that merge and preserved unrewritten, per the
+  retained-history convention.* (base
+  `ca9fb4be818f62a7e78a72ce6c97c707bba9807c`) (PR #556 merge — PVCG-R4 FORMAL CLOSURE, AUTHORITATIVE;
   live tip re-fetched and independently re-verified: first parent `5ed09180…`, second parent
   `713a48fd…` — the exact Owner-accepted R4 closure candidate — merge tree `eb105e95…` == candidate
   tree, empty diff, zero later commits, clean tree). Disposition: **`PVCG CLOSURE CANDIDATE — NOT
