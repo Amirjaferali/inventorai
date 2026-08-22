@@ -13871,9 +13871,16 @@ SAME `_surface_matches` discipline as the concept surfaces — 36 single-token s
 genuine multi-word surfaces by substring (boundary-safe by construction). The definite-article
 proclitics (`ال` family) are additionally excluded for causal surfaces, because prefixing the article
 turns a connective into a noun phrase (`حين` "when" → `الحين` "the time"), while the verb-attaching
-proclitics `و ف ب ك ل` remain allowed so `وثم` and `فتدور` still match. The validator now REFUSES at
-import any single-token causal or unknown surface declared PHRASE, so the defect class cannot return
-silently. **Measured after repair: 0/19 false positives, 10/10 legitimate causal constructions still
+proclitics `و ف ب ك ل` remain allowed. **O-1 correction — stated exactly, because the interaction with
+the length guard is easy to describe wrongly.** An earlier revision of this sentence claimed that `وثم`
+and `فتدور` "still match". Only the second half is true. A causal word surface is reached through a
+proclitic ONLY when the surface is at least `_MIN_PROCLITIC_SURFACE_LEN` (3) characters, so `فتدور` and
+`وتدور` match (`تدور`, 4 chars) and `وحين` matches (`حين`, 3 chars), while **`وثم` and `فثم` do NOT** —
+`ثم` is 2 characters and falls below the guard, so it is recognised only as a bare token. The runtime is
+therefore MORE conservative than that sentence described; the guard is NOT weakened, and both sides of
+the boundary are now pinned by inert-carrier assertions so the wording can never drift from the code
+again. The validator now REFUSES at import any single-token causal or unknown surface declared PHRASE,
+so the defect class cannot return silently. **Measured after repair: 0/19 false positives, 10/10 legitimate causal constructions still
 recognised, and the three material outcomes (`ثمن` / `سعر` / English) are now IDENTICAL.**
 **The prior justification comment was itself false and is removed:** the English table is NOT exposed to
 this bleed, because its short function words carry explicit trailing-space guards (`"when "`, `"if "`,
