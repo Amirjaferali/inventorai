@@ -2424,6 +2424,30 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
+- **PVCG-R3 — AUTHORITATIVE CLOSURE (governance-only closure CANDIDATE), base
+  `d046b3e5449f5f91f5f719686e7e207ceda2f06c`** (PR #552 merge — PVCG-R3-I, AUTHORITATIVE; live tip
+  re-fetched and independently re-verified: first parent `7b7aa2f1…`, second parent `4978c969…` — the
+  exact Owner-accepted candidate — merge tree `db87b7cb…` == candidate tree, empty candidate→merge diff,
+  zero later commits, clean tree). Disposition: **`PVCG-R3 CLOSURE CANDIDATE — NOT AUTHORITATIVE UNTIL
+  MERGED`**; **`PVCG-R3-C AUTHORITATIVE: YES`**, **`PVCG-R3-I AUTHORITATIVE: YES`**. **Why a separate
+  gate:** `PVCG_R3_C_SEMANTIC_STABILITY_CONTRACT.md` §19 criterion **10** requires *"a formal closure
+  record merged, exactly as R2 required"* — the implementation merge alone does not close R3; no
+  competing closure rule exists and no such record previously existed. Closure statements live in
+  `docs/governance/PVCG_R3_FORMAL_CLOSURE_RECORD.md`. **All ten §19 criteria resolved, 1–9 re-measured
+  on the merged tree:** §7.3 **313 pairs / 0 mismatches**, D-1 **0/6**; §10.1/§10.2/§16 green in the
+  579-test R3-I suite; pin `3cbd7684…` enforced green by the three P9 suites with `domain_rules.py`,
+  `path_n_questions.py` and all five packs byte-identical; R1 **26** byte-unchanged; R2 **189** + **566**
+  byte-unchanged; P9 **54**; `UNIVERSAL GUARDRAIL SMOKE: PASS`; full suite **4355 passed / 3 skipped /
+  1 xfailed / 0 failed** (3776 baseline **+579**). Mutation sweep **257 / 254 KILLED / 0 SURVIVED /
+  3 LOADFAIL, restore 257/257** recorded as **carried, independently reviewer-reproduced** evidence from
+  `0f1404f0…`, not re-measured this gate. **B-1, B-2, U-1, U-2, O-1 all CLOSED**; rejected `1ce9ef34…`
+  and every superseded SHA preserved unchanged and unpublished. **Residuals OPEN / NON-BLOCKING and NOT
+  R4 authorization:** N-2 (40-char acknowledged-unknown threshold) and U-4 (single Arabic connective in
+  English prose) — neither appears in any §19 criterion. `PVCG-R4 NOT STARTED`;
+  `FULL ADAPTIVE QUESTIONING ACTIVATED: NO`; `TDVP IMPLEMENTATION STARTED: NO`; `PVCG SATISFIED: NO`;
+  `MINIMUM LAUNCH-CONFORMANCE SET SATISFIED: NO`; `DEPLOYMENT AUTHORIZED: NO`; `main` not reconciled;
+  `OWNER_DECISION_REGISTER.md` UNCHANGED.
+
 - **PVCG-R3-I (REPAIR) — FOCUSED REPAIR AFTER INDEPENDENT REVIEW REJECT (implementation CANDIDATE),
   base `7b7aa2f12a7429fbb309c2f4a7e13d7b83ebdd60`** (PR #551 merge — PVCG-R3-C, AUTHORITATIVE;
   re-resolved live and independently re-verified on all four merge criteria before any repair work).

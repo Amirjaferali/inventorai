@@ -41,7 +41,53 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — PVCG-R3-I (REPAIR): focused repair after Independent External Review REJECT).**
+**Status (current — PVCG-R3: AUTHORITATIVE CLOSURE; governance-only closure gate).** Base:
+`d046b3e5449f5f91f5f719686e7e207ceda2f06c` (PR #552 merge — PVCG-R3-I, AUTHORITATIVE; live tip
+re-fetched from `origin/feature/atomic-json-session-persistence` and independently re-verified: first
+parent `7b7aa2f12a7429fbb309c2f4a7e13d7b83ebdd60`, second parent
+`4978c969357200721199c811fede2d40d59e95ac` — the exact Owner-accepted candidate — merge tree
+`db87b7cbdc5c681d10e8e905b5d81a9f2c29cd7c` identical to the candidate tree, empty candidate→merge diff,
+zero later commits, working tree clean).
+
+**Disposition: `PVCG-R3 CLOSURE CANDIDATE — NOT AUTHORITATIVE UNTIL MERGED`.**
+`PVCG-R3-C AUTHORITATIVE: YES` (PR #551). `PVCG-R3-I AUTHORITATIVE: YES` (PR #552). The closure
+statements live in `docs/governance/PVCG_R3_FORMAL_CLOSURE_RECORD.md` and take effect only on merge and
+post-merge verification.
+
+**Why this gate exists, cited.** `PVCG_R3_C_SEMANTIC_STABILITY_CONTRACT.md` §19 requires as criterion
+**10** *"a formal closure record merged, exactly as R2 required"*, so the implementation merge alone does
+not close R3. Supersession check: no competing closure rule exists in committed governance, and no
+`PVCG_R3_FORMAL_CLOSURE_RECORD.md` previously existed.
+
+**All ten §19 criteria resolved; 1–9 re-measured on the merged tree.** §7.3 **313 registered-surface
+pairs / 0 material mismatches**; D-1 **0/6**; §10.1/§10.2/§16 exercised green by the 579-test R3-I
+suite; pin `3cbd7684…` enforced green by the three P9 suites with `domain_rules.py`,
+`path_n_questions.py` and all five packs byte-identical; R1 **26** (file byte-unchanged); R2 **189** +
+**566** (file byte-unchanged); P9 **54**; smoke **PASS**; full suite **4355 passed / 3 skipped /
+1 xfailed / 0 failed**, §18 reconciliation 3776 **+579**. The mutation sweep **257 / 254 KILLED /
+0 SURVIVED / 3 LOADFAIL, restore 257/257** is recorded as **carried, independently reviewer-reproduced**
+evidence from `0f1404f0…`, not re-measured this gate — the merge tree equals the accepted candidate tree
+and the registry and frozen oracle are byte-identical across that lineage.
+
+**Defect dispositions: B-1 CLOSED, B-2 CLOSED, U-1 CLOSED, U-2 CLOSED, O-1 CLOSED.** Rejected candidate
+`1ce9ef34…` and every superseded SHA preserved unchanged and unpublished.
+
+**Residuals carried forward, OPEN / NON-BLOCKING, and NOT R4 authorization:** **N-2** (the 40-character
+acknowledged-unknown threshold — pre-existing, byte-unchanged, fail-closed in direction, outside the
+§7.3 quantifier) and **U-4** (a single Arabic connective in English prose granting causal structure —
+by design under §10.2/9). Neither appears in any §19 criterion.
+
+**Scope.** Governance/documentation ONLY. No `engine/`, `web/`, `tests/`, `domains/`, `scripts/`,
+evidence-tree, generator, deployment or Render path; `PIN DELTA: 0`; `main` not reconciled;
+`OWNER_DECISION_REGISTER.md` UNCHANGED. R3 closure closes ONLY R3: `PVCG-R4 NOT STARTED`,
+`FULL ADAPTIVE QUESTIONING ACTIVATED: NO`, `TDVP IMPLEMENTATION STARTED: NO`, `PVCG SATISFIED: NO`,
+`MINIMUM LAUNCH-CONFORMANCE SET SATISFIED: NO`, `DEPLOYMENT AUTHORIZED: NO`.
+`UNSUPPORTED MATERIAL CLAIMS: 0`.
+
+---
+
+**Superseded (retained as history) — PVCG-R3-I (REPAIR): focused repair after Independent External
+Review REJECT; MERGED AND AUTHORITATIVE via PR #552, merge `d046b3e5…`.**
 Base: `7b7aa2f12a7429fbb309c2f4a7e13d7b83ebdd60` (PR #551 merge — PVCG-R3-C, AUTHORITATIVE;
 re-resolved live and independently re-verified on all four merge criteria before any repair work).
 

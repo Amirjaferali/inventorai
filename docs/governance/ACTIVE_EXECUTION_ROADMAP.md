@@ -13983,3 +13983,88 @@ no next-question-selection change. `main` NOT reconciled; Render NOT reopened;
 `MINIMUM LAUNCH-CONFORMANCE SET SATISFIED: NO`; `DEPLOYMENT AUTHORIZED: NO`. Authoritative ONLY if/when
 this exact candidate is merged and post-merge verified. Next required step: Independent External Review
 of this exact SHA + bundle.
+
+---
+
+## PVCG-R3 — AUTHORITATIVE CLOSURE (governance-only closure candidate)
+
+**Authority.** PVCG-R3-I is now AUTHORITATIVE: **PR #552**, merge
+`d046b3e5449f5f91f5f719686e7e207ceda2f06c`, independently re-verified this gate from a fresh fetch —
+first parent `7b7aa2f12a7429fbb309c2f4a7e13d7b83ebdd60` (prior authoritative base), second parent
+`4978c969357200721199c811fede2d40d59e95ac` (exact Owner-accepted candidate), merge tree
+`db87b7cbdc5c681d10e8e905b5d81a9f2c29cd7c` — identical to the accepted candidate tree —
+candidate→merge diff **EMPTY**, `git diff --check` PASS, zero later commits, working tree clean.
+PVCG-R3-C remains AUTHORITATIVE: PR #551, merge `7b7aa2f12a74…`, second parent `6bdf2669…`,
+candidate→merge diff EMPTY, ancestor of the live tip — re-verified from repository lineage rather than
+copied.
+
+**Why a separate closure gate exists, cited rather than assumed.**
+`PVCG_R3_C_SEMANTIC_STABILITY_CONTRACT.md` **§19 "CLOSURE CRITERIA FOR PVCG-R3"** lists ten criteria and
+requires as criterion **10** *"a formal closure record merged, exactly as R2 required."* R3 is therefore
+NOT closed by the implementation merge alone. A supersession check found **no competing closure rule**
+anywhere in committed governance, no `PVCG_R3_FORMAL_CLOSURE_RECORD.md` previously existed, and
+`CURRENT_PROJECT_STATE.md` independently states that R3 is satisfied only *"until merged, post-merge
+verified and formally closed"*. The `<GATE>_FORMAL_CLOSURE_RECORD.md` convention invoked by criterion 10
+is the one established by `PVCG_R2_FORMAL_CLOSURE_RECORD.md`.
+
+**Disposition.** `PVCG-R3 CLOSURE CANDIDATE — NOT AUTHORITATIVE UNTIL MERGED`. The closure statements
+live in the dedicated record `docs/governance/PVCG_R3_FORMAL_CLOSURE_RECORD.md` and take effect only on
+merge and post-merge verification.
+
+**What is closed, and only this.** The bounded R3 objective frozen by
+`PVCG_R3_C_SEMANTIC_STABILITY_CONTRACT.md` §4 — within the governed equivalence boundary, two inputs
+activating the same governed concept set for the served gap produce the same material progression
+outcome, whether written in English or Arabic, from the same authoritative starting state. Nothing
+wider.
+
+**All ten §19 criteria resolved; criteria 1–9 RE-MEASURED on the merged tree, not inherited.** §7.3
+proven over the published inventory: **313 registered-surface pairs compared, 0 material mismatches**,
+with D-1 material divergence **0/6**. Every §10.1 property and §10.2 category and every §16 negative
+control is exercised by `TestAdversarialCategories`, `TestNegativeControls` and `TestCausalTokenBoundary`
+in the 579-test R3-I suite, green on the merged tree. Pin reconciliation holds exactly: the live
+`engine/progression_loop.py` digest `3cbd76849c0f572191a552db1a41a8cd418d02fac1d59d9b8804c72883239a55`
+is enforced green by the three P9 suites, while `engine/domain_rules.py` (`0e47326a…`),
+`engine/path_n_questions.py` (`a1a682d3…`) and **all five** `domains/*/domain.json` are byte-identical.
+PVCG-R1 **26 passed** with its test file byte-unchanged; R2 behavioural **189 passed**; R2 marker
+coverage **566 passed** with its file byte-unchanged; P9 pin suites **54 passed**;
+`UNIVERSAL GUARDRAIL SMOKE: PASS`; full suite **4355 passed / 3 skipped / 1 xfailed / 0 failed** under
+the §18 precondition (Python 3.11.15, Flask 3.1.3, SQLite 3.45.1, gunicorn 26.1.0 on `PATH`), §18
+reconciliation 3776 baseline **+579** — exactly the R3-I test file. The declared residual is stated as a
+**KNOWN BOUND** in both `engine/semantic_registry.py` and `engine/gap_relevance.py`, not concealed.
+
+**Carried evidence, attributed rather than re-claimed.** The mutation sweep **257 processed / 254
+KILLED / 0 SURVIVED / 3 LOADFAIL, restore 257/257 byte-identical** was measured on candidate
+`0f1404f0…` and **independently reproduced by the Independent External Reviewer**; it is NOT re-measured
+this gate and is recorded as carried, independently verified evidence. It carries because the merge tree
+equals the accepted candidate tree and both `engine/semantic_registry.py` and the frozen oracle are
+byte-identical across that lineage. The three LOADFAILs are the three concepts whose only Arabic surface
+the mutation removes, where the registry's own import-time `RegistryError` refuses the mutant —
+fail-closed by design, correctly not counted as behavioural kills.
+
+**Review lineage preserved, never authoritative except where accepted.** `1ce9ef34…` was **REJECTED** on
+blocking defects B-1 (Arabic causal substring bleed manufacturing quality, progress and closure) and B-2
+(mutation probes derived from the object under test). `3f08e727…` and `0f1404f0…` each returned
+**ACCEPT WITH NON-BLOCKING OBSERVATIONS**, raising U-1/U-2 and then O-1 respectively. All five defect
+IDs — B-1, B-2, U-1, U-2, O-1 — are **CLOSED**, each with its repair recorded. Every rejected and
+superseded SHA is preserved unchanged; none was amended, rebased, squashed or recreated, and none was
+published.
+
+**Carried forward as OPEN / NON-BLOCKING (not repaired here, not authorized work):** **N-2**, the
+40-character acknowledged-unknown threshold, language-neutral as a rule but not in effect because Arabic
+is more compact — pre-existing, byte-unchanged by R3, fail-closed in direction, and outside the §7.3
+quantifier; and **U-4**, a single Arabic connective inside otherwise-English prose granting causal
+structure — correct by design and symmetric with the mixed-language characterisation §10.2/9 makes
+mandatory. Neither appears in any §19 criterion, both were classified NON-BLOCKING by the independent
+reviewer, and **neither is PVCG-R4 authorization**.
+
+**R3 IS NOT R4.** This closure does not deliver user correction, deterministic invalidation, a
+contradiction engine, full adaptive questioning, question skip/reorder/add, or any LLM/NLP/embedding/
+vector/probabilistic subsystem. **`PVCG-R4 NOT STARTED`** — naming it as next authorizes nothing.
+
+**Scope.** Governance/documentation only — one new closure record plus this entry and the two status
+surfaces. No `engine/`, `web/`, `tests/`, `domains/`, `scripts/`, evidence-tree, generator, deployment or
+Render path; `PIN DELTA: 0`; `main` not reconciled; `OWNER_DECISION_REGISTER.md` UNCHANGED.
+`PVCG SATISFIED: NO`; `MINIMUM LAUNCH-CONFORMANCE SET SATISFIED: NO`; `DEPLOYMENT AUTHORIZED: NO`;
+`TDVP IMPLEMENTATION STARTED: NO`. Next authorized workstream after this closure becomes authoritative:
+**PVCG-R4 — Correction / Invalidation**, still NOT STARTED and opened only by the Owner through the
+established workflow.
