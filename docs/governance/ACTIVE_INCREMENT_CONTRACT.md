@@ -57,7 +57,11 @@ CLOSED a gap while the synonym `سعر` and the faithful English counterpart sta
 Each causal surface now declares an explicit `match_mode` and goes through the same `_surface_matches`
 discipline as concept surfaces (36 WORD / 6 PHRASE), with the definite-article proclitics excluded for
 causal surfaces only. After repair: **0/19 false positives, 10/10 legitimate causal usage preserved, and
-the `ثمن` / `سعر` / English outcomes identical.** The validator now refuses at import any single-token
+the `ثمن` / `سعر` / English outcomes identical.** **U-2 correction:** a comment claimed `وثم` still
+matches; it does NOT — `ثم` is 2 characters, below `_MIN_PROCLITIC_SURFACE_LEN = 3`, so it is reached
+only as a bare token. The runtime is therefore MORE conservative than the comment described; the
+comment is corrected to the code's actual behaviour, the guard is unchanged, and the proclitic boundary
+is now pinned by isolated assertions (`وحين`/`فتدور`/`وتدور` match; `وثم`/`فثم` do not). The validator now refuses at import any single-token
 causal or unknown surface declared PHRASE.
 
 **B-2 repaired — circular mutation evidence.** Probes were parametrized over `DECLARED_INVENTORY`
@@ -67,9 +71,14 @@ runs off `tests/fixtures/pvcg_r3i_frozen_expectations.py` — **257 rows of lite
 importing nothing from the object under test (AST-verified), with a both-directions parity test.
 Deleting one entry from each of the four classes now turns the suite RED.
 
-**Corrected sweep:** **257 processed / 252 KILLED / 0 SURVIVED / 5 LOADFAIL**, restore **257/257**
-byte-identical. The 5 LOADFAILs are sole-surface entries where the registry's own `RegistryError`
-refuses the mutant (fail-closed by design) — reported as LOADFAIL, **not** counted as kills.
+**Corrected sweep:** **257 processed / 254 KILLED / 0 SURVIVED / 3 LOADFAIL**, restore **257/257**
+byte-identical, 0 anchor misses. The **3** LOADFAILs are exactly `MC-LATCH: مزلاج`, `PF-ENERGY: طاقة`
+and `PF-FREQUENCY: تردد` — the three concepts whose ONLY Arabic surface was removed, where the
+registry's own `RegistryError` refuses the mutant (fail-closed by design) — reported as LOADFAIL,
+**not** counted as kills. **The earlier `252 / 5` split is WITHDRAWN as a HARNESS defect** (the
+substance remover hit the first file-wide occurrence of a surface that also exists in the concept
+table, mutating the wrong table); `battery` and `frequency` are genuinely KILLED. `0 SURVIVED` and the
+`257/257` restore are unchanged and were reproduced independently by the reviewer and the Creator.
 
 **Structural shadowing — prior "0 shadowed" was WRONG.** Two genuine shadows found (`مما يسبب` behind
 the WORD surface `يسبب`; `لست متاكدا` behind the prefix `لست متاكد`) and REMOVED, with the removals

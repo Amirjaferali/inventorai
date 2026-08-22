@@ -2442,8 +2442,15 @@ AUTHORIZED / NOT STARTED.***
   **`163/163 KILLED` claim is WITHDRAWN**. Adequacy now runs off the frozen, import-free
   `tests/fixtures/pvcg_r3i_frozen_expectations.py` (**257 literal rows**, AST-verified independent, with
   both-directions parity); deleting one entry per class now goes RED. **Corrected sweep: 257 processed /
-  252 KILLED / 0 SURVIVED / 5 LOADFAIL** (sole-surface entries where the registry's own `RegistryError`
-  fails closed — **not** counted as kills), restore **257/257** byte-identical. **Structural shadowing:
+  254 KILLED / 0 SURVIVED / 3 LOADFAIL** (exactly `MC-LATCH: مزلاج`, `PF-ENERGY: طاقة`,
+  `PF-FREQUENCY: تردد` — the three concepts whose only Arabic surface was removed, where the registry's
+  own `RegistryError` fails closed — **not** counted as kills), restore **257/257** byte-identical,
+  0 anchor misses. **The earlier `252 / 5` split is WITHDRAWN as a harness defect** (the substance
+  remover mutated the first file-wide occurrence, which for `بطارية`/`تردد` lives in the CONCEPT table);
+  both signals are genuinely KILLED. `0 SURVIVED` and `257/257` restore are unchanged and were
+  reproduced independently by reviewer and Creator. **U-2 corrected:** a comment claimed `وثم` matches —
+  it does not (`ثم` is 2 chars, below the 3-char proclitic guard), so the runtime is more conservative
+  than documented; comment fixed to code truth, guard unchanged, boundary now pinned by test. **Structural shadowing:
   the prior "0 shadowed" was WRONG** — 2 genuine shadows (`مما يسبب`, `لست متاكدا`) found and REMOVED,
   so causal is **42** and unknown **8**, and the re-audited zero is earned. **N-1 corrected:** 38 pack
   SIGNALS / **44** Arabic SURFACES. **N-3 corrected** (the control no longer skips the case it names).

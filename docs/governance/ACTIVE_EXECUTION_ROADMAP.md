@@ -13895,11 +13895,25 @@ agreement in BOTH directions, so a silently ADDED runtime surface fails as loudl
 Verified: removing one entry from EACH of the four classes now turns the committed suite RED (2 failures
 each), where the rejected candidate stayed green.
 
-**Corrected mutation sweep, with the committed suite as the oracle.** **257 processed / 252 KILLED /
-0 SURVIVED / 5 LOADFAIL**, restore **257/257 byte-identical**, every mutant run in a fresh interpreter
-with bytecode caching disabled. The 5 LOADFAILs are the five concepts/signals whose ONLY Arabic surface
-was removed: the registry's own import-time `RegistryError` refuses the mutant (fail-closed by design,
-verified by reproduction). **They are reported as LOADFAIL and are NOT counted as behavioural kills.**
+**Corrected mutation sweep, with the committed suite as the oracle.** **257 processed / 254 KILLED /
+0 SURVIVED / 3 LOADFAIL**, restore **257/257 byte-identical**, every mutant run in a fresh interpreter
+with bytecode caching disabled and zero anchor misses. The **3** LOADFAILs are exactly the three
+concepts whose ONLY Arabic surface was removed — `MC-LATCH: مزلاج`, `PF-ENERGY: طاقة`,
+`PF-FREQUENCY: تردد` — where the registry's own import-time
+`RegistryError("concept … must carry both an English and an Arabic surface set")` refuses the mutant
+(fail-closed by design, verified by reproduction). **They are reported as LOADFAIL and are NOT counted
+as behavioural kills.**
+
+**U-1 correction — the earlier `252 KILLED / 5 LOADFAIL` split was a HARNESS defect and is WITHDRAWN.**
+Independent focused re-review of `3f08e727…` measured **254 / 0 / 3**; the Creator independently
+reproduced that figure and found the cause. A surface string can legitimately occur in TWO tables —
+`بطارية` is both a `PF-BATTERY` concept surface and the Arabic surface of the `battery` pack signal —
+and the substance remover replaced the FIRST file-wide occurrence, so it silently mutated the CONCEPT
+table instead, produced `((WORD), …)`, and the resulting import error was miscounted as LOADFAIL. The
+two affected signals (`battery`, `frequency`) are genuinely **KILLED**. The remover is now scoped to
+each class's own section of the file. **The load-bearing result — `0 SURVIVED` and `257/257` restore —
+is unchanged and reproduced by both parties.** No runtime semantics were altered to reach the corrected
+numbers; only the measurement harness was fixed.
 An earlier harness revision produced 31 LOADFAIL and 12 anchor misses; those were HARNESS defects (a
 one-element tuple left without its trailing comma, and multi-word surfaces wrapped across lines), fixed
 before the figures above were taken — disclosed because an undisclosed bad measurement is a

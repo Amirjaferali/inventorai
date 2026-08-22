@@ -175,8 +175,17 @@ _MIN_PROCLITIC_SURFACE_LEN = 3
 #: derived from the measured B-1 bleed set — not from linguistic intuition.
 _AR_ARTICLE_PROCLITICS = frozenset({"وال", "بال", "كال", "فال", "لل", "ال"})
 
-#: Proclitics admissible for a CAUSAL word surface: the non-article ones, so
-#: `وثم` / `فتدور` still match while `الحين` does not.
+#: Proclitics admissible for a CAUSAL word surface: the non-article ones.
+#:
+#: Stated exactly, because the interaction with the length guard below is easy
+#: to describe wrongly: a causal word surface is reached through a proclitic
+#: ONLY when the surface is at least ``_MIN_PROCLITIC_SURFACE_LEN`` characters.
+#: So `فتدور` and `وتدور` (تدور, 4 chars) DO match and `وحين` (حين, 3 chars)
+#: does, while `وثم` and `فثم` do NOT — `ثم` is 2 characters and falls below the
+#: guard, so it is recognised only as a bare token. That is deliberately
+#: fail-closed: `ثم` is the shortest surface in the table and the one most
+#: exposed to accidental reach, so it gets the least proclitic latitude.
+#: `الحين` does not match either, because the article family is excluded here.
 _AR_CAUSAL_PROCLITICS = tuple(p for p in _AR_PROCLITICS
                               if p not in _AR_ARTICLE_PROCLITICS)
 

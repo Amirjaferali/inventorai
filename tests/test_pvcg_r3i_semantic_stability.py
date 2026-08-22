@@ -688,6 +688,9 @@ class TestCausalTokenBoundary:
 
     LEGITIMATE = [
         "ثم تحرر المزلاج بعد ذلك مباشرة.",
+        # NOTE: this line qualifies through تدور, NOT through وثم — see
+        # test_definite_article_does_not_reach_a_causal_surface for the exact
+        # proclitic boundary.
         "وثم تدور الذراع بعد ذلك.",
         "عندما يضغط المستخدم على المقبض تدور الذراع.",
         "حين يرتفع الضغط يفتح الصمام.",
@@ -745,10 +748,24 @@ class TestCausalTokenBoundary:
         """`ال` turns a connective into a noun phrase, so the article family is
         excluded from causal proclitic stripping while verbs keep و/ف/ب/ك/ل."""
         from engine.semantic_registry import (
-            _AR_CAUSAL_PROCLITICS, _AR_ARTICLE_PROCLITICS)
+            _AR_CAUSAL_PROCLITICS, _AR_ARTICLE_PROCLITICS,
+            _MIN_PROCLITIC_SURFACE_LEN)
         assert not (set(_AR_CAUSAL_PROCLITICS) & _AR_ARTICLE_PROCLITICS)
+        # Every probe below uses the inert carrier, so the ONLY candidate
+        # surface is the one under test. An earlier version of this assertion
+        # used "وثم تدور الذراع", which passed through تدور rather than through
+        # the proclitic on ثم — a test passing for the wrong reason.
         assert has_registered_causal_structure("هذا الحين فقط") is False
-        assert has_registered_causal_structure("وثم تدور الذراع") is True
+        assert has_registered_causal_structure("هذا وحين فقط") is True
+        assert has_registered_causal_structure("هذا فتدور فقط") is True
+        assert has_registered_causal_structure("هذا وتدور فقط") is True
+        # ثم is 2 characters, below the guard, so NO proclitic reaches it. The
+        # behaviour is more conservative than a naive reading would suggest and
+        # is asserted here so the comment can never drift from the code again.
+        assert len("ثم") < _MIN_PROCLITIC_SURFACE_LEN
+        assert has_registered_causal_structure("هذا ثم فقط") is True
+        assert has_registered_causal_structure("هذا وثم فقط") is False
+        assert has_registered_causal_structure("هذا فثم فقط") is False
 
 
 # ---------------------------------------------------------------------------
