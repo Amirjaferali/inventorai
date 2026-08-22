@@ -60,8 +60,14 @@ not close R3. Supersession check: no competing closure rule exists in committed 
 `PVCG_R3_FORMAL_CLOSURE_RECORD.md` previously existed.
 
 **All ten §19 criteria resolved; 1–9 re-measured on the merged tree.** §7.3 **313 registered-surface
-pairs / 0 material mismatches**; D-1 **0/6**; §10.1/§10.2/§16 exercised green by the 579-test R3-I
-suite; pin `3cbd7684…` enforced green by the three P9 suites with `domain_rules.py`,
+anchor comparisons / 0 material mismatches** — each remaining surface of a concept compared against a
+common anchor, Σ(n−1) = 313 executed over 56 concepts and 369 surfaces, with §7.3's every-pair property
+following transitively; the 1,174 exhaustive pairs were NOT executed; D-1 **0/6**. §10.2 categories 1–11
+and the §16 controls are exercised by `TestAdversarialCategories`, `TestNegativeControls` and
+`TestCausalTokenBoundary` in the 579-test R3-I suite, while the remaining §10.1 properties are proven by
+other authoritative suites — gap-specific relevance by the 6×6 closure control in
+`tests/test_pvcg_r2i_gap_relevance.py`, R1 durable memory by the R1 suite, the P9-MECH pins by the three
+P9 suites, and determinism by `TestDeterminismAndProhibitions`; pin `3cbd7684…` enforced green by the three P9 suites with `domain_rules.py`,
 `path_n_questions.py` and all five packs byte-identical; R1 **26** (file byte-unchanged); R2 **189** +
 **566** (file byte-unchanged); P9 **54**; smoke **PASS**; full suite **4355 passed / 3 skipped /
 1 xfailed / 0 failed**, §18 reconciliation 3776 **+579**. The mutation sweep **257 / 254 KILLED /
@@ -82,7 +88,20 @@ evidence-tree, generator, deployment or Render path; `PIN DELTA: 0`; `main` not 
 `OWNER_DECISION_REGISTER.md` UNCHANGED. R3 closure closes ONLY R3: `PVCG-R4 NOT STARTED`,
 `FULL ADAPTIVE QUESTIONING ACTIVATED: NO`, `TDVP IMPLEMENTATION STARTED: NO`, `PVCG SATISFIED: NO`,
 `MINIMUM LAUNCH-CONFORMANCE SET SATISFIED: NO`, `DEPLOYMENT AUTHORIZED: NO`.
-`UNSUPPORTED MATERIAL CLAIMS: 0`.
+
+**Verdict provenance, kept distinct.** `UNSUPPORTED MATERIAL CLAIMS` is an INDEPENDENT-REVIEWER field and
+is not a verdict the Creator may self-award. Stated separately:
+
+```
+Creator Grill unsupported-material-claim finding : 0
+Independent closure review (candidate a477ead76d5d57c61da2f15eb1ff1eadfbd8da5e):
+  UNSUPPORTED MATERIAL CLAIMS = 0
+  VERDICT = ACCEPT WITH NON-BLOCKING OBSERVATIONS
+```
+
+The reviewer's count applies to candidate `a477ead7…`; this child candidate carries the three bounded
+governance-precision repairs it requested (O-1 criterion-4 locator, O-2 anchor-comparison wording, O-3
+this provenance separation) and has NOT itself been independently reviewed.
 
 ---
 

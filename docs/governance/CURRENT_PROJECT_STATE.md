@@ -2434,8 +2434,12 @@ AUTHORIZED / NOT STARTED.***
   record merged, exactly as R2 required"* — the implementation merge alone does not close R3; no
   competing closure rule exists and no such record previously existed. Closure statements live in
   `docs/governance/PVCG_R3_FORMAL_CLOSURE_RECORD.md`. **All ten §19 criteria resolved, 1–9 re-measured
-  on the merged tree:** §7.3 **313 pairs / 0 mismatches**, D-1 **0/6**; §10.1/§10.2/§16 green in the
-  579-test R3-I suite; pin `3cbd7684…` enforced green by the three P9 suites with `domain_rules.py`,
+  on the merged tree:** §7.3 **313 anchor comparisons / 0 mismatches** (56 concepts, 369 surfaces; each
+  remaining surface compared against a common anchor, so the every-pair property follows transitively —
+  the 1,174 exhaustive pairs were NOT executed), D-1 **0/6**; the §10.2 categories 1–11 and the §16
+  controls green in the 579-test R3-I suite, with the remaining §10.1 properties proven by other
+  authoritative suites (6×6 closure control in the R2 suite, R1 durable memory, the three P9 pin suites,
+  and `TestDeterminismAndProhibitions`); pin `3cbd7684…` enforced green by the three P9 suites with `domain_rules.py`,
   `path_n_questions.py` and all five packs byte-identical; R1 **26** byte-unchanged; R2 **189** + **566**
   byte-unchanged; P9 **54**; `UNIVERSAL GUARDRAIL SMOKE: PASS`; full suite **4355 passed / 3 skipped /
   1 xfailed / 0 failed** (3776 baseline **+579**). Mutation sweep **257 / 254 KILLED / 0 SURVIVED /

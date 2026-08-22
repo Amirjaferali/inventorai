@@ -14018,10 +14018,20 @@ outcome, whether written in English or Arabic, from the same authoritative start
 wider.
 
 **All ten §19 criteria resolved; criteria 1–9 RE-MEASURED on the merged tree, not inherited.** §7.3
-proven over the published inventory: **313 registered-surface pairs compared, 0 material mismatches**,
+proven over the published inventory: **313 anchor comparisons, 0 material mismatches** — the suite compares
+each remaining surface of a concept against a common anchor, Σ(n−1) = 313 executed comparisons over 56
+concepts and 369 registered surfaces, and §7.3's every-pair property follows **transitively**; the
+exhaustive unordered pair count would be **1,174** and those pairs were **NOT** executed —
 with D-1 material divergence **0/6**. Every §10.1 property and §10.2 category and every §16 negative
-control is exercised by `TestAdversarialCategories`, `TestNegativeControls` and `TestCausalTokenBoundary`
-in the 579-test R3-I suite, green on the merged tree. Pin reconciliation holds exactly: the live
+control is proven by two distinct evidence groups, because the R3-I classes alone are **not** the full
+§10.1 basis. **(A)** the §10.2 categories 1–11 and the §16 negative controls are exercised by
+`TestAdversarialCategories`, `TestNegativeControls` and `TestCausalTokenBoundary` in the 579-test R3-I
+suite. **(B)** the remaining §10.1 properties are proven by other authoritative suites: *gap-specific
+relevance* by the authoritative 6×6 closure control `test_each_genuine_answer_closes_only_its_own_gap`
+in `tests/test_pvcg_r2i_gap_relevance.py`; *R1 durable epistemic memory* (§11) by
+`tests/test_pvcg_r1_durable_epistemic_memory.py`; *the P9-MECH-I3/I4/I5 pins* (§13) by the three P9 pin
+suites; and *determinism* (§6.1) by `TestDeterminismAndProhibitions`. All of (A) and (B) are green on
+the merged tree. Pin reconciliation holds exactly: the live
 `engine/progression_loop.py` digest `3cbd76849c0f572191a552db1a41a8cd418d02fac1d59d9b8804c72883239a55`
 is enforced green by the three P9 suites, while `engine/domain_rules.py` (`0e47326a…`),
 `engine/path_n_questions.py` (`a1a682d3…`) and **all five** `domains/*/domain.json` are byte-identical.

@@ -77,8 +77,8 @@ No candidate was amended, rebased, squashed or recreated at any point in this li
 |---|---|---|---|
 | 1 | R3-C authoritative (merged, post-merge verified) | **MET** | PR #551, merge `7b7aa2f1…`, re-verified §1 |
 | 2 | R3-I Owner-authorized, implemented, independently reviewed, Owner-accepted, merged, post-merge verified | **MET** | §2 lineage; PR #552, merge `d046b3e5…`, re-verified §1 |
-| 3 | §7.3 GREEN over the published registered-class inventory | **MET** | re-measured on the merged tree: **313 registered-surface pairs compared, 0 material mismatches**; D-1 divergence **0/6** |
-| 4 | every §10.1 property re-proven, every §10.2 category tested | **MET** | `TestAdversarialCategories`, `TestNegativeControls`, `TestCausalTokenBoundary` present and green in the 579-test R3-I suite on the merged tree |
+| 3 | §7.3 GREEN over the published registered-class inventory | **MET** | re-measured on the merged tree: **313 anchor comparisons over the published registered-class inventory** (56 concepts, 369 registered surfaces), **0 material mismatches**; D-1 divergence **0/6**. Stated precisely: the suite compares each remaining surface of a concept against a common anchor surface — Σ(n−1) = **313 executed comparisons** — and the every-pair property §7.3 requires follows **transitively** from equality against that anchor. The exhaustive unordered pair count would be **1,174**; those 1,174 pairs were **NOT** executed and are not claimed. |
+| 4 | every §10.1 property re-proven, every §10.2 category tested | **MET** | Two distinct evidence groups, distinguished because the R3-I classes alone are **not** the full §10.1 basis. **(A) §10.2 categories 1–11 and the §16 controls:** `TestAdversarialCategories`, `TestNegativeControls` and `TestCausalTokenBoundary`, green in the 579-test R3-I suite. **(B) the remaining §10.1 properties, proven by other authoritative suites:** *gap-specific relevance* by the authoritative 6×6 closure control `test_each_genuine_answer_closes_only_its_own_gap` in `tests/test_pvcg_r2i_gap_relevance.py`; *R1 durable epistemic memory* (§11) by `tests/test_pvcg_r1_durable_epistemic_memory.py`; *the P9-MECH-I3/I4/I5 pins* (§13) by the three P9 pin suites; *determinism* (§6.1) by `TestDeterminismAndProhibitions`. All of (A) and (B) re-measured green on the merged tree. |
 | 5 | every §16 negative control holding | **MET** | `TestNegativeControls` green on the merged tree |
 | 6 | §13.2 pin reconciliation exactly as specified, with packs, `domain_rules.py`, `path_n_questions.py` byte-identical | **MET** | live `engine/progression_loop.py` digest `3cbd76849c0f572191a552db1a41a8cd418d02fac1d59d9b8804c72883239a55` enforced green by the three P9 suites; `domain_rules.py` `0e47326a…`, `path_n_questions.py` `a1a682d3…` and all five `domains/*/domain.json` byte-identical |
 | 7 | R1 26/26 GREEN with its test file byte-unchanged; R2 suites GREEN | **MET** | R1 **26 passed**, test file byte-unchanged; R2 behavioural **189 passed**; R2 marker coverage **566 passed**, file byte-unchanged |
@@ -96,7 +96,8 @@ inherited. Criterion 10 is this record.
 **Re-measured on the merged tree `d046b3e5…` this gate:** focused R3-I **579 passed**; PVCG-R1 **26
 passed**; R2 behavioural **189 passed**; R2 marker coverage **566 passed**; P9 pin suites **54
 passed**; `UNIVERSAL GUARDRAIL SMOKE: PASS`; full suite **4355 passed / 3 skipped / 1 xfailed / 0
-failed**; §7.3 sweep **313 pairs / 0 mismatches**; D-1 **0/6**; the four watched engine digests and all
+failed**; §7.3 **313 anchor comparisons / 0 mismatches** (56 concepts, 369 surfaces; every-pair equality
+follows transitively — the 1,174 exhaustive pairs were not executed); D-1 **0/6**; the four watched engine digests and all
 five pack digests.
 
 **Carried, independently verified, NOT re-measured this gate:** the mutation sweep **257 processed /
