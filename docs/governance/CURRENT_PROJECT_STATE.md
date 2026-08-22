@@ -2424,14 +2424,68 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
-- **PVCG-R2 — AUTHORITATIVE CLOSURE (governance-only closure candidate, PR pending), base
+- **PVCG-R3-C — SEMANTIC STABILITY CONTRACT / DIAGNOSIS GATE (governance-only CONTRACT CANDIDATE), base
+  `ca98099e29f6729c29e7612d67f9187dbd0dccb6`** (PR #550 merge — PVCG-R2 formal closure; live tip
+  re-fetched and independently re-verified on all four merge criteria: first parent `1ce2c896…`, second
+  parent `25cf419c…` (exact Owner-accepted candidate), merge tree `9bd7a116…` == candidate tree,
+  candidate→merge diff EMPTY, zero later commits, working tree clean). Disposition:
+  **`PVCG-R3-C CONTRACT CANDIDATE — NOT AUTHORITATIVE UNTIL MERGED`**; the contract lives at
+  `docs/governance/PVCG_R3_C_SEMANTIC_STABILITY_CONTRACT.md`. **Defect proven before the contract was
+  written** (Creator-local executed evidence at the base tree; R3-I must re-measure independently):
+  **D-1** — eligibility diverges in **6 of 6** governed gaps between materially equivalent EN/AR answers
+  from an identical starting state and the same served gap (served gap stays `OPEN` instead of moving to
+  `PARTIAL`); the 264 declared entries of `engine/gap_relevance.py` are all Latin-script English.
+  **D-2, decisive** — all 32 `_CAUSAL_STRUCTURE_PATTERNS`, all 15 `mechanical` and all 53
+  `electronics_electrical` substance signals are ASCII, so `assess_response` returns `ASSERTED`
+  unconditionally for pure Arabic; a gap closes only on `REASONED`/`DEMONSTRATED` and `DEMONSTRATED` is
+  unreachable in the MVP, so **an Arabic-only inventor can never close a gap** — eight iterations `OPEN`
+  with the English control first `CLOSED` at iteration 2. **D-3** — the 18 ASCII-only
+  `_ACKNOWLEDGED_UNKNOWN_MARKERS` mean an Arabic-stated unknown is never recorded (hidden side-effect
+  divergence). **D-4** — the R2 "not addressed" reason matches no specific `result_feedback` branch,
+  falls to the conservative unknown-reason fallback, and is English-only, so the divergence is not even
+  disclosed. Arabic input is genuinely accepted (`web/app.py`: no ASCII-only rule) while the canonical
+  question is deliberately served in English in BOTH UI languages (`session.html`, D-P6-18).
+  **Recorded negative diagnosis:** EN normalization is ALREADY stable (8/8 variants identical) and R3
+  adds none; AR-internal normalization is NOT a divergence source today (7/7 identical) because Arabic
+  recognition is uniformly zero, and becomes material only once an Arabic surface is registered;
+  unregistered EN paraphrase remaining ineligible is expected lexical boundedness, not a defect; a single
+  embedded English token flipping an Arabic answer is a collision risk to guard, not a divergence to fix.
+  **Contract content:** an executable, table-decidable definition of "materially equivalent" over
+  registered governed concepts (stable id, one owning gap family, mandatory governed-question provenance,
+  EN+AR surface sets, declared per-surface match mode) — never "the same meaning"; a ten-field material
+  progression outcome set as the success condition (reason **classification** in, reason **bytes** out);
+  determinism plus an explicit no-LLM / no-embeddings / no-vector-store / no-external-NLP /
+  no-probabilistic-classifier boundary; an evidence-gated Arabic normalization boundary (NFC authorized;
+  tatweel/harakat/alef folding only on demonstrated necessity; teh-marbuta and yeh folding NOT authorized
+  by default; no stemming, fuzzy matching, transliteration or edit distance); eleven adversarial
+  categories; seven negative controls; full R1/R2 preservation; and the T-1/T-1b coverage-adequacy
+  discipline made binding. **Pin impact:** `engine/gap_relevance.py` is **not byte-pinned anywhere**, but
+  D-2 lives in the pinned `engine/progression_loop.py` (`07c9bff5…`, three P9-MECH suites), so exactly
+  one engine pin may move — reconciled in all three ENFORCING pin locations in the same candidate, RED
+  first, **and** synchronized across the active current-truth governance surfaces that record the digest
+  (§13.2a separates enforcing pins from recorded references and from append-only history, which is not
+  rewritten) — while
+  `engine/domain_rules.py`, `engine/path_n_questions.py` and all five pack digests stay byte-identical;
+  **pin delta in this candidate: 0**. **Governance-truth disclosure:** no committed document defines PVCG
+  or enumerates the Minimum Launch-Conformance Set, so that membership claim is `[OWNER]`, not `[REPO]`,
+  and whether the Set should be committed is `[OPEN]`. Governance-only; zero runtime/test/pack/script
+  diff; `OWNER_DECISION_REGISTER.md` UNCHANGED. `PVCG-R3 IMPLEMENTATION STARTED: NO`; `PVCG-R4
+  IMPLEMENTATION STARTED: NO`; `LLM/NLP SUBSYSTEM ADDED: NO`; `PVCG SATISFIED: NO`; `MINIMUM
+  LAUNCH-CONFORMANCE SET SATISFIED: NO`; `DEPLOYMENT AUTHORIZED: NO`. PVCG-R3-I requires this contract
+  authoritative **and** a separate explicit Owner execution authorization.
+
+- **PVCG-R2 — AUTHORITATIVELY CLOSED (PR #550, merge `ca98099e29f6729c29e7612d67f9187dbd0dccb6`;
+  post-merge verified: first parent `1ce2c896…`, second parent `25cf419c…` = the exact Owner-accepted
+  closure candidate, merge tree `9bd7a116…` == candidate tree, candidate→merge diff EMPTY; authoritative
+  scope 4 governance files / +332 / -1), base
   `1ce2c89630b9bdbfdedb15ee85eafa410a03632a`.** **`PVCG-R2-I AUTHORITATIVE: YES`** — PR #549,
   independently re-verified this gate from a fresh fetch: first parent `4d746d15…`, second parent
   `60cc5f48…` (exact accepted candidate), merge tree `476629b6…`, candidate→merge diff EMPTY, zero
   later commits, working tree clean. **`PVCG-R2-C AUTHORITATIVE: YES`** — PR #548, merge `4d746d15…`,
   second parent `e394f962…`, diff EMPTY, ancestor of the live tip (re-verified from lineage, not
-  copied). Disposition: **`PVCG-R2 CLOSURE CANDIDATE — NOT AUTHORITATIVE UNTIL MERGED`**; the closure
-  statements live in `docs/governance/PVCG_R2_FORMAL_CLOSURE_RECORD.md`. **Closure evidence executed
+  copied). Disposition: **`PVCG-R2 AUTHORITATIVELY CLOSED: YES`** (merged via PR #550 — see the entry
+  above); the closure statements live in `docs/governance/PVCG_R2_FORMAL_CLOSURE_RECORD.md` §9 and are
+  now in force. **Closure evidence executed
   against the MERGED tree:** off-topic signal-rich answers blocked across all six gaps; 6×6 cross-gap
   reuse blocked; five repetitions cannot manufacture closure; legitimate answers still close; weak-but-
   relevant keeps its pre-R2 outcome; fail-closed never BLOCK; `known_mechanism` / `known_problem` /
