@@ -2455,10 +2455,10 @@ AUTHORIZED / NOT STARTED.***
   notes preserving the prior digest; kind (2) the R4-C §16 table and the live status surfaces
   synchronized; kind (3) every historical occurrence left byte-unchanged. `PACK DELTA: 0`;
   `domain_rules.py` and `path_n_questions.py` byte-identical; the correction path is domain-neutral
-  (asserted by test). **Verification measured on the frozen candidate:** focused R4-I **37**; R1 **26**
+  (asserted by test). **Verification measured on the frozen candidate:** focused R4-I **38**; R1 **26**
   (byte-unchanged); R2 **189** + **566** (byte-unchanged); R3 **579** (byte-unchanged); P9 **54**;
-  `UNIVERSAL GUARDRAIL SMOKE: PASS`; full suite **4392 passed / 3 skipped / 1 xfailed / 0 failed**;
-  §20 reconciliation **4355 + 37 = 4392**, with the baseline itself re-measured on this base in this
+  `UNIVERSAL GUARDRAIL SMOKE: PASS`; full suite **4393 passed / 3 skipped / 1 xfailed / 0 failed**;
+  §20 reconciliation **4355 + 38 = 4393**, with the baseline itself re-measured on this base in this
   session. `TARGETED PARTIAL INVALIDATION AUTHORIZED: NO`; `DEPENDENCY GRAPH ADDED: NO`;
   `FULL CONTRADICTION ENGINE AUTHORIZED: NO`; `VERSIONING / BRANCHING / ROLLBACK / SHARING ADDED: NO`;
   `PHASE 4 REOPENED GENERALLY: NO`; `main` not reconciled; `OWNER_DECISION_REGISTER.md` UNCHANGED;

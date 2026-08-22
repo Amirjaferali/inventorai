@@ -1220,6 +1220,18 @@ _DEEP_AR = {
     "Who answers this is not yet clear": "من يجيب عن هذا غير واضح بعد",
     "It is not yet clear who should answer this. You can answer, defer, or mark it as unknown.": "ليس واضحًا بعد من ينبغي أن يجيب عن هذا. يمكنك الإجابة، أو التأجيل، أو وضع علامة عليه بأنه غير معروف.",
 
+    # --- 4.12b PVCG-R4 correction acknowledgement (web/app.py correct_answer) ---
+    # `show_session` renders `_interaction_ack` through `localize_deep`, NOT
+    # through `localize_message`, so the correction ack MUST be registered here
+    # as well as in `_MESSAGE_KEYS` — otherwise it reaches an Arabic reader in
+    # English and the correction path is language-asymmetric at the ACTUAL
+    # render path (PVCG-R4-C §13 E-1). Same seam the R3 D-4 disclosure lesson
+    # identified: register in the map the render path really consults.
+    ("Your earlier answer was withdrawn and kept in the project history. "
+     "Everything shown has been recomputed from your remaining answers."):
+        ("تم سحب إجابتك السابقة مع الاحتفاظ بها في سجل المشروع. "
+         "وأُعيد حساب كل ما يظهر هنا من إجاباتك المتبقية."),
+
     # --- 4.12 non-answer acknowledgements (web/app.py _NON_ANSWER_ACK) ---
     "Recorded that you do not know this yet. It is kept as an open unknown and does not resolve the question.": "تم تسجيل أنك لا تعرف هذا بعد. يُحفظ كأمر غير معروف مفتوح ولا يحلّ السؤال.",
     "Recorded as deferred. The question remains open and unresolved.": "تم التسجيل كمؤجَّل. يبقى السؤال مفتوحًا وغير محلول.",

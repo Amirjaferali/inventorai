@@ -88,11 +88,11 @@ R3-closure roadmap gate entries, the retained R3-I blocks here and in `CURRENT_P
 **`PACK DELTA: 0`** — `domain_rules.py`, `path_n_questions.py` and all five packs byte-identical; the
 correction path is domain-neutral, asserted by test.
 
-**Verification on the frozen candidate — measured, not carried.** Focused R4-I **37 passed**; R1
+**Verification on the frozen candidate — measured, not carried.** Focused R4-I **38 passed**; R1
 **26** (file byte-unchanged); R2 **189** + **566** (both byte-unchanged); R3 **579** (byte-unchanged);
-P9 **54**; `UNIVERSAL GUARDRAIL SMOKE: PASS`; full suite **4392 passed / 3 skipped / 1 xfailed /
+P9 **54**; `UNIVERSAL GUARDRAIL SMOKE: PASS`; full suite **4393 passed / 3 skipped / 1 xfailed /
 0 failed** under the §18 precondition (Python 3.11.15, Flask 3.1.3, SQLite 3.45.1, gunicorn 26.1.0).
-**§20 reconciliation: 4355 baseline + 37 = 4392**, exactly the one new test file — and the baseline was
+**§20 reconciliation: 4355 baseline + 38 = 4393**, exactly the one new test file — and the baseline was
 itself re-measured on this candidate's own base in this session.
 
 **Scope.** `FPC-02 / P4-2 REMAINS IMPLEMENTATION OWNER: YES`; `PVCG-R4 REMAINS CONFORMANCE OWNER ONLY:

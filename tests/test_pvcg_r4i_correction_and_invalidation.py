@@ -371,14 +371,36 @@ class TestJBilingualEquivalence:
                     st.known_mechanism is not None)
         assert run(MECH_STRONG, MECH_CORRECTED) == run(MECH_STRONG_AR, MECH_CORRECTED_AR)
 
-    def test_correction_messages_are_localised_in_both_languages(self):
+    def test_correction_messages_are_localised_on_their_actual_render_path(self):
+        """Each message must be localised by the helper `show_session` really
+        calls for it: `_answer_error` goes through `localize_message`, while
+        `_interaction_ack` goes through `localize_deep`. Testing only the
+        convenient helper would pass while an Arabic reader still saw English."""
         from web import ui_text
-        for msg in (webapp.CORRECTION_NOT_APPLIED_MESSAGE,
-                    webapp.CORRECTION_INCOMPLETE_MESSAGE,
-                    webapp.CORRECTION_APPLIED_ACK):
+        errors = (webapp.CORRECTION_NOT_APPLIED_MESSAGE,
+                  webapp.CORRECTION_INCOMPLETE_MESSAGE)
+        for msg in errors:                      # rendered via localize_message
             assert ui_text.localize_message(msg, "en") == msg
             assert ui_text.localize_message(msg, "ar") != msg, (
                 "a language-asymmetric correction path is a rejection condition")
+        ack = webapp.CORRECTION_APPLIED_ACK     # rendered via localize_deep
+        assert ui_text.localize_deep(ack, "en") == ack
+        assert ui_text.localize_deep(ack, "ar") != ack, (
+            "the success acknowledgement must be localised by the helper the "
+            "render path actually uses (localize_deep), not only by "
+            "localize_message")
+
+    def test_the_ack_reaches_an_arabic_reader_in_arabic_end_to_end(self, client):
+        sid = _start(client)
+        # The real route contract is `lang` (web/app.py set_ui_language).
+        assert client.post("/ui-language", data={"lang": "ar"}).status_code == 302
+        _correct(client, sid, _answered_ids(sid)[-1], MECH_CORRECTED)
+        body = client.get("/session/" + sid).get_data(as_text=True)
+        from web import ui_text
+        ar = ui_text.localize_deep(webapp.CORRECTION_APPLIED_ACK, "ar")
+        assert webapp.CORRECTION_APPLIED_ACK not in body, (
+            "the English ack must not reach an Arabic reader")
+        assert ar[:24] in body, "the Arabic ack must be rendered"
 
 
 # =========================================================================

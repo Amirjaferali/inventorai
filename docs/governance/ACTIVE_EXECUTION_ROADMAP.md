@@ -14348,14 +14348,31 @@ the retained PVCG-R3-I bullet in `CURRENT_PROJECT_STATE.md`. **`PACK DELTA: 0`**
 `domains/*/domain.json` byte-identical; the correction path is domain-neutral and a committed test
 asserts it contains no domain token.
 
-**Verification on the frozen candidate, measured — not carried.** Focused R4-I **37 passed**;
+**Verification on the frozen candidate, measured — not carried.** Focused R4-I **38 passed**;
 PVCG-R1 **26 passed** with its test file byte-unchanged; R2 behavioural **189 passed** and R2 marker
 coverage **566 passed**, both files byte-unchanged; R3 focused **579 passed**, file byte-unchanged;
-P9 pin suites **54 passed**; `UNIVERSAL GUARDRAIL SMOKE: PASS`; full suite **4392 passed / 3 skipped /
+P9 pin suites **54 passed**; `UNIVERSAL GUARDRAIL SMOKE: PASS`; full suite **4393 passed / 3 skipped /
 1 xfailed / 0 failed** under the §18 precondition (Python 3.11.15, Flask 3.1.3, SQLite 3.45.1,
-gunicorn 26.1.0 on `PATH`). **§20 reconciliation: baseline 4355 + 37 = 4392**, exactly the one new R4-I
+gunicorn 26.1.0 on `PATH`). **§20 reconciliation: baseline 4355 + 38 = 4393**, exactly the one new R4-I
 test file and nothing else. The baseline `4355 / 3 / 1 / 0` was itself re-measured on this candidate's
 own base tip in this session rather than carried from prose.
+
+**Mandatory Creator Grill — one REJECT, lineage preserved, nothing rewritten.** The first frozen
+candidate `c03386dfd301b1a63d751422ea53a477a68173b3` was **REJECTED BY THE CREATOR'S OWN GRILL** and is
+preserved unchanged and unpublished as immutable evidence (branch
+`pvcg-r4i-grill-rejected-c03386df`); it was never amended, rebased, squashed or recreated. **CG-1
+(EN/AR asymmetry at the ACTUAL render path).** All three correction messages were registered in
+`ui_text._MESSAGE_KEYS`, which serves `localize_message` — but `show_session` renders
+`_interaction_ack` through `localize_deep`, which consults a DIFFERENT map (`_DEEP_AR`). The success
+acknowledgement therefore reached an Arabic reader **in English**, violating §13 E-1, while a test that
+exercised only `localize_message` passed. This is the same seam the R3 D-4 disclosure identified, and
+the Grill caught it precisely because the attack asked which helper the render path *really* calls.
+Repaired by registering the acknowledgement in `_DEEP_AR` as well, and by replacing the convenient test
+with two that exercise the real path — one per-helper, one end-to-end through the live client with the
+UI language actually switched (using the route's real `lang` field). **Guard-removal proof:** with the
+`_DEEP_AR` registration temporarily removed, both new tests FAIL; with it restored, both pass — the
+coverage is real, not vacuous. Focused R4-I therefore stands at **38**, and the §20 reconciliation at
+**4355 + 38 = 4393**.
 
 **Scope.** `PVCG-R4 AUTHORITATIVELY SATISFIED: NO`; `FPC-02 / P4-2 REMAINS IMPLEMENTATION OWNER: YES`;
 `PVCG-R4 REMAINS CONFORMANCE OWNER ONLY: YES`; `TARGETED PARTIAL INVALIDATION AUTHORIZED: NO`;
