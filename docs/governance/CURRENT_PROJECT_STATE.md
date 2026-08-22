@@ -2461,7 +2461,10 @@ AUTHORIZED / NOT STARTED.***
   categories; seven negative controls; full R1/R2 preservation; and the T-1/T-1b coverage-adequacy
   discipline made binding. **Pin impact:** `engine/gap_relevance.py` is **not byte-pinned anywhere**, but
   D-2 lives in the pinned `engine/progression_loop.py` (`07c9bff5…`, three P9-MECH suites), so exactly
-  one engine pin may move — reconciled in all three locations in the same candidate, RED first — while
+  one engine pin may move — reconciled in all three ENFORCING pin locations in the same candidate, RED
+  first, **and** synchronized across the active current-truth governance surfaces that record the digest
+  (§13.2a separates enforcing pins from recorded references and from append-only history, which is not
+  rewritten) — while
   `engine/domain_rules.py`, `engine/path_n_questions.py` and all five pack digests stay byte-identical;
   **pin delta in this candidate: 0**. **Governance-truth disclosure:** no committed document defines PVCG
   or enumerates the Minimum Launch-Conformance Set, so that membership claim is `[OWNER]`, not `[REPO]`,

@@ -42,9 +42,15 @@ reconstruction → bounded diagnosis → governance contract candidate → freez
 
 **§1.2 A governance-truth disclosure about "PVCG" and the "Minimum Launch-Conformance Set."** At the
 base SHA there is **no committed document that defines PVCG or enumerates the Minimum
-Launch-Conformance Set** **[REPO]** — a repository-wide search finds `PVCG` only in
-`CURRENT_PROJECT_STATE.md`, `ACTIVE_INCREMENT_CONTRACT.md`, `ACTIVE_EXECUTION_ROADMAP.md`,
-`PVCG_R2_C_GAP_RELEVANCE_HARDENING_CONTRACT.md` and `PVCG_R2_FORMAL_CLOSURE_RECORD.md`, and
+Launch-Conformance Set** **[REPO]**. Stated with its search scope explicit: **within
+`docs/governance/`**, `PVCG` appears only in `CURRENT_PROJECT_STATE.md`,
+`ACTIVE_INCREMENT_CONTRACT.md`, `ACTIVE_EXECUTION_ROADMAP.md`,
+`PVCG_R2_C_GAP_RELEVANCE_HARDENING_CONTRACT.md` and `PVCG_R2_FORMAL_CLOSURE_RECORD.md`, none of which
+defines it. `PVCG` does occur elsewhere in the repository — **57 occurrences across 23 further files** under
+`engine/`, `web/` and `tests/` at this base — and **every one of them is a gate reference of the form
+`PVCG-R<n>` / `PVCG_R<n>` / `pvcg_r<n>`** in a docstring, comment, test name or module path; filtering
+those forms out leaves **zero** remaining occurrences, and none of the 57 is a definition **[EXEC]**.
+The no-definition proposition is therefore unaffected by the wider scope.
 `Minimum Launch-Conformance Set` appears only as a status line (`SATISFIED: NO`) plus the single
 `[OWNER]`-classed sentence at `PVCG_R2_C_GAP_RELEVANCE_HARDENING_CONTRACT.md` §1 **[REPO]**. The
 statement "R3 belongs to the Minimum Launch-Conformance Set" is therefore **[OWNER]**, not **[REPO]**,
@@ -419,8 +425,8 @@ transliteration inference, soundex-style matching, and any statistical tokenizer
 
 | Property | Preservation requirement |
 |---|---|
-| Gap-specific relevance | The full 6×6 off-diagonal matrix must remain blocked in **both** languages. |
-| Cross-gap protection | An answer registered to gap A must not become eligible for gap B. |
+| Gap-specific relevance | The authoritative 6×6 **closure** control (`test_each_genuine_answer_closes_only_its_own_gap`) must stay GREEN, and its Arabic / mixed-language counterparts over registered surfaces must produce no off-diagonal **closure or satisfaction**. Not a zero-eligibility requirement — see §16.1. |
+| Cross-gap protection | No registered R3 surface may create a cross-gap satisfaction or closure path that does not exist at the authoritative base (differential, *no new leakage*). Pre-existing English off-diagonal eligibility is out of scope (§14 residual 1). |
 | Repetition protection | Re-submitting the same answer must not manufacture additional progression. |
 | Fail-closed | Unregistered / uncertain / unrecognised ⇒ **not eligible**, never eligible-by-default. |
 | Non-punitive rejection | Ineligibility never becomes `BLOCK`, a contradiction, or an input-validation failure; the answer is still recorded and its assessed quality is unchanged. |
@@ -438,7 +444,7 @@ closed wherever a mapping creates unsafe ambiguity:
 5. **Negation** — "لا يعمل بأي خطوات" and the English "It does not work by any steps"; measured at the base tip, the English negated form is already `relevant=True` **[EXEC]**, so R3-I must not *worsen* this and must state truthfully whether it changes.
 6. **Uncertainty and "I don't know"** — including the D-3 case; measured at the base tip, "I don't know how it works yet, honestly." is already `relevant=True` for `MECHANISM_COMPLETENESS` **[EXEC]**.
 7. **Contradicted statements.**
-8. **Cross-gap answer reuse** — full off-diagonal, both languages and mixed.
+8. **Cross-gap answer reuse** — full off-diagonal, both languages and mixed, measured against the closure/satisfaction property defined in **§16.1**, not against a zero-eligibility property (which does not hold at the base).
 9. **Mixed English/Arabic answers** — mandatory because of N-4; a one-token flip must be characterised, not discovered later.
 10. **Substring / token ambiguity** — §9.3, including token-dissolving forms.
 11. **Empty / whitespace-only input** — must remain not eligible (verified at the base tip **[EXEC]**).
@@ -485,12 +491,12 @@ Measured at the base SHA **[REPO]** / **[EXEC]**:
 
 | File | Live digest | Pinned in |
 |---|---|---|
-| `engine/progression_loop.py` | `07c9bff500662de54ac0f7388c1f2e13a721549c6f4943cde865b98a22c525d6` | **3** files: `test_p9_mech_i3_signal_quality.py`, `test_p9_mech_i4_boundary_corpus.py`, `test_p9_mech_i5_question_sufficiency.py` |
+| `engine/progression_loop.py` | `07c9bff500662de54ac0f7388c1f2e13a721549c6f4943cde865b98a22c525d6` | **3 ENFORCING** locations: `test_p9_mech_i3_signal_quality.py`, `test_p9_mech_i4_boundary_corpus.py`, `test_p9_mech_i5_question_sufficiency.py`. The same digest is additionally **recorded** (not enforced) in active governance surfaces and in historical entries — see **§13.2a**, which separates the three kinds and states which must be synchronized and which must not be rewritten. |
 | `engine/domain_rules.py` | `0e47326ad92a6e5b0a63eb06db9e3ad96ae72c9aaf64471dd21621265b1db1ab` | the same 3 files |
 | `engine/path_n_questions.py` | `a1a682d38293defd4b351e6238aeb870b4f765eaf3fc0f105c4932f75286ce7f` | I5 |
 | all five `domains/*/domain.json` | see `_FROZEN_PACK_SHA256` in I3/I4 | **I3 pins 4** (`electronics_electrical`, `medical_device`, `software`, `iot_electronics` — deliberately **not** `mechanical`) / **I4 pins all 5** (adds `mechanical` `901dd718…`) |
 | mechanical pack fields outside the two authorized signal lists | `_FROZEN_MECH_FIELDS` in I3 — `gap_type_mappings` `857820ed…`, `aliases` `bc7f35e4…` | I3 |
-| `engine/gap_relevance.py` | `773a10acb31dc1595a35540b1431346858ca98a2676b711e504ffcd19bb7dbfd` | **NOT byte-pinned anywhere** — a repository-wide search for this digest returns no match |
+| `engine/gap_relevance.py` | `773a10acb31dc1595a35540b1431346858ca98a2676b711e504ffcd19bb7dbfd` | **NOT byte-pinned anywhere** — no `_FROZEN_*` table in `tests/` holds this digest (a search of `tests/` returns no match) **[EXEC]**. Its only occurrences in the repository are the two descriptive governance references introduced by this candidate itself (this table and the roadmap entry), neither of which enforces anything. |
 
 **§13.1 The consequence, stated plainly.** Closing **D-1** (eligibility) can be done inside
 `engine/gap_relevance.py` plus a new registry module and moves **no pin**. Closing **D-2** — the
@@ -500,9 +506,21 @@ movement, and this contract does not pretend otherwise.**
 
 **§13.2 Bounded pin-reconciliation rule (binding on R3-I).**
 
-* **Exactly one** engine pin may move: `engine/progression_loop.py`. Its new digest must be reconciled
-  in **all three** pin locations **in the same candidate**, simultaneously and disclosed — never one at
-  a time, never silently.
+* **Exactly one** engine pin may move: `engine/progression_loop.py`.
+
+**§13.2a — two distinct kinds of location hold this digest; R3-I must synchronize both, and must not
+confuse them.**
+
+| Kind | What it is | Locations at this base | R3-I obligation |
+|---|---|---|---|
+| **(1) ENFORCING pin locations** | `_FROZEN_ENGINE_SHA256` entries whose assertion fails when the file changes | exactly **3**: `tests/test_p9_mech_i3_signal_quality.py`, `tests/test_p9_mech_i4_boundary_corpus.py`, `tests/test_p9_mech_i5_question_sufficiency.py` | **MUST** be updated to the new digest, all three **in the same candidate**, simultaneously and disclosed — never one at a time, never silently. Missing one leaves the suite RED. |
+| **(2) ACTIVE CURRENT-TRUTH governance references** | prose in a live status surface that records the digest as *currently* in force, so it goes stale the moment the pin moves | `ACTIVE_INCREMENT_CONTRACT.md`, `ACTIVE_EXECUTION_ROADMAP.md`, `CURRENT_PROJECT_STATE.md`, and this contract's own §13 table | **MUST** be synchronized in the same implementation candidate. These fail no test, so nothing catches them automatically — an R3-I that updates only the three enforcing pins leaves a green suite and a false governance record. |
+| **(3) HISTORICAL records — do NOT rewrite** | append-only roadmap gate entries, `Superseded (retained as history)` blocks, and the merged `PVCG_R2_FORMAL_CLOSURE_RECORD.md` §4 evidence row | the remaining occurrences | **MUST be left byte-unchanged.** They record what was true at their own gate and are not current-truth claims. Rewriting them would falsify history and is outside this contract. |
+
+R3-I must state, in its own evidence, the old digest, the new digest, and the exhaustive list of
+locations it changed under (1) and (2) together with the locations it deliberately left unchanged
+under (3). An R3-I candidate that reports "all three pin locations updated" **without** addressing
+kind (2) has not completed the reconciliation.
 * `engine/domain_rules.py`, `engine/path_n_questions.py`, **all five pack digests** and I3's
   `_FROZEN_MECH_FIELDS` (`gap_type_mappings`, `aliases`) **MUST remain byte-identical.** The Arabic
   causal-structure and substance surfaces therefore live in the new unpinned R3 registry module and are
@@ -571,7 +589,33 @@ re-proven; every §10.2 category tested; every negative control (§16) holding.
 
 R3-I must prove that **non**-equivalent inputs remain distinguishable. At minimum:
 
-1. **Cross-gap, both languages and mixed** — the full 6×6 off-diagonal must remain not eligible.
+1. **Cross-gap, both languages and mixed — stated against the property the repository actually has.**
+   The authoritative R2 control is
+   `tests/test_pvcg_r2i_gap_relevance.py::test_each_genuine_answer_closes_only_its_own_gap` **[REPO]**,
+   which asserts, over the curated `GENUINE` corpus with `times=2`, that the diagonal **closes** and
+   that the off-diagonal set of **CLOSED** gaps is empty — a property over **closure**, not over
+   eligibility. R3-I must preserve exactly that, and must extend it to the languages R3 registers:
+   * the authoritative 6×6 **closure** control must stay GREEN, and its Arabic and mixed-language
+     counterparts over registered surfaces must produce **no off-diagonal closure and no off-diagonal
+     satisfaction** (no `known_mechanism` / `known_problem` establishment, no Stage-3 evidence append)
+     for an answer registered to a different gap family;
+   * **no registered R3 surface may create a cross-gap satisfaction or closure path that does not exist
+     at the authoritative base** — the R3 obligation is *no new leakage*, measured differentially
+     against the base;
+   * unregistered surfaces in either language remain fail-closed under the existing bounded R2 model
+     (§4, §5.5, §7.4).
+
+   **This control deliberately does NOT require zero off-diagonal *eligibility*, because that property
+   does not hold at the authoritative base and the repository has never claimed it.** Measured this
+   gate over ordinary (non-curated) English answers: **2** off-diagonal eligible activations
+   — `PHYSICAL_FEASIBILITY` answer eligible for `BOUNDARY_AMBIGUITY`, and `EXPERTISE_GAP_AWARENESS`
+   answer eligible for `PHYSICAL_FEASIBILITY` **[EXEC]**; the independent reviewer measured **6** with
+   a different corpus, and over the curated `GENUINE` corpus the count is **0** **[EXEC]**. The count
+   is corpus-dependent, which is precisely why a universal zero-eligibility requirement would be
+   unsound. Requiring it would (a) assert a property the base does not satisfy, (b) manufacture RED out
+   of the pre-existing, R2-accepted English lexical cross-talk recorded at §14 residual 1, and
+   (c) implicitly reopen the English marker tables, which §14 forbids. **R3-I must not treat existing
+   English off-diagonal eligibility as a defect to repair.**
 2. **Unregistered Arabic wording** — an Arabic answer carrying no registered surface must remain **not
    eligible**; a general "it is Arabic and technical, therefore accept" behaviour is a rejection
    condition.
@@ -619,11 +663,13 @@ record's own §1 shows it was executed against the tip **`1ce2c896…`** / the f
 correct comparison baseline for this lineage, because `ca98099e…` is the SHA-preserving merge of
 `25cf419c…` whose entire delta over `1ce2c896…` is **4 governance documents, +332 / -1, with zero
 `engine/`, `web/`, `tests/`, `domains/` or `scripts/` change** (independently re-verified this gate)
-**[REPO]**. R3-I must nevertheless **re-measure the full suite itself on its own frozen state** rather
-than inherit this number.
+**[REPO]**. The Creator did **not** execute the full suite at `ca98099e…`; the independent external
+reviewer subsequently measured it **directly on the frozen R3-C candidate `6f7720ab…`** and obtained
+the same **3776 / 3 / 1 / 0** (§21). R3-I must nevertheless **re-measure the full suite itself on its
+own frozen state** rather than inherit either number.
 
-Any delta must be reconciled test-by-test with a
-stated cause; an unexplained delta is a rejection condition. A skipped serving-stack test reported as a
+Any delta must be reconciled test-by-test with a stated cause; an unexplained delta is a rejection
+condition. A skipped serving-stack test reported as a
 pass, or a lower total reported without the precondition, is a governance-truth defect.
 
 ---
@@ -684,7 +730,19 @@ types remain frozen in the engine; no domain is activated, recognised differentl
 
 LEVEL 2 governance-only under the LEAN §5B risk-based review model. **Zero executable bytes change in
 this candidate** (expected runtime delta `0`, test delta `0`, pack delta `0`, pin delta `0`), so §5B.1's
-full-suite Creator-evidence trigger is not met by an implementation change; the authoritative full-suite
-truth for this lineage remains the base-SHA figure recorded in §18. Every **[EXEC]** finding in §2 and
-§3 was produced by read-only probes that modified no repository file and added no test fixture; the
-reviewer should re-measure independently rather than accept them as repository fact.
+full-suite Creator-evidence trigger is not met by an implementation change.
+
+**Full-suite provenance for this candidate — consistent with §18, and stated without back-dating.** The
+Creator did **not** execute the full suite at the authoritative base `ca98099e…` before independent
+review, and no statement here or in §18 may be read as claiming otherwise. The `3776 / 3 / 1 / 0`
+figure originates from `PVCG_R2_FORMAL_CLOSURE_RECORD.md` §5, measured on the R2 closure lineage
+(`1ce2c896…` / candidate `25cf419c…`), and carries to this base only because the intervening R2 closure
+merge is governance-only (§18). The **independent external reviewer subsequently measured the full
+suite directly on the frozen R3-C candidate `6f7720ab51a58e83270f2b28bcf6d650d5661bc4`** and obtained
+**3776 passed / 3 skipped / 1 xfailed / 0 failed**, so from that review onward the figure is
+independently established *at the candidate* rather than inherited. R3-I must still re-measure on its
+own frozen state (§18).
+
+Every **[EXEC]** finding in §2 and §3 was produced by read-only probes that modified no repository file
+and added no test fixture; a reviewer should re-measure independently rather than accept them as
+repository fact.

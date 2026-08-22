@@ -71,7 +71,9 @@ boundedness, not a defect.
 
 **Pin impact.** `engine/gap_relevance.py` is **not byte-pinned anywhere**; `engine/progression_loop.py`
 (`07c9bff5…`) is pinned in three P9-MECH suites and cannot be avoided when closing D-2. The contract
-permits exactly one engine pin to move, reconciled in all three locations in the same candidate with RED
+permits exactly one engine pin to move, reconciled in all three ENFORCING pin locations in the same
+candidate — and synchronized across the active current-truth governance surfaces that record the digest,
+per §13.2a, which also bars rewriting append-only historical entries — with RED
 first, and requires `engine/domain_rules.py`, `engine/path_n_questions.py` and all five pack digests to
 remain byte-identical. **Pin delta in this candidate: 0.**
 

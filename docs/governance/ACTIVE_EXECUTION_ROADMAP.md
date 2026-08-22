@@ -13647,7 +13647,10 @@ controls; full R1 and R2 preservation; and the T-1/T-1b coverage-adequacy discip
 anywhere**, so closing D-1 alone moves no pin. Closing D-2 cannot avoid the pin: the `ASSERTED` ceiling
 lives in `assess_response` inside `engine/progression_loop.py` (`07c9bff5…`), pinned in the three
 P9-MECH-I3/I4/I5 suites. The contract therefore permits **exactly one** engine pin to move
-(`engine/progression_loop.py`, reconciled in all three locations in the same candidate, RED first) and
+(`engine/progression_loop.py`, reconciled in all three ENFORCING pin locations in the same candidate,
+RED first, **and** synchronized in the same candidate across the active current-truth governance
+surfaces that merely record the digest — §13.2a separates enforcing pins, active records, and
+append-only historical entries, which must NOT be rewritten) and
 requires `engine/domain_rules.py`, `engine/path_n_questions.py` and **all five pack digests** to stay
 byte-identical — Arabic causal-structure and substance surfaces live in the new unpinned R3 registry
 module, never in the packs. **No pin is changed by this candidate.**
