@@ -443,6 +443,33 @@ class TestNegativeControls:
         # PM-SOLVE registers يحل; the alef-maqsura near-miss must not match.
         assert addresses_gap(_probe_for("يحلى"), PROBLEM_MECHANISM_FIT) is False
 
+    def test_8_pre_existing_english_breadth_is_MIRRORED_not_narrowed(self):
+        """Creator-Grill finding, disclosed rather than concealed.
+
+        `believe` and `expect` are PRE-EXISTING English ASSUMPTION_INVENTORY
+        intent markers, so ordinary English prose containing them is already
+        eligible at the authoritative base — §14 residual 1 (English lexical
+        breadth), which R3 must NOT reopen. Their registered Arabic surfaces
+        (اعتقد / اتوقع) therefore mirror that breadth EXACTLY.
+
+        Making the Arabic side stricter than the English side would CREATE a
+        new EN/AR divergence — precisely the defect R3 exists to remove — so
+        the mirrored breadth is the correct behaviour, not a leak. It is pinned
+        here so the limitation is visible in the test record.
+        """
+        prose = [
+            ("I believe the weather today is nice and suitable for going out.",
+             "أعتقد أن الطقس اليوم جميل ومناسب للخروج مع العائلة والأصدقاء."),
+            ("I expect the weather to be fine tomorrow for the family trip.",
+             "أتوقع أن يكون الطقس جميلا غدا من أجل رحلة العائلة."),
+        ]
+        for en, ar in prose:
+            assert addresses_gap(en, ASSUMPTION_INVENTORY) is True
+            assert addresses_gap(ar, ASSUMPTION_INVENTORY) == \
+                addresses_gap(en, ASSUMPTION_INVENTORY), (
+                    "Arabic must mirror the pre-existing English breadth, "
+                    "neither widening nor narrowing it")
+
     def test_7_registered_intent_without_causal_structure_stays_asserted(self):
         """An Arabic answer with an intent concept but NO registered causal
         structure must stay ASSERTED, exactly as its English counterpart."""

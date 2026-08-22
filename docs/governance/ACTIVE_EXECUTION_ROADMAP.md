@@ -13758,6 +13758,26 @@ that pre-existing English cross-talk; it was corrected before freeze. The Englis
 untouched and English is not widened by one token — machine-checked: every registered English surface
 is already an intent marker of the same gap family.
 
+**Creator-Grill finding, disclosed rather than concealed — mirrored English breadth.** An adversarial
+sweep over ordinary non-technical Arabic prose found ONE eligibility hit: `أعتقد` / `أتوقع` make
+everyday prose eligible for `ASSUMPTION_INVENTORY`. Measured parity: the English counterparts behave
+IDENTICALLY, because `believe` and `expect` are PRE-EXISTING English `ASSUMPTION_INVENTORY` intent
+markers at the authoritative base — §14 residual 1 (English lexical breadth), which R3 must not reopen.
+Narrowing the Arabic side would CREATE a new EN/AR divergence, the exact defect R3 exists to remove, so
+the mirrored breadth is the correct behaviour. It is now pinned by
+`test_8_pre_existing_english_breadth_is_MIRRORED_not_narrowed` so the limitation is visible in the test
+record rather than discovered later.
+
+**A Creator-harness defect found and corrected during the Grill, recorded for the reviewer.** The first
+RED-reproduction probe hard-coded the repository path, so when re-run against a base-tree worktree it
+still imported the CANDIDATE modules and reported a false "0/6 divergence at the base". The probe was
+corrected to bind to the worktree under test and RED was re-measured properly at
+`7b7aa2f12a7429fbb309c2f4a7e13d7b83ebdd60`, with the registry file confirmed ABSENT from that tree:
+**6/6** gaps divergent, Arabic `OPEN` across all eight iterations while the English control `CLOSED`,
+the Arabic unknown undetected, and the not-addressed reason falling to the unknown-reason fallback.
+This was a measurement-harness defect, never a runtime or candidate defect, and it is disclosed because
+an undisclosed bad measurement is a governance-truth defect even when the conclusion is unchanged.
+
 **Coverage adequacy (§10.3 — the binding T-1 / T-1b lesson).** Probes are generated from the DECLARED
 inventory, never from the live tables. Probe isolation is machine-validated and the suite REFUSES AT
 COLLECTION otherwise, with validator self-tests proving both the carrier and the dissolving affix
@@ -13789,12 +13809,12 @@ in `ACTIVE_INCREMENT_CONTRACT.md`; the historical bullets in `CURRENT_PROJECT_ST
 demonstrates the §7.1 divergence, not a digest mismatch.
 
 **Verification, all measured on the frozen candidate — no count inherited from a prior SHA.** Focused
-R3-I **452 passed**; PVCG-R1 **26/26** with `tests/test_pvcg_r1_durable_epistemic_memory.py`
+R3-I **453 passed**; PVCG-R1 **26/26** with `tests/test_pvcg_r1_durable_epistemic_memory.py`
 **byte-unchanged**; R2 behavioural **189 passed**; R2 marker coverage **566 passed** with its file
 **byte-unchanged**; P9 pin suites **54 passed**; `UNIVERSAL GUARDRAIL SMOKE: PASS`; full suite
-**4228 passed / 3 skipped / 1 xfailed / 0 failed** under the §18 precondition (Python 3.11.15,
+**4229 passed / 3 skipped / 1 xfailed / 0 failed** under the §18 precondition (Python 3.11.15,
 Flask 3.1.3, SQLite 3.45.1, gunicorn resolvable on `PATH` so the serving-stack tests EXECUTE rather
-than SKIP). §18 reconciliation against the 3776 baseline: **+452, exactly the new R3-I test file**, no
+than SKIP). §18 reconciliation against the 3776 baseline: **+453, exactly the new R3-I test file**, no
 other delta and no test removed.
 
 **One R2 test file changed — disclosed, with the reason (§12).**

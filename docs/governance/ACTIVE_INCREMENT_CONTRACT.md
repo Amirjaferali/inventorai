@@ -92,11 +92,11 @@ unknown undetected; D-4 the not-addressed reason falling to the unknown-reason f
 GREEN: **0/6** divergence, Arabic and English closure trajectories identical, the Arabic unknown
 recorded with a truthful basis, the disclosure specific and localized. Complete single-entry mutation
 sweep over every declared Arabic surface: **163 processed / 163 KILLED / 0 SURVIVED / 0 LOADFAIL**,
-restore **163/163** byte-identical. Focused R3-I **452 passed**; PVCG-R1 **26/26** with its test file
+restore **163/163** byte-identical. Focused R3-I **453 passed**; PVCG-R1 **26/26** with its test file
 **byte-unchanged**; R2 behavioural **189 passed**; R2 marker coverage **566 passed**; P9 pin suites
-**54 passed**; `UNIVERSAL GUARDRAIL SMOKE: PASS`; full suite **4228 passed / 3 skipped / 1 xfailed /
+**54 passed**; `UNIVERSAL GUARDRAIL SMOKE: PASS`; full suite **4229 passed / 3 skipped / 1 xfailed /
 0 failed** under the §18 precondition (Python 3.11.15, Flask 3.1.3, SQLite 3.45.1, gunicorn on `PATH`).
-Reconciliation against the 3776 baseline: **+452**, exactly the new R3-I test file, no other delta.
+Reconciliation against the 3776 baseline: **+453**, exactly the new R3-I test file, no other delta.
 
 **One R2 test file changed, disclosed rather than hidden (§12).**
 `tests/test_pvcg_r2i_gap_relevance.py::TestDeclaredLexicalBounds::
@@ -105,6 +105,13 @@ mechanism answer is NOT recognised — the bound R3-C §1.3/§4 exists to close,
 named it "PVCG-R3 territory". It is updated to current truth and still asserts the residual:
 unregistered Arabic remains fail-closed. `tests/test_pvcg_r2i_marker_coverage.py` is
 **byte-unchanged**.
+
+**Creator-Grill findings, disclosed.** (a) `أعتقد`/`أتوقع` make ordinary Arabic prose eligible for
+`ASSUMPTION_INVENTORY` — the English `believe`/`expect` markers behave identically at the base, so this
+is PRE-EXISTING English breadth (§14 residual 1) mirrored faithfully; narrowing Arabic would create a
+new divergence. Pinned by test. (b) The first RED probe hard-coded the repo path and mis-measured the
+base tree; corrected, and RED re-verified at `7b7aa2f1…` with the registry file confirmed absent from
+that tree.
 
 **Residual, stated as a known bound and not concealed.** The §7.3 guarantee holds ONLY over the
 published registered-class inventory. Unregistered wording in either language is not governed-equivalent
