@@ -2424,6 +2424,44 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
+- **PVCG-R3-I — SEMANTIC STABILITY IMPLEMENTATION (bounded implementation CANDIDATE), base
+  `7b7aa2f12a7429fbb309c2f4a7e13d7b83ebdd60`** (PR #551 merge — PVCG-R3-C, AUTHORITATIVE; live tip
+  re-fetched and independently re-verified on all four merge criteria: first parent `ca98099e…`, second
+  parent `6bdf2669…` (exact Owner-accepted candidate), merge tree `c707281a…` == candidate tree, empty
+  candidate→merge diff, zero later commits, clean working tree). Disposition:
+  **`PVCG-R3-I IMPLEMENTED / CANDIDATE — NOT AUTHORITATIVE UNTIL MERGED`**;
+  **`PVCG-R3-C AUTHORITATIVE: YES`**. Closes the EN/AR divergence the R3-C contract diagnosed, and
+  nothing wider. **Delivered:** one new unpinned `engine/semantic_registry.py` — a governed bilingual
+  concept registry of **56 concepts / 163 declared Arabic surfaces** (each with a stable `concept_id`,
+  exactly ONE owning gap, governed-question provenance, EN+AR surface sets and a declared `match_mode`),
+  plus **43** Arabic causal-structure surfaces, **38** Arabic substance surfaces one-to-one with
+  already-committed pack signals (30 signals justified as needing none), and **9** Arabic
+  acknowledged-unknown surfaces. Consulted by four seams: `addresses_gap` (D-1),
+  `_has_causal_structure` + the substance check (D-2), `_detect_acknowledged_unknown` (D-3), and
+  `result_feedback`/`ui_text` for the truthful both-language not-addressed disclosure (D-4).
+  **RED at the base → GREEN at the candidate:** 6/6 gaps materially divergent → **0/6**; Arabic never
+  `CLOSED` in eight iterations → Arabic and English trajectories **identical**; Arabic unknown
+  undetected → recorded with a truthful basis; unknown-reason fallback → specific, localized
+  disclosure. **Pin reconciliation (§13.2a):** `engine/progression_loop.py`
+  `07c9bff5…` → **`3cbd76849c0f572191a552db1a41a8cd418d02fac1d59d9b8804c72883239a55`**, all THREE
+  ENFORCING pin files updated together with disclosed notes preserving the prior digest, ALL active
+  current-truth governance references synchronized in the same candidate, and ALL historical
+  append-only occurrences deliberately left byte-unchanged. `engine/domain_rules.py`,
+  `engine/path_n_questions.py` and all five pack digests byte-identical. **Evidence measured on the
+  frozen candidate:** single-entry mutation sweep **163 processed / 163 KILLED / 0 SURVIVED /
+  0 LOADFAIL**, restore 163/163 byte-identical; focused R3-I **452 passed**; PVCG-R1 **26/26** with its
+  test file byte-unchanged; R2 behavioural **189**; R2 marker coverage **566** byte-unchanged; P9 pins
+  **54**; `UNIVERSAL GUARDRAIL SMOKE: PASS`; full suite **4228 passed / 3 skipped / 1 xfailed /
+  0 failed** (3776 baseline **+452**, exactly the new test file). R2 preserved **differentially** — no
+  NEW off-diagonal leakage; the two off-diagonal closures present occur in English too and are
+  pre-existing R2-accepted cross-talk, explicitly out of scope. English not widened by one token
+  (machine-checked). One R2 test file changed and disclosed: the R3-bound assertion updated to current
+  truth, residual still asserted. `LLM/EMBEDDINGS/VECTOR STORE/EXTERNAL NLP/PROBABILISTIC CLASSIFIER
+  ADDED: NO`; teh-marbuta, yeh/alef-maqsura and Arabic-Indic digits NOT folded.
+  **`PVCG-R3 AUTHORITATIVELY SATISFIED: NO`** until merged, post-merge verified and formally closed;
+  `PVCG-R4 NOT STARTED`; `PVCG SATISFIED: NO`; `MINIMUM LAUNCH-CONFORMANCE SET SATISFIED: NO`;
+  `DEPLOYMENT AUTHORIZED: NO`; `main` not reconciled; `OWNER_DECISION_REGISTER.md` UNCHANGED.
+
 - **PVCG-R3-C — SEMANTIC STABILITY CONTRACT / DIAGNOSIS GATE (governance-only CONTRACT CANDIDATE), base
   `ca98099e29f6729c29e7612d67f9187dbd0dccb6`** (PR #550 merge — PVCG-R2 formal closure; live tip
   re-fetched and independently re-verified on all four merge criteria: first parent `1ce2c896…`, second

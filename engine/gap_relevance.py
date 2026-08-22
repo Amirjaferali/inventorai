@@ -42,6 +42,7 @@ from engine.idea_state import (
     MECHANISM_COMPLETENESS, PHYSICAL_FEASIBILITY, BOUNDARY_AMBIGUITY,
     PROBLEM_MECHANISM_FIT, ASSUMPTION_INVENTORY, EXPERTISE_GAP_AWARENESS,
 )
+from engine.semantic_registry import arabic_surface_activates
 
 # Whole-word intent markers per governed gap type.
 #
@@ -187,4 +188,13 @@ def addresses_gap(response, gap_type):
     for phrase in _INTENT_PHRASES.get(gap_type, ()):
         if phrase in lowered:
             return True
-    return not _INTENT_WORDS[gap_type].isdisjoint(_WORD_RE.findall(lowered))
+    if not _INTENT_WORDS[gap_type].isdisjoint(_WORD_RE.findall(lowered)):
+        return True
+    # PVCG-R3-I (authoritative contract PVCG_R3_C_SEMANTIC_STABILITY_CONTRACT.md
+    # §4/§5): registered ARABIC surfaces of this gap's governed concepts. The
+    # English paths above are evaluated first and are byte-unchanged, and this
+    # hook consults the Arabic surface sets ALONE, so R3 cannot widen English
+    # recognition by a single token (§16.3). Unregistered wording in either
+    # language stays fail-closed exactly as R2 left it — that residual is a
+    # declared KNOWN BOUND of R3, not a concealed defect.
+    return arabic_surface_activates(response, gap_type)

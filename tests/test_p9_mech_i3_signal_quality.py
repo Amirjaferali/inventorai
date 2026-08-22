@@ -88,9 +88,27 @@ _APPROVED_SUBSTANCE_SIGNALS = [
 # This authorization is ONE bounded reconciliation, NOT a general permission to
 # edit engine/progression_loop.py; the guard below is unchanged and still
 # enforced against the new expected value.
+# PVCG-R3-I RECONCILIATION (owner-authorized, bounded — the SECOND and only
+# other reconciliation of this pin). Authority: PVCG_R3_C_SEMANTIC_STABILITY_
+# CONTRACT.md §13.1/§13.2/§13.2a (AUTHORITATIVE, PR #551, merge 7b7aa2f1…),
+# which permits EXACTLY ONE engine pin to move and names this file as one of
+# the three ENFORCING locations that must be updated together in the same
+# candidate. Why the pin had to move: closing D-2 — an Arabic-only inventor can
+# never close a gap because assess_response returns ASSERTED unconditionally
+# for Arabic — is impossible from engine/gap_relevance.py, because the ASSERTED
+# ceiling is produced by _has_causal_structure / the substance check INSIDE this
+# pinned file. RED was established at the authoritative base BEFORE the pin was
+# touched, and demonstrated the §7.1 material divergence, not merely a digest
+# mismatch. Scope of the edit: one import, the Arabic branch of
+# _has_causal_structure, the Arabic branch of the substance check, the Arabic
+# branch of _detect_acknowledged_unknown, and one bounded fragment helper.
+# Question selection, gap priority, scoring thresholds, maturity, stall
+# behaviour and the six governed gap types are untouched.
+#   pre-R3-I     progression_loop.py =
+#       07c9bff500662de54ac0f7388c1f2e13a721549c6f4943cde865b98a22c525d6
 _FROZEN_ENGINE_SHA256 = {
     "engine/domain_rules.py": "0e47326ad92a6e5b0a63eb06db9e3ad96ae72c9aaf64471dd21621265b1db1ab",
-    "engine/progression_loop.py": "07c9bff500662de54ac0f7388c1f2e13a721549c6f4943cde865b98a22c525d6",
+    "engine/progression_loop.py": "3cbd76849c0f572191a552db1a41a8cd418d02fac1d59d9b8804c72883239a55",
 }
 # Other-pack byte freeze (unchanged lineage from I1/I2). L2SC-01 reconciliation
 # (disclosed; electronics_electrical re-frozen, see I1's own comment).

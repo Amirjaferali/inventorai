@@ -71,9 +71,27 @@ _PROV_PATH = os.path.join(_DOMAINS, "domain_provenance.json")
 # gap-relevance reconciliation; prior digest preserved as historical evidence:
 #   a8e1ffdf9accf3ed57fc6c32d51c7e77ce9e260c0d39a8ec3030e2635ff03dc3
 # engine/path_n_questions.py is untouched by PVCG-R2-I — hash unchanged.
+# PVCG-R3-I RECONCILIATION (owner-authorized, bounded — the SECOND and only
+# other reconciliation of this pin). Authority: PVCG_R3_C_SEMANTIC_STABILITY_
+# CONTRACT.md §13.1/§13.2/§13.2a (AUTHORITATIVE, PR #551, merge 7b7aa2f1…),
+# which permits EXACTLY ONE engine pin to move and names this file as one of
+# the three ENFORCING locations that must be updated together in the same
+# candidate. Why the pin had to move: closing D-2 — an Arabic-only inventor can
+# never close a gap because assess_response returns ASSERTED unconditionally
+# for Arabic — is impossible from engine/gap_relevance.py, because the ASSERTED
+# ceiling is produced by _has_causal_structure / the substance check INSIDE this
+# pinned file. RED was established at the authoritative base BEFORE the pin was
+# touched, and demonstrated the §7.1 material divergence, not merely a digest
+# mismatch. Scope of the edit: one import, the Arabic branch of
+# _has_causal_structure, the Arabic branch of the substance check, the Arabic
+# branch of _detect_acknowledged_unknown, and one bounded fragment helper.
+# Question selection, gap priority, scoring thresholds, maturity, stall
+# behaviour and the six governed gap types are untouched.
+#   pre-R3-I     progression_loop.py =
+#       07c9bff500662de54ac0f7388c1f2e13a721549c6f4943cde865b98a22c525d6
 _FROZEN_ENGINE_SHA256 = {
     "engine/domain_rules.py": "0e47326ad92a6e5b0a63eb06db9e3ad96ae72c9aaf64471dd21621265b1db1ab",
-    "engine/progression_loop.py": "07c9bff500662de54ac0f7388c1f2e13a721549c6f4943cde865b98a22c525d6",
+    "engine/progression_loop.py": "3cbd76849c0f572191a552db1a41a8cd418d02fac1d59d9b8804c72883239a55",
     # D-GMPR-D3-PN reconciliation #2 (disclosed; DGMPR_D3_PATH_N_DOMAIN_NEUTRAL_
     # SERVICE_CONTRACT.md §5): the seam hash is re-frozen at the remediated
     # domain-neutral seam. domain_rules/progression_loop hashes are UNCHANGED.
