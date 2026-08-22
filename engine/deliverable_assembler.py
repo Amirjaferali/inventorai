@@ -266,6 +266,14 @@ def assemble_deliverable(state: IdeaState) -> dict:
             # Counts only — raw requirement ids are never exported; stale
             # confirmations are retained in session history, never reattached.
             "stale_criticality_confirmations": _stale_criticality_meta(state),
+            # PVCG-R4-C §15 M-2 / M-3 (additive, nested under _session_meta so
+            # the canonical-section contract is unchanged): truthful
+            # withdrawn-source surfacing, following the SAME surface-and-retain
+            # idiom as `stale_criteria` and `stale_criticality_confirmations` —
+            # counts only, no content, nothing deleted. It states that the
+            # inventor explicitly withdrew earlier source material; it asserts
+            # NOTHING about whether any conclusion is false (M-4).
+            "withdrawn_source_records": _withdrawn_source_meta(state),
         },
     }
     # Workstream 5 (UNIFIED_RISK_SAFETY_PRESENTATION_INCREMENT_CONTRACT.md §4;
@@ -408,6 +416,31 @@ def _requirement_landscape_synthesis(package):
         "repeated_group_total": sum(1 for g in groups
                                     if g["occurrence_count"] > 1),
     }
+
+
+_WITHDRAWN_SOURCE_NOTE = (
+    "The inventor explicitly withdrew earlier answer(s). Everything shown here "
+    "was recomputed from the remaining answers only; the withdrawn text is kept "
+    "in the project history and is no longer used as current support. This is "
+    "not a judgement that any earlier conclusion was wrong."
+)
+
+
+def _withdrawn_source_meta(state):
+    """PVCG-R4-C §15 — truthful withdrawn-source surfacing.
+
+    Counts the durably retained accepted-source records the inventor has
+    explicitly superseded through the governed correction path. Aggregate JSON
+    metadata only: no record id, no withdrawn content, and no claim that any
+    conclusion is false (M-4). The withdrawn records are RETAINED (§7 S-1); they
+    are simply outside the active set that the replay and the derived modules
+    consume. Zero for every project that has never used a correction, so pre-R4
+    output is unchanged in substance."""
+    records = getattr(state, "assertions", None) or []
+    total = sum(1 for r in records
+                if getattr(r, "superseded_by", None) is not None)
+    return {"total": total,
+            "note": _WITHDRAWN_SOURCE_NOTE if total else None}
 
 
 def _stale_criticality_meta(state):

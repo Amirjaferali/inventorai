@@ -322,7 +322,7 @@ class IdeaState:
     def record_interaction(self, action, content="", gap_context=None,
                            iteration=0, provenance=None,
                            validation_status=UNVALIDATED, quality=None,
-                           responsibility=None):
+                           responsibility=None, supersedes=None):
         """Append a durable disposition record for one of the six owner actions.
 
         Append-only: never mutates an existing record and never removes one. Has
@@ -355,14 +355,42 @@ class IdeaState:
                       and r.record_id.startswith("rec_")
                       and r.record_id[4:].isdigit()), default=0)
         record_id = f"rec_{_max_n + 1}"                 # stable; append-only
+        # PVCG-R4-C §6 C-4: additive, backward-compatible correction seam. With
+        # `supersedes=None` (every pre-R4 caller) behaviour is byte-identical.
+        # When given, the NEW record carries the relationship FORWARD (C-3),
+        # because the durable store is INSERT-only and the prior row must never
+        # be rewritten (C-2, §7 S-1). Fail-closed BEFORE anything is appended
+        # (C-5): unknown ids, self-supersession, an already-superseded target,
+        # and any cycle are refused with NOTHING stored. This reuses the ONE
+        # canonical supersession model (§7 S-4) — no second concept.
+        superseded_ids = list(supersedes or ())
+        if superseded_ids:
+            if len(set(superseded_ids)) != len(superseded_ids):
+                raise ValueError("duplicate supersedes reference")
+            for prior_id in superseded_ids:
+                prior = self._require_record(prior_id)      # unknown id -> refuse
+                if prior_id == record_id:
+                    raise ValueError(
+                        f"a record cannot supersede itself: {prior_id!r}")
+                if prior.superseded_by is not None:
+                    raise ValueError(
+                        f"record already superseded: {prior_id!r}")
         record = AssertionRecord(
             record_id=record_id, disposition=action, content=content,
             gap_context=gap_context, iteration=iteration, provenance=provenance,
             validation_status=validation_status, quality=quality,
             pending=_PENDING_BY_DISPOSITION.get(action),
             responsibility=responsibility, resolves_gap=False,
+            supersedes=list(superseded_ids),
         )
         self.assertions.append(record)
+        # In-memory inverse edge, set through the EXISTING canonical primitive so
+        # the acyclicity guard and the five derived-module active-set consumers
+        # behave exactly as they already do. Durably the prior row is untouched;
+        # the inverse is re-derived on load by
+        # `record_contract.reconcile_supersession_edges` (C-3).
+        for prior_id in superseded_ids:
+            self.mark_supersession(prior_id, record_id)
         return record
 
     def get_assertions(self, gap_context=None):

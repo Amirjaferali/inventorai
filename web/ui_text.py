@@ -95,6 +95,15 @@ _MESSAGE_KEYS = {
      "No changes were saved."): "UI_B_SC_007",
     ("A criterion exceeds the 1000-character "
      "limit. No changes were saved."): "UI_B_SC_008",
+    # PVCG-R4-C §13 E-1: the correction path must be bilingual, so its three
+    # server messages are registered here exactly like every other one.
+    ("That correction could not be applied just now. "
+     "Nothing was changed."): "UI_B_CORRECT_001",
+    ("Select which of your earlier answers to withdraw, and enter the "
+     "corrected answer."): "UI_B_CORRECT_002",
+    ("Your earlier answer was withdrawn and kept in the project history. "
+     "Everything shown has been recomputed from your remaining answers."):
+        "UI_B_CORRECT_003",
 }
 
 
@@ -439,6 +448,25 @@ UI_STRINGS = {
     "UI_B_SC_008": {
         "en": "A criterion exceeds the 1000-character limit. No changes were saved.",
         "ar": "يتجاوز أحد المعايير الحد الأقصى البالغ 1000 حرف. لم يتم حفظ أي تغييرات.",
+    },
+
+    # --- PVCG-R4 explicit correction / withdrawal (web/app.py correct_answer) --
+    # Storage stays English; only display localises — the UI_B_SC_007/008
+    # pattern. Fail-closed and success wording are both registered so the
+    # correction path is EN/AR equivalent end to end (PVCG-R4-C §13 E-1).
+    "UI_B_CORRECT_001": {
+        "en": "That correction could not be applied just now. Nothing was changed.",
+        "ar": "تعذّر تطبيق هذا التصحيح الآن. لم يتم تغيير أي شيء.",
+    },
+    "UI_B_CORRECT_002": {
+        "en": "Select which of your earlier answers to withdraw, and enter the corrected answer.",
+        "ar": "اختر أي إجابة سابقة تريد سحبها، ثم اكتب الإجابة المصحّحة.",
+    },
+    "UI_B_CORRECT_003": {
+        "en": ("Your earlier answer was withdrawn and kept in the project history. "
+               "Everything shown has been recomputed from your remaining answers."),
+        "ar": ("تم سحب إجابتك السابقة مع الاحتفاظ بها في سجل المشروع. "
+               "وأُعيد حساب كل ما يظهر هنا من إجاباتك المتبقية."),
     },
 
     # --- login.html (Category A) ----------------------------------------------

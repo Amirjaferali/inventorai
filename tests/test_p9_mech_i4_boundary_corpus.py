@@ -88,9 +88,25 @@ _DOMAINS = os.path.join(_REPO, "domains")
 # behaviour and the six governed gap types are untouched.
 #   pre-R3-I     progression_loop.py =
 #       07c9bff500662de54ac0f7388c1f2e13a721549c6f4943cde865b98a22c525d6
+# PVCG-R4-I pin reconciliation (PVCG_R4_C_USER_CORRECTION_AND_DETERMINISTIC_
+# INVALIDATION_CONTRACT.md §16.2, performed exactly under the R3-C §13.2a
+# mechanism the R4 contract adopts by reference). The R4 contract DISCLOSED this
+# movement in advance rather than leaving it to be discovered at review: the
+# §10.4 G-1 CLOSED-gap safety guard lands in this pinned file.
+# Scope of the edit: ONE guard in `integrate_response` — an already-CLOSED gap
+# returns unchanged instead of falling through to the PARTIAL branch, which
+# previously left `status=PARTIAL` with `closed_at` still set (an impossible
+# mixed state). RED was established at the authoritative base BEFORE the pin was
+# touched and demonstrated that impossible state reachable, not merely a digest
+# mismatch. Question selection, gap priority, scoring thresholds, maturity,
+# stall behaviour, the six governed gap types, and the ordinary forward-only
+# journey (WPS-001 INV-004) are untouched; no CLOSED gap can reopen through the
+# normal answer path.
+#   pre-R4-I     progression_loop.py =
+#       3cbd76849c0f572191a552db1a41a8cd418d02fac1d59d9b8804c72883239a55
 _FROZEN_ENGINE_SHA256 = {
     "engine/domain_rules.py": "0e47326ad92a6e5b0a63eb06db9e3ad96ae72c9aaf64471dd21621265b1db1ab",
-    "engine/progression_loop.py": "3cbd76849c0f572191a552db1a41a8cd418d02fac1d59d9b8804c72883239a55",
+    "engine/progression_loop.py": "c268cd6380129170da19f3ba03158eebd9a5480711b43e39280e8ce9e74f63f8",
 }
 # The mechanical pack hash IS this corpus's inventory validity anchor.
 # P9-MECH-SF reconciliation (contract §4 item 10, disclosed): re-frozen after

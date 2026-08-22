@@ -577,7 +577,7 @@ Measured at the base SHA **[REPO]** / **[EXEC]**:
 
 | File | Live digest / state | Pinned in |
 |---|---|---|
-| `engine/progression_loop.py` | `3cbd76849c0f572191a552db1a41a8cd418d02fac1d59d9b8804c72883239a55` | **3 ENFORCING** locations: `tests/test_p9_mech_i3_signal_quality.py`, `tests/test_p9_mech_i4_boundary_corpus.py`, `tests/test_p9_mech_i5_question_sufficiency.py` |
+| `engine/progression_loop.py` | **RECONCILED BY PVCG-R4-I** — was `3cbd76849c0f572191a552db1a41a8cd418d02fac1d59d9b8804c72883239a55` at this contract's base; the live digest is now `c268cd6380129170da19f3ba03158eebd9a5480711b43e39280e8ce9e74f63f8`, updated in all three ENFORCING locations in the R4-I candidate under §16.2 / R3-C §13.2a. | **3 ENFORCING** locations: `tests/test_p9_mech_i3_signal_quality.py`, `tests/test_p9_mech_i4_boundary_corpus.py`, `tests/test_p9_mech_i5_question_sufficiency.py` |
 | `engine/domain_rules.py` | `0e47326ad92a6e5b0a63eb06db9e3ad96ae72c9aaf64471dd21621265b1db1ab` | the same 3 files |
 | `engine/path_n_questions.py` | `a1a682d38293defd4b351e6238aeb870b4f765eaf3fc0f105c4932f75286ce7f` | I5 |
 | all five `domains/*/domain.json` | `_FROZEN_PACK_SHA256` in I3/I4 | I3 pins 4, I4 pins all 5 |

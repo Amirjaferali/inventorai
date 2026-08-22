@@ -780,6 +780,21 @@ INTERACTION_NOT_SAVED_MESSAGE = (
 # "Keep current snapshot" post-output decision. It selects the CURRENT deterministic
 # working snapshot for this temporary session only — it does not serialize, duplicate,
 # version, persist, approve, or create ownership. Echoes no idea/snapshot content.
+# --- PVCG-R4 explicit correction / withdrawal (PVCG_R4_C ... CONTRACT.md) -----
+# Storage stays English; display localises through `ui_text.localize_message`
+# (registered as UI_B_CORRECT_001/002/003), so the path is EN/AR equivalent.
+CORRECTION_NOT_APPLIED_MESSAGE = (
+    "That correction could not be applied just now. Nothing was changed."
+)
+CORRECTION_INCOMPLETE_MESSAGE = (
+    "Select which of your earlier answers to withdraw, and enter the "
+    "corrected answer."
+)
+CORRECTION_APPLIED_ACK = (
+    "Your earlier answer was withdrawn and kept in the project history. "
+    "Everything shown has been recomputed from your remaining answers."
+)
+
 KEEP_SNAPSHOT_ACK = (
     "Current working snapshot selected for this temporary session. "
     "It has not been permanently saved or approved."
@@ -2593,6 +2608,140 @@ def show_deliverable(sid):
         snapshot_kept_ack=ui_text.localize_message(
             entry.pop("_snapshot_kept_ack", None) if entry else None, _current_ui_lang()),
     )
+
+
+@app.route("/session/<sid>/correct", methods=["POST"])
+def correct_answer(sid):
+    """PVCG-R4 — EXPLICIT USER CORRECTION / WITHDRAWAL of one prior accepted
+    source record, then FULL deterministic replay.
+
+    Implements the authoritative
+    `docs/governance/PVCG_R4_C_USER_CORRECTION_AND_DETERMINISTIC_INVALIDATION_CONTRACT.md`.
+    PVCG-R4 is the CONFORMANCE owner only: the implementation here consumes the
+    EXISTING canonical models (the Increment-2 supersession primitive, the P4-0
+    record contract, the P4-1a INSERT-only store, and the P4-2 Level-1
+    reconstruction replay). It introduces no parallel state model, no second
+    replay engine, no dependency model and no persistence schema change.
+
+    Canonical sequence (§6 C-1/C-5/C-6, §8 RP-1/RP-4, §9 F-1/F-2/F-3):
+      ownership -> EXPLICIT record-targeted validation -> staged mint ->
+      durable append -> FULL replay of the amended stream -> ATOMIC live-state
+      replacement.
+
+    §6 C-1: the correction is explicit and names the prior `record_id`. Nothing
+    is ever inferred from retraction wording, sentiment, or any classifier.
+    §6 C-2/§7 S-1: the prior record is retained verbatim and never deleted,
+    renumbered or rewritten; the new record carries the edge FORWARD (C-3).
+    §8 RP-1: recomputation is FULL replay of the whole amended stream — naming
+    one record narrows WHICH INPUT was withdrawn, never how much is recomputed.
+    §8 RP-4: progression state changes ONLY by replacement with the replayed
+    state; this route never assigns `gap.status`, `known_mechanism`,
+    `known_problem`, `maturity_level` or `current_stage`.
+    §9 F-2/F-3: if replay does not produce a Level-1 state, live memory is left
+    exactly as it was and nothing is acknowledged as applied.
+    """
+    if not _project_authorized(sid):
+        return _deny_project()
+    entry = SESSION_STORE.get(sid)
+    if not entry:
+        return redirect(url_for("index"))
+    state = entry["state"]
+
+    target_id = (request.form.get("supersedes_record_id") or "").strip()
+    response = (request.form.get("response") or "").strip()
+
+    # §6 C-8: the same bounded free-text hardening as the answered and
+    # non-answer paths, before any state or durable change.
+    _input_error = _free_text_error(response, _current_ui_lang())
+    if _input_error is not None:
+        return (_input_error, 400)
+    if not target_id or not response:
+        entry["_answer_error"] = CORRECTION_INCOMPLETE_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+
+    # §6 C-5 — fail closed BEFORE anything is staged or stored. The target must
+    # be a real, still-active, accepted ANSWER record of THIS project: the
+    # amended stream is the answered stream (§14 P-1), so only an answered
+    # record can be withdrawn from it.
+    target = None
+    for record in getattr(state, "assertions", []):
+        if record.record_id == target_id:
+            target = record
+            break
+    if (target is None
+            or target.disposition != ACTION_ANSWERED
+            or getattr(target, "superseded_by", None) is not None):
+        entry["_answer_error"] = CORRECTION_NOT_APPLIED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+
+    # §6 C-6 — staged mint against a THROWAWAY ledger view, so live state is
+    # untouched until the durable append commits. The minting seam re-validates
+    # (unknown id / self / already-superseded / cycle) and raises with NOTHING
+    # appended on any violation.
+    import copy
+    # Deep-ish copies: `mark_supersession` writes the inverse edge, so the LIVE
+    # records must not be reachable from the throwaway view before the durable
+    # append commits.
+    _minter = IdeaState(idea_id=state.idea_id)
+    _minter.assertions = [copy.deepcopy(r) for r in state.assertions]
+    try:
+        new_record = _minter.record_interaction(
+            action=ACTION_ANSWERED, content=response,
+            gap_context=target.gap_context, iteration=state.iteration,
+            supersedes=[target_id],
+        )
+    except ValueError:
+        entry["_answer_error"] = CORRECTION_NOT_APPLIED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+
+    # §6 C-7 — a SEPARATE durable idempotency identity, derived from the exact
+    # correction event, so a refresh/retry/double-submit produces no second
+    # durable record, no second supersession edge and no second replay.
+    idem_key = _interaction_idempotency_key(
+        sid, "correct:" + target_id, target.gap_context, state.iteration,
+        response)
+    try:
+        _get_store().append_record(sid, new_record, idempotency_key=idem_key)
+    except sqlite3.IntegrityError:
+        # Never auto-classify an IntegrityError as a duplicate: the same event
+        # resubmitted is an idempotent no-op; anything else fails closed.
+        try:
+            prior = _get_store().record_payload_for_idempotency_key(sid, idem_key)
+        except StoreError:
+            prior = None
+        if prior is None or prior.get("content") != response:
+            entry["_answer_error"] = CORRECTION_NOT_APPLIED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    except StoreError:
+        # §9 F-1: durable append unavailable — nothing changed, nothing claimed.
+        entry["_answer_error"] = CORRECTION_NOT_APPLIED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+
+    # §8 RP-1 — FULL deterministic replay of the AMENDED accepted-source stream
+    # through the UNCHANGED canonical reconstruction (which itself replays
+    # through the UNCHANGED `progression_loop.run_iteration`). No targeted
+    # recomputation, no selective patching, no dependency propagation.
+    try:
+        _recon = reconstruct_readonly_state(_get_store(), sid)
+    except Exception:
+        _recon = None
+    if _recon is None or _recon.review.level != 1 or _recon.state is None:
+        # §9 F-2/F-3: replay did not produce a state, so live memory is left
+        # EXACTLY as it was — never partially replaced — and the correction is
+        # not reported as applied. The durable stream stays valid and
+        # re-loadable, so the next load applies it (§9 F-4).
+        entry["_answer_error"] = CORRECTION_NOT_APPLIED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+
+    # §8 RP-4 — ATOMIC live-state replacement. The replayed state REPLACES the
+    # prior one wholesale; no field of the old state is edited, so no stored gap
+    # status is ever moved backward (WPS-001 INV-004 preserved, §8.1/G-3). A
+    # weaker outcome is a property of this NEW forward run.
+    entry["state"] = _recon.state
+    entry["last_result"] = None
+    entry.pop("answer_token", None)
+    entry["_interaction_ack"] = CORRECTION_APPLIED_ACK
+    return redirect(url_for("show_session", sid=sid))
 
 
 @app.route("/session/<sid>/keep-snapshot", methods=["POST"])

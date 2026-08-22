@@ -14266,3 +14266,102 @@ Render path; `RUNTIME DELTA: 0`, `TEST DELTA: 0`, `PACK DELTA: 0`, `PIN DELTA: 0
 `VERSIONING / BRANCHING / ROLLBACK / SHARING AUTHORIZED: NO`; `TDVP IMPLEMENTATION STARTED: NO`;
 `PVCG SATISFIED: NO`; `FULL MLC DEFINITION FROZEN: NO`;
 `MINIMUM LAUNCH-CONFORMANCE SET SATISFIED: NO`; `DEPLOYMENT AUTHORIZED: NO`.
+
+---
+
+## PVCG-R4-I — bounded FPC-02 / P4-2 IMPLEMENTATION of the authoritative R4 conformance contract (Owner-authorized implementation candidate) — NOT authoritative unless merged
+
+**Base.** `c3d9e2d98ba7b6c9b3a9d9d316e6d572122d8a8e` — the live authoritative tip of
+`origin/feature/atomic-json-session-persistence`, independently re-fetched and re-verified on all four
+merge criteria before any edit: PR #554, first parent `18a90f9b0aa85d05317bed5aaa596e19716c6557`, second
+parent `d5286de76109e9dd8be52f49d72e59b063e2c823` (the exact Owner-accepted R4-C candidate), merge tree
+`968ff38cbe689526b8d97a7b9533be631e4ee1a7` identical to the accepted candidate tree, candidate→merge
+diff **EMPTY**, zero later commits, working tree clean. **`PVCG-R4-C AUTHORITATIVE: YES`.**
+
+**Disposition.** `PVCG-R4-I IMPLEMENTATION CANDIDATE — NOT AUTHORITATIVE UNTIL MERGED`. This candidate
+implements ONLY the bounded capability the authoritative contract defines, and it closes **R4 only**.
+`PVCG-R4 AUTHORITATIVELY SATISFIED: NO` until merged, post-merge verified and formally closed by its own
+closure record.
+
+**Ownership, unchanged and structurally enforced.** `IMPLEMENTATION OWNER: FPC-02 / P4-2`;
+`PVCG CONFORMANCE OWNER: PVCG-R4`. Every mechanism used here is an EXISTING canonical model: the
+Increment-2 supersession primitive (`IdeaState.mark_supersession`), the P4-0 record contract, the
+P4-1a INSERT-only store, the P4-2 Level-1 reconstruction replay, and the one canonical active-set rule
+(`superseded_by is None`) already consumed by `derived_readiness`, `requirement_landscape`,
+`idea_development_outputs`, `validation_plan` and `safety_signal`. **No parallel state model, no second
+replay engine, no dependency model, no persistence schema change, no migration** — `D-FPC-MAP-02` and
+`D-FPC-MAP-06` preserved.
+
+**Delivered — exactly seven paths.** `engine/record_contract.py` (new
+`reconcile_supersession_edges`, called from `from_dict` before the unchanged `validate()`, deriving the
+INVERSE edge on load because the durable store is INSERT-only; strictly additive and idempotent, and it
+REJECTS a stored value that contradicts the forward edge or a prior record superseded twice, rather than
+repairing either); `engine/idea_state.py` (additive `supersedes=` on `record_interaction`, fail-closed
+before any append on unknown / self / already-superseded / duplicate, then the inverse edge written
+through the EXISTING `mark_supersession` primitive); `engine/progression_loop.py` (the §10.4 G-1
+CLOSED-gap guard — ONE branch); `engine/session_reconstruction.py` (replay the AMENDED stream — the
+accepted answers not withdrawn — plus an additive `withdrawn_source_records` count; the replay bound is
+still checked against the FULL persisted stream, the conservative reading, so a correction can neither
+exceed nor disable it); `engine/deliverable_assembler.py` (the truthful withdrawn-source marker under
+`_session_meta`, counts and a note only, following the SAME surface-and-retain idiom as `stale_criteria`
+and `stale_criticality_confirmations`); `web/app.py` (the explicit `POST /session/<sid>/correct` route);
+`web/ui_text.py` (three EN/AR message pairs, `UI_B_CORRECT_001…003`).
+
+**Correction semantics as contracted.** The correction is EXPLICIT and names the prior `record_id`
+(§6 C-1) — nothing is ever inferred from retraction wording, and a test proves that typing *"actually I
+was wrong"* as an ordinary answer still produces zero withdrawals. The prior record is RETAINED verbatim
+(§7 S-1); the new record carries the edge FORWARD (§6 C-3); `rec_N` is never reused or renumbered
+(§7 S-2). Recomputation is FULL replay of the entire amended stream through the UNCHANGED
+`run_iteration` (§8 RP-1) — naming one record narrows WHICH INPUT was withdrawn, never how much is
+recomputed (§2.4.2). Live state changes ONLY by wholesale replacement with the replayed state
+(§8 RP-4); the route assigns no `gap.status`, `known_mechanism`, `known_problem`, `maturity_level` or
+`current_stage`. A replay failure leaves live memory byte-identical and is never reported as applied
+(§9 F-2/F-3), with the durable stream still valid and re-loadable (§9 F-4).
+
+**Evaluation can decrease, proven.** Withdrawing the mechanism answer and replacing it with an off-topic
+one produces a strictly weaker replayed state (§8 RP-5). **INV-004 is preserved exactly** (§8.1/G-3):
+replay builds a FRESH `IdeaState` and rebuilds forward, then replaces the prior state wholesale, so no
+stored gap status is ever moved backward — the weaker outcome is a property of the NEW run.
+
+**CLOSED-gap hazard closed by construction.** At the base, calling `integrate_response` on an
+already-CLOSED gap produced `status=PARTIAL` with `closed_at` still set — measured RED at
+`c3d9e2d9` before the pin was touched. The guard makes it unreachable; `closed_at` is now set if and
+only if the gap is CLOSED (G-4); and the ordinary forward-only journey is unchanged — **no CLOSED gap
+reopens through the normal answer path** (G-2). **Non-vacuous INV-004 coverage** (G-5) is committed with
+a literal corpus that asserts it reaches CLOSED *before* checking the invariant, unlike the pre-existing
+`test_wps001_invariants.py` test, which skips on its own corpus and is left byte-unchanged.
+
+**Pin reconciliation (§16.2, under the R3-C §13.2a mechanism), stated exhaustively.**
+Old `3cbd76849c0f572191a552db1a41a8cd418d02fac1d59d9b8804c72883239a55` → new
+`c268cd6380129170da19f3ba03158eebd9a5480711b43e39280e8ce9e74f63f8`.
+**Kind (1) ENFORCING — all THREE updated in this same candidate:**
+`tests/test_p9_mech_i3_signal_quality.py`, `tests/test_p9_mech_i4_boundary_corpus.py`,
+`tests/test_p9_mech_i5_question_sufficiency.py`, each carrying a disclosed reconciliation note that
+PRESERVES the prior digest. **Kind (2) ACTIVE CURRENT-TRUTH — synchronized:** the §16 table of
+`PVCG_R4_C_USER_CORRECTION_AND_DETERMINISTIC_INVALIDATION_CONTRACT.md` (exactly the precedent by which
+R3-I synchronized R3-C's own §13 table), plus this entry and the two status surfaces.
+**Kind (3) HISTORICAL — deliberately left byte-unchanged:** `PVCG_R3_C_SEMANTIC_STABILITY_CONTRACT.md`
+§13, `PVCG_R3_FORMAL_CLOSURE_RECORD.md` §4, the PVCG-R3-I and PVCG-R3-closure append-only roadmap gate
+entries, the `Superseded (retained as history)` PVCG-R3-I block in `ACTIVE_INCREMENT_CONTRACT.md`, and
+the retained PVCG-R3-I bullet in `CURRENT_PROJECT_STATE.md`. **`PACK DELTA: 0`** —
+`engine/domain_rules.py` (`0e47326a…`), `engine/path_n_questions.py` (`a1a682d3…`) and all five
+`domains/*/domain.json` byte-identical; the correction path is domain-neutral and a committed test
+asserts it contains no domain token.
+
+**Verification on the frozen candidate, measured — not carried.** Focused R4-I **37 passed**;
+PVCG-R1 **26 passed** with its test file byte-unchanged; R2 behavioural **189 passed** and R2 marker
+coverage **566 passed**, both files byte-unchanged; R3 focused **579 passed**, file byte-unchanged;
+P9 pin suites **54 passed**; `UNIVERSAL GUARDRAIL SMOKE: PASS`; full suite **4392 passed / 3 skipped /
+1 xfailed / 0 failed** under the §18 precondition (Python 3.11.15, Flask 3.1.3, SQLite 3.45.1,
+gunicorn 26.1.0 on `PATH`). **§20 reconciliation: baseline 4355 + 37 = 4392**, exactly the one new R4-I
+test file and nothing else. The baseline `4355 / 3 / 1 / 0` was itself re-measured on this candidate's
+own base tip in this session rather than carried from prose.
+
+**Scope.** `PVCG-R4 AUTHORITATIVELY SATISFIED: NO`; `FPC-02 / P4-2 REMAINS IMPLEMENTATION OWNER: YES`;
+`PVCG-R4 REMAINS CONFORMANCE OWNER ONLY: YES`; `TARGETED PARTIAL INVALIDATION AUTHORIZED: NO`;
+`DEPENDENCY GRAPH ADDED: NO`; `FULL CONTRADICTION ENGINE AUTHORIZED: NO`;
+`SEMANTIC CORRECTION INFERENCE ADDED: NO`; `VERSIONING / BRANCHING / ROLLBACK / SHARING ADDED: NO`;
+`PERSISTENCE SCHEMA MIGRATION: NO`; `PHASE 4 REOPENED GENERALLY: NO`; no pack edit, no domain change,
+no new gap type; `main` not reconciled; `OWNER_DECISION_REGISTER.md` UNCHANGED.
+`TDVP IMPLEMENTATION STARTED: NO`; `PVCG SATISFIED: NO`; `FULL MLC DEFINITION FROZEN: NO`;
+`MINIMUM LAUNCH-CONFORMANCE SET SATISFIED: NO`; `DEPLOYMENT AUTHORIZED: NO`.

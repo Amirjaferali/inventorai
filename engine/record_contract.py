@@ -91,6 +91,57 @@ def assertion_to_dict(record):
     }
 
 
+def reconcile_supersession_edges(assertions):
+    """PVCG-R4-C §6 C-3 — derive the INVERSE supersession edge on load.
+
+    The durable store is INSERT-only (``SqliteRecordStore.append_record`` issues a
+    single INSERT and the adapter contains no UPDATE statement at all), so when a
+    correction supersedes an earlier accepted record only the NEW row can carry the
+    relationship. It carries it FORWARD as ``supersedes=[prior_id]``; the prior
+    row's persisted payload still says ``superseded_by=None`` because it was never
+    — and must never be — rewritten (§6 C-2, §7 S-1).
+
+    This function restores the inverse deterministically, so the ONE canonical
+    active-set concept already consumed by ``derived_readiness``,
+    ``requirement_landscape``, ``idea_development_outputs``, ``validation_plan`` and
+    ``safety_signal`` (``superseded_by is None``) keeps working unchanged. R4
+    introduces no second active-set model (§7 S-4).
+
+    Strictly ADDITIVE and IDEMPOTENT:
+      * a ``superseded_by`` that is already set is NEVER overwritten;
+      * it is filled in ONLY when it is ``None`` and some record names this one in
+        its ``supersedes`` list;
+      * a stored value that CONTRADICTS the forward edge is a corruption and raises
+        ``InvalidReferenceError`` — it is never silently repaired;
+      * two different records superseding the same prior record is likewise
+        rejected: the inverse edge must be single-valued.
+
+    It repairs nothing else, deletes nothing, reorders nothing, and renumbers
+    nothing. ``validate()`` still runs afterwards with its existing strength intact
+    (unknown references, self-supersession, and cycles all still fail closed —
+    §14 P-4)."""
+    forward = {}
+    for record in assertions:
+        for prior_id in record.supersedes:
+            if prior_id in forward and forward[prior_id] != record.record_id:
+                raise InvalidReferenceError(
+                    "record %r is superseded by more than one record: %r and %r"
+                    % (prior_id, forward[prior_id], record.record_id))
+            forward[prior_id] = record.record_id
+    for record in assertions:
+        by_id = forward.get(record.record_id)
+        if by_id is None:
+            continue
+        if record.superseded_by is None:
+            record.superseded_by = by_id
+        elif record.superseded_by != by_id:
+            raise InvalidReferenceError(
+                "supersession edges disagree for record %r: stored %r, "
+                "forward edge %r"
+                % (record.record_id, record.superseded_by, by_id))
+    return assertions
+
+
 def assertion_from_dict(data):
     """Reconstruct one AssertionRecord, rejecting unknown or missing fields so
     nothing is silently dropped. Values are restored verbatim."""
@@ -176,6 +227,7 @@ class ProjectRecordContract:
                 "missing required contract field(s): %s"
                 % sorted({"idea_id", "assertions"} - set(data)))
         assertions = [assertion_from_dict(d) for d in data["assertions"]]
+        reconcile_supersession_edges(assertions)
         contract = cls(idea_id=data["idea_id"], assertions=assertions,
                        contract_version=version)
         contract.validate()
