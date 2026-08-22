@@ -14023,15 +14023,24 @@ each remaining surface of a concept against a common anchor, Σ(n−1) = 313 exe
 concepts and 369 registered surfaces, and §7.3's every-pair property follows **transitively**; the
 exhaustive unordered pair count would be **1,174** and those pairs were **NOT** executed —
 with D-1 material divergence **0/6**. Every §10.1 property and §10.2 category and every §16 negative
-control is proven by two distinct evidence groups, because the R3-I classes alone are **not** the full
-§10.1 basis. **(A)** the §10.2 categories 1–11 and the §16 negative controls are exercised by
-`TestAdversarialCategories`, `TestNegativeControls` and `TestCausalTokenBoundary` in the 579-test R3-I
-suite. **(B)** the remaining §10.1 properties are proven by other authoritative suites: *gap-specific
-relevance* by the authoritative 6×6 closure control `test_each_genuine_answer_closes_only_its_own_gap`
-in `tests/test_pvcg_r2i_gap_relevance.py`; *R1 durable epistemic memory* (§11) by
-`tests/test_pvcg_r1_durable_epistemic_memory.py`; *the P9-MECH-I3/I4/I5 pins* (§13) by the three P9 pin
-suites; and *determinism* (§6.1) by `TestDeterminismAndProhibitions`. All of (A) and (B) are green on
-the merged tree. Pin reconciliation holds exactly: the live
+control carries a **named** proof locator. §10.1 lists **eight** preserved properties, and the closure
+record's **§4.1** now maps every one of them — earlier statements named only four and left the rest to
+be inferred from the phrase "the §16 controls", which is a category rather than a locator. Two evidence
+groups, because the R3-I classes alone are **not** the full §10.1 basis. **(A)** in the 579-test R3-I
+suite: *cross-gap protection* by `TestAdversarialCategories::test_8_cross_gap_reuse_creates_no_off_diagonal_closure`
+with `TestNegativeControls::test_8_pre_existing_english_breadth_is_MIRRORED_not_narrowed`; *fail-closed*
+by `TestNegativeControls::test_2` through `::test_6`; *determinism* (§6.1) by
+`TestDeterminismAndProhibitions`; the §10.2 categories 1–11 by `TestAdversarialCategories::test_1…test_11`
+with category 10 additionally pinned by `TestCausalTokenBoundary`; and the EN/AR diagonal identity by
+`TestNegativeControls::test_1`. **(B)** in other authoritative suites: *gap-specific relevance* by the
+authoritative 6×6 closure control `test_each_genuine_answer_closes_only_its_own_gap`,
+**repetition protection** by `TestRed3RepetitionCannotManufactureSatisfaction::test_five_repetitions_of_an_irrelevant_answer_never_close`
+(`times=5`, every gap × every off-topic answer, never `CLOSED`) and **non-punitive rejection** by
+`TestFailClosedIsNotPunitive::test_irrelevant_answer_never_returns_block` (transition `WARN`, never
+`BLOCK`) — all three in `tests/test_pvcg_r2i_gap_relevance.py`; *R1 durable epistemic memory* (§11) by
+`tests/test_pvcg_r1_durable_epistemic_memory.py`; and *the P9-MECH-I3/I4/I5 pins* (§13) by the three P9
+pin suites. All of (A) and (B) are green on the merged tree. **Criterion 4 status is unchanged: MET** —
+the two newly cited properties were already proven green; only the citation was missing. Pin reconciliation holds exactly: the live
 `engine/progression_loop.py` digest `3cbd76849c0f572191a552db1a41a8cd418d02fac1d59d9b8804c72883239a55`
 is enforced green by the three P9 suites, while `engine/domain_rules.py` (`0e47326a…`),
 `engine/path_n_questions.py` (`a1a682d3…`) and **all five** `domains/*/domain.json` are byte-identical.
@@ -14054,10 +14063,39 @@ fail-closed by design, correctly not counted as behavioural kills.
 **Review lineage preserved, never authoritative except where accepted.** `1ce9ef34…` was **REJECTED** on
 blocking defects B-1 (Arabic causal substring bleed manufacturing quality, progress and closure) and B-2
 (mutation probes derived from the object under test). `3f08e727…` and `0f1404f0…` each returned
-**ACCEPT WITH NON-BLOCKING OBSERVATIONS**, raising U-1/U-2 and then O-1 respectively. All five defect
-IDs — B-1, B-2, U-1, U-2, O-1 — are **CLOSED**, each with its repair recorded. Every rejected and
-superseded SHA is preserved unchanged; none was amended, rebased, squashed or recreated, and none was
-published.
+**ACCEPT WITH NON-BLOCKING OBSERVATIONS**, raising U-1/U-2 and then **R3-I-O1** respectively. All five
+implementation-lineage defect IDs — B-1, B-2, U-1, U-2, R3-I-O1 — are **CLOSED**, each with its repair
+recorded. Every rejected and superseded SHA is preserved unchanged; none was amended, rebased, squashed
+or recreated, and none was published.
+
+**Label namespace — disambiguated, with no merged history rewritten.** Two review rounds each numbered
+their observations from `O-1`, in different namespaces. The implementation-lineage observation is now
+written **R3-I-O1**; the three closure-gate observations are written **CLOSURE-O1 / CLOSURE-O2 /
+CLOSURE-O3**. The merged PVCG-R3-I entries below retain the original `O-1` label **verbatim and
+unrewritten** — merged history is authoritative for what it says. The prefixes are applied only where
+the collision is live (this entry, the closure record, and the two other current status surfaces) and
+change no disposition, verdict, count or status. Full mapping: closure record **§3.1**.
+
+**Closure-gate review provenance, stated per SHA so it does not go stale.** `UNSUPPORTED MATERIAL
+CLAIMS` is an independent-reviewer field and is not a Creator self-award. Candidate `a477ead7…`:
+**ACCEPT WITH NON-BLOCKING OBSERVATIONS**, `UNSUPPORTED MATERIAL CLAIMS = 0`, observations
+**CLOSURE-O1** (criterion-4 evidence locator), **CLOSURE-O2** (§7.3 anchor-comparison wording) and
+**CLOSURE-O3** (verdict-provenance separation). Its child `ebd94ab0…` **was itself independently
+re-reviewed**: **ACCEPT WITH NON-BLOCKING OBSERVATIONS**, `UNSUPPORTED MATERIAL CLAIMS = 0`, CLOSURE-O1
+/ CLOSURE-O2 / CLOSURE-O3 all **PASS**, with four further findings **N-P1** (the criterion-4 locator
+still named only four of the eight §10.1 properties), **N-P2** (the `O-1` namespace collision),
+**N-P3** (a review-status sentence that had gone stale) and **N-P4**. N-P1, N-P2 and N-P3 are
+**CLOSED** by the present candidate; the Creator Grill on this candidate found **0** unsupported
+material claims. **This candidate — the N-P1/N-P2/N-P3 micro-precision child of `ebd94ab0…` — has NOT
+itself been independently re-reviewed as at the time of its submission, and must not be cited as
+reviewed.**
+
+**N-P4 is a reviewer-environment limitation, not a defect.** The reviewer could not re-execute the
+application suites because **Flask was unavailable in the reviewer's environment**. It is recorded as
+exactly that: not a product defect, not a closure defect, and not a failure of any §19 criterion. §18 of
+the governing contract declares the execution precondition (Python 3.11.15, Flask 3.1.3, SQLite 3.45.1,
+gunicorn 26.1.0 on `PATH`) and every suite result recorded above was measured in an environment
+satisfying it. **No repair is made for N-P4 and none is owed.**
 
 **Carried forward as OPEN / NON-BLOCKING (not repaired here, not authorized work):** **N-2**, the
 40-character acknowledged-unknown threshold, language-neutral as a rule but not in effect because Arabic
@@ -14073,7 +14111,10 @@ vector/probabilistic subsystem. **`PVCG-R4 NOT STARTED`** — naming it as next 
 
 **Scope.** Governance/documentation only — one new closure record plus this entry and the two status
 surfaces. No `engine/`, `web/`, `tests/`, `domains/`, `scripts/`, evidence-tree, generator, deployment or
-Render path; `PIN DELTA: 0`; `main` not reconciled; `OWNER_DECISION_REGISTER.md` UNCHANGED.
+Render path; `PIN DELTA: 0`; `main` not reconciled; `OWNER_DECISION_REGISTER.md` UNCHANGED. The
+N-P1/N-P2/N-P3 micro-precision repair carried by this candidate is **governance prose only**: `RUNTIME
+DELTA: 0`, `TEST DELTA: 0`, `PACK DELTA: 0`, `PIN DELTA: 0`, and no executable file changed, so the
+previously established suite evidence carries forward unchanged and is **not** re-run or re-claimed.
 `PVCG SATISFIED: NO`; `MINIMUM LAUNCH-CONFORMANCE SET SATISFIED: NO`; `DEPLOYMENT AUTHORIZED: NO`;
 `TDVP IMPLEMENTATION STARTED: NO`. Next authorized workstream after this closure becomes authoritative:
 **PVCG-R4 — Correction / Invalidation**, still NOT STARTED and opened only by the Owner through the

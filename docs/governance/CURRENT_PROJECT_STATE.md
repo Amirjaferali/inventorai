@@ -2437,15 +2437,40 @@ AUTHORIZED / NOT STARTED.***
   on the merged tree:** §7.3 **313 anchor comparisons / 0 mismatches** (56 concepts, 369 surfaces; each
   remaining surface compared against a common anchor, so the every-pair property follows transitively —
   the 1,174 exhaustive pairs were NOT executed), D-1 **0/6**; the §10.2 categories 1–11 and the §16
-  controls green in the 579-test R3-I suite, with the remaining §10.1 properties proven by other
-  authoritative suites (6×6 closure control in the R2 suite, R1 durable memory, the three P9 pin suites,
-  and `TestDeterminismAndProhibitions`); pin `3cbd7684…` enforced green by the three P9 suites with `domain_rules.py`,
+  controls green in the 579-test R3-I suite. **All eight §10.1 properties carry a named locator** —
+  complete map in closure record **§4.1**; earlier statements named only four. In the R3-I suite:
+  cross-gap protection (`TestAdversarialCategories::test_8…`, `TestNegativeControls::test_8`),
+  fail-closed (`TestNegativeControls::test_2`–`::test_6`), determinism
+  (`TestDeterminismAndProhibitions`). In other authoritative suites, all three in
+  `tests/test_pvcg_r2i_gap_relevance.py`: gap-specific relevance (the 6×6 closure control),
+  **repetition protection**
+  (`TestRed3RepetitionCannotManufactureSatisfaction::test_five_repetitions_of_an_irrelevant_answer_never_close`)
+  and **non-punitive rejection**
+  (`TestFailClosedIsNotPunitive::test_irrelevant_answer_never_returns_block`); plus R1 durable memory
+  and the three P9 pin suites. **Criterion 4 status unchanged: MET** — the two newly cited properties
+  were already green; only the citation was missing. Pin `3cbd7684…` enforced green by the three P9 suites with `domain_rules.py`,
   `path_n_questions.py` and all five packs byte-identical; R1 **26** byte-unchanged; R2 **189** + **566**
   byte-unchanged; P9 **54**; `UNIVERSAL GUARDRAIL SMOKE: PASS`; full suite **4355 passed / 3 skipped /
   1 xfailed / 0 failed** (3776 baseline **+579**). Mutation sweep **257 / 254 KILLED / 0 SURVIVED /
   3 LOADFAIL, restore 257/257** recorded as **carried, independently reviewer-reproduced** evidence from
-  `0f1404f0…`, not re-measured this gate. **B-1, B-2, U-1, U-2, O-1 all CLOSED**; rejected `1ce9ef34…`
-  and every superseded SHA preserved unchanged and unpublished. **Residuals OPEN / NON-BLOCKING and NOT
+  `0f1404f0…`, not re-measured this gate. **Implementation lineage: B-1, B-2, U-1, U-2, R3-I-O1 all
+  CLOSED**; rejected `1ce9ef34…` and every superseded SHA preserved unchanged and unpublished.
+  **Closure gate: CLOSURE-O1, CLOSURE-O2, CLOSURE-O3 CLOSED; N-P1, N-P2, N-P3 CLOSED; N-P4 NO REPAIR
+  OWED.** **Label namespace disambiguated with no merged history rewritten** — two review rounds each
+  numbered from `O-1` in different namespaces, so the implementation-lineage observation is written
+  **R3-I-O1** and the closure-gate observations **CLOSURE-O1/O2/O3**; the merged PVCG-R3-I entries keep
+  the original `O-1` label verbatim (closure record §3.1). **Review provenance, per SHA:** `a477ead7…`
+  ACCEPT WITH NON-BLOCKING OBSERVATIONS, `UNSUPPORTED MATERIAL CLAIMS = 0`, raising CLOSURE-O1/O2/O3;
+  its child **`ebd94ab0…` WAS itself independently re-reviewed** — ACCEPT WITH NON-BLOCKING
+  OBSERVATIONS, `UNSUPPORTED MATERIAL CLAIMS = 0`, CLOSURE-O1/O2/O3 all PASS, findings N-P1…N-P4.
+  **The current N-P1/N-P2/N-P3 micro-precision child has NOT itself been independently re-reviewed as at
+  the time of its submission and must not be cited as reviewed.** **N-P4 is a reviewer-environment
+  limitation** (Flask unavailable in the reviewer's environment) — not a product defect, not a closure
+  defect, not a §19 criterion failure; the R3-C §18 execution precondition was satisfied where the
+  recorded results were measured, so no repair is made and none is owed. The micro-precision repair is
+  **governance prose only**: `RUNTIME DELTA: 0`, `TEST DELTA: 0`, `PACK DELTA: 0`, `PIN DELTA: 0`, no
+  executable file changed, and the established suite evidence carries forward without being re-run or
+  re-claimed. **Residuals OPEN / NON-BLOCKING and NOT
   R4 authorization:** N-2 (40-char acknowledged-unknown threshold) and U-4 (single Arabic connective in
   English prose) — neither appears in any §19 criterion. `PVCG-R4 NOT STARTED`;
   `FULL ADAPTIVE QUESTIONING ACTIVATED: NO`; `TDVP IMPLEMENTATION STARTED: NO`; `PVCG SATISFIED: NO`;

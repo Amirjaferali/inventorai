@@ -64,10 +64,17 @@ anchor comparisons / 0 material mismatches** — each remaining surface of a con
 common anchor, Σ(n−1) = 313 executed over 56 concepts and 369 surfaces, with §7.3's every-pair property
 following transitively; the 1,174 exhaustive pairs were NOT executed; D-1 **0/6**. §10.2 categories 1–11
 and the §16 controls are exercised by `TestAdversarialCategories`, `TestNegativeControls` and
-`TestCausalTokenBoundary` in the 579-test R3-I suite, while the remaining §10.1 properties are proven by
-other authoritative suites — gap-specific relevance by the 6×6 closure control in
-`tests/test_pvcg_r2i_gap_relevance.py`, R1 durable memory by the R1 suite, the P9-MECH pins by the three
-P9 suites, and determinism by `TestDeterminismAndProhibitions`; pin `3cbd7684…` enforced green by the three P9 suites with `domain_rules.py`,
+`TestCausalTokenBoundary` in the 579-test R3-I suite. **All eight §10.1 properties carry a named
+locator** — the complete map is closure record **§4.1**; earlier statements named only four. Inside the
+R3-I suite: cross-gap protection by `TestAdversarialCategories::test_8_cross_gap_reuse_creates_no_off_diagonal_closure`
+with `TestNegativeControls::test_8`, fail-closed by `TestNegativeControls::test_2`–`::test_6`, and
+determinism by `TestDeterminismAndProhibitions`. In other authoritative suites: gap-specific relevance by
+the 6×6 closure control, **repetition protection** by
+`TestRed3RepetitionCannotManufactureSatisfaction::test_five_repetitions_of_an_irrelevant_answer_never_close`
+and **non-punitive rejection** by `TestFailClosedIsNotPunitive::test_irrelevant_answer_never_returns_block`
+— all three in `tests/test_pvcg_r2i_gap_relevance.py` — plus R1 durable memory by the R1 suite and the
+P9-MECH pins by the three P9 suites. **Criterion 4 status unchanged: MET**; the two newly cited
+properties were already green and only the citation was missing. Pin `3cbd7684…` enforced green by the three P9 suites with `domain_rules.py`,
 `path_n_questions.py` and all five packs byte-identical; R1 **26** (file byte-unchanged); R2 **189** +
 **566** (file byte-unchanged); P9 **54**; smoke **PASS**; full suite **4355 passed / 3 skipped /
 1 xfailed / 0 failed**, §18 reconciliation 3776 **+579**. The mutation sweep **257 / 254 KILLED /
@@ -75,8 +82,18 @@ P9 suites, and determinism by `TestDeterminismAndProhibitions`; pin `3cbd7684…
 evidence from `0f1404f0…`, not re-measured this gate — the merge tree equals the accepted candidate tree
 and the registry and frozen oracle are byte-identical across that lineage.
 
-**Defect dispositions: B-1 CLOSED, B-2 CLOSED, U-1 CLOSED, U-2 CLOSED, O-1 CLOSED.** Rejected candidate
-`1ce9ef34…` and every superseded SHA preserved unchanged and unpublished.
+**Defect dispositions (PVCG-R3-I implementation lineage): B-1 CLOSED, B-2 CLOSED, U-1 CLOSED, U-2
+CLOSED, R3-I-O1 CLOSED.** Rejected candidate `1ce9ef34…` and every superseded SHA preserved unchanged
+and unpublished.
+
+**Closure-gate dispositions (this gate): CLOSURE-O1 CLOSED, CLOSURE-O2 CLOSED, CLOSURE-O3 CLOSED;
+N-P1 CLOSED, N-P2 CLOSED, N-P3 CLOSED; N-P4 NO REPAIR OWED.**
+
+**Label namespace — disambiguated, no merged history rewritten.** Two review rounds each numbered from
+`O-1`, in different namespaces. The implementation-lineage observation is written **R3-I-O1**; the
+closure-gate observations are written **CLOSURE-O1 / CLOSURE-O2 / CLOSURE-O3**. The merged PVCG-R3-I
+entries retained below keep the original `O-1` label **verbatim** — merged history is authoritative for
+what it says and was not renamed. Full mapping: closure record §3.1.
 
 **Residuals carried forward, OPEN / NON-BLOCKING, and NOT R4 authorization:** **N-2** (the 40-character
 acknowledged-unknown threshold — pre-existing, byte-unchanged, fail-closed in direction, outside the
@@ -93,15 +110,41 @@ evidence-tree, generator, deployment or Render path; `PIN DELTA: 0`; `main` not 
 is not a verdict the Creator may self-award. Stated separately:
 
 ```
-Creator Grill unsupported-material-claim finding : 0
-Independent closure review (candidate a477ead76d5d57c61da2f15eb1ff1eadfbd8da5e):
+Creator Grill unsupported-material-claim finding (this candidate)  : 0
+
+Independent closure review — candidate a477ead76d5d57c61da2f15eb1ff1eadfbd8da5e
+  VERDICT                     = ACCEPT WITH NON-BLOCKING OBSERVATIONS
   UNSUPPORTED MATERIAL CLAIMS = 0
-  VERDICT = ACCEPT WITH NON-BLOCKING OBSERVATIONS
+  Observations raised         = CLOSURE-O1, CLOSURE-O2, CLOSURE-O3
+
+Independent closure RE-REVIEW — candidate ebd94ab0ebaba224b93aea4e16b9e72ea89d52bc
+  VERDICT                     = ACCEPT WITH NON-BLOCKING OBSERVATIONS
+  UNSUPPORTED MATERIAL CLAIMS = 0
+  CLOSURE-O1 = PASS   CLOSURE-O2 = PASS   CLOSURE-O3 = PASS
+  Findings raised             = N-P1, N-P2, N-P3, N-P4
+
+THIS candidate — N-P1 / N-P2 / N-P3 micro-precision child of ebd94ab0…
+  INDEPENDENTLY REVIEWED      = NO, as at the time of its submission
 ```
 
-The reviewer's count applies to candidate `a477ead7…`; this child candidate carries the three bounded
-governance-precision repairs it requested (O-1 criterion-4 locator, O-2 anchor-comparison wording, O-3
-this provenance separation) and has NOT itself been independently reviewed.
+Each count is attributed to the exact SHA it was issued against, so the statement does not go stale as
+the lineage grows — the defect recorded as **N-P3**. `a477ead7…` carried the CLOSURE-O1 (criterion-4
+locator), CLOSURE-O2 (anchor-comparison wording) and CLOSURE-O3 (provenance separation) observations;
+its child **`ebd94ab0…` WAS itself independently re-reviewed**, returning ACCEPT WITH NON-BLOCKING
+OBSERVATIONS with all three confirmed PASS and four further findings N-P1…N-P4. **This candidate carries
+only the N-P1/N-P2/N-P3 governance-prose repairs and has NOT itself received a focused re-review; it
+must not be cited as reviewed.**
+
+**N-P4 — reviewer-environment limitation, not a defect.** The reviewer could not re-execute the
+application suites because **Flask was unavailable in the reviewer's environment**. Not a product
+defect, not a closure defect, not a §19 criterion failure. R3-C §18 declares the execution precondition
+(Python 3.11.15, Flask 3.1.3, SQLite 3.45.1, gunicorn 26.1.0 on `PATH`) and every recorded suite result
+was measured in an environment satisfying it. **No repair is made and none is owed.**
+
+**This micro-precision repair is governance prose only:** `RUNTIME DELTA: 0`, `TEST DELTA: 0`,
+`PACK DELTA: 0`, `PIN DELTA: 0`; no `engine/`, `web/`, `tests/`, `domains/` or `scripts/` file changed,
+so the previously established suite evidence carries forward unchanged and is **not** re-run or
+re-claimed.
 
 ---
 
