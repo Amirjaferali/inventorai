@@ -41,8 +41,86 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — PVCG-R4-I: bounded FPC-02 / P4-2 IMPLEMENTATION of the authoritative R4
-conformance contract).** Base: `c3d9e2d98ba7b6c9b3a9d9d316e6d572122d8a8e` (PR #554 merge — PVCG-R4-C,
+**Status (current — PVCG-R4: AUTHORITATIVE CLOSURE; governance-only closure gate).** Base:
+`5ed09180c7b3bc1809785ed425d4820d5ffc71b7` (PR #555 merge — PVCG-R4-I, AUTHORITATIVE; live tip
+re-fetched from `origin/feature/atomic-json-session-persistence` and independently re-verified: first
+parent `c3d9e2d98ba7b6c9b3a9d9d316e6d572122d8a8e`, second parent
+`2bb472a07f9ac9177070c131c5c7f13ee3cd718a` — the exact Owner-accepted candidate — merge tree
+`506b2dd4a8994ced79ada0215e0f389db92b4e53` identical to the candidate tree, empty candidate→merge diff,
+zero later commits, working tree clean).
+
+**Disposition: `PVCG-R4 CLOSURE CANDIDATE — NOT AUTHORITATIVE UNTIL MERGED`.**
+`PVCG-R4-C AUTHORITATIVE: YES` (PR #554). `PVCG-R4-I AUTHORITATIVE: YES` (PR #555). The closure
+statements live in `docs/governance/PVCG_R4_FORMAL_CLOSURE_RECORD.md` and take effect only on merge and
+post-merge verification.
+
+**Why this gate exists, cited.** `PVCG_R4_C…CONTRACT.md` §21 requires as criterion **15** *"**a formal
+closure record merged**, exactly as R2 and R3 required"*, so the implementation merge alone does not
+close R4. **`CLOSURE REQUIRED BY CONTRACT: YES`.**
+
+**THE MATERIAL DISTINCTION.** `R4 correction mechanism / explicit route: IMPLEMENTED`.
+`Rendered correction UX: NOT DELIVERED IN THIS GATE`. `Deferred to: Phase-3C / FPC-02 (NOT STARTED /
+NOT AUTHORIZED)`. `POST /session/<sid>/correct` is reachable by an HTTP client but **NOT by clicking
+anything in the product** — `web/templates/` is byte-unchanged across the whole R4-I lineage. **No
+statement may claim users can now correct prior answers through the product UI.** Contract-conformant
+per §2.2 (disjunctive residual), §17 (*"expressible"*), §2.5 and §19.2 (UX increment deferred and out of
+scope), §21 (no rendered criterion) and §13 E-1 (constrains the affordance, does not create one).
+
+**All fifteen §21 criteria resolved; 1–14 re-measured on the merged tree.** Focused R4-I **63**; R1
+**26** (file byte-unchanged vs both `18a90f9b…` and `c3d9e2d9…`); R2 **189** + **566** (byte-unchanged);
+R3 **579** (byte-unchanged); P9 **54**; WPS-001 **20 passed / 1 skipped** (byte-unchanged); smoke
+**PASS**; full suite **4418 passed / 3 skipped / 1 xfailed / 0 failed**; §20 reconciliation
+**4355 + 63 = 4418** — the **4418** and **63** measured fresh on this merged tree, the **4355** baseline
+measured on `c3d9e2d9…` (the R4-C merge tip), **not** on `18a90f9b…`, carrying back only because PR #554
+was governance-only. Criterion 3 measured in both halves: the §3.2 scenario as written is unchanged
+**by design** (§6 C-1 forbids inferring a correction from wording — a committed test pins it), while the
+governed correction path clears **all seven** measured withdrawn-basis field paths — a strict superset
+of the four §3.2 named — and surfaces the marker. The §3.2 count of four is **not** rewritten.
+
+**Pin / pack.** `progression_loop.py` `3cbd7684…` → `c268cd63…`, all THREE ENFORCING locations carrying
+the new digest with disclosed notes preserving the prior one; kind (2) synchronized; kind (3) historical
+untouched (`PVCG_R2_C`, `PVCG_R2_FORMAL_CLOSURE_RECORD.md`, `PVCG_R3_C`,
+`PVCG_R3_FORMAL_CLOSURE_RECORD.md` all **0 files changed**). `PACK DELTA: 0`; `domain_rules.py`,
+`path_n_questions.py` and all five packs byte-identical; `record_store.py` byte-unchanged with **no
+`UPDATE` statement at all** — no schema migration.
+
+**Residuals OPEN / NON-BLOCKING, none silently repaired:** the **replay bound** (`MAX_ACCEPTED_ANSWER_
+REPLAY = 500`) — pre-existing, **NOT repaired**, reproduced before any edit and pinned by test; the fix
+was to the MESSAGE (now conditional), never to the bound, which stays a separately recorded unassigned
+observation; stateless answer-token semantics (reused unchanged); **NB-3 and NB-4 deliberately NOT
+addressed**; bundle extra-ref hygiene; the deferred rendered UX; and R3's N-2 / U-4, never admitted.
+
+**Scope.** Governance/documentation ONLY. `RUNTIME DELTA: 0`, `TEST DELTA: 0`, `PACK DELTA: 0`,
+`PIN DELTA: 0`; `main` not reconciled; `OWNER_DECISION_REGISTER.md` UNCHANGED.
+`RENDERED CORRECTION UX DELIVERED: NO`; `TDVP STARTED: NO`; `PVCG SATISFIED: NO`;
+`FULL MLC DEFINITION FROZEN: NO`; `DEPLOYMENT AUTHORIZED: NO`. **No successor gate is opened.**
+
+**Verdict provenance, kept distinct.** `UNSUPPORTED MATERIAL CLAIMS` is an INDEPENDENT-REVIEWER field:
+
+```
+Creator Grill on the first frozen closure candidate 08561f9e6eeee9f720994815a56875ca35cd460b:
+  VERDICT = REJECTED BY CREATOR GRILL
+  Defect  = CG-2, unsupported material claim: the 4355 baseline was attributed to a
+            re-measurement on 18a90f9b (the R3-closure merge). No suite was ever run
+            on that tip; it was measured on c3d9e2d9, the R4-C merge tip.
+  SHA preserved unchanged and unpublished as immutable evidence.
+
+Creator Grill on THIS candidate (the CG-2 child):
+  unsupported-material-claim finding = 0
+
+Independent review of this closure candidate : NOT YET PERFORMED,
+                                               as at the time of its submission
+```
+
+The rejected SHA was never amended, rebased, squashed or recreated. CG-2 is repaired by stating each
+figure's provenance separately, saying explicitly that the baseline was NOT measured on `18a90f9b…`, and
+giving the carry-over argument (PR #554 was governance-only, `TEST DELTA: 0`) rather than leaving it
+implicit. The arithmetic was correct throughout; the claim about where it came from was not.
+
+---
+
+**Superseded (retained as history) — PVCG-R4-I: bounded FPC-02 / P4-2 IMPLEMENTATION; MERGED AND
+AUTHORITATIVE via PR #555, merge `5ed09180…`.** Base: `c3d9e2d98ba7b6c9b3a9d9d316e6d572122d8a8e` (PR #554 merge — PVCG-R4-C,
 AUTHORITATIVE; live tip re-fetched and independently re-verified on all four merge criteria before any
 edit: first parent `18a90f9b0aa85d05317bed5aaa596e19716c6557`, second parent
 `d5286de76109e9dd8be52f49d72e59b063e2c823` — the exact Owner-accepted candidate — merge tree

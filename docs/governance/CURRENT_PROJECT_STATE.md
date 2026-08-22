@@ -2424,8 +2424,42 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
-- **PVCG-R4-I — BOUNDED FPC-02 / P4-2 IMPLEMENTATION of the authoritative R4 conformance contract
-  (implementation CANDIDATE), base `c3d9e2d98ba7b6c9b3a9d9d316e6d572122d8a8e`** (PR #554 merge —
+- **PVCG-R4 — AUTHORITATIVE CLOSURE (governance-only closure CANDIDATE), base
+  `5ed09180c7b3bc1809785ed425d4820d5ffc71b7`** (PR #555 merge — PVCG-R4-I, AUTHORITATIVE; live tip
+  re-fetched and independently re-verified: first parent `c3d9e2d9…`, second parent `2bb472a0…` — the
+  exact Owner-accepted candidate — merge tree `506b2dd4…` == candidate tree, empty candidate→merge diff,
+  zero later commits, clean tree). Disposition: **`PVCG-R4 CLOSURE CANDIDATE — NOT AUTHORITATIVE UNTIL
+  MERGED`**; **`PVCG-R4-C AUTHORITATIVE: YES`**, **`PVCG-R4-I AUTHORITATIVE: YES`**. **Why a separate
+  gate:** `PVCG_R4_C…CONTRACT.md` §21 criterion **15** requires *"a formal closure record merged,
+  exactly as R2 and R3 required"* — `CLOSURE REQUIRED BY CONTRACT: YES`. Closure statements live in
+  `docs/governance/PVCG_R4_FORMAL_CLOSURE_RECORD.md`. **THE MATERIAL DISTINCTION:** `R4 correction
+  route: IMPLEMENTED`; **`Rendered correction UX: NOT DELIVERED`**, deferred to **Phase-3C / FPC-02**
+  (NOT STARTED / NOT AUTHORIZED). `POST /session/<sid>/correct` is reachable by an HTTP client but **not
+  by clicking anything in the product** — `web/templates/` byte-unchanged across the whole lineage — so
+  **no statement may claim users can now correct prior answers through the product UI**; this is
+  contract-conformant per §2.2 / §17 / §2.5 / §19.2 / §21 / §13 E-1. **All fifteen §21 criteria
+  resolved, 1–14 re-measured on the merged tree:** focused R4-I **63**; R1 **26** (byte-unchanged); R2
+  **189** + **566** (byte-unchanged); R3 **579** (byte-unchanged); P9 **54**; WPS-001 **20 / 1 skipped**;
+  `UNIVERSAL GUARDRAIL SMOKE: PASS`; full suite **4418 passed / 3 skipped / 1 xfailed / 0 failed**; §20
+  reconciliation **4355 + 63 = 4418**. Criterion 3 measured in both halves — the §3.2 scenario as
+  written is unchanged **by design** (§6 C-1 forbids inferring a correction from wording), while the
+  governed path clears **all seven** measured withdrawn-basis field paths (a strict superset of the four
+  §3.2 named) and surfaces the marker; the §3.2 count of four is **not** rewritten. **Pin:** `3cbd7684…`
+  → **`c268cd63…`**, all THREE ENFORCING locations updated with disclosed notes preserving the prior
+  digest; historical occurrences untouched. `PACK DELTA: 0`; `record_store.py` byte-unchanged with **no
+  `UPDATE` statement** — no schema migration. **Residuals OPEN / NON-BLOCKING, none silently repaired:**
+  the **replay bound** (500) — pre-existing, **NOT repaired**, reproduced before any edit and pinned by
+  test, with the fix applied to the MESSAGE only; stateless answer-token semantics; **NB-3 / NB-4
+  deliberately NOT addressed**; bundle extra-ref hygiene; the deferred UX; R3's N-2 / U-4, never
+  admitted. `RENDERED CORRECTION UX DELIVERED: NO`; `TDVP STARTED: NO`; `PVCG SATISFIED: NO`;
+  `FULL MLC DEFINITION FROZEN: NO`; `DEPLOYMENT AUTHORIZED: NO`; `main` not reconciled;
+  `OWNER_DECISION_REGISTER.md` UNCHANGED. **No successor gate is opened.**
+
+- **PVCG-R4-I — BOUNDED FPC-02 / P4-2 IMPLEMENTATION — MERGED AND AUTHORITATIVE via PR #555, merge
+  `5ed09180…`; the text below is retained as the CANDIDATE-TIME historical record, base
+  `c3d9e2d98ba7b6c9b3a9d9d316e6d572122d8a8e`.** *Current truth: `PVCG-R4-I AUTHORITATIVE: YES` — the
+  candidate-time disposition line below is superseded by that merge and preserved unrewritten, per the
+  retained-history convention.* (PR #554 merge —
   PVCG-R4-C, AUTHORITATIVE; live tip re-fetched and independently re-verified on all four merge
   criteria: first parent `18a90f9b…`, second parent `d5286de7…` — the exact Owner-accepted candidate —
   merge tree `968ff38c…` == candidate tree, empty candidate→merge diff, zero later commits, clean
