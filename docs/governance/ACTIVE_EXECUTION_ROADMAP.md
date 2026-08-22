@@ -13579,3 +13579,97 @@ or Render path; `main` not reconciled; `OWNER_DECISION_REGISTER.md` UNCHANGED. `
 `MINIMUM LAUNCH-CONFORMANCE SET SATISFIED: NO`; `DEPLOYMENT AUTHORIZED: NO`. Next authorized
 workstream after this closure becomes authoritative: **PVCG-R3 — Semantic Stability**, still NOT
 STARTED and opened only by the Owner through the established workflow.
+
+---
+
+## PVCG-R3-C — Semantic Stability Contract / Diagnosis Gate (Owner-authorized governance-only CONTRACT CANDIDATE) — NOT authoritative unless merged; R3 implementation NOT authorized
+
+**Gate.** Owner-authorized **governance-only** creation of a bounded PVCG-R3 semantic-stability contract
+candidate on authoritative base `ca98099e29f6729c29e7612d67f9187dbd0dccb6` (PR #550 merge — PVCG-R2
+formal closure; live tip re-fetched and independently re-verified on all four merge criteria: first
+parent `1ce2c89630b9bdbfdedb15ee85eafa410a03632a`, second parent
+`25cf419c3b21201fc6403d4a53301281af7a2071`, merge tree `9bd7a1169072598b3804e16ee3bc04dea4faa313`,
+empty candidate→merge diff; zero commits after the tip; working tree clean). **CONTRACT CANDIDATE
+ONLY** — it becomes repository-authoritative only if independently reviewed, Owner-accepted, merged
+(create-a-merge-commit) and post-merge verified. It authorizes **no** R3 runtime change, no R4, no
+adaptive questioning, no LLM/NLP subsystem, no Render, no `main` reconciliation, no deployment.
+
+**Scope (governance docs only).** NEW
+`docs/governance/PVCG_R3_C_SEMANTIC_STABILITY_CONTRACT.md` plus this roadmap append and the two status
+surfaces. **ZERO** `engine/`, `web/`, `tests/`, `domains/`, `scripts/`, evidence-tree, generator, CI or
+deployment diff; **pin delta 0**; `OWNER_DECISION_REGISTER.md` UNCHANGED.
+
+**Defect reproduced before the contract was written (Creator-local executed evidence at the base tree;
+R3-I must re-measure independently).** Four findings:
+
+* **D-1 — eligibility divergence, 6 of 6 governed gaps.** From an identical fresh starting state and the
+  same served gap, a materially equivalent Arabic answer is not eligible where the English one is; the
+  served gap stays `OPEN` instead of moving to `PARTIAL`, in all six families. Cause: the 264 declared
+  entries of `engine/gap_relevance.py` are all Latin-script English.
+* **D-2 — the decisive finding: an Arabic-only inventor can never close a gap.** All 32
+  `_CAUSAL_STRUCTURE_PATTERNS`, all 15 `mechanical` and all 53 `electronics_electrical` substance
+  signals are ASCII, so `assess_response` returns `ASSERTED` unconditionally for pure Arabic; a gap
+  closes only on `REASONED` or `DEMONSTRATED`, and `DEMONSTRATED` is unreachable in the MVP. Executed
+  proof over eight iterations: Arabic `OPEN` at every iteration and never `CLOSED`; the English control
+  first `CLOSED` at iteration 2.
+* **D-3 — hidden side effect divergence.** The 18 `_ACKNOWLEDGED_UNKNOWN_MARKERS` are all ASCII, so an
+  Arabic inventor's explicitly stated unknown is never recorded in the acknowledged-unknown parallel
+  track, while its English equivalent is.
+* **D-4 — the divergence is not disclosed, and the disclosure that exists is English-only.** The R2
+  "not addressed" reason matches no specific `result_feedback` branch and falls to the conservative
+  unknown-reason fallback, which does not identify language as the cause and is not localized to
+  Arabic.
+
+The governed interaction genuinely accepts Arabic: `web/app.py` states there is NO ASCII-only rule and
+Arabic passes untouched, `web/ui_text.py` supports `en`/`ar`, and `web/templates/session.html` (D-P6-18)
+deliberately serves the canonical question in English in BOTH UI languages.
+
+**Negative diagnosis — recorded so R3-I does not manufacture work.** Latin/English normalization is
+ALREADY stable (8 of 8 variants identical) and R3 adds none. Arabic-internal normalization is NOT a
+divergence source today (7 of 7 Arabic variants identical) precisely because Arabic recognition is
+uniformly zero; it becomes material only conditionally, once an Arabic surface is registered.
+Unregistered English paraphrase remaining ineligible is expected lexical boundedness, not an R3 defect.
+A single embedded English token flipping an Arabic answer is a collision risk to guard, not a
+divergence to fix.
+
+**Contract content.** An executable, table-decidable definition of "materially equivalent" built on
+registered governed concepts (stable id, exactly one owning gap family, mandatory governed-question
+provenance, EN and AR surface sets, declared per-surface match mode) — never "the same meaning"; a
+ten-field material progression outcome set as the success condition, with the raw reason's **bytes**
+excluded and its **classification** included; a determinism requirement and an explicit
+no-LLM / no-embeddings / no-vector-store / no-external-NLP / no-probabilistic-classifier boundary; an
+evidence-gated Arabic normalization boundary (NFC authorized; tatweel, harakat and alef folding only on
+demonstrated necessity; teh-marbuta and yeh folding NOT authorized by default; no stemming, fuzzy
+matching, transliteration or edit distance); eleven mandatory adversarial categories; seven negative
+controls; full R1 and R2 preservation; and the T-1/T-1b coverage-adequacy discipline made binding.
+
+**Pin impact, stated rather than avoided.** `engine/gap_relevance.py` (`773a10ac…`) is **not byte-pinned
+anywhere**, so closing D-1 alone moves no pin. Closing D-2 cannot avoid the pin: the `ASSERTED` ceiling
+lives in `assess_response` inside `engine/progression_loop.py` (`07c9bff5…`), pinned in the three
+P9-MECH-I3/I4/I5 suites. The contract therefore permits **exactly one** engine pin to move
+(`engine/progression_loop.py`, reconciled in all three locations in the same candidate, RED first) and
+requires `engine/domain_rules.py`, `engine/path_n_questions.py` and **all five pack digests** to stay
+byte-identical — Arabic causal-structure and substance surfaces live in the new unpinned R3 registry
+module, never in the packs. **No pin is changed by this candidate.**
+
+**R2 residuals classified as R3 inputs, not repair scope.** Directly material: lexical cross-talk (a
+single sentence already activates 2 families), the broad `"does not"`/`"doesn't"` phrases (their Arabic
+counterparts are far broader and must not be mirrored naively), and substring/token asymmetry (Arabic
+clitic attachment makes this the highest false-positive risk). Adjacent/out of scope: WS1 helper
+coupling, the acknowledged-unknown *fixture* shift (distinct from the newly measured D-3), and the
+English `battery` surface. No action: `test_B1`.
+
+**Governance-truth disclosure carried in the contract.** At this tip **no committed document defines
+PVCG or enumerates the Minimum Launch-Conformance Set**; the claim that R3 belongs to that Set is
+classified `[OWNER]`, not `[REPO]`, exactly as R2-C classified the equivalent claim for R2. Whether the
+Set should be committed as its own document is recorded `[OPEN]` and is not resolved here.
+
+**Boundary / status after this entry.** `PVCG-R1 AUTHORITATIVE: YES`; `PVCG-R2-C AUTHORITATIVE: YES`;
+`PVCG-R2-I AUTHORITATIVE: YES`; `PVCG-R2 AUTHORITATIVELY CLOSED: YES`; `PVCG-R3 CONTRACT CANDIDATE:
+FROZEN / NOT AUTHORITATIVE UNTIL MERGED`; `PVCG-R3 IMPLEMENTATION STARTED: NO`; `PVCG-R4 IMPLEMENTATION
+STARTED: NO`; `FULL ADAPTIVE QUESTIONING ACTIVATED: NO`; `LLM/NLP SUBSYSTEM ADDED: NO`; `RUNTIME
+MODIFIED: NO`; `TESTS MODIFIED: NO`; `RENDER REOPENED: NO`; `MAIN RECONCILIATION STARTED: NO`; `PVCG
+SATISFIED: NO`; `MINIMUM LAUNCH-CONFORMANCE SET SATISFIED: NO`; `DEPLOYMENT AUTHORIZED: NO`. WS10, WS11
+and WS12 remain dormant and unwired; the six governed gap types remain frozen in the engine; no domain
+is activated, recognised differently, or re-scoped. PVCG-R3-I requires this contract to be authoritative
+**and** a separate explicit Owner execution authorization.

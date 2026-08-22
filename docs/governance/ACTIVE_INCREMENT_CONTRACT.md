@@ -41,16 +41,64 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — PVCG-R2: AUTHORITATIVE CLOSURE; governance-only closure gate).** Base:
+**Status (current — PVCG-R3-C: SEMANTIC STABILITY CONTRACT / DIAGNOSIS GATE; governance-only).** Base:
+`ca98099e29f6729c29e7612d67f9187dbd0dccb6` (PR #550 merge — PVCG-R2 formal closure; live tip re-fetched
+from `origin/feature/atomic-json-session-persistence` and independently re-verified on all four merge
+criteria: first parent `1ce2c89630b9bdbfdedb15ee85eafa410a03632a`, second parent
+`25cf419c3b21201fc6403d4a53301281af7a2071`, merge tree `9bd7a1169072598b3804e16ee3bc04dea4faa313`,
+empty candidate→merge diff; zero commits after the tip; working tree clean).
+
+**Disposition: `PVCG-R3-C CONTRACT CANDIDATE — NOT AUTHORITATIVE UNTIL MERGED`.**
+`PVCG-R2 AUTHORITATIVELY CLOSED: YES` (PR #550). The R3 contract lives at
+`docs/governance/PVCG_R3_C_SEMANTIC_STABILITY_CONTRACT.md` and authorizes nothing until it is merged
+and post-merge verified; `PVCG-R3-I` additionally requires a separate explicit Owner execution
+authorization.
+
+**Defect proven before the contract was written** (Creator-local executed evidence at the base tree;
+R3-I must re-measure independently): **D-1** eligibility diverges in **6 of 6** governed gaps between
+materially equivalent EN/AR answers from an identical starting state (served gap stays `OPEN` instead
+of `PARTIAL`); **D-2**, the decisive finding, every causal-structure pattern and every mechanical and
+electronics substance signal is ASCII, so `assess_response` returns `ASSERTED` unconditionally for pure
+Arabic and — because a gap closes only on `REASONED`/`DEMONSTRATED` and `DEMONSTRATED` is unreachable in
+the MVP — **an Arabic-only inventor can never close a gap** (eight iterations `OPEN`, English control
+`CLOSED` at iteration 2); **D-3** the ASCII-only acknowledged-unknown markers mean an Arabic-stated
+unknown is never recorded, a hidden side-effect divergence; **D-4** the R2 "not addressed" reason falls
+to the conservative unknown-reason `result_feedback` fallback and is English-only, so the divergence is
+not even disclosed. Recorded negative diagnosis: EN normalization is already stable (8/8) and R3 adds
+none; AR-internal normalization is not a divergence source today (7/7) and becomes material only once an
+Arabic surface is registered; unregistered EN paraphrase remaining ineligible is expected lexical
+boundedness, not a defect.
+
+**Pin impact.** `engine/gap_relevance.py` is **not byte-pinned anywhere**; `engine/progression_loop.py`
+(`07c9bff5…`) is pinned in three P9-MECH suites and cannot be avoided when closing D-2. The contract
+permits exactly one engine pin to move, reconciled in all three locations in the same candidate with RED
+first, and requires `engine/domain_rules.py`, `engine/path_n_questions.py` and all five pack digests to
+remain byte-identical. **Pin delta in this candidate: 0.**
+
+**Scope.** Governance/documentation ONLY — one new contract plus the roadmap append and the two status
+surfaces. No `engine/`, `web/`, `tests/`, `domains/`, `scripts/`, evidence-tree, generator, CI,
+deployment or Render path; `main` not reconciled; `OWNER_DECISION_REGISTER.md` UNCHANGED.
+`PVCG-R1 AUTHORITATIVE: YES`; `PVCG-R2 AUTHORITATIVELY CLOSED: YES`; `PVCG-R3 IMPLEMENTATION STARTED:
+NO`; `PVCG-R4 IMPLEMENTATION STARTED: NO`; `LLM/NLP SUBSYSTEM ADDED: NO`; `RUNTIME MODIFIED: NO`;
+`TESTS MODIFIED: NO`; `PVCG SATISFIED: NO`; `MINIMUM LAUNCH-CONFORMANCE SET SATISFIED: NO`;
+`DEPLOYMENT AUTHORIZED: NO`. `UNSUPPORTED MATERIAL CLAIMS: 0`.
+
+---
+
+**Superseded (retained as history) — PVCG-R2: AUTHORITATIVE CLOSURE; governance-only closure gate;
+MERGED AND AUTHORITATIVE via PR #550, merge `ca98099e…`.** Base:
 `1ce2c89630b9bdbfdedb15ee85eafa410a03632a` (PR #549 merge — PVCG-R2-I, AUTHORITATIVE; re-resolved live
 from `origin/feature/atomic-json-session-persistence` and independently re-verified: first parent
 `4d746d15…`, second parent `60cc5f48…`, merge tree `476629b6…`, empty candidate→merge diff, zero later
 commits).
 
-**Disposition: `PVCG-R2 CLOSURE CANDIDATE — NOT AUTHORITATIVE UNTIL MERGED`.**
+**Disposition: `PVCG-R2 AUTHORITATIVELY CLOSED: YES`** — the closure candidate
+`25cf419c3b21201fc6403d4a53301281af7a2071` was Owner-accepted and merged via PR #550, merge
+`ca98099e29f6729c29e7612d67f9187dbd0dccb6`, post-merge verified on all four criteria (first parent
+`1ce2c896…`, second parent `25cf419c…`, merge tree `9bd7a116…` == candidate tree, empty
+candidate→merge diff; authoritative scope 4 governance files / +332 / -1).
 `PVCG-R2-C AUTHORITATIVE: YES`. `PVCG-R2-I AUTHORITATIVE: YES`. The closure statements live in
-`docs/governance/PVCG_R2_FORMAL_CLOSURE_RECORD.md` and take effect only on merge and post-merge
-verification.
+`docs/governance/PVCG_R2_FORMAL_CLOSURE_RECORD.md` §9 and are now in force.
 
 **Scope.** Governance/documentation ONLY. No `engine/`, `web/`, `tests/`, `domains/`, `scripts/`,
 evidence-tree, generator, deployment or Render path; `main` not reconciled;
