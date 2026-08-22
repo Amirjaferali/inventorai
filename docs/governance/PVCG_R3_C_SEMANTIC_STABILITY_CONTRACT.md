@@ -488,7 +488,8 @@ Measured at the base SHA **[REPO]** / **[EXEC]**:
 | `engine/progression_loop.py` | `07c9bff500662de54ac0f7388c1f2e13a721549c6f4943cde865b98a22c525d6` | **3** files: `test_p9_mech_i3_signal_quality.py`, `test_p9_mech_i4_boundary_corpus.py`, `test_p9_mech_i5_question_sufficiency.py` |
 | `engine/domain_rules.py` | `0e47326ad92a6e5b0a63eb06db9e3ad96ae72c9aaf64471dd21621265b1db1ab` | the same 3 files |
 | `engine/path_n_questions.py` | `a1a682d38293defd4b351e6238aeb870b4f765eaf3fc0f105c4932f75286ce7f` | I5 |
-| all five `domains/*/domain.json` | see `_FROZEN_PACK_SHA256` in I3/I4 | I3 (4 packs) / I4 (5 packs) |
+| all five `domains/*/domain.json` | see `_FROZEN_PACK_SHA256` in I3/I4 | **I3 pins 4** (`electronics_electrical`, `medical_device`, `software`, `iot_electronics` — deliberately **not** `mechanical`) / **I4 pins all 5** (adds `mechanical` `901dd718…`) |
+| mechanical pack fields outside the two authorized signal lists | `_FROZEN_MECH_FIELDS` in I3 — `gap_type_mappings` `857820ed…`, `aliases` `bc7f35e4…` | I3 |
 | `engine/gap_relevance.py` | `773a10acb31dc1595a35540b1431346858ca98a2676b711e504ffcd19bb7dbfd` | **NOT byte-pinned anywhere** — a repository-wide search for this digest returns no match |
 
 **§13.1 The consequence, stated plainly.** Closing **D-1** (eligibility) can be done inside
@@ -502,10 +503,12 @@ movement, and this contract does not pretend otherwise.**
 * **Exactly one** engine pin may move: `engine/progression_loop.py`. Its new digest must be reconciled
   in **all three** pin locations **in the same candidate**, simultaneously and disclosed — never one at
   a time, never silently.
-* `engine/domain_rules.py`, `engine/path_n_questions.py` and **all five pack digests MUST remain
-  byte-identical.** The Arabic causal-structure and substance surfaces therefore live in the new
-  unpinned R3 registry module and are *consulted* by `progression_loop.py`; they are **not** added to
-  the packs and **not** added to `domain_rules.py`.
+* `engine/domain_rules.py`, `engine/path_n_questions.py`, **all five pack digests** and I3's
+  `_FROZEN_MECH_FIELDS` (`gap_type_mappings`, `aliases`) **MUST remain byte-identical.** The Arabic
+  causal-structure and substance surfaces therefore live in the new unpinned R3 registry module and are
+  *consulted* by `progression_loop.py`; they are **not** added to the packs and **not** added to
+  `domain_rules.py`. A pack edit of any kind is outside R3 and would additionally re-open pack-pin and
+  domain-capability questions this contract does not authorize.
 * RED must be established **before** any pin is touched, at the authoritative base, and must
   demonstrate the §7.1 divergence — not merely a digest mismatch. A pin reconciliation whose only
   justification is "the file changed" is not acceptable.
@@ -607,9 +610,19 @@ R3-C authorizes none of the following, and R3-I must not introduce any of them:
 
 The full suite must be reported with its **environment precondition stated**, because the figure is not
 comparable otherwise: Python 3.11.15, Flask 3.1.3, SQLite 3.45.1, and **gunicorn resolvable on `PATH`**
-so the serving-stack access-log tests EXECUTE rather than SKIP. The authoritative comparison baseline at
-the base SHA is **3776 passed / 3 skipped / 1 xfailed / 0 failed**
-(`PVCG_R2_FORMAL_CLOSURE_RECORD.md` §5) **[REPO]**. Any delta must be reconciled test-by-test with a
+so the serving-stack access-log tests EXECUTE rather than SKIP.
+
+**Baseline provenance, stated precisely rather than loosely.** The figure **3776 passed / 3 skipped /
+1 xfailed / 0 failed** is recorded in `PVCG_R2_FORMAL_CLOSURE_RECORD.md` §5 **[REPO]**, and that
+record's own §1 shows it was executed against the tip **`1ce2c896…`** / the frozen closure candidate
+`25cf419c…` — **not** against this contract's base SHA `ca98099e…` **[REPO]**. It is nonetheless the
+correct comparison baseline for this lineage, because `ca98099e…` is the SHA-preserving merge of
+`25cf419c…` whose entire delta over `1ce2c896…` is **4 governance documents, +332 / -1, with zero
+`engine/`, `web/`, `tests/`, `domains/` or `scripts/` change** (independently re-verified this gate)
+**[REPO]**. R3-I must nevertheless **re-measure the full suite itself on its own frozen state** rather
+than inherit this number.
+
+Any delta must be reconciled test-by-test with a
 stated cause; an unexplained delta is a rejection condition. A skipped serving-stack test reported as a
 pass, or a lower total reported without the precondition, is a governance-truth defect.
 
