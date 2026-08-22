@@ -699,9 +699,25 @@ class TestNB1TruthfulReplayFailureMessage:
         low = msg.lower()
         assert "saved" in low                      # recorded durably
         assert "not changed yet" in low            # live state untouched
-        assert "next time this project loads" in low   # applied on next load
         for claim in ("undone", "reverted", "rolled back", "discarded"):
             assert claim not in low, "no durable rollback may be claimed"
+
+    def test_the_message_makes_no_unconditional_next_load_promise(self, client, monkeypatch):
+        """The promise must be CONDITIONAL. A project already at
+        MAX_ACCEPTED_ANSWER_REPLAY crosses the bound when the correction append
+        takes the durable stream to limit + 1, after which EVERY reconstruction
+        raises — so 'will be applied the next time this project loads' would be
+        false there. See TestNB1cReplayBoundTruth for the measured edge."""
+        sid, _, _, _, _ = self._forced_replay_failure(client, monkeypatch)
+        msg = SESSION_STORE[sid]["_answer_error"]
+        low = msg.lower()
+        for absolute in ("next time this project loads", "next load",
+                         "will be applied", "will be applied on"):
+            assert absolute not in low, (
+                "an unconditional next-load promise is not true at the "
+                "replay-bound crossing: %r" % absolute)
+        assert "whenever" in low, "the promise must be conditional"
+        assert "rebuilt successfully" in low
 
     def test_the_english_message_renders_to_an_english_reader(
             self, client, monkeypatch):
@@ -825,3 +841,159 @@ class TestNB2CorrectionTokenParity:
         live = SESSION_STORE[sid]["state"]
         if live.known_mechanism is not None:
             assert live.known_mechanism.content != MECH_STRONG
+
+
+# =========================================================================
+# NB-1c — the REPLAY-BOUND crossing, measured. The message must stay TRUE here
+# too. The bound itself is PRE-EXISTING behaviour and is NOT repaired: it is
+# checked against the FULL persisted stream on purpose (§8 RP-9 — a correction
+# must never become a way to get UNDER the limit), so the correct fix is a
+# truthful message, not a moved bound.
+# =========================================================================
+class TestNB1cReplayBoundTruth:
+
+    def _project_at_the_bound(self, limit):
+        """A durable project holding exactly `limit` accepted answers."""
+        import os, tempfile
+        from engine.record_store import SqliteRecordStore
+        from engine.record_contract import ProjectRecordContract
+        from engine.session_reconstruction import RECONSTRUCTION_VERSION
+        store = SqliteRecordStore(os.path.join(tempfile.mkdtemp(), "bound.db"))
+        live = IdeaState(idea_id="bound")
+        pid = store.create_project(
+            ProjectRecordContract.from_state(live),
+            reconstruction_inputs={
+                "seed_idea_text": "An ESP32 circuit with a voltage sensor.",
+                "confirmed_domain": "electronics_electrical", "path": "N",
+                "engine_contract_version": RECONSTRUCTION_VERSION})
+        for i in range(limit):
+            r = live.record_interaction(
+                "answered", "The circuit works because part %d moves." % i,
+                gap_context=MECHANISM_COMPLETENESS, iteration=i)
+            store.append_record(pid, r, idempotency_key="k%d" % i)
+        return store, pid, live
+
+    def test_a_correction_at_the_bound_is_never_applied_by_any_later_load(
+            self, monkeypatch):
+        import engine.session_reconstruction as sr
+        from engine.session_reconstruction import ReconstructionReplayLimitError
+        LIMIT = 6
+        monkeypatch.setattr(sr, "MAX_ACCEPTED_ANSWER_REPLAY", LIMIT)
+        store, pid, live = self._project_at_the_bound(LIMIT)
+        # Precondition: AT the bound reconstruction still succeeds.
+        assert sr.reconstruct_readonly_state(store, pid).review.level == 1
+        # The correction append takes the durable stream to LIMIT + 1.
+        target = live.assertions[0].record_id
+        c = live.record_interaction(
+            "answered", "The mechanism is different because the lever moves.",
+            gap_context=MECHANISM_COMPLETENESS, iteration=999,
+            supersedes=[target])
+        store.append_record(pid, c, idempotency_key="corr")
+        assert len(store.load_accepted_answer_evidence(pid)) == LIMIT + 1
+        # EVERY subsequent load fails — the correction is never applied.
+        for _ in range(3):
+            with pytest.raises(ReconstructionReplayLimitError):
+                sr.reconstruct_readonly_state(store, pid)
+        # ... and the correction is still durably present and retained.
+        by_id = {r.record_id: r for r in store.load_accepted_answer_evidence(pid)}
+        assert target in by_id and by_id[target].superseded_by is not None
+
+    def test_the_message_remains_factually_true_in_that_case(self, monkeypatch):
+        """Every clause of the message must hold at the replay-bound crossing."""
+        import engine.session_reconstruction as sr
+        from engine.session_reconstruction import ReconstructionReplayLimitError
+        LIMIT = 6
+        monkeypatch.setattr(sr, "MAX_ACCEPTED_ANSWER_REPLAY", LIMIT)
+        store, pid, live = self._project_at_the_bound(LIMIT)
+        target = live.assertions[0].record_id
+        c = live.record_interaction(
+            "answered", "The mechanism is different because the lever moves.",
+            gap_context=MECHANISM_COMPLETENESS, iteration=999,
+            supersedes=[target])
+        store.append_record(pid, c, idempotency_key="corr")
+        msg = webapp.CORRECTION_SAVED_NOT_YET_APPLIED_MESSAGE
+        # "was saved" — TRUE: the record is durably present.
+        assert c.record_id in {r.record_id
+                               for r in store.load_accepted_answer_evidence(pid)}
+        assert "saved" in msg.lower()
+        # "has not changed yet" — TRUE: no reconstruction succeeded.
+        with pytest.raises(ReconstructionReplayLimitError):
+            sr.reconstruct_readonly_state(store, pid)
+        assert "not changed yet" in msg.lower()
+        # The forward-looking clause is CONDITIONAL, so it is not falsified by
+        # a project that can never be rebuilt.
+        assert "whenever" in msg.lower()
+        assert "next time this project loads" not in msg.lower()
+
+    def test_the_replay_bound_itself_is_untouched(self):
+        """The pre-existing bound is NOT repaired by this gate."""
+        from engine.session_reconstruction import MAX_ACCEPTED_ANSWER_REPLAY
+        assert MAX_ACCEPTED_ANSWER_REPLAY == 500
+        import inspect, engine.session_reconstruction as sr
+        src = inspect.getsource(sr._reconstruct)
+        assert "len(evidence) > MAX_ACCEPTED_ANSWER_REPLAY" in src, (
+            "the bound is still checked against the FULL persisted stream "
+            "(§8 RP-9), so a correction can never get under it")
+
+
+# =========================================================================
+# USER REACHABILITY — classification A. The authoritative contract requires an
+# EXPRESSIBLE correction, not a rendered UI, and defers the presentation
+# increment to a separate UX gate. These tests pin that reading to the
+# contract text so a later reader cannot silently re-interpret it.
+# =========================================================================
+class TestUserReachabilityClassificationA:
+
+    CONTRACT = ("docs/governance/"
+                "PVCG_R4_C_USER_CORRECTION_AND_DETERMINISTIC_INVALIDATION_CONTRACT.md")
+
+    def _contract(self):
+        with open(self.CONTRACT, encoding="utf-8") as fh:
+            return fh.read()
+
+    def test_the_residual_is_disjunctive_route_form_template_or_api(self):
+        text = " ".join(self._contract().split())
+        assert ("No route, form, template or API accepts a correction" in text), (
+            "R4-RES-1 is stated disjunctively, so a route closes it")
+
+    def test_the_required_red_shape_asks_for_expressible_not_rendered(self):
+        text = " ".join(self._contract().split())
+        assert ("an explicit correction of a named prior accepted record is "
+                "expressible and durably recorded" in text)
+
+    def test_the_presentation_increment_is_explicitly_deferred(self):
+        text = " ".join(self._contract().split())
+        assert ('presentation increment (**Phase-3C / FPC-02**, a UX gate of '
+                'its own)' in text), "the UX increment is deferred, not required here"
+
+    def test_the_ux_increment_is_explicitly_out_of_scope(self):
+        text = " ".join(self._contract().split())
+        assert 'the in-session "What changed?" UX increment' in text
+
+    def test_no_closure_criterion_requires_a_rendered_affordance(self):
+        text = self._contract()
+        start = text.index("## §21. CLOSURE CRITERIA FOR PVCG-R4")
+        end = text.index("## §22.")
+        criteria = text[start:end].lower()
+        for token in ("rendered", "template", "affordance", "user interface"):
+            assert token not in criteria, (
+                "closure criterion %r would make a UI mandatory" % token)
+
+    def test_the_bilingual_clause_constrains_the_affordance_it_does_not_create_one(self):
+        text = " ".join(self._contract().split())
+        assert ("The correction affordance, its refusal behaviour, its "
+                "withdrawal marker, and the resulting replayed state MUST be "
+                "**equivalent for English and Arabic**" in text), (
+            "E-1 requires EN/AR equivalence OF the affordance; it does not "
+            "require that the affordance be a rendered form")
+
+    def test_the_route_level_affordance_is_bilingually_equivalent(self, client):
+        """E-1 is satisfied at route level: every correction message the route
+        can emit is localised on the path that actually renders it."""
+        from web import ui_text
+        for msg in (webapp.CORRECTION_NOT_APPLIED_MESSAGE,
+                    webapp.CORRECTION_INCOMPLETE_MESSAGE,
+                    webapp.CORRECTION_SAVED_NOT_YET_APPLIED_MESSAGE):
+            assert ui_text.localize_message(msg, "ar") != msg
+        assert ui_text.localize_deep(webapp.CORRECTION_APPLIED_ACK, "ar") != \
+            webapp.CORRECTION_APPLIED_ACK

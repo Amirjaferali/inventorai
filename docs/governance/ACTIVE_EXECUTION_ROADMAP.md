@@ -14348,12 +14348,12 @@ the retained PVCG-R3-I bullet in `CURRENT_PROJECT_STATE.md`. **`PACK DELTA: 0`**
 `domains/*/domain.json` byte-identical; the correction path is domain-neutral and a committed test
 asserts it contains no domain token.
 
-**Verification on the frozen candidate, measured — not carried.** Focused R4-I **52 passed**;
+**Verification on the frozen candidate, measured — not carried.** Focused R4-I **63 passed**;
 PVCG-R1 **26 passed** with its test file byte-unchanged; R2 behavioural **189 passed** and R2 marker
 coverage **566 passed**, both files byte-unchanged; R3 focused **579 passed**, file byte-unchanged;
-P9 pin suites **54 passed**; `UNIVERSAL GUARDRAIL SMOKE: PASS`; full suite **4407 passed / 3 skipped /
+P9 pin suites **54 passed**; `UNIVERSAL GUARDRAIL SMOKE: PASS`; full suite **4418 passed / 3 skipped /
 1 xfailed / 0 failed** under the §18 precondition (Python 3.11.15, Flask 3.1.3, SQLite 3.45.1,
-gunicorn 26.1.0 on `PATH`). **§20 reconciliation: baseline 4355 + 52 = 4407**, exactly the one new R4-I
+gunicorn 26.1.0 on `PATH`). **§20 reconciliation: baseline 4355 + 63 = 4418**, exactly the one new R4-I
 test file and nothing else. The baseline `4355 / 3 / 1 / 0` was itself re-measured on this candidate's
 own base tip in this session rather than carried from prose.
 
@@ -14372,8 +14372,8 @@ with two that exercise the real path — one per-helper, one end-to-end through 
 UI language actually switched (using the route's real `lang` field). **Guard-removal proof:** with the
 `_DEEP_AR` registration temporarily removed, both new tests FAIL; with it restored, both pass — the
 coverage is real, not vacuous. Focused R4-I stood at **38** at that point, with the §20 reconciliation
-at **4355 + 38 = 4393** — stated as the CG-1 stage's own figures; the NB-1/NB-2 microrepair below
-supersedes them with the current **52** / **4355 + 52 = 4407**.
+at **4355 + 38 = 4393** — stated as the CG-1 stage's own figures; later stages below supersede them,
+and the CURRENT figures are the final microgate's **63** / **4355 + 63 = 4418**.
 
 **NB-1 / NB-2 microrepair (Owner-directed, bounded).** The Independent External Review of
 `4dc7c3290a8bf9b72a87ad017e1e94181f6b9799` returned **ACCEPT WITH NON-BLOCKING OBSERVATIONS**,
@@ -14405,10 +14405,50 @@ session-scoped POST route was altered.**
 
 **Guard-removal proof for both.** With the token check removed, five NB-2 tests FAIL; with the message
 reverted to the old wording, three NB-1 tests FAIL; with both repairs in place all fourteen pass — the
-coverage is real, not vacuous. Focused R4-I therefore stands at **52**, and the §20 reconciliation at
-**4355 + 52 = 4407**. `PIN DELTA from 4dc7c329: 0` — `engine/progression_loop.py` is untouched by this
+coverage is real, not vacuous. Focused R4-I stood at **52** at that point, with the §20 reconciliation at **4355 + 52 = 4407** —
+the NB-1/NB-2 stage's own figures; the final microgate below supersedes them with **63** / **4418**. `PIN DELTA from 4dc7c329: 0` — `engine/progression_loop.py` is untouched by this
 microrepair and its digest remains `c268cd63…`; `PACK DELTA: 0`; `DOMAIN-RULE DELTA: 0`. Exactly three
 paths changed: `web/app.py`, `web/ui_text.py`, `tests/test_pvcg_r4i_correction_and_invalidation.py`.
+
+**Final truthfulness + user-reachability microgate (Owner-directed, wording-only).** The ultra-focused
+Independent Review of `fc45d029926d7842bbea5440339c4bac9625613a` returned **ACCEPT WITH NON-BLOCKING
+OBSERVATIONS**, `UNSUPPORTED MATERIAL CLAIMS = 0`, `SAFE FOR OWNER EXACT-SHA ACCEPTANCE: YES`, and
+raised two items the Owner required resolved before acceptance. `fc45d029…` is preserved unchanged and
+unpublished as immutable evidence (branch `pvcg-r4i-reviewed-fc45d029`), never amended, rebased,
+squashed or recreated.
+
+**(1) The unconditional next-load promise was false at the replay-bound crossing — repaired in wording
+only.** The reviewer's edge was **independently reproduced before any edit**: with the durable stream
+already at `MAX_ACCEPTED_ANSWER_REPLAY`, the correction append takes it to limit + 1 and **every**
+subsequent reconstruction raises `ReconstructionReplayLimitError`, so the correction is never applied
+and *"will be applied the next time this project loads"* was untrue there. **The replay bound is NOT
+repaired** — it is checked against the FULL persisted stream on purpose (§8 RP-9: a correction must
+never become a way to get UNDER the limit), so the bound is contract-correct and it is the MESSAGE that
+must tell the truth. The closing clause is now **conditional**: *"The saved correction will be reflected
+whenever this project can be rebuilt successfully."* Every clause holds under both a transient replay
+failure and the replay-bound crossing; the durable append is still disclosed as committed, and no
+rollback is claimed. The pre-existing replay-bound behaviour remains a **separately recorded
+pre-existing observation**, unassigned by this gate.
+
+**(2) User reachability — CLASSIFICATION A: ROUTE/API IS SUFFICIENT UNDER THE CURRENT CONTRACT; NO UI
+ADDED.** Determined from authoritative text, not inferred. **§2.2 R4-RES-1** states the residual
+disjunctively — *"No **route, form, template or API** accepts a correction"* — so a route closes it.
+**§17** requires that a correction be *"**expressible** and durably recorded"*, not rendered. **§2.5
+DEFERRED** places the in-session *"What changed?"* presentation increment with **Phase-3C / FPC-02**,
+*"a UX gate of its own"*, and **§19.2** lists that same UX increment as **out of scope**. **§21** contains
+no closure criterion mentioning a rendered affordance, and the contract has **no** user-visible-behaviour
+section (unlike R3-C §8). **§13 E-1** constrains *"the correction affordance"* to EN/AR equivalence — it
+governs whatever affordance exists and does not create a requirement for a rendered one; that
+equivalence is satisfied at route level and proven for all four messages on their real render paths.
+Adding UI here would enter a gate the contract explicitly defers, so none was added. Seven committed
+tests pin this reading to the contract text so it cannot be silently re-interpreted.
+
+**Guard-removal proof.** Restoring the unconditional promise makes three tests FAIL, including the
+replay-bound truth test; with the conditional wording all pass. Focused R4-I stands at **63**, and the
+§20 reconciliation at **4355 + 63 = 4418**. **Wording-only:** `engine/` delta from `fc45d029…` is **0
+files**; `PIN DELTA: 0` (`engine/progression_loop.py` untouched, digest still `c268cd63…`);
+`PACK DELTA: 0`; `DOMAIN-RULE DELTA: 0`. Exactly three paths changed: `web/app.py`, `web/ui_text.py`,
+`tests/test_pvcg_r4i_correction_and_invalidation.py`.
 
 **Scope.** `PVCG-R4 AUTHORITATIVELY SATISFIED: NO`; `FPC-02 / P4-2 REMAINS IMPLEMENTATION OWNER: YES`;
 `PVCG-R4 REMAINS CONFORMANCE OWNER ONLY: YES`; `TARGETED PARTIAL INVALIDATION AUTHORIZED: NO`;

@@ -108,8 +108,9 @@ _MESSAGE_KEYS = {
     # `_answer_error` slot, which `show_session` localises with
     # `localize_message`, so it is registered HERE — the map that path uses.
     ("Your correction was saved, but the page could not be updated just now. "
-     "What you see below has not changed yet. Your correction will be applied "
-     "the next time this project loads."): "UI_B_CORRECT_004",
+     "What you see below has not changed yet. The saved correction will be "
+     "reflected whenever this project can be rebuilt successfully."):
+        "UI_B_CORRECT_004",
 }
 
 
@@ -468,13 +469,18 @@ UI_STRINGS = {
         "en": "Select which of your earlier answers to withdraw, and enter the corrected answer.",
         "ar": "اختر أي إجابة سابقة تريد سحبها، ثم اكتب الإجابة المصحّحة.",
     },
+    # The closing clause is deliberately CONDITIONAL ("whenever ... can be"),
+    # never "on the next load": a project at MAX_ACCEPTED_ANSWER_REPLAY crosses
+    # the bound when the correction append takes the stream to limit + 1, and
+    # every later reconstruction then fails, so an unconditional promise would
+    # be false. Both languages carry the same conditional force.
     "UI_B_CORRECT_004": {
         "en": ("Your correction was saved, but the page could not be updated just now. "
-               "What you see below has not changed yet. Your correction will be applied "
-               "the next time this project loads."),
+               "What you see below has not changed yet. The saved correction will be "
+               "reflected whenever this project can be rebuilt successfully."),
         "ar": ("تم حفظ تصحيحك، لكن تعذّر تحديث الصفحة الآن. "
-               "وما تراه بالأسفل لم يتغيّر بعد. وسيُطبَّق تصحيحك "
-               "عند تحميل المشروع في المرة القادمة."),
+               "وما تراه بالأسفل لم يتغيّر بعد. وسيظهر أثر التصحيح المحفوظ "
+               "متى أمكن إعادة بناء المشروع بنجاح."),
     },
     "UI_B_CORRECT_003": {
         "en": ("Your earlier answer was withdrawn and kept in the project history. "

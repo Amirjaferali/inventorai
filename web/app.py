@@ -798,8 +798,8 @@ CORRECTION_INCOMPLETE_MESSAGE = (
 # successful load applies it through reconstruction (§9 F-4).
 CORRECTION_SAVED_NOT_YET_APPLIED_MESSAGE = (
     "Your correction was saved, but the page could not be updated just now. "
-    "What you see below has not changed yet. Your correction will be applied "
-    "the next time this project loads."
+    "What you see below has not changed yet. The saved correction will be "
+    "reflected whenever this project can be rebuilt successfully."
 )
 
 CORRECTION_APPLIED_ACK = (
@@ -2761,10 +2761,25 @@ def correct_answer(sid):
         #
         # NB-1: the durable append ALREADY committed above, so this path must
         # NOT say "Nothing was changed" — that would be factually false about
-        # accepted-source history. The message states what is true: the
-        # correction was saved, the live view was not updated, and it will be
-        # applied on the next successful load. No durable rollback is claimed,
-        # and the contract's persistence ordering is unchanged.
+        # accepted-source history.
+        #
+        # The promise is deliberately CONDITIONAL, not "on the next load". A
+        # project already sitting at MAX_ACCEPTED_ANSWER_REPLAY crosses the
+        # bound when the correction append takes the durable stream to
+        # limit + 1, and EVERY subsequent reconstruction then raises
+        # ReconstructionReplayLimitError — so an unconditional next-load
+        # promise would be false there. The bound is checked against the FULL
+        # persisted stream on purpose (§8 RP-9: a correction must not become a
+        # way to get UNDER the limit), so this is contract-correct behaviour
+        # and it is the MESSAGE that must tell the truth, not the bound that
+        # must move. Repairing the replay bound is NOT authorized here and is
+        # deliberately not done.
+        #
+        # So the message states only what is true in BOTH cases: the correction
+        # was saved, the live view was not updated, and the saved correction is
+        # reflected whenever the project can be rebuilt successfully. No
+        # durable rollback is claimed, and the contract's persistence ordering
+        # is unchanged.
         entry["_answer_error"] = CORRECTION_SAVED_NOT_YET_APPLIED_MESSAGE
         return redirect(url_for("show_session", sid=sid))
 

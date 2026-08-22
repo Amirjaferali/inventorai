@@ -88,11 +88,11 @@ R3-closure roadmap gate entries, the retained R3-I blocks here and in `CURRENT_P
 **`PACK DELTA: 0`** — `domain_rules.py`, `path_n_questions.py` and all five packs byte-identical; the
 correction path is domain-neutral, asserted by test.
 
-**Verification on the frozen candidate — measured, not carried.** Focused R4-I **52 passed**; R1
+**Verification on the frozen candidate — measured, not carried.** Focused R4-I **63 passed**; R1
 **26** (file byte-unchanged); R2 **189** + **566** (both byte-unchanged); R3 **579** (byte-unchanged);
-P9 **54**; `UNIVERSAL GUARDRAIL SMOKE: PASS`; full suite **4407 passed / 3 skipped / 1 xfailed /
+P9 **54**; `UNIVERSAL GUARDRAIL SMOKE: PASS`; full suite **4418 passed / 3 skipped / 1 xfailed /
 0 failed** under the §18 precondition (Python 3.11.15, Flask 3.1.3, SQLite 3.45.1, gunicorn 26.1.0).
-**§20 reconciliation: 4355 baseline + 52 = 4407**, exactly the one new test file — and the baseline was
+**§20 reconciliation: 4355 baseline + 63 = 4418**, exactly the one new test file — and the baseline was
 itself re-measured on this candidate's own base in this session.
 
 **Scope.** `FPC-02 / P4-2 REMAINS IMPLEMENTATION OWNER: YES`; `PVCG-R4 REMAINS CONFORMANCE OWNER ONLY:
@@ -113,10 +113,19 @@ Independent External Review — candidate 4dc7c3290a8bf9b72a87ad017e1e94181f6b97
   Owner disposition           = acceptance WITHHELD pending a bounded child
                                 repairing NB-1 and NB-2 ONLY
 
-THIS candidate — the NB-1/NB-2 microrepair child of 4dc7c329…
-  NB-1 = REPAIRED   NB-2 = REPAIRED
-  NB-3 = NOT ADDRESSED (out of the authorized repair scope)
-  NB-4 = NOT ADDRESSED (out of the authorized repair scope)
+Ultra-focused Independent Review — candidate fc45d029926d7842bbea5440339c4bac9625613a
+  VERDICT                     = ACCEPT WITH NON-BLOCKING OBSERVATIONS
+  UNSUPPORTED MATERIAL CLAIMS = 0
+  SAFE FOR OWNER EXACT-SHA ACCEPTANCE = YES
+  Owner disposition           = acceptance WITHHELD pending a final microgate
+                                on the next-load promise + user reachability
+
+THIS candidate — the final truthfulness / reachability microchild of fc45d029…
+  NB-1 = REPAIRED (NB-1/NB-2 stage)   NB-2 = REPAIRED (NB-1/NB-2 stage)
+  NB-3 = NOT ADDRESSED   NB-4 = NOT ADDRESSED (out of the authorized scope)
+  false next-load promise     = REPAIRED, wording only
+  replay bound                = NOT repaired (pre-existing; unassigned)
+  USER-REACHABILITY           = CLASSIFICATION A (route/API sufficient; no UI added)
   Creator Grill unsupported-material-claim finding = 0
   INDEPENDENTLY RE-REVIEWED   = NO, as at the time of its submission
 ```
