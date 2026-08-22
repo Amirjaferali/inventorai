@@ -41,8 +41,102 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — PVCG-R4-C: USER CORRECTION AND DETERMINISTIC INVALIDATION — CONFORMANCE CONTRACT;
-governance-only contract gate).** Base: `18a90f9b0aa85d05317bed5aaa596e19716c6557` — the live
+**Status (current — PVCG-R4-I: bounded FPC-02 / P4-2 IMPLEMENTATION of the authoritative R4
+conformance contract).** Base: `c3d9e2d98ba7b6c9b3a9d9d316e6d572122d8a8e` (PR #554 merge — PVCG-R4-C,
+AUTHORITATIVE; live tip re-fetched and independently re-verified on all four merge criteria before any
+edit: first parent `18a90f9b0aa85d05317bed5aaa596e19716c6557`, second parent
+`d5286de76109e9dd8be52f49d72e59b063e2c823` — the exact Owner-accepted candidate — merge tree
+`968ff38cbe689526b8d97a7b9533be631e4ee1a7` identical to the candidate tree, empty candidate→merge diff,
+zero later commits, clean tree). **`PVCG-R4-C AUTHORITATIVE: YES`.**
+
+**Disposition: `PVCG-R4-I IMPLEMENTATION CANDIDATE — NOT AUTHORITATIVE UNTIL MERGED`.**
+`PVCG-R4 AUTHORITATIVELY SATISFIED: NO` until merged, post-merge verified and formally closed by its
+own closure record.
+
+**Ownership enforced structurally.** `IMPLEMENTATION OWNER: FPC-02 / P4-2`;
+`PVCG CONFORMANCE OWNER: PVCG-R4`. Every mechanism is an EXISTING canonical model — the Increment-2
+supersession primitive, the P4-0 record contract, the P4-1a INSERT-only store, the P4-2 Level-1
+reconstruction replay, and the one canonical active-set rule already consumed by five derived modules.
+No parallel state model, no second replay engine, no dependency model, no schema change, no migration
+(`D-FPC-MAP-02` / `D-FPC-MAP-06` preserved).
+
+**Delivered — exactly seven paths:** `engine/record_contract.py` (`reconcile_supersession_edges`,
+deriving the inverse edge on load because the store is INSERT-only; additive, idempotent, and it
+REJECTS contradictory or double supersession rather than repairing it), `engine/idea_state.py`
+(additive `supersedes=`, fail-closed before any append), `engine/progression_loop.py` (the ONE §10.4
+G-1 CLOSED-gap guard), `engine/session_reconstruction.py` (AMENDED-stream replay + additive
+`withdrawn_source_records`), `engine/deliverable_assembler.py` (the truthful withdrawn-source marker,
+counts and note only, on the existing surface-and-retain idiom), `web/app.py`
+(`POST /session/<sid>/correct`), `web/ui_text.py` (`UI_B_CORRECT_001…003`, EN/AR).
+
+**Contract clauses proven.** Explicit record-targeted correction, never inferred (§6 C-1 — a committed
+test shows retraction wording alone still withdraws nothing); retention with no destructive mutation and
+no `rec_N` reuse (§6 C-2/C-3, §7 S-1/S-2); FULL replay of the amended stream through the unchanged
+`run_iteration` (§8 RP-1); atomic live-state replacement with no direct progression mutation (§8 RP-4);
+measured decrease (§8 RP-5); replay-failure rollback leaving live memory byte-identical (§9 F-2/F-3);
+persistence/reload reproducing the corrected state (§14 P-2/P-3); EN/AR equivalence (§13 E-1);
+withdrawn basis absent from the recomposed deliverable (§15 M-1) with an explicit counts-only marker
+(§15 M-2/M-3/M-4).
+
+**Pin reconciliation (§16.2 under R3-C §13.2a), exhaustive.** Old `3cbd76849c0f572191a552db1a41a8cd418d02fac1d59d9b8804c72883239a55` → new `c268cd6380129170da19f3ba03158eebd9a5480711b43e39280e8ce9e74f63f8`.
+**Kind (1) ENFORCING — all THREE updated together:** `test_p9_mech_i3_signal_quality.py`,
+`test_p9_mech_i4_boundary_corpus.py`, `test_p9_mech_i5_question_sufficiency.py`, each with a disclosed
+note preserving the prior digest. **Kind (2) ACTIVE CURRENT-TRUTH — synchronized:** the R4-C §16 table
+(the precedent by which R3-I synchronized R3-C §13) plus the roadmap entry and the two status surfaces.
+**Kind (3) HISTORICAL — left byte-unchanged:** R3-C §13, the R3 formal closure record §4, the R3-I and
+R3-closure roadmap gate entries, the retained R3-I blocks here and in `CURRENT_PROJECT_STATE.md`.
+**`PACK DELTA: 0`** — `domain_rules.py`, `path_n_questions.py` and all five packs byte-identical; the
+correction path is domain-neutral, asserted by test.
+
+**Verification on the frozen candidate — measured, not carried.** Focused R4-I **63 passed**; R1
+**26** (file byte-unchanged); R2 **189** + **566** (both byte-unchanged); R3 **579** (byte-unchanged);
+P9 **54**; `UNIVERSAL GUARDRAIL SMOKE: PASS`; full suite **4418 passed / 3 skipped / 1 xfailed /
+0 failed** under the §18 precondition (Python 3.11.15, Flask 3.1.3, SQLite 3.45.1, gunicorn 26.1.0).
+**§20 reconciliation: 4355 baseline + 63 = 4418**, exactly the one new test file — and the baseline was
+itself re-measured on this candidate's own base in this session.
+
+**Scope.** `FPC-02 / P4-2 REMAINS IMPLEMENTATION OWNER: YES`; `PVCG-R4 REMAINS CONFORMANCE OWNER ONLY:
+YES`; `TARGETED PARTIAL INVALIDATION AUTHORIZED: NO`; `DEPENDENCY GRAPH ADDED: NO`;
+`FULL CONTRADICTION ENGINE AUTHORIZED: NO`; `VERSIONING / BRANCHING / ROLLBACK / SHARING ADDED: NO`;
+`PERSISTENCE SCHEMA MIGRATION: NO`; `PHASE 4 REOPENED GENERALLY: NO`; `main` not reconciled;
+`OWNER_DECISION_REGISTER.md` UNCHANGED. `TDVP STARTED: NO`; `PVCG SATISFIED: NO`;
+`FULL MLC DEFINITION FROZEN: NO`; `DEPLOYMENT AUTHORIZED: NO`.
+
+**Verdict provenance, kept distinct.** `UNSUPPORTED MATERIAL CLAIMS` is an INDEPENDENT-REVIEWER field:
+
+```
+Independent External Review — candidate 4dc7c3290a8bf9b72a87ad017e1e94181f6b9799
+  VERDICT                     = ACCEPT WITH NON-BLOCKING OBSERVATIONS
+  UNSUPPORTED MATERIAL CLAIMS = 0
+  SAFE FOR OWNER EXACT-SHA ACCEPTANCE = YES
+  Observations raised         = NB-1, NB-2, NB-3, NB-4
+  Owner disposition           = acceptance WITHHELD pending a bounded child
+                                repairing NB-1 and NB-2 ONLY
+
+Ultra-focused Independent Review — candidate fc45d029926d7842bbea5440339c4bac9625613a
+  VERDICT                     = ACCEPT WITH NON-BLOCKING OBSERVATIONS
+  UNSUPPORTED MATERIAL CLAIMS = 0
+  SAFE FOR OWNER EXACT-SHA ACCEPTANCE = YES
+  Owner disposition           = acceptance WITHHELD pending a final microgate
+                                on the next-load promise + user reachability
+
+THIS candidate — the final truthfulness / reachability microchild of fc45d029…
+  NB-1 = REPAIRED (NB-1/NB-2 stage)   NB-2 = REPAIRED (NB-1/NB-2 stage)
+  NB-3 = NOT ADDRESSED   NB-4 = NOT ADDRESSED (out of the authorized scope)
+  false next-load promise     = REPAIRED, wording only
+  replay bound                = NOT repaired (pre-existing; unassigned)
+  USER-REACHABILITY           = CLASSIFICATION A (route/API sufficient; no UI added)
+  Creator Grill unsupported-material-claim finding = 0
+  INDEPENDENTLY RE-REVIEWED   = NO, as at the time of its submission
+```
+
+`4dc7c329…` is preserved unchanged and unpublished as immutable review evidence (branch
+`pvcg-r4i-reviewed-4dc7c329`); it was never amended, rebased, squashed or recreated.
+
+---
+
+**Superseded (retained as history) — PVCG-R4-C: USER CORRECTION AND DETERMINISTIC INVALIDATION —
+CONFORMANCE CONTRACT; MERGED AND AUTHORITATIVE via PR #554, merge `c3d9e2d9…`.** Base: `18a90f9b0aa85d05317bed5aaa596e19716c6557` — the live
 authoritative tip of `origin/feature/atomic-json-session-persistence`, independently re-fetched and
 re-verified on all four merge criteria before drafting (PR #553; first parent
 `d046b3e5449f5f91f5f719686e7e207ceda2f06c`; second parent `0fa8fbd83ee2b3a8de165eaaa1a9fd0d4e64c290` —

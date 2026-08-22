@@ -95,6 +95,22 @@ _MESSAGE_KEYS = {
      "No changes were saved."): "UI_B_SC_007",
     ("A criterion exceeds the 1000-character "
      "limit. No changes were saved."): "UI_B_SC_008",
+    # PVCG-R4-C §13 E-1: the correction path must be bilingual, so its three
+    # server messages are registered here exactly like every other one.
+    ("That correction could not be applied just now. "
+     "Nothing was changed."): "UI_B_CORRECT_001",
+    ("Select which of your earlier answers to withdraw, and enter the "
+     "corrected answer."): "UI_B_CORRECT_002",
+    ("Your earlier answer was withdrawn and kept in the project history. "
+     "Everything shown has been recomputed from your remaining answers."):
+        "UI_B_CORRECT_003",
+    # NB-1: the post-durable replay-failure notice. Rendered through the
+    # `_answer_error` slot, which `show_session` localises with
+    # `localize_message`, so it is registered HERE — the map that path uses.
+    ("Your correction was saved, but the page could not be updated just now. "
+     "What you see below has not changed yet. The saved correction will be "
+     "reflected whenever this project can be rebuilt successfully."):
+        "UI_B_CORRECT_004",
 }
 
 
@@ -439,6 +455,38 @@ UI_STRINGS = {
     "UI_B_SC_008": {
         "en": "A criterion exceeds the 1000-character limit. No changes were saved.",
         "ar": "يتجاوز أحد المعايير الحد الأقصى البالغ 1000 حرف. لم يتم حفظ أي تغييرات.",
+    },
+
+    # --- PVCG-R4 explicit correction / withdrawal (web/app.py correct_answer) --
+    # Storage stays English; only display localises — the UI_B_SC_007/008
+    # pattern. Fail-closed and success wording are both registered so the
+    # correction path is EN/AR equivalent end to end (PVCG-R4-C §13 E-1).
+    "UI_B_CORRECT_001": {
+        "en": "That correction could not be applied just now. Nothing was changed.",
+        "ar": "تعذّر تطبيق هذا التصحيح الآن. لم يتم تغيير أي شيء.",
+    },
+    "UI_B_CORRECT_002": {
+        "en": "Select which of your earlier answers to withdraw, and enter the corrected answer.",
+        "ar": "اختر أي إجابة سابقة تريد سحبها، ثم اكتب الإجابة المصحّحة.",
+    },
+    # The closing clause is deliberately CONDITIONAL ("whenever ... can be"),
+    # never "on the next load": a project at MAX_ACCEPTED_ANSWER_REPLAY crosses
+    # the bound when the correction append takes the stream to limit + 1, and
+    # every later reconstruction then fails, so an unconditional promise would
+    # be false. Both languages carry the same conditional force.
+    "UI_B_CORRECT_004": {
+        "en": ("Your correction was saved, but the page could not be updated just now. "
+               "What you see below has not changed yet. The saved correction will be "
+               "reflected whenever this project can be rebuilt successfully."),
+        "ar": ("تم حفظ تصحيحك، لكن تعذّر تحديث الصفحة الآن. "
+               "وما تراه بالأسفل لم يتغيّر بعد. وسيظهر أثر التصحيح المحفوظ "
+               "متى أمكن إعادة بناء المشروع بنجاح."),
+    },
+    "UI_B_CORRECT_003": {
+        "en": ("Your earlier answer was withdrawn and kept in the project history. "
+               "Everything shown has been recomputed from your remaining answers."),
+        "ar": ("تم سحب إجابتك السابقة مع الاحتفاظ بها في سجل المشروع. "
+               "وأُعيد حساب كل ما يظهر هنا من إجاباتك المتبقية."),
     },
 
     # --- login.html (Category A) ----------------------------------------------
@@ -1191,6 +1239,18 @@ _DEEP_AR = {
     "This usually needs a measurement, test, or external evidence. You can request evidence and continue.": "يحتاج هذا عادةً إلى قياس أو اختبار أو دليل خارجي. يمكنك طلب دليل والمتابعة.",
     "Who answers this is not yet clear": "من يجيب عن هذا غير واضح بعد",
     "It is not yet clear who should answer this. You can answer, defer, or mark it as unknown.": "ليس واضحًا بعد من ينبغي أن يجيب عن هذا. يمكنك الإجابة، أو التأجيل، أو وضع علامة عليه بأنه غير معروف.",
+
+    # --- 4.12b PVCG-R4 correction acknowledgement (web/app.py correct_answer) ---
+    # `show_session` renders `_interaction_ack` through `localize_deep`, NOT
+    # through `localize_message`, so the correction ack MUST be registered here
+    # as well as in `_MESSAGE_KEYS` — otherwise it reaches an Arabic reader in
+    # English and the correction path is language-asymmetric at the ACTUAL
+    # render path (PVCG-R4-C §13 E-1). Same seam the R3 D-4 disclosure lesson
+    # identified: register in the map the render path really consults.
+    ("Your earlier answer was withdrawn and kept in the project history. "
+     "Everything shown has been recomputed from your remaining answers."):
+        ("تم سحب إجابتك السابقة مع الاحتفاظ بها في سجل المشروع. "
+         "وأُعيد حساب كل ما يظهر هنا من إجاباتك المتبقية."),
 
     # --- 4.12 non-answer acknowledgements (web/app.py _NON_ANSWER_ACK) ---
     "Recorded that you do not know this yet. It is kept as an open unknown and does not resolve the question.": "تم تسجيل أنك لا تعرف هذا بعد. يُحفظ كأمر غير معروف مفتوح ولا يحلّ السؤال.",

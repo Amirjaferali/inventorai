@@ -14266,3 +14266,195 @@ Render path; `RUNTIME DELTA: 0`, `TEST DELTA: 0`, `PACK DELTA: 0`, `PIN DELTA: 0
 `VERSIONING / BRANCHING / ROLLBACK / SHARING AUTHORIZED: NO`; `TDVP IMPLEMENTATION STARTED: NO`;
 `PVCG SATISFIED: NO`; `FULL MLC DEFINITION FROZEN: NO`;
 `MINIMUM LAUNCH-CONFORMANCE SET SATISFIED: NO`; `DEPLOYMENT AUTHORIZED: NO`.
+
+---
+
+## PVCG-R4-I — bounded FPC-02 / P4-2 IMPLEMENTATION of the authoritative R4 conformance contract (Owner-authorized implementation candidate) — NOT authoritative unless merged
+
+**Base.** `c3d9e2d98ba7b6c9b3a9d9d316e6d572122d8a8e` — the live authoritative tip of
+`origin/feature/atomic-json-session-persistence`, independently re-fetched and re-verified on all four
+merge criteria before any edit: PR #554, first parent `18a90f9b0aa85d05317bed5aaa596e19716c6557`, second
+parent `d5286de76109e9dd8be52f49d72e59b063e2c823` (the exact Owner-accepted R4-C candidate), merge tree
+`968ff38cbe689526b8d97a7b9533be631e4ee1a7` identical to the accepted candidate tree, candidate→merge
+diff **EMPTY**, zero later commits, working tree clean. **`PVCG-R4-C AUTHORITATIVE: YES`.**
+
+**Disposition.** `PVCG-R4-I IMPLEMENTATION CANDIDATE — NOT AUTHORITATIVE UNTIL MERGED`. This candidate
+implements ONLY the bounded capability the authoritative contract defines, and it closes **R4 only**.
+`PVCG-R4 AUTHORITATIVELY SATISFIED: NO` until merged, post-merge verified and formally closed by its own
+closure record.
+
+**Ownership, unchanged and structurally enforced.** `IMPLEMENTATION OWNER: FPC-02 / P4-2`;
+`PVCG CONFORMANCE OWNER: PVCG-R4`. Every mechanism used here is an EXISTING canonical model: the
+Increment-2 supersession primitive (`IdeaState.mark_supersession`), the P4-0 record contract, the
+P4-1a INSERT-only store, the P4-2 Level-1 reconstruction replay, and the one canonical active-set rule
+(`superseded_by is None`) already consumed by `derived_readiness`, `requirement_landscape`,
+`idea_development_outputs`, `validation_plan` and `safety_signal`. **No parallel state model, no second
+replay engine, no dependency model, no persistence schema change, no migration** — `D-FPC-MAP-02` and
+`D-FPC-MAP-06` preserved.
+
+**Delivered — exactly seven paths.** `engine/record_contract.py` (new
+`reconcile_supersession_edges`, called from `from_dict` before the unchanged `validate()`, deriving the
+INVERSE edge on load because the durable store is INSERT-only; strictly additive and idempotent, and it
+REJECTS a stored value that contradicts the forward edge or a prior record superseded twice, rather than
+repairing either); `engine/idea_state.py` (additive `supersedes=` on `record_interaction`, fail-closed
+before any append on unknown / self / already-superseded / duplicate, then the inverse edge written
+through the EXISTING `mark_supersession` primitive); `engine/progression_loop.py` (the §10.4 G-1
+CLOSED-gap guard — ONE branch); `engine/session_reconstruction.py` (replay the AMENDED stream — the
+accepted answers not withdrawn — plus an additive `withdrawn_source_records` count; the replay bound is
+still checked against the FULL persisted stream, the conservative reading, so a correction can neither
+exceed nor disable it); `engine/deliverable_assembler.py` (the truthful withdrawn-source marker under
+`_session_meta`, counts and a note only, following the SAME surface-and-retain idiom as `stale_criteria`
+and `stale_criticality_confirmations`); `web/app.py` (the explicit `POST /session/<sid>/correct` route);
+`web/ui_text.py` (three EN/AR message pairs, `UI_B_CORRECT_001…003`).
+
+**Correction semantics as contracted.** The correction is EXPLICIT and names the prior `record_id`
+(§6 C-1) — nothing is ever inferred from retraction wording, and a test proves that typing *"actually I
+was wrong"* as an ordinary answer still produces zero withdrawals. The prior record is RETAINED verbatim
+(§7 S-1); the new record carries the edge FORWARD (§6 C-3); `rec_N` is never reused or renumbered
+(§7 S-2). Recomputation is FULL replay of the entire amended stream through the UNCHANGED
+`run_iteration` (§8 RP-1) — naming one record narrows WHICH INPUT was withdrawn, never how much is
+recomputed (§2.4.2). Live state changes ONLY by wholesale replacement with the replayed state
+(§8 RP-4); the route assigns no `gap.status`, `known_mechanism`, `known_problem`, `maturity_level` or
+`current_stage`. A replay failure leaves live memory byte-identical and is never reported as applied
+(§9 F-2/F-3), with the durable stream still valid and re-loadable (§9 F-4).
+
+**Evaluation can decrease, proven.** Withdrawing the mechanism answer and replacing it with an off-topic
+one produces a strictly weaker replayed state (§8 RP-5). **INV-004 is preserved exactly** (§8.1/G-3):
+replay builds a FRESH `IdeaState` and rebuilds forward, then replaces the prior state wholesale, so no
+stored gap status is ever moved backward — the weaker outcome is a property of the NEW run.
+
+**CLOSED-gap hazard closed by construction.** At the base, calling `integrate_response` on an
+already-CLOSED gap produced `status=PARTIAL` with `closed_at` still set — measured RED at
+`c3d9e2d9` before the pin was touched. The guard makes it unreachable; `closed_at` is now set if and
+only if the gap is CLOSED (G-4); and the ordinary forward-only journey is unchanged — **no CLOSED gap
+reopens through the normal answer path** (G-2). **Non-vacuous INV-004 coverage** (G-5) is committed with
+a literal corpus that asserts it reaches CLOSED *before* checking the invariant, unlike the pre-existing
+`test_wps001_invariants.py` test, which skips on its own corpus and is left byte-unchanged.
+
+**Pin reconciliation (§16.2, under the R3-C §13.2a mechanism), stated exhaustively.**
+Old `3cbd76849c0f572191a552db1a41a8cd418d02fac1d59d9b8804c72883239a55` → new
+`c268cd6380129170da19f3ba03158eebd9a5480711b43e39280e8ce9e74f63f8`.
+**Kind (1) ENFORCING — all THREE updated in this same candidate:**
+`tests/test_p9_mech_i3_signal_quality.py`, `tests/test_p9_mech_i4_boundary_corpus.py`,
+`tests/test_p9_mech_i5_question_sufficiency.py`, each carrying a disclosed reconciliation note that
+PRESERVES the prior digest. **Kind (2) ACTIVE CURRENT-TRUTH — synchronized:** the §16 table of
+`PVCG_R4_C_USER_CORRECTION_AND_DETERMINISTIC_INVALIDATION_CONTRACT.md` (exactly the precedent by which
+R3-I synchronized R3-C's own §13 table), plus this entry and the two status surfaces.
+**Kind (3) HISTORICAL — deliberately left byte-unchanged:** `PVCG_R3_C_SEMANTIC_STABILITY_CONTRACT.md`
+§13, `PVCG_R3_FORMAL_CLOSURE_RECORD.md` §4, the PVCG-R3-I and PVCG-R3-closure append-only roadmap gate
+entries, the `Superseded (retained as history)` PVCG-R3-I block in `ACTIVE_INCREMENT_CONTRACT.md`, and
+the retained PVCG-R3-I bullet in `CURRENT_PROJECT_STATE.md`. **`PACK DELTA: 0`** —
+`engine/domain_rules.py` (`0e47326a…`), `engine/path_n_questions.py` (`a1a682d3…`) and all five
+`domains/*/domain.json` byte-identical; the correction path is domain-neutral and a committed test
+asserts it contains no domain token.
+
+**Verification on the frozen candidate, measured — not carried.** Focused R4-I **63 passed**;
+PVCG-R1 **26 passed** with its test file byte-unchanged; R2 behavioural **189 passed** and R2 marker
+coverage **566 passed**, both files byte-unchanged; R3 focused **579 passed**, file byte-unchanged;
+P9 pin suites **54 passed**; `UNIVERSAL GUARDRAIL SMOKE: PASS`; full suite **4418 passed / 3 skipped /
+1 xfailed / 0 failed** under the §18 precondition (Python 3.11.15, Flask 3.1.3, SQLite 3.45.1,
+gunicorn 26.1.0 on `PATH`). **§20 reconciliation: baseline 4355 + 63 = 4418**, exactly the one new R4-I
+test file and nothing else. The baseline `4355 / 3 / 1 / 0` was itself re-measured on this candidate's
+own base tip in this session rather than carried from prose.
+
+**Mandatory Creator Grill — one REJECT, lineage preserved, nothing rewritten.** The first frozen
+candidate `c03386dfd301b1a63d751422ea53a477a68173b3` was **REJECTED BY THE CREATOR'S OWN GRILL** and is
+preserved unchanged and unpublished as immutable evidence (branch
+`pvcg-r4i-grill-rejected-c03386df`); it was never amended, rebased, squashed or recreated. **CG-1
+(EN/AR asymmetry at the ACTUAL render path).** All three correction messages were registered in
+`ui_text._MESSAGE_KEYS`, which serves `localize_message` — but `show_session` renders
+`_interaction_ack` through `localize_deep`, which consults a DIFFERENT map (`_DEEP_AR`). The success
+acknowledgement therefore reached an Arabic reader **in English**, violating §13 E-1, while a test that
+exercised only `localize_message` passed. This is the same seam the R3 D-4 disclosure identified, and
+the Grill caught it precisely because the attack asked which helper the render path *really* calls.
+Repaired by registering the acknowledgement in `_DEEP_AR` as well, and by replacing the convenient test
+with two that exercise the real path — one per-helper, one end-to-end through the live client with the
+UI language actually switched (using the route's real `lang` field). **Guard-removal proof:** with the
+`_DEEP_AR` registration temporarily removed, both new tests FAIL; with it restored, both pass — the
+coverage is real, not vacuous. Focused R4-I stood at **38** at that point, with the §20 reconciliation
+at **4355 + 38 = 4393** — stated as the CG-1 stage's own figures; later stages below supersede them,
+and the CURRENT figures are the final microgate's **63** / **4355 + 63 = 4418**.
+
+**NB-1 / NB-2 microrepair (Owner-directed, bounded).** The Independent External Review of
+`4dc7c3290a8bf9b72a87ad017e1e94181f6b9799` returned **ACCEPT WITH NON-BLOCKING OBSERVATIONS**,
+`UNSUPPORTED MATERIAL CLAIMS = 0`, and `SAFE FOR OWNER EXACT-SHA ACCEPTANCE: YES`. The Owner directed
+one tightly bounded child repairing **NB-1 and NB-2 only**; **NB-3 and NB-4 are deliberately NOT
+addressed**, and the reviewed SHA is preserved unchanged and unpublished as immutable evidence
+(branch `pvcg-r4i-reviewed-4dc7c329`), never amended, rebased, squashed or recreated.
+
+**NB-1 — a factually false replay-failure message, now truthful.** The contract's
+persist-before-acknowledge ordering (§6 C-6) commits the durable append BEFORE the replay, so on the
+reviewer-reproduced path — append succeeds, replay fails, live state untouched, record committed, next
+load applies it — the wording *"Nothing was changed"* was **false about accepted-source history**. That
+path now uses a separate message stating exactly what is true: the correction was saved; the page could
+not be updated just now; what is shown has not changed yet; it will be applied the next time the project
+loads. **No durable rollback is claimed, and the contract's persistence ordering was NOT altered to make
+the old wording true.** The pre-durable failure paths keep the original wording, where *"Nothing was
+changed"* remains correct. Registered as `UI_B_CORRECT_004` in `ui_text._MESSAGE_KEYS` — the map the
+`_answer_error` slot actually uses — with an Arabic equivalent, and proven on the real render path in
+both languages.
+
+**NB-2 — correction-POST token parity.** `POST /session/<sid>/correct` mutates accepted durable state
+but did not take the `answer_token` its closest functional peer `submit_answer` requires. It now takes
+the SAME token, validated by the SAME canonical `_valid_answer_token` (a stateless HMAC binding the
+`sid`), placed **FIRST in the route — before parsing, minting, the durable append and the replay** — so
+a token failure can never reach the store. Missing, malformed, forged and cross-session tokens all fail
+closed with no durable correction record, no supersession edge, no replay and no live-state change.
+**No second CSRF or token model is introduced, `_project_authorized` is unchanged, and no other
+session-scoped POST route was altered.**
+
+**Guard-removal proof for both.** With the token check removed, five NB-2 tests FAIL; with the message
+reverted to the old wording, three NB-1 tests FAIL; with both repairs in place all fourteen pass — the
+coverage is real, not vacuous. Focused R4-I stood at **52** at that point, with the §20 reconciliation at **4355 + 52 = 4407** —
+the NB-1/NB-2 stage's own figures; the final microgate below supersedes them with **63** / **4418**. `PIN DELTA from 4dc7c329: 0` — `engine/progression_loop.py` is untouched by this
+microrepair and its digest remains `c268cd63…`; `PACK DELTA: 0`; `DOMAIN-RULE DELTA: 0`. Exactly three
+paths changed: `web/app.py`, `web/ui_text.py`, `tests/test_pvcg_r4i_correction_and_invalidation.py`.
+
+**Final truthfulness + user-reachability microgate (Owner-directed, wording-only).** The ultra-focused
+Independent Review of `fc45d029926d7842bbea5440339c4bac9625613a` returned **ACCEPT WITH NON-BLOCKING
+OBSERVATIONS**, `UNSUPPORTED MATERIAL CLAIMS = 0`, `SAFE FOR OWNER EXACT-SHA ACCEPTANCE: YES`, and
+raised two items the Owner required resolved before acceptance. `fc45d029…` is preserved unchanged and
+unpublished as immutable evidence (branch `pvcg-r4i-reviewed-fc45d029`), never amended, rebased,
+squashed or recreated.
+
+**(1) The unconditional next-load promise was false at the replay-bound crossing — repaired in wording
+only.** The reviewer's edge was **independently reproduced before any edit**: with the durable stream
+already at `MAX_ACCEPTED_ANSWER_REPLAY`, the correction append takes it to limit + 1 and **every**
+subsequent reconstruction raises `ReconstructionReplayLimitError`, so the correction is never applied
+and *"will be applied the next time this project loads"* was untrue there. **The replay bound is NOT
+repaired** — it is checked against the FULL persisted stream on purpose (§8 RP-9: a correction must
+never become a way to get UNDER the limit), so the bound is contract-correct and it is the MESSAGE that
+must tell the truth. The closing clause is now **conditional**: *"The saved correction will be reflected
+whenever this project can be rebuilt successfully."* Every clause holds under both a transient replay
+failure and the replay-bound crossing; the durable append is still disclosed as committed, and no
+rollback is claimed. The pre-existing replay-bound behaviour remains a **separately recorded
+pre-existing observation**, unassigned by this gate.
+
+**(2) User reachability — CLASSIFICATION A: ROUTE/API IS SUFFICIENT UNDER THE CURRENT CONTRACT; NO UI
+ADDED.** Determined from authoritative text, not inferred. **§2.2 R4-RES-1** states the residual
+disjunctively — *"No **route, form, template or API** accepts a correction"* — so a route closes it.
+**§17** requires that a correction be *"**expressible** and durably recorded"*, not rendered. **§2.5
+DEFERRED** places the in-session *"What changed?"* presentation increment with **Phase-3C / FPC-02**,
+*"a UX gate of its own"*, and **§19.2** lists that same UX increment as **out of scope**. **§21** contains
+no closure criterion mentioning a rendered affordance, and the contract has **no** user-visible-behaviour
+section (unlike R3-C §8). **§13 E-1** constrains *"the correction affordance"* to EN/AR equivalence — it
+governs whatever affordance exists and does not create a requirement for a rendered one; that
+equivalence is satisfied at route level and proven for all four messages on their real render paths.
+Adding UI here would enter a gate the contract explicitly defers, so none was added. Seven committed
+tests pin this reading to the contract text so it cannot be silently re-interpreted.
+
+**Guard-removal proof.** Restoring the unconditional promise makes three tests FAIL, including the
+replay-bound truth test; with the conditional wording all pass. Focused R4-I stands at **63**, and the
+§20 reconciliation at **4355 + 63 = 4418**. **Wording-only:** `engine/` delta from `fc45d029…` is **0
+files**; `PIN DELTA: 0` (`engine/progression_loop.py` untouched, digest still `c268cd63…`);
+`PACK DELTA: 0`; `DOMAIN-RULE DELTA: 0`. Exactly three paths changed: `web/app.py`, `web/ui_text.py`,
+`tests/test_pvcg_r4i_correction_and_invalidation.py`.
+
+**Scope.** `PVCG-R4 AUTHORITATIVELY SATISFIED: NO`; `FPC-02 / P4-2 REMAINS IMPLEMENTATION OWNER: YES`;
+`PVCG-R4 REMAINS CONFORMANCE OWNER ONLY: YES`; `TARGETED PARTIAL INVALIDATION AUTHORIZED: NO`;
+`DEPENDENCY GRAPH ADDED: NO`; `FULL CONTRADICTION ENGINE AUTHORIZED: NO`;
+`SEMANTIC CORRECTION INFERENCE ADDED: NO`; `VERSIONING / BRANCHING / ROLLBACK / SHARING ADDED: NO`;
+`PERSISTENCE SCHEMA MIGRATION: NO`; `PHASE 4 REOPENED GENERALLY: NO`; no pack edit, no domain change,
+no new gap type; `main` not reconciled; `OWNER_DECISION_REGISTER.md` UNCHANGED.
+`TDVP IMPLEMENTATION STARTED: NO`; `PVCG SATISFIED: NO`; `FULL MLC DEFINITION FROZEN: NO`;
+`MINIMUM LAUNCH-CONFORMANCE SET SATISFIED: NO`; `DEPLOYMENT AUTHORIZED: NO`.

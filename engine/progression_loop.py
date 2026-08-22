@@ -820,6 +820,28 @@ def integrate_response(
         return "WARN", (f"{gap_type} not addressed — this answer does not "
                         f"respond to the question that was asked")
 
+    # PVCG-R4-C §10.4 G-1/G-2/G-4 — CLOSED-gap safety guard.
+    #
+    # Before R4 this function had no CLOSED branch, so a REASONED answer against
+    # an already-CLOSED gap fell through to the `else` below and overwrote CLOSED
+    # with PARTIAL **while leaving closed_at set** — an impossible mixed state.
+    # It was never reachable at runtime, because `select_next_gap` returns only
+    # OPEN/PARTIAL gaps and this function's single runtime caller
+    # (`run_iteration`) takes its gap_type from there. The runtime was protected
+    # by the CALLER's filter, not by this function.
+    #
+    # R4 exposes an explicit correction path, so the hazard is now closed HERE,
+    # by construction rather than by caller discipline (G-1): an already-CLOSED
+    # gap is never weakened in place and `closed_at` can never be orphaned (G-4).
+    #
+    # This is NOT a reopen path (G-2): the ordinary forward journey is unchanged,
+    # OPEN->PARTIAL->CLOSED still only moves forward, and WPS-001 INV-004 is
+    # preserved exactly. A correction reaches a WEAKER outcome only through full
+    # deterministic replay onto a FRESH IdeaState (G-3) — a property of the new
+    # run, never a backward transition in the old one.
+    if gap.status == CLOSED:
+        return "PASS", f"{gap_type} already closed — no change"
+
     if quality == DEMONSTRATED:
         gap.status = CLOSED
         gap.closed_at = state.iteration

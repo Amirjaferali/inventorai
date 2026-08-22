@@ -2424,8 +2424,52 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
-- **PVCG-R4-C — USER CORRECTION AND DETERMINISTIC INVALIDATION — CONFORMANCE CONTRACT (governance-only
-  CONTRACT CANDIDATE), base `18a90f9b0aa85d05317bed5aaa596e19716c6557`** (PR #553 merge — PVCG-R3
+- **PVCG-R4-I — BOUNDED FPC-02 / P4-2 IMPLEMENTATION of the authoritative R4 conformance contract
+  (implementation CANDIDATE), base `c3d9e2d98ba7b6c9b3a9d9d316e6d572122d8a8e`** (PR #554 merge —
+  PVCG-R4-C, AUTHORITATIVE; live tip re-fetched and independently re-verified on all four merge
+  criteria: first parent `18a90f9b…`, second parent `d5286de7…` — the exact Owner-accepted candidate —
+  merge tree `968ff38c…` == candidate tree, empty candidate→merge diff, zero later commits, clean
+  tree). Disposition: **`PVCG-R4-I IMPLEMENTATION CANDIDATE — NOT AUTHORITATIVE UNTIL MERGED`**;
+  **`PVCG-R4-C AUTHORITATIVE: YES`**; `PVCG-R4 AUTHORITATIVELY SATISFIED: NO` until merged, post-merge
+  verified and formally closed. **Ownership unchanged and structurally enforced:** `IMPLEMENTATION
+  OWNER: FPC-02 / P4-2`, `PVCG CONFORMANCE OWNER: PVCG-R4` — every mechanism is an EXISTING canonical
+  model (Increment-2 supersession, the P4-0 record contract, the P4-1a INSERT-only store, the P4-2
+  Level-1 replay, and the one active-set rule already consumed by five derived modules); no parallel
+  state model, no second replay engine, no dependency model, no schema change, no migration
+  (`D-FPC-MAP-02` / `D-FPC-MAP-06` preserved). **Closes the confirmed defect:** an inventor can now
+  explicitly withdraw a NAMED prior accepted answer; the prior record is retained verbatim, the new
+  record carries the edge forward (the store is INSERT-only), the whole amended stream is re-run by
+  FULL deterministic replay through the unchanged `run_iteration`, and the replayed state REPLACES live
+  state wholesale — so the withdrawn mechanism no longer appears in the recomposed deliverable, and
+  evaluation is free to DECREASE (measured). **Nothing is inferred:** typing "actually I was wrong" as
+  an ordinary answer still withdraws nothing (committed test). **CLOSED-gap hazard closed by
+  construction** — at the base, `integrate_response` on an already-CLOSED gap produced `status=PARTIAL`
+  with `closed_at` set (measured RED before the pin was touched); the guard makes it unreachable,
+  `closed_at` is set iff CLOSED, the ordinary forward journey is unchanged, and **non-vacuous INV-004
+  coverage** is committed with a literal corpus that asserts it reaches CLOSED before checking the
+  invariant. **Exactly seven paths changed:** `engine/record_contract.py`, `engine/idea_state.py`,
+  `engine/progression_loop.py`, `engine/session_reconstruction.py`, `engine/deliverable_assembler.py`,
+  `web/app.py`, `web/ui_text.py` (+ the new focused test file and the three pin files).
+  **Pin reconciliation (§16.2 / R3-C §13.2a):** `3cbd7684…` → **`c268cd6380129170da19f3ba03158eebd9a548
+  0711b43e39280e8ce9e74f63f8`**; kind (1) all THREE ENFORCING files updated together with disclosed
+  notes preserving the prior digest; kind (2) the R4-C §16 table and the live status surfaces
+  synchronized; kind (3) every historical occurrence left byte-unchanged. `PACK DELTA: 0`;
+  `domain_rules.py` and `path_n_questions.py` byte-identical; the correction path is domain-neutral
+  (asserted by test). **Verification measured on the frozen candidate:** focused R4-I **63**; R1 **26**
+  (byte-unchanged); R2 **189** + **566** (byte-unchanged); R3 **579** (byte-unchanged); P9 **54**;
+  `UNIVERSAL GUARDRAIL SMOKE: PASS`; full suite **4418 passed / 3 skipped / 1 xfailed / 0 failed**;
+  §20 reconciliation **4355 + 63 = 4418**, with the baseline itself re-measured on this base in this
+  session. `TARGETED PARTIAL INVALIDATION AUTHORIZED: NO`; `DEPENDENCY GRAPH ADDED: NO`;
+  `FULL CONTRADICTION ENGINE AUTHORIZED: NO`; `VERSIONING / BRANCHING / ROLLBACK / SHARING ADDED: NO`;
+  `PHASE 4 REOPENED GENERALLY: NO`; `main` not reconciled; `OWNER_DECISION_REGISTER.md` UNCHANGED;
+  `TDVP STARTED: NO`; `PVCG SATISFIED: NO`; `FULL MLC DEFINITION FROZEN: NO`;
+  `DEPLOYMENT AUTHORIZED: NO`.
+
+- **PVCG-R4-C — USER CORRECTION AND DETERMINISTIC INVALIDATION — CONFORMANCE CONTRACT — MERGED AND
+  AUTHORITATIVE via PR #554, merge `c3d9e2d9…`; the text below is retained as the CANDIDATE-TIME
+  historical record, base `18a90f9b0aa85d05317bed5aaa596e19716c6557`.** *Current truth:
+  `PVCG-R4-C AUTHORITATIVE: YES` — the candidate-time disposition line below is superseded by that
+  merge and is preserved unrewritten, per the retained-history convention.* (PR #553 merge — PVCG-R3
   FORMAL CLOSURE, AUTHORITATIVE; live tip independently re-fetched and re-verified: first parent
   `d046b3e5…`, second parent `0fa8fbd8…` — the exact Owner-accepted R3 closure candidate — merge tree
   `5101c167…` == candidate tree, empty candidate→merge diff, zero later commits, clean tree).

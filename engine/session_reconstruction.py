@@ -14,7 +14,12 @@ What it does (and only this):
   * requires a persisted seed idea, confirmed domain, path, and an EXACT supported
     engine/contract version, all captured at project creation;
   * loads the accepted-answer evidence in authoritative store `seq` order
-    (`SqliteRecordStore.load_accepted_answer_evidence`, P4-1b-2b);
+    (`SqliteRecordStore.load_accepted_answer_evidence`, P4-1b-2b), then replays
+    the AMENDED stream — the accepted answers the inventor has not explicitly
+    withdrawn (`superseded_by is None`, the one canonical active-set rule already
+    used by the derived modules). Withdrawn records remain durably present and
+    are still restored into the ledger verbatim; they are excluded from the
+    replay, never deleted (PVCG-R4-C §8 RP-1, §7 S-1);
   * builds a FRESH canonical `IdeaState`, sets the persisted domain/path, and
     replays the seed FIRST then the accepted-answer contents through the UNCHANGED
     canonical progression path (`engine.progression_loop.run_iteration`);
@@ -100,6 +105,12 @@ class ReconstructedReviewState:
     current_stage: Optional[int] = None
     open_gaps: tuple = field(default_factory=tuple)
     next_question: Optional[str] = None
+    # PVCG-R4-C §15: how many durably retained accepted-source records the
+    # inventor has explicitly WITHDRAWN (superseded) — counts only, never
+    # content. Additive and defaulted, so every pre-R4 construction is
+    # unchanged. `withdrawn_source_records` is retained history that was
+    # EXCLUDED from the replay below; it is not a deletion.
+    withdrawn_source_records: int = 0
 
 
 def _level0(idea_id, status, evidence):
@@ -193,10 +204,28 @@ def _reconstruct(store, project_id: str):
         # advisor and no network path is ever reached.
         return _level0(None, STATUS_UNSUPPORTED_PATH, evidence), None
 
+    # PVCG-R4-C §8 RP-9: the replay bound is checked against the FULL persisted
+    # answered stream, not the post-withdrawal subset. That is deliberately the
+    # conservative reading — a correction can never be used to get UNDER the
+    # bound, so it can neither exceed nor disable it.
     if len(evidence) > MAX_ACCEPTED_ANSWER_REPLAY:
         raise ReconstructionReplayLimitError(
             "accepted-answer replay count %d exceeds the bound %d"
             % (len(evidence), MAX_ACCEPTED_ANSWER_REPLAY))
+
+    # PVCG-R4-C §8 RP-1 — THE AMENDED ACCEPTED-SOURCE STREAM.
+    #
+    # Exactly the same ONE canonical active-set rule the five derived modules
+    # already use (`superseded_by is None`); R4 adds no second concept (§7 S-4).
+    # A withdrawn record stays durably present and stays in the restored ledger
+    # below — it is excluded from the REPLAY, never deleted (§7 S-1, §15 M-1).
+    #
+    # This is FULL replay of the whole amended stream in `seq` order, never
+    # targeted or partial recomputation: the filter selects WHICH INPUTS the
+    # inventor withdrew, and every surviving input is then replayed from
+    # scratch. No dependency model, no propagation, no selective patching.
+    amended = tuple(r for r in evidence if getattr(r, "superseded_by", None) is None)
+    withdrawn = len(evidence) - len(amended)
 
     # The FULL validated durable contract (the evidence load above already
     # validated it). PVCG-R1: this single read supplies BOTH the `idea_id` and
@@ -218,7 +247,7 @@ def _reconstruct(store, project_id: str):
     state.path = path
 
     last_result = progression_loop.run_iteration(state, seed)   # seed first
-    for record in evidence:                                     # then answers (seq order)
+    for record in amended:                        # then ACTIVE answers (seq order)
         last_result = progression_loop.run_iteration(state, record.content)
 
     # P10-PC2: restore the durably persisted interaction ledger VERBATIM onto
@@ -258,4 +287,5 @@ def _reconstruct(store, project_id: str):
         current_stage=state.current_stage,
         open_gaps=open_gaps,
         next_question=next_question,
+        withdrawn_source_records=withdrawn,
     ), state
