@@ -41,7 +41,68 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — PVCG-R3-I: SEMANTIC STABILITY IMPLEMENTATION; bounded implementation candidate).**
+**Status (current — PVCG-R3-I (REPAIR): focused repair after Independent External Review REJECT).**
+Base: `7b7aa2f12a7429fbb309c2f4a7e13d7b83ebdd60` (PR #551 merge — PVCG-R3-C, AUTHORITATIVE;
+re-resolved live and independently re-verified on all four merge criteria before any repair work).
+
+**Disposition: `PVCG-R3-I REPAIR CANDIDATE — NOT AUTHORITATIVE UNTIL MERGED`.**
+**Rejected predecessor `1ce9ef340c7cb908da37ae8b4b304b1ee9ae30bc` is preserved UNCHANGED as immutable
+review evidence** (never amended, rebased, squashed or published), together with its Creator-Grill
+parent `52a25182…`. **The rejected candidate's `UNSUPPORTED MATERIAL CLAIMS: 0` is WITHDRAWN.**
+
+**B-1 repaired — Arabic causal substring bleed.** Causal surfaces matched by raw substring, so the
+2-character `ثم` fired from inside `ثمن` (price), `عثمان`, `ثمانية`, `استثمار` — 19/19 measured false
+positives — and an Arabic answer whose only qualifying token was the noun `ثمن` reached `REASONED` and
+CLOSED a gap while the synonym `سعر` and the faithful English counterpart stayed `ASSERTED`/`PARTIAL`.
+Each causal surface now declares an explicit `match_mode` and goes through the same `_surface_matches`
+discipline as concept surfaces (36 WORD / 6 PHRASE), with the definite-article proclitics excluded for
+causal surfaces only. After repair: **0/19 false positives, 10/10 legitimate causal usage preserved, and
+the `ثمن` / `سعر` / English outcomes identical.** The validator now refuses at import any single-token
+causal or unknown surface declared PHRASE.
+
+**B-2 repaired — circular mutation evidence.** Probes were parametrized over `DECLARED_INVENTORY`
+(derived from `CONCEPTS`), so deleting a surface deleted its own test: focused 453→451 and full
+4229→4227, both with ZERO failures. **The `163/163 KILLED` result is WITHDRAWN.** Coverage adequacy now
+runs off `tests/fixtures/pvcg_r3i_frozen_expectations.py` — **257 rows of literal committed data**
+importing nothing from the object under test (AST-verified), with a both-directions parity test.
+Deleting one entry from each of the four classes now turns the suite RED.
+
+**Corrected sweep:** **257 processed / 252 KILLED / 0 SURVIVED / 5 LOADFAIL**, restore **257/257**
+byte-identical. The 5 LOADFAILs are sole-surface entries where the registry's own `RegistryError`
+refuses the mutant (fail-closed by design) — reported as LOADFAIL, **not** counted as kills.
+
+**Structural shadowing — prior "0 shadowed" was WRONG.** Two genuine shadows found (`مما يسبب` behind
+the WORD surface `يسبب`; `لست متاكدا` behind the prefix `لست متاكد`) and REMOVED, with the removals
+recorded. Causal is now **42** and acknowledged-unknown **8**. The re-audited zero is earned.
+
+**N-1 corrected:** **38 pack SIGNALS carrying 44 Arabic SURFACES** (the earlier "38 substance surfaces"
+was wrong). **N-3 corrected:** the negative control no longer skips the case it names. **N-2 recorded as
+OPEN / NON-BLOCKING:** the 40-character acknowledged-unknown threshold is language-neutral in rule but
+not in effect (EN 43 detected / AR 27 not); pre-existing, byte-unchanged, fail-closed in direction, not
+redesigned here. **N-5 classified:** R3-C §2.5's "English-only" wording is overstated (`localize_deep`
+did localize the base fallback); an observation about the authoritative contract, not an R3-I defect —
+R3-C history is NOT rewritten.
+
+**Preserved gains.** D-1 **0/6**; D-2 trajectories identical; D-3 unknown recorded and never
+satisfaction; D-4 specific and genuinely localized; English not widened by one token.
+`engine/progression_loop.py` **byte-unchanged by this repair** (`3cbd7684…`), so no pin moved again.
+
+**Verification on the frozen repair candidate.** Focused R3-I **579 passed**; R1 **26/26** byte-unchanged;
+R2 **189** + **566** byte-unchanged; P9 **54**; smoke **PASS**; full suite **4355 passed / 3 skipped /
+1 xfailed / 0 failed**; §18 reconciliation 3776 **+579**, exactly the R3-I test file.
+
+**Scope.** `PVCG-R3 AUTHORITATIVELY SATISFIED: NO`; `PVCG-R4 IMPLEMENTATION STARTED: NO`;
+`FULL ADAPTIVE QUESTIONING ACTIVATED: NO`; `TDVP IMPLEMENTATION STARTED: NO`; `LLM/EMBEDDINGS/VECTOR
+STORE/EXTERNAL NLP/PROBABILISTIC CLASSIFIER ADDED: NO`; no pack edit, no domain change, no new gap type;
+`main` not reconciled; `OWNER_DECISION_REGISTER.md` UNCHANGED. `PVCG SATISFIED: NO`;
+`MINIMUM LAUNCH-CONFORMANCE SET SATISFIED: NO`; `DEPLOYMENT AUTHORIZED: NO`.
+`UNSUPPORTED MATERIAL CLAIMS: 0`.
+
+---
+
+**Superseded (retained as history) — PVCG-R3-I: SEMANTIC STABILITY IMPLEMENTATION; REJECTED by
+Independent External Review as `1ce9ef34…` on defects B-1 and B-2; preserved unchanged as immutable
+review evidence. Its claims below are HISTORICAL and several were false — see the repair entry above.**
 Base: `7b7aa2f12a7429fbb309c2f4a7e13d7b83ebdd60` (PR #551 merge — PVCG-R3-C, AUTHORITATIVE; live tip
 re-fetched from `origin/feature/atomic-json-session-persistence` and independently re-verified on all
 four merge criteria: first parent `ca98099e29f6729c29e7612d67f9187dbd0dccb6`, second parent

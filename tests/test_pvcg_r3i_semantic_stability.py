@@ -13,11 +13,18 @@ BOUND (§7.4) and is asserted here explicitly rather than implied away.
 
 COVERAGE ADEQUACY (§10.3 — the binding T-1 / T-1b lesson)
 ---------------------------------------------------------
-Probes are generated from the DECLARED inventory
-(``engine.semantic_registry.DECLARED_INVENTORY``), never from the live matcher
-tables: a probe generated from the live table would vanish together with the
-entry it is supposed to protect. Probe isolation is machine-validated and the
-suite REFUSES AT COLLECTION if any probe is not isolated.
+Coverage probes come from ``tests/fixtures/pvcg_r3i_frozen_expectations.py``,
+a FROZEN corpus of literal committed data that imports nothing from the object
+under test. It does not shrink when a runtime entry is deleted, so a deletion
+leaves the expectation standing and the assertion goes RED.
+
+The previous candidate (1ce9ef34, REJECTED) parametrized these probes over
+``DECLARED_INVENTORY``, which is derived from ``CONCEPTS`` at import — so
+deleting a surface deleted its own test case and the suite stayed GREEN while
+real behaviour was lost (measured: focused 453 -> 451 and full 4229 -> 4227,
+both with ZERO failures). That was defect B-2 and this file no longer relies on
+that pattern for adequacy. ``DECLARED_INVENTORY`` is still used for the §7.3
+equivalence sweep and the isolation helpers, which are not adequacy oracles.
 """
 
 import warnings
@@ -38,6 +45,12 @@ from engine.semantic_registry import (
     CONCEPTS, DECLARED_INVENTORY, CAUSAL_SURFACES,
     ACKNOWLEDGED_UNKNOWN_SURFACES, SUBSTANCE_SURFACES,
     activated_concepts, normalize_ar, WORD, PHRASE,
+    has_registered_causal_structure, substance_surface_present,
+    detect_registered_unknown,
+)
+from engine.domain_rules import get_substance_signals
+from tests.fixtures.pvcg_r3i_frozen_expectations import (
+    EXPECTED_SURFACES, CONCEPT, CAUSAL, UNKNOWN, SUBSTANCE,
 )
 from web.result_feedback import get_result_feedback
 from web.ui_text import localize_deep
@@ -160,7 +173,7 @@ class TestD1EligibilityAndMaterialEquivalence:
         §7.1 fields are equal. This is a property of REGISTERED surfaces, not of
         hand-written sentence pairs.
         """
-        probes = ["%s %s %s" % (_CARRIER[0], surface, _CARRIER[1])
+        probes = [_probe_for(surface)
                   for surface, _mode in concept.ar_surfaces + concept.en_surfaces]
         first = outcome(concept.owner, probes[0])
         for probe in probes[1:]:
@@ -410,12 +423,23 @@ class TestNegativeControls:
     def test_2_unregistered_arabic_is_not_eligible(self):
         """'It is Arabic and technical, therefore accept' is a rejection
         condition."""
+        # N-3 repair: this control previously did `if activated_concepts(...):
+        # continue`, so it skipped exactly the cases it named and could never
+        # fail. The أعتقد sentence is now asserted explicitly against the
+        # accepted mirrored-breadth truth instead of being silently skipped.
         for text in ("هذه الفكرة جميلة جدا وسوف تنال إعجاب الناس في كل مكان.",
-                     "أعتقد أن الطقس اليوم جميل ومناسب للخروج مع العائلة."):
+                     "سوف اعمل على هذا المشروع في وقت لاحق عندما تتوفر الفرصة."):
             for gap in GAPS:
-                if activated_concepts(text, gap):
-                    continue
-                assert addresses_gap(text, gap) is False
+                assert addresses_gap(text, gap) is False, (
+                    "unregistered Arabic prose became eligible for %s" % gap)
+        # Carries اعتقد, a registered surface mirroring the PRE-EXISTING English
+        # marker `believe`. Eligible in BOTH languages by design (§14 residual
+        # 1) — asserted, not skipped.
+        mirrored = "أعتقد أن الطقس اليوم جميل ومناسب للخروج مع العائلة."
+        assert addresses_gap(mirrored, ASSUMPTION_INVENTORY) is True
+        for gap in GAPS:
+            if gap != ASSUMPTION_INVENTORY:
+                assert addresses_gap(mirrored, gap) is False
 
     def test_3_unregistered_english_paraphrase_still_not_eligible(self):
         """N-3 — R3 must not accidentally widen English while adding Arabic."""
@@ -480,20 +504,25 @@ class TestNegativeControls:
 
 
 # ---------------------------------------------------------------------------
-# §10.3 — COVERAGE ADEQUACY. Probes generated from the DECLARED inventory.
+# §10.3 — COVERAGE ADEQUACY, driven by the FROZEN INDEPENDENT CORPUS.
 # ---------------------------------------------------------------------------
-# A neutral Arabic carrier containing NO registered surface of any family. If
-# this ever stops being true the isolation validator below fails at collection.
+# Independent External Review REJECTED candidate 1ce9ef34 on defect B-2: the
+# probes were parametrized over DECLARED_INVENTORY, which is derived from
+# CONCEPTS at import. Deleting a registered surface deleted its own test case,
+# so the suite stayed GREEN while real behaviour was lost (measured: focused
+# 453 -> 451 and full 4229 -> 4227, both with ZERO failures).
+#
+# The oracle now comes from tests/fixtures/pvcg_r3i_frozen_expectations.py,
+# which imports NOTHING from the object under test. A deleted runtime entry
+# leaves its expectation standing, so the assertion goes RED. The parity test
+# below keeps the two in sync in BOTH directions, so a silently ADDED runtime
+# surface with no frozen expectation fails just as loudly.
+
+# A neutral Arabic carrier containing NO registered surface of any family, and
+# a dissolving affix absent from every registered surface. Used by the §7.3
+# equivalence sweep and the near-miss controls. NOT the coverage-adequacy
+# oracle — that is the frozen corpus below.
 _CARRIER = ("هذا", "فقط", "هنا")
-
-
-#: An affix that appears in NO registered surface and is not a declared
-#: proclitic, used to DISSOLVE a companion token while preserving a phrase
-#: substring — the technique PVCG_R2_FORMAL_CLOSURE_RECORD.md §6 established
-#: for the T-1b phrase→word containments ("zstep by stepz").
-#: A DIGRAPH, not a single letter: no single Arabic letter is absent from every
-#: registered surface (ز, for instance, occurs inside جزء), so a one-letter
-#: affix could not carry the "appears in no surface" invariant below.
 _DISSOLVE = "ظظ"
 
 
@@ -502,29 +531,13 @@ def _plain_probe(surface):
 
 
 def _dissolved_probe(surface):
-    """Keep the phrase as a SUBSTRING while dissolving its boundary tokens."""
     return "%s %s%s%s %s" % (_CARRIER[0], _DISSOLVE, surface, _DISSOLVE,
                              _CARRIER[1])
 
 
-def _probe_for(surface):
-    """The isolated probe for ``surface``.
-
-    A registered PHRASE may properly contain a shorter registered WORD of the
-    SAME family (e.g. متطلبات الطاقة contains طاقة). That is genuine same-family
-    co-activation, not a defect — but it makes the plain probe non-isolated, so
-    the coverage claim would be meaningless. The dissolved form preserves the
-    phrase substring and breaks the companion token, exactly as the R2 marker
-    suite does. A phrase→word containment is NEVER used to argue that the
-    contained entry is non-operative — that argument is unsound (T-1b).
-    """
-    plain = _plain_probe(surface)
-    return plain if _is_isolated(surface, plain) else _dissolved_probe(surface)
-
-
 def _is_isolated(surface, probe):
-    """True when ``probe`` activates at most the one concept owning ``surface``."""
-    owners = {cid: owner for cid, owner, s, _m in DECLARED_INVENTORY if s == surface}
+    owners = {cid: owner for cid, owner, sfc, _m in DECLARED_INVENTORY
+              if sfc == surface}
     if len(owners) != 1:
         return False
     concept_id, owner = next(iter(owners.items()))
@@ -534,102 +547,208 @@ def _is_isolated(surface, probe):
                for other in GAPS if other != owner)
 
 
-def _isolation_report(concept_id, owner, surface):
-    """Return None when the probe is isolated, else the reason it is not."""
-    probe = _probe_for(surface)
-    own = activated_concepts(probe, owner)
-    if own != frozenset({concept_id}):
-        return ("probe for %s activates %s in its own family, expected exactly "
-                "{%s}" % (surface, sorted(own), concept_id))
-    for other in GAPS:
-        if other == owner:
-            continue
-        foreign = activated_concepts(probe, other)
-        if foreign:
-            return ("probe for %s leaks into %s via %s"
-                    % (surface, other, sorted(foreign)))
-    return None
+def _probe_for(surface):
+    plain = _plain_probe(surface)
+    return plain if _is_isolated(surface, plain) else _dissolved_probe(surface)
 
 
-def _collection_guard():
-    """§10.3 — REFUSE AT COLLECTION if any generated probe is not isolated."""
-    problems = [r for r in
-                (_isolation_report(cid, owner, surface)
-                 for cid, owner, surface, _mode in DECLARED_INVENTORY)
-                if r is not None]
-    return problems
-
-
-_ISOLATION_PROBLEMS = _collection_guard()
-
-
-def test_carrier_is_itself_inert():
-    """Validator self-test: the carrier alone must activate nothing anywhere."""
+def test_carrier_and_dissolving_affix_are_inert():
+    """Validator self-test for the helpers above."""
     for gap in GAPS:
-        assert activated_concepts(" ".join(_CARRIER), gap) == frozenset()
         assert addresses_gap(" ".join(_CARRIER), gap) is False
+        assert addresses_gap("%s %s %s" % (_CARRIER[0], _DISSOLVE,
+                                           _CARRIER[1]), gap) is False
+    for _c, _o, surface, _m in DECLARED_INVENTORY:
+        assert _DISSOLVE not in surface
 
 
-def test_dissolving_affix_is_itself_inert():
-    """Validator self-test: the dissolving affix must not create or suppress a
-    match on its own, and must not be a declared proclitic."""
-    from engine.semantic_registry import _AR_PROCLITICS
-    assert _DISSOLVE not in _AR_PROCLITICS
-    for gap in GAPS:
-        assert addresses_gap("%s %s %s" % (_CARRIER[0], _DISSOLVE, _CARRIER[1]),
-                             gap) is False
-    for _cid, _owner, surface, _mode in DECLARED_INVENTORY:
-        assert _DISSOLVE not in surface, (
-            "the dissolving affix appears in registered surface %r" % surface)
+_BY_CLASS = {}
+for _row in EXPECTED_SURFACES:
+    _BY_CLASS.setdefault(_row[0], []).append(_row)
+
+_CONCEPT_ROWS = tuple(_BY_CLASS[CONCEPT])
+_CAUSAL_ROWS = tuple(_BY_CLASS[CAUSAL])
+_UNKNOWN_ROWS = tuple(_BY_CLASS[UNKNOWN])
+_SUBSTANCE_ROWS = tuple(_BY_CLASS[SUBSTANCE])
 
 
-def test_probes_requiring_dissolution_are_declared():
-    """Auditable: exactly which surfaces needed the dissolved form, and why."""
-    needed = sorted(surface for _c, _o, surface, _m in DECLARED_INVENTORY
-                    if not _is_isolated(surface, _plain_probe(surface)))
-    for surface in needed:
-        assert " " in surface, (
-            "only multi-word PHRASE surfaces may require dissolution; %r is not "
-            "a phrase, so its non-isolation is a real collision" % surface)
-        assert _is_isolated(surface, _dissolved_probe(surface)), (
-            "%r is not isolable even when dissolved" % surface)
+def test_frozen_corpus_is_independent_of_the_object_under_test():
+    """The oracle must not import the matcher it is supposed to police."""
+    import ast
+    import inspect
+    import tests.fixtures.pvcg_r3i_frozen_expectations as frozen
+    tree = ast.parse(inspect.getsource(frozen))
+    imports = [node for node in ast.walk(tree)
+               if isinstance(node, (ast.Import, ast.ImportFrom))]
+    assert imports == [], (
+        "the frozen corpus must contain no import statement; found %d"
+        % len(imports))
 
 
-def test_every_generated_probe_is_isolated():
-    """Collection-time adequacy guard (§10.3). A non-isolated probe would make
-    the coverage claim below meaningless, so it fails loudly instead."""
-    assert _ISOLATION_PROBLEMS == [], _ISOLATION_PROBLEMS
+def test_frozen_corpus_and_live_registry_agree_in_both_directions():
+    """Deletion AND silent addition both fail here."""
+    frozen_concept = {(r[1], r[2], r[3], r[4]) for r in _CONCEPT_ROWS}
+    live_concept = {(c.concept_id, c.owner, surface, mode)
+                    for c in CONCEPTS for surface, mode in c.ar_surfaces}
+    assert frozen_concept == live_concept, (
+        "concept surfaces drifted; missing from live=%s, unexpected in live=%s"
+        % (sorted(frozen_concept - live_concept),
+           sorted(live_concept - frozen_concept)))
+
+    frozen_causal = {(r[3], r[4]) for r in _CAUSAL_ROWS}
+    live_causal = {(surface, mode) for surface, mode, _m in CAUSAL_SURFACES}
+    assert frozen_causal == live_causal, (
+        "causal surfaces drifted; missing=%s, unexpected=%s"
+        % (sorted(frozen_causal - live_causal),
+           sorted(live_causal - frozen_causal)))
+
+    frozen_unknown = {r[3] for r in _UNKNOWN_ROWS}
+    live_unknown = {surface for surface, _m in ACKNOWLEDGED_UNKNOWN_SURFACES}
+    assert frozen_unknown == live_unknown
+
+    frozen_substance = {(r[2], r[1], r[3]) for r in _SUBSTANCE_ROWS}
+    live_substance = {(domain, signal, surface)
+                      for domain, sigmap in SUBSTANCE_SURFACES.items()
+                      for signal, surfaces in sigmap.items()
+                      for surface in surfaces}
+    assert frozen_substance == live_substance
 
 
-@pytest.mark.parametrize(
-    "concept_id,owner,surface,mode",
-    DECLARED_INVENTORY,
-    ids=["%s:%s" % (c, s) for c, _o, s, _m in DECLARED_INVENTORY])
-def test_declared_surface_is_operative(concept_id, owner, surface, mode):
-    """One machine-isolated POSITIVE probe per declared Arabic surface.
-
-    Generated from the DECLARED inventory, so deleting the surface from the
-    live table leaves this probe in place to FAIL — the T-1 lesson.
-    """
-    probe = _probe_for(surface)
+@pytest.mark.parametrize("row", _CONCEPT_ROWS,
+                         ids=["%s:%s" % (r[1], r[3]) for r in _CONCEPT_ROWS])
+def test_frozen_concept_surface_is_operative(row):
+    _cls, concept_id, owner, surface, _mode, probe = row
     assert addresses_gap(probe, owner) is True, (
-        "declared surface %r of %s is NOT operative" % (surface, concept_id))
+        "frozen concept surface %r of %s is NOT operative" % (surface, concept_id))
     assert concept_id in activated_concepts(probe, owner)
 
 
-@pytest.mark.parametrize(
-    "concept_id,owner,surface,mode",
-    DECLARED_INVENTORY,
-    ids=["%s:%s" % (c, s) for c, _o, s, _m in DECLARED_INVENTORY])
-def test_declared_surface_has_cross_family_exclusivity(concept_id, owner,
-                                                       surface, mode):
-    """The same probe must activate NOTHING in the other five families."""
-    probe = _probe_for(surface)
+@pytest.mark.parametrize("row", _CONCEPT_ROWS,
+                         ids=["%s:%s" % (r[1], r[3]) for r in _CONCEPT_ROWS])
+def test_frozen_concept_surface_is_cross_family_exclusive(row):
+    _cls, _cid, owner, surface, _mode, probe = row
     for other in GAPS:
         if other == owner:
             continue
         assert addresses_gap(probe, other) is False, (
             "%r (owned by %s) also satisfies %s" % (surface, owner, other))
+
+
+@pytest.mark.parametrize("row", _CAUSAL_ROWS,
+                         ids=[r[3] for r in _CAUSAL_ROWS])
+def test_frozen_causal_surface_is_operative(row):
+    _cls, mirror, _scope, surface, _mode, probe = row
+    assert has_registered_causal_structure(probe) is True, (
+        "frozen causal surface %r (mirrors %r) is NOT operative"
+        % (surface, mirror))
+
+
+@pytest.mark.parametrize("row", _UNKNOWN_ROWS,
+                         ids=[r[3] for r in _UNKNOWN_ROWS])
+def test_frozen_unknown_surface_is_operative(row):
+    _cls, mirror, _scope, surface, _mode, probe = row
+    assert detect_registered_unknown(probe) is not None, (
+        "frozen unknown surface %r (mirrors %r) is NOT operative"
+        % (surface, mirror))
+
+
+@pytest.mark.parametrize("row", _SUBSTANCE_ROWS,
+                         ids=["%s:%s" % (r[1], r[3]) for r in _SUBSTANCE_ROWS])
+def test_frozen_substance_surface_is_operative(row):
+    _cls, signal, domain, surface, _mode, probe = row
+    assert substance_surface_present(probe, domain) is True, (
+        "frozen substance surface %r for signal %r is NOT operative"
+        % (surface, signal))
+
+
+def test_every_substance_surface_maps_to_a_committed_pack_signal():
+    """R3 adds NO new substance concept — one-to-one with the packs (§5.4)."""
+    for _cls, signal, domain, _surface, _mode, _probe in _SUBSTANCE_ROWS:
+        assert signal in set(get_substance_signals(domain)), (
+            "%r is not a committed pack signal of %s" % (signal, domain))
+
+
+# ---------------------------------------------------------------------------
+# B-1 — Arabic causal surfaces must not fire from inside an unrelated word.
+# ---------------------------------------------------------------------------
+class TestCausalTokenBoundary:
+    """Independent External Review defect B-1, repaired and pinned.
+
+    A raw substring rule let the 2-character surface `ثم` fire from inside
+    ordinary words (`ثمن` price, `عثمان` a name, `ثمانية` eight, `استثمار`
+    investment). Measured consequence at the rejected candidate: an Arabic
+    answer whose only qualifying token was the noun `ثمن` reached REASONED and
+    CLOSED the gap, while the same sentence with the synonym `سعر` and the
+    faithful English counterpart both stayed ASSERTED / PARTIAL.
+    """
+
+    BLEED = ["ثمن", "الثمن", "عثمان", "مثمر", "الثمار", "ثمانية", "ثمين",
+             "استثمار", "المستثمر", "ثمة", "الحين", "حينها", "يستحين",
+             "اذاعي", "الاذاعة", "شاذا", "لكيلا", "بلكيت", "فتحتى"]
+
+    LEGITIMATE = [
+        "ثم تحرر المزلاج بعد ذلك مباشرة.",
+        "وثم تدور الذراع بعد ذلك.",
+        "عندما يضغط المستخدم على المقبض تدور الذراع.",
+        "حين يرتفع الضغط يفتح الصمام.",
+        "بمجرد أن يتحرر المزلاج يدفع النابض المكبس.",
+        "اذا ارتفع الضغط يفتح الصمام تلقائيا.",
+        "الذراع تحول قوة اليد الى حركة خطية.",
+        "هذا يؤدي الى فتح الصمام بالكامل.",
+        "فتدور الذراع وتدفع المزلاج.",
+        "النظام يقيس الضغط ثم يقارن القيمة بالعتبة.",
+    ]
+
+    @pytest.mark.parametrize("word", BLEED)
+    def test_causal_surface_does_not_fire_from_inside_a_word(self, word):
+        assert has_registered_causal_structure(
+            "هذا %s فقط في الجهاز" % word) is False, (
+            "causal structure recognised from lexical containment in %r" % word)
+
+    @pytest.mark.parametrize("text", LEGITIMATE)
+    def test_legitimate_causal_usage_still_recognised(self, text):
+        assert has_registered_causal_structure(text) is True
+
+    def test_ordinary_noun_cannot_manufacture_quality_or_closure(self):
+        """The exact material consequence the reviewer proved, pinned."""
+        with_bleed = ("المكونات الرئيسية للجهاز هي المزلاج والصمام وقد ارتفع "
+                      "ثمن هذه القطع كثيرا هذا العام.")
+        with_synonym = ("المكونات الرئيسية للجهاز هي المزلاج والصمام وقد ارتفع "
+                        "سعر هذه القطع كثيرا هذا العام.")
+        english = ("The main components of the device are the latch and the "
+                   "valve and the price of these parts rose a lot this year.")
+
+        def material(answer):
+            state = _with_gap(MECHANISM_COMPLETENESS)
+            for i in range(2):
+                state.iteration = i + 1
+                _serve(state, MECHANISM_COMPLETENESS, answer)
+            gap = state.get_gap(MECHANISM_COMPLETENESS)
+            return _quality(answer), gap.status, gap.closed_at is not None
+
+        assert material(with_bleed) == material(with_synonym), (
+            "an ordinary noun sharing letters with a causal surface changed "
+            "the material outcome")
+        assert material(with_bleed) == material(english), (
+            "Arabic is materially easier than its faithful English counterpart")
+        assert material(with_bleed)[2] is False
+
+    def test_every_single_token_causal_surface_is_word_mode(self):
+        """Structural guarantee: no bare token may be matched by substring."""
+        for surface, mode, _mirror in CAUSAL_SURFACES:
+            if " " not in surface:
+                assert mode == WORD, (
+                    "single-token causal surface %r declared %s — that is the "
+                    "B-1 defect" % (surface, mode))
+
+    def test_definite_article_does_not_reach_a_causal_surface(self):
+        """`ال` turns a connective into a noun phrase, so the article family is
+        excluded from causal proclitic stripping while verbs keep و/ف/ب/ك/ل."""
+        from engine.semantic_registry import (
+            _AR_CAUSAL_PROCLITICS, _AR_ARTICLE_PROCLITICS)
+        assert not (set(_AR_CAUSAL_PROCLITICS) & _AR_ARTICLE_PROCLITICS)
+        assert has_registered_causal_structure("هذا الحين فقط") is False
+        assert has_registered_causal_structure("وثم تدور الذراع") is True
 
 
 # ---------------------------------------------------------------------------

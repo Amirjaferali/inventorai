@@ -2424,6 +2424,43 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
+- **PVCG-R3-I (REPAIR) — FOCUSED REPAIR AFTER INDEPENDENT REVIEW REJECT (implementation CANDIDATE),
+  base `7b7aa2f12a7429fbb309c2f4a7e13d7b83ebdd60`** (PR #551 merge — PVCG-R3-C, AUTHORITATIVE;
+  re-resolved live and independently re-verified on all four merge criteria before any repair work).
+  Disposition: **`PVCG-R3-I REPAIR CANDIDATE — NOT AUTHORITATIVE UNTIL MERGED`**. **Rejected
+  predecessor `1ce9ef340c7cb908da37ae8b4b304b1ee9ae30bc` preserved UNCHANGED as immutable review
+  evidence, never published**; its `UNSUPPORTED MATERIAL CLAIMS: 0` is **WITHDRAWN**.
+  **B-1 repaired:** Arabic causal surfaces matched by RAW SUBSTRING, so `ثم` fired inside `ثمن` (price),
+  `عثمان`, `ثمانية`, `استثمار` — **19/19** false positives — and an answer whose only qualifying token
+  was the noun `ثمن` reached **`REASONED` → `CLOSED`** while the synonym `سعر` and the faithful English
+  counterpart stayed `ASSERTED`/`PARTIAL`. Causal surfaces now declare an explicit `match_mode` and use
+  the same token/substring discipline as concept surfaces (36 WORD / 6 PHRASE), with the definite-article
+  proclitics excluded for causal only. After repair **0/19** false positives, **10/10** legitimate causal
+  usage preserved, and the three material outcomes identical. **B-2 repaired:** coverage probes were
+  derived from `DECLARED_INVENTORY` (itself derived from `CONCEPTS`), so deleting a surface deleted its
+  own test — focused **453→451** and full **4229→4227**, both **ZERO failures**; the
+  **`163/163 KILLED` claim is WITHDRAWN**. Adequacy now runs off the frozen, import-free
+  `tests/fixtures/pvcg_r3i_frozen_expectations.py` (**257 literal rows**, AST-verified independent, with
+  both-directions parity); deleting one entry per class now goes RED. **Corrected sweep: 257 processed /
+  252 KILLED / 0 SURVIVED / 5 LOADFAIL** (sole-surface entries where the registry's own `RegistryError`
+  fails closed — **not** counted as kills), restore **257/257** byte-identical. **Structural shadowing:
+  the prior "0 shadowed" was WRONG** — 2 genuine shadows (`مما يسبب`, `لست متاكدا`) found and REMOVED,
+  so causal is **42** and unknown **8**, and the re-audited zero is earned. **N-1 corrected:** 38 pack
+  SIGNALS / **44** Arabic SURFACES. **N-3 corrected** (the control no longer skips the case it names).
+  **N-2 OPEN/NON-BLOCKING:** the 40-char acknowledged-unknown threshold is language-neutral in rule but
+  not in effect (EN 43 detected / AR 27 not) — pre-existing, byte-unchanged, fail-closed in direction,
+  not redesigned. **N-5 classified:** R3-C §2.5's "English-only" wording is overstated (`localize_deep`
+  did localize the base fallback) — an authoritative-contract observation, not an R3-I defect; R3-C
+  history NOT rewritten. **Gains preserved:** D-1 **0/6**, D-2 trajectories identical, D-3 unknown never
+  satisfaction, D-4 specific and localized, English not widened. `engine/progression_loop.py`
+  **byte-unchanged by this repair** (`3cbd7684…`) so no pin moved again; packs byte-identical.
+  **Measured on the frozen repair candidate:** focused R3-I **579**; R1 **26/26** byte-unchanged; R2
+  **189** + **566** byte-unchanged; P9 **54**; `UNIVERSAL GUARDRAIL SMOKE: PASS`; full suite
+  **4355 passed / 3 skipped / 1 xfailed / 0 failed** (3776 baseline **+579**, exactly the R3-I test
+  file). `PVCG-R3 AUTHORITATIVELY SATISFIED: NO`; `PVCG-R4 NOT STARTED`; `PVCG SATISFIED: NO`;
+  `MINIMUM LAUNCH-CONFORMANCE SET SATISFIED: NO`; `DEPLOYMENT AUTHORIZED: NO`; `main` not reconciled;
+  `OWNER_DECISION_REGISTER.md` UNCHANGED.
+
 - **PVCG-R3-I — SEMANTIC STABILITY IMPLEMENTATION (bounded implementation CANDIDATE), base
   `7b7aa2f12a7429fbb309c2f4a7e13d7b83ebdd60`** (PR #551 merge — PVCG-R3-C, AUTHORITATIVE; live tip
   re-fetched and independently re-verified on all four merge criteria: first parent `ca98099e…`, second

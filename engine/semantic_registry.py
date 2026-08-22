@@ -166,6 +166,20 @@ _AR_PROCLITICS = (
 #: token merely because its first letter happens to be a proclitic.
 _MIN_PROCLITIC_SURFACE_LEN = 3
 
+#: The definite-article proclitics. Prefixing `ال` to a CAUSAL connective turns
+#: it into a noun phrase and changes its part of speech — `حين` ("when") becomes
+#: `الحين` ("the time" / colloquially "now"), which is not a causal
+#: construction. Concept surfaces are nouns and verbs where the article is
+#: harmless and expected (`الخطوات` = "the steps"), so the article family is
+#: allowed there and DISALLOWED for causal surfaces. Explicit, finite, and
+#: derived from the measured B-1 bleed set — not from linguistic intuition.
+_AR_ARTICLE_PROCLITICS = frozenset({"وال", "بال", "كال", "فال", "لل", "ال"})
+
+#: Proclitics admissible for a CAUSAL word surface: the non-article ones, so
+#: `وثم` / `فتدور` still match while `الحين` does not.
+_AR_CAUSAL_PROCLITICS = tuple(p for p in _AR_PROCLITICS
+                              if p not in _AR_ARTICLE_PROCLITICS)
+
 #: Letter runs. ``[^\W\d_]`` is Unicode-aware, so this tokenizes Arabic and
 #: Latin identically and never splits inside a word.
 _TOKEN_RE = re.compile(r"[^\W\d_]+", re.UNICODE)
@@ -175,23 +189,24 @@ def _tokens(normalized_text):
     return frozenset(_TOKEN_RE.findall(normalized_text))
 
 
-def _word_matches(surface, tokens):
+def _word_matches(surface, tokens, proclitics=_AR_PROCLITICS):
     """True when a registered WORD surface is present as a whole token."""
     if surface in tokens:
         return True
     if len(surface) < _MIN_PROCLITIC_SURFACE_LEN:
         return False
     for token in tokens:
-        for proclitic in _AR_PROCLITICS:
+        for proclitic in proclitics:
             if token.startswith(proclitic) and token[len(proclitic):] == surface:
                 return True
     return False
 
 
-def _surface_matches(surface, mode, normalized_text, tokens):
+def _surface_matches(surface, mode, normalized_text, tokens,
+                     proclitics=_AR_PROCLITICS):
     if mode == PHRASE:
         return surface in normalized_text
-    return _word_matches(surface, tokens)
+    return _word_matches(surface, tokens, proclitics)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -503,54 +518,76 @@ CONCEPTS = (
 #: Arabic counterparts of the English ``_CAUSAL_STRUCTURE_PATTERNS`` role in
 #: ``engine.progression_loop``. Each entry names the English construction it
 #: mirrors — it adds no new causal construction, and the English table is NOT
-#: touched. Matched as PHRASE (substring) on normalized text: these are
-#: connective/verb constructions that legitimately attach clitics, and a token
-#: rule would miss the attached forms the English table matches by substring
-#: too ("when " / "causes" are substrings in the English table).
+#: touched.
+#:
+#: MATCH MODE IS DECLARED PER SURFACE and is enforced through the SAME
+#: ``_surface_matches`` discipline as the concept surfaces:
+#:
+#:   WORD   — a single Arabic token. Matched by TOKEN, never by substring.
+#:   PHRASE — a genuine multi-word construction. Matched by substring, which is
+#:            boundary-safe by construction because the surface contains a
+#:            space and therefore cannot occur inside a single word.
+#:
+#: WHY A BARE SUBSTRING RULE IS WRONG HERE (defect B-1, found by Independent
+#: External Review of candidate 1ce9ef34 and repaired here). A raw substring
+#: rule let a short surface fire from inside an ordinary unrelated word: `ثم`
+#: ("then") matched inside `ثمن` (price), `عثمان` (a name), `ثمانية` (eight),
+#: `استثمار` (investment) and `ثمة`; `حين` inside `الحين`/`حينها`; `اذا` inside
+#: `اذاعي`; `لكي` inside `لكيلا`. Measured consequence: an Arabic answer whose
+#: only qualifying token was the noun `ثمن` reached REASONED and CLOSED a gap,
+#: while the same sentence with the synonym `سعر` and the faithful English
+#: counterpart both stayed ASSERTED / PARTIAL. That is manufactured progress
+#: and an Arabic-easier-than-English divergence — exactly what R3-C §4 and the
+#: §16.7 quality negative control forbid.
+#:
+#: The English table is NOT the counter-example it was previously claimed to
+#: be: its short function words carry an explicit trailing-space boundary
+#: guard (`"when "`, `"if "`, `"then "`, `"after "`, `"until "`, `"once "`), so
+#: English was never exposed to this class of bleed. Token matching restores
+#: the parity the previous comment wrongly asserted already existed.
 CAUSAL_SURFACES = (
-    ("عندما", "when "),
-    ("حين", "when "),
-    ("اذا", "if "),
-    ("بعد ان", "after "),
-    ("قبل ان", "before "),
-    ("حتى", "until "),
-    ("بمجرد", "once / as soon as "),
-    ("يسبب", "causes"),
-    ("تسبب", "causes"),
-    ("ينتج", "produces"),
-    ("تنتج", "produces"),
-    ("يؤدي الى", "results in / leads to"),
-    ("تؤدي الى", "results in / leads to"),
-    ("يحول", "converts / transforms"),
-    ("تحول", "converts / transforms"),
-    ("ينقل", "transfers"),
-    ("تنقل", "transfers"),
-    ("يقيس", "measures"),
-    ("تقيس", "measures"),
-    ("يحسب", "calculates"),
-    ("تحسب", "calculates"),
-    ("يقارن", "compares"),
-    ("تقارن", "compares"),
-    ("يتجاوز", "exceeds"),
-    ("تتجاوز", "exceeds"),
-    ("يقفل", "locks"),
-    ("تقفل", "locks"),
-    ("يحرر", "releases"),
-    ("تحرر", "releases"),
-    ("يدفع", "pushes"),
-    ("تدفع", "pushes"),
-    ("يسحب", "pulls"),
-    ("تسحب", "pulls"),
-    ("يمنع", "blocks"),
-    ("تمنع", "blocks"),
-    ("يدور", "rotates"),
-    ("تدور", "rotates"),
-    ("من اجل", "in order to"),
-    ("لكي", "in order to"),
-    ("بحيث", "so that"),
-    ("مما يعني", "which means"),
-    ("مما يسبب", "which causes"),
-    ("ثم", "then "),
+    ("عندما", WORD, "when "),
+    ("حين", WORD, "when "),
+    ("اذا", WORD, "if "),
+    ("بعد ان", PHRASE, "after "),
+    ("قبل ان", PHRASE, "before "),
+    ("حتى", WORD, "until "),
+    ("بمجرد", WORD, "once / as soon as "),
+    ("يسبب", WORD, "causes"),
+    ("تسبب", WORD, "causes"),
+    ("ينتج", WORD, "produces"),
+    ("تنتج", WORD, "produces"),
+    ("يؤدي الى", PHRASE, "results in / leads to"),
+    ("تؤدي الى", PHRASE, "results in / leads to"),
+    ("يحول", WORD, "converts / transforms"),
+    ("تحول", WORD, "converts / transforms"),
+    ("ينقل", WORD, "transfers"),
+    ("تنقل", WORD, "transfers"),
+    ("يقيس", WORD, "measures"),
+    ("تقيس", WORD, "measures"),
+    ("يحسب", WORD, "calculates"),
+    ("تحسب", WORD, "calculates"),
+    ("يقارن", WORD, "compares"),
+    ("تقارن", WORD, "compares"),
+    ("يتجاوز", WORD, "exceeds"),
+    ("تتجاوز", WORD, "exceeds"),
+    ("يقفل", WORD, "locks"),
+    ("تقفل", WORD, "locks"),
+    ("يحرر", WORD, "releases"),
+    ("تحرر", WORD, "releases"),
+    ("يدفع", WORD, "pushes"),
+    ("تدفع", WORD, "pushes"),
+    ("يسحب", WORD, "pulls"),
+    ("تسحب", WORD, "pulls"),
+    ("يمنع", WORD, "blocks"),
+    ("تمنع", WORD, "blocks"),
+    ("يدور", WORD, "rotates"),
+    ("تدور", WORD, "rotates"),
+    ("من اجل", PHRASE, "in order to"),
+    ("لكي", WORD, "in order to"),
+    ("بحيث", WORD, "so that"),
+    ("مما يعني", PHRASE, "which means"),
+    ("ثم", WORD, "then "),
 )
 
 #: Arabic surfaces for the ALREADY-COMMITTED per-domain substance signals.
@@ -649,7 +686,6 @@ SUBSTANCE_NO_ARABIC_SURFACE = {
 ACKNOWLEDGED_UNKNOWN_SURFACES = (
     ("لا اعرف", "i do not know"),
     ("لا اعلم", "i do not know"),
-    ("لست متاكدا", "i am not sure"),
     ("لست متاكد", "i am not sure"),
     ("لم احدد", "i have not yet determined"),
     ("لم اقرر", "i have not decided"),
@@ -662,6 +698,14 @@ ACKNOWLEDGED_UNKNOWN_SURFACES = (
 #: question expresses in more than one family is registered to exactly ONE
 #: owner or NOT registered at all. These are the not-registered decisions.
 COLLISION_DISPOSITIONS = {
+    "مما يسبب (causal 'which causes')":
+        "REMOVED as STRUCTURALLY SHADOWED — any text containing the phrase "
+        "also contains the WORD surface يسبب, so the entry could never be "
+        "independently operative. Found by the B-2 shadow audit; the prior "
+        "candidate's '0 structurally shadowed entries' claim was WRONG.",
+    "لست متاكدا (unknown 'i am not sure')":
+        "REMOVED as STRUCTURALLY SHADOWED — لست متاكد is a proper prefix "
+        "substring of it, so the shorter registered form always matches first.",
     "حدود (bare 'limits/boundaries')":
         "NOT REGISTERED — genuinely ambiguous between BOUNDARY_AMBIGUITY "
         "('boundary') and PHYSICAL_FEASIBILITY ('physical limits'). Fail "
@@ -740,9 +784,23 @@ def _validate():
                     "Arabic surface %r is registered to two gap families "
                     "(%s and %s)" % (surface, prev, c.owner))
             ar_owner[surface] = c.owner
-    for surface, _mirrors in CAUSAL_SURFACES + ACKNOWLEDGED_UNKNOWN_SURFACES:
+    for surface, mode, _mirrors in CAUSAL_SURFACES:
         if normalize_ar(surface) != surface:
-            raise RegistryError("structural surface %r is not normalized" % surface)
+            raise RegistryError("causal surface %r is not normalized" % surface)
+        if mode not in (WORD, PHRASE):
+            raise RegistryError("causal surface %r has no declared match_mode" % surface)
+        if mode == WORD and " " in surface:
+            raise RegistryError("word-mode causal surface %r contains a space" % surface)
+        if mode == PHRASE and " " not in surface:
+            raise RegistryError(
+                "single-token causal surface %r declared PHRASE — substring "
+                "matching on a bare token is defect B-1" % surface)
+    for surface, _mirrors in ACKNOWLEDGED_UNKNOWN_SURFACES:
+        if normalize_ar(surface) != surface:
+            raise RegistryError("unknown surface %r is not normalized" % surface)
+        if " " not in surface:
+            raise RegistryError(
+                "single-token unknown surface %r would match by substring" % surface)
     for domain_surfaces in SUBSTANCE_SURFACES.values():
         for signal, surfaces in domain_surfaces.items():
             for surface in surfaces:
@@ -826,7 +884,10 @@ def has_registered_causal_structure(text):
     if not isinstance(text, str):
         return False
     normalized = normalize_ar(text.lower())
-    return any(surface in normalized for surface, _mirror in CAUSAL_SURFACES)
+    tokens = _tokens(normalized)
+    return any(_surface_matches(surface, mode, normalized, tokens,
+                                _AR_CAUSAL_PROCLITICS)
+               for surface, mode, _mirror in CAUSAL_SURFACES)
 
 
 def substance_surface_present(text, domain):
