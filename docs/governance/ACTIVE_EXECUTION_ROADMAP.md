@@ -14458,3 +14458,113 @@ files**; `PIN DELTA: 0` (`engine/progression_loop.py` untouched, digest still `c
 no new gap type; `main` not reconciled; `OWNER_DECISION_REGISTER.md` UNCHANGED.
 `TDVP IMPLEMENTATION STARTED: NO`; `PVCG SATISFIED: NO`; `FULL MLC DEFINITION FROZEN: NO`;
 `MINIMUM LAUNCH-CONFORMANCE SET SATISFIED: NO`; `DEPLOYMENT AUTHORIZED: NO`.
+
+---
+
+## PVCG-R4 — AUTHORITATIVE CLOSURE (governance-only closure candidate)
+
+**Authority.** PVCG-R4-I is now AUTHORITATIVE: **PR #555**, merge
+`5ed09180c7b3bc1809785ed425d4820d5ffc71b7`, independently re-verified this gate from a fresh fetch —
+first parent `c3d9e2d98ba7b6c9b3a9d9d316e6d572122d8a8e` (prior authoritative base), second parent
+`2bb472a07f9ac9177070c131c5c7f13ee3cd718a` (exact Owner-accepted candidate), merge tree
+`506b2dd4a8994ced79ada0215e0f389db92b4e53` — identical to the accepted candidate tree — candidate→merge
+diff **EMPTY**, `git diff --check` PASS, zero later commits, working tree clean. PVCG-R4-C remains
+AUTHORITATIVE: PR #554, merge `c3d9e2d9…`, second parent `d5286de7…`, merge tree `968ff38c…`, empty
+candidate→merge diff; both it and the R3-closure merge `18a90f9b…` are confirmed ancestors of the live
+tip — re-verified from repository lineage rather than copied.
+
+**Why a separate closure gate exists, cited rather than assumed.**
+`PVCG_R4_C_USER_CORRECTION_AND_DETERMINISTIC_INVALIDATION_CONTRACT.md` **§21 "CLOSURE CRITERIA FOR
+PVCG-R4"** lists fifteen criteria and requires as criterion **15** *"**a formal closure record merged**,
+exactly as R2 and R3 required."* **`CLOSURE REQUIRED BY CONTRACT: YES`.** R4 is therefore NOT closed by
+the implementation merge alone. The `<GATE>_FORMAL_CLOSURE_RECORD.md` convention is the one established
+by `PVCG_R2_FORMAL_CLOSURE_RECORD.md` and `PVCG_R3_FORMAL_CLOSURE_RECORD.md`.
+
+**Disposition.** `PVCG-R4 CLOSURE CANDIDATE — NOT AUTHORITATIVE UNTIL MERGED`. The closure statements
+live in the dedicated record `docs/governance/PVCG_R4_FORMAL_CLOSURE_RECORD.md` and take effect only on
+merge and post-merge verification.
+
+**THE MATERIAL DISTINCTION, STATED WITHOUT SOFTENING.**
+
+```
+R4 correction mechanism / explicit route  : IMPLEMENTED
+Rendered correction UX                    : NOT DELIVERED IN THIS GATE
+Rendered correction UX remains deferred to: Phase-3C / FPC-02 (NOT STARTED / NOT AUTHORIZED)
+```
+
+`POST /session/<sid>/correct` exists, carries the canonical `answer_token`, is `_project_authorized`,
+fails closed on every invalid input, and drives durable supersession plus full deterministic replay. It
+is reachable by an HTTP client. **It is NOT reachable by clicking anything in the product:
+`web/templates/` is byte-unchanged across the entire R4-I lineage.** **No statement anywhere may claim
+that users can now correct prior answers through the product UI.** That this is contract-conformant
+rather than a shortfall is determined from authoritative text — §2.2 R4-RES-1 states the residual
+disjunctively (*"No route, form, template or API"*), §17 requires a correction be *"expressible"* not
+rendered, §2.5 defers the presentation increment to *"a UX gate of its own"*, §19.2 puts that UX
+increment out of scope, §21 names no rendered affordance, and §13 E-1 constrains whatever affordance
+exists rather than creating a rendered one. Closing R4 makes correction exist, correct, durable,
+deterministic and truthful; **it does not put correction in an inventor's hands.**
+
+**All fifteen §21 criteria resolved; criteria 1–14 RE-MEASURED on the merged tree, not inherited.**
+Focused R4-I **63 passed**; PVCG-R1 **26 passed** with its test file byte-unchanged against BOTH
+`18a90f9b…` and `c3d9e2d9…`; R2 behavioural **189 passed** and R2 marker coverage **566 passed**, both
+files byte-unchanged; R3 focused **579 passed**, byte-unchanged; P9 pin suites **54 passed**; WPS-001
+**20 passed / 1 skipped**, byte-unchanged; `UNIVERSAL GUARDRAIL SMOKE: PASS`; full suite **4418 passed /
+3 skipped / 1 xfailed / 0 failed** under the §18 precondition (Python 3.11.15, Flask 3.1.3, SQLite
+3.45.1, gunicorn 26.1.0 on `PATH`; pytest 9.1.1, which the precondition does not pin — disclosed rather
+than left implicit). §20 reconciliation **4355 + 63 = 4418**, exactly the one new R4-I test file.
+
+**Criterion 3, measured in both halves with the distinction preserved.** (A) The §3.2 scenario exactly
+as written — retraction wording submitted as ORDINARY answers — still leaves the material present and
+the marker at **0**. That is **correct and is not the defect**: §6 C-1 forbids inferring a correction
+from wording, so no withdrawal was expressed and nothing is "withdrawn material" being presented; a
+committed test pins exactly that. (B) The same project through the governed correction path clears
+**every** withdrawn-basis field path to **0** and surfaces the marker at **1**. **A precision the
+contract did not anticipate, disclosed rather than smoothed over:** §3.2 recorded four locations; a live
+re-measurement found **seven** distinct field paths — the four §3.2 fields plus
+`section_13_requirement_landscape`, `section_14_validation_plan` and
+`_session_meta.requirement_landscape_synthesis` — and **all seven are cleared by replay**, so the
+criterion is satisfied for a strict superset of what it named. The §3.2 count of four is **not**
+rewritten; it remains the historical measurement of a different corpus.
+
+**Pin reconciliation verified on the merged tree.** `engine/progression_loop.py`
+`3cbd7684…` → **`c268cd6380129170da19f3ba03158eebd9a5480711b43e39280e8ce9e74f63f8`**; all THREE
+ENFORCING locations carry the new digest with a disclosed note preserving the prior one; kind (2) active
+current-truth references synchronized; kind (3) historical occurrences left byte-unchanged — `PVCG_R2_C`,
+`PVCG_R2_FORMAL_CLOSURE_RECORD.md`, `PVCG_R3_C` and `PVCG_R3_FORMAL_CLOSURE_RECORD.md` show **0 files
+changed** against `18a90f9b…`. `PACK DELTA: 0`; `engine/domain_rules.py` (`0e47326a…`),
+`engine/path_n_questions.py` (`a1a682d3…`) and all five packs byte-identical; `engine/record_store.py`
+byte-unchanged and still containing **no `UPDATE` statement at all**, so no schema migration occurred.
+
+**Residuals carried forward as OPEN / NON-BLOCKING, none silently repaired.** The **replay bound** at
+`MAX_ACCEPTED_ANSWER_REPLAY = 500` is **PRE-EXISTING and NOT REPAIRED**: a project already at the bound
+crosses it when a correction append takes the stream to limit + 1, after which every reconstruction
+raises and the correction is never applied — independently reproduced before any edit and pinned by a
+committed test. The bound is checked against the FULL persisted stream **on purpose** (§8 RP-9), so the
+behaviour is contract-correct; **the repair applied was to the MESSAGE, never to the bound**, which is
+why the user-facing wording is conditional. The bound remains a **separately recorded pre-existing
+observation, unassigned by this gate**. Also carried openly: the stateless canonical answer-token
+semantics (reused unchanged); **NB-3 and NB-4**, deliberately NOT addressed and outside every authorized
+repair scope in this lineage; bundle extra-ref hygiene, a review-process observation rather than a
+repository defect; the deferred rendered UX; and the R3 residuals N-2 / U-4, which
+`PVCG_R3_FORMAL_CLOSURE_RECORD.md` §6 states are not PVCG-R4 authorization and which were never admitted.
+
+**Review lineage preserved, never authoritative except where accepted.** `c03386df…` was **REJECTED by
+the Creator's own Grill** on CG-1 (EN/AR asymmetry at the actual render path). `4dc7c329…` and
+`fc45d029…` each returned **ACCEPT WITH NON-BLOCKING OBSERVATIONS** with `UNSUPPORTED MATERIAL
+CLAIMS = 0` and `SAFE FOR OWNER EXACT-SHA ACCEPTANCE: YES`; the Owner withheld acceptance after each,
+directing bounded children. All defect IDs — CG-1, NB-1, NB-2 — are **CLOSED**; NB-3 and NB-4 are
+recorded as **NOT ADDRESSED**. Every rejected and superseded SHA is preserved unchanged; none was
+amended, rebased, squashed or recreated, and none was published.
+
+**R4 IS NOT A UX GATE, AND NOT PVCG.** This closure delivers no rendered correction affordance, no
+"What changed?" presentation, no versioning, branching, rollback or sharing, no dependency graph, no
+targeted partial invalidation and no contradiction engine. **`PVCG SATISFIED: NO`**;
+**`FULL MLC DEFINITION FROZEN: NO`** — consistent with `PVCG_R3_C` §1.2 and `PVCG_R4_C` §21, no
+committed document defines PVCG or enumerates the Minimum Launch-Conformance Set, so R4's membership is
+`[OWNER]`, not `[REPO]`.
+
+**Scope.** Governance/documentation only — one new closure record plus this entry and the two status
+surfaces. No `engine/`, `web/`, `tests/`, `domains/`, `scripts/`, evidence-tree, generator, deployment
+or Render path; `PIN DELTA: 0`; `PACK DELTA: 0`; `main` not reconciled; `OWNER_DECISION_REGISTER.md`
+UNCHANGED. `TDVP IMPLEMENTATION STARTED: NO`; `DEPLOYMENT AUTHORIZED: NO`. **No successor gate is
+opened by this entry** — naming Phase-3C / FPC-02 authorizes nothing.
