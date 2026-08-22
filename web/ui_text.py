@@ -1152,6 +1152,9 @@ _DEEP_AR = {
     "This point has reached the highest maturity level supported by the current MVP demo.": "بلغت هذه النقطة أعلى مستوى نضج يدعمه العرض التوضيحي الحالي للحد الأدنى من المنتج.",
     "An earlier required step needs to be addressed first before this can move forward.": "يلزم تناول خطوة سابقة مطلوبة أولًا قبل أن يمضي هذا قُدُمًا.",
     "This needs more reasoning or supporting detail before it can move forward.": "يحتاج هذا إلى مزيد من الاستدلال أو التفاصيل الداعمة قبل أن يمضي قُدُمًا.",
+    # PVCG-R3-I (R3-C §8.1): the truthful not-addressed disclosure. Both
+    # supported UI languages, through the existing localize_deep seam.
+    "This answer was not recognized as responding to the question that was asked, so it did not move this point forward. Answering the question directly, in the words the question uses, is what the current demo can recognize.": "لم يتم التعرف على هذه الإجابة كردٍّ على السؤال المطروح، لذلك لم تُحرِّك هذه النقطة إلى الأمام. الإجابة عن السؤال مباشرةً، وبالكلمات التي يستخدمها السؤال، هي ما يستطيع العرض الحالي التعرف عليه.",
     "This point cannot move forward yet. Review the result details for the specific reason.": "لا يمكن لهذه النقطة المضي قدمًا بعد. راجِع تفاصيل النتيجة لمعرفة السبب المحدّد.",
 
     # --- 4.9 gap_labels.py GAP_LABELS (heading / guidance / stage_note) ---

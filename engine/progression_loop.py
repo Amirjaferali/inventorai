@@ -22,6 +22,10 @@ from engine.domain_rules import (
     get_substance_signals, get_substance_signal_plural_aliases, is_known_domain,
 )
 from engine.gap_relevance import addresses_gap
+from engine.semantic_registry import (
+    has_registered_causal_structure, substance_surface_present,
+    detect_registered_unknown, normalize_ar,
+)
 from engine.idea_state import (
     IdeaState, Evidence, Gap, IterationLog, AcknowledgedUnknown,
     PHYSICAL_FEASIBILITY, BOUNDARY_AMBIGUITY, MECHANISM_COMPLETENESS,
@@ -351,6 +355,23 @@ def _extract_unknown_fragment(r, marker):
     return tail or r
 
 
+def _extract_unknown_fragment_normalized(r, surface):
+    """Bounded acknowledged-unknown fragment for a NORMALIZED Arabic surface.
+
+    Identical bounding rule to ``_extract_unknown_fragment``: the inventor's own
+    sentence, verbatim except surrounding whitespace, never a paraphrase and
+    never a neighbouring sentence. The surface is matched against the NORMALIZED
+    form of each sentence, but the VERBATIM sentence is what is returned.
+    """
+    sentences = [x.strip() for x in _SENTENCE_SPLIT_RE.split(r) if x.strip()]
+    if len(sentences) <= 1:
+        return r
+    for sentence in sentences:
+        if surface in normalize_ar(sentence.lower()):
+            return sentence
+    return r
+
+
 def _detect_acknowledged_unknown(response, gap_type, iteration):
     """
     Conservative detection of explicit acknowledged unknowns.
@@ -373,6 +394,20 @@ def _detect_acknowledged_unknown(response, gap_type, iteration):
                 verbatim=_extract_unknown_fragment(r, marker),
                 category_basis=marker,
             )
+    # PVCG-R3-I (D-3): the registered ARABIC unknown surfaces mirror the
+    # English markers above one-for-one. An Arabic inventor's explicitly stated
+    # unknown is recorded on the SAME parallel track, with a truthful
+    # category_basis. This changes no gap status, no quality tier and no return
+    # value — unknown is still never satisfied, never REASONED, never
+    # DEMONSTRATED. R4 correction/invalidation is NOT activated here.
+    surface = detect_registered_unknown(r)
+    if surface is not None:
+        return AcknowledgedUnknown(
+            iteration=iteration,
+            gap_context=gap_type,
+            verbatim=_extract_unknown_fragment_normalized(r, surface),
+            category_basis=surface,
+        )
     return None
 
 
@@ -405,7 +440,14 @@ _CAUSAL_STRUCTURE_PATTERNS = [
     
 ]
 def _has_causal_structure(r_lower):
-    return any(p in r_lower for p in _CAUSAL_STRUCTURE_PATTERNS)
+    # PVCG-R3-I: the English table is evaluated first and is byte-unchanged.
+    # The registered Arabic causal-structure surfaces mirror the SAME role for
+    # Arabic (R3-C §5.4) and add no new causal construction; without them an
+    # Arabic answer can never reach REASONED, which is D-2 — the decisive
+    # launch-material finding.
+    if any(p in r_lower for p in _CAUSAL_STRUCTURE_PATTERNS):
+        return True
+    return has_registered_causal_structure(r_lower)
 def _is_generic_verb_trap(r_lower):
     if not (set(r_lower.split()) & _GENERIC_CAUSAL_VERBS): return False
     return not _has_causal_structure(r_lower)
@@ -667,7 +709,12 @@ def assess_response(response: str, domain: str = "") -> str:
         )
     words = set(r_lower.split())
     has_weak = bool(words & weak_tokens)
-    has_substance = any(sig in r_lower for sig in substance_tokens)
+    # PVCG-R3-I: the pack's own signals are consulted first and unchanged; the
+    # registered Arabic surfaces are one-to-one with those ALREADY-COMMITTED
+    # signals (R3-C §5.4). No pack is edited, no signal is added, and no domain
+    # capability changes — the surfaces live in the unpinned R3 registry.
+    has_substance = (any(sig in r_lower for sig in substance_tokens)
+                     or substance_surface_present(r_lower, domain))
 
     if has_weak and not has_substance:
         return ASSERTED  # vague filler — no technical substance

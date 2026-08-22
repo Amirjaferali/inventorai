@@ -41,7 +41,164 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — PVCG-R3-C: SEMANTIC STABILITY CONTRACT / DIAGNOSIS GATE; governance-only).** Base:
+**Status (current — PVCG-R3-I (REPAIR): focused repair after Independent External Review REJECT).**
+Base: `7b7aa2f12a7429fbb309c2f4a7e13d7b83ebdd60` (PR #551 merge — PVCG-R3-C, AUTHORITATIVE;
+re-resolved live and independently re-verified on all four merge criteria before any repair work).
+
+**Disposition: `PVCG-R3-I REPAIR CANDIDATE — NOT AUTHORITATIVE UNTIL MERGED`.**
+**Rejected predecessor `1ce9ef340c7cb908da37ae8b4b304b1ee9ae30bc` is preserved UNCHANGED as immutable
+review evidence** (never amended, rebased, squashed or published), together with its Creator-Grill
+parent `52a25182…`. **The rejected candidate's `UNSUPPORTED MATERIAL CLAIMS: 0` is WITHDRAWN.**
+
+**B-1 repaired — Arabic causal substring bleed.** Causal surfaces matched by raw substring, so the
+2-character `ثم` fired from inside `ثمن` (price), `عثمان`, `ثمانية`, `استثمار` — 19/19 measured false
+positives — and an Arabic answer whose only qualifying token was the noun `ثمن` reached `REASONED` and
+CLOSED a gap while the synonym `سعر` and the faithful English counterpart stayed `ASSERTED`/`PARTIAL`.
+Each causal surface now declares an explicit `match_mode` and goes through the same `_surface_matches`
+discipline as concept surfaces (36 WORD / 6 PHRASE), with the definite-article proclitics excluded for
+causal surfaces only. After repair: **0/19 false positives, 10/10 legitimate causal usage preserved, and
+the `ثمن` / `سعر` / English outcomes identical.** **U-2 correction:** a comment claimed `وثم` still
+matches; it does NOT — `ثم` is 2 characters, below `_MIN_PROCLITIC_SURFACE_LEN = 3`, so it is reached
+only as a bare token. The runtime is therefore MORE conservative than the comment described; the
+comment is corrected to the code's actual behaviour, the guard is unchanged, and the proclitic boundary
+is now pinned by isolated assertions (`وحين`/`فتدور`/`وتدور` match; `وثم`/`فثم` do not). The validator now refuses at import any single-token
+causal or unknown surface declared PHRASE.
+
+**B-2 repaired — circular mutation evidence.** Probes were parametrized over `DECLARED_INVENTORY`
+(derived from `CONCEPTS`), so deleting a surface deleted its own test: focused 453→451 and full
+4229→4227, both with ZERO failures. **The `163/163 KILLED` result is WITHDRAWN.** Coverage adequacy now
+runs off `tests/fixtures/pvcg_r3i_frozen_expectations.py` — **257 rows of literal committed data**
+importing nothing from the object under test (AST-verified), with a both-directions parity test.
+Deleting one entry from each of the four classes now turns the suite RED.
+
+**Corrected sweep:** **257 processed / 254 KILLED / 0 SURVIVED / 3 LOADFAIL**, restore **257/257**
+byte-identical, 0 anchor misses. The **3** LOADFAILs are exactly `MC-LATCH: مزلاج`, `PF-ENERGY: طاقة`
+and `PF-FREQUENCY: تردد` — the three concepts whose ONLY Arabic surface was removed, where the
+registry's own `RegistryError` refuses the mutant (fail-closed by design) — reported as LOADFAIL,
+**not** counted as kills. **The earlier `252 / 5` split is WITHDRAWN as a HARNESS defect** (the
+substance remover hit the first file-wide occurrence of a surface that also exists in the concept
+table, mutating the wrong table); `battery` and `frequency` are genuinely KILLED. `0 SURVIVED` and the
+`257/257` restore are unchanged and were reproduced independently by the reviewer and the Creator.
+
+**Structural shadowing — prior "0 shadowed" was WRONG.** Two genuine shadows found (`مما يسبب` behind
+the WORD surface `يسبب`; `لست متاكدا` behind the prefix `لست متاكد`) and REMOVED, with the removals
+recorded. Causal is now **42** and acknowledged-unknown **8**. The re-audited zero is earned.
+
+**N-1 corrected:** **38 pack SIGNALS carrying 44 Arabic SURFACES** (the earlier "38 substance surfaces"
+was wrong). **N-3 corrected:** the negative control no longer skips the case it names. **N-2 recorded as
+OPEN / NON-BLOCKING:** the 40-character acknowledged-unknown threshold is language-neutral in rule but
+not in effect (EN 43 detected / AR 27 not); pre-existing, byte-unchanged, fail-closed in direction, not
+redesigned here. **N-5 classified:** R3-C §2.5's "English-only" wording is overstated (`localize_deep`
+did localize the base fallback); an observation about the authoritative contract, not an R3-I defect —
+R3-C history is NOT rewritten.
+
+**Preserved gains.** D-1 **0/6**; D-2 trajectories identical; D-3 unknown recorded and never
+satisfaction; D-4 specific and genuinely localized; English not widened by one token.
+`engine/progression_loop.py` **byte-unchanged by this repair** (`3cbd7684…`), so no pin moved again.
+
+**Verification on the frozen repair candidate.** Focused R3-I **579 passed**; R1 **26/26** byte-unchanged;
+R2 **189** + **566** byte-unchanged; P9 **54**; smoke **PASS**; full suite **4355 passed / 3 skipped /
+1 xfailed / 0 failed**; §18 reconciliation 3776 **+579**, exactly the R3-I test file.
+
+**Scope.** `PVCG-R3 AUTHORITATIVELY SATISFIED: NO`; `PVCG-R4 IMPLEMENTATION STARTED: NO`;
+`FULL ADAPTIVE QUESTIONING ACTIVATED: NO`; `TDVP IMPLEMENTATION STARTED: NO`; `LLM/EMBEDDINGS/VECTOR
+STORE/EXTERNAL NLP/PROBABILISTIC CLASSIFIER ADDED: NO`; no pack edit, no domain change, no new gap type;
+`main` not reconciled; `OWNER_DECISION_REGISTER.md` UNCHANGED. `PVCG SATISFIED: NO`;
+`MINIMUM LAUNCH-CONFORMANCE SET SATISFIED: NO`; `DEPLOYMENT AUTHORIZED: NO`.
+`UNSUPPORTED MATERIAL CLAIMS: 0`.
+
+---
+
+**Superseded (retained as history) — PVCG-R3-I: SEMANTIC STABILITY IMPLEMENTATION; REJECTED by
+Independent External Review as `1ce9ef34…` on defects B-1 and B-2; preserved unchanged as immutable
+review evidence. Its claims below are HISTORICAL and several were false — see the repair entry above.**
+Base: `7b7aa2f12a7429fbb309c2f4a7e13d7b83ebdd60` (PR #551 merge — PVCG-R3-C, AUTHORITATIVE; live tip
+re-fetched from `origin/feature/atomic-json-session-persistence` and independently re-verified on all
+four merge criteria: first parent `ca98099e29f6729c29e7612d67f9187dbd0dccb6`, second parent
+`6bdf2669ef0826d2f06e2a54722954e3d49958c1`, merge tree
+`c707281acccf1751a0d48bb65fa917879f2c5909`, empty candidate→merge diff; zero commits after the tip;
+working tree clean).
+
+**Disposition: `PVCG-R3-I IMPLEMENTED / CANDIDATE — NOT AUTHORITATIVE UNTIL MERGED`.**
+`PVCG-R3-C AUTHORITATIVE: YES` (PR #551). This candidate implements ONLY the bounded R3 capability the
+authoritative contract defines; it closes **R3 only**. `PVCG-R3 AUTHORITATIVELY SATISFIED: NO` until
+merged, post-merge verified and formally closed by its own closure record.
+
+**Delivered.** One new unpinned module `engine/semantic_registry.py` — the governed bilingual concept
+registry: **56 concepts / 163 declared Arabic surfaces**, each concept carrying all five §5.1 fields
+(stable `concept_id`, exactly ONE owning gap, governed-question provenance, EN + AR surface sets, a
+declared `match_mode` per surface); plus the two required structural classes — **43** Arabic
+causal-structure surfaces mirroring the English `_CAUSAL_STRUCTURE_PATTERNS` role and **38** Arabic
+substance surfaces (15 mechanical + 23 electronics) one-to-one with ALREADY-COMMITTED pack signals, with
+the **30** signals deliberately given no Arabic surface recorded and justified — and **9** Arabic
+acknowledged-unknown surfaces mirroring the English markers one-for-one. Four seams consult it:
+`gap_relevance.addresses_gap` (D-1), `progression_loop._has_causal_structure` and the substance check
+(D-2), `progression_loop._detect_acknowledged_unknown` (D-3), and `web/result_feedback.py` +
+`web/ui_text.py` for the §8.1 truthful, both-language not-addressed disclosure (D-4).
+
+**Boundaries held as facts of the delivered code.** `LLM ADDED: NO`; `EMBEDDINGS ADDED: NO`;
+`VECTOR STORE ADDED: NO`; `EXTERNAL NLP SERVICE ADDED: NO`;
+`PROBABILISTIC SEMANTIC CLASSIFIER ADDED: NO`; `MODEL-BASED ADJUDICATION ADDED: NO`. No network, clock,
+randomness, filesystem access at decision time, stemming, lemmatization, fuzzy matching, edit distance
+or transliteration. The registry depends only on stdlib `re` and `unicodedata`. **English is not
+widened by one token** — every registered English surface is machine-checked to be an existing intent
+marker of the SAME gap family. Normalization is exactly the authorized set (NFC, tatweel, harakat,
+alef-variant folding), each demonstrated necessary by execution; **teh marbuta, yeh/alef-maqsura and
+Arabic-Indic digits are NOT folded**, and hamza-carrier letter identity is preserved and pinned by test.
+
+**Pin reconciliation (§13.2/§13.2a) — the one authorized engine pin moved.** Old
+`07c9bff500662de54ac0f7388c1f2e13a721549c6f4943cde865b98a22c525d6` → new
+`3cbd76849c0f572191a552db1a41a8cd418d02fac1d59d9b8804c72883239a55`. All THREE ENFORCING locations
+updated together (`test_p9_mech_i3_signal_quality.py`, `test_p9_mech_i4_boundary_corpus.py`,
+`test_p9_mech_i5_question_sufficiency.py`), each with a disclosed reconciliation note preserving the
+prior digest as historical evidence; all ACTIVE CURRENT-TRUTH governance references synchronized in this
+same candidate; all HISTORICAL append-only occurrences deliberately left byte-unchanged.
+`engine/domain_rules.py` (`0e47326a…`), `engine/path_n_questions.py` (`a1a682d3…`) and all five pack
+digests are byte-identical. RED was established at the authoritative base BEFORE any pin was touched.
+
+**Evidence, measured on the frozen candidate.** RED at the base: D-1 **6/6** gaps materially diverge;
+D-2 Arabic `OPEN` for eight iterations while the English control `CLOSED` at iteration 2; D-3 the Arabic
+unknown undetected; D-4 the not-addressed reason falling to the unknown-reason fallback, English-only.
+GREEN: **0/6** divergence, Arabic and English closure trajectories identical, the Arabic unknown
+recorded with a truthful basis, the disclosure specific and localized. Complete single-entry mutation
+sweep over every declared Arabic surface: **163 processed / 163 KILLED / 0 SURVIVED / 0 LOADFAIL**,
+restore **163/163** byte-identical. Focused R3-I **453 passed**; PVCG-R1 **26/26** with its test file
+**byte-unchanged**; R2 behavioural **189 passed**; R2 marker coverage **566 passed**; P9 pin suites
+**54 passed**; `UNIVERSAL GUARDRAIL SMOKE: PASS`; full suite **4229 passed / 3 skipped / 1 xfailed /
+0 failed** under the §18 precondition (Python 3.11.15, Flask 3.1.3, SQLite 3.45.1, gunicorn on `PATH`).
+Reconciliation against the 3776 baseline: **+453**, exactly the new R3-I test file, no other delta.
+
+**One R2 test file changed, disclosed rather than hidden (§12).**
+`tests/test_pvcg_r2i_gap_relevance.py::TestDeclaredLexicalBounds::
+test_non_english_paraphrase_is_not_recognised_r3_bound` asserted the R2 KNOWN BOUND that an Arabic
+mechanism answer is NOT recognised — the bound R3-C §1.3/§4 exists to close, and whose own docstring
+named it "PVCG-R3 territory". It is updated to current truth and still asserts the residual:
+unregistered Arabic remains fail-closed. `tests/test_pvcg_r2i_marker_coverage.py` is
+**byte-unchanged**.
+
+**Creator-Grill findings, disclosed.** (a) `أعتقد`/`أتوقع` make ordinary Arabic prose eligible for
+`ASSUMPTION_INVENTORY` — the English `believe`/`expect` markers behave identically at the base, so this
+is PRE-EXISTING English breadth (§14 residual 1) mirrored faithfully; narrowing Arabic would create a
+new divergence. Pinned by test. (b) The first RED probe hard-coded the repo path and mis-measured the
+base tree; corrected, and RED re-verified at `7b7aa2f1…` with the registry file confirmed absent from
+that tree.
+
+**Residual, stated as a known bound and not concealed.** The §7.3 guarantee holds ONLY over the
+published registered-class inventory. Unregistered wording in either language is not governed-equivalent
+and gains nothing. R3 is a registered bilingual concept mapping, not language understanding, not
+paraphrase stabilisation, and not a third language.
+
+**Scope.** `PVCG-R3 AUTHORITATIVELY SATISFIED: NO`; `PVCG-R4 IMPLEMENTATION STARTED: NO`;
+`FULL ADAPTIVE QUESTIONING ACTIVATED: NO`; `TDVP IMPLEMENTATION STARTED: NO`; no domain activated,
+recognised differently or re-scoped; no pack edited; no new gap type; no next-question-selection change;
+no `stage3_evaluator` or WS10/WS11/WS12 integration; `main` not reconciled; Render not reopened;
+`OWNER_DECISION_REGISTER.md` UNCHANGED. `PVCG SATISFIED: NO`;
+`MINIMUM LAUNCH-CONFORMANCE SET SATISFIED: NO`; `DEPLOYMENT AUTHORIZED: NO`.
+`UNSUPPORTED MATERIAL CLAIMS: 0`.
+
+---
+
+**Superseded (retained as history) — PVCG-R3-C: SEMANTIC STABILITY CONTRACT / DIAGNOSIS GATE; governance-only; MERGED AND AUTHORITATIVE via PR #551, merge `7b7aa2f1…`.** Base:
 `ca98099e29f6729c29e7612d67f9187dbd0dccb6` (PR #550 merge — PVCG-R2 formal closure; live tip re-fetched
 from `origin/feature/atomic-json-session-persistence` and independently re-verified on all four merge
 criteria: first parent `1ce2c89630b9bdbfdedb15ee85eafa410a03632a`, second parent

@@ -78,6 +78,19 @@ _REASONED_MINIMUM = (
 # Conservative fallback for an unknown / future WARN reason: it does NOT invent
 # the cause, does NOT claim the point is unestablished, and points the inventor
 # to the raw reason preserved in the non-primary result details.
+# PVCG-R3-I (R3-C §8.1): the R2 "not addressed" reason previously fell through
+# to the conservative unknown-reason fallback, so an inventor whose answer was
+# ruled ineligible was told only to "review the result details" — the cause was
+# never identified (D-4). This branch names the actual cause truthfully. It does
+# NOT claim the answer was wrong, off-topic or low quality, and it does not
+# promise that any particular rewording will be recognised.
+_WARN_NOT_ADDRESSED = (
+    "This answer was not recognized as responding to the question that was "
+    "asked, so it did not move this point forward. Answering the question "
+    "directly, in the words the question uses, is what the current demo can "
+    "recognize."
+)
+
 _GENERIC_WARN = (
     "This point cannot move forward yet. Review the result details for the specific reason."
 )
@@ -120,6 +133,10 @@ def get_result_feedback(last_result):
         #   "... must be REASONED minimum"                       -> reasoning needed
         #   "... not (yet) established / not yet closed / opened"-> not established
         #   anything else                                        -> conservative fallback
+        # Checked BEFORE "partially addressed": the R2 reason is
+        # "{gap} not addressed — …", a distinct and more specific category.
+        if "not addressed" in reason:
+            return _WARN_NOT_ADDRESSED
         if "asserted only" in reason:
             return _WARN_ASSERTED_ONLY
         if "partially addressed" in reason:

@@ -592,16 +592,36 @@ class TestDeclaredLexicalBounds:
         assert "not" in doc and "semantic" in doc
 
     def test_non_english_paraphrase_is_not_recognised_r3_bound(self):
-        """PVCG-R3 territory. An Arabic mechanism answer is NOT recognised by
-        this lexical guard. This is a KNOWN BOUND of R2, asserted here so the
-        limitation is visible in the test record rather than implied away."""
+        """The R2 bound this test recorded is now CLOSED — but only inside the
+        registered R3 boundary, and the residual is still asserted here.
+
+        At R2 this test asserted that an Arabic mechanism answer is NOT
+        recognised, and its own docstring named that "PVCG-R3 territory". The
+        authoritative PVCG-R3-C contract (§1.3, §4) exists precisely to close
+        that declared bound, and PVCG-R3-I closes it for answers carrying a
+        REGISTERED Arabic surface. The test is therefore updated to current
+        truth rather than deleted, and it still carries the limitation it was
+        written to keep visible: unregistered Arabic wording remains
+        fail-closed, exactly as R2 left it.
+        """
         from engine.gap_relevance import addresses_gap
+        # Carries registered surfaces (MC-DETECT يكشف / MC-OPEN يفتح), so R3
+        # now recognises it. Recognising a genuine mechanism answer is the
+        # whole point of R3 — this is not a relaxation of R2.
         arabic_mechanism_answer = (
             "المستشعر يكشف الارتفاع غير الطبيعي في التيار، لذلك يفتح المتحكم "
             "الدقيق المرحل لفصل الجهاز."
         )
         assert addresses_gap(
-            arabic_mechanism_answer, MECHANISM_COMPLETENESS) is False
+            arabic_mechanism_answer, MECHANISM_COMPLETENESS) is True
+        # The residual bound, still asserted: an Arabic answer carrying NO
+        # registered surface of the served gap gains nothing. R3 registers
+        # concepts, it does not understand Arabic.
+        unregistered_arabic = (
+            "هذه الفكرة جميلة جدا وسوف تنال إعجاب الناس في كل مكان تقريبا."
+        )
+        assert addresses_gap(
+            unregistered_arabic, MECHANISM_COMPLETENESS) is False
 
     def test_guard_makes_no_multilingual_or_understanding_claim(self):
         import inspect
