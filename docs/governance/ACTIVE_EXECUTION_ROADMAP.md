@@ -14585,3 +14585,75 @@ surfaces. No `engine/`, `web/`, `tests/`, `domains/`, `scripts/`, evidence-tree,
 or Render path; `PIN DELTA: 0`; `PACK DELTA: 0`; `main` not reconciled; `OWNER_DECISION_REGISTER.md`
 UNCHANGED. `TDVP IMPLEMENTATION STARTED: NO`; `DEPLOYMENT AUTHORIZED: NO`. **No successor gate is
 opened by this entry** — naming Phase-3C / FPC-02 authorizes nothing.
+
+---
+
+## PVCG — AUTHORITATIVE CLOSURE OF THE R1–R4 PROGRAM (governance-only closure candidate)
+
+**Authority.** PVCG-R4 is now FORMALLY CLOSED: **PR #556**, merge
+`ca9fb4be818f62a7e78a72ce6c97c707bba9807c`, independently re-verified this gate from a fresh fetch —
+first parent `5ed09180c7b3bc1809785ed425d4820d5ffc71b7`, second parent
+`713a48fd81be7190d02832921fa4d4259ec2bacf` (exact Owner-accepted R4 closure candidate), merge tree
+`eb105e95c8fdbfd7bc41cc0545fe972fab83d443` identical to the candidate tree, candidate→merge diff
+**EMPTY**, `git diff --check` PASS, zero later commits, clean tree. The full PVCG merge chain — R1
+`c70bad19…` (PR #547), R2 closure `ca98099e…`, R3-C `7b7aa2f1…`, R3-I `d046b3e5…`, R3 closure
+`18a90f9b…`, R4-C `c3d9e2d9…`, R4-I `5ed09180…`, R4 closure `ca9fb4be…` — verified intact in the live
+tip's ancestry.
+
+**Disposition.** `PVCG CLOSURE CANDIDATE — NOT AUTHORITATIVE UNTIL MERGED`. The closure statements live
+in the dedicated record `docs/governance/PVCG_FORMAL_CLOSURE_RECORD.md` and take effect only on merge
+and post-merge verification.
+
+**The authority question, answered honestly rather than assumed.** A fresh reconstruction confirmed:
+**no committed document defines PVCG, enumerates its membership, or states PVCG-wide closure criteria**
+(re-confirming R3-C §1.2 and R4-C §21 as current); the two master remediation plans and
+`OWNER_DECISION_REGISTER.md` contain **zero** PVCG mentions, so no tracker places any obligation inside
+PVCG beyond R1–R4; and the `"PVCG §11"` citation in the merged R1 entry refers to the Owner-side
+directive, not a committed file. **PVCG-wide closure is therefore NOT required by repository contract;
+it is AUTHORIZED by the Owner's PVCG FINAL directive**, which enumerates the program for this gate as
+exactly R1–R4. The closure record fixes that scope explicitly as an **[OWNER]** definition — *PVCG =
+the R1–R4 conformance program, nothing wider* — so it cannot drift, and states that merging the record
+makes it a committed Owner decision rather than a retroactive repository fact.
+
+**Closure matrix: 14 criteria MET, 1 PENDING (the record itself), 0 NOT MET, 0 on insufficient
+evidence.** R1 authoritative / R2, R3, R4 formally closed — each verified from Git lineage, not prose.
+**Final behavioral proof, every figure FRESH on `ca9fb4be…` this gate:** R1 **26**; R2 **189** +
+**566**; R3 **579**; R4 **63**; P9 pins **54**; WPS-001 **20/1 skipped**; `UNIVERSAL GUARDRAIL SMOKE:
+PASS`; full suite **4418 passed / 3 skipped / 1 xfailed / 0 failed** — equal to the R4-closure figure,
+confirming PR #556's `TEST DELTA: 0` by measurement rather than assumption. Plus a **15-point
+integrated cross-capability probe** (one live flow, not four suites): EN + AR answers, an R1 `unknown`
+disposition, an R2 off-topic fail-closed check, UI language NOT switching on Arabic input, an explicit
+R4 correction with the canonical token, the withdrawn Arabic basis absent from the entire recomposed
+package with the marker at exactly 1, and restart-reconstruction reproducing the corrected state with
+the full ledger restored, the superseded record retained-inactive, deterministic across runs, and no
+fabricated contradiction edge — **15/15 PASS**. Pin and pack digests re-measured: all match; protected
+test files byte-identical to the R3-closure baseline through the whole R4 lineage.
+
+**MLC — no definition invented.** Fresh search: the Minimum Launch-Conformance Set exists in committed
+files ONLY as status lines, one `[OWNER]`-classed membership sentence (R2-C §1), and the no-definition
+disclosures. The closure record classifies this exactly and asserts nothing the missing definition
+would be needed to support: `MINIMUM LAUNCH-CONFORMANCE SET SATISFIED: NO`;
+`FULL MLC DEFINITION FROZEN: NO`; whether to commit a definition remains an OPEN Owner decision, and
+PVCG closes without it because no committed criterion conditions closure on it.
+
+**The R4 clarification preserved without drift.** `PVCG-R4 AUTHORITATIVELY SATISFIED` means the R4
+conformance contract is satisfied — **NOT** that rendered correction UX exists. `R4 correction route:
+IMPLEMENTED`; `Rendered correction UX: NOT DELIVERED`; owner **Phase-3C / FPC-02**, NOT STARTED / NOT
+AUTHORIZED. Zero templates claim a correction feature (measured). No statement may imply users can
+correct prior answers through the product UI.
+
+**Residuals classified by release type, none suppressed, none absorbed.** PVCG-internal OPEN /
+NON-BLOCKING: the replay bound (500, pre-existing, message-truthfulness applied, unassigned), token
+semantics, NB-3/NB-4, R3's N-2/U-4, bundle-ref hygiene. Outside PVCG and unchanged by it:
+provider-log verification (OBS-P5-2-01 explicitly NOT FULLY CLOSED), no HSTS, production email
+provider, Render, PSRR GO, legal/tax, payment, OD-A/public name, `main` reconciliation, future domains.
+**TDVP remains a Provisional Candidate — subject to post-PVCG reconciliation; no TDVP numbering,
+workstream, owner or activation is created, and nothing provisional is promoted.**
+
+**Scope.** Governance/documentation only — one new closure record plus this entry and the two status
+surfaces. No `engine/`, `web/`, `tests/`, `domains/`, `scripts/`, evidence-tree, generator, deployment
+or Render path; `RUNTIME DELTA: 0`; `TEST DELTA: 0`; `PIN DELTA: 0`; `PACK DELTA: 0`;
+`DOMAIN-RULE DELTA: 0`; `main` not reconciled; `OWNER_DECISION_REGISTER.md` UNCHANGED. Historical
+R1/R2/R3/R4 documents are not rewritten. **Closing PVCG closes only PVCG as scoped:** it is not product
+completion, release readiness, production readiness, PSRR GO, or commercial activation, and it opens no
+successor gate — naming Phase-3C / FPC-02 or TDVP authorizes nothing.

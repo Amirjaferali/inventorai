@@ -41,7 +41,64 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — PVCG-R4: AUTHORITATIVE CLOSURE; governance-only closure gate).** Base:
+**Status (current — PVCG: AUTHORITATIVE CLOSURE OF THE R1–R4 PROGRAM; governance-only closure
+gate).** Base: `ca9fb4be818f62a7e78a72ce6c97c707bba9807c` (PR #556 merge — PVCG-R4 FORMAL CLOSURE,
+AUTHORITATIVE; live tip re-fetched and independently re-verified: first parent `5ed09180…`, second
+parent `713a48fd…` — the exact Owner-accepted R4 closure candidate — merge tree `eb105e95…` identical
+to the candidate tree, empty candidate→merge diff, zero later commits, clean tree).
+
+**Disposition: `PVCG CLOSURE CANDIDATE — NOT AUTHORITATIVE UNTIL MERGED`.** Closure statements live in
+`docs/governance/PVCG_FORMAL_CLOSURE_RECORD.md` and take effect only on merge and post-merge
+verification.
+
+**Authority, reconstructed honestly.** No committed document defines PVCG or PVCG-wide closure
+criteria (re-confirmed fresh); the two master remediation plans and `OWNER_DECISION_REGISTER.md`
+contain zero PVCG mentions. Closure is therefore NOT required by repository contract; it is AUTHORIZED
+by the Owner's PVCG FINAL directive, and the record fixes the scope as an **[OWNER]** definition —
+*PVCG = the R1–R4 conformance program, nothing wider*.
+
+**Matrix: 14 MET / 1 PENDING (the record) / 0 NOT MET.** R1 authoritative (PR #547 `c70bad19…`,
+ancestor), R2/R3/R4 formally closed (merges `ca98099e…` / `18a90f9b…` / `ca9fb4be…`, all verified from
+lineage). **All behavioral evidence FRESH on `ca9fb4be…`:** R1 **26**; R2 **189** + **566**; R3
+**579**; R4 **63**; P9 **54**; WPS-001 **20/1**; smoke **PASS**; full suite **4418 / 3 / 1 / 0**; plus
+a 15/15 integrated cross-capability probe (EN+AR journey, R1 disposition, R2 fail-closed, UI language
+not switching on Arabic input, R4 tokened correction, withdrawn basis absent from the whole package,
+marker exactly 1, restart-reconstruction reproducing the corrected state with full ledger and
+retained-inactive superseded record, deterministic, no fabricated contradiction). Pins and packs
+re-measured, all matching; protected test files byte-identical to the R3-closure baseline through the
+R4 lineage.
+
+**MLC:** name + status lines + one `[OWNER]` membership sentence only; **no definition exists and none
+is invented**; `MINIMUM LAUNCH-CONFORMANCE SET SATISFIED: NO`; `FULL MLC DEFINITION FROZEN: NO`;
+committing a definition remains an OPEN Owner decision that does not block this closure.
+
+**R4 clarification preserved:** `R4 correction route: IMPLEMENTED`; `Rendered correction UX: NOT
+DELIVERED` (owner Phase-3C / FPC-02, NOT STARTED / NOT AUTHORIZED); zero templates claim a correction
+feature; no statement may imply UI correction exists.
+
+**Residuals:** PVCG-internal OPEN/NON-BLOCKING (replay bound 500 unrepaired/unassigned, token
+semantics, NB-3/NB-4, N-2/U-4, bundle-ref hygiene) vs outside-PVCG open release items (OBS-P5-2-01
+provider portion, no HSTS, email provider, Render, PSRR GO, legal/tax, payment, OD-A, `main`
+reconciliation, future domains) — none suppressed, none absorbed. **TDVP: provisional candidate only;
+nothing created, promoted or activated.**
+
+**Scope.** Governance/documentation ONLY. `RUNTIME DELTA: 0`; `TEST DELTA: 0`; `PIN DELTA: 0`;
+`PACK DELTA: 0`; `DOMAIN-RULE DELTA: 0`; `main` not reconciled; `OWNER_DECISION_REGISTER.md`
+UNCHANGED. `RENDERED CORRECTION UX DELIVERED: NO`; `TDVP STARTED: NO`; `PSRR GO: NO`;
+`DEPLOYMENT AUTHORIZED: NO`; `PRODUCTION AUTHORIZED: NO`. Closing PVCG closes only PVCG as scoped.
+
+**Verdict provenance, kept distinct.** `UNSUPPORTED MATERIAL CLAIMS` is an INDEPENDENT-REVIEWER field:
+
+```
+Creator Grill unsupported-material-claim finding (this candidate) : 0
+Independent review of this closure candidate                     : NOT YET PERFORMED,
+                                                                   as at the time of its submission
+```
+
+---
+
+**Superseded (retained as history) — PVCG-R4: AUTHORITATIVE CLOSURE; MERGED AND AUTHORITATIVE via
+PR #556, merge `ca9fb4be…`.** Base:
 `5ed09180c7b3bc1809785ed425d4820d5ffc71b7` (PR #555 merge — PVCG-R4-I, AUTHORITATIVE; live tip
 re-fetched from `origin/feature/atomic-json-session-persistence` and independently re-verified: first
 parent `c3d9e2d98ba7b6c9b3a9d9d316e6d572122d8a8e`, second parent
