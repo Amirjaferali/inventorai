@@ -14119,3 +14119,133 @@ previously established suite evidence carries forward unchanged and is **not** r
 `TDVP IMPLEMENTATION STARTED: NO`. Next authorized workstream after this closure becomes authoritative:
 **PVCG-R4 — Correction / Invalidation**, still NOT STARTED and opened only by the Owner through the
 established workflow.
+
+---
+
+## PVCG-R4-C — User Correction and Deterministic Invalidation — CONFORMANCE CONTRACT (Owner-authorized governance-only CONTRACT CANDIDATE) — NOT authoritative unless merged; R4 implementation NOT authorized
+
+**Base.** `18a90f9b0aa85d05317bed5aaa596e19716c6557` — the live authoritative tip of
+`origin/feature/atomic-json-session-persistence`, independently re-fetched and re-verified this gate on
+all four merge criteria before any drafting: PR #553, first parent
+`d046b3e5449f5f91f5f719686e7e207ceda2f06c`, second parent `0fa8fbd83ee2b3a8de165eaaa1a9fd0d4e64c290`
+(the exact Owner-accepted R3 closure candidate), merge tree `5101c167c91a87184e701e3236f1aa62be8be376`
+identical to the accepted candidate tree, candidate→merge diff **EMPTY**, `git diff --check` PASS, zero
+later commits, working tree clean. **PVCG-R3 is FORMALLY CLOSED / AUTHORITATIVE**; §19 criterion 10 is
+satisfied.
+
+**Disposition.** `PVCG-R4-C CONTRACT CANDIDATE — NOT AUTHORITATIVE UNTIL MERGED`. Governance-only; it
+authorizes no code. Even once merged it authorizes **no implementation**: PVCG-R4-I requires its own
+separate explicit Owner execution authorization, exactly as R2-I and R3-I did.
+
+**What this gate is — and the duplication it deliberately does NOT create.** Under Owner rulings
+**OD-R4-01** and **OD-R4-02**, PVCG-R4 is recorded as a **CONFORMANCE / ASSURANCE GATE**, not a parallel
+capability owner. Implementation ownership remains **FPC-02 + P4-2** with the accepted supporting
+decisions (**D17 / D-AISR-06 / D-P4-05**). The contract states the split explicitly —
+`IMPLEMENTATION OWNER: FPC-02 / P4-2` versus `PVCG CONFORMANCE OWNER: PVCG-R4` — and creates no new
+state model, no new record type, no persistence schema, no second replay engine and no second dependency
+model. This preserves **`D-FPC-MAP-02`** (FPC-02 is a canonical requirement already owned by
+P4-2 + D17 + Phase-3C, **not** a new capability) and **`D-FPC-MAP-06`** (*"DO NOT CREATE A NEW PARALLEL
+MODEL — EXTEND OR CONSUME THE EXISTING CANONICAL MODEL"*).
+
+**The read-only diagnosis this contract rests on, cited rather than assumed.** The preceding
+Owner-authorized read-only PVCG-R4 reconstruction established, from repository truth: R4's entire prior
+definition was five non-defining mentions (two in R2-C, one in R3-C §17, one in the R3 closure record
+§7, one roadmap boundary line), none a contract or problem statement; the R2→R3 derivation chain does
+**not** extend to R4, because `PVCG_R3_FORMAL_CLOSURE_RECORD.md` §6 states that neither N-2, U-4 nor the
+declared R3 bound *"is PVCG-R4 authorization"*; and committed governance already records the runtime
+diagnosis verbatim — *"Engine-only supersession/contradiction primitives … **not route-exposed**
+[code-exists; runtime-unreachable from UI]"* and *"**No full user-invocable replay/re-evaluation path**
+exists"*.
+
+**The narrow defect frozen by this contract (§3).** A user who discovers that previously supplied
+accepted material was wrong has no explicit way to withdraw that source material; corrective or
+retraction language does not invalidate the earlier authoritative progression state; so previously
+derived conclusions may remain current although their basis was explicitly withdrawn. Demonstrated
+end-to-end through the runtime path (`run_iteration` only): after three strong causal answers the three
+Stage-2 gaps reach CLOSED with `maturity_level` 2 and `current_stage` 3, and four explicit retraction
+iterations change nothing — `known_mechanism` still holds the withdrawn text at REASONED, and that text
+appears in the assembled deliverable in **four** places (`section_2_invention_summary.known_mechanism`,
+two `section_11_prototype_test_plan` fields, and `_session_meta.evidence_registry`), so the prototype &
+test plan proposes testing a mechanism the inventor disowned. **Credited mitigations, so the defect is
+not overstated:** `deliverable_eligible=False`, `derived_verified_ready=False`, all acknowledged unknowns
+surfaced, readiness caveat rendered — this is a truthfulness-of-basis defect, **not** a false-readiness
+defect.
+
+**What the contract requires.** An explicit, record-targeted correction (never inferred from wording);
+non-destructive supersession with full retention, expressed as a forward `supersedes` edge because the
+durable store contains **no `UPDATE` statement at all**, with the inverse derived on load; **full
+deterministic replay** of the amended accepted-source stream through the unchanged
+`progression_loop.run_iteration`; live-state replacement only via that replay, never by direct mutation;
+readiness, maturity and evaluation **permitted to decrease**, with at least one measured decrease
+required as evidence; deterministic atomic failure/rollback; a truthful withdrawal marker following the
+established surface-and-retain idiom already used by `stale_criteria` and
+`stale_criticality_confirmations`; and **no schema migration** — `contradicts`, `supersedes` and
+`superseded_by` are already in `_ASSERTION_FIELDS`, already serialized losslessly and already validated
+on load (unknown references, self-supersession and cycles rejected).
+
+**Prohibitions carried as prohibitions, not as mere non-goals.** Targeted / partial / selective
+re-evaluation is **PROHIBITED** by `D-AISR-06` and the Phase-4 entry decision §12 (*"targeted partial
+re-evaluation is prohibited until a separately authorized and independently verified deterministic
+dependency model proves it safe"*), reaffirmed by **OD-R4-03**; no dependency graph or propagation model
+is authorized; a **full contradiction engine is NOT authorized** (**OD-R4-04**); destructive deletion or
+mutation of accepted-source history is forbidden; and ordinary CLOSED gaps must **not** reopen through
+the normal forward-answer path. The contract also fixes the vocabulary: **"bounded" means bounded SCOPE
+and bounded AUTHORIZATION, never targeted partial recomputation.**
+
+**CLOSED-gap safety precondition (§10), disclosed with its reachability.** Called directly with an
+already-CLOSED gap, `integrate_response` overwrites `CLOSED` with `PARTIAL` while leaving `closed_at`
+set — an impossible mixed state that fires on a third identical answer. **This is NOT a live defect:**
+`integrate_response` has exactly one runtime caller, inside `run_iteration`, whose `gap_type` comes from
+`select_next_gap`, which returns only OPEN/PARTIAL, so a CLOSED gap is never re-served. The runtime is
+protected by the caller's filter, not by `integrate_response`. Per **OD-R4-07** the contract requires the
+hazard be made unreachable **by construction** before any correction capability can reprocess prior
+material, without letting ordinary CLOSED gaps reopen, preserving WPS-001 INV-004. It further records
+that the only dedicated INV-004 test skips on its own corpus (no gap reaches CLOSED, so its final
+assertion is vacuous) and mandates non-vacuous replacement coverage — the binding T-1 / T-1b
+coverage-adequacy lesson.
+
+**R1 / R2 / R3 protection (**OD-R4-10**).** R1: ledger append-only and non-destructive, five governed
+non-answer dispositions preserved, R1 test file byte-unchanged, `rec_N` never reused or renumbered.
+R2: fail-closed relevance intact, correction never punitive, repeated corrections cannot manufacture
+closure, English marker tables not reopened. R3: EN/AR correction equivalence required and proven —
+measured at this base, an EN correction and its faithful AR counterpart produced identical transitions
+and identical resulting state, so R3 holds across the correction seam and must not be worsened.
+
+**Pin and pack impact, disclosed in advance.** `PACK DELTA: 0`; `engine/domain_rules.py`
+(`0e47326a…`), `engine/path_n_questions.py` (`a1a682d3…`) and all five `domains/*/domain.json` must stay
+byte-identical; correction semantics must be domain-neutral. `engine/progression_loop.py`
+(`3cbd7684…`) is pinned in **3 ENFORCING** locations and the §10 guard lands in that file, so R4-I will
+move that digest — disclosed here rather than discovered at review — and must reconcile it exactly per
+`PVCG_R3_C_SEMANTIC_STABILITY_CONTRACT.md` §13.2a. **No pin moves in this candidate: `PIN DELTA: 0`.**
+
+**Phase 4 (**OD-R4-08**).** Phase 4 remains **FORMALLY CLOSED within its previously implemented
+boundary** and is **NOT reopened generally**. The Owner authorized a narrowly bounded post-closure P4-2
+extension solely because repository authority already assigned FPC-02's missing revision / stale-output
+obligation to P4-2, limited to what the R4 conformance obligation needs — and not other Phase 4 deferred
+items, broad durable-output redesign, versioning, branching, rollback, sharing, unrelated persistence
+redesign, or infrastructure changes.
+
+**A governance discrepancy disclosed, with no historical rewriting.** `PVCG_R2_C` §5 equates PVCG-R4
+with *"a full contradiction engine"*, while `PVCG_R3_C` §17 names R4 as *"user correction / deterministic
+invalidation"* **and** a contradiction engine as a separate item. Per **OD-R4-04** the older R2 framing
+is historical/ambiguous and does not govern the new contract; `PVCG_R2_C` is **untouched** by this
+candidate, and §19.4 of the new contract carries the bounded current-truth clarification. Whether a
+formal supersession statement should be recorded remains OPEN.
+
+**Creator evidence provenance, stated without back-dating.** The Creator executed **no test suite** for
+this candidate and claims no suite figure. The drafting container has Python 3.11.15 but **neither
+`pytest` nor `flask`**, so the §18-class execution precondition used by R3-I is **not satisfied** here.
+That is a Creator-environment limitation — not a product defect, not a governance defect, not a criterion
+failure — recorded rather than worked around. Every `[EXEC]` finding came from read-only `python3` probes
+against `engine/` that modified no repository file and added no fixture; the reviewer should re-measure
+them independently. PVCG-R4-I must measure everything on its own frozen state.
+
+**Scope.** Governance/documentation only — one new contract document plus this entry and the two status
+surfaces. No `engine/`, `web/`, `tests/`, `domains/`, `scripts/`, evidence-tree, generator, deployment or
+Render path; `RUNTIME DELTA: 0`, `TEST DELTA: 0`, `PACK DELTA: 0`, `PIN DELTA: 0`; `main` not reconciled;
+`OWNER_DECISION_REGISTER.md` **UNCHANGED**. `PVCG-R4 IMPLEMENTATION STARTED: NO`;
+`FPC-02 / P4-2 REMAINS IMPLEMENTATION OWNER: YES`; `TARGETED PARTIAL INVALIDATION AUTHORIZED: NO`;
+`FULL CONTRADICTION ENGINE AUTHORIZED: NO`; `PHASE 4 REOPENED GENERALLY: NO`;
+`VERSIONING / BRANCHING / ROLLBACK / SHARING AUTHORIZED: NO`; `TDVP IMPLEMENTATION STARTED: NO`;
+`PVCG SATISFIED: NO`; `FULL MLC DEFINITION FROZEN: NO`;
+`MINIMUM LAUNCH-CONFORMANCE SET SATISFIED: NO`; `DEPLOYMENT AUTHORIZED: NO`.

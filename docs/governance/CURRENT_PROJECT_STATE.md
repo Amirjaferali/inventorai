@@ -2424,8 +2424,58 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
-- **PVCG-R3 — AUTHORITATIVE CLOSURE (governance-only closure CANDIDATE), base
-  `d046b3e5449f5f91f5f719686e7e207ceda2f06c`** (PR #552 merge — PVCG-R3-I, AUTHORITATIVE; live tip
+- **PVCG-R4-C — USER CORRECTION AND DETERMINISTIC INVALIDATION — CONFORMANCE CONTRACT (governance-only
+  CONTRACT CANDIDATE), base `18a90f9b0aa85d05317bed5aaa596e19716c6557`** (PR #553 merge — PVCG-R3
+  FORMAL CLOSURE, AUTHORITATIVE; live tip independently re-fetched and re-verified: first parent
+  `d046b3e5…`, second parent `0fa8fbd8…` — the exact Owner-accepted R3 closure candidate — merge tree
+  `5101c167…` == candidate tree, empty candidate→merge diff, zero later commits, clean tree).
+  **`PVCG-R3 FORMALLY CLOSED: YES`.** Disposition: **`PVCG-R4-C CONTRACT CANDIDATE — NOT AUTHORITATIVE
+  UNTIL MERGED`**; even on merge it authorizes **no implementation** (PVCG-R4-I needs its own separate
+  Owner execution authorization). Contract:
+  `docs/governance/PVCG_R4_C_USER_CORRECTION_AND_DETERMINISTIC_INVALIDATION_CONTRACT.md`.
+  **PVCG-R4 is a CONFORMANCE GATE, not a capability owner (OD-R4-01/02):** `IMPLEMENTATION OWNER:
+  FPC-02 / P4-2` (with D17 / D-AISR-06 / D-P4-05) vs `PVCG CONFORMANCE OWNER: PVCG-R4` — no parallel
+  state model, record type, schema, replay engine or dependency model, preserving `D-FPC-MAP-02` and
+  `D-FPC-MAP-06`. **Frozen defect:** a user who discovers previously supplied accepted material was
+  wrong cannot withdraw it, so conclusions stay current although their basis was withdrawn —
+  demonstrated through the runtime path (three Stage-2 gaps CLOSED at maturity 2 / stage 3; four
+  retraction iterations change nothing; the withdrawn mechanism appears in **four** deliverable
+  locations including the prototype & test plan), with `deliverable_eligible=False` /
+  `derived_verified_ready=False` / unknowns surfaced credited, so it is a truthfulness-of-basis defect,
+  **not** a false-readiness defect. **Required:** explicit record-targeted correction (never inferred
+  from wording); non-destructive supersession with retention as a forward `supersedes` edge (the durable
+  store has **no `UPDATE` statement at all**), inverse derived on load; **full deterministic replay** of
+  the amended accepted-source stream through the unchanged `run_iteration`; live-state replacement only
+  via replay; readiness/maturity/evaluation **permitted to decrease** with a measured decrease required;
+  atomic failure/rollback; truthful withdrawal marker on the existing surface-and-retain idiom; **no
+  schema migration**. **Prohibited:** targeted/partial re-evaluation (`D-AISR-06`, Phase-4 entry decision
+  §12, OD-R4-03), any dependency graph, a full contradiction engine (OD-R4-04), destructive history
+  mutation, and reopening ordinary CLOSED gaps through the forward path (OD-R4-07); **"bounded" means
+  bounded SCOPE and AUTHORIZATION, never targeted partial recomputation**. **CLOSED-gap precondition:**
+  `integrate_response` on an already-CLOSED gap yields `status=PARTIAL` with `closed_at` set — **not a
+  live defect** (its sole runtime caller sits inside `run_iteration`, whose gap comes from
+  `select_next_gap`, which returns only OPEN/PARTIAL) — and must be made unreachable by construction
+  before any reprocessing, preserving WPS-001 INV-004; the only dedicated INV-004 test skips on its own
+  corpus, so non-vacuous coverage is mandated. **R1/R2/R3 protected (OD-R4-10)**, including EN/AR
+  correction equivalence — measured at this base, EN and AR corrections produced identical transitions
+  and identical resulting state. **Phase 4 remains FORMALLY CLOSED within its implemented boundary and
+  is NOT reopened generally (OD-R4-08)**; only a narrowly bounded post-closure P4-2 extension limited to
+  the R4 conformance obligation was authorized. **Creator evidence provenance: no test suite was
+  executed for this candidate and no suite figure is claimed** — the drafting container has Python
+  3.11.15 but neither `pytest` nor `flask`, a Creator-environment limitation recorded rather than worked
+  around; all `[EXEC]` findings are read-only `engine/` probes for the reviewer to re-measure.
+  `RUNTIME DELTA: 0`, `TEST DELTA: 0`, `PACK DELTA: 0`, `PIN DELTA: 0`; `main` not reconciled;
+  `OWNER_DECISION_REGISTER.md` UNCHANGED. `PVCG-R4 IMPLEMENTATION STARTED: NO`;
+  `FPC-02 / P4-2 REMAINS IMPLEMENTATION OWNER: YES`; `TARGETED PARTIAL INVALIDATION AUTHORIZED: NO`;
+  `FULL CONTRADICTION ENGINE AUTHORIZED: NO`; `TDVP STARTED: NO`; `PVCG SATISFIED: NO`;
+  `FULL MLC DEFINITION FROZEN: NO`; `DEPLOYMENT AUTHORIZED: NO`.
+
+- **PVCG-R3 — AUTHORITATIVE CLOSURE — MERGED AND AUTHORITATIVE via PR #553, merge `18a90f9b…`; the
+  text below is retained as the CANDIDATE-TIME historical record, base
+  `d046b3e5449f5f91f5f719686e7e207ceda2f06c`.** *Current truth: `PVCG-R3 FORMALLY CLOSED: YES` — the
+  candidate-time disposition line "NOT AUTHORITATIVE UNTIL MERGED" below is superseded by that merge and
+  is preserved unrewritten, per the retained-history convention.* (PR #552 merge — PVCG-R3-I,
+  AUTHORITATIVE; live tip
   re-fetched and independently re-verified: first parent `7b7aa2f1…`, second parent `4978c969…` — the
   exact Owner-accepted candidate — merge tree `db87b7cb…` == candidate tree, empty candidate→merge diff,
   zero later commits, clean tree). Disposition: **`PVCG-R3 CLOSURE CANDIDATE — NOT AUTHORITATIVE UNTIL
