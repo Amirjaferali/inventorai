@@ -2424,8 +2424,40 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
-- **PVCG-R4 — AUTHORITATIVE CLOSURE (governance-only closure CANDIDATE), base
-  `5ed09180c7b3bc1809785ed425d4820d5ffc71b7`** (PR #555 merge — PVCG-R4-I, AUTHORITATIVE; live tip
+- **PVCG — AUTHORITATIVE CLOSURE OF THE R1–R4 PROGRAM (governance-only closure CANDIDATE), base
+  `ca9fb4be818f62a7e78a72ce6c97c707bba9807c`** (PR #556 merge — PVCG-R4 FORMAL CLOSURE, AUTHORITATIVE;
+  live tip re-fetched and independently re-verified: first parent `5ed09180…`, second parent
+  `713a48fd…` — the exact Owner-accepted R4 closure candidate — merge tree `eb105e95…` == candidate
+  tree, empty diff, zero later commits, clean tree). Disposition: **`PVCG CLOSURE CANDIDATE — NOT
+  AUTHORITATIVE UNTIL MERGED`**. Record: `docs/governance/PVCG_FORMAL_CLOSURE_RECORD.md`.
+  **Authority:** no committed document defines PVCG or PVCG-wide closure criteria (re-confirmed
+  fresh; both master remediation plans and the ODR carry zero PVCG mentions), so closure is NOT
+  repository-required; it is AUTHORIZED by the Owner's PVCG FINAL directive, with the scope fixed as an
+  **[OWNER]** definition — *PVCG = the R1–R4 conformance program, nothing wider*. **Matrix: 14 MET / 1
+  PENDING / 0 NOT MET.** R1 authoritative (PR #547), R2/R3/R4 formally closed — all verified from Git
+  lineage. **Every behavioral figure FRESH on `ca9fb4be…`:** R1 **26**; R2 **189**+**566**; R3 **579**;
+  R4 **63**; P9 **54**; WPS-001 **20/1**; smoke **PASS**; full suite **4418 / 3 / 1 / 0**; 15/15
+  integrated cross-capability probe (EN+AR, R1 disposition, R2 fail-closed, UI language not switching on
+  Arabic input, tokened R4 correction, withdrawn basis absent package-wide, marker 1,
+  restart-reconstruction exact and deterministic, no fabricated contradiction). Pins/packs re-measured
+  and matching. **MLC: no committed definition exists and none is invented** — `MINIMUM
+  LAUNCH-CONFORMANCE SET SATISFIED: NO`; `FULL MLC DEFINITION FROZEN: NO`; the definition remains an
+  OPEN Owner decision that does not block closure. **R4 clarification preserved:** correction route
+  IMPLEMENTED; **rendered correction UX NOT DELIVERED** (Phase-3C / FPC-02, NOT STARTED / NOT
+  AUTHORIZED); zero templates claim a correction feature. **Residuals classified, none suppressed:**
+  PVCG-internal (replay bound 500 unrepaired/unassigned, NB-3/NB-4, N-2/U-4, token semantics,
+  bundle-ref hygiene) vs outside-PVCG (OBS-P5-2-01 provider portion, no HSTS, email provider, Render,
+  PSRR GO, legal/tax, payment, OD-A, `main` reconciliation, future domains). **TDVP remains a
+  provisional candidate; nothing promoted.** Closing PVCG closes only PVCG as scoped — not product
+  completion, not release/production readiness, not commercial activation. `RUNTIME/TEST/PIN/PACK/
+  DOMAIN-RULE DELTA: 0`; `main` not reconciled; `OWNER_DECISION_REGISTER.md` UNCHANGED;
+  `DEPLOYMENT AUTHORIZED: NO`; `PRODUCTION AUTHORIZED: NO`.
+
+- **PVCG-R4 — AUTHORITATIVE CLOSURE — MERGED AND AUTHORITATIVE via PR #556, merge `ca9fb4be…`; the
+  text below is retained as the CANDIDATE-TIME historical record.** *Current truth: `PVCG-R4 FORMALLY
+  CLOSED: YES` — the candidate-time disposition line below is superseded by that merge and preserved
+  unrewritten, per the retained-history convention.* (base
+  `5ed09180c7b3bc1809785ed425d4820d5ffc71b7`) (PR #555 merge — PVCG-R4-I, AUTHORITATIVE; live tip
   re-fetched and independently re-verified: first parent `c3d9e2d9…`, second parent `2bb472a0…` — the
   exact Owner-accepted candidate — merge tree `506b2dd4…` == candidate tree, empty candidate→merge diff,
   zero later commits, clean tree). Disposition: **`PVCG-R4 CLOSURE CANDIDATE — NOT AUTHORITATIVE UNTIL
