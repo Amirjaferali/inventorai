@@ -41,7 +41,86 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — TDVP: POST-PVCG RECONCILIATION; governance-only reconciliation gate).** Base:
+**Status (current — PDVG-01: PRE-RELEASE PRODUCT DEPTH & VALUE GATE; governance-only classification
+gate; REPAIR candidate after Independent External Review REJECT).** Base:
+`1295ed08ec902f2fcc21934eac3622548a44719b` — re-verified this gate as the **live authoritative tip** of
+`feature/atomic-json-session-persistence` (0 commits after it; PR #558; first parent `2da8a6a3…`, second
+parent `1f5989b5…`; merge tree `bdb6e6b9…`; empty candidate→merge diff; clean tree). TDVP Outcome A and
+`PVCG FORMALLY CLOSED / SATISFIED: YES` stand unchanged and are not reopened.
+
+**Disposition: `PDVG-01 CLASSIFICATION CANDIDATE — NOT AUTHORITATIVE UNTIL MERGED`.** Record:
+`docs/governance/PDVG_01_PRE_RELEASE_PRODUCT_DEPTH_AND_VALUE_GATE_RECORD.md`. Classifies product-depth work in four kinds —
+**adequately owned**, **partially owned**, **dormant/planned**, and **independently proven ownership
+gaps**; **two §9 rows have no current owner** (semantic adaptive questioning; user-feedback capture).
+**NEW WORKSTREAMS: 0; NEW OWNERS: 0; no new numbering for existing workstreams** — a proven gap is
+surfaced, never resolved here. Authorizes NO implementation.
+
+**Rejected evidence: ELEVEN candidates, none published to `origin`.** `da8c1fd8…` (Creator Grill CG-1/CG-2),
+`5974baf7…` (CG-3), `fd7de207…` (**Independent External Review REJECT** — truthfulness rated HIGH;
+rejected on ownership architecture and release classification), `d6d55db0…` (Re-Grill RG-1),
+`97233ad9…` (RG-2), `8cddcda3…` (Instruction-to-Result Audit P1–P5), `fa93acef…` (post-Grill audit —
+stale rejected-evidence aggregate), **`ecc9bde9…` (substantive Independent External Review REJECT —
+F-1 governance consistency)**, and **`1a9cdad7…` (reviewer micro-repair directive — §12.1a
+historical-reference precision)**, **`b287c4b6…` (pre-review audit B24)**, and **`615fcb8e…` (Creator
+pre-freeze self-check — B24-F2 recurrence)**. **All eleven are retained as local refs and included in
+the SHA-preserving bundle; none amended, rebased, or published.** Count derived per the §12.3 rule. Each of
+the Independent Review's **three blocking findings** was **independently re-proved from source**, not
+accepted on the reviewer's authority.
+
+**TRUE OWNERSHIP GAP RECORDED.** Semantic adaptive questioning is owned by **no** workstream, capability
+or phase: WS10 contract L71, WS11 D14, and WS14 L59/L227 each exclude it in their own text;
+`gap_relevance` is *"LEXICAL … not a semantic component"*; **WS11.2 has no contract, file or §15 row**;
+and **WS4 §17 records the capability as wanted and ownerless by explicit disclaimer**. The merged TDVP
+`TRUE RESIDUAL GAP COUNT: 0` is **preserved as authority-at-that-time and NOT rewritten**; current truth
+is restated as `UNOWNED CAPABILITY GAP COUNT (PDVG-01 reconstruction): 1` pending **OD-PDVG-10**. Class:
+**Tier 2 (T2-G)** — SHOULD before first release under a binding no-implied-adaptivity condition, **MUST
+before paid activation**; **not** force-fitted into WS14 or WS11.
+
+**Corrections carried.** **T1-A′** — S2 is scoped to the Technical Decision Workspace lane (core gate
+verbatim; `validity_status` occurs in no Python file; 8 dimensions at zero coverage), so T1-A becomes a
+**bounded S2 extension under the existing owner, then one run**; no second benchmark owner; §8 row 2
+re-marked PARTIAL. **T2-C′** — WS16 is read-only and electronics-only, ~6 of 14 dimensions, so unchanged
+re-execution is replaced by a **bounded WS16 extension** under the existing §15 row; **PSRR not
+expanded**. **Evidence ladder re-tiered** into T1-D (truthful disclosure), T2-E (writer mapping) and
+T2-F (ordering repair **+ mandatory guard test**). **WS10/display split** — the render is excluded by
+WS10 L71; the adequate owner is **Phase 3 Product UX/UI**, the same lane as T1-B. **WS11 two axes** —
+activation blocked, **importance HIGH**. **ILT** requires **≥1 experienced technical participant**.
+**Tier 4 relabelled** `STRATEGICALLY PRESERVED / NOT RELEASE-SEQUENCED`. **Longitudinal** — a timestamp
+is **not required**.
+
+**Tier classification groups** (§5 entries, not literal item counts): **4 / 7 / 4 / 6**; **exact §9
+matrix rows: 4 / 8 / 5 / 8, total 25**, no ambiguous tier. **Contradiction ledger (§10A): 7 rows.**
+`MLC DEFINITION FROZEN: NO` — the Tier-1 set is **not** proposed as the MLC, for two evidenced reasons:
+it has not itself been independently reviewed, and **T1-A′'s scope is undefined pending OD-PDVG-11**.
+**OD-PDVG-10 does NOT gate MLC definition and does NOT block first serious release** (§4A.5): an unowned
+**Tier-2** item is not a member of the launch-conformance set. *"First serious release"* remains
+undefined as a repository fact.
+
+**Scope.** Governance/documentation ONLY. `EXECUTABLE/TEST/PIN/PACK/DOMAIN-RULE DELTA: 0`; `main` not
+reconciled; `OWNER_DECISION_REGISTER.md` UNCHANGED; no historical record rewritten.
+`PDVG-01 IMPLEMENTATION STARTED: NO`; `TIER-1 IMPLEMENTATION AUTHORIZED: NO`; `S2 EXTENSION AUTHORIZED:
+NO`; `ILT ROUND EXECUTED: NO`; `NEW DOMAINS ACTIVATED: NO`; `PSRR GO: NO`; `DEPLOYMENT AUTHORIZED: NO`;
+`PRODUCTION AUTHORIZED: NO`; `PAID ACTIVATION AUTHORIZED: NO`.
+
+**Verdict provenance, kept distinct.** `UNSUPPORTED MATERIAL CLAIMS` is an INDEPENDENT-REVIEWER field:
+
+```
+Creator Grill unsupported-material-claim finding (this repair candidate) : 0
+Independent review of the PRIOR candidate fd7de207                      : REJECT on ownership
+                                                                          architecture and release
+                                                                          classification; truthfulness
+                                                                          rated HIGH
+Independent review of THIS repair candidate                             : NOT YET PERFORMED,
+                                                                          as at the time of submission
+```
+
+**Owner decisions surfaced: 14** — 01, 02, 03, 04, 05, 06, 07, **08a**, **08b**, 09, 10, 11, 12, 13
+(08a/08b independently actionable, counted separately; no plain OD-PDVG-08). **Recorded as made: 0.**
+
+---
+
+**Superseded (retained as history) — TDVP: POST-PVCG RECONCILIATION; MERGED AND AUTHORITATIVE via
+PR #558, merge `1295ed08…`.** Base:
 `2da8a6a3bb832bf3326c4cb7cc9e1dc8a99499e7` (PR #557 merge — PVCG FINAL FORMAL CLOSURE, AUTHORITATIVE;
 live tip re-fetched and independently re-verified: first parent `ca9fb4be…`, second parent `106d3b52…`
 — the exact Owner-accepted candidate — merge tree `cdbf4c36…` identical to the candidate tree, empty
