@@ -118,7 +118,7 @@ _DOMAINS = os.path.join(_REPO, "domains")
 #       c268cd6380129170da19f3ba03158eebd9a5480711b43e39280e8ce9e74f63f8
 _FROZEN_ENGINE_SHA256 = {
     "engine/domain_rules.py": "0e47326ad92a6e5b0a63eb06db9e3ad96ae72c9aaf64471dd21621265b1db1ab",
-    "engine/progression_loop.py": "4ba9ceec80b7924d2d153e2274cccab41b2630d70b321b9608fff0bd1281b026",
+    "engine/progression_loop.py": "678a2134c243bc1941f78624294334a831539ef33f116b7ea12605f72e81d155",
 }
 # The mechanical pack hash IS this corpus's inventory validity anchor.
 # P9-MECH-SF reconciliation (contract §4 item 10, disclosed): re-frozen after

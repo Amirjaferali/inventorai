@@ -208,6 +208,20 @@ QUESTIONS = {
 # I/O or LLM call, and starts no conversational / multi-question loop. A single
 # deterministic reframe is sufficient for this bounded increment; the owner's
 # existing six actions remain the truthful exits.
+# RVR-2 (Wave-1 remediation contract): served AFTER the single reframe render,
+# instead of repeating the identical reframe indefinitely (the S2 run recorded
+# the same reframe re-served 18-20x). A different, stable, governed message
+# that names the honest exits. Display selection only - canonical state, gap
+# status, get_question(), and the six owner actions are untouched.
+_EXHAUSTED_EXIT_PROMPT = (
+    "The prepared questions for this area are exhausted, and repeating them "
+    "will not move it forward. Your honest options now: add genuinely new "
+    "information in the answer box; mark this unknown or deferred; note a "
+    "provisional assumption; ask for a specialist or evidence; or - if it "
+    "cannot be resolved now - accept it explicitly as a known risk so the "
+    "journey can move on while the risk stays visibly recorded."
+)
+
 _STALL_REFRAME = (
     "Let's take this part in plainer terms. In your own words, what do you "
     "already know about this aspect of your idea — and what information do you "
@@ -289,6 +303,15 @@ def get_display_question(domain: str, gap_type: str, iterations_open: int,
         if current is not None and current == get_path_n_question(
             gap_type, iterations_open - 1, domain=domain
         ):
+            # RVR-2: the reframe is served exactly ONCE (the first exhausted
+            # render). Every later exhausted render serves the deterministic
+            # exit prompt instead of re-serving the identical reframe - the
+            # governed reason the question changes is that the variants are
+            # exhausted and the honest exits are now the productive path.
+            if iterations_open >= 2 and current == get_path_n_question(
+                gap_type, iterations_open - 2, domain=domain
+            ):
+                return _EXHAUSTED_EXIT_PROMPT
             return _STALL_REFRAME
     return get_question(domain, gap_type, iterations_open, path=path)
 

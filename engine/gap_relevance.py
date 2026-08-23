@@ -63,6 +63,12 @@ _INTENT_WORDS = {
         "actuates", "actuate", "triggers", "trigger", "activates", "activate",
         "switches", "switch", "opens", "open", "closes", "close",
         "converts", "convert", "drives", "drive", "transmits", "transmit",
+        # RVR-2 (Wave-1) re-derivation from the COMMITTED Path-N banks:
+        # mechanical bank - "What moves, connects, or transfers force?",
+        # "contribute to the overall motion or function"; electronics bank -
+        # "how you imagine the system would notice the problem and respond".
+        "transfers", "transfer", "motion", "notice", "notices", "noticed",
+        "respond", "responds",
         "receives", "receive", "sends", "send", "measures", "measure",
         "detects", "detect", "senses", "sense", "compares", "compare",
         "computes", "compute", "disconnects", "disconnect",
@@ -83,6 +89,18 @@ _INTENT_WORDS = {
         "constraint", "constraints", "efficiency", "withstand",
         "rated", "rating", "capacity", "feasible", "feasibility",
         "resistive", "inductive", "capacitive", "optical", "magnetic",
+        # RVR-2 (Wave-1) re-derivation from the COMMITTED Path-N banks, under
+        # this contract's own rule (families derive from the gap's governed
+        # questions): electronics bank - "work safely in the real world",
+        # "running reliably over time", "heat, water, time, or wear",
+        # "whether this can physically work". Close inflections only; the R2
+        # exclusions stay excluded, and words that would create cross-family
+        # eligibility (condition/force/spring/gear...) are deliberately NOT
+        # added as single words - the mechanical bank's principle examples
+        # enter as exact PHRASES below instead, so a mechanism answer that
+        # merely mentions a spring or a force cannot satisfy feasibility.
+        "safely", "safety", "safe", "reliably", "reliable", "reliability",
+        "wear", "wears", "water", "physically",
     }),
     # "What does your invention specifically NOT do or NOT cover?"; "one
     # existing approach that is similar … what makes yours different"; "the
@@ -98,6 +116,12 @@ _INTENT_WORDS = {
         "versus", "vs", "compared", "comparison", "whereas",
         "outside", "beyond", "limitation", "limitations",
         "restricted", "restricts", "uncovered",
+        # RVR-2 (Wave-1) re-derivation from the COMMITTED Path-N banks:
+        # electronics bank - "responsible for handling", "someone or something
+        # else's job"; mechanical bank - "one existing mechanical approach
+        # similar to yours". Close inflections only.
+        "responsible", "responsibility", "responsibilities",
+        "similar", "handles", "handling", "job",
     }),
     # "describe the problem you are trying to solve … why does it matter to
     # them"; "why does your mechanism solve this problem rather than a
@@ -147,6 +171,15 @@ _INTENT_PHRASES = {
         "power requirement", "power requirements", "power consumption",
         "power source", "temperature range", "operating range",
         "physical limit", "physical limits", "operating limit",
+        # RVR-2 (Wave-1): bounded phrase additions from the mechanical bank's
+        # own question vocabulary ("What physical principle does your
+        # mechanism rely on?") and the feasibility-intent phrase "safety
+        # margin". Deliberately NOT added: "spring tension" / "gear ratio" /
+        # "force constraint" - measured cross-family eligibility (an
+        # assumption-register answer naming spring tension would become
+        # feasibility-eligible in English only, a differential EN/AR leak the
+        # R3 semantic-stability suite forbids).
+        "physical principle", "safety margin",
     ),
     BOUNDARY_AMBIGUITY: (
         "does not", "doesn't", "not cover", "not intended",

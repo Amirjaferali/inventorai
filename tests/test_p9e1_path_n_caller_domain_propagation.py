@@ -60,7 +60,14 @@ def _exhaustion_iteration(gap):
            / "docs" / "governance" / "path_n_content_config"
            / "electronics_electrical_path_n_questions.json")
     variants = json.load(open(art, encoding="utf-8"))["gaps"][gap]
-    return len(variants) + 3
+    # Wave-1 RVR-2 reconciliation (WAVE_1_REMEDIATION_IMPLEMENTATION_
+    # CONTRACTS.md): the stall reframe is now served exactly ONCE, at the
+    # FIRST exhausted render (iterations_open == len(variants), where the
+    # current==previous clamp comparison first holds); deeper renders serve
+    # the domain-neutral exhausted-exit prompt instead of repeating the
+    # reframe. This test's domain-propagation truths are unchanged and are
+    # additionally asserted against the deeper renders below.
+    return len(variants)
 
 
 # --------------------------------------------------------- fixture honesty -------
@@ -132,6 +139,12 @@ def test_red2_get_display_question_foreign_domain_no_electronics_stall_reframe()
     # specific is served to a foreign domain.
     assert result == progression_loop._STALL_REFRAME
     assert result != electronics_text
+    # RVR-2: deeper exhausted renders serve the domain-neutral exit prompt -
+    # still never Electronics artifact text at a foreign domain.
+    deeper = progression_loop.get_display_question(
+        _RECOGNIZED_NOT_ACTIVATED, gap, it + 3, path="N")
+    assert deeper == progression_loop._EXHAUSTED_EXIT_PROMPT
+    assert deeper != electronics_text
     assert result != generic_text
     for electronics_only in ("circuit", "electrical", "electronic", "voltage"):
         assert electronics_only not in result.lower()
@@ -151,6 +164,9 @@ def test_green_guard_electronics_stall_reframe_preserved():
     # Electronics at exhaustion still gets the deterministic stall reframe.
     assert progression_loop.get_display_question(_ACTIVATED, gap, it, path="N") == \
         progression_loop._STALL_REFRAME
+    # RVR-2: past the single reframe render, the exit prompt takes over.
+    assert progression_loop.get_display_question(_ACTIVATED, gap, it + 3, path="N") == \
+        progression_loop._EXHAUSTED_EXIT_PROMPT
 
 
 # ------------------------------- GREEN guard: None / backward compatibility ------
