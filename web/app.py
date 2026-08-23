@@ -27,6 +27,12 @@ from engine.idea_state import (
 from engine.requirement_landscape import derive_requirement_landscape
 from engine.progression_loop import (
     run_iteration, select_next_gap, get_question, get_display_question,
+    # RVR-1 (Wave-1): the canonical accepted-risk lifecycle writer and the
+    # existing next-gap cascade, invoked ONLY by the explicit accept-risk route.
+    accept_gap_risk, _open_next_gap_if_needed,
+)
+from engine.idea_state import (
+    DISPOSITION_RISK_ACCEPTED, MECHANISM_COMPLETENESS as _MECH_GAP,
 )
 from web.gap_labels import (
     GAP_LABELS, get_gap_label, get_maturity_label, SESSION_DISCLOSURE,
@@ -806,6 +812,17 @@ CORRECTION_APPLIED_ACK = (
     "Your earlier answer was withdrawn and kept in the project history. "
     "Everything shown has been recomputed from your remaining answers."
 )
+
+# RVR-1 (Wave-1): explicit accepted-risk acknowledgement / failure messages.
+# Same catalogue conventions as the other acks (canonical English constant,
+# Arabic via the ui_text presentation map); truthful: accepted != resolved.
+RISK_ACCEPTED_ACK = (
+    "Recorded as an accepted risk. This gap is explicitly accepted by you as "
+    "a known, unresolved risk - it is NOT resolved and NOT validated, and it "
+    "stays visible in your assessment.")
+RISK_NOT_ACCEPTED_MESSAGE = (
+    "The risk acceptance was not recorded. Nothing was changed - please "
+    "review the question and try again.")
 
 KEEP_SNAPSHOT_ACK = (
     "Current working snapshot selected for this temporary session. "
@@ -2791,6 +2808,98 @@ def correct_answer(sid):
     entry["last_result"] = None
     entry.pop("answer_token", None)
     entry["_interaction_ack"] = CORRECTION_APPLIED_ACK
+    return redirect(url_for("show_session", sid=sid))
+
+
+@app.route("/session/<sid>/accept-risk", methods=["POST"])
+def accept_risk(sid):
+    """RVR-1 (Wave-1 remediation contract, OD-R1) — EXPLICIT owner acceptance of
+    the currently served gap as a known risk.
+
+    Governed, never automatic: requires the explicit confirmation field, the
+    same server-issued answer token as every state-changing session POST, and
+    project authorization. Persist-before-acknowledge (the proven non-answer
+    shape): the durable ledger record commits BEFORE the live gap status moves,
+    and on any durable failure nothing changes and nothing is acknowledged.
+    The gap-status write goes through the ONE canonical lifecycle writer
+    (`engine.progression_loop.accept_gap_risk`), which refuses
+    MECHANISM_COMPLETENESS and any non-OPEN/PARTIAL gap. WS12 stays
+    observation-only — its classification is consumed at deliverable render,
+    never here. Truthful UX: the acknowledgement says accepted, not resolved.
+    """
+    if not _project_authorized(sid):
+        return _deny_project()
+    entry = SESSION_STORE.get(sid)
+    if not entry:
+        return redirect(url_for("index"))
+    state = entry["state"]
+    if not _valid_answer_token(sid, request.form.get("answer_token", "")):
+        entry["_answer_error"] = RISK_NOT_ACCEPTED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    if getattr(state, "domain", None) is None:
+        # Cold-loaded non-resumable session: same refusal shape as answers.
+        entry["_answer_error"] = RISK_NOT_ACCEPTED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    gap_type = (request.form.get("gap_type") or "").strip()
+    reason = (request.form.get("reason") or "").strip()
+    _input_error = _free_text_error(reason, _current_ui_lang())
+    if _input_error is not None:
+        return (_input_error, 400)
+    # Explicit confirmation is mandatory; the accepted gap must be exactly the
+    # currently served one (the question the user is looking at), so consent
+    # can never silently target a different gap.
+    if (request.form.get("risk_confirm") != "yes"
+            or not gap_type
+            or gap_type != select_next_gap(state)
+            or gap_type == _MECH_GAP):
+        entry["_answer_error"] = RISK_NOT_ACCEPTED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    gap = state.get_gap(gap_type)
+    if gap is None or gap.status not in ("OPEN", "PARTIAL"):
+        entry["_answer_error"] = RISK_NOT_ACCEPTED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    # Staged mint on a throwaway ledger view (the proven persist-before-
+    # acknowledge shape): live state untouched until the durable append commits.
+    _minter = IdeaState(idea_id=state.idea_id)
+    _minter.assertions = list(state.assertions)
+    new_record = _minter.record_interaction(
+        action=DISPOSITION_RISK_ACCEPTED, content=reason or "",
+        gap_context=gap_type, iteration=state.iteration,
+    )
+    idem_key = _interaction_idempotency_key(
+        sid, DISPOSITION_RISK_ACCEPTED, gap_type, state.iteration, reason or "")
+    fingerprint = _answer_fingerprint(
+        sid, gap_type, DISPOSITION_RISK_ACCEPTED, reason or "")
+    try:
+        _get_store().append_record(sid, new_record, idempotency_key=idem_key)
+    except sqlite3.IntegrityError:
+        try:
+            prior = _get_store().record_payload_for_idempotency_key(sid, idem_key)
+        except StoreError:
+            prior = None
+        if prior is not None and _payload_answer_fingerprint(sid, prior) == fingerprint:
+            # Same event resubmitted: idempotent no-op, no second acceptance.
+            entry["_interaction_ack"] = RISK_ACCEPTED_ACK
+            return redirect(url_for("show_session", sid=sid))
+        entry["_answer_error"] = RISK_NOT_ACCEPTED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    except StoreError:
+        entry["_answer_error"] = RISK_NOT_ACCEPTED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    # Durable success — publish: ledger record, then the canonical lifecycle
+    # write, then the existing next-gap cascade so the journey advances.
+    state.assertions.append(new_record)
+    try:
+        accept_gap_risk(state, gap_type)
+    except ValueError:
+        # Unreachable after the validations above; truthful fail-closed anyway:
+        # the durable record stands as recorded owner intent, the live status
+        # is unchanged, and no acceptance is acknowledged.
+        entry["_answer_error"] = RISK_NOT_ACCEPTED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    _open_next_gap_if_needed(state)
+    entry.pop("answer_token", None)
+    entry["_interaction_ack"] = RISK_ACCEPTED_ACK
     return redirect(url_for("show_session", sid=sid))
 
 

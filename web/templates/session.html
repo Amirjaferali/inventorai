@@ -351,6 +351,28 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
   <button type="submit">{{ t('UI_B_SESSION_034') }}</button>
 </form>
 
+{# RVR-1 (Wave-1): explicit accept-as-known-risk exit. Rendered only for the
+   currently served non-mechanism gap; requires an explicit confirmation and
+   the same server answer token; truthful copy - accepted is not resolved. #}
+{% if gap_type and gap_type != 'MECHANISM_COMPLETENESS' %}
+<details class="accept-risk" style="margin-top:14px;border:1px solid #e8d9c0;border-radius:4px;background:#fdf9f2;padding:10px 14px">
+  <summary style="cursor:pointer;font-size:13px;color:#8a6d3b;font-weight:bold">{{ t('UI_RVR1_RISK_HEADING') }}</summary>
+  <p style="font-size:13px;color:#555;margin:10px 0 8px 0">{{ t('UI_RVR1_RISK_EXPLAIN') }}</p>
+  <form method="POST" action="/session/{{ sid }}/accept-risk">
+    <input type="hidden" name="answer_token" value="{{ answer_token }}">
+    <input type="hidden" name="gap_type" value="{{ gap_type }}">
+    <label style="display:block;font-size:13px;color:#555;margin-bottom:8px">
+      <input type="checkbox" name="risk_confirm" value="yes" required>
+      {{ t('UI_RVR1_RISK_CONFIRM') }}
+    </label>
+    <label for="risk-reason" style="display:block;font-size:12px;color:#888;margin-bottom:4px">{{ t('UI_RVR1_RISK_REASON') }}</label>
+    <textarea id="risk-reason" name="reason" rows="2" style="width:100%;box-sizing:border-box"></textarea>
+    <br>
+    <button type="submit" style="margin-top:8px">{{ t('UI_RVR1_RISK_BUTTON') }}</button>
+  </form>
+</details>
+{% endif %}
+
 {% else %}
 
 <hr>

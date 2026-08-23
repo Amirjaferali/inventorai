@@ -11,6 +11,7 @@ from datetime import datetime, timezone
 from typing import Any
 from engine.idea_state import (
     IdeaState, Evidence, ASSERTED, REASONED, DEMONSTRATED, OPEN, PARTIAL, CLOSED,
+    ACCEPTED_RISK, DISPOSITION_RISK_ACCEPTED,
     STAGE_3_GAP_TYPES, PROBLEM_MECHANISM_FIT,
     ASSUMPTION_INVENTORY, EXPERTISE_GAP_AWARENESS,
     LEGACY_UNSPECIFIED, UNVALIDATED,
@@ -963,10 +964,32 @@ def _s7(state, open_gaps):
                       "demonstration, or independent verification): verification "
                       "remains incomplete even where stored gaps are CLOSED.",
             "priority": "high"})
+    # RVR-1 (Wave-1 remediation contract): an ACCEPTED_RISK gap counts toward
+    # completion but is NEVER silently resolved. Whenever any accepted risk
+    # exists, the verdict rationale is qualified so a PROCEED-class verdict can
+    # never read as "all identified gaps resolved", and a Category-D item keeps
+    # the risk actionable. Display-only truthfulness; no verdict value changes.
+    accepted_risk_gaps = [g for g in state.gaps if g.status == ACCEPTED_RISK]
+    if accepted_risk_gaps:
+        _risk_names = ", ".join(
+            _GAP_LABELS.get(g.gap_type, g.gap_type) for g in accepted_risk_gaps)
+        rationale += (
+            " NOTE: %d gap(s) — %s — are ACCEPTED RISK: explicitly accepted by "
+            "the inventor as known, unresolved risk. Accepted is not resolved "
+            "and is not validated." % (len(accepted_risk_gaps), _risk_names))
+        for g in accepted_risk_gaps:
+            cat_d.append({"item_type": "accepted_risk",
+                "gap_type": _public_gap(g.gap_type),
+                "gap_label": _GAP_LABELS.get(g.gap_type, g.gap_type),
+                "action": ("Revisit the accepted risk for "
+                           f"{_GAP_LABELS.get(g.gap_type, g.gap_type).lower()} "
+                           "before any build, test, or commercial step."),
+                "priority": "high"})
     return {
         "category_a_proceed_revise_block": {"verdict": verdict, "rationale": rationale,
             "basis": {"maturity_level": state.maturity_level,
                       "open_gap_count": len(open_gaps),
+                      "accepted_risk_count": len(accepted_risk_gaps),
                       "evidence_quality": _plain_quality(_overall_quality(state)),
                       "derived_verified_ready": derived_ready}},
         "category_b_material_selection": {"status": "DEFERRED",
@@ -975,6 +998,44 @@ def _s7(state, open_gaps):
             "note": "Requires Options Database (ODS-001). Not in the current MVP."},
         "category_d_open_items": cat_d,
     }
+
+def _accepted_risk_items(state):
+    """RVR-1: one truthful Section-8 item per ACCEPTED_RISK gap. The WS12 path
+    classification is CONSUMED at render time (observation-only, deterministic):
+    the recorded `risk_accepted` ledger disposition for the gap is classified
+    as DEFERRED_BY_USER through the existing WS12 seam — no second vocabulary,
+    nothing stored, nothing mutated."""
+    if state is None:
+        return []
+    from engine.controlled_unknown_progression import (
+        classify_controlled_unknown, DEFERRED_BY_USER)
+    items = []
+    risk_gaps = [g for g in getattr(state, "gaps", []) if g.status == ACCEPTED_RISK]
+    for i, g in enumerate(risk_gaps):
+        path = None
+        for r in getattr(state, "assertions", []):
+            if (getattr(r, "disposition", None) == DISPOSITION_RISK_ACCEPTED
+                    and getattr(r, "gap_context", None) == g.gap_type):
+                try:
+                    path = classify_controlled_unknown(
+                        r, path=DEFERRED_BY_USER).path_classification
+                except Exception:
+                    path = None
+                break
+        items.append({
+            "id": f"RISK-ACCEPTED-{i+1:03d}",
+            "type": "accepted_risk",
+            "gap_type": _public_gap(g.gap_type),
+            "gap_label": _GAP_LABELS.get(g.gap_type, g.gap_type),
+            "status": g.status,
+            "path_classification": path,
+            "resolution": ("Explicitly accepted by the inventor as a known "
+                           "risk. Accepted, NOT resolved, NOT validated - "
+                           "revisit before any build, test, or commercial "
+                           "step."),
+        })
+    return items
+
 
 def _s8(open_gaps, state=None):
     items = [
@@ -1000,9 +1061,13 @@ def _s8(open_gaps, state=None):
             "iteration": u.iteration,
             "source": "inventor_stated",
         })
+    # RVR-1: accepted risks are ALWAYS visible in the unresolved-items section.
+    _risk_items = _accepted_risk_items(state)
+    items.extend(_risk_items)
     return {
         "items": items,
         "open_gap_count": len(open_gaps),
+        "accepted_risk_count": len(_risk_items),
         "acknowledged_unknown_count": len(getattr(state, "acknowledged_unknowns", [])),
         "cross_capability_conflicts": [], "conflict_count": 0,
         "note_conflicts": "Cross-capability conflict detection deferred to Phase 6.",

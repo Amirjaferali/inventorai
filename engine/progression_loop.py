@@ -861,6 +861,40 @@ def integrate_response(
         return "WARN", f"{gap_type} asserted only — reasoning required"
 
 
+def accept_gap_risk(state: IdeaState, gap_type: str) -> None:
+    """RVR-1 (Wave-1 remediation contract, OD-R1) — the ONLY writer of
+    ``Gap.status = ACCEPTED_RISK``.
+
+    Explicit-owner-action lifecycle transition: the named gap moves from
+    OPEN/PARTIAL to ACCEPTED_RISK. Never automatic — the sole live caller is
+    the governed /session/<sid>/accept-risk route after an explicit user
+    confirmation, and the sole replay caller applies the durably recorded
+    ``risk_accepted`` disposition (deterministic replay).
+
+    Refused loudly (ValueError, nothing mutated) when:
+      * the gap does not exist on this state;
+      * the gap is not OPEN/PARTIAL (CLOSED and ACCEPTED_RISK never move);
+      * the gap is MECHANISM_COMPLETENESS — the core mechanism can never be
+        risk-accepted: an idea whose mechanism is unknown is truthfully
+        BLOCKED, not riskily acceptable.
+
+    ACCEPTED_RISK is acceptance, not resolution: nothing here touches
+    evidence, quality, maturity, known_mechanism/known_problem, or closed_at.
+    """
+    if gap_type == MECHANISM_COMPLETENESS:
+        raise ValueError(
+            "MECHANISM_COMPLETENESS cannot be risk-accepted - the core "
+            "mechanism must be established, not accepted as unknown")
+    gap = state.get_gap(gap_type)
+    if gap is None:
+        raise ValueError(f"no such gap on this state: {gap_type!r}")
+    if gap.status not in (OPEN, PARTIAL):
+        raise ValueError(
+            f"{gap_type} is {gap.status} - only an OPEN/PARTIAL gap can be "
+            "accepted as a known risk")
+    gap.status = ACCEPTED_RISK
+
+
 # ─────────────────────────────────────────────
 # 4. Evaluate maturity transition
 # ─────────────────────────────────────────────
@@ -901,6 +935,15 @@ def evaluate_transition(state: IdeaState) -> tuple[bool, str]:
             gap = state.get_gap(required_gap)
             if gap is None:
                 return False, f"BLOCK: {required_gap} not yet opened"
+            # RVR-1 (OD-R1): PHYSICAL_FEASIBILITY and BOUNDARY_AMBIGUITY are
+            # satisfied by CLOSED **or** by the explicit owner disposition
+            # ACCEPTED_RISK — acceptance counts toward completion while staying
+            # visibly unresolved everywhere it renders. MECHANISM_COMPLETENESS
+            # is exempt by construction: accept_gap_risk refuses it, and the
+            # dedicated mech_gap CLOSED check above still governs it.
+            if required_gap != MECHANISM_COMPLETENESS \
+                    and gap.status == ACCEPTED_RISK:
+                continue
             if gap.status != CLOSED:
                 return False, f"BLOCK: {required_gap} not yet closed (status: {gap.status})"
         return True, "Mechanism established — ready for LEVEL 2"

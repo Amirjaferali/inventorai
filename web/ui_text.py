@@ -718,6 +718,30 @@ UI_STRINGS = {
         "ar": "كيف تريد أن تردّ؟",
     },
     "UI_B_SESSION_034": {"en": "Submit", "ar": "إرسال"},
+    # RVR-1 (Wave-1): accept-as-known-risk affordance. Truthful copy — accepted
+    # is never presented as resolved or validated.
+    "UI_RVR1_RISK_HEADING": {
+        "en": "Accept this as a known risk",
+        "ar": "قبول هذا كمخاطرة معروفة"},
+    "UI_RVR1_RISK_EXPLAIN": {
+        "en": ("If you honestly cannot resolve this now, you can accept it as a "
+               "known risk. It will stay visible as an unresolved, unvalidated "
+               "risk in your assessment - accepting is not resolving - and the "
+               "journey moves on to the next area."),
+        "ar": ("إذا كنت لا تستطيع بصدق حسم هذا الأمر الآن، يمكنك قبوله كمخاطرة "
+               "معروفة. سيبقى ظاهرًا كمخاطرة غير محسومة وغير مُتحقق منها في "
+               "تقييمك — القبول ليس حلًا — وتنتقل الرحلة إلى المجال التالي.")},
+    "UI_RVR1_RISK_CONFIRM": {
+        "en": ("I understand this stays an unresolved known risk and is not "
+               "resolved or validated."),
+        "ar": ("أفهم أن هذا يبقى مخاطرة معروفة غير محسومة، وأنه غير محلول وغير "
+               "مُتحقق منه.")},
+    "UI_RVR1_RISK_REASON": {
+        "en": "Optional: why you are accepting this risk",
+        "ar": "اختياري: لماذا تقبل هذه المخاطرة"},
+    "UI_RVR1_RISK_BUTTON": {
+        "en": "Accept as known risk",
+        "ar": "قبول كمخاطرة معروفة"},
     "UI_B_SESSION_035": {
         "en": "You have worked through the key questions for your idea.",
         "ar": "لقد عملتَ على الأسئلة الأساسية لفكرتك.",
@@ -1099,6 +1123,12 @@ UI_STRINGS = {
 # questions, the criticality clarification ask, and user content are deliberately
 # ABSENT. Populated below; kept as the single owner-approved Arabic registry.
 _DEEP_AR = {
+    # --- RVR-1 accepted-risk acknowledgement / failure (web.app constants) ---
+    "Recorded as an accepted risk. This gap is explicitly accepted by you as "
+    "a known, unresolved risk - it is NOT resolved and NOT validated, and it "
+    "stays visible in your assessment.":
+        "تم التسجيل كمخاطرة مقبولة. هذه الفجوة مقبولة منك صراحةً كمخاطرة معروفة "
+        "غير محسومة — وهي غير محلولة وغير مُتحقق منها، وستبقى ظاهرة في تقييمك.",
     # --- 4.5 clarification_labels.py (_CLARIFICATION / _FALLBACK) ---
     "What this question is asking": "ما الذي يسأل عنه هذا السؤال",
     "This is asking you to walk through how your idea works from start to finish — what happens first, what happens next, and how those steps lead to the result you want.": "هذا يطلب منك أن تستعرض كيف تعمل فكرتك من البداية إلى النهاية — ما الذي يحدث أولًا، وما الذي يحدث بعده، وكيف تؤدّي تلك الخطوات إلى النتيجة التي تريدها.",
