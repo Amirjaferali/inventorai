@@ -14712,3 +14712,131 @@ status surfaces. `RUNTIME DELTA: 0`; `TEST DELTA: 0`; `PIN DELTA: 0`; `PACK DELT
 `DOMAIN-RULE DELTA: 0`; `main` not reconciled; `OWNER_DECISION_REGISTER.md` UNCHANGED; no historical
 record rewritten. `TDVP IMPLEMENTATION STARTED: NO`; `NEW DOMAINS ACTIVATED: NO`; `PSRR GO: NO`;
 `DEPLOYMENT AUTHORIZED: NO`; `PRODUCTION AUTHORIZED: NO`.
+
+
+## PDVG-01 — PRE-RELEASE PRODUCT DEPTH & VALUE GATE (governance-only classification candidate — REPAIR after Independent Review REJECT)
+
+**Base.** `1295ed08ec902f2fcc21934eac3622548a44719b` — independently re-verified this gate as the **live
+authoritative tip** of `feature/atomic-json-session-persistence` (0 commits after it; PR #558 merge;
+parents `2da8a6a3…` / `1f5989b5…`; merge tree `bdb6e6b9…`; empty candidate→merge diff; clean tree).
+TDVP Outcome A and PVCG closure stand unchanged and are not reopened.
+
+**Rejected evidence — ELEVEN candidates; NONE published to `origin`.** `da8c1fd8…` (Creator Grill
+CG-1/CG-2), `5974baf7…` (CG-3), **`fd7de207…` (Independent External Review REJECT)**, `d6d55db0…`
+(Re-Grill RG-1), `97233ad9…` (RG-2), `8cddcda3…` (Instruction-to-Result Audit P1–P5), `fa93acef…`
+(post-Grill audit — stale rejected-evidence aggregate), and **`ecc9bde9…` (substantive Independent
+External Review REJECT — F-1 governance consistency: this entry's own surviving `ui_text.py:361`
+citation, repaired in the present candidate)**, and **`1a9cdad7…` (reviewer micro-repair directive —
+§12.1a historical-reference precision)**, and **`b287c4b6…` (pre-review audit B24 — stale §12.4
+aggregate and fragile §12.1a self-count)**, and **`615fcb8e…` (Creator pre-freeze self-check — B24-F2
+recurrence)**. **All eleven are retained as local refs and included in the SHA-preserving bundle; none
+is amended, rebased, or published.** The count is derived
+per the §12.3 rule — every candidate rejected up to and including the surviving candidate's predecessor,
+a surviving candidate never being a member of its own rejected set. The Independent Review rated
+`fd7de207…`'s truthfulness **HIGH** and rejected it on **ownership architecture and release
+classification** only.
+
+**Disposition.** `PDVG-01 CLASSIFICATION CANDIDATE — NOT AUTHORITATIVE UNTIL MERGED`. Record:
+`docs/governance/PDVG_01_PRE_RELEASE_PRODUCT_DEPTH_AND_VALUE_GATE_RECORD.md`. Classifies product-depth work by release
+value in four kinds — **adequately owned**, **partially owned**, **dormant/planned**, and
+**independently proven ownership gaps**. **Two §9 rows have no current owner** (semantic adaptive
+questioning; user-feedback capture) and are recorded as unowned rather than attached to an adjacent
+owner. **NEW WORKSTREAMS: 0; NEW OWNERS: 0; no new numbering** — a proven gap is surfaced for Owner
+adjudication, never resolved here. Authorizes NO implementation. Each of the three blocking findings was **independently
+re-proved from source**, not accepted on the reviewer's authority.
+
+**TRUE OWNERSHIP GAP RECORDED — semantic adaptive questioning.** `material answer content → changed
+canonical technical state → next-question decision materially adapts` is owned by **no** workstream,
+capability or phase. Every candidate disclaims it in its own committed text: WS10 contract L71 excludes
+*"serving selection or order, evaluation, persistence, or user-facing behavior"*; WS11 **D14** defers
+*"any consumption that changes … transition decisions"*; WS14 contract L59 lists *"semantic answer
+verification; semantic expressed-intent detection"* as out of scope and L227 records expressed-intent
+capture as *"NOT COMPLETED BY WS14"*; `gap_relevance` header L23–25 declares itself *"a LEXICAL …
+not a semantic component"*; `stage3_evaluator` is unintegrated. **WS11.2 is a name, not an owner** — no
+contract, no file, no §15 row — and D14 would block it regardless. Decisively, **WS4 §17 records the
+capability as wanted and ownerless by explicit disclaimer**: *"ask only what is missing"*, marked
+*"[FUTURE — recorded product observation, outside Workstream 4, non-authorizing]"* authorizing *"no new
+workstream"*. **The merged TDVP `TRUE RESIDUAL GAP COUNT: 0` is preserved as authority-at-that-time and
+NOT rewritten**; current truth is restated as `UNOWNED CAPABILITY GAP COUNT (PDVG-01 reconstruction): 1`
+pending **OD-PDVG-10**. Release class re-proved independently: **SHOULD before first serious release**
+(with a binding no-implied-adaptivity condition), **MUST before paid activation**, strategic importance
+**HIGH** — Tier 2 (T2-G), not Tier 1 and not optional. It is **not** force-fitted into WS14 or WS11.
+
+**S2 BENCHMARK SCOPE CORRECTED — T1-A′.** The rejected candidate treated S2 as sufficient and marked its
+coverage ADEQUATE. Re-verified: §6's mandatory core gate is scoped *"For the first Technical Decision
+Workspace increment"*; criterion 12 requires `validity_status`, which occurs in **no Python file in the
+repository**; criterion 13's label exists only at `engine/decision_workspace.py:102`; §7 Baseline A is
+FDC-001; §12 re-run triggers are decision-workspace changes; §13 preserves the **lane INACTIVE**; and
+eight dimensions occur **zero** times (`mechanical`, `arabic`, `novice`, `expert`, `bilingual`,
+`question quality`, `specialist`, `unsafe`). T1-A becomes **bounded S2 extension under the existing S2
+owner, then one RC run** — one mechanical case, EN/AR, novice + experienced-technical profiles, and
+criteria for question quality, critical missing gaps, unsafe assumptions and specialist escalation, with
+decision-workspace-only criteria marked NOT APPLICABLE for the Path-N surface. **No second benchmark
+owner.** Competitive product-value evaluation and reasoning-regression evaluation are kept distinct, and
+**criterion 12's stale-marking must never be satisfied by importing targeted partial invalidation**,
+which remains PROHIBITED. §8 row 2 re-marked **PARTIAL**. No benchmark execution is authorized.
+
+**WS16 OWNERSHIP CORRECTED — T2-C′.** The rejected candidate claimed WS16 *"already owns exactly this
+function; only re-execution is needed."* WS16 §1 is read-only completion validation of the
+**electronics/electrical** MVP; §2 is a comprehension checklist; §4 forbids implying it improves the
+product. Eleven dimension terms occur **zero** times in its contract (`user value`, `differentiation`,
+`reasoning quality`, `question quality`, `commercial`, `mechanical`, `cost`, `resilience`,
+`integration readiness`, `cognitive load`, `actionab*`). Roughly **6 of 14** dimensions, electronics-only.
+Replaced by a **bounded WS16 extension under the existing §15 row** — adding user value, product
+differentiation, reasoning quality, question quality, commercial usability and mechanical coverage;
+explicitly **excluding** performance, cost/resilience, infrastructure assurance and integration
+readiness; and recovering the two dropped OD-10 observations. **No new workstream number. PSRR not
+expanded** — its registered scope is security scanning, penetration testing, configuration review and
+production release assurance.
+
+**EVIDENCE LADDER RE-TIERED.** The single "precondition of a future increment" treatment is replaced by
+three independently tiered items: **T1-D (Tier 1)** a truthful disclosure that evidence/validation
+progression is unavailable in this version — the deliverable ships labels (*"Empirically demonstrated"*,
+*"Independently verified"*) for states that cannot occur, and the repository already ships the correct
+pattern at `web/ui_text.py:362–363`; **T2-E** the evidence-writer mapping (which governed action, route and
+qualifying evidence may write each non-default value); **T2-F** the ordering repair **plus a mandatory
+guard test**, because the invariant that currently masks the defect is enforced by **no test**, so the
+trigger must not depend on someone recognising a future change as a ladder increment. T1-D also carries
+the fixed-question-set statement, which is the condition on which deferring T2-G past first release
+depends.
+
+**FURTHER CORRECTIONS.** **WS10/display split:** WS10 owns the governed intent content; the render is
+excluded by WS10's own L71, and the adequate display owner already exists — **Phase 3 Product UX/UI**
+(3A closed, 3B closed, implementation `NOT AUTHORIZED / NOT STARTED`) — the **same lane** that owns
+T1-B's correction UX, so one activation serves both and **no new display owner is invented**.
+**WS11 two axes:** current activation Tier 4 blocked by dependency; **long-term importance HIGH**; and
+even after unlock, D7.1.T means `SATISFIED` would signal only the generic quality tier, so semantic
+matching remains necessary before any user-facing `SATISFIED` claim. **ILT:** minimum coverage now
+requires **at least one experienced technical participant** alongside the novice, results recorded
+separately — novice-only evidence is falsely reassuring on question quality. **Tier 4 relabelled**
+`STRATEGICALLY PRESERVED / NOT RELEASE-SEQUENCED`. **Longitudinal:** a wall-clock timestamp is **not
+required** — `seq` + supersession already answer *what changed, in what order, what superseded what*;
+the absence is a non-finding and the durable schema must not be widened for presentation.
+
+**Contradiction ledger (mandatory, §10A).** Seven rows, four of which move a disposition that would have
+been more convenient to leave alone — TDVP's zero-unowned-gap conclusion; TDVP's quantified-requirements
+commercial classification; the rejected candidate's S2 sufficiency; and its WS16 ownership claim. Every
+historical statement is preserved as authority-at-that-time; none is rewritten.
+
+**MLC.** `MLC DEFINITION FROZEN: NO`. The corrected Tier-1 set is **not** proposed as the MLC: the prior
+set was judged INCOMPLETE by review and has not itself been independently reviewed, and **T1-A′'s scope
+is undefined pending OD-PDVG-11**. **OD-PDVG-10 does NOT gate MLC definition and does NOT block the
+first serious release** — an unowned **Tier-2** item is not a member of the launch-conformance set, so
+its ownership cannot gate that set (§4A.5, which withdraws the earlier blocking formulation as unsound
+because it turned T2-G's SHOULD into a MUST and made OD-PDVG-10 option D self-defeating).
+*"First serious release"* is still **not** defined as a repository fact.
+
+**Owner decisions: 14 surfaced** — 01, 02, 03, 04, 05, 06, 07, **08a**, **08b**, 09, 10, 11, 12, 13
+(08a and 08b are independently actionable and counted separately; there is no plain OD-PDVG-08);
+**NONE recorded.** **Tier classification groups** (§5 entries, not literal item counts): T1 = 4, T2 = 7,
+T3 = 4, T4 = 6; **exact §9 matrix rows:** T1 = 4, T2 = 8, T3 = 5, T4 = 8, total **25**, with **no
+ambiguous tier** (WS13's former `3/4` straddle resolved to Tier 4 on the evidence that no release case
+exists).
+`OWNER_DECISION_REGISTER.md` UNCHANGED.
+
+**Scope.** Governance/documentation only — the record plus this entry and the two status surfaces. No
+`engine/`, `web/`, `tests/`, `domains/`, `scripts/`, `benchmark/`, `prompts/`, `schemas/` or evidence
+path. `EXECUTABLE DELTA: 0`; `TEST DELTA: 0`; `PIN DELTA: 0`; `PACK DELTA: 0`; `DOMAIN-RULE DELTA: 0`;
+`main` not reconciled; no historical record rewritten. `PDVG-01 IMPLEMENTATION STARTED: NO`;
+`TIER-1 IMPLEMENTATION AUTHORIZED: NO`; `S2 EXTENSION AUTHORIZED: NO`; `ILT ROUND EXECUTED: NO`;
+`PSRR GO: NO`; `DEPLOYMENT AUTHORIZED: NO`; `PRODUCTION AUTHORIZED: NO`; `PAID ACTIVATION AUTHORIZED: NO`.

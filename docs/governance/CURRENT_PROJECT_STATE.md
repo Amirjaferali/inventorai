@@ -2424,6 +2424,63 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
+- **PDVG-01 — PRE-RELEASE PRODUCT DEPTH & VALUE GATE (governance-only classification CANDIDATE — REPAIR
+  after Independent Review REJECT), base `1295ed08ec902f2fcc21934eac3622548a44719b`** — re-verified this
+  gate as the **live authoritative tip** (0 commits after; PR #558; parents `2da8a6a3…` / `1f5989b5…`;
+  merge tree `bdb6e6b9…`; empty candidate→merge diff; clean tree). Disposition:
+  **`PDVG-01 CLASSIFICATION CANDIDATE — NOT AUTHORITATIVE UNTIL MERGED`**; record
+  `docs/governance/PDVG_01_PRE_RELEASE_PRODUCT_DEPTH_AND_VALUE_GATE_RECORD.md`. Classifies product-depth
+  work by release value in four kinds — **adequately owned**, **partially owned**, **dormant/planned**,
+  and **independently proven ownership gaps**; **two §9 rows have no current owner** (semantic adaptive
+  questioning; user-feedback capture), recorded as unowned rather than attached to an adjacent owner.
+  **NEW WORKSTREAMS: 0; NEW OWNERS: 0; no new numbering** — a proven gap is surfaced for Owner
+  adjudication, never resolved here. **Rejected evidence: ELEVEN candidates** — `da8c1fd8…` (Grill CG-1/CG-2),
+  `5974baf7…` (CG-3), `fd7de207…` (**Independent Review REJECT** — truthfulness rated HIGH; rejected on
+  ownership architecture and release classification), `d6d55db0…` (Re-Grill RG-1), `97233ad9…` (RG-2),
+  `8cddcda3…` (**post-Creator Instruction-to-Result Audit**, P1–P5), `fa93acef…` (**post-Grill
+  audit** — stale rejected-evidence aggregate), `ecc9bde9…` (**substantive Independent External
+  Review REJECT** — F-1 governance consistency; the reviewer concurred with the architecture and rated
+  truthfulness HIGH), and `1a9cdad7…` (**reviewer micro-repair directive** — §12.1a historical-reference
+  precision), and `b287c4b6…` (**pre-review audit B24** — stale §12.4 aggregate; fragile §12.1a
+  self-count), and `615fcb8e…` (**Creator pre-freeze self-check** — B24-F2 recurrence). **All eleven are
+  retained as local refs and included in the SHA-preserving bundle; none is published to `origin`.** Count derived per the §12.3 rule (every
+  candidate rejected up to and including the surviving candidate's predecessor). The Independent
+  Review's **three blocking findings** — a different count, not a candidate count — were each
+  **independently re-proved from source**.
+  **TRUE OWNERSHIP GAP RECORDED:** semantic adaptive questioning (`answer content → changed canonical
+  state → next question adapts`) is owned by **no** workstream — WS10 L71, WS11 D14, WS14 L59/L227 each
+  exclude it; `gap_relevance` is *"LEXICAL … not a semantic component"*; **WS11.2 has no contract, file
+  or §15 row**; and **WS4 §17 records the capability as wanted and ownerless by explicit disclaimer**
+  (*"ask only what is missing"*, authorizing *"no new workstream"*). Merged TDVP `TRUE RESIDUAL GAP
+  COUNT: 0` **preserved as authority-at-that-time, NOT rewritten**; current truth restated as
+  **`UNOWNED CAPABILITY GAP COUNT (PDVG-01 reconstruction): 1`** pending **OD-PDVG-10**. Class: **Tier 2
+  (T2-G)** — SHOULD before first release with a binding no-implied-adaptivity condition, **MUST before
+  paid activation**, strategic importance HIGH; **not** force-fitted into WS14 or WS11.
+  **S2 CORRECTED (T1-A′):** S2's core gate is scoped *"For the first Technical Decision Workspace
+  increment"*, criterion 12 needs `validity_status` which occurs in **no Python file**, criterion 13's
+  label lives only in `decision_workspace.py:102`, lane INACTIVE, and 8 dimensions occur **zero** times —
+  so T1-A becomes **bounded S2 extension under the existing owner, then one run**; **no second benchmark
+  owner**; §8 row 2 re-marked PARTIAL. **WS16 CORRECTED (T2-C′):** WS16 is read-only, electronics-only,
+  ~**6 of 14** dimensions (11 dimension terms occur zero times in its contract) — replaced by a **bounded
+  WS16 extension** under the existing §15 row with added and excluded dimensions named; **PSRR not
+  expanded**. **EVIDENCE LADDER RE-TIERED** into **T1-D** (truthful disclosure that evidence progression
+  is unavailable — labels ship for unreachable states), **T2-E** (evidence-writer mapping) and **T2-F**
+  (ordering repair **+ mandatory guard test**, since no test enforces the masking invariant).
+  **WS10/display split** — render is excluded by WS10 L71; adequate owner is **Phase 3 Product UX/UI**
+  (NOT ACTIVATED), the **same lane** as T1-B, so one activation serves both. **WS11 two axes** —
+  activation Tier 4 blocked, **importance HIGH**. **ILT** now requires **≥1 experienced technical
+  participant**. **Tier 4 relabelled** `STRATEGICALLY PRESERVED / NOT RELEASE-SEQUENCED`.
+  **Longitudinal:** a timestamp is **not required** (`seq` + supersession suffice). **Tier groups 4/7/4/6; exact §9 matrix rows 4/8/5/8, total 25, no ambiguous tier.**
+  **Contradiction ledger (§10A): 7 rows.** `MLC DEFINITION FROZEN: NO` — the Tier-1 set is **not**
+  proposed as the MLC — the two evidenced reasons being that the set has not itself been independently
+  reviewed and that **T1-A′'s scope is undefined pending OD-PDVG-11**; **OD-PDVG-10 does NOT gate MLC
+  definition and does NOT block first serious release** (§4A.5). *"First serious release"* still not a
+  repository fact. **14 Owner decisions surfaced** (08a/08b counted separately), **none recorded**; `OWNER_DECISION_REGISTER.md` UNCHANGED.
+  `EXECUTABLE/TEST/PIN/PACK/DOMAIN-RULE DELTA: 0`; PVCG and TDVP not reopened; `main` not reconciled; no
+  historical record rewritten. `PDVG-01 IMPLEMENTATION STARTED: NO`; `TIER-1 IMPLEMENTATION AUTHORIZED:
+  NO`; `S2 EXTENSION AUTHORIZED: NO`; `ILT ROUND EXECUTED: NO`; `PSRR GO: NO`; `DEPLOYMENT AUTHORIZED:
+  NO`; `PRODUCTION AUTHORIZED: NO`; `PAID ACTIVATION AUTHORIZED: NO`.
+
 - **TDVP — POST-PVCG RECONCILIATION (governance-only reconciliation CANDIDATE), base
   `2da8a6a3bb832bf3326c4cb7cc9e1dc8a99499e7`** (PR #557 merge — PVCG FINAL, AUTHORITATIVE; live tip
   re-verified: parents `ca9fb4be…` / `106d3b52…`, merge tree `cdbf4c36…` == candidate tree, empty diff,
