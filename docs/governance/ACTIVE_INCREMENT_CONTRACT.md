@@ -41,8 +41,49 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — PVCG: AUTHORITATIVE CLOSURE OF THE R1–R4 PROGRAM; governance-only closure
-gate).** Base: `ca9fb4be818f62a7e78a72ce6c97c707bba9807c` (PR #556 merge — PVCG-R4 FORMAL CLOSURE,
+**Status (current — TDVP: POST-PVCG RECONCILIATION; governance-only reconciliation gate).** Base:
+`2da8a6a3bb832bf3326c4cb7cc9e1dc8a99499e7` (PR #557 merge — PVCG FINAL FORMAL CLOSURE, AUTHORITATIVE;
+live tip re-fetched and independently re-verified: first parent `ca9fb4be…`, second parent `106d3b52…`
+— the exact Owner-accepted candidate — merge tree `cdbf4c36…` identical to the candidate tree, empty
+candidate→merge diff, zero later commits, clean tree). `PVCG FORMALLY CLOSED: YES`;
+`PVCG SATISFIED: YES` (bounded R1–R4 scope) — unchanged and not reopened.
+
+**Disposition: `TDVP RECONCILIATION CANDIDATE — NOT AUTHORITATIVE UNTIL MERGED`.** Record:
+`docs/governance/TDVP_POST_PVCG_RECONCILIATION_RECORD.md`. Discharges the merged PVCG closure record's
+§7.4 clause (TDVP *"subject to post-PVCG reconciliation"*). Authorizes NO implementation.
+
+**Outcome A — NO NEW PROGRAM REQUIRED.** All ten provisional TDVP topics eliminated as new-workstream
+candidates by duplicate/overlap/supersession reconciliation against current ownership: WS6 Requirements
+(quantified fields = extension residual, not a second model); domain rules + P9-QS + STG-deferred
+depth; `GroundedRisk` linkage with state-engine propagation still PROHIBITED (D17/D-AISR-06/R4-C);
+Increment-2 evidence axes + CAP-11; WS7 + prototype & test plan + FPC-01; D13 + AISR + FPC-04 +
+WS-PFV-001; P9-QS + registry (active set unchanged: electronics_electrical + mechanical); deliverable +
+P7-I1 + FPC-04A; P7-I1/P7-I3 vendor-neutral export (one-way — never to be labelled round-trip; inbound
+ingestion directionally AISR/STG); WS8–WS17 question/journey family with WS10/WS11 built-dormant and
+the `FULL ADAPTIVE QUESTIONING ACTIVATED: NO` fence in eight committed documents. **TRUE RESIDUAL GAP
+COUNT: 0**; every surviving residual fact is owned; **one optional Owner decision surfaced** (admit the
+quantified-requirements WS6 extension as a future bounded increment), none recorded. **The provisional
+TDVP program name is RETIRED effective on merge**; no numbering carried forward; every disposition is
+`PLANNED / GOVERNED — NOT YET IMPLEMENTATION-AUTHORIZED` unless a cited owner already carries its own
+authorization. Preserved without drift: R4 correction route IMPLEMENTED; rendered correction UX NOT
+DELIVERED (Phase-3C / FPC-02, NOT STARTED / NOT AUTHORIZED, not absorbed into TDVP).
+
+**Scope.** Governance/documentation ONLY. `RUNTIME/TEST/PIN/PACK/DOMAIN-RULE DELTA: 0`; `main` not
+reconciled; `OWNER_DECISION_REGISTER.md` UNCHANGED. `TDVP IMPLEMENTATION STARTED: NO`;
+`NEW DOMAINS ACTIVATED: NO`; `PSRR GO: NO`; `DEPLOYMENT AUTHORIZED: NO`; `PRODUCTION AUTHORIZED: NO`.
+
+**Verdict provenance, kept distinct.** `UNSUPPORTED MATERIAL CLAIMS` is an INDEPENDENT-REVIEWER field:
+
+```
+Creator Grill unsupported-material-claim finding (this candidate) : 0
+Independent review of this reconciliation candidate              : NOT YET PERFORMED,
+                                                                   as at the time of its submission
+```
+
+---
+
+**Superseded (retained as history) — PVCG: AUTHORITATIVE CLOSURE OF THE R1–R4 PROGRAM; MERGED AND
+AUTHORITATIVE via PR #557, merge `2da8a6a3…`.** Base: `ca9fb4be818f62a7e78a72ce6c97c707bba9807c` (PR #556 merge — PVCG-R4 FORMAL CLOSURE,
 AUTHORITATIVE; live tip re-fetched and independently re-verified: first parent `5ed09180…`, second
 parent `713a48fd…` — the exact Owner-accepted R4 closure candidate — merge tree `eb105e95…` identical
 to the candidate tree, empty candidate→merge diff, zero later commits, clean tree).
