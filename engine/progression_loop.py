@@ -32,7 +32,7 @@ from engine.idea_state import (
     PROBLEM_MECHANISM_FIT, ASSUMPTION_INVENTORY, EXPERTISE_GAP_AWARENESS,
     STAGE_2_GAP_TYPES, STAGE_3_GAP_TYPES,
     OPEN, PARTIAL, CLOSED, ACCEPTED_RISK,
-    ASSERTED, REASONED, DEMONSTRATED,
+    ASSERTED, REASONED, DEMONSTRATED, OWNER_STATED,
     PROGRESSING, STALLED, REGRESSING
 )
 
@@ -687,6 +687,60 @@ def _connective_whole_word_substance_gate(r_lower, substance_tokens, plural_alia
 
 
 
+# ─── Layer-3 bounded structured-substance gate (Wave-1 RVR-3, OD-R2) ───
+# The frozen S2 run proved a perspective inversion: practitioner-form answers
+# carrying MORE engineering substance assessed BELOW everyday prose, solely
+# because they lack the preferred conversational causal substrings. This gate
+# recognizes committed STRUCTURAL-TECHNICAL form - enumeration markers,
+# labeled technical clauses, hyphenated technical compounds - as a distinct
+# deterministic REASONED path. Pure text predicate: no model inference, no
+# semantic interpretation, no probabilistic scoring. It never bypasses the
+# weak-pattern / weak-token rejections above it, and the generic-verb trap
+# yields to it exactly as the trap already yields to the Layer-2 connective
+# gate. Unicode-letter classes, so the same structural forms count in Arabic.
+import re as _re
+_ENUM_MARKER_RE = _re.compile(r"\(\d{1,2}\)|(?:^|[\s:;])\d{1,2}\.\s")
+_LABEL_CLAUSE_RE = _re.compile(
+    r"(?:^|[.!?;]\s+)[^\W\d_][\w /\-]{2,40}:\s", _re.UNICODE)
+_HYPHEN_COMPOUND_RE = _re.compile(
+    r"\b[^\W\d_]{3,}-[^\W\d_]{3,}\b", _re.UNICODE)
+_MIN_STRUCTURED_WORDS = 12
+_LONG_TOKEN_RE = _re.compile(r"[^\W\d_]{6,}", _re.UNICODE)
+_ARABIC_CHAR_RE = _re.compile(r"[\u0600-\u06ff]")
+_MIN_DISTINCT_LONG_TOKENS = 2
+
+def _distinct_long_tokens(r_lower):
+    """Distinct 'long' content tokens: >= 8 letters, or >= 6 letters for
+    Arabic-script tokens (Arabic morphology packs the same content into
+    shorter surface forms - measured on the frozen corpus)."""
+    out = set()
+    for tok in _LONG_TOKEN_RE.findall(r_lower):
+        if len(tok) >= 8 or _ARABIC_CHAR_RE.search(tok):
+            out.add(tok)
+    return out
+
+def _structured_technical_form(r_lower):
+    """Deterministic structural-technical form test (thresholds fixed):
+    (at least two enumeration markers, OR at least two distinct hyphenated
+    compounds, OR one labeled clause plus one enumeration/hyphen marker),
+    AND at least two distinct long tokens (>= 8 unicode letters) - the
+    measured discriminator that separates technical enumeration from
+    enumerated small-talk ("(1) cool (2) nice"), in English and Arabic
+    alike. Pure text predicate; no model inference."""
+    enum = len(_ENUM_MARKER_RE.findall(r_lower))
+    hyph = len(set(_HYPHEN_COMPOUND_RE.findall(r_lower)))
+    label = len(_LABEL_CLAUSE_RE.findall(r_lower))
+    # semicolon-separated technical clause chains count in both scripts
+    # (";" and the Arabic "؛").
+    semis = r_lower.count(";") + r_lower.count("؛")
+    structured = ((enum >= 2) or (hyph >= 2)
+                  or (label >= 1 and (enum + hyph) >= 1)
+                  or (label >= 1 and semis >= 2))
+    if not structured:
+        return False
+    return len(_distinct_long_tokens(r_lower)) >= _MIN_DISTINCT_LONG_TOKENS
+
+
 MIN_REASONED_RESPONSE_LENGTH = 40  # anti-triviality guard only — see ADR-003 Step 6 note
 
 def assess_response(response: str, domain: str = "") -> str:
@@ -752,7 +806,14 @@ def assess_response(response: str, domain: str = "") -> str:
     # only at path C below, after the existing causal path.
     new_connective_gate = _connective_whole_word_substance_gate(
         r_lower, substance_tokens, plural_aliases)
-    if _is_generic_verb_trap(r_lower) and not new_connective_gate:
+    # Wave-1 RVR-3: the structured-technical gate (Layer-3) - evaluated here
+    # only so the generic-verb trap yields to it the same way it yields to the
+    # Layer-2 connective gate. REASONED via this gate is granted only at path D
+    # below, after the existing paths, and only past the length/word floors.
+    structured_gate = (_structured_technical_form(r_lower)
+                       and len(r_lower.split()) >= _MIN_STRUCTURED_WORDS)
+    if _is_generic_verb_trap(r_lower) and not new_connective_gate \
+            and not structured_gate:
         return ASSERTED
     has_causal = _has_causal_structure(r_lower)
     # REASONED path A: substance domain token + causal structure + length
@@ -764,6 +825,11 @@ def assess_response(response: str, domain: str = "") -> str:
     # supporting clause + existing minimum length. Distinct gated path —
     # never bypasses the weak-pattern / weak-token rejections above.
     if new_connective_gate and len(r) >= MIN_REASONED_RESPONSE_LENGTH:
+        return REASONED
+    # REASONED path D (Layer-3, Wave-1 RVR-3): committed structural-technical
+    # form + the existing minimum length. Distinct gated path - never bypasses
+    # the weak-pattern / weak-token rejections above.
+    if structured_gate and len(r) >= MIN_REASONED_RESPONSE_LENGTH:
         return REASONED
 
     # 4. Length fallback for borderline answers without clear substance signals
@@ -798,6 +864,10 @@ def integrate_response(
         content=response,
         quality=quality,
         iteration=state.iteration,
+        # Wave-1 RVR-3 / MG-5: an owner answer's evidence is OWNER_STATED -
+        # the durable ledger already records exactly this provenance for the
+        # same answers; the rendered registry now matches it.
+        provenance=OWNER_STATED,
     )
 
     # Update known elements
@@ -1021,6 +1091,7 @@ def run_iteration(state: IdeaState, response: str) -> dict:
             content=response,
             quality=quality,
             iteration=state.iteration,
+            provenance=OWNER_STATED,   # Wave-1 RVR-3 / MG-5
         )
         if quality >= REASONED and (state.known_problem is None or quality > state.known_problem.quality):  # RISK-002
             state.known_problem = evidence
