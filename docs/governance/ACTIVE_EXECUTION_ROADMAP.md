@@ -14840,3 +14840,144 @@ path. `EXECUTABLE DELTA: 0`; `TEST DELTA: 0`; `PIN DELTA: 0`; `PACK DELTA: 0`; `
 `main` not reconciled; no historical record rewritten. `PDVG-01 IMPLEMENTATION STARTED: NO`;
 `TIER-1 IMPLEMENTATION AUTHORIZED: NO`; `S2 EXTENSION AUTHORIZED: NO`; `ILT ROUND EXECUTED: NO`;
 `PSRR GO: NO`; `DEPLOYMENT AUTHORIZED: NO`; `PRODUCTION AUTHORIZED: NO`; `PAID ACTIVATION AUTHORIZED: NO`.
+
+---
+
+## OWNER DECISION ACTIVATION / BOUNDED S2 EXTENSION (governance-only contract candidate) — OD-PDVG-11(a) + OD-PDVG-01(a) RECORDED; BENCHMARK EXECUTION NOT AUTHORIZED
+
+**Base.** `a9b9d53cb15165ec9ed0b35962577449750ff663` — independently re-verified this gate as the **live
+authoritative tip** of `feature/atomic-json-session-persistence` (**0 commits after it**; PR #559 merge;
+parents `1295ed08…` / `df941501…`; merge tree `c726bd15…`, identical to the accepted PDVG-01 candidate's
+tree; empty candidate→merge diff). **Supersession check: NONE.** PDVG-01 is **AUTHORITATIVE** and is
+**not reopened, not re-adjudicated, and not edited by this gate.**
+
+**Owner decisions recorded — exactly two of fourteen.**
+**`OD-PDVG-11` — OPTION (a):** approve the bounded S2 extension scope defined by PDVG-01 T1-A′.
+**`OD-PDVG-01` (revised) — OPTION (a):** authorize the bounded extension **and**, only once that
+extension is itself authoritative through the full high-assurance lifecycle, **one** S2 run against the
+**exact** release-candidate commit. The other twelve — 02, 03, 04, 05, 06, 07, 08a, 08b, 09, 10, 12, 13 —
+remain **REGISTERED AND UNDECIDED**, and **no approval of any of them is implied by adjacency**.
+`OWNER_DECISION_REGISTER.md` **CHANGED** (first gate in this sequence in which it changes): two accepted
+rows added under a new PDVG-01 section, with the twelve undecided decisions named as still open.
+
+**Contract location — the existing owner is extended, never replaced.**
+`docs/benchmarks/BICYCLE_BRAKE_LIGHT_COMPETITIVE_BENCHMARK.md` **§§15–17** — *Path-N Release-Evaluation
+Extension v1*. **§§0–14 are unchanged.** The extension is made under S2's **own** amendment mechanisms —
+§2's authorized case-revision requirement (version, reason, date, comparison-impact note, all four
+supplied for the new case) and §11's *"Benchmark criteria and protocol may be owner-approved"*.
+**NO second benchmark owner, no "Golden Reasoning Benchmark", no parallel evaluation programme, and no
+duplicate reasoning-quality framework is created.** *Integration Before Duplication.*
+
+**Approved scope.** Two frozen cases and no more: **E-1** (electronics/electrical — the existing §2 case,
+**unchanged**) and **M-1** (mechanical — foldable wheelchair ramp; bounded decision `folded-position
+retention architecture`; three bounded candidates, each `artifact_origin_status=inferred`,
+`source_type=explicit_platform_inference`, `evidence_status=advisory`, `option_status=active`).
+**EN and AR**, evaluating the release-relevant Path-N experience rather than translation-string existence.
+**Novice and experienced-technical *evaluation perspectives*, recorded separately** — an evaluation
+instrument, **never** describable as real-user research. Added criteria **`P1…P6`** (question quality,
+critical missing gaps, unsafe assumptions, prohibited/unsupported claims, specialist escalation,
+deliverable usefulness); evidence visibility, provenance and truthful-block/bounded-recommendation
+behaviour are carried by **existing** criteria 4 and 7 and are **not** duplicated. **No new domain
+activation; no third case; no open-ended benchmark programme.**
+
+**Criteria disposition — `NOT APPLICABLE` is exactly two.** **12** (`validity_status=stale`) and **13**
+(`REVIEW REQUIRED` label), plus the **§6 core gate as written**, which is scoped verbatim *"For the first
+Technical Decision Workspace increment"*. **Disclosed narrowing:** T1-A′ anticipated `(9–14)`; source
+reconstruction narrows it to `{12, 13}` because criteria 9, 10, 11 and 14 each have a real Path-N
+counterpart (`contract_version`/`engine_contract_version` and `seed_idea_text` persisted in
+`engine/record_store.py`; full deterministic re-evaluation; `CORRECTION_APPLIED_ACK` with
+`withdrawn_source_records`). **T1-A′'s rule is applied unchanged; only its parenthetical enumeration
+diverges, and the divergence narrows what the extension excuses.** `NOT APPLICABLE` is **never** a
+substitute for `FAIL`: a criterion the product could satisfy but does not is `FAIL` or `PARTIAL`.
+
+**Rejected evidence — enumerated once, elsewhere.** The single authoritative enumeration of this gate's
+rejected candidates — every SHA, each rejection reason — is **§9 of the Owner-decision evidence record**
+(`docs/governance/evidence/pdvg_owner_decisions/OD-PDVG-11_OD-PDVG-01_S2_BOUNDED_EXTENSION_ACTIVATION.md`).
+This entry deliberately restates **neither the SHAs, nor the reasons, nor a count** — a copy of that list
+goes stale the moment the list grows, which is a failure mode two of the enumerated rejections themselves
+record. Each rejected candidate is preserved as a local ref matching `refs/rejected/s2ext-<short-sha>`
+(one per §9 row) and carried in the SHA-preserving bundle; **none is published to `origin`, none is
+amended, rebased, or squashed**, and each surviving candidate is a **sibling from the authoritative
+base**, never a descendant of a rejected one.
+
+**Domain-gate admissibility protection — the second architectural protection.** Measured at the base
+commit by calling `engine.domain_rules.classify_domain` directly **[EXEC]** (the classifier function only;
+the full `/start` flow adds the unsupported-evidence check, the classifier-miss consent path, and
+`_admit_specialist_domain`): **neither case's bare product concept resolves to a domain**, and which
+domain a case resolves to **depends on which of its own sentences is typed** — most sharply, the
+**electronics** case E-1 resolves to **`mechanical`** when stated with its own §3 candidate 1
+(`bicycle automatic brake light with a wired brake-lever switch`). Because wording steers the outcome, the
+contract **freezes the English seed text** under one outcome-independent construction applied identically
+to both cases — *product-concept line, then user-context sentence, verbatim, joined by an em dash* —
+yielding measured results of **`NONE`** for E-1 and **`SINGLE` → `mechanical`** for M-1. **That asymmetry
+is recorded, not corrected.** The **Arabic** seeds freeze **at first use** — produced once, recorded
+verbatim, immutable thereafter — which is admissible **only because** an Arabic seed cannot resolve to a
+domain at all, so no translation choice can steer the gate. The contract requires the exact seed text recorded per case and per language;
+**prohibits rewording a case to change a gate outcome** (any seed change is a §2 case revision);
+**prohibits changing `engine/domain_rules.py`, the domain registry, the activation set, or the `/start`
+admission policy to admit a benchmark case**; and **prohibits treating a resolved domain as the case's
+"correct" domain**. A blocked, mis-classified, or consent-routed frozen case is a **truthful reportable
+result**, never a product defect to correct for the benchmark. **The Arabic dimension carries the same
+protection:** `engine/domain_rules.py` and every domain pack under `domains/` contain **no Arabic text**
+**[EXEC]**, so the classifier holds **no Arabic vocabulary** and an Arabic-only seed **cannot** resolve to
+a domain (measured `NONE` for both Arabic seeds) — an Arabic run reaches the classifier-miss / admission
+path for **both** cases. That is a **property to be evaluated**, and **no** addition of Arabic (or any
+other language's) classifier, domain-pack, or admission vocabulary is authorized.
+
+**One run, made countable.** One Path-N release-candidate run = **2 cases × 2 languages × 2 perspectives
+= 8 evaluation records**, all at the same evaluated commit, reported separately with no aggregate.
+Splitting them into several "runs" to obtain more than one authorized run is **prohibited**, and so is
+collapsing them into one undifferentiated result. Baseline B is an **evaluator activity outside the
+product** — no product AI call, `AI_ADVISORY_ENABLED` unchanged (`False` **[EXEC]**), and **no benchmark
+artifact may be fed back into the product**.
+
+**Binding criterion-12 protection.** `validity_status` occurs in **no** Python file **[EXEC]**; targeted
+partial invalidation is **PROHIBITED** by `D-AISR-06` (full deterministic re-evaluation mandatory),
+preserving `D17`, and by the PVCG-R4 correction/invalidation contract **[REPO]**. Criterion 12 is
+`NOT APPLICABLE` for the Path-N surface and **must never** be satisfied by introducing `validity_status`,
+stale-marking, or targeted-partial-invalidation semantics into the product. **`D17`, `D-AISR-06` and
+PVCG-R4 semantics are unchanged.** *A benchmark tests the product architecture; the architecture is never
+distorted to satisfy the benchmark.* The property criterion 12 reached for **is** evaluated — by criterion
+11 and the Path-N core gate, against the architecture actually implemented.
+
+**Epistemic limits, made binding.** One run may support only that *on the frozen cases, at the exact
+release-candidate commit, against the governed baselines, using the approved criteria, the evaluated
+Path-N journey and deliverable did or did not meet the defined S2 release-value criteria*. It may **not**
+be described as evidence of all-user behaviour, market success, real-user usability, real-world
+novice/expert fit, production readiness, security, operational readiness, commercial readiness, universal
+superiority over general-purpose AI, or generalization beyond the frozen cases. **T1-A′ does not
+substitute for T1-C′**, whose ILT-style real-user round (ILT-002 collection still `NOT AUTHORIZED`)
+remains independently required.
+
+**MLC boundary preserved.** `MLC DEFINITION FROZEN: NO`; `MINIMUM LAUNCH-CONFORMANCE SET SATISFIED: NO`.
+**OD-PDVG-07 remains a separate, undecided Owner decision.** Approving the S2 scope discharges only
+reason **(ii)** of the two PDVG-01 gave for making no recommendation on OD-PDVG-07; reason **(i)** — the
+corrected Tier-1 set has not itself been independently reviewed — **stands undischarged**, and
+discharging one of two reasons is not a decision. **`OD-PDVG-10 BLOCKS MLC DEFINITION: NO`** and
+**`OD-PDVG-10 BLOCKS FIRST SERIOUS RELEASE: NO`** (PDVG-01 §4A.5) are preserved; the withdrawn conflation
+is not reintroduced.
+
+**Superseded PDVG-01 §11 lines — stated, not hidden.** `OWNER DECISIONS RECORDED AS MADE: 0` → **2**;
+`S2 EXTENSION AUTHORIZED: NO` → **YES (scope approved; contract defined; run not executed)**. **Every
+other PDVG-01 §11 line stands unchanged**, and PDVG-01 is not edited.
+
+**S2 §13 note.** §13 is preserved exactly and **not edited**. Two of its snapshot entries are superseded
+by later authoritative truth, recorded in §17 rather than by rewriting §13: Mechanical is an **activated**
+governed domain (`activated_domains() == ['electronics_electrical', 'mechanical']` **[EXEC]**; Phase 9
+FORMALLY CLOSED), so case M-1 expands nothing; and Phase 5 is FORMALLY CLOSED. Every other §13 entry —
+`ILT-002 = NOT AUTHORIZED`, `Path T = BLOCKED`, `lane INACTIVE`, `PRESERVE UNMODIFIED AND PAUSE` — is
+carried forward **unchanged**, and this extension relies on none of them being relaxed.
+
+**Scope.** Governance/documentation only — the S2 extension, the Owner-decision evidence record
+(`docs/governance/evidence/pdvg_owner_decisions/OD-PDVG-11_OD-PDVG-01_S2_BOUNDED_EXTENSION_ACTIVATION.md`),
+`OWNER_DECISION_REGISTER.md`, this entry, and the two status surfaces. No `engine/`, `web/`, `tests/`,
+`domains/`, `scripts/`, `benchmark/`, `prompts/` or `schemas/` path. `EXECUTABLE DELTA: 0`;
+`TEST DELTA: 0`; `PIN DELTA: 0`; `PACK DELTA: 0`; `DOMAIN-RULE DELTA: 0`; `main` not reconciled; no
+historical record rewritten.
+
+**Disposition.** `S2 BOUNDED EXTENSION — CONTRACT CANDIDATE; NOT AUTHORITATIVE UNTIL MERGED AND
+POST-MERGE VERIFIED`. `S2 BENCHMARK RUN EXECUTED: NO`; `S2 BENCHMARK RUN AUTHORIZED NOW: NO`;
+`SECOND BENCHMARK OWNER CREATED: NO`; `NEW DOMAINS ACTIVATED: NO`; `NEW WORKSTREAMS CREATED: 0`;
+`NEW OWNERS CREATED: 0`; `WS16 EXTENSION AUTHORIZED: NO`; `ILT ROUND AUTHORIZED: NO`;
+`TIER-1 IMPLEMENTATION AUTHORIZED GENERALLY: NO`; `AI ACTIVATED: NO`; `PSRR GO: NO`;
+`DEPLOYMENT AUTHORIZED: NO`; `PRODUCTION AUTHORIZED: NO`; `PAID ACTIVATION AUTHORIZED: NO`.

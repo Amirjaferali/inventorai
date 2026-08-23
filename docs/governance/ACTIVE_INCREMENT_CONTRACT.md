@@ -41,8 +41,146 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — PDVG-01: PRE-RELEASE PRODUCT DEPTH & VALUE GATE; governance-only classification
-gate; REPAIR candidate after Independent External Review REJECT).** Base:
+**Status (current — OWNER DECISION ACTIVATION / BOUNDED S2 EXTENSION GATE; governance-only
+contract candidate).** Base: `a9b9d53cb15165ec9ed0b35962577449750ff663` — re-verified this gate as the
+**live authoritative tip** of `feature/atomic-json-session-persistence` (**0 commits after it**; PR #559;
+first parent `1295ed08…`, second parent `df941501…` — the exact Owner-accepted PDVG-01 candidate — merge
+tree `c726bd15…` identical to the candidate tree; empty candidate→merge diff). **Supersession check:
+NONE.** PDVG-01 is **AUTHORITATIVE** and is **not reopened, not re-adjudicated, and not edited here.**
+
+```
+INCREMENT CONTRACT — Bounded S2 Path-N Release-Evaluation Extension (governance/contract only)
+Objective:                Record Owner decisions OD-PDVG-11(a) and OD-PDVG-01(a), and define the
+                          bounded S2 extension contract that makes PDVG-01 T1-A' executable.
+Owner authorization:      Owner Decision Activation / Bounded S2 Extension Gate, recorded at
+                          docs/governance/evidence/pdvg_owner_decisions/
+                          OD-PDVG-11_OD-PDVG-01_S2_BOUNDED_EXTENSION_ACTIVATION.md
+Risk level:               LEVEL 2 — governance/documentation only
+Allowed paths:            docs/benchmarks/BICYCLE_BRAKE_LIGHT_COMPETITIVE_BENCHMARK.md (SS15-17 only);
+                          docs/governance/evidence/pdvg_owner_decisions/ (new record);
+                          docs/governance/OWNER_DECISION_REGISTER.md;
+                          docs/governance/ACTIVE_EXECUTION_ROADMAP.md;
+                          docs/governance/ACTIVE_INCREMENT_CONTRACT.md;
+                          docs/governance/CURRENT_PROJECT_STATE.md
+Forbidden paths:          engine/, web/, tests/, domains/, database/, schemas/, prompts/, scripts/,
+                          benchmark/, CI, runtime/deploy, main, accepted evidence, PDVG-01 record,
+                          BICYCLE_BRAKE_LIGHT_COMPETITIVE_BENCHMARK.md SS0-14
+Expected behavior:        The extension contract exists and is complete; nothing is executed.
+Non-goals:                running S2; any product implementation; any lane/domain/phase activation;
+                          freezing the MLC; deciding any other OD-PDVG decision
+Acceptance criteria:      SS13 required contract properties all present; NOT APPLICABLE set derived
+                          from source, not memory; criterion-12 protection binding; single owner
+                          preserved; executable delta 0
+Required tests:           none — documentation-only
+Tests not required:       product tests — no product path changes
+Dependencies:             PDVG-01 (authoritative); S2 SS2 and SS11 amendment mechanisms;
+                          D-AISR-06 / D17 / PVCG-R4 (criterion-12 protection)
+Unresolved decisions:     OD-PDVG-02, 03, 04, 05, 06, 07, 08a, 08b, 09, 10, 12, 13 — ALL STILL OPEN
+Stop conditions:          any contradiction between the approved S2 scope and authoritative
+                          repository truth; any pressure to alter the product to satisfy a criterion
+Independent-review scope: legitimacy of extending S2 rather than duplicating it; sufficiency and
+                          boundedness of the approved scope; correctness of the NOT APPLICABLE set;
+                          criterion-12 architectural safety; MLC non-freeze; no unauthorized execution
+Merge authority:          owner, separately
+```
+
+**Disposition: `S2 BOUNDED EXTENSION — CONTRACT CANDIDATE; NOT AUTHORITATIVE UNTIL MERGED AND
+POST-MERGE VERIFIED`.** Contract: `docs/benchmarks/BICYCLE_BRAKE_LIGHT_COMPETITIVE_BENCHMARK.md`
+**§§15–17** (*Path-N Release-Evaluation Extension v1*); **§§0–14 unchanged**. Owner-decision evidence:
+`docs/governance/evidence/pdvg_owner_decisions/OD-PDVG-11_OD-PDVG-01_S2_BOUNDED_EXTENSION_ACTIVATION.md`.
+Authorizes **NO** implementation and **NO** benchmark run.
+
+**Owner decisions recorded: 2 of 14.** `OD-PDVG-11` — OPTION (a) (approve the bounded extension scope);
+`OD-PDVG-01` (revised) — OPTION (a) (authorize the extension **and**, once it is authoritative, **one**
+run against the exact release candidate). **The other twelve — 02, 03, 04, 05, 06, 07, 08a, 08b, 09, 10,
+12, 13 — remain UNDECIDED**, and no approval of any of them is implied by adjacency.
+`OWNER_DECISION_REGISTER.md` **CHANGED** — two accepted rows added; the twelve open decisions named.
+
+**Single owner preserved.** The extension is made under S2's **own** mechanisms — §2 (authorized case
+revision: version, reason, date, comparison-impact note — all four supplied) and §11 (*"Benchmark
+criteria and protocol may be owner-approved"*). **NO second benchmark owner, no "Golden Reasoning
+Benchmark", no parallel evaluation programme, no duplicate reasoning-quality framework.**
+
+**Approved scope.** Two frozen cases: **E-1** electronics (existing §2 case, **unchanged**) and **M-1**
+mechanical (foldable wheelchair ramp; `folded-position retention architecture`; three bounded candidates,
+each `artifact_origin_status=inferred`, `evidence_status=advisory`). **EN + AR** on the release-relevant
+Path-N experience, not translation-string existence. **Novice + experienced-technical evaluation
+perspectives**, recorded separately — an **evaluation instrument**, never describable as real-user
+research. Added criteria **`P1…P6`**; evidence visibility, provenance and truthful-block/bounded-
+recommendation carried by **existing** criteria 4 and 7, not duplicated. **No new domain activation; no
+third case.**
+
+**`NOT APPLICABLE` = exactly two: criteria 12 and 13**, plus the §6 core gate as written (scoped verbatim
+*"For the first Technical Decision Workspace increment"*). **Disclosed narrowing:** T1-A′ anticipated
+`(9–14)`; source reconstruction narrows it to `{12, 13}` — criteria 9, 10, 11 and 14 each have a real
+Path-N counterpart. **T1-A′'s rule is applied unchanged; only its parenthetical enumeration diverges, and
+the divergence narrows what is excused.** `NOT APPLICABLE` is **never** a substitute for `FAIL`.
+
+**Rejected evidence — enumerated once, elsewhere.** The single authoritative enumeration of this gate's
+rejected candidates — every SHA, each rejection reason — is **§9 of the Owner-decision evidence record**
+(`docs/governance/evidence/pdvg_owner_decisions/OD-PDVG-11_OD-PDVG-01_S2_BOUNDED_EXTENSION_ACTIVATION.md`).
+This surface deliberately restates **neither the SHAs, nor the reasons, nor a count** — a copy of that
+list goes stale the moment the list grows. Each rejected candidate is preserved as a local ref matching
+`refs/rejected/s2ext-<short-sha>` (one per §9 row) and carried in the SHA-preserving bundle; **none
+published, none amended, rebased, or squashed**; each surviving candidate is a **sibling from the
+authoritative base**.
+
+**Domain-gate protection is binding.** `classify_domain` is **wording-sensitive** **[EXEC]** — neither
+case's bare concept resolves, and the **electronics** case E-1 resolves to **`mechanical`** when stated
+with its own §3 candidate 1 — so the contract **freezes the English seed text** under one
+outcome-independent construction applied to both cases (*product-concept line, then user-context sentence,
+verbatim, em-dash joined*), measured as **`NONE`** for E-1 and **`mechanical`** for M-1, **recorded not
+corrected**; the **Arabic** seeds freeze **at first use**, admissible only because an Arabic seed cannot
+resolve a domain at all. Each
+run records the exact seed text per case and per language; **rewording a case to change a gate outcome is
+prohibited** (any seed change is a §2 case revision); **`engine/domain_rules.py`, the registry, the
+activation set and the `/start` admission policy are never changed to admit a benchmark case**; and a
+resolved domain is **never** asserted to be the case's "correct" domain. A blocked or consent-routed
+frozen case is a **truthful reportable result**. **The Arabic dimension carries the same protection:**
+`domain_rules.py` and every domain pack contain **no Arabic text** **[EXEC]**, so an Arabic-only seed
+**cannot** resolve a domain (measured `NONE` for both) and an Arabic run reaches the classifier-miss path
+for **both** cases — a property to evaluate, with **no** Arabic classifier/pack/admission vocabulary
+authorized. **One run = 2 cases × 2 languages × 2 perspectives = 8
+evaluation records**, reported separately, no aggregate, never split into extra "runs". Baseline B is an
+**evaluator activity outside the product**; `AI_ADVISORY_ENABLED` unchanged.
+
+**Criterion-12 protection is binding.** `validity_status` occurs in **no** Python file **[EXEC]**;
+targeted partial invalidation is **PROHIBITED** (`D-AISR-06` full deterministic re-evaluation, preserving
+`D17`; PVCG-R4) **[REPO]**. It must **never** be satisfied by introducing stale-marking into the product.
+**`D17` / `D-AISR-06` / PVCG-R4 semantics UNCHANGED.**
+
+**MLC boundary.** `MLC DEFINITION FROZEN: NO`; `MINIMUM LAUNCH-CONFORMANCE SET SATISFIED: NO`;
+**OD-PDVG-07 remains separate and undecided.** Approving the S2 scope discharges only reason (ii) of the
+two PDVG-01 gave for making no recommendation on OD-PDVG-07; reason (i) — no independent review of the
+corrected Tier-1 set — **stands**. **`OD-PDVG-10 BLOCKS MLC DEFINITION: NO`** and **`OD-PDVG-10 BLOCKS
+FIRST SERIOUS RELEASE: NO`** are preserved (§4A.5).
+
+**Superseded PDVG-01 §11 lines — stated, not hidden.** `OWNER DECISIONS RECORDED AS MADE: 0` → **2**;
+`S2 EXTENSION AUTHORIZED: NO` → **YES (scope approved; contract defined; run not executed)**. Every other
+PDVG-01 §11 line stands unchanged, and PDVG-01 is not edited. The same supersession applies to the
+`Recorded as made: 0` and `S2 EXTENSION AUTHORIZED: NO` lines in the superseded PDVG-01 block below,
+which are retained as authority-at-that-time.
+
+**Scope.** Governance/documentation ONLY. `EXECUTABLE/TEST/PIN/PACK/DOMAIN-RULE DELTA: 0`; `main` not
+reconciled; no historical record rewritten. `S2 BENCHMARK RUN EXECUTED: NO`; `S2 BENCHMARK RUN AUTHORIZED
+NOW: NO`; `SECOND BENCHMARK OWNER CREATED: NO`; `NEW WORKSTREAMS CREATED: 0`; `NEW OWNERS CREATED: 0`;
+`NEW DOMAINS ACTIVATED: NO`; `WS16 EXTENSION AUTHORIZED: NO`; `ILT ROUND AUTHORIZED: NO`;
+`TIER-1 IMPLEMENTATION AUTHORIZED GENERALLY: NO`; `AI ACTIVATED: NO`; `PSRR GO: NO`;
+`DEPLOYMENT AUTHORIZED: NO`; `PRODUCTION AUTHORIZED: NO`; `PAID ACTIVATION AUTHORIZED: NO`;
+`T1-C′ STILL INDEPENDENTLY REQUIRED: YES`.
+
+**Verdict provenance, kept distinct.** `UNSUPPORTED MATERIAL CLAIMS` is an INDEPENDENT-REVIEWER field:
+
+```
+Creator Grill unsupported-material-claim finding (this candidate) : 0
+Independent review of THIS candidate                             : NOT YET PERFORMED,
+                                                                   as at the time of submission
+```
+
+---
+
+**Superseded (retained as history) — PDVG-01: PRE-RELEASE PRODUCT DEPTH & VALUE GATE; MERGED AND
+AUTHORITATIVE via PR #559, merge `a9b9d53cb15165ec9ed0b35962577449750ff663`.** Base:
 `1295ed08ec902f2fcc21934eac3622548a44719b` — re-verified this gate as the **live authoritative tip** of
 `feature/atomic-json-session-persistence` (0 commits after it; PR #558; first parent `2da8a6a3…`, second
 parent `1f5989b5…`; merge tree `bdb6e6b9…`; empty candidate→merge diff; clean tree). TDVP Outcome A and
