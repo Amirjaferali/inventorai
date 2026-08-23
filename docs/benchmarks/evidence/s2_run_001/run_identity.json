@@ -1,0 +1,17 @@
+{
+  "run_id": "S2-PATHN-RUN-001",
+  "authoritative_branch": "feature/atomic-json-session-persistence",
+  "s2_contract_authoritative_sha": "e119d60450f40b1633433625ae6a011eec112b79",
+  "exact_release_candidate_sha": "e119d60450f40b1633433625ae6a011eec112b79",
+  "rc_parent_first": "a9b9d53cb15165ec9ed0b35962577449750ff663",
+  "rc_parent_second": "a25c21cefdd335f8c31b503cfe25f6e398987f5f",
+  "rc_tree": "0274c8235da3acc1b420606ddc281378f6ee2924",
+  "benchmark_contract_version": "Path-N Release-Evaluation Extension v1 (S2 SS15-17); S2 base SS0-14 unchanged",
+  "rc_basis": "S2 15.1 defines the evaluated surface as the governed Path-N journey 'at one exact commit'; 15.8 Baseline C is 'the actual committed, observable Path-N increment'; PDVG-01 SS9 binds the run to the 'RC tip'. Product paths engine/, web/, domains/ are byte-identical from the last product-changing commit 2bb472a07f9ac9177070c131c5c7f13ee3cd718a (PVCG-R4-I) through e119d604 (verified: empty diff), so exactly one committed Path-N product state exists, and e119d604 is the only commit whose tree carries both that product and the authoritative SS15 contract.",
+  "activated_domains": ["electronics_electrical", "mechanical"],
+  "ai_advisory_enabled": false,
+  "test_suite_state_at_rc_tree": "4418 passed, 3 skipped, 1 xfailed, 0 failed (executed at the identical tree 0274c823 during the accepted-candidate gate)",
+  "working_tree": "clean at e119d604 before execution",
+  "db_path": "INVENTORAI_DB_PATH bound to the run evidence store (outside the repository tree)",
+  "executed_by": "Creator/Executor agent (evaluator); evaluation perspectives per S2 15.4 - not real users"
+}

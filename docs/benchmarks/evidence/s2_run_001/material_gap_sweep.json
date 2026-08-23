@@ -1,0 +1,85 @@
+{
+ "note": "Review candidates ONLY (S2 one-run gate §18). No workstream created, no governance modified, no fix applied. Provisional classification of each finding: observed product behavior unless stated otherwise. Root cause is NOT declared where evidence does not prove it.",
+ "findings": [
+  {
+   "id": "MG-1",
+   "title": "No journey completion path: identical reframe loops and honest unknowns never progress",
+   "evidence": "All 8 records: deliverable_eligible=false at the 24-interaction bound; the exhausted-gap reframe re-served identically 18-20x; R1's acknowledged unknown (UNK-001) recorded but PHYSICAL_FEASIBILITY stayed OPEN for 22 further identical asks; no record reached stage 3.",
+   "classification": "observed product behavior",
+   "tier": "BLOCKING CANDIDATE",
+   "why": "time-to-value is 'never' on every axis measured; a user cannot finish, and cannot learn what would count as enough"
+  },
+  {
+   "id": "MG-2",
+   "title": "Practitioner-phrased answers assess materially worse than everyday phrasing",
+   "evidence": "EN novice closed MECHANISM in 2 (E-1) / 3 (M-1) interactions; EN expert never closed it in 24 (PARTIAL throughout), answering with the same case facts in practitioner terms. Provisional: consistent with a lexical substance gate favoring everyday causal phrasing; root cause NOT proven by this run.",
+   "classification": "observed product behavior",
+   "tier": "TIER-1 CANDIDATE",
+   "why": "novice/expert asymmetry inverts the expected competence gradient; experienced users are a launch audience"
+  },
+  {
+   "id": "MG-3",
+   "title": "Arabic journey serves English questions and English substantive deliverable content",
+   "evidence": "R3/R4/R7/R8: question rendered with explicit lang=\"en\" dir=\"ltr\" inside the RTL Arabic shell; deliverable verdict/rationale/recommendation values English under Arabic labels. Committed architecture states /ui-language 'translates no question or output' — behavior matches commitment; the release-VALUE gap is what S2 §15.3 was defined to measure.",
+   "classification": "observed product behavior (matching committed truthful scope)",
+   "tier": "TIER-1 CANDIDATE",
+   "why": "the Arabic release experience does not deliver the product's substance in Arabic; also feeds T1-D truthful-disclosure content"
+  },
+  {
+   "id": "MG-4",
+   "title": "The bounded technical decision never enters the Path-N journey",
+   "evidence": "No surface captures the case's candidate set; criteria 5/6 FAIL on all 8 records; deliverable is idea-maturity-centric; candidate comparison exists only in the paused FDC-001 workspace (hard-coded to one case) and in category B/C 'DEFERRED (ODS-001)'.",
+   "classification": "observed product behavior",
+   "tier": "TIER-1 CANDIDATE",
+   "why": "decision usefulness vs a generic assistant is the commercial premise; on the frozen cases the generic baseline delivered more decision-relevant content (with worse truthfulness)"
+  },
+  {
+   "id": "MG-5",
+   "title": "Provenance display divergence on live sessions",
+   "evidence": "Deliverable evidence registry shows provenance 'Not recorded (pre-provenance session)' while the durable ledger for the same session carries provenance=OWNER_STATED on all 24 records (all 8 sessions).",
+   "classification": "observed product behavior",
+   "tier": "TIER-2 BEFORE PAID CANDIDATE",
+   "why": "trust surface understates evidence the platform actually holds; adjudication of cause belongs to the next gate"
+  },
+  {
+   "id": "MG-6",
+   "title": "Correction path unreachable from every rendered surface",
+   "evidence": "No form/link/affordance to POST /session/<sid>/correct on session or deliverable pages in any record; criteria 11 PARTIAL / 14 FAIL accordingly.",
+   "classification": "observed product behavior — CONFIRMS the existing PDVG-01 T1-B classification (rendered correction UX; OD-PDVG-02 undecided)",
+   "tier": "TIER-1 CANDIDATE (already tiered as T1-B)",
+   "why": "live confirmation, from execution, of an already-adjudicated Tier-1 item; no reclassification proposed"
+  },
+  {
+   "id": "MG-7",
+   "title": "Stage 3 (assumptions / expertise-gap / specialist escalation) unreachable in practice",
+   "evidence": "No record reached stage 3 in 24 interactions; stage3_gap_count=0 in every deliverable; 'specialist' absent from every output; P5 FAIL on all 8.",
+   "classification": "observed product behavior",
+   "tier": "TIER-1 CANDIDATE",
+   "why": "specialist escalation is a required release-evaluation dimension and one of the product's stated differentiators"
+  },
+  {
+   "id": "MG-8",
+   "title": "Seed problem statement not captured as known_problem",
+   "evidence": "E-1: known_problem=null, note 'Problem evidence has not yet been captured clearly', although the frozen seed states the problem verbatim; maturity nonetheless reached 1 on novice records.",
+   "classification": "observed product behavior",
+   "tier": "OBSERVATION",
+   "why": "intake extraction weaker than the seed content supports; overlaps MG-2's phrasing sensitivity; cause unproven"
+  },
+  {
+   "id": "MG-9",
+   "title": "Arabic closure asymmetric across domains",
+   "evidence": "Arabic novice answers closed mechanical MECHANISM in 3 interactions (R7) but never closed electronics MECHANISM (R3, 24x PARTIAL) with equally faithful translations.",
+   "classification": "observed product behavior",
+   "tier": "OBSERVATION",
+   "why": "suggests uneven cross-language/cross-domain assessment coverage; benchmark cannot determine cause"
+  },
+  {
+   "id": "MG-10",
+   "title": "Differentiation profile: trust discipline strong, decision content weak",
+   "evidence": "Product refused to fabricate (no invented load figures/market claims); generic baseline asserted unsupported specifics confidently. Product's truthful-block/provenance/durability discipline is real and observable; its decision-content value on the frozen cases is currently below the one-shot generic response.",
+   "classification": "evidence synthesis across records and baselines",
+   "tier": "LATER STRATEGIC (direction); the actionable constituents are MG-1/MG-2/MG-4",
+   "why": "differentiation exists but sits in the trust layer, not yet in decision usefulness"
+  }
+ ]
+}

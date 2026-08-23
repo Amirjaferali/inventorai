@@ -1,0 +1,162 @@
+{
+ "R1": {
+  "time_to_value": {
+   "questions_before_first_material_gap": 0,
+   "interactions_before_first_actionable_guidance": "deliverable reachable at any point; NEVER deliverable-eligible within the 24-interaction bound",
+   "total_question_interactions": 24,
+   "distinct_questions_served": 7,
+   "max_identical_question_repetition": {
+    "count": 18,
+    "question": "Let's take this part in plainer terms. In your own words, what do you already know about this aspect of your idea — and "
+   },
+   "mechanism_gap_closed_at_interaction": 2,
+   "clarification_loops": "the exhausted-gap reframe is the loop: one identical question re-served every remaining interaction",
+   "why_question_asked_visible": "gap-context line ('addressing: <gap label>') is shown per question; no per-question intent/explainability content (WS10 has no data)"
+  },
+  "perceived_intelligence": "initial per-gap questions are case-relevant and ordered; after the per-gap bank exhausts (3-4 questions), the journey repeats one identical reframe indefinitely and never uses prior answers to vary its ask — reads as generic/repetitive from interaction ~4 onward",
+  "decision_usefulness": "outputs expose a concrete next action (validate feasibility / prototype) and an acknowledged unknown; the bounded technical decision (candidate selection) is never represented, compared, or advanced",
+  "differentiation": "real differentiation observed: truthful evidence classification, provenance-disciplined durable ledger, honest REVISE verdict, no fabricated specifics (the generic-AI baseline asserted unsupported figures and market claims); NOT observed: reasoning depth, candidate analysis, adaptivity",
+  "friction": "severe: identical question re-served up to 20x; honest 'unknown' answers do not progress or reroute the journey; no completion within 24 interactions in any record",
+  "trust": "known/unknown/unsupported distinguished truthfully: unknowns acknowledged and carried; quality labels honest; one divergence — provenance displayed as 'Not recorded (pre-provenance session)' while durably recorded OWNER_STATED"
+ },
+ "R2": {
+  "time_to_value": {
+   "questions_before_first_material_gap": 0,
+   "interactions_before_first_actionable_guidance": "deliverable reachable at any point; NEVER deliverable-eligible within the 24-interaction bound",
+   "total_question_interactions": 24,
+   "distinct_questions_served": 5,
+   "max_identical_question_repetition": {
+    "count": 20,
+    "question": "Let's take this part in plainer terms. In your own words, what do you already know about this aspect of your idea — and "
+   },
+   "mechanism_gap_closed_at_interaction": null,
+   "clarification_loops": "the exhausted-gap reframe is the loop: one identical question re-served every remaining interaction",
+   "why_question_asked_visible": "gap-context line ('addressing: <gap label>') is shown per question; no per-question intent/explainability content (WS10 has no data)"
+  },
+  "perceived_intelligence": "initial per-gap questions are case-relevant and ordered; after the per-gap bank exhausts (3-4 questions), the journey repeats one identical reframe indefinitely and never uses prior answers to vary its ask — reads as generic/repetitive from interaction ~4 onward",
+  "decision_usefulness": "outputs expose a concrete next action (validate feasibility / prototype) and an acknowledged unknown; the bounded technical decision (candidate selection) is never represented, compared, or advanced",
+  "differentiation": "real differentiation observed: truthful evidence classification, provenance-disciplined durable ledger, honest REVISE verdict, no fabricated specifics (the generic-AI baseline asserted unsupported figures and market claims); NOT observed: reasoning depth, candidate analysis, adaptivity",
+  "friction": "severe: identical question re-served up to 20x; honest 'unknown' answers do not progress or reroute the journey; no completion within 24 interactions in any record",
+  "trust": "known/unknown/unsupported distinguished truthfully: unknowns acknowledged and carried; quality labels honest; one divergence — provenance displayed as 'Not recorded (pre-provenance session)' while durably recorded OWNER_STATED"
+ },
+ "R3": {
+  "time_to_value": {
+   "questions_before_first_material_gap": 0,
+   "interactions_before_first_actionable_guidance": "deliverable reachable at any point; NEVER deliverable-eligible within the 24-interaction bound",
+   "total_question_interactions": 24,
+   "distinct_questions_served": 5,
+   "max_identical_question_repetition": {
+    "count": 20,
+    "question": "Let's take this part in plainer terms. In your own words, what do you already know about this aspect of your idea — and "
+   },
+   "mechanism_gap_closed_at_interaction": null,
+   "clarification_loops": "the exhausted-gap reframe is the loop: one identical question re-served every remaining interaction",
+   "why_question_asked_visible": "gap-context line ('addressing: <gap label>') is shown per question; no per-question intent/explainability content (WS10 has no data)"
+  },
+  "perceived_intelligence": "initial per-gap questions are case-relevant and ordered; after the per-gap bank exhausts (3-4 questions), the journey repeats one identical reframe indefinitely and never uses prior answers to vary its ask — reads as generic/repetitive from interaction ~4 onward",
+  "decision_usefulness": "outputs expose a concrete next action (validate feasibility / prototype) and an acknowledged unknown; the bounded technical decision (candidate selection) is never represented, compared, or advanced",
+  "differentiation": "real differentiation observed: truthful evidence classification, provenance-disciplined durable ledger, honest REVISE verdict, no fabricated specifics (the generic-AI baseline asserted unsupported figures and market claims); NOT observed: reasoning depth, candidate analysis, adaptivity",
+  "friction": "severe: identical question re-served up to 20x; honest 'unknown' answers do not progress or reroute the journey; no completion within 24 interactions in any record",
+  "trust": "known/unknown/unsupported distinguished truthfully: unknowns acknowledged and carried; quality labels honest; one divergence — provenance displayed as 'Not recorded (pre-provenance session)' while durably recorded OWNER_STATED"
+ },
+ "R4": {
+  "time_to_value": {
+   "questions_before_first_material_gap": 0,
+   "interactions_before_first_actionable_guidance": "deliverable reachable at any point; NEVER deliverable-eligible within the 24-interaction bound",
+   "total_question_interactions": 24,
+   "distinct_questions_served": 5,
+   "max_identical_question_repetition": {
+    "count": 20,
+    "question": "Let's take this part in plainer terms. In your own words, what do you already know about this aspect of your idea — and "
+   },
+   "mechanism_gap_closed_at_interaction": null,
+   "clarification_loops": "the exhausted-gap reframe is the loop: one identical question re-served every remaining interaction",
+   "why_question_asked_visible": "gap-context line ('addressing: <gap label>') is shown per question; no per-question intent/explainability content (WS10 has no data)"
+  },
+  "perceived_intelligence": "initial per-gap questions are case-relevant and ordered; after the per-gap bank exhausts (3-4 questions), the journey repeats one identical reframe indefinitely and never uses prior answers to vary its ask — reads as generic/repetitive from interaction ~4 onward",
+  "decision_usefulness": "outputs expose a concrete next action (validate feasibility / prototype) and an acknowledged unknown; the bounded technical decision (candidate selection) is never represented, compared, or advanced",
+  "differentiation": "real differentiation observed: truthful evidence classification, provenance-disciplined durable ledger, honest REVISE verdict, no fabricated specifics (the generic-AI baseline asserted unsupported figures and market claims); NOT observed: reasoning depth, candidate analysis, adaptivity",
+  "friction": "severe: identical question re-served up to 20x; honest 'unknown' answers do not progress or reroute the journey; no completion within 24 interactions in any record",
+  "trust": "known/unknown/unsupported distinguished truthfully: unknowns acknowledged and carried; quality labels honest; one divergence — provenance displayed as 'Not recorded (pre-provenance session)' while durably recorded OWNER_STATED"
+ },
+ "R5": {
+  "time_to_value": {
+   "questions_before_first_material_gap": 0,
+   "interactions_before_first_actionable_guidance": "deliverable reachable at any point; NEVER deliverable-eligible within the 24-interaction bound",
+   "total_question_interactions": 24,
+   "distinct_questions_served": 6,
+   "max_identical_question_repetition": {
+    "count": 19,
+    "question": "Let's take this part in plainer terms. In your own words, what do you already know about this aspect of your idea — and "
+   },
+   "mechanism_gap_closed_at_interaction": 3,
+   "clarification_loops": "the exhausted-gap reframe is the loop: one identical question re-served every remaining interaction",
+   "why_question_asked_visible": "gap-context line ('addressing: <gap label>') is shown per question; no per-question intent/explainability content (WS10 has no data)"
+  },
+  "perceived_intelligence": "initial per-gap questions are case-relevant and ordered; after the per-gap bank exhausts (3-4 questions), the journey repeats one identical reframe indefinitely and never uses prior answers to vary its ask — reads as generic/repetitive from interaction ~4 onward",
+  "decision_usefulness": "outputs expose a concrete next action (validate feasibility / prototype) and an acknowledged unknown; the bounded technical decision (candidate selection) is never represented, compared, or advanced",
+  "differentiation": "real differentiation observed: truthful evidence classification, provenance-disciplined durable ledger, honest REVISE verdict, no fabricated specifics (the generic-AI baseline asserted unsupported figures and market claims); NOT observed: reasoning depth, candidate analysis, adaptivity",
+  "friction": "severe: identical question re-served up to 20x; honest 'unknown' answers do not progress or reroute the journey; no completion within 24 interactions in any record",
+  "trust": "known/unknown/unsupported distinguished truthfully: unknowns acknowledged and carried; quality labels honest; one divergence — provenance displayed as 'Not recorded (pre-provenance session)' while durably recorded OWNER_STATED"
+ },
+ "R6": {
+  "time_to_value": {
+   "questions_before_first_material_gap": 0,
+   "interactions_before_first_actionable_guidance": "deliverable reachable at any point; NEVER deliverable-eligible within the 24-interaction bound",
+   "total_question_interactions": 24,
+   "distinct_questions_served": 5,
+   "max_identical_question_repetition": {
+    "count": 20,
+    "question": "Let's take this part in plainer terms. In your own words, what do you already know about this aspect of your idea — and "
+   },
+   "mechanism_gap_closed_at_interaction": null,
+   "clarification_loops": "the exhausted-gap reframe is the loop: one identical question re-served every remaining interaction",
+   "why_question_asked_visible": "gap-context line ('addressing: <gap label>') is shown per question; no per-question intent/explainability content (WS10 has no data)"
+  },
+  "perceived_intelligence": "initial per-gap questions are case-relevant and ordered; after the per-gap bank exhausts (3-4 questions), the journey repeats one identical reframe indefinitely and never uses prior answers to vary its ask — reads as generic/repetitive from interaction ~4 onward",
+  "decision_usefulness": "outputs expose a concrete next action (validate feasibility / prototype) and an acknowledged unknown; the bounded technical decision (candidate selection) is never represented, compared, or advanced",
+  "differentiation": "real differentiation observed: truthful evidence classification, provenance-disciplined durable ledger, honest REVISE verdict, no fabricated specifics (the generic-AI baseline asserted unsupported figures and market claims); NOT observed: reasoning depth, candidate analysis, adaptivity",
+  "friction": "severe: identical question re-served up to 20x; honest 'unknown' answers do not progress or reroute the journey; no completion within 24 interactions in any record",
+  "trust": "known/unknown/unsupported distinguished truthfully: unknowns acknowledged and carried; quality labels honest; one divergence — provenance displayed as 'Not recorded (pre-provenance session)' while durably recorded OWNER_STATED"
+ },
+ "R7": {
+  "time_to_value": {
+   "questions_before_first_material_gap": 0,
+   "interactions_before_first_actionable_guidance": "deliverable reachable at any point; NEVER deliverable-eligible within the 24-interaction bound",
+   "total_question_interactions": 24,
+   "distinct_questions_served": 6,
+   "max_identical_question_repetition": {
+    "count": 19,
+    "question": "Let's take this part in plainer terms. In your own words, what do you already know about this aspect of your idea — and "
+   },
+   "mechanism_gap_closed_at_interaction": 3,
+   "clarification_loops": "the exhausted-gap reframe is the loop: one identical question re-served every remaining interaction",
+   "why_question_asked_visible": "gap-context line ('addressing: <gap label>') is shown per question; no per-question intent/explainability content (WS10 has no data)"
+  },
+  "perceived_intelligence": "initial per-gap questions are case-relevant and ordered; after the per-gap bank exhausts (3-4 questions), the journey repeats one identical reframe indefinitely and never uses prior answers to vary its ask — reads as generic/repetitive from interaction ~4 onward",
+  "decision_usefulness": "outputs expose a concrete next action (validate feasibility / prototype) and an acknowledged unknown; the bounded technical decision (candidate selection) is never represented, compared, or advanced",
+  "differentiation": "real differentiation observed: truthful evidence classification, provenance-disciplined durable ledger, honest REVISE verdict, no fabricated specifics (the generic-AI baseline asserted unsupported figures and market claims); NOT observed: reasoning depth, candidate analysis, adaptivity",
+  "friction": "severe: identical question re-served up to 20x; honest 'unknown' answers do not progress or reroute the journey; no completion within 24 interactions in any record",
+  "trust": "known/unknown/unsupported distinguished truthfully: unknowns acknowledged and carried; quality labels honest; one divergence — provenance displayed as 'Not recorded (pre-provenance session)' while durably recorded OWNER_STATED"
+ },
+ "R8": {
+  "time_to_value": {
+   "questions_before_first_material_gap": 0,
+   "interactions_before_first_actionable_guidance": "deliverable reachable at any point; NEVER deliverable-eligible within the 24-interaction bound",
+   "total_question_interactions": 24,
+   "distinct_questions_served": 5,
+   "max_identical_question_repetition": {
+    "count": 20,
+    "question": "Let's take this part in plainer terms. In your own words, what do you already know about this aspect of your idea — and "
+   },
+   "mechanism_gap_closed_at_interaction": null,
+   "clarification_loops": "the exhausted-gap reframe is the loop: one identical question re-served every remaining interaction",
+   "why_question_asked_visible": "gap-context line ('addressing: <gap label>') is shown per question; no per-question intent/explainability content (WS10 has no data)"
+  },
+  "perceived_intelligence": "initial per-gap questions are case-relevant and ordered; after the per-gap bank exhausts (3-4 questions), the journey repeats one identical reframe indefinitely and never uses prior answers to vary its ask — reads as generic/repetitive from interaction ~4 onward",
+  "decision_usefulness": "outputs expose a concrete next action (validate feasibility / prototype) and an acknowledged unknown; the bounded technical decision (candidate selection) is never represented, compared, or advanced",
+  "differentiation": "real differentiation observed: truthful evidence classification, provenance-disciplined durable ledger, honest REVISE verdict, no fabricated specifics (the generic-AI baseline asserted unsupported figures and market claims); NOT observed: reasoning depth, candidate analysis, adaptivity",
+  "friction": "severe: identical question re-served up to 20x; honest 'unknown' answers do not progress or reroute the journey; no completion within 24 interactions in any record",
+  "trust": "known/unknown/unsupported distinguished truthfully: unknowns acknowledged and carried; quality labels honest; one divergence — provenance displayed as 'Not recorded (pre-provenance session)' while durably recorded OWNER_STATED"
+ }
+}

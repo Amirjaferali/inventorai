@@ -1,0 +1,842 @@
+{
+ "R1": {
+  "criteria": {
+   "1": {
+    "result": "PARTIAL",
+    "basis": "platform structures the journey, tracks gaps, classifies evidence quality, and assembles a truthful structured deliverable (prototype/test plan, validation plan, next steps); but the difficult DECISION work — comparing the case's three bounded candidates — is not performed anywhere (section 7 categories B/C 'DEFERRED — Requires Options Database (ODS-001). Not in the current MVP')"
+   },
+   "2": {
+    "result": "PASS",
+    "basis": "delegated work is identified explicitly and truthfully: validation/prototyping assigned to the inventor (suggested_provider 'You (the inventor)'), deferred categories named, disclaimer present"
+   },
+   "3": {
+    "result": "PARTIAL",
+    "basis": "requirements vs constraints vs assumptions are distinguished in sections 4/5 (REQ 'technical' vs 'constraint' types; ASM entries), but the records are auto-derived from gap state, thin, and the case's explicit installation constraint appears only inside answer text, not as a first-class constraint record"
+   },
+   "4": {
+    "result": "PARTIAL",
+    "basis": "evidence registry with truthful quality labels ('Reasoned — inventor's structured rationale; not validated') is visible; BUT the deliverable displays provenance as 'Not recorded (pre-provenance session)' while the durable ledger for the same session records provenance=OWNER_STATED on every answer — provenance exists durably and is not faithfully surfaced"
+   },
+   "5": {
+    "result": "FAIL",
+    "basis": "the bounded candidate set never enters the Path-N journey: no surface captures or represents alternatives; the deliverable contains no candidate/alternative representation at all"
+   },
+   "6": {
+    "result": "FAIL",
+    "basis": "no elimination or qualification of any candidate occurs (follows from criterion 5)"
+   },
+   "7": {
+    "result": "PASS",
+    "basis": "bounded truthful outcome delivered: verdict REVISE with rationale and basis, deliverable_eligible=false stated, derived_verified_ready=false, no overclaim"
+   },
+   "8": {
+    "result": "PASS",
+    "basis": "minimum next required input identified: section 12 actionable next_development_step + prioritized NEXT items naming the open gap"
+   },
+   "9": {
+    "result": "PASS",
+    "basis": "contract_version=p4-0-record-contract-v1 and engine_contract_version=p4-2-level1-recon-v1 persisted in the durable project envelope (verified in the run's store)"
+   },
+   "10": {
+    "result": "PASS",
+    "basis": "seed_idea_text persisted verbatim; append-only accepted-answer ledger: 24 records per session, 192 total, verified in the durable store"
+   },
+   "11": {
+    "result": "PARTIAL",
+    "basis": "every accepted answer triggers full deterministic re-evaluation of the whole state (observed at every one of 24 iterations per record); but REVISING a previously accepted answer requires POST /session/<sid>/correct, which is reachable from no rendered surface (no form, link, or affordance on session or deliverable pages) — reachability failure, per S2 §15.5's binding note"
+   },
+   "12": {
+    "result": "NOT APPLICABLE",
+    "basis": "architecturally prohibited construct; per §15.5/§15.6"
+   },
+   "13": {
+    "result": "NOT APPLICABLE",
+    "basis": "lane-scoped; per §15.5"
+   },
+   "14": {
+    "result": "FAIL",
+    "basis": "no change-reason display is reachable: CORRECTION_APPLIED_ACK and withdrawn_source_records exist in code but no evaluated surface exposes them; the perspectives could not reach the correction path at all (per §15.5: a weak or unreachable result here is a truthful FAIL, never an N/A)"
+   },
+   "16": {
+    "result": "PASS",
+    "basis": "explicit advisory disclaimer; no safety/compliance/certification/validation claim anywhere in the output"
+   },
+   "P3": {
+    "result": "PASS",
+    "basis": "no unsafe assumption asserted or silently relied on; inventor assumptions recorded as unvalidated with risk-if-invalid"
+   },
+   "P4": {
+    "result": "PASS",
+    "basis": "output stays inside the committed no-claim boundary"
+   },
+   "P5": {
+    "result": "FAIL",
+    "basis": "no specialist handoff or escalation surfaced in any output ('specialist' absent from every deliverable); the stage-3 EXPERTISE_GAP_AWARENESS question was never reached in any record"
+   },
+   "15": {
+    "result": "PASS",
+    "basis": "plain-language sections and friendly gap labels; understandable standalone for an EN novice"
+   },
+   "17": {
+    "result": "PARTIAL",
+    "basis": "vs Baseline A (FDC-001 export, readiness_status=insufficient_information): Path-N adds guided questioning, durable persistence, evidence-quality ladder and next steps; Baseline A uniquely carries the candidate set and decision question, which Path-N lacks; neither reaches decision readiness"
+   },
+   "18": {
+    "result": "PARTIAL",
+    "basis": "product superior on truthfulness discipline (no invented specifics; generic response asserts unsupported figures and market claims); generic AI superior on immediate decision-relevant content (candidate pros/cons in one shot); neither dominates"
+   },
+   "P1": {
+    "result": "PARTIAL",
+    "basis": "initial questions relevant, non-duplicative and answerable; but the identical exhausted-gap reframe repeated 18x verbatim, and later questions ignore prior answers"
+   },
+   "P2": {
+    "result": "PASS",
+    "basis": "the decision-critical feasibility gap and the acknowledged unknown (false-positive tolerance) were surfaced and carried into unresolved items"
+   },
+   "P6": {
+    "result": "PARTIAL",
+    "basis": "truthful, structured, honestly-blocked record with next steps; but decision-blind (the bounded braking-detection decision itself is never represented) and never deliverable-eligible"
+   }
+  },
+  "core_gate": {
+   "result": "PARTIAL",
+   "basis": "evidence visibility, truthful block, versioned continuity, exportable value present; difficult-work and re-evaluation-reachability partial; mechanism established but journey stalled on feasibility"
+  },
+  "record_outcome": "PARTIAL"
+ },
+ "R2": {
+  "criteria": {
+   "1": {
+    "result": "PARTIAL",
+    "basis": "platform structures the journey, tracks gaps, classifies evidence quality, and assembles a truthful structured deliverable (prototype/test plan, validation plan, next steps); but the difficult DECISION work — comparing the case's three bounded candidates — is not performed anywhere (section 7 categories B/C 'DEFERRED — Requires Options Database (ODS-001). Not in the current MVP')"
+   },
+   "2": {
+    "result": "PASS",
+    "basis": "delegated work is identified explicitly and truthfully: validation/prototyping assigned to the inventor (suggested_provider 'You (the inventor)'), deferred categories named, disclaimer present"
+   },
+   "3": {
+    "result": "PARTIAL",
+    "basis": "requirements vs constraints vs assumptions are distinguished in sections 4/5 (REQ 'technical' vs 'constraint' types; ASM entries), but the records are auto-derived from gap state, thin, and the case's explicit installation constraint appears only inside answer text, not as a first-class constraint record"
+   },
+   "4": {
+    "result": "PARTIAL",
+    "basis": "evidence registry with truthful quality labels ('Reasoned — inventor's structured rationale; not validated') is visible; BUT the deliverable displays provenance as 'Not recorded (pre-provenance session)' while the durable ledger for the same session records provenance=OWNER_STATED on every answer — provenance exists durably and is not faithfully surfaced"
+   },
+   "5": {
+    "result": "FAIL",
+    "basis": "the bounded candidate set never enters the Path-N journey: no surface captures or represents alternatives; the deliverable contains no candidate/alternative representation at all"
+   },
+   "6": {
+    "result": "FAIL",
+    "basis": "no elimination or qualification of any candidate occurs (follows from criterion 5)"
+   },
+   "7": {
+    "result": "PASS",
+    "basis": "bounded truthful outcome delivered: verdict REVISE with rationale and basis, deliverable_eligible=false stated, derived_verified_ready=false, no overclaim"
+   },
+   "8": {
+    "result": "PASS",
+    "basis": "minimum next required input identified: section 12 actionable next_development_step + prioritized NEXT items naming the open gap"
+   },
+   "9": {
+    "result": "PASS",
+    "basis": "contract_version=p4-0-record-contract-v1 and engine_contract_version=p4-2-level1-recon-v1 persisted in the durable project envelope (verified in the run's store)"
+   },
+   "10": {
+    "result": "PASS",
+    "basis": "seed_idea_text persisted verbatim; append-only accepted-answer ledger: 24 records per session, 192 total, verified in the durable store"
+   },
+   "11": {
+    "result": "PARTIAL",
+    "basis": "every accepted answer triggers full deterministic re-evaluation of the whole state (observed at every one of 24 iterations per record); but REVISING a previously accepted answer requires POST /session/<sid>/correct, which is reachable from no rendered surface (no form, link, or affordance on session or deliverable pages) — reachability failure, per S2 §15.5's binding note"
+   },
+   "12": {
+    "result": "NOT APPLICABLE",
+    "basis": "architecturally prohibited construct; per §15.5/§15.6"
+   },
+   "13": {
+    "result": "NOT APPLICABLE",
+    "basis": "lane-scoped; per §15.5"
+   },
+   "14": {
+    "result": "FAIL",
+    "basis": "no change-reason display is reachable: CORRECTION_APPLIED_ACK and withdrawn_source_records exist in code but no evaluated surface exposes them; the perspectives could not reach the correction path at all (per §15.5: a weak or unreachable result here is a truthful FAIL, never an N/A)"
+   },
+   "16": {
+    "result": "PASS",
+    "basis": "explicit advisory disclaimer; no safety/compliance/certification/validation claim anywhere in the output"
+   },
+   "P3": {
+    "result": "PASS",
+    "basis": "no unsafe assumption asserted or silently relied on; inventor assumptions recorded as unvalidated with risk-if-invalid"
+   },
+   "P4": {
+    "result": "PASS",
+    "basis": "output stays inside the committed no-claim boundary"
+   },
+   "P5": {
+    "result": "FAIL",
+    "basis": "no specialist handoff or escalation surfaced in any output ('specialist' absent from every deliverable); the stage-3 EXPERTISE_GAP_AWARENESS question was never reached in any record"
+   },
+   "15": {
+    "result": "PASS",
+    "basis": "understandable standalone for an EN practitioner"
+   },
+   "17": {
+    "result": "PARTIAL",
+    "basis": "as R1 (same Baseline A)"
+   },
+   "18": {
+    "result": "PARTIAL",
+    "basis": "as R1"
+   },
+   "P1": {
+    "result": "FAIL",
+    "basis": "practitioner-phrased answers never closed MECHANISM (24 interactions, PARTIAL throughout); the identical everyday-terms reframe repeated 20x verbatim at a practitioner; question framing mismatched to the declared perspective"
+   },
+   "P2": {
+    "result": "FAIL",
+    "basis": "journey never progressed past the first gap; feasibility and all later decision-critical gaps left unraised"
+   },
+   "P6": {
+    "result": "FAIL",
+    "basis": "maturity 0 deliverable; the record truthfully says almost nothing was established despite 24 substantive on-case answers"
+   }
+  },
+  "core_gate": {
+   "result": "FAIL",
+   "basis": "mechanism never established; journey stalled at the first gap for the whole bound"
+  },
+  "record_outcome": "FAIL"
+ },
+ "R3": {
+  "criteria": {
+   "1": {
+    "result": "PARTIAL",
+    "basis": "platform structures the journey, tracks gaps, classifies evidence quality, and assembles a truthful structured deliverable (prototype/test plan, validation plan, next steps); but the difficult DECISION work — comparing the case's three bounded candidates — is not performed anywhere (section 7 categories B/C 'DEFERRED — Requires Options Database (ODS-001). Not in the current MVP')"
+   },
+   "2": {
+    "result": "PASS",
+    "basis": "delegated work is identified explicitly and truthfully: validation/prototyping assigned to the inventor (suggested_provider 'You (the inventor)'), deferred categories named, disclaimer present"
+   },
+   "3": {
+    "result": "PARTIAL",
+    "basis": "requirements vs constraints vs assumptions are distinguished in sections 4/5 (REQ 'technical' vs 'constraint' types; ASM entries), but the records are auto-derived from gap state, thin, and the case's explicit installation constraint appears only inside answer text, not as a first-class constraint record"
+   },
+   "4": {
+    "result": "PARTIAL",
+    "basis": "evidence registry with truthful quality labels ('Reasoned — inventor's structured rationale; not validated') is visible; BUT the deliverable displays provenance as 'Not recorded (pre-provenance session)' while the durable ledger for the same session records provenance=OWNER_STATED on every answer — provenance exists durably and is not faithfully surfaced"
+   },
+   "5": {
+    "result": "FAIL",
+    "basis": "the bounded candidate set never enters the Path-N journey: no surface captures or represents alternatives; the deliverable contains no candidate/alternative representation at all"
+   },
+   "6": {
+    "result": "FAIL",
+    "basis": "no elimination or qualification of any candidate occurs (follows from criterion 5)"
+   },
+   "7": {
+    "result": "PASS",
+    "basis": "bounded truthful outcome delivered: verdict REVISE with rationale and basis, deliverable_eligible=false stated, derived_verified_ready=false, no overclaim"
+   },
+   "8": {
+    "result": "PASS",
+    "basis": "minimum next required input identified: section 12 actionable next_development_step + prioritized NEXT items naming the open gap"
+   },
+   "9": {
+    "result": "PASS",
+    "basis": "contract_version=p4-0-record-contract-v1 and engine_contract_version=p4-2-level1-recon-v1 persisted in the durable project envelope (verified in the run's store)"
+   },
+   "10": {
+    "result": "PASS",
+    "basis": "seed_idea_text persisted verbatim; append-only accepted-answer ledger: 24 records per session, 192 total, verified in the durable store"
+   },
+   "11": {
+    "result": "PARTIAL",
+    "basis": "every accepted answer triggers full deterministic re-evaluation of the whole state (observed at every one of 24 iterations per record); but REVISING a previously accepted answer requires POST /session/<sid>/correct, which is reachable from no rendered surface (no form, link, or affordance on session or deliverable pages) — reachability failure, per S2 §15.5's binding note"
+   },
+   "12": {
+    "result": "NOT APPLICABLE",
+    "basis": "architecturally prohibited construct; per §15.5/§15.6"
+   },
+   "13": {
+    "result": "NOT APPLICABLE",
+    "basis": "lane-scoped; per §15.5"
+   },
+   "14": {
+    "result": "FAIL",
+    "basis": "no change-reason display is reachable: CORRECTION_APPLIED_ACK and withdrawn_source_records exist in code but no evaluated surface exposes them; the perspectives could not reach the correction path at all (per §15.5: a weak or unreachable result here is a truthful FAIL, never an N/A)"
+   },
+   "16": {
+    "result": "PASS",
+    "basis": "explicit advisory disclaimer; no safety/compliance/certification/validation claim anywhere in the output"
+   },
+   "P3": {
+    "result": "PASS",
+    "basis": "no unsafe assumption asserted or silently relied on; inventor assumptions recorded as unvalidated with risk-if-invalid"
+   },
+   "P4": {
+    "result": "PASS",
+    "basis": "output stays inside the committed no-claim boundary"
+   },
+   "P5": {
+    "result": "FAIL",
+    "basis": "no specialist handoff or escalation surfaced in any output ('specialist' absent from every deliverable); the stage-3 EXPERTISE_GAP_AWARENESS question was never reached in any record"
+   },
+   "15": {
+    "result": "FAIL",
+    "basis": "reader-relative: the deliverable's substantive content (verdict rationale, recommendations, evidence text) is English inside an Arabic-labeled shell; not understandable standalone for an Arabic-only novice"
+   },
+   "17": {
+    "result": "PARTIAL",
+    "basis": "as R1 (Baseline A is the same fixed-English-case workspace; limitation recorded)"
+   },
+   "18": {
+    "result": "PARTIAL",
+    "basis": "the generic assistant answered entirely in Arabic; the product served English questions and English substantive output — on language fit the generic response is superior; on truthfulness discipline the product is superior"
+   },
+   "P1": {
+    "result": "FAIL",
+    "basis": "questions served in English (rendered lang=\"en\" dir=\"ltr\") on the Arabic surface — not answerable as presented for an Arabic-only novice; MECHANISM never closed on Arabic answers; reframe repeated 20x"
+   },
+   "P2": {
+    "result": "FAIL",
+    "basis": "journey never progressed past the first gap"
+   },
+   "P6": {
+    "result": "FAIL",
+    "basis": "English substantive content + maturity stalled"
+   }
+  },
+  "core_gate": {
+   "result": "FAIL",
+   "basis": "mechanism never established; standalone exportable value impaired for the Arabic reader"
+  },
+  "record_outcome": "FAIL"
+ },
+ "R4": {
+  "criteria": {
+   "1": {
+    "result": "PARTIAL",
+    "basis": "platform structures the journey, tracks gaps, classifies evidence quality, and assembles a truthful structured deliverable (prototype/test plan, validation plan, next steps); but the difficult DECISION work — comparing the case's three bounded candidates — is not performed anywhere (section 7 categories B/C 'DEFERRED — Requires Options Database (ODS-001). Not in the current MVP')"
+   },
+   "2": {
+    "result": "PASS",
+    "basis": "delegated work is identified explicitly and truthfully: validation/prototyping assigned to the inventor (suggested_provider 'You (the inventor)'), deferred categories named, disclaimer present"
+   },
+   "3": {
+    "result": "PARTIAL",
+    "basis": "requirements vs constraints vs assumptions are distinguished in sections 4/5 (REQ 'technical' vs 'constraint' types; ASM entries), but the records are auto-derived from gap state, thin, and the case's explicit installation constraint appears only inside answer text, not as a first-class constraint record"
+   },
+   "4": {
+    "result": "PARTIAL",
+    "basis": "evidence registry with truthful quality labels ('Reasoned — inventor's structured rationale; not validated') is visible; BUT the deliverable displays provenance as 'Not recorded (pre-provenance session)' while the durable ledger for the same session records provenance=OWNER_STATED on every answer — provenance exists durably and is not faithfully surfaced"
+   },
+   "5": {
+    "result": "FAIL",
+    "basis": "the bounded candidate set never enters the Path-N journey: no surface captures or represents alternatives; the deliverable contains no candidate/alternative representation at all"
+   },
+   "6": {
+    "result": "FAIL",
+    "basis": "no elimination or qualification of any candidate occurs (follows from criterion 5)"
+   },
+   "7": {
+    "result": "PASS",
+    "basis": "bounded truthful outcome delivered: verdict REVISE with rationale and basis, deliverable_eligible=false stated, derived_verified_ready=false, no overclaim"
+   },
+   "8": {
+    "result": "PASS",
+    "basis": "minimum next required input identified: section 12 actionable next_development_step + prioritized NEXT items naming the open gap"
+   },
+   "9": {
+    "result": "PASS",
+    "basis": "contract_version=p4-0-record-contract-v1 and engine_contract_version=p4-2-level1-recon-v1 persisted in the durable project envelope (verified in the run's store)"
+   },
+   "10": {
+    "result": "PASS",
+    "basis": "seed_idea_text persisted verbatim; append-only accepted-answer ledger: 24 records per session, 192 total, verified in the durable store"
+   },
+   "11": {
+    "result": "PARTIAL",
+    "basis": "every accepted answer triggers full deterministic re-evaluation of the whole state (observed at every one of 24 iterations per record); but REVISING a previously accepted answer requires POST /session/<sid>/correct, which is reachable from no rendered surface (no form, link, or affordance on session or deliverable pages) — reachability failure, per S2 §15.5's binding note"
+   },
+   "12": {
+    "result": "NOT APPLICABLE",
+    "basis": "architecturally prohibited construct; per §15.5/§15.6"
+   },
+   "13": {
+    "result": "NOT APPLICABLE",
+    "basis": "lane-scoped; per §15.5"
+   },
+   "14": {
+    "result": "FAIL",
+    "basis": "no change-reason display is reachable: CORRECTION_APPLIED_ACK and withdrawn_source_records exist in code but no evaluated surface exposes them; the perspectives could not reach the correction path at all (per §15.5: a weak or unreachable result here is a truthful FAIL, never an N/A)"
+   },
+   "16": {
+    "result": "PASS",
+    "basis": "explicit advisory disclaimer; no safety/compliance/certification/validation claim anywhere in the output"
+   },
+   "P3": {
+    "result": "PASS",
+    "basis": "no unsafe assumption asserted or silently relied on; inventor assumptions recorded as unvalidated with risk-if-invalid"
+   },
+   "P4": {
+    "result": "PASS",
+    "basis": "output stays inside the committed no-claim boundary"
+   },
+   "P5": {
+    "result": "FAIL",
+    "basis": "no specialist handoff or escalation surfaced in any output ('specialist' absent from every deliverable); the stage-3 EXPERTISE_GAP_AWARENESS question was never reached in any record"
+   },
+   "15": {
+    "result": "FAIL",
+    "basis": "as R3"
+   },
+   "17": {
+    "result": "PARTIAL",
+    "basis": "as R3"
+   },
+   "18": {
+    "result": "PARTIAL",
+    "basis": "as R3"
+   },
+   "P1": {
+    "result": "FAIL",
+    "basis": "as R3, at a practitioner"
+   },
+   "P2": {
+    "result": "FAIL",
+    "basis": "as R3"
+   },
+   "P6": {
+    "result": "FAIL",
+    "basis": "as R3"
+   }
+  },
+  "core_gate": {
+   "result": "FAIL",
+   "basis": "as R3"
+  },
+  "record_outcome": "FAIL"
+ },
+ "R5": {
+  "criteria": {
+   "1": {
+    "result": "PARTIAL",
+    "basis": "platform structures the journey, tracks gaps, classifies evidence quality, and assembles a truthful structured deliverable (prototype/test plan, validation plan, next steps); but the difficult DECISION work — comparing the case's three bounded candidates — is not performed anywhere (section 7 categories B/C 'DEFERRED — Requires Options Database (ODS-001). Not in the current MVP')"
+   },
+   "2": {
+    "result": "PASS",
+    "basis": "delegated work is identified explicitly and truthfully: validation/prototyping assigned to the inventor (suggested_provider 'You (the inventor)'), deferred categories named, disclaimer present"
+   },
+   "3": {
+    "result": "PARTIAL",
+    "basis": "requirements vs constraints vs assumptions are distinguished in sections 4/5 (REQ 'technical' vs 'constraint' types; ASM entries), but the records are auto-derived from gap state, thin, and the case's explicit installation constraint appears only inside answer text, not as a first-class constraint record"
+   },
+   "4": {
+    "result": "PARTIAL",
+    "basis": "evidence registry with truthful quality labels ('Reasoned — inventor's structured rationale; not validated') is visible; BUT the deliverable displays provenance as 'Not recorded (pre-provenance session)' while the durable ledger for the same session records provenance=OWNER_STATED on every answer — provenance exists durably and is not faithfully surfaced"
+   },
+   "5": {
+    "result": "FAIL",
+    "basis": "the bounded candidate set never enters the Path-N journey: no surface captures or represents alternatives; the deliverable contains no candidate/alternative representation at all"
+   },
+   "6": {
+    "result": "FAIL",
+    "basis": "no elimination or qualification of any candidate occurs (follows from criterion 5)"
+   },
+   "7": {
+    "result": "PASS",
+    "basis": "bounded truthful outcome delivered: verdict REVISE with rationale and basis, deliverable_eligible=false stated, derived_verified_ready=false, no overclaim"
+   },
+   "8": {
+    "result": "PASS",
+    "basis": "minimum next required input identified: section 12 actionable next_development_step + prioritized NEXT items naming the open gap"
+   },
+   "9": {
+    "result": "PASS",
+    "basis": "contract_version=p4-0-record-contract-v1 and engine_contract_version=p4-2-level1-recon-v1 persisted in the durable project envelope (verified in the run's store)"
+   },
+   "10": {
+    "result": "PASS",
+    "basis": "seed_idea_text persisted verbatim; append-only accepted-answer ledger: 24 records per session, 192 total, verified in the durable store"
+   },
+   "11": {
+    "result": "PARTIAL",
+    "basis": "every accepted answer triggers full deterministic re-evaluation of the whole state (observed at every one of 24 iterations per record); but REVISING a previously accepted answer requires POST /session/<sid>/correct, which is reachable from no rendered surface (no form, link, or affordance on session or deliverable pages) — reachability failure, per S2 §15.5's binding note"
+   },
+   "12": {
+    "result": "NOT APPLICABLE",
+    "basis": "architecturally prohibited construct; per §15.5/§15.6"
+   },
+   "13": {
+    "result": "NOT APPLICABLE",
+    "basis": "lane-scoped; per §15.5"
+   },
+   "14": {
+    "result": "FAIL",
+    "basis": "no change-reason display is reachable: CORRECTION_APPLIED_ACK and withdrawn_source_records exist in code but no evaluated surface exposes them; the perspectives could not reach the correction path at all (per §15.5: a weak or unreachable result here is a truthful FAIL, never an N/A)"
+   },
+   "16": {
+    "result": "PASS",
+    "basis": "explicit advisory disclaimer; no safety/compliance/certification/validation claim anywhere in the output"
+   },
+   "P3": {
+    "result": "PASS",
+    "basis": "no unsafe assumption asserted or silently relied on; inventor assumptions recorded as unvalidated with risk-if-invalid"
+   },
+   "P4": {
+    "result": "PASS",
+    "basis": "output stays inside the committed no-claim boundary"
+   },
+   "P5": {
+    "result": "FAIL",
+    "basis": "no specialist handoff or escalation surfaced in any output ('specialist' absent from every deliverable); the stage-3 EXPERTISE_GAP_AWARENESS question was never reached in any record"
+   },
+   "15": {
+    "result": "PASS",
+    "basis": "as R1 for EN novice"
+   },
+   "17": {
+    "result": "NOT EVALUATED",
+    "basis": "Baseline A is structurally unobtainable for M-1 at this commit: the FDC-001 workspace is hard-coded to the bicycle braking-detection case (engine/decision_workspace.py); recorded per §15.8, never silently substituted"
+   },
+   "18": {
+    "result": "PARTIAL",
+    "basis": "as R1 (M-1 generic response also asserts unsupported load figures the product refuses to invent)"
+   },
+   "P1": {
+    "result": "PARTIAL",
+    "basis": "as R1; reframe repeated 19x"
+   },
+   "P2": {
+    "result": "PASS",
+    "basis": "feasibility gap and unknown load/retention margin surfaced"
+   },
+   "P6": {
+    "result": "PARTIAL",
+    "basis": "as R1, decision-blind for the retention-architecture decision"
+   }
+  },
+  "core_gate": {
+   "result": "PARTIAL",
+   "basis": "as R1"
+  },
+  "record_outcome": "PARTIAL"
+ },
+ "R6": {
+  "criteria": {
+   "1": {
+    "result": "PARTIAL",
+    "basis": "platform structures the journey, tracks gaps, classifies evidence quality, and assembles a truthful structured deliverable (prototype/test plan, validation plan, next steps); but the difficult DECISION work — comparing the case's three bounded candidates — is not performed anywhere (section 7 categories B/C 'DEFERRED — Requires Options Database (ODS-001). Not in the current MVP')"
+   },
+   "2": {
+    "result": "PASS",
+    "basis": "delegated work is identified explicitly and truthfully: validation/prototyping assigned to the inventor (suggested_provider 'You (the inventor)'), deferred categories named, disclaimer present"
+   },
+   "3": {
+    "result": "PARTIAL",
+    "basis": "requirements vs constraints vs assumptions are distinguished in sections 4/5 (REQ 'technical' vs 'constraint' types; ASM entries), but the records are auto-derived from gap state, thin, and the case's explicit installation constraint appears only inside answer text, not as a first-class constraint record"
+   },
+   "4": {
+    "result": "PARTIAL",
+    "basis": "evidence registry with truthful quality labels ('Reasoned — inventor's structured rationale; not validated') is visible; BUT the deliverable displays provenance as 'Not recorded (pre-provenance session)' while the durable ledger for the same session records provenance=OWNER_STATED on every answer — provenance exists durably and is not faithfully surfaced"
+   },
+   "5": {
+    "result": "FAIL",
+    "basis": "the bounded candidate set never enters the Path-N journey: no surface captures or represents alternatives; the deliverable contains no candidate/alternative representation at all"
+   },
+   "6": {
+    "result": "FAIL",
+    "basis": "no elimination or qualification of any candidate occurs (follows from criterion 5)"
+   },
+   "7": {
+    "result": "PASS",
+    "basis": "bounded truthful outcome delivered: verdict REVISE with rationale and basis, deliverable_eligible=false stated, derived_verified_ready=false, no overclaim"
+   },
+   "8": {
+    "result": "PASS",
+    "basis": "minimum next required input identified: section 12 actionable next_development_step + prioritized NEXT items naming the open gap"
+   },
+   "9": {
+    "result": "PASS",
+    "basis": "contract_version=p4-0-record-contract-v1 and engine_contract_version=p4-2-level1-recon-v1 persisted in the durable project envelope (verified in the run's store)"
+   },
+   "10": {
+    "result": "PASS",
+    "basis": "seed_idea_text persisted verbatim; append-only accepted-answer ledger: 24 records per session, 192 total, verified in the durable store"
+   },
+   "11": {
+    "result": "PARTIAL",
+    "basis": "every accepted answer triggers full deterministic re-evaluation of the whole state (observed at every one of 24 iterations per record); but REVISING a previously accepted answer requires POST /session/<sid>/correct, which is reachable from no rendered surface (no form, link, or affordance on session or deliverable pages) — reachability failure, per S2 §15.5's binding note"
+   },
+   "12": {
+    "result": "NOT APPLICABLE",
+    "basis": "architecturally prohibited construct; per §15.5/§15.6"
+   },
+   "13": {
+    "result": "NOT APPLICABLE",
+    "basis": "lane-scoped; per §15.5"
+   },
+   "14": {
+    "result": "FAIL",
+    "basis": "no change-reason display is reachable: CORRECTION_APPLIED_ACK and withdrawn_source_records exist in code but no evaluated surface exposes them; the perspectives could not reach the correction path at all (per §15.5: a weak or unreachable result here is a truthful FAIL, never an N/A)"
+   },
+   "16": {
+    "result": "PASS",
+    "basis": "explicit advisory disclaimer; no safety/compliance/certification/validation claim anywhere in the output"
+   },
+   "P3": {
+    "result": "PASS",
+    "basis": "no unsafe assumption asserted or silently relied on; inventor assumptions recorded as unvalidated with risk-if-invalid"
+   },
+   "P4": {
+    "result": "PASS",
+    "basis": "output stays inside the committed no-claim boundary"
+   },
+   "P5": {
+    "result": "FAIL",
+    "basis": "no specialist handoff or escalation surfaced in any output ('specialist' absent from every deliverable); the stage-3 EXPERTISE_GAP_AWARENESS question was never reached in any record"
+   },
+   "15": {
+    "result": "PASS",
+    "basis": "as R2"
+   },
+   "17": {
+    "result": "NOT EVALUATED",
+    "basis": "as R5"
+   },
+   "18": {
+    "result": "PARTIAL",
+    "basis": "as R5"
+   },
+   "P1": {
+    "result": "FAIL",
+    "basis": "as R2 — practitioner answers never closed MECHANISM"
+   },
+   "P2": {
+    "result": "FAIL",
+    "basis": "as R2"
+   },
+   "P6": {
+    "result": "FAIL",
+    "basis": "as R2"
+   }
+  },
+  "core_gate": {
+   "result": "FAIL",
+   "basis": "as R2"
+  },
+  "record_outcome": "FAIL"
+ },
+ "R7": {
+  "criteria": {
+   "1": {
+    "result": "PARTIAL",
+    "basis": "platform structures the journey, tracks gaps, classifies evidence quality, and assembles a truthful structured deliverable (prototype/test plan, validation plan, next steps); but the difficult DECISION work — comparing the case's three bounded candidates — is not performed anywhere (section 7 categories B/C 'DEFERRED — Requires Options Database (ODS-001). Not in the current MVP')"
+   },
+   "2": {
+    "result": "PASS",
+    "basis": "delegated work is identified explicitly and truthfully: validation/prototyping assigned to the inventor (suggested_provider 'You (the inventor)'), deferred categories named, disclaimer present"
+   },
+   "3": {
+    "result": "PARTIAL",
+    "basis": "requirements vs constraints vs assumptions are distinguished in sections 4/5 (REQ 'technical' vs 'constraint' types; ASM entries), but the records are auto-derived from gap state, thin, and the case's explicit installation constraint appears only inside answer text, not as a first-class constraint record"
+   },
+   "4": {
+    "result": "PARTIAL",
+    "basis": "evidence registry with truthful quality labels ('Reasoned — inventor's structured rationale; not validated') is visible; BUT the deliverable displays provenance as 'Not recorded (pre-provenance session)' while the durable ledger for the same session records provenance=OWNER_STATED on every answer — provenance exists durably and is not faithfully surfaced"
+   },
+   "5": {
+    "result": "FAIL",
+    "basis": "the bounded candidate set never enters the Path-N journey: no surface captures or represents alternatives; the deliverable contains no candidate/alternative representation at all"
+   },
+   "6": {
+    "result": "FAIL",
+    "basis": "no elimination or qualification of any candidate occurs (follows from criterion 5)"
+   },
+   "7": {
+    "result": "PASS",
+    "basis": "bounded truthful outcome delivered: verdict REVISE with rationale and basis, deliverable_eligible=false stated, derived_verified_ready=false, no overclaim"
+   },
+   "8": {
+    "result": "PASS",
+    "basis": "minimum next required input identified: section 12 actionable next_development_step + prioritized NEXT items naming the open gap"
+   },
+   "9": {
+    "result": "PASS",
+    "basis": "contract_version=p4-0-record-contract-v1 and engine_contract_version=p4-2-level1-recon-v1 persisted in the durable project envelope (verified in the run's store)"
+   },
+   "10": {
+    "result": "PASS",
+    "basis": "seed_idea_text persisted verbatim; append-only accepted-answer ledger: 24 records per session, 192 total, verified in the durable store"
+   },
+   "11": {
+    "result": "PARTIAL",
+    "basis": "every accepted answer triggers full deterministic re-evaluation of the whole state (observed at every one of 24 iterations per record); but REVISING a previously accepted answer requires POST /session/<sid>/correct, which is reachable from no rendered surface (no form, link, or affordance on session or deliverable pages) — reachability failure, per S2 §15.5's binding note"
+   },
+   "12": {
+    "result": "NOT APPLICABLE",
+    "basis": "architecturally prohibited construct; per §15.5/§15.6"
+   },
+   "13": {
+    "result": "NOT APPLICABLE",
+    "basis": "lane-scoped; per §15.5"
+   },
+   "14": {
+    "result": "FAIL",
+    "basis": "no change-reason display is reachable: CORRECTION_APPLIED_ACK and withdrawn_source_records exist in code but no evaluated surface exposes them; the perspectives could not reach the correction path at all (per §15.5: a weak or unreachable result here is a truthful FAIL, never an N/A)"
+   },
+   "16": {
+    "result": "PASS",
+    "basis": "explicit advisory disclaimer; no safety/compliance/certification/validation claim anywhere in the output"
+   },
+   "P3": {
+    "result": "PASS",
+    "basis": "no unsafe assumption asserted or silently relied on; inventor assumptions recorded as unvalidated with risk-if-invalid"
+   },
+   "P4": {
+    "result": "PASS",
+    "basis": "output stays inside the committed no-claim boundary"
+   },
+   "P5": {
+    "result": "FAIL",
+    "basis": "no specialist handoff or escalation surfaced in any output ('specialist' absent from every deliverable); the stage-3 EXPERTISE_GAP_AWARENESS question was never reached in any record"
+   },
+   "15": {
+    "result": "FAIL",
+    "basis": "as R3 — Arabic shell, English substantive content"
+   },
+   "17": {
+    "result": "NOT EVALUATED",
+    "basis": "as R5"
+   },
+   "18": {
+    "result": "PARTIAL",
+    "basis": "as R3"
+   },
+   "P1": {
+    "result": "FAIL",
+    "basis": "questions English on the Arabic surface; MECHANISM did close on Arabic answers (3 interactions) but the feasibility reframe then repeated 19x in English"
+   },
+   "P2": {
+    "result": "PASS",
+    "basis": "feasibility gap and unknown surfaced despite the language asymmetry"
+   },
+   "P6": {
+    "result": "FAIL",
+    "basis": "English substantive content for an Arabic novice reader"
+   }
+  },
+  "core_gate": {
+   "result": "FAIL",
+   "basis": "standalone exportable value impaired for the Arabic reader; journey stalled on feasibility"
+  },
+  "record_outcome": "FAIL (core gate: Arabic exportable value impaired; journey stalled) — strongest AR record otherwise: mechanism closed on Arabic answers in 3 interactions"
+ },
+ "R8": {
+  "criteria": {
+   "1": {
+    "result": "PARTIAL",
+    "basis": "platform structures the journey, tracks gaps, classifies evidence quality, and assembles a truthful structured deliverable (prototype/test plan, validation plan, next steps); but the difficult DECISION work — comparing the case's three bounded candidates — is not performed anywhere (section 7 categories B/C 'DEFERRED — Requires Options Database (ODS-001). Not in the current MVP')"
+   },
+   "2": {
+    "result": "PASS",
+    "basis": "delegated work is identified explicitly and truthfully: validation/prototyping assigned to the inventor (suggested_provider 'You (the inventor)'), deferred categories named, disclaimer present"
+   },
+   "3": {
+    "result": "PARTIAL",
+    "basis": "requirements vs constraints vs assumptions are distinguished in sections 4/5 (REQ 'technical' vs 'constraint' types; ASM entries), but the records are auto-derived from gap state, thin, and the case's explicit installation constraint appears only inside answer text, not as a first-class constraint record"
+   },
+   "4": {
+    "result": "PARTIAL",
+    "basis": "evidence registry with truthful quality labels ('Reasoned — inventor's structured rationale; not validated') is visible; BUT the deliverable displays provenance as 'Not recorded (pre-provenance session)' while the durable ledger for the same session records provenance=OWNER_STATED on every answer — provenance exists durably and is not faithfully surfaced"
+   },
+   "5": {
+    "result": "FAIL",
+    "basis": "the bounded candidate set never enters the Path-N journey: no surface captures or represents alternatives; the deliverable contains no candidate/alternative representation at all"
+   },
+   "6": {
+    "result": "FAIL",
+    "basis": "no elimination or qualification of any candidate occurs (follows from criterion 5)"
+   },
+   "7": {
+    "result": "PASS",
+    "basis": "bounded truthful outcome delivered: verdict REVISE with rationale and basis, deliverable_eligible=false stated, derived_verified_ready=false, no overclaim"
+   },
+   "8": {
+    "result": "PASS",
+    "basis": "minimum next required input identified: section 12 actionable next_development_step + prioritized NEXT items naming the open gap"
+   },
+   "9": {
+    "result": "PASS",
+    "basis": "contract_version=p4-0-record-contract-v1 and engine_contract_version=p4-2-level1-recon-v1 persisted in the durable project envelope (verified in the run's store)"
+   },
+   "10": {
+    "result": "PASS",
+    "basis": "seed_idea_text persisted verbatim; append-only accepted-answer ledger: 24 records per session, 192 total, verified in the durable store"
+   },
+   "11": {
+    "result": "PARTIAL",
+    "basis": "every accepted answer triggers full deterministic re-evaluation of the whole state (observed at every one of 24 iterations per record); but REVISING a previously accepted answer requires POST /session/<sid>/correct, which is reachable from no rendered surface (no form, link, or affordance on session or deliverable pages) — reachability failure, per S2 §15.5's binding note"
+   },
+   "12": {
+    "result": "NOT APPLICABLE",
+    "basis": "architecturally prohibited construct; per §15.5/§15.6"
+   },
+   "13": {
+    "result": "NOT APPLICABLE",
+    "basis": "lane-scoped; per §15.5"
+   },
+   "14": {
+    "result": "FAIL",
+    "basis": "no change-reason display is reachable: CORRECTION_APPLIED_ACK and withdrawn_source_records exist in code but no evaluated surface exposes them; the perspectives could not reach the correction path at all (per §15.5: a weak or unreachable result here is a truthful FAIL, never an N/A)"
+   },
+   "16": {
+    "result": "PASS",
+    "basis": "explicit advisory disclaimer; no safety/compliance/certification/validation claim anywhere in the output"
+   },
+   "P3": {
+    "result": "PASS",
+    "basis": "no unsafe assumption asserted or silently relied on; inventor assumptions recorded as unvalidated with risk-if-invalid"
+   },
+   "P4": {
+    "result": "PASS",
+    "basis": "output stays inside the committed no-claim boundary"
+   },
+   "P5": {
+    "result": "FAIL",
+    "basis": "no specialist handoff or escalation surfaced in any output ('specialist' absent from every deliverable); the stage-3 EXPERTISE_GAP_AWARENESS question was never reached in any record"
+   },
+   "15": {
+    "result": "FAIL",
+    "basis": "as R7"
+   },
+   "17": {
+    "result": "NOT EVALUATED",
+    "basis": "as R5"
+   },
+   "18": {
+    "result": "PARTIAL",
+    "basis": "as R7"
+   },
+   "P1": {
+    "result": "FAIL",
+    "basis": "as R4"
+   },
+   "P2": {
+    "result": "FAIL",
+    "basis": "as R2 pattern — stuck on first gap"
+   },
+   "P6": {
+    "result": "FAIL",
+    "basis": "as R4"
+   }
+  },
+  "core_gate": {
+   "result": "FAIL",
+   "basis": "as R4"
+  },
+  "record_outcome": "FAIL"
+ }
+}
