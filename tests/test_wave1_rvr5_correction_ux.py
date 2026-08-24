@@ -56,14 +56,22 @@ def test_correction_affordance_hidden_until_an_answer_exists(client):
     # answer to correct yet.
     assert "/accept-risk" not in page
     assert f"/session/{sid}/correct" not in page
-    # after the mechanism closes, the served gap becomes feasibility and the
-    # accept-risk affordance appears.
+    # after the mechanism closes, the served gap becomes feasibility.
+    # W2-D reconciliation (Wave-2 contract §F, W1-S2 — intentional new
+    # expectation): the accept-risk affordance no longer appears merely
+    # because an eligible gap is served; it requires at least one ACTIVE
+    # substantive attempt for that gap first.
     _answer_once(c, sid)
     _answer_once(c, sid)
     page2 = _page(c, sid)
     from engine.progression_loop import select_next_gap
     if select_next_gap(appmod.SESSION_STORE[sid]["state"]) == "PHYSICAL_FEASIBILITY":
-        assert "/accept-risk" in page2
+        assert "/accept-risk" not in page2  # no substantive attempt yet
+        c.post(f"/session/{sid}", data={
+            "response": ("I have not tested whether the mechanism stays "
+                         "reliable under repeated loading and outdoor use."),
+            "answer_token": _token(_page(c, sid)), "action": "answered"})
+        assert "/accept-risk" in _page(c, sid)
 
 def test_correction_affordance_reaches_the_governed_route(client):
     c, appmod = client

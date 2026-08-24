@@ -743,6 +743,31 @@ UI_STRINGS = {
         "en": "Accept as known risk",
         "ar": "قبول كمخاطرة معروفة"},
     # RVR-5 (Wave-1): rendered correction affordance over the existing route.
+    # W2-D (Wave-2 contract §K, W1-N4) — correction-lapse transparency notice.
+    # Platform UI chrome under the existing governed EN/AR catalog mechanism
+    # (current localization infrastructure, NOT RVR-7 / Arabic substantive
+    # parity, which remains Wave-3 and unauthorized).
+    "UI_W2D_LAPSE_HEADING": {
+        "en": "A previous risk acceptance no longer applies",
+        "ar": "قبول سابق للمخاطرة لم يعد ساريًا"},
+    "UI_W2D_LAPSE_EXPLAIN": {
+        "en": ("Your correction changed the recorded evidence, so everything "
+               "was deterministically re-evaluated. A risk you had accepted "
+               "earlier could not be carried over to the corrected state. "
+               "Nothing was deleted - the original acceptance stays in your "
+               "project history."),
+        "ar": ("غيّر تصحيحُك الأدلة المسجّلة، فأُعيد تقييم كل شيء بشكل حتمي. "
+               "مخاطرة كنت قد قبلتها سابقًا تعذّر نقلها إلى الحالة المصحّحة. "
+               "لم يُحذف شيء — يبقى القبول الأصلي في سجل مشروعك.")},
+    "UI_W2D_LAPSE_ACTION": {
+        "en": ("No longer covered - will need a new answer or a new explicit "
+               "decision when it is asked again:"),
+        "ar": ("لم يعد مشمولًا — سيتطلب إجابة جديدة أو قرارًا صريحًا جديدًا "
+               "عند طرحه مجددًا:")},
+    "UI_W2D_LAPSE_RESOLVED": {
+        "en": ("Resolved by your corrected answers - no further action "
+               "needed:"),
+        "ar": "حُلّ بفضل إجاباتك المصحّحة — لا حاجة لإجراء آخر:"},
     "UI_RVR5_CORRECT_HEADING": {
         "en": "Correct an earlier answer",
         "ar": "تصحيح إجابة سابقة"},

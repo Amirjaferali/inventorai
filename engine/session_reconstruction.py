@@ -112,6 +112,29 @@ class ReconstructedReviewState:
     # unchanged. `withdrawn_source_records` is retained history that was
     # EXCLUDED from the replay below; it is not a deletion.
     withdrawn_source_records: int = 0
+    # W2-D (Wave-2 contract §K, W1-N4): per recorded `risk_accepted`
+    # disposition, whether the replay re-applied it or it LAPSED against the
+    # rebuilt canonical state — a read-only DERIVED report artifact (one
+    # `RiskAcceptanceReplayOutcome` per record, in seq order). Additive and
+    # defaulted; the D-AISR-06 full-re-evaluation semantics, the canonical
+    # writer, and the restored ledger are unchanged — this only makes the
+    # already-deterministic outcome visible instead of silent.
+    risk_acceptance_outcomes: tuple = field(default_factory=tuple)
+
+
+@dataclass(frozen=True)
+class RiskAcceptanceReplayOutcome:
+    """W2-D (W1-N4) — one recorded `risk_accepted` disposition's replay
+    outcome. NOT a canonical risk state and never persisted: derived anew on
+    every reconstruction from the same durable inputs (deterministic).
+    ``reason`` is a bounded category, populated only when ``applied`` is
+    False: ``"gap_not_present"`` (the rebuilt journey has not derived the gap
+    at the record's replay point) or ``"gap_status_<STATUS>"`` (the gap exists
+    but is not OPEN/PARTIAL there)."""
+    record_id: str
+    gap_context: Optional[str]
+    applied: bool
+    reason: Optional[str] = None
 
 
 def contract_assertions_seq(contract):
@@ -267,6 +290,14 @@ def _reconstruct(store, project_id: str):
     # which validated it at mint) is skipped without mutating anything — the
     # record itself stays restored ledger truth below; nothing is fabricated.
     _amended_ids = {r.record_id for r in amended}
+    # W2-D (W1-N4): the replay OUTCOME of every recorded `risk_accepted`
+    # disposition is reported instead of silently discarded. The canonical
+    # behavior is byte-identical — an inapplicable recorded acceptance is
+    # still skipped without mutating anything (no stale acceptance survives)
+    # — but the skip is now classified deterministically so the correction
+    # UX can truthfully explain the lapse. Derived report only; nothing is
+    # persisted and no record is mutated.
+    _risk_outcomes = []
     for record in contract_assertions_seq(contract):
         if (record.disposition == DISPOSITION_ANSWERED
                 and record.record_id in _amended_ids):
@@ -275,8 +306,20 @@ def _reconstruct(store, project_id: str):
             try:
                 progression_loop.accept_gap_risk(state, record.gap_context)
                 progression_loop.advance_after_disposition(state)
+                _risk_outcomes.append(RiskAcceptanceReplayOutcome(
+                    record_id=record.record_id,
+                    gap_context=record.gap_context,
+                    applied=True))
             except ValueError:
-                pass
+                _gap = state.get_gap(record.gap_context) \
+                    if record.gap_context else None
+                _reason = ("gap_not_present" if _gap is None
+                           else "gap_status_" + _gap.status)
+                _risk_outcomes.append(RiskAcceptanceReplayOutcome(
+                    record_id=record.record_id,
+                    gap_context=record.gap_context,
+                    applied=False,
+                    reason=_reason))
 
     # P10-PC2: restore the durably persisted interaction ledger VERBATIM onto
     # the fresh state — these are the very ``AssertionRecord`` values created
@@ -316,4 +359,5 @@ def _reconstruct(store, project_id: str):
         open_gaps=open_gaps,
         next_question=next_question,
         withdrawn_source_records=withdrawn,
+        risk_acceptance_outcomes=tuple(_risk_outcomes),
     ), state

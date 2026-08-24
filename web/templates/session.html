@@ -288,6 +288,27 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
 <div class="badge-warn" style="display:block;padding:9px 14px;margin-bottom:14px">{{ interaction_ack }}</div>
 {% endif %}
 
+{# W2-D (Wave-2 contract §K, W1-N4): single-use correction-lapse notice,
+   rendered with the RVR-5 correction acknowledgement it belongs to. Truthful:
+   the previous acceptance no longer applies (never deleted, never an error);
+   an affected gap is either no longer covered (new action needed when served)
+   or was resolved by the corrected evidence. Display-only; computed by the
+   reconstruction seam, the single explanation owner renders here. #}
+{% if risk_lapse_notice %}
+<div class="badge-warn risk-lapse" style="display:block;padding:9px 14px;margin-bottom:14px">
+  <strong>{{ t('UI_W2D_LAPSE_HEADING') }}</strong>
+  <p style="margin:6px 0 0 0;font-size:13px">{{ t('UI_W2D_LAPSE_EXPLAIN') }}</p>
+  {% if risk_lapse_notice.action %}
+  <p style="margin:6px 0 0 0;font-size:13px">{{ t('UI_W2D_LAPSE_ACTION') }}
+    <strong>{{ risk_lapse_notice.action | join(' · ') }}</strong></p>
+  {% endif %}
+  {% if risk_lapse_notice.resolved %}
+  <p style="margin:6px 0 0 0;font-size:13px">{{ t('UI_W2D_LAPSE_RESOLVED') }}
+    <strong>{{ risk_lapse_notice.resolved | join(' · ') }}</strong></p>
+  {% endif %}
+</div>
+{% endif %}
+
 {# Guided Uncertainty Support (PR #134 Increment Contract): supportive, OPTIONAL, #}
 {# display-only prompts shown when the user's own text expresses uncertainty      #}
 {# ("I don't know" / "لا أعرف"). It supplies no answer text, has no save/approve/  #}
@@ -353,8 +374,12 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
 
 {# RVR-1 (Wave-1): explicit accept-as-known-risk exit. Rendered only for the
    currently served non-mechanism gap; requires an explicit confirmation and
-   the same server answer token; truthful copy - accepted is not resolved. #}
-{% if gap_type and gap_type != 'MECHANISM_COMPLETENESS' %}
+   the same server answer token; truthful copy - accepted is not resolved.
+   W2-D (W1-S2): additionally rendered ONLY when the live availability policy
+   holds - at least one ACTIVE substantive attempt for this gap exists
+   (`risk_available`, the SAME `substantive_attempt_recorded` policy the
+   route re-checks; a superseded attempt never keeps the affordance open). #}
+{% if gap_type and gap_type != 'MECHANISM_COMPLETENESS' and risk_available %}
 <details class="accept-risk" style="margin-top:14px;border:1px solid #e8d9c0;border-radius:4px;background:#fdf9f2;padding:10px 14px">
   <summary style="cursor:pointer;font-size:13px;color:#8a6d3b;font-weight:bold">{{ t('UI_RVR1_RISK_HEADING') }}</summary>
   <p style="font-size:13px;color:#555;margin:10px 0 8px 0">{{ t('UI_RVR1_RISK_EXPLAIN') }}</p>

@@ -988,6 +988,47 @@ def accept_gap_risk(state: IdeaState, gap_type: str) -> None:
     gap.status = ACCEPTED_RISK
 
 
+def substantive_attempt_recorded(state: IdeaState, gap_type: str) -> bool:
+    """W2-D (Wave-2 contract §F, W1-S2) — LIVE Accept Risk availability input.
+
+    True iff at least one ACTIVE ledger record satisfies ALL of the canonical
+    durable active-set rule (the same `superseded_by is None` rule the
+    correction/replay seam already uses — no second active-set concept):
+      1. `superseded_by is None`;
+      2. `disposition == "answered"`;
+      3. `gap_context == gap_type` (the currently served gap);
+      4. stored verbatim content is not a weak/refusal response (the existing
+         `_WEAK_PATTERNS` exact-form guard — no second weak vocabulary);
+      5. `addresses_gap(content, gap_type)` is True (the existing governed
+         lexical relevance owner — no second relevance vocabulary).
+
+    A superseded/withdrawn attempt does NOT satisfy the gate: after a
+    correction supersedes the qualifying attempt, availability lapses until a
+    new active substantive attempt is recorded against the corrected state.
+
+    LIVE availability policy ONLY (route + affordance). Deliberately NOT part
+    of `accept_gap_risk`: the canonical writer and the replay of historical
+    `risk_accepted` records are unchanged, so pre-W2-D ledgers reconstruct
+    identically. Pure recomputation from durable fields — deterministic, no
+    persisted field added, no AI, no randomness. Known W1-N3-class relevance
+    false negatives FAIL SAFE (gate stays closed; the governed non-answer
+    exits remain the truthful path); W1-N3 remains owned by W2-C.
+    """
+    for record in getattr(state, "assertions", []):
+        if getattr(record, "superseded_by", None) is not None:
+            continue
+        if record.disposition != "answered":
+            continue
+        if record.gap_context != gap_type:
+            continue
+        content = (record.content or "").strip()
+        if not content or content.lower() in _WEAK_PATTERNS:
+            continue
+        if addresses_gap(content, gap_type):
+            return True
+    return False
+
+
 def advance_after_disposition(state: IdeaState):
     """RVR-1 (Wave-1) — canonical progression continuation after an explicit
     gap disposition (accept_gap_risk).
