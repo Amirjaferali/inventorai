@@ -108,10 +108,21 @@ DISPOSITION_PROVISIONAL_ASSUMPTION = "provisional_assumption"
 DISPOSITION_SPECIALIST_REQUESTED   = "specialist_requested"
 DISPOSITION_EVIDENCE_REQUESTED     = "evidence_requested"
 
+# RVR-1 (Wave-1 remediation contract, OD-R1): a SEVENTH governed ledger
+# disposition recording the explicit owner action of accepting a gap as a
+# known risk. It is an owner-action record, NEVER a WS12 path classification
+# (WS12 OD-3/OD-11 preserved: the WS12 vocabulary stays disjoint from this
+# set) and NEVER added to the web answered-route action allowlist (the six
+# structured actions there remain frozen; risk acceptance has its own
+# explicit route). The record itself resolves nothing — the gap-status write
+# happens only through the canonical lifecycle function
+# `engine.progression_loop.accept_gap_risk`.
+DISPOSITION_RISK_ACCEPTED          = "risk_accepted"
+
 INTERACTION_DISPOSITIONS = frozenset({
     DISPOSITION_ANSWERED, DISPOSITION_UNKNOWN, DISPOSITION_DEFERRED,
     DISPOSITION_PROVISIONAL_ASSUMPTION, DISPOSITION_SPECIALIST_REQUESTED,
-    DISPOSITION_EVIDENCE_REQUESTED,
+    DISPOSITION_EVIDENCE_REQUESTED, DISPOSITION_RISK_ACCEPTED,
 })
 
 # Durable pending state for the two request actions (None for the others).
@@ -129,6 +140,9 @@ _PENDING_BY_DISPOSITION = {
 _DEFAULT_PROVENANCE_BY_DISPOSITION = {
     DISPOSITION_ANSWERED:               OWNER_STATED,
     DISPOSITION_PROVISIONAL_ASSUMPTION: OWNER_STATED,
+    # RVR-1: accepting a risk is an owner assertion about the owner's own
+    # decision — provenance is the owner's statement, never platform-derived.
+    DISPOSITION_RISK_ACCEPTED:          OWNER_STATED,
 }
 
 # Validation levels treated as "validated" (i.e. not owner-unvalidated) by the

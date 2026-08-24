@@ -53,7 +53,8 @@ from dataclasses import dataclass, field
 from typing import Optional
 
 from engine import progression_loop
-from engine.idea_state import IdeaState, DISPOSITION_ANSWERED
+from engine.idea_state import (IdeaState, DISPOSITION_ANSWERED,
+    DISPOSITION_RISK_ACCEPTED)
 
 # One explicit deterministic reconstruction version. It identifies the supported
 # engine/contract behaviour — NOT an AI model, timestamp, branch, or environment
@@ -111,6 +112,13 @@ class ReconstructedReviewState:
     # unchanged. `withdrawn_source_records` is retained history that was
     # EXCLUDED from the replay below; it is not a deletion.
     withdrawn_source_records: int = 0
+
+
+def contract_assertions_seq(contract):
+    """RVR-1: the full durable ledger in authoritative seq order (the contract
+    already restores it in order; this named seam keeps the replay's source
+    explicit and testable)."""
+    return list(contract.assertions)
 
 
 def _level0(idea_id, status, evidence):
@@ -247,8 +255,28 @@ def _reconstruct(store, project_id: str):
     state.path = path
 
     last_result = progression_loop.run_iteration(state, seed)   # seed first
-    for record in amended:                        # then ACTIVE answers (seq order)
-        last_result = progression_loop.run_iteration(state, record.content)
+    # RVR-1 (Wave-1 remediation contract, OD-R1): the replay walks the FULL
+    # durable ledger in seq order and applies exactly two record kinds — the
+    # ACTIVE answered records (identified by membership in the validated
+    # `amended` stream, so the answered replay source, bound, and withdrawal
+    # semantics are byte-unchanged) and the `risk_accepted` owner dispositions,
+    # which re-apply through the SAME canonical lifecycle writer used live.
+    # A history containing no risk_accepted record replays byte-identically to
+    # the previous answered-only loop. A recorded acceptance that is not
+    # applicable at its replay point (impossible for a live-minted history,
+    # which validated it at mint) is skipped without mutating anything — the
+    # record itself stays restored ledger truth below; nothing is fabricated.
+    _amended_ids = {r.record_id for r in amended}
+    for record in contract_assertions_seq(contract):
+        if (record.disposition == DISPOSITION_ANSWERED
+                and record.record_id in _amended_ids):
+            last_result = progression_loop.run_iteration(state, record.content)
+        elif record.disposition == DISPOSITION_RISK_ACCEPTED:
+            try:
+                progression_loop.accept_gap_risk(state, record.gap_context)
+                progression_loop.advance_after_disposition(state)
+            except ValueError:
+                pass
 
     # P10-PC2: restore the durably persisted interaction ledger VERBATIM onto
     # the fresh state — these are the very ``AssertionRecord`` values created

@@ -32,7 +32,7 @@ from engine.idea_state import (
     PROBLEM_MECHANISM_FIT, ASSUMPTION_INVENTORY, EXPERTISE_GAP_AWARENESS,
     STAGE_2_GAP_TYPES, STAGE_3_GAP_TYPES,
     OPEN, PARTIAL, CLOSED, ACCEPTED_RISK,
-    ASSERTED, REASONED, DEMONSTRATED,
+    ASSERTED, REASONED, DEMONSTRATED, OWNER_STATED,
     PROGRESSING, STALLED, REGRESSING
 )
 
@@ -208,6 +208,20 @@ QUESTIONS = {
 # I/O or LLM call, and starts no conversational / multi-question loop. A single
 # deterministic reframe is sufficient for this bounded increment; the owner's
 # existing six actions remain the truthful exits.
+# RVR-2 (Wave-1 remediation contract): served AFTER the single reframe render,
+# instead of repeating the identical reframe indefinitely (the S2 run recorded
+# the same reframe re-served 18-20x). A different, stable, governed message
+# that names the honest exits. Display selection only - canonical state, gap
+# status, get_question(), and the six owner actions are untouched.
+_EXHAUSTED_EXIT_PROMPT = (
+    "The prepared questions for this area are exhausted, and repeating them "
+    "will not move it forward. Your honest options now: add genuinely new "
+    "information in the answer box; mark this unknown or deferred; note a "
+    "provisional assumption; ask for a specialist or evidence; or - if it "
+    "cannot be resolved now - accept it explicitly as a known risk so the "
+    "journey can move on while the risk stays visibly recorded."
+)
+
 _STALL_REFRAME = (
     "Let's take this part in plainer terms. In your own words, what do you "
     "already know about this aspect of your idea — and what information do you "
@@ -289,6 +303,15 @@ def get_display_question(domain: str, gap_type: str, iterations_open: int,
         if current is not None and current == get_path_n_question(
             gap_type, iterations_open - 1, domain=domain
         ):
+            # RVR-2: the reframe is served exactly ONCE (the first exhausted
+            # render). Every later exhausted render serves the deterministic
+            # exit prompt instead of re-serving the identical reframe - the
+            # governed reason the question changes is that the variants are
+            # exhausted and the honest exits are now the productive path.
+            if iterations_open >= 2 and current == get_path_n_question(
+                gap_type, iterations_open - 2, domain=domain
+            ):
+                return _EXHAUSTED_EXIT_PROMPT
             return _STALL_REFRAME
     return get_question(domain, gap_type, iterations_open, path=path)
 
@@ -664,6 +687,60 @@ def _connective_whole_word_substance_gate(r_lower, substance_tokens, plural_alia
 
 
 
+# ─── Layer-3 bounded structured-substance gate (Wave-1 RVR-3, OD-R2) ───
+# The frozen S2 run proved a perspective inversion: practitioner-form answers
+# carrying MORE engineering substance assessed BELOW everyday prose, solely
+# because they lack the preferred conversational causal substrings. This gate
+# recognizes committed STRUCTURAL-TECHNICAL form - enumeration markers,
+# labeled technical clauses, hyphenated technical compounds - as a distinct
+# deterministic REASONED path. Pure text predicate: no model inference, no
+# semantic interpretation, no probabilistic scoring. It never bypasses the
+# weak-pattern / weak-token rejections above it, and the generic-verb trap
+# yields to it exactly as the trap already yields to the Layer-2 connective
+# gate. Unicode-letter classes, so the same structural forms count in Arabic.
+import re as _re
+_ENUM_MARKER_RE = _re.compile(r"\(\d{1,2}\)|(?:^|[\s:;])\d{1,2}\.\s")
+_LABEL_CLAUSE_RE = _re.compile(
+    r"(?:^|[.!?;]\s+)[^\W\d_][\w /\-]{2,40}:\s", _re.UNICODE)
+_HYPHEN_COMPOUND_RE = _re.compile(
+    r"\b[^\W\d_]{3,}-[^\W\d_]{3,}\b", _re.UNICODE)
+_MIN_STRUCTURED_WORDS = 12
+_LONG_TOKEN_RE = _re.compile(r"[^\W\d_]{6,}", _re.UNICODE)
+_ARABIC_CHAR_RE = _re.compile(r"[\u0600-\u06ff]")
+_MIN_DISTINCT_LONG_TOKENS = 2
+
+def _distinct_long_tokens(r_lower):
+    """Distinct 'long' content tokens: >= 8 letters, or >= 6 letters for
+    Arabic-script tokens (Arabic morphology packs the same content into
+    shorter surface forms - measured on the frozen corpus)."""
+    out = set()
+    for tok in _LONG_TOKEN_RE.findall(r_lower):
+        if len(tok) >= 8 or _ARABIC_CHAR_RE.search(tok):
+            out.add(tok)
+    return out
+
+def _structured_technical_form(r_lower):
+    """Deterministic structural-technical form test (thresholds fixed):
+    (at least two enumeration markers, OR at least two distinct hyphenated
+    compounds, OR one labeled clause plus one enumeration/hyphen marker),
+    AND at least two distinct long tokens (>= 8 unicode letters) - the
+    measured discriminator that separates technical enumeration from
+    enumerated small-talk ("(1) cool (2) nice"), in English and Arabic
+    alike. Pure text predicate; no model inference."""
+    enum = len(_ENUM_MARKER_RE.findall(r_lower))
+    hyph = len(set(_HYPHEN_COMPOUND_RE.findall(r_lower)))
+    label = len(_LABEL_CLAUSE_RE.findall(r_lower))
+    # semicolon-separated technical clause chains count in both scripts
+    # (";" and the Arabic "؛").
+    semis = r_lower.count(";") + r_lower.count("؛")
+    structured = ((enum >= 2) or (hyph >= 2)
+                  or (label >= 1 and (enum + hyph) >= 1)
+                  or (label >= 1 and semis >= 2))
+    if not structured:
+        return False
+    return len(_distinct_long_tokens(r_lower)) >= _MIN_DISTINCT_LONG_TOKENS
+
+
 MIN_REASONED_RESPONSE_LENGTH = 40  # anti-triviality guard only — see ADR-003 Step 6 note
 
 def assess_response(response: str, domain: str = "") -> str:
@@ -729,7 +806,14 @@ def assess_response(response: str, domain: str = "") -> str:
     # only at path C below, after the existing causal path.
     new_connective_gate = _connective_whole_word_substance_gate(
         r_lower, substance_tokens, plural_aliases)
-    if _is_generic_verb_trap(r_lower) and not new_connective_gate:
+    # Wave-1 RVR-3: the structured-technical gate (Layer-3) - evaluated here
+    # only so the generic-verb trap yields to it the same way it yields to the
+    # Layer-2 connective gate. REASONED via this gate is granted only at path D
+    # below, after the existing paths, and only past the length/word floors.
+    structured_gate = (_structured_technical_form(r_lower)
+                       and len(r_lower.split()) >= _MIN_STRUCTURED_WORDS)
+    if _is_generic_verb_trap(r_lower) and not new_connective_gate \
+            and not structured_gate:
         return ASSERTED
     has_causal = _has_causal_structure(r_lower)
     # REASONED path A: substance domain token + causal structure + length
@@ -741,6 +825,11 @@ def assess_response(response: str, domain: str = "") -> str:
     # supporting clause + existing minimum length. Distinct gated path —
     # never bypasses the weak-pattern / weak-token rejections above.
     if new_connective_gate and len(r) >= MIN_REASONED_RESPONSE_LENGTH:
+        return REASONED
+    # REASONED path D (Layer-3, Wave-1 RVR-3): committed structural-technical
+    # form + the existing minimum length. Distinct gated path - never bypasses
+    # the weak-pattern / weak-token rejections above.
+    if structured_gate and len(r) >= MIN_REASONED_RESPONSE_LENGTH:
         return REASONED
 
     # 4. Length fallback for borderline answers without clear substance signals
@@ -775,6 +864,10 @@ def integrate_response(
         content=response,
         quality=quality,
         iteration=state.iteration,
+        # Wave-1 RVR-3 / MG-5: an owner answer's evidence is OWNER_STATED -
+        # the durable ledger already records exactly this provenance for the
+        # same answers; the rendered registry now matches it.
+        provenance=OWNER_STATED,
     )
 
     # Update known elements
@@ -861,6 +954,58 @@ def integrate_response(
         return "WARN", f"{gap_type} asserted only — reasoning required"
 
 
+def accept_gap_risk(state: IdeaState, gap_type: str) -> None:
+    """RVR-1 (Wave-1 remediation contract, OD-R1) — the ONLY writer of
+    ``Gap.status = ACCEPTED_RISK``.
+
+    Explicit-owner-action lifecycle transition: the named gap moves from
+    OPEN/PARTIAL to ACCEPTED_RISK. Never automatic — the sole live caller is
+    the governed /session/<sid>/accept-risk route after an explicit user
+    confirmation, and the sole replay caller applies the durably recorded
+    ``risk_accepted`` disposition (deterministic replay).
+
+    Refused loudly (ValueError, nothing mutated) when:
+      * the gap does not exist on this state;
+      * the gap is not OPEN/PARTIAL (CLOSED and ACCEPTED_RISK never move);
+      * the gap is MECHANISM_COMPLETENESS — the core mechanism can never be
+        risk-accepted: an idea whose mechanism is unknown is truthfully
+        BLOCKED, not riskily acceptable.
+
+    ACCEPTED_RISK is acceptance, not resolution: nothing here touches
+    evidence, quality, maturity, known_mechanism/known_problem, or closed_at.
+    """
+    if gap_type == MECHANISM_COMPLETENESS:
+        raise ValueError(
+            "MECHANISM_COMPLETENESS cannot be risk-accepted - the core "
+            "mechanism must be established, not accepted as unknown")
+    gap = state.get_gap(gap_type)
+    if gap is None:
+        raise ValueError(f"no such gap on this state: {gap_type!r}")
+    if gap.status not in (OPEN, PARTIAL):
+        raise ValueError(
+            f"{gap_type} is {gap.status} - only an OPEN/PARTIAL gap can be "
+            "accepted as a known risk")
+    gap.status = ACCEPTED_RISK
+
+
+def advance_after_disposition(state: IdeaState):
+    """RVR-1 (Wave-1) — canonical progression continuation after an explicit
+    gap disposition (accept_gap_risk).
+
+    Opens the next priority gap through the existing cascade; when no gap
+    remains to open or serve, the canonical iteration step runs with EMPTY
+    input (nothing is assessed, no evidence is created) so the SAME
+    evaluate_transition/stage logic every answered iteration uses decides
+    whether maturity advances and the next stage's gaps open. Deterministic;
+    used identically by the live accept-risk route and the reconstruction
+    replay, so live and replayed states stay byte-equivalent.
+    """
+    opened = _open_next_gap_if_needed(state)
+    if opened is None and select_next_gap(state) is None:
+        return run_iteration(state, "")
+    return None
+
+
 # ─────────────────────────────────────────────
 # 4. Evaluate maturity transition
 # ─────────────────────────────────────────────
@@ -901,6 +1046,15 @@ def evaluate_transition(state: IdeaState) -> tuple[bool, str]:
             gap = state.get_gap(required_gap)
             if gap is None:
                 return False, f"BLOCK: {required_gap} not yet opened"
+            # RVR-1 (OD-R1): PHYSICAL_FEASIBILITY and BOUNDARY_AMBIGUITY are
+            # satisfied by CLOSED **or** by the explicit owner disposition
+            # ACCEPTED_RISK — acceptance counts toward completion while staying
+            # visibly unresolved everywhere it renders. MECHANISM_COMPLETENESS
+            # is exempt by construction: accept_gap_risk refuses it, and the
+            # dedicated mech_gap CLOSED check above still governs it.
+            if required_gap != MECHANISM_COMPLETENESS \
+                    and gap.status == ACCEPTED_RISK:
+                continue
             if gap.status != CLOSED:
                 return False, f"BLOCK: {required_gap} not yet closed (status: {gap.status})"
         return True, "Mechanism established — ready for LEVEL 2"
@@ -955,6 +1109,7 @@ def run_iteration(state: IdeaState, response: str) -> dict:
             content=response,
             quality=quality,
             iteration=state.iteration,
+            provenance=OWNER_STATED,   # Wave-1 RVR-3 / MG-5
         )
         if quality >= REASONED and (state.known_problem is None or quality > state.known_problem.quality):  # RISK-002
             state.known_problem = evidence

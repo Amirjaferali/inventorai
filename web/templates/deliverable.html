@@ -82,6 +82,14 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   <div>
     <div class="field-label">{{ t('UI_B_DELIV_010A') }} <span style="font-weight:normal">{{ t('UI_B_DELIV_010B') }}</span></div>
     <div class="field-value">{{ t('UI_B_DELIV_011') if package["_session_meta"].get("derived_verified_ready", False) else t('UI_B_DELIV_012') }}</div>
+    {# RVR-5 (Wave-1): truthful withdrawn-history visibility - the aggregate
+       the assembler already carries (PVCG-R4-C S15), now rendered. #}
+    {% set _wsr = package["_session_meta"].get("withdrawn_source_records") %}
+    {% if _wsr and _wsr.total %}
+    <div class="field-label">{{ t('UI_RVR5_WITHDRAWN_LABEL') }}</div>
+    <div class="field-value">{{ _wsr.total }}</div>
+    {% if _wsr.note %}<div class="ss-meta">{{ _wsr.note }}</div>{% endif %}
+    {% endif %}
   </div>
 </div>
 

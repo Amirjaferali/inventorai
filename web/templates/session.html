@@ -351,6 +351,28 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
   <button type="submit">{{ t('UI_B_SESSION_034') }}</button>
 </form>
 
+{# RVR-1 (Wave-1): explicit accept-as-known-risk exit. Rendered only for the
+   currently served non-mechanism gap; requires an explicit confirmation and
+   the same server answer token; truthful copy - accepted is not resolved. #}
+{% if gap_type and gap_type != 'MECHANISM_COMPLETENESS' %}
+<details class="accept-risk" style="margin-top:14px;border:1px solid #e8d9c0;border-radius:4px;background:#fdf9f2;padding:10px 14px">
+  <summary style="cursor:pointer;font-size:13px;color:#8a6d3b;font-weight:bold">{{ t('UI_RVR1_RISK_HEADING') }}</summary>
+  <p style="font-size:13px;color:#555;margin:10px 0 8px 0">{{ t('UI_RVR1_RISK_EXPLAIN') }}</p>
+  <form method="POST" action="/session/{{ sid }}/accept-risk">
+    <input type="hidden" name="answer_token" value="{{ answer_token }}">
+    <input type="hidden" name="gap_type" value="{{ gap_type }}">
+    <label style="display:block;font-size:13px;color:#555;margin-bottom:8px">
+      <input type="checkbox" name="risk_confirm" value="yes" required>
+      {{ t('UI_RVR1_RISK_CONFIRM') }}
+    </label>
+    <label for="risk-reason" style="display:block;font-size:12px;color:#888;margin-bottom:4px">{{ t('UI_RVR1_RISK_REASON') }}</label>
+    <textarea id="risk-reason" name="reason" rows="2" style="width:100%;box-sizing:border-box"></textarea>
+    <br>
+    <button type="submit" style="margin-top:8px">{{ t('UI_RVR1_RISK_BUTTON') }}</button>
+  </form>
+</details>
+{% endif %}
+
 {% else %}
 
 <hr>
@@ -431,7 +453,38 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
 {% endif %}
 {% endif %}
 
+
 <p><a href="/">{{ t('UI_B_SESSION_038') }}</a></p>
+{% endif %}
+
+
+{# RVR-5 (Wave-1, T1-B / OD-PDVG-02(a)): rendered reachability for the
+   EXISTING governed correction route. Display + form only - the route body,
+   replay, supersession, token and idempotency semantics are byte-unchanged
+   (PVCG-R4-C). Truthful copy: a correction preserves the prior answer as
+   withdrawn history and re-computes everything; nothing is erased. #}
+{# Suppressed on a cold-loaded read-only view (committed marker: state.domain
+   is None) - P10-PC1's dead-form suppression applies to this form too; the
+   affordance appears only on a live (or explicitly resumed) session. #}
+{% set active_answers = state.assertions | default([]) | selectattr('disposition', 'equalto', 'answered') | selectattr('superseded_by', 'none') | list %}
+{% if active_answers and state.domain %}
+<details class="correct-answer" style="margin-top:14px;border:1px solid #c9d6e8;border-radius:4px;background:#f4f8fd;padding:10px 14px">
+  <summary style="cursor:pointer;font-size:13px;color:#2c5a8c;font-weight:bold">{{ t('UI_RVR5_CORRECT_HEADING') }}</summary>
+  <p style="font-size:13px;color:#555;margin:10px 0 8px 0">{{ t('UI_RVR5_CORRECT_EXPLAIN') }}</p>
+  <form method="POST" action="/session/{{ sid }}/correct">
+    <input type="hidden" name="answer_token" value="{{ answer_token }}">
+    <label for="correct-target" style="display:block;font-size:12px;color:#888;margin-bottom:4px">{{ t('UI_RVR5_CORRECT_SELECT') }}</label>
+    <select id="correct-target" name="supersedes_record_id" required style="max-width:100%;margin-bottom:8px">
+      {% for rec in active_answers %}
+      <option value="{{ rec.record_id }}">{{ rec.record_id }} · {{ rec.gap_context | gap_display }} · {{ rec.content[:70] }}{% if rec.content|length > 70 %}…{% endif %}</option>
+      {% endfor %}
+    </select>
+    <label for="correct-response" style="display:block;font-size:12px;color:#888;margin-bottom:4px">{{ t('UI_RVR5_CORRECT_NEW') }}</label>
+    <textarea id="correct-response" name="response" rows="3" required style="width:100%;box-sizing:border-box"></textarea>
+    <br>
+    <button type="submit" style="margin-top:8px">{{ t('UI_RVR5_CORRECT_BUTTON') }}</button>
+  </form>
+</details>
 {% endif %}
 
 {% endblock %}

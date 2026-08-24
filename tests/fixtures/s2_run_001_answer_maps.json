@@ -1,0 +1,202 @@
+{
+ "seeds": {
+  "E-1|en": "bicycle automatic brake light — the inventor wants automatic brake indication without relying on manually pressing a light control",
+  "M-1|en": "a manually foldable wheelchair ramp for a home doorway — the inventor wants the ramp to stay reliably locked in the flat, load-bearing position and to fold away without tools",
+  "E-1|ar": "ضوء فرامل أوتوماتيكي للدراجة الهوائية — يريد المخترع إشارة فرملة تلقائية دون الاعتماد على الضغط اليدوي على مفتاح الضوء",
+  "M-1|ar": "منحدر متنقل قابل للطي يدويًا لمدخل باب منزل — يريد المخترع أن يبقى المنحدر مثبتًا بشكل موثوق في الوضع الأفقي الحامل للوزن وأن يُطوى بعيدًا دون أدوات"
+ },
+ "answers": {
+  "E-1|novice|en": {
+   "MECHANISM_COMPLETENESS": [
+    "When I brake, the light at the back should come on by itself, without me pressing anything. I am considering three ways it could notice the braking: a small switch connected to the brake lever, a part that feels the bike slowing down, or something that watches how fast the wheel is turning. When it notices braking, it turns the light on.",
+    "The main parts are: something that notices the braking (the lever switch, or the part that feels slowing, or the wheel watcher), and the brake light itself that comes on. I would rather not have a wire going to the brake lever if I can avoid it.",
+    "Step by step: I squeeze the brakes, the detector notices it, and the light comes on so people behind me know I am slowing. I honestly do not know more of the inner details yet."
+   ],
+   "PHYSICAL_FEASIBILITY": [
+    "Rough roads worry me: shaking and bumps might make the light come on when I am not actually braking. I do not know how many false flashes would be acceptable.",
+    "I have not tested anything or measured anything yet, so I cannot say how reliable it will be over time."
+   ],
+   "BOUNDARY_AMBIGUITY": [
+    "It should only show that I am braking. It does not do the braking itself, and it is not a normal always-on rear light.",
+    "It should definitely react when I squeeze the brakes, and it should definitely stay quiet when I am just riding on a bumpy road without braking."
+   ],
+   "PROBLEM_MECHANISM_FIT": [
+    "The problem is that people behind me cannot tell I am slowing unless I press something. Noticing the braking and lighting the light directly addresses that; but the shaking could trick it, and I do not know what level of false alarms would be acceptable."
+   ],
+   "ASSUMPTION_INVENTORY": [
+    "I am assuming the braking can be noticed reliably even on rough roads. I have not checked that. I also assume a light coming on is enough warning for people behind me."
+   ],
+   "EXPERTISE_GAP_AWARENESS": [
+    "I would need help from someone who knows electronics to pick between the lever switch, the slowing sensor, and the wheel-speed idea, and to test the false alarms. I cannot do that myself."
+   ]
+  },
+  "E-1|expert|en": {
+   "MECHANISM_COMPLETENESS": [
+    "The decision is the braking-detection architecture. Candidate detection paths: (1) a wired brake-lever switch, (2) accelerometer-based inference of deceleration, (3) wheel-speed-based inference. On detected braking the brake light is driven on. Which detection path to adopt is exactly the unresolved decision.",
+    "Components: a detection stage (one of the three candidates) and the indicator lamp it drives. Installation constraint: avoid or minimize a physical wire run to the brake lever, which weighs against candidate (1).",
+    "No calibration data or physical test results exist yet, and the acceptable false-positive rate under vibration is unspecified; those are missing evidence, not assumptions I can fill."
+   ],
+   "PHYSICAL_FEASIBILITY": [
+    "Primary feasibility risk: rough-road vibration producing false braking indications for the inference-based candidates. The acceptable false-positive rate is unknown and no calibration or test evidence exists.",
+    "No environmental or endurance data is available for any candidate; I am recording that as missing evidence rather than assuming it."
+   ],
+   "BOUNDARY_AMBIGUITY": [
+    "In scope: automatic brake indication. Out of scope: actuating the brakes, steady running lights, and anything beyond signaling deceleration. The nearest existing approach is the wired brake-lever switch, which is also candidate (1).",
+    "Must react: actual brake application. Must not react: vibration transients from the road surface without braking."
+   ],
+   "PROBLEM_MECHANISM_FIT": [
+    "The stated problem is automatic brake indication without manual control input. All three candidates address it; the discriminating factors are the wiring constraint and false-positive behavior under vibration, for which no data exists yet."
+   ],
+   "ASSUMPTION_INVENTORY": [
+    "Working assumptions: braking is detectable with acceptable false positives despite vibration (unvalidated - no measured false-positive tolerance exists), and lever-switch wiring is undesirable per the installation constraint. No component values or thresholds are specified anywhere in the case."
+   ],
+   "EXPERTISE_GAP_AWARENESS": [
+    "This needs electronics and instrumentation expertise to characterize the accelerometer and wheel-speed candidates under vibration and to define an acceptable false-positive rate. That verification exceeds what can be concluded from the stated case."
+   ]
+  },
+  "M-1|novice|en": {
+   "MECHANISM_COMPLETENESS": [
+    "The ramp folds up and down by hand. When it is down flat, it must stay firmly held so a wheelchair can roll over it. I am considering three ways to hold it: a toggle latch that snaps over its center, a spring pin that clicks into place, or a small gate piece that drops into place by its own weight.",
+    "The moving parts are the ramp itself folding at the doorway, and the holder piece that keeps it flat. I do not want to drill into or permanently change the doorway.",
+    "Steps: unfold the ramp flat, the holder locks it, the wheelchair rolls over it; later I release the holder and fold the ramp away, all without tools. I do not know more of the inner detail than that."
+   ],
+   "PHYSICAL_FEASIBILITY": [
+    "It relies on the holder keeping the ramp flat under the weight of a wheelchair. I do not know how much weight or what safety margin is needed - that has not been worked out or tested.",
+    "Outdoor damp and grit might wear out or jam the holder over time. I have no test results."
+   ],
+   "BOUNDARY_AMBIGUITY": [
+    "It does not attach permanently to the doorway or frame, and it does not move by itself - it is folded by hand. It only holds the ramp in position; it does not lift anyone by itself.",
+    "A similar existing thing would be the snap-over toggle latch, like on some cases and gates."
+   ],
+   "PROBLEM_MECHANISM_FIT": [
+    "The problem is the ramp must stay reliably flat under load and fold away without tools. Each of the three holders tries to do exactly that; which one copes best with damp and grit is unknown."
+   ],
+   "ASSUMPTION_INVENTORY": [
+    "I am assuming a simple holder can keep the loaded ramp safe - that is untested. I am also assuming it can work without permanently changing the doorway."
+   ],
+   "EXPERTISE_GAP_AWARENESS": [
+    "I would need someone who knows mechanics to judge the load the holder must carry and to test it with moisture and grit. I cannot verify that myself."
+   ]
+  },
+  "M-1|expert|en": {
+   "MECHANISM_COMPLETENESS": [
+    "The decision is the folded-position retention architecture. Candidates: (1) over-centre toggle latch, (2) spring-loaded detent pin, (3) gravity-drop gate latch. The mechanism must retain the ramp in the flat, load-bearing position and release for tool-less folding.",
+    "Force path: wheelchair load through the deployed ramp into the retention mechanism at the hinge line; manual actuation for fold and unfold; no permanent modification to the doorway or frame is permitted.",
+    "No load rating, retention margin, or physical test evidence exists; those are missing evidence, not assumptions I can fill."
+   ],
+   "PHYSICAL_FEASIBILITY": [
+    "Candidate (1) relies on over-centre geometry, (2) on spring preload in a detent, (3) on gravity engagement. Operating constraints: outdoor moisture and grit degrading the latch over time; the acceptable load and retention margin are unknown.",
+    "No material selection or force data exists in the case; I am recording that as missing evidence."
+   ],
+   "BOUNDARY_AMBIGUITY": [
+    "Out of scope: powered actuation, permanent doorway attachment, and structural load-bearing beyond retaining the folded and deployed positions. The mechanism retains position; it is not the structural ramp itself. The nearest existing approach is the over-centre toggle latch, candidate (1).",
+    "Must hold: the flat, load-bearing position under wheelchair load. Must release: on deliberate manual actuation, without tools."
+   ],
+   "PROBLEM_MECHANISM_FIT": [
+    "The stated requirement is reliable flat-position retention with tool-less folding. All three candidates address retention; environmental degradation from moisture and grit and the unquantified retention margin are the open discriminators."
+   ],
+   "ASSUMPTION_INVENTORY": [
+    "Assumptions: a mechanical latch can meet the retention requirement, whose magnitude is unquantified; detent spring preload or over-centre geometry remains effective despite grit ingress - unvalidated; no load rating exists."
+   ],
+   "EXPERTISE_GAP_AWARENESS": [
+    "This requires mechanical engineering input to size the retention load, define the safety margin, and assess moisture and grit degradation - none of which can be concluded from the stated case."
+   ]
+  },
+  "E-1|novice|ar": {
+   "MECHANISM_COMPLETENESS": [
+    "عندما أستخدم الفرامل، يجب أن يضيء الضوء الخلفي من تلقاء نفسه دون أن أضغط على أي شيء. أفكر في ثلاث طرق ليكتشف الفرملة: مفتاح صغير موصول بذراع الفرامل، أو قطعة تشعر بتباطؤ الدراجة، أو شيء يراقب سرعة دوران العجلة. وعندما يكتشف الفرملة يُشعل الضوء.",
+    "الأجزاء الرئيسية هي: شيء يكتشف الفرملة (مفتاح الذراع، أو قطعة الإحساس بالتباطؤ، أو مراقب العجلة)، والضوء الخلفي نفسه الذي يضيء. وأفضل ألا يكون هناك سلك ممتد إلى ذراع الفرامل إن أمكن.",
+    "خطوة بخطوة: أضغط على الفرامل، فيكتشف الجهاز ذلك، فيضيء الضوء ليعرف من خلفي أنني أتباطأ. بصراحة لا أعرف تفاصيل داخلية أكثر من ذلك بعد."
+   ],
+   "PHYSICAL_FEASIBILITY": [
+    "الطرق الوعرة تقلقني: الاهتزاز والمطبات قد تجعل الضوء يضيء وأنا لا أستخدم الفرامل فعلًا. ولا أعرف كم عدد الإضاءات الخاطئة المقبول.",
+    "لم أختبر أو أقس أي شيء بعد، لذلك لا أستطيع القول كم سيكون موثوقًا مع مرور الوقت."
+   ],
+   "BOUNDARY_AMBIGUITY": [
+    "يجب أن يُظهر فقط أنني أستخدم الفرامل. هو لا يقوم بالفرملة نفسها، وليس ضوءًا خلفيًا عاديًا يعمل دائمًا.",
+    "يجب أن يتفاعل حتمًا عندما أضغط على الفرامل، ويجب أن يبقى صامتًا حتمًا عندما أقود على طريق وعر دون فرملة."
+   ],
+   "PROBLEM_MECHANISM_FIT": [
+    "المشكلة أن من خلفي لا يستطيعون معرفة أنني أتباطأ إلا إذا ضغطت على شيء. اكتشاف الفرملة وإضاءة الضوء يعالج ذلك مباشرة؛ لكن الاهتزاز قد يخدعه، ولا أعرف مستوى الإنذارات الخاطئة المقبول."
+   ],
+   "ASSUMPTION_INVENTORY": [
+    "أفترض أن الفرملة يمكن اكتشافها بموثوقية حتى على الطرق الوعرة، ولم أتحقق من ذلك. وأفترض أيضًا أن إضاءة الضوء كافية لتحذير من خلفي."
+   ],
+   "EXPERTISE_GAP_AWARENESS": [
+    "سأحتاج مساعدة من شخص يفهم الإلكترونيات للاختيار بين مفتاح الذراع وحساس التباطؤ وفكرة سرعة العجلة، ولاختبار الإنذارات الخاطئة. لا أستطيع فعل ذلك بنفسي."
+   ]
+  },
+  "E-1|expert|ar": {
+   "MECHANISM_COMPLETENESS": [
+    "القرار هو معمارية اكتشاف الفرملة. مسارات الاكتشاف المرشحة: (1) مفتاح سلكي على ذراع الفرامل، (2) استدلال بالتسارع عبر مقياس تسارع، (3) استدلال عبر سرعة العجلة. عند اكتشاف الفرملة يُشغَّل ضوء الفرامل. اختيار مسار الاكتشاف هو بالضبط القرار غير المحسوم.",
+    "المكوّنات: مرحلة اكتشاف (أحد المرشحين الثلاثة) والمصباح الذي تقوده. قيد التركيب: تجنب أو تقليل تمديد سلك إلى ذراع الفرامل، وهو ما يُضعف المرشح (1).",
+    "لا توجد بيانات معايرة ولا نتائج اختبار فيزيائي بعد، ومعدل الإنذارات الخاطئة المقبول تحت الاهتزاز غير محدد؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها."
+   ],
+   "PHYSICAL_FEASIBILITY": [
+    "الخطر الرئيسي للجدوى: اهتزاز الطرق الوعرة المنتج لإشارات فرملة خاطئة في المرشحين الاستدلاليين. معدل الإنذارات الخاطئة المقبول غير معروف ولا يوجد دليل معايرة أو اختبار.",
+    "لا تتوفر بيانات بيئية أو بيانات تحمل لأي مرشح؛ أسجل ذلك كدليل ناقص لا كافتراض."
+   ],
+   "BOUNDARY_AMBIGUITY": [
+    "ضمن النطاق: إشارة الفرملة التلقائية. خارج النطاق: تشغيل الفرامل نفسها، والأضواء الدائمة، وأي شيء يتجاوز إشارة التباطؤ. أقرب نهج موجود هو مفتاح ذراع الفرامل السلكي، وهو أيضًا المرشح (1).",
+    "يجب أن يتفاعل مع: الضغط الفعلي على الفرامل. ويجب ألا يتفاعل مع: عوارض الاهتزاز من سطح الطريق دون فرملة."
+   ],
+   "PROBLEM_MECHANISM_FIT": [
+    "المشكلة المعلنة هي إشارة فرملة تلقائية دون إدخال يدوي. المرشحون الثلاثة يعالجونها؛ عاملا التمييز هما قيد التمديد السلكي وسلوك الإنذارات الخاطئة تحت الاهتزاز، ولا توجد بيانات لهما بعد."
+   ],
+   "ASSUMPTION_INVENTORY": [
+    "افتراضات العمل: الفرملة قابلة للاكتشاف بإنذارات خاطئة مقبولة رغم الاهتزاز (غير مُتحقق منه — لا يوجد حد مقاس للإنذارات الخاطئة)، وتمديد سلك الذراع غير مرغوب وفق قيد التركيب. لا توجد قيم مكونات أو عتبات محددة في الحالة."
+   ],
+   "EXPERTISE_GAP_AWARENESS": [
+    "يلزم خبرة إلكترونيات وقياس لتوصيف مرشحي مقياس التسارع وسرعة العجلة تحت الاهتزاز ولتحديد معدل إنذارات خاطئة مقبول. هذا التحقق يتجاوز ما يمكن استنتاجه من الحالة المعلنة."
+   ]
+  },
+  "M-1|novice|ar": {
+   "MECHANISM_COMPLETENESS": [
+    "المنحدر يُطوى ويُفرد باليد. عندما يكون مفرودًا بشكل مسطح يجب أن يبقى مثبتًا بإحكام ليعبر عليه كرسي متحرك. أفكر في ثلاث طرق لتثبيته: مزلاج قلاب ينقفل بعد تجاوز مركزه، أو دبوس بنابض يستقر في مكانه بنقرة، أو قطعة بوابة صغيرة تسقط في مكانها بوزنها.",
+    "الأجزاء المتحركة هي المنحدر نفسه الذي يُطوى عند المدخل، وقطعة التثبيت التي تُبقيه مسطحًا. لا أريد الحفر في إطار الباب أو تغييره بشكل دائم.",
+    "الخطوات: أفرد المنحدر مسطحًا، فيُقفل المثبت، فيعبر الكرسي المتحرك؛ ولاحقًا أحرر المثبت وأطوي المنحدر بعيدًا، كل ذلك دون أدوات. لا أعرف تفاصيل داخلية أكثر من ذلك."
+   ],
+   "PHYSICAL_FEASIBILITY": [
+    "يعتمد على أن يُبقي المثبت المنحدر مسطحًا تحت وزن كرسي متحرك. لا أعرف كم الوزن ولا هامش الأمان المطلوب — لم يُحسب ذلك ولم يُختبر.",
+    "الرطوبة والأتربة في الخارج قد تُتلف المثبت أو تعلّقه مع الوقت. لا أملك نتائج اختبار."
+   ],
+   "BOUNDARY_AMBIGUITY": [
+    "لا يثبَّت بشكل دائم في الباب أو الإطار، ولا يتحرك من تلقاء نفسه — يُطوى باليد. هو فقط يثبت وضعية المنحدر؛ لا يرفع أحدًا بنفسه.",
+    "الشيء المشابه الموجود هو المزلاج القلاب الذي ينقفل بعد تجاوز مركزه، كما في بعض الصناديق والبوابات."
+   ],
+   "PROBLEM_MECHANISM_FIT": [
+    "المشكلة أن المنحدر يجب أن يبقى مسطحًا بموثوقية تحت الحمل وأن يُطوى دون أدوات. كل واحد من المثبتات الثلاثة يحاول ذلك تمامًا؛ وأيها يتحمل الرطوبة والأتربة أفضل غير معروف."
+   ],
+   "ASSUMPTION_INVENTORY": [
+    "أفترض أن مثبتًا بسيطًا يكفي لإبقاء المنحدر المحمّل آمنًا — وهذا غير مختبر. وأفترض أيضًا أنه يمكن أن يعمل دون تغيير دائم في المدخل."
+   ],
+   "EXPERTISE_GAP_AWARENESS": [
+    "سأحتاج شخصًا يفهم الميكانيكا لتقدير الحمل الذي يجب أن يتحمله المثبت ولاختباره مع الرطوبة والأتربة. لا أستطيع التحقق من ذلك بنفسي."
+   ]
+  },
+  "M-1|expert|ar": {
+   "MECHANISM_COMPLETENESS": [
+    "القرار هو معمارية تثبيت الوضع المطوي. المرشحون: (1) مزلاج قلاب متجاوز للمركز، (2) دبوس تعشيق بنابض، (3) مزلاج بوابة يسقط بالجاذبية. يجب أن تثبت الآلية المنحدر في الوضع الأفقي الحامل للوزن وأن تتحرر للطي دون أدوات.",
+    "مسار القوة: حمل الكرسي المتحرك عبر المنحدر المفرود إلى آلية التثبيت عند خط المفصلة؛ تشغيل يدوي للطي والفرد؛ ولا يُسمح بتعديل دائم للباب أو الإطار.",
+    "لا يوجد تقدير حمل ولا هامش تثبيت ولا دليل اختبار فيزيائي؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها."
+   ],
+   "PHYSICAL_FEASIBILITY": [
+    "يعتمد المرشح (1) على هندسة تجاوز المركز، و(2) على شد نابض في تعشيقة، و(3) على التعشيق بالجاذبية. قيود التشغيل: رطوبة وأتربة خارجية تُضعف المزلاج مع الوقت؛ والحمل المقبول وهامش التثبيت غير معروفين.",
+    "لا يوجد اختيار مواد ولا بيانات قوى في الحالة؛ أسجل ذلك كدليل ناقص."
+   ],
+   "BOUNDARY_AMBIGUITY": [
+    "خارج النطاق: التشغيل الآلي، والتثبيت الدائم في المدخل، وتحمل الأحمال الإنشائية بما يتجاوز تثبيت الوضعين المطوي والمفرود. الآلية تثبت الوضعية؛ وهي ليست المنحدر الإنشائي نفسه. أقرب نهج موجود هو المزلاج القلاب متجاوز المركز، المرشح (1).",
+    "يجب أن تثبت: الوضع الأفقي الحامل للوزن تحت حمل الكرسي. ويجب أن تتحرر: عند تشغيل يدوي مقصود، دون أدوات."
+   ],
+   "PROBLEM_MECHANISM_FIT": [
+    "المتطلب المعلن هو تثبيت موثوق للوضع الأفقي مع طي دون أدوات. المرشحون الثلاثة يعالجون التثبيت؛ والتدهور البيئي من الرطوبة والأتربة وهامش التثبيت غير المقدَّر هما عاملا التمييز المفتوحان."
+   ],
+   "ASSUMPTION_INVENTORY": [
+    "الافتراضات: مزلاج ميكانيكي يمكنه تلبية متطلب التثبيت غير المقدَّر كمّيًا؛ وبقاء شد النابض أو هندسة تجاوز المركز فعالة رغم دخول الأتربة — غير مُتحقق منه؛ ولا يوجد تقدير حمل."
+   ],
+   "EXPERTISE_GAP_AWARENESS": [
+    "يلزم مدخل هندسة ميكانيكية لتقدير حمل التثبيت وتحديد هامش الأمان وتقييم تدهور الرطوبة والأتربة — ولا يمكن استنتاج أي منها من الحالة المعلنة."
+   ]
+  }
+ }
+}

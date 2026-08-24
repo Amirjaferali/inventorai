@@ -122,9 +122,21 @@ _APPROVED_SUBSTANCE_SIGNALS = [
 # normal answer path.
 #   pre-R4-I     progression_loop.py =
 #       3cbd76849c0f572191a552db1a41a8cd418d02fac1d59d9b8804c72883239a55
+# Wave-1 remediation pin reconciliation (WAVE_1_REMEDIATION_IMPLEMENTATION_
+# CONTRACTS.md, Owner-authorized RVR-1/RVR-2/RVR-3; same §13.2a mechanism as
+# the R3-I and R4-I reconciliations above). The Wave-1 contract moves this
+# pinned file in three disclosed, bounded steps: RVR-1 adds the canonical
+# `accept_gap_risk` lifecycle writer and the ACCEPTED_RISK completion
+# semantics; RVR-2 bounds the exhausted-question reframe; RVR-3 adds the
+# deterministic Layer-3 structured-substance REASONED path. Question identity,
+# gap priority, the six governed gap types, Arabic branches, and the ordinary
+# forward-only journey are untouched; the pin below records the digest at the
+# latest completed Wave-1 step.
+#   pre-Wave-1   progression_loop.py =
+#       c268cd6380129170da19f3ba03158eebd9a5480711b43e39280e8ce9e74f63f8
 _FROZEN_ENGINE_SHA256 = {
     "engine/domain_rules.py": "0e47326ad92a6e5b0a63eb06db9e3ad96ae72c9aaf64471dd21621265b1db1ab",
-    "engine/progression_loop.py": "c268cd6380129170da19f3ba03158eebd9a5480711b43e39280e8ce9e74f63f8",
+    "engine/progression_loop.py": "d53e1a75afe0082ce5acdc7c0208a3f675ababde017da3ef652bdb4827dc2cc6",
 }
 # Other-pack byte freeze (unchanged lineage from I1/I2). L2SC-01 reconciliation
 # (disclosed; electronics_electrical re-frozen, see I1's own comment).
