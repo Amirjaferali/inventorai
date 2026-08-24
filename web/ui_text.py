@@ -742,6 +742,29 @@ UI_STRINGS = {
     "UI_RVR1_RISK_BUTTON": {
         "en": "Accept as known risk",
         "ar": "قبول كمخاطرة معروفة"},
+    # RVR-5 (Wave-1): rendered correction affordance over the existing route.
+    "UI_RVR5_CORRECT_HEADING": {
+        "en": "Correct an earlier answer",
+        "ar": "تصحيح إجابة سابقة"},
+    "UI_RVR5_CORRECT_EXPLAIN": {
+        "en": ("Correcting an answer keeps the original in your project "
+               "history as a withdrawn record - nothing is erased - and "
+               "everything shown is deterministically recomputed from your "
+               "remaining answers."),
+        "ar": ("تصحيح إجابة يُبقي الأصل في سجل مشروعك كإجابة مسحوبة — لا يُمحى "
+               "شيء — ويُعاد حساب كل ما يُعرض بشكل حتمي من إجاباتك المتبقية.")},
+    "UI_RVR5_CORRECT_SELECT": {
+        "en": "Choose the answer to correct",
+        "ar": "اختر الإجابة المراد تصحيحها"},
+    "UI_RVR5_CORRECT_NEW": {
+        "en": "Your corrected answer",
+        "ar": "إجابتك المصحَّحة"},
+    "UI_RVR5_CORRECT_BUTTON": {
+        "en": "Withdraw and replace this answer",
+        "ar": "سحب هذه الإجابة واستبدالها"},
+    "UI_RVR5_WITHDRAWN_LABEL": {
+        "en": "Corrected (withdrawn) answers kept in history",
+        "ar": "إجابات مصحَّحة (مسحوبة) محفوظة في السجل"},
     "UI_B_SESSION_035": {
         "en": "You have worked through the key questions for your idea.",
         "ar": "لقد عملتَ على الأسئلة الأساسية لفكرتك.",
