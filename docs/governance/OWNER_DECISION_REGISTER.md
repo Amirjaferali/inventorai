@@ -1202,3 +1202,43 @@ counterpart (`contract_version` / `engine_contract_version` and `seed_idea_text`
 full deterministic re-evaluation; `CORRECTION_APPLIED_ACK` with `withdrawn_source_records`), so excusing
 them would understate what the instrument can legitimately judge. T1-A′'s **rule** is applied unchanged;
 its parenthetical **enumeration** is the only divergence, and it narrows what the extension excuses.
+
+## Wave-1 remediation — Owner decisions consumed (OD-R1, OD-R2, OD-PDVG-02 decided; OD-R3, OD-R5, OD-R4 accepted in principle, implementation Owner-gated)
+
+Recorded at the Wave-1 authoritative closure/synchronization gate. Chain of authority, each step
+separately verified from Git: the bounded S2 extension became **AUTHORITATIVE** at merge
+`e119d60450f40b1633433625ae6a011eec112b79` (PR #560); the **one** authorized S2 Path-N
+release-candidate run (`S2-PATHN-RUN-001`, 2026-08-23) was executed against that exact RC SHA and
+**no record achieved a full pass** (per-record core gate: R1 PARTIAL · R2–R4 FAIL · R5 PARTIAL ·
+R6–R8 FAIL; evidence-only commit `ebf243db83d880f75c2febc3d33d6a52a76ceab7`, preserved as
+`refs/evidence/s2run-ebf243db`, parent `e119d604…`, not on the branch); the Owner adjudicated
+`ACCEPT EVIDENCE — REMEDIATION REQUIRED`, froze the **Final Remediation Contract**
+(RVR-1…RVR-8), and authorized **Wave 1 only** (RVR-1, RVR-2, RVR-3, RVR-5), merged via **PR #561**,
+merge `93be682a34c1221f0af7f7018af9023a9b6c5b2c` (see
+`docs/governance/WAVE_1_REMEDIATION_FORMAL_CLOSURE_RECORD.md` and
+`docs/governance/WAVE_1_REMEDIATION_IMPLEMENTATION_CONTRACTS.md`).
+
+**Supersession of the S2-extension section above (stated, not hidden).** That section's
+"the other twelve — 02, 03, 04, 05, 06, 07, 08a, 08b, 09, 10, 12, 13 — remain REGISTERED AND
+UNDECIDED" enumeration is preserved as authority-at-that-time. Current authority is this section:
+**OD-PDVG-02 is now DECIDED — OPTION (a)** and consumed by Wave-1 (RVR-5/T1-B); the remaining
+**eleven** — OD-PDVG-03, 04 (partially promoted in principle only, below), 05, 06, 07, 08a, 08b,
+09, 10, 12, 13 — remain **REGISTERED AND UNDECIDED** as their own decisions. Likewise, the
+**OD-PDVG-01(a) one-run authorization is now EXERCISED AND CONSUMED** by `S2-PATHN-RUN-001`; a
+second S2 run requires separate Owner authorization (`SECOND S2 RUN AUTHORIZED: NO`), and a result
+authorizes nothing (S2 §0).
+
+| ID | Subject | Status | Phase/WS | Impl. authority | Evidence |
+|---|---|---|---|---|---|
+| OD-R1 | **Truthful unknown progression & completion semantics** — governed `risk_accepted` ledger disposition; `ACCEPTED_RISK` gap status via the sole writer `accept_gap_risk` (never MECHANISM_COMPLETENESS); completion semantics accept CLOSED-or-ACCEPTED_RISK for feasibility/boundary; explicit owner action, truthful labels, replay-stable, deliverable-visible (accepted ≠ resolved) | ACCEPTED — CONSUMED BY WAVE-1 (RVR-1 merged, PR #561) | Remediation / RVR-1 | NONE beyond the merged RVR-1 increment | WAVE_1_REMEDIATION_IMPLEMENTATION_CONTRACTS.md §RVR-1; WAVE_1_REMEDIATION_FORMAL_CLOSURE_RECORD.md §2 |
+| OD-R2 | **Deterministic structured-substance assessment** — Layer-3 STRUCTURED-TECHNICAL gate in `assess_response` + MG-5 `provenance=OWNER_STATED` Evidence stamping + T2-F ordering guard tests (the ordering REPAIR itself remains OD-PDVG-08b, not performed) | ACCEPTED — CONSUMED BY WAVE-1 (RVR-3 merged, PR #561) | Remediation / RVR-3 | NONE beyond the merged RVR-3 increment | WAVE_1_REMEDIATION_IMPLEMENTATION_CONTRACTS.md §RVR-3; WAVE_1_REMEDIATION_FORMAL_CLOSURE_RECORD.md §2 |
+| OD-PDVG-02 | **Rendered correction UX (T1-B)** — OPTION (a): render the correction affordance over the byte-unchanged PVCG-R4-C `/session/<sid>/correct` route; deliverable renders the withdrawn-history aggregate; R4-C semantics unchanged | DECIDED — OPTION (a); CONSUMED BY WAVE-1 (RVR-5 merged, PR #561) | PDVG-01 T1-B / RVR-5 | NONE beyond the merged RVR-5 increment | WAVE_1_REMEDIATION_IMPLEMENTATION_CONTRACTS.md §RVR-5; WAVE_1_REMEDIATION_FORMAL_CLOSURE_RECORD.md §2 |
+| OD-R3 | **RVR-4 — generalize the FDC-001 `DecisionRecord` (Architecture D)** as the sole decision-semantics owner, with a bounded lift of the DW-lane hold for exactly that composition | ACCEPTED IN PRINCIPLE — IMPLEMENTATION NOT AUTHORIZED (Wave 2+, separate Owner authorization) | Remediation / RVR-4 | NONE | Owner freeze-and-Wave-1 authorization (recorded in WAVE_1_REMEDIATION_FORMAL_CLOSURE_RECORD.md §7) |
+| OD-R5 | **RVR-6 — bounded adaptive interaction, Tier-1 STATE-ADAPTIVE only** (capabilities A–F; evidence-weighted reversible register calibration with deterministic hysteresis, W/M Owner-approvable; register-variant content gate; semantic-equivalence invariant; partial promotion of OD-PDVG-04(a) WS10 content authoring into Tier-1); Tier-2 meaning-adaptive questioning remains OD-PDVG-10, unchanged and unauthorized | ACCEPTED IN PRINCIPLE — IMPLEMENTATION NOT AUTHORIZED (Wave 2+, separate Owner authorization) | Remediation / RVR-6 | NONE | Owner freeze-and-Wave-1 authorization (recorded in WAVE_1_REMEDIATION_FORMAL_CLOSURE_RECORD.md §7) |
+| OD-R4 | **RVR-7 — substantive Arabic parity program** (after content stabilizes; W1-N2/W1-N3 are mandatory inputs) | ACCEPTED IN PRINCIPLE — IMPLEMENTATION NOT AUTHORIZED (Wave 3, separate Owner authorization) | Remediation / RVR-7 | NONE | Owner freeze-and-Wave-1 authorization (recorded in WAVE_1_REMEDIATION_FORMAL_CLOSURE_RECORD.md §7) |
+
+**Boundaries carried.** `WAVE-2 AUTHORIZED: NO`; RVR-4 / RVR-6 / RVR-7 / RVR-8 each require their own
+future Owner authorization (RVR-8's verification-run authorization is entirely future); the intended
+sequence `RVR-4 ∥ RVR-6a → RVR-6b → RVR-7 → RVR-8` is planning direction only. `T1-A′ CLOSED: NO`;
+`MLC DEFINITION FROZEN: NO`; the five Wave-1 follow-ups (W1-S2, W1-N1, W1-N2, W1-N3, W1-N4) are
+recorded, owned, and NOT implemented (closure record §4). Accepting these rows activates nothing.
