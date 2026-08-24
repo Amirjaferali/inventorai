@@ -988,6 +988,24 @@ def accept_gap_risk(state: IdeaState, gap_type: str) -> None:
     gap.status = ACCEPTED_RISK
 
 
+def advance_after_disposition(state: IdeaState):
+    """RVR-1 (Wave-1) — canonical progression continuation after an explicit
+    gap disposition (accept_gap_risk).
+
+    Opens the next priority gap through the existing cascade; when no gap
+    remains to open or serve, the canonical iteration step runs with EMPTY
+    input (nothing is assessed, no evidence is created) so the SAME
+    evaluate_transition/stage logic every answered iteration uses decides
+    whether maturity advances and the next stage's gaps open. Deterministic;
+    used identically by the live accept-risk route and the reconstruction
+    replay, so live and replayed states stay byte-equivalent.
+    """
+    opened = _open_next_gap_if_needed(state)
+    if opened is None and select_next_gap(state) is None:
+        return run_iteration(state, "")
+    return None
+
+
 # ─────────────────────────────────────────────
 # 4. Evaluate maturity transition
 # ─────────────────────────────────────────────

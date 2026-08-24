@@ -274,7 +274,7 @@ def _reconstruct(store, project_id: str):
         elif record.disposition == DISPOSITION_RISK_ACCEPTED:
             try:
                 progression_loop.accept_gap_risk(state, record.gap_context)
-                progression_loop._open_next_gap_if_needed(state)
+                progression_loop.advance_after_disposition(state)
             except ValueError:
                 pass
 

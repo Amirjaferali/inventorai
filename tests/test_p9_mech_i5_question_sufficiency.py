@@ -119,7 +119,7 @@ _PROV_PATH = os.path.join(_DOMAINS, "domain_provenance.json")
 #       c268cd6380129170da19f3ba03158eebd9a5480711b43e39280e8ce9e74f63f8
 _FROZEN_ENGINE_SHA256 = {
     "engine/domain_rules.py": "0e47326ad92a6e5b0a63eb06db9e3ad96ae72c9aaf64471dd21621265b1db1ab",
-    "engine/progression_loop.py": "b6cf9819ca54677d76bdf9facf47710a9d96f2e8f9a5c3a3120126b971cfcf72",
+    "engine/progression_loop.py": "d53e1a75afe0082ce5acdc7c0208a3f675ababde017da3ef652bdb4827dc2cc6",
     # D-GMPR-D3-PN reconciliation #2 (disclosed; DGMPR_D3_PATH_N_DOMAIN_NEUTRAL_
     # SERVICE_CONTRACT.md §5): the seam hash is re-frozen at the remediated
     # domain-neutral seam. domain_rules/progression_loop hashes are UNCHANGED.

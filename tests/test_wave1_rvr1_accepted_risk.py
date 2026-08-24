@@ -249,6 +249,35 @@ def test_route_refuses_mechanism_gap(client):
         "answer_token": _token(c, sid)})
     assert state.get_gap(MECHANISM_COMPLETENESS).status in (OPEN, PARTIAL)
 
+def test_disposition_completing_stage2_advances_maturity_and_replays(client):
+    """When explicit dispositions satisfy the last stage-2 gap, the canonical
+    continuation advances maturity/stage exactly as an answered iteration
+    would - live and in replay, identically."""
+    c, appmod = client
+    sid = _start(c)
+    state = appmod.SESSION_STORE[sid]["state"]
+    _answer_until(c, appmod, sid, MECHANISM_COMPLETENESS)
+    assert state.get_gap(MECHANISM_COMPLETENESS).status == CLOSED
+    for gap in (PHYSICAL_FEASIBILITY, BOUNDARY_AMBIGUITY):
+        assert select_next_gap(state) == gap
+        c.post(f"/session/{sid}/accept-risk", data={
+            "gap_type": gap, "risk_confirm": "yes",
+            "answer_token": _token(c, sid)})
+        assert state.get_gap(gap).status == ACCEPTED_RISK
+    # the continuation ran: maturity advanced and Stage 3 opened
+    assert state.maturity_level == 2
+    assert state.current_stage == 3
+    assert select_next_gap(state) is not None  # a stage-3 gap is being served
+    # replay equivalence: the reconstructed state matches the live one
+    from web.app import _get_store
+    from engine.session_reconstruction import reconstruct_readonly_state
+    recon = reconstruct_readonly_state(_get_store(), sid)
+    assert recon.review.level == 1
+    assert recon.state.maturity_level == state.maturity_level
+    assert recon.state.current_stage == state.current_stage
+    assert {g.gap_type: g.status for g in recon.state.gaps} ==            {g.gap_type: g.status for g in state.gaps}
+
+
 def test_histories_without_risk_records_replay_identically(client):
     c, appmod = client
     sid = _start(c)

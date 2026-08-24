@@ -29,7 +29,7 @@ from engine.progression_loop import (
     run_iteration, select_next_gap, get_question, get_display_question,
     # RVR-1 (Wave-1): the canonical accepted-risk lifecycle writer and the
     # existing next-gap cascade, invoked ONLY by the explicit accept-risk route.
-    accept_gap_risk, _open_next_gap_if_needed,
+    accept_gap_risk, advance_after_disposition,
 )
 from engine.idea_state import (
     DISPOSITION_RISK_ACCEPTED, MECHANISM_COMPLETENESS as _MECH_GAP,
@@ -2897,7 +2897,7 @@ def accept_risk(sid):
         # is unchanged, and no acceptance is acknowledged.
         entry["_answer_error"] = RISK_NOT_ACCEPTED_MESSAGE
         return redirect(url_for("show_session", sid=sid))
-    _open_next_gap_if_needed(state)
+    advance_after_disposition(state)
     entry.pop("answer_token", None)
     entry["_interaction_ack"] = RISK_ACCEPTED_ACK
     return redirect(url_for("show_session", sid=sid))
