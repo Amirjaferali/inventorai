@@ -41,8 +41,81 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — OWNER DECISION ACTIVATION / BOUNDED S2 EXTENSION GATE; governance-only
-contract candidate).** Base: `a9b9d53cb15165ec9ed0b35962577449750ff663` — re-verified this gate as the
+**Status (current — WAVE-1 REMEDIATION AUTHORITATIVE CLOSURE / SYNCHRONIZATION; governance-only
+closure candidate).** Base: **`93be682a34c1221f0af7f7018af9023a9b6c5b2c`** — re-verified this gate as
+the **live authoritative tip** of `feature/atomic-json-session-persistence` (**0 commits after it**;
+**PR #561** — the Wave-1 remediation merge; first parent
+`e119d60450f40b1633433625ae6a011eec112b79` (PR #560, the authoritative S2 extension), second parent
+`cd7ed9451ec33886e1e032c9ae6c2016be80949b` — the exact Owner-accepted Wave-1 candidate; merge tree
+`666e75ec7fc6d93307f7ac3e86d97f2d09c6dfda` identical to the candidate tree; empty candidate→merge
+diff). **Supersession check: the superseded S2-extension block below is retained as history** with its
+banner naming exactly which of its lines are authority-at-that-time.
+
+```
+INCREMENT CONTRACT — Wave-1 Remediation Authoritative Closure / Synchronization (governance only)
+Objective:                Record Wave-1 (RVR-1/2/3/5 + continuation repair) as IMPLEMENTED /
+                          AUTHORITATIVE at merge 93be682a (PR #561); synchronize the governance
+                          surfaces; record the Owner decisions consumed; carry the five follow-ups
+                          (W1-S2, W1-N1, W1-N2, W1-N3, W1-N4) without implementing any.
+Owner authorization:      the Owner Wave-1 closure/sync gate instruction, following Owner exact-SHA
+                          acceptance of cd7ed945… and the PR #561 merge
+Risk level:               LEVEL 2 — governance/documentation only
+Allowed paths:            docs/governance/WAVE_1_REMEDIATION_FORMAL_CLOSURE_RECORD.md (new);
+                          docs/governance/OWNER_DECISION_REGISTER.md;
+                          docs/governance/ACTIVE_EXECUTION_ROADMAP.md;
+                          docs/governance/ACTIVE_INCREMENT_CONTRACT.md;
+                          docs/governance/CURRENT_PROJECT_STATE.md
+Forbidden paths:          engine/, web/, tests/, domains/, database/, schemas/, prompts/, scripts/,
+                          benchmark/, CI, runtime/deploy, main, accepted evidence, the S2 run
+                          evidence (refs/evidence/s2run-ebf243db), the merged Wave-1 chain
+Expected behavior:        governance surfaces state current truth; nothing else changes
+Non-goals:                Wave-2 work; RVR-4/6/7/8; any S2 rerun; T1-A' closure; MLC freeze;
+                          implementing any W1 follow-up; editing any historical record
+Acceptance criteria:      Grill checklist of the gate instruction (base identity; changed-path
+                          allowlist exact; zero product/test delta; per-environment test truth;
+                          all five follow-up IDs present; no stale pre-merge Wave-1 status in the
+                          changed surfaces; no duplicate owner; no contradiction)
+Required tests:           none — documentation-only (product suite untouched at the merged tree)
+Tests not required:       product tests — no product path changes
+Dependencies:             PR #560 (S2 extension authoritative, e119d604…); S2-PATHN-RUN-001 evidence
+                          (ebf243db…); the Owner-frozen Final Remediation Contract (RVR-1…RVR-8);
+                          PR #561 (93be682a…)
+Unresolved decisions:     Wave-2 authorization; OD-PDVG-03, 04, 05, 06, 07, 08a, 08b, 09, 10, 12, 13
+Stop conditions:          any merge-identity mismatch; any pressure to overstate Wave-1 into
+                          release-value closure or to authorize Wave-2/S2-rerun from this record
+Independent-review scope: faithfulness of the closure record to Git and preserved evidence;
+                          correctness of the supersession statements; boundary preservation
+Merge authority:          owner, separately (this candidate is NOT published, PR'd, or merged by
+                          the Creator)
+```
+
+**Disposition: `WAVE-1 CLOSURE / SYNC — GOVERNANCE CANDIDATE; NOT AUTHORITATIVE UNTIL MERGED AND
+POST-MERGE VERIFIED`.** Record: `docs/governance/WAVE_1_REMEDIATION_FORMAL_CLOSURE_RECORD.md`.
+Authoritative facts it records (verified from Git/probes, never memory): Wave-1
+`RVR-1 / RVR-2 / RVR-3 / RVR-5: IMPLEMENTED, AUTHORITATIVE` and
+`POST-DISPOSITION CONTINUATION REPAIR: AUTHORITATIVE` at merge `93be682a…`; test truth per-environment
+(Creator `4512 passed / 3 skipped / 1 xfailed / 0 failed`; Independent Reviewer `4511 passed /
+4 skipped / 1 xfailed / 0 failed` — environment-conditional skip, not a regression); the five
+follow-ups W1-S2, W1-N1, W1-N2, W1-N3, W1-N4 recorded and NOT implemented; Owner decisions OD-R1,
+OD-R2, OD-PDVG-02(a) consumed and OD-R3 / OD-R5 / OD-R4 accepted in principle (register Wave-1
+section). **Boundaries:** `WAVE-1 RELEASE-VALUE CLOSED: NO`; `T1-A′ CLOSED: NO`; `S2 PASSED: NO
+CLAIM`; `SECOND S2 RUN AUTHORIZED: NO`; `WAVE-2 AUTHORIZED: NO`; `RVR-4 / RVR-6 / RVR-7 / RVR-8: NOT
+AUTHORIZED`; `TIER-2 MEANING-ADAPTIVE QUESTIONING: NOT AUTHORIZED`; `MLC DEFINITION FROZEN: NO`;
+`ILT ROUND AUTHORIZED: NO`; `AI ACTIVATED: NO`; `PSRR GO: NO`; `DEPLOYMENT AUTHORIZED: NO`;
+`PRODUCTION AUTHORIZED: NO`; `PAID ACTIVATION AUTHORIZED: NO`.
+**`NEXT GATE: WAVE-2 OWNER AUTHORIZATION`.**
+
+---
+
+**Superseded (retained as history) — OWNER DECISION ACTIVATION / BOUNDED S2 EXTENSION GATE; MERGED
+AND AUTHORITATIVE via PR #560, merge `e119d60450f40b1633433625ae6a011eec112b79`.** Since that merge:
+the block's `S2 BENCHMARK RUN EXECUTED: NO` lines are authority-at-that-time — the one authorized run
+`S2-PATHN-RUN-001` has since been **EXECUTED** (evidence `ebf243db…`, ref `refs/evidence/s2run-ebf243db`;
+no record achieved a full pass; the OD-PDVG-01(a) run authorization is **EXERCISED AND CONSUMED**) —
+and its "twelve … remain UNDECIDED" lines are likewise authority-at-that-time: **OD-PDVG-02 is now
+DECIDED — OPTION (a)** and consumed by Wave-1 RVR-5 (see the Wave-1 section of
+`OWNER_DECISION_REGISTER.md`). Everything else in the block stands as written.
+Base: `a9b9d53cb15165ec9ed0b35962577449750ff663` — re-verified at that gate as the
 **live authoritative tip** of `feature/atomic-json-session-persistence` (**0 commits after it**; PR #559;
 first parent `1295ed08…`, second parent `df941501…` — the exact Owner-accepted PDVG-01 candidate — merge
 tree `c726bd15…` identical to the candidate tree; empty candidate→merge diff). **Supersession check:

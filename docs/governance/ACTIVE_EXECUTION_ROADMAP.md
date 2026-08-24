@@ -14981,3 +14981,79 @@ POST-MERGE VERIFIED`. `S2 BENCHMARK RUN EXECUTED: NO`; `S2 BENCHMARK RUN AUTHORI
 `NEW OWNERS CREATED: 0`; `WS16 EXTENSION AUTHORIZED: NO`; `ILT ROUND AUTHORIZED: NO`;
 `TIER-1 IMPLEMENTATION AUTHORIZED GENERALLY: NO`; `AI ACTIVATED: NO`; `PSRR GO: NO`;
 `DEPLOYMENT AUTHORIZED: NO`; `PRODUCTION AUTHORIZED: NO`; `PAID ACTIVATION AUTHORIZED: NO`.
+
+## WAVE-1 REMEDIATION — S2 RUN EVIDENCE, OWNER-FROZEN REMEDIATION CONTRACT, WAVE-1 IMPLEMENTATION MERGED (PR #561) — AUTHORITATIVE CLOSURE / SYNCHRONIZATION (governance-only closure candidate)
+
+**Append-only synchronization entry.** The gates between the S2-extension entry above and this one were
+executed under Owner instruction but not previously reflected here; this entry records them in order,
+each verified from Git and preserved evidence — never from memory.
+
+**1. S2 extension AUTHORITATIVE.** Merged via **PR #560**, merge
+`e119d60450f40b1633433625ae6a011eec112b79` (parents `a9b9d53c…` + accepted candidate `a25c21ce…`,
+tree `0274c823…`, empty candidate→merge diff). The prior entry's `NOT AUTHORITATIVE UNTIL MERGED`
+disposition is superseded; everything else in it stands.
+
+**2. The one authorized S2 run EXECUTED — evidence preserved, adjudicated, not fixed in-run.**
+`S2-PATHN-RUN-001` (2026-08-23), executed against the exact RC SHA `e119d604…` (RC basis evidenced:
+product paths byte-identical since the last product-changing commit `2bb472a0…`). Exactly **8
+evaluation records** (E-1/M-1 × EN/AR × novice/experienced), one run, no retries, frozen seeds
+verbatim, `AI_ADVISORY_ENABLED = False` throughout. **Formal result: no record achieved a full pass**
+— per-record §15.7 core gate `R1 PARTIAL · R2 FAIL · R3 FAIL · R4 FAIL · R5 PARTIAL · R6 FAIL ·
+R7 FAIL · R8 FAIL`, reported separately with no aggregate. Evidence: **evidence-only commit
+`ebf243db83d880f75c2febc3d33d6a52a76ceab7`** (parent `e119d604…`; ref `refs/evidence/s2run-ebf243db`;
+NOT on the branch), carrying `docs/benchmarks/evidence/s2_run_001/` (run record, criteria matrix, all
+records, answer maps, baselines, SHA256SUMS). A result authorizes nothing (S2 §0);
+`OD-PDVG-01(a)`'s one-run authorization is now **EXERCISED AND CONSUMED**; `SECOND S2 RUN
+AUTHORIZED: NO`.
+
+**3. Owner adjudication and the Final Remediation Contract.** Owner verdict on the run evidence:
+`ACCEPT EVIDENCE — REMEDIATION REQUIRED`. After a read-only remediation-architecture gate and Owner
+revision (Option B: RVR-6 bounded adaptive interaction; Tier-1 STATE-ADAPTIVE vs Tier-2
+MEANING-ADAPTIVE boundary; 7 implementation increments + 1 verification), the Owner **FROZE** the
+Final Remediation Contract (**RVR-1…RVR-8**) and accepted OD-R1, OD-R2, OD-PDVG-02(a) for Wave 1 and
+OD-R3 / OD-R5 / OD-R4 in principle (implementation Owner-gated) — see the Wave-1 section of
+`OWNER_DECISION_REGISTER.md`.
+
+**4. Wave-1 IMPLEMENTED, MERGED, AUTHORITATIVE.** Authorization: **Wave 1 only — RVR-1, RVR-2,
+RVR-3, RVR-5**; RVR-4/6/7/8 NOT authorized; **no S2 rerun** (the frozen R1–R8 recorded answer corpus
+is used only as regression fixtures — `tests/fixtures/s2_run_001_answer_maps.json`, byte-identical to
+the evidence pack). Serialized chain on base `e119d604…`: contracts `4f86bfa3` → RVR-1 `3dd770fc` →
+RVR-2 `78d333dd` → RVR-3 `b0133861` → RVR-5 `44020d6d` → post-disposition continuation repair
+`cd7ed945` (Grill finding; pre-fix tip preserved unamended as its ancestor). Independent External
+Review: `ACCEPT WAVE-1 CANDIDATE WITH REQUIRED FOLLOW-UP BEFORE OWNER ACCEPTANCE`; the Wave-1 Owner
+Follow-Up Record was made (disclosure only, candidate unchanged); Owner exact-SHA acceptance of
+`cd7ed9451ec33886e1e032c9ae6c2016be80949b`; merged via **PR #561**, merge
+**`93be682a34c1221f0af7f7018af9023a9b6c5b2c`** (parents `e119d604…` + `cd7ed945…`, tree `666e75ec…`
+identical to the candidate tree, empty candidate→merge diff, 0 commits after at verification).
+Authoritative implementation state, re-proved by probes at the merged tree:
+`RVR-1 / RVR-2 / RVR-3 / RVR-5: IMPLEMENTED, AUTHORITATIVE`;
+`POST-DISPOSITION CONTINUATION REPAIR: AUTHORITATIVE`. Test truth, two environments, never collapsed:
+Creator `4512 passed / 3 skipped / 1 xfailed / 0 failed`; Independent Reviewer `4511 passed /
+4 skipped / 1 xfailed / 0 failed` (environment-conditional skip, not a regression).
+
+**5. Follow-ups recorded, none implemented.** W1-S2 (Stage-3 risk acceptance must require ≥1
+substantive attempt — Tier-1 before first serious release; progression/accepted-risk owner);
+W1-N1/W1-N2 (Layer-3 REASONED reachable by EN hyphenated buzzword stuffing / AR enumerated
+small-talk; relevance gate demonstrated containment of the verified examples, not universal proof;
+binding invariant: `REASONED classification alone is not proof of technical validity or progression
+eligibility`); W1-N3 (corrected factual statement: M-1 experienced-technical required one honest
+restatement, ~18 interactions; the "both cases 14–17" line WITHDRAWN as authoritative); W1-N4
+(correction may truthfully lapse a prior risk acceptance — semantics ACCEPTED; Tier-1
+correction-transparency follow-up; RVR-1/R4-C seam owner). Full text:
+`docs/governance/WAVE_1_REMEDIATION_FORMAL_CLOSURE_RECORD.md` §4.
+
+**6. This closure/sync candidate.** Governance/status surfaces only:
+`docs/governance/WAVE_1_REMEDIATION_FORMAL_CLOSURE_RECORD.md` (new) + bounded synchronization of
+`OWNER_DECISION_REGISTER.md`, this roadmap, `ACTIVE_INCREMENT_CONTRACT.md`,
+`CURRENT_PROJECT_STATE.md`. `EXECUTABLE DELTA: 0`; `TEST DELTA: 0`; `PIN DELTA: 0`; no historical
+record rewritten; no evidence mutated. **Disposition: `WAVE-1 CLOSURE / SYNC — GOVERNANCE CANDIDATE;
+NOT AUTHORITATIVE UNTIL MERGED AND POST-MERGE VERIFIED`.**
+
+**Boundaries.** `WAVE-1 IMPLEMENTED / AUTHORITATIVE: YES` but `WAVE-1 RELEASE-VALUE CLOSED: NO`;
+`T1-A′ CLOSED: NO`; `S2 PASSED: NO CLAIM`; `SECOND S2 RUN AUTHORIZED: NO`; `WAVE-2 AUTHORIZED: NO`;
+`RVR-4 / RVR-6 / RVR-7 / RVR-8: NOT AUTHORIZED` (the sequence `RVR-4 ∥ RVR-6a → RVR-6b → RVR-7 →
+RVR-8` is planning direction only); `TIER-2 MEANING-ADAPTIVE QUESTIONING: NOT AUTHORIZED`
+(OD-PDVG-10 undecided); `MLC DEFINITION FROZEN: NO`; `FIRST SERIOUS RELEASE READY: NO`;
+`ILT ROUND AUTHORIZED: NO`; `AI ACTIVATED: NO`; `PSRR GO: NO`; `DEPLOYMENT AUTHORIZED: NO`;
+`PRODUCTION AUTHORIZED: NO`; `PAID ACTIVATION AUTHORIZED: NO`; `main` not reconciled.
+**`NEXT GATE: WAVE-2 OWNER AUTHORIZATION`** — nothing begins automatically from this closure.

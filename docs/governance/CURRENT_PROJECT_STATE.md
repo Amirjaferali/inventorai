@@ -16,10 +16,17 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
   (`git rev-parse origin/feature/atomic-json-session-persistence`). Do **not** trust a
   prose-pinned SHA.
   - **Current authoritative branch tip (last independently verified):**
-    `3a802fd84055f475feafcd55893da301af45c67d` (Merge PR #427 — P8-I4-I1 Provider-Neutral Payment Boundary Foundation;
+    `93be682a34c1221f0af7f7018af9023a9b6c5b2c` (Merge PR #561 — Wave-1 remediation: RVR-1/RVR-2/RVR-3/RVR-5 + the
+    post-disposition continuation repair; two-parent merge of `e119d60450f40b1633433625ae6a011eec112b79` (base, PR #560
+    authoritative S2 extension) + `cd7ed9451ec33886e1e032c9ae6c2016be80949b` (the exact Owner-accepted Wave-1 candidate),
+    tree `666e75ec7fc6d93307f7ac3e86d97f2d09c6dfda` identical to the candidate tree, post-merge verified) — always
+    re-resolve the live tip from Git per the rule above.
+  - **Prior recorded tip (historical):** `3a802fd84055f475feafcd55893da301af45c67d` (Merge PR #427 — P8-I4-I1 Provider-Neutral Payment Boundary Foundation;
     two-parent merge of `fccd8955afdfdd5167c4b7a4f0dbe6c14d00127b` (base, PR #426 P8-I4-C) + `6f83e496ac236a798598d393d8dd79b9f9dfaf8d`
-    (candidate), tree `191709299943f8a87ec2ee8c287caf77a850e2f9`, post-merge verified) — always re-resolve the live tip from
-    Git per the rule above. (Prior pin `d37caef` (PR #421, P8-I2 formal closure) is superseded; the authoritative branch has
+    (candidate), tree `191709299943f8a87ec2ee8c287caf77a850e2f9`, post-merge verified); superseded as the live tip by the
+    intervening implementation and governance merges through PR #561 (among them the Phase 8/9/10 gates, PVCG R1–R4 and its
+    closure (PR #557), TDVP reconciliation (PR #558), PDVG-01 (PR #559), the bounded S2 extension (PR #560), and Wave-1
+    remediation (PR #561, `93be682a`)). (Prior pin `d37caef` (PR #421, P8-I2 formal closure) is superseded; the authoritative branch had
     since merged the corrected P8-I3-C contract (PR #423), the P8-I3 implementation + formal closure (PR #424, merge
     `cef9a52`), the P8-I4-C contract (merge PR #426, `fccd895`), and P8-I4-I1 (PR #427, `3a802fd`).)
   - **Prior recorded tip (historical):** `d37caef8cfc0e4c5e53275e6e126ec8247a26219` (Merge PR #421 — P8-I2 Commercial Usage
@@ -2424,7 +2431,60 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
-- **OWNER DECISION ACTIVATION / BOUNDED S2 EXTENSION GATE (governance-only contract CANDIDATE), base
+- **WAVE-1 REMEDIATION — S2 RUN EXECUTED (NO FULL PASS), FINAL REMEDIATION CONTRACT OWNER-FROZEN,
+  WAVE-1 IMPLEMENTED & MERGED (PR #561) — AUTHORITATIVE CLOSURE / SYNC (governance-only CANDIDATE), base
+  `93be682a34c1221f0af7f7018af9023a9b6c5b2c`** — re-verified this gate as the **live authoritative tip**
+  (**0 commits after**; **PR #561**; parents `e119d60450f40b1633433625ae6a011eec112b79` (PR #560, the
+  authoritative S2 extension) / `cd7ed9451ec33886e1e032c9ae6c2016be80949b` (the exact Owner-accepted
+  Wave-1 candidate); merge tree `666e75ec…` identical to the candidate tree; empty candidate→merge diff).
+  This entry synchronizes the gates executed since the S2-extension entry below, each verified from Git
+  and preserved evidence. **(1) S2 extension AUTHORITATIVE** via PR #560, merge `e119d604…` —
+  superseding the entry-below's `CONTRACT CANDIDATE; NOT AUTHORITATIVE UNTIL MERGED` disposition.
+  **(2) The one authorized S2 run EXECUTED** (`S2-PATHN-RUN-001`, 2026-08-23, against the exact RC SHA
+  `e119d604…`; 8 records, one run, frozen seeds, `AI_ADVISORY_ENABLED=False`): **no record achieved a
+  full pass** — per-record §15.7 core gate `R1 PARTIAL · R2 FAIL · R3 FAIL · R4 FAIL · R5 PARTIAL ·
+  R6 FAIL · R7 FAIL · R8 FAIL`, no aggregate; evidence-only commit `ebf243db…`
+  (`refs/evidence/s2run-ebf243db`, parent `e119d604…`, NOT on the branch), carrying
+  `docs/benchmarks/evidence/s2_run_001/`. The OD-PDVG-01(a) one-run authorization is **EXERCISED AND
+  CONSUMED**; `SECOND S2 RUN AUTHORIZED: NO`; a result authorizes nothing (S2 §0). **(3) Owner
+  adjudication** `ACCEPT EVIDENCE — REMEDIATION REQUIRED`; the **Final Remediation Contract
+  (RVR-1…RVR-8) OWNER-FROZEN** (Tier-1 STATE-ADAPTIVE vs Tier-2 MEANING-ADAPTIVE boundary; 7
+  implementation increments + 1 verification); Owner decisions **OD-R1, OD-R2, OD-PDVG-02(a)** accepted
+  for Wave 1 and **OD-R3 / OD-R5 / OD-R4** accepted in principle (implementation Owner-gated) — recorded
+  in the Wave-1 section of `OWNER_DECISION_REGISTER.md`, which supersedes the entry-below's
+  "twelve … UNDECIDED" enumeration for OD-PDVG-02 only (now DECIDED — OPTION (a); the other eleven
+  remain undecided). **(4) Wave-1 IMPLEMENTED / AUTHORITATIVE** at merge `93be682a…`: serialized chain
+  contracts `4f86bfa3` → RVR-1 `3dd770fc` → RVR-2 `78d333dd` → RVR-3 `b0133861` → RVR-5 `44020d6d` →
+  post-disposition continuation repair `cd7ed945` (Grill finding; pre-fix tip preserved unamended);
+  Independent External Review `ACCEPT … WITH REQUIRED FOLLOW-UP`; Wave-1 Owner Follow-Up Record made
+  (disclosure only, candidate unchanged); Owner exact-SHA acceptance of `cd7ed945…`. Re-proved by
+  probes at the merged tree: `RVR-1 / RVR-2 / RVR-3 / RVR-5: IMPLEMENTED, AUTHORITATIVE`;
+  `POST-DISPOSITION CONTINUATION REPAIR: AUTHORITATIVE`. **Test truth, two environments, never
+  collapsed:** Creator `4512 passed / 3 skipped / 1 xfailed / 0 failed`; Independent Reviewer
+  `4511 passed / 4 skipped / 1 xfailed / 0 failed` (environment-conditional skip, not a regression).
+  The frozen R1–R8 recorded answer corpus is used **only** as regression fixtures
+  (`tests/fixtures/s2_run_001_answer_maps.json`, byte-identical to the evidence pack) — NOT an S2
+  rerun. **(5) Five follow-ups recorded, owned, NOT implemented:** W1-S2 (Stage-3 risk acceptance must
+  require ≥1 substantive attempt — Tier-1 before first serious release), W1-N1/W1-N2 (Layer-3 REASONED
+  reachable by EN buzzword stuffing / AR enumerated small-talk; relevance-gate containment demonstrated
+  for the verified examples, not universally; invariant: `REASONED classification alone is not proof of
+  technical validity or progression eligibility`), W1-N3 (corrected fact: M-1 experienced-technical
+  needed one honest restatement, ~18 interactions; "both cases 14–17" WITHDRAWN as authoritative),
+  W1-N4 (correction may truthfully lapse a prior risk acceptance — Tier-1 transparency follow-up,
+  RVR-1/R4-C seam). Full record: `docs/governance/WAVE_1_REMEDIATION_FORMAL_CLOSURE_RECORD.md`.
+  **Disposition: `WAVE-1 CLOSURE / SYNC — GOVERNANCE CANDIDATE; NOT AUTHORITATIVE UNTIL MERGED AND
+  POST-MERGE VERIFIED`.** Governance/documentation only; `EXECUTABLE/TEST/PIN/PACK/DOMAIN-RULE
+  DELTA: 0`; no historical record rewritten; no evidence mutated; `main` not reconciled.
+  `WAVE-1 IMPLEMENTED / AUTHORITATIVE: YES`; `WAVE-1 RELEASE-VALUE CLOSED: NO`; `T1-A′ CLOSED: NO`;
+  `S2 PASSED: NO CLAIM`; `WAVE-2 AUTHORIZED: NO`; `RVR-4 / RVR-6 / RVR-7 / RVR-8: NOT AUTHORIZED`;
+  `TIER-2 MEANING-ADAPTIVE QUESTIONING: NOT AUTHORIZED`; `MLC DEFINITION FROZEN: NO`;
+  `FIRST SERIOUS RELEASE READY: NO`; `ILT ROUND AUTHORIZED: NO`; `AI ACTIVATED: NO`; `PSRR GO: NO`;
+  `DEPLOYMENT AUTHORIZED: NO`; `PRODUCTION AUTHORIZED: NO`; `PAID ACTIVATION AUTHORIZED: NO`.
+  **`NEXT GATE: WAVE-2 OWNER AUTHORIZATION`.**
+
+- **OWNER DECISION ACTIVATION / BOUNDED S2 EXTENSION GATE (governance-only contract CANDIDATE — since
+  MERGED AND AUTHORITATIVE via PR #560, merge `e119d604…`; its `S2 BENCHMARK RUN EXECUTED: NO` and
+  "twelve … UNDECIDED" lines are authority-at-that-time — see the Wave-1 closure entry above), base
   `a9b9d53cb15165ec9ed0b35962577449750ff663`** — re-verified this gate as the **live authoritative tip**
   (**0 commits after**; PR #559; parents `1295ed08…` / `df941501…`; merge tree `c726bd15…` == the accepted
   PDVG-01 candidate tree; empty candidate→merge diff). **Supersession check: NONE.** **PDVG-01 is now
