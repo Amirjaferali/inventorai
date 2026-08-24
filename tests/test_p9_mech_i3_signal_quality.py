@@ -134,9 +134,19 @@ _APPROVED_SUBSTANCE_SIGNALS = [
 # latest completed Wave-1 step.
 #   pre-Wave-1   progression_loop.py =
 #       c268cd6380129170da19f3ba03158eebd9a5480711b43e39280e8ce9e74f63f8
+# W2-D reconciliation (Wave-2 contract §F, W1-S2; Owner-authorized W2-D
+# implementation instruction; same disclosed mechanism as above). W2-D adds
+# EXACTLY ONE pure read-only helper, `substantive_attempt_recorded` — the
+# live Accept Risk availability policy (active-set rule over the durable
+# ledger, consuming the existing _WEAK_PATTERNS guard and addresses_gap
+# owner). No question identity, gap priority, assessment, transition,
+# reframe, writer, or replay semantics changed; the canonical writer
+# `accept_gap_risk` is byte-identical.
+#   pre-W2-D     progression_loop.py =
+#       d53e1a75afe0082ce5acdc7c0208a3f675ababde017da3ef652bdb4827dc2cc6
 _FROZEN_ENGINE_SHA256 = {
     "engine/domain_rules.py": "0e47326ad92a6e5b0a63eb06db9e3ad96ae72c9aaf64471dd21621265b1db1ab",
-    "engine/progression_loop.py": "d53e1a75afe0082ce5acdc7c0208a3f675ababde017da3ef652bdb4827dc2cc6",
+    "engine/progression_loop.py": "756e524adc681906f20eb64a0ae28e3abb56cadf7ade07424b7bf237d4adbcb4",
 }
 # Other-pack byte freeze (unchanged lineage from I1/I2). L2SC-01 reconciliation
 # (disclosed; electronics_electrical re-frozen, see I1's own comment).

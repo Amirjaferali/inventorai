@@ -187,6 +187,22 @@ def _answer_until(c, appmod, sid, gap, max_steps=8):
                                         "action": "answered"})
         steps += 1
 
+# W2-D reconciliation (Wave-2 contract §F, W1-S2 — intentional new
+# expectation): Accept Risk now requires at least one ACTIVE substantive
+# attempt (active-set rule) for the served gap. These substantive-but-
+# unresolved attempts unlock the gate without closing the gap.
+_ATTEMPT = {
+    PHYSICAL_FEASIBILITY: ("I have not tested whether the toggle latch stays "
+                           "reliable under repeated loading and outdoor use."),
+    BOUNDARY_AMBIGUITY: ("One person is responsible for locking the ramp and "
+                         "handles checking it before each use."),
+}
+
+def _attempt(c, sid, gap):
+    c.post(f"/session/{sid}", data={"response": _ATTEMPT[gap],
+                                    "answer_token": _token(c, sid),
+                                    "action": "answered"})
+
 def test_route_accepts_current_gap_and_persists_and_replays(client):
     c, appmod = client
     sid = _start(c)
@@ -194,6 +210,7 @@ def test_route_accepts_current_gap_and_persists_and_replays(client):
     _answer_until(c, appmod, sid, MECHANISM_COMPLETENESS)
     gap = select_next_gap(state)
     assert gap == PHYSICAL_FEASIBILITY
+    _attempt(c, sid, gap)   # W2-D: substantive attempt unlocks Accept Risk
     r = c.post(f"/session/{sid}/accept-risk", data={
         "gap_type": gap, "risk_confirm": "yes", "reason": "cannot test yet",
         "answer_token": _token(c, sid)})
@@ -260,6 +277,7 @@ def test_disposition_completing_stage2_advances_maturity_and_replays(client):
     assert state.get_gap(MECHANISM_COMPLETENESS).status == CLOSED
     for gap in (PHYSICAL_FEASIBILITY, BOUNDARY_AMBIGUITY):
         assert select_next_gap(state) == gap
+        _attempt(c, sid, gap)   # W2-D: substantive attempt unlocks Accept Risk
         c.post(f"/session/{sid}/accept-risk", data={
             "gap_type": gap, "risk_confirm": "yes",
             "answer_token": _token(c, sid)})

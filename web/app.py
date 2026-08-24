@@ -30,6 +30,9 @@ from engine.progression_loop import (
     # RVR-1 (Wave-1): the canonical accepted-risk lifecycle writer and the
     # existing next-gap cascade, invoked ONLY by the explicit accept-risk route.
     accept_gap_risk, advance_after_disposition,
+    # W2-D (Wave-2 contract §F, W1-S2): the ONE live Accept Risk availability
+    # policy — consumed by the route AND the affordance render, nowhere else.
+    substantive_attempt_recorded,
 )
 from engine.idea_state import (
     DISPOSITION_RISK_ACCEPTED, MECHANISM_COMPLETENESS as _MECH_GAP,
@@ -2369,6 +2372,27 @@ def resume_project(sid):
     return redirect(url_for("show_session", sid=sid))
 
 
+def _risk_lapse_display(notice):
+    """W2-D (W1-N4): map the route-stored lapse notice ({'action': [gap_type],
+    'resolved': [gap_type]}) to localized gap display headings for the
+    template. Display-only derivation — no state, no persistence; None in and
+    None out (the common no-lapse case)."""
+    if not notice:
+        return None
+    lang = _current_ui_lang()
+
+    def _headings(gap_types):
+        out = []
+        for g in gap_types:
+            label = ui_text.localize_deep(
+                GAP_LABELS.get(g, GAP_LABELS["__default__"]), lang)
+            out.append(label.get("heading", g))
+        return out
+
+    return {"action": _headings(notice.get("action", [])),
+            "resolved": _headings(notice.get("resolved", []))}
+
+
 @app.route("/session/<sid>", methods=["GET"])
 def show_session(sid):
     if not _project_authorized(sid):
@@ -2532,6 +2556,16 @@ def show_session(sid):
         closed_gaps=closed_gaps,
         interaction_ack=ui_text.localize_deep(
             entry.pop("_interaction_ack", None) if entry else None, _current_ui_lang()),
+        # W2-D (W1-S2): the ONE live Accept Risk availability policy, rendered
+        # and enforced identically (the route re-checks the same helper).
+        risk_available=bool(
+            gap_type and gap_type != _MECH_GAP
+            and substantive_attempt_recorded(state, gap_type)),
+        # W2-D (W1-N4): single-use correction-lapse notice (popped so it
+        # renders exactly once after the Post/Redirect/Get, like answer_error).
+        # Gap types are mapped to their existing localized display headings.
+        risk_lapse_notice=_risk_lapse_display(
+            entry.pop("_risk_lapse_notice", None) if entry else None),
         # G-UX-ANSWER-VALIDATION: single-use empty-answer validation error, popped
         # here so it renders exactly once after the Post/Redirect/Get and never
         # repeats on a later plain GET. None on every normal load.
@@ -2804,10 +2838,43 @@ def correct_answer(sid):
     # prior one wholesale; no field of the old state is edited, so no stored gap
     # status is ever moved backward (WPS-001 INV-004 preserved, §8.1/G-3). A
     # weaker outcome is a property of this NEW forward run.
+    #
+    # W2-D (Wave-2 contract §K, W1-N4): correction-lapse transparency. The
+    # reconstruction seam (the sole re-application owner) reports which
+    # recorded risk acceptances re-applied and which LAPSED against the
+    # rebuilt state; this route only translates that read-only report into a
+    # single-use display notice grouped per affected gap. Canonical semantics
+    # are unchanged — no stale acceptance survived either way; the user is now
+    # TOLD. Reported per gap only when THIS correction caused the lapse: the
+    # gap was ACCEPTED_RISK in the live state immediately before this
+    # correction (captured below, pre-replacement) and is no longer covered
+    # after it — an acceptance that already lapsed under an earlier correction
+    # is not re-announced, and a gap whose FINAL rebuilt status is
+    # ACCEPTED_RISK is covered by a re-applied acceptance and not reported.
+    # OPEN/PARTIAL/absent report as needs-new-action; CLOSED (defensive — not
+    # constructible live today) reports as resolved-by-correction.
+    _pre_accepted = {g.gap_type for g in getattr(state, "gaps", [])
+                     if g.status == "ACCEPTED_RISK"}
     entry["state"] = _recon.state
     entry["last_result"] = None
     entry.pop("answer_token", None)
     entry["_interaction_ack"] = CORRECTION_APPLIED_ACK
+    _lapsed_gaps, _resolved_gaps, _seen = [], [], set()
+    for _oc in getattr(_recon.review, "risk_acceptance_outcomes", ()):
+        if _oc.applied or _oc.gap_context in _seen:
+            continue
+        _seen.add(_oc.gap_context)
+        if _oc.gap_context not in _pre_accepted:
+            continue  # lapsed before this correction — old news, not this event
+        _fg = _recon.state.get_gap(_oc.gap_context)
+        _status = _fg.status if _fg is not None else None
+        if _status == "ACCEPTED_RISK":
+            continue
+        (_resolved_gaps if _status == "CLOSED" else _lapsed_gaps).append(
+            _oc.gap_context)
+    if _lapsed_gaps or _resolved_gaps:
+        entry["_risk_lapse_notice"] = {
+            "action": _lapsed_gaps, "resolved": _resolved_gaps}
     return redirect(url_for("show_session", sid=sid))
 
 
@@ -2856,6 +2923,15 @@ def accept_risk(sid):
         return redirect(url_for("show_session", sid=sid))
     gap = state.get_gap(gap_type)
     if gap is None or gap.status not in ("OPEN", "PARTIAL"):
+        entry["_answer_error"] = RISK_NOT_ACCEPTED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    # W2-D (Wave-2 contract §F, W1-S2): LIVE availability precondition — at
+    # least one ACTIVE substantive attempt (canonical active-set rule:
+    # superseded_by is None + answered + this gap + not weak/refusal +
+    # addresses_gap) must exist before Accept Risk can be invoked. A
+    # superseded/withdrawn attempt does NOT satisfy the gate. Live policy
+    # only: the canonical writer and historical replay are unchanged.
+    if not substantive_attempt_recorded(state, gap_type):
         entry["_answer_error"] = RISK_NOT_ACCEPTED_MESSAGE
         return redirect(url_for("show_session", sid=sid))
     # Staged mint on a throwaway ledger view (the proven persist-before-
