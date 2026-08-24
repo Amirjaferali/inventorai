@@ -1242,3 +1242,37 @@ future Owner authorization (RVR-8's verification-run authorization is entirely f
 sequence `RVR-4 ∥ RVR-6a → RVR-6b → RVR-7 → RVR-8` is planning direction only. `T1-A′ CLOSED: NO`;
 `MLC DEFINITION FROZEN: NO`; the five Wave-1 follow-ups (W1-S2, W1-N1, W1-N2, W1-N3, W1-N4) are
 recorded, owned, and NOT implemented (closure record §4). Accepting these rows activates nothing.
+
+## Wave-2 — committed decisions and authorization lineage (post-W2-ID synchronization)
+
+Recorded at the post-W2-ID status-sync + deferred-register gate. The Wave-1 section's
+`WAVE-2 AUTHORIZED: NO` boundary line above is authority-at-that-time; current authority follows.
+
+**A. Committed Owner decision.**
+
+| ID | Subject | Status | Phase/WS | Impl. authority | Evidence |
+|---|---|---|---|---|---|
+| OD-W2ID-LEDGER | **Decision-capture carrier ARCHITECTURE** — the existing `AssertionRecord` ledger is approved as the bounded durable carrier for decision-capture owner actions; FDC-001 `DecisionRecord` remains the SOLE canonical decision-semantics owner; `AssertionRecord` remains a carrier/provenance/history object and is never presented as the decision itself; implementation — including any disposition-value or field change — is separately authorized only in W2-A | **APPROVED — ARCHITECTURE DECIDED; IMPLEMENTATION/ENACTMENT DEFERRED TO W2-A** | Wave-2 / W2-ID → RVR-4 | NONE now (enactment items named at the W2-A authorization) | `docs/governance/W2_ID_DECISION_CAPTURE_IDENTITY_RECORDING_CANDIDATE.md` §B (authoritative via PR #565, merge `516a1842…`) |
+
+**B. Authorization lineage — recorded without retroactive invention.** The following lifecycle
+authorizations were exercised through the full high-assurance lifecycle (candidate → Grill →
+Independent External Review → Owner exact-SHA acceptance → merge commit → post-merge verification)
+but carry no dedicated register entry of their own. Classification for each:
+`AUTHORIZATION EXERCISE EVIDENCED BY AUTHORITATIVE MERGED EXECUTION; DEDICATED REGISTER ENTRY
+ABSENT`. No OD identifier, decision date, or approval wording is invented; the merged execution is
+the evidence.
+
+| Exercise | Accepted candidate (exact SHA) | Merge | Effect |
+|---|---|---|---|
+| Wave-2 bounded implementation contract authorization | `84b165a894a771ff2775a993d8f08f38e6ba46a6` | PR #563, `58e92e09cc7e6d36cb9c939cf9958e8a294f88ce` | Wave-2 contract CONTRACT AUTHORITATIVE (1 governance sub-gate + 4 executable slices; RVR-7 = Wave 3; RVR-8 separate) |
+| W2-D implementation acceptance (W1-S2 + W1-N4) | `528b45199892aaa4ce6b2f0db2452f525b963c0b` | PR #564, `91475e456cbe8ff21bfa8e7bf2fb3e6dd801f762` | W2-D IMPLEMENTATION AUTHORITATIVE; W1-S2 and W1-N4 CLOSED with evidence |
+| W2-ID acceptance (v3 after focused re-Grill + narrow repair; v1 `f2cfe745…`/v2 `538d57fa…` immutable reviewed evidence) | `a92d4fa4dcea32009b3020b083c08dc8028772d5` | PR #565, `516a184231f3e19fad6e8f6f3301b5b9c4ad9820` | W2-ID GOVERNANCE MINI-GATE AUTHORITATIVE; OD-W2ID-LEDGER committed |
+
+**C. Current open boundary.** **W2-A still requires explicit Owner authorization before any
+implementation begins.** OPEN at that gate (enactment items, NOT approved implementation): the
+exact decision-action disposition vocabulary; the explicit context-attachment representation
+(incl. any exact bounded `AssertionRecord` field proposal for separate Owner authorization); the
+RVR-4 implementation-contract freeze. `W2-A IMPLEMENTATION AUTHORIZED: NO`; `W2-B / W2-C / RVR-6 /
+RVR-7 / RVR-8: NOT AUTHORIZED`; `SECOND S2 RUN AUTHORIZED: NO`. Cross-cutting deferred obligations
+are tracked in `docs/governance/DEFERRED_OBLIGATIONS_REGISTER.md` (Master Obligation Index
+layer 6); this register remains decision-only.

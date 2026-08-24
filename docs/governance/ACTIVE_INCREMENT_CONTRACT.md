@@ -41,8 +41,79 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — WAVE-1 REMEDIATION AUTHORITATIVE CLOSURE / SYNCHRONIZATION; governance-only
-closure candidate).** Base: **`93be682a34c1221f0af7f7018af9023a9b6c5b2c`** — re-verified this gate as
+**Status (current — POST-W2-ID STATUS-SURFACE SYNCHRONIZATION + PERMANENT DEFERRED OBLIGATIONS
+REGISTER; governance-only write-gate candidate).** Base: **`516a184231f3e19fad6e8f6f3301b5b9c4ad9820`**
+— re-verified as the **live authoritative tip** of `feature/atomic-json-session-persistence`
+(**0 commits after it**; **PR #565** — the W2-ID v3 merge; first parent `91475e456cbe8ff21bfa8e7bf2fb3e6dd801f762`
+(PR #564, W2-D implementation), second parent `a92d4fa4dcea32009b3020b083c08dc8028772d5` — the exact
+Owner-accepted W2-ID v3 candidate; merge tree `f5e452ed43c69d6492ca8de611ebeeb547d9c5aa` identical to
+the candidate tree; empty candidate→merge diff).
+
+**Current authoritative truth (verified from Git, not prose):** the Wave-2 bounded implementation
+contract is **CONTRACT AUTHORITATIVE** (PR #563, merge `58e92e09…`); **W2-D is IMPLEMENTATION
+AUTHORITATIVE** (PR #564 — W1-S2 attempt gate + W1-N4 lapse transparency, both follow-ups CLOSED
+with evidence); **W2-ID is GOVERNANCE-MINI-GATE AUTHORITATIVE** (PR #565 — identity/recording model
++ the committed Owner decision `OD-W2ID-LEDGER — APPROVED`: AssertionRecord ledger = bounded
+decision-capture carrier architecture; FDC-001 `DecisionRecord` = sole canonical decision-semantics
+owner; implementation deferred to W2-A). The Wave-1-era `WAVE-2 AUTHORIZED: NO` /
+`NEXT GATE: WAVE-2 OWNER AUTHORIZATION` lines retained in the superseded block below are
+authority-at-that-time.
+
+```
+INCREMENT CONTRACT — Post-W2-ID Status Synchronization + Deferred Obligations Register (governance only)
+Objective:                Bring the four live status surfaces to current repository truth
+                          (PR #563/#564/#565 arc) and create the permanent
+                          DEFERRED_OBLIGATIONS_REGISTER.md seeded from the read-only
+                          retrospective reconstruction.
+Owner authorization:      the Owner's bounded status-sync + deferred-register write-gate
+                          instruction (following the read-only gate's READY disposition) and the
+                          Owner's permanent Deferred-Obligations-Register rule
+Risk level:               LEVEL 2 — governance/documentation only
+Allowed paths:            docs/governance/CURRENT_PROJECT_STATE.md;
+                          docs/governance/ACTIVE_EXECUTION_ROADMAP.md (append-only);
+                          docs/governance/ACTIVE_INCREMENT_CONTRACT.md (this rotation);
+                          docs/governance/OWNER_DECISION_REGISTER.md (append);
+                          docs/governance/DEFERRED_OBLIGATIONS_REGISTER.md (new)
+Forbidden paths:          engine/, web/, tests/, schemas, export code, WS implementation files,
+                          historical closure records, PDVG/TDVP/PVCG records, the W2-ID record,
+                          the Wave-2 contract record, W2-D implementation
+Expected behavior:        status surfaces state current truth; the permanent register exists;
+                          nothing else changes
+Non-goals:                W2-A/RVR-4 implementation; any product/runtime/test change; any
+                          disposition/field enactment; RVR-6/7/8; deployment/production/paid
+Acceptance criteria:      the write-gate Grill G1–G45 (allowlist exact; zero product delta;
+                          truthful lineage without retroactive invention; register contract and
+                          seeded buckets complete; no self-certified closure)
+Required tests:           none — documentation-only
+Tests not required:       product tests — no product path changes
+Dependencies:             PR #563 / #564 / #565 authoritative merges; the read-only
+                          reconstruction (navigation evidence only — repository truth revalidated)
+Unresolved decisions:     W2-A authorization (incl. OD-W2A-LEDGER enactment items); the open
+                          Owner decisions tracked in the Deferred Obligations Register
+Stop conditions:          any merge-identity mismatch; any pressure to authorize W2-A here, to
+                          invent retroactive Owner decisions, or to rewrite historical records
+Independent-review scope: factual accuracy of the synchronization; register completeness vs the
+                          retrospective reconstruction; no obligation silently dropped or falsely
+                          kept alive
+Merge authority:          owner, separately (candidate is NOT published, PR'd, or merged by the
+                          Creator)
+```
+
+**Disposition: `POST-W2-ID SYNC + DEFERRED REGISTER — GOVERNANCE CANDIDATE; NOT AUTHORITATIVE
+UNTIL MERGED AND POST-MERGE VERIFIED`.** After it merges, the next eligible gate is the
+**`W2-A AUTHORIZATION / CONTRACT-FREEZE GATE`** — a separately Owner-authorized gate that must name
+the OD-W2A-LEDGER enactment items (exact decision-action disposition vocabulary; explicit
+context-attachment representation incl. any exact bounded `AssertionRecord` field proposal; the
+frozen RVR-4 implementation contract). **`W2-A IMPLEMENTATION AUTHORIZED: NO`;
+`W2-A IMPLEMENTATION STARTED: NO`.**
+
+---
+
+**Superseded (retained as history) — WAVE-1 REMEDIATION AUTHORITATIVE CLOSURE / SYNCHRONIZATION;
+MERGED AND AUTHORITATIVE via PR #562, merge `e02d175b93556213e22e6af0decd66f12966ff7f`.** Its
+in-block `WAVE-2 AUTHORIZED: NO` and `NEXT GATE: WAVE-2 OWNER AUTHORIZATION` lines are
+authority-at-that-time — superseded by the PR #563/#564/#565 arc recorded in the active block
+above. Base: **`93be682a34c1221f0af7f7018af9023a9b6c5b2c`** — re-verified at that gate as
 the **live authoritative tip** of `feature/atomic-json-session-persistence` (**0 commits after it**;
 **PR #561** — the Wave-1 remediation merge; first parent
 `e119d60450f40b1633433625ae6a011eec112b79` (PR #560, the authoritative S2 extension), second parent
