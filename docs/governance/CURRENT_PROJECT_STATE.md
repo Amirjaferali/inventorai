@@ -16,11 +16,19 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
   (`git rev-parse origin/feature/atomic-json-session-persistence`). Do **not** trust a
   prose-pinned SHA.
   - **Current authoritative branch tip (last independently verified):**
+    `516a184231f3e19fad6e8f6f3301b5b9c4ad9820` (Merge PR #565 — W2-ID v3 decision-capture identity/recording
+    mini-gate; two-parent merge of `91475e456cbe8ff21bfa8e7bf2fb3e6dd801f762` (base, PR #564 W2-D implementation) +
+    `a92d4fa4dcea32009b3020b083c08dc8028772d5` (the exact Owner-accepted W2-ID v3 candidate), tree
+    `f5e452ed43c69d6492ca8de611ebeeb547d9c5aa` identical to the candidate tree, post-merge verified) — always
+    re-resolve the live tip from Git per the rule above.
+  - **Prior recorded tip (historical):**
     `93be682a34c1221f0af7f7018af9023a9b6c5b2c` (Merge PR #561 — Wave-1 remediation: RVR-1/RVR-2/RVR-3/RVR-5 + the
     post-disposition continuation repair; two-parent merge of `e119d60450f40b1633433625ae6a011eec112b79` (base, PR #560
     authoritative S2 extension) + `cd7ed9451ec33886e1e032c9ae6c2016be80949b` (the exact Owner-accepted Wave-1 candidate),
-    tree `666e75ec7fc6d93307f7ac3e86d97f2d09c6dfda` identical to the candidate tree, post-merge verified) — always
-    re-resolve the live tip from Git per the rule above.
+    tree `666e75ec7fc6d93307f7ac3e86d97f2d09c6dfda` identical to the candidate tree, post-merge verified); superseded as
+    the live tip by PR #562 (Wave-1 formal closure sync, `e02d175b…`), PR #563 (authoritative Wave-2 bounded
+    implementation contract, `58e92e09…`), PR #564 (W2-D implementation: W1-S2 attempt gate + W1-N4 lapse
+    transparency, `91475e45…`), and PR #565 (W2-ID v3, `516a1842…`).
   - **Prior recorded tip (historical):** `3a802fd84055f475feafcd55893da301af45c67d` (Merge PR #427 — P8-I4-I1 Provider-Neutral Payment Boundary Foundation;
     two-parent merge of `fccd8955afdfdd5167c4b7a4f0dbe6c14d00127b` (base, PR #426 P8-I4-C) + `6f83e496ac236a798598d393d8dd79b9f9dfaf8d`
     (candidate), tree `191709299943f8a87ec2ee8c287caf77a850e2f9`, post-merge verified); superseded as the live tip by the
@@ -82,6 +90,7 @@ status**, holds **no current per-item status values of its own**, and creates no
 | 3. Active phase/sub-gate **execution status** (P4 / P5 / P6 — e.g. P6-1, D-P6-18) | `ACTIVE_EXECUTION_ROADMAP.md` (§4 live status + append-only tail) + formal closure records, subject to `ACTIVE_INCREMENT_CONTRACT.md` + `OWNER_DECISION_REGISTER.md` | Current lane / holds / authorized next action / phase-execution status | The latest authoritative roadmap entry (+ closure records) |
 | 4. Owner-added capability inventory (CAP-01…CAP-18) | `INVENTORAI_CAPABILITY_ENRICHMENT_REGISTER.md` | Recorded capabilities — all `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION` (**registration ≠ authorization**). Range corrected to CAP-01…CAP-18 under G-MPR-01-D D6 (the register extends through CAP-18; CAP-15…CAP-18 are equally tracked; earlier "CAP-01…CAP-14" enumerations are superseded as index range). | That register |
 | 5. Owner decisions & authorization state (OD-/D- numbers) | `OWNER_DECISION_REGISTER.md` | Owner decisions + separate-authorization requirements (**a recorded proposal is NOT execution authorization**) | That register |
+| 6. Deferred Obligations Register (permanent cross-cutting obligation ledger — Owner rule) | `DEFERRED_OBLIGATIONS_REGISTER.md` | Per-obligation current disposition, return gate, blocking level, and closure evidence for deferred/open/conditional obligations (source owners stay authoritative for the underlying capability/decision) | That register |
 
 **Product-Foundation status caveat (important).** The Product-Foundation plan (Layer 2) is authoritative for
 objectives / intended phase **structure** / sequence — it is **not** the owner of current execution status.
@@ -2431,8 +2440,55 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
+- **POST-W2-ID GOVERNANCE SYNCHRONIZATION — WAVE-2 CONTRACT, W2-D, AND W2-ID NOW AUTHORITATIVE;
+  PERMANENT DEFERRED OBLIGATIONS REGISTER CREATED (governance-only CANDIDATE), base
+  `516a184231f3e19fad6e8f6f3301b5b9c4ad9820`** — re-verified as the **live authoritative tip** (**0
+  commits after**; PR #565; parents `91475e45…` / `a92d4fa4…`; merge tree `f5e452ed…` identical to the
+  Owner-accepted W2-ID v3 candidate tree; empty candidate→merge diff). This entry synchronizes the
+  authoritative arc executed since the Wave-1 closure entry below, each step verified from Git:
+  **(1) WAVE-2 BOUNDED IMPLEMENTATION CONTRACT — CONTRACT AUTHORITATIVE** via **PR #563**, merge
+  `58e92e09cc7e6d36cb9c939cf9958e8a294f88ce` (exact accepted candidate `84b165a8…` after two
+  Independent External Review rounds; RVR-7 placed Wave 3; 1 governance sub-gate + 4 executable
+  slices `W2-D → W2-ID → W2-A ∥(analysis) W2-B → W2-C`). **(2) W2-D — IMPLEMENTATION AUTHORITATIVE**
+  via **PR #564**, merge `91475e456cbe8ff21bfa8e7bf2fb3e6dd801f762` (exact accepted candidate
+  `528b4519…`): W1-S2 substantive-attempt availability gate (canonical active-set rule) and W1-N4
+  correction-lapse transparency — both follow-ups CLOSED with evidence; Creator full suite at the
+  candidate: `4533 passed / 3 skipped / 1 xfailed / 0 failed`. **(3) W2-ID — GOVERNANCE MINI-GATE
+  AUTHORITATIVE** via **PR #565** (v3 candidate `a92d4fa4…`; v1 `f2cfe745…`/v2 `538d57fa…` preserved
+  as immutable reviewed evidence): decision-capture identity model (founding-record chain-root +
+  `idea_id` qualification; plural user-created contexts; full derived-projection determinism;
+  single-target declaration supersession ID-11; derived-surface containment OW-6) and the committed
+  Owner decision **`OD-W2ID-LEDGER — APPROVED`** (AssertionRecord ledger = bounded decision-capture
+  carrier ARCHITECTURE; FDC-001 `DecisionRecord` = sole canonical decision-semantics owner;
+  implementation deferred to W2-A). **Authorization lineage, recorded without retroactive
+  invention:** the Wave-2 contract, W2-D, and W2-ID lifecycle authorizations are
+  `AUTHORIZATION EXERCISE EVIDENCED BY AUTHORITATIVE MERGED EXECUTION; DEDICATED REGISTER ENTRY
+  ABSENT` — factual PR/SHA lineage is now recorded in the register's Wave-2 section; no OD
+  identifier, date, or wording is invented. **Supersession, stated not hidden:** the Wave-1 closure
+  entry below carries `WAVE-2 AUTHORIZED: NO` and `NEXT GATE: WAVE-2 OWNER AUTHORIZATION` — both are
+  authority-at-that-time, superseded by the merged facts above. **This candidate also creates the
+  permanent `docs/governance/DEFERRED_OBLIGATIONS_REGISTER.md`** (Owner permanent rule; routed as
+  Master Obligation Index layer 6) seeded from the post-W2-ID read-only retrospective
+  reconstruction: before-W2-A, before-serious-release, before-paid-activation, and strategic/future
+  buckets; unowned truths preserved (`USER FEEDBACK OWNER: NONE`; MG-8 observation/cause-unproven
+  with NO established governance owner; R4-C replay-order Owner decision OPEN — none force-fitted,
+  none silently resolved); retrospective closures recorded (W1-S2/W1-N4 CLOSED via PR #564;
+  OD-W2A-SCOPE RETIRED; TDVP Outcome A CLOSED WITHIN ITS HISTORICAL SCOPE, not rewritten).
+  **NEXT ELIGIBLE GATE (after this synchronization merges): `W2-A AUTHORIZATION / CONTRACT-FREEZE
+  GATE`** — naming the OD-W2A-LEDGER enactment items (exact disposition vocabulary; explicit
+  context-attachment representation; any exact bounded schema-field proposal; RVR-4 implementation
+  contract). **`W2-A IMPLEMENTATION AUTHORIZED: NO`; `W2-A IMPLEMENTATION STARTED: NO`**;
+  RVR-6/RVR-7/RVR-8, second S2 run, meaning-adaptive questioning, WS10 activation, PSRR GO,
+  deployment, production, paid activation: all NOT AUTHORIZED. Governance/documentation only;
+  `EXECUTABLE/TEST/PIN/PACK/DOMAIN-RULE DELTA: 0`; no historical record rewritten; `main` not
+  reconciled. **Disposition: `POST-W2-ID SYNC + DEFERRED REGISTER — GOVERNANCE CANDIDATE; NOT
+  AUTHORITATIVE UNTIL MERGED AND POST-MERGE VERIFIED`.**
+
 - **WAVE-1 REMEDIATION — S2 RUN EXECUTED (NO FULL PASS), FINAL REMEDIATION CONTRACT OWNER-FROZEN,
-  WAVE-1 IMPLEMENTED & MERGED (PR #561) — AUTHORITATIVE CLOSURE / SYNC (governance-only CANDIDATE), base
+  WAVE-1 IMPLEMENTED & MERGED (PR #561) — AUTHORITATIVE CLOSURE / SYNC (governance-only CANDIDATE —
+  since MERGED AND AUTHORITATIVE via PR #562, merge `e02d175b…`; its `WAVE-2 AUTHORIZED: NO` and
+  `NEXT GATE: WAVE-2 OWNER AUTHORIZATION` lines are authority-at-that-time — see the post-W2-ID
+  synchronization entry above), base
   `93be682a34c1221f0af7f7018af9023a9b6c5b2c`** — re-verified this gate as the **live authoritative tip**
   (**0 commits after**; **PR #561**; parents `e119d60450f40b1633433625ae6a011eec112b79` (PR #560, the
   authoritative S2 extension) / `cd7ed9451ec33886e1e032c9ae6c2016be80949b` (the exact Owner-accepted

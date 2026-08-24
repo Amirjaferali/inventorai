@@ -15057,3 +15057,71 @@ RVR-8` is planning direction only); `TIER-2 MEANING-ADAPTIVE QUESTIONING: NOT AU
 `ILT ROUND AUTHORIZED: NO`; `AI ACTIVATED: NO`; `PSRR GO: NO`; `DEPLOYMENT AUTHORIZED: NO`;
 `PRODUCTION AUTHORIZED: NO`; `PAID ACTIVATION AUTHORIZED: NO`; `main` not reconciled.
 **`NEXT GATE: WAVE-2 OWNER AUTHORIZATION`** — nothing begins automatically from this closure.
+
+## POST-W2-ID GOVERNANCE SYNCHRONIZATION — WAVE-2 CONTRACT / W2-D / W2-ID AUTHORITATIVE; PERMANENT DEFERRED OBLIGATIONS REGISTER CREATED (governance-only synchronization candidate)
+
+**Append-only synchronization entry.** The Wave-1 closure entry above ended with
+`WAVE-2 AUTHORIZED: NO` and `NEXT GATE: WAVE-2 OWNER AUTHORIZATION` — authority-at-that-time,
+now superseded by the authoritative merged arc below (each step verified from Git at the
+synchronization gate; nothing here rewrites the older entries, which were correct when written).
+
+**1. WAVE-2 BOUNDED IMPLEMENTATION CONTRACT — `CONTRACT AUTHORITATIVE`.** Merged via **PR #563**,
+merge `58e92e09cc7e6d36cb9c939cf9958e8a294f88ce` (first parent `e02d175b…` = the Wave-1 closure
+merge; second parent = the exact Owner-accepted final contract candidate `84b165a894a771ff2775a993d8f08f38e6ba46a6`
+after two Independent External Review rounds; prior candidates `89736887…`/`fd2e1052…` preserved as
+immutable reviewed evidence). Establishes: Wave-2 = 1 governance sub-gate (W2-ID) + 4 executable
+slices (`W2-D → W2-ID → W2-A ∥(analysis-only) W2-B → W2-C`, exact-SHA serialized acceptance);
+RVR-7 Arabic parity = **Wave 3 — unchanged**; RVR-8 separate; W1-S2 active-set attempt gate;
+W1-N4 lapse transparency; register recomputation architecture; corrected WS10 scope;
+`WHY THIS MATTERS USER-FACING RENDER: NOT AUTHORIZED` (OD-PDVG-12 undecided).
+
+**2. W2-D — `IMPLEMENTATION AUTHORITATIVE`.** Merged via **PR #564**, merge
+`91475e456cbe8ff21bfa8e7bf2fb3e6dd801f762` (second parent = exact Owner-accepted candidate
+`528b45199892aaa4ce6b2f0db2452f525b963c0b`). Delivered: **W1-S2** — the live Accept Risk
+availability gate (`substantive_attempt_recorded`: active-set rule — `superseded_by is None` +
+`answered` + served gap + not weak/refusal + `addresses_gap`), route + affordance, canonical writer
+and historical replay byte-unchanged; **W1-N4** — reconstruction-seam lapse classification
+(`RiskAcceptanceReplayOutcome`) + single-use governed EN/AR lapse notice in the RVR-5 correction
+acknowledgement; three P9 digest pins reconciled via the disclosed lineage mechanism (purely
+additive engine change). Creator full suite at the candidate: `4533 passed / 3 skipped / 1 xfailed /
+0 failed`. **W1-S2 CLOSED — evidence verified; W1-N4 CLOSED — evidence verified.**
+
+**3. W2-ID — `GOVERNANCE MINI-GATE AUTHORITATIVE`.** Merged via **PR #565**, merge
+`516a184231f3e19fad6e8f6f3301b5b9c4ad9820` (second parent = exact Owner-accepted v3 candidate
+`a92d4fa4dcea32009b3020b083c08dc8028772d5`; v1 `f2cfe745…` and v2 `538d57fa…` preserved unamended as
+`refs/reviewed/*` evidence). Resolves the decision-capture identity/recording model: founding-record
+chain-root identity (`decision-pn-<idea_id>-<root>`, candidate ids root-based; refinement preserves
+identity, withdraw+redeclare renews it), plural user-created decision contexts, full
+derived-projection determinism (every serialized sub-object enumerated at RVR-4 freeze), the
+single-target declaration supersession invariant (ID-11) and derived-surface containment (OW-6),
+and the committed Owner decision **`OD-W2ID-LEDGER — APPROVED`**: the existing `AssertionRecord`
+ledger is the bounded decision-capture carrier ARCHITECTURE; FDC-001 `DecisionRecord` remains the
+sole canonical decision-semantics owner; `AssertionRecord` remains carrier/provenance/history and is
+never the decision; **implementation and any field/disposition change deferred to W2-A**.
+
+**Authorization lineage — recorded without retroactive invention.** The Wave-2 contract, W2-D, and
+W2-ID lifecycle authorizations carry no dedicated Owner-Decision-Register entries; classification:
+`AUTHORIZATION EXERCISE EVIDENCED BY AUTHORITATIVE MERGED EXECUTION; DEDICATED REGISTER ENTRY
+ABSENT` — factual PR/SHA lineage is recorded in the register's new Wave-2 section; no OD identifier,
+date, or approval wording is invented.
+
+**4. This synchronization candidate.** Governance-only: the four status surfaces brought to current
+truth plus the **NEW permanent `docs/governance/DEFERRED_OBLIGATIONS_REGISTER.md`** (Owner permanent
+rule; Master Obligation Index layer 6) seeded from the post-W2-ID read-only retrospective
+reconstruction — before-W2-A, before-serious-release, before-paid-activation, strategic/future
+buckets, unowned truths (`USER FEEDBACK OWNER: NONE`; MG-8 observation, cause unproven, no
+established governance owner; R4-C replay-order Owner decision OPEN), and retrospective
+closed/superseded/retired lineage rows (TDVP Outcome A preserved as CLOSED WITHIN ITS HISTORICAL
+SCOPE). `EXECUTABLE/TEST/PIN/PACK/DOMAIN-RULE DELTA: 0`; no historical record rewritten; `main` not
+reconciled. **Disposition: `POST-W2-ID SYNC + DEFERRED REGISTER — GOVERNANCE CANDIDATE; NOT
+AUTHORITATIVE UNTIL MERGED AND POST-MERGE VERIFIED`.**
+
+**Next eligible gate — `NEXT IMPLEMENTATION NOT YET AUTHORIZED`.** After this synchronization
+merges: **`Post-W2-ID governance sync → W2-A AUTHORIZATION / CONTRACT-FREEZE GATE`** (the Owner
+authorization that must name the OD-W2A-LEDGER enactment items: exact decision-action disposition
+vocabulary; explicit context-attachment representation incl. any exact bounded `AssertionRecord`
+field proposal; the frozen RVR-4 implementation contract). `W2-A IMPLEMENTATION AUTHORIZED: NO`;
+`W2-A IMPLEMENTATION STARTED: NO`; `RVR-6 / RVR-7 / RVR-8: NOT AUTHORIZED`; `SECOND S2 RUN
+AUTHORIZED: NO`; `WHY THIS MATTERS RENDER AUTHORIZED: NO`; `MEANING-ADAPTIVE QUESTIONING
+AUTHORIZED: NO`; `MLC DEFINITION FROZEN: NO`; `PSRR GO: NO`; `DEPLOYMENT AUTHORIZED: NO`;
+`PRODUCTION AUTHORIZED: NO`; `PAID ACTIVATION AUTHORIZED: NO`.
