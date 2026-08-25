@@ -31,7 +31,13 @@ readiness is always freshly derived from restored records.
 import json
 from dataclasses import dataclass, field
 
-from engine.idea_state import AssertionRecord, IdeaState
+from engine.idea_state import (
+    AssertionRecord, IdeaState,
+    DECISION_ACTION_DISPOSITIONS, LEGACY_INTERACTION_DISPOSITIONS,
+    DISPOSITION_DECISION_CONTEXT_DECLARED,
+    DISPOSITION_DECISION_ALTERNATIVE_DECLARED,
+    DISPOSITION_DECISION_ALTERNATIVE_WITHDRAWN,
+)
 
 # One minimal supported contract version. Unknown versions fail explicitly.
 CONTRACT_VERSION = "p4-0-record-contract-v1"
@@ -65,6 +71,10 @@ _ASSERTION_FIELDS = (
     "record_id", "disposition", "content", "gap_context", "iteration",
     "provenance", "validation_status", "quality", "pending", "responsibility",
     "resolves_gap", "contradicts", "supersedes", "superseded_by",
+    # W2-A (authoritative contract §3/§4, PR #567): explicit decision-context
+    # attachment. The ONLY loader relaxation is the bounded legacy rule in
+    # `assertion_from_dict` below; decision-action payloads get no escape.
+    "decision_context_root",
 )
 
 _ENVELOPE_FIELDS = ("contract_version", "idea_id", "assertions")
@@ -88,6 +98,7 @@ def assertion_to_dict(record):
         "contradicts": list(record.contradicts),
         "supersedes": list(record.supersedes),
         "superseded_by": record.superseded_by,
+        "decision_context_root": record.decision_context_root,
     }
 
 
@@ -153,6 +164,14 @@ def assertion_from_dict(data):
         raise UnknownFieldError(
             "unknown assertion field(s): %s" % sorted(unknown))
     missing = set(_ASSERTION_FIELDS) - keys
+    if missing == {"decision_context_root"} \
+            and data.get("disposition") in LEGACY_INTERACTION_DISPOSITIONS:
+        # W2-A contract §4 — the ONE bounded compatibility relaxation: a
+        # pre-W2-A payload (legacy disposition) may omit exactly the new
+        # optional field and loads with None. Decision-action payloads never
+        # take this branch; every other missing field still fails below.
+        data = dict(data, decision_context_root=None)
+        missing = set()
     if missing:
         raise UnknownFieldError(
             "missing required assertion field(s): %s" % sorted(missing))
@@ -171,6 +190,7 @@ def assertion_from_dict(data):
         contradicts=list(data["contradicts"]),
         supersedes=list(data["supersedes"]),
         superseded_by=data["superseded_by"],
+        decision_context_root=data["decision_context_root"],
     )
 
 
@@ -272,6 +292,69 @@ class ProjectRecordContract:
                         "supersession cycle detected at record: %r" % node)
                 seen.add(node)
                 node = by_id[node].superseded_by
+        # W2-A (contract §4) — load-side structural validation of persisted
+        # decision-action records. Fail closed: an invalid persisted decision
+        # payload never becomes live state. Mirrors the carrier mint rules
+        # (structural legality only; decision semantics stay with FDC-001).
+        for r in self.assertions:
+            root_ref = getattr(r, "decision_context_root", None)
+            if r.disposition not in DECISION_ACTION_DISPOSITIONS:
+                if root_ref is not None:
+                    raise InvalidReferenceError(
+                        "legacy record %r carries a decision_context_root"
+                        % r.record_id)
+                for ref in r.supersedes:
+                    if by_id[ref].disposition in DECISION_ACTION_DISPOSITIONS:
+                        raise InvalidReferenceError(
+                            "legacy record %r supersedes a decision-action "
+                            "record" % r.record_id)
+                continue
+            if r.gap_context is not None:
+                raise InvalidReferenceError(
+                    "decision-action record %r carries a gap_context"
+                    % r.record_id)
+            if len(r.supersedes) > 1:
+                raise InvalidReferenceError(
+                    "decision-action record %r supersedes more than one "
+                    "record (ID-11)" % r.record_id)
+            if r.disposition == DISPOSITION_DECISION_CONTEXT_DECLARED:
+                if root_ref is not None:
+                    raise InvalidReferenceError(
+                        "decision_context_declared record %r carries a "
+                        "non-null decision_context_root" % r.record_id)
+                for ref in r.supersedes:
+                    if by_id[ref].disposition \
+                            != DISPOSITION_DECISION_CONTEXT_DECLARED:
+                        raise InvalidReferenceError(
+                            "context refinement %r supersedes a non-context "
+                            "record" % r.record_id)
+                continue
+            if root_ref is None or root_ref not in ids:
+                raise InvalidReferenceError(
+                    "decision-action record %r has a missing/unknown "
+                    "decision_context_root" % r.record_id)
+            root = by_id[root_ref]
+            if root.disposition != DISPOSITION_DECISION_CONTEXT_DECLARED \
+                    or root.supersedes:
+                raise InvalidReferenceError(
+                    "decision-action record %r does not reference a FOUNDING "
+                    "context record" % r.record_id)
+            if r.disposition == DISPOSITION_DECISION_ALTERNATIVE_WITHDRAWN \
+                    and len(r.supersedes) != 1:
+                raise InvalidReferenceError(
+                    "withdrawal %r must supersede exactly one alternative"
+                    % r.record_id)
+            for ref in r.supersedes:
+                target = by_id[ref]
+                if target.disposition \
+                        != DISPOSITION_DECISION_ALTERNATIVE_DECLARED:
+                    raise InvalidReferenceError(
+                        "decision-action record %r supersedes a record of "
+                        "the wrong class" % r.record_id)
+                if target.decision_context_root != root_ref:
+                    raise InvalidReferenceError(
+                        "cross-context decision supersession at record %r"
+                        % r.record_id)
         return self
 
     # --- reconstruction of a state suitable for a FRESH readiness call ------

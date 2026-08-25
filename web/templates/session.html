@@ -512,4 +512,68 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
 </details>
 {% endif %}
 
+{# W2-A / RVR-4 (authoritative contract §14): bounded decision capture inside
+   the EXISTING journey. The composed state is derived on demand from the
+   ledger; user content (question / alternative names) renders verbatim and is
+   never translated; chrome uses the governed UI_W2A_* keys. Forms follow the
+   accept-risk/correction pattern (server token, persist-before-acknowledge)
+   and are suppressed on a cold read-only view (state.domain is None), where
+   the composed state still displays. #}
+{% if decision_capture is defined %}
+<details class="decision-capture" {% if decision_capture %}open{% endif %} style="margin-top:14px;border:1px solid #d5c9e8;border-radius:4px;background:#f9f5fd;padding:10px 14px">
+  <summary style="cursor:pointer;font-size:13px;color:#5a2c8c;font-weight:bold">{{ t('UI_W2A_SECTION_HEADING') }}</summary>
+  <p style="font-size:13px;color:#555;margin:10px 0 8px 0">{{ t('UI_W2A_SECTION_EXPLAIN') }}</p>
+  {% for d in decision_capture %}
+  <div class="w2a-context" style="border:1px solid #e2d9ef;border-radius:4px;background:#ffffff;padding:8px 12px;margin-bottom:10px">
+    <p style="margin:4px 0"><strong>{{ t('UI_W2A_QUESTION_LABEL') }}:</strong> {{ d.question }}</p>
+    <p style="margin:8px 0 4px 0;font-size:13px"><strong>{{ t('UI_W2A_ALTERNATIVES_LABEL') }}:</strong></p>
+    {% if d.alternatives %}
+    <ul style="margin:4px 0 8px 0">
+      {% for a in d.alternatives %}
+      <li style="margin-bottom:8px">{{ a.name }}
+        {% if state.domain %}
+        <form method="POST" action="/session/{{ sid }}/decision/refine-alternative" style="display:inline-block;margin:2px 6px">
+          <input type="hidden" name="answer_token" value="{{ answer_token }}">
+          <input type="hidden" name="supersedes_record_id" value="{{ a.head_record_id }}">
+          <input type="text" name="content" required aria-label="{{ t('UI_W2A_REFINE_LABEL') }}" placeholder="{{ t('UI_W2A_REFINE_LABEL') }}" style="max-width:280px">
+          <button type="submit">{{ t('UI_W2A_REFINE_BUTTON') }}</button>
+        </form>
+        <form method="POST" action="/session/{{ sid }}/decision/withdraw-alternative" style="display:inline-block;margin:2px 6px">
+          <input type="hidden" name="answer_token" value="{{ answer_token }}">
+          <input type="hidden" name="supersedes_record_id" value="{{ a.head_record_id }}">
+          <button type="submit" title="{{ t('UI_W2A_WITHDRAW_LABEL') }}">{{ t('UI_W2A_WITHDRAW_BUTTON') }}</button>
+        </form>
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p style="font-size:13px;color:#777;margin:4px 0">{{ t('UI_W2A_NO_ALTERNATIVES') }}</p>
+    {% endif %}
+    {% if d.readiness_status == 'insufficient_information' %}
+    <p class="w2a-readiness-note" style="font-size:12px;color:#777;margin:6px 0 4px 0">{{ t('UI_W2A_READINESS_NOTE') }}</p>
+    {% endif %}
+    {% if state.domain %}
+    <form method="POST" action="/session/{{ sid }}/decision/declare-alternative" style="margin-top:6px">
+      <input type="hidden" name="answer_token" value="{{ answer_token }}">
+      <input type="hidden" name="context_root" value="{{ d.context_root }}">
+      <label style="display:block;font-size:12px;color:#888;margin-bottom:4px">{{ t('UI_W2A_DECLARE_ALT_LABEL') }}</label>
+      <input type="text" name="content" required style="max-width:320px">
+      <button type="submit">{{ t('UI_W2A_DECLARE_ALT_BUTTON') }}</button>
+    </form>
+    {% endif %}
+  </div>
+  {% endfor %}
+  {% if state.domain %}
+  <form method="POST" action="/session/{{ sid }}/decision/declare-context" style="margin-top:6px">
+    <input type="hidden" name="answer_token" value="{{ answer_token }}">
+    <label for="w2a-context-content" style="display:block;font-size:12px;color:#888;margin-bottom:4px">{{ t('UI_W2A_DECLARE_CONTEXT_LABEL') }}</label>
+    <textarea id="w2a-context-content" name="content" rows="2" required style="width:100%;box-sizing:border-box"></textarea>
+    <br>
+    <button type="submit" style="margin-top:6px">{{ t('UI_W2A_DECLARE_CONTEXT_BUTTON') }}</button>
+  </form>
+  {% endif %}
+</details>
+{% endif %}
+
 {% endblock %}

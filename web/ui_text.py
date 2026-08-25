@@ -111,6 +111,10 @@ _MESSAGE_KEYS = {
      "What you see below has not changed yet. The saved correction will be "
      "reflected whenever this project can be rebuilt successfully."):
         "UI_B_CORRECT_004",
+    # W2-A decision-capture failure message (web/app.py) — same registration
+    # pattern as every other server message (storage stays English).
+    ("That decision entry could not be saved just now. "
+     "Nothing was changed."): "UI_W2A_ERR_001",
 }
 
 
@@ -768,6 +772,68 @@ UI_STRINGS = {
         "en": ("Resolved by your corrected answers - no further action "
                "needed:"),
         "ar": "حُلّ بفضل إجاباتك المصحّحة — لا حاجة لإجراء آخر:"},
+    # --- W2-A / RVR-4 decision capture (authoritative contract §14/§15) ---
+    # Governed EN/AR pairs for W2-A's OWN new UI only (no RVR-7 expansion);
+    # single-language rendering via the existing t()/ui_lang mechanism.
+    "UI_W2A_SECTION_HEADING": {
+        "en": "Decision capture",
+        "ar": "تسجيل القرارات"},
+    "UI_W2A_SECTION_EXPLAIN": {
+        "en": ("Declare a technical decision you are working through, list the "
+               "alternatives you are considering, and refine or withdraw them "
+               "as your thinking evolves. Everything is kept in your project "
+               "history and rebuilt exactly on reload."),
+        "ar": ("سجّل قرارًا تقنيًا تعمل عليه، واذكر البدائل التي تفكّر فيها، "
+               "وحسّنها أو اسحبها مع تطوّر تفكيرك. يُحفظ كل شيء في سجل مشروعك "
+               "ويُعاد بناؤه بدقة عند إعادة التحميل.")},
+    "UI_W2A_DECLARE_CONTEXT_LABEL": {
+        "en": "Declare a decision to work on (state it as a question)",
+        "ar": "سجّل قرارًا للعمل عليه (صِغه كسؤال)"},
+    "UI_W2A_DECLARE_CONTEXT_BUTTON": {
+        "en": "Declare decision",
+        "ar": "تسجيل القرار"},
+    "UI_W2A_QUESTION_LABEL": {
+        "en": "Decision question",
+        "ar": "سؤال القرار"},
+    "UI_W2A_ALTERNATIVES_LABEL": {
+        "en": "Alternatives under consideration",
+        "ar": "البدائل قيد الدراسة"},
+    "UI_W2A_NO_ALTERNATIVES": {
+        "en": "No active alternatives yet.",
+        "ar": "لا توجد بدائل نشطة بعد."},
+    "UI_W2A_DECLARE_ALT_LABEL": {
+        "en": "Add an alternative",
+        "ar": "أضف بديلًا"},
+    "UI_W2A_DECLARE_ALT_BUTTON": {
+        "en": "Add alternative",
+        "ar": "إضافة البديل"},
+    "UI_W2A_REFINE_LABEL": {
+        "en": "Refine this alternative (keeps its identity and history)",
+        "ar": "حسّن هذا البديل (يحافظ على هويته وسجله)"},
+    "UI_W2A_REFINE_BUTTON": {
+        "en": "Refine",
+        "ar": "تحسين"},
+    "UI_W2A_WITHDRAW_LABEL": {
+        "en": "Withdraw this alternative (kept in project history)",
+        "ar": "اسحب هذا البديل (يبقى في سجل المشروع)"},
+    "UI_W2A_WITHDRAW_BUTTON": {
+        "en": "Withdraw",
+        "ar": "سحب"},
+    "UI_W2A_READINESS_NOTE": {
+        "en": ("Comparison has not started: these alternatives are recorded, "
+               "and the inputs needed to compare them can be added at a later "
+               "stage. This is the expected state for a newly declared "
+               "decision - not a problem with your idea."),
+        "ar": ("لم تبدأ المقارنة بعد: هذه البدائل مسجّلة، ويمكن إضافة المدخلات "
+               "اللازمة لمقارنتها في مرحلة لاحقة. هذه هي الحالة المتوقعة لقرار "
+               "مسجّل حديثًا — وليست مشكلة في فكرتك.")},
+    "UI_W2A_DELIV_HEADING": {
+        "en": "Recorded decision state",
+        "ar": "حالة القرارات المسجّلة"},
+    "UI_W2A_ERR_001": {
+        "en": ("That decision entry could not be saved just now. "
+               "Nothing was changed."),
+        "ar": "تعذّر حفظ هذا الإدخال القراري الآن. لم يتغيّر أي شيء."},
     "UI_RVR5_CORRECT_HEADING": {
         "en": "Correct an earlier answer",
         "ar": "تصحيح إجابة سابقة"},
@@ -1171,6 +1237,9 @@ UI_STRINGS = {
 # questions, the criticality clarification ask, and user content are deliberately
 # ABSENT. Populated below; kept as the single owner-approved Arabic registry.
 _DEEP_AR = {
+    # --- W2-A decision-capture acknowledgement (web.app constant) ---
+    "Your decision entry was recorded and saved to your project.":
+        "تم تسجيل إدخالك القراري وحفظه في مشروعك.",
     # --- RVR-1 accepted-risk acknowledgement / failure (web.app constants) ---
     "Recorded as an accepted risk. This gap is explicitly accepted by you as "
     "a known, unresolved risk - it is NOT resolved and NOT validated, and it "
