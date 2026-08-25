@@ -15125,3 +15125,61 @@ field proposal; the frozen RVR-4 implementation contract). `W2-A IMPLEMENTATION 
 AUTHORIZED: NO`; `WHY THIS MATTERS RENDER AUTHORIZED: NO`; `MEANING-ADAPTIVE QUESTIONING
 AUTHORIZED: NO`; `MLC DEFINITION FROZEN: NO`; `PSRR GO: NO`; `DEPLOYMENT AUTHORIZED: NO`;
 `PRODUCTION AUTHORIZED: NO`; `PAID ACTIVATION AUTHORIZED: NO`.
+
+## POST-W2-A-CONTRACT GOVERNANCE SYNCHRONIZATION — W2-A / RVR-4 CONTRACT FREEZE AUTHORITATIVE; OD-W2-DW-LIFT EXERCISED (governance-only synchronization candidate)
+
+**Append-only synchronization entry.** The entry above ended with the next eligible gate
+`W2-A AUTHORIZATION / CONTRACT-FREEZE GATE` — that gate has now completed through the full
+lifecycle; the entry above is authority-at-that-time and is not rewritten.
+
+**1. W2-A / RVR-4 CONTRACT — `CONTRACT-FREEZE AUTHORITATIVE`.** Merged via **PR #567**, merge
+`82758cb2d06a7b91d30acfaa83a3d836df103186` (verified from Git at this gate: first parent
+`557548db2bb37b21b6b57f893afc2ae1af64744f` = the PR #566 post-W2-ID sync merge; second parent
+`b778cfe7fd31c82c583d7d97e5f73394e6bfda65` = the exact Owner-accepted contract candidate — the
+final sibling after Independent External Review `NARROW REPAIR REQUIRED` and Creator re-Grill,
+with `f4d0552…` (reviewed) and `f0f6663…` (Grill-failed) preserved as immutable sibling evidence;
+merge tree `7b56a5e19f2a3b1f3bdba00203aa119772b5b1ca` identical to the candidate tree; empty
+candidate→merge diff; merged 2026-08-25T11:23:16Z; 0 commits after at this gate).
+The authoritative contract (`docs/governance/W2_A_RVR4_IMPLEMENTATION_CONTRACT_CANDIDATE.md`)
+freezes: the V2 decision-action vocabulary (`decision_context_declared` /
+`decision_alternative_declared` / `decision_alternative_withdrawn`; refinement = single-target
+supersession, no refinement disposition); the exact context-attachment field
+`decision_context_root` with fail-closed mint/load semantics; the bounded legacy-payload load rule
+(`CONTRACT_VERSION` unchanged); the fail-closed carrier-level mint seam (no bypass; explicit
+non-`OWNER_STATED` provenance rejected on decision actions); `OWNER_STATED` decision-action
+provenance; FDC-001 sole canonical decision-semantics ownership; the full deterministic projection
+formulas; ID-11; OW-6 containment on the CORRECTED repository baseline (the requirement-landscape
+chain has NO disposition inclusion gate — primary containment point `engine/requirement_landscape.py`,
+with `validation_plan.py` / `deliverable_assembler.py` inheriting); the frozen implementation
+allowlist + 51-item RED inventory; and the §21 Deferred-Obligations transition plan.
+
+**2. OD-W2-DW-LIFT — `EXERCISED (bounded)`.** The Owner exercise is recorded in the authoritative
+contract §5 and committed through Owner exact-SHA acceptance + merge: class reuse by the
+composition seam; default-preserving constructor generalization for deterministic injected
+identities; class vocabulary reuse — nothing more. The broader DW Path-T
+`PRESERVE UNMODIFIED AND PAUSE` hold stands; no code was authorized by the contract gate.
+Register row CLOSED — evidence verified (contract §5 + PR #567).
+
+**3. Deferred Obligations Register reconciliation (this candidate).** Per the authoritative
+contract §21: OD-W2-DW-LIFT → `CLOSED — evidence verified`; the two post-W2-ID sync/lineage rows →
+`CLOSED — evidence verified` (PR #566 merge evidence, closed only now, never self-certified);
+the **W2-A enactment set remains `OPEN`** (contract details FROZEN; closure only with exact
+implementation + RED→GREEN evidence); **RVR-4 implementation remains `OPEN — NOT AUTHORIZED YET`**.
+Release-value obligations unchanged and OPEN: R4-C; T1-A′; T1-C′; Time-to-Value; Differentiation.
+Non-blocking review observations preserved as observations (no promotion to blockers).
+
+**4. This synchronization candidate.** Governance-only: the four live status surfaces
+(`CURRENT_PROJECT_STATE.md`, this roadmap (append-only), `ACTIVE_INCREMENT_CONTRACT.md` rotation,
+`OWNER_DECISION_REGISTER.md` append) + the Deferred Obligations Register row transitions above.
+`EXECUTABLE/TEST/PIN/PACK/DOMAIN-RULE DELTA: 0`; no historical record rewritten; `main` not
+reconciled. **Disposition: `POST-W2-A-CONTRACT SYNC — GOVERNANCE CANDIDATE; NOT AUTHORITATIVE
+UNTIL MERGED AND POST-MERGE VERIFIED`.**
+
+**Next eligible gate — `W2-A IMPLEMENTATION AUTHORIZATION GATE` (a separate Owner decision).**
+The repository is READY for that gate (contract frozen; allowlist and RED inventory frozen;
+blocking §2 register rows resolved) — **READY is not AUTHORIZED**. `W2-A IMPLEMENTATION
+AUTHORIZED: NO`; `W2-A IMPLEMENTATION STARTED: NO`; `W2-B / W2-C: NOT STARTED`;
+`RVR-6 / RVR-7 / RVR-8: NOT AUTHORIZED`; `SECOND S2 RUN AUTHORIZED: NO`; `WHY THIS MATTERS RENDER
+AUTHORIZED: NO`; `MEANING-ADAPTIVE QUESTIONING AUTHORIZED: NO`; `MLC DEFINITION FROZEN: NO`;
+`PSRR GO: NO`; `DEPLOYMENT AUTHORIZED: NO`; `PRODUCTION AUTHORIZED: NO`; `PAID ACTIVATION
+AUTHORIZED: NO`.

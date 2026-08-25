@@ -6,6 +6,15 @@ post-W2-ID bounded status-sync + register write gate, seeded from the
 repository-verified retrospective reconstruction (read-only gate, base
 `516a184231f3e19fad6e8f6f3301b5b9c4ad9820`).
 
+CURRENT STATUS: `AUTHORITATIVE` — merged via PR #566 (merge
+`557548db2bb37b21b6b57f893afc2ae1af64744f`), post-merge verified.
+Maintained through authoritative gates only; latest maintenance gate:
+the post-W2-A-contract synchronization (base
+`82758cb2d06a7b91d30acfaa83a3d836df103186`, PR #567 — W2-A/RVR-4
+contract freeze). Rows touched at that gate carry it as their last
+authoritative review point; all other rows keep the seeding review
+point below.
+
 ## 1. Governance contract
 
 **Owner permanent rule (binding, retrospective and prospective).** A
@@ -77,10 +86,10 @@ read-only reconstruction at base `516a1842…` (this gate).
 
 | Item | Source owner | Origin | Disposition | Return trigger | Latest safe gate | Blocking | Closure evidence required |
 |---|---|---|---|---|---|---|---|
-| W2-A enactment set — exact decision-action disposition vocabulary; explicit context-attachment representation (incl. any exact bounded `AssertionRecord` field proposal); RVR-4 implementation-contract freeze. Carrier ARCHITECTURE itself is NOT open — decided by `OD-W2ID-LEDGER — APPROVED` `[OWNER]` | Owner (named items inside the W2-A authorization) + RVR-4 contract | W2-ID v3 record §B/§C (authoritative, PR #565) | OPEN — return at W2-A authorization | Owner convenes the W2-A authorization/contract-freeze gate | W2-A authorization | CURRENT EXECUTION BLOCKER (for W2-A start) | W2-A authorization naming the enactment items + frozen RVR-4 contract, merged |
-| **OD-W2-DW-LIFT — exercise OD-R3's bounded DW-lane-hold lift** exactly as the Wave-2 contract §D scopes it (class reuse only; no second journey; the S2 §13 `PRESERVE UNMODIFIED AND PAUSE` hold otherwise stands). OD-R3 = ACCEPTED IN PRINCIPLE; the lift exercise is NOT AUTHORIZED / NOT YET EXERCISED (W2-ID did not exercise it); nothing here activates broader DW Path-T work | Owner (Wave-2 authoritative contract §P item 3) | WAVE_2_BOUNDED_IMPLEMENTATION_CONTRACT_CANDIDATE.md §P item 3 `[REPO :434-436]`; register OD-R3 row (Wave-1 section) | OPEN — return at defined gate | W2-A authorization gate | before W2-A implementation starts | CURRENT EXECUTION BLOCKER | explicit Owner exercise/authorization of OD-W2-DW-LIFT under the authoritative W2-A lifecycle |
-| Post-W2-ID status-surface synchronization + this register's creation | this write gate (Creator under Owner authorization) | read-only reconstruction §C/§D; this candidate | OPEN — candidate frozen / pending external review and Owner acceptance (never self-certified closed pre-merge) | Independent review → Owner exact-SHA acceptance → merge → post-merge verification | this gate | CURRENT EXECUTION BLOCKER (governance currency) | authoritative merge of this candidate + post-merge verification |
-| Wave-2-era authorization lineage recording in the Owner Decision Register | `OWNER_DECISION_REGISTER.md` (L5) | read-only reconstruction §C (`AUTHORIZATION EXERCISE EVIDENCED BY AUTHORITATIVE MERGED EXECUTION; DEDICATED REGISTER ENTRY ABSENT`) | OPEN — carried by this same candidate (see row above) | same as above | this gate | CURRENT EXECUTION BLOCKER (bookkeeping) | merged register Wave-2 section |
+| W2-A enactment set — exact decision-action disposition vocabulary; explicit context-attachment representation (incl. any exact bounded `AssertionRecord` field proposal); RVR-4 implementation-contract freeze. Carrier ARCHITECTURE itself is NOT open — decided by `OD-W2ID-LEDGER — APPROVED` `[OWNER]`. **CONTRACT DETAILS NOW FROZEN** via the authoritative W2-A contract (PR #567, merge `82758cb2…`, accepted candidate `b778cfe7…`): V2 vocabulary; `decision_context_root`; bounded legacy load rule; fail-closed carrier mint; `OWNER_STATED` provenance; OW-6 containment incl. the corrected requirement-landscape truth; frozen allowlist + RED inventory. This row's original closure-evidence wording ("authorization + frozen contract, merged") is SUPERSEDED by the later authoritative contract's own §21 transition plan, which keeps the enactment set OPEN until implementation | Owner (frozen W2-A contract) + RVR-4 contract | W2-ID v3 record §B/§C (PR #565); W2-A contract §21 (PR #567) | OPEN — return at defined gate (contract FROZEN; **runtime enactment NOT started**) | W2-A implementation authorization gate (a separate Owner decision) | before serious release (W2-A implementation) | CURRENT EXECUTION BLOCKER (for W2-A enactment) | exact implementation + RED→GREEN evidence, merged (W2-A contract §21) |
+| **OD-W2-DW-LIFT — exercise OD-R3's bounded DW-lane-hold lift** exactly as the Wave-2 contract §D scopes it (class reuse only; no second journey; the S2 §13 `PRESERVE UNMODIFIED AND PAUSE` hold otherwise stands). OD-R3 = ACCEPTED IN PRINCIPLE; nothing here activates broader DW Path-T work | Owner (Wave-2 authoritative contract §P item 3) | WAVE_2_BOUNDED_IMPLEMENTATION_CONTRACT_CANDIDATE.md §P item 3 `[REPO :434-436]`; register OD-R3 row (Wave-1 section) | **CLOSED — evidence verified.** Closure criterion (this row): "explicit Owner exercise/authorization of OD-W2-DW-LIFT under the authoritative W2-A lifecycle" — a governance criterion requiring NO runtime evidence. Satisfied exactly: the Owner exercise is recorded in the authoritative W2-A contract §5 (three bounded permissions — FDC-001 class reuse by the composition seam; default-preserving constructor generalization; class vocabulary reuse — with the full forbidden list and the `PRESERVE UNMODIFIED AND PAUSE` hold preserved), Owner-accepted at exact SHA `b778cfe7fd31c82c583d7d97e5f73394e6bfda65`, merged PR #567 (`82758cb2…`), post-merge verified. The contract's own §21 names this row eligible for exactly this closure. IMPLEMENTATION of the lifted permission remains separately governed by the W2-A implementation gate + frozen allowlist; broader DW Path-T remains held | n/a (closed) | n/a (closed) | n/a (closed) | W2-A contract §5 + PR #567 merge `82758cb2…` (recorded) |
+| Post-W2-ID status-surface synchronization + this register's creation | this write gate (Creator under Owner authorization) | read-only reconstruction §C/§D; this candidate | **CLOSED — evidence verified.** Closure criterion: "authoritative merge of this candidate + post-merge verification". Satisfied: merged via PR #566 (merge `557548db2bb37b21b6b57f893afc2ae1af64744f`, second parent = the exact accepted sync candidate `3910e86c…`, empty candidate→merge diff), post-merge verified at the W2-A read-only gate and re-verified at the post-W2-A-contract sync (PR #566's merge is the first parent of PR #567). Never self-certified: closure recorded only AFTER the merge, at a later gate | n/a (closed) | n/a (closed) | n/a (closed) | PR #566 merge `557548db…` + post-merge verification (recorded) |
+| Wave-2-era authorization lineage recording in the Owner Decision Register | `OWNER_DECISION_REGISTER.md` (L5) | read-only reconstruction §C (`AUTHORIZATION EXERCISE EVIDENCED BY AUTHORITATIVE MERGED EXECUTION; DEDICATED REGISTER ENTRY ABSENT`) | **CLOSED — evidence verified.** Closure criterion: "merged register Wave-2 section". Satisfied: the Owner Decision Register's Wave-2 section (OD-W2ID-LEDGER row + lifecycle lineage table + open boundary) is present in the merged authoritative tree via PR #566 (`557548db…`), post-merge verified | n/a (closed) | n/a (closed) | n/a (closed) | PR #566 merge `557548db…`, ODR Wave-2 section (recorded) |
 
 ## 3. Before serious release
 
@@ -88,7 +97,7 @@ read-only reconstruction at base `516a1842…` (this gate).
 |---|---|---|---|---|---|---|---|
 | W1-N3 — residual relevance false-negative (bounded question-id-scoped attempt; evidenced fallback = safe false-negative) | RVR-6b / W2-C (gap_relevance + WS10 intent content) | Wave-1 closure §4; Wave-2 contract §J | OPEN — return at defined gate | W2-C contract freeze | W2-C | CONDITIONAL | W2-C RED test vs frozen S2 R6 fixture passing without new false positives, or evidenced deferral record |
 | W1-N2 — Arabic adversarial regression test (enumerated small-talk) | RVR-7 (Wave 3) | Wave-1 closure §4; Wave-2 contract §O | OPEN — return at defined gate | RVR-7 contract freeze | RVR-7 | FRB (verification input) | merged RVR-7 suite incl. the W1-N2 AR test |
-| RVR-4 decision composition (W2-A implementation) | FDC-001 + composition seam per W2-ID | Wave-2 contract §D; W2-ID record | OPEN — NOT AUTHORIZED YET (not cancelled) | W2-A authorization | before serious release | FRB | W2-A implemented/merged with ID/PV/OW/CP/FL + ID-11/OW-6 tests green |
+| RVR-4 decision composition (W2-A implementation) | FDC-001 + composition seam per W2-ID; implementation contract = the authoritative W2-A contract (PR #567) | Wave-2 contract §D; W2-ID record; W2-A contract (PR #567, `82758cb2…`) | OPEN — NOT AUTHORIZED YET (not cancelled; **contract FROZEN, implementation NOT authorized/started**) | W2-A implementation authorization (a separate Owner decision — the frozen contract §23 requires it explicitly) | before serious release | FRB | W2-A implemented/merged under the frozen contract with its full RED inventory (ID/SUP/DET/COMPAT/OW6/SEAM/PROV/LANG/CORR/REACH) green |
 | RVR-6a routing/register core (W2-B) | progression_loop seams per Wave-2 contract §H | Wave-2 contract §H; OD-R5 | OPEN — NOT AUTHORIZED YET | W2-B authorization (W/M values at its acceptance) | before serious release | FRB | W2-B merged with register/suppression/ordering tests green |
 | RVR-6b WS10 content + intent-aware completion (W2-C) | WS10 (existing loader) + routing consumers | Wave-2 contract §I | OPEN — NOT AUTHORIZED YET | W2-C authorization (incl. corrected WS10 scope decision) | before serious release | FRB | W2-C merged; 21-id registry committed and loader-validated |
 | RVR-7 — substantive Arabic parity | Path-N artifacts + ui_text + deliverable owners; D-P6-18 supersession decision at that gate | register OD-R4 (Wave 3); Wave-2 contract §O | OPEN — NOT AUTHORIZED YET | Wave-3 authorization after W2 content stabilizes | before serious release IF Arabic is represented as a substantive supported experience | FRB (conditional on Arabic positioning) | RVR-7 merged; EN/AR semantic-equivalence review + W1-N1/N2 inputs discharged |
@@ -153,11 +162,15 @@ unfinished material obligation = NONE" `[REPO CURRENT_PROJECT_STATE
 genuinely-future residuals (durable subsystem persistence / subsystem
 identity / display-name / subsystem-grain evidence-risk-validation —
 "future / NOT delivered" `[REPO]`); WS-PFV-001;
-D13; DW-lane Path T (PRESERVE UNMODIFIED AND PAUSE — the hold stands;
-OD-R3 is ACCEPTED IN PRINCIPLE with implementation NOT AUTHORIZED, and the
-required bounded DW-lane-hold-lift exercise (OD-W2-DW-LIFT, Wave-2
-contract §P item 3) remains deferred to the W2-A gate — NOT YET
-EXERCISED, and W2-ID did not exercise it; see the Before-W2-A bucket §2);
+D13; DW-lane Path T (PRESERVE UNMODIFIED AND PAUSE — the broader hold
+stands; OD-R3 is ACCEPTED IN PRINCIPLE with implementation NOT
+AUTHORIZED. The bounded DW-lane-hold-lift exercise **OD-W2-DW-LIFT is
+now EXERCISED** in exactly its bounded form via the authoritative W2-A
+contract §5 (PR #567, `82758cb2…`; closed row in §2) — the exercise
+grants only the three governance permissions the W2-A composition seam
+needs and preserves the full forbidden list; IMPLEMENTATION of the
+lifted permission remains governed by the W2-A implementation gate, and
+nothing activates broader DW Path-T work);
 future FDC-001 persistence
 (current-only limitation per W2-ID v3 §H); QTA (dormant status fence — the
 Arabic substance obligation lives with RVR-7's committed-content approach);
