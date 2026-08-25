@@ -41,8 +41,87 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — POST-W2-A-CONTRACT GOVERNANCE SYNCHRONIZATION; governance-only write-gate
-candidate).** Base: **`82758cb2d06a7b91d30acfaa83a3d836df103186`** — verified from Git at this
+**Status (current — POST-W2-A-IMPLEMENTATION GOVERNANCE SYNCHRONIZATION; governance-only
+write-gate candidate).** Base: **`e17ca1477e55b49298b92ac5ec8db711e208496e`** — verified from Git
+at this gate as the **live authoritative tip** of `feature/atomic-json-session-persistence`
+(**0 commits after it**; **PR #569** — the W2-A/RVR-4 implementation merge; first parent
+`894861c9ef78c9affe927f22dfa497de68050e96` (PR #568, post-W2-A-contract sync), second parent
+`d8c5aef988a00a8b342b26816afd6186e4262c42` — the exact Owner-accepted implementation candidate
+(final fresh same-base sibling after Grill-failed `b3ada80…` (IG-17) and externally reviewed
+N-2-rejected `614a0c7…`, both preserved as REMOTE evidence branches
+`evidence/w2a-impl-grillfail-b3ada80` / `evidence/w2a-impl-reviewed-614a0c7`); merge tree
+`4c1739ae9f98c422812e4a8f3561d28105974522` identical to the candidate tree; empty
+candidate→merge diff; merged 2026-08-25T13:56:35Z).
+
+**Current authoritative truth (verified from Git and by execution, not prose):**
+**W2-A / RVR-4 IMPLEMENTATION IS AUTHORITATIVE** — bounded decision capture live in the existing
+journey under the frozen contract, with the full RED inventory + IG-17 + N-2 tests GREEN in the
+merged tree (`[EXEC] 62 passed at this tip`; candidate full suite `4595/3/1/0`). The register's
+"W2-A enactment set" and "RVR-4" rows are CLOSED on that prior external evidence (this
+candidate). The Owner has directed a **Cross-Layer Execution Assurance Standard** be documented
+BEFORE W2-B proceeds (recorded in ODR §D; NOT created here). The entry-below's "next eligible
+gate = W2-A IMPLEMENTATION AUTHORIZATION" line is authority-at-that-time — that gate completed.
+
+```
+INCREMENT CONTRACT — Post-W2-A-Implementation Status Synchronization (governance only)
+Objective:                Bring the live status surfaces and the Deferred Obligations Register to
+                          current repository truth after the PR #569 implementation merge: record
+                          the implementation as authoritative; close the enactment set and RVR-4
+                          on their exact prior-evidence criteria; record the Owner's Cross-Layer
+                          Execution Assurance Standard direction and the two implementation
+                          residuals; rotate this contract.
+Owner authorization:      the Owner's post-W2-A-implementation read-only-reconstruction + bounded
+                          status/Deferred-Obligations synchronization gate instruction (following
+                          Owner exact-SHA acceptance of d8c5aef… and the PR #569 merge)
+Risk level:               LEVEL 2 — governance/documentation only
+Allowed paths:            docs/governance/CURRENT_PROJECT_STATE.md;
+                          docs/governance/ACTIVE_EXECUTION_ROADMAP.md (append-only);
+                          docs/governance/ACTIVE_INCREMENT_CONTRACT.md (this rotation);
+                          docs/governance/OWNER_DECISION_REGISTER.md (append/boundary/direction);
+                          docs/governance/DEFERRED_OBLIGATIONS_REGISTER.md (row transitions)
+Forbidden paths:          engine/, web/, tests/, schemas, export code, the W2-A contract record,
+                          historical closure records, preserved/remote evidence branches
+Expected behavior:        status surfaces state current truth; closures rest ONLY on prior
+                          external evidence; the standard is directed but NOT created; nothing
+                          else changes
+Non-goals:                W2-B/W2-C/RVR-6/RVR-7/RVR-8 implementation or authorization; the
+                          Cross-Layer Execution Assurance Standard's content; any runtime change;
+                          release-value closure; deployment/production/paid activation
+Acceptance criteria:      the governance Grill SG-1…SG-30 (merge identity verified; every changed
+                          path truth-owned; exact-criterion closures only; no self-certification;
+                          READY/ELIGIBLE/AUTHORIZED preserved)
+Required tests:           none — documentation-only (zero runtime delta verified mechanically;
+                          the W2-A inventory was re-executed read-only at the tip as closure
+                          evidence: 62 passed)
+Tests not required:       product tests — no product path changes
+Dependencies:             PR #569 authoritative merge; W2-A contract §21; the register's frozen
+                          row criteria; the remote evidence branches
+Unresolved decisions:     W2-B authorization (incl. W/M values); the Cross-Layer Execution
+                          Assurance Standard gate; the open Owner decisions tracked in the
+                          Deferred Obligations Register (R4-C, OD-PDVG-10/12/13, T2-D, MG-8 …)
+Stop conditions:          any merge-identity mismatch; any pressure to authorize W2-B, create the
+                          standard's content here, close release-value gates, or rewrite history
+Independent-review scope: factual accuracy; exact-criterion closure discipline; no obligation
+                          silently dropped or falsely kept alive; direction recorded without
+                          invention
+Merge authority:          owner, separately (candidate is NOT published, PR'd, or merged by the
+                          Creator)
+```
+
+**Disposition: `POST-W2-A-IMPLEMENTATION SYNC — GOVERNANCE CANDIDATE; NOT AUTHORITATIVE UNTIL
+MERGED AND POST-MERGE VERIFIED`.** After it merges, the next eligible gate is the
+**`CROSS-LAYER EXECUTION ASSURANCE STANDARD` governance gate** (its own full lifecycle), and only
+after that the **`W2-B AUTHORIZATION`** — a separate Owner decision. ELIGIBLE is not AUTHORIZED:
+**`W2-B AUTHORIZED: NO`; `W2-C AUTHORIZED: NO`; `RVR-7 AUTHORIZED: NO`; `RVR-8 AUTHORIZED: NO`.**
+
+---
+
+**Superseded (retained as history) — POST-W2-A-CONTRACT GOVERNANCE SYNCHRONIZATION; MERGED AND
+AUTHORITATIVE via PR #568, merge `894861c9ef78c9affe927f22dfa497de68050e96`.** Its in-block "next
+eligible gate = `W2-A IMPLEMENTATION AUTHORIZATION GATE`" line and its `W2-A IMPLEMENTATION
+AUTHORIZED: NO / STARTED: NO` lines are authority-at-that-time — the authorization was granted
+and the implementation completed via PR #569 (see the active block above). Base:
+**`82758cb2d06a7b91d30acfaa83a3d836df103186`** — verified from Git at this
 gate as the **live authoritative tip** of `feature/atomic-json-session-persistence` (**0 commits
 after it**; **PR #567** — the W2-A/RVR-4 contract-freeze merge; first parent
 `557548db2bb37b21b6b57f893afc2ae1af64744f` (PR #566, post-W2-ID sync + Deferred Obligations

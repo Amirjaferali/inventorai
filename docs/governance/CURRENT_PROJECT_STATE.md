@@ -16,11 +16,19 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
   (`git rev-parse origin/feature/atomic-json-session-persistence`). Do **not** trust a
   prose-pinned SHA.
   - **Current authoritative branch tip (last independently verified):**
+    `e17ca1477e55b49298b92ac5ec8db711e208496e` (Merge PR #569 — W2-A/RVR-4 IMPLEMENTATION; two-parent merge of
+    `894861c9ef78c9affe927f22dfa497de68050e96` (base, PR #568 post-W2-A-contract sync) +
+    `d8c5aef988a00a8b342b26816afd6186e4262c42` (the exact Owner-accepted implementation candidate; Grill-failed
+    `b3ada80…` and externally reviewed `614a0c7…` preserved as remote evidence branches), tree
+    `4c1739ae9f98c422812e4a8f3561d28105974522` identical to the candidate tree, post-merge verified) — always
+    re-resolve the live tip from Git per the rule above.
+  - **Prior recorded tip (historical):**
     `82758cb2d06a7b91d30acfaa83a3d836df103186` (Merge PR #567 — W2-A/RVR-4 contract freeze; two-parent merge of
     `557548db2bb37b21b6b57f893afc2ae1af64744f` (base, PR #566 post-W2-ID sync + Deferred Obligations Register) +
     `b778cfe7fd31c82c583d7d97e5f73394e6bfda65` (the exact Owner-accepted W2-A contract candidate), tree
-    `7b56a5e19f2a3b1f3bdba00203aa119772b5b1ca` identical to the candidate tree, post-merge verified) — always
-    re-resolve the live tip from Git per the rule above.
+    `7b56a5e19f2a3b1f3bdba00203aa119772b5b1ca` identical to the candidate tree, post-merge verified); superseded
+    as the live tip by PR #568 (post-W2-A-contract status sync, `894861c9…`) and PR #569 (W2-A/RVR-4
+    implementation, `e17ca147…`).
   - **Prior recorded tip (historical):**
     `516a184231f3e19fad6e8f6f3301b5b9c4ad9820` (Merge PR #565 — W2-ID v3 decision-capture identity/recording
     mini-gate; two-parent merge of `91475e456cbe8ff21bfa8e7bf2fb3e6dd801f762` (base, PR #564 W2-D implementation) +
@@ -2447,8 +2455,56 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
+- **POST-W2-A-IMPLEMENTATION GOVERNANCE SYNCHRONIZATION — W2-A/RVR-4 IMPLEMENTATION
+  AUTHORITATIVE; ENACTMENT + RVR-4 CLOSED; CROSS-LAYER EXECUTION ASSURANCE STANDARD DIRECTED
+  BEFORE W2-B (governance-only CANDIDATE), base `e17ca1477e55b49298b92ac5ec8db711e208496e`** —
+  verified from Git at this gate as the **live authoritative tip** (**0 commits after**;
+  **PR #569**; parents `894861c9…` (PR #568 post-W2-A-contract sync) / `d8c5aef…` (the exact
+  Owner-accepted implementation candidate); merge tree `4c1739ae…` identical to the candidate
+  tree; empty candidate→merge diff; merged 2026-08-25T13:56:35Z). **The W2-A / RVR-4
+  implementation is now AUTHORITATIVE**: bounded decision capture lives in the existing Path-N
+  journey — declare a decision context, declare/refine/withdraw alternatives, composed
+  deterministic FDC-001 decision state rendered on the session and deliverable surfaces —
+  under the frozen contract: carrier-level fail-closed mint validation; the 15-field record
+  contract with the bounded legacy load rule; the deterministic composition seam
+  (`engine/decision_composition.py`); OW-6 containment (requirement-landscape exclusion + the
+  Owner-authorized bounded `deliverable_assembler.py` IG-17 containment); `OWNER_STATED`
+  provenance; token-instance-discriminated idempotency (N-2 repair: withdrawal + byte-identical
+  redeclaration = NEW founding identity; retry/race stays refused); EN/AR copy;
+  persist-before-acknowledge; reconstruction parity. **Lifecycle recorded truthfully:**
+  authorization → `b3ada80…` Creator-Grill-FAILED (IG-17, escalated) → bounded Owner allowlist
+  extension → `614a0c7…` externally reviewed, N-2 MATERIAL → `d8c5aef…` accepted + merged; both
+  prior candidates preserved as REMOTE evidence branches (`evidence/w2a-impl-grillfail-b3ada80`,
+  `evidence/w2a-impl-reviewed-614a0c7`, verified at exact SHAs). **Evidence:** 51 authoritative
+  RED requirements + IG-17 truth tests + N-2 composition tests GREEN in the merged tree
+  (`[EXEC] 62 passed at this tip`); candidate full suite `4595 passed / 3 skipped / 1 xfailed /
+  0 failed`. **Register reconciliation per the exact frozen criteria (prior external evidence
+  only — no self-certification):** W2-A enactment set → `CLOSED — evidence verified` (contract
+  §21 criterion); RVR-4 → `CLOSED — evidence verified` (its row criterion); the Owner-directed
+  **Cross-Layer Execution Assurance Standard** obligation added (OPEN — CURRENT EXECUTION BLOCKER
+  for W2-B execution; NOT created here); the Owner-mandated **FCORA — Full Capability & Obligation
+  Reconciliation Audit** recorded as a release-blocking future gate positioned after RVR-8 and
+  before Serious Release / Production Readiness (bidirectional docs↔implementation
+  reconciliation; Owner-required pass condition `Unaccounted / Orphan capability count = 0`;
+  audit gate only — never a duplicate owner; NOT executed here; ODR §D-2 + register §3 FCORA
+  row, FRB); two implementation residuals preserved with Owner-direction evidence (latent
+  `derived_readiness` grouping — CONDITIONAL; unlocalized withdrawn-note rendering — NBF).
+  Release-value obligations unchanged and OPEN: R4-C; T1-A′; T1-C′; Time-to-Value;
+  Differentiation — implementation is mechanism evidence, never release-value proof.
+  **NEXT ELIGIBLE GATE (after this synchronization merges): the `CROSS-LAYER EXECUTION ASSURANCE
+  STANDARD` governance gate (its own lifecycle), THEN `W2-B AUTHORIZATION` (a separate Owner
+  decision; W/M values fixed at its acceptance).** ELIGIBLE is not AUTHORIZED:
+  **`W2-B AUTHORIZED: NO`; `W2-C AUTHORIZED: NO`**; RVR-6/RVR-7/RVR-8, second S2 run,
+  meaning-adaptive questioning, PSRR GO, deployment, production, paid activation: all NOT
+  AUTHORIZED. Governance/documentation only; `EXECUTABLE/TEST/PIN/PACK/DOMAIN-RULE DELTA: 0`;
+  no historical record rewritten; `main` not reconciled. **Disposition:
+  `POST-W2-A-IMPLEMENTATION SYNC — GOVERNANCE CANDIDATE; NOT AUTHORITATIVE UNTIL MERGED AND
+  POST-MERGE VERIFIED`.**
+
 - **POST-W2-A-CONTRACT GOVERNANCE SYNCHRONIZATION — W2-A/RVR-4 CONTRACT FREEZE AUTHORITATIVE;
-  OD-W2-DW-LIFT EXERCISED (governance-only CANDIDATE), base
+  OD-W2-DW-LIFT EXERCISED (governance-only CANDIDATE — since MERGED AND AUTHORITATIVE via
+  PR #568, merge `894861c9…`; its "NEXT ELIGIBLE GATE: W2-A IMPLEMENTATION AUTHORIZATION GATE"
+  line is authority-at-that-time — that gate completed via PR #569, see the entry above), base
   `82758cb2d06a7b91d30acfaa83a3d836df103186`** — verified from Git at this gate as the **live
   authoritative tip** (**0 commits after**; **PR #567**; parents `557548db…` (PR #566 post-W2-ID
   sync) / `b778cfe7…` (the exact Owner-accepted W2-A contract candidate — final sibling after
