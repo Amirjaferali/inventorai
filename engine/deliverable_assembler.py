@@ -15,6 +15,7 @@ from engine.idea_state import (
     STAGE_3_GAP_TYPES, PROBLEM_MECHANISM_FIT,
     ASSUMPTION_INVENTORY, EXPERTISE_GAP_AWARENESS,
     LEGACY_UNSPECIFIED, UNVALIDATED,
+    DECISION_ACTION_DISPOSITIONS,
 )
 from engine.derived_readiness import derive_readiness
 # Increment 3: the SAME shared public derivation that feeds the session callout.
@@ -436,10 +437,21 @@ def _withdrawn_source_meta(state):
     conclusion is false (M-4). The withdrawn records are RETAINED (§7 S-1); they
     are simply outside the active set that the replay and the derived modules
     consume. Zero for every project that has never used a correction, so pre-R4
-    output is unchanged in substance."""
+    output is unchanged in substance.
+
+    W2-A OW-6 containment (Owner-authorized bounded allowlist extension,
+    repairing the escalated IG-17 defect): the three W2-A decision-action
+    dispositions are EXCLUDED from this count. A refined or withdrawn decision
+    alternative supersedes a DECISION record, not a legacy answer — counting
+    it here would render the withdrawn-answer note ("the inventor explicitly
+    withdrew earlier answer(s)") for a user who withdrew no answer at all.
+    Class-bounded exclusion only, using the one governed vocabulary constant:
+    every legacy superseded record keeps its behavior byte-identically."""
     records = getattr(state, "assertions", None) or []
     total = sum(1 for r in records
-                if getattr(r, "superseded_by", None) is not None)
+                if getattr(r, "superseded_by", None) is not None
+                and getattr(r, "disposition", None)
+                not in DECISION_ACTION_DISPOSITIONS)
     return {"total": total,
             "note": _WITHDRAWN_SOURCE_NOTE if total else None}
 

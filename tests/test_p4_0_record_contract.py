@@ -51,6 +51,13 @@ _EXPECTED_ASSERTION_FIELDS = frozenset({
     "record_id", "disposition", "content", "gap_context", "iteration",
     "provenance", "validation_status", "quality", "pending", "responsibility",
     "resolves_gap", "contradicts", "supersedes", "superseded_by",
+    # W2-A / RVR-4 (authoritative contract §3/§4, PR #567): deliberate
+    # 15th authoritative field — explicit decision-context attachment. The
+    # contract handles it with the bounded legacy load rule (a legacy payload
+    # missing ONLY this field loads with None); see
+    # tests/test_w2a_rvr4_contract_compat.py. This guard fired exactly as
+    # designed and is reconciled here deliberately, additively.
+    "decision_context_root",
 })
 
 

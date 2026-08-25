@@ -827,6 +827,16 @@ RISK_NOT_ACCEPTED_MESSAGE = (
     "The risk acceptance was not recorded. Nothing was changed - please "
     "review the question and try again.")
 
+# W2-A / RVR-4 (authoritative contract §14/§15) — decision-capture messages.
+# Same conventions as the accepted-risk pair above: canonical English
+# constants; Arabic via the ui_text presentation maps; persist-before-
+# acknowledge (the ack is set only AFTER the durable append commits).
+DECISION_SAVED_ACK = (
+    "Your decision entry was recorded and saved to your project.")
+DECISION_NOT_SAVED_MESSAGE = (
+    "That decision entry could not be saved just now. "
+    "Nothing was changed.")
+
 KEEP_SNAPSHOT_ACK = (
     "Current working snapshot selected for this temporary session. "
     "It has not been permanently saved or approved."
@@ -2561,6 +2571,11 @@ def show_session(sid):
         risk_available=bool(
             gap_type and gap_type != _MECH_GAP
             and substantive_attempt_recorded(state, gap_type)),
+        # W2-A / RVR-4 (contract §14): the composed decision state, derived on
+        # demand from the ledger (never persisted). User content (questions /
+        # alternative names) renders verbatim — it is never translated; the
+        # surrounding chrome uses the governed UI_W2A_* catalogue keys.
+        decision_capture=_decision_capture_view_safe(state),
         # W2-D (W1-N4): single-use correction-lapse notice (popped so it
         # renders exactly once after the Post/Redirect/Get, like answer_error).
         # Gap types are mapped to their existing localized display headings.
@@ -2665,6 +2680,10 @@ def show_deliverable(sid):
         package=package,
         eligible=eligible,
         reconstructed_deliverable=reconstructed_deliverable,
+        # W2-A / RVR-4 (contract §14): read-only composed decision state on the
+        # deliverable surface (derived on demand; not part of the canonical
+        # deliverable package — the assembler is deliberately untouched).
+        decision_capture=_decision_capture_view_safe(state),
         # G-UX-SNAPSHOT-DECISION: single-use, per-sid "Keep current snapshot"
         # acknowledgement, popped here so it renders once after the Post/Redirect/Get
         # and never repeats on a later plain GET. None on every normal load.
@@ -2977,6 +2996,191 @@ def accept_risk(sid):
     entry.pop("answer_token", None)
     entry["_interaction_ack"] = RISK_ACCEPTED_ACK
     return redirect(url_for("show_session", sid=sid))
+
+
+# --- W2-A / RVR-4 — bounded decision capture inside the EXISTING journey ------
+# Authoritative contract §14 (PR #567): declare context / declare alternative /
+# refine alternative / withdraw alternative, all through the governed carrier
+# mint (which itself fails closed — no bypass), all persist-before-acknowledge,
+# all reconstruction-stable. No second journey, no Decision Workspace
+# activation, no new page: the composed state renders on the existing
+# session/deliverable surfaces.
+
+def _decision_capture_view_safe(state):
+    """Render-safe wrapper around the derived decision-capture view: an
+    unreadable/legacy state yields an empty view (the section simply offers
+    the declare form) rather than a 500. Read-only, derived, never persisted."""
+    from engine.decision_composition import decision_capture_view
+    try:
+        return decision_capture_view(state)
+    except Exception:
+        return []
+
+
+def _handle_decision_post(sid, mint, idem_label, idem_content,
+                          needs_supersession):
+    """Shared bounded skeleton for the four W2-A decision POST routes:
+    auth -> token -> staged mint on a throwaway ledger view -> durable append
+    (idempotent) -> live publish -> acknowledge. On ANY failure nothing is
+    appended, nothing changes, and nothing is acknowledged."""
+    from engine.decision_composition import (  # local: keeps import surface flat
+        compose_decision_records)  # noqa: F401  (documentation of the seam)
+    if not _project_authorized(sid):
+        return _deny_project()
+    entry = SESSION_STORE.get(sid)
+    if not entry:
+        return redirect(url_for("index"))
+    state = entry["state"]
+    submitted_token = request.form.get("answer_token", "")
+    if not _valid_answer_token(sid, submitted_token):
+        entry["_answer_error"] = DECISION_NOT_SAVED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    # §6 C-6-shaped staged mint: throwaway ledger view so live state is
+    # untouched until the durable append commits. Supersession routes need
+    # deep copies (the mint writes the inverse edge on the target).
+    import copy
+    _minter = IdeaState(idea_id=state.idea_id)
+    if needs_supersession:
+        _minter.assertions = [copy.deepcopy(r) for r in state.assertions]
+    else:
+        _minter.assertions = list(state.assertions)
+    try:
+        new_record = mint(_minter)
+    except ValueError:
+        # Carrier fail-closed (contract §3/§8): invalid decision action —
+        # nothing staged, nothing stored, nothing acknowledged.
+        entry["_answer_error"] = DECISION_NOT_SAVED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    # N-2 repair (Independent External Review, MATERIAL): retry identity vs
+    # new user intent. Text equality is NEVER canonical event identity — the
+    # frozen contract makes withdrawal + byte-identical redeclaration a NEW
+    # founding event (new root, new identity), and identical-text context
+    # declarations distinct founding events. The request-INSTANCE
+    # discriminator is the server-issued token (the same convention as the
+    # answered path's token-derived durable key): an accidental retry /
+    # double-submit / concurrent race carries the SAME issued token and so
+    # derives the SAME durable key (duplicate protection intact), while a
+    # deliberate new declaration necessarily follows a fresh render — each
+    # successful decision action consumes the token below — and so carries a
+    # NEW token and derives a NEW key. `idem_label` keeps different actions
+    # submitted from one render from colliding; the content component only
+    # separates different events within one token instance.
+    idem_key = _interaction_idempotency_key(
+        sid, idem_label + "@" + submitted_token, None, state.iteration,
+        idem_content)
+    # Like-with-like fingerprint (N-2: the prior label-based construction
+    # could never match `_payload_answer_fingerprint`, leaving the friendly
+    # retry branch structurally dead): bind the SAME fields the stored payload
+    # reconstruction binds — gap_context (None for decision actions),
+    # disposition, exact stored content.
+    fingerprint = _answer_fingerprint(sid, new_record.gap_context,
+                                      new_record.disposition,
+                                      new_record.content)
+    try:
+        _get_store().append_record(sid, new_record, idempotency_key=idem_key)
+    except sqlite3.IntegrityError:
+        try:
+            prior = _get_store().record_payload_for_idempotency_key(sid, idem_key)
+        except StoreError:
+            prior = None
+        if prior is not None and _payload_answer_fingerprint(sid, prior) == fingerprint:
+            # Same event resubmitted: idempotent no-op, no duplicate record.
+            entry["_interaction_ack"] = DECISION_SAVED_ACK
+            return redirect(url_for("show_session", sid=sid))
+        entry["_answer_error"] = DECISION_NOT_SAVED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    except StoreError:
+        # Persist-before-acknowledge: durable append unavailable — no live
+        # change, no false success.
+        entry["_answer_error"] = DECISION_NOT_SAVED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    # Durable success — publish to live state through the same canonical
+    # primitives (append + existing supersession edge helper).
+    state.assertions.append(new_record)
+    for prior_id in new_record.supersedes:
+        state.mark_supersession(prior_id, new_record.record_id)
+    entry.pop("answer_token", None)
+    entry["_interaction_ack"] = DECISION_SAVED_ACK
+    return redirect(url_for("show_session", sid=sid))
+
+
+@app.route("/session/<sid>/decision/declare-context", methods=["POST"])
+def decision_declare_context(sid):
+    from engine.decision_composition import declare_decision_context
+    content = (request.form.get("content") or "").strip()
+    _input_error = _free_text_error(content, _current_ui_lang())
+    if _input_error is not None:
+        return (_input_error, 400)
+    if not content:
+        entry = SESSION_STORE.get(sid)
+        if entry:
+            entry["_answer_error"] = DECISION_NOT_SAVED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    state = SESSION_STORE.get(sid, {}).get("state")
+    iteration = getattr(state, "iteration", 0) if state else 0
+    return _handle_decision_post(
+        sid, lambda m: declare_decision_context(m, content, iteration),
+        "w2a:declare-context", content, needs_supersession=False)
+
+
+@app.route("/session/<sid>/decision/declare-alternative", methods=["POST"])
+def decision_declare_alternative(sid):
+    from engine.decision_composition import declare_alternative
+    content = (request.form.get("content") or "").strip()
+    context_root = (request.form.get("context_root") or "").strip()
+    _input_error = _free_text_error(content, _current_ui_lang())
+    if _input_error is not None:
+        return (_input_error, 400)
+    if not content or not context_root:
+        entry = SESSION_STORE.get(sid)
+        if entry:
+            entry["_answer_error"] = DECISION_NOT_SAVED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    state = SESSION_STORE.get(sid, {}).get("state")
+    iteration = getattr(state, "iteration", 0) if state else 0
+    return _handle_decision_post(
+        sid, lambda m: declare_alternative(m, content, context_root, iteration),
+        "w2a:declare-alt:" + context_root, content, needs_supersession=False)
+
+
+@app.route("/session/<sid>/decision/refine-alternative", methods=["POST"])
+def decision_refine_alternative(sid):
+    from engine.decision_composition import refine_alternative
+    content = (request.form.get("content") or "").strip()
+    target_id = (request.form.get("supersedes_record_id") or "").strip()
+    _input_error = _free_text_error(content, _current_ui_lang())
+    if _input_error is not None:
+        return (_input_error, 400)
+    if not content or not target_id:
+        entry = SESSION_STORE.get(sid)
+        if entry:
+            entry["_answer_error"] = DECISION_NOT_SAVED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    state = SESSION_STORE.get(sid, {}).get("state")
+    iteration = getattr(state, "iteration", 0) if state else 0
+    return _handle_decision_post(
+        sid, lambda m: refine_alternative(m, content, target_id, iteration),
+        "w2a:refine:" + target_id, content, needs_supersession=True)
+
+
+@app.route("/session/<sid>/decision/withdraw-alternative", methods=["POST"])
+def decision_withdraw_alternative(sid):
+    from engine.decision_composition import withdraw_alternative
+    reason = (request.form.get("reason") or "").strip()
+    target_id = (request.form.get("supersedes_record_id") or "").strip()
+    _input_error = _free_text_error(reason, _current_ui_lang())
+    if _input_error is not None:
+        return (_input_error, 400)
+    if not target_id:
+        entry = SESSION_STORE.get(sid)
+        if entry:
+            entry["_answer_error"] = DECISION_NOT_SAVED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    state = SESSION_STORE.get(sid, {}).get("state")
+    iteration = getattr(state, "iteration", 0) if state else 0
+    return _handle_decision_post(
+        sid, lambda m: withdraw_alternative(m, target_id, reason, iteration),
+        "w2a:withdraw:" + target_id, reason, needs_supersession=True)
 
 
 @app.route("/session/<sid>/keep-snapshot", methods=["POST"])
