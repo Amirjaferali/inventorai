@@ -15305,3 +15305,62 @@ satisfied — that satisfies a PREREQUISITE and authorizes nothing. `W2-B AUTHOR
 `UNACCOUNTED / ORPHAN = 0`); `R4-C: OPEN`; `T1-A′ / T1-C′ / TIME-TO-VALUE / DIFFERENTIATION:
 OPEN`; `MLC DEFINITION FROZEN: NO`; `PSRR GO: NO`; `DEPLOYMENT AUTHORIZED: NO`; `PRODUCTION
 AUTHORIZED: NO`; `PAID ACTIVATION AUTHORIZED: NO`.
+
+## W2-B / RVR-6a IMPLEMENTATION CONTRACT — AUTHORITATIVE; IMPLEMENTATION START NOT AUTHORIZED (governance-only synchronization candidate)
+
+**Append-only synchronization entry.** The entry above named the W2-B authorization gate as next
+eligible — that gate has completed through its full lifecycle; the entry above is
+authority-at-that-time, including its "(Wave-2 contract §H)" W/M citation, whose CORRECTION is
+recorded below (the historical entry itself is not rewritten).
+
+**1. W2-B / RVR-6a CONTRACT AUTHORITATIVE.**
+`docs/governance/W2_B_RVR6A_IMPLEMENTATION_CONTRACT_CANDIDATE.md` merged via **PR #573**, merge
+`48017ec0259e5fc7bcb105e0b018f6d447057bda` (verified from Git at this gate: first parent
+`21ce0ff8…` = the PR #572 sync merge; second parent `5e91fd9cbc27b784c8b398ac48366b84dd73cceb` =
+the exact Owner-accepted REPAIRED candidate; merge tree `c5c2590c…` identical to the candidate
+tree; empty candidate→merge diff; merged 2026-08-25T21:15:58Z; 0 commits after at this gate).
+**Lifecycle recorded truthfully:** first candidate `0448e36…` was REJECTED by Independent
+External Review (`REJECT — BOUNDED REPAIR REQUIRED`: D-1 — the digest-pin conditional allowance
+named one of the THREE enforcing pin tests; D-2 — the `[EXEC]` consumer seed omitted the governed
+CLI consumer `scripts/run_cli.py:152`) and is preserved, un-rewritten, as rejected evidence; the
+accepted sibling carries exactly those repairs plus cleanups N-1…N-4. The contract freezes: the
+six §H capabilities (Tier-1 STATE-ADAPTIVE only); the derived evidence-weighted reversible
+register with deterministic hysteresis (architecture A — pure recomputation; `quality`-aggregate
+prohibition); the seven-consumer reproducible sweep seed; the three-file digest-pin bounded
+allowance; multi-trigger determinism (precedence proposal frozen in the implementation evidence
+pack); the two added negative paths; Cross-Layer application (C2+C4; §6.1/§6.5; §6.3 excluded
+with a frozen C3-escalation rule); and the §N lifecycle-state separation.
+
+**2. Lifecycle truth after this merge.** `W2-B / RVR-6a IMPLEMENTATION CONTRACT: AUTHORITATIVE`;
+the contract-acceptance authorization boundary named "W2-B AUTHORIZATION" by the prior entries is
+COMPLETED (per the contract's §N `[DERIVED]` composition — next-gate naming + the W2-A
+precedent). **`W2-B IMPLEMENTATION START AUTHORIZED: NO`** — implementation start requires a
+SEPARATE explicit Owner instruction, exactly as W2-A's did; this synchronization is not it.
+`W2-B IMPLEMENTATION AUTHORITATIVE: NO`; `RVR-6A CLOSED: NO` (its register row stays OPEN until
+"W2-B merged with register/suppression/ordering tests green").
+
+**3. W/M — status-surface citation CORRECTED.** The propagated wording "W/M values at W2-B
+acceptance (Wave-2 contract §H)" carried a citation defect: **the operative W/M timing source is
+Wave-2 contract §P** (§H defines the slice, not the W/M timing). Authoritative meaning, restated
+once for all current surfaces: no individual W or M expansion and no numeric/enumerated value
+space is authoritative; the earlier pre-gate value-fixing approach was WITHDRAWN AS CIRCULAR; the
+values are PRODUCED BY W2-B implementation evidence, proposed/frozen inside the future
+implementation candidate/evidence pack, and become fixed through **Owner exact-SHA acceptance of
+that implementation candidate**. Contract acceptance (PR #573) froze NO numbers:
+`W/M NUMERIC VALUES FROZEN: NO`.
+
+**4. This synchronization candidate.** Governance-only: register (RVR-6a row + header), ODR
+(lineage rows incl. the rejected-candidate history and carried observations A–D + §C boundary
+with the corrected citation), this roadmap (append-only), `ACTIVE_INCREMENT_CONTRACT.md`
+(rotation), `CURRENT_PROJECT_STATE.md` (pin + entry). `EXECUTABLE/TEST/PIN/PACK/DOMAIN-RULE
+DELTA: 0`; no historical record rewritten; `main` not reconciled. **Disposition:
+`POST-W2-B-CONTRACT SYNC — GOVERNANCE CANDIDATE; NOT AUTHORITATIVE UNTIL MERGED AND POST-MERGE
+VERIFIED`.**
+
+**Next eligible gate — `W2-B IMPLEMENTATION-START AUTHORIZATION` (a separate explicit Owner
+instruction under the frozen contract; the W2-A precedent).** ELIGIBLE is not AUTHORIZED:
+`W2-B IMPLEMENTATION START AUTHORIZED: NO`; `W2-C AUTHORIZED: NO`;
+`RVR-6b / RVR-7 / RVR-8: NOT AUTHORIZED`; `SECOND S2 RUN AUTHORIZED: NO`; `FCORA: RECORDED, NOT
+EXECUTED`; `R4-C: OPEN`; `T1-A′ / T1-C′ / TIME-TO-VALUE / DIFFERENTIATION: OPEN`; `MLC
+DEFINITION FROZEN: NO`; `PSRR GO: NO`; `DEPLOYMENT AUTHORIZED: NO`; `PRODUCTION AUTHORIZED: NO`;
+`PAID ACTIVATION AUTHORIZED: NO`.
