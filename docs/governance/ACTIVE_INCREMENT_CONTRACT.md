@@ -41,8 +41,84 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — POST-W2-ID STATUS-SURFACE SYNCHRONIZATION + PERMANENT DEFERRED OBLIGATIONS
-REGISTER; governance-only write-gate candidate).** Base: **`516a184231f3e19fad6e8f6f3301b5b9c4ad9820`**
+**Status (current — POST-W2-A-CONTRACT GOVERNANCE SYNCHRONIZATION; governance-only write-gate
+candidate).** Base: **`82758cb2d06a7b91d30acfaa83a3d836df103186`** — verified from Git at this
+gate as the **live authoritative tip** of `feature/atomic-json-session-persistence` (**0 commits
+after it**; **PR #567** — the W2-A/RVR-4 contract-freeze merge; first parent
+`557548db2bb37b21b6b57f893afc2ae1af64744f` (PR #566, post-W2-ID sync + Deferred Obligations
+Register), second parent `b778cfe7fd31c82c583d7d97e5f73394e6bfda65` — the exact Owner-accepted
+contract candidate (final sibling after Independent External Review `NARROW REPAIR REQUIRED` +
+Creator re-Grill; `f4d0552…`/`f0f6663…` preserved as immutable sibling evidence); merge tree
+`7b56a5e19f2a3b1f3bdba00203aa119772b5b1ca` identical to the candidate tree; empty candidate→merge
+diff; merged 2026-08-25T11:23:16Z).
+
+**Current authoritative truth (verified from Git, not prose):** the **W2-A / RVR-4 implementation
+contract is CONTRACT-FREEZE AUTHORITATIVE** (`docs/governance/W2_A_RVR4_IMPLEMENTATION_CONTRACT_CANDIDATE.md`
+via PR #567): V2 decision-action vocabulary; `decision_context_root`; bounded legacy load rule;
+fail-closed carrier mint; `OWNER_STATED` decision-action provenance; FDC-001 sole ownership;
+deterministic projection formulas; ID-11; OW-6 on the corrected requirement-landscape baseline;
+frozen implementation allowlist + RED inventory. **OD-W2-DW-LIFT is EXERCISED (bounded)** per
+contract §5 — the broader DW Path-T hold stands. **W2-A IMPLEMENTATION remains NOT AUTHORIZED and
+NOT STARTED** (contract §23 requires a separate explicit Owner authorization). The entry-below's
+"next eligible gate = W2-A AUTHORIZATION / CONTRACT-FREEZE GATE" line is authority-at-that-time —
+that gate has completed.
+
+```
+INCREMENT CONTRACT — Post-W2-A-Contract Status Synchronization (governance only)
+Objective:                Bring the live status surfaces and the Deferred Obligations Register to
+                          current repository truth after the PR #567 W2-A contract-freeze merge:
+                          record the freeze as authoritative; close OD-W2-DW-LIFT and the two
+                          post-W2-ID sync/lineage rows on their own evidence; keep the W2-A
+                          enactment set and RVR-4 implementation OPEN per contract §21.
+Owner authorization:      the Owner's post-W2-A-contract read-only-reconstruction + bounded
+                          status/Deferred-Obligations synchronization gate instruction (following
+                          Owner exact-SHA acceptance of b778cfe7… and the PR #567 merge)
+Risk level:               LEVEL 2 — governance/documentation only
+Allowed paths:            docs/governance/CURRENT_PROJECT_STATE.md;
+                          docs/governance/ACTIVE_EXECUTION_ROADMAP.md (append-only);
+                          docs/governance/ACTIVE_INCREMENT_CONTRACT.md (this rotation);
+                          docs/governance/OWNER_DECISION_REGISTER.md (append/boundary update);
+                          docs/governance/DEFERRED_OBLIGATIONS_REGISTER.md (row transitions)
+Forbidden paths:          engine/, web/, tests/, schemas, export code, WS implementation files,
+                          historical closure records, the W2-A contract record, the W2-ID record,
+                          the Wave-2 contract record, preserved evidence
+Expected behavior:        status surfaces state current truth; obligations transition only on
+                          row-specific evidence; nothing else changes
+Non-goals:                W2-A/RVR-4 runtime implementation; any schema/runtime/test/UI change;
+                          Path-T activation; persistence/export expansion; W2-B/W2-C; RVR-7/RVR-8;
+                          serious-release or paid-activation closure; unrelated cleanup
+Acceptance criteria:      the sync Grill SG-1…SG-30 (merge identity verified; every changed path
+                          governance-only and necessary; row-specific closure evidence; enactment
+                          and release-value obligations remain OPEN; no self-certified closure)
+Required tests:           none — documentation-only (zero runtime delta verified mechanically)
+Tests not required:       product tests — no product path changes
+Dependencies:             PR #567 authoritative merge; the W2-A contract §21 transition plan;
+                          PR #566 (register + ODR Wave-2 section)
+Unresolved decisions:     the W2-A implementation authorization (separate Owner decision); the
+                          open Owner decisions tracked in the Deferred Obligations Register
+                          (R4-C, OD-PDVG-10/12/13, OD-PDVG-08b, T2-D ownership, MG-8, OD-A …)
+Stop conditions:          any merge-identity mismatch; any pressure to authorize or start W2-A
+                          implementation here, to close release-value gates, or to rewrite
+                          historical records
+Independent-review scope: factual accuracy of the synchronization; row-specific closure evidence;
+                          no obligation silently dropped or falsely kept alive; no reviewed-sound
+                          contract semantic changed via status text
+Merge authority:          owner, separately (candidate is NOT published, PR'd, or merged by the
+                          Creator)
+```
+
+**Disposition: `POST-W2-A-CONTRACT SYNC — GOVERNANCE CANDIDATE; NOT AUTHORITATIVE UNTIL MERGED
+AND POST-MERGE VERIFIED`.** After it merges, the next eligible gate is the
+**`W2-A IMPLEMENTATION AUTHORIZATION GATE`** — a separate explicit Owner decision (READY is not
+AUTHORIZED). **`W2-A IMPLEMENTATION AUTHORIZED: NO`; `W2-A IMPLEMENTATION STARTED: NO`.**
+
+---
+
+**Superseded (retained as history) — POST-W2-ID STATUS-SURFACE SYNCHRONIZATION + PERMANENT
+DEFERRED OBLIGATIONS REGISTER; MERGED AND AUTHORITATIVE via PR #566, merge
+`557548db2bb37b21b6b57f893afc2ae1af64744f`.** Its in-block "next eligible gate =
+`W2-A AUTHORIZATION / CONTRACT-FREEZE GATE`" line is authority-at-that-time — that gate completed
+via PR #567 (see the active block above). Base: **`516a184231f3e19fad6e8f6f3301b5b9c4ad9820`**
 — re-verified as the **live authoritative tip** of `feature/atomic-json-session-persistence`
 (**0 commits after it**; **PR #565** — the W2-ID v3 merge; first parent `91475e456cbe8ff21bfa8e7bf2fb3e6dd801f762`
 (PR #564, W2-D implementation), second parent `a92d4fa4dcea32009b3020b083c08dc8028772d5` — the exact

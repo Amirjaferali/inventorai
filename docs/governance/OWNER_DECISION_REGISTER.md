@@ -1252,7 +1252,8 @@ Recorded at the post-W2-ID status-sync + deferred-register gate. The Wave-1 sect
 
 | ID | Subject | Status | Phase/WS | Impl. authority | Evidence |
 |---|---|---|---|---|---|
-| OD-W2ID-LEDGER | **Decision-capture carrier ARCHITECTURE** — the existing `AssertionRecord` ledger is approved as the bounded durable carrier for decision-capture owner actions; FDC-001 `DecisionRecord` remains the SOLE canonical decision-semantics owner; `AssertionRecord` remains a carrier/provenance/history object and is never presented as the decision itself; implementation — including any disposition-value or field change — is separately authorized only in W2-A | **APPROVED — ARCHITECTURE DECIDED; IMPLEMENTATION/ENACTMENT DEFERRED TO W2-A** | Wave-2 / W2-ID → RVR-4 | NONE now (enactment items named at the W2-A authorization) | `docs/governance/W2_ID_DECISION_CAPTURE_IDENTITY_RECORDING_CANDIDATE.md` §B (authoritative via PR #565, merge `516a1842…`) |
+| OD-W2ID-LEDGER | **Decision-capture carrier ARCHITECTURE** — the existing `AssertionRecord` ledger is approved as the bounded durable carrier for decision-capture owner actions; FDC-001 `DecisionRecord` remains the SOLE canonical decision-semantics owner; `AssertionRecord` remains a carrier/provenance/history object and is never presented as the decision itself; implementation — including any disposition-value or field change — is separately authorized only in W2-A | **APPROVED — ARCHITECTURE DECIDED; IMPLEMENTATION/ENACTMENT DEFERRED TO W2-A** (the deferred enactment items are now FROZEN by the authoritative W2-A contract, PR #567 — implementation still separately authorized) | Wave-2 / W2-ID → RVR-4 | NONE now (implementation authorized only at the W2-A implementation gate) | `docs/governance/W2_ID_DECISION_CAPTURE_IDENTITY_RECORDING_CANDIDATE.md` §B (authoritative via PR #565, merge `516a1842…`) |
+| OD-W2-DW-LIFT | **Bounded DW-lane-hold-lift EXERCISED** — the Owner exercise recorded in the authoritative W2-A contract §5 grants ONLY: (1) reuse of the FDC-001 `DecisionRecord` class by the Path-N deterministic decision-composition seam; (2) default-preserving constructor generalization only where required for deterministic injected identities (incl. the bounded seed-suppression / `decision_question`-injection scope the contract derives and flags); (3) reuse of the class vocabulary the bounded composition seam requires. It authorizes NO code in the contract gate, does NOT lift the broader DW Path-T hold, and preserves the full forbidden list (no second journey; no live DW behavior/endpoint/UI change; no persistence expansion; no second canonical decision model); the S2 §13 `PRESERVE UNMODIFIED AND PAUSE` boundary remains intact | **EXERCISED (bounded) — via Owner exact-SHA acceptance of the W2-A contract** | Wave-2 §P item 3 → W2-A | W2-A implementation gate (for the lifted permission's code) | `docs/governance/W2_A_RVR4_IMPLEMENTATION_CONTRACT_CANDIDATE.md` §5 (authoritative via PR #567, merge `82758cb2…`, accepted candidate `b778cfe7…`); Deferred Obligations Register §2 row CLOSED |
 
 **B. Authorization lineage — recorded without retroactive invention.** The following lifecycle
 authorizations were exercised through the full high-assurance lifecycle (candidate → Grill →
@@ -1267,12 +1268,19 @@ the evidence.
 | Wave-2 bounded implementation contract authorization | `84b165a894a771ff2775a993d8f08f38e6ba46a6` | PR #563, `58e92e09cc7e6d36cb9c939cf9958e8a294f88ce` | Wave-2 contract CONTRACT AUTHORITATIVE (1 governance sub-gate + 4 executable slices; RVR-7 = Wave 3; RVR-8 separate) |
 | W2-D implementation acceptance (W1-S2 + W1-N4) | `528b45199892aaa4ce6b2f0db2452f525b963c0b` | PR #564, `91475e456cbe8ff21bfa8e7bf2fb3e6dd801f762` | W2-D IMPLEMENTATION AUTHORITATIVE; W1-S2 and W1-N4 CLOSED with evidence |
 | W2-ID acceptance (v3 after focused re-Grill + narrow repair; v1 `f2cfe745…`/v2 `538d57fa…` immutable reviewed evidence) | `a92d4fa4dcea32009b3020b083c08dc8028772d5` | PR #565, `516a184231f3e19fad6e8f6f3301b5b9c4ad9820` | W2-ID GOVERNANCE MINI-GATE AUTHORITATIVE; OD-W2ID-LEDGER committed |
+| Post-W2-ID status sync + permanent Deferred Obligations Register acceptance | `3910e86c29e569680be8ac8c728acd6e94453ab6` | PR #566, `557548db2bb37b21b6b57f893afc2ae1af64744f` | Status surfaces synchronized; `DEFERRED_OBLIGATIONS_REGISTER.md` AUTHORITATIVE (Master Obligation Index layer 6) |
+| W2-A / RVR-4 contract-freeze acceptance (final sibling after Independent External Review `NARROW REPAIR REQUIRED` + Creator re-Grill; `f4d0552…` reviewed / `f0f6663…` Grill-failed siblings preserved as immutable evidence) | `b778cfe7fd31c82c583d7d97e5f73394e6bfda65` | PR #567, `82758cb2d06a7b91d30acfaa83a3d836df103186` | **W2-A CONTRACT-FREEZE AUTHORITATIVE** (V2 vocabulary; `decision_context_root`; bounded legacy load rule; fail-closed carrier mint; `OWNER_STATED` provenance; OW-6 incl. corrected requirement-landscape containment; frozen allowlist + RED inventory); OD-W2-DW-LIFT EXERCISED (bounded, §5); **W2-A IMPLEMENTATION NOT AUTHORIZED / NOT STARTED** |
 
-**C. Current open boundary.** **W2-A still requires explicit Owner authorization before any
-implementation begins.** OPEN at that gate (enactment items, NOT approved implementation): the
-exact decision-action disposition vocabulary; the explicit context-attachment representation
-(incl. any exact bounded `AssertionRecord` field proposal for separate Owner authorization); the
-RVR-4 implementation-contract freeze. `W2-A IMPLEMENTATION AUTHORIZED: NO`; `W2-B / W2-C / RVR-6 /
-RVR-7 / RVR-8: NOT AUTHORIZED`; `SECOND S2 RUN AUTHORIZED: NO`. Cross-cutting deferred obligations
-are tracked in `docs/governance/DEFERRED_OBLIGATIONS_REGISTER.md` (Master Obligation Index
-layer 6); this register remains decision-only.
+**C. Current open boundary** (the prior boundary text here — "the exact decision-action
+disposition vocabulary; the explicit context-attachment representation; the RVR-4
+implementation-contract freeze" as OPEN enactment items — was authority-at-that-time: those items
+are now FROZEN by the authoritative W2-A contract, PR #567). **W2-A IMPLEMENTATION still requires
+a separate explicit Owner authorization before any code begins** — the frozen contract's own §23
+states the requirement; contract-freeze is a governance milestone, never runtime evidence. OPEN at
+the next gate: the W2-A implementation authorization itself (execution under the frozen contract's
+allowlist + RED inventory). `W2-A CONTRACT-FREEZE AUTHORITATIVE: YES`;
+`W2-A IMPLEMENTATION AUTHORIZED: NO`; `W2-A IMPLEMENTATION STARTED: NO`; `W2-B / W2-C / RVR-6 /
+RVR-7 / RVR-8: NOT AUTHORIZED`; `SECOND S2 RUN AUTHORIZED: NO`; R4-C / T1-A′ / T1-C′ /
+Time-to-Value / Differentiation: OPEN. Cross-cutting deferred obligations are tracked in
+`docs/governance/DEFERRED_OBLIGATIONS_REGISTER.md` (Master Obligation Index layer 6); this
+register remains decision-only.
