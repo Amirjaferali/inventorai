@@ -15183,3 +15183,68 @@ AUTHORIZED: NO`; `W2-A IMPLEMENTATION STARTED: NO`; `W2-B / W2-C: NOT STARTED`;
 AUTHORIZED: NO`; `MEANING-ADAPTIVE QUESTIONING AUTHORIZED: NO`; `MLC DEFINITION FROZEN: NO`;
 `PSRR GO: NO`; `DEPLOYMENT AUTHORIZED: NO`; `PRODUCTION AUTHORIZED: NO`; `PAID ACTIVATION
 AUTHORIZED: NO`.
+
+## POST-W2-A-IMPLEMENTATION GOVERNANCE SYNCHRONIZATION — W2-A / RVR-4 IMPLEMENTATION AUTHORITATIVE; ENACTMENT + RVR-4 CLOSED; CROSS-LAYER EXECUTION ASSURANCE STANDARD DIRECTED BEFORE W2-B (governance-only synchronization candidate)
+
+**Append-only synchronization entry.** The entry above ended with the next eligible gate
+`W2-A IMPLEMENTATION AUTHORIZATION GATE` — that authorization was granted and the implementation
+lifecycle has now completed in full; the entries above are authority-at-that-time and are not
+rewritten.
+
+**1. W2-A / RVR-4 IMPLEMENTATION — `IMPLEMENTATION AUTHORITATIVE`.** Merged via **PR #569**,
+merge `e17ca1477e55b49298b92ac5ec8db711e208496e` (verified from Git at this gate: first parent
+`894861c9ef78c9affe927f22dfa497de68050e96` = the PR #568 post-W2-A-contract sync merge; second
+parent `d8c5aef988a00a8b342b26816afd6186e4262c42` = the exact Owner-accepted implementation
+candidate; merge tree `4c1739ae9f98c422812e4a8f3561d28105974522` identical to the candidate tree;
+empty candidate→merge diff; merged 2026-08-25T13:56:35Z; 0 commits after at this gate).
+**Lifecycle, recorded truthfully:** Owner implementation authorization → first candidate
+`b3ada80…` Creator-Grill-FAILED on IG-17 (decision supersession counted as withdrawn legacy
+answers on the deliverable) and escalated rather than shipped → explicit bounded Owner allowlist
+extension (`engine/deliverable_assembler.py`, class-bounded containment only) → fresh sibling
+`614a0c7…` externally reviewed, N-2 adjudicated MATERIAL (route idempotency conflated retry
+identity with new user intent: withdrawal + byte-identical redeclaration was rejected) → fresh
+same-base sibling `d8c5aef…` repairing exactly N-2 (token-instance-discriminated durable key;
+like-with-like fingerprint) → accepted and merged. **Both rejected/reviewed candidates are
+preserved as REMOTE evidence branches** (`evidence/w2a-impl-grillfail-b3ada80` =
+`b3ada80…`, `evidence/w2a-impl-reviewed-614a0c7` = `614a0c7…` — verified at their exact SHAs at
+this gate). Delivered behavior: bounded decision capture in the existing journey (declare
+context / declare / refine / withdraw alternatives; composed deterministic FDC-001 projection
+rendered on session + deliverable; carrier-level fail-closed mint; 15-field record contract with
+bounded legacy load; OW-6 containment; `OWNER_STATED` provenance; EN/AR copy;
+persist-before-acknowledge; reconstruction parity). Evidence: full RED inventory (51 authoritative
+requirements) + IG-17 truth tests + N-2 composition tests GREEN; candidate full suite
+`4595 passed / 3 skipped / 1 xfailed / 0 failed`; the W2-A inventory re-executed GREEN at this
+tip (`[EXEC] 62 passed at e17ca147…`).
+
+**2. Register reconciliation (this candidate).** Per the exact frozen criteria: **W2-A enactment
+set → `CLOSED — evidence verified`** (contract §21 criterion "exact implementation + RED→GREEN
+evidence, merged" — satisfied by the prior external PR #569 evidence, never by this candidate's
+own merge); **RVR-4 → `CLOSED — evidence verified`** (its row criterion satisfied identically).
+Three rows added: the Owner-directed **Cross-Layer Execution Assurance Standard** obligation
+(OPEN; CURRENT EXECUTION BLOCKER for W2-B execution); two W2-A implementation residuals preserved
+truthfully (latent `derived_readiness` None-context grouping — CONDITIONAL; pre-existing
+unlocalized withdrawn-note rendering — NBF). Release-value obligations unchanged and OPEN:
+R4-C; T1-A′; T1-C′; Time-to-Value; Differentiation — implementation is mechanism evidence, not
+release-value proof.
+
+**3. Owner process direction (recorded, not executed).** The Owner/Lead Agent directed that a
+durable **Cross-Layer Execution Assurance Standard** (derived from the W2-A lifecycle lessons) be
+documented after W2-A and BEFORE W2-B proceeds, through its own full lifecycle. **NOT created in
+this candidate**; contents not pre-defined; nothing here authorizes W2-B.
+
+**4. This synchronization candidate.** Governance-only: the five status surfaces
+(`CURRENT_PROJECT_STATE.md` pin + entry; this roadmap, append-only;
+`ACTIVE_INCREMENT_CONTRACT.md` rotation; `OWNER_DECISION_REGISTER.md` lineage/boundary/direction;
+`DEFERRED_OBLIGATIONS_REGISTER.md` transitions above). `EXECUTABLE/TEST/PIN/PACK/DOMAIN-RULE
+DELTA: 0`; no historical record rewritten; `main` not reconciled. **Disposition:
+`POST-W2-A-IMPLEMENTATION SYNC — GOVERNANCE CANDIDATE; NOT AUTHORITATIVE UNTIL MERGED AND
+POST-MERGE VERIFIED`.**
+
+**Next eligible gate — `CROSS-LAYER EXECUTION ASSURANCE STANDARD` (governance/process gate, its
+own lifecycle), THEN `W2-B AUTHORIZATION` (a separate Owner decision fixing the W/M values at its
+acceptance per the Wave-2 contract §H).** W2-B is the next eligible PRODUCT increment — eligible
+is not authorized. `W2-B AUTHORIZED: NO`; `W2-C AUTHORIZED: NO`;
+`RVR-6 / RVR-7 / RVR-8: NOT AUTHORIZED`; `SECOND S2 RUN AUTHORIZED: NO`; `R4-C: OPEN`;
+`T1-A′ / T1-C′ / TIME-TO-VALUE / DIFFERENTIATION: OPEN`; `MLC DEFINITION FROZEN: NO`;
+`PSRR GO: NO`; `DEPLOYMENT AUTHORIZED: NO`; `PRODUCTION AUTHORIZED: NO`; `PAID ACTIVATION
+AUTHORIZED: NO`.
