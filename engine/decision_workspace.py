@@ -521,13 +521,27 @@ class DecisionError(ValueError):
 class DecisionRecord:
     """One bounded technical decision, evolved deterministically in memory."""
 
-    def __init__(self, decision_id=None):
+    def __init__(self, decision_id=None, *, decision_question=None,
+                 seeded=True, initial_candidates=None):
+        """Default-preserving constructor (W2-A OD-W2-DW-LIFT bounded
+        generalization, authoritative contract §5): with no keyword arguments
+        the behavior is byte-identical to the historical DW-lane constructor
+        (bicycle CANDIDATE_NAMES candidates, seeded owner context, constant
+        DECISION_QUESTION, uuid sub-ids). The Path-N composition seam passes
+        ``seeded=False`` plus injected deterministic identities so NO seeded
+        bicycle content and NO uuid can reach a composed projection; a
+        composed DecisionRecord remains a pure derived projection of the
+        amended active assertion state. No live DW route/behavior changes."""
         self.decision_id = decision_id or _new_id("decision")
-        self.decision_question = DECISION_QUESTION
+        self.decision_question = (DECISION_QUESTION if decision_question is None
+                                  else decision_question)
         self.revision = 0
-        self.candidates = [
-            Candidate(_new_id("cand"), name) for name in CANDIDATE_NAMES
-        ]
+        if seeded:
+            self.candidates = [
+                Candidate(_new_id("cand"), name) for name in CANDIDATE_NAMES
+            ]
+        else:
+            self.candidates = list(initial_candidates or [])
         self.inputs = []            # list[ClaimItem]
         self.constraints = []       # list[Constraint]
         self.gaps = []              # list[Gap]
@@ -540,7 +554,8 @@ class DecisionRecord:
         self.change_impact_summary = None
         self.readiness_status = INSUFFICIENT_INFORMATION
         self._open_conflicts = []   # list[str] conflict ids
-        self._seed_owner_context()
+        if seeded:
+            self._seed_owner_context()
         # Initial deterministic readiness (no change event for seeding).
         self.readiness_status = self._compute_readiness()
 
