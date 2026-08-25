@@ -24,6 +24,7 @@ from typing import Optional, Tuple
 
 from engine.idea_state import (
     OPEN,
+    DECISION_ACTION_DISPOSITIONS,
     DISPOSITION_EVIDENCE_REQUESTED,
     DISPOSITION_SPECIALIST_REQUESTED,
     DISPOSITION_UNKNOWN,
@@ -326,8 +327,19 @@ def _order_key(requirement):
 def derive_requirement_landscape(state):
     """Return the immutable RequirementLandscape for ``state``. Pure / read-only /
     deterministic (contract §6.1). Empty ONLY when no valid active anchor remains."""
+    # W2-A OW-6 containment (authoritative contract §10, per W2-ID v3 §G):
+    # this derivation historically includes EVERY active ledger record with no
+    # disposition inclusion gate, so unlisted dispositions inherit the legacy
+    # assertion/"Recorded answer" vocabulary. The three W2-A decision-action
+    # dispositions are therefore EXPLICITLY excluded here — a declared
+    # decision context/alternative/withdrawal is never a requirement row, a
+    # recorded answer, or a validation-plan/deliverable input (both inherit
+    # this landscape). Bounded class exclusion only: every legacy disposition
+    # keeps its behavior byte-identically.
     active = [r for r in getattr(state, "assertions", [])
-              if getattr(r, "superseded_by", None) is None]
+              if getattr(r, "superseded_by", None) is None
+              and getattr(r, "disposition", None)
+              not in DECISION_ACTION_DISPOSITIONS]
     active_ids = {r.record_id for r in active}
 
     # 1. Active contradiction pairs (order-normalized; F-2 / §6.5). A malformed edge

@@ -576,6 +576,32 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
 </section>
 {% endif %}
 
+{# W2-A / RVR-4 (contract §14): read-only composed decision state on the
+   deliverable surface. Derived on demand; NOT part of the canonical
+   deliverable package (the assembler is deliberately untouched); user
+   content renders verbatim, chrome via the governed UI_W2A_* keys. #}
+{% if decision_capture is defined and decision_capture %}
+<section class="w2a-decisions" style="margin-top:18px;border:1px solid #d5c9e8;border-radius:4px;background:#f9f5fd;padding:12px 16px">
+  <h2 style="font-size:16px;margin:0 0 8px 0">{{ t('UI_W2A_DELIV_HEADING') }}</h2>
+  {% for d in decision_capture %}
+  <div class="w2a-context" style="margin-bottom:10px">
+    <p style="margin:4px 0"><strong>{{ t('UI_W2A_QUESTION_LABEL') }}:</strong> {{ d.question }}</p>
+    <p style="margin:4px 0;font-size:13px"><strong>{{ t('UI_W2A_ALTERNATIVES_LABEL') }}:</strong></p>
+    {% if d.alternatives %}
+    <ul style="margin:4px 0">
+      {% for a in d.alternatives %}<li>{{ a.name }}</li>{% endfor %}
+    </ul>
+    {% else %}
+    <p style="font-size:13px;color:#777;margin:4px 0">{{ t('UI_W2A_NO_ALTERNATIVES') }}</p>
+    {% endif %}
+    {% if d.readiness_status == 'insufficient_information' %}
+    <p style="font-size:12px;color:#777;margin:4px 0">{{ t('UI_W2A_READINESS_NOTE') }}</p>
+    {% endif %}
+  </div>
+  {% endfor %}
+</section>
+{% endif %}
+
 <p class="back-link"><a href="{{ url_for('show_session', sid=sid) }}">{{ t('UI_B_DELIV_104') }}</a></p>
 
 {% endblock %}

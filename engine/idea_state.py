@@ -119,11 +119,31 @@ DISPOSITION_EVIDENCE_REQUESTED     = "evidence_requested"
 # `engine.progression_loop.accept_gap_risk`.
 DISPOSITION_RISK_ACCEPTED          = "risk_accepted"
 
+# W2-A / RVR-4 (authoritative contract §2, PR #567): the exact frozen
+# decision-action vocabulary. Refinement is NOT a disposition — it is the
+# existing single-target supersession relation within a same-class chain.
+# Context withdrawal is OUTSIDE W2-A. These are carrier dispositions only:
+# FDC-001 `DecisionRecord` remains the sole canonical decision-semantics owner.
+DISPOSITION_DECISION_CONTEXT_DECLARED     = "decision_context_declared"
+DISPOSITION_DECISION_ALTERNATIVE_DECLARED = "decision_alternative_declared"
+DISPOSITION_DECISION_ALTERNATIVE_WITHDRAWN = "decision_alternative_withdrawn"
+
+DECISION_ACTION_DISPOSITIONS = frozenset({
+    DISPOSITION_DECISION_CONTEXT_DECLARED,
+    DISPOSITION_DECISION_ALTERNATIVE_DECLARED,
+    DISPOSITION_DECISION_ALTERNATIVE_WITHDRAWN,
+})
+
 INTERACTION_DISPOSITIONS = frozenset({
     DISPOSITION_ANSWERED, DISPOSITION_UNKNOWN, DISPOSITION_DEFERRED,
     DISPOSITION_PROVISIONAL_ASSUMPTION, DISPOSITION_SPECIALIST_REQUESTED,
     DISPOSITION_EVIDENCE_REQUESTED, DISPOSITION_RISK_ACCEPTED,
-})
+}) | DECISION_ACTION_DISPOSITIONS
+
+# The seven pre-W2-A dispositions, needed by the bounded legacy-payload load
+# rule in engine.record_contract (contract §4: only a LEGACY payload may omit
+# `decision_context_root`).
+LEGACY_INTERACTION_DISPOSITIONS = INTERACTION_DISPOSITIONS - DECISION_ACTION_DISPOSITIONS
 
 # Durable pending state for the two request actions (None for the others).
 _PENDING_BY_DISPOSITION = {
@@ -143,6 +163,13 @@ _DEFAULT_PROVENANCE_BY_DISPOSITION = {
     # RVR-1: accepting a risk is an owner assertion about the owner's own
     # decision — provenance is the owner's statement, never platform-derived.
     DISPOSITION_RISK_ACCEPTED:          OWNER_STATED,
+    # W2-A (contract §2 frozen provenance rule): declaring a context, declaring
+    # an alternative, and withdrawing an alternative are each an owner
+    # assertion about the owner's own decision — same semantics as the
+    # risk_accepted precedent above. Never LEGACY_UNSPECIFIED.
+    DISPOSITION_DECISION_CONTEXT_DECLARED:      OWNER_STATED,
+    DISPOSITION_DECISION_ALTERNATIVE_DECLARED:  OWNER_STATED,
+    DISPOSITION_DECISION_ALTERNATIVE_WITHDRAWN: OWNER_STATED,
 }
 
 # Validation levels treated as "validated" (i.e. not owner-unvalidated) by the
@@ -206,6 +233,12 @@ class AssertionRecord:
     contradicts       : list = field(default_factory=list)   # record_ids in conflict
     supersedes        : list = field(default_factory=list)   # record_ids this supersedes
     superseded_by     : Optional[str] = None
+    # W2-A (contract §3): explicit decision-context attachment. None on every
+    # legacy record and on every `decision_context_declared` record (chain
+    # membership is derived from the supersession edge, never from this field);
+    # the exact founding-chain root record_id on alternative declarations and
+    # withdrawals. Never carried by gap_context/question_id/content/position.
+    decision_context_root : Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -336,16 +369,42 @@ class IdeaState:
     def record_interaction(self, action, content="", gap_context=None,
                            iteration=0, provenance=None,
                            validation_status=UNVALIDATED, quality=None,
-                           responsibility=None, supersedes=None):
+                           responsibility=None, supersedes=None,
+                           decision_context_root=None):
         """Append a durable disposition record for one of the six owner actions.
 
         Append-only: never mutates an existing record and never removes one. Has
         NO effect on maturity, lifecycle, gaps, transitions, or the transcript.
         Provenance, when not given explicitly, is derived ONLY from the action
         (never from text/quality/maturity). Returns the new record.
+
+        W2-A (authoritative contract §3 mint-seam rule): the three
+        decision-action dispositions receive class-bounded STRUCTURAL
+        fail-closed validation HERE, in the carrier itself, so no caller can
+        bypass the composition seam and create invalid live decision-action
+        state (nothing is appended on any violation). This is carrier
+        legality only — decision SEMANTICS stay with FDC-001.
         """
         if action not in INTERACTION_DISPOSITIONS:
             raise ValueError(f"unknown interaction action: {action!r}")
+        if action in DECISION_ACTION_DISPOSITIONS:
+            # Frozen provenance rule (§2): the generic "explicit provenance
+            # always wins" override cannot stamp a decision action as
+            # legacy/unspecified or platform-derived.
+            if provenance is not None and provenance != OWNER_STATED:
+                raise ValueError(
+                    "decision-action provenance must be OWNER_STATED, got "
+                    f"{provenance!r}")
+            # No gap linkage/attachment overload (§3): decision actions never
+            # carry a gap context.
+            if gap_context is not None:
+                raise ValueError(
+                    "a decision-action record may not carry gap_context")
+        elif decision_context_root is not None:
+            # Legacy/non-decision records always carry None (§3).
+            raise ValueError(
+                "decision_context_root is reserved for decision-action "
+                "dispositions")
         if provenance is None:
             provenance = _DEFAULT_PROVENANCE_BY_DISPOSITION.get(
                 action, LEGACY_UNSPECIFIED)
@@ -389,6 +448,11 @@ class IdeaState:
                 if prior.superseded_by is not None:
                     raise ValueError(
                         f"record already superseded: {prior_id!r}")
+        # W2-A (contract §3/§8) — class-bounded structural validation, still
+        # BEFORE anything is appended. The generic supersession primitive
+        # above is untouched for legacy-to-legacy behavior (ID-11).
+        self._validate_decision_action_structure(
+            action, decision_context_root, superseded_ids)
         record = AssertionRecord(
             record_id=record_id, disposition=action, content=content,
             gap_context=gap_context, iteration=iteration, provenance=provenance,
@@ -396,6 +460,7 @@ class IdeaState:
             pending=_PENDING_BY_DISPOSITION.get(action),
             responsibility=responsibility, resolves_gap=False,
             supersedes=list(superseded_ids),
+            decision_context_root=decision_context_root,
         )
         self.assertions.append(record)
         # In-memory inverse edge, set through the EXISTING canonical primitive so
@@ -419,6 +484,72 @@ class IdeaState:
             if r.record_id == record_id:
                 return r
         raise ValueError(f"unknown record_id: {record_id!r}")
+
+    def _validate_decision_action_structure(self, action, decision_context_root,
+                                            superseded_ids):
+        """W2-A carrier legality (authoritative contract §3/§8) — STRUCTURAL
+        only, fail-closed, nothing appended by the caller on a raise.
+
+        Enforced here so NO direct `record_interaction` call can bypass the
+        composition seam: root existence/class, founding-root reference,
+        cross-context and cross-class supersession, single-target decision
+        supersession (ID-11), and protection of decision-class records from
+        legacy-action supersession. Decision SEMANTICS remain FDC-001's."""
+        if action not in DECISION_ACTION_DISPOSITIONS:
+            # Legacy actions: only class protection — a legacy record may not
+            # supersede a decision-action record (cross-class, ID-11). All
+            # legacy-to-legacy behavior is byte-identical.
+            for prior_id in superseded_ids:
+                prior = self._require_record(prior_id)
+                if prior.disposition in DECISION_ACTION_DISPOSITIONS:
+                    raise ValueError(
+                        "a legacy action may not supersede a decision-action "
+                        f"record: {prior_id!r}")
+            return
+        # ID-11: a decision action supersedes at most ONE prior record.
+        if len(superseded_ids) > 1:
+            raise ValueError(
+                "a decision action may supersede at most one prior record")
+        if action == DISPOSITION_DECISION_CONTEXT_DECLARED:
+            if decision_context_root is not None:
+                raise ValueError(
+                    "a decision_context_declared record carries no "
+                    "decision_context_root (chain membership is derived from "
+                    "the supersession edge)")
+            for prior_id in superseded_ids:
+                prior = self._require_record(prior_id)
+                if prior.disposition != DISPOSITION_DECISION_CONTEXT_DECLARED:
+                    raise ValueError(
+                        "a context refinement must supersede a "
+                        "decision_context_declared record")
+            return
+        # Alternative declaration / withdrawal: a valid founding context root
+        # is mandatory.
+        if not decision_context_root:
+            raise ValueError(
+                f"{action} requires a decision_context_root")
+        root = self._require_record(decision_context_root)
+        if root.disposition != DISPOSITION_DECISION_CONTEXT_DECLARED:
+            raise ValueError(
+                "decision_context_root must reference a "
+                "decision_context_declared record")
+        if root.supersedes:
+            raise ValueError(
+                "decision_context_root must be the FOUNDING record of its "
+                "context chain (a refinement is not a root)")
+        if action == DISPOSITION_DECISION_ALTERNATIVE_WITHDRAWN \
+                and len(superseded_ids) != 1:
+            raise ValueError(
+                "a withdrawal must supersede exactly one active alternative")
+        for prior_id in superseded_ids:
+            prior = self._require_record(prior_id)
+            if prior.disposition != DISPOSITION_DECISION_ALTERNATIVE_DECLARED:
+                raise ValueError(
+                    "an alternative refinement/withdrawal must supersede a "
+                    "decision_alternative_declared record")
+            if prior.decision_context_root != decision_context_root:
+                raise ValueError(
+                    "cross-context decision supersession is not allowed")
 
     def mark_contradiction(self, record_id_a, record_id_b):
         """Mark two existing records as mutually contradictory. Non-destructive:
