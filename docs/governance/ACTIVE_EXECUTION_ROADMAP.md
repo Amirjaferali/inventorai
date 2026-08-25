@@ -15260,3 +15260,48 @@ is not authorized. `W2-B AUTHORIZED: NO`; `W2-C AUTHORIZED: NO`;
 `T1-A′ / T1-C′ / TIME-TO-VALUE / DIFFERENTIATION: OPEN`; `MLC DEFINITION FROZEN: NO`;
 `PSRR GO: NO`; `DEPLOYMENT AUTHORIZED: NO`; `PRODUCTION AUTHORIZED: NO`; `PAID ACTIVATION
 AUTHORIZED: NO`.
+
+## CROSS-LAYER EXECUTION ASSURANCE STANDARD — AUTHORITATIVE (governance-only synchronization candidate)
+
+**Append-only synchronization entry.** The entry above named the Standard gate as next eligible —
+that gate has completed through its full lifecycle; the entry above is authority-at-that-time.
+
+**1. STANDARD AUTHORITATIVE.** `docs/governance/CROSS_LAYER_EXECUTION_ASSURANCE_STANDARD.md`
+merged via **PR #571**, merge `216cdc8e61eea141940de072105aa03a4cd801bb` (verified from Git at
+this gate: first parent `e2b50120…` = the PR #570 sync merge; second parent
+`015a8534fbecef7e790f87cb42c087f28807d86e` = the exact Owner-accepted candidate; merge tree
+`611d3da4…` identical to the candidate tree; empty candidate→merge diff; 0 commits after at this
+gate), accepted after Independent External Review with non-blocking observations. **Effect: the
+Standard's Continuous Traceability Rule and C0–C4 proportional assurance mechanisms are now
+MANDATORY current process for every future applicable candidate** — prospective only: no
+retroactive execution over already-closed historical gates is claimed, and FCORA remains
+un-executed. Register Cross-Layer row `CLOSED — evidence verified` (this candidate, on the PR #571
+evidence).
+
+**2. Review observations carried forward (BINDING interpretation — recorded in the ODR
+acceptance row; lineage notes only, deliberately no new register rows):** **O-1** — C0–C4
+classes are a SEPARATE AXIS from the Lean LEVEL/DEPTH and review-tier classifications (C-class
+selects assurance mechanisms; Lean/review-tier keeps governing review intensity and authorization
+discipline under its existing owner — no duplicate classification ownership). **O-2** — an
+applicable Consumer Propagation Sweep records its reproducible search method (terms, scope,
+tool/command style, categories, resulting inventory) so review can re-run it; no single shell
+command is mandated. **O-3** — KFP identifiers stay bounded lessons, never a second registry.
+**O-4** — the route-idempotency finding is cited as `W2-A N-2` where ambiguous. **O-5** — the
+reviewer's initial smoke BLOCK was an environment/dependency artifact (passed with pinned
+dependencies), not a project defect.
+
+**3. This synchronization candidate.** Governance-only: register (Cross-Layer row closure +
+header), ODR (acceptance row with O-1…O-5 + boundary), this roadmap (append-only),
+`ACTIVE_INCREMENT_CONTRACT.md` (rotation), `CURRENT_PROJECT_STATE.md` (pin + entry).
+`EXECUTABLE/TEST/PIN/PACK/DOMAIN-RULE DELTA: 0`; no historical record rewritten; `main` not
+reconciled. **Disposition: `POST-CROSS-LAYER-STANDARD SYNC — GOVERNANCE CANDIDATE; NOT
+AUTHORITATIVE UNTIL MERGED AND POST-MERGE VERIFIED`.**
+
+**Next eligible gate — `W2-B AUTHORIZATION` (a separate Owner decision fixing the W/M values at
+its acceptance per the Wave-2 contract §H).** The Standard prerequisite for W2-B execution is now
+satisfied — that satisfies a PREREQUISITE and authorizes nothing. `W2-B AUTHORIZED: NO`;
+`W2-C AUTHORIZED: NO`; `RVR-6 / RVR-7 / RVR-8: NOT AUTHORIZED`; `SECOND S2 RUN AUTHORIZED: NO`;
+`FCORA: RECORDED, NOT EXECUTED` (after RVR-8, before Serious Release; pass =
+`UNACCOUNTED / ORPHAN = 0`); `R4-C: OPEN`; `T1-A′ / T1-C′ / TIME-TO-VALUE / DIFFERENTIATION:
+OPEN`; `MLC DEFINITION FROZEN: NO`; `PSRR GO: NO`; `DEPLOYMENT AUTHORIZED: NO`; `PRODUCTION
+AUTHORIZED: NO`; `PAID ACTIVATION AUTHORIZED: NO`.
