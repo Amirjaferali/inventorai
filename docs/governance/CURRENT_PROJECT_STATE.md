@@ -16,11 +16,19 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
   (`git rev-parse origin/feature/atomic-json-session-persistence`). Do **not** trust a
   prose-pinned SHA.
   - **Current authoritative branch tip (last independently verified):**
+    `48017ec0259e5fc7bcb105e0b018f6d447057bda` (Merge PR #573 — W2-B/RVR-6a IMPLEMENTATION CONTRACT;
+    two-parent merge of `21ce0ff843682068c0bc29a73d4506de51e581fa` (base, PR #572 post-Cross-Layer sync) +
+    `5e91fd9cbc27b784c8b398ac48366b84dd73cceb` (the exact Owner-accepted REPAIRED contract candidate; first
+    candidate `0448e36…` externally rejected for D-1/D-2, preserved as rejected evidence), tree
+    `c5c2590c28657fcff270f9e843bd360076ec8ce9` identical to the candidate tree, post-merge verified) — always
+    re-resolve the live tip from Git per the rule above.
+  - **Prior recorded tip (historical):**
     `216cdc8e61eea141940de072105aa03a4cd801bb` (Merge PR #571 — CROSS-LAYER EXECUTION ASSURANCE STANDARD;
     two-parent merge of `e2b50120e5d2e4a1c156bff7cb5184c4efc4eb5b` (base, PR #570 post-W2-A-implementation
     sync + FCORA recording) + `015a8534fbecef7e790f87cb42c087f28807d86e` (the exact Owner-accepted Standard
     candidate), tree `611d3da478bc164aa7036cd955defda800b21389` identical to the candidate tree, post-merge
-    verified) — always re-resolve the live tip from Git per the rule above.
+    verified); superseded as the live tip by PR #572 (post-Cross-Layer sync, `21ce0ff8…`) and PR #573
+    (W2-B/RVR-6a implementation contract, `48017ec0…`).
   - **Prior recorded tip (historical):**
     `e17ca1477e55b49298b92ac5ec8db711e208496e` (Merge PR #569 — W2-A/RVR-4 IMPLEMENTATION; two-parent merge of
     `894861c9ef78c9affe927f22dfa497de68050e96` (base, PR #568 post-W2-A-contract sync) +
@@ -2462,8 +2470,42 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
+- **W2-B / RVR-6a IMPLEMENTATION CONTRACT — AUTHORITATIVE; IMPLEMENTATION START NOT AUTHORIZED
+  (governance-only synchronization CANDIDATE), base `48017ec0259e5fc7bcb105e0b018f6d447057bda`**
+  — verified from Git at this gate as the **live authoritative tip** (**0 commits after**;
+  **PR #573**; parents `21ce0ff8…` (PR #572 post-Cross-Layer sync) / `5e91fd9c…` (the exact
+  Owner-accepted REPAIRED contract candidate); merge tree `c5c2590c…` identical to the candidate
+  tree; empty candidate→merge diff; merged 2026-08-25T21:15:58Z).
+  **`docs/governance/W2_B_RVR6A_IMPLEMENTATION_CONTRACT_CANDIDATE.md` is now AUTHORITATIVE**,
+  freezing the RVR-6a slice contract: the six Wave-2 §H capabilities (Tier-1 STATE-ADAPTIVE
+  only); the derived evidence-weighted reversible register with deterministic hysteresis
+  (architecture A pure recomputation; `quality`-aggregate prohibition); the seven-consumer
+  reproducible sweep seed (incl. the governed CLI `scripts/run_cli.py:152`); the three-file
+  digest-pin bounded allowance; multi-trigger determinism (precedence proposal frozen in the
+  future implementation evidence pack); the added negative paths; Cross-Layer application
+  (C2+C4, §6.1/§6.5, §6.3 excluded with a frozen C3-escalation rule). **Lifecycle recorded
+  truthfully:** first candidate `0448e36…` externally REJECTED (`REJECT — BOUNDED REPAIR
+  REQUIRED`, blockers D-1 digest-pin allowlist / D-2 consumer inventory) and preserved as
+  rejected evidence; the accepted sibling repairs exactly those findings. **Lifecycle truth:**
+  the contract-acceptance authorization boundary is COMPLETED; **`W2-B IMPLEMENTATION START
+  AUTHORIZED: NO`** (a separate explicit Owner instruction is required — the W2-A precedent);
+  `W2-B IMPLEMENTATION AUTHORITATIVE: NO`; `RVR-6A CLOSED: NO`. **W/M — corrected citation:**
+  the operative timing source is **Wave-2 contract §P** (not §H, which defines the slice): no W
+  or M expansion and no value space is authoritative; the pre-gate value-fixing was withdrawn as
+  circular; the numeric values are proposed inside the future implementation candidate/evidence
+  pack and become fixed through Owner exact-SHA acceptance of THAT candidate —
+  `W/M NUMERIC VALUES FROZEN: NO`. **NEXT ELIGIBLE GATE (after this synchronization merges):
+  `W2-B IMPLEMENTATION-START AUTHORIZATION`** — eligible is not authorized. `W2-C / RVR-6b /
+  RVR-7 / RVR-8: NOT AUTHORIZED`; FCORA recorded, not executed; release-value gates OPEN.
+  Governance/documentation only; `EXECUTABLE/TEST/PIN/PACK/DOMAIN-RULE DELTA: 0`; no historical
+  record rewritten; `main` not reconciled. **Disposition: `POST-W2-B-CONTRACT SYNC — GOVERNANCE
+  CANDIDATE; NOT AUTHORITATIVE UNTIL MERGED AND POST-MERGE VERIFIED`.**
+
 - **CROSS-LAYER EXECUTION ASSURANCE STANDARD — AUTHORITATIVE (governance-only synchronization
-  CANDIDATE), base `216cdc8e61eea141940de072105aa03a4cd801bb`** — verified from Git at this gate
+  CANDIDATE — since MERGED AND AUTHORITATIVE via PR #572, merge `21ce0ff8…`; its "next eligible
+  gate = W2-B AUTHORIZATION … (Wave-2 contract §H)" wording is authority-at-that-time — the gate
+  completed via PR #573 and the W/M citation is corrected in the entry above), base
+  `216cdc8e61eea141940de072105aa03a4cd801bb`** — verified from Git at this gate
   as the **live authoritative tip** (**0 commits after**; **PR #571**; parents `e2b50120…`
   (PR #570 post-W2-A-implementation sync + FCORA recording) / `015a8534…` (the exact
   Owner-accepted Standard candidate); merge tree `611d3da4…` identical to the candidate tree;

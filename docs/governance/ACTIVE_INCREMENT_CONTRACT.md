@@ -41,8 +41,79 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — POST-CROSS-LAYER-STANDARD GOVERNANCE SYNCHRONIZATION; governance-only
-write-gate candidate).** Base: **`216cdc8e61eea141940de072105aa03a4cd801bb`** — verified from Git
+**Status (current — POST-W2-B-CONTRACT GOVERNANCE SYNCHRONIZATION; governance-only write-gate
+candidate).** Base: **`48017ec0259e5fc7bcb105e0b018f6d447057bda`** — verified from Git at this
+gate as the **live authoritative tip** of `feature/atomic-json-session-persistence`
+(**0 commits after it**; **PR #573** — the W2-B/RVR-6a implementation-contract merge; first
+parent `21ce0ff843682068c0bc29a73d4506de51e581fa` (PR #572, post-Cross-Layer sync), second
+parent `5e91fd9cbc27b784c8b398ac48366b84dd73cceb` — the exact Owner-accepted REPAIRED contract
+candidate (first candidate `0448e36…` externally REJECTED for D-1/D-2 and preserved as rejected
+evidence); merge tree `c5c2590c…` identical to the candidate tree; empty candidate→merge diff;
+merged 2026-08-25T21:15:58Z).
+
+**Current authoritative truth (verified from Git, not prose):**
+**`W2-B / RVR-6a IMPLEMENTATION CONTRACT: AUTHORITATIVE`** — the contract-acceptance
+authorization boundary is COMPLETED, while **`W2-B IMPLEMENTATION START AUTHORIZED: NO`**
+(a separate explicit Owner instruction is required, per the contract §N and the W2-A precedent)
+and `W2-B IMPLEMENTATION AUTHORITATIVE: NO`; `RVR-6A CLOSED: NO`. **W/M numeric values are NOT
+frozen** — operative timing source **Wave-2 contract §P** (corrected from the propagated §H
+miscitation): values are proposed inside the future implementation candidate/evidence pack and
+fixed at Owner exact-SHA acceptance of that candidate. The entry-below's "next eligible gate =
+W2-B AUTHORIZATION" line is authority-at-that-time — that gate completed.
+
+```
+INCREMENT CONTRACT — Post-W2-B-Contract Status Synchronization (governance only)
+Objective:                Bring the live status surfaces and the Deferred Obligations Register to
+                          current repository truth after the PR #573 contract merge: record the
+                          contract as authoritative with the lifecycle-state separation intact;
+                          correct the propagated W/M citation (§H → §P) and disambiguate
+                          "at W2-B acceptance"; carry the review lineage (rejected 0448e36) and
+                          observations A–D; rotate this contract.
+Owner authorization:      the Owner's post-W2-B-contract governance synchronization gate
+                          instruction (following Owner exact-SHA acceptance of 5e91fd9c… and the
+                          PR #573 merge)
+Risk level:               LEVEL 2 — governance/documentation only (Standard change class: C0/C1)
+Allowed paths:            docs/governance/CURRENT_PROJECT_STATE.md;
+                          docs/governance/ACTIVE_EXECUTION_ROADMAP.md (append-only);
+                          docs/governance/ACTIVE_INCREMENT_CONTRACT.md (this rotation);
+                          docs/governance/OWNER_DECISION_REGISTER.md (append/boundary);
+                          docs/governance/DEFERRED_OBLIGATIONS_REGISTER.md (row wording)
+Forbidden paths:          engine/, web/, tests/, scripts/, domains/, schemas, the merged W2-B
+                          contract record, historical records, preserved/rejected evidence
+Expected behavior:        status surfaces state current lifecycle truth; no numeric W/M value
+                          appears anywhere; nothing else changes
+Non-goals:                W2-B implementation or implementation-start authorization; numeric W/M
+                          values; W2-C/RVR-6b/RVR-7/RVR-8; FCORA execution; residual repair;
+                          any runtime change
+Acceptance criteria:      the sync Grill PCS-01…PCS-52 (merge identity verified; lifecycle states
+                          not collapsed; citation corrected on live surfaces only; historical
+                          entries preserved; minimal changed-file set)
+Required tests:           none — documentation-only (zero runtime delta verified mechanically)
+Tests not required:       product tests — no product path changes
+Dependencies:             PR #573 authoritative merge; the W2-B contract §C/§N; Wave-2 §P
+Unresolved decisions:     the W2-B implementation-start authorization (separate Owner
+                          instruction); the open Owner decisions tracked in the register
+Stop conditions:          any merge-identity mismatch; any pressure to authorize implementation
+                          start, freeze W/M numbers, or rewrite history
+Independent-review scope: factual accuracy; lifecycle-state vocabulary; citation-correction
+                          fidelity; no self-certification
+Merge authority:          owner, separately (candidate is NOT published, PR'd, or merged by the
+                          Creator)
+```
+
+**Disposition: `POST-W2-B-CONTRACT SYNC — GOVERNANCE CANDIDATE; NOT AUTHORITATIVE UNTIL MERGED
+AND POST-MERGE VERIFIED`.** After it merges, the next eligible gate is the
+**`W2-B IMPLEMENTATION-START AUTHORIZATION`** — a separate explicit Owner instruction.
+**`W2-B IMPLEMENTATION START AUTHORIZED: NO`; `W2-C AUTHORIZED: NO`; `RVR-7 AUTHORIZED: NO`;
+`RVR-8 AUTHORIZED: NO`.**
+
+---
+
+**Superseded (retained as history) — POST-CROSS-LAYER-STANDARD GOVERNANCE SYNCHRONIZATION;
+MERGED AND AUTHORITATIVE via PR #572, merge `21ce0ff843682068c0bc29a73d4506de51e581fa`.** Its
+"next eligible gate = W2-B AUTHORIZATION" line is authority-at-that-time — that gate completed
+via PR #573 (see the active block above; its "(Wave-2 contract §H)" W/M citation is corrected
+there). Base: **`216cdc8e61eea141940de072105aa03a4cd801bb`** — verified from Git
 at this gate as the **live authoritative tip** of `feature/atomic-json-session-persistence`
 (**0 commits after it**; **PR #571** — the Cross-Layer Execution Assurance Standard merge; first
 parent `e2b50120e5d2e4a1c156bff7cb5184c4efc4eb5b` (PR #570, post-W2-A-implementation sync +
