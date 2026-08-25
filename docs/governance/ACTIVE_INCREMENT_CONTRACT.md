@@ -41,8 +41,76 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — POST-W2-A-IMPLEMENTATION GOVERNANCE SYNCHRONIZATION; governance-only
-write-gate candidate).** Base: **`e17ca1477e55b49298b92ac5ec8db711e208496e`** — verified from Git
+**Status (current — POST-CROSS-LAYER-STANDARD GOVERNANCE SYNCHRONIZATION; governance-only
+write-gate candidate).** Base: **`216cdc8e61eea141940de072105aa03a4cd801bb`** — verified from Git
+at this gate as the **live authoritative tip** of `feature/atomic-json-session-persistence`
+(**0 commits after it**; **PR #571** — the Cross-Layer Execution Assurance Standard merge; first
+parent `e2b50120e5d2e4a1c156bff7cb5184c4efc4eb5b` (PR #570, post-W2-A-implementation sync +
+FCORA recording), second parent `015a8534fbecef7e790f87cb42c087f28807d86e` — the exact
+Owner-accepted Standard candidate; merge tree `611d3da4…` identical to the candidate tree; empty
+candidate→merge diff).
+
+**Current authoritative truth (verified from Git, not prose):**
+**`CROSS-LAYER EXECUTION ASSURANCE STANDARD: AUTHORITATIVE`**
+(`docs/governance/CROSS_LAYER_EXECUTION_ASSURANCE_STANDARD.md`, PR #571, accepted with
+non-blocking review observations O-1…O-5 carried as binding interpretation in the ODR acceptance
+row). Its Continuous Traceability Rule and C0–C4 proportional assurance mechanisms are MANDATORY
+current process for every future applicable candidate (prospective only; per O-1 the C-classes
+are a separate axis from the Lean LEVEL/DEPTH and review-tier classifications). The register's
+Cross-Layer row is CLOSED on the PR #571 evidence (this candidate). FCORA remains RECORDED, NOT
+EXECUTED. The entry-below's "next eligible gate = CROSS-LAYER EXECUTION ASSURANCE STANDARD" line
+is authority-at-that-time — that gate completed.
+
+```
+INCREMENT CONTRACT — Post-Cross-Layer-Standard Status Synchronization (governance only)
+Objective:                Bring the live status surfaces and the Deferred Obligations Register to
+                          current repository truth after the PR #571 Standard merge: record the
+                          Standard as authoritative and now-mandatory (prospective); close its
+                          register row on the merge evidence; carry review observations O-1…O-5
+                          as binding interpretation; rotate this contract.
+Owner authorization:      the Owner's post-Cross-Layer-Standard governance synchronization gate
+                          instruction (following Owner exact-SHA acceptance of 015a8534… and the
+                          PR #571 merge)
+Risk level:               LEVEL 2 — governance/documentation only (Standard change class: C0/C1)
+Allowed paths:            docs/governance/CURRENT_PROJECT_STATE.md;
+                          docs/governance/ACTIVE_EXECUTION_ROADMAP.md (append-only);
+                          docs/governance/ACTIVE_INCREMENT_CONTRACT.md (this rotation);
+                          docs/governance/OWNER_DECISION_REGISTER.md (append/boundary);
+                          docs/governance/DEFERRED_OBLIGATIONS_REGISTER.md (row closure)
+Forbidden paths:          engine/, web/, tests/, domains/, schemas, the merged Standard document,
+                          historical records, preserved evidence
+Expected behavior:        status surfaces state current truth; the Standard row closes on prior
+                          external merge evidence only; nothing else changes
+Non-goals:                W2-B authorization or W/M values; W2-C/RVR-6/RVR-7/RVR-8; FCORA
+                          execution; residual-observation repair; any runtime change
+Acceptance criteria:      the sync Grill SG-1…SG-30 (merge identity verified; minimal changed-file
+                          set; no self-certification; observations carried without bloat)
+Required tests:           none — documentation-only (zero runtime delta verified mechanically)
+Tests not required:       product tests — no product path changes
+Dependencies:             PR #571 authoritative merge; the register row's frozen closure criterion
+Unresolved decisions:     the W2-B authorization (separate Owner decision, W/M at acceptance);
+                          the open Owner decisions tracked in the register
+Stop conditions:          any merge-identity mismatch; any pressure to authorize W2-B, execute
+                          FCORA, or rewrite history
+Independent-review scope: factual accuracy; closure-criterion discipline; observation carry
+                          fidelity; no stale "future Standard" wording on live surfaces
+Merge authority:          owner, separately (candidate is NOT published, PR'd, or merged by the
+                          Creator)
+```
+
+**Disposition: `POST-CROSS-LAYER-STANDARD SYNC — GOVERNANCE CANDIDATE; NOT AUTHORITATIVE UNTIL
+MERGED AND POST-MERGE VERIFIED`.** After it merges, the next eligible gate is the
+**`W2-B AUTHORIZATION`** — a separate Owner decision (W/M values fixed at its acceptance).
+**`W2-B AUTHORIZED: NO`; `W2-C AUTHORIZED: NO`; `RVR-7 AUTHORIZED: NO`; `RVR-8 AUTHORIZED: NO`.**
+
+---
+
+**Superseded (retained as history) — POST-W2-A-IMPLEMENTATION GOVERNANCE SYNCHRONIZATION;
+MERGED AND AUTHORITATIVE via PR #570, merge `e2b50120e5d2e4a1c156bff7cb5184c4efc4eb5b` (the
+accepted candidate was the FCORA-reconciled fresh sibling `007f08ea…`; prior sibling `e36a4d5…`
+preserved as superseded-before-review evidence).** Its "next eligible gate = CROSS-LAYER
+EXECUTION ASSURANCE STANDARD" line is authority-at-that-time — that gate completed via PR #571
+(see the active block above). Base: **`e17ca1477e55b49298b92ac5ec8db711e208496e`** — verified from Git
 at this gate as the **live authoritative tip** of `feature/atomic-json-session-persistence`
 (**0 commits after it**; **PR #569** — the W2-A/RVR-4 implementation merge; first parent
 `894861c9ef78c9affe927f22dfa497de68050e96` (PR #568, post-W2-A-contract sync), second parent

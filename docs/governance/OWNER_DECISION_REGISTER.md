@@ -1273,17 +1273,23 @@ the evidence.
 | Post-W2-A-contract status sync acceptance | `6f592779790f35e0641fa800b603e52cc227c74b` | PR #568, `894861c9ef78c9affe927f22dfa497de68050e96` | Status surfaces + register reconciled to the contract-freeze; OD-W2-DW-LIFT and the two post-W2-ID sync rows CLOSED; enactment/RVR-4 kept OPEN per contract §21 |
 | **W2-A implementation authorization exercise** — explicit Owner authorization of W2-A/RVR-4 implementation under the frozen contract (its allowlist/RED inventory/STOP conditions), followed mid-lifecycle by the **explicit bounded Owner allowlist extension** (`engine/deliverable_assembler.py`, `_withdrawn_source_meta` class-bounded containment only) granted to repair the Creator-escalated IG-17 defect | authorization exercised through the full lifecycle (no single candidate SHA — see the acceptance row below) | evidenced by the PR #569 chain | W2-A implementation STARTED and executed strictly inside the frozen contract + one bounded extension; no adjacent scope |
 | **W2-A / RVR-4 implementation acceptance** — final fresh same-base sibling after Creator-Grill-failed `b3ada80b26de75379c3a4f5fedf27d6c438c8dd8` (IG-17) and externally reviewed N-2-material-rejected `614a0c78b6e43f4f6abbc139bee7c0f33c9ac925`, BOTH preserved as REMOTE evidence branches (`evidence/w2a-impl-grillfail-b3ada80`, `evidence/w2a-impl-reviewed-614a0c7` — verified at their exact SHAs) | `d8c5aef988a00a8b342b26816afd6186e4262c42` | PR #569, `e17ca1477e55b49298b92ac5ec8db711e208496e` (second parent = the exact candidate; merge tree `4c1739ae…` identical; empty candidate→merge diff; merged 2026-08-25T13:56:35Z) | **W2-A / RVR-4 IMPLEMENTATION AUTHORITATIVE** — bounded decision capture live in the existing journey (carrier mint validation; 15-field contract + bounded legacy load; deterministic composition; OW-6 containment incl. IG-17; N-2 retry-vs-new-intent repair; EN/AR); register rows "W2-A enactment set" and "RVR-4" CLOSED on this evidence; **release-value gates NOT touched** |
+| Post-W2-A-implementation status sync + FCORA recording acceptance (fresh sibling replacing superseded-before-review `e36a4d5…`) | `007f08ea637f14e163d23773944393c5d93c1e70` | PR #570, `e2b50120e5d2e4a1c156bff7cb5184c4efc4eb5b` | Enactment/RVR-4 closures authoritative; FCORA + Cross-Layer-Standard directions recorded (§D) |
+| **Cross-Layer Execution Assurance Standard acceptance** — accepted after Independent External Review with non-blocking observations, carried forward here as BINDING interpretation of the authoritative standard: **O-1** — the standard's C0–C4 applicability classes do NOT replace the Lean LEVEL/DEPTH classification or the review-tier classification; they are separate axes (C-class selects which assurance MECHANISMS apply; Lean LEVEL/DEPTH/review tier continues to govern review intensity and authorization discipline under its existing owner — no duplicate classification ownership); **O-2** — whenever a Consumer Propagation Sweep applies, the candidate evidence records the REPRODUCIBLE search method (search terms; path/scope; tool/command style; categories inspected; resulting consumer inventory) so an independent reviewer can re-run it — without mandating any one shell command; **O-3** — the KFP identifiers remain bounded lessons, never a second obligations registry; **O-4** — the route-idempotency finding is referenced as `W2-A N-2` wherever ambiguity is possible; **O-5** — the reviewer's initial smoke BLOCK was an environment/dependency artifact (passed with pinned dependencies) and is NOT a project defect | `015a8534fbecef7e790f87cb42c087f28807d86e` | PR #571, `216cdc8e61eea141940de072105aa03a4cd801bb` (second parent = the exact candidate; merge tree `611d3da4…` identical; empty candidate→merge diff) | **`CROSS-LAYER EXECUTION ASSURANCE STANDARD: AUTHORITATIVE`** — its Continuous Traceability Rule and proportionality model are MANDATORY current process for future applicable candidates (prospective only); register Cross-Layer row CLOSED on this evidence; the W2-B-execution prerequisite is satisfied while **W2-B remains `AUTHORIZED: NO`** |
 
 **C. Current open boundary** (each prior boundary paragraph here was authority-at-that-time; the
-enactment items were frozen by PR #567, and the implementation-authorization requirement it stated
-was then satisfied through the full lifecycle ending in PR #569). Current truth:
-`W2-A / RVR-4 IMPLEMENTATION AUTHORITATIVE: YES` (PR #569, acceptance row above). OPEN at the
-next gates: (1) the **Cross-Layer Execution Assurance Standard** governance gate (§D direction
-below) — before W2-B execution; (2) the **W2-B authorization** itself, a separate Owner decision
-that must also fix the W/M values at its acceptance (Wave-2 contract §H). `W2-B / W2-C / RVR-6 /
-RVR-7 / RVR-8: NOT AUTHORIZED`; `SECOND S2 RUN AUTHORIZED: NO`; R4-C / T1-A′ / T1-C′ /
-Time-to-Value / Differentiation: OPEN — W2-A completion is mechanism evidence, never release-value
-proof. Cross-cutting deferred obligations are tracked in
+enactment items were frozen by PR #567, the implementation-authorization requirement was satisfied
+through PR #569, and the D-1 Cross-Layer-Standard gate completed via PR #571). Current truth:
+`W2-A / RVR-4 IMPLEMENTATION AUTHORITATIVE: YES` (PR #569);
+`CROSS-LAYER EXECUTION ASSURANCE STANDARD: AUTHORITATIVE` (PR #571, acceptance row above — its
+Continuous Traceability Rule and C0–C4 model are MANDATORY current process for future applicable
+candidates; per O-1 the C-classes are a separate axis from the Lean LEVEL/DEPTH and review-tier
+classifications, which keep their existing owner). OPEN at the next gate: the **W2-B
+authorization** itself — a separate Owner decision that must also fix the W/M values at its
+acceptance (Wave-2 contract §H); the Standard prerequisite for W2-B execution is now satisfied,
+which authorizes NOTHING by itself. `W2-B / W2-C / RVR-6 / RVR-7 / RVR-8: NOT AUTHORIZED`;
+`SECOND S2 RUN AUTHORIZED: NO`; `FCORA: RECORDED, NOT EXECUTED` (after RVR-8, before Serious
+Release; pass = `UNACCOUNTED / ORPHAN = 0`); R4-C / T1-A′ / T1-C′ / Time-to-Value /
+Differentiation: OPEN. Cross-cutting deferred obligations are tracked in
 `docs/governance/DEFERRED_OBLIGATIONS_REGISTER.md` (Master Obligation Index layer 6); this
 register remains decision-only.
 

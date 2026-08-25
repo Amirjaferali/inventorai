@@ -16,12 +16,19 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
   (`git rev-parse origin/feature/atomic-json-session-persistence`). Do **not** trust a
   prose-pinned SHA.
   - **Current authoritative branch tip (last independently verified):**
+    `216cdc8e61eea141940de072105aa03a4cd801bb` (Merge PR #571 — CROSS-LAYER EXECUTION ASSURANCE STANDARD;
+    two-parent merge of `e2b50120e5d2e4a1c156bff7cb5184c4efc4eb5b` (base, PR #570 post-W2-A-implementation
+    sync + FCORA recording) + `015a8534fbecef7e790f87cb42c087f28807d86e` (the exact Owner-accepted Standard
+    candidate), tree `611d3da478bc164aa7036cd955defda800b21389` identical to the candidate tree, post-merge
+    verified) — always re-resolve the live tip from Git per the rule above.
+  - **Prior recorded tip (historical):**
     `e17ca1477e55b49298b92ac5ec8db711e208496e` (Merge PR #569 — W2-A/RVR-4 IMPLEMENTATION; two-parent merge of
     `894861c9ef78c9affe927f22dfa497de68050e96` (base, PR #568 post-W2-A-contract sync) +
     `d8c5aef988a00a8b342b26816afd6186e4262c42` (the exact Owner-accepted implementation candidate; Grill-failed
     `b3ada80…` and externally reviewed `614a0c7…` preserved as remote evidence branches), tree
-    `4c1739ae9f98c422812e4a8f3561d28105974522` identical to the candidate tree, post-merge verified) — always
-    re-resolve the live tip from Git per the rule above.
+    `4c1739ae9f98c422812e4a8f3561d28105974522` identical to the candidate tree, post-merge verified); superseded
+    as the live tip by PR #570 (post-W2-A-implementation sync + FCORA recording, `e2b50120…`) and PR #571
+    (Cross-Layer Execution Assurance Standard, `216cdc8e…`).
   - **Prior recorded tip (historical):**
     `82758cb2d06a7b91d30acfaa83a3d836df103186` (Merge PR #567 — W2-A/RVR-4 contract freeze; two-parent merge of
     `557548db2bb37b21b6b57f893afc2ae1af64744f` (base, PR #566 post-W2-ID sync + Deferred Obligations Register) +
@@ -2455,9 +2462,41 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
+- **CROSS-LAYER EXECUTION ASSURANCE STANDARD — AUTHORITATIVE (governance-only synchronization
+  CANDIDATE), base `216cdc8e61eea141940de072105aa03a4cd801bb`** — verified from Git at this gate
+  as the **live authoritative tip** (**0 commits after**; **PR #571**; parents `e2b50120…`
+  (PR #570 post-W2-A-implementation sync + FCORA recording) / `015a8534…` (the exact
+  Owner-accepted Standard candidate); merge tree `611d3da4…` identical to the candidate tree;
+  empty candidate→merge diff). **`docs/governance/CROSS_LAYER_EXECUTION_ASSURANCE_STANDARD.md`
+  is now AUTHORITATIVE**: its Continuous Traceability Rule and C0–C4 proportional assurance
+  mechanisms (State-Transition / Cross-Layer Composition / Intent-vs-Payload-Retry matrices;
+  persistence-reload-race, UI↔engine parity, consumer-propagation assurance; Compliance vs
+  Break-the-Product Grills; substantive self-invalidation) are **MANDATORY current process for
+  every future applicable candidate** — prospective only: no retroactive execution over closed
+  historical gates is claimed, and **FCORA remains RECORDED, NOT EXECUTED** (after RVR-8, before
+  Serious Release; pass = `UNACCOUNTED / ORPHAN = 0`). Independent-review observations carried as
+  BINDING interpretation in the ODR acceptance row: **O-1** C0–C4 classes are a separate axis
+  from the Lean LEVEL/DEPTH and review-tier classifications (no duplicate classification
+  ownership); **O-2** an applicable Consumer Propagation Sweep records its reproducible search
+  method; **O-3** KFP identifiers stay bounded lessons; **O-4** cite the idempotency finding as
+  `W2-A N-2` where ambiguous; **O-5** the reviewer's initial smoke BLOCK was an
+  environment/dependency artifact, not a project defect. **Register reconciliation:** the
+  Cross-Layer row → `CLOSED — evidence verified` (its exact criterion, PR #571 evidence — no
+  self-certification). Residuals and future capabilities untouched. **NEXT ELIGIBLE GATE (after
+  this synchronization merges): `W2-B AUTHORIZATION`** — a separate Owner decision (W/M values
+  fixed at its acceptance); the Standard prerequisite is satisfied, which authorizes nothing.
+  **`W2-B AUTHORIZED: NO`; `W2-C AUTHORIZED: NO`**; RVR-6/RVR-7/RVR-8, second S2 run, PSRR GO,
+  deployment, production, paid activation: all NOT AUTHORIZED. Governance/documentation only;
+  `EXECUTABLE/TEST/PIN/PACK/DOMAIN-RULE DELTA: 0`; no historical record rewritten; `main` not
+  reconciled. **Disposition: `POST-CROSS-LAYER-STANDARD SYNC — GOVERNANCE CANDIDATE; NOT
+  AUTHORITATIVE UNTIL MERGED AND POST-MERGE VERIFIED`.**
+
 - **POST-W2-A-IMPLEMENTATION GOVERNANCE SYNCHRONIZATION — W2-A/RVR-4 IMPLEMENTATION
   AUTHORITATIVE; ENACTMENT + RVR-4 CLOSED; CROSS-LAYER EXECUTION ASSURANCE STANDARD DIRECTED
-  BEFORE W2-B (governance-only CANDIDATE), base `e17ca1477e55b49298b92ac5ec8db711e208496e`** —
+  BEFORE W2-B (governance-only CANDIDATE — since MERGED AND AUTHORITATIVE via PR #570, merge
+  `e2b50120…`, with the FCORA-reconciled accepted candidate `007f08ea…`; its "NEXT ELIGIBLE GATE:
+  CROSS-LAYER EXECUTION ASSURANCE STANDARD" line is authority-at-that-time — that gate completed
+  via PR #571, see the entry above), base `e17ca1477e55b49298b92ac5ec8db711e208496e`** —
   verified from Git at this gate as the **live authoritative tip** (**0 commits after**;
   **PR #569**; parents `894861c9…` (PR #568 post-W2-A-contract sync) / `d8c5aef…` (the exact
   Owner-accepted implementation candidate); merge tree `4c1739ae…` identical to the candidate
