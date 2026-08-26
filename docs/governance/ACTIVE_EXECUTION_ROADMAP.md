@@ -15458,3 +15458,57 @@ AUTHORIZED: NO`; `FCORA: RECORDED, NOT EXECUTED`; `CAP-12 / CAP-13 / IoT / Drone
 NOT AUTHORIZED`; `R4-C: OPEN`; `T1-A′ / T1-C′ / TIME-TO-VALUE / DIFFERENTIATION: OPEN`; `MLC
 DEFINITION FROZEN: NO`; `PSRR GO: NO`; `DEPLOYMENT AUTHORIZED: NO`; `PRODUCTION AUTHORIZED: NO`;
 `PAID ACTIVATION AUTHORIZED: NO`.
+
+## RVR-6a FORMAL CLOSURE (governance-only closure candidate — conditional, non-circular)
+
+**Append-only closure-gate entry.** The entry above named `RVR-6a FORMAL CLOSURE` as the next
+eligible gate. The Owner then authorized **STARTING that closure lifecycle only** — explicitly
+NOT pre-deciding closure. This entry records the executed gate; it rewrites no history.
+
+**1. Entry identity (verified live).** Base = live authoritative tip
+`eb23cbf2b1b3b4d81908942ea9231756c90d8d94` (**PR #577**, 0 commits after; first parent
+`ac9c01ea…` (PR #576); second parent `3aa985ed…` = the exact Owner-accepted sync candidate;
+merge tree `003035c8…` identical; empty candidate→merge diff). The full authority chain —
+PR #573 (contract) → PR #575 (Contract Amendment 1) → PR #576 (implementation, Option C) →
+PR #577 (status sync) — re-verified from Git as ancestors of the tip with second-parent =
+exact-accepted-candidate identity at every step.
+
+**2. Closure contract reconstructed from repository sources** (register RVR-6a row; Wave-2 §H /
+OD-R5; Amendment 1 §14; the `<GATE>_FORMAL_CLOSURE_RECORD.md` precedent — Wave-1, PVCG-R4,
+Phase-9): a dedicated closure record + minimal status-surface synchronization in one
+governance-only candidate, with conditional (merge-gated) closure wording and no new
+`OWNER_DECISION_REGISTER.md` decision (closure-gate convention).
+
+**3. Adjudication result.** 13-row closure-requirement matrix
+(`docs/governance/RVR_6A_FORMAL_CLOSURE_RECORD.md` §3): rows 1–8 and 11–13 SATISFIED on
+`[REPO]` merge/blob identity plus `[EXEC]` re-probes at this exact base (W=2/M=2 constants;
+exactly four trigger classes + frozen slot precedence; `select_next_gap` and FDC-001 sole-owner
+boundaries intact; 67 focused W2-B tests green; **full suite re-reproduced at this base:
+4662 passed / 3 skipped / 1 xfailed / 0 failed**); row 9 (the closure record itself) is
+satisfied ON THIS CANDIDATE'S MERGE; row 10 (Owner adjudication) is deliberately FUTURE — it IS
+the Owner's exact-SHA acceptance. Complete Deferred-Obligations sweep at this base:
+**closure blocker count 0** — the only row at its return gate is RVR-6a itself; **MG-8 is
+NON-BLOCKING** (diagnosis delivered; Owner adjudication OPEN; semantics unchanged; latest safe
+gate "before serious release" NOT moved). Observations (a)–(d) keep their existing owners;
+rejected lineage (`7e0174ac…`, `91c5de53…`, `2bcf15a7…`, `8b455a0b…`) preserved as immutable
+evidence — nothing rehabilitated, nothing carried as a false current blocker.
+
+**4. This closure candidate.** Governance-only: the new
+`RVR_6A_FORMAL_CLOSURE_RECORD.md`; register (RVR-6a row conditional-closure wording + header
+maintenance note); this roadmap (append-only); `ACTIVE_INCREMENT_CONTRACT.md` (rotation);
+`CURRENT_PROJECT_STATE.md` (pin + entry). `OWNER_DECISION_REGISTER.md` UNCHANGED.
+`EXECUTABLE/TEST/PIN/PACK/DOMAIN-RULE DELTA: 0`; no historical record rewritten; `main` not
+reconciled. **Closure is CONDITIONAL AND NON-CIRCULAR: RVR-6a becomes formally closed if and
+when this exact closure candidate is Owner-accepted at exact SHA, merged (second parent = the
+accepted candidate; empty candidate→merge diff), and post-merge identity-verified.** Until
+then: `OWNER CLOSURE-LIFECYCLE START AUTHORIZED: YES` · `OWNER EXACT CLOSURE-SHA ACCEPTED: NO`
+· `RVR-6A AUTHORITATIVELY CLOSED: NO`. **Disposition: `RVR-6A FORMAL CLOSURE — GOVERNANCE
+CANDIDATE; NOT AUTHORITATIVE UNTIL MERGED AND POST-MERGE VERIFIED`.**
+
+**Boundaries — nothing downstream activated by this gate.** `W2-C AUTHORIZED: NO`;
+`RVR-6b / RVR-7 / RVR-8: NOT AUTHORIZED`; `SECOND S2 RUN AUTHORIZED: NO`; `FCORA: RECORDED,
+NOT EXECUTED`; `CAP-12 / CAP-13 / IoT / Drones / Renewable: NOT AUTHORIZED`; `MG-8
+ADJUDICATION: OPEN (Owner)`; `R4-C: OPEN`; `T1-A′ / T1-C′ / TIME-TO-VALUE / DIFFERENTIATION:
+OPEN`; `MLC DEFINITION FROZEN: NO`; `PSRR GO: NO`; `DEPLOYMENT AUTHORIZED: NO`; `PRODUCTION
+AUTHORIZED: NO`; `SERIOUS RELEASE AUTHORIZED: NO`; `PAID ACTIVATION AUTHORIZED: NO`. Any next
+gate requires its own separate Owner authorization — eligibility is not authorization.

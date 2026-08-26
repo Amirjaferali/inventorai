@@ -41,8 +41,82 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — POST-W2-B-IMPLEMENTATION GOVERNANCE SYNCHRONIZATION; governance-only
-write-gate candidate).** Base: **`ac9c01ea1caaca18306a99039cea3a4224216e8a`** — verified from Git
+**Status (current — RVR-6a FORMAL CLOSURE; governance-only closure-gate candidate).** Base:
+**`eb23cbf2b1b3b4d81908942ea9231756c90d8d94`** — verified from Git at this gate as the **live
+authoritative tip** of `feature/atomic-json-session-persistence` (**0 commits after it**;
+**PR #577** — the post-W2-B-implementation governance-sync merge; first parent `ac9c01ea…`
+(PR #576 — the authoritative W2-B/RVR-6a implementation merge); second parent `3aa985ed…` — the
+exact Owner-accepted repaired sync candidate; merge tree `003035c8…` identical to the candidate
+tree; EMPTY candidate→merge diff).
+
+**Current authoritative truth (verified from Git, not prose):**
+`W2-B CONTRACT: AUTHORITATIVE` (PR #573) · `W2-B CONTRACT AMENDMENT 1: AUTHORITATIVE` (PR #575)
+· `W2-B IMPLEMENTATION: AUTHORITATIVE` (PR #576) · `POST-W2-B GOVERNANCE SYNC: AUTHORITATIVE`
+(PR #577) · **`W/M OWNER-ACCEPTED AND FROZEN: W = 2, M = 2`**. The Owner authorized **STARTING
+the RVR-6a formal-closure lifecycle only** (closure NOT pre-decided). This gate reconstructed
+the closure contract from repository sources, swept the complete Deferred Obligations Register
+(**closure blocker count 0**; MG-8 correctly NON-BLOCKING with its adjudication OPEN and its
+gate unmoved), and created the closure instrument
+`docs/governance/RVR_6A_FORMAL_CLOSURE_RECORD.md` with the non-circular conditional statement:
+**`RVR-6A CLOSED: NO` until this exact closure candidate is Owner-accepted at exact SHA,
+merged, and post-merge identity-verified.** `OWNER EXACT CLOSURE-SHA ACCEPTED: NO`.
+`W2-C / RVR-6b / RVR-7 / RVR-8: NOT AUTHORIZED`; `FCORA: RECORDED, NOT EXECUTED`;
+CAP-12/CAP-13/IoT/Drones/Renewable, deployment, production, Serious Release, Paid Activation:
+NOT AUTHORIZED.
+
+```
+INCREMENT CONTRACT — RVR-6a Formal Closure (governance only)
+Objective:                Execute the Owner-authorized RVR-6a formal-closure lifecycle: verify
+                          the authority chain live; reconstruct the closure contract from
+                          repository precedent; adjudicate the closure-requirement matrix on
+                          [REPO]+[EXEC] evidence; sweep the complete Deferred Obligations
+                          Register; create the conditional, non-circular formal-closure record
+                          and the minimal status-surface synchronization.
+Owner authorization:      the Owner's RVR-6a formal-closure lifecycle START authorization
+                          (start only — closure itself requires the Owner's later exact-SHA
+                          acceptance + merge + post-merge verification)
+Risk level:               LEVEL 2 — governance/documentation only (Standard change class: C0/C1)
+Allowed paths:            docs/governance/RVR_6A_FORMAL_CLOSURE_RECORD.md (new);
+                          docs/governance/CURRENT_PROJECT_STATE.md;
+                          docs/governance/ACTIVE_EXECUTION_ROADMAP.md (append-only);
+                          docs/governance/ACTIVE_INCREMENT_CONTRACT.md (this rotation);
+                          docs/governance/DEFERRED_OBLIGATIONS_REGISTER.md (RVR-6a row + header)
+Forbidden paths:          engine/, web/, tests/, scripts/, domains/, schemas, digest pins,
+                          OWNER_DECISION_REGISTER.md (closure-gate convention — no new Owner
+                          decision), the merged contract/amendment/evidence-pack records,
+                          historical records, preserved/rejected evidence
+Expected behavior:        closure evidence adjudicated truthfully; RVR-6a reported CLOSED only
+                          through the conditional merge-gated statement; nothing else changes
+Non-goals:                W2-C/RVR-6b/RVR-7/RVR-8 authorization; FCORA execution; MG-8
+                          adjudication or repair; any runtime change; release-value closure
+Acceptance criteria:      the Closure Grill R6C-01…R6C-105 (identity, evidence-backing,
+                          non-circularity, zero blockers, boundary preservation, bundle +
+                          isolated fetch-back)
+Required tests:           none — documentation-only (zero runtime delta; the [EXEC] probes and
+                          full-suite re-run are evidence, not new tests)
+Tests not required:       product tests — no product path changes
+Dependencies:             PR #573/#575/#576/#577 authoritative merges; the committed evidence
+                          pack; the Deferred Obligations Register RVR-6a row
+Unresolved decisions:     Owner exact-SHA acceptance of the closure candidate; MG-8 Owner
+                          adjudication; the open Owner decisions tracked in the register
+Stop conditions:          any merge-identity mismatch; insufficient closure evidence (do NOT
+                          manufacture a closure candidate); any pressure to activate W2-C or
+                          later gates, adjudicate MG-8, or rewrite history
+Independent-review scope: closure-evidence sufficiency; non-circular conditional wording;
+                          DOR-sweep completeness; MG-8/observation disposition fidelity;
+                          boundary preservation; no self-certification
+Merge authority:          owner, separately (candidate is NOT published, PR'd, or merged by the
+                          Creator)
+```
+
+---
+
+**Superseded (retained as history) — POST-W2-B-IMPLEMENTATION GOVERNANCE SYNCHRONIZATION;
+MERGED AND AUTHORITATIVE via PR #577, merge `eb23cbf2b1b3b4d81908942ea9231756c90d8d94`.** Its
+"next eligible gate is the separate `RVR-6a FORMAL CLOSURE` lifecycle" line completed — the
+Owner authorized the closure-lifecycle START and the closure gate executed (see the active
+block above); its base pin `ac9c01ea…` is authority-at-that-time (superseded as the live tip by
+PR #577). Base: **`ac9c01ea1caaca18306a99039cea3a4224216e8a`** — verified from Git
 at this gate as the **live authoritative tip** of `feature/atomic-json-session-persistence`
 (**0 commits after it**; **PR #576** — the W2-B/RVR-6a implementation merge under Contract
 Amendment 1; first parent `346f8e8a3b1532a6c52750fe20bc76668db06956` (PR #575 — the authoritative

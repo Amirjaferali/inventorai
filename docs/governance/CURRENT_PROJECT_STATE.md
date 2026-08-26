@@ -16,14 +16,22 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
   (`git rev-parse origin/feature/atomic-json-session-persistence`). Do **not** trust a
   prose-pinned SHA.
   - **Current authoritative branch tip (last independently verified):**
+    `eb23cbf2b1b3b4d81908942ea9231756c90d8d94` (Merge PR #577 — POST-W2-B-IMPLEMENTATION GOVERNANCE
+    SYNCHRONIZATION; two-parent merge of `ac9c01ea1caaca18306a99039cea3a4224216e8a` (base, PR #576 —
+    the authoritative W2-B/RVR-6a implementation merge) + `3aa985ed72cacc4482dcc7c18092f33dbda6f962`
+    (the exact Owner-accepted repaired sync candidate; rejected sibling `8b455a0b…` preserved as
+    rejected evidence), tree `003035c80281083ea515dde419292531620af9d3` identical to the candidate
+    tree, empty candidate→merge diff, post-merge verified; all five synchronized governance surfaces
+    are inside this exact tree) — always re-resolve the live tip from Git per the rule above.
+  - **Prior recorded tip (historical):**
     `ac9c01ea1caaca18306a99039cea3a4224216e8a` (Merge PR #576 — W2-B/RVR-6a IMPLEMENTATION under
     Contract Amendment 1, Option C; two-parent merge of `346f8e8a3b1532a6c52750fe20bc76668db06956`
     (base, PR #575 — the authoritative Contract Amendment 1 merge) +
     `6cf0958205681d1f476ecb8a9258bbebfb365059` (the exact Owner-accepted implementation candidate),
     tree `f2b0004b97eaf508d3e9cc3c667bcdd6b80a80f2` identical to the candidate tree, empty
     candidate→merge diff, post-merge verified; the committed implementation evidence pack
-    `docs/governance/W2_B_RVR6A_IMPLEMENTATION_EVIDENCE_PACK.md` is inside this exact tree) — always
-    re-resolve the live tip from Git per the rule above.
+    `docs/governance/W2_B_RVR6A_IMPLEMENTATION_EVIDENCE_PACK.md` is inside this exact tree);
+    superseded as the live tip by PR #577 (post-W2-B-implementation governance sync, `eb23cbf2…`).
   - **Prior recorded tip (historical):**
     `48017ec0259e5fc7bcb105e0b018f6d447057bda` (Merge PR #573 — W2-B/RVR-6a IMPLEMENTATION CONTRACT;
     two-parent merge of `21ce0ff843682068c0bc29a73d4506de51e581fa` (base, PR #572 post-Cross-Layer sync) +
@@ -2480,8 +2488,40 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
+- **RVR-6a — FORMAL CLOSURE (governance-only closure CANDIDATE — closure conditional on this
+  exact candidate's acceptance, merge, and post-merge verification), base
+  `eb23cbf2b1b3b4d81908942ea9231756c90d8d94`** — verified from Git at this gate as the **live
+  authoritative tip** (**0 commits after**; **PR #577** — the post-W2-B-implementation governance
+  sync merge; first parent `ac9c01ea…` (PR #576); second parent `3aa985ed…` — the exact
+  Owner-accepted sync candidate; merge tree `003035c8…` identical to the candidate tree; empty
+  candidate→merge diff). The Owner authorized **STARTING the RVR-6a formal-closure lifecycle
+  only** — closure was NOT pre-decided. The closure contract was reconstructed from repository
+  sources (the Deferred Obligations Register RVR-6a row; Wave-2 §H / OD-R5; Amendment 1 §14;
+  the `<GATE>_FORMAL_CLOSURE_RECORD.md` precedent: Wave-1, PVCG-R4, Phase-9): a 13-row
+  closure-requirement matrix is evidence-backed with rows 1–8 and 11–13 SATISFIED (`[REPO]`
+  merge/blob identity + `[EXEC]` re-probes at this exact base: W=2/M=2 constants; exactly four
+  trigger classes + frozen precedence; 67 focused W2-B tests green; **full suite re-reproduced
+  at this base: 4662 passed / 3 skipped / 1 xfailed / 0 failed**); the complete register sweep
+  found **closure blocker count 0** (MG-8 correctly NON-BLOCKING: diagnosis delivered, Owner
+  adjudication OPEN, latest safe gate "before serious release" unmoved); observations (a)–(d)
+  and the rejected lineage (`7e0174ac…`, `91c5de53…`, `2bcf15a7…`, `8b455a0b…`) remain preserved
+  with unchanged owners. The required closure instrument
+  `docs/governance/RVR_6A_FORMAL_CLOSURE_RECORD.md` is created in this candidate with the
+  non-circular conditional statement: **RVR-6a becomes formally closed if and when this exact
+  closure candidate is Owner-accepted at exact SHA, merged, and post-merge identity-verified —
+  until then `RVR-6A CLOSED: NO`**, `OWNER EXACT CLOSURE-SHA ACCEPTED: NO`. Nothing downstream
+  is activated: `W2-C / RVR-6b / RVR-7 / RVR-8: NOT AUTHORIZED`; `FCORA: RECORDED, NOT
+  EXECUTED`; CAP-12/CAP-13/IoT/Drones/Renewable, deployment, production, Serious Release, Paid
+  Activation: NOT AUTHORIZED; release-value gates (T1-A′/RVR-8) remain OPEN — implemented ≠
+  release-value closed. `OWNER_DECISION_REGISTER.md` UNCHANGED (closure-gate convention).
+  Governance/documentation only; `EXECUTABLE/TEST/PIN/PACK/DOMAIN-RULE DELTA: 0`; no historical
+  record rewritten; `main` not reconciled. **Disposition: `RVR-6A FORMAL CLOSURE — GOVERNANCE
+  CANDIDATE; NOT AUTHORITATIVE UNTIL MERGED AND POST-MERGE VERIFIED`.**
+
 - **W2-B / RVR-6a IMPLEMENTATION — AUTHORITATIVE UNDER CONTRACT AMENDMENT 1 (OPTION C); W/M
-  OWNER-ACCEPTED AND FROZEN (governance-only synchronization CANDIDATE), base
+  OWNER-ACCEPTED AND FROZEN (governance-only synchronization CANDIDATE — since MERGED AND
+  AUTHORITATIVE via PR #577, `eb23cbf2…`; its "next eligible gate" line completed at the RVR-6a
+  formal-closure gate recorded in the entry above), base
   `ac9c01ea1caaca18306a99039cea3a4224216e8a`** — verified from Git at this gate as the **live
   authoritative tip** (**0 commits after**; **PR #576**; first parent `346f8e8a…` (PR #575 — the
   authoritative **W2-B/RVR-6a Contract Amendment 1** merge, accepted candidate `6bb8f9e34c…`,
