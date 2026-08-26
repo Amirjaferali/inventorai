@@ -15512,3 +15512,78 @@ ADJUDICATION: OPEN (Owner)`; `R4-C: OPEN`; `T1-A′ / T1-C′ / TIME-TO-VALUE / 
 OPEN`; `MLC DEFINITION FROZEN: NO`; `PSRR GO: NO`; `DEPLOYMENT AUTHORIZED: NO`; `PRODUCTION
 AUTHORIZED: NO`; `SERIOUS RELEASE AUTHORIZED: NO`; `PAID ACTIVATION AUTHORIZED: NO`. Any next
 gate requires its own separate Owner authorization — eligibility is not authorization.
+
+## POST-W2-C-CONTRACT GOVERNANCE / STATUS SYNCHRONIZATION (governance-only sync candidate)
+
+**Append-only synchronization entry.** The RVR-6a closure entry above recorded its candidate as
+conditional and named no authorized next gate. This entry records the full authoritative span
+since — PR #578 and PR #579 — plus this synchronization; it rewrites no historical entry.
+
+**1. RVR-6a — FORMALLY CLOSED (PR #578).** The Owner accepted the exact closure candidate
+`31eb87f6762c3dddc0a183ebc96674535546636d` and merged it via **PR #578**
+(`1a9eb55656b52f635804647fe77412a7987a591e`; first parent `eb23cbf2…`; second parent = the exact
+accepted candidate; merge tree `55c2d25b…` identical; EMPTY candidate→merge diff; post-merge
+identity-verified). The closure record's §9 non-circular conditional statement is thereby
+SATISFIED: **`RVR-6A FORMALLY CLOSED: YES`**. The register's RVR-6a row is recorded
+`CLOSED — evidence verified` at this sync per that row's own conditional wording; observations
+(a)–(d) keep their stated future rediscovery mechanisms. Closure closed ONLY RVR-6a — it
+authorized nothing downstream.
+
+**2. W2-C / RVR-6b CONTRACT — AUTHORITATIVE (PR #579).** The Owner authorized the W2-C/RVR-6b
+authorization-and-contract-reconstruction lifecycle (contract only). The Creator's contract gate
+reconstructed W2-C from repository sources (Wave-2 §§H/I/J/N/P; OD-R5; the Owner-frozen
+`RVR-6a → RVR-6b` split; the DOR rows returning at that gate) and froze the single-file
+candidate `706917cb66d4d7d6386f97a46fee58cd8c0ff2ac`. Lead adjudication REJECTED that exact SHA
+pre-acceptance (primary defect: a false "tree unchanged by PR #578" Git-tree proposition; plus
+six bounded hardening repairs R2–R7), and the fresh same-base sibling
+`455cb502aba03cdc3ae14fb04c7116b9e1ffe6ab` (rejected→repaired diff = exactly R1–R7; rejected SHA
+preserved as evidence, not an ancestor) was Owner-accepted at exact SHA and merged via
+**PR #579** (`d796b0cd385d8ad2071088d58a89612715aad888`; second parent = the exact accepted
+candidate; merge tree `816c39a5…` identical; EMPTY candidate→merge diff; post-merge verified).
+**`W2-C / RVR-6b CONTRACT: AUTHORITATIVE`** — six Tier-1 STATE-ADAPTIVE capabilities (WS10
+registry content for the existing 21 committed ids; per-question intent-coverage state;
+intent-aware suppression; within-gap ordering; read-only decision-aware routing; the bounded
+W1-N3 attempt), with `select_next_gap` / FDC-001 / `evaluate_transition` / the W2-B register,
+triggers and frozen W=2/M=2 untouched; WS11 dormant; OD-PDVG-12 excluded by default
+(UNEXERCISED); Tier-2 meaning adaptation and full adaptive questioning remain OFF.
+
+**3. OD-W2-WS10-SCOPE — EXERCISED.** By the Owner's exact-SHA acceptance of `455cb502…` (the
+contract's §D timing rule; the OD-W2-DW-LIFT precedent; the Creator freeze was NOT the
+exercise): **two per-domain WS10 intent registry instances** — electronics = the existing 11
+committed ids, mechanical = the existing 10, total 21 — through the **unmodified D11/D19
+loader**; OD-PDVG-04(a) bounded to exactly those 21 ids; combined-source reconciliation
+REJECTED; no new placeholder/question/decision identities. The Wave-2 §P.4 wording "before W2-C
+freeze" is durably resolved (ODR Wave-2 §A row): exercised before any implementation
+authorization, implementation freeze, or execution; historical §P.4 source text unchanged.
+Registry CONTENT covers all 21 ids; the physical representation is two per-domain registries —
+the register's historic "21-id registry" phrase is normalized accordingly (forward-looking
+wording only; no historical evidence rewritten).
+
+**4. W1-N3 — consumed into the contract.** Returned at the W2-C contract gate per its own row
+trigger; adjudicated disposition A: `ATTEMPT BOUNDED CLOSURE IN W2-C; EVIDENCED FALLBACK =
+DEFER AS SAFE FALSE-NEGATIVE`, with durable deferral ownership bound in the contract §E
+(`DEFERRED ≠ SATISFIED`; owner stays `gap_relevance`/RVR-2; RVR-7 mandatory downstream input per
+OD-R4; DOR persistence; release re-examination; FCORA zero-orphan). **NOT satisfied** — the
+implementation outcome does not exist yet.
+
+**5. This synchronization candidate.** Governance-only: ODR (OD-W2-WS10-SCOPE decision row +
+three lineage rows (PR #577 sync acceptance, PR #578 closure acceptance, PR #579 contract
+acceptance) + §C boundary), register (RVR-6a row closed per its conditional wording; RVR-6b/W2-C
+and W1-N3 rows updated; header), this roadmap (append-only), `ACTIVE_INCREMENT_CONTRACT.md`
+(rotation), `CURRENT_PROJECT_STATE.md` (pin + entry). `EXECUTABLE/TEST/PIN/PACK/DOMAIN-RULE
+DELTA: 0`; no WS10 registry authored; no loader change; no W1-N3/precedence/lapse/EN-AR/MG-8
+implementation; no historical record rewritten; `main` not reconciled. **Disposition:
+`POST-W2-C-CONTRACT SYNC — GOVERNANCE CANDIDATE; NOT AUTHORITATIVE UNTIL MERGED AND POST-MERGE
+VERIFIED`.**
+
+**Next eligible gate — `W2-C IMPLEMENTATION-START AUTHORIZATION` (a separate explicit Owner
+instruction under the authoritative contract; the W2-A/W2-B precedent).** ELIGIBLE is not
+AUTHORIZED: **`W2-C RUNTIME IMPLEMENTATION AUTHORIZED: NO`**; `W2-C IMPLEMENTED: NO`;
+`RVR-6B FORMALLY CLOSED: NO`; `OD-PDVG-12 EXERCISED: NO`; MG-8 Owner adjudication OPEN (no
+semantic repair); `WS11 ACTIVATED: NO`; `MEANING-ADAPTIVE / TIER-2 ACTIVATED: NO`;
+`FULL ADAPTIVE QUESTIONING ACTIVATED: NO`; `W/M: 2/2 OWNER-ACCEPTED AND FROZEN`;
+`RVR-7 / RVR-8: NOT AUTHORIZED`; `SECOND S2 RUN AUTHORIZED: NO`; `FCORA: RECORDED, NOT
+EXECUTED`; `CAP-12 / CAP-13 / IoT / Drones / Renewable: NOT AUTHORIZED`; `R4-C: OPEN`;
+`T1-A′ / T1-C′ / TIME-TO-VALUE / DIFFERENTIATION: OPEN`; `MLC DEFINITION FROZEN: NO`;
+`PSRR GO: NO`; `DEPLOYMENT AUTHORIZED: NO`; `PRODUCTION AUTHORIZED: NO`; `SERIOUS RELEASE
+AUTHORIZED: NO`; `PAID ACTIVATION AUTHORIZED: NO`.
