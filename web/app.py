@@ -33,7 +33,18 @@ from engine.progression_loop import (
     # W2-D (Wave-2 contract §F, W1-S2): the ONE live Accept Risk availability
     # policy — consumed by the route AND the affordance render, nowhere else.
     substantive_attempt_recorded,
+    # W2-B / RVR-6a (Contract Amendment 1, authoritative via PR #575): the
+    # Option-C serving policy — state-aware next-question/next-action
+    # prioritization WITHIN the canonical gap — and its trigger vocabulary.
+    # Consumed ONLY by the session render below; run_iteration, replay, and
+    # the canonical writers never consult it.
+    compute_serving_decision,
+    TRIGGER_CRITICAL_UNRESOLVED, TRIGGER_LAPSED_ACCEPTANCE,
+    TRIGGER_MULTIPLE_ALTERNATIVES, TRIGGER_COMPLETED_INTENT_SKIP,
 )
+# W2-B / RVR-6a: the derived evidence-weighted register (never persisted;
+# recomputed from the active answered ledger at render time only).
+from engine.adaptive_register import compute_register, REGISTER_ELEVATED
 from engine.idea_state import (
     DISPOSITION_RISK_ACCEPTED, MECHANISM_COMPLETENESS as _MECH_GAP,
 )
@@ -2477,6 +2488,53 @@ def show_session(sid):
         and "not yet established" in (last_result.get("reason") or "")
     ):
         question = INTAKE_QUESTION
+    # W2-B / RVR-6a (Contract Amendment 1 §4-§6): derived register + the
+    # Option-C serving decision, computed at THIS serving surface only.
+    # The canonical served gap, run_iteration, replay, and every writer are
+    # untouched; the decision is a pure recomputation from canonical state +
+    # ledger, so a reconstructed session renders identically (§9 parity).
+    # When a question-slot trigger wins, the SERVED QUESTION is actually
+    # replaced by its governed candidate text (a real serving consequence,
+    # §10 — never a cue alone); the alternatives transition prioritizes the
+    # decision-evidence action block. Any computation failure fails closed
+    # to the unadapted page (cues/overrides are serving chrome, never a 500
+    # — the cold-load reconstruction precedent).
+    w2b_cues = []
+    w2b_risk_note = False
+    w2b_primary_action = None
+    if gap_type and question is not None:
+        try:
+            _w2b_register = compute_register(state)
+            _w2b = compute_serving_decision(
+                state,
+                register_elevated=(_w2b_register.level == REGISTER_ELEVATED))
+            if _w2b.question_override is not None:
+                question = _w2b.question_override
+            w2b_primary_action = _w2b.primary_action
+            # Truthful cue policy (§16): the question-slot WINNER explains
+            # the actual replacement; the capability-4 lapse-transparency
+            # duty renders whenever the served gap reopened via a lapse
+            # (the same governed string — never duplicated).
+            _w2b_cue_keys = {
+                TRIGGER_LAPSED_ACCEPTANCE: "UI_W2B_CUE_REOPENED_LAPSE",
+                TRIGGER_COMPLETED_INTENT_SKIP: "UI_W2B_CUE_INTENT_SKIP",
+                TRIGGER_CRITICAL_UNRESOLVED: "UI_W2B_CUE_CRITICAL_REPHRASED",
+            }
+            if _w2b.question_override_source is not None:
+                w2b_cues.append(
+                    _w2b_cue_keys[_w2b.question_override_source])
+            if (_w2b.lapsed_served_gap
+                    and "UI_W2B_CUE_REOPENED_LAPSE" not in w2b_cues):
+                w2b_cues.append("UI_W2B_CUE_REOPENED_LAPSE")
+            w2b_risk_note = bool(_w2b.accepted_risk_gaps)
+        except Exception:
+            w2b_cues = []
+            w2b_risk_note = False
+            w2b_primary_action = None
+    elif any(g.status == "ACCEPTED_RISK" for g in state.gaps):
+        # no served question, but accepted risks exist: the governed
+        # not-re-asked transparency note still applies
+        w2b_risk_note = True
     open_gaps = state.get_open_gaps()
     closed_gaps = [g for g in state.gaps if g.status == "CLOSED"]
     gap_labels = {g.gap_type: GAP_LABELS.get(g.gap_type, GAP_LABELS["__default__"]) for g in state.gaps}
@@ -2526,6 +2584,12 @@ def show_session(sid):
         draft_context=_draft_context_id(question),
         draft_context_version="v1",
         state=state,
+        # W2-B / RVR-6a (Amendment 1): governed serving cues (catalogue
+        # keys, resolved by t() in the template), the accepted-risk
+        # not-re-asked note flag, and the prioritized governed next action.
+        w2b_cues=w2b_cues,
+        w2b_risk_note=w2b_risk_note,
+        w2b_primary_action=w2b_primary_action,
         # P4-1b-2a: the server-issued token every answered-producing form must
         # carry (retained across renders until an accepted answer consumes it).
         answer_token=_answer_token_for(sid, entry),
