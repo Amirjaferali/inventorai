@@ -144,9 +144,19 @@ _APPROVED_SUBSTANCE_SIGNALS = [
 # `accept_gap_risk` is byte-identical.
 #   pre-W2-D     progression_loop.py =
 #       d53e1a75afe0082ce5acdc7c0208a3f675ababde017da3ef652bdb4827dc2cc6
+# W2-B / RVR-6a reconciliation (disclosed; base contract §G bounded
+# conditional allowance, mechanical digest re-freeze ONLY - Contract
+# Amendment 1 via PR #575 governs the implementation): the additive
+# Option-C serving-policy section was appended to
+# engine/progression_loop.py; select_next_gap, assess_response, the
+# question selectors, accept_gap_risk, substantive_attempt_recorded,
+# the cascade, and replay semantics are byte-unchanged within their
+# bodies.
+#   pre-W2-B     progression_loop.py =
+#       756e524adc681906f20eb64a0ae28e3abb56cadf7ade07424b7bf237d4adbcb4
 _FROZEN_ENGINE_SHA256 = {
     "engine/domain_rules.py": "0e47326ad92a6e5b0a63eb06db9e3ad96ae72c9aaf64471dd21621265b1db1ab",
-    "engine/progression_loop.py": "756e524adc681906f20eb64a0ae28e3abb56cadf7ade07424b7bf237d4adbcb4",
+    "engine/progression_loop.py": "3b531cc8e5126b956ba9ce6ba103dafb83677f8077992a166e3e7f8d26ff2a08",
 }
 # Other-pack byte freeze (unchanged lineage from I1/I2). L2SC-01 reconciliation
 # (disclosed; electronics_electrical re-frozen, see I1's own comment).

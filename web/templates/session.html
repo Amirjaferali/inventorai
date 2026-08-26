@@ -263,6 +263,38 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
 <p class="answer-hint" style="font-size:12px;color:#888;margin:-6px 0 14px 0">{{ t('UI_B_SESSION_025') }}</p>
 {% endif %}
 
+{# W2-B / RVR-6a (Contract Amendment 1 §4/§10/§16): governed serving cues.
+   Each cue truthfully explains an ACTUAL serving change (the replaced
+   question, or the lapse-reopening transparency duty) — never a claim of
+   resolution, completion, or comparability. Display chrome (EN/AR via
+   t()); the serving change itself happened in the question slot above. #}
+{% if question and w2b_cues %}
+<div class="w2b-routing-cues" style="margin-bottom:14px;padding:10px 14px;border-radius:4px;border:1px solid #d8e2dc;background:#f6faf7;font-size:13px">
+  {% for cue_key in w2b_cues %}
+  <p style="margin:{{ '0' if loop.first else '6px 0 0 0' }};color:#3d5a4c">{{ t(cue_key) }}</p>
+  {% endfor %}
+</div>
+{% endif %}
+
+{# W2-B: the prioritized governed next action (the alternatives-transition
+   slot) — an actual actionable affordance pointing at the existing
+   decision-capture section, with an explicitly no-comparability-claim
+   explanation. Fires only on the true ledger transition and expires with
+   the next governed interaction. #}
+{% if w2b_primary_action == 'decision_refine' %}
+<div class="w2b-primary-action" style="margin-bottom:14px;padding:10px 14px;border-radius:4px;border:1px solid #cfd8ea;background:#f3f6fc;font-size:13px">
+  <p style="margin:0;color:#33466b">{{ t('UI_W2B_ACTION_DECISION_EVIDENCE') }}</p>
+  <p style="margin:6px 0 0 0"><a href="#w2b-decision-capture" style="color:#1a4f8b;font-weight:bold">{{ t('UI_W2B_ACTION_DECISION_LINK') }}</a></p>
+</div>
+{% endif %}
+
+{# W2-B: unknown-aware rerouting transparency — accepted risks are not
+   re-asked; this governed note says so and names the only reopening path
+   (a correction lapse). The risks stay visibly recorded below. #}
+{% if w2b_risk_note %}
+<div class="w2b-risk-note" style="margin-bottom:14px;padding:9px 14px;border-radius:4px;border:1px solid #e8dfc8;background:#fbf7ec;font-size:13px;color:#6b5d3f">{{ t('UI_W2B_CUE_RISK_NOT_REASKED') }}</div>
+{% endif %}
+
 {% if question and current_clarification %}
 <details style="margin-bottom:14px;border:1px solid #d6e0e8;border-radius:4px;background:#fafcfe">
   <summary style="cursor:pointer;padding:9px 14px;font-size:14px;color:#2c3e50">{{ t('UI_B_SESSION_026') }}</summary>
@@ -520,7 +552,7 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
    and are suppressed on a cold read-only view (state.domain is None), where
    the composed state still displays. #}
 {% if decision_capture is defined %}
-<details class="decision-capture" {% if decision_capture %}open{% endif %} style="margin-top:14px;border:1px solid #d5c9e8;border-radius:4px;background:#f9f5fd;padding:10px 14px">
+<details id="w2b-decision-capture" class="decision-capture" {% if decision_capture %}open{% endif %} style="margin-top:14px;border:1px solid #d5c9e8;border-radius:4px;background:#f9f5fd;padding:10px 14px">
   <summary style="cursor:pointer;font-size:13px;color:#5a2c8c;font-weight:bold">{{ t('UI_W2A_SECTION_HEADING') }}</summary>
   <p style="font-size:13px;color:#555;margin:10px 0 8px 0">{{ t('UI_W2A_SECTION_EXPLAIN') }}</p>
   {% for d in decision_capture %}

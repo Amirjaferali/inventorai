@@ -1303,3 +1303,331 @@ def run_iteration(state: IdeaState, response: str) -> dict:
     )
     state.iteration_log.append(log)
     return result
+
+
+# ─────────────────────────────────────────────
+# 7. W2-B / RVR-6a — Option-C serving policy (Contract Amendment 1)
+# ─────────────────────────────────────────────
+# Authority: W2-B implementation contract (PR #573) as amended by Contract
+# Amendment 1 §4-§6 (authoritative via PR #575). STATE-AWARE NEXT-QUESTION /
+# NEXT-ACTION PRIORITIZATION WITHIN THE CURRENT CANONICAL GAP. Hard
+# boundaries, by construction:
+#   * `select_next_gap` remains the SOLE canonical gap owner —
+#     `ServingDecision.served_gap` restates it verbatim and nothing here
+#     reorders, promotes, or demotes canonical gaps;
+#   * `run_iteration`, `advance_after_disposition`, `accept_gap_risk`, the
+#     W2-D `substantive_attempt_recorded` gate, and the reconstruction
+#     replay NEVER consult this layer — the cascade and replay semantics
+#     are byte-unchanged;
+#   * every candidate served text/action is EXISTING GOVERNED content (the
+#     gap's own variants via the existing selectors, the RVR-2
+#     reframe/exit vocabulary, the existing governed affordances) — no new
+#     question copy is fabricated, and where no governed alternative
+#     exists the policy fails closed to the existing serving behavior;
+#   * exactly FOUR triggers (Amendment §5); the question-slot precedence
+#     below is THIS CANDIDATE'S deterministic tie-break PROPOSAL over REAL
+#     competing served-text consequences, frozen only at Owner exact-SHA
+#     acceptance;
+#   * pure functions of committed ledger content + canonical state: no
+#     persisted adaptive state, no fired-flags, no render memory, no
+#     timestamps, no randomness — an idle re-render of an unchanged ledger
+#     snapshot is deterministic and idempotent.
+from dataclasses import dataclass as _dataclass
+
+from engine.idea_state import (
+    DISPOSITION_ANSWERED as _W2B_ANSWERED,
+    DISPOSITION_RISK_ACCEPTED as _W2B_RISK_ACCEPTED,
+    DISPOSITION_DECISION_ALTERNATIVE_DECLARED as _W2B_ALT_DECLARED,
+)
+
+# The four authoritative trigger classes (Amendment §5 — closed set).
+TRIGGER_CRITICAL_UNRESOLVED = "critical_unresolved_gap"
+TRIGGER_LAPSED_ACCEPTANCE = "lapsed_acceptance"
+TRIGGER_MULTIPLE_ALTERNATIVES = "multiple_decision_alternatives_declared"
+TRIGGER_COMPLETED_INTENT_SKIP = "completed_intent_skip"
+
+W2B_TRIGGERS = frozenset({
+    TRIGGER_CRITICAL_UNRESOLVED, TRIGGER_LAPSED_ACCEPTANCE,
+    TRIGGER_MULTIPLE_ALTERNATIVES, TRIGGER_COMPLETED_INTENT_SKIP,
+})
+
+# QUESTION-SLOT precedence PROPOSAL (Amendment §6 — resolves REAL competing
+# served-text consequences; the action slot belongs to the alternatives
+# transition alone, so the two slots never compete). Rationale: a lapse is
+# the most specific state (an explicit acceptance was invalidated by a
+# correction — the truthful restart is the area's primary question); the
+# completed-intent skip precedes the critical reframe because its condition
+# includes an ACTIVE substantive attempt, making a re-engagement reframe
+# redundant — the honest serving is the governed exit vocabulary; the
+# critical stall reframe/exit serves last.
+W2B_QUESTION_SLOT_PRECEDENCE = (
+    TRIGGER_LAPSED_ACCEPTANCE,
+    TRIGGER_COMPLETED_INTENT_SKIP,
+    TRIGGER_CRITICAL_UNRESOLVED,
+)
+
+
+@_dataclass(frozen=True)
+class ServingDecision:
+    """Immutable Option-C serving decision. Derived on demand; never
+    persisted; byte-equal for byte-equal canonical state (insertion-order
+    independent). ``question_override`` is the governed text ACTUALLY served
+    instead of the baseline (None = existing serving behavior);
+    ``question_override_source`` is the precedence winner that owns it;
+    ``primary_action`` is the prioritized governed next action (the
+    alternatives-transition slot); ``lapsed_served_gap`` is the
+    capability-4 transparency duty (the served gap reopened via a
+    correction lapse), independent of whether the trigger changed the
+    serving."""
+    served_gap: "str | None"
+    question_override: "str | None"
+    question_override_source: "str | None"
+    primary_action: "str | None"
+    triggers: tuple
+    lapsed_served_gap: bool
+    accepted_risk_gaps: tuple
+
+
+def _level1_blocking_gap(state):
+    """The single gap that currently blocks the level 1 -> 2 transition, or
+    None. A STRUCTURAL mirror of `evaluate_transition`'s level-1 rule in its
+    exact evaluation order — truth-linked by test, so no second transition
+    semantics exists. Pure; read-only."""
+    if state.maturity_level != 1:
+        return None
+    if state.known_mechanism is None \
+            or state.known_mechanism.quality == ASSERTED:
+        return MECHANISM_COMPLETENESS
+    mech_gap = state.get_gap(MECHANISM_COMPLETENESS)
+    if mech_gap and mech_gap.status != CLOSED:
+        return MECHANISM_COMPLETENESS
+    for required_gap in (MECHANISM_COMPLETENESS, PHYSICAL_FEASIBILITY,
+                         BOUNDARY_AMBIGUITY):
+        gap = state.get_gap(required_gap)
+        if gap is None:
+            return required_gap
+        if required_gap != MECHANISM_COMPLETENESS \
+                and gap.status == ACCEPTED_RISK:
+            continue
+        if gap.status != CLOSED:
+            return required_gap
+    return None
+
+
+def _lapsed_acceptance_gaps(state):
+    """Gap types whose recorded risk acceptance has LAPSED: an ACTIVE
+    `risk_accepted` ledger record stands while the gap is absent or
+    OPEN/PARTIAL again (the exact state shape the W2-D correction replay
+    produces). While the acceptance holds (ACCEPTED_RISK) or the record is
+    superseded, nothing is lapsed. Deterministic sorted tuple."""
+    accepted_contexts = {
+        r.gap_context for r in getattr(state, "assertions", [])
+        if getattr(r, "superseded_by", None) is None
+        and r.disposition == _W2B_RISK_ACCEPTED
+        and r.gap_context
+    }
+    lapsed = []
+    for gap_context in accepted_contexts:
+        gap = state.get_gap(gap_context)
+        if gap is None or gap.status in (OPEN, PARTIAL):
+            lapsed.append(gap_context)
+    return tuple(sorted(lapsed))
+
+
+def _re_engaged_since_acceptance(state, gap_type):
+    """True iff an ACTIVE answered record for `gap_type` postdates the
+    latest active `risk_accepted` record for it — the inventor already
+    re-engaged the reopened area, so the lapse re-ask override must expire
+    (it never loops). Pure recomputation from canonical `rec_N` order."""
+    def _seq(record_id):
+        prefix, _, num = str(record_id).partition("_")
+        return int(num) if prefix == "rec" and num.isdigit() else -1
+    risk_seq = max((_seq(r.record_id)
+                    for r in getattr(state, "assertions", [])
+                    if getattr(r, "superseded_by", None) is None
+                    and r.disposition == _W2B_RISK_ACCEPTED
+                    and r.gap_context == gap_type), default=None)
+    if risk_seq is None:
+        return False
+    return any(
+        _seq(r.record_id) > risk_seq
+        for r in getattr(state, "assertions", [])
+        if getattr(r, "superseded_by", None) is None
+        and r.disposition == _W2B_ANSWERED
+        and r.gap_context == gap_type)
+
+
+def _generic_clamped_repeat(state, gap_type):
+    """True iff the question the serving layer would show for `gap_type` is
+    a CLAMPED verbatim repeat on the GENERIC-variant surface. The Path-N
+    artifact-governed exhaustion surface (RVR-2 reframe/exit) is explicitly
+    EXCLUDED — it is already governed and this policy never double-governs
+    it. Fails toward serving on any selection error."""
+    gap = state.get_gap(gap_type)
+    iterations_open = gap.iterations_open if gap else 0
+    if iterations_open <= 0:
+        return False
+    domain = getattr(state, "domain", None)
+    path = getattr(state, "path", None)
+    try:
+        if path == "N":
+            from engine.path_n_questions import get_path_n_question
+            if get_path_n_question(gap_type, iterations_open,
+                                   domain=domain) is not None:
+                return False        # RVR-2's governed surface — yield to it
+        current = get_question(domain, gap_type, iterations_open, path=path)
+        previous = get_question(domain, gap_type, iterations_open - 1,
+                                path=path)
+    except Exception:
+        return False                # fail-closed: never adapt on error
+    return current == previous
+
+
+def _alternatives_crossing_context(state):
+    """Trigger-3 TRUE-TRANSITION detector (Amendment §5 row 3): returns the
+    decision-context root whose ACTIVE alternative count crossed
+    < 2 -> >= 2 with the LATEST ledger event, else None.
+
+    Derived entirely from the ledger — no persisted fired-flag, no render
+    memory: the transition is 'the most recent ledger record is a declared
+    alternative whose addition crossed its context to two-or-more active
+    alternatives'. Any subsequent record (an answer, an action, another
+    declaration) deterministically ends it; a refine (supersession) keeps
+    the count and never fires; a withdrawal can only lower the count and
+    never fires; re-crossing after a withdrawal fires again. Idempotent for
+    an unchanged ledger snapshot. NOT a comparability claim of any kind —
+    FDC-001 alone owns comparability/readiness."""
+    assertions = list(getattr(state, "assertions", []))
+    if not assertions:
+        return None
+
+    def _seq(record_id):
+        prefix, _, num = str(record_id).partition("_")
+        return int(num) if prefix == "rec" and num.isdigit() else -1
+    last = max(assertions, key=lambda r: _seq(r.record_id))
+    if last.disposition != _W2B_ALT_DECLARED:
+        return None
+    if getattr(last, "superseded_by", None) is not None:
+        return None                 # a later event exists by definition
+    ctx = getattr(last, "decision_context_root", None)
+    if ctx is None:
+        return None
+
+    def _active_alt_count(exclude_id=None):
+        count = 0
+        for r in assertions:
+            if r.record_id == exclude_id:
+                continue
+            if r.disposition != _W2B_ALT_DECLARED:
+                continue
+            superseded_by = getattr(r, "superseded_by", None)
+            # simulating the pre-event ledger: a record superseded BY the
+            # excluded event was still active before it
+            if superseded_by is not None and superseded_by != exclude_id:
+                continue
+            if getattr(r, "decision_context_root", None) != ctx:
+                continue
+            count += 1
+        return count
+    now = _active_alt_count()
+    before = _active_alt_count(exclude_id=last.record_id)
+    return ctx if (before < 2 <= now) else None
+
+
+def compute_serving_decision(state, register_elevated=False):
+    """THE Option-C serving decision (Amendment §4-§6).
+
+    Pure and read-only over (canonical state + committed ledger +
+    `register_elevated`, the caller-computed `engine.adaptive_register`
+    calibration). The served gap is exactly the canonical selection; the
+    four triggers fire on their exact conditions:
+
+      * LAPSED_ACCEPTANCE — the served gap reopened via a correction lapse
+        and the inventor has not re-engaged it since: the area's PRIMARY
+        governed question is served instead of a stale clamped variant
+        (fires only when that actually differs from the baseline);
+      * COMPLETED_INTENT_SKIP — clamped generic verbatim repeat + ACTIVE
+        substantive attempt (the W2-D gate) + ELEVATED register: the
+        governed exit vocabulary is served instead of the repeat;
+      * CRITICAL_UNRESOLVED — the served gap blocks the level-1 transition
+        (structural mirror of `evaluate_transition`) AND is stalled
+        (`iterations_open >= STALL_THRESHOLD`, the existing vocabulary) on
+        the generic-verbatim surface: the governed stall reframe (first
+        stalled serve) / exit vocabulary (afterwards) is served instead of
+        the verbatim repeat;
+      * MULTIPLE_ALTERNATIVES — the true ledger transition (see
+        `_alternatives_crossing_context`): the DECISION-EVIDENCE action is
+        prioritized as the primary governed next action (action slot; the
+        question slot is untouched).
+
+    The question-slot winner among simultaneously firing question triggers
+    is decided by `W2B_QUESTION_SLOT_PRECEDENCE`. Where no governed
+    alternative differs from the baseline, the trigger does not fire —
+    adaptation is never fabricated (Amendment §4 fail-closed rule)."""
+    served_gap = select_next_gap(state)
+    accepted_risk_gaps = tuple(sorted(
+        g.gap_type for g in state.gaps if g.status == ACCEPTED_RISK))
+    firing = set()
+    candidates = {}
+    lapsed_served = False
+    if served_gap is not None:
+        gap = state.get_gap(served_gap)
+        iterations_open = gap.iterations_open if gap else 0
+        domain = getattr(state, "domain", None)
+        path = getattr(state, "path", None)
+        try:
+            baseline = get_display_question(domain, served_gap,
+                                            iterations_open, path=path)
+        except Exception:
+            baseline = None
+        lapsed_served = served_gap in _lapsed_acceptance_gaps(state)
+        # LAPSED_ACCEPTANCE — re-ask the area's primary governed question
+        if (lapsed_served and baseline is not None
+                and not _re_engaged_since_acceptance(state, served_gap)):
+            try:
+                primary = get_question(domain, served_gap, 0, path=path)
+            except Exception:
+                primary = None
+            if primary is not None and primary != baseline:
+                firing.add(TRIGGER_LAPSED_ACCEPTANCE)
+                candidates[TRIGGER_LAPSED_ACCEPTANCE] = primary
+        # COMPLETED_INTENT_SKIP — governed exit instead of a clamped repeat
+        if (register_elevated
+                and _generic_clamped_repeat(state, served_gap)
+                and substantive_attempt_recorded(state, served_gap)):
+            firing.add(TRIGGER_COMPLETED_INTENT_SKIP)
+            candidates[TRIGGER_COMPLETED_INTENT_SKIP] = \
+                _EXHAUSTED_EXIT_PROMPT
+        # CRITICAL_UNRESOLVED — stalled level-1 blocker, generic surface
+        if (_level1_blocking_gap(state) == served_gap
+                and iterations_open >= STALL_THRESHOLD
+                and _generic_clamped_repeat(state, served_gap)):
+            firing.add(TRIGGER_CRITICAL_UNRESOLVED)
+            candidates[TRIGGER_CRITICAL_UNRESOLVED] = (
+                _STALL_REFRAME if iterations_open == STALL_THRESHOLD
+                else _EXHAUSTED_EXIT_PROMPT)
+    question_override = None
+    question_override_source = None
+    for trigger in W2B_QUESTION_SLOT_PRECEDENCE:
+        if trigger in firing:
+            question_override = candidates[trigger]
+            question_override_source = trigger
+            break
+    # MULTIPLE_ALTERNATIVES — the action slot (independent of the question)
+    primary_action = None
+    try:
+        if _alternatives_crossing_context(state) is not None:
+            firing.add(TRIGGER_MULTIPLE_ALTERNATIVES)
+            primary_action = "decision_refine"
+    except Exception:
+        primary_action = None       # fail-closed: no fabricated action
+    triggers = tuple(sorted(firing))
+    return ServingDecision(
+        served_gap=served_gap,
+        question_override=question_override,
+        question_override_source=question_override_source,
+        primary_action=primary_action,
+        triggers=triggers,
+        lapsed_served_gap=lapsed_served,
+        accepted_risk_gaps=accepted_risk_gaps,
+    )

@@ -834,6 +834,52 @@ UI_STRINGS = {
         "en": ("That decision entry could not be saved just now. "
                "Nothing was changed."),
         "ar": "تعذّر حفظ هذا الإدخال القراري الآن. لم يتغيّر أي شيء."},
+    # --- W2-B / RVR-6a Option-C serving cues (Contract Amendment 1 §4/§10/
+    # §16, authoritative via PR #575). Governed EN/AR pairs for W2-B's OWN
+    # new strings only (no RVR-7 expansion); display chrome rendered via the
+    # existing t()/ui_lang mechanism. Truthfulness rule (§16): no string may
+    # overstate engine behavior — never "served first", "comparable",
+    # "completed", or "resolved" claims.
+    "UI_W2B_CUE_RISK_NOT_REASKED": {
+        "en": ("Areas you accepted as known risks are not asked again. They "
+               "stay recorded as open risks, and they reopen only if a later "
+               "correction lapses an acceptance."),
+        "ar": ("المجالات التي قبلتَها كمخاطر معروفة لا يُعاد سؤالك عنها. "
+               "تبقى مسجّلة كمخاطر قائمة، ولا يُعاد فتحها إلا إذا أبطل "
+               "تصحيحٌ لاحق قبولًا سابقًا.")},
+    "UI_W2B_CUE_REOPENED_LAPSE": {
+        "en": ("This area is being asked again because a correction lapsed "
+               "its earlier risk acceptance. The earlier acceptance stays in "
+               "the project history."),
+        "ar": ("يُطرح هذا المجال من جديد لأن تصحيحًا أبطل قبول المخاطرة "
+               "السابق الخاص به. يبقى القبول السابق محفوظًا في سجل "
+               "المشروع.")},
+    "UI_W2B_CUE_CRITICAL_REPHRASED": {
+        "en": ("This area is still unresolved and is what currently blocks "
+               "your idea's progression, so the question has been rephrased "
+               "to help you move it forward."),
+        "ar": ("هذا المجال ما زال غير محسوم وهو ما يمنع تقدّم فكرتك حاليًا، "
+               "لذلك أُعيدت صياغة السؤال لمساعدتك على المضي قدمًا.")},
+    "UI_W2B_CUE_INTENT_SKIP": {
+        "en": ("You already gave a substantive answer to the prepared "
+               "question for this area, so it is not repeated word for word. "
+               "Add genuinely new information or use the options below - "
+               "this area is still open, not settled."),
+        "ar": ("سبق أن قدّمتَ إجابة جوهرية على السؤال المعدّ لهذا المجال، "
+               "لذلك لن يُكرَّر حرفيًا. أضف معلومات جديدة فعلًا أو استخدم "
+               "الخيارات أدناه — هذا المجال ما زال مفتوحًا ولم يُحسم.")},
+    "UI_W2B_ACTION_DECISION_EVIDENCE": {
+        "en": ("You have declared more than one alternative for a decision. "
+               "Recording what you know about each alternative - using the "
+               "refine option in the decision section - gathers the evidence "
+               "a future comparison will need. No comparison has started "
+               "yet."),
+        "ar": ("لقد سجّلت أكثر من بديل لقرارٍ ما. تدوين ما تعرفه عن كل "
+               "بديل — عبر خيار التحسين في قسم القرارات — يجمع الأدلة التي "
+               "ستحتاجها المقارنة مستقبلًا. لم تبدأ المقارنة بعد.")},
+    "UI_W2B_ACTION_DECISION_LINK": {
+        "en": "Go to the decision section",
+        "ar": "الانتقال إلى قسم القرارات"},
     "UI_RVR5_CORRECT_HEADING": {
         "en": "Correct an earlier answer",
         "ar": "تصحيح إجابة سابقة"},
