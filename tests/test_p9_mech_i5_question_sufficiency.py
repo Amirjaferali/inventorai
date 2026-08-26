@@ -137,9 +137,19 @@ _PROV_PATH = os.path.join(_DOMAINS, "domain_provenance.json")
 # bodies.
 #   pre-W2-B     progression_loop.py =
 #       756e524adc681906f20eb64a0ae28e3abb56cadf7ade07424b7bf237d4adbcb4
+# W2-C / RVR-6b reconciliation (disclosed; authoritative W2-C contract §M
+# bounded digest-pin allowance, mechanical digest re-freeze ONLY — the
+# contract merged via PR #579 governs the implementation): ONE purely
+# additive hunk was inserted in integrate_response after the canonical
+# addresses_gap consultation — the fail-closed W1-N3 question-id-scoped
+# supplemental relevance (engine/intent_serving.py); select_next_gap,
+# assess_response, the question selectors, the Option-C serving policy
+# section, and replay semantics are byte-unchanged within their bodies.
+#   pre-W2-C     progression_loop.py =
+#       3b531cc8e5126b956ba9ce6ba103dafb83677f8077992a166e3e7f8d26ff2a08
 _FROZEN_ENGINE_SHA256 = {
     "engine/domain_rules.py": "0e47326ad92a6e5b0a63eb06db9e3ad96ae72c9aaf64471dd21621265b1db1ab",
-    "engine/progression_loop.py": "3b531cc8e5126b956ba9ce6ba103dafb83677f8077992a166e3e7f8d26ff2a08",
+    "engine/progression_loop.py": "a7e8bd62b9ab76aaba5889ce52b5f32ee646b2817ba1c790ed7a231d259fa41f",
     # D-GMPR-D3-PN reconciliation #2 (disclosed; DGMPR_D3_PATH_N_DOMAIN_NEUTRAL_
     # SERVICE_CONTRACT.md §5): the seam hash is re-frozen at the remediated
     # domain-neutral seam. domain_rules/progression_loop hashes are UNCHANGED.

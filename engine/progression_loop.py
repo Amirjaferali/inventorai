@@ -860,6 +860,23 @@ def integrate_response(
     # stated bound); it is eligibility only and never a quality judgement, a
     # BLOCK, a contradiction, or an input-validation failure.
     relevant = addresses_gap(response, gap_type)
+    # W2-C / RVR-6b — W1-N3 bounded attempt (authoritative contract §E/§F.6,
+    # PR #579; separate Owner implementation-start authorization): when the
+    # canonical family test above says "not addressing", consult the
+    # question-id-scoped supplemental relevance for the CANONICAL index-law
+    # variant of the served gap (EN/AR-paired committed markers;
+    # engine/intent_serving.py — see its replay-parity scope rule: the scope
+    # is ledger-independent so live and reconstruction-replay progression
+    # recompute identically). Widening-only composition: `gap_relevance`
+    # remains the canonical relevance owner; a True family result is never
+    # revisited, and the supplement fails closed to the existing safe
+    # false-negative.
+    if not relevant:
+        try:
+            from engine.intent_serving import supplemental_relevance
+            relevant = supplemental_relevance(state, gap_type, response)
+        except Exception:
+            pass
     evidence = Evidence(
         content=response,
         quality=quality,
