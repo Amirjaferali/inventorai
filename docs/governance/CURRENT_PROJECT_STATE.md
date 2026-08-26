@@ -16,13 +16,32 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
   (`git rev-parse origin/feature/atomic-json-session-persistence`). Do **not** trust a
   prose-pinned SHA.
   - **Current authoritative branch tip (last independently verified):**
+    `d796b0cd385d8ad2071088d58a89612715aad888` (Merge PR #579 — W2-C/RVR-6b AUTHORIZATION &
+    IMPLEMENTATION CONTRACT; two-parent merge of `1a9eb55656b52f635804647fe77412a7987a591e` (base,
+    PR #578 — the authoritative RVR-6a formal-closure merge) +
+    `455cb502aba03cdc3ae14fb04c7116b9e1ffe6ab` (the exact Owner-accepted repaired contract
+    candidate; rejected sibling `706917cb…` preserved as rejected evidence), tree
+    `816c39a5e95daea64039a95ba2053238786be4bf` identical to the candidate tree, empty
+    candidate→merge diff, post-merge verified; the authoritative contract
+    `docs/governance/W2_C_RVR6B_IMPLEMENTATION_CONTRACT_CANDIDATE.md` is inside this exact tree) —
+    always re-resolve the live tip from Git per the rule above.
+  - **Prior recorded tip (historical):**
+    `1a9eb55656b52f635804647fe77412a7987a591e` (Merge PR #578 — RVR-6a FORMAL CLOSURE; two-parent
+    merge of `eb23cbf2b1b3b4d81908942ea9231756c90d8d94` (base, PR #577) +
+    `31eb87f6762c3dddc0a183ebc96674535546636d` (the exact Owner-accepted closure candidate), tree
+    `55c2d25b8229dc532affb884bcecf6443eafa93d` identical to the candidate tree, empty
+    candidate→merge diff, post-merge verified — the closure record's conditional statement is
+    thereby satisfied: **RVR-6a FORMALLY CLOSED**); superseded as the live tip by PR #579
+    (W2-C/RVR-6b contract, `d796b0cd…`).
+  - **Prior recorded tip (historical):**
     `eb23cbf2b1b3b4d81908942ea9231756c90d8d94` (Merge PR #577 — POST-W2-B-IMPLEMENTATION GOVERNANCE
     SYNCHRONIZATION; two-parent merge of `ac9c01ea1caaca18306a99039cea3a4224216e8a` (base, PR #576 —
     the authoritative W2-B/RVR-6a implementation merge) + `3aa985ed72cacc4482dcc7c18092f33dbda6f962`
     (the exact Owner-accepted repaired sync candidate; rejected sibling `8b455a0b…` preserved as
     rejected evidence), tree `003035c80281083ea515dde419292531620af9d3` identical to the candidate
     tree, empty candidate→merge diff, post-merge verified; all five synchronized governance surfaces
-    are inside this exact tree) — always re-resolve the live tip from Git per the rule above.
+    are inside this exact tree); superseded as the live tip by PR #578 (RVR-6a formal closure,
+    `1a9eb556…`) and PR #579 (W2-C/RVR-6b contract, `d796b0cd…`).
   - **Prior recorded tip (historical):**
     `ac9c01ea1caaca18306a99039cea3a4224216e8a` (Merge PR #576 — W2-B/RVR-6a IMPLEMENTATION under
     Contract Amendment 1, Option C; two-parent merge of `346f8e8a3b1532a6c52750fe20bc76668db06956`
@@ -2488,8 +2507,48 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
+- **POST-W2-C-CONTRACT GOVERNANCE / STATUS SYNCHRONIZATION (governance-only sync CANDIDATE), base
+  `d796b0cd385d8ad2071088d58a89612715aad888`** — verified from Git at this gate as the **live
+  authoritative tip** (**0 commits after**; **PR #579** — the W2-C/RVR-6b contract merge; first
+  parent `1a9eb556…` (PR #578 — the authoritative RVR-6a formal-closure merge); second parent
+  `455cb502…` — the exact Owner-accepted repaired contract candidate (rejected sibling
+  `706917cb…` — false "tree unchanged" Git proposition + six bounded hardening items —
+  preserved as rejected evidence); merge tree `816c39a5…` identical to the candidate tree; empty
+  candidate→merge diff). **Two authoritative events recorded here:** (1) **RVR-6a FORMALLY
+  CLOSED** — PR #578 merged the exact accepted closure candidate `31eb87f6…` with empty
+  candidate→merge diff and was post-merge identity-verified, satisfying the closure record's §9
+  non-circular conditional statement; the Deferred Obligations Register RVR-6a row is recorded
+  `CLOSED — evidence verified` at this sync per that row's own conditional wording. (2)
+  **`W2-C / RVR-6b CONTRACT: AUTHORITATIVE`** (PR #579) — RVR-6b (the remaining half of the
+  Owner-split RVR-6 obligation) is now contract-frozen as the W2-C slice: six Tier-1
+  STATE-ADAPTIVE capabilities (WS10 registry content for the existing 21 committed ids;
+  per-question intent-coverage state; intent-aware suppression; within-gap ordering; read-only
+  decision-aware routing; the bounded W1-N3 attempt), with `select_next_gap` / FDC-001 /
+  `evaluate_transition` / W2-B surfaces and W=2/M=2 untouched, WS11 dormant, Tier-2 and full
+  adaptive questioning OFF. **`OD-W2-WS10-SCOPE: EXERCISED`** — by the Owner's exact-SHA
+  acceptance of `455cb502…` (the contract's §D timing rule and the OD-W2-DW-LIFT precedent;
+  Creator freeze was NOT the exercise): the selected option is **two per-domain WS10 intent
+  registry instances** (electronics = the existing 11 committed ids; mechanical = the existing
+  10; total 21) through the **unmodified D11/D19 loader**, OD-PDVG-04(a) bounded to exactly
+  those 21 ids, combined-source reconciliation REJECTED, no new identities authorized —
+  registry CONTENT covers all 21 ids while the physical representation is two per-domain
+  registries. **W1-N3: CONSUMED INTO THE W2-C CONTRACT** (attempt bounded closure; evidenced
+  fallback = defer as safe false-negative with durable ownership — `DEFERRED ≠ SATISFIED`; not
+  satisfied yet). OD-PDVG-12 remains UNEXERCISED (contract default: excluded). **Lifecycle
+  separation preserved: `W2-C CONTRACT AUTHORITATIVE: YES` ≠ `W2-C RUNTIME IMPLEMENTATION
+  AUTHORIZED: NO` ≠ `W2-C IMPLEMENTED: NO` ≠ `RVR-6B FORMALLY CLOSED: NO`.** Next gate after
+  this sync merges: a SEPARATE Owner W2-C implementation-start authorization — eligible is not
+  authorized. `RVR-7 / RVR-8: NOT AUTHORIZED`; `FCORA: RECORDED, NOT EXECUTED`; MG-8 Owner
+  adjudication OPEN (no semantic repair); CAP-12/CAP-13/IoT/Drones/Renewable, deployment,
+  production, Serious Release, Paid Activation: NOT AUTHORIZED. Governance/documentation only;
+  `EXECUTABLE/TEST/PIN/PACK/DOMAIN-RULE DELTA: 0`; no WS10 registry authored; no historical
+  record rewritten; `main` not reconciled. **Disposition: `POST-W2-C-CONTRACT SYNC — GOVERNANCE
+  CANDIDATE; NOT AUTHORITATIVE UNTIL MERGED AND POST-MERGE VERIFIED`.**
+
 - **RVR-6a — FORMAL CLOSURE (governance-only closure CANDIDATE — closure conditional on this
-  exact candidate's acceptance, merge, and post-merge verification), base
+  exact candidate's acceptance, merge, and post-merge verification — since MERGED AND
+  AUTHORITATIVE via PR #578, `1a9eb55656b52f635804647fe77412a7987a591e`, post-merge verified:
+  the §9 condition is satisfied and **RVR-6a is FORMALLY CLOSED**; see the entry above), base
   `eb23cbf2b1b3b4d81908942ea9231756c90d8d94`** — verified from Git at this gate as the **live
   authoritative tip** (**0 commits after**; **PR #577** — the post-W2-B-implementation governance
   sync merge; first parent `ac9c01ea…` (PR #576); second parent `3aa985ed…` — the exact
