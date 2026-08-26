@@ -2527,6 +2527,28 @@ def show_session(sid):
                     and "UI_W2B_CUE_REOPENED_LAPSE" not in w2b_cues):
                 w2b_cues.append("UI_W2B_CUE_REOPENED_LAPSE")
             w2b_risk_note = bool(_w2b.accepted_risk_gaps)
+            # W2-C / RVR-6b intent-aware serving (authoritative contract
+            # §F.2-§F.5, PR #579): applies ONLY when no W2-B question-slot
+            # override won (the composed precedence keeps every W2-B trigger
+            # first) AND the displayed question is the plain canonical Path-N
+            # variant (the RVR-2 stall reframe / exhausted exit and the
+            # generic fallthrough are never overridden). The served text is
+            # then the committed variant chosen by the deterministic
+            # intent-coverage law — a silent, truthful journey improvement:
+            # no new strings, no progress claim, one primary CTA. Fail-closed
+            # to the canonical question on any failure.
+            if _w2b.question_override is None:
+                try:
+                    _canonical_q = get_question(
+                        getattr(state, "domain", None), gap_type,
+                        iterations_open, path=state.path)
+                    if question == _canonical_q:
+                        from engine.intent_serving import w2c_served_question
+                        _w2c = w2c_served_question(state, gap_type)
+                        if _w2c is not None:
+                            question = _w2c.text
+                except Exception:
+                    pass  # W2-C fails closed alone; W2-B chrome stands
         except Exception:
             w2b_cues = []
             w2b_risk_note = False

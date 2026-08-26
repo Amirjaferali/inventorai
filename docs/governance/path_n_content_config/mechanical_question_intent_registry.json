@@ -1,0 +1,133 @@
+{
+  "metadata": {
+    "schema_version": "1.0",
+    "registry_version": "1.0",
+    "owner": "WS10 question-intent registry — W2-C / RVR-6b (OD-W2-WS10-SCOPE: per-domain instance)",
+    "review_date": "2026-08-26",
+    "stage": 2,
+    "language": "en",
+    "source_artifact": "docs/governance/path_n_content_config/mechanical_path_n_questions.json"
+  },
+  "records": [
+    {
+      "question_id": "mechanical:MECHANISM_COMPLETENESS:Q1",
+      "intent_id": "intent:mechanical:MECHANISM_COMPLETENESS:Q1",
+      "design_gap_id": "MECHANISM_COMPLETENESS",
+      "primary_intent": "Elicit the physical steps the mechanism takes to achieve its function.",
+      "answer_objective": "An ordered account of the mechanism's physical steps.",
+      "completion_condition": "The answer describes the physical steps in order.",
+      "source_reference": {
+        "artifact_path": "docs/governance/path_n_content_config/mechanical_path_n_questions.json",
+        "question_id": "mechanical:MECHANISM_COMPLETENESS:Q1"
+      }
+    },
+    {
+      "question_id": "mechanical:MECHANISM_COMPLETENESS:Q2",
+      "intent_id": "intent:mechanical:MECHANISM_COMPLETENESS:Q2",
+      "design_gap_id": "MECHANISM_COMPLETENESS",
+      "primary_intent": "Identify what moves, connects, or transfers force (the force/load path).",
+      "answer_objective": "The moving/connecting elements and the force or load path through them.",
+      "completion_condition": "The answer identifies what moves, connects, or transfers force.",
+      "source_reference": {
+        "artifact_path": "docs/governance/path_n_content_config/mechanical_path_n_questions.json",
+        "question_id": "mechanical:MECHANISM_COMPLETENESS:Q2"
+      }
+    },
+    {
+      "question_id": "mechanical:MECHANISM_COMPLETENESS:Q3",
+      "intent_id": "intent:mechanical:MECHANISM_COMPLETENESS:Q3",
+      "design_gap_id": "MECHANISM_COMPLETENESS",
+      "primary_intent": "Enumerate the mechanical components and each one's contribution.",
+      "answer_objective": "The individual components and how each contributes to motion or function.",
+      "completion_condition": "The answer lists components with each one's contribution.",
+      "source_reference": {
+        "artifact_path": "docs/governance/path_n_content_config/mechanical_path_n_questions.json",
+        "question_id": "mechanical:MECHANISM_COMPLETENESS:Q3"
+      }
+    },
+    {
+      "question_id": "mechanical:MECHANISM_COMPLETENESS:Q4",
+      "intent_id": "intent:mechanical:MECHANISM_COMPLETENESS:Q4",
+      "design_gap_id": "MECHANISM_COMPLETENESS",
+      "primary_intent": "Surface the physical detail a builder would find missing tomorrow.",
+      "answer_objective": "The missing physical detail that blocks independent build.",
+      "completion_condition": "The answer names the missing physical detail.",
+      "source_reference": {
+        "artifact_path": "docs/governance/path_n_content_config/mechanical_path_n_questions.json",
+        "question_id": "mechanical:MECHANISM_COMPLETENESS:Q4"
+      }
+    },
+    {
+      "question_id": "mechanical:PHYSICAL_FEASIBILITY:Q1",
+      "intent_id": "intent:mechanical:PHYSICAL_FEASIBILITY:Q1",
+      "design_gap_id": "PHYSICAL_FEASIBILITY",
+      "primary_intent": "Identify the physical principle the mechanism relies on.",
+      "answer_objective": "The governing physical principle (e.g. leverage, spring tension, gear ratio, friction).",
+      "completion_condition": "The answer names the physical principle relied on.",
+      "source_reference": {
+        "artifact_path": "docs/governance/path_n_content_config/mechanical_path_n_questions.json",
+        "question_id": "mechanical:PHYSICAL_FEASIBILITY:Q1"
+      }
+    },
+    {
+      "question_id": "mechanical:PHYSICAL_FEASIBILITY:Q2",
+      "intent_id": "intent:mechanical:PHYSICAL_FEASIBILITY:Q2",
+      "design_gap_id": "PHYSICAL_FEASIBILITY",
+      "primary_intent": "Establish the material or force constraints the mechanism operates within.",
+      "answer_objective": "The material/force constraints and operating limits.",
+      "completion_condition": "The answer states at least one material or force constraint.",
+      "source_reference": {
+        "artifact_path": "docs/governance/path_n_content_config/mechanical_path_n_questions.json",
+        "question_id": "mechanical:PHYSICAL_FEASIBILITY:Q2"
+      }
+    },
+    {
+      "question_id": "mechanical:BOUNDARY_AMBIGUITY:Q1",
+      "intent_id": "intent:mechanical:BOUNDARY_AMBIGUITY:Q1",
+      "design_gap_id": "BOUNDARY_AMBIGUITY",
+      "primary_intent": "Bound what the mechanism specifically does NOT do or cover.",
+      "answer_objective": "The explicit exclusions from the mechanism's scope.",
+      "completion_condition": "The answer states what the mechanism does not do or cover.",
+      "source_reference": {
+        "artifact_path": "docs/governance/path_n_content_config/mechanical_path_n_questions.json",
+        "question_id": "mechanical:BOUNDARY_AMBIGUITY:Q1"
+      }
+    },
+    {
+      "question_id": "mechanical:BOUNDARY_AMBIGUITY:Q2",
+      "intent_id": "intent:mechanical:BOUNDARY_AMBIGUITY:Q2",
+      "design_gap_id": "BOUNDARY_AMBIGUITY",
+      "primary_intent": "Elicit at least one clear mechanical boundary.",
+      "answer_objective": "One clearly stated mechanical boundary.",
+      "completion_condition": "The answer states at least one clear mechanical boundary.",
+      "source_reference": {
+        "artifact_path": "docs/governance/path_n_content_config/mechanical_path_n_questions.json",
+        "question_id": "mechanical:BOUNDARY_AMBIGUITY:Q2"
+      }
+    },
+    {
+      "question_id": "mechanical:BOUNDARY_AMBIGUITY:Q3",
+      "intent_id": "intent:mechanical:BOUNDARY_AMBIGUITY:Q3",
+      "design_gap_id": "BOUNDARY_AMBIGUITY",
+      "primary_intent": "Identify one existing mechanical approach similar to the idea.",
+      "answer_objective": "A named similar existing mechanical approach.",
+      "completion_condition": "The answer names one similar existing approach.",
+      "source_reference": {
+        "artifact_path": "docs/governance/path_n_content_config/mechanical_path_n_questions.json",
+        "question_id": "mechanical:BOUNDARY_AMBIGUITY:Q3"
+      }
+    },
+    {
+      "question_id": "mechanical:BOUNDARY_AMBIGUITY:Q4",
+      "intent_id": "intent:mechanical:BOUNDARY_AMBIGUITY:Q4",
+      "design_gap_id": "BOUNDARY_AMBIGUITY",
+      "primary_intent": "Establish the concrete physical difference from the similar approach.",
+      "answer_objective": "What makes this mechanism physically different.",
+      "completion_condition": "The answer states a concrete physical difference.",
+      "source_reference": {
+        "artifact_path": "docs/governance/path_n_content_config/mechanical_path_n_questions.json",
+        "question_id": "mechanical:BOUNDARY_AMBIGUITY:Q4"
+      }
+    }
+  ]
+}

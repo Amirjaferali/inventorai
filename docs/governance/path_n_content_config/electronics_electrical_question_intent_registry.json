@@ -1,0 +1,145 @@
+{
+  "metadata": {
+    "schema_version": "1.0",
+    "registry_version": "1.0",
+    "owner": "WS10 question-intent registry — W2-C / RVR-6b (OD-W2-WS10-SCOPE: per-domain instance)",
+    "review_date": "2026-08-26",
+    "stage": 2,
+    "language": "en",
+    "source_artifact": "docs/governance/path_n_content_config/electronics_electrical_path_n_questions.json"
+  },
+  "records": [
+    {
+      "question_id": "N-MC-1",
+      "intent_id": "intent:N-MC-1",
+      "design_gap_id": "MECHANISM_COMPLETENESS",
+      "primary_intent": "Elicit how the system notices the problem and responds, in everyday words.",
+      "answer_objective": "A plain-language description of the notice-and-respond behaviour.",
+      "completion_condition": "The answer describes both how the problem is noticed and how the system responds.",
+      "source_reference": {
+        "artifact_path": "docs/governance/path_n_content_config/electronics_electrical_path_n_questions.json",
+        "question_id": "N-MC-1"
+      }
+    },
+    {
+      "question_id": "N-MC-2",
+      "intent_id": "intent:N-MC-2",
+      "design_gap_id": "MECHANISM_COMPLETENESS",
+      "primary_intent": "Identify the main parts of the idea and each part's role.",
+      "answer_objective": "A list of the main parts with what each part does.",
+      "completion_condition": "The answer names the main parts and states each part's function.",
+      "source_reference": {
+        "artifact_path": "docs/governance/path_n_content_config/electronics_electrical_path_n_questions.json",
+        "question_id": "N-MC-2"
+      }
+    },
+    {
+      "question_id": "N-MC-3",
+      "intent_id": "intent:N-MC-3",
+      "design_gap_id": "MECHANISM_COMPLETENESS",
+      "primary_intent": "Walk through the end-to-end sequence from problem start to notification.",
+      "answer_objective": "A step-by-step account of what happens in order.",
+      "completion_condition": "The answer traces the sequence step by step from start to outcome.",
+      "source_reference": {
+        "artifact_path": "docs/governance/path_n_content_config/electronics_electrical_path_n_questions.json",
+        "question_id": "N-MC-3"
+      }
+    },
+    {
+      "question_id": "N-MC-4",
+      "intent_id": "intent:N-MC-4",
+      "design_gap_id": "MECHANISM_COMPLETENESS",
+      "primary_intent": "Surface the loosely-imagined or uncertain part of the mechanism.",
+      "answer_objective": "An honest description of the part the inventor is unsure about.",
+      "completion_condition": "The answer identifies which part is unsure or loosely imagined.",
+      "source_reference": {
+        "artifact_path": "docs/governance/path_n_content_config/electronics_electrical_path_n_questions.json",
+        "question_id": "N-MC-4"
+      }
+    },
+    {
+      "question_id": "N-PF-1",
+      "intent_id": "intent:N-PF-1",
+      "design_gap_id": "PHYSICAL_FEASIBILITY",
+      "primary_intent": "Establish what must be true for safe real-world operation.",
+      "answer_objective": "The conditions required for the system to work safely.",
+      "completion_condition": "The answer states at least one concrete safe-operation condition.",
+      "source_reference": {
+        "artifact_path": "docs/governance/path_n_content_config/electronics_electrical_path_n_questions.json",
+        "question_id": "N-PF-1"
+      }
+    },
+    {
+      "question_id": "N-PF-2",
+      "intent_id": "intent:N-PF-2",
+      "design_gap_id": "PHYSICAL_FEASIBILITY",
+      "primary_intent": "Establish what keeps the system running reliably over time.",
+      "answer_objective": "The factors that sustain reliable long-term operation.",
+      "completion_condition": "The answer states what keeps the system reliable over time.",
+      "source_reference": {
+        "artifact_path": "docs/governance/path_n_content_config/electronics_electrical_path_n_questions.json",
+        "question_id": "N-PF-2"
+      }
+    },
+    {
+      "question_id": "N-PF-3",
+      "intent_id": "intent:N-PF-3",
+      "design_gap_id": "PHYSICAL_FEASIBILITY",
+      "primary_intent": "Identify real-world conditions (heat, water, time, wear) that might stop it.",
+      "answer_objective": "The environmental conditions that threaten operation, ranked by worry.",
+      "completion_condition": "The answer names at least one threatening real-world condition.",
+      "source_reference": {
+        "artifact_path": "docs/governance/path_n_content_config/electronics_electrical_path_n_questions.json",
+        "question_id": "N-PF-3"
+      }
+    },
+    {
+      "question_id": "N-PF-4",
+      "intent_id": "intent:N-PF-4",
+      "design_gap_id": "PHYSICAL_FEASIBILITY",
+      "primary_intent": "Identify the single most valuable feasibility check an engineer could run.",
+      "answer_objective": "The first thing an engineer should verify about physical workability.",
+      "completion_condition": "The answer names one concrete thing to check first.",
+      "source_reference": {
+        "artifact_path": "docs/governance/path_n_content_config/electronics_electrical_path_n_questions.json",
+        "question_id": "N-PF-4"
+      }
+    },
+    {
+      "question_id": "N-BA-1",
+      "intent_id": "intent:N-BA-1",
+      "design_gap_id": "BOUNDARY_AMBIGUITY",
+      "primary_intent": "Bound which situations the system is responsible for handling.",
+      "answer_objective": "The situations that are in the system's scope of responsibility.",
+      "completion_condition": "The answer names the situations the system should handle.",
+      "source_reference": {
+        "artifact_path": "docs/governance/path_n_content_config/electronics_electrical_path_n_questions.json",
+        "question_id": "N-BA-1"
+      }
+    },
+    {
+      "question_id": "N-BA-2",
+      "intent_id": "intent:N-BA-2",
+      "design_gap_id": "BOUNDARY_AMBIGUITY",
+      "primary_intent": "Separate the idea's responsibility from someone or something else's job.",
+      "answer_objective": "A split between what the idea does and what is another's job.",
+      "completion_condition": "The answer separates the idea's responsibility from another party's.",
+      "source_reference": {
+        "artifact_path": "docs/governance/path_n_content_config/electronics_electrical_path_n_questions.json",
+        "question_id": "N-BA-2"
+      }
+    },
+    {
+      "question_id": "N-BA-3",
+      "intent_id": "intent:N-BA-3",
+      "design_gap_id": "BOUNDARY_AMBIGUITY",
+      "primary_intent": "Contrast a must-react situation with a must-stay-quiet situation.",
+      "answer_objective": "One situation demanding reaction and one demanding silence.",
+      "completion_condition": "The answer gives both a react case and a stay-quiet case.",
+      "source_reference": {
+        "artifact_path": "docs/governance/path_n_content_config/electronics_electrical_path_n_questions.json",
+        "question_id": "N-BA-3"
+      }
+    }
+  ]
+}
