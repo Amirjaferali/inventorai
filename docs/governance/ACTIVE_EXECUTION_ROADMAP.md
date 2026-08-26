@@ -15587,3 +15587,92 @@ EXECUTED`; `CAP-12 / CAP-13 / IoT / Drones / Renewable: NOT AUTHORIZED`; `R4-C: 
 `T1-A′ / T1-C′ / TIME-TO-VALUE / DIFFERENTIATION: OPEN`; `MLC DEFINITION FROZEN: NO`;
 `PSRR GO: NO`; `DEPLOYMENT AUTHORIZED: NO`; `PRODUCTION AUTHORIZED: NO`; `SERIOUS RELEASE
 AUTHORIZED: NO`; `PAID ACTIVATION AUTHORIZED: NO`.
+
+## W2-C / RVR-6b IMPLEMENTATION — AUTHORITATIVE; W1-N3 CLOSED (BOUNDED); PRECEDENCE OWNER-ACCEPTED (governance-only synchronization candidate)
+
+**Append-only synchronization entry.** The post-W2-C-contract entry above truthfully recorded
+`W2-C RUNTIME IMPLEMENTATION AUTHORIZED: NO` at its gate — authority-at-that-time, not
+rewritten. This entry records the full authoritative span since, in truthful sequence:
+(1) the PR #580 sync became authoritative; (2) the Owner THEN explicitly authorized the bounded
+W2-C runtime implementation lifecycle from exact base `6b4629d75b58690eb0a40a754e747ba79f265447`
+(OWNER-RATIFIED PREMISE, durably recorded at this sync — the W2-A/W2-B chronology precedent);
+(3) the implementation lifecycle executed; (4) the exact candidate was accepted; (5) PR #581
+merged; (6) post-merge identity verification PASSED; (7) this synchronization records that
+lifecycle durably.
+
+**1. Implementation lifecycle — two evidence-integrity rejections, then acceptance (all SHAs
+preserved, none rewritten).** Candidate #1 `1249dbbdf69bfc23a7b35f6e302478e995c8319f` was
+Lead-rejected pre-review (affected-family methodology conflated "18 modules"/"1443" with the
+enumerated 22-module manifest). Fresh same-base sibling #2
+`cf77c33dfd560fc2026bc5fe0024ab2f6288ea8d` repaired that and was rejected by Independent
+External Review (IR-I84: focused per-module split 13/15/11/9 vs the mechanically collected
+14/14/11/9; the runtime itself NOT rejected — the reviewer independently reproduced focused
+48/0, affected family 1637/0/0/0 over the 22-module unique manifest, full suite 4710/3/1/0,
+truthful bounded W1-N3 closure, lapse `NOT AFFECTED`, EN and AR PASS). The final fresh
+same-base sibling `1bc0690d9bc9e7317d267d1c0be5ab8f5fcdd0a1` (evidence-pack truth + the
+comment-only digest-lineage hardening; zero runtime/test-semantic delta vs #2) passed the
+focused re-review and was **Owner-accepted at exact SHA and merged via PR #581** —
+merge `b749c8873533ca6c48ebcf9be0c4023aa10cdd09` (first parent `6b4629d7…`; second parent =
+the exact accepted candidate; merge tree `14b54d7e…` identical; EMPTY candidate→merge diff;
+merged 2026-08-26T22:30:52Z; post-merge verified). **`W2-C IMPLEMENTATION: AUTHORITATIVE` —
+`W2-C IMPLEMENTED: YES`.**
+
+**2. What is now authoritatively implemented.** Exactly the exercised OD-W2-WS10-SCOPE option —
+two per-domain WS10 intent registry instances (the existing 11 electronics + 10 mechanical =
+21 committed ids) validated through the byte-unchanged D11/D19 loader; `engine/intent_serving.py`
+(EN/AR-paired question-id-scoped intent markers; derived, never-persisted intent-coverage state;
+the deterministic within-gap suppression/ordering law; read-only decision-aware deference; the
+W1-N3 supplemental relevance with the replay-parity canonical scope); ONE additive
+`integrate_response` hunk; ONE render-only `show_session` hunk; three digest pins mechanically
+re-frozen with disclosed in-file lineage; the committed evidence pack (anti-circular identity
+binding). Zero new user-facing strings; `select_next_gap`, FDC-001, `gap_relevance`,
+`AssertionRecord`, `semantic_registry`, WS11 (dormant), WS12, and the frozen W=2/M=2 all
+preserved as sole owners — fence-tested.
+
+**3. Owner-accepted W2-B × W2-C precedence (accepted WITH the exact-SHA acceptance of
+`1bc0690d…`; recorded durably in the ODR acceptance row):** (1) W2-B question-slot overrides —
+LAPSED > SKIP > CRITICAL — always first; (2) W2-B alternatives transition: the W2-C question
+slot defers and the decision-evidence action remains the one primary CTA; (3) the W2-C
+intent-coverage law applies only over the plain canonical Path-N variant (the RVR-2 stall
+reframe, the exhausted exit, and the generic fallthrough are never overridden); (4) canonical
+serving remains the baseline and the universal fail-closed target. This is NOT Full Adaptive
+Questioning and creates no second adaptive engine.
+
+**4. W1-N3 — CLOSED WITH EVIDENCE (bounded authoritative scope).** The recorded M-1
+experienced-technical MECHANISM residual relevance false-negative is reproduced on the frozen
+S2 fixture and closed by the question-id-scoped supplement (EN and AR identical;
+`gap_relevance` byte-unchanged; no new false positives — R2/R3 suites green), upheld by
+Independent Review. NOT rewritten as "all relevance false-negatives closed" / RVR-2 complete /
+RVR-7 unnecessary: the remaining relevance-precision residual stays `gap_relevance`/RVR-2-owned
+with RVR-7 as the mandatory downstream return (OD-R4). The register's W1-N3 row is CLOSED with
+its history preserved.
+
+**5. Carried non-blocking observations (durable — register RVR-6b row):** (a) registry CWD /
+path binding (fail-closed degradation under a non-root working directory; future Owner /
+loader-contract decision — not repaired); (b) registry intent prose ↔ `_INTENT_MARKERS`
+divergence surface (future binding decision — not redesigned); (c) marker/relevance precision
+class — RVR-2/RVR-7-owned; (d) the 22-module affected-family methodology is a declared bounded
+set (independently QUALIFIED; broader owner suites independently green), never universal
+coverage. Test truth at acceptance: focused 48 (14/14/11/9); affected family 1637/0/0/0; full
+suite **4710 passed / 3 skipped / 1 xfailed / 0 failed**; 467/484 remain distinct historical
+measurements, unreconciled.
+
+**6. This synchronization candidate.** Governance-only: ODR (three lineage rows + §C boundary),
+register (W1-N3 row CLOSED; RVR-6b row updated with carried observations; header), this
+roadmap (append-only), `ACTIVE_INCREMENT_CONTRACT.md` (rotation),
+`CURRENT_PROJECT_STATE.md` (pin + entry). `EXECUTABLE/TEST/PIN/PACK/DOMAIN-RULE DELTA: 0`;
+no historical record rewritten; `main` not reconciled. **Disposition:
+`POST-W2-C-IMPLEMENTATION SYNC — GOVERNANCE CANDIDATE; NOT AUTHORITATIVE UNTIL MERGED AND
+POST-MERGE VERIFIED`.**
+
+**Next eligible gate — `RVR-6b FORMAL CLOSURE` (its own evidence/closure lifecycle; the RVR-6a
+closure precedent; implementation authority is NOT closure).** ELIGIBLE is not CLOSED and not
+AUTHORIZED: `RVR-6B FORMALLY CLOSED: NO`; `RVR-6B CLOSURE AUTHORIZED: NO`; `RVR-7 / RVR-8:
+NOT AUTHORIZED`; `SECOND S2 RUN AUTHORIZED: NO`; `FCORA: RECORDED, NOT EXECUTED`;
+`CAP-12 / CAP-13 / IoT / Drones / Renewable: NOT AUTHORIZED`; `WS11 ACTIVATED: NO`;
+`MEANING-ADAPTIVE / TIER-2 ACTIVATED: NO`; `FULL ADAPTIVE QUESTIONING ACTIVATED: NO`;
+`OD-PDVG-12 EXERCISED: NO`; MG-8 Owner adjudication OPEN (no semantic repair);
+`W/M: 2/2 OWNER-ACCEPTED AND FROZEN`; `R4-C: OPEN`; `T1-A′ / T1-C′ / TIME-TO-VALUE /
+DIFFERENTIATION: OPEN`; `MLC DEFINITION FROZEN: NO`; `PSRR GO: NO`; `DEPLOYMENT AUTHORIZED:
+NO`; `PRODUCTION AUTHORIZED: NO`; `SERIOUS RELEASE AUTHORIZED: NO`; `PAID ACTIVATION
+AUTHORIZED: NO`.

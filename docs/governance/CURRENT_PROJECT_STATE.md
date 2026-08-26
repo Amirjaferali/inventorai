@@ -16,6 +16,24 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
   (`git rev-parse origin/feature/atomic-json-session-persistence`). Do **not** trust a
   prose-pinned SHA.
   - **Current authoritative branch tip (last independently verified):**
+    `b749c8873533ca6c48ebcf9be0c4023aa10cdd09` (Merge PR #581 — W2-C/RVR-6b IMPLEMENTATION;
+    two-parent merge of `6b4629d75b58690eb0a40a754e747ba79f265447` (base, PR #580 — the
+    authoritative post-W2-C-contract sync merge) + `1bc0690d9bc9e7317d267d1c0be5ab8f5fcdd0a1`
+    (the exact Owner-accepted implementation candidate; evidence-integrity rejected siblings
+    `1249dbbd…` and `cf77c33d…` preserved as rejected evidence, neither an ancestor), tree
+    `14b54d7e4778808efdb10bbd7be7102f31e90429` identical to the candidate tree, empty
+    candidate→merge diff, merged 2026-08-26T22:30:52Z, post-merge identity verified; the
+    committed implementation evidence pack
+    `docs/governance/W2_C_RVR6B_IMPLEMENTATION_EVIDENCE_PACK.md` is inside this exact tree) —
+    always re-resolve the live tip from Git per the rule above.
+  - **Prior recorded tip (historical):**
+    `6b4629d75b58690eb0a40a754e747ba79f265447` (Merge PR #580 — POST-W2-C-CONTRACT GOVERNANCE
+    SYNCHRONIZATION; two-parent merge of `d796b0cd…` (base, PR #579) +
+    `21c6076917754959c5f7c0c0cffde1f84a9c162e` (the exact Owner-accepted sync candidate), tree
+    `8d620676eb024f9352e8e3bac56ed40cddfd8bd5` identical to the candidate tree, empty
+    candidate→merge diff, post-merge verified); superseded as the live tip by PR #581
+    (W2-C/RVR-6b implementation, `b749c887…`).
+  - **Prior recorded tip (historical):**
     `d796b0cd385d8ad2071088d58a89612715aad888` (Merge PR #579 — W2-C/RVR-6b AUTHORIZATION &
     IMPLEMENTATION CONTRACT; two-parent merge of `1a9eb55656b52f635804647fe77412a7987a591e` (base,
     PR #578 — the authoritative RVR-6a formal-closure merge) +
@@ -23,8 +41,9 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
     candidate; rejected sibling `706917cb…` preserved as rejected evidence), tree
     `816c39a5e95daea64039a95ba2053238786be4bf` identical to the candidate tree, empty
     candidate→merge diff, post-merge verified; the authoritative contract
-    `docs/governance/W2_C_RVR6B_IMPLEMENTATION_CONTRACT_CANDIDATE.md` is inside this exact tree) —
-    always re-resolve the live tip from Git per the rule above.
+    `docs/governance/W2_C_RVR6B_IMPLEMENTATION_CONTRACT_CANDIDATE.md` is inside this exact tree);
+    superseded as the live tip by PR #580 (post-W2-C-contract sync, `6b4629d7…`) and PR #581
+    (W2-C/RVR-6b implementation, `b749c887…`).
   - **Prior recorded tip (historical):**
     `1a9eb55656b52f635804647fe77412a7987a591e` (Merge PR #578 — RVR-6a FORMAL CLOSURE; two-parent
     merge of `eb23cbf2b1b3b4d81908942ea9231756c90d8d94` (base, PR #577) +
@@ -2507,7 +2526,56 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
-- **POST-W2-C-CONTRACT GOVERNANCE / STATUS SYNCHRONIZATION (governance-only sync CANDIDATE), base
+- **W2-C / RVR-6b IMPLEMENTATION — AUTHORITATIVE; W1-N3 CLOSED (BOUNDED); PRECEDENCE
+  OWNER-ACCEPTED (governance-only synchronization CANDIDATE), base
+  `b749c8873533ca6c48ebcf9be0c4023aa10cdd09`** — verified from Git at this gate as the **live
+  authoritative tip** (**0 commits after**; **PR #581** — the W2-C/RVR-6b implementation merge;
+  first parent `6b4629d7…` (PR #580); second parent `1bc0690d…` — the exact Owner-accepted
+  implementation candidate; merge tree `14b54d7e…` identical; empty candidate→merge diff;
+  merged 2026-08-26T22:30:52Z; post-merge identity verified). **Chronology recorded
+  truthfully:** the PR #580 sync's `W2-C RUNTIME IMPLEMENTATION AUTHORIZED: NO` was
+  authority-at-its-time; the Owner THEN explicitly authorized the bounded implementation
+  lifecycle from exact base `6b4629d7…` (OWNER-RATIFIED PREMISE, durably recorded at this
+  sync); the lifecycle produced two evidence-integrity REJECTED candidates — `1249dbbd…`
+  (18/1443 vs the 22-module manifest conflation) and `cf77c33d…` (IR-I84: focused split
+  13/15/11/9 vs the collected 14/14/11/9; runtime NOT rejected) — both preserved, neither an
+  ancestor; the accepted sibling `1bc0690d…` passed the focused re-review and merged.
+  **Current truth: `W2-C IMPLEMENTATION: AUTHORITATIVE` — `W2-C IMPLEMENTED: YES`** — two
+  per-domain WS10 registries (existing 11+10 = 21 committed ids) through the byte-unchanged
+  D11/D19 loader; intent-coverage serving law (suppression + within-gap ordering);
+  decision-aware deference; the W1-N3 supplement with the replay-parity canonical scope; ONE
+  additive `integrate_response` hunk + ONE render-only `show_session` hunk; three digest pins
+  re-frozen with disclosed lineage; committed evidence pack.
+  **`PRECEDENCE OWNER-ACCEPTED: YES`** at the exact-SHA acceptance: (1) W2-B overrides
+  LAPSED > SKIP > CRITICAL first; (2) alternatives transition — W2-C defers, decision-evidence
+  action is the one primary CTA; (3) the W2-C law only over the plain canonical Path-N variant
+  (reframe/exit/generic never overridden); (4) canonical serving = baseline and fail-closed
+  target — NOT Full Adaptive Questioning, no second adaptive engine.
+  **W1-N3: `CLOSED WITH EVIDENCE` — bounded authoritative scope** (the recorded M-1
+  experienced-technical MECHANISM residual; EN/AR identical; no new false positives; NOT
+  "all relevance false-negatives closed" — the precision residual stays `gap_relevance`/RVR-2
+  with RVR-7 the mandatory downstream return). Test truth at acceptance: focused 48
+  (14/14/11/9); affected family 22 modules 1637/0/0/0; full suite
+  **4710 passed / 3 skipped / 1 xfailed / 0 failed**; 467/484 remain distinct historical
+  measurements. Carried non-blocking observations (register RVR-6b row): registry CWD/path
+  binding (fail-closed under a non-root CWD; future Owner/loader-contract decision);
+  registry-prose ↔ `_INTENT_MARKERS` divergence surface (future binding decision);
+  marker-precision class (RVR-2/RVR-7-owned); the 22-module family = declared bounded set
+  (independently QUALIFIED). **Lifecycle separation: `W2-C IMPLEMENTED: YES` ≠ `RVR-6B
+  FORMALLY CLOSED` — `RVR-6B FORMALLY CLOSED: NO`; formal closure is a SEPARATE gate.**
+  **NEXT ELIGIBLE GATE (after this synchronization merges): `RVR-6b FORMAL CLOSURE`** —
+  eligible is not authorized/closed (`RVR-6B CLOSURE AUTHORIZED: NO`). `RVR-7 / RVR-8: NOT
+  AUTHORIZED`; FCORA recorded, not executed; OD-PDVG-12 UNEXERCISED; MG-8 OPEN (no repair);
+  WS11 dormant; Tier-2/full adaptive questioning OFF; W/M 2/2 frozen;
+  CAP-12/CAP-13/IoT/Drones/Renewable, deployment, production, Serious Release, Paid
+  Activation: NOT AUTHORIZED. Governance/documentation only;
+  `EXECUTABLE/TEST/PIN/PACK/DOMAIN-RULE DELTA: 0`; no historical record rewritten; `main` not
+  reconciled. **Disposition: `POST-W2-C-IMPLEMENTATION SYNC — GOVERNANCE CANDIDATE; NOT
+  AUTHORITATIVE UNTIL MERGED AND POST-MERGE VERIFIED`.**
+
+- **POST-W2-C-CONTRACT GOVERNANCE / STATUS SYNCHRONIZATION (governance-only sync CANDIDATE —
+  since MERGED AND AUTHORITATIVE via PR #580, `6b4629d75b58690eb0a40a754e747ba79f265447`; its
+  "next gate = separate implementation-start authorization" completed — see the entry above), base
   `d796b0cd385d8ad2071088d58a89612715aad888`** — verified from Git at this gate as the **live
   authoritative tip** (**0 commits after**; **PR #579** — the W2-C/RVR-6b contract merge; first
   parent `1a9eb556…` (PR #578 — the authoritative RVR-6a formal-closure merge); second parent
