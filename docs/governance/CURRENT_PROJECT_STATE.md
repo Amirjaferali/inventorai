@@ -16,12 +16,22 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
   (`git rev-parse origin/feature/atomic-json-session-persistence`). Do **not** trust a
   prose-pinned SHA.
   - **Current authoritative branch tip (last independently verified):**
+    `ac9c01ea1caaca18306a99039cea3a4224216e8a` (Merge PR #576 — W2-B/RVR-6a IMPLEMENTATION under
+    Contract Amendment 1, Option C; two-parent merge of `346f8e8a3b1532a6c52750fe20bc76668db06956`
+    (base, PR #575 — the authoritative Contract Amendment 1 merge) +
+    `6cf0958205681d1f476ecb8a9258bbebfb365059` (the exact Owner-accepted implementation candidate),
+    tree `f2b0004b97eaf508d3e9cc3c667bcdd6b80a80f2` identical to the candidate tree, empty
+    candidate→merge diff, post-merge verified; the committed implementation evidence pack
+    `docs/governance/W2_B_RVR6A_IMPLEMENTATION_EVIDENCE_PACK.md` is inside this exact tree) — always
+    re-resolve the live tip from Git per the rule above.
+  - **Prior recorded tip (historical):**
     `48017ec0259e5fc7bcb105e0b018f6d447057bda` (Merge PR #573 — W2-B/RVR-6a IMPLEMENTATION CONTRACT;
     two-parent merge of `21ce0ff843682068c0bc29a73d4506de51e581fa` (base, PR #572 post-Cross-Layer sync) +
     `5e91fd9cbc27b784c8b398ac48366b84dd73cceb` (the exact Owner-accepted REPAIRED contract candidate; first
     candidate `0448e36…` externally rejected for D-1/D-2, preserved as rejected evidence), tree
-    `c5c2590c28657fcff270f9e843bd360076ec8ce9` identical to the candidate tree, post-merge verified) — always
-    re-resolve the live tip from Git per the rule above.
+    `c5c2590c28657fcff270f9e843bd360076ec8ce9` identical to the candidate tree, post-merge verified);
+    superseded as the live tip by PR #574 (post-W2-B-contract sync, `ad70723e…`), PR #575 (W2-B/RVR-6a
+    Contract Amendment 1, `346f8e8a…`), and PR #576 (W2-B/RVR-6a implementation, `ac9c01ea…`).
   - **Prior recorded tip (historical):**
     `216cdc8e61eea141940de072105aa03a4cd801bb` (Merge PR #571 — CROSS-LAYER EXECUTION ASSURANCE STANDARD;
     two-parent merge of `e2b50120e5d2e4a1c156bff7cb5184c4efc4eb5b` (base, PR #570 post-W2-A-implementation
@@ -2470,8 +2480,58 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
+- **W2-B / RVR-6a IMPLEMENTATION — AUTHORITATIVE UNDER CONTRACT AMENDMENT 1 (OPTION C); W/M
+  OWNER-ACCEPTED AND FROZEN (governance-only synchronization CANDIDATE), base
+  `ac9c01ea1caaca18306a99039cea3a4224216e8a`** — verified from Git at this gate as the **live
+  authoritative tip** (**0 commits after**; **PR #576**; first parent `346f8e8a…` (PR #575 — the
+  authoritative **W2-B/RVR-6a Contract Amendment 1** merge, accepted candidate `6bb8f9e34c…`,
+  rejected sibling `2bcf15a7…` preserved as rejected evidence); second parent `6cf09582…` — the
+  exact Owner-accepted implementation candidate; merge tree `f2b0004b…` identical to the candidate
+  tree; empty candidate→merge diff). **Lifecycle recorded truthfully:** the FIRST implementation
+  lifecycle (under the pre-amendment contract, with an explicit Owner implementation-start
+  authorization given outside the repository workflow — recorded here as OWNER-RATIFIED PREMISE,
+  previously unsynchronized) produced Creator-Grill-failed `7e0174ac…` and Independent-Review
+  REJECTED `91c5de53…` (`REJECT — MATERIAL RECONSTRUCTION / OWNER ESCALATION REQUIRED`: gap-level
+  promotion structurally vacuous under the singleton-open-gap architecture; the decision trigger
+  contradicted FDC-001 comparability truth) — both preserved as rejected evidence via
+  SHA-preserving bundles; a read-only material reconstruction then produced the Owner
+  **Architecture Resolution (OPTION C)** enacted by **Contract Amendment 1** (PR #575, byte-verified):
+  state-aware next-question/next-action prioritization WITHIN the canonical gap; `select_next_gap`
+  the sole canonical gap owner; `newly_comparable_decision_state` REMOVED and replaced by the
+  true-transition trigger `multiple_decision_alternatives_declared`; FDC-001 the sole
+  comparability/readiness owner; cue-only adaptation insufficient; the committed evidence-pack
+  home with anti-circular identity binding; prior implementation-start authorization NOT carried
+  across the amendment. A NEW explicit Owner implementation-start authorization was then issued
+  (OWNER-RATIFIED PREMISE) and the new lifecycle executed to acceptance. **Current truth:**
+  `W2-B CONTRACT: AUTHORITATIVE` (PR #573) · `W2-B CONTRACT AMENDMENT 1: AUTHORITATIVE` (PR #575)
+  · **`W2-B IMPLEMENTATION: AUTHORITATIVE`** (PR #576) — exactly four trigger classes; the
+  alternatives trigger is a deterministic `<2→>=2` ledger transition with no persisted fired-state
+  and no comparability claim; the derived two-level register is never persisted; MG-8 was
+  diagnosed/measured only (semantics unchanged); Consumer Propagation / reconstruction parity /
+  Behavioral Composition / Cross-Layer C2+C4 assurance completed; the committed evidence pack is
+  authoritative evidence inside the implementation tree. **W/M — OWNER-ACCEPTED AND FROZEN at the
+  exact acceptance of `6cf09582…`: `W = 2`, `M = 2`** (per Wave-2 §P as amended: values produced
+  by implementation evidence and fixed at Owner exact-SHA acceptance of the implementation
+  candidate — exactly what occurred; historical entries describing W/M as proposals are
+  authority-at-their-time). Full-suite truth at acceptance (independently reproduced):
+  `4662 passed / 3 skipped / 1 xfailed / 0 failed` (prior baseline 4595/3/1/0; delta = exactly the
+  67 new W2-B tests). Accepted non-blocking observations carried in the Deferred Obligations
+  Register RVR-6a row (route-limited critical trigger and lapse-override state class;
+  trigger-3 integrated product value assessed with the release-value rows; affected-family
+  set-reproducibility looseness — the full suite is the authoritative reproduction). **Lifecycle
+  separation: `W2-B IMPLEMENTATION AUTHORITATIVE: YES` ≠ `RVR-6A CLOSED` — `RVR-6A CLOSED: NO`;
+  formal closure is a SEPARATE gate.** **NEXT ELIGIBLE GATE (after this synchronization merges):
+  `RVR-6a FORMAL CLOSURE`** — eligible is not authorized/closed. `W2-C / RVR-6b / RVR-7 / RVR-8:
+  NOT AUTHORIZED`; FCORA recorded, not executed; CAP-12/CAP-13/IoT/Drones/Renewable NOT
+  AUTHORIZED; deployment/production/Serious Release/Paid Activation NOT AUTHORIZED; release-value
+  gates OPEN. Governance/documentation only; `EXECUTABLE/TEST/PIN/PACK/DOMAIN-RULE DELTA: 0`; no
+  historical record rewritten; `main` not reconciled. **Disposition: `POST-W2-B-IMPLEMENTATION
+  SYNC — GOVERNANCE CANDIDATE; NOT AUTHORITATIVE UNTIL MERGED AND POST-MERGE VERIFIED`.**
+
 - **W2-B / RVR-6a IMPLEMENTATION CONTRACT — AUTHORITATIVE; IMPLEMENTATION START NOT AUTHORIZED
-  (governance-only synchronization CANDIDATE), base `48017ec0259e5fc7bcb105e0b018f6d447057bda`**
+  (governance-only synchronization CANDIDATE — historical: since superseded by the Amendment-1 +
+  implementation entries above; its "implementation start authorized: NO" and "W/M NOT frozen"
+  lines are authority-at-that-time), base `48017ec0259e5fc7bcb105e0b018f6d447057bda`**
   — verified from Git at this gate as the **live authoritative tip** (**0 commits after**;
   **PR #573**; parents `21ce0ff8…` (PR #572 post-Cross-Layer sync) / `5e91fd9c…` (the exact
   Owner-accepted REPAIRED contract candidate); merge tree `c5c2590c…` identical to the candidate

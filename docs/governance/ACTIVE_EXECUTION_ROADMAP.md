@@ -15364,3 +15364,97 @@ instruction under the frozen contract; the W2-A precedent).** ELIGIBLE is not AU
 EXECUTED`; `R4-C: OPEN`; `T1-A′ / T1-C′ / TIME-TO-VALUE / DIFFERENTIATION: OPEN`; `MLC
 DEFINITION FROZEN: NO`; `PSRR GO: NO`; `DEPLOYMENT AUTHORIZED: NO`; `PRODUCTION AUTHORIZED: NO`;
 `PAID ACTIVATION AUTHORIZED: NO`.
+
+## W2-B / RVR-6a IMPLEMENTATION — AUTHORITATIVE UNDER CONTRACT AMENDMENT 1; W/M FROZEN (governance-only synchronization candidate)
+
+**Append-only synchronization entry.** The entry above named `W2-B IMPLEMENTATION-START
+AUTHORIZATION` as next eligible and stated `W2-B IMPLEMENTATION START AUTHORIZED: NO` — that was
+authority-at-that-time. This entry records the full authoritative span since (PR #575 and PR #576,
+plus the previously unsynchronized implementation-start premises), rewriting no historical entry.
+
+**1. FIRST implementation lifecycle — rejected evidence (recorded, not rehabilitated).** An
+explicit Owner implementation-start authorization under the PRE-AMENDMENT contract was issued
+outside the repository workflow (OWNER-RATIFIED PREMISE — its repository recording was pending
+until this entry; the prior entries' `AUTHORIZED: NO` lines were stale against that premise and
+are superseded by this record, not rewritten). That lifecycle produced: Creator-Grill-failed
+candidate `7e0174ac838f21680521951d074a6b56a88aecc6` (composition-coverage failure; preserved via
+SHA-preserving evidence bundle) and its repaired sibling `91c5de53f1d6f4bb0a4d9cfe857a5e9511415250`,
+which Independent External Review REJECTED (`REJECT — MATERIAL RECONSTRUCTION / OWNER ESCALATION
+REQUIRED`): capability-3 "gap-level promotion" was structurally vacuous under the canonical
+singleton-open-gap architecture (the policy layer could only annotate), and the
+`newly_comparable_decision_state` trigger contradicted FDC-001's canonical comparability truth on
+the same rendered page. Both SHAs remain immutable rejected evidence; neither is a parent of any
+later candidate. A strictly read-only MATERIAL RECONSTRUCTION gate then returned the architecture
+options (A/B/C), the FDC-001-preserving trigger resolutions, a fresh W/M calibration (which
+OVERTURNED the earlier M=1 proposal on oscillation evidence), and the complete MG-8 diagnosis plan.
+
+**2. CONTRACT AMENDMENT 1 — AUTHORITATIVE.** The Owner ratified the Architecture Resolution
+(**OPTION C** — state-aware next-question/next-action prioritization WITHIN the current canonical
+gap; Options A/B not authorized; `select_next_gap` remains the sole canonical gap owner; no
+cascade/replay/reconstruction change) and the truthful trigger replacement
+(`newly_comparable_decision_state` REMOVED; `multiple_decision_alternatives_declared` ADDED as a
+TRUE `<2→>=2` transition, never a standing predicate, never a comparability claim — FDC-001 sole
+owner). Amendment candidate `2bcf15a7255128d81c06b73d4da4a4cd8eaf6164` was REJECTED pre-review
+(self-referential evidence-pack identity — a file cannot embed its own commit SHA) and preserved;
+the repaired sibling `6bb8f9e34c289953f2003de49c68210f9d2706ac` (anti-circular Candidate Identity
+Binding) was Owner-accepted at exact SHA and merged via **PR #575**
+(`346f8e8a3b1532a6c52750fe20bc76668db06956`; second parent = the exact accepted candidate; content
+byte-verified). The amendment also froze: cue-only adaptation is insufficient (behavioral floor:
+same canonical gap + different governed state → different truthful next question/action); exactly
+one committed evidence-pack file (`docs/governance/W2_B_RVR6A_IMPLEMENTATION_EVIDENCE_PACK.md`);
+the W/M falsification duty with the anti-hard-coding rule; MG-8 diagnosis-only; and the lifecycle
+reset — the prior implementation-start authorization did NOT carry across the amendment.
+
+**3. NEW implementation lifecycle — IMPLEMENTATION AUTHORITATIVE.** A NEW explicit Owner
+implementation-start authorization under the amended contract was issued (OWNER-RATIFIED PREMISE)
+and executed through the full lifecycle: candidate `6cf0958205681d1f476ecb8a9258bbebfb365059`
+(RED-first; 67 focused tests; purely additive `progression_loop` serving-policy section; derived
+two-level register; the four amended triggers with REAL serving consequences and declared
+route-reachability limits; the committed evidence pack inside the tree), Owner-accepted at exact
+SHA and merged via **PR #576** — merge `ac9c01ea1caaca18306a99039cea3a4224216e8a` (first parent
+`346f8e8a…`; second parent = the exact accepted candidate; merge tree `f2b0004b…` identical;
+EMPTY candidate→merge diff; 0 commits after at this gate). **`W2-B IMPLEMENTATION:
+AUTHORITATIVE`.** Verified from the merged tree: exactly four trigger classes; the alternatives
+trigger is a deterministic ledger transition with no persisted/session-local fired-state and
+idempotent idle re-render; no `len>=2` comparability proxy (FDC-001 readiness byte-unchanged,
+fence-tested); MG-8 diagnosed/measured only; Consumer Propagation (fresh sweep, every runtime
+consumer classified; CLI out-of-scope by contract, stated), reconstruction parity, Behavioral
+Composition flows A–F, and Cross-Layer C2+C4 assurance completed; full suite at acceptance
+`4662 / 3 / 1 / 0` (baseline 4595/3/1/0; delta = exactly the 67 new tests), independently
+reproduced by review.
+
+**4. W/M — OWNER-ACCEPTED AND FROZEN.** At the exact-SHA acceptance of `6cf09582…` the Owner
+accepted and froze **`W = 2`, `M = 2`** — exactly the Wave-2 §P mechanism as amended (values
+produced by implementation evidence, fixed at Owner exact-SHA acceptance of the implementation
+candidate; the committed calibration traces and the independent review's calibration support the
+values). Historical wording describing 2/2 (or the overturned 1) as proposals remains correct
+historically and is time-scoped; no current surface may call the frozen values proposals.
+
+**5. Accepted non-blocking observations — carried to existing owners (no duplicates).**
+(a) `critical_unresolved_gap` is route-limited today (both activated domains are artifact-covered,
+so their stage-2 exhaustion is RVR-2's governed surface) — reachability is re-verified at any
+future domain-activation gate; (b) the lapsed-acceptance stale-index override class is
+route-limited today — re-verify if that state class becomes reachable; both live as disclosures in
+the authoritative evidence pack and in the register's RVR-6a row. (c) the
+`multiple_decision_alternatives_declared` integrated product-value delta was assessed modest —
+carried to the release-value verification rows (T1-A′/RVR-8), not reopened here. (d) the
+implementation evidence pack's "467 affected regressions" family is loosely reproducible as a SET
+(the independent reviewer's closest reconstruction reached 484 green); the numbers are NOT falsely
+reconciled — the authoritative, independently reproduced evidence is the FULL suite
+(`4662 / 3 / 1 / 0`).
+
+**6. This synchronization candidate.** Governance-only: register (RVR-6a + MG-8 rows + header),
+ODR (lineage rows + §C boundary), this roadmap (append-only), `ACTIVE_INCREMENT_CONTRACT.md`
+(rotation), `CURRENT_PROJECT_STATE.md` (pin + entry). `EXECUTABLE/TEST/PIN/PACK/DOMAIN-RULE
+DELTA: 0`; no historical record rewritten; `main` not reconciled. **Disposition:
+`POST-W2-B-IMPLEMENTATION SYNC — GOVERNANCE CANDIDATE; NOT AUTHORITATIVE UNTIL MERGED AND
+POST-MERGE VERIFIED`.**
+
+**Next eligible gate — `RVR-6a FORMAL CLOSURE` (its own evidence/closure lifecycle; implementation
+authority is NOT closure).** ELIGIBLE is not CLOSED: `RVR-6A CLOSED: NO` (no obligation blocks
+closure — the register row's evidence exists — but closure requires its own gate and Owner
+adjudication); `W2-C AUTHORIZED: NO`; `RVR-6b / RVR-7 / RVR-8: NOT AUTHORIZED`; `SECOND S2 RUN
+AUTHORIZED: NO`; `FCORA: RECORDED, NOT EXECUTED`; `CAP-12 / CAP-13 / IoT / Drones / Renewable:
+NOT AUTHORIZED`; `R4-C: OPEN`; `T1-A′ / T1-C′ / TIME-TO-VALUE / DIFFERENTIATION: OPEN`; `MLC
+DEFINITION FROZEN: NO`; `PSRR GO: NO`; `DEPLOYMENT AUTHORIZED: NO`; `PRODUCTION AUTHORIZED: NO`;
+`PAID ACTIVATION AUTHORIZED: NO`.
