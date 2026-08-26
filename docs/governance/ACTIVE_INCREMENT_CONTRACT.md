@@ -41,8 +41,81 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — POST-W2-B-CONTRACT GOVERNANCE SYNCHRONIZATION; governance-only write-gate
-candidate).** Base: **`48017ec0259e5fc7bcb105e0b018f6d447057bda`** — verified from Git at this
+**Status (current — POST-W2-B-IMPLEMENTATION GOVERNANCE SYNCHRONIZATION; governance-only
+write-gate candidate).** Base: **`ac9c01ea1caaca18306a99039cea3a4224216e8a`** — verified from Git
+at this gate as the **live authoritative tip** of `feature/atomic-json-session-persistence`
+(**0 commits after it**; **PR #576** — the W2-B/RVR-6a implementation merge under Contract
+Amendment 1; first parent `346f8e8a3b1532a6c52750fe20bc76668db06956` (PR #575 — the authoritative
+Contract Amendment 1 merge, accepted candidate `6bb8f9e34c…`); second parent
+`6cf0958205681d1f476ecb8a9258bbebfb365059` — the exact Owner-accepted implementation candidate;
+merge tree `f2b0004b…` identical to the candidate tree; EMPTY candidate→merge diff; the committed
+implementation evidence pack is inside this exact tree).
+
+**Current authoritative truth (verified from Git, not prose):**
+`W2-B CONTRACT: AUTHORITATIVE` (PR #573) · **`W2-B CONTRACT AMENDMENT 1: AUTHORITATIVE`**
+(PR #575 — Option C; trigger replacement; FDC-001 sole comparability/readiness owner; lifecycle
+reset) · **`W2-B IMPLEMENTATION: AUTHORITATIVE`** (PR #576) · **`W/M OWNER-ACCEPTED AND FROZEN:
+W = 2, M = 2`** (at the exact-SHA acceptance of `6cf09582…`, per the Wave-2 §P mechanism as
+amended — no current surface may describe these as proposals; historical proposal wording is
+authority-at-its-time). **`RVR-6A CLOSED: NO`** — implementation authority is not formal closure;
+the next eligible gate is the separate `RVR-6a FORMAL CLOSURE` lifecycle. `W2-C / RVR-6b / RVR-7 /
+RVR-8: NOT AUTHORIZED`; `FCORA: RECORDED, NOT EXECUTED`; CAP-12/CAP-13/IoT/Drones/Renewable,
+deployment, production, Serious Release, Paid Activation: NOT AUTHORIZED. The entry-below's
+"next eligible gate = W2-B IMPLEMENTATION-START AUTHORIZATION" line is authority-at-that-time —
+that gate (and the full amended-contract implementation lifecycle) completed.
+
+```
+INCREMENT CONTRACT — Post-W2-B-Implementation Status Synchronization (governance only)
+Objective:                Bring the live status surfaces and the Deferred Obligations Register to
+                          current repository truth after the PR #575 (Contract Amendment 1) and
+                          PR #576 (implementation) merges: record Amendment 1 and the
+                          implementation as authoritative; record the W/M Owner acceptance/freeze
+                          (W=2, M=2); record the previously unsynchronized implementation-start
+                          premises and the rejected first-implementation lineage; carry the
+                          accepted non-blocking observations to their existing owners; update the
+                          RVR-6a and MG-8 register rows; rotate this contract.
+Owner authorization:      the Owner's post-W2-B-implementation governance synchronization gate
+                          instruction (following Owner exact-SHA acceptance of 6cf09582… and the
+                          PR #576 merge)
+Risk level:               LEVEL 2 — governance/documentation only (Standard change class: C0/C1)
+Allowed paths:            docs/governance/CURRENT_PROJECT_STATE.md;
+                          docs/governance/ACTIVE_EXECUTION_ROADMAP.md (append-only);
+                          docs/governance/ACTIVE_INCREMENT_CONTRACT.md (this rotation);
+                          docs/governance/OWNER_DECISION_REGISTER.md (append/boundary);
+                          docs/governance/DEFERRED_OBLIGATIONS_REGISTER.md (row wording)
+Forbidden paths:          engine/, web/, tests/, scripts/, domains/, schemas, the merged
+                          contract/amendment/evidence-pack records, historical records,
+                          preserved/rejected evidence
+Expected behavior:        status surfaces state current lifecycle truth (implementation
+                          authoritative; W/M frozen; RVR-6a NOT closed); nothing else changes
+Non-goals:                RVR-6a formal closure; W2-C/RVR-6b/RVR-7/RVR-8 authorization; FCORA
+                          execution; any runtime change; any new implementation authorization
+Acceptance criteria:      the sync Grill GS-01…GS-73 (merge identity verified; lifecycle states
+                          not collapsed; W/M freeze recorded with correct epistemics; observations
+                          carried without duplicate obligations; minimal changed-file set)
+Required tests:           none — documentation-only (zero runtime delta verified mechanically)
+Tests not required:       product tests — no product path changes
+Dependencies:             PR #575 and PR #576 authoritative merges; Amendment 1 §14 lifecycle;
+                          the committed implementation evidence pack
+Unresolved decisions:     RVR-6a formal closure (next eligible gate); MG-8 Owner adjudication;
+                          the open Owner decisions tracked in the register
+Stop conditions:          any merge-identity mismatch; any pressure to close RVR-6a, authorize
+                          W2-C, or rewrite history
+Independent-review scope: factual accuracy; lifecycle-state vocabulary; W/M epistemic treatment;
+                          observation ownership; no self-certification
+Merge authority:          owner, separately (candidate is NOT published, PR'd, or merged by the
+                          Creator)
+```
+
+---
+
+**Superseded (retained as history) — POST-W2-B-CONTRACT GOVERNANCE SYNCHRONIZATION;
+MERGED AND AUTHORITATIVE via PR #574, merge `ad70723e8fdb34493ac9e53d7a9a3ceb80850708`.** Its
+"next eligible gate = W2-B IMPLEMENTATION-START AUTHORIZATION" and
+`W2-B IMPLEMENTATION START AUTHORIZED: NO` / `W/M NOT frozen` lines are
+authority-at-that-time — the implementation-start premises, Contract Amendment 1 (PR #575), the
+implementation (PR #576), and the W/M freeze completed since (see the active block above).
+Base: **`48017ec0259e5fc7bcb105e0b018f6d447057bda`** — verified from Git at this
 gate as the **live authoritative tip** of `feature/atomic-json-session-persistence`
 (**0 commits after it**; **PR #573** — the W2-B/RVR-6a implementation-contract merge; first
 parent `21ce0ff843682068c0bc29a73d4506de51e581fa` (PR #572, post-Cross-Layer sync), second
