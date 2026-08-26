@@ -41,9 +41,87 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — POST-W2-C-CONTRACT GOVERNANCE / STATUS SYNCHRONIZATION; governance-only
-write-gate candidate).** Base: **`d796b0cd385d8ad2071088d58a89612715aad888`** — verified from
-Git at this gate as the **live authoritative tip** of
+**Status (current — POST-W2-C-IMPLEMENTATION GOVERNANCE / STATUS SYNCHRONIZATION;
+governance-only write-gate candidate).** Base:
+**`b749c8873533ca6c48ebcf9be0c4023aa10cdd09`** — verified from Git at this gate as the **live
+authoritative tip** of `feature/atomic-json-session-persistence` (**0 commits after it**;
+**PR #581** — the W2-C/RVR-6b implementation merge; first parent `6b4629d7…` (PR #580 — the
+authoritative post-W2-C-contract sync merge); second parent `1bc0690d…` — the exact
+Owner-accepted implementation candidate (evidence-integrity rejected siblings `1249dbbd…` and
+`cf77c33d…` preserved as rejected evidence, neither an ancestor); merge tree `14b54d7e…`
+identical to the candidate tree; EMPTY candidate→merge diff; merged 2026-08-26T22:30:52Z;
+post-merge identity verified).
+
+**Current authoritative truth (verified from Git, not prose):**
+**`W2-C IMPLEMENTATION: AUTHORITATIVE` — `W2-C IMPLEMENTED: YES`** (PR #581; the Owner's
+implementation-start authorization was issued AFTER the PR #580 sync — recorded as fulfilled
+chronology, the prior sync's `AUTHORIZED: NO` line being authority-at-its-time) ·
+**`PRECEDENCE OWNER-ACCEPTED: YES`** (the exact four-level W2-B × W2-C composition, accepted
+with the exact-SHA acceptance of `1bc0690d…` — ODR acceptance row) · **W1-N3 `CLOSED WITH
+EVIDENCE` (bounded authoritative scope; the relevance-precision residual stays
+RVR-2/RVR-7-owned)** · lapse revalidation `NOT AFFECTED` · `W/M: 2/2 OWNER-ACCEPTED AND
+FROZEN` · **`RVR-6B FORMALLY CLOSED: NO`** — implementation authority is not formal closure;
+the next eligible gate is the separate `RVR-6b FORMAL CLOSURE` lifecycle (its own Owner
+authorization required). Carried non-blocking observations (register RVR-6b row): registry
+CWD/path binding; registry-prose ↔ `_INTENT_MARKERS`. `OD-PDVG-12 EXERCISED: NO`; MG-8 OPEN
+(no repair); WS11 dormant; Tier-2 and full adaptive questioning OFF; `RVR-7 / RVR-8 / FCORA:
+NOT AUTHORIZED`; CAP-12/CAP-13/IoT/Drones/Renewable, deployment, production, Serious Release,
+Paid Activation: NOT AUTHORIZED.
+
+```
+INCREMENT CONTRACT — Post-W2-C-Implementation Status Synchronization (governance only)
+Objective:                Bring the live status surfaces and the registers to current repository
+                          truth after the PR #581 implementation merge: record the
+                          implementation as authoritative with the truthful
+                          authorization-after-sync chronology; record the Owner-accepted
+                          W2-B × W2-C precedence; close the W1-N3 row on its bounded evidence
+                          (history preserved); carry the CWD-binding and prose↔marker
+                          observations durably; update the RVR-6b row without closing it;
+                          rotate this contract.
+Owner authorization:      the Owner's post-W2-C-implementation governance synchronization gate
+                          instruction (following Owner exact-SHA acceptance of 1bc0690d… and
+                          the PR #581 merge)
+Risk level:               LEVEL 2 — governance/documentation only (Standard change class: C0/C1)
+Allowed paths:            docs/governance/CURRENT_PROJECT_STATE.md;
+                          docs/governance/ACTIVE_EXECUTION_ROADMAP.md (append-only);
+                          docs/governance/ACTIVE_INCREMENT_CONTRACT.md (this rotation);
+                          docs/governance/OWNER_DECISION_REGISTER.md (lineage + boundary);
+                          docs/governance/DEFERRED_OBLIGATIONS_REGISTER.md (row updates +
+                          header)
+Forbidden paths:          engine/, web/, tests/, scripts/, domains/, schemas, digest pins, the
+                          merged contract/evidence-pack records, historical records,
+                          preserved/rejected evidence
+Expected behavior:        status surfaces state current lifecycle truth (implemented ≠ RVR-6b
+                          closed); nothing else changes
+Non-goals:                RVR-6b formal closure; RVR-7/RVR-8/FCORA; MG-8 adjudication/repair;
+                          OD-PDVG-12; any runtime change; repair of the carried observations
+Acceptance criteria:      the sync Grill S01…S38 (merge identity verified; chronology truthful;
+                          precedence recorded; W1-N3 bounded closure exact; observations
+                          durable; no premature RVR-6b closure; minimal changed-file set)
+Required tests:           none — documentation-only (zero runtime delta verified mechanically)
+Tests not required:       product tests — no product path changes
+Dependencies:             PR #581 authoritative merge; the committed evidence pack; the
+                          Independent Review + focused re-review record
+Unresolved decisions:     RVR-6b formal-closure authorization; MG-8 adjudication; OD-PDVG-12;
+                          the CWD-binding and prose↔marker future decisions; the open Owner
+                          decisions tracked in the register
+Stop conditions:          any merge-identity mismatch; any pressure to close RVR-6b, authorize
+                          RVR-7+, repair observations, or rewrite history
+Independent-review scope: factual accuracy; chronology truthfulness; bounded-closure scope
+                          fidelity; observation durability; no self-certification
+Merge authority:          owner, separately (candidate is NOT published, PR'd, or merged by the
+                          Creator)
+```
+
+---
+
+**Superseded (retained as history) — POST-W2-C-CONTRACT GOVERNANCE / STATUS SYNCHRONIZATION;
+MERGED AND AUTHORITATIVE via PR #580, merge `6b4629d75b58690eb0a40a754e747ba79f265447`.** Its
+"W2-C RUNTIME IMPLEMENTATION AUTHORIZED: NO / next eligible gate = W2-C IMPLEMENTATION-START
+AUTHORIZATION" lines are authority-at-that-time — the Owner subsequently issued that separate
+authorization and the implementation lifecycle completed via PR #581 (see the active block
+above). Base: **`d796b0cd385d8ad2071088d58a89612715aad888`** — verified from
+Git at that gate as the **live authoritative tip** of
 `feature/atomic-json-session-persistence` (**0 commits after it**; **PR #579** — the W2-C/RVR-6b
 contract merge; first parent `1a9eb556…` (PR #578 — the authoritative RVR-6a formal-closure
 merge); second parent `455cb502…` — the exact Owner-accepted repaired contract candidate
