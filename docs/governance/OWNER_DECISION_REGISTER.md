@@ -1421,3 +1421,26 @@ decisions) remain authoritative; FCORA audits them. Duplication was adjudicated 
 direction and obligation ONLY: FCORA is NOT executed here, its detailed contract (incl.
 refinements such as partial-implementation ambiguity handling) is a future gate's own lifecycle
 work. Obligation tracking: the Deferred Obligations Register §3 FCORA row (FRB).
+
+**E. RVR-7 Path Manifest Freeze gate — Owner decisions recorded contemporaneously.**
+Recorded at the RVR-7 Implementation Path Manifest Freeze gate (base
+`dad450bfb86cb96a29527a733a213897950c57ec`, PR #587). These are decisions the Owner HAS MADE;
+none is an authorization, and none existed in the repository before this gate. **Durable
+repository authority attaches to these registrations only upon Owner exact-SHA acceptance, merge
+and post-merge identity verification of the freeze candidate that introduces them** — recording
+is not authority.
+
+| ID | Subject | Status | Evidence |
+|---|---|---|---|
+| OD-W2-D-P6-18 | **D-P6-18 display-rule supersession — `BOUNDED`.** Scope: `RVR-7 Path-N substantive journey`; Arabic sessions receive the substantive journey asks in Arabic. Boundaries carried unexpanded: canonical state language-independent; persistence language-independent; replay and determinism unchanged; **no runtime or machine translation**; **no parallel Arabic question registry**. This resolves the decision the authoritative RVR-7 Contract Framework §S routed here and expressly left undecided ("Status: `OWNER DECISION REQUIRED` — NOT DECIDED AT THIS FREEZE"), and satisfies §S.1 / §H.3 sequencing rule 5, which require it to precede the Path Manifest Freeze. Outcome **(b)** of the three §S outcomes is selected; (a) and (c) are not | **DECIDED** — supersession is bounded, not full; D-P6-18's closed implementation record (PR #388) is NOT reopened, and its non-question chrome rule is unchanged | `RVR_7_IMPLEMENTATION_PATH_MANIFEST_FREEZE_CANDIDATE.md` §3.1 + §4 supersession map |
+| OD-W2-D-P6-18-Q2 | **Q2 — `INCLUDE`.** The substantive exhaustion/reframe prompts belonging to the same Path-N journey are inside the Arabic parity requirement, satisfying the RVR-7 Contract Framework §I item 6 conditional. The IMPLEMENTATION ARCHITECTURE is selected by repository evidence, not by preference: **`RENDER-EDGE / IDENTITY-BASED RESOLUTION`** — the engine stays language-blind and the language variant resolves from an explicit semantic identity after the engine's decision is complete. Language-aware progression is **NOT** selected and is fenced | **DECIDED** — Q2 resolved; the Contract Framework §H.1 Q2 parenthetical expectation that inclusion requires an `engine/progression_loop.py` touch and a governed digest re-freeze is superseded by repository evidence (shape B leaves that file byte-unchanged) | freeze candidate §3.2, §3.3, §5.A-§5.D, §9 |
+| D-RVR7-1 | **Journey-completeness boundary — `OPTION A — JOURNEY-COMPLETE`.** For the CURRENTLY ACTIVATED domains the RVR-7 Arabic substantive scope is exactly: the 21 committed Path-N `question_id`s; `_STALL_REFRAME`; `_EXHAUSTED_EXIT_PROMPT`; the **reachable** Stage-3 generic substantive asks; `INTAKE_QUESTION`; `closing_q`. This is a **bounded expansion** of the Contract Framework §I item 1 content enumeration — it expands the CONTENT set only, and expands neither the surface set nor the authorization set. It does **NOT** absorb generated substantive outputs, `next_development_step`, deliverables, Decision Snapshot generated content, PDF/export generated output, CAP-12/CAP-13/CAP-14/CAP-18, unrelated UI chrome, or future-domain latent generic questions merely because they exist — reachability, not existence, is the test, and the generic Stage-2 variants are unreachable in both activated domains | **DECIDED** — bounded expansion accepted; the §I item 1 wording is `SUPERSEDED IN PART` by the new bounded content rule, with index-isomorphism and equivalent-meaning requirements unchanged | freeze candidate §3.4, §4.2, §4.3 |
+
+**Boundary carried with these decisions (none is weakened by them):**
+`RVR-7 IMPLEMENTATION PATH MANIFEST FROZEN: NO` (the freeze candidate proposes it; adoption alone
+confers it); `RVR-7 IMPLEMENTATION AUTHORIZED: NO`; `RVR-7 IMPLEMENTATION START AUTHORIZED: NO`
+(a separate Owner decision under Contract Framework §H.3 sequencing rules 1 and 4);
+`W1-N2 DISCHARGED: NO`; `RVR-8 AUTHORIZED: NO`; `CAP-12 / CAP-13 / CAP-14 / CAP-18 ACTIVATED: NO`;
+`LANGUAGE-CONDITIONAL ROUTING: FORBIDDEN`; `RUNTIME / MACHINE TRANSLATION: FORBIDDEN`;
+`PARALLEL ARABIC QUESTION REGISTRY: FORBIDDEN`. No Path Manifest acceptance, no Implementation
+START decision and no RVR-8 decision is registered here, because none exists.

@@ -41,7 +41,66 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — POST-RVR-7-CONTRACT-FRAMEWORK GOVERNANCE SYNCHRONIZATION; governance-only
+**Status (current — RVR-7 IMPLEMENTATION PATH MANIFEST FREEZE; governance-only candidate.
+`PATH MANIFEST AUTHORITATIVE/FROZEN: NO`; `RVR-7 IMPLEMENTATION AUTHORIZED: NO`;
+`RVR-7 IMPLEMENTATION START AUTHORIZED: NO`).** Base:
+**`dad450bfb86cb96a29527a733a213897950c57ec`** — verified from Git at this gate as the **live
+authoritative tip** of `feature/atomic-json-session-persistence` (**0 commits after it**;
+**PR #587** — the post-RVR-7-contract-framework governance synchronization; first parent
+`b4a0d5fc…` (PR #586 — the authoritative RVR-7 Contract Framework merge); second parent
+`c832c8876e3634f1996bf1d5c947a150abf2a8dc` — the exact Owner-accepted candidate; merge tree
+`eb26d034…` identical to the candidate tree; EMPTY candidate→merge diff; post-merge identity
+verified).
+
+```
+Objective:                record the Owner decisions D-P6-18 (BOUNDED), Q2 (INCLUDE) and D-RVR7-1
+                          (Option A — Journey-Complete); apply the bounded §I.1 supersession by the
+                          repository-native ADDITIVE mechanism; and freeze the EXACT RVR-7
+                          implementation path manifest, its architecture fences, its
+                          test/evidence plan and its pin consequences. NO implementation.
+Owner authorization:      explicit — PATH MANIFEST FREEZE CANDIDATE LIFECYCLE ONLY (governance
+                          candidate; no runtime implementation, no Implementation START).
+                          Independent Review, Owner exact-SHA acceptance, publication, PR and merge
+                          each remain separate decisions.
+Lean risk LEVEL:          LEVEL 1 (re-derived per Contract Framework §H.3 rule 6 — freezes an
+                          implementation architecture and supersedes in part an authoritative
+                          merged contract clause; NOT inherited from the framework gate's LEVEL 2)
+Lean review DEPTH:        DEPTH 1 (Independent Review REQUIRED before Owner acceptance)
+Allowed paths:            docs/governance/RVR_7_IMPLEMENTATION_PATH_MANIFEST_FREEZE_CANDIDATE.md
+                          (new); ACTIVE_EXECUTION_ROADMAP.md (append-only);
+                          ACTIVE_INCREMENT_CONTRACT.md (this rotation);
+                          CURRENT_PROJECT_STATE.md (pointer + entry);
+                          DEFERRED_OBLIGATIONS_REGISTER.md (Increment-3 row, RVR-7 conditional,
+                          W1-N2 non-advancement clause, header);
+                          OWNER_DECISION_REGISTER.md (section E). SIX paths, all governance.
+Forbidden paths:          every runtime, test, content, pack, pin and domain-rule file without
+                          exception; the authoritative RVR-7 contract instrument itself (additive
+                          supersession only — accepted history is never rewritten).
+Expected behavior:        none — zero executable delta.
+Non-goals:                RVR-7 implementation; Implementation START; RVR-8; CAP activation;
+                          generated-output localization; deliverable expansion; deployment.
+Acceptance criteria:      exact 12-path manifest with no wildcard; architecture fences frozen;
+                          machine-derived pin table; supersession map exact old -> new; zero
+                          executable/test/pin/pack/content delta; no wording implying
+                          implementation authorization.
+Required tests:           none (governance-only); Universal Guardrail Smoke as unchanged-state
+                          evidence.
+Tests not required:       any new runtime test — writing one would breach the forbidden paths.
+Dependencies:             the authoritative RVR-7 Contract Framework (PR #586) and the decided
+                          OD-W2-D-P6-18 (both prerequisites of Contract Framework §H.3).
+Unresolved decisions:     none required before Independent Review. Implementation START remains a
+                          separate Owner decision and is NOT sought here.
+Stop conditions:          any need to touch a runtime/test/content/pack/pin file, to rewrite the
+                          base contract, or to expand the manifest -> STOP and prove the
+                          invalidation before proceeding.
+Independent-review scope: manifest exactness and minimality; architecture-fence soundness;
+                          supersession-map correctness; pin-table completeness; absence of any
+                          implementation-authorization leak; Increment-3 obligation routing.
+Merge authority:          Owner, separately (not by the execution agent).
+```
+
+**Superseded status block (authority-at-its-time; preserved, not rewritten):**
+**Status (POST-RVR-7-CONTRACT-FRAMEWORK GOVERNANCE SYNCHRONIZATION; governance-only
 synchronization candidate).** Base:
 **`b4a0d5fc076292a36385f9228d5a37eedf3a4da1`** — verified from Git at this gate as the **live
 authoritative tip** of `feature/atomic-json-session-persistence` (**0 commits after it**;
