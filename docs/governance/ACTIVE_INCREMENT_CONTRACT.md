@@ -41,7 +41,78 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — RVR-7 CONTRACT **FRAMEWORK** FREEZE; substantive Arabic parity;
+**Status (current — POST-RVR-7-CONTRACT-FRAMEWORK GOVERNANCE SYNCHRONIZATION; governance-only
+synchronization candidate).** Base:
+**`b4a0d5fc076292a36385f9228d5a37eedf3a4da1`** — verified from Git at this gate as the **live
+authoritative tip** of `feature/atomic-json-session-persistence` (**0 commits after it**;
+**PR #586** — the RVR-7 Contract Framework merge; first parent `507a9b75…` (PR #585); second parent
+`d95a610b393c61f8b134b3cb747606f944cfb67e` — the exact Owner-accepted candidate; merge tree
+`e0d4cb5b…` identical to the candidate tree; EMPTY candidate→merge diff; post-merge identity
+verified).
+
+```
+Objective:                synchronize governance surfaces to the authoritative RVR-7 Contract
+                          Framework (PR #586); transition W1-N2 to TRIGGER FIRED / BOUND while
+                          keeping it OPEN and NOT DISCHARGED; make the two deferred ODR
+                          registrations; and durably register the standing Owner deferred product
+                          direction (Manufacturing Readiness + Market Reality / Commercial
+                          Readiness) with ownership explicitly unresolved. NO implementation.
+Owner authorization:      explicit — bounded post-merge governance synchronization only
+Lean risk LEVEL:          LEVEL 2 (authorized governance increment; no Level-1 trigger — product
+                          identity anchors untouched, the deferred direction is registered as an
+                          UNRECONCILED obligation, not a product-identity change)
+Lean review DEPTH:        DEPTH 2
+AHAEP execution mode:     FULL SEMANTIC LIFECYCLE (new authoritative state + an obligation-trigger
+                          transition + two Owner-decision registrations + creation of a NEW durable
+                          canonical obligation with release-blocking reach — not a bounded delta
+                          over a verified baseline, and not mechanical merely because it is
+                          governance-only)
+Allowed paths:            docs/governance/ACTIVE_EXECUTION_ROADMAP.md (append-only);
+                          docs/governance/ACTIVE_INCREMENT_CONTRACT.md (rotation);
+                          docs/governance/CURRENT_PROJECT_STATE.md (pointer, entry, obligation
+                          route); docs/governance/DEFERRED_OBLIGATIONS_REGISTER.md (W1-N2
+                          transition, RVR-7 status sync, new reconciliation row, header);
+                          docs/governance/OWNER_DECISION_REGISTER.md (two deferred registrations
+                          + boundary)
+Forbidden paths:          the authoritative RVR-7 contract instrument (not rewritten); every
+                          runtime, test, fixture, pin, pack, registry, schema, content and
+                          persistence file; every frozen historical record
+Expected behavior:        no behavior change; zero content and zero code delta
+Non-goals:                RVR-7 implementation; Implementation START; Path Manifest Freeze;
+                          D-P6-18 resolution; RVR-8; CAP-12; CAP-13; Manufacturing or Commercial
+                          Readiness implementation; creating a capability owner for the deferred
+                          direction; deployment
+Acceptance criteria:      the Creator Grill S01…S30 (merge identity, authoritative-state truth,
+                          W1-N2 fired-but-not-discharged, ODR registrations exact, new obligation
+                          correctly unowned, CAP-12/CAP-13 non-activation, D-P6-18 unchanged,
+                          DOR counts, orphan 0, bundle + isolated fetch-back)
+Required tests:           none — documentation only; Universal Guardrail Smoke as the standing floor
+Tests not required:       full application suite — zero runtime-reachable semantic delta
+Dependencies:             PR #586 merge identity; the authoritative contract §E.0/§E.1.1 duties;
+                          the register rows and their triggers
+Unresolved decisions:     Owner exact-SHA acceptance of THIS synchronization candidate; D-P6-18;
+                          the Path Manifest Freeze; Implementation START; RVR-8; the deferred
+                          product direction's ownership (reconciliation output)
+Stop conditions:          base advancement; any DOR trigger found fired but unaccounted; any
+                          pressure to resolve D-P6-18, freeze a path manifest, activate CAP-12 /
+                          CAP-13, or create a capability owner for the deferred direction
+Independent-review scope: merge-identity reconstruction; the framework-authoritative vs
+                          implementation-not-ready distinction; W1-N2 transition truthfulness;
+                          ODR registration exactness and absence of fabricated future decisions;
+                          the new obligation's unresolved-ownership discipline and anti-force-fit;
+                          DOR sweep truth; non-circularity
+Merge authority:          owner, separately (the candidate is NOT published, PR'd, or merged by
+                          the Creator)
+```
+
+---
+
+**Superseded (retained as history) — RVR-7 CONTRACT FRAMEWORK FREEZE; MERGED AND AUTHORITATIVE via
+PR #586, merge `b4a0d5fc076292a36385f9228d5a37eedf3a4da1` (accepted candidate
+`d95a610b393c61f8b134b3cb747606f944cfb67e`; post-merge identity verified) — `RVR-7 CONTRACT
+FRAMEWORK: AUTHORITATIVE`; implementation still NOT authorized.**
+
+**Status (superseded — RVR-7 CONTRACT **FRAMEWORK** FREEZE; substantive Arabic parity;
 governance/contract-only candidate — a fresh same-base sibling replacing Independent-Review-rejected
 `d7ce5df8…`, preserved as rejected evidence and NOT an ancestor.
 `RVR-7 IMPLEMENTATION PATH MANIFEST FROZEN: NO`; `RVR-7 IMPLEMENTATION AUTHORIZED: NO`).** Base:

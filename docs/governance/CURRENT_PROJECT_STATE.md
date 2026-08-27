@@ -16,6 +16,19 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
   (`git rev-parse origin/feature/atomic-json-session-persistence`). Do **not** trust a
   prose-pinned SHA.
   - **Current authoritative branch tip (last independently verified):**
+    `b4a0d5fc076292a36385f9228d5a37eedf3a4da1` (Merge **PR #586** — RVR-7 CONTRACT FRAMEWORK;
+    two-parent merge of `507a9b7533b63bb85dcae2d3fa955946b676189a` (base, PR #585 — the
+    consolidated post-RVR-6b-closure governance synchronization) +
+    `d95a610b393c61f8b134b3cb747606f944cfb67e` (the exact Owner-accepted contract-framework
+    candidate; Independent-Review-rejected `d7ce5df8…` and re-reviewed `3d0992b5…` preserved as
+    evidence, neither an ancestor), tree `e0d4cb5b44edb48ac867b45446b30e5163621d54` identical to
+    the candidate tree, empty candidate→merge diff, post-merge identity verified) — always
+    re-resolve the live tip from Git per the rule above.
+  - **Prior recorded tip (historical):**
+    `507a9b7533b63bb85dcae2d3fa955946b676189a` (Merge PR #585 — CONSOLIDATED POST-RVR-6b-CLOSURE
+    GOVERNANCE SYNCHRONIZATION; accepted candidate `5f3b7cb6…`); superseded as the live tip by
+    PR #586 (`b4a0d5fc…`).
+  - **Prior recorded tip (historical):**
     `814e97b5d5b7ba39fce01d35fd72bb008af03046` (Merge PR #584 — RVR-6b FORMAL CLOSURE;
     two-parent merge of `9f872a70c5fc296cf1b397450badf17c74b37641` (base, PR #583 — the
     authoritative AHAEP SOP adoption merge) +
@@ -197,6 +210,21 @@ status**, holds **no current per-item status values of its own**, and creates no
 | 4. Owner-added capability inventory (CAP-01…CAP-18) | `INVENTORAI_CAPABILITY_ENRICHMENT_REGISTER.md` | Recorded capabilities — all `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION` (**registration ≠ authorization**). Range corrected to CAP-01…CAP-18 under G-MPR-01-D D6 (the register extends through CAP-18; CAP-15…CAP-18 are equally tracked; earlier "CAP-01…CAP-14" enumerations are superseded as index range). | That register |
 | 5. Owner decisions & authorization state (OD-/D- numbers) | `OWNER_DECISION_REGISTER.md` | Owner decisions + separate-authorization requirements (**a recorded proposal is NOT execution authorization**) | That register |
 | 6. Deferred Obligations Register (permanent cross-cutting obligation ledger — Owner rule) | `DEFERRED_OBLIGATIONS_REGISTER.md` | Per-obligation current disposition, return gate, blocking level, and closure evidence for deferred/open/conditional obligations (source owners stay authoritative for the underlying capability/decision) | That register |
+
+**DEFERRED PRODUCT EXPANSION — MUST NOT BE LOST (mandatory routing entry; pointer-only).** A standing
+Owner product direction — that InventorAI should eventually help the user answer **Technical Readiness**,
+**Manufacturing Readiness**, and **Market Reality / Commercial Readiness** — is tracked as a single
+cross-cutting obligation and **must survive every Creator / Independent Reviewer / Lead change, every
+handover, and every future source-of-truth reconstruction**. Consistent with this Index's pointer-only rule,
+**no status, ownership, scope or content is held here**. Route:
+
+| Item | Authoritative source | Where CURRENT status is determined |
+|---|---|---|
+| Manufacturing Readiness + Market Reality / Commercial Readiness — Repository Reconciliation | **Layer 6** — `DEFERRED_OBLIGATIONS_REGISTER.md`, the row titled *"Manufacturing Readiness + Market Reality / Commercial Readiness — REPOSITORY RECONCILIATION"* | That register row (disposition, return event, latest safe gate, blocking level, closure evidence). Capability ownership is **UNRESOLVED** there by design and is determined only by the future reconciliation; candidate existing-owner surfaces to inspect (incl. CAP-12, CAP-13, CAP-14 as a declared dependency-overlap, and **CAP-18 — Commercial Readiness Snapshot** via Layer 4) are enumerated in that row |
+
+Any agent performing normal repository reconstruction reaches this obligation through the mandatory boot
+chain — `CLAUDE.md` → `CURRENT_PROJECT_STATE.md` → this Master Obligation Index → Layer 6 register row —
+without needing to read the historical state stream below.
 
 **Product-Foundation status caveat (important).** The Product-Foundation plan (Layer 2) is authoritative for
 objectives / intended phase **structure** / sequence — it is **not** the owner of current execution status.
@@ -2545,6 +2573,52 @@ AUTHORIZED / NOT STARTED.***
   none authorized, started, or implied. `OWNER_DECISION_REGISTER.md` UNCHANGED (Phase 8 formal-closure
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
+
+- **RVR-7 CONTRACT FRAMEWORK: AUTHORITATIVE (PR #586) + POST-MERGE GOVERNANCE SYNCHRONIZATION
+  (governance-only synchronization CANDIDATE — NOT authoritative until Owner-accepted at exact SHA,
+  merged and post-merge verified), base `b4a0d5fc076292a36385f9228d5a37eedf3a4da1`** — verified from
+  Git at this gate as the **live authoritative tip** (**0 commits after**; **PR #586**; first parent
+  `507a9b75…` (PR #585); second parent `d95a610b…` — the exact Owner-accepted candidate; merge tree
+  `e0d4cb5b…` identical; EMPTY candidate→merge diff; post-merge identity verified).
+  **`RVR-7 CONTRACT FRAMEWORK: AUTHORITATIVE`** — and authority of the framework is **NOT**
+  implementation readiness: **`RVR-7 IMPLEMENTATION PATH MANIFEST: NOT YET FROZEN`** ·
+  **`RVR-7 IMPLEMENTATION AUTHORIZED: NO`** · **`RVR-7 IMPLEMENTATION START AUTHORIZED: NO`** ·
+  `RVR-8 AUTHORIZED: NO`. Required order before any implementation start: the **D-P6-18 Owner
+  decision** (still `OWNER DECISION REQUIRED`; it must precede the manifest freeze) → a separately
+  Owner-authorized bounded diagnostic/path-manifest discovery step → a **Path Manifest Freeze**
+  candidate independently reviewed, Owner-accepted at exact SHA, merged and post-merge verified →
+  only then a separate Implementation START authorization; Lean LEVEL / Review DEPTH re-derived once
+  the real manifest exists. **W1-N2:** its registered "RVR-7 contract freeze" trigger has now FIRED
+  (the framework's own §E.0 defines that event as authoritative adoption), so the register row moves
+  to **`TRIGGER FIRED / BOUND: YES`** while remaining **OPEN and NOT DISCHARGED** — no Arabic
+  adversarial regression test exists and none is claimed. The **RVR-7 row's own** trigger ("Wave-3
+  authorization") did **NOT** fire; that row received a truthful status synchronization only.
+  **Owner Decision Register:** the two deliberately deferred registrations are made at this gate —
+  the Contract Framework START authorization exercise, and the exact-SHA acceptance of `d95a610b…`
+  with merge identity `b4a0d5fc…`. No Path Manifest acceptance, Implementation START decision or
+  RVR-8 decision is registered, because none exists. **Standing deferred product direction:** this
+  synchronization RECORDS it as a single cross-cutting register obligation and installs its mandatory
+  routing entry in the Master Obligation Index; **durable repository authority attaches only upon
+  authoritative adoption of this synchronization**. Register counts at this gate:
+  `OPEN 24 → 25` · `CLOSED 9 → 9` · fired 1 · closed 0 · added 1 · `UNACCOUNTED / ORPHAN: 0`. Both
+  RVR-6b Option-A anchors remain OPEN and non-transferred; W1-N3 stays CLOSED (bounded); MG-8,
+  OD-PDVG-12, R4-C untouched; `CAP-12 ACTIVATED: NO`; `CAP-13 ACTIVATED: NO`; `gap_relevance`
+  UNCHANGED; `W/M: 2/2` frozen; adaptive/Tier-2/WS11 fences intact; `LANGUAGE-CONDITIONAL ROUTING`
+  and `RUNTIME TRANSLATION` FORBIDDEN; `FCORA: RECORDED, NOT EXECUTED`; `DEPLOYMENT / PRODUCTION /
+  SERIOUS RELEASE / PAID ACTIVATION: NOT AUTHORIZED`. The authoritative RVR-7 contract instrument is
+  **not rewritten** at this gate. Governance/documentation only; `EXECUTABLE / TEST / PIN / PACK /
+  DOMAIN-RULE / CONTENT DELTA: 0`. **Disposition: `POST-RVR-7-CONTRACT-FRAMEWORK SYNCHRONIZATION —
+  GOVERNANCE CANDIDATE; NOT AUTHORITATIVE UNTIL MERGED AND POST-MERGE VERIFIED`.**
+
+- **DEFERRED PRODUCT EXPANSION — MUST NOT BE LOST (pointer; see the Master Obligation Index routing entry
+  above, which is the mandatory discovery path).** The standing Owner product direction covering Technical
+  Readiness, Manufacturing Readiness and Market Reality / Commercial Readiness is tracked as ONE cross-cutting
+  obligation whose canonical source is the `DEFERRED_OBLIGATIONS_REGISTER.md` row *"Manufacturing Readiness +
+  Market Reality / Commercial Readiness — REPOSITORY RECONCILIATION"*. That row is the single source of truth
+  for its content, disposition, return event, latest safe gate, blocking level, closure evidence and its
+  deliberately **UNRESOLVED** capability ownership; nothing here duplicates or overrides it. This
+  synchronization RECORDS that obligation — durable repository authority attaches only upon authoritative
+  adoption of this synchronization (Owner exact-SHA acceptance, merge, post-merge identity verification).
 
 - **RVR-7 — SUBSTANTIVE ARABIC PARITY: CONTRACT **FRAMEWORK** FREEZE (governance/contract-only
   CANDIDATE — NOT authoritative until Owner-accepted at exact SHA, merged, and post-merge verified;
