@@ -16017,3 +16017,114 @@ under-specified D-P6-18 ordering; and an over-claimed contract-freeze event). Th
 preserved as immutable rejected evidence and is **NOT an ancestor** of this candidate.
 **Disposition: `RVR-7 CONTRACT FRAMEWORK — GOVERNANCE CANDIDATE; NOT AUTHORITATIVE UNTIL MERGED AND
 POST-MERGE VERIFIED`.**
+
+---
+
+## RVR-7 CONTRACT FRAMEWORK AUTHORITATIVE (PR #586) + POST-MERGE GOVERNANCE SYNCHRONIZATION
+
+**Append-only gate record.** The RVR-7 contract-framework freeze gate above recorded a conditional,
+non-circular statement: the framework becomes authoritative if and when the exact Owner-accepted
+candidate is merged and post-merge identity-verified. That condition is now satisfied.
+
+**1. Merge identity (verified live from Git at this gate).** Merge
+`b4a0d5fc076292a36385f9228d5a37eedf3a4da1` (**PR #586**); two parents; first parent
+`507a9b7533b63bb85dcae2d3fa955946b676189a` (PR #585 — the consolidated post-RVR-6b-closure
+synchronization); second parent `d95a610b393c61f8b134b3cb747606f944cfb67e` — the exact Owner-accepted
+candidate; merge tree `e0d4cb5b44edb48ac867b45446b30e5163621d54` identical to the candidate tree;
+candidate→merge diff **EMPTY**; post-merge identity verified. **`RVR-7 CONTRACT FRAMEWORK:
+AUTHORITATIVE`.**
+
+**2. Candidate lineage preserved (no rewriting, no ancestry laundering).** The accepted candidate is
+the final bounded textual-truth cleanup sibling. Its predecessors are preserved as immutable
+evidence and **neither is an ancestor**: `d7ce5df8661529637e0c327b7b62498d751bf2dd`
+(`REJECT — BOUNDED REPAIR REQUIRED`) and `3d0992b5917c3bc5b8c3d3303a4ecd9f0e657bde`
+(`ACCEPT WITH NON-BLOCKING OBSERVATIONS`). All three are same-base siblings of `507a9b75…`.
+
+**3. What is now authoritative — and what is emphatically not.**
+`RVR-7 CONTRACT FRAMEWORK: AUTHORITATIVE` · **`RVR-7 IMPLEMENTATION PATH MANIFEST: NOT YET FROZEN`** ·
+**`RVR-7 IMPLEMENTATION AUTHORIZED: NO`** · **`RVR-7 IMPLEMENTATION START AUTHORIZED: NO`** ·
+`RVR-8 AUTHORIZED: NO`. Authority of the framework is **not** implementation readiness. The framework's
+own sequencing governs what must happen first: the **D-P6-18 Owner decision** (still
+`OWNER DECISION REQUIRED`, and it must precede the manifest freeze because it determines whether the
+substantive exhaustion/reframe surfaces belong in the manifest) → a separately Owner-authorized
+bounded diagnostic/path-manifest discovery step → a **Path Manifest Freeze** candidate, independently
+reviewed, Owner-accepted at exact SHA, merged and post-merge verified → and only then a separate
+Implementation START authorization. Implementation START may not be authorized while the path
+manifest is unresolved, and Lean LEVEL / Review DEPTH must be re-derived once the real manifest
+exists.
+
+**4. Deferred Obligations Register at this gate — swept before any edit.** Every OPEN row's return
+trigger was tested against the PR #586 event. **Exactly one trigger fired: W1-N2**, whose registered
+trigger is literally "RVR-7 contract freeze" — an event the now-authoritative framework itself
+defines (§E.0) as authoritative adoption, not Creator candidate creation. Its row moves from
+`TRIGGER FIRED: NO` to **`TRIGGER FIRED / BOUND: YES`** while remaining **OPEN and NOT DISCHARGED**;
+no Arabic adversarial regression test exists and none is claimed. Separately — and this is a
+distinction worth recording rather than blurring — the **RVR-7 row itself did NOT have its trigger
+fired** ("Wave-3 authorization after W2 content stabilizes" has not occurred; the Owner authorized the
+contract lifecycle, not implementation), but its disposition required a truthful **status
+synchronization** because its contract is now authoritative. No row was closed. The two RVR-6b
+Option-A anchors stay OPEN and non-transferred (anchor #1 still needs its PSRR conjunct; anchor #2
+still needs an authorized touch of the registries or `_INTENT_MARKERS`); W1-N3 stays CLOSED (bounded);
+MG-8, OD-PDVG-12, R4-C, RVR-8 and the release-value gates are untouched. Counts: `OPEN 24 → 25` ·
+`CLOSED 9 → 9` · `ROWS FIRED: 1` · `ROWS CLOSED: 0` · `ROWS ADDED: 1` ·
+`UNACCOUNTED / ORPHAN: 0`.
+
+**5. Owner Decision Register — the deferred registrations are made here.** Two rows, both previously
+and deliberately deferred to this first post-acceptance/post-merge synchronization: (a) the **RVR-7
+Contract Framework START authorization** exercise, and (b) the **exact-SHA acceptance** of
+`d95a610b…` with merge identity `b4a0d5fc…`. Nothing beyond them is registered — no Path Manifest
+acceptance, no Implementation START decision, no RVR-8 decision, none of which exist.
+
+**6. Standing deferred product direction — recorded by this synchronization.** Durable repository
+authority attaches only upon authoritative adoption of this synchronization (Owner exact-SHA acceptance,
+merge, post-merge identity verification); until then it is included in the frozen candidate but not yet
+authoritative. The Owner's standing direction
+that InventorAI should eventually help answer **Technical Readiness**, **Manufacturing Readiness** and
+**Market Reality / Commercial Readiness** is recorded as a single new OPEN register row: *Manufacturing
+Readiness + Market Reality / Commercial Readiness — Repository Reconciliation* — one obligation, which
+remains the correct minimum representation (splitting it before reconciliation would create premature and
+possibly duplicate owners). Owner field:
+**`UNRESOLVED — REPOSITORY RECONCILIATION REQUIRED`** — no capability owner is created, and the
+direction is deliberately **not** force-fitted into CAP-12, CAP-13, WS6, Decision Snapshot or Market
+Feasibility. **Return event:** the separately Owner-authorized reconciliation gate may convene only after **BOTH RVR-7
+AND RVR-8 have each reached the terminal completion state required by their own authoritative obligation and
+registered closure evidence** (both, not either — neither alone opens it). Derived from the registered
+closure-evidence fields rather than any invented token: RVR-7 requires "RVR-7 merged; EN/AR
+semantic-equivalence review + W1-N1/N2 inputs discharged", and RVR-8 requires "executed RVR-8 evidence pack
+under its own authorization". **`RVR-7 CONTRACT FRAMEWORK: AUTHORITATIVE` is expressly NOT RVR-7 terminal
+completion** — it is already true today while RVR-7 implementation is unauthorized, its path manifest
+unfrozen and its closure evidence undischarged. No `RVR-7 FORMALLY CLOSED` / `RVR-8 FORMALLY CLOSED` token is
+asserted; the repository defines none. **Latest safe gate: `BEFORE FCORA CONVENES`**; **`RUNTIME IMPLEMENTATION AUTHORIZED: NO`**. Its mandatory inspection set names **CAP-18 —
+Commercial Readiness Snapshot** and the authoritative capability-enrichment register, plus CAP-12, CAP-13 and
+CAP-14 (the last as a declared dependency-overlap of CAP-12/CAP-13, not a readiness owner) — inspection
+coverage only: **no CAP is activated, none is asserted to be the owner, and Commercial Readiness is not
+force-fitted into CAP-18**. The row preserves the product
+identity to protect (**IDEA → REALITY DECISION ENGINE**, never a business-plan generator, startup
+score, investment adviser, manufacturer, marketplace, CAD or success guarantee), records the
+three-layer model as a **hypothesis to be tested at reconciliation rather than a pre-authorized
+architecture**, carries the evidence-first and no-fake-score laws, requires the reconciliation to
+defend against BOTH duplicate ownership and false force-fit, and arms the early-trigger rule for any
+earlier work touching CAP-12, CAP-13, Market Feasibility / Commercial Evidence, Decision Snapshot
+architecture, manufacturing or commercial evidence, or external-evidence architecture. **CAP-12 and
+CAP-13 are NOT activated by this record.**
+
+**7. This synchronization candidate — non-circular.** Governance/documentation only: this roadmap
+(append-only), `ACTIVE_INCREMENT_CONTRACT.md` (rotation), `CURRENT_PROJECT_STATE.md` (pointer,
+entry, and the Master Obligation Index route to the new row), `DEFERRED_OBLIGATIONS_REGISTER.md`
+(W1-N2 transition, RVR-7 status sync, the new reconciliation row, header) and
+`OWNER_DECISION_REGISTER.md` (the two deferred registrations + boundary). The authoritative RVR-7
+contract instrument itself is **not rewritten** (the RVR-6a / RVR-6b precedent for merged
+instruments). `EXECUTABLE / TEST / PIN / PACK / DOMAIN-RULE / CONTENT DELTA: 0`; no historical record
+rewritten; `main` not reconciled. This synchronization becomes authoritative only if and when this
+exact candidate is Owner-accepted at its exact SHA, merged, and post-merge identity-verified — until
+then `OWNER EXACT SYNC-CANDIDATE SHA ACCEPTED: NO`. **Disposition: `POST-RVR-7-CONTRACT-FRAMEWORK
+SYNCHRONIZATION — GOVERNANCE CANDIDATE; NOT AUTHORITATIVE UNTIL MERGED AND POST-MERGE VERIFIED`.**
+
+**8. Boundaries — nothing downstream activated.** `D-P6-18: OWNER DECISION REQUIRED` (untouched);
+`RVR-7 IMPLEMENTATION PATH MANIFEST FROZEN: NO`; `RVR-8 AUTHORIZED: NO`; `CAP-12 ACTIVATED: NO`;
+`CAP-13 ACTIVATED: NO`; Manufacturing / Market Reality / Commercial Readiness implementation:
+**NOT AUTHORIZED**; `gap_relevance` UNCHANGED; `W/M: 2/2` frozen; `FULL ADAPTIVE QUESTIONING /
+MEANING-ADAPTIVE / TIER-2 / WS11: NOT ACTIVATED`; `LANGUAGE-CONDITIONAL ROUTING: FORBIDDEN`;
+`RUNTIME TRANSLATION: FORBIDDEN`; MG-8 OPEN with semantic repair NOT authorized;
+`OD-PDVG-12 EXERCISED: NO`; `FCORA: RECORDED, NOT EXECUTED`; `DEPLOYMENT / PRODUCTION / SERIOUS
+RELEASE / PAID ACTIVATION: NOT AUTHORIZED`.
