@@ -13,51 +13,62 @@
     "MECHANISM_COMPLETENESS": [
       {
         "question_id": "N-MC-1",
-        "text": "Explain in everyday words how you imagine the system would notice the problem and respond."
+        "text": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+        "text_ar": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها."
       },
       {
         "question_id": "N-MC-2",
-        "text": "What are the main parts of your idea, in your own words, and what does each part do?"
+        "text": "What are the main parts of your idea, in your own words, and what does each part do?",
+        "text_ar": "ما الأجزاء الرئيسية في فكرتك، بكلماتك أنت، وماذا يفعل كل جزء منها؟"
       },
       {
         "question_id": "N-MC-3",
-        "text": "Walk through what happens step by step, from the moment the problem starts to the moment someone knows about it."
+        "text": "Walk through what happens step by step, from the moment the problem starts to the moment someone knows about it.",
+        "text_ar": "اشرح ما يحدث خطوة بخطوة، من اللحظة التي تبدأ فيها المشكلة إلى اللحظة التي يعرف فيها أحدهم بها."
       },
       {
         "question_id": "N-MC-4",
-        "text": "Is there any part of how it works that you're unsure about or imagining loosely? Describe it as best you can."
+        "text": "Is there any part of how it works that you're unsure about or imagining loosely? Describe it as best you can.",
+        "text_ar": "هل هناك جزء من طريقة عملها لست متأكدا منه أو تتخيله بشكل فضفاض؟ صِفه بأفضل ما تستطيع."
       }
     ],
     "PHYSICAL_FEASIBILITY": [
       {
         "question_id": "N-PF-1",
-        "text": "What would need to be true for this system to work safely in the real world?"
+        "text": "What would need to be true for this system to work safely in the real world?",
+        "text_ar": "ما الذي يجب أن يكون صحيحا لكي يعمل هذا النظام بأمان في العالم الحقيقي؟"
       },
       {
         "question_id": "N-PF-2",
-        "text": "What do you think would keep the system running reliably over time?"
+        "text": "What do you think would keep the system running reliably over time?",
+        "text_ar": "في رأيك، ما الذي سيبقي النظام يعمل بشكل موثوق مع الوقت؟"
       },
       {
         "question_id": "N-PF-3",
-        "text": "Are there real-world conditions, such as heat, water, time, or wear, that might stop it from working? Which ones worry you most?"
+        "text": "Are there real-world conditions, such as heat, water, time, or wear, that might stop it from working? Which ones worry you most?",
+        "text_ar": "هل هناك ظروف في العالم الحقيقي، مثل الحرارة أو الماء أو مرور الوقت أو التآكل، قد توقفه عن العمل؟ أيها يقلقك أكثر؟"
       },
       {
         "question_id": "N-PF-4",
-        "text": "If an engineer offered to check one thing about whether this can physically work, what would you ask them to check first?"
+        "text": "If an engineer offered to check one thing about whether this can physically work, what would you ask them to check first?",
+        "text_ar": "لو عرض عليك مهندس أن يفحص شيئا واحدا بخصوص ما إذا كان هذا قادرا على العمل من الناحية الفيزيائية، ما الذي ستطلب منه أن يتحقق منه أولا؟"
       }
     ],
     "BOUNDARY_AMBIGUITY": [
       {
         "question_id": "N-BA-1",
-        "text": "Which situations should the system be responsible for handling?"
+        "text": "Which situations should the system be responsible for handling?",
+        "text_ar": "ما المواقف التي ينبغي أن يكون النظام مسؤولا عن التعامل معها؟"
       },
       {
         "question_id": "N-BA-2",
-        "text": "What is your idea responsible for, and what is someone or something else's job?"
+        "text": "What is your idea responsible for, and what is someone or something else's job?",
+        "text_ar": "ما الذي تتحمل فكرتك مسؤوليته، وما الذي يُعد مهمة شخص آخر أو جهة أخرى؟"
       },
       {
         "question_id": "N-BA-3",
-        "text": "Describe a situation where the system should definitely react, and one where it should definitely stay quiet."
+        "text": "Describe a situation where the system should definitely react, and one where it should definitely stay quiet.",
+        "text_ar": "صِف موقفا ينبغي أن يتفاعل فيه النظام بالتأكيد، وموقفا آخر ينبغي أن يبقى فيه صامتا."
       }
     ]
   }

@@ -80,8 +80,36 @@ def load_artifact() -> dict:
         return json.load(f)
 
 
+# RVR-7 (authoritative implementation path manifest freeze, PR #588) — M-5.
+# The English guards below are word-boundary regexes and are structurally blind to
+# Arabic, so the committed Arabic surface would otherwise bypass the very policy
+# the English surface is held to. These are the Arabic equivalents of the SAME two
+# policies, applied to the SAME artifact entries. They add no new policy: each
+# pattern is the Arabic rendering of an already-disallowed English term.
+DISALLOWED_TERM_PATTERNS_AR = {
+    "voltage": "الجهد",
+    "current (electrical)": "التيار",
+    "frequency": "التردد",
+    "circuit architecture": "معمارية الدائرة",
+    "circuit structure": "بنية الدائرة",
+    "component-level selection": "اختيار المكونات",
+    "signal transformation": "تحويل الإشارة",
+    "datasheet": "ورقة البيانات",
+    "calculation": "حساب",
+    "manufacturing tolerance": "تفاوت التصنيع",
+    "electrical constraints": "القيود الكهربائية",
+}
+
+R1_REGRESSION_PATTERNS_AR = {
+    "electronic circuit": "دائرة إلكترونية",
+    "electronic components": "مكونات إلكترونية",
+    "signal or energy transformation": "تحويل الإشارة أو الطاقة",
+    "electrical constraints": "القيود الكهربائية",
+}
+
+
 def all_questions(artifact: dict) -> list[dict]:
-    """Flatten gap groups into ordered [{question_id, text}, ...]."""
+    """Flatten gap groups into ordered [{question_id, text, text_ar?}, ...]."""
     out: list[dict] = []
     for group in EXPECTED_GAP_GROUPS:
         out.extend(artifact.get("gaps", {}).get(group, []))
@@ -232,3 +260,58 @@ def test_runtime_integrated_remains_true_post_phase4():
         "runtime_integrated reverted to false unexpectedly — any "
         "reversal requires its own recorded rollback authorization"
     )
+
+
+# ---------------------------------------------------------------------------
+# Test 10 — RVR-7: the Arabic surface obeys the same content policies
+# ---------------------------------------------------------------------------
+
+def test_arabic_variant_present_for_every_committed_question():
+    """RVR-7 required Arabic completeness for this artifact: every committed id
+    carries a non-empty `text_ar`. A missing variant fails HERE — it can never be
+    absorbed by the runtime's deterministic English fallback."""
+    missing = [
+        q.get("question_id")
+        for q in all_questions(load_artifact())
+        if not (isinstance(q.get("text_ar"), str) and q["text_ar"].strip())
+    ]
+    assert not missing, f"questions with no committed Arabic variant: {missing}"
+
+
+def test_no_disallowed_terms_in_arabic():
+    """M-5: the Arabic surface must not carry disallowed early-gate terminology
+    that the English-only regexes cannot see."""
+    violations = {}
+    for q in all_questions(load_artifact()):
+        arabic = q.get("text_ar") or ""
+        hits = [term for term, needle in DISALLOWED_TERM_PATTERNS_AR.items()
+                if needle in arabic]
+        if hits:
+            violations[q.get("question_id")] = hits
+    assert not violations, f"disallowed early-gate terms in Arabic: {violations}"
+
+
+def test_r1_regression_markers_absent_in_arabic():
+    """M-5: the R1 regression markers must be absent from the Arabic surface too."""
+    violations = {}
+    for q in all_questions(load_artifact()):
+        arabic = q.get("text_ar") or ""
+        hits = [marker for marker, needle in R1_REGRESSION_PATTERNS_AR.items()
+                if needle in arabic]
+        if hits:
+            violations[q.get("question_id")] = hits
+    assert not violations, f"R1 regression markers in Arabic: {violations}"
+
+
+def test_arabic_guard_needles_actually_detect():
+    """The Arabic guards must be capable of firing — a guard that can never match
+    is not a guard. Mirrors the English `test_word_boundary_guard` intent."""
+    assert DISALLOWED_TERM_PATTERNS_AR["voltage"] in "ما هو الجهد المطلوب؟"
+    assert DISALLOWED_TERM_PATTERNS_AR["voltage"] not in (
+        "صِف موقفا ينبغي أن يتفاعل فيه النظام بالتأكيد.")
+    assert R1_REGRESSION_PATTERNS_AR["electronic components"] in (
+        "اذكر مكونات إلكترونية مستخدمة في الدائرة.")
+    # ...and must not fire on the committed mechanical-style wording, which
+    # legitimately speaks of mechanical components.
+    assert R1_REGRESSION_PATTERNS_AR["electronic components"] not in (
+        "ما المكونات الميكانيكية المنفردة؟")

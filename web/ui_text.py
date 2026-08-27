@@ -127,6 +127,128 @@ def localize_message(english, lang):
     return text(key, lang) if key else english
 
 
+# ---------------------------------------------------------------------------
+# RVR-7 — substantive Path-N asks that have NO committed ``question_id``
+# (authoritative implementation path manifest freeze, PR #588).
+#
+# The 21 committed Path-N questions carry their Arabic surface inside their own
+# committed record (`ServedQuestion.text_ar`). The remaining substantive asks of
+# the SAME journey have no record to carry it, so they are keyed here by an
+# EXPLICIT SEMANTIC IDENTITY resolved at the render edge from canonical state.
+#
+# Identity-keyed, never text-keyed: an edit to an English engine constant can
+# therefore never silently detach its Arabic surface the way a text-lookup would.
+# This is a presentation catalogue for identities the engine already owns — it is
+# NOT a second question registry: no identity is minted here, English content and
+# question identity stay in their existing owners, and nothing here is consulted
+# by progression.
+#
+# Scope is exactly the Owner-decided D-RVR7-1 Option A (Journey-Complete) set
+# minus the committed-record questions: the two governed exhaustion/reframe
+# prompts, the intake ask, the maturity-2 closing ask, and the REACHABLE Stage-3
+# generic asks. The Stage-2 generic variants are deliberately ABSENT — they are
+# unreachable in both activated domains and are owned by the future-domain
+# activation obligation, not by RVR-7.
+# ---------------------------------------------------------------------------
+
+RVR7_STALL_REFRAME = "_STALL_REFRAME"
+RVR7_EXHAUSTED_EXIT_PROMPT = "_EXHAUSTED_EXIT_PROMPT"
+RVR7_INTAKE_QUESTION = "INTAKE_QUESTION"
+RVR7_CLOSING_Q = "_CLOSING_Q"
+
+
+def rvr7_generic_identity(gap_type, index):
+    """The explicit semantic identity of a generic (non-artifact) substantive ask.
+
+    Derived from canonical state — the served gap type and the deterministic
+    variant index — never from the displayed text."""
+    return f"GENERIC:{gap_type}:{index}"
+
+
+RVR7_SUBSTANTIVE_AR = {
+    RVR7_STALL_REFRAME: (
+        "لنتناول هذا الجزء بعبارات أبسط. بكلماتك أنت، ما الذي تعرفه بالفعل عن هذا "
+        "الجانب من فكرتك — وما المعلومات التي تظن أنك ستحتاجها، أو من يمكنه مساعدتك "
+        "في إيجادها، لاستكمال الباقي؟ وإن لم تكن متأكدا، يمكنك أيضا استخدام الخيارات "
+        "أدناه لتحديده كغير معروف، أو تأجيله، أو تسجيل افتراض مبدئي، أو طلب مختص أو دليل."
+    ),
+    RVR7_EXHAUSTED_EXIT_PROMPT: (
+        "لقد استُنفدت الأسئلة المعدة لهذا الجانب، وتكرارها لن يدفعه إلى الأمام. "
+        "خياراتك الصادقة الآن: أضف معلومات جديدة فعلا في صندوق الإجابة؛ أو حدده كغير "
+        "معروف أو مؤجل؛ أو سجّل افتراضا مبدئيا؛ أو اطلب مختصا أو دليلا؛ أو — إن تعذر "
+        "حله الآن — اقبله صراحة كمخاطرة معروفة حتى تتمكن الرحلة من المضي بينما تبقى "
+        "المخاطرة مسجلة بوضوح."
+    ),
+    RVR7_INTAKE_QUESTION: (
+        "صِف اختراعك بمزيد من التفصيل — ما المشكلة المحددة التي يحلها، وكيف يحلها؟"
+    ),
+    RVR7_CLOSING_Q: (
+        "بدأت آليتك تتضح. الآن اذكر بوضوح: ما الذي لا يقوم به اختراعك أو لا يغطيه؟ "
+        "اذكر حدا واحدا على الأقل."
+    ),
+    # Stage-3 generic substantive asks — reachable on the success path once
+    # maturity reaches 2 and the Stage-3 gap priority opens these gaps.
+    "GENERIC:PROBLEM_MECHANISM_FIT:0": (
+        "دون أن تصف كيف تعمل آليتك، صِف المشكلة التي تحاول حلها. ما الذي يحدث للشخص "
+        "أو النظام الذي يعاني من هذه المشكلة، ولماذا تهمه؟"
+    ),
+    "GENERIC:PROBLEM_MECHANISM_FIT:1": (
+        "لماذا تحل آليتك هذه المشكلة بدلا من نهج آخر؟ ما الذي في طريقة عمل آليتك "
+        "يجعلها الأنسب لهذه المشكلة تحديدا؟"
+    ),
+    "GENERIC:PROBLEM_MECHANISM_FIT:2": (
+        "هل هناك مواقف أو ظروف لن تحل فيها آليتك هذه المشكلة، أو ستحلها بشكل أقل "
+        "جودة؟ ما هي تلك الظروف؟"
+    ),
+    "GENERIC:ASSUMPTION_INVENTORY:0": (
+        "ما الأمور التي تعدّها مسلَّما بها بخصوص آليتك ولم تختبرها أو تتحقق منها بعد؟ "
+        "قد تكون أمورا تتوقع أنها صحيحة، أو مواد تفترض أنها متوفرة، أو ظروفا تفترض "
+        "أنها ستستمر."
+    ),
+    "GENERIC:ASSUMPTION_INVENTORY:1": (
+        "بالنسبة لكل افتراض ذكرته، هل ستظل آليتك تعمل لو تبيّن أن ذلك الافتراض خاطئ؟ "
+        "أي الافتراضات أساسية — أي تفشل الآلية بدونها — وأيها يتطلب منك فقط تعديل نهجك؟"
+    ),
+    "GENERIC:ASSUMPTION_INVENTORY:2": (
+        "الآن بعد أن فكرت في افتراضاتك — هل هناك شيء تدرك أنك كنت تفترضه دون أن تعدّه "
+        "افتراضا قبل هذه المحادثة؟ شيء بدا بديهيا لكنه في الواقع غير متحقق منه؟"
+    ),
+    "GENERIC:EXPERTISE_GAP_AWARENESS:0": (
+        "ما مجالات المعرفة التقنية التي سيحتاجها شخص ما لبناء آليتك أو تنفيذها فعليا؟ "
+        "اذكر مجالات الخبرة المطلوبة — لا ما تعرفه أنت، بل ما يتطلبه التنفيذ نفسه."
+    ),
+    "GENERIC:EXPERTISE_GAP_AWARENESS:1": (
+        "من بين مجالات الخبرة التي حددتها للتو — أيها لديك معرفة عملية كافية بها "
+        "للمضي قدما، وأيها يمثل فجوات حقيقية تحتاج فيها إلى التعلم أكثر أو الاستعانة "
+        "بشخص آخر؟"
+    ),
+    "GENERIC:EXPERTISE_GAP_AWARENESS:2": (
+        "بالنسبة لفجوات الخبرة التي حددتها — ماذا سيحدث لتنفيذك لو لم تُعالج تلك "
+        "الفجوات قبل أن تبدأ البناء؟ ما المشكلات المحددة التي ستواجهها؟"
+    ),
+}
+
+
+def rvr7_substantive_text(identity, english, lang):
+    """Forward identity -> substantive display text for the selected language.
+
+    ``identity`` is the semantic identity already resolved from canonical state;
+    ``english`` is the canonical English text the engine decided on. Returns the
+    committed Arabic variant when Arabic is selected and one is committed for that
+    identity, otherwise the unchanged ``english``.
+
+    Forward-only by construction: the identity is an input, never derived from
+    ``english``. There is no text matching and no translation — a missing Arabic
+    variant yields deterministic English, and it is the RVR-7 evidence gate that
+    fails on absence, never the runtime."""
+    if normalize(lang) != "ar" or not identity:
+        return english
+    variant = RVR7_SUBSTANTIVE_AR.get(identity)
+    if isinstance(variant, str) and variant.strip():
+        return variant
+    return english
+
+
 def localize_deep(value, lang):
     """Recursively localise KNOWN English UI-chrome strings inside a value.
 

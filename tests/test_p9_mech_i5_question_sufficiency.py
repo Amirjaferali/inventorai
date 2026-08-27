@@ -153,7 +153,17 @@ _FROZEN_ENGINE_SHA256 = {
     # D-GMPR-D3-PN reconciliation #2 (disclosed; DGMPR_D3_PATH_N_DOMAIN_NEUTRAL_
     # SERVICE_CONTRACT.md §5): the seam hash is re-frozen at the remediated
     # domain-neutral seam. domain_rules/progression_loop hashes are UNCHANGED.
-    "engine/path_n_questions.py": "a1a682d38293defd4b351e6238aeb870b4f765eaf3fc0f105c4932f75286ce7f",
+    # RVR-7 reconciliation (disclosed; authoritative implementation path manifest
+    # freeze, PR #588): re-frozen after the AUTHORIZED additive seam change — the
+    # optional `ServedQuestion.text_ar` variant field, its single atomic read, and
+    # the forward identity->record accessor `get_served_question_by_id`. The seam
+    # takes NO language parameter and every existing caller still consumes the
+    # English `text`, so the question-inventory pins, signal inventory and this
+    # file's own test inventory are untouched, and the domain_rules /
+    # progression_loop / pack hashes below remain UNCHANGED by construction.
+    #   pre-RVR-7 path_n_questions.py =
+    #       a1a682d38293defd4b351e6238aeb870b4f765eaf3fc0f105c4932f75286ce7f
+    "engine/path_n_questions.py": "56280afd936903f3b7018d9dbd97d8e194279f835a2f7315131bce3dba506907",
 }
 # L2SC-01 reconciliation (disclosed; docs/governance/L2SC01_SUBSTANCE_SIGNAL_
 # PLURAL_ALIAS_INCREMENT_CONTRACT.md §10): mechanical and electronics_electrical

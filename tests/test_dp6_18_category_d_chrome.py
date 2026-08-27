@@ -128,8 +128,14 @@ def test_english_selection_is_parity_preserving():
 # --------------------------------------------------------------------------
 def test_question_flow_guidance_follows_ui_language(client):
     """On a normal question page the clarification/responsibility/co-authoring/
-    gap-guidance CHROME switches to Arabic, while the canonical QUESTION stays
-    English (lang=en)."""
+    gap-guidance CHROME switches to Arabic.
+
+    The CHROME rule this test owns is unchanged by RVR-7 and is asserted exactly
+    as before. Only the trailing question-element expectation is realigned: under
+    the Owner's `D-P6-18 DISPLAY-RULE SUPERSESSION: BOUNDED` (PR #588) the
+    substantive question follows the UI language too, so the element declares
+    Arabic/RTL when Arabic is what is rendered (M-13) instead of a hardcoded
+    `lang="en"`."""
     sid = _start(client)
     en = client.get("/session/" + sid).get_data(as_text=True)
     assert "What this question is asking" in en           # clarification label EN
@@ -137,8 +143,14 @@ def test_question_flow_guidance_follows_ui_language(client):
     ar = client.get("/session/" + sid).get_data(as_text=True)
     assert "ما الذي يسأل عنه هذا السؤال" in ar             # clarification label AR
     assert "What this question is asking" not in ar
-    # the actual canonical question is still English, marked lang="en"
-    assert re.search(r'<p class="question"[^>]*lang="en"', ar)
+    # RVR-7 / M-13: the question element declares the language of the text it
+    # actually renders — Arabic/RTL here, never a hardcoded English declaration
+    # wrapped around Arabic script.
+    match = re.search(r'<p class="question"([^>]*)>(.*?)</p>', ar, re.S)
+    assert match, "question element not rendered"
+    attrs, text = match.group(1), match.group(2)
+    assert 'lang="ar"' in attrs and 'dir="rtl"' in attrs
+    assert re.search("[؀-ۿ]", text), "Arabic session served no Arabic question"
 
 
 def test_criticality_summary_and_choice_chrome_follow_ui_language():

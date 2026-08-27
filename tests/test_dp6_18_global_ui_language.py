@@ -56,6 +56,11 @@ CORRECTED_DATA_02 = "Signed-in accounts can keep and reopen saved projects."
 # The seeded electronics idea opens on the Path-N N-MC-1 question; its English
 # text is canonical and must stay English in BOTH UI languages (hard boundary).
 EN_INTAKE_QUESTION_FRAGMENT = "how you imagine the system would notice the problem"
+# RVR-7 (authoritative implementation path manifest freeze, PR #588): the
+# committed Arabic variant of the SAME question record (N-MC-1). Same
+# `question_id`, same artifact entry — not a translation performed at runtime
+# and not a second registry.
+AR_INTAKE_QUESTION_FRAGMENT = "كيف تتخيل أن النظام سيلاحظ المشكلة"
 
 IDEA = ("An electronic circuit uses a sensor and a switch to cut the power when "
         "the current gets too high.")
@@ -171,15 +176,34 @@ def test_p6_1_label_follows_ui_language(client):
     assert EN_ELECTRONICS_LABEL not in ar_body
 
 
-# --- HARD BOUNDARY: canonical question text stays English in BOTH languages ----
-def test_canonical_question_stays_english_in_both_languages(client):
+# --- BOUNDED SUPERSESSION: the substantive question follows the UI language ----
+# Authority-at-its-time: D-P6-18 alone kept the canonical question English in BOTH
+# languages, and this test asserted exactly that. The Owner has now SUPERSEDED that
+# rule IN PART — `D-P6-18 DISPLAY-RULE SUPERSESSION: BOUNDED`, scoped to the RVR-7
+# Path-N substantive journey, with `D-RVR7-1: OPTION A — JOURNEY-COMPLETE` — so an
+# Arabic session receives the substantive ask in Arabic, served from COMMITTED
+# content resolved at the render edge. What D-P6-18 still owns is unchanged and is
+# still asserted here: the English session is byte-identical, and the question is
+# never translated at runtime — the Arabic surface is a committed variant of the
+# SAME `question_id`.
+def test_canonical_question_follows_ui_language_under_rvr7(client):
     sid = _start(client)
     en_body = client.get("/session/" + sid).get_data(as_text=True)
+    # UNCHANGED half: an English session still receives the English question.
     assert EN_INTAKE_QUESTION_FRAGMENT in en_body
+    assert AR_INTAKE_QUESTION_FRAGMENT not in en_body
     _set_lang(client, "ar")
     ar_body = client.get("/session/" + sid).get_data(as_text=True)
-    # The system question itself is NOT translated by D-P6-18.
-    assert EN_INTAKE_QUESTION_FRAGMENT in ar_body
+    # SUPERSEDED half: the Arabic session receives the committed Arabic variant,
+    # and the English text of that same ask is no longer served to it.
+    assert AR_INTAKE_QUESTION_FRAGMENT in ar_body
+    assert EN_INTAKE_QUESTION_FRAGMENT not in ar_body
+    # The identity is the SAME committed record — no second registry, no Arabic id.
+    from engine.path_n_questions import get_served_question
+    served = get_served_question("MECHANISM_COMPLETENESS", 0,
+                                 domain="electronics_electrical")
+    assert EN_INTAKE_QUESTION_FRAGMENT in served.text
+    assert AR_INTAKE_QUESTION_FRAGMENT in served.text_ar
 
 
 # --- OUTPUT boundary: substantive generated output not falsely Arabic ---------
@@ -273,14 +297,32 @@ def test_active_page_titles_follow_ui_language(client):
     assert EN_SESSION_TITLE not in ar_session
 
 
-def test_canonical_question_marked_lang_en_under_arabic_ui(client):
+def test_question_element_declares_the_language_actually_rendered(client):
+    """RVR-7 / M-13. Authority-at-its-time: under D-P6-18 alone the question
+    paragraph was hardcoded `lang="en" dir="ltr"` because the text was always
+    English, and this test asserted that. Under the bounded supersession the
+    element must declare the language and direction of the text ACTUALLY
+    rendered — Arabic text inside an element declared English/LTR is a real bidi
+    and assistive-technology defect, not a cosmetic one.
+
+    The English half of the rule is asserted too: an English session, and any
+    deterministic English fallback, still render `lang="en" dir="ltr"`."""
     sid = _start(client)
+
+    en_body = client.get("/session/" + sid).get_data(as_text=True)
+    en_attrs = re.search(r'<p class="question"([^>]*)>', en_body).group(1)
+    assert 'lang="en"' in en_attrs and 'dir="ltr"' in en_attrs
+    assert EN_INTAKE_QUESTION_FRAGMENT in en_body
+
     _set_lang(client, "ar")
-    body = client.get("/session/" + sid).get_data(as_text=True)
-    # The canonical English question paragraph carries explicit lang="en" (LTR)
-    # inside the Arabic RTL shell; the question TEXT itself is unchanged.
-    assert re.search(r'<p class="question"[^>]*lang="en"', body)
-    assert EN_INTAKE_QUESTION_FRAGMENT in body
+    ar_body = client.get("/session/" + sid).get_data(as_text=True)
+    ar_match = re.search(r'<p class="question"([^>]*)>(.*?)</p>', ar_body, re.S)
+    ar_attrs, ar_text = ar_match.group(1), ar_match.group(2)
+    assert 'lang="ar"' in ar_attrs and 'dir="rtl"' in ar_attrs
+    assert AR_INTAKE_QUESTION_FRAGMENT in ar_text
+    # The declaration must never disagree with the text: Arabic declared only
+    # when Arabic script is what was rendered.
+    assert bool(re.search("[؀-ۿ]", ar_text)) == ('lang="ar"' in ar_attrs)
 
 
 # --- UI language is NOT inferred from input -----------------------------------

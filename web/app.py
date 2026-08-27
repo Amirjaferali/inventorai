@@ -41,6 +41,16 @@ from engine.progression_loop import (
     compute_serving_decision,
     TRIGGER_CRITICAL_UNRESOLVED, TRIGGER_LAPSED_ACCEPTANCE,
     TRIGGER_MULTIPLE_ALTERNATIVES, TRIGGER_COMPLETED_INTENT_SKIP,
+    # RVR-7 (authoritative path manifest freeze, PR #588): read-only inputs to the
+    # render-edge identity resolver below. All four are canonical, language-free
+    # engine constants; importing them adds NO language signal to progression and
+    # `engine/progression_loop.py` itself stays byte-unchanged (Q2 shape B).
+    # The two governed prompt constants are imported ONLY so the render edge can
+    # verify FORWARD that a resolved special identity matches the English the
+    # engine actually served.
+    STALL_THRESHOLD, QUESTIONS,
+    _STALL_REFRAME as RVR7_EN_STALL_REFRAME,
+    _EXHAUSTED_EXIT_PROMPT as RVR7_EN_EXHAUSTED_EXIT,
 )
 # W2-B / RVR-6a: the derived evidence-weighted register (never persisted;
 # recomputed from the active answered ledger at render time only).
@@ -2414,6 +2424,176 @@ def _risk_lapse_display(notice):
             "resolved": _headings(notice.get("resolved", []))}
 
 
+# ---------------------------------------------------------------------------
+# RVR-7 — render-edge / identity-based language resolution
+# (authoritative implementation path manifest freeze, PR #588; architecture §5.A-§5.F)
+#
+# The engine decides WHICH substantive ask is displayed, entirely in canonical
+# English and with no language signal anywhere in progression. Only afterwards do
+# these helpers name that decision's SEMANTIC IDENTITY from canonical state and
+# resolve the committed variant for the selected display language:
+#
+#     canonical engine decision (EN)
+#       -> final semantic identity   (from domain/gap/index/trigger — never text)
+#       -> EN/AR variant resolution  (forward: identity -> committed content)
+#       -> user-visible rendering
+#
+# There is NO text -> question_id reverse lookup (ServedQuestion D4.4) and no
+# runtime translation. `_rvr7_verify_english` re-derives the identity's English
+# text and compares it to what the engine actually decided, failing CLOSED to
+# English on any divergence, so a resolver drift can never silently ship Arabic
+# text for the wrong ask.
+# ---------------------------------------------------------------------------
+
+def _rvr7_identity(domain, gap_type, iterations_open, path,
+                   override_source=None, w2c=None):
+    """The semantic identity of the substantive ask the engine just decided on.
+
+    Returns ``(identity, served)``: ``identity`` is the explicit identity string
+    (``"PATHN:<question_id>"``, a governed special-prompt key, or a
+    ``"GENERIC:<gap>:<index>"`` positional identity), and ``served`` is the
+    committed ``ServedQuestion`` when the ask is an artifact record (it carries
+    that record's Arabic sibling). ``(None, None)`` when no identity applies.
+
+    Pure and derived ONLY from canonical, language-free inputs the render edge
+    already holds. It reproduces the engine's own decision forward; it never
+    inspects displayed text."""
+    from engine.path_n_questions import get_served_question, get_path_n_question
+
+    # 1. A W2-B question-slot override owns the slot; the winning TRIGGER is
+    #    itself the identity (that is why the source, not the text, is consulted).
+    if override_source == TRIGGER_LAPSED_ACCEPTANCE:
+        served = get_served_question(gap_type, 0, domain=domain)
+        if served is not None:
+            return "PATHN:" + served.question_id, served
+        variants = QUESTIONS.get(gap_type)
+        if variants:
+            return ui_text.rvr7_generic_identity(gap_type, 0), None
+        return None, None
+    if override_source == TRIGGER_COMPLETED_INTENT_SKIP:
+        return ui_text.RVR7_EXHAUSTED_EXIT_PROMPT, None
+    if override_source == TRIGGER_CRITICAL_UNRESOLVED:
+        return (ui_text.RVR7_STALL_REFRAME
+                if iterations_open == STALL_THRESHOLD
+                else ui_text.RVR7_EXHAUSTED_EXIT_PROMPT), None
+
+    # 2. W2-C intent-aware serving already returns its own committed identity
+    #    (IntentServing.question_id) — it is preserved here instead of being
+    #    reduced to `.text`, and the record is fetched FORWARD by that id.
+    if w2c is not None:
+        from engine.path_n_questions import get_served_question_by_id
+        served = get_served_question_by_id(gap_type, w2c.question_id, domain=domain)
+        if served is not None:
+            return "PATHN:" + served.question_id, served
+        return None, None
+
+    # 3. Otherwise reproduce get_display_question's own decision from the same
+    #    canonical inputs: the Path-N exhaustion clamp first, then the artifact
+    #    record, then the generic positional fallthrough.
+    if path == "N" and iterations_open > 0:
+        current = get_path_n_question(gap_type, iterations_open, domain=domain)
+        if current is not None and current == get_path_n_question(
+                gap_type, iterations_open - 1, domain=domain):
+            if iterations_open >= 2 and current == get_path_n_question(
+                    gap_type, iterations_open - 2, domain=domain):
+                return ui_text.RVR7_EXHAUSTED_EXIT_PROMPT, None
+            return ui_text.RVR7_STALL_REFRAME, None
+    served = get_served_question(gap_type, iterations_open, domain=domain)
+    if served is not None:
+        return "PATHN:" + served.question_id, served
+    variants = QUESTIONS.get(gap_type)
+    if variants:
+        return ui_text.rvr7_generic_identity(
+            gap_type, min(iterations_open, len(variants) - 1)), None
+    return None, None
+
+
+def _rvr7_verify_english(identity, served, english):
+    """True when the identity's committed ENGLISH text equals what the engine
+    decided. Forward verification (identity -> text), never the reverse."""
+    if identity is None or not isinstance(english, str):
+        return False
+    if served is not None:
+        return served.text == english
+    if identity == ui_text.RVR7_STALL_REFRAME:
+        return english == RVR7_EN_STALL_REFRAME
+    if identity == ui_text.RVR7_EXHAUSTED_EXIT_PROMPT:
+        return english == RVR7_EN_EXHAUSTED_EXIT
+    if identity.startswith("GENERIC:"):
+        _, gap, index = identity.split(":", 2)
+        variants = QUESTIONS.get(gap)
+        try:
+            return bool(variants) and variants[int(index)] == english
+        except (ValueError, IndexError):
+            return False
+    # Identities with no engine-side English constant to compare (intake /
+    # closing ask) are supplied by their own call sites, which pass the exact
+    # constant they just served.
+    return True
+
+
+def _rvr7_display(identity, served, english, lang):
+    """The substantive text to RENDER for the selected language.
+
+    Arabic only when the identity verifies against the engine's English decision
+    AND a committed Arabic variant exists for that identity. Any absence, any
+    mismatch, and any failure resolve to the unchanged English — deterministic,
+    never a silent claim of parity (the RVR-7 evidence gate is what fails when a
+    required Arabic variant is missing, not the runtime)."""
+    try:
+        if ui_text.normalize(lang) != "ar" or identity is None:
+            return english
+        if not _rvr7_verify_english(identity, served, english):
+            return english
+        if served is not None:
+            return served.text_ar or english
+        return ui_text.rvr7_substantive_text(identity, english, lang)
+    except Exception:
+        return english
+
+
+def _rvr7_reconstructed_display(recon_state, english, maturity_level, lang):
+    """Display text + (lang, dir) for the cold-load reconstruction banner.
+
+    The reconstructed canonical state names the identity FORWARD — served gap and
+    variant index for an open gap, or the governed closing ask once maturity has
+    reached 2 with no gap left. `next_question` itself stays canonical English
+    reconstruction evidence; only what is RENDERED is resolved here. Fails closed
+    to English on any failure."""
+    try:
+        if not isinstance(english, str) or recon_state is None:
+            return english, "en", "ltr"
+        gap_type = select_next_gap(recon_state)
+        if gap_type:
+            gap = recon_state.get_gap(gap_type)
+            identity, served = _rvr7_identity(
+                getattr(recon_state, "domain", None), gap_type,
+                gap.iterations_open if gap else 0,
+                getattr(recon_state, "path", None))
+        elif maturity_level == 2:
+            identity, served = ui_text.RVR7_CLOSING_Q, None
+        else:
+            identity, served = None, None
+        text = _rvr7_display(identity, served, english, lang)
+        return (text,) + _rvr7_question_direction(text, lang)
+    except Exception:
+        return english, "en", "ltr"
+
+
+def _rvr7_question_direction(text, lang):
+    """The writing direction the QUESTION ELEMENT must declare (M-13).
+
+    RTL only when Arabic is selected AND the text actually rendered is the Arabic
+    variant; an English deterministic fallback keeps LTR, so the element never
+    declares a language or direction the text does not have."""
+    if ui_text.normalize(lang) != "ar" or not isinstance(text, str):
+        return "en", "ltr"
+    for ch in text:
+        if "\u0600" <= ch <= "\u06ff":
+            return "ar", "rtl"
+    return "en", "ltr"
+
+
 @app.route("/session/<sid>", methods=["GET"])
 def show_session(sid):
     if not _project_authorized(sid):
@@ -2443,12 +2623,37 @@ def show_session(sid):
         try:
             _recon = reconstruct_review_state(_get_store(), sid)
             if _recon.level == 1 and _recon.reconstructed:
+                # RVR-7 (PR #588): the banner's display identity is named FORWARD
+                # from the reconstructed canonical state — served gap, variant
+                # index, domain — so the Arabic banner never reverse-looks-up an
+                # id from the reconstructed English text. `reconstruct_readonly_state`
+                # is the EXISTING Level-1 accessor (`reconstruct_review_state` is
+                # `_reconstruct(...)[0]`): no schema change, no new subsystem, and
+                # `RECONSTRUCTION_VERSION` is untouched.
+                # Deliberately a SECOND call rather than replacing the one above:
+                # the committed fail-closed contract of this block is bound to the
+                # `reconstruct_review_state` seam, and that behaviour is preserved
+                # exactly. It runs only after a Level-1 reconstruction already
+                # succeeded, and it fails closed to English on its own.
+                try:
+                    _recon_state = reconstruct_readonly_state(
+                        _get_store(), sid).state
+                except Exception:
+                    _recon_state = None
+                _recon_display = _rvr7_reconstructed_display(
+                    _recon_state, _recon.next_question,
+                    _recon.maturity_level, _current_ui_lang())
                 reconstructed_review = {
                     "domain": getattr(state, "domain_signal", None),
                     "maturity_level": _recon.maturity_level,
                     "current_stage": _recon.current_stage,
                     "open_gaps": list(_recon.open_gaps),
+                    # Canonical English reconstruction evidence — UNCHANGED.
                     "next_question": _recon.next_question,
+                    # Display-only resolution of the SAME ask (RVR-7).
+                    "next_question_display": _recon_display[0],
+                    "next_question_lang": _recon_display[1],
+                    "next_question_dir": _recon_display[2],
                     "answers_count": len(_recon.accepted_answer_evidence),
                     # P10-PC3: writable-resume eligibility for the explicit
                     # establishment button (display precheck only; the POST
@@ -2467,6 +2672,9 @@ def show_session(sid):
 
     gap_type = select_next_gap(state)
     question = None
+    # RVR-7: identity of a substantive ask served OUTSIDE the gap slot (the
+    # intake ask). Bound in the branch that serves it; never inferred from text.
+    _rvr7_forced_identity = None
     if gap_type:
         gap = state.get_gap(gap_type)
         iterations_open = gap.iterations_open if gap else 0
@@ -2488,6 +2696,10 @@ def show_session(sid):
         and "not yet established" in (last_result.get("reason") or "")
     ):
         question = INTAKE_QUESTION
+        # RVR-7: the identity is bound HERE, in the same branch that decides to
+        # serve the intake ask, so it is derived from canonical state and never
+        # by matching the displayed text back to an identity.
+        _rvr7_forced_identity = ui_text.RVR7_INTAKE_QUESTION
     # W2-B / RVR-6a (Contract Amendment 1 §4-§6): derived register + the
     # Option-C serving decision, computed at THIS serving surface only.
     # The canonical served gap, run_iteration, replay, and every writer are
@@ -2502,6 +2714,11 @@ def show_session(sid):
     w2b_cues = []
     w2b_risk_note = False
     w2b_primary_action = None
+    # RVR-7 render-edge carriers: the W2-B question-slot winner (a trigger name,
+    # never text) and the W2-C committed serving record. Both stay None unless
+    # their owning decision actually fired.
+    _rvr7_override_source = None
+    _rvr7_w2c = None
     if gap_type and question is not None:
         try:
             _w2b_register = compute_register(state)
@@ -2510,6 +2727,7 @@ def show_session(sid):
                 register_elevated=(_w2b_register.level == REGISTER_ELEVATED))
             if _w2b.question_override is not None:
                 question = _w2b.question_override
+                _rvr7_override_source = _w2b.question_override_source
             w2b_primary_action = _w2b.primary_action
             # Truthful cue policy (§16): the question-slot WINNER explains
             # the actual replacement; the capability-4 lapse-transparency
@@ -2547,6 +2765,11 @@ def show_session(sid):
                         _w2c = w2c_served_question(state, gap_type)
                         if _w2c is not None:
                             question = _w2c.text
+                            # RVR-7: keep the committed IDENTITY alongside the
+                            # text so the render edge resolves the language
+                            # variant of THIS record forward, instead of losing
+                            # the identity to a text-only value.
+                            _rvr7_w2c = _w2c
                 except Exception:
                     pass  # W2-C fails closed alone; W2-B chrome stands
         except Exception:
@@ -2563,8 +2786,29 @@ def show_session(sid):
     current_gap_label = GAP_LABELS.get(gap_type, GAP_LABELS["__default__"]) if gap_type else None
     # Transcript capture: store question before render so POST can record it.
     # No engine effect. Evidence preservation only.
+    # RVR-7: what is stored here stays the CANONICAL ENGLISH decision — storage,
+    # transcript and canonical state remain language-independent; only the render
+    # below resolves the display language.
     if entry is not None and question is not None:
         entry["last_question"] = question
+
+    # RVR-7 render edge (PR #588): the engine's English decision is now final.
+    # Name its semantic identity from canonical state, then resolve the committed
+    # display variant. English sessions are byte-identical: `_rvr7_display`
+    # returns `question` unchanged whenever Arabic is not selected.
+    question_lang, question_dir = "en", "ltr"
+    if question is not None:
+        if gap_type:
+            _rvr7_id, _rvr7_served = _rvr7_identity(
+                getattr(state, "domain", None), gap_type, iterations_open,
+                state.path, override_source=_rvr7_override_source,
+                w2c=_rvr7_w2c)
+        else:
+            _rvr7_id, _rvr7_served = _rvr7_forced_identity, None
+        question = _rvr7_display(_rvr7_id, _rvr7_served, question,
+                                 _current_ui_lang())
+        question_lang, question_dir = _rvr7_question_direction(
+            question, _current_ui_lang())
     # Increment 3 (R-5): compute the one prioritized next development step from the
     # ALREADY-LOADED in-memory IdeaState via the shared pure derivation, and pass
     # it to the presentation-only session callout. Read-only: no route/method
@@ -2626,6 +2870,10 @@ def show_session(sid):
             _criticality_step_context(entry, state, sid), _current_ui_lang()),
         next_development_step=next_development_step,
         question=question,
+        # RVR-7 / M-13: the substantive question element must declare the language
+        # and direction of the text ACTUALLY rendered, never a hardcoded en/ltr.
+        question_lang=question_lang,
+        question_dir=question_dir,
         open_gaps=open_gaps,
         gap_type=gap_type,
         last_result=last_result,
