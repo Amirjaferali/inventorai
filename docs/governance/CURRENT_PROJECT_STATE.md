@@ -16,6 +16,25 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
   (`git rev-parse origin/feature/atomic-json-session-persistence`). Do **not** trust a
   prose-pinned SHA.
   - **Current authoritative branch tip (last independently verified):**
+    `22c26881daf128691fd64a6f38c96380ff309b57` (Merge **PR #589** — RVR-7 IMPLEMENTATION
+    (bounded Arabic semantic repair, N-PF-3 / N-PF-4); two-parent merge of
+    `3891d9bdfddaa9a1e90d2811e9e3783d4f4395b5` (base, PR #588 — the authoritative RVR-7
+    Implementation Path Manifest Freeze merge) + `bf519dae4d256ac1528505eaa57ea7c562d20d55`
+    (the exact Owner-accepted implementation candidate), tree
+    `9bd0d3f4e4493fae96e89d87bd9e50f4f00ac179`, EMPTY candidate→merge diff, post-merge identity
+    verified) — always re-resolve the live tip from Git per the rule above. **RVR-7
+    implementation is authoritative repository content; RVR-7 Formal Closure is NOT complete
+    (`RVR-7 FORMALLY CLOSED: NO`).**
+  - **Prior recorded tip (historical):**
+    `3891d9bdfddaa9a1e90d2811e9e3783d4f4395b5` (Merge **PR #588** — RVR-7 IMPLEMENTATION PATH
+    MANIFEST FREEZE; two-parent merge of `dad450bfb86cb96a29527a733a213897950c57ec` (base,
+    PR #587) + `bbe828a25d7359e039c33ddb8b5d3a20e3006b20` (the exact Owner-accepted freeze
+    candidate), tree `100b5c8086675362d833c2b6375fcaf560f273ac`, EMPTY candidate→merge diff,
+    post-merge identity verified). This merge is the event that made
+    `RVR_7_IMPLEMENTATION_PATH_MANIFEST_FREEZE_CANDIDATE.md` authoritative on its own §14 terms:
+    **`PATH MANIFEST AUTHORITATIVE/FROZEN: YES`** (superseding that instrument's pre-merge
+    `NO` fence, which was authority-at-that-time).
+  - **Prior recorded tip (historical):**
     `dad450bfb86cb96a29527a733a213897950c57ec` (Merge **PR #587** — POST-RVR-7-CONTRACT-FRAMEWORK
     GOVERNANCE SYNCHRONIZATION; two-parent merge of
     `b4a0d5fc076292a36385f9228d5a37eedf3a4da1` (base, PR #586 — the authoritative RVR-7 Contract
@@ -2581,6 +2600,45 @@ AUTHORIZED / NOT STARTED.***
   none authorized, started, or implied. `OWNER_DECISION_REGISTER.md` UNCHANGED (Phase 8 formal-closure
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
+
+- **POST-RVR-7-IMPLEMENTATION GOVERNANCE SYNCHRONIZATION (governance-only CANDIDATE — NOT
+  authoritative until Owner-accepted at exact SHA, merged and post-merge verified), base
+  `22c26881daf128691fd64a6f38c96380ff309b57`** — verified live from Git at this gate as the
+  authoritative tip of `feature/atomic-json-session-persistence` (**0 commits after it**).
+  **Purpose: remove governance staleness after two merged, identity-verified events that no
+  committed authority surface had recorded.** **PR #588** (`3891d9bd…`; first parent
+  `dad450bf…`; second parent `bbe828a2…`; tree `100b5c80…`; EMPTY candidate→merge diff) made the
+  **RVR-7 Implementation Path Manifest AUTHORITATIVE / FROZEN**. **PR #589** (`22c26881…`; first
+  parent `3891d9bd…`; second parent `bf519dae…`; tree `9bd0d3f4…`; EMPTY candidate→merge diff)
+  made the **RVR-7 IMPLEMENTATION** (bounded Arabic semantic repair for N-PF-3 and N-PF-4)
+  **authoritative repository content** — 14 changed paths, matching the frozen 12-path manifest
+  plus the two separately Owner-authorized D-P6-18 regression test paths.
+  **Current truth: `RVR-7 IMPLEMENTATION: AUTHORITATIVE` · `RVR-7 FORMALLY CLOSED: NO`.**
+  Authority of the implementation is **NOT** closure: **`HUMAN BILINGUAL REVIEW SATISFIED: NO`**
+  (base contract §L.2.1 is binding, is genuinely unsatisfied, and is not substitutable by
+  automated checks or by the adopted AI reviewer evidence); **`W1-N1 DISCHARGED: NO`**;
+  **`W1-N2 DISCHARGED: NO`** — reclassified to **`TECHNICAL EVIDENCE PRODUCED / DISCHARGE NOT YET
+  ADJUDICATED`**, because the merged corpus exists on the real served route
+  (`tests/test_rvr7_web_arabic_serving.py` §4) while two limbs of the registered discharge
+  mechanism remain outstanding (EN↔AR differential assertions **over the adversarial corpus**;
+  independent reproduction recorded in an evidence pack). **§K.2 conditional acceptance-evidence
+  obligation (i)–(v): DID NOT FIRE** — adjudicated at this gate against exact artifact
+  definitions, correcting a contrary reading: §K.2's "two committed per-domain registries" are
+  `..._question_intent_registry.json` (the files carrying `primary_intent` / `answer_objective` /
+  `completion_condition`), which the frozen manifest §7 **explicitly excludes** and which, with
+  `engine/intent_serving.py`, are **byte-identical** across `dad450bf → 3891d9bd → 22c26881`
+  (identical blob SHAs). The manifest's own §8 item 32 invokes §K.2 only "**if** the markers
+  change"; they did not. What remains open is the distinct manifest §8 **item 31 OBSERVATION**
+  (`_INTENT_MARKERS` re-validation against the new Arabic question wording) plus the standing DOR
+  Option-A anchor row, which stays **OPEN, owned by the W2-C content/marker surfaces, and is NOT
+  transferred to RVR-7**. **No RVR-7 implementation evidence pack and no RVR-7 formal closure
+  record exist** — both are prerequisites of the next gate, not of this one.
+  **Next eligible gate — `RVR-7 FORMAL CLOSURE` (eligibility only; NOT authorized here and NOT
+  started here); it requires its own separate Owner authorization.** Governance/documentation
+  only: `EXECUTABLE / TEST / PIN / PACK / DOMAIN-RULE / CONTENT / RUNTIME DELTA: 0`; no historical
+  record rewritten; no frozen instrument rewritten; `main` not reconciled. **Disposition:
+  `POST-RVR-7-IMPLEMENTATION GOVERNANCE SYNCHRONIZATION — GOVERNANCE CANDIDATE; NOT AUTHORITATIVE
+  UNTIL MERGED AND POST-MERGE VERIFIED`.**
 
 - **RVR-7 IMPLEMENTATION PATH MANIFEST FREEZE (governance-only CANDIDATE — NOT authoritative
   until Owner-accepted at exact SHA, merged and post-merge verified), base

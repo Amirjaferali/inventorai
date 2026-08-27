@@ -41,9 +41,82 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — RVR-7 IMPLEMENTATION PATH MANIFEST FREEZE; governance-only candidate.
+**Status (current — POST-RVR-7-IMPLEMENTATION GOVERNANCE SYNCHRONIZATION; governance-only
+candidate. `RVR-7 IMPLEMENTATION PATH MANIFEST: AUTHORITATIVE / FROZEN` (PR #588);
+`RVR-7 IMPLEMENTATION: AUTHORITATIVE REPOSITORY CONTENT` (PR #589); `RVR-7 FORMALLY CLOSED: NO`;
+`RVR-7 FORMAL CLOSURE AUTHORIZED: NO`; `HUMAN BILINGUAL REVIEW SATISFIED: NO`;
+`W1-N1 DISCHARGED: NO`; `W1-N2 DISCHARGED: NO`; `RVR-8 AUTHORIZED: NO`).** Base:
+**`22c26881daf128691fd64a6f38c96380ff309b57`** — verified live from Git at this gate as the
+**authoritative tip** of `feature/atomic-json-session-persistence` (**0 commits after it**;
+**PR #589** — the RVR-7 implementation merge; first parent `3891d9bdfddaa9a1e90d2811e9e3783d4f4395b5`
+(PR #588 — the authoritative RVR-7 Implementation Path Manifest Freeze merge); second parent
+`bf519dae4d256ac1528505eaa57ea7c562d20d55` — the exact Owner-accepted implementation candidate;
+merge tree `9bd0d3f4e4493fae96e89d87bd9e50f4f00ac179`; EMPTY candidate→merge diff; post-merge
+identity verified).
+
+**Rotation semantics — binding.** This rotation is a **RECORDING of already-authoritative Git
+truth**. It does **NOT** authorize execution, does **NOT** re-authorize the merged RVR-7
+implementation, does **NOT** open or carry an implementation contract, and does **NOT** confer any
+implementation, closure, deployment or downstream permission. **NO IMPLEMENTATION CONTRACT IS
+ACTIVE.** The only lifecycle authorized at this gate is the bounded governance-only
+synchronization described below; every subsequent gate requires its own separate explicit Owner
+authorization.
+
+```
+Objective:                remove governance staleness by recording, on the authority surfaces that
+                          §11 of the roadmap makes mandatory, two already-merged and
+                          identity-verified events that no committed surface had recorded: PR #588
+                          (RVR-7 Implementation Path Manifest AUTHORITATIVE / FROZEN) and PR #589
+                          (RVR-7 IMPLEMENTATION authoritative repository content). Record that
+                          RVR-7 Formal Closure is NOT complete; that human bilingual review is
+                          genuinely unsatisfied; that W1-N1 / W1-N2 are NOT discharged; that the
+                          §K.2 conditional acceptance-evidence obligation DID NOT fire (adjudicated
+                          from exact artifact definitions); that manifest §8 item 31 and the DOR
+                          Option-A anchor remain OPEN and owned outside RVR-7; and that the next
+                          eligible gate is RVR-7 FORMAL CLOSURE as ELIGIBILITY ONLY.
+                          NO implementation. NO closure. NO adjudication of closure outcome.
+Owner authorization:      explicit — bounded POST-RVR-7-IMPLEMENTATION GOVERNANCE SYNCHRONIZATION
+                          LIFECYCLE ONLY (governance candidate). Independent Review, Owner
+                          exact-SHA acceptance, publication, PR and merge each remain separate
+                          decisions. RVR-7 Formal Closure and RVR-8 are NOT authorized.
+Lean risk LEVEL:          LEVEL 2 (authorized governance increment; re-derived, not inherited —
+                          no Lean §3 LEVEL-1 trigger is reached: no product identity, architecture,
+                          persistence, schema, security, authorization, billing, domain activation,
+                          release/deployment or main-reconciliation surface is touched; this gate
+                          freezes no architecture and supersedes no accepted contract clause —
+                          it records merges that already occurred)
+Lean review DEPTH:        DEPTH 2
+Allowed paths:            docs/governance/ACTIVE_EXECUTION_ROADMAP.md (append-only);
+                          docs/governance/ACTIVE_INCREMENT_CONTRACT.md (rotation);
+                          docs/governance/CURRENT_PROJECT_STATE.md (pointer + entry);
+                          docs/governance/DEFERRED_OBLIGATIONS_REGISTER.md (status-only row edits
+                          + header maintenance-gate line);
+                          docs/governance/OWNER_DECISION_REGISTER.md (§E registration)
+Prohibited paths:         every runtime, engine, web, test, content, pack, pin and domain-rule
+                          path without exception; engine/intent_serving.py and _INTENT_MARKERS;
+                          both ..._question_intent_registry.json; both ..._path_n_questions.json;
+                          all frozen instruments and all historical records (no rewriting)
+Mandatory deltas:         EXECUTABLE 0 · TEST 0 · CONTENT 0 · RUNTIME 0 · PIN 0 · PACK 0 ·
+                          DOMAIN-RULE 0
+Prohibited outcomes:      reopening RVR-7 architecture, the semantic repair, N-PF-3 / N-PF-4, Q2,
+                          the Path Manifest, D-P6-18, the mechanical pack or generated-output
+                          scope; discharging W1-N1 / W1-N2 without evidence; representing human
+                          bilingual review as satisfied; starting RVR-7 Formal Closure or RVR-8;
+                          activating CAP-12 / 13 / 14 / 18; touching deployment; unrelated cleanup;
+                          creating or implying downstream authorization
+Independent-review scope: SHA / PR / merge-identity claims; every stale-status replacement; the
+                          §K.2 trigger adjudication; the W1-N2 classification; obligation-orphan
+                          check; that the rotation authorizes no execution; that the roadmap names
+                          the next gate as eligibility only, never authorization
+Merge authority:          Owner, separately (not by the execution agent).
+```
+
+**Superseded status block (authority-at-its-time; preserved, not rewritten):**
+**Status (RVR-7 IMPLEMENTATION PATH MANIFEST FREEZE; governance-only candidate.
 `PATH MANIFEST AUTHORITATIVE/FROZEN: NO`; `RVR-7 IMPLEMENTATION AUTHORIZED: NO`;
-`RVR-7 IMPLEMENTATION START AUTHORIZED: NO`).** Base:
+`RVR-7 IMPLEMENTATION START AUTHORIZED: NO`) — these three fences were authority-at-that-time and
+are SUPERSEDED by PR #588 and PR #589; the manifest is now AUTHORITATIVE / FROZEN and the
+implementation is authoritative repository content.** Base:
 **`dad450bfb86cb96a29527a733a213897950c57ec`** — verified from Git at this gate as the **live
 authoritative tip** of `feature/atomic-json-session-persistence` (**0 commits after it**;
 **PR #587** — the post-RVR-7-contract-framework governance synchronization; first parent
