@@ -1,6 +1,18 @@
 # Risk-Based Execution and Review Model
 
-**Status:** ACTIVE — binding process model. Governs *how* work is executed and reviewed, not *what* is authorized.
+**Status:** SUPERSEDED — HISTORICAL ONLY (status adjudicated by the governed adoption of
+the candidate that introduces this banner). This document is no longer a binding process
+model and no rule below governs present execution. **Successor owners:**
+risk classification, review depth, review economy, evidence reuse, and full-suite
+trigger policy — `docs/governance/LEAN_GOVERNANCE_AND_AGENT_CONTINUITY_PROTOCOL.md`
+(§3/§4/§5/§5A/§5B); general candidate-lifecycle mechanics (candidate/freeze/bundle/
+acceptance/publication/merge/post-merge, including the separate-merge-authorization
+rule formerly in §6 below) —
+`docs/governance/ACCELERATED_HIGH_ASSURANCE_EXECUTION_PROTOCOL.md`.
+The Draft-PR-default review mechanism (§3 below) and the bundle-by-exception rule
+(§4 below) contradict current doctrine (SHA-preserving bundle, isolated fetch-back,
+Owner-controlled publication) and must not be followed. The text below is preserved
+verbatim as historical record only.
 **Non-authorizing:** this document changes process efficiency only. It authorizes no product, code, data, or downstream work.
 
 ## 1. Non-negotiable quality floor

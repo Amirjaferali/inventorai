@@ -1,6 +1,17 @@
  # GOVERNED_PRODUCT_EXECUTION_PROTOCOL.md
 
-**Status:** ACTIVE — owner-approved, committed, and pushed on the authoritative branch
+**Status:** SUPERSEDED — HISTORICAL ONLY (status adjudicated by the governed adoption of
+the candidate that introduces this banner). No rule below governs present execution.
+**Successor owners:** finding classification —
+`docs/governance/ACCELERATED_HIGH_ASSURANCE_EXECUTION_PROTOCOL.md` §13; the Product Value
+review obligation — that protocol §22 (product-value semantics remain owned by the
+product anchors); owner-interruption, escalation, and governance-recording economy —
+`docs/governance/LEAN_GOVERNANCE_AND_AGENT_CONTINUITY_PROTOCOL.md` (§7/§10/§11).
+**WARNING — historical state snapshot:** the constraint-status table in Section B below
+(and every status value in this document) is a historical snapshot from this document's
+drafting era and MUST NOT be used as current truth; current state is owned exclusively by
+`docs/governance/CURRENT_PROJECT_STATE.md` and the canonical status surfaces.
+The text below is preserved verbatim as historical record only.
 **Scope:** Execution-efficiency triage layer only
 **Does NOT supersede:** Any active anchor, scope freeze, blocked state, or existing governance document
 **Authoritative repository:** Amirjaferali/inventorai
