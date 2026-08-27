@@ -109,7 +109,7 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
   {# P6-1: truthful Tier-1 public label via the single central resolver (no raw     #}
   {# pack id). Owner decision (RESUME-01): render ONE language variant per the      #}
   {# surface's authoritative language — never EN and AR together. This session      #}
-  {# shell is <html lang="en"> (LTR) and no per-user language-selection signal       #}
+  {# the shell follows the selected UI language via base.html (D-P6-18)              #}
   {# exists on this surface yet, so the English variant renders here; the AR variant #}
   {# stays canonical in the resolver for a future language-aware surface            #}
   {# (non-blocking follow-up). No extra RTL region is introduced.                   #}
@@ -173,7 +173,9 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
   {% endif %}
   {% if reconstructed_review.next_question %}
   <div style="font-size:13px;margin-top:8px"><strong>{{ t('UI_B_SESSION_044') }}</strong>
-    <p class="question" style="margin:6px 0 0 0">{{ reconstructed_review.next_question }}</p>
+    <p class="question" style="margin:6px 0 0 0"
+     lang="{{ reconstructed_review.next_question_lang }}"
+     dir="{{ reconstructed_review.next_question_dir }}">{{ reconstructed_review.next_question_display }}</p>
   </div>
   {% endif %}
   <div style="font-size:13px;margin-top:8px">{{ t('UI_B_SESSION_045') }} <span id="recon-answer-count">{{ reconstructed_review.answers_count }}</span></div>
@@ -255,10 +257,16 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
 <div class="current-question-context" style="font-size:12px;color:#666;margin-bottom:8px">{{ t('UI_B_SESSION_024') }} <strong style="color:#2c3e50">{{ current_gap_label.heading }}</strong></div>
 {% endif %}
 {% endif %}
-{# D-P6-18: the canonical technical/system question stays English in BOTH UI
-   languages; mark it lang="en" / dir="ltr" so it renders correctly (LTR) inside
-   the Arabic RTL shell. The question TEXT is unchanged (not translated). #}
-<p class="question" lang="en" dir="ltr">{{ question }}</p>
+{# RVR-7 (PR #588) supersedes the earlier D-P6-18 wording here IN PART, per the
+   Owner's BOUNDED display-rule supersession scoped to the Path-N substantive
+   journey: an Arabic session now receives the substantive ask in Arabic, served
+   from committed content resolved at the render edge (never translated at
+   runtime). The element therefore declares the language and direction of the
+   text ACTUALLY rendered — Arabic/RTL for a committed Arabic variant, and
+   English/LTR whenever English is what is served, including the deterministic
+   English fallback. Non-question chrome continues to follow the UI language
+   under the unchanged part of D-P6-18. #}
+<p class="question" lang="{{ question_lang }}" dir="{{ question_dir }}">{{ question }}</p>
 {% if question %}
 <p class="answer-hint" style="font-size:12px;color:#888;margin:-6px 0 14px 0">{{ t('UI_B_SESSION_025') }}</p>
 {% endif %}
@@ -349,7 +357,9 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
 {% if question and current_uncertainty_guidance %}
 {# Arabic / RTL Supportive Response (contract PR #148): lang/dir are scoped to    #}
 {# THIS uncertainty panel only, from the display-only guidance dict. The page     #}
-{# shell stays <html lang="en"> LTR; only this supportive panel flips to Arabic   #}
+{# the shell follows the selected UI language (base.html renders                  #}
+{# <html lang="{{ ui_lang }}"> with dir="rtl" in Arabic); this panel carries its  #}
+{# own lang/dir because its content is resolved independently.                    #}
 {# RTL when an Arabic-script uncertainty cue is detected. No other surface,        #}
 {# precedence guard, action, or behavior changes.                                 #}
 <div class="uncertainty-guidance" lang="{{ current_uncertainty_guidance.lang }}" dir="{{ current_uncertainty_guidance.dir }}" style="margin-bottom:14px;padding:10px 14px;border-radius:4px;border:1px solid #cfe6d6;background:#f2faf5;font-size:13px">

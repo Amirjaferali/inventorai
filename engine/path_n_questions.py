@@ -18,8 +18,15 @@ Source  : docs/governance/path_n_content_config/<domain>_path_n_questions.json �
           mechanical artifact is the D-GMPR-D3-PN verbatim projection of the
           I5-proven pack questions.
 
+RVR-7 language boundary (authoritative path manifest freeze, PR #588): a record now
+carries BOTH committed surfaces, but ``get_path_n_question`` and every engine caller
+keep consuming the English ``text`` alone. Language selection happens at the render
+edge from an already-resolved semantic identity — never here, never in progression,
+and never by translating or reverse-looking-up text.
+
 Prohibited behaviors:
 - No mutation of any artifact or its metadata.
+- No runtime/machine translation, and no language parameter on this seam.
 - No fallback to Path T content or another domain's artifact on partial data —
   fail loudly, per artifact, without poisoning another domain's cache.
 - No AI calls.
@@ -83,11 +90,21 @@ class ServedQuestion:
     ``design_gap_id`` parent key), so identity, text, and design-gap always
     describe one physical record. ``question_id`` is NEVER reconstructed, inferred,
     derived, parsed, hashed, normalized, translated, fuzzy-matched, or
-    reverse-looked-up from ``text`` (D4.4)."""
+    reverse-looked-up from ``text`` (D4.4).
+
+    RVR-7 (authoritative path manifest freeze, PR #588): ``text_ar`` is the
+    ADDITIVE committed Arabic variant of the SAME record — same ``question_id``,
+    same ``design_gap_id``, read atomically from the SAME entry in the SAME read.
+    It is display content only: ``text`` remains the canonical English surface
+    that every engine caller consumes, so no language signal reaches progression.
+    ``None`` when the record commits no Arabic variant; the render edge then falls
+    back to ``text`` deterministically — it is the RVR-7 evidence gate, not the
+    runtime, that fails when a required Arabic variant is absent."""
 
     question_id: str
     text: str
     design_gap_id: str
+    text_ar: "str | None" = None
 
 
 def get_served_question(gap_type: str, iterations_open: int,
@@ -134,7 +151,43 @@ def get_served_question(gap_type: str, iterations_open: int,
             f"Path N artifact entry for {gap_type}[{index}] has no usable "
             "'question_id' — failing loudly, no fallback (b3a5fba §5)"
         )
-    return ServedQuestion(question_id=question_id, text=text, design_gap_id=gap_type)
+    # RVR-7: the committed Arabic variant of the SAME entry, read in the SAME
+    # single read as identity/text/design-gap. Absent, non-string or blank ->
+    # None (English stays the deterministic fallback). Never fabricated, never
+    # derived from ``text``, never translated at runtime.
+    text_ar = entry.get("text_ar")
+    if not isinstance(text_ar, str) or not text_ar.strip():
+        text_ar = None
+    return ServedQuestion(question_id=question_id, text=text,
+                          design_gap_id=gap_type, text_ar=text_ar)
+
+
+def get_served_question_by_id(gap_type: str, question_id: str,
+                              domain: "str | None" = None) -> "ServedQuestion | None":
+    """FORWARD identity -> record lookup: the committed ServedQuestion of this gap
+    whose ``question_id`` equals the one supplied, or None.
+
+    RVR-7 render-edge support (PR #588). The direction is identity -> content and
+    never the reverse: ``question_id`` is an INPUT here, supplied by a caller that
+    already holds it (e.g. the W2-C serving decision), so nothing is inferred,
+    parsed, translated, fuzzy-matched or reverse-looked-up from ``text`` (D4.4).
+    Walks the gap's committed variants in artifact order through the same
+    ``get_served_question`` seam — no second reader, no second truth source, no
+    new caching. Returns None for an unmapped gap/domain or an unknown id."""
+    if not isinstance(question_id, str) or not question_id.strip():
+        return None
+    index = 0
+    previous_id = None
+    while True:
+        served = get_served_question(gap_type, index, domain=domain)
+        if served is None:
+            return None
+        if served.question_id == question_id:
+            return served
+        if served.question_id == previous_id:
+            return None          # clamp reached — the id is not in this gap
+        previous_id = served.question_id
+        index += 1
 
 
 def get_path_n_question(gap_type: str, iterations_open: int,

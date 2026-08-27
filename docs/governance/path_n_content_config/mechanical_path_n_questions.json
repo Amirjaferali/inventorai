@@ -10,47 +10,57 @@
     "MECHANISM_COMPLETENESS": [
       {
         "question_id": "mechanical:MECHANISM_COMPLETENESS:Q1",
-        "text": "Describe the physical steps your mechanism takes to achieve its function."
+        "text": "Describe the physical steps your mechanism takes to achieve its function.",
+        "text_ar": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها."
       },
       {
         "question_id": "mechanical:MECHANISM_COMPLETENESS:Q2",
-        "text": "What moves, connects, or transfers force?"
+        "text": "What moves, connects, or transfers force?",
+        "text_ar": "ما الذي يتحرك أو يتصل أو ينقل القوة؟"
       },
       {
         "question_id": "mechanical:MECHANISM_COMPLETENESS:Q3",
-        "text": "What are the individual mechanical components and how does each one contribute to the overall motion or function?"
+        "text": "What are the individual mechanical components and how does each one contribute to the overall motion or function?",
+        "text_ar": "ما المكونات الميكانيكية المنفردة، وكيف يسهم كل مكون في الحركة الكلية أو في الوظيفة؟"
       },
       {
         "question_id": "mechanical:MECHANISM_COMPLETENESS:Q4",
-        "text": "If someone tried to build your mechanism tomorrow with no further explanation, what physical detail would be missing?"
+        "text": "If someone tried to build your mechanism tomorrow with no further explanation, what physical detail would be missing?",
+        "text_ar": "لو حاول أحدهم بناء آليتك غدا دون أي شرح إضافي، ما التفصيل المادي الذي سيكون مفقودا؟"
       }
     ],
     "PHYSICAL_FEASIBILITY": [
       {
         "question_id": "mechanical:PHYSICAL_FEASIBILITY:Q1",
-        "text": "What physical principle does your mechanism rely on? (e.g. leverage, spring tension, gear ratio, friction)"
+        "text": "What physical principle does your mechanism rely on? (e.g. leverage, spring tension, gear ratio, friction)",
+        "text_ar": "على أي مبدأ فيزيائي تعتمد آليتك؟ (مثل الرافعة، أو شد النابض، أو نسبة التروس، أو الاحتكاك)"
       },
       {
         "question_id": "mechanical:PHYSICAL_FEASIBILITY:Q2",
-        "text": "What are the material or force constraints your mechanism must operate within?"
+        "text": "What are the material or force constraints your mechanism must operate within?",
+        "text_ar": "ما قيود المواد أو قيود القوة التي يجب أن تعمل آليتك ضمنها؟"
       }
     ],
     "BOUNDARY_AMBIGUITY": [
       {
         "question_id": "mechanical:BOUNDARY_AMBIGUITY:Q1",
-        "text": "What does your mechanism specifically NOT do or NOT cover?"
+        "text": "What does your mechanism specifically NOT do or NOT cover?",
+        "text_ar": "ما الذي لا تقوم به آليتك تحديدا أو لا تغطيه؟"
       },
       {
         "question_id": "mechanical:BOUNDARY_AMBIGUITY:Q2",
-        "text": "State at least one clear mechanical boundary."
+        "text": "State at least one clear mechanical boundary.",
+        "text_ar": "اذكر حدا ميكانيكيا واضحا واحدا على الأقل."
       },
       {
         "question_id": "mechanical:BOUNDARY_AMBIGUITY:Q3",
-        "text": "Name one existing mechanical approach similar to yours."
+        "text": "Name one existing mechanical approach similar to yours.",
+        "text_ar": "اذكر نهجا ميكانيكيا قائما واحدا مشابها لنهجك."
       },
       {
         "question_id": "mechanical:BOUNDARY_AMBIGUITY:Q4",
-        "text": "What makes yours different in a concrete, physical way?"
+        "text": "What makes yours different in a concrete, physical way?",
+        "text_ar": "ما الذي يجعل نهجك مختلفا بشكل مادي ملموس؟"
       }
     ]
   }
