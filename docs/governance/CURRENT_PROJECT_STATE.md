@@ -2546,6 +2546,82 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
+- **RVR-7 — SUBSTANTIVE ARABIC PARITY: CONTRACT **FRAMEWORK** FREEZE (governance/contract-only
+  CANDIDATE — NOT authoritative until Owner-accepted at exact SHA, merged, and post-merge verified;
+  a fresh same-base sibling replacing Independent-Review-rejected `d7ce5df8…`, which is preserved as
+  rejected evidence and is NOT an ancestor),
+  base `507a9b7533b63bb85dcae2d3fa955946b676189a`** — verified from Git at this gate as the **live
+  authoritative tip** (**0 commits after**; **PR #585** — the consolidated post-RVR-6b-closure
+  governance synchronization; first parent `814e97b5…` (PR #584 — RVR-6b formal closure); second
+  parent `5f3b7cb6…` — the exact Owner-accepted sync candidate; merge tree `7f4c45af…` identical;
+  EMPTY candidate→merge diff; post-merge verified). **OWNER PRODUCT DECISION:
+  `ARABIC SUBSTANTIVE POSITIONING: OWNER DECIDED YES`** — Arabic in InventorAI is a **Substantive
+  Supported Experience**, not merely UI localization. Exact consequence, bounded: the register's
+  RVR-7 row was conditional on precisely that positioning, so **`RVR-7 SERIOUS-RELEASE BLOCKING
+  STATUS: ACTIVE`** — its conditional FRB becomes an **unconditional future serious-release
+  blocker** and its latest safe gate firms to "before serious release". It does **not** become a
+  current execution blocker and authorizes no implementation. **RVR-7 identity (re-derived, not
+  inherited): substantive Arabic parity** — NOT relevance/precision repair, NOT an RVR-2
+  continuation, NOT adaptive questioning, NOT runtime translation, NOT RVR-8 (register §3 row;
+  ODR OD-R4; Wave-2 contract §O, which states the gap is "substantive Arabic parity, not shell RTL
+  activation"). **Contract FRAMEWORK frozen at this gate**
+  (`docs/governance/RVR_7_SUBSTANTIVE_ARABIC_PARITY_CONTRACT_CANDIDATE.md`) — framework only:
+  product scope, fences, mandatory inputs, evidence requirements, acceptance criteria, stop
+  conditions and open diagnostic questions. **`RVR-7 IMPLEMENTATION PATH MANIFEST: NOT YET FROZEN`**
+  — it can be frozen only through a distinct, separately Owner-authorized, separately reviewed and
+  separately Owner-accepted **Path Manifest Freeze gate**, which is never the same decision as
+  Implementation START; **Implementation START may NOT be authorized while the manifest is
+  unresolved**, and Lean LEVEL / Review DEPTH must be **re-derived once the actual manifest exists**.
+  Objective = same-`question_id` Arabic variants through the existing committed content gate,
+  canonical state language-independent, EN/AR semantic equivalence proven by a **human reviewer with
+  demonstrated bilingual EN/AR competence** (machine translation may assist drafting, never as the
+  equivalence authority). The **"RVR-7 contract freeze" event is now DEFINED** as authoritative
+  adoption (Owner-accepted candidate merged + post-merge verified), NOT Creator candidate creation;
+  therefore **`W1-N2 TRIGGER: NOT YET AUTHORITATIVELY FIRED`** with its conditional future firing
+  bound — W1-N2 stays **OPEN and NOT DISCHARGED**; W1-N1
+  bound as a verification input on the RVR-7 row's own closure-evidence field (no duplicate row);
+  **W1-N3 stays `CLOSED — evidence verified (bounded authoritative scope)`, not reopened**, and the
+  broader `gap_relevance`/RVR-2 precision residual is explicitly **outside** RVR-7's deliverable
+  scope with a STOP condition if a `gap_relevance` change proves necessary. **Design discovery
+  (read-only):** question text is never persisted (`next_question` is derived at reconstruction), so
+  an additive bilingual variant field on the existing committed records served by the existing gate
+  reaches no persistence or reconstruction schema — **NO ESCALATION REQUIRED** on current evidence;
+  a **complete four-sentinel language-routing model** is frozen into the contract, not the
+  single clamp the rejected sibling named: **S1** Path-N exhaustion clamp; **S2**
+  `_generic_clamped_repeat` (inert for Path-N today, live if the generic surface becomes
+  language-aware); **S3** LAPSED_ACCEPTANCE's cross-accessor `primary != baseline` (would fire only
+  in Arabic under accessor asymmetry); **S4** the `web/app.py` W2-C serving gate, whose two opposite
+  failure modes are both fenced — Arabic silently **bypassing** W2-C serving, or the English served
+  variant **overwriting** the Arabic question. Index-isomorphism is retained but the contract states
+  **`INDEX-ISOMORPHISM ALONE IS NOT SUFFICIENT`**. A second parity gap is recorded, not assumed
+  (`_STALL_REFRAME` / `_EXHAUSTED_EXIT_PROMPT` are English constants absent from the Arabic catalog;
+  localizing them touches digest-pinned `engine/progression_loop.py`, whose true re-freeze cost is
+  **four** modules — three digest pins plus the
+  `test_exactly_three_p9_files_pin_the_current_digest` meta-assertion). The in-memory
+  `last_result`/transcript serving surface is recorded as non-durable but parity-testable. A bounded
+  read-only/diagnostic discovery sub-step is defined but **NOT authorized**; no allowlist was
+  guessed. The **OD-W2-D-P6-18 display-rule supersession** that Wave-2 §O routes to this gate is
+  reconstructed with candidate outcomes and a recommendation (bounded supersession scoped to the
+  Path-N journey) but preserved as **`OWNER DECISION REQUIRED`** with an explicit Owner Decision Gate
+  reserved — contract-framework authorization is not authorization of the supersession, and
+  **`D-P6-18 OWNER DECISION MUST PRECEDE THE PATH MANIFEST FREEZE`** (its outcome decides Q2, i.e.
+  whether the exhaustion/reframe surfaces belong in the manifest); it may remain unresolved while
+  this framework candidate is accepted, but not when the manifest is frozen.
+  Boundaries: `RVR-7 CONTRACT FRAMEWORK OWNER-ACCEPTED: NO`;
+  **`RVR-7 IMPLEMENTATION PATH MANIFEST FROZEN: NO`**; **`RVR-7 IMPLEMENTATION AUTHORIZED: NO`**;
+  **`RVR-7 IMPLEMENTATION START AUTHORIZED: NO`** (separate explicit Owner instruction required after
+  contract acceptance — the W2-A/W2-B/W2-C precedent); `RVR-8 AUTHORIZED: NO`; `W/M: 2/2` frozen
+  (reference and consume only); `FULL ADAPTIVE QUESTIONING / MEANING-ADAPTIVE / TIER-2 / WS11:
+  NOT ACTIVATED`; `LANGUAGE-CONDITIONAL ROUTING: FORBIDDEN`; `RUNTIME TRANSLATION: FORBIDDEN`;
+  MG-8 OPEN with semantic repair NOT authorized; `OD-PDVG-12 EXERCISED: NO`; both RVR-6b Option-A
+  anchors remain **OPEN, unclosed and non-transferred** (anchor #1 needs its PSRR conjunct; anchor #2
+  becomes a conditional in-contract obligation only if a frozen manifest touches the registries or
+  `_INTENT_MARKERS`); `DEPLOYMENT / PRODUCTION / SERIOUS RELEASE / PAID ACTIVATION / BILLING / NEW
+  DOMAIN: NOT AUTHORIZED`. Governance/contract only; `EXECUTABLE / TEST / PIN / PACK / DOMAIN-RULE /
+  CONTENT DELTA: 0`; no Arabic content added; no historical record rewritten. **Disposition:
+  `RVR-7 CONTRACT FRAMEWORK — GOVERNANCE CANDIDATE; NOT AUTHORITATIVE UNTIL MERGED AND POST-MERGE
+  VERIFIED`.**
+
 - **MANDATORY CONSOLIDATED POST-RVR-6b-CLOSURE GOVERNANCE SYNCHRONIZATION (governance-only
   synchronization CANDIDATE — NOT authoritative until Owner-accepted at exact SHA, merged, and
   post-merge verified), base `814e97b5d5b7ba39fce01d35fd72bb008af03046`** — verified from Git at
