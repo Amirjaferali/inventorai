@@ -16,6 +16,16 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
   (`git rev-parse origin/feature/atomic-json-session-persistence`). Do **not** trust a
   prose-pinned SHA.
   - **Current authoritative branch tip (last independently verified):**
+    `814e97b5d5b7ba39fce01d35fd72bb008af03046` (Merge PR #584 — RVR-6b FORMAL CLOSURE;
+    two-parent merge of `9f872a70c5fc296cf1b397450badf17c74b37641` (base, PR #583 — the
+    authoritative AHAEP SOP adoption merge) +
+    `a75f4c274c5d03b212b6fa3823e20f87572454a8` (the exact Owner-accepted closure candidate —
+    the authorized base-forward re-materialization of `e9296dbc…`, which is preserved as
+    stale-base evidence and is NOT an ancestor; `e76cb97e…` preserved as rejected evidence),
+    tree `1ad7b90a6ec0b3f59c6f1f77e70dd946a399b52c` identical to the candidate tree, empty
+    candidate→merge diff, post-merge identity verified) — always re-resolve the live tip from
+    Git per the rule above.
+  - **Prior recorded tip (historical):**
     `9f872a70c5fc296cf1b397450badf17c74b37641` (Merge PR #583 — ACCELERATED HIGH-ASSURANCE
     EXECUTION PROTOCOL (AHAEP) ADOPTION; two-parent merge of
     `51ce5df3f8cf33c595fd626fbfb2aa7eaa40e3f8` (base, PR #582 — the authoritative
@@ -23,8 +33,8 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
     the exact Owner-accepted sync candidate) +
     `9e19654221e0bb74fc33dda930629dd1661383aa` (the exact Owner-accepted SOP candidate), tree
     `db2b5c431f5a907772f7d939c3472a7f07e97c3b` identical to the candidate tree, empty
-    candidate→merge diff, post-merge verified) — always re-resolve the live tip from Git per
-    the rule above.
+    candidate→merge diff, post-merge verified); superseded as the live tip by PR #584
+    (`814e97b5…`).
   - **Prior recorded tip (historical):**
     `b749c8873533ca6c48ebcf9be0c4023aa10cdd09` (Merge PR #581 — W2-C/RVR-6b IMPLEMENTATION;
     two-parent merge of `6b4629d75b58690eb0a40a754e747ba79f265447` (base, PR #580 — the
@@ -2536,8 +2546,76 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
+- **MANDATORY CONSOLIDATED POST-RVR-6b-CLOSURE GOVERNANCE SYNCHRONIZATION (governance-only
+  synchronization CANDIDATE — NOT authoritative until Owner-accepted at exact SHA, merged, and
+  post-merge verified), base `814e97b5d5b7ba39fce01d35fd72bb008af03046`** — verified from Git at
+  this gate as the **live authoritative tip** (**0 commits after**; **PR #584** — the RVR-6b
+  formal-closure merge; first parent `9f872a70…` (PR #583 — AHAEP adoption); second parent
+  `a75f4c27…` — the exact Owner-accepted closure candidate; merge tree `1ad7b90a…` identical;
+  EMPTY candidate→merge diff; post-merge identity verified). **Scope — two discharges in one
+  gate:** (1) the complete outstanding **PR #583 residual** synchronization (its dedicated
+  append-only roadmap gate record; the SOP exact-SHA acceptance registration; this
+  governance-authority state; and its AHAEP §20 decision recorded with exact chronology —
+  reconstructed at this gate, **not** claimed as contemporaneous); and (2) the **RVR-6b
+  post-closure synchronization** (closure status on the current-state owners; the Owner exact
+  closure-SHA acceptance; the post-PR-#582 closure-lifecycle START authorization the closure
+  record deferred to exactly this gate; the PR #584 merge identity; the register's RVR-6b row
+  CLOSED per its own conditional wording). The outstanding PR #582 sync-acceptance lineage row
+  is registered here too (the closure gate had applied the closure-gate convention of leaving
+  the decision register unchanged). **AHAEP §20 decisions recorded:** `POST-MERGE GOVERNANCE
+  SYNC REQUIRED (PR #583): YES` and `POST-MERGE GOVERNANCE SYNC REQUIRED (PR #584): YES`.
+  **Deferred Obligations Register sweep (read-only, before any edit; all OPEN rows tested
+  against the PR #583 merge, the PR #584 merge, the closure completion, and this delta):
+  `FIRED = 1` (the RVR-6b/W2-C row, whose registered trigger is exactly Owner exact-SHA
+  acceptance + merge + post-merge verification of the closure candidate) · `CLOSED THIS SYNC = 1`
+  · `REMAINING OPEN = 24` · `UNACCOUNTED / ORPHAN = 0`.** The two Option-A durable anchors
+  (registry CWD/path binding; registry prose ↔ `_INTENT_MARKERS`) remain **OPEN** — their
+  triggers (loader/accessor touch + PSRR; either-artifact touch + RVR-7) did NOT fire, and
+  closing RVR-6b never closes them; W1-N3's broader precision residual stays RVR-2/RVR-7-owned;
+  MG-8, OD-PDVG-12, R4-C, the W/M freeze and the adaptive-questioning fences are untouched.
+  **`RVR-7 NEXT ELIGIBLE GATE — REQUIRES SEPARATE OWNER AUTHORIZATION`; `RVR-7 AUTHORIZED: NO`**
+  (no RVR-7 contract exists or is created here). The frozen `RVR_6B_FORMAL_CLOSURE_RECORD.md` is
+  deliberately **NOT** rewritten (the RVR-6a precedent: the post-closure sync at PR #580 left
+  `RVR_6A_FORMAL_CLOSURE_RECORD.md` byte-untouched). Governance/documentation only;
+  `EXECUTABLE/TEST/PIN/PACK/DOMAIN-RULE DELTA: 0`; no historical record rewritten; `main` not
+  reconciled. **Disposition: `CONSOLIDATED POST-RVR-6b CLOSURE SYNCHRONIZATION — GOVERNANCE
+  CANDIDATE; NOT AUTHORITATIVE UNTIL MERGED AND POST-MERGE VERIFIED`** — until then
+  `PR #583 RESIDUAL SYNC AUTHORITATIVELY DISCHARGED: NO`.
+
+- **AHAEP — ACCELERATED HIGH-ASSURANCE EXECUTION PROTOCOL: AUTHORITATIVE / BINDING (merged via
+  PR #583, `9f872a70c5fc296cf1b397450badf17c74b37641`; accepted candidate
+  `9e19654221e0bb74fc33dda930629dd1661383aa`; merge tree `db2b5c43…` identical; empty
+  candidate→merge diff; post-merge identity verified).** `docs/governance/ACCELERATED_HIGH_ASSURANCE_EXECUTION_PROTOCOL.md`
+  is the general **candidate-lifecycle-mechanics** owner and is discoverable directly from the
+  `CLAUDE.md` boot-sequence section; its compliance blocks are gate evidence, not reading advice.
+  **Ownership boundary (accepted with the candidate):** it owns lifecycle mechanics only —
+  live-base guard, differential reconstruction, freeze/identity/no-rewrite, Creator Grill,
+  rejected-evidence preservation and sibling repair, finding disposition, review loop breaker,
+  bundle mechanics, evidence provenance, execution modes, Execution-Reachability, compliance
+  evidence, the Owner exact-SHA acceptance boundary, Owner-controlled publication, PR
+  verification, separate merge authorization, CREATE A MERGE COMMIT, exact-head guard,
+  post-merge identity verification, the post-merge sync decision, and the product-value review
+  obligation. **Lean remains the SOLE owner of risk LEVEL / review DEPTH / review economy /
+  evidence-reuse / independent-review policy** (AHAEP execution modes are an explicitly non-risk
+  axis that can never lower a Lean requirement); AHAEP never owns current state, roadmap truth,
+  Owner decisions, obligation contents, product or architecture semantics, or any
+  release/deployment/production authorization, and is **permanently non-authorizing**.
+  **Legacy status adjudication (same candidate; original texts preserved beneath their
+  banners):** `RISK_BASED_EXECUTION_AND_REVIEW_MODEL.md` → `SUPERSEDED — HISTORICAL ONLY`;
+  `GOVERNED_PRODUCT_EXECUTION_PROTOCOL.md` → `SUPERSEDED — HISTORICAL ONLY` (its embedded
+  constraint-status table is a historical snapshot, never current truth);
+  `GOVERNED_EXECUTION_EFFICIENCY_PROTOCOL.md` → `SUPERSEDED — RULES MIGRATED`. The historical
+  EF §9.1 conditional mechanical fast path is **NOT ACTIVE** and `REQUIRES SEPARATE FUTURE OWNER
+  AUTHORIZATION BEFORE ANY USE`; **Owner-controlled publication remains the default**. AHAEP
+  adoption authorized nothing downstream.
+
 - **RVR-6b — FORMAL CLOSURE (governance-only closure CANDIDATE — closure conditional on this
-  exact candidate's acceptance, merge, and post-merge verification), base
+  exact candidate's acceptance, merge, and post-merge verification; that condition is now
+  SATISFIED — the exact candidate `a75f4c274c5d03b212b6fa3823e20f87572454a8` was Owner-accepted,
+  merged via **PR #584** `814e97b5d5b7ba39fce01d35fd72bb008af03046`, and post-merge
+  identity-verified, so **`RVR-6B FORMALLY CLOSED: YES`**; the conditional wording below is
+  preserved as authority-at-its-time and the frozen closure record itself is NOT rewritten),
+  base
   `9f872a70c5fc296cf1b397450badf17c74b37641`** — verified from Git at this gate as the **live
   authoritative tip** (**0 commits after**; **PR #583** — the AHAEP SOP adoption merge; first
   parent `51ce5df3…` (PR #582 — the post-W2-C-implementation sync merge); second parent
@@ -2571,8 +2649,12 @@ AUTHORIZED / NOT STARTED.***
   Paid Activation: NOT AUTHORIZED; release-value gates (T1-A′/T1-C′/RVR-8) OPEN — implemented/
   closed ≠ release-value closed. `OWNER_DECISION_REGISTER.md` UNCHANGED (closure-gate
   convention). Governance/documentation only; `EXECUTABLE/TEST/PIN/PACK/DOMAIN-RULE DELTA: 0`;
-  no historical record rewritten; `main` not reconciled. **Disposition: `RVR-6B FORMAL
-  CLOSURE — GOVERNANCE CANDIDATE; NOT AUTHORITATIVE UNTIL MERGED AND POST-MERGE VERIFIED`.**
+  no historical record rewritten; `main` not reconciled. **Disposition (updated at the
+  consolidated post-closure synchronization): `RVR-6B FORMAL CLOSURE — MERGED AND AUTHORITATIVE
+  via PR #584, post-merge identity-verified; RVR-6B FORMALLY CLOSED: YES`.** The
+  `OWNER_DECISION_REGISTER.md UNCHANGED` line above was the closure-gate convention at that
+  gate; the Owner exact closure-SHA acceptance and the post-PR-#582 closure-START authorization
+  are registered at the consolidated post-closure synchronization (entry above).
 
 - **W2-C / RVR-6b IMPLEMENTATION — AUTHORITATIVE; W1-N3 CLOSED (BOUNDED); PRECEDENCE
   OWNER-ACCEPTED (governance-only synchronization CANDIDATE — since MERGED AND AUTHORITATIVE
