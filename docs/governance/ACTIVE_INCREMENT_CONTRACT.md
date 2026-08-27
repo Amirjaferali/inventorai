@@ -41,8 +41,84 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — MANDATORY CONSOLIDATED POST-RVR-6b-CLOSURE GOVERNANCE SYNCHRONIZATION;
-governance-only synchronization candidate).** Base:
+**Status (current — RVR-7 CONTRACT **FRAMEWORK** FREEZE; substantive Arabic parity;
+governance/contract-only candidate — a fresh same-base sibling replacing Independent-Review-rejected
+`d7ce5df8…`, preserved as rejected evidence and NOT an ancestor.
+`RVR-7 IMPLEMENTATION PATH MANIFEST FROZEN: NO`; `RVR-7 IMPLEMENTATION AUTHORIZED: NO`).** Base:
+**`507a9b7533b63bb85dcae2d3fa955946b676189a`** — verified from Git at this gate as the **live
+authoritative tip** of `feature/atomic-json-session-persistence` (**0 commits after it**;
+**PR #585** — the consolidated post-RVR-6b-closure governance synchronization; first parent
+`814e97b5…` (PR #584 — the RVR-6b formal-closure merge); second parent `5f3b7cb6…` — the exact
+Owner-accepted synchronization candidate; merge tree `7f4c45af…` identical to the candidate tree;
+EMPTY candidate→merge diff; post-merge identity verified).
+
+```
+Objective:                reconstruct and freeze the RVR-7 (substantive Arabic parity) contract
+                          FRAMEWORK from repository source of truth — scope, fences, inputs,
+                          evidence, acceptance, stop conditions, open questions — WITHOUT freezing
+                          any implementation path manifest; record the Owner's Arabic
+                          substantive-positioning decision and its exact register consequence.
+                          NO implementation.
+Owner authorization:      explicit — RVR-7 CONTRACT RECONSTRUCTION AND FREEZE LIFECYCLE ONLY
+                          (read-only reconstruction, path discovery sufficient to freeze a safe
+                          contract, contract drafting, ONE frozen candidate, Grill, evidence,
+                          review bundle). Publication, PR, merge and implementation start each
+                          remain separate Owner decisions.
+Lean risk LEVEL:          LEVEL 2 (authorized governance increment; no runtime surface touched)
+Lean review DEPTH:        DEPTH 2
+AHAEP execution mode:     FULL SEMANTIC LIFECYCLE (new governance authority + a decision with
+                          release-blocking consequence; not a mechanical or focused-differential
+                          operation)
+Allowed paths:            docs/governance/RVR_7_SUBSTANTIVE_ARABIC_PARITY_CONTRACT_CANDIDATE.md
+                          (new); docs/governance/ACTIVE_EXECUTION_ROADMAP.md (append-only);
+                          docs/governance/ACTIVE_INCREMENT_CONTRACT.md (rotation);
+                          docs/governance/CURRENT_PROJECT_STATE.md (entry);
+                          docs/governance/DEFERRED_OBLIGATIONS_REGISTER.md (W1-N2 conditional
+                          future-firing record, RVR-7 row conditionality, two dependent rows);
+                          docs/governance/OWNER_DECISION_REGISTER.md (one Owner decision — the
+                          Arabic substantive positioning row; the contract-freeze START
+                          authorization is deliberately NOT registered here, per the deferred-
+                          registration convention)
+Forbidden paths:          every runtime, test, fixture, pin, pack, registry, schema, content and
+                          persistence file — in particular the two committed Path-N question
+                          artifacts, engine/path_n_questions.py, engine/intent_serving.py,
+                          engine/progression_loop.py, engine/gap_relevance*, web/ui_text.py and
+                          web/app.py; and every frozen historical record
+Expected behavior:        no behavior change of any kind; zero content and zero code delta
+Non-goals:                RVR-7 implementation; RVR-8; adding Arabic content; language routing;
+                          gap_relevance repair; W/M change; MG-8 repair; OD-PDVG-12; deciding
+                          OD-W2-D-P6-18; closing either Option-A anchor; deployment/production
+Acceptance criteria:      the repair Grill R01…R40 (this sibling) over the Contract-Freeze Grill
+                          C01…C35 (identity, definition, positioning
+                          consequence, every fence, DOR sweep truth, orphan 0, ownership map,
+                          zero implementation delta, bundle + isolated fetch-back)
+Required tests:           none — documentation/contract only; Universal Guardrail Smoke as the
+                          standing floor
+Tests not required:       full application suite — zero runtime-reachable semantic delta
+Dependencies:             PR #585 merge identity; register RVR-7 / W1-N2 / anchor rows; ODR
+                          OD-R4; Wave-2 contract §O; D-P6-18 closure record
+Unresolved decisions:     Owner exact-SHA acceptance of THIS contract candidate; RVR-7
+                          implementation start; the OD-W2-D-P6-18 supersession; the two
+                          Option-A anchored future decisions; MG-8; OD-PDVG-12
+Stop conditions:          base advancement; any need to change gap_relevance, W/M or adaptive
+                          semantics; any persistence/schema/Level-1 escalation discovered; any
+                          pressure to guess a path allowlist, decide D-P6-18, close an anchor,
+                          or treat contract acceptance as an implementation start
+Independent-review scope: RVR-7 identity re-derivation; the positioning consequence stated
+                          without overstatement; W1-N2 fired-not-discharged truth; precision
+                          boundary; anchor non-transfer; every fence; design-discovery honesty
+                          (incl. the clamp-isomorphism hazard and the escalation test);
+                          non-circularity
+Merge authority:          owner, separately (the candidate is NOT published, PR'd, or merged by
+                          the Creator)
+```
+
+---
+
+**Superseded (retained as history) — MANDATORY CONSOLIDATED POST-RVR-6b-CLOSURE GOVERNANCE
+SYNCHRONIZATION; MERGED AND AUTHORITATIVE via PR #585, merge
+`507a9b7533b63bb85dcae2d3fa955946b676189a` (accepted candidate
+`5f3b7cb663025c7519c2f255da48d6b97400b1f9`; post-merge identity verified).** Base:
 **`814e97b5d5b7ba39fce01d35fd72bb008af03046`** — verified from Git at this gate as the **live
 authoritative tip** of `feature/atomic-json-session-persistence` (**0 commits after it**;
 **PR #584** — the RVR-6b formal-closure merge; first parent `9f872a70…` (PR #583 — the AHAEP
