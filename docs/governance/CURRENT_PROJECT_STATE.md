@@ -16,6 +16,14 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
   (`git rev-parse origin/feature/atomic-json-session-persistence`). Do **not** trust a
   prose-pinned SHA.
   - **Current authoritative branch tip (last independently verified):**
+    `dad450bfb86cb96a29527a733a213897950c57ec` (Merge **PR #587** — POST-RVR-7-CONTRACT-FRAMEWORK
+    GOVERNANCE SYNCHRONIZATION; two-parent merge of
+    `b4a0d5fc076292a36385f9228d5a37eedf3a4da1` (base, PR #586 — the authoritative RVR-7 Contract
+    Framework merge) + `c832c8876e3634f1996bf1d5c947a150abf2a8dc` (the exact Owner-accepted
+    synchronization candidate), tree `eb26d034a1548ec4d56b1628c0b0af397ce74aaa` identical to the
+    candidate tree, empty candidate→merge diff, post-merge identity verified) — always re-resolve
+    the live tip from Git per the rule above.
+  - **Prior recorded tip (historical):**
     `b4a0d5fc076292a36385f9228d5a37eedf3a4da1` (Merge **PR #586** — RVR-7 CONTRACT FRAMEWORK;
     two-parent merge of `507a9b7533b63bb85dcae2d3fa955946b676189a` (base, PR #585 — the
     consolidated post-RVR-6b-closure governance synchronization) +
@@ -2573,6 +2581,39 @@ AUTHORIZED / NOT STARTED.***
   none authorized, started, or implied. `OWNER_DECISION_REGISTER.md` UNCHANGED (Phase 8 formal-closure
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
+
+- **RVR-7 IMPLEMENTATION PATH MANIFEST FREEZE (governance-only CANDIDATE — NOT authoritative
+  until Owner-accepted at exact SHA, merged and post-merge verified), base
+  `dad450bfb86cb96a29527a733a213897950c57ec`** — verified from Git at this gate as the **live
+  authoritative tip** (**0 commits after**; **PR #587**; first parent `b4a0d5fc…` (PR #586); second
+  parent `c832c887…`; merge tree `eb26d034…`; empty candidate→merge diff; post-merge verified).
+  **Owner decisions recorded (decisions, never authorizations; ODR §E):**
+  `D-P6-18 DISPLAY-RULE SUPERSESSION: BOUNDED` (scope `RVR-7 Path-N substantive journey`; canonical
+  state, persistence, replay and determinism language-independent; no runtime/machine translation;
+  no parallel Arabic question registry); `Q2: INCLUDE`; architecture selected by repository
+  evidence as `RENDER-EDGE / IDENTITY-BASED RESOLUTION` (NOT language-aware progression);
+  `D-RVR7-1: OPTION A — JOURNEY-COMPLETE` — a bounded expansion of the RVR-7 Contract Framework §I
+  item 1 CONTENT enumeration only (21 committed `question_id`s + `_STALL_REFRAME` +
+  `_EXHAUSTED_EXIT_PROMPT` + reachable Stage-3 generic substantive asks + `INTAKE_QUESTION` +
+  `closing_q`), absorbing NO generated output, NO deliverable, NO CAP and NO future-domain latent
+  generic questions. **Amendment mechanism:** additive supersession document — the authoritative
+  RVR-7 contract instrument is NOT rewritten (RVR-6a/RVR-6b precedent; the rule is stated in
+  `W2_B_RVR6A_CONTRACT_AMENDMENT_1_CANDIDATE.md` §1). **Proposed freeze:** an EXACT 12-path
+  manifest with no wildcard (9 MODIFY / 3 ADD / 0 DELETE), the architecture fences, the
+  BLOCKING/EVIDENCE/OBSERVATION test plan, and a machine-derived pin table with exactly TWO
+  expected digest changes (the electronics Path-N artifact and `engine/path_n_questions.py`);
+  `engine/progression_loop.py`, `engine/domain_rules.py`, both domain packs and
+  `RECONSTRUCTION_VERSION` are expected UNCHANGED. **New deferred obligation:** `Increment 3 /
+  next_development_step — generated substantive output language parity` (capability owner Increment
+  3 unchanged; LANGUAGE obligation owner UNRESOLVED and not created by the row; NOT RVR-7 runtime
+  scope; NBF; return event = next authorized touch of that surface or a separately Owner-authorized
+  generated-output language gate; latest safe gate before Serious Release). Lean re-derived, not
+  inherited: `LEVEL 1 / DEPTH 1`; Independent Review REQUIRED before Owner acceptance.
+  Governance-only; `EXECUTABLE / TEST / PIN / PACK / DOMAIN-RULE / CONTENT DELTA: 0`.
+  **`PATH MANIFEST AUTHORITATIVE/FROZEN: NO`; `RVR-7 IMPLEMENTATION AUTHORIZED: NO`;
+  `RVR-7 IMPLEMENTATION START AUTHORIZED: NO`; `W1-N2 DISCHARGED: NO`; `RVR-8 AUTHORIZED: NO`;
+  `CAP-12 / CAP-13 / CAP-14 / CAP-18 ACTIVATED: NO`.** Full detail:
+  `docs/governance/RVR_7_IMPLEMENTATION_PATH_MANIFEST_FREEZE_CANDIDATE.md`.
 
 - **RVR-7 CONTRACT FRAMEWORK: AUTHORITATIVE (PR #586) + POST-MERGE GOVERNANCE SYNCHRONIZATION
   (governance-only synchronization CANDIDATE — NOT authoritative until Owner-accepted at exact SHA,

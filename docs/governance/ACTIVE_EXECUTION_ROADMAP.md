@@ -16128,3 +16128,77 @@ MEANING-ADAPTIVE / TIER-2 / WS11: NOT ACTIVATED`; `LANGUAGE-CONDITIONAL ROUTING:
 `RUNTIME TRANSLATION: FORBIDDEN`; MG-8 OPEN with semantic repair NOT authorized;
 `OD-PDVG-12 EXERCISED: NO`; `FCORA: RECORDED, NOT EXECUTED`; `DEPLOYMENT / PRODUCTION / SERIOUS
 RELEASE / PAID ACTIVATION: NOT AUTHORIZED`.
+
+---
+
+## RVR-7 IMPLEMENTATION PATH MANIFEST FREEZE GATE — GOVERNANCE CANDIDATE (append-only entry)
+
+**Base:** `dad450bfb86cb96a29527a733a213897950c57ec` — verified live from Git at this gate as the
+tip of `feature/atomic-json-session-persistence` (0 commits after it). **PR #587** — the
+post-RVR-7-contract-framework governance synchronization; first parent `b4a0d5fc…` (PR #586 — the
+authoritative RVR-7 Contract Framework merge); second parent `c832c887…` (the exact Owner-accepted
+synchronization candidate); merge tree `eb26d034…`; EMPTY candidate→merge diff; post-merge
+identity verified.
+
+**1. Owner decisions recorded at this gate (decisions, never authorizations).** The prior entry's
+boundary line `D-P6-18: OWNER DECISION REQUIRED` was authority-at-that-time and is now resolved.
+Current truth: **`D-P6-18 DISPLAY-RULE SUPERSESSION: BOUNDED`** (scope `RVR-7 Path-N substantive
+journey`; canonical state, persistence, replay and determinism remain language-independent; no
+runtime or machine translation; no parallel Arabic question registry); **`Q2: INCLUDE`**;
+implementation architecture selected by repository evidence as **`RENDER-EDGE / IDENTITY-BASED
+RESOLUTION`**, NOT language-aware progression; **`D-RVR7-1: OPTION A — JOURNEY-COMPLETE`** — a
+bounded expansion of the RVR-7 Contract Framework §I item 1 CONTENT enumeration (21 committed
+`question_id`s plus `_STALL_REFRAME`, `_EXHAUSTED_EXIT_PROMPT`, the reachable Stage-3 generic
+substantive asks, `INTAKE_QUESTION` and `closing_q`), expanding neither the surface set nor the
+authorization set. Registered in `OWNER_DECISION_REGISTER.md` §E.
+
+**2. Amendment mechanism — repository-native.** The authoritative RVR-7 contract instrument is
+**NOT rewritten** (the RVR-6a / RVR-6b precedent for merged instruments, and the explicit rule
+stated in `W2_B_RVR6A_CONTRACT_AMENDMENT_1_CANDIDATE.md` §1: amendments resolve by additive
+supersession documents, never by in-place rewriting of accepted history). The new instrument
+`docs/governance/RVR_7_IMPLEMENTATION_PATH_MANIFEST_FREEZE_CANDIDATE.md` carries an exact
+old → new supersession map (§4) and supersedes only the clause portions it names.
+
+**3. What this gate proposes to freeze.** An EXACT 12-path implementation manifest with **no
+wildcard** (9 MODIFY, 3 ADD, 0 DELETE); the architecture fences (engine remains language-blind;
+render-edge identity resolution with forward-only identity → content and no text → `question_id`
+reverse lookup; W2-C `IntentServing.question_id` preserved through the render edge; Q2 shape B
+leaving `engine/progression_loop.py` byte-unchanged; the mechanical domain pack byte-identical;
+no reconstruction schema or `RECONSTRUCTION_VERSION` change); the BLOCKING/EVIDENCE/OBSERVATION
+test plan; and the machine-derived pin consequences (exactly two expected digest changes —
+the electronics Path-N artifact and `engine/path_n_questions.py`).
+
+**4. Deferred obligation registered at this gate.** `Increment 3 / next_development_step —
+generated substantive output language parity` is added as a single OPEN register row: capability
+owner unchanged (Increment 3), LANGUAGE obligation owner `UNRESOLVED` and NOT created by the row,
+`NOT RVR-7 runtime scope`, blocking level **NBF** (derived, not asserted), return event = the next
+authorized touch of the Increment-3 output surface or a separately Owner-authorized
+generated-output language gate, latest safe gate **before Serious Release** so FCORA finds a
+defensible disposition. No generated-output implementation is performed or authorized.
+
+**5. This candidate — non-circular.** Governance/documentation only: the new freeze instrument,
+this roadmap (append-only), `ACTIVE_INCREMENT_CONTRACT.md` (rotation), `CURRENT_PROJECT_STATE.md`
+(pointer and entry), `DEFERRED_OBLIGATIONS_REGISTER.md` (the new row, the RVR-7 row's non-circular
+conditional, the W1-N2 non-advancement clause, header) and `OWNER_DECISION_REGISTER.md` (§E).
+`EXECUTABLE / TEST / PIN / PACK / DOMAIN-RULE / CONTENT DELTA: 0`; no historical record rewritten;
+`main` not reconciled. The manifest becomes authoritative only if and when this exact candidate is
+independently reviewed, Owner-accepted at its exact SHA, merged and post-merge identity-verified —
+until then `OWNER EXACT FREEZE-CANDIDATE SHA ACCEPTED: NO`. **Disposition: `RVR-7 IMPLEMENTATION
+PATH MANIFEST FREEZE — GOVERNANCE CANDIDATE; NOT AUTHORITATIVE UNTIL MERGED AND POST-MERGE
+VERIFIED`.**
+
+**6. Lean classification re-derived, not inherited** (Contract Framework §H.3 sequencing rule 6):
+**`LEAN RISK LEVEL: 1`**, **`REVIEW DEPTH: 1`** — the gate freezes an implementation architecture
+(a Lean §3 LEVEL 1 trigger) and supersedes in part a clause of an authoritative merged contract.
+Independent Review is REQUIRED before Owner exact-SHA acceptance.
+
+**7. Boundaries — nothing downstream activated by this gate.**
+`RVR-7 IMPLEMENTATION PATH MANIFEST FROZEN: NO`; `RVR-7 IMPLEMENTATION AUTHORIZED: NO`;
+`RVR-7 IMPLEMENTATION START AUTHORIZED: NO`; `W1-N2 DISCHARGED: NO`; `RVR-8 AUTHORIZED: NO`;
+`CAP-12 ACTIVATED: NO`; `CAP-13 ACTIVATED: NO`; `CAP-14 ACTIVATED: NO`; `CAP-18 ACTIVATED: NO`;
+Manufacturing / Market Reality / Commercial Readiness implementation: **NOT AUTHORIZED**;
+`gap_relevance` UNCHANGED; `W/M: 2/2` frozen; `FULL ADAPTIVE QUESTIONING / MEANING-ADAPTIVE /
+TIER-2 / WS11: NOT ACTIVATED`; `LANGUAGE-CONDITIONAL ROUTING: FORBIDDEN`; `RUNTIME / MACHINE
+TRANSLATION: FORBIDDEN`; `PARALLEL ARABIC QUESTION REGISTRY: FORBIDDEN`; MG-8 OPEN with semantic
+repair NOT authorized; `OD-PDVG-12 EXERCISED: NO`; `FCORA: RECORDED, NOT EXECUTED`;
+`DEPLOYMENT / PRODUCTION / SERIOUS RELEASE / PAID ACTIVATION: NOT AUTHORIZED`.
