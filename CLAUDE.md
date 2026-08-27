@@ -23,6 +23,15 @@ security/privacy boundary, phase sequencing, active hold, or separate-authorizat
 requirement; Phase 3 implementation remains NOT authorized. The detailed reading order that
 follows remains authoritative for Depth-1 / full-audit contexts.
 
+For any material candidate-lifecycle work (candidate creation, exact-SHA freeze, Creator
+Grill, SHA-preserving bundle, independent review, Owner exact-SHA acceptance, publication,
+PR, merge, or post-merge verification/synchronization), every agent MUST also read and
+comply with `docs/governance/ACCELERATED_HIGH_ASSURANCE_EXECUTION_PROTOCOL.md` — the
+binding owner of general lifecycle mechanics. Protocol compliance is gate evidence (its
+compact compliance blocks are required), not reading advice. That protocol is subordinate
+to this file and to the Lean protocol, owns no risk or review-depth taxonomy (those remain
+Lean-owned), embeds no current state, and authorizes nothing.
+
 Before any analysis, recommendation, code change, command execution, file
 creation, staging, commit, or push, every Claude Code session, team lead,
 subagent, and Agent Teams teammate MUST read, in this order:

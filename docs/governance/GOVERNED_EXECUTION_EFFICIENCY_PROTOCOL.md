@@ -1,8 +1,22 @@
 # Governed Execution Efficiency Protocol
 
 Status:
-`ACTIVE SUBORDINATE OPERATIONAL PROTOCOL`
-`— DOES NOT MODIFY PRODUCT, ANCHOR, SCOPE, OR LIFECYCLE AUTHORITY`
+`SUPERSEDED — RULES MIGRATED` (status adjudicated by the governed adoption of the
+candidate that introduces this banner). No rule below governs present execution.
+Its still-valid unique safeguards were migrated, in the same candidate, into
+`docs/governance/ACCELERATED_HIGH_ASSURANCE_EXECUTION_PROTOCOL.md` ("AHAEP"):
+§3 operation classes → AHAEP §4 execution modes (renamed off the risk axis; risk
+LEVEL/DEPTH remain owned by the Lean protocol §3/§4); §3.1 identity-operation
+workflow → AHAEP §4 (MECHANICAL LIFECYCLE); §4 finding severity → AHAEP §13;
+§5 closed-finding finality → AHAEP §12; §6 consolidated-review rule → AHAEP §12;
+§7 evidence-first reporting → AHAEP §16; §8 platform-mutation guard → AHAEP §19;
+§9 owner-gating preservation and separate merge authorization → AHAEP §19/§20;
+§10 report shape → AHAEP §16/§21.
+**§9.1 exception:** the conditional reversible LOW-risk fast path was NOT migrated as
+active authority. It is classified `HISTORICAL / DEFERRED OPTIONAL MECHANICAL FAST
+PATH — NOT ACTIVE` (AHAEP §23) and `REQUIRES SEPARATE FUTURE OWNER AUTHORIZATION
+BEFORE ANY USE`; the Owner-controlled publication default governs.
+The text below is preserved verbatim as historical record only.
 
 ## 1. Purpose and bounded subject
 
