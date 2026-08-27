@@ -41,8 +41,70 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — RVR-6b FORMAL CLOSURE; governance-only closure-gate candidate).** Base:
-**`9f872a70c5fc296cf1b397450badf17c74b37641`** — verified from Git at this gate as the **live
+**Status (current — MANDATORY CONSOLIDATED POST-RVR-6b-CLOSURE GOVERNANCE SYNCHRONIZATION;
+governance-only synchronization candidate).** Base:
+**`814e97b5d5b7ba39fce01d35fd72bb008af03046`** — verified from Git at this gate as the **live
+authoritative tip** of `feature/atomic-json-session-persistence` (**0 commits after it**;
+**PR #584** — the RVR-6b formal-closure merge; first parent `9f872a70…` (PR #583 — the AHAEP
+SOP adoption merge); second parent `a75f4c274c5d03b212b6fa3823e20f87572454a8` — the exact
+Owner-accepted closure candidate; merge tree `1ad7b90a…` identical to the candidate tree; EMPTY
+candidate→merge diff; post-merge identity verified).
+
+```
+Objective:                one consolidated governance synchronization discharging BOTH (1) the
+                          complete outstanding PR #583 AHAEP-adoption residual synchronization
+                          and (2) the RVR-6b post-closure synchronization
+Owner authorization:      explicit — start this consolidated synchronization lifecycle
+                          (candidate construction + evidence only; publication, PR and merge
+                          remain separate Owner decisions)
+Lean risk LEVEL:          LEVEL 2 (authorized governance increment)
+Lean review DEPTH:        DEPTH 2
+AHAEP execution mode:     FOCUSED DIFFERENTIAL LIFECYCLE
+Allowed paths:            docs/governance/ACTIVE_EXECUTION_ROADMAP.md (append-only);
+                          docs/governance/ACTIVE_INCREMENT_CONTRACT.md (rotation);
+                          docs/governance/CURRENT_PROJECT_STATE.md (pointer + entries);
+                          docs/governance/DEFERRED_OBLIGATIONS_REGISTER.md (header + the one
+                          fired row); docs/governance/OWNER_DECISION_REGISTER.md (lineage rows
+                          + current boundary)
+Forbidden paths:          docs/governance/RVR_6B_FORMAL_CLOSURE_RECORD.md (frozen historical
+                          pre-acceptance instrument — the RVR-6a/PR #580 precedent); the AHAEP
+                          protocol text and the three superseded legacy protocols; every
+                          runtime, test, fixture, pin, pack, registry, schema and domain file
+Expected behavior:        canonical current-state and decision surfaces reflect the two merged
+                          events truthfully; no historical wording rewritten
+Non-goals:                RVR-7 (contract, authorization or any work); RVR-8; FCORA execution;
+                          MG-8 repair; OD-PDVG-12; any runtime change; release-value closure;
+                          activating the historical EF §9.1 fast path
+Acceptance criteria:      the focused Grill S01…S36 (dual merge reconstruction, ownership map
+                          with no duplicate owner, PR #583 residual coverage, DOR sweep truth,
+                          historical-record immutability, RVR-7 fence, identity + bundle +
+                          isolated fetch-back)
+Required tests:           none — documentation-only; Universal Guardrail Smoke as the standing
+                          floor
+Tests not required:       full application suite — zero runtime-reachable semantic delta
+Dependencies:             PR #583 and PR #584 merges (mechanically re-derived at this gate);
+                          the frozen closure record; the register rows and their triggers
+Unresolved decisions:     Owner exact-SHA acceptance of THIS synchronization candidate; RVR-7
+                          authorization; the two anchored future decisions (CWD binding;
+                          prose ↔ markers); MG-8; OD-PDVG-12; the open register decisions
+Stop conditions:          base advancement; any merge-identity mismatch; any DOR trigger found
+                          fired but unaccounted; any pressure to rewrite the frozen closure
+                          record or to convert RVR-7 eligibility into authorization
+Independent-review scope: dual merge-identity reconstruction; canonical-ownership correctness
+                          and non-duplication; PR #583 residual completeness; chronology
+                          exactness (nothing back-dated); DOR sweep truth incl. anchor
+                          preservation; historical immutability; RVR-7 fence; non-circularity
+Merge authority:          owner, separately (the candidate is NOT published, PR'd, or merged by
+                          the Creator)
+```
+
+---
+
+**Superseded (retained as history) — RVR-6b FORMAL CLOSURE; MERGED AND AUTHORITATIVE via
+PR #584, merge `814e97b5d5b7ba39fce01d35fd72bb008af03046` (accepted candidate
+`a75f4c274c5d03b212b6fa3823e20f87572454a8`; post-merge identity verified) — `RVR-6B FORMALLY
+CLOSED: YES`.** Base:
+**`9f872a70c5fc296cf1b397450badf17c74b37641`** — verified from Git at that gate as the **live
 authoritative tip** of `feature/atomic-json-session-persistence` (**0 commits after it**;
 **PR #583** — the Accelerated High-Assurance Execution Protocol (AHAEP) adoption merge; first
 parent `51ce5df3…` (PR #582 — the post-W2-C-implementation governance-sync merge); second

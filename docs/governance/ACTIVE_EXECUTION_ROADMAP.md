@@ -15736,3 +15736,149 @@ repair); `W/M: 2/2 OWNER-ACCEPTED AND FROZEN`; `R4-C: OPEN`; `T1-A′ / T1-C′ 
 DIFFERENTIATION: OPEN`; `MLC DEFINITION FROZEN: NO`; `PSRR GO: NO`; `DEPLOYMENT AUTHORIZED:
 NO`; `PRODUCTION AUTHORIZED: NO`; `SERIOUS RELEASE AUTHORIZED: NO`; `PAID ACTIVATION
 AUTHORIZED: NO`. Any next gate requires its own separate Owner authorization.
+
+---
+
+## AHAEP SOP ADOPTION (PR #583) — dedicated governed-gate record
+
+**Chronology disclosure (exact, not retroactive).** This dedicated append-only gate record was
+**NOT written contemporaneously at PR #583**. PR #583 was merged and post-merge identity-verified,
+but its Lean §11 governed-gate record and its ODR acceptance registration were left outstanding;
+the omission was detected at the RVR-6b closure gate's pre-review contradiction resolution, Lead-
+adjudicated as `REQUIRED BUT SAFE TO CONSOLIDATE LATER`, and the Owner then required the residual
+to be discharged in the first post-RVR-6b-closure synchronization. This record is that discharge.
+Nothing here claims the record existed earlier.
+
+**1. Gate identity (verified live from Git at this sync).** Merge `9f872a70c5fc296cf1b397450badf17c74b37641`
+(**PR #583**); two parents; first parent `51ce5df3f8cf33c595fd626fbfb2aa7eaa40e3f8` (PR #582 — the
+post-W2-C-implementation governance sync); second parent
+`9e19654221e0bb74fc33dda930629dd1661383aa` — the exact Owner-accepted SOP candidate; merge tree
+`db2b5c431f5a907772f7d939c3472a7f07e97c3b` identical to the accepted candidate tree; candidate→merge
+diff **EMPTY**; post-merge identity verified.
+
+**2. What the gate made authoritative.** `docs/governance/ACCELERATED_HIGH_ASSURANCE_EXECUTION_PROTOCOL.md`
+(AHAEP) — the general candidate-lifecycle-mechanics owner (live-base guard; differential
+reconstruction; freeze/identity/no-rewrite; Creator Grill mechanics; rejected-evidence preservation
+and sibling differential repair; finding disposition; review loop breaker; SHA-preserving bundle;
+machine-evidence provenance; execution modes; Execution-Reachability; protocol-compliance evidence;
+Owner exact-SHA acceptance boundary; Owner-controlled publication; PR verification; separate merge
+authorization; CREATE A MERGE COMMIT; exact-head guard; post-merge identity verification; the
+post-merge sync decision mechanics; the product-value review obligation). It **references and does
+not own** Lean risk LEVEL / review DEPTH / review economy / evidence reuse / independent-review
+policy, the UG1 smoke floor, Cross-Layer C0–C4, the registers, FCORA, and product-value semantics;
+it **never owns** current state, roadmap truth, Owner decisions, obligation contents, product or
+architecture semantics, or any release/deployment authorization. It is **permanently
+non-authorizing** (AHAEP §25).
+
+**3. Legacy status adjudication in the same candidate** (banners only; each legacy document's
+original text preserved verbatim beneath its banner as historical record):
+`RISK_BASED_EXECUTION_AND_REVIEW_MODEL.md` → `SUPERSEDED — HISTORICAL ONLY` (successors named:
+Lean §3/§4/§5/§5B for risk and review; AHAEP for lifecycle mechanics; its Draft-PR-default and
+bundle-by-exception rules contradict current doctrine and must not be followed);
+`GOVERNED_PRODUCT_EXECUTION_PROTOCOL.md` → `SUPERSEDED — HISTORICAL ONLY` (with an explicit warning
+that its embedded constraint-status table is a historical snapshot, never current truth);
+`GOVERNED_EXECUTION_EFFICIENCY_PROTOCOL.md` → `SUPERSEDED — RULES MIGRATED` (section-by-section
+successor map into AHAEP). `CLAUDE.md` received exactly one direct mandatory SOP-discovery
+paragraph in the boot-sequence section. Path set: 5 files; `+668 / −4`.
+
+**4. Assurance.** Preceded by two read-only audits (SOP Governance Ownership Collision Audit;
+Rule-Level Supersession & Salvage Reconciliation — 42 legacy rules dispositioned, unassigned
+safeguards 0, duplicate-owner rules 0). `EXECUTABLE/TEST/PIN/PACK/DOMAIN-RULE DELTA: 0`; Universal
+Guardrail Smoke PASS; zero runtime-reachable semantic delta.
+
+**5. AHAEP §20 post-merge sync decision for this gate (recorded here, reconstructed later — NOT
+returned contemporaneously at PR #583):** **`POST-MERGE GOVERNANCE SYNC REQUIRED (PR #583): YES`** —
+reason: canonical governance-authority truth changed (AHAEP became binding; three legacy process
+documents were status-adjudicated; the CLAUDE.md boot chain was extended). Canonical surfaces whose
+truth changed: this roadmap (this record), the Owner Decision Register (the SOP exact-SHA acceptance
+row), and `CURRENT_PROJECT_STATE.md` (governance-authority state). That synchronization is performed
+in the consolidated gate recorded below.
+
+**6. Boundaries.** AHAEP adoption authorized nothing: `RVR-7 AUTHORIZED: NO`; `RVR-8 AUTHORIZED: NO`;
+`FCORA: RECORDED, NOT EXECUTED`; `DEPLOYMENT / PRODUCTION / SERIOUS RELEASE / PAID ACTIVATION:
+NOT AUTHORIZED`; the historical EF §9.1 mechanical fast path is `NOT ACTIVE` and requires separate
+future Owner authorization before any use; Owner-controlled publication remains the default.
+
+---
+
+## RVR-6b FORMAL CLOSURE COMPLETED (PR #584) + MANDATORY CONSOLIDATED POST-CLOSURE GOVERNANCE SYNCHRONIZATION
+
+**Append-only completion + synchronization record.** The closure-gate entry above recorded the
+closure candidate under a **conditional, non-circular** statement: RVR-6b becomes formally closed
+if and when the exact closure candidate is Owner-accepted at exact SHA, merged, and post-merge
+identity-verified. That condition has now been satisfied. The conditional statement is
+self-executing: the frozen closure record is **not rewritten** (the RVR-6a precedent — the
+post-closure sync at PR #580 left `RVR_6A_FORMAL_CLOSURE_RECORD.md` byte-untouched); its
+pre-acceptance status lines remain authority-at-their-time, and current status is carried by the
+current-state owners.
+
+**1. Closure merge identity (verified live from Git at this gate).** Merge
+`814e97b5d5b7ba39fce01d35fd72bb008af03046` (**PR #584**); two parents; first parent
+`9f872a70c5fc296cf1b397450badf17c74b37641` (PR #583 — the AHAEP SOP adoption); second parent
+`a75f4c274c5d03b212b6fa3823e20f87572454a8` — the exact Owner-accepted closure candidate; merge tree
+`1ad7b90a6ec0b3f59c6f1f77e70dd946a399b52c` identical to the accepted candidate tree; candidate→merge
+diff **EMPTY**; post-merge identity verified. **`RVR-6B FORMALLY CLOSED: YES`.**
+
+**2. Closure candidate lineage preserved (no rewriting, no ancestry laundering).** The accepted
+candidate `a75f4c27…` was the authorized **base-forward re-materialization** onto the PR #583 base
+of the semantically repaired candidate `e9296dbc0f16574062954fab6920cf5251696b9d` (sole parent
+`51ce5df3…`) — preserved as `SEMANTICALLY REPAIRED / STALE-BASE EVIDENCE — NOT PUBLICATION-ELIGIBLE`
+and **never an ancestor** of the accepted candidate. Its own predecessor
+`e76cb97eab5e29b99a58938913281974b0830c8b` remains `REJECTED — AUTHORITY-PROVENANCE DEFECT`,
+un-rewritten, also never an ancestor. Path-overlap between the intervening SOP advancement and the
+closure path family was mechanically proven **0**.
+
+**3. What this consolidated synchronization discharges.** (a) the complete outstanding **PR #583
+residual** — the dedicated gate record above, the SOP exact-SHA acceptance registration in the Owner
+Decision Register, the governance-authority state in `CURRENT_PROJECT_STATE.md`, and the truthfully
+back-dated §20 decision; (b) the **RVR-6b post-closure synchronization** — closure status on the
+current-state owners, the Owner exact closure-SHA acceptance registration, the closure-lifecycle
+START-authorization registration (which the closure record correctly recorded as post-PR-#582 and
+deferred to exactly this gate), the PR #584 merge identity, and the register's RVR-6b row closure
+per its own conditional wording. Also registered here: the PR #582 sync acceptance
+(`ed767f4d7a77ffe70bdf5f84315e2614f6efbbd7`), whose lineage row was outstanding because the RVR-6b
+closure gate followed the closure-gate convention of leaving the Owner Decision Register unchanged.
+
+**4. AHAEP §20 post-merge sync decision for PR #584:** **`POST-MERGE GOVERNANCE SYNC REQUIRED
+(PR #584): YES`** — reason: material canonical governance truth changed (RVR-6b Formal Closure became
+completed upon acceptance + merge + post-merge verification). Canonical surfaces whose truth changed:
+this roadmap, `CURRENT_PROJECT_STATE.md`, `ACTIVE_INCREMENT_CONTRACT.md`,
+`DEFERRED_OBLIGATIONS_REGISTER.md`, `OWNER_DECISION_REGISTER.md`.
+
+**5. Deferred Obligations Register sweep at this gate (read-only sweep performed before any edit).**
+Every OPEN row's return trigger was tested against four events: the PR #583 merge, the PR #584 merge,
+the RVR-6b formal-closure completion, and this synchronization delta. **Exactly one trigger fired:**
+the RVR-6b/W2-C row, whose registered trigger is "Owner exact-SHA acceptance + merge + post-merge
+verification of the RVR-6b formal-closure candidate" — satisfied by PR #584; that row is CLOSED at
+this gate on that evidence, per its own conditional wording. **No other trigger fired**, and in
+particular the two Option-A durable anchors created at the closure gate remain **OPEN**: the W2-C
+registry CWD/path-binding limitation (trigger = next authorized WS10-loader/`intent_serving`-accessor
+touch AND mandatorily the PSRR/deployment gate) and the registry intent prose ↔ `_INTENT_MARKERS`
+divergence surface (trigger = next authorized touch of either artifact AND RVR-7) — closing RVR-6b
+never closes them. Counts at this gate: `DOR FIRED = 1` · `DOR CLOSED THIS SYNC = 1` ·
+`DOR REMAINING OPEN = 24` · `UNACCOUNTED / ORPHAN = 0`.
+
+**6. Current lane state — eligibility is not authorization.** `RVR-6B FORMALLY CLOSED: YES`;
+`W2-C IMPLEMENTED: YES`; `W2-C / RVR-6b CONTRACT: AUTHORITATIVE`; `AHAEP: AUTHORITATIVE / BINDING`;
+`W/M: 2/2 OWNER-ACCEPTED AND FROZEN`. **`RVR-7 NEXT ELIGIBLE GATE — REQUIRES SEPARATE OWNER
+AUTHORIZATION`**; **`RVR-7 AUTHORIZED: NO`** (no RVR-7 contract exists, none is drafted here, and no
+RVR-7 work has started). `RVR-8 AUTHORIZED: NO`; `SECOND S2 RUN AUTHORIZED: NO`; `FCORA: RECORDED,
+NOT EXECUTED`; `CAP-12 / CAP-13 / IoT / Drones / Renewable: NOT AUTHORIZED`; `WS11 ACTIVATED: NO`;
+`MEANING-ADAPTIVE / TIER-2 ACTIVATED: NO`; `FULL ADAPTIVE QUESTIONING ACTIVATED: NO`;
+`OD-PDVG-12 EXERCISED: NO`; MG-8 Owner adjudication OPEN (no semantic repair); `R4-C: OPEN`;
+`T1-A′ / T1-C′ / TIME-TO-VALUE / DIFFERENTIATION: OPEN`; `MLC DEFINITION FROZEN: NO`; `PSRR GO: NO`;
+`DEPLOYMENT / PRODUCTION / SERIOUS RELEASE / PAID ACTIVATION AUTHORIZED: NO`.
+
+**7. This synchronization candidate itself — non-circular.** Governance/documentation only:
+this roadmap (append-only), `ACTIVE_INCREMENT_CONTRACT.md` (rotation),
+`CURRENT_PROJECT_STATE.md` (pointer + entries), `DEFERRED_OBLIGATIONS_REGISTER.md` (header + the one
+fired row), `OWNER_DECISION_REGISTER.md` (lineage + boundary). No historical record is rewritten; the
+frozen `RVR_6B_FORMAL_CLOSURE_RECORD.md` is deliberately untouched; `EXECUTABLE/TEST/PIN/PACK/
+DOMAIN-RULE DELTA: 0`; `main` not reconciled. **`PR #583 RESIDUAL SYNC CONTENT INCLUDED IN THIS
+CANDIDATE: YES`; `PR #583 RESIDUAL SYNC AUTHORITATIVELY DISCHARGED: NO`** — and this consolidated
+synchronization itself becomes authoritative only if and when this exact candidate is Owner-accepted
+at its exact SHA, merged (second parent = the accepted candidate; empty candidate→merge diff), and
+post-merge identity-verified. Until then: `OWNER EXACT SYNC-CANDIDATE SHA ACCEPTED: NO`;
+`POST-RVR-6b CLOSURE SYNCHRONIZATION AUTHORITATIVE: NO`. **Disposition: `CONSOLIDATED POST-RVR-6b
+CLOSURE SYNCHRONIZATION — GOVERNANCE CANDIDATE; NOT AUTHORITATIVE UNTIL MERGED AND POST-MERGE
+VERIFIED`.**
