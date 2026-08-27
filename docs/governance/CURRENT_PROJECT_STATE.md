@@ -16,6 +16,16 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
   (`git rev-parse origin/feature/atomic-json-session-persistence`). Do **not** trust a
   prose-pinned SHA.
   - **Current authoritative branch tip (last independently verified):**
+    `9f872a70c5fc296cf1b397450badf17c74b37641` (Merge PR #583 — ACCELERATED HIGH-ASSURANCE
+    EXECUTION PROTOCOL (AHAEP) ADOPTION; two-parent merge of
+    `51ce5df3f8cf33c595fd626fbfb2aa7eaa40e3f8` (base, PR #582 — the authoritative
+    post-W2-C-implementation governance-sync merge, whose own second parent `ed767f4d…` was
+    the exact Owner-accepted sync candidate) +
+    `9e19654221e0bb74fc33dda930629dd1661383aa` (the exact Owner-accepted SOP candidate), tree
+    `db2b5c431f5a907772f7d939c3472a7f07e97c3b` identical to the candidate tree, empty
+    candidate→merge diff, post-merge verified) — always re-resolve the live tip from Git per
+    the rule above.
+  - **Prior recorded tip (historical):**
     `b749c8873533ca6c48ebcf9be0c4023aa10cdd09` (Merge PR #581 — W2-C/RVR-6b IMPLEMENTATION;
     two-parent merge of `6b4629d75b58690eb0a40a754e747ba79f265447` (base, PR #580 — the
     authoritative post-W2-C-contract sync merge) + `1bc0690d9bc9e7317d267d1c0be5ab8f5fcdd0a1`
@@ -24,8 +34,8 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
     `14b54d7e4778808efdb10bbd7be7102f31e90429` identical to the candidate tree, empty
     candidate→merge diff, merged 2026-08-26T22:30:52Z, post-merge identity verified; the
     committed implementation evidence pack
-    `docs/governance/W2_C_RVR6B_IMPLEMENTATION_EVIDENCE_PACK.md` is inside this exact tree) —
-    always re-resolve the live tip from Git per the rule above.
+    `docs/governance/W2_C_RVR6B_IMPLEMENTATION_EVIDENCE_PACK.md` is inside this exact tree);
+    superseded as the live tip by PR #582 (post-W2-C-implementation sync, `51ce5df3…`).
   - **Prior recorded tip (historical):**
     `6b4629d75b58690eb0a40a754e747ba79f265447` (Merge PR #580 — POST-W2-C-CONTRACT GOVERNANCE
     SYNCHRONIZATION; two-parent merge of `d796b0cd…` (base, PR #579) +
@@ -2526,8 +2536,48 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
+- **RVR-6b — FORMAL CLOSURE (governance-only closure CANDIDATE — closure conditional on this
+  exact candidate's acceptance, merge, and post-merge verification), base
+  `9f872a70c5fc296cf1b397450badf17c74b37641`** — verified from Git at this gate as the **live
+  authoritative tip** (**0 commits after**; **PR #583** — the AHAEP SOP adoption merge; first
+  parent `51ce5df3…` (PR #582 — the post-W2-C-implementation sync merge); second parent
+  `9e19654…` — the exact Owner-accepted SOP candidate; merge tree `db2b5c43…` identical; empty
+  candidate→merge diff). This candidate is the authorized base-forward re-materialization of
+  the semantically repaired stale-base candidate `e9296dbc…` (sole parent `51ce5df3…`;
+  preserved as evidence; NOT an ancestor); closure content identical except gate-context base
+  identities; SOP and closure path sets mechanically disjoint (overlap 0). The Owner
+  authorized **the RVR-6b formal-closure lifecycle only** — closure NOT
+  pre-decided; **RVR-7 NOT authorized**. Eligibility was adjudicated, not assumed
+  (`docs/governance/RVR_6B_FORMAL_CLOSURE_RECORD.md`): the register row's own closure
+  criterion is EVIDENCED (PR #581 + the committed evidence pack; `[EXEC]` at the PR #582 base
+  `51ce5df3…` — 21 marker ids over exactly the two domains; focused 48 (14/14/11/9) green;
+  **full suite re-run: 4710 passed / 3 skipped / 1 xfailed / 0 failed**; the PR #583 base
+  advancement is governance/markdown-only with zero runtime-reachable semantic delta, so this
+  runtime evidence remains valid); W1-N3 stands CLOSED (bounded,
+  PR #582); the complete register closure-gate sweep fired **zero blockers**; and the two
+  carried observations receive **Option-A durable dispositions** — new OPEN register §3
+  anchor rows for the registry CWD/path-binding limitation (return: next authorized
+  loader/accessor touch AND mandatorily PSRR/deployment; before deployment/production;
+  CONDITIONAL) and the registry-prose ↔ `_INTENT_MARKERS` divergence surface (return: next
+  authorized touch of either artifact AND RVR-7; before serious release; CONDITIONAL) — so
+  closure orphans nothing (FCORA discovers both through the register). The precision residual
+  stays `gap_relevance`/RVR-2 + RVR-7-owned; MG-8 OPEN (no repair); OD-PDVG-12 unexercised;
+  WS11 dormant; Tier-2/full adaptive questioning OFF; W/M 2/2 frozen; fences and the
+  Owner-accepted precedence unaltered. **Non-circular conditional statement: RVR-6b becomes
+  formally closed if and when this exact closure candidate is Owner-accepted at exact SHA,
+  merged, and post-merge identity-verified — until then `RVR-6B FORMALLY CLOSED: NO`,
+  `OWNER EXACT CLOSURE-SHA ACCEPTED: NO`.** `RVR-7 / RVR-8: NOT AUTHORIZED`; FCORA recorded,
+  not executed; CAP-12/CAP-13/IoT/Drones/Renewable, deployment, production, Serious Release,
+  Paid Activation: NOT AUTHORIZED; release-value gates (T1-A′/T1-C′/RVR-8) OPEN — implemented/
+  closed ≠ release-value closed. `OWNER_DECISION_REGISTER.md` UNCHANGED (closure-gate
+  convention). Governance/documentation only; `EXECUTABLE/TEST/PIN/PACK/DOMAIN-RULE DELTA: 0`;
+  no historical record rewritten; `main` not reconciled. **Disposition: `RVR-6B FORMAL
+  CLOSURE — GOVERNANCE CANDIDATE; NOT AUTHORITATIVE UNTIL MERGED AND POST-MERGE VERIFIED`.**
+
 - **W2-C / RVR-6b IMPLEMENTATION — AUTHORITATIVE; W1-N3 CLOSED (BOUNDED); PRECEDENCE
-  OWNER-ACCEPTED (governance-only synchronization CANDIDATE), base
+  OWNER-ACCEPTED (governance-only synchronization CANDIDATE — since MERGED AND AUTHORITATIVE
+  via PR #582, `51ce5df3f8cf33c595fd626fbfb2aa7eaa40e3f8`; its "next eligible gate = RVR-6b
+  FORMAL CLOSURE" line reached at the closure gate recorded in the entry above), base
   `b749c8873533ca6c48ebcf9be0c4023aa10cdd09`** — verified from Git at this gate as the **live
   authoritative tip** (**0 commits after**; **PR #581** — the W2-C/RVR-6b implementation merge;
   first parent `6b4629d7…` (PR #580); second parent `1bc0690d…` — the exact Owner-accepted

@@ -15676,3 +15676,63 @@ NOT AUTHORIZED`; `SECOND S2 RUN AUTHORIZED: NO`; `FCORA: RECORDED, NOT EXECUTED`
 DIFFERENTIATION: OPEN`; `MLC DEFINITION FROZEN: NO`; `PSRR GO: NO`; `DEPLOYMENT AUTHORIZED:
 NO`; `PRODUCTION AUTHORIZED: NO`; `SERIOUS RELEASE AUTHORIZED: NO`; `PAID ACTIVATION
 AUTHORIZED: NO`.
+
+## RVR-6b FORMAL CLOSURE (governance-only closure candidate — conditional, non-circular)
+
+**Append-only closure-gate entry.** The entry above named `RVR-6b FORMAL CLOSURE` as the next
+eligible gate. The Owner then authorized THIS closure lifecycle only (reconstruction +
+governance-only candidate) — explicitly NOT pre-deciding closure and NOT authorizing RVR-7.
+
+**1. Entry identity (verified live).** Base = live authoritative tip
+`9f872a70c5fc296cf1b397450badf17c74b37641` (**PR #583** — the AHAEP SOP adoption merge,
+0 commits after; first parent `51ce5df3…` (PR #582); second parent `9e19654…` = the exact
+Owner-accepted SOP candidate; merge tree `db2b5c43…` identical; empty candidate→merge diff).
+The authority chain —
+PR #579 (contract + exercised OD-W2-WS10-SCOPE) → PR #580 (sync) → PR #581 (implementation,
+accepted `1bc0690d…`, Owner-accepted precedence) → PR #582 (sync) → PR #583 (AHAEP SOP
+adoption) — re-verified from Git with second-parent = exact-accepted-candidate identity at
+every step. This closure candidate is the authorized base-forward re-materialization of the
+semantically repaired stale-base candidate `e9296dbc…` (sole parent `51ce5df3…`; preserved as
+evidence; NOT an ancestor); closure content identical except gate-context base identities;
+SOP-adoption and closure path sets mechanically disjoint (overlap 0).
+
+**2. Eligibility adjudicated, not assumed** (`docs/governance/RVR_6B_FORMAL_CLOSURE_RECORD.md`):
+the register row's own closure criterion is EVIDENCED (PR #581 + the committed evidence pack;
+`[EXEC]` re-probes at the PR #582 base `51ce5df3…` — 21 marker ids over exactly two domains;
+focused 48 (14/14/11/9) green; full suite re-run **4710 passed / 3 skipped / 1 xfailed /
+0 failed**; the PR #583 advancement is governance/markdown-only with zero runtime-reachable
+semantic delta, leaving this runtime evidence valid);
+W1-N3 stands CLOSED (bounded scope, PR #582); the complete register closure-gate sweep fired
+no blocker (**closure blocker count 0**); and — the gate's mandatory condition — the two
+carried observations receive **Option-A durable dispositions**: NEW OPEN register §3 rows for
+(a) the registry CWD/path-binding limitation (return: next authorized loader/accessor touch
+AND mandatorily the PSRR/deployment gate; latest safe gate before deployment/production;
+CONDITIONAL) and (b) the registry-prose ↔ `_INTENT_MARKERS` divergence surface (return: next
+authorized touch of either artifact AND RVR-7; latest safe gate before serious release;
+CONDITIONAL) — both FCORA-discoverable through the register; the precision residual stays
+`gap_relevance`/RVR-2 + RVR-7-owned. **Orphan risk after closure: ZERO. RVR-6B FORMAL CLOSURE
+ELIGIBLE: YES.**
+
+**3. This closure candidate.** Governance-only: the new `RVR_6B_FORMAL_CLOSURE_RECORD.md`;
+register (RVR-6b row conditional-closure wording + the two new Option-A anchor rows + header);
+this roadmap (append-only); `ACTIVE_INCREMENT_CONTRACT.md` (rotation);
+`CURRENT_PROJECT_STATE.md` (pin + entry). `OWNER_DECISION_REGISTER.md` UNCHANGED (closure-gate
+convention). `EXECUTABLE/TEST/PIN/PACK/DOMAIN-RULE DELTA: 0`; the implementation evidence pack
+is not rewritten; no historical record rewritten; `main` not reconciled. **Closure is
+CONDITIONAL AND NON-CIRCULAR: RVR-6b becomes formally closed if and when this exact closure
+candidate is Owner-accepted at exact SHA, merged (second parent = the accepted candidate;
+empty candidate→merge diff), and post-merge identity-verified.** Until then: `OWNER
+CLOSURE-LIFECYCLE AUTHORIZED: YES` · `OWNER EXACT CLOSURE-SHA ACCEPTED: NO` · `RVR-6B
+FORMALLY CLOSED: NO`. **Disposition: `RVR-6B FORMAL CLOSURE — GOVERNANCE CANDIDATE; NOT
+AUTHORITATIVE UNTIL MERGED AND POST-MERGE VERIFIED`.**
+
+**Boundaries — nothing downstream activated by this gate.** **`RVR-7 AUTHORIZED: NO`**
+(closure of RVR-6b never starts RVR-7 — Wave-3 requires its own Owner authorization after W2
+content stabilizes); `RVR-8 AUTHORIZED: NO`; `SECOND S2 RUN AUTHORIZED: NO`; `FCORA:
+RECORDED, NOT EXECUTED`; `CAP-12 / CAP-13 / IoT / Drones / Renewable: NOT AUTHORIZED`;
+`WS11 ACTIVATED: NO`; `MEANING-ADAPTIVE / TIER-2 ACTIVATED: NO`; `FULL ADAPTIVE QUESTIONING
+ACTIVATED: NO`; `OD-PDVG-12 EXERCISED: NO`; MG-8 Owner adjudication OPEN (no semantic
+repair); `W/M: 2/2 OWNER-ACCEPTED AND FROZEN`; `R4-C: OPEN`; `T1-A′ / T1-C′ / TIME-TO-VALUE /
+DIFFERENTIATION: OPEN`; `MLC DEFINITION FROZEN: NO`; `PSRR GO: NO`; `DEPLOYMENT AUTHORIZED:
+NO`; `PRODUCTION AUTHORIZED: NO`; `SERIOUS RELEASE AUTHORIZED: NO`; `PAID ACTIVATION
+AUTHORIZED: NO`. Any next gate requires its own separate Owner authorization.

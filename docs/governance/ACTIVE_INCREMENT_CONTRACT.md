@@ -41,9 +41,93 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — POST-W2-C-IMPLEMENTATION GOVERNANCE / STATUS SYNCHRONIZATION;
-governance-only write-gate candidate).** Base:
-**`b749c8873533ca6c48ebcf9be0c4023aa10cdd09`** — verified from Git at this gate as the **live
+**Status (current — RVR-6b FORMAL CLOSURE; governance-only closure-gate candidate).** Base:
+**`9f872a70c5fc296cf1b397450badf17c74b37641`** — verified from Git at this gate as the **live
+authoritative tip** of `feature/atomic-json-session-persistence` (**0 commits after it**;
+**PR #583** — the Accelerated High-Assurance Execution Protocol (AHAEP) adoption merge; first
+parent `51ce5df3…` (PR #582 — the post-W2-C-implementation governance-sync merge); second
+parent `9e19654…` — the exact Owner-accepted SOP candidate; merge tree `db2b5c43…` identical
+to the candidate tree; EMPTY candidate→merge diff; post-merge verified). This candidate is
+the authorized **base-forward re-materialization** of the semantically repaired stale-base
+closure candidate `e9296dbc…` (sole parent `51ce5df3…`; preserved as evidence; NOT an
+ancestor): closure content identical except these gate-context base identities; the SOP and
+closure path sets are mechanically disjoint (overlap 0).
+
+**Current authoritative truth (verified from Git, not prose):**
+`W2-C IMPLEMENTATION: AUTHORITATIVE — W2-C IMPLEMENTED: YES` (PR #581) · `PRECEDENCE
+OWNER-ACCEPTED: YES` · `W1-N3: CLOSED WITH EVIDENCE (bounded)` · `POST-W2-C SYNC:
+AUTHORITATIVE` (PR #582) · `W/M: 2/2 OWNER-ACCEPTED AND FROZEN`. The Owner authorized the
+**RVR-6b FORMAL CLOSURE lifecycle only** (closure NOT pre-decided; RVR-7 NOT authorized).
+This gate proved eligibility (register criterion EVIDENCED; complete closure sweep — blocker
+count 0; the two carried observations transferred to their own OPEN register anchors so
+closure orphans nothing) and created the closure instrument
+`docs/governance/RVR_6B_FORMAL_CLOSURE_RECORD.md` with the non-circular conditional
+statement: **`RVR-6B FORMALLY CLOSED: NO` until this exact closure candidate is
+Owner-accepted at exact SHA, merged, and post-merge identity-verified.** `OWNER EXACT
+CLOSURE-SHA ACCEPTED: NO`. `RVR-7 / RVR-8 / FCORA: NOT AUTHORIZED`; OD-PDVG-12 UNEXERCISED;
+MG-8 OPEN (no repair); WS11 dormant; Tier-2 and full adaptive questioning OFF;
+CAP-12/CAP-13/IoT/Drones/Renewable, deployment, production, Serious Release, Paid Activation:
+NOT AUTHORIZED.
+
+```
+INCREMENT CONTRACT — RVR-6b Formal Closure (governance only)
+Objective:                Execute the Owner-authorized RVR-6b formal-closure lifecycle: verify
+                          the PR #579→#582 authority chain live; reconstruct the closure
+                          criterion from the register row; adjudicate eligibility on
+                          [REPO]+[EXEC] evidence; give the carried CWD-binding and
+                          prose↔marker observations durable Option-A register anchors; create
+                          the conditional, non-circular closure record and the minimal
+                          status-surface synchronization.
+Owner authorization:      the Owner's RVR-6b formal-closure lifecycle authorization
+                          (reconstruction + candidate only — closure itself requires the
+                          Owner's later exact-SHA acceptance + merge + post-merge
+                          verification; RVR-7 explicitly NOT authorized)
+Risk level:               LEVEL 2 — governance/documentation only (Standard change class: C0/C1)
+Allowed paths:            docs/governance/RVR_6B_FORMAL_CLOSURE_RECORD.md (new);
+                          docs/governance/CURRENT_PROJECT_STATE.md;
+                          docs/governance/ACTIVE_EXECUTION_ROADMAP.md (append-only);
+                          docs/governance/ACTIVE_INCREMENT_CONTRACT.md (this rotation);
+                          docs/governance/DEFERRED_OBLIGATIONS_REGISTER.md (RVR-6b row +
+                          two new Option-A anchor rows + header)
+Forbidden paths:          engine/, web/, tests/, scripts/, domains/, schemas, digest pins,
+                          OWNER_DECISION_REGISTER.md (closure-gate convention), the merged
+                          contract/evidence-pack/closure records, historical records,
+                          preserved/rejected evidence
+Expected behavior:        closure eligibility adjudicated truthfully; RVR-6b reported CLOSED
+                          only through the conditional merge-gated statement; the observations
+                          survive closure in their own OPEN anchors; nothing else changes
+Non-goals:                RVR-7/RVR-8/FCORA authorization; MG-8 adjudication or repair;
+                          OD-PDVG-12; repair of either observation; any runtime change;
+                          release-value closure
+Acceptance criteria:      the Closure Grill C01…C76 (identity, eligibility proof, zero
+                          blockers, zero orphans, non-circularity, boundary preservation,
+                          bundle + isolated fetch-back)
+Required tests:           none — documentation-only (the [EXEC] probes and full-suite re-run
+                          are evidence, not new tests)
+Tests not required:       product tests — no product path changes
+Dependencies:             PR #579/#580/#581/#582 authoritative merges; the committed
+                          implementation evidence pack; the register RVR-6b row
+Unresolved decisions:     Owner exact-SHA acceptance of the closure candidate; the CWD-binding
+                          and prose↔marker future decisions (now anchored); MG-8 adjudication;
+                          OD-PDVG-12; the open Owner decisions in the register
+Stop conditions:          any merge-identity mismatch; any unresolved closure blocker or
+                          impending orphan (do NOT manufacture closure); any pressure to
+                          authorize RVR-7+ or rewrite history
+Independent-review scope: eligibility-evidence sufficiency; observation-anchor durability;
+                          non-circular conditional wording; sweep completeness; boundary
+                          preservation; no self-certification
+Merge authority:          owner, separately (candidate is NOT published, PR'd, or merged by
+                          the Creator)
+```
+
+---
+
+**Superseded (retained as history) — POST-W2-C-IMPLEMENTATION GOVERNANCE / STATUS
+SYNCHRONIZATION; MERGED AND AUTHORITATIVE via PR #582, merge
+`51ce5df3f8cf33c595fd626fbfb2aa7eaa40e3f8`.** Its "next eligible gate = RVR-6b FORMAL
+CLOSURE" line completed — the Owner authorized that closure lifecycle and the closure gate
+executed (see the active block above). Base:
+**`b749c8873533ca6c48ebcf9be0c4023aa10cdd09`** — verified from Git at that gate as the **live
 authoritative tip** of `feature/atomic-json-session-persistence` (**0 commits after it**;
 **PR #581** — the W2-C/RVR-6b implementation merge; first parent `6b4629d7…` (PR #580 — the
 authoritative post-W2-C-contract sync merge); second parent `1bc0690d…` — the exact
