@@ -1444,3 +1444,41 @@ confers it); `RVR-7 IMPLEMENTATION AUTHORIZED: NO`; `RVR-7 IMPLEMENTATION START 
 `LANGUAGE-CONDITIONAL ROUTING: FORBIDDEN`; `RUNTIME / MACHINE TRANSLATION: FORBIDDEN`;
 `PARALLEL ARABIC QUESTION REGISTRY: FORBIDDEN`. No Path Manifest acceptance, no Implementation
 START decision and no RVR-8 decision is registered here, because none exists.
+
+**F. RVR-7 Path Manifest acceptance and RVR-7 Implementation authorization — registered at the
+POST-RVR-7-IMPLEMENTATION GOVERNANCE SYNCHRONIZATION gate** (base
+`22c26881daf128691fd64a6f38c96380ff309b57`, PR #589). This section discharges the deferred
+registration duty standing at base contract §E.1 item 2 (register the START authorization and the
+exact acceptance, "paired with authoritative evidence", at the first appropriate post-acceptance /
+post-merge synchronization) and supersedes §E's closing sentence "No Path Manifest acceptance, no
+Implementation START decision and no RVR-8 decision is registered here, because none exists" **as
+to the first two only** — `RVR-8 AUTHORIZED: NO` is unchanged and no RVR-8 decision is registered.
+**Durable repository authority attaches to these registrations only upon Owner exact-SHA
+acceptance, merge and post-merge identity verification of the synchronization candidate that
+introduces them** — recording is not authority.
+
+**Provenance discipline — three levels, kept distinct and never conflated:**
+
+| Level | Meaning | Applied here |
+|---|---|---|
+| **Repository-recorded historical fact** | A proposition provable from committed repository content or Git object identity | The two merges and their full identities; the 14 changed paths; the absence, before this gate, of ANY committed instrument authorizing RVR-7 Implementation START — candidate `bf519dae…` added zero governance files |
+| **Current Owner confirmation** | A statement the Owner makes NOW, recorded as a present-tense confirmation and dated to THIS gate | That the RVR-7 implementation was intentionally authorized, and was subsequently exact-SHA accepted and merged |
+| **Inference** | Anything neither of the above | **NONE is recorded.** No historical timestamp, no prior committed authorization instrument, and no retroactive authorization document is invented, implied, reconstructed or backdated |
+
+| ID | Subject | Status | Evidence |
+|---|---|---|---|
+| OD-RVR7-PMF-ACCEPT | **RVR-7 Implementation Path Manifest Freeze — exact-SHA acceptance and merge.** The Owner accepted the freeze candidate at exact SHA `bbe828a25d7359e039c33ddb8b5d3a20e3006b20` and merged it via CREATE A MERGE COMMIT. On that instrument's own §14 terms the manifest thereby became authoritative. | `RVR-7 IMPLEMENTATION PATH MANIFEST: AUTHORITATIVE / FROZEN` — superseding the §E boundary line `RVR-7 IMPLEMENTATION PATH MANIFEST FROZEN: NO`, which was authority-at-that-time. Confers the manifest ONLY, never implementation. | **PR #588** merge `3891d9bdfddaa9a1e90d2811e9e3783d4f4395b5`; first parent `dad450bfb86cb96a29527a733a213897950c57ec` (PR #587); second parent = the exact accepted candidate; merge tree `100b5c8086675362d833c2b6375fcaf560f273ac`; EMPTY candidate→merge diff; PR state MERGED; post-merge identity verified `[REPO]` |
+| OD-RVR7-IMPL-START | **RVR-7 Implementation START — Owner authorization, recorded as CURRENT OWNER CONFIRMATION.** Repository-recorded historical fact: the frozen manifest §14 requires START to be a separate Owner decision under Contract Framework §H.3 sequencing rules 1 and 4, and **no committed authorization instrument for that START existed in the repository** at any point before this gate. Current Owner confirmation, recorded at this gate: the Owner confirms the RVR-7 implementation **was intentionally authorized**. The authoritative evidence of that authorization is the Owner's exact-SHA acceptance and merge act itself. | `RVR-7 IMPLEMENTATION START AUTHORIZED: YES (Owner-confirmed at this gate)` — superseding the §E boundary line `RVR-7 IMPLEMENTATION START AUTHORIZED: NO`, which was authority-at-that-time. **No historical instrument is asserted to have existed; the gap in contemporaneous recording is stated, not papered over.** | Current Owner confirmation recorded at base `22c26881…`; corroborated by the merge act and verified merge identity below `[OWNER-PREMISE + REPO]` |
+| OD-RVR7-IMPL-ACCEPT | **RVR-7 Implementation — exact-SHA acceptance and merge.** The Owner accepted the implementation candidate at exact SHA `bf519dae4d256ac1528505eaa57ea7c562d20d55` and merged it via CREATE A MERGE COMMIT. Scope as merged: 14 changed paths — the 12 frozen manifest paths plus the two separately Owner-authorized D-P6-18 regression test paths; bounded Arabic semantic repair of N-PF-3 (material narrowing) and N-PF-4 (technical-meaning shift). | `RVR-7 IMPLEMENTATION: AUTHORITATIVE REPOSITORY CONTENT` · `RVR-7 FORMALLY CLOSED: NO`. Authority of the implementation is NOT closure and NOT evidence discharge. | **PR #589** merge `22c26881daf128691fd64a6f38c96380ff309b57`; first parent `3891d9bd…`; second parent = the exact accepted candidate; merge tree `9bd0d3f4e4493fae96e89d87bd9e50f4f00ac179`; EMPTY candidate→merge diff; PR state MERGED; post-merge identity verified `[REPO]` |
+
+**Boundary carried with these registrations (none is weakened by them):**
+`RVR-7 FORMALLY CLOSED: NO`; `RVR-7 FORMAL CLOSURE AUTHORIZED: NO` (eligibility only — the next
+gate requires its own separate explicit Owner authorization); `HUMAN BILINGUAL REVIEW SATISFIED:
+NO` (base contract §L.2.1 is binding and genuinely unsatisfied — not closed, softened, or deemed
+satisfied by any registration here); `W1-N1 DISCHARGED: NO`; `W1-N2 DISCHARGED: NO`;
+`RVR-7 IMPLEMENTATION EVIDENCE PACK: ABSENT`; `RVR-8 AUTHORIZED: NO`;
+`CAP-12 / CAP-13 / CAP-14 / CAP-18 ACTIVATED: NO`; `LANGUAGE-CONDITIONAL ROUTING: FORBIDDEN`;
+`RUNTIME / MACHINE TRANSLATION: FORBIDDEN`; `PARALLEL ARABIC QUESTION REGISTRY: FORBIDDEN`;
+`OD-PDVG-12 EXERCISED: NO`; `DEPLOYMENT / PRODUCTION / SERIOUS RELEASE / PAID ACTIVATION: NOT
+AUTHORIZED`; `main` NOT RECONCILED. No RVR-8 decision and no closure decision is registered here,
+because none exists.

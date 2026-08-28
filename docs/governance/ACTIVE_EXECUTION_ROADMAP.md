@@ -16202,3 +16202,176 @@ TIER-2 / WS11: NOT ACTIVATED`; `LANGUAGE-CONDITIONAL ROUTING: FORBIDDEN`; `RUNTI
 TRANSLATION: FORBIDDEN`; `PARALLEL ARABIC QUESTION REGISTRY: FORBIDDEN`; MG-8 OPEN with semantic
 repair NOT authorized; `OD-PDVG-12 EXERCISED: NO`; `FCORA: RECORDED, NOT EXECUTED`;
 `DEPLOYMENT / PRODUCTION / SERIOUS RELEASE / PAID ACTIVATION: NOT AUTHORIZED`.
+
+---
+
+## POST-RVR-7-IMPLEMENTATION GOVERNANCE SYNCHRONIZATION — PR #588 + PR #589 AUTHORITATIVE; RVR-7 IMPLEMENTATION AUTHORITATIVE, FORMAL CLOSURE NOT COMPLETE (governance-only synchronization candidate; append-only entry)
+
+**Append-only synchronization entry.** The entry above was written **before** its own candidate
+merged, and — unlike every comparable predecessor — named no next eligible gate. Two qualifying
+state-change events have occurred since, and **no committed authority surface recorded either**.
+Under §11 of this roadmap ("This roadmap MUST be updated … at every one of these events, and is
+otherwise stale: … *A phase authorization is committed* … *A phase implementation is committed*")
+the roadmap was **STALE**. This gate removes that staleness. It records already-authoritative Git
+truth; it decides nothing new and authorizes nothing.
+
+**1. Entry identity (verified live from Git at this gate).** Base = live authoritative tip
+`22c26881daf128691fd64a6f38c96380ff309b57` of `feature/atomic-json-session-persistence`,
+**0 commits after it**. `origin/main` (`331700e2b3108798db4bd148ed3bb4973f05d266`) is **not** the
+authoritative surface for this lane and carries none of RVR-7; main reconciliation remains a
+separate governed question, not decided here.
+
+**2. PR #588 — RVR-7 IMPLEMENTATION PATH MANIFEST FREEZE: AUTHORITATIVE.** Merge
+`3891d9bdfddaa9a1e90d2811e9e3783d4f4395b5`; first parent `dad450bfb86cb96a29527a733a213897950c57ec`
+(PR #587); second parent `bbe828a25d7359e039c33ddb8b5d3a20e3006b20` (the exact Owner-accepted
+freeze candidate); merge tree `100b5c8086675362d833c2b6375fcaf560f273ac`; EMPTY candidate→merge
+diff; post-merge identity verified. **Supersession:** the prior entry's `RVR-7 IMPLEMENTATION PATH
+MANIFEST FROZEN: NO` and `RVR_7_IMPLEMENTATION_PATH_MANIFEST_FREEZE_CANDIDATE.md` §14's
+`PATH MANIFEST AUTHORITATIVE/FROZEN: NO` were **authority-at-that-time**; that instrument's own
+§14 makes it authoritative "on Owner exact-SHA acceptance, merge, and post-merge identity
+verification of this exact candidate", which has occurred. Current truth:
+**`RVR-7 IMPLEMENTATION PATH MANIFEST: AUTHORITATIVE / FROZEN`** — the exact 12-path manifest,
+no wildcard, and its architecture fences, test/evidence plan and pin consequences.
+
+**3. PR #589 — RVR-7 IMPLEMENTATION: AUTHORITATIVE REPOSITORY CONTENT.** Merge
+`22c26881daf128691fd64a6f38c96380ff309b57`; first parent `3891d9bd…`; second parent
+`bf519dae4d256ac1528505eaa57ea7c562d20d55` (the exact Owner-accepted implementation candidate);
+merge tree `9bd0d3f4e4493fae96e89d87bd9e50f4f00ac179`; EMPTY candidate→merge diff; post-merge
+identity verified; PR state MERGED via CREATE A MERGE COMMIT. Scope as merged: **14 changed
+paths** — the 12 frozen manifest paths plus the two D-P6-18 regression test paths the Owner
+separately authorized. The bounded Arabic semantic repair of **N-PF-3** (material narrowing) and
+**N-PF-4** (technical-meaning shift) is therefore authoritative. **This entry does not reopen,
+re-review, or re-litigate that implementation, its architecture, or N-PF-3 / N-PF-4.**
+
+**4. Implementation-authorization provenance — three levels, not conflated.**
+(a) **Repository-recorded historical fact:** the frozen manifest §14 requires Implementation START
+to be "a separate Owner decision under §H.3 sequencing rules 1 and 4", and **no committed
+authorization instrument for that START exists in the repository** — candidate `bf519dae…` added
+zero governance files. (b) **Current Owner confirmation, recorded at this gate:** the Owner
+confirms that the RVR-7 implementation **was intentionally authorized**, and was subsequently
+**exact-SHA accepted and merged**; the merge act and its verified identity are the authoritative
+evidence. (c) **Inference — explicitly none:** no historical timestamp, no prior committed
+instrument, and no retroactive authorization document is invented, implied, or backdated here.
+Registered in `OWNER_DECISION_REGISTER.md`, discharging the deferred registration duty standing at
+base contract §E.1 item 2.
+
+**5. RVR-7 status — authority is not closure.** **`RVR-7 IMPLEMENTATION: AUTHORITATIVE`** ·
+**`RVR-7 FORMALLY CLOSED: NO`**. No `RVR_7_FORMAL_CLOSURE_RECORD.md` and no RVR-7 implementation
+evidence pack exist (contrast `RVR_6A_FORMAL_CLOSURE_RECORD.md`, `RVR_6B_FORMAL_CLOSURE_RECORD.md`,
+`W2_B_RVR6A_IMPLEMENTATION_EVIDENCE_PACK.md`, `W2_C_RVR6B_IMPLEMENTATION_EVIDENCE_PACK.md`). Open
+RVR-7 closure obligations, none discharged here:
+**`HUMAN BILINGUAL REVIEW SATISFIED: NO`** — base contract §L.2.1 is binding, requires demonstrated
+EN/AR competence at the product's technical register, and states machine translation "may NEVER be
+the semantic-equivalence authority"; the review adopted at PR #589 is AI reviewer evidence and the
+Owner adopted its repair conclusions only. This obligation is **genuinely unsatisfied and is not
+closed, softened, or deemed satisfied by this entry**;
+**`W1-N1 DISCHARGED: NO`** (verification input on the RVR-7 row's closure-evidence field per base
+contract §E.2; no independent row, and none created here);
+**`W1-N2 DISCHARGED: NO`**, reclassified **`TECHNICAL EVIDENCE PRODUCED / DISCHARGE NOT YET
+ADJUDICATED`** — see §6;
+RVR-7 implementation evidence pack: **ABSENT**;
+per-question EN↔AR semantic-equivalence review artifact (manifest §8 item 24): **ABSENT**.
+
+**6. W1-N2 — precise classification, neither erased nor over-claimed.** The registered discharge
+mechanism is "a merged Arabic adversarial regression over the enumerated small-talk corpus,
+exercised through the real answer-integration path (not a unit stub), with EN↔AR differential
+assertions, independently reproduced at Independent Review." Verified at this base
+`[EXEC/REPO]`: `tests/test_rvr7_web_arabic_serving.py` §4 carries `W1N2_ARABIC_SMALL_TALK` — **12
+enumerated Arabic utterances** — driven through the **real Flask served route** via the test
+client with assertions on live `SESSION_STORE` canonical state (no unit stub), proving small talk
+never closes a gap, advances maturity or advances the stage, and that the page keeps serving a
+substantive Arabic ask. **SATISFIED LIMBS:** merged; enumerated corpus; real answer-integration
+path. **OUTSTANDING LIMBS:** (i) **EN↔AR differential assertions over the adversarial corpus**
+— the §4 tests assert Arabic-side behavior only; the file's EN/AR differential test covers
+substantive answers, not the small-talk corpus; (ii) **independent reproduction at Independent
+Review, recorded** — no evidence pack exists to record it. **Therefore `W1-N2 DISCHARGED: NO` and
+the row stays OPEN**; the independent-reproduction and formal-adjudication limbs are preserved,
+not erased. Discharge is a closure-gate adjudication and is **not performed here**.
+
+**7. §K.2 trigger — adjudicated from exact artifact definitions; DID NOT FIRE.** A material
+contradiction existed between the Independent Reviewer (trigger did NOT fire — surfaces untouched)
+and a later read-only reconstruction (trigger DID fire — treating the touched Path-N
+question-content artifacts as "committed per-domain registry content"). Resolved at this gate
+against exact repository evidence, **not harmonized and not forced**:
+`docs/governance/path_n_content_config/` contains **four** files, two per domain. Base contract
+§K.2 defines its surface as "the committed registry intent prose (**primary_intent /
+answer_objective / completion_condition**)". Those three field names occur **only** in
+`electronics_electrical_question_intent_registry.json` (11 each) and
+`mechanical_question_intent_registry.json` (10 each) — 21 total, matching the 21 committed intents
+— and occur **zero** times in either `..._path_n_questions.json` `[EXEC]`. The frozen manifest
+independently confirms the distinction: §6 lists the two `..._path_n_questions.json` as MODIFY
+paths 1–2, while **§7 EXCLUDES** both `..._question_intent_registry.json` files ("English audit
+prose, never displayed") **and** `engine/intent_serving.py`. All three §K.2 trigger surfaces are
+**byte-identical across `dad450bf → 3891d9bd → 22c26881`** (identical blob SHAs
+`7e35d1c2…`, `0e653c6e…`, `de9b7ab0…`) `[EXEC]`, and §K.2's own stated baseline — registries 0
+Arabic characters, `_INTENT_MARKERS` 578 — still holds exactly at this tip. Manifest §8 item 32 is
+decisive on intent: §K.2 is invoked "**if** the markers change"; they did not.
+**`§K.2 CONDITIONAL ACCEPTANCE-EVIDENCE OBLIGATION (i)–(v): DID NOT FIRE`** — the reconstruction
+reading is **withdrawn as erroneous**; the Independent Reviewer's reading is **upheld**.
+**What remains genuinely open is a different item** and is not renamed away: manifest §8
+**item 31 OBSERVATION** — `_INTENT_MARKERS` re-validation against the new Arabic question wording,
+since the 21 Arabic marker sets were authored against English wording (this is the substance
+PR #589 flagged, whose N-PF-3 answer markers still carry only environmental-condition vocabulary on
+both language surfaces) — together with the standing DOR Option-A anchor row, which remains
+**OPEN**, **owned by the W2-C content/marker surfaces**, **NOT transferred to RVR-7**, **CONDITIONAL**,
+latest safe gate **before serious release**. Its `_INTENT_MARKERS` conjunct is untouched here.
+
+**8. Active Increment Contract rotation — recording only, authorizing nothing.** The AIC still
+carried the PR #587-based *governance-only* freeze candidate as its Active contract, which had
+already merged. It is rotated to the current post-implementation state. The rotation records that
+the RVR-7 implementation is merged and authoritative; it **does not** re-authorize it, does not
+open an implementation contract, and confers **no execution authorization of any kind**. No
+implementation contract is active after this rotation.
+
+**9. Deferred obligations — preserved, owned, discoverable.** No row is closed, deleted, merged,
+re-owned or made unreachable by this gate. Status-only updates: the RVR-7 row advances from
+"CONTRACT FRAMEWORK NOW AUTHORITATIVE (PR #586); IMPLEMENTATION NOT AUTHORIZED" to implementation
+authoritative / closure open, keeping its closure evidence undischarged; the W1-N2 row takes the
+§6 classification; the Option-A anchor row records the §7 adjudication without altering owner,
+trigger, disposition or blocking level. The Increment-3 generated-output language-parity row
+(NBF, LANGUAGE owner `UNRESOLVED`, latest safe gate before Serious Release) and the DOR
+characterization inconsistency remain OPEN, deferred and non-blocking. **Orphan risk: ZERO.**
+
+**10. Anti-delay disposition — what this gate unblocks.** The Owner's standing direction is that
+formal-closure pendency must not freeze unrelated technical development, and that
+minor/reversible/documentary items be classified for deferral rather than used to freeze progress.
+Applied here: the **only** blocker of further work was this roadmap's staleness (`CLAUDE.md`: "Do
+not continue under a stale roadmap"). None of the open RVR-7 closure obligations — human bilingual
+review, W1-N1, W1-N2, the evidence pack, manifest §8 item 31, the Increment-3 row, the DOR
+characterization inconsistency — blocks unrelated executable technical development; each is scoped
+to RVR-7 Formal Closure or to a later latest-safe gate. **Once this synchronization is merged and
+post-merge verified, unrelated technical development is no longer blocked by RVR-7 closure
+evidence** — subject, as always, to its own separate Owner authorization, which this gate does not
+grant.
+
+**11. This candidate — non-circular.** Governance/documentation only: this roadmap (append-only);
+`ACTIVE_INCREMENT_CONTRACT.md` (rotation); `CURRENT_PROJECT_STATE.md` (pointer + entry);
+`DEFERRED_OBLIGATIONS_REGISTER.md` (status-only row edits + header maintenance-gate line);
+`OWNER_DECISION_REGISTER.md` (§E registration). `EXECUTABLE / TEST / PIN / PACK / DOMAIN-RULE /
+CONTENT / RUNTIME DELTA: 0`; `_INTENT_MARKERS` untouched; no runtime code, test, or content file
+touched; no historical record rewritten; no frozen instrument rewritten; `main` not reconciled.
+**Synchronization becomes authoritative if and when this exact candidate is Owner-accepted at
+exact SHA, merged (second parent = the accepted candidate; EMPTY candidate→merge diff) and
+post-merge identity-verified.** Until then: `OWNER SYNCHRONIZATION-LIFECYCLE AUTHORIZED: YES` ·
+`OWNER EXACT SYNC-SHA ACCEPTED: NO`. **Disposition: `POST-RVR-7-IMPLEMENTATION GOVERNANCE
+SYNCHRONIZATION — GOVERNANCE CANDIDATE; NOT AUTHORITATIVE UNTIL MERGED AND POST-MERGE VERIFIED`.**
+
+**Next eligible gate — `RVR-7 FORMAL CLOSURE` (its own evidence/closure lifecycle, on the RVR-6a /
+RVR-6b precedent). ELIGIBILITY ONLY — this names the gate, does NOT authorize it, does NOT start
+it, and does NOT pre-decide its outcome; it requires its own separate explicit Owner
+authorization.** Its known prerequisites, none satisfied at this base: the human bilingual EN/AR
+semantic-equivalence review (§L.2.1); the per-question equivalence artifact; W1-N1 discharge; the
+W1-N2 outstanding limbs of §6; an RVR-7 implementation evidence pack; manifest §8 item 31
+disposition; and an eligibility adjudication with a register closure-gate sweep.
+
+**Boundaries — nothing downstream activated by this gate.** `RVR-7 FORMALLY CLOSED: NO`;
+`RVR-7 FORMAL CLOSURE AUTHORIZED: NO`; `RVR-8 AUTHORIZED: NO`; `W1-N1 DISCHARGED: NO`;
+`W1-N2 DISCHARGED: NO`; `HUMAN BILINGUAL REVIEW SATISFIED: NO`; `CAP-12 ACTIVATED: NO`;
+`CAP-13 ACTIVATED: NO`; `CAP-14 ACTIVATED: NO`; `CAP-18 ACTIVATED: NO`; Manufacturing / Market
+Reality / Commercial Readiness implementation: **NOT AUTHORIZED**; `gap_relevance` UNCHANGED;
+`W/M: 2/2` frozen; `FULL ADAPTIVE QUESTIONING / MEANING-ADAPTIVE / TIER-2 / WS11: NOT ACTIVATED`;
+`LANGUAGE-CONDITIONAL ROUTING: FORBIDDEN`; `RUNTIME / MACHINE TRANSLATION: FORBIDDEN`;
+`PARALLEL ARABIC QUESTION REGISTRY: FORBIDDEN`; MG-8 OPEN with semantic repair NOT authorized;
+`OD-PDVG-12 EXERCISED: NO`; `FCORA: RECORDED, NOT EXECUTED`; `PSRR GO: NO`;
+`DEPLOYMENT / PRODUCTION / SERIOUS RELEASE / PAID ACTIVATION: NOT AUTHORIZED`;
+`main` NOT RECONCILED. Any next gate requires its own separate Owner authorization.
