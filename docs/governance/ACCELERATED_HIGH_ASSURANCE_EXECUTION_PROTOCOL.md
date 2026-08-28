@@ -2,11 +2,17 @@
 
 **Document ID:** ACCELERATED_HIGH_ASSURANCE_EXECUTION_PROTOCOL
 **Type:** General lifecycle-mechanics standard operating protocol.
-**Status:** PROPOSED / NON-AUTHORITATIVE — this document becomes authoritative only
-if and when the exact candidate introducing it completes the full governed adoption
-lifecycle: Independent Focused Governance Review, Owner exact-SHA acceptance, merge
-via CREATE A MERGE COMMIT, and post-merge identity verification. Until then no rule
-in this document governs anything.
+**Status:** **AUTHORITATIVE.** The adoption condition originally stated here — "becomes
+authoritative only if and when the exact candidate introducing it completes the full governed
+adoption lifecycle: Independent Focused Governance Review, Owner exact-SHA acceptance, merge
+via CREATE A MERGE COMMIT, and post-merge identity verification" — was **satisfied at PR #583**
+(merge `9f872a70c5fc296cf1b397450badf17c74b37641`; second parent
+`9e19654221e0bb74fc33dda930629dd1661383aa` = the exact Owner-accepted SOP candidate; merge tree
+`db2b5c431f5a907772f7d939c3472a7f07e97c3b` identical; post-merge identity verified; dedicated
+governed-gate record in `ACTIVE_EXECUTION_ROADMAP.md` §"AHAEP SOP ADOPTION (PR #583)"). The
+pre-adoption `PROPOSED / NON-AUTHORITATIVE` wording was authority-at-that-time and is preserved
+above as the condition, not as current status. `CLAUDE.md` binds this document as "the binding
+owner of general lifecycle mechanics".
 **Subordinate to:** `CLAUDE.md`; `docs/governance/LEAN_GOVERNANCE_AND_AGENT_CONTINUITY_PROTOCOL.md`
 (binding; "Lean" below); the committed anchors; `MVP_SCOPE_FREEZE.md`;
 `docs/governance/ACTIVE_EXECUTION_ROADMAP.md`; `docs/governance/ACTIVE_INCREMENT_CONTRACT.md`;
@@ -212,6 +218,73 @@ no squash, no rewrite of the frozen commit — ever. A frozen candidate that
 needs change is replaced by a fresh sibling (§12); it is never mutated. A
 candidate must not contain its own SHA in its tree (anti-circularity); its
 identity lives in evidence artifacts outside the tree.
+
+## 9A. Lead gate preflight (bounded)
+
+**Defect this closes (§26 basis):** material gates were repeatedly entered with an
+incomplete first Creator instruction, so gate requirements — including requirements no
+Creator or AI review can honestly satisfy alone — surfaced one message at a time and
+restarted review of unchanged facts. This section closes only that residual. It defines
+no risk taxonomy, no review depth, and no current state.
+
+**Rule.** Before issuing the first Creator instruction for a **material** gate (§3), the
+Lead establishes the gate's parameters from authoritative repository evidence, so that the
+instruction is materially complete in one pass wherever reasonably possible. The Preflight
+is **bounded by §6 differential reconstruction**: it reads last verified authoritative truth
+plus the current delta, newly fired obligations and new Owner decisions — it does **not**
+re-derive unchanged architecture, re-audit history (Lean §6 governs full-audit triggers), or
+reopen authoritative decisions absent a §7 invalidation. Preflight depth is proportional to
+Lean LEVEL/DEPTH; for a bounded FOCUSED DIFFERENTIAL or MECHANICAL operation (§4) it is
+correspondingly short.
+
+**Minimum content, where applicable to the gate:** objective; authoritative base;
+authorization state; exact scope and non-goals; governing contracts and Owner decisions;
+the architecture/product owner; acceptance criteria; required evidence and expected test
+layers; baseline assurance proposed for inheritance **with its invalidation conditions**
+(§7); dependencies; known material observations; relevant Deferred Obligations whose
+triggers this gate may fire (§22); what constitutes a BLOCKER and what may safely be
+deferred (§13); likely failure surfaces; and the publication/merge fences that apply.
+
+**Externally dependent requirements — identified at entry, not at closure.** The Preflight
+explicitly identifies any gate requirement that Creator execution or AI review **cannot
+honestly satisfy alone** — for example human bilingual review, legal, tax, security, privacy,
+specialist-engineering or domain-specialist review, an Owner premise or decision, or an
+external provider/adviser dependency. For each, the Preflight records: the owner; the exact
+gate that requires it; its trigger; its evidence standard; its latest safe gate; whether it
+blocks the current gate or only a downstream one; and whether it can proceed in parallel.
+An externally dependent requirement **must not freeze unrelated technically executable work**
+unless authoritative governance makes that specific dependency blocking for that work. No
+reviewer identity, credential, qualification, signature or external opinion is ever
+fabricated; where such a requirement is unsatisfied it is recorded as unsatisfied.
+
+**Output.** A compact Preflight block — this protocol's anti-bureaucracy principle (§1)
+applies to the Preflight itself. It carries no authority of its own: it records what the
+authoritative sources already say, and any conflict is resolved by those sources (Lean §10).
+An unavailable parameter is recorded as `UNKNOWN` with what would resolve it — never guessed.
+
+```text
+GATE PREFLIGHT
+GATE / OBJECTIVE: <bounded statement>
+AUTHORITATIVE BASE: <live-verified per §5>
+AUTHORIZATION STATE: <exact, per the authorizing source>
+SCOPE / NON-GOALS: <exact>
+GOVERNING CONTRACTS + OWNER DECISIONS: <refs>
+ACCEPTANCE CRITERIA: <refs>
+REQUIRED EVIDENCE / TEST LAYERS: <list>
+INHERITABLE BASELINE + INVALIDATION CONDITIONS: <per §7, or NONE>
+FIRED / APPROACHING DEFERRED OBLIGATIONS: <or NONE>
+EXTERNALLY DEPENDENT REQUIREMENTS: <per the clause above, or NONE>
+BLOCKER DEFINITION / SAFE-DEFERRAL BOUNDARY: <per §13>
+LIKELY FAILURE SURFACES: <list>
+PUBLICATION / MERGE FENCES: <exact>
+UNKNOWNS: <or NONE>
+```
+
+**Limits.** The Preflight is not a second reconstruction ritual, not a current-state owner
+(§24), and not an authorization (§25). It never lowers a Lean or referenced-owner requirement,
+and it never substitutes for the Creator Grill (§10), Independent Review (§15), or Owner
+exact-SHA acceptance (§18). A Preflight that cannot be completed within its bounds reports the
+unknown and escalates (Lean §10) rather than expanding into speculative discovery.
 
 ## 10. Creator lifecycle and Creator Grill
 
@@ -585,6 +658,15 @@ requirement; an explicit Owner safeguard change; or authoritative
 supersession. Material amendments follow the full governed candidate
 lifecycle defined here, including Independent Review and Owner exact-SHA
 acceptance.
+
+### 26.1 Amendment record
+
+- **Amendment 1 — §9A Lead gate preflight (bounded), and the §Status correction.** Basis
+  under this section: a **proven workflow defect** (material gates entered on incomplete
+  first instructions, and externally dependent requirements discovered at closure rather
+  than at entry). Scope: additive §9A plus the correction of a status line whose own
+  adoption condition had already been satisfied at PR #583. No existing rule was weakened,
+  removed, or renumbered; no taxonomy, owner, or current state was created or moved.
 
 ## 27. Legacy migration and supersession record
 
