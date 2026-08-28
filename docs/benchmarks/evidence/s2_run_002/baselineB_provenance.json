@@ -1,0 +1,4 @@
+{
+ "reuse": "Baseline B responses reused BYTE-IDENTICAL from the S2-PATHN-RUN-001 evidence pack (same frozen seeds, so the general-purpose one-shot baseline is unchanged input; re-authoring it would move the baseline between runs and break the \u00a715.8 per-case/per-language comparison). Assistant named inside the file, unchanged. An evaluator activity outside the product; nothing fed back into the product.",
+ "sha256_of_reused_file": "44267b3bdbc15e993ac6f67ebc327071326a7f31bfc050bbd39b351f1c516aa8"
+}

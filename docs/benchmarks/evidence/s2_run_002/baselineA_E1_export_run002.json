@@ -1,0 +1,153 @@
+{
+ "list_status": 302,
+ "dids_found": [
+  "decision-4369ce92db97"
+ ],
+ "export": {
+  "blocking_reasons": [
+   {
+    "affected_candidate_id": null,
+    "affected_constraint_id": null,
+    "affected_scope": "decision",
+    "clearing_guidance": null,
+    "code": "missing_false_positive_tolerance",
+    "text": "Acceptable false-positive (false-braking) rate is unknown."
+   },
+   {
+    "affected_candidate_id": null,
+    "affected_constraint_id": null,
+    "affected_scope": "decision",
+    "clearing_guidance": "Record an externally-produced operator or physical observation/result against this gap, then make an explicit assessment and resolution decision. This lane performs no verification; recorded evidence is operator-reported and unverified.",
+    "code": "missing_physical_or_calibration_information",
+    "text": "No physical / calibration / field result is available."
+   },
+   {
+    "affected_candidate_id": "cand-997029bd8f5e",
+    "affected_constraint_id": null,
+    "affected_scope": "candidate",
+    "clearing_guidance": null,
+    "code": "candidate_not_yet_comparable",
+    "text": "Candidate wired_brake_lever_switch lacks inputs to be compared."
+   },
+   {
+    "affected_candidate_id": "cand-996ba179fe29",
+    "affected_constraint_id": null,
+    "affected_scope": "candidate",
+    "clearing_guidance": null,
+    "code": "candidate_not_yet_comparable",
+    "text": "Candidate accelerometer_inference lacks inputs to be compared."
+   },
+   {
+    "affected_candidate_id": "cand-88f6dcad41f0",
+    "affected_constraint_id": null,
+    "affected_scope": "candidate",
+    "clearing_guidance": null,
+    "code": "candidate_not_yet_comparable",
+    "text": "Candidate wheel_speed_inference lacks inputs to be compared."
+   }
+  ],
+  "candidates": [
+   {
+    "candidate_id": "cand-997029bd8f5e",
+    "disposition_basis": null,
+    "disposition_reason": null,
+    "name": "wired_brake_lever_switch",
+    "option_status": "active"
+   },
+   {
+    "candidate_id": "cand-996ba179fe29",
+    "disposition_basis": null,
+    "disposition_reason": null,
+    "name": "accelerometer_inference",
+    "option_status": "active"
+   },
+   {
+    "candidate_id": "cand-88f6dcad41f0",
+    "disposition_basis": null,
+    "disposition_reason": null,
+    "name": "wheel_speed_inference",
+    "option_status": "active"
+   }
+  ],
+  "change_impact_summary": null,
+  "constraints": [],
+  "decision_id": "decision-4369ce92db97",
+  "decision_question": "Which braking-detection architecture should the bicycle automatic brake light use?",
+  "evidence": [],
+  "export_metadata": {
+   "export_format": "json",
+   "export_revision": 0,
+   "generated_at": "2026-08-28T23:10:08.879713+00:00",
+   "limitations": [
+    "in-memory only; not durable",
+    "restart restoration not supported",
+    "no benchmark run",
+    "no external retrieval",
+    "no physical testing",
+    "no verified evidence",
+    "no final technical selection",
+    "advisory only",
+    "no verification performed by this lane; recorded evidence is operator-reported and unverified"
+   ],
+   "schema_version": "fdc001-decision-workspace-v1"
+  },
+  "gap_assessments": [],
+  "gaps": [
+   {
+    "blocks_readiness": true,
+    "gap_id": "gap-5c2a5cba6b61",
+    "reclassification_rationale": null,
+    "text": "Acceptable false-positive (false-braking) rate is unknown."
+   },
+   {
+    "blocks_readiness": true,
+    "gap_id": "gap-07f664f11ec6",
+    "reclassification_rationale": null,
+    "text": "No physical / calibration / field result is available."
+   }
+  ],
+  "history": [],
+  "inputs": [
+   {
+    "candidate_ids": [],
+    "claim_class": "owner_requirement",
+    "claim_id": "claim-65f11e3dad39",
+    "confirmed": false,
+    "decision_relevant": false,
+    "display_label": "owner_requirement",
+    "provenance": "seeded_owner_context",
+    "source_label": null,
+    "text": "Automatic brake indication without manually pressing a control."
+   },
+   {
+    "candidate_ids": [],
+    "claim_class": "owner_requirement",
+    "claim_id": "claim-2cf8b02edb04",
+    "confirmed": false,
+    "decision_relevant": false,
+    "display_label": "owner_requirement",
+    "provenance": "seeded_owner_context",
+    "source_label": null,
+    "text": "Avoid or minimize a wire to the brake lever."
+   },
+   {
+    "candidate_ids": [],
+    "claim_class": "assumption",
+    "claim_id": "claim-382a033b412f",
+    "confirmed": false,
+    "decision_relevant": false,
+    "display_label": "assumption",
+    "provenance": "seeded_owner_context",
+    "source_label": null,
+    "text": "Rough roads and vibration are an owner-stated concern."
+   }
+  ],
+  "owner_preference": null,
+  "readiness_status": "insufficient_information",
+  "review_required_label": "REVIEW REQUIRED",
+  "revision": 0,
+  "risks": [],
+  "schema_version": "fdc001-decision-workspace-v1"
+ },
+ "export_status": 200
+}

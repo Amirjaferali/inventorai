@@ -1,0 +1,5833 @@
+{
+ "run_id": "S2-PATHN-RUN-002",
+ "rvr8": true,
+ "evaluated_rc_sha": "1f3d9d14b3b645df9595889861140910d63b918c",
+ "started_utc": "2026-08-28T23:08:38.017751+00:00",
+ "finished_utc": "2026-08-28T23:08:38.599185+00:00",
+ "records": {
+  "R1": {
+   "record_id": "R1",
+   "case": "E-1",
+   "language": "en",
+   "perspective": "novice",
+   "anomalies": [],
+   "admission_steps": [
+    {
+     "step": "POST /start (idea only)",
+     "status": 200
+    },
+    {
+     "step": "POST /start + domain_choice=electronics_electrical",
+     "status": 200
+    },
+    {
+     "step": "POST /start + choice+confirm=electronics_electrical",
+     "status": 302,
+     "location": "/session/ce76355a-fc05-4707-b9cc-6b68ec09c75a"
+    }
+   ],
+   "interactions": [
+    {
+     "n": 0,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "When I brake, the light at the back should come on by itself, without me pressing anything. I am considering three ways it could notice the braking: a small switch connected to the brake lever, a part that feels the bike slowing down, or something that watches how fast the wheel is turning. When it notices braking, it turns the light on.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 1,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "The main parts are: something that notices the braking (the lever switch, or the part that feels slowing, or the wheel watcher), and the brake light itself that comes on. I would rather not have a wire going to the brake lever if I can avoid it.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 2,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "Step by step: I squeeze the brakes, the detector notices it, and the light comes on so people behind me know I am slowing. I honestly do not know more of the inner details yet.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 3,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "Step by step: I squeeze the brakes, the detector notices it, and the light comes on so people behind me know I am slowing. I honestly do not know more of the inner details yet.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 4,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "Step by step: I squeeze the brakes, the detector notices it, and the light comes on so people behind me know I am slowing. I honestly do not know more of the inner details yet.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 5,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "Step by step: I squeeze the brakes, the detector notices it, and the light comes on so people behind me know I am slowing. I honestly do not know more of the inner details yet.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 6,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "Step by step: I squeeze the brakes, the detector notices it, and the light comes on so people behind me know I am slowing. I honestly do not know more of the inner details yet.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 7,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "Step by step: I squeeze the brakes, the detector notices it, and the light comes on so people behind me know I am slowing. I honestly do not know more of the inner details yet.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 8,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "Step by step: I squeeze the brakes, the detector notices it, and the light comes on so people behind me know I am slowing. I honestly do not know more of the inner details yet.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 9,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "Step by step: I squeeze the brakes, the detector notices it, and the light comes on so people behind me know I am slowing. I honestly do not know more of the inner details yet.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 10,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "Step by step: I squeeze the brakes, the detector notices it, and the light comes on so people behind me know I am slowing. I honestly do not know more of the inner details yet.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 11,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "Step by step: I squeeze the brakes, the detector notices it, and the light comes on so people behind me know I am slowing. I honestly do not know more of the inner details yet.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 12,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "Step by step: I squeeze the brakes, the detector notices it, and the light comes on so people behind me know I am slowing. I honestly do not know more of the inner details yet.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 13,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "Step by step: I squeeze the brakes, the detector notices it, and the light comes on so people behind me know I am slowing. I honestly do not know more of the inner details yet.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 14,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "Step by step: I squeeze the brakes, the detector notices it, and the light comes on so people behind me know I am slowing. I honestly do not know more of the inner details yet.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 15,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "Step by step: I squeeze the brakes, the detector notices it, and the light comes on so people behind me know I am slowing. I honestly do not know more of the inner details yet.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 16,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "Step by step: I squeeze the brakes, the detector notices it, and the light comes on so people behind me know I am slowing. I honestly do not know more of the inner details yet.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 17,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "Step by step: I squeeze the brakes, the detector notices it, and the light comes on so people behind me know I am slowing. I honestly do not know more of the inner details yet.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 18,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "Step by step: I squeeze the brakes, the detector notices it, and the light comes on so people behind me know I am slowing. I honestly do not know more of the inner details yet.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 19,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "Step by step: I squeeze the brakes, the detector notices it, and the light comes on so people behind me know I am slowing. I honestly do not know more of the inner details yet.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 20,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "Step by step: I squeeze the brakes, the detector notices it, and the light comes on so people behind me know I am slowing. I honestly do not know more of the inner details yet.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 21,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "Step by step: I squeeze the brakes, the detector notices it, and the light comes on so people behind me know I am slowing. I honestly do not know more of the inner details yet.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 22,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "Step by step: I squeeze the brakes, the detector notices it, and the light comes on so people behind me know I am slowing. I honestly do not know more of the inner details yet.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 23,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "Step by step: I squeeze the brakes, the detector notices it, and the light comes on so people behind me know I am slowing. I honestly do not know more of the inner details yet.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    }
+   ],
+   "seed_exact": "bicycle automatic brake light — the inventor wants automatic brake indication without relying on manually pressing a light control",
+   "new_gap_types_encountered": [],
+   "classifier_result": {
+    "kind": "NONE",
+    "selected_domain": null
+   },
+   "sid": "ce76355a-fc05-4707-b9cc-6b68ec09c75a",
+   "admission_route": "NONE -> D2 explicit choice -> explicit confirmation",
+   "confirmed_domain": "electronics_electrical",
+   "path": "N",
+   "interaction_count": 24,
+   "reached_no_open_gap": false,
+   "final_gaps": [
+    {
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "status": "OPEN",
+     "iterations_open": 0
+    }
+   ],
+   "final_maturity": 0,
+   "final_stage": null,
+   "final_iteration": 1,
+   "question_language_trace": [
+    {
+     "n": 0,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 1,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 2,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 3,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 4,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 5,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 6,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 7,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 8,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 9,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 10,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 11,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 12,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 13,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 14,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 15,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 16,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 17,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 18,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 19,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 20,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 21,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 22,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 23,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    }
+   ],
+   "deliverable_http_status": 200,
+   "deliverable_eligible": false,
+   "deliverable_meta": {
+    "total_iterations": 1,
+    "total_gaps": 1,
+    "open_gap_count": 1,
+    "closed_gap_count": 0,
+    "maturity_level": 0,
+    "maturity_label": "Level 0 — Problem signal not yet established",
+    "direction": "PROGRESSING",
+    "domain_signal": "electronics_electrical",
+    "evidence_quality": null,
+    "idea_summary": null
+   },
+   "deliverable_sections": [
+    "section_10_recommended_next_steps",
+    "section_11_prototype_test_plan",
+    "section_12_next_development_step",
+    "section_13_requirement_landscape",
+    "section_14_validation_plan",
+    "section_1_disclaimer",
+    "section_2_invention_summary",
+    "section_3_assessment_overview",
+    "section_4_requirements",
+    "section_5_assumptions",
+    "section_6_risks",
+    "section_7_recommendations",
+    "section_8_unresolved_items",
+    "section_9_stage3_reasoning"
+   ],
+   "correct_affordance_in_session_html": false,
+   "correct_affordance_in_deliverable_html": false,
+   "envelope": {
+    "contract_keys": [
+     "assertions",
+     "contract_version",
+     "idea_id"
+    ],
+    "contract_version": "p4-0-record-contract-v1",
+    "engine_contract_version": null,
+    "seed_idea_text_matches": false,
+    "ledger_record_count": 0
+   },
+   "html_sha256": {
+    "R1_session_first.html": "6e2a0c2d1d306391c75165b46ae0cd8c40e488bc523a34ae4b4ab5daeb69d117",
+    "R1_session_last.html": "368408b82b7d3fbfb33c944c9d108d24ee1daf0b0ffe7440cccda88c1b269bdf",
+    "R1_deliverable.html": "ac226341a0d1c5604bab74acf4600a6d238dcb9eed625e2ce43132f8590bde6c"
+   },
+   "answers_used": {
+    "MECHANISM_COMPLETENESS": [
+     "When I brake, the light at the back should come on by itself, without me pressing anything. I am considering three ways it could notice the braking: a small switch connected to the brake lever, a part that feels the bike slowing down, or something that watches how fast the wheel is turning. When it notices braking, it turns the light on.",
+     "The main parts are: something that notices the braking (the lever switch, or the part that feels slowing, or the wheel watcher), and the brake light itself that comes on. I would rather not have a wire going to the brake lever if I can avoid it.",
+     "Step by step: I squeeze the brakes, the detector notices it, and the light comes on so people behind me know I am slowing. I honestly do not know more of the inner details yet."
+    ]
+   },
+   "execution_status": "EXECUTED"
+  },
+  "R2": {
+   "record_id": "R2",
+   "case": "E-1",
+   "language": "en",
+   "perspective": "expert",
+   "anomalies": [],
+   "admission_steps": [
+    {
+     "step": "POST /start (idea only)",
+     "status": 200
+    },
+    {
+     "step": "POST /start + domain_choice=electronics_electrical",
+     "status": 200
+    },
+    {
+     "step": "POST /start + choice+confirm=electronics_electrical",
+     "status": 302,
+     "location": "/session/3359ab01-9b55-47e2-84b7-11a1448e37c0"
+    }
+   ],
+   "interactions": [
+    {
+     "n": 0,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "The decision is the braking-detection architecture. Candidate detection paths: (1) a wired brake-lever switch, (2) accelerometer-based inference of deceleration, (3) wheel-speed-based inference. On detected braking the brake light is driven on. Which detection path to adopt is exactly the unresolved decision.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 1,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "Components: a detection stage (one of the three candidates) and the indicator lamp it drives. Installation constraint: avoid or minimize a physical wire run to the brake lever, which weighs against candidate (1).",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 2,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "No calibration data or physical test results exist yet, and the acceptable false-positive rate under vibration is unspecified; those are missing evidence, not assumptions I can fill.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 3,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "No calibration data or physical test results exist yet, and the acceptable false-positive rate under vibration is unspecified; those are missing evidence, not assumptions I can fill.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 4,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "No calibration data or physical test results exist yet, and the acceptable false-positive rate under vibration is unspecified; those are missing evidence, not assumptions I can fill.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 5,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "No calibration data or physical test results exist yet, and the acceptable false-positive rate under vibration is unspecified; those are missing evidence, not assumptions I can fill.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 6,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "No calibration data or physical test results exist yet, and the acceptable false-positive rate under vibration is unspecified; those are missing evidence, not assumptions I can fill.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 7,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "No calibration data or physical test results exist yet, and the acceptable false-positive rate under vibration is unspecified; those are missing evidence, not assumptions I can fill.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 8,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "No calibration data or physical test results exist yet, and the acceptable false-positive rate under vibration is unspecified; those are missing evidence, not assumptions I can fill.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 9,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "No calibration data or physical test results exist yet, and the acceptable false-positive rate under vibration is unspecified; those are missing evidence, not assumptions I can fill.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 10,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "No calibration data or physical test results exist yet, and the acceptable false-positive rate under vibration is unspecified; those are missing evidence, not assumptions I can fill.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 11,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "No calibration data or physical test results exist yet, and the acceptable false-positive rate under vibration is unspecified; those are missing evidence, not assumptions I can fill.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 12,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "No calibration data or physical test results exist yet, and the acceptable false-positive rate under vibration is unspecified; those are missing evidence, not assumptions I can fill.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 13,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "No calibration data or physical test results exist yet, and the acceptable false-positive rate under vibration is unspecified; those are missing evidence, not assumptions I can fill.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 14,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "No calibration data or physical test results exist yet, and the acceptable false-positive rate under vibration is unspecified; those are missing evidence, not assumptions I can fill.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 15,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "No calibration data or physical test results exist yet, and the acceptable false-positive rate under vibration is unspecified; those are missing evidence, not assumptions I can fill.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 16,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "No calibration data or physical test results exist yet, and the acceptable false-positive rate under vibration is unspecified; those are missing evidence, not assumptions I can fill.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 17,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "No calibration data or physical test results exist yet, and the acceptable false-positive rate under vibration is unspecified; those are missing evidence, not assumptions I can fill.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 18,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "No calibration data or physical test results exist yet, and the acceptable false-positive rate under vibration is unspecified; those are missing evidence, not assumptions I can fill.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 19,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "No calibration data or physical test results exist yet, and the acceptable false-positive rate under vibration is unspecified; those are missing evidence, not assumptions I can fill.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 20,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "No calibration data or physical test results exist yet, and the acceptable false-positive rate under vibration is unspecified; those are missing evidence, not assumptions I can fill.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 21,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "No calibration data or physical test results exist yet, and the acceptable false-positive rate under vibration is unspecified; those are missing evidence, not assumptions I can fill.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 22,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "No calibration data or physical test results exist yet, and the acceptable false-positive rate under vibration is unspecified; those are missing evidence, not assumptions I can fill.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 23,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Explain in everyday words how you imagine the system would notice the problem and respond.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "No calibration data or physical test results exist yet, and the acceptable false-positive rate under vibration is unspecified; those are missing evidence, not assumptions I can fill.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    }
+   ],
+   "seed_exact": "bicycle automatic brake light — the inventor wants automatic brake indication without relying on manually pressing a light control",
+   "new_gap_types_encountered": [],
+   "classifier_result": {
+    "kind": "NONE",
+    "selected_domain": null
+   },
+   "sid": "3359ab01-9b55-47e2-84b7-11a1448e37c0",
+   "admission_route": "NONE -> D2 explicit choice -> explicit confirmation",
+   "confirmed_domain": "electronics_electrical",
+   "path": "N",
+   "interaction_count": 24,
+   "reached_no_open_gap": false,
+   "final_gaps": [
+    {
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "status": "OPEN",
+     "iterations_open": 0
+    }
+   ],
+   "final_maturity": 0,
+   "final_stage": null,
+   "final_iteration": 1,
+   "question_language_trace": [
+    {
+     "n": 0,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 1,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 2,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 3,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 4,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 5,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 6,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 7,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 8,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 9,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 10,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 11,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 12,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 13,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 14,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 15,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 16,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 17,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 18,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 19,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 20,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 21,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 22,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 23,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    }
+   ],
+   "deliverable_http_status": 200,
+   "deliverable_eligible": false,
+   "deliverable_meta": {
+    "total_iterations": 1,
+    "total_gaps": 1,
+    "open_gap_count": 1,
+    "closed_gap_count": 0,
+    "maturity_level": 0,
+    "maturity_label": "Level 0 — Problem signal not yet established",
+    "direction": "PROGRESSING",
+    "domain_signal": "electronics_electrical",
+    "evidence_quality": null,
+    "idea_summary": null
+   },
+   "deliverable_sections": [
+    "section_10_recommended_next_steps",
+    "section_11_prototype_test_plan",
+    "section_12_next_development_step",
+    "section_13_requirement_landscape",
+    "section_14_validation_plan",
+    "section_1_disclaimer",
+    "section_2_invention_summary",
+    "section_3_assessment_overview",
+    "section_4_requirements",
+    "section_5_assumptions",
+    "section_6_risks",
+    "section_7_recommendations",
+    "section_8_unresolved_items",
+    "section_9_stage3_reasoning"
+   ],
+   "correct_affordance_in_session_html": false,
+   "correct_affordance_in_deliverable_html": false,
+   "envelope": {
+    "contract_keys": [
+     "assertions",
+     "contract_version",
+     "idea_id"
+    ],
+    "contract_version": "p4-0-record-contract-v1",
+    "engine_contract_version": null,
+    "seed_idea_text_matches": false,
+    "ledger_record_count": 0
+   },
+   "html_sha256": {
+    "R2_session_first.html": "360a20a3f6606c21d5853152116339dbd79abd5eb0354bad18938fc33f313965",
+    "R2_session_last.html": "f670e7bde23a627bf96e51f73e29bc8786d37d14c0bdc4963fa940c54cc6b7ed",
+    "R2_deliverable.html": "3731d0748a61f1b7139a06b2f194d5cd677f3aa87ca56f15915f053749444f2e"
+   },
+   "answers_used": {
+    "MECHANISM_COMPLETENESS": [
+     "The decision is the braking-detection architecture. Candidate detection paths: (1) a wired brake-lever switch, (2) accelerometer-based inference of deceleration, (3) wheel-speed-based inference. On detected braking the brake light is driven on. Which detection path to adopt is exactly the unresolved decision.",
+     "Components: a detection stage (one of the three candidates) and the indicator lamp it drives. Installation constraint: avoid or minimize a physical wire run to the brake lever, which weighs against candidate (1).",
+     "No calibration data or physical test results exist yet, and the acceptable false-positive rate under vibration is unspecified; those are missing evidence, not assumptions I can fill."
+    ]
+   },
+   "execution_status": "EXECUTED"
+  },
+  "R3": {
+   "record_id": "R3",
+   "case": "E-1",
+   "language": "ar",
+   "perspective": "novice",
+   "anomalies": [],
+   "admission_steps": [
+    {
+     "step": "POST /start (idea only)",
+     "status": 200
+    },
+    {
+     "step": "POST /start + domain_choice=electronics_electrical",
+     "status": 200
+    },
+    {
+     "step": "POST /start + choice+confirm=electronics_electrical",
+     "status": 302,
+     "location": "/session/d7662300-cdfb-481c-8d1f-f275956e578e"
+    }
+   ],
+   "interactions": [
+    {
+     "n": 0,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "عندما أستخدم الفرامل، يجب أن يضيء الضوء الخلفي من تلقاء نفسه دون أن أضغط على أي شيء. أفكر في ثلاث طرق ليكتشف الفرملة: مفتاح صغير موصول بذراع الفرامل، أو قطعة تشعر بتباطؤ الدراجة، أو شيء يراقب سرعة دوران العجلة. وعندما يكتشف الفرملة يُشعل الضوء.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 1,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "الأجزاء الرئيسية هي: شيء يكتشف الفرملة (مفتاح الذراع، أو قطعة الإحساس بالتباطؤ، أو مراقب العجلة)، والضوء الخلفي نفسه الذي يضيء. وأفضل ألا يكون هناك سلك ممتد إلى ذراع الفرامل إن أمكن.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 2,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "خطوة بخطوة: أضغط على الفرامل، فيكتشف الجهاز ذلك، فيضيء الضوء ليعرف من خلفي أنني أتباطأ. بصراحة لا أعرف تفاصيل داخلية أكثر من ذلك بعد.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 3,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "خطوة بخطوة: أضغط على الفرامل، فيكتشف الجهاز ذلك، فيضيء الضوء ليعرف من خلفي أنني أتباطأ. بصراحة لا أعرف تفاصيل داخلية أكثر من ذلك بعد.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 4,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "خطوة بخطوة: أضغط على الفرامل، فيكتشف الجهاز ذلك، فيضيء الضوء ليعرف من خلفي أنني أتباطأ. بصراحة لا أعرف تفاصيل داخلية أكثر من ذلك بعد.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 5,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "خطوة بخطوة: أضغط على الفرامل، فيكتشف الجهاز ذلك، فيضيء الضوء ليعرف من خلفي أنني أتباطأ. بصراحة لا أعرف تفاصيل داخلية أكثر من ذلك بعد.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 6,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "خطوة بخطوة: أضغط على الفرامل، فيكتشف الجهاز ذلك، فيضيء الضوء ليعرف من خلفي أنني أتباطأ. بصراحة لا أعرف تفاصيل داخلية أكثر من ذلك بعد.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 7,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "خطوة بخطوة: أضغط على الفرامل، فيكتشف الجهاز ذلك، فيضيء الضوء ليعرف من خلفي أنني أتباطأ. بصراحة لا أعرف تفاصيل داخلية أكثر من ذلك بعد.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 8,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "خطوة بخطوة: أضغط على الفرامل، فيكتشف الجهاز ذلك، فيضيء الضوء ليعرف من خلفي أنني أتباطأ. بصراحة لا أعرف تفاصيل داخلية أكثر من ذلك بعد.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 9,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "خطوة بخطوة: أضغط على الفرامل، فيكتشف الجهاز ذلك، فيضيء الضوء ليعرف من خلفي أنني أتباطأ. بصراحة لا أعرف تفاصيل داخلية أكثر من ذلك بعد.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 10,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "خطوة بخطوة: أضغط على الفرامل، فيكتشف الجهاز ذلك، فيضيء الضوء ليعرف من خلفي أنني أتباطأ. بصراحة لا أعرف تفاصيل داخلية أكثر من ذلك بعد.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 11,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "خطوة بخطوة: أضغط على الفرامل، فيكتشف الجهاز ذلك، فيضيء الضوء ليعرف من خلفي أنني أتباطأ. بصراحة لا أعرف تفاصيل داخلية أكثر من ذلك بعد.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 12,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "خطوة بخطوة: أضغط على الفرامل، فيكتشف الجهاز ذلك، فيضيء الضوء ليعرف من خلفي أنني أتباطأ. بصراحة لا أعرف تفاصيل داخلية أكثر من ذلك بعد.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 13,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "خطوة بخطوة: أضغط على الفرامل، فيكتشف الجهاز ذلك، فيضيء الضوء ليعرف من خلفي أنني أتباطأ. بصراحة لا أعرف تفاصيل داخلية أكثر من ذلك بعد.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 14,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "خطوة بخطوة: أضغط على الفرامل، فيكتشف الجهاز ذلك، فيضيء الضوء ليعرف من خلفي أنني أتباطأ. بصراحة لا أعرف تفاصيل داخلية أكثر من ذلك بعد.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 15,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "خطوة بخطوة: أضغط على الفرامل، فيكتشف الجهاز ذلك، فيضيء الضوء ليعرف من خلفي أنني أتباطأ. بصراحة لا أعرف تفاصيل داخلية أكثر من ذلك بعد.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 16,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "خطوة بخطوة: أضغط على الفرامل، فيكتشف الجهاز ذلك، فيضيء الضوء ليعرف من خلفي أنني أتباطأ. بصراحة لا أعرف تفاصيل داخلية أكثر من ذلك بعد.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 17,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "خطوة بخطوة: أضغط على الفرامل، فيكتشف الجهاز ذلك، فيضيء الضوء ليعرف من خلفي أنني أتباطأ. بصراحة لا أعرف تفاصيل داخلية أكثر من ذلك بعد.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 18,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "خطوة بخطوة: أضغط على الفرامل، فيكتشف الجهاز ذلك، فيضيء الضوء ليعرف من خلفي أنني أتباطأ. بصراحة لا أعرف تفاصيل داخلية أكثر من ذلك بعد.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 19,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "خطوة بخطوة: أضغط على الفرامل، فيكتشف الجهاز ذلك، فيضيء الضوء ليعرف من خلفي أنني أتباطأ. بصراحة لا أعرف تفاصيل داخلية أكثر من ذلك بعد.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 20,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "خطوة بخطوة: أضغط على الفرامل، فيكتشف الجهاز ذلك، فيضيء الضوء ليعرف من خلفي أنني أتباطأ. بصراحة لا أعرف تفاصيل داخلية أكثر من ذلك بعد.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 21,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "خطوة بخطوة: أضغط على الفرامل، فيكتشف الجهاز ذلك، فيضيء الضوء ليعرف من خلفي أنني أتباطأ. بصراحة لا أعرف تفاصيل داخلية أكثر من ذلك بعد.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 22,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "خطوة بخطوة: أضغط على الفرامل، فيكتشف الجهاز ذلك، فيضيء الضوء ليعرف من خلفي أنني أتباطأ. بصراحة لا أعرف تفاصيل داخلية أكثر من ذلك بعد.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 23,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "خطوة بخطوة: أضغط على الفرامل، فيكتشف الجهاز ذلك، فيضيء الضوء ليعرف من خلفي أنني أتباطأ. بصراحة لا أعرف تفاصيل داخلية أكثر من ذلك بعد.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    }
+   ],
+   "seed_exact": "ضوء فرامل أوتوماتيكي للدراجة الهوائية — يريد المخترع إشارة فرملة تلقائية دون الاعتماد على الضغط اليدوي على مفتاح الضوء",
+   "new_gap_types_encountered": [],
+   "classifier_result": {
+    "kind": "NONE",
+    "selected_domain": null
+   },
+   "sid": "d7662300-cdfb-481c-8d1f-f275956e578e",
+   "admission_route": "NONE -> D2 explicit choice -> explicit confirmation",
+   "confirmed_domain": "electronics_electrical",
+   "path": "N",
+   "interaction_count": 24,
+   "reached_no_open_gap": false,
+   "final_gaps": [
+    {
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "status": "OPEN",
+     "iterations_open": 0
+    }
+   ],
+   "final_maturity": 0,
+   "final_stage": null,
+   "final_iteration": 1,
+   "question_language_trace": [
+    {
+     "n": 0,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 1,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 2,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 3,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 4,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 5,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 6,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 7,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 8,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 9,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 10,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 11,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 12,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 13,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 14,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 15,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 16,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 17,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 18,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 19,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 20,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 21,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 22,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 23,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    }
+   ],
+   "deliverable_http_status": 200,
+   "deliverable_eligible": false,
+   "deliverable_meta": {
+    "total_iterations": 1,
+    "total_gaps": 1,
+    "open_gap_count": 1,
+    "closed_gap_count": 0,
+    "maturity_level": 0,
+    "maturity_label": "Level 0 — Problem signal not yet established",
+    "direction": "PROGRESSING",
+    "domain_signal": "electronics_electrical",
+    "evidence_quality": null,
+    "idea_summary": null
+   },
+   "deliverable_sections": [
+    "section_10_recommended_next_steps",
+    "section_11_prototype_test_plan",
+    "section_12_next_development_step",
+    "section_13_requirement_landscape",
+    "section_14_validation_plan",
+    "section_1_disclaimer",
+    "section_2_invention_summary",
+    "section_3_assessment_overview",
+    "section_4_requirements",
+    "section_5_assumptions",
+    "section_6_risks",
+    "section_7_recommendations",
+    "section_8_unresolved_items",
+    "section_9_stage3_reasoning"
+   ],
+   "correct_affordance_in_session_html": false,
+   "correct_affordance_in_deliverable_html": false,
+   "envelope": {
+    "contract_keys": [
+     "assertions",
+     "contract_version",
+     "idea_id"
+    ],
+    "contract_version": "p4-0-record-contract-v1",
+    "engine_contract_version": null,
+    "seed_idea_text_matches": false,
+    "ledger_record_count": 0
+   },
+   "html_sha256": {
+    "R3_session_first.html": "2d3caf2c055ebbaec7f753848259632bdc04584663907fc89b3c113f1e0160ec",
+    "R3_session_last.html": "bcde9f60cc5161aff836c7d2b8d0a192271a0598e5169b82a6c7df73ff3d6902",
+    "R3_deliverable.html": "14685ecaeed48faa5e6892bb9868a4d13d840eee86b813e899b6c07d12022032"
+   },
+   "answers_used": {
+    "MECHANISM_COMPLETENESS": [
+     "عندما أستخدم الفرامل، يجب أن يضيء الضوء الخلفي من تلقاء نفسه دون أن أضغط على أي شيء. أفكر في ثلاث طرق ليكتشف الفرملة: مفتاح صغير موصول بذراع الفرامل، أو قطعة تشعر بتباطؤ الدراجة، أو شيء يراقب سرعة دوران العجلة. وعندما يكتشف الفرملة يُشعل الضوء.",
+     "الأجزاء الرئيسية هي: شيء يكتشف الفرملة (مفتاح الذراع، أو قطعة الإحساس بالتباطؤ، أو مراقب العجلة)، والضوء الخلفي نفسه الذي يضيء. وأفضل ألا يكون هناك سلك ممتد إلى ذراع الفرامل إن أمكن.",
+     "خطوة بخطوة: أضغط على الفرامل، فيكتشف الجهاز ذلك، فيضيء الضوء ليعرف من خلفي أنني أتباطأ. بصراحة لا أعرف تفاصيل داخلية أكثر من ذلك بعد."
+    ]
+   },
+   "execution_status": "EXECUTED"
+  },
+  "R4": {
+   "record_id": "R4",
+   "case": "E-1",
+   "language": "ar",
+   "perspective": "expert",
+   "anomalies": [],
+   "admission_steps": [
+    {
+     "step": "POST /start (idea only)",
+     "status": 200
+    },
+    {
+     "step": "POST /start + domain_choice=electronics_electrical",
+     "status": 200
+    },
+    {
+     "step": "POST /start + choice+confirm=electronics_electrical",
+     "status": 302,
+     "location": "/session/d8987996-9905-4331-8e8e-be0ba8a6a1b0"
+    }
+   ],
+   "interactions": [
+    {
+     "n": 0,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "القرار هو معمارية اكتشاف الفرملة. مسارات الاكتشاف المرشحة: (1) مفتاح سلكي على ذراع الفرامل، (2) استدلال بالتسارع عبر مقياس تسارع، (3) استدلال عبر سرعة العجلة. عند اكتشاف الفرملة يُشغَّل ضوء الفرامل. اختيار مسار الاكتشاف هو بالضبط القرار غير المحسوم.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 1,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "المكوّنات: مرحلة اكتشاف (أحد المرشحين الثلاثة) والمصباح الذي تقوده. قيد التركيب: تجنب أو تقليل تمديد سلك إلى ذراع الفرامل، وهو ما يُضعف المرشح (1).",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 2,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "لا توجد بيانات معايرة ولا نتائج اختبار فيزيائي بعد، ومعدل الإنذارات الخاطئة المقبول تحت الاهتزاز غير محدد؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 3,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "لا توجد بيانات معايرة ولا نتائج اختبار فيزيائي بعد، ومعدل الإنذارات الخاطئة المقبول تحت الاهتزاز غير محدد؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 4,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "لا توجد بيانات معايرة ولا نتائج اختبار فيزيائي بعد، ومعدل الإنذارات الخاطئة المقبول تحت الاهتزاز غير محدد؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 5,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "لا توجد بيانات معايرة ولا نتائج اختبار فيزيائي بعد، ومعدل الإنذارات الخاطئة المقبول تحت الاهتزاز غير محدد؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 6,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "لا توجد بيانات معايرة ولا نتائج اختبار فيزيائي بعد، ومعدل الإنذارات الخاطئة المقبول تحت الاهتزاز غير محدد؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 7,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "لا توجد بيانات معايرة ولا نتائج اختبار فيزيائي بعد، ومعدل الإنذارات الخاطئة المقبول تحت الاهتزاز غير محدد؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 8,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "لا توجد بيانات معايرة ولا نتائج اختبار فيزيائي بعد، ومعدل الإنذارات الخاطئة المقبول تحت الاهتزاز غير محدد؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 9,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "لا توجد بيانات معايرة ولا نتائج اختبار فيزيائي بعد، ومعدل الإنذارات الخاطئة المقبول تحت الاهتزاز غير محدد؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 10,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "لا توجد بيانات معايرة ولا نتائج اختبار فيزيائي بعد، ومعدل الإنذارات الخاطئة المقبول تحت الاهتزاز غير محدد؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 11,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "لا توجد بيانات معايرة ولا نتائج اختبار فيزيائي بعد، ومعدل الإنذارات الخاطئة المقبول تحت الاهتزاز غير محدد؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 12,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "لا توجد بيانات معايرة ولا نتائج اختبار فيزيائي بعد، ومعدل الإنذارات الخاطئة المقبول تحت الاهتزاز غير محدد؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 13,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "لا توجد بيانات معايرة ولا نتائج اختبار فيزيائي بعد، ومعدل الإنذارات الخاطئة المقبول تحت الاهتزاز غير محدد؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 14,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "لا توجد بيانات معايرة ولا نتائج اختبار فيزيائي بعد، ومعدل الإنذارات الخاطئة المقبول تحت الاهتزاز غير محدد؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 15,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "لا توجد بيانات معايرة ولا نتائج اختبار فيزيائي بعد، ومعدل الإنذارات الخاطئة المقبول تحت الاهتزاز غير محدد؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 16,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "لا توجد بيانات معايرة ولا نتائج اختبار فيزيائي بعد، ومعدل الإنذارات الخاطئة المقبول تحت الاهتزاز غير محدد؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 17,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "لا توجد بيانات معايرة ولا نتائج اختبار فيزيائي بعد، ومعدل الإنذارات الخاطئة المقبول تحت الاهتزاز غير محدد؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 18,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "لا توجد بيانات معايرة ولا نتائج اختبار فيزيائي بعد، ومعدل الإنذارات الخاطئة المقبول تحت الاهتزاز غير محدد؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 19,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "لا توجد بيانات معايرة ولا نتائج اختبار فيزيائي بعد، ومعدل الإنذارات الخاطئة المقبول تحت الاهتزاز غير محدد؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 20,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "لا توجد بيانات معايرة ولا نتائج اختبار فيزيائي بعد، ومعدل الإنذارات الخاطئة المقبول تحت الاهتزاز غير محدد؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 21,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "لا توجد بيانات معايرة ولا نتائج اختبار فيزيائي بعد، ومعدل الإنذارات الخاطئة المقبول تحت الاهتزاز غير محدد؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 22,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "لا توجد بيانات معايرة ولا نتائج اختبار فيزيائي بعد، ومعدل الإنذارات الخاطئة المقبول تحت الاهتزاز غير محدد؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 23,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "اشرح بكلمات يومية بسيطة كيف تتخيل أن النظام سيلاحظ المشكلة وكيف سيستجيب لها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "لا توجد بيانات معايرة ولا نتائج اختبار فيزيائي بعد، ومعدل الإنذارات الخاطئة المقبول تحت الاهتزاز غير محدد؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    }
+   ],
+   "seed_exact": "ضوء فرامل أوتوماتيكي للدراجة الهوائية — يريد المخترع إشارة فرملة تلقائية دون الاعتماد على الضغط اليدوي على مفتاح الضوء",
+   "new_gap_types_encountered": [],
+   "classifier_result": {
+    "kind": "NONE",
+    "selected_domain": null
+   },
+   "sid": "d8987996-9905-4331-8e8e-be0ba8a6a1b0",
+   "admission_route": "NONE -> D2 explicit choice -> explicit confirmation",
+   "confirmed_domain": "electronics_electrical",
+   "path": "N",
+   "interaction_count": 24,
+   "reached_no_open_gap": false,
+   "final_gaps": [
+    {
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "status": "OPEN",
+     "iterations_open": 0
+    }
+   ],
+   "final_maturity": 0,
+   "final_stage": null,
+   "final_iteration": 1,
+   "question_language_trace": [
+    {
+     "n": 0,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 1,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 2,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 3,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 4,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 5,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 6,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 7,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 8,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 9,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 10,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 11,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 12,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 13,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 14,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 15,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 16,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 17,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 18,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 19,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 20,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 21,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 22,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 23,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    }
+   ],
+   "deliverable_http_status": 200,
+   "deliverable_eligible": false,
+   "deliverable_meta": {
+    "total_iterations": 1,
+    "total_gaps": 1,
+    "open_gap_count": 1,
+    "closed_gap_count": 0,
+    "maturity_level": 0,
+    "maturity_label": "Level 0 — Problem signal not yet established",
+    "direction": "PROGRESSING",
+    "domain_signal": "electronics_electrical",
+    "evidence_quality": null,
+    "idea_summary": null
+   },
+   "deliverable_sections": [
+    "section_10_recommended_next_steps",
+    "section_11_prototype_test_plan",
+    "section_12_next_development_step",
+    "section_13_requirement_landscape",
+    "section_14_validation_plan",
+    "section_1_disclaimer",
+    "section_2_invention_summary",
+    "section_3_assessment_overview",
+    "section_4_requirements",
+    "section_5_assumptions",
+    "section_6_risks",
+    "section_7_recommendations",
+    "section_8_unresolved_items",
+    "section_9_stage3_reasoning"
+   ],
+   "correct_affordance_in_session_html": false,
+   "correct_affordance_in_deliverable_html": false,
+   "envelope": {
+    "contract_keys": [
+     "assertions",
+     "contract_version",
+     "idea_id"
+    ],
+    "contract_version": "p4-0-record-contract-v1",
+    "engine_contract_version": null,
+    "seed_idea_text_matches": false,
+    "ledger_record_count": 0
+   },
+   "html_sha256": {
+    "R4_session_first.html": "581d89ac7ffd29ed57da3bfa124200e333d57f03159c1ca81905c6f639caa43f",
+    "R4_session_last.html": "12a11699d63615ebeceb076264e134c9a1a7f367dc550f6c87ee816123d4cca9",
+    "R4_deliverable.html": "c28adf522accbb857f5f47da315c4909e0b1e20e89939f9570d61f97ddf359af"
+   },
+   "answers_used": {
+    "MECHANISM_COMPLETENESS": [
+     "القرار هو معمارية اكتشاف الفرملة. مسارات الاكتشاف المرشحة: (1) مفتاح سلكي على ذراع الفرامل، (2) استدلال بالتسارع عبر مقياس تسارع، (3) استدلال عبر سرعة العجلة. عند اكتشاف الفرملة يُشغَّل ضوء الفرامل. اختيار مسار الاكتشاف هو بالضبط القرار غير المحسوم.",
+     "المكوّنات: مرحلة اكتشاف (أحد المرشحين الثلاثة) والمصباح الذي تقوده. قيد التركيب: تجنب أو تقليل تمديد سلك إلى ذراع الفرامل، وهو ما يُضعف المرشح (1).",
+     "لا توجد بيانات معايرة ولا نتائج اختبار فيزيائي بعد، ومعدل الإنذارات الخاطئة المقبول تحت الاهتزاز غير محدد؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها."
+    ]
+   },
+   "execution_status": "EXECUTED"
+  },
+  "R5": {
+   "record_id": "R5",
+   "case": "M-1",
+   "language": "en",
+   "perspective": "novice",
+   "anomalies": [],
+   "admission_steps": [
+    {
+     "step": "POST /start (idea only)",
+     "status": 200
+    },
+    {
+     "step": "POST /start + domain_choice=mechanical",
+     "status": 200
+    },
+    {
+     "step": "POST /start + choice+confirm=mechanical",
+     "status": 302,
+     "location": "/session/d70c42e1-5777-41d7-bdcd-6e10b16070a7"
+    }
+   ],
+   "interactions": [
+    {
+     "n": 0,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "The ramp folds up and down by hand. When it is down flat, it must stay firmly held so a wheelchair can roll over it. I am considering three ways to hold it: a toggle latch that snaps over its center, a spring pin that clicks into place, or a small gate piece that drops into place by its own weight.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 1,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "The moving parts are the ramp itself folding at the doorway, and the holder piece that keeps it flat. I do not want to drill into or permanently change the doorway.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 2,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "Steps: unfold the ramp flat, the holder locks it, the wheelchair rolls over it; later I release the holder and fold the ramp away, all without tools. I do not know more of the inner detail than that.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 3,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "Steps: unfold the ramp flat, the holder locks it, the wheelchair rolls over it; later I release the holder and fold the ramp away, all without tools. I do not know more of the inner detail than that.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 4,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "Steps: unfold the ramp flat, the holder locks it, the wheelchair rolls over it; later I release the holder and fold the ramp away, all without tools. I do not know more of the inner detail than that.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 5,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "Steps: unfold the ramp flat, the holder locks it, the wheelchair rolls over it; later I release the holder and fold the ramp away, all without tools. I do not know more of the inner detail than that.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 6,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "Steps: unfold the ramp flat, the holder locks it, the wheelchair rolls over it; later I release the holder and fold the ramp away, all without tools. I do not know more of the inner detail than that.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 7,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "Steps: unfold the ramp flat, the holder locks it, the wheelchair rolls over it; later I release the holder and fold the ramp away, all without tools. I do not know more of the inner detail than that.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 8,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "Steps: unfold the ramp flat, the holder locks it, the wheelchair rolls over it; later I release the holder and fold the ramp away, all without tools. I do not know more of the inner detail than that.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 9,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "Steps: unfold the ramp flat, the holder locks it, the wheelchair rolls over it; later I release the holder and fold the ramp away, all without tools. I do not know more of the inner detail than that.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 10,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "Steps: unfold the ramp flat, the holder locks it, the wheelchair rolls over it; later I release the holder and fold the ramp away, all without tools. I do not know more of the inner detail than that.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 11,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "Steps: unfold the ramp flat, the holder locks it, the wheelchair rolls over it; later I release the holder and fold the ramp away, all without tools. I do not know more of the inner detail than that.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 12,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "Steps: unfold the ramp flat, the holder locks it, the wheelchair rolls over it; later I release the holder and fold the ramp away, all without tools. I do not know more of the inner detail than that.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 13,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "Steps: unfold the ramp flat, the holder locks it, the wheelchair rolls over it; later I release the holder and fold the ramp away, all without tools. I do not know more of the inner detail than that.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 14,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "Steps: unfold the ramp flat, the holder locks it, the wheelchair rolls over it; later I release the holder and fold the ramp away, all without tools. I do not know more of the inner detail than that.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 15,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "Steps: unfold the ramp flat, the holder locks it, the wheelchair rolls over it; later I release the holder and fold the ramp away, all without tools. I do not know more of the inner detail than that.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 16,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "Steps: unfold the ramp flat, the holder locks it, the wheelchair rolls over it; later I release the holder and fold the ramp away, all without tools. I do not know more of the inner detail than that.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 17,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "Steps: unfold the ramp flat, the holder locks it, the wheelchair rolls over it; later I release the holder and fold the ramp away, all without tools. I do not know more of the inner detail than that.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 18,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "Steps: unfold the ramp flat, the holder locks it, the wheelchair rolls over it; later I release the holder and fold the ramp away, all without tools. I do not know more of the inner detail than that.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 19,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "Steps: unfold the ramp flat, the holder locks it, the wheelchair rolls over it; later I release the holder and fold the ramp away, all without tools. I do not know more of the inner detail than that.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 20,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "Steps: unfold the ramp flat, the holder locks it, the wheelchair rolls over it; later I release the holder and fold the ramp away, all without tools. I do not know more of the inner detail than that.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 21,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "Steps: unfold the ramp flat, the holder locks it, the wheelchair rolls over it; later I release the holder and fold the ramp away, all without tools. I do not know more of the inner detail than that.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 22,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "Steps: unfold the ramp flat, the holder locks it, the wheelchair rolls over it; later I release the holder and fold the ramp away, all without tools. I do not know more of the inner detail than that.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 23,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "Steps: unfold the ramp flat, the holder locks it, the wheelchair rolls over it; later I release the holder and fold the ramp away, all without tools. I do not know more of the inner detail than that.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    }
+   ],
+   "seed_exact": "a manually foldable wheelchair ramp for a home doorway — the inventor wants the ramp to stay reliably locked in the flat, load-bearing position and to fold away without tools",
+   "new_gap_types_encountered": [],
+   "classifier_result": {
+    "kind": "SINGLE",
+    "selected_domain": "mechanical"
+   },
+   "sid": "d70c42e1-5777-41d7-bdcd-6e10b16070a7",
+   "admission_route": "classifier SINGLE -> explicit confirmation",
+   "confirmed_domain": "mechanical",
+   "path": "N",
+   "interaction_count": 24,
+   "reached_no_open_gap": false,
+   "final_gaps": [
+    {
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "status": "OPEN",
+     "iterations_open": 0
+    }
+   ],
+   "final_maturity": 0,
+   "final_stage": null,
+   "final_iteration": 1,
+   "question_language_trace": [
+    {
+     "n": 0,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 1,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 2,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 3,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 4,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 5,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 6,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 7,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 8,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 9,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 10,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 11,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 12,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 13,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 14,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 15,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 16,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 17,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 18,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 19,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 20,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 21,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 22,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 23,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    }
+   ],
+   "deliverable_http_status": 200,
+   "deliverable_eligible": false,
+   "deliverable_meta": {
+    "total_iterations": 1,
+    "total_gaps": 1,
+    "open_gap_count": 1,
+    "closed_gap_count": 0,
+    "maturity_level": 0,
+    "maturity_label": "Level 0 — Problem signal not yet established",
+    "direction": "PROGRESSING",
+    "domain_signal": "mechanical",
+    "evidence_quality": null,
+    "idea_summary": null
+   },
+   "deliverable_sections": [
+    "section_10_recommended_next_steps",
+    "section_11_prototype_test_plan",
+    "section_12_next_development_step",
+    "section_13_requirement_landscape",
+    "section_14_validation_plan",
+    "section_1_disclaimer",
+    "section_2_invention_summary",
+    "section_3_assessment_overview",
+    "section_4_requirements",
+    "section_5_assumptions",
+    "section_6_risks",
+    "section_7_recommendations",
+    "section_8_unresolved_items",
+    "section_9_stage3_reasoning"
+   ],
+   "correct_affordance_in_session_html": false,
+   "correct_affordance_in_deliverable_html": false,
+   "envelope": {
+    "contract_keys": [
+     "assertions",
+     "contract_version",
+     "idea_id"
+    ],
+    "contract_version": "p4-0-record-contract-v1",
+    "engine_contract_version": null,
+    "seed_idea_text_matches": false,
+    "ledger_record_count": 0
+   },
+   "html_sha256": {
+    "R5_session_first.html": "e123d47385860a3167fe1b55ad3c874cd743dcfc25a1dfe38ad2eee2178b4e6c",
+    "R5_session_last.html": "b0844bf9a31a17cf961f062c6264447dd45be2db23d751534ded15eb2a1a6646",
+    "R5_deliverable.html": "465fb1acda71ff6b44a9c11eaaf6a06cc016990e4926065bddd0c887a7f6c5cf"
+   },
+   "answers_used": {
+    "MECHANISM_COMPLETENESS": [
+     "The ramp folds up and down by hand. When it is down flat, it must stay firmly held so a wheelchair can roll over it. I am considering three ways to hold it: a toggle latch that snaps over its center, a spring pin that clicks into place, or a small gate piece that drops into place by its own weight.",
+     "The moving parts are the ramp itself folding at the doorway, and the holder piece that keeps it flat. I do not want to drill into or permanently change the doorway.",
+     "Steps: unfold the ramp flat, the holder locks it, the wheelchair rolls over it; later I release the holder and fold the ramp away, all without tools. I do not know more of the inner detail than that."
+    ]
+   },
+   "execution_status": "EXECUTED"
+  },
+  "R6": {
+   "record_id": "R6",
+   "case": "M-1",
+   "language": "en",
+   "perspective": "expert",
+   "anomalies": [],
+   "admission_steps": [
+    {
+     "step": "POST /start (idea only)",
+     "status": 200
+    },
+    {
+     "step": "POST /start + domain_choice=mechanical",
+     "status": 200
+    },
+    {
+     "step": "POST /start + choice+confirm=mechanical",
+     "status": 302,
+     "location": "/session/aa2865cc-552b-4626-9b0b-050df6cd2e6b"
+    }
+   ],
+   "interactions": [
+    {
+     "n": 0,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "The decision is the folded-position retention architecture. Candidates: (1) over-centre toggle latch, (2) spring-loaded detent pin, (3) gravity-drop gate latch. The mechanism must retain the ramp in the flat, load-bearing position and release for tool-less folding.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 1,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "Force path: wheelchair load through the deployed ramp into the retention mechanism at the hinge line; manual actuation for fold and unfold; no permanent modification to the doorway or frame is permitted.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 2,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "No load rating, retention margin, or physical test evidence exists; those are missing evidence, not assumptions I can fill.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 3,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "No load rating, retention margin, or physical test evidence exists; those are missing evidence, not assumptions I can fill.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 4,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "No load rating, retention margin, or physical test evidence exists; those are missing evidence, not assumptions I can fill.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 5,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "No load rating, retention margin, or physical test evidence exists; those are missing evidence, not assumptions I can fill.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 6,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "No load rating, retention margin, or physical test evidence exists; those are missing evidence, not assumptions I can fill.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 7,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "No load rating, retention margin, or physical test evidence exists; those are missing evidence, not assumptions I can fill.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 8,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "No load rating, retention margin, or physical test evidence exists; those are missing evidence, not assumptions I can fill.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 9,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "No load rating, retention margin, or physical test evidence exists; those are missing evidence, not assumptions I can fill.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 10,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "No load rating, retention margin, or physical test evidence exists; those are missing evidence, not assumptions I can fill.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 11,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "No load rating, retention margin, or physical test evidence exists; those are missing evidence, not assumptions I can fill.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 12,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "No load rating, retention margin, or physical test evidence exists; those are missing evidence, not assumptions I can fill.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 13,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "No load rating, retention margin, or physical test evidence exists; those are missing evidence, not assumptions I can fill.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 14,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "No load rating, retention margin, or physical test evidence exists; those are missing evidence, not assumptions I can fill.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 15,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "No load rating, retention margin, or physical test evidence exists; those are missing evidence, not assumptions I can fill.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 16,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "No load rating, retention margin, or physical test evidence exists; those are missing evidence, not assumptions I can fill.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 17,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "No load rating, retention margin, or physical test evidence exists; those are missing evidence, not assumptions I can fill.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 18,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "No load rating, retention margin, or physical test evidence exists; those are missing evidence, not assumptions I can fill.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 19,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "No load rating, retention margin, or physical test evidence exists; those are missing evidence, not assumptions I can fill.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 20,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "No load rating, retention margin, or physical test evidence exists; those are missing evidence, not assumptions I can fill.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 21,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "No load rating, retention margin, or physical test evidence exists; those are missing evidence, not assumptions I can fill.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 22,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "No load rating, retention margin, or physical test evidence exists; those are missing evidence, not assumptions I can fill.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 23,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "Describe the physical steps your mechanism takes to achieve its function.",
+     "question_lang": "en",
+     "question_dir": "ltr",
+     "answer": "No load rating, retention margin, or physical test evidence exists; those are missing evidence, not assumptions I can fill.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    }
+   ],
+   "seed_exact": "a manually foldable wheelchair ramp for a home doorway — the inventor wants the ramp to stay reliably locked in the flat, load-bearing position and to fold away without tools",
+   "new_gap_types_encountered": [],
+   "classifier_result": {
+    "kind": "SINGLE",
+    "selected_domain": "mechanical"
+   },
+   "sid": "aa2865cc-552b-4626-9b0b-050df6cd2e6b",
+   "admission_route": "classifier SINGLE -> explicit confirmation",
+   "confirmed_domain": "mechanical",
+   "path": "N",
+   "interaction_count": 24,
+   "reached_no_open_gap": false,
+   "final_gaps": [
+    {
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "status": "OPEN",
+     "iterations_open": 0
+    }
+   ],
+   "final_maturity": 0,
+   "final_stage": null,
+   "final_iteration": 1,
+   "question_language_trace": [
+    {
+     "n": 0,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 1,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 2,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 3,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 4,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 5,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 6,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 7,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 8,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 9,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 10,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 11,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 12,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 13,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 14,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 15,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 16,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 17,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 18,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 19,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 20,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 21,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 22,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    },
+    {
+     "n": 23,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "en",
+     "q_dir": "ltr"
+    }
+   ],
+   "deliverable_http_status": 200,
+   "deliverable_eligible": false,
+   "deliverable_meta": {
+    "total_iterations": 1,
+    "total_gaps": 1,
+    "open_gap_count": 1,
+    "closed_gap_count": 0,
+    "maturity_level": 0,
+    "maturity_label": "Level 0 — Problem signal not yet established",
+    "direction": "PROGRESSING",
+    "domain_signal": "mechanical",
+    "evidence_quality": null,
+    "idea_summary": null
+   },
+   "deliverable_sections": [
+    "section_10_recommended_next_steps",
+    "section_11_prototype_test_plan",
+    "section_12_next_development_step",
+    "section_13_requirement_landscape",
+    "section_14_validation_plan",
+    "section_1_disclaimer",
+    "section_2_invention_summary",
+    "section_3_assessment_overview",
+    "section_4_requirements",
+    "section_5_assumptions",
+    "section_6_risks",
+    "section_7_recommendations",
+    "section_8_unresolved_items",
+    "section_9_stage3_reasoning"
+   ],
+   "correct_affordance_in_session_html": false,
+   "correct_affordance_in_deliverable_html": false,
+   "envelope": {
+    "contract_keys": [
+     "assertions",
+     "contract_version",
+     "idea_id"
+    ],
+    "contract_version": "p4-0-record-contract-v1",
+    "engine_contract_version": null,
+    "seed_idea_text_matches": false,
+    "ledger_record_count": 0
+   },
+   "html_sha256": {
+    "R6_session_first.html": "d15626ec5d0f7a3d293744dea58333bd3c4d95cbcbb8d51b00d528b032d04a5a",
+    "R6_session_last.html": "87b27fb705ee2bc82c9331b821b4903ead295003684f76451211bc4c6b395424",
+    "R6_deliverable.html": "0a681c935fa8a38c7641aee08aded97fa4dab7dfd6f0d8bb43f973ebb0bf7e6b"
+   },
+   "answers_used": {
+    "MECHANISM_COMPLETENESS": [
+     "The decision is the folded-position retention architecture. Candidates: (1) over-centre toggle latch, (2) spring-loaded detent pin, (3) gravity-drop gate latch. The mechanism must retain the ramp in the flat, load-bearing position and release for tool-less folding.",
+     "Force path: wheelchair load through the deployed ramp into the retention mechanism at the hinge line; manual actuation for fold and unfold; no permanent modification to the doorway or frame is permitted.",
+     "No load rating, retention margin, or physical test evidence exists; those are missing evidence, not assumptions I can fill."
+    ]
+   },
+   "execution_status": "EXECUTED"
+  },
+  "R7": {
+   "record_id": "R7",
+   "case": "M-1",
+   "language": "ar",
+   "perspective": "novice",
+   "anomalies": [],
+   "admission_steps": [
+    {
+     "step": "POST /start (idea only)",
+     "status": 200
+    },
+    {
+     "step": "POST /start + domain_choice=mechanical",
+     "status": 200
+    },
+    {
+     "step": "POST /start + choice+confirm=mechanical",
+     "status": 302,
+     "location": "/session/9bc7d37e-d11e-44aa-90d3-8b6900a81236"
+    }
+   ],
+   "interactions": [
+    {
+     "n": 0,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "المنحدر يُطوى ويُفرد باليد. عندما يكون مفرودًا بشكل مسطح يجب أن يبقى مثبتًا بإحكام ليعبر عليه كرسي متحرك. أفكر في ثلاث طرق لتثبيته: مزلاج قلاب ينقفل بعد تجاوز مركزه، أو دبوس بنابض يستقر في مكانه بنقرة، أو قطعة بوابة صغيرة تسقط في مكانها بوزنها.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 1,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "الأجزاء المتحركة هي المنحدر نفسه الذي يُطوى عند المدخل، وقطعة التثبيت التي تُبقيه مسطحًا. لا أريد الحفر في إطار الباب أو تغييره بشكل دائم.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 2,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "الخطوات: أفرد المنحدر مسطحًا، فيُقفل المثبت، فيعبر الكرسي المتحرك؛ ولاحقًا أحرر المثبت وأطوي المنحدر بعيدًا، كل ذلك دون أدوات. لا أعرف تفاصيل داخلية أكثر من ذلك.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 3,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "الخطوات: أفرد المنحدر مسطحًا، فيُقفل المثبت، فيعبر الكرسي المتحرك؛ ولاحقًا أحرر المثبت وأطوي المنحدر بعيدًا، كل ذلك دون أدوات. لا أعرف تفاصيل داخلية أكثر من ذلك.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 4,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "الخطوات: أفرد المنحدر مسطحًا، فيُقفل المثبت، فيعبر الكرسي المتحرك؛ ولاحقًا أحرر المثبت وأطوي المنحدر بعيدًا، كل ذلك دون أدوات. لا أعرف تفاصيل داخلية أكثر من ذلك.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 5,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "الخطوات: أفرد المنحدر مسطحًا، فيُقفل المثبت، فيعبر الكرسي المتحرك؛ ولاحقًا أحرر المثبت وأطوي المنحدر بعيدًا، كل ذلك دون أدوات. لا أعرف تفاصيل داخلية أكثر من ذلك.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 6,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "الخطوات: أفرد المنحدر مسطحًا، فيُقفل المثبت، فيعبر الكرسي المتحرك؛ ولاحقًا أحرر المثبت وأطوي المنحدر بعيدًا، كل ذلك دون أدوات. لا أعرف تفاصيل داخلية أكثر من ذلك.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 7,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "الخطوات: أفرد المنحدر مسطحًا، فيُقفل المثبت، فيعبر الكرسي المتحرك؛ ولاحقًا أحرر المثبت وأطوي المنحدر بعيدًا، كل ذلك دون أدوات. لا أعرف تفاصيل داخلية أكثر من ذلك.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 8,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "الخطوات: أفرد المنحدر مسطحًا، فيُقفل المثبت، فيعبر الكرسي المتحرك؛ ولاحقًا أحرر المثبت وأطوي المنحدر بعيدًا، كل ذلك دون أدوات. لا أعرف تفاصيل داخلية أكثر من ذلك.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 9,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "الخطوات: أفرد المنحدر مسطحًا، فيُقفل المثبت، فيعبر الكرسي المتحرك؛ ولاحقًا أحرر المثبت وأطوي المنحدر بعيدًا، كل ذلك دون أدوات. لا أعرف تفاصيل داخلية أكثر من ذلك.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 10,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "الخطوات: أفرد المنحدر مسطحًا، فيُقفل المثبت، فيعبر الكرسي المتحرك؛ ولاحقًا أحرر المثبت وأطوي المنحدر بعيدًا، كل ذلك دون أدوات. لا أعرف تفاصيل داخلية أكثر من ذلك.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 11,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "الخطوات: أفرد المنحدر مسطحًا، فيُقفل المثبت، فيعبر الكرسي المتحرك؛ ولاحقًا أحرر المثبت وأطوي المنحدر بعيدًا، كل ذلك دون أدوات. لا أعرف تفاصيل داخلية أكثر من ذلك.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 12,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "الخطوات: أفرد المنحدر مسطحًا، فيُقفل المثبت، فيعبر الكرسي المتحرك؛ ولاحقًا أحرر المثبت وأطوي المنحدر بعيدًا، كل ذلك دون أدوات. لا أعرف تفاصيل داخلية أكثر من ذلك.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 13,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "الخطوات: أفرد المنحدر مسطحًا، فيُقفل المثبت، فيعبر الكرسي المتحرك؛ ولاحقًا أحرر المثبت وأطوي المنحدر بعيدًا، كل ذلك دون أدوات. لا أعرف تفاصيل داخلية أكثر من ذلك.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 14,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "الخطوات: أفرد المنحدر مسطحًا، فيُقفل المثبت، فيعبر الكرسي المتحرك؛ ولاحقًا أحرر المثبت وأطوي المنحدر بعيدًا، كل ذلك دون أدوات. لا أعرف تفاصيل داخلية أكثر من ذلك.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 15,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "الخطوات: أفرد المنحدر مسطحًا، فيُقفل المثبت، فيعبر الكرسي المتحرك؛ ولاحقًا أحرر المثبت وأطوي المنحدر بعيدًا، كل ذلك دون أدوات. لا أعرف تفاصيل داخلية أكثر من ذلك.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 16,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "الخطوات: أفرد المنحدر مسطحًا، فيُقفل المثبت، فيعبر الكرسي المتحرك؛ ولاحقًا أحرر المثبت وأطوي المنحدر بعيدًا، كل ذلك دون أدوات. لا أعرف تفاصيل داخلية أكثر من ذلك.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 17,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "الخطوات: أفرد المنحدر مسطحًا، فيُقفل المثبت، فيعبر الكرسي المتحرك؛ ولاحقًا أحرر المثبت وأطوي المنحدر بعيدًا، كل ذلك دون أدوات. لا أعرف تفاصيل داخلية أكثر من ذلك.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 18,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "الخطوات: أفرد المنحدر مسطحًا، فيُقفل المثبت، فيعبر الكرسي المتحرك؛ ولاحقًا أحرر المثبت وأطوي المنحدر بعيدًا، كل ذلك دون أدوات. لا أعرف تفاصيل داخلية أكثر من ذلك.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 19,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "الخطوات: أفرد المنحدر مسطحًا، فيُقفل المثبت، فيعبر الكرسي المتحرك؛ ولاحقًا أحرر المثبت وأطوي المنحدر بعيدًا، كل ذلك دون أدوات. لا أعرف تفاصيل داخلية أكثر من ذلك.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 20,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "الخطوات: أفرد المنحدر مسطحًا، فيُقفل المثبت، فيعبر الكرسي المتحرك؛ ولاحقًا أحرر المثبت وأطوي المنحدر بعيدًا، كل ذلك دون أدوات. لا أعرف تفاصيل داخلية أكثر من ذلك.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 21,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "الخطوات: أفرد المنحدر مسطحًا، فيُقفل المثبت، فيعبر الكرسي المتحرك؛ ولاحقًا أحرر المثبت وأطوي المنحدر بعيدًا، كل ذلك دون أدوات. لا أعرف تفاصيل داخلية أكثر من ذلك.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 22,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "الخطوات: أفرد المنحدر مسطحًا، فيُقفل المثبت، فيعبر الكرسي المتحرك؛ ولاحقًا أحرر المثبت وأطوي المنحدر بعيدًا، كل ذلك دون أدوات. لا أعرف تفاصيل داخلية أكثر من ذلك.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 23,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "الخطوات: أفرد المنحدر مسطحًا، فيُقفل المثبت، فيعبر الكرسي المتحرك؛ ولاحقًا أحرر المثبت وأطوي المنحدر بعيدًا، كل ذلك دون أدوات. لا أعرف تفاصيل داخلية أكثر من ذلك.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    }
+   ],
+   "seed_exact": "منحدر متنقل قابل للطي يدويًا لمدخل باب منزل — يريد المخترع أن يبقى المنحدر مثبتًا بشكل موثوق في الوضع الأفقي الحامل للوزن وأن يُطوى بعيدًا دون أدوات",
+   "new_gap_types_encountered": [],
+   "classifier_result": {
+    "kind": "NONE",
+    "selected_domain": null
+   },
+   "sid": "9bc7d37e-d11e-44aa-90d3-8b6900a81236",
+   "admission_route": "NONE -> D2 explicit choice -> explicit confirmation",
+   "confirmed_domain": "mechanical",
+   "path": "N",
+   "interaction_count": 24,
+   "reached_no_open_gap": false,
+   "final_gaps": [
+    {
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "status": "OPEN",
+     "iterations_open": 0
+    }
+   ],
+   "final_maturity": 0,
+   "final_stage": null,
+   "final_iteration": 1,
+   "question_language_trace": [
+    {
+     "n": 0,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 1,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 2,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 3,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 4,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 5,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 6,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 7,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 8,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 9,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 10,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 11,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 12,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 13,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 14,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 15,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 16,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 17,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 18,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 19,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 20,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 21,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 22,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 23,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    }
+   ],
+   "deliverable_http_status": 200,
+   "deliverable_eligible": false,
+   "deliverable_meta": {
+    "total_iterations": 1,
+    "total_gaps": 1,
+    "open_gap_count": 1,
+    "closed_gap_count": 0,
+    "maturity_level": 0,
+    "maturity_label": "Level 0 — Problem signal not yet established",
+    "direction": "PROGRESSING",
+    "domain_signal": "mechanical",
+    "evidence_quality": null,
+    "idea_summary": null
+   },
+   "deliverable_sections": [
+    "section_10_recommended_next_steps",
+    "section_11_prototype_test_plan",
+    "section_12_next_development_step",
+    "section_13_requirement_landscape",
+    "section_14_validation_plan",
+    "section_1_disclaimer",
+    "section_2_invention_summary",
+    "section_3_assessment_overview",
+    "section_4_requirements",
+    "section_5_assumptions",
+    "section_6_risks",
+    "section_7_recommendations",
+    "section_8_unresolved_items",
+    "section_9_stage3_reasoning"
+   ],
+   "correct_affordance_in_session_html": false,
+   "correct_affordance_in_deliverable_html": false,
+   "envelope": {
+    "contract_keys": [
+     "assertions",
+     "contract_version",
+     "idea_id"
+    ],
+    "contract_version": "p4-0-record-contract-v1",
+    "engine_contract_version": null,
+    "seed_idea_text_matches": false,
+    "ledger_record_count": 0
+   },
+   "html_sha256": {
+    "R7_session_first.html": "0b1b6809ed1fc7c0b9c2b49503b287694bb80e8ceb8c0a7296c53904819e1996",
+    "R7_session_last.html": "322a675a41ca8f5916dee42657e590539147438dbd49938b68bf566fc6a3528e",
+    "R7_deliverable.html": "ec0e4b5cdb59d7216f1ad766c2e74a1309f3af59c24e9d07017458a25caea360"
+   },
+   "answers_used": {
+    "MECHANISM_COMPLETENESS": [
+     "المنحدر يُطوى ويُفرد باليد. عندما يكون مفرودًا بشكل مسطح يجب أن يبقى مثبتًا بإحكام ليعبر عليه كرسي متحرك. أفكر في ثلاث طرق لتثبيته: مزلاج قلاب ينقفل بعد تجاوز مركزه، أو دبوس بنابض يستقر في مكانه بنقرة، أو قطعة بوابة صغيرة تسقط في مكانها بوزنها.",
+     "الأجزاء المتحركة هي المنحدر نفسه الذي يُطوى عند المدخل، وقطعة التثبيت التي تُبقيه مسطحًا. لا أريد الحفر في إطار الباب أو تغييره بشكل دائم.",
+     "الخطوات: أفرد المنحدر مسطحًا، فيُقفل المثبت، فيعبر الكرسي المتحرك؛ ولاحقًا أحرر المثبت وأطوي المنحدر بعيدًا، كل ذلك دون أدوات. لا أعرف تفاصيل داخلية أكثر من ذلك."
+    ]
+   },
+   "execution_status": "EXECUTED"
+  },
+  "R8": {
+   "record_id": "R8",
+   "case": "M-1",
+   "language": "ar",
+   "perspective": "expert",
+   "anomalies": [],
+   "admission_steps": [
+    {
+     "step": "POST /start (idea only)",
+     "status": 200
+    },
+    {
+     "step": "POST /start + domain_choice=mechanical",
+     "status": 200
+    },
+    {
+     "step": "POST /start + choice+confirm=mechanical",
+     "status": 302,
+     "location": "/session/b28f1984-fd49-44cc-a34f-cfd01ffa2b79"
+    }
+   ],
+   "interactions": [
+    {
+     "n": 0,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "القرار هو معمارية تثبيت الوضع المطوي. المرشحون: (1) مزلاج قلاب متجاوز للمركز، (2) دبوس تعشيق بنابض، (3) مزلاج بوابة يسقط بالجاذبية. يجب أن تثبت الآلية المنحدر في الوضع الأفقي الحامل للوزن وأن تتحرر للطي دون أدوات.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 1,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "مسار القوة: حمل الكرسي المتحرك عبر المنحدر المفرود إلى آلية التثبيت عند خط المفصلة؛ تشغيل يدوي للطي والفرد؛ ولا يُسمح بتعديل دائم للباب أو الإطار.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 2,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "لا يوجد تقدير حمل ولا هامش تثبيت ولا دليل اختبار فيزيائي؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 3,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "لا يوجد تقدير حمل ولا هامش تثبيت ولا دليل اختبار فيزيائي؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 4,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "لا يوجد تقدير حمل ولا هامش تثبيت ولا دليل اختبار فيزيائي؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 5,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "لا يوجد تقدير حمل ولا هامش تثبيت ولا دليل اختبار فيزيائي؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 6,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "لا يوجد تقدير حمل ولا هامش تثبيت ولا دليل اختبار فيزيائي؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 7,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "لا يوجد تقدير حمل ولا هامش تثبيت ولا دليل اختبار فيزيائي؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 8,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "لا يوجد تقدير حمل ولا هامش تثبيت ولا دليل اختبار فيزيائي؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 9,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "لا يوجد تقدير حمل ولا هامش تثبيت ولا دليل اختبار فيزيائي؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 10,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "لا يوجد تقدير حمل ولا هامش تثبيت ولا دليل اختبار فيزيائي؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 11,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "لا يوجد تقدير حمل ولا هامش تثبيت ولا دليل اختبار فيزيائي؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 12,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "لا يوجد تقدير حمل ولا هامش تثبيت ولا دليل اختبار فيزيائي؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 13,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "لا يوجد تقدير حمل ولا هامش تثبيت ولا دليل اختبار فيزيائي؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 14,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "لا يوجد تقدير حمل ولا هامش تثبيت ولا دليل اختبار فيزيائي؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 15,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "لا يوجد تقدير حمل ولا هامش تثبيت ولا دليل اختبار فيزيائي؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 16,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "لا يوجد تقدير حمل ولا هامش تثبيت ولا دليل اختبار فيزيائي؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 17,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "لا يوجد تقدير حمل ولا هامش تثبيت ولا دليل اختبار فيزيائي؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 18,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "لا يوجد تقدير حمل ولا هامش تثبيت ولا دليل اختبار فيزيائي؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 19,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "لا يوجد تقدير حمل ولا هامش تثبيت ولا دليل اختبار فيزيائي؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 20,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "لا يوجد تقدير حمل ولا هامش تثبيت ولا دليل اختبار فيزيائي؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 21,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "لا يوجد تقدير حمل ولا هامش تثبيت ولا دليل اختبار فيزيائي؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 22,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "لا يوجد تقدير حمل ولا هامش تثبيت ولا دليل اختبار فيزيائي؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    },
+    {
+     "n": 23,
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "question_displayed": "صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.",
+     "question_lang": "ar",
+     "question_dir": "rtl",
+     "answer": "لا يوجد تقدير حمل ولا هامش تثبيت ولا دليل اختبار فيزيائي؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+     "post_status": 302,
+     "answer_error": null,
+     "gaps_after": [
+      {
+       "gap_type": "MECHANISM_COMPLETENESS",
+       "status": "OPEN",
+       "iterations_open": 0
+      }
+     ],
+     "maturity_after": 0,
+     "stage_after": null,
+     "iteration_after": 1
+    }
+   ],
+   "seed_exact": "منحدر متنقل قابل للطي يدويًا لمدخل باب منزل — يريد المخترع أن يبقى المنحدر مثبتًا بشكل موثوق في الوضع الأفقي الحامل للوزن وأن يُطوى بعيدًا دون أدوات",
+   "new_gap_types_encountered": [],
+   "classifier_result": {
+    "kind": "NONE",
+    "selected_domain": null
+   },
+   "sid": "b28f1984-fd49-44cc-a34f-cfd01ffa2b79",
+   "admission_route": "NONE -> D2 explicit choice -> explicit confirmation",
+   "confirmed_domain": "mechanical",
+   "path": "N",
+   "interaction_count": 24,
+   "reached_no_open_gap": false,
+   "final_gaps": [
+    {
+     "gap_type": "MECHANISM_COMPLETENESS",
+     "status": "OPEN",
+     "iterations_open": 0
+    }
+   ],
+   "final_maturity": 0,
+   "final_stage": null,
+   "final_iteration": 1,
+   "question_language_trace": [
+    {
+     "n": 0,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 1,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 2,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 3,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 4,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 5,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 6,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 7,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 8,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 9,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 10,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 11,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 12,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 13,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 14,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 15,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 16,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 17,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 18,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 19,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 20,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 21,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 22,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    },
+    {
+     "n": 23,
+     "gap": "MECHANISM_COMPLETENESS",
+     "q_lang": "ar",
+     "q_dir": "rtl"
+    }
+   ],
+   "deliverable_http_status": 200,
+   "deliverable_eligible": false,
+   "deliverable_meta": {
+    "total_iterations": 1,
+    "total_gaps": 1,
+    "open_gap_count": 1,
+    "closed_gap_count": 0,
+    "maturity_level": 0,
+    "maturity_label": "Level 0 — Problem signal not yet established",
+    "direction": "PROGRESSING",
+    "domain_signal": "mechanical",
+    "evidence_quality": null,
+    "idea_summary": null
+   },
+   "deliverable_sections": [
+    "section_10_recommended_next_steps",
+    "section_11_prototype_test_plan",
+    "section_12_next_development_step",
+    "section_13_requirement_landscape",
+    "section_14_validation_plan",
+    "section_1_disclaimer",
+    "section_2_invention_summary",
+    "section_3_assessment_overview",
+    "section_4_requirements",
+    "section_5_assumptions",
+    "section_6_risks",
+    "section_7_recommendations",
+    "section_8_unresolved_items",
+    "section_9_stage3_reasoning"
+   ],
+   "correct_affordance_in_session_html": false,
+   "correct_affordance_in_deliverable_html": false,
+   "envelope": {
+    "contract_keys": [
+     "assertions",
+     "contract_version",
+     "idea_id"
+    ],
+    "contract_version": "p4-0-record-contract-v1",
+    "engine_contract_version": null,
+    "seed_idea_text_matches": false,
+    "ledger_record_count": 0
+   },
+   "html_sha256": {
+    "R8_session_first.html": "5660cf7adeb816c5af319ec518cbd89bc120475552fe74a505124279170d998a",
+    "R8_session_last.html": "d4f28ed9063f266587feaaa0febd0fac4a844587960930ddef0cad9480efd638",
+    "R8_deliverable.html": "0c1a042a7595f0d3ce45d113754ac0a1a6955dce4cbebf21ff6c7fee061ac87d"
+   },
+   "answers_used": {
+    "MECHANISM_COMPLETENESS": [
+     "القرار هو معمارية تثبيت الوضع المطوي. المرشحون: (1) مزلاج قلاب متجاوز للمركز، (2) دبوس تعشيق بنابض، (3) مزلاج بوابة يسقط بالجاذبية. يجب أن تثبت الآلية المنحدر في الوضع الأفقي الحامل للوزن وأن تتحرر للطي دون أدوات.",
+     "مسار القوة: حمل الكرسي المتحرك عبر المنحدر المفرود إلى آلية التثبيت عند خط المفصلة؛ تشغيل يدوي للطي والفرد؛ ولا يُسمح بتعديل دائم للباب أو الإطار.",
+     "لا يوجد تقدير حمل ولا هامش تثبيت ولا دليل اختبار فيزيائي؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها."
+    ]
+   },
+   "execution_status": "EXECUTED"
+  }
+ }
+}

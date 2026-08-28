@@ -1,0 +1,22 @@
+{
+ "run_id": "S2-PATHN-RUN-002",
+ "purpose": "RVR-8 \u2014 integrated release-value verification (the '1 verification' of the frozen Final Remediation Contract)",
+ "authoritative_branch": "feature/atomic-json-session-persistence",
+ "s2_contract_authoritative_sha": "1f3d9d14b3b645df9595889861140910d63b918c",
+ "exact_release_candidate_sha": "1f3d9d14b3b645df9595889861140910d63b918c",
+ "rc_parent_first": "12a94580420a3137029562c97a67e32241ef4824",
+ "rc_parent_second": "2411f1d555f81516f3b02ac0fdf09d772a09b40f",
+ "rc_tree": "97702884a60853abefd457299e5127280827d2b2",
+ "benchmark_contract_version": "Path-N Release-Evaluation Extension v1 (S2 SS15-17); S2 base SS0-14 unchanged",
+ "rc_basis": "product paths engine/, web/, domains/ are byte-identical from the last product-changing merge 22c26881 (PR #589, the RVR-7 implementation) through 1f3d9d14 (verified: only docs/governance and one additive test file differ), so exactly one committed Path-N product state exists and 1f3d9d14 is the only commit whose tree carries both that product and every authoritative contract",
+ "activated_domains": [
+  "electronics_electrical",
+  "mechanical"
+ ],
+ "ai_advisory_enabled": false,
+ "working_tree": "clean, detached at 1f3d9d14 before execution; tree verified equal to the merge tree",
+ "db_path": "INVENTORAI_DB_PATH bound to the run evidence store (outside the repository tree)",
+ "executed_by": "Creator/Executor agent (evaluator); evaluation perspectives per S2 15.4 - not real users",
+ "one_run_accounting": "prior authorized run count consumed: 1 (S2-PATHN-RUN-001, OD-PDVG-01(a)); THIS run consumes the separate Owner second-run authorization issued for RVR-8; exactly 8 evaluation records, one pass, no retries; FURTHER RUN AUTHORIZED: NO",
+ "harness_defect_disclosure": "a first harness attempt omitted the mandatory server-issued answer_token, so every answer POST was refused fail-closed by the committed P4-1b-2a guard and NO evaluation occurred (all 8 ledgers held 0 accepted answers; nothing was assessed or judged). That aborted harness attempt is preserved as run002_ABORTED_HARNESS_ATTEMPT/ and is not an evaluation run; the run proper executed once, after the harness was fixed to submit the token the session page serves. Incidentally this is live fail-closed evidence for the token guard."
+}

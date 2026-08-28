@@ -1,0 +1,90 @@
+{
+ "R1": {
+  "keys": [
+   "confirmed_domain",
+   "engine_contract_version",
+   "path",
+   "seed_idea_text"
+  ],
+  "seed_verbatim": true,
+  "engine_contract_version": "p4-2-level1-recon-v1",
+  "contract_version": null
+ },
+ "R2": {
+  "keys": [
+   "confirmed_domain",
+   "engine_contract_version",
+   "path",
+   "seed_idea_text"
+  ],
+  "seed_verbatim": true,
+  "engine_contract_version": "p4-2-level1-recon-v1",
+  "contract_version": null
+ },
+ "R3": {
+  "keys": [
+   "confirmed_domain",
+   "engine_contract_version",
+   "path",
+   "seed_idea_text"
+  ],
+  "seed_verbatim": true,
+  "engine_contract_version": "p4-2-level1-recon-v1",
+  "contract_version": null
+ },
+ "R4": {
+  "keys": [
+   "confirmed_domain",
+   "engine_contract_version",
+   "path",
+   "seed_idea_text"
+  ],
+  "seed_verbatim": true,
+  "engine_contract_version": "p4-2-level1-recon-v1",
+  "contract_version": null
+ },
+ "R5": {
+  "keys": [
+   "confirmed_domain",
+   "engine_contract_version",
+   "path",
+   "seed_idea_text"
+  ],
+  "seed_verbatim": true,
+  "engine_contract_version": "p4-2-level1-recon-v1",
+  "contract_version": null
+ },
+ "R6": {
+  "keys": [
+   "confirmed_domain",
+   "engine_contract_version",
+   "path",
+   "seed_idea_text"
+  ],
+  "seed_verbatim": true,
+  "engine_contract_version": "p4-2-level1-recon-v1",
+  "contract_version": null
+ },
+ "R7": {
+  "keys": [
+   "confirmed_domain",
+   "engine_contract_version",
+   "path",
+   "seed_idea_text"
+  ],
+  "seed_verbatim": true,
+  "engine_contract_version": "p4-2-level1-recon-v1",
+  "contract_version": null
+ },
+ "R8": {
+  "keys": [
+   "confirmed_domain",
+   "engine_contract_version",
+   "path",
+   "seed_idea_text"
+  ],
+  "seed_verbatim": true,
+  "engine_contract_version": "p4-2-level1-recon-v1",
+  "contract_version": null
+ }
+}
