@@ -16375,3 +16375,125 @@ Reality / Commercial Readiness implementation: **NOT AUTHORIZED**; `gap_relevanc
 `OD-PDVG-12 EXERCISED: NO`; `FCORA: RECORDED, NOT EXECUTED`; `PSRR GO: NO`;
 `DEPLOYMENT / PRODUCTION / SERIOUS RELEASE / PAID ACTIVATION: NOT AUTHORIZED`;
 `main` NOT RECONCILED. Any next gate requires its own separate Owner authorization.
+
+---
+
+## RVR-7 FORMAL CLOSURE (governance + test-only closure candidate — conditional, non-circular)
+
+**Append-only closure-gate entry.** The entry above named `RVR-7 FORMAL CLOSURE` as the next
+eligible gate — **eligibility only**. The Owner has now authorized THIS closure lifecycle only, in
+ONE bounded pass: reconstruct the exact remaining requirements, produce the evidence that can
+legitimately be produced, adjudicate, and freeze once. It explicitly does **NOT** pre-decide closure
+and does **NOT** authorize RVR-8.
+
+**1. Entry identity (verified live).** Base = live authoritative tip
+`02a79a849f74eaa450d217ac1bb1b67f8959fc75` (**PR #590** — the post-RVR-7-implementation governance
+synchronization; first parent `22c26881…`; second parent `952739549c7b…` = the exact Owner-accepted
+candidate; merge tree `95f396b3…`; EMPTY candidate→merge diff), **0 commits after it**. Chain
+re-verified from Git with second-parent = exact-accepted-candidate identity at every step:
+PR #586 → #587 → #588 → #589 → #590.
+
+**2. §L.2.1 adjudicated on exact wording — Owner-as-reviewer is PERMITTED.** The binding requirement
+is a **human** reviewer with **demonstrated bilingual EN/AR competence appropriate to the product's
+technical register**, plus four recording limbs. It requires **neither independence from the Owner
+nor any external credential**: "independen", "credential", "certif", "qualifi", "accredit",
+"professional", "native speaker" and "third-party" do not occur in §L or §L.2.1 `[EXEC]`. No such
+requirement is imposed by convention. The Owner personally performed the review and declared it;
+competence basis is recorded as **demonstrated in use** — most directly the Owner's adoption of the
+N-PF-3 material-narrowing and N-PF-4 technical-meaning-shift characterizations, which are exactly
+the EN/AR technical-register judgments §L.2.1 describes — and **no credential is claimed or
+fabricated**. Machine translation was never the equivalence authority.
+**`HUMAN BILINGUAL REVIEW SATISFIED: YES`** · **`§L.2.1 SATISFIED: YES`** — superseding the prior
+entry's `HUMAN BILINGUAL REVIEW SATISFIED: NO`, which was authority-at-that-time and is now
+falsified by the Owner's actual human review. The artifact is
+`docs/governance/RVR_7_EN_AR_SEMANTIC_EQUIVALENCE_REVIEW.md`: 34/34 items dispositioned
+`EQUIVALENT — ACCEPTED FOR USE` as a **uniform declaration-level disposition**, with **no invented
+per-item commentary, reasoning, credential or signature**. The review universe was enumerated
+mechanically as **exactly 34** (21 committed `question_id` pairs + 13 identity-keyed substantive
+asks) `[EXEC]`, matching the declaration's own scope. The *Independent Review* of this governance
+candidate remains fully required and is not substituted by it.
+
+**3. W1-N1 — DISCHARGED (evidence-only).** Contract §E.2 requires demonstrating its Arabic
+verification concern **in the RVR-7 suite** and recording the discharge **in the implementation
+evidence pack**. Both done: new §4c tests in `tests/test_rvr7_web_arabic_serving.py` prove that
+hyphenated buzzword stuffing closes no gap, advances no maturity level and advances no stage on the
+Arabic surface exactly as on the English one — plus the differential form, so neither language is the
+weaker path. The committed English owner module `tests/test_wave2_w2d_s2_attempt_gate.py` is
+**unmodified and still green (14 passed)**. No standalone W1-N1 row is created (no duplicate owner).
+**`W1-N1 DISCHARGED: YES`** — superseding the prior `NO`.
+
+**4. W1-N2 — technical evidence COMPLETE; independent reproduction is a lifecycle act, not a
+Creator artifact.** Contract §E.1's mechanism has five limbs. Merged, enumerated corpus, and real
+answer-integration path were already satisfied at PR #589. The **EN↔AR differential assertions** limb
+— genuinely outstanding, re-derived at this gate rather than inherited — is now satisfied by new §4b
+tests pairing each of the 12 Arabic utterances with an index-aligned English counterpart and
+asserting identical, unchanged canonical outcomes in both languages, with a fixture-completeness
+guard so the differential cannot silently degrade. The fifth limb, "the Independent Review must
+independently reproduce it", is discharged **by** the reviewer of this candidate and is **NOT
+self-certified**; it is scheduled and reproducible in one command (evidence pack §6).
+**`W1-N2 DISCHARGED: NO` at this base**; it closes at the merge of this candidate.
+
+**5. §K.2 — NOT reopened.** Its conditional obligation did not fire: the trigger surfaces
+(`engine/intent_serving.py` and both `..._question_intent_registry.json`) are **byte-identical**
+across `dad450bf → 3891d9bd → 22c26881 → 02a79a8` `[EXEC]`, and manifest §8 item 32 invokes §K.2 only
+"**if** the markers change". Manifest §8 **item 31** (`_INTENT_MARKERS` re-validation against the new
+Arabic wording) remains a **separate deferred item**: owner unchanged (the W2-C content/marker
+surfaces), trigger unchanged, latest safe gate before Serious Release, `CONDITIONAL`, fail-closed,
+not a decision-correctness defect, **not repaired here**, **not duplicated**, and **not a closure
+blocker**.
+
+**6. Closure-gate sweep — BLOCKER COUNT 0.** All 35 register rows read at this exact base: 9 already
+CLOSED; 2 SATISFIED at this gate (the RVR-7 criterion and W1-N1); 23 NON-BLOCKING/DEFERRED at
+Serious-Release or Paid-Activation latest-safe gates; 4 unowned/future. No row names RVR-7 Formal
+Closure as its gate other than the RVR-7 row and its W1-N1/W1-N2 inputs.
+**Serious-Release-latest-safe obligations are NOT converted into Formal-Closure blockers** — no exact
+authority requires it. New durable disposition recorded, not orphaned: **OBS-RVR7-LANG-1** (residual
+minor Arabic linguistic polish, disclosed by the Owner's own declaration; owner = the existing RVR-7
+Arabic content surfaces; trigger = next authorized touch; latest safe gate before Serious Release;
+`NBF`; authorizes no repair cycle and no fresh implementation SHA for wording preference).
+**Orphan risk: ZERO.**
+
+**7. This candidate — delta and evidence.** Governance/documentation + **test-only**. New:
+`RVR_7_FORMAL_CLOSURE_RECORD.md`, `RVR_7_IMPLEMENTATION_EVIDENCE_PACK.md`,
+`RVR_7_EN_AR_SEMANTIC_EQUIVALENCE_REVIEW.md`. Updated: this roadmap (append-only),
+`ACTIVE_INCREMENT_CONTRACT.md` (rotation), `CURRENT_PROJECT_STATE.md` (pointer + entry),
+`DEFERRED_OBLIGATIONS_REGISTER.md` (status-only). `OWNER_DECISION_REGISTER.md` **UNCHANGED**
+(closure-gate convention). Executable delta is **+16 additive tests in one module**, each asserting
+**existing** behavior and each verified against unmodified runtime before adoption.
+**`RUNTIME DELTA: 0` · `APPLICATION-CODE DELTA: 0` · `CONTENT DELTA: 0` · `ARCHITECTURE DELTA: 0` ·
+`CANONICAL-STATE DELTA: 0` · `PACK / PIN / DOMAIN-RULE DELTA: 0`.** Evidence: RVR-7 targeted set
+61 → **77 passed**; changed module **41 passed**; W1-N1 English owner module **14 passed**
+(unweakened); Universal Guardrail Smoke **PASS (27)**; **FULL SUITE 4793 passed / 0 failed / 3
+skipped / 1 xfailed** — exactly the inherited PR #589 baseline of 4777 **+16**. No test weakened,
+skipped, quarantined or removed.
+
+**8. Lean classification re-derived, not inherited.** **`LEAN RISK LEVEL: 2`** ·
+**`REVIEW DEPTH: 2`** — an authorized governance closure increment reaching no Lean §3 LEVEL-1
+trigger: no product identity, architecture, persistence, schema, security, authorization, billing,
+domain activation, release/deployment or main-reconciliation surface is touched, and the executable
+delta is additive test evidence of unchanged behavior. Per AHAEP, a Formal Closure gate is not
+automatically low-risk: this one changes a disputed obligation's resolution (W1-N1, the §L.2.1
+adjudication), which is why DEPTH 2 with **Independent Review REQUIRED** is retained rather than
+reduced.
+
+**9. Conditional and non-circular.** **RVR-7 becomes formally closed if and only if this exact
+candidate is independently reviewed, Owner-accepted at its exact SHA, published, merged with CREATE A
+MERGE COMMIT (second parent = the accepted candidate; EMPTY candidate→merge diff), and post-merge
+identity-verified.** Until then: `OWNER CLOSURE-LIFECYCLE AUTHORIZED: YES` ·
+`OWNER EXACT CLOSURE-SHA ACCEPTED: NO` · **`RVR-7 FORMALLY CLOSED: NO`**. **Disposition:
+`RVR-7 FORMAL CLOSURE — GOVERNANCE + TEST-ONLY CANDIDATE; NOT AUTHORITATIVE UNTIL MERGED AND
+POST-MERGE VERIFIED`.**
+
+**Next eligible gate — none is named here.** Closure of RVR-7 does **not** name, imply or start a
+successor. The RVR-8 register trigger remains "Owner authorization after RVR-7" — a separate Owner
+decision this gate neither makes nor pre-empts.
+
+**Boundaries — nothing downstream activated by this gate.** `RVR-7 FORMALLY CLOSED: NO`;
+`RVR-8 AUTHORIZED: NO`; `RVR-8 STARTED: NO`; `CAP-12 / CAP-13 / CAP-14 / CAP-18 ACTIVATED: NO`;
+`FCORA: RECORDED, NOT EXECUTED`; `OD-PDVG-12 EXERCISED: NO`; MG-8 OPEN with semantic repair NOT
+authorized; `WS11 ACTIVATED: NO`; `MEANING-ADAPTIVE / TIER-2 ACTIVATED: NO`; `gap_relevance`
+UNCHANGED; `W/M: 2/2` frozen; `R4-C: OPEN`; `MLC DEFINITION FROZEN: NO`; `PSRR GO: NO`;
+`LANGUAGE-CONDITIONAL ROUTING: FORBIDDEN`; `RUNTIME / MACHINE TRANSLATION: FORBIDDEN`;
+`PARALLEL ARABIC QUESTION REGISTRY: FORBIDDEN`; Manufacturing / Market Reality / Commercial
+Readiness: **NOT AUTHORIZED**; `DEPLOYMENT / PRODUCTION / SERIOUS RELEASE / PAID ACTIVATION: NOT
+AUTHORIZED`; `main` NOT RECONCILED. Any next gate requires its own separate Owner authorization.

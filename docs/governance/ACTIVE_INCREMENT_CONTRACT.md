@@ -41,7 +41,87 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — POST-RVR-7-IMPLEMENTATION GOVERNANCE SYNCHRONIZATION; governance-only
+**Status (current — RVR-7 FORMAL CLOSURE; governance + test-only closure candidate.
+`RVR-7 FORMALLY CLOSED: NO`; `OWNER CLOSURE-LIFECYCLE AUTHORIZED: YES`;
+`OWNER EXACT CLOSURE-SHA ACCEPTED: NO`; `§L.2.1 SATISFIED: YES`;
+`HUMAN BILINGUAL REVIEW SATISFIED: YES`; `W1-N1 DISCHARGED: YES`; `W1-N2 DISCHARGED: NO`
+(technical evidence complete; independent reproduction pending at this candidate's Independent
+Review); `RVR-8 AUTHORIZED: NO`; `RVR-8 STARTED: NO`).** Base:
+**`02a79a849f74eaa450d217ac1bb1b67f8959fc75`** — verified live from Git at this gate as the
+**authoritative tip** of `feature/atomic-json-session-persistence` (**0 commits after it**;
+**PR #590** — the post-RVR-7-implementation governance synchronization; first parent
+`22c26881daf128691fd64a6f38c96380ff309b57` (PR #589 — the authoritative RVR-7 implementation
+merge); second parent `952739549c7b03284b091a67bf2efce12f3254e7` — the exact Owner-accepted
+candidate; merge tree `95f396b3d4e9e3aa96413f6a0b84a96f28b054bd`; EMPTY candidate→merge diff;
+post-merge identity verified).
+
+**Contract semantics — binding.** This is a CLOSURE contract, not an implementation contract. It
+authorizes ONE bounded closure lifecycle and nothing else. It does **NOT** authorize runtime,
+application-code, architecture, canonical-state, progression, reconstruction or product-behavior
+change; **NO IMPLEMENTATION CONTRACT IS ACTIVE**; and closure itself remains the Owner's future
+exact-SHA acceptance. Freezing this candidate authorizes no successor: `RVR-8 AUTHORIZED: NO`.
+
+```
+Objective:                reconstruct the exact remaining RVR-7 Formal Closure requirements;
+                          produce the evidence legitimately producible under this authorization
+                          (human EN/AR equivalence artifact; consolidated implementation evidence
+                          pack; W1-N1 Arabic verification discharge; the W1-N2 EN/AR differential
+                          limb); adjudicate §L.2.1 against exact wording; run the complete register
+                          closure-gate sweep; and freeze ONE closure candidate if and only if
+                          blocker count reaches zero. NO implementation. NO RVR-8. Closure NOT
+                          pre-decided.
+Owner authorization:      explicit — RVR-7 FORMAL CLOSURE, ONE bounded closure lifecycle only.
+                          Independent Review, Owner exact-SHA acceptance, publication, PR and merge
+                          each remain separate decisions. RVR-8 is NOT authorized.
+Lean risk LEVEL:          LEVEL 2 (re-derived, not inherited — no Lean §3 LEVEL-1 trigger is
+                          reached; the executable delta is additive test evidence of unchanged
+                          behavior)
+Lean review DEPTH:        DEPTH 2 — Independent Review REQUIRED, retained rather than reduced
+                          because this gate resolves a disputed obligation (W1-N1; the §L.2.1
+                          adjudication), per the AHAEP rule that a Formal Closure gate is not
+                          automatically low-risk
+Allowed paths:            docs/governance/RVR_7_FORMAL_CLOSURE_RECORD.md (new);
+                          docs/governance/RVR_7_IMPLEMENTATION_EVIDENCE_PACK.md (new);
+                          docs/governance/RVR_7_EN_AR_SEMANTIC_EQUIVALENCE_REVIEW.md (new);
+                          ACTIVE_EXECUTION_ROADMAP.md (append-only);
+                          ACTIVE_INCREMENT_CONTRACT.md (rotation);
+                          CURRENT_PROJECT_STATE.md (pointer + entry);
+                          DEFERRED_OBLIGATIONS_REGISTER.md (status-only row edits);
+                          tests/test_rvr7_web_arabic_serving.py (ADDITIVE TEST EVIDENCE ONLY)
+Prohibited paths:         every runtime, engine, web and content path without exception;
+                          engine/intent_serving.py and _INTENT_MARKERS; both
+                          ..._question_intent_registry.json; both ..._path_n_questions.json;
+                          both domain packs; every other test module; all frozen instruments and
+                          all historical records (no rewriting);
+                          OWNER_DECISION_REGISTER.md (closure-gate convention: UNCHANGED)
+Mandatory deltas:         RUNTIME 0 · APPLICATION-CODE 0 · CONTENT 0 · ARCHITECTURE 0 ·
+                          CANONICAL-STATE 0 · PACK 0 · PIN 0 · DOMAIN-RULE 0.
+                          TEST: additive only; no test weakened, skipped, quarantined or removed;
+                          every added test must assert EXISTING behavior, verified against
+                          unmodified runtime before adoption
+Prohibited outcomes:      reopening RVR-7 architecture, the semantic repair, N-PF-3/N-PF-4, Q2, the
+                          Path Manifest, D-P6-18, the mechanical pack, generated-output scope or
+                          §K.2; repairing _INTENT_MARKERS; duplicating the marker owner;
+                          fabricating an external reviewer, independence, credentials, signatures
+                          or per-item reviewer comments; discharging W1-N1/W1-N2 without evidence;
+                          self-certifying independent reproduction; claiming Formal Closure before
+                          merge; starting RVR-8; activating CAP-12/13/14/18; touching deployment;
+                          converting Serious-Release obligations into Formal-Closure blockers
+                          without exact authority; unrelated cleanup
+Independent-review scope: reproduce the RVR-7 suite (expect 41 passed in the changed module) and in
+                          particular the W1-N2 EN/AR differential — the §E.1 limb this review is
+                          required to discharge; the §L.2.1 adjudication (human, competence, and
+                          the ABSENCE of any independence/credential requirement); the human-review
+                          evidence completeness and the absence of fabrication; W1-N1 discharge;
+                          evidence-pack completeness and its inheritance conditions; closure blocker
+                          count 0; runtime/architecture/content delta 0; no test weakening; that
+                          §K.2 stays closed and item 31 stays deferred with its owner intact; that
+                          no deferred obligation is orphaned; that RVR-8 is not activated
+Merge authority:          Owner, separately (not by the execution agent).
+```
+
+**Superseded status block (authority-at-its-time; preserved, not rewritten):**
+**Status (POST-RVR-7-IMPLEMENTATION GOVERNANCE SYNCHRONIZATION; governance-only
 candidate. `RVR-7 IMPLEMENTATION PATH MANIFEST: AUTHORITATIVE / FROZEN` (PR #588);
 `RVR-7 IMPLEMENTATION: AUTHORITATIVE REPOSITORY CONTENT` (PR #589); `RVR-7 FORMALLY CLOSED: NO`;
 `RVR-7 FORMAL CLOSURE AUTHORIZED: NO`; `HUMAN BILINGUAL REVIEW SATISFIED: NO`;

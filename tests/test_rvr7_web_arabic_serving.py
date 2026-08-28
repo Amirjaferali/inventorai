@@ -274,6 +274,136 @@ def test_w1n2_arabic_small_talk_keeps_the_page_serving_arabic(client):
 
 
 # ---------------------------------------------------------------------------
+# 4b. W1-N2 — EN <-> AR DIFFERENTIAL over the same adversarial corpus
+#
+# Contract SS-E.1 fixes the discharge mechanism for W1-N2 as an Arabic adversarial
+# regression over the enumerated small-talk corpus, on the real answer-integration
+# path, "with EN/AR differential assertions". Section 4 above proves the Arabic
+# side in isolation; this section supplies the differential limb: the SAME
+# small-talk semantics, expressed in each language, must leave canonical state
+# identically untouched. A leak on either surface that the other does not share
+# is exactly the historical W2-C R3 failure this must defend against.
+#
+# These tests assert EXISTING behavior. They add no runtime capability.
+# ---------------------------------------------------------------------------
+
+# Index-aligned English counterparts of W1N2_ARABIC_SMALL_TALK. Same speech acts,
+# same adversarial class (greeting / thanks / deflection / assent / meta-request).
+W1N2_ENGLISH_COUNTERPART = (
+    "hello",
+    "thank you",
+    "how are you?",
+    "I don't know",
+    "okay",
+    "yes",
+    "no",
+    "please help me",
+    "what is this?",
+    "fine, continue",
+    "this is a very good idea",
+    "I want to start over",
+)
+
+
+def test_w1n2_corpus_pairing_is_complete():
+    """Guards the differential fixture itself: every Arabic adversarial utterance
+    has exactly one English counterpart, so the differential cannot silently
+    degrade into a one-sided check if the corpus is extended."""
+    assert len(W1N2_ENGLISH_COUNTERPART) == len(W1N2_ARABIC_SMALL_TALK)
+
+
+def _progression_snapshot(appmod, sid):
+    """Canonical progression state, language-independent by construction."""
+    state = appmod.SESSION_STORE[sid]["state"]
+    gap = select_next_gap(state)
+    return (state.maturity_level, state.current_stage, gap,
+            state.get_gap(gap).status)
+
+
+@pytest.mark.parametrize("index", range(len(W1N2_ARABIC_SMALL_TALK)))
+def test_w1n2_small_talk_is_inert_identically_in_both_languages(client, index):
+    """EN/AR differential: the same small talk must produce the SAME canonical
+    outcome in both languages, and that outcome must be no progression at all.
+    Catches a one-sided leak in either direction."""
+    c, appmod = client
+    arabic = W1N2_ARABIC_SMALL_TALK[index]
+    english = W1N2_ENGLISH_COUNTERPART[index]
+
+    sid_ar = _start(c)
+    _set_lang(c, "ar")
+    before_ar = _progression_snapshot(appmod, sid_ar)
+    _answer(c, sid_ar, arabic)
+    after_ar = _progression_snapshot(appmod, sid_ar)
+
+    sid_en = _start(c)
+    _set_lang(c, "en")
+    before_en = _progression_snapshot(appmod, sid_en)
+    _answer(c, sid_en, english)
+    after_en = _progression_snapshot(appmod, sid_en)
+
+    assert before_ar == before_en, (before_ar, before_en)
+    assert after_ar == after_en, (arabic, english, after_ar, after_en)
+    assert after_ar == before_ar, (arabic, before_ar, after_ar)
+
+
+# ---------------------------------------------------------------------------
+# 4c. W1-N1 — Arabic verification concern, on the real served route
+#
+# W1-N1 (Wave-1 closure record SS-4) is the English-side finding that hyphenated
+# buzzword stuffing may reach REASONED, contained by the binding invariant
+# "REASONED classification alone is not proof of technical validity or
+# progression eligibility." The English containment is already asserted by the
+# committed W2-D gate module. Contract SS-E.2 makes W1-N1 a verification INPUT to
+# RVR-7 acceptance, "discharged by demonstrating its Arabic verification concern
+# in the RVR-7 suite": the Arabic surface must contain the same class of input on
+# the same terms, so the substantive Arabic journey cannot become the weaker path.
+#
+# These tests assert EXISTING behavior. They add no runtime capability.
+# ---------------------------------------------------------------------------
+
+# English fixture reused verbatim from the committed W2-D gate module so the two
+# surfaces are compared on the same adversarial class.
+W1N1_STUFFING_EN = ("state-of-the-art sensor-fusion next-generation "
+                    "performance-optimized architecture-driven market-leading "
+                    "solution platform")
+# Arabic analogue: the same buzzword-stuffing act, no feasibility-family content.
+W1N1_STUFFING_AR = ("حل متطور متعدد-الاستشعار جيل-جديد محسّن-الأداء "
+                    "مبني-على-البنية رائد-في-السوق منصة متكاملة")
+
+
+@pytest.mark.parametrize("lang,stuffing", [("en", W1N1_STUFFING_EN),
+                                           ("ar", W1N1_STUFFING_AR)])
+def test_w1n1_buzzword_stuffing_never_advances_on_either_surface(
+        client, lang, stuffing):
+    """W1-N1 containment holds on the Arabic surface exactly as on the English
+    one: buzzword stuffing closes no gap, advances no maturity level and advances
+    no stage."""
+    c, appmod = client
+    sid = _start(c)
+    _set_lang(c, lang)
+    before = _progression_snapshot(appmod, sid)
+    _answer(c, sid, stuffing)
+    after = _progression_snapshot(appmod, sid)
+    assert after == before, (lang, before, after)
+
+
+def test_w1n1_stuffing_outcome_is_identical_across_languages(client):
+    """The differential form of W1-N1: neither language is the weaker path."""
+    c, appmod = client
+    sid_en = _start(c)
+    _set_lang(c, "en")
+    _answer(c, sid_en, W1N1_STUFFING_EN)
+    after_en = _progression_snapshot(appmod, sid_en)
+
+    sid_ar = _start(c)
+    _set_lang(c, "ar")
+    _answer(c, sid_ar, W1N1_STUFFING_AR)
+    after_ar = _progression_snapshot(appmod, sid_ar)
+
+    assert after_ar == after_en, (after_ar, after_en)
+
+
+# ---------------------------------------------------------------------------
 # 5. Generated output stays outside RVR-7
 # ---------------------------------------------------------------------------
 
