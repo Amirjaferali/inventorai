@@ -1516,9 +1516,49 @@ authority.
 `RVR-8 STARTED: NO` — the RVR-8 register trigger remains "Owner authorization after RVR-7", a
 separate Owner decision neither made nor pre-empted here; `READINESS IMPLEMENTATION AUTHORIZED: NO`;
 `AHAEP AMENDMENT 1 — OWNER AUTHORIZATION / INDEPENDENT REVIEW / ACCEPTANCE: NONE CLAIMED` (that
-candidate is unpublished, on no remote, and repository truth proves no such decision); `CAP-06 /
+candidate is unpublished, on no remote, and repository truth proves no such decision) — **this
+clause was accurate when written and is now SUPERSEDED by PR #593; see §H below**; `CAP-06 /
 CAP-12 / CAP-13 / CAP-14 / CAP-18 ACTIVATED: NO`; `WS11 / ADAPTIVE QUESTIONING: NOT ACTIVATED`;
 `FCORA: RECORDED, NOT EXECUTED`; `OD-PDVG-12 EXERCISED: NO`; `PSRR GO: NO`;
 `DEPLOYMENT / PRODUCTION / SERIOUS RELEASE / PAID ACTIVATION: NOT AUTHORIZED`; `main` NOT
 RECONCILED. No new product, implementation, readiness or RVR-8 authorization is registered here,
 because none exists.
+
+
+**H. AHAEP Amendment 1 — Owner decisions registered at the POST-AHAEP-AMENDMENT-1 BOUNDED STATUS
+SYNCHRONIZATION gate** (base `40b6fe61f2f4515709764fe367547de9e59084c3`, PR #593). This section
+supersedes §G's boundary clause `AHAEP AMENDMENT 1 — OWNER AUTHORIZATION / INDEPENDENT REVIEW /
+ACCEPTANCE: NONE CLAIMED`, which was true at the PR #592 gate and is now contradicted by
+repository truth. Durable authority attaches to these registrations only upon review, Owner
+exact-SHA acceptance, merge and post-merge identity verification of the candidate introducing them.
+
+**Provenance discipline — four levels, kept distinct:** **Owner decision** — the amendment
+lifecycle authorization, the exact-SHA acceptance, and the separate merge authorization.
+**Git fact** — the PR #593 merge SHA, its two ordered parents, merge tree, EMPTY candidate→merge
+diff, and its single changed path, all mechanically re-verified live at this gate.
+**Review evidence** — Independent Governance Review `ACCEPT WITH NON-BLOCKING OBSERVATIONS`; Lead
+re-adjudication `ACCEPT WITH NON-BLOCKING OBSERVATIONS`; four observations, none requiring
+candidate repair (Owner-relayed; no review artifact is committed to this repository and none is
+represented as existing). **Inference — NONE**: no wording the Owner did not use, no reviewer
+identity, no credential, no signature, no backdated instrument, and no product, readiness or RVR-8
+authorization is invented.
+
+| ID | Subject | Status | Evidence |
+|---|---|---|---|
+| OD-AHAEP-A1-LIFECYCLE | **AHAEP Amendment 1 — Owner authorization of ONE bounded governance/process-improvement lifecycle**, whose objective was to reduce unnecessary review loops without reducing material assurance, evidence integrity, Independent Review or Owner control. The reconciliation found the great majority of the proposed mechanisms ALREADY FULLY OWNED and amended only two genuine residual gaps (a bounded Lead gate preflight; early identification of externally dependent requirements), plus a status-line correction. | Consumed; discharged by the completed lifecycle. **`NEW SOP CREATED: NO` · `DUPLICATE PROCESS OWNER CREATED: NO`.** | Recorded in `ACCELERATED_HIGH_ASSURANCE_EXECUTION_PROTOCOL.md` §9A and §26.1 `[OWNER-PREMISE + REPO]` |
+| OD-AHAEP-A1-REFREEZE | **Owner authorization to re-freeze Amendment 1 as a fresh same-base sibling** after PR #592 advanced the base, with the amendment content expressly not to be rewritten or improved. | Exercised. `c81e591e763de504733e12eab6edbddcf20df39c` is preserved as **superseded historical evidence** — never amended, rebased, squashed, published or merged, and never an ancestor. | The re-frozen candidate's AHAEP blob is byte-identical (`9dba27f0bd0ca685b55cc26ee22a06b59941a5b8`) to the superseded candidate's; PR #592 did not modify the AHAEP file, whose base blob `f0da8c62…` is identical across both bases `[REPO]` |
+| OD-AHAEP-A1-ACCEPT | **AHAEP Amendment 1 — exact-SHA acceptance.** The Owner accepted the re-frozen candidate at exact SHA `3a4d4664be02dc18349be06119b144c3e2966440`, after Independent Governance Review and Lead re-adjudication each returned `ACCEPT WITH NON-BLOCKING OBSERVATIONS` with no candidate repair required. | `OWNER EXACT AHAEP-A1-SHA ACCEPTED: YES`. | The accepted SHA is the second parent of the PR #593 merge, with an EMPTY candidate→merge diff `[OWNER-PREMISE + REPO]` |
+| OD-AHAEP-A1-MERGE | **Separate Owner authorization to merge PR #593 using CREATE A MERGE COMMIT.** | Exercised; **`AHAEP AMENDMENT 1: AUTHORITATIVE`** — §9A and the corrected §Status line now govern material candidate-lifecycle work. | **PR #593** merge `40b6fe61f2f4515709764fe367547de9e59084c3`; **2 parents**; first parent `2c602059d65f7ecf51970d483eda7a14703ff08d`; second parent = the exact accepted candidate; merge tree `ac5646b8ce1237283d6f5c0f1e65ce157c17685d`; EMPTY candidate→merge diff; single changed path `docs/governance/ACCELERATED_HIGH_ASSURANCE_EXECUTION_PROTOCOL.md`; post-merge identity verified `[REPO]` |
+
+**Boundary carried with these registrations (none is weakened by them):**
+`C — INTEGRATED READINESS DIRECTION: NEXT ELIGIBLE GOVERNANCE DIRECTION STEP` ·
+`C IMPLEMENTATION STARTED: NO` — naming it authorizes nothing and pre-decides no content;
+`RVR-8 AUTHORIZED: NO`; `RVR-8 STARTED: NO`; `READINESS IMPLEMENTATION AUTHORIZED: NO`;
+`TRL / MRL / IRL / SRL IMPLEMENTED: NO`; `USER-VISIBLE READINESS LEVELS / CONFIDENCE PERCENTAGES /
+PATENTABILITY / FTO CONCLUSIONS: NOT CREATED`; `CAP-06 / CAP-12 / CAP-13 / CAP-14 / CAP-18
+ACTIVATED: NO`; `NEW RISK ENGINE: NOT CREATED`; `CANONICAL RISK ARCHITECTURE: UNCHANGED`;
+`EXTERNAL PROVIDERS: NOT ACTIVATED`; `ADAPTIVE QUESTIONING / WS11: NOT ACTIVATED`;
+`KNOWN MATERIAL ORPHAN BUNDLES: 0` (reconciliation complete; not reopened);
+`FCORA: RECORDED, NOT EXECUTED`; `PSRR GO: NO`; `DEPLOYMENT / PRODUCTION / SERIOUS RELEASE / PAID
+ACTIVATION: NOT AUTHORIZED`; `main` NOT RECONCILED. No product, readiness or RVR-8 authorization is
+registered here, because none exists.
