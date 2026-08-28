@@ -41,7 +41,67 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — POST-RVR-7-FORMAL-CLOSURE GOVERNANCE SYNCHRONIZATION; governance-only
+**Status (current — POST-AHAEP-AMENDMENT-1 BOUNDED STATUS SYNCHRONIZATION; governance-only
+candidate. `AHAEP AMENDMENT 1: AUTHORITATIVE` (PR #593); `RVR-7 FORMALLY CLOSED: YES /
+AUTHORITATIVE` (PR #591); `NO IMPLEMENTATION CONTRACT IS ACTIVE`; `OWNER SYNC-LIFECYCLE AUTHORIZED:
+YES`; `OWNER EXACT SYNC-SHA ACCEPTED: NO`; `C IMPLEMENTATION STARTED: NO`; `RVR-8 AUTHORIZED: NO`;
+`RVR-8 STARTED: NO`; `READINESS IMPLEMENTATION AUTHORIZED: NO`).** Base:
+**`40b6fe61f2f4515709764fe367547de9e59084c3`** — verified live from Git at this gate as the
+**authoritative tip** of `feature/atomic-json-session-persistence` (**0 commits after it**;
+**PR #593** — the AHAEP Amendment 1 merge; first parent
+`2c602059d65f7ecf51970d483eda7a14703ff08d` (PR #592); second parent
+`3a4d4664be02dc18349be06119b144c3e2966440` — the exact Owner-accepted candidate; merge tree
+`ac5646b8ce1237283d6f5c0f1e65ce157c17685d` identical to the candidate tree; EMPTY candidate→merge
+diff; post-merge identity verified).
+
+**Rotation semantics — binding.** The preceding POST-RVR-7-FORMAL-CLOSURE GOVERNANCE SYNCHRONIZATION
+lifecycle is **COMPLETE** (merged at PR #592) and the AHAEP Amendment 1 lifecycle is **COMPLETE**
+(merged at PR #593); neither is active work. This rotation **RECORDS already-authoritative Git
+truth**: it authorizes no execution, opens no implementation contract, and starts no readiness or
+RVR-8 work. **NO IMPLEMENTATION CONTRACT IS ACTIVE.**
+
+```
+Objective:                repair the four current-state records made materially false by PR #593 —
+                          the roadmap's next-eligible-step claim, the CPS authoritative-tip pointer,
+                          this active contract, and the ODR boundary asserting that no AHAEP
+                          Amendment 1 decision exists — and make C discoverable as the next eligible
+                          direction-recording step. Nothing else.
+Owner authorization:      explicit — POST-AHAEP AMENDMENT 1 MINIMUM NECESSARY GOVERNANCE STATUS
+                          SYNCHRONIZATION ONLY. Review, Owner exact-SHA acceptance, publication, PR
+                          and merge each remain separate decisions.
+Lean risk LEVEL:          LEVEL 2 (re-derived; zero executable delta)
+Lean review DEPTH:        DEPTH 2
+Allowed paths:            docs/governance/ACTIVE_EXECUTION_ROADMAP.md (append-only);
+                          docs/governance/ACTIVE_INCREMENT_CONTRACT.md (rotation);
+                          docs/governance/CURRENT_PROJECT_STATE.md (tip pointer);
+                          docs/governance/OWNER_DECISION_REGISTER.md (§H + superseded boundary line)
+Deliberately unchanged:   docs/governance/DEFERRED_OBLIGATIONS_REGISTER.md — PR #593 changed no
+                          obligation status and the register references neither Amendment 1 nor
+                          either candidate SHA; editing it would be synchronization churn
+Prohibited paths:         docs/governance/ACCELERATED_HIGH_ASSURANCE_EXECUTION_PROTOCOL.md;
+                          docs/governance/INVENTORAI_COMMERCIAL_DIFFERENTIATION_DIRECTION.md;
+                          every runtime, engine, web, test, content, pack, pin and domain path
+Mandatory deltas:         RUNTIME 0 · PRODUCT 0 · TEST 0 · ARCHITECTURE 0 · PERSISTENCE 0 ·
+                          SCHEMA 0 · API 0 · READINESS-IMPLEMENTATION 0 · RVR-8-IMPLEMENTATION 0 ·
+                          DEPLOYMENT 0
+Prohibited outcomes:      amending AHAEP or creating any SOP; reopening RVR-7, PR #592, the
+                          Amendment content review, either candidate, the Independent Governance
+                          Review, orphan-bundle reconciliation, Phase 8 or Wave-2 rejected
+                          candidates; starting or authorizing C; implementing TRL/MRL/IRL/SRL or
+                          readiness scoring; activating CAP-06/12/13/14/18, WS11 or adaptive
+                          questioning; creating a Risk Engine or changing canonical risk
+                          architecture; activating external providers; creating user-visible
+                          readiness levels, confidence percentages or patentability/FTO
+                          conclusions; authorizing RVR-8 or deployment; duplicating a process owner
+Independent-review scope: live base and PR #593 identity; that each changed path is demonstrably
+                          stale and none is habitual churn; that DOR was correctly excluded; that
+                          no historical record is wrongly rewritten; that AHAEP is unmodified; that
+                          no C or RVR-8 authority is introduced; zero executable delta
+Merge authority:          Owner, separately (not by the execution agent).
+```
+
+**Superseded status block (authority-at-its-time; preserved, not rewritten):**
+**Status (POST-RVR-7-FORMAL-CLOSURE GOVERNANCE SYNCHRONIZATION; governance-only
 candidate. `RVR-7 FORMALLY CLOSED: YES / AUTHORITATIVE` (PR #591); `NO IMPLEMENTATION CONTRACT IS
 ACTIVE`; `OWNER SYNCHRONIZATION-LIFECYCLE AUTHORIZED: YES`; `OWNER EXACT SYNC-SHA ACCEPTED: NO`;
 `RVR-8 AUTHORIZED: NO`; `RVR-8 STARTED: NO`; `READINESS IMPLEMENTATION AUTHORIZED: NO`;

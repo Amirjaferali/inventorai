@@ -16616,3 +16616,86 @@ UNCHANGED; `W/M: 2/2` frozen; `R4-C: OPEN`; `MLC DEFINITION FROZEN: NO`; `PSRR G
 Manufacturing / Market Reality / Commercial Readiness: **NOT AUTHORIZED**;
 `DEPLOYMENT / PRODUCTION / SERIOUS RELEASE / PAID ACTIVATION: NOT AUTHORIZED`;
 `main` NOT RECONCILED. Any next gate requires its own separate Owner authorization.
+
+---
+
+## AHAEP AMENDMENT 1 AUTHORITATIVE (PR #593) — BOUNDED STATUS SYNCHRONIZATION (governance-only candidate; append-only entry)
+
+**Append-only synchronization entry.** The entry above ended by naming
+`AHAEP AMENDMENT 1 — RE-FREEZE / REVIEW LIFECYCLE` as the next eligible lifecycle, "ELIGIBILITY /
+PENDING GOVERNED WORK ONLY". **That step is now COMPLETE**, so that claim — and three sibling
+current-state claims in other records — are materially false and are repaired here. The wording
+above was authority-at-its-time and is preserved, not rewritten.
+
+**Why this gate exists — stated precisely.** The §11 event list did **not** fire: PR #593 committed
+neither a phase authorization, a phase implementation, a phase closure record, an R2 / FORM T / S-6
+/ AA-5 status change, a `runtime_integrated` change, nor a STOP. **The requirement comes instead
+from material falsity**: four current-state records assert things repository truth now contradicts
+(next-eligible step, authoritative tip, active contract, and an ODR boundary asserting no AHAEP
+Amendment 1 decision exists). Leaving a false current claim standing is a Lean §10 contradiction.
+This gate repairs exactly those, and nothing else.
+
+**1. Entry identity (verified live).** Base = live authoritative tip
+`40b6fe61f2f4515709764fe367547de9e59084c3`, **0 commits after it**.
+
+**2. PR #593 — AHAEP AMENDMENT 1: AUTHORITATIVE.** Merge
+`40b6fe61f2f4515709764fe367547de9e59084c3`; **2 parents**; first parent
+`2c602059d65f7ecf51970d483eda7a14703ff08d` (PR #592); second parent
+`3a4d4664be02dc18349be06119b144c3e2966440` — the exact Owner-accepted re-frozen candidate; merge
+tree `ac5646b8ce1237283d6f5c0f1e65ce157c17685d`, identical to the candidate tree; **EMPTY
+candidate→merge diff**; merged via CREATE A MERGE COMMIT; post-merge identity verified. The merge
+changed exactly one path, `docs/governance/ACCELERATED_HIGH_ASSURANCE_EXECUTION_PROTOCOL.md`
+`[EXEC]`. Independent Governance Review: `ACCEPT WITH NON-BLOCKING OBSERVATIONS`; Lead
+re-adjudication: `ACCEPT WITH NON-BLOCKING OBSERVATIONS`; the four observations required no
+candidate repair. **`AHAEP AMENDMENT 1: AUTHORITATIVE`** — its §9A bounded Lead gate preflight
+(including the externally-dependent-requirement clause) and the corrected §Status line now govern
+material candidate-lifecycle work.
+
+**3. Candidate lineage — preserved, not reopened.** `c81e591e763de504733e12eab6edbddcf20df39c`
+remains **superseded historical evidence**: never amended, rebased, squashed, published or merged,
+and never an ancestor. `3a4d4664…` was its fresh same-base sibling on the post-#592 tip, carrying a
+**byte-identical** AHAEP blob (`9dba27f0…`) — the re-freeze changed candidate identity and base
+metadata only. Historical orphan-bundle reconciliation is complete
+(`KNOWN MATERIAL ORPHAN BUNDLES: 0`) and is **not reopened here**.
+
+**4. Sequence status.** **B — Post-RVR-7 Closure Synchronization: COMPLETE / AUTHORITATIVE**
+(PR #592). **A — AHAEP Amendment 1: COMPLETE / AUTHORITATIVE** (PR #593).
+**C — Integrated Readiness Direction: NEXT ELIGIBLE GOVERNANCE DIRECTION STEP.**
+**`C IMPLEMENTATION STARTED: NO`** — C is made discoverable as the next eligible *direction-recording*
+step and nothing more. It requires its own separate explicit Owner authorization, and this gate
+neither performs nor authorizes it.
+
+**5. Deferred obligations — untouched, with reason.** `DEFERRED_OBLIGATIONS_REGISTER.md` is
+**deliberately NOT changed**: PR #593 altered no obligation's status, and the register carries no
+reference to AHAEP Amendment 1, either candidate SHA, or any re-freeze claim `[EXEC]`. The
+Independent Review's superseded-evidence durability observation is **NON-BLOCKING** and does not by
+itself require a new row; no obligation is created, closed, re-owned or lost.
+
+**6. This candidate — non-circular.** Governance/status documentation only across exactly four
+paths: this roadmap (append-only); `ACTIVE_INCREMENT_CONTRACT.md` (rotation);
+`CURRENT_PROJECT_STATE.md` (tip pointer); `OWNER_DECISION_REGISTER.md` (§H registration + the
+superseded boundary line). **`RUNTIME / PRODUCT / TEST / ARCHITECTURE / PERSISTENCE / SCHEMA / API /
+READINESS-IMPLEMENTATION / RVR-8-IMPLEMENTATION / DEPLOYMENT DELTA: 0`.** The AHAEP file itself is
+**not modified**; no SOP is created or amended; no process owner is duplicated; no historical record
+is rewritten. **Becomes authoritative only if and when this exact candidate is reviewed,
+Owner-accepted at exact SHA, merged (second parent = the accepted candidate; EMPTY candidate→merge
+diff) and post-merge identity-verified.** Until then `OWNER SYNC-LIFECYCLE AUTHORIZED: YES` ·
+`OWNER EXACT SYNC-SHA ACCEPTED: NO`. **Disposition: `POST-AHAEP-AMENDMENT-1 STATUS SYNCHRONIZATION —
+GOVERNANCE CANDIDATE; NOT AUTHORITATIVE UNTIL MERGED AND POST-MERGE VERIFIED`.**
+
+**7. Lean classification re-derived.** **`LEAN RISK LEVEL: 2`** · **`REVIEW DEPTH: 2`** — a bounded
+governance recording; zero executable delta; no Lean §3 LEVEL-1 trigger.
+
+**Next eligible governance direction step — `C — INTEGRATED READINESS DIRECTION RECORDING`.
+ELIGIBILITY ONLY:** it names the step, and does **NOT** start it, authorize it, pre-decide its
+content, activate any readiness capability, or authorize RVR-8.
+
+**Boundaries — nothing downstream activated by this gate.** `RVR-8 AUTHORIZED: NO`;
+`RVR-8 STARTED: NO`; `READINESS IMPLEMENTATION AUTHORIZED: NO`; `C IMPLEMENTATION STARTED: NO`;
+`TRL / MRL / IRL / SRL IMPLEMENTED: NO`; `READINESS SCORING / USER-VISIBLE READINESS LEVELS /
+CONFIDENCE PERCENTAGES: NOT CREATED`; `PATENTABILITY / FTO CONCLUSIONS: NOT CREATED`;
+`CAP-06 / CAP-12 / CAP-13 / CAP-14 / CAP-18 ACTIVATED: NO`; `NEW RISK ENGINE: NOT CREATED`;
+`CANONICAL RISK ARCHITECTURE: UNCHANGED`; `EXTERNAL MARKET / PATENT / SUPPLIER / STANDARDS
+PROVIDERS: NOT ACTIVATED`; `ADAPTIVE QUESTIONING / WS11: NOT ACTIVATED`; `FCORA: RECORDED, NOT
+EXECUTED`; `PSRR GO: NO`; `DEPLOYMENT / PRODUCTION / SERIOUS RELEASE / PAID ACTIVATION: NOT
+AUTHORIZED`; `main` NOT RECONCILED. Any next gate requires its own separate Owner authorization.

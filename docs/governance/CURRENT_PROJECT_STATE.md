@@ -16,6 +16,21 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
   (`git rev-parse origin/feature/atomic-json-session-persistence`). Do **not** trust a
   prose-pinned SHA.
   - **Current authoritative branch tip (last independently verified):**
+    `40b6fe61f2f4515709764fe367547de9e59084c3` (Merge **PR #593** — AHAEP AMENDMENT 1;
+    two-parent merge of `2c602059d65f7ecf51970d483eda7a14703ff08d` (base, PR #592 — the
+    authoritative post-RVR-7-formal-closure governance synchronization) +
+    `3a4d4664be02dc18349be06119b144c3e2966440` (the exact Owner-accepted re-frozen Amendment 1
+    candidate), tree `ac5646b8ce1237283d6f5c0f1e65ce157c17685d` identical to the candidate tree,
+    EMPTY candidate→merge diff, post-merge identity verified) — always re-resolve the live tip
+    from Git per the rule above. **`AHAEP AMENDMENT 1: AUTHORITATIVE`** (its §9A bounded Lead gate
+    preflight and the corrected §Status line now govern).
+  - **Prior recorded tip (historical):**
+    `2c602059d65f7ecf51970d483eda7a14703ff08d` (Merge **PR #592** — POST-RVR-7-FORMAL-CLOSURE
+    GOVERNANCE SYNCHRONIZATION; two-parent merge of `55228c3ff7e87144a5a0ceb5cb3a5349d5754276`
+    (base, PR #591) + `0331e5c41e72309addc7869a3d55e70e9da26e9c` (the exact Owner-accepted
+    synchronization candidate), tree `caef97bf43950b610cd8a49997f8c620315b6f3d` identical, EMPTY
+    candidate→merge diff, post-merge identity verified).
+  - **Prior recorded tip (historical):**
     `55228c3ff7e87144a5a0ceb5cb3a5349d5754276` (Merge **PR #591** — RVR-7 FORMAL CLOSURE;
     two-parent merge of `02a79a849f74eaa450d217ac1bb1b67f8959fc75` (base, PR #590 — the
     authoritative post-RVR-7-implementation governance synchronization) +
