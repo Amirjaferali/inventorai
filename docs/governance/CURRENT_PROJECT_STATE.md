@@ -16,6 +16,16 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
   (`git rev-parse origin/feature/atomic-json-session-persistence`). Do **not** trust a
   prose-pinned SHA.
   - **Current authoritative branch tip (last independently verified):**
+    `02a79a849f74eaa450d217ac1bb1b67f8959fc75` (Merge **PR #590** — POST-RVR-7-IMPLEMENTATION
+    GOVERNANCE SYNCHRONIZATION; two-parent merge of `22c26881daf128691fd64a6f38c96380ff309b57`
+    (base, PR #589 — the authoritative RVR-7 implementation merge) +
+    `952739549c7b03284b091a67bf2efce12f3254e7` (the exact Owner-accepted synchronization
+    candidate), tree `95f396b3d4e9e3aa96413f6a0b84a96f28b054bd` identical to the candidate tree,
+    EMPTY candidate→merge diff, post-merge identity verified) — always re-resolve the live tip
+    from Git per the rule above. **This is the base of the RVR-7 FORMAL CLOSURE gate.
+    `RVR-7 FORMALLY CLOSED: NO` until that closure candidate is independently reviewed,
+    Owner-accepted at exact SHA, merged and post-merge verified.**
+  - **Prior recorded tip (historical):**
     `22c26881daf128691fd64a6f38c96380ff309b57` (Merge **PR #589** — RVR-7 IMPLEMENTATION
     (bounded Arabic semantic repair, N-PF-3 / N-PF-4); two-parent merge of
     `3891d9bdfddaa9a1e90d2811e9e3783d4f4395b5` (base, PR #588 — the authoritative RVR-7
@@ -2600,6 +2610,49 @@ AUTHORIZED / NOT STARTED.***
   none authorized, started, or implied. `OWNER_DECISION_REGISTER.md` UNCHANGED (Phase 8 formal-closure
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
+
+- **RVR-7 FORMAL CLOSURE (governance + test-only CANDIDATE — NOT authoritative until
+  independently reviewed, Owner-accepted at exact SHA, merged and post-merge verified), base
+  `02a79a849f74eaa450d217ac1bb1b67f8959fc75`** — verified live from Git at this gate as the
+  authoritative tip of `feature/atomic-json-session-persistence` (**0 commits after it**;
+  **PR #590**; first parent `22c26881…`; second parent `95273954…`; merge tree `95f396b3…`;
+  EMPTY candidate→merge diff; post-merge verified). The Owner authorized ONE bounded closure
+  lifecycle; closure is **not** pre-decided and RVR-8 is **not** authorized.
+  **§L.2.1 adjudicated on exact wording:** it requires a **human** reviewer with **demonstrated
+  bilingual EN/AR competence** at the product's technical register plus four recording limbs, and
+  requires **neither independence from the Owner nor any external credential** — those strings do
+  not occur in §L or §L.2.1 `[EXEC]`, and no such requirement is imposed by convention. The Owner
+  personally performed and declared the review; competence basis is recorded as **demonstrated in
+  use** (most directly the adoption of the N-PF-3 material-narrowing and N-PF-4
+  technical-meaning-shift characterizations), with **no credential, signature or per-item reviewer
+  commentary fabricated**. Review universe enumerated mechanically as **exactly 34** (21 committed
+  `question_id` pairs + 13 identity-keyed substantive asks), 34/34 dispositioned
+  `EQUIVALENT — ACCEPTED FOR USE` as a uniform declaration-level disposition.
+  **`HUMAN BILINGUAL REVIEW SATISFIED: YES` · `§L.2.1 SATISFIED: YES`** — superseding the prior
+  entry's `NO`, which was authority-at-that-time. **`W1-N1 DISCHARGED: YES`** — its Arabic
+  verification concern is now demonstrated in the RVR-7 suite and recorded in the evidence pack
+  exactly as contract §E.2 requires, with the English owner module unmodified and still green.
+  **`W1-N2 DISCHARGED: NO`** — the EN↔AR differential limb is now satisfied by additive tests, but
+  the "Independent Review must independently reproduce it" limb is discharged **by** the reviewer
+  and is **not self-certified**; W1-N2 closes at the merge of this candidate.
+  **`§K.2 REOPENED: NO`** (trigger surfaces byte-identical across the whole span `[EXEC]`);
+  manifest §8 **item 31** stays a separate deferred item with owner, trigger and latest-safe gate
+  intact, **not repaired and not duplicated**. New durable disposition, not orphaned:
+  **OBS-RVR7-LANG-1** (residual minor Arabic linguistic polish disclosed by the Owner's own
+  declaration; `NBF`; owner = the existing RVR-7 Arabic content surfaces; latest safe gate before
+  Serious Release). **Closure-gate sweep: all 35 register rows read; RVR-7 FORMAL-CLOSURE BLOCKER
+  COUNT 0**; Serious-Release-latest-safe obligations are NOT converted into closure blockers.
+  Delta: governance/documentation + **test-only** — `RUNTIME / APPLICATION-CODE / CONTENT /
+  ARCHITECTURE / CANONICAL-STATE / PACK / PIN / DOMAIN-RULE DELTA: 0`; **+16 additive tests** in one
+  module, each asserting existing behavior verified against unmodified runtime before adoption.
+  Evidence: RVR-7 targeted 61 → **77 passed**; changed module **41 passed**; W1-N1 English owner
+  module **14 passed** unweakened; Universal Guardrail Smoke **PASS (27)**; **FULL SUITE 4793
+  passed / 0 failed / 3 skipped / 1 xfailed** = the inherited PR #589 baseline 4777 **+16**.
+  `OWNER_DECISION_REGISTER.md` UNCHANGED (closure-gate convention). Records:
+  `RVR_7_FORMAL_CLOSURE_RECORD.md`, `RVR_7_IMPLEMENTATION_EVIDENCE_PACK.md`,
+  `RVR_7_EN_AR_SEMANTIC_EQUIVALENCE_REVIEW.md`. **Disposition: `RVR-7 FORMAL CLOSURE — GOVERNANCE +
+  TEST-ONLY CANDIDATE; NOT AUTHORITATIVE UNTIL MERGED AND POST-MERGE VERIFIED`.**
+  `RVR-8 AUTHORIZED: NO` · `RVR-8 STARTED: NO`.
 
 - **POST-RVR-7-IMPLEMENTATION GOVERNANCE SYNCHRONIZATION (governance-only CANDIDATE — NOT
   authoritative until Owner-accepted at exact SHA, merged and post-merge verified), base
