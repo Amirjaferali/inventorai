@@ -16795,3 +16795,82 @@ ELIGIBILITY ONLY**, unchanged by this gate: `C AUTHORIZED: NO` · `C IMPLEMENTAT
 `QUESTION ROUTING / WS11 / ADAPTIVE QUESTIONING: NOT ACTIVATED`; `FCORA: RECORDED, NOT EXECUTED`;
 `PSRR GO: NO`; `DEPLOYMENT / PRODUCTION / SERIOUS RELEASE / PAID ACTIVATION: NOT AUTHORIZED`;
 `main` NOT RECONCILED. Any next gate requires its own separate Owner authorization.
+
+---
+
+## C — INTEGRATED READINESS DIRECTION RECORDING (non-activating product-direction gate; provenance-only entry)
+
+**Provenance-only by design.** Lean §11 requires the append-only roadmap to receive one record per
+governed gate. This entry is that record and nothing more: it carries **pointers, not substance**, so
+that if the Product Direction document or the Deferred Obligations Register later changes under
+authority, this entry can never become a competing substantive owner.
+`ROADMAP SUBSTANTIVE C OWNER: NO`.
+
+**Authoritative base.** `12a94580420a3137029562c97a67e32241ef4824` — the PR #595 merge (two parents,
+first `0c6bbc2f…`, second `b31b26c1…`, merge tree `34235658…`, EMPTY candidate→merge diff), verified
+live at freeze with **0 commits after it**. Its self-termination property held, so no status
+synchronization was owed solely because PR #595 merged.
+
+**Owner authorization boundary.** One bounded, non-activating direction-recording gate under a
+separate Owner authorization, with an authorized changed-path set of exactly three governance paths
+and no fourth. It authorizes recording only — no implementation, no activation, no new owner.
+
+**Objective.** Record the Owner-approved Integrated Readiness product direction in its existing owner
+document, register the one cross-cutting residual it surfaced in the canonical obligation register,
+and leave every ownership question open for the later reconciliation.
+
+**Exact changed paths (3).**
+1. `docs/governance/INVENTORAI_COMMERCIAL_DIFFERENTIATION_DIRECTION.md`
+2. `docs/governance/DEFERRED_OBLIGATIONS_REGISTER.md`
+3. `docs/governance/ACTIVE_EXECUTION_ROADMAP.md` (this entry)
+
+**Target owner document — where the substance lives.** The direction itself is recorded as **§16** of
+`INVENTORAI_COMMERCIAL_DIFFERENTIATION_DIRECTION.md` (the existing
+`OWNER-APPROVED STRATEGIC PRODUCT DIRECTION — NON-ACTIVATING` owner, already item 9 of the CLAUDE.md
+mandatory reading order), in six epistemically separated subsections §16.A–§16.F. **No new SOP,
+program, readiness engine, product-direction document, application or canonical evidence authority is
+created.** Read §16 for the direction; do not read it from here.
+
+**DOR disposition pointer.** The `_s6` / `RISK-*` canonical risk projection-mapping residual is owned
+— as an obligation — by `DEFERRED_OBLIGATIONS_REGISTER.md` **§3**, row
+**`_s6` / `RISK-*` — CANONICAL RISK PROJECTION-MAPPING RESIDUAL**, which holds its disposition, return
+trigger, latest-safe gate, blocking classification and closure evidence. The technical owners remain
+the existing canonical risk owner and the deliverable-assembler owner. **Neither this entry nor the
+Product Direction document owns that routing.**
+
+**Non-activating.** `C DIRECTION RECORDING ONLY`. C activates nothing, authorizes nothing, creates no
+owner, discharges no obligation and closes no residual.
+
+**MRL.** `MRL COMPOSITION: WORKING HYPOTHESIS — NOT A SETTLED REPOSITORY FACT`, recorded among the
+hypotheses in §16.C and deliberately excluded from the repository-facts section. No MRL owner,
+no MRL engine, no CAP consolidation or activation. `MRL FINAL OWNER / COMPOSITION PREDECIDED: NO`.
+
+**Early intersection.** `DEFERRED MARKET / MANUFACTURING PRODUCT-DIRECTION INTERSECTION DETECTED: YES`
+· `RECONCILIATION BROUGHT FORWARD: NO`. The assessment is recorded in the register row that owns the
+rule; no latest-safe gate moved and no obligation was discharged.
+
+**Non-authorization fences.** `C IMPLEMENTATION STARTED: NO` ·
+`READINESS IMPLEMENTATION AUTHORIZED: NO` · `CAP ACTIVATION: NONE` ·
+`SHADOW MODE IMPLEMENTATION AUTHORIZED: NO` · `FULL ADAPTIVE QUESTIONING ACTIVATED: NO` ·
+`MEANING-ADAPTIVE / TIER-2 ACTIVATED: NO` · `WS11: DORMANT` · `SECOND RISK ENGINE / STORE: NO` ·
+`RVR-8 AUTHORIZED: NO` · `RVR-8 STARTED: NO` · `FCORA: RECORDED, NOT EXECUTED` · `PSRR GO: NO` ·
+`gap_relevance` UNCHANGED · canonical risk architecture UNCHANGED ·
+`DEPLOYMENT / PRODUCTION / SERIOUS RELEASE / PAID ACTIVATION: NOT AUTHORIZED` ·
+`main` NOT RECONCILED. **`RUNTIME / PRODUCT-RUNTIME / TEST / PERSISTENCE / SCHEMA / API /
+READINESS-IMPLEMENTATION / CAP-ACTIVATION / RVR-8 / DEPLOYMENT DELTA: 0`.**
+
+**Candidate lifecycle status — stated as a fact about this gate's freeze, and true afterwards because
+it is scoped to that moment.** As at freeze: `OWNER C-RECORDING LIFECYCLE AUTHORIZED: YES` and
+`OWNER EXACT C-SHA ACCEPTED: NO`. This record becomes authoritative only through the ordinary
+lifecycle — independent review, Owner exact-SHA acceptance, merge (second parent = the accepted
+candidate, EMPTY candidate→merge diff) and post-merge identity verification. `ACTIVE_INCREMENT_CONTRACT.md`
+is untouched and correctly remains `ACTIVE CONTRACT: NONE`; the registered obligation remains OPEN
+after C merges, which is correct and owes no synchronization.
+
+**Lean classification.** `LEAN RISK LEVEL: 2` · `REVIEW DEPTH: 2` — bounded, non-activating, zero
+executable delta, no Lean §3 LEVEL-1 trigger.
+
+**Next step after this gate becomes authoritative — STOP.** The Lead separately reconstructs the exact
+next RVR-8 gate from live repository authority under its own separate Owner authorization. Recording C
+is an execution-order decision only; it makes C no technical dependency of RVR-8 and consumes no RVR-8
+work. Any next gate requires its own separate Owner authorization.
