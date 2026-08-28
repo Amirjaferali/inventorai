@@ -16,6 +16,15 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
   (`git rev-parse origin/feature/atomic-json-session-persistence`). Do **not** trust a
   prose-pinned SHA.
   - **Current authoritative branch tip (last independently verified):**
+    `55228c3ff7e87144a5a0ceb5cb3a5349d5754276` (Merge **PR #591** — RVR-7 FORMAL CLOSURE;
+    two-parent merge of `02a79a849f74eaa450d217ac1bb1b67f8959fc75` (base, PR #590 — the
+    authoritative post-RVR-7-implementation governance synchronization) +
+    `82eda0be2240c36a1d5d2a286cc314253092ae40` (the exact Owner-accepted Formal Closure
+    candidate), tree `be4d49db21a2cbca81c3e4411832ebfafcdc5b53` identical to the candidate tree,
+    EMPTY candidate→merge diff, Owner-terminal post-merge identity verification passed) — always
+    re-resolve the live tip from Git per the rule above.
+    **`RVR-7 FORMALLY CLOSED: YES / AUTHORITATIVE`.**
+  - **Prior recorded tip (historical):**
     `02a79a849f74eaa450d217ac1bb1b67f8959fc75` (Merge **PR #590** — POST-RVR-7-IMPLEMENTATION
     GOVERNANCE SYNCHRONIZATION; two-parent merge of `22c26881daf128691fd64a6f38c96380ff309b57`
     (base, PR #589 — the authoritative RVR-7 implementation merge) +
@@ -2611,6 +2620,39 @@ AUTHORIZED / NOT STARTED.***
   precedent). Governance-only; zero runtime/test diff. Governance truth sweep: STALE/UNSUPPORTED live-current
   count = 0. Full detail: `docs/governance/PHASE_9_FORMAL_CLOSURE_RECORD.md`.
 
+- **POST-RVR-7-FORMAL-CLOSURE GOVERNANCE SYNCHRONIZATION (governance-only CANDIDATE — NOT
+  authoritative until independently reviewed, Owner-accepted at exact SHA, merged and post-merge
+  verified), base `55228c3ff7e87144a5a0ceb5cb3a5349d5754276`** — verified live from Git at this
+  gate as the authoritative tip of `feature/atomic-json-session-persistence` (**0 commits after
+  it**; **PR #591**; first parent `02a79a84…`; second parent `82eda0be…`; merge tree
+  `be4d49db…`; EMPTY candidate→merge diff). **Purpose: remove the stale-roadmap blocker created
+  when PR #591 committed a phase closure record** (`ACTIVE_EXECUTION_ROADMAP.md` §11: the roadmap
+  MUST be updated when "a phase closure record is committed", "and is otherwise stale"), and
+  register the Owner decisions that `RVR_7_FORMAL_CLOSURE_RECORD.md` expressly deferred to "the
+  appropriate post-closure synchronization".
+  **Current truth recorded: `RVR-7 FORMALLY CLOSED: YES / AUTHORITATIVE`** — the closure record's
+  §9 five-condition conditional is satisfied. Consequently `HUMAN BILINGUAL REVIEW SATISFIED: YES`
+  (the Owner's own recorded human EN/AR declaration; §L.2.1 requires a human reviewer with
+  demonstrated competence and requires neither independence from the Owner nor any credential);
+  **`W1-N1 DISCHARGED: YES`**; **`W1-N2 DISCHARGED: YES`** — its final limb, independent
+  reproduction at the closure candidate's Independent Review, completed within that §9 lifecycle
+  (Owner-attested; no separate review artifact is committed, and none is claimed).
+  **RVR-7 FORMAL-CLOSURE BLOCKER COUNT WAS 0 BEFORE ACCEPTANCE.** Pre-merge conditional wording on
+  the closure gate and its instruments is preserved as **authority-at-its-time**, not rewritten as
+  though false when written. **Nothing downstream is activated:** `RVR-8 AUTHORIZED: NO` ·
+  `RVR-8 STARTED: NO` · `READINESS IMPLEMENTATION AUTHORIZED: NO` · `DEPLOYMENT / PRODUCTION /
+  SERIOUS RELEASE / PAID ACTIVATION: NOT AUTHORIZED`. One narrow discoverability append records
+  **`IRL / SYSTEM-INTEGRATION READINESS: UNRESOLVED RESIDUAL CANDIDATE`** inside the EXISTING
+  Manufacturing / Market Reality / Commercial Readiness reconciliation row — no new row, no new
+  owner, no engine, no numeric level, no CAP change, and no movement of that row's trigger or
+  latest-safe gate. The frozen AHAEP Amendment 1 candidate `c81e591e763de504733e12eab6edbddcf20df39c`
+  is **untouched, unpublished and NOT an ancestor**; after this synchronization merges its base
+  advances, so it must later be re-frozen as a fresh same-base sibling (AHAEP §5/§9/§12) — that
+  re-freeze is NOT performed or authorized here. `EXECUTABLE / RUNTIME / PRODUCT / TEST /
+  ARCHITECTURE / CONTENT / PACK / PIN / DOMAIN-RULE / API / SERVICE / DATABASE DELTA: 0`.
+  **Disposition: `POST-RVR-7-FORMAL-CLOSURE GOVERNANCE SYNCHRONIZATION — GOVERNANCE CANDIDATE; NOT
+  AUTHORITATIVE UNTIL MERGED AND POST-MERGE VERIFIED`.**
+
 - **RVR-7 FORMAL CLOSURE (governance + test-only CANDIDATE — NOT authoritative until
   independently reviewed, Owner-accepted at exact SHA, merged and post-merge verified), base
   `02a79a849f74eaa450d217ac1bb1b67f8959fc75`** — verified live from Git at this gate as the
@@ -2666,7 +2708,9 @@ AUTHORIZED / NOT STARTED.***
   made the **RVR-7 IMPLEMENTATION** (bounded Arabic semantic repair for N-PF-3 and N-PF-4)
   **authoritative repository content** — 14 changed paths, matching the frozen 12-path manifest
   plus the two separately Owner-authorized D-P6-18 regression test paths.
-  **Current truth: `RVR-7 IMPLEMENTATION: AUTHORITATIVE` · `RVR-7 FORMALLY CLOSED: NO`.**
+  **Truth at that gate — SUPERSEDED as to closure by PR #591 (see the post-closure entry
+  above; `RVR-7 FORMALLY CLOSED: YES / AUTHORITATIVE`); preserved, not rewritten:**
+  **`RVR-7 IMPLEMENTATION: AUTHORITATIVE` · `RVR-7 FORMALLY CLOSED: NO`.**
   Authority of the implementation is **NOT** closure: **`HUMAN BILINGUAL REVIEW SATISFIED: NO`**
   (base contract §L.2.1 is binding, is genuinely unsatisfied, and is not substitutable by
   automated checks or by the adopted AI reviewer evidence); **`W1-N1 DISCHARGED: NO`**;
