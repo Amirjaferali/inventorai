@@ -17,6 +17,41 @@ section (append-only history is kept in the roadmap, not here).
   it). LEVEL 1 changes always need separate explicit owner authorization regardless of any
   contract.
 
+**Authoritative-only rule (binding; self-terminating).** The "Active contract" section records
+**AUTHORITATIVE contract state only**.
+
+1. **A frozen in-flight candidate is a proposal, not current authoritative contract state**, and is
+   never recorded here as the active contract. This is safe because no material execution may rely
+   on an implementation contract until that contract is authoritative in the repository: an
+   increment is authorized only by **committed** owner authorization (above), and the governing
+   sequencing requires a contract candidate to be "independently reviewed AND Owner-accepted at its
+   exact SHA, **merged and post-merge verified** before implementation can start", with
+   Implementation START a further separate decision
+   (`RVR_7_SUBSTANTIVE_ARABIC_PARITY_CONTRACT_CANDIDATE.md` §H.3 rules 1–4). Owner exact-SHA
+   acceptance alone therefore never starts execution, so excluding an accepted-but-unmerged
+   candidate from this section hides no legitimate active contract state.
+2. **Candidate-era lifecycle conditions do not live here.** Acceptance, publication and merge
+   conditions — any token of the form `OWNER EXACT …-SHA ACCEPTED: NO`, "governance candidate",
+   "not authoritative until merged and post-merge verified" — belong solely to that gate's
+   append-only lifecycle record in `ACTIVE_EXECUTION_ROADMAP.md`, scoped to the freeze-time
+   condition they describe.
+3. **Self-expiry.** On a candidate's authoritative merge, its candidate-era language expires by
+   operation of this rule. **No status synchronization is required merely to record that a
+   candidate was accepted or merged**, because no such token was ever load-bearing here.
+4. **A governance-only recording, synchronization or repair gate opens no implementation
+   contract**, and never becomes one merely because a governance candidate exists.
+5. When no authoritative implementation contract is active, this section states exactly
+   **`ACTIVE CONTRACT: NONE`** and **`NO IMPLEMENTATION CONTRACT IS ACTIVE`**.
+6. Superseded status blocks are **preserved, not deleted** — they remain true as
+   authority-at-their-time under the existing supersession convention.
+
+**Why this rule exists (recorded so it is not re-litigated).** Before it, this section carried each
+in-flight candidate's own acceptance token as *current* state. That token was true at freeze and
+false the moment the candidate merged, so every governance gate generated a follow-on
+synchronization, which wrote the same token about itself and generated the next — a non-terminating
+loop demonstrated across PR #592 and PR #594. The defect was these declaration semantics, not any
+single wording.
+
 ## Reusable contract template
 
 ```
@@ -41,7 +76,28 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — POST-AHAEP-AMENDMENT-1 BOUNDED STATUS SYNCHRONIZATION; governance-only
+
+**`ACTIVE CONTRACT: NONE`** · **`NO IMPLEMENTATION CONTRACT IS ACTIVE`**
+
+No authoritative implementation contract governs work at this time. Recorded under the
+**Authoritative-only rule** above: this section reports authoritative contract state, so a frozen
+in-flight candidate — including any repair or synchronization candidate that may exist while this
+is read — is a proposal and does not appear here, and no candidate-era acceptance or merge token is
+load-bearing in this section. Any governance-only recording, synchronization or repair gate opens no
+implementation contract, so completing one leaves this declaration unchanged.
+
+The lifecycle history of each gate, including its freeze-time acceptance conditions, lives in the
+append-only entries of `ACTIVE_EXECUTION_ROADMAP.md`. Live authoritative truth is resolved from Git,
+never from a prose-pinned SHA.
+
+Standing boundaries, unchanged by this declaration: `C AUTHORIZED: NO` ·
+`C IMPLEMENTATION STARTED: NO` · `RVR-8 AUTHORIZED: NO` · `RVR-8 STARTED: NO` ·
+`READINESS IMPLEMENTATION AUTHORIZED: NO` · `DEPLOYMENT AUTHORIZED: NO`. Any implementation
+increment requires its own separate explicit Owner authorization and an authoritative contract.
+
+**Superseded status block (authority-at-its-time; preserved, not rewritten — its candidate-era
+tokens described the PR #594 gate at ITS freeze and are historical, not current):**
+**Status (POST-AHAEP-AMENDMENT-1 BOUNDED STATUS SYNCHRONIZATION; governance-only
 candidate. `AHAEP AMENDMENT 1: AUTHORITATIVE` (PR #593); `RVR-7 FORMALLY CLOSED: YES /
 AUTHORITATIVE` (PR #591); `NO IMPLEMENTATION CONTRACT IS ACTIVE`; `OWNER SYNC-LIFECYCLE AUTHORIZED:
 YES`; `OWNER EXACT SYNC-SHA ACCEPTED: NO`; `C IMPLEMENTATION STARTED: NO`; `RVR-8 AUTHORIZED: NO`;

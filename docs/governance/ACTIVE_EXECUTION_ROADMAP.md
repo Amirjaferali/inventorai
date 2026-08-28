@@ -16699,3 +16699,99 @@ CONFIDENCE PERCENTAGES: NOT CREATED`; `PATENTABILITY / FTO CONCLUSIONS: NOT CREA
 PROVIDERS: NOT ACTIVATED`; `ADAPTIVE QUESTIONING / WS11: NOT ACTIVATED`; `FCORA: RECORDED, NOT
 EXECUTED`; `PSRR GO: NO`; `DEPLOYMENT / PRODUCTION / SERIOUS RELEASE / PAID ACTIVATION: NOT
 AUTHORIZED`; `main` NOT RECONCILED. Any next gate requires its own separate Owner authorization.
+
+---
+
+## SELF-TERMINATING GOVERNANCE STATE REPAIR — AIC ACTIVE-CONTRACT SEMANTICS (governance-only candidate; append-only entry)
+
+**Append-only repair-gate entry.** No earlier entry is rewritten. Every candidate-era condition
+below is scoped to **this gate's freeze**, so it stays true as a statement about that moment once
+the gate resolves — the wording is deliberately historical-at-freeze rather than a perpetual
+current-state assertion.
+
+**1. Entry identity (verified live at freeze).** Base = live authoritative tip
+`0c6bbc2f9dd6fca2bd71117a9bd3880cb9f3d8b1`, **0 commits after it**. **PR #594** — the
+post-AHAEP-Amendment-1 status synchronization; two parents, first
+`40b6fe61f2f4515709764fe367547de9e59084c3`, second
+`fd47ca8d8ca9ff11a33be91ce610d629b091f188` (the exact Owner-accepted candidate); merge tree
+`0032dd1a39956afab504813860b289faadd89ee6`; EMPTY candidate→merge diff. `PR #594: AUTHORITATIVE`.
+
+**2. The defect repaired — generative, not cosmetic.** `ACTIVE_INCREMENT_CONTRACT.md`'s
+`Declaration rule` bound readers to the "Active contract" section as *the* active contract, while
+that section was written as `Status (current — … governance-only candidate … OWNER EXACT SYNC-SHA
+ACCEPTED: NO)`. A candidate's own acceptance token was therefore load-bearing **current** state: true
+at freeze, false the instant the candidate merged. Each governance gate thus required a follow-on
+synchronization, which wrote the same token about itself and required the next — a non-terminating
+loop **demonstrated across PR #592 and PR #594**, not hypothesised. Repairing only the token would
+have left the generator intact.
+
+**3. The repair.** `ACTIVE_INCREMENT_CONTRACT.md` only: an **Authoritative-only rule** added to its
+`Declaration rule` (the section records authoritative contract state; an in-flight candidate is a
+proposal and never appears; candidate-era acceptance/publication/merge conditions live solely in this
+roadmap's append-only gate entries; candidate-era language self-expires on merge so no
+synchronization is needed merely to record acceptance or merge; a governance-only gate opens no
+implementation contract; the empty state is exactly `ACTIVE CONTRACT: NONE` /
+`NO IMPLEMENTATION CONTRACT IS ACTIVE`; superseded blocks are preserved), and the Active-contract
+section set to that terminal state. The PR #594 block is **preserved as a superseded
+authority-at-its-time block**, explicitly relabelled as describing that gate at ITS freeze — not
+deleted as though it had never been true.
+
+**4. Safety proof — the exclusion hides nothing** `[REPO]`. No authorized workflow lets material
+execution rely on an unmerged contract: an increment is authorized only by **committed** owner
+authorization (`ACTIVE_INCREMENT_CONTRACT.md` §Declaration rule), and
+`RVR_7_SUBSTANTIVE_ARABIC_PARITY_CONTRACT_CANDIDATE.md` §H.3 rule 3 requires a contract candidate to
+be "independently reviewed AND Owner-accepted at its exact SHA, **merged and post-merge verified**
+before implementation can start", with Implementation START a further separate decision (rules 1, 2
+and 4). **Owner exact-SHA acceptance alone never starts execution**, so an accepted-but-unmerged
+candidate is not a legitimate active contract that this design could conceal.
+
+**5. Reusable behaviour across all five states.** (A) No authoritative implementation contract →
+`ACTIVE CONTRACT: NONE`. (B) Frozen candidate in review → the candidate does not replace authoritative
+current state. (C) Owner-accepted but unmerged → cannot authorize execution (§4), so current state
+remains the last authoritative state. (D) Contract merged / authoritative → it may become the active
+contract under existing lifecycle rules. (E) Governance-only recording / synchronization / repair
+gate → opens no implementation contract and never becomes one.
+
+**6. Scope discipline.** `OWNER_DECISION_REGISTER.md` is **deliberately unchanged**: no rule requires
+registering a material Owner authorization there `[EXEC]`; the register's own purpose is "a concise
+index of current owner decisions and active separate-authorization requirements", and this bounded
+repair authorization grants no implementation authority, leaves no active separate-authorization
+requirement, and is fully consumed by this gate — its provenance is this append-only entry, per the
+established convention of recording a gate's own lifecycle authorization in the gate record.
+`CURRENT_PROJECT_STATE.md` unchanged: its pin is expressly subordinated ("resolve from Git each
+session; do **not** trust a prose-pinned SHA") and re-pinning would recreate the very staleness
+pattern under repair. `DEFERRED_OBLIGATIONS_REGISTER.md` unchanged: no obligation is fired, created,
+closed, re-owned or moved. `ACCELERATED_HIGH_ASSURANCE_EXECUTION_PROTOCOL.md` unchanged:
+**`AHAEP CHANGE REQUIRED: NO`** — §24 assigns the active contract to the current-state surfaces and
+disclaims owning it, so amending AHAEP would create the duplicate ownership §2.4 forbids. AHAEP
+remains the lifecycle-mechanics owner; the AIC owns its own active-contract declaration semantics.
+**No second lifecycle owner, preflight owner or SOP is created.**
+
+**7. Owner authorization consumed at this gate.** The Owner authorized ONE bounded
+self-terminating governance state repair. It authorizes no implementation, no C, no RVR-8, no
+readiness work and no deployment, and is discharged by this gate.
+
+**8. This candidate — delta and lifecycle.** Governance/documentation only across exactly two paths:
+`ACTIVE_INCREMENT_CONTRACT.md` (Declaration rule + Active-contract terminal state) and this roadmap
+(append-only). **`RUNTIME / PRODUCT / TEST / ARCHITECTURE / PERSISTENCE / SCHEMA / API /
+READINESS-IMPLEMENTATION / RVR-8-IMPLEMENTATION / DEPLOYMENT DELTA: 0`.** No source or test path is
+touched; no historical record is rewritten. **As at this gate's freeze**, and stated as a fact about
+that moment: `OWNER REPAIR-LIFECYCLE AUTHORIZED: YES` and `OWNER EXACT REPAIR-SHA ACCEPTED: NO` —
+this repair becomes authoritative through the ordinary lifecycle (review, Owner exact-SHA acceptance,
+merge with second parent = the accepted candidate and EMPTY candidate→merge diff, post-merge identity
+verification). Those freeze-time facts remain true afterwards precisely because they are scoped to
+the freeze, and **no current-state sentence anywhere becomes false solely because this candidate
+merges**.
+
+**9. Lean classification re-derived.** **`LEAN RISK LEVEL: 2`** · **`REVIEW DEPTH: 2`** — a bounded
+governance-semantics repair; zero executable delta; no Lean §3 LEVEL-1 trigger.
+
+**Next eligible governance direction step — `C — INTEGRATED READINESS DIRECTION RECORDING`.
+ELIGIBILITY ONLY**, unchanged by this gate: `C AUTHORIZED: NO` · `C IMPLEMENTATION STARTED: NO`.
+
+**Boundaries — nothing downstream activated by this gate.** `RVR-8 AUTHORIZED: NO`;
+`RVR-8 STARTED: NO`; `READINESS IMPLEMENTATION AUTHORIZED: NO`; `AHAEP CHANGE REQUIRED: NO`;
+`CAP-06 / CAP-12 / CAP-13 / CAP-14 / CAP-18 ACTIVATED: NO`; `CANONICAL RISK ARCHITECTURE: UNCHANGED`;
+`QUESTION ROUTING / WS11 / ADAPTIVE QUESTIONING: NOT ACTIVATED`; `FCORA: RECORDED, NOT EXECUTED`;
+`PSRR GO: NO`; `DEPLOYMENT / PRODUCTION / SERIOUS RELEASE / PAID ACTIVATION: NOT AUTHORIZED`;
+`main` NOT RECONCILED. Any next gate requires its own separate Owner authorization.
