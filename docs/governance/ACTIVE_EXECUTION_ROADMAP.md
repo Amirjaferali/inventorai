@@ -16497,3 +16497,122 @@ UNCHANGED; `W/M: 2/2` frozen; `R4-C: OPEN`; `MLC DEFINITION FROZEN: NO`; `PSRR G
 `PARALLEL ARABIC QUESTION REGISTRY: FORBIDDEN`; Manufacturing / Market Reality / Commercial
 Readiness: **NOT AUTHORIZED**; `DEPLOYMENT / PRODUCTION / SERIOUS RELEASE / PAID ACTIVATION: NOT
 AUTHORIZED`; `main` NOT RECONCILED. Any next gate requires its own separate Owner authorization.
+
+---
+
+## POST-RVR-7-FORMAL-CLOSURE GOVERNANCE SYNCHRONIZATION — RVR-7 FORMALLY CLOSED: YES (PR #591) (governance-only synchronization candidate; append-only entry)
+
+**Append-only synchronization entry.** The entry above is the RVR-7 Formal Closure **gate**
+candidate, written before its own merge; it therefore still concludes `RVR-7 FORMALLY CLOSED: NO`
+and `OWNER EXACT CLOSURE-SHA ACCEPTED: NO`. **That wording was authority-at-its-time and is now
+SUPERSEDED by PR #591** — it is preserved, not rewritten as though it had been false when written.
+Under §11 of this roadmap ("This roadmap MUST be updated … at every one of these events, and is
+otherwise stale: … *A phase closure record is committed*"), the commit of
+`RVR_7_FORMAL_CLOSURE_RECORD.md` at PR #591 made this roadmap **STALE**, and `CLAUDE.md` prohibits
+continuing under a stale roadmap. This gate removes exactly that blocker. It records
+already-authoritative Git truth; it decides nothing new and authorizes nothing.
+
+**1. Entry identity (verified live from Git at this gate).** Base = live authoritative tip
+`55228c3ff7e87144a5a0ceb5cb3a5349d5754276`, **0 commits after it**.
+
+**2. PR #591 — RVR-7 FORMAL CLOSURE: AUTHORITATIVE.** Merge
+`55228c3ff7e87144a5a0ceb5cb3a5349d5754276`; **2 parents**; first parent
+`02a79a849f74eaa450d217ac1bb1b67f8959fc75` (PR #590 — the authoritative post-implementation
+synchronization); second parent `82eda0be2240c36a1d5d2a286cc314253092ae40` — the exact
+Owner-accepted Formal Closure candidate; merge tree `be4d49db21a2cbca81c3e4411832ebfafcdc5b53`,
+identical to the accepted candidate tree; **EMPTY candidate→merge diff**; merged via CREATE A MERGE
+COMMIT under separate Owner merge authorization; Owner-terminal post-merge identity verification
+passed. All five conditions of `RVR_7_FORMAL_CLOSURE_RECORD.md` §9 are therefore satisfied, and by
+that record's own non-circular terms: **`RVR-7 FORMALLY CLOSED: YES / AUTHORITATIVE`**.
+
+**3. What closure carried with it — recorded, not re-adjudicated.**
+**`RVR-7 FORMAL-CLOSURE BLOCKER COUNT: 0`** at acceptance (closure record §5 sweep of all 35
+register rows; §8 eligibility adjudication).
+**`HUMAN BILINGUAL REVIEW SATISFIED: YES`** — on the Owner's **own recorded human EN/AR
+declaration** (`RVR_7_EN_AR_SEMANTIC_EQUIVALENCE_REVIEW.md`), 34/34 items dispositioned
+`EQUIVALENT — ACCEPTED FOR USE`. Base contract §L.2.1 requires a **human** reviewer with
+demonstrated bilingual EN/AR competence and requires **neither independence from the Owner nor any
+external credential**; none was claimed or fabricated. This supersedes the earlier
+`HUMAN BILINGUAL REVIEW SATISFIED: NO`, which was authority-at-that-time.
+**`W1-N1 DISCHARGED: YES`** — Arabic verification concern demonstrated in the RVR-7 suite and
+recorded in the evidence pack exactly as base contract §E.2 requires.
+**`W1-N2 DISCHARGED: YES`** — its four producible limbs were complete at freeze, and its fifth,
+"the Independent Review must independently reproduce it" (§E.1), completed inside the §9 closure
+lifecycle that PR #591 concluded. **Provenance stated exactly:** the merge and its identity are Git
+fact; the independent-review reproduction is **Owner-attested** through §9 condition (1) — no
+separate independent-review artifact is committed to the repository, and none is represented as
+existing.
+
+**4. Owner decisions registered.** The closure record stated that its lifecycle-START
+authorization, the human-review acceptance and the exact-SHA acceptance "belong … with that future
+exact-closure-SHA acceptance at the appropriate post-closure synchronization, which has NOT yet
+occurred". **This gate is that synchronization**; the registrations are made in
+`OWNER_DECISION_REGISTER.md` §G, separating Owner decision, Git fact and inference, and inventing
+no instrument, wording, reviewer identity, credential, signature or backdated authorization.
+
+**5. Deferred obligations — only what closure mechanically changed.** The RVR-7 row and the W1-N2
+row advance to CLOSED on their own evidenced criteria. **Nothing else is closed or reclassified:**
+Serious-Release obligations, Increment-3 generated-output parity, §K.2, manifest §8 item 31 marker
+re-validation, the DOR characterization issue, FCORA, legal/tax/release obligations, and every CAP
+/ readiness obligation keep their exact owner, trigger, latest-safe gate and blocking level.
+**No obligation disappears.**
+
+**6. One narrow discoverability append — routing, never ownership.** The read-only inventory proved
+that the existing Manufacturing / Market Reality / Commercial Readiness reconciliation row makes no
+integration-readiness concept discoverable (`IRL` 0 · `SRL` 0 · `interface` 0 · `compatib` 0 ·
+`subsystem` 0 hits in that row `[EXEC]`). Under this authorization ONE append is made **inside that
+existing row**, recording **`IRL / SYSTEM-INTEGRATION READINESS: UNRESOLVED RESIDUAL CANDIDATE`**
+and that the future reconciliation must also adjudicate integration/interface readiness across
+components and subsystems, whole-system readiness synthesis, and whether each is an EXISTING OWNER
+/ EXTENSION / COMPOSITION / TRUE RESIDUAL. **No new row; no new owner; no IRL/SRL engine; no
+implementation; no numeric level; no CAP-06/12/13/14/18 change; no consolidation; and the row's
+trigger (after terminal RVR-7 AND RVR-8) and latest-safe gate (BEFORE FCORA) are unchanged.**
+
+**7. AHAEP Amendment 1 — sequencing fence.** The frozen candidate
+`c81e591e763de504733e12eab6edbddcf20df39c` (sole parent `55228c3f…`; tree `f863061a…`; single path
+`docs/governance/ACCELERATED_HIGH_ASSURANCE_EXECUTION_PROTOCOL.md`; **unpublished, on no remote**)
+is **not amended, rebased, cherry-picked, published, merged, or made an ancestor here, and the
+AHAEP file is not modified**. When this synchronization merges the live base advances; per AHAEP §5
+(**STOP — BASE ADVANCED**; never rebase or reconstruct), §9 (no post-freeze rewrite) and §12
+(fresh same-base sibling), `c81e591…` is thereafter **preserved as superseded historical evidence**
+and Amendment 1 must be **re-frozen as a fresh same-base sibling on the post-synchronization tip**.
+**That re-freeze is NOT performed and NOT authorized here.** No Owner authorization, Independent
+Review or acceptance of that candidate is claimed — repository truth proves none.
+
+**8. Active contract rotation.** The AIC still carried the completed RVR-7 Formal Closure lifecycle
+as active work. It is rotated to record that lifecycle's completion. **`NO IMPLEMENTATION CONTRACT
+IS ACTIVE`.** The rotation authorizes no execution and opens no implementation contract.
+
+**9. This candidate — non-circular.** Governance/documentation only across exactly five paths: this
+roadmap (append-only); `ACTIVE_INCREMENT_CONTRACT.md` (rotation); `CURRENT_PROJECT_STATE.md`
+(pointer + entry); `DEFERRED_OBLIGATIONS_REGISTER.md` (status-only rows + the §6 append);
+`OWNER_DECISION_REGISTER.md` (§G registration). **`RUNTIME / APPLICATION-CODE / PRODUCT-BEHAVIOR /
+TEST / ARCHITECTURE / CONTENT / PACK / PIN / DOMAIN-RULE / API / SERVICE / DATABASE DELTA: 0`.** No
+historical record rewritten; no frozen instrument rewritten; the RVR-7 implementation, evidence
+pack, semantic review and Formal Closure Record are untouched; `main` not reconciled.
+**Synchronization becomes authoritative if and when this exact candidate is independently reviewed,
+Owner-accepted at exact SHA, merged (second parent = the accepted candidate; EMPTY candidate→merge
+diff) and post-merge identity-verified.** Until then `OWNER SYNCHRONIZATION-LIFECYCLE AUTHORIZED:
+YES` · `OWNER EXACT SYNC-SHA ACCEPTED: NO`. **Disposition: `POST-RVR-7-FORMAL-CLOSURE GOVERNANCE
+SYNCHRONIZATION — GOVERNANCE CANDIDATE; NOT AUTHORITATIVE UNTIL MERGED AND POST-MERGE VERIFIED`.**
+
+**10. Lean classification re-derived, not inherited.** **`LEAN RISK LEVEL: 2`** ·
+**`REVIEW DEPTH: 2`** — an authorized governance recording reaching no Lean §3 LEVEL-1 trigger; the
+executable delta is zero. Independent Review REQUIRED.
+
+**Next eligible lifecycle — `AHAEP AMENDMENT 1 — RE-FREEZE / REVIEW LIFECYCLE`. ELIGIBILITY /
+PENDING GOVERNED WORK ONLY:** it names the work, and does **NOT** accept the old SHA, authorize
+publication, authorize merge, activate RVR-8, or activate readiness implementation; it requires its
+own separate explicit Owner authorization. The Integrated Readiness Direction recording remains
+**after** it, per the approved sequencing `B → A → C`.
+
+**Boundaries — nothing downstream activated by this gate.** `RVR-8 AUTHORIZED: NO`;
+`RVR-8 STARTED: NO`; `READINESS IMPLEMENTATION AUTHORIZED: NO`; `AHAEP CANDIDATE PUBLISHED: NO`;
+`CAP-12 / CAP-13 / CAP-14 / CAP-18 ACTIVATED: NO`; `CAP-06 UNCHANGED`; `WS11 / FULL ADAPTIVE
+QUESTIONING / MEANING-ADAPTIVE / TIER-2: NOT ACTIVATED`; `FCORA: RECORDED, NOT EXECUTED`;
+`OD-PDVG-12 EXERCISED: NO`; MG-8 OPEN with semantic repair NOT authorized; `gap_relevance`
+UNCHANGED; `W/M: 2/2` frozen; `R4-C: OPEN`; `MLC DEFINITION FROZEN: NO`; `PSRR GO: NO`;
+`LANGUAGE-CONDITIONAL ROUTING: FORBIDDEN`; `RUNTIME / MACHINE TRANSLATION: FORBIDDEN`;
+Manufacturing / Market Reality / Commercial Readiness: **NOT AUTHORIZED**;
+`DEPLOYMENT / PRODUCTION / SERIOUS RELEASE / PAID ACTIVATION: NOT AUTHORIZED`;
+`main` NOT RECONCILED. Any next gate requires its own separate Owner authorization.

@@ -1482,3 +1482,43 @@ satisfied by any registration here); `W1-N1 DISCHARGED: NO`; `W1-N2 DISCHARGED: 
 `OD-PDVG-12 EXERCISED: NO`; `DEPLOYMENT / PRODUCTION / SERIOUS RELEASE / PAID ACTIVATION: NOT
 AUTHORIZED`; `main` NOT RECONCILED. No RVR-8 decision and no closure decision is registered here,
 because none exists.
+
+**G. RVR-7 Formal Closure — Owner decisions registered at the POST-RVR-7-FORMAL-CLOSURE
+GOVERNANCE SYNCHRONIZATION gate** (base `55228c3ff7e87144a5a0ceb5cb3a5349d5754276`, PR #591).
+`RVR_7_FORMAL_CLOSURE_RECORD.md` recorded `OWNER_DECISION_REGISTER.md` UNCHANGED under the
+closure-gate convention and stated that its lifecycle-START authorization "is recorded
+contemporaneously by this closure record … Its register entry belongs, per the established
+registration pattern, with that future exact-closure-SHA acceptance at the appropriate post-closure
+synchronization — which has NOT yet occurred and is not claimed here." **This gate is that
+synchronization, and this section is that discharge.** Durable repository authority attaches to
+these registrations only upon independent review, Owner exact-SHA acceptance, merge and post-merge
+identity verification of the synchronization candidate that introduces them — recording is not
+authority.
+
+**Provenance discipline — four levels, kept distinct and never conflated:**
+
+| Level | Applied here |
+|---|---|
+| **Owner decision / premise** | The closure-lifecycle authorization; the human EN/AR review declaration and its acceptance; the exact-SHA acceptance; the separate merge authorization |
+| **Git fact** | PR #591 merge SHA, 2 parents, ordered parent identities, merge tree, EMPTY candidate→merge diff — all mechanically re-verified live at this gate |
+| **Lead / Independent Review evidence** | The closure candidate's Creator Grill and blocker-count-0 sweep are recorded inside `RVR_7_FORMAL_CLOSURE_RECORD.md` §5/§8; the Independent Review of that candidate is **Owner-attested through §9 condition (1)** — **no independent-review artifact is committed to this repository, and none is represented as existing** |
+| **Inference** | **NONE.** No wording the Owner did not use, no external reviewer identity, no credential, no signature, no backdated authorization instrument, and no product or implementation authorization is invented, implied or created |
+
+| ID | Subject | Status | Evidence |
+|---|---|---|---|
+| OD-RVR7-CLOSURE-START | **RVR-7 Formal Closure lifecycle — Owner authorization (ONE bounded one-pass lifecycle).** The Owner authorized the closure lifecycle only: reconstruct the remaining requirements, produce the producible evidence, adjudicate, and freeze once. It explicitly did NOT pre-decide closure and did NOT authorize RVR-8. | `OWNER CLOSURE-LIFECYCLE AUTHORIZED: YES` — consumed and now discharged by the completed lifecycle. | Recorded contemporaneously in `RVR_7_FORMAL_CLOSURE_RECORD.md` (status header) and its closure-gate roadmap entry `[OWNER-PREMISE + REPO]` |
+| OD-RVR7-HUMAN-REVIEW | **Human EN/AR semantic-equivalence review — Owner's own declaration, accepted.** The Owner personally performed and declared the review over the 34 substantive EN/AR pairs including the N-PF-3 and N-PF-4 repairs, and accepted their substantive semantic/technical equivalence for use. Base contract §L.2.1 requires a **human** reviewer with **demonstrated bilingual EN/AR competence** and requires **neither independence from the Owner nor any external credential**; none is claimed. Machine translation was never the equivalence authority. One residual, **OBS-RVR7-LANG-1** (minor linguistic polish, `NBF`), was disclosed by the Owner and deferred, not silently resolved. | `HUMAN BILINGUAL REVIEW SATISFIED: YES` · `§L.2.1 SATISFIED: YES` — superseding the earlier `NO`, which was authority-at-that-time. | The declaration is reproduced verbatim in `RVR_7_EN_AR_SEMANTIC_EQUIVALENCE_REVIEW.md` §2; the four §L.2.1 recording limbs are at §3–§6; 34/34 disposition at §5 `[OWNER-PREMISE]` |
+| OD-RVR7-CLOSURE-ACCEPT | **RVR-7 Formal Closure — exact-SHA acceptance.** The Owner accepted the closure candidate at exact SHA `82eda0be2240c36a1d5d2a286cc314253092ae40`. | `OWNER EXACT CLOSURE-SHA ACCEPTED: YES` — superseding the pre-merge `NO`. | The accepted SHA is the second parent of the PR #591 merge, with an EMPTY candidate→merge diff `[OWNER-PREMISE + REPO]` |
+| OD-RVR7-CLOSURE-MERGE | **Separate Owner authorization to merge PR #591 using CREATE A MERGE COMMIT.** Merge authority is the Owner's and separate from acceptance. | Exercised. | **PR #591** merge `55228c3ff7e87144a5a0ceb5cb3a5349d5754276`; **2 parents**; first parent `02a79a849f74eaa450d217ac1bb1b67f8959fc75`; second parent = the exact accepted candidate; merge tree `be4d49db21a2cbca81c3e4411832ebfafcdc5b53`; EMPTY candidate→merge diff; Owner-terminal post-merge identity verification passed `[REPO]` |
+| OD-RVR7-CLOSURE-EFFECT | **Formal Closure became authoritative only after merge and post-merge identity verification** — never at acceptance, freeze or review. On that completion the closure record's §9 non-circular conditional resolved. | **`RVR-7 FORMALLY CLOSED: YES / AUTHORITATIVE`**. Closure is not a downstream authorization. | `RVR_7_FORMAL_CLOSURE_RECORD.md` §9 read against the PR #591 identity above `[REPO]` |
+
+**Boundary carried with these registrations (none is weakened by them):** `RVR-8 AUTHORIZED: NO`;
+`RVR-8 STARTED: NO` — the RVR-8 register trigger remains "Owner authorization after RVR-7", a
+separate Owner decision neither made nor pre-empted here; `READINESS IMPLEMENTATION AUTHORIZED: NO`;
+`AHAEP AMENDMENT 1 — OWNER AUTHORIZATION / INDEPENDENT REVIEW / ACCEPTANCE: NONE CLAIMED` (that
+candidate is unpublished, on no remote, and repository truth proves no such decision); `CAP-06 /
+CAP-12 / CAP-13 / CAP-14 / CAP-18 ACTIVATED: NO`; `WS11 / ADAPTIVE QUESTIONING: NOT ACTIVATED`;
+`FCORA: RECORDED, NOT EXECUTED`; `OD-PDVG-12 EXERCISED: NO`; `PSRR GO: NO`;
+`DEPLOYMENT / PRODUCTION / SERIOUS RELEASE / PAID ACTIVATION: NOT AUTHORIZED`; `main` NOT
+RECONCILED. No new product, implementation, readiness or RVR-8 authorization is registered here,
+because none exists.

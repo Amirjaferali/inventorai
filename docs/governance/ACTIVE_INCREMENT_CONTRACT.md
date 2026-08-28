@@ -41,7 +41,74 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 ```
 
 ## Active contract
-**Status (current — RVR-7 FORMAL CLOSURE; governance + test-only closure candidate.
+**Status (current — POST-RVR-7-FORMAL-CLOSURE GOVERNANCE SYNCHRONIZATION; governance-only
+candidate. `RVR-7 FORMALLY CLOSED: YES / AUTHORITATIVE` (PR #591); `NO IMPLEMENTATION CONTRACT IS
+ACTIVE`; `OWNER SYNCHRONIZATION-LIFECYCLE AUTHORIZED: YES`; `OWNER EXACT SYNC-SHA ACCEPTED: NO`;
+`RVR-8 AUTHORIZED: NO`; `RVR-8 STARTED: NO`; `READINESS IMPLEMENTATION AUTHORIZED: NO`;
+`AHAEP CANDIDATE PUBLISHED: NO`).** Base:
+**`55228c3ff7e87144a5a0ceb5cb3a5349d5754276`** — verified live from Git at this gate as the
+**authoritative tip** of `feature/atomic-json-session-persistence` (**0 commits after it**;
+**PR #591** — the RVR-7 Formal Closure merge; first parent
+`02a79a849f74eaa450d217ac1bb1b67f8959fc75` (PR #590); second parent
+`82eda0be2240c36a1d5d2a286cc314253092ae40` — the exact Owner-accepted closure candidate; merge tree
+`be4d49db21a2cbca81c3e4411832ebfafcdc5b53` identical to the candidate tree; EMPTY candidate→merge
+diff; Owner-terminal post-merge identity verification passed).
+
+**Rotation semantics — binding.** The RVR-7 Formal Closure lifecycle is **COMPLETE** and is no
+longer active work. This rotation is a **RECORDING of already-authoritative Git truth**: it
+authorizes no execution, opens no implementation contract, and confers no implementation, closure,
+readiness, deployment or downstream permission. **NO IMPLEMENTATION CONTRACT IS ACTIVE.**
+
+```
+Objective:                remove the stale-roadmap blocker created when PR #591 committed a phase
+                          closure record (roadmap §11); record RVR-7 FORMALLY CLOSED: YES with its
+                          carried truths (blocker count 0 at acceptance; human EN/AR review
+                          satisfied on the Owner's own declaration; W1-N1 and W1-N2 discharged);
+                          register in the ODR the decisions the closure record deferred to this
+                          synchronization; advance ONLY the register rows closure mechanically
+                          changed; and make the IRL / system-integration residual discoverable by
+                          ONE append inside the EXISTING reconciliation row.
+                          NO implementation. NO RVR-8. NO readiness work. NO AHAEP change.
+Owner authorization:      explicit — POST-RVR-7 FORMAL-CLOSURE GOVERNANCE SYNCHRONIZATION ONLY.
+                          Independent Review, Owner exact-SHA acceptance, publication, PR and merge
+                          each remain separate decisions.
+Lean risk LEVEL:          LEVEL 2 (re-derived — no Lean §3 LEVEL-1 trigger; zero executable delta)
+Lean review DEPTH:        DEPTH 2 — Independent Review REQUIRED
+Allowed paths:            docs/governance/ACTIVE_EXECUTION_ROADMAP.md (append-only);
+                          docs/governance/ACTIVE_INCREMENT_CONTRACT.md (rotation);
+                          docs/governance/CURRENT_PROJECT_STATE.md (pointer + entry);
+                          docs/governance/DEFERRED_OBLIGATIONS_REGISTER.md (status-only rows +
+                          the one IRL discoverability append);
+                          docs/governance/OWNER_DECISION_REGISTER.md (§G registration)
+Prohibited paths:         docs/governance/ACCELERATED_HIGH_ASSURANCE_EXECUTION_PROTOCOL.md;
+                          docs/governance/INVENTORAI_COMMERCIAL_DIFFERENTIATION_DIRECTION.md;
+                          the RVR-7 implementation, evidence pack, semantic review and Formal
+                          Closure Record; every runtime, engine, web, test, content, pack, pin and
+                          domain path without exception
+Mandatory deltas:         RUNTIME 0 · APPLICATION-CODE 0 · PRODUCT-BEHAVIOR 0 · TEST 0 ·
+                          ARCHITECTURE 0 · CONTENT 0 · PACK / PIN / DOMAIN-RULE 0 ·
+                          API / SERVICE / DATABASE 0
+Prohibited outcomes:      touching, publishing, rebasing, cherry-picking or ancestoring the frozen
+                          AHAEP Amendment 1 candidate, or claiming its authorization/review/
+                          acceptance occurred; re-freezing it here; creating an IRL owner, row,
+                          engine or numeric level; consolidating CAP-12/13/14; modifying CAP-06 or
+                          CAP-18; closing Serious-Release, Increment-3, §K.2, manifest §8 item 31,
+                          the DOR characterization issue or FCORA; activating RVR-8, readiness
+                          implementation, WS11 or adaptive questioning; authorizing deployment or
+                          Serious Release; owning AHAEP mechanics, readiness product direction,
+                          architecture, canonical evidence, risk architecture, question routing or
+                          CAP implementation
+Independent-review scope: live-base and PR #591 identity; every stale-proposition repair; the
+                          W1-N1 / W1-N2 / human-review provenance separation (Owner decision vs Git
+                          fact vs inference); ODR registration accuracy with no invented
+                          instrument; obligation preservation and no dropped row; that the IRL
+                          append creates no owner and no row; that the AHAEP file and candidate are
+                          untouched; the five-path boundary; zero runtime/product/test delta
+Merge authority:          Owner, separately (not by the execution agent).
+```
+
+**Superseded status block (authority-at-its-time; preserved, not rewritten):**
+**Status (RVR-7 FORMAL CLOSURE; governance + test-only closure candidate.
 `RVR-7 FORMALLY CLOSED: NO`; `OWNER CLOSURE-LIFECYCLE AUTHORIZED: YES`;
 `OWNER EXACT CLOSURE-SHA ACCEPTED: NO`; `§L.2.1 SATISFIED: YES`;
 `HUMAN BILINGUAL REVIEW SATISFIED: YES`; `W1-N1 DISCHARGED: YES`; `W1-N2 DISCHARGED: NO`
