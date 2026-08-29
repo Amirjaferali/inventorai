@@ -1708,3 +1708,42 @@ ACTIVATED` · `ODS-001: NOT ACTIVATED` · `RVR-4: CLOSED, NOT REOPENED` · `READ
 AUTHORIZED: NO` · `CAP ACTIVATION: NONE` · readiness reconciliation **ELIGIBLE, NOT CONVENED** ·
 `FCORA AUTHORIZED: NO` · `PSRR GO: NO` · `DEPLOYMENT / PRODUCTION / SERIOUS RELEASE / PAID ACTIVATION:
 NOT AUTHORIZED` · `main` NOT RECONCILED.
+
+
+---
+
+## G-4 EN↔AR assessment-parity direction — OD-G4-A and OD-G4-B (direction only; no implementation)
+
+Recorded at the G-4 direction gate on the authoritative base
+`3359c92a3a05c1306feb959ce55e1e7fd8fd8267`, against the reconciliation and direction packet produced
+read-only at that base. **Ownership is adjudicated as `COMPOSITION ACROSS EXISTING OWNERS`** and recorded
+in the existing G-4 obligation row; **no new assessment, Arabic-language, normalization or relevance
+owner is created, and no duplicate G-4 row exists** `[REPO]`.
+
+| ID | Subject | Status | Evidence |
+|---|---|---|---|
+| OD-G4-A | **EN causal-recognition false positive — direction: `TIGHTEN ENGLISH`.** The incidental raw-substring match on `"if "` in the measured `E-1\|novice\|en` `MECHANISM_COMPLETENESS` answer is a **user preference clause, not causal mechanism structure**. The bounded future repair shall constrain **that measured false positive**. **Arabic shall NOT be widened merely to reproduce it.** The Owner **accepts** that the English novice path may no longer close `MECHANISM_COMPLETENESS` on that answer, because the previous closure was **not semantically earned**. The existing byte-pinned causal-pattern guard (`tests/test_causal_connective_substance_gate.py::test_existing_causal_structure_patterns_frozen`) **may be amended only as required by this bounded approved correction**. | **ACCEPTED AND COMMITTED — DIRECTION ONLY.** One bounded implementation contract is frozen at `docs/governance/G4_A_EN_CAUSAL_FALSE_POSITIVE_IMPLEMENTATION_CONTRACT_CANDIDATE.md`. `IMPLEMENTATION AUTHORIZED: NO` · `IMPLEMENTATION STARTED: NO`. | Decision substance is Owner-supplied `[OWNER-PREMISE]`. Measured basis, verified read-only at this base: the matched clause is *"…not have a wire going to the brake lever **if I can avoid it**"*, a legal word-boundary match on a preference statement; removing `"if "` changes the causal result of **exactly one** answer in the frozen EN corpus — the target — and it is the **only** answer where `"if "` is the sole causal hit; no RVR-3 pin breaks `[EXEC]` |
+| OD-G4-B | **Structured-form script bias — diagnosis accepted, code change NOT authorized.** The Owner accepts that treating hyphenated-compound counting as an **independently sufficient** structural trigger is script-biased: English technical orthography produces hyphenated compounds and Arabic does not, while the measured Arabic counterpart carries **more** distinct long tokens (13 vs 10) and states the same meaning. **`MECHANISM-B CODE CHANGE NOW: NOT AUTHORIZED`** — the hyphen trigger is **not** removed or altered at this gate, and **no new structural signal is authorized**. A future change requires a **separate bounded Owner decision** establishing a truthful script-neutral replacement or composition **and its regression consequences**. | **ACCEPTED AND COMMITTED — DEFERRAL.** The measured Mechanism-B divergence remains **`OPEN / DEFERRED`**. **`RVR-3 REOPENING REQUIRED: NO`.** | Decision substance is Owner-supplied `[OWNER-PREMISE]`. RVR-3 boundary verified read-only: `test_expert_mechanism_closure_answers_reach_reasoned_en_and_ar` pins MECHANISM in **EN and AR**, while `test_expert_feasibility_and_boundary_answers_reach_reasoned_en` and `test_novice_answers_do_not_regress` pin **English only** — so the measured expert PHYSICAL divergence sits **outside** RVR-3's EN/AR assertion. Measured on the frozen corpus: dropping hyphen as an independently sufficient trigger changes **nothing** anywhere; removing it from every clause **breaks two English results, including the RVR-3-pinned one** `[EXEC]` |
+
+**What this recording deliberately does NOT do.** It does not close, discharge, reorder or re-own any
+obligation. **G-4 remains `OPEN` / `FRB`** and **G-4 full closure is NOT asserted** — completing
+Mechanism A alone would not close it. No implementation, no test implementation, no run, no benchmark or
+corpus change is authorized. `RVR-3`, `RVR-7`, `W1-N3` and `RVR-2` are **not reopened**.
+
+**M-1 fence, recorded as a standing constraint only.** M-1 relevance is **language-symmetric** and remains
+independently owned by `gap_relevance` / RVR-2 with **RVR-7 as the downstream return (OD-R4)**. It is
+**not** designed or authorized here and `engine/gap_relevance.py` is **not** touched. **Any future
+authorized M-1 `gap_relevance` touch must preserve EN/AR parity and must disposition G-4 at that gate,
+because G-4's return trigger names `gap_relevance`.**
+
+**Boundary carried with these registrations (none is weakened by them):**
+`G-4: OPEN / FRB` · `G-4 FULL CLOSURE: NOT ASSERTED` · `MECHANISM A IMPLEMENTATION AUTHORIZED: NO` ·
+`MECHANISM B CODE CHANGE: NOT AUTHORIZED` · `M-1 RELEVANCE: SEPARATE, UNTOUCHED` ·
+`NEW ASSESSMENT / ARABIC / NORMALIZATION / RELEVANCE OWNER: NOT CREATED` · `ARABIC WIDENING: NOT
+AUTHORIZED` · `RVR-3 / RVR-7 / W1-N3 / RVR-2: NOT REOPENED` · `T1-A′: OPEN` · `T1-C′ / T1-D: OPEN,
+SEPARATE` · `G-5: UNCHANGED` · readiness reconciliation **ELIGIBLE, NOT CONVENED** · HICR bounded
+supplement **UNCHANGED** · `FDC-001 LANE: INACTIVE` · `DECISION WORKSPACE / PATH-T: NOT ACTIVATED` ·
+`ODS-001: NOT ACTIVATED` · `RVR-4: CLOSED` · `READINESS IMPLEMENTATION AUTHORIZED: NO` ·
+`CAP ACTIVATION: NONE` · `FURTHER S2 RUN OR SLICE EXECUTION: NOT AUTHORIZED` · `FCORA AUTHORIZED: NO` ·
+`PSRR GO: NO` · `DEPLOYMENT / PRODUCTION / SERIOUS RELEASE / PAID ACTIVATION: NOT AUTHORIZED` ·
+`main` NOT RECONCILED.

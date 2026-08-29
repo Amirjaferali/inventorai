@@ -17281,3 +17281,77 @@ zero executable delta.
 **Next step after this gate — STOP.** Lead review of this recording candidate. T1-A′ closure and any
 disposition of the non-blocking UX observation each remain separate Owner decisions; neither is created,
 implied or scheduled here.
+
+
+---
+
+## G-4 — EN↔AR ASSESSMENT-PARITY DIRECTION + MECHANISM-A CONTRACT FREEZE (governance-only; provenance-only entry)
+
+**Provenance-only by design.** Lean §11 requires one record per governed gate, and separately requires the
+Owner Decision Register to be updated whenever an owner decision is accepted and committed. This entry is
+the former and carries **pointers, not substance**: the decisions live in `OWNER_DECISION_REGISTER.md`
+(`OD-G4-A`, `OD-G4-B`), the obligation state in the existing G-4 row of
+`DEFERRED_OBLIGATIONS_REGISTER.md` §3, and the frozen contract in
+`docs/governance/G4_A_EN_CAUSAL_FALSE_POSITIVE_IMPLEMENTATION_CONTRACT_CANDIDATE.md`.
+`ROADMAP SUBSTANTIVE G-4 OWNER: NO`.
+
+**Authoritative base.** `3359c92a3a05c1306feb959ce55e1e7fd8fd8267` (PR #602), verified live from Git at
+this gate `[EXEC]`.
+
+**What this gate records.** G-4 ownership adjudicated as **COMPOSITION ACROSS EXISTING OWNERS**, with the
+two measured mechanisms attributed: **A** — the English raw-substring causal table firing on a user
+preference clause while the Arabic normalized registry correctly does not; **B** — hyphenated-compound
+counting as an independently sufficient structural trigger, a feature Arabic orthography does not produce.
+**OD-G4-A** selects `TIGHTEN ENGLISH` and freezes **one bounded Mechanism-A implementation contract**.
+**OD-G4-B** accepts the Mechanism-B diagnosis but records **`MECHANISM-B CODE CHANGE: NOT AUTHORIZED`**;
+that divergence stays **OPEN / DEFERRED**. **`RVR-3 REOPENING REQUIRED: NO`.**
+
+**What this gate is NOT.** Not an implementation · not a test implementation · not a Mechanism-B change ·
+not an M-1 repair · not a run · not a benchmark or corpus change · **not a G-4 closure** — the row stays
+`OPEN` / `FRB` and full closure is **not asserted**, since completing Mechanism A alone would not close it.
+
+**Exact changed paths (4).**
+1. `docs/governance/OWNER_DECISION_REGISTER.md` — Lean §11: the register is updated whenever an owner
+   decision is accepted and committed. `OD-G4-A` and `OD-G4-B` are two. One bounded append; no existing
+   row rewritten.
+2. `docs/governance/DEFERRED_OBLIGATIONS_REGISTER.md` — the **existing** G-4 row is updated in place, and
+   only in its SourceOwner and Disposition cells: ownership `UNRESOLVED` → `COMPOSITION ACROSS EXISTING
+   OWNERS` (prior falsification narrative preserved verbatim as history), and the disposition records the
+   Mechanism-A contract path and the Mechanism-B deferral. Status stays `OPEN`, blocking stays `FRB`, the
+   return gate and latest-safe gate are untouched, **no duplicate row is created**, and no other
+   obligation is closed or reordered.
+3. `docs/governance/G4_A_EN_CAUSAL_FALSE_POSITIVE_IMPLEMENTATION_CONTRACT_CANDIDATE.md` (**new**) — the
+   authorized deliverable: the frozen Mechanism-A contract must exist as a committed artifact to be
+   reviewable and to be the thing a future implementation is authorized against.
+4. `docs/governance/ACTIVE_EXECUTION_ROADMAP.md` (this entry) — Lean §11: one record per governed gate.
+
+**Paths deliberately NOT changed.** `ACTIVE_INCREMENT_CONTRACT.md` — a governance-only direction gate opens
+no implementation contract; `ACTIVE CONTRACT: NONE` untouched. `CURRENT_PROJECT_STATE.md` — its pin is
+expressly subordinated to Git. The G-3 contract, all product/runtime/test paths, the benchmark instrument
+and every benchmark evidence set — untouched. HICR, readiness and commercial rows unrelated to G-4 —
+untouched. **All product, runtime, test, schema, domain, prompt, script and benchmark paths: 0 —
+`EXECUTABLE DELTA: 0`.**
+
+**Continuity fence.** G-4 becoming current displaces nothing: `T1-A′` stays **OPEN**, the M-1 relevance
+residual keeps its existing owner (`gap_relevance` / RVR-2, RVR-7 downstream return), readiness
+reconciliation stays **ELIGIBLE, NOT CONVENED**, the HICR bounded supplement, `G-5`, `T1-C′` / `T1-D`, the
+pre-FCORA obligations and the commercial/readiness/deferred items are preserved by authoritative pointer
+to `DEFERRED_OBLIGATIONS_REGISTER.md` and `CURRENT_PROJECT_STATE.md`. Nothing is marked complete or
+reordered merely because G-4-A is current.
+
+**Non-authorization fences.** `G-4: OPEN / FRB` · `G-4 FULL CLOSURE: NOT ASSERTED` ·
+`MECHANISM A IMPLEMENTATION AUTHORIZED: NO` · `MECHANISM B CODE CHANGE: NOT AUTHORIZED` ·
+`ARABIC WIDENING: NOT AUTHORIZED` · `M-1 RELEVANCE: SEPARATE, UNTOUCHED` ·
+`NEW ASSESSMENT / ARABIC / NORMALIZATION / RELEVANCE OWNER: NOT CREATED` ·
+`RVR-3 / RVR-7 / W1-N3 / RVR-2: NOT REOPENED` · `FURTHER S2 RUN OR SLICE EXECUTION: NOT AUTHORIZED` ·
+`FDC-001 LANE: INACTIVE` · `DECISION WORKSPACE / PATH-T: NOT ACTIVATED` · `ODS-001: NOT ACTIVATED` ·
+`RVR-4: CLOSED` · `READINESS IMPLEMENTATION AUTHORIZED: NO` · `CAP ACTIVATION: NONE` ·
+`FCORA AUTHORIZED: NO` · `PSRR GO: NO` · `ACTIVE CONTRACT: NONE` (untouched) ·
+`DEPLOYMENT / PRODUCTION / SERIOUS RELEASE / PAID ACTIVATION: NOT AUTHORIZED` · `main` NOT RECONCILED.
+
+**Lean classification.** `LEAN RISK LEVEL: 2` · `REVIEW DEPTH: 2` — bounded governance-only direction
+recording and contract freeze, zero executable delta.
+
+**Next step after this gate — STOP.** Lead review of this candidate. Mechanism-A implementation, and any
+Mechanism-B change, each require their own separate Owner authorization; neither is created, implied or
+scheduled here.
