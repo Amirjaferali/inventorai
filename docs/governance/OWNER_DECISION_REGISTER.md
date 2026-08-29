@@ -1562,3 +1562,59 @@ ACTIVATED: NO`; `NEW RISK ENGINE: NOT CREATED`; `CANONICAL RISK ARCHITECTURE: UN
 `FCORA: RECORDED, NOT EXECUTED`; `PSRR GO: NO`; `DEPLOYMENT / PRODUCTION / SERIOUS RELEASE / PAID
 ACTIVATION: NOT AUTHORIZED`; `main` NOT RECONCILED. No product, readiness or RVR-8 authorization is
 registered here, because none exists.
+
+
+---
+
+## G-3 — pre-implementation Owner decisions (D-G3-1, D-G3-2) and the OD-W2-DW-LIFT permission-(3) reading for G-3
+
+Recorded at the G-3 pre-implementation Owner-decision recording gate, on the authoritative base
+`495e7613c1109ce0366d6089d0e54ba5ada24303` — the **PR #598** merge that made the **G-3 Contract Freeze**
+authoritative (2 parents; first parent `39a966995d83ce72ba64a263c048d803f6d95061`; second parent = the
+Owner-accepted candidate `5437637178c5fdcc4c2a7dc29f101fd7add3fedd`; merge tree
+`53464296249d261e5e7faa4d010e7c1977455050` — identical to the accepted candidate's tree, i.e. an EMPTY
+candidate→merge diff; post-merge identity verified `[REPO]`).
+
+These three decisions resolve the pre-implementation semantic questions the authoritative contract
+raised at its §7, and **nothing else**. Recording them **authorizes no implementation**: the contract's
+own `G-3 IMPLEMENTATION AUTHORIZED: NO` and `G-3 IMPLEMENTATION STARTED: NO` fences are untouched, and
+implementation and implementation START each remain separate Owner decisions. The authoritative
+contract is **not reopened, amended, repaired or re-reviewed** by this recording, and no register,
+tracker or status surface outside this register and the append-only roadmap's one pointer record is
+changed. **`EXECUTABLE DELTA: 0`.**
+
+| ID | Subject | Status | Evidence |
+|---|---|---|---|
+| OD-G3-1-WITHDRAWAL | **D-G3-1 — Withdrawal.** A user withdrawal **removes that alternative from the active FDC comparison-eligible candidate set** while preserving its governed `AssertionRecord` lineage, withdrawal event, reason/provenance, and historical reconstructability, **subject to the existing retention policy**. Withdrawal is a **user lifecycle action** and is **NOT** an evidence-based system `ELIMINATED` disposition. A later return to the concept requires **redeclaration under the existing new-root / new-identity rule** rather than silent reactivation of the withdrawn chain. Preserved by this decision: **full provenance**; **historical reconstructability**; **no silent deletion**; **no system-elimination mischaracterization**; **no new withdrawal status or disposition vocabulary for this decision**. | **ACCEPTED AND COMMITTED** — resolves contract §7 `D-G3-1`. **Mapping to the contract's option table, performed by the Creator and not Owner wording:** this is **Option B in its sub-case (ii)** — excluded from the comparison set while remaining in the bounded rendered set (`A-4a`/`A-5` already freeze that visibility) — and it adds no vocabulary. **IMPLEMENTATION NOT AUTHORIZED; IMPLEMENTATION START NOT AUTHORIZED.** | Decision substance is Owner-supplied `[OWNER-PREMISE]`. Question of record: `docs/governance/G3_BOUNDED_DECISION_VALUE_REPAIR_CONTRACT_CANDIDATE.md` §7 `D-G3-1` and its option table row **B** (authoritative via PR #598, merge `495e7613…`, accepted candidate `5437637…`). The contract items this resolution routes to at the implementation gate are its §6.0 two-set distinction, `A-4b`, `A-5`, `A-23(b)` and `A-24` `[REPO]` |
+| OD-G3-2-REFINEMENT | **D-G3-2 — Refinement.** Refinement of an existing alternative creates a **successor `AssertionRecord` within the same logical alternative chain**, preserving the founding root / candidate identity and the prior records as governed history. **The latest active declaration represents the current interpretation of that alternative.** For the bounded G-3 implementation: refinement text **shall NOT be promoted into an FDC `ClaimItem`**, and **shall NOT be assigned a claim class merely to advance readiness**. Any future decision-relevant projection requires **separate evidence that an existing claim/provenance classification truthfully represents its meaning**. **No new claim semantics are created.** | **ACCEPTED AND COMMITTED** — resolves contract §7 `D-G3-2`. **Mapping performed by the Creator, not Owner wording:** it selects the outcome that section already records as legitimate — inventor refinement text is **not** projected as a decision-relevant input for this bounded repair, and no `claim_class`/`provenance` pair is chosen. **IMPLEMENTATION NOT AUTHORIZED.** | Decision substance is Owner-supplied `[OWNER-PREMISE]`. Question of record: the same contract §7 `D-G3-2` and its full repository-authoritative `claim_class` / `provenance` choice set, in which no member was pre-selected `[REPO]` |
+| OD-W2-DW-LIFT-G3-CONFIRM | **OD-W2-DW-LIFT permission (3) — the Owner's reading for G-3.** The previously exercised permission (3) is **confirmed applicable to G-3 only for reuse of already-existing FDC-001 `DecisionRecord` vocabulary through the existing deterministic bounded Path-N composition seam.** This confirmation does **NOT** authorize: new `DecisionRecord` vocabulary · broader Decision Workspace activation · Path-T activation · persistence expansion · a second decision model · implementation start. **Any need for new `DecisionRecord` vocabulary requires a separate Owner decision.** | **CONFIRMED READING — bounded to G-3.** It is a reading of the existing exercised permission, **not** an amendment, widening, re-exercise or bounded extension of `OD-W2-DW-LIFT`; the historical Wave-2 `OD-W2-DW-LIFT` row above is **not rewritten** (this register's established precedent). It discharges the precondition the G-3 contract recorded at its §5 **to the extent that precondition concerns already-existing vocabulary**; any need for NEW `DecisionRecord` vocabulary remains a separate Owner decision. It **authorizes no code**. | Decision substance is Owner-supplied `[OWNER-PREMISE]`. Instrument of record: the Wave-2 `OD-W2-DW-LIFT` row in this register, permission item **(3)** — *"reuse of the class vocabulary the bounded composition seam requires"* — and W2-A contract §5 (authoritative via PR #567, merge `82758cb2…`, accepted candidate `b778cfe7…`). Precondition of record: G-3 contract §5, *"an explicit Owner confirmation or bounded extension of OD-W2-DW-LIFT permission (3) covering the §7 vocabulary subset"* `[REPO]` |
+
+**What this recording deliberately does NOT resolve.** `D-G3-3` (whether criterion 5/6 satisfaction is
+intended **with** readiness advancing past `insufficient_information`, or truthful classification plus
+explicit reasons is sufficient) and `D-G3-4` (whether the composed decision state enters the canonical
+deliverable package, or stays a derived render-only projection) are **NOT decided here** and remain
+exactly as the authoritative contract left them. No downstream authorization, activation or scheduling
+is created or implied by closing the two questions above.
+
+**Continuity preserved by pointer, not by restatement.** No deferred, future, release, readiness,
+commercial or review obligation is discharged, reordered, marked complete or removed by this recording.
+`DEFERRED_OBLIGATIONS_REGISTER.md` is **byte-unchanged** — `T1-A′` remains **OPEN / `FRB`** as G-3's
+release-value owner (row L150), no G-3 row is duplicated, and no new tracker is created.
+`ACTIVE_INCREMENT_CONTRACT.md` (`ACTIVE CONTRACT: NONE`) and `CURRENT_PROJECT_STATE.md` are
+**byte-unchanged**. The G-3 contract file itself is **byte-unchanged**.
+
+**Boundary carried with these registrations (none is weakened by them):**
+`G-3 IMPLEMENTATION AUTHORIZED: NO` · `G-3 IMPLEMENTATION START AUTHORIZED: NO` ·
+`RUNTIME / TESTS / SCHEMA / DATABASE / PROMPT CHANGES: NOT AUTHORIZED` ·
+`FDC-001 LANE: INACTIVE, NOT ACTIVATED` · `DECISION WORKSPACE: NOT ACTIVATED` ·
+`PATH-T: NOT ACTIVATED` · `PERSISTENCE EXPANSION: NOT AUTHORIZED` ·
+`SECOND DECISION MODEL: NOT CREATED` · `NEW DECISIONRECORD VOCABULARY: NOT AUTHORIZED` ·
+`ODS-001: NOT ACTIVATED` · `RVR-4: CLOSED, NOT REOPENED` ·
+`T1-A′ / T1-C′ / T1-D / MG-8 / R4-C: OPEN` · `T2-G / OD-PDVG-10: OPEN, UNDECIDED` ·
+`READINESS IMPLEMENTATION AUTHORIZED: NO` · `TRL / MRL / IRL / SRL: NOT IMPLEMENTED` ·
+`CAP ACTIVATION: NONE` · `ADAPTIVE QUESTIONING / WS11: NOT ACTIVATED` ·
+`SECOND S2 RUN: CONSUMED` · `THIRD S2 RUN: NOT AUTHORIZED` · `FCORA AUTHORIZED: NO` ·
+readiness reconciliation **ELIGIBLE, NOT CONVENED** · `PSRR GO: NO` ·
+`DEPLOYMENT / PRODUCTION / SERIOUS RELEASE / PAID ACTIVATION: NOT AUTHORIZED` ·
+`main` NOT RECONCILED. **No product, readiness, release or verification authorization is registered
+here, because none exists.**

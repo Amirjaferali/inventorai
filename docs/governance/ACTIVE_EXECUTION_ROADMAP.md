@@ -17082,3 +17082,72 @@ freeze, zero executable delta.
 **Next step after this gate — STOP.** Lead review of the contract candidate. Implementation, and the
 Owner confirmation or bounded extension of OD-W2-DW-LIFT permission (3) that the contract names as its
 precondition, each require their own separate Owner authorization.
+
+
+---
+
+## G-3 — PRE-IMPLEMENTATION OWNER DECISIONS (recording gate; provenance-only entry)
+
+**Provenance-only by design.** Lean §11 requires one record per governed gate, and separately requires
+the Owner Decision Register to be updated whenever an owner decision is accepted and committed. This
+entry is the former and carries **pointers, not substance**; the decisions themselves live in
+`OWNER_DECISION_REGISTER.md`. `ROADMAP SUBSTANTIVE G-3 DECISION OWNER: NO`.
+
+**Authoritative base.** `495e7613c1109ce0366d6089d0e54ba5ada24303` — the PR #598 merge that made the
+G-3 Contract Freeze authoritative (2 parents; second parent = the Owner-accepted candidate
+`5437637178c5fdcc4c2a7dc29f101fd7add3fedd`; merge tree `53464296…` identical to the accepted tree, an
+EMPTY candidate→merge diff), verified live from Git at this gate `[EXEC]`.
+
+**What this gate is.** A recording gate only. Three already-made Owner decisions are registered as
+durable repository evidence: **`OD-G3-1-WITHDRAWAL`** (D-G3-1 — a user withdrawal removes the
+alternative from the active FDC comparison-eligible candidate set while preserving ledger lineage,
+withdrawal event, reason/provenance and reconstructability; a lifecycle action, not an evidence-based
+system elimination; return requires redeclaration under the existing new-root rule; no new vocabulary),
+**`OD-G3-2-REFINEMENT`** (D-G3-2 — refinement creates a successor `AssertionRecord` in the same chain
+preserving founding-root identity, the latest active declaration is the current interpretation, and
+refinement text is neither promoted into an FDC `ClaimItem` nor given a claim class to advance
+readiness) and **`OD-W2-DW-LIFT-G3-CONFIRM`** (permission (3) confirmed for G-3 only for reuse of
+already-existing `DecisionRecord` vocabulary through the existing bounded Path-N composition seam).
+Read them there; this entry does not restate their substance.
+
+**What this gate is NOT.** Not a new contract · not a contract repair, reopening or re-review · not a
+product implementation · not a new review cycle · not an implementation authorization · not a readiness
+authorization. `D-G3-3` and `D-G3-4` are **not decided** by this gate.
+
+**Exact changed paths (2).**
+1. `docs/governance/OWNER_DECISION_REGISTER.md` — Lean §11: the register is updated whenever an owner
+   decision is accepted and committed. One bounded append; no existing row rewritten.
+2. `docs/governance/ACTIVE_EXECUTION_ROADMAP.md` (this entry) — Lean §11: one record per governed gate.
+
+**Paths deliberately NOT changed.** `G3_BOUNDED_DECISION_VALUE_REPAIR_CONTRACT_CANDIDATE.md` — the
+authoritative contract is not reopened or amended, and no pointer correction is required by repository
+authority. `DEFERRED_OBLIGATIONS_REGISTER.md` — no obligation fires, closes, is created or is re-owned
+by recording an accepted decision; `T1-A′` stays OPEN / `FRB` as G-3's release-value owner and no row is
+duplicated. `ACTIVE_INCREMENT_CONTRACT.md` — a governance-only recording gate opens no implementation
+contract; `ACTIVE CONTRACT: NONE` is untouched. `CURRENT_PROJECT_STATE.md` — its pin is expressly
+subordinated to Git. **All product, runtime, test, schema, domain, prompt, script and benchmark paths:
+0 — `EXECUTABLE DELTA: 0`.**
+
+**Continuity fence.** Recording these decisions displaces nothing previously reconciled. No readiness,
+deferred, future, release, commercial or review item is marked complete, reordered or removed; `T1-A′`
+is not removed; FCORA, Serious Release, Production and Paid Activation states are unchanged.
+`CURRENT LANE ≠ REPLACEMENT OF MATERIAL CONTINUITY WATCHLIST`. **Recorded finding, stated rather than
+assumed:** no artifact is committed to this repository under the name *Material Continuity Watchlist*
+(and none under *HICR*) at this base `[EXEC]`; none is invented here. The continuity substance the
+fence protects is preserved by authoritative pointer to `DEFERRED_OBLIGATIONS_REGISTER.md`, the fences
+in this roadmap and `CURRENT_PROJECT_STATE.md` — each byte-unchanged at this gate.
+
+**Non-authorization fences.** `G-3 IMPLEMENTATION AUTHORIZED: NO` · `G-3 IMPLEMENTATION START
+AUTHORIZED: NO` · `FDC-001 LANE: INACTIVE` · `DECISION WORKSPACE: NOT ACTIVATED` · `PATH-T: NOT
+ACTIVATED` · `PERSISTENCE EXPANSION: NOT AUTHORIZED` · `NEW DECISIONRECORD VOCABULARY: NOT AUTHORIZED` ·
+`ODS-001: NOT ACTIVATED` · `RVR-4: CLOSED, NOT REOPENED` · `READINESS IMPLEMENTATION AUTHORIZED: NO` ·
+`CAP ACTIVATION: NONE` · `ADAPTIVE QUESTIONING / WS11: NOT ACTIVATED` · `THIRD S2 RUN: NOT AUTHORIZED` ·
+`FCORA AUTHORIZED: NO` · `PSRR GO: NO` · `ACTIVE CONTRACT: NONE` (untouched) · `DEPLOYMENT / PRODUCTION
+/ SERIOUS RELEASE / PAID ACTIVATION: NOT AUTHORIZED` · `main` NOT RECONCILED.
+
+**Lean classification.** `LEAN RISK LEVEL: 2` · `REVIEW DEPTH: 2` — bounded governance-only recording,
+zero executable delta.
+
+**Next step after this gate — STOP.** Lead review of this recording candidate. G-3 implementation
+authorization, and implementation START, each remain separate Owner decisions; neither is created,
+implied or scheduled here.
