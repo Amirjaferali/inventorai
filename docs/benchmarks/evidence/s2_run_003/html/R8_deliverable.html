@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>InventorAI — المُخرَج</title>
+<style>
+/* G-UX-SHELL shared application-shell baseline. Minimal; no framework, no JS.
+   Accessibility/disclosure baseline only — not a visual redesign. */
+*:focus-visible{outline:3px solid #2c6fbb;outline-offset:2px}
+a.skip-link{position:absolute;left:-9999px;top:auto;background:#fff;color:#2c3e50;padding:8px 12px;border:2px solid #2c3e50;border-radius:4px;z-index:1000}
+a.skip-link:focus{left:8px;top:8px;position:fixed}
+.app-header{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:760px;margin:0 auto;padding:10px 20px;border-bottom:1px solid #d4dde6}
+.app-header .brand{font-weight:600;color:#2c3e50}
+.app-header .temp-session{font-size:12px;color:#555;white-space:nowrap}
+/* D-P6-18 global UI-language selector (shared, top-of-content, consistent). */
+.ui-lang-selector{max-width:760px;margin:0 auto;padding:6px 20px;display:flex;align-items:center;gap:8px;font-size:12px;color:#555;flex-wrap:wrap}
+.ui-lang-selector .ui-lang-label{color:#666}
+.ui-lang-selector a{padding:3px 10px;background:#fff;color:#2c3e50;border:1px solid #c3ccd6;border-radius:4px;text-decoration:none}
+.ui-lang-selector .ui-lang-active{padding:3px 10px;background:#2c3e50;color:#fff;border:1px solid #2c3e50;border-radius:4px}
+</style>
+
+<style>
+body{font-family:sans-serif;max-width:760px;margin:60px auto;padding:0 20px;color:#222}
+h1{color:#2c3e50;margin-bottom:4px}
+h2{color:#2c3e50;font-size:18px;margin-top:34px;border-bottom:2px solid #2c3e50;padding-bottom:5px}
+.group-lede{font-size:13px;color:#667;line-height:1.5;margin:6px 0 14px 0}
+h3{color:#2c3e50;font-size:15px;margin-top:20px;margin-bottom:4px}
+.meta{background:#f0f4f8;padding:10px 14px;border-radius:4px;margin-bottom:18px;font-size:13px;color:#444}
+.status-eligible{background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7;padding:10px 14px;border-radius:4px;margin-bottom:18px}
+.status-snapshot{background:#fff3e0;color:#e65100;border:1px solid #ffcc02;padding:10px 14px;border-radius:4px;margin-bottom:18px}
+.status-title{font-weight:bold;font-size:16px;margin-bottom:4px}
+.status-sub{font-size:13px}
+.status-strip{background:#f0f4f8;border:1px solid #d4dde6;padding:10px 14px;border-radius:4px;margin-bottom:20px;font-size:13px;color:#444;display:flex;flex-wrap:wrap;gap:10px 28px}
+.status-strip .field-label{margin:0}
+.status-strip .field-value{margin:0}
+.disclaimer{background:#f8f9fa;border-left:3px solid #b0b8c1;padding:9px 14px;border-radius:0 4px 4px 0;margin-bottom:20px;font-size:12px;color:#666;line-height:1.5}
+.safety-signals{background:#fff8e1;border:1px solid #f0c36d;padding:12px 14px;border-radius:4px;margin-bottom:20px}
+.ss-note{font-size:12px;color:#8a6d3b;line-height:1.5;margin:6px 0 12px 0}
+.ss-meta{font-size:12px;color:#667;line-height:1.5;margin:2px 0 6px 0}
+.ss-caution{font-size:12px;color:#8a6d3b;line-height:1.5;margin:0 0 12px 0}
+section{margin-bottom:18px}
+ul{padding-left:18px;font-size:13px;color:#444}
+li{margin-bottom:4px}
+.field-label{font-weight:bold;color:#2c3e50;font-size:13px}
+.field-value{font-size:13px;color:#444;margin-bottom:6px}
+.vp-meta{font-size:12px;color:#667;line-height:1.5;margin:0 0 12px 0}
+.vp-intro{font-size:13px;color:#555;line-height:1.5;margin:0 0 12px 0}
+.back-link{margin-top:30px;font-size:13px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
+</style>
+
+</head>
+<body>
+<a class="skip-link" href="#main-content">تخطَّ إلى المحتوى</a>
+<header class="app-header">
+<span class="brand">InventorAI</span>
+<span class="temp-session">جلسة مؤقتة <a href="/data-and-session">معرفة المزيد</a></span>
+</header>
+
+<nav class="ui-lang-selector" aria-label="اللغة">
+  <span class="ui-lang-label">اللغة:</span>
+  <a href="/ui-language?lang=en&amp;next=/session/62a1e958-dfcc-4782-8fd5-087d9b810bb9/deliverable" lang="en">English</a>
+  <span class="ui-lang-active" lang="ar" aria-current="true">العربية</span>
+</nav>
+<main id="main-content">
+
+<h1>InventorAI</h1>
+
+
+
+
+
+
+
+<div class="meta">
+  إصدار الحزمة: 1.0.0
+  &nbsp;·&nbsp;
+  المخطط: fdc-001-mvp-v1
+  &nbsp;·&nbsp;
+  تم الإنشاء: 2026-08-29T18:43:30Z
+  &nbsp;·&nbsp;
+  الجلسة: 40f42d58-d4ab-4cf3-b93d-32e520c03438
+</div>
+
+
+<div class="status-snapshot">
+  <div class="status-title">لقطة التقييم — قيد التقدم</div>
+  <div class="status-sub">هذا ليس مُخرَجًا نهائيًا. واصِل تطوير الفكرة للوصول إلى الأهلية.</div>
+</div>
+
+
+
+<div class="status-strip">
+  <div>
+    <div class="field-label">النضج</div>
+    <div class="field-value">Level 1 — Exploratory / Incomplete: problem signal received at minimum evidence threshold. No engineering claim validated. Not a deliverable gate.</div>
+  </div>
+  <div>
+    <div class="field-label">الجاهزية المشتقّة <span style="font-weight:normal">(تُحتسب بشكل منفصل عن النضج المخزَّن؛ ليست تحققًا ولا حالة محسومة)</span></div>
+    <div class="field-value">غير جاهزة وفق الاشتقاق — الأدلة المسجَّلة غير مُتحقَّق منها تقنيًا</div>
+    
+    
+    
+  </div>
+</div>
+
+
+
+<div class="safety-signals">
+  <div class="status-title">إشارات السلامة كما ذكرها المخترِع</div>
+  
+  <div class="field-value">No inventor-stated safety signals were derived from the recorded statements. This is NOT a determination that the idea is safe, unsafe, risk-free, or verified — it means no inventor-stated safety-critical failure condition was detected in the recorded content.</div>
+  
+</div>
+
+
+
+<section>
+  <h2>ما هي فكرتك</h2>
+  <p class="group-lede">إعادة صياغة مبسّطة للاختراع كما نفهمه حاليًا من مدخلاتك.</p>
+
+  <div class="disclaimer">This assessment package is produced by an automated invention analysis system. It is advisory only. No claim made in this package constitutes engineering certification, regulatory approval, or legal advice. The inventor is responsible for independent verification of all technical claims, feasibility conclusions, and recommendations before acting on this assessment.</div>
+
+  <h3>ملخص الاختراع</h3>
+  <div class="field-label">النضج</div>
+  <div class="field-value">Level 1 — Exploratory / Incomplete: problem signal received at minimum evidence threshold. No engineering claim validated. Not a deliverable gate.</div>
+  <div class="field-label">اكتمال التقييم</div>
+  <div class="field-value">PARTIAL — mechanism or boundaries still required</div>
+  
+  <div class="field-label">المشكلة المعروفة</div>
+  <div class="field-value">Problem evidence has not yet been captured clearly.</div>
+  
+  
+  <div class="field-label">الآلية المعروفة <span class="ev-id" style="font-weight:normal;color:#667">(EV-002)</span></div>
+  <div class="field-value">القرار هو معمارية تثبيت الوضع المطوي. المرشحون: (1) مزلاج قلاب متجاوز للمركز، (2) دبوس تعشيق بنابض، (3) مزلاج بوابة يسقط بالجاذبية. يجب أن تثبت الآلية المنحدر في الوضع الأفقي الحامل للوزن وأن تتحرر للطي دون أدوات.</div>
+  
+</section>
+
+<section>
+  <h2>ما الذي قيّمناه</h2>
+  <p class="group-lede">المجالات التي نظرنا فيها، ومدى تطوّر كل منها حتى الآن.</p>
+
+  <h3>نظرة عامة على التقييم</h3>
+  
+  
+  
+  <div class="field-value">
+    نوع المراجعة: مراجعة مستنيرة بمجال الميكانيكا &nbsp;·&nbsp;
+    النضج: 1 &nbsp;·&nbsp;
+    الفجوات الإجمالية/المفتوحة/المحلولة: 1/0/0
+  </div>
+  
+</section>
+
+<section>
+  <h2>ما الذي تحتاجه</h2>
+  <p class="group-lede">المدخلات التي التقطناها والمجالات المفتوحة التي ما زال يتعيّن معالجتها.</p>
+
+  <h3>المدخلات الملتقطة وحالة التقييم</h3>
+  <p class="group-lede" style="margin-top:0">هذه مدخلات ملتقطة من إجاباتك، وليست استنتاجات مختبَرة. تُظهر الفحوصات المقترحة أدناه ما قد يساعد على ترسيخها.</p>
+  
+  <ul>
+    
+    <li>REQ-001 — See EV-002 — Known Mechanism (Stated by the inventor (not yet verified))</li>
+    
+  </ul>
+  
+
+  <h3>مشهد المتطلبات</h3>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <div class="field-label">القرار هو معمارية تثبيت الوضع المطوي. المرشحون: (1) مزلاج قلاب متجاوز للمركز، (2) دبوس تعشيق بنابض، (3) مزلاج بوابة يسقط بالجاذبية. يجب أن تثبت الآلية المنحدر في الوضع الأفقي الحامل للوزن وأن تتحرر للطي دون أدوات.</div>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <div class="field-label">مسار القوة: حمل الكرسي المتحرك عبر المنحدر المفرود إلى آلية التثبيت عند خط المفصلة؛ تشغيل يدوي للطي والفرد؛ ولا يُسمح بتعديل دائم للباب أو الإطار.</div>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <div class="field-label">لا يوجد تقدير حمل ولا هامش تثبيت ولا دليل اختبار فيزيائي؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.</div>
+  
+  
+  
+  
+  
+  
+  <div class="field-value" style="color:#667">This statement was recorded 22 times during the session.</div>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <div class="field-value"><strong>المنشأ:</strong> Recorded answer</div>
+  <div class="field-value"><strong>الحالة:</strong> Recorded from your answers (not yet verified)</div>
+  <div class="field-value"><strong>الأهمية:</strong> Not yet determined (assigned automatically by the system; not yet reviewed)</div>
+  
+  
+  <div class="field-value"><strong>الإجراء الحلّي:</strong> Validate the recorded answer against the available evidence.</div>
+  
+  
+  
+  <div class="field-value" style="color:#667">(مشترَك بين 24 عنصرًا)</div>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <div class="field-label">Mechanism Completeness</div>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <div class="field-value"><strong>المنشأ:</strong> Mechanism Completeness</div>
+  <div class="field-value"><strong>الحالة:</strong> partially addressed</div>
+  <div class="field-value"><strong>الأهمية:</strong> Not yet determined (assigned automatically by the system; not yet reviewed)</div>
+  
+  
+  <div class="field-value"><strong>الإجراء الحلّي:</strong> Address the open gap: Mechanism Completeness.</div>
+  
+  
+  
+  
+  
+  
+  
+  <div class="field-value"><em>No structurally grounded risks are recorded for the current requirements. This is not a statement that the idea is risk-free, safe, or verified; it means no structural adverse-consequence signal exists in the recorded state.</em></div>
+  
+  
+  
+  
+</section>
+
+<section>
+  <h2>ما هو مُفترَض مقابل ما لا يزال مجهولًا</h2>
+  <p class="group-lede">أمور تُؤخذ حاليًا كمُسلَّمات، إلى جانب عناصر أشرتَ إلى أنها غير معروفة بعد.</p>
+
+  <h3>الافتراضات والمجهولات كما ذكرها المخترِع</h3>
+  
+  <ul>
+    
+    <li>The stated mechanism operates as described — Component-level testing to confirm operating principle<br><span class="group-lede" style="margin:0">لماذا يهم هذا: Session assessment may not reflect true feasibility</span></li>
+    
+  </ul>
+  
+  
+
+  <h3>العناصر غير المحلولة</h3>
+  
+    
+  <div class="field-value">لم تعد هناك فجوات مخزَّنة مفتوحة، لكن لا تزال هناك عناصر تحقق من الأدلة أو جاهزية غير محلولة. الأدلة المسجَّلة غير مُتحقَّق منها تقنيًا.</div>
+    
+  
+</section>
+
+<section>
+  <h2>ما الذي قد يسوء</h2>
+  <p class="group-lede">مخاطر مسجَّلة من الحالة الراهنة. هذا ليس حكمًا على السلامة وليس شاملًا.</p>
+
+  <h3>المخاطر</h3>
+  
+  
+  
+  <ul>
+    
+    <li>[medium] Session is at Level 1 — Exploratory / Incomplete: problem signal received at minimum evidence threshold. No engineering claim validated. Not a deliverable gate.. Assessment incomplete.</li>
+    
+    <li>[low] Evidence is reasoned (substantiated but not demonstrated).</li>
+    
+  </ul>
+  
+  
+</section>
+
+<section>
+  <h2>المنطق وراء ذلك</h2>
+  <p class="group-lede">المنطق والأدلة المسجَّلة وراء التقييم أعلاه.</p>
+
+  
+  <div class="field-value">لا توجد مجالات منطق للمرحلة 3 مسجَّلة لهذه الجلسة.</div>
+  
+</section>
+
+<section>
+  <h2>ما نوصي به وما يجب فعله تاليًا</h2>
+  <p class="group-lede">اتجاه مقترَح وخطوات تالية ملموسة يمكنك اتخاذها. استرشادي فقط.</p>
+
+  <h3>التوصيات</h3>
+  <div class="field-label">الحكم</div>
+  <div class="field-value">REVISE</div>
+  <div class="field-label">المبرّر</div>
+  <div class="field-value">Problem established at exploratory level only. Mechanism not yet substantiated.</div>
+  
+  <div class="field-label">العناصر المفتوحة</div>
+  <ul>
+    
+    <li>Continue with technically substantive answers to reach Level 2.</li>
+    
+  </ul>
+  
+
+  <h3>خطوة التطوير التالية</h3>
+  
+  
+  
+  <div class="field-label">Owner-stated answer awaiting validation</div>
+  <div class="field-value">An owner-provided answer is recorded but not independently validated.</div>
+  <div class="field-label">الإجراء التالي</div>
+  <div class="field-value">Validate the owner-stated answer.</div>
+  
+  
+  <div class="field-label">الجهة المقترَحة</div>
+  <div class="field-value">You (the inventor)</div>
+  
+  
+  <div class="field-label">شرط الكفاية</div>
+  <div class="field-value">The owner-stated answer is independently validated.</div>
+  
+  
+  <div class="field-value"><em>Owner-stated, not validated.</em></div>
+  
+  
+
+  <h3>الخطوات التالية الموصى بها</h3>
+  
+  <ul>
+    
+    <li>Continue with technically substantive answers to reach Level 2 (mechanism established). <em>(أولوية عالية)</em></li>
+    
+    <li>Validate the leading claims with a prototype or demonstration to raise evidence from Reasoned to Demonstrated.</li>
+    
+  </ul>
+  
+  <div class="field-value"><em>Synthesized from current session state and captured evidence. Advisory only; no new analysis was performed.</em></div>
+
+  <h3>خطة النموذج الأولي والاختبار</h3>
+  
+  
+  <div class="field-label">Proposed experiment: demonstrate the leading mechanism claim</div>
+  <div class="field-value"><strong>الهدف:</strong> Build a minimum prototype of the described mechanism and observe whether it behaves as the inventor described, to raise the evidence from Reasoned toward Demonstrated.</div>
+  <div class="field-value"><strong>بناءً على:</strong> Leading claim at Reasoned quality: &#34;القرار هو معمارية تثبيت الوضع المطوي. المرشحون: (1) مزلاج قلاب متجاوز للمركز، (2) دبوس تعشيق بنابض، (3) مزلاج بوابة يسقط بالجاذبية. يجب أن تثبت الآلية المنحدر في الوضع الأفقي الحامل للوزن وأن تتحرر للطي دون أدوات.&#34;</div>
+  <div class="field-value"><strong>الحد الأدنى للنموذج الأولي:</strong> A minimal end-to-end build of the described operating principle, no more than needed to observe the claimed behavior.</div>
+  <div class="field-value"><strong>لاحِظ:</strong> Observe whether the described input-to-output behavior occurs as stated.</div>
+  
+  <div class="field-value"><strong>معيار النجاح:</strong> Owner-defined criterion required.</div>
+  
+  <div class="field-value"><strong>الفشل / أعِد النظر إذا:</strong> If the described behavior does not occur, revise the mechanism before relying on it.</div>
+  <div class="field-value"><strong>هدف ترقية الأدلة:</strong> Reasoned -&gt; Demonstrated.</div>
+  
+  
+  
+  
+  
+  <div class="field-value"><a href="/session/62a1e958-dfcc-4782-8fd5-087d9b810bb9/success-criteria">تحديد معايير النجاح أو تعديلها</a></div>
+  
+  <div class="field-value"><em>Proposed experiments synthesized from your own captured evidence. Advisory only: nothing here has been built, tested, demonstrated, validated, certified, or shown feasible. You define the success criteria.</em></div>
+
+  <h3>خطة التحقق</h3>
+  
+  
+  
+  <p class="vp-intro">فحوصات مقترَحة قد تساعد على ترسيخ هذه الفكرة. لم يُنفَّذ أي منها بعد — هذه اقتراحات وليست نتائج. يحتفظ كل فحص بتفاصيله الداعمة في سطر واحد أسفله.</p>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <h4 class="vp-group">فحوصات يمكنك إجراؤها بنفسك</h4>
+  
+  
+  
+  
+  
+  
+  
+  <div class="field-label">Validate this recorded answer against the available evidence: “القرار هو معمارية تثبيت الوضع المطوي. المرشحون: (1) مزلاج قلاب متجاوز للمركز، (2) دبوس تعشيق بنابض، (3) مزلاج بوابة يسقط بالجاذبية. يجب أن تثبت الآلية المنحدر في الوضع الأفقي الحامل للوزن وأن تتحرر للطي دون أدوات.”</div>
+  
+  
+  
+  <div class="vp-meta">المسؤولية: Owner can perform &nbsp;&middot;&nbsp; الأدلة المطلوبة: owner confirmation &nbsp;&middot;&nbsp; الإغلاق: Closed when owner confirmation is provided and recorded; no such evidence is recorded yet. &nbsp;&middot;&nbsp; المنشأ: Recorded answer</div>
+  
+  
+  
+  
+  
+  
+  
+  
+  <div class="field-label">Validate this recorded answer against the available evidence: “مسار القوة: حمل الكرسي المتحرك عبر المنحدر المفرود إلى آلية التثبيت عند خط المفصلة؛ تشغيل يدوي للطي والفرد؛ ولا يُسمح بتعديل دائم للباب أو الإطار.”</div>
+  
+  
+  
+  <div class="vp-meta">المسؤولية: Owner can perform &nbsp;&middot;&nbsp; الأدلة المطلوبة: owner confirmation &nbsp;&middot;&nbsp; الإغلاق: Closed when owner confirmation is provided and recorded; no such evidence is recorded yet. &nbsp;&middot;&nbsp; المنشأ: Recorded answer</div>
+  
+  
+  
+  
+  
+  
+  
+  
+  <div class="field-label">Validate this recorded answer against the available evidence: “لا يوجد تقدير حمل ولا هامش تثبيت ولا دليل اختبار فيزيائي؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.” <span class="vp-count" style="font-weight:normal;color:#667">(ينطبق على 22 إجابة مسجَّلة)</span></div>
+  
+  
+  
+  <div class="vp-meta">المسؤولية: Owner can perform &nbsp;&middot;&nbsp; الأدلة المطلوبة: owner confirmation &nbsp;&middot;&nbsp; الإغلاق: Closed when owner confirmation is provided and recorded; no such evidence is recorded yet. &nbsp;&middot;&nbsp; المنشأ: Recorded answer</div>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <h4 class="vp-group">فحوصات مقترَحة أخرى</h4>
+  
+  
+  
+  
+  
+  
+  
+  <div class="field-label">Address the open gap: Mechanism Completeness.</div>
+  
+  
+  <div class="vp-resp" style="font-size:12px;color:#667;line-height:1.5;margin:0">لم تُسنَد المسؤولية بعد.</div>
+  <div class="vp-resp" style="font-size:12px;color:#667;line-height:1.5;margin:0 0 4px 0">اختر من سيتولّى خطوة التحقق هذه قبل الاعتماد على النتيجة.</div>
+  
+  
+  <div class="vp-meta">الأدلة المطلوبة: clarifying information &nbsp;&middot;&nbsp; الإغلاق: Closed when clarifying information is provided and recorded; no such evidence is recorded yet. &nbsp;&middot;&nbsp; المنشأ: Mechanism Completeness</div>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+</section>
+
+
+
+
+
+
+<p class="back-link"><a href="/session/62a1e958-dfcc-4782-8fd5-087d9b810bb9">العودة إلى الجلسة</a></p>
+
+
+</main>
+</body>
+</html>

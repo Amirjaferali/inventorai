@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>InventorAI — Session</title>
+<style>
+/* G-UX-SHELL shared application-shell baseline. Minimal; no framework, no JS.
+   Accessibility/disclosure baseline only — not a visual redesign. */
+*:focus-visible{outline:3px solid #2c6fbb;outline-offset:2px}
+a.skip-link{position:absolute;left:-9999px;top:auto;background:#fff;color:#2c3e50;padding:8px 12px;border:2px solid #2c3e50;border-radius:4px;z-index:1000}
+a.skip-link:focus{left:8px;top:8px;position:fixed}
+.app-header{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:760px;margin:0 auto;padding:10px 20px;border-bottom:1px solid #d4dde6}
+.app-header .brand{font-weight:600;color:#2c3e50}
+.app-header .temp-session{font-size:12px;color:#555;white-space:nowrap}
+/* D-P6-18 global UI-language selector (shared, top-of-content, consistent). */
+.ui-lang-selector{max-width:760px;margin:0 auto;padding:6px 20px;display:flex;align-items:center;gap:8px;font-size:12px;color:#555;flex-wrap:wrap}
+.ui-lang-selector .ui-lang-label{color:#666}
+.ui-lang-selector a{padding:3px 10px;background:#fff;color:#2c3e50;border:1px solid #c3ccd6;border-radius:4px;text-decoration:none}
+.ui-lang-selector .ui-lang-active{padding:3px 10px;background:#2c3e50;color:#fff;border:1px solid #2c3e50;border-radius:4px}
+</style>
+
+<style>
+body{font-family:sans-serif;max-width:720px;margin:60px auto;padding:0 20px;color:#222}
+h1{color:#2c3e50;margin-bottom:4px}
+.meta{background:#f0f4f8;padding:10px 14px;border-radius:4px;margin-bottom:18px;font-size:13px;color:#444}
+.disclosure{background:#f8f9fa;border-left:3px solid #b0b8c1;padding:9px 14px;border-radius:0 4px 4px 0;margin-bottom:20px;font-size:12px;color:#666;line-height:1.5}
+.progress-section{margin-bottom:20px}
+.progress-label{font-size:13px;color:#555;margin-bottom:4px}
+.progress-track{background:#dde3ea;border-radius:8px;height:14px;width:100%;overflow:hidden}
+.progress-fill{background:#2c3e50;height:14px;border-radius:8px}
+.stage-block{margin-bottom:18px;padding:10px 14px;background:#f0f4f8;border-radius:4px}
+.stage-label{font-size:15px;font-weight:bold;color:#2c3e50;margin-bottom:3px}
+.stage-meaning{font-size:13px;color:#555;line-height:1.4}
+.gap-board{margin-bottom:20px}
+.gap-board h3{font-size:14px;color:#555;margin:0 0 8px 0;text-transform:uppercase;letter-spacing:.5px}
+.gap-row{display:flex;align-items:center;padding:6px 10px;border-radius:4px;margin-bottom:4px;font-size:13px;background:#f8f9fa;border:1px solid #e2e6ea}
+.gap-row.current{background:#fff8e1;border-color:#ffe082;font-weight:bold}
+.gap-row.closed{background:#f0faf0;border-color:#c8e6c9;color:#555}
+.gap-status{width:70px;font-size:11px;padding:2px 6px;border-radius:3px;text-align:center;margin-right:10px;font-weight:bold;flex-shrink:0}
+.status-current{background:#fff3cd;color:#856404;border:1px solid #ffc107}
+.status-closed{background:#d4edda;color:#155724;border:1px solid #c3e6cb}
+.status-open{background:#f0f4f8;color:#555;border:1px solid #ccc}
+.gap-name{flex:1;color:#333}
+.gap-stage-note{font-size:11px;color:#888;margin-left:8px;flex-shrink:0}
+.current-arrow{font-size:11px;color:#e65100;margin-left:6px;flex-shrink:0}
+.gap-guidance{background:#fffbf0;border:1px solid #ffe082;border-radius:4px;padding:12px 16px;margin-bottom:18px}
+.gap-guidance-heading{font-size:15px;font-weight:bold;color:#2c3e50;margin-bottom:6px}
+.gap-guidance-text{font-size:13px;color:#555;line-height:1.5}
+.last-result{margin-bottom:18px;padding:10px 14px;border-radius:4px;border:1px solid #e2e6ea;font-size:13px}
+.badge-warn{background:#fff3e0;color:#e65100;border:1px solid #ffcc02;display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:bold;margin-bottom:6px}
+.badge-pass{background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7;display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:bold;margin-bottom:6px}
+.badge-block{background:#fdecea;color:#c62828;border:1px solid #ef9a9a;display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:bold;margin-bottom:6px}
+.badge-none{background:#f0f4f8;color:#555;border:1px solid #ccc;display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;margin-bottom:6px}
+.reason-text{font-size:13px;color:#555;margin-top:6px}
+.direction-text{font-size:12px;color:#888;margin-top:4px}
+.question{font-size:18px;margin-bottom:16px;color:#2c3e50;line-height:1.5}
+textarea{width:100%;padding:12px;font-size:15px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box}
+button{margin-top:10px;padding:10px 24px;background:#2c3e50;color:white;border:none;border-radius:4px;font-size:15px;cursor:pointer}
+.complete{color:#27ae60;font-weight:bold;font-size:18px}
+hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
+</style>
+
+<script defer src="/static/js/local_draft.js"></script>
+
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to content</a>
+<header class="app-header">
+<span class="brand">InventorAI</span>
+<span class="temp-session">Temporary session <a href="/data-and-session">Learn more</a></span>
+</header>
+
+<nav class="ui-lang-selector" aria-label="Language">
+  <span class="ui-lang-label">Language:</span>
+  <span class="ui-lang-active" lang="en" aria-current="true">English</span>
+  <a href="/ui-language?lang=ar&amp;next=/session/22688d3e-f327-4907-b1fc-126a44b8fd22" lang="ar">العربية</a>
+</nav>
+<main id="main-content">
+
+
+<div id="draft-signals" data-draft-scope="22688d3e-f327-4907-b1fc-126a44b8fd22" data-seed-accepted="0" data-answer-accepted="1" hidden></div>
+
+<h1>InventorAI</h1>
+
+
+
+
+
+<div class="disclosure">This platform helps you structure your thinking through guided questions. It tracks how you have addressed key areas — external technical validation remains a separate step.</div>
+
+
+
+<div class="next-step-callout" style="background:#eef5ff;border:1px solid #b3d1ff;border-radius:4px;padding:10px 14px;margin-bottom:18px">
+  <div class="next-step-heading" style="font-weight:bold;color:#1a4f8b">Next Development Step</div>
+  <div class="next-step-issue" style="font-size:14px;margin-top:4px">Owner-stated answer awaiting validation</div>
+  
+  <div class="next-step-why" style="font-size:13px;color:#555;margin-top:4px">An owner-provided answer is recorded but not independently validated.</div>
+  
+  
+  <div class="next-step-action" style="font-size:13px;color:#444;margin-top:6px"><span style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#1a4f8b">Do next:</span> Validate the owner-stated answer.</div>
+  
+  <div class="next-step-ref" style="font-size:12px;color:#666;margin-top:4px">Reference: rec_1</div>
+</div>
+
+
+<p>
+  <a href="/session/22688d3e-f327-4907-b1fc-126a44b8fd22/deliverable">
+  View In-Progress Assessment Snapshot
+  </a>
+</p>
+
+
+
+
+<div class="meta">
+  Idea: 6175edd8-fca8-4b33-b0e4-d40dc1b7893c
+  &nbsp;·&nbsp;
+  Iteration: 24
+  &nbsp;·&nbsp;
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  Review type: Electronics-informed review
+</div>
+
+<div class="stage-block">
+  <div class="stage-label">Problem established</div>
+  <div class="stage-meaning">You have described the core problem and your idea&#39;s direction. Now let&#39;s develop the mechanism.</div>
+</div>
+
+<div class="progress-section">
+  
+  
+  <div class="progress-label">Progress — Stage 2 of 3</div>
+  <div class="progress-track">
+    <div class="progress-fill" style="width:66%"></div>
+  </div>
+</div>
+
+
+<div class="gap-board">
+  <h3>Your Progress Areas</h3>
+  
+  
+  <div class="gap-row closed">
+    
+      <span class="gap-status status-closed">DONE</span>
+    
+    <span class="gap-name">How does it work, step by step?</span>
+    <span class="gap-stage-note">Developing mechanism</span>
+    
+  </div>
+  
+  
+  <div class="gap-row current">
+    
+      <span class="gap-status status-current">ACTIVE</span>
+    
+    <span class="gap-name">Does your idea have a clear working principle?</span>
+    <span class="gap-stage-note">Exploring feasibility</span>
+    <span class="current-arrow">◄ now</span>
+  </div>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+<div class="gap-guidance">
+  <div class="gap-guidance-heading">Does your idea have a clear working principle?</div>
+  <div class="gap-guidance-text">Describe what makes your idea work — the components, materials, forces, or processes involved. Be as specific as you can about the mechanism, not just the goal.</div>
+</div>
+
+
+
+<div class="last-result">
+  
+    <span class="badge-warn">More detail needed</span>
+  
+  
+  
+  
+  
+  
+  
+  <div class="reason-text">This answer was not recognized as responding to the question that was asked, so it did not move this point forward. Answering the question directly, in the words the question uses, is what the current demo can recognize.</div>
+  
+  
+  <details class="result-details" style="margin-top:4px">
+    <summary style="cursor:pointer;font-size:12px;color:#8a97a3">Result details</summary>
+    <div class="reason-raw" style="font-size:12px;color:#8a7a68;margin-top:4px">PHYSICAL_FEASIBILITY not addressed — this answer does not respond to the question that was asked</div>
+  </details>
+  
+  
+  <div class="direction-text">Direction: STALLED</div>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+<div class="scaffolding-guidance" style="margin-bottom:18px;padding:10px 14px;border-radius:4px;border:1px solid #ffe0b2;background:#fff8ef;font-size:13px">
+  <div class="scaffolding-guidance-heading" style="font-weight:bold;color:#e65100;margin-bottom:6px">What kind of detail to add</div>
+  <div class="scaffolding-guidance-lead" style="color:#5a4633;margin-bottom:8px">This answer needs more detail. Add a specific point about the mechanism, the trigger condition, the operating boundary, or a supporting observation.</div>
+  <ul class="scaffolding-guidance-prompts" style="margin:0 0 8px 18px;color:#5a4633">
+    <li>What physical limits or operating range does this work within?</li><li>What conditions or constraints must hold for it to work?</li><li>What assumptions about the environment does it rely on?</li><li>What could physically prevent it from working?</li><li>What evidence or observation supports that it can work?</li>
+  </ul>
+  <div class="scaffolding-guidance-note" style="font-size:12px;color:#8a7a68">These are prompts to help you add detail. They do not change or grade your answer — you write it in your own words.</div>
+</div>
+
+
+
+<div class="current-question-eyebrow" style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#8a97a3;margin-bottom:4px">Current question</div>
+
+<div class="current-question-context" style="font-size:12px;color:#666;margin-bottom:8px">Currently addressing: <strong style="color:#2c3e50">Does your idea have a clear working principle?</strong></div>
+
+
+
+<p class="question" lang="en" dir="ltr">The prepared questions for this area are exhausted, and repeating them will not move it forward. Your honest options now: add genuinely new information in the answer box; mark this unknown or deferred; note a provisional assumption; ask for a specialist or evidence; or - if it cannot be resolved now - accept it explicitly as a known risk so the journey can move on while the risk stays visibly recorded.</p>
+
+<p class="answer-hint" style="font-size:12px;color:#888;margin:-6px 0 14px 0">Answer in the box below, or choose one of the response options.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+<details style="margin-bottom:14px;border:1px solid #d6e0e8;border-radius:4px;background:#fafcfe">
+  <summary style="cursor:pointer;padding:9px 14px;font-size:14px;color:#2c3e50">Help me understand this question</summary>
+  <div style="padding:4px 14px 12px 14px">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#8a97a3;margin-bottom:6px">System guidance</div>
+    <div style="font-size:14px;font-weight:bold;color:#2c3e50;margin-bottom:6px">What this question is asking</div>
+    <p style="font-size:13px;color:#555;line-height:1.5;margin:0 0 8px 0">This is asking what makes your idea actually work — the basic principle, components, or process behind it.</p>
+    <p style="font-size:13px;color:#555;line-height:1.5;margin:0 0 8px 0"><strong>What would help:</strong> The working principle in plain terms. Whether it truly holds may later need a measurement, test, or outside evidence.</p>
+    <p style="font-size:13px;color:#555;line-height:1.5;margin:0 0 8px 0"><strong>A good answer looks like:</strong> A plain description of the principle you expect to make it work. Exact measurements are not required here.</p>
+    <p style="font-size:13px;color:#555;line-height:1.5;margin:0">If confirming it would need a test or evidence you do not have, you can note that and continue.</p>
+  </div>
+</details>
+
+
+
+<div class="gap-guidance" style="background:#f3f7fb;border-color:#cfe0ee;margin-bottom:14px">
+  <div class="gap-guidance-heading">Evidence or a test may be needed</div>
+  <div class="gap-guidance-text">This usually needs a measurement, test, or external evidence. You can request evidence and continue.</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<form method="POST" action="/session/22688d3e-f327-4907-b1fc-126a44b8fd22">
+  
+  <input type="hidden" name="answer_token" value="HtKWj2e9V7fm6wY_iMgNxy3yqZ3flmFA.e47e182ad12f4a38a32251ab0cd37bc8">
+  <label for="response" style="display:block;margin-bottom:6px;font-size:13px;color:#555">Your answer</label>
+  
+  <textarea id="response" name="response" rows="5" placeholder="Describe your thinking here, or pick an option below..."
+    data-draft-field="answer" data-draft-scope="22688d3e-f327-4907-b1fc-126a44b8fd22" data-draft-context="3212f606e4379931" data-draft-context-version="v1" data-draft-account="anon"></textarea>
+  <br>
+  <fieldset style="margin-top:12px;border:1px solid #e2e6ea;border-radius:4px;padding:10px">
+    <legend style="font-size:13px;color:#555;padding:0 6px">How do you want to respond?</legend>
+    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="answered" checked> Answer this question (using the text above)</label>
+    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="unknown"> I do not know this yet</label>
+    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="deferred"> Defer this question for now</label>
+    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="provisional_assumption"> Record a provisional assumption (not verified — optional note above)</label>
+    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="specialist_requested"> A specialist needs to answer this</label>
+    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="evidence_requested"> Evidence or a test is needed for this</label>
+  </fieldset>
+  <button type="submit">Submit</button>
+</form>
+
+
+
+<details class="accept-risk" style="margin-top:14px;border:1px solid #e8d9c0;border-radius:4px;background:#fdf9f2;padding:10px 14px">
+  <summary style="cursor:pointer;font-size:13px;color:#8a6d3b;font-weight:bold">Accept this as a known risk</summary>
+  <p style="font-size:13px;color:#555;margin:10px 0 8px 0">If you honestly cannot resolve this now, you can accept it as a known risk. It will stay visible as an unresolved, unvalidated risk in your assessment - accepting is not resolving - and the journey moves on to the next area.</p>
+  <form method="POST" action="/session/22688d3e-f327-4907-b1fc-126a44b8fd22/accept-risk">
+    <input type="hidden" name="answer_token" value="HtKWj2e9V7fm6wY_iMgNxy3yqZ3flmFA.e47e182ad12f4a38a32251ab0cd37bc8">
+    <input type="hidden" name="gap_type" value="PHYSICAL_FEASIBILITY">
+    <label style="display:block;font-size:13px;color:#555;margin-bottom:8px">
+      <input type="checkbox" name="risk_confirm" value="yes" required>
+      I understand this stays an unresolved known risk and is not resolved or validated.
+    </label>
+    <label for="risk-reason" style="display:block;font-size:12px;color:#888;margin-bottom:4px">Optional: why you are accepting this risk</label>
+    <textarea id="risk-reason" name="reason" rows="2" style="width:100%;box-sizing:border-box"></textarea>
+    <br>
+    <button type="submit" style="margin-top:8px">Accept as known risk</button>
+  </form>
+</details>
+
+
+
+
+
+
+
+
+
+<details class="correct-answer" style="margin-top:14px;border:1px solid #c9d6e8;border-radius:4px;background:#f4f8fd;padding:10px 14px">
+  <summary style="cursor:pointer;font-size:13px;color:#2c5a8c;font-weight:bold">Correct an earlier answer</summary>
+  <p style="font-size:13px;color:#555;margin:10px 0 8px 0">Correcting an answer keeps the original in your project history as a withdrawn record - nothing is erased - and everything shown is deterministically recomputed from your remaining answers.</p>
+  <form method="POST" action="/session/22688d3e-f327-4907-b1fc-126a44b8fd22/correct">
+    <input type="hidden" name="answer_token" value="HtKWj2e9V7fm6wY_iMgNxy3yqZ3flmFA.e47e182ad12f4a38a32251ab0cd37bc8">
+    <label for="correct-target" style="display:block;font-size:12px;color:#888;margin-bottom:4px">Choose the answer to correct</label>
+    <select id="correct-target" name="supersedes_record_id" required style="max-width:100%;margin-bottom:8px">
+      
+      <option value="rec_1">rec_1 · Working mechanism · The decision is the braking-detection architecture. Candidate detectio…</option>
+      
+      <option value="rec_2">rec_2 · Working mechanism · Components: a detection stage (one of the three candidates) and the in…</option>
+      
+      <option value="rec_3">rec_3 · Practical feasibility · Primary feasibility risk: rough-road vibration producing false braking…</option>
+      
+      <option value="rec_4">rec_4 · Practical feasibility · No environmental or endurance data is available for any candidate; I a…</option>
+      
+      <option value="rec_5">rec_5 · Practical feasibility · No environmental or endurance data is available for any candidate; I a…</option>
+      
+      <option value="rec_6">rec_6 · Practical feasibility · No environmental or endurance data is available for any candidate; I a…</option>
+      
+      <option value="rec_7">rec_7 · Practical feasibility · No environmental or endurance data is available for any candidate; I a…</option>
+      
+      <option value="rec_8">rec_8 · Practical feasibility · No environmental or endurance data is available for any candidate; I a…</option>
+      
+      <option value="rec_9">rec_9 · Practical feasibility · No environmental or endurance data is available for any candidate; I a…</option>
+      
+      <option value="rec_10">rec_10 · Practical feasibility · No environmental or endurance data is available for any candidate; I a…</option>
+      
+      <option value="rec_11">rec_11 · Practical feasibility · No environmental or endurance data is available for any candidate; I a…</option>
+      
+      <option value="rec_12">rec_12 · Practical feasibility · No environmental or endurance data is available for any candidate; I a…</option>
+      
+      <option value="rec_13">rec_13 · Practical feasibility · No environmental or endurance data is available for any candidate; I a…</option>
+      
+      <option value="rec_14">rec_14 · Practical feasibility · No environmental or endurance data is available for any candidate; I a…</option>
+      
+      <option value="rec_15">rec_15 · Practical feasibility · No environmental or endurance data is available for any candidate; I a…</option>
+      
+      <option value="rec_16">rec_16 · Practical feasibility · No environmental or endurance data is available for any candidate; I a…</option>
+      
+      <option value="rec_17">rec_17 · Practical feasibility · No environmental or endurance data is available for any candidate; I a…</option>
+      
+      <option value="rec_18">rec_18 · Practical feasibility · No environmental or endurance data is available for any candidate; I a…</option>
+      
+      <option value="rec_19">rec_19 · Practical feasibility · No environmental or endurance data is available for any candidate; I a…</option>
+      
+      <option value="rec_20">rec_20 · Practical feasibility · No environmental or endurance data is available for any candidate; I a…</option>
+      
+      <option value="rec_21">rec_21 · Practical feasibility · No environmental or endurance data is available for any candidate; I a…</option>
+      
+      <option value="rec_22">rec_22 · Practical feasibility · No environmental or endurance data is available for any candidate; I a…</option>
+      
+      <option value="rec_23">rec_23 · Practical feasibility · No environmental or endurance data is available for any candidate; I a…</option>
+      
+    </select>
+    <label for="correct-response" style="display:block;font-size:12px;color:#888;margin-bottom:4px">Your corrected answer</label>
+    <textarea id="correct-response" name="response" rows="3" required style="width:100%;box-sizing:border-box"></textarea>
+    <br>
+    <button type="submit" style="margin-top:8px">Withdraw and replace this answer</button>
+  </form>
+</details>
+
+
+
+
+<details id="w2b-decision-capture" class="decision-capture"  style="margin-top:14px;border:1px solid #d5c9e8;border-radius:4px;background:#f9f5fd;padding:10px 14px">
+  <summary style="cursor:pointer;font-size:13px;color:#5a2c8c;font-weight:bold">Decision capture</summary>
+  <p style="font-size:13px;color:#555;margin:10px 0 8px 0">Declare a technical decision you are working through, list the alternatives you are considering, and refine or withdraw them as your thinking evolves. Everything is kept in your project history and rebuilt exactly on reload.</p>
+  
+  
+  <form method="POST" action="/session/22688d3e-f327-4907-b1fc-126a44b8fd22/decision/declare-context" style="margin-top:6px">
+    <input type="hidden" name="answer_token" value="HtKWj2e9V7fm6wY_iMgNxy3yqZ3flmFA.e47e182ad12f4a38a32251ab0cd37bc8">
+    <label for="w2a-context-content" style="display:block;font-size:12px;color:#888;margin-bottom:4px">Declare a decision to work on (state it as a question)</label>
+    <textarea id="w2a-context-content" name="content" rows="2" required style="width:100%;box-sizing:border-box"></textarea>
+    <br>
+    <button type="submit" style="margin-top:6px">Declare decision</button>
+  </form>
+  
+</details>
+
+
+
+</main>
+</body>
+</html>

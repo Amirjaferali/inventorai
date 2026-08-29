@@ -1,0 +1,29 @@
+{
+ "run_id": "S2-PATHN-RUN-003",
+ "purpose": "ONE post-G-3 T1-A′ re-verification run (Owner-authorized, measurement only)",
+ "authoritative_branch": "feature/atomic-json-session-persistence",
+ "s2_contract_authoritative_sha": "5a392f0cfd7d6b19874382441f78fee61cee1a26",
+ "exact_evaluated_product_sha": "5a392f0cfd7d6b19874382441f78fee61cee1a26",
+ "rc_parent_first": "f96c1900a0f5d0831a7654223ae4e008d4df961e",
+ "rc_parent_second": "7a887a42c89b65e59063e388cd06f59d7ebabd7c",
+ "rc_tree": "0ce806c3cf0881ea1990741ae88286bf7941072c",
+ "mixed_sha_run": "NO — all 8 records executed against this one SHA",
+ "benchmark_contract_version": "Path-N Release-Evaluation Extension v1 (S2 §§15-17); S2 base §§0-14 unchanged",
+ "instrument_comparability": "docs/benchmarks tree object 61f2bb458c7e4b53c766c018c7c73baebcea30da is IDENTICAL at the run-002 authoritative SHA 1f3d9d14 and at this evaluated SHA; instrument blob 4e64b5906596ed538d45bb9192ba32ed6a84ad1e identical. INSTRUMENT DELTA: 0",
+ "corpus_comparability": "frozen seeds and answer corpus replayed verbatim from the committed run-001 evidence blob 0ddd1644afe1f5b57ca5b396fae51a69080e8de3 (sha256 0750f3e41a1d8489353c52abbcbda79f32f445d33ace3561bf2422f656ce7fce), byte-identical to the local copy the harness read — the same corpus run 002 replayed. CORPUS DELTA: 0",
+ "corpus_cardinality": "2 cases x 2 languages x 2 perspectives = 8 evaluation records, exactly as run 002",
+ "harness": "the preserved run-002 harness (sha256 9bac68f79bd565de6a54c371d192cdb8a5911d9abe5e97384c6b4257f6d52696) with SIX changed lines only: evidence output dir, RC_SHA constant, local secret-key and db-path names, run_id label and one boolean label. No admission, answering, interaction-bound, capture or evaluation logic was changed; the full diff is disclosed in the run record.",
+ "activated_domains": [
+  "electronics_electrical",
+  "mechanical"
+ ],
+ "ai_advisory_enabled": false,
+ "working_tree": "clean, detached at 5a392f0 before execution; tree verified equal to the merge tree 0ce806c3",
+ "db_path": "INVENTORAI_DB_PATH bound to the run evidence store (outside the repository tree)",
+ "executed_by": "Creator/Executor agent (evaluator); evaluation perspectives per S2 15.4 - not real users",
+ "one_run_accounting": "ONE post-G-3 T1-A′ re-verification run authorized and consumed; exactly 8 evaluation records; ONE pass; NO retry; NO restart; NO aborted attempt. FURTHER RUN AUTHORIZED: NO",
+ "product_delta_during_run": 0,
+ "instrument_delta": 0,
+ "corpus_delta": 0,
+ "runtime_repair_during_run": 0
+}

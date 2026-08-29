@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>InventorAI — Deliverable</title>
+<style>
+/* G-UX-SHELL shared application-shell baseline. Minimal; no framework, no JS.
+   Accessibility/disclosure baseline only — not a visual redesign. */
+*:focus-visible{outline:3px solid #2c6fbb;outline-offset:2px}
+a.skip-link{position:absolute;left:-9999px;top:auto;background:#fff;color:#2c3e50;padding:8px 12px;border:2px solid #2c3e50;border-radius:4px;z-index:1000}
+a.skip-link:focus{left:8px;top:8px;position:fixed}
+.app-header{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:760px;margin:0 auto;padding:10px 20px;border-bottom:1px solid #d4dde6}
+.app-header .brand{font-weight:600;color:#2c3e50}
+.app-header .temp-session{font-size:12px;color:#555;white-space:nowrap}
+/* D-P6-18 global UI-language selector (shared, top-of-content, consistent). */
+.ui-lang-selector{max-width:760px;margin:0 auto;padding:6px 20px;display:flex;align-items:center;gap:8px;font-size:12px;color:#555;flex-wrap:wrap}
+.ui-lang-selector .ui-lang-label{color:#666}
+.ui-lang-selector a{padding:3px 10px;background:#fff;color:#2c3e50;border:1px solid #c3ccd6;border-radius:4px;text-decoration:none}
+.ui-lang-selector .ui-lang-active{padding:3px 10px;background:#2c3e50;color:#fff;border:1px solid #2c3e50;border-radius:4px}
+</style>
+
+<style>
+body{font-family:sans-serif;max-width:760px;margin:60px auto;padding:0 20px;color:#222}
+h1{color:#2c3e50;margin-bottom:4px}
+h2{color:#2c3e50;font-size:18px;margin-top:34px;border-bottom:2px solid #2c3e50;padding-bottom:5px}
+.group-lede{font-size:13px;color:#667;line-height:1.5;margin:6px 0 14px 0}
+h3{color:#2c3e50;font-size:15px;margin-top:20px;margin-bottom:4px}
+.meta{background:#f0f4f8;padding:10px 14px;border-radius:4px;margin-bottom:18px;font-size:13px;color:#444}
+.status-eligible{background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7;padding:10px 14px;border-radius:4px;margin-bottom:18px}
+.status-snapshot{background:#fff3e0;color:#e65100;border:1px solid #ffcc02;padding:10px 14px;border-radius:4px;margin-bottom:18px}
+.status-title{font-weight:bold;font-size:16px;margin-bottom:4px}
+.status-sub{font-size:13px}
+.status-strip{background:#f0f4f8;border:1px solid #d4dde6;padding:10px 14px;border-radius:4px;margin-bottom:20px;font-size:13px;color:#444;display:flex;flex-wrap:wrap;gap:10px 28px}
+.status-strip .field-label{margin:0}
+.status-strip .field-value{margin:0}
+.disclaimer{background:#f8f9fa;border-left:3px solid #b0b8c1;padding:9px 14px;border-radius:0 4px 4px 0;margin-bottom:20px;font-size:12px;color:#666;line-height:1.5}
+.safety-signals{background:#fff8e1;border:1px solid #f0c36d;padding:12px 14px;border-radius:4px;margin-bottom:20px}
+.ss-note{font-size:12px;color:#8a6d3b;line-height:1.5;margin:6px 0 12px 0}
+.ss-meta{font-size:12px;color:#667;line-height:1.5;margin:2px 0 6px 0}
+.ss-caution{font-size:12px;color:#8a6d3b;line-height:1.5;margin:0 0 12px 0}
+section{margin-bottom:18px}
+ul{padding-left:18px;font-size:13px;color:#444}
+li{margin-bottom:4px}
+.field-label{font-weight:bold;color:#2c3e50;font-size:13px}
+.field-value{font-size:13px;color:#444;margin-bottom:6px}
+.vp-meta{font-size:12px;color:#667;line-height:1.5;margin:0 0 12px 0}
+.vp-intro{font-size:13px;color:#555;line-height:1.5;margin:0 0 12px 0}
+.back-link{margin-top:30px;font-size:13px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
+</style>
+
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to content</a>
+<header class="app-header">
+<span class="brand">InventorAI</span>
+<span class="temp-session">Temporary session <a href="/data-and-session">Learn more</a></span>
+</header>
+
+<nav class="ui-lang-selector" aria-label="Language">
+  <span class="ui-lang-label">Language:</span>
+  <span class="ui-lang-active" lang="en" aria-current="true">English</span>
+  <a href="/ui-language?lang=ar&amp;next=/session/0383b3dc-ebec-4150-b45b-e591e9117063/deliverable" lang="ar">العربية</a>
+</nav>
+<main id="main-content">
+
+<h1>InventorAI</h1>
+
+
+
+
+
+
+
+<div class="meta">
+  Package version: 1.0.0
+  &nbsp;·&nbsp;
+  Schema: fdc-001-mvp-v1
+  &nbsp;·&nbsp;
+  Generated: 2026-08-29T18:43:29Z
+  &nbsp;·&nbsp;
+  Session: 60128b30-967f-4f93-96a9-d34dc5bd67ba
+</div>
+
+
+<div class="status-snapshot">
+  <div class="status-title">Assessment Snapshot — In Progress</div>
+  <div class="status-sub">This is not a final deliverable. Continue developing the idea to reach eligibility.</div>
+</div>
+
+
+
+<div class="status-strip">
+  <div>
+    <div class="field-label">Maturity</div>
+    <div class="field-value">Level 1 — Exploratory / Incomplete: problem signal received at minimum evidence threshold. No engineering claim validated. Not a deliverable gate.</div>
+  </div>
+  <div>
+    <div class="field-label">Derived readiness <span style="font-weight:normal">(recomputed separately from stored maturity; not a validation or resolved status)</span></div>
+    <div class="field-value">Not derived-ready — recorded evidence is not technically verified</div>
+    
+    
+    
+  </div>
+</div>
+
+
+
+<div class="safety-signals">
+  <div class="status-title">Inventor-Stated Safety Signals</div>
+  
+  <div class="field-value">No inventor-stated safety signals were derived from the recorded statements. This is NOT a determination that the idea is safe, unsafe, risk-free, or verified — it means no inventor-stated safety-critical failure condition was detected in the recorded content.</div>
+  
+</div>
+
+
+
+<section>
+  <h2>What your idea is</h2>
+  <p class="group-lede">A plain restatement of the invention as we currently understand it from your inputs.</p>
+
+  <div class="disclaimer">This assessment package is produced by an automated invention analysis system. It is advisory only. No claim made in this package constitutes engineering certification, regulatory approval, or legal advice. The inventor is responsible for independent verification of all technical claims, feasibility conclusions, and recommendations before acting on this assessment.</div>
+
+  <h3>Invention Summary</h3>
+  <div class="field-label">Maturity</div>
+  <div class="field-value">Level 1 — Exploratory / Incomplete: problem signal received at minimum evidence threshold. No engineering claim validated. Not a deliverable gate.</div>
+  <div class="field-label">Assessment Completeness</div>
+  <div class="field-value">PARTIAL — mechanism or boundaries still required</div>
+  
+  <div class="field-label">Known Problem</div>
+  <div class="field-value">Problem evidence has not yet been captured clearly.</div>
+  
+  
+  <div class="field-label">Known Mechanism <span class="ev-id" style="font-weight:normal;color:#667">(EV-002)</span></div>
+  <div class="field-value">Steps: unfold the ramp flat, the holder locks it, the wheelchair rolls over it; later I release the holder and fold the ramp away, all without tools. I do not know more of the inner detail than that.</div>
+  
+</section>
+
+<section>
+  <h2>What we assessed</h2>
+  <p class="group-lede">The areas we looked at, and how far each one has been developed so far.</p>
+
+  <h3>Assessment Overview</h3>
+  
+  
+  
+  <div class="field-value">
+    Review type: Mechanical-informed review &nbsp;·&nbsp;
+    Maturity: 1 &nbsp;·&nbsp;
+    Gaps total/open/resolved: 2/0/1
+  </div>
+  
+</section>
+
+<section>
+  <h2>What it needs</h2>
+  <p class="group-lede">The inputs we captured and the open areas that still have to be worked out.</p>
+
+  <h3>Captured Inputs and Assessment Status</h3>
+  <p class="group-lede" style="margin-top:0">These are inputs captured from your answers, not tested conclusions. The suggested checks further down show what could help firm them up.</p>
+  
+  <ul>
+    
+    <li>REQ-001 — See EV-002 — Known Mechanism (Stated by the inventor (not yet verified))</li>
+    
+    <li>REQ-002 — Mechanism Completeness addressed (resolved)</li>
+    
+  </ul>
+  
+
+  <h3>Requirement Landscape</h3>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <div class="field-label">The ramp folds up and down by hand. When it is down flat, it must stay firmly held so a wheelchair can roll over it. I am considering three ways to hold it: a toggle latch that snaps over its center, a spring pin that clicks into place, or a small gate piece that drops into place by its own weight.</div>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <div class="field-label">The moving parts are the ramp itself folding at the doorway, and the holder piece that keeps it flat. I do not want to drill into or permanently change the doorway.</div>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <div class="field-label">Steps: unfold the ramp flat, the holder locks it, the wheelchair rolls over it; later I release the holder and fold the ramp away, all without tools. I do not know more of the inner detail than that.</div>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <div class="field-label">It relies on the holder keeping the ramp flat under the weight of a wheelchair. I do not know how much weight or what safety margin is needed - that has not been worked out or tested.</div>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <div class="field-label">Outdoor damp and grit might wear out or jam the holder over time. I have no test results.</div>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <div class="field-value" style="color:#667">This statement was recorded 20 times during the session.</div>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <div class="field-value"><strong>Provenance:</strong> Recorded answer</div>
+  <div class="field-value"><strong>Status:</strong> Recorded from your answers (not yet verified)</div>
+  <div class="field-value"><strong>Criticality:</strong> Not yet determined (assigned automatically by the system; not yet reviewed)</div>
+  
+  
+  <div class="field-value"><strong>Resolving action:</strong> Validate the recorded answer against the available evidence.</div>
+  
+  
+  
+  <div class="field-value" style="color:#667">(shared by 24 entries)</div>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <div class="field-label">Physical Feasibility</div>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <div class="field-value"><strong>Provenance:</strong> Physical Feasibility</div>
+  <div class="field-value"><strong>Status:</strong> partially addressed</div>
+  <div class="field-value"><strong>Criticality:</strong> Not yet determined (assigned automatically by the system; not yet reviewed)</div>
+  
+  
+  <div class="field-value"><strong>Resolving action:</strong> Address the open gap: Physical Feasibility.</div>
+  
+  
+  
+  
+  
+  
+  
+  <div class="field-value"><em>No structurally grounded risks are recorded for the current requirements. This is not a statement that the idea is risk-free, safe, or verified; it means no structural adverse-consequence signal exists in the recorded state.</em></div>
+  
+  
+  
+  
+</section>
+
+<section>
+  <h2>What is assumed vs still unknown</h2>
+  <p class="group-lede">Things currently taken as given, alongside items you have flagged as not yet known.</p>
+
+  <h3>Assumptions &amp; Inventor-Stated Unknowns</h3>
+  
+  <ul>
+    
+    <li>The stated mechanism operates as described — Component-level testing to confirm operating principle<br><span class="group-lede" style="margin:0">Why this matters: Session assessment may not reflect true feasibility</span></li>
+    
+  </ul>
+  
+  
+  <ul>
+    
+    <li><span class="ev-id" style="font-weight:normal;color:#667">(UNK-001)</span> (Iteration 4) I do not know more of the inner detail than that.</li>
+    
+    <li><span class="ev-id" style="font-weight:normal;color:#667">(UNK-002)</span> (Iteration 5) I do not know how much weight or what safety margin is needed - that has not been worked out or tested.</li>
+    
+  </ul>
+  
+
+  <h3>Unresolved Items</h3>
+  
+  <ul>
+    
+    <li>
+      
+        Acknowledged unknown: See UNK-001 — Acknowledged unknown
+      
+    </li>
+    
+    <li>
+      
+        Acknowledged unknown: See UNK-002 — Acknowledged unknown
+      
+    </li>
+    
+  </ul>
+  
+</section>
+
+<section>
+  <h2>What could go wrong</h2>
+  <p class="group-lede">Risks recorded from the current state. This is not a safety judgement and is not exhaustive.</p>
+
+  <h3>Risks</h3>
+  
+  
+  
+  <ul>
+    
+    <li>[medium] Session is at Level 1 — Exploratory / Incomplete: problem signal received at minimum evidence threshold. No engineering claim validated. Not a deliverable gate.. Assessment incomplete.</li>
+    
+    <li>[low] Evidence is reasoned (substantiated but not demonstrated).</li>
+    
+  </ul>
+  
+  
+</section>
+
+<section>
+  <h2>The reasoning behind it</h2>
+  <p class="group-lede">The recorded reasoning and evidence behind the assessment above.</p>
+
+  
+  <div class="field-value">No Stage 3 reasoning areas are recorded for this session.</div>
+  
+</section>
+
+<section>
+  <h2>What we recommend and what to do next</h2>
+  <p class="group-lede">A suggested direction and concrete next steps you can act on. Advisory only.</p>
+
+  <h3>Recommendations</h3>
+  <div class="field-label">Verdict</div>
+  <div class="field-value">REVISE</div>
+  <div class="field-label">Rationale</div>
+  <div class="field-value">Problem established at exploratory level only. Mechanism not yet substantiated.</div>
+  
+  <div class="field-label">Open Items</div>
+  <ul>
+    
+    <li>Continue with technically substantive answers to reach Level 2.</li>
+    
+  </ul>
+  
+
+  <h3>Next Development Step</h3>
+  
+  
+  
+  <div class="field-label">Owner-stated answer awaiting validation</div>
+  <div class="field-value">An owner-provided answer is recorded but not independently validated.</div>
+  <div class="field-label">Next action</div>
+  <div class="field-value">Validate the owner-stated answer.</div>
+  
+  
+  <div class="field-label">Suggested provider</div>
+  <div class="field-value">You (the inventor)</div>
+  
+  
+  <div class="field-label">Sufficiency condition</div>
+  <div class="field-value">The owner-stated answer is independently validated.</div>
+  
+  
+  <div class="field-value"><em>Owner-stated, not validated.</em></div>
+  
+  
+
+  <h3>Recommended Next Steps</h3>
+  
+  <ul>
+    
+    <li>Continue with technically substantive answers to reach Level 2 (mechanism established). <em>(high priority)</em></li>
+    
+    <li>Resolve the inventor-stated unknown: See UNK-001 — Acknowledged unknown</li>
+    
+    <li>Resolve the inventor-stated unknown: See UNK-002 — Acknowledged unknown</li>
+    
+    <li>Validate the leading claims with a prototype or demonstration to raise evidence from Reasoned to Demonstrated.</li>
+    
+  </ul>
+  
+  <div class="field-value"><em>Synthesized from current session state and captured evidence. Advisory only; no new analysis was performed.</em></div>
+
+  <h3>Prototype &amp; Test Plan</h3>
+  
+  
+  <div class="field-label">Proposed experiment: resolve a stated unknown</div>
+  <div class="field-value"><strong>Objective:</strong> Evaluate the inventor&#39;s stated unknown under controlled conditions to reduce its uncertainty.</div>
+  <div class="field-value"><strong>Based on:</strong> See UNK-001 — Acknowledged unknown</div>
+  <div class="field-value"><strong>Minimum prototype:</strong> A minimal build that exercises only the part of the described mechanism this unknown depends on.</div>
+  <div class="field-value"><strong>Observe:</strong> Observe whether the stated unknown can be distinguished or measured under conditions you control.</div>
+  
+  <div class="field-value"><strong>Success criterion:</strong> Owner-defined criterion required.</div>
+  
+  <div class="field-value"><strong>Failure / revise if:</strong> If the unknown cannot be resolved as assumed, revise the assumption or the mechanism that depends on it.</div>
+  <div class="field-value"><strong>Evidence upgrade target:</strong> Reduce this uncertainty and move the dependent claim toward Demonstrated.</div>
+  
+  <div class="field-label">Proposed experiment: resolve a stated unknown</div>
+  <div class="field-value"><strong>Objective:</strong> Evaluate the inventor&#39;s stated unknown under controlled conditions to reduce its uncertainty.</div>
+  <div class="field-value"><strong>Based on:</strong> See UNK-002 — Acknowledged unknown</div>
+  <div class="field-value"><strong>Minimum prototype:</strong> A minimal build that exercises only the part of the described mechanism this unknown depends on.</div>
+  <div class="field-value"><strong>Observe:</strong> Observe whether the stated unknown can be distinguished or measured under conditions you control.</div>
+  
+  <div class="field-value"><strong>Success criterion:</strong> Owner-defined criterion required.</div>
+  
+  <div class="field-value"><strong>Failure / revise if:</strong> If the unknown cannot be resolved as assumed, revise the assumption or the mechanism that depends on it.</div>
+  <div class="field-value"><strong>Evidence upgrade target:</strong> Reduce this uncertainty and move the dependent claim toward Demonstrated.</div>
+  
+  
+  
+  
+  
+  <div class="field-value"><a href="/session/0383b3dc-ebec-4150-b45b-e591e9117063/success-criteria">Define or edit success criteria</a></div>
+  
+  <div class="field-value"><em>Proposed experiments synthesized from your own captured evidence. Advisory only: nothing here has been built, tested, demonstrated, validated, certified, or shown feasible. You define the success criteria.</em></div>
+
+  <h3>Validation Plan</h3>
+  
+  
+  
+  <p class="vp-intro">Suggested checks that would help firm up this idea. None has been carried out yet — these are proposals, not results. Each check keeps its supporting details on one line below it.</p>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <h4 class="vp-group">Checks you can do yourself</h4>
+  
+  
+  
+  
+  
+  
+  
+  <div class="field-label">Validate this recorded answer against the available evidence: “The ramp folds up and down by hand. When it is down flat, it must stay firmly held so a wheelchair can roll over it. I am considering three ways to hold it: a toggle latch that snaps over its center, a spring pin that clicks into place, or a small gate piece that drops into place by its own weight.”</div>
+  
+  
+  
+  <div class="vp-meta">Responsibility: Owner can perform &nbsp;&middot;&nbsp; Evidence needed: owner confirmation &nbsp;&middot;&nbsp; Closure: Closed when owner confirmation is provided and recorded; no such evidence is recorded yet. &nbsp;&middot;&nbsp; Provenance: Recorded answer</div>
+  
+  
+  
+  
+  
+  
+  
+  
+  <div class="field-label">Validate this recorded answer against the available evidence: “The moving parts are the ramp itself folding at the doorway, and the holder piece that keeps it flat. I do not want to drill into or permanently change the doorway.”</div>
+  
+  
+  
+  <div class="vp-meta">Responsibility: Owner can perform &nbsp;&middot;&nbsp; Evidence needed: owner confirmation &nbsp;&middot;&nbsp; Closure: Closed when owner confirmation is provided and recorded; no such evidence is recorded yet. &nbsp;&middot;&nbsp; Provenance: Recorded answer</div>
+  
+  
+  
+  
+  
+  
+  
+  
+  <div class="field-label">Validate this recorded answer against the available evidence: “Steps: unfold the ramp flat, the holder locks it, the wheelchair rolls over it; later I release the holder and fold the ramp away, all without tools. I do not know more of the inner detail than that.”</div>
+  
+  
+  
+  <div class="vp-meta">Responsibility: Owner can perform &nbsp;&middot;&nbsp; Evidence needed: owner confirmation &nbsp;&middot;&nbsp; Closure: Closed when owner confirmation is provided and recorded; no such evidence is recorded yet. &nbsp;&middot;&nbsp; Provenance: Recorded answer</div>
+  
+  
+  
+  
+  
+  
+  
+  
+  <div class="field-label">Validate this recorded answer against the available evidence: “It relies on the holder keeping the ramp flat under the weight of a wheelchair. I do not know how much weight or what safety margin is needed - that has not been worked out or tested.”</div>
+  
+  
+  
+  <div class="vp-meta">Responsibility: Owner can perform &nbsp;&middot;&nbsp; Evidence needed: owner confirmation &nbsp;&middot;&nbsp; Closure: Closed when owner confirmation is provided and recorded; no such evidence is recorded yet. &nbsp;&middot;&nbsp; Provenance: Recorded answer</div>
+  
+  
+  
+  
+  
+  
+  
+  
+  <div class="field-label">Validate this recorded answer against the available evidence: “Outdoor damp and grit might wear out or jam the holder over time. I have no test results.” <span class="vp-count" style="font-weight:normal;color:#667">(applies to 20 recorded answers)</span></div>
+  
+  
+  
+  <div class="vp-meta">Responsibility: Owner can perform &nbsp;&middot;&nbsp; Evidence needed: owner confirmation &nbsp;&middot;&nbsp; Closure: Closed when owner confirmation is provided and recorded; no such evidence is recorded yet. &nbsp;&middot;&nbsp; Provenance: Recorded answer</div>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <h4 class="vp-group">Other suggested checks</h4>
+  
+  
+  
+  
+  
+  
+  
+  <div class="field-label">Address the open gap: Physical Feasibility.</div>
+  
+  
+  <div class="vp-resp" style="font-size:12px;color:#667;line-height:1.5;margin:0">Responsibility has not yet been assigned.</div>
+  <div class="vp-resp" style="font-size:12px;color:#667;line-height:1.5;margin:0 0 4px 0">Choose who will own this validation step before relying on the result.</div>
+  
+  
+  <div class="vp-meta">Evidence needed: clarifying information &nbsp;&middot;&nbsp; Closure: Closed when clarifying information is provided and recorded; no such evidence is recorded yet. &nbsp;&middot;&nbsp; Provenance: Physical Feasibility</div>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+</section>
+
+
+
+
+
+
+<p class="back-link"><a href="/session/0383b3dc-ebec-4150-b45b-e591e9117063">Back to session</a></p>
+
+
+</main>
+</body>
+</html>

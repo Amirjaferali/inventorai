@@ -1,0 +1,842 @@
+{
+ "R1": {
+  "criteria": {
+   "1": {
+    "result": "PARTIAL",
+    "basis": "platform structures the journey, tracks gaps, classifies evidence, and assembles a truthful structured deliverable; the case's difficult DECISION work — comparing its bounded candidates — is still performed nowhere (section 7 remains deferred pending the Options Database); unchanged from run 001 | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "2": {
+    "result": "PASS",
+    "basis": "delegation is honest: every material fact is asked of the inventor, and the deliverable states what remains the inventor's (validate the owner-stated answer; suggested provider: the inventor) | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "3": {
+    "result": "PARTIAL",
+    "basis": "the requirement landscape distinguishes requirement classes, but the journey still elicits no separate preferences/constraints capture; unchanged from run 001 | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "4": {
+    "result": "PASS",
+    "basis": "REMEDIATED vs run 001: the provenance display divergence is gone — no 'pre-provenance session' text; the deliverable displays 'Owner-stated ... not validated' consistent with the durable OWNER_STATED ledger (24 records verified per record); every material claim carries a truthful evidence label | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "5": {
+    "result": "FAIL",
+    "basis": "re-derived on this run's evidence: the frozen corpus declares no decision context, so the served decision-capture section carries 0 contexts and 0 rendered alternatives in all 8 records [MEASURED]; the G-3 bounded rendered set and its governed strings therefore have no subject on this corpus and appear 0 times. The platform still neither bounds nor truthfully classifies the case's own candidate set on the corpus-replayed path. UNCHANGED FAIL vs run 002 - the residual the frozen corpus cannot exercise, not a measurement that G-3 failed"
+   },
+   "6": {
+    "result": "FAIL",
+    "basis": "re-derived on this run's evidence: with 0 rendered alternatives no qualification, elimination or not-comparable reason has a subject [MEASURED]; UNCHANGED FAIL vs run 002 for the same corpus reason"
+   },
+   "7": {
+    "result": "PASS",
+    "basis": "truthful bounded outcome: verdict REVISE with explicit rationale; the exhausted-gap reframe now offers the honest dispositions (unknown / deferred / provisional assumption / specialist / evidence / accept-as-known-risk) instead of feigning progress | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "8": {
+    "result": "PASS",
+    "basis": "minimum next required input identified (technically substantive answers to reach Level 2; validate the owner-stated answer) | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "9": {
+    "result": "PASS",
+    "basis": "durable envelope verified at the RC: contract_version p4-0-record-contract-v1 + engine_contract_version p4-2-level1-recon-v1 preserved (envelope_recheck.json) | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "10": {
+    "result": "PASS",
+    "basis": "verbatim seed_idea_text preserved (byte-equal to the frozen seed) plus a 24-record append-only accepted-answer ledger per record (envelope_recheck.json) | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "11": {
+    "result": "PARTIAL",
+    "basis": "REMEDIATION MEASURED vs run 001: the correction affordance is now RENDERED on the session surface (form to /session/<sid>/correct present in captured HTML; run 001 found it unreachable from every rendered surface); committed behaviour remains full deterministic re-evaluation (D-AISR-06); the frozen answer corpus contains no correction event, so re-evaluation was not exercised — no route-level claim is made | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "12": {
+    "result": "NOT APPLICABLE",
+    "basis": "architecturally prohibited (S2 §15.6); never satisfied by introducing stale-marking | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "13": {
+    "result": "NOT APPLICABLE",
+    "basis": "lane-scoped label; no Path-N subject (S2 §15.5) | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "14": {
+    "result": "PARTIAL",
+    "basis": "up from FAIL in run 001: the withdraw-and-replace affordance is now rendered in-session, so the change-reason surface is reachable; the frozen corpus exercised no change, so the exact-reason display was not observed live in this run | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "15": {
+    "result": "PASS",
+    "basis": "standalone deliverable readable without the conversation; states its own basis and limits | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "16": {
+    "result": "PASS",
+    "basis": "no prohibited claim anywhere; explicit negations captured ('nothing here has been built, tested, demonstrated, validated, certified, or shown feasible'; 'No engineering claim validated') | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "17": {
+    "result": "PARTIAL",
+    "basis": "Baseline A re-obtained at the RC (decision-workspace export, status 200): the Path-N deliverable adds the truthful journey envelope, provenance and landscape, but the FDC-001 export still uniquely carries the case's actual candidate comparison and readiness_status — improvement is real but partial | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "18": {
+    "result": "PARTIAL",
+    "basis": "the generic-AI baseline gives an immediate, readable candidate discussion asserting unsupported figures; the product is truthful and structured but produces no comparison within 24 interactions | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P1": {
+    "result": "PARTIAL",
+    "basis": "questions are relevant and answerable for a novice and now end in an honest-options reframe; but the reframe repeats 17-19x and prepared wording is identical across perspectives (no register-differentiated phrasing observed) | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P2": {
+    "result": "PASS",
+    "basis": "both decision-critical gap classes surfaced and tracked; unknowns named in the deliverable | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P3": {
+    "result": "PASS",
+    "basis": "assumptions are named and labelled (assumed vs still unknown section); no unsafe assumption is asserted or silently relied upon | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P4": {
+    "result": "PASS",
+    "basis": "output stays inside the committed no-claim boundary in both languages | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P5": {
+    "result": "PARTIAL",
+    "basis": "up from FAIL in run 001: specialist_requested and evidence_requested are now first-class journey actions and the honest-options reframe explicitly names 'ask for a specialist or evidence'; the deliverable itself still escalates generically ('suggested provider: you (the inventor)'); unexercised by the frozen corpus | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P6": {
+    "result": "PARTIAL",
+    "basis": "truthful and readable for a novice; mechanism captured; the case's required outcome (a bounded technical-decision-readiness record or truthful block) is only partially reached — REVISE with no candidate comparison | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   }
+  },
+  "core_gate": {
+   "result": "PARTIAL",
+   "basis": "evidence/provenance, truthful outcome, versioned continuity, exportable value present; difficult-work partial (no candidate comparison); re-evaluation affordance rendered but unexercised; mechanism established, feasibility honestly stalled | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+  },
+  "record_outcome": "PARTIAL"
+ },
+ "R2": {
+  "criteria": {
+   "1": {
+    "result": "PARTIAL",
+    "basis": "platform structures the journey, tracks gaps, classifies evidence, and assembles a truthful structured deliverable; the case's difficult DECISION work — comparing its bounded candidates — is still performed nowhere (section 7 remains deferred pending the Options Database); unchanged from run 001 | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "2": {
+    "result": "PASS",
+    "basis": "delegation is honest: every material fact is asked of the inventor, and the deliverable states what remains the inventor's (validate the owner-stated answer; suggested provider: the inventor) | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "3": {
+    "result": "PARTIAL",
+    "basis": "the requirement landscape distinguishes requirement classes, but the journey still elicits no separate preferences/constraints capture; unchanged from run 001 | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "4": {
+    "result": "PASS",
+    "basis": "REMEDIATED vs run 001: the provenance display divergence is gone — no 'pre-provenance session' text; the deliverable displays 'Owner-stated ... not validated' consistent with the durable OWNER_STATED ledger (24 records verified per record); every material claim carries a truthful evidence label | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "5": {
+    "result": "FAIL",
+    "basis": "re-derived on this run's evidence: the frozen corpus declares no decision context, so the served decision-capture section carries 0 contexts and 0 rendered alternatives in all 8 records [MEASURED]; the G-3 bounded rendered set and its governed strings therefore have no subject on this corpus and appear 0 times. The platform still neither bounds nor truthfully classifies the case's own candidate set on the corpus-replayed path. UNCHANGED FAIL vs run 002 - the residual the frozen corpus cannot exercise, not a measurement that G-3 failed"
+   },
+   "6": {
+    "result": "FAIL",
+    "basis": "re-derived on this run's evidence: with 0 rendered alternatives no qualification, elimination or not-comparable reason has a subject [MEASURED]; UNCHANGED FAIL vs run 002 for the same corpus reason"
+   },
+   "7": {
+    "result": "PASS",
+    "basis": "truthful bounded outcome: verdict REVISE with explicit rationale; the exhausted-gap reframe now offers the honest dispositions (unknown / deferred / provisional assumption / specialist / evidence / accept-as-known-risk) instead of feigning progress | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "8": {
+    "result": "PASS",
+    "basis": "minimum next required input identified (technically substantive answers to reach Level 2; validate the owner-stated answer) | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "9": {
+    "result": "PASS",
+    "basis": "durable envelope verified at the RC: contract_version p4-0-record-contract-v1 + engine_contract_version p4-2-level1-recon-v1 preserved (envelope_recheck.json) | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "10": {
+    "result": "PASS",
+    "basis": "verbatim seed_idea_text preserved (byte-equal to the frozen seed) plus a 24-record append-only accepted-answer ledger per record (envelope_recheck.json) | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "11": {
+    "result": "PARTIAL",
+    "basis": "REMEDIATION MEASURED vs run 001: the correction affordance is now RENDERED on the session surface (form to /session/<sid>/correct present in captured HTML; run 001 found it unreachable from every rendered surface); committed behaviour remains full deterministic re-evaluation (D-AISR-06); the frozen answer corpus contains no correction event, so re-evaluation was not exercised — no route-level claim is made | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "12": {
+    "result": "NOT APPLICABLE",
+    "basis": "architecturally prohibited (S2 §15.6); never satisfied by introducing stale-marking | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "13": {
+    "result": "NOT APPLICABLE",
+    "basis": "lane-scoped label; no Path-N subject (S2 §15.5) | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "14": {
+    "result": "PARTIAL",
+    "basis": "up from FAIL in run 001: the withdraw-and-replace affordance is now rendered in-session, so the change-reason surface is reachable; the frozen corpus exercised no change, so the exact-reason display was not observed live in this run | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "15": {
+    "result": "PASS",
+    "basis": "standalone deliverable readable without the conversation; states its own basis and limits | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "16": {
+    "result": "PASS",
+    "basis": "no prohibited claim anywhere; explicit negations captured ('nothing here has been built, tested, demonstrated, validated, certified, or shown feasible'; 'No engineering claim validated') | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "17": {
+    "result": "PARTIAL",
+    "basis": "Baseline A re-obtained at the RC (decision-workspace export, status 200): the Path-N deliverable adds the truthful journey envelope, provenance and landscape, but the FDC-001 export still uniquely carries the case's actual candidate comparison and readiness_status — improvement is real but partial | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "18": {
+    "result": "PARTIAL",
+    "basis": "the generic-AI baseline gives an immediate, readable candidate discussion asserting unsupported figures; the product is truthful and structured but produces no comparison within 24 interactions | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P1": {
+    "result": "PARTIAL",
+    "basis": "up from FAIL in run 001: the same frozen practitioner answers are now assessed correctly and the journey closes MECHANISM; residual: the reframe repeats and wording is not perspective-adapted | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P2": {
+    "result": "FAIL",
+    "basis": "gaps a competent practitioner would consider decision-critical for the bounded decision (quantified detection thresholds, false-positive tolerance, retention load path) terminate the journey unraised beyond the two generic gap classes; unchanged from run 001 | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P3": {
+    "result": "PASS",
+    "basis": "assumptions are named and labelled (assumed vs still unknown section); no unsafe assumption is asserted or silently relied upon | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P4": {
+    "result": "PASS",
+    "basis": "output stays inside the committed no-claim boundary in both languages | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P5": {
+    "result": "PARTIAL",
+    "basis": "up from FAIL in run 001: specialist_requested and evidence_requested are now first-class journey actions and the honest-options reframe explicitly names 'ask for a specialist or evidence'; the deliverable itself still escalates generically ('suggested provider: you (the inventor)'); unexercised by the frozen corpus | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P6": {
+    "result": "PARTIAL",
+    "basis": "up from FAIL in run 001: a register-correct captured mechanism makes the document genuinely usable, though generated substantive values the bounded decision itself remains unresolved | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   }
+  },
+  "core_gate": {
+   "result": "PARTIAL",
+   "basis": "IMPROVED from FAIL in run 001: the same frozen practitioner answers now close MECHANISM at interaction 1 (the run-001 perspective inversion is resolved for E-1 by the deterministic structured-substance assessment); remaining limbs as R1 | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+  },
+  "record_outcome": "PARTIAL"
+ },
+ "R3": {
+  "criteria": {
+   "1": {
+    "result": "PARTIAL",
+    "basis": "platform structures the journey, tracks gaps, classifies evidence, and assembles a truthful structured deliverable; the case's difficult DECISION work — comparing its bounded candidates — is still performed nowhere (section 7 remains deferred pending the Options Database); unchanged from run 001 | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "2": {
+    "result": "PASS",
+    "basis": "delegation is honest: every material fact is asked of the inventor, and the deliverable states what remains the inventor's (validate the owner-stated answer; suggested provider: the inventor) | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "3": {
+    "result": "PARTIAL",
+    "basis": "the requirement landscape distinguishes requirement classes, but the journey still elicits no separate preferences/constraints capture; unchanged from run 001 | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "4": {
+    "result": "PASS",
+    "basis": "REMEDIATED vs run 001: the provenance display divergence is gone — no 'pre-provenance session' text; the deliverable displays 'Owner-stated ... not validated' consistent with the durable OWNER_STATED ledger (24 records verified per record); every material claim carries a truthful evidence label | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "5": {
+    "result": "FAIL",
+    "basis": "re-derived on this run's evidence: the frozen corpus declares no decision context, so the served decision-capture section carries 0 contexts and 0 rendered alternatives in all 8 records [MEASURED]; the G-3 bounded rendered set and its governed strings therefore have no subject on this corpus and appear 0 times. The platform still neither bounds nor truthfully classifies the case's own candidate set on the corpus-replayed path. UNCHANGED FAIL vs run 002 - the residual the frozen corpus cannot exercise, not a measurement that G-3 failed"
+   },
+   "6": {
+    "result": "FAIL",
+    "basis": "re-derived on this run's evidence: with 0 rendered alternatives no qualification, elimination or not-comparable reason has a subject [MEASURED]; UNCHANGED FAIL vs run 002 for the same corpus reason"
+   },
+   "7": {
+    "result": "PASS",
+    "basis": "truthful bounded outcome: verdict REVISE with explicit rationale; the exhausted-gap reframe now offers the honest dispositions (unknown / deferred / provisional assumption / specialist / evidence / accept-as-known-risk) instead of feigning progress | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "8": {
+    "result": "PASS",
+    "basis": "minimum next required input identified (technically substantive answers to reach Level 2; validate the owner-stated answer) | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "9": {
+    "result": "PASS",
+    "basis": "durable envelope verified at the RC: contract_version p4-0-record-contract-v1 + engine_contract_version p4-2-level1-recon-v1 preserved (envelope_recheck.json) | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "10": {
+    "result": "PASS",
+    "basis": "verbatim seed_idea_text preserved (byte-equal to the frozen seed) plus a 24-record append-only accepted-answer ledger per record (envelope_recheck.json) | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "11": {
+    "result": "PARTIAL",
+    "basis": "REMEDIATION MEASURED vs run 001: the correction affordance is now RENDERED on the session surface (form to /session/<sid>/correct present in captured HTML; run 001 found it unreachable from every rendered surface); committed behaviour remains full deterministic re-evaluation (D-AISR-06); the frozen answer corpus contains no correction event, so re-evaluation was not exercised — no route-level claim is made | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "12": {
+    "result": "NOT APPLICABLE",
+    "basis": "architecturally prohibited (S2 §15.6); never satisfied by introducing stale-marking | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "13": {
+    "result": "NOT APPLICABLE",
+    "basis": "lane-scoped label; no Path-N subject (S2 §15.5) | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "14": {
+    "result": "PARTIAL",
+    "basis": "up from FAIL in run 001: the withdraw-and-replace affordance is now rendered in-session, so the change-reason surface is reachable; the frozen corpus exercised no change, so the exact-reason display was not observed live in this run | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "15": {
+    "result": "PARTIAL",
+    "basis": "ARABIC MATERIALLY IMPROVED, not yet complete: the deliverable is now a full Arabic reader-facing document (Arabic <html lang=ar dir=rtl>, all section headings and labels Arabic) — run 001 scored FAIL here; the generated substantive values (verdict token, rationale, open items, next-development-step text) remain English under Arabic labels — the registered generated-output language-parity obligation, excluded from RVR-7 by Owner decision | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "16": {
+    "result": "PASS",
+    "basis": "no prohibited claim anywhere; explicit negations captured ('nothing here has been built, tested, demonstrated, validated, certified, or shown feasible'; 'No engineering claim validated') | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "17": {
+    "result": "PARTIAL",
+    "basis": "Baseline A re-obtained at the RC (decision-workspace export, status 200): the Path-N deliverable adds the truthful journey envelope, provenance and landscape, but the FDC-001 export still uniquely carries the case's actual candidate comparison and readiness_status — improvement is real but partial | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "18": {
+    "result": "PARTIAL",
+    "basis": "the generic-AI baseline answers the Arabic seed immediately with candidate discussion and unsupported specifics; the product now serves the whole substantive journey in Arabic and fabricates nothing, but stalls without a candidate comparison — improvement over run 001's comparison, still partial | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P1": {
+    "result": "PARTIAL",
+    "basis": "up from FAIL in run 001: questions are now served in Arabic (lang=ar dir=rtl for all 24 interactions — the RVR-7 remediation, measured live) and the journey closes MECHANISM — though not in this record; residual: the reframe repeats and wording is not perspective-adapted | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P2": {
+    "result": "FAIL",
+    "basis": "gaps a competent practitioner would consider decision-critical for the bounded decision (quantified detection thresholds, false-positive tolerance, retention load path) terminate the journey unraised beyond the two generic gap classes; unchanged from run 001 | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P3": {
+    "result": "PASS",
+    "basis": "assumptions are named and labelled (assumed vs still unknown section); no unsafe assumption is asserted or silently relied upon | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P4": {
+    "result": "PASS",
+    "basis": "output stays inside the committed no-claim boundary in both languages | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P5": {
+    "result": "PARTIAL",
+    "basis": "up from FAIL in run 001: specialist_requested and evidence_requested are now first-class journey actions and the honest-options reframe explicitly names 'ask for a specialist or evidence'; the deliverable itself still escalates generically ('suggested provider: you (the inventor)'); unexercised by the frozen corpus | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P6": {
+    "result": "PARTIAL",
+    "basis": "up from FAIL in run 001: a full Arabic reader-facing deliverable makes the document genuinely usable, though generated substantive values remain English and the bounded decision itself remains unresolved | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   }
+  },
+  "core_gate": {
+   "result": "FAIL",
+   "basis": "questions and deliverable are now fully Arabic-served (remediation measured), but MECHANISM_COMPLETENESS never leaves PARTIAL in 24 interactions — the difficult-work limb fails; no full-pass limb set exists | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+  },
+  "record_outcome": "FAIL"
+ },
+ "R4": {
+  "criteria": {
+   "1": {
+    "result": "PARTIAL",
+    "basis": "platform structures the journey, tracks gaps, classifies evidence, and assembles a truthful structured deliverable; the case's difficult DECISION work — comparing its bounded candidates — is still performed nowhere (section 7 remains deferred pending the Options Database); unchanged from run 001 | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "2": {
+    "result": "PASS",
+    "basis": "delegation is honest: every material fact is asked of the inventor, and the deliverable states what remains the inventor's (validate the owner-stated answer; suggested provider: the inventor) | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "3": {
+    "result": "PARTIAL",
+    "basis": "the requirement landscape distinguishes requirement classes, but the journey still elicits no separate preferences/constraints capture; unchanged from run 001 | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "4": {
+    "result": "PASS",
+    "basis": "REMEDIATED vs run 001: the provenance display divergence is gone — no 'pre-provenance session' text; the deliverable displays 'Owner-stated ... not validated' consistent with the durable OWNER_STATED ledger (24 records verified per record); every material claim carries a truthful evidence label | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "5": {
+    "result": "FAIL",
+    "basis": "re-derived on this run's evidence: the frozen corpus declares no decision context, so the served decision-capture section carries 0 contexts and 0 rendered alternatives in all 8 records [MEASURED]; the G-3 bounded rendered set and its governed strings therefore have no subject on this corpus and appear 0 times. The platform still neither bounds nor truthfully classifies the case's own candidate set on the corpus-replayed path. UNCHANGED FAIL vs run 002 - the residual the frozen corpus cannot exercise, not a measurement that G-3 failed"
+   },
+   "6": {
+    "result": "FAIL",
+    "basis": "re-derived on this run's evidence: with 0 rendered alternatives no qualification, elimination or not-comparable reason has a subject [MEASURED]; UNCHANGED FAIL vs run 002 for the same corpus reason"
+   },
+   "7": {
+    "result": "PASS",
+    "basis": "truthful bounded outcome: verdict REVISE with explicit rationale; the exhausted-gap reframe now offers the honest dispositions (unknown / deferred / provisional assumption / specialist / evidence / accept-as-known-risk) instead of feigning progress | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "8": {
+    "result": "PASS",
+    "basis": "minimum next required input identified (technically substantive answers to reach Level 2; validate the owner-stated answer) | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "9": {
+    "result": "PASS",
+    "basis": "durable envelope verified at the RC: contract_version p4-0-record-contract-v1 + engine_contract_version p4-2-level1-recon-v1 preserved (envelope_recheck.json) | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "10": {
+    "result": "PASS",
+    "basis": "verbatim seed_idea_text preserved (byte-equal to the frozen seed) plus a 24-record append-only accepted-answer ledger per record (envelope_recheck.json) | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "11": {
+    "result": "PARTIAL",
+    "basis": "REMEDIATION MEASURED vs run 001: the correction affordance is now RENDERED on the session surface (form to /session/<sid>/correct present in captured HTML; run 001 found it unreachable from every rendered surface); committed behaviour remains full deterministic re-evaluation (D-AISR-06); the frozen answer corpus contains no correction event, so re-evaluation was not exercised — no route-level claim is made | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "12": {
+    "result": "NOT APPLICABLE",
+    "basis": "architecturally prohibited (S2 §15.6); never satisfied by introducing stale-marking | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "13": {
+    "result": "NOT APPLICABLE",
+    "basis": "lane-scoped label; no Path-N subject (S2 §15.5) | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "14": {
+    "result": "PARTIAL",
+    "basis": "up from FAIL in run 001: the withdraw-and-replace affordance is now rendered in-session, so the change-reason surface is reachable; the frozen corpus exercised no change, so the exact-reason display was not observed live in this run | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "15": {
+    "result": "PARTIAL",
+    "basis": "ARABIC MATERIALLY IMPROVED, not yet complete: the deliverable is now a full Arabic reader-facing document (Arabic <html lang=ar dir=rtl>, all section headings and labels Arabic) — run 001 scored FAIL here; the generated substantive values (verdict token, rationale, open items, next-development-step text) remain English under Arabic labels — the registered generated-output language-parity obligation, excluded from RVR-7 by Owner decision | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "16": {
+    "result": "PASS",
+    "basis": "no prohibited claim anywhere; explicit negations captured ('nothing here has been built, tested, demonstrated, validated, certified, or shown feasible'; 'No engineering claim validated') | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "17": {
+    "result": "PARTIAL",
+    "basis": "Baseline A re-obtained at the RC (decision-workspace export, status 200): the Path-N deliverable adds the truthful journey envelope, provenance and landscape, but the FDC-001 export still uniquely carries the case's actual candidate comparison and readiness_status — improvement is real but partial | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "18": {
+    "result": "PARTIAL",
+    "basis": "the generic-AI baseline answers the Arabic seed immediately with candidate discussion and unsupported specifics; the product now serves the whole substantive journey in Arabic and fabricates nothing, but stalls without a candidate comparison — improvement over run 001's comparison, still partial | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P1": {
+    "result": "PARTIAL",
+    "basis": "up from FAIL in run 001: questions are now served in Arabic (lang=ar dir=rtl for all 24 interactions — the RVR-7 remediation, measured live) and the journey closes MECHANISM; residual: the reframe repeats and wording is not perspective-adapted | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P2": {
+    "result": "FAIL",
+    "basis": "gaps a competent practitioner would consider decision-critical for the bounded decision (quantified detection thresholds, false-positive tolerance, retention load path) terminate the journey unraised beyond the two generic gap classes; unchanged from run 001 | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P3": {
+    "result": "PASS",
+    "basis": "assumptions are named and labelled (assumed vs still unknown section); no unsafe assumption is asserted or silently relied upon | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P4": {
+    "result": "PASS",
+    "basis": "output stays inside the committed no-claim boundary in both languages | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P5": {
+    "result": "PARTIAL",
+    "basis": "up from FAIL in run 001: specialist_requested and evidence_requested are now first-class journey actions and the honest-options reframe explicitly names 'ask for a specialist or evidence'; the deliverable itself still escalates generically ('suggested provider: you (the inventor)'); unexercised by the frozen corpus | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P6": {
+    "result": "PARTIAL",
+    "basis": "up from FAIL in run 001: a full Arabic reader-facing deliverable makes the document genuinely usable, though generated substantive values remain English and the bounded decision itself remains unresolved | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   }
+  },
+  "core_gate": {
+   "result": "PARTIAL",
+   "basis": "IMPROVED from FAIL in run 001: Arabic-served journey closes MECHANISM at interaction 1; feasibility honestly stalled; remaining limbs as R1 | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+  },
+  "record_outcome": "PARTIAL"
+ },
+ "R5": {
+  "criteria": {
+   "1": {
+    "result": "PARTIAL",
+    "basis": "platform structures the journey, tracks gaps, classifies evidence, and assembles a truthful structured deliverable; the case's difficult DECISION work — comparing its bounded candidates — is still performed nowhere (section 7 remains deferred pending the Options Database); unchanged from run 001 | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "2": {
+    "result": "PASS",
+    "basis": "delegation is honest: every material fact is asked of the inventor, and the deliverable states what remains the inventor's (validate the owner-stated answer; suggested provider: the inventor) | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "3": {
+    "result": "PARTIAL",
+    "basis": "the requirement landscape distinguishes requirement classes, but the journey still elicits no separate preferences/constraints capture; unchanged from run 001 | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "4": {
+    "result": "PASS",
+    "basis": "REMEDIATED vs run 001: the provenance display divergence is gone — no 'pre-provenance session' text; the deliverable displays 'Owner-stated ... not validated' consistent with the durable OWNER_STATED ledger (24 records verified per record); every material claim carries a truthful evidence label | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "5": {
+    "result": "FAIL",
+    "basis": "re-derived on this run's evidence: the frozen corpus declares no decision context, so the served decision-capture section carries 0 contexts and 0 rendered alternatives in all 8 records [MEASURED]; the G-3 bounded rendered set and its governed strings therefore have no subject on this corpus and appear 0 times. The platform still neither bounds nor truthfully classifies the case's own candidate set on the corpus-replayed path. UNCHANGED FAIL vs run 002 - the residual the frozen corpus cannot exercise, not a measurement that G-3 failed"
+   },
+   "6": {
+    "result": "FAIL",
+    "basis": "re-derived on this run's evidence: with 0 rendered alternatives no qualification, elimination or not-comparable reason has a subject [MEASURED]; UNCHANGED FAIL vs run 002 for the same corpus reason"
+   },
+   "7": {
+    "result": "PASS",
+    "basis": "truthful bounded outcome: verdict REVISE with explicit rationale; the exhausted-gap reframe now offers the honest dispositions (unknown / deferred / provisional assumption / specialist / evidence / accept-as-known-risk) instead of feigning progress | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "8": {
+    "result": "PASS",
+    "basis": "minimum next required input identified (technically substantive answers to reach Level 2; validate the owner-stated answer) | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "9": {
+    "result": "PASS",
+    "basis": "durable envelope verified at the RC: contract_version p4-0-record-contract-v1 + engine_contract_version p4-2-level1-recon-v1 preserved (envelope_recheck.json) | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "10": {
+    "result": "PASS",
+    "basis": "verbatim seed_idea_text preserved (byte-equal to the frozen seed) plus a 24-record append-only accepted-answer ledger per record (envelope_recheck.json) | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "11": {
+    "result": "PARTIAL",
+    "basis": "REMEDIATION MEASURED vs run 001: the correction affordance is now RENDERED on the session surface (form to /session/<sid>/correct present in captured HTML; run 001 found it unreachable from every rendered surface); committed behaviour remains full deterministic re-evaluation (D-AISR-06); the frozen answer corpus contains no correction event, so re-evaluation was not exercised — no route-level claim is made | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "12": {
+    "result": "NOT APPLICABLE",
+    "basis": "architecturally prohibited (S2 §15.6); never satisfied by introducing stale-marking | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "13": {
+    "result": "NOT APPLICABLE",
+    "basis": "lane-scoped label; no Path-N subject (S2 §15.5) | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "14": {
+    "result": "PARTIAL",
+    "basis": "up from FAIL in run 001: the withdraw-and-replace affordance is now rendered in-session, so the change-reason surface is reachable; the frozen corpus exercised no change, so the exact-reason display was not observed live in this run | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "15": {
+    "result": "PASS",
+    "basis": "standalone deliverable readable without the conversation; states its own basis and limits | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "16": {
+    "result": "PASS",
+    "basis": "no prohibited claim anywhere; explicit negations captured ('nothing here has been built, tested, demonstrated, validated, certified, or shown feasible'; 'No engineering claim validated') | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "17": {
+    "result": "NOT EVALUATED",
+    "basis": "Baseline A unobtainable for M-1 at this commit: the assessment-only FDC-001 workspace is hard-coded to the bicycle case; recorded per §15.8, never substituted | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "18": {
+    "result": "PARTIAL",
+    "basis": "the generic-AI baseline gives an immediate, readable candidate discussion asserting unsupported figures; the product is truthful and structured but produces no comparison within 24 interactions | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P1": {
+    "result": "PARTIAL",
+    "basis": "questions are relevant and answerable for a novice and now end in an honest-options reframe; but the reframe repeats 17-19x and prepared wording is identical across perspectives (no register-differentiated phrasing observed) | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P2": {
+    "result": "PASS",
+    "basis": "same | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P3": {
+    "result": "PASS",
+    "basis": "assumptions are named and labelled (assumed vs still unknown section); no unsafe assumption is asserted or silently relied upon | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P4": {
+    "result": "PASS",
+    "basis": "output stays inside the committed no-claim boundary in both languages | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P5": {
+    "result": "PARTIAL",
+    "basis": "up from FAIL in run 001: specialist_requested and evidence_requested are now first-class journey actions and the honest-options reframe explicitly names 'ask for a specialist or evidence'; the deliverable itself still escalates generically ('suggested provider: you (the inventor)'); unexercised by the frozen corpus | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P6": {
+    "result": "PARTIAL",
+    "basis": "truthful and readable for a novice; mechanism captured; the case's required outcome (a bounded technical-decision-readiness record or truthful block) is only partially reached — REVISE with no candidate comparison | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   }
+  },
+  "core_gate": {
+   "result": "PARTIAL",
+   "basis": "as run 001: mechanism closed, feasibility honestly stalled; truthful outcome and continuity present | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+  },
+  "record_outcome": "PARTIAL"
+ },
+ "R6": {
+  "criteria": {
+   "1": {
+    "result": "PARTIAL",
+    "basis": "platform structures the journey, tracks gaps, classifies evidence, and assembles a truthful structured deliverable; the case's difficult DECISION work — comparing its bounded candidates — is still performed nowhere (section 7 remains deferred pending the Options Database); unchanged from run 001 | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "2": {
+    "result": "PASS",
+    "basis": "delegation is honest: every material fact is asked of the inventor, and the deliverable states what remains the inventor's (validate the owner-stated answer; suggested provider: the inventor) | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "3": {
+    "result": "PARTIAL",
+    "basis": "the requirement landscape distinguishes requirement classes, but the journey still elicits no separate preferences/constraints capture; unchanged from run 001 | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "4": {
+    "result": "PASS",
+    "basis": "REMEDIATED vs run 001: the provenance display divergence is gone — no 'pre-provenance session' text; the deliverable displays 'Owner-stated ... not validated' consistent with the durable OWNER_STATED ledger (24 records verified per record); every material claim carries a truthful evidence label | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "5": {
+    "result": "FAIL",
+    "basis": "re-derived on this run's evidence: the frozen corpus declares no decision context, so the served decision-capture section carries 0 contexts and 0 rendered alternatives in all 8 records [MEASURED]; the G-3 bounded rendered set and its governed strings therefore have no subject on this corpus and appear 0 times. The platform still neither bounds nor truthfully classifies the case's own candidate set on the corpus-replayed path. UNCHANGED FAIL vs run 002 - the residual the frozen corpus cannot exercise, not a measurement that G-3 failed"
+   },
+   "6": {
+    "result": "FAIL",
+    "basis": "re-derived on this run's evidence: with 0 rendered alternatives no qualification, elimination or not-comparable reason has a subject [MEASURED]; UNCHANGED FAIL vs run 002 for the same corpus reason"
+   },
+   "7": {
+    "result": "PASS",
+    "basis": "truthful bounded outcome: verdict REVISE with explicit rationale; the exhausted-gap reframe now offers the honest dispositions (unknown / deferred / provisional assumption / specialist / evidence / accept-as-known-risk) instead of feigning progress | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "8": {
+    "result": "PASS",
+    "basis": "minimum next required input identified (technically substantive answers to reach Level 2; validate the owner-stated answer) | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "9": {
+    "result": "PASS",
+    "basis": "durable envelope verified at the RC: contract_version p4-0-record-contract-v1 + engine_contract_version p4-2-level1-recon-v1 preserved (envelope_recheck.json) | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "10": {
+    "result": "PASS",
+    "basis": "verbatim seed_idea_text preserved (byte-equal to the frozen seed) plus a 24-record append-only accepted-answer ledger per record (envelope_recheck.json) | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "11": {
+    "result": "PARTIAL",
+    "basis": "REMEDIATION MEASURED vs run 001: the correction affordance is now RENDERED on the session surface (form to /session/<sid>/correct present in captured HTML; run 001 found it unreachable from every rendered surface); committed behaviour remains full deterministic re-evaluation (D-AISR-06); the frozen answer corpus contains no correction event, so re-evaluation was not exercised — no route-level claim is made | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "12": {
+    "result": "NOT APPLICABLE",
+    "basis": "architecturally prohibited (S2 §15.6); never satisfied by introducing stale-marking | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "13": {
+    "result": "NOT APPLICABLE",
+    "basis": "lane-scoped label; no Path-N subject (S2 §15.5) | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "14": {
+    "result": "PARTIAL",
+    "basis": "up from FAIL in run 001: the withdraw-and-replace affordance is now rendered in-session, so the change-reason surface is reachable; the frozen corpus exercised no change, so the exact-reason display was not observed live in this run | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "15": {
+    "result": "PASS",
+    "basis": "standalone deliverable readable without the conversation; states its own basis and limits | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "16": {
+    "result": "PASS",
+    "basis": "no prohibited claim anywhere; explicit negations captured ('nothing here has been built, tested, demonstrated, validated, certified, or shown feasible'; 'No engineering claim validated') | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "17": {
+    "result": "NOT EVALUATED",
+    "basis": "Baseline A unobtainable for M-1 at this commit: the assessment-only FDC-001 workspace is hard-coded to the bicycle case; recorded per §15.8, never substituted | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "18": {
+    "result": "PARTIAL",
+    "basis": "the generic-AI baseline gives an immediate, readable candidate discussion asserting unsupported figures; the product is truthful and structured but produces no comparison within 24 interactions | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P1": {
+    "result": "FAIL",
+    "basis": "practitioner-phrased mechanical questions suit this reader, but the same frozen practitioner answers never close MECHANISM_COMPLETENESS in 24 interactions and the exhausted-gap reframe repeats 19x — the question/assessment pairing still fails this perspective on M-1 | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P2": {
+    "result": "FAIL",
+    "basis": "gaps a competent practitioner would consider decision-critical for the bounded decision (quantified detection thresholds, false-positive tolerance, retention load path) terminate the journey unraised beyond the two generic gap classes; unchanged from run 001 | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P3": {
+    "result": "PASS",
+    "basis": "assumptions are named and labelled (assumed vs still unknown section); no unsafe assumption is asserted or silently relied upon | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P4": {
+    "result": "PASS",
+    "basis": "output stays inside the committed no-claim boundary in both languages | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P5": {
+    "result": "PARTIAL",
+    "basis": "up from FAIL in run 001: specialist_requested and evidence_requested are now first-class journey actions and the honest-options reframe explicitly names 'ask for a specialist or evidence'; the deliverable itself still escalates generically ('suggested provider: you (the inventor)'); unexercised by the frozen corpus | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P6": {
+    "result": "FAIL",
+    "basis": "for this practitioner the deliverable establishes no mechanism, compares no candidates, and advises generically — not usable for the case's bounded decision; unchanged from run 001 | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   }
+  },
+  "core_gate": {
+   "result": "FAIL",
+   "basis": "practitioner answers never close MECHANISM on M-1 in 24 interactions; difficult-work limb fails; unchanged from run 001 | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+  },
+  "record_outcome": "FAIL"
+ },
+ "R7": {
+  "criteria": {
+   "1": {
+    "result": "PARTIAL",
+    "basis": "platform structures the journey, tracks gaps, classifies evidence, and assembles a truthful structured deliverable; the case's difficult DECISION work — comparing its bounded candidates — is still performed nowhere (section 7 remains deferred pending the Options Database); unchanged from run 001 | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "2": {
+    "result": "PASS",
+    "basis": "delegation is honest: every material fact is asked of the inventor, and the deliverable states what remains the inventor's (validate the owner-stated answer; suggested provider: the inventor) | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "3": {
+    "result": "PARTIAL",
+    "basis": "the requirement landscape distinguishes requirement classes, but the journey still elicits no separate preferences/constraints capture; unchanged from run 001 | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "4": {
+    "result": "PASS",
+    "basis": "REMEDIATED vs run 001: the provenance display divergence is gone — no 'pre-provenance session' text; the deliverable displays 'Owner-stated ... not validated' consistent with the durable OWNER_STATED ledger (24 records verified per record); every material claim carries a truthful evidence label | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "5": {
+    "result": "FAIL",
+    "basis": "re-derived on this run's evidence: the frozen corpus declares no decision context, so the served decision-capture section carries 0 contexts and 0 rendered alternatives in all 8 records [MEASURED]; the G-3 bounded rendered set and its governed strings therefore have no subject on this corpus and appear 0 times. The platform still neither bounds nor truthfully classifies the case's own candidate set on the corpus-replayed path. UNCHANGED FAIL vs run 002 - the residual the frozen corpus cannot exercise, not a measurement that G-3 failed"
+   },
+   "6": {
+    "result": "FAIL",
+    "basis": "re-derived on this run's evidence: with 0 rendered alternatives no qualification, elimination or not-comparable reason has a subject [MEASURED]; UNCHANGED FAIL vs run 002 for the same corpus reason"
+   },
+   "7": {
+    "result": "PASS",
+    "basis": "truthful bounded outcome: verdict REVISE with explicit rationale; the exhausted-gap reframe now offers the honest dispositions (unknown / deferred / provisional assumption / specialist / evidence / accept-as-known-risk) instead of feigning progress | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "8": {
+    "result": "PASS",
+    "basis": "minimum next required input identified (technically substantive answers to reach Level 2; validate the owner-stated answer) | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "9": {
+    "result": "PASS",
+    "basis": "durable envelope verified at the RC: contract_version p4-0-record-contract-v1 + engine_contract_version p4-2-level1-recon-v1 preserved (envelope_recheck.json) | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "10": {
+    "result": "PASS",
+    "basis": "verbatim seed_idea_text preserved (byte-equal to the frozen seed) plus a 24-record append-only accepted-answer ledger per record (envelope_recheck.json) | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "11": {
+    "result": "PARTIAL",
+    "basis": "REMEDIATION MEASURED vs run 001: the correction affordance is now RENDERED on the session surface (form to /session/<sid>/correct present in captured HTML; run 001 found it unreachable from every rendered surface); committed behaviour remains full deterministic re-evaluation (D-AISR-06); the frozen answer corpus contains no correction event, so re-evaluation was not exercised — no route-level claim is made | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "12": {
+    "result": "NOT APPLICABLE",
+    "basis": "architecturally prohibited (S2 §15.6); never satisfied by introducing stale-marking | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "13": {
+    "result": "NOT APPLICABLE",
+    "basis": "lane-scoped label; no Path-N subject (S2 §15.5) | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "14": {
+    "result": "PARTIAL",
+    "basis": "up from FAIL in run 001: the withdraw-and-replace affordance is now rendered in-session, so the change-reason surface is reachable; the frozen corpus exercised no change, so the exact-reason display was not observed live in this run | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "15": {
+    "result": "PARTIAL",
+    "basis": "ARABIC MATERIALLY IMPROVED, not yet complete: the deliverable is now a full Arabic reader-facing document (Arabic <html lang=ar dir=rtl>, all section headings and labels Arabic) — run 001 scored FAIL here; the generated substantive values (verdict token, rationale, open items, next-development-step text) remain English under Arabic labels — the registered generated-output language-parity obligation, excluded from RVR-7 by Owner decision | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "16": {
+    "result": "PASS",
+    "basis": "no prohibited claim anywhere; explicit negations captured ('nothing here has been built, tested, demonstrated, validated, certified, or shown feasible'; 'No engineering claim validated') | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "17": {
+    "result": "NOT EVALUATED",
+    "basis": "Baseline A unobtainable for M-1 at this commit: the assessment-only FDC-001 workspace is hard-coded to the bicycle case; recorded per §15.8, never substituted | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "18": {
+    "result": "PARTIAL",
+    "basis": "the generic-AI baseline answers the Arabic seed immediately with candidate discussion and unsupported specifics; the product now serves the whole substantive journey in Arabic and fabricates nothing, but stalls without a candidate comparison — improvement over run 001's comparison, still partial | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P1": {
+    "result": "PARTIAL",
+    "basis": "up from FAIL in run 001: questions are now served in Arabic (lang=ar dir=rtl for all 24 interactions — the RVR-7 remediation, measured live) and the journey closes MECHANISM; residual: the reframe repeats and wording is not perspective-adapted | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P2": {
+    "result": "PASS",
+    "basis": "same | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P3": {
+    "result": "PASS",
+    "basis": "assumptions are named and labelled (assumed vs still unknown section); no unsafe assumption is asserted or silently relied upon | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P4": {
+    "result": "PASS",
+    "basis": "output stays inside the committed no-claim boundary in both languages | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P5": {
+    "result": "PARTIAL",
+    "basis": "up from FAIL in run 001: specialist_requested and evidence_requested are now first-class journey actions and the honest-options reframe explicitly names 'ask for a specialist or evidence'; the deliverable itself still escalates generically ('suggested provider: you (the inventor)'); unexercised by the frozen corpus | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P6": {
+    "result": "PARTIAL",
+    "basis": "up from FAIL in run 001: a full Arabic reader-facing deliverable makes the document genuinely usable, though generated substantive values remain English and the bounded decision itself remains unresolved | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   }
+  },
+  "core_gate": {
+   "result": "PARTIAL",
+   "basis": "IMPROVED from FAIL in run 001: Arabic-served mechanical journey closes MECHANISM at interaction 3; feasibility remains honestly OPEN with unknown-dispositions acknowledged | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+  },
+  "record_outcome": "PARTIAL"
+ },
+ "R8": {
+  "criteria": {
+   "1": {
+    "result": "PARTIAL",
+    "basis": "platform structures the journey, tracks gaps, classifies evidence, and assembles a truthful structured deliverable; the case's difficult DECISION work — comparing its bounded candidates — is still performed nowhere (section 7 remains deferred pending the Options Database); unchanged from run 001 | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "2": {
+    "result": "PASS",
+    "basis": "delegation is honest: every material fact is asked of the inventor, and the deliverable states what remains the inventor's (validate the owner-stated answer; suggested provider: the inventor) | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "3": {
+    "result": "PARTIAL",
+    "basis": "the requirement landscape distinguishes requirement classes, but the journey still elicits no separate preferences/constraints capture; unchanged from run 001 | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "4": {
+    "result": "PASS",
+    "basis": "REMEDIATED vs run 001: the provenance display divergence is gone — no 'pre-provenance session' text; the deliverable displays 'Owner-stated ... not validated' consistent with the durable OWNER_STATED ledger (24 records verified per record); every material claim carries a truthful evidence label | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "5": {
+    "result": "FAIL",
+    "basis": "re-derived on this run's evidence: the frozen corpus declares no decision context, so the served decision-capture section carries 0 contexts and 0 rendered alternatives in all 8 records [MEASURED]; the G-3 bounded rendered set and its governed strings therefore have no subject on this corpus and appear 0 times. The platform still neither bounds nor truthfully classifies the case's own candidate set on the corpus-replayed path. UNCHANGED FAIL vs run 002 - the residual the frozen corpus cannot exercise, not a measurement that G-3 failed"
+   },
+   "6": {
+    "result": "FAIL",
+    "basis": "re-derived on this run's evidence: with 0 rendered alternatives no qualification, elimination or not-comparable reason has a subject [MEASURED]; UNCHANGED FAIL vs run 002 for the same corpus reason"
+   },
+   "7": {
+    "result": "PASS",
+    "basis": "truthful bounded outcome: verdict REVISE with explicit rationale; the exhausted-gap reframe now offers the honest dispositions (unknown / deferred / provisional assumption / specialist / evidence / accept-as-known-risk) instead of feigning progress | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "8": {
+    "result": "PASS",
+    "basis": "minimum next required input identified (technically substantive answers to reach Level 2; validate the owner-stated answer) | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "9": {
+    "result": "PASS",
+    "basis": "durable envelope verified at the RC: contract_version p4-0-record-contract-v1 + engine_contract_version p4-2-level1-recon-v1 preserved (envelope_recheck.json) | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "10": {
+    "result": "PASS",
+    "basis": "verbatim seed_idea_text preserved (byte-equal to the frozen seed) plus a 24-record append-only accepted-answer ledger per record (envelope_recheck.json) | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "11": {
+    "result": "PARTIAL",
+    "basis": "REMEDIATION MEASURED vs run 001: the correction affordance is now RENDERED on the session surface (form to /session/<sid>/correct present in captured HTML; run 001 found it unreachable from every rendered surface); committed behaviour remains full deterministic re-evaluation (D-AISR-06); the frozen answer corpus contains no correction event, so re-evaluation was not exercised — no route-level claim is made | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "12": {
+    "result": "NOT APPLICABLE",
+    "basis": "architecturally prohibited (S2 §15.6); never satisfied by introducing stale-marking | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "13": {
+    "result": "NOT APPLICABLE",
+    "basis": "lane-scoped label; no Path-N subject (S2 §15.5) | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "14": {
+    "result": "PARTIAL",
+    "basis": "up from FAIL in run 001: the withdraw-and-replace affordance is now rendered in-session, so the change-reason surface is reachable; the frozen corpus exercised no change, so the exact-reason display was not observed live in this run | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "15": {
+    "result": "PARTIAL",
+    "basis": "ARABIC MATERIALLY IMPROVED, not yet complete: the deliverable is now a full Arabic reader-facing document (Arabic <html lang=ar dir=rtl>, all section headings and labels Arabic) — run 001 scored FAIL here; the generated substantive values (verdict token, rationale, open items, next-development-step text) remain English under Arabic labels — the registered generated-output language-parity obligation, excluded from RVR-7 by Owner decision | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "16": {
+    "result": "PASS",
+    "basis": "no prohibited claim anywhere; explicit negations captured ('nothing here has been built, tested, demonstrated, validated, certified, or shown feasible'; 'No engineering claim validated') | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "17": {
+    "result": "NOT EVALUATED",
+    "basis": "Baseline A unobtainable for M-1 at this commit: the assessment-only FDC-001 workspace is hard-coded to the bicycle case; recorded per §15.8, never substituted | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "18": {
+    "result": "PARTIAL",
+    "basis": "the generic-AI baseline answers the Arabic seed immediately with candidate discussion and unsupported specifics; the product now serves the whole substantive journey in Arabic and fabricates nothing, but stalls without a candidate comparison — improvement over run 001's comparison, still partial | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P1": {
+    "result": "FAIL",
+    "basis": "practitioner-phrased mechanical questions suit this reader, but the same frozen practitioner answers never close MECHANISM_COMPLETENESS in 24 interactions and the exhausted-gap reframe repeats 19x — the question/assessment pairing still fails this perspective on M-1 | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P2": {
+    "result": "FAIL",
+    "basis": "gaps a competent practitioner would consider decision-critical for the bounded decision (quantified detection thresholds, false-positive tolerance, retention load path) terminate the journey unraised beyond the two generic gap classes; unchanged from run 001 | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P3": {
+    "result": "PASS",
+    "basis": "assumptions are named and labelled (assumed vs still unknown section); no unsafe assumption is asserted or silently relied upon | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P4": {
+    "result": "PASS",
+    "basis": "output stays inside the committed no-claim boundary in both languages | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P5": {
+    "result": "PARTIAL",
+    "basis": "up from FAIL in run 001: specialist_requested and evidence_requested are now first-class journey actions and the honest-options reframe explicitly names 'ask for a specialist or evidence'; the deliverable itself still escalates generically ('suggested provider: you (the inventor)'); unexercised by the frozen corpus | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   },
+   "P6": {
+    "result": "FAIL",
+    "basis": "for this practitioner the deliverable establishes no mechanism, compares no candidates, and advises generically — not usable for the case's bounded decision; unchanged from run 001 | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+   }
+  },
+  "core_gate": {
+   "result": "FAIL",
+   "basis": "as R6, on the Arabic-served surface; difficult-work limb fails | run 003: substrate identical to run 002 at the interaction, gap, deliverable-meta, envelope and normalized-HTML level; re-judged on this run's own evidence, result unchanged"
+  },
+  "record_outcome": "FAIL"
+ }
+}

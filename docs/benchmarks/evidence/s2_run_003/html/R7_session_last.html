@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>InventorAI — الجلسة</title>
+<style>
+/* G-UX-SHELL shared application-shell baseline. Minimal; no framework, no JS.
+   Accessibility/disclosure baseline only — not a visual redesign. */
+*:focus-visible{outline:3px solid #2c6fbb;outline-offset:2px}
+a.skip-link{position:absolute;left:-9999px;top:auto;background:#fff;color:#2c3e50;padding:8px 12px;border:2px solid #2c3e50;border-radius:4px;z-index:1000}
+a.skip-link:focus{left:8px;top:8px;position:fixed}
+.app-header{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:760px;margin:0 auto;padding:10px 20px;border-bottom:1px solid #d4dde6}
+.app-header .brand{font-weight:600;color:#2c3e50}
+.app-header .temp-session{font-size:12px;color:#555;white-space:nowrap}
+/* D-P6-18 global UI-language selector (shared, top-of-content, consistent). */
+.ui-lang-selector{max-width:760px;margin:0 auto;padding:6px 20px;display:flex;align-items:center;gap:8px;font-size:12px;color:#555;flex-wrap:wrap}
+.ui-lang-selector .ui-lang-label{color:#666}
+.ui-lang-selector a{padding:3px 10px;background:#fff;color:#2c3e50;border:1px solid #c3ccd6;border-radius:4px;text-decoration:none}
+.ui-lang-selector .ui-lang-active{padding:3px 10px;background:#2c3e50;color:#fff;border:1px solid #2c3e50;border-radius:4px}
+</style>
+
+<style>
+body{font-family:sans-serif;max-width:720px;margin:60px auto;padding:0 20px;color:#222}
+h1{color:#2c3e50;margin-bottom:4px}
+.meta{background:#f0f4f8;padding:10px 14px;border-radius:4px;margin-bottom:18px;font-size:13px;color:#444}
+.disclosure{background:#f8f9fa;border-left:3px solid #b0b8c1;padding:9px 14px;border-radius:0 4px 4px 0;margin-bottom:20px;font-size:12px;color:#666;line-height:1.5}
+.progress-section{margin-bottom:20px}
+.progress-label{font-size:13px;color:#555;margin-bottom:4px}
+.progress-track{background:#dde3ea;border-radius:8px;height:14px;width:100%;overflow:hidden}
+.progress-fill{background:#2c3e50;height:14px;border-radius:8px}
+.stage-block{margin-bottom:18px;padding:10px 14px;background:#f0f4f8;border-radius:4px}
+.stage-label{font-size:15px;font-weight:bold;color:#2c3e50;margin-bottom:3px}
+.stage-meaning{font-size:13px;color:#555;line-height:1.4}
+.gap-board{margin-bottom:20px}
+.gap-board h3{font-size:14px;color:#555;margin:0 0 8px 0;text-transform:uppercase;letter-spacing:.5px}
+.gap-row{display:flex;align-items:center;padding:6px 10px;border-radius:4px;margin-bottom:4px;font-size:13px;background:#f8f9fa;border:1px solid #e2e6ea}
+.gap-row.current{background:#fff8e1;border-color:#ffe082;font-weight:bold}
+.gap-row.closed{background:#f0faf0;border-color:#c8e6c9;color:#555}
+.gap-status{width:70px;font-size:11px;padding:2px 6px;border-radius:3px;text-align:center;margin-right:10px;font-weight:bold;flex-shrink:0}
+.status-current{background:#fff3cd;color:#856404;border:1px solid #ffc107}
+.status-closed{background:#d4edda;color:#155724;border:1px solid #c3e6cb}
+.status-open{background:#f0f4f8;color:#555;border:1px solid #ccc}
+.gap-name{flex:1;color:#333}
+.gap-stage-note{font-size:11px;color:#888;margin-left:8px;flex-shrink:0}
+.current-arrow{font-size:11px;color:#e65100;margin-left:6px;flex-shrink:0}
+.gap-guidance{background:#fffbf0;border:1px solid #ffe082;border-radius:4px;padding:12px 16px;margin-bottom:18px}
+.gap-guidance-heading{font-size:15px;font-weight:bold;color:#2c3e50;margin-bottom:6px}
+.gap-guidance-text{font-size:13px;color:#555;line-height:1.5}
+.last-result{margin-bottom:18px;padding:10px 14px;border-radius:4px;border:1px solid #e2e6ea;font-size:13px}
+.badge-warn{background:#fff3e0;color:#e65100;border:1px solid #ffcc02;display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:bold;margin-bottom:6px}
+.badge-pass{background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7;display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:bold;margin-bottom:6px}
+.badge-block{background:#fdecea;color:#c62828;border:1px solid #ef9a9a;display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:bold;margin-bottom:6px}
+.badge-none{background:#f0f4f8;color:#555;border:1px solid #ccc;display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;margin-bottom:6px}
+.reason-text{font-size:13px;color:#555;margin-top:6px}
+.direction-text{font-size:12px;color:#888;margin-top:4px}
+.question{font-size:18px;margin-bottom:16px;color:#2c3e50;line-height:1.5}
+textarea{width:100%;padding:12px;font-size:15px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box}
+button{margin-top:10px;padding:10px 24px;background:#2c3e50;color:white;border:none;border-radius:4px;font-size:15px;cursor:pointer}
+.complete{color:#27ae60;font-weight:bold;font-size:18px}
+hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
+</style>
+
+<script defer src="/static/js/local_draft.js"></script>
+
+</head>
+<body>
+<a class="skip-link" href="#main-content">تخطَّ إلى المحتوى</a>
+<header class="app-header">
+<span class="brand">InventorAI</span>
+<span class="temp-session">جلسة مؤقتة <a href="/data-and-session">معرفة المزيد</a></span>
+</header>
+
+<nav class="ui-lang-selector" aria-label="اللغة">
+  <span class="ui-lang-label">اللغة:</span>
+  <a href="/ui-language?lang=en&amp;next=/session/55f19046-b3e8-465b-9b1b-277a4e62f83e" lang="en">English</a>
+  <span class="ui-lang-active" lang="ar" aria-current="true">العربية</span>
+</nav>
+<main id="main-content">
+
+
+<div id="draft-signals" data-draft-scope="55f19046-b3e8-465b-9b1b-277a4e62f83e" data-seed-accepted="0" data-answer-accepted="1" hidden></div>
+
+<h1>InventorAI</h1>
+
+
+
+
+
+<div class="disclosure">تساعدك هذه المنصة على تنظيم تفكيرك عبر أسئلة موجَّهة. وهي تتتبّع كيف تناولت المجالات الأساسية — ويبقى التحقق التقني الخارجي خطوة منفصلة.</div>
+
+
+
+<div class="next-step-callout" style="background:#eef5ff;border:1px solid #b3d1ff;border-radius:4px;padding:10px 14px;margin-bottom:18px">
+  <div class="next-step-heading" style="font-weight:bold;color:#1a4f8b">خطوة التطوير التالية</div>
+  <div class="next-step-issue" style="font-size:14px;margin-top:4px">Owner-stated answer awaiting validation</div>
+  
+  <div class="next-step-why" style="font-size:13px;color:#555;margin-top:4px">An owner-provided answer is recorded but not independently validated.</div>
+  
+  
+  <div class="next-step-action" style="font-size:13px;color:#444;margin-top:6px"><span style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#1a4f8b">الخطوة التالية:</span> Validate the owner-stated answer.</div>
+  
+  <div class="next-step-ref" style="font-size:12px;color:#666;margin-top:4px">المرجع: rec_1</div>
+</div>
+
+
+<p>
+  <a href="/session/55f19046-b3e8-465b-9b1b-277a4e62f83e/deliverable">
+  عرض لقطة التقييم قيد التقدم
+  </a>
+</p>
+
+
+
+<div class="gap-guidance" style="background:#f8f9fa;border-color:#ccc">
+  <div class="gap-guidance-heading">ما وضعتَ علامة عليه بأنه غير معروف بعد</div>
+  <div class="gap-guidance-text" style="margin-bottom:10px">تبقى هذه العناصر مفتوحة لتوضيحها لاحقًا. تسجيل أمر غير معروف لا يحلّه.</div>
+  <ul style="margin:6px 0 0 0;padding-left:18px;font-size:13px;color:#444">
+    
+    <li><strong>الآلية العاملة:</strong> لا أعرف تفاصيل داخلية أكثر من ذلك.</li>
+    
+    <li><strong>الجدوى العملية:</strong> لا أعرف كم الوزن ولا هامش الأمان المطلوب — لم يُحسب ذلك ولم يُختبر.</li>
+    
+  </ul>
+</div>
+
+
+<div class="meta">
+  الفكرة: 0df5bee1-ebcf-48d0-9a13-3e0cc5a03ddd
+  &nbsp;·&nbsp;
+  التكرار: 24
+  &nbsp;·&nbsp;
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  نوع المراجعة: مراجعة مستنيرة بمجال الميكانيكا
+</div>
+
+<div class="stage-block">
+  <div class="stage-label">تحديد المشكلة</div>
+  <div class="stage-meaning">لقد وصفت المشكلة الجوهرية واتجاه فكرتك. لنطوّر الآن الآلية.</div>
+</div>
+
+<div class="progress-section">
+  
+  
+  <div class="progress-label">التقدّم — المرحلة 2 من 3</div>
+  <div class="progress-track">
+    <div class="progress-fill" style="width:66%"></div>
+  </div>
+</div>
+
+
+<div class="gap-board">
+  <h3>مجالات تقدّمك</h3>
+  
+  
+  <div class="gap-row closed">
+    
+      <span class="gap-status status-closed">منجز</span>
+    
+    <span class="gap-name">كيف تعمل، خطوة بخطوة؟</span>
+    <span class="gap-stage-note">تطوير الآلية</span>
+    
+  </div>
+  
+  
+  <div class="gap-row current">
+    
+      <span class="gap-status status-current">نشط</span>
+    
+    <span class="gap-name">هل لفكرتك مبدأ عمل واضح؟</span>
+    <span class="gap-stage-note">استكشاف الجدوى</span>
+    <span class="current-arrow">◄ الآن</span>
+  </div>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+<div class="gap-guidance">
+  <div class="gap-guidance-heading">هل لفكرتك مبدأ عمل واضح؟</div>
+  <div class="gap-guidance-text">صف ما يجعل فكرتك تعمل — المكوّنات أو المواد أو القوى أو العمليات المعنيّة. كن محدّدًا قدر الإمكان بشأن الآلية، لا الهدف فحسب.</div>
+</div>
+
+
+
+<div class="last-result">
+  
+    <span class="badge-warn">يلزم مزيد من التفاصيل</span>
+  
+  
+  
+  
+  
+  
+  
+  <div class="reason-text">لم يتم التعرف على هذه الإجابة كردٍّ على السؤال المطروح، لذلك لم تُحرِّك هذه النقطة إلى الأمام. الإجابة عن السؤال مباشرةً، وبالكلمات التي يستخدمها السؤال، هي ما يستطيع العرض الحالي التعرف عليه.</div>
+  
+  
+  <details class="result-details" style="margin-top:4px">
+    <summary style="cursor:pointer;font-size:12px;color:#8a97a3">تفاصيل النتيجة</summary>
+    <div class="reason-raw" style="font-size:12px;color:#8a7a68;margin-top:4px">PHYSICAL_FEASIBILITY not addressed — this answer does not respond to the question that was asked</div>
+  </details>
+  
+  
+  <div class="direction-text">الاتجاه: STALLED</div>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+<div class="scaffolding-guidance" style="margin-bottom:18px;padding:10px 14px;border-radius:4px;border:1px solid #ffe0b2;background:#fff8ef;font-size:13px">
+  <div class="scaffolding-guidance-heading" style="font-weight:bold;color:#e65100;margin-bottom:6px">أي نوع من التفاصيل يجب إضافته</div>
+  <div class="scaffolding-guidance-lead" style="color:#5a4633;margin-bottom:8px">تحتاج هذه الإجابة إلى مزيد من التفصيل. أضِف نقطة محدّدة حول الآلية، أو شرط الإطلاق، أو حدّ التشغيل، أو ملاحظة داعمة.</div>
+  <ul class="scaffolding-guidance-prompts" style="margin:0 0 8px 18px;color:#5a4633">
+    <li>ما الحدود المادية أو نطاق التشغيل الذي يعمل هذا ضمنه؟</li><li>ما الظروف أو القيود التي يجب أن تتحقق ليعمل؟</li><li>ما الافتراضات حول البيئة التي يعتمد عليها؟</li><li>ما الذي قد يمنعه ماديًا من العمل؟</li><li>ما الدليل أو الملاحظة التي تدعم أنه يمكن أن يعمل؟</li>
+  </ul>
+  <div class="scaffolding-guidance-note" style="font-size:12px;color:#8a7a68">هذه توجيهات تساعدك على إضافة التفاصيل. إنها لا تُغيّر إجابتك ولا تقيّمها — أنت تكتبها بكلماتك الخاصة.</div>
+</div>
+
+
+
+<div class="current-question-eyebrow" style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#8a97a3;margin-bottom:4px">السؤال الحالي</div>
+
+<div class="current-question-context" style="font-size:12px;color:#666;margin-bottom:8px">يجري تناول: <strong style="color:#2c3e50">هل لفكرتك مبدأ عمل واضح؟</strong></div>
+
+
+
+<p class="question" lang="ar" dir="rtl">لقد استُنفدت الأسئلة المعدة لهذا الجانب، وتكرارها لن يدفعه إلى الأمام. خياراتك الصادقة الآن: أضف معلومات جديدة فعلا في صندوق الإجابة؛ أو حدده كغير معروف أو مؤجل؛ أو سجّل افتراضا مبدئيا؛ أو اطلب مختصا أو دليلا؛ أو — إن تعذر حله الآن — اقبله صراحة كمخاطرة معروفة حتى تتمكن الرحلة من المضي بينما تبقى المخاطرة مسجلة بوضوح.</p>
+
+<p class="answer-hint" style="font-size:12px;color:#888;margin:-6px 0 14px 0">أجب في المربع أدناه، أو اختر أحد خيارات الرد.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+<details style="margin-bottom:14px;border:1px solid #d6e0e8;border-radius:4px;background:#fafcfe">
+  <summary style="cursor:pointer;padding:9px 14px;font-size:14px;color:#2c3e50">ساعدني على فهم هذا السؤال</summary>
+  <div style="padding:4px 14px 12px 14px">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#8a97a3;margin-bottom:6px">إرشاد النظام</div>
+    <div style="font-size:14px;font-weight:bold;color:#2c3e50;margin-bottom:6px">ما الذي يسأل عنه هذا السؤال</div>
+    <p style="font-size:13px;color:#555;line-height:1.5;margin:0 0 8px 0">هذا يسأل عمّا يجعل فكرتك تعمل فعليًا — المبدأ الأساسي أو المكوّنات أو العملية وراءها.</p>
+    <p style="font-size:13px;color:#555;line-height:1.5;margin:0 0 8px 0"><strong>ما الذي سيساعد:</strong> المبدأ العامل بعبارات بسيطة. أما صحّته فعلًا فقد تحتاج لاحقًا إلى قياس أو اختبار أو دليل خارجي.</p>
+    <p style="font-size:13px;color:#555;line-height:1.5;margin:0 0 8px 0"><strong>الإجابة الجيدة تبدو هكذا:</strong> وصف بسيط للمبدأ الذي تتوقّع أن يجعلها تعمل. القياسات الدقيقة ليست مطلوبة هنا.</p>
+    <p style="font-size:13px;color:#555;line-height:1.5;margin:0">إذا كان تأكيده يحتاج إلى اختبار أو دليل لا تملكه، يمكنك تدوين ذلك والمتابعة.</p>
+  </div>
+</details>
+
+
+
+<div class="gap-guidance" style="background:#f3f7fb;border-color:#cfe0ee;margin-bottom:14px">
+  <div class="gap-guidance-heading">قد يلزم دليل أو اختبار</div>
+  <div class="gap-guidance-text">يحتاج هذا عادةً إلى قياس أو اختبار أو دليل خارجي. يمكنك طلب دليل والمتابعة.</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<form method="POST" action="/session/55f19046-b3e8-465b-9b1b-277a4e62f83e">
+  
+  <input type="hidden" name="answer_token" value="r58cGt3p6dKNMtbXrzf3WiBvsFkGlssw.97a0c5e8ad7b57247b641b688c5be623">
+  <label for="response" style="display:block;margin-bottom:6px;font-size:13px;color:#555">إجابتك</label>
+  
+  <textarea id="response" name="response" rows="5" placeholder="صف تفكيرك هنا، أو اختر خيارًا أدناه..."
+    data-draft-field="answer" data-draft-scope="55f19046-b3e8-465b-9b1b-277a4e62f83e" data-draft-context="94bae7c433712c8b" data-draft-context-version="v1" data-draft-account="anon"></textarea>
+  <br>
+  <fieldset style="margin-top:12px;border:1px solid #e2e6ea;border-radius:4px;padding:10px">
+    <legend style="font-size:13px;color:#555;padding:0 6px">كيف تريد أن تردّ؟</legend>
+    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="answered" checked> الإجابة عن هذا السؤال (باستخدام النص أعلاه)</label>
+    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="unknown"> لا أعرف هذا بعد</label>
+    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="deferred"> تأجيل هذا السؤال الآن</label>
+    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="provisional_assumption"> تسجيل افتراض مبدئي (غير مُتحقَّق منه — ملاحظة اختيارية أعلاه)</label>
+    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="specialist_requested"> يحتاج متخصّص إلى الإجابة عن هذا</label>
+    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="evidence_requested"> يلزم دليل أو اختبار لهذا</label>
+  </fieldset>
+  <button type="submit">إرسال</button>
+</form>
+
+
+
+
+
+
+
+
+
+
+
+<details class="correct-answer" style="margin-top:14px;border:1px solid #c9d6e8;border-radius:4px;background:#f4f8fd;padding:10px 14px">
+  <summary style="cursor:pointer;font-size:13px;color:#2c5a8c;font-weight:bold">تصحيح إجابة سابقة</summary>
+  <p style="font-size:13px;color:#555;margin:10px 0 8px 0">تصحيح إجابة يُبقي الأصل في سجل مشروعك كإجابة مسحوبة — لا يُمحى شيء — ويُعاد حساب كل ما يُعرض بشكل حتمي من إجاباتك المتبقية.</p>
+  <form method="POST" action="/session/55f19046-b3e8-465b-9b1b-277a4e62f83e/correct">
+    <input type="hidden" name="answer_token" value="r58cGt3p6dKNMtbXrzf3WiBvsFkGlssw.97a0c5e8ad7b57247b641b688c5be623">
+    <label for="correct-target" style="display:block;font-size:12px;color:#888;margin-bottom:4px">اختر الإجابة المراد تصحيحها</label>
+    <select id="correct-target" name="supersedes_record_id" required style="max-width:100%;margin-bottom:8px">
+      
+      <option value="rec_1">rec_1 · الآلية العاملة · المنحدر يُطوى ويُفرد باليد. عندما يكون مفرودًا بشكل مسطح يجب أن يبقى م…</option>
+      
+      <option value="rec_2">rec_2 · الآلية العاملة · الأجزاء المتحركة هي المنحدر نفسه الذي يُطوى عند المدخل، وقطعة التثبيت …</option>
+      
+      <option value="rec_3">rec_3 · الآلية العاملة · الخطوات: أفرد المنحدر مسطحًا، فيُقفل المثبت، فيعبر الكرسي المتحرك؛ ولا…</option>
+      
+      <option value="rec_4">rec_4 · الجدوى العملية · يعتمد على أن يُبقي المثبت المنحدر مسطحًا تحت وزن كرسي متحرك. لا أعرف ك…</option>
+      
+      <option value="rec_5">rec_5 · الجدوى العملية · الرطوبة والأتربة في الخارج قد تُتلف المثبت أو تعلّقه مع الوقت. لا أملك…</option>
+      
+      <option value="rec_6">rec_6 · الجدوى العملية · الرطوبة والأتربة في الخارج قد تُتلف المثبت أو تعلّقه مع الوقت. لا أملك…</option>
+      
+      <option value="rec_7">rec_7 · الجدوى العملية · الرطوبة والأتربة في الخارج قد تُتلف المثبت أو تعلّقه مع الوقت. لا أملك…</option>
+      
+      <option value="rec_8">rec_8 · الجدوى العملية · الرطوبة والأتربة في الخارج قد تُتلف المثبت أو تعلّقه مع الوقت. لا أملك…</option>
+      
+      <option value="rec_9">rec_9 · الجدوى العملية · الرطوبة والأتربة في الخارج قد تُتلف المثبت أو تعلّقه مع الوقت. لا أملك…</option>
+      
+      <option value="rec_10">rec_10 · الجدوى العملية · الرطوبة والأتربة في الخارج قد تُتلف المثبت أو تعلّقه مع الوقت. لا أملك…</option>
+      
+      <option value="rec_11">rec_11 · الجدوى العملية · الرطوبة والأتربة في الخارج قد تُتلف المثبت أو تعلّقه مع الوقت. لا أملك…</option>
+      
+      <option value="rec_12">rec_12 · الجدوى العملية · الرطوبة والأتربة في الخارج قد تُتلف المثبت أو تعلّقه مع الوقت. لا أملك…</option>
+      
+      <option value="rec_13">rec_13 · الجدوى العملية · الرطوبة والأتربة في الخارج قد تُتلف المثبت أو تعلّقه مع الوقت. لا أملك…</option>
+      
+      <option value="rec_14">rec_14 · الجدوى العملية · الرطوبة والأتربة في الخارج قد تُتلف المثبت أو تعلّقه مع الوقت. لا أملك…</option>
+      
+      <option value="rec_15">rec_15 · الجدوى العملية · الرطوبة والأتربة في الخارج قد تُتلف المثبت أو تعلّقه مع الوقت. لا أملك…</option>
+      
+      <option value="rec_16">rec_16 · الجدوى العملية · الرطوبة والأتربة في الخارج قد تُتلف المثبت أو تعلّقه مع الوقت. لا أملك…</option>
+      
+      <option value="rec_17">rec_17 · الجدوى العملية · الرطوبة والأتربة في الخارج قد تُتلف المثبت أو تعلّقه مع الوقت. لا أملك…</option>
+      
+      <option value="rec_18">rec_18 · الجدوى العملية · الرطوبة والأتربة في الخارج قد تُتلف المثبت أو تعلّقه مع الوقت. لا أملك…</option>
+      
+      <option value="rec_19">rec_19 · الجدوى العملية · الرطوبة والأتربة في الخارج قد تُتلف المثبت أو تعلّقه مع الوقت. لا أملك…</option>
+      
+      <option value="rec_20">rec_20 · الجدوى العملية · الرطوبة والأتربة في الخارج قد تُتلف المثبت أو تعلّقه مع الوقت. لا أملك…</option>
+      
+      <option value="rec_21">rec_21 · الجدوى العملية · الرطوبة والأتربة في الخارج قد تُتلف المثبت أو تعلّقه مع الوقت. لا أملك…</option>
+      
+      <option value="rec_22">rec_22 · الجدوى العملية · الرطوبة والأتربة في الخارج قد تُتلف المثبت أو تعلّقه مع الوقت. لا أملك…</option>
+      
+      <option value="rec_23">rec_23 · الجدوى العملية · الرطوبة والأتربة في الخارج قد تُتلف المثبت أو تعلّقه مع الوقت. لا أملك…</option>
+      
+    </select>
+    <label for="correct-response" style="display:block;font-size:12px;color:#888;margin-bottom:4px">إجابتك المصحَّحة</label>
+    <textarea id="correct-response" name="response" rows="3" required style="width:100%;box-sizing:border-box"></textarea>
+    <br>
+    <button type="submit" style="margin-top:8px">سحب هذه الإجابة واستبدالها</button>
+  </form>
+</details>
+
+
+
+
+<details id="w2b-decision-capture" class="decision-capture"  style="margin-top:14px;border:1px solid #d5c9e8;border-radius:4px;background:#f9f5fd;padding:10px 14px">
+  <summary style="cursor:pointer;font-size:13px;color:#5a2c8c;font-weight:bold">تسجيل القرارات</summary>
+  <p style="font-size:13px;color:#555;margin:10px 0 8px 0">سجّل قرارًا تقنيًا تعمل عليه، واذكر البدائل التي تفكّر فيها، وحسّنها أو اسحبها مع تطوّر تفكيرك. يُحفظ كل شيء في سجل مشروعك ويُعاد بناؤه بدقة عند إعادة التحميل.</p>
+  
+  
+  <form method="POST" action="/session/55f19046-b3e8-465b-9b1b-277a4e62f83e/decision/declare-context" style="margin-top:6px">
+    <input type="hidden" name="answer_token" value="r58cGt3p6dKNMtbXrzf3WiBvsFkGlssw.97a0c5e8ad7b57247b641b688c5be623">
+    <label for="w2a-context-content" style="display:block;font-size:12px;color:#888;margin-bottom:4px">سجّل قرارًا للعمل عليه (صِغه كسؤال)</label>
+    <textarea id="w2a-context-content" name="content" rows="2" required style="width:100%;box-sizing:border-box"></textarea>
+    <br>
+    <button type="submit" style="margin-top:6px">تسجيل القرار</button>
+  </form>
+  
+</details>
+
+
+
+</main>
+</body>
+</html>
