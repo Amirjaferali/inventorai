@@ -16962,3 +16962,123 @@ executable delta.
 **Next step after this gate becomes authoritative — STOP.** The newly-eligible obligations named in
 the closure record §10 each require their own separate Owner authorization. Any next gate requires its
 own separate Owner authorization.
+
+---
+
+## G-3 — BOUNDED DECISION-VALUE REPAIR — CONTRACT FREEZE (governance-only contract candidate; provenance-only entry)
+
+**Provenance-only by design.** Lean §11 requires one record per governed gate. This entry carries
+**pointers, not substance**, so that if the contract later changes under authority, this entry can
+never become a competing substantive owner. `ROADMAP SUBSTANTIVE G-3 OWNER: NO`.
+
+**Repair lineage (BD-1).** This entry accompanies a **fresh same-base repair sibling** of the
+independently reviewed candidate `db5fb1aa9f73bfb2a21df88d1386a6274902660b`, whose verdict was
+`REPAIR REQUIRED — BOUNDED SAME-BASE SIBLING` on **BD-1 — user withdrawal was pre-committed as system
+elimination**. That candidate is immutable review evidence, is **not** this candidate's Git parent,
+and was never on origin by design. Earlier `06fc86b3…` and `daa7c219…` carry no evidence authority.
+The repair removes the frozen `withdrawn → eliminated` mapping, unifies D-G3-1 across status **and**
+basis, conditions the non-active-basis acceptance rule on that decision, and adds withdrawal-semantic
+-truth and canonical-mutation-discipline acceptance tests. The Lead then returned
+`REPAIR REQUIRED — ONE BOUNDED SAME-BASE SIBLING` on the resulting sibling
+`27ae273f7b35e909dfd5e275ac7d862b4249db52`, whose replacement sibling
+`87dc507e0a2a339333ff2abf6583f7c4cfe1df1b` removed a stale basis-absent fallback, made S-1
+status-neutral, moved the withdrawal-reason carrier into the unified D-G3-1, and corrected one
+citation. The Lead then returned `REPAIR REQUIRED — ONE FINAL BOUNDED SAME-BASE SIBLING` on
+`87dc507e…` for one remaining family: **several clauses collapsed product VISIBILITY into FDC
+COMPARISON MEMBERSHIP**, which would have decided D-G3-1 Option B by construction. This entry
+accompanies a further fresh same-base sibling which adds an explicit two-set distinction (rendered
+alternative set vs FDC comparison-eligible candidate set), repairs S-1, S-5, A-4, A-5 and A-23 against
+it, adds A-24 (visibility must not imply comparison membership), and cleans up the S-2 sequencing.
+`27ae273f…` and `87dc507e…` are Lead-review evidence and are **not** this candidate's Git parent. All
+prior siblings remain immutable review evidence; none is an ancestor of this one.
+
+**Authoritative base.** `39a966995d83ce72ba64a263c048d803f6d95061` — the PR #597 merge (the RVR-8
+formal closure; parents `1f3d9d14…` + `e50723e3…`, tree `e68c2e94…`), verified live from Git at
+freeze with **0 commits after it** `[EXEC]`.
+
+**Owner authorization boundary.** One bounded governance-only contract freeze. It authorizes creation
+of ONE implementation-contract candidate and a SHA-preserving bundle only — no implementation, no
+product/runtime/test change, no ODS-001, no FDC-001 lane activation, no Decision Workspace activation,
+no CAP, no readiness, no adaptive questioning, no third S2 run, no FCORA, no Serious Release, no
+deployment, no push, no PR, no merge. The candidate returns for Lead review before any implementation
+authorization.
+
+**Objective.** Design the smallest useful repair of the measured G-3 gap — RVR-8's **criteria 5 and 6
+FAIL on all 8 records** (*alternatives bounded and truthfully classified*; *elimination or
+qualification reasons explicit*) with **candidate representation / comparison absent on the evaluated
+Path-N surface** — so an inventor sees their already-declared candidates represented distinctly, with
+evidence state, explicit qualification / elimination / retention / cannot-decide reasons, and a
+truthful insufficiency result where evidence does not support comparison.
+
+**Exact changed paths (2).**
+1. `docs/governance/G3_BOUNDED_DECISION_VALUE_REPAIR_CONTRACT_CANDIDATE.md` (new)
+2. `docs/governance/ACTIVE_EXECUTION_ROADMAP.md` (this entry)
+
+**Where the substance lives.** The contract candidate — the exact owner map (§2), the mechanical cause
+of criteria 5/6 (§3), the ODS-001 and FDC-001 adjudications (§4, §5), the two-set distinction and
+minimum scope (§6.0, §6), the four
+bounded decision points an implementation gate must resolve first (§7), canonical ownership (§8),
+determinism (§9), EN/AR (§10), the early-intersection assessment (§11), the frozen acceptance-evidence
+contract (§12), the path-set derivation (§13), non-goals (§14), self-termination (§15) and
+anti-anchoring (§16). Read it there; this entry does not restate it.
+
+**Adjudications — the two the Owner required by name.**
+`ODS-001 REQUIRED: NO` · `ODS-001 ACTIVATION REQUIRED: NO` — every committed definition scopes ODS-001
+to a components / materials / manufacturing catalogue (`SO-5`, *"Not designed. Not authorized."*), and
+its entire runtime footprint is the two deliverable DEFERRED notes at
+`engine/deliverable_assembler.py:1008,1010`, which stay byte-unchanged.
+`FDC-001 ACTIVATION REQUIRED: NO` — the `DecisionRecord` class is **already** lawfully inside the
+served Path-N runtime through the CLOSED, evidence-verified **OD-W2-DW-LIFT** (W2-A contract §5), and
+the repair uses only that same class and vocabulary through the same composition seam. **Disclosed and
+gated rather than assumed:** whether OD-W2-DW-LIFT permission (3) already covers the larger vocabulary
+subset the repair needs is an Owner reading of the Owner's own instrument, and the contract records an
+explicit Owner confirmation or bounded extension of that permission as a **precondition of
+implementation authorization**. Under either reading the lane stays `INACTIVE` — no second journey, no
+DW endpoint or template change, no DW UI activation, no persistence expansion — so nothing is silently
+activated. `RVR-4 REOPEN REQUIRED: NO`; `T1-A′` remains the G-3 governance owner and **no new owner is
+created**.
+
+**Early-intersection result.** `DEFERRED MARKET / MANUFACTURING PRODUCT-DIRECTION INTERSECTION
+DETECTED: YES` · `RECONCILIATION BROUGHT FORWARD: NO` · `RECONCILIATION MUST BE INFORMED: YES` ·
+`NO-FORECLOSURE CONSTRAINT APPLIES: YES`. A no-foreclosure rule suffices: the repair may add no new
+canonical decision owner, no dimension vocabulary, no readiness level and no cross-layer confidence
+propagation, leaving the reconciliation's architectural options equally available. The reconciliation
+row's owner, disposition, return trigger and latest safe gate (**BEFORE FCORA CONVENES**) are
+**UNCHANGED**; nothing is discharged; the intersection is **not** used to block G-3.
+
+**Registers deliberately untouched, and why.** `DEFERRED_OBLIGATIONS_REGISTER.md` — no obligation
+fires, closes, is created or is re-owned by a contract freeze, and G-3 is **already** routed to
+`T1-A′` in that row; re-recording it would duplicate an existing routing. `ACTIVE_INCREMENT_CONTRACT.md`
+— under the repaired AIC Authoritative-only rule an in-flight candidate never appears there, and a
+governance-only gate opens no implementation contract; `ACTIVE CONTRACT: NONE` is untouched.
+`CURRENT_PROJECT_STATE.md` — its pin is expressly subordinated to Git. `OWNER_DECISION_REGISTER.md` —
+no owner decision is accepted and committed at this gate; this gate's own authorization is recorded in
+this entry, per the convention established at the AIC self-terminating repair gate.
+
+**Non-authorization fences.** `G-3 IMPLEMENTATION AUTHORIZED: NO` · `G-3 IMPLEMENTATION STARTED: NO` ·
+`ODS-001: NOT ACTIVATED` · `FDC-001 LANE: INACTIVE` · `DECISION WORKSPACE: NOT ACTIVATED` ·
+`CAP-06 / CAP-12 / CAP-13 / CAP-14 / CAP-18 ACTIVATED: NO` · `READINESS IMPLEMENTATION AUTHORIZED: NO` ·
+`MEANING-ADAPTIVE / TIER-2 ACTIVATED: NO` · `WS11: DORMANT` · `gap_relevance` UNCHANGED ·
+`W1-N3` NOT reopened · `RVR-4` CLOSED, not reopened · `T1-A′ / T1-C′ / T1-D / MG-8 / R4-C: OPEN` ·
+`T2-G / OD-PDVG-10: OPEN, UNDECIDED` · `SECOND S2 RUN: CONSUMED` · `THIRD S2 RUN: NOT AUTHORIZED` ·
+`FCORA AUTHORIZED: NO` · readiness reconciliation **ELIGIBLE, NOT CONVENED** · `PSRR GO: NO` ·
+`ACTIVE CONTRACT: NONE` (untouched) ·
+`DEPLOYMENT / PRODUCTION / SERIOUS RELEASE / PAID ACTIVATION: NOT AUTHORIZED` · `main` NOT RECONCILED.
+**`engine/ web/ domains/ tests/ database/ schemas/ prompts/ scripts/ and the benchmark instrument: 0 —
+PRODUCT RUNTIME DELTA 0`.**
+
+**Candidate lifecycle status — stated as a fact about this gate's freeze, and true afterwards because
+it is scoped to that moment.** As at freeze: `OWNER CONTRACT-FREEZE LIFECYCLE AUTHORIZED: YES` and
+`OWNER EXACT CONTRACT-SHA ACCEPTED: NO`. The contract becomes authoritative only through Lead review,
+Independent Review, Owner exact-SHA acceptance, separate publication authorization, PR, separate merge
+authorization, CREATE A MERGE COMMIT (second parent = the accepted candidate, EMPTY candidate→merge
+diff) and post-merge identity verification. Implementation START remains a further separate Owner
+decision after that. **No post-merge status synchronization is owed merely because this contract
+candidate merges.**
+
+**Lean classification.** `LEAN RISK LEVEL: 2` · `REVIEW DEPTH: 2` — bounded governance-only contract
+freeze, zero executable delta.
+
+**Next step after this gate — STOP.** Lead review of the contract candidate. Implementation, and the
+Owner confirmation or bounded extension of OD-W2-DW-LIFT permission (3) that the contract names as its
+precondition, each require their own separate Owner authorization.
