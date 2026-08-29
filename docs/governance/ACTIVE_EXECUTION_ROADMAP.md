@@ -17217,3 +17217,67 @@ zero executable delta.
 
 **Next step after this gate — STOP.** Lead review of this design candidate. A separate Owner authorization
 is required before the slice may be executed, and T1-A′ closure remains a further separate Owner decision.
+
+
+---
+
+## S2-PATHN-DCS-001 — OWNER CRITERION-5 EVIDENCE ADJUDICATION (governance-only; provenance-only entry)
+
+**Provenance-only by design.** Lean §11 requires one record per governed gate, and separately requires the
+Owner Decision Register to be updated whenever an owner decision is accepted and committed. This entry is
+the former and carries **pointers, not substance**: the decision lives in `OWNER_DECISION_REGISTER.md`
+(`OD-DCS001-C5`), and the measured facts live in the immutable slice evidence.
+`ROADMAP SUBSTANTIVE ADJUDICATION OWNER: NO`.
+
+**Authoritative base.** Product `d867b92eaa69221b1884a9a2eef25cd74225bb86` (PR #601), verified live from
+Git at this gate; accepted immutable slice evidence `39bc856471eb252a62abe9332bfb611590c2b898`,
+re-verified here (14 files, `SHA256SUMS` 13/13 OK, non-evidence delta 0, not an ancestor of the product
+branch) `[EXEC]`.
+
+**What this gate records — two truths, kept distinct.** `HISTORICAL EVALUATOR JUDGEMENT: CRITERION 5 =
+PARTIAL ×4`, preserved unaltered inside the evidence commit; and `OWNER-ADJUDICATED GOVERNING RESULT:
+CRITERION 5 = PASS ×4`, recorded in the register. **Neither overwrites the other.** `CRITERION 6 = PASS
+×4` is unchanged. The Owner did not adopt stable-display-name matchability as an additional criterion-5
+PASS requirement because it was not part of the authoritative frozen observation contract — a premise
+verified at this gate against the frozen design's own four-item §6 list. The refinement display-name
+observation stands as a **NON-BLOCKING UX OBSERVATION ONLY**.
+
+**What this gate is NOT.** Not a re-grade · not a reopening of the slice design or of G-3 · not a new
+T1-A′ product blocker · not a modification of the evidence artifact · not a T1-A′ closure · not a product
+or UX repair authorization · not authorization for another slice execution or Run-004 · not a new
+criterion.
+
+**Exact changed paths (2).**
+1. `docs/governance/OWNER_DECISION_REGISTER.md` — Lean §11: the register is updated whenever an owner
+   decision is accepted and committed. One bounded append; no existing row rewritten.
+2. `docs/governance/ACTIVE_EXECUTION_ROADMAP.md` (this entry) — Lean §11: one record per governed gate.
+
+**Paths deliberately NOT changed.** The evidence commit `39bc8564…` and its artifacts — immutable by the
+preservation fence, and an evidence commit is never rewritten. `S2_PATHN_DECISION_CAPTURE_SLICE_DESIGN.md`
+and `BICYCLE_BRAKE_LIGHT_COMPETITIVE_BENCHMARK.md` — both byte-unchanged; no criterion is created,
+reworded or re-scoped. `DEFERRED_OBLIGATIONS_REGISTER.md` — no obligation fires, closes, is created or is
+re-owned by an adjudication; `T1-A′` (L150) stays OPEN/`FRB` and the G-4 (L160) and RVR-7 (L147) rows keep
+their existing owners. `ACTIVE_INCREMENT_CONTRACT.md` — `ACTIVE CONTRACT: NONE` untouched.
+`CURRENT_PROJECT_STATE.md` — its pin is expressly subordinated to Git. **All product, runtime, test,
+schema, domain, prompt, script and benchmark paths: 0 — `EXECUTABLE DELTA: 0`.**
+
+**Continuity fence.** Nothing previously reconciled is displaced, marked complete or reordered: readiness
+reconciliation stays ELIGIBLE/NOT CONVENED, `T1-A′` OPEN, `T1-C′`/`T1-D` OPEN and separate, G-4 and G-5
+unrepaired with their existing rows, and the deferred/future/release/commercial items are preserved by
+authoritative pointer to `DEFERRED_OBLIGATIONS_REGISTER.md` and `CURRENT_PROJECT_STATE.md`, both
+byte-unchanged at this gate.
+
+**Non-authorization fences.** `T1-A′: OPEN` · `T1-A′ CLOSED: NOT ASSERTED` · `G-3: NOT REOPENED` ·
+`PRODUCT / UX REPAIR AUTHORIZED: NO` · `FURTHER SLICE EXECUTION AUTHORIZED: NO` · `RUN-004 AUTHORIZED:
+NO` · `BENCHMARK / CORPUS MODIFICATION: NONE` · `NEW CRITERION CREATED: NO` · `FDC-001 LANE: INACTIVE` ·
+`DECISION WORKSPACE / PATH-T: NOT ACTIVATED` · `ODS-001: NOT ACTIVATED` · `RVR-4: CLOSED` · `READINESS
+IMPLEMENTATION AUTHORIZED: NO` · `CAP ACTIVATION: NONE` · `FCORA AUTHORIZED: NO` · `PSRR GO: NO` ·
+`ACTIVE CONTRACT: NONE` (untouched) · `DEPLOYMENT / PRODUCTION / SERIOUS RELEASE / PAID ACTIVATION: NOT
+AUTHORIZED` · `main` NOT RECONCILED.
+
+**Lean classification.** `LEAN RISK LEVEL: 2` · `REVIEW DEPTH: 2` — bounded governance-only recording,
+zero executable delta.
+
+**Next step after this gate — STOP.** Lead review of this recording candidate. T1-A′ closure and any
+disposition of the non-blocking UX observation each remain separate Owner decisions; neither is created,
+implied or scheduled here.
