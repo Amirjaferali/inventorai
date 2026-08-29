@@ -22,6 +22,25 @@ state (a truthful `insufficient_information` is expected while comparison
 inputs are empty by construction). Broader Decision Workspace Path-T remains
 `PRESERVE UNMODIFIED AND PAUSE`.
 
+G-3 (authoritative contract PR #598; Owner decisions PR #599) adds the
+bounded RENDERED alternative set beside — never instead of — the FDC
+comparison-eligible candidate set:
+
+  * SET A, ``rendered_alternative_set`` — what the inventor can see: one entry
+    per founding alternative root they declared, a user-WITHDRAWN one
+    included, so a withdrawal never silently disappears (D-G3-1);
+  * SET B, ``compose_decision_records`` — ``DecisionRecord.candidates``: a user
+    withdrawal REMOVES the alternative from it, unchanged from W2-A.
+
+Both are deterministic projections of the SAME ledger; neither is a second
+store, model, comparison engine or persistence layer. Visibility alone creates
+NO decision-semantic consequence (contract A-24): membership of SET B is read
+from the composed record and is never inferred from SET A. A withdrawal is a
+lifecycle act, not an FDC disposition, so no ``dispose_candidate()``-equivalent
+state is fabricated for it (A-23(b)), and refinement text is never promoted to
+a ``ClaimItem`` (D-G3-2). Only already-existing ``DecisionRecord`` vocabulary is
+reused, through this same seam (OD-W2-DW-LIFT permission (3), Owner reading).
+
 Determinism (contract §9): identity is root-based
 (`decision-pn-<idea_id>-<root>`, `cand-pn-<root>`), never uuid, never
 replay-position, never display-text; ordering is by ascending numeric
@@ -33,7 +52,19 @@ from engine.idea_state import (
     DISPOSITION_DECISION_ALTERNATIVE_DECLARED,
     DISPOSITION_DECISION_ALTERNATIVE_WITHDRAWN,
 )
-from engine.decision_workspace import Candidate, DecisionRecord
+from engine.decision_workspace import (
+    CANDIDATE_NOT_YET_COMPARABLE,
+    Candidate,
+    DecisionRecord,
+)
+
+# G-3 rendered-set vocabulary. These name PRESENTATION facts about SET A and
+# are deliberately NOT `option_status` / `disposition_basis` values: no new
+# FDC vocabulary is created, and none of these ever reaches a `DecisionRecord`.
+ALT_LIFECYCLE_ACTIVE = "active"
+ALT_LIFECYCLE_WITHDRAWN = "withdrawn"
+EVIDENCE_NO_RECORDED_DETAIL = "no_recorded_detail"
+EVIDENCE_RECORDED_DETAIL = "recorded_detail"
 
 
 def _root_num(record_id):
@@ -91,9 +122,13 @@ def refine_alternative(state, content, supersedes_id, iteration=0):
 
 
 def withdraw_alternative(state, supersedes_id, reason="", iteration=0):
-    """Withdraw an active alternative. Its chain leaves the composed candidate
-    set; the ledger keeps the full history. A later re-declaration founds a
-    NEW chain (new root, new identity)."""
+    """Withdraw an active alternative (D-G3-1: a USER LIFECYCLE ACT, never an
+    evidence-based system elimination). Its chain leaves the FDC
+    comparison-eligible candidate set (SET B) and STAYS in the bounded rendered
+    set (SET A) with its reason and provenance, so the inventor still sees what
+    happened to it; the ledger keeps the full history. A later re-declaration
+    founds a NEW chain (new root, new identity) — the withdrawn chain is never
+    silently reactivated."""
     target = state._require_record(supersedes_id)
     return state.record_interaction(
         action=DISPOSITION_DECISION_ALTERNATIVE_WITHDRAWN, content=reason or "",
@@ -121,6 +156,8 @@ def compose_decision_records(state):
 
     # Alternative chains: ACTIVE head of class alternative_declared belongs to
     # its context's candidate set; a withdrawn/superseded chain is absent.
+    # Absent HERE means absent from SET B only — `rendered_alternative_set`
+    # still shows a withdrawn chain to the inventor (D-G3-1).
     alternatives = {}
     for r in active:
         if r.disposition == DISPOSITION_DECISION_ALTERNATIVE_DECLARED:
@@ -144,37 +181,125 @@ def compose_decision_records(state):
     return records
 
 
+def rendered_alternative_set(state):
+    """G-3 SET A — the bounded RENDERED alternative set, keyed by context root.
+
+    One entry per founding alternative root the inventor declared inside a
+    context, **including a user-withdrawn one** (D-G3-1: no silent
+    disappearance). Each entry carries only ledger-derived facts:
+
+      ``root``               the founding record id — stable identity
+      ``name``               the LATEST declared content of that chain, verbatim
+      ``lifecycle_state``    ``active`` | ``withdrawn`` — a USER lifecycle fact
+      ``head_record_id``     the active declared head (``None`` when withdrawn)
+      ``withdrawal_reason``  the inventor's recorded reason; ``""`` when the
+                             withdrawal recorded none; ``None`` when not
+                             withdrawn. Never invented, never upgraded.
+      ``refinement_count``   refinements recorded on that chain
+      ``evidence_state``     derived ONLY from that chain's own records
+
+    This function decides NOTHING about FDC comparison membership, readiness,
+    accounting or disposition — those remain ``compose_decision_records`` and
+    the unchanged ``DecisionRecord`` derivations. Pure, read-only,
+    deterministic (ascending numeric founding root), persisted nowhere.
+    """
+    assertions = list(getattr(state, "assertions", []))
+    by_id, root_of = _chain_index(assertions)
+    active = [r for r in assertions
+              if getattr(r, "superseded_by", None) is None]
+
+    # Every declared record of each alternative chain, in ledger order: the
+    # last one is the chain's current text, and the count gives the recorded
+    # refinement depth. Refinement text is read here as the inventor's own
+    # recorded detail ONLY — it is never projected into an FDC `ClaimItem`
+    # and is never given a claim class (D-G3-2).
+    declared_by_root = {}
+    for r in assertions:
+        if r.disposition == DISPOSITION_DECISION_ALTERNATIVE_DECLARED:
+            declared_by_root.setdefault(root_of(r), []).append(r)
+
+    by_context = {}
+    for r in active:
+        root = root_of(r)
+        chain = declared_by_root.get(root, [])
+        if r.disposition == DISPOSITION_DECISION_ALTERNATIVE_DECLARED:
+            entry = {
+                "root": root,
+                "name": r.content,
+                "lifecycle_state": ALT_LIFECYCLE_ACTIVE,
+                "head_record_id": r.record_id,
+                "withdrawal_reason": None,
+            }
+        elif r.disposition == DISPOSITION_DECISION_ALTERNATIVE_WITHDRAWN:
+            if not chain:
+                # A withdrawal whose chain carries no declared record cannot be
+                # described truthfully; fail loudly rather than render a
+                # fabricated alternative.
+                raise ValueError(
+                    f"withdrawal {r.record_id!r} has no declared chain record")
+            entry = {
+                "root": root,
+                "name": chain[-1].content,
+                "lifecycle_state": ALT_LIFECYCLE_WITHDRAWN,
+                "head_record_id": None,
+                # `content` IS the reason the inventor supplied; "" means the
+                # withdrawal recorded none, which the surface must say plainly.
+                "withdrawal_reason": r.content or "",
+            }
+        else:
+            continue
+        entry["refinement_count"] = max(len(chain) - 1, 0)
+        entry["evidence_state"] = (
+            EVIDENCE_RECORDED_DETAIL if entry["refinement_count"]
+            else EVIDENCE_NO_RECORDED_DETAIL)
+        by_context.setdefault(r.decision_context_root, []).append(entry)
+
+    for entries in by_context.values():
+        entries.sort(key=lambda e: _root_num(e["root"]))
+    return by_context
+
+
 def decision_capture_view(state):
     """Presentation-shaped, JSON-safe projection for the existing journey
     surfaces (session/deliverable templates). Derived; carries the ledger ids
     the bounded UI forms need (context root, active alternative head ids).
     Introduces no second canonical model — every value restates the composed
-    FDC-001 record or the ledger verbatim."""
-    assertions = list(getattr(state, "assertions", []))
-    by_id, root_of = _chain_index(assertions)
-    active = [r for r in assertions
-              if getattr(r, "superseded_by", None) is None]
-    heads = {}
-    for r in active:
-        if r.disposition == DISPOSITION_DECISION_ALTERNATIVE_DECLARED:
-            heads[root_of(r)] = r
+    FDC-001 record, SET A, or the ledger verbatim.
+
+    Each rendered alternative additionally carries the SET A / SET B split:
+    ``comparison_eligible`` and ``candidate_id`` are read from the composed
+    record's own candidate list, and ``not_comparable`` from its own derived
+    ``blocking_reasons`` — never inferred from the fact that an alternative is
+    visible (contract A-24). Blocking reasons are exposed as CODES so the
+    surface can render a governed EN/AR string; the engine's English
+    ``BlockingReason.text`` is never served (contract §10 / A-16).
+    """
+    rendered = rendered_alternative_set(state)
     view = []
     for rec in compose_decision_records(state):
         ctx_root = rec.decision_id.rsplit("-", 1)[-1]
+        members = {c.candidate_id.rsplit("-", 1)[-1]: c for c in rec.candidates}
+        not_comparable_ids = {
+            b.affected_candidate_id for b in rec.blocking_reasons
+            if b.code == CANDIDATE_NOT_YET_COMPARABLE}
+        alternatives = []
+        for entry in rendered.get(ctx_root, []):
+            candidate = members.get(entry["root"])
+            alternatives.append(dict(
+                entry,
+                candidate_id=(candidate.candidate_id if candidate else None),
+                comparison_eligible=candidate is not None,
+                option_status=(candidate.option_status if candidate else None),
+                not_comparable=bool(
+                    candidate is not None
+                    and candidate.candidate_id in not_comparable_ids),
+            ))
         view.append({
             "context_root": ctx_root,
             "decision_id": rec.decision_id,
             "question": rec.decision_question,
             "readiness_status": rec.readiness_status,
-            "alternatives": [
-                {
-                    "candidate_id": c.candidate_id,
-                    "root": c.candidate_id.rsplit("-", 1)[-1],
-                    "head_record_id": heads[
-                        c.candidate_id.rsplit("-", 1)[-1]].record_id,
-                    "name": c.name,
-                }
-                for c in rec.candidates
-            ],
+            "blocking_reason_codes": [b.code for b in rec.blocking_reasons],
+            "alternatives": alternatives,
         })
     return view

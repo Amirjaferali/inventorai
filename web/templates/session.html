@@ -569,11 +569,31 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
   <div class="w2a-context" style="border:1px solid #e2d9ef;border-radius:4px;background:#ffffff;padding:8px 12px;margin-bottom:10px">
     <p style="margin:4px 0"><strong>{{ t('UI_W2A_QUESTION_LABEL') }}:</strong> {{ d.question }}</p>
     <p style="margin:8px 0 4px 0;font-size:13px"><strong>{{ t('UI_W2A_ALTERNATIVES_LABEL') }}:</strong></p>
+    {# G-3: the BOUNDED RENDERED alternative set (§6.0 SET A) - every
+       alternative the inventor declared, a withdrawn one included so it never
+       silently disappears. `comparison_eligible` / `not_comparable` are read
+       from the composed record's own candidates and blocking reasons; being
+       visible here creates no decision-semantic consequence (A-24). Mutation
+       forms are offered for ACTIVE alternatives only, and are suppressed
+       entirely on a cold read-only view. #}
     {% if d.alternatives %}
     <ul style="margin:4px 0 8px 0">
       {% for a in d.alternatives %}
-      <li style="margin-bottom:8px">{{ a.name }}
-        {% if state.domain %}
+      <li class="g3-alternative g3-{{ a.lifecycle_state }}" style="margin-bottom:10px">
+        <span class="g3-name">{{ a.name }}</span>
+        <span class="g3-state" style="font-size:12px;color:#5a2c8c">— {{ t('UI_G3_STATE_WITHDRAWN') if a.lifecycle_state == 'withdrawn' else t('UI_G3_STATE_ACTIVE') }}</span>
+        {% if a.lifecycle_state == 'withdrawn' %}
+          {% if a.withdrawal_reason %}
+        <div class="g3-reason" style="font-size:12px;color:#555;margin:2px 0 0 12px"><strong>{{ t('UI_G3_REASON_LABEL') }}:</strong> {{ a.withdrawal_reason }}</div>
+          {% else %}
+        <div class="g3-reason" style="font-size:12px;color:#777;margin:2px 0 0 12px">{{ t('UI_G3_REASON_NOT_RECORDED') }}</div>
+          {% endif %}
+        {% else %}
+        <div class="g3-evidence" style="font-size:12px;color:#777;margin:2px 0 0 12px">{{ t('UI_G3_EVIDENCE_RECORDED') if a.evidence_state == 'recorded_detail' else t('UI_G3_EVIDENCE_NONE') }}</div>
+          {% if a.not_comparable %}
+        <div class="g3-not-comparable" style="font-size:12px;color:#777;margin:2px 0 0 12px">{{ t('UI_G3_NOT_COMPARABLE') }}</div>
+          {% endif %}
+          {% if state.domain %}
         <form method="POST" action="/session/{{ sid }}/decision/refine-alternative" style="display:inline-block;margin:2px 6px">
           <input type="hidden" name="answer_token" value="{{ answer_token }}">
           <input type="hidden" name="supersedes_record_id" value="{{ a.head_record_id }}">
@@ -583,12 +603,15 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
         <form method="POST" action="/session/{{ sid }}/decision/withdraw-alternative" style="display:inline-block;margin:2px 6px">
           <input type="hidden" name="answer_token" value="{{ answer_token }}">
           <input type="hidden" name="supersedes_record_id" value="{{ a.head_record_id }}">
+          <input type="text" name="reason" aria-label="{{ t('UI_G3_WITHDRAW_REASON_LABEL') }}" placeholder="{{ t('UI_G3_WITHDRAW_REASON_LABEL') }}" style="max-width:240px">
           <button type="submit" title="{{ t('UI_W2A_WITHDRAW_LABEL') }}">{{ t('UI_W2A_WITHDRAW_BUTTON') }}</button>
         </form>
+          {% endif %}
         {% endif %}
       </li>
       {% endfor %}
     </ul>
+    <p class="g3-history-note" style="font-size:12px;color:#777;margin:4px 0 8px 0">{{ t('UI_G3_HISTORY_NOTE') }}</p>
     {% else %}
     <p style="font-size:13px;color:#777;margin:4px 0">{{ t('UI_W2A_NO_ALTERNATIVES') }}</p>
     {% endif %}
