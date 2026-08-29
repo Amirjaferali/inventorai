@@ -1618,3 +1618,48 @@ readiness reconciliation **ELIGIBLE, NOT CONVENED** · `PSRR GO: NO` ·
 `DEPLOYMENT / PRODUCTION / SERIOUS RELEASE / PAID ACTIVATION: NOT AUTHORIZED` ·
 `main` NOT RECONCILED. **No product, readiness, release or verification authorization is registered
 here, because none exists.**
+
+
+---
+
+## T1-A′ supplemental measurement design — Option B selected (design-freeze authorization only)
+
+Recorded at the T1-A′ supplemental S2 measurement-slice design-freeze gate, on the authoritative product
+base `5a392f0cfd7d6b19874382441f78fee61cee1a26` (the PR #600 merge of the G-3 implementation), with the
+accepted Run-003 evidence `f1c104ecca38ef99c0937454c8c7419df5130012` published at
+`refs/evidence/s2run003-f1c104ec` and verified at this gate (31 files, `SHA256SUMS` 30/30 OK, non-evidence
+delta 0, not an ancestor of the product branch) `[REPO]`.
+
+Run-003 established the T1-A′ criteria-5/6 blocker as **reachability, not capability**: all eight records
+served the decision-capture section and its `declare-context` form, while the frozen answer-only corpus
+produced **0 decision contexts and 0 alternatives**, so criteria 5 and 6 had **no subject** and their
+`FAIL ×8` is evidence about the corpus, not about the G-3 implementation in either direction.
+
+| ID | Subject | Status | Evidence |
+|---|---|---|---|
+| OD-T1AP-SLICE-B | **Option B selected as the T1-A′ supplemental measurement design.** Same frozen cases · same frozen seeds · same criteria · same §15.7 core gate · same perspectives available · **the Run-002/003 eight-record series is IMMUTABLE** · a **separate** supplemental slice explicitly exercises the already-authoritative Path-N decision-capture / G-3 lifecycle · supplemental results are **never merged, averaged, substituted into, or represented as record-for-record replacements for** that series. Options A (answer-policy change), C (corpus extension) and D (criterion applicability/routing correction) are **not** selected; D was additionally rejected on the instrument's own §15.5 rule, which permits `NOT APPLICABLE` only where a criterion is structurally bound to another product lane — after G-3, criteria 5/6 have a real Path-N subject, so marking them `NOT APPLICABLE` would be false. No existing authoritative mechanism (option E) was found that can satisfy T1-A′. | **ACCEPTED AND COMMITTED — DESIGN AUTHORIZATION ONLY.** `SLICE EXECUTION AUTHORIZED: NO` · `RUN-004 AUTHORIZED: NO` · `FOURTH PATH-N RELEASE-CANDIDATE RUN AUTHORIZED: NO`. A future execution requires a **separate** Owner authorization naming the slice id, the exact product SHA and the one-execution boundary. | Decision substance is Owner-supplied `[OWNER-PREMISE]`. Frozen design of record: `docs/benchmarks/S2_PATHN_DECISION_CAPTURE_SLICE_DESIGN.md` (slice id `S2-PATHN-DCS-001`). Measured basis: Run-003 evidence `f1c104ec…` `[REPO]` |
+
+**Instrument ownership and the §15.10 boundary, carried with this registration.**
+`docs/benchmarks/BICYCLE_BRAKE_LIGHT_COMPETITIVE_BENCHMARK.md` remains the **sole** benchmark owner and is
+**byte-unchanged**; the slice design is a scoped pointer-only supplemental protocol under that record's own
+§11 amendment mechanism, and creates **no second benchmark owner** and **no new criteria**. §15.10 defines
+one Path-N release-candidate run as exactly 2×2×2 = 8 records and forbids splitting them; **the slice is
+NOT such a run**, consumes no part of that boundary, adds no ninth record, and may never be described as
+one. The frozen instrument, the frozen corpus, §15.3's history and the Run-001/002/003 evidence sets are
+**not modified, reinterpreted or rewritten** by this decision.
+
+**What this recording deliberately does NOT do.** It does not close, discharge, reorder or re-own any
+obligation; `T1-A′` (DOR §3 L150) stays **OPEN / `FRB`**, and the two product blockers measured at
+Run-003 — the EN↔AR substantive-assessment divergence (DOR §3 L160, `FRB`) and the `gap_relevance`/RVR-2
+relevance false-negative returning through RVR-7 (DOR §3 L147) — remain **OPEN with their existing owners**
+and are untouched. **No new owner and no new tracker is created.** `DEFERRED_OBLIGATIONS_REGISTER.md`,
+`ACTIVE_INCREMENT_CONTRACT.md` and `CURRENT_PROJECT_STATE.md` are **byte-unchanged**. `EXECUTABLE DELTA: 0`.
+
+**Boundary carried with this registration (none is weakened by it):**
+`SLICE EXECUTION AUTHORIZED: NO` · `RUN-004 AUTHORIZED: NO` · `BENCHMARK MODIFICATION: NONE` ·
+`CORPUS MODIFICATION: NONE` · `PRODUCT DELTA: 0` · `G-3: NOT REOPENED` · `G-4: NOT REPAIRED` ·
+`G-5: NOT REPAIRED` · `M-1 RELEVANCE: NOT REPAIRED` · `T1-A′: OPEN` · `T1-C′ / T1-D: OPEN, SEPARATE` ·
+`FDC-001 LANE: INACTIVE` · `DECISION WORKSPACE / PATH-T: NOT ACTIVATED` · `ODS-001: NOT ACTIVATED` ·
+`RVR-4: CLOSED, NOT REOPENED` · `READINESS IMPLEMENTATION AUTHORIZED: NO` · `CAP ACTIVATION: NONE` ·
+readiness reconciliation **ELIGIBLE, NOT CONVENED** · `FCORA AUTHORIZED: NO` · `PSRR GO: NO` ·
+`DEPLOYMENT / PRODUCTION / SERIOUS RELEASE / PAID ACTIVATION: NOT AUTHORIZED` · `main` NOT RECONCILED.
