@@ -1663,3 +1663,48 @@ and are untouched. **No new owner and no new tracker is created.** `DEFERRED_OBL
 `RVR-4: CLOSED, NOT REOPENED` · `READINESS IMPLEMENTATION AUTHORIZED: NO` · `CAP ACTIVATION: NONE` ·
 readiness reconciliation **ELIGIBLE, NOT CONVENED** · `FCORA AUTHORIZED: NO` · `PSRR GO: NO` ·
 `DEPLOYMENT / PRODUCTION / SERIOUS RELEASE / PAID ACTIVATION: NOT AUTHORIZED` · `main` NOT RECONCILED.
+
+
+---
+
+## S2-PATHN-DCS-001 — Owner criterion-5 evidence adjudication (governance-only; both truths preserved)
+
+Recorded at the S2-PATHN-DCS-001 criterion-5 adjudication gate, on the authoritative product base
+`d867b92eaa69221b1884a9a2eef25cd74225bb86` (the PR #601 merge that made the supplemental slice design
+authoritative), against the accepted immutable slice evidence
+`39bc856471eb252a62abe9332bfb611590c2b898` (tree `f98f1716…`, parent = the evaluated SHA; 14 files;
+`SHA256SUMS` 13/13 OK; non-evidence delta 0; not an ancestor of the product branch) `[REPO]`.
+
+**Two truths are recorded here and neither overwrites the other.**
+
+| | Truth | Value | Where it lives |
+|---|---|---|---|
+| 1 | **HISTORICAL EVALUATOR JUDGEMENT** | **`CRITERION 5: PARTIAL ×4`** | Preserved unaltered inside evidence `39bc8564…` — the slice record and `criteria_5_6_matrix.json`. **Not rewritten, not re-graded, not superseded in place.** |
+| 2 | **OWNER-ADJUDICATED GOVERNING RESULT** | **`CRITERION 5: PASS ×4`** | This register entry. It governs; it does **not** edit truth 1. |
+
+| ID | Subject | Status | Evidence |
+|---|---|---|---|
+| OD-DCS001-C5 | **Owner S2-PATHN-DCS-001 criterion-5 evidence adjudication.** The measured facts preserved in evidence `39bc856471eb252a62abe9332bfb611590c2b898` **remain immutable**, and the historical evaluator result remains preserved as **`CRITERION 5: PARTIAL ×4`**. **The Owner does NOT adopt stable-display-name matchability as an additional criterion-5 PASS requirement, because it was not part of the authoritative frozen observation contract.** The authoritative criterion-5 observation contract **was satisfied in D1–D4**. The Owner-adjudicated supplemental result is therefore **`CRITERION 5: PASS ×4`**; **`CRITERION 6: PASS ×4`** is unchanged. The refinement display-name observation remains a **NON-BLOCKING UX OBSERVATION ONLY**. | **ACCEPTED AND COMMITTED — ADJUDICATION ONLY.** It does **NOT**: reopen G-3 · establish a new T1-A′ product blocker · modify the evidence artifact · rewrite the evaluator's historical judgement · close T1-A′ · authorize product repair · authorize another slice execution or Run-004. | Decision substance is Owner-supplied `[OWNER-PREMISE]`. **The Owner's stated premise is verified against repository authority, not merely relayed:** the frozen contract's criterion-5 observation list (`docs/benchmarks/S2_PATHN_DECISION_CAPTURE_SLICE_DESIGN.md` §6, blob `b887871a…`) contains exactly four items — bounded representation · no fabricated alternative · no silent disappearance · truthful current-vs-historical membership — and **display-name matchability is not among them**; the slice evidence records all four measured satisfied in D1–D4 `[REPO]` |
+
+**How the divergence arose, stated once and not re-litigated.** The evaluator's `PARTIAL` rested on an
+additional test — that a refined member should still display under a name matchable to the case's bounded
+candidate set — which the evaluator applied beyond the frozen observation contract and disclosed as such
+in the slice record. The Owner has adjudicated that test out of scope for criterion-5 PASS. The evaluator's
+reasoning and the underlying measurement both stand, unedited, inside the immutable evidence.
+
+**Preservation fence carried with this registration.** Unmodified by this decision: the evidence commit
+`39bc8564…` · the S2-PATHN-DCS-001 design · product, runtime and tests · the benchmark instrument · the
+frozen corpus · the G-3 implementation · every Deferred-Obligations-Register status · and the **`T1-A′:
+OPEN`** state. `DEFERRED_OBLIGATIONS_REGISTER.md`, `ACTIVE_INCREMENT_CONTRACT.md` and
+`CURRENT_PROJECT_STATE.md` are **byte-unchanged**; the benchmark instrument and the slice design are
+**byte-unchanged**. `EXECUTABLE DELTA: 0`.
+
+**Boundary carried with this registration (none is weakened by it):**
+`T1-A′: OPEN` · `T1-A′ CLOSED: NOT ASSERTED` · `G-3: NOT REOPENED` · `PRODUCT REPAIR AUTHORIZED: NO` ·
+`UX REPAIR AUTHORIZED: NO` · `FURTHER SLICE EXECUTION AUTHORIZED: NO` · `RUN-004 AUTHORIZED: NO` ·
+`BENCHMARK / CORPUS MODIFICATION: NONE` · `NEW CRITERION CREATED: NO` · `G-4 / G-5 / M-1 RELEVANCE: NOT
+REPAIRED, EXISTING OWNERS UNCHANGED` · `FDC-001 LANE: INACTIVE` · `DECISION WORKSPACE / PATH-T: NOT
+ACTIVATED` · `ODS-001: NOT ACTIVATED` · `RVR-4: CLOSED, NOT REOPENED` · `READINESS IMPLEMENTATION
+AUTHORIZED: NO` · `CAP ACTIVATION: NONE` · readiness reconciliation **ELIGIBLE, NOT CONVENED** ·
+`FCORA AUTHORIZED: NO` · `PSRR GO: NO` · `DEPLOYMENT / PRODUCTION / SERIOUS RELEASE / PAID ACTIVATION:
+NOT AUTHORIZED` · `main` NOT RECONCILED.
