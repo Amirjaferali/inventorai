@@ -952,6 +952,55 @@ UI_STRINGS = {
     "UI_W2A_DELIV_HEADING": {
         "en": "Recorded decision state",
         "ar": "حالة القرارات المسجّلة"},
+    # --- G-3 bounded decision-value repair (authoritative contract PR #598;
+    # Owner decisions OD-G3-1-WITHDRAWAL / OD-G3-2-REFINEMENT, PR #599).
+    # Governed EN/AR pairs for G-3's OWN new chrome only. Truthfulness rules
+    # these strings are bound by: a user withdrawal is a LIFECYCLE act and is
+    # never worded as an evidence-based system elimination; nothing claims a
+    # comparison, ranking, winner or engineering superiority; a missing reason
+    # is stated plainly and never invented.
+    "UI_G3_STATE_ACTIVE": {
+        "en": "still under consideration",
+        "ar": "ما زال قيد الدراسة"},
+    "UI_G3_STATE_WITHDRAWN": {
+        "en": "withdrawn by you",
+        "ar": "سحبتَه بنفسك"},
+    "UI_G3_REASON_LABEL": {
+        "en": "Your reason",
+        "ar": "سببك"},
+    "UI_G3_REASON_NOT_RECORDED": {
+        "en": "No reason was recorded with this withdrawal.",
+        "ar": "لم يُسجَّل أي سبب مع هذا السحب."},
+    # Renders the derived `candidate_not_yet_comparable` blocking reason. It
+    # must stay truthful ALONGSIDE UI_G3_EVIDENCE_RECORDED: what the inventor
+    # writes about an alternative is their own description and is deliberately
+    # NOT decision-evidence (D-G3-2), so "you recorded detail" and "not yet
+    # comparable" are both true at once and the string must say why.
+    "UI_G3_NOT_COMPARABLE": {
+        "en": ("Not yet comparable: what you have written about this "
+               "alternative is kept as your own description of it, not as "
+               "comparison input, so no comparison can use it yet."),
+        "ar": ("غير قابل للمقارنة بعد: ما كتبتَه عن هذا البديل محفوظ بوصفه "
+               "وصفك أنت له، لا كمُدخل للمقارنة، لذلك لا يمكن لأي مقارنة أن "
+               "تستخدمه بعد.")},
+    "UI_G3_EVIDENCE_NONE": {
+        "en": "Nothing recorded about it yet",
+        "ar": "لم يُسجَّل عنه شيء بعد"},
+    "UI_G3_EVIDENCE_RECORDED": {
+        "en": "You have recorded detail about it",
+        "ar": "لقد سجّلت تفاصيل عنه"},
+    "UI_G3_WITHDRAW_REASON_LABEL": {
+        "en": "Why are you withdrawing it? (optional)",
+        "ar": "لماذا تسحبه؟ (اختياري)"},
+    "UI_G3_HISTORY_NOTE": {
+        "en": ("Alternatives you withdrew stay listed here so your own "
+               "history remains complete. A withdrawn alternative takes no "
+               "part in comparison, and withdrawing one is your decision "
+               "about direction - it is not a judgement that the alternative "
+               "would not work."),
+        "ar": ("تبقى البدائل التي سحبتَها مدرجة هنا كي يظل سجلك كاملًا. "
+               "لا يشارك البديل المسحوب في المقارنة، وسحبه قرارٌ منك بشأن "
+               "الاتجاه — وليس حكمًا بأن البديل لن ينجح.")},
     "UI_W2A_ERR_001": {
         "en": ("That decision entry could not be saved just now. "
                "Nothing was changed."),

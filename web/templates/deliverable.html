@@ -587,10 +587,31 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   <div class="w2a-context" style="margin-bottom:10px">
     <p style="margin:4px 0"><strong>{{ t('UI_W2A_QUESTION_LABEL') }}:</strong> {{ d.question }}</p>
     <p style="margin:4px 0;font-size:13px"><strong>{{ t('UI_W2A_ALTERNATIVES_LABEL') }}:</strong></p>
+    {# G-3: the same BOUNDED RENDERED alternative set (§6.0 SET A) as the
+       session surface, read-only. Withdrawn alternatives stay listed with
+       their recorded reason; visibility carries no comparison consequence. #}
     {% if d.alternatives %}
     <ul style="margin:4px 0">
-      {% for a in d.alternatives %}<li>{{ a.name }}</li>{% endfor %}
+      {% for a in d.alternatives %}
+      <li class="g3-alternative g3-{{ a.lifecycle_state }}" style="margin-bottom:6px">
+        <span class="g3-name">{{ a.name }}</span>
+        <span class="g3-state" style="font-size:12px;color:#5a2c8c">— {{ t('UI_G3_STATE_WITHDRAWN') if a.lifecycle_state == 'withdrawn' else t('UI_G3_STATE_ACTIVE') }}</span>
+        {% if a.lifecycle_state == 'withdrawn' %}
+          {% if a.withdrawal_reason %}
+        <div style="font-size:12px;color:#555;margin:2px 0 0 12px"><strong>{{ t('UI_G3_REASON_LABEL') }}:</strong> {{ a.withdrawal_reason }}</div>
+          {% else %}
+        <div style="font-size:12px;color:#777;margin:2px 0 0 12px">{{ t('UI_G3_REASON_NOT_RECORDED') }}</div>
+          {% endif %}
+        {% else %}
+        <div style="font-size:12px;color:#777;margin:2px 0 0 12px">{{ t('UI_G3_EVIDENCE_RECORDED') if a.evidence_state == 'recorded_detail' else t('UI_G3_EVIDENCE_NONE') }}</div>
+          {% if a.not_comparable %}
+        <div style="font-size:12px;color:#777;margin:2px 0 0 12px">{{ t('UI_G3_NOT_COMPARABLE') }}</div>
+          {% endif %}
+        {% endif %}
+      </li>
+      {% endfor %}
     </ul>
+    <p style="font-size:12px;color:#777;margin:4px 0">{{ t('UI_G3_HISTORY_NOTE') }}</p>
     {% else %}
     <p style="font-size:13px;color:#777;margin:4px 0">{{ t('UI_W2A_NO_ALTERNATIVES') }}</p>
     {% endif %}
