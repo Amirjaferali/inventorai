@@ -17151,3 +17151,69 @@ zero executable delta.
 **Next step after this gate — STOP.** Lead review of this recording candidate. G-3 implementation
 authorization, and implementation START, each remain separate Owner decisions; neither is created,
 implied or scheduled here.
+
+
+---
+
+## T1-A′ — SUPPLEMENTAL S2 MEASUREMENT SLICE — DESIGN FREEZE (governance-only; provenance-only entry)
+
+**Provenance-only by design.** Lean §11 requires one record per governed gate, and separately requires the
+Owner Decision Register to be updated whenever an owner decision is accepted and committed. This entry is
+the former and carries **pointers, not substance**: the Owner decision lives in
+`OWNER_DECISION_REGISTER.md` (`OD-T1AP-SLICE-B`) and the frozen design in
+`docs/benchmarks/S2_PATHN_DECISION_CAPTURE_SLICE_DESIGN.md`. `ROADMAP SUBSTANTIVE SLICE OWNER: NO`.
+
+**Authoritative base.** Product `5a392f0cfd7d6b19874382441f78fee61cee1a26` (PR #600, the G-3
+implementation merge), verified live from Git at this gate; accepted Run-003 evidence
+`f1c104ecca38ef99c0937454c8c7419df5130012` at `refs/evidence/s2run003-f1c104ec`, re-verified here
+`[EXEC]`.
+
+**What this gate is.** A design freeze only. Run-003 established that the T1-A′ criteria-5/6 blocker is
+**reachability, not capability** — the served decision-capture surface was present in all 8 records while
+the frozen answer-only corpus produced 0 contexts and 0 alternatives, leaving criteria 5/6 with no
+subject. The Owner selected **Option B**: a separate supplemental slice, `S2-PATHN-DCS-001`, 4 records
+(2 cases × 2 languages, perspective held constant on a stated repository fact), exercising the existing
+governed decision-capture routes with payloads taken **verbatim from the frozen run-001 corpus**, with
+the Run-002/003 eight-record series immutable and the slice reported in its own namespace.
+
+**What this gate is NOT.** Not a run · not a Path-N release-candidate run and no part of §15.10's 8-record
+boundary · not a benchmark or corpus change · not a product change · not a G-3, G-4, G-5 or M-1-relevance
+repair · not a T1-A′ closure · not a new benchmark owner.
+
+**Exact changed paths (3).**
+1. `docs/governance/OWNER_DECISION_REGISTER.md` — Lean §11: the register is updated whenever an owner
+   decision is accepted and committed. One bounded append; no existing row rewritten.
+2. `docs/benchmarks/S2_PATHN_DECISION_CAPTURE_SLICE_DESIGN.md` (**new**) — the authorized deliverable: the
+   frozen design must exist as a committed artifact to be reviewable and to be the thing a future run is
+   authorized against. It is a scoped pointer-only supplemental protocol under the instrument's own §11
+   mechanism and creates no second benchmark owner.
+3. `docs/governance/ACTIVE_EXECUTION_ROADMAP.md` (this entry) — Lean §11: one record per governed gate.
+
+**Paths deliberately NOT changed.** `BICYCLE_BRAKE_LIGHT_COMPETITIVE_BENCHMARK.md` — the instrument is the
+sole benchmark owner and stays **byte-unchanged**; the design references it and amends nothing.
+`DEFERRED_OBLIGATIONS_REGISTER.md` — no obligation fires, closes, is created or is re-owned by freezing a
+measurement design; `T1-A′` (L150) stays OPEN/`FRB`, the EN↔AR divergence (L160) and the RVR-7 return
+(L147) stay OPEN with their existing owners, and no duplicate tracker is created.
+`ACTIVE_INCREMENT_CONTRACT.md` — a governance-only design gate opens no implementation contract;
+`ACTIVE CONTRACT: NONE` untouched. `CURRENT_PROJECT_STATE.md` — its pin is expressly subordinated to Git.
+The Run-001/002/003 evidence sets — historical evidence is never rewritten. **All product, runtime, test,
+schema, domain, prompt, script and benchmark-instrument paths: 0 — `EXECUTABLE DELTA: 0`.**
+
+**Continuity fence.** Nothing previously reconciled is displaced, marked complete or reordered: readiness
+reconciliation stays ELIGIBLE/NOT CONVENED, `T1-A′` OPEN, `T1-C′`/`T1-D` OPEN and separate, G-4 and G-5
+unrepaired with their existing rows, and the deferred/future/release/commercial items are preserved by
+authoritative pointer to `DEFERRED_OBLIGATIONS_REGISTER.md` and `CURRENT_PROJECT_STATE.md`, both
+byte-unchanged at this gate.
+
+**Non-authorization fences.** `SLICE EXECUTION AUTHORIZED: NO` · `RUN-004 AUTHORIZED: NO` ·
+`FOURTH PATH-N RELEASE-CANDIDATE RUN: NOT AUTHORIZED` · `BENCHMARK / CORPUS MODIFICATION: NONE` ·
+`PRODUCT DELTA: 0` · `G-3: NOT REOPENED` · `FDC-001 LANE: INACTIVE` · `DECISION WORKSPACE / PATH-T: NOT
+ACTIVATED` · `ODS-001: NOT ACTIVATED` · `RVR-4: CLOSED` · `READINESS IMPLEMENTATION AUTHORIZED: NO` ·
+`CAP ACTIVATION: NONE` · `FCORA AUTHORIZED: NO` · `PSRR GO: NO` · `ACTIVE CONTRACT: NONE` (untouched) ·
+`DEPLOYMENT / PRODUCTION / SERIOUS RELEASE / PAID ACTIVATION: NOT AUTHORIZED` · `main` NOT RECONCILED.
+
+**Lean classification.** `LEAN RISK LEVEL: 2` · `REVIEW DEPTH: 2` — bounded governance-only design freeze,
+zero executable delta.
+
+**Next step after this gate — STOP.** Lead review of this design candidate. A separate Owner authorization
+is required before the slice may be executed, and T1-A′ closure remains a further separate Owner decision.
