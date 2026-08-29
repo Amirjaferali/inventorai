@@ -16874,3 +16874,91 @@ executable delta, no Lean §3 LEVEL-1 trigger.
 next RVR-8 gate from live repository authority under its own separate Owner authorization. Recording C
 is an execution-order decision only; it makes C no technical dependency of RVR-8 and consumes no RVR-8
 work. Any next gate requires its own separate Owner authorization.
+
+---
+
+## RVR-8 — FORMAL CLOSURE (completed verification, negative / mixed product result; provenance-only entry)
+
+**Provenance-only by design.** Lean §11 requires one record per governed gate. This entry carries
+**pointers, not substance**, so that if the closure record or the register later changes under
+authority, this entry can never become a competing substantive owner.
+`ROADMAP SUBSTANTIVE RVR-8 OWNER: NO`.
+
+**Authoritative base.** `1f3d9d14b3b645df9595889861140910d63b918c` — the PR #596 merge (two parents
+`12a94580…` + `2411f1d5…`, merge tree `97702884…`, EMPTY candidate→merge diff), verified live at
+freeze with **0 commits after it**.
+
+**Owner authorization boundary.** One bounded governance-only closure freeze. It authorizes candidate
+creation and a SHA-preserving bundle only — no push, no PR, no merge, no product repair.
+
+**Objective.** Close RVR-8 — the "1 verification" of the frozen Final Remediation Contract — as a
+**completed verification that returned a negative / mixed product result**, and carry a proposed
+current Owner ratification of the already-executed run.
+
+**Exact changed paths (3).**
+1. `docs/governance/RVR_8_FORMAL_CLOSURE_RECORD.md` (new)
+2. `docs/governance/DEFERRED_OBLIGATIONS_REGISTER.md`
+3. `docs/governance/ACTIVE_EXECUTION_ROADMAP.md` (this entry)
+
+**Where the substance lives.** `RVR_8_FORMAL_CLOSURE_RECORD.md` — closure semantics (§4), the proposed
+ratification (§3), T1-A′ (§5), residual routing G-3…G-8 (§6), Arabic truth (§7), confirmed
+improvements (§8), the non-circular closure statement (§9), and the obligations that become eligible
+on merge (§10). Read it there; this entry does not restate it.
+
+**Evidence pointer.** `refs/evidence/s2run002-abc79cee` → `abc79cee22e943436da5c046c4e2dc7cbfb9471e`,
+parent = the evaluated RC, 11 evidence-only paths, **not product ancestry**. Verified live from origin
+at this gate. The evidence commit is **not** merged into the product branch.
+
+**Closure form — the whole point of this gate.**
+`RVR-8 VERIFICATION COMPLETED: YES` and `PRODUCT MET RELEASE-VALUE CRITERIA: NO` are different
+statements and both are true. RVR-8 closes only as
+**`COMPLETED VERIFICATION — VALID EVIDENCE RETURNED — NEGATIVE / MIXED PRODUCT RESULT`**.
+`RVR-8 PASS: NOT ASSERTED`.
+
+**T1-A′ stays open.** `T1-A′: OPEN` — its trigger fired, its closure evidence did not: no full pass in
+8/8, criteria 5 and 6 FAIL on all 8 records, three core-gate FAILs, no deliverable eligibility or
+Stage 3. `SERIOUS-RELEASE VALUE OBLIGATION: NOT SATISFIED`. Confirmed remediations are evidence
+conclusions and do not offset it; no aggregate improvement score is defined or permitted.
+
+**Registers touched, and why.** The register carries the RVR-8 conditional closure, the T1-A′
+trigger-fired/not-satisfied status, a cross-reference of the RVR-8 Arabic measurement onto the existing
+generated-output language-parity row (not closed, not duplicated), a second-limb note on the
+Manufacturing / Market Reality / Commercial Readiness row (identified, not executed), and **one new
+routing row** for the genuinely unowned **EN↔AR substantive assessment / progression outcome
+divergence observed in novice-register controlled pairs** — measured in **two of four** controlled
+pairs, across both cases and two gap types (E-1 novice `MECHANISM_COMPLETENESS`, R1 CLOSED vs R3
+PARTIAL; M-1 novice `PHYSICAL_FEASIBILITY`, R5 PARTIAL vs R7 OPEN), with substance-equivalent answers.
+It is **not** a blanket Arabic failure — successful Arabic paths exist in the same run — and **root
+cause is UNRESOLVED and unasserted**. Row fields: source owner / ownership classification
+`UNRESOLVED — REPOSITORY RECONCILIATION REQUIRED`, disposition `OPEN — return at defined gate` (a §1
+Disposition value), blocking **`FRB`** — re-derived from the two-pair evidence on the authority of the
+Owner's substantive-Arabic positioning decision (the same basis as the RVR-7 row), **not** carried
+over and **not** chosen because breadth increased; `FRB` here requires an authoritative disposition
+with evidence before Serious Release, not implementation. The ownership classification is deliberately
+not stated as a Disposition, and the register's exhaustive Disposition vocabulary is unchanged. No duplicate owner is created and
+no closed row is reopened.
+
+**Non-authorization fences.** `READINESS IMPLEMENTATION AUTHORIZED: NO` · `CAP ACTIVATION: NONE` ·
+`SECOND S2 RUN: CONSUMED` · `THIRD S2 RUN: NOT AUTHORIZED` · `FCORA AUTHORIZED: NO` ·
+`FCORA: RECORDED, NOT EXECUTED` · readiness reconciliation **ELIGIBLE ON MERGE, NOT CONVENED** ·
+`MEANING-ADAPTIVE / TIER-2 ACTIVATED: NO` · `WS11: DORMANT` · `gap_relevance` UNCHANGED ·
+`W1-N3` NOT reopened · `T1-C′ / T1-D / MG-8 / R4-C: OPEN` · `PSRR GO: NO` · `ACTIVE CONTRACT: NONE`
+(untouched) · `DEPLOYMENT / PRODUCTION / SERIOUS RELEASE / PAID ACTIVATION: NOT AUTHORIZED` ·
+`main` NOT RECONCILED. **`engine/ web/ domains/ tests/ database/ schemas/ prompts/ scripts/ and the
+benchmark instrument: 0 — PRODUCT RUNTIME DELTA 0`.**
+
+**Candidate lifecycle status — stated as a fact about this gate's freeze, and true afterwards because
+it is scoped to that moment.** As at freeze: `OWNER CLOSURE-LIFECYCLE AUTHORIZED: YES` and
+`OWNER EXACT CLOSURE-SHA ACCEPTED: NO`. Closure becomes authoritative only through Lead review,
+independent review, Owner exact-SHA acceptance, separate publication authorization, PR, separate merge
+authorization, CREATE A MERGE COMMIT (second parent = the accepted candidate, EMPTY candidate→merge
+diff) and post-merge identity verification. `ACTIVE_INCREMENT_CONTRACT.md`,
+`CURRENT_PROJECT_STATE.md` and `OWNER_DECISION_REGISTER.md` are untouched, and **no post-merge status
+synchronization is owed merely because this closure merges**.
+
+**Lean classification.** `LEAN RISK LEVEL: 2` · `REVIEW DEPTH: 2` — bounded governance closure, zero
+executable delta.
+
+**Next step after this gate becomes authoritative — STOP.** The newly-eligible obligations named in
+the closure record §10 each require their own separate Owner authorization. Any next gate requires its
+own separate Owner authorization.
