@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>InventorAI — الجلسة</title>
+<style>
+/* G-UX-SHELL shared application-shell baseline. Minimal; no framework, no JS.
+   Accessibility/disclosure baseline only — not a visual redesign. */
+*:focus-visible{outline:3px solid #2c6fbb;outline-offset:2px}
+a.skip-link{position:absolute;left:-9999px;top:auto;background:#fff;color:#2c3e50;padding:8px 12px;border:2px solid #2c3e50;border-radius:4px;z-index:1000}
+a.skip-link:focus{left:8px;top:8px;position:fixed}
+.app-header{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:760px;margin:0 auto;padding:10px 20px;border-bottom:1px solid #d4dde6}
+.app-header .brand{font-weight:600;color:#2c3e50}
+.app-header .temp-session{font-size:12px;color:#555;white-space:nowrap}
+/* D-P6-18 global UI-language selector (shared, top-of-content, consistent). */
+.ui-lang-selector{max-width:760px;margin:0 auto;padding:6px 20px;display:flex;align-items:center;gap:8px;font-size:12px;color:#555;flex-wrap:wrap}
+.ui-lang-selector .ui-lang-label{color:#666}
+.ui-lang-selector a{padding:3px 10px;background:#fff;color:#2c3e50;border:1px solid #c3ccd6;border-radius:4px;text-decoration:none}
+.ui-lang-selector .ui-lang-active{padding:3px 10px;background:#2c3e50;color:#fff;border:1px solid #2c3e50;border-radius:4px}
+</style>
+
+<style>
+body{font-family:sans-serif;max-width:720px;margin:60px auto;padding:0 20px;color:#222}
+h1{color:#2c3e50;margin-bottom:4px}
+.meta{background:#f0f4f8;padding:10px 14px;border-radius:4px;margin-bottom:18px;font-size:13px;color:#444}
+.disclosure{background:#f8f9fa;border-left:3px solid #b0b8c1;padding:9px 14px;border-radius:0 4px 4px 0;margin-bottom:20px;font-size:12px;color:#666;line-height:1.5}
+.progress-section{margin-bottom:20px}
+.progress-label{font-size:13px;color:#555;margin-bottom:4px}
+.progress-track{background:#dde3ea;border-radius:8px;height:14px;width:100%;overflow:hidden}
+.progress-fill{background:#2c3e50;height:14px;border-radius:8px}
+.stage-block{margin-bottom:18px;padding:10px 14px;background:#f0f4f8;border-radius:4px}
+.stage-label{font-size:15px;font-weight:bold;color:#2c3e50;margin-bottom:3px}
+.stage-meaning{font-size:13px;color:#555;line-height:1.4}
+.gap-board{margin-bottom:20px}
+.gap-board h3{font-size:14px;color:#555;margin:0 0 8px 0;text-transform:uppercase;letter-spacing:.5px}
+.gap-row{display:flex;align-items:center;padding:6px 10px;border-radius:4px;margin-bottom:4px;font-size:13px;background:#f8f9fa;border:1px solid #e2e6ea}
+.gap-row.current{background:#fff8e1;border-color:#ffe082;font-weight:bold}
+.gap-row.closed{background:#f0faf0;border-color:#c8e6c9;color:#555}
+.gap-status{width:70px;font-size:11px;padding:2px 6px;border-radius:3px;text-align:center;margin-right:10px;font-weight:bold;flex-shrink:0}
+.status-current{background:#fff3cd;color:#856404;border:1px solid #ffc107}
+.status-closed{background:#d4edda;color:#155724;border:1px solid #c3e6cb}
+.status-open{background:#f0f4f8;color:#555;border:1px solid #ccc}
+.gap-name{flex:1;color:#333}
+.gap-stage-note{font-size:11px;color:#888;margin-left:8px;flex-shrink:0}
+.current-arrow{font-size:11px;color:#e65100;margin-left:6px;flex-shrink:0}
+.gap-guidance{background:#fffbf0;border:1px solid #ffe082;border-radius:4px;padding:12px 16px;margin-bottom:18px}
+.gap-guidance-heading{font-size:15px;font-weight:bold;color:#2c3e50;margin-bottom:6px}
+.gap-guidance-text{font-size:13px;color:#555;line-height:1.5}
+.last-result{margin-bottom:18px;padding:10px 14px;border-radius:4px;border:1px solid #e2e6ea;font-size:13px}
+.badge-warn{background:#fff3e0;color:#e65100;border:1px solid #ffcc02;display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:bold;margin-bottom:6px}
+.badge-pass{background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7;display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:bold;margin-bottom:6px}
+.badge-block{background:#fdecea;color:#c62828;border:1px solid #ef9a9a;display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:bold;margin-bottom:6px}
+.badge-none{background:#f0f4f8;color:#555;border:1px solid #ccc;display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;margin-bottom:6px}
+.reason-text{font-size:13px;color:#555;margin-top:6px}
+.direction-text{font-size:12px;color:#888;margin-top:4px}
+.question{font-size:18px;margin-bottom:16px;color:#2c3e50;line-height:1.5}
+textarea{width:100%;padding:12px;font-size:15px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box}
+button{margin-top:10px;padding:10px 24px;background:#2c3e50;color:white;border:none;border-radius:4px;font-size:15px;cursor:pointer}
+.complete{color:#27ae60;font-weight:bold;font-size:18px}
+hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
+</style>
+
+<script defer src="/static/js/local_draft.js"></script>
+
+</head>
+<body>
+<a class="skip-link" href="#main-content">تخطَّ إلى المحتوى</a>
+<header class="app-header">
+<span class="brand">InventorAI</span>
+<span class="temp-session">جلسة مؤقتة <a href="/data-and-session">معرفة المزيد</a></span>
+</header>
+
+<nav class="ui-lang-selector" aria-label="اللغة">
+  <span class="ui-lang-label">اللغة:</span>
+  <a href="/ui-language?lang=en&amp;next=/session/930b0ca7-9e74-431e-8103-30ad88354628" lang="en">English</a>
+  <span class="ui-lang-active" lang="ar" aria-current="true">العربية</span>
+</nav>
+<main id="main-content">
+
+
+<div id="draft-signals" data-draft-scope="930b0ca7-9e74-431e-8103-30ad88354628" data-seed-accepted="0" data-answer-accepted="0" hidden></div>
+
+<h1>InventorAI</h1>
+
+
+
+
+
+<div class="disclosure">تساعدك هذه المنصة على تنظيم تفكيرك عبر أسئلة موجَّهة. وهي تتتبّع كيف تناولت المجالات الأساسية — ويبقى التحقق التقني الخارجي خطوة منفصلة.</div>
+
+
+
+<div class="next-step-callout" style="background:#eef5ff;border:1px solid #b3d1ff;border-radius:4px;padding:10px 14px;margin-bottom:18px">
+  <div class="next-step-heading" style="font-weight:bold;color:#1a4f8b">خطوة التطوير التالية</div>
+  <div class="next-step-issue" style="font-size:14px;margin-top:4px">An open gap remains to be addressed</div>
+  
+  <div class="next-step-why" style="font-size:13px;color:#555;margin-top:4px">A recorded gap remains open.</div>
+  
+  
+  <div class="next-step-action" style="font-size:13px;color:#444;margin-top:6px"><span style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#1a4f8b">الخطوة التالية:</span> Address the open gap.</div>
+  
+  <div class="next-step-ref" style="font-size:12px;color:#666;margin-top:4px">المرجع: الآلية العاملة</div>
+</div>
+
+
+<p>
+  <a href="/session/930b0ca7-9e74-431e-8103-30ad88354628/deliverable">
+  عرض لقطة التقييم قيد التقدم
+  </a>
+</p>
+
+
+
+
+<div class="meta">
+  الفكرة: ddce7394-cef7-40df-a988-05c19b708861
+  &nbsp;·&nbsp;
+  التكرار: 1
+  &nbsp;·&nbsp;
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  نوع المراجعة: مراجعة مستنيرة بمجال الميكانيكا
+</div>
+
+<div class="stage-block">
+  <div class="stage-label">البدء</div>
+  <div class="stage-meaning">شارك فكرتك — ما الذي تفعله والمشكلة التي تعالجها.</div>
+</div>
+
+<div class="progress-section">
+  
+  
+  <div class="progress-label">التقدّم — المرحلة 1 من 3</div>
+  <div class="progress-track">
+    <div class="progress-fill" style="width:33%"></div>
+  </div>
+</div>
+
+
+<div class="gap-board">
+  <h3>مجالات تقدّمك</h3>
+  
+  
+  <div class="gap-row current">
+    
+      <span class="gap-status status-current">نشط</span>
+    
+    <span class="gap-name">كيف تعمل، خطوة بخطوة؟</span>
+    <span class="gap-stage-note">تطوير الآلية</span>
+    <span class="current-arrow">◄ الآن</span>
+  </div>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+<div class="gap-guidance">
+  <div class="gap-guidance-heading">كيف تعمل، خطوة بخطوة؟</div>
+  <div class="gap-guidance-text">استعرض آلية العمل — السلسلة السببية من المدخل إلى المخرج. ما الذي يحدث في كل مرحلة؟ ما الذي يحوّل المدخلات أو يتحكم بها أو يبدّلها إلى النتيجة المرجوّة؟</div>
+</div>
+
+
+
+<div class="last-result">
+  
+    <span class="badge-warn">يلزم مزيد من التفاصيل</span>
+  
+  
+  
+  
+  
+  
+  
+  <div class="reason-text">هذه النقطة غير مثبتة بعد، لذا لا يمكن للفكرة المضي قدمًا في هذا العنصر.</div>
+  
+  
+  <details class="result-details" style="margin-top:4px">
+    <summary style="cursor:pointer;font-size:12px;color:#8a97a3">تفاصيل النتيجة</summary>
+    <div class="reason-raw" style="font-size:12px;color:#8a7a68;margin-top:4px">Problem not yet established</div>
+  </details>
+  
+  
+  <div class="direction-text">الاتجاه: PROGRESSING</div>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+<div class="scaffolding-guidance" style="margin-bottom:18px;padding:10px 14px;border-radius:4px;border:1px solid #ffe0b2;background:#fff8ef;font-size:13px">
+  <div class="scaffolding-guidance-heading" style="font-weight:bold;color:#e65100;margin-bottom:6px">أي نوع من التفاصيل يجب إضافته</div>
+  <div class="scaffolding-guidance-lead" style="color:#5a4633;margin-bottom:8px">لم توصف الفكرة بالكامل بعد. اذكر ما المشكلة التي تحلّها، وبعبارات بسيطة، كيف تحلّها.</div>
+  <ul class="scaffolding-guidance-prompts" style="margin:0 0 8px 18px;color:#5a4633">
+    <li>ما الجزء المادي أو الآلية التي يستخدمها هذا؟</li><li>ما الشرط الذي يُطلق الإجراء؟</li><li>ما الذي يستشعره الجهاز أو يكشفه؟</li><li>ما المخرَج أو الاستجابة التي تحدث؟</li><li>ما الدليل أو الملاحظة التي تدعم هذا؟</li>
+  </ul>
+  <div class="scaffolding-guidance-note" style="font-size:12px;color:#8a7a68">هذه توجيهات تساعدك على إضافة التفاصيل. إنها لا تُغيّر إجابتك ولا تقيّمها — أنت تكتبها بكلماتك الخاصة.</div>
+</div>
+
+
+
+<div class="current-question-eyebrow" style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#8a97a3;margin-bottom:4px">السؤال الحالي</div>
+
+<div class="current-question-context" style="font-size:12px;color:#666;margin-bottom:8px">يجري تناول: <strong style="color:#2c3e50">كيف تعمل، خطوة بخطوة؟</strong></div>
+
+
+
+<p class="question" lang="ar" dir="rtl">صِف الخطوات المادية التي تقوم بها آليتك لتحقيق وظيفتها.</p>
+
+<p class="answer-hint" style="font-size:12px;color:#888;margin:-6px 0 14px 0">أجب في المربع أدناه، أو اختر أحد خيارات الرد.</p>
+
+
+
+
+
+
+
+<div class="w2b-primary-action" style="margin-bottom:14px;padding:10px 14px;border-radius:4px;border:1px solid #cfd8ea;background:#f3f6fc;font-size:13px">
+  <p style="margin:0;color:#33466b">لقد سجّلت أكثر من بديل لقرارٍ ما. تدوين ما تعرفه عن كل بديل — عبر خيار التحسين في قسم القرارات — يجمع الأدلة التي ستحتاجها المقارنة مستقبلًا. لم تبدأ المقارنة بعد.</p>
+  <p style="margin:6px 0 0 0"><a href="#w2b-decision-capture" style="color:#1a4f8b;font-weight:bold">الانتقال إلى قسم القرارات</a></p>
+</div>
+
+
+
+
+
+
+<details style="margin-bottom:14px;border:1px solid #d6e0e8;border-radius:4px;background:#fafcfe">
+  <summary style="cursor:pointer;padding:9px 14px;font-size:14px;color:#2c3e50">ساعدني على فهم هذا السؤال</summary>
+  <div style="padding:4px 14px 12px 14px">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#8a97a3;margin-bottom:6px">إرشاد النظام</div>
+    <div style="font-size:14px;font-weight:bold;color:#2c3e50;margin-bottom:6px">ما الذي يسأل عنه هذا السؤال</div>
+    <p style="font-size:13px;color:#555;line-height:1.5;margin:0 0 8px 0">هذا يطلب منك أن تستعرض كيف تعمل فكرتك من البداية إلى النهاية — ما الذي يحدث أولًا، وما الذي يحدث بعده، وكيف تؤدّي تلك الخطوات إلى النتيجة التي تريدها.</p>
+    <p style="font-size:13px;color:#555;line-height:1.5;margin:0 0 8px 0"><strong>ما الذي سيساعد:</strong> وصف خطوة بخطوة، بكلماتك الخاصة، لكيفية تحويل الفكرة نقطة انطلاقها إلى النتيجة.</p>
+    <p style="font-size:13px;color:#555;line-height:1.5;margin:0 0 8px 0"><strong>الإجابة الجيدة تبدو هكذا:</strong> بضع جُمل بسيطة تصف تسلسل الخطوات. اللغة اليومية كافية؛ الأرقام التقنية الدقيقة ليست مطلوبة.</p>
+    <p style="font-size:13px;color:#555;line-height:1.5;margin:0">إذا كان جزء من السلسلة ما زال غير واضح، يمكنك وصف الأجزاء التي تعرفها ووضع علامة على الباقي بأنه غير معروف بعد.</p>
+  </div>
+</details>
+
+
+
+<div class="gap-guidance" style="background:#f3f7fb;border-color:#cfe0ee;margin-bottom:14px">
+  <div class="gap-guidance-heading">يمكنك الإجابة عن هذا</div>
+  <div class="gap-guidance-text">يمكنك الإجابة عن هذا من تصميمك المقصود أو فهمك الحالي. القيم الهندسية الدقيقة ليست مطلوبة.</div>
+</div>
+
+
+
+<div class="badge-warn" style="display:block;padding:9px 14px;margin-bottom:14px">تم تسجيل إدخالك القراري وحفظه في مشروعك.</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<form method="POST" action="/session/930b0ca7-9e74-431e-8103-30ad88354628">
+  
+  <input type="hidden" name="answer_token" value="EMu-h3RohtXseoMMNJOGrTRwSK0FSp9l.43e17f9203ca64c56617dc2a88b45f2b">
+  <label for="response" style="display:block;margin-bottom:6px;font-size:13px;color:#555">إجابتك</label>
+  
+  <textarea id="response" name="response" rows="5" placeholder="صف تفكيرك هنا، أو اختر خيارًا أدناه..."
+    data-draft-field="answer" data-draft-scope="930b0ca7-9e74-431e-8103-30ad88354628" data-draft-context="9906b7164d528ce7" data-draft-context-version="v1" data-draft-account="anon"></textarea>
+  <br>
+  <fieldset style="margin-top:12px;border:1px solid #e2e6ea;border-radius:4px;padding:10px">
+    <legend style="font-size:13px;color:#555;padding:0 6px">كيف تريد أن تردّ؟</legend>
+    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="answered" checked> الإجابة عن هذا السؤال (باستخدام النص أعلاه)</label>
+    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="unknown"> لا أعرف هذا بعد</label>
+    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="deferred"> تأجيل هذا السؤال الآن</label>
+    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="provisional_assumption"> تسجيل افتراض مبدئي (غير مُتحقَّق منه — ملاحظة اختيارية أعلاه)</label>
+    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="specialist_requested"> يحتاج متخصّص إلى الإجابة عن هذا</label>
+    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="evidence_requested"> يلزم دليل أو اختبار لهذا</label>
+  </fieldset>
+  <button type="submit">إرسال</button>
+</form>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<details id="w2b-decision-capture" class="decision-capture" open style="margin-top:14px;border:1px solid #d5c9e8;border-radius:4px;background:#f9f5fd;padding:10px 14px">
+  <summary style="cursor:pointer;font-size:13px;color:#5a2c8c;font-weight:bold">تسجيل القرارات</summary>
+  <p style="font-size:13px;color:#555;margin:10px 0 8px 0">سجّل قرارًا تقنيًا تعمل عليه، واذكر البدائل التي تفكّر فيها، وحسّنها أو اسحبها مع تطوّر تفكيرك. يُحفظ كل شيء في سجل مشروعك ويُعاد بناؤه بدقة عند إعادة التحميل.</p>
+  
+  <div class="w2a-context" style="border:1px solid #e2d9ef;border-radius:4px;background:#ffffff;padding:8px 12px;margin-bottom:10px">
+    <p style="margin:4px 0"><strong>سؤال القرار:</strong> القرار هو معمارية تثبيت الوضع المطوي. المرشحون: (1) مزلاج قلاب متجاوز للمركز، (2) دبوس تعشيق بنابض، (3) مزلاج بوابة يسقط بالجاذبية. يجب أن تثبت الآلية المنحدر في الوضع الأفقي الحامل للوزن وأن تتحرر للطي دون أدوات.</p>
+    <p style="margin:8px 0 4px 0;font-size:13px"><strong>البدائل قيد الدراسة:</strong></p>
+    
+    
+    <ul style="margin:4px 0 8px 0">
+      
+      <li class="g3-alternative g3-active" style="margin-bottom:10px">
+        <span class="g3-name">مسار القوة: حمل الكرسي المتحرك عبر المنحدر المفرود إلى آلية التثبيت عند خط المفصلة؛ تشغيل يدوي للطي والفرد؛ ولا يُسمح بتعديل دائم للباب أو الإطار.</span>
+        <span class="g3-state" style="font-size:12px;color:#5a2c8c">— ما زال قيد الدراسة</span>
+        
+        <div class="g3-evidence" style="font-size:12px;color:#777;margin:2px 0 0 12px">لقد سجّلت تفاصيل عنه</div>
+          
+        <div class="g3-not-comparable" style="font-size:12px;color:#777;margin:2px 0 0 12px">غير قابل للمقارنة بعد: ما كتبتَه عن هذا البديل محفوظ بوصفه وصفك أنت له، لا كمُدخل للمقارنة، لذلك لا يمكن لأي مقارنة أن تستخدمه بعد.</div>
+          
+          
+        <form method="POST" action="/session/930b0ca7-9e74-431e-8103-30ad88354628/decision/refine-alternative" style="display:inline-block;margin:2px 6px">
+          <input type="hidden" name="answer_token" value="EMu-h3RohtXseoMMNJOGrTRwSK0FSp9l.43e17f9203ca64c56617dc2a88b45f2b">
+          <input type="hidden" name="supersedes_record_id" value="rec_5">
+          <input type="text" name="content" required aria-label="حسّن هذا البديل (يحافظ على هويته وسجله)" placeholder="حسّن هذا البديل (يحافظ على هويته وسجله)" style="max-width:280px">
+          <button type="submit">تحسين</button>
+        </form>
+        <form method="POST" action="/session/930b0ca7-9e74-431e-8103-30ad88354628/decision/withdraw-alternative" style="display:inline-block;margin:2px 6px">
+          <input type="hidden" name="answer_token" value="EMu-h3RohtXseoMMNJOGrTRwSK0FSp9l.43e17f9203ca64c56617dc2a88b45f2b">
+          <input type="hidden" name="supersedes_record_id" value="rec_5">
+          <input type="text" name="reason" aria-label="لماذا تسحبه؟ (اختياري)" placeholder="لماذا تسحبه؟ (اختياري)" style="max-width:240px">
+          <button type="submit" title="اسحب هذا البديل (يبقى في سجل المشروع)">سحب</button>
+        </form>
+          
+        
+      </li>
+      
+      <li class="g3-alternative g3-withdrawn" style="margin-bottom:10px">
+        <span class="g3-name">دبوس تعشيق بنابض</span>
+        <span class="g3-state" style="font-size:12px;color:#5a2c8c">— سحبتَه بنفسك</span>
+        
+          
+        <div class="g3-reason" style="font-size:12px;color:#555;margin:2px 0 0 12px"><strong>سببك:</strong> لا يوجد تقدير حمل ولا هامش تثبيت ولا دليل اختبار فيزيائي؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.</div>
+          
+        
+      </li>
+      
+      <li class="g3-alternative g3-withdrawn" style="margin-bottom:10px">
+        <span class="g3-name">مزلاج بوابة يسقط بالجاذبية</span>
+        <span class="g3-state" style="font-size:12px;color:#5a2c8c">— سحبتَه بنفسك</span>
+        
+          
+        <div class="g3-reason" style="font-size:12px;color:#777;margin:2px 0 0 12px">لم يُسجَّل أي سبب مع هذا السحب.</div>
+          
+        
+      </li>
+      
+      <li class="g3-alternative g3-active" style="margin-bottom:10px">
+        <span class="g3-name">دبوس تعشيق بنابض</span>
+        <span class="g3-state" style="font-size:12px;color:#5a2c8c">— ما زال قيد الدراسة</span>
+        
+        <div class="g3-evidence" style="font-size:12px;color:#777;margin:2px 0 0 12px">لم يُسجَّل عنه شيء بعد</div>
+          
+        <div class="g3-not-comparable" style="font-size:12px;color:#777;margin:2px 0 0 12px">غير قابل للمقارنة بعد: ما كتبتَه عن هذا البديل محفوظ بوصفه وصفك أنت له، لا كمُدخل للمقارنة، لذلك لا يمكن لأي مقارنة أن تستخدمه بعد.</div>
+          
+          
+        <form method="POST" action="/session/930b0ca7-9e74-431e-8103-30ad88354628/decision/refine-alternative" style="display:inline-block;margin:2px 6px">
+          <input type="hidden" name="answer_token" value="EMu-h3RohtXseoMMNJOGrTRwSK0FSp9l.43e17f9203ca64c56617dc2a88b45f2b">
+          <input type="hidden" name="supersedes_record_id" value="rec_8">
+          <input type="text" name="content" required aria-label="حسّن هذا البديل (يحافظ على هويته وسجله)" placeholder="حسّن هذا البديل (يحافظ على هويته وسجله)" style="max-width:280px">
+          <button type="submit">تحسين</button>
+        </form>
+        <form method="POST" action="/session/930b0ca7-9e74-431e-8103-30ad88354628/decision/withdraw-alternative" style="display:inline-block;margin:2px 6px">
+          <input type="hidden" name="answer_token" value="EMu-h3RohtXseoMMNJOGrTRwSK0FSp9l.43e17f9203ca64c56617dc2a88b45f2b">
+          <input type="hidden" name="supersedes_record_id" value="rec_8">
+          <input type="text" name="reason" aria-label="لماذا تسحبه؟ (اختياري)" placeholder="لماذا تسحبه؟ (اختياري)" style="max-width:240px">
+          <button type="submit" title="اسحب هذا البديل (يبقى في سجل المشروع)">سحب</button>
+        </form>
+          
+        
+      </li>
+      
+    </ul>
+    <p class="g3-history-note" style="font-size:12px;color:#777;margin:4px 0 8px 0">تبقى البدائل التي سحبتَها مدرجة هنا كي يظل سجلك كاملًا. لا يشارك البديل المسحوب في المقارنة، وسحبه قرارٌ منك بشأن الاتجاه — وليس حكمًا بأن البديل لن ينجح.</p>
+    
+    
+    <p class="w2a-readiness-note" style="font-size:12px;color:#777;margin:6px 0 4px 0">لم تبدأ المقارنة بعد: هذه البدائل مسجّلة، ويمكن إضافة المدخلات اللازمة لمقارنتها في مرحلة لاحقة. هذه هي الحالة المتوقعة لقرار مسجّل حديثًا — وليست مشكلة في فكرتك.</p>
+    
+    
+    <form method="POST" action="/session/930b0ca7-9e74-431e-8103-30ad88354628/decision/declare-alternative" style="margin-top:6px">
+      <input type="hidden" name="answer_token" value="EMu-h3RohtXseoMMNJOGrTRwSK0FSp9l.43e17f9203ca64c56617dc2a88b45f2b">
+      <input type="hidden" name="context_root" value="rec_1">
+      <label style="display:block;font-size:12px;color:#888;margin-bottom:4px">أضف بديلًا</label>
+      <input type="text" name="content" required style="max-width:320px">
+      <button type="submit">إضافة البديل</button>
+    </form>
+    
+  </div>
+  
+  
+  <form method="POST" action="/session/930b0ca7-9e74-431e-8103-30ad88354628/decision/declare-context" style="margin-top:6px">
+    <input type="hidden" name="answer_token" value="EMu-h3RohtXseoMMNJOGrTRwSK0FSp9l.43e17f9203ca64c56617dc2a88b45f2b">
+    <label for="w2a-context-content" style="display:block;font-size:12px;color:#888;margin-bottom:4px">سجّل قرارًا للعمل عليه (صِغه كسؤال)</label>
+    <textarea id="w2a-context-content" name="content" rows="2" required style="width:100%;box-sizing:border-box"></textarea>
+    <br>
+    <button type="submit" style="margin-top:6px">تسجيل القرار</button>
+  </form>
+  
+</details>
+
+
+
+</main>
+</body>
+</html>

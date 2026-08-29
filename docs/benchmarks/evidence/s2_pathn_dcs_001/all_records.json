@@ -1,0 +1,1216 @@
+{
+ "slice_id": "S2-PATHN-DCS-001",
+ "evaluated_sha": "d867b92eaa69221b1884a9a2eef25cd74225bb86",
+ "started_utc": "2026-08-29T20:04:47.330201+00:00",
+ "records": {
+  "D1": {
+   "record_id": "D1",
+   "slice_id": "S2-PATHN-DCS-001",
+   "case": "E-1",
+   "language": "en",
+   "perspective": "experienced-technical",
+   "evaluated_sha": "d867b92eaa69221b1884a9a2eef25cd74225bb86",
+   "seed_exact": "bicycle automatic brake light — the inventor wants automatic brake indication without relying on manually pressing a light control",
+   "payloads": {
+    "CTX": "The decision is the braking-detection architecture. Candidate detection paths: (1) a wired brake-lever switch, (2) accelerometer-based inference of deceleration, (3) wheel-speed-based inference. On detected braking the brake light is driven on. Which detection path to adopt is exactly the unresolved decision.",
+    "REF": "Components: a detection stage (one of the three candidates) and the indicator lamp it drives. Installation constraint: avoid or minimize a physical wire run to the brake lever, which weighs against candidate (1).",
+    "REASON": "No calibration data or physical test results exist yet, and the acceptable false-positive rate under vibration is unspecified; those are missing evidence, not assumptions I can fill.",
+    "ALT": [
+     "a wired brake-lever switch",
+     "accelerometer-based inference of deceleration",
+     "wheel-speed-based inference"
+    ]
+   },
+   "actions": [
+    {
+     "n": 1,
+     "action": "declare context",
+     "route": "declare-context",
+     "payload": {
+      "content": "The decision is the braking-detection architecture. Candidate detection paths: (1) a wired brake-lever switch, (2) accelerometer-based inference of deceleration, (3) wheel-speed-based inference. On detected braking the brake light is driven on. Which detection path to adopt is exactly the unresolved decision."
+     },
+     "status": 302
+    },
+    {
+     "n": 2,
+     "action": "declare alternative 1",
+     "route": "declare-alternative",
+     "payload": {
+      "content": "a wired brake-lever switch",
+      "context_root": "rec_1"
+     },
+     "status": 302
+    },
+    {
+     "n": 3,
+     "action": "declare alternative 2",
+     "route": "declare-alternative",
+     "payload": {
+      "content": "accelerometer-based inference of deceleration",
+      "context_root": "rec_1"
+     },
+     "status": 302
+    },
+    {
+     "n": 4,
+     "action": "declare alternative 3",
+     "route": "declare-alternative",
+     "payload": {
+      "content": "wheel-speed-based inference",
+      "context_root": "rec_1"
+     },
+     "status": 302
+    },
+    {
+     "n": 5,
+     "action": "refine alternative 1",
+     "route": "refine-alternative",
+     "payload": {
+      "content": "Components: a detection stage (one of the three candidates) and the indicator lamp it drives. Installation constraint: avoid or minimize a physical wire run to the brake lever, which weighs against candidate (1).",
+      "supersedes_record_id": "rec_2"
+     },
+     "status": 302
+    },
+    {
+     "n": 6,
+     "action": "withdraw alternative 2 WITH reason",
+     "route": "withdraw-alternative",
+     "payload": {
+      "supersedes_record_id": "rec_3",
+      "reason": "No calibration data or physical test results exist yet, and the acceptable false-positive rate under vibration is unspecified; those are missing evidence, not assumptions I can fill."
+     },
+     "status": 302
+    },
+    {
+     "n": 7,
+     "action": "withdraw alternative 3 WITHOUT reason",
+     "route": "withdraw-alternative",
+     "payload": {
+      "supersedes_record_id": "rec_4",
+      "reason": ""
+     },
+     "status": 302
+    },
+    {
+     "n": 8,
+     "action": "re-declare alternative 2",
+     "route": "declare-alternative",
+     "payload": {
+      "content": "accelerometer-based inference of deceleration",
+      "context_root": "rec_1"
+     },
+     "status": 302
+    }
+   ],
+   "anomalies": [],
+   "classifier_result": "NONE",
+   "sid": "210a4733-05f5-4ed8-94f8-5bc36b33dd0b",
+   "confirmed_domain": "electronics_electrical",
+   "context_root": "rec_1",
+   "decision_capture_view": [
+    {
+     "context_root": "rec_1",
+     "decision_id": "decision-pn-b336e6b0-c078-4f9e-b2d2-15ee0f319a3e-rec_1",
+     "question": "The decision is the braking-detection architecture. Candidate detection paths: (1) a wired brake-lever switch, (2) accelerometer-based inference of deceleration, (3) wheel-speed-based inference. On detected braking the brake light is driven on. Which detection path to adopt is exactly the unresolved decision.",
+     "readiness_status": "insufficient_information",
+     "blocking_reason_codes": [
+      "candidate_not_yet_comparable",
+      "candidate_not_yet_comparable"
+     ],
+     "alternatives": [
+      {
+       "root": "rec_2",
+       "name": "Components: a detection stage (one of the three candidates) and the indicator lamp it drives. Installation constraint: avoid or minimize a physical wire run to the brake lever, which weighs against candidate (1).",
+       "lifecycle_state": "active",
+       "head_record_id": "rec_5",
+       "withdrawal_reason": null,
+       "refinement_count": 1,
+       "evidence_state": "recorded_detail",
+       "candidate_id": "cand-pn-rec_2",
+       "comparison_eligible": true,
+       "option_status": "active",
+       "not_comparable": true
+      },
+      {
+       "root": "rec_3",
+       "name": "accelerometer-based inference of deceleration",
+       "lifecycle_state": "withdrawn",
+       "head_record_id": null,
+       "withdrawal_reason": "No calibration data or physical test results exist yet, and the acceptable false-positive rate under vibration is unspecified; those are missing evidence, not assumptions I can fill.",
+       "refinement_count": 0,
+       "evidence_state": "no_recorded_detail",
+       "candidate_id": null,
+       "comparison_eligible": false,
+       "option_status": null,
+       "not_comparable": false
+      },
+      {
+       "root": "rec_4",
+       "name": "wheel-speed-based inference",
+       "lifecycle_state": "withdrawn",
+       "head_record_id": null,
+       "withdrawal_reason": "",
+       "refinement_count": 0,
+       "evidence_state": "no_recorded_detail",
+       "candidate_id": null,
+       "comparison_eligible": false,
+       "option_status": null,
+       "not_comparable": false
+      },
+      {
+       "root": "rec_8",
+       "name": "accelerometer-based inference of deceleration",
+       "lifecycle_state": "active",
+       "head_record_id": "rec_8",
+       "withdrawal_reason": null,
+       "refinement_count": 0,
+       "evidence_state": "no_recorded_detail",
+       "candidate_id": "cand-pn-rec_8",
+       "comparison_eligible": true,
+       "option_status": "active",
+       "not_comparable": true
+      }
+     ]
+    }
+   ],
+   "composed_records": [
+    {
+     "schema_version": "fdc001-decision-workspace-v1",
+     "decision_id": "decision-pn-b336e6b0-c078-4f9e-b2d2-15ee0f319a3e-rec_1",
+     "decision_question": "The decision is the braking-detection architecture. Candidate detection paths: (1) a wired brake-lever switch, (2) accelerometer-based inference of deceleration, (3) wheel-speed-based inference. On detected braking the brake light is driven on. Which detection path to adopt is exactly the unresolved decision.",
+     "revision": 0,
+     "candidates": [
+      {
+       "candidate_id": "cand-pn-rec_2",
+       "name": "Components: a detection stage (one of the three candidates) and the indicator lamp it drives. Installation constraint: avoid or minimize a physical wire run to the brake lever, which weighs against candidate (1).",
+       "option_status": "active",
+       "disposition_reason": null,
+       "disposition_basis": null
+      },
+      {
+       "candidate_id": "cand-pn-rec_8",
+       "name": "accelerometer-based inference of deceleration",
+       "option_status": "active",
+       "disposition_reason": null,
+       "disposition_basis": null
+      }
+     ],
+     "inputs": [],
+     "constraints": [],
+     "gaps": [],
+     "risks": [],
+     "owner_preference": null,
+     "readiness_status": "insufficient_information",
+     "review_required_label": "REVIEW REQUIRED",
+     "blocking_reasons": [
+      {
+       "code": "candidate_not_yet_comparable",
+       "text": "Candidate Components: a detection stage (one of the three candidates) and the indicator lamp it drives. Installation constraint: avoid or minimize a physical wire run to the brake lever, which weighs against candidate (1). lacks inputs to be compared.",
+       "affected_scope": "candidate",
+       "affected_candidate_id": "cand-pn-rec_2",
+       "affected_constraint_id": null,
+       "clearing_guidance": null
+      },
+      {
+       "code": "candidate_not_yet_comparable",
+       "text": "Candidate accelerometer-based inference of deceleration lacks inputs to be compared.",
+       "affected_scope": "candidate",
+       "affected_candidate_id": "cand-pn-rec_8",
+       "affected_constraint_id": null,
+       "clearing_guidance": null
+      }
+     ],
+     "evidence": [],
+     "gap_assessments": [],
+     "history": [],
+     "change_impact_summary": null
+    }
+   ],
+   "ledger_decision_records": [
+    {
+     "record_id": "rec_1",
+     "disposition": "decision_context_declared",
+     "content": "The decision is the braking-detection architecture. Candidate detection paths: (1) a wired brake-lever switch, (2) accelerometer-based inference of deceleration, (3) wheel-speed-based inference. On detected braking the brake light is driven on. Which detection path to adopt is exactly the unresolved decision.",
+     "supersedes": [],
+     "superseded_by": null,
+     "provenance": "OWNER_STATED"
+    },
+    {
+     "record_id": "rec_2",
+     "disposition": "decision_alternative_declared",
+     "content": "a wired brake-lever switch",
+     "supersedes": [],
+     "superseded_by": "rec_5",
+     "provenance": "OWNER_STATED"
+    },
+    {
+     "record_id": "rec_3",
+     "disposition": "decision_alternative_declared",
+     "content": "accelerometer-based inference of deceleration",
+     "supersedes": [],
+     "superseded_by": "rec_6",
+     "provenance": "OWNER_STATED"
+    },
+    {
+     "record_id": "rec_4",
+     "disposition": "decision_alternative_declared",
+     "content": "wheel-speed-based inference",
+     "supersedes": [],
+     "superseded_by": "rec_7",
+     "provenance": "OWNER_STATED"
+    },
+    {
+     "record_id": "rec_5",
+     "disposition": "decision_alternative_declared",
+     "content": "Components: a detection stage (one of the three candidates) and the indicator lamp it drives. Installation constraint: avoid or minimize a physical wire run to the brake lever, which weighs against candidate (1).",
+     "supersedes": [
+      "rec_2"
+     ],
+     "superseded_by": null,
+     "provenance": "OWNER_STATED"
+    },
+    {
+     "record_id": "rec_6",
+     "disposition": "decision_alternative_withdrawn",
+     "content": "No calibration data or physical test results exist yet, and the acceptable false-positive rate under vibration is unspecified; those are missing evidence, not assumptions I can fill.",
+     "supersedes": [
+      "rec_3"
+     ],
+     "superseded_by": null,
+     "provenance": "OWNER_STATED"
+    },
+    {
+     "record_id": "rec_7",
+     "disposition": "decision_alternative_withdrawn",
+     "content": "",
+     "supersedes": [
+      "rec_4"
+     ],
+     "superseded_by": null,
+     "provenance": "OWNER_STATED"
+    },
+    {
+     "record_id": "rec_8",
+     "disposition": "decision_alternative_declared",
+     "content": "accelerometer-based inference of deceleration",
+     "supersedes": [],
+     "superseded_by": null,
+     "provenance": "OWNER_STATED"
+    }
+   ],
+   "deliverable_http_status": 200,
+   "html_sha256": {
+    "D1_session.html": "e3f236197aab786936c88500b4d46d76a427136fe1d0c812575d796422ebbe67",
+    "D1_deliverable.html": "03a55c8e59fb1d44521bf7f2e161da8de2f8b55b9cbeeab1d9d6a7687c05b726"
+   },
+   "execution_status": "EXECUTED"
+  },
+  "D2": {
+   "record_id": "D2",
+   "slice_id": "S2-PATHN-DCS-001",
+   "case": "E-1",
+   "language": "ar",
+   "perspective": "experienced-technical",
+   "evaluated_sha": "d867b92eaa69221b1884a9a2eef25cd74225bb86",
+   "seed_exact": "ضوء فرامل أوتوماتيكي للدراجة الهوائية — يريد المخترع إشارة فرملة تلقائية دون الاعتماد على الضغط اليدوي على مفتاح الضوء",
+   "payloads": {
+    "CTX": "القرار هو معمارية اكتشاف الفرملة. مسارات الاكتشاف المرشحة: (1) مفتاح سلكي على ذراع الفرامل، (2) استدلال بالتسارع عبر مقياس تسارع، (3) استدلال عبر سرعة العجلة. عند اكتشاف الفرملة يُشغَّل ضوء الفرامل. اختيار مسار الاكتشاف هو بالضبط القرار غير المحسوم.",
+    "REF": "المكوّنات: مرحلة اكتشاف (أحد المرشحين الثلاثة) والمصباح الذي تقوده. قيد التركيب: تجنب أو تقليل تمديد سلك إلى ذراع الفرامل، وهو ما يُضعف المرشح (1).",
+    "REASON": "لا توجد بيانات معايرة ولا نتائج اختبار فيزيائي بعد، ومعدل الإنذارات الخاطئة المقبول تحت الاهتزاز غير محدد؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+    "ALT": [
+     "مفتاح سلكي على ذراع الفرامل",
+     "استدلال بالتسارع عبر مقياس تسارع",
+     "استدلال عبر سرعة العجلة"
+    ]
+   },
+   "actions": [
+    {
+     "n": 1,
+     "action": "declare context",
+     "route": "declare-context",
+     "payload": {
+      "content": "القرار هو معمارية اكتشاف الفرملة. مسارات الاكتشاف المرشحة: (1) مفتاح سلكي على ذراع الفرامل، (2) استدلال بالتسارع عبر مقياس تسارع، (3) استدلال عبر سرعة العجلة. عند اكتشاف الفرملة يُشغَّل ضوء الفرامل. اختيار مسار الاكتشاف هو بالضبط القرار غير المحسوم."
+     },
+     "status": 302
+    },
+    {
+     "n": 2,
+     "action": "declare alternative 1",
+     "route": "declare-alternative",
+     "payload": {
+      "content": "مفتاح سلكي على ذراع الفرامل",
+      "context_root": "rec_1"
+     },
+     "status": 302
+    },
+    {
+     "n": 3,
+     "action": "declare alternative 2",
+     "route": "declare-alternative",
+     "payload": {
+      "content": "استدلال بالتسارع عبر مقياس تسارع",
+      "context_root": "rec_1"
+     },
+     "status": 302
+    },
+    {
+     "n": 4,
+     "action": "declare alternative 3",
+     "route": "declare-alternative",
+     "payload": {
+      "content": "استدلال عبر سرعة العجلة",
+      "context_root": "rec_1"
+     },
+     "status": 302
+    },
+    {
+     "n": 5,
+     "action": "refine alternative 1",
+     "route": "refine-alternative",
+     "payload": {
+      "content": "المكوّنات: مرحلة اكتشاف (أحد المرشحين الثلاثة) والمصباح الذي تقوده. قيد التركيب: تجنب أو تقليل تمديد سلك إلى ذراع الفرامل، وهو ما يُضعف المرشح (1).",
+      "supersedes_record_id": "rec_2"
+     },
+     "status": 302
+    },
+    {
+     "n": 6,
+     "action": "withdraw alternative 2 WITH reason",
+     "route": "withdraw-alternative",
+     "payload": {
+      "supersedes_record_id": "rec_3",
+      "reason": "لا توجد بيانات معايرة ولا نتائج اختبار فيزيائي بعد، ومعدل الإنذارات الخاطئة المقبول تحت الاهتزاز غير محدد؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها."
+     },
+     "status": 302
+    },
+    {
+     "n": 7,
+     "action": "withdraw alternative 3 WITHOUT reason",
+     "route": "withdraw-alternative",
+     "payload": {
+      "supersedes_record_id": "rec_4",
+      "reason": ""
+     },
+     "status": 302
+    },
+    {
+     "n": 8,
+     "action": "re-declare alternative 2",
+     "route": "declare-alternative",
+     "payload": {
+      "content": "استدلال بالتسارع عبر مقياس تسارع",
+      "context_root": "rec_1"
+     },
+     "status": 302
+    }
+   ],
+   "anomalies": [],
+   "classifier_result": "NONE",
+   "sid": "3e1ba4a6-2385-4218-8268-6e629aee7f3c",
+   "confirmed_domain": "electronics_electrical",
+   "context_root": "rec_1",
+   "decision_capture_view": [
+    {
+     "context_root": "rec_1",
+     "decision_id": "decision-pn-7554f7a6-dc32-418c-a692-81234b1e013d-rec_1",
+     "question": "القرار هو معمارية اكتشاف الفرملة. مسارات الاكتشاف المرشحة: (1) مفتاح سلكي على ذراع الفرامل، (2) استدلال بالتسارع عبر مقياس تسارع، (3) استدلال عبر سرعة العجلة. عند اكتشاف الفرملة يُشغَّل ضوء الفرامل. اختيار مسار الاكتشاف هو بالضبط القرار غير المحسوم.",
+     "readiness_status": "insufficient_information",
+     "blocking_reason_codes": [
+      "candidate_not_yet_comparable",
+      "candidate_not_yet_comparable"
+     ],
+     "alternatives": [
+      {
+       "root": "rec_2",
+       "name": "المكوّنات: مرحلة اكتشاف (أحد المرشحين الثلاثة) والمصباح الذي تقوده. قيد التركيب: تجنب أو تقليل تمديد سلك إلى ذراع الفرامل، وهو ما يُضعف المرشح (1).",
+       "lifecycle_state": "active",
+       "head_record_id": "rec_5",
+       "withdrawal_reason": null,
+       "refinement_count": 1,
+       "evidence_state": "recorded_detail",
+       "candidate_id": "cand-pn-rec_2",
+       "comparison_eligible": true,
+       "option_status": "active",
+       "not_comparable": true
+      },
+      {
+       "root": "rec_3",
+       "name": "استدلال بالتسارع عبر مقياس تسارع",
+       "lifecycle_state": "withdrawn",
+       "head_record_id": null,
+       "withdrawal_reason": "لا توجد بيانات معايرة ولا نتائج اختبار فيزيائي بعد، ومعدل الإنذارات الخاطئة المقبول تحت الاهتزاز غير محدد؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+       "refinement_count": 0,
+       "evidence_state": "no_recorded_detail",
+       "candidate_id": null,
+       "comparison_eligible": false,
+       "option_status": null,
+       "not_comparable": false
+      },
+      {
+       "root": "rec_4",
+       "name": "استدلال عبر سرعة العجلة",
+       "lifecycle_state": "withdrawn",
+       "head_record_id": null,
+       "withdrawal_reason": "",
+       "refinement_count": 0,
+       "evidence_state": "no_recorded_detail",
+       "candidate_id": null,
+       "comparison_eligible": false,
+       "option_status": null,
+       "not_comparable": false
+      },
+      {
+       "root": "rec_8",
+       "name": "استدلال بالتسارع عبر مقياس تسارع",
+       "lifecycle_state": "active",
+       "head_record_id": "rec_8",
+       "withdrawal_reason": null,
+       "refinement_count": 0,
+       "evidence_state": "no_recorded_detail",
+       "candidate_id": "cand-pn-rec_8",
+       "comparison_eligible": true,
+       "option_status": "active",
+       "not_comparable": true
+      }
+     ]
+    }
+   ],
+   "composed_records": [
+    {
+     "schema_version": "fdc001-decision-workspace-v1",
+     "decision_id": "decision-pn-7554f7a6-dc32-418c-a692-81234b1e013d-rec_1",
+     "decision_question": "القرار هو معمارية اكتشاف الفرملة. مسارات الاكتشاف المرشحة: (1) مفتاح سلكي على ذراع الفرامل، (2) استدلال بالتسارع عبر مقياس تسارع، (3) استدلال عبر سرعة العجلة. عند اكتشاف الفرملة يُشغَّل ضوء الفرامل. اختيار مسار الاكتشاف هو بالضبط القرار غير المحسوم.",
+     "revision": 0,
+     "candidates": [
+      {
+       "candidate_id": "cand-pn-rec_2",
+       "name": "المكوّنات: مرحلة اكتشاف (أحد المرشحين الثلاثة) والمصباح الذي تقوده. قيد التركيب: تجنب أو تقليل تمديد سلك إلى ذراع الفرامل، وهو ما يُضعف المرشح (1).",
+       "option_status": "active",
+       "disposition_reason": null,
+       "disposition_basis": null
+      },
+      {
+       "candidate_id": "cand-pn-rec_8",
+       "name": "استدلال بالتسارع عبر مقياس تسارع",
+       "option_status": "active",
+       "disposition_reason": null,
+       "disposition_basis": null
+      }
+     ],
+     "inputs": [],
+     "constraints": [],
+     "gaps": [],
+     "risks": [],
+     "owner_preference": null,
+     "readiness_status": "insufficient_information",
+     "review_required_label": "REVIEW REQUIRED",
+     "blocking_reasons": [
+      {
+       "code": "candidate_not_yet_comparable",
+       "text": "Candidate المكوّنات: مرحلة اكتشاف (أحد المرشحين الثلاثة) والمصباح الذي تقوده. قيد التركيب: تجنب أو تقليل تمديد سلك إلى ذراع الفرامل، وهو ما يُضعف المرشح (1). lacks inputs to be compared.",
+       "affected_scope": "candidate",
+       "affected_candidate_id": "cand-pn-rec_2",
+       "affected_constraint_id": null,
+       "clearing_guidance": null
+      },
+      {
+       "code": "candidate_not_yet_comparable",
+       "text": "Candidate استدلال بالتسارع عبر مقياس تسارع lacks inputs to be compared.",
+       "affected_scope": "candidate",
+       "affected_candidate_id": "cand-pn-rec_8",
+       "affected_constraint_id": null,
+       "clearing_guidance": null
+      }
+     ],
+     "evidence": [],
+     "gap_assessments": [],
+     "history": [],
+     "change_impact_summary": null
+    }
+   ],
+   "ledger_decision_records": [
+    {
+     "record_id": "rec_1",
+     "disposition": "decision_context_declared",
+     "content": "القرار هو معمارية اكتشاف الفرملة. مسارات الاكتشاف المرشحة: (1) مفتاح سلكي على ذراع الفرامل، (2) استدلال بالتسارع عبر مقياس تسارع، (3) استدلال عبر سرعة العجلة. عند اكتشاف الفرملة يُشغَّل ضوء الفرامل. اختيار مسار الاكتشاف هو بالضبط القرار غير المحسوم.",
+     "supersedes": [],
+     "superseded_by": null,
+     "provenance": "OWNER_STATED"
+    },
+    {
+     "record_id": "rec_2",
+     "disposition": "decision_alternative_declared",
+     "content": "مفتاح سلكي على ذراع الفرامل",
+     "supersedes": [],
+     "superseded_by": "rec_5",
+     "provenance": "OWNER_STATED"
+    },
+    {
+     "record_id": "rec_3",
+     "disposition": "decision_alternative_declared",
+     "content": "استدلال بالتسارع عبر مقياس تسارع",
+     "supersedes": [],
+     "superseded_by": "rec_6",
+     "provenance": "OWNER_STATED"
+    },
+    {
+     "record_id": "rec_4",
+     "disposition": "decision_alternative_declared",
+     "content": "استدلال عبر سرعة العجلة",
+     "supersedes": [],
+     "superseded_by": "rec_7",
+     "provenance": "OWNER_STATED"
+    },
+    {
+     "record_id": "rec_5",
+     "disposition": "decision_alternative_declared",
+     "content": "المكوّنات: مرحلة اكتشاف (أحد المرشحين الثلاثة) والمصباح الذي تقوده. قيد التركيب: تجنب أو تقليل تمديد سلك إلى ذراع الفرامل، وهو ما يُضعف المرشح (1).",
+     "supersedes": [
+      "rec_2"
+     ],
+     "superseded_by": null,
+     "provenance": "OWNER_STATED"
+    },
+    {
+     "record_id": "rec_6",
+     "disposition": "decision_alternative_withdrawn",
+     "content": "لا توجد بيانات معايرة ولا نتائج اختبار فيزيائي بعد، ومعدل الإنذارات الخاطئة المقبول تحت الاهتزاز غير محدد؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+     "supersedes": [
+      "rec_3"
+     ],
+     "superseded_by": null,
+     "provenance": "OWNER_STATED"
+    },
+    {
+     "record_id": "rec_7",
+     "disposition": "decision_alternative_withdrawn",
+     "content": "",
+     "supersedes": [
+      "rec_4"
+     ],
+     "superseded_by": null,
+     "provenance": "OWNER_STATED"
+    },
+    {
+     "record_id": "rec_8",
+     "disposition": "decision_alternative_declared",
+     "content": "استدلال بالتسارع عبر مقياس تسارع",
+     "supersedes": [],
+     "superseded_by": null,
+     "provenance": "OWNER_STATED"
+    }
+   ],
+   "deliverable_http_status": 200,
+   "html_sha256": {
+    "D2_session.html": "c98f0117e8daacbe04eb8f712f518f5aac673727f21a5b0cb2c0c8815640306a",
+    "D2_deliverable.html": "e56ce1949b1a1ea6768498340c508a4a967b96464e5d03eae8d9b2a90cd3fdf0"
+   },
+   "execution_status": "EXECUTED"
+  },
+  "D3": {
+   "record_id": "D3",
+   "slice_id": "S2-PATHN-DCS-001",
+   "case": "M-1",
+   "language": "en",
+   "perspective": "experienced-technical",
+   "evaluated_sha": "d867b92eaa69221b1884a9a2eef25cd74225bb86",
+   "seed_exact": "a manually foldable wheelchair ramp for a home doorway — the inventor wants the ramp to stay reliably locked in the flat, load-bearing position and to fold away without tools",
+   "payloads": {
+    "CTX": "The decision is the folded-position retention architecture. Candidates: (1) over-centre toggle latch, (2) spring-loaded detent pin, (3) gravity-drop gate latch. The mechanism must retain the ramp in the flat, load-bearing position and release for tool-less folding.",
+    "REF": "Force path: wheelchair load through the deployed ramp into the retention mechanism at the hinge line; manual actuation for fold and unfold; no permanent modification to the doorway or frame is permitted.",
+    "REASON": "No load rating, retention margin, or physical test evidence exists; those are missing evidence, not assumptions I can fill.",
+    "ALT": [
+     "over-centre toggle latch",
+     "spring-loaded detent pin",
+     "gravity-drop gate latch"
+    ]
+   },
+   "actions": [
+    {
+     "n": 1,
+     "action": "declare context",
+     "route": "declare-context",
+     "payload": {
+      "content": "The decision is the folded-position retention architecture. Candidates: (1) over-centre toggle latch, (2) spring-loaded detent pin, (3) gravity-drop gate latch. The mechanism must retain the ramp in the flat, load-bearing position and release for tool-less folding."
+     },
+     "status": 302
+    },
+    {
+     "n": 2,
+     "action": "declare alternative 1",
+     "route": "declare-alternative",
+     "payload": {
+      "content": "over-centre toggle latch",
+      "context_root": "rec_1"
+     },
+     "status": 302
+    },
+    {
+     "n": 3,
+     "action": "declare alternative 2",
+     "route": "declare-alternative",
+     "payload": {
+      "content": "spring-loaded detent pin",
+      "context_root": "rec_1"
+     },
+     "status": 302
+    },
+    {
+     "n": 4,
+     "action": "declare alternative 3",
+     "route": "declare-alternative",
+     "payload": {
+      "content": "gravity-drop gate latch",
+      "context_root": "rec_1"
+     },
+     "status": 302
+    },
+    {
+     "n": 5,
+     "action": "refine alternative 1",
+     "route": "refine-alternative",
+     "payload": {
+      "content": "Force path: wheelchair load through the deployed ramp into the retention mechanism at the hinge line; manual actuation for fold and unfold; no permanent modification to the doorway or frame is permitted.",
+      "supersedes_record_id": "rec_2"
+     },
+     "status": 302
+    },
+    {
+     "n": 6,
+     "action": "withdraw alternative 2 WITH reason",
+     "route": "withdraw-alternative",
+     "payload": {
+      "supersedes_record_id": "rec_3",
+      "reason": "No load rating, retention margin, or physical test evidence exists; those are missing evidence, not assumptions I can fill."
+     },
+     "status": 302
+    },
+    {
+     "n": 7,
+     "action": "withdraw alternative 3 WITHOUT reason",
+     "route": "withdraw-alternative",
+     "payload": {
+      "supersedes_record_id": "rec_4",
+      "reason": ""
+     },
+     "status": 302
+    },
+    {
+     "n": 8,
+     "action": "re-declare alternative 2",
+     "route": "declare-alternative",
+     "payload": {
+      "content": "spring-loaded detent pin",
+      "context_root": "rec_1"
+     },
+     "status": 302
+    }
+   ],
+   "anomalies": [],
+   "classifier_result": "SINGLE",
+   "sid": "f8df66da-74a1-4dd1-bd41-c7b73fda83c6",
+   "confirmed_domain": "mechanical",
+   "context_root": "rec_1",
+   "decision_capture_view": [
+    {
+     "context_root": "rec_1",
+     "decision_id": "decision-pn-eb0b3cc2-5666-4550-99e2-3eb3cf8f7a5b-rec_1",
+     "question": "The decision is the folded-position retention architecture. Candidates: (1) over-centre toggle latch, (2) spring-loaded detent pin, (3) gravity-drop gate latch. The mechanism must retain the ramp in the flat, load-bearing position and release for tool-less folding.",
+     "readiness_status": "insufficient_information",
+     "blocking_reason_codes": [
+      "candidate_not_yet_comparable",
+      "candidate_not_yet_comparable"
+     ],
+     "alternatives": [
+      {
+       "root": "rec_2",
+       "name": "Force path: wheelchair load through the deployed ramp into the retention mechanism at the hinge line; manual actuation for fold and unfold; no permanent modification to the doorway or frame is permitted.",
+       "lifecycle_state": "active",
+       "head_record_id": "rec_5",
+       "withdrawal_reason": null,
+       "refinement_count": 1,
+       "evidence_state": "recorded_detail",
+       "candidate_id": "cand-pn-rec_2",
+       "comparison_eligible": true,
+       "option_status": "active",
+       "not_comparable": true
+      },
+      {
+       "root": "rec_3",
+       "name": "spring-loaded detent pin",
+       "lifecycle_state": "withdrawn",
+       "head_record_id": null,
+       "withdrawal_reason": "No load rating, retention margin, or physical test evidence exists; those are missing evidence, not assumptions I can fill.",
+       "refinement_count": 0,
+       "evidence_state": "no_recorded_detail",
+       "candidate_id": null,
+       "comparison_eligible": false,
+       "option_status": null,
+       "not_comparable": false
+      },
+      {
+       "root": "rec_4",
+       "name": "gravity-drop gate latch",
+       "lifecycle_state": "withdrawn",
+       "head_record_id": null,
+       "withdrawal_reason": "",
+       "refinement_count": 0,
+       "evidence_state": "no_recorded_detail",
+       "candidate_id": null,
+       "comparison_eligible": false,
+       "option_status": null,
+       "not_comparable": false
+      },
+      {
+       "root": "rec_8",
+       "name": "spring-loaded detent pin",
+       "lifecycle_state": "active",
+       "head_record_id": "rec_8",
+       "withdrawal_reason": null,
+       "refinement_count": 0,
+       "evidence_state": "no_recorded_detail",
+       "candidate_id": "cand-pn-rec_8",
+       "comparison_eligible": true,
+       "option_status": "active",
+       "not_comparable": true
+      }
+     ]
+    }
+   ],
+   "composed_records": [
+    {
+     "schema_version": "fdc001-decision-workspace-v1",
+     "decision_id": "decision-pn-eb0b3cc2-5666-4550-99e2-3eb3cf8f7a5b-rec_1",
+     "decision_question": "The decision is the folded-position retention architecture. Candidates: (1) over-centre toggle latch, (2) spring-loaded detent pin, (3) gravity-drop gate latch. The mechanism must retain the ramp in the flat, load-bearing position and release for tool-less folding.",
+     "revision": 0,
+     "candidates": [
+      {
+       "candidate_id": "cand-pn-rec_2",
+       "name": "Force path: wheelchair load through the deployed ramp into the retention mechanism at the hinge line; manual actuation for fold and unfold; no permanent modification to the doorway or frame is permitted.",
+       "option_status": "active",
+       "disposition_reason": null,
+       "disposition_basis": null
+      },
+      {
+       "candidate_id": "cand-pn-rec_8",
+       "name": "spring-loaded detent pin",
+       "option_status": "active",
+       "disposition_reason": null,
+       "disposition_basis": null
+      }
+     ],
+     "inputs": [],
+     "constraints": [],
+     "gaps": [],
+     "risks": [],
+     "owner_preference": null,
+     "readiness_status": "insufficient_information",
+     "review_required_label": "REVIEW REQUIRED",
+     "blocking_reasons": [
+      {
+       "code": "candidate_not_yet_comparable",
+       "text": "Candidate Force path: wheelchair load through the deployed ramp into the retention mechanism at the hinge line; manual actuation for fold and unfold; no permanent modification to the doorway or frame is permitted. lacks inputs to be compared.",
+       "affected_scope": "candidate",
+       "affected_candidate_id": "cand-pn-rec_2",
+       "affected_constraint_id": null,
+       "clearing_guidance": null
+      },
+      {
+       "code": "candidate_not_yet_comparable",
+       "text": "Candidate spring-loaded detent pin lacks inputs to be compared.",
+       "affected_scope": "candidate",
+       "affected_candidate_id": "cand-pn-rec_8",
+       "affected_constraint_id": null,
+       "clearing_guidance": null
+      }
+     ],
+     "evidence": [],
+     "gap_assessments": [],
+     "history": [],
+     "change_impact_summary": null
+    }
+   ],
+   "ledger_decision_records": [
+    {
+     "record_id": "rec_1",
+     "disposition": "decision_context_declared",
+     "content": "The decision is the folded-position retention architecture. Candidates: (1) over-centre toggle latch, (2) spring-loaded detent pin, (3) gravity-drop gate latch. The mechanism must retain the ramp in the flat, load-bearing position and release for tool-less folding.",
+     "supersedes": [],
+     "superseded_by": null,
+     "provenance": "OWNER_STATED"
+    },
+    {
+     "record_id": "rec_2",
+     "disposition": "decision_alternative_declared",
+     "content": "over-centre toggle latch",
+     "supersedes": [],
+     "superseded_by": "rec_5",
+     "provenance": "OWNER_STATED"
+    },
+    {
+     "record_id": "rec_3",
+     "disposition": "decision_alternative_declared",
+     "content": "spring-loaded detent pin",
+     "supersedes": [],
+     "superseded_by": "rec_6",
+     "provenance": "OWNER_STATED"
+    },
+    {
+     "record_id": "rec_4",
+     "disposition": "decision_alternative_declared",
+     "content": "gravity-drop gate latch",
+     "supersedes": [],
+     "superseded_by": "rec_7",
+     "provenance": "OWNER_STATED"
+    },
+    {
+     "record_id": "rec_5",
+     "disposition": "decision_alternative_declared",
+     "content": "Force path: wheelchair load through the deployed ramp into the retention mechanism at the hinge line; manual actuation for fold and unfold; no permanent modification to the doorway or frame is permitted.",
+     "supersedes": [
+      "rec_2"
+     ],
+     "superseded_by": null,
+     "provenance": "OWNER_STATED"
+    },
+    {
+     "record_id": "rec_6",
+     "disposition": "decision_alternative_withdrawn",
+     "content": "No load rating, retention margin, or physical test evidence exists; those are missing evidence, not assumptions I can fill.",
+     "supersedes": [
+      "rec_3"
+     ],
+     "superseded_by": null,
+     "provenance": "OWNER_STATED"
+    },
+    {
+     "record_id": "rec_7",
+     "disposition": "decision_alternative_withdrawn",
+     "content": "",
+     "supersedes": [
+      "rec_4"
+     ],
+     "superseded_by": null,
+     "provenance": "OWNER_STATED"
+    },
+    {
+     "record_id": "rec_8",
+     "disposition": "decision_alternative_declared",
+     "content": "spring-loaded detent pin",
+     "supersedes": [],
+     "superseded_by": null,
+     "provenance": "OWNER_STATED"
+    }
+   ],
+   "deliverable_http_status": 200,
+   "html_sha256": {
+    "D3_session.html": "257e29b110e9def2f3e964185bde650a0c5d85c022d18e43328c099237ed421e",
+    "D3_deliverable.html": "a2f529ee0f36d70d7beae81578ad4005fe1e48c50668eedbea39c546ff62090a"
+   },
+   "execution_status": "EXECUTED"
+  },
+  "D4": {
+   "record_id": "D4",
+   "slice_id": "S2-PATHN-DCS-001",
+   "case": "M-1",
+   "language": "ar",
+   "perspective": "experienced-technical",
+   "evaluated_sha": "d867b92eaa69221b1884a9a2eef25cd74225bb86",
+   "seed_exact": "منحدر متنقل قابل للطي يدويًا لمدخل باب منزل — يريد المخترع أن يبقى المنحدر مثبتًا بشكل موثوق في الوضع الأفقي الحامل للوزن وأن يُطوى بعيدًا دون أدوات",
+   "payloads": {
+    "CTX": "القرار هو معمارية تثبيت الوضع المطوي. المرشحون: (1) مزلاج قلاب متجاوز للمركز، (2) دبوس تعشيق بنابض، (3) مزلاج بوابة يسقط بالجاذبية. يجب أن تثبت الآلية المنحدر في الوضع الأفقي الحامل للوزن وأن تتحرر للطي دون أدوات.",
+    "REF": "مسار القوة: حمل الكرسي المتحرك عبر المنحدر المفرود إلى آلية التثبيت عند خط المفصلة؛ تشغيل يدوي للطي والفرد؛ ولا يُسمح بتعديل دائم للباب أو الإطار.",
+    "REASON": "لا يوجد تقدير حمل ولا هامش تثبيت ولا دليل اختبار فيزيائي؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+    "ALT": [
+     "مزلاج قلاب متجاوز للمركز",
+     "دبوس تعشيق بنابض",
+     "مزلاج بوابة يسقط بالجاذبية"
+    ]
+   },
+   "actions": [
+    {
+     "n": 1,
+     "action": "declare context",
+     "route": "declare-context",
+     "payload": {
+      "content": "القرار هو معمارية تثبيت الوضع المطوي. المرشحون: (1) مزلاج قلاب متجاوز للمركز، (2) دبوس تعشيق بنابض، (3) مزلاج بوابة يسقط بالجاذبية. يجب أن تثبت الآلية المنحدر في الوضع الأفقي الحامل للوزن وأن تتحرر للطي دون أدوات."
+     },
+     "status": 302
+    },
+    {
+     "n": 2,
+     "action": "declare alternative 1",
+     "route": "declare-alternative",
+     "payload": {
+      "content": "مزلاج قلاب متجاوز للمركز",
+      "context_root": "rec_1"
+     },
+     "status": 302
+    },
+    {
+     "n": 3,
+     "action": "declare alternative 2",
+     "route": "declare-alternative",
+     "payload": {
+      "content": "دبوس تعشيق بنابض",
+      "context_root": "rec_1"
+     },
+     "status": 302
+    },
+    {
+     "n": 4,
+     "action": "declare alternative 3",
+     "route": "declare-alternative",
+     "payload": {
+      "content": "مزلاج بوابة يسقط بالجاذبية",
+      "context_root": "rec_1"
+     },
+     "status": 302
+    },
+    {
+     "n": 5,
+     "action": "refine alternative 1",
+     "route": "refine-alternative",
+     "payload": {
+      "content": "مسار القوة: حمل الكرسي المتحرك عبر المنحدر المفرود إلى آلية التثبيت عند خط المفصلة؛ تشغيل يدوي للطي والفرد؛ ولا يُسمح بتعديل دائم للباب أو الإطار.",
+      "supersedes_record_id": "rec_2"
+     },
+     "status": 302
+    },
+    {
+     "n": 6,
+     "action": "withdraw alternative 2 WITH reason",
+     "route": "withdraw-alternative",
+     "payload": {
+      "supersedes_record_id": "rec_3",
+      "reason": "لا يوجد تقدير حمل ولا هامش تثبيت ولا دليل اختبار فيزيائي؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها."
+     },
+     "status": 302
+    },
+    {
+     "n": 7,
+     "action": "withdraw alternative 3 WITHOUT reason",
+     "route": "withdraw-alternative",
+     "payload": {
+      "supersedes_record_id": "rec_4",
+      "reason": ""
+     },
+     "status": 302
+    },
+    {
+     "n": 8,
+     "action": "re-declare alternative 2",
+     "route": "declare-alternative",
+     "payload": {
+      "content": "دبوس تعشيق بنابض",
+      "context_root": "rec_1"
+     },
+     "status": 302
+    }
+   ],
+   "anomalies": [],
+   "classifier_result": "NONE",
+   "sid": "930b0ca7-9e74-431e-8103-30ad88354628",
+   "confirmed_domain": "mechanical",
+   "context_root": "rec_1",
+   "decision_capture_view": [
+    {
+     "context_root": "rec_1",
+     "decision_id": "decision-pn-ddce7394-cef7-40df-a988-05c19b708861-rec_1",
+     "question": "القرار هو معمارية تثبيت الوضع المطوي. المرشحون: (1) مزلاج قلاب متجاوز للمركز، (2) دبوس تعشيق بنابض، (3) مزلاج بوابة يسقط بالجاذبية. يجب أن تثبت الآلية المنحدر في الوضع الأفقي الحامل للوزن وأن تتحرر للطي دون أدوات.",
+     "readiness_status": "insufficient_information",
+     "blocking_reason_codes": [
+      "candidate_not_yet_comparable",
+      "candidate_not_yet_comparable"
+     ],
+     "alternatives": [
+      {
+       "root": "rec_2",
+       "name": "مسار القوة: حمل الكرسي المتحرك عبر المنحدر المفرود إلى آلية التثبيت عند خط المفصلة؛ تشغيل يدوي للطي والفرد؛ ولا يُسمح بتعديل دائم للباب أو الإطار.",
+       "lifecycle_state": "active",
+       "head_record_id": "rec_5",
+       "withdrawal_reason": null,
+       "refinement_count": 1,
+       "evidence_state": "recorded_detail",
+       "candidate_id": "cand-pn-rec_2",
+       "comparison_eligible": true,
+       "option_status": "active",
+       "not_comparable": true
+      },
+      {
+       "root": "rec_3",
+       "name": "دبوس تعشيق بنابض",
+       "lifecycle_state": "withdrawn",
+       "head_record_id": null,
+       "withdrawal_reason": "لا يوجد تقدير حمل ولا هامش تثبيت ولا دليل اختبار فيزيائي؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+       "refinement_count": 0,
+       "evidence_state": "no_recorded_detail",
+       "candidate_id": null,
+       "comparison_eligible": false,
+       "option_status": null,
+       "not_comparable": false
+      },
+      {
+       "root": "rec_4",
+       "name": "مزلاج بوابة يسقط بالجاذبية",
+       "lifecycle_state": "withdrawn",
+       "head_record_id": null,
+       "withdrawal_reason": "",
+       "refinement_count": 0,
+       "evidence_state": "no_recorded_detail",
+       "candidate_id": null,
+       "comparison_eligible": false,
+       "option_status": null,
+       "not_comparable": false
+      },
+      {
+       "root": "rec_8",
+       "name": "دبوس تعشيق بنابض",
+       "lifecycle_state": "active",
+       "head_record_id": "rec_8",
+       "withdrawal_reason": null,
+       "refinement_count": 0,
+       "evidence_state": "no_recorded_detail",
+       "candidate_id": "cand-pn-rec_8",
+       "comparison_eligible": true,
+       "option_status": "active",
+       "not_comparable": true
+      }
+     ]
+    }
+   ],
+   "composed_records": [
+    {
+     "schema_version": "fdc001-decision-workspace-v1",
+     "decision_id": "decision-pn-ddce7394-cef7-40df-a988-05c19b708861-rec_1",
+     "decision_question": "القرار هو معمارية تثبيت الوضع المطوي. المرشحون: (1) مزلاج قلاب متجاوز للمركز، (2) دبوس تعشيق بنابض، (3) مزلاج بوابة يسقط بالجاذبية. يجب أن تثبت الآلية المنحدر في الوضع الأفقي الحامل للوزن وأن تتحرر للطي دون أدوات.",
+     "revision": 0,
+     "candidates": [
+      {
+       "candidate_id": "cand-pn-rec_2",
+       "name": "مسار القوة: حمل الكرسي المتحرك عبر المنحدر المفرود إلى آلية التثبيت عند خط المفصلة؛ تشغيل يدوي للطي والفرد؛ ولا يُسمح بتعديل دائم للباب أو الإطار.",
+       "option_status": "active",
+       "disposition_reason": null,
+       "disposition_basis": null
+      },
+      {
+       "candidate_id": "cand-pn-rec_8",
+       "name": "دبوس تعشيق بنابض",
+       "option_status": "active",
+       "disposition_reason": null,
+       "disposition_basis": null
+      }
+     ],
+     "inputs": [],
+     "constraints": [],
+     "gaps": [],
+     "risks": [],
+     "owner_preference": null,
+     "readiness_status": "insufficient_information",
+     "review_required_label": "REVIEW REQUIRED",
+     "blocking_reasons": [
+      {
+       "code": "candidate_not_yet_comparable",
+       "text": "Candidate مسار القوة: حمل الكرسي المتحرك عبر المنحدر المفرود إلى آلية التثبيت عند خط المفصلة؛ تشغيل يدوي للطي والفرد؛ ولا يُسمح بتعديل دائم للباب أو الإطار. lacks inputs to be compared.",
+       "affected_scope": "candidate",
+       "affected_candidate_id": "cand-pn-rec_2",
+       "affected_constraint_id": null,
+       "clearing_guidance": null
+      },
+      {
+       "code": "candidate_not_yet_comparable",
+       "text": "Candidate دبوس تعشيق بنابض lacks inputs to be compared.",
+       "affected_scope": "candidate",
+       "affected_candidate_id": "cand-pn-rec_8",
+       "affected_constraint_id": null,
+       "clearing_guidance": null
+      }
+     ],
+     "evidence": [],
+     "gap_assessments": [],
+     "history": [],
+     "change_impact_summary": null
+    }
+   ],
+   "ledger_decision_records": [
+    {
+     "record_id": "rec_1",
+     "disposition": "decision_context_declared",
+     "content": "القرار هو معمارية تثبيت الوضع المطوي. المرشحون: (1) مزلاج قلاب متجاوز للمركز، (2) دبوس تعشيق بنابض، (3) مزلاج بوابة يسقط بالجاذبية. يجب أن تثبت الآلية المنحدر في الوضع الأفقي الحامل للوزن وأن تتحرر للطي دون أدوات.",
+     "supersedes": [],
+     "superseded_by": null,
+     "provenance": "OWNER_STATED"
+    },
+    {
+     "record_id": "rec_2",
+     "disposition": "decision_alternative_declared",
+     "content": "مزلاج قلاب متجاوز للمركز",
+     "supersedes": [],
+     "superseded_by": "rec_5",
+     "provenance": "OWNER_STATED"
+    },
+    {
+     "record_id": "rec_3",
+     "disposition": "decision_alternative_declared",
+     "content": "دبوس تعشيق بنابض",
+     "supersedes": [],
+     "superseded_by": "rec_6",
+     "provenance": "OWNER_STATED"
+    },
+    {
+     "record_id": "rec_4",
+     "disposition": "decision_alternative_declared",
+     "content": "مزلاج بوابة يسقط بالجاذبية",
+     "supersedes": [],
+     "superseded_by": "rec_7",
+     "provenance": "OWNER_STATED"
+    },
+    {
+     "record_id": "rec_5",
+     "disposition": "decision_alternative_declared",
+     "content": "مسار القوة: حمل الكرسي المتحرك عبر المنحدر المفرود إلى آلية التثبيت عند خط المفصلة؛ تشغيل يدوي للطي والفرد؛ ولا يُسمح بتعديل دائم للباب أو الإطار.",
+     "supersedes": [
+      "rec_2"
+     ],
+     "superseded_by": null,
+     "provenance": "OWNER_STATED"
+    },
+    {
+     "record_id": "rec_6",
+     "disposition": "decision_alternative_withdrawn",
+     "content": "لا يوجد تقدير حمل ولا هامش تثبيت ولا دليل اختبار فيزيائي؛ هذه أدلة ناقصة لا افتراضات يمكنني ملؤها.",
+     "supersedes": [
+      "rec_3"
+     ],
+     "superseded_by": null,
+     "provenance": "OWNER_STATED"
+    },
+    {
+     "record_id": "rec_7",
+     "disposition": "decision_alternative_withdrawn",
+     "content": "",
+     "supersedes": [
+      "rec_4"
+     ],
+     "superseded_by": null,
+     "provenance": "OWNER_STATED"
+    },
+    {
+     "record_id": "rec_8",
+     "disposition": "decision_alternative_declared",
+     "content": "دبوس تعشيق بنابض",
+     "supersedes": [],
+     "superseded_by": null,
+     "provenance": "OWNER_STATED"
+    }
+   ],
+   "deliverable_http_status": 200,
+   "html_sha256": {
+    "D4_session.html": "7cae894111a08ff8351405eef3cca4938f2c6228f09e4a9ee5e64b38be723f6e",
+    "D4_deliverable.html": "47f9cae270bcdbc76d9e8a64e342c7ae32a30a7d908e20fe343aeae655764e8f"
+   },
+   "execution_status": "EXECUTED"
+  }
+ },
+ "finished_utc": "2026-08-29T20:04:47.705781+00:00"
+}

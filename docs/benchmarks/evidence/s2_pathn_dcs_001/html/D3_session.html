@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>InventorAI — Session</title>
+<style>
+/* G-UX-SHELL shared application-shell baseline. Minimal; no framework, no JS.
+   Accessibility/disclosure baseline only — not a visual redesign. */
+*:focus-visible{outline:3px solid #2c6fbb;outline-offset:2px}
+a.skip-link{position:absolute;left:-9999px;top:auto;background:#fff;color:#2c3e50;padding:8px 12px;border:2px solid #2c3e50;border-radius:4px;z-index:1000}
+a.skip-link:focus{left:8px;top:8px;position:fixed}
+.app-header{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:760px;margin:0 auto;padding:10px 20px;border-bottom:1px solid #d4dde6}
+.app-header .brand{font-weight:600;color:#2c3e50}
+.app-header .temp-session{font-size:12px;color:#555;white-space:nowrap}
+/* D-P6-18 global UI-language selector (shared, top-of-content, consistent). */
+.ui-lang-selector{max-width:760px;margin:0 auto;padding:6px 20px;display:flex;align-items:center;gap:8px;font-size:12px;color:#555;flex-wrap:wrap}
+.ui-lang-selector .ui-lang-label{color:#666}
+.ui-lang-selector a{padding:3px 10px;background:#fff;color:#2c3e50;border:1px solid #c3ccd6;border-radius:4px;text-decoration:none}
+.ui-lang-selector .ui-lang-active{padding:3px 10px;background:#2c3e50;color:#fff;border:1px solid #2c3e50;border-radius:4px}
+</style>
+
+<style>
+body{font-family:sans-serif;max-width:720px;margin:60px auto;padding:0 20px;color:#222}
+h1{color:#2c3e50;margin-bottom:4px}
+.meta{background:#f0f4f8;padding:10px 14px;border-radius:4px;margin-bottom:18px;font-size:13px;color:#444}
+.disclosure{background:#f8f9fa;border-left:3px solid #b0b8c1;padding:9px 14px;border-radius:0 4px 4px 0;margin-bottom:20px;font-size:12px;color:#666;line-height:1.5}
+.progress-section{margin-bottom:20px}
+.progress-label{font-size:13px;color:#555;margin-bottom:4px}
+.progress-track{background:#dde3ea;border-radius:8px;height:14px;width:100%;overflow:hidden}
+.progress-fill{background:#2c3e50;height:14px;border-radius:8px}
+.stage-block{margin-bottom:18px;padding:10px 14px;background:#f0f4f8;border-radius:4px}
+.stage-label{font-size:15px;font-weight:bold;color:#2c3e50;margin-bottom:3px}
+.stage-meaning{font-size:13px;color:#555;line-height:1.4}
+.gap-board{margin-bottom:20px}
+.gap-board h3{font-size:14px;color:#555;margin:0 0 8px 0;text-transform:uppercase;letter-spacing:.5px}
+.gap-row{display:flex;align-items:center;padding:6px 10px;border-radius:4px;margin-bottom:4px;font-size:13px;background:#f8f9fa;border:1px solid #e2e6ea}
+.gap-row.current{background:#fff8e1;border-color:#ffe082;font-weight:bold}
+.gap-row.closed{background:#f0faf0;border-color:#c8e6c9;color:#555}
+.gap-status{width:70px;font-size:11px;padding:2px 6px;border-radius:3px;text-align:center;margin-right:10px;font-weight:bold;flex-shrink:0}
+.status-current{background:#fff3cd;color:#856404;border:1px solid #ffc107}
+.status-closed{background:#d4edda;color:#155724;border:1px solid #c3e6cb}
+.status-open{background:#f0f4f8;color:#555;border:1px solid #ccc}
+.gap-name{flex:1;color:#333}
+.gap-stage-note{font-size:11px;color:#888;margin-left:8px;flex-shrink:0}
+.current-arrow{font-size:11px;color:#e65100;margin-left:6px;flex-shrink:0}
+.gap-guidance{background:#fffbf0;border:1px solid #ffe082;border-radius:4px;padding:12px 16px;margin-bottom:18px}
+.gap-guidance-heading{font-size:15px;font-weight:bold;color:#2c3e50;margin-bottom:6px}
+.gap-guidance-text{font-size:13px;color:#555;line-height:1.5}
+.last-result{margin-bottom:18px;padding:10px 14px;border-radius:4px;border:1px solid #e2e6ea;font-size:13px}
+.badge-warn{background:#fff3e0;color:#e65100;border:1px solid #ffcc02;display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:bold;margin-bottom:6px}
+.badge-pass{background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7;display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:bold;margin-bottom:6px}
+.badge-block{background:#fdecea;color:#c62828;border:1px solid #ef9a9a;display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:bold;margin-bottom:6px}
+.badge-none{background:#f0f4f8;color:#555;border:1px solid #ccc;display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;margin-bottom:6px}
+.reason-text{font-size:13px;color:#555;margin-top:6px}
+.direction-text{font-size:12px;color:#888;margin-top:4px}
+.question{font-size:18px;margin-bottom:16px;color:#2c3e50;line-height:1.5}
+textarea{width:100%;padding:12px;font-size:15px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box}
+button{margin-top:10px;padding:10px 24px;background:#2c3e50;color:white;border:none;border-radius:4px;font-size:15px;cursor:pointer}
+.complete{color:#27ae60;font-weight:bold;font-size:18px}
+hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
+</style>
+
+<script defer src="/static/js/local_draft.js"></script>
+
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to content</a>
+<header class="app-header">
+<span class="brand">InventorAI</span>
+<span class="temp-session">Temporary session <a href="/data-and-session">Learn more</a></span>
+</header>
+
+<nav class="ui-lang-selector" aria-label="Language">
+  <span class="ui-lang-label">Language:</span>
+  <span class="ui-lang-active" lang="en" aria-current="true">English</span>
+  <a href="/ui-language?lang=ar&amp;next=/session/f8df66da-74a1-4dd1-bd41-c7b73fda83c6" lang="ar">العربية</a>
+</nav>
+<main id="main-content">
+
+
+<div id="draft-signals" data-draft-scope="f8df66da-74a1-4dd1-bd41-c7b73fda83c6" data-seed-accepted="0" data-answer-accepted="0" hidden></div>
+
+<h1>InventorAI</h1>
+
+
+
+
+
+<div class="disclosure">This platform helps you structure your thinking through guided questions. It tracks how you have addressed key areas — external technical validation remains a separate step.</div>
+
+
+
+<div class="next-step-callout" style="background:#eef5ff;border:1px solid #b3d1ff;border-radius:4px;padding:10px 14px;margin-bottom:18px">
+  <div class="next-step-heading" style="font-weight:bold;color:#1a4f8b">Next Development Step</div>
+  <div class="next-step-issue" style="font-size:14px;margin-top:4px">An open gap remains to be addressed</div>
+  
+  <div class="next-step-why" style="font-size:13px;color:#555;margin-top:4px">A recorded gap remains open.</div>
+  
+  
+  <div class="next-step-action" style="font-size:13px;color:#444;margin-top:6px"><span style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#1a4f8b">Do next:</span> Address the open gap.</div>
+  
+  <div class="next-step-ref" style="font-size:12px;color:#666;margin-top:4px">Reference: Working mechanism</div>
+</div>
+
+
+<p>
+  <a href="/session/f8df66da-74a1-4dd1-bd41-c7b73fda83c6/deliverable">
+  View In-Progress Assessment Snapshot
+  </a>
+</p>
+
+
+
+
+<div class="meta">
+  Idea: eb0b3cc2-5666-4550-99e2-3eb3cf8f7a5b
+  &nbsp;·&nbsp;
+  Iteration: 1
+  &nbsp;·&nbsp;
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  Review type: Mechanical-informed review
+</div>
+
+<div class="stage-block">
+  <div class="stage-label">Getting started</div>
+  <div class="stage-meaning">Share your idea — what it does and the problem it addresses.</div>
+</div>
+
+<div class="progress-section">
+  
+  
+  <div class="progress-label">Progress — Stage 1 of 3</div>
+  <div class="progress-track">
+    <div class="progress-fill" style="width:33%"></div>
+  </div>
+</div>
+
+
+<div class="gap-board">
+  <h3>Your Progress Areas</h3>
+  
+  
+  <div class="gap-row current">
+    
+      <span class="gap-status status-current">ACTIVE</span>
+    
+    <span class="gap-name">How does it work, step by step?</span>
+    <span class="gap-stage-note">Developing mechanism</span>
+    <span class="current-arrow">◄ now</span>
+  </div>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+<div class="gap-guidance">
+  <div class="gap-guidance-heading">How does it work, step by step?</div>
+  <div class="gap-guidance-text">Walk through the operating mechanism — the causal chain from input to output. What happens at each stage? What converts, controls, or transforms the inputs into the desired result?</div>
+</div>
+
+
+
+<div class="last-result">
+  
+    <span class="badge-warn">More detail needed</span>
+  
+  
+  
+  
+  
+  
+  
+  <div class="reason-text">This point is not established yet, so the idea cannot move forward on this item.</div>
+  
+  
+  <details class="result-details" style="margin-top:4px">
+    <summary style="cursor:pointer;font-size:12px;color:#8a97a3">Result details</summary>
+    <div class="reason-raw" style="font-size:12px;color:#8a7a68;margin-top:4px">Problem not yet established</div>
+  </details>
+  
+  
+  <div class="direction-text">Direction: PROGRESSING</div>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+<div class="scaffolding-guidance" style="margin-bottom:18px;padding:10px 14px;border-radius:4px;border:1px solid #ffe0b2;background:#fff8ef;font-size:13px">
+  <div class="scaffolding-guidance-heading" style="font-weight:bold;color:#e65100;margin-bottom:6px">What kind of detail to add</div>
+  <div class="scaffolding-guidance-lead" style="color:#5a4633;margin-bottom:8px">The idea is not fully described yet. Say what problem it solves and, in plain words, how it solves it.</div>
+  <ul class="scaffolding-guidance-prompts" style="margin:0 0 8px 18px;color:#5a4633">
+    <li>What physical part or mechanism does this use?</li><li>What condition triggers the action?</li><li>What does the device sense or detect?</li><li>What output or response happens?</li><li>What evidence or observation supports this?</li>
+  </ul>
+  <div class="scaffolding-guidance-note" style="font-size:12px;color:#8a7a68">These are prompts to help you add detail. They do not change or grade your answer — you write it in your own words.</div>
+</div>
+
+
+
+<div class="current-question-eyebrow" style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#8a97a3;margin-bottom:4px">Current question</div>
+
+<div class="current-question-context" style="font-size:12px;color:#666;margin-bottom:8px">Currently addressing: <strong style="color:#2c3e50">How does it work, step by step?</strong></div>
+
+
+
+<p class="question" lang="en" dir="ltr">Describe the physical steps your mechanism takes to achieve its function.</p>
+
+<p class="answer-hint" style="font-size:12px;color:#888;margin:-6px 0 14px 0">Answer in the box below, or choose one of the response options.</p>
+
+
+
+
+
+
+
+<div class="w2b-primary-action" style="margin-bottom:14px;padding:10px 14px;border-radius:4px;border:1px solid #cfd8ea;background:#f3f6fc;font-size:13px">
+  <p style="margin:0;color:#33466b">You have declared more than one alternative for a decision. Recording what you know about each alternative - using the refine option in the decision section - gathers the evidence a future comparison will need. No comparison has started yet.</p>
+  <p style="margin:6px 0 0 0"><a href="#w2b-decision-capture" style="color:#1a4f8b;font-weight:bold">Go to the decision section</a></p>
+</div>
+
+
+
+
+
+
+<details style="margin-bottom:14px;border:1px solid #d6e0e8;border-radius:4px;background:#fafcfe">
+  <summary style="cursor:pointer;padding:9px 14px;font-size:14px;color:#2c3e50">Help me understand this question</summary>
+  <div style="padding:4px 14px 12px 14px">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#8a97a3;margin-bottom:6px">System guidance</div>
+    <div style="font-size:14px;font-weight:bold;color:#2c3e50;margin-bottom:6px">What this question is asking</div>
+    <p style="font-size:13px;color:#555;line-height:1.5;margin:0 0 8px 0">This is asking you to walk through how your idea works from start to finish — what happens first, what happens next, and how those steps lead to the result you want.</p>
+    <p style="font-size:13px;color:#555;line-height:1.5;margin:0 0 8px 0"><strong>What would help:</strong> A step-by-step description, in your own words, of how the idea turns its starting point into the outcome.</p>
+    <p style="font-size:13px;color:#555;line-height:1.5;margin:0 0 8px 0"><strong>A good answer looks like:</strong> A few plain sentences describing the sequence of steps. Everyday language is fine; exact technical figures are not required.</p>
+    <p style="font-size:13px;color:#555;line-height:1.5;margin:0">If part of the chain is still unclear, you can describe the parts you know and mark the rest as not yet known.</p>
+  </div>
+</details>
+
+
+
+<div class="gap-guidance" style="background:#f3f7fb;border-color:#cfe0ee;margin-bottom:14px">
+  <div class="gap-guidance-heading">You can answer this</div>
+  <div class="gap-guidance-text">You can answer this from your intended design or current understanding. Exact engineering values are not required.</div>
+</div>
+
+
+
+<div class="badge-warn" style="display:block;padding:9px 14px;margin-bottom:14px">Your decision entry was recorded and saved to your project.</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<form method="POST" action="/session/f8df66da-74a1-4dd1-bd41-c7b73fda83c6">
+  
+  <input type="hidden" name="answer_token" value="7v0Riadq23VFpz_ZizuFTVxaYHeon7rD.cd890f2c5824bdca988e68531375d23d">
+  <label for="response" style="display:block;margin-bottom:6px;font-size:13px;color:#555">Your answer</label>
+  
+  <textarea id="response" name="response" rows="5" placeholder="Describe your thinking here, or pick an option below..."
+    data-draft-field="answer" data-draft-scope="f8df66da-74a1-4dd1-bd41-c7b73fda83c6" data-draft-context="ff02ceb4172e8728" data-draft-context-version="v1" data-draft-account="anon"></textarea>
+  <br>
+  <fieldset style="margin-top:12px;border:1px solid #e2e6ea;border-radius:4px;padding:10px">
+    <legend style="font-size:13px;color:#555;padding:0 6px">How do you want to respond?</legend>
+    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="answered" checked> Answer this question (using the text above)</label>
+    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="unknown"> I do not know this yet</label>
+    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="deferred"> Defer this question for now</label>
+    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="provisional_assumption"> Record a provisional assumption (not verified — optional note above)</label>
+    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="specialist_requested"> A specialist needs to answer this</label>
+    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="evidence_requested"> Evidence or a test is needed for this</label>
+  </fieldset>
+  <button type="submit">Submit</button>
+</form>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<details id="w2b-decision-capture" class="decision-capture" open style="margin-top:14px;border:1px solid #d5c9e8;border-radius:4px;background:#f9f5fd;padding:10px 14px">
+  <summary style="cursor:pointer;font-size:13px;color:#5a2c8c;font-weight:bold">Decision capture</summary>
+  <p style="font-size:13px;color:#555;margin:10px 0 8px 0">Declare a technical decision you are working through, list the alternatives you are considering, and refine or withdraw them as your thinking evolves. Everything is kept in your project history and rebuilt exactly on reload.</p>
+  
+  <div class="w2a-context" style="border:1px solid #e2d9ef;border-radius:4px;background:#ffffff;padding:8px 12px;margin-bottom:10px">
+    <p style="margin:4px 0"><strong>Decision question:</strong> The decision is the folded-position retention architecture. Candidates: (1) over-centre toggle latch, (2) spring-loaded detent pin, (3) gravity-drop gate latch. The mechanism must retain the ramp in the flat, load-bearing position and release for tool-less folding.</p>
+    <p style="margin:8px 0 4px 0;font-size:13px"><strong>Alternatives under consideration:</strong></p>
+    
+    
+    <ul style="margin:4px 0 8px 0">
+      
+      <li class="g3-alternative g3-active" style="margin-bottom:10px">
+        <span class="g3-name">Force path: wheelchair load through the deployed ramp into the retention mechanism at the hinge line; manual actuation for fold and unfold; no permanent modification to the doorway or frame is permitted.</span>
+        <span class="g3-state" style="font-size:12px;color:#5a2c8c">— still under consideration</span>
+        
+        <div class="g3-evidence" style="font-size:12px;color:#777;margin:2px 0 0 12px">You have recorded detail about it</div>
+          
+        <div class="g3-not-comparable" style="font-size:12px;color:#777;margin:2px 0 0 12px">Not yet comparable: what you have written about this alternative is kept as your own description of it, not as comparison input, so no comparison can use it yet.</div>
+          
+          
+        <form method="POST" action="/session/f8df66da-74a1-4dd1-bd41-c7b73fda83c6/decision/refine-alternative" style="display:inline-block;margin:2px 6px">
+          <input type="hidden" name="answer_token" value="7v0Riadq23VFpz_ZizuFTVxaYHeon7rD.cd890f2c5824bdca988e68531375d23d">
+          <input type="hidden" name="supersedes_record_id" value="rec_5">
+          <input type="text" name="content" required aria-label="Refine this alternative (keeps its identity and history)" placeholder="Refine this alternative (keeps its identity and history)" style="max-width:280px">
+          <button type="submit">Refine</button>
+        </form>
+        <form method="POST" action="/session/f8df66da-74a1-4dd1-bd41-c7b73fda83c6/decision/withdraw-alternative" style="display:inline-block;margin:2px 6px">
+          <input type="hidden" name="answer_token" value="7v0Riadq23VFpz_ZizuFTVxaYHeon7rD.cd890f2c5824bdca988e68531375d23d">
+          <input type="hidden" name="supersedes_record_id" value="rec_5">
+          <input type="text" name="reason" aria-label="Why are you withdrawing it? (optional)" placeholder="Why are you withdrawing it? (optional)" style="max-width:240px">
+          <button type="submit" title="Withdraw this alternative (kept in project history)">Withdraw</button>
+        </form>
+          
+        
+      </li>
+      
+      <li class="g3-alternative g3-withdrawn" style="margin-bottom:10px">
+        <span class="g3-name">spring-loaded detent pin</span>
+        <span class="g3-state" style="font-size:12px;color:#5a2c8c">— withdrawn by you</span>
+        
+          
+        <div class="g3-reason" style="font-size:12px;color:#555;margin:2px 0 0 12px"><strong>Your reason:</strong> No load rating, retention margin, or physical test evidence exists; those are missing evidence, not assumptions I can fill.</div>
+          
+        
+      </li>
+      
+      <li class="g3-alternative g3-withdrawn" style="margin-bottom:10px">
+        <span class="g3-name">gravity-drop gate latch</span>
+        <span class="g3-state" style="font-size:12px;color:#5a2c8c">— withdrawn by you</span>
+        
+          
+        <div class="g3-reason" style="font-size:12px;color:#777;margin:2px 0 0 12px">No reason was recorded with this withdrawal.</div>
+          
+        
+      </li>
+      
+      <li class="g3-alternative g3-active" style="margin-bottom:10px">
+        <span class="g3-name">spring-loaded detent pin</span>
+        <span class="g3-state" style="font-size:12px;color:#5a2c8c">— still under consideration</span>
+        
+        <div class="g3-evidence" style="font-size:12px;color:#777;margin:2px 0 0 12px">Nothing recorded about it yet</div>
+          
+        <div class="g3-not-comparable" style="font-size:12px;color:#777;margin:2px 0 0 12px">Not yet comparable: what you have written about this alternative is kept as your own description of it, not as comparison input, so no comparison can use it yet.</div>
+          
+          
+        <form method="POST" action="/session/f8df66da-74a1-4dd1-bd41-c7b73fda83c6/decision/refine-alternative" style="display:inline-block;margin:2px 6px">
+          <input type="hidden" name="answer_token" value="7v0Riadq23VFpz_ZizuFTVxaYHeon7rD.cd890f2c5824bdca988e68531375d23d">
+          <input type="hidden" name="supersedes_record_id" value="rec_8">
+          <input type="text" name="content" required aria-label="Refine this alternative (keeps its identity and history)" placeholder="Refine this alternative (keeps its identity and history)" style="max-width:280px">
+          <button type="submit">Refine</button>
+        </form>
+        <form method="POST" action="/session/f8df66da-74a1-4dd1-bd41-c7b73fda83c6/decision/withdraw-alternative" style="display:inline-block;margin:2px 6px">
+          <input type="hidden" name="answer_token" value="7v0Riadq23VFpz_ZizuFTVxaYHeon7rD.cd890f2c5824bdca988e68531375d23d">
+          <input type="hidden" name="supersedes_record_id" value="rec_8">
+          <input type="text" name="reason" aria-label="Why are you withdrawing it? (optional)" placeholder="Why are you withdrawing it? (optional)" style="max-width:240px">
+          <button type="submit" title="Withdraw this alternative (kept in project history)">Withdraw</button>
+        </form>
+          
+        
+      </li>
+      
+    </ul>
+    <p class="g3-history-note" style="font-size:12px;color:#777;margin:4px 0 8px 0">Alternatives you withdrew stay listed here so your own history remains complete. A withdrawn alternative takes no part in comparison, and withdrawing one is your decision about direction - it is not a judgement that the alternative would not work.</p>
+    
+    
+    <p class="w2a-readiness-note" style="font-size:12px;color:#777;margin:6px 0 4px 0">Comparison has not started: these alternatives are recorded, and the inputs needed to compare them can be added at a later stage. This is the expected state for a newly declared decision - not a problem with your idea.</p>
+    
+    
+    <form method="POST" action="/session/f8df66da-74a1-4dd1-bd41-c7b73fda83c6/decision/declare-alternative" style="margin-top:6px">
+      <input type="hidden" name="answer_token" value="7v0Riadq23VFpz_ZizuFTVxaYHeon7rD.cd890f2c5824bdca988e68531375d23d">
+      <input type="hidden" name="context_root" value="rec_1">
+      <label style="display:block;font-size:12px;color:#888;margin-bottom:4px">Add an alternative</label>
+      <input type="text" name="content" required style="max-width:320px">
+      <button type="submit">Add alternative</button>
+    </form>
+    
+  </div>
+  
+  
+  <form method="POST" action="/session/f8df66da-74a1-4dd1-bd41-c7b73fda83c6/decision/declare-context" style="margin-top:6px">
+    <input type="hidden" name="answer_token" value="7v0Riadq23VFpz_ZizuFTVxaYHeon7rD.cd890f2c5824bdca988e68531375d23d">
+    <label for="w2a-context-content" style="display:block;font-size:12px;color:#888;margin-bottom:4px">Declare a decision to work on (state it as a question)</label>
+    <textarea id="w2a-context-content" name="content" rows="2" required style="width:100%;box-sizing:border-box"></textarea>
+    <br>
+    <button type="submit" style="margin-top:6px">Declare decision</button>
+  </form>
+  
+</details>
+
+
+
+</main>
+</body>
+</html>

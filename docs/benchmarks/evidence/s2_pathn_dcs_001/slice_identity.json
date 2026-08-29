@@ -1,0 +1,29 @@
+{
+ "slice_id": "S2-PATHN-DCS-001",
+ "kind": "SUPPLEMENTAL MEASUREMENT SLICE — NOT a Path-N release-candidate run, NOT Run-004, NOT part of the original 8-record series",
+ "purpose": "ONE Owner-authorized execution of the authoritative supplemental decision-capture slice (measurement/evidence only)",
+ "authoritative_branch": "feature/atomic-json-session-persistence",
+ "evaluated_product_sha": "d867b92eaa69221b1884a9a2eef25cd74225bb86",
+ "evaluated_tree": "ce68363d445ac448e84c05d3eb796b28552a93b3",
+ "rc_parent_first": "5a392f0cfd7d6b19874382441f78fee61cee1a26",
+ "rc_parent_second": "fa5c1f79c0385648526b4bff8ddbf98b12ac8530",
+ "mixed_sha_run": "NO — all 4 records executed against this one SHA",
+ "design_of_record": "docs/benchmarks/S2_PATHN_DECISION_CAPTURE_SLICE_DESIGN.md, blob b887871a307868216de123674d4f7315cfdb589c — byte-identical to the Owner-accepted candidate fa5c1f79",
+ "instrument_delta": 0,
+ "instrument_proof": "docs/benchmarks/BICYCLE_BRAKE_LIGHT_COMPETITIVE_BENCHMARK.md blob 4e64b5906596ed538d45bb9192ba32ed6a84ad1e — identical at the run-002 authoritative SHA 1f3d9d14 and at this evaluated SHA",
+ "corpus_delta": 0,
+ "corpus_proof": "payloads read from the committed run-001 evidence blob 0ddd1644afe1f5b57ca5b396fae51a69080e8de3 (sha256 0750f3e41a1d8489353c52abbcbda79f32f445d33ace3561bf2422f656ce7fce); every candidate string asserted verbatim in frozen answer [0] at runtime, fail-closed",
+ "product_delta": 0,
+ "product_proof": "engine/decision_composition.py, engine/decision_workspace.py, web/app.py, web/ui_text.py and both templates byte-identical to the evaluated G-3 merge 5a392f0; product-path delta 5a392f0..d867b92 = 0 files",
+ "cardinality": "2 cases x 2 languages x 1 held-constant perspective = 4 records (D1-D4), per the frozen design",
+ "activated_domains": [
+  "electronics_electrical",
+  "mechanical"
+ ],
+ "ai_advisory_enabled": false,
+ "working_tree": "clean, detached at d867b92 before execution; tree verified equal to the merge tree",
+ "db_path": "INVENTORAI_DB_PATH bound to the slice evidence store (outside the repository tree)",
+ "executed_by": "Creator/Executor agent (evaluator); evaluation perspective per S2 15.4 - not a real user",
+ "execution_accounting": "ONE execution authorized and consumed; exactly 4 records; ONE pass; NO retry; NO restart; NO replacement record; NO aborted attempt; NO ninth/original-series record. FURTHER EXECUTION AUTHORIZED: NO",
+ "series_boundary": "the Run-002/003 eight-record series is untouched by this execution; results are NEVER merged, averaged or substituted into it"
+}

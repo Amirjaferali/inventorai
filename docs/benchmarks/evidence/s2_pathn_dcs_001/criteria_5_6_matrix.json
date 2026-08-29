@@ -1,0 +1,150 @@
+{
+ "D1": {
+  "case": "E-1",
+  "language": "en",
+  "criterion_5": {
+   "result": "PARTIAL",
+   "basis": "PASSING: bounded representation - 4 rendered entries for 4 declared founding roots, each exactly once; no fabricated entry - every entry traces to a founding ledger root; no silent disappearance - both withdrawn alternatives remain visible on BOTH served routes; truthful membership - DecisionRecord.candidates contains exactly the two active roots and neither withdrawn chain, and the re-declared alternative carries a NEW root (rec_8) distinct from the withdrawn one (rec_3). SHORTFALL (why not PASS): after the refinement, the refined member's RENDERED NAME becomes the refinement text, so that member no longer displays under a name a reader can match to the case's authoritative bounded candidate set. The set stays bounded and its identity is preserved in the ledger (root unchanged), but as DISPLAYED the bounded set is no longer fully matchable to the case's bounded candidate set. Measured in all four records. This is contract-specified behaviour (the latest active declaration is the current interpretation), reported as a measurement finding, NOT repaired here. measured on this execution's own captured served surfaces and composed record"
+  },
+  "criterion_6": {
+   "result": "PASS",
+   "basis": "Every non-active entry carries an explicit truthful statement of its state and reason: the reasoned withdrawal renders the inventor's recorded reason VERBATIM under a governed reason label; the reason-less withdrawal renders the governed 'no reason was recorded' copy - never invented text, never omission. Withdrawal is distinguished from system elimination in BOTH languages via the governed 'withdrawn by you' state, and no withdrawn chain carries any disposition_basis or disposition_reason (all None) - no dispose_candidate()-equivalent state was fabricated. Active members that no comparison input references render the derived candidate_not_yet_comparable reason truthfully. No ranking, preference or winner appears; the only 'validated/certified' tokens on the deliverable are inside the standing NEGATIVE no-claim disclaimer ('nothing here has been built, tested, demonstrated, validated, certified, or shown feasible'), checked in context. readiness=insufficient_information with derived blocking reasons is recorded as a legitimate truthful outcome, not a failure. measured on this execution's own captured served surfaces and composed record"
+  },
+  "en_ar_substantive_parity": {
+   "result": "PASS",
+   "basis": "for one identical action matrix the entry set, lifecycle states, comparison membership, not-comparable outcomes, evidence states, reason presence/absence, readiness and blocking reasons are IDENTICAL across EN and AR (D1 vs D2, D3 vs D4); user content renders verbatim and untranslated in both; the AR surfaces carry lang=ar dir=rtl and the G-3 section is fully Arabic chrome. No engine-generated English prose appears in the AR G-3 section."
+  },
+  "observed": {
+   "declared_founding_roots": 4,
+   "rendered_entries": 4,
+   "comparison_eligible": 2,
+   "withdrawn_visible_session": true,
+   "withdrawn_visible_deliverable": true,
+   "withdrawal_with_reason_verbatim": true,
+   "withdrawal_without_reason_governed_copy": true,
+   "redeclaration_new_root": true,
+   "readiness": "insufficient_information",
+   "blocking_reason_codes": [
+    "candidate_not_yet_comparable",
+    "candidate_not_yet_comparable"
+   ],
+   "candidate_disposition_bases": [
+    null,
+    null
+   ],
+   "claim_items_created": 0,
+   "anomalies": 0
+  }
+ },
+ "D2": {
+  "case": "E-1",
+  "language": "ar",
+  "criterion_5": {
+   "result": "PARTIAL",
+   "basis": "PASSING: bounded representation - 4 rendered entries for 4 declared founding roots, each exactly once; no fabricated entry - every entry traces to a founding ledger root; no silent disappearance - both withdrawn alternatives remain visible on BOTH served routes; truthful membership - DecisionRecord.candidates contains exactly the two active roots and neither withdrawn chain, and the re-declared alternative carries a NEW root (rec_8) distinct from the withdrawn one (rec_3). SHORTFALL (why not PASS): after the refinement, the refined member's RENDERED NAME becomes the refinement text, so that member no longer displays under a name a reader can match to the case's authoritative bounded candidate set. The set stays bounded and its identity is preserved in the ledger (root unchanged), but as DISPLAYED the bounded set is no longer fully matchable to the case's bounded candidate set. Measured in all four records. This is contract-specified behaviour (the latest active declaration is the current interpretation), reported as a measurement finding, NOT repaired here. measured on this execution's own captured served surfaces and composed record"
+  },
+  "criterion_6": {
+   "result": "PASS",
+   "basis": "Every non-active entry carries an explicit truthful statement of its state and reason: the reasoned withdrawal renders the inventor's recorded reason VERBATIM under a governed reason label; the reason-less withdrawal renders the governed 'no reason was recorded' copy - never invented text, never omission. Withdrawal is distinguished from system elimination in BOTH languages via the governed 'withdrawn by you' state, and no withdrawn chain carries any disposition_basis or disposition_reason (all None) - no dispose_candidate()-equivalent state was fabricated. Active members that no comparison input references render the derived candidate_not_yet_comparable reason truthfully. No ranking, preference or winner appears; the only 'validated/certified' tokens on the deliverable are inside the standing NEGATIVE no-claim disclaimer ('nothing here has been built, tested, demonstrated, validated, certified, or shown feasible'), checked in context. readiness=insufficient_information with derived blocking reasons is recorded as a legitimate truthful outcome, not a failure. measured on this execution's own captured served surfaces and composed record"
+  },
+  "en_ar_substantive_parity": {
+   "result": "PASS",
+   "basis": "for one identical action matrix the entry set, lifecycle states, comparison membership, not-comparable outcomes, evidence states, reason presence/absence, readiness and blocking reasons are IDENTICAL across EN and AR (D1 vs D2, D3 vs D4); user content renders verbatim and untranslated in both; the AR surfaces carry lang=ar dir=rtl and the G-3 section is fully Arabic chrome. No engine-generated English prose appears in the AR G-3 section."
+  },
+  "observed": {
+   "declared_founding_roots": 4,
+   "rendered_entries": 4,
+   "comparison_eligible": 2,
+   "withdrawn_visible_session": true,
+   "withdrawn_visible_deliverable": true,
+   "withdrawal_with_reason_verbatim": true,
+   "withdrawal_without_reason_governed_copy": true,
+   "redeclaration_new_root": true,
+   "readiness": "insufficient_information",
+   "blocking_reason_codes": [
+    "candidate_not_yet_comparable",
+    "candidate_not_yet_comparable"
+   ],
+   "candidate_disposition_bases": [
+    null,
+    null
+   ],
+   "claim_items_created": 0,
+   "anomalies": 0
+  }
+ },
+ "D3": {
+  "case": "M-1",
+  "language": "en",
+  "criterion_5": {
+   "result": "PARTIAL",
+   "basis": "PASSING: bounded representation - 4 rendered entries for 4 declared founding roots, each exactly once; no fabricated entry - every entry traces to a founding ledger root; no silent disappearance - both withdrawn alternatives remain visible on BOTH served routes; truthful membership - DecisionRecord.candidates contains exactly the two active roots and neither withdrawn chain, and the re-declared alternative carries a NEW root (rec_8) distinct from the withdrawn one (rec_3). SHORTFALL (why not PASS): after the refinement, the refined member's RENDERED NAME becomes the refinement text, so that member no longer displays under a name a reader can match to the case's authoritative bounded candidate set. The set stays bounded and its identity is preserved in the ledger (root unchanged), but as DISPLAYED the bounded set is no longer fully matchable to the case's bounded candidate set. Measured in all four records. This is contract-specified behaviour (the latest active declaration is the current interpretation), reported as a measurement finding, NOT repaired here. measured on this execution's own captured served surfaces and composed record"
+  },
+  "criterion_6": {
+   "result": "PASS",
+   "basis": "Every non-active entry carries an explicit truthful statement of its state and reason: the reasoned withdrawal renders the inventor's recorded reason VERBATIM under a governed reason label; the reason-less withdrawal renders the governed 'no reason was recorded' copy - never invented text, never omission. Withdrawal is distinguished from system elimination in BOTH languages via the governed 'withdrawn by you' state, and no withdrawn chain carries any disposition_basis or disposition_reason (all None) - no dispose_candidate()-equivalent state was fabricated. Active members that no comparison input references render the derived candidate_not_yet_comparable reason truthfully. No ranking, preference or winner appears; the only 'validated/certified' tokens on the deliverable are inside the standing NEGATIVE no-claim disclaimer ('nothing here has been built, tested, demonstrated, validated, certified, or shown feasible'), checked in context. readiness=insufficient_information with derived blocking reasons is recorded as a legitimate truthful outcome, not a failure. measured on this execution's own captured served surfaces and composed record"
+  },
+  "en_ar_substantive_parity": {
+   "result": "PASS",
+   "basis": "for one identical action matrix the entry set, lifecycle states, comparison membership, not-comparable outcomes, evidence states, reason presence/absence, readiness and blocking reasons are IDENTICAL across EN and AR (D1 vs D2, D3 vs D4); user content renders verbatim and untranslated in both; the AR surfaces carry lang=ar dir=rtl and the G-3 section is fully Arabic chrome. No engine-generated English prose appears in the AR G-3 section."
+  },
+  "observed": {
+   "declared_founding_roots": 4,
+   "rendered_entries": 4,
+   "comparison_eligible": 2,
+   "withdrawn_visible_session": true,
+   "withdrawn_visible_deliverable": true,
+   "withdrawal_with_reason_verbatim": true,
+   "withdrawal_without_reason_governed_copy": true,
+   "redeclaration_new_root": true,
+   "readiness": "insufficient_information",
+   "blocking_reason_codes": [
+    "candidate_not_yet_comparable",
+    "candidate_not_yet_comparable"
+   ],
+   "candidate_disposition_bases": [
+    null,
+    null
+   ],
+   "claim_items_created": 0,
+   "anomalies": 0
+  }
+ },
+ "D4": {
+  "case": "M-1",
+  "language": "ar",
+  "criterion_5": {
+   "result": "PARTIAL",
+   "basis": "PASSING: bounded representation - 4 rendered entries for 4 declared founding roots, each exactly once; no fabricated entry - every entry traces to a founding ledger root; no silent disappearance - both withdrawn alternatives remain visible on BOTH served routes; truthful membership - DecisionRecord.candidates contains exactly the two active roots and neither withdrawn chain, and the re-declared alternative carries a NEW root (rec_8) distinct from the withdrawn one (rec_3). SHORTFALL (why not PASS): after the refinement, the refined member's RENDERED NAME becomes the refinement text, so that member no longer displays under a name a reader can match to the case's authoritative bounded candidate set. The set stays bounded and its identity is preserved in the ledger (root unchanged), but as DISPLAYED the bounded set is no longer fully matchable to the case's bounded candidate set. Measured in all four records. This is contract-specified behaviour (the latest active declaration is the current interpretation), reported as a measurement finding, NOT repaired here. measured on this execution's own captured served surfaces and composed record"
+  },
+  "criterion_6": {
+   "result": "PASS",
+   "basis": "Every non-active entry carries an explicit truthful statement of its state and reason: the reasoned withdrawal renders the inventor's recorded reason VERBATIM under a governed reason label; the reason-less withdrawal renders the governed 'no reason was recorded' copy - never invented text, never omission. Withdrawal is distinguished from system elimination in BOTH languages via the governed 'withdrawn by you' state, and no withdrawn chain carries any disposition_basis or disposition_reason (all None) - no dispose_candidate()-equivalent state was fabricated. Active members that no comparison input references render the derived candidate_not_yet_comparable reason truthfully. No ranking, preference or winner appears; the only 'validated/certified' tokens on the deliverable are inside the standing NEGATIVE no-claim disclaimer ('nothing here has been built, tested, demonstrated, validated, certified, or shown feasible'), checked in context. readiness=insufficient_information with derived blocking reasons is recorded as a legitimate truthful outcome, not a failure. measured on this execution's own captured served surfaces and composed record"
+  },
+  "en_ar_substantive_parity": {
+   "result": "PASS",
+   "basis": "for one identical action matrix the entry set, lifecycle states, comparison membership, not-comparable outcomes, evidence states, reason presence/absence, readiness and blocking reasons are IDENTICAL across EN and AR (D1 vs D2, D3 vs D4); user content renders verbatim and untranslated in both; the AR surfaces carry lang=ar dir=rtl and the G-3 section is fully Arabic chrome. No engine-generated English prose appears in the AR G-3 section."
+  },
+  "observed": {
+   "declared_founding_roots": 4,
+   "rendered_entries": 4,
+   "comparison_eligible": 2,
+   "withdrawn_visible_session": true,
+   "withdrawn_visible_deliverable": true,
+   "withdrawal_with_reason_verbatim": true,
+   "withdrawal_without_reason_governed_copy": true,
+   "redeclaration_new_root": true,
+   "readiness": "insufficient_information",
+   "blocking_reason_codes": [
+    "candidate_not_yet_comparable",
+    "candidate_not_yet_comparable"
+   ],
+   "candidate_disposition_bases": [
+    null,
+    null
+   ],
+   "claim_items_created": 0,
+   "anomalies": 0
+  }
+ }
+}
