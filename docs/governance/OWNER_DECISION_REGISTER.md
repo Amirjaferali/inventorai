@@ -1747,3 +1747,49 @@ supplement **UNCHANGED** · `FDC-001 LANE: INACTIVE` · `DECISION WORKSPACE / PA
 `CAP ACTIVATION: NONE` · `FURTHER S2 RUN OR SLICE EXECUTION: NOT AUTHORIZED` · `FCORA AUTHORIZED: NO` ·
 `PSRR GO: NO` · `DEPLOYMENT / PRODUCTION / SERIOUS RELEASE / PAID ACTIVATION: NOT AUTHORIZED` ·
 `main` NOT RECONCILED.
+
+---
+
+## G-4-A Contract Amendment 1 — bounded digest-pin allowance — OD-G4-A1 (governance-only; no implementation)
+
+Recorded at the G-4-A Contract Amendment 1 gate on the authoritative base
+`89534a55720a25b8d5928c76bf09011e608294b0`, verified live from Git at this gate `[EXEC]`. This amendment
+exists because the authorized G-4-A implementation START was **returned unstarted** under
+`STOP — IMPLEMENTATION REQUIRES OUT-OF-CONTRACT SURFACE`: the bounded Mechanism-A correction changes
+`engine/progression_loop.py` bytes, and three P9 modules pin that file's whole-file SHA-256, so two
+cross-check guards go red on a mechanical consequence of pinning that the frozen §5 surface list did not
+permit to touch. **No new decision owner is created** — `OD-G4-A1` amends the existing `OD-G4-A` contract
+and does not supersede `OD-G4-A` or `OD-G4-B` `[REPO]`.
+
+| ID | Subject | Status | Evidence |
+|---|---|---|---|
+| OD-G4-A1 | **Bounded digest-pin allowance.** `tests/test_p9_mech_i3_signal_quality.py`, `tests/test_p9_mech_i4_boundary_corpus.py` and `tests/test_p9_mech_i5_question_sufficiency.py` are added to the G-4-A allowed-surface list **for a mechanical SHA-256 digest re-freeze of the `engine/progression_loop.py` pin ONLY**, plus the lineage comment the existing pin-comment convention requires. **Changing P9 test logic, assertions, expectations, fixtures, corpora, thresholds or signal lists, changing any other pin, or touching a fourth module is NOT authorized**; the required return in that case is `STOP — DIGEST-PIN RECONCILIATION EXCEEDS OWNER ALLOWANCE`. Digest truth is bound: freeze `engine/progression_loop.py` first, compute from the exact candidate bytes, use the identical value in all three files, run both cross-check guards green, leave no superseded digest in any **active** pin site while leaving truthful historical/governance/evidence records unedited, do not present the re-freeze as a P9 semantic change, and **do not pre-compute or invent the future digest during this governance freeze**. | **ACCEPTED AND COMMITTED — AMENDMENT ONLY.** Folded into `docs/governance/G4_A_EN_CAUSAL_FALSE_POSITIVE_IMPLEMENTATION_CONTRACT_CANDIDATE.md` §5 item 4, new §5.1, and new §6 section F (`A-20`…`A-26`). **`IMPLEMENTATION AUTHORIZED: NO`** — this amendment does **not** resume the returned implementation START, which needs a further separate Owner decision. | Decision substance is Owner-supplied `[OWNER-PREMISE]`. Measured basis, verified read-only at this base: the value `engine/progression_loop.py = a7e8bd62b9ab76aaba5889ce52b5f32ee646b2817ba1c790ed7a231d259fa41f` is carried as an **ACTIVE pin** in exactly those three P9 modules — and, as `HISTORICAL / GOVERNANCE / EVIDENCE LINEAGE`, in `docs/governance/RVR_7_IMPLEMENTATION_PATH_MANIFEST_FREEZE_CANDIDATE.md` and `docs/governance/W2_C_RVR6B_IMPLEMENTATION_EVIDENCE_PACK.md`, neither of which is edited by this amendment — enforced by `tests/test_rvr7_render_edge_resolution.py::test_progression_loop_is_byte_unchanged_by_rvr7` and `tests/test_w2b_amc_consumers.py::test_exactly_three_p9_files_pin_the_current_digest`; the same bounded allowance shape is already recorded in those files' pin-comment lineage for `W2-B §G` and `W2-C §M` `[REPO]` |
+| OD-G4-A1-F | **Genuine-conditional falsification hardening.** The bounded correction must be falsified against a targeted deterministic case proving that a genuine causal conditional — verbatim **`"if I can detect wheel slip, the controller turns on"`** — **remains recognised**. The exploratory qualifier-list mechanism produced during the blocked implementation attempt is **evidence only and is NOT frozen as the required code solution**. | **ACCEPTED AND COMMITTED — AMENDMENT ONLY.** Recorded as acceptance item `A-19` (new §6 section E), bound to the existing `A-8` two-sided requirement, which is **unamended**. | Decision substance is Owner-supplied `[OWNER-PREMISE]`. Measured read-only at this base: for that sentence the base matcher's **sole** causal hit is `"if "` and `has_registered_causal_structure` is **False**; the sentence **opens with `"if i can"`**, so the exploratory qualifier-list predicate would return **False** — it is **measured to fail** the case the Owner requires, which is precisely why it is recorded as evidence and not frozen as the solution `[EXEC]` |
+
+**What this recording deliberately does NOT do.** It does not close, discharge, reorder or re-own any
+obligation. **G-4 remains `OPEN` / `FRB`** and **G-4 full closure is NOT asserted**. It does not resume,
+restart or re-authorize G-4-A implementation; it does not select a code mechanism; it does not widen §4's
+prohibition list or weaken its two-sided requirement; it does not touch Mechanism B or M-1 relevance; it
+does not authorize any run. `RVR-3`, `RVR-7`, `W1-N3` and `RVR-2` are **not reopened**.
+
+**Deferred Obligations Register — deliberately NOT touched, with the reason stated.** The G-4 obligation
+row is the only G-4-A-referencing DOR content (`docs/governance/DEFERRED_OBLIGATIONS_REGISTER.md`, one
+match `[EXEC]`), and its Disposition cell references the contract **by path and freeze state**
+(*"Mechanism A — bounded contract-freeze path OPEN"*) **without enumerating implementation surfaces**.
+Amendment 1 therefore contradicts **no** DOR text: the row's status, blocking level, return gate,
+latest-safe gate and closure criterion all remain true as written. The `STOP first and explain the exact
+contradiction` condition does **not** fire, and no duplicate row is created.
+
+**Boundary carried with these registrations (none is weakened by them):**
+`G-4: OPEN / FRB` · `G-4 FULL CLOSURE: NOT ASSERTED` · `MECHANISM A IMPLEMENTATION AUTHORIZED: NO` ·
+`MECHANISM A IMPLEMENTATION RESUMED: NO` · `MECHANISM B CODE CHANGE: NOT AUTHORIZED` ·
+`ARABIC WIDENING: NOT AUTHORIZED` · `M-1 RELEVANCE: SEPARATE, UNTOUCHED` ·
+`NEW ASSESSMENT / ARABIC / NORMALIZATION / RELEVANCE OWNER: NOT CREATED` ·
+`P9 SEMANTIC CHANGE: NOT AUTHORIZED` · `RVR-3 / RVR-7 / W1-N3 / RVR-2: NOT REOPENED` · `T1-A′: OPEN` ·
+`T1-C′ / T1-D: OPEN, SEPARATE` · `G-5: UNCHANGED` · readiness reconciliation **ELIGIBLE, NOT CONVENED** ·
+HICR bounded supplement **UNCHANGED** · `THIRD S2 RUN: CONSUMED` · `FOURTH S2 RUN: NOT AUTHORIZED` ·
+`FURTHER SUPPLEMENTAL SLICE EXECUTION: NOT AUTHORIZED` · `FDC-001 LANE: INACTIVE` ·
+`DECISION WORKSPACE / PATH-T: NOT ACTIVATED` · `ODS-001: NOT ACTIVATED` · `RVR-4: CLOSED` ·
+`READINESS IMPLEMENTATION AUTHORIZED: NO` · `CAP ACTIVATION: NONE` · `FCORA AUTHORIZED: NO` ·
+`PSRR GO: NO` · `ACTIVE CONTRACT: NONE` (untouched) ·
+`DEPLOYMENT / PRODUCTION / SERIOUS RELEASE / PAID ACTIVATION: NOT AUTHORIZED` · `main` NOT RECONCILED.
