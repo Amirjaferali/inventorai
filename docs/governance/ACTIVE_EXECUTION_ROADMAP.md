@@ -17355,3 +17355,78 @@ recording and contract freeze, zero executable delta.
 **Next step after this gate — STOP.** Lead review of this candidate. Mechanism-A implementation, and any
 Mechanism-B change, each require their own separate Owner authorization; neither is created, implied or
 scheduled here.
+
+---
+
+## G-4-A CONTRACT AMENDMENT 1 — BOUNDED DIGEST-PIN ALLOWANCE (governance-only; provenance-only entry)
+
+**Provenance-only by design.** Lean §11 requires one record per governed gate, and separately requires the
+Owner Decision Register to be updated whenever an owner decision is accepted and committed. This entry is
+the former and carries **pointers, not substance**: the decisions live in `OWNER_DECISION_REGISTER.md`
+(`OD-G4-A1`, `OD-G4-A1-F`) and the amended contract in
+`docs/governance/G4_A_EN_CAUSAL_FALSE_POSITIVE_IMPLEMENTATION_CONTRACT_CANDIDATE.md`.
+`ROADMAP SUBSTANTIVE G-4 OWNER: NO`.
+
+**Authoritative base.** `89534a55720a25b8d5928c76bf09011e608294b0`, verified live from Git at this gate
+`[EXEC]`.
+
+**Why this gate exists.** The authorized G-4-A implementation START was **returned unstarted** under
+`STOP — IMPLEMENTATION REQUIRES OUT-OF-CONTRACT SURFACE`. Any byte change to `engine/progression_loop.py`
+— the Mechanism-A correction included — invalidates the whole-file SHA-256 pin replicated in three P9
+modules and turns two cross-check guards red. That is a mechanical consequence of pinning, not a P9
+behavioural question, and the frozen §5 surface list did not permit touching it.
+
+**What this gate records.** `OD-G4-A1` adds those three P9 modules to the allowed-surface list **for a
+mechanical digest re-freeze only**, with an exhaustive forbidden list and the required return
+`STOP — DIGEST-PIN RECONCILIATION EXCEEDS OWNER ALLOWANCE`, plus seven binding digest-truth requirements
+(new contract §5 item 4, §5.1 and §6 section F, `A-20`…`A-26`). `OD-G4-A1-F` hardens falsification: a
+genuine causal conditional — verbatim *"if I can detect wheel slip, the controller turns on"* — must
+remain recognised (new §6 section E, `A-19`), and the exploratory qualifier-list mechanism is recorded as
+**evidence only, NOT frozen as the required code solution** — it is **measured to fail** that very case.
+
+**What this gate is NOT.** Not an implementation · not a resumption of the returned implementation START ·
+not a code-mechanism selection · not a P9 semantic change · not a Mechanism-B change · not an M-1 repair ·
+not a run · not a benchmark or corpus change · **not a G-4 closure** — the row stays `OPEN` / `FRB`.
+
+**Exact changed paths (3).**
+1. `docs/governance/OWNER_DECISION_REGISTER.md` — Lean §11: `OD-G4-A1` and `OD-G4-A1-F` are accepted and
+   committed owner decisions. One bounded append; no existing row rewritten; no decision superseded.
+2. `docs/governance/G4_A_EN_CAUSAL_FALSE_POSITIVE_IMPLEMENTATION_CONTRACT_CANDIDATE.md` — the amendment is
+   folded into the single governing contract in place, so no reader can act on a superseded surface list.
+   §2, §3, §4's binding two-sided requirement and prohibition list, and §7 are **unamended**.
+3. `docs/governance/ACTIVE_EXECUTION_ROADMAP.md` (this entry) — Lean §11: one record per governed gate;
+   repository convention records a contract amendment as its own gate entry.
+
+**Paths deliberately NOT changed.** `DEFERRED_OBLIGATIONS_REGISTER.md` — the G-4 row is the only
+G-4-A-referencing DOR content and it references the contract by **path and freeze state**, not by
+implementation surface, so Amendment 1 contradicts nothing in it; the `STOP first` condition does not
+fire. `ACTIVE_INCREMENT_CONTRACT.md` — `ACTIVE CONTRACT: NONE` untouched. `CURRENT_PROJECT_STATE.md` — its
+pin is expressly subordinated to Git. The three P9 modules, `engine/progression_loop.py`, the causal-table
+guard, both cross-check guards, all product/runtime/test paths, the benchmark instrument and every
+benchmark evidence set — untouched. **All product, runtime, test, schema, domain, prompt, script and
+benchmark paths: 0 — `EXECUTABLE DELTA: 0`.**
+
+**Continuity fence.** Nothing is displaced, completed or reordered by this amendment: `T1-A′` stays
+**OPEN**, the M-1 relevance residual keeps its existing owner (`gap_relevance` / RVR-2, RVR-7 downstream
+return), Mechanism B stays `OPEN / DEFERRED`, readiness reconciliation stays **ELIGIBLE, NOT CONVENED**,
+and the HICR bounded supplement, `G-5`, `T1-C′` / `T1-D`, the pre-FCORA obligations and the
+commercial/readiness/deferred items are preserved by authoritative pointer to
+`DEFERRED_OBLIGATIONS_REGISTER.md` and `CURRENT_PROJECT_STATE.md`.
+
+**Non-authorization fences.** `G-4: OPEN / FRB` · `G-4 FULL CLOSURE: NOT ASSERTED` ·
+`MECHANISM A IMPLEMENTATION AUTHORIZED: NO` · `MECHANISM A IMPLEMENTATION RESUMED: NO` ·
+`MECHANISM B CODE CHANGE: NOT AUTHORIZED` · `ARABIC WIDENING: NOT AUTHORIZED` ·
+`P9 SEMANTIC CHANGE: NOT AUTHORIZED` · `M-1 RELEVANCE: SEPARATE, UNTOUCHED` ·
+`NEW ASSESSMENT / ARABIC / NORMALIZATION / RELEVANCE OWNER: NOT CREATED` ·
+`RVR-3 / RVR-7 / W1-N3 / RVR-2: NOT REOPENED` · `THIRD S2 RUN: CONSUMED` ·
+`FOURTH S2 RUN: NOT AUTHORIZED` · `FURTHER SUPPLEMENTAL SLICE EXECUTION: NOT AUTHORIZED` ·
+`FDC-001 LANE: INACTIVE` · `DECISION WORKSPACE / PATH-T: NOT ACTIVATED` · `ODS-001: NOT ACTIVATED` ·
+`RVR-4: CLOSED` · `READINESS IMPLEMENTATION AUTHORIZED: NO` · `CAP ACTIVATION: NONE` ·
+`FCORA AUTHORIZED: NO` · `PSRR GO: NO` · `ACTIVE CONTRACT: NONE` (untouched) ·
+`DEPLOYMENT / PRODUCTION / SERIOUS RELEASE / PAID ACTIVATION: NOT AUTHORIZED` · `main` NOT RECONCILED.
+
+**Lean classification.** `LEAN RISK LEVEL: 2` · `REVIEW DEPTH: 2` — bounded governance-only contract
+amendment, zero executable delta.
+
+**Next step after this gate — STOP.** Lead review of this candidate. Resuming G-4-A implementation
+requires its own separate Owner authorization; it is not created, implied or scheduled here.
