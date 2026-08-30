@@ -1793,3 +1793,38 @@ HICR bounded supplement **UNCHANGED** · `THIRD S2 RUN: CONSUMED` · `FOURTH S2 
 `READINESS IMPLEMENTATION AUTHORIZED: NO` · `CAP ACTIVATION: NONE` · `FCORA AUTHORIZED: NO` ·
 `PSRR GO: NO` · `ACTIVE CONTRACT: NONE` (untouched) ·
 `DEPLOYMENT / PRODUCTION / SERIOUS RELEASE / PAID ACTIVATION: NOT AUTHORIZED` · `main` NOT RECONCILED.
+
+---
+
+## G-4-A post-separability-audit — OD-G4-A2 (contract design only; no implementation)
+
+Recorded at the G-4-A bounded-disambiguation contract-design gate on the authoritative base
+`b1c5b7b092091f50c8181253b1ed3b08b35a837e`, verified live from Git at this gate `[EXEC]`. No new
+decision owner is created; `OD-G4-A` and `OD-G4-B` are not superseded, and G-4 ownership remains
+**COMPOSITION ACROSS EXISTING OWNERS**.
+
+| ID | Subject | Status | Evidence |
+|---|---|---|---|
+| OD-G4-A2 | **Accepted gate result and contract-design authorization.** The Owner accepts the Lead-adjudicated `STOP — BOUNDED G-4-A CORRECTION REQUIRES OWNER DECISION`: the materially credible bounded solution space **under the base G-4-A contract as written** is sufficiently exhausted for governance purposes. This is **not** an assertion of universal algorithmic impossibility. The Owner authorizes **`G-4-A BOUNDED SEMANTIC / SYNTACTIC DISAMBIGUATION CONTRACT DESIGN: YES`** and **`IMPLEMENTATION: NO`**. The design must determine the **minimum** capability that truthfully separates the measured incidental hedge from a genuine condition → technical/system-response relationship using the same English surface, evaluated in order — bounded local syntax, bounded local context, bounded reference disambiguation only if genuinely necessary, broader semantic capability only if the prior levels are proven insufficient — and must **not** assume coreference, NLP, parsing, LLM inference, a new registry or a new language architecture. If broader architecture proves materially necessary, that is a **finding to return**, not a licence. | **ACCEPTED AND COMMITTED — CONTRACT DESIGN ONLY.** One contract candidate is frozen at `docs/governance/G4_A_BOUNDED_DISAMBIGUATION_CONTRACT_CANDIDATE.md`. `IMPLEMENTATION AUTHORIZED: NO` · `MECHANISM PRE-SELECTED: NO` · `G-4 FULL CLOSURE: NOT ASSERTED`. | Decision substance is Owner-supplied `[OWNER-PREMISE]`. Measured read-only at this base `[EXEC]`: the measured record's `if`-tail and the same-surface genuine contrast are byte-identical (`'i can avoid it.'`); an exhaustive search over every conjunction of the avoidance-tail, preference-marker, negative-frame and first-person-subject features returned **NONE** that separates **while three materially ambiguous adversarial cases were treated as binding** — that result is **WITHDRAWN** at the oracle-integrity gate, and re-run over binding oracles only the same search separates the whole set through **eleven** conjunctions including `H ∧ P`, which are therefore **MATERIALLY PLAUSIBLE — NOT YET FALSIFIED** and must be tested first; the electronics_electrical substance list contains neither `wire`, `brake` nor `controller` and all three contrasted matrices carry **zero** substance signals, so **that existing** Layer-2 gate cannot separate them either. Each finding is scoped to the mechanisms actually tested: **no capability class is claimed exhausted**, and the contract binds the implementation gate to begin at the lowest surviving level |
+| OD-G4-A2-E | **Rejected candidates are evidence only.** `88fe2e8c37bb9301b829dd2ba7f18f95320ecb4b`, `317da0ad9a69b9b81053b06fe9f2ea6f22f65183` and `87ec9f4860c735c73bbf0912c4eea2a9e8dd7c59` are **not** implementation authority, lineage authority, accepted design, or permitted implementation parents. They must not be amended, cherry-picked, merged from or otherwise promoted. | **ACCEPTED AND COMMITTED — EVIDENCE PRESERVATION.** Preserved at `refs/preserved/g4a-implementation`, `…-v2` and `…-v3`. | Each was falsified at the predicate, predicate-isolated on `"if "`, with the falsifying cases recorded in the contract candidate §3 `[EXEC]` |
+
+**What this recording deliberately does NOT do.** It closes, discharges, reorders and re-owns nothing.
+**G-4 remains `OPEN` / `FRB`** and full closure is **NOT** asserted. It authorizes no implementation, no
+code, no mechanism, no run, and no benchmark or corpus change. It does not pre-authorize coreference,
+POS/NLP infrastructure, semantic parsing, LLM or embedding inference, a new assessment engine, a second
+causal model, a second language owner, a second semantic registry, domain-pack expansion or general
+English understanding. `RVR-3`, `RVR-7`, `W1-N3` and `RVR-2` are **not reopened**.
+
+**Boundary carried with these registrations (none is weakened by them):**
+`G-4: OPEN / FRB` · `G-4 FULL CLOSURE: NOT ASSERTED` · `IMPLEMENTATION AUTHORIZED: NO` ·
+`MECHANISM PRE-SELECTED: NO` · `MECHANISM B CODE CHANGE: NOT AUTHORIZED` · `M-1: SEPARATE, UNTOUCHED` ·
+`ARABIC WIDENING: NOT AUTHORIZED` · `SEMANTIC REGISTRY / DOMAIN PACK EXPANSION: NOT AUTHORIZED` ·
+`NEW ASSESSMENT / LANGUAGE / NORMALIZATION / RELEVANCE OWNER: NOT CREATED` ·
+`RVR-3 / RVR-7 / W1-N3 / RVR-2: NOT REOPENED` · `T1-A′: OPEN` · `T1-C′ / T1-D: OPEN, SEPARATE` ·
+`G-5: UNCHANGED` · readiness reconciliation **ELIGIBLE, NOT CONVENED** · HICR bounded supplement
+**UNCHANGED** · `HICR PHASE 2: NOT AUTHORIZED` · `THIRD S2 RUN: CONSUMED` ·
+`FOURTH S2 RUN / RUN-004: NOT AUTHORIZED` · `FURTHER SUPPLEMENTAL SLICE EXECUTION: NOT AUTHORIZED` ·
+`FDC-001 LANE: INACTIVE` · `DECISION WORKSPACE / PATH-T: NOT ACTIVATED` · `ODS-001: NOT ACTIVATED` ·
+`RVR-4: CLOSED` · `READINESS IMPLEMENTATION AUTHORIZED: NO` · `CAP ACTIVATION: NONE` ·
+`FCORA AUTHORIZED: NO` · `PSRR GO: NO` · `ACTIVE CONTRACT: NONE` (untouched) ·
+`SERIOUS RELEASE / PRODUCTION / PAID ACTIVATION: NOT AUTHORIZED` · `main` NOT RECONCILED.

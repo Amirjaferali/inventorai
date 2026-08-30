@@ -17430,3 +17430,98 @@ amendment, zero executable delta.
 
 **Next step after this gate — STOP.** Lead review of this candidate. Resuming G-4-A implementation
 requires its own separate Owner authorization; it is not created, implied or scheduled here.
+
+---
+
+## G-4-A — BOUNDED DISAMBIGUATION CONTRACT DESIGN (governance-only; provenance-only entry)
+
+**Provenance-only by design.** Lean §11 requires one record per governed gate and separately requires the
+Owner Decision Register to be updated whenever an owner decision is accepted and committed. This entry is
+the former and carries **pointers, not substance**: the decisions live in `OWNER_DECISION_REGISTER.md`
+(`OD-G4-A2`, `OD-G4-A2-E`) and the contract in
+`docs/governance/G4_A_BOUNDED_DISAMBIGUATION_CONTRACT_CANDIDATE.md`.
+`ROADMAP SUBSTANTIVE G-4 OWNER: NO`.
+
+**Authoritative base.** `b1c5b7b092091f50c8181253b1ed3b08b35a837e` on
+`feature/atomic-json-session-persistence`, verified live from Git at this gate `[EXEC]`.
+
+**Why this gate exists.** Three bounded G-4-A implementation candidates were each falsified at the
+predicate, and a Lead-directed separability audit reported that the measured false positive is not a
+property of the `if`-clause, nor of any conjunction of the avoidance-tail, preference-marker,
+negative-frame and first-person-subject features. The Owner accepted the resulting contract-defined STOP
+and authorized contract design only. **That NO-SEPARATOR half of the audit result is WITHDRAWN and is
+NOT current truth**: it depended on materially ambiguous cases being treated as binding oracles. What
+remains established is only that the defect is not a property of the `if`-clause **alone** — the same
+tail carries opposite truth in different sentences. **Current state:** re-run over binding, semantically
+admissible oracles the search returns **ELEVEN** separating conjunctions; **`H ∧ P` and the related
+Level-1 conjunction families are `MATERIALLY PLAUSIBLE — NOT YET FALSIFIED`**; separation over the finite
+binding set is **necessary, not sufficient**; **no mechanism is selected**; and **Level 1 remains OPEN
+and must be entered first**.
+
+**What this gate records.** `OD-G4-A2` accepts the STOP as an exhaustion of the bounded space **under the
+base contract as written**, explicitly not as universal impossibility, and authorizes
+`CONTRACT DESIGN: YES` / `IMPLEMENTATION: NO`. `OD-G4-A2-E` fixes the three rejected candidates as
+evidence only. The contract records the minimum-capability analysis with measured findings — bounded
+local syntax **OPEN**, bounded local context **OPEN**, bounded reference disambiguation
+**CONDITIONAL — NOT PRE-SELECTED**, broader semantic capability **not concluded and not authorized**;
+**no capability class is claimed exhausted**. **Exact mechanism states — `FALSIFIED` is NOT a synonym for
+any of the others:** H/P/C/D and the `H ∧ P` family **`MATERIALLY PLAUSIBLE — NOT YET FALSIFIED`** · the
+`-ing` complement proxy **`REJECTED AS INSUFFICIENT`** (binding generalisation / materially equivalent
+paraphrase failure) · the system-response lexical direction **`EXCLUDED`** (architecture / governance
+boundary against an open-ended lexicon) · the existing Layer-2 substance gate **`MEASURED INSUFFICIENT —
+THAT GATE ONLY`** · the prior-sentence avoid-lemma cue **`FALSIFIED`** (binding cases 21, 22, 32, 36, 37)
+· the former P-31 false-negative claim **`WITHDRAWN`** · the clause-verbatim exception **`REJECTED`**. The
+contract also records — a binding lowest-surviving-level progression rule, a
+binding adversarial falsification matrix — semantically audited, with seven pro-form-ambiguous cases
+moved to a non-binding ambiguity-probe section and two replaced by unambiguous equivalents — including
+the binding same-surface contrast, the
+shallow-context-cue and antecedent-position guards, the context-position invariant, the
+anti-hardcoding safeguards with a testable paraphrase requirement, the precise word-class boundary, the
+surface and regression plan, two explicitly separated Independent Review gates (CONTRACT and
+IMPLEMENTATION), and five exact STOP conditions.
+
+**What this gate is NOT.** Not an implementation · not a mechanism selection · not a pre-authorization of
+coreference, NLP, parsing, LLM inference, a new registry, a new engine or domain-pack expansion · not a
+Mechanism-B change · not an M-1 repair · not a run · not a benchmark or corpus change · **not a G-4
+closure** — the row stays `OPEN` / `FRB`.
+
+**Exact changed paths (3).**
+1. `docs/governance/OWNER_DECISION_REGISTER.md` — Lean §11: `OD-G4-A2` and `OD-G4-A2-E` are accepted and
+   committed owner decisions. One bounded append; no existing row rewritten; no decision superseded.
+2. `docs/governance/G4_A_BOUNDED_DISAMBIGUATION_CONTRACT_CANDIDATE.md` (**new**) — the authorized
+   deliverable; subordinate to the base G-4-A contract and Amendment 1, which it does not amend.
+3. `docs/governance/ACTIVE_EXECUTION_ROADMAP.md` (this entry) — one record per governed gate.
+
+**Paths deliberately NOT changed.** The base G-4-A contract and Amendment 1 — this contract is
+subordinate and amends neither. `DEFERRED_OBLIGATIONS_REGISTER.md` — the G-4 row's status, blocking
+level, return gate, latest-safe gate and closure criterion all remain true as written, and its
+Disposition references the Mechanism-A path by name and freeze state without enumerating implementation
+surfaces, so nothing there is contradicted. `ACTIVE_INCREMENT_CONTRACT.md` — `ACTIVE CONTRACT: NONE`
+untouched. `CURRENT_PROJECT_STATE.md` — its pin is expressly subordinated to Git. All product, runtime,
+test, schema, domain, prompt, script and benchmark paths: 0 — **`EXECUTABLE DELTA: 0`**.
+
+**Continuity fence.** Nothing is displaced, completed or reordered: `T1-A′` stays **OPEN**, Mechanism B
+stays `OPEN / DEFERRED`, the M-1 relevance residual keeps its existing owner (`gap_relevance` / RVR-2,
+RVR-7 downstream return), readiness reconciliation stays **ELIGIBLE, NOT CONVENED**, and the HICR bounded
+supplement, `G-5`, `T1-C′` / `T1-D`, the pre-FCORA obligations and the commercial/readiness/deferred
+items are preserved by authoritative pointer to `DEFERRED_OBLIGATIONS_REGISTER.md` and
+`CURRENT_PROJECT_STATE.md`.
+
+**Non-authorization fences.** `G-4: OPEN / FRB` · `G-4 FULL CLOSURE: NOT ASSERTED` ·
+`IMPLEMENTATION AUTHORIZED: NO` · `MECHANISM PRE-SELECTED: NO` · `MECHANISM B CODE CHANGE: NOT
+AUTHORIZED` · `ARABIC WIDENING: NOT AUTHORIZED` · `SEMANTIC REGISTRY / DOMAIN PACK EXPANSION: NOT
+AUTHORIZED` · `COREFERENCE / NLP / PARSER / LLM / EMBEDDING INFERENCE: NOT AUTHORIZED` ·
+`M-1 RELEVANCE: SEPARATE, UNTOUCHED` · `NEW ASSESSMENT / LANGUAGE / NORMALIZATION / RELEVANCE OWNER: NOT
+CREATED` · `RVR-3 / RVR-7 / W1-N3 / RVR-2: NOT REOPENED` · `THIRD S2 RUN: CONSUMED` ·
+`FOURTH S2 RUN / RUN-004: NOT AUTHORIZED` · `FURTHER SUPPLEMENTAL SLICE EXECUTION: NOT AUTHORIZED` ·
+`FDC-001 LANE: INACTIVE` · `DECISION WORKSPACE / PATH-T: NOT ACTIVATED` · `ODS-001: NOT ACTIVATED` ·
+`RVR-4: CLOSED` · `HICR PHASE 2: NOT AUTHORIZED` · `READINESS IMPLEMENTATION AUTHORIZED: NO` ·
+`CAP ACTIVATION: NONE` · `FCORA AUTHORIZED: NO` · `PSRR GO: NO` · `ACTIVE CONTRACT: NONE` (untouched) ·
+`SERIOUS RELEASE / PRODUCTION / PAID ACTIVATION: NOT AUTHORIZED` · `main` NOT RECONCILED.
+
+**Lean classification.** `LEAN RISK LEVEL: 2` · `REVIEW DEPTH: 2` — governance-only contract freeze, zero
+executable delta.
+
+**Next step after this gate — STOP.** Lead review of this candidate. Implementation of any mechanism, and
+any broader architectural capability, each require their own separate Owner authorization; neither is
+created, implied or scheduled here.
