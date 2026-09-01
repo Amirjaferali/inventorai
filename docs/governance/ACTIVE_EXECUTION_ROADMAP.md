@@ -17525,3 +17525,108 @@ executable delta.
 **Next step after this gate — STOP.** Lead review of this candidate. Implementation of any mechanism, and
 any broader architectural capability, each require their own separate Owner authorization; neither is
 created, implied or scheduled here.
+
+---
+
+## GOVERNED GATE — BOUNDED GOVERNANCE CONTROL-SURFACE SYNCHRONIZATION (PR #606 / PR #607 lineage) — CANDIDATE STAGE
+
+**Gate identity.** One bounded governance-only control-surface synchronization, executed by
+`ORIGINAL CLAUDE / CREATOR` under the Owner's `BOUNDED GOVERNANCE CONTROL-SURFACE SYNCHRONIZATION
+CANDIDATE + SAFE LOCAL CANDIDATE MATERIALIZATION` authorization, on the authoritative base
+`650efa5ce4e5215ce35a77e600c48921a6025126` (`feature/atomic-json-session-persistence`), verified live
+from Git at this gate `[EXEC]`. Purpose: reflect the already-merged, already-authoritative PR #606 and
+PR #607 lineage in the three governance control surfaces. The roadmap-desynchronization STOP condition
+that required this synchronization **remains FIRED at this candidate stage** — local candidate creation
+does not clear it; only the governed publication / PR / merge / post-merge verification lifecycle of an
+accepted candidate can complete the synchronization, and every later stage requires separate Owner
+authorization. **Recorded now: candidate-stage facts only.** Not recorded, because they have not
+happened: Owner acceptance of this candidate · publication · PR creation · merge · authoritativeness ·
+STOP clearance.
+
+**PR #606 — authoritative record `[EXEC]`.** The G-4-A Hybrid preventive-evidence + fail-closed
+contract (`docs/governance/G4_A_HYBRID_PREVENTIVE_EVIDENCE_FAIL_CLOSED_CONTRACT.md`, blob
+`042a4261b963f2fd981dd4d06aa8911e4b89f019`) is repository-authoritative: the exact Owner-accepted
+candidate `72f687a3fb48107e28013b97569174a84e4da266` (sole parent `100d224ba61dfff35668944d4aaa3e294d95bc7d`,
+1 changed path, `EXECUTABLE DELTA: 0`) merged as PR #606, merge `95608998537f7d0d042be069f9925fd559438428`.
+The PR body records the Owner exact-SHA acceptance verbatim; the contract file's internal
+`NOT YET OWNER-ACCEPTED` heading is stale drafting text, not lifecycle authority. Historical Owner
+provenance is recorded in the Owner Decision Register through its established
+`Authorization lineage — recorded without retroactive invention` mechanism (historical
+authorization / acceptance / merge provenance; no new Owner decision; no new OD identifier
+minted). `HYBRID ≠ TECHNICAL G-4-A FIX`.
+
+**PR #607 — authoritative record `[EXEC]`.** The G-4-A Claim-Eligibility Boundary Contract Amendment 1
+(`docs/governance/G4_A_CLAIM_ELIGIBILITY_BOUNDARY_CONTRACT_AMENDMENT_1_CANDIDATE.md` — historical
+filename; authoritative content; blob `5185f60f80ad3ea83efa92fd0550b7bc6ac18749`, SHA-256
+`f671aa6d8cdda001d549ca0bcb2e7117b73e7eb513ac8ebb74f3705515f705d3`) is repository-authoritative: the
+exact Owner-accepted candidate `dea34274d9a118fb078a018b0ba7104bfdd709a4` (sole parent `95608998…`,
+tree `05ea3cfcfc37a7d1af5a286b5e6eae26794e74af`, 1 changed path, `EXECUTABLE DELTA: 0`) merged as
+PR #607, merge `650efa5ce4e5215ce35a77e600c48921a6025126`, merge tree identical to the accepted
+candidate tree (candidate→merge diff EMPTY). Independent review and Lead differential review preceded
+the acceptance; non-blocking observations O-1/O-2/O-3 are carried forward. Historical Owner provenance
+is recorded in the Owner Decision Register through its established
+`Authorization lineage — recorded without retroactive invention` mechanism (historical
+authorization / acceptance / merge provenance; no new Owner decision; no new OD identifier
+minted). Amendment 1 governs the Hybrid contract per its own §2 clause-disposition
+table; the Hybrid contract file is byte-unchanged.
+
+**Two parallel G-4-A lanes — no supersession.** After this synchronization the repository carries, side
+by side: **(A) DIRECT G-4-A ENGINE REPAIR** — the `OD-G4-A` → `OD-G4-A1` → `OD-G4-A2` lineage with
+Mechanism B under `OD-G4-B`, capability state `EARLIER EXHAUSTION CONCLUSION: WITHDRAWN` · `LEVEL 1:
+OPEN` (at least one materially plausible — not yet falsified mechanism family) · `LEVEL 2: OPEN` ·
+`LEVEL 3: CONDITIONAL — NOT PRE-SELECTED`, with the implementation gate bound to begin at the lowest
+surviving capability level; and **(B) CLAIM-ELIGIBILITY / PRODUCT-TRUTH CONTAINMENT** — the PR #606 /
+PR #607 contract lineage. `CLAIM-ELIGIBILITY CONTAINMENT ≠ DIRECT G-4-A ENGINE REPAIR`: neither lane
+supersedes, closes or absorbs the other; no lane is selected here; no T1A-A / T1A-B / T1A-C ordering is
+adjudicated (`T1A-* PRIORITY: UNADJUDICATED`); the post-synchronization option set is to be reissued
+later against synchronized authority. For the containment lane:
+`CLAIM-ELIGIBILITY HUMAN-REVIEW EVIDENCE GATE: MANDATORY BEFORE IMPLEMENTATION AUTHORIZATION` ·
+`HUMAN-STUDY EXECUTION: NOT AUTHORIZED` · `EVIDENCE COLLECTION: NOT AUTHORIZED`.
+
+**Exact changed paths (3).**
+1. `docs/governance/OWNER_DECISION_REGISTER.md` — PR #606 / PR #607 historical authorization /
+   acceptance / merge provenance appended through the register's established
+   `Authorization lineage — recorded without retroactive invention` mechanism (no new OD identifier
+   minted); no existing row rewritten; `OD-G4-A`, `OD-G4-A1`, `OD-G4-A2`, `OD-G4-B` not superseded.
+2. `docs/governance/DEFERRED_OBLIGATIONS_REGISTER.md` — one bounded in-cell append to the existing G-4
+   row's Disposition recording the containment lane as parallel and non-superseding; the row's status,
+   blocking level, return trigger, latest-safe gate and closure criterion are unchanged.
+3. `docs/governance/ACTIVE_EXECUTION_ROADMAP.md` (this entry) — one record per governed gate.
+
+**Deliberately unchanged, disclosed.** `CLAUDE.md` · `CURRENT_PROJECT_STATE.md` (pin subordinate to
+Git) · the Hybrid contract, Amendment 1, the EN-causal contract and the bounded disambiguation contract
+(artifact authority NOT reopened) · all evidence and preserved refs · every executable path
+(`EXECUTABLE DELTA: 0`). Two REPORT-ONLY DOR staleness observations are disclosed without repair, as
+each is separable from truthful #606/#607 synchronization: (a) rows RVR-8 / T1-A′ still carry the
+earlier wording `THIRD S2 RUN: NOT AUTHORIZED` while the later G-4 row carries `THIRD S2 RUN: CONSUMED`
+· `FOURTH S2 RUN / RUN-004: NOT AUTHORIZED` — both formulations arm nothing; (b) the DOR header's
+maintenance-gate list ends at the PR #595 gate and omits two later DOR-touching gates. Recommended
+touch for each: the next authorized gate that legitimately edits the affected rows/header.
+
+**Continuity fence.** Nothing is displaced, completed, closed, armed or reordered. `G-4-A TECHNICAL
+DEFECT: CURRENT — NOT FIXED` · `DIRECT G-4-A CLASSIFIER DEFECT: STILL PRESENT` · `G-4-A: OPEN / FRB` ·
+`G-4: OPEN / FRB` · `T1-A′: OPEN` (trigger fired; closure evidence not met; remediation progress ≠
+formal closure; this governance sync ≠ remediation and ≠ formal closure) · G-3 / PR #602 dual truth
+preserved where relevant (historical evaluator `CRITERION 5: PARTIAL ×4`; Owner-adjudicated governing
+result over `S2-PATHN-DCS-001` `CRITERION 5: PASS ×4` · `CRITERION 6: PASS ×4`; Run-002 historical
+results unedited) · `NO FURTHER SUPPLEMENTAL SLICE EXECUTION` · `NO RUN-004`.
+
+**Non-authorization fences.** `IMPLEMENTATION AUTHORIZED: NO` · `EXECUTABLE CODE CHANGE AUTHORIZED:
+NO` · `SCHEMA IMPLEMENTATION AUTHORIZED: NO` · `HUMAN-STUDY EXECUTION: NOT AUTHORIZED` · `EVIDENCE
+COLLECTION: NOT AUTHORIZED` · `MECHANISM PRE-SELECTED: NO` · `MECHANISM B CODE CHANGE: NOT AUTHORIZED`
+· `ARABIC WIDENING: NOT AUTHORIZED` · `SEMANTIC REGISTRY / DOMAIN PACK EXPANSION: NOT AUTHORIZED` ·
+`COREFERENCE / NLP / PARSER / LLM / EMBEDDING INFERENCE: NOT AUTHORIZED` · `M-1 RELEVANCE: SEPARATE,
+UNTOUCHED` · `NEW ASSESSMENT / LANGUAGE / NORMALIZATION / RELEVANCE OWNER: NOT CREATED` · `RVR-3 /
+RVR-7 / W1-N3 / RVR-2: NOT REOPENED` · `THIRD S2 RUN: CONSUMED` · `FOURTH S2 RUN / RUN-004: NOT
+AUTHORIZED` · `FURTHER SUPPLEMENTAL SLICE EXECUTION: NOT AUTHORIZED` · `FDC-001 LANE: INACTIVE` ·
+`DECISION WORKSPACE / PATH-T: NOT ACTIVATED` · `ODS-001: NOT ACTIVATED` · `RVR-4: CLOSED` · `HICR
+PHASE 2: NOT AUTHORIZED` · `READINESS IMPLEMENTATION AUTHORIZED: NO` · `CAP ACTIVATION: NONE` ·
+`FCORA AUTHORIZED: NO` · `PSRR GO: NO` · `ACTIVE CONTRACT: NONE` (untouched) · `SERIOUS RELEASE /
+PRODUCTION / PAID ACTIVATION: NOT AUTHORIZED` · `main` NOT RECONCILED.
+
+**Lean classification.** `LEAN RISK LEVEL: 2` · `REVIEW DEPTH: 2` — governance-only synchronization,
+zero executable delta, three governance control surfaces changed.
+
+**Next step after this gate — STOP.** Lead review of this exact candidate, then any required
+independent review, then Owner exact-SHA decision; publication, PR and merge each require separate
+Owner authorization. Nothing further is created, implied or scheduled here.
