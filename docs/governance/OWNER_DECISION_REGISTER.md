@@ -1828,3 +1828,56 @@ English understanding. `RVR-3`, `RVR-7`, `W1-N3` and `RVR-2` are **not reopened*
 `RVR-4: CLOSED` · `READINESS IMPLEMENTATION AUTHORIZED: NO` · `CAP ACTIVATION: NONE` ·
 `FCORA AUTHORIZED: NO` · `PSRR GO: NO` · `ACTIVE CONTRACT: NONE` (untouched) ·
 `SERIOUS RELEASE / PRODUCTION / PAID ACTIVATION: NOT AUTHORIZED` · `main` NOT RECONCILED.
+
+---
+
+## G-4-A Hybrid / Claim-Eligibility containment lineage — historical authorization / acceptance / merge provenance for PR #606 and PR #607 (recorded without retroactive invention; no new Owner decision; no new OD identifier)
+
+Recorded at the bounded governance control-surface synchronization gate on the authoritative base
+`650efa5ce4e5215ce35a77e600c48921a6025126`, verified live from Git at this gate `[EXEC]`, under the
+Owner's `BOUNDED GOVERNANCE CONTROL-SURFACE SYNCHRONIZATION CANDIDATE + SAFE LOCAL CANDIDATE
+MATERIALIZATION` authorization, whose §6 confirms that the verifiable historical exact-SHA acceptance
+and merge acts associated with PR #606 and PR #607 are Owner historical acts and may be recorded as
+such. These entries are recorded through this register's established mechanism
+`Authorization lineage — recorded without retroactive invention` (the Wave-2 section's §B lineage
+discipline), under its classification
+`AUTHORIZATION EXERCISE EVIDENCED BY AUTHORITATIVE MERGED EXECUTION; DEDICATED REGISTER ENTRY
+ABSENT`. No OD identifier, decision date, or approval wording is invented; the merged execution is
+the evidence. **These entries are HISTORICAL AUTHORIZATION / ACCEPTANCE / MERGE PROVENANCE, NOT NEW
+OWNER DECISIONS** — they record acts that already occurred and are repository-verifiable; they mint
+no new `OD-*` or `D-*` identity, create no new authority, reopen neither PR, and re-adjudicate
+nothing. No new decision owner is created; `OD-G4-A`, `OD-G4-A1`, `OD-G4-A2` and `OD-G4-B` are
+**not superseded** and remain in force as written.
+
+| Exercise | Accepted candidate (exact SHA) | Merge | Effect |
+|---|---|---|---|
+| **PR #606 — G-4-A Hybrid preventive-evidence + fail-closed contract: Owner exact-SHA acceptance and merge (historical authorization / acceptance / merge provenance — NOT a new Owner decision).** Repository-verifiable `[EXEC]`: merge `95608998…` carries ordered parents `100d224b…` + `72f687a3…`, subject `Merge pull request #606 from Amirjaferali/g4a-hybrid-contract-72f687a3`. The authoritative PR #606 body records verbatim: *"Governance-only publication of the exact Owner-accepted candidate: `72f687a3fb48107e28013b97569174a84e4da266`"* and *"Owner exact-SHA acceptance has been granted for: `72f687a3fb48107e28013b97569174a84e4da266`"*; the PR was merged by the Owner account (`merged_by: Amirjaferali`, merged 2026-08-31T11:50:42Z). The Owner's current §6 confirmation attributes the acceptance and merge acts to the Owner. No further wording of the historical acceptance instrument is available and none is reconstructed here | `72f687a3fb48107e28013b97569174a84e4da266` (sole parent `100d224ba61dfff35668944d4aaa3e294d95bc7d`; changed path `docs/governance/G4_A_HYBRID_PREVENTIVE_EVIDENCE_FAIL_CLOSED_CONTRACT.md`, blob `042a4261b963f2fd981dd4d06aa8911e4b89f019`; 1 changed path; `EXECUTABLE DELTA: 0`) | PR #606, `95608998537f7d0d042be069f9925fd559438428` | **HISTORICAL AUTHORIZATION / ACCEPTANCE / MERGE PROVENANCE — VERIFIED.** The Hybrid contract is repository-authoritative. The contract's own historical header still reads `NOT YET OWNER-ACCEPTED`; that heading is stale drafting text and is **not** current lifecycle authority — repository authority is the merged PR #606 lineage. `HYBRID ≠ TECHNICAL G-4-A FIX` · `G-4-A TECHNICAL DEFECT: CURRENT — NOT FIXED` · `IMPLEMENTATION AUTHORIZED: NO` · `EVIDENCE COLLECTION: NOT AUTHORIZED` · `HUMAN-STUDY EXECUTION: NOT AUTHORIZED` |
+| **PR #607 — G-4-A Claim-Eligibility Boundary Contract Amendment 1: Owner exact-SHA acceptance, publication authorization and merge (historical authorization / acceptance / merge provenance — NOT a new Owner decision).** The candidate received Owner exact-SHA acceptance (with `INDEPENDENT REVIEW: ACCEPT EXACT SHA dea34274…` and `LEAD DIFFERENTIAL REVIEW: PASS`, and non-blocking observations O-1, O-2, O-3 carried forward), a separate Owner publication authorization for branch `g4a-claim-eligibility-amendment-dea34274`, and a separate Owner merge authorization specifying `CREATE A MERGE COMMIT`. Repository-verifiable `[EXEC]`: merge `650efa5c…` carries ordered parents `95608998…` + `dea34274…`, tree `05ea3cfc…` identical to the accepted candidate tree (candidate→merge diff EMPTY). The authoritative PR #607 body records verbatim: *"Exact accepted SHA: `dea34274d9a118fb078a018b0ba7104bfdd709a4`"* and `OWNER EXACT-SHA ACCEPTANCE: YES`; merged by the Owner account (`merged_by: Amirjaferali`, merged 2026-08-31T22:17:21Z). The Owner's current §6 confirmation attributes the acceptance and merge acts to the Owner | `dea34274d9a118fb078a018b0ba7104bfdd709a4` (sole parent `95608998537f7d0d042be069f9925fd559438428`; tree `05ea3cfcfc37a7d1af5a286b5e6eae26794e74af`; changed path `docs/governance/G4_A_CLAIM_ELIGIBILITY_BOUNDARY_CONTRACT_AMENDMENT_1_CANDIDATE.md`, blob `5185f60f80ad3ea83efa92fd0550b7bc6ac18749`, contract SHA-256 `f671aa6d8cdda001d549ca0bcb2e7117b73e7eb513ac8ebb74f3705515f705d3`; 1 changed path; `EXECUTABLE DELTA: 0`) | PR #607, `650efa5ce4e5215ce35a77e600c48921a6025126` | **HISTORICAL AUTHORIZATION / ACCEPTANCE / MERGE PROVENANCE — VERIFIED.** Amendment 1 is repository-authoritative and amends the Hybrid contract per its own §2 clause-disposition table; the Hybrid contract file itself is byte-unchanged (blob `042a4261…`). The Amendment's filename retains `_CANDIDATE`; that name is historical and is **not** current lifecycle authority. `CLAIM-ELIGIBILITY ARCHITECTURE = PRODUCT-TRUTH CONTAINMENT` · `CLAIM-ELIGIBILITY CONTAINMENT ≠ DIRECT G-4-A ENGINE REPAIR` · `CLAIM-ELIGIBILITY HUMAN-REVIEW EVIDENCE GATE: MANDATORY BEFORE IMPLEMENTATION AUTHORIZATION` · `HUMAN-STUDY EXECUTION: NOT AUTHORIZED` · `EVIDENCE COLLECTION: NOT AUTHORIZED` · `IMPLEMENTATION AUTHORIZED: NO` · `NEW GOVERNED QUESTION_ID REQUIRED: CONDITIONAL` · `ROUTING EXPANSION REQUIRED: NO` |
+
+**What this recording deliberately does NOT do.** It creates no new Owner decision, reopens and
+re-adjudicates neither PR, closes nothing, arms nothing, selects no lane, orders no T1-A′ option, and
+authorizes no implementation, evidence collection, human study, schema work, or run. The direct G-4-A
+engine-repair lineage (`OD-G4-A` → `OD-G4-A1` → `OD-G4-A2`, Mechanism B under `OD-G4-B`) and the
+Claim-Eligibility containment lineage recorded here are **parallel, non-superseding lanes**: neither
+replaces, closes, nor absorbs the other, and `CLAIM-ELIGIBILITY CONTAINMENT ≠ DIRECT G-4-A ENGINE
+REPAIR`. The direct G-4-A capability state is unchanged: `EARLIER EXHAUSTION CONCLUSION: WITHDRAWN` ·
+`LEVEL 1: OPEN` (at least one materially plausible — not yet falsified mechanism family, per
+`OD-G4-A2`) · `LEVEL 2: OPEN` · `LEVEL 3: CONDITIONAL — NOT PRE-SELECTED` · the implementation gate
+must always begin at the lowest surviving capability level.
+
+**Boundary carried with these registrations (none is weakened by them):**
+`G-4-A TECHNICAL DEFECT: CURRENT — NOT FIXED` · `DIRECT G-4-A CLASSIFIER DEFECT: STILL PRESENT` ·
+`G-4-A: OPEN / FRB` · `G-4: OPEN / FRB` · `G-4 FULL CLOSURE: NOT ASSERTED` ·
+`IMPLEMENTATION AUTHORIZED: NO` · `MECHANISM PRE-SELECTED: NO` ·
+`MECHANISM B CODE CHANGE: NOT AUTHORIZED` · `M-1: SEPARATE, UNTOUCHED` ·
+`ARABIC WIDENING: NOT AUTHORIZED` · `SEMANTIC REGISTRY / DOMAIN PACK EXPANSION: NOT AUTHORIZED` ·
+`NEW ASSESSMENT / LANGUAGE / NORMALIZATION / RELEVANCE OWNER: NOT CREATED` ·
+`RVR-3 / RVR-7 / W1-N3 / RVR-2: NOT REOPENED` · `T1-A′: OPEN` (trigger fired; closure evidence not
+met) · `T1-C′ / T1-D: OPEN, SEPARATE` · `G-5: UNCHANGED` · readiness reconciliation **ELIGIBLE, NOT
+CONVENED** · HICR bounded supplement **UNCHANGED** · `HICR PHASE 2: NOT AUTHORIZED` ·
+`THIRD S2 RUN: CONSUMED` · `FOURTH S2 RUN / RUN-004: NOT AUTHORIZED` ·
+`FURTHER SUPPLEMENTAL SLICE EXECUTION: NOT AUTHORIZED` · `FDC-001 LANE: INACTIVE` ·
+`DECISION WORKSPACE / PATH-T: NOT ACTIVATED` · `ODS-001: NOT ACTIVATED` · `RVR-4: CLOSED` ·
+`READINESS IMPLEMENTATION AUTHORIZED: NO` · `CAP ACTIVATION: NONE` · `FCORA AUTHORIZED: NO` ·
+`PSRR GO: NO` · `ACTIVE CONTRACT: NONE` (untouched) ·
+`SERIOUS RELEASE / PRODUCTION / PAID ACTIVATION: NOT AUTHORIZED` · `main` NOT RECONCILED.
