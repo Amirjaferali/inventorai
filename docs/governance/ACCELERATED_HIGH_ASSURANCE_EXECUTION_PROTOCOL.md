@@ -33,6 +33,12 @@ calls "standing protocol + established workflow").
 **Central principle:** *Accelerated does not mean fewer proofs. It means fewer proofs
 of unchanged facts.*
 
+**Standing loop-compression objective (Owner safeguard, durable):** `FEWER LOOPS + SAME OR
+HIGHER ASSURANCE`. The durable mechanism set for this objective is §6 (differential
+reconstruction), §7 (claim-scoped assurance reuse), §12 (consolidated repair loop and
+differential re-review), §14 (review loop breaker and convergence), and §15 (independent-review
+interface) — no second compression lifecycle exists or may be created.
+
 **Anti-bureaucracy principle (applies to this protocol itself):** every element of
 this protocol must provide proof, prevent a material failure, or eliminate redundant
 work. An element doing none of these must be removed through the amendment rule
@@ -286,12 +292,29 @@ and it never substitutes for the Creator Grill (§10), Independent Review (§15)
 exact-SHA acceptance (§18). A Preflight that cannot be completed within its bounds reports the
 unknown and escalates (Lean §10) rather than expanding into speculative discovery.
 
+**Role separation and centralized Creator instruction authoring (durable operating
+invariants).** The governed lifecycle operates under a fixed role model:
+**OWNER = DECISION / AUTHORIZATION**; **LEAD = ORCHESTRATION / GOVERNANCE / COMPLETE CREATOR
+INSTRUCTION / REVIEW / ADJUDICATION RECOMMENDATION**; **CREATOR = EXECUTION / CANDIDATE
+CONSTRUCTION / EXECUTION EVIDENCE**. All substantive Creator-facing instructions are authored
+centrally by the project Lead and issued as materially complete instructions only after the
+applicable Owner authorization exists; where no directly callable Creator channel exists,
+**OWNER MANUAL RELAY = TRANSPORT ONLY** — manual relay does not make the Owner the technical
+instruction author, and relay never substitutes for the underlying Owner authorization, which
+the Lead must never fabricate or infer. These are lifecycle-state/role boundaries, not a second
+authority hierarchy:
+`LEAD REASONING ≠ CREATOR EXECUTION EVIDENCE` · `CREATOR EVIDENCE ≠ LEAD ACCEPTANCE` ·
+`INDEPENDENT REVIEW ≠ LEAD ACCEPTANCE` · `OWNER DECISION ≠ AUTOMATIC EXECUTION` ·
+`LEAD ACCEPTANCE ≠ OWNER EXACT-SHA ACCEPTANCE` · `OWNER EXACT-SHA ACCEPTANCE ≠ PUBLICATION
+AUTHORIZATION` · `PUBLICATION AUTHORIZATION ≠ MERGE AUTHORIZATION`. Lead reasoning, however
+complete, never substitutes for Creator execution evidence (§21.3 remains controlling).
+
 ## 10. Creator lifecycle and Creator Grill
 
 Where appropriate the Creator completes one governed session workflow:
 
 ```text
-RECONSTRUCT → IMPLEMENT → CREATE → FREEZE → GRILL
+RECONSTRUCT → IMPLEMENT → CREATE → PRE-FREEZE TRANSITIVE CONSEQUENCE SWEEP → FREEZE → GRILL
 → BOUNDED SAME-SESSION REPAIR IF REQUIRED (as a fresh sibling, §12)
 → BUNDLE → RETURN ONLY THE GRILL-PASSED CANDIDATE
 ```
@@ -303,6 +326,18 @@ mandatory where Lean requires it). Grill depth is risk-proportional: it follows
 the semantic risk and the affected material claims of the specific candidate —
 Grill quality outranks Grill question count. A Grill that fails blocks
 delivery; only a Grill-passed candidate is returned.
+
+**Creator Pre-Freeze Transitive Consequence Sweep (mandatory).**
+`CREATOR PRE-FREEZE TRANSITIVE CONSEQUENCE SWEEP REQUIRED: YES` ·
+`TRANSITIVE SWEEP IS DEPENDENCY-BOUNDED — NO SCOPE EXPANSION`. Before final freeze wherever
+reasonably possible — and always before delivery — the Creator sweeps the direct and transitive
+consequences of the authorized delta across the dependencies that delta actually touches:
+cross-references, section references, ownership statements, contracts, registers, and evidence
+claims the changed content directly affects. The sweep never authorizes repository-wide
+speculative cleanup, unrelated refactoring, adjacent architecture work, or expansion into
+untouched process owners. If the bounded sweep reveals a material consequence outside the
+current authorization: STOP and escalate that exact consequence — scope is never silently
+expanded.
 
 ## 11. Evidence integrity
 
@@ -333,9 +368,19 @@ Previously verified claims may be inherited only under §7 (dependencies
 unchanged); the repair delta must be proven to be exactly the authorized repair
 and nothing else.
 
+`DIFFERENTIAL RE-REVIEW DEFAULT FOR BOUNDED REPAIR: YES` — this differential scope is the
+bounded-repair review default, and `NO FULL RE-PROOF OF UNCHANGED FACTS WITHOUT AN INVALIDATION
+TRIGGER` (§6/§7 govern; Lean §5B owns the Independent-Review evidence-reuse rules and its
+universal review minimum — the minimum independent invariant recheck — which this protocol
+references and never redefines).
+
 **Consolidated repair loop:** prefer one complete review → one consolidated
 material-finding set → one bounded correction batch → one focused closure
-review. Findings are not intentionally deferred to later rounds, no finding
+review. This is the standing single-pass
+discipline, durable here: `SINGLE-PASS DEFECT ACCUMULATION REQUIRED: YES` — the
+`COMPLETE MATERIAL DEFECT SET BEFORE CONSOLIDATED REPAIR`: all material findings reasonably
+discoverable from the current review subject and its available evidence are accumulated before
+the consolidated repair instruction is issued. Findings are not intentionally deferred to later rounds, no finding
 quota is invented, and unnecessary micro-rounds are not generated. A later,
 additional finding is legitimate only when it depends on the correction itself
 or its evidence was genuinely unavailable earlier.
@@ -378,6 +423,15 @@ Deferred Obligations Register owns deferred content); it creates no orphan; and
 the deferral creates no unacceptable future risk. Unresolved material
 uncertainty is never non-blocking.
 
+**No standalone repair lifecycle from non-blocking findings:** `MINOR / NON-BLOCKING FINDING
+ALONE MUST NOT CREATE A STANDALONE REPAIR LIFECYCLE`. A MINOR that does not block under this
+section, or an OBSERVATION, is dispositioned under the non-blocking proof above
+(classification; evidence-backed non-blocking basis; legitimate owner; return trigger; latest
+safe gate; discoverability; no unacceptable orphan/future risk — the Deferred Obligations
+Register remains the owner of deferred content) and is folded into the next legitimately
+authorized touch of its owner; it never seeds its own candidate lifecycle. This creates no
+second deferral vocabulary.
+
 ## 14. Review loop breaker
 
 Before requesting another review round on the same candidate lineage, the Lead
@@ -387,6 +441,35 @@ advance the gate. If the same issue cycles repeatedly without material new
 evidence, the Lead forces adjudication to exactly one of: `ACCEPT`,
 `BOUNDED REPAIR`, or `OWNER DECISION`. A genuine new BLOCKER/MAJOR is never
 suppressed by any loop limit.
+
+**Review-invalidating stop exception (`REVIEW-INVALIDATING STOP EXCEPTION: ACTIVE`).** The
+loop breaker never forces advancement when new material evidence has invalidated the review
+subject itself — its candidate identity, base, scope, a dependency's validity, material
+evidence integrity, a previously inherited claim (§7), or a material acceptance premise. A new
+review round on an invalidated subject is legitimate, and remains bounded to the invalidated
+subject and its dependencies unless a higher-level trigger requires more. `NO NEW REVIEW ROUND
+WITHOUT MATERIAL DECISION IMPACT` — and subject invalidation IS material decision impact.
+
+**Convergence — `ENOUGH EVIDENCE — PROCEED`.** When ALL applicable conditions hold — review
+subject identity valid and stable; required evidence sufficient for the current decision;
+material blockers = 0; material findings repaired or validly dispositioned (§13); required
+Independent Review complete; authorization/scope leakage = 0; no unresolved material
+contradiction — the Lead advances to adjudication and, where required, to Owner decision. The
+normal flow is INDEPENDENT REVIEW → LEAD ADJUDICATION → OWNER DECISION WHERE REQUIRED;
+reviewer-on-reviewer recursion (REVIEWER → REVIEWER → REVIEWER) is never institutionalized and
+requires genuinely new material evidence or a newly arising material architectural/authority
+question. Nothing in this convergence rule suppresses a genuine new BLOCKER/MAJOR (above).
+
+**Capability / root-cause convergence check.** When materially plausible mechanisms from the
+SAME mechanism family have been repeatedly falsified and another same-family patch or review
+round would merely repeat the failed premise, the Lead requires a
+`CAPABILITY / ROOT-CAUSE CONVERGENCE CHECK`: determine whether the problem remains a bounded
+mechanism defect or whether the evidence now indicates a wrong capability level, a wrong owner,
+a wrong contract boundary, a missing dependency, an architectural limitation, or an unsupported
+premise. The check authorizes NO architecture implementation and never pre-selects a higher
+capability level; its outcomes are exactly: continue at the lowest surviving capability level;
+bounded repair; Owner decision; or architectural-review escalation where materially justified.
+Review difficulty alone is never architecture escalation.
 
 ## 15. Independent review interface
 
@@ -408,6 +491,11 @@ the lifecycle interface:
   separate: the inherited independently verified baseline; the new delta;
   newly fired obligations; and the conclusions requiring fresh falsification.
   A previous verdict is never evidence.
+- **early-review sequencing interface (`EARLY INDEPENDENT REVIEW RULE: ACTIVE`):** where Lean
+  requires Independent Review for a material candidate, the lifecycle schedules it at the
+  earliest point at which a stable, frozen, reviewable exact subject and sufficient evidence
+  for meaningful independent falsification exist — per Lean §5B.17, which owns the rule; this
+  protocol carries only this sequencing reference and defines no review policy.
 
 **Formal Closure semantic-risk classification:** a Formal Closure gate is not
 automatically low-risk or automatically focused. Its scope is classified by
@@ -667,6 +755,21 @@ acceptance.
   than at entry). Scope: additive §9A plus the correction of a status line whose own
   adoption condition had already been satisfied at PR #583. No existing rule was weakened,
   removed, or renumbered; no taxonomy, owner, or current state was created or moved.
+- **Amendment 2 — Durable operating/review/continuity safeguard hardening.** Basis under this
+  section: a **validated better control** plus an **explicit Owner safeguard change** (the Owner
+  decision `OWNER DURABLE OPERATING-MECHANISM HARDENING`, recorded with exact provenance in the
+  Owner Decision Register §D-2 amendment and the roadmap gate record of the introducing
+  candidate) closing durability gaps identified by an Owner-authorized read-only recovery audit.
+  Scope, all additive: §1 standing loop-compression objective; §9A role separation and
+  centralized Creator instruction authoring; §10 Creator Pre-Freeze Transitive Consequence
+  Sweep; §12 single-pass defect accumulation and differential re-review tokens; §13 non-blocking
+  standalone-lifecycle suppression; §14 review-invalidating stop exception, ENOUGH EVIDENCE —
+  PROCEED convergence, and the capability / root-cause convergence check; §15 early-review
+  sequencing interface reference (the Independent Review timing rule itself is owned by Lean
+  §5B.17). No existing rule was
+  weakened, removed, or renumbered; no taxonomy, owner, or current state was created or moved;
+  the parallel Lean continuity hardening and the ODR §D-2 PRE-FCORA hardening remain owned by
+  their own documents.
 
 ## 27. Legacy migration and supersession record
 

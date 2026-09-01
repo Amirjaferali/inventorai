@@ -352,6 +352,25 @@ bounded LEVEL-2 gates with no artificial hard time SLA. Success means: less
 duplicate execution, more reviewer novelty, and the same or higher
 defect-detection quality.
 
+**5B.17 Early Independent Review rule (`EARLY INDEPENDENT REVIEW RULE: ACTIVE`).** When
+Independent Review is required for a material candidate, it occurs at the earliest lifecycle
+point at which a stable, reviewable exact subject (the frozen candidate SHA) and sufficient
+evidence for meaningful independent falsification exist — never delayed merely to accumulate
+avoidable downstream work. The rule exists to: surface material defects before avoidable
+downstream lifecycle work; reduce expensive repair after publication preparation or later-stage
+ceremony; and preserve independent judgment early enough to change the candidate/gate decision.
+The safeguard is EARLY FORMAL REVIEW OF A STABLE EXACT SUBJECT — it is NOT repeated formal
+review of an unchanged subject, which remains prohibited absent material decision-changing
+evidence (AHAEP §14 owns that loop discipline). This rule: weakens no exact-SHA review-subject
+identity requirement (§5 and §5B.2–5B.3 continue to govern, and a formal Independent Review is
+never performed on an unstable/unfrozen candidate); replaces neither the Creator Grill nor Lead
+review; creates no mandatory reviewer recursion and no second Independent Review policy owner;
+requires no review where this protocol does not require Independent Review; never overrides
+LEVEL/DEPTH (§3/§4); authorizes no publication, merge, implementation, or execution; and never
+requires a second formal Independent Review merely because an early one already occurred —
+renewed review is required only when the candidate changed materially or an existing
+invalidation/repair rule (§5B.6/§5B.8; AHAEP §7/§14) requires it.
+
 ## 6. Full-historical-audit triggers (exceptions only)
 
 A full historical review is required only when one or more applies: current authority
@@ -389,12 +408,58 @@ loses. A handover-only idea must be marked `NOT CANONICAL — REQUIRES OWNER DEC
 routed to the Owner Decision Register with committed owner-decision evidence — never
 silently implemented. Use `docs/governance/HANDOVER_TEMPLATE.md`.
 
+**9.1 Read-only continuity reconstruction preflight (successor boot).** A successor Lead — and
+any material handover transition — first performs a
+`READ-ONLY CONTINUITY RECONSTRUCTION PREFLIGHT`: reconstruct current authority exclusively from
+committed repository authority (the §1 boot sequence) and the live Git tip. No repository
+mutation occurs during this preflight. The handover is evidence/input only; it is never
+authority.
+
+**9.2 Handover continuity difference check.** After the read-only reconstruction and before any
+materially affected execution, the successor compares the previous handover / derived Master
+Checklist / carried continuity state against the fresh repository reconstruction. Every
+material difference is disclosed and, where supported, classified as exactly one of:
+`STATUS ADVANCED` · `REORDERED BY AUTHORITY` · `SUPERSEDED` · `MERGED INTO` ·
+`DEFERRED / RETURN GATE CHANGED` · `NEWLY DISCOVERED` · `SILENT DISAPPEARANCE CANDIDATE` ·
+`UNEXPLAINED MATERIAL DIFFERENCE`. If all material differences are explained by repository
+authority: `HANDOVER CONTINUITY DIFFERENCE CHECK: PASS`. If the handover contained errors that
+current repository truth resolves: `HANDOVER CONTINUITY DIFFERENCE CHECK: CORRECTED PASS`. If
+an unexplained material difference can affect the current gate, upcoming scope, ownership, a
+dependency, or an authorization: HOLD only the materially affected execution until reconciled
+(§10 owns the STOP/HOLD scoping) — never silently prefer the handover, and never silently
+prefer an unsupported inference.
+
+**9.3 Master Checklist and HICR classification.** `MASTER CHECKLIST = DERIVED OWNER-FACING
+NAVIGATION / CONTINUITY AID — NOT SSOT`; `CHECKLIST ORDER ≠ EXECUTION AUTHORIZATION`. A Master
+Checklist may point to repository authority; it never replaces repository authority, roadmap
+sequencing, Owner decisions, the Owner Decision Register, the Deferred Obligations Register, or
+active contracts. Where a Handover-Integrated Continuity Record (HICR) is used:
+`HICR = POINTER / RECONCILIATION MECHANISM — NOT DUPLICATION` — it must not become a second
+SSOT, a second Owner Decision Register, a second Deferred Obligations Register, a second Master
+Checklist, or a second roadmap. No volatile current checklist/HICR status is encoded in this
+protocol; that state lives with the canonical current-state surfaces.
+
+**9.4 Successor propagation.** `SUCCESSOR PROPAGATION REQUIRED: YES` — these continuity
+safeguards bind successor agents through this protocol's repository boot authority even when a
+handover omits or misstates them. Handover omission cannot delete durable repository
+safeguards.
+
 ## 10. Contradiction escalation and stop conditions
 
 Stop and escalate to the owner when: current authority cannot be resolved; governing
 records materially contradict; the requested work crosses the active contract or a
 Level-1 boundary; or a separate-authorization capability would be touched. Do not resolve
 a material contradiction by editing history — report it and request canonicalization.
+
+**STOP versus bounded HOLD (scoping rule).** A broad STOP applies when: current authority
+cannot be resolved globally; a material governing contradiction makes safe authority
+impossible; an explicit repository-wide STOP applies; or the requested action crosses a
+prohibited or high-authority boundary that cannot be isolated. A **bounded HOLD** applies when
+the material uncertainty or difference is localized: unaffected work retains resolved
+authority, and only the specific gate, subject, dependency, or review subject in question is
+held until reconciled. A localized immaterial or non-blocking difference never freezes the
+whole project. This scoping rule NEVER overrides or weakens an explicit broader STOP imposed by
+authoritative repository governance.
 
 ## 11. Update responsibilities
 

@@ -17630,3 +17630,91 @@ zero executable delta, three governance control surfaces changed.
 **Next step after this gate — STOP.** Lead review of this exact candidate, then any required
 independent review, then Owner exact-SHA decision; publication, PR and merge each require separate
 Owner authorization. Nothing further is created, implied or scheduled here.
+
+---
+
+## GOVERNED GATE — DURABLE OPERATING-MECHANISM HARDENING — CANDIDATE STAGE
+
+**Gate identity.** One bounded consolidated governance-only durability-hardening candidate,
+executed by `ORIGINAL CLAUDE / CREATOR` under the Owner decision
+`OWNER DURABLE OPERATING-MECHANISM HARDENING: YES` (with `OWNER RATIFICATION OF CURRENT
+STANDING PROCESS SAFEGUARDS FOR DURABLE INTEGRATION: YES`), on the authoritative base
+`c46edc21a543b7418b9d722bdb89dfb38bee0aa9` — the CREATE-A-MERGE-COMMIT result of PR #608 —
+verified live from Git at this gate `[EXEC]`. The prior bounded governance control-surface
+synchronization (PR #606 / PR #607 lineage) COMPLETED via PR #608:
+`ROADMAP DESYNCHRONIZATION STOP CONDITION: CLEARED`.
+
+**Recorded now: candidate-stage facts only.** Not recorded, because they have not happened:
+Lead review verdict · Independent Review verdict · Owner exact-SHA acceptance of this
+candidate · publication · PR creation · merge · authoritativeness of this hardening ·
+hardening completion · return to T1-A′.
+
+**Purpose.** Durable integration of already-adopted / currently-binding process safeguards into
+their existing owners — AHAEP (lifecycle mechanics: standing loop-compression objective;
+single-pass defect accumulation / complete material defect set; Creator pre-freeze transitive
+consequence sweep; role separation and Lead-centralized Creator instruction authoring with
+`OWNER MANUAL RELAY = TRANSPORT ONLY`; non-blocking standalone-lifecycle suppression;
+review-invalidating stop exception; `ENOUGH EVIDENCE — PROCEED` convergence; capability /
+root-cause convergence check; early-review sequencing interface reference; AHAEP §26.1
+Amendment 2), Lean (early Independent Review timing rule `EARLY INDEPENDENT REVIEW RULE:
+ACTIVE` (§5B.17); successor continuity: read-only continuity reconstruction preflight; handover
+continuity difference check with its difference classes; Master Checklist / HICR
+classification; STOP versus bounded HOLD scoping; successor propagation), and ODR §D-2 (PRE-FCORA systematic cross-phase reconciliation review as mandatory
+immediate FCORA prerequisite; `PRE-FCORA PASS ≠ FCORA AUTHORIZATION`). NOT process redesign;
+`NEW PROCESS DOCUMENT: NO` · `NEW PROCESS OWNER: NO` · `NO DUPLICATE SEMANTIC OWNER` ·
+`NO FALSE FORCE-FIT` preserved.
+
+**Current temporary process condition.**
+`T1-A′ NEXT-GATE ADJUDICATION: TEMPORARILY HELD FOR ONE BOUNDED DURABILITY-HARDENING LIFECYCLE`
+— a bounded HOLD, not a technical T1-A′ failure. T1-A′ technical state: unchanged (`T1-A′:
+OPEN` · trigger fired · closure evidence not met). `G-4-A` status: unchanged (`G-4-A: OPEN /
+FRB` · `G-4-A TECHNICAL DEFECT: CURRENT — NOT FIXED` · `DIRECT G-4-A CLASSIFIER DEFECT: STILL
+PRESENT`). `G-4-B` status: unchanged. `M-1` status: unchanged (SEPARATE, UNTOUCHED). Current
+remediation priority: unselected / unchanged by this process candidate (`T1A-* PRIORITY:
+UNADJUDICATED`; no T1-A′ option is selected).
+
+**Binding next lifecycle fence.** After this durability-hardening lifecycle becomes
+authoritative: `MANDATORY RETURN TO T1-A′ NEXT-GATE ADJUDICATION`, and
+`NO ADDITIONAL PROCESS-HARDENING ROUND WITHOUT GENUINELY NEW MATERIAL EVIDENCE` — evidence
+capable of changing authorization integrity, execution lifecycle correctness, successor
+continuity, review-loop convergence, authoritative ownership, or release/product truth; never
+wording improvement, cosmetic cleanup, optional clarification, stylistic preference, a
+non-blocking documentation preference, or a safeguard already adequately owned.
+
+**Exact changed paths (4).**
+1. `docs/governance/ACCELERATED_HIGH_ASSURANCE_EXECUTION_PROTOCOL.md` — bounded additive
+   hardening (§1, §9A, §10, §12, §13, §14, §15 sequencing-interface reference, §26.1
+   Amendment 2); no rule weakened, removed, or renumbered.
+2. `docs/governance/LEAN_GOVERNANCE_AND_AGENT_CONTINUITY_PROTOCOL.md` — bounded additive
+   hardening (§5B.17 early Independent Review timing rule; §9 continuity additions 9.1–9.4;
+   §10 STOP-versus-bounded-HOLD scoping); Independent-Review policy ownership unchanged (Lean
+   remains its sole owner).
+3. `docs/governance/OWNER_DECISION_REGISTER.md` — one bounded in-place §D-2 amendment
+   (PRE-FCORA); no new `OD-*` / `D-*` identifier minted; no historical wording reconstructed.
+4. `docs/governance/ACTIVE_EXECUTION_ROADMAP.md` (this entry) — one record per governed gate.
+
+**Deliberately unchanged, disclosed.** `CLAUDE.md` (existing boot bindings sufficient — it
+already binds Lean and AHAEP) · `DEFERRED_OBLIGATIONS_REGISTER.md` (remains the canonical
+obligation ledger; its two previously disclosed REPORT-ONLY staleness observations remain
+unrepaired by design) · `CURRENT_PROJECT_STATE.md` · `HANDOVER_TEMPLATE.md` ·
+`MASTER-HANDOVER.md` · the superseded legacy protocols · every product / architecture / G-4-A /
+readiness contract · every executable path. `EXECUTABLE DELTA: 0` ·
+`GOVERNANCE SEMANTIC DELTA: YES — AUTHORIZED AND BOUNDED` · `RUNTIME / PRODUCT / SCHEMA DELTA:
+0`.
+
+**Non-authorization fences.** `T1-A′ EXECUTION: NOT AUTHORIZED` · `T1A-A / T1A-B / T1A-C: NOT
+SELECTED` · `G-4-A IMPLEMENTATION AUTHORIZED: NO` · `G-4-B EXECUTION: NOT AUTHORIZED` ·
+`M-1 EXECUTION: NOT AUTHORIZED` · `CEHR EXECUTION: NOT AUTHORIZED` · `EVIDENCE COLLECTION: NOT
+AUTHORIZED` · `HUMAN-STUDY EXECUTION: NOT AUTHORIZED` · `PRE-FCORA EXECUTION: NOT AUTHORIZED` ·
+`FCORA EXECUTION: NOT AUTHORIZED` · `THIRD S2 RUN: CONSUMED` · `FOURTH S2 RUN / RUN-004: NOT
+AUTHORIZED` · `SERIOUS RELEASE / PRODUCTION / PAID ACTIVATION: NOT AUTHORIZED` ·
+`ACTIVE CONTRACT: NONE` (untouched) · `main` NOT RECONCILED.
+
+**Lean classification.** `LEAN RISK LEVEL: 2` · `REVIEW DEPTH: 2` — governance-only durable
+process hardening, zero executable delta, four governance surfaces changed; Independent Review
+is required before Owner exact-SHA acceptance per the authorizing instrument and AHAEP §26.
+
+**Next step after this gate — STOP.** Lead single-pass review of this exact candidate, then
+Independent Review, then Lead adjudication, then (only if eligible) Owner exact-SHA decision;
+publication, PR and merge each require separate Owner authorization. Nothing further is
+created, implied or scheduled here.
