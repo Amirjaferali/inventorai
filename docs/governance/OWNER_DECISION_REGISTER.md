@@ -1422,6 +1422,35 @@ direction and obligation ONLY: FCORA is NOT executed here, its detailed contract
 refinements such as partial-implementation ambiguity handling) is a future gate's own lifecycle
 work. Obligation tracking: the Deferred Obligations Register §3 FCORA row (FRB).
 
+**D-2 amendment — PRE-FCORA systematic cross-phase reconciliation review (durable hardening).**
+Recorded under the current Owner decision issued under the title
+`OWNER DECISION — DURABLE OPERATING-MECHANISM HARDENING`
+(`OWNER DURABLE OPERATING-MECHANISM HARDENING: YES` · `OWNER RATIFICATION OF CURRENT STANDING
+PROCESS SAFEGUARDS FOR DURABLE INTEGRATION: YES` ·
+`AUTHORIZE ONE BOUNDED GOVERNANCE-ONLY DURABLE PROCESS HARDENING CANDIDATE: YES`),
+supplied verbatim in the authorizing instrument for the durable operating-mechanism hardening
+gate; no historical decision identifier, decision date, or approval wording exists for it beyond
+that instrument and none is invented — per this register's `Authorization lineage — recorded
+without retroactive invention` discipline, the accepted and merged hardening candidate is the
+evidence. Within the FCORA authority this section already owns,
+`PRE-FCORA SYSTEMATIC CROSS-PHASE RECONCILIATION REVIEW` is a **mandatory immediate prerequisite
+gate to FCORA** — a gate under the existing FCORA/reconciliation authority, NOT a new SSOT, NOT
+a new process owner, and NOT a duplicate Deferred Obligations Register. Timing: PRE-FCORA occurs
+after the then-applicable pre-FCORA execution lanes and required HICR/readiness-reconciliation
+inputs are stable, and immediately before FCORA begins. It reconciles systematically against
+then-current authoritative repository truth; it does NOT reopen or re-execute closed phases by
+default — a closed phase is reopened only if new material authority/evidence validly requires
+it. Required PRE-FCORA pass conditions: `UNEXPLAINED MATERIAL DIFFERENCES = 0` ·
+`SILENT DISAPPEARANCE CANDIDATES = 0` · `UNACCOUNTED MATERIAL OBLIGATIONS = 0` ·
+`MATERIAL STATUS CONTRADICTIONS = 0` · `DUPLICATE EXECUTION OWNERSHIP = 0` ·
+`PRE-FCORA RECONCILIATION-DUE ITEMS = DISPOSITIONED` ·
+`MASTER CHECKLIST ↔ REPOSITORY TRACEABILITY = PASS`. The Deferred Obligations Register remains
+the canonical obligation ledger used by the reconciliation, and existing source owners remain
+authoritative for their underlying capabilities. `PRE-FCORA PASS ≠ FCORA AUTHORIZATION` —
+PRE-FCORA PASS establishes eligibility only; FCORA remains separately governed by this section
+and applicable Owner authority. Neither PRE-FCORA nor FCORA is executed, scheduled, or
+authorized by this recording.
+
 **E. RVR-7 Path Manifest Freeze gate — Owner decisions recorded contemporaneously.**
 Recorded at the RVR-7 Implementation Path Manifest Freeze gate (base
 `dad450bfb86cb96a29527a733a213897950c57ec`, PR #587). These are decisions the Owner HAS MADE;
