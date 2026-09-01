@@ -17718,3 +17718,84 @@ is required before Owner exact-SHA acceptance per the authorizing instrument and
 Independent Review, then Lead adjudication, then (only if eligible) Owner exact-SHA decision;
 publication, PR and merge each require separate Owner authorization. Nothing further is
 created, implied or scheduled here.
+
+---
+
+## POST-MERGE GOVERNANCE SYNCHRONIZATION — DURABLE OPERATING-MECHANISM HARDENING — SELF-TERMINATING CANDIDATE
+
+**Gate identity.** One bounded, governance-only, SELF-TERMINATING post-merge synchronization,
+executed by `ORIGINAL CLAUDE / CREATOR` under the Owner's
+`OWNER AUTHORIZATION — ONE BOUNDED POST-MERGE GOVERNANCE SYNCHRONIZATION: YES`, on the
+authoritative base `c03db85c52f28be4c48ac78ddcd84a76590fa2ed` — the CREATE-A-MERGE-COMMIT result
+of PR #609 — verified live from Git at this gate `[EXEC]`. `LEAN RISK LEVEL: 2` ·
+`REVIEW DEPTH: 2` · `AHAEP EXECUTION MODE: FOCUSED DIFFERENTIAL`.
+
+**PR #609 — authoritative record `[EXEC]`.** The Durable Operating-Mechanism Hardening is
+repository-authoritative: the exact Owner-accepted candidate
+`39481b7f4feb4d60a88251a0f9cba440c768244d` merged as **PR #609**, merge
+`c03db85c52f28be4c48ac78ddcd84a76590fa2ed`, first parent
+`c46edc21a543b7418b9d722bdb89dfb38bee0aa9`, second parent = the exact accepted candidate, merge
+tree `f008b0666d489680695c8772bb99c5462286a89e` identical to the accepted candidate tree,
+candidate→merge content diff **EMPTY**. `POST-MERGE IDENTITY VERIFICATION: PASS`.
+`DURABLE OPERATING-MECHANISM HARDENING: AUTHORITATIVE` — AHAEP Amendment 2 (lifecycle
+hardening), Lean §5B.17 early-Independent-Review + §9/§10 continuity/scoping hardening, and the
+ODR §D-2 PRE-FCORA hardening are authoritative as merged; their semantics are NOT re-reviewed,
+reopened, or amended by this synchronization. Provenance is registered in the Owner Decision
+Register through its established `Authorization lineage — recorded without retroactive
+invention` mechanism (no new `OD-*` / `D-*` identifier minted). The four accepted non-blocking
+observations remain non-blocking and are not reopened.
+
+**Temporary hold discharged.** The prior gate record's condition
+`T1-A′ NEXT-GATE ADJUDICATION: TEMPORARILY HELD FOR ONE BOUNDED DURABILITY-HARDENING LIFECYCLE`
+is now: `TEMPORARY DURABILITY-HARDENING HOLD CONDITION: COMPLETE / SATISFIED` — the hardening
+lifecycle it waited on is authoritative, and this synchronization is that lifecycle's final
+bounded governance recording step. Unchanged and preserved: `T1-A′: OPEN` · `T1-A′ TRIGGER:
+FIRED` · `T1-A′ CLOSURE EVIDENCE: NOT MET` · `T1-A′ TECHNICAL STATUS: UNCHANGED` · `G-4-A
+STATUS: UNCHANGED` · `G-4-B STATUS: UNCHANGED` · `M-1 STATUS: UNCHANGED` · `T1A-* PRIORITY:
+UNADJUDICATED` · `T1-A′ OPTION SELECTED: NO` · `T1-A′ EXECUTION: NOT AUTHORIZED BY THIS
+SYNCHRONIZATION`.
+
+**Post-hardening sequencing (durable, conditional/terminal).** UPON AUTHORITATIVE ADOPTION OF
+THIS SYNCHRONIZATION: `MANDATORY RETURN TO T1-A′ NEXT-GATE ADJUDICATION` — that adjudication is
+the next mandatory governance activity. Eligibility/sequencing only: no T1-A′ remediation
+option is selected here, no T1-A′ implementation or execution is authorized here, and any later
+T1-A′ execution still requires the applicable Owner decision / authorization.
+`NO ADDITIONAL PROCESS-HARDENING ROUND WITHOUT GENUINELY NEW MATERIAL EVIDENCE` remains in
+force.
+
+**Self-terminating design.** Candidate-lifecycle facts in this record are scoped AS AT THIS
+SYNCHRONIZATION CANDIDATE'S FREEZE: `SYNC CANDIDATE OWNER-AUTHORIZED AT FREEZE: YES` ·
+`SYNC CANDIDATE OWNER EXACT-SHA ACCEPTED AT FREEZE: NO` · `SYNC CANDIDATE PUBLISHED AT FREEZE:
+NO` · `SYNC CANDIDATE MERGED AT FREEZE: NO` — freeze-moment statements that remain historically
+true after any later lifecycle completion. Design invariant: `NO CURRENT-STATE SENTENCE IN THIS
+SYNCHRONIZATION BECOMES FALSE SOLELY BECAUSE THIS CANDIDATE MERGES`. Expected terminal rule: if
+this exact candidate later receives its required review, Owner exact-SHA acceptance,
+identity-preserving publication, and a CREATE-A-MERGE-COMMIT merge with the expected parents
+and tree and an EMPTY candidate→merge diff, and no independent material canonical truth changes
+during that lifecycle, then `ANOTHER GOVERNANCE SYNC SOLELY TO RECORD THIS SYNCHRONIZATION'S
+OWN MERGE: NOT REQUIRED`; the actual AHAEP §20 `POST-MERGE GOVERNANCE SYNC REQUIRED: YES / NO`
+decision is still adjudicated by the Lead after the eventual merge.
+
+**Exact changed paths (2).**
+1. `docs/governance/OWNER_DECISION_REGISTER.md` — one lineage row appended to the existing
+   `Authorization lineage — recorded without retroactive invention` table; no existing row
+   rewritten; no new decision identifier.
+2. `docs/governance/ACTIVE_EXECUTION_ROADMAP.md` (this entry) — one record per governed gate;
+   the prior hardening gate record is byte-preserved as historical-at-freeze evidence.
+
+**Deliberately unchanged, disclosed.** AHAEP · Lean · `DEFERRED_OBLIGATIONS_REGISTER.md` ·
+`CLAUDE.md` · `CURRENT_PROJECT_STATE.md` (subordinate to Git) · `ACTIVE_INCREMENT_CONTRACT.md`
+(`ACTIVE CONTRACT: NONE` untouched) · every product / architecture / readiness / G-4 contract ·
+every executable path. `EXECUTABLE DELTA: 0` · `RUNTIME / PRODUCT / SCHEMA DELTA: 0` ·
+`NEW PROCESS OWNER: NO`.
+
+**Non-authorization fences.** This synchronization authorizes nothing: `PUBLICATION: NOT
+AUTHORIZED HERE` · `PR: NOT AUTHORIZED HERE` · `MERGE: NOT AUTHORIZED HERE` · `T1-A′ EXECUTION:
+NOT AUTHORIZED` · `G-4-A IMPLEMENTATION AUTHORIZED: NO` · `G-4-B EXECUTION: NOT AUTHORIZED` ·
+`M-1 EXECUTION: NOT AUTHORIZED` · `PRE-FCORA EXECUTION: NOT AUTHORIZED` · `FCORA EXECUTION: NOT
+AUTHORIZED` · `THIRD S2 RUN: CONSUMED` · `FOURTH S2 RUN / RUN-004: NOT AUTHORIZED` · `SERIOUS
+RELEASE / PRODUCTION / PAID ACTIVATION: NOT AUTHORIZED` · `main` NOT RECONCILED.
+
+**Next step after this gate — STOP.** Lead single-pass review of this exact candidate, then the
+required review / acceptance / publication lifecycle as applicable; publication, PR and merge
+each require separate Owner authorization.
