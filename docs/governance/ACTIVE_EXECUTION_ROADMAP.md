@@ -17799,3 +17799,81 @@ RELEASE / PRODUCTION / PAID ACTIVATION: NOT AUTHORIZED` · `main` NOT RECONCILED
 **Next step after this gate — STOP.** Lead single-pass review of this exact candidate, then the
 required review / acceptance / publication lifecycle as applicable; publication, PR and merge
 each require separate Owner authorization.
+
+---
+
+## G-4-A / T1-A′ — POST-LEVEL-1/2/3 DURABILITY SYNCHRONIZATION (GOVERNANCE-ONLY; ZERO EXECUTABLE DELTA) — CANDIDATE STAGE
+
+**Owner authorization.** `OWNER AUTHORIZATION — BOUNDED GOVERNANCE DURABILITY SYNCHRONIZATION: YES`
+(direct authority supplied for this gate; exact provenance recorded in the Owner Decision Register
+lineage section `G-4-A / T1-A′ post-292ad1c authorization / progression lineage`). Executed by
+`ORIGINAL CLAUDE / CREATOR` on the authoritative pre-candidate base
+`292ad1cfaabac8a721068e1b271af8e904300ecf` (the PR #610 CREATE-A-MERGE-COMMIT), verified live from Git
+at this gate `[EXEC]`. `LEAN RISK LEVEL: 2` · `REVIEW DEPTH: 2` · `AHAEP EXECUTION MODE: FOCUSED
+DIFFERENTIAL`.
+
+**Why this gate fired.** The repository-durable control surfaces lagged the later Owner-authorized,
+Creator-evidenced and independently reviewed operating state: they still presented the contract
+freeze-time `LEVEL 1: OPEN` · `LEVEL 2: OPEN` · `LEVEL 3: CONDITIONAL` and the H∧P conjunction family as
+if current. That lag materially misdirected an independent review toward that stale state and toward
+stale H∧P survivor reasoning. `DURABILITY GAP MATERIAL: YES` · `DURABILITY SYNCHRONIZATION NOW
+LOAD-BEARING: YES`.
+
+**Adjudicated result recorded (existing governed truth; no new technical finding).**
+`TECHNICAL INVALIDATION OF LEVEL-1 EXHAUSTION: NO` · `TECHNICAL INVALIDATION OF LEVEL-2 EXHAUSTION: NO` ·
+`TECHNICAL INVALIDATION OF LEVEL-3 EXHAUSTION: NO` · `H∧P SHOULD REOPEN: NO`. Current operating state:
+`LEVEL 1: EXHAUSTED — LEAD-ACCEPTED + INDEPENDENTLY VERIFIED` · `LEVEL 2: EXHAUSTED — LEAD-ACCEPTED +
+INDEPENDENTLY VERIFIED` · `LEVEL 3: EXHAUSTED — LEAD-ACCEPTED + INDEPENDENTLY VERIFIED` · `SURVIVORS:
+0 / 0 / 0` · `H∧P: REJECTED AS INSUFFICIENT — PARAPHRASE / GENERALISATION FAILURE`. Exhaustion is
+classified `EVIDENCE-SURFACED / GOVERNANCE-DILIGENCE ONLY — NOT UNIVERSAL IMPOSSIBILITY`; `UNIVERSAL
+LEVEL-1 / LEVEL-2 / LEVEL-3 IMPOSSIBILITY: NOT CLAIMED`; `REFERENCE RESOLUTION REQUIRED: NOT PROVEN` ·
+`GENERAL NLP REQUIRED: NOT PROVEN`. The contract §5.1 table remains truthful **as state at its freeze**
+(`CONTRACT FREEZE SNAPSHOT ≠ CURRENT OPERATING STATUS`); the contract is not rewritten.
+
+**What this gate does NOT do.** It does not reopen any level, create a technical finding, choose a
+solution, select a strategic option (`STRATEGIC OPTION SELECTED: NO` — O2 / O4 / Claim-Eligibility
+containment: none selected; `O2 ACCEPTED: NO` · `O2 FEASIBILITY EXPERIMENT AUTHORIZED: NO` · `O4
+AUTHORIZED: NO` · `LEVEL 4 AUTHORIZED: NO`; no Level-0 amendment is asserted as required), change
+product identity, or authorize implementation. Bounded AI-boundary position preserved for current-state
+truth only: `EXTERNAL / NON-DETERMINISTIC AI PROGRESSION GATING: NOT ADMISSIBLE UNDER CURRENT IDENTITY`
+· `FROZEN / LOCAL / DETERMINISTIC ML USED AS LOAD-BEARING PROGRESSION LOGIC: NOT CURRENTLY AUTHORIZED /
+LEVEL-0 STATUS NOT FINALLY ADJUDICATED`.
+
+**Exact changed paths (4).** `docs/governance/CURRENT_PROJECT_STATE.md` (self-terminating
+synchronization-baseline pointer + concise current G-4-A / T1-A′ status block) ·
+`docs/governance/ACTIVE_EXECUTION_ROADMAP.md` (this record) ·
+`docs/governance/OWNER_DECISION_REGISTER.md` (post-`292ad1c` authorization / progression lineage —
+recorded without retroactive invention; no new `OD-*` / `D-*` identifier) ·
+`docs/governance/DEFERRED_OBLIGATIONS_REGISTER.md` (exactly two rows: the G-4 row's current-status
+portion and the T1-A′ row's later routing/status; both obligations remain OPEN; no other row, no header).
+`EXECUTABLE DELTA: 0` · `RUNTIME DELTA: 0` · `PRODUCT DELTA: 0` · `SCHEMA DELTA: 0` · `TEST DELTA: 0` ·
+`CONTRACT-SEMANTIC DELTA: 0` · `GOVERNANCE CURRENT-STATE SYNCHRONIZATION DELTA: YES — AUTHORIZED AND
+BOUNDED`. Deliberately unchanged: the G-4-A contracts, `ACTIVE_INCREMENT_CONTRACT.md` (`ACTIVE
+CONTRACT: NONE` untouched), `ARCHITECTURE_GUARDRAILS.md`, `STRATEGIC_PRODUCT_VISION.md`, `CLAUDE.md`,
+`MASTER-HANDOVER.md`, every evidence artifact and preserved ref, every executable path.
+
+**Non-authorization fences (all preserved).** `G-4-A TECHNICAL DEFECT: CURRENT — NOT FIXED` · `DIRECT
+G-4-A CLASSIFIER DEFECT: STILL PRESENT` · `G-4-A: OPEN / FRB` · `G-4: OPEN / FRB` · `G-4 FULL CLOSURE:
+NOT ASSERTED` · `IMPLEMENTATION AUTHORIZED: NO` · `IMPLEMENTATION CANDIDATE: NONE` · `ACTIVE
+IMPLEMENTATION CONTRACT: NONE` · `G-4-B: OPEN / DEFERRED` · `MECHANISM-B CODE CHANGE: NOT AUTHORIZED` ·
+`M-1: PRESERVED / SEPARATE` · `CLAIM-ELIGIBILITY: PRESERVED — NOT EXECUTED` · `CLAIM-ELIGIBILITY
+CONTAINMENT ≠ DIRECT G-4-A ENGINE REPAIR` · `HUMAN-STUDY EXECUTION: NOT AUTHORIZED` · `EVIDENCE
+COLLECTION: NOT AUTHORIZED` · `T1-A′: OPEN` · `T1-A′ TRIGGER: FIRED` · `T1-A′ CLOSURE EVIDENCE: NOT MET`
+· `THIRD S2 RUN: CONSUMED` · `FOURTH S2 RUN / RUN-004: NOT AUTHORIZED` · `FURTHER SUPPLEMENTAL SLICE
+EXECUTION: NOT AUTHORIZED` · `HICR PHASE 2: NOT AUTHORIZED` · `READINESS IMPLEMENTATION: NOT
+AUTHORIZED` · `FCORA: NOT AUTHORIZED` · `PRE-FCORA SYSTEMATIC CROSS-PHASE RECONCILIATION REVIEW:
+MANDATORY — REQUIRED LATER / NOT EXECUTED NOW / NOT MOVED` · `ACTIVE CONTRACT: NONE` (untouched) ·
+`SERIOUS RELEASE / PRODUCTION / PAID ACTIVATION: NOT AUTHORIZED` · `main` NOT RECONCILED.
+
+**Candidate-stage lifecycle truth (as at this candidate's freeze).** This append is NOT authoritative
+merely because the Creator created it. `OWNER EXACT-SHA ACCEPTED AT FREEZE: NO` · `PUBLICATION AUTHORIZED
+AT FREEZE: NO` · `PR CREATED AT FREEZE: NO` · `MERGED AT FREEZE: NO` · `AUTHORITATIVE AT FREEZE: NO` ·
+`POST-MERGE VERIFIED AT FREEZE: NO`. Conditional sequencing: UPON AUTHORITATIVE ADOPTION OF THIS
+SYNCHRONIZATION (separate Owner exact-SHA acceptance, publication authorization, merge authorization,
+CREATE A MERGE COMMIT and post-merge identity verification): `POST-EXHAUSTION STRATEGIC OPTION
+ADJUDICATION` is the next governance activity — `STRATEGIC OPTION SELECTED: NO`. No current-state
+sentence in this record becomes false solely because this candidate later merges.
+
+**Next step after this gate — STOP.** Lead single-pass review of this exact candidate, then the required
+review / acceptance / publication lifecycle as applicable; publication, PR and merge each require
+separate Owner authorization.

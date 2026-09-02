@@ -15,7 +15,20 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
 - **Live tip:** resolve from Git each session
   (`git rev-parse origin/feature/atomic-json-session-persistence`). Do **not** trust a
   prose-pinned SHA.
-  - **Current authoritative branch tip (last independently verified):**
+  - **Synchronization baseline (self-terminating SHA semantics):** the verified PRE-CANDIDATE BASE
+    of the G-4-A / T1-A′ post-Level-1/2/3 durability synchronization is
+    `292ad1cfaabac8a721068e1b271af8e904300ecf` (Merge **PR #610** — the self-terminating post-merge
+    governance synchronization of the Durable Operating-Mechanism Hardening; two-parent merge of
+    `c03db85c52f28be4c48ac78ddcd84a76590fa2ed` (PR #609) + `cd99d1d0b2ee7b3bac70ed3a2d24645f8ef20eeb`
+    (the exact Owner-accepted synchronization candidate), tree
+    `f9f1c6594f48b5a3d22117f4c2225d90e6eeb1bf` identical, EMPTY candidate→merge diff). This SHA is a
+    synchronization / publication baseline — **NOT** a permanent claim about the post-merge live tip:
+    the durability-synchronization candidate itself, once separately accepted and merged, advances the
+    branch, and the resulting merge commit is then the live tip and must be verified from Git per the
+    rule above. No SHA-only re-synchronization obligation arises from that advance. Intermediate merges
+    (PR #594 – PR #609) are recorded in the append-only roadmap and the Owner Decision Register lineage;
+    this pointer does not enumerate them.
+  - **Prior recorded tip (historical; was the last independently verified pointer recorded here):**
     `40b6fe61f2f4515709764fe367547de9e59084c3` (Merge **PR #593** — AHAEP AMENDMENT 1;
     two-parent merge of `2c602059d65f7ecf51970d483eda7a14703ff08d` (base, PR #592 — the
     authoritative post-RVR-7-formal-closure governance synchronization) +
@@ -251,6 +264,42 @@ by `docs/governance/OWNER_DECISION_REGISTER.md`.
     (PR #327 merge) — **historical evidence only; not the current tip.**
 - **`main`:** `0e89e4636399760965c9ff8086b465c90dbadf8e` — STALE / UNRECONCILED / NOT authority.
 
+
+## CURRENT G-4-A / T1-A′ STATUS (durability synchronization; concise)
+
+**Contract freeze snapshot ≠ current operating status.** The G-4-A bounded-disambiguation contract
+(`docs/governance/G4_A_BOUNDED_DISAMBIGUATION_CONTRACT_CANDIDATE.md`) §5.1 records, truthfully **as
+state at that freeze**, `LEVEL 1: OPEN` · `LEVEL 2: OPEN` · `LEVEL 3: CONDITIONAL — NOT PRE-SELECTED`.
+That table is historical contract authority and is not rewritten. The later governed operating state,
+reached by the read-only Level-1 / Level-2 / Level-3 investigation and adjudication chain (roadmap gate
+record `G-4-A / T1-A′ — POST-LEVEL-1/2/3 DURABILITY SYNCHRONIZATION`; Owner Decision Register lineage
+section `G-4-A / T1-A′ post-292ad1c authorization / progression lineage`), is:
+
+- `G-4-A TECHNICAL DEFECT: CURRENT — NOT FIXED` · `DIRECT G-4-A CLASSIFIER DEFECT: STILL PRESENT` ·
+  `G-4-A: OPEN / FRB` · `G-4: OPEN / FRB` · `G-4 FULL CLOSURE: NOT ASSERTED`.
+- `LEVEL-1 EXHAUSTION: LEAD-ACCEPTED + INDEPENDENTLY VERIFIED` · `LEVEL-2 EXHAUSTION: LEAD-ACCEPTED +
+  INDEPENDENTLY VERIFIED` · `LEVEL-3 EXHAUSTION: LEAD-ACCEPTED + INDEPENDENTLY VERIFIED` ·
+  `LEVEL-1 / LEVEL-2 / LEVEL-3 SURVIVORS: 0 / 0 / 0` · `EXHAUSTION SENSE: EVIDENCE-SURFACED /
+  GOVERNANCE-DILIGENCE ONLY` · `UNIVERSAL LEVEL-1 / LEVEL-2 / LEVEL-3 IMPOSSIBILITY: NOT CLAIMED` ·
+  `H∧P: REJECTED AS INSUFFICIENT — PARAPHRASE / GENERALISATION FAILURE` · `H∧P SHOULD REOPEN: NO`.
+- `IMPLEMENTATION AUTHORIZED: NO` · `IMPLEMENTATION CANDIDATE: NONE` · `ACTIVE IMPLEMENTATION CONTRACT:
+  NONE` · `ARCHITECTURE SELECTED: NO` · `O2 ACCEPTED: NO` · `O2 FEASIBILITY EXPERIMENT AUTHORIZED: NO` ·
+  `O4 AUTHORIZED: NO` · `LEVEL 4 AUTHORIZED: NO` · `REFERENCE RESOLUTION REQUIRED: NOT PROVEN` ·
+  `GENERAL NLP REQUIRED: NOT PROVEN`.
+- Bounded AI-boundary position (current-state truth only; not an O2 decision, not a Level-0 amendment,
+  not a declaration about all local deterministic ML everywhere): `EXTERNAL / NON-DETERMINISTIC AI
+  PROGRESSION GATING: NOT ADMISSIBLE UNDER CURRENT IDENTITY` · `FROZEN / LOCAL / DETERMINISTIC ML USED
+  AS LOAD-BEARING PROGRESSION LOGIC: NOT CURRENTLY AUTHORIZED / LEVEL-0 STATUS NOT FINALLY ADJUDICATED`.
+- `G-4-B: OPEN / DEFERRED` · `MECHANISM-B CODE CHANGE: NOT AUTHORIZED` · `M-1: PRESERVED / SEPARATE` ·
+  `CLAIM-ELIGIBILITY: PRESERVED — NOT EXECUTED` · `CLAIM-ELIGIBILITY CONTAINMENT ≠ DIRECT G-4-A ENGINE
+  REPAIR` · `HUMAN-STUDY EXECUTION: NOT AUTHORIZED` · `EVIDENCE COLLECTION: NOT AUTHORIZED`.
+- `T1-A′: OPEN` · `TRIGGER: FIRED` · `CLOSURE EVIDENCE: NOT MET` · `THIRD S2 RUN: CONSUMED` ·
+  `FOURTH S2 RUN / RUN-004: NOT AUTHORIZED` · `FURTHER SUPPLEMENTAL SLICE EXECUTION: NOT AUTHORIZED` ·
+  `HICR PHASE 2: NOT AUTHORIZED` · `READINESS IMPLEMENTATION: NOT AUTHORIZED` · `FCORA: NOT AUTHORIZED`
+  · `PRE-FCORA SYSTEMATIC CROSS-PHASE RECONCILIATION REVIEW: MANDATORY — REQUIRED LATER / NOT EXECUTED
+  NOW` (owned by the Owner Decision Register §D-2; neither moved nor executed here).
+- Routing only, no strategic option selected: `POST-EXHAUSTION STRATEGIC OPTION ADJUDICATION: NEXT AFTER
+  THIS DURABILITY SYNCHRONIZATION BECOMES AUTHORITATIVE`.
 
 ## Master Obligation Index (routing layer — pointer-only)
 
