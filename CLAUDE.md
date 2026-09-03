@@ -38,11 +38,16 @@ subagent, and Agent Teams teammate MUST read, in this order:
 
 1. `docs/governance/ILT-002_GOVERNANCE_ANCHOR.md`
 2. `docs/governance/OWNER_PRODUCT_IDENTITY_CORRECTION.md`
-3. `docs/governance/STRATEGIC_PRODUCT_VISION.md`
-4. `docs/governance/PATH_N_CURRENT_EXECUTION_ANCHOR.md`
-5. `docs/governance/DUAL_PATH_PRODUCT_ANCHOR.md`
-6. `docs/governance/ACTIVE_EXECUTION_ROADMAP.md`
-7. `docs/governance/PRODUCT_FOUNDATION_AND_COMMERCIAL_READINESS_REMEDIATION_PLAN.md`
+3. `docs/governance/OWNER_PRODUCT_SUPPORT_AND_CERTIFICATION_BOUNDARY_AMENDMENT.md`
+   — Level 0 Owner Amendment governing the `STRATEGIC_PRODUCT_VISION.md` §4
+   Coverage Declaration Principle ONLY. Read it before relying on that
+   provision's original wording. It does not amend any other §4 content, does
+   not change product identity, and creates no implementation authority.
+4. `docs/governance/STRATEGIC_PRODUCT_VISION.md`
+5. `docs/governance/PATH_N_CURRENT_EXECUTION_ANCHOR.md`
+6. `docs/governance/DUAL_PATH_PRODUCT_ANCHOR.md`
+7. `docs/governance/ACTIVE_EXECUTION_ROADMAP.md`
+8. `docs/governance/PRODUCT_FOUNDATION_AND_COMMERCIAL_READINESS_REMEDIATION_PLAN.md`
    — mandatory product-foundation and commercial-readiness remediation plan (the
    owner-approved v2 plan, now CANONICAL — merged via PR #289 and post-merge
    verified; it supersedes any earlier draft). Read it in full
@@ -60,12 +65,12 @@ subagent, and Agent Teams teammate MUST read, in this order:
    verified. The plan is subordinate to the committed anchors, contracts, and
    `docs/governance/ACTIVE_EXECUTION_ROADMAP.md`; recording future work in it
    authorizes nothing.
-8. Any phase-specific authorization identified as active by the roadmap
-9. `docs/governance/INVENTORAI_COMMERCIAL_DIFFERENTIATION_DIRECTION.md`
+9. Any phase-specific authorization identified as active by the roadmap
+10. `docs/governance/INVENTORAI_COMMERCIAL_DIFFERENTIATION_DIRECTION.md`
    — mandatory strategic product direction; non-activating and non-authorizing;
    subordinate to committed anchors, contracts, and
    `docs/governance/ACTIVE_EXECUTION_ROADMAP.md`.
-10. `docs/benchmarks/BICYCLE_BRAKE_LIGHT_COMPETITIVE_BENCHMARK.md`
+11. `docs/benchmarks/BICYCLE_BRAKE_LIGHT_COMPETITIVE_BENCHMARK.md`
    — mandatory competitive product-value evaluation protocol; non-activating
    and non-authorizing; subordinate to committed anchors, contracts, and
    `docs/governance/ACTIVE_EXECUTION_ROADMAP.md`; no benchmark run or result is

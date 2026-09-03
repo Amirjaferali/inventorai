@@ -17877,3 +17877,96 @@ sentence in this record becomes false solely because this candidate later merges
 **Next step after this gate — STOP.** Lead single-pass review of this exact candidate, then the required
 review / acceptance / publication lifecycle as applicable; publication, PR and merge each require
 separate Owner authorization.
+
+
+---
+
+## R3 — BOUNDED DURABILITY / DISCOVERABILITY SYNCHRONIZATION (governance-only; zero executable delta) — CANDIDATE STAGE
+
+**Gate identity.** One bounded, governance-only durability / discoverability synchronization,
+executed by `ORIGINAL CLAUDE / CREATOR` under the Owner's `R3 PLAN: APPROVED` ·
+`R3 CANDIDATE CREATION: AUTHORIZED`, on the authoritative base
+`d95c34ea4f306377813ffad347863a1bae98ba2a` — the PR #612 merge — verified live from Git at this
+gate `[EXEC]`. `LEAN RISK LEVEL: 2` · `REVIEW DEPTH: 2` · `AHAEP EXECUTION MODE: FOCUSED
+DIFFERENTIAL`.
+
+**Why this gate fired.** R1 became authoritative and R2 was Owner-finalised, but the lower-level
+control surfaces did not yet make either durably discoverable: the boot reading order did not name
+the new Level-0 amendment, `STRATEGIC_PRODUCT_VISION.md` §4 carried no governing-effect notice, and
+the current-state, decision and obligation surfaces did not carry the current R1 / R2 position.
+`DURABILITY GAP MATERIAL: YES`. R3 closes only that discoverability lag.
+
+**Current sequence recorded.** `R1 EFFECTIVE` → `R2 OWNER-FINAL` → `R3 DURABILITY
+SYNCHRONIZATION`.
+
+**R1 — authoritative record `[EXEC]`.** `docs/governance/OWNER_PRODUCT_SUPPORT_AND_CERTIFICATION_BOUNDARY_AMENDMENT.md`
+is repository-authoritative: Owner-accepted candidate `a88b5c968c38c6e60654c5b30a3e15fbec3d3b6e`
+(sole parent `dda2af03a9418e34705e8714b10b3598dfa8197c`, tree
+`59c917551a28fb5a6328d194e526e61fd513ee28`, 1 changed path, `EXECUTABLE DELTA: 0`) merged as
+**PR #612**, merge `d95c34ea4f306377813ffad347863a1bae98ba2a`, merge tree identical to the accepted
+candidate tree (candidate→merge diff EMPTY), `POST-MERGE IDENTITY VERIFICATION: PASS`. Its direct
+Level-0 scope is the `STRATEGIC_PRODUCT_VISION.md` §4 Coverage Declaration Principle ONLY; the §4
+comparison table is not amended; `OWNER_PRODUCT_IDENTITY_CORRECTION.md` is preserved with its
+governing scope unmodified. The amendment's creation-time `PROPOSED` record remains historically
+true as written and is **not** rewritten here.
+
+**R2 — Owner-final architectural disposition.** `FINAL FOR: CURRENT ARCHITECTURAL DISPOSITION` ·
+`NOT FINAL FOR: EXHAUSTIVE FUTURE PRODUCT-CAPABILITY SCOPE`. `ARCHITECTURAL CLASSIFICATION !=
+PRODUCT-CAPABILITY CEILING` · `NO FORCE-FIT` · `NO DUPLICATE OWNERSHIP`. TRL — existing-owner
+extension / composition. MRL — composition working minimum; CAP-12 / CAP-13 / CAP-14 contributors;
+`NOT PROVEN EXHAUSTIVE`. IRL — D4 current cross-domain owner; single-domain multi-subsystem gap
+preserved; residual owner `NOT PROVEN`. SRL — composition / derivation; CAP-06 `NOT TRUTH OWNER`.
+Commercial — CAP-18 bounded snapshot; `NOT UNIVERSAL COMMERCIAL OWNER`. No architecture,
+implementation or ownership is designed, selected or created by recording these.
+
+**Exact changed paths (6); new repository files: 0.**
+1. `CLAUDE.md` — reading-order / discoverability only: the R1 amendment inserted after
+   `OWNER_PRODUCT_IDENTITY_CORRECTION.md` and before `STRATEGIC_PRODUCT_VISION.md`, with the
+   following entries renumbered; no authority created, no product meaning altered.
+2. `docs/governance/STRATEGIC_PRODUCT_VISION.md` — a `GOVERNING EFFECT AMENDED` notice inserted at
+   the §4 Coverage Declaration Principle ONLY. Pure insertion: the original §4 prose and the §4
+   comparison table are byte-preserved (0 deletions).
+3. `docs/governance/CURRENT_PROJECT_STATE.md` — one concise current-truth block (R1 / R2 / R3,
+   Master Checklist and HICR fences).
+4. `docs/governance/ACTIVE_EXECUTION_ROADMAP.md` (this entry) — append-only; one record per governed
+   gate; all prior roadmap content byte-preserved.
+5. `docs/governance/OWNER_DECISION_REGISTER.md` — R1 and R2 lineage recorded through the register's
+   established `Authorization lineage — recorded without retroactive invention` mechanism; **no new
+   `OD-*` / `D-*` identifier minted**; no existing row rewritten.
+6. `docs/governance/DEFERRED_OBLIGATIONS_REGISTER.md` — one bounded status advance on the existing
+   readiness-reconciliation row, plus the maintenance-header lineage repair; no new row.
+
+**Master Checklist fence.** `PASS AGAINST RECONSTRUCTED CURRENT BASELINE` (52 + 2 = 54;
+`BASELINE UNMAPPED: 0`), while `MASTER CHECKLIST = DERIVED OWNER-FACING NAVIGATION VIEW — NOT SSOT —
+NOT EXECUTION AUTHORITY` and `EXACT HISTORICAL MASTER-CHECKLIST ARTIFACT / FILE / SHA: UNKNOWN —
+RECOVERY UNRESOLVED`. Reconstruction is not recovery, and no Master Checklist artifact is created.
+
+**HICR fence.** `HICR BOUNDED-SUPPLEMENT REFERENT: UNRESOLVED CONTINUITY REFERENT CANDIDATE` ·
+`SILENT DISAPPEARANCE CANDIDATE: YES` · `CONFIRMED SILENT DISAPPEARANCE: NOT ASSERTED` ·
+`CONFIRMED MATERIAL READINESS OBLIGATION: NOT PROVEN` · `HICR PHASE 2: NOT AUTHORIZED`. No HICR row,
+owner, obligation or substance is created or inferred.
+
+**Continuity fence.** Nothing is displaced, completed, closed, armed or reordered by R3. Unchanged
+and not advanced: `G-4-A` · `G-4-B` · `M-1` · `CEHR` · `T1-A′` · `RUN-004: NOT AUTHORIZED` ·
+`HICR PHASE 2: NOT AUTHORIZED` · `R4–R8: NOT AUTHORIZED` · `PRE-FCORA SYSTEMATIC CROSS-PHASE
+RECONCILIATION REVIEW: MANDATORY LATER — NOT STARTED / NOT MOVED` · `FCORA: NOT AUTHORIZED`.
+R3 does not permit PRE-FCORA to be skipped on the basis that readiness has been architecturally
+adjudicated.
+
+**Non-authorization fences.** `IMPLEMENTATION AUTHORIZED: NO` · `EXECUTABLE CODE CHANGE AUTHORIZED:
+NO` · `NEW ARCHITECTURE: NO` · `NEW OWNER: NO` · `NEW COMPONENT / SERVICE: NO` · `NEW CAPABILITY:
+NO` · `NEW PERSISTED REPRESENTATION: NO` · `NEW EVIDENCE / RISK AUTHORITY: NO` · `CAP ACTIVATION:
+NONE` · `READINESS IMPLEMENTATION: NOT AUTHORIZED` · `ACTIVE CONTRACT: NONE` (untouched) ·
+`SERIOUS RELEASE / PRODUCTION / PAID ACTIVATION: NOT AUTHORIZED` · `main` NOT RECONCILED.
+`EXECUTABLE DELTA: 0` · `RUNTIME / PRODUCT / SCHEMA / TEST DELTA: 0`.
+
+**Candidate-stage lifecycle truth (as at this candidate's freeze).** This append is NOT
+authoritative merely because the Creator created it. `OWNER EXACT-SHA ACCEPTED AT FREEZE: NO` ·
+`PUBLICATION AUTHORIZED AT FREEZE: NO` · `PUSHED AT FREEZE: NO` · `PR CREATED AT FREEZE: NO` ·
+`MERGED AT FREEZE: NO` · `AUTHORITATIVE AT FREEZE: NO` · `POST-MERGE VERIFIED AT FREEZE: NO`.
+Candidate creation is not authoritative adoption. No current-state sentence in this record becomes
+false solely because this candidate later merges.
+
+**Next step after this gate — STOP.** Lead single-pass review of this exact candidate, then the
+required review / acceptance / publication lifecycle as applicable; publication, PR and merge each
+require separate Owner authorization. Nothing further is created, implied or scheduled here.
