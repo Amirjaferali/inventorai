@@ -301,6 +301,49 @@ section `G-4-A / T1-A′ post-292ad1c authorization / progression lineage`), is:
 - Routing only, no strategic option selected: `POST-EXHAUSTION STRATEGIC OPTION ADJUDICATION: NEXT AFTER
   THIS DURABILITY SYNCHRONIZATION BECOMES AUTHORITATIVE`.
 
+## CURRENT R1 / R2 / R3 STATUS (concise)
+
+- **R1 — Level-0 support / certification boundary amendment: `EFFECTIVE`.**
+  `docs/governance/OWNER_PRODUCT_SUPPORT_AND_CERTIFICATION_BOUNDARY_AMENDMENT.md` is
+  repository-authoritative: Owner-accepted candidate `a88b5c968c38c6e60654c5b30a3e15fbec3d3b6e`
+  (parent `dda2af03a9418e34705e8714b10b3598dfa8197c`, tree
+  `59c917551a28fb5a6328d194e526e61fd513ee28`), **PR #612**, merge
+  `d95c34ea4f306377813ffad347863a1bae98ba2a`, `POST-MERGE IDENTITY VERIFICATION: PASS`.
+  Its direct Level-0 scope is `STRATEGIC_PRODUCT_VISION.md` §4 Coverage Declaration
+  Principle ONLY. `PRODUCT IDENTITY CHANGED: NO` · `OWNER_PRODUCT_IDENTITY_CORRECTION:
+  PRESERVED, SCOPE UNCHANGED` · `IMPLEMENTATION AUTHORIZED: NO`. The amendment's own
+  creation-time `PROPOSED` record remains historically true as written and is not
+  rewritten by this synchronization.
+- **R2 — architectural adjudication: `OWNER-FINAL`.** Final for the **current
+  architectural disposition**; NOT final for exhaustive future product-capability scope.
+  `ARCHITECTURAL CLASSIFICATION != PRODUCT-CAPABILITY CEILING` · `NO FORCE-FIT` ·
+  `NO DUPLICATE OWNERSHIP`. Current dispositions: TRL — existing-owner extension /
+  composition; MRL — composition working minimum, CAP-12 / CAP-13 / CAP-14 contributors,
+  `NOT PROVEN EXHAUSTIVE`; IRL — D4 current cross-domain owner, single-domain
+  multi-subsystem gap preserved, residual owner `NOT PROVEN`; SRL — composition /
+  derivation, CAP-06 `NOT TRUTH OWNER`; Commercial — CAP-18 bounded snapshot,
+  `NOT UNIVERSAL COMMERCIAL OWNER`. No architecture or implementation is designed,
+  authorized or implied by recording these.
+- **R3 — current lane: durability / discoverability synchronization only.** Zero
+  executable delta; no implementation, no new architecture, no owner, no capability.
+- **Master Checklist — `PASS AGAINST RECONSTRUCTED CURRENT BASELINE`**: old material
+  items 52 + new R0–R8 navigation items 2 = 54; `BASELINE UNMAPPED: 0`. It remains a
+  `DERIVED OWNER-FACING NAVIGATION VIEW` — `NOT SSOT` and `NOT EXECUTION AUTHORITY`.
+  **`EXACT HISTORICAL MASTER-CHECKLIST ARTIFACT / FILE / SHA: UNKNOWN — RECOVERY
+  UNRESOLVED`**; the reconstructed 54-item view is a reconstruction and does **not**
+  evidence recovery of the lost historical artifact, and no Master Checklist artifact is
+  created in the repository.
+- **HICR — `HICR BOUNDED-SUPPLEMENT REFERENT: UNRESOLVED CONTINUITY REFERENT CANDIDATE`**
+  · `SILENT DISAPPEARANCE CANDIDATE: YES` · `CONFIRMED SILENT DISAPPEARANCE: NOT ASSERTED`
+  · `CONFIRMED MATERIAL READINESS OBLIGATION: NOT PROVEN` · `HICR PHASE 2: NOT AUTHORIZED`.
+  No HICR obligation, register row, owner or substance is created or inferred.
+- Unchanged and not advanced by R3: `G-4-A` · `G-4-B` · `M-1` · `CEHR` · `T1-A′` ·
+  `RUN-004: NOT AUTHORIZED` · `HICR PHASE 2: NOT AUTHORIZED` · `R4–R8: NOT AUTHORIZED` ·
+  `PRE-FCORA SYSTEMATIC CROSS-PHASE RECONCILIATION REVIEW: MANDATORY LATER — NOT STARTED /
+  NOT MOVED` · `FCORA: NOT AUTHORIZED` · `IMPLEMENTATION: NO` · `CAP ACTIVATION: NONE` ·
+  `READINESS IMPLEMENTATION: NOT AUTHORIZED`. R3 does not permit PRE-FCORA to be skipped
+  on the basis that readiness has been architecturally adjudicated.
+
 ## Master Obligation Index (routing layer — pointer-only)
 
 Added by the owner-authorized governance-only **Master Obligation Index** gate (gate authorization recorded

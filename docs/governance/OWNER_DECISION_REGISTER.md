@@ -1945,3 +1945,33 @@ OPEN / FRB` · `G-4: OPEN / FRB` · `G-4 FULL CLOSURE: NOT ASSERTED` · `G-4-B: 
 PRESERVED / SEPARATE` · `CLAIM-ELIGIBILITY: PRESERVED — NOT EXECUTED` · `T1-A′: OPEN`; the §D-2
 PRE-FCORA prerequisite is unchanged, not moved and not executed. This section is authoritative only upon
 the governed lifecycle of the candidate that introduces it (candidate-stage recording).
+
+
+---
+
+## R1 / R2 — post-`d95c34ea` authorization / progression lineage (recorded without retroactive invention)
+
+Recorded at the R3 bounded durability-synchronization gate on the authoritative base
+`d95c34ea4f306377813ffad347863a1bae98ba2a` — the PR #612 merge — verified live from Git at this gate
+`[EXEC]`, under the Owner's `R3 PLAN: APPROVED` · `R3 CANDIDATE CREATION: AUTHORIZED`. These entries
+are recorded through this register's established mechanism
+`Authorization lineage — recorded without retroactive invention`, under its classification
+`AUTHORIZATION EXERCISE EVIDENCED BY AUTHORITATIVE MERGED EXECUTION; DEDICATED REGISTER ENTRY
+ABSENT`. No OD identifier, decision date, or approval wording is invented; the merged execution is
+the evidence. **These entries are HISTORICAL AUTHORIZATION / ACCEPTANCE / MERGE PROVENANCE for R1 and
+a CURRENT PROSPECTIVE DISPOSITION RECORD for R2, NOT NEW OWNER DECISIONS** — they mint no new `OD-*`
+or `D-*` identity, create no new authority, rewrite no historical record, and re-adjudicate nothing.
+`OWNER_PRODUCT_IDENTITY_CORRECTION.md` is **not superseded, widened or modified** and remains the
+controlling Level 0 Owner Amendment for its own existing direct scope
+(`STRATEGIC_PRODUCT_VISION.md` §1 / §2 / §3 / §5A).
+
+| Exercise | Accepted candidate (exact SHA) | Merge | Effect |
+|---|---|---|---|
+| **R1 — Level-0 support / certification boundary amendment: Owner exact-SHA acceptance, separate publication authorization and separate merge authorization (historical authorization / acceptance / merge provenance — NOT a new Owner decision).** The candidate was created on the authoritative base `dda2af03a9418e34705e8714b10b3598dfa8197c` as a fresh same-base sibling of a rejected predecessor (`1c523aee5b9dd874178af47f3a3ceb48c904d0db`, preserved as repair-predecessor evidence and never merged), received Lead differential review, Independent Level-0 review `ACCEPT`, Owner exact-SHA acceptance, a separate Owner publication authorization for branch `r1-level0-support-certification-boundary-a88b5c96`, and a separate Owner merge authorization. Repository-verifiable `[EXEC]`: the merge carries ordered parents `dda2af03…` + `a88b5c96…` and tree `59c917551a28fb5a6328d194e526e61fd513ee28` identical to the accepted candidate tree (candidate→merge diff EMPTY); the candidate changed exactly one path, `A docs/governance/OWNER_PRODUCT_SUPPORT_AND_CERTIFICATION_BOUNDARY_AMENDMENT.md`, `EXECUTABLE DELTA: 0`. Publication-time truth is preserved as written: the PR #612 body recorded `MERGE AUTHORIZATION: NO` and `AUTHORITATIVE LEVEL-0 EFFECT: NO`, which were true at publication time and are **not** rewritten by this entry; the amendment's own creation-time `PROPOSED` status likewise remains historically true as written | `a88b5c968c38c6e60654c5b30a3e15fbec3d3b6e` (sole parent `dda2af03a9418e34705e8714b10b3598dfa8197c`; tree `59c917551a28fb5a6328d194e526e61fd513ee28`; blob `1d6926ca24f8cec5b8ec4e9a45b2c23c9dedd312`; 1 changed path; `EXECUTABLE DELTA: 0`) | PR #612, `d95c34ea4f306377813ffad347863a1bae98ba2a` | **HISTORICAL AUTHORIZATION / ACCEPTANCE / MERGE PROVENANCE — VERIFIED. `POST-MERGE IDENTITY VERIFICATION: PASS`. `R1: EFFECTIVE`.** Its direct Level-0 scope is the `STRATEGIC_PRODUCT_VISION.md` §4 **Coverage Declaration Principle ONLY**; the §4 comparison table is NOT amended and remains in full effect under its own existing governing terms. `PRODUCT IDENTITY CHANGED: NO` · `OPIC MODIFIED: NO` · `OPIC GOVERNING SCOPE CHANGED: NO` · `IMPLEMENTATION AUTHORIZED: NO` · `CAP ACTIVATION: NONE` · `READINESS IMPLEMENTATION: NOT AUTHORIZED` |
+| **R2 — Owner-final architectural disposition of the readiness dimensions (current prospective disposition record — NOT a new Owner decision identifier and NOT a retroactive rewrite).** Recorded prospectively as current truth; prior readiness history and prior Owner-decision records are preserved unedited | not a candidate-scoped acceptance; recorded at this gate from the Owner's final adjudication | recorded at the R3 gate on base `d95c34ea4f306377813ffad347863a1bae98ba2a` | **`R2: OWNER-FINAL`** — `FINAL FOR: CURRENT ARCHITECTURAL DISPOSITION`; **`NOT FINAL FOR: EXHAUSTIVE FUTURE PRODUCT-CAPABILITY SCOPE`**. Binding semantics preserved: `ARCHITECTURAL CLASSIFICATION != PRODUCT-CAPABILITY CEILING` · `NO FORCE-FIT` · `NO DUPLICATE OWNERSHIP`. Current dispositions: **TRL** — existing-owner extension / composition. **MRL** — composition working minimum; CAP-12 / CAP-13 / CAP-14 contributors; **`NOT PROVEN EXHAUSTIVE`**. **IRL** — D4 current cross-domain owner; single-domain multi-subsystem gap **preserved**; residual owner **`NOT PROVEN`**. **SRL** — composition / derivation; CAP-06 **`NOT TRUTH OWNER`**. **Commercial** — CAP-18 bounded snapshot; **`NOT UNIVERSAL COMMERCIAL OWNER`**. No readiness engine, owner, component, service, schema, scoring system or persisted representation is created; no CAP is activated; no implementation is authorized; and no separate TRL / MRL / IRL / SRL / Commercial obligation is registered — these remain governed through the existing readiness-reconciliation obligation in `DEFERRED_OBLIGATIONS_REGISTER.md` |
+
+This section is authoritative only upon the governed lifecycle of the candidate that introduces it
+(candidate-stage recording). It moves no gate: `G-4-A` · `G-4-B` · `M-1` · `CEHR` · `T1-A′` ·
+`RUN-004: NOT AUTHORIZED` · `HICR PHASE 2: NOT AUTHORIZED` · `R4–R8: NOT AUTHORIZED` · the §D-2
+PRE-FCORA prerequisite `MANDATORY LATER — NOT STARTED / NOT MOVED` · `FCORA: NOT AUTHORIZED` — all
+unchanged.

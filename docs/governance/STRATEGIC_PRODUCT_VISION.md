@@ -139,6 +139,19 @@ A platform that helps inventors complete sessions is different from a platform t
 
 ### Coverage Declaration Principle
 
+> **GOVERNING EFFECT AMENDED**
+> The governing effect of this Coverage Declaration Principle has been amended
+> by the Level 0 Owner Amendment
+> `docs/governance/OWNER_PRODUCT_SUPPORT_AND_CERTIFICATION_BOUNDARY_AMENDMENT.md`.
+> Read that document before relying on the wording below. Where wording
+> conflicts, the Owner Amendment governs. The original text is retained for
+> historical provenance.
+> This notice applies to the Coverage Declaration Principle ONLY. The §4
+> comparison table above is NOT amended and remains in full effect under its own
+> existing governing terms, and no other provision of this document is affected.
+> This notice creates no implementation or readiness authority and does not
+> modify execution gates, holds, or authorization status.
+
 *Provenance: Owner Decision (2026-05-31)*
 
 InventorAI evaluates the quality of an inventor's reasoning about their mechanism. It does not evaluate, certify, or assess:
