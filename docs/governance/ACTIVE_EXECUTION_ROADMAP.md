@@ -17970,3 +17970,132 @@ false solely because this candidate later merges.
 **Next step after this gate — STOP.** Lead single-pass review of this exact candidate, then the
 required review / acceptance / publication lifecycle as applicable; publication, PR and merge each
 require separate Owner authorization. Nothing further is created, implied or scheduled here.
+
+---
+## CEHR — EXACT-SHA PROTOCOL SEPARATE PUBLICATION — CANDIDATE-STAGE LIFECYCLE RECORD
+
+**Gate identity.** This is one bounded governance-publication operation under the Owner's separate `CEHR SEPARATE PUBLICATION — OPTION PUBLISH-A` authorization, against authoritative publication base `acd65fad4299a8a2ec7801a6e7d359da5a57b144`. It is a publication lifecycle only and creates no implementation, pilot, human-collection, PR or merge authority.
+
+**Exact Owner-accepted CEHR subject.**
+
+`SHA-256: 5a320fbbcc9b13d67d8718192db310826021771aebb68803603945bf03fdcd74`
+
+`BYTES: 290944`
+
+`LINES: 3353`
+
+Authorized repository path:
+
+`docs/governance/G4_A_CLAIM_ELIGIBILITY_HUMAN_REVIEW_EVIDENCE_GATE_PROTOCOL.FROZEN.5a320fbbcc9b13d67d8718192db310826021771aebb68803603945bf03fdcd74.md`
+
+The repository publication MUST preserve the Owner-accepted CEHR subject byte-for-byte. Content transformation, normalization, reformatting, regeneration, amendment or alternate canonical sibling creation is prohibited.
+
+**External acceptance / lifecycle provenance.**
+
+The exact acceptance-provenance record published beside the frozen subject is:
+
+`docs/governance/CEHR_OWNER_EXACT_SHA_ACCEPTANCE_PROVENANCE_5a320fbbcc9b13d67d8718192db310826021771aebb68803603945bf03fdcd74.md`
+
+Required provenance-record SHA-256:
+
+`eed64b81765d2f4d4162ac12a1a4c5f17775bc1ec0e60fa670634e34694cb0ee`
+
+That record binds the external identity-preserving freeze, Independent Review B, Lead final adjudication and Owner exact-SHA acceptance to the exact frozen CEHR SHA. Where the frozen subject retains historical pre-freeze lifecycle self-description under NB-5, the external exact-SHA lifecycle / acceptance provenance governs current lifecycle state.
+
+**Accepted assurance state.**
+
+`OWNER EXACT-SHA ACCEPTANCE: APPROVED`
+
+`INDEPENDENT REVIEW B WHOLE-SUBJECT: PASS WITH NON-BLOCKING FINDINGS`
+
+`INDEPENDENT REVIEW B NB-4 DIFFERENTIAL: PASS`
+
+`LEAD FINAL ADJUDICATION: PASS`
+
+`MATERIAL DEFECTS REMAINING: 0`
+
+`UNRESOLVED LOAD-BEARING CHOICES: 0`
+
+`POST-HOC STATISTICAL DISCRETION: 0`
+
+`PF-04: CLOSED`
+
+`NB-4: CLOSED`
+
+**Exact publication mutation set.**
+
+ADD:
+
+`docs/governance/G4_A_CLAIM_ELIGIBILITY_HUMAN_REVIEW_EVIDENCE_GATE_PROTOCOL.FROZEN.5a320fbbcc9b13d67d8718192db310826021771aebb68803603945bf03fdcd74.md`
+
+ADD:
+
+`docs/governance/CEHR_OWNER_EXACT_SHA_ACCEPTANCE_PROVENANCE_5a320fbbcc9b13d67d8718192db310826021771aebb68803603945bf03fdcd74.md`
+
+MODIFY:
+
+`docs/governance/ACTIVE_EXECUTION_ROADMAP.md`
+
+Modification of this roadmap is append-only through this exact lifecycle block.
+
+`FILES DELETED: 0`
+
+`UNSPECIFIED FILE MUTATION: PROHIBITED`
+
+**Publication boundary.**
+
+`PUBLICATION-CANDIDATE CREATION: AUTHORIZED UNDER THE SEPARATE OWNER PUBLICATION DECISION`
+
+`CONDITIONAL PUSH AFTER LEAD EXACT-CANDIDATE PASS: AUTHORIZED UNDER THAT SAME DECISION`
+
+`PR AUTHORIZATION: NO`
+
+`MERGE AUTHORIZATION: NO`
+
+`PUBLICATION AUTHORIZATION != PR AUTHORIZATION`
+
+`PR AUTHORIZATION != MERGE AUTHORIZATION`
+
+After local candidate creation, Creator returns exact evidence to Lead. Creator evidence is not Lead acceptance. Push may occur only for the exact Lead-verified candidate and only under the Owner's conditional-push terms. After remote publication identity verification: STOP and return for the next separate Owner lifecycle decision.
+
+**Preserved technical / authority state.**
+
+`G-4-A: CURRENT — NOT FIXED`
+
+`DIRECT G-4-A REMEDIATION: DEFERRED — NOT CANCELLED`
+
+`CLAIM-ELIGIBILITY CONTAINMENT != DIRECT G-4-A ENGINE REPAIR`
+
+`PILOT: NOT AUTHORIZED`
+
+`HUMAN COLLECTION: NOT AUTHORIZED`
+
+`REFERENCE HUMAN ADJUDICATION: NOT AUTHORIZED`
+
+`STUDY-SURFACE IMPLEMENTATION: NOT AUTHORIZED`
+
+`CLAIM-ELIGIBILITY IMPLEMENTATION: NOT AUTHORIZED`
+
+`RUNTIME / SCHEMA IMPLEMENTATION: NOT AUTHORIZED`
+
+`ClaimEligibilityEvent MINTING: NOT AUTHORIZED`
+
+**Preserved later obligations / gates.**
+
+`NB-2 RETURN TRIGGER: AT D-SURFACE EXACT SURFACE-CONFORMANCE VERIFICATION, BEFORE D5 PILOT AUTHORIZATION, AND BEFORE ANY HUMAN COLLECTION`
+
+`D-CUSTODIAN: PRESERVED`
+
+`D-CONSENT: PRESERVED`
+
+`D-SURFACE: PRESERVED`
+
+`D4-a: PRESERVE CURRENT GOVERNING STATUS`
+
+`CEHR / ROUTE-B DURABILITY SYNCHRONIZATION: REQUIRED LATER BEFORE PILOT AUTHORIZATION`
+
+`PRE-FCORA SYSTEMATIC CROSS-PHASE RECONCILIATION REVIEW: MANDATORY LATER — NOT MOVED, NOT CONSUMED, MUST NOT BE LOST`
+
+This publication lifecycle reopens no closed CEHR decision, authorizes no human or implementation activity, and changes no accepted CEHR byte.
+
+---
