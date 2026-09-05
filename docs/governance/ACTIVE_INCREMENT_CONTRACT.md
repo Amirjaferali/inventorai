@@ -77,6 +77,44 @@ Merge authority:          <who authorizes merge; default: owner, separately>
 
 ## Active contract
 
+**ACTIVE CONTRACT: F-01/F-02 ACCOUNT SECURITY FAILURE-ATOMICITY REMEDIATION v2.1**
+
+**CONTRACT STATUS: REPOSITORY-AUTHORITATIVE — ACTIVE GOVERNING CONTRACT**
+
+Contract source:
+[ACCOUNT_SECURITY_FAILURE_ATOMICITY_REMEDIATION_CONTRACT_v2.1.md](ACCOUNT_SECURITY_FAILURE_ATOMICITY_REMEDIATION_CONTRACT_v2.1.md).
+
+This is the active governing implementation contract for the bounded F-01/F-02
+Account Security increment. Active contract status defines the governing terms;
+it does not grant permission to begin implementation.
+
+**IMPLEMENTATION START: NOT GRANTED BY CONTRACT ADOPTION.**
+**CREATOR IMPLEMENTATION: NOT AUTHORIZED BY CONTRACT ADOPTION.**
+A separate explicit Owner Implementation START decision is required. No second
+contract-installation or activation candidate is required for that decision.
+The contract's implementation path boundary and all technical acceptance, review,
+failure, and STOP requirements remain unchanged.
+
+Owner authority and lifecycle:
+OWNER_DECISION_REGISTER.md, section "F-01/F-02 v2.1 — contract approval and adoption authority";
+ACTIVE_EXECUTION_ROADMAP.md, section "F-01/F-02 v2.1 — repository adoption and active-contract installation".
+
+This is express adoption and installation of an Owner-approved contract, not
+automatic activation caused by a recording, synchronization, or repair candidate.
+The Declaration rule and Authoritative-only rule above remain unchanged.
+
+Standing boundaries remain: C AUTHORIZED: NO; C IMPLEMENTATION STARTED: NO;
+RVR-8 AUTHORIZED: NO; RVR-8 STARTED: NO; READINESS IMPLEMENTATION AUTHORIZED: NO;
+DEPLOYMENT AUTHORIZED: NO. No unrelated lane is activated.
+
+## Superseded contract declarations — historical only
+
+### Declaration immediately before F-01/F-02 v2.1 adoption
+
+The following pre-adoption declaration and all earlier status blocks are retained
+byte-for-byte as authority-at-their-time. They are not the current Active contract
+declaration and do not override the governing contract identified above.
+
 **`ACTIVE CONTRACT: NONE`** · **`NO IMPLEMENTATION CONTRACT IS ACTIVE`**
 
 No authoritative implementation contract governs work at this time. Recorded under the
