@@ -309,6 +309,59 @@ authority hierarchy:
 AUTHORIZATION` · `PUBLICATION AUTHORIZATION ≠ MERGE AUTHORIZATION`. Lead reasoning, however
 complete, never substitutes for Creator execution evidence (§21.3 remains controlling).
 
+### 9A.1 Material Execution-Instruction Pre-Send Control (`OSP-MEI-PSC-001`)
+
+**Ownership and placement.** This subsection is subordinate to §9A. Section 9A remains the
+single governing process owner for Lead gate preflight and centralized Creator-instruction
+authoring. `OSP-MEI-PSC-001` is one subordinate Owner standing-process control; it does not
+create a second process owner, a second instruction lifecycle, or a provider-specific copy.
+Its controlling detailed definition is the canonical repository artifact
+`docs/governance/OSP-MEI-PSC-001_Material_Execution_Instruction_Pre_Send_Control_v1.0.md`,
+Control ID `OSP-MEI-PSC-001`, Version `1.0`, SHA-256
+`c7c50f854dbbb36dcc847b08b57f085485bc035815af1d2e337931cd57088d02`.
+`docs/governance/OWNER_STANDING_PROCESS_REGISTER.md` is provenance / discoverability only
+and is not a semantic or execution-authority owner. Lean §5A remains a supporting
+pre-delivery self-review invariant and is neither duplicated nor rewritten here.
+
+**Function-triggered applicability.** The control applies whenever an agent, session, model,
+provider, successor, or human-relay workflow performs the instruction-authoring /
+execution-originator function by authoring, finalizing, materially modifying, or relaying a
+material or load-bearing execution instruction. Applicability is triggered by that function
+and task, not by model, provider, role label, or message destination. Applicability alone
+confers no execution-originator authority. Under the current role model, the project Lead
+remains the centralized execution originator for substantive Creator-facing instructions;
+Owner authority remains decision / authorization authority; Creator execution evidence never
+becomes self-authorization; and manual Owner relay, where required, remains transport only.
+
+**Mandatory pre-send gate.** For every instruction in scope, `MC-01` through `MC-18` in the
+canonical control artifact are mandatory. The material instruction may be sent or relayed only
+after the applicable checklist is completed and `MC-18 — MATERIAL INSTRUCTION PRE-SEND GATE`
+is `PASS`. A checklist PASS does not itself authorize execution and never substitutes for any
+required Owner decision, contract, gate, or other governing authority. `N/A` is permitted only
+where the canonical control permits it and only with an explicit rationale.
+
+**Evidence and exact-send provenance.** `NO VERIFICATION CLAIM WITHOUT EVIDENCE` is binding.
+Textual / logical claims may be established from exact inspected text and governing authority.
+Live / tool-verifiable claims — including repository state, path existence, hashes, bytes,
+line counts, Git identities, worktree state, command results, actual send / relay completion,
+and remote state — require actual live evidence from an applicable tool or execution return.
+When a claim relies on another agent or tool, provenance must distinguish
+`SOURCE-AGENT / TOOL VERIFIED` from `CURRENT AGENT INDEPENDENTLY RE-VERIFIED`; one must never
+be silently converted into the other. The exact final instruction identity / version, exact
+load-bearing input and output artifact identities and paths, applicable authorization, and
+actual send / relay state must be preserved so the executed instruction can be reconciled
+against the exact text that was authorized and reviewed.
+
+**Successor propagation and change control.** `SUCCESSOR PROPAGATION REQUIRED: YES`. Every
+successor operating the instruction-authoring / execution-originator function inherits this
+same control; no Lead-specific, Claude-specific, Codex-specific, reviewer-specific, or other
+renamed duplicate may be created. Silent modification is prohibited. Any material change to
+the control requires explicit Owner authority, a new version and exact content hash,
+preservation of the prior version, and a corresponding update to the Owner Standing Process
+Register. The canonical artifact controls the detailed `MC-01` through `MC-18` definitions;
+this subsection integrates ownership and applicability and does not duplicate the full
+checklist.
+
 ## 10. Creator lifecycle and Creator Grill
 
 Where appropriate the Creator completes one governed session workflow:
@@ -770,6 +823,18 @@ acceptance.
   weakened, removed, or renumbered; no taxonomy, owner, or current state was created or moved;
   the parallel Lean continuity hardening and the ODR §D-2 PRE-FCORA hardening remain owned by
   their own documents.
+
+- **Amendment 3 — `OSP-MEI-PSC-001` durable repository placement.** Basis under this
+  section: a **validated better control** plus an **explicit Owner safeguard change** establishing
+  a durable, role-agnostic but function-triggered material execution-instruction pre-send control.
+  Scope, all governance-only: additive §9A.1; byte-exact placement of canonical
+  `OSP-MEI-PSC-001` Version 1.0 at
+  `docs/governance/OSP-MEI-PSC-001_Material_Execution_Instruction_Pre_Send_Control_v1.0.md`;
+  and `docs/governance/OWNER_STANDING_PROCESS_REGISTER.md` as provenance / discoverability only.
+  Section 9A remains the single process owner; Lean §5A remains a supporting invariant and is not
+  duplicated or rewritten; no provider-, agent-, reviewer-, or Lead-specific process owner is
+  created. This amendment grants no implementation, publication, PR, merge, pilot, human-study,
+  product, runtime, schema, or other downstream authority.
 
 ## 27. Legacy migration and supersession record
 
