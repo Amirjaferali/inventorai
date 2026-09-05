@@ -205,4 +205,43 @@ LEAN §5A:
 SUPPORTING INVARIANT ONLY — NOT A SECOND PROCESS OWNER
 ```
 
+---
+
+## 8. Provenance class C — verified OSP v1.0 placement record
+
+This is the bounded direct-completion record required by §5. Classes A and B
+remain preserved as historical provenance; no canonical control bytes, version,
+content hash, ownership semantics or original lifecycle statements are rewritten.
+
+| Field | Verified integration value |
+|---|---|
+| Control | `OSP-MEI-PSC-001` |
+| Version | `1.0` |
+| Standing status | `ACTIVE` |
+| Authoritative repository integration | `YES` |
+| Placement PR | `#614` |
+| Placement merge SHA | `2f4a54bd87c47421576caef34fc53d9caac86f68` |
+| First parent | `acd65fad4299a8a2ec7801a6e7d359da5a57b144` |
+| Accepted placement candidate / second parent | `744b2d020691a1a7d721388a13e83a24586b640a` |
+| Placement merge tree | `5e1370cf1c0f78116800cf20f9930b03790fa40c` |
+| Candidate-to-merge diff | `EMPTY` |
+| Post-merge identity verification | `PASS` |
+| Canonical v1.0 SHA-256 | `c7c50f854dbbb36dcc847b08b57f085485bc035815af1d2e337931cd57088d02` |
+| Governing process owner | `docs/governance/ACCELERATED_HIGH_ASSURANCE_EXECUTION_PROTOCOL.md` §9A / §9A.1 |
+| Canonical control path | `docs/governance/OSP-MEI-PSC-001_Material_Execution_Instruction_Pre_Send_Control_v1.0.md` |
+| Provenance/discoverability path | `docs/governance/OWNER_STANDING_PROCESS_REGISTER.md` |
+
+**OSP-PX-03 — status precedence.** The canonical v1.0 artifact's internal
+`NOT YET DURABLY INTEGRATED` and `PENDING AUTHORIZED PLACEMENT STEP` statements
+remain byte-exact historical pre-integration self-description. The later verified
+PR #614 placement merge and this class-C record govern CURRENT repository-
+integration status. This precedence concerns lifecycle status only; it changes
+no control meaning, authority hierarchy, process owner, version or hash.
+
+This record binds to the actual OSP PLACEMENT merge, not to its own future
+synchronization merge SHA. It becomes an authoritative register addition only
+through its synchronization candidate's separately governed adoption and
+post-merge verification. OSP full lifecycle completion additionally requires the
+F-01/F-02 recording consequences and the Lead's completion check, as recorded
+in the OSP roadmap entry. No recursive SHA-recording lifecycle is created.
 END OWNER STANDING PROCESS REGISTER.
