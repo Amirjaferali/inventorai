@@ -17970,3 +17970,64 @@ false solely because this candidate later merges.
 **Next step after this gate — STOP.** Lead single-pass review of this exact candidate, then the
 required review / acceptance / publication lifecycle as applicable; publication, PR and merge each
 require separate Owner authorization. Nothing further is created, implied or scheduled here.
+
+---
+
+## OSP-MEI-PSC-001 — verified placement and bounded post-merge governance synchronization
+
+**Placement truth.** OSP-MEI-PSC-001 Version 1.0 durable repository placement merged
+through PR #614 at `2f4a54bd87c47421576caef34fc53d9caac86f68` on
+`feature/atomic-json-session-persistence`. Ordered parents:
+`acd65fad4299a8a2ec7801a6e7d359da5a57b144`, then the Owner-accepted placement candidate
+`744b2d020691a1a7d721388a13e83a24586b640a`. Merge tree:
+`5e1370cf1c0f78116800cf20f9930b03790fa40c`, identical to the accepted candidate tree;
+candidate-to-merge diff EMPTY. `OSP DURABLE PLACEMENT MERGE: COMPLETE`;
+`POST-MERGE IDENTITY: PASS`; `OSP AUTHORITATIVE INTEGRATION: COMPLETE`.
+The placement merge is historical identity, not a permanent live-tip pin.
+
+**Direct completion gate.** At the preparation baseline above:
+`OSP LIFECYCLE: POST-MERGE GOVERNANCE SYNC PENDING`. The bounded synchronization
+covers F-01 roadmap/current-gate durability, F-02 authorization lineage in
+`OWNER_DECISION_REGISTER.md`, and actual placement-merge capture plus OSP-PX-03
+status precedence in `OWNER_STANDING_PROCESS_REGISTER.md` §8. Nothing else is
+closed or activated. The register remains provenance/discoverability only;
+AHAEP §9A/§9A.1 remains the single process owner.
+
+**Candidate-stage and completion condition.** This synchronization record is not
+self-authorizing and does not assert that its own candidate is accepted, published
+or merged. Its completion requires its exact frozen candidate's governed review,
+separate Owner exact-SHA acceptance, publication/PR/merge authorizations, merge,
+and post-merge identity PASS, followed by Lead verification that the three direct
+recording consequences are fulfilled. Until then the OSP lifecycle remains open.
+After those conditions, this baseline PENDING statement remains historical;
+verified adoption discharges these direct recording consequences without writing
+this synchronization's own future SHA into its tree or creating a recursive
+SHA-only synchronization. No unrelated material gate, including CEHR PR
+authorization, precedes that completion.
+
+**Historical process record and lesson — Lean §5A/§11.** The OSP review chain
+needed a later independent Universal Guardrail Smoke completion and G1 reviewer
+§5A completion; both are closed, and Smoke PASS is preserved. Original
+pre-delivery Creator Grill evidence was NOT ESTABLISHED FROM THE AVAILABLE
+HISTORICAL EVIDENCE; the original Creator return's Lean §5A output block was
+ABSENT. G2 late Grill and G3 current three-subject self-review were completed
+under explicit Owner authorization, and the evidence-report reconciliation was
+accepted before the Owner reaffirmed the exact placement SHA and separately
+authorized PR #614 merge. No historical compliance is reconstructed. The repeated
+failure pattern was governing requirements omitted from execution/review packages
+or insufficiently demonstrated in returns. Apply the existing AHAEP §9A/§21,
+Lean §5A/§5B and OSP MC-01–MC-18 controls to map each applicable requirement to its
+role, evidence and delivery point before execution, accumulate the complete gap
+set, and reconcile counts and subject scope before delivery. This note creates
+no new control, waiver, second review policy or standalone repair lifecycle;
+it records the lesson at this authorized maintenance opportunity.
+
+**Preserved boundaries.** F-03 returns only at the next Owner-authorized material
+OSP version change, before exact-SHA acceptance of that version. CEHR PR/merge
+remain NOT AUTHORIZED; CEHR/Route-B durability synchronization remains required
+before pilot. G-4-A remains CURRENT — NOT FIXED; direct remediation remains
+DEFERRED — NOT CANCELLED. G-4-B, M-1, T1-A′, HICR/readiness, RUN-004, R4–R8,
+NB-2 and the custodian/consent/surface obligations retain their existing scope,
+owners and return gates. Implementation, pilot and human collection are not
+activated. PRE-FCORA SYSTEMATIC CROSS-PHASE RECONCILIATION REVIEW remains
+MANDATORY LATER — NOT STARTED, and is not satisfied by this synchronization.

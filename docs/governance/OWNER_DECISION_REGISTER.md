@@ -1975,3 +1975,49 @@ This section is authoritative only upon the governed lifecycle of the candidate 
 `RUN-004: NOT AUTHORIZED` · `HICR PHASE 2: NOT AUTHORIZED` · `R4–R8: NOT AUTHORIZED` · the §D-2
 PRE-FCORA prerequisite `MANDATORY LATER — NOT STARTED / NOT MOVED` · `FCORA: NOT AUTHORIZED` — all
 unchanged.
+
+---
+
+## OSP-MEI-PSC-001 — placement authorization lineage and completed-assurance reaffirmation
+
+This is an authorization-lineage record, not a new Owner decision identifier or
+reconstructed decision text. Distinct historical decisions remain distinct.
+The register's existing `Authorization lineage — recorded without retroactive
+invention` convention applies; repository-verifiable execution is distinguished
+from Owner-issued decision provenance. No retroactive OD/D identifier or
+unsupported decision timestamp is assigned.
+
+| Sequence / subject | Actual authority or evidence | Bounded effect |
+|---|---|---|
+| Prior standing-process authority | Canonical OSP-MEI-PSC-001 v1.0, SHA-256 `c7c50f854dbbb36dcc847b08b57f085485bc035815af1d2e337931cd57088d02`; Owner Standing Process Register §§2–3 preserve its Owner-standing provenance. | Control ACTIVE before repository placement; applicability never granted execution authority. |
+| Original exact-SHA acceptance | Owner-issued `OWNER EXACT-SHA ACCEPTANCE — OSP-MEI-PSC-001 DURABLE REPOSITORY PLACEMENT + SUCCESSOR LEAD TRANSITION FENCE`, preserved as `Pasted text(20260905-083528).txt`, SHA-256 `6e646dd51062f6bf1e95e4b0aca351e44be5e16cf8e7120e965ce06d4df07132`. | Accepted only `744b2d020691a1a7d721388a13e83a24586b640a`; publication, PR and merge were not authorized by that decision. F-01/F-02 were retained for direct post-merge synchronization; F-03 retained for the next material version change. |
+| Separate publication authorization and execution channel | Owner-issued `OWNER EXECUTION-CHANNEL DIRECTION — OSP-MEI-PSC-001 PUBLICATION / PUSH — MANUAL TERMINAL EXECUTION PATH` preserved the existing exact-candidate push authorization. Owner terminal evidence records the later successful exact-SHA normal push. | Published branch `osp-mei-psc-001-durable-placement-v1` at the accepted SHA. The earlier Claude HTTP 403 attempt is failed-channel history, not candidate failure; publication did not authorize PR or merge. |
+| Separate PR creation authorization | Owner-issued `OWNER AUTHORIZATION — OSP-MEI-PSC-001 PR CREATION ONLY`, binding packet `OSP-MEI-PSC-001-PR-CREATION-PACKET-20260905-01`, exact head/base and PR body SHA-256 `7a7b9368cc3f4b2a6880ff57f586e4f2899a4cb631aabfd63b23f1d43abb8172`; resulting PR #614. | One PR only. Its creation did not authorize merge. |
+| Bounded assurance completion | Owner-issued independent-review completeness adjudication, `OSP PR #614 — COMPLETE GAP-CLOSURE PATH`, and `OSP PR #614 — G2/G3 EVIDENCE-REPORT COMPLETION`; accepted G1/G2/G3 completion and Lead final adjudication. | Original independent review plus independent Smoke and G1 completion preserved; G2 late Creator Grill and G3 current self-review completed without candidate change. Historical omissions were not rewritten as historical compliance. |
+| Exact-SHA reaffirmation on completed assurance basis | Owner-issued `OSP-MEI-PSC-001 — EXACT-SHA REAFFIRMATION ON COMPLETED ASSURANCE BASIS AND SEPARATE PR #614 MERGE AUTHORIZATION`, §§1–2. | Reaffirmed the same `744b2d020691a1a7d721388a13e83a24586b640a` on the completed assurance basis. No replacement candidate, general waiver or precedent for late completion. |
+| Separate merge authorization | The same issued Owner instrument, §§3–7, separately authorizes PR #614 using CREATE A MERGE COMMIT and mandates fresh guards and post-merge identity verification. | Merge only; later governance-sync execution was expressly excluded. The reaffirmation and merge authorization are separate decisions even though issued in one instrument. |
+| Actual merge and verification | PR #614 merged at `2026-09-05T12:26:50Z`; merge `2f4a54bd87c47421576caef34fc53d9caac86f68`; first parent `acd65fad4299a8a2ec7801a6e7d359da5a57b144`; second parent `744b2d020691a1a7d721388a13e83a24586b640a`; tree `5e1370cf1c0f78116800cf20f9930b03790fa40c`; candidate-to-merge diff EMPTY; Lead post-merge identity PASS accepted by Owner. | OSP repository-authoritative integration COMPLETE. Direct post-merge governance synchronization remained pending; integration was not full lifecycle completion. |
+
+Owner decisions above are identified by their issued titles and exact subject;
+where no standalone source-file hash is stated, none is asserted. They are not
+verbatim quotations or claims that those external files already exist in this
+repository. The original exact-SHA acceptance artifact is preserved within the
+Owner handover package; the later decisions remain in the Owner evidence lineage.
+PR #614 and its merge prove the stated Git/platform facts, not the full wording
+of every historical decision. This entry records that lineage without inventing
+missing IDs, dates or approval text.
+
+The historical original Creator Grill remains NOT ESTABLISHED FROM THE AVAILABLE
+HISTORICAL EVIDENCE; the original Creator return Lean §5A block remains ABSENT.
+Authorized late/current completion is not retroactive historical compliance.
+The concise recurrence lesson is recorded in the OSP roadmap entry under
+Lean §5A/§11; no separate deviation register is created.
+
+This synchronization is constructed under the separate Owner authorization
+adopting `OSP-MEI-PSC-001-POST-MERGE-SYNC-OWNER-PACKET-20260905-01`, Version 1.0.
+That authorization permits its bounded local candidate construction only, not
+acceptance, publication, PR or merge of the synchronization. Recording that issued
+authorization does not exercise any of those later decisions.
+
+This lineage record grants no new execution authority. The governing limits and
+return gates for F-03, CEHR, G-4-A, readiness and PRE-FCORA remain unchanged.
