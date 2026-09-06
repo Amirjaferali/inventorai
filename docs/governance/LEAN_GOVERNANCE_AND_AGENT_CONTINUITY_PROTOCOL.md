@@ -1,484 +1,330 @@
 # InventorAI — Lean Governance and Agent Continuity Protocol
 
-**Type:** Documentation-only governance protocol (candidate).
-**Status on adoption:** BINDING on all future agents through the CLAUDE.md boot sequence.
-**Authority level:** Operational protocol. **Subordinate to** all Level-0 authorities,
-product identity, security/privacy boundaries, phase sequencing, active holds, and
-separate-authorization requirements. It weakens none of them.
-**Resolve current authority from:** `CLAUDE.md` → `docs/governance/CURRENT_PROJECT_STATE.md`
-→ the current authoritative anchor → `docs/governance/OWNER_DECISION_REGISTER.md`
-→ the active phase/increment contract → only the further documents the active contract cites.
+**Type:** Binding operational authority, risk, review and continuity rules.
+**Authority:** current explicit Owner instructions and their durable record in the existing
+active authority surface. Product, architecture, security/privacy and evidence semantics
+remain with their existing owners; reserved decisions cannot be inferred from routine scope.
+**Applicability:** the autonomous-delivery amendments become operative only after their
+initial authoritative merge and safeguard verification. Their own initial integration follows
+the finite Owner-authorized bootstrap and previously authoritative rules; the candidate cannot
+authorize its own publication or merge. Consult `ACTIVE_INCREMENT_CONTRACT.md` for the current
+bootstrap boundary, conditional milestone and activation evidence. Do not reproduce them here.
 
 ---
 
 ## 0. Operating principle
 
-```
-History is evidence, not daily workload.
-Current authority guides daily work.
-Owner decisions are recorded once.
-Agents execute bounded increments.
-Independent review verifies outcomes.
-The owner intervenes at major gates only.
-```
-
-This is an enforceable protocol, not an aspiration. Full historical audits are an
-exception (§6), not the daily default.
+Current authority guides bounded execution. History supplies evidence when relevant.
+Preserve material safeguards and independent judgment without repeating unchanged proofs,
+creating status-only candidates or requiring another approval for an already included action.
 
 ## 1. Agent boot sequence (mandatory)
 
-Before planning or implementation, every agent reads, in order:
+Follow the single current sequence in `CLAUDE.md`; this section refers to that sequence and
+creates no competing reading order. Verify the live authoritative repository/branch identity
+before mutation. Read further material only to resolve the assigned work or a §6 audit trigger.
+Historical contracts, candidate records and old anchor boot instructions are not universal
+reading requirements merely because a current document links to their evidence.
 
-1. `CLAUDE.md`;
-2. `docs/governance/CURRENT_PROJECT_STATE.md`;
-3. the current authoritative anchor (per CLAUDE.md);
-4. `docs/governance/OWNER_DECISION_REGISTER.md`;
-5. the active phase/increment contract;
-6. only the additional documents the active contract references.
+## 2. Owner authority and milestone delegation
 
-The agent then verifies the live authoritative tip from Git (never a prose-pinned SHA).
-Reading beyond this set is required only when a §6 full-audit trigger is present or the
-active contract cites more.
+The governing principle is recorded once here:
 
-## 2. Authority hierarchy (unchanged)
+> Within an explicit, unexpired Owner-authorized milestone, the designated execution Lead may proceed through planning, implementation, proportionate testing, branch creation, commits, push, PR creation, revision and merge to the extent those actions are expressly included in the milestone.
+>
+> No separate Owner approval is required for an included routine action.
+>
+> Risk determines the required testing and review. Risk does not create an additional Owner approval for an action already included in the mandate.
+>
+> Owner escalation is required only for a reserved decision, material mandate expansion, or an explicit stop condition.
+>
+> Completion, expiry, pause or revocation ends further authority. Previously accepted work remains accepted unless new material evidence establishes a reason for corrective action.
 
-1. Level-0 freeze/state records (`docs/governance/INVENTORAI_PROJECT_STATE_FREEZE_v1.2.md`,
-   `MVP_SCOPE_FREEZE.md`) and the governing anchors.
-2. `CLAUDE.md`.
-3. The canonical plan (`docs/governance/PRODUCT_FOUNDATION_AND_COMMERCIAL_READINESS_REMEDIATION_PLAN.md`)
-   and the append-only `ACTIVE_EXECUTION_ROADMAP.md`.
-4. Accepted owner-decision evidence (indexed by the Owner Decision Register).
-5. The active increment contract.
+**Effective and durable authority.** A direct Owner instruction takes effect when received
+in the active session; old committed text does not nullify that instruction. A mandate for
+successors is recorded concisely once in the existing active authority surface,
+`ACTIVE_INCREMENT_CONTRACT.md`. Record faithfully with the first relevant implementation or
+transition PR where practical; no separate authorization-recording lifecycle, self-status
+candidate or full mandate copy in the roadmap/Owner Decision Register is required.
+Conversation-only authority must not be assumed discoverable by later agents indefinitely.
 
-Committed current authority always overrides handovers, chat memory, and prior reports.
+**Precedence and boundaries.** Resolve authority from the actual current Owner instruction,
+its durable active mandate, and the applicable current canonical records. The Owner Decision
+Register supplies referenced material decisions; product/freeze/architecture/evidence owners
+retain their meanings and actual return gates. A general engineering mandate is not an implied
+change to product policy, ownership, security/privacy or evidence-trust boundaries. Current
+repository evidence prevails over unsupported handovers, memory and prior reports; a conflict
+with a direct Owner instruction is interpreted using that instruction, not hidden by editing history.
+
+**Explicit operating-rule supersession.** Once applicable, this section and §§3–5B replace
+older universal START, personal exact-SHA acceptance, publication/PR/merge approval, fresh-sibling,
+full-suite/review-frequency, Owner-relay and lifecycle-only synchronization requirements.
+This includes such imports from `INVENTORAI_UNIVERSAL_CORE_GUARDRAIL_SMOKE_STANDARD.md`
+§§3/7–8, `CROSS_LAYER_EXECUTION_ASSURANCE_STANDARD.md` §2/ownership table, old anchor boot
+instructions and other legacy contract/standard cross-references. They retain technical guards,
+evidence integrity, semantic owners and material gates, not a second operating lifecycle.
+Historical imperative text does not revive retired mechanics. The CI smoke requirement in
+§5B.9 remains mandatory; no operational simplification authorizes a failed-check bypass.
+
+**No self-expansion.** Check the active milestone's activation conditions before exercising
+its delegated actions. The Lead cannot expand, renew or activate its own mandate by inference.
+A pause/revocation takes effect under §9; only one Lead holds repository mutation authority.
 
 ## 3. Change-risk levels
 
-- **LEVEL 1 — HIGH-RISK / STRATEGIC.** Separate explicit owner authorization **and**
-  independent review required. Includes: product identity; architecture; database;
-  authentication; authorization; privacy/security model; billing/subscription; domain
-  activation; ACV implementation; Structured Technical Guidance; release/deployment;
-  main reconciliation.
-- **LEVEL 2 — AUTHORIZED PHASE INCREMENT.** May proceed inside an owner-approved contract
-  without repeated per-file approval. Examples (only when in the approved contract):
-  screen redesign; navigation; Arabic/RTL; accessibility; output UX; sponsor presentation;
-  administrative-notice UX; privacy/trust presentation.
-- **LEVEL 3 — LOW-RISK MAINTENANCE.** May proceed and be reported in the active increment
-  when it changes no product meaning, no engine behavior, no data lifecycle, no
-  authorization, crosses no protected path, and is covered by the active contract.
-  Examples: copy corrections; labels; minor CSS; empty/error states; dead-code removal;
-  non-behavioral cleanup.
+Classify by behavior and consequences, not diff size or file extension. Risk selects evidence;
+§2 and the active mandate select authority.
+
+| Level | Actual risk | Minimum testing and review |
+|---|---|---|
+| **LEVEL 3 — LOW** | Bounded maintenance with no material product, security, data, authority or architecture consequence | Self-review and targeted verification; no formal independent review or full suite by default. |
+| **LEVEL 2 — MEDIUM** | Bounded behavioral/integration change with understood dependencies and no high-risk boundary | One non-authoring technical review in a separate session; targeted and adjacent integration tests; smoke when application behavior changes; full suite only for shared reach, failures or regression uncertainty. |
+| **LEVEL 1 — HIGH** | Authentication, authorization, persistence/migration, shared security, material architecture, evidence trust, authority, customer policy or release-critical behavior | Separate-session independent review; relevant adversarial/security/transaction/migration/recovery evidence; full regression for authentication, authorization, persistence, migration and shared security changes. Production-like evidence only where affected behavior requires it. |
+
+High-risk work already expressly included in a mandate needs stronger evidence, not another
+routine START approval. A new reserved product/architecture/security boundary needs the Owner.
+Authority-changing Markdown may be high risk without unrelated application regression; a small
+code diff may be high risk. Reassess classification if evidence changes the affected risk.
 
 ## 4. Review depth (proportionate)
 
-- **DEPTH 1 — new phase / high-risk strategic change:** boot sequence + current anchors +
-  roadmap status + relevant owner decisions + phase plan + relevant architecture/freeze
-  documents + independent review + explicit owner authorization.
-- **DEPTH 2 — authorized phase increment:** boot sequence + active contract + only the
-  relevant decisions/documents + bounded implementation + required tests + bounded
-  independent review. No full historical audit unless a §6 trigger appears.
-- **DEPTH 3 — low-risk maintenance inside a contract:** implementation → targeted
-  verification → inclusion in the increment report. No separate per-file owner
-  authorization.
+DEPTH 3 follows low-risk changed claims; DEPTH 2 follows the bounded behavior and adjacent
+dependencies; DEPTH 1 examines high-risk premises, failure modes and relevant protected boundaries.
+Use current scope and relevant owners at every depth. Neither high risk nor a “formal closure”
+label automatically triggers a full historical audit, another report layer or another approval.
+A closure changing substantive authority or obligations is reviewed for that consequence.
 
-## 5. Independent-review policy (proportionate)
+## 5. Independent-review policy
 
-Independent review stays mandatory where required; its scope is proportionate. For a
-bounded increment the reviewer answers only: did the implementation match the active
-contract; did any forbidden path change; did required tests pass; was scope expanded;
-were owner decisions respected; were current limitations preserved honestly; did the
-increment activate a later phase or a separate-authorization capability. The reviewer
-does not repeat the full historical audit unless a §6 trigger is present.
+For medium and high risk, the reviewer must not author or modify the candidate and must work
+outside the authoring session. A child agent or role inside that session can assist but does
+not satisfy formal independence. Record verifiable separate-session/review identity, the
+non-authorship declaration, exact subject and inspected evidence in one review verdict.
+An agent identifier alone is insufficient proof of separate-session independence.
 
-**Formal review independence (mandatory where independent review is required).** Proportionate
-scope never weakens independence. A formal independent review must be performed in a genuinely
-separate review session that did not author or modify the candidate. A subagent, child agent, or
-agent function operating inside the implementation or authoring session does **not** qualify as a
-formally independent reviewer, and an agent identifier alone is **not** sufficient evidence of
-separate-session independence. The reviewer must record: its separate session (or equivalent
-verifiable review) identity; a declaration that it did not author or modify the candidate; the
-exact candidate SHA; the parent SHA; the tree where applicable; the verified changed paths; and
-the evidence source or transfer artifact it independently inspected. When a bundle or transferred
-candidate is used, the review must verify the artifact's identity rather than rely on the filename
-alone — checking the applicable file size, SHA-256, `git bundle list-heads`, candidate SHA, parent
-SHA, tree, and changed paths. A review that cannot satisfy these conditions is recorded as
-technical verification only, with formal independent review `NOT YET SATISFIED`.
+Verify exact head, relevant base/parents, changed paths and source/transfer identity; tree
+and bundle details are included where applicable. An accessible remote PR/head normally
+supplies the subject. Local exact-object transfer is valid when publication is unavailable
+or unauthorized, with applicable transfer verification under AHAEP §17.
 
-## 5A. Mandatory Pre-Delivery Adversarial Self-Review
+Review scope, behavior, material claims, reserved decisions, security/data implications and
+the risk-appropriate evidence. Do not re-audit unrelated history. A review lacking required
+independence is technical assistance only, explicitly marked as such. One adequate independent
+review satisfies the requirement; reviewer recursion needs new material decision impact.
 
-Before DELIVERING any material gated deliverable, the authoring or reporting session
-MUST perform an adversarial review of its own output and record the result. This
-self-review is a precondition of delivery; it authorizes nothing and does not replace
-owner authorization or independent review.
+## 5A. Pre-delivery adversarial self-review
 
-Material gated deliverables include: plans and owner-decision packages; proposed
-increment/gate contracts; implementation candidates; completion-evidence packages;
-independent-review reports; publication and merge-verification reports; and closure or
-governance-synchronization proposals. Trivial conversational replies do not require the
-formal block below.
+Perform one proportionate self-review of a meaningful implementation or decision package
+before delivery. Check actual evidence versus inference, scope, affected failure paths,
+required acceptance criteria, truthful limitations and direct/transitive dependencies.
+Correct material defects within authorization; hold only affected work when correction exceeds
+scope. Do not present unresolved material blockers as readiness or fabricate missing evidence.
 
-The self-review examines, WHERE RELEVANT: (1) authoritative evidence vs unsupported
-inference; (2) mandatory requirement vs preferred best practice; (3) scope vs
-exclusions; (4) permitted paths vs required implementation paths; (5) the current gate
-vs later or separately authorized gates; (6) RED criteria vs actual pre-change
-behavior; (7) GREEN criteria vs achievable authorized behavior; (8) source checks vs
-runtime/behavioral evidence; (9) false-green and false-positive tests; (10) fallback,
-bypass, logging, persistence, security, and privacy; (11) temporary-session
-truthfulness; (12) accessibility, RTL/LTR, and responsive claims; (13) minimum
-necessary files, changes, and process; (14) prior accepted observations and lessons
-learned; (15) Lean proportionality; (16) unresolved ambiguity and missing evidence.
+Record the result and material findings/evidence limits in the existing PR or consolidated
+return. No fixed end-of-message block or separate self-review artifact is required. A reviewer
+self-checks their report and distinguishes report defects from candidate defects; they do not
+modify the candidate to satisfy this rule. Self-review never substitutes for §5 independence.
+The historical Creator/Reviewer “Grill” names refer to these checks, not extra review loops.
 
-**Mandatory behavior.** Every avoidable blocking defect found MUST be corrected before
-delivery. If correction requires unauthorized scope, the agent MUST STOP and report
-instead of expanding scope. If any material ambiguity or unresolved blocker remains, the
-package MUST NOT be presented as ready for owner authorization. The agent MUST NOT
-fabricate certainty or fill an evidence gap with preference. Non-blocking observations
-MUST be disclosed, not silently hidden. When the same avoidable defect class recurs
-across deliverables, a lessons-learned note is recorded at the next authorized
-governance-maintenance opportunity (see §11).
+## 5B. Proportionate testing and evidence reuse
 
-**Author vs reviewer scope.** For an authoring/implementation session, the self-review
-targets defects in its own proposed plan, contract, candidate, or evidence package, and
-corrects every avoidable defect within authorization. For an independent-review session,
-the self-review targets defects in its own review reasoning and report; the independent
-reviewer MUST NOT modify the candidate merely to satisfy this requirement. In an
-independent-review report, the block fields **BLOCKING DEFECTS FOUND AND CORRECTED** and
-**REMAINING BLOCKING DEFECTS** refer to defects in the review report/reasoning unless the
-report explicitly labels candidate findings separately; candidate findings remain
-separately classified as `BLOCKING` / `NON-BLOCKING` / `OBSERVATION` / `NO FINDING`.
+This section replaces the earlier review-frequency mechanics, including those introduced
+after P10-PC3 (historical PR #535). Preserve their useful independent judgment and evidence
+integrity; the old universal full-suite/bundle/Owner-acceptance floor is not still operative.
 
-**Self-review is not independence.** 
+**5B.1 Creator evidence.** Produce evidence against the meaningful candidate for the risk
+in §3. Record environment, commands, identity and outcomes, including material skips. Run
+required scope once at a stable candidate; repeat or broaden only for a relevant change,
+failure or unresolved concern. No mandated pipeline of duplicated pre/post smoke, Grill and
+full suite applies to every implementation edit or candidate.
 
-    SELF-REVIEW:
-    MANDATORY
-    NOT INDEPENDENT
+**5B.2 Verified reuse.** Reuse facts only after checking their source identity, changed paths,
+dependencies and validity for this head. A verdict alone is not proof. Distinguish author
+results from independently reproduced results. A changed dependency invalidates affected
+assurance; it does not invalidate unrelated facts automatically.
 
-    INDEPENDENT REVIEW:
-    SEPARATELY REQUIRED WHEN THE GOVERNANCE GATE REQUIRES IT
+**5B.3 Review minimum.** The non-authoring reviewer verifies the subject, scope, governing
+criteria, material claims and applicable evidence, and probes meaningful failure hypotheses.
+Use remote-head or applicable transfer checks, not a mandatory bundle for every review.
+Review depth and test breadth follow §3 and the rules below, not a universal extra runtime run.
 
-Self-review MUST NEVER be cited as satisfying the §5 independence requirement, and a
-same-session subagent does not become independent merely by performing a review.
+**5B.4 LEVEL 1.** High-risk authentication, authorization, persistence, migration and shared
+security candidates require author full regression and independent reviewer full regression,
+plus relevant adversarial/failure evidence. A broader independently run suite may subsume a
+targeted run when its actual collection covers the same claim. High-risk authority/strategy
+prose receives independent semantic review; unrelated runtime regression is not required
+solely because it is Level 1. Required PR CI smoke remains governed by §5B.9.
 
-**Proportionality.** The self-review is concise for small bounded material deliverables
-and deeper for security, governance, architecture, persistence, identity, or broad UX
-work. By default it performs no full repository re-audit, does not repeat already-proved
-evidence unless identity, base, scope, or content changed, corrects within authorization
-where possible, stops and reports when correction exceeds authorization, and never
-requires a separate repository gate merely to store a self-review result.
+**5B.5 LEVEL 2.** One separate-session non-authoring technical review examines targeted and
+adjacent integration behavior and performs meaningful independent verification. Use smoke
+when application behavior is affected. No author full suite is a prerequisite to bounded
+reuse; a full suite is required when the concrete triggers in §5B.6 warrant it.
 
-**Required output block.** Every material gated deliverable MUST end with this exact
-minimum block, reporting the ACTUAL result — it MUST NEVER be filled with predetermined
-successful values:
+**5B.6 Breadth triggers.** Broaden tests for demonstrated shared reach, failures, unexplained
+results, collection changes or regression uncertainty. State the affected risk and why broader
+coverage resolves it. Security/data boundary changes may require Level 1. A previous rejection,
+prose-only change or unchanged inherited fact alone is not a full-suite trigger. Do not repeat
+checks that cannot answer the unresolved question.
 
-    PRE-DELIVERY ADVERSARIAL SELF-REVIEW:
-    COMPLETED
+**5B.7 LEVEL 3.** Self-review and targeted verification of changed behavior/document claims
+suffice by default. Do not add formal independent review or a full suite merely to mirror a
+higher-risk candidate. An explicit applicable Owner requirement remains binding.
 
-    BLOCKING DEFECTS FOUND AND CORRECTED:
-    [COUNT]
+**5B.8 Repairs.** Ordinary fix commits may advance the same PR under AHAEP §12. Preserve
+prior SHAs/verdicts. Verify the corrected defect and affected boundaries; refresh invalidated
+tests/review. High-risk runtime repairs retain §5B.4's full regression. Medium-risk rejection
+alone does not justify repeating everything. Fresh replacement needs AHAEP §12's material basis.
 
-    REMAINING BLOCKING DEFECTS:
-    [COUNT]
+**5B.9 Universal Smoke role.** The Owner requires the universal smoke in CI for every PR
+covered by the required workflow, including governance-only PRs. Mandatory prerequisites and
+mandatory browser/server/security checks must fail loudly when unavailable; skipped required
+coverage is not a pass. The smoke is an early guard filter, not proof of all behavior, independent
+review, PSRR or deployment authority. This CI requirement does not add repeated local or
+independent runtime smoke to unaffected prose by default; actual runtime risk still determines
+those runs under §3. Never bypass failed or missing required checks.
 
-    KNOWN NON-BLOCKING OBSERVATIONS:
-    [LIST OR NONE]
+**5B.10 Avoid duplicate execution.** Do not rerun a targeted collection already covered by
+a required broader run unless it supplies distinct evidence. State what covered the claim.
+Identity or dependency changes refresh affected evidence, not an entire unchanged history.
 
-    UNRESOLVED EVIDENCE GAPS:
-    [LIST OR NONE]
+**5B.11 Reviewer value.** Prioritize independent risk hypotheses, adversarial edge cases,
+cross-feature consequences and unsupported claims. Historical P10-PC3's interleaved-history
+finding illustrates novel probing; it does not impose a fixed repeated testing ceremony.
 
-    UNAUTHORIZED SCOPE REQUIRED TO CORRECT ANY REMAINING ISSUE:
-    [YES/NO]
+**5B.12 Evidence reporting.** In one existing review/PR record identify what was inspected,
+reused, independently reproduced or unavailable, with results and material limitations. A
+compact table is useful when it clarifies provenance, not a required separate artifact.
 
-    READY FOR OWNER OR INDEPENDENT REVIEW:
-    [YES/NO]
+**5B.13 Governance-only changes.** Verify scope, source authority, transitive contradictions,
+supersession and changed claims. Authority amendments receive high-risk semantic review.
+Run relevant workflow/config validation if reachable behavior changes; reproduce material
+runtime claims when necessary. Unrelated suites are not required by document format or high
+semantic risk alone. §5B.9's mandated PR CI smoke is preserved.
 
-Binding consistency rules for the block:
+**5B.14 Honest classification.** Do not downgrade risk to avoid evidence or inflate risk to
+force an approval. Reclassification needs an evidence-based explanation of the affected surface;
+an explicit Owner risk/evidence requirement cannot be relaxed without corresponding authority.
+A reviewer may request more evidence for a concrete material risk, not reassurance alone.
 
-- If `REMAINING BLOCKING DEFECTS` is greater than 0, `READY FOR OWNER OR INDEPENDENT
-  REVIEW` MUST be `NO`.
-- If a material unresolved evidence gap prevents a reliable decision, `READY FOR OWNER OR
-  INDEPENDENT REVIEW` MUST be `NO`.
-- If correcting a remaining issue requires unauthorized scope, `UNAUTHORIZED SCOPE
-  REQUIRED TO CORRECT ANY REMAINING ISSUE` MUST be `YES`, and the agent MUST stop.
-- `READY` may be `YES` only when no unresolved blocker or material ambiguity remains.
+**5B.15 Quality floor.** Preserve exact reviewed identity, truthful execution results,
+rejected/accepted evidence, meaningful self-review, required independent judgment and applicable
+technical safeguards. AHAEP owns deliberate guarded merge and post-merge verification. The
+floor does not reintroduce universal bundles, personal Owner SHA acceptance, separate merge
+approval or lifecycle-only documentation. Applicable reserved decisions remain unchanged.
 
-When the package is not ready, the last two fields MUST honestly reflect that and the
-agent MUST stop rather than deliver it as ready.
+**5B.16 Efficiency objective.** Reduce duplicated execution and Owner interruption while
+retaining material defect detection. No arbitrary review-time SLA, coverage percentage or
+minimum number of probes replaces actual risk evidence.
 
-## 5B. Risk-Based Independent Review & Evidence Reuse (Owner-authorized amendment)
-
-Owner-authorized amendment (issued after P10-PC3 became authoritative, merge
-`bf7fe7ce1b180ecfe78c1d790b6c4e6eb63ce159`, PR #535). Objective: reduce DUPLICATIVE
-review execution without reducing independent judgment, review independence (§5),
-adversarial strength, source-of-truth discipline, SHA/bundle integrity, Owner
-exact-SHA acceptance, or any mandatory review requirement. This section optimizes
-repeated execution only; it removes no obligation in §3–§5A and §12's non-weakening
-guarantee applies to this amendment itself.
-
-**5B.1 Creator evidence (definition).** CREATOR EVIDENCE is evidence produced against
-the exact frozen candidate SHA by the authoring session (the lifecycle established by
-the §5A self-review obligation PLUS the established authoritative per-gate lifecycle
-of the governed workflow: base
-verification → pre-smoke → RED → implementation → GREEN → targeted regression →
-mutation/adversarial probes → post-smoke → FULL SUITE → differential sweep →
-governance truth sweep → freeze → Creator Grill → SHA-preserving bundle). Creator
-obligations are unchanged by this amendment; the full suite remains mandatory at
-Creator for every meaningful implementation candidate.
-
-**5B.2 Evidence reuse is not trust without verification.** An Independent Reviewer
-may REUSE Creator evidence only after independently verifying: the exact candidate
-SHA; parent; tree; bundle SHA-256; bundle prerequisite; diff scope; that the evidence
-corresponds to that exact SHA; and that the candidate was not mutated after evidence
-production. Reuse never means accepting conclusions blindly: the Reviewer must
-independently evaluate whether the reused evidence is sufficient and truthful.
-
-**5B.3 Universal review minimum (never replaced by Creator evidence).** Every
-required Independent External Review performs at least: (1) bundle SHA-256
-verification; (2) `git bundle verify`; (3) candidate SHA/parent/tree/commit-count
-verification; (4) authoritative-base verification; (5) diff/scope verification;
-(6) an independent Universal Guardrail Smoke run; (7) source-of-truth review of
-material changed claims; (8) critical targeted tests for the changed risk surface;
-(9) at least one independent reviewer-designed adversarial probe where meaningful;
-(10) Reviewer Grill; (11) an exact final verdict. In item (9), "where meaningful"
-preserves reviewer judgment about probe design ONLY: it never removes the Reviewer
-Grill, the reviewer's escalation authority, or any other mandatory review
-requirement, and it never forces an artificial probe where none is genuinely
-meaningful.
-
-**5B.4 LEVEL 1 (§3 high-risk).** The Reviewer additionally runs independently: the
-Universal Smoke, the critical targeted suites, adversarial probes, AND the FULL
-SUITE. The full suite remains mandatory at Reviewer for LEVEL 1 unless a later
-explicit Owner-authorized amendment changes that. Rationale: auth, persistence,
-resume, schema, guardrail-framework, and strategic-architecture changes justify full
-independent regression. The only permitted optimization at LEVEL 1 is skipping a
-targeted sub-suite that an independently executed broader suite already subsumes
-(record what subsumed it).
-
-**5B.5 LEVEL 2 (§3 bounded increments).** The Reviewer runs the 5B.3 minimum plus
-risk-specific targeted tests and reviewer-designed probes. The Reviewer does NOT
-automatically rerun the full suite when ALL of the following hold: (A) Creator ran
-the full suite on the exact frozen SHA; (B) the recorded result is internally
-consistent; (C) bundle/SHA identity is exact; (D) the Reviewer's own Universal Smoke
-run PASSes; (E) the changed scope is bounded; (F) the targeted tests pass
-independently; (G) no auth/schema/persistence/guardrail-framework/high-risk boundary
-is crossed; (H) no reviewer red flag exists. When all hold, the review reports:
-`FULL SUITE: CREATOR EVIDENCE REUSED — INDEPENDENT RERUN NOT TRIGGERED`.
-
-**5B.6 LEVEL 2 full-suite triggers (any one mandates an independent full suite):**
-Creator/reviewer evidence mismatch; Universal Smoke BLOCK or unexplained
-observation; unexpected diff; broad runtime scope; persistence/state-mutation
-concern; auth/ownership concern; schema/migration concern; guardrail-framework
-change; regression suspicion; test-collection change; flaky or unexplained result;
-candidate repaired after a prior rejection; a newly discovered material defect
-class; source-of-truth inconsistency; or reviewer judgment that the full suite is
-necessary. Reviewer discretion may ALWAYS escalate; nothing in this section may be
-read as preventing a reviewer from running more tests. The qualitative triggers
-(e.g. "broad runtime scope", "regression suspicion") remain deliberately
-conservative precisely BECAUSE the reviewer-judgment catch-all and the
-unconditional escalation authority remain controlling; they are not replaced by
-numeric thresholds unless repository authority later requires it.
-
-**5B.7 LEVEL 3 / low-risk (§3–§4).** The existing LEVEL/DEPTH rules apply
-unchanged: where independent external review is not required by governance it is
-not added mechanically; where an Owner directive requires it, it is preserved.
-No artificial escalation of low-risk maintenance.
-
-**5B.8 Repair after an Independent Review REJECT (conservative by default).** For
-any repaired candidate: the Reviewer must independently re-test the prior blocking
-defect, test the repair, and perform NEW adversarial probing around the repaired
-boundary. For a LEVEL 1 repair the full suite remains mandatory at Reviewer. For a
-LEVEL 2 repair, the prior rejection is itself a 5B.6 trigger unless explicitly
-justified otherwise by authoritative governance.
-
-**5B.9 Universal Smoke role.** The smoke is a fast blocking filter plus
-core-invariant regression check (see
-`INVENTORAI_UNIVERSAL_CORE_GUARDRAIL_SMOKE_STANDARD.md`). It is NOT a substitute
-for the full suite where required, targeted tests, adversarial review, security
-review, PSRR, or deployment approval. Its workflow value is stopping bad candidates
-early and cheaply.
-
-**5B.10 No duplicate testing requirement.** A Reviewer may skip a redundant
-targeted sub-suite when the same behavior is already covered by a broader
-INDEPENDENTLY RUN suite, the exact test collection is known, and no separate
-evidentiary value exists — and must record what evidence replaced the skipped
-execution.
-
-**5B.11 Reviewer value shifts to novel adversarial work.** Reviewer time is
-preferentially spent on: independent risk hypotheses; adversarial edge cases;
-boundary violations; cross-feature interactions; failure modes the Creator did not
-test; scope/governance truth; and architecture drift — not on mechanical repetition
-of already-proven evidence. Historical lesson (recorded, facts unchanged): the
-P10-PC3 blocking defect B1 was found by a NEW reviewer-designed interleaved-history
-scenario, not by mechanically rerunning the existing full suite — while the
-independent LEVEL-1 full-suite rerun remained valuable for regression confidence.
-The optimal workflow is not "less review"; it is less duplicate low-value execution
-and more independent adversarial reasoning. This lesson does not diminish the full
-suite's role where required.
-
-**5B.12 Review evidence-reporting format (mandatory for reviews using reuse).** A
-concise evidence table with, per item: EVIDENCE ITEM / SOURCE (CREATOR or REVIEWER)
-/ RERUN (YES or NO) / REASON / RESULT. Reused rows are labeled
-`REUSED EXACT-SHA CREATOR EVIDENCE`; independent rows `INDEPENDENTLY REPRODUCED`;
-escalations `INDEPENDENT FULL-SUITE TRIGGER: <reason>`. This makes review
-acceleration auditable.
-
-**5B.13 Governance-only candidates.** For candidates with no runtime/test/guardrail
-changes, the review normally verifies: source-of-truth; exact SHA/bundle; scope;
-contradictions; authority/supersession; governance completeness; and Reviewer
-Grill. Runtime suites are not run merely because markdown changed — UNLESS the
-governance candidate asserts runtime evidence requiring reproduction or a 5B.6
-trigger exists. Where Independent External Review is required, the independent
-Universal Guardrail Smoke run remains part of the 5B.3 universal minimum and is
-NOT optional for governance-only candidates; nothing in this clause makes the
-smoke discretionary in a required review, and the smoke never substitutes for any
-other required evidence.
-
-**5B.14 No silent review downgrade.** No agent may label a candidate LEVEL 2 merely
-to avoid the full suite: the review tier must be source-backed against §3. A
-reviewer may escalate the effective review depth on risk evidence; any DOWNGRADE
-from a prior authoritative risk classification requires explicit governance
-authority.
-
-**5B.15 Quality floor (never removed by this amendment):** mandatory Creator Grill;
-Independent Reviewer Grill where required; exact frozen SHA; immutable rejected
-evidence (whose preservation may be LOCAL to the Creator environment and its
-bundle artifacts — local-only rejected-evidence artifacts are recorded as such and
-are never described as independently remote-verifiable);
-SHA-preserving bundle; Owner exact-SHA acceptance; merge-commit-only
-publication; pre/post-merge verification; source-of-truth mode with UNSUPPORTED
-MATERIAL CLAIMS = 0; the Universal Smoke; and the reviewer's escalation authority.
-
-**5B.16 Performance objective.** Materially reduce Independent Review time for
-bounded LEVEL-2 gates with no artificial hard time SLA. Success means: less
-duplicate execution, more reviewer novelty, and the same or higher
-defect-detection quality.
-
-**5B.17 Early Independent Review rule (`EARLY INDEPENDENT REVIEW RULE: ACTIVE`).** When
-Independent Review is required for a material candidate, it occurs at the earliest lifecycle
-point at which a stable, reviewable exact subject (the frozen candidate SHA) and sufficient
-evidence for meaningful independent falsification exist — never delayed merely to accumulate
-avoidable downstream work. The rule exists to: surface material defects before avoidable
-downstream lifecycle work; reduce expensive repair after publication preparation or later-stage
-ceremony; and preserve independent judgment early enough to change the candidate/gate decision.
-The safeguard is EARLY FORMAL REVIEW OF A STABLE EXACT SUBJECT — it is NOT repeated formal
-review of an unchanged subject, which remains prohibited absent material decision-changing
-evidence (AHAEP §14 owns that loop discipline). This rule: weakens no exact-SHA review-subject
-identity requirement (§5 and §5B.2–5B.3 continue to govern, and a formal Independent Review is
-never performed on an unstable/unfrozen candidate); replaces neither the Creator Grill nor Lead
-review; creates no mandatory reviewer recursion and no second Independent Review policy owner;
-requires no review where this protocol does not require Independent Review; never overrides
-LEVEL/DEPTH (§3/§4); authorizes no publication, merge, implementation, or execution; and never
-requires a second formal Independent Review merely because an early one already occurred —
-renewed review is required only when the candidate changed materially or an existing
-invalidation/repair rule (§5B.6/§5B.8; AHAEP §7/§14) requires it.
+**5B.17 Early meaningful review.** When required, review a stable exact subject once enough
+evidence exists for independent scrutiny. Do not delay useful review for downstream ceremony,
+review an unstable subject as final, or repeat an unchanged review without material decision
+impact. New/changed evidence refreshes affected review; AHAEP §14 governs convergence.
 
 ## 6. Full-historical-audit triggers (exceptions only)
 
-A full historical review is required only when one or more applies: current authority
-cannot be resolved; a material contradiction appears between governing records; product
-identity is being changed; architecture is being materially changed; repository state
-materially conflicts with committed status; a long-unattended project lacks a reliable
-current-state record; the owner explicitly requests a historical audit; an implementation
-claim materially exceeds available evidence. Otherwise agents use current authority and
-the active contract.
+Use full historical reconstruction only for a demonstrated authority conflict, continuity
+failure affecting current work, high-risk strategic reconsideration, PRE-FCORA at its existing
+trigger, or another explicit full-audit trigger. First bound the actual question and relevant
+history; no ordinary implementation or minor repository/prose mismatch requires a full audit.
+Substantive existing audit and evidence gates remain intact at their actual triggers.
 
 ## 7. Owner-interruption policy
 
-Agents must not request approval for every file, command, text change, or minor action.
-The owner is asked when: a required product decision is unresolved; evidence materially
-conflicts; the change crosses the active contract; a Level-1 change is required; a
-separate-authorization capability is implicated; an increment reaches owner-acceptance
-status; or merge / phase progression requires owner authority. Within a valid approved
-contract the agent completes the bounded work and returns one concise evidence report.
+Do not request another approval for reversible routine actions already included. Resolve
+ordinary libraries, helper placement, transaction mechanics, fixtures and implementation
+choices within scope. Return only for §2/§10 reserved decisions or explicit stop conditions.
+For a genuine Owner choice explain the practical user consequence, two or three viable options,
+tradeoffs/risks, estimated work impact and the recommended option with reasons. Continue
+unrelated authorized work while that decision is pending where safe.
 
-## 8. Phase / increment contracts
+## 8. Active milestone and execution roles
 
-Bounded work runs under an active contract (see
-`docs/governance/ACTIVE_INCREMENT_CONTRACT.md`, which holds the reusable template and the
-declaration rule). A contract states: objective; owner authorization; allowed paths;
-forbidden paths; expected behavior; non-goals; acceptance criteria; required tests; tests
-not required; dependencies; unresolved decisions; stop conditions; independent-review
-scope; merge authority. Where the active contract is declared is fixed by that document so
-future agents can always discover it.
+`ACTIVE_INCREMENT_CONTRACT.md` owns the current mandate: objective, included actions, scope,
+criteria, protected boundaries, activation/termination conditions and reserved decisions.
+Do not create a new contract for each included routine action or duplicate the mandate here.
 
-## 9. Handover rules
+The designated Lead may implement directly or coordinate authorized bounded sub-agents.
+Creator and Lead functions may be combined; real execution evidence remains required and
+formal non-authoring review remains separate. The Owner is not routine inter-agent transport.
+`OSP-MEI-PSC-001` continues unchanged for material delegated execution instructions; its
+canonical §3.2 permits an explicit Owner role change. Its checklist does not require self-relay,
+a second Owner decision for routine engineering, or a new process owner. Only the Owner may
+resolve reserved policy/architecture decisions; an agent cannot fabricate delegated authority.
 
-Handovers are informative, never authoritative. Every agent must be able to continue from
-the five core inputs (§1.1–1.5). A handover conflicting with committed current authority
-loses. A handover-only idea must be marked `NOT CANONICAL — REQUIRES OWNER DECISION` and
-routed to the Owner Decision Register with committed owner-decision evidence — never
-silently implemented. Use `docs/governance/HANDOVER_TEMPLATE.md`.
+## 9. Continuity, pause and return
 
-**9.1 Read-only continuity reconstruction preflight (successor boot).** A successor Lead — and
-any material handover transition — first performs a
-`READ-ONLY CONTINUITY RECONSTRUCTION PREFLIGHT`: reconstruct current authority exclusively from
-committed repository authority (the §1 boot sequence) and the live Git tip. No repository
-mutation occurs during this preflight. The handover is evidence/input only; it is never
-authority.
+**9.1 Successor reconstruction.** Read current authority through the single boot sequence,
+verify live identity and inspect existing work before mutation. A handover/checkpoint is an
+input, not independent authority. Direct current Owner instructions apply under §2; successors
+must locate their durable active record rather than assume access to old conversations.
 
-**9.2 Handover continuity difference check.** After the read-only reconstruction and before any
-materially affected execution, the successor compares the previous handover / derived Master
-Checklist / carried continuity state against the fresh repository reconstruction. Every
-material difference is disclosed and, where supported, classified as exactly one of:
-`STATUS ADVANCED` · `REORDERED BY AUTHORITY` · `SUPERSEDED` · `MERGED INTO` ·
-`DEFERRED / RETURN GATE CHANGED` · `NEWLY DISCOVERED` · `SILENT DISAPPEARANCE CANDIDATE` ·
-`UNEXPLAINED MATERIAL DIFFERENCE`. If all material differences are explained by repository
-authority: `HANDOVER CONTINUITY DIFFERENCE CHECK: PASS`. If the handover contained errors that
-current repository truth resolves: `HANDOVER CONTINUITY DIFFERENCE CHECK: CORRECTED PASS`. If
-an unexplained material difference can affect the current gate, upcoming scope, ownership, a
-dependency, or an authorization: HOLD only the materially affected execution until reconciled
-(§10 owns the STOP/HOLD scoping) — never silently prefer the handover, and never silently
-prefer an unsupported inference.
+**9.2 Material differences.** Compare carried state only where it affects current work.
+Explain supported status advances, supersession, reordered authority, merged/deferred items
+and unresolved differences. Hold only work affected by an unexplained material discrepancy.
+Do not create a full continuity reconstruction merely because a SHA or PR advanced.
 
-**9.3 Master Checklist and HICR classification.** `MASTER CHECKLIST = DERIVED OWNER-FACING
-NAVIGATION / CONTINUITY AID — NOT SSOT`; `CHECKLIST ORDER ≠ EXECUTION AUTHORIZATION`. A Master
-Checklist may point to repository authority; it never replaces repository authority, roadmap
-sequencing, Owner decisions, the Owner Decision Register, the Deferred Obligations Register, or
-active contracts. Where a Handover-Integrated Continuity Record (HICR) is used:
-`HICR = POINTER / RECONCILIATION MECHANISM — NOT DUPLICATION` — it must not become a second
-SSOT, a second Owner Decision Register, a second Deferred Obligations Register, a second Master
-Checklist, or a second roadmap. No volatile current checklist/HICR status is encoded in this
-protocol; that state lives with the canonical current-state surfaces.
+**9.3 Master Checklist / HICR.** The Master Checklist is derived navigation, not SSOT or
+execution authority. HICR is pointer/reconciliation, not a second roadmap, decision register,
+obligation register or checklist. Existing material continuity and PRE-FCORA obligations return
+at their actual gates. A missing historical referent is investigated when material, not silently
+converted into completion or an invented obligation.
 
-**9.4 Successor propagation.** `SUCCESSOR PROPAGATION REQUIRED: YES` — these continuity
-safeguards bind successor agents through this protocol's repository boot authority even when a
-handover omits or misstates them. Handover omission cannot delete durable repository
-safeguards.
+**9.4 Successor propagation and Owner control.** These rules bind successor execution.
+`PAUSE ASTRA`, `STOP THIS MILESTONE` or `REVOKE ASTRA AUTHORITY` takes effect upon receipt:
+start no new mutation; safely finish or stop a running atomic operation if interruption could
+corrupt state; preserve work; do not reset, delete or revert accepted work. Return one checkpoint:
+authoritative branch/SHA; working branch/HEAD; uncommitted/untracked changes; created commits
+and remote branches; PR/merge state; exact reviewed/merged SHAs; tests/material skips;
+unresolved findings; incomplete work; current authority; and safest next action.
 
-## 10. Contradiction escalation and stop conditions
+The prior Lead remains in STANDBY, not permanently terminated. Only one Lead holds mutation
+authority. The Owner can return authority using the checkpoint and then-current repository
+identity. A paused/revoked/completed/expired mandate does not resume or renew automatically;
+explicit Owner instruction is required. Accepted work remains accepted absent new material
+evidence requiring correction. No repository-recording step delays a received pause.
 
-Stop and escalate to the owner when: current authority cannot be resolved; governing
-records materially contradict; the requested work crosses the active contract or a
-Level-1 boundary; or a separate-authorization capability would be touched. Do not resolve
-a material contradiction by editing history — report it and request canonicalization.
+## 10. Reserved decisions and scoped holds
 
-**STOP versus bounded HOLD (scoping rule).** A broad STOP applies when: current authority
-cannot be resolved globally; a material governing contradiction makes safe authority
-impossible; an explicit repository-wide STOP applies; or the requested action crosses a
-prohibited or high-authority boundary that cannot be isolated. A **bounded HOLD** applies when
-the material uncertainty or difference is localized: unaffected work retains resolved
-authority, and only the specific gate, subject, dependency, or review subject in question is
-held until reconciled. A localized immaterial or non-blocking difference never freezes the
-whole project. This scoping rule NEVER overrides or weakens an explicit broader STOP imposed by
-authoritative repository governance.
+Escalate material product/customer policy, F-03 ownership/access, a new G-4-A architecture,
+security/privacy/ownership/evidence-trust boundaries, unresolved material architecture,
+CAD/PCB or another major capability activation, destructive/irreversible action, real-data
+migration, production/public staging, human collection, spending/provider commitment,
+legal/regulatory/commercial policy, mandate expansion or a conflict materially invalidating
+the mandate. Consult the active mandate for its concrete exclusions. Do not ask the Owner
+to decide routine engineering or reapprove high-risk remediation already expressly included.
 
-## 11. Update responsibilities
+Uncertainty/failure holds only the affected operation; continue unrelated authorized work.
+Global holds apply only when repository identity is unverified, whole-milestone authority is
+invalid, the working state is unsafe, or a cross-cutting defect materially invalidates all
+remaining work. Owner pause/revocation ends authority under §§2/9 immediately. Resolve ordinary
+technical conflicts within scope; do not edit history or broaden scope to disguise a material
+contradiction. A new tip alone is handled by AHAEP §5, not a blanket STOP.
 
-- The Owner Decision Register is updated (append/supersede row) whenever an owner decision
-  is accepted and committed.
-- `CURRENT_PROJECT_STATE.md` is refreshed at each phase/increment boundary and kept
-  concise — it points to the roadmap/evidence for detail and must not become a second
-  roadmap.
-- The active-contract declaration is updated when a new increment is authorized.
-- The append-only roadmap receives one record per governed gate.
-- When the same avoidable defect class recurs across deliverables (per §5A), a
-  lessons-learned note is appended at the next authorized governance-maintenance
-  opportunity.
+## 11. Durable updates with implementation
 
-## 12. Scope and non-weakening guarantee
+Keep concise current authority, material product truth, dependencies and durable decisions.
+Update material documentation with the implementation that makes it true where practical.
+The active mandate is recorded once in `ACTIVE_INCREMENT_CONTRACT.md`; other current surfaces
+point to it. Material Owner decisions belong in their existing record, without copying the full
+mandate into another register or requiring a separate recording candidate.
 
-This protocol changes no product behavior, no engine, no schema, no runtime, and no phase
-status. It activates no phase. Phase 3 remains NOT authorized for implementation.
-Structured Technical Guidance remains RESERVED / INACTIVE / separately authorized. Domain
-expansion, ACV/Download/Email implementation, main reconciliation, and deployment remain
-NOT authorized. It becomes binding only through independent review, owner acceptance,
-normal merge, and post-merge verification.
+The roadmap records meaningful progression, obligation/return-gate and authority changes;
+current state remains concise navigation. Preserve historical records as evidence, not present
+commands. Git/GitHub own transient SHAs, PR and merge state. A SHA, PR, parent, merge, lifecycle
+label or other non-material status change alone never requires standalone synchronization.
+Batch useful non-blocking documentation at the next relevant authorized touch; neither a merge
+nor a lessons-learned preference automatically creates a governance workstream.
+
+## 12. Scope, retained boundaries and transition
+
+These amendments change operating mechanics, not product runtime, semantic owners or accepted
+closure outcomes. F-01/F-02 and OSP remain closed as lifecycles; OSP's standing control remains
+active. F-03, G-4-A, CEHR/Route-B, T1-A′, HICR, readiness, RUN-004 and PRE-FCORA retain their
+actual decisions and return gates. No obsolete snapshot here supplies current phase status.
+
+This protocol alone authorizes no implementation, deployment, paid activation, human collection
+or new architecture/capability. The first milestone remains conditional in the active authority
+surface; the bootstrap cannot use its proposed rules to integrate itself. After authoritative
+integration and verified safeguards, the amended operating rules supersede routine repeated
+approvals within the actual Owner mandate. No new governance program is created.

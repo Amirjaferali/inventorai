@@ -1,81 +1,244 @@
-# InventorAI — Active Increment Contract
+# InventorAI — Active Milestone / Increment Contract
 
-**Purpose:** the single, fixed location where the currently active phase/increment contract
-is declared, plus the reusable contract template. Future agents discover the active contract
-here (referenced from `CLAUDE.md` and `CURRENT_PROJECT_STATE.md`). Only one contract is
-"active" at a time. When a new increment is authorized, replace the "Active contract"
-section (append-only history is kept in the roadmap, not here).
-
----
+**Purpose:** the one durable current mandate/contract declaration. Lean §2 owns
+operating authority; this file records the actual scope and conditions, not another
+protocol. Historical declarations below are evidence only, not current permissions,
+holds, START requirements or reading duties.
 
 ## Declaration rule
 
-- The **active contract** is whatever is recorded in the "Active contract" section below.
-- An increment is authorized only by committed owner authorization; a contract here without
-  such authorization is a template/placeholder, not an authorization.
-- A contract governs bounded work at DEPTH 2/LEVEL 2 (and DEPTH 3/LEVEL 3 maintenance inside
-  it). LEVEL 1 changes always need separate explicit owner authorization regardless of any
-  contract.
+An explicit Owner instruction takes effect in the active session on receipt.
+Record successor-relevant authority here concisely, normally with the first relevant
+implementation/transition PR; do not require another recording lifecycle. A proposal
+is not an Owner instruction. Only the Owner may expand, renew or replace the mandate.
 
-**Authoritative-only rule (binding; self-terminating).** The "Active contract" section records
-**AUTHORITATIVE contract state only**.
+An authorized milestone includes its permitted delivery actions; its implementation
+does not need another START merely because a contract was installed. Its risk determines
+tests/review under Lean §§3–5B, not repeated approvals. Exact technical review identity
+remains required. Omitted actions and reserved decisions remain outside authority.
 
-1. **A frozen in-flight candidate is a proposal, not current authoritative contract state**, and is
-   never recorded here as the active contract. This is safe because no material execution may rely
-   on an implementation contract until that contract is authoritative in the repository: an
-   increment is authorized only by **committed** owner authorization (above), and the governing
-   sequencing requires a contract candidate to be "independently reviewed AND Owner-accepted at its
-   exact SHA, **merged and post-merge verified** before implementation can start", with
-   Implementation START a further separate decision
-   (`RVR_7_SUBSTANTIVE_ARABIC_PARITY_CONTRACT_CANDIDATE.md` §H.3 rules 1–4). Owner exact-SHA
-   acceptance alone therefore never starts execution, so excluding an accepted-but-unmerged
-   candidate from this section hides no legitimate active contract state.
-2. **Candidate-era lifecycle conditions do not live here.** Acceptance, publication and merge
-   conditions — any token of the form `OWNER EXACT …-SHA ACCEPTED: NO`, "governance candidate",
-   "not authoritative until merged and post-merge verified" — belong solely to that gate's
-   append-only lifecycle record in `ACTIVE_EXECUTION_ROADMAP.md`, scoped to the freeze-time
-   condition they describe.
-3. **Self-expiry.** On a candidate's authoritative merge, its candidate-era language expires by
-   operation of this rule. **No status synchronization is required merely to record that a
-   candidate was accepted or merged**, because no such token was ever load-bearing here.
-4. **A governance-only recording, synchronization or repair gate opens no implementation
-   contract**, and never becomes one merely because a governance candidate exists.
-5. When no authoritative implementation contract is active, this section states exactly
-   **`ACTIVE CONTRACT: NONE`** and **`NO IMPLEMENTATION CONTRACT IS ACTIVE`**.
-6. Superseded status blocks are **preserved, not deleted** — they remain true as
-   authority-at-their-time under the existing supersession convention.
+A conditional mandate remains conditional until every named activation requirement is
+verified. Completing a milestone never authorizes a successor capability or phase.
+Git/GitHub own transient candidate, PR and merge identity. No acceptance/merge token,
+self-SHA or lifecycle-label change creates a synchronization candidate. When no mandate
+exists, state ACTIVE CONTRACT: NONE; historical declarations never fill the gap.
 
-**Why this rule exists (recorded so it is not re-litigated).** Before it, this section carried each
-in-flight candidate's own acceptance token as *current* state. That token was true at freeze and
-false the moment the candidate merged, so every governance gate generated a follow-on
-synchronization, which wrote the same token about itself and generated the next — a non-terminating
-loop demonstrated across PR #592 and PR #594. The defect was these declaration semantics, not any
-single wording.
+## Current transition preparation — bounded bootstrap only
 
-## Reusable contract template
+**Owner source:** OWNER TRANSITION AUTHORIZATION — ASTRA AUTONOMOUS DELIVERY OPERATING
+MODEL — TRANSITION CANDIDATE PREPARATION, §§3–4 and 12–14. This records the issued
+instruction, not an invented later acceptance or activation.
 
-```
-INCREMENT CONTRACT — <name>
-Objective:                <what this increment achieves>
-Owner authorization:      <reference to the committed owner authorization>
-Risk level:               <LEVEL 1 | LEVEL 2 | LEVEL 3>
-Allowed paths:            <exact paths that may change>
-Forbidden paths:          <exact paths that must not change; default: engine/, web/, tests/,
-                           domains/, database/, schemas/, prompts/, scripts/, CI, runtime/deploy,
-                           main, accepted evidence>
-Expected behavior:        <observable outcome>
-Non-goals:                <explicitly out of scope>
-Acceptance criteria:      <testable/verifiable gates>
-Required tests:           <tests that must pass; or "none — documentation-only">
-Tests not required:       <what is deliberately not tested>
-Dependencies:             <prior gates, decisions, foundations>
-Unresolved decisions:     <owner decisions still open, if any>
-Stop conditions:          <when to stop and escalate>
-Independent-review scope: <bounded reviewer questions per protocol §5>
-Merge authority:          <who authorizes merge; default: owner, separately>
-```
+**Subject:** one local transition candidate based on verified execution branch
+feature/atomic-json-session-persistence at
+c78efd4e4064f464b48064173ac176f88ed9c371. That SHA is the preparation identity,
+not a perpetual live-tip declaration. Astra is the sole preparation Lead; the prior
+Lead remains STANDBY, not permanently terminated. Only one Lead may mutate.
 
-## Active contract
+**Preparation authority:** isolated current checkout; amendments to exactly the seven
+paths below; bounded sub-agent assistance; semantic/structural/workflow validation;
+one consolidated pre-return defect sweep; one local candidate commit; exact candidate
+evidence, SHA-preserving independent-review package and one Owner return.
+
+1. CLAUDE.md
+2. docs/governance/LEAN_GOVERNANCE_AND_AGENT_CONTINUITY_PROTOCOL.md
+3. docs/governance/ACCELERATED_HIGH_ASSURANCE_EXECUTION_PROTOCOL.md
+4. docs/governance/ACTIVE_INCREMENT_CONTRACT.md
+5. docs/governance/ACTIVE_EXECUTION_ROADMAP.md
+6. docs/governance/CURRENT_PROJECT_STATE.md
+7. .github/workflows/ci.yml (the only new repository file)
+
+No other repository path may change. No product runtime, tests, domains, schemas,
+migrations, prompts, dependencies, accepted evidence or deployment configuration changes.
+If correct CI requires another path, hold that part and report the demonstrated need.
+
+**Bootstrap limits:** no push, remote branch, PR, merge/auto-merge, protection
+administration, main change, force-push, branch/evidence/history deletion, R-05
+implementation, staging/production/deployment/paid activation, human data, spending
+or new governance machinery. Local review artifacts outside the repository are
+transport/evidence, not another protocol or authority source.
+
+**Finite integration sequence:** prepare → separate-session independent review →
+one consolidated Owner exact-SHA acceptance and publication/PR decision → final
+separate Owner merge decision → guarded merge and post-merge verification.
+The currently authoritative lifecycle governs this bootstrap sufficiently to integrate
+the amendment safely. The candidate cannot use its proposed rules to authorize itself.
+These one-time limits do not become future milestone delivery rules.
+
+After verified integration this preparation authorization is consumed. No separate
+bootstrap-closure, activation-candidate or governance-sync lifecycle is required.
+The conditional milestone below still requires its operational safeguards. The
+presence of the workflow alone is not proof that CI or branch protection works.
+
+## Active conditional milestone
+
+**ASTRA MILESTONE 1 — SECURE AND DIFFERENTIATED PRIVATE-BETA PROGRESSION**
+
+**Owner source:** the same Transition Authorization, §§7–11. **Status: CONDITIONAL —
+NOT EXECUTABLE until all activation conditions are verified.** Astra may not waive,
+expand or renew these conditions or this scope.
+
+### Activation conditions — all required
+
+1. This transition amendment is merged into the authoritative execution branch and
+   post-merge identity is verified.
+2. CI passes on the actual transition candidate.
+3. Branch protection and required checks are verified, not merely requested.
+4. Astra is confirmed as the sole mutating execution Lead.
+5. No later Owner pause or revocation exists.
+
+Record the verification evidence in the normal task/PR return. A missing condition
+keeps milestone implementation inactive; do not generate another activation candidate
+or infer a new permission from elapsed time. Later actions remain subject to the
+per-merge checks below.
+
+### Objective and authorized sequence
+
+A. Complete R-05 request-integrity/CSRF remediation across the actual state-changing
+route and caller inventory.
+
+B. Preserve existing account, session, HMAC, ownership and F-03 semantics. The
+specified request-integrity remediation is authorized after activation; a new
+material product/security/privacy boundary still requires an Owner decision.
+
+C. Prove protected operations reject invalid or missing request-integrity evidence
+before mutation. Cover relevant failure, cross-caller and regression behavior.
+
+D. Obtain a separate non-authoring security review before autonomous R-05 merge;
+apply high-risk evidence under Lean §§3–5B. A child agent in the authoring session
+does not satisfy this review.
+
+E. After R-05 is complete, perform ONE strategic product-priority assessment comparing
+F-04 _answer_error, G-4-A/product value, the shortest path to a usable private beta,
+the guided and saved-project journey, differentiation against direct Astra/other
+frontier-model use, and future CAD/PCB external-tool integration.
+
+F. Return one decision package when a genuine Owner product or architecture choice
+is required; continue only unrelated, still-authorized milestone work while waiting
+where safe. F-04 is NOT automatically the next implementation. This mandate does
+not authorize G-4-A remediation, CAD/PCB activation or another follow-on implementation.
+
+### Strategic assessment boundary and existing ownership
+
+The Owner identifies competitive pressure from general-purpose AI engineering tools;
+that premise is direction for the later assessment, not a claim of independently
+verified current model capabilities. InventorAI must not rely on simply turning an
+invention description into a picture or preliminary CAD-like representation.
+
+Assess governed progression toward a reviewable, testable prototype package, as
+supported: confirmed requirements; confirmed versus inferred components; assumptions
+and known unknowns; provenance for dimensions/constraints; risks/dependencies;
+materials/manufacturing options; preliminary representations; validation/prototype
+test plans; admitted test results/evidence; versioned decisions/change consequences;
+and honest conceptual-versus-engineering/manufacturing-validation boundaries.
+
+Reconcile tool opportunities against CAP-12, CAP-13, CAP-14 and CAP-15 in
+INVENTORAI_CAPABILITY_ENRICHMENT_REGISTER.md; WS-PFV-001 in
+PROTOTYPE_FEASIBILITY_AND_VALIDATION_FUTURE_WORKSTREAM_OWNER_DECISION.md; the Phase-7
+canonical export/API/adapter architecture; the activated Mechanical domain; the
+deferred dedicated PCB domain pack; and existing evidence/provenance/validation owners.
+External results remain untrusted until governed acceptance.
+
+Recommend a bounded Mechanical CAD proof, PCB/EDA proof, or neither yet using canonical
+data availability; missing component/geometry/netlist/BOM/constraint models; domain
+activation; user value; implementation cost; validation risk; and competitive urgency.
+No Engineering Realization Layer, second canonical model/evidence authority, plugin
+framework, integration orchestrator or new capability owner is authorized. A concrete
+residual ownership gap must be demonstrated and returned to the Owner before any such
+architectural change. This is assessment scope, not permission to generate artifacts.
+
+Any future authorized CAD/PCB artifact initially carries
+**CONCEPT / PRELIMINARY — REQUIRES ENGINEERING VALIDATION**. Do not claim production
+readiness, manufacturability, safety, compliance or certification. Development Lead
+selection does not select OpenAI, replace Claude or migrate runtime providers;
+provider neutrality and CAP-15 remain preserved. The Owner's model-guidance reference
+for the later assessment is https://developers.openai.com/api/docs/guides/latest-model;
+verify current primary evidence there when assessing capabilities.
+
+### Actions included after activation
+
+Within this scope, Astra may plan/implement, use isolated worktrees and bounded
+sub-agents, decide ordinary engineering details, modify relevant runtime/templates/
+tests/supporting documentation, create local and remote branches/commits, push,
+create/update PRs, make ordinary fix commits, run proportionate tests, obtain required
+independent review, deliberately merge the exact reviewed head using CREATE A MERGE
+COMMIT, verify post-merge identity, and continue the next included task. Lean §2
+governs this authority; no further routine START/SHA/publication/PR/merge approval.
+
+### Every autonomous merge — all safeguards required
+
+1. The CI workflow passes on the actual candidate.
+2. Required checks are tied to the latest PR head and reviewed integration context.
+3. The authoritative branch is protected.
+4. Force-push and branch deletion are disabled.
+5. Failed or missing required checks prevent merge; no bypass.
+6. The independent-review route required by risk is usable and its applicable review
+   is complete for the exact candidate.
+7. A mechanical expected-head guard prevents merging an unreviewed revision.
+
+Astra deliberately checks these facts and performs the merge; GitHub auto-merge queues
+are not authorized. Verify the resulting merge under AHAEP §20. If a prerequisite is
+missing, hold merging; ordinary authorized preparation may continue after activation
+when safe. No mere successful local run is called hosted CI enforcement.
+
+### Exclusions and reserved decisions
+
+No direct commit to the authoritative branch, force-push, failed/missing-check bypass,
+unreviewed revision merge, main modification, production/public deployment, paid
+activation, real customer/participant data, pilot/human collection, external spending
+or provider commitment, destructive real-data migration, representation of generated
+engineering output as validated, self-expansion/renewal, or new governance machinery.
+No private staging, service provisioning or CAD/PCB execution is implied by the
+private-beta objective.
+
+Owner decisions remain: material product/customer policy; F-03 access policy; a new
+G-4-A architecture after viable options/recommendation; changed security/privacy/
+ownership/evidence trust; unresolved material architecture; CAD/PCB or other major
+capability activation; destructive/irreversible action; real-data migration;
+production/public staging; human data; paid/external provider commitments;
+legal/regulatory/commercial policy; mandate expansion; and a conflict materially
+invalidating the milestone. Return practical user consequences, two or three viable
+options, tradeoffs, risks, estimated work impact and a reasoned recommendation.
+Ordinary helper/library/transaction/fixture choices do not require Owner selection.
+
+### Completion, pause and continuity
+
+Milestone execution ends after R-05 and the one strategic assessment/required decision
+return are complete, or earlier Owner expiry/pause/revocation. A recommendation does
+not authorize its implementation or renew the milestone.
+
+PAUSE ASTRA, STOP THIS MILESTONE or REVOKE ASTRA AUTHORITY takes effect on receipt:
+start no new mutation; safely finish/stop an already-running atomic operation where
+interruption could corrupt state; preserve all work; do not reset/delete/revert accepted
+work; return Lean §9's single checkpoint. No inferred resume. The prior Lead remains
+STANDBY and may receive authority back from the Owner using that checkpoint and the
+then-current authoritative SHA. Only one Lead may mutate.
+
+### Preserved closed work and return gates
+
+F-01/F-02 v2.1 and B-01/B-02 are closed at PR #617. No additional F-01/F-02 post-merge
+governance synchronization is required. OSP lifecycle remains CLOSED and its standing
+control remains applicable. No closed lifecycle is reopened by this transition.
+
+F-03, G-4-A (CURRENT — NOT FIXED), CEHR/Route-B, G-4-B, M-1, T1-A′, HICR/readiness,
+RUN-004 and PRE-FCORA retain their existing substantive authorities and actual return
+gates. PRE-FCORA is mandatory later, not started or moved; FCORA, Phase 3, pilot/human
+study/collection, production, deployment and paid activation receive no implied authority.
+
+## Reusable declaration fields
+
+Owner provenance; objective; execution branch; scope/non-goals; explicitly included
+actions; reserved decisions; acceptance criteria; risk/evidence requirements;
+activation/dependencies; completion/expiry; pause/return. Do not embed a candidate's
+own SHA or duplicate transient Git/PR state. A proposed successor remains non-authorizing.
+
+## Superseded contract declarations — historical only
+
+The declarations below describe their original gates only. They cannot override the
+current transition or conditional milestone above. Original F-01/F-02 adoption language
+is retained as historical evidence of adoption, not unfinished implementation.
+
+### Completed F-01/F-02 contract declaration — historical adoption terms
 
 **ACTIVE CONTRACT: F-01/F-02 ACCOUNT SECURITY FAILURE-ATOMICITY REMEDIATION v2.1**
 
@@ -106,8 +269,6 @@ The Declaration rule and Authoritative-only rule above remain unchanged.
 Standing boundaries remain: C AUTHORIZED: NO; C IMPLEMENTATION STARTED: NO;
 RVR-8 AUTHORIZED: NO; RVR-8 STARTED: NO; READINESS IMPLEMENTATION AUTHORIZED: NO;
 DEPLOYMENT AUTHORIZED: NO. No unrelated lane is activated.
-
-## Superseded contract declarations — historical only
 
 ### Declaration immediately before F-01/F-02 v2.1 adoption
 

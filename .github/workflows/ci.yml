@@ -1,0 +1,202 @@
+name: InventorAI CI
+
+on:
+  pull_request:
+    branches: [feature/atomic-json-session-persistence]
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: inventorai-ci-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Verify candidate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    defaults:
+      run:
+        shell: bash
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONUNBUFFERED: '1'
+      INVENTORAI_DRAFT_L2_REQUIRE_BROWSER: '1'
+      EXPECTED_BASE: ${{ github.event.pull_request.base.sha }}
+      EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+      EXPECTED_MERGE: ${{ github.sha }}
+    steps:
+      - name: Check out the exact proposed merge
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify identity and select the minimum test scope
+        id: scope
+        run: |
+          python3 - <<'PY'
+          import json, os, pathlib, re, subprocess
+
+          def git(*args):
+              return subprocess.check_output(['git', *args])
+
+          base, head, merge = (os.environ[key] for key in
+                               ('EXPECTED_BASE', 'EXPECTED_HEAD', 'EXPECTED_MERGE'))
+          assert all(re.fullmatch(r'[0-9a-f]{40}', sha) for sha in (base, head, merge))
+          assert git('rev-list', '--parents', '-n', '1', 'HEAD').decode().split() == [merge, base, head], \
+              'The checked-out merge must contain the event base and exact PR head'
+          paths = git('diff', '--name-only', '--no-renames', '-z', base + '...' + head).decode().split('\0')[:-1]
+          assert paths, 'An empty or unavailable diff cannot receive a green result'
+
+          # These six current authority surfaces have no runtime/test content
+          # consumers. Keep this set narrow; a new consumer requires revisiting
+          # its entry. Other Markdown includes tested product/document contracts.
+          passive_authority = {
+              'CLAUDE.md',
+              'docs/governance/LEAN_GOVERNANCE_AND_AGENT_CONTINUITY_PROTOCOL.md',
+              'docs/governance/ACCELERATED_HIGH_ASSURANCE_EXECUTION_PROTOCOL.md',
+              'docs/governance/ACTIVE_INCREMENT_CONTRACT.md',
+              'docs/governance/ACTIVE_EXECUTION_ROADMAP.md',
+              'docs/governance/CURRENT_PROJECT_STATE.md',
+          }
+
+          def documentation_only(path):
+              if path not in passive_authority:
+                  return False
+              for revision in (base, head):
+                  entry = git('ls-tree', revision, '--', path).decode()
+                  if entry and not entry.startswith('100644 blob '):
+                      return False  # A symlink/executable is not passive documentation.
+              return True
+
+          # This is a test floor, not a risk verdict. Authority Markdown can need
+          # high-risk semantic review without a full application regression.
+          # Current runtime and tests share callers/fixtures; without a proven
+          # narrower dependency map, code/config/workflow/unknown changes run all.
+          # No PR label, body claim or manual input can downgrade this selection.
+          scope = 'smoke' if all(map(documentation_only, paths)) else 'full'
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              output.write('scope=' + scope + '\n')
+          print(json.dumps({'base': base, 'head': head, 'tested_merge': merge,
+                            'test_scope': scope, 'changed_paths': paths}, indent=2))
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
+              summary.write(f'Base: `{base}`\n\nPR head: `{head}`\n\nTested merge: `{merge}`\n\nTest floor: **{scope}**\n')
+          PY
+
+      - name: Set up the repository-required Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version-file: .python-version
+
+      - name: Install existing pinned inputs into an isolated environment
+        run: |
+          echo "INVENTORAI_DB_PATH=$RUNNER_TEMP/inventorai-ci.sqlite" >> "$GITHUB_ENV"
+          echo "PLAYWRIGHT_BROWSERS_PATH=$RUNNER_TEMP/playwright" >> "$GITHUB_ENV"
+          python -m venv "$RUNNER_TEMP/inventorai-venv"
+          echo "$RUNNER_TEMP/inventorai-venv/bin" >> "$GITHUB_PATH"
+          "$RUNNER_TEMP/inventorai-venv/bin/python" -m pip install --disable-pip-version-check --no-input -r requirements.txt -r tests/requirements-draft-l2.txt
+          "$RUNNER_TEMP/inventorai-venv/bin/python" -m pip check
+          # Direct requirements are pinned; repository inputs intentionally leave
+          # transitives pip-resolved. Record them; do not claim a hermetic lock.
+          "$RUNNER_TEMP/inventorai-venv/bin/python" -m pip freeze
+
+      - name: Install the matching Chromium and Linux prerequisites
+        run: python -m playwright install --with-deps chromium
+
+      - name: Require a working interpreter, server and real browser
+        run: |
+          python - <<'PY'
+          import pathlib, shutil, subprocess, sys
+          import flask, gunicorn, pytest
+          from playwright.sync_api import sync_playwright
+
+          required = tuple(map(int, pathlib.Path('.python-version').read_text().strip().split('.')))
+          assert sys.version_info[:len(required)] == required, 'Wrong Python version'
+          assert sys.platform == 'linux', 'The real Gunicorn proof requires Linux'
+          server = shutil.which('gunicorn')
+          assert server, 'Mandatory Gunicorn prerequisite missing'
+          subprocess.run([server, '--version'], check=True)
+          with sync_playwright() as playwright:
+              browser = playwright.chromium.launch(headless=True)
+              print('Chromium:', browser.version)
+              browser.close()
+          print(sys.version)
+          PY
+
+      - name: Universal guardrail smoke
+        run: python scripts/run_universal_smoke.py
+
+      - name: Full regression and mandatory-check audit
+        if: steps.scope.outputs.scope == 'full'
+        run: |
+          python - <<'PY'
+          import os, pathlib, subprocess, sys, xml.etree.ElementTree as ET
+
+          report = pathlib.Path(os.environ['RUNNER_TEMP']) / 'inventorai-pytest.xml'
+          result = subprocess.run([sys.executable, '-m', 'pytest', '-q', '-p', 'no:cacheprovider',
+                                   '--junitxml=' + str(report)])
+          assert report.is_file(), 'Missing test evidence'
+          cases = ET.parse(report).findall('.//testcase')
+          assert cases, 'No collected test evidence'
+          # Existing conditional semantic cases only; never browser/server skips.
+          allowed = {
+              ('tests.test_fdc001_contract.TestFDC001_S7_CategoriesBC_Deferred', name): {'ODS-001 exists'}
+              for name in ('test_category_b_deferred', 'test_category_c_deferred',
+                           'test_category_b_note_references_ods001')
+          }
+          allowed[('tests.test_wps001_invariants.TestWPS001_INV004_GapLifecycle',
+                   'test_closed_gap_does_not_reopen')] = {'No gaps reached CLOSED — cannot test forward-only'}
+          allowed[('tests.test_w2c_rvr6b_web', 'test_electronics_covered_intent_suppressed')] = {
+              'electronics journey did not open MECHANISM first',
+              'journey advanced differently — covered elsewhere'}
+          known_xfail = ('tests.test_f011_progression_quality_gate',
+                         'test_f011_hall_sensor_alone_does_not_advance_level_0')
+          passed = set()
+          for case in cases:
+              key = (case.get('classname'), case.get('name'))
+              skipped = case.find('skipped')
+              if skipped is not None:
+                  reason = skipped.get('message', '')
+                  expected = (key == known_xfail and skipped.get('type') == 'pytest.xfail' and
+                              reason == 'ADR-003 Step 6: component label only — no claim/basis/relationship')
+                  expected = expected or (skipped.get('type') == 'pytest.skip' and reason in allowed.get(key, set()))
+                  assert expected, f'Unexpected skip/xfail: {key}: {reason}'
+                  print('Existing conditional result:', key, reason)
+              elif case.find('failure') is None and case.find('error') is None:
+                  passed.add(key)
+          for module in ('tests.test_draft_l2_local_continuity', 'tests.test_p5_2_draft_account_switch'):
+              assert any(key[0] == module for key in passed), f'Mandatory browser module did not pass: {module}'
+          assert ('tests.test_email_h1_access_log_token_redaction',
+                  'test_real_gunicorn_access_log_contains_no_raw_token') in passed, 'Real server security proof missing'
+          assert result.returncode == 0, f'pytest failed: exit {result.returncode}'
+          PY
+
+      - name: Confirm repository data was not changed
+        if: always()
+        run: |
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git ls-files --others --exclude-standard)"
+
+  required:
+    name: CI required
+    needs: [verify]
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions: {}
+    steps:
+      - name: Reject failed, cancelled, skipped or missing verification
+        env:
+          VERIFY_RESULT: ${{ needs.verify.result }}
+        run: test "$VERIFY_RESULT" = success
+
+# Require "CI required" on the authoritative branch, disallow bypass/force-push/
+# deletion, and bind reviews/checks to the latest PR head. The execution Lead must
+# still verify the current base/head and required non-authoring review immediately
+# before an expected-head guarded merge. This workflow neither grants merge
+# authority nor configures protection, reviewer independence or deployment.
