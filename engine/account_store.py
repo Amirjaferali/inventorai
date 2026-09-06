@@ -81,9 +81,33 @@ class AccountStoreInvariantError(AccountStoreError):
     exact UPDATE affected a row count other than one AFTER eligibility had already
     been established (Contract §2 for the epoch proof; §8B for the post-eligibility
     reset row count). This is NEVER an ordinary concurrent loser and never maps to
-    the generic invalid-token response."""
+    the generic invalid-token response.
 
-    durable_outcome = DURABLE_CONFIRMED_UNCHANGED
+    B-01: this class carries NO class-level ``durable_outcome``. Raising it says
+    nothing about the transaction's fate — only ``_write()`` can establish that,
+    and it sets ``durable_outcome = confirmed_unchanged`` on the instance solely
+    after a defensive rollback has provably succeeded. Callers must therefore treat
+    a missing attribute as "not established", never as "unchanged"."""
+
+
+class AccountStoreRollbackError(AccountStoreError):
+    """A body/invariant exception whose transaction could NOT be resolved (B-01):
+    the defensive rollback failed, or the transaction was unexpectedly no longer
+    active, so unchanged durable state cannot be established.
+
+    Durable outcome is therefore ``indeterminate``. The original body failure is
+    retained as ``original`` and chained as ``__cause__``; any rollback failure is
+    retained as ``rollback_error``. The connection is marked unsafe for all future
+    reads and writes. Carries no SQL, token, account, password, path or raw
+    database detail, so the web boundary can surface it as a generic response."""
+
+    def __init__(self, message, durable_outcome=DURABLE_INDETERMINATE,
+                 original=None, rollback_error=None, connection_unsafe=True):
+        super().__init__(message)
+        self.durable_outcome = durable_outcome
+        self.original = original
+        self.rollback_error = rollback_error
+        self.connection_unsafe = connection_unsafe
 
 
 class AccountStoreCommitError(AccountStoreError):
@@ -343,6 +367,19 @@ class SqliteAccountStore:
                 raise
 
     # --- transaction helpers -----------------------------------------------
+    def _refuse_if_unsafe(self):
+        """B-01: fail closed on a connection whose transactional state is unknown.
+
+        Called by BOTH ``_read()`` and ``_write()`` while holding the lock and
+        BEFORE any SQL is issued or the connection is yielded, so no SELECT, BEGIN,
+        mutation or downstream password hash can run on it. No automatic rollback
+        retry and no reconnect/recovery lifecycle is attempted: the refusal is a
+        bounded, process-lifetime fail-closed state."""
+        if self._connection_unsafe:
+            raise AccountStoreConnectionUnsafeError(
+                "shared connection is in an unknown transactional state after an "
+                "unresolved rollback failure; reads and writes are refused")
+
     def _rollback_if_in_transaction(self):
         """Attempt a defensive ROLLBACK only while the connection actually remains
         in a transaction (Contract §9 step 2, §10 items 3 and 5). Returns
@@ -382,18 +419,30 @@ class SqliteAccountStore:
            one of these to a generic response.
         """
         with self._lock:
-            if self._connection_unsafe:
-                raise AccountStoreConnectionUnsafeError(
-                    "shared connection is in an unknown transactional state after an "
-                    "earlier rollback failure; blind continuation is refused")
+            self._refuse_if_unsafe()
             self._conn.execute("BEGIN IMMEDIATE")
             try:
                 yield self._conn
-            except BaseException:
-                # Pre-COMMIT failure. Rollback where the transaction is still open,
-                # then propagate the ORIGINAL error unchanged.
-                self._rollback_if_in_transaction()
-                raise
+            except BaseException as body_error:
+                # Pre-COMMIT failure (B-01). The body exception alone establishes
+                # NOTHING about durable state: resolve the transaction first, then
+                # report only what the rollback result actually proves.
+                attempted, rollback_error = self._rollback_if_in_transaction()
+                if attempted and rollback_error is None:
+                    # The transaction was still open and was provably rolled back —
+                    # the only body/invariant branch that may claim unchanged state.
+                    if isinstance(body_error, AccountStoreInvariantError):
+                        body_error.durable_outcome = DURABLE_CONFIRMED_UNCHANGED
+                    raise
+                # Rollback failed, or no transaction remained, so unchanged state
+                # cannot be established. Refuse the connection from here on.
+                self._connection_unsafe = True
+                raise AccountStoreRollbackError(
+                    "transaction could not be resolved after a body failure; "
+                    "durable outcome %s" % DURABLE_INDETERMINATE,
+                    durable_outcome=DURABLE_INDETERMINATE, original=body_error,
+                    rollback_error=rollback_error, connection_unsafe=True,
+                ) from body_error
             try:
                 self._conn.execute("COMMIT")
             except BaseException as commit_error:
@@ -418,7 +467,15 @@ class SqliteAccountStore:
 
     @contextmanager
     def _read(self):
+        """Serialise read access to the shared connection.
+
+        B-01: an unsafe connection is refused here too, before any SELECT is
+        issued and before the connection is yielded. A read from a connection with
+        an unresolved transaction could otherwise report uncommitted or unknown
+        state as fact — and, on the F-02 path, let an unsafe Stage-A read authorize
+        expensive password hashing."""
         with self._lock:
+            self._refuse_if_unsafe()
             yield self._conn
 
     # --- accounts -----------------------------------------------------------

@@ -1601,3 +1601,188 @@ def test_f02_failure_injection_adds_no_production_surface():
         assert forbidden not in src and forbidden not in app_src
     rules = [r.rule for r in app.url_map.iter_rules()]
     assert not [r for r in rules if "fail" in r.lower() or "inject" in r.lower()]
+
+
+# ===========================================================================
+# B-01 / B-02 — web-boundary behaviour on unsafe store state and store-acquisition
+# failure (Lead review F01F02-V21-LEAD-REVIEW-01; repair instruction §§4.3, 5)
+# ===========================================================================
+from engine.account_store import AccountStoreRollbackError
+
+
+def _drive_store_unsafe(monkeypatch, store, aid):
+    """Body failure whose defensive ROLLBACK also fails → unresolved state."""
+    def hook(real, sql, *a, **k):
+        up = sql.strip().upper()
+        if up.startswith("UPDATE ACCOUNTS SET SESSION_EPOCH"):
+            raise _sqlite3.OperationalError("injected body failure")
+        if up.startswith("ROLLBACK"):
+            raise _sqlite3.OperationalError("injected rollback failure")
+        return real.execute(sql, *a, **k)
+    _patch_conn(monkeypatch, store, hook)
+    with pytest.raises(AccountStoreRollbackError):
+        store.increment_session_epoch(aid, "2026-01-01T00:00:00.000000Z")
+    monkeypatch.undo()
+    assert store._connection_unsafe is True
+
+
+def test_b01_eligible_token_on_unsafe_connection_is_generic_503(client, monkeypatch):
+    """§4.3 — an unsafe Stage-A read is an operational precheck failure: generic
+    empty 503, ZERO password hashing, zero reset mutation, no session clearing and
+    no token/account disclosure. The token itself stays eligible in the database."""
+    _register(client, "b01elig@example.com")
+    _login(client, "b01elig@example.com")
+    client.post("/recover", data={"email": "b01elig@example.com"})
+    raw = _reset_token("b01elig@example.com")
+    store = _store()
+    aid = store.get_account_by_normalized_email("b01elig@example.com")["account_id"]
+    before = _durable_snapshot(store, aid)
+    _drive_store_unsafe(monkeypatch, store, aid)
+
+    calls = _hash_spy(monkeypatch)
+    r = client.post("/reset/" + raw, data={"password": NEW_PW, "password_confirm": NEW_PW})
+    assert r.status_code == 503
+    assert r.get_data() == b""                        # generic and non-disclosing
+    assert calls == []                                # zero password hashing
+    with client.session_transaction() as sess:
+        assert "auth" in sess                         # no deliberate clearing
+    monkeypatch.undo()
+
+    # TEST-ONLY inspection cleanup. The product deliberately offers no recovery, so
+    # the stranded transaction is released and the refusal flag cleared HERE, by the
+    # test, purely to read durable state back. This is not a product code path.
+    if store._conn.in_transaction:
+        store._conn.execute("ROLLBACK")
+    store._connection_unsafe = False
+    assert _durable_snapshot(store, aid) == before     # zero reset mutation
+    assert store.get_email_token_by_hash(_acct.hash_token(raw))["used_at"] is None
+
+
+def test_b01_normal_validation_after_unsafe_state_fails_closed(client, monkeypatch):
+    """§4.3 — ordinary authentication/account lookup after unsafe state fails
+    closed rather than reading unresolved state from the refused connection."""
+    _register(client, "b01valid@example.com")
+    _login(client, "b01valid@example.com")
+    assert client.get("/account").status_code == 200
+    store = _store()
+    aid = store.get_account_by_normalized_email("b01valid@example.com")["account_id"]
+    _drive_store_unsafe(monkeypatch, store, aid)
+    r = client.get("/account")
+    assert r.status_code == 302 and r.headers["Location"].endswith("/login")
+    with client.session_transaction() as sess:
+        assert "auth" not in sess                     # session dropped, fail closed
+
+
+def test_b01_logout_all_body_rollback_failure_is_503_with_no_guarantee(client,
+                                                                       monkeypatch):
+    """§4.3 — an F-01 body/invariant failure whose rollback could not be resolved
+    returns generic empty 503, preserves local material, claims neither success nor
+    confirmed rollback nor continued authentication, and does not retry."""
+    _register(client, "b01lo@example.com")
+    _login(client, "b01lo@example.com")
+    csrf = _csrf(client)
+    store = _store()
+    attempts = {"epoch": 0, "rollback": 0}
+
+    class _ZeroCursor:
+        rowcount = 0
+
+    def hook(real, sql, *a, **k):
+        up = sql.strip().upper()
+        if up.startswith("UPDATE ACCOUNTS SET SESSION_EPOCH"):
+            attempts["epoch"] += 1
+            return _ZeroCursor()                       # invariant breach
+        if up.startswith("ROLLBACK"):
+            attempts["rollback"] += 1
+            raise _sqlite3.OperationalError("injected rollback failure")
+        return real.execute(sql, *a, **k)
+    _patch_conn(monkeypatch, store, hook)
+    r = client.post("/logout-all", data={"csrf_token": csrf})
+    monkeypatch.undo()
+
+    assert r.status_code == 503
+    assert r.get_data() == b"" and "Location" not in r.headers   # no success claim
+    assert attempts["epoch"] == 1 and attempts["rollback"] == 1  # no retry
+    assert store._connection_unsafe is True
+    with client.session_transaction() as sess:
+        assert "auth" in sess                          # material not deliberately cleared
+    # Continued authentication is NOT promised: ordinary validation now fails closed.
+    assert client.get("/account").status_code == 302
+
+
+def test_b01_logout_all_confirmed_rollback_still_reports_unchanged(client, monkeypatch):
+    """§4.3 — other pre-COMMIT failures WITH a confirmed rollback keep the existing
+    confirmed-unchanged behaviour; not every non-COMMIT exception is uncertain."""
+    _register(client, "b01conf@example.com")
+    _login(client, "b01conf@example.com")
+    csrf = _csrf(client)
+    store = _store()
+    aid = store.get_account_by_normalized_email("b01conf@example.com")["account_id"]
+    before = _epoch(store, aid)
+    _inject(monkeypatch, store, ["UPDATE ACCOUNTS SET SESSION_EPOCH"])
+    r = client.post("/logout-all", data={"csrf_token": csrf})
+    monkeypatch.undo()
+    assert r.status_code == 503 and r.get_data() == b""
+    assert store._connection_unsafe is False           # connection remains usable
+    assert _epoch(store, aid) == before                # provably unchanged
+    assert client.get("/account").status_code == 200   # still authenticated
+
+
+def test_b02_reset_store_acquisition_failure_is_generic_503(client, monkeypatch):
+    """§5 — store acquisition inside the Stage-A operational boundary: a failure
+    returns generic empty 503, not a 500, with zero password hashing, zero
+    mutation, no deliberate session clearing and no disclosure."""
+    _register(client, "b02acq@example.com")
+    _login(client, "b02acq@example.com")
+    client.post("/recover", data={"email": "b02acq@example.com"})
+    raw = _reset_token("b02acq@example.com")
+    store = _store()
+    aid = store.get_account_by_normalized_email("b02acq@example.com")["account_id"]
+    before = _durable_snapshot(store, aid)
+    calls = _hash_spy(monkeypatch)
+
+    def boom():
+        raise RuntimeError("injected store acquisition failure /tmp/secret.sqlite")
+    monkeypatch.setattr(webapp, "_get_account_store", boom)
+    r = client.post("/reset/" + raw, data={"password": NEW_PW, "password_confirm": NEW_PW})
+    monkeypatch.undo()
+
+    assert r.status_code == 503
+    body = r.get_data()
+    assert body == b""                                 # generic and empty
+    assert b"secret" not in body and b"RuntimeError" not in body
+    assert calls == []                                 # zero hashing
+    assert _durable_snapshot(store, aid) == before      # zero mutation
+    with client.session_transaction() as sess:
+        assert "auth" in sess                          # no deliberate clearing
+
+
+def test_b02_reset_token_hashing_failure_is_generic_503(client, monkeypatch):
+    """§5 — token hashing also sits inside the operational boundary."""
+    _register(client, "b02hash@example.com")
+    client.post("/recover", data={"email": "b02hash@example.com"})
+    raw = _reset_token("b02hash@example.com")
+    calls = _hash_spy(monkeypatch)
+    monkeypatch.setattr(webapp._acct, "hash_token",
+                        lambda *a, **k: (_ for _ in ()).throw(
+                            RuntimeError("injected token-hash failure")))
+    r = client.post("/reset/" + raw, data={"password": NEW_PW, "password_confirm": NEW_PW})
+    monkeypatch.undo()
+    assert r.status_code == 503 and r.get_data() == b""
+    assert calls == []                                 # no password hashing
+
+
+def test_b02_ordinary_ineligibility_stays_400_not_503(client):
+    """§5 — ordinary Stage-A ineligibility is NOT collapsed into the operational
+    503 branch; the two remain distinct and distinguishable."""
+    _register(client, "b02dist@example.com")
+    client.post("/recover", data={"email": "b02dist@example.com"})
+    used = _reset_token("b02dist@example.com")
+    assert client.post("/reset/" + used,
+                       data={"password": NEW_PW,
+                             "password_confirm": NEW_PW}).status_code == 200
+    for raw in (used, "never-was-a-token"):
+        r = client.post("/reset/" + raw,
+                        data={"password": NEW_PW, "password_confirm": NEW_PW})
+        assert r.status_code == 400                    # ordinary ineligibility
+        assert r.get_data() != b""                     # rendered page, not the 503 body

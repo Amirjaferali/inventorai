@@ -86,6 +86,9 @@ from engine.account_store import (
     # distinguishable at the web boundary so the two D-04 durable-outcome branches
     # are never conflated. Both still return the SAME generic 503 body.
     AccountStoreCommitError,
+    # B-01: a body/invariant failure whose transaction could not be resolved is
+    # equally uncertain, so it follows the committed/indeterminate branch too.
+    AccountStoreRollbackError,
 )
 from engine import account_credentials as _acct
 from engine import auth_session as _auth
@@ -1946,10 +1949,13 @@ def logout_all():
 
       * confirmed rollback before durable commit — the current session, its CSRF
         and its UI-language state are untouched and remain authenticated;
-      * COMMIT exception with a committed or indeterminate durable outcome — this
-        handler still does not deliberately clear or rewrite local material, but
-        continued authentication is NOT promised: the next ordinary server-side
-        epoch validation decides, and it may legitimately reject the session.
+      * uncertain durable outcome — a COMMIT exception, or (B-01) a body/invariant
+        failure whose transaction could not be resolved. This handler still does
+        not deliberately clear or rewrite local material, but continued
+        authentication is NOT promised: the next ordinary server-side epoch
+        validation decides, and it may legitimately reject the session. Where the
+        store marked its connection unsafe, that validation fails closed rather
+        than reading unresolved state.
 
     Neither branch retries automatically.
     """
@@ -1960,14 +1966,16 @@ def logout_all():
         return _csrf_reject()
     try:
         _get_account_store().increment_session_epoch(account["account_id"], _iso(_utc_now()))
-    except AccountStoreCommitError:
-        # D-04 branch B: confirmed-committed or indeterminate durable state.
-        # Preserve local material; promise nothing about continued authentication.
+    except (AccountStoreCommitError, AccountStoreRollbackError):
+        # Uncertain durable outcome: a COMMIT failure, or a body/invariant failure
+        # whose rollback could not be established (B-01). Preserve local material;
+        # promise neither confirmed rollback nor continued authentication.
         return app.response_class(status=503)
     except Exception:
-        # D-04 branch A plus every other pre-COMMIT operational/invariant failure
-        # (including a non-1 epoch row count): confirmed rolled back, so session
-        # material, CSRF and language state are preserved and still valid.
+        # Pre-COMMIT failure with a PROVABLY successful rollback (D-04 branch A),
+        # including a non-1 epoch row count: confirmed rolled back, so session
+        # material, CSRF and language state are preserved and still valid. Only
+        # this branch may be read as confirmed unchanged.
         return app.response_class(status=503)
     _ui_lang = flask_session.get("ui_lang")   # D-P6-18: preserve UI-language choice
     flask_session.clear()
@@ -2083,17 +2091,24 @@ def reset_submit(token):
             "reset.html", form_error="password_mismatch", done=False), 400)
     now = _utc_now()
     now_iso = _iso(now)
-    store = _get_account_store()
-    token_hash = _acct.hash_token(token)
 
     # STAGE A (Contract §5) — read-only eligibility guard. Nothing is mutated and
     # no token is reserved. Ordinary ineligibility and operational failure are
     # kept apart, and neither discloses which condition failed.
+    #
+    # B-02: store acquisition and token hashing sit INSIDE this operational
+    # boundary. DB-path resolution, directory creation, SQLite initialisation,
+    # token hashing and Stage A itself therefore all fail the same generic way
+    # instead of escaping the handler as a 500.
     try:
+        store = _get_account_store()
+        token_hash = _acct.hash_token(token)
         eligible = store.password_reset_eligible(token_hash, now_iso)
     except Exception:
-        # Operational precheck failure: no hashing, zero intentional mutation, no
-        # deliberate session clearing, generic 503.
+        # Operational precheck failure — including a store whose connection is
+        # unsafe (B-01), which is refused before any SELECT. No password hashing,
+        # zero intentional mutation, no deliberate session clearing, no retry, no
+        # token/account/path/SQL detail: a generic empty 503.
         return app.response_class(status=503)
     if not eligible:
         # Every ordinary ineligibility class — nonexistent, expired, replayed,

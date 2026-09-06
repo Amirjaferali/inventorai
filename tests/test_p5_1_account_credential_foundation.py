@@ -718,3 +718,223 @@ def test_sweep_concurrent_writers_still_serialised_after_hardening(db_path):
         t.join(60)
     assert errors == []
     assert store.get_account_by_id(aid)["session_epoch"] == 40   # no lost updates
+
+
+# ===========================================================================
+# B-01 — unsafe-connection refusal and honest body-rollback classification
+# (Lead review F01F02-V21-LEAD-REVIEW-01; repair instruction §4)
+# ===========================================================================
+from engine.account_store import AccountStoreRollbackError
+
+
+def _make_unsafe(monkeypatch, store, aid):
+    """Drive the store into the unresolved-rollback state: a body failure whose
+    defensive ROLLBACK also fails. Returns the raised exception."""
+    def hook(real, sql, *a, **k):
+        up = sql.strip().upper()
+        if up.startswith("UPDATE ACCOUNTS SET SESSION_EPOCH"):
+            raise _sqlite3.OperationalError("injected body failure")
+        if up.startswith("ROLLBACK"):
+            raise _sqlite3.OperationalError("injected rollback failure")
+        return real.execute(sql, *a, **k)
+    _patch_conn(monkeypatch, store, hook)
+    with pytest.raises(AccountStoreRollbackError) as ei:
+        store.increment_session_epoch(aid, "2026-01-01T00:00:00.000000Z")
+    monkeypatch.undo()
+    return ei.value
+
+
+def test_b01_body_failure_with_rollback_failure_is_rollback_error(db_path, monkeypatch):
+    """§4.2.6-7 — a body/invariant failure whose rollback also fails raises
+    AccountStoreRollbackError, reports indeterminate, retains both the original
+    failure and the rollback failure, and marks the connection unsafe."""
+    store = SqliteAccountStore(db_path)
+    aid = _mk(store, "b01err@example.com")
+    exc = _make_unsafe(monkeypatch, store, aid)
+    assert isinstance(exc, AccountStoreError)               # subclasses the base
+    assert exc.durable_outcome == DURABLE_INDETERMINATE
+    assert exc.original is not None                         # original body failure
+    assert exc.__cause__ is exc.original                    # and chained
+    assert exc.rollback_error is not None                   # rollback failure kept
+    assert exc.connection_unsafe is True
+    assert store._connection_unsafe is True
+
+
+def test_b01_rollback_error_discloses_no_sensitive_detail(db_path, monkeypatch):
+    """§4.2.7 — the transaction-resolution failure exposes no SQL, token, account,
+    password, path or raw database detail at the web boundary."""
+    store = SqliteAccountStore(db_path)
+    aid = _mk(store, "b01leak@example.com")
+    exc = _make_unsafe(monkeypatch, store, aid)
+    msg = str(exc)
+    for leak in ("accounts", "email_tokens", "password_hash", "session_epoch",
+                 "SELECT", "UPDATE", "INSERT", "token", aid, store._path):
+        assert leak not in msg
+
+
+def test_b01_unsafe_connection_rejects_read_before_any_select(db_path, monkeypatch):
+    """§4.2.1-2 — an unsafe connection rejects ``_read()`` BEFORE any SELECT."""
+    store = SqliteAccountStore(db_path)
+    aid = _mk(store, "b01read@example.com")
+    _make_unsafe(monkeypatch, store, aid)
+    seen = []
+
+    def watch(real, sql, *a, **k):
+        seen.append(sql.strip().upper())
+        return real.execute(sql, *a, **k)
+    _patch_conn(monkeypatch, store, watch)
+    with pytest.raises(AccountStoreConnectionUnsafeError):
+        with store._read():
+            pass
+    monkeypatch.undo()
+    assert seen == [], "no SQL may be issued on an unsafe connection"
+    # every public read seam fails closed the same way
+    for seam in (lambda: store.get_account_by_id(aid),
+                 lambda: store.get_email_token_by_hash("whatever"),
+                 lambda: store.active_tokens(aid, RESET),
+                 lambda: store.count_accounts()):
+        with pytest.raises(AccountStoreConnectionUnsafeError):
+            seam()
+
+
+def test_b01_unsafe_connection_rejects_write_before_begin(db_path, monkeypatch):
+    """§4.2.1-2 — an unsafe connection rejects ``_write()`` BEFORE BEGIN."""
+    store = SqliteAccountStore(db_path)
+    aid = _mk(store, "b01write@example.com")
+    _make_unsafe(monkeypatch, store, aid)
+    seen = []
+
+    def watch(real, sql, *a, **k):
+        seen.append(sql.strip().upper())
+        return real.execute(sql, *a, **k)
+    _patch_conn(monkeypatch, store, watch)
+    with pytest.raises(AccountStoreConnectionUnsafeError):
+        with store._write():
+            pass
+    monkeypatch.undo()
+    assert seen == [], "no BEGIN may be issued on an unsafe connection"
+
+
+def test_b01_no_recovery_or_retry_lifecycle_is_introduced(db_path, monkeypatch):
+    """§4.2.9 — refusal is process-lifetime fail-closed: no reconnect, no automatic
+    rollback retry, no recovery attempt on subsequent calls."""
+    store = SqliteAccountStore(db_path)
+    aid = _mk(store, "b01noretry@example.com")
+    _make_unsafe(monkeypatch, store, aid)
+    seen = []
+
+    def watch(real, sql, *a, **k):
+        seen.append(sql.strip().upper().split()[0])
+        return real.execute(sql, *a, **k)
+    _patch_conn(monkeypatch, store, watch)
+    for _ in range(3):
+        with pytest.raises(AccountStoreConnectionUnsafeError):
+            store.increment_session_epoch(aid, "2026-01-01T00:00:00.000000Z")
+    monkeypatch.undo()
+    assert seen == []                                       # no ROLLBACK/BEGIN retry
+    assert store._connection_unsafe is True                 # never self-cleared
+
+
+def test_b01_successful_rollback_propagates_original_without_false_class(db_path,
+                                                                         monkeypatch):
+    """§4.2.4-5 — when the defensive rollback SUCCEEDS the original body/invariant
+    error propagates unchanged, is classified confirmed_unchanged, and the
+    connection stays usable. No false indeterminate classification."""
+    store = SqliteAccountStore(db_path)
+    aid = _mk(store, "b01ok@example.com")
+
+    class _ZeroCursor:
+        rowcount = 0
+
+    def hook(real, sql, *a, **k):
+        if sql.strip().upper().startswith("UPDATE ACCOUNTS SET SESSION_EPOCH"):
+            return _ZeroCursor()
+        return real.execute(sql, *a, **k)
+    _patch_conn(monkeypatch, store, hook)
+    with pytest.raises(AccountStoreInvariantError) as ei:
+        store.increment_session_epoch(aid, "2026-01-01T00:00:00.000000Z")
+    monkeypatch.undo()
+    assert ei.value.durable_outcome == DURABLE_CONFIRMED_UNCHANGED
+    assert not isinstance(ei.value, AccountStoreRollbackError)
+    assert store._connection_unsafe is False
+    assert store.get_account_by_id(aid)["session_epoch"] == 0   # still readable
+    assert store.increment_session_epoch(aid, "2026-01-01T00:00:01.000000Z") == 1
+
+
+def test_b01_invariant_error_claims_no_outcome_before_write_resolves_it():
+    """§4.2.3 — the unconditional class-level confirmed_unchanged is gone: an
+    AccountStoreInvariantError constructed on its own asserts NOTHING about the
+    transaction, so a missing attribute can never be read as 'unchanged'."""
+    bare = AccountStoreInvariantError("row count 0")
+    assert not hasattr(bare, "durable_outcome")
+    assert getattr(type(bare), "durable_outcome", None) is None
+
+
+def test_b01_body_exception_that_rolls_back_keeps_plain_exceptions_plain(db_path):
+    """§4.2.5 — a non-invariant body exception with a successful rollback is still
+    re-raised as itself; no durable_outcome is invented for it."""
+    store = SqliteAccountStore(db_path)
+    aid = _mk(store, "b01plain@example.com")
+    sentinel = RuntimeError("original body failure")
+    with pytest.raises(RuntimeError) as ei:
+        with store._write() as c:
+            c.execute("UPDATE accounts SET session_epoch = 99 WHERE account_id = ?", (aid,))
+            raise sentinel
+    assert ei.value is sentinel
+    assert not hasattr(ei.value, "durable_outcome")
+    assert store._connection_unsafe is False
+    assert store.get_account_by_id(aid)["session_epoch"] == 0
+
+
+def test_b01_commit_error_semantics_are_unchanged(db_path, monkeypatch):
+    """§4.2.8 — AccountStoreCommitError keeps its COMMIT-specific meaning and its
+    existing confirmed_unchanged vs indeterminate logic."""
+    store = SqliteAccountStore(db_path)
+    aid = _mk(store, "b01commit@example.com")
+    _inject_exec(monkeypatch, store, ["COMMIT"])
+    with pytest.raises(AccountStoreCommitError) as confirmed:
+        store.increment_session_epoch(aid, "2026-01-01T00:00:00.000000Z")
+    monkeypatch.undo()
+    assert confirmed.value.durable_outcome == DURABLE_CONFIRMED_UNCHANGED
+    assert not isinstance(confirmed.value, AccountStoreRollbackError)
+    _inject_exec(monkeypatch, store, ["COMMIT"], mode="commit_then_raise")
+    with pytest.raises(AccountStoreCommitError) as indeterminate:
+        store.increment_session_epoch(aid, "2026-01-01T00:00:01.000000Z")
+    monkeypatch.undo()
+    assert indeterminate.value.durable_outcome == DURABLE_INDETERMINATE
+
+
+def test_b01_sweep_every_read_and_write_seam_refuses_when_unsafe(db_path, monkeypatch):
+    """§7.7 sweep — every AccountStore read and write user is covered by the
+    unsafe-state refusal, with no seam left reading unresolved state."""
+    store = SqliteAccountStore(db_path)
+    now = "2026-01-01T00:00:00.000000Z"
+    aid = _mk(store, "b01sweep@example.com")
+    _make_unsafe(monkeypatch, store, aid)
+    read_seams = [
+        lambda: store.get_account_by_id(aid),
+        lambda: store.get_account_by_normalized_email("b01sweep@example.com"),
+        lambda: store.count_accounts(),
+        lambda: store.get_email_token_by_hash("h"),
+        lambda: store.active_tokens(aid, RESET),
+        lambda: store.active_verification_tokens(aid),
+        lambda: store.password_reset_eligible("h", now),
+    ]
+    write_seams = [
+        lambda: store.create_account(_acct.new_account_id(), "x@y.z", "h", now),
+        lambda: store.set_password_hash(aid, "h", now),
+        lambda: store.increment_session_epoch(aid, now),
+        lambda: store.mark_email_verified(aid, now),
+        lambda: store.set_status(aid, "disabled", now),
+        lambda: store.create_email_token(_acct.new_account_id(), aid, RESET, "h",
+                                         "2099-01-01T00:00:00.000000Z", now),
+        lambda: store.consume_token("h", RESET, now),
+        lambda: store.supersede_tokens(aid, RESET, now),
+        lambda: store.complete_password_reset("h", "nh", now),
+        lambda: store.record_rate_attempt("s", "login", now,
+                                          "2099-01-01T00:00:00.000000Z", 3),
+        lambda: store.cleanup_expired_rate_limits(now),
+    ]
+    for seam in read_seams + write_seams:
+        with pytest.raises(AccountStoreConnectionUnsafeError):
+            seam()
