@@ -18031,3 +18031,71 @@ NB-2 and the custodian/consent/surface obligations retain their existing scope,
 owners and return gates. Implementation, pilot and human collection are not
 activated. PRE-FCORA SYSTEMATIC CROSS-PHASE RECONCILIATION REVIEW remains
 MANDATORY LATER — NOT STARTED, and is not satisfied by this synchronization.
+
+
+---
+
+## F-01/F-02 v2.1 — repository adoption and active-contract installation
+
+**Subject and preparation identity.** ACCOUNT SECURITY FAILURE-ATOMICITY
+REMEDIATION, F-01/F-02 ONLY; not the historical OSP findings bearing similar IDs.
+Repository: Amirjaferali/inventorai. Authoritative branch:
+feature/atomic-json-session-persistence. Preparation base:
+2fb3e2166a1bd0b5c3d57850a4f9d50eeba14d45, tree
+4c7ddb4b9d0d3e164dd0edbfe9ad3bf5ba6fab8e.
+The preparation base is historical, not a permanent live-tip assertion.
+
+**Authority.** Owner approved Contract v2.1 in full, without Implementation START.
+The Owner's express release of instruction F01F02-V21-ADOPTION-CREATOR-01 v1.0
+authorizes one local governance-adoption candidate and its specified evidence only.
+This entry records that issued construction authority, not a future exact-SHA
+acceptance, publication, PR or merge decision. See the corresponding Owner Decision
+Register section. No new Owner decision identifier or unsupported date is assigned.
+
+**Exact scope.** One new dedicated contract document,
+ACCOUNT_SECURITY_FAILURE_ATOMICITY_REMEDIATION_CONTRACT_v2.1.md; one insertion in
+ACTIVE_INCREMENT_CONTRACT.md installing the governing declaration and preserving
+the old declaration as history; this append; and one append in OWNER_DECISION_REGISTER.md.
+No fifth path. All earlier roadmap bytes are preserved. Runtime, application,
+test, schema, CI, dependency, product, ownership, commercial and deployment deltas: 0.
+
+**Authority transition and next gate.** The proposed active declaration does not
+govern the authoritative branch merely because it exists in a local candidate.
+At candidate freeze: exact-SHA acceptance, publication, PR, merge, and post-merge
+verification are not claimed. These statements are freeze-time history only.
+Adoption requires the exact candidate's required independent review, Lead
+adjudication, Owner exact-SHA acceptance, separately authorized publication, PR and
+merge, CREATE A MERGE COMMIT, and Lead post-merge identity verification.
+Once those conditions hold, Contract v2.1 is repository-authoritative AND the active
+governing implementation contract. IMPLEMENTATION START remains NOT GRANTED BY
+ADOPTION. The direct next gate is a separate explicit Owner Implementation START
+decision for that already-active contract. No second activation candidate is needed.
+
+**Review boundary.** Governance-only adoption; Lean LEVEL 2 / DEPTH 2;
+AHAEP FOCUSED DIFFERENTIAL. Source fidelity, exact identity, authority separation,
+discovery, historical preservation and self-termination are the changed risk surface.
+Independent review includes the Lean 5B.3 minimum and the reviewer's own Universal
+Guardrail Smoke under 5B.13. This is not a downgrade of future security implementation:
+F-01/F-02 implementation remains a separate LEVEL-1 lane with the contract's full
+suite, transitive sweep and bounded independent security review. No implementation
+acceptance test is claimed to pass through documentation adoption.
+
+**Self-termination.** Verified adoption discharges this contract-installation gate
+without writing this candidate's own SHA or future merge SHA into its tree.
+The live tip and verified gate outcome come from Git and preserved lifecycle evidence.
+No status-sync, closure-only, or activation candidate is required merely because
+adoption succeeded. Before Implementation START, reconcile the governance-only base
+advance and bind the separate authority to the verified implementation starting SHA;
+this read-only reconciliation is not another contract-adoption cycle.
+
+**Preserved states.** OSP lifecycle remains CLOSED under Owner closure; its standing
+control remains ACTIVE. D-01 through D-05 remain closed as contract-review findings;
+Account Security F-01/F-02 are not fixed by this adoption. Account Security F-03
+remains a separate Owner product-decision gate. The distinct historical OSP F-03
+retains its next-authorized-material-OSP-version return gate. G-4-A remains
+CURRENT — NOT FIXED; direct remediation DEFERRED — NOT CANCELLED.
+CEHR / Route-B, G-4-B, M-1, T1-A′, HICR / readiness, RUN-004, R4–R8 and existing
+custodian / consent / surface obligations retain their existing authorities and
+return gates. PRE-FCORA remains MANDATORY LATER — NOT STARTED; FCORA, pilot,
+human study / collection, production, deployment and paid activation are not
+authorized. No ownership, commercial, AI or readiness state is changed.

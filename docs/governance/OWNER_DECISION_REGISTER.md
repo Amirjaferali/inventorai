@@ -2021,3 +2021,96 @@ authorization does not exercise any of those later decisions.
 
 This lineage record grants no new execution authority. The governing limits and
 return gates for F-03, CEHR, G-4-A, readiness and PRE-FCORA remain unchanged.
+
+
+---
+
+## F-01/F-02 v2.1 — contract approval and adoption authority
+
+This records issued Owner authority without inventing an OD/D identifier, date,
+signature or historical acceptance. Account Security F-01/F-02 are distinct from
+historical OSP finding identifiers.
+
+### Issued contract-substance approval — preserved Owner text
+
+OWNER DECISION
+ACCOUNT SECURITY FAILURE-ATOMICITY REMEDIATION
+F-01 + F-02 CONTRACT v2.1
+
+I approve:
+
+OWNER DECISION PACKET — VERSION 2.1
+
+in full, including:
+
+- all retained v2.0 decisions;
+- D-04 corrected session-material/authenticated-validity semantics;
+- D-05 corrected transactional ineligibility/row-count classification;
+- D-02 Option A shared `_write()` hardening;
+- the two-stage F-02 design;
+- the four-path boundary;
+- the expanded dependency-bounded transitive sweep;
+- the required bounded independent security review;
+- and all preserved-state and STOP fences.
+
+CONTRACT VERSION 2.1:
+APPROVED
+
+PREPARATION BASE:
+2fb3e2166a1bd0b5c3d57850a4f9d50eeba14d45
+
+This approval authorizes recording the decisions and preparing the final
+Creator-facing implementation instruction and its complete OSP-MEI-PSC-001
+MC-01 through MC-18 assessment.
+
+IMPLEMENTATION AUTHORIZATION:
+NOT GRANTED BY THIS MESSAGE
+
+CREATOR SEND:
+NOT AUTHORIZED
+
+BRANCH / COMMIT / PUBLICATION / PR / MERGE:
+NOT AUTHORIZED
+
+The Lead must present the final implementation authorization and Creator-facing
+instruction for Owner approval before execution.
+
+NO ADDITIONAL CONTRACT REPAIR:
+REQUIRED
+
+NO ADDITIONAL BROAD REVIEW:
+REQUIRED
+
+END OWNER DECISION.
+
+### Separate adoption-construction authority and preserved limits
+
+Construction authority is the Owner's explicit release of the exact final instruction
+F01F02-V21-ADOPTION-CREATOR-01 v1.0, binding its preserved SHA-256 and this four-path
+scope. Creator must possess that issued release before constructing the candidate;
+an assistant-proposed authorization is not an issued Owner decision.
+
+The released scope installs the complete approved contract and its Active Contract
+declaration in one governed adoption lifecycle. The Owner's lifecycle correction
+distinguishes active governing terms from permission to start implementation:
+successful adoption and post-merge identity verification make v2.1 authoritative
+and active; Implementation START remains a separate explicit Owner decision.
+No generic standing-process rule is amended and no second activation candidate is
+required merely because adoption succeeded.
+
+Contract approval, candidate-construction authority, exact-SHA acceptance,
+publication, PR, merge, and Implementation START are distinct authorities.
+This record claims only the issued contract approval and bounded construction
+release. It neither grants nor asserts future lifecycle decisions. Publication,
+PR, merge and F-01/F-02 implementation are not authorized by that construction
+release. Later execution authority must be explicit and separately evidenced.
+
+The canonical contract is
+ACCOUNT_SECURITY_FAILURE_ATOMICITY_REMEDIATION_CONTRACT_v2.1.md.
+The current governing declaration is in ACTIVE_INCREMENT_CONTRACT.md.
+The adoption lifecycle and next-gate determination are in ACTIVE_EXECUTION_ROADMAP.md,
+section "F-01/F-02 v2.1 — repository adoption and active-contract installation".
+
+No F-03, OSP closure/control, G-4-A, CEHR / Route-B, T1-A′, HICR / readiness /
+RUN-004, PRE-FCORA, product, ownership, commercial, AI or human-study decision
+is changed. Prior entries remain byte-for-byte intact.
