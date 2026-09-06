@@ -59,7 +59,7 @@ def _start(c, domain="mechanical", seed=MECH_SEED):
 
 
 def _set_lang(c, lang):
-    assert c.get(f"/ui-language?lang={lang}").status_code in (200, 302)
+    assert c.post("/ui-language", data={"lang": lang}).status_code in (200, 302)
 
 
 def _raw(c, sid):
