@@ -38,6 +38,7 @@ count, referral, tool-guidance, validation-planning, or structural change;
 must not assert implementation-chosen mechanics beyond the names and
 wordings the contract itself pins.
 """
+from tests.csrf_client import csrf_client
 import html as html_module
 from test_p4_1b2a_durable_answer_append import answered_post  # P4-1b-2a
 import json
@@ -195,7 +196,7 @@ def _standalone_counts(section_text, statements):
 
 
 def _start(idea):
-    client = app.test_client()
+    client = csrf_client(app)
     r = client.post("/start", data={"idea": idea,
                                     "domain_confirm": DOMAIN_CONFIRM_VALUE})
     assert r.status_code == 302, "fixture defect: /start did not redirect"
@@ -252,7 +253,7 @@ def _single_record_fixture(disposition, content):
     SESSION_STORE[sid] = {"state": state, "last_result": None, "transcript": []}
     try:
         package = assemble_deliverable(state)
-        html = app.test_client().get(
+        html = csrf_client(app).get(
             f"/session/{sid}/deliverable").get_data(as_text=True)
     finally:
         SESSION_STORE.pop(sid, None)

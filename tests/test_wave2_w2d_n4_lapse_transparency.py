@@ -9,6 +9,7 @@ ever preserved). Rendering lives in the RVR-5 correction UX: when a correction
 causes a prior acceptance to lapse, the user sees a truthful governed
 explanation next to the correction acknowledgement.
 """
+from tests.csrf_client import csrf_client
 import os, sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
@@ -44,7 +45,7 @@ def client(tmp_path, monkeypatch):
     monkeypatch.setattr(appmod, "_STORE", None)
     appmod.SESSION_STORE.clear()
     appmod.app.config["TESTING"] = True
-    with appmod.app.test_client() as c:
+    with csrf_client(appmod.app) as c:
         yield c, appmod
 
 

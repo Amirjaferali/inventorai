@@ -14,6 +14,7 @@ The frozen §6.0 distinction these tests enforce:
 
 Visibility alone must create no decision-semantic consequence (A-24).
 """
+from tests.csrf_client import csrf_client
 import os, re, sys, html, copy
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
@@ -34,7 +35,7 @@ def client(tmp_path, monkeypatch):
     monkeypatch.setattr(appmod, "_STORE", None)
     appmod.SESSION_STORE.clear()
     appmod.app.config["TESTING"] = True
-    with appmod.app.test_client() as c:
+    with csrf_client(appmod.app) as c:
         yield c, appmod
 
 

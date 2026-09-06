@@ -21,6 +21,7 @@ File-creation contract:
     completed-project eligibility probe (documented inline) — every other
     path is the real replay.
 """
+from tests.csrf_client import csrf_client
 import html
 import re
 
@@ -51,7 +52,7 @@ RESUMED_AR = "تم استئناف المشروع — متابعة مُعاد ب�
 @pytest.fixture
 def client():
     app.config["TESTING"] = True
-    return app.test_client()
+    return csrf_client(app)
 
 
 def _token(client, sid):
@@ -234,7 +235,7 @@ def _mk_verified_client(email):
                          _acct.hash_password(PW),
                          "2026-01-01T00:00:00.000000Z", status="active")
     store.mark_email_verified(aid, "2026-01-01T00:00:00.000000Z")
-    c = app.test_client()
+    c = csrf_client(app)
     c.post("/login", data={"email": email, "password": PW})
     return c
 
@@ -250,7 +251,7 @@ def test_cross_account_resume_denied(client):
     assert r.status_code == 302                         # generic denial
     assert sid not in SESSION_STORE or \
         getattr(SESSION_STORE[sid]["state"], "domain", None) is None
-    anonymous = app.test_client()
+    anonymous = csrf_client(app)
     r = anonymous.post("/session/%s/resume" % sid, data={})
     assert r.status_code == 302
     assert sid not in SESSION_STORE or \

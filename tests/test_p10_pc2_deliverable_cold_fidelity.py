@@ -21,6 +21,7 @@ File-creation contract:
     NO duplication of replay logic in tests (parity is asserted against the
     canonical assembler + reconstruction seams).
 """
+from tests.csrf_client import csrf_client
 import html
 import json
 import re
@@ -48,7 +49,7 @@ ANSWER_2 = ("The mechanism works because the accelerometer outputs a voltage "
 @pytest.fixture
 def client():
     app.config["TESTING"] = True
-    return app.test_client()
+    return csrf_client(app)
 
 
 def _token(client, sid):

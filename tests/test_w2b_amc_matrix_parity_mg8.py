@@ -6,6 +6,7 @@ retained as mandatory evidence) and §13 (MG-8 diagnosis/measurement only —
 real /start, durable seed, known_problem, idea_summary, both guards,
 cause-vs-symptom, cold reconstruction, no semantic change).
 """
+from tests.csrf_client import csrf_client
 import copy
 import os
 import re
@@ -170,7 +171,7 @@ def client(tmp_path, monkeypatch):
     monkeypatch.setattr(appmod, "_STORE", None)
     appmod.SESSION_STORE.clear()
     appmod.app.config["TESTING"] = True
-    with appmod.app.test_client() as c:
+    with csrf_client(appmod.app) as c:
         yield c, appmod
 
 

@@ -24,6 +24,7 @@ repository; sending it locally would be untruthful) — proven absent here.
 The seam must not break anything: auth/CSRF/forms, export attachment headers,
 the /health surface, and static-JS loading are re-proven with headers active.
 """
+from tests.csrf_client import csrf_client
 import json
 import re
 
@@ -50,7 +51,7 @@ REQUIRED_DIRECTIVES = {
 
 def _new_client():
     app.config["TESTING"] = True
-    return app.test_client()
+    return csrf_client(app)
 
 
 def _mk_account(email):

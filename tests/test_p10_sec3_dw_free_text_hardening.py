@@ -25,6 +25,7 @@ Rejections reuse the route family's EXISTING error convention
 engine call, and mutate nothing. Unicode/Arabic/multiline text and
 exactly-at-limit input pass untouched.
 """
+from tests.csrf_client import csrf_client
 import re
 
 import pytest
@@ -39,11 +40,11 @@ VALID_INPUT = {"claim_class": "observed_fact", "provenance": "operator_entered"}
 
 def _new_client():
     app.config["TESTING"] = True
-    return app.test_client()
+    return csrf_client(app)
 
 
 def _new_workspace(client):
-    r = client.get("/decision-workspace")
+    r = client.post("/decision-workspace")
     assert r.status_code == 302
     return r.headers["Location"].rsplit("/decision-workspace/", 1)[-1]
 

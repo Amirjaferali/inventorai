@@ -9,6 +9,7 @@ pre-P9-E2-R baseline because classify_domain / DomainClassification did not exis
 and /start / the CLI consumed the str|None seam that could not represent ambiguity.
 """
 
+from tests.csrf_client import csrf_client
 import builtins
 import importlib.util
 import os
@@ -227,7 +228,7 @@ def test_red_r2_start_ambiguous_tie_fails_closed(activate, monkeypatch):
                                candidates=("mechanical", "medical_device"),
                                reason=DomainAmbiguityReason.EQUAL_SCORE)
     monkeypatch.setattr(web_app, "classify_domain", lambda _t: amb)
-    client = web_app.app.test_client()
+    client = csrf_client(web_app.app)
     before = set(web_app.SESSION_STORE)
     resp = _start_post(client, "an ambiguous cross-domain idea")
     assert resp.status_code == 200                       # not a 302 admission
@@ -253,7 +254,7 @@ def test_red_r10_start_multi_domain_fails_closed(monkeypatch):
                                  candidates=("mechanical", "medical_device"),
                                  reason=DomainAmbiguityReason.MULTI_DOMAIN)
     monkeypatch.setattr(web_app, "classify_domain", lambda _t: multi)
-    client = web_app.app.test_client()
+    client = csrf_client(web_app.app)
     before = set(web_app.SESSION_STORE)
     resp = _start_post(client, "a genuine multi-domain invention")
     assert resp.status_code == 200                       # fail closed, no admission
@@ -266,7 +267,7 @@ def test_red_r10_start_multi_domain_fails_closed(monkeypatch):
 
 def test_start_single_and_none_behavior_unchanged(monkeypatch):
     from web import app as web_app
-    client = web_app.app.test_client()
+    client = csrf_client(web_app.app)
     # SINGLE(electronics) admitted under confirmation (real classifier)
     resp = _start_post(client, "ESP32 microcontroller circuit with a voltage sensor")
     assert resp.status_code == 302 and "/session/" in resp.headers["Location"]

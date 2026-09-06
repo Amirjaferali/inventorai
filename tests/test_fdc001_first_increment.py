@@ -7,6 +7,7 @@ behavior; static source inspection is used only for prohibitions that cannot be
 observed behaviorally (e.g. confirming no persistence import).
 """
 
+from tests.csrf_client import csrf_client
 import os
 import sys
 import json
@@ -327,8 +328,8 @@ def test_no_prohibited_status_values():
 
 # 16 ------------------------------------------------------------------- §14.1/§14.2 (route)
 def test_workspace_route_renders_three_candidates():
-    client = app.test_client()
-    resp = client.get("/decision-workspace", follow_redirects=True)
+    client = csrf_client(app)
+    resp = client.post("/decision-workspace", follow_redirects=True)
     assert resp.status_code == 200
     body = resp.get_data(as_text=True)
     for name in CANDIDATE_NAMES:
@@ -341,8 +342,8 @@ def test_workspace_route_renders_three_candidates():
 
 # 17 ------------------------------------------------------------------- §14.10 (route/export)
 def test_export_route_available_without_restart():
-    client = app.test_client()
-    start = client.get("/decision-workspace", follow_redirects=False)
+    client = csrf_client(app)
+    start = client.post("/decision-workspace", follow_redirects=False)
     assert start.status_code == 302
     loc = start.headers["Location"]
     did = loc.rstrip("/").rsplit("/", 1)[-1]
@@ -390,15 +391,15 @@ def test_no_benchmark_result_represented():
     assert any("no benchmark run" in l.lower()
                for l in obj["export_metadata"]["limitations"])
 
-    client = app.test_client()
-    resp = client.get("/decision-workspace", follow_redirects=True)
+    client = csrf_client(app)
+    resp = client.post("/decision-workspace", follow_redirects=True)
     page = resp.get_data(as_text=True).lower()
     assert "benchmark result" not in page
 
 
 # --- helpers for route tests -------------------------------------------------
 def _start_decision(client):
-    start = client.get("/decision-workspace", follow_redirects=False)
+    start = client.post("/decision-workspace", follow_redirects=False)
     assert start.status_code == 302
     did = start.headers["Location"].rstrip("/").rsplit("/", 1)[-1]
     return did, FDC001_DECISIONS[did]
@@ -475,7 +476,7 @@ def test_evaluable_confirmed_mandatory_constraint_does_not_create_false_block():
 
 # 22 ------------------------------------------- defect 4: add-constraint route
 def test_route_add_constraint_persists_and_exports():
-    client = app.test_client()
+    client = csrf_client(app)
     did, rec = _start_decision(client)
     cand = rec.candidates[0].candidate_id
     resp = client.post("/decision-workspace/%s/constraint" % did, data={
@@ -494,7 +495,7 @@ def test_route_add_constraint_persists_and_exports():
 
 # 23 ----------------------------------- defect 4: gap resolve/reclassify routes
 def test_route_gap_resolve_and_reclassify():
-    client = app.test_client()
+    client = csrf_client(app)
     did, rec = _start_decision(client)
     gids = [g.gap_id for g in rec.gaps]
     assert len(gids) >= 2
@@ -551,7 +552,7 @@ def test_route_gap_resolve_and_reclassify():
 
 # 24 ------------------------------- defect 4: owner-preference set/clear routes
 def test_route_owner_preference_set_and_clear():
-    client = app.test_client()
+    client = csrf_client(app)
     did, rec = _start_decision(client)
     cand = rec.candidates[1].candidate_id
     rs = client.post("/decision-workspace/%s/preference" % did, data={
@@ -569,7 +570,7 @@ def test_route_owner_preference_set_and_clear():
 
 # 25 --------------------------------- defect 4: candidate-disposition route
 def test_route_candidate_disposition():
-    client = app.test_client()
+    client = csrf_client(app)
     did, rec = _start_decision(client)
     cand = rec.candidates[2].candidate_id
     resp = client.post("/decision-workspace/%s/candidate" % did, data={
@@ -585,7 +586,7 @@ def test_route_candidate_disposition():
 
 # 26 -------------------------- defect 4: bounded error + no mutation on invalid
 def test_route_invalid_mutation_shows_bounded_error_and_does_not_mutate():
-    client = app.test_client()
+    client = csrf_client(app)
     did, rec = _start_decision(client)
     rev_before = rec.revision
     hist_before = len(rec.history)

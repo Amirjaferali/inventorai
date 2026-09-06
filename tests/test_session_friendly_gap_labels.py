@@ -5,6 +5,7 @@ Development Step "Reference:" line and acknowledged-unknown gap contexts — now
 render short inventor-friendly labels. Internal IDs, state, engine behaviour and
 the final deliverable are unchanged; non-gap references pass through untouched.
 """
+from tests.csrf_client import csrf_client
 import os, sys, uuid
 import pytest
 
@@ -46,7 +47,7 @@ def test_non_gap_references_pass_through_unchanged(value):
 # --- rendered session page --------------------------------------------------
 
 def test_session_reference_line_shows_friendly_label_not_raw_id():
-    client = app.test_client()
+    client = csrf_client(app)
     r = client.post(
         "/start_ilt002_water_leak",
         data={"idea": "An electronic under-sink water leak sensor with wireless alert."},
@@ -79,7 +80,7 @@ def test_session_acknowledged_unknown_shows_friendly_label():
     )
     SESSION_STORE[sid] = {"state": s, "last_result": None, "transcript": []}
     try:
-        body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+        body = csrf_client(app).get(f"/session/{sid}").get_data(as_text=True)
         assert "What You Have Marked as Not Yet Known" in body
         assert "Practical feasibility:" in body           # friendly label rendered
         assert "PHYSICAL_FEASIBILITY" not in body          # raw internal id not exposed
@@ -90,7 +91,7 @@ def test_session_acknowledged_unknown_shows_friendly_label():
 
 
 def test_no_raw_underscore_gap_ids_for_the_six_in_session_html():
-    client = app.test_client()
+    client = csrf_client(app)
     r = client.post(
         "/start_ilt002_water_leak",
         data={"idea": "An electronic under-sink water leak sensor with wireless alert."},
@@ -104,7 +105,7 @@ def test_no_raw_underscore_gap_ids_for_the_six_in_session_html():
 
 
 def test_final_deliverable_route_unaffected():
-    client = app.test_client()
+    client = csrf_client(app)
     r = client.post(
         "/start_ilt002_water_leak",
         data={"idea": "An electronic under-sink water leak sensor with wireless alert."},

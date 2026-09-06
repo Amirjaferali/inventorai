@@ -8,6 +8,7 @@ store), so a legacy session can durably accept an answer — with no second
 persistence model, no tokenless fallback, no new UX/scope, no replay, and the
 routes still unlinked from core navigation.
 """
+from tests.csrf_client import csrf_client
 import os
 
 import pytest
@@ -49,7 +50,7 @@ def _answers(db_path, sid):
 
 @pytest.mark.parametrize("route", LEGACY_ROUTES)
 def test_legacy_route_starts_and_creates_durable_envelope(route, db_path):
-    client = app.test_client()
+    client = csrf_client(app)
     sid = _start_legacy(client, route)
     # The durable project envelope must exist BEFORE the first accepted answer.
     store = SqliteRecordStore(db_path)
@@ -63,7 +64,7 @@ def test_legacy_route_starts_and_creates_durable_envelope(route, db_path):
 
 @pytest.mark.parametrize("route", LEGACY_ROUTES)
 def test_legacy_route_accepted_answer_persists_recN(route, db_path):
-    client = app.test_client()
+    client = csrf_client(app)
     sid = _start_legacy(client, route)
     assert _answers(db_path, sid) == []
     tok = get_answer_token(client, sid)
@@ -82,7 +83,7 @@ def test_legacy_route_accepted_answer_persists_recN(route, db_path):
 
 @pytest.mark.parametrize("route", LEGACY_ROUTES)
 def test_legacy_route_no_tokenless_fallback(route, db_path):
-    client = app.test_client()
+    client = csrf_client(app)
     sid = _start_legacy(client, route)
     client.post(f"/session/{sid}",
                 data={"response": "A tokenless answer on a legacy route.",
@@ -93,7 +94,7 @@ def test_legacy_route_no_tokenless_fallback(route, db_path):
 
 
 def test_legacy_routes_remain_unlinked_from_core_navigation():
-    client = app.test_client()
+    client = csrf_client(app)
     home = client.get("/").get_data(as_text=True)
     data_page = client.get("/data-and-session").get_data(as_text=True)
     for route in LEGACY_ROUTES:

@@ -54,6 +54,7 @@ Contract-pinned surface used here (and nothing beyond it):
     chosen authorized interaction surface (see
     GREEN_ONLY_JOURNEY_OBLIGATIONS).
 """
+from tests.csrf_client import csrf_client
 import json
 from test_p4_1b2a_durable_answer_append import answered_post  # P4-1b-2a
 
@@ -195,7 +196,7 @@ GREEN_ONLY_JOURNEY_OBLIGATIONS = [
 
 # --- Real-path journey helpers ----------------------------------------------
 def _start(idea):
-    client = app.test_client()
+    client = csrf_client(app)
     r = client.post("/start", data={"idea": idea,
                                     "domain_confirm": DOMAIN_CONFIRM_VALUE})
     assert r.status_code == 302, (

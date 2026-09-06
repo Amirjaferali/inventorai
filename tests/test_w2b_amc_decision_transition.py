@@ -10,6 +10,7 @@ FDC-001 (`engine/decision_workspace.py`) remains the sole owner of decision
 comparability/readiness; `len(active_alternatives) >= 2` is never a
 comparability proxy; no rendered page may contradict FDC-001 truth.
 """
+from tests.csrf_client import csrf_client
 import os
 import re
 import sys
@@ -183,7 +184,7 @@ def client(tmp_path, monkeypatch):
     monkeypatch.setattr(appmod, "_STORE", None)
     appmod.SESSION_STORE.clear()
     appmod.app.config["TESTING"] = True
-    with appmod.app.test_client() as c:
+    with csrf_client(appmod.app) as c:
         yield c, appmod
 
 

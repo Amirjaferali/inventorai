@@ -12,6 +12,7 @@ Governed by
 - leaves scoring, transition outcome, gap status, maturity, stored answers,
   persistence behavior, and Domain-Gate rejection unchanged.
 """
+from tests.csrf_client import csrf_client
 import copy
 from test_p4_1b2a_durable_answer_append import answered_post  # P4-1b-2a
 import os
@@ -279,7 +280,7 @@ def test_rendered_asserted_page_shows_recognizer_explanation_once():
     _store(sid, state, last_result, transcript, "How does it work?")
     before_answer = copy.deepcopy(transcript)
     try:
-        body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+        body = csrf_client(app).get(f"/session/{sid}").get_data(as_text=True)
         assert body.lower().count(_DETECTOR_HONEST_MARK) == 1
         assert "More detail needed" in body                    # badge unchanged
         assert "asserted only — reasoning required" in body     # raw reason preserved
@@ -408,7 +409,7 @@ def test_render_preserves_answer_state_and_outcome():
     before_transition = last_result["transition"]
     before_store_keys = set(SESSION_STORE[sid].keys())
     try:
-        resp = app.test_client().get(f"/session/{sid}")
+        resp = csrf_client(app).get(f"/session/{sid}")
         assert resp.status_code == 200
         assert _HEADING in resp.get_data(as_text=True)  # WARN guidance shown
         assert SESSION_STORE[sid]["transcript"] == before_answer  # answer byte-for-byte
@@ -432,7 +433,7 @@ def test_render_pass_shows_no_guidance():
     state.domain = "electronics_electrical"
     _store(sid, state, {"transition": "PASS", "reason": "good", "direction": "PROGRESSING"})
     try:
-        body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+        body = csrf_client(app).get(f"/session/{sid}").get_data(as_text=True)
         assert _HEADING not in body
     finally:
         SESSION_STORE.pop(sid, None)
@@ -446,7 +447,7 @@ def _start(idea, confirm=True):
     data = {"idea": idea}
     if confirm:
         data["domain_confirm"] = DOMAIN_CONFIRM_VALUE
-    return app.test_client().post("/start", data=data, follow_redirects=False)
+    return csrf_client(app).post("/start", data=data, follow_redirects=False)
 
 
 def test_unsupported_domain_rejection_unchanged(monkeypatch):

@@ -7,6 +7,7 @@ port, or run web/app.py as a long-lived subprocess; they use Flask's test_client
 and monkeypatched environment. No existing test is modified.
 """
 
+from tests.csrf_client import csrf_client
 import os
 from test_p4_1b2a_durable_answer_append import answered_post, seed_direct_session_envelope  # P4-1b-2a
 from pathlib import Path
@@ -55,7 +56,7 @@ def _answer_once(sid):
         "last_question": "Q",
     }
     seed_direct_session_envelope(sid, state)  # explicit P4-1b-2a durable envelope
-    answered_post(app.test_client(), sid, {"response": _REASONED})
+    answered_post(csrf_client(app), sid, {"response": _REASONED})
 
 
 # --------------------------------------------------------------------------- R6

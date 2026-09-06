@@ -14,6 +14,7 @@ Tests assert rendered-output behavior (panel presence/absence), not internals.
 They are written to FAIL on the prior stacked-panel behavior and PASS only after
 the template precedence guards are applied.
 """
+from tests.csrf_client import csrf_client
 import copy
 from test_p4_1b2a_durable_answer_append import answered_post  # P4-1b-2a
 import os
@@ -49,7 +50,7 @@ def _start(idea, confirm=True):
     data = {"idea": idea}
     if confirm:
         data["domain_confirm"] = DOMAIN_CONFIRM_VALUE
-    return app.test_client().post("/start", data=data, follow_redirects=False)
+    return csrf_client(app).post("/start", data=data, follow_redirects=False)
 
 
 def _start_electronics_session():
@@ -93,9 +94,9 @@ def test_uncertainty_state_uncertainty_is_sole_primary():
     # Uncertainty via the non-scoring "I do not know this yet" action (no WARN).
     sid = _start_electronics_session()
     try:
-        app.test_client().post(f"/session/{sid}",
+        csrf_client(app).post(f"/session/{sid}",
                                data={"response": "I don't know", "action": "unknown"})
-        body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+        body = csrf_client(app).get(f"/session/{sid}").get_data(as_text=True)
         assert _primary_panels(body) == ["uncertainty"]  # co-authoring suppressed
     finally:
         SESSION_STORE.pop(sid, None)
@@ -104,9 +105,9 @@ def test_uncertainty_state_uncertainty_is_sole_primary():
 def test_arabic_uncertainty_state_uncertainty_is_sole_primary():
     sid = _start_electronics_session()
     try:
-        app.test_client().post(f"/session/{sid}",
+        csrf_client(app).post(f"/session/{sid}",
                                data={"response": "لا أعرف", "action": "unknown"})
-        body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+        body = csrf_client(app).get(f"/session/{sid}").get_data(as_text=True)
         assert _primary_panels(body) == ["uncertainty"]
     finally:
         SESSION_STORE.pop(sid, None)
@@ -120,7 +121,7 @@ def test_arabic_uncertainty_suppresses_scaffolding_and_coauthoring_and_is_rtl():
     sid = _start_electronics_session()
     try:
         _force(sid, last_result=_warn(), last_response="لا أعرف")
-        body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+        body = csrf_client(app).get(f"/session/{sid}").get_data(as_text=True)
         assert _primary_panels(body) == ["uncertainty"]
         assert 'dir="rtl"' in body and body.count('dir="rtl"') == 1
         assert '<html lang="en">' in body
@@ -134,7 +135,7 @@ def test_uncertainty_wins_over_warn_scaffolding():
     sid = _start_electronics_session()
     try:
         _force(sid, last_result=_warn(), last_response="I don't know")
-        body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+        body = csrf_client(app).get(f"/session/{sid}").get_data(as_text=True)
         assert _primary_panels(body) == ["uncertainty"]
         assert _WARN_BADGE in body  # truthful WARN state NOT hidden
     finally:
@@ -146,7 +147,7 @@ def test_warn_not_uncertain_scaffolding_is_sole_primary():
     try:
         _force(sid, last_result=_warn(),
                last_response="the plug senses current and cuts power")
-        body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+        body = csrf_client(app).get(f"/session/{sid}").get_data(as_text=True)
         assert _primary_panels(body) == ["scaffolding"]  # co-authoring suppressed
         assert _WARN_BADGE in body
     finally:
@@ -166,7 +167,7 @@ def test_non_warn_non_uncertainty_state_coauthoring_is_sole_primary():
     try:
         _force(sid, last_result=_pass(),
                last_response="it opens a relay when current exceeds a threshold")
-        body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+        body = csrf_client(app).get(f"/session/{sid}").get_data(as_text=True)
         assert _primary_panels(body) == ["coauthoring"]
     finally:
         SESSION_STORE.pop(sid, None)
@@ -176,15 +177,15 @@ def test_exactly_one_primary_panel_in_every_exercised_state():
     sid = _start_electronics_session()
     try:
         # fresh
-        b = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+        b = csrf_client(app).get(f"/session/{sid}").get_data(as_text=True)
         assert len(_primary_panels(b)) == 1
         # uncertainty
         _force(sid, last_result=_warn(), last_response="I don't know")
-        b = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+        b = csrf_client(app).get(f"/session/{sid}").get_data(as_text=True)
         assert len(_primary_panels(b)) == 1
         # WARN not-uncertain
         _force(sid, last_result=_warn(), last_response="it opens a relay at 5V")
-        b = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+        b = csrf_client(app).get(f"/session/{sid}").get_data(as_text=True)
         assert len(_primary_panels(b)) == 1
     finally:
         SESSION_STORE.pop(sid, None)
@@ -197,7 +198,7 @@ def test_exactly_one_primary_panel_in_every_exercised_state():
 def test_clarification_remains_collapsed_on_demand():
     sid = _start_electronics_session()
     try:
-        body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+        body = csrf_client(app).get(f"/session/{sid}").get_data(as_text=True)
         assert _CLARIFICATION in body           # available
         assert "<details" in body               # collapsed/on-demand, not an open panel
     finally:
@@ -209,7 +210,7 @@ def test_responsibility_truthful_content_preserved():
     try:
         gap_type = select_next_gap(SESSION_STORE[sid]["state"])
         resp = get_responsibility(gap_type) if gap_type else None
-        body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+        body = csrf_client(app).get(f"/session/{sid}").get_data(as_text=True)
         assert resp is not None
         assert resp["label"] in body            # responsibility not removed
         assert resp["guidance"] in body
@@ -222,7 +223,7 @@ def test_coauthoring_not_removed_renders_primary_in_non_uncertainty_non_warn_sta
     try:
         _force(sid, last_result=_pass(),
                last_response="it opens a relay when current exceeds a threshold")
-        body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+        body = csrf_client(app).get(f"/session/{sid}").get_data(as_text=True)
         # Capability preserved: the co-authoring panel and its unchanged helper
         # heading both render as primary in a non-uncertainty / non-WARN state.
         assert _COAUTHORING in body
@@ -235,7 +236,7 @@ def test_truthful_warn_badge_visible_when_scaffolding_panel_suppressed():
     sid = _start_electronics_session()
     try:
         _force(sid, last_result=_warn(), last_response="I don't know")
-        body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+        body = csrf_client(app).get(f"/session/{sid}").get_data(as_text=True)
         assert _SCAFFOLDING not in body   # advisory scaffolding panel suppressed
         assert _WARN_BADGE in body        # truthful WARN indicator preserved
     finally:
@@ -246,12 +247,12 @@ def test_truthful_gap_progress_and_interaction_ack_visible():
     sid = _start_electronics_session()
     try:
         # gap-progress list renders from the truthful state.
-        body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+        body = csrf_client(app).get(f"/session/{sid}").get_data(as_text=True)
         assert "gap-row" in body
         # interaction acknowledgement renders after a non-answer action.
-        app.test_client().post(f"/session/{sid}",
+        csrf_client(app).post(f"/session/{sid}",
                                data={"response": "", "action": "deferred"})
-        body2 = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+        body2 = csrf_client(app).get(f"/session/{sid}").get_data(as_text=True)
         assert "badge-warn" in body2
     finally:
         SESSION_STORE.pop(sid, None)
@@ -264,7 +265,7 @@ def test_truthful_gap_progress_and_interaction_ack_visible():
 def test_six_honest_actions_unchanged_no_seventh():
     sid = _start_electronics_session()
     try:
-        body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+        body = csrf_client(app).get(f"/session/{sid}").get_data(as_text=True)
         assert body.count('name="action"') == 6
         for v in ("answered", "unknown", "deferred", "provisional_assumption",
                   "specialist_requested", "evidence_requested"):
@@ -277,7 +278,7 @@ def test_saved_answer_verbatim_and_guidance_not_persisted():
     sid = _start_electronics_session()
     answer = "The ESP32 reads the voltage sensor and opens a relay above 5V."
     try:
-        answered_post(app.test_client(), sid, {"response": answer, "action": "answered"})
+        answered_post(csrf_client(app), sid, {"response": answer, "action": "answered"})
         tx = SESSION_STORE[sid]["transcript"]
         assert tx[-1]["response"] == answer
     finally:
@@ -292,8 +293,8 @@ def test_render_does_not_change_maturity_gaps_or_outcome():
     before_gaps = [(g.gap_type, g.status) for g in state.gaps]
     before_result = copy.deepcopy(SESSION_STORE[sid].get("last_result"))
     try:
-        app.test_client().get(f"/session/{sid}")
-        app.test_client().get(f"/session/{sid}")
+        csrf_client(app).get(f"/session/{sid}")
+        csrf_client(app).get(f"/session/{sid}")
         assert state.maturity_level == before_maturity
         assert [(g.gap_type, g.status) for g in state.gaps] == before_gaps
         assert SESSION_STORE[sid].get("last_result") == before_result
@@ -304,9 +305,9 @@ def test_render_does_not_change_maturity_gaps_or_outcome():
 def test_no_forbidden_answer_clarification_fields():
     sid = _start_electronics_session()
     try:
-        app.test_client().post(f"/session/{sid}",
+        csrf_client(app).post(f"/session/{sid}",
                                data={"response": "I don't know", "action": "unknown"})
-        app.test_client().get(f"/session/{sid}")
+        csrf_client(app).get(f"/session/{sid}")
         state = SESSION_STORE[sid]["state"]
         for f in _FORBIDDEN_FIELDS:
             assert not hasattr(state, f)

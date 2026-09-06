@@ -12,6 +12,7 @@ byte-identical across languages, and no mixed-language failure state occurs.
 It also carries the W1-N2 Arabic adversarial enumerated small-talk corpus on that
 same real route.
 """
+from tests.csrf_client import csrf_client
 import html as _html
 import os
 import re
@@ -47,7 +48,7 @@ def client(tmp_path, monkeypatch):
     monkeypatch.setattr(appmod, "_STORE", None)
     appmod.SESSION_STORE.clear()
     appmod.app.config["TESTING"] = True
-    with appmod.app.test_client() as c:
+    with csrf_client(appmod.app) as c:
         yield c, appmod
 
 

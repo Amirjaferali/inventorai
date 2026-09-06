@@ -6,6 +6,7 @@ The bounded decision-capture capability lives INSIDE the existing Path-N
 journey (session + deliverable surfaces): no second page, no second journey,
 no Decision Workspace activation.
 """
+from tests.csrf_client import csrf_client
 import os, re, sys, html
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
@@ -28,7 +29,7 @@ def client(tmp_path, monkeypatch):
     monkeypatch.setattr(appmod, "_STORE", None)
     appmod.SESSION_STORE.clear()
     appmod.app.config["TESTING"] = True
-    with appmod.app.test_client() as c:
+    with csrf_client(appmod.app) as c:
         yield c, appmod
 
 

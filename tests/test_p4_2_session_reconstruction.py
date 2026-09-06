@@ -21,6 +21,7 @@ durable SQLite DB lives only under the pytest-managed `INVENTORAI_DB_PATH` from
 `tests/conftest.py`. No push/PR/merge. Out of scope: writable continuation,
 session resume, durable outputs, FPC-02, Phase 5.
 """
+from tests.csrf_client import csrf_client
 import copy
 import os
 import re
@@ -58,7 +59,7 @@ _TOKEN_RE = re.compile(
 @pytest.fixture
 def client():
     app.config["TESTING"] = True
-    with app.test_client() as c:
+    with csrf_client(app) as c:
         yield c
 
 

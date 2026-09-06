@@ -7,6 +7,7 @@ that reachability limitations are honored truthfully (no false firing on
 the governed artifact surface), and that every W2-B string is a governed
 EN/AR pair that never overstates what happened.
 """
+from tests.csrf_client import csrf_client
 import os
 import re
 import sys
@@ -70,7 +71,7 @@ def client(tmp_path, monkeypatch):
     monkeypatch.setattr(appmod, "_STORE", None)
     appmod.SESSION_STORE.clear()
     appmod.app.config["TESTING"] = True
-    with appmod.app.test_client() as c:
+    with csrf_client(appmod.app) as c:
         yield c, appmod
 
 

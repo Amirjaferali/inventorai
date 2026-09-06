@@ -30,6 +30,7 @@ raw substring substance semantics, never fires for empty/unknown domains, and
 grants REASONED only at the existing minimum response length.
 """
 
+from tests.csrf_client import csrf_client
 import warnings
 from test_p4_1b2a_durable_answer_append import answered_post, seed_direct_session_envelope  # P4-1b-2a
 
@@ -542,7 +543,7 @@ def test_explicit_unknown_action_is_never_assessed_even_with_gate_text():
         state = entry["state"]
         before = (state.iteration, state.maturity_level,
                   [(g.gap_type, g.status) for g in state.gaps])
-        r = app.test_client().post(
+        r = csrf_client(app).post(
             f"/session/{sid}",
             data={"action": "unknown",
                   "response": "Fan must continue because sensor still reads "
@@ -569,7 +570,7 @@ def test_answered_flow_keeps_transcript_and_ledger_verbatim():
         # exercising the Layer-2 connective+substance gate.
         answer = ("The controller opens the relay because the sensor still "
                   "reads high temperature and the enclosure has not cooled.")
-        r = answered_post(app.test_client(), sid, {"action": "answered", "response": answer})
+        r = answered_post(csrf_client(app), sid, {"action": "answered", "response": answer})
         assert r.status_code in (301, 302)
         # Exactly one new transcript record, byte-for-byte verbatim.
         assert len(entry["transcript"]) == 1

@@ -4,6 +4,7 @@ Authorized by docs/governance/PHASE_1_PATH_DESIGNATION_AUTHORIZATION.md (16e020e
 Phase 1 carries the path designation only. It must NOT change content:
 Path N sessions receive legacy question content until Phase 2.
 """
+from tests.csrf_client import csrf_client
 import os
 import sys
 import uuid
@@ -22,7 +23,7 @@ IDEA_TEXT = (
 
 
 def _client():
-    return app.test_client()
+    return csrf_client(app)
 
 
 def _post_route(client, route):

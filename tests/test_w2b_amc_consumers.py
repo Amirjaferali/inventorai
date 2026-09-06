@@ -22,6 +22,7 @@ worktree, `__pycache__` excluded) found SEVEN runtime call sites plus the
 The three P9 digest-pin files are covered by the base contract's bounded
 mechanical-re-freeze allowance and revalidated here.
 """
+from tests.csrf_client import csrf_client
 import hashlib
 import os
 import re
@@ -104,7 +105,7 @@ def client(tmp_path, monkeypatch):
     monkeypatch.setattr(appmod, "_STORE", None)
     appmod.SESSION_STORE.clear()
     appmod.app.config["TESTING"] = True
-    with appmod.app.test_client() as c:
+    with csrf_client(appmod.app) as c:
         yield c, appmod
 
 

@@ -1,16 +1,13 @@
 # InventorAI — Current Repository Execution Instructions
 
-## Current authority and transition scope
+## Current authority
 
-The Owner's Astra Autonomous Delivery Operating Model — Transition Candidate
-Preparation instruction authorizes the bounded seven-path transition recorded in
-docs/governance/ACTIVE_INCREMENT_CONTRACT.md. The candidate does not authorize
-its own publication or integration. Its initial integration retains the one-time
-Owner acceptance/publication and separate merge decisions recorded there.
-
-The replacement operating rules take effect only after authoritative transition
-merge, post-merge verification and the applicable safeguard verification. The
-conditional first milestone is not activated by the existence of this file.
+ASTRA MILESTONE 1 is ACTIVE following PR #618 integration and verification of all
+activation safeguards. The Owner's ASTRA-M1-R05-IMPLEMENT-DELIVER-01 instruction
+expressly authorizes bounded R-05 implementation and autonomous delivery, followed
+by the included strategic assessment. ACTIVE_INCREMENT_CONTRACT.md records the
+scope, preserved boundaries and mandatory review/merge safeguards. Bootstrap-only
+preparation restrictions are consumed; they do not constrain this implementation.
 
 docs/governance/LEAN_GOVERNANCE_AND_AGENT_CONTINUITY_PROTOCOL.md §2 owns milestone
 authority and its precedence; §§3–5B own risk, tests and review. The

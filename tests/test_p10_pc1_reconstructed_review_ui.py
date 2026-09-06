@@ -26,6 +26,7 @@ Authorized product claim (exact, from the merged P4-2 Level-1 module):
    recomputed from its saved inputs and accepted answers. This is not a
    resumed session."
 """
+from tests.csrf_client import csrf_client
 import html
 import re
 
@@ -60,7 +61,7 @@ ANSWER_2 = ("The mechanism works because the accelerometer outputs a voltage "
 @pytest.fixture
 def client():
     app.config["TESTING"] = True
-    return app.test_client()
+    return csrf_client(app)
 
 
 def _start(client, idea=ELEC_IDEA, domain="electronics_electrical"):

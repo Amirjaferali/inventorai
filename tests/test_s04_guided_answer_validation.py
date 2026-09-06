@@ -11,6 +11,7 @@ No real server/port; no durable file; session seeded in-memory using the same
 pattern as tests/test_web_app.py; no application code is modified by the tests.
 """
 
+from tests.csrf_client import csrf_client
 import re
 
 from web.app import app, SESSION_STORE
@@ -56,7 +57,7 @@ def _snapshot(entry):
 def test_empty_answered_shows_error_once():
     _seed_session(_SID)
     try:
-        c = app.test_client()
+        c = csrf_client(app)
         r = answered_post(c, _SID, {"response": "", "action": "answered"},
                    follow_redirects=True)
         assert r.status_code == 200
@@ -69,7 +70,7 @@ def test_empty_answered_shows_error_once():
 def test_whitespace_only_answered_shows_error():
     _seed_session(_SID)
     try:
-        c = app.test_client()
+        c = csrf_client(app)
         r = answered_post(c, _SID, {"response": "   \t  ", "action": "answered"},
                    follow_redirects=True)
         assert ERROR_MSG in r.get_data(as_text=True), "whitespace-only answer must be treated as empty"
@@ -80,7 +81,7 @@ def test_whitespace_only_answered_shows_error():
 def test_error_element_id_and_aria_association():
     _seed_session(_SID)
     try:
-        c = app.test_client()
+        c = csrf_client(app)
         body = answered_post(c, _SID, {"response": "", "action": "answered"},
                       follow_redirects=True).get_data(as_text=True)
         # Prove the intended EMPTY-ANSWER VALIDATION branch was reached (a real
@@ -101,7 +102,7 @@ def test_error_element_id_and_aria_association():
 def test_conditional_autofocus_on_error():
     _seed_session(_SID)
     try:
-        c = app.test_client()
+        c = csrf_client(app)
         body = answered_post(c, _SID, {"response": "", "action": "answered"},
                       follow_redirects=True).get_data(as_text=True)
         assert ERROR_MSG in body, "must reach empty-answer validation, not token rejection"
@@ -116,7 +117,7 @@ def test_conditional_autofocus_on_error():
 def test_error_consumed_once_not_repeated_on_refresh():
     _seed_session(_SID)
     try:
-        c = app.test_client()
+        c = csrf_client(app)
         rendered = answered_post(c, _SID, {"response": "", "action": "answered"},
                follow_redirects=True).get_data(as_text=True)  # error rendered here (transient consumed)
         assert ERROR_MSG in rendered, "must reach empty-answer validation, not token rejection"
@@ -130,7 +131,7 @@ def test_error_consumed_once_not_repeated_on_refresh():
 def test_no_aria_or_autofocus_on_normal_load():
     _seed_session(_SID)
     try:
-        body = app.test_client().get(f"/session/{_SID}").get_data(as_text=True)
+        body = csrf_client(app).get(f"/session/{_SID}").get_data(as_text=True)
         ta = [t for t in re.findall(r"<textarea\b[^>]*>", body) if 'id="response"' in t][0]
         assert "aria-describedby" not in ta, "no dangling aria-describedby on normal load"
         assert "autofocus" not in ta, "no autofocus on normal load"
@@ -144,7 +145,7 @@ def test_no_aria_or_autofocus_on_normal_load():
 def test_non_answer_action_does_not_trigger_error():
     _seed_session(_SID)
     try:
-        c = app.test_client()
+        c = csrf_client(app)
         body = c.post(f"/session/{_SID}", data={"response": "", "action": "deferred"},
                       follow_redirects=True).get_data(as_text=True)
         assert ERROR_MSG not in body, "a valid non-answer option must not show the answer-required error"
@@ -155,7 +156,7 @@ def test_non_answer_action_does_not_trigger_error():
 def test_valid_answer_shows_no_error():
     _seed_session(_SID)
     try:
-        c = app.test_client()
+        c = csrf_client(app)
         body = answered_post(c, _SID,
                       {"response": "It uses a shunt resistor and comparator to detect the fault current.",
                             "action": "answered"}, follow_redirects=True).get_data(as_text=True)
@@ -169,7 +170,7 @@ def test_valid_answer_shows_no_error():
 def test_empty_answered_changes_no_state_and_no_transcript():
     _seed_session(_SID)
     try:
-        client = app.test_client()
+        client = csrf_client(app)
         before = _snapshot(SESSION_STORE[_SID])
         body = answered_post(client, _SID, {"response": "", "action": "answered"},
                              follow_redirects=True).get_data(as_text=True)
@@ -184,7 +185,7 @@ def test_empty_answered_changes_no_state_and_no_transcript():
 def test_empty_answered_redirects_302():
     _seed_session(_SID)
     try:
-        client = app.test_client()
+        client = csrf_client(app)
         r = answered_post(client, _SID, {"response": "", "action": "answered"})
         assert r.status_code == 302 and r.headers.get("Location", "").endswith(f"/session/{_SID}"), \
             "empty answered must still Post/Redirect/Get to the same session page"
@@ -199,7 +200,7 @@ def test_error_does_not_echo_submitted_content():
     _seed_session(_SID)
     try:
         # even a non-empty-but-whitespace payload must not be echoed; the message is a constant
-        body = answered_post(app.test_client(), _SID, {"response": "  \n ", "action": "answered"},
+        body = answered_post(csrf_client(app), _SID, {"response": "  \n ", "action": "answered"},
                                       follow_redirects=True).get_data(as_text=True)
         # the rendered error region contains only the constant message
         m = re.search(r'<[a-z0-9]+\b[^>]*\bid="answer-error"[^>]*>(.*?)</[a-z0-9]+>', body, re.DOTALL)
@@ -213,7 +214,7 @@ def test_error_does_not_echo_submitted_content():
 def test_preserved_answer_controls_intact():
     _seed_session(_SID)
     try:
-        body = app.test_client().get(f"/session/{_SID}").get_data(as_text=True)
+        body = csrf_client(app).get(f"/session/{_SID}").get_data(as_text=True)
         assert '<label for="response"' in body and "Your answer" in body, "answer label preserved"
         assert '<p class="question"' in body, "question paragraph preserved"
         assert "<fieldset" in body and "How do you want to respond?" in body, "response fieldset/legend preserved"
@@ -229,6 +230,6 @@ def test_preserved_answer_controls_intact():
 
 def test_missing_session_generic_redirect_unchanged():
     SESSION_STORE.pop("no-such", None)
-    r = app.test_client().post("/session/no-such", data={"response": "", "action": "answered"})
+    r = csrf_client(app).post("/session/no-such", data={"response": "", "action": "answered"})
     assert r.status_code == 302 and r.headers.get("Location", "").endswith("/"), \
         "unavailable session retains the generic redirect to /"

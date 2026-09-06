@@ -114,8 +114,12 @@ def test_s15_no_terms_privacy_body_or_future_controls():
     # only structural controls: the header has no self-link; the sole in-body link is Back to /
     hdr = _header_block(body)
     assert "Learn more" not in hdr, "S15 header must suppress the Learn more self-link"
-    # NB: the D-P6-18 UI-language selector is text links (no <form>/<button>), so
-    # the original no-product-controls guard still holds unchanged.
+    # R-05 changes only the shared language selector to a protected POST. Keep
+    # the no-product-controls guard everywhere outside that exact selector.
+    selector = re.search(r'<nav class="ui-lang-selector".*?</nav>', body, re.DOTALL)
+    assert selector and selector.group(0).count('<form') == 1
+    assert 'method="POST" action="/ui-language"' in selector.group(0)
+    body = body.replace(selector.group(0), "")
     for forbidden in ("Sign in", "Log in", "Logout", "Account", "Settings",
                       "Saved Projects", "Download PDF", "Email", "<form", "<button"):
         assert forbidden not in body, f"S15 must not contain: {forbidden!r}"

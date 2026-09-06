@@ -11,6 +11,7 @@ A superseded/withdrawn attempt does NOT satisfy the gate. The gate is a LIVE
 availability policy only: the canonical writer `accept_gap_risk` is unchanged
 and historical accepted-risk ledgers still reconstruct identically.
 """
+from tests.csrf_client import csrf_client
 import os, sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
@@ -64,7 +65,7 @@ def client(tmp_path, monkeypatch):
     monkeypatch.setattr(appmod, "_STORE", None)
     appmod.SESSION_STORE.clear()
     appmod.app.config["TESTING"] = True
-    with appmod.app.test_client() as c:
+    with csrf_client(appmod.app) as c:
         yield c, appmod
 
 

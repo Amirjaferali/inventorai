@@ -23,6 +23,7 @@ singular + plural-container, cross-domain non-leakage, at-most-once parity, genu
 0/1/2/3+ activation, Web/CLI parity) passes after the fix.
 """
 
+from tests.csrf_client import csrf_client
 import builtins
 import importlib.util
 import os
@@ -82,7 +83,7 @@ def test_red_web_start_false_positive_no_medical_guidance():
     medical-conflict mechanism guidance. Post-fix `hearth warmer` is not medical, so
     that guidance MUST NOT appear (real route, real classifier)."""
     from web import app as web_app
-    client = web_app.app.test_client()
+    client = csrf_client(web_app.app)
     resp = client.post("/start", data={"idea": "a hearth warmer",
                                         "domain_confirm": "electronics_electrical"},
                         follow_redirects=False)
@@ -320,7 +321,7 @@ def test_nmf1_final_token_pluralization_still_permitted():
 # ----------------------------------------------------- GREEN: Web/CLI parity ------
 def test_green_web_electronics_admitted_unchanged():
     from web import app as web_app
-    client = web_app.app.test_client()
+    client = csrf_client(web_app.app)
     resp = client.post("/start", data={"idea": "an ESP32 circuit with sensors",
                                         "domain_confirm": "electronics_electrical"},
                        follow_redirects=False)

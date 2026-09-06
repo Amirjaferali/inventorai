@@ -19,6 +19,7 @@ Legacy-compatibility rule under test: a POST with NO `action` field is treated
 as `answered` (identical to pre-1A behavior). An explicit but unrecognized
 action is rejected with HTTP 400 and changes nothing.
 """
+from tests.csrf_client import csrf_client
 import copy
 import uuid
 
@@ -78,7 +79,7 @@ def test_answered_invokes_assessment_path():
         entry = SESSION_STORE[sid]
         before = _snapshot(entry["state"])
         before_transcript = len(entry["transcript"])
-        client = app.test_client()
+        client = csrf_client(app)
         r = answered_post(client, sid,
                         {"action": "answered",
                               "response": "The accelerometer measures deceleration and "
@@ -102,7 +103,7 @@ def test_legacy_submission_without_action_is_answered():
         entry = SESSION_STORE[sid]
         before_iter = entry["state"].iteration
         before_transcript = len(entry["transcript"])
-        client = app.test_client()
+        client = csrf_client(app)
         r = answered_post(client, sid,
                         {"response": "The sensor detects deceleration by measuring "
                                           "the rate of change of speed over time."},
@@ -123,7 +124,7 @@ def test_unrecognized_action_rejected_400_no_change():
         entry = SESSION_STORE[sid]
         before = _snapshot(entry["state"])
         before_transcript = len(entry["transcript"])
-        client = app.test_client()
+        client = csrf_client(app)
         r = client.post(f"/session/{sid}",
                         data={"action": "totally_unknown_action", "response": "x"},
                         follow_redirects=False)
@@ -144,7 +145,7 @@ def test_non_answer_action_does_not_advance_or_assess(action):
         entry = SESSION_STORE[sid]
         before = _snapshot(entry["state"])
         before_transcript = len(entry["transcript"])
-        client = app.test_client()
+        client = csrf_client(app)
         r = client.post(f"/session/{sid}",
                         data={"action": action,
                               "response": "some optional note text that is long enough "
@@ -173,7 +174,7 @@ def test_provisional_assumption_text_is_metadata_not_validated():
         entry = SESSION_STORE[sid]
         before = _snapshot(entry["state"])
         note = "Assume a 3.7V battery is acceptable for now."
-        client = app.test_client()
+        client = csrf_client(app)
         client.post(f"/session/{sid}",
                     data={"action": "provisional_assumption", "response": note},
                     follow_redirects=False)
@@ -196,7 +197,7 @@ def test_specialist_and_evidence_requests_create_no_assertion():
         try:
             entry = SESSION_STORE[sid]
             before = _snapshot(entry["state"])
-            client = app.test_client()
+            client = csrf_client(app)
             client.post(f"/session/{sid}", data={"action": action},
                         follow_redirects=False)
             # No gap evidence created, no known_* asserted, no progression.
@@ -214,7 +215,7 @@ def test_deferred_no_assessment_no_closure():
     try:
         entry = SESSION_STORE[sid]
         before = _snapshot(entry["state"])
-        client = app.test_client()
+        client = csrf_client(app)
         client.post(f"/session/{sid}", data={"action": "deferred", "response": ""},
                     follow_redirects=False)
         # No assessment and no closure: full epistemic snapshot is unchanged,
@@ -239,7 +240,7 @@ def test_non_answer_action_never_calls_run_iteration(action, monkeypatch):
             raise AssertionError("run_iteration must not be called for " + action)
 
         monkeypatch.setattr(webapp, "run_iteration", _boom)
-        client = app.test_client()
+        client = csrf_client(app)
         r = client.post(f"/session/{sid}", data={"action": action, "response": "note"},
                         follow_redirects=False)
         assert r.status_code in (301, 302)
@@ -253,7 +254,7 @@ def test_answered_transcript_record_shape_unchanged():
     sid = _new_session()
     try:
         entry = SESSION_STORE[sid]
-        client = app.test_client()
+        client = csrf_client(app)
         answered_post(client, sid,
                     {"action": "answered", "response": "The Hall-effect sensor "
                           "detects wheel slowing and the controller switches the light."},
@@ -275,7 +276,7 @@ def test_interaction_metadata_is_additive_and_default_absent():
         entry = SESSION_STORE[sid]
         # Default-on-read: legacy entries have no interaction_actions key.
         assert "interaction_actions" not in entry
-        client = app.test_client()
+        client = csrf_client(app)
         client.post(f"/session/{sid}", data={"action": "unknown"}, follow_redirects=False)
         assert isinstance(entry["interaction_actions"], list)
         assert entry["interaction_actions"][-1]["action"] == "unknown"

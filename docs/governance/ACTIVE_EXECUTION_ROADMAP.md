@@ -1,8 +1,8 @@
 # ACTIVE EXECUTION ROADMAP
 # Single source of execution continuity across agent changes
 
-**Current execution routing:** ACTIVE_INCREMENT_CONTRACT.md owns the bounded transition
-preparation and conditional ASTRA MILESTONE 1 declaration; CURRENT_PROJECT_STATE.md is
+**Current execution routing:** ACTIVE_INCREMENT_CONTRACT.md owns the ACTIVE
+ASTRA MILESTONE 1 / bounded R-05 delivery mandate; CURRENT_PROJECT_STATE.md is
 the concise entry. Lean §2 owns milestone authority, risk/review live in Lean §§3–5B,
 and AHAEP owns delivery mechanics. The appended entries and accumulated former current
 state/lane tables are historical evidence at their recorded time, not competing live

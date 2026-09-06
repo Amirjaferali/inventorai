@@ -12,6 +12,7 @@ These tests verify the bounded, question-layer correction only:
 No engine state model, provenance, transcript, deliverable, domain pack, or
 governance artifact is touched (those remain reserved for Increment 2).
 """
+from tests.csrf_client import csrf_client
 import os
 import re
 import sys
@@ -66,7 +67,7 @@ def test_start_initializes_path_n():
     # This idea classifies as NONE; with 2 activated domains (Mechanical
     # Activation Execution Gate) the D2 branch additionally requires an
     # explicit domain_choice.
-    client = app.test_client()
+    client = csrf_client(app)
     resp = client.post(
         "/start",
         data={"idea": "A small electronic reminder gadget for medicine times",
@@ -85,7 +86,7 @@ def test_start_initializes_path_n():
 
 
 def test_named_ilt_routes_remain_on_existing_behavior():
-    client = app.test_client()
+    client = csrf_client(app)
     for route in ("/start_ilt002_water_leak", "/start_ilt002_combination_lock"):
         resp = client.post(route, data={"idea": "leak detector idea"},
                            follow_redirects=False)
@@ -101,7 +102,7 @@ def test_named_ilt_routes_remain_on_existing_behavior():
 
 
 def test_path_n_governed_route_remains_path_n():
-    client = app.test_client()
+    client = csrf_client(app)
     resp = client.post("/start_ilt002_combination_lock_path_n",
                        data={"idea": "combination lock idea"},
                        follow_redirects=False)
@@ -237,7 +238,7 @@ def test_start_renders_path_n_question_end_to_end():
     OR if show_session stops using get_display_question (a stalled gap would render
     the final variant verbatim instead of the reframe). Does not call
     get_display_question directly and does not mock /start or the render route."""
-    client = app.test_client()
+    client = csrf_client(app)
 
     # --- Phase A: fresh /start through the real route + real render ---
     # This idea classifies as NONE; with 2 activated domains the D2 branch

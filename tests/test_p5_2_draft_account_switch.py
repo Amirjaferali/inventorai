@@ -93,7 +93,7 @@ def _login(page, base, email):
     page.goto(base + "/login")
     page.fill("#email", email)
     page.fill("#password", PW)
-    page.click("button[type=submit]")
+    page.click("main button[type=submit]")
     page.wait_for_load_state()
 
 

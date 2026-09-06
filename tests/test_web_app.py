@@ -1,3 +1,4 @@
+from tests.csrf_client import csrf_client
 import os, sys
 from test_p4_1b2a_durable_answer_append import answered_post, seed_direct_session_envelope  # P4-1b-2a
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
@@ -41,7 +42,7 @@ def _multi_result(_t):
 
 
 def test_start_ilt002_water_leak_forces_electronics_domain():
-    client = app.test_client()
+    client = csrf_client(app)
     response = client.post(
         "/start_ilt002_water_leak",
         data={"idea": "A water leak detection system using moisture sensors and alarm notification."},
@@ -64,7 +65,7 @@ def test_start_ilt002_water_leak_forces_electronics_domain():
 
 
 def test_start_uses_infer_domain_for_normal_flow():
-    client = app.test_client()
+    client = csrf_client(app)
     idea_text = "ESP32 moisture sensor circuit with WiFi reporting"
     response = client.post(
         "/start",
@@ -103,7 +104,7 @@ def _make_eligible_state(idea_id):
 
 
 def test_deliverable_route_missing_sid_redirects():
-    client = app.test_client()
+    client = csrf_client(app)
     response = client.get("/session/does-not-exist/deliverable", follow_redirects=False)
     assert response.status_code == 302
     assert response.headers["Location"].endswith("/")
@@ -114,7 +115,7 @@ def test_deliverable_route_incomplete_state_returns_200_and_snapshot_language():
     state = _make_incomplete_state(sid)
     SESSION_STORE[sid] = {"state": state, "last_result": None, "transcript": []}
     try:
-        client = app.test_client()
+        client = csrf_client(app)
         response = client.get(f"/session/{sid}/deliverable")
         assert response.status_code == 200
         assert response.content_type.startswith("text/html")
@@ -130,7 +131,7 @@ def test_deliverable_route_eligible_state_returns_deliverable_language():
     state = _make_eligible_state(sid)
     SESSION_STORE[sid] = {"state": state, "last_result": None, "transcript": []}
     try:
-        client = app.test_client()
+        client = csrf_client(app)
         response = client.get(f"/session/{sid}/deliverable")
         assert response.status_code == 200
         body = response.get_data(as_text=True)
@@ -144,7 +145,7 @@ def test_deliverable_route_contains_required_sections():
     state = _make_eligible_state(sid)
     SESSION_STORE[sid] = {"state": state, "last_result": None, "transcript": []}
     try:
-        client = app.test_client()
+        client = csrf_client(app)
         response = client.get(f"/session/{sid}/deliverable")
         body = response.get_data(as_text=True)
         for fragment in [
@@ -172,7 +173,7 @@ def test_deliverable_route_does_not_mutate_state():
     before = (state.iteration, state.maturity_level, len(state.gaps), len(state.acknowledged_unknowns))
     SESSION_STORE[sid] = {"state": state, "last_result": None, "transcript": []}
     try:
-        client = app.test_client()
+        client = csrf_client(app)
         client.get(f"/session/{sid}/deliverable")
         after = (state.iteration, state.maturity_level, len(state.gaps), len(state.acknowledged_unknowns))
         assert before == after, f"state mutated: {before} != {after}"
@@ -181,7 +182,7 @@ def test_deliverable_route_does_not_mutate_state():
 
 
 def test_session_page_incomplete_state_contains_snapshot_link():
-    client = app.test_client()
+    client = csrf_client(app)
     idea_text = "ESP32 moisture sensor circuit with WiFi reporting"
     response = client.post(
         "/start",
@@ -203,7 +204,7 @@ def test_session_page_eligible_state_contains_deliverable_link():
     state = _make_eligible_state(sid)
     SESSION_STORE[sid] = {"state": state, "last_result": None, "transcript": []}
     try:
-        client = app.test_client()
+        client = csrf_client(app)
         page = client.get(f"/session/{sid}")
         body = page.get_data(as_text=True)
         assert f"/session/{sid}/deliverable" in body
@@ -226,7 +227,7 @@ def test_deliverable_route_does_not_call_run_iteration(monkeypatch):
     state = _make_incomplete_state(sid)
     SESSION_STORE[sid] = {"state": state, "last_result": None, "transcript": []}
     try:
-        client = app.test_client()
+        client = csrf_client(app)
         response = client.get(f"/session/{sid}/deliverable")
         assert response.status_code == 200
         assert called["value"] is False
@@ -248,7 +249,7 @@ def test_deliverable_route_uses_package_eligibility_for_status_selection():
     SESSION_STORE[sid_b] = {"state": state_b, "last_result": None, "transcript": []}
 
     try:
-        client = app.test_client()
+        client = csrf_client(app)
         body_a = client.get(f"/session/{sid_a}/deliverable").get_data(as_text=True)
         body_b = client.get(f"/session/{sid_b}/deliverable").get_data(as_text=True)
 
@@ -278,7 +279,7 @@ def test_session_page_no_unknowns_section_when_empty():
     state = _make_incomplete_state(sid)
     SESSION_STORE[sid] = {"state": state, "last_result": None, "transcript": []}
     try:
-        client = app.test_client()
+        client = csrf_client(app)
         body = client.get(f"/session/{sid}").get_data(as_text=True)
         assert "What You Have Marked as Not Yet Known" not in body
     finally:
@@ -290,7 +291,7 @@ def test_session_page_shows_one_acknowledged_unknown():
     state = _make_state_with_unknowns(sid, [(2, "MECHANISM_COMPLETENESS", "I do not yet know the exact voltage")])
     SESSION_STORE[sid] = {"state": state, "last_result": None, "transcript": []}
     try:
-        client = app.test_client()
+        client = csrf_client(app)
         body = client.get(f"/session/{sid}").get_data(as_text=True)
         assert "What You Have Marked as Not Yet Known" in body
         assert "I do not yet know the exact voltage" in body
@@ -306,7 +307,7 @@ def test_session_page_shows_multiple_unknowns_in_order():
     ])
     SESSION_STORE[sid] = {"state": state, "last_result": None, "transcript": []}
     try:
-        client = app.test_client()
+        client = csrf_client(app)
         body = client.get(f"/session/{sid}").get_data(as_text=True)
         idx1 = body.find("First unknown statement")
         idx2 = body.find("Second unknown statement")
@@ -321,7 +322,7 @@ def test_session_page_escapes_unknown_text():
     state = _make_state_with_unknowns(sid, [(2, "MECHANISM_COMPLETENESS", "<script>alert(1)</script>")])
     SESSION_STORE[sid] = {"state": state, "last_result": None, "transcript": []}
     try:
-        client = app.test_client()
+        client = csrf_client(app)
         body = client.get(f"/session/{sid}").get_data(as_text=True)
         assert "<script>alert(1)</script>" not in body
         assert "&lt;script&gt;" in body
@@ -338,7 +339,7 @@ def test_session_page_viewing_does_not_mutate_unknowns_or_state():
     )
     SESSION_STORE[sid] = {"state": state, "last_result": None, "transcript": []}
     try:
-        client = app.test_client()
+        client = csrf_client(app)
         client.get(f"/session/{sid}")
         after = (
             state.iteration, state.maturity_level, len(state.gaps),
@@ -354,7 +355,7 @@ def test_session_page_unknowns_section_no_resolution_claim():
     state = _make_state_with_unknowns(sid, [(2, "MECHANISM_COMPLETENESS", "Some unknown")])
     SESSION_STORE[sid] = {"state": state, "last_result": None, "transcript": []}
     try:
-        client = app.test_client()
+        client = csrf_client(app)
         body = client.get(f"/session/{sid}").get_data(as_text=True)
         for forbidden in ["resolved unknown", "completed unknown", "feasibility established", "ready to build"]:
             assert forbidden not in body.lower()
@@ -367,7 +368,7 @@ def test_session_page_unknowns_section_no_ilt002_or_evidence_wording():
     state = _make_state_with_unknowns(sid, [(2, "MECHANISM_COMPLETENESS", "Some unknown")])
     SESSION_STORE[sid] = {"state": state, "last_result": None, "transcript": []}
     try:
-        client = app.test_client()
+        client = csrf_client(app)
         body = client.get(f"/session/{sid}").get_data(as_text=True)
         # Scope the forbidden-word protection to the acknowledged-unknowns SECTION,
         # not the whole page. Increment 1A added a structured EVIDENCE_REQUESTED
@@ -393,7 +394,7 @@ def test_session_page_with_unknowns_retains_snapshot_link_when_incomplete():
     state = _make_state_with_unknowns(sid, [(2, "MECHANISM_COMPLETENESS", "Some unknown")])
     SESSION_STORE[sid] = {"state": state, "last_result": None, "transcript": []}
     try:
-        client = app.test_client()
+        client = csrf_client(app)
         body = client.get(f"/session/{sid}").get_data(as_text=True)
         assert "View In-Progress Assessment Snapshot" in body
     finally:
@@ -408,7 +409,7 @@ def test_session_page_with_unknowns_retains_deliverable_link_when_eligible():
     )
     SESSION_STORE[sid] = {"state": state, "last_result": None, "transcript": []}
     try:
-        client = app.test_client()
+        client = csrf_client(app)
         body = client.get(f"/session/{sid}").get_data(as_text=True)
         assert "View FDC-001 Deliverable" in body
         assert "What You Have Marked as Not Yet Known" in body
@@ -491,7 +492,7 @@ def test_stage3_rendered_browser_flow_form_persists_through_partial():
                           "last_result": None, "transcript": [], "last_question": ""}
     seed_direct_session_envelope(sid, _stage3_state)  # explicit P4-1b-2a durable envelope
     try:
-        client = app.test_client()
+        client = csrf_client(app)
         # PVCG-R2-I defect-dependent input correction (contract §3.2/§3.4): this
         # rendered flow previously answered the boundary, PMF and AI gaps with
         # one MECHANISM-shaped answer, so each closed only through manufactured
@@ -561,7 +562,7 @@ def _start_post(client, idea, confirm=True, choice=None):
 
 
 def test_start_admits_electronics_idea():
-    client = app.test_client()
+    client = csrf_client(app)
     before = set(SESSION_STORE)
     resp = _start_post(client, "ESP32 microcontroller circuit with a voltage sensor")
     assert resp.status_code == 302
@@ -580,7 +581,7 @@ def test_mechanical_idea_confirmed_as_electronics_is_reprompted_not_admitted():
     # electronics (the wrong domain) never admits it as electronics; it
     # re-prompts for the correct (mechanical) confirmation instead. No
     # cross-domain relabeling ever occurs.
-    client = app.test_client()
+    client = csrf_client(app)
     before = set(SESSION_STORE)
     idea = "a gearbox with a rotating shaft and bearing torque"
     assert infer_domain(idea) == "mechanical"
@@ -595,7 +596,7 @@ def test_mechanical_idea_confirmed_as_electronics_is_reprompted_not_admitted():
 
 def test_mechanical_idea_confirmed_as_mechanical_is_admitted():
     # The same idea, confirmed with its own (now-activated) domain, admits.
-    client = app.test_client()
+    client = csrf_client(app)
     before = set(SESSION_STORE)
     idea = "a gearbox with a rotating shaft and bearing torque"
     resp = client.post("/start", data={"idea": idea, "domain_confirm": "mechanical"},
@@ -610,7 +611,7 @@ def test_mechanical_idea_confirmed_as_mechanical_is_admitted():
 
 
 def test_start_refuses_medical_device_idea_and_creates_no_session():
-    client = app.test_client()
+    client = csrf_client(app)
     before = set(SESSION_STORE)
     idea = "a surgical implant for patient diagnosis"
     assert infer_domain(idea) == "medical_device"
@@ -625,7 +626,7 @@ def test_start_refuses_medical_device_idea_and_creates_no_session():
 
 
 def test_start_refuses_software_idea_and_creates_no_session():
-    client = app.test_client()
+    client = csrf_client(app)
     before = set(SESSION_STORE)
     idea = "a software application with an api backend and database"
     assert infer_domain(idea) == "software"
@@ -640,7 +641,7 @@ def test_start_without_confirmation_refused_even_when_inference_none(monkeypatch
     # A None-classified idea with 2 activated domains requires an explicit D2
     # domain_choice (not just confirmation); with neither, it is refused and no
     # session is created.
-    client = app.test_client()
+    client = csrf_client(app)
     before = set(SESSION_STORE)
     monkeypatch.setattr("web.app.classify_domain", _none_result)
     resp = _start_post(client, "something with no recognizable signals", confirm=False)
@@ -652,7 +653,7 @@ def test_start_without_confirmation_refused_even_when_inference_none(monkeypatch
 def test_start_refuses_unexpected_inference_value_defensively(monkeypatch):
     # Defensive: an unexpected boundary return must be refused, never admitted
     # or converted to electronics.
-    client = app.test_client()
+    client = csrf_client(app)
     before = set(SESSION_STORE)
     monkeypatch.setattr("web.app.classify_domain", _multi_result)
     resp = _start_post(client, "an idea the boundary scores oddly")
@@ -664,7 +665,7 @@ def test_start_refuses_unexpected_inference_value_defensively(monkeypatch):
 
 def test_start_does_not_fall_back_to_electronics_on_refusal(monkeypatch):
     # A refused non-electronics result must not produce an electronics session.
-    client = app.test_client()
+    client = csrf_client(app)
     before_electronics = sum(
         1 for v in SESSION_STORE.values() if v["state"].domain == "electronics_electrical"
     )
@@ -680,7 +681,7 @@ def test_start_does_not_fall_back_to_electronics_on_refusal(monkeypatch):
 def test_governed_ilt002_routes_remain_electronics_pinned_after_restriction():
     # The generic /start restriction must not affect the electronics-pinned
     # governed ILT-002 / Path N routes.
-    client = app.test_client()
+    client = csrf_client(app)
     for route in (
         "/start_ilt002_water_leak",
         "/start_ilt002_combination_lock",
@@ -696,7 +697,7 @@ def test_governed_ilt002_routes_remain_electronics_pinned_after_restriction():
 def test_refusals_persist_no_non_electronics_domain():
     # Aggregate invariant: exercising all refusal cases adds no session, and no
     # stored session carries a non-electronics domain.
-    client = app.test_client()
+    client = csrf_client(app)
     before = set(SESSION_STORE)
     for idea in (
         "a gearbox with a rotating shaft and bearing torque",
@@ -719,13 +720,13 @@ def test_index_page_states_currently_activated_domain_support():
     # Mechanical Activation Execution Gate: the supported-domains statement is
     # activation-derived (truthful for any activated set), not a fixed
     # electronics-only string.
-    client = app.test_client()
+    client = csrf_client(app)
     body = client.get("/").get_data(as_text=True)
     assert "Currently supported: Electronics Electrical or Mechanical ideas." in body
 
 
 def test_index_page_does_not_advertise_other_domains():
-    client = app.test_client()
+    client = csrf_client(app)
     body = client.get("/").get_data(as_text=True)
     assert "mechanical" not in body
     assert "medical device" not in body
@@ -736,7 +737,7 @@ def test_index_page_does_not_advertise_other_domains():
 def test_index_page_placeholder_is_domain_neutral_under_broadened_activation():
     # With 2+ activated domains the placeholder is the domain-neutral,
     # pre-hardened (L10N-RH-01) copy — not the electronics-specific string.
-    client = app.test_client()
+    client = csrf_client(app)
     body = client.get("/").get_data(as_text=True)
     assert "Describe your invention..." in body
 
@@ -744,7 +745,7 @@ def test_index_page_placeholder_is_domain_neutral_under_broadened_activation():
 def test_index_error_surface_renders_stable_refusal_message(monkeypatch):
     # The {{ error }} surface still renders the stable refusal message exactly
     # when /start refuses a non-electronics activation.
-    client = app.test_client()
+    client = csrf_client(app)
     monkeypatch.setattr("web.app.classify_domain", _multi_result)
     body = _start_post(client, "a mechanical idea forced through the boundary").get_data(as_text=True)
     assert _ERROR_HTML in body
@@ -771,7 +772,7 @@ def _admitted_sid(resp):
 
 
 def test_confirm_admits_valid_electronics_idea():
-    client = app.test_client()
+    client = csrf_client(app)
     before = set(SESSION_STORE)
     resp = _start_post(client, "ESP32 microcontroller circuit with a voltage sensor")
     sid = _admitted_sid(resp)
@@ -785,7 +786,7 @@ def test_water_leak_admitted_even_if_inference_is_none(monkeypatch):
     # returns None (as it would after substring matching is corrected later),
     # the confirmed water-leak idea is admitted. With 2 activated domains a
     # NONE classification additionally requires the explicit D2 domain_choice.
-    client = app.test_client()
+    client = csrf_client(app)
     monkeypatch.setattr("web.app.classify_domain", _none_result)
     sid = _admitted_sid(_start_post(client, WATER_LEAK_IDEA,
                                      choice="electronics_electrical"))
@@ -798,7 +799,7 @@ def test_functional_electronics_paraphrase_admitted_when_confirmed():
     # domain_choice, required now that 2 domains are activated).
     idea = "A gadget that watches for a problem and warns the homeowner right away"
     assert infer_domain(idea) is None              # no signal keyword present
-    client = app.test_client()
+    client = csrf_client(app)
     sid = _admitted_sid(_start_post(client, idea, choice="electronics_electrical"))
     assert SESSION_STORE[sid]["state"].domain == "electronics_electrical"
 
@@ -807,7 +808,7 @@ def test_no_confirmation_creates_no_session():
     # The real (unmocked) classifier resolves ESP32 wording to SINGLE
     # electronics_electrical (D1): with no confirmation posted, this is now the
     # D1 present-confirm re-prompt, not the old generic sole-domain message.
-    client = app.test_client()
+    client = csrf_client(app)
     before = set(SESSION_STORE)
     resp = _start_post(client, "ESP32 microcontroller circuit", confirm=False)
     assert resp.status_code == 200
@@ -819,7 +820,7 @@ def test_no_confirmation_creates_no_session():
 
 
 def test_empty_idea_creates_no_session_even_with_confirmation():
-    client = app.test_client()
+    client = csrf_client(app)
     before = set(SESSION_STORE)
     resp = client.post("/start", data={"idea": "   ", "domain_confirm": DOMAIN_CONFIRM_VALUE},
                        follow_redirects=False)
@@ -829,7 +830,7 @@ def test_empty_idea_creates_no_session_even_with_confirmation():
 
 
 def test_confirmed_software_idea_refused_and_no_session():
-    client = app.test_client()
+    client = csrf_client(app)
     before = set(SESSION_STORE)
     idea = "a software application with an api backend and database"
     assert infer_domain(idea) == "software"
@@ -841,7 +842,7 @@ def test_confirmed_software_idea_refused_and_no_session():
 
 
 def test_confirmed_medical_idea_refused_and_no_session():
-    client = app.test_client()
+    client = csrf_client(app)
     before = set(SESSION_STORE)
     idea = "a surgical implant for patient diagnosis"
     assert infer_domain(idea) == "medical_device"
@@ -856,7 +857,7 @@ def test_confirmed_as_electronics_mechanical_idea_reprompted_not_admitted():
     # Mechanical is now activated — confirming this idea as electronics (the
     # wrong domain) never admits it as electronics; it re-prompts for the
     # correct (mechanical) confirmation. No session is created either way.
-    client = app.test_client()
+    client = csrf_client(app)
     before = set(SESSION_STORE)
     idea = "a gearbox with a rotating shaft and bearing torque"
     assert infer_domain(idea) == "mechanical"
@@ -870,7 +871,7 @@ def test_confirmed_as_electronics_mechanical_idea_reprompted_not_admitted():
 def test_confirmation_never_relabels_conflicting_domain():
     # A confirmed-but-conflicting idea must neither persist its real domain nor
     # be silently converted into an electronics session.
-    client = app.test_client()
+    client = csrf_client(app)
     before_electronics = sum(
         1 for v in SESSION_STORE.values() if v["state"].domain == "electronics_electrical")
     for idea in ("a gearbox with a rotating shaft and bearing torque",
@@ -884,7 +885,7 @@ def test_confirmation_never_relabels_conflicting_domain():
 
 
 def test_unexpected_classifier_value_refused_even_with_confirmation(monkeypatch):
-    client = app.test_client()
+    client = csrf_client(app)
     before = set(SESSION_STORE)
     # P9-E2-R: an unadmittable (richer-kind) classification fails closed even under
     # explicit confirmation — no session, never relabeled electronics. (An
@@ -903,7 +904,7 @@ def test_index_page_states_scope_under_broadened_activation():
     # bare landing page states scope but no longer carries a pre-checked
     # single-domain confirmation control (see the companion test below for
     # where that control now appears).
-    client = app.test_client()
+    client = csrf_client(app)
     body = client.get("/").get_data(as_text=True)
     assert ("Electronics Electrical or Mechanical ideas are currently "
             "supported. Before starting, please confirm the domain your idea "
@@ -913,7 +914,7 @@ def test_index_page_states_scope_under_broadened_activation():
 def test_start_response_carries_confirmation_control_for_resolved_domain():
     # The confirmation control now appears on the POST /start response once
     # the classifier resolves a target domain (D1), not on the bare GET /.
-    client = app.test_client()
+    client = csrf_client(app)
     resp = _start_post(client, "ESP32 microcontroller circuit", confirm=False)
     body = resp.get_data(as_text=True)
     assert 'name="domain_confirm"' in body

@@ -19,6 +19,7 @@ its scope decision `docs/governance/GUIDED_ANSWER_COAUTHORING_SCOPE_DECISION.md`
   * keeps the existing Increment 1B clarification and More Detail Needed
     scaffolding surfaces present and distinct.
 """
+from tests.csrf_client import csrf_client
 import copy
 from test_p4_1b2a_durable_answer_append import answered_post  # P4-1b-2a
 import os
@@ -57,7 +58,7 @@ def _start(idea, confirm=True):
     data = {"idea": idea}
     if confirm:
         data["domain_confirm"] = DOMAIN_CONFIRM_VALUE
-    return app.test_client().post("/start", data=data, follow_redirects=False)
+    return csrf_client(app).post("/start", data=data, follow_redirects=False)
 
 
 def _start_electronics_session():
@@ -171,7 +172,7 @@ def test_panel_appears_and_is_labeled_advisory_for_electronics_question():
     # state (Advisory Panel Precedence, PR #141).
     sid = _coauthoring_primary_session()
     try:
-        body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+        body = csrf_client(app).get(f"/session/{sid}").get_data(as_text=True)
         assert _HEADING in body
         assert _EYEBROW in body
         assert "not validation" in body.lower()
@@ -183,7 +184,7 @@ def test_panel_appears_and_is_labeled_advisory_for_electronics_question():
 def test_panel_has_no_save_approve_apply_control_or_hidden_field():
     sid = _coauthoring_primary_session()
     try:
-        body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+        body = csrf_client(app).get(f"/session/{sid}").get_data(as_text=True)
         panel = body[body.index(_HEADING):]
         panel = panel[:panel.index("<form")] if "<form" in panel else panel
         low = panel.lower()
@@ -197,7 +198,7 @@ def test_panel_has_no_save_approve_apply_control_or_hidden_field():
 def test_no_seventh_session_action_radio_introduced():
     sid = _start_electronics_session()
     try:
-        body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+        body = csrf_client(app).get(f"/session/{sid}").get_data(as_text=True)
         assert body.count('name="action"') == 6
     finally:
         SESSION_STORE.pop(sid, None)
@@ -207,7 +208,7 @@ def test_saved_answer_is_verbatim_and_guidance_not_persisted():
     sid = _start_electronics_session()
     answer = "The ESP32 reads the voltage sensor and opens a relay above 5V."
     try:
-        answered_post(app.test_client(), sid, {"response": answer, "action": "answered"})
+        answered_post(csrf_client(app), sid, {"response": answer, "action": "answered"})
         transcript = SESSION_STORE[sid]["transcript"]
         assert transcript, "an answered submission must be recorded"
         assert transcript[-1]["response"] == answer  # verbatim, byte-for-byte
@@ -234,8 +235,8 @@ def test_render_does_not_change_maturity_gaps_or_outcome():
     before_gaps = [(g.gap_type, g.status) for g in state.gaps]
     before_result = copy.deepcopy(SESSION_STORE[sid].get("last_result"))
     try:
-        r1 = app.test_client().get(f"/session/{sid}")
-        r2 = app.test_client().get(f"/session/{sid}")
+        r1 = csrf_client(app).get(f"/session/{sid}")
+        r2 = csrf_client(app).get(f"/session/{sid}")
         assert r1.status_code == 200 and r2.status_code == 200
         assert _HEADING in r1.get_data(as_text=True)
         assert state.maturity_level == before_maturity
@@ -248,7 +249,7 @@ def test_render_does_not_change_maturity_gaps_or_outcome():
 def test_no_forbidden_fields_introduced_on_state_or_store():
     sid = _start_electronics_session()
     try:
-        app.test_client().get(f"/session/{sid}")
+        csrf_client(app).get(f"/session/{sid}")
         state = SESSION_STORE[sid]["state"]
         for field in _FORBIDDEN_FIELDS:
             assert not hasattr(state, field)
@@ -264,7 +265,7 @@ def test_existing_surfaces_present_and_distinct():
     # non-uncertainty / non-WARN state, where this distinctness is asserted.
     sid = _coauthoring_primary_session()
     try:
-        body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+        body = csrf_client(app).get(f"/session/{sid}").get_data(as_text=True)
         assert "Help me understand this question" in body   # Increment 1B intact
         assert _HEADING in body                             # co-authoring surface present
         assert _EYEBROW in body                             # distinctly labeled
@@ -280,9 +281,9 @@ def test_coauthoring_suppressed_as_primary_in_uncertainty_and_warn_states():
     # Uncertainty state (non-scoring "I do not know this yet" action):
     sid = _start_electronics_session()
     try:
-        app.test_client().post(f"/session/{sid}",
+        csrf_client(app).post(f"/session/{sid}",
                                data={"response": "I don't know", "action": "unknown"})
-        body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+        body = csrf_client(app).get(f"/session/{sid}").get_data(as_text=True)
         assert "Optional — no pressure" in body   # uncertainty is primary
         assert _HEADING not in body                # co-authoring suppressed here
     finally:
@@ -296,7 +297,7 @@ def test_coauthoring_suppressed_as_primary_in_uncertainty_and_warn_states():
                                 "direction": "STALLED"}
         entry["transcript"] = [{"response": "the plug senses current and cuts power",
                                 "iteration": 1}]
-        body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+        body = csrf_client(app).get(f"/session/{sid}").get_data(as_text=True)
         assert 'class="scaffolding-guidance"' in body  # scaffolding is primary
         assert _HEADING not in body                    # co-authoring suppressed here
     finally:

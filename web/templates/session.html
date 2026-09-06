@@ -185,6 +185,7 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
   {# ownership, reconstruction, activation, and completion from scratch.     #}
   {% if reconstructed_review.resume_eligible %}
   <form method="POST" action="/session/{{ sid }}/resume" style="margin-top:10px">
+  <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
     <button type="submit" id="resume-project">{{ t('UI_B_SESSION_048') }}</button>
   </form>
   {% endif %}
@@ -395,6 +396,7 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
 {% endif %}
 
 <form method="POST" action="/session/{{ sid }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
   {# P4-1b-2a: server-issued idempotency token required on this answered-producing form. #}
   <input type="hidden" name="answer_token" value="{{ answer_token }}">
   <label for="response" style="display:block;margin-bottom:6px;font-size:13px;color:#555">{{ t('UI_B_SESSION_031') }}</label>
@@ -426,6 +428,7 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
   <summary style="cursor:pointer;font-size:13px;color:#8a6d3b;font-weight:bold">{{ t('UI_RVR1_RISK_HEADING') }}</summary>
   <p style="font-size:13px;color:#555;margin:10px 0 8px 0">{{ t('UI_RVR1_RISK_EXPLAIN') }}</p>
   <form method="POST" action="/session/{{ sid }}/accept-risk">
+  <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
     <input type="hidden" name="answer_token" value="{{ answer_token }}">
     <input type="hidden" name="gap_type" value="{{ gap_type }}">
     <label style="display:block;font-size:13px;color:#555;margin-bottom:8px">
@@ -481,6 +484,7 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
   <div class="gap-guidance-text">{{ t('UI_CRIT_CORR_T') }}</div>
 </div>
 <form method="POST" action="/session/{{ sid }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
   {# P4-1b-2a: this criticality-correction free-text form posts no `action`, so it
      resolves to `answered` and MUST also carry the server-issued idempotency token. #}
   <input type="hidden" name="answer_token" value="{{ answer_token }}">
@@ -494,6 +498,7 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
   <div class="gap-guidance-heading">{{ criticality_step.clarification }}</div>
   <div class="gap-guidance-text" style="margin-bottom:8px"><strong>{{ criticality_step.statement }}</strong></div>
   <form method="POST" action="/session/{{ sid }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
     <input type="hidden" name="criticality_action" value="clarify_choice">
     <input type="hidden" name="focus_token" value="{{ criticality_step.focus_token }}">
     {% for value, label in criticality_step.choices %}
@@ -511,6 +516,7 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
   <div class="gap-guidance-text" style="margin-bottom:10px">{{ t('UI_CRIT_YOUSAID') }} &ldquo;{{ criticality_step.you_said }}&rdquo;</div>
   <div class="gap-guidance-text" style="margin-bottom:6px">{{ t('UI_CRIT_CORRECT_Q') }}</div>
   <form method="POST" action="/session/{{ sid }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
     <input type="hidden" name="focus_token" value="{{ criticality_step.focus_token }}">
     {% for value, label in criticality_step.summary_actions %}
     <button type="submit" name="criticality_action" value="{{ value }}" style="margin:4px 6px 0 0">{{ label }}</button>
@@ -539,6 +545,7 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
   <summary style="cursor:pointer;font-size:13px;color:#2c5a8c;font-weight:bold">{{ t('UI_RVR5_CORRECT_HEADING') }}</summary>
   <p style="font-size:13px;color:#555;margin:10px 0 8px 0">{{ t('UI_RVR5_CORRECT_EXPLAIN') }}</p>
   <form method="POST" action="/session/{{ sid }}/correct">
+  <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
     <input type="hidden" name="answer_token" value="{{ answer_token }}">
     <label for="correct-target" style="display:block;font-size:12px;color:#888;margin-bottom:4px">{{ t('UI_RVR5_CORRECT_SELECT') }}</label>
     <select id="correct-target" name="supersedes_record_id" required style="max-width:100%;margin-bottom:8px">
@@ -595,12 +602,14 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
           {% endif %}
           {% if state.domain %}
         <form method="POST" action="/session/{{ sid }}/decision/refine-alternative" style="display:inline-block;margin:2px 6px">
+  <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
           <input type="hidden" name="answer_token" value="{{ answer_token }}">
           <input type="hidden" name="supersedes_record_id" value="{{ a.head_record_id }}">
           <input type="text" name="content" required aria-label="{{ t('UI_W2A_REFINE_LABEL') }}" placeholder="{{ t('UI_W2A_REFINE_LABEL') }}" style="max-width:280px">
           <button type="submit">{{ t('UI_W2A_REFINE_BUTTON') }}</button>
         </form>
         <form method="POST" action="/session/{{ sid }}/decision/withdraw-alternative" style="display:inline-block;margin:2px 6px">
+  <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
           <input type="hidden" name="answer_token" value="{{ answer_token }}">
           <input type="hidden" name="supersedes_record_id" value="{{ a.head_record_id }}">
           <input type="text" name="reason" aria-label="{{ t('UI_G3_WITHDRAW_REASON_LABEL') }}" placeholder="{{ t('UI_G3_WITHDRAW_REASON_LABEL') }}" style="max-width:240px">
@@ -620,6 +629,7 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
     {% endif %}
     {% if state.domain %}
     <form method="POST" action="/session/{{ sid }}/decision/declare-alternative" style="margin-top:6px">
+  <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
       <input type="hidden" name="answer_token" value="{{ answer_token }}">
       <input type="hidden" name="context_root" value="{{ d.context_root }}">
       <label style="display:block;font-size:12px;color:#888;margin-bottom:4px">{{ t('UI_W2A_DECLARE_ALT_LABEL') }}</label>
@@ -631,6 +641,7 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
   {% endfor %}
   {% if state.domain %}
   <form method="POST" action="/session/{{ sid }}/decision/declare-context" style="margin-top:6px">
+  <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
     <input type="hidden" name="answer_token" value="{{ answer_token }}">
     <label for="w2a-context-content" style="display:block;font-size:12px;color:#888;margin-bottom:4px">{{ t('UI_W2A_DECLARE_CONTEXT_LABEL') }}</label>
     <textarea id="w2a-context-content" name="content" rows="2" required style="width:100%;box-sizing:border-box"></textarea>

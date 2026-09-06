@@ -64,11 +64,56 @@ gate; `includeSubDomains`/`preload` additionally need separate authorization.
 
 ## Abuse Protection — PARTIAL
 - IMPLEMENTED: store-backed auth-surface rate-limit floor with bounded
-  cleanup (`auth_rate_limits`); CSRF tokens on state-changing routes;
+  cleanup (`auth_rate_limits`); browser request integrity as scoped below;
   non-enumerating generic denials.
 - NOT IMPLEMENTED (historical claim): "10 requests/minute per session_id"
   broad limiter and per-session token budgets. Broad abuse controls remain
   NOT CLAIMED DELIVERED (PSRR §8 preserved; PSRR items 23–25 reassess).
+
+## Browser request integrity — R-05 implementation scope
+
+The shared `before_request` guard in `web/app.py` requires exactly one valid
+`csrf_token` form field for every registered unsafe method before view code,
+account-session touch, storage access or protected in-memory mutation. It extends
+the existing `engine/auth_session.py` token generator/comparator to anonymous
+signed-cookie sessions; it is not a second security system. Authenticated forms
+use the existing auth-session token. Sign-in retains its fresh session/token
+rotation; logout/reset retain their existing revocation and failure semantics.
+Missing, forged, cross-session, duplicate and non-ASCII evidence is rejected.
+Query parameters and JSON bodies are not token transports. Current browser
+callers are HTML forms; the read/export API has no unsafe methods.
+
+| Browser mutation family | Protected routes/callers |
+| --- | --- |
+| Account/session | register, login, deactivate, logout, logout-all, resend verification, verify, recover, reset |
+| Project admission | `/start` and the three existing ILT-002 start POST routes |
+| Project progression | answer, resume, correct, accept-risk, success-criteria, keep-snapshot |
+| Project decisions | declare-context, declare-alternative, refine-alternative, withdraw-alternative |
+| Decision workspace | create, input, constraint, gap, evidence, gap-assessment, preference, candidate |
+| Presentation preference | `/ui-language` |
+
+The exact 32-route inventory is asserted in `tests/test_r05_request_integrity.py`.
+All affected templates supply hidden form evidence. GET/HEAD of an emailed
+verification link show an explicit confirmation without consuming it; POST
+retains single-use verification. GET/HEAD `/decision-workspace` show a creation
+form without creating a record. `/ui-language` accepts protected POST only.
+Ordinary navigation, project views/exports, health and the bearer-authenticated
+read API retain their existing read behavior. Form rendering may issue the
+anonymous cookie token; form-bearing HTML is `Cache-Control: no-store`. Health,
+static files and unrelated responses are not made private by a global cache rule.
+
+CSRF evidence is never put in an action/href URL, local draft or log. Existing
+email-token URL architecture and no-referrer/no-store protections are preserved.
+The language selector uses labelled keyboard-accessible POST buttons in English
+and Arabic; token failures follow the selected UI language. Reload obtains current
+form evidence; a rejected request does not report an operation as accepted.
+
+This guard does not replace project ownership, HMAC answer/focus tokens, account
+status/epoch checks, F-01/F-02 atomicity or the separately gated F-03 policy.
+It does not claim protection from same-origin script compromise, stolen signed
+cookies, production proxy/log configuration, or unknown future callers. The
+existing release/security gates remain open. New unsafe callers must use the
+same guard and add their meaningful positive/negative inventory coverage.
 
 ## Dependency auditing — LOCAL FOUNDATION IMPLEMENTED (P10-DEP1)
 `scripts/run_dependency_audit.py` audits the single authoritative dependency

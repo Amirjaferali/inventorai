@@ -19,6 +19,7 @@ its scope decision
     top-level contract, and the electronics/electrical MVP boundary are unchanged;
   * the Guided Answer Co-Authoring surface remains present and distinct.
 """
+from tests.csrf_client import csrf_client
 import copy
 from test_p4_1b2a_durable_answer_append import answered_post  # P4-1b-2a
 import os
@@ -82,7 +83,7 @@ def _start(idea, confirm=True):
     data = {"idea": idea}
     if confirm:
         data["domain_confirm"] = DOMAIN_CONFIRM_VALUE
-    return app.test_client().post("/start", data=data, follow_redirects=False)
+    return csrf_client(app).post("/start", data=data, follow_redirects=False)
 
 
 def _start_electronics_session():
@@ -178,9 +179,9 @@ def test_panel_appears_for_uncertainty_via_unknown_action():
     # The "I do not know this yet" action never scores; the question is retained.
     sid = _start_electronics_session()
     try:
-        app.test_client().post(f"/session/{sid}",
+        csrf_client(app).post(f"/session/{sid}",
                                data={"response": "I don't know", "action": "unknown"})
-        body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+        body = csrf_client(app).get(f"/session/{sid}").get_data(as_text=True)
         assert _EYEBROW in body
         assert "one step at a time" in body.lower()
         assert "not validation" in body.lower() and "not safety" in body.lower()
@@ -193,9 +194,9 @@ def test_panel_appears_for_arabic_uncertainty():
     # English eyebrow) with the panel flipped to RTL.
     sid = _start_electronics_session()
     try:
-        app.test_client().post(f"/session/{sid}",
+        csrf_client(app).post(f"/session/{sid}",
                                data={"response": "لا أعرف", "action": "unknown"})
-        body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+        body = csrf_client(app).get(f"/session/{sid}").get_data(as_text=True)
         assert _AR_EYEBROW in body
         assert _AR_HEADING in body
         assert _EYEBROW not in body            # English eyebrow not shown for Arabic
@@ -206,10 +207,10 @@ def test_panel_appears_for_arabic_uncertainty():
 def test_panel_absent_for_non_uncertainty_answer():
     sid = _start_electronics_session()
     try:
-        app.test_client().post(f"/session/{sid}", data={
+        csrf_client(app).post(f"/session/{sid}", data={
             "response": "It opens a relay when current exceeds a threshold.",
             "action": "unknown"})
-        body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+        body = csrf_client(app).get(f"/session/{sid}").get_data(as_text=True)
         assert _EYEBROW not in body
     finally:
         SESSION_STORE.pop(sid, None)
@@ -218,9 +219,9 @@ def test_panel_absent_for_non_uncertainty_answer():
 def test_panel_has_no_hidden_field_or_save_approve_apply_control():
     sid = _start_electronics_session()
     try:
-        app.test_client().post(f"/session/{sid}",
+        csrf_client(app).post(f"/session/{sid}",
                                data={"response": "I don't know", "action": "unknown"})
-        body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+        body = csrf_client(app).get(f"/session/{sid}").get_data(as_text=True)
         panel = body[body.index(_EYEBROW):]
         panel = panel[:panel.index("<form")] if "<form" in panel else panel
         low = panel.lower()
@@ -234,9 +235,9 @@ def test_panel_has_no_hidden_field_or_save_approve_apply_control():
 def test_no_seventh_session_action_radio_introduced():
     sid = _start_electronics_session()
     try:
-        app.test_client().post(f"/session/{sid}",
+        csrf_client(app).post(f"/session/{sid}",
                                data={"response": "I don't know", "action": "unknown"})
-        body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+        body = csrf_client(app).get(f"/session/{sid}").get_data(as_text=True)
         assert body.count('name="action"') == 6
     finally:
         SESSION_STORE.pop(sid, None)
@@ -246,7 +247,7 @@ def test_saved_answer_is_verbatim_and_guidance_not_persisted():
     sid = _start_electronics_session()
     answer = "I don't know how the sensor triggers the relay yet."
     try:
-        answered_post(app.test_client(), sid, {"response": answer, "action": "answered"})
+        answered_post(csrf_client(app), sid, {"response": answer, "action": "answered"})
         transcript = SESSION_STORE[sid]["transcript"]
         assert transcript, "an answered submission must be recorded"
         assert transcript[-1]["response"] == answer  # verbatim, byte-for-byte
@@ -267,15 +268,15 @@ def test_saved_answer_is_verbatim_and_guidance_not_persisted():
 def test_render_does_not_change_maturity_gaps_or_outcome():
     sid = _start_electronics_session()
     # Prime an uncertainty signal via the non-scoring unknown action.
-    app.test_client().post(f"/session/{sid}",
+    csrf_client(app).post(f"/session/{sid}",
                            data={"response": "I don't know", "action": "unknown"})
     state = SESSION_STORE[sid]["state"]
     before_maturity = state.maturity_level
     before_gaps = [(g.gap_type, g.status) for g in state.gaps]
     before_result = copy.deepcopy(SESSION_STORE[sid].get("last_result"))
     try:
-        r1 = app.test_client().get(f"/session/{sid}")
-        r2 = app.test_client().get(f"/session/{sid}")
+        r1 = csrf_client(app).get(f"/session/{sid}")
+        r2 = csrf_client(app).get(f"/session/{sid}")
         assert r1.status_code == 200 and r2.status_code == 200
         assert _EYEBROW in r1.get_data(as_text=True)
         assert state.maturity_level == before_maturity
@@ -288,9 +289,9 @@ def test_render_does_not_change_maturity_gaps_or_outcome():
 def test_no_forbidden_fields_introduced_on_state_or_store():
     sid = _start_electronics_session()
     try:
-        app.test_client().post(f"/session/{sid}",
+        csrf_client(app).post(f"/session/{sid}",
                                data={"response": "I don't know", "action": "unknown"})
-        app.test_client().get(f"/session/{sid}")
+        csrf_client(app).get(f"/session/{sid}")
         state = SESSION_STORE[sid]["state"]
         for field in _FORBIDDEN_FIELDS:
             assert not hasattr(state, field)
@@ -308,9 +309,9 @@ def test_guided_answer_coauthoring_suppressed_in_uncertainty_but_not_removed():
     _COAUTHORING_HEADING = "Optional: what you could include in your answer"
     sid = _start_electronics_session()
     try:
-        app.test_client().post(f"/session/{sid}",
+        csrf_client(app).post(f"/session/{sid}",
                                data={"response": "I don't know", "action": "unknown"})
-        body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+        body = csrf_client(app).get(f"/session/{sid}").get_data(as_text=True)
         assert _EYEBROW in body                              # uncertainty is primary
         assert _COAUTHORING_HEADING not in body             # co-authoring suppressed here
         assert "Help me understand this question" in body   # Increment 1B intact
@@ -325,7 +326,7 @@ def test_guided_answer_coauthoring_suppressed_in_uncertainty_but_not_removed():
                                 "direction": "PROGRESSING"}
         entry["transcript"] = [{"response": "it opens a relay when current exceeds a threshold",
                                 "iteration": 1}]
-        body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+        body = csrf_client(app).get(f"/session/{sid}").get_data(as_text=True)
         assert _COAUTHORING_HEADING in body                 # co-authoring available/primary
         assert _EYEBROW not in body                          # uncertainty absent here
     finally:
@@ -373,9 +374,9 @@ def test_mixed_language_uncertainty_chooses_arabic():
 def test_arabic_panel_is_lang_ar_dir_rtl_and_page_shell_stays_english():
     sid = _start_electronics_session()
     try:
-        app.test_client().post(f"/session/{sid}",
+        csrf_client(app).post(f"/session/{sid}",
                                data={"response": "لا أعرف", "action": "unknown"})
-        body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+        body = csrf_client(app).get(f"/session/{sid}").get_data(as_text=True)
         div = _panel_div(body)
         assert 'lang="ar"' in div and 'dir="rtl"' in div
         # RTL is scoped to the uncertainty panel only — the page shell is LTR/en.
@@ -388,9 +389,9 @@ def test_arabic_panel_is_lang_ar_dir_rtl_and_page_shell_stays_english():
 def test_english_panel_is_ltr_and_no_rtl_anywhere():
     sid = _start_electronics_session()
     try:
-        app.test_client().post(f"/session/{sid}",
+        csrf_client(app).post(f"/session/{sid}",
                                data={"response": "I don't know", "action": "unknown"})
-        body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+        body = csrf_client(app).get(f"/session/{sid}").get_data(as_text=True)
         div = _panel_div(body)
         assert 'lang="en"' in div and 'dir="ltr"' in div
         assert 'dir="rtl"' not in body
@@ -403,10 +404,10 @@ def test_arabic_panel_saved_answer_verbatim_and_six_actions():
     sid = _start_electronics_session()
     answer = "لا أعرف كيف يعمل الحساس بعد."
     try:
-        answered_post(app.test_client(), sid, {"response": answer, "action": "answered"})
+        answered_post(csrf_client(app), sid, {"response": answer, "action": "answered"})
         transcript = SESSION_STORE[sid]["transcript"]
         assert transcript and transcript[-1]["response"] == answer  # verbatim
-        body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+        body = csrf_client(app).get(f"/session/{sid}").get_data(as_text=True)
         assert body.count('name="action"') == 6
     finally:
         SESSION_STORE.pop(sid, None)

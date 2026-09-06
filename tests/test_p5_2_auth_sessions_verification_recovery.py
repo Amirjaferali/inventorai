@@ -16,6 +16,7 @@ signed cookies; the real store, credential helpers, auth-session helpers and dev
 email sink. False-green guards are addressed explicitly (see the FALSE-GREEN
 GUARD comments). No mocks of the store; no ``:memory:`` DB.
 """
+from tests.csrf_client import csrf_client
 import os
 import re
 import threading
@@ -37,7 +38,7 @@ NEW_PW = "another sufficiently long secret"
 @pytest.fixture
 def client():
     app.config["TESTING"] = True
-    return app.test_client()
+    return csrf_client(app)
 
 
 @pytest.fixture
@@ -338,7 +339,7 @@ def test_cookie_security_flags(client):
 def test_logout_requires_csrf_then_clears_session(client):
     _register(client, "lo@example.com")
     _login(client, "lo@example.com")
-    assert client.post("/logout", data={}).status_code == 403          # missing CSRF
+    assert client.post("/logout", data={}, csrf=False).status_code == 403  # missing CSRF
     assert client.post("/logout", data={"csrf_token": "bogus"}).status_code == 403
     csrf = _csrf(client)
     assert client.post("/logout", data={"csrf_token": csrf}).status_code == 302
@@ -350,7 +351,7 @@ def test_logout_all_revokes_other_sessions(client):
     _register(client, "la@example.com")
     # session 1 (this client) and session 2 (second client), same account.
     _login(client, "la@example.com")
-    other = app.test_client()
+    other = csrf_client(app)
     _login(other, "la@example.com")
     assert other.get("/account").status_code == 200
     csrf = _csrf(client)
@@ -427,7 +428,7 @@ def test_disabled_midsession_fails_closed(client):
 def test_verification_completion_sets_verified(client):
     _register(client, "ver@example.com")
     raw = _reg_verification_token("ver@example.com")
-    r = client.get("/verify/" + raw)
+    r = client.post("/verify/" + raw)
     assert r.status_code == 200 and "verified" in r.get_data(as_text=True).lower()
     acct = _store().get_account_by_normalized_email("ver@example.com")
     assert acct["email_verified"] is True
@@ -439,11 +440,11 @@ def test_verification_replay_fails_and_state_durable(client):
     second use is rejected generically, and the flag stays set (durable)."""
     _register(client, "rep@example.com")
     raw = _reg_verification_token("rep@example.com")
-    first = client.get("/verify/" + raw)
+    first = client.post("/verify/" + raw)
     assert "verified" in first.get_data(as_text=True).lower()
     acct = _store().get_account_by_normalized_email("rep@example.com")
     assert acct["email_verified"] is True
-    second = client.get("/verify/" + raw)
+    second = client.post("/verify/" + raw)
     body = second.get_data(as_text=True).lower()
     assert "invalid" in body or "expired" in body or "already" in body
     # token is used exactly once
@@ -457,13 +458,13 @@ def test_verification_expired_token_rejected(client):
     store.create_email_token(_acct.new_token_id(), aid, VERIFICATION,
                              _acct.hash_token(raw), "2000-01-01T00:00:00.000000Z",
                              "2000-01-01T00:00:00.000000Z")
-    r = client.get("/verify/" + raw)
+    r = client.post("/verify/" + raw)
     assert "invalid" in r.get_data(as_text=True).lower() or "expired" in r.get_data(as_text=True).lower()
     assert store.get_account_by_id(aid)["email_verified"] is False
 
 
 def test_invalid_verification_token_generic(client):
-    r = client.get("/verify/this-token-never-existed")
+    r = client.post("/verify/this-token-never-existed")
     assert r.status_code == 200
     assert "invalid" in r.get_data(as_text=True).lower() or "expired" in r.get_data(as_text=True).lower()
 
@@ -528,9 +529,9 @@ def test_password_reset_completion_changes_password(client):
     r = client.post("/reset/" + raw, data={"password": NEW_PW, "password_confirm": NEW_PW})
     assert r.status_code == 200 and "reset" in r.get_data(as_text=True).lower()
     # old password rejected, new accepted
-    c2 = app.test_client()
+    c2 = csrf_client(app)
     assert c2.post("/login", data={"email": "pr@example.com", "password": PW}).status_code == 401
-    c3 = app.test_client()
+    c3 = csrf_client(app)
     assert c3.post("/login", data={"email": "pr@example.com", "password": NEW_PW}).status_code == 302
 
 
@@ -540,7 +541,7 @@ def test_password_reset_revokes_all_sessions(client):
     _register(client, "prr@example.com")
     _login(client, "prr@example.com")            # live session in `client`
     assert client.get("/account").status_code == 200
-    other = app.test_client()
+    other = csrf_client(app)
     other.post("/recover", data={"email": "prr@example.com"})
     raw = _reset_token("prr@example.com")
     other.post("/reset/" + raw, data={"password": NEW_PW, "password_confirm": NEW_PW})
@@ -778,7 +779,7 @@ def test_f01_r4_distinct_pre_existing_session_rejected_after_success(client):
     """§4.4 — a distinct pre-existing session is rejected after success."""
     _register(client, "f01r4@example.com")
     _login(client, "f01r4@example.com")
-    other = app.test_client()
+    other = csrf_client(app)
     _login(other, "f01r4@example.com")
     assert other.get("/account").status_code == 200
     assert client.post("/logout-all", data={"csrf_token": _csrf(client)}).status_code == 302
@@ -793,7 +794,7 @@ def test_f01_r5_csrf_rejection_behaviour_unchanged(client):
     store = _store()
     aid = store.get_account_by_normalized_email("f01r5@example.com")["account_id"]
     before = _epoch(store, aid)
-    assert client.post("/logout-all", data={}).status_code == 403
+    assert client.post("/logout-all", data={}, csrf=False).status_code == 403
     assert client.post("/logout-all", data={"csrf_token": "bogus"}).status_code == 403
     assert _epoch(store, aid) == before                 # no epoch change on rejection
     assert client.get("/account").status_code == 200    # session untouched
@@ -878,7 +879,7 @@ def test_f01_r10_confirmed_rollback_leaves_epoch_and_other_sessions_unchanged(
     unchanged under controlled conditions."""
     _register(client, "f01r10@example.com")
     _login(client, "f01r10@example.com")
-    other = app.test_client()
+    other = csrf_client(app)
     _login(other, "f01r10@example.com")
     csrf = _csrf(client)
     store = _store()
@@ -1468,7 +1469,7 @@ def test_f02_local_session_preservation_is_not_authentication_proof(client, monk
     material is NOT proof that the session is still authenticated."""
     _register(client, "f02sess@example.com")
     _login(client, "f02sess@example.com")
-    other = app.test_client()
+    other = csrf_client(app)
     other.post("/recover", data={"email": "f02sess@example.com"})
     raw = _reset_token("f02sess@example.com")
     store = _store()
@@ -1511,7 +1512,7 @@ def test_f02_two_competing_same_token_requests_exactly_one_winner(client, monkey
     results = {}
 
     def attempt(name, pw):
-        c = app.test_client()
+        c = csrf_client(app)
         results[name] = c.post("/reset/" + raw,
                                data={"password": pw, "password_confirm": pw}).status_code
 
@@ -1573,7 +1574,7 @@ def test_f02_success_old_rejected_new_accepted_sessions_revoked_no_auto_signin(c
     _register(client, "f02ok@example.com")
     _login(client, "f02ok@example.com")
     assert client.get("/account").status_code == 200
-    resetter = app.test_client()
+    resetter = csrf_client(app)
     resetter.post("/recover", data={"email": "f02ok@example.com"})
     raw = _reset_token("f02ok@example.com")
     r = resetter.post("/reset/" + raw, data={"password": NEW_PW, "password_confirm": NEW_PW})
@@ -1582,10 +1583,10 @@ def test_f02_success_old_rejected_new_accepted_sessions_revoked_no_auto_signin(c
         assert "auth" not in sess                          # no automatic sign-in
     prev = client.get("/account")                          # old session revoked
     assert prev.status_code == 302 and prev.headers["Location"].endswith("/login")
-    c_old = app.test_client()
+    c_old = csrf_client(app)
     assert c_old.post("/login", data={"email": "f02ok@example.com",
                                       "password": PW}).status_code == 401
-    c_new = app.test_client()
+    c_new = csrf_client(app)
     assert c_new.post("/login", data={"email": "f02ok@example.com",
                                       "password": NEW_PW}).status_code == 302
 

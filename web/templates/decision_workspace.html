@@ -57,6 +57,7 @@ td,th{padding:5px 8px;border-bottom:1px solid #e2e6ea;text-align:left;font-size:
 </table>
 <p class="note">No candidate is marked as finally selected; the lane issues no final technical selection.</p>
 <form method="post" action="{{ url_for('decision_workspace_dispose_candidate', did=view.decision_id) }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
   <p>
     Set candidate disposition —
     candidate:
@@ -112,6 +113,7 @@ td,th{padding:5px 8px;border-bottom:1px solid #e2e6ea;text-align:left;font-size:
 <p class="note">No constraints recorded.</p>
 {% endif %}
 <form method="post" action="{{ url_for('decision_workspace_add_constraint', did=view.decision_id) }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
   <p>
     Add a constraint —
     <input type="text" name="text" placeholder="constraint text" size="40" required>
@@ -152,6 +154,7 @@ td,th{padding:5px 8px;border-bottom:1px solid #e2e6ea;text-align:left;font-size:
 {% endif %}
 {% if view.gaps %}
 <form method="post" action="{{ url_for('decision_workspace_gap_action', did=view.decision_id) }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
   <p>
     Gap action —
     gap:
@@ -191,6 +194,7 @@ td,th{padding:5px 8px;border-bottom:1px solid #e2e6ea;text-align:left;font-size:
 {% endif %}
 {% if view.gaps %}
 <form method="post" action="{{ url_for('decision_workspace_add_evidence', did=view.decision_id) }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
   <p>
     Record evidence —
     gap:
@@ -242,6 +246,7 @@ td,th{padding:5px 8px;border-bottom:1px solid #e2e6ea;text-align:left;font-size:
 {% endif %}
 {% if view.gaps and view.evidence %}
 <form method="post" action="{{ url_for('decision_workspace_gap_assessment', did=view.decision_id) }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
   <p>
     Assess gap &amp; decide —
     gap:
@@ -286,6 +291,7 @@ td,th{padding:5px 8px;border-bottom:1px solid #e2e6ea;text-align:left;font-size:
 <p class="note">No owner preference set.</p>
 {% endif %}
 <form method="post" action="{{ url_for('decision_workspace_preference', did=view.decision_id) }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
   <input type="hidden" name="action" value="set">
   <p>
     Set owner preference (preference only; not a technical selection) —
@@ -299,6 +305,7 @@ td,th{padding:5px 8px;border-bottom:1px solid #e2e6ea;text-align:left;font-size:
 </form>
 {% if view.owner_preference %}
 <form method="post" action="{{ url_for('decision_workspace_preference', did=view.decision_id) }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
   <input type="hidden" name="action" value="clear">
   <p><button type="submit">Clear owner preference</button></p>
 </form>
@@ -318,6 +325,7 @@ td,th{padding:5px 8px;border-bottom:1px solid #e2e6ea;text-align:left;font-size:
 
 <h2>Add an input</h2>
 <form method="post" action="{{ url_for('decision_workspace_add_input', did=view.decision_id) }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
   <p><input type="text" name="text" placeholder="input text" size="60" required></p>
   <p>
     claim_class:

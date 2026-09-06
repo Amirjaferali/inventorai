@@ -10,6 +10,7 @@ candidate, Owner-accepted only at exact-SHA acceptance):
   4. canonical serving (index law / stall reframe / exhausted exit) —
      baseline and universal fail-closed target, never overridden by W2-C.
 """
+from tests.csrf_client import csrf_client
 import html as _html
 import json
 import os
@@ -62,7 +63,7 @@ def client(tmp_path, monkeypatch):
     monkeypatch.setattr(appmod, "_STORE", None)
     appmod.SESSION_STORE.clear()
     appmod.app.config["TESTING"] = True
-    with appmod.app.test_client() as c:
+    with csrf_client(appmod.app) as c:
         yield c, appmod
 
 

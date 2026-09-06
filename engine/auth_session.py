@@ -55,6 +55,8 @@ def csrf_matches(expected, provided):
         return False
     if not isinstance(expected, str) or not isinstance(provided, str):
         return False
+    if not expected.isascii() or not provided.isascii():
+        return False
     return hmac.compare_digest(expected, provided)
 
 

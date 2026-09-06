@@ -27,6 +27,7 @@ strong-unsupported family, and no lay-electrical word — so the real ``/start``
 chain (R7) exercises the classifier path, not the pre-classifier vocabulary.
 """
 
+from tests.csrf_client import csrf_client
 import builtins
 import importlib.util
 import os
@@ -126,7 +127,7 @@ def test_red_r7_start_no_none_based_electronics_admission(registry_double):
     deliberately NOT triggered — see module docstring.)"""
     registry_double({NEWDOM: _NEW_PACK})
     from web.app import app, SESSION_STORE
-    client = app.test_client()
+    client = csrf_client(app)
     before = set(SESSION_STORE)
     resp = client.post("/start",
                        data={"idea": "a loom with a spindle",
@@ -247,7 +248,7 @@ def test_green_focused_web_dispatch_fail_closed(registry_double):
     c = classify_domain("a loom and a catheter")
     assert c.kind is DomainResultKind.UNRESOLVED_NON_ACTIVATED_TIE  # honest precondition
     from web.app import app, SESSION_STORE
-    client = app.test_client()
+    client = csrf_client(app)
     before = set(SESSION_STORE)
     resp = client.post("/start",
                        data={"idea": "a loom and a catheter",

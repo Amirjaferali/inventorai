@@ -22,6 +22,7 @@ single-use semantics, session revocation, or the URL-token architecture.
 Scope note: PROVIDER/REVERSE-PROXY ACCESS-LOG BEHAVIOUR IS OUT OF SCOPE HERE and
 remains OPEN — it is not provable from this repository.
 """
+from tests.csrf_client import csrf_client
 import importlib
 import logging
 import os
@@ -39,7 +40,7 @@ def client(tmp_path, monkeypatch):
     monkeypatch.delenv("INVENTORAI_ENV", raising=False)
     webapp = importlib.import_module("web.app")
     webapp.app.config["TESTING"] = True
-    return webapp.app.test_client()
+    return csrf_client(webapp.app)
 
 
 def _token_pages(client):
@@ -146,7 +147,7 @@ def test_ordinary_route_language_switch_still_returns_to_that_route(client):
     """NB-1: the token-path fix must NOT collapse every route's language-switch
     target to `/`. An ordinary page must still offer a return link to ITSELF."""
     body = client.get("/login").get_data(as_text=True)
-    assert "next=%2Flogin" in body or "next=/login" in body
+    assert 'name="next" value="/login"' in body
 
 
 def test_token_routes_language_switch_does_not_carry_the_token_path(client):
@@ -155,12 +156,13 @@ def test_token_routes_language_switch_does_not_carry_the_token_path(client):
     for path in ("/verify/%s" % RAW_TOKEN, "/reset/%s" % RAW_TOKEN):
         body = client.get(path).get_data(as_text=True)
         assert RAW_TOKEN not in body, path
-        assert 'next=/"' in body, path
+        assert 'name="next" value="/"' in body, path
 
 
-def test_non_token_routes_are_not_forced_to_no_store(client):
-    """No accidental global cache-policy change."""
-    response = client.get("/")
+def test_responses_without_form_tokens_are_not_forced_to_no_store(client):
+    """Form-bearing HTML is private; unrelated responses retain their policy."""
+    assert client.get("/").headers.get("Cache-Control") == "no-store"
+    response = client.get("/health")
     assert "no-store" not in (response.headers.get("Cache-Control") or "")
 
 

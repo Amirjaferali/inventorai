@@ -5,6 +5,7 @@ The /session/<sid>/correct route body (PVCG-R4-C semantics) is byte-unchanged;
 these tests cover rendered reachability, truthful copy, the ack surface, and
 withdrawn-history visibility.
 """
+from tests.csrf_client import csrf_client
 import html, os, re, sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
@@ -29,7 +30,7 @@ def client(tmp_path, monkeypatch):
     monkeypatch.setattr(appmod, "_STORE", None)
     appmod.SESSION_STORE.clear()
     appmod.app.config["TESTING"] = True
-    with appmod.app.test_client() as c:
+    with csrf_client(appmod.app) as c:
         yield c, appmod
 
 def _start(c):

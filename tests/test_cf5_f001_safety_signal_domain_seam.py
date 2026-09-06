@@ -36,6 +36,7 @@ Signal-bearing statements are chosen deliberately:
       session domain (the validated unconditional-exposure defect).
 """
 
+from tests.csrf_client import csrf_client
 import os
 import sys
 
@@ -138,7 +139,7 @@ def test_red_r3_cold_load_detection_matches_live():
     """r3 (NB-R1): the durably cold-loaded session derives the SAME signals as
     the live session for an accepted-answer statement without literal
     electrical terms."""
-    client = app.test_client()
+    client = csrf_client(app)
     sid = _started_answered_session(client)
     live = derive_inventor_stated_safety_signals(SESSION_STORE[sid]["state"])
     assert len(live) == 1                      # honest precondition, not the fix
@@ -161,7 +162,7 @@ def test_red_r4_cold_load_restores_session_domain_identity():
     `state.domain` stays absent because it is the committed P4-1b-2a
     non-resume guard anchor (a cold-loaded session must remain unanswerable —
     complete resume is P4-2 and out of scope)."""
-    client = app.test_client()
+    client = csrf_client(app)
     sid = _started_answered_session(client)
     SESSION_STORE.pop(sid)
     assert client.get(f"/session/{sid}").status_code == 200
@@ -175,7 +176,7 @@ def test_green_cold_load_remains_unanswerable_after_restoration():
     """Governed-boundary pin (P4-1b-2a): the NB-R1 restoration must NOT
     re-enable resume-answering — a new answered submission on a cold-loaded
     session still fails closed with no second durable append."""
-    client = app.test_client()
+    client = csrf_client(app)
     sid = _started_answered_session(client)
     SESSION_STORE.pop(sid)
     assert client.get(f"/session/{sid}").status_code == 200
@@ -247,7 +248,7 @@ def test_green_legacy_missing_domain_fallback_unchanged():
 def test_green_legacy_null_envelope_cold_load_fail_safe():
     """§4 fail-safe: a legacy envelope with NULL reconstruction inputs restores
     nothing — cold-load still works and the state keeps no domain."""
-    client = app.test_client()
+    client = csrf_client(app)
     sid = "cf5f001-legacy-envelope-sid"
     st = IdeaState(idea_id="cf5f001-legacy")
     _get_store().create_project(ProjectRecordContract.from_state(st),
@@ -266,7 +267,7 @@ def test_green_cold_load_restores_stored_domain_verbatim():
     (contract §4 item 15): mechanical now has a governed family, so the
     derive-() pin below holds because the seed text carries no mechanical
     cues (verified un-flipped), no longer because the domain is family-less."""
-    client = app.test_client()
+    client = csrf_client(app)
     sid = "cf5f001-mech-envelope-sid"
     st = IdeaState(idea_id="cf5f001-mech")
     _get_store().create_project(
