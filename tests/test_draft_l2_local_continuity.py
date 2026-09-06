@@ -71,15 +71,38 @@ def _chromium_exe():
 @pytest.fixture
 def server():
     from werkzeug.serving import make_server
-    srv = make_server("127.0.0.1", 0, app, threaded=True)
+    # Match the supported single-thread serving topology: the cached SQLite
+    # stores must be used and closed on the thread that creates them.
+    srv = make_server("127.0.0.1", 0, app, threaded=False)
     port = srv.server_port
-    th = threading.Thread(target=srv.serve_forever, daemon=True)
+    server_errors = []
+
+    def serve():
+        try:
+            srv.serve_forever(poll_interval=0.05)
+        except Exception as exc:
+            server_errors.append(exc)
+        finally:
+            for name in ("_STORE", "_ACCOUNT_STORE"):
+                store = getattr(webapp, name)
+                if store is not None:
+                    try:
+                        store.close()
+                    except Exception as exc:
+                        server_errors.append(exc)
+                    finally:
+                        setattr(webapp, name, None)
+
+    th = threading.Thread(target=serve, daemon=True)
     th.start()
     try:
         yield f"http://127.0.0.1:{port}"
     finally:
         srv.shutdown()
         th.join(timeout=5)
+        srv.server_close()
+        assert not th.is_alive(), "test server did not stop"
+        assert not server_errors, f"test server/store cleanup failed: {server_errors!r}"
 
 
 @pytest.fixture(scope="module")
@@ -108,6 +131,36 @@ def page(_browser):
 def _start(page, base, idea=IDEA):
     page.goto(base + "/")
     page.fill("#idea", idea)
+    _present_domain_confirmation(page, idea)
+    return _confirm_start(page)
+
+
+def _present_domain_confirmation(page, idea=IDEA):
+    # With Electronics and Mechanical active, the first submit classifies the
+    # idea; it must not create a session or silently supply explicit consent.
+    assert page.locator("input[name=domain_confirm]").count() == 0
+    page.click("input[type=submit], button[type=submit]")
+    page.wait_for_load_state()
+    assert page.url.endswith("/start")
+    assert page.input_value("#idea") == idea
+    choices = page.locator("input[name=domain_choice]")
+    if choices.count():
+        # The unrelated-session fixture has no classified domain. Follow the
+        # real chooser rather than treating its Electronics intent as consent.
+        assert sorted(choices.evaluate_all("els => els.map(e => e.value)")) == [
+            "electronics_electrical", "mechanical"]
+        page.check('input[name=domain_choice][value="electronics_electrical"]')
+        page.click("input[type=submit], button[type=submit]")
+        page.wait_for_load_state()
+        assert page.url.endswith("/start")
+        assert page.input_value("#idea") == idea
+    confirmation = page.locator("input[name=domain_confirm]")
+    assert confirmation.count() == 1
+    assert confirmation.input_value() == "electronics_electrical"
+    assert not confirmation.is_checked()
+
+
+def _confirm_start(page):
     page.check("input[name=domain_confirm]")
     page.click("input[type=submit], button[type=submit]")
     page.wait_for_load_state()
@@ -282,9 +335,8 @@ def test_storage_failure_nonblocking(server, page):
     status = page.locator(".draft-status").first
     assert "Could not save" in (status.text_content() or "")
     # Submission still works despite the storage failure.
-    page.check("input[name=domain_confirm]")
-    page.click("input[type=submit], button[type=submit]")
-    page.wait_for_load_state()
+    _present_domain_confirmation(page)
+    _confirm_start(page)
     assert "/session/" in page.url
 
 
@@ -295,9 +347,8 @@ def test_full_storage_unavailable_is_level0(server, page):
         "Storage.prototype.setItem = function(){ throw new Error('denied'); };")
     page.goto(server + "/")
     page.fill("#idea", IDEA)
-    page.check("input[name=domain_confirm]")
-    page.click("input[type=submit], button[type=submit]")
-    page.wait_for_load_state()
+    _present_domain_confirmation(page)
+    _confirm_start(page)
     assert "/session/" in page.url
 
 
@@ -382,7 +433,7 @@ def test_local_draft_disclosure_present(server, page):
 # ===========================================================================
 # 16. Idempotency still prevents duplicate accepted answers (server-side)
 # ===========================================================================
-def test_idempotency_prevents_duplicate(server):
+def test_idempotency_prevents_duplicate():
     # Server-side proof that the draft feature does not alter the accepted-answer
     # idempotency model: the same token + same content submitted twice yields ONE
     # durable answered record.
@@ -413,7 +464,7 @@ def test_no_server_draft_route_or_record():
         f"no draft server route may exist: {rules}"
 
 
-def test_rendering_creates_no_records(server):
+def test_rendering_creates_no_records():
     # Rendering the pages (where drafts live entirely client-side) creates no
     # durable answered records and no session mutation beyond normal start.
     client = app.test_client()
@@ -470,9 +521,10 @@ def test_b1_seed_cleared_only_after_matching_start(server, page):
     page.fill("#idea", IDEA)
     page.wait_for_timeout(1000)
     assert page.evaluate(f"localStorage.getItem('{SEED_KEY}')")
-    page.check("input[name=domain_confirm]")
-    page.click("input[type=submit], button[type=submit]")
-    page.wait_for_load_state()
+    _present_domain_confirmation(page)
+    assert page.evaluate(f"localStorage.getItem('{SEED_KEY}')"), \
+        "seed draft must survive classification before explicit acceptance"
+    _confirm_start(page)
     assert "/session/" in page.url
     assert page.evaluate(f"localStorage.getItem('{SEED_KEY}')") is None  # matching seed cleared
 

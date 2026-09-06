@@ -1,5 +1,89 @@
 # InventorAI — Current Project State
 
+**Current entry:** concise execution routing. The active authority is recorded once in
+[ACTIVE_INCREMENT_CONTRACT.md](ACTIVE_INCREMENT_CONTRACT.md); Lean §2 owns its operating
+meaning. CLAUDE.md owns the single boot sequence. Historical material below does not
+override this current entry or impose another reading/approval/synchronization sequence.
+
+## Current authority and position
+
+- Repository: Amirjaferali/inventorai.
+- Execution branch: feature/atomic-json-session-persistence. Verify the live tip from
+  Git each session; main is outside execution authority.
+- Verified transition preparation baseline:
+  c78efd4e4064f464b48064173ac176f88ed9c371 (PR #617). This is recorded preparation
+  provenance, not an assertion that HEAD never advances.
+- During transition preparation: the Owner-authorized seven-path LOCAL transition candidate
+  and evidence package only, under the bootstrap declaration in ACTIVE_INCREMENT_CONTRACT.md.
+  No push, PR, merge, settings administration or R-05 execution is granted at preparation.
+- Conditional successor: ASTRA MILESTONE 1 — SECURE AND DIFFERENTIATED PRIVATE-BETA
+  PROGRESSION, installed in that same active authority surface. It remains inactive
+  until transition integration, CI, branch-protection/required-check, sole-Lead and
+  no-pause conditions are all verified. All per-merge safeguards also apply.
+- Astra is the sole preparation Lead; the prior Lead remains STANDBY, not terminated.
+  Only one Lead may possess mutation authority. Pause/revocation and return use Lean §9.
+- Technical position: completed product foundations with remaining security/product-value
+  and release obligations. Phase closure, a successful test or this transition is not
+  public/private staging, production, paid, pilot or human-data authorization.
+
+## Preserved state and next included work
+
+F-01/F-02 v2.1 is implemented at PR #617; B-01/B-02 are closed. No further F-01/F-02
+post-merge governance synchronization is required. OSP lifecycle remains CLOSED; its
+standing material-instruction control remains applicable. These lifecycles are not reopened.
+
+After all activation conditions pass, the milestone authorizes R-05 request-integrity/
+CSRF remediation preserving existing account/session/HMAC/ownership and F-03 semantics,
+with the required separate non-authoring security review before guarded merge. It then
+authorizes ONE strategic product-priority assessment. F-04 is not automatically the next
+implementation. The milestone owns its exact objectives, actions, exclusions and ending.
+
+F-03 stays behind its Owner product-decision gate. G-4-A remains CURRENT — NOT FIXED;
+CEHR/Route-B, G-4-B, M-1, T1-A′, HICR/readiness, RUN-004 and PRE-FCORA retain their actual
+authorities and return gates. No fresh evidence run, G-4-A implementation, human collection
+or premature PRE-FCORA/FCORA is authorized. The later CAD/PCB/competitive assessment
+preserves existing capability and Phase-7 owners and provider neutrality; no integration,
+new model, capability owner or runtime provider is selected by this transition.
+
+The Master Checklist remains a derived navigation view, not execution authority or SSOT.
+The repository-recorded reconstructed baseline has 54 items and zero unmapped items;
+the exact historical artifact/file/SHA remains unrecovered. The HICR bounded-supplement
+referent is an unresolved continuity candidate, not a proven lost material obligation.
+Resolve it at the affected return gate, not through an automatic unrelated-work STOP.
+
+## Material authority routing (pointer-only)
+
+| Question | Existing owner |
+|---|---|
+| Current mandate, scope and activation | ACTIVE_INCREMENT_CONTRACT.md |
+| Operating authority, risk, review and pause | LEAN_GOVERNANCE_AND_AGENT_CONTINUITY_PROTOCOL.md |
+| Delivery, repair and exact-head merge mechanics | ACCELERATED_HIGH_ASSURANCE_EXECUTION_PROTOCOL.md |
+| Material execution history and dependencies | ACTIVE_EXECUTION_ROADMAP.md and applicable formal closure records |
+| Foundation phase structure, not current status | PRODUCT_FOUNDATION_AND_COMMERCIAL_READINESS_REMEDIATION_PLAN.md |
+| Relevant substantive Owner decisions | OWNER_DECISION_REGISTER.md, only the cited/relevant decisions |
+| Deferred obligations and actual return gates | DEFERRED_OBLIGATIONS_REGISTER.md |
+| Capability ownership, including CAP-12–15 and CAP-18 | INVENTORAI_CAPABILITY_ENRICHMENT_REGISTER.md |
+| Deliverable workstreams, including deferred WS17 | DELIVERABLE_STABILIZATION_REMEDIATION_PLAN.md §15 |
+
+The deferred Technical/Manufacturing/Market-Reality readiness direction remains routed
+through the Deferred Obligations Register and existing capability owners. R2's accepted
+architectural disposition is not an exhaustive product-capability ceiling. This pointer
+creates no new owner, closes no obligation and does not move PRE-FCORA's mandatory trigger.
+
+## Update rule
+
+Keep this current entry concise. Update material authority, product truth and dependencies
+with the work that changes them under Lean §11; Git/GitHub own transient SHA/PR identity.
+No lifecycle-only change or successful transition integration requires a separate sync.
+
+## Historical state stream — evidence at the recorded time only
+
+The original entries below are retained as history. Their labels such as current, active,
+next, not authorized and synchronization describe their own recorded gates; they are not
+the current lane, current operating rules or a requirement to reread the whole stream.
+Resolve substantive current decisions through the routing owners above and later Owner
+authority, rather than silently deleting preserved evidence or inferring a new permission.
+
 **Purpose:** the concise current-state entry point for every agent. It is **not** a second
 roadmap. For detail, see the canonical plan
 (`docs/governance/PRODUCT_FOUNDATION_AND_COMMERCIAL_READINESS_REMEDIATION_PLAN.md`), the

@@ -1,12 +1,22 @@
 # ACTIVE EXECUTION ROADMAP
 # Single source of execution continuity across agent changes
 
+**Current execution routing:** ACTIVE_INCREMENT_CONTRACT.md owns the bounded transition
+preparation and conditional ASTRA MILESTONE 1 declaration; CURRENT_PROJECT_STATE.md is
+the concise entry. Lean §2 owns milestone authority, risk/review live in Lean §§3–5B,
+and AHAEP owns delivery mechanics. The appended entries and accumulated former current
+state/lane tables are historical evidence at their recorded time, not competing live
+declarations or universal separate-approval rules. Substantive decisions and unfulfilled
+return gates remain with their existing owners. Use §§10–11 below for current reading
+and recording mechanics. No completed F-01/F-02 or OSP lifecycle is reopened.
+
 ## 1. Purpose of this document
 
-Any agent joining this project reads this roadmap to know the
-current lane and next step WITHOUT reconstructing state from chat
-history, memory, or assumption. Repository truth overrides any
-conversation. This roadmap is execution control only — product
+Use the relevant entries in this roadmap when execution history or dependencies
+matter to the assigned work; current lane and next action come from the active
+authority surface and current-state entry. Current explicit Owner instructions take effect under
+Lean §2; record successor-relevant authority concisely in the active authority surface.
+This roadmap is execution continuity evidence — product
 meaning lives in `DUAL_PATH_PRODUCT_ANCHOR.md` (`60c809b`);
 epistemic rules live in `ILT-002_GOVERNANCE_ANCHOR.md`.
 
@@ -1650,81 +1660,43 @@ next-step authorization, and is not a state-change event under §11.
 8. This record must not modify source, tests, persistence files, or
    `main`; it is documentation only.
 
-## 10. Mandatory reading before any analysis
+## 10. Current reading rule
 
-1. `docs/governance/ILT-002_GOVERNANCE_ANCHOR.md` (epistemic boot — mandatory first)
-2. `docs/governance/OWNER_PRODUCT_IDENTITY_CORRECTION.md` (`5768d31`; Level 0 active amendment — read before relying on STRATEGIC_PRODUCT_VISION.md §1, §2, §3, §5A)
-3. `docs/governance/PATH_N_CURRENT_EXECUTION_ANCHOR.md` (`aa068fd`; historically stale — cannot override Phase 2, Phase 3, Phase 4, or Gate 8 authority)
-4. `docs/governance/DUAL_PATH_PRODUCT_ANCHOR.md` (`60c809b`, product-intent anchor)
-5. This roadmap (current execution lane and next governed step)
-6. `docs/governance/PHASE_4_PATH_N_RUNTIME_INTEGRATION_AUTHORIZATION.md` (`f4827d1`, Amendment 1 `b6d465d`, Amendment 2 `37001da`)
-7. `docs/governance/PHASE_4_PATH_N_RUNTIME_INTEGRATION_CLOSURE_RECORD.md` (Step K commit `bc34d78`)
+CLAUDE.md **One boot sequence** is the only universal reading order. Read the active
+milestone, current pointers and materially relevant authority. The historical anchor/
+closure-file reading list formerly here does not bind ordinary work. Full historical
+reconstruction uses Lean §6 and PRE-FCORA's actual trigger; no recursive full-roadmap read
+is required merely because another document links here.
 
-If these are not read, the agent must not proceed.
+## 11. Material recording and baseline semantics
 
-## 11. Roadmap update rule and baseline semantics
+Lean §11 owns recording cadence. Update material scope, authority, dependencies and product
+truth with the implementation that makes them true where practical. Preserve historical
+entries as evidence, not as current instructions. Git/GitHub own transient commit/PR/merge
+identity; publication baselines and historical SHAs do not become perpetual live-tip pins.
 
-Baseline semantics:
-- §4's baseline is the latest relevant execution-event commit
-  reflected in this roadmap. Roadmap-only commits (including this
-  update's own commit) do NOT make the roadmap stale.
-- Agents flag staleness only when phase/state-change events (below)
-  have occurred AFTER the roadmap's last update — not because the
-  roadmap's own commit advanced HEAD.
+A new SHA, PR creation, merge, exact-parent record, lifecycle label or immaterial status
+change never creates a standalone governance synchronization. A source merge is not
+automatically high risk or an exception to this rule. A resolved local HOLD does not itself
+create a documentation gate. Record a changed durable decision when material; do not require
+updates to several historical sections merely because a delivery transition occurred.
 
-This roadmap MUST be updated (and the update committed) at every
-one of these events, and is otherwise stale:
-- A phase authorization is committed
-- A phase implementation is committed
-- A phase closure record is committed
-- Any of R2 / FORM T / S-6 / AA-5 changes status
-- `runtime_integrated` changes
-- Any STOP is declared or resolved
+If history reveals an unrecorded event, inspect its effect on the current mandate, product
+truth and dependencies. Correct material current documentation within authorized scope,
+normally in the relevant PR. Hold only affected work if safe authority or behavior cannot
+be resolved; follow Lean §10. Unrelated authorized work continues.
 
-Each update revises §4 (baseline and state), §5 (chain), §6 (lane),
-and §7 (next step). Staleness check for agents: review repository
-history since §4's baseline; if any event from the list above
-appears and is not reflected here, trust git, flag the roadmap,
-and request a roadmap update before proceeding.
+### 11.A Implementation and documentation together
 
-### 11.A Bounded batching of LOW/MEDIUM-risk sub-events within one Increment lifecycle
+Related material updates may accompany one implementation PR and one concise outcome record.
+No separate recording/closure candidate is required merely to describe that PR's success.
+A changed product/security/privacy/architecture boundary still requires its reserved Owner
+decision; bundling documentation does not authorize it. A milestone ends at its specified
+completion/expiry or pause, not at a sequence of mechanically generated sync gates.
 
-The §11 "MUST be updated … at every one of these events" rule is narrowed — and
-ONLY narrowed — as follows for routine intra-Increment work, consistent with
-`GOVERNED_EXECUTION_EFFICIENCY_PROTOCOL.md` §3 risk classes and §9.1. LOW- and
-MEDIUM-risk sub-events within one active Increment lifecycle (for example: an
-implementation-contract merge, a tests-first merge, a bounded test-scope
-correction, a Source authoring or independent-review step, or a review-transport)
-MAY be batched into ONE reconciliation point rather than triggering a separate
-roadmap synchronization each, provided ALL of the following hold:
-
-1. the authoritative branch and the current next action remain unambiguous
-   throughout;
-2. no Anchor, product identity, stage gate, persistence status, security boundary,
-   or destructive authority changes;
-3. no new STOP condition appears;
-4. the roadmap is reconciled no later than EITHER the final lifecycle PR for that
-   Increment OR immediately after its true merge — whichever comes first.
-
-Immediate roadmap synchronization remains MANDATORY (batching is NOT permitted)
-for any of:
-
-- an Anchor or constitutional change;
-- a stage-gate change;
-- persistence activation or any data-state change;
-- a security or privacy change;
-- a destructive operation;
-- a STOP declaration or resolution;
-- any change to the authoritative branch or product-execution authority that would
-  materially mislead the next agent.
-
-This narrowing does NOT permit indefinite documentation lag: the outstanding
-sub-events MUST be reconciled by the deadline in condition 4, and a new agent
-reading the roadmap during a batching window must still be able to determine the
-authoritative branch and the next action unambiguously (condition 1). Where
-condition 1 or 4 cannot be met, batching is unavailable and the immediate-update
-rule applies. A product-execution SOURCE true-merge is never LOW/MEDIUM-risk for
-this purpose and always triggers the ordinary §11 update.
+The former batching rules tied to the superseded efficiency protocol, including its blanket
+source-merge exception and per-event STOP/update requirement, are superseded here. This is a
+replacement of operating mechanics, not reactivation of that protocol's historical fast path.
 
 ---
 
@@ -18099,3 +18071,35 @@ custodian / consent / surface obligations retain their existing authorities and
 return gates. PRE-FCORA remains MANDATORY LATER — NOT STARTED; FCORA, pilot,
 human study / collection, production, deployment and paid activation are not
 authorized. No ownership, commercial, AI or readiness state is changed.
+
+## Astra autonomous-delivery transition — Owner-authorized bounded preparation
+
+**Authority:** OWNER TRANSITION AUTHORIZATION — ASTRA AUTONOMOUS DELIVERY OPERATING
+MODEL — TRANSITION CANDIDATE PREPARATION. The Owner accepted the readiness assessment
+as GO WITH CONDITIONS and the governance-amplification assessment with one correction:
+the replacement model cannot govern its own initial integration. The existing active
+authority surface records the seven-path preparation scope and conditional first milestone
+once; this entry does not duplicate the mandate or supply additional authorization.
+
+**Preparation baseline:** feature/atomic-json-session-persistence at
+c78efd4e4064f464b48064173ac176f88ed9c371, PR #617. F-01/F-02 and B-01/B-02 are closed;
+no extra F-01/F-02 synchronization is required. OSP lifecycle remains closed with its
+standing control applicable. The prior Lead is STANDBY; Astra is sole preparation Lead.
+
+**Bounded delta:** replace conflicting operating clauses in CLAUDE, Lean, AHAEP, active
+contract, roadmap and current state; add only .github/workflows/ci.yml. No product runtime,
+test, domain, dependency-version, data, deployment or accepted-evidence changes. Current
+authority covers one local candidate, validation and the independent-review package.
+It does not cover push, PR, merge, protection administration or R-05 implementation.
+
+**Transition:** independent review, the Owner's consolidated exact-SHA acceptance and
+publication/PR decision, then the final separate Owner merge decision remain the finite
+bootstrap. Git/GitHub and the review return prove its actual outcome. After authoritative
+merge, post-merge verification and applicable safeguards, the replacement mechanics apply
+within the Owner mandate. No closure-only, activation or lifecycle-sync candidate follows.
+
+**Continuity:** conditional Milestone 1 is R-05 then one strategic priority assessment,
+not automatic F-04, G-4-A or CAD/PCB implementation. F-03, G-4-A, CEHR/Route-B, T1-A′,
+HICR/readiness, RUN-004 and PRE-FCORA retain their actual substantive return gates.
+PRE-FCORA is mandatory later, not started/moved. No production, staging, paid activation,
+pilot/human collection, provider commitment, main change or new capability owner is implied.

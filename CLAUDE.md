@@ -1,341 +1,91 @@
-# Current Repository Execution Authority
-
-This section overrides any older current-priority, active-document, or
-document-authority statement in this file when they conflict.
-
-## Mandatory Lean Governance Boot Sequence (current authority — read first)
-
-Governed by `docs/governance/LEAN_GOVERNANCE_AND_AGENT_CONTINUITY_PROTOCOL.md`
-(binding). Before planning or implementation, every agent MUST read, in order:
-
-1. this `CLAUDE.md`;
-2. `docs/governance/CURRENT_PROJECT_STATE.md`;
-3. the current authoritative anchor (per the reading order below);
-4. `docs/governance/OWNER_DECISION_REGISTER.md`;
-5. the active phase/increment contract (`docs/governance/ACTIVE_INCREMENT_CONTRACT.md`);
-6. only the additional documents the active contract references.
-
-Then verify the live authoritative tip from Git (never a prose-pinned SHA). A full
-historical audit and the complete reading order below are required only for a Depth-1 /
-high-risk / strategic change or when a full-audit trigger applies (protocol §6) — not as
-daily default work. This boot sequence weakens no Level-0 authority, product identity,
-security/privacy boundary, phase sequencing, active hold, or separate-authorization
-requirement; Phase 3 implementation remains NOT authorized. The detailed reading order that
-follows remains authoritative for Depth-1 / full-audit contexts.
-
-For any material candidate-lifecycle work (candidate creation, exact-SHA freeze, Creator
-Grill, SHA-preserving bundle, independent review, Owner exact-SHA acceptance, publication,
-PR, merge, or post-merge verification/synchronization), every agent MUST also read and
-comply with `docs/governance/ACCELERATED_HIGH_ASSURANCE_EXECUTION_PROTOCOL.md` — the
-binding owner of general lifecycle mechanics. Protocol compliance is gate evidence (its
-compact compliance blocks are required), not reading advice. That protocol is subordinate
-to this file and to the Lean protocol, owns no risk or review-depth taxonomy (those remain
-Lean-owned), embeds no current state, and authorizes nothing.
-
-Before any analysis, recommendation, code change, command execution, file
-creation, staging, commit, or push, every Claude Code session, team lead,
-subagent, and Agent Teams teammate MUST read, in this order:
-
-1. `docs/governance/ILT-002_GOVERNANCE_ANCHOR.md`
-2. `docs/governance/OWNER_PRODUCT_IDENTITY_CORRECTION.md`
-3. `docs/governance/OWNER_PRODUCT_SUPPORT_AND_CERTIFICATION_BOUNDARY_AMENDMENT.md`
-   — Level 0 Owner Amendment governing the `STRATEGIC_PRODUCT_VISION.md` §4
-   Coverage Declaration Principle ONLY. Read it before relying on that
-   provision's original wording. It does not amend any other §4 content, does
-   not change product identity, and creates no implementation authority.
-4. `docs/governance/STRATEGIC_PRODUCT_VISION.md`
-5. `docs/governance/PATH_N_CURRENT_EXECUTION_ANCHOR.md`
-6. `docs/governance/DUAL_PATH_PRODUCT_ANCHOR.md`
-7. `docs/governance/ACTIVE_EXECUTION_ROADMAP.md`
-8. `docs/governance/PRODUCT_FOUNDATION_AND_COMMERCIAL_READINESS_REMEDIATION_PLAN.md`
-   — mandatory product-foundation and commercial-readiness remediation plan (the
-   owner-approved v2 plan, now CANONICAL — merged via PR #289 and post-merge
-   verified; it supersedes any earlier draft). Read it in full
-   after the governing anchors and the roadmap and before any Product UX/UI,
-   persistence, accounts, API, multi-domain, subscription, or other implementation
-   work. Every agent MUST: read the full plan; resolve and verify the current
-   authoritative branch and tip from the active governance sources (do not treat
-   the plan's historical drafting baseline SHA as the expected tip); verify the
-   currently active phase from the latest committed roadmap and status surfaces;
-   distinguish its statuses (`RECORDED` / `PLANNED` / `ELIGIBLE` /
-   `OWNER-AUTHORIZED` / `ACTIVE` / `CLOSED`) and never treat one as another;
-   perform no automatic downstream activation (closing one phase never activates
-   another); and return `VERIFICATION BLOCKED` when repository state, the
-   authoritative tip/branch, the active phase, or authorization cannot be
-   verified. The plan is subordinate to the committed anchors, contracts, and
-   `docs/governance/ACTIVE_EXECUTION_ROADMAP.md`; recording future work in it
-   authorizes nothing.
-9. Any phase-specific authorization identified as active by the roadmap
-10. `docs/governance/INVENTORAI_COMMERCIAL_DIFFERENTIATION_DIRECTION.md`
-   — mandatory strategic product direction; non-activating and non-authorizing;
-   subordinate to committed anchors, contracts, and
-   `docs/governance/ACTIVE_EXECUTION_ROADMAP.md`.
-11. `docs/benchmarks/BICYCLE_BRAKE_LIGHT_COMPETITIVE_BENCHMARK.md`
-   — mandatory competitive product-value evaluation protocol; non-activating
-   and non-authorizing; subordinate to committed anchors, contracts, and
-   `docs/governance/ACTIVE_EXECUTION_ROADMAP.md`; no benchmark run or result is
-   implied by this record.
-
-Repository truth overrides conversation history, memory, and assumption.
-
-The active roadmap controls:
-- the current execution lane;
-- authorized next actions;
-- blocked states and holds;
-- mandatory stop conditions;
-- roadmap-staleness handling.
-
-Current statuses, holds, authorization boundaries, and next actions MUST be
-read from the latest committed `ACTIVE_EXECUTION_ROADMAP.md`; they must not be
-copied, reconstructed, or inferred from this file.
-
-Unless the latest committed roadmap and a separate applicable authority
-explicitly authorize an action, agents MUST NOT:
-
-- reopen Gate C;
-- run another E-2 attempt;
-- create a new SID;
-- start Flask or invoke the E-2 runner;
-- modify preserved evidence;
-- move any status or hold;
-- classify S-6;
-- create or imply downstream authorization;
-- treat analysis, recommendations, or team consensus as authorization.
-
-Agent Teams does not create authority. Every teammate is bound by the same
-repository documents, prohibitions, and stop conditions as the team lead.
-
-If Git history contains a qualifying state-change event not reflected in the
-roadmap, STOP, report the exact evidence, and request roadmap synchronization.
-Do not continue under a stale roadmap.
-
----
-
-# InventorAI — Refactor Governance Contract
-
-## Mission
-
-This repository is undergoing behavior-preserving extraction and replay stabilization.
-
-Primary goal:
-Preserve historical benchmark behavior while tracing semantic provenance accurately.
-
-This is NOT a redesign project.
-
----
-
-# Core Rules
-
-1. Do NOT redesign architecture.
-2. Do NOT optimize behavior.
-3. Do NOT modernize schemas.
-4. Do NOT improve heuristics.
-5. Do NOT silently upgrade semantics.
-6. Do NOT patch replay blindly.
-
-All changes must preserve historical behavior unless explicitly approved.
-
----
-
-# Historical Truth Source
-
-`benchmark/run_benchmark_v1.py`
-
-This file is the historical behavioral authority unless explicitly overridden.
-
----
-
-# Required Engineering Method
-
-Every mismatch must first be classified:
-
-- structural contract drift
-- semantic drift
-- fixture drift
-- runtime dependency drift
-- actual logic defect
-
-No patching before classification.
-
----
-
-# Mandatory Provenance Tracing
-
-Every semantic mismatch must be traced chronologically:
-
-raw_response
-→ extraction
-→ normalization
-→ fixture generation
-→ replay scoring
-→ final report
-
-Never guess the origin of drift.
-
----
-
-# Scoring Rules
-
-Do NOT modify scoring criteria unless:
-
-1. parity proof exists
-2. benchmark lineage is proven
-3. behavior matches historical benchmark intent
-
-No replay cosmetics.
-
----
-
-# Adapter Rules
-
-Compatibility adapters are allowed ONLY for:
-
-- legacy field aliases
-- structural compatibility
-- schema bridging
-
-Adapters must NEVER alter semantic meaning.
-
----
-
-# Fixture Rules
-
-Fixtures are evidence artifacts.
-
-Do NOT mutate fixtures unless explicitly approved.
-
-Replay greenness alone is NOT proof of correctness.
-
----
-
-# Semantic Safety Rules
-
-Avoid:
-- forced confidence downgrades
-- artificial replay parity
-- hidden heuristic upgrades
-- semantic masking
-
-Historical parity must be balanced with:
-- semantic correctness
-- governance intent
-- provenance evidence
-
----
-
-# File Creation Rules
-
-Before creating any file, document:
-
-- file path
-- purpose
-- input contract
-- output contract
-- prohibited behaviors
-
-All files must remain:
-- small
-- deterministic
-- single-purpose
-
----
-
-# Forbidden Behaviors
-
-The following are forbidden unless explicitly approved:
-
-- hidden fallback logic
-- silent schema coercion
-- benchmark gaming
-- replay-only hacks
-- implicit semantic upgrades
-- uncontrolled aliasing
-
----
-
-# Stop Conditions
-
-STOP immediately and report diagnosis if:
-
-- semantic origin becomes unclear
-- replay passes without provenance proof
-- scorer patching becomes tempting
-- fixture mutation appears necessary
-- historical truth becomes ambiguous
-
-Diagnosis is preferred over speculative coding.
-
----
-
-# Current Priority
-
-Freeze replay patching.
-
-Current investigation focus:
-
-1. provenance tracing
-2. semantic drift source identification
-3. confidence assignment lineage
-4. recommendation/action contract divergence
-
-No redesign work is authorized.
-## Reporting Integrity Rules
-
-The replay report is not allowed to infer, reinterpret, suppress, or recompute scoring truth.
-
-The authoritative scoring result is the raw output of:
-
-engine.scoring.score_case()
-
-Any replay reporter, formatter, verifier, or summary script must render this output faithfully.
-
-Forbidden:
-- dropping issues from score_case()
-- converting overall=false into pass
-- hiding failed criteria
-- recomputing pass/fail outside score_case()
-- reporting partial truth as full parity
-- using replay greenness as proof without raw score evidence
-
-Every replay report must include or reference:
-- raw score_case() output
-- weighted_score
-- overall
-- failed criteria
-- issues
-- scoring_version
-- fixture/hash provenance when available
-
-If final replay output disagrees with score_case(), STOP and report:
-
-REPORTING DIVERGENCE DETECTED
-
----
-
-## Active Governance Documents
-
-The following documents were added after the initial governance contract.
-Read them before any code change or architectural decision.
-
-./GOVERNANCE_MODEL.md
-  Authority hierarchy (Tiers 1-4), confirmed violations,
-  and remediation steps for replay/provenance issues.
-  Status: ACTIVE
-
-./MVP_SCOPE_FREEZE.md
-  Hard boundary on MVP scope.
-  Read this before writing any code.
-  Status: ACTIVE FREEZE
-
-./DECISION_PROGRESSION_MODEL.md
-  Proposed architecture for the progression engine.
-  Electronics/electrical domain, LEVEL 0-2 only.
-  Status: PROPOSED — not implemented, not validated
-
-## Document Authority Order
-
-When documents conflict, this order applies (paths are repository-root-relative):
-1. ./MVP_SCOPE_FREEZE.md          (hard constraint)
-2. ./GOVERNANCE_MODEL.md          (authority hierarchy)
-3. ./CLAUDE.md                    (engineering rules)
-4. ./DECISION_PROGRESSION_MODEL.md (proposal only)
+# InventorAI — Current Repository Execution Instructions
+
+## Current authority and transition scope
+
+The Owner's Astra Autonomous Delivery Operating Model — Transition Candidate
+Preparation instruction authorizes the bounded seven-path transition recorded in
+docs/governance/ACTIVE_INCREMENT_CONTRACT.md. The candidate does not authorize
+its own publication or integration. Its initial integration retains the one-time
+Owner acceptance/publication and separate merge decisions recorded there.
+
+The replacement operating rules take effect only after authoritative transition
+merge, post-merge verification and the applicable safeguard verification. The
+conditional first milestone is not activated by the existence of this file.
+
+docs/governance/LEAN_GOVERNANCE_AND_AGENT_CONTINUITY_PROTOCOL.md §2 owns milestone
+authority and its precedence; §§3–5B own risk, tests and review. The
+ACCELERATED_HIGH_ASSURANCE_EXECUTION_PROTOCOL.md owns delivery mechanics, not
+another authorization model. This file owns the single boot sequence below.
+
+## One boot sequence
+
+Before ordinary planning or execution:
+
+1. Read this CLAUDE.md.
+2. Read the current entry and routing pointers in
+   docs/governance/CURRENT_PROJECT_STATE.md, not its historical state stream.
+3. Read the current milestone/contract in
+   docs/governance/ACTIVE_INCREMENT_CONTRACT.md, not superseded declarations.
+4. Read docs/governance/OWNER_DECISION_REGISTER.md only for relevant decisions
+   referenced by that milestone or the assigned work.
+5. Read the documents and applicable clauses materially relevant to the work,
+   including Lean authority/risk and AHAEP mechanics when performing those functions.
+
+Verify repository identity, working state and the live authoritative branch from
+Git. The execution branch is feature/atomic-json-session-persistence; main is
+not the execution base. A prose SHA is evidence of its recorded moment, not a
+permanent live-tip expectation. Apply Lean §10 / AHAEP §5 to a base advance.
+
+This sequence supersedes competing universal reading orders in this file, the
+roadmap, historical anchors and old contracts. A reference to a large file is not
+an instruction to read its entire history or recursively load every citation.
+Consult enough relevant context to establish current authority and affected rules.
+
+Full historical reconstruction is required only by a demonstrated authority
+conflict, a continuity failure affecting current work, high-risk strategic
+reconsideration, PRE-FCORA at its existing trigger, or another explicit full-audit
+trigger under Lean §6. Ordinary high-risk implementation requires its relevant
+security/data/architecture evidence, not an automatic full project-history audit.
+
+## Historical material and substantive boundaries
+
+Historical evidence, superseded contracts and candidate-lifecycle records are
+evidence at their recorded time. They do not reimpose current approval stages,
+reading duties or closed holds. ILT-002_GOVERNANCE_ANCHOR.md governs the integrity
+and limits of the ILT evidence ledger; its restrictions on reconstructing missing
+sessions do not prohibit repository continuity reconstruction under Lean §9.
+
+The old replay/refactor mission and its old Current Priority were task-scoped,
+not a permanent prohibition on Owner-authorized product implementation. When work
+touches replay or scoring, retain truthful provenance, unchanged accepted evidence
+unless expressly authorized, and faithful reporting of engine.scoring.score_case().
+Fixtures and replay greenness are not substitutes for semantic truth. Investigate
+the affected cause of a mismatch before changing behavior; never fabricate parity,
+hide failed criteria, silently change product meaning or mutate preserved evidence.
+
+Current product identity, ownership and security/privacy boundaries, domain
+activation, evidence acceptance, and release/human-data gates remain with their
+existing substantive owners. Unmodified documents' imported lifecycle mechanics
+resolve through current Lean/AHAEP; they do not revive superseded routine approvals.
+No phase or capability starts merely because a preceding one closed.
+
+## Continue, hold and return
+
+The active milestone determines permitted actions. Complete included routine work
+without repeated per-file, command, START, publication or merge requests. Escalate
+reserved decisions and scope changes as defined in Lean §2 and the actual mandate.
+
+A missing roadmap SHA, PR label, merge record or other immaterial lifecycle update
+does not stop work or create a synchronization candidate. Update materially changed
+authority, product truth and dependencies with the implementation that changes them.
+If a discrepancy affects safe authority or behavior, hold that affected work under
+Lean §10; continue unrelated authorized work. Do not rewrite history to resolve it.
+
+Only one designated Lead may mutate the project. The Lead may implement directly
+or use bounded sub-agents; their authority never exceeds the Lead's. Same-session
+child agents are technical assistance, not formal independent review. Apply the
+existing OSP material-instruction control when its function is actually performed;
+it does not create another workstream or routine Owner relay.
+
+An Owner pause, stop or revocation is effective on receipt. Start no new mutation,
+preserve accepted work, and return the single checkpoint specified by Lean §9.
