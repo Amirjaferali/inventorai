@@ -69,6 +69,46 @@ class EmailExistsError(AccountStoreError):
     this to the SAME generic response as success (no account enumeration)."""
 
 
+# Durable-outcome vocabulary (Contract v2.1 §§3, 9, 10). These three classes are
+# NOT interchangeable and must never be collapsed in code, tests or evidence.
+DURABLE_CONFIRMED_UNCHANGED = "confirmed_unchanged"
+DURABLE_CONFIRMED_COMMITTED = "confirmed_committed"
+DURABLE_INDETERMINATE = "indeterminate"
+
+
+class AccountStoreInvariantError(AccountStoreError):
+    """An operational/invariant failure inside an otherwise-eligible write: the
+    exact UPDATE affected a row count other than one AFTER eligibility had already
+    been established (Contract §2 for the epoch proof; §8B for the post-eligibility
+    reset row count). This is NEVER an ordinary concurrent loser and never maps to
+    the generic invalid-token response."""
+
+    durable_outcome = DURABLE_CONFIRMED_UNCHANGED
+
+
+class AccountStoreCommitError(AccountStoreError):
+    """COMMIT itself raised (Contract §9). Success is never reported. The durable
+    outcome is ``confirmed_unchanged`` only when a defensive rollback provably ran,
+    otherwise ``indeterminate`` — it is NEVER assumed to be rolled back. The
+    original COMMIT failure is preserved as ``__cause__`` and in ``original``."""
+
+    def __init__(self, message, durable_outcome=DURABLE_INDETERMINATE,
+                 original=None, rollback_error=None, connection_unsafe=False):
+        super().__init__(message)
+        self.durable_outcome = durable_outcome
+        self.original = original
+        self.rollback_error = rollback_error
+        self.connection_unsafe = connection_unsafe
+
+
+class AccountStoreConnectionUnsafeError(AccountStoreError):
+    """A previous failure left the shared connection in an unknown transactional
+    state and a defensive rollback also failed. Blind continuation on it is refused
+    (Contract §10 item 6). Not an automatic retry and not a recovery mechanism."""
+
+    durable_outcome = DURABLE_INDETERMINATE
+
+
 _SCHEMA = (
     """
     CREATE TABLE IF NOT EXISTS accounts (
@@ -281,6 +321,9 @@ class SqliteAccountStore:
     def __init__(self, path: str):
         self._path = path
         self._lock = threading.RLock()
+        # Contract §10 item 6: set only when a defensive rollback itself failed and
+        # the transactional state is therefore unknown. Never cleared automatically.
+        self._connection_unsafe = False
         # isolation_level=None → autocommit mode, so WE control transactions with
         # explicit BEGIN IMMEDIATE/COMMIT (required for the atomic rate-limit and
         # token critical sections). check_same_thread=False + the lock below make
@@ -300,22 +343,78 @@ class SqliteAccountStore:
                 raise
 
     # --- transaction helpers -----------------------------------------------
+    def _rollback_if_in_transaction(self):
+        """Attempt a defensive ROLLBACK only while the connection actually remains
+        in a transaction (Contract §9 step 2, §10 items 3 and 5). Returns
+        ``(attempted, error)``. A rollback failure is reported, never swallowed
+        into an apparent success, and marks the connection unsafe."""
+        if not self._conn.in_transaction:
+            return False, None
+        try:
+            self._conn.execute("ROLLBACK")
+        except BaseException as rollback_error:      # pragma: no cover - defensive
+            self._connection_unsafe = True
+            return True, rollback_error
+        return True, None
+
     @contextmanager
     def _write(self):
         """Serialise in-process access to the shared connection AND take the
         SQLite RESERVED lock immediately, so a concurrent writer (even from
         another connection/instance/process) can never interleave a
-        read-modify-write. Commits on success, rolls back and re-raises on any
-        error (fail closed)."""
+        read-modify-write.
+
+        Contract v2.1 §10 (D-02 Option A) hardening. ``_write()`` remains the ONE
+        transaction owner; no parallel transaction mechanism exists.
+
+        1. Acquire the lock and ``BEGIN IMMEDIATE``.
+        2. Yield the connection.
+        3. On a body exception, attempt rollback IF still in a transaction, then
+           propagate the original failure.
+        4. On body success, attempt ``COMMIT``.
+        5. On a COMMIT exception, attempt rollback IF still in a transaction and
+           NEVER report success; the original COMMIT failure is preserved.
+        6. If that rollback also fails, keep the original failure, propagate an
+           operational failure and mark the connection unsafe for blind
+           continuation.
+        7. No silent retry of BEGIN, the body, COMMIT or ROLLBACK.
+        8. No sensitive database detail is added here; the web boundary maps every
+           one of these to a generic response.
+        """
         with self._lock:
+            if self._connection_unsafe:
+                raise AccountStoreConnectionUnsafeError(
+                    "shared connection is in an unknown transactional state after an "
+                    "earlier rollback failure; blind continuation is refused")
             self._conn.execute("BEGIN IMMEDIATE")
             try:
                 yield self._conn
             except BaseException:
-                self._conn.execute("ROLLBACK")
+                # Pre-COMMIT failure. Rollback where the transaction is still open,
+                # then propagate the ORIGINAL error unchanged.
+                self._rollback_if_in_transaction()
                 raise
-            else:
+            try:
                 self._conn.execute("COMMIT")
+            except BaseException as commit_error:
+                attempted, rollback_error = self._rollback_if_in_transaction()
+                if attempted and rollback_error is None:
+                    # The transaction was provably still open and was rolled back:
+                    # the write did not become durable.
+                    outcome, unsafe = DURABLE_CONFIRMED_UNCHANGED, False
+                elif attempted:
+                    # Rollback failed. Durable state is unknown; do not continue
+                    # blindly on this connection.
+                    outcome, unsafe = DURABLE_INDETERMINATE, True
+                else:
+                    # No transaction remained. COMMIT may have become durable.
+                    # This is NOT a confirmed rollback.
+                    outcome, unsafe = DURABLE_INDETERMINATE, False
+                raise AccountStoreCommitError(
+                    "COMMIT failed; durable outcome %s" % outcome,
+                    durable_outcome=outcome, original=commit_error,
+                    rollback_error=rollback_error, connection_unsafe=unsafe,
+                ) from commit_error
 
     @contextmanager
     def _read(self):
@@ -393,14 +492,34 @@ class SqliteAccountStore:
 
     def increment_session_epoch(self, account_id: str, now_iso: str):
         """Atomically bump ``session_epoch`` (revokes every existing authenticated
-        session for the account). Returns the new epoch, or None if missing."""
+        session for the account) and PROVE the write with the exact UPDATE row
+        count (Contract v2.1 §2).
+
+        Success requires the UPDATE to affect exactly one row AND ``_write()`` to
+        confirm COMMIT. A missing account, zero rows or any unexpected non-1 row
+        count is an operational/invariant failure and raises
+        ``AccountStoreInvariantError`` inside the transaction, so the write rolls
+        back — it is never reported as a successful revocation.
+
+        Returns the resulting epoch. That value may be retained, but the ABSENCE of
+        an exception is not by itself the success proof, and no epoch previously
+        read by a web route is used as the production success guard.
+        """
         with self._write() as c:
-            c.execute(
+            cur = c.execute(
                 "UPDATE accounts SET session_epoch = session_epoch + 1, updated_at = ? "
                 "WHERE account_id = ?", (now_iso, account_id))
+            if cur.rowcount != 1:
+                raise AccountStoreInvariantError(
+                    "session_epoch UPDATE affected %d rows, expected exactly 1"
+                    % (cur.rowcount,))
             row = c.execute("SELECT session_epoch FROM accounts WHERE account_id = ?",
                             (account_id,)).fetchone()
-        return row[0] if row else None
+            if row is None:                          # pragma: no cover - defensive
+                raise AccountStoreInvariantError(
+                    "account row absent immediately after a 1-row epoch UPDATE")
+            new_epoch = row[0]
+        return new_epoch
 
     def mark_email_verified(self, account_id: str, now_iso: str) -> int:
         """Set ``email_verified = 1`` for an ACTIVE account. Returns rows changed
@@ -1019,6 +1138,118 @@ class SqliteAccountStore:
                 "WHERE account_id = ? AND token_type = ? AND used_at IS NULL",
                 (now_iso, account_id, token_type))
             return cur.rowcount
+
+    # --- F-02 two-stage password reset (Contract v2.1 §§5-9) ----------------
+    def password_reset_eligible(self, token_hash: str, now_iso: str) -> bool:
+        """STAGE A — strictly READ-ONLY eligibility precheck (Contract §5).
+
+        Performs no INSERT, UPDATE, DELETE, token reservation or any other durable
+        mutation: it runs under ``_read()`` and never opens a write transaction.
+
+        Returns True only when a RESET token with this hash exists, is unused, is
+        unexpired, and belongs to an existing ACTIVE account. Every other ordinary
+        outcome — nonexistent, expired, replayed, wrong-type, missing or
+        non-active account — returns False and is indistinguishable to the caller.
+
+        An operational store failure PROPAGATES as an exception so the web layer
+        can separate it from ordinary ineligibility (generic 503 vs generic 400).
+
+        This precheck creates NO mutation authority, NO reservation and NO TOCTOU
+        guarantee. True permits only proceeding to password hashing; it must never
+        be passed to Stage B as a trusted eligibility flag.
+        """
+        with self._read() as c:
+            row = c.execute(
+                "SELECT account_id, expires_at, used_at FROM email_tokens "
+                "WHERE token_hash = ? AND token_type = ?",
+                (token_hash, RESET)).fetchone()
+            if row is None:
+                return False
+            account_id, expires_at, used_at = row
+            if used_at is not None:
+                return False
+            if now_iso >= expires_at:
+                return False
+            acct = c.execute("SELECT status FROM accounts WHERE account_id = ?",
+                             (account_id,)).fetchone()
+            if acct is None or acct[0] != "active":
+                return False
+        return True
+
+    def complete_password_reset(self, token_hash: str, new_password_hash: str,
+                                now_iso: str):
+        """STAGE B — the ONE authoritative transaction for a password reset
+        (Contract §§7-9). Every F-02 mutation lives in this single
+        ``_write()`` / ``BEGIN IMMEDIATE`` critical section.
+
+        No Stage-A result is trusted: the token and account are independently
+        re-resolved and fully revalidated here, before any mutation.
+
+        Ordinary ineligibility observed by that initial in-transaction
+        revalidation — used, expired, superseded, wrong-type or ineligible
+        account, including a normal concurrent same-token loser — returns ``None``
+        with ZERO mutation by this request (Contract §8A).
+
+        A row count other than one on the submitted-token, password or epoch
+        UPDATE AFTER eligibility already passed is an invariant/operational
+        failure: it raises ``AccountStoreInvariantError``, the whole transaction
+        rolls back, and it is NEVER normalized into the concurrent-loser branch
+        (Contract §8B).
+
+        Returns the ``account_id`` only after ``_write()`` confirms COMMIT.
+        """
+        with self._write() as c:
+            # 1-2. Independently resolve and revalidate the token by hash and type.
+            row = c.execute(
+                "SELECT token_id, account_id, expires_at, used_at FROM email_tokens "
+                "WHERE token_hash = ? AND token_type = ?",
+                (token_hash, RESET)).fetchone()
+            if row is None:
+                return None
+            token_id, account_id, expires_at, used_at = row
+            if used_at is not None:
+                return None
+            if now_iso >= expires_at:
+                return None
+            # 3. Independently resolve and revalidate the account.
+            acct = c.execute("SELECT status FROM accounts WHERE account_id = ?",
+                             (account_id,)).fetchone()
+            if acct is None or acct[0] != "active":
+                return None
+            # ---- eligibility established; every failure below is an invariant ----
+            # 4-5. Conditionally consume the EXACT submitted token; require 1 row.
+            cur = c.execute(
+                "UPDATE email_tokens SET used_at = ? "
+                "WHERE token_id = ? AND used_at IS NULL", (now_iso, token_id))
+            if cur.rowcount != 1:
+                raise AccountStoreInvariantError(
+                    "submitted reset-token UPDATE affected %d rows after eligibility "
+                    "passed, expected exactly 1" % (cur.rowcount,))
+            # 6. Update the exact account's password hash and timestamp; require 1.
+            cur = c.execute(
+                "UPDATE accounts SET password_hash = ?, updated_at = ? "
+                "WHERE account_id = ? AND status != 'deleted'",
+                (new_password_hash, now_iso, account_id))
+            if cur.rowcount != 1:
+                raise AccountStoreInvariantError(
+                    "password UPDATE affected %d rows after eligibility passed, "
+                    "expected exactly 1" % (cur.rowcount,))
+            # 7. Increment that account's epoch in SQL; require exactly 1 row.
+            cur = c.execute(
+                "UPDATE accounts SET session_epoch = session_epoch + 1, updated_at = ? "
+                "WHERE account_id = ?", (now_iso, account_id))
+            if cur.rowcount != 1:
+                raise AccountStoreInvariantError(
+                    "session_epoch UPDATE affected %d rows after eligibility passed, "
+                    "expected exactly 1" % (cur.rowcount,))
+            # 8. Supersede every OTHER still-active RESET token for that account.
+            c.execute(
+                "UPDATE email_tokens SET used_at = ? WHERE account_id = ? "
+                "AND token_type = ? AND used_at IS NULL AND token_id != ?",
+                (now_iso, account_id, RESET, token_id))
+            # 9. COMMIT is performed by _write(); 10. the caller receives the id
+            #    only because that COMMIT was confirmed.
+        return account_id
 
     def active_tokens(self, account_id: str, token_type: str) -> int:
         with self._read() as c:

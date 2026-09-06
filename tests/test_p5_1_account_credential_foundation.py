@@ -436,3 +436,285 @@ def test_register_page_language_switch_and_accessible(client):
     assert 'autocomplete="new-password"' in body
     assert 'for="email"' in body and 'for="password"' in body   # labelled inputs
     assert "required" in body
+
+
+# ===========================================================================
+# F-01/F-02 v2.1 — shared ``_write()`` transaction-owner hardening (D-02 Option A)
+# Contract §§9-10 and the §14 dependency-bounded shared-helper sweep.
+# ===========================================================================
+import sqlite3 as _sqlite3
+import threading as _threading
+
+from engine.account_store import (
+    AccountStoreCommitError, AccountStoreInvariantError,
+    AccountStoreConnectionUnsafeError, RESET,
+    DURABLE_CONFIRMED_UNCHANGED, DURABLE_INDETERMINATE,
+)
+
+
+class _ConnProxy:
+    """Test-only proxy over the real ``sqlite3.Connection``. ``sqlite3`` connection
+    objects reject attribute assignment, so failure injection replaces the store's
+    ``_conn`` reference instead. ``execute`` goes through the hook; every other
+    attribute — including ``in_transaction`` — forwards unchanged."""
+
+    def __init__(self, real, hook):
+        object.__setattr__(self, "_real_conn", real)
+        object.__setattr__(self, "_hook", hook)
+
+    def execute(self, sql, *args, **kwargs):
+        return object.__getattribute__(self, "_hook")(
+            object.__getattribute__(self, "_real_conn"), sql, *args, **kwargs)
+
+    def __getattr__(self, name):
+        return getattr(object.__getattribute__(self, "_real_conn"), name)
+
+
+def _patch_conn(monkeypatch, store, hook):
+    monkeypatch.setattr(store, "_conn", _ConnProxy(store._conn, hook))
+
+
+def _inject_exec(monkeypatch, store, prefixes, mode="raise"):
+    prefixes = tuple(p.upper() for p in prefixes)
+    state = {"hits": 0}
+
+    def hook(real, sql, *a, **k):
+        if sql.strip().upper().startswith(prefixes):
+            state["hits"] += 1
+            if mode == "commit_then_raise":
+                real.execute(sql, *a, **k)
+            raise _sqlite3.OperationalError("injected failure")
+        return real.execute(sql, *a, **k)
+    _patch_conn(monkeypatch, store, hook)
+    return state
+
+
+def _mk(store, email="w@example.com", status="active"):
+    aid = _acct.new_account_id()
+    store.create_account(aid, _acct.normalize_email(email),
+                         _acct.hash_password(VALID_PASSWORD),
+                         "2026-01-01T00:00:00.000000Z", status=status)
+    return aid
+
+
+def test_write_remains_the_single_transaction_owner(db_path):
+    """§10.1-2 — ``_write()`` acquires the lock, issues BEGIN IMMEDIATE and yields
+    the connection. No parallel F-02 transaction mechanism is introduced."""
+    store = SqliteAccountStore(db_path)
+    src = open(store.__class__.__module__.replace(".", "/") + ".py", encoding="utf-8").read()
+    assert src.count('execute("BEGIN IMMEDIATE")') == 2      # constructor + _write only
+    assert "def _write" in src
+    with store._write() as c:
+        assert store._conn.in_transaction is True
+        assert c is store._conn
+    assert store._conn.in_transaction is False
+
+
+def test_write_body_exception_rolls_back_and_propagates_original(db_path):
+    """§10.3 — a body exception rolls back where the transaction is still open and
+    propagates the ORIGINAL failure unchanged."""
+    store = SqliteAccountStore(db_path)
+    aid = _mk(store, "wbody@example.com")
+    sentinel = RuntimeError("original body failure")
+    with pytest.raises(RuntimeError) as ei:
+        with store._write() as c:
+            c.execute("UPDATE accounts SET session_epoch = 99 WHERE account_id = ?", (aid,))
+            raise sentinel
+    assert ei.value is sentinel                               # original, not wrapped
+    assert store._conn.in_transaction is False
+    assert store.get_account_by_id(aid)["session_epoch"] == 0  # rolled back
+
+
+def test_write_commit_exception_never_reports_success(db_path, monkeypatch):
+    """§10.4-5 — on a COMMIT exception the helper never reports success; it rolls
+    back while transactional and raises with the original failure preserved."""
+    store = SqliteAccountStore(db_path)
+    aid = _mk(store, "wcommit@example.com")
+    state = _inject_exec(monkeypatch, store, ["COMMIT"])
+    with pytest.raises(AccountStoreCommitError) as ei:
+        with store._write() as c:
+            c.execute("UPDATE accounts SET session_epoch = 99 WHERE account_id = ?", (aid,))
+    monkeypatch.undo()
+    assert ei.value.durable_outcome == DURABLE_CONFIRMED_UNCHANGED
+    assert isinstance(ei.value.original, Exception)
+    assert ei.value.__cause__ is ei.value.original
+    assert state["hits"] == 1                                  # no silent retry
+    assert store.get_account_by_id(aid)["session_epoch"] == 0
+
+
+def test_write_rollback_failure_retains_original_and_marks_unsafe(db_path, monkeypatch):
+    """§10.6 — when the defensive rollback also fails, the original failure is
+    retained, an operational failure propagates and the connection is treated as
+    unsafe for blind continuation."""
+    store = SqliteAccountStore(db_path)
+    aid = _mk(store, "wrbf@example.com")
+    _inject_exec(monkeypatch, store, ["COMMIT", "ROLLBACK"])
+    with pytest.raises(AccountStoreCommitError) as ei:
+        with store._write() as c:
+            c.execute("UPDATE accounts SET session_epoch = 99 WHERE account_id = ?", (aid,))
+    monkeypatch.undo()
+    assert ei.value.original is not None and ei.value.rollback_error is not None
+    assert ei.value.durable_outcome == DURABLE_INDETERMINATE
+    assert store._connection_unsafe is True
+    with pytest.raises(AccountStoreConnectionUnsafeError):     # no blind continuation
+        with store._write():
+            pass
+
+
+def test_write_does_not_silently_retry_any_statement(db_path, monkeypatch):
+    """§10.7 — no automatic retry of BEGIN, the body, COMMIT or ROLLBACK."""
+    store = SqliteAccountStore(db_path)
+    counts = {}
+
+    def counting(real, sql, *a, **k):
+        key = sql.strip().upper().split()[0]
+        counts[key] = counts.get(key, 0) + 1
+        if key == "COMMIT":
+            raise _sqlite3.OperationalError("injected")
+        return real.execute(sql, *a, **k)
+    _patch_conn(monkeypatch, store, counting)
+    with pytest.raises(AccountStoreCommitError):
+        with store._write() as c:
+            c.execute("SELECT 1")
+    monkeypatch.undo()
+    assert counts["BEGIN"] == 1 and counts["COMMIT"] == 1 and counts.get("ROLLBACK", 0) == 1
+
+
+def test_write_exposes_no_sensitive_database_detail_in_its_message(db_path, monkeypatch):
+    """§10.8 — the raised operational failure carries no schema/SQL/credential
+    detail of its own; the web boundary maps it to a generic response anyway."""
+    store = SqliteAccountStore(db_path)
+    _inject_exec(monkeypatch, store, ["COMMIT"])
+    with pytest.raises(AccountStoreCommitError) as ei:
+        with store._write() as c:
+            c.execute("SELECT 1")
+    monkeypatch.undo()
+    msg = str(ei.value)
+    for leak in ("accounts", "email_tokens", "password_hash", "SELECT", "UPDATE",
+                 "INSERT", store._path):
+        assert leak not in msg
+
+
+# --- §14 dependency-bounded shared-helper sweep ----------------------------
+def test_sweep_no_public_method_nests_a_second_write_transaction(db_path):
+    """§7/§14 — no reset path calls a public method that owns another ``_write()``
+    transaction, and no nested transaction is introduced anywhere."""
+    store = SqliteAccountStore(db_path)
+    depth = {"max": 0, "cur": 0}
+    real_write = SqliteAccountStore._write
+
+    import contextlib
+
+    @contextlib.contextmanager
+    def counting_write(self):
+        depth["cur"] += 1
+        depth["max"] = max(depth["max"], depth["cur"])
+        try:
+            with real_write(self) as c:
+                yield c
+        finally:
+            depth["cur"] -= 1
+
+    aid = _mk(store, "sweepnest@example.com")
+    raw = _acct.new_raw_token()
+    store.create_email_token(_acct.new_account_id(), aid, RESET, _acct.hash_token(raw),
+                             "2099-01-01T00:00:00.000000Z", "2026-01-01T00:00:00.000000Z")
+    try:
+        SqliteAccountStore._write = counting_write
+        assert store.complete_password_reset(_acct.hash_token(raw), "nh",
+                                             "2026-01-01T00:00:00.000000Z") == aid
+        depth["max"] = 0
+        store.increment_session_epoch(aid, "2026-01-01T00:00:01.000000Z")
+    finally:
+        SqliteAccountStore._write = real_write
+    assert depth["max"] == 1                       # never more than one open at a time
+
+
+def test_sweep_existing_write_callers_preserve_behaviour(db_path):
+    """§14 — registration, account status, email verification, token
+    issuance/consumption, rate-limit atomicity and commercial-assignment storage
+    all keep their existing behaviour on the hardened helper. No commercial
+    feature is activated."""
+    store = SqliteAccountStore(db_path)
+    now = "2026-01-01T00:00:00.000000Z"
+    aid = _mk(store, "sweepcallers@example.com")
+    assert store.get_account_by_id(aid)["status"] == "active"
+    with pytest.raises(EmailExistsError):
+        store.create_account(_acct.new_account_id(),
+                             _acct.normalize_email("sweepcallers@example.com"),
+                             "h", now)
+    assert store.set_password_hash(aid, "another-hash", now) == 1
+    assert store.mark_email_verified(aid, now) == 1
+    assert store.set_status(aid, "disabled", now) == 1
+    assert store.set_status(aid, "active", now) == 1
+    raw = _acct.new_raw_token()
+    store.create_email_token(_acct.new_account_id(), aid, VERIFICATION,
+                             _acct.hash_token(raw), "2099-01-01T00:00:00.000000Z", now)
+    assert store.consume_token(_acct.hash_token(raw), VERIFICATION, now) == aid
+    assert store.consume_token(_acct.hash_token(raw), VERIFICATION, now) is None  # replay
+    assert store.record_rate_attempt("subj", "login", now, "2099-01-01T00:00:00.000000Z", 3)
+    assert store.supersede_tokens(aid, RESET, now) == 0
+
+
+def test_sweep_no_caller_depends_on_suppressed_commit_failure(db_path, monkeypatch):
+    """§14 — no AccountStore caller may keep depending on a suppressed COMMIT
+    failure or continue on an unsafe connection: every write seam now surfaces it."""
+    store = SqliteAccountStore(db_path)
+    aid = _mk(store, "sweepsupp@example.com")
+    now = "2026-01-01T00:00:00.000000Z"
+    seams = [
+        lambda: store.set_password_hash(aid, "h2", now),
+        lambda: store.increment_session_epoch(aid, now),
+        lambda: store.mark_email_verified(aid, now),
+        lambda: store.set_status(aid, "disabled", now),
+        lambda: store.supersede_tokens(aid, RESET, now),
+    ]
+    for seam in seams:
+        state = _inject_exec(monkeypatch, store, ["COMMIT"])
+        with pytest.raises(AccountStoreCommitError):
+            seam()
+        assert state["hits"] == 1
+        monkeypatch.undo()
+
+
+def test_sweep_epoch_password_and_reset_token_callers_inspected(db_path):
+    """§14 — the epoch, password and reset-token callers are inspected together:
+    authentication validation input, deactivation, reset replay and concurrency
+    remain correct after the hardening."""
+    store = SqliteAccountStore(db_path)
+    now = "2026-01-01T00:00:00.000000Z"
+    aid = _mk(store, "sweepepoch@example.com")
+    assert store.get_account_by_id(aid)["session_epoch"] == 0
+    assert store.increment_session_epoch(aid, now) == 1        # login-validation input
+    store.set_status(aid, "disabled", now)                     # deactivation path
+    assert store.increment_session_epoch(aid, now) == 2        # still exactly +1
+    store.set_status(aid, "active", now)
+    raw = _acct.new_raw_token()
+    store.create_email_token(_acct.new_account_id(), aid, RESET, _acct.hash_token(raw),
+                             "2099-01-01T00:00:00.000000Z", now)
+    assert store.complete_password_reset(_acct.hash_token(raw), "nh", now) == aid
+    assert store.complete_password_reset(_acct.hash_token(raw), "nh2", now) is None  # replay
+    assert store.get_account_by_id(aid)["session_epoch"] == 3
+
+
+def test_sweep_concurrent_writers_still_serialised_after_hardening(db_path):
+    """§14 / P5-2-PRE-02 — the hardened helper keeps real concurrent writers
+    serialised with no lost update and no thread-affinity error."""
+    store = SqliteAccountStore(db_path)
+    aid = _mk(store, "sweepconc@example.com")
+    errors = []
+
+    def bump():
+        try:
+            for _ in range(10):
+                store.increment_session_epoch(aid, "2026-01-01T00:00:00.000000Z")
+        except Exception as exc:                    # pragma: no cover - failure path
+            errors.append(exc)
+
+    threads = [_threading.Thread(target=bump) for _ in range(4)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join(60)
+    assert errors == []
+    assert store.get_account_by_id(aid)["session_epoch"] == 40   # no lost updates

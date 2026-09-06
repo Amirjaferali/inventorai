@@ -82,6 +82,10 @@ from engine import read_export_service as _read_export
 # authenticated session / project ownership here (those are P5-2 / P5-3).
 from engine.account_store import (
     SqliteAccountStore, EmailExistsError, VERIFICATION, RESET,
+    # F-01/F-02 v2.1 (Contract §§2-3, 8-10): the COMMIT-phase failure class must be
+    # distinguishable at the web boundary so the two D-04 durable-outcome branches
+    # are never conflated. Both still return the SAME generic 503 body.
+    AccountStoreCommitError,
 )
 from engine import account_credentials as _acct
 from engine import auth_session as _auth
@@ -1928,7 +1932,27 @@ def logout():
 @app.route("/logout-all", methods=["POST"])
 def logout_all():
     """Revoke EVERY authenticated session for the account by incrementing
-    ``session_epoch`` (this cookie's epoch becomes stale too). CSRF-protected."""
+    ``session_epoch`` (this cookie's epoch becomes stale too). CSRF-protected.
+
+    F-01 (Contract v2.1 §§2-3). The store's exact UPDATE row-count proof plus a
+    confirmed COMMIT is the ONLY success guard; the absence of an exception is
+    not. The session is cleared and the login redirect returned ONLY on that
+    unambiguous successful store result — never after a suppressed persistence
+    failure. No epoch previously read by this route is used as the guard.
+
+    Every operational failure returns a generic, non-disclosing HTTP 503 with no
+    logout-all success claim and no login-success redirect. In BOTH D-04 branches
+    the local browser-session material is left alone:
+
+      * confirmed rollback before durable commit — the current session, its CSRF
+        and its UI-language state are untouched and remain authenticated;
+      * COMMIT exception with a committed or indeterminate durable outcome — this
+        handler still does not deliberately clear or rewrite local material, but
+        continued authentication is NOT promised: the next ordinary server-side
+        epoch validation decides, and it may legitimately reject the session.
+
+    Neither branch retries automatically.
+    """
     account = _current_account()
     if not account:
         return redirect(url_for("login_form"))
@@ -1936,8 +1960,15 @@ def logout_all():
         return _csrf_reject()
     try:
         _get_account_store().increment_session_epoch(account["account_id"], _iso(_utc_now()))
+    except AccountStoreCommitError:
+        # D-04 branch B: confirmed-committed or indeterminate durable state.
+        # Preserve local material; promise nothing about continued authentication.
+        return app.response_class(status=503)
     except Exception:
-        pass
+        # D-04 branch A plus every other pre-COMMIT operational/invariant failure
+        # (including a non-1 epoch row count): confirmed rolled back, so session
+        # material, CSRF and language state are preserved and still valid.
+        return app.response_class(status=503)
     _ui_lang = flask_session.get("ui_lang")   # D-P6-18: preserve UI-language choice
     flask_session.clear()
     if _ui_lang == "ar":
@@ -2025,11 +2056,22 @@ def reset_form(token):
 
 @app.route("/reset/<token>", methods=["POST"])
 def reset_submit(token):
-    """Complete a password reset. Validate the new password (P5-1 policy), then
-    atomically consume the reset token (type reset; unused; unexpired; active
-    account), scrypt-hash and store the new password, INCREMENT ``session_epoch``
-    (revoking every existing authenticated session), and supersede any other
-    reset tokens. Does NOT auto-sign-in. Invalid/expired/used → generic failure."""
+    """Complete a password reset in the two governed stages (F-02, Contract
+    v2.1 §§5-9).
+
+    Order: existing P5-1 password-policy and confirmation validation → read-only
+    Stage A eligibility precheck → scrypt hashing, only after an eligible
+    precheck and outside the writer transaction → one authoritative Stage B
+    transaction that independently revalidates everything and then consumes the
+    submitted token, replaces the password, increments ``session_epoch``
+    (revoking every existing authenticated session) and supersedes the account's
+    other active reset tokens, committing all of it together or not at all.
+
+    Does NOT auto-sign-in. Ordinary ineligibility — invalid, expired, replayed,
+    wrong-type, ineligible account, or losing a normal same-token race — returns
+    the SAME generic 400. Operational and invariant failures return a generic 503
+    and never a success claim.
+    """
     password = request.form.get("password", "")
     confirm = request.form.get("password_confirm", "")
     ok, _reason = _acct.validate_password(password)
@@ -2040,17 +2082,50 @@ def reset_submit(token):
         return _token_bearing(render_template(
             "reset.html", form_error="password_mismatch", done=False), 400)
     now = _utc_now()
-    account_id = None
+    now_iso = _iso(now)
+    store = _get_account_store()
+    token_hash = _acct.hash_token(token)
+
+    # STAGE A (Contract §5) — read-only eligibility guard. Nothing is mutated and
+    # no token is reserved. Ordinary ineligibility and operational failure are
+    # kept apart, and neither discloses which condition failed.
     try:
-        store = _get_account_store()
-        account_id = store.consume_token(_acct.hash_token(token), RESET, _iso(now))
-        if account_id:
-            store.set_password_hash(account_id, _acct.hash_password(password), _iso(now))
-            store.increment_session_epoch(account_id, _iso(now))
-            store.supersede_tokens(account_id, RESET, _iso(now))
+        eligible = store.password_reset_eligible(token_hash, now_iso)
     except Exception:
-        account_id = None
+        # Operational precheck failure: no hashing, zero intentional mutation, no
+        # deliberate session clearing, generic 503.
+        return app.response_class(status=503)
+    if not eligible:
+        # Every ordinary ineligibility class — nonexistent, expired, replayed,
+        # wrong-type, missing or non-active account — shares this generic 400 and
+        # never invokes the expensive password hash.
+        return _token_bearing(render_template(
+            "reset.html", form_error="token_invalid", done=False), 400)
+
+    # Hashing runs ONLY after an eligible Stage A, and strictly outside _write() /
+    # BEGIN IMMEDIATE, so the SQLite writer lock is never held across it
+    # (Contract §6).
+    try:
+        new_password_hash = _acct.hash_password(password)
+    except Exception:
+        return app.response_class(status=503)
+
+    # STAGE B (Contract §§7-9) — the ONE authoritative transaction. Stage A's True
+    # is NOT carried in: the store independently revalidates every token and
+    # account condition before any mutation, so a token invalidated during hashing
+    # is caught here.
+    try:
+        account_id = store.complete_password_reset(token_hash, new_password_hash, now_iso)
+    except Exception:
+        # Invariant/operational failure, including a post-eligibility row count
+        # other than one and any COMMIT-phase failure: complete rollback where the
+        # transaction was still open, no success claim, no deliberate session
+        # clearing, generic 503. Never normalized into the concurrent-loser branch.
+        return app.response_class(status=503)
     if not account_id:
+        # D-05 branch A: initial in-transaction revalidation found the input
+        # already used, expired, superseded or ineligible BEFORE any mutation —
+        # the ordinary concurrent loser. Zero mutation by this request.
         return _token_bearing(render_template(
             "reset.html", form_error="token_invalid", done=False), 400)
     _ui_lang = flask_session.get("ui_lang")   # D-P6-18: preserve UI-language choice
