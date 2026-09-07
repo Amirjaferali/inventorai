@@ -9,6 +9,7 @@ section_4_requirements data key, the REQ-00N item ids, and the EV references are
 all unchanged.
 """
 import os, sys, uuid
+import re
 import pytest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -67,7 +68,7 @@ def test_group_lede_no_longer_leads_with_requirements():
 
 def test_friendly_group_heading_unchanged():
     _, body = _render(_state())
-    assert "<h2>What it needs</h2>" in body
+    assert len(re.findall(r"<h2\b[^>]*>What it needs</h2>", body)) == 1
 
 
 # --- data / IDs / references unchanged (presentation-only) -------------------

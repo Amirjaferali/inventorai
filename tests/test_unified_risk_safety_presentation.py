@@ -123,7 +123,7 @@ def _collapse(text):
 def _s6_region(html):
     """The rendered Section 6 region: from the 'What could go wrong' heading
     to the next section heading."""
-    m = re.search(r"<h2>What could go wrong</h2>(.*?)</section>", html, re.S)
+    m = re.search(r"<h2\b[^>]*>What could go wrong</h2>(.*?)</section>", html, re.S)
     assert m, "fixture defect: Section 6 region not found in deliverable HTML"
     return m.group(1)
 

@@ -1251,6 +1251,8 @@ UI_STRINGS = {
     "UI_B_DELIV_017": {"en": "Source:", "ar": "المصدر:"},
     "UI_B_DELIV_018": {"en": "Provenance:", "ar": "المنشأ:"},
     "UI_B_DELIV_019": {"en": "Validation:", "ar": "التحقق:"},
+    "UI_REPORT_CONTENTS": {"en": "Report contents", "ar": "محتويات التقرير"},
+    "UI_REPORT_BACK_CONTENTS": {"en": "Back to contents", "ar": "العودة إلى المحتويات"},
     "UI_B_DELIV_020": {"en": "What your idea is", "ar": "ما هي فكرتك"},
     "UI_B_DELIV_021": {
         "en": ("A plain restatement of the invention as we currently understand "
