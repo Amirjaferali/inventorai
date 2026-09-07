@@ -7,6 +7,7 @@ priority labels, no new claim. When `risk_if_invalid` is absent/empty nothing is
 fabricated. Sections 10/11/13 and the EV/UNK registries are untouched.
 """
 import os, sys, uuid
+import re
 import pytest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -47,11 +48,12 @@ def _render(state):
 
 
 def _section5(body):
-    """The rendered Section 5 slice (assumptions/unknowns group)."""
-    i = body.find("What is assumed")
-    j = body.find("What could go wrong")
-    assert i >= 0 and j > i
-    return body[i:j]
+    """The actual assumptions/unknowns section, not its repeated contents label."""
+    sections = re.findall(
+        r"<h2\b[^>]*>What is assumed vs still unknown</h2>(.*?)</section>",
+        body, re.S)
+    assert len(sections) == 1
+    return sections[0]
 
 
 # --- present case -----------------------------------------------------------
