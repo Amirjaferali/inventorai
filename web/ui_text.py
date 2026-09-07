@@ -1119,6 +1119,22 @@ UI_STRINGS = {
     "UI_RVR5_CORRECT_NEW": {
         "en": "Your corrected answer",
         "ar": "إجابتك المصحَّحة"},
+    "UI_CORRECTION_PREVIEW_HEADING": {
+        "en": "Selected recorded answer",
+        "ar": "الإجابة المسجَّلة المحددة"},
+    "UI_CORRECTION_PREVIEW_HELP": {
+        "en": ("Read the full recorded answer before correcting it. This is your "
+               "answer in this loaded view, not a verified fact. You can also "
+               "expand all eligible recorded answers below."),
+        "ar": ("اقرأ الإجابة المسجَّلة كاملة قبل تصحيحها. هذه إجابتك في الصفحة "
+               "المحمَّلة، وليست حقيقة متحقَّقًا منها. يمكنك أيضًا توسيع قائمة "
+               "الإجابات المسجَّلة المتاحة للتصحيح أدناه.")},
+    "UI_CORRECTION_PREVIEW_ALL": {
+        "en": "Read full recorded answers available for correction",
+        "ar": "قراءة الإجابات المسجَّلة الكاملة المتاحة للتصحيح"},
+    "UI_CORRECTION_PREVIEW_UPDATED": {
+        "en": "Recorded-answer preview updated: {reference}.",
+        "ar": "تم تحديث معاينة الإجابة المسجَّلة: {reference}."},
     "UI_RVR5_CORRECT_BUTTON": {
         "en": "Withdraw and replace this answer",
         "ar": "سحب هذه الإجابة واستبدالها"},

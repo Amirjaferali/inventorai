@@ -43,8 +43,8 @@ def _page(c, sid):
 def _token(page):
     return html.unescape(re.search(r'name="answer_token" value="([^"]+)"', page).group(1))
 
-def _answer_once(c, sid):
-    c.post(f"/session/{sid}", data={"response": ANSWER,
+def _answer_once(c, sid, answer=ANSWER):
+    c.post(f"/session/{sid}", data={"response": answer,
                                     "answer_token": _token(_page(c, sid)),
                                     "action": "answered"})
 
@@ -130,3 +130,112 @@ def test_route_semantics_untouched_forged_token_still_fails_closed(client):
     state = appmod.SESSION_STORE[sid]["state"]
     assert all(getattr(x, "superseded_by", None) is None
                for x in state.assertions)
+
+
+def _preview_records(page):
+    from html.parser import HTMLParser
+
+    class Records(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.records, self.current, self.field = {}, None, None
+
+        def handle_starttag(self, tag, attrs):
+            attrs = dict(attrs)
+            if 'data-correction-record' in attrs:
+                self.current = attrs['data-correction-record']
+                self.records[self.current] = {}
+            if self.current:
+                for field in ('reference', 'context', 'content'):
+                    if 'data-record-' + field in attrs:
+                        self.field = field
+                        self.records[self.current][field] = ''
+
+        def handle_data(self, value):
+            if self.current and self.field:
+                self.records[self.current][self.field] += value
+
+        def handle_endtag(self, tag):
+            if tag in ('bdi', 'span', 'p'):
+                self.field = None
+            if tag == 'div':
+                self.current = None
+
+    parsed = Records()
+    parsed.feed(page)
+    return parsed.records
+
+
+@pytest.mark.parametrize('lang', ['en', 'ar'])
+def test_full_preview_is_verbatim_and_uses_exact_selector_eligibility(client, lang):
+    c, appmod = client
+    c.post('/ui-language', data={'lang': lang, 'next': '/'})
+    sid = _start(c)
+    assert 'correction-preview.js' not in _page(c, sid)
+    texts = [ANSWER + '\n  نص عربي EN & <img src=x onerror="alert(1)">\n' + 'x' * 800,
+             ANSWER + '\n  Different tail إجابة أخرى']
+    for value in texts:
+        _answer_once(c, sid, value)
+    state = appmod.SESSION_STORE[sid]['state']
+    before = [r.record_id for r in state.assertions]
+    page = _page(c, sid)
+    records = _preview_records(page)
+    active = [r for r in state.assertions if r.disposition == 'answered' and r.superseded_by is None]
+    assert len(active) == 2 and texts[0][:70] == texts[1][:70]
+    assert list(records) == [r.record_id for r in active]
+    for record in active:
+        assert records[record.record_id]['content'] == record.content
+        assert records[record.record_id]['reference'] == record.record_id
+        assert records[record.record_id]['context']
+        assert f'<option value="{record.record_id}">' in page
+    assert '&lt;img' in page and '<img src=x' not in page
+    assert [r.record_id for r in state.assertions] == before
+    assert 'name="supersedes_record_id" required' in page
+    assert 'name="response" rows="3" required' in page
+    assert 'name="csrf_token"' in page and 'name="answer_token"' in page
+
+
+def test_preview_excludes_withdrawn_and_nonanswer_records(client):
+    c, appmod = client
+    sid = _start(c)
+    _answer_once(c, sid)
+    first = next(iter(_preview_records(_page(c, sid))))
+    c.post(f'/session/{sid}/correct', data={
+        'supersedes_record_id': first, 'response': CORRECTED,
+        'answer_token': _token(_page(c, sid))})
+    c.post(f'/session/{sid}', data={
+        'action': 'unknown', 'response': 'Not yet known',
+        'answer_token': _token(_page(c, sid))})
+    records = _preview_records(_page(c, sid))
+    assert first not in records and len(records) == 1
+    assert next(iter(records.values()))['content'] == CORRECTED
+    assert all(r.disposition == 'answered' and r.superseded_by is None
+               for r in appmod.SESSION_STORE[sid]['state'].assertions if r.record_id in records)
+
+
+@pytest.mark.parametrize('lang', ['en', 'ar'])
+def test_preview_owned_isolation_and_cold_resume(client, lang):
+    from tests.test_p5_3_project_ownership_authorization import _client_for
+    _, appmod = client
+    owner = _client_for('preview-owner@example.com')
+    other = _client_for('preview-other@example.com')
+    owner.post('/ui-language', data={'lang': lang, 'next': '/'})
+    sid = _start(owner)
+    secret = ANSWER + ' CONFIDENTIAL-OWNER-ANSWER'
+    _answer_once(owner, sid, secret)
+    other_sid = _start(other)
+    _answer_once(other, other_sid, ANSWER + ' OTHER-PROJECT-ANSWER')
+    page = _page(owner, sid)
+    assert secret in page and 'OTHER-PROJECT-ANSWER' not in page
+    denied = other.get(f'/session/{sid}')
+    assert denied.status_code == 302 and denied.headers['Location'].endswith('/')
+    assert secret not in denied.get_data(as_text=True)
+    assert _preview_records(denied.get_data(as_text=True)) == {}
+    assert secret not in _page(other, other_sid)
+    appmod.SESSION_STORE.pop(sid)
+    cold = _page(owner, sid)
+    assert 'id="resume-project"' in cold
+    assert _preview_records(cold) == {} and 'correction-preview.js' not in cold
+    owner.post(f'/session/{sid}/resume', data={})
+    resumed = _preview_records(_page(owner, sid))
+    assert len(resumed) == 1 and next(iter(resumed.values()))['content'] == secret
