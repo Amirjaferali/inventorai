@@ -37,6 +37,10 @@
     saving: { en: "Saving locally…", ar: "جارٍ الحفظ محليًا…" },
     saveFail: { en: "Could not save a draft on this device", ar: "تعذّر حفظ مسودة على هذا الجهاز" },
     found: { en: "Unsent text was found on this device.", ar: "تم العثور على نص غير مرسل محفوظ على هذا الجهاز." },
+    preview: {
+      en: "Preview unsent text stored on this device",
+      ar: "معاينة النص غير المرسل المحفوظ على هذا الجهاز"
+    },
     restore: { en: "Restore", ar: "استعادة" },
     discard: { en: "Discard", ar: "حذف" },
     restored: { en: "Draft restored", ar: "تمت استعادة المسودة" },
@@ -181,6 +185,25 @@
     box.appendChild(msg);
     box.appendChild(restore);
     box.appendChild(discard);
+    // Use the same already-validated offer captured by Restore. Native details
+    // toggling performs no storage access and makes no cross-tab freshness claim.
+    var preview = document.createElement("details");
+    preview.className = "draft-preview";
+    preview.lang = lang();
+    preview.dir = lang() === "ar" ? "rtl" : "ltr";
+    preview.style.cssText = "margin-top:8px;min-width:0";
+    var summary = document.createElement("summary");
+    summary.textContent = t(STR.preview);
+    summary.style.cssText = "cursor:pointer;padding:10px 0;overflow-wrap:anywhere";
+    var content = document.createElement("div");
+    content.className = "draft-preview-text";
+    content.dir = "auto";
+    content.textContent = draft.text;
+    content.style.cssText = "white-space:pre-wrap;overflow-wrap:anywhere;" +
+      "line-height:1.6;margin-top:8px";
+    preview.appendChild(summary);
+    preview.appendChild(content);
+    box.appendChild(preview);
     el.parentNode.insertBefore(box, el);
   }
 
