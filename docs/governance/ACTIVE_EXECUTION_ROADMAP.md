@@ -1,14 +1,64 @@
 # ACTIVE EXECUTION ROADMAP
 # Single source of execution continuity across agent changes
 
-**Current execution routing:** ACTIVE_INCREMENT_CONTRACT.md owns the ACTIVE
-ASTRA MILESTONE 2 / bounded A1 saved-project and recovery mandate; CURRENT_PROJECT_STATE.md is
-the concise entry. Lean §2 owns milestone authority, risk/review live in Lean §§3–5B,
+**Current execution routing:** [ACTIVE_INCREMENT_CONTRACT.md](ACTIVE_INCREMENT_CONTRACT.md)
+owns the bounded source-of-truth documentation sync only; the PR #625 product
+milestone is **CLOSED**. The operating-automation build is **PLANNED — NOT ACTIVE**.
+[CURRENT_PROJECT_STATE.md](CURRENT_PROJECT_STATE.md) is the concise current entry.
+Lean §2 owns milestone authority, risk/review live in Lean §§3–5B,
 and AHAEP owns delivery mechanics. The appended entries and accumulated former current
 state/lane tables are historical evidence at their recorded time, not competing live
 declarations or universal separate-approval rules. Substantive decisions and unfulfilled
 return gates remain with their existing owners. Use §§10–11 below for current reading
 and recording mechanics. No completed F-01/F-02 or OSP lifecycle is reopened.
+
+## PR #625 verified product closure and recent increments
+
+**Source and status:** the Owner's current-chat "OWNER MERGE AUTHORIZATION — PR #625"
+and "OWNER AUTHORIZATION — BOUNDED SOURCE-OF-TRUTH DOCUMENTATION SYNC", corroborated by
+live GitHub PR/branch state and local Git objects on 2026-09-08 (Asia/Riyadh).
+PR #625 is **MERGED / POST-MERGE VERIFIED / PRODUCT MILESTONE CLOSED**.
+
+| Exact identity | Value |
+|---|---|
+| Authoritative branch | `feature/atomic-json-session-persistence` |
+| Verified tip / documentation baseline | `ab5915e68851b25e46d5742ec49877b50eebee5c` |
+| Ordered merge parent 1 | `a3cabab7b44feb35f5d2ac9a76e172ac48814fa6` |
+| Ordered merge parent 2 / reviewed head | `a54a897a4af381801c1579edd04da7ac2cbd24a5` |
+| Reviewed head's sole parent | `6c09cfa104ed27082ea20a0701947f41ab6c6b94` |
+| Merge tree = reviewed candidate tree | `04c25394547558e82a6bf379671d7eca2c64155d` |
+| Candidate-to-merge diff | Empty; no additional content |
+| Merge method / GitHub merged time | CREATE A MERGE COMMIT / `2026-09-07T22:10:35Z` |
+
+Evidence: [PR #625](https://github.com/Amirjaferali/inventorai/pull/625),
+[merge object](https://github.com/Amirjaferali/inventorai/commit/ab5915e68851b25e46d5742ec49877b50eebee5c),
+[candidate-to-merge comparison](https://github.com/Amirjaferali/inventorai/compare/a54a897a4af381801c1579edd04da7ac2cbd24a5...ab5915e68851b25e46d5742ec49877b50eebee5c).
+Required GitHub Actions `CI required` and `Verify candidate` succeeded on the reviewed
+head ([run 34164525788](https://github.com/Amirjaferali/inventorai/actions/runs/34164525788)).
+Cloud's **PASS WITH NON-BLOCKING OBSERVATIONS** was accepted by the Owner. Continuing
+branch protection and `CI required` enforcement were verified after merge; this entry
+records that evidence without changing settings or rerunning completed product evidence.
+
+Recent integrated product work, in order (historical completion, not live mandates):
+
+| PR | User-facing increment | Merge commit |
+|---|---|---|
+| [#620](https://github.com/Amirjaferali/inventorai/pull/620) | A1 saved-project orientation and recovery, including bounded P2 correction | `964a1c50c3880519c1e31968466b46098d816c9e` |
+| [#621](https://github.com/Amirjaferali/inventorai/pull/621) | Browser-local literal saved-project filtering; reopen/export preserved | `535f35c557724642fc8026a568dde80c54cbbf01` |
+| [#622](https://github.com/Amirjaferali/inventorai/pull/622) | Full recorded-answer preview before correction | `83beedd6dbbd9bbc88e6937514b68946b3311cf7` |
+| [#623](https://github.com/Amirjaferali/inventorai/pull/623) | Native bilingual report contents and return navigation | `9882266bd580d4544482d107d8ecd5149e54702f` |
+| [#624](https://github.com/Amirjaferali/inventorai/pull/624) | Optional collapsed preview of the validated unsent local draft | `a3cabab7b44feb35f5d2ac9a76e172ac48814fa6` |
+| [#625](https://github.com/Amirjaferali/inventorai/pull/625) | Experiment context disclosure; stable-identity native criterion navigation; bilingual limit/Save/clear guidance | `ab5915e68851b25e46d5742ec49877b50eebee5c` |
+
+PR #625's bounded repair uses opaque deterministic navigation targets while preserving
+canonical experiment identity and form payloads; the existing rendering test was not
+weakened or modified. Its six-file product scope is closed. No observation is treated
+as repaired by merging or by this sync; see
+[preserved state and boundaries](CURRENT_PROJECT_STATE.md#preserved-state-and-boundaries).
+All gates and deferred obligations retain their owners and conditions. The historical
+entries below are preserved; their old "current", "next" and STOP declarations do not
+override the active contract. This recorded baseline remains historical evidence when
+live Git advances; it requires no recursive SHA-only sync after a later docs merge.
 
 ## 1. Purpose of this document
 
@@ -17,7 +67,8 @@ matter to the assigned work; current lane and next action come from the active
 authority surface and current-state entry. Current explicit Owner instructions take effect under
 Lean §2; record successor-relevant authority concisely in the active authority surface.
 This roadmap is execution continuity evidence — product
-meaning lives in `DUAL_PATH_PRODUCT_ANCHOR.md` (`60c809b`);
+meaning remains with the existing substantive owners; `DUAL_PATH_PRODUCT_ANCHOR.md`
+is a historical consolidation with current routing at its top;
 epistemic rules live in `ILT-002_GOVERNANCE_ANCHOR.md`.
 
 ## 2. What the application is
@@ -37,7 +88,8 @@ Path T serves technical questioning contexts. The platform
 preserves gaps and known-unknowns; it never falsely solves or
 hides them.
 
-## 4. Current official state
+<a id="4-current-official-state"></a>
+## 4. Historical official-state snapshots — not current execution authority
 
 | Item | State |
 |------|-------|

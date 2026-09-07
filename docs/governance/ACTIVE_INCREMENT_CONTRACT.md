@@ -23,7 +23,57 @@ Git/GitHub own transient candidate, PR and merge identity. No acceptance/merge t
 self-SHA or lifecycle-label change creates a synchronization candidate. When no mandate
 exists, state ACTIVE CONTRACT: NONE; historical declarations never fill the gap.
 
-## Current authority — bounded saved-project filter
+## Current authority — bounded source-of-truth documentation sync only
+
+**Owner source:** current-chat "OWNER AUTHORIZATION — BOUNDED SOURCE-OF-TRUTH
+DOCUMENTATION SYNC", received after the verified PR #625 merge. This records that
+instruction; it creates no new Owner decision or operating protocol.
+
+**Product milestone: CLOSED.** PR #625 is merged and post-merge verified at
+`ab5915e68851b25e46d5742ec49877b50eebee5c`, tree
+`04c25394547558e82a6bf379671d7eca2c64155d`, on
+`feature/atomic-json-session-persistence`. The reviewed candidate has the same tree
+and an empty candidate-to-merge diff. Exact evidence and recent product increments
+are recorded in [the roadmap's PR #625 closure entry](ACTIVE_EXECUTION_ROADMAP.md#pr-625-verified-product-closure-and-recent-increments).
+This is the documentation baseline, not a permanent live-tip claim.
+
+**Only current work:** one bounded documentation change set recording the closed
+product milestone, current authority and historical/superseded routing. The future
+operating-automation build is **PLANNED — NOT ACTIVE** under this synchronization;
+its implementation requires a separate Owner authorization. No product mandate
+continues from A1, the saved-project filter or the completed PR #625 milestone.
+
+**Exact file boundary:** only these six existing files may change:
+
+- `docs/governance/CURRENT_PROJECT_STATE.md`
+- `docs/governance/ACTIVE_INCREMENT_CONTRACT.md`
+- `docs/governance/ACTIVE_EXECUTION_ROADMAP.md`
+- `docs/governance/PATH_N_CURRENT_EXECUTION_ANCHOR.md`
+- `docs/governance/DUAL_PATH_PRODUCT_ANCHOR.md`
+- `docs/governance/MASTER-HANDOVER.md`
+
+Prepare one local documentation branch/commit and one exact candidate for independent
+review. Return identity, changed paths, before/after authority, scope proof and
+targeted documentation validation. This mandate ends at that return; no successor
+work is implied. No publication or PR action is inferred for this local preparation;
+merge is not authorized. Do not alter PR #625, reopen closed work, create a competing
+source of truth, or modify product code, tests, routes, APIs, persistence, dependencies,
+workflows or deployment configuration. No automation implementation, deployment or
+new product scope. Stop for a material authority conflict requiring a new Owner decision.
+
+**Preservation:** all existing gates, deferred obligations, unresolved issues and
+non-blocking observations keep their status, owner and return conditions. The
+[current-state entry](CURRENT_PROJECT_STATE.md#preserved-state-and-boundaries) records
+the carry-forward boundaries; this sync does not adjudicate, repair or close them.
+Read only relevant current sections and latest Git evidence; no unrestricted history
+reconstruction. Existing Lean/AHAEP safeguards remain applicable, with one independent
+review of this exact documentation candidate and no unrelated runtime reruns by default.
+
+## Historical authority — bounded saved-project filter (PR #621 merged)
+
+The following task-scoped declaration is consumed, including its historical
+"Merge is not authorized" statement. PR #621 was subsequently Owner-authorized and
+merged; it does not authorize current implementation. See the roadmap closure entry.
 
 **Owner source:** current-chat "OWNER AUTHORIZATION — BOUNDED SAVED-PROJECT FILTER
 IMPLEMENTATION". Implement browser-local literal filtering of displayed project

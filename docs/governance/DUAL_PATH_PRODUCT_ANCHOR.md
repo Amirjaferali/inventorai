@@ -1,6 +1,20 @@
 # DUAL PATH PRODUCT ANCHOR
 # Consolidation of committed dual-path product interpretation
 
+> **STATUS: HISTORICAL PRODUCT CONSOLIDATION — NOT CURRENT EXECUTION AUTHORITY.**
+> The product distinctions and substantive source boundaries below are preserved;
+> its old execution-state references are superseded for current routing. Read
+> [CURRENT_PROJECT_STATE.md](CURRENT_PROJECT_STATE.md), then the current mandate in
+> [ACTIVE_INCREMENT_CONTRACT.md](ACTIVE_INCREMENT_CONTRACT.md). PR #625's product
+> milestone is closed; only the bounded documentation sync is currently authorized.
+> The operating-automation build is planned, not active under this sync. Recent
+> integrations are recorded in [the roadmap closure entry](ACTIVE_EXECUTION_ROADMAP.md#pr-625-verified-product-closure-and-recent-increments).
+> For the accepted North Star and deferred integrated readiness direction, consult
+> [INVENTORAI_COMMERCIAL_DIFFERENTIATION_DIRECTION.md §16.G](INVENTORAI_COMMERCIAL_DIFFERENTIATION_DIRECTION.md)
+> and [INVENTORAI_CAPABILITY_ENRICHMENT_REGISTER.md](INVENTORAI_CAPABILITY_ENRICHMENT_REGISTER.md).
+> These existing owners are not replaced: FDC-001 / DecisionRecord remains canonical;
+> no capability, runtime readiness engine or new decision authority is activated.
+
 ## 1. Status and nature of this document
 
 - DUAL PATH PRODUCT ANCHOR

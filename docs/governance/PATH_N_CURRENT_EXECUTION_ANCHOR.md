@@ -1,5 +1,15 @@
 # PATH N CURRENT EXECUTION ANCHOR
 
+> **CURRENT ROUTING — NOT AN ACTIVE EXECUTION ANCHOR.** Read
+> [CURRENT_PROJECT_STATE.md](CURRENT_PROJECT_STATE.md) for current status and
+> [ACTIVE_INCREMENT_CONTRACT.md](ACTIVE_INCREMENT_CONTRACT.md) for the only current
+> mandate: bounded documentation sync after the closed PR #625 product milestone.
+> [The roadmap closure entry](ACTIVE_EXECUTION_ROADMAP.md#pr-625-verified-product-closure-and-recent-increments)
+> owns recent merge evidence. Operating automation is planned, not active here.
+> The body's old boot order, execution status and permissions are historical;
+> CLAUDE.md owns the single boot sequence under current Lean authority. No existing
+> substantive Path N, evidence or gate boundary is changed by this routing notice.
+
 > **STATUS: HISTORICAL / SUPERSEDED (Phase 2 Increment 1).** This document is
 > historical and must not be treated as current authority for `runtime_integrated`.
 > Its statements `runtime_integrated=false` and "No Path N content loader has been
