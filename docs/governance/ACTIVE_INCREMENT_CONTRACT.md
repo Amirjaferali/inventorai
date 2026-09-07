@@ -23,7 +23,30 @@ Git/GitHub own transient candidate, PR and merge identity. No acceptance/merge t
 self-SHA or lifecycle-label change creates a synchronization candidate. When no mandate
 exists, state ACTIVE CONTRACT: NONE; historical declarations never fill the gap.
 
-## Current authority — ASTRA MILESTONE 2 / A1
+## Current authority — bounded saved-project filter
+
+**Owner source:** current-chat "OWNER AUTHORIZATION — BOUNDED SAVED-PROJECT FILTER
+IMPLEMENTATION". Implement browser-local literal filtering of displayed project
+description excerpts and IDs, optional existing-domain-label filtering, counts,
+clear/reset and truthful empty/unavailable/no-match states. Preserve EN/AR, RTL,
+keyboard/mobile accessibility, existing reopen/export links and the complete
+no-JavaScript list. No filter-generated network requests, storage writes, semantic
+interpretation or HTML interpretation of search text.
+
+**Bounded delivery:** account template, UI localization, new filter JavaScript and
+focused filter tests only, plus this required mandate entry under Lean §11. One
+branch/PR; focused unit/browser and adjacent A1/ownership/export/security checks,
+required repository regression and hosted CI. Return exact candidate identity,
+paths, evidence and deviations; obtain separate non-authoring Cloud review of the
+ready exact candidate. **Merge is not authorized.** This records the Owner's scope;
+it changes no governance ownership, security policy, DecisionRecord or active gate.
+
+No full-content/semantic search, ranking, generated titles, new metadata, endpoints,
+persistence, analytics, external requests or dependencies. No G-4-A, CEHR, HICR,
+PRE-FCORA/FCORA, human activity, IoT/drones/renewable-energy work, Commercial Readiness
+runtime, CAD/PCB, deployment or release work. No successor work follows this return.
+
+## Historical authority — ASTRA MILESTONE 2 / A1
 
 **Owner source:** ASTRA-M2-A1-PRODUCT-FIRST-SAVED-JOURNEY-DELIVER-01 v1.0.
 The Owner accepted the completed, corrected Milestone 1 strategic decision package
