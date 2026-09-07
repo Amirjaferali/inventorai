@@ -171,8 +171,9 @@ def test_live_page_unchanged(client):
     SESSION_STORE.pop(sid, None)
 
 
-def test_reconstruction_failure_fails_closed_to_prior_page(client, monkeypatch):
+def test_reconstruction_failure_fails_closed_to_readonly_recovery(client, monkeypatch):
     sid, _, _ = _journey(client)
+    before = webapp._get_store().load_contract(sid).to_json()
 
     def _boom(*_a, **_k):
         raise RuntimeError("forced reconstruction failure")
@@ -181,7 +182,19 @@ def test_reconstruction_failure_fails_closed_to_prior_page(client, monkeypatch):
     assert r.status_code == 200                              # never a 500
     body = r.get_data(as_text=True)
     assert CLAIM_EN not in html.unescape(body)               # no false recon claim
-    assert 'name="response"' in body                         # prior cold page kept
+    # A1 removes the unusable cold answer box; it does not establish writable
+    # continuation or reinterpret a failed reconstruction as a completed journey.
+    assert 'name="response"' not in body
+    assert 'id="resume-project"' not in body
+    assert 'class="complete"' not in body
+    assert "Saved view" in body and body.count("data-primary-action") == 1
+    assert getattr(SESSION_STORE[sid]["state"], "domain", None) is None
+    assert webapp._get_store().load_contract(sid).to_json() == before
+    rejected = client.post("/session/" + sid, data={
+        "response": "A forged answer must not revive this project.",
+        "action": "answered", "answer_token": "forged-token"})
+    assert rejected.status_code == 302
+    assert webapp._get_store().load_contract(sid).to_json() == before
     SESSION_STORE.pop(sid, None)
 
 
