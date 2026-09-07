@@ -17,6 +17,14 @@ form{display:inline-block;margin:6px 8px 0 0}
 .project-card .project-links{display:flex;gap:18px;flex-wrap:wrap;margin-top:10px}
 .project-card a{padding:4px 0}
 .project-caption{font-size:12px;color:#526474;margin:4px 0}
+.project-filter{margin:16px 0;padding:14px;border:1px solid #cbd6df;border-radius:8px}
+.project-filter[hidden]{display:none}
+.project-filter-fields{display:grid;grid-template-columns:2fr 1fr;gap:12px}
+.project-filter label{display:block;font-size:14px;margin-bottom:5px}
+.project-filter input,.project-filter select{box-sizing:border-box;width:100%;min-width:0;padding:9px;border:1px solid #748596;border-radius:4px;font:inherit}
+.project-filter-help,.project-filter-results{font-size:13px;line-height:1.5;overflow-wrap:anywhere}
+.project-filter button{margin:8px 0}
+@media(max-width:480px){.project-filter-fields{grid-template-columns:1fr}}
 </style>
 {% endblock %}
 {% block content %}
@@ -45,14 +53,32 @@ form{display:inline-block;margin:6px 8px 0 0}
     <a href="{{ url_for('account_home') }}">{{ t('UI_A1_RETRY_LIST') }}</a>
   {% elif owned_projects %}
     <p class="truthful">{{ t('UI_A1_PROJECT_LIST_NOTE') }}</p>
-    <ul class="project-list">
+    <div id="project-filter" class="project-filter" hidden>
+      <div class="project-filter-fields">
+        <div>
+          <label for="project-filter-query">{{ t('UI_PROJECT_FILTER_SEARCH') }}</label>
+          <input id="project-filter-query" type="search" dir="auto" autocomplete="off" spellcheck="false" autocapitalize="none" aria-describedby="project-filter-help" aria-controls="project-list">
+        </div>
+        <div>
+          <label for="project-filter-domain">{{ t('UI_PROJECT_FILTER_DOMAIN') }}</label>
+          <select id="project-filter-domain" aria-controls="project-list">
+            <option value="">{{ t('UI_PROJECT_FILTER_ALL_DOMAINS') }}</option>
+          </select>
+        </div>
+      </div>
+      <p id="project-filter-help" class="project-filter-help">{{ t('UI_PROJECT_FILTER_HELP') }}</p>
+      <button id="project-filter-clear" type="button">{{ t('UI_PROJECT_FILTER_CLEAR') }}</button>
+      <p id="project-filter-results" class="project-filter-results" role="status" aria-live="polite" aria-atomic="true" data-count-template="{{ t('UI_PROJECT_FILTER_COUNT') }}"></p>
+      <p id="project-filter-no-match" class="project-filter-results" hidden>{{ t('UI_PROJECT_FILTER_NO_MATCH') }}</p>
+    </div>
+    <ul id="project-list" class="project-list">
       {% for project in owned_projects %}
       <li class="project-card">
         <p class="project-caption">{{ t('UI_A1_ORIGINAL_IDEA') }}</p>
-        <h3 dir="auto">{{ project.idea or t('UI_A1_UNTITLED') }}</h3>
+        <h3 dir="auto"{% if project.idea %} data-project-description{% endif %}>{{ project.idea or t('UI_A1_UNTITLED') }}</h3>
         {% set project_domain = project.domain | public_domain_label %}
-        <p class="project-caption">{{ project_domain[ui_lang] }}</p>
-        <p class="project-caption">{{ t('UI_A1_PROJECT_ID') }}: <bdi>{{ project.id }}</bdi></p>
+        <p class="project-caption" data-project-domain>{{ project_domain[ui_lang] }}</p>
+        <p class="project-caption">{{ t('UI_A1_PROJECT_ID') }}: <bdi data-project-id>{{ project.id }}</bdi></p>
         {% if project.unavailable %}<p>{{ t('UI_A1_DETAILS_UNAVAILABLE') }}</p>{% endif %}
         <div class="project-links"><a href="/session/{{ project.id }}">{{ t('UI_A_ACCOUNT_007') }}</a><a href="/account/projects/{{ project.id }}/export">{{ t('UI_A_ACCOUNT_012') }}</a></div>
       </li>
@@ -90,4 +116,5 @@ form{display:inline-block;margin:6px 8px 0 0}
 
 <p class="truthful">{{ t('UI_A_ACCOUNT_011') }}</p>
 </div>
+{% if owned_projects %}<script src="{{ url_for('static', filename='js/project_filter.js') }}" defer></script>{% endif %}
 {% endblock %}
