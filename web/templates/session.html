@@ -49,6 +49,11 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
 .journey-feedback{background:#eef7ee;border:1px solid #bcdcbc;padding:12px;border-radius:6px;line-height:1.5}
 #answer-form{border:1px solid #bccddc;background:#f8fbfd;padding:16px;border-radius:8px;margin:14px 0 22px}
 #response,#criticality-review,#w2b-decision-capture{scroll-margin-top:20px}
+.correction-preview,.correction-record{border:1px solid #c9d6e8;border-radius:4px;padding:12px;margin:10px 0;min-width:0}
+.correction-preview[hidden]{display:none}
+.correction-recorded-text{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.6;margin:8px 0}
+.correction-preview h3{font-size:14px;margin:0 0 8px}
+.correction-full-answers summary{cursor:pointer;padding:8px 0}
 .gap-status{margin-inline-end:10px;margin-inline-start:0}
 .gap-stage-note,.current-arrow{margin-inline-start:8px;margin-inline-end:0}
 .disclosure{border-left:0;border-inline-start:3px solid #b0b8c1}
@@ -593,17 +598,34 @@ body{overflow-wrap:anywhere}
   <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
     <input type="hidden" name="answer_token" value="{{ answer_token }}">
     <label for="correct-target" style="display:block;font-size:12px;color:#888;margin-bottom:4px">{{ t('UI_RVR5_CORRECT_SELECT') }}</label>
-    <select id="correct-target" name="supersedes_record_id" required style="max-width:100%;margin-bottom:8px">
+    <select id="correct-target" name="supersedes_record_id" required aria-controls="correction-preview" aria-describedby="correction-preview-help" style="max-width:100%;margin-bottom:8px">
       {% for rec in active_answers %}
       <option value="{{ rec.record_id }}">{{ rec.record_id }} · {{ rec.gap_context | gap_display }} · {{ rec.content[:70] }}{% if rec.content|length > 70 %}…{% endif %}</option>
       {% endfor %}
     </select>
+    <p id="correction-preview-help" class="journey-note">{{ t('UI_CORRECTION_PREVIEW_HELP') }}</p>
+    <section id="correction-preview" class="correction-preview" aria-labelledby="correction-preview-heading" tabindex="0" hidden>
+      <h3 id="correction-preview-heading">{{ t('UI_CORRECTION_PREVIEW_HEADING') }}</h3>
+      <p class="journey-note"><bdi data-preview-reference></bdi> · <span data-preview-context></span></p>
+      <p class="correction-recorded-text" data-preview-content dir="auto"></p>
+    </section>
+    <p id="correction-preview-status" class="journey-note" role="status" aria-live="polite" aria-atomic="true" data-message="{{ t('UI_CORRECTION_PREVIEW_UPDATED') }}"></p>
+    <details class="correction-full-answers">
+      <summary>{{ t('UI_CORRECTION_PREVIEW_ALL') }}</summary>
+      {% for rec in active_answers %}
+      <div class="correction-record" data-correction-record="{{ rec.record_id }}">
+        <p class="journey-note"><bdi data-record-reference>{{ rec.record_id }}</bdi> · <span data-record-context>{{ rec.gap_context | gap_display }}</span></p>
+        <p class="correction-recorded-text" data-record-content dir="auto">{{ rec.content }}</p>
+      </div>
+      {% endfor %}
+    </details>
     <label for="correct-response" style="display:block;font-size:12px;color:#888;margin-bottom:4px">{{ t('UI_RVR5_CORRECT_NEW') }}</label>
     <textarea id="correct-response" name="response" rows="3" required style="width:100%;box-sizing:border-box"></textarea>
     <br>
     <button type="submit" style="margin-top:8px">{{ t('UI_RVR5_CORRECT_BUTTON') }}</button>
   </form>
 </details>
+<script defer src="{{ url_for('static', filename='js/correction_preview.js') }}"></script>
 {% endif %}
 
 {# W2-A / RVR-4 (authoritative contract §14): bounded decision capture inside
