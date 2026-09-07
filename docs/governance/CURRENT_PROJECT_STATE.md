@@ -10,17 +10,14 @@ override this current entry or impose another reading/approval/synchronization s
 - Repository: Amirjaferali/inventorai.
 - Execution branch: feature/atomic-json-session-persistence. Verify the live tip from
   Git each session; main is outside execution authority.
-- Verified transition preparation baseline:
-  c78efd4e4064f464b48064173ac176f88ed9c371 (PR #617). This is recorded preparation
-  provenance, not an assertion that HEAD never advances.
-- During transition preparation: the Owner-authorized seven-path LOCAL transition candidate
-  and evidence package only, under the bootstrap declaration in ACTIVE_INCREMENT_CONTRACT.md.
-  No push, PR, merge, settings administration or R-05 execution is granted at preparation.
-- Conditional successor: ASTRA MILESTONE 1 — SECURE AND DIFFERENTIATED PRIVATE-BETA
-  PROGRESSION, installed in that same active authority surface. It remains inactive
-  until transition integration, CI, branch-protection/required-check, sole-Lead and
-  no-pause conditions are all verified. All per-merge safeguards also apply.
-- Astra is the sole preparation Lead; the prior Lead remains STANDBY, not terminated.
+- Transition integrated through PR #618 at
+  20a10105178196a5c4242f4ba1d7b3f265f00a8a; all activation safeguards verified.
+  ACTIVE_INCREMENT_CONTRACT.md records the evidence and exact mandate.
+- ASTRA MILESTONE 1 — SECURE AND DIFFERENTIATED PRIVATE-BETA PROGRESSION is ACTIVE.
+  R-05 implementation and autonomous delivery are expressly authorized by
+  ASTRA-M1-R05-IMPLEMENT-DELIVER-01; its security review and per-merge safeguards
+  remain mandatory. The preparation-only bootstrap authority is consumed.
+- Astra is the sole mutating execution Lead; the prior Lead remains STANDBY, not terminated.
   Only one Lead may possess mutation authority. Pause/revocation and return use Lean §9.
 - Technical position: completed product foundations with remaining security/product-value
   and release obligations. Phase closure, a successful test or this transition is not
@@ -32,7 +29,7 @@ F-01/F-02 v2.1 is implemented at PR #617; B-01/B-02 are closed. No further F-01/
 post-merge governance synchronization is required. OSP lifecycle remains CLOSED; its
 standing material-instruction control remains applicable. These lifecycles are not reopened.
 
-After all activation conditions pass, the milestone authorizes R-05 request-integrity/
+The active milestone authorizes R-05 request-integrity/
 CSRF remediation preserving existing account/session/HMAC/ownership and F-03 semantics,
 with the required separate non-authoring security review before guarded merge. It then
 authorizes ONE strategic product-priority assessment. F-04 is not automatically the next

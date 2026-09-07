@@ -39,6 +39,7 @@ strong-unsupported words ("circuit and hinge") so the parent's incidental
 single-winner ADMISSION at ``/start`` is directly observable and distinguishing.
 """
 
+from tests.csrf_client import csrf_client
 import builtins
 import importlib.util
 import os
@@ -189,7 +190,7 @@ def test_red_e2_10_start_real_tie_fails_closed_electronics_pair(activate):
     classifier through the route (no injected DomainClassification)."""
     from web import app as web_app
     activate("electronics_electrical", "mechanical")
-    client = web_app.app.test_client()
+    client = csrf_client(web_app.app)
     before = set(web_app.SESSION_STORE)
     resp = _start_post(client, f"{_ELEC} and {_MECH}")
     assert resp.status_code == 200                          # NOT a 302 admission
@@ -209,7 +210,7 @@ def test_red_e2_10b_start_real_tie_fails_closed_non_electronics_pair(activate):
     closed. Distinguishing on the fail-closed message + branch."""
     from web import app as web_app
     activate("mechanical", "software")
-    client = web_app.app.test_client()
+    client = csrf_client(web_app.app)
     before = set(web_app.SESSION_STORE)
     resp = _start_post(client, f"{_MECH} and {_SW}")
     body = resp.get_data(as_text=True)
@@ -275,7 +276,7 @@ def test_green_guard_strong_unsupported_intercepts_single_token(activate):
     from web import app as web_app
     activate("electronics_electrical")                      # medical NOT activated
     assert web_app._has_strong_unsupported_evidence(_MED)   # 'catheter' is strong-unsupported
-    client = web_app.app.test_client()
+    client = csrf_client(web_app.app)
     before = set(web_app.SESSION_STORE)
     resp = _start_post(client, f"a {_MED} device")
     assert resp.status_code == 200

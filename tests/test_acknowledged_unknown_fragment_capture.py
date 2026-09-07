@@ -15,6 +15,7 @@ transcript, interaction ledger). Scoring, gap lifecycle, maturity,
 iteration behavior, and the explicit "unknown" non-answer action are
 unchanged.
 """
+from tests.csrf_client import csrf_client
 import os
 from test_p4_1b2a_durable_answer_append import answered_post  # P4-1b-2a
 import sys
@@ -182,7 +183,7 @@ class TestNoFalsePositives:
 
 class TestExplicitUnknownActionUnchanged:
     def _start_session(self):
-        resp = app.test_client().post(
+        resp = csrf_client(app).post(
             "/start",
             data={"idea": "ESP32 microcontroller circuit with a voltage sensor",
                   "domain_confirm": DOMAIN_CONFIRM_VALUE},
@@ -198,7 +199,7 @@ class TestExplicitUnknownActionUnchanged:
             before = (state.iteration, state.maturity_level,
                       [(g.gap_type, g.status) for g in state.gaps],
                       len(state.acknowledged_unknowns))
-            app.test_client().post(f"/session/{sid}",
+            csrf_client(app).post(f"/session/{sid}",
                                    data={"action": "unknown", "response": text})
             after = (state.iteration, state.maturity_level,
                      [(g.gap_type, g.status) for g in state.gaps],
@@ -259,7 +260,7 @@ class TestExtractionIndependence:
 
     def test_web_answered_flow_full_answer_verbatim_fragment_stored(self):
         sid = None
-        resp = app.test_client().post(
+        resp = csrf_client(app).post(
             "/start",
             data={"idea": "ESP32 microcontroller circuit with a voltage sensor",
                   "domain_confirm": DOMAIN_CONFIRM_VALUE},
@@ -271,7 +272,7 @@ class TestExtractionIndependence:
             # Deterministically target the answered->integrate_response path.
             state.gaps.append(Gap(gap_type=MECHANISM_COMPLETENESS,
                                   status=OPEN, opened_at=state.iteration))
-            answered_post(app.test_client(), sid, {"action": "answered", "response": DEMO_ANSWER})
+            answered_post(csrf_client(app), sid, {"action": "answered", "response": DEMO_ANSWER})
             # Transcript: full answer, byte-for-byte.
             transcript = SESSION_STORE[sid]["transcript"]
             assert transcript and transcript[-1]["response"] == DEMO_ANSWER
@@ -283,7 +284,7 @@ class TestExtractionIndependence:
                 [DEMO_UNKNOWN_SENTENCE]
             # Session panel renders only the bounded fragment, not the
             # substantive reasoning.
-            body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+            body = csrf_client(app).get(f"/session/{sid}").get_data(as_text=True)
             assert DEMO_UNKNOWN_SENTENCE in body
             assert "What You Have Marked as Not Yet Known" in body
         finally:

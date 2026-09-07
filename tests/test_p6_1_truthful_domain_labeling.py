@@ -19,6 +19,7 @@ Real on-disk SQLite (autouse conftest isolation); the Flask test client; the rea
 central resolver `web.domain_label.public_domain_label`. No mocks; the label is
 resolved server-side from trusted runtime state, never from client input.
 """
+from tests.csrf_client import csrf_client
 import re
 
 import pytest
@@ -47,7 +48,7 @@ FORM = {"idea": IDEA, "domain_confirm": "electronics_electrical"}
 @pytest.fixture
 def client():
     app.config["TESTING"] = True
-    return app.test_client()
+    return csrf_client(app)
 
 
 def _start(client):

@@ -14,6 +14,7 @@ In-memory sessions only; no real server/port; no durable file. No existing test 
 modified.
 """
 
+from tests.csrf_client import csrf_client
 import re
 
 from web.app import app, SESSION_STORE
@@ -53,7 +54,7 @@ def _snapshot(entry):
 
 
 def _deliverable_body(sid):
-    return app.test_client().get(f"/session/{sid}/deliverable").get_data(as_text=True)
+    return csrf_client(app).get(f"/session/{sid}/deliverable").get_data(as_text=True)
 
 
 # ------------------------------------------------------------------ RED -> GREEN
@@ -72,7 +73,7 @@ def test_eligible_deliverable_has_both_exact_labels():
 def test_keep_post_route_exists_and_is_meaningful():
     _seed(_SID)
     try:
-        r = app.test_client().post(f"/session/{_SID}/keep-snapshot")
+        r = csrf_client(app).post(f"/session/{_SID}/keep-snapshot")
         assert r.status_code == 302, "Keep must be a meaningful POST (Post/Redirect/Get), not 404/405"
         assert r.headers.get("Location", "").endswith(f"/session/{_SID}/deliverable"), \
             "Keep must redirect back to the same deliverable (same sid)"
@@ -83,7 +84,7 @@ def test_keep_post_route_exists_and_is_meaningful():
 def test_keep_shows_truthful_temporary_acknowledgement():
     _seed(_SID)
     try:
-        c = app.test_client()
+        c = csrf_client(app)
         body = c.post(f"/session/{_SID}/keep-snapshot", follow_redirects=True).get_data(as_text=True)
         low = body.lower()
         assert "temporary session" in low, "acknowledgement must state the temporary-session boundary"
@@ -179,7 +180,7 @@ def test_keep_does_not_mutate_deterministic_state_or_transcript():
     _seed(_SID)
     try:
         before = _snapshot(SESSION_STORE[_SID])
-        app.test_client().post(f"/session/{_SID}/keep-snapshot")
+        csrf_client(app).post(f"/session/{_SID}/keep-snapshot")
         after = _snapshot(SESSION_STORE[_SID])
         assert after == before, f"Keep must not mutate IdeaState/iteration/maturity/gaps/evidence/transcript/last_result: {before} -> {after}"
         assert (SESSION_STORE[_SID].get("transcript") or []) == [], "Keep writes no transcript"
@@ -190,7 +191,7 @@ def test_keep_does_not_mutate_deterministic_state_or_transcript():
 def test_keep_ack_is_single_use_transient():
     _seed(_SID)
     try:
-        c = app.test_client()
+        c = csrf_client(app)
         c.post(f"/session/{_SID}/keep-snapshot", follow_redirects=True)  # ack shown, consumed
         again = c.get(f"/session/{_SID}/deliverable").get_data(as_text=True).lower()
         assert "current working snapshot selected" not in again, \
@@ -204,8 +205,8 @@ def test_keep_marker_does_not_leak_across_sids():
     other = "gux-snapshot-other-sid"
     _seed(other)
     try:
-        app.test_client().post(f"/session/{_SID}/keep-snapshot")  # sets marker on _SID only
-        other_body = app.test_client().get(f"/session/{other}/deliverable").get_data(as_text=True).lower()
+        csrf_client(app).post(f"/session/{_SID}/keep-snapshot")  # sets marker on _SID only
+        other_body = csrf_client(app).get(f"/session/{other}/deliverable").get_data(as_text=True).lower()
         assert "current working snapshot selected" not in other_body, "Keep marker must be namespaced to its own sid"
         assert "_snapshot_kept_ack" not in SESSION_STORE.get(other, {}), "no cross-session marker leak"
     finally:
@@ -215,7 +216,7 @@ def test_keep_marker_does_not_leak_across_sids():
 
 def test_keep_missing_session_is_generic():
     SESSION_STORE.pop("no-such-sid", None)
-    r = app.test_client().post("/session/no-such-sid/keep-snapshot")
+    r = csrf_client(app).post("/session/no-such-sid/keep-snapshot")
     assert r.status_code == 302 and r.headers.get("Location", "").endswith("/"), \
         "Keep on a missing session must use the generic redirect to / (no existence disclosure)"
 
@@ -224,7 +225,7 @@ def test_no_overclaim_or_durable_language():
     _seed(_SID)
     try:
         low = (_deliverable_body(_SID)
-               + app.test_client().post(f"/session/{_SID}/keep-snapshot", follow_redirects=True).get_data(as_text=True)).lower()
+               + csrf_client(app).post(f"/session/{_SID}/keep-snapshot", follow_redirects=True).get_data(as_text=True)).lower()
         for forbidden in ("permanently saved.", "version history", "account", "sign in", "approved and",
                           "restore", "download pdf", "email delivery"):
             # allow the truthful negations ("not been permanently saved", "not ... approved")
@@ -250,5 +251,5 @@ def test_existing_deliverable_content_preserved():
 
 def test_missing_session_deliverable_generic_redirect():
     SESSION_STORE.pop("gone", None)
-    r = app.test_client().get("/session/gone/deliverable")
+    r = csrf_client(app).get("/session/gone/deliverable")
     assert r.status_code == 302 and r.headers.get("Location", "").endswith("/")

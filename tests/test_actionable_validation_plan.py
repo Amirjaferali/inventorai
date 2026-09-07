@@ -23,6 +23,7 @@ tool, laboratory, simulation, standard, threshold, test method, product, or
 service; MUST NOT imply that D13 (Technical Capability Gap Detection and
 Actionable Research Guidance) is implemented or satisfied.
 """
+from tests.csrf_client import csrf_client
 import os
 from test_p4_1b2a_durable_answer_append import answered_post  # P4-1b-2a
 import re
@@ -144,7 +145,7 @@ def _run_ws1_journey():
     """Drive the committed Flask session flow with the canonical Workstream 1
     inputs and return (state, package, deliverable_html). Real routes and the
     real assembler only — nothing is mocked."""
-    client = app.test_client()
+    client = csrf_client(app)
     resp = client.post("/start", data={"idea": IDEA_WS1,
                                        "domain_confirm": DOMAIN_CONFIRM_VALUE})
     assert resp.status_code == 302, resp.status_code
@@ -249,7 +250,7 @@ def _render(state):
     sid = "ws7-red-" + uuid.uuid4().hex[:8]
     SESSION_STORE[sid] = {"state": state, "last_result": None, "transcript": []}
     try:
-        resp = app.test_client().get(f"/session/{sid}/deliverable")
+        resp = csrf_client(app).get(f"/session/{sid}/deliverable")
         assert resp.status_code == 200, resp.status_code
         return resp.get_data(as_text=True)
     finally:

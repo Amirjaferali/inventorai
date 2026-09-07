@@ -19,6 +19,7 @@ Chromium is pre-provisioned (`/opt/pw-browsers`); the browser is launched via
 (`tests/requirements-draft-l2.txt`). Fail-closed, no false-green: each assertion
 inspects real browser storage / DOM / the durable store, never mere existence.
 """
+from tests.csrf_client import csrf_client
 import glob
 import json
 import os
@@ -139,7 +140,7 @@ def _present_domain_confirmation(page, idea=IDEA):
     # With Electronics and Mechanical active, the first submit classifies the
     # idea; it must not create a session or silently supply explicit consent.
     assert page.locator("input[name=domain_confirm]").count() == 0
-    page.click("input[type=submit], button[type=submit]")
+    page.click("main input[type=submit], main button[type=submit]")
     page.wait_for_load_state()
     assert page.url.endswith("/start")
     assert page.input_value("#idea") == idea
@@ -150,7 +151,7 @@ def _present_domain_confirmation(page, idea=IDEA):
         assert sorted(choices.evaluate_all("els => els.map(e => e.value)")) == [
             "electronics_electrical", "mechanical"]
         page.check('input[name=domain_choice][value="electronics_electrical"]')
-        page.click("input[type=submit], button[type=submit]")
+        page.click("main input[type=submit], main button[type=submit]")
         page.wait_for_load_state()
         assert page.url.endswith("/start")
         assert page.input_value("#idea") == idea
@@ -162,7 +163,7 @@ def _present_domain_confirmation(page, idea=IDEA):
 
 def _confirm_start(page):
     page.check("input[name=domain_confirm]")
-    page.click("input[type=submit], button[type=submit]")
+    page.click("main input[type=submit], main button[type=submit]")
     page.wait_for_load_state()
     assert "/session/" in page.url
     return page.url.rsplit("/session/", 1)[1].split("?")[0]
@@ -362,7 +363,7 @@ def test_failed_submit_retains_draft(server, page):
     assert _answer_key(page)
     # Force a token-invalid answered submit (fails closed server-side, PRG back).
     page.eval_on_selector("input[name=answer_token]", "e => { e.value = 'forged'; }")
-    page.click("input[type=submit], button[type=submit]")
+    page.click("main input[type=submit], main button[type=submit]")
     page.wait_for_load_state()
     # The draft is still present and offered for recovery.
     assert _answer_key(page), "draft was wrongly cleared on a failed submit"
@@ -382,7 +383,7 @@ def test_successful_submit_clears_matching_draft(server, page):
     page.fill("#response", ANSWER)
     page.wait_for_timeout(1000)
     assert any(sid in k for k in _answer_key(page)), "sid draft not stored pre-submit"
-    page.click("input[type=submit], button[type=submit]")  # real token -> accepted
+    page.click("main input[type=submit], main button[type=submit]")  # real token -> accepted
     page.wait_for_load_state()
     # The matching (this-session) answer draft is cleared; the foreign one survives.
     assert not any(sid in k for k in _answer_key(page)), \
@@ -437,7 +438,7 @@ def test_idempotency_prevents_duplicate():
     # Server-side proof that the draft feature does not alter the accepted-answer
     # idempotency model: the same token + same content submitted twice yields ONE
     # durable answered record.
-    client = app.test_client()
+    client = csrf_client(app)
     r = client.post("/start", data={"idea": IDEA, **FORM})
     sid = r.headers["Location"].rsplit("/session/", 1)[1]
     html = client.get(f"/session/{sid}").get_data(as_text=True)
@@ -467,7 +468,7 @@ def test_no_server_draft_route_or_record():
 def test_rendering_creates_no_records():
     # Rendering the pages (where drafts live entirely client-side) creates no
     # durable answered records and no session mutation beyond normal start.
-    client = app.test_client()
+    client = csrf_client(app)
     r = client.post("/start", data={"idea": IDEA, **FORM})
     sid = r.headers["Location"].rsplit("/session/", 1)[1]
     client.get(f"/session/{sid}")
@@ -483,7 +484,7 @@ def test_no_js_fallback_level0():
     # The Flask test client executes no JavaScript; the server-rendered forms and
     # the accepted-answer flow must behave exactly as before (Level 0), unaffected
     # by the additive data-draft-* attributes.
-    client = app.test_client()
+    client = csrf_client(app)
     r = client.post("/start", data={"idea": IDEA, **FORM})
     assert r.status_code in (301, 302)
     sid = r.headers["Location"].rsplit("/session/", 1)[1]
@@ -619,7 +620,7 @@ def test_correction_surface_wired():
     SESSION_STORE[sid] = {"state": st, "last_result": None, "transcript": [],
                           "criticality_correction": True}
     try:
-        html = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+        html = csrf_client(app).get(f"/session/{sid}").get_data(as_text=True)
         assert 'data-draft-field="correction"' in html
         assert "Describe the change or the missing part" in html
     finally:
@@ -656,7 +657,7 @@ def test_ambiguous_submit_interrupted_retains_draft(server, page):
                                            body="temporarily unavailable")
                if route.request.method == "POST" else route.continue_())
     try:
-        page.click("input[type=submit], button[type=submit]")
+        page.click("main input[type=submit], main button[type=submit]")
         page.wait_for_timeout(500)
     except Exception:
         pass

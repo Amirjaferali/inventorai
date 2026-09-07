@@ -12,7 +12,7 @@ import uuid
 from urllib.parse import urlparse as _urlparse
 from flask import (
     Flask, request, redirect, url_for, render_template, make_response,
-    has_request_context, session as flask_session,
+    g, has_request_context, session as flask_session,
 )
 from engine.domain_rules import classify_domain, DomainResultKind, is_known_domain
 from engine import domain_activation
@@ -211,6 +211,8 @@ _SECURITY_HEADERS = (
 def _apply_security_headers(response):
     for name, value in _SECURITY_HEADERS:
         response.headers.setdefault(name, value)
+    if has_request_context() and getattr(g, "csrf_form_rendered", False):
+        response.headers["Cache-Control"] = "no-store"
     return response
 
 
@@ -592,29 +594,65 @@ def _is_safe_local_path(target):
     return not parsed.scheme and not parsed.netloc
 
 
-@app.route("/ui-language", methods=["GET", "POST"])
+@app.route("/ui-language", methods=["POST"])
 def set_ui_language():
     """Set the explicit global UI language and return to the originating page.
 
     Presentation only: it writes the ``ui_lang`` preference into the signed session
     and redirects to a SAFE local ``next`` path. It creates/changes no project,
     account, schema, or durable preference, and translates no question or output.
-    Accepts the shared shell's GET language links and a POST form alike."""
-    flask_session["ui_lang"] = ui_text.normalize(request.values.get("lang"))
-    nxt = request.values.get("next") or ""
+    Accepts the shared shell's protected POST form."""
+    flask_session["ui_lang"] = ui_text.normalize(request.form.get("lang"))
+    nxt = request.form.get("next") or ""
     if not _is_safe_local_path(nxt):
         nxt = url_for("index")
     return redirect(nxt)
 
 
 def _session_csrf():
+    """Read the existing session token without creating or changing state."""
     auth = flask_session.get(_AUTH_SESSION_KEY)
-    return auth.get("csrf") if auth else None
+    if auth is not None:
+        return auth.get("csrf") if isinstance(auth, dict) else None
+    return flask_session.get("csrf")
+
+
+def _csrf_for_form():
+    """Extend the existing token mechanism to anonymous browser forms.
+
+    Issuance is lazy, during rendering only. Login's existing session rotation
+    discards the anonymous token and establishes a fresh authenticated token.
+    Validation never calls this function or consults an account store.
+    """
+    if not has_request_context():
+        return ""
+    token = _session_csrf()
+    if not token and _AUTH_SESSION_KEY not in flask_session:
+        token = _auth.new_csrf_token()
+        flask_session["csrf"] = token
+    g.csrf_form_rendered = True
+    return token or ""
+
+
+app.jinja_env.globals["csrf_for_form"] = _csrf_for_form
 
 
 def _csrf_valid():
-    """Constant-time CSRF check for authenticated state-changing POSTs."""
-    return _auth.csrf_matches(_session_csrf(), request.form.get("csrf_token", ""))
+    """Accept exactly one form token bound to this browser's signed session."""
+    tokens = request.form.getlist("csrf_token")
+    return len(tokens) == 1 and _auth.csrf_matches(_session_csrf(), tokens[0])
+
+
+@app.before_request
+def _require_request_integrity():
+    """Reject unsafe browser requests before route code or account-session touch.
+
+    All registered unsafe methods fail closed, including future routes. Routing
+    failures retain Flask's 404/405 behavior; read-only API routes are unchanged.
+    """
+    if (request.method not in ("GET", "HEAD", "OPTIONS")
+            and request.url_rule is not None and not _csrf_valid()):
+        return _csrf_reject()
 
 
 def _sign_in(account, now):
@@ -1705,8 +1743,11 @@ _DUMMY_PASSWORD_HASH = _acct.hash_password(secrets.token_urlsafe(24))
 
 def _csrf_reject():
     """Generic, non-enumerating rejection for a missing/invalid CSRF token."""
-    return ("Your session security token was missing or invalid. Please reload "
-            "the page and try again.", 403)
+    response = make_response(ui_text.text("UI_CSRF_REJECT", _current_ui_lang()), 403)
+    response.headers["Cache-Control"] = "no-store"
+    if request.endpoint in _TOKEN_BEARING_ENDPOINTS:
+        return _token_bearing(response, 403)
+    return response
 
 
 def _issue_verification(account, now):
@@ -2008,12 +2049,14 @@ def resend_verification():
                            csrf_token=_session_csrf(), notice="resend")
 
 
-@app.route("/verify/<token>", methods=["GET"])
+@app.route("/verify/<token>", methods=["GET", "POST"])
 def verify_email(token):
     """Complete email verification from the emailed link. Atomically consume the
     raw token (hash before lookup; type must be verification; unused; unexpired;
     active account) and set ``email_verified``. Replay/expired/invalid all render
     the SAME generic failure. No ownership is created."""
+    if request.method in ("GET", "HEAD"):
+        return _token_bearing(render_template("verify_result.html", verified=None))
     now = _utc_now()
     verified = False
     try:
@@ -3986,8 +4029,10 @@ def _dw_free_text_reject(record, *field_names):
     return None
 
 
-@app.route("/decision-workspace", methods=["GET"])
+@app.route("/decision-workspace", methods=["GET", "POST"])
 def decision_workspace_start():
+    if request.method in ("GET", "HEAD"):
+        return render_template("decision_workspace_start.html")
     record = fdc001_dw.DecisionRecord()
     did = record.decision_id
     FDC001_DECISIONS[did] = record

@@ -570,6 +570,7 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   <div class="decision-actions" style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:12px">
     <a class="decision-primary" href="{{ url_for('show_session', sid=sid) }}" style="display:inline-block;padding:10px 22px;background:#2c3e50;color:#fff;border-radius:4px;text-decoration:none;font-size:15px">{{ t('UI_B_DELIV_102') }}</a>
     <form method="POST" action="{{ url_for('keep_snapshot', sid=sid) }}" style="margin:0">
+  <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
       <button type="submit" class="decision-secondary" style="padding:10px 22px;background:#fff;color:#2c3e50;border:1px solid #2c3e50;border-radius:4px;font-size:15px;cursor:pointer">{{ t('UI_B_DELIV_103') }}</button>
     </form>
   </div>

@@ -24,6 +24,7 @@ PROCESS BOUNDARY (PVCG §6): the reconstruction half of every restart assertion
 runs in a SEPARATE Python interpreter via `_reconstruct_in_new_process`, so a
 pass can never be produced by surviving in-memory objects.
 """
+from tests.csrf_client import csrf_client
 import json
 import os
 import re
@@ -90,7 +91,7 @@ class _Live:
         import web.app as app_module
         app_module.app.config["TESTING"] = True
         self.mod = app_module
-        self.client = app_module.app.test_client()
+        self.client = csrf_client(app_module.app)
 
     def close(self):
         """Restore the interpreter to exactly its pre-fixture state."""

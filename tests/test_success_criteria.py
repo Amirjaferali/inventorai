@@ -7,6 +7,7 @@ criterion in FDC-001 as explicitly user-defined. Criteria are NEVER graded,
 validated, claimed met, or written to the ILT-002 transcript, and they never
 change progression, maturity, gaps, Evidence, experiment IDs, or plan text.
 """
+from tests.csrf_client import csrf_client
 import os, sys, uuid, dataclasses
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
@@ -100,7 +101,7 @@ def test_4_criteria_do_not_alter_maturity_or_progression():
 def test_5_criterion_stored_by_experiment_id():
     sid, s = _seed()
     eid = _ids(s)[0]
-    _post(app.test_client(), sid, {eid: "alarm within the user-chosen window"})
+    _post(csrf_client(app), sid, {eid: "alarm within the user-chosen window"})
     assert s.success_criteria[eid].criterion == "alarm within the user-chosen window"
     assert s.success_criteria[eid].provenance == "user_defined"
 
@@ -135,7 +136,7 @@ def test_8_two_assumption_experiments_hold_different_criteria():
          "second assumption about radio range through concrete")
     ids = _ids(s)
     assert len(ids) == 2
-    _post(app.test_client(), sid, {ids[0]: "crit A", ids[1]: "crit B"})
+    _post(csrf_client(app), sid, {ids[0]: "crit A", ids[1]: "crit B"})
     assert s.success_criteria[ids[0]].criterion == "crit A"
     assert s.success_criteria[ids[1]].criterion == "crit B"
 
@@ -146,7 +147,7 @@ def test_9_10_11_12_get_lists_experiments_and_distinguishes_from_result():
     sid, s = _seed()
     ids = _ids(s)
     s.success_criteria[ids[0]] = SuccessCriterion("prefilled target one")
-    body = app.test_client().get(f"/session/{sid}/success-criteria").get_data(as_text=True)
+    body = csrf_client(app).get(f"/session/{sid}/success-criteria").get_data(as_text=True)
     # 9: lists all current experiments
     for it in assemble_deliverable(s)["section_11_prototype_test_plan"]["items"]:
         assert it["experiment_title"] in body
@@ -157,7 +158,7 @@ def test_9_10_11_12_get_lists_experiments_and_distinguishes_from_result():
 
 
 def test_13_unknown_session_redirects():
-    r = app.test_client().get("/session/does-not-exist/success-criteria",
+    r = csrf_client(app).get("/session/does-not-exist/success-criteria",
                               follow_redirects=False)
     assert r.status_code == 302
     assert "/session/" not in r.headers.get("Location", "")
@@ -167,14 +168,14 @@ def test_13_unknown_session_redirects():
 
 def test_14_valid_criterion_saved():
     sid, s = _seed()
-    r = _post(app.test_client(), sid, {_ids(s)[0]: "a saved target"})
+    r = _post(csrf_client(app), sid, {_ids(s)[0]: "a saved target"})
     assert r.status_code == 302
     assert s.success_criteria[_ids(s)[0]].criterion == "a saved target"
 
 
 def test_15_criterion_can_be_edited():
     sid, s = _seed(); eid = _ids(s)[0]
-    c = app.test_client()
+    c = csrf_client(app)
     _post(c, sid, {eid: "first"})
     _post(c, sid, {eid: "second edited"})
     assert s.success_criteria[eid].criterion == "second edited"
@@ -182,13 +183,13 @@ def test_15_criterion_can_be_edited():
 
 def test_16_whitespace_trimmed_internal_preserved():
     sid, s = _seed(); eid = _ids(s)[0]
-    _post(app.test_client(), sid, {eid: "   keep  inner   spacing   "})
+    _post(csrf_client(app), sid, {eid: "   keep  inner   spacing   "})
     assert s.success_criteria[eid].criterion == "keep  inner   spacing"
 
 
 def test_17_whitespace_only_removes_criterion():
     sid, s = _seed(); eid = _ids(s)[0]
-    c = app.test_client()
+    c = csrf_client(app)
     _post(c, sid, {eid: "present"})
     assert eid in s.success_criteria
     _post(c, sid, {eid: "    "})
@@ -198,7 +199,7 @@ def test_17_whitespace_only_removes_criterion():
 def test_18_unknown_experiment_id_rejected():
     sid, s = _seed()
     before = dict(s.success_criteria)
-    r = _post(app.test_client(), sid, {"exp_v1_acknowledged_unknown_" + "0"*32: "x"})
+    r = _post(csrf_client(app), sid, {"exp_v1_acknowledged_unknown_" + "0"*32: "x"})
     assert r.status_code == 400
     assert s.success_criteria == before
 
@@ -206,14 +207,14 @@ def test_18_unknown_experiment_id_rejected():
 def test_19_stale_experiment_id_rejected():
     sid, s = _seed()
     stale_id = "exp_v1_reasoned_leading_claim_" + "a"*32   # not in current plan
-    r = _post(app.test_client(), sid, {stale_id: "x"})
+    r = _post(csrf_client(app), sid, {stale_id: "x"})
     assert r.status_code == 400
     assert stale_id not in s.success_criteria
 
 
 def test_20_over_limit_rejected_without_partial_save():
     sid, s = _seed(); ids = _ids(s)
-    r = _post(app.test_client(), sid,
+    r = _post(csrf_client(app), sid,
               {ids[0]: "ok", ids[1]: "a" * (MAX_CRITERION_LENGTH + 1)})
     assert r.status_code == 400
     assert ids[0] not in s.success_criteria          # the valid one was NOT saved
@@ -222,7 +223,7 @@ def test_20_over_limit_rejected_without_partial_save():
 
 def test_21_multiple_criteria_saved_in_one_request():
     sid, s = _seed(); ids = _ids(s)
-    _post(app.test_client(), sid, {ids[0]: "c0", ids[1]: "c1", ids[2]: "c2"})
+    _post(csrf_client(app), sid, {ids[0]: "c0", ids[1]: "c1", ids[2]: "c2"})
     assert [s.success_criteria[i].criterion for i in ids] == ["c0", "c1", "c2"]
 
 
@@ -231,7 +232,7 @@ def test_22_no_transcript_entry_written():
     path = f"/tmp/ilt002_transcript_{sid}.jsonl"
     if os.path.exists(path):
         os.remove(path)
-    _post(app.test_client(), sid, {eid: "no transcript please"})
+    _post(csrf_client(app), sid, {eid: "no transcript please"})
     assert not os.path.exists(path)
     assert SESSION_STORE[sid]["transcript"] == []
 
@@ -239,7 +240,7 @@ def test_22_no_transcript_entry_written():
 def test_23_only_planning_metadata_changes_in_session():
     sid, s = _seed(); eid = _ids(s)[0]
     before = _snap(s)
-    _post(app.test_client(), sid, {eid: "target"})
+    _post(csrf_client(app), sid, {eid: "target"})
     assert _snap(s) == before                        # maturity/gaps/evidence/iteration unchanged
     assert eid in s.success_criteria
 
@@ -255,7 +256,7 @@ def test_24_missing_criterion_displays_required():
 def test_25_captured_criterion_displays_user_defined():
     sid, s = _seed(); eid = _ids(s)[0]
     s.success_criteria[eid] = SuccessCriterion("homeowner hears the alarm in time")
-    body = app.test_client().get(f"/session/{sid}/deliverable").get_data(as_text=True)
+    body = csrf_client(app).get(f"/session/{sid}/deliverable").get_data(as_text=True)
     assert "Success criterion — user-defined:" in body
     assert "homeowner hears the alarm in time" in body
 
@@ -263,7 +264,7 @@ def test_25_captured_criterion_displays_user_defined():
 def test_26_user_numbers_verbatim_not_claimed_valid():
     sid, s = _seed(); eid = _ids(s)[0]
     s.success_criteria[eid] = SuccessCriterion("alarm sounds within 30 seconds")
-    body = app.test_client().get(f"/session/{sid}/deliverable").get_data(as_text=True)
+    body = csrf_client(app).get(f"/session/{sid}/deliverable").get_data(as_text=True)
     assert "alarm sounds within 30 seconds" in body          # number shown verbatim
     assert "Success criterion — user-defined:" in body       # labeled as the user's target
     low = body.lower()
@@ -291,7 +292,7 @@ def test_28_stale_criteria_preserved_and_surfaced():
                for x in pkg["stale_criteria"])
     # not reattached to any current experiment
     assert all(it["success_criterion"] != "orphaned target text" for it in pkg["items"])
-    body = app.test_client().get(f"/session/{sid}/deliverable").get_data(as_text=True)
+    body = csrf_client(app).get(f"/session/{sid}/deliverable").get_data(as_text=True)
     assert "no longer matches a current proposed experiment" in body
 
 
@@ -324,14 +325,14 @@ def test_30_sections_1_to_10_unchanged_by_criteria():
 def test_31_html_is_escaped():
     sid, s = _seed(); eid = _ids(s)[0]
     s.success_criteria[eid] = SuccessCriterion("<script>alert(1)</script>")
-    body = app.test_client().get(f"/session/{sid}/deliverable").get_data(as_text=True)
+    body = csrf_client(app).get(f"/session/{sid}/deliverable").get_data(as_text=True)
     assert "<script>alert(1)</script>" not in body
     assert "&lt;script&gt;" in body
 
 
 def test_32_unknown_id_not_accepted():
     sid, s = _seed()
-    r = _post(app.test_client(), sid, {"totally_bogus_id": "x"})
+    r = _post(csrf_client(app), sid, {"totally_bogus_id": "x"})
     assert r.status_code == 400
     assert "totally_bogus_id" not in s.success_criteria
 
@@ -341,7 +342,7 @@ def test_33_34_35_no_evidence_gap_or_maturity_change():
     mech_q = s.known_mechanism.quality
     gap_status = [(g.gap_type, g.status) for g in s.gaps]
     maturity = s.maturity_level
-    _post(app.test_client(), sid, {eid: "target"})
+    _post(csrf_client(app), sid, {eid: "target"})
     assert s.known_mechanism.quality == mech_q                 # 33: no quality upgrade
     assert [(g.gap_type, g.status) for g in s.gaps] == gap_status  # 34: no gap closed
     assert s.maturity_level == maturity                        # 35: no maturity change
@@ -351,7 +352,7 @@ def test_33_34_35_no_evidence_gap_or_maturity_change():
 
 def test_atomic_reject_preserves_a_valid_field_when_another_is_unknown():
     sid, s = _seed(); ids = _ids(s)
-    r = app.test_client().post(
+    r = csrf_client(app).post(
         f"/session/{sid}/success-criteria",
         data={PREFIX + ids[0]: "a valid one",
               PREFIX + ("exp_v1_acknowledged_unknown_" + "9" * 32): "rogue"},
@@ -362,7 +363,7 @@ def test_atomic_reject_preserves_a_valid_field_when_another_is_unknown():
 
 def test_omitted_field_leaves_existing_criterion_unchanged():
     sid, s = _seed(); ids = _ids(s)
-    c = app.test_client()
+    c = csrf_client(app)
     _post(c, sid, {ids[0]: "keep me", ids[1]: "and me"})
     # second request omits ids[0] entirely; updates only ids[1]
     c.post(f"/session/{sid}/success-criteria",
@@ -373,7 +374,7 @@ def test_omitted_field_leaves_existing_criterion_unchanged():
 
 def test_partial_valid_request_does_not_delete_other_criteria():
     sid, s = _seed(); ids = _ids(s)
-    c = app.test_client()
+    c = csrf_client(app)
     _post(c, sid, {ids[0]: "first", ids[1]: "second", ids[2]: "third"})
     _post(c, sid, {ids[1]: "second-edited"})        # only one field present
     assert s.success_criteria[ids[0]].criterion == "first"
@@ -383,7 +384,7 @@ def test_partial_valid_request_does_not_delete_other_criteria():
 
 def test_repeated_identical_submission_is_idempotent():
     sid, s = _seed(); eid = _ids(s)[0]
-    c = app.test_client()
+    c = csrf_client(app)
     _post(c, sid, {eid: "stable target"})
     _post(c, sid, {eid: "stable target"})
     assert s.success_criteria[eid].criterion == "stable target"
@@ -395,7 +396,7 @@ def test_rejected_submission_writes_no_transcript():
     path = f"/tmp/ilt002_transcript_{sid}.jsonl"
     if os.path.exists(path):
         os.remove(path)
-    r = _post(app.test_client(), sid, {"exp_v1_bogus_" + "0" * 32: "x"})
+    r = _post(csrf_client(app), sid, {"exp_v1_bogus_" + "0" * 32: "x"})
     assert r.status_code == 400
     assert not os.path.exists(path)
     assert SESSION_STORE[sid]["transcript"] == []

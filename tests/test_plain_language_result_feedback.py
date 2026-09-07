@@ -11,6 +11,7 @@ Proves the display-only increment:
     inactive; Safety Signals closed; six honest actions; no forbidden claims.
 """
 
+from tests.csrf_client import csrf_client
 import copy
 from test_p4_1b2a_durable_answer_append import answered_post  # P4-1b-2a
 import os
@@ -57,7 +58,7 @@ _FORBIDDEN_FIELDS = (
 
 
 def _start(idea="ESP32 microcontroller circuit with a voltage sensor and relay"):
-    return app.test_client().post(
+    return csrf_client(app).post(
         "/start", data={"idea": idea, "domain_confirm": DOMAIN_CONFIRM_VALUE})
 
 
@@ -73,7 +74,7 @@ def _force(sid, transition, reason, direction=None):
 
 
 def _body(sid):
-    return app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+    return csrf_client(app).get(f"/session/{sid}").get_data(as_text=True)
 
 
 def _primary_reason(body):
@@ -279,7 +280,7 @@ def test_saved_answer_verbatim_and_feedback_not_persisted():
     sid = _session()
     answer = "The ESP32 reads the voltage sensor and opens a relay above 5V."
     try:
-        answered_post(app.test_client(), sid, {"response": answer, "action": "answered"})
+        answered_post(csrf_client(app), sid, {"response": answer, "action": "answered"})
         tx = SESSION_STORE[sid]["transcript"]
         assert tx and tx[-1]["response"] == answer            # verbatim
         stored = " ".join(r.get("response", "") for r in tx)
@@ -313,7 +314,7 @@ def test_no_forbidden_fields_and_no_forbidden_claims_in_page():
 def test_render_does_not_change_scoring_transition_gaps_or_maturity():
     sid = _session()
     try:
-        app.test_client().post(f"/session/{sid}", data={"response": "I don't know", "action": "unknown"})
+        csrf_client(app).post(f"/session/{sid}", data={"response": "I don't know", "action": "unknown"})
         state = SESSION_STORE[sid]["state"]
         before_mat = state.maturity_level
         before_gaps = [(g.gap_type, g.status) for g in state.gaps]

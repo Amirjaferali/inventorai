@@ -17,6 +17,7 @@ Real on-disk SQLite (autouse conftest isolation); real signed Flask sessions;
 the real account/record stores and P7-I2 credential auth. The only mock is one
 deliberate store-failure proxy for the fail-closed test.
 """
+from tests.csrf_client import csrf_client
 import os
 import re
 
@@ -51,7 +52,7 @@ def db_path():
 
 def _new_client():
     app.config["TESTING"] = True
-    return app.test_client()
+    return csrf_client(app)
 
 
 def _mk_account(email, verified=True, status="active"):
@@ -104,7 +105,8 @@ def _deactivate(client, password=PW, csrf="__fetch__", extra=None):
         data["csrf_token"] = csrf
     if extra:
         data.update(extra)
-    return client.post(DEACTIVATE_PATH, data=data, follow_redirects=False)
+    return client.post(DEACTIVATE_PATH, data=data, follow_redirects=False,
+                       csrf=csrf is not None)
 
 
 def _table_counts():

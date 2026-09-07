@@ -43,6 +43,7 @@ Contract-pinned surface used here (and nothing beyond it):
     JSON linkage block carries the wordings verbatim at GREEN)
   * the frozen Section 13 disclaimer and Section 6 row semantics
 """
+from tests.csrf_client import csrf_client
 import json
 from test_p4_1b2a_durable_answer_append import answered_post  # P4-1b-2a
 import re
@@ -129,7 +130,7 @@ def _s6_region(html):
 
 # --- Real-path journey fixtures ----------------------------------------------
 def _start(idea):
-    client = app.test_client()
+    client = csrf_client(app)
     r = client.post("/start", data={"idea": idea,
                                     "domain_confirm": DOMAIN_CONFIRM_VALUE})
     assert r.status_code == 302, "fixture defect: /start did not redirect"

@@ -15,6 +15,7 @@ stores; multiple independent authenticated Flask clients with real signed
 sessions; the real authorization helper. No mocks; no ``:memory:`` DB. False-green
 guards (contract §21) are addressed explicitly in the marked tests.
 """
+from tests.csrf_client import csrf_client
 import os
 import threading
 
@@ -39,7 +40,7 @@ def db_path():
 
 def _new_client():
     app.config["TESTING"] = True
-    return app.test_client()
+    return csrf_client(app)
 
 
 def _mk_account(email, verified=True, status="active"):

@@ -20,6 +20,7 @@ helpers so, before implementation, each test fails on the ABSENT BEHAVIOUR
 (missing routes / missing store capability), not on collection-time import.
 No broad ``pytest.raises(Exception)``; existing tests unchanged.
 """
+from tests.csrf_client import csrf_client
 import hashlib
 import importlib
 import json
@@ -52,7 +53,7 @@ def _api():
 
 def _new_client():
     app.config["TESTING"] = True
-    return app.test_client()
+    return csrf_client(app)
 
 
 def _mk_account(email, verified=True, status="active"):

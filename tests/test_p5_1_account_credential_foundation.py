@@ -21,6 +21,7 @@ isolation); the Flask ``test_client``; the real credential helpers, account
 store, and dev email sink. No ``:memory:`` DB, no mocks of the store, no
 file-existence-only assertions.
 """
+from tests.csrf_client import csrf_client
 import os
 from datetime import datetime
 
@@ -44,7 +45,7 @@ VALID_PASSWORD_2 = "another sufficiently long secret"
 @pytest.fixture
 def client():
     app.config["TESTING"] = True
-    return app.test_client()
+    return csrf_client(app)
 
 
 @pytest.fixture

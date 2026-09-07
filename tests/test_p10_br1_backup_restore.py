@@ -25,6 +25,7 @@ stores; real web routes for representative population; synthetic data only.
 No test ever touches the shared local-development database, and no generated
 `.db`/backup artifact is committed.
 """
+from tests.csrf_client import csrf_client
 import hashlib
 import os
 import sqlite3
@@ -63,7 +64,7 @@ def db_path():
 
 def _new_client():
     app.config["TESTING"] = True
-    return app.test_client()
+    return csrf_client(app)
 
 
 def _mk_account(email, verified=True):

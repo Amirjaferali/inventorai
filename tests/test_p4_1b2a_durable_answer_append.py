@@ -34,6 +34,7 @@ SQLite database lives only under the pytest-managed ``INVENTORAI_DB_PATH`` set b
 accepted-answer durability + idempotency only — no Keep/Refine durability, no
 durable outputs, no replay (P4-2), no accounts (Phase 5).
 """
+from tests.csrf_client import csrf_client
 import os
 import re
 
@@ -138,7 +139,7 @@ def _durable_answers(db_path, sid):
 
 # --- RED-B1: an answered POST WITHOUT a valid token fails closed --------------
 def test_red_b1_tokenless_answered_post_fails_closed(db_path):
-    client = app.test_client()
+    client = csrf_client(app)
     sid = _start(client)
     before = len(_durable_answers(db_path, sid))
     # No answer_token in the form data.
@@ -152,7 +153,7 @@ def test_red_b1_tokenless_answered_post_fails_closed(db_path):
 
 # --- RED-B2: the main answer form carries a hidden server-issued token --------
 def test_red_b2_main_answer_form_carries_token(db_path):
-    client = app.test_client()
+    client = csrf_client(app)
     sid = _start(client)
     html = _render(client, sid).get_data(as_text=True)
     assert 'name="answer_token"' in html, (
@@ -162,7 +163,7 @@ def test_red_b2_main_answer_form_carries_token(db_path):
 
 # --- RED-A6a: same token + same content twice => exactly ONE durable answer ---
 def test_red_a6a_duplicate_retry_is_idempotent_single_event(db_path):
-    client = app.test_client()
+    client = csrf_client(app)
     sid = _start(client)
     tok = _get_token(client, sid)
     answer = "The current sensor opens the relay when current exceeds 5 A."
@@ -182,7 +183,7 @@ def test_red_a6a_duplicate_retry_is_idempotent_single_event(db_path):
 
 # --- RED-A6b: same token + DIFFERENT content => fail closed (no 2nd event) ----
 def test_red_a6b_same_token_different_content_fails_closed(db_path):
-    client = app.test_client()
+    client = csrf_client(app)
     sid = _start(client)
     tok = _get_token(client, sid)
     client.post(f"/session/{sid}",
@@ -204,7 +205,7 @@ def test_red_a6b_same_token_different_content_fails_closed(db_path):
 
 # --- RED durable-append + real restart cold-load survival --------------------
 def test_red_accepted_answer_survives_restart_coldload(db_path):
-    client = app.test_client()
+    client = csrf_client(app)
     sid = _start(client)
     tok = _get_token(client, sid)
     answer = "A shunt resistor measures current and the MCU opens the relay."
@@ -241,7 +242,7 @@ def test_red_a9_store_enforces_idempotency_uniqueness(db_path):
 
 # --- RED-C8: Option A mixed-id STABILITY — record_id stays rec_N (no evt-*) ---
 def test_red_c8_record_id_stays_recN_after_durable_append(db_path):
-    client = app.test_client()
+    client = csrf_client(app)
     sid = _start(client)
     tok = _get_token(client, sid)
     client.post(f"/session/{sid}",
@@ -264,7 +265,7 @@ def test_red_c8_record_id_stays_recN_after_durable_append(db_path):
 
 # --- RED persist-before-ack: durable-append failure => no in-memory advance ---
 def test_red_persist_before_ack_on_store_failure(db_path, monkeypatch):
-    client = app.test_client()
+    client = csrf_client(app)
     sid = _start(client)
     tok = _get_token(client, sid)
     # Force the durable append to fail; the accepted answer must NOT be published
@@ -292,7 +293,7 @@ def test_red_persist_before_ack_on_store_failure(db_path, monkeypatch):
 
 # --- RED obs#2: a validation error RETAINS the same unconsumed token ----------
 def test_red_validation_error_retains_same_token(db_path):
-    client = app.test_client()
+    client = csrf_client(app)
     sid = _start(client)
     tok = _get_token(client, sid)
     # Answer chosen but empty response => validation error, token NOT consumed.
@@ -306,7 +307,7 @@ def test_red_validation_error_retains_same_token(db_path):
 
 # --- RED obs#4: distinct valid tokens are independent (no false dedup) --------
 def test_red_distinct_tokens_are_independent(db_path):
-    client = app.test_client()
+    client = csrf_client(app)
     sid = _start(client)
     tok1 = _get_token(client, sid)
     client.post(f"/session/{sid}",
@@ -343,7 +344,7 @@ def _reject_and_assert_unchanged(db_path, sid, token, response="A valid-looking 
     redirect does not acknowledge acceptance."""
     dbefore = len(_durable_answers(db_path, sid))
     sbefore = len(_state_assertions(sid))
-    r = app.test_client().post(
+    r = csrf_client(app).post(
         f"/session/{sid}",
         data={"response": response, "action": "answered", "answer_token": token},
         follow_redirects=False)
@@ -354,14 +355,14 @@ def _reject_and_assert_unchanged(db_path, sid, token, response="A valid-looking 
 
 # --- BF3: malformed token fails closed ---------------------------------------
 def test_bf3_malformed_token_fails_closed(db_path):
-    client = app.test_client()
+    client = csrf_client(app)
     sid = _start(client)
     _reject_and_assert_unchanged(db_path, sid, token="not-a-valid-token-no-separator")
 
 
 # --- BF3: valid format but invalid HMAC signature fails closed ---------------
 def test_bf3_valid_format_invalid_hmac_fails_closed(db_path):
-    client = app.test_client()
+    client = csrf_client(app)
     sid = _start(client)
     real = _get_token(client, sid)
     nonce = real.split(".", 1)[0]
@@ -372,7 +373,7 @@ def test_bf3_valid_format_invalid_hmac_fails_closed(db_path):
 
 # --- BF3: token issued for session A reused in session B fails closed ---------
 def test_bf3_cross_session_token_fails_closed(db_path):
-    client = app.test_client()
+    client = csrf_client(app)
     sid_a = _start(client)
     sid_b = _start(client)
     assert sid_a != sid_b
@@ -383,7 +384,7 @@ def test_bf3_cross_session_token_fails_closed(db_path):
 # --- BF3: token issued for project A reused in project B fails closed ---------
 def test_bf3_cross_project_token_fails_closed(db_path):
     # sid == durable project_id in this model; two independent /start projects.
-    client = app.test_client()
+    client = csrf_client(app)
     proj1 = _start(client)
     proj2 = _start(client)
     token_p1 = _get_token(client, proj1)
@@ -392,7 +393,7 @@ def test_bf3_cross_project_token_fails_closed(db_path):
 
 # --- BF3: same token reused for a DIFFERENT target/operation fails closed -----
 def test_bf3_same_token_different_target_operation_fails_closed(db_path):
-    client = app.test_client()
+    client = csrf_client(app)
     sid = _start(client)
     tok = _get_token(client, sid)
     # First accepted answer consumes the operation bound to this token.
@@ -474,7 +475,7 @@ def test_obs_b_restart_durability_new_context(db_path):
     500/traceback, no second durable event), which this test also asserts. The
     durable evidence stays viewable; it is simply not extendable in this
     increment. No false cross-restart resume is claimed."""
-    client = app.test_client()
+    client = csrf_client(app)
     sid = _start(client)
     tok = _get_token(client, sid)
     first = "The shunt sensor opens the relay above the trip current."
@@ -485,7 +486,7 @@ def test_obs_b_restart_durability_new_context(db_path):
     _reset_runtime()
     assert sid not in SESSION_STORE
     # Cold-load rebuilds a viewable session from the durable envelope + records.
-    assert app.test_client().get(f"/session/{sid}", follow_redirects=False).status_code == 200
+    assert csrf_client(app).get(f"/session/{sid}", follow_redirects=False).status_code == 200
     survived = _durable_answers(db_path, sid)
     assert any(r.content == first for r in survived), "accepted answer survives a full restart"
     # A new answered submission on the cold-loaded session fails closed cleanly
@@ -497,7 +498,7 @@ def test_obs_b_restart_durability_new_context(db_path):
     # always failed). The guarantee under test is unchanged and asserted
     # directly: even a FORGED direct POST fails closed with a redirect and no
     # second durable event.
-    client2 = app.test_client()
+    client2 = csrf_client(app)
     cold_html = _render(client2, sid).get_data(as_text=True)
     assert _token_from_html(cold_html) is None, (
         "the reconstructed cold page must not offer an answering token")

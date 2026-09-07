@@ -34,6 +34,7 @@ refusal tests assert no new ``SESSION_STORE`` entry is created (the conftest
 autouse fixtures additionally isolate and clear the durable store per test).
 """
 
+from tests.csrf_client import csrf_client
 import os
 import sys
 
@@ -75,7 +76,7 @@ def activate(monkeypatch):
 
 @pytest.fixture
 def client():
-    return app.test_client()
+    return csrf_client(app)
 
 
 def _post(client, idea, confirm=None, choice=None):

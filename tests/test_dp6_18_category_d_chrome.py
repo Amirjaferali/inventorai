@@ -10,6 +10,7 @@ modules and the criticality/ack constants can render is asserted to be mapped to
 Arabic, so no ordinary chrome can silently leak English under Arabic UI ("close
 the boundary once"). Representative render tests confirm real pages switch.
 """
+from tests.csrf_client import csrf_client
 import re
 
 import pytest
@@ -39,7 +40,7 @@ IDEA = ("An electronic circuit uses a sensor and a switch to cut the power when 
 @pytest.fixture
 def client():
     app.config["TESTING"] = True
-    return app.test_client()
+    return csrf_client(app)
 
 
 def _set_lang(client, lang):

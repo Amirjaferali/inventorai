@@ -12,6 +12,7 @@ prohibitions that cannot be observed behaviorally (e.g. no persistence import,
 no caller-controlled verification status).
 """
 
+from tests.csrf_client import csrf_client
 import os
 import sys
 import json
@@ -87,7 +88,7 @@ def _snapshot(rec):
 
 
 def _start(client):
-    start = client.get("/decision-workspace", follow_redirects=False)
+    start = client.post("/decision-workspace", follow_redirects=False)
     did = start.headers["Location"].rstrip("/").split("/")[-1]
     return did, FDC001_DECISIONS[did]
 
@@ -134,7 +135,7 @@ def test_verification_status_is_not_a_caller_parameter():
 
 # 5 ---------------------------------- posted verification_status ignored (route)
 def test_route_ignores_posted_verification_status():
-    client = app.test_client()
+    client = csrf_client(app)
     did, rec = _start(client)
     g = _physical_gap(rec)
     resp = client.post("/decision-workspace/%s/evidence" % did, data={
@@ -493,7 +494,7 @@ def test_history_cardinality_gap_resolved_via_evidence_only_with_audit():
 
 # 29 --------------------------------------------- route guard: resolve physical
 def test_route_guard_rejects_resolve_of_physical_gap():
-    client = app.test_client()
+    client = csrf_client(app)
     did, rec = _start(client)
     _make_comparable(rec)
     g = _physical_gap(rec)
@@ -508,7 +509,7 @@ def test_route_guard_rejects_resolve_of_physical_gap():
 
 # 30 ------------------------------------------- route guard: reclassify physical
 def test_route_guard_rejects_reclassify_of_physical_gap():
-    client = app.test_client()
+    client = csrf_client(app)
     did, rec = _start(client)
     g = _physical_gap(rec)
     before = _snapshot(rec)
@@ -523,7 +524,7 @@ def test_route_guard_rejects_reclassify_of_physical_gap():
 
 # 31 ------------------------- non-physical legacy route behavior unchanged
 def test_route_nonphysical_gap_still_resolves_and_reclassifies():
-    client = app.test_client()
+    client = csrf_client(app)
     did, rec = _start(client)
     np_gid = _nonphysical_gap(rec).gap_id
     # reclassify a non-physical gap still succeeds (302) and becomes non-blocking
@@ -549,7 +550,7 @@ def test_legacy_domain_methods_still_clear_physical_gap_programmatically():
 
 # 33 ------------------------- FDC-002 evidence-assessment route is sole UI path
 def test_route_evidence_then_assessment_clears_physical_gap():
-    client = app.test_client()
+    client = csrf_client(app)
     did, rec = _start(client)
     _make_comparable(rec)
     rec.reclassify_gap(_nonphysical_gap(rec).gap_id, "owner accepts FP")
@@ -575,7 +576,7 @@ def test_route_evidence_then_assessment_clears_physical_gap():
 
 # 34 ------------------------------- bounded route validation error (no mutation)
 def test_route_assessment_validation_error_is_bounded_and_atomic():
-    client = app.test_client()
+    client = csrf_client(app)
     did, rec = _start(client)
     g = _physical_gap(rec)
     _add_phys_evidence(rec)

@@ -24,6 +24,7 @@ P10-SEC1 security headers and no HSTS.
 JSON/API-body hardening is JUSTIFIED N/A: the public API (web/api_v1.py) is
 GET-only — no JSON or file-upload input surface exists in the application.
 """
+from tests.csrf_client import csrf_client
 import hashlib
 import os
 import re
@@ -52,7 +53,7 @@ def db_path():
 
 def _new_client():
     app.config["TESTING"] = True
-    return app.test_client()
+    return csrf_client(app)
 
 
 def _login(email):

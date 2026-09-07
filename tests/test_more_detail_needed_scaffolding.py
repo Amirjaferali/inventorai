@@ -8,6 +8,7 @@ detail to add, and never rewrites/stores the answer, closes a gap, advances
 maturity, alters the PASS/WARN/BLOCK outcome, introduces forbidden Answer
 Clarification fields, or changes Domain Gate / Increment 1B behavior.
 """
+from tests.csrf_client import csrf_client
 import copy
 import os
 import sys
@@ -124,7 +125,7 @@ def test_session_page_shows_guidance_on_warn():
     state.domain = "electronics_electrical"
     _store(sid, state, _warn("MECHANISM_COMPLETENESS asserted only — reasoning required"))
     try:
-        body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+        body = csrf_client(app).get(f"/session/{sid}").get_data(as_text=True)
         assert _HEADING in body
         assert "What condition triggers the action?" in body
         assert "do not change or grade your answer" in body
@@ -138,7 +139,7 @@ def test_session_page_no_guidance_on_pass():
     state.domain = "electronics_electrical"
     _store(sid, state, {"transition": "PASS", "reason": "good", "direction": "PROGRESSING"})
     try:
-        body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+        body = csrf_client(app).get(f"/session/{sid}").get_data(as_text=True)
         assert _HEADING not in body
     finally:
         SESSION_STORE.pop(sid, None)
@@ -160,7 +161,7 @@ def test_render_does_not_change_stored_answer_state_or_outcome():
     before_gap_status = [(g.gap_type, g.status) for g in state.gaps]
     before_transition = last_result["transition"]
     try:
-        resp = app.test_client().get(f"/session/{sid}")
+        resp = csrf_client(app).get(f"/session/{sid}")
         assert resp.status_code == 200
         assert _HEADING in resp.get_data(as_text=True)  # guidance shown (WARN)
         # Stored answer byte-for-byte unchanged; no maturity/gap advance; outcome intact.
@@ -179,7 +180,7 @@ def test_no_forbidden_answer_clarification_fields_introduced():
     state.domain = "electronics_electrical"
     _store(sid, state, _warn("MECHANISM_COMPLETENESS asserted only — reasoning required"))
     try:
-        app.test_client().get(f"/session/{sid}")
+        csrf_client(app).get(f"/session/{sid}")
         for field in _FORBIDDEN_FIELDS:
             assert not hasattr(state, field)
             assert field not in SESSION_STORE[sid]
@@ -195,7 +196,7 @@ def _start(idea, confirm=True):
     data = {"idea": idea}
     if confirm:
         data["domain_confirm"] = DOMAIN_CONFIRM_VALUE
-    return app.test_client().post("/start", data=data, follow_redirects=False)
+    return csrf_client(app).post("/start", data=data, follow_redirects=False)
 
 
 def test_domain_gate_still_rejects_unsupported_and_admits_electronics(monkeypatch):
@@ -225,7 +226,7 @@ def test_increment_1b_help_expander_preserved_and_distinct_from_guidance():
     assert resp.status_code == 302
     sid = resp.headers["Location"].rsplit("/", 1)[-1]
     try:
-        body = app.test_client().get(f"/session/{sid}").get_data(as_text=True)
+        body = csrf_client(app).get(f"/session/{sid}").get_data(as_text=True)
         assert "Help me understand this question" in body  # Increment 1B intact
     finally:
         SESSION_STORE.pop(sid, None)

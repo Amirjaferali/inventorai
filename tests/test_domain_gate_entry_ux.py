@@ -13,6 +13,7 @@ resolution added in `web/app.py`.
 Coverage maps to Contract §8 (accept), §9 (reject), §10 (conflicts), and the
 §12 required-test categories.
 """
+from tests.csrf_client import csrf_client
 import os
 import sys
 
@@ -50,7 +51,7 @@ def _post(idea, confirm=True, choice=None):
         data["domain_confirm"] = DOMAIN_CONFIRM_VALUE
     if choice:
         data["domain_choice"] = choice
-    return app.test_client().post("/start", data=data, follow_redirects=False)
+    return csrf_client(app).post("/start", data=data, follow_redirects=False)
 
 
 def _assert_admitted(resp):
@@ -163,7 +164,7 @@ def test_mechanical_idea_now_correctly_admitted_via_own_confirmation():
                           + _present_confirm_message("mechanical") + '</p>')
     assert set(SESSION_STORE) == before
     # (ii) Confirming the correct (mechanical) domain admits it.
-    resp2 = app.test_client().post(
+    resp2 = csrf_client(app).post(
         "/start", data={"idea": idea, "domain_confirm": "mechanical"},
         follow_redirects=False)
     assert resp2.status_code == 302
@@ -316,7 +317,7 @@ def test_hand_powered_mechanical_idea_now_correctly_admitted_via_own_confirmatio
     _assert_not_admitted(resp, '<p class="error">'
                           + _present_confirm_message("mechanical") + '</p>')
     assert set(SESSION_STORE) == before
-    resp2 = app.test_client().post(
+    resp2 = csrf_client(app).post(
         "/start", data={"idea": idea, "domain_confirm": "mechanical"},
         follow_redirects=False)
     assert resp2.status_code == 302

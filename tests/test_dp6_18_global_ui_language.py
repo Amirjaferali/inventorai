@@ -23,6 +23,7 @@ global UI-language capability:
 The signed Flask session carries ``ui_lang``. No mocks; the test client persists
 the session cookie across requests.
 """
+from tests.csrf_client import csrf_client
 import re
 
 import pytest
@@ -70,7 +71,7 @@ FORM = {"idea": IDEA, "domain_confirm": "electronics_electrical"}
 @pytest.fixture
 def client():
     app.config["TESTING"] = True
-    return app.test_client()
+    return csrf_client(app)
 
 
 def _set_lang(client, lang):

@@ -30,6 +30,7 @@ real runtime state remains `activated_domains() == ['electronics_electrical']`
 D-CF6CF2-ILT002-01 are all UNCHANGED — presentation only.
 """
 
+from tests.csrf_client import csrf_client
 import os
 import re
 import sys
@@ -66,7 +67,7 @@ def activate(monkeypatch):
 
 @pytest.fixture
 def client():
-    return app.test_client()
+    return csrf_client(app)
 
 
 def _set_lang(client, lang):

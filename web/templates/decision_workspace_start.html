@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}{{ t('UI_DW_START_TITLE') }}{% endblock %}
+{% block content %}
+<section style="max-width:760px;margin:32px auto;padding:0 20px">
+  <h1>{{ t('UI_DW_START_TITLE') }}</h1>
+  <form method="POST" action="{{ url_for('decision_workspace_start') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
+    <button type="submit">{{ t('UI_DW_START_ACTION') }}</button>
+  </form>
+</section>
+{% endblock %}

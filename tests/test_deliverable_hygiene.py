@@ -36,6 +36,7 @@ observation, not repair): raw lifecycle status values such as "OPEN" /
 "PARTIAL" / "CLOSED" in machine `status` fields and the raw validation-status
 constant "UNVALIDATED" — their classes have no pinned exemplar in §8.1.
 """
+from tests.csrf_client import csrf_client
 import hashlib
 from test_p4_1b2a_durable_answer_append import answered_post  # P4-1b-2a
 import os
@@ -260,7 +261,7 @@ def _run_journey(idea, answer_for_iteration, max_iterations, gap_aware=False):
     """Drive the committed Flask session flow to (at most) max_iterations and
     return (inventor_inputs, state, package, deliverable_html). Uses only the
     real committed routes and the real assembler — nothing is mocked."""
-    client = app.test_client()
+    client = csrf_client(app)
     resp = client.post("/start", data={"idea": idea,
                                        "domain_confirm": DOMAIN_CONFIRM_VALUE})
     assert resp.status_code == 302, resp.status_code

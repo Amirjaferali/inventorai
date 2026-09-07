@@ -13,6 +13,7 @@ redirect used for a genuinely nonexistent ``did``).
 Real on-disk SQLite (autouse conftest isolation); Flask test client with real
 signed cookies; the real account store/credential helpers. No mocks.
 """
+from tests.csrf_client import csrf_client
 import os
 
 import pytest
@@ -27,7 +28,7 @@ PW = "correct horse battery staple"        # >= 12 chars
 @pytest.fixture
 def client():
     app.config["TESTING"] = True
-    return app.test_client()
+    return csrf_client(app)
 
 
 @pytest.fixture
@@ -46,7 +47,7 @@ def _login(client, email, password=PW):
 
 def _new_signed_in_client(email):
     """A fresh test client, registered and signed in as its own account."""
-    c = app.test_client()
+    c = csrf_client(app)
     _register(c, email)
     _login(c, email)
     return c
@@ -54,14 +55,14 @@ def _new_signed_in_client(email):
 
 def _create_anonymous(client):
     """Create a decision anonymously via the real route; return its did."""
-    r = client.get("/decision-workspace", follow_redirects=False)
+    r = client.post("/decision-workspace", follow_redirects=False)
     assert r.status_code == 302, r.status_code
     return r.headers["Location"].rsplit("/decision-workspace/", 1)[-1]
 
 
 def _create_owned(client):
     """Create a decision as the client's already-signed-in account; return did."""
-    r = client.get("/decision-workspace", follow_redirects=False)
+    r = client.post("/decision-workspace", follow_redirects=False)
     assert r.status_code == 302, r.status_code
     return r.headers["Location"].rsplit("/decision-workspace/", 1)[-1]
 
@@ -85,14 +86,14 @@ _DID_ROUTES_MUTATE = (
 # Anonymous creator: same browser/session retains full access
 # ===========================================================================
 def test_anonymous_creator_can_read_own_decision():
-    client = app.test_client()
+    client = csrf_client(app)
     did = _create_anonymous(client)
     r = client.get("/decision-workspace/%s" % did)
     assert r.status_code == 200
 
 
 def test_anonymous_creator_can_mutate_own_decision():
-    client = app.test_client()
+    client = csrf_client(app)
     did = _create_anonymous(client)
     r = client.post("/decision-workspace/%s/preference" % did,
                      data={"action": "clear"})
@@ -101,7 +102,7 @@ def test_anonymous_creator_can_mutate_own_decision():
 
 
 def test_anonymous_creator_can_export_own_decision():
-    client = app.test_client()
+    client = csrf_client(app)
     did = _create_anonymous(client)
     r = client.get("/decision-workspace/%s/export" % did)
     assert r.status_code == 200
@@ -112,18 +113,18 @@ def test_anonymous_creator_can_export_own_decision():
 # Anonymous foreign session: bare did possession is NOT sufficient
 # ===========================================================================
 def test_anonymous_foreign_session_cannot_read():
-    owner_client = app.test_client()
+    owner_client = csrf_client(app)
     did = _create_anonymous(owner_client)
-    foreign_client = app.test_client()          # different signed session
+    foreign_client = csrf_client(app)          # different signed session
     r = foreign_client.get("/decision-workspace/%s" % did, follow_redirects=False)
     assert r.status_code == 302
     assert r.headers["Location"] == "/decision-workspace"
 
 
 def test_anonymous_foreign_session_cannot_mutate():
-    owner_client = app.test_client()
+    owner_client = csrf_client(app)
     did = _create_anonymous(owner_client)
-    foreign_client = app.test_client()
+    foreign_client = csrf_client(app)
     r = foreign_client.post("/decision-workspace/%s/preference" % did,
                              data={"action": "clear"}, follow_redirects=False)
     assert r.status_code == 302
@@ -131,9 +132,9 @@ def test_anonymous_foreign_session_cannot_mutate():
 
 
 def test_anonymous_foreign_session_cannot_export():
-    owner_client = app.test_client()
+    owner_client = csrf_client(app)
     did = _create_anonymous(owner_client)
-    foreign_client = app.test_client()
+    foreign_client = csrf_client(app)
     r = foreign_client.get("/decision-workspace/%s/export" % did,
                             follow_redirects=False)
     assert r.status_code == 302
@@ -203,9 +204,9 @@ def test_authenticated_non_owner_denied_export(db_path):
 # ===========================================================================
 @pytest.mark.parametrize("suffix,payload", _DID_ROUTES_MUTATE)
 def test_every_mutation_route_denies_foreign_anonymous_session(suffix, payload):
-    owner_client = app.test_client()
+    owner_client = csrf_client(app)
     did = _create_anonymous(owner_client)
-    foreign_client = app.test_client()
+    foreign_client = csrf_client(app)
     r = foreign_client.post("/decision-workspace/%s/%s" % (did, suffix),
                              data=payload, follow_redirects=False)
     assert r.status_code == 302
@@ -216,9 +217,9 @@ def test_every_mutation_route_denies_foreign_anonymous_session(suffix, payload):
 # Non-enumeration: nonexistent vs. unauthorized-existing look identical
 # ===========================================================================
 def test_nonenumeration_nonexistent_and_unauthorized_denials_match():
-    owner_client = app.test_client()
+    owner_client = csrf_client(app)
     did = _create_anonymous(owner_client)
-    foreign_client = app.test_client()
+    foreign_client = csrf_client(app)
 
     r_unauthorized = foreign_client.get("/decision-workspace/%s" % did,
                                          follow_redirects=False)
@@ -232,9 +233,9 @@ def test_nonenumeration_nonexistent_and_unauthorized_denials_match():
 
 
 def test_nonenumeration_export_nonexistent_and_unauthorized_denials_match():
-    owner_client = app.test_client()
+    owner_client = csrf_client(app)
     did = _create_anonymous(owner_client)
-    foreign_client = app.test_client()
+    foreign_client = csrf_client(app)
 
     r_unauthorized = foreign_client.get("/decision-workspace/%s/export" % did,
                                          follow_redirects=False)
@@ -253,7 +254,7 @@ def test_nonenumeration_export_nonexistent_and_unauthorized_denials_match():
 def test_regression_anonymous_self_creator_full_lifecycle_unaffected():
     """The pre-existing anonymous-flow behaviour (create -> view -> mutate ->
     export, all from the SAME browser) must remain functionally identical."""
-    client = app.test_client()
+    client = csrf_client(app)
     did = _create_anonymous(client)
     view = client.get("/decision-workspace/%s" % did)
     assert view.status_code == 200

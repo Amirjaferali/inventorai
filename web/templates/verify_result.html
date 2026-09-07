@@ -12,7 +12,13 @@
 {% endblock %}
 {% block content %}
 <div class="auth-wrap">
-{% if verified %}
+{% if verified is none %}
+  <h1>{{ t('UI_VERIFY_CONFIRM_TITLE') }}</h1>
+  <form method="POST">
+    <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
+    <button type="submit">{{ t('UI_VERIFY_CONFIRM_ACTION') }}</button>
+  </form>
+{% elif verified %}
   <h1>{{ t('UI_A_VERIFY_001') }}</h1>
   <p class="result ok" role="status">{{ t('UI_A_VERIFY_002') }}</p>
 {% else %}

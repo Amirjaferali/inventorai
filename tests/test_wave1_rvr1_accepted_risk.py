@@ -5,6 +5,7 @@ Covers: the single canonical ACCEPTED_RISK writer; mechanism refusal; completion
 semantics; deliverable truthfulness; the explicit route (auth/token/confirmation/
 persistence/idempotency); replay determinism of recorded acceptances.
 """
+from tests.csrf_client import csrf_client
 import os, sys, tempfile, uuid
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
@@ -152,7 +153,7 @@ def client(tmp_path, monkeypatch):
     monkeypatch.setattr(appmod, "_STORE", None)
     appmod.SESSION_STORE.clear()
     appmod.app.config["TESTING"] = True
-    with appmod.app.test_client() as c:
+    with csrf_client(appmod.app) as c:
         yield c, appmod
 
 SEED = ("a manually foldable wheelchair ramp for a home doorway — the inventor "

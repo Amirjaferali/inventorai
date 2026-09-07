@@ -28,6 +28,7 @@ button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:n
 
 {% if experiments %}
 <form method="POST" action="{{ url_for('save_success_criteria', sid=sid) }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
   {% for exp in experiments %}
   <div class="exp">
     <div class="exp-title">{{ exp.experiment_title }}</div>

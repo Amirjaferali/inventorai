@@ -20,6 +20,7 @@ File-creation contract:
     asserts its own precondition first); NO probe derived from the object under
     test (the INV-004 corpus is literal and committed here).
 """
+from tests.csrf_client import csrf_client
 import copy
 import re
 
@@ -68,7 +69,7 @@ OFF_TOPIC = "The enclosure is blue and we will ship it in a cardboard box."
 @pytest.fixture
 def client():
     app.config["TESTING"] = True
-    return app.test_client()
+    return csrf_client(app)
 
 
 def _token(client, sid):

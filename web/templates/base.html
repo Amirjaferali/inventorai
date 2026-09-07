@@ -16,7 +16,8 @@ a.skip-link:focus{left:8px;top:8px;position:fixed}
 /* D-P6-18 global UI-language selector (shared, top-of-content, consistent). */
 .ui-lang-selector{max-width:760px;margin:0 auto;padding:6px 20px;display:flex;align-items:center;gap:8px;font-size:12px;color:#555;flex-wrap:wrap}
 .ui-lang-selector .ui-lang-label{color:#666}
-.ui-lang-selector a{padding:3px 10px;background:#fff;color:#2c3e50;border:1px solid #c3ccd6;border-radius:4px;text-decoration:none}
+.ui-lang-selector form{margin:0}
+.ui-lang-selector button{font:inherit;cursor:pointer;padding:3px 10px;background:#fff;color:#2c3e50;border:1px solid #c3ccd6;border-radius:4px;text-decoration:none}
 .ui-lang-selector .ui-lang-active{padding:3px 10px;background:#2c3e50;color:#fff;border:1px solid #2c3e50;border-radius:4px}
 </style>
 {% block head %}{% endblock %}
@@ -28,16 +29,13 @@ a.skip-link:focus{left:8px;top:8px;position:fixed}
 <span class="temp-session">{{ t('UI_B_BASE_002') }}{% if request.path != '/data-and-session' %} <a href="/data-and-session">{{ t('UI_B_BASE_003') }}</a>{% endif %}</span>
 </header>
 {# D-P6-18: explicit global UI-language selection (English | العربية). Presentation
-   only; each option is a keyboard-usable, text-labelled link that sets the
-   preference and returns to the same page; the active language is a non-link
-   marked with aria-current. It sits at the top of the shared content region (not
-   inside the purity-constrained G-UX-SHELL header) so it is consistent on every
-   page without adding controls to the header or colliding with page form
-   submit-buttons. #}
+   only; each option is a keyboard-usable, text-labelled POST button. The active
+   language is marked with aria-current. The selector stays outside the header
+   and main content so it cannot nest inside a page form. #}
 <nav class="ui-lang-selector" aria-label="{{ t('UI_LANG_MENU_LABEL') }}">
   <span class="ui-lang-label">{{ t('UI_LANG_MENU_LABEL') }}:</span>
-  {% if ui_lang == 'en' %}<span class="ui-lang-active" lang="en" aria-current="true">English</span>{% else %}<a href="{{ url_for('set_ui_language', lang='en', next=lang_switch_next) }}" lang="en">English</a>{% endif %}
-  {% if ui_lang == 'ar' %}<span class="ui-lang-active" lang="ar" aria-current="true">العربية</span>{% else %}<a href="{{ url_for('set_ui_language', lang='ar', next=lang_switch_next) }}" lang="ar">العربية</a>{% endif %}
+  {% if ui_lang == 'en' %}<span class="ui-lang-active" lang="en" aria-current="true">English</span>{% else %}<form method="POST" action="{{ url_for('set_ui_language') }}"><input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}"><input type="hidden" name="lang" value="en"><input type="hidden" name="next" value="{{ lang_switch_next }}"><button type="submit" lang="en">English</button></form>{% endif %}
+  {% if ui_lang == 'ar' %}<span class="ui-lang-active" lang="ar" aria-current="true">العربية</span>{% else %}<form method="POST" action="{{ url_for('set_ui_language') }}"><input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}"><input type="hidden" name="lang" value="ar"><input type="hidden" name="next" value="{{ lang_switch_next }}"><button type="submit" lang="ar">العربية</button></form>{% endif %}
 </nav>
 <main id="main-content">
 {% block content %}{% endblock %}

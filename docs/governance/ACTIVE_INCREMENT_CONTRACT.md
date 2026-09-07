@@ -23,7 +23,26 @@ Git/GitHub own transient candidate, PR and merge identity. No acceptance/merge t
 self-SHA or lifecycle-label change creates a synchronization candidate. When no mandate
 exists, state ACTIVE CONTRACT: NONE; historical declarations never fill the gap.
 
-## Current transition preparation — bounded bootstrap only
+## Current authority — ASTRA MILESTONE 1 ACTIVE
+
+Owner instruction ASTRA-M1-R05-IMPLEMENT-DELIVER-01 v1.0 explicitly authorizes the
+bounded R-05 runtime, session/request-integrity, route, template, bilingual UI,
+test and necessary documentation changes. Exact necessary file selection is
+delegated. It includes one R-05 PR, ordinary repair commits, publication, hosted CI,
+separate non-authoring security review and an expected-head guarded merge commit
+after all safeguards below pass, then the included strategic assessment. No
+additional routine START, file, SHA, publication, PR or merge approval is required.
+
+Activation evidence: PR #618 merged at 20a10105178196a5c4242f4ba1d7b3f265f00a8a,
+with ordered parents c78efd4e4064f464b48064173ac176f88ed9c371 and
+ff2c2c83c42b25eb46264ae4a3bc295c31429157; the merge tree equals the accepted head.
+Hosted run 34062270444 succeeded; the Owner's saved protection rule 82814043 and
+live branch state establish the required protection/check configuration. Astra
+is the sole mutating Lead, prior Lead STANDBY; no pause/revocation was present.
+These are recorded activation facts, not permanent live-tip/check assertions.
+Every later merge still requires fresh verification of its own safeguards.
+
+## Consumed transition preparation — historical bootstrap evidence only
 
 **Owner source:** OWNER TRANSITION AUTHORIZATION — ASTRA AUTONOMOUS DELIVERY OPERATING
 MODEL — TRANSITION CANDIDATE PREPARATION, §§3–4 and 12–14. This records the issued
@@ -70,13 +89,14 @@ bootstrap-closure, activation-candidate or governance-sync lifecycle is required
 The conditional milestone below still requires its operational safeguards. The
 presence of the workflow alone is not proof that CI or branch protection works.
 
-## Active conditional milestone
+## Active milestone scope and safeguards
 
 **ASTRA MILESTONE 1 — SECURE AND DIFFERENTIATED PRIVATE-BETA PROGRESSION**
 
-**Owner source:** the same Transition Authorization, §§7–11. **Status: CONDITIONAL —
-NOT EXECUTABLE until all activation conditions are verified.** Astra may not waive,
-expand or renew these conditions or this scope.
+**Owner source:** Transition Authorization §§7–11, final merge decision
+ASTRA-TRANSITION-PR618-FINAL-MERGE-01 and explicit R-05 delivery instruction
+ASTRA-M1-R05-IMPLEMENT-DELIVER-01. **Status: ACTIVE.** The activation evidence is
+recorded above. Astra may not waive, expand or renew these conditions or scope.
 
 ### Activation conditions — all required
 

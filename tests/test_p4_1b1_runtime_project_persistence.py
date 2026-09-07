@@ -23,6 +23,7 @@ in pytest `tmp_path`. Scope: durable NEW-project create/load only — no
 accepted-input append, no Keep/Refine durability, no transcript/last_result
 persistence, no replay (all P4-1b-2 or later).
 """
+from tests.csrf_client import csrf_client
 import os
 
 import pytest
@@ -62,7 +63,7 @@ def _reset_runtime():
 
 
 def _start(idea=IDEA_A):
-    return app.test_client().post("/start", data={"idea": idea, **FORM},
+    return csrf_client(app).post("/start", data={"idea": idea, **FORM},
                                   follow_redirects=False)
 
 
@@ -89,7 +90,7 @@ def test_red2_project_survives_real_restart_and_cold_loads(db_path):
     # Simulate a process restart: carry ONLY the sid string across.
     _reset_runtime()                             # discard SESSION_STORE + store handle
     assert sid not in SESSION_STORE
-    resp = app.test_client().get(f"/session/{sid}", follow_redirects=False)
+    resp = csrf_client(app).get(f"/session/{sid}", follow_redirects=False)
     # RED: today a missing SESSION_STORE entry redirects (302) with no durable load.
     assert resp.status_code == 200, (
         "cold request with only the sid must reconstruct the durable project")
@@ -113,7 +114,7 @@ def test_red4_durable_creation_failure_no_live_session(tmp_path, monkeypatch):
 
 # --- RED-5: unknown capability is generic and non-disclosing -------------------
 def test_red5_unknown_capability_generic(db_path):
-    resp = app.test_client().get("/session/00000000-0000-4000-8000-000000000000",
+    resp = csrf_client(app).get("/session/00000000-0000-4000-8000-000000000000",
                                  follow_redirects=False)
     # Generic redirect to index; discloses nothing about existence.
     assert resp.status_code == 302
@@ -131,7 +132,7 @@ def test_red6_malformed_stored_contract_fails_closed(db_path):
         conn.execute("UPDATE projects SET contract_version = ? WHERE project_id = ?",
                      ("p4-0-record-contract-v999", sid))
     conn.close()
-    resp = app.test_client().get(f"/session/{sid}", follow_redirects=False)
+    resp = csrf_client(app).get(f"/session/{sid}", follow_redirects=False)
     # Must fail closed to the generic behaviour (redirect), never 500/traceback.
     assert resp.status_code == 302
     assert "/session/" not in resp.headers.get("Location", "")
@@ -146,7 +147,7 @@ def test_red7_database_unavailable_generic(db_path, tmp_path, monkeypatch):
     blocker.write_text("x")
     monkeypatch.setenv("INVENTORAI_DB_PATH", str(blocker / "db.sqlite"))
     setattr(webapp, "_STORE", None)
-    resp = app.test_client().get(f"/session/{sid}", follow_redirects=False)
+    resp = csrf_client(app).get(f"/session/{sid}", follow_redirects=False)
     assert resp.status_code == 302
     assert "/session/" not in resp.headers.get("Location", "")
 
@@ -169,7 +170,7 @@ def test_red8_cross_project_isolation(db_path):
 def test_red9_readiness_derived_after_cold_load(db_path):
     sid = _sid_of(_start(IDEA_A))
     _reset_runtime()
-    resp = app.test_client().get(f"/session/{sid}", follow_redirects=False)
+    resp = csrf_client(app).get(f"/session/{sid}", follow_redirects=False)
     assert resp.status_code == 200
     entry = SESSION_STORE.get(sid)
     assert entry is not None
@@ -185,7 +186,7 @@ def test_red9_readiness_derived_after_cold_load(db_path):
 def test_red10_no_transcript_or_last_result_restored(db_path):
     sid = _sid_of(_start(IDEA_A))
     _reset_runtime()
-    resp = app.test_client().get(f"/session/{sid}", follow_redirects=False)
+    resp = csrf_client(app).get(f"/session/{sid}", follow_redirects=False)
     assert resp.status_code == 200
     entry = SESSION_STORE.get(sid)
     assert entry.get("transcript") == []          # not reconstructed

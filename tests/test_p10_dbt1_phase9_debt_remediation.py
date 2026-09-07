@@ -23,6 +23,7 @@ File-creation contract:
 §5 item 3 (UI_B_START_024) is deliberately NOT addressed: it is separately
 dispositioned non-blocking by L10N_RH01_FORMAL_CLOSURE_RECORD.md.
 """
+from tests.csrf_client import csrf_client
 import builtins
 import importlib.util
 import io
@@ -47,7 +48,7 @@ EN_ELECTRONICS = "Electronics-informed review"
 
 def _client():
     app.config["TESTING"] = True
-    return app.test_client()
+    return csrf_client(app)
 
 
 def _read(relpath):

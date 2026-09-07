@@ -20,6 +20,7 @@ Real on-disk SQLite (autouse conftest isolation); real signed Flask sessions; th
 real record + account stores; the real seam. No mocks except one deliberate
 post-authorization store failure injected via monkeypatch for the fail-closed test.
 """
+from tests.csrf_client import csrf_client
 import json
 import os
 
@@ -45,7 +46,7 @@ def db_path():
 
 def _new_client():
     app.config["TESTING"] = True
-    return app.test_client()
+    return csrf_client(app)
 
 
 def _mk_account(email, verified=True, status="active"):

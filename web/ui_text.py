@@ -283,6 +283,22 @@ def localize_deep(value, lang):
 # sensitive paragraphs). Category-C output and Category-D question/guided-prompt
 # copy are deliberately absent.
 UI_STRINGS = {
+    "UI_CSRF_REJECT": {
+        "en": "Your session security token was missing or invalid. Please reload the page and try again.",
+        "ar": "رمز أمان الجلسة مفقود أو غير صالح. يرجى إعادة تحميل الصفحة والمحاولة مرة أخرى.",
+    },
+    "UI_VERIFY_CONFIRM_TITLE": {
+        "en": "Verify your email", "ar": "التحقق من بريدك الإلكتروني",
+    },
+    "UI_VERIFY_CONFIRM_ACTION": {
+        "en": "Confirm email verification", "ar": "تأكيد التحقق من البريد",
+    },
+    "UI_DW_START_TITLE": {
+        "en": "Decision workspace", "ar": "مساحة عمل القرار",
+    },
+    "UI_DW_START_ACTION": {
+        "en": "Create a decision workspace", "ar": "إنشاء مساحة عمل للقرار",
+    },
     # --- shared shell (base.html) + language selector --------------------------
     "UI_LANG_MENU_LABEL": {"en": "Language", "ar": "اللغة"},
     "UI_B_BASE_001": {"en": "Skip to content", "ar": "تخطَّ إلى المحتوى"},
