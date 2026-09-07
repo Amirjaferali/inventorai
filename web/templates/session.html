@@ -40,9 +40,24 @@ textarea{width:100%;padding:12px;font-size:15px;border:1px solid #ccc;border-rad
 button{margin-top:10px;padding:10px 24px;background:#2c3e50;color:white;border:none;border-radius:4px;font-size:15px;cursor:pointer}
 .complete{color:#27ae60;font-weight:bold;font-size:18px}
 hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
+.project-orientation{background:#f4f8fb;border:1px solid #cbd8e4;border-radius:10px;padding:18px;margin:16px 0;overflow-wrap:anywhere}
+.project-orientation h2{font-size:14px;margin:0 0 8px;color:#526474}
+.project-orientation .idea-excerpt{font-size:19px;line-height:1.5;margin:4px 0 12px}
+.journey-primary{background:#263b4b;color:#fff;border:2px solid #263b4b;border-radius:6px;display:inline-block;padding:11px 18px;text-decoration:none;font-weight:bold;margin-top:8px}
+.project-orientation .journey-primary{color:#fff}
+.journey-note{font-size:13px;line-height:1.6;color:#526474}
+.journey-feedback{background:#eef7ee;border:1px solid #bcdcbc;padding:12px;border-radius:6px;line-height:1.5}
+#answer-form{border:1px solid #bccddc;background:#f8fbfd;padding:16px;border-radius:8px;margin:14px 0 22px}
+#response,#criticality-review,#w2b-decision-capture{scroll-margin-top:20px}
+.gap-status{margin-inline-end:10px;margin-inline-start:0}
+.gap-stage-note,.current-arrow{margin-inline-start:8px;margin-inline-end:0}
+.disclosure{border-left:0;border-inline-start:3px solid #b0b8c1}
+body{overflow-wrap:anywhere}
+@media(max-width:520px){body{margin:18px auto;padding:0 14px}.app-header{padding:10px 0;flex-wrap:wrap}.app-header .temp-session{white-space:normal}.gap-row{flex-wrap:wrap;gap:6px}.gap-name{min-width:140px}.gap-stage-note{white-space:normal}.project-orientation{padding:14px}button,.journey-primary{max-width:100%;box-sizing:border-box}select{max-width:100%}}
 </style>
 {# Draft Level 2 — Same-Device Unsubmitted-Text Recovery (local-only; no framework). #}
 <script defer src="{{ url_for('static', filename='js/local_draft.js') }}"></script>
+<script defer src="{{ url_for('static', filename='js/journey_feedback.js') }}"></script>
 {% endblock %}
 {% block content %}
 {# One-shot, truthful client cleanup signals: reaching a session page means the seed
@@ -54,6 +69,39 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
 </p>
 {% endif %}
 <h1>InventorAI</h1>
+{% if project_owned_by_you %}<p><a href="{{ url_for('account_home') }}">{{ t('UI_A_ACCOUNT_006') }}</a></p>{% endif %}
+{% if answer_accepted %}<p id="journey-saved" class="journey-feedback" role="status">{{ t('UI_A1_SAVED') }}</p>
+{% elif seed_accepted %}<p id="journey-saved" class="journey-feedback" role="status">{{ t('UI_A1_PROJECT_SAVED') }}</p>{% endif %}
+{% if interaction_ack %}<p class="journey-feedback" role="status">{{ interaction_ack }}</p>{% endif %}
+{% if answer_error %}<p id="answer-error" role="alert" class="answer-error" style="color:#9e2722;border:1px solid #daaaa7;padding:12px;line-height:1.5">{{ answer_error }}</p>{% endif %}
+<section class="project-orientation" aria-labelledby="project-orientation-title">
+  <h2 id="project-orientation-title">{{ t('UI_A1_ORIGINAL_IDEA') }}</h2>
+  <p class="idea-excerpt" dir="auto">{{ project_identification.idea or t('UI_A1_UNTITLED') }}</p>
+  <p class="journey-note">{{ t('UI_A1_DESCRIPTION_NOTE') }} {{ t('UI_A1_PROJECT_ID') }}: <bdi>{{ sid }}</bdi></p>
+  <h2>{{ t('UI_A1_NEXT_ACTION') }}</h2>
+  {% if reconstructed_review and reconstructed_review.resume_eligible %}
+    <p class="journey-note">{{ t('UI_A1_READ_ONLY') }}</p>
+    <form method="POST" action="/session/{{ sid }}/resume">
+      <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
+      <button class="journey-primary" data-primary-action type="submit" id="resume-project">{{ t('UI_B_SESSION_048') }}</button>
+    </form>
+  {% elif not state.domain %}
+    <p class="journey-note">{{ t('UI_A1_READ_ONLY') }}</p>
+    <a class="journey-primary" data-primary-action href="{{ url_for('show_deliverable', sid=sid) }}">{{ t('UI_A1_REVIEW_HANDOFF') }}</a>
+  {% elif w2b_primary_action == 'decision_refine' and (state.maturity_level < 2 or open_gaps) %}
+    <p class="journey-note">{{ t('UI_W2B_ACTION_DECISION_EVIDENCE') }}</p>
+    <a class="journey-primary" data-primary-action href="#w2b-decision-capture">{{ t('UI_W2B_ACTION_DECISION_LINK') }}</a>
+  {% elif (state.maturity_level < 2 or open_gaps) and question %}
+    <p class="journey-note">{{ t('UI_A1_ANSWER_NOTE') }}</p>
+    <a class="journey-primary" data-primary-action href="#response">{{ t('UI_A1_ANSWER_NEXT') }}</a>
+  {% elif criticality_step %}
+    <a class="journey-primary" data-primary-action href="#criticality-review">{{ t('UI_A1_REVIEW_REQUIREMENT') }}</a>
+  {% else %}
+    <p class="journey-note">{{ t('UI_A1_HANDOFF_NOTE') }}</p>
+    <a class="journey-primary" data-primary-action href="{{ url_for('show_deliverable', sid=sid) }}">{{ t('UI_A1_REVIEW_HANDOFF') }}</a>
+  {% endif %}
+</section>
+<div id="journey-submit-feedback" role="status" aria-live="polite" data-sending="{{ t('UI_A1_SENDING') }}" data-waiting="{{ t('UI_A1_WAITING') }}"></div>
 
 {# P10-PC3: truthful resumed-mode banner — this is a reconstructed            #}
 {# continuation of the durable project, NEVER a restored original session.    #}
@@ -183,16 +231,13 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
   {# P10-PC3: explicit writable-resume establishment (POST; never automatic  #}
   {# on GET). Offered only to eligible projects; the route re-validates      #}
   {# ownership, reconstruction, activation, and completion from scratch.     #}
-  {% if reconstructed_review.resume_eligible %}
-  <form method="POST" action="/session/{{ sid }}/resume" style="margin-top:10px">
-  <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
-    <button type="submit" id="resume-project">{{ t('UI_B_SESSION_048') }}</button>
-  </form>
-  {% endif %}
+
   {# The fail-closed not-saved message stays VISIBLE on a reconstructed view    #}
   {# (the form that normally hosts it is suppressed here).                      #}
-  {% if answer_error %}<p id="answer-error" role="alert" class="answer-error" style="color:#c0392b;font-size:13px;margin:8px 0 0 0">{{ answer_error }}</p>{% endif %}
 </div>
+
+{% elif not state.domain %}
+<p class="journey-note">{{ t('UI_A1_READ_ONLY') }}</p>
 
 {% elif state.maturity_level < 2 or open_gaps %}
 
@@ -272,6 +317,26 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
 <p class="answer-hint" style="font-size:12px;color:#888;margin:-6px 0 14px 0">{{ t('UI_B_SESSION_025') }}</p>
 {% endif %}
 
+<form id="answer-form" method="POST" action="/session/{{ sid }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
+  {# P4-1b-2a: server-issued idempotency token required on this answered-producing form. #}
+  <input type="hidden" name="answer_token" value="{{ answer_token }}">
+  <label for="response" style="display:block;margin-bottom:6px;font-size:13px;color:#555">{{ t('UI_B_SESSION_031') }}</label>
+  <textarea id="response" name="response" rows="5" placeholder="{{ t('UI_B_SESSION_032') }}"{% if answer_error %} aria-describedby="answer-error" autofocus{% endif %}
+    data-draft-field="answer" data-draft-scope="{{ sid }}" data-draft-context="{{ draft_context }}" data-draft-context-version="{{ draft_context_version }}" data-draft-account="{{ account_context }}"></textarea>
+  <br>
+  <fieldset style="margin-top:12px;border:1px solid #e2e6ea;border-radius:4px;padding:10px">
+    <legend style="font-size:13px;color:#555;padding:0 6px">{{ t('UI_B_SESSION_033') }}</legend>
+    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="answered" checked> {{ t('UI_ACT_ANSWERED') }}</label>
+    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="unknown"> {{ t('UI_ACT_UNKNOWN') }}</label>
+    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="deferred"> {{ t('UI_ACT_DEFERRED') }}</label>
+    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="provisional_assumption"> {{ t('UI_ACT_PROVISIONAL') }}</label>
+    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="specialist_requested"> {{ t('UI_ACT_SPECIALIST') }}</label>
+    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="evidence_requested"> {{ t('UI_ACT_EVIDENCE') }}</label>
+  </fieldset>
+  <button type="submit">{{ t('UI_B_SESSION_034') }}</button>
+</form>
+
 {# W2-B / RVR-6a (Contract Amendment 1 §4/§10/§16): governed serving cues.
    Each cue truthfully explains an ACTUAL serving change (the replaced
    question, or the lapse-reopening transparency duty) — never a claim of
@@ -293,7 +358,7 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
 {% if w2b_primary_action == 'decision_refine' %}
 <div class="w2b-primary-action" style="margin-bottom:14px;padding:10px 14px;border-radius:4px;border:1px solid #cfd8ea;background:#f3f6fc;font-size:13px">
   <p style="margin:0;color:#33466b">{{ t('UI_W2B_ACTION_DECISION_EVIDENCE') }}</p>
-  <p style="margin:6px 0 0 0"><a href="#w2b-decision-capture" style="color:#1a4f8b;font-weight:bold">{{ t('UI_W2B_ACTION_DECISION_LINK') }}</a></p>
+
 </div>
 {% endif %}
 
@@ -325,9 +390,7 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
 </div>
 {% endif %}
 
-{% if interaction_ack %}
-<div class="badge-warn" style="display:block;padding:9px 14px;margin-bottom:14px">{{ interaction_ack }}</div>
-{% endif %}
+
 
 {# W2-D (Wave-2 contract §K, W1-N4): single-use correction-lapse notice,
    rendered with the RVR-5 correction acknowledgement it belongs to. Truthful:
@@ -395,26 +458,7 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
 </div>
 {% endif %}
 
-<form method="POST" action="/session/{{ sid }}">
-  <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
-  {# P4-1b-2a: server-issued idempotency token required on this answered-producing form. #}
-  <input type="hidden" name="answer_token" value="{{ answer_token }}">
-  <label for="response" style="display:block;margin-bottom:6px;font-size:13px;color:#555">{{ t('UI_B_SESSION_031') }}</label>
-  {% if answer_error %}<p id="answer-error" role="alert" class="answer-error" style="color:#c0392b;font-size:13px;margin:0 0 6px 0">{{ answer_error }}</p>{% endif %}
-  <textarea id="response" name="response" rows="5" placeholder="{{ t('UI_B_SESSION_032') }}"{% if answer_error %} aria-describedby="answer-error" autofocus{% endif %}
-    data-draft-field="answer" data-draft-scope="{{ sid }}" data-draft-context="{{ draft_context }}" data-draft-context-version="{{ draft_context_version }}" data-draft-account="{{ account_context }}"></textarea>
-  <br>
-  <fieldset style="margin-top:12px;border:1px solid #e2e6ea;border-radius:4px;padding:10px">
-    <legend style="font-size:13px;color:#555;padding:0 6px">{{ t('UI_B_SESSION_033') }}</legend>
-    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="answered" checked> {{ t('UI_ACT_ANSWERED') }}</label>
-    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="unknown"> {{ t('UI_ACT_UNKNOWN') }}</label>
-    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="deferred"> {{ t('UI_ACT_DEFERRED') }}</label>
-    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="provisional_assumption"> {{ t('UI_ACT_PROVISIONAL') }}</label>
-    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="specialist_requested"> {{ t('UI_ACT_SPECIALIST') }}</label>
-    <label style="display:block;margin:5px 0"><input type="radio" name="action" value="evidence_requested"> {{ t('UI_ACT_EVIDENCE') }}</label>
-  </fieldset>
-  <button type="submit">{{ t('UI_B_SESSION_034') }}</button>
-</form>
+
 
 {# RVR-1 (Wave-1): explicit accept-as-known-risk exit. Rendered only for the
    currently served non-mechanism gap; requires an explicit confirmation and
@@ -478,6 +522,7 @@ hr{border:none;border-top:1px solid #e2e6ea;margin:20px 0}
    supported item at a time; deferral is always available and changes nothing
    else; skipping the step entirely changes nothing. #}
 {% if criticality_step %}
+<div id="criticality-review" tabindex="-1"></div>
 {% if criticality_step.stage == 'correction' %}
 <div class="gap-guidance" style="margin-top:18px">
   <div class="gap-guidance-heading">{{ t('UI_CRIT_CORR_H') }}</div>

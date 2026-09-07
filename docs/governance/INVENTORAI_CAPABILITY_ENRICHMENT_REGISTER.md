@@ -495,6 +495,13 @@ captured but must **not** displace it (displacement check: PASS — recorded, no
   authorization required.
 
 ### CAP-18 — Commercial Readiness Snapshot
+- **Accepted direction cross-reference:** [Commercial Differentiation Direction §16.G](INVENTORAI_COMMERCIAL_DIFFERENTIATION_DIRECTION.md#16g--accepted-milestone-1-product-direction-preserved-with-a1)
+  preserves the accepted North Star, full future commercial evidence landscape, four
+  evidence-based readiness dispositions, quantitative uncertainty/provenance safeguards,
+  confidentiality and Simple Outside — Deep Inside. It does not activate this capability
+  or force universal commercial/adoption ownership into CAP-18. The integrated snapshot
+  is derived; FDC-001 / DecisionRecord remains the canonical decision owner unless future
+  authority expressly changes it. MRL/IRL/whole-system ownership questions remain open.
 - **Priority:** LOWER than CAP-15…CAP-17. **Status:** `RECORDED — NOT AUTHORIZED FOR IMPLEMENTATION`.
 - **Purpose:** a bounded commercial perspective after an invention concept is sufficiently structured.
   Possible future contents: target user/customer; problem/value proposition; commercialization assumptions;

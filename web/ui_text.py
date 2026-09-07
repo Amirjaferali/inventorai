@@ -284,9 +284,38 @@ def localize_deep(value, lang):
 # copy are deliberately absent.
 UI_STRINGS = {
     "UI_CSRF_REJECT": {
-        "en": "Your session security token was missing or invalid. Please reload the page and try again.",
-        "ar": "رمز أمان الجلسة مفقود أو غير صالح. يرجى إعادة تحميل الصفحة والمحاولة مرة أخرى.",
+        "en": "Your session security token was missing or invalid. This request was rejected before any change was made.",
+        "ar": "رمز أمان الجلسة مفقود أو غير صالح. رُفض هذا الطلب قبل إجراء أي تغيير.",
     },
+    "UI_A1_RECOVERY_TITLE": {"en": "Return to a fresh form", "ar": "العودة إلى نموذج جديد"},
+    "UI_A1_RECOVERY_TEXT": {
+        "en": "Use the link below to open the form again, review your entries and submit. Do not reload or resubmit this rejected page. If a local draft is available, you can choose to restore it on the form.",
+        "ar": "استخدم الرابط أدناه لفتح النموذج من جديد، ومراجعة إدخالاتك ثم إرسالها. لا تُعد تحميل هذه الصفحة المرفوضة أو إرسالها. إذا كانت هناك مسودة محلية متاحة، يمكنك اختيار استعادتها في النموذج."
+    },
+    "UI_A1_RECOVERY_EMAIL": {
+        "en": "For email verification or password reset, reopen the original link from your email. If it has expired, request a new link from your account or the password recovery form.",
+        "ar": "للتحقق من البريد أو إعادة تعيين كلمة المرور، افتح الرابط الأصلي في بريدك من جديد. إذا انتهت صلاحيته، اطلب رابطًا جديدًا من حسابك أو نموذج استعادة كلمة المرور."
+    },
+    "UI_A1_RECOVERY_LINK": {"en": "Open a fresh form", "ar": "فتح نموذج جديد"},
+    "UI_A1_ORIGINAL_IDEA": {"en": "Your original description", "ar": "وصفك الأصلي"},
+    "UI_A1_UNTITLED": {"en": "Saved project", "ar": "مشروع محفوظ"},
+    "UI_A1_DETAILS_UNAVAILABLE": {"en": "Project details could not be loaded. Try reopening it.", "ar": "تعذّر تحميل تفاصيل المشروع. حاول فتحه من جديد."},
+    "UI_A1_LIST_UNAVAILABLE": {"en": "Your project list could not be loaded. This does not mean your projects were deleted.", "ar": "تعذّر تحميل قائمة مشاريعك. هذا لا يعني حذف مشاريعك."},
+    "UI_A1_RETRY_LIST": {"en": "Try loading your projects again", "ar": "محاولة تحميل مشاريعك من جديد"},
+    "UI_A1_PROJECT_ID": {"en": "Project reference", "ar": "مرجع المشروع"},
+    "UI_A1_PROJECT_LIST_NOTE": {"en": "Descriptions below are your original words, not independently verified findings. Open a project to review its saved state and unresolved questions.", "ar": "الأوصاف أدناه هي كلماتك الأصلية، وليست نتائج تحقّق مستقل. افتح مشروعًا لمراجعة حالته المحفوظة والأسئلة التي لم تُحسم."},
+    "UI_A1_NEXT_ACTION": {"en": "Your next action", "ar": "خطوتك التالية"},
+    "UI_A1_ANSWER_NEXT": {"en": "Answer the current question", "ar": "الإجابة عن السؤال الحالي"},
+    "UI_A1_ANSWER_NOTE": {"en": "One question at a time. You can give an answer or explicitly record what you do not know yet.", "ar": "سؤال واحد في كل مرة. يمكنك الإجابة أو تسجيل ما لا تعرفه بعد بشكل صريح."},
+    "UI_A1_READ_ONLY": {"en": "Saved view. Continue only when the continuation option is available below.", "ar": "عرض محفوظ. يمكنك المتابعة فقط عندما يتوفر خيار المتابعة أدناه."},
+    "UI_A1_REVIEW_HANDOFF": {"en": "Review the current handoff", "ar": "مراجعة حزمة التسليم الحالية"},
+    "UI_A1_HANDOFF_NOTE": {"en": "Review the recorded evidence and gaps before using the handoff. A completed question flow is not engineering, manufacturing or commercial validation.", "ar": "راجع الأدلة والفجوات المسجّلة قبل استخدام حزمة التسليم. اكتمال مسار الأسئلة لا يعني تحقّقًا هندسيًا أو تصنيعيًا أو تجاريًا."},
+    "UI_A1_REVIEW_REQUIREMENT": {"en": "Review the current requirement", "ar": "مراجعة المتطلب الحالي"},
+    "UI_A1_SAVED": {"en": "Your answer was saved to this project.", "ar": "تم حفظ إجابتك في هذا المشروع."},
+    "UI_A1_PROJECT_SAVED": {"en": "Your project was saved. Continue with the next action below.", "ar": "تم حفظ مشروعك. تابع بالخطوة التالية أدناه."},
+    "UI_A1_SENDING": {"en": "Submitting… Saving is not confirmed yet.", "ar": "جارٍ الإرسال… لم يتأكد الحفظ بعد."},
+    "UI_A1_WAITING": {"en": "Still waiting for a response. Saving is not confirmed. Keep your text until the result is shown.", "ar": "ما زلنا ننتظر الرد. لم يتأكد الحفظ. احتفظ بنصك إلى أن تظهر النتيجة."},
+    "UI_A1_DESCRIPTION_NOTE": {"en": "Original description; not a validation result.", "ar": "الوصف الأصلي؛ وليس نتيجة تحقّق."},
     "UI_VERIFY_CONFIRM_TITLE": {
         "en": "Verify your email", "ar": "التحقق من بريدك الإلكتروني",
     },

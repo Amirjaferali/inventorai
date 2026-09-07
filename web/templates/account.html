@@ -11,6 +11,12 @@
 button{margin-top:8px;padding:8px 18px;background:#2c3e50;color:#fff;border:none;border-radius:4px;font-size:15px;cursor:pointer}
 form{display:inline-block;margin:6px 8px 0 0}
 .truthful{font-size:13px;color:#555;margin-top:18px;line-height:1.5}
+.project-list{list-style:none;padding:0;display:grid;gap:14px}
+.project-card{border:1px solid #cbd6df;border-radius:8px;padding:16px;overflow-wrap:anywhere;line-height:1.5}
+.project-card h3{font-size:16px;margin:4px 0 10px;color:#263b4b}
+.project-card .project-links{display:flex;gap:18px;flex-wrap:wrap;margin-top:10px}
+.project-card a{padding:4px 0}
+.project-caption{font-size:12px;color:#526474;margin:4px 0}
 </style>
 {% endblock %}
 {% block content %}
@@ -34,10 +40,22 @@ form{display:inline-block;margin:6px 8px 0 0}
 
 <section aria-labelledby="your-projects-h">
   <h2 id="your-projects-h" style="font-size:16px;color:#2c3e50;margin-top:22px">{{ t('UI_A_ACCOUNT_006') }}</h2>
-  {% if owned_projects %}
-    <ul style="padding-left:18px;font-size:14px">
-      {% for pid in owned_projects %}
-      <li><a href="/session/{{ pid }}">{{ t('UI_A_ACCOUNT_007') }}</a> · <a href="/account/projects/{{ pid }}/export">{{ t('UI_A_ACCOUNT_012') }}</a> <span style="color:#888">({{ pid[:8] }}…)</span></li>
+  {% if owned_projects is none %}
+    <p class="status warn" role="alert">{{ t('UI_A1_LIST_UNAVAILABLE') }}</p>
+    <a href="{{ url_for('account_home') }}">{{ t('UI_A1_RETRY_LIST') }}</a>
+  {% elif owned_projects %}
+    <p class="truthful">{{ t('UI_A1_PROJECT_LIST_NOTE') }}</p>
+    <ul class="project-list">
+      {% for project in owned_projects %}
+      <li class="project-card">
+        <p class="project-caption">{{ t('UI_A1_ORIGINAL_IDEA') }}</p>
+        <h3 dir="auto">{{ project.idea or t('UI_A1_UNTITLED') }}</h3>
+        {% set project_domain = project.domain | public_domain_label %}
+        <p class="project-caption">{{ project_domain[ui_lang] }}</p>
+        <p class="project-caption">{{ t('UI_A1_PROJECT_ID') }}: <bdi>{{ project.id }}</bdi></p>
+        {% if project.unavailable %}<p>{{ t('UI_A1_DETAILS_UNAVAILABLE') }}</p>{% endif %}
+        <div class="project-links"><a href="/session/{{ project.id }}">{{ t('UI_A_ACCOUNT_007') }}</a><a href="/account/projects/{{ project.id }}/export">{{ t('UI_A_ACCOUNT_012') }}</a></div>
+      </li>
       {% endfor %}
     </ul>
   {% else %}
