@@ -246,6 +246,9 @@ def test_matching_draft_offered_for_restore(server, page):
     page.wait_for_timeout(1000)
     page.reload()
     assert page.locator(".draft-recovery").count() == 1
+    preview = page.locator(".draft-recovery details.draft-preview")
+    assert preview.count() == 1 and preview.get_attribute("open") is None
+    assert preview.locator(".draft-preview-text").text_content() == IDEA
 
 
 def test_no_silent_overwrite_of_newer_text(server, page):
