@@ -13,28 +13,42 @@ override this current entry or impose another reading/approval/synchronization s
 - Transition integrated through PR #618 at
   20a10105178196a5c4242f4ba1d7b3f265f00a8a; all activation safeguards verified.
   ACTIVE_INCREMENT_CONTRACT.md records the evidence and exact mandate.
-- Milestone 1 is complete: R-05 integrated through PR #619 and its corrected
-  strategic package accepted. ASTRA MILESTONE 2 / A1 saved-project and recovery
-  delivery is the current bounded mandate; ACTIVE_INCREMENT_CONTRACT.md owns
-  its scope, safeguards, completion and exclusions.
+- R-05 integrated through PR #619; its accepted protections and corrected strategic
+  package remain preserved. That earlier milestone is complete.
+- **Product milestone CLOSED:** PR #625 is merged and post-merge verified.
+  Verified authoritative tip/documentation baseline:
+  `ab5915e68851b25e46d5742ec49877b50eebee5c`; merge tree:
+  `04c25394547558e82a6bf379671d7eca2c64155d`. The reviewed candidate tree equals
+  this tree and the candidate-to-merge diff is empty. See the
+  [roadmap closure entry](ACTIVE_EXECUTION_ROADMAP.md#pr-625-verified-product-closure-and-recent-increments)
+  for exact merge evidence and PRs #620–#625. Verify the live tip rather than
+  treating this recorded baseline as a permanent pin.
+- **Current authorized work: bounded source-of-truth documentation sync only**, in
+  the six paths and through the candidate return specified by
+  [the active contract](ACTIVE_INCREMENT_CONTRACT.md#current-authority--bounded-source-of-truth-documentation-sync-only).
+  A1, the saved-project filter and the three-slice PR #625 milestone are historical,
+  completed mandates. No product implementation or merge is authorized by this sync.
+- **Operating-automation build: PLANNED — NOT ACTIVE** under this synchronization.
+  A separate Owner authorization is required before implementation.
 - Astra is the sole mutating execution Lead; the prior Lead remains STANDBY, not terminated.
   Only one Lead may possess mutation authority. Pause/revocation and return use Lean §9.
 - Technical position: completed product foundations with remaining security/product-value
   and release obligations. Phase closure, a successful test or this transition is not
   public/private staging, production, paid, pilot or human-data authorization.
 
-## Preserved state and next included work
+<a id="preserved-state-and-next-included-work"></a>
+## Preserved state and boundaries
 
 F-01/F-02 v2.1 is implemented at PR #617; B-01/B-02 are closed. No further F-01/F-02
 post-merge governance synchronization is required. OSP lifecycle remains CLOSED; its
 standing material-instruction control remains applicable. These lifecycles are not reopened.
 
-A1 improves the existing saved journey and safe recovery, including R05-N1 and a
-reproduction-led F-04 disposition. It does not reopen accepted R-05 protections.
-New human activity is not an A1 prerequisite. After verified A1 completion, stop:
-A2 evidence reconciliation/human scope or Option B needs a new Owner decision.
-Prior human evaluation remains historical evidence, neither discarded nor an automatic
-CEHR pass. Actual later return gates remain with their owners and the current mandate.
+A1's saved-journey and safe-recovery work, including its R05-N1/P2 closure and F-04
+reproduction/disposition, belongs to the completed PR #620 record. Accepted R-05
+protections and completed evidence are not reopened or rerun here. Later read-only
+reconciliation does not authorize A2 implementation or new human activity. Prior
+human evaluation remains historical evidence, neither discarded nor an automatic
+CEHR pass. Actual later return gates remain with their existing owners.
 
 F-03 stays behind its Owner product-decision gate. G-4-A remains CURRENT — NOT FIXED;
 CEHR/Route-B, G-4-B, M-1, T1-A′, HICR/readiness, RUN-004 and PRE-FCORA retain their actual
@@ -43,9 +57,37 @@ or premature PRE-FCORA/FCORA is authorized. The later CAD/PCB/competitive assess
 preserves existing capability and Phase-7 owners and provider neutrality; no integration,
 new model, capability owner or runtime provider is selected by this transition.
 
+The Owner's existing dispositions remain unchanged: T1-A′ **OPEN / FRB** (trigger
+fired; closure evidence not met); HICR **partially reconciled**, with readiness-input
+dependencies applicable; G-4-A **CURRENT — NOT FIXED / OPEN / FRB**, with
+**PROVISIONAL NO-GO — IMPLEMENTATION HOLD** and the symbolic-feasibility lane closed
+without technical or gate closure. PRE-FCORA is **required but unauthorized**;
+FCORA is later and unauthorized. No recovery, evaluator-drift inspection, external
+linkage, feasibility evaluation or gate execution is activated by this sync.
+
+The bounded recovery lane remains closed in the decision-use record with **BLOCKED**
+disposition, the unresolved external-source return gate and STOP-handling deviation
+preserved, and no Owner-scope exhaustion claim. This carry-forward notice does not
+move external evidence, establish its repository traceability or change its disposition.
+External decision-use records retain their existing authority and location; their
+wording is not imported or adopted as a new repository decision by this notice.
+FDC-001 / DecisionRecord remains the canonical decision owner; no duplicate owner,
+parallel DecisionRecord, readiness engine or risk store is created.
+
+All non-blocking observations remain open unless separately resolved by existing
+authority. In particular, PR #622's accepted anonymous full-answer disclosure,
+governance-record and HTML-duplication observations; PR #623's three observations;
+PR #624's accepted same-origin DOM preview within the existing 64K-character boundary
+and remaining observations; and PR #625's Cloud PASS WITH NON-BLOCKING OBSERVATIONS
+are not fixed or closed by merge or by this documentation sync. Earlier open
+follow-ups, including PR #621's three observations, remain preserved. This is a
+carry-forward pointer, not a new findings register or a replacement for the reviews.
+
 The Master Checklist remains a derived navigation view, not execution authority or SSOT.
 The repository-recorded reconstructed baseline has 54 items and zero unmapped items;
-the exact historical artifact/file/SHA remains unrecovered. The HICR bounded-supplement
+this is a reconstructed, structurally self-confirming denominator, not historical
+recovery, current exhaustive coverage or proof that nothing disappeared. The exact
+historical artifact/file/SHA remains unrecovered. The HICR bounded-supplement
 referent is an unresolved continuity candidate, not a proven lost material obligation.
 Resolve it at the affected return gate, not through an automatic unrelated-work STOP.
 
@@ -68,6 +110,12 @@ The deferred Technical/Manufacturing/Market-Reality readiness direction remains 
 through the Deferred Obligations Register and existing capability owners. R2's accepted
 architectural disposition is not an exhaustive product-capability ceiling. This pointer
 creates no new owner, closes no obligation and does not move PRE-FCORA's mandatory trigger.
+
+**Boot consistency:** CLAUDE.md still contains an older A1 current-authority summary;
+that summary is superseded by the Owner's present instruction and the active contract
+above. Its single boot sequence and substantive safeguards remain applicable. CLAUDE.md
+is outside this six-file sync and is not edited. Historical anchor/handover imperatives
+do not revive consumed mandates or competing boot sequences.
 
 ## Update rule
 
