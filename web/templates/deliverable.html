@@ -467,9 +467,11 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   <h3>{{ t('UI_B_DELIV_074') }}</h3>
   {% if package.section_11_prototype_test_plan["items"] %}
   {% for exp in package.section_11_prototype_test_plan["items"] %}
+  {# Same existing identity digest as the criterion form; no source enum in navigation. #}
+  {% set nav_id = exp.experiment_id.rsplit('_', 1)[-1] %}
   <div class="field-label">{{ exp.experiment_title }}</div>
   <div class="field-value"><strong>{{ t('UI_B_DELIV_075') }}</strong> {{ exp.objective }}</div>
-  <div class="field-value" id="report-experiment-source-{{ exp.experiment_id }}"><strong>{{ t('UI_B_DELIV_076') }}</strong> {{ exp.source_basis }}</div>
+  <div class="field-value" id="report-experiment-source-{{ nav_id }}"><strong>{{ t('UI_B_DELIV_076') }}</strong> {{ exp.source_basis }}</div>
   <div class="field-value"><strong>{{ t('UI_B_DELIV_077') }}</strong> {{ exp.minimum_prototype }}</div>
   <div class="field-value"><strong>{{ t('UI_B_DELIV_078') }}</strong> {{ exp.what_to_observe }}</div>
   {% if exp.success_criterion_provenance == 'user_defined' %}
@@ -479,7 +481,7 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% endif %}
   <div class="field-value"><strong>{{ t('UI_B_DELIV_081') }}</strong> {{ exp.failure_or_revision_condition }}</div>
   <div class="field-value"><strong>{{ t('UI_B_DELIV_082') }}</strong> {{ exp.expected_evidence_upgrade }}</div>
-  <p class="experiment-criterion-link"><a href="{{ url_for('success_criteria', sid=sid) }}#criterion__{{ exp.experiment_id }}" aria-describedby="report-experiment-source-{{ exp.experiment_id }}">{{ t('UI_SC_EDIT_EXPERIMENT') }}</a></p>
+  <p class="experiment-criterion-link"><a href="{{ url_for('success_criteria', sid=sid) }}#criterion-{{ nav_id }}" aria-describedby="report-experiment-source-{{ nav_id }}">{{ t('UI_SC_EDIT_EXPERIMENT') }}</a></p>
   {% endfor %}
   {% if package.section_11_prototype_test_plan.shared_required_expertise %}
   <div class="field-label">{{ t('UI_B_DELIV_083') }}</div>

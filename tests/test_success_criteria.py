@@ -263,7 +263,10 @@ def test_experiment_context_matches_current_payload_without_state_change(lang):
         assert values == [item[key] for key in ('objective', 'minimum_prototype',
                                                'what_to_observe', 'failure_or_revision_condition')]
         assert f'name="criterion__{eid}"' in card
-        assert f'id="criterion-guidance-{eid}"' in card
+        nav_id = eid.rsplit('_', 1)[-1]
+        assert f'id="criterion-guidance-{nav_id}"' in card
+        assert f'id="criterion-{nav_id}"' in card
+        assert f'for="criterion-{nav_id}"' in card
         assert text('UI_SC_LIMIT', lang).format(limit=MAX_CRITERION_LENGTH) in card
         assert text('UI_SC_SAVE_CLEAR', lang) in card
         assert '<details class="experiment-context">' in card

@@ -634,14 +634,41 @@ def test_experiment_links_match_current_fields_not_titles(lang, eligible, captur
     sid, items, report, criteria = render_criteria_workflow_case(
         lang, eligible, capture, cold, reverse, empty)
     links = re.findall(r'href="(/session/[^"#]+/success-criteria)#([^"]+)"', report)
-    assert links == [(f'/session/{sid}/success-criteria', 'criterion__' + item['experiment_id'])
+    assert links == [(f'/session/{sid}/success-criteria', 'criterion-' + item['experiment_id'].rsplit('_', 1)[-1])
                      for item in items]
-    for _, target in links:
+    for (_, target), item in zip(links, items):
+        assert re.fullmatch(r'criterion-[0-9a-f]{32}', target)
         assert criteria.count(f'id="{target}"') == 1
-        assert criteria.count(f'name="{target}"') == 1
+        assert criteria.count(f'for="{target}"') == 1
+        assert criteria.count(f'name="criterion__{item["experiment_id"]}"') == 1
+    for source_type in ('acknowledged_unknown', 'assumption_inventory_evidence', 'reasoned_leading_claim'):
+        assert source_type not in report
+        presentation_refs = re.findall(r'(?:id|for|href|aria-describedby)="([^"]*)"', criteria)
+        assert all(source_type not in value for value in presentation_refs)
     assert report.count('class="decision-primary"') == int(eligible)
     assert ('/keep-snapshot' in report) == eligible
     assert '<img src=x onerror=alert(1)>' not in report + criteria
+
+
+def test_navigation_digest_keeps_source_namespace_and_stability():
+    from engine.deliverable_assembler import _experiment_id
+    from flask import render_template
+    source = 'The same source text النص نفسه'
+    types = ('acknowledged_unknown', 'assumption_inventory_evidence', 'reasoned_leading_claim')
+    identities = [_experiment_id(kind, source) for kind in types]
+    assert len({eid.rsplit('_', 1)[-1] for eid in identities}) == len(types)
+    assert identities == [_experiment_id(kind, '  ' + source.upper() + '  ') for kind in types]
+    items = [dict(experiment_id=eid, experiment_title='Identical title', source_basis='Same source')
+             for eid in identities]
+    with _flask_app.test_request_context('/session/stable/success-criteria'):
+        def targets(rows):
+            body = render_template('success_criteria.html', sid='stable', experiments=rows,
+                                   field_prefix='criterion__', max_length=1000)
+            return dict(re.findall(r'<textarea id="([^"]+)"\s+name="([^"]+)"', body))
+        original = targets(items)
+        assert original == targets(list(reversed(items))) == targets(copy.deepcopy(items))
+        assert set(original.values()) == {'criterion__' + eid for eid in identities}
+        assert all(re.fullmatch(r'criterion-[0-9a-f]{32}', target) for target in original)
 
 
 def _report_sections(body):

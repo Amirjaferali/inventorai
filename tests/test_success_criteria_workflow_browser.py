@@ -34,8 +34,10 @@ def test_context_native_accessibility_and_exact_text_without_javascript(_browser
         for index, item in enumerate(items):
             links.nth(index).focus()
             links.nth(index).press('Enter')
-            target = page.locator('#criterion__' + item['experiment_id'])
+            target = page.locator('[name="criterion__' + item['experiment_id'] + '"]')
             expect(target).to_be_focused()
+            assert 'acknowledged_unknown' not in page.url
+            assert page.url.endswith('#' + target.get_attribute('id'))
             assert page.locator('html').get_attribute('lang') == lang
             assert page.locator('html').get_attribute('dir') == ('rtl' if lang == 'ar' else None)
             card = target.locator('..')
@@ -103,7 +105,7 @@ def test_live_navigation_toggle_and_save_clear_preserve_semantics(server, _brows
         requests = []
         page.on('request', lambda req: requests.append((req.method, req.url, req.post_data)))
         link.click()
-        target = page.locator('#criterion__' + ids[1])
+        target = page.locator('[name="criterion__' + ids[1] + '"]')
         expect(target).to_be_focused()
         assert [(method, url) for method, url, _ in requests] == [
             ('GET', server + f'/session/{sid}/success-criteria')]
@@ -114,7 +116,7 @@ def test_live_navigation_toggle_and_save_clear_preserve_semantics(server, _brows
         assert form.locator('input,textarea,select').evaluate_all('els => els.map(e => e.name)') == [
             'csrf_token', *['criterion__' + eid for eid in ids]]
         target.fill('  Revised target هدف معدّل\nwith  spaces <tag>  ')
-        page.locator('#criterion__' + ids[0]).fill('   ')
+        page.locator('[name="criterion__' + ids[0] + '"]').fill('   ')
         values = form.locator('textarea').evaluate_all('els => els.map(e => e.value)')
         requests.clear()
         for summary in page.locator('.experiment-context summary').all():
@@ -155,9 +157,10 @@ def test_stale_fragment_leaves_current_form_usable_without_javascript(server, _b
         if lang == 'ar':
             page.get_by_role('button', name='العربية', exact=True).click()
         state.acknowledged_unknowns.clear()
-        link = page.locator(f'.experiment-criterion-link a[href$="#criterion__{old_id}"]')
+        old_target = 'criterion-' + old_id.rsplit('_', 1)[-1]
+        link = page.locator(f'.experiment-criterion-link a[href$="#{old_target}"]')
         link.click()
-        assert page.locator('#criterion__' + old_id).count() == 0
+        assert page.locator('#' + old_target).count() == 0
         assert page.locator('textarea:focus').count() == 0
         assert page.locator('textarea').count() == len(_ids(state))
         expect(page.locator('form[action$="/success-criteria"] button')).to_be_visible()
