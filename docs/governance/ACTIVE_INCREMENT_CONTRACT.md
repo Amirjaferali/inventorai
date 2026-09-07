@@ -23,7 +23,32 @@ Git/GitHub own transient candidate, PR and merge identity. No acceptance/merge t
 self-SHA or lifecycle-label change creates a synchronization candidate. When no mandate
 exists, state ACTIVE CONTRACT: NONE; historical declarations never fill the gap.
 
-## Current authority — bounded source-of-truth documentation sync only
+<a id="current-authority--bounded-source-of-truth-documentation-sync-only"></a>
+## Current authority — post-return declaration
+
+**ACTIVE CONTRACT: NONE**
+
+PR #626 documentation sync: **COMPLETED / MERGED / POST-MERGE VERIFIED**.
+No current product implementation or documentation-sync mandate exists.
+Operating automation: **PLANNED — NOT ACTIVE**. Any future product, governance
+or automation work requires a new explicit Owner authorization.
+
+**Owner source:** current-chat "OWNER AUTHORIZATION — BOUNDED POST-RETURN AUTHORITY
+CLOSURE". This declaration records the required post-return state. The finite
+authorization to prepare this local closure candidate ends at its review-ready
+return; it does not install or renew an active increment contract. Publication,
+PR creation, merge and deployment are not authorized by that preparation instruction.
+Exact PR #626 closure evidence is in
+[the roadmap closure entry](ACTIVE_EXECUTION_ROADMAP.md#pr-626-documentation-sync-completed-and-post-return-authority).
+All existing gates, obligations, owners, return conditions and other observations
+remain unchanged; this candidate addresses only Observation 3's routing correction.
+
+## Historical authority — PR #626 documentation sync (completed)
+
+The original preparation declaration below is preserved as historical evidence.
+Its "Only current work" and preparation commands applied to that completed task;
+they do not authorize current or future work. Subsequent explicit Owner publication
+and merge authorizations integrated PR #626. The post-return declaration above governs.
 
 **Owner source:** current-chat "OWNER AUTHORIZATION — BOUNDED SOURCE-OF-TRUTH
 DOCUMENTATION SYNC", received after the verified PR #625 merge. This records that

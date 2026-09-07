@@ -16,21 +16,26 @@ override this current entry or impose another reading/approval/synchronization s
 - R-05 integrated through PR #619; its accepted protections and corrected strategic
   package remain preserved. That earlier milestone is complete.
 - **Product milestone CLOSED:** PR #625 is merged and post-merge verified.
-  Verified authoritative tip/documentation baseline:
+  Historical product-closure tip/documentation baseline:
   `ab5915e68851b25e46d5742ec49877b50eebee5c`; merge tree:
   `04c25394547558e82a6bf379671d7eca2c64155d`. The reviewed candidate tree equals
   this tree and the candidate-to-merge diff is empty. See the
   [roadmap closure entry](ACTIVE_EXECUTION_ROADMAP.md#pr-625-verified-product-closure-and-recent-increments)
   for exact merge evidence and PRs #620–#625. Verify the live tip rather than
   treating this recorded baseline as a permanent pin.
-- **Current authorized work: bounded source-of-truth documentation sync only**, in
-  the six paths and through the candidate return specified by
-  [the active contract](ACTIVE_INCREMENT_CONTRACT.md#current-authority--bounded-source-of-truth-documentation-sync-only).
-  A1, the saved-project filter and the three-slice PR #625 milestone are historical,
-  completed mandates. No product implementation or merge is authorized by this sync.
-- **Operating-automation build: PLANNED — NOT ACTIVE** under this synchronization.
-  A separate Owner authorization is required before implementation.
-- Astra is the sole mutating execution Lead; the prior Lead remains STANDBY, not terminated.
+- **ACTIVE CONTRACT: NONE**, as declared in
+  [the post-return contract entry](ACTIVE_INCREMENT_CONTRACT.md#current-authority--post-return-declaration).
+  No current product implementation or documentation-sync mandate exists. A1, the
+  saved-project filter, PR #625 and the PR #626 documentation sync are completed work.
+- **PR #626 documentation sync: COMPLETED / MERGED / POST-MERGE VERIFIED.**
+  Verified authoritative tip/closure baseline:
+  `16890c8a121ba9bf4aea960ed046ab5e9e34cc5f`; merge tree:
+  `d9b3b6cf522be46a03bf896788fa2fd633a54c24`. See
+  [the roadmap closure entry](ACTIVE_EXECUTION_ROADMAP.md#pr-626-documentation-sync-completed-and-post-return-authority).
+- **Operating automation: PLANNED — NOT ACTIVE.** Any future product, governance
+  or automation work requires a new explicit Owner authorization.
+- Astra remains the designated Lead; that designation alone grants no mutation
+  authority. The prior Lead remains STANDBY, not terminated.
   Only one Lead may possess mutation authority. Pause/revocation and return use Lean §9.
 - Technical position: completed product foundations with remaining security/product-value
   and release obligations. Phase closure, a successful test or this transition is not

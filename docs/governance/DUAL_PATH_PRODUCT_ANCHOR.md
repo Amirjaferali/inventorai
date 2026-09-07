@@ -4,11 +4,13 @@
 > **STATUS: HISTORICAL PRODUCT CONSOLIDATION — NOT CURRENT EXECUTION AUTHORITY.**
 > The product distinctions and substantive source boundaries below are preserved;
 > its old execution-state references are superseded for current routing. Read
-> [CURRENT_PROJECT_STATE.md](CURRENT_PROJECT_STATE.md), then the current mandate in
-> [ACTIVE_INCREMENT_CONTRACT.md](ACTIVE_INCREMENT_CONTRACT.md). PR #625's product
-> milestone is closed; only the bounded documentation sync is currently authorized.
-> The operating-automation build is planned, not active under this sync. Recent
-> integrations are recorded in [the roadmap closure entry](ACTIVE_EXECUTION_ROADMAP.md#pr-625-verified-product-closure-and-recent-increments).
+> [CURRENT_PROJECT_STATE.md](CURRENT_PROJECT_STATE.md), then
+> [ACTIVE_INCREMENT_CONTRACT.md](ACTIVE_INCREMENT_CONTRACT.md): **ACTIVE CONTRACT: NONE**.
+> No current product implementation or documentation-sync mandate exists. PR #626
+> documentation sync is **COMPLETED / MERGED / POST-MERGE VERIFIED**; PR #625's product
+> milestone is closed. Operating automation is **PLANNED — NOT ACTIVE**. Any future
+> product, governance or automation work requires a new explicit Owner authorization.
+> Recent integrations are recorded in [the roadmap closure entry](ACTIVE_EXECUTION_ROADMAP.md#pr-626-documentation-sync-completed-and-post-return-authority).
 > For the accepted North Star and deferred integrated readiness direction, consult
 > [INVENTORAI_COMMERCIAL_DIFFERENTIATION_DIRECTION.md §16.G](INVENTORAI_COMMERCIAL_DIFFERENTIATION_DIRECTION.md)
 > and [INVENTORAI_CAPABILITY_ENRICHMENT_REGISTER.md](INVENTORAI_CAPABILITY_ENRICHMENT_REGISTER.md).
