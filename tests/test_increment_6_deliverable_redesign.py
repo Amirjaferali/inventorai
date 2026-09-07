@@ -588,6 +588,62 @@ def test_redesign_honest_status_strip_separate_from_maturity():
     )
 
 
+def render_criteria_workflow_case(lang='en', eligible=False, capture=False, cold=False,
+                                  reverse=False, empty=False):
+    """Synthetic presentation cases; IDs come from real assembled experiments.
+
+    Deliberately repeated titles and distinctive field values detect accidental
+    title/position matching. These cases are not eligibility or engine evidence.
+    """
+    from flask import session
+    from tests.test_success_criteria import _seed
+    from web.ui_text import text
+    sid, state = _seed()
+    package = assemble_deliverable(state)
+    items = package['section_11_prototype_test_plan']['items']
+    for index, item in enumerate(items):
+        item['experiment_title'] = 'Same title عنوان واحد'
+        for key in ('objective', 'minimum_prototype', 'what_to_observe',
+                    'failure_or_revision_condition'):
+            item[key] = f'{index} {key}: العربية <img src=x onerror=alert(1)> &\n' + 'long-text ' * 35
+    if reverse:
+        items.reverse()
+    if empty:
+        items.clear()
+    before = copy.deepcopy(package)
+    decisions = [{'question': 'Existing decision?', 'alternatives': [],
+                  'readiness_status': 'insufficient_information'}] if capture else []
+    with _flask_app.test_request_context(f'/session/{sid}/deliverable'):
+        session['ui_lang'] = lang
+        common = dict(sid=sid, ui_lang=lang, ui_dir='rtl' if lang == 'ar' else 'ltr',
+                      t=lambda key: text(key, lang), lang_switch_next=f'/session/{sid}/deliverable')
+        report = _flask_app.jinja_env.get_template('deliverable.html').render(
+            package=package, eligible=eligible, decision_capture=decisions,
+            reconstructed_deliverable=cold, **common)
+        criteria = _flask_app.jinja_env.get_template('success_criteria.html').render(
+            experiments=items, field_prefix='criterion__', max_length=1000, **common)
+    assert package == before
+    return sid, items, report, criteria
+
+
+@pytest.mark.parametrize('lang', ['en', 'ar'])
+@pytest.mark.parametrize('eligible,capture,cold', [
+    (False, False, False), (True, False, False), (False, False, True), (False, True, False)])
+@pytest.mark.parametrize('reverse,empty', [(False, False), (True, False), (False, True)])
+def test_experiment_links_match_current_fields_not_titles(lang, eligible, capture, cold, reverse, empty):
+    sid, items, report, criteria = render_criteria_workflow_case(
+        lang, eligible, capture, cold, reverse, empty)
+    links = re.findall(r'href="(/session/[^"#]+/success-criteria)#([^"]+)"', report)
+    assert links == [(f'/session/{sid}/success-criteria', 'criterion__' + item['experiment_id'])
+                     for item in items]
+    for _, target in links:
+        assert criteria.count(f'id="{target}"') == 1
+        assert criteria.count(f'name="{target}"') == 1
+    assert report.count('class="decision-primary"') == int(eligible)
+    assert ('/keep-snapshot' in report) == eligible
+    assert '<img src=x onerror=alert(1)>' not in report + criteria
+
+
 def _report_sections(body):
     return re.findall(r'<section\b[^>]*>.*?</section>', body, re.S)
 
