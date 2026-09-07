@@ -1,29 +1,35 @@
 # InventorAI — Successor Handover
 
-## Current successor routing — post-PR #625
+<a id="current-successor-routing--post-pr-625"></a>
+## Current successor routing — post-PR #626
 
-**Only current authority:** the bounded source-of-truth documentation sync recorded
-in [ACTIVE_INCREMENT_CONTRACT.md](ACTIVE_INCREMENT_CONTRACT.md). The PR #625 product
-milestone is **CLOSED — MERGED AND POST-MERGE VERIFIED**. Its verified authoritative
-tip/documentation baseline is `ab5915e68851b25e46d5742ec49877b50eebee5c` on
+**ACTIVE CONTRACT: NONE**, as declared in
+[ACTIVE_INCREMENT_CONTRACT.md](ACTIVE_INCREMENT_CONTRACT.md#current-authority--post-return-declaration).
+No current product implementation or documentation-sync mandate exists.
+PR #626 documentation sync: **COMPLETED / MERGED / POST-MERGE VERIFIED**.
+The PR #625 product milestone remains closed. Verified authoritative tip/closure
+baseline: `16890c8a121ba9bf4aea960ed046ab5e9e34cc5f` on
 `feature/atomic-json-session-persistence`, with merge tree
-`04c25394547558e82a6bf379671d7eca2c64155d`, identical to the reviewed candidate tree
-and with an empty candidate-to-merge diff. The exact evidence and PRs #620–#625 are
-in [the roadmap closure entry](ACTIVE_EXECUTION_ROADMAP.md#pr-625-verified-product-closure-and-recent-increments).
+`d9b3b6cf522be46a03bf896788fa2fd633a54c24`, identical to the reviewed documentation
+candidate tree and with an empty candidate-to-merge diff. Exact evidence is in
+[the roadmap closure entry](ACTIVE_EXECUTION_ROADMAP.md#pr-626-documentation-sync-completed-and-post-return-authority);
+the prior [PRs #620–#625 entry](ACTIVE_EXECUTION_ROADMAP.md#pr-625-verified-product-closure-and-recent-increments)
+remains historical evidence.
 Resolve the live tip from Git; this recorded baseline is not a permanent pin.
 
 Use CLAUDE.md's single boot sequence, the concise
 [CURRENT_PROJECT_STATE.md](CURRENT_PROJECT_STATE.md) entry and the active contract.
 CLAUDE.md's older A1 current-authority summary is superseded by the present Owner
 instruction/current contract; its boot sequence and substantive safeguards remain.
-Only relevant current sections and latest Git evidence are needed for this sync.
+Read only relevant current sections and latest Git evidence when work is authorized.
 Do not load the whole historical stream or rerun completed evidence as a boot ritual.
 
-The **operating-automation build is PLANNED — NOT ACTIVE** under this synchronization.
-This local documentation candidate ends at one independent-review-ready return.
-No product implementation, merge, deployment or successor scope is authorized.
-Do not act on consumed A1/filter/PR #625 permissions or old "next action" text.
-An incoming agent must establish a still-applicable Owner mandate before any new work.
+**Operating automation: PLANNED — NOT ACTIVE.** Any future product, governance or
+automation work requires a new explicit Owner authorization. The finite preparation
+of this post-return closure candidate ends at its independent-review-ready return;
+it leaves no active increment contract. No publication, PR, merge or deployment is
+authorized for this candidate. Do not act on consumed A1/filter/PR #625/PR #626
+permissions or old "next action" text.
 
 Preserve all [open gates, issues and observations](CURRENT_PROJECT_STATE.md#preserved-state-and-boundaries),
 their existing owners and return conditions. FDC-001 / DecisionRecord stays canonical.

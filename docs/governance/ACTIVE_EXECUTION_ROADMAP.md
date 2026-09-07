@@ -2,8 +2,11 @@
 # Single source of execution continuity across agent changes
 
 **Current execution routing:** [ACTIVE_INCREMENT_CONTRACT.md](ACTIVE_INCREMENT_CONTRACT.md)
-owns the bounded source-of-truth documentation sync only; the PR #625 product
-milestone is **CLOSED**. The operating-automation build is **PLANNED — NOT ACTIVE**.
+declares **ACTIVE CONTRACT: NONE**. No current product implementation or
+documentation-sync mandate exists. PR #626 documentation sync is
+**COMPLETED / MERGED / POST-MERGE VERIFIED**; the PR #625 product milestone remains
+**CLOSED**. Operating automation is **PLANNED — NOT ACTIVE**. Any future product,
+governance or automation work requires a new explicit Owner authorization.
 [CURRENT_PROJECT_STATE.md](CURRENT_PROJECT_STATE.md) is the concise current entry.
 Lean §2 owns milestone authority, risk/review live in Lean §§3–5B,
 and AHAEP owns delivery mechanics. The appended entries and accumulated former current
@@ -11,6 +14,29 @@ state/lane tables are historical evidence at their recorded time, not competing 
 declarations or universal separate-approval rules. Substantive decisions and unfulfilled
 return gates remain with their existing owners. Use §§10–11 below for current reading
 and recording mechanics. No completed F-01/F-02 or OSP lifecycle is reopened.
+
+## PR #626 documentation sync completed and post-return authority
+
+**Owner source:** current-chat "OWNER AUTHORIZATION — BOUNDED POST-RETURN AUTHORITY
+CLOSURE", following the authorized, verified merge of
+[PR #626](https://github.com/Amirjaferali/inventorai/pull/626).
+The documentation sync is **COMPLETED / MERGED / POST-MERGE VERIFIED** and is
+historical work, not an active mandate.
+
+Verified authoritative branch `feature/atomic-json-session-persistence` at
+`16890c8a121ba9bf4aea960ed046ab5e9e34cc5f`; ordered merge parents:
+`ab5915e68851b25e46d5742ec49877b50eebee5c`, then
+`cda5dedd59ac79df3ed6c17ac2e428eadf0a60a4`. Merge tree
+`d9b3b6cf522be46a03bf896788fa2fd633a54c24` equals the reviewed candidate tree;
+candidate-to-merge diff is empty. This is the verified closure baseline, not a
+permanent live-tip pin. No additional content was introduced by that merge.
+
+The [post-return contract entry](ACTIVE_INCREMENT_CONTRACT.md#current-authority--post-return-declaration)
+declares **ACTIVE CONTRACT: NONE**. This local correction addresses Cloud Observation
+3 only; its independent read-only review remains pending. Observations 1, 2, 4 and 5
+and all other existing observations, gates, deferred obligations, unresolved issues,
+owners and return conditions are preserved. No external decision record is created
+or modified. No publication, PR, merge or deployment is authorized for this candidate.
 
 ## PR #625 verified product closure and recent increments
 

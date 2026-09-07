@@ -2,10 +2,14 @@
 
 > **CURRENT ROUTING — NOT AN ACTIVE EXECUTION ANCHOR.** Read
 > [CURRENT_PROJECT_STATE.md](CURRENT_PROJECT_STATE.md) for current status and
-> [ACTIVE_INCREMENT_CONTRACT.md](ACTIVE_INCREMENT_CONTRACT.md) for the only current
-> mandate: bounded documentation sync after the closed PR #625 product milestone.
-> [The roadmap closure entry](ACTIVE_EXECUTION_ROADMAP.md#pr-625-verified-product-closure-and-recent-increments)
-> owns recent merge evidence. Operating automation is planned, not active here.
+> [ACTIVE_INCREMENT_CONTRACT.md](ACTIVE_INCREMENT_CONTRACT.md) for
+> **ACTIVE CONTRACT: NONE**. No current product implementation or documentation-sync
+> mandate exists. PR #626 documentation sync is
+> **COMPLETED / MERGED / POST-MERGE VERIFIED**; PR #625's product milestone is closed.
+> [The roadmap closure entry](ACTIVE_EXECUTION_ROADMAP.md#pr-626-documentation-sync-completed-and-post-return-authority)
+> owns recent merge evidence. Operating automation is **PLANNED — NOT ACTIVE**.
+> Any future product, governance or automation work requires a new explicit Owner
+> authorization.
 > The body's old boot order, execution status and permissions are historical;
 > CLAUDE.md owns the single boot sequence under current Lean authority. No existing
 > substantive Path N, evidence or gate boundary is changed by this routing notice.
