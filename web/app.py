@@ -1748,7 +1748,11 @@ def _csrf_reject():
     # page does not mint a token, touch authentication or invoke a protected view.
     args = request.view_args or {}
     if "sid" in args:
-        recovery_url = url_for("show_session", sid=args["sid"])
+        endpoint = {
+            "save_success_criteria": "success_criteria",
+            "keep_snapshot": "show_deliverable",
+        }.get(request.endpoint, "show_session")
+        recovery_url = url_for(endpoint, sid=args["sid"])
     elif "did" in args:
         recovery_url = url_for("decision_workspace_view", did=args["did"])
     else:

@@ -174,6 +174,39 @@ def test_r05_n1_get_recovery_never_reflects_form_tokens_or_untrusted_redirect(pa
         assert dict(session) == {"ui_lang": "ar"}
 
 
+@pytest.mark.parametrize("path,target", [
+    ("/session/existing/success-criteria", "/session/existing/success-criteria"),
+    ("/session/existing/keep-snapshot", "/session/existing/deliverable"),
+])
+@pytest.mark.parametrize("lang,direction", [("en", "ltr"), ("ar", "rtl")])
+@pytest.mark.parametrize("data", [{}, {"csrf_token": "rejected-secret"}])
+def test_r05_n1_specific_form_recovery_rejects_before_protected_access(
+        monkeypatch, path, target, lang, direction, data):
+    client = webapp.app.test_client()  # raw request; no CSRF helper or GET setup
+    with client.session_transaction() as session:
+        session["ui_lang"] = lang
+
+    def forbidden_access(*args, **kwargs):
+        pytest.fail("CSRF rejection reached protected store/account/view code")
+
+    for name in ("_get_store", "_get_account_store", "_current_account"):
+        monkeypatch.setattr(webapp, name, forbidden_access)
+    for endpoint in ("save_success_criteria", "keep_snapshot"):
+        monkeypatch.setitem(webapp.app.view_functions, endpoint, forbidden_access)
+
+    response = client.post(path, data=data)
+    body = response.get_data(as_text=True)
+    assert response.status_code == 403
+    assert response.headers["Cache-Control"] == "no-store"
+    assert "Set-Cookie" not in response.headers
+    assert f'<html lang="{lang}" dir="{direction}">' in body
+    assert f'id="csrf-recovery" href="{target}"' in body
+    assert '<form' not in body and 'name="csrf_token"' not in body
+    assert "rejected-secret" not in body
+    with client.session_transaction() as session:
+        assert dict(session) == {"ui_lang": lang}
+
+
 def test_unavailable_cold_reconstruction_has_no_dead_form_or_false_completion(monkeypatch):
     client = csrf_client(webapp.app)
     sid = start(client)
