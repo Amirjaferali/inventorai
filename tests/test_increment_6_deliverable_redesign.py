@@ -57,6 +57,10 @@ import os
 import sys
 import json
 import copy
+import re
+import html as html_module
+
+import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
@@ -513,7 +517,8 @@ def test_redesign_all_seven_group_headings_present():
     RENDERED HTML (default English UI) — D-P6-18 resolves headings via the central
     UI-string catalogue rather than raw template literals."""
     html = _rendered_deliverable()
-    missing = [h for h in REDESIGN_GROUP_HEADINGS if h not in html]
+    headings = _report_headings(html)
+    missing = [h for h in REDESIGN_GROUP_HEADINGS if h not in headings]
     assert missing == [], f"missing redesign group headings {missing}"
 
 
@@ -521,9 +526,10 @@ def test_redesign_reading_order_needs_group_before_risks_group():
     """Design §4 reading order: 'What it needs' (requirements + requirement
     landscape) precedes 'What could go wrong' (risks) in the rendered output."""
     html = _rendered_deliverable()
-    assert "What it needs" in html and "What could go wrong" in html, \
+    headings = _report_headings(html)
+    assert "What it needs" in headings and "What could go wrong" in headings, \
         "redesign groups absent from rendered deliverable"
-    assert html.index("What it needs") < html.index("What could go wrong")
+    assert headings.index("What it needs") < headings.index("What could go wrong")
 
 
 def test_redesign_needs_group_colocates_requirements_and_landscape():
@@ -531,13 +537,10 @@ def test_redesign_needs_group_colocates_requirements_and_landscape():
     landscape (section_13) render together (design §5 mapping, Group 3). Verified
     by their rendered subheadings appearing within the 'What it needs' group."""
     html = _rendered_deliverable()
-    assert "What it needs" in html, "'What it needs' group absent from rendered output"
-    start = html.index("What it needs")
-    nxt = min(
-        (html.index(h) for h in REDESIGN_GROUP_HEADINGS if h in html and html.index(h) > start),
-        default=len(html),
-    )
-    group = html[start:nxt]
+    groups = [section for section in _report_sections(html)
+              if _report_headings(section) == ['What it needs']]
+    assert len(groups) == 1, "'What it needs' group absent or duplicated"
+    group = groups[0]
     # section_4 renders as "Captured Inputs and Assessment Status"; section_13 as
     # the "Requirement Landscape" subheading — both inside the "What it needs" group.
     assert "Captured Inputs and Assessment Status" in group
@@ -583,6 +586,78 @@ def test_redesign_honest_status_strip_separate_from_maturity():
         "derived_verified_ready signals are not yet co-located in one honest status "
         "strip (still presented far apart in separate section bodies)"
     )
+
+
+def _report_sections(body):
+    return re.findall(r'<section\b[^>]*>.*?</section>', body, re.S)
+
+
+def _report_headings(body):
+    return [html_module.unescape(re.sub(r'<[^>]+>', '', text))
+            for text in re.findall(r'<h2\b[^>]*>(.*?)</h2>', body, re.S)]
+
+
+def render_navigation_case(lang='en', eligible=False, capture=False, cold=False):
+    """Real template with explicit presentation-state fixtures, not eligibility proof."""
+    from flask import session
+    from web.ui_text import text
+    package = assemble_deliverable(_fresh_state('An electronic current sensor opens a relay.'))
+    before = copy.deepcopy(package)
+    decisions = [{'question': 'Which switch? أي مفتاح؟ <img src=x>',
+                  'alternatives': [], 'readiness_status': 'insufficient_information'}] if capture else []
+    with _flask_app.test_request_context('/session/navigation-fixture/deliverable'):
+        session['ui_lang'] = lang
+        session['csrf'] = 'navigation-test-csrf'
+        body = _flask_app.jinja_env.get_template('deliverable.html').render(
+            package=package, sid='navigation-fixture', eligible=eligible,
+            decision_capture=decisions, reconstructed_deliverable=cold,
+            ui_lang=lang, ui_dir='rtl' if lang == 'ar' else 'ltr',
+            t=lambda key: text(key, lang), lang_switch_next='/session/navigation-fixture/deliverable')
+    assert package == before
+    return body
+
+
+@pytest.mark.parametrize('lang', ['en', 'ar'])
+@pytest.mark.parametrize('eligible', [False, True])
+@pytest.mark.parametrize('capture', [False, True])
+@pytest.mark.parametrize('cold', [False, True])
+def test_navigation_exact_rendered_targets_order_and_preserved_actions(lang, eligible, capture, cold):
+    from web.ui_text import text
+    body = render_navigation_case(lang, eligible, capture, cold)
+    nav = re.search(r'<nav id="report-contents".*?</nav>', body, re.S).group(0)
+    links = re.findall(r'<a href="#([^"]+)">(.*?)</a>', nav)
+    expected = ['report-idea', 'report-assessment', 'report-needs', 'report-unknowns',
+                'report-risks', 'report-reasoning', 'report-next-steps']
+    keys = ['020', '026', '031', '043', '052', '056', '060']
+    labels = [text('UI_B_DELIV_' + key, lang) for key in keys]
+    if eligible:
+        expected.append('decision-heading')
+        labels.append(text('UI_B_DELIV_100', lang))
+    if capture:
+        expected.append('report-decisions')
+        labels.append(text('UI_W2A_DELIV_HEADING', lang))
+    assert [target for target, _ in links] == expected
+    assert [html_module.unescape(label) for _, label in links] == labels
+    assert _report_headings(body) == labels
+    ids = re.findall(r'\bid="([^"]+)"', body)
+    assert len(ids) == len(set(ids))
+    sections = _report_sections(body)
+    assert len(sections) == len(expected)
+    for target, section in zip(expected, sections):
+        assert ids.count(target) == 1
+        assert f'<h2 id="{target}" class="report-section-heading" tabindex="-1"' in section
+        assert section.count('href="#report-contents"') == 1
+        assert ' hidden' not in section and '<details' not in section
+    assert ('id="decision-heading"' in body) == eligible
+    assert ('id="report-decisions"' in body) == capture
+    assert ('id="reconstructed-deliverable"' in body) == cold
+    assert body.count('class="decision-primary"') == int(eligible)
+    assert body.count('action="/session/navigation-fixture/keep-snapshot"') == int(eligible)
+    assert 'action="/ui-language"' in body and 'name="csrf_token"' in body
+    assert '<script' not in body
+    assert 'href="/session/navigation-fixture"' in body
+    if capture:
+        assert '&lt;img src=x&gt;' in body and '<img src=x>' not in body
 
 
 if __name__ == "__main__":
