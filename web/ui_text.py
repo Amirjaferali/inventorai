@@ -592,6 +592,24 @@ UI_STRINGS = {
     },
 
     # --- success_criteria.html -------------------------------------------------
+    "UI_SC_CONTEXT": {
+        "en": "Experiment context",
+        "ar": "سياق التجربة",
+    },
+    "UI_SC_EDIT_EXPERIMENT": {
+        "en": "Edit this experiment’s criterion",
+        "ar": "تعديل معيار هذه التجربة",
+    },
+    "UI_SC_LIMIT": {
+        "en": "Optional. Limit: {limit} characters.",
+        "ar": "اختياري. الحد الأقصى: {limit} حرف.",
+    },
+    "UI_SC_SAVE_CLEAR": {
+        "en": ("Edits apply only when you choose Save criteria. To remove an "
+               "existing target, clear its box and choose Save criteria."),
+        "ar": ("لا تُطبَّق التعديلات إلا عند اختيار حفظ المعايير. لإزالة هدف موجود، "
+               "أفرغ خانته ثم اختر حفظ المعايير."),
+    },
     "UI_B_SC_001": {
         "en": "InventorAI — Define Success Criteria",
         "ar": "InventorAI — تحديد معايير النجاح",

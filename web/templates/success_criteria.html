@@ -12,7 +12,15 @@ h2{color:#2c3e50;font-size:16px;margin-top:28px;border-bottom:1px solid #e2e6ea;
 .exp-title{font-weight:bold;color:#2c3e50;font-size:14px;margin-bottom:4px}
 .source{font-size:12px;color:#666;margin-bottom:8px}
 label{display:block;font-size:13px;color:#2c3e50;margin-bottom:4px}
-textarea{width:100%;padding:8px;font-size:13px;border:1px solid #ccc;border-radius:4px}
+textarea{width:100%;padding:8px;font-size:13px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;scroll-margin-top:20px}
+.exp{min-width:0;overflow-wrap:anywhere}
+.experiment-context{margin:10px 0;border:1px solid #d4dde6;border-radius:4px;padding:8px 12px}
+.experiment-context summary{cursor:pointer;line-height:1.6}
+.experiment-context dl{margin:10px 0 0}
+.experiment-context dt{font-weight:bold;font-size:13px;margin-top:10px}
+.experiment-context dd{margin:4px 0 0;white-space:pre-wrap;line-height:1.6;font-size:13px}
+.criterion-guidance{font-size:13px;line-height:1.6;color:#444;margin:8px 0 0}
+@media(max-width:520px){body{margin:18px auto;padding:0 14px}.app-header{flex-wrap:wrap}.app-header .temp-session{white-space:normal}.exp{padding:12px}button{max-width:100%;box-sizing:border-box}}
 button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:none;border-radius:4px;font-size:15px;cursor:pointer}
 .links{margin-top:24px;font-size:13px}
 </style>
@@ -30,14 +38,28 @@ button{margin-top:12px;padding:10px 24px;background:#2c3e50;color:white;border:n
 <form method="POST" action="{{ url_for('save_success_criteria', sid=sid) }}">
   <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
   {% for exp in experiments %}
+  {# The existing v1 digest covers source type and canonical content. Use only
+     that opaque component for presentation; the POST name keeps the full ID. #}
+  {% set nav_id = exp.experiment_id.rsplit('_', 1)[-1] %}
   <div class="exp">
-    <div class="exp-title">{{ exp.experiment_title }}</div>
-    <div class="source">{{ exp.source_basis }}</div>
-    <label for="{{ field_prefix }}{{ exp.experiment_id }}">{{ t('UI_B_SC_002') }}</label>
-    <textarea id="{{ field_prefix }}{{ exp.experiment_id }}"
+    <div class="exp-title" id="experiment-title-{{ nav_id }}" dir="auto">{{ exp.experiment_title }}</div>
+    <div class="source" id="experiment-source-{{ nav_id }}" dir="auto">{{ exp.source_basis }}</div>
+    <details class="experiment-context">
+      <summary aria-describedby="experiment-title-{{ nav_id }} experiment-source-{{ nav_id }}">{{ t('UI_SC_CONTEXT') }}</summary>
+      <dl>
+        <dt>{{ t('UI_B_DELIV_075') }}</dt><dd dir="auto">{{ exp.objective }}</dd>
+        <dt>{{ t('UI_B_DELIV_077') }}</dt><dd dir="auto">{{ exp.minimum_prototype }}</dd>
+        <dt>{{ t('UI_B_DELIV_078') }}</dt><dd dir="auto">{{ exp.what_to_observe }}</dd>
+        <dt>{{ t('UI_B_DELIV_081') }}</dt><dd dir="auto">{{ exp.failure_or_revision_condition }}</dd>
+      </dl>
+    </details>
+    <label for="criterion-{{ nav_id }}">{{ t('UI_B_SC_002') }}</label>
+    <textarea id="criterion-{{ nav_id }}"
               name="{{ field_prefix }}{{ exp.experiment_id }}" rows="2"
               maxlength="{{ max_length }}"
+              dir="auto" aria-describedby="experiment-source-{{ nav_id }} criterion-guidance-{{ nav_id }}"
               placeholder="{{ t('UI_B_SC_003') }}">{% if exp.success_criterion_provenance == 'user_defined' %}{{ exp.success_criterion }}{% endif %}</textarea>
+    <p class="criterion-guidance" id="criterion-guidance-{{ nav_id }}">{{ t('UI_SC_LIMIT').format(limit=max_length) }} {{ t('UI_SC_SAVE_CLEAR') }}</p>
   </div>
   {% endfor %}
   <button type="submit">{{ t('UI_B_SC_004') }}</button>

@@ -9,6 +9,11 @@ change progression, maturity, gaps, Evidence, experiment IDs, or plan text.
 """
 from tests.csrf_client import csrf_client
 import os, sys, uuid, dataclasses
+import copy
+import html
+import re
+
+import pytest
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
 from engine.idea_state import (
@@ -235,6 +240,62 @@ def test_22_no_transcript_entry_written():
     _post(csrf_client(app), sid, {eid: "no transcript please"})
     assert not os.path.exists(path)
     assert SESSION_STORE[sid]["transcript"] == []
+
+
+@pytest.mark.parametrize("lang", ["en", "ar"])
+def test_experiment_context_matches_current_payload_without_state_change(lang):
+    from web.ui_text import text
+    sid, state = _seed(unknown='Unknown <img src=x> العربية & details')
+    client = csrf_client(app)
+    with client.session_transaction() as session:
+        session['ui_lang'] = lang
+    items = assemble_deliverable(state)['section_11_prototype_test_plan']['items']
+    before = copy.deepcopy(state.__dict__)
+    response = client.get(f'/session/{sid}/success-criteria')
+    body = response.get_data(as_text=True)
+    assert response.status_code == 200
+    assert response.headers['Cache-Control'] == 'no-store'
+    cards = body.split('<div class="exp">')[1:]
+    assert len(cards) == len(items)
+    for card, item in zip(cards, items):
+        eid = item['experiment_id']
+        values = [html.unescape(value) for value in re.findall(r'<dd dir="auto">(.*?)</dd>', card, re.S)]
+        assert values == [item[key] for key in ('objective', 'minimum_prototype',
+                                               'what_to_observe', 'failure_or_revision_condition')]
+        assert f'name="criterion__{eid}"' in card
+        nav_id = eid.rsplit('_', 1)[-1]
+        assert f'id="criterion-guidance-{nav_id}"' in card
+        assert f'id="criterion-{nav_id}"' in card
+        assert f'for="criterion-{nav_id}"' in card
+        assert text('UI_SC_LIMIT', lang).format(limit=MAX_CRITERION_LENGTH) in card
+        assert text('UI_SC_SAVE_CLEAR', lang) in card
+        assert '<details class="experiment-context">' in card
+    assert '<img src=x>' not in body
+    assert '<script' not in body
+    assert state.__dict__ == before
+
+
+@pytest.mark.parametrize("lang", ["en", "ar"])
+def test_empty_plan_and_rejection_preserve_context_contract(lang):
+    sid, state = _seed(unknown=None, assumption=None, mech=None)
+    client = csrf_client(app)
+    with client.session_transaction() as session:
+        session['ui_lang'] = lang
+    body = client.get(f'/session/{sid}/success-criteria').get_data(as_text=True)
+    assert 'class="experiment-context"' not in body
+    assert 'name="criterion__' not in body
+    sid, state = _seed()
+    eid = _ids(state)[0]
+    state.success_criteria[eid] = SuccessCriterion('existing target')
+    state.success_criteria['stale-id'] = SuccessCriterion('preserved stale target')
+    before = copy.deepcopy(state.__dict__)
+    response = _post(client, sid, {eid: 'x' * (MAX_CRITERION_LENGTH + 1)})
+    assert response.status_code == 400
+    body = response.get_data(as_text=True)
+    assert 'class="experiment-context"' in body
+    assert 'class="stale"' in body
+    assert 'existing target</textarea>' in body
+    assert state.__dict__ == before
 
 
 def test_23_only_planning_metadata_changes_in_session():
