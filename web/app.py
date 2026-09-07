@@ -1743,7 +1743,26 @@ _DUMMY_PASSWORD_HASH = _acct.hash_password(secrets.token_urlsafe(24))
 
 def _csrf_reject():
     """Generic, non-enumerating rejection for a missing/invalid CSRF token."""
-    response = make_response(ui_text.text("UI_CSRF_REJECT", _current_ui_lang()), 403)
+    # Recovery is a GET selected from the matched route, never a submitted URL,
+    # Referer, rejected form value or raw email token. Rendering this standalone
+    # page does not mint a token, touch authentication or invoke a protected view.
+    args = request.view_args or {}
+    if "sid" in args:
+        recovery_url = url_for("show_session", sid=args["sid"])
+    elif "did" in args:
+        recovery_url = url_for("decision_workspace_view", did=args["did"])
+    else:
+        endpoint = {
+            "login_submit": "login_form", "register_submit": "register_form",
+            "recover_submit": "recover_form", "reset_submit": "recover_form",
+            "verify_email": "account_home", "account_deactivate": "account_home",
+            "resend_verification": "account_home", "logout": "account_home",
+            "logout_all": "account_home", "decision_workspace_start": "decision_workspace_start",
+        }.get(request.endpoint, "index")
+        recovery_url = url_for(endpoint)
+    response = make_response(render_template(
+        "csrf_error.html", recovery_url=recovery_url,
+        email_recovery=request.endpoint in _TOKEN_BEARING_ENDPOINTS), 403)
     response.headers["Cache-Control"] = "no-store"
     if request.endpoint in _TOKEN_BEARING_ENDPOINTS:
         return _token_bearing(response, 403)
@@ -1838,13 +1857,37 @@ def account_home():
 
 
 def _owned_projects(account):
-    """The minimum truthful 'Your projects' list: the project_ids durably owned by
-    THIS account (contract §13). Never includes NULL-owner legacy projects and
-    never another account's projects. No dashboard/analytics/sharing."""
+    """Read-only identification from existing durable, strictly owned data.
+
+    None means list unavailable; an empty list really means no owned projects.
+    No inferred titles, reconstruction, new metadata or cross-owner content.
+    """
     try:
-        return _get_store().project_ids_for_owner(account["account_id"])
+        store = _get_store()
+        projects = []
+        for pid in store.project_ids_for_owner(account["account_id"]):
+            exists, owner = store.load_owner(pid)
+            if exists and owner == account["account_id"]:
+                projects.append({"id": pid, **_project_identification(pid)})
+        return projects
     except Exception:
-        return []
+        return None
+
+
+def _project_identification(sid):
+    """Presentation-only; caller MUST first establish project authorization.
+
+    The excerpt is labelled as the original user description, not validated
+    evidence or a generated title. Missing/corrupt metadata has a neutral fallback.
+    """
+    try:
+        inputs = _get_store().load_reconstruction_inputs(sid) or {}
+        idea = inputs.get("seed_idea_text")
+        idea = " ".join(idea.split()) if isinstance(idea, str) else ""
+        return {"idea": idea[:180] + ("…" if len(idea) > 180 else ""),
+                "domain": inputs.get("confirmed_domain"), "unavailable": False}
+    except Exception:
+        return {"idea": "", "domain": None, "unavailable": True}
 
 
 @app.route("/account/projects/<project_id>/export", methods=["GET"])
@@ -2727,6 +2770,13 @@ def _rvr7_question_direction(text, lang):
     return "en", "ltr"
 
 
+def _render_notice(entry, key, default=None):
+    """HEAD has no visible body; only a rendered GET consumes one-shot feedback."""
+    if not entry:
+        return default
+    return entry.get(key, default) if request.method == "HEAD" else entry.pop(key, default)
+
+
 @app.route("/session/<sid>", methods=["GET"])
 def show_session(sid):
     if not _project_authorized(sid):
@@ -2968,6 +3018,7 @@ def show_session(sid):
         if _uncertainty_candidates else "")
     return render_template("session.html",
         sid=sid,
+        project_identification=_project_identification(sid),
         # P5-3: a TRUTHFUL owned-state signal — True only when the current
         # authenticated account is the durable owner of this project. Never claims
         # ownership for a NULL-owner (legacy/anonymous) project. Display only.
@@ -2978,8 +3029,8 @@ def show_session(sid):
         # a draft-schema version. These let the client-side local-draft script key
         # drafts to the current question and clear them after a confirmed accept.
         # They add NO durable/engine/accepted-answer behaviour and store nothing.
-        answer_accepted=(entry.pop("_answer_accepted", False) if entry else False),
-        seed_accepted=(entry.pop("_seed_accepted", False) if entry else False),
+        answer_accepted=(_render_notice(entry, "_answer_accepted", False)),
+        seed_accepted=(_render_notice(entry, "_seed_accepted", False)),
         draft_context=_draft_context_id(question),
         draft_context_version="v1",
         state=state,
@@ -3032,7 +3083,7 @@ def show_session(sid):
         session_disclosure=get_session_disclosure(_current_ui_lang()),
         closed_gaps=closed_gaps,
         interaction_ack=ui_text.localize_deep(
-            entry.pop("_interaction_ack", None) if entry else None, _current_ui_lang()),
+            _render_notice(entry, "_interaction_ack", None), _current_ui_lang()),
         # W2-D (W1-S2): the ONE live Accept Risk availability policy, rendered
         # and enforced identically (the route re-checks the same helper).
         risk_available=bool(
@@ -3047,12 +3098,12 @@ def show_session(sid):
         # renders exactly once after the Post/Redirect/Get, like answer_error).
         # Gap types are mapped to their existing localized display headings.
         risk_lapse_notice=_risk_lapse_display(
-            entry.pop("_risk_lapse_notice", None) if entry else None),
+            _render_notice(entry, "_risk_lapse_notice", None)),
         # G-UX-ANSWER-VALIDATION: single-use empty-answer validation error, popped
         # here so it renders exactly once after the Post/Redirect/Get and never
         # repeats on a later plain GET. None on every normal load.
         answer_error=ui_text.localize_message(
-            entry.pop("_answer_error", None) if entry else None, _current_ui_lang()),
+            _render_notice(entry, "_answer_error", None), _current_ui_lang()),
         # Increment 1B: advisory, derived, read-only responsibility guidance for
         # the current gap. Computed at render time; never stored, never affects
         # gates/scoring/maturity/closure/transcript/IdeaState. None when no gap.

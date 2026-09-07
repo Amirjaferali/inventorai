@@ -212,30 +212,16 @@ This record changes none of the following:
 
 ## 15. Future-Agent Use
 
-Future agents must:
-- read this record **after** the governing anchors and the committed roadmap;
-- treat it as mandatory strategic direction but **not** execution authority;
-- avoid reopening the accepted Technical Realization models without a concrete
-  repository contradiction;
-- avoid replacing user-visible delivery with governance expansion;
-- test every recommendation against the commercial value standard in §6.
-
-**Mandatory reading-order enforcement is IN FORCE `[REPO]`.** Any earlier statement that enforcement
-was pending is **stale and is corrected here**: `CLAUDE.md` already lists this document as **item 9**
-of the mandatory reading order — *"mandatory strategic product direction; non-activating and
-non-authorizing; subordinate to committed anchors, contracts, and
-`docs/governance/ACTIVE_EXECUTION_ROADMAP.md`"*. This record's discoverability **is** enforced by the
-reading order; no further reading-order change is owed for it.
-
-**Mandatory reading confers no authority.** Being mandatory to read elevates this record above
-nothing. It remains subordinate — in the committed order — to `CLAUDE.md` itself, the governing
-anchors, the architecture authorities, the implementation contracts,
-`docs/governance/ACTIVE_EXECUTION_ROADMAP.md`, and the registers, exactly as CLAUDE.md item 9 states.
-Where it conflicts with any of them, **they control**. It **activates nothing**, authorizes nothing,
-creates no owner, and starts no implementation: a future agent must read it, and must not execute
-from it.
-
----
+CLAUDE.md owns the one current boot sequence; CURRENT_PROJECT_STATE.md provides
+concise routing to this direction and the existing Capability Enrichment Register.
+Consult this direction when materially relevant to product work. The former universal
+"item 9"/anchors-first reading order is historical, not an additional boot sequence.
+This record is product direction, not execution authority. Current explicit Owner
+mandates and existing substantive architecture, evidence and capability owners control.
+Do not reopen accepted Technical Realization models without a concrete contradiction,
+replace user-visible delivery with governance expansion, or create PRODUCT_NORTH_STAR.md,
+a second roadmap/registry or another source of current state. Test recommendations
+against the commercial value standard in §6; preserve §16's unresolved ownership limits.
 
 ## 16. Integrated Readiness Direction (C) — NON-ACTIVATING
 
@@ -246,7 +232,7 @@ non-authorization boundary in full: it is **direction recording only**. It autho
 implementation, activates no capability, and creates no owner. Where it and any committed anchor,
 roadmap, register or contract conflict, the committed repository authority controls.
 
-The six subsections below deliberately separate **what the Owner wants**, **what the repository
+Subsections A–F below separate **what the Owner wants**, **what the repository
 already owns**, **what is genuinely unresolved**, **what is deliberately not decided**, **what
 architecture already governs**, and **what is forbidden**. That separation is the point: it exists so
 a future agent cannot read ambition as ownership, or direction as authorization.
@@ -283,12 +269,9 @@ missing evidence rather than block" is **not** recorded here as a rule.
 **This record changes no decision policy.** It does **not** alter any existing pass /
 pass-with-conditions / hold decision policy; does **not** weaken, lower or bypass any evidence
 threshold; does **not** convert a withheld, negative or unknown outcome into a positive one; and does
-**not** create any presumption toward producing a result. Vocabulary honesty `[EXEC]`:
-`PASS_WITH_CONDITIONS` has **0 occurrences repository-wide**, and `HOLD` has **0 occurrences as a
-standalone engine or product state** (every apparent match is a substring of `STALL_THRESHOLD` /
-`_MATURITY_THRESHOLD` / `UI_CRIT_CORR_PLACEHOLDER`). These outcome words are therefore used here as
-the **Owner's decision-outcome policy vocabulary**, not as committed repository tokens; no such token
-is created, implied, or scheduled by this record.
+**not** create any presumption toward producing a result. At the original recording, the exact outcome words were Owner policy vocabulary,
+not implemented canonical tokens. §16.G now explicitly preserves the accepted future
+vocabulary; neither record changes current state tokens, evidence thresholds or policy.
 
 ### 16.B — Repository facts and existing owners (verified; no duplicates created)
 
@@ -361,7 +344,7 @@ is created, implied, or scheduled by this record.
 
 None of the following is decided by this record, and none may be treated as settled by a later agent
 merely because the direction above exists: numeric TRL display · numeric MRL display · user-visible
-readiness levels · readiness labels · calibrated confidence percentages · an overall composite
+readiness levels · runtime readiness-label semantics (future disposition vocabulary is preserved in §16.G) · calibrated confidence percentages · an overall composite
 readiness score · external patent / prior-art adapters · external market adapters ·
 supplier / manufacturer data · standards providers · any "highest-impact clarification question"
 mechanism · any readiness-driven new question.
@@ -460,3 +443,137 @@ provider-independent. No specialist review is claimed, and none has occurred.
 `CAP-06 / CAP-12 / CAP-13 / CAP-14 / CAP-18 ACTIVATED: NO` · `SHADOW MODE IMPLEMENTATION AUTHORIZED:
 NO` · `FULL ADAPTIVE QUESTIONING ACTIVATED: NO` · `RVR-8 AUTHORIZED: NO` · `RVR-8 STARTED: NO` ·
 `DEPLOYMENT AUTHORIZED: NO`.
+
+
+### 16.G — Accepted Milestone 1 product direction, preserved with A1
+
+Owner provenance: acceptance of the corrected `ASTRA_M1_STRATEGIC_DECISION.md`
+under **ASTRA-M2-A1-PRODUCT-FIRST-SAVED-JOURNEY-DELIVER-01 v1.0**. This preserves
+future direction in its existing home; the current implementation mandate is owned
+by ACTIVE_INCREMENT_CONTRACT.md. It does not activate deferred capabilities or
+settle the ownership residuals in §16.B–C.
+
+**Product North Star:** help an inventor turn an uncertain idea into a traceable
+decision about the next justified development step, and progressively into a
+reviewable, testable prototype package—showing what is established, what is inferred,
+what remains unknown, and what must be verified. The idea is primary; learning is
+secondary. The intended package includes confirmed requirements/components,
+assumptions, dimensional and constraint provenance, risks/dependencies, supported
+materials/manufacturing options, preliminary representations, test plans, admitted
+results, and versioned decisions/change consequences. These include future abilities;
+they are not claims that every element is implemented now.
+
+Useful value measures are decision-relevant work completed; save/reopen/continue
+without loss or invented history; recovery time/errors; visible material-claim
+provenance; correct response to changed requirements; and a usable standalone
+handoff. Report length, question count, session count and green code tests do not
+prove commercial value. Differentiation is a hypothesis about a consistent product
+for evidence, decisions and continuity—not proven competitive superiority or willingness
+to pay. The existing Bicycle Brake Light Competitive Benchmark remains the evaluation
+owner; a future comparison needs equivalent case/information/tool access and explicit
+assistance/cost conditions. Development Lead selection does not select or migrate the
+runtime provider; CAP-15 retains its future provider-neutral boundary.
+
+**Integrated Technical–Manufacturing–Commercial Readiness:** three separately evidenced
+dimensions in a **derived view**. **FDC-001 / DecisionRecord remains the canonical
+decision owner unless future authority expressly changes it.** No parallel DecisionRecord,
+umbrella readiness engine, three separate engines, duplicated risk store or new canonical
+owner. Do not average readiness scores. Evidence of a mechanism cannot imply
+manufacturability, demand or commercial viability. Each conclusion names the particular
+next step, its supporting evidence, decisive unknowns and limits.
+
+| Future evidence-based disposition | Meaning for the specified next step |
+|---|---|
+| **PASS** | Evidence supports that step within explicit scope and limitations; no certification or commercial-success forecast. |
+| **PASS_WITH_CONDITIONS** | Evidence supports only the bounded step under visible conditions; decisive missing evidence cannot be hidden inside a conditional positive result. |
+| **HOLD** | An evidence-grounded conflict, risk, dependency or constraint prevents that step until the identified condition is resolved. |
+| **INSUFFICIENT_EVIDENCE** | Evidence does not support a decision about that step; name the material unknown and needed evidence. |
+
+These are evidence-based readiness dispositions, **not predicted probabilities of
+commercial success**. They preserve future vocabulary, not implemented canonical
+tokens or a new status model; current decision policy and evidence thresholds stand.
+Evidence confidence describes the strength/applicability of evidence, not business odds.
+
+**Future Commercial Readiness evidence landscape:** customer problem clarity; target
+customer; direct and indirect alternatives; meaningful differentiation; customer
+validation; willingness to pay; price assumptions; market-evidence strength;
+competitive pressure; acquisition channel; manufacturing economics; regulatory/legal/
+safety dependencies; unresolved commercial gaps; and evidence confidence. Preserve
+these even where exact ownership or available evidence is unresolved. This list does
+not make CAP-18 the universal commercial/adoption owner or enlarge its recorded scope.
+
+TAM/SAM/SOM, estimated unit cost, proposed price, gross-margin range and other unit
+economics may appear **only when assumptions, ranges, provenance and confidence are
+visible**. Distinguish sourced observations from estimates/scenarios; carry cost and
+price uncertainty through reported economics. **Uncertain manufacturing cost must
+never produce falsely precise margin claims.** Unsupported quantities stay unknown
+or are withheld; a numerical result is not compulsory.
+
+**FACT / USER CLAIM / EXTERNAL EVIDENCE / SYSTEM INFERENCE / ASSUMPTION / UNKNOWN**
+are presentation/projection distinctions over existing canonical provenance and
+validation ownership, not replacement tokens or a parallel evidence model. Preserve
+the underlying source and validation status; relabelling cannot promote a claim,
+inference or assumption into fact.
+
+Any future external market, supplier, competitor, official-statistics or manufacturing
+evidence requires provenance, source quality and claim-to-source traceability: source,
+date/version where applicable, relevance, limitations and the exact supported claim.
+Retrieved/generated material is not automatically admitted evidence. Preserve existing
+validation and external-evidence admission boundaries. **Do not send complete invention
+details to external services without necessity, authorization and an applicable trust/
+privacy boundary.** Use the minimum necessary disclosure/query and disclose confidentiality
+implications before external-service use. Volatile external data must not enter canonical
+deterministic hashing accidentally.
+
+**Simple Outside — Deep Inside:** one uncertainty-reducing question at a time and
+**ONE PRIMARY NEXT ACTION**, using the authorized question-selection/progression rules.
+Serve novice and technical users through clear project identity, progressive disclosure,
+reconstructed-continuation wording, and expandable evidence/limits. Require functional
+EN/AR parity and RTL; responsive desktop/mobile behavior; keyboard operation, usable
+focus, semantic labels and accessible status announcements; truthful loading, saving,
+success, failure and recovery with safe text preservation; and visible evidence,
+assumption and unknown distinctions. A pending/failed save cannot look successful.
+Keep governance IDs out of the main product flow. "I do not know" remains usable;
+no compulsory giant commercial or engineering questionnaire. This does not activate
+meaning-adaptive/Tier-2 routing or a new question-selection mechanism.
+
+**Negative results have product value:** InventorAI may correctly advise the user
+**not to spend more money yet**, tied to a specified step and the current evidence,
+with a route to new evidence. It is not a Business Plan Generator, startup scoring
+tool, investment adviser, manufacturer, marketplace or predictor of future commercial
+success. A negative result is not an unqualified permanent judgment about an invention.
+
+**Sequence retained:** the Owner selected Option A. A1 is one immediate, coherent
+non-human saved-project/recovery slice; it must not wait for new CEHR or human review.
+"Complete the additions and corrections first" means that slice, not every future
+capability. Preserve prior human evaluation as historical product evidence that informed
+corrections, with its original scope/context/limits; do not discard or repeat it for
+ceremony. After A1 is merged and verified, A2 returns by separate Owner decision to
+reconcile that evidence against the then-current product and exact CEHR protocol,
+reuse every valid result, and seek new human evidence only for material unanswered
+questions under explicit authorization of actual human/reviewer/data scope. CEHR is
+deferred, not cancelled, and retains the authoritative latest-safe gate before dependent
+claim-eligibility/G-4-A implementation authorization or private-beta human invitation.
+A2 is not an A1 entry prerequisite. Return to Option B automated G-4-A feasibility if
+CEHR cannot meet an Owner-selected reliability, latency, cost or scalability boundary,
+or recurring human review is incompatible with the product model; no automatic B
+activation. Day estimates are low-confidence planning ranges, not commitments;
+measurable exit conditions govern. R05-N1's latest-safe touch is the authorized recovery/
+CSRF UX slice or before any private-beta invitation, whichever is first; A1 includes it.
+
+Commercial Readiness runtime, CAD, PCB, CAP-12/13 and other deferred capabilities remain
+unactivated. A future bounded Mechanical concept proof is the preferred first tool
+experiment only after explicit scope, confirmed dimensions/constraints and validation
+requirements exist; the dedicated PCB domain remains deferred. Initial artifacts must
+be labelled **CONCEPT / PRELIMINARY — REQUIRES ENGINEERING VALIDATION**. Phase-7 owns
+export/adapter boundaries; inbound results require governed acceptance. No new design
+store, integration orchestrator or "Engineering Realization Layer" follows from this
+direction. CAP-12/13/14 remain distinct; WS-PFV-001 retains its future validation/result/
+retest scope and prerequisites; the IRL/MRL and `_s6`/RISK-* residuals remain unresolved.
+
+Substantive references remain the existing [Owner Product Identity Correction](OWNER_PRODUCT_IDENTITY_CORRECTION.md),
+[Support and Certification Boundary](OWNER_PRODUCT_SUPPORT_AND_CERTIFICATION_BOUNDARY_AMENDMENT.md),
+[Capability Enrichment Register](INVENTORAI_CAPABILITY_ENRICHMENT_REGISTER.md),
+[Prototype Feasibility and Validation reservation](PROTOTYPE_FEASIBILITY_AND_VALIDATION_FUTURE_WORKSTREAM_OWNER_DECISION.md),
+and [existing competitive benchmark](../benchmarks/BICYCLE_BRAKE_LIGHT_COMPETITIVE_BENCHMARK.md).
+No new human evaluation, market study, G-4-A experiment or release approval is established here.

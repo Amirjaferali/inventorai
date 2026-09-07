@@ -2,12 +2,10 @@
 
 ## Current authority
 
-ASTRA MILESTONE 1 is ACTIVE following PR #618 integration and verification of all
-activation safeguards. The Owner's ASTRA-M1-R05-IMPLEMENT-DELIVER-01 instruction
-expressly authorizes bounded R-05 implementation and autonomous delivery, followed
-by the included strategic assessment. ACTIVE_INCREMENT_CONTRACT.md records the
-scope, preserved boundaries and mandatory review/merge safeguards. Bootstrap-only
-preparation restrictions are consumed; they do not constrain this implementation.
+ASTRA MILESTONE 2 / A1 is the current bounded saved-project and recovery mandate
+under ASTRA-M2-A1-PRODUCT-FIRST-SAVED-JOURNEY-DELIVER-01. Milestone 1 and R-05
+integration are complete. ACTIVE_INCREMENT_CONTRACT.md owns A1's scope, delivery
+safeguards and ending; A2/new human activity and successor implementation are deferred.
 
 docs/governance/LEAN_GOVERNANCE_AND_AGENT_CONTINUITY_PROTOCOL.md §2 owns milestone
 authority and its precedence; §§3–5B own risk, tests and review. The
@@ -43,6 +41,13 @@ conflict, a continuity failure affecting current work, high-risk strategic
 reconsideration, PRE-FCORA at its existing trigger, or another explicit full-audit
 trigger under Lean §6. Ordinary high-risk implementation requires its relevant
 security/data/architecture evidence, not an automatic full project-history audit.
+
+Product direction and capability navigation: consult
+[Commercial Differentiation Direction](docs/governance/INVENTORAI_COMMERCIAL_DIFFERENTIATION_DIRECTION.md)
+(§16.G preserves the accepted North Star and future integrated readiness direction)
+and the [Capability Enrichment Register](docs/governance/INVENTORAI_CAPABILITY_ENRICHMENT_REGISTER.md)
+for materially relevant product work. These links create no second boot order,
+current-state source or implementation authority.
 
 ## Historical material and substantive boundaries
 

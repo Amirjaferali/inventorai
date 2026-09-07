@@ -23,24 +23,88 @@ Git/GitHub own transient candidate, PR and merge identity. No acceptance/merge t
 self-SHA or lifecycle-label change creates a synchronization candidate. When no mandate
 exists, state ACTIVE CONTRACT: NONE; historical declarations never fill the gap.
 
-## Current authority — ASTRA MILESTONE 1 ACTIVE
+## Current authority — ASTRA MILESTONE 2 / A1
 
-Owner instruction ASTRA-M1-R05-IMPLEMENT-DELIVER-01 v1.0 explicitly authorizes the
-bounded R-05 runtime, session/request-integrity, route, template, bilingual UI,
-test and necessary documentation changes. Exact necessary file selection is
-delegated. It includes one R-05 PR, ordinary repair commits, publication, hosted CI,
-separate non-authoring security review and an expected-head guarded merge commit
-after all safeguards below pass, then the included strategic assessment. No
-additional routine START, file, SHA, publication, PR or merge approval is required.
+**Owner source:** ASTRA-M2-A1-PRODUCT-FIRST-SAVED-JOURNEY-DELIVER-01 v1.0.
+The Owner accepted the completed, corrected Milestone 1 strategic decision package
+and selected Option A with product-first sequencing. Astra remains the sole mutating
+Lead; the prior Lead remains STANDBY. This is one bounded mandate, effective on receipt.
 
-Activation evidence: PR #618 merged at 20a10105178196a5c4242f4ba1d7b3f265f00a8a,
-with ordered parents c78efd4e4064f464b48064173ac176f88ed9c371 and
-ff2c2c83c42b25eb46264ae4a3bc295c31429157; the merge tree equals the accepted head.
-Hosted run 34062270444 succeeded; the Owner's saved protection rule 82814043 and
-live branch state establish the required protection/check configuration. Astra
-is the sole mutating Lead, prior Lead STANDBY; no pause/revocation was present.
-These are recorded activation facts, not permanent live-tip/check assertions.
-Every later merge still requires fresh verification of its own safeguards.
+**Starting context:** authoritative branch `feature/atomic-json-session-persistence`,
+verified at `5b85fb573436530e9100111bc30653ade038bd55` (PR #619). R-05 is integrated;
+its accepted security protections remain binding. Milestone 1's assessment is complete.
+This recorded SHA is starting evidence, not a perpetual tip expectation. Reconcile a
+base advance under Lean §10 / AHAEP §5; hold only a material conflict.
+
+**Objective:** one coherent saved-project/recovery improvement: identify the project
+from existing safe authorized data; reopen it; understand supported and unresolved
+state; recover safely; continue through ONE PRIMARY NEXT ACTION. Preserve the current
+loop (describe, explicitly confirm supported domain, answer/unknown, save, reopen,
+review, correct/continue, honest export). Keep canonical progression, scoring, evidence,
+readiness, ownership, persistence and domain activation semantics unchanged.
+
+**Included work:** necessary runtime, templates, bilingual UI, tests and documentation;
+truthful loading/save/success/failure/recovery; safe text preservation; EN/AR, RTL,
+responsive desktop/mobile, keyboard and semantic accessibility. Close R05-N1 here:
+a rejected CSRF POST stays 403 and before mutation, no-store, no-referrer on token
+routes, no token disclosure; recovery leads to a safe GET form with explicit Arabic
+language/direction. Reproduce F-04 `_answer_error` before bounded repair; do not infer
+durable data loss. If not reproduced, record that honestly without speculative change.
+If its repair requires a material new boundary, hold that part and continue A1.
+
+Record the accepted North Star and future integrated Technical–Manufacturing–Commercial
+direction in the existing Commercial Differentiation Direction and Capability Enrichment
+Register, with clear canonical navigation. These are future direction, not runtime
+activation. FDC-001 / DecisionRecord remains the canonical decision owner; any future
+readiness snapshot is derived. No second owner, roadmap, registry or readiness engine.
+
+**Delivery authority:** isolated worktree, bounded non-authoring assistance, ordinary
+commits and repairs, one delivery branch and one PR, push, update PR, proportionate tests
+and hosted CI, risk-appropriate separate-session independent review, then deliberate
+CREATE A MERGE COMMIT of the exact reviewed head. No further routine START, file-selection,
+commit, SHA, push, PR or merge approval is required within this scope. Lean §§3–5B govern
+risk and evidence. Recovery at the shared security rejection surface and durable-owner
+project presentation receive relevant adversarial checks and full regression with the
+required separate-session review; technical assistance is not that formal review.
+
+**Every merge:** freshly verify exact base/head, open/unmerged state, clean mergeability,
+GitHub Actions `CI required` success at the actual candidate/integration context, continuing
+protection (PR-only, strict/up-to-date check enforcement including administrators,
+conversations resolved, force push/deletion disabled), and exact-head independent review.
+Use a mechanical expected-head guard. Verify merged state, ordered parents, expected
+merge tree/diff, authoritative history/tip and protection under AHAEP §20. No auto-merge,
+direct authoritative commit, force push, branch deletion, bypass or main change.
+
+**Human sequencing and later return:** A1 is immediate non-human product work and must
+not wait for new CEHR or human review activity. Preserve prior human evaluation as
+historical product evidence, including its scope and limits. A2 follows only after A1
+is merged and verified and a new Owner decision: reconcile that evidence against the
+then-current product and exact CEHR protocol, reuse valid results, seek new human
+evidence only for material unanswered questions under explicit authorization of the
+actual reviewer/data scope. CEHR remains deferred, not cancelled; its latest-safe gate
+before dependent claim-eligibility/G-4-A implementation authorization or private-beta
+human invitation remains. No preparation or favorable anecdote satisfies that gate.
+Return to Option B automated G-4-A feasibility only by Owner decision if CEHR cannot
+meet an Owner-selected reliability, latency, cost or scalability boundary, or recurring
+human review conflicts with the intended product model. A1 does not activate A2 or B.
+
+**Holds and exclusions:** hold only affected work for a new material product/evidence/
+security/privacy/ownership boundary, schema/migration, unresolved material architecture,
+required CI/review failure, material base conflict, human data, external cost/provider
+commitment or deployment. Continue unrelated authorized work. No A2/CEHR execution,
+claim-eligibility/G-4-A implementation or architecture, CAD/PCB, Commercial Readiness
+runtime, CAP-12/13 or other deferred activation, new domain, schema/destructive migration,
+production/private-beta invitation, deployment, paid service or spending is authorized.
+F-03, G-4-B, M-1, T1-A′, HICR, RUN-004 and PRE-FCORA retain their actual gates.
+
+**Completion and expiry:** this mandate ends at the verified merge and one concise
+return covering visible improvement, F-04 evidence/disposition, R05-N1 closure, EN/AR/
+RTL/responsive/accessibility, tests/review/hosted CI, exact merge identity, nonblocking
+findings and the later A2/B return. No successor implementation follows without a new
+Owner decision. Planning day ranges are low confidence, never delivery commitments;
+use the stated exit conditions. An Owner pause/stop/revocation is effective immediately
+under Lean §9: no new mutation, safe handling of an in-flight atomic operation, preserve
+accepted work and return one checkpoint; no inferred resumption or retroactive undo.
 
 ## Consumed transition preparation — historical bootstrap evidence only
 
@@ -89,13 +153,13 @@ bootstrap-closure, activation-candidate or governance-sync lifecycle is required
 The conditional milestone below still requires its operational safeguards. The
 presence of the workflow alone is not proof that CI or branch protection works.
 
-## Active milestone scope and safeguards
+## Completed Milestone 1 — historical scope and safeguards
 
 **ASTRA MILESTONE 1 — SECURE AND DIFFERENTIATED PRIVATE-BETA PROGRESSION**
 
 **Owner source:** Transition Authorization §§7–11, final merge decision
 ASTRA-TRANSITION-PR618-FINAL-MERGE-01 and explicit R-05 delivery instruction
-ASTRA-M1-R05-IMPLEMENT-DELIVER-01. **Status: ACTIVE.** The activation evidence is
+ASTRA-M1-R05-IMPLEMENT-DELIVER-01. **Status: COMPLETED.** The activation evidence is
 recorded above. Astra may not waive, expand or renew these conditions or scope.
 
 ### Activation conditions — all required

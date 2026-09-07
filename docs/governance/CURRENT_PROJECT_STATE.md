@@ -13,10 +13,10 @@ override this current entry or impose another reading/approval/synchronization s
 - Transition integrated through PR #618 at
   20a10105178196a5c4242f4ba1d7b3f265f00a8a; all activation safeguards verified.
   ACTIVE_INCREMENT_CONTRACT.md records the evidence and exact mandate.
-- ASTRA MILESTONE 1 — SECURE AND DIFFERENTIATED PRIVATE-BETA PROGRESSION is ACTIVE.
-  R-05 implementation and autonomous delivery are expressly authorized by
-  ASTRA-M1-R05-IMPLEMENT-DELIVER-01; its security review and per-merge safeguards
-  remain mandatory. The preparation-only bootstrap authority is consumed.
+- Milestone 1 is complete: R-05 integrated through PR #619 and its corrected
+  strategic package accepted. ASTRA MILESTONE 2 / A1 saved-project and recovery
+  delivery is the current bounded mandate; ACTIVE_INCREMENT_CONTRACT.md owns
+  its scope, safeguards, completion and exclusions.
 - Astra is the sole mutating execution Lead; the prior Lead remains STANDBY, not terminated.
   Only one Lead may possess mutation authority. Pause/revocation and return use Lean §9.
 - Technical position: completed product foundations with remaining security/product-value
@@ -29,11 +29,12 @@ F-01/F-02 v2.1 is implemented at PR #617; B-01/B-02 are closed. No further F-01/
 post-merge governance synchronization is required. OSP lifecycle remains CLOSED; its
 standing material-instruction control remains applicable. These lifecycles are not reopened.
 
-The active milestone authorizes R-05 request-integrity/
-CSRF remediation preserving existing account/session/HMAC/ownership and F-03 semantics,
-with the required separate non-authoring security review before guarded merge. It then
-authorizes ONE strategic product-priority assessment. F-04 is not automatically the next
-implementation. The milestone owns its exact objectives, actions, exclusions and ending.
+A1 improves the existing saved journey and safe recovery, including R05-N1 and a
+reproduction-led F-04 disposition. It does not reopen accepted R-05 protections.
+New human activity is not an A1 prerequisite. After verified A1 completion, stop:
+A2 evidence reconciliation/human scope or Option B needs a new Owner decision.
+Prior human evaluation remains historical evidence, neither discarded nor an automatic
+CEHR pass. Actual later return gates remain with their owners and the current mandate.
 
 F-03 stays behind its Owner product-decision gate. G-4-A remains CURRENT — NOT FIXED;
 CEHR/Route-B, G-4-B, M-1, T1-A′, HICR/readiness, RUN-004 and PRE-FCORA retain their actual
@@ -59,6 +60,7 @@ Resolve it at the affected return gate, not through an automatic unrelated-work 
 | Foundation phase structure, not current status | PRODUCT_FOUNDATION_AND_COMMERCIAL_READINESS_REMEDIATION_PLAN.md |
 | Relevant substantive Owner decisions | OWNER_DECISION_REGISTER.md, only the cited/relevant decisions |
 | Deferred obligations and actual return gates | DEFERRED_OBLIGATIONS_REGISTER.md |
+| Accepted North Star and future integrated readiness direction | INVENTORAI_COMMERCIAL_DIFFERENTIATION_DIRECTION.md §16.G (direction, not activation) |
 | Capability ownership, including CAP-12–15 and CAP-18 | INVENTORAI_CAPABILITY_ENRICHMENT_REGISTER.md |
 | Deliverable workstreams, including deferred WS17 | DELIVERABLE_STABILIZATION_REMEDIATION_PLAN.md §15 |
 

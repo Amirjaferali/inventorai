@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="{{ ui_lang }}" dir="{{ ui_dir }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ t('UI_A1_RECOVERY_TITLE') }} — InventorAI</title>
+  <style>
+    body{font-family:sans-serif;max-width:38rem;margin:3rem auto;padding:0 1.25rem;line-height:1.6;color:#263b4b}
+    a{display:inline-block;padding:.7rem 1rem;background:#263b4b;color:#fff;border-radius:6px}
+    a:focus-visible{outline:3px solid #2c6fbb;outline-offset:4px}
+  </style>
+</head>
+<body>
+<main>
+  <h1>{{ t('UI_A1_RECOVERY_TITLE') }}</h1>
+  <p role="alert">{{ t('UI_CSRF_REJECT') }}</p>
+  <p>{{ t('UI_A1_RECOVERY_TEXT') }}</p>
+  {% if email_recovery %}<p>{{ t('UI_A1_RECOVERY_EMAIL') }}</p>{% endif %}
+  <a id="csrf-recovery" href="{{ recovery_url }}">{{ t('UI_A1_RECOVERY_LINK') }}</a>
+</main>
+</body>
+</html>
