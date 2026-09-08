@@ -81,7 +81,7 @@ WORDINGS = {
         "These are your statements, not confirmed risks, and they still require\n"
         "independent validation."),
     "section_6_empty_qualification": (
-        "No system-derived risks were identified from the current session state.\n\n"
+        "No risks were identified by the system from the current session state.\n\n"
         "This does not mean the idea is safe or risk-free. Safety consequences you\n"
         "described are listed separately under “Inventor-Stated Safety Signals” and\n"
         "have not been independently validated."),
