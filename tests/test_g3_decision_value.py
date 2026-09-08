@@ -442,12 +442,48 @@ def test_a17_single_decisionrecord_construction_path():
     assert "sqlite" not in src and "json.dump" not in src
 
 
+# The single public wording replacement authorized by the bounded three-file
+# wording repair over the A-20/A-21 pin below. It removes the prohibited internal
+# vocabulary token `system-derived` from the inventor-facing Section 6 empty-state
+# qualification. Nothing else in engine/deliverable_assembler.py may differ from
+# the pin: the guard reconstructs the pinned blob with EXACTLY this substitution
+# and demands byte-equality, so any further assembler change fails.
+_A20_ASSEMBLER_APPROVED_OLD = (
+    '    "No system-derived risks were identified from the current session '
+    'state.\\n\\n"\n')
+_A20_ASSEMBLER_APPROVED_NEW = (
+    '    "No risks were identified by the system from the current session '
+    'state.\\n\\n"\n')
+
+
 def test_a20_a21_dw_lane_and_assembler_untouched():
     import subprocess
     base = "f96c1900a0f5d0831a7654223ae4e008d4df961e"
-    for path in ("engine/decision_workspace.py",
-                 "engine/deliverable_assembler.py"):
-        out = subprocess.run(["git", "diff", "--name-only", base, "--", path],
-                             capture_output=True, text=True,
-                             cwd=os.path.join(os.path.dirname(__file__), ".."))
-        assert out.stdout.strip() == "", path
+    root = os.path.join(os.path.dirname(__file__), "..")
+
+    # A-20/A-21, unchanged rule: the decision-workspace lane stays byte-identical
+    # to the pin — no diff of any kind is tolerated.
+    out = subprocess.run(["git", "diff", "--name-only", base, "--",
+                          "engine/decision_workspace.py"],
+                         capture_output=True, text=True, cwd=root)
+    assert out.stdout.strip() == "", "engine/decision_workspace.py"
+
+    # A-20/A-21, same pin, bounded exception: engine/deliverable_assembler.py is
+    # still frozen against `base`; the ONLY authorized difference is the one-line
+    # public wording replacement above. Reconstructing the pinned blob with that
+    # exact substitution must reproduce the working file byte for byte. This is
+    # not a broad exemption and not a newer baseline: any other assembler edit,
+    # anywhere in the file, makes the reconstruction differ and fails the test.
+    pinned = subprocess.run(
+        ["git", "show", base + ":engine/deliverable_assembler.py"],
+        capture_output=True, cwd=root)
+    assert pinned.returncode == 0, "pinned engine/deliverable_assembler.py unavailable"
+    pinned_text = pinned.stdout.decode("utf-8")
+    assert pinned_text.count(_A20_ASSEMBLER_APPROVED_OLD) == 1, (
+        "the pinned assembler no longer carries the exact authorized wording line")
+    expected = pinned_text.replace(_A20_ASSEMBLER_APPROVED_OLD,
+                                   _A20_ASSEMBLER_APPROVED_NEW)
+    with open(os.path.join(root, "engine", "deliverable_assembler.py"),
+              encoding="utf-8") as fh:
+        actual = fh.read()
+    assert actual == expected, "engine/deliverable_assembler.py"
