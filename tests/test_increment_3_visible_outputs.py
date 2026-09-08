@@ -781,3 +781,127 @@ def test_both_surfaces_call_shared_derivation_entry_point(monkeypatch):
     assert any(c is s for c in calls), \
         "session did not call the shared derivation with the in-memory IdeaState"
     assert b"rec_1" in resp.data
+
+
+# =================================================================================
+# L. Increment-3 generated-output language disclosure (Owner decision, Option B)
+#
+# The Owner disposition for the Deferred Obligations Register §3 row "Increment 3 /
+# next_development_step — generated substantive output language parity" is
+# ENGLISH-BY-RULE WITH ON-SURFACE DISCLOSURE: the generated substantive content
+# stays English deliberately, and the surrounding interface plus a disclosure follow
+# the selected UI language. These tests prove exactly that pairing on both surfaces.
+# They do NOT translate generated content and do NOT reverse the RVR-7
+# generated-output exclusion, which tests/test_rvr7_web_arabic_serving.py still pins.
+# =================================================================================
+_DISCLOSURE_KEY = "UI_B_GENOUT_DISCLOSURE"
+
+# The exact generated substantive strings that must stay English in BOTH languages.
+_SUBSTANTIVE_ENGLISH = (
+    "Pending empirical evidence request",
+    "Provide the requested empirical evidence.",
+)
+
+
+def _disclosure(lang):
+    import web.ui_text as _ui_text
+    return _ui_text.UI_STRINGS[_DISCLOSURE_KEY][lang]
+
+
+def _render_in_language(path, state, sid_prefix, lang):
+    """Render `path` for `state` with the UI language set to `lang`, through the
+    real committed session slot. Presentation only; mutates no state."""
+    sid = sid_prefix + str(id(state)) + lang
+    _SESSION_STORE[sid] = {"state": state, "last_result": None, "transcript": []}
+    client = _flask_app.test_client()
+    with client.session_transaction() as sess:
+        sess["ui_lang"] = lang
+    try:
+        return client.get(path % sid).get_data(as_text=True)
+    finally:
+        _SESSION_STORE.pop(sid, None)
+
+
+def _evidence_request_state():
+    """A state whose primary issue is a pending empirical-evidence request, so the
+    Increment-3 payload is actionable on both surfaces."""
+    s = _state_with_open_gap()
+    s.record_interaction(action=DISPOSITION_EVIDENCE_REQUESTED, content="m",
+                         gap_context=MECHANISM_COMPLETENESS, iteration=1)
+    return s
+
+
+def test_genout_disclosure_key_carries_both_languages():
+    """The disclosure is a catalogue entry with both languages, resolved by the
+    existing UI-text mechanism — not a hardcoded template string."""
+    import web.ui_text as _ui_text
+    entry = _ui_text.UI_STRINGS[_DISCLOSURE_KEY]
+    assert set(entry) == {"en", "ar"}
+    assert entry["en"].strip() and entry["ar"].strip()
+    assert entry["en"] != entry["ar"]
+    assert _ui_text.text(_DISCLOSURE_KEY, "en") == entry["en"]
+    assert _ui_text.text(_DISCLOSURE_KEY, "ar") == entry["ar"]
+
+
+def test_session_page_shows_english_disclosure_for_en():
+    body = _render_in_language("/session/%s", _evidence_request_state(),
+                               "inc3-genout-sess-", "en")
+    assert _disclosure("en") in body
+    assert _disclosure("ar") not in body
+
+
+def test_session_page_shows_arabic_disclosure_for_ar():
+    body = _render_in_language("/session/%s", _evidence_request_state(),
+                               "inc3-genout-sess-", "ar")
+    assert _disclosure("ar") in body
+    assert _disclosure("en") not in body
+
+
+def test_deliverable_section_12_shows_english_disclosure_for_en():
+    body = _render_in_language("/session/%s/deliverable", _evidence_request_state(),
+                               "inc3-genout-deliv-", "en")
+    assert _disclosure("en") in body
+    assert _disclosure("ar") not in body
+
+
+def test_deliverable_section_12_shows_arabic_disclosure_for_ar():
+    body = _render_in_language("/session/%s/deliverable", _evidence_request_state(),
+                               "inc3-genout-deliv-", "ar")
+    assert _disclosure("ar") in body
+    assert _disclosure("en") not in body
+
+
+def test_generated_substantive_content_stays_english_in_both_languages():
+    """The disposition is english-by-rule: the SAME generated strings render on both
+    surfaces in both languages. The disclosure explains this; it never replaces or
+    translates the content."""
+    for lang in ("en", "ar"):
+        for path, prefix in (("/session/%s", "inc3-genout-sess-"),
+                             ("/session/%s/deliverable", "inc3-genout-deliv-")):
+            body = _render_in_language(path, _evidence_request_state(), prefix, lang)
+            for phrase in _SUBSTANTIVE_ENGLISH:
+                assert phrase in body, (lang, path, phrase)
+
+
+def test_disclosure_payload_is_unchanged_by_the_disclosure():
+    """Presentation-only: the engine payload and the additive deliverable section
+    carry NO disclosure field and no language field. The disclosure exists solely at
+    the render boundary."""
+    s = _evidence_request_state()
+    payload = _derive(s)
+    section = assemble_deliverable(s)[ADDITIVE_SECTION_KEY]
+    for lang in ("en", "ar"):
+        assert _disclosure(lang) not in repr(vars(payload) if hasattr(payload, "__dict__")
+                                             else payload)
+        assert _disclosure(lang) not in repr(section)
+    assert "disclosure" not in section and "language" not in section
+
+
+def test_disclosure_makes_no_affirmative_capability_claim():
+    """The disclosure states a presentation rule only. It must not claim the content
+    is verified, validated, complete, accurate, safe or translated."""
+    for lang in ("en", "ar"):
+        text = _disclosure(lang).lower()
+        for word in ("verified", "validated", "complete", "accurate", "safe",
+                     "guaranteed", "translated", "certified"):
+            assert word not in text, (lang, word)

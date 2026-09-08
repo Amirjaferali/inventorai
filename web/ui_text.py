@@ -853,6 +853,17 @@ UI_STRINGS = {
     "UI_B_SESSION_001": {"en": "Next Development Step", "ar": "خطوة التطوير التالية"},
     "UI_B_SESSION_002": {"en": "Do next:", "ar": "الخطوة التالية:"},
     "UI_B_SESSION_003": {"en": "Reference:", "ar": "المرجع:"},
+    # Increment-3 generated-output language disclosure (Owner decision, Option B:
+    # generated substantive content stays English by rule; the surrounding
+    # interface and this disclosure follow the selected UI language). Shared by
+    # the session callout and Deliverable Section 12; it translates NO generated
+    # content and asserts nothing about the content itself.
+    "UI_B_GENOUT_DISCLOSURE": {
+        "en": ("Generated substantive content is intentionally presented in "
+               "English; the surrounding interface is localized."),
+        "ar": ("يُعرض المحتوى الجوهري المُولَّد عمدًا باللغة الإنجليزية؛ أما واجهة "
+               "الاستخدام المحيطة فمترجمة."),
+    },
     "UI_B_SESSION_004": {
         "en": "View FDC-001 Deliverable",
         "ar": "عرض مُخرَج FDC-001",

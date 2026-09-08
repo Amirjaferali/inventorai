@@ -448,6 +448,11 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% if nds.remaining_uncertainty %}
   <div class="field-value"><em>{{ nds.remaining_uncertainty }}</em></div>
   {% endif %}
+  {# Increment-3 generated-output language disclosure (Owner decision, Option B).
+     Rendered only in the actionable branch, i.e. exactly where generated English
+     substantive content appears. Presentation-only: no payload, key or generated
+     string changes. #}
+  <div class="genout-note" style="font-size:12px;color:#666;margin-top:6px">{{ t('UI_B_GENOUT_DISCLOSURE') }}</div>
   {% else %}
   <div class="field-value">{{ t('UI_B_DELIV_071') }}</div>
   {% endif %}
