@@ -97,7 +97,11 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
     {% if _wsr and _wsr.total %}
     <div class="field-label">{{ t('UI_RVR5_WITHDRAWN_LABEL') }}</div>
     <div class="field-value">{{ _wsr.total }}</div>
-    {% if _wsr.note %}<div class="ss-meta">{{ _wsr.note }}</div>{% endif %}
+    {# RVR-5 withdrawn-note localization: the guard still keys on the payload
+       note (unchanged, English), while the rendered paragraph follows the
+       selected UI language through the existing catalogue mechanism. Same
+       meaning in both languages; no payload, constant or claim changes. #}
+    {% if _wsr.note %}<div class="ss-meta">{{ t('UI_RVR5_WITHDRAWN_NOTE') }}</div>{% endif %}
     {% endif %}
   </div>
 </div>

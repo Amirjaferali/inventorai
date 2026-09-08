@@ -998,3 +998,106 @@ class TestUserReachabilityClassificationA:
             assert ui_text.localize_message(msg, "ar") != msg
         assert ui_text.localize_deep(webapp.CORRECTION_APPLIED_ACK, "ar") != \
             webapp.CORRECTION_APPLIED_ACK
+
+
+# =========================================================================
+# RVR-5 withdrawn-note localization (Deferred Obligations Register §3 row
+# "W2-A implementation residual — deliverable withdrawn-note renders its
+# English constant without localization").
+#
+# The repair is PRESENTATION-ONLY: the assembler constant and the JSON payload
+# stay English and unchanged, and only the rendered paragraph follows the
+# selected UI language through the existing catalogue mechanism. These tests
+# prove that pairing and pin the payload so a future change cannot localize the
+# machine surface by accident. They touch no other disclaimer.
+# =========================================================================
+_WITHDRAWN_NOTE_KEY = "UI_RVR5_WITHDRAWN_NOTE"
+
+
+def _deliverable_in_language(client, sid, lang):
+    """Render the deliverable with the UI language set through the committed
+    route. Presentation only; mutates no state."""
+    import html as _html
+    assert client.post("/ui-language", data={"lang": lang}).status_code in (200, 302)
+    return _html.unescape(
+        client.get("/session/" + sid + "/deliverable").get_data(as_text=True))
+
+
+def _ss_meta(body):
+    m = re.search(r'<div class="ss-meta">(.*?)</div>', body, re.S)
+    return re.sub(r"\s+", " ", m.group(1)).strip() if m else None
+
+
+class TestRVR5WithdrawnNoteLocalization:
+    def test_catalogue_entry_carries_both_languages_and_english_matches_the_constant(self):
+        """The catalogue English is VERBATIM from the assembler constant, so the
+        rendered English is parity-preserving and the payload stays the source of
+        truth."""
+        from web import ui_text
+        from engine.deliverable_assembler import _WITHDRAWN_SOURCE_NOTE
+        entry = ui_text.UI_STRINGS[_WITHDRAWN_NOTE_KEY]
+        assert set(entry) == {"en", "ar"}
+        assert entry["en"] == _WITHDRAWN_SOURCE_NOTE
+        assert entry["ar"] and entry["ar"] != entry["en"]
+        assert ui_text.text(_WITHDRAWN_NOTE_KEY, "en") == entry["en"]
+        assert ui_text.text(_WITHDRAWN_NOTE_KEY, "ar") == entry["ar"]
+
+    def test_english_deliverable_still_renders_the_english_note(self, client):
+        from web import ui_text
+        sid = _start(client)
+        _correct(client, sid, _answered_ids(sid)[-1], MECH_CORRECTED)
+        body = _deliverable_in_language(client, sid, "en")
+        assert _ss_meta(body) == ui_text.UI_STRINGS[_WITHDRAWN_NOTE_KEY]["en"]
+        assert ui_text.UI_STRINGS[_WITHDRAWN_NOTE_KEY]["ar"] not in body
+
+    def test_arabic_deliverable_renders_the_arabic_note(self, client):
+        from web import ui_text
+        sid = _start(client)
+        _correct(client, sid, _answered_ids(sid)[-1], MECH_CORRECTED)
+        body = _deliverable_in_language(client, sid, "ar")
+        assert _ss_meta(body) == ui_text.UI_STRINGS[_WITHDRAWN_NOTE_KEY]["ar"]
+        assert ui_text.UI_STRINGS[_WITHDRAWN_NOTE_KEY]["en"] not in body
+
+    def test_payload_note_stays_english_in_both_languages(self, client):
+        """The machine surface is NOT localized: the assembled package carries the
+        English constant regardless of the selected UI language."""
+        from engine.deliverable_assembler import _WITHDRAWN_SOURCE_NOTE
+        sid = _start(client)
+        _correct(client, sid, _answered_ids(sid)[-1], MECH_CORRECTED)
+        for lang in ("en", "ar"):
+            _deliverable_in_language(client, sid, lang)
+            meta = assemble_deliverable(
+                SESSION_STORE[sid]["state"])["_session_meta"]
+            assert meta["withdrawn_source_records"]["total"] == 1
+            assert meta["withdrawn_source_records"]["note"] == _WITHDRAWN_SOURCE_NOTE
+
+    def test_no_note_block_renders_before_any_withdrawal(self, client):
+        """The existing `{% if _wsr.note %}` guard is preserved: with no withdrawal
+        the note block does not render in either language."""
+        from web import ui_text
+        sid = _start(client)
+        meta = assemble_deliverable(SESSION_STORE[sid]["state"])["_session_meta"]
+        assert meta["withdrawn_source_records"] == {"total": 0, "note": None}
+        for lang in ("en", "ar"):
+            body = _deliverable_in_language(client, sid, lang)
+            assert _ss_meta(body) is None
+            for text in ui_text.UI_STRINGS[_WITHDRAWN_NOTE_KEY].values():
+                assert text not in body
+
+    def test_localization_adds_no_claim_and_touches_no_other_disclaimer(self):
+        """The Arabic wording states the same meaning and asserts nothing new, and
+        the sibling assembler disclaimers are deliberately NOT localized by this
+        bounded repair."""
+        from web import ui_text
+        import engine.deliverable_assembler as _assembler
+        ar = ui_text.UI_STRINGS[_WITHDRAWN_NOTE_KEY]["ar"]
+        for word in ("verified", "validated", "certified", "safe", "guaranteed",
+                     "accurate", "complete"):
+            assert word not in ar.lower()
+        for name in ("_ZERO_RISK_DISCLAIMER", "_SAFETY_SIGNALS_EMPTY",
+                     "_REQUIREMENT_LANDSCAPE_EMPTY", "_VALIDATION_PLAN_EMPTY",
+                     "_STALE_CRITICALITY_NOTE"):
+            constant = getattr(_assembler, name, None)
+            if isinstance(constant, str):
+                assert not any(v.get("en") == constant
+                               for v in ui_text.UI_STRINGS.values()), name

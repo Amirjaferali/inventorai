@@ -1170,6 +1170,22 @@ UI_STRINGS = {
     "UI_RVR5_WITHDRAWN_LABEL": {
         "en": "Corrected (withdrawn) answers kept in history",
         "ar": "إجابات مصحَّحة (مسحوبة) محفوظة في السجل"},
+    # RVR-5 withdrawn-source note. English is VERBATIM from the assembler constant
+    # engine/deliverable_assembler.py::_WITHDRAWN_SOURCE_NOTE (parity-preserving):
+    # the constant and the JSON payload stay English and unchanged, and only the
+    # rendered paragraph follows the selected UI language. It states the same
+    # meaning in both languages and adds no claim.
+    "UI_RVR5_WITHDRAWN_NOTE": {
+        "en": ("The inventor explicitly withdrew earlier answer(s). Everything "
+               "shown here was recomputed from the remaining answers only; the "
+               "withdrawn text is kept in the project history and is no longer "
+               "used as current support. This is not a judgement that any "
+               "earlier conclusion was wrong."),
+        "ar": ("سحب المخترع الإجابة/الإجابات السابقة صراحةً. أُعيد حساب كل ما "
+               "يظهر هنا بالاعتماد على الإجابات المتبقية فقط؛ ويظل النص المسحوب "
+               "محفوظًا في سجل المشروع ولا يُستخدم بعد ذلك كدعم حالي. ولا يُعد "
+               "ذلك حكمًا بأن أي استنتاج سابق كان خاطئًا."),
+    },
     "UI_B_SESSION_035": {
         "en": "You have worked through the key questions for your idea.",
         "ar": "لقد عملتَ على الأسئلة الأساسية لفكرتك.",
