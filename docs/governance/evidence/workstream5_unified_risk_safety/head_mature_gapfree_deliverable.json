@@ -37,7 +37,7 @@
       "acknowledged_unknown_count": 0,
       "section_13_has_structural_risks": false,
       "section_13_note": "You also described possible safety consequences in your own words.\n\nThey are listed separately under “Inventor-Stated Safety Signals.” They are\nnot structural risk records and have not been independently validated.",
-      "section_6_empty_qualification": "No system-derived risks were identified from the current session state.\n\nThis does not mean the idea is safe or risk-free. Safety consequences you\ndescribed are listed separately under “Inventor-Stated Safety Signals” and\nhave not been independently validated.",
+      "section_6_empty_qualification": "No risks were identified by the system from the current session state.\n\nThis does not mean the idea is safe or risk-free. Safety consequences you\ndescribed are listed separately under “Inventor-Stated Safety Signals” and\nhave not been independently validated.",
       "section_6_high_count": 0,
       "section_6_low_count": 0,
       "section_6_medium_count": 0,

@@ -55,7 +55,7 @@ independent validation.
 **5.2 Section 6 empty-state qualification (no system-derived risks, signals present):**
 
 ```
-No system-derived risks were identified from the current session state.
+No risks were identified by the system from the current session state.
 
 This does not mean the idea is safe or risk-free. Safety consequences you
 described are listed separately under “Inventor-Stated Safety Signals” and
