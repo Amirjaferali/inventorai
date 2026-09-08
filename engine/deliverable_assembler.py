@@ -305,7 +305,7 @@ _LINKAGE_SECTION_6_NOTE = (
     "These are your statements, not confirmed risks, and they still require\n"
     "independent validation.")
 _LINKAGE_SECTION_6_EMPTY_QUALIFIED = (
-    "No system-derived risks were identified from the current session state.\n\n"
+    "No risks were identified by the system from the current session state.\n\n"
     "This does not mean the idea is safe or risk-free. Safety consequences you\n"
     "described are listed separately under “Inventor-Stated Safety Signals” and\n"
     "have not been independently validated.")
