@@ -4,8 +4,11 @@ File-creation contract:
   Path: tests/test_p10_pc1_reconstructed_review_ui.py
   Purpose: behaviour tests for the bounded product gate that surfaces the
     ALREADY-MERGED P4-2 Level-1 deterministic read-only reconstruction
-    (engine.session_reconstruction.reconstruct_review_state — zero production
-    call sites before this gate) on the cold-loaded session page, replacing the
+    (engine.session_reconstruction — zero production call sites before this
+    gate; served since PERF-01 by the single canonical
+    `reconstruct_readonly_state` accessor whose `.review` IS the
+    `reconstruct_review_state` snapshot) on the cold-loaded session page,
+    replacing the
     current cold-load render that shows a FALSE LEVEL-0 maturity display, a
     generic domain label, no gaps, no question, and an answer form whose every
     submission fails closed with a "try again" message.
@@ -177,7 +180,12 @@ def test_reconstruction_failure_fails_closed_to_readonly_recovery(client, monkey
 
     def _boom(*_a, **_k):
         raise RuntimeError("forced reconstruction failure")
-    monkeypatch.setattr(webapp, "reconstruct_review_state", _boom)
+    # PERF-01: the cold page now runs ONE reconstruction pass through the
+    # canonical `reconstruct_readonly_state` accessor, so the failure seam is
+    # retargeted to it. The intent is unchanged and undiminished: an exception
+    # raised by reconstruction must never reach the user as a 500 or a false
+    # reconstruction claim, and must not disturb the durable contract.
+    monkeypatch.setattr(webapp, "reconstruct_readonly_state", _boom)
     r = client.get("/session/" + sid)
     assert r.status_code == 200                              # never a 500
     body = r.get_data(as_text=True)
@@ -222,3 +230,188 @@ def test_cold_render_makes_no_durable_write(client):
     client.get("/session/" + sid)
     assert len(store.load_accepted_answer_evidence(sid)) == before == 2
     SESSION_STORE.pop(sid, None)
+
+
+# ==========================================================================
+# PERF-01 — ONE reconstruction pass per cold page
+#
+# The gate is a DETERMINISTIC OPERATION COUNT, not a timing threshold: the cold
+# page must run the canonical reconstruction accessor exactly once and must not
+# run a second replay for the banner's display state. Nothing here asserts
+# elapsed time.
+# ==========================================================================
+def _count_recon(monkeypatch):
+    """Count `reconstruct_readonly_state` calls made through the web module,
+    leaving behaviour untouched."""
+    calls = []
+    real = webapp.reconstruct_readonly_state
+
+    def counting(store, project_id):
+        calls.append(project_id)
+        return real(store, project_id)
+    monkeypatch.setattr(webapp, "reconstruct_readonly_state", counting)
+    return calls
+
+
+def _count_contract_loads(monkeypatch):
+    """Count full `load_contract()` calls (deserialization + validation) on the
+    real store class."""
+    from engine.record_store import SqliteRecordStore
+    calls = []
+    real = SqliteRecordStore.load_contract
+
+    def counting(self, project_id):
+        calls.append(project_id)
+        return real(self, project_id)
+    monkeypatch.setattr(SqliteRecordStore, "load_contract", counting)
+    return calls
+
+
+def test_perf01_cold_page_runs_exactly_one_reconstruction_pass(client, monkeypatch):
+    """ONE canonical accessor call AND — the load-bearing half — exactly ONE
+    underlying deterministic reconstruction/replay pass. The page used to run
+    two passes over the same durable history for one request."""
+    import engine.session_reconstruction as SR
+    passes = []
+    real_reconstruct = SR._reconstruct
+
+    def counting(store, project_id):
+        passes.append(project_id)
+        return real_reconstruct(store, project_id)
+    monkeypatch.setattr(SR, "_reconstruct", counting)
+    sid, _, _ = _journey(client)
+    calls = _count_recon(monkeypatch)
+    passes.clear()
+    body = client.get("/session/" + sid).get_data(as_text=True)
+    assert CLAIM_EN in html.unescape(body)          # a real Level-1 render
+    assert calls == [sid], calls                    # one canonical accessor call
+    assert passes == [sid], passes                  # one reconstruction pass
+    SESSION_STORE.pop(sid, None)
+
+
+def test_perf01_cold_page_never_calls_reconstruct_review_state(client, monkeypatch):
+    """Structural AND behavioural proof. The web module no longer binds
+    `reconstruct_review_state` at all, and forcing the engine's own function to
+    explode leaves the cold page fully working — so no path reaches it."""
+    import engine.session_reconstruction as SR
+    assert not hasattr(webapp, "reconstruct_review_state")
+
+    def _boom(*_a, **_k):
+        raise AssertionError("reconstruct_review_state must not run on the cold page")
+    monkeypatch.setattr(SR, "reconstruct_review_state", _boom)
+    sid, _, live_question = _journey(client)
+    body = client.get("/session/" + sid).get_data(as_text=True)
+    assert CLAIM_EN in html.unescape(body)
+    assert live_question and live_question in body
+    SESSION_STORE.pop(sid, None)
+
+
+def test_perf01_cold_page_performs_two_full_contract_loads(client, monkeypatch):
+    """The successful known Level-1 cold page keeps exactly TWO safe full
+    contract loads — the durable `_cold_load_entry` rebuild and the ONE
+    reconstruction pass. The five it used to perform are gone, and the two
+    remaining are deliberately NOT collapsed by rehydrating the render-only
+    reconstructed state into SESSION_STORE."""
+    sid, _, _ = _journey(client)
+    loads = _count_contract_loads(monkeypatch)
+    body = client.get("/session/" + sid).get_data(as_text=True)
+    assert CLAIM_EN in html.unescape(body)
+    assert loads == [sid, sid], loads
+    SESSION_STORE.pop(sid, None)
+
+
+def test_perf01_cold_entry_stays_minimal_and_non_resumable(client):
+    """The SESSION_STORE entry is still the minimal cold entry — NOT the
+    render-only reconstructed state — so the committed P4-1b-2a non-resume
+    guard (`state.domain is None`) is untouched and an answer still fails
+    closed without changing the durable contract."""
+    sid, _, _ = _journey(client)
+    before = webapp._get_store().load_contract(sid).to_json()
+    body = client.get("/session/" + sid).get_data(as_text=True)
+    assert CLAIM_EN in html.unescape(body)
+    entry_state = SESSION_STORE[sid]["state"]
+    assert getattr(entry_state, "domain", None) is None      # cold marker intact
+    # The reconstructed render-only state is a DIFFERENT object that carries the
+    # persisted domain; it was never placed into SESSION_STORE.
+    import engine.session_reconstruction as SR
+    recon = SR.reconstruct_readonly_state(webapp._get_store(), sid)
+    assert recon.state is not entry_state
+    assert getattr(recon.state, "domain", None) == "electronics_electrical"
+    assert entry_state.assertions is not recon.state.assertions
+    rejected = client.post("/session/" + sid, data={
+        "response": "A forged answer must not revive this project.",
+        "action": "answered", "answer_token": "forged-token"})
+    assert rejected.status_code == 302
+    assert webapp._get_store().load_contract(sid).to_json() == before
+    SESSION_STORE.pop(sid, None)
+
+
+def test_perf01_level1_wrapper_without_state_suppresses_the_claim(client, monkeypatch):
+    """A Level-1 review WITHOUT a reconstructed state is not a valid
+    reconstruction: the claim is suppressed rather than rendered from a missing
+    state, and the page still returns 200 with no dead answer form."""
+    import engine.session_reconstruction as SR
+    sid, _, _ = _journey(client)
+    real = webapp.reconstruct_readonly_state(webapp._get_store(), sid)
+    assert real.review.level == 1 and real.state is not None
+    monkeypatch.setattr(
+        webapp, "reconstruct_readonly_state",
+        lambda *_a, **_k: SR.ReconstructedReadonlySession(
+            review=real.review, state=None))
+    r = client.get("/session/" + sid)
+    assert r.status_code == 200                                  # never a 500
+    body = r.get_data(as_text=True)
+    assert CLAIM_EN not in html.unescape(body)                   # no false claim
+    assert 'name="response"' not in body
+    SESSION_STORE.pop(sid, None)
+
+
+def test_perf01_valid_state_with_failing_localization_falls_back_to_english(
+        client, monkeypatch):
+    """A DIFFERENT invariant from the one above: once a valid non-None state
+    exists, a failure inside the display resolution falls back to the canonical
+    English reconstruction evidence — the claim is still rendered."""
+    sid, _, live_question = _journey(client)
+    assert live_question
+
+    hit = []
+
+    def _boom(*_a, **_k):
+        hit.append(1)
+        raise RuntimeError("forced localization resolution failure")
+    monkeypatch.setattr(webapp, "_rvr7_identity", _boom)
+    client.post("/ui-language", data={"lang": "ar"})
+    r = client.get("/session/" + sid)
+    assert r.status_code == 200
+    body = r.get_data(as_text=True)
+    assert hit, "the display-resolution seam was never reached"
+    assert live_question in body            # canonical English evidence rendered
+    SESSION_STORE.pop(sid, None)
+
+
+def test_perf01_english_and_arabic_cold_banners_unchanged(client):
+    """EN/AR cold-page display parity is structurally and semantically the same
+    after the single-pass change: the English page renders the canonical English
+    ask, the Arabic page renders Arabic with the localized claim, and the
+    question element never declares a language its text does not have."""
+    sid, _, live_question = _journey(client)
+    assert live_question
+    en = client.get("/session/" + sid).get_data(as_text=True)
+    assert CLAIM_EN in html.unescape(en)
+    assert live_question in en
+    SESSION_STORE.pop(sid, None)
+
+    sid2, _, live_question2 = _journey(client)
+    client.post("/ui-language", data={"lang": "ar"})
+    ar = client.get("/session/" + sid2).get_data(as_text=True)
+    assert bool(re.search(r"[؀-ۿ]", ar))
+    assert "ليست جلسة مستأنفة" in ar
+    assert 'name="response"' not in ar
+    m = re.search(
+        r'<p class="question"[^>]*lang="([a-z]{2})"[^>]*dir="(ltr|rtl)"[^>]*>(.*?)</p>',
+        ar, re.S)
+    if m:
+        lang, direction, text = m.group(1), m.group(2), m.group(3).strip()
+        assert (lang == "ar") == bool(re.search(r"[؀-ۿ]", text))
+        assert (direction == "rtl") == (lang == "ar")
+    SESSION_STORE.pop(sid2, None)

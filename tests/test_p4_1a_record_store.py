@@ -246,3 +246,97 @@ def test_no_readiness_persisted_fresh_derivation(tmp_path):
     # the persisted contract dict carries no readiness fields
     dumped = loaded.to_dict()
     assert "readiness" not in dumped and "overall_verified" not in str(dumped)
+
+
+# --- PERF-01: bounded read-only readability probe ----------------------------
+# `ping()` exists so the health path can prove the database is readable WITHOUT
+# enumerating projects. These tests pin its deterministic shape — one bounded
+# statement, at most one discarded row, zero writes — for both an empty and a
+# populated table. They assert no elapsed time and claim no database latency.
+class _SqlSpyConn:
+    """Wraps a real connection and records the SQL issued through it
+    (``sqlite3.Connection.execute`` is read-only and cannot be patched)."""
+    def __init__(self, real):
+        self._real = real
+        self.sql = []
+
+    def execute(self, sql, *a, **k):
+        self.sql.append(" ".join(sql.split()).upper())
+        return self._real.execute(sql, *a, **k)
+
+    def __getattr__(self, name):
+        return getattr(self._real, name)
+
+
+def _spy(store):
+    spy = _SqlSpyConn(store._conn)
+    store._conn = spy
+    return spy
+
+
+def test_perf01_record_store_ping_is_declared_on_the_protocol():
+    from engine.record_store import RecordStore
+    assert callable(getattr(RecordStore, "ping", None))
+    assert callable(getattr(SqliteRecordStore, "ping", None))
+
+
+def test_perf01_record_store_ping_is_bounded_on_an_empty_table(tmp_path):
+    store = SqliteRecordStore(_db(tmp_path))
+    assert store.project_ids() == []
+    spy = _spy(store)
+    assert store.ping() is None            # empty table with no row is HEALTHY
+    assert spy.sql == ["SELECT 1 FROM PROJECTS LIMIT 1"], spy.sql
+    store.close()
+
+
+def test_perf01_record_store_ping_is_bounded_on_a_populated_table(tmp_path):
+    store = SqliteRecordStore(_db(tmp_path))
+    for i in range(25):
+        store.create_project(ProjectRecordContract(idea_id="idea-%d" % i,
+                                                   assertions=[]),
+                             project_id="perf01-%d" % i)
+    spy = _spy(store)
+    assert store.ping() is None
+    # The SAME single bounded statement whatever the table size: no COUNT, no
+    # project enumeration, and at most one row can come back.
+    assert spy.sql == ["SELECT 1 FROM PROJECTS LIMIT 1"], spy.sql
+    row_count = len(store._conn._real.execute(
+        "SELECT 1 FROM projects LIMIT 1").fetchall())
+    assert row_count <= 1
+    store.close()
+
+
+def test_perf01_record_store_ping_writes_nothing(tmp_path):
+    path = _db(tmp_path)
+    store = SqliteRecordStore(path)
+    contract, _ = sample_contract()
+    pid = store.create_project(contract)
+    before_projects = store._conn.execute(
+        "SELECT * FROM projects ORDER BY project_id").fetchall()
+    before_records = store._conn.execute(
+        "SELECT project_id, seq, record_id, payload FROM records ORDER BY seq"
+    ).fetchall()
+    for _ in range(5):
+        store.ping()
+    assert store._conn.execute(
+        "SELECT * FROM projects ORDER BY project_id").fetchall() == before_projects
+    assert store._conn.execute(
+        "SELECT project_id, seq, record_id, payload FROM records ORDER BY seq"
+    ).fetchall() == before_records
+    store.close()
+    # The durable content survives a real close-and-reopen unchanged.
+    store2 = SqliteRecordStore(path)
+    assert store2.load_contract(pid).idea_id == "idea-p4-1a-001"
+    store2.close()
+
+
+def test_perf01_record_store_ping_propagates_storage_failure(tmp_path):
+    """Success is signalled ONLY by returning None; a storage failure must
+    propagate to the caller's existing exception boundary, never be swallowed
+    into an apparent healthy result."""
+    import sqlite3 as _sqlite3
+    store = SqliteRecordStore(_db(tmp_path))
+    store._conn.execute("DROP TABLE projects")
+    with pytest.raises(_sqlite3.OperationalError):
+        store.ping()
+    store.close()

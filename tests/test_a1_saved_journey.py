@@ -215,7 +215,10 @@ def test_unavailable_cold_reconstruction_has_no_dead_form_or_false_completion(mo
     webapp.SESSION_STORE.pop(sid)
     def unavailable(*args):
         raise StoreError("reconstruction unavailable")
-    monkeypatch.setattr(webapp, "reconstruct_review_state", unavailable)
+    # PERF-01: retargeted to the single canonical accessor the cold page now
+    # calls. Unchanged intent: an unavailable durable store must still produce
+    # the recovery view — no dead answer form, no false completion, no 500.
+    monkeypatch.setattr(webapp, "reconstruct_readonly_state", unavailable)
     body = get(client, sid)
     assert body.count("data-primary-action") == 1
     assert 'name="response"' not in body and 'id="resume-project"' not in body

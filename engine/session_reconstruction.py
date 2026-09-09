@@ -13,8 +13,10 @@ What it does (and only this):
   * loads ONE project (project-scoped; the `sid` IS the durable `project_id`);
   * requires a persisted seed idea, confirmed domain, path, and an EXACT supported
     engine/contract version, all captured at project creation;
-  * loads the accepted-answer evidence in authoritative store `seq` order
-    (`SqliteRecordStore.load_accepted_answer_evidence`, P4-1b-2b), then replays
+  * loads the project's validated `ProjectRecordContract` ONCE and derives the
+    accepted-answer evidence from it in authoritative store `seq` order (the
+    same `answered` selection `SqliteRecordStore.load_accepted_answer_evidence`
+    performs over that same load, P4-1b-2b), then replays
     the AMENDED stream — the accepted answers the inventor has not explicitly
     withdrawn (`superseded_by is None`, the one canonical active-set rule already
     used by the derived modules). Withdrawn records remain durably present and
@@ -49,12 +51,14 @@ Hard boundaries (fail-closed, no false-green):
 The seed idea is sensitive user content: it is never logged, never placed in an
 exception string, and never duplicated into an `AssertionRecord`.
 """
+import copy
 from dataclasses import dataclass, field
 from typing import Optional
 
 from engine import progression_loop
 from engine.idea_state import (IdeaState, DISPOSITION_ANSWERED,
     DISPOSITION_RISK_ACCEPTED)
+from engine.record_store import ProjectNotFound
 
 # One explicit deterministic reconstruction version. It identifies the supported
 # engine/contract behaviour — NOT an AI model, timestamp, branch, or environment
@@ -207,15 +211,31 @@ def reconstruct_review_state(store, project_id: str) -> ReconstructedReviewState
 def _reconstruct(store, project_id: str):
     """Shared single replay (P10-PC2 extraction — verbatim P4-2 Level-1 logic;
     no behavior change). Returns ``(review, state_or_None)``."""
-    # Load the accepted-answer evidence FIRST (project-scoped, seq order). This
-    # validates the durable contract, so a malformed/corrupt/cyclic history raises
-    # the canonical ContractError here — before any Level-0 shortcut — and yields
-    # no partial review state. Unknown/empty projects yield the empty tuple.
-    evidence = store.load_accepted_answer_evidence(project_id)
+    # PERF-01: ONE full validated contract load per reconstruction. Loading the
+    # contract IS the validation seam (`load_accepted_answer_evidence` was only a
+    # thin `answered` filter over this same load), so a malformed / unsupported-
+    # version / invalid-reference / cyclic durable history still raises the
+    # canonical ContractError HERE — before any Level-0 shortcut — and still
+    # yields no partial review state. Only ``ProjectNotFound`` is caught, exactly
+    # as the evidence loader caught it, so an unknown project keeps its
+    # non-disclosing empty-evidence Level-0 behaviour; ``StoreError``,
+    # ``ContractError`` and every other failure propagate unchanged.
+    try:
+        contract = store.load_contract(project_id)
+    except ProjectNotFound:
+        contract = None
+    # The accepted-answer evidence, derived from that SAME validated contract in
+    # authoritative `seq` order (the contract already restores the ledger in
+    # order) — byte-identical to what `load_accepted_answer_evidence` returned.
+    evidence = () if contract is None else tuple(
+        record for record in contract.assertions
+        if record.disposition == DISPOSITION_ANSWERED)
 
     inputs = store.load_reconstruction_inputs(project_id)
-    if inputs is None:
+    if inputs is None or contract is None:
         # Legacy project (all reconstruction columns NULL) or unknown project.
+        # The `contract is None` limb is defensive: both reads key off the same
+        # `projects` row, so an absent contract can never carry usable inputs.
         return _level0(None, STATUS_NO_METADATA, evidence), None
 
     seed = inputs.get("seed_idea_text")
@@ -258,11 +278,10 @@ def _reconstruct(store, project_id: str):
     amended = tuple(r for r in evidence if getattr(r, "superseded_by", None) is None)
     withdrawn = len(evidence) - len(amended)
 
-    # The FULL validated durable contract (the evidence load above already
-    # validated it). PVCG-R1: this single read supplies BOTH the `idea_id` and
-    # the complete durable ledger — no second read, no second store, no second
-    # truth source.
-    contract = store.load_contract(project_id)
+    # PVCG-R1: that ONE validated read supplies the accepted-answer evidence
+    # above, the `idea_id`, and the complete durable ledger below — no second
+    # read, no second store, no second truth source (PERF-01 removed the second
+    # `load_contract()` that re-deserialized and re-validated the same rows).
     idea_id = contract.idea_id
 
     # Fresh, local, canonical state — RECONSTRUCTION ITSELF never rehydrates it
@@ -340,7 +359,15 @@ def _reconstruct(store, project_id: str):
     # non-answer record is restored as recorded truth and is NEVER replayed,
     # assessed, or allowed to move a gap, maturity, or the stage. Records
     # absent from the durable history stay absent — nothing is fabricated.
-    state.assertions = list(contract.assertions)
+    #
+    # PERF-01: `review.accepted_answer_evidence` and this returned ledger now
+    # come from ONE contract load, so the ledger is DEEP-COPIED after validation
+    # to preserve the snapshot/state object isolation the two separate loads
+    # used to provide: no `AssertionRecord` instance and no nested mutable field
+    # (`contradicts` / `supersedes`) is shared between the immutable review
+    # snapshot and the render-only state. Values are unchanged; only identity is
+    # separated, and no additional store read or validation is performed.
+    state.assertions = copy.deepcopy(list(contract.assertions))
 
     open_gaps = tuple(sorted(g.gap_type for g in state.get_open_gaps()))
     next_question = (last_result or {}).get("question")

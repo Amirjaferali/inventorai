@@ -59,6 +59,7 @@ class RecordStore(Protocol):
     def project_ids(self) -> List[str]: ...
     def project_ids_for_owner(self, owner_account_id: str) -> List[str]: ...
     def new_record_id(self) -> str: ...
+    def ping(self) -> None: ...
     def close(self) -> None: ...
 
 
@@ -448,6 +449,21 @@ class SqliteRecordStore:
     def project_ids(self) -> List[str]:
         return [row[0] for row in
                 self._conn.execute("SELECT project_id FROM projects").fetchall()]
+
+    def ping(self) -> None:
+        """PERF-01 — bounded READ-ONLY readability probe for an already-opened
+        store. Answers only "is this database readable right now?".
+
+        Emits exactly one ``SELECT 1 FROM projects LIMIT 1`` and discards the
+        single optional row, so the work and the result cardinality stay bounded
+        as the table grows — unlike ``project_ids()``, which collects every
+        project id. An EMPTY table returns no row and is still healthy: success
+        is signalled ONLY by returning ``None``, failure ONLY by the SQL/storage
+        exception propagating to the caller's existing boundary. Performs no
+        write, schema creation, migration, repair, cleanup, file creation,
+        enumeration, user-content logging, or provider/network call, and
+        discloses nothing about any project."""
+        self._conn.execute("SELECT 1 FROM projects LIMIT 1").fetchone()
 
     # --- lifecycle ----------------------------------------------------------
     def close(self) -> None:
