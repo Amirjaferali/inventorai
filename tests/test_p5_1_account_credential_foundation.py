@@ -793,7 +793,8 @@ def test_b01_unsafe_connection_rejects_read_before_any_select(db_path, monkeypat
     for seam in (lambda: store.get_account_by_id(aid),
                  lambda: store.get_email_token_by_hash("whatever"),
                  lambda: store.active_tokens(aid, RESET),
-                 lambda: store.count_accounts()):
+                 lambda: store.count_accounts(),
+                 lambda: store.ping()):        # PERF-01 bounded health probe
         with pytest.raises(AccountStoreConnectionUnsafeError):
             seam()
 
@@ -916,6 +917,7 @@ def test_b01_sweep_every_read_and_write_seam_refuses_when_unsafe(db_path, monkey
         lambda: store.get_account_by_id(aid),
         lambda: store.get_account_by_normalized_email("b01sweep@example.com"),
         lambda: store.count_accounts(),
+        lambda: store.ping(),                  # PERF-01 bounded health probe
         lambda: store.get_email_token_by_hash("h"),
         lambda: store.active_tokens(aid, RESET),
         lambda: store.active_verification_tokens(aid),
@@ -939,3 +941,85 @@ def test_b01_sweep_every_read_and_write_seam_refuses_when_unsafe(db_path, monkey
     for seam in read_seams + write_seams:
         with pytest.raises(AccountStoreConnectionUnsafeError):
             seam()
+
+
+# ===========================================================================
+# PERF-01 — bounded read-only account readability probe
+#
+# `ping()` lets the health path prove the accounts database is readable WITHOUT
+# counting every account. It runs inside the EXISTING `_read()` seam, so it
+# inherits the lock and the B-01 unsafe-connection refusal unchanged. These
+# tests pin its deterministic shape only; they assert no elapsed time.
+# ===========================================================================
+def test_perf01_account_ping_is_bounded_on_an_empty_table(db_path, monkeypatch):
+    store = SqliteAccountStore(db_path)
+    assert store.count_accounts() == 0
+    seen = []
+
+    def hook(real, sql, *a, **k):
+        seen.append(" ".join(sql.split()).upper())
+        return real.execute(sql, *a, **k)
+    _patch_conn(monkeypatch, store, hook)
+    assert store.ping() is None            # no row is still HEALTHY
+    assert seen == ["SELECT 1 FROM ACCOUNTS LIMIT 1"], seen
+
+
+def test_perf01_account_ping_is_bounded_on_a_populated_table(db_path, monkeypatch):
+    store = SqliteAccountStore(db_path)
+    for i in range(15):
+        _mk(store, "perf01-%d@example.com" % i)
+    assert store.count_accounts() == 15
+    seen = []
+
+    def hook(real, sql, *a, **k):
+        seen.append(" ".join(sql.split()).upper())
+        return real.execute(sql, *a, **k)
+    _patch_conn(monkeypatch, store, hook)
+    assert store.ping() is None
+    # The SAME single bounded statement whatever the table size: never a COUNT.
+    assert seen == ["SELECT 1 FROM ACCOUNTS LIMIT 1"], seen
+    assert not any("COUNT(" in s for s in seen), seen
+
+
+def test_perf01_account_ping_writes_nothing(db_path):
+    store = SqliteAccountStore(db_path)
+    aid = _mk(store, "perf01-nowrite@example.com")
+    before = {
+        t: store._conn.execute('SELECT COUNT(*) FROM "%s"' % t).fetchone()[0]
+        for (t,) in store._conn.execute(
+            "SELECT name FROM sqlite_master WHERE type='table' "
+            "AND name NOT LIKE 'sqlite_%'")}
+    account_before = store.get_account_by_id(aid)
+    for _ in range(5):
+        store.ping()
+    after = {t: store._conn.execute('SELECT COUNT(*) FROM "%s"' % t).fetchone()[0]
+             for t in before}
+    assert after == before
+    assert store.get_account_by_id(aid) == account_before
+
+
+def test_perf01_account_ping_refuses_before_any_sql_when_unsafe(db_path, monkeypatch):
+    """B-01 coverage for the new probe: on a connection whose transactional
+    state is unknown it fails closed BEFORE issuing SQL — the probe can never
+    report unresolved state as a healthy database."""
+    store = SqliteAccountStore(db_path)
+    aid = _mk(store, "perf01-unsafe@example.com")
+    _make_unsafe(monkeypatch, store, aid)
+    seen = []
+
+    def watch(real, sql, *a, **k):
+        seen.append(sql.strip().upper())
+        return real.execute(sql, *a, **k)
+    _patch_conn(monkeypatch, store, watch)
+    with pytest.raises(AccountStoreConnectionUnsafeError):
+        store.ping()
+    assert seen == [], "no SQL may be issued on an unsafe connection"
+
+
+def test_perf01_account_ping_propagates_storage_failure(db_path, monkeypatch):
+    """Success is signalled ONLY by returning None; a storage failure
+    propagates to the caller's existing exception boundary."""
+    store = SqliteAccountStore(db_path)
+    _inject_exec(monkeypatch, store, ["SELECT 1 FROM ACCOUNTS"])
+    with pytest.raises(_sqlite3.OperationalError):
+        store.ping()

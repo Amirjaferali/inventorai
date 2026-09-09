@@ -96,10 +96,14 @@ from engine.email_sender import DevMemoryEmailSender
 # P4-2 Level-1: the exact supported reconstruction/engine-contract version stamp
 # persisted at project creation (read-only reconstruction lives entirely in the
 # engine; web only persists these additive envelope inputs).
+# PERF-01: `reconstruct_review_state` is NO LONGER imported here — every web
+# consumer now reads the ONE canonical `reconstruct_readonly_state` accessor
+# (whose `.review` IS that function's return value), so the cold session page
+# cannot run a second reconstruction pass. The engine API itself is unchanged
+# and still public for its other callers.
 from engine.session_reconstruction import (
     RECONSTRUCTION_VERSION,
     reconstruct_readonly_state,
-    reconstruct_review_state,
 )
 # Increment 3 (R-5): the SAME shared public derivation that feeds the deliverable
 # section, imported as a module-level name so one selection feeds both surfaces.
@@ -424,20 +428,22 @@ def _database_health():
     required LOCAL runtime dependencies usable right now?
 
     Never creates a file, schema, or row: already-initialized application
-    stores are probed with existing PUBLIC read-only reads; an existing but
-    not-yet-opened database file is opened strictly read-only for a trivial
-    read; a missing file reports ``"uninitialized"`` (the lazy runtime creates
-    it on first real use, so absence is a normal pre-first-use state, not a
-    failure). Returns ``"ok"`` | ``"uninitialized"`` | ``"error"``. It proves
+    stores are probed with their PUBLIC bounded read-only ``ping()`` probes
+    (PERF-01 — one ``SELECT ... LIMIT 1`` each, at most one discarded row, so
+    proving readability never enumerates every project or counts every account);
+    an existing but not-yet-opened database file is opened strictly read-only for
+    a trivial read; a missing file reports ``"uninitialized"`` (the lazy runtime
+    creates it on first real use, so absence is a normal pre-first-use state, not
+    a failure). Returns ``"ok"`` | ``"uninitialized"`` | ``"error"``. It proves
     nothing about external providers, payment, hosting, security, PSRR, legal
     readiness, or deployment readiness."""
     try:
         probed = False
         if _ACCOUNT_STORE is not None:
-            _ACCOUNT_STORE.count_accounts()
+            _ACCOUNT_STORE.ping()
             probed = True
         if _STORE is not None:
-            _STORE.project_ids()
+            _STORE.ping()
             probed = True
         if probed:
             return "ok"
@@ -2808,27 +2814,32 @@ def show_session(sid):
     reconstructed_review = None
     if getattr(state, "domain", None) is None:
         try:
-            _recon = reconstruct_review_state(_get_store(), sid)
-            if _recon.level == 1 and _recon.reconstructed:
-                # RVR-7 (PR #588): the banner's display identity is named FORWARD
-                # from the reconstructed canonical state — served gap, variant
-                # index, domain — so the Arabic banner never reverse-looks-up an
-                # id from the reconstructed English text. `reconstruct_readonly_state`
-                # is the EXISTING Level-1 accessor (`reconstruct_review_state` is
-                # `_reconstruct(...)[0]`): no schema change, no new subsystem, and
-                # `RECONSTRUCTION_VERSION` is untouched.
-                # Deliberately a SECOND call rather than replacing the one above:
-                # the committed fail-closed contract of this block is bound to the
-                # `reconstruct_review_state` seam, and that behaviour is preserved
-                # exactly. It runs only after a Level-1 reconstruction already
-                # succeeded, and it fails closed to English on its own.
-                try:
-                    _recon_state = reconstruct_readonly_state(
-                        _get_store(), sid).state
-                except Exception:
-                    _recon_state = None
+            # PERF-01: ONE canonical reconstruction pass serves BOTH the review
+            # fields and the banner's display identity. `reconstruct_readonly_state`
+            # is the EXISTING Level-1 accessor and `reconstruct_review_state` is
+            # exactly its `.review` element (`_reconstruct(...)[0]`), so this page
+            # reads the same snapshot it always did — the second full replay it
+            # used to run for `.state` alone is removed. No schema change, no new
+            # subsystem, and `RECONSTRUCTION_VERSION` is untouched.
+            _session = reconstruct_readonly_state(_get_store(), sid)
+            _recon = _session.review
+            # RVR-7 (PR #588): the banner's display identity is named FORWARD from
+            # the reconstructed canonical state — served gap, variant index, domain
+            # — so the Arabic banner never reverse-looks-up an id from the
+            # reconstructed English text. `.state` is RENDER-ONLY here: it is never
+            # placed into SESSION_STORE (the minimal cold entry above stays the
+            # non-resumable one, `state.domain is None`), never mutated and never
+            # persisted. A Level-1 wrapper WITHOUT a state is not a valid
+            # reconstruction: the claim is suppressed rather than rendered from a
+            # missing state, and every other failure (Level-0 fallback,
+            # ContractError, replay-limit, store unavailability) still falls
+            # closed to the prior cold-load page through the except below.
+            if (_recon.level == 1 and _recon.reconstructed
+                    and _session.state is not None):
+                # `_rvr7_reconstructed_display` keeps its own internal
+                # exception/mismatch fallback to canonical English.
                 _recon_display = _rvr7_reconstructed_display(
-                    _recon_state, _recon.next_question,
+                    _session.state, _recon.next_question,
                     _recon.maturity_level, _current_ui_lang())
                 reconstructed_review = {
                     "domain": getattr(state, "domain_signal", None),

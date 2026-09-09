@@ -302,3 +302,153 @@ def test_health_route_uses_no_request_metadata():
     for forbidden in ("remote_addr", "REMOTE_ADDR", "X-Forwarded-For",
                       "user_agent", "User-Agent", "headers"):
         assert forbidden not in source, forbidden
+
+
+# ==========================================================================
+# PERF-01 — bounded initialized-store health probes
+#
+# Proving the database is readable must not enumerate every project or count
+# every account. These tests pin the DETERMINISTIC operation shape: which
+# methods the health path invokes, which it must never invoke again, and that
+# the probes stay bounded as the tables grow. Nothing here asserts elapsed time
+# or claims theoretical O(1) database latency.
+# ==========================================================================
+def _record_store_with(n_projects):
+    """Populate the app-scoped record store with `n_projects` real projects."""
+    from engine.record_contract import ProjectRecordContract
+    store = webapp._get_store()
+    for i in range(n_projects):
+        store.create_project(ProjectRecordContract(idea_id="perf01-%d" % i,
+                                                   assertions=[]),
+                             project_id="perf01-p%d" % i)
+    return store
+
+
+def _account_store_with(n_accounts):
+    from engine import account_credentials as _acct
+    store = webapp._get_account_store()
+    for i in range(n_accounts):
+        store.create_account("perf01-a%d" % i,
+                             _acct.normalize_email("perf01-%d@example.com" % i),
+                             _acct.hash_password(PW), NOW)
+    return store
+
+
+def test_perf01_health_uses_bounded_probes_and_never_enumerates(monkeypatch):
+    """Initialized `/health` invokes each initialized store's bounded probe and
+    calls neither `project_ids()` nor `count_accounts()`."""
+    from engine.record_store import SqliteRecordStore
+    from engine.account_store import SqliteAccountStore
+    _init_db()
+    _record_store_with(3)
+    calls = []
+    for cls, name in ((SqliteRecordStore, "ping"), (SqliteAccountStore, "ping"),
+                      (SqliteRecordStore, "project_ids"),
+                      (SqliteAccountStore, "count_accounts")):
+        real = getattr(cls, name)
+        label = "%s.%s" % (cls.__name__, name)
+
+        def counting(self, _real=real, _label=label, *a, **k):
+            calls.append(_label)
+            return _real(self, *a, **k)
+        monkeypatch.setattr(cls, name, counting)
+    r = _new_client().get(HEALTH_PATH)
+    assert r.status_code == 200
+    assert json.loads(r.get_data(as_text=True)) == HEALTHY_BODY
+    assert "SqliteRecordStore.ping" in calls
+    assert "SqliteAccountStore.ping" in calls
+    assert "SqliteRecordStore.project_ids" not in calls
+    assert "SqliteAccountStore.count_accounts" not in calls
+
+
+def test_perf01_health_probe_sql_is_bounded_as_tables_grow(monkeypatch):
+    """The SQL the initialized health path emits is the same bounded
+    `LIMIT 1` shape whatever the table sizes are: no whole-table COUNT and no
+    unbounded project enumeration."""
+    _init_db()
+    seen = []
+
+    class _ConnProxy:
+        """Records the SQL each probe emits without changing behaviour
+        (``sqlite3.Connection.execute`` is read-only, so the connection is
+        wrapped rather than patched)."""
+        def __init__(self, real):
+            self._real = real
+
+        def execute(self, sql, *a, **k):
+            seen.append(" ".join(sql.split()).upper())
+            return self._real.execute(sql, *a, **k)
+
+        def __getattr__(self, name):
+            return getattr(self._real, name)
+
+    def _watch(store):
+        monkeypatch.setattr(store, "_conn", _ConnProxy(store._conn))
+
+    for size in (0, 5):
+        seen.clear()
+        _record_store_with(size)
+        _account_store_with(size)
+        _watch(webapp._get_store())
+        _watch(webapp._get_account_store())
+        r = _new_client().get(HEALTH_PATH)
+        assert r.status_code == 200
+        probes = [s for s in seen if s.startswith("SELECT")]
+        assert probes == ["SELECT 1 FROM ACCOUNTS LIMIT 1",
+                          "SELECT 1 FROM PROJECTS LIMIT 1"], (size, seen)
+        assert not any("COUNT(" in s for s in seen), (size, seen)
+        assert not any("SELECT PROJECT_ID FROM PROJECTS" in s for s in seen), \
+            (size, seen)
+        monkeypatch.undo()
+
+
+def test_perf01_health_unchanged_for_uninitialized_corrupt_and_unavailable(
+        monkeypatch, tmp_path, captured):
+    """Response body/status and the safe error-event behaviour are unchanged for
+    every non-initialized-store case the probes do not touch."""
+    monkeypatch.setenv("INVENTORAI_DB_PATH", str(tmp_path / "absent.sqlite"))
+    r = _new_client().get(HEALTH_PATH)
+    assert r.status_code == 200
+    assert json.loads(r.get_data(as_text=True)) == UNINITIALIZED_BODY
+    monkeypatch.undo()
+
+    bad = tmp_path / "corrupt2.sqlite"
+    bad.write_bytes(b"not a sqlite database" * 50)
+    monkeypatch.setenv("INVENTORAI_DB_PATH", str(bad))
+    r = _new_client().get(HEALTH_PATH)
+    assert r.status_code == 503
+    assert json.loads(r.get_data(as_text=True)) == ERROR_BODY
+    monkeypatch.undo()
+
+    # An initialized store whose probe raises: generic 503, and the operational
+    # event carries the exception CLASS only — never a message, path or row.
+    _init_db()
+    captured.clear()
+
+    def _boom(self):
+        raise sqlite3.DatabaseError("probe failed with a secret path /tmp/x")
+    monkeypatch.setattr(type(webapp._get_account_store()), "ping", _boom)
+    r = _new_client().get(HEALTH_PATH)
+    assert r.status_code == 503
+    assert json.loads(r.get_data(as_text=True)) == ERROR_BODY
+    events = [json.loads(line) for line in captured]
+    failures = [e for e in events if e.get("event") == "health.db_probe_failed"]
+    assert failures, captured
+    for event in failures:
+        assert event.get("error_class") == "DatabaseError"
+        assert "secret" not in json.dumps(event)
+        assert "/tmp/x" not in json.dumps(event)
+
+
+def test_perf01_health_security_and_cache_headers_unchanged():
+    """Header/caching semantics of the health surface are untouched by the
+    probe change."""
+    _init_db()
+    baseline = _new_client().get(HEALTH_PATH)
+    _record_store_with(4)
+    after = _new_client().get(HEALTH_PATH)
+    assert after.status_code == baseline.status_code
+    assert after.get_data() == baseline.get_data()
+    assert after.mimetype == "application/json"
+    for header in ("Cache-Control", "Set-Cookie"):
+        assert after.headers.get(header) == baseline.headers.get(header)

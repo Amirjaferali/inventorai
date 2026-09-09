@@ -498,3 +498,294 @@ def test_p4_1b2b_evidence_still_works(client):
                  answers=[ANSWER_1, ANSWER_2])
     ev = store.load_accepted_answer_evidence("reg2b")
     assert tuple(r.content for r in ev) == (ANSWER_1, ANSWER_2)
+
+
+# ===========================================================================
+# 28. PERF-01 — ONE validated contract load per reconstruction
+#
+# The efficiency contract is a DETERMINISTIC OPERATION COUNT, not a timing
+# threshold: each public reconstruction API must deserialize and validate the
+# durable project contract exactly once, and must derive the accepted-answer
+# evidence from that same validated contract. These probes count real calls on
+# the real store; they assert nothing about elapsed time.
+# ===========================================================================
+def _count_loads(monkeypatch, store):
+    """Count full `load_contract()` calls (deserialization + validation) on the
+    REAL store, leaving behaviour untouched."""
+    calls = []
+    real = type(store).load_contract
+
+    def counting(self, project_id):
+        calls.append(project_id)
+        return real(self, project_id)
+    monkeypatch.setattr(type(store), "load_contract", counting)
+    return calls
+
+
+def _count_iterations(monkeypatch):
+    """Count `run_iteration` calls made through the module the replay uses."""
+    from engine import progression_loop as PL
+    calls = []
+    real = PL.run_iteration
+
+    def counting(state, text, *a, **k):
+        calls.append(text)
+        return real(state, text, *a, **k)
+    monkeypatch.setattr(SR.progression_loop, "run_iteration", counting)
+    return calls
+
+
+def test_perf01_review_api_performs_exactly_one_contract_load(monkeypatch):
+    store = _store()
+    _put_project(store, "p1load", seed=IDEA, domain="electronics_electrical",
+                 path="N", version=SR.RECONSTRUCTION_VERSION,
+                 answers=[ANSWER_1, ANSWER_2])
+    calls = _count_loads(monkeypatch, store)
+    snap = SR.reconstruct_review_state(store, "p1load")
+    assert snap.level == 1 and snap.reconstructed is True
+    assert calls == ["p1load"], calls
+
+
+def test_perf01_readonly_api_performs_exactly_one_contract_load(monkeypatch):
+    store = _store()
+    _put_project(store, "p1ro", seed=IDEA, domain="electronics_electrical",
+                 path="N", version=SR.RECONSTRUCTION_VERSION,
+                 answers=[ANSWER_1, ANSWER_2])
+    calls = _count_loads(monkeypatch, store)
+    session = SR.reconstruct_readonly_state(store, "p1ro")
+    assert session.review.level == 1 and session.state is not None
+    assert calls == ["p1ro"], calls
+
+
+def test_perf01_unknown_project_attempts_at_most_one_contract_load(monkeypatch):
+    """Unknown project: one attempt, `ProjectNotFound` absorbed, and the
+    non-disclosing Level-0 result is byte-unchanged (no existence leak)."""
+    store = _store()
+    calls = _count_loads(monkeypatch, store)
+    snap = SR.reconstruct_review_state(store, "no-such-project")
+    assert len(calls) <= 1, calls
+    assert snap.level == 0
+    assert snap.status == SR.STATUS_NO_METADATA
+    assert snap.idea_id is None
+    assert snap.accepted_answer_evidence == ()
+    assert snap.reconstructed is False
+
+
+def test_perf01_level0_families_load_at_most_once_and_carry_no_idea_id(monkeypatch):
+    """Every Level-0 family: bounded load count AND the explicit `idea_id is
+    None` non-disclosure invariant."""
+    store = _store()
+    _put_project(store, "p1legacy")                                   # legacy/NULL
+    _put_project(store, "p1partial", seed=IDEA)                       # partial
+    _put_project(store, "p1ver", seed=IDEA, domain="electronics_electrical",
+                 path="N", version="some-other-version")              # mismatch
+    _put_project(store, "p1path", seed=IDEA, domain="electronics_electrical",
+                 path="Z", version=SR.RECONSTRUCTION_VERSION)         # unsupported
+    expected = {
+        "p1legacy": SR.STATUS_NO_METADATA,
+        "p1partial": SR.STATUS_NO_METADATA,
+        "p1ver": SR.STATUS_VERSION_MISMATCH,
+        "p1path": SR.STATUS_UNSUPPORTED_PATH,
+        "p1missing": SR.STATUS_NO_METADATA,
+    }
+    for pid, status in expected.items():
+        calls = _count_loads(monkeypatch, store)
+        snap = SR.reconstruct_review_state(store, pid)
+        assert len(calls) <= 1, (pid, calls)
+        assert snap.level == 0 and snap.status == status, pid
+        assert snap.idea_id is None, pid
+        monkeypatch.undo()
+
+
+def test_perf01_level0_families_run_zero_iterations(monkeypatch):
+    """Level-0, version-mismatch and unsupported-path never enter the replay."""
+    store = _store()
+    _put_project(store, "p1zlegacy")
+    _put_project(store, "p1zver", seed=IDEA, domain="electronics_electrical",
+                 path="N", version="other")
+    _put_project(store, "p1zpath", seed=IDEA, domain="electronics_electrical",
+                 path="Z", version=SR.RECONSTRUCTION_VERSION)
+    for pid in ("p1zlegacy", "p1zver", "p1zpath", "p1zmissing"):
+        seen = _count_iterations(monkeypatch)
+        SR.reconstruct_review_state(store, pid)
+        assert seen == [], (pid, seen)
+        monkeypatch.undo()
+
+
+def test_perf01_replay_limit_runs_zero_iterations_and_loads_once(monkeypatch):
+    store = _store()
+    _put_project(store, "p1lim", seed=IDEA, domain="electronics_electrical",
+                 path="N", version=SR.RECONSTRUCTION_VERSION,
+                 answers=["x"] * (SR.MAX_ACCEPTED_ANSWER_REPLAY + 1))
+    loads = _count_loads(monkeypatch, store)
+    seen = _count_iterations(monkeypatch)
+    with pytest.raises(SR.ReconstructionReplayLimitError):
+        SR.reconstruct_review_state(store, "p1lim")
+    assert len(loads) == 1, loads
+    assert seen == [], seen
+
+
+def test_perf01_corrupt_history_still_raises_before_any_level0_shortcut(monkeypatch):
+    """Validation-before-shortcut ordering is preserved: a malformed durable
+    payload raises the canonical ContractError even though the project ALSO
+    carries legacy (Level-0) reconstruction metadata, and no replay runs."""
+    store = _store()
+    _put_project(store, "p1bad", answers=[ANSWER_1])       # legacy metadata (NULL)
+    store._conn.execute(
+        "UPDATE records SET payload = ? WHERE project_id = 'p1bad'",
+        ('{"record_id": "rec_1", "disposition": "answered", '
+         '"content": "x", "unknown_field": 1}',))
+    seen = _count_iterations(monkeypatch)
+    with pytest.raises(ContractError):
+        SR.reconstruct_review_state(store, "p1bad")
+    assert seen == [], seen
+
+
+# ===========================================================================
+# 29. PERF-01 — the single load still replays exactly the same stream
+# ===========================================================================
+def test_perf01_seed_and_each_active_answer_replayed_once_in_seq_order(monkeypatch):
+    store = _store()
+    _put_project(store, "p1seq", seed=IDEA, domain="electronics_electrical",
+                 path="N", version=SR.RECONSTRUCTION_VERSION,
+                 answers=[ANSWER_1, ANSWER_2, ANSWER_3])
+    seen = _count_iterations(monkeypatch)
+    snap = SR.reconstruct_review_state(store, "p1seq")
+    assert snap.level == 1
+    # Seed FIRST, then every active answered record exactly once, in seq order.
+    assert seen == [IDEA, ANSWER_1, ANSWER_2, ANSWER_3], seen
+
+
+def test_perf01_withdrawn_answer_is_restored_but_never_replayed(monkeypatch):
+    """A withdrawn (superseded) answered record stays durable ledger truth and
+    stays out of the replay — unchanged by the single-load refactor. The
+    withdrawal is minted the canonical way (a later record that `supersedes` it;
+    the contract re-derives the inverse edge on load)."""
+    store = _store()
+    _put_project(store, "p1wd", seed=IDEA, domain="electronics_electrical",
+                 path="N", version=SR.RECONSTRUCTION_VERSION,
+                 answers=[ANSWER_1, ANSWER_2])
+    store.append_record("p1wd", AssertionRecord(
+        record_id="rec_3", disposition=DISPOSITION_ANSWERED, content=ANSWER_3,
+        gap_context=None, iteration=3, provenance=OWNER_STATED,
+        validation_status=UNVALIDATED, supersedes=["rec_1"]),
+        idempotency_key="idem-p1wd-3")
+    seen = _count_iterations(monkeypatch)
+    session = SR.reconstruct_readonly_state(store, "p1wd")
+    assert session.review.level == 1
+    assert session.state.assertions[0].superseded_by == "rec_3"   # withdrawn
+    assert seen == [IDEA, ANSWER_2, ANSWER_3], seen               # rec_1 skipped
+    assert session.review.withdrawn_source_records == 1
+    # Restored verbatim in the ledger — excluded from the replay, not deleted.
+    assert [r.record_id for r in session.state.assertions] == \
+        ["rec_1", "rec_2", "rec_3"]
+
+
+def test_perf01_non_answer_records_are_restored_but_never_replayed(monkeypatch):
+    """A governed non-answer disposition reconstructs with its recorded meaning
+    and is NEVER passed to `run_iteration`."""
+    store = _store()
+    _put_project(store, "p1na", seed=IDEA, domain="electronics_electrical",
+                 path="N", version=SR.RECONSTRUCTION_VERSION, answers=[ANSWER_1])
+    store.append_record("p1na", AssertionRecord(
+        record_id="rec_9", disposition=DISPOSITION_DEFERRED,
+        content="deferred content", gap_context=None, iteration=2,
+        provenance=OWNER_STATED, validation_status=UNVALIDATED),
+        idempotency_key="idem-p1na-9")
+    seen = _count_iterations(monkeypatch)
+    session = SR.reconstruct_readonly_state(store, "p1na")
+    assert seen == [IDEA, ANSWER_1], seen
+    dispositions = [r.disposition for r in session.state.assertions]
+    assert DISPOSITION_DEFERRED in dispositions
+    assert [r.record_id for r in session.review.accepted_answer_evidence] == ["rec_1"]
+
+
+def test_perf01_empty_ledger_level1_keeps_its_contract_idea_id(monkeypatch):
+    """A known project with an EMPTY assertion ledger and complete valid
+    metadata stays the Level-1 seed-only reconstruction with its contract
+    `idea_id` — one load, one seed replay."""
+    store = _store()
+    _put_project(store, "p1empty", idea_id="idea-empty", seed=IDEA,
+                 domain="electronics_electrical", path="N",
+                 version=SR.RECONSTRUCTION_VERSION, answers=[])
+    loads = _count_loads(monkeypatch, store)
+    seen = _count_iterations(monkeypatch)
+    snap = SR.reconstruct_review_state(store, "p1empty")
+    assert snap.level == 1 and snap.reconstructed is True
+    assert snap.idea_id == "idea-empty"
+    assert snap.accepted_answer_evidence == ()
+    assert loads == ["p1empty"], loads
+    assert seen == [IDEA], seen
+
+
+# ===========================================================================
+# 30. PERF-01 — snapshot / state object isolation survives the single load
+#
+# The two outputs used to come from two separate contract loads, which gave
+# them distinct objects for free. With ONE load the ledger is deep-copied after
+# validation, so the immutable review snapshot can never be reached through the
+# render-only state.
+# ===========================================================================
+def test_perf01_evidence_and_state_ledger_do_not_share_objects():
+    store = _store()
+    _put_project(store, "p1alias", seed=IDEA, domain="electronics_electrical",
+                 path="N", version=SR.RECONSTRUCTION_VERSION,
+                 answers=[ANSWER_1, ANSWER_2])
+    session = SR.reconstruct_readonly_state(store, "p1alias")
+    evidence = session.review.accepted_answer_evidence
+    ledger = session.state.assertions
+    assert len(evidence) == 2 and len(ledger) == 2
+    by_id = {r.record_id: r for r in ledger}
+    for snap_rec in evidence:
+        state_rec = by_id[snap_rec.record_id]
+        assert snap_rec is not state_rec                  # distinct records
+        assert snap_rec.contradicts is not state_rec.contradicts   # nested lists
+        assert snap_rec.supersedes is not state_rec.supersedes
+        assert snap_rec.content == state_rec.content      # same VALUES
+        assert snap_rec.disposition == state_rec.disposition
+
+
+def test_perf01_mutating_returned_ledger_cannot_change_the_review_snapshot():
+    """Test-only mutation of the render-only ledger must not reach the
+    immutable review snapshot (no production path mutates either)."""
+    store = _store()
+    _put_project(store, "p1iso", seed=IDEA, domain="electronics_electrical",
+                 path="N", version=SR.RECONSTRUCTION_VERSION, answers=[ANSWER_1])
+    session = SR.reconstruct_readonly_state(store, "p1iso")
+    before_content = session.review.accepted_answer_evidence[0].content
+    before_supersedes = list(session.review.accepted_answer_evidence[0].supersedes)
+    session.state.assertions[0].content = "MUTATED BY TEST"
+    session.state.assertions[0].supersedes.append("rec_999")
+    session.state.assertions.append(session.state.assertions[0])
+    assert session.review.accepted_answer_evidence[0].content == before_content
+    assert list(session.review.accepted_answer_evidence[0].supersedes) == before_supersedes
+    assert len(session.review.accepted_answer_evidence) == 1
+
+
+def test_perf01_risk_accepted_record_keeps_its_distinct_single_pass(monkeypatch):
+    """A durable `risk_accepted` disposition keeps its OWN acceptance path: it is
+    never passed to `run_iteration`, it is attempted at most once, and it yields
+    exactly one replay outcome — unchanged by the single-load refactor."""
+    from engine.idea_state import DISPOSITION_RISK_ACCEPTED
+    store = _store()
+    _put_project(store, "p1risk", seed=IDEA, domain="electronics_electrical",
+                 path="N", version=SR.RECONSTRUCTION_VERSION, answers=[ANSWER_1])
+    store.append_record("p1risk", AssertionRecord(
+        record_id="rec_7", disposition=DISPOSITION_RISK_ACCEPTED,
+        content="accepted risk", gap_context="mechanism_completeness",
+        iteration=2, provenance=OWNER_STATED, validation_status=UNVALIDATED),
+        idempotency_key="idem-p1risk-7")
+    accepts = []
+    real_accept = SR.progression_loop.accept_gap_risk
+
+    def counting_accept(state, gap_context, *a, **k):
+        accepts.append(gap_context)
+        return real_accept(state, gap_context, *a, **k)
+    monkeypatch.setattr(SR.progression_loop, "accept_gap_risk", counting_accept)
+    seen = _count_iterations(monkeypatch)
+    snap = SR.reconstruct_review_state(store, "p1risk")
+    assert snap.level == 1
+    assert seen == [IDEA, ANSWER_1], seen        # the risk record is NOT replayed
+    assert accepts == ["mechanism_completeness"], accepts   # attempted once
+    outcomes = [o for o in snap.risk_acceptance_outcomes if o.record_id == "rec_7"]
+    assert len(outcomes) == 1, snap.risk_acceptance_outcomes

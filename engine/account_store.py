@@ -536,6 +536,24 @@ class SqliteAccountStore:
         with self._read() as c:
             return c.execute("SELECT COUNT(*) FROM accounts").fetchone()[0]
 
+    def ping(self) -> None:
+        """PERF-01 — bounded READ-ONLY readability probe for an already-opened
+        store. Answers only "is this database readable right now?".
+
+        Runs inside the existing ``_read()`` seam, so it takes the same RLock and
+        inherits the B-01 unsafe-connection refusal BEFORE any SQL is issued; it
+        never touches ``_conn`` outside that context. Emits exactly one
+        ``SELECT 1 FROM accounts LIMIT 1`` and discards the single optional row,
+        so work and result cardinality stay bounded as the table grows — unlike
+        ``count_accounts()``, which counts every row. An EMPTY table returns no
+        row and is still healthy: success is signalled ONLY by returning
+        ``None``, failure ONLY by the exception propagating to the caller's
+        existing boundary. Performs no write, schema creation, migration,
+        repair, cleanup, file creation, user-content logging, or
+        provider/network call, and discloses no account data."""
+        with self._read() as c:
+            c.execute("SELECT 1 FROM accounts LIMIT 1").fetchone()
+
     def set_password_hash(self, account_id: str, password_hash: str, now_iso: str) -> int:
         """Update the scrypt hash for a non-deleted account. Returns the number of
         rows changed (0 if the account is missing or deleted). Never stores or
