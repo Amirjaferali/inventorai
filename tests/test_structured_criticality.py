@@ -804,3 +804,183 @@ def test_p4_1b2a_criticality_correction_form_carries_and_enforces_token():
                 data={"response": "A completely different correction body.", "answer_token": atok})
     assert len(_durable_answers()) == before + 1, "(F) same-token different-content fails closed"
     SESSION_STORE.pop(sid, None)
+
+
+# =============================================================================
+# WS4-H1 — FUTURE-HARDENING REGRESSION: completion-stage eligibility must be
+# re-checked on POST, not only at render time.
+#
+# Registered observation (authoritative): docs/governance/evidence/
+# workstream4_structured_criticality/WS4_REVIEW_FINDINGS.md, observation 1 —
+# "Completion-stage gate re-check absent in POST." `_criticality_step_context`
+# exposes the completion-stage controls only while `maturity_level >= 2` AND no
+# gap is open; the POST branch re-derives the focus and validates the token but
+# never re-checks that condition, so a page rendered while eligible can still be
+# submitted after the journey stops being eligible.
+#
+# This is a defense-in-depth state-integrity correction. It does NOT reopen,
+# invalidate, or reinterpret the closed Workstream 4 increment: every committed
+# WS4 behavior above is unchanged and still asserted by its own tests.
+#
+# NON-VACUITY: each test first proves the completion-stage surface really is
+# rendered with the token it will later submit, then makes the journey
+# ineligible and proves the surface is gone. The submitted focus token therefore
+# still matches the server-re-derived focus at POST time, so a rejection can only
+# come from the eligibility re-check — not from a stale-focus/token mismatch.
+# Against unchanged production these submissions are ACCEPTED and MUTATE state.
+# =============================================================================
+def _ws4h1_snapshot(entry, state):
+    """Everything these submissions must leave untouched."""
+    import copy as _copy
+    return {
+        "confirmations": list(state.criticality_confirmations),
+        "assertions": [(a.record_id, a.disposition, a.content)
+                       for a in state.assertions],
+        "gaps": [(g.gap_type, g.status) for g in state.gaps],
+        "maturity_level": state.maturity_level,
+        "current_stage": state.current_stage,
+        "iteration": state.iteration,
+        "criticality_stage": _copy.deepcopy(entry.get("criticality_stage")),
+        "criticality_correction": entry.get("criticality_correction"),
+        "transcript": list(entry.get("transcript") or []),
+        "last_result": _copy.deepcopy(entry.get("last_result")),
+    }
+
+
+def _ws4h1_make_ineligible(state, condition):
+    """Make the completed journey fail the completion-stage predicate, using
+    only the two conditions that predicate tests. Deliberate test setup: the
+    resulting difference is the ONLY state change the submission may be
+    followed by."""
+    from engine.idea_state import OPEN
+    if condition == "maturity":
+        state.maturity_level = 1
+        assert state.maturity_level < 2
+    else:
+        assert state.gaps, "fixture defect: completed journey has no gaps"
+        state.gaps[0].status = OPEN
+        assert state.get_open_gaps()
+
+
+def _ws4h1_surface_gone(client, sid):
+    """The completion-stage block is no longer rendered (render-time gate)."""
+    page = _page(client, sid)
+    assert SUMMARY_LEAD not in page
+    assert CLARIFICATION_QUESTION not in page
+    assert 'name="focus_token"' not in page
+    return page
+
+
+_WS4H1_REJECTION = ("This confirmation step is no longer current. "
+                    "No change was made.")
+_WS4H1_CONDITIONS = ["maturity", "open_gap"]
+
+
+@pytest.mark.parametrize("condition", _WS4H1_CONDITIONS)
+def test_ws4h1_stale_summary_post_rejected_when_no_longer_eligible(condition):
+    """Phase 1 — SUMMARY POST. A summary action rendered while the journey was
+    complete must be rejected once the journey is no longer completion-stage
+    eligible, with nothing stored and nothing mutated."""
+    client, sid, state = _fresh_completed_journey()
+    try:
+        entry = SESSION_STORE[sid]
+        page = _page(client, sid)
+        assert SUMMARY_LEAD in page          # the surface really is rendered
+        token = _focus_token(page)
+        assert state.criticality_confirmations == []
+
+        _ws4h1_make_ineligible(state, condition)
+        _ws4h1_surface_gone(client, sid)     # render-time gate now closed
+        before = _ws4h1_snapshot(entry, state)
+
+        # The otherwise-valid, genuinely-issued submission, now stale.
+        r = client.post(f"/session/{sid}", data={
+            "criticality_action": "summary_unsure", "focus_token": token})
+
+        assert r.status_code == 400, (
+            "stale summary POST accepted after loss of completion-stage "
+            "eligibility (%s)" % condition)
+        assert _WS4H1_REJECTION in r.get_data(as_text=True)
+        assert state.criticality_confirmations == []
+        assert _ws4h1_snapshot(entry, state) == before
+    finally:
+        SESSION_STORE.pop(sid, None)
+
+
+@pytest.mark.parametrize("condition", _WS4H1_CONDITIONS)
+def test_ws4h1_stale_summary_correct_post_does_not_open_clarification(condition):
+    """Phase 1 — SUMMARY POST, transient-stage variant. `summary_correct`
+    stores no confirmation but does mutate the transient stage; once ineligible
+    it must not open the clarification stage either."""
+    client, sid, state = _fresh_completed_journey()
+    try:
+        entry = SESSION_STORE[sid]
+        page = _page(client, sid)
+        assert SUMMARY_LEAD in page
+        token = _focus_token(page)
+
+        _ws4h1_make_ineligible(state, condition)
+        _ws4h1_surface_gone(client, sid)
+        before = _ws4h1_snapshot(entry, state)
+        assert before["criticality_stage"] is None
+
+        r = client.post(f"/session/{sid}", data={
+            "criticality_action": "summary_correct", "focus_token": token})
+
+        assert r.status_code == 400, (
+            "stale summary_correct POST accepted after loss of eligibility "
+            "(%s)" % condition)
+        assert _WS4H1_REJECTION in r.get_data(as_text=True)
+        assert entry.get("criticality_stage") is None
+        assert state.criticality_confirmations == []
+        assert _ws4h1_snapshot(entry, state) == before
+    finally:
+        SESSION_STORE.pop(sid, None)
+
+
+@pytest.mark.parametrize("condition", _WS4H1_CONDITIONS)
+def test_ws4h1_stale_final_clarification_post_rejected_when_no_longer_eligible(
+        condition):
+    """Phase 2 — FINAL CLARIFICATION POST. The clarification stage is entered
+    LEGITIMATELY first (real summary_correct while eligible); only then does the
+    journey lose eligibility. The final acceptance must be rejected, storing no
+    confirmation and leaving the transient stage untouched (a rejection must not
+    silently clear it either)."""
+    client, sid, state = _fresh_completed_journey()
+    try:
+        entry = SESSION_STORE[sid]
+        page = _page(client, sid)
+        assert SUMMARY_LEAD in page
+        token = _focus_token(page)
+
+        # Enter the clarification stage legitimately, while still eligible.
+        r = client.post(f"/session/{sid}", data={
+            "criticality_action": "summary_correct", "focus_token": token})
+        assert r.status_code == 302
+        assert state.criticality_confirmations == []
+        page = _page(client, sid)
+        assert CLARIFICATION_QUESTION in page
+        token = _focus_token(page)
+        rationale_m = _RATIONALE_RE.search(page)
+        assert rationale_m, "no prefilled rationale textarea"
+        rationale = rationale_m.group(1)
+        assert rationale.strip()
+        assert (entry.get("criticality_stage") or {}).get("requirement_id")
+
+        _ws4h1_make_ineligible(state, condition)
+        _ws4h1_surface_gone(client, sid)
+        before = _ws4h1_snapshot(entry, state)
+
+        r = client.post(f"/session/{sid}", data={
+            "criticality_action": "clarify_choice", "focus_token": token,
+            "category_choice": "essential", "rationale": rationale})
+
+        assert r.status_code == 400, (
+            "stale final clarification POST accepted after loss of "
+            "completion-stage eligibility (%s)" % condition)
+        assert _WS4H1_REJECTION in r.get_data(as_text=True)
+        assert state.criticality_confirmations == []
+        # The transient stage is neither advanced nor cleared by the rejection.
+        assert _ws4h1_snapshot(entry, state) == before
+    finally:
+        SESSION_STORE.pop(sid, None)

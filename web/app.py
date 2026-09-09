@@ -1147,6 +1147,14 @@ def _handle_criticality_action(entry, state, sid):
         return ("This confirmation step is no longer current. "
                 "No change was made.", 400)
 
+    # WS4-H1 (WS4_REVIEW_FINDINGS observation 1) — defense in depth: re-check
+    # the SAME completion-stage predicate `_criticality_step_context` gates
+    # rendering with, before any focus/token processing and before any state or
+    # entry mutation. A page rendered while the journey was complete could
+    # otherwise still be submitted after the journey stopped being eligible.
+    if state.maturity_level < 2 or state.get_open_gaps():
+        return _reject()
+
     crit_action = (request.form.get("criticality_action") or "").strip()
     # Server-side focus protection (owner rule 5): re-derive the authoritative
     # focus and require the rendered token to match it.
