@@ -1321,16 +1321,21 @@ def _confirmation_required_message(domain, lang="en"):
 
 
 def _present_confirm_message(domain, lang="en"):
-    """D1/U1: prompt shown when the classifier-selected (or explicitly chosen)
-    ACTIVATED domain is presented for explicit confirm/decline.
+    """D1/U1 (and D2 once a valid choice exists): the explanatory PROMPT shown
+    when the selected ACTIVATED domain is presented for explicit
+    confirm/decline. This is the `<p class="error">` paragraph role only —
+    the consent checkbox label is a separate role (see `_render_start_page`).
 
     CF-2 Arabic-localization remainder: see `_unsupported_domain_message`
-    docstring for the `lang` contract (default-`en` byte-identity; Arabic
-    domain-neutral for any non-electronics domain)."""
+    docstring for the `lang` contract (default-`en` byte-identity).
+    UXAR-01: the Arabic prompt is UI_B_START_032 formatted with the canonical
+    Arabic review-path label from the trusted server-resolved `domain`
+    (`web/domain_label.py`, the same Tier-1 label shown elsewhere), for BOTH
+    activated domains; the copy says "selected review path" and never who
+    selected it, so it stays truthful for D1 and D2 alike."""
     if ui_text.normalize(lang) == "ar":
-        if domain == "electronics_electrical":
-            return ui_text.text("UI_B_START_023", lang)
-        return ui_text.text("UI_B_START_024", lang)
+        return ui_text.text("UI_B_START_032", lang).format(
+            review_label=_public_domain_label(domain)["ar"])
     return ("Your idea appears to belong to the " + _domain_label(domain)
             + " domain. Please confirm this domain to start, or revise your "
             "description.")
@@ -1557,7 +1562,10 @@ def _render_start_page(error=None, status=None, present_domain=None,
     # output below is UNCHANGED (byte-identical); Arabic uses fixed catalogue
     # copy, domain-neutral wherever the underlying content would otherwise
     # require translating a non-electronics domain name (out of scope — see
-    # `_unsupported_domain_message`).
+    # `_unsupported_domain_message`). UXAR-01 exception: `start_present_confirm_label`
+    # is the consent-checkbox role and formats UI_B_START_024 with the EXISTING
+    # canonical Tier-1 review-path label (`_public_domain_label`), never a new
+    # translation.
     lang = _current_ui_lang()
     is_ar = ui_text.normalize(lang) == "ar"
     generalized = None
@@ -1594,9 +1602,13 @@ def _render_start_page(error=None, status=None, present_domain=None,
     if present_domain is None:
         present_confirm_label = None
     elif is_ar:
-        present_confirm_label = ui_text.text(
-            "UI_B_START_023" if present_domain == "electronics_electrical"
-            else "UI_B_START_024", lang)
+        # UXAR-01: the consent CHECKBOX role — UI_B_START_024 formatted with
+        # the canonical Arabic review-path label of the trusted server-resolved
+        # `present_domain`, for both activated domains. Never the same
+        # catalogue entry as the explanatory paragraph
+        # (`_present_confirm_message`).
+        present_confirm_label = ui_text.text("UI_B_START_024", lang).format(
+            review_label=_public_domain_label(present_domain)["ar"])
     else:
         present_confirm_label = ("I confirm that my idea belongs to the "
                                   + labels[present_domain] + " domain.")

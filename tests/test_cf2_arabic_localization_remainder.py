@@ -102,7 +102,7 @@ def test_new_catalogue_keys_bilingual_and_registered():
     """Every new UI_STRINGS key added by this gate carries both languages, and
     every _MESSAGE_KEYS registration resolves to an existing catalogue key."""
     new_keys = [f"UI_B_START_0{n}" for n in range(10, 15)] + \
-               [f"UI_B_START_0{n}" for n in range(20, 32)] + \
+               [f"UI_B_START_0{n}" for n in range(20, 33)] + \
                ["UI_B_SC_007", "UI_B_SC_008"]
     for key in new_keys:
         entry = ui_text.UI_STRINGS[key]
@@ -220,21 +220,30 @@ def test_green_en_present_confirm_electronics_byte_content_unchanged(activate, c
 
 
 def test_green_ar_present_confirm_electronics_localized_no_english_leak(activate, client):
+    """UXAR-01: the Arabic present-confirm PARAGRAPH is the explanatory prompt
+    (UI_B_START_032) naming the canonical review path — no longer the
+    UI_B_START_023 copy, which is preserved in the catalogue byte-for-byte but
+    is not what this paragraph renders. Hard-coded expectation."""
     activate(ELEC, MECH)
     _set_lang(client, "ar")
     resp = _post(client, ELEC_IDEA)
     body = resp.get_data(as_text=True)
-    assert _error_paragraph(body) == ui_text.UI_STRINGS["UI_B_START_023"]["ar"]
+    assert _error_paragraph(body) == UXAR_AR_PROMPT_ELEC
+    assert "Your idea appears to belong" not in body
 
 
 def test_green_ar_present_confirm_broadened_domain_neutral(activate, client):
-    """Present-confirm for a NON-electronics target: Arabic stays
-    domain-neutral (no invented Tier-1 translation of "Mechanical")."""
+    """Present-confirm for a NON-electronics target. UXAR-01: the paragraph
+    names the review path through the CANONICAL public label resolver
+    (`web/domain_label.py`, the same Tier-1 label the rest of the product
+    shows) — nothing is invented or hard-coded in the catalogue, whose
+    templates stay domain-neutral. Hard-coded expectation."""
     activate(ELEC, MECH)
     _set_lang(client, "ar")
     resp = _post(client, MECH_IDEA)
     body = resp.get_data(as_text=True)
-    assert _error_paragraph(body) == ui_text.UI_STRINGS["UI_B_START_024"]["ar"]
+    assert _error_paragraph(body) == UXAR_AR_PROMPT_MECH
+    assert "Your idea appears to belong" not in body
 
 
 # ==================================================== 3/6. no-activation state --
@@ -422,3 +431,162 @@ def test_green_guard_ilt002_review_type_label_unchanged(client):
     label = domain_label.public_domain_label(ELEC)
     assert label == {"en": "Electronics-informed review",
                       "ar": "مراجعة مستنيرة بمجال الإلكترونيات"}
+
+
+# =========================================================================
+# UXAR-01 — Arabic /start present-confirm: explanatory PROMPT vs first-person
+# CONSENT are two UI roles and must never consume one catalogue entry.
+#
+# Every expectation below is HARD-CODED (never derived from `ui_text.UI_STRINGS`)
+# so a catalogue mutation cannot silently satisfy its own test. Elements are
+# extracted individually: the `<p class="error">` paragraph and the `<label>`
+# that owns `input[name="domain_confirm"]`. Whole-page substring checks are
+# avoided because other page copy shares phrases such as "يرجى تأكيد".
+# =========================================================================
+UXAR_LABEL_ELEC = "مراجعة مستنيرة بمجال الإلكترونيات"
+UXAR_LABEL_MECH = "مراجعة مستنيرة بمجال الميكانيكا"
+UXAR_AR_PROMPT_ELEC = ("المسار المحدد لمراجعة فكرتك هو «مراجعة مستنيرة بمجال الإلكترونيات». "
+                       "يرجى تأكيد هذا المسار للبدء، أو تعديل وصفك.")
+UXAR_AR_PROMPT_MECH = ("المسار المحدد لمراجعة فكرتك هو «مراجعة مستنيرة بمجال الميكانيكا». "
+                       "يرجى تأكيد هذا المسار للبدء، أو تعديل وصفك.")
+UXAR_AR_CONSENT_ELEC = "أؤكد أنني أرغب في متابعة فكرتي عبر «مراجعة مستنيرة بمجال الإلكترونيات»."
+UXAR_AR_CONSENT_MECH = "أؤكد أنني أرغب في متابعة فكرتي عبر «مراجعة مستنيرة بمجال الميكانيكا»."
+UXAR_EN_PROMPT = ("Your idea appears to belong to the {label} domain. "
+                  "Please confirm this domain to start, or revise your description.")
+UXAR_EN_CONSENT = "I confirm that my idea belongs to the {label} domain."
+UXAR_EN_LABEL = {ELEC: "Electronics Electrical", MECH: "Mechanical"}
+
+_CONFIRM_LABEL_RE = re.compile(
+    r'<label[^>]*>\s*<input type="checkbox" name="domain_confirm" value="([^"]+)" required>'
+    r'\s*(.*?)\s*</label>', re.S)
+_CARRIED_CHOICE_RE = re.compile(r'<input type="hidden" name="domain_choice" value="([^"]+)">')
+
+
+def _confirm_checkbox(body):
+    """(domain value, label text) of the ONE consent checkbox, or (None, None)."""
+    m = _CONFIRM_LABEL_RE.search(body)
+    return (m.group(1), " ".join(m.group(2).split())) if m else (None, None)
+
+
+def _carried_choice(body):
+    m = _CARRIED_CHOICE_RE.search(body)
+    return m.group(1) if m else None
+
+
+def _present_confirm(client, origin, domain):
+    """Reach the present-confirm response for one matrix cell on the REAL
+    activation state (both domains are activated in production). D1: the
+    classifier selects `domain`; D2: the classifier returns NONE and the user
+    explicitly chooses `domain`. No confirmation is sent, so no admission."""
+    idea = {ELEC: ELEC_IDEA, MECH: MECH_IDEA}[domain]
+    if origin == "D1":
+        return _post(client, idea)
+    return _post(client, NONE_IDEA, choice=domain)
+
+
+_MATRIX = [("D1", ELEC), ("D1", MECH), ("D2", ELEC), ("D2", MECH)]
+_AR_EXPECTED = {
+    ELEC: (UXAR_AR_PROMPT_ELEC, UXAR_AR_CONSENT_ELEC, UXAR_LABEL_ELEC),
+    MECH: (UXAR_AR_PROMPT_MECH, UXAR_AR_CONSENT_MECH, UXAR_LABEL_MECH),
+}
+
+
+def test_uxar01_catalogue_032_exists_and_024_english_pinned():
+    """UI_B_START_032 exists with both languages and is NOT a `_MESSAGE_KEYS`
+    member (it is consumed directly through `ui_text.text()`); the English
+    UI_B_START_024 value is byte-identical to its pre-UXAR-01 text."""
+    entry = ui_text.UI_STRINGS["UI_B_START_032"]
+    assert entry.get("en") and entry.get("ar")
+    assert "UI_B_START_032" not in ui_text._MESSAGE_KEYS.values()
+    assert ui_text.UI_STRINGS["UI_B_START_024"]["en"] == (
+        "I confirm that this idea belongs to the domain that was recognized for it.")
+
+
+@pytest.mark.parametrize("origin,domain", _MATRIX)
+def test_uxar01_ar_prompt_and_consent_are_split_roles(client, origin, domain):
+    prompt, consent, label = _AR_EXPECTED[domain]
+    _set_lang(client, "ar")
+    resp = _present_confirm(client, origin, domain)
+    assert resp.status_code == 200
+    body = resp.get_data(as_text=True)
+    para = _error_paragraph(body)
+    value, checkbox = _confirm_checkbox(body)
+    assert value == domain
+    assert para is not None and checkbox is not None
+    assert para != checkbox                                   # two roles, two texts
+    assert para == prompt                                     # exact UI_B_START_032
+    assert checkbox == consent                                # exact UI_B_START_024
+    assert label in para and label in checkbox                # canonical review path
+    assert "يرجى تأكيد" in para and "أؤكد" not in para        # request register
+    assert "أؤكد" in checkbox and "يرجى تأكيد" not in checkbox  # consent register
+    for element in (para, checkbox):
+        assert "المقترح" not in element                       # no "suggested"
+        assert "تم التعرف عليه" not in element                # no recognition claim
+        assert "المجال الذي" not in element                   # no unnamed generic consent
+    if origin == "D2":
+        assert _carried_choice(body) == domain               # hidden carry preserved
+    else:
+        assert _carried_choice(body) is None
+
+
+@pytest.mark.parametrize("origin,domain", _MATRIX)
+def test_uxar01_en_paragraph_and_checkbox_bytes_unchanged(client, origin, domain):
+    """English runtime output is byte-compatible: the split is Arabic-only."""
+    _set_lang(client, "en")
+    resp = _present_confirm(client, origin, domain)
+    body = resp.get_data(as_text=True)
+    value, checkbox = _confirm_checkbox(body)
+    assert value == domain
+    assert _error_paragraph(body) == UXAR_EN_PROMPT.format(label=UXAR_EN_LABEL[domain])
+    assert checkbox == UXAR_EN_CONSENT.format(label=UXAR_EN_LABEL[domain])
+    if origin == "D2":
+        assert _carried_choice(body) == domain
+
+
+@pytest.mark.parametrize("origin,domain", _MATRIX)
+def test_uxar01_no_session_or_project_before_matching_confirmation(client, origin, domain):
+    import web.app as webapp
+    store = webapp._get_store()
+    projects_before = set(store.project_ids())
+    sessions_before = set(SESSION_STORE)
+    _set_lang(client, "ar")
+    resp = _present_confirm(client, origin, domain)
+    assert resp.status_code == 200                            # stays on the form
+    assert 'name="domain_confirm"' in resp.get_data(as_text=True)
+    assert set(SESSION_STORE) == sessions_before
+    assert set(store.project_ids()) == projects_before
+
+
+@pytest.mark.parametrize("origin,domain", _MATRIX)
+def test_uxar01_missing_forged_or_mismatched_confirmation_never_admits(client, origin, domain):
+    import web.app as webapp
+    store = webapp._get_store()
+    projects_before = set(store.project_ids())
+    sessions_before = set(SESSION_STORE)
+    other = MECH if domain == ELEC else ELEC
+    idea = {ELEC: ELEC_IDEA, MECH: MECH_IDEA}[domain]
+    _set_lang(client, "ar")
+    attempts = (
+        _post(client, idea if origin == "D1" else NONE_IDEA, confirm=other,
+              choice=(domain if origin == "D2" else None)),      # mismatched
+        _post(client, idea if origin == "D1" else NONE_IDEA, confirm="forged-domain",
+              choice=(domain if origin == "D2" else None)),      # forged
+    )
+    for resp in attempts:
+        assert resp.status_code == 200
+        assert "/session/" not in resp.headers.get("Location", "")
+    assert set(SESSION_STORE) == sessions_before
+    assert set(store.project_ids()) == projects_before
+
+
+@pytest.mark.parametrize("origin,domain", _MATRIX)
+def test_uxar01_matching_confirmation_admits_exact_domain(client, origin, domain):
+    idea = {ELEC: ELEC_IDEA, MECH: MECH_IDEA}[domain]
+    _set_lang(client, "ar")
+    _present_confirm(client, origin, domain)                  # the AR confirm page
+    resp = _post(client, idea if origin == "D1" else NONE_IDEA, confirm=domain,
+                 choice=(domain if origin == "D2" else None))
+    assert resp.status_code == 302
+    sid = resp.headers["Location"].rsplit("/", 1)[-1]
+    entry = SESSION_STORE.pop(sid)
+    assert entry["state"].domain == domain
