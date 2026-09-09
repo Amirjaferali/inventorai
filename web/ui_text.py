@@ -396,6 +396,11 @@ UI_STRINGS = {
     # deliberately DOMAIN-NEUTRAL — it never names a specific non-electronics
     # domain in Arabic (that would require new Tier-1 label translation work,
     # out of scope here and explicitly forbidden by the governing contract) —
+    # with ONE later, separately authorized exception: UXAR-01's present-confirm
+    # paragraph/checkbox templates (UI_B_START_032 / UI_B_START_024) identify
+    # the review path by formatting in the EXISTING canonical Tier-1 label from
+    # `web/domain_label.py` at render time (no new translation; the catalogue
+    # entries themselves still name no domain) —
     # while still truthfully describing the real state (never an
     # electronics-only claim, never a false single-domain implication). The
     # empty-activation Arabic copy needs no domain name at all. Both broadened
@@ -453,13 +458,17 @@ UI_STRINGS = {
         "en": "Your idea appears to belong to the Electronics Electrical domain. Please confirm this domain to start, or revise your description.",
         "ar": "يبدو أن فكرتك تنتمي إلى مجال الإلكترونيات والكهرباء. يرجى تأكيد هذا المجال للبدء، أو تعديل الوصف.",
     },
-    "UI_B_START_024": {  # present-confirm, broadened (non-electronics) activation — domain-neutral
+    "UI_B_START_024": {  # present-confirm CHECKBOX consent (AR, both activated domains)
         # L10N-RH-01 Observation #3 remediation: first-person consent
         # affirmation (matching UI_B_START_030's register) rather than
-        # prompt/instruction wording. Still domain-neutral (no Tier-1
-        # translation) and truthful.
+        # prompt/instruction wording. UXAR-01 role split: the Arabic value is
+        # now a `{review_label}` TEMPLATE consumed ONLY by the checkbox label
+        # (`start_present_confirm_label`); the paragraph role moved to
+        # UI_B_START_032. The review-path label is injected at render time
+        # from the canonical `web/domain_label.py` resolver — the catalogue
+        # itself still names no domain. English is byte-unchanged.
         "en": "I confirm that this idea belongs to the domain that was recognized for it.",
-        "ar": "أؤكد أن هذه الفكرة تنتمي إلى المجال الذي تم التعرف عليه لها.",
+        "ar": "أؤكد أنني أرغب في متابعة فكرتي عبر «{review_label}».",
     },
     "UI_B_START_025": {  # start_scope_sentence, empty activation
         "en": "No specialist domain is currently available.",
@@ -488,6 +497,23 @@ UI_STRINGS = {
     "UI_B_START_031": {  # start_choice_prompt (domain-neutral already in English; unchanged, added for AR)
         "en": "Choose your idea's domain:",
         "ar": "اختر مجال فكرتك:",
+    },
+    # UXAR-01: present-confirm explanatory PARAGRAPH (`<p class="error">`), a
+    # `{review_label}` template formatted with the canonical Arabic review-path
+    # label for BOTH activated domains and both route origins (D1 classifier-
+    # selected, D2 user-chosen). Deliberately says "selected review path" and
+    # never who selected it. Consumed directly through `ui_text.text()`; it is
+    # NOT a `_MESSAGE_KEYS` member (no English server-message constant owns it —
+    # the English runtime branch still composes its own sentence).
+    "UI_B_START_032": {
+        "en": (
+            "The selected review path for your idea is “{review_label}”. "
+            "Please confirm this path to start, or revise your description."
+        ),
+        "ar": (
+            "المسار المحدد لمراجعة فكرتك هو «{review_label}». "
+            "يرجى تأكيد هذا المسار للبدء، أو تعديل وصفك."
+        ),
     },
 
     # --- index.html + data_session.html + success_criteria.html: sensitive -----

@@ -25,9 +25,17 @@ real production call seam at all):
      already accepted, production-reachable) and `UI_B_START_030`
      (`start_confirm_label`, a different template variable, already correctly
      first-person) are explicitly OUT OF SCOPE and untouched.
+     UXAR-01 (later, separately authorized) split the two UI roles: the
+     checkbox label is now UI_B_START_024 formatted with the canonical Arabic
+     review-path label and the explanatory paragraph is UI_B_START_032, so
+     the Observation-3 register check below is asserted on the checkbox
+     `<label>` itself — the surface the observation always named.
 
 No Mechanical activation. No Tier-1 label work (both new Arabic/English
-strings below remain strictly domain-neutral — no domain is ever named).
+strings below remain strictly domain-neutral — no domain is ever named; the
+UXAR-01-retargeted Observation-3 test is the one place a canonical review-path
+label appears, hard-coded as the EXPECTED render of the existing
+`web/domain_label.py` Tier-1 label, not a new translation).
 """
 
 from tests.csrf_client import csrf_client
@@ -156,32 +164,52 @@ def test_red_service_unavailable_real_call_seam_ar(
 
 
 # ===== 3. Observation #3 — present-confirm first-person consent (LOAD-BEARING)
+_CONFIRM_LABEL_RE = re.compile(
+    r'<label[^>]*>\s*<input type="checkbox" name="domain_confirm" value="([^"]+)" required>'
+    r'\s*(.*?)\s*</label>', re.S)
+
+
+def _confirm_checkbox(body):
+    """(domain value, label text) of the consent checkbox — the actual
+    `<label>` that owns `input[name="domain_confirm"]`, never the paragraph."""
+    m = _CONFIRM_LABEL_RE.search(body)
+    return (m.group(1), " ".join(m.group(2).split())) if m else (None, None)
+
+
 def test_red_broadened_present_confirm_ar_first_person_not_prompt_style(activate, client):
-    """The Arabic present-confirm text for a recognized non-electronics
-    domain (UI_B_START_024, consumed by both the error paragraph and
-    `start_present_confirm_label`) must now be a first-person consent
-    affirmation ("أؤكد أن...") — matching the register `UI_B_START_030`
-    already correctly uses — rather than the old prompt/instruction wording
-    ("يرجى تأكيد..."). Independent hardcoded-literal markers for both
-    registers, not derived from `ui_text.UI_STRINGS`. Fails if UI_B_START_024
-    is ever reverted to prompt/instruction style. Domain-neutral throughout —
-    no domain name (Mechanical or otherwise) appears anywhere in the string,
-    preserving the CF-2 Tier-1 boundary."""
+    """The Arabic present-confirm CHECKBOX LABEL for a recognized
+    non-electronics domain (`start_present_confirm_label`, UI_B_START_024)
+    must be a first-person consent affirmation ("أؤكد ...") — matching the
+    register `UI_B_START_030` already correctly uses — rather than
+    prompt/instruction wording ("يرجى تأكيد ..."). UXAR-01: the assertion is
+    made on the checkbox `<label>` itself (the observation's own surface),
+    not on the `<p class="error">` paragraph, which is now a DIFFERENT role
+    (the explanatory prompt, UI_B_START_032). Exact hard-coded expected copy
+    (not derived from `ui_text.UI_STRINGS`) keeps this mutation-resistant:
+    it fails if UI_B_START_024 is ever reverted to prompt/instruction style,
+    if the paragraph is served as the label again, or if the canonical
+    review-path label stops being identified. The old negative marker
+    "ميكانيكي" is not used: it never matched the canonical label "الميكانيكا"."""
     activate(ELEC, MECH)
     _set_lang(client, "ar")
     resp = _post(client, MECH_IDEA)
     body = resp.get_data(as_text=True)
-    para = _error_paragraph(body)
-    assert "أؤكد أن" in para
-    assert "يرجى تأكيد" not in para
-    assert "Mechanical" not in body
-    assert "ميكانيكي" not in body
+    value, label = _confirm_checkbox(body)
+    assert value == MECH
+    assert label == "أؤكد أنني أرغب في متابعة فكرتي عبر «مراجعة مستنيرة بمجال الميكانيكا»."
+    assert "أؤكد" in label
+    assert "يرجى تأكيد" not in label
+    assert label != _error_paragraph(body)          # two roles, two texts
+    assert "Mechanical" not in label                # no English leak in the AR label
 
 
 def test_green_ui_b_start_024_still_domain_neutral():
-    """Structural guard: the corrected UI_B_START_024 content names no
+    """Structural guard: the UI_B_START_024 catalogue content names no
     specific domain in either language — confirms the remediation did not
-    drift into Tier-1 translation work."""
+    drift into Tier-1 translation work. (UXAR-01: the Arabic value is a
+    `{review_label}` template; the review-path label is injected at render
+    time from the canonical `web/domain_label.py` resolver, never stored
+    here.)"""
     entry = ui_text.UI_STRINGS["UI_B_START_024"]
     for lang, text in entry.items():
         assert "mechanical" not in text.lower()
