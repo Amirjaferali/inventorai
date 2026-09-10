@@ -1,4 +1,8 @@
-{% extends "base.html" %}
+{% extends deliverable_base|default("base.html") %}
+{# DIRECT-OUTPUT-PDF: the HTML route renders through the default application
+   shell; the PDF route passes `deliverable_base="pdf_base.html"`. PDF mode is
+   derived from that single variable — no second flag, no request input. #}
+{% set pdf_mode = (deliverable_base|default("base.html")) != "base.html" %}
 {% block title %}{{ t('UI_TITLE_DELIVERABLE') }}{% endblock %}
 {% block head %}
 <style>
@@ -61,8 +65,10 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {{ t('UI_B_DELIV_002') }} {{ package.schema_id }}
   &nbsp;·&nbsp;
   {{ t('UI_B_DELIV_003') }} {{ package.generated_at }}
+  {%- if not pdf_mode %}
   &nbsp;·&nbsp;
   {{ t('UI_B_DELIV_004') }} {{ package.session_id }}
+  {%- endif %}
 </div>
 
 {% if eligible %}
@@ -156,7 +162,7 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
     <li><a href="#report-risks">{{ t('UI_B_DELIV_052') }}</a></li>
     <li><a href="#report-reasoning">{{ t('UI_B_DELIV_056') }}</a></li>
     <li><a href="#report-next-steps">{{ t('UI_B_DELIV_060') }}</a></li>
-    {% if eligible %}<li><a href="#decision-heading">{{ t('UI_B_DELIV_100') }}</a></li>{% endif %}
+    {% if eligible and not pdf_mode %}<li><a href="#decision-heading">{{ t('UI_B_DELIV_100') }}</a></li>{% endif %}
     {% if decision_capture is defined and decision_capture %}<li><a href="#report-decisions">{{ t('UI_W2A_DELIV_HEADING') }}</a></li>{% endif %}
   </ol>
 </nav>
@@ -490,7 +496,7 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% endif %}
   <div class="field-value"><strong>{{ t('UI_B_DELIV_081') }}</strong> {{ exp.failure_or_revision_condition }}</div>
   <div class="field-value"><strong>{{ t('UI_B_DELIV_082') }}</strong> {{ exp.expected_evidence_upgrade }}</div>
-  <p class="experiment-criterion-link"><a href="{{ url_for('success_criteria', sid=sid) }}#criterion-{{ nav_id }}" aria-describedby="report-experiment-source-{{ nav_id }}">{{ t('UI_SC_EDIT_EXPERIMENT') }}</a></p>
+  {% if not pdf_mode %}<p class="experiment-criterion-link"><a href="{{ url_for('success_criteria', sid=sid) }}#criterion-{{ nav_id }}" aria-describedby="report-experiment-source-{{ nav_id }}">{{ t('UI_SC_EDIT_EXPERIMENT') }}</a></p>{% endif %}
   {% endfor %}
   {% if package.section_11_prototype_test_plan.shared_required_expertise %}
   <div class="field-label">{{ t('UI_B_DELIV_083') }}</div>
@@ -502,7 +508,7 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% if package.section_11_prototype_test_plan.stale_criteria_notice %}
   <div class="field-value status-snapshot">{{ package.section_11_prototype_test_plan.stale_criteria_notice }}</div>
   {% endif %}
-  {% if package.section_11_prototype_test_plan["items"] %}
+  {% if package.section_11_prototype_test_plan["items"] and not pdf_mode %}
   <div class="field-value"><a href="{{ url_for('success_criteria', sid=sid) }}">{{ t('UI_B_DELIV_084') }}</a></div>
   {% endif %}
   <div class="field-value"><em>{{ package.section_11_prototype_test_plan.note }}</em></div>
@@ -599,7 +605,7 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   <p class="report-return"><a href="#report-contents">{{ t('UI_REPORT_BACK_CONTENTS') }}</a></p>
 </section>
 
-{% if eligible %}
+{% if eligible and not pdf_mode %}
 {# G-UX-SNAPSHOT-DECISION: truthful post-output decision within the current
    temporary session. Refine (primary) returns to the SAME guided session (same
    sid); Keep (secondary) records only a single-use temporary acknowledgement.
@@ -669,6 +675,19 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
 </section>
 {% endif %}
 
+{% if not pdf_mode %}
+{# DIRECT-OUTPUT-PDF: one localized download action for the CURRENT report,
+   available for both an eligible deliverable and a truthful in-progress
+   snapshot. POST + the existing `csrf_for_form()` token, so the global
+   request-integrity guard rejects missing/wrong/foreign evidence before the
+   view runs. It creates no version, approval, or durable save. #}
+<form class="pdf-download" method="POST" action="{{ url_for('download_deliverable_pdf', sid=sid) }}" style="margin-top:30px">
+  <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
+  <button type="submit" style="padding:10px 22px;background:#fff;color:#2c3e50;border:1px solid #2c3e50;border-radius:4px;font-size:15px;cursor:pointer">{{ t('UI_PDF_DOWNLOAD') }}</button>
+  <p class="field-value" style="margin:6px 0 0">{{ t('UI_PDF_DOWNLOAD_HELP') }}</p>
+</form>
+
 <p class="back-link"><a href="{{ url_for('show_session', sid=sid) }}">{{ t('UI_B_DELIV_104') }}</a></p>
+{% endif %}
 
 {% endblock %}

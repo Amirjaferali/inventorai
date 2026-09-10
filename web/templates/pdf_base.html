@@ -1,0 +1,37 @@
+{# DIRECT-OUTPUT-PDF — the PDF-ONLY trusted document shell.
+
+   The application shell (`base.html`) is deliberately NOT reused: it carries the
+   language-switch forms and their live CSRF tokens, the skip link, and the
+   application header. A verbatim conversion of the rendered page would make a
+   live CSRF token extractable from the downloaded PDF, so that design is
+   rejected.
+
+   This shell therefore contains ONLY the doctype, the language/direction
+   attributes, UTF-8 metadata, the existing title block, trusted inline style,
+   and the content block. It has no form, input, button, script, image, iframe,
+   object, embed, external stylesheet, font URL, request path, language switch,
+   application navigation, or session capability. Every declaration below is
+   authored here — none comes from the request, the package, or user text. #}
+<!DOCTYPE html>
+<html lang="{{ ui_lang }}"{% if ui_dir == 'rtl' %} dir="rtl"{% endif %}>
+<head>
+<meta charset="UTF-8">
+<title>{% block title %}InventorAI{% endblock %}</title>
+{# The page's own screen style block renders first (via `head`); the trusted
+   print rules below follow it, so they win on equal specificity and the screen
+   layout cannot override the page geometry, direction, or font stack. #}
+{% block head %}{% endblock %}
+<style>
+@page { size: A4; margin: 18mm 15mm; }
+body { font-family: "DejaVu Sans", sans-serif; max-width: none; margin: 0;
+       padding: 0; text-align: start; }
+html[dir="rtl"] body { direction: rtl; text-align: right; }
+html[dir="rtl"] ul, html[dir="rtl"] ol { padding-right: 18px; padding-left: 0; }
+h1, h2, h3, h4 { break-after: avoid-page; }
+tr { break-inside: avoid-page; }
+</style>
+</head>
+<body>
+{% block content %}{% endblock %}
+</body>
+</html>

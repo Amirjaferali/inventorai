@@ -128,6 +128,11 @@ def test_owner_can_access_owned_project_get_and_post(db_path):
     assert r.status_code in (200, 302)
     if r.status_code == 302:
         assert not r.headers["Location"].endswith("/")   # not the generic deny redirect
+    # DIRECT-OUTPUT-PDF: the owner's own protected PDF download is accepted with
+    # a valid CSRF token (never the generic deny redirect).
+    pdf = c.post("/session/" + sid + "/deliverable.pdf", data={})
+    assert pdf.status_code == 200, pdf.status_code
+    assert pdf.headers["Content-Type"] == "application/pdf"
 
 
 def test_non_owner_denied_on_real_owned_project(db_path):
@@ -141,6 +146,7 @@ def test_non_owner_denied_on_real_owned_project(db_path):
                        ("get", "/session/" + sid + "/success-criteria"),
                        ("post", "/session/" + sid),
                        ("post", "/session/" + sid + "/keep-snapshot"),
+                       ("post", "/session/" + sid + "/deliverable.pdf"),
                        ("post", "/session/" + sid + "/success-criteria")]:
         r = getattr(cb, verb)(path, data={})
         assert r.status_code == 302 and r.headers["Location"].endswith("/"), (verb, path, r.status_code)
@@ -153,7 +159,8 @@ def test_anonymous_denied_on_owned_project_all_verbs(db_path):
     for verb, path in [("get", "/session/" + sid),
                        ("get", "/session/" + sid + "/deliverable"),
                        ("post", "/session/" + sid),
-                       ("post", "/session/" + sid + "/keep-snapshot")]:
+                       ("post", "/session/" + sid + "/keep-snapshot"),
+                       ("post", "/session/" + sid + "/deliverable.pdf")]:
         r = getattr(anon, verb)(path, data={})
         assert r.status_code == 302 and r.headers["Location"].endswith("/")
 
