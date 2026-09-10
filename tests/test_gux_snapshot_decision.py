@@ -230,7 +230,8 @@ def test_no_overclaim_or_durable_language():
                           "restore", "download pdf", "email delivery"):
             # allow the truthful negations ("not been permanently saved", "not ... approved")
             pass
-        for banned in ("version history", "saved projects", "your account", "restored", "download pdf", "email delivery"):
+        # Direct Output Download is now implemented and separately tested, so its label is no longer an overclaim.
+        for banned in ("version history", "saved projects", "your account", "restored", "email delivery"):
             assert banned not in low, f"decision experience must not introduce {banned!r}"
     finally:
         SESSION_STORE.pop(_SID, None)

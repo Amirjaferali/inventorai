@@ -3208,10 +3208,23 @@ def show_session(sid):
         # remains the sole author of any saved answer.
         current_uncertainty_guidance=get_uncertainty_guidance(_uncertainty_text),
     )
-@app.route("/session/<sid>/deliverable", methods=["GET"])
-def show_deliverable(sid):
-    if not _project_authorized(sid):
-        return _deny_project()
+# --- DIRECT-OUTPUT-PDF: one shared truthful deliverable context ---------------
+# The HTML deliverable and the PDF download must never disagree about what the
+# report says, so the live/cold-load, Level-1 read-only reconstruction, package
+# assembly, eligibility and decision-capture derivation live HERE and are
+# consumed by both routes. The cold-reconstruction block is not duplicated.
+#
+# Read-only with respect to the engine: it calls no `run_iteration` and no
+# progression/scoring writer, changes nothing in `assemble_deliverable`, adds no
+# persistence/schema/cache/version/approval/save semantics, and performs no
+# durable write. It MAY populate the existing `SESSION_STORE` entry on a cold
+# load — exactly as the HTML deliverable route already did before this change.
+# The single-use `_snapshot_kept_ack` is deliberately NOT touched here: only the
+# HTML route pops and displays it.
+def _deliverable_context(sid):
+    """Return ``(entry, package, eligible, reconstructed, state)`` for ``sid``,
+    or ``None`` when no live or durable state exists. Authorization is the
+    caller's responsibility and always precedes this call."""
     entry = SESSION_STORE.get(sid)
     if not entry:
         # P10-PC2: a direct deliverable link to a saved project must survive a
@@ -3219,7 +3232,7 @@ def show_deliverable(sid):
         # generic fail-closed redirect when no durable state exists).
         entry = _cold_load_entry(sid)
         if not entry:
-            return redirect(url_for("index"))
+            return None
         SESSION_STORE[sid] = entry
     state = entry["state"]
     # P10-PC2: on a cold-loaded session (committed marker: state.domain is
@@ -3241,6 +3254,17 @@ def show_deliverable(sid):
             reconstructed_deliverable = False
     package = assemble_deliverable(state)
     eligible = package["_session_meta"]["deliverable_eligible"]
+    return entry, package, eligible, reconstructed_deliverable, state
+
+
+@app.route("/session/<sid>/deliverable", methods=["GET"])
+def show_deliverable(sid):
+    if not _project_authorized(sid):
+        return _deny_project()
+    context = _deliverable_context(sid)
+    if context is None:
+        return redirect(url_for("index"))
+    entry, package, eligible, reconstructed_deliverable, state = context
     return render_template(
         "deliverable.html",
         sid=sid,
@@ -3257,6 +3281,160 @@ def show_deliverable(sid):
         snapshot_kept_ack=ui_text.localize_message(
             entry.pop("_snapshot_kept_ack", None) if entry else None, _current_ui_lang()),
     )
+
+
+# --- DIRECT-OUTPUT-PDF: in-memory renderer, hard bounds, protected route ------
+# Synchronous and in memory only: no PDF persistence, no temporary PDF file, no
+# background job, no external network, and no document-controlled file fetching.
+# Nothing generated here is ever written to disk or to the durable store.
+#
+# Hard byte limits (inclusive maxima). The source cap is enforced BEFORE the
+# renderer is constructed or invoked; over-cap input is REJECTED, never
+# truncated, because truncating a report would silently change what it says.
+_PDF_MAX_SOURCE_BYTES = 262144      # 256 KiB of UTF-8 encoded rendered HTML
+_PDF_MAX_OUTPUT_BYTES = 5242880     # 5 MiB of returned PDF bytes
+
+
+class _PdfTooLarge(Exception):
+    """The rendered source or the produced PDF exceeded its hard byte limit."""
+
+
+class _PdfUnavailable(Exception):
+    """Ordinary generation failure: import, native library, render, or a
+    refused fetch. Never carries a detail that may reach the response."""
+
+
+def _pdf_source_within_limit(source):
+    """True while the UTF-8 encoded source is within the inclusive cap."""
+    return len(source.encode("utf-8")) <= _PDF_MAX_SOURCE_BYTES
+
+
+def _pdf_output_within_limit(pdf_bytes):
+    """True only for non-empty, PDF-signed bytes within the inclusive cap."""
+    return bool(pdf_bytes) and pdf_bytes[:5] == b"%PDF-" \
+        and len(pdf_bytes) <= _PDF_MAX_OUTPUT_BYTES
+
+
+def _render_pdf_bytes(source):
+    """Render one trusted document STRING to PDF bytes, in memory.
+
+    WeasyPrint is imported LAZILY here, not at module import time, so a missing
+    or broken native library affects only this endpoint and is converted to the
+    required 503 instead of preventing the HTML application from starting.
+
+    The fetcher denies every protocol, refuses redirects, and fails on error, so
+    an `http`/`https`/`file`/`ftp`/`data` reference is refused on the PROTOCOL —
+    before any socket is opened or any file is read. `HTML(string=...)` with
+    `base_url=None` gives the document no origin to resolve against, and
+    `write_pdf()` is called with no target, so nothing is ever written to the
+    filesystem.
+
+    `weasyprint.urls.FatalURLFetchingError` derives directly from
+    `BaseException`, not from `Exception`, so it is caught HERE BY NAME. That is
+    deliberately not a blanket `except BaseException`: `KeyboardInterrupt` and
+    `SystemExit` still propagate untouched.
+    """
+    try:
+        from weasyprint import HTML as _WeasyHTML
+        from weasyprint.urls import URLFetcher as _WeasyURLFetcher
+        from weasyprint.urls import FatalURLFetchingError as _WeasyFetchError
+    except Exception as exc:                      # import / native library
+        raise _PdfUnavailable("renderer unavailable") from exc
+    fetcher = _WeasyURLFetcher(allowed_protocols=frozenset(),
+                               allow_redirects=False, fail_on_errors=True)
+    try:
+        return _WeasyHTML(string=source, base_url=None,
+                          url_fetcher=fetcher).write_pdf()
+    except _WeasyFetchError as exc:               # a refused resource fetch
+        raise _PdfUnavailable("resource fetching is not permitted") from exc
+    except Exception as exc:                      # ordinary render failure
+        raise _PdfUnavailable("render failed") from exc
+
+
+def _pdf_bytes_from_source(source):
+    """Apply both hard bounds around one in-memory render. Rejected or invalid
+    output is discarded immediately; no partial or complete bytes are kept."""
+    if not _pdf_source_within_limit(source):
+        raise _PdfTooLarge("source exceeds the maximum size")
+    pdf_bytes = _render_pdf_bytes(source)
+    if not _pdf_output_within_limit(pdf_bytes):
+        del pdf_bytes
+        raise _PdfTooLarge("output is empty, malformed, or exceeds the maximum size")
+    return pdf_bytes
+
+
+def _pdf_error(status, key):
+    """One bounded, localized, non-disclosing plain-text failure response. It
+    never carries an exception type, path, URL, native-library detail, source
+    content, sid, or stack trace."""
+    response = app.response_class(
+        response=ui_text.text(key, _current_ui_lang()),
+        status=status,
+        mimetype="text/plain",
+    )
+    response.headers["Content-Type"] = "text/plain; charset=utf-8"
+    response.headers["Cache-Control"] = "private, no-store"
+    return response
+
+
+@app.route("/session/<sid>/deliverable.pdf", methods=["POST"])
+def download_deliverable_pdf(sid):
+    """DIRECT-OUTPUT-PDF — on-demand, in-memory PDF of the CURRENT report.
+
+    POST only (an unsafe browser route), so the existing global request-integrity
+    guard rejects a missing, wrong, foreign, query, JSON, or duplicate token
+    before this view runs and without any state mutation. Authorization uses the
+    SAME central `_project_authorized` decision and the SAME generic
+    `_deny_project()` denial as the HTML deliverable — one authorization model,
+    NULL-owner capability behavior preserved exactly.
+
+    The document is rendered from the PDF-ONLY trusted shell with every
+    interactive control, application route, CSRF value and session capability
+    omitted, then converted in memory. Nothing is persisted, and the single-use
+    snapshot acknowledgement is neither popped nor rendered here.
+    """
+    if not _project_authorized(sid):
+        return _deny_project()
+    # The generation boundary starts HERE, after authorization, and covers every
+    # stage that can fail while producing the document: the shared context, the
+    # PDF-only source render, and the in-memory conversion. Anything that raises
+    # inside it becomes the SAME bounded localized failure response instead of a
+    # generic HTML 500 with no cache directive. Authorization and the global CSRF
+    # guard both run BEFORE this boundary and are unchanged, so a failure here can
+    # never soften a denial. `context is None` is a normal outcome, not an
+    # exception, and keeps its existing generic redirect.
+    try:
+        context = _deliverable_context(sid)
+        if context is None:
+            return redirect(url_for("index"))
+        _entry, package, eligible, reconstructed_deliverable, state = context
+        source = render_template(
+            "deliverable.html",
+            deliverable_base="pdf_base.html",
+            sid=sid,
+            package=package,
+            eligible=eligible,
+            reconstructed_deliverable=reconstructed_deliverable,
+            decision_capture=_decision_capture_view_safe(state),
+            snapshot_kept_ack=None,
+        )
+        pdf_bytes = _pdf_bytes_from_source(source)
+    except _PdfTooLarge:
+        return _pdf_error(422, "UI_PDF_TOO_LARGE")
+    except _PdfUnavailable:
+        return _pdf_error(503, "UI_PDF_UNAVAILABLE")
+    except Exception:
+        return _pdf_error(503, "UI_PDF_UNAVAILABLE")
+    response = app.response_class(
+        response=pdf_bytes,
+        status=200,
+        mimetype="application/pdf",
+    )
+    response.headers["Content-Type"] = "application/pdf"
+    response.headers["Content-Disposition"] = (
+        'attachment; filename="inventorai-output.pdf"')
+    response.headers["Cache-Control"] = "private, no-store"
+    return response
 
 
 @app.route("/session/<sid>/correct", methods=["POST"])

@@ -1586,6 +1586,28 @@ UI_STRINGS = {
                          "ar": "InventorAI — تحديد معايير النجاح"},
     "UI_TITLE_DATA": {"en": "Data & Session information",
                       "ar": "معلومات البيانات والجلسة"},
+
+    # --- DIRECT-OUTPUT-PDF: on-demand, in-memory PDF download of the current
+    # report. UI chrome only. The wording states exactly what the action does —
+    # it never implies finality, validation, approval, technical verification,
+    # or a durable save, because none of those occur: the PDF is generated
+    # synchronously in memory from the report as it stands and is never stored.
+    "UI_PDF_DOWNLOAD": {"en": "Download PDF",
+                        "ar": "تنزيل ملف PDF"},
+    "UI_PDF_DOWNLOAD_HELP": {
+        "en": "Downloads the current report with its current status.",
+        "ar": "ينزّل التقرير الحالي بحالته الحالية.",
+    },
+    "UI_PDF_TOO_LARGE": {
+        "en": ("This report is too large to generate as a PDF safely. "
+               "The report remains available on this page."),
+        "ar": ("هذا التقرير كبير جدًا بحيث لا يمكن إنشاء ملف PDF منه بأمان. "
+               "يظل التقرير متاحًا في هذه الصفحة."),
+    },
+    "UI_PDF_UNAVAILABLE": {
+        "en": "We could not generate the PDF. Nothing was saved. Please try again.",
+        "ar": "تعذر إنشاء ملف PDF. لم يتم حفظ أي شيء. يُرجى المحاولة مرة أخرى.",
+    },
 }
 
 

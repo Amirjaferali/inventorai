@@ -23,6 +23,7 @@ MUTATIONS = (
     "/session/<sid>/decision/declare-context", "/session/<sid>/decision/declare-alternative",
     "/session/<sid>/decision/refine-alternative", "/session/<sid>/decision/withdraw-alternative",
     "/session/<sid>/keep-snapshot", "/session/<sid>/success-criteria", "/session/<sid>",
+    "/session/<sid>/deliverable.pdf",
     "/decision-workspace", "/decision-workspace/<did>/input",
     "/decision-workspace/<did>/constraint", "/decision-workspace/<did>/gap",
     "/decision-workspace/<did>/evidence", "/decision-workspace/<did>/gap-assessment",
