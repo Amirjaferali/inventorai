@@ -1624,11 +1624,25 @@ def _render_start_page(error=None, status=None, present_domain=None,
         (ui_text.text("UI_B_START_031", lang) if is_ar
          else "Choose your idea's domain:")
         if choice_domains else None)
+    # UXAR-02: render-edge picker labels for the D2 explicit chooser ONLY
+    # (`start_domain_labels` is consumed by exactly one template site — the
+    # D2 radio-option text). `labels` keeps its existing semantics for every
+    # other surface above (English confirm/present-confirm copy), so English,
+    # D1, sole-domain, prompt and consent output are unchanged. Under Arabic
+    # each offered option's VISIBLE label becomes the existing canonical Tier-1
+    # review-path label from the trusted central resolver — no Arabic copy is
+    # introduced here, and the submitted radio values, their activated-domain
+    # order and the `required` attribute are untouched.
+    picker_labels = labels
+    if is_ar and choice_domains:
+        picker_labels = dict(labels)
+        for _d in choice_domains:
+            picker_labels[_d] = _public_domain_label(_d)["ar"]
     rendered = render_template(
         "index.html", error=error,
         start_sole_domain=sole,
         start_is_electronics_only=is_elec_only,
-        start_domain_labels=labels,
+        start_domain_labels=picker_labels,
         start_present_domain=present_domain,
         start_present_confirm_label=present_confirm_label,
         start_choice_domains=choice_domains,

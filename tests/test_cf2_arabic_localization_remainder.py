@@ -31,8 +31,10 @@ D-CF6CF2-ILT002-01 are all UNCHANGED — presentation only.
 """
 
 from tests.csrf_client import csrf_client
+import html as _html
 import os
 import re
+import re as _re
 import sys
 
 import pytest
@@ -177,20 +179,61 @@ def test_green_ar_mechanism_guidance_localized_no_english_leak(client, activate)
     assert ui_text.UI_STRINGS["UI_B_START_012"]["ar"] in body
 
 
+# --- UXAR-02: D2 explicit-chooser radio options -------------------------------
+# The two tests below own the D2 chooser surface. Each expectation is
+# HARD-CODED here and is never derived from a production mapping
+# (`_domain_label`, `_public_domain_label`, `start_domain_labels`) or from the
+# `ui_text` catalogue, so a mutation of any of those cannot silently satisfy
+# its own test. The option ORDER is the activated-domain order.
+_D2_RADIO_RE = _re.compile(
+    r'<input type="radio" name="domain_choice" value="([^"]+)"([^>]*)>\s*(.*?)\s*</label>',
+    _re.S)
+
+UXAR02_AR_OPTIONS = [
+    ("electronics_electrical", "مراجعة مستنيرة بمجال الإلكترونيات"),
+    ("mechanical", "مراجعة مستنيرة بمجال الميكانيكا"),
+]
+UXAR02_EN_OPTIONS = [
+    ("electronics_electrical", "Electronics Electrical"),
+    ("mechanical", "Mechanical"),
+]
+
+
+def _d2_radio_options(body):
+    """Ordered (submitted value, visible label) pairs for the D2 chooser."""
+    return [(v, " ".join(_html.unescape(lab).split()))
+            for v, _attrs, lab in _D2_RADIO_RE.findall(body)]
+
+
+def _d2_all_required(body):
+    return [("required" in attrs) for _v, attrs, _lab in _D2_RADIO_RE.findall(body)]
+
+
 def test_green_en_domain_choice_byte_identical(activate, client):
+    """UXAR-02: the English D2 chooser is byte-compatible — the visible option
+    labels stay exactly "Electronics Electrical" / "Mechanical"."""
     activate(ELEC, MECH)
     resp = _post(client, NONE_IDEA)
     body = resp.get_data(as_text=True)
     assert DOMAIN_CHOICE_MESSAGE in body
+    assert _d2_radio_options(body) == UXAR02_EN_OPTIONS
+    assert _d2_all_required(body) == [True, True]
 
 
 def test_green_ar_domain_choice_localized_no_english_leak(activate, client):
+    """UXAR-02: under Arabic the D2 chooser shows the canonical Arabic
+    review-path labels; the submitted radio values, their order and the
+    `required` attribute are unchanged, and no English label leaks."""
     activate(ELEC, MECH)
     _set_lang(client, "ar")
     resp = _post(client, NONE_IDEA)
     body = resp.get_data(as_text=True)
     assert DOMAIN_CHOICE_MESSAGE not in body
     assert ui_text.UI_STRINGS["UI_B_START_013"]["ar"] in body
+    assert _d2_radio_options(body) == UXAR02_AR_OPTIONS
+    assert _d2_all_required(body) == [True, True]
+    for english in ("Electronics Electrical", "Mechanical"):
+        assert english not in body, english
 
 
 def test_green_ar_service_unavailable_localize_message_wired(client):
