@@ -3395,21 +3395,29 @@ def download_deliverable_pdf(sid):
     """
     if not _project_authorized(sid):
         return _deny_project()
-    context = _deliverable_context(sid)
-    if context is None:
-        return redirect(url_for("index"))
-    _entry, package, eligible, reconstructed_deliverable, state = context
-    source = render_template(
-        "deliverable.html",
-        deliverable_base="pdf_base.html",
-        sid=sid,
-        package=package,
-        eligible=eligible,
-        reconstructed_deliverable=reconstructed_deliverable,
-        decision_capture=_decision_capture_view_safe(state),
-        snapshot_kept_ack=None,
-    )
+    # The generation boundary starts HERE, after authorization, and covers every
+    # stage that can fail while producing the document: the shared context, the
+    # PDF-only source render, and the in-memory conversion. Anything that raises
+    # inside it becomes the SAME bounded localized failure response instead of a
+    # generic HTML 500 with no cache directive. Authorization and the global CSRF
+    # guard both run BEFORE this boundary and are unchanged, so a failure here can
+    # never soften a denial. `context is None` is a normal outcome, not an
+    # exception, and keeps its existing generic redirect.
     try:
+        context = _deliverable_context(sid)
+        if context is None:
+            return redirect(url_for("index"))
+        _entry, package, eligible, reconstructed_deliverable, state = context
+        source = render_template(
+            "deliverable.html",
+            deliverable_base="pdf_base.html",
+            sid=sid,
+            package=package,
+            eligible=eligible,
+            reconstructed_deliverable=reconstructed_deliverable,
+            decision_capture=_decision_capture_view_safe(state),
+            snapshot_kept_ack=None,
+        )
         pdf_bytes = _pdf_bytes_from_source(source)
     except _PdfTooLarge:
         return _pdf_error(422, "UI_PDF_TOO_LARGE")

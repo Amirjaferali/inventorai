@@ -361,6 +361,72 @@ def test_pdf_generation_failure_is_localized_no_store_and_non_disclosing(
 
 
 # ==========================================================================
+# 6b. Failure boundary: context and PDF-source construction
+# ==========================================================================
+def test_pdf_context_failure_is_localized_no_store_and_non_disclosing(
+        db_path, monkeypatch):
+    """An ordinary exception while building the SHARED deliverable context must
+    reach the same bounded localized PDF failure response — not Flask's generic
+    500 with an HTML body and no cache directive."""
+    c, _aid = _client_for("pdf-ctxfail@example.com")
+    sid = _start_project(c)
+    secret = "SECRET-CONTEXT-DETAIL-/srv/context"
+    seen = {}
+
+    def exploding_context(requested_sid):
+        seen["sid"] = requested_sid
+        raise RuntimeError(secret)
+
+    monkeypatch.setattr(webapp, "_deliverable_context", exploding_context)
+    state, memory, database = _snapshot_state(sid)
+    r = _post_pdf(c, sid)
+
+    assert seen.get("sid") == sid, seen
+    assert r.status_code == 503, r.status_code
+    assert r.headers["Content-Type"] == "text/plain; charset=utf-8"
+    assert r.headers["Cache-Control"] == "private, no-store"
+    body = r.get_data(as_text=True)
+    assert body == EN_UNAVAILABLE
+    for leak in (secret, "RuntimeError", "Traceback", "/srv/context", sid):
+        assert leak not in body, leak
+    assert _snapshot_state(sid) == (state, memory, database)
+
+
+def test_pdf_template_source_failure_is_localized_no_store_and_non_disclosing(
+        db_path, monkeypatch):
+    """An ordinary exception while rendering the PDF-ONLY document source must
+    reach the same bounded localized failure response. Only the PDF source
+    render is faulted; every other template render still uses the real
+    function, so the fault is precisely the source-construction stage."""
+    c, _aid = _client_for("pdf-tplfail@example.com")
+    sid = _start_project(c)
+    secret = "SECRET-TEMPLATE-DETAIL-/srv/template"
+    real_render = webapp.render_template
+    seen = {}
+
+    def faulting_render(template_name_or_list, **context):
+        if (template_name_or_list == "deliverable.html"
+                and context.get("deliverable_base") == "pdf_base.html"):
+            seen["hit"] = True
+            raise RuntimeError(secret)
+        return real_render(template_name_or_list, **context)
+
+    monkeypatch.setattr(webapp, "render_template", faulting_render)
+    state, memory, database = _snapshot_state(sid)
+    r = _post_pdf(c, sid)
+
+    assert seen.get("hit") is True, "the PDF source render was never reached"
+    assert r.status_code == 503, r.status_code
+    assert r.headers["Content-Type"] == "text/plain; charset=utf-8"
+    assert r.headers["Cache-Control"] == "private, no-store"
+    body = r.get_data(as_text=True)
+    assert body == EN_UNAVAILABLE
+    for leak in (secret, "RuntimeError", "Traceback", "/srv/template", sid):
+        assert leak not in body, leak
+    assert _snapshot_state(sid) == (state, memory, database)
+
+
+# ==========================================================================
 # 7-8. Authorization
 # ==========================================================================
 def test_pdf_owned_project_authorization_and_generic_denial_matrix(db_path):
