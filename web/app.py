@@ -4372,7 +4372,7 @@ def decision_workspace_export(did):
     if record is None:
         return _deny_fdc001()
     # Deterministic, safe attachment filename derived from the decision id.
-    filename = "fdc001-decision-%s.json" % record.decision_id
+    filename = "fdc001-%s.json" % record.decision_id
     response = app.response_class(
         response=record.to_json(),
         status=200,

@@ -355,7 +355,7 @@ def test_export_route_available_without_restart():
     # filename tied to the decision id.
     cd = exp.headers.get("Content-Disposition", "")
     assert "attachment" in cd.lower()
-    assert ("fdc001-decision-%s.json" % did) in cd
+    assert cd == ('attachment; filename="fdc001-%s.json"' % did)
     assert did in cd
     obj = json.loads(exp.get_data(as_text=True))
     assert obj["decision_id"] == did
