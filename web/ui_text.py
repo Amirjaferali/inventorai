@@ -1865,6 +1865,128 @@ UI_STRINGS = {
                "يعرض بناءً على ما سجّله مشروعك فعلًا، وفق قواعد ثابتة — وهو لا يقرأ "
                "معنى إجاباتك لينشئ أسئلة متابعة جديدة."),
     },
+    # --- T2-E Option B: owner-recorded, explicitly UNVERIFIED evidence ------
+    # Every line below states, in both languages, that this is something the
+    # inventor recorded and that InventorAI has verified none of it. No line
+    # implies regulatory approval, completed testing, independent verification,
+    # specialist review as an established fact, certification, or proof. Copy
+    # exists ONLY for the state this increment actually makes reachable.
+    "UI_T2E_HEADING": {
+        "en": "Recorded external review or support (not verified)",
+        "ar": "مراجعة أو إسناد خارجي مُسجَّل (غير مُتحقَّق منه)",
+    },
+    "UI_T2E_INTRO": {
+        "en": ("You can record who you say reviewed or supports one of your "
+               "answers, when that happened, what it covered, and what it did "
+               "not cover. InventorAI has not contacted that person or source, "
+               "has not seen the material, and has not checked any of it. This "
+               "is kept as your own recorded statement."),
+        "ar": ("يمكنك تسجيل من تقول إنه راجع أحد إجاباتك أو يدعمها، ومتى حدث "
+               "ذلك، وما الذي غطّاه، وما الذي لم يغطّه. لم تتواصل InventorAI مع "
+               "ذلك الشخص أو المصدر، ولم تطّلع على المادة، ولم تتحقق من أي منها. "
+               "ويُحفظ ذلك بوصفه إفادتك المسجّلة أنت."),
+    },
+    "UI_T2E_STATUS_UNVERIFIED": {
+        "en": "Recorded by the inventor — not verified by InventorAI",
+        "ar": "سجّله المخترع — لم تتحقق منه InventorAI",
+    },
+    "UI_T2E_NOT_CERTIFICATION": {
+        "en": ("Recording this does not make the answer specialist-reviewed, "
+               "empirically demonstrated, independently verified, certified, or "
+               "validated. Its evidence status is unchanged."),
+        "ar": ("تسجيل ذلك لا يجعل الإجابة «مراجَعة من مختص» أو «مُثبَتة تجريبيًا» "
+               "أو «مُتحقَّقًا منها باستقلال» أو معتمَدة أو مُتحقَّقة. وحالة أدلتها "
+               "لم تتغير."),
+    },
+    "UI_T2E_SOURCE_LABEL": {"en": "Who you say reviewed or supports it:",
+                            "ar": "من تقول إنه راجعها أو يدعمها:"},
+    "UI_T2E_DATE_LABEL": {"en": "When it happened (YYYY-MM-DD):",
+                          "ar": "متى حدث ذلك (سنة-شهر-يوم):"},
+    "UI_T2E_SCOPE_LABEL": {"en": "What it covered:", "ar": "ما الذي غطّاه:"},
+    "UI_T2E_LIMITATION_LABEL": {
+        "en": "What it did NOT cover (required):",
+        "ar": "ما الذي لم يغطّه (مطلوب):",
+    },
+    "UI_T2E_LIMITATION_HINT": {
+        "en": ("Say plainly what was left out. A record with no stated limit "
+               "cannot be saved."),
+        "ar": ("اذكر بوضوح ما الذي استُثني. لا يمكن حفظ سجل بلا حدّ مذكور."),
+    },
+    "UI_T2E_ANCHOR_LABEL": {"en": "Which answer this is about:",
+                            "ar": "أي إجابة يتعلق بها ذلك:"},
+    "UI_T2E_SUBMIT": {"en": "Record this", "ar": "سجّل ذلك"},
+    "UI_T2E_WITHDRAW": {"en": "Withdraw this record", "ar": "اسحب هذا السجل"},
+    "UI_T2E_WITHDRAWN": {
+        "en": "Withdrawn by the inventor — kept in history, no longer current",
+        "ar": "سحبه المخترع — محفوظ في السجل ولم يعد ساريًا",
+    },
+    "UI_T2E_REPLACES": {
+        "en": "This replaces an earlier record; the earlier one is kept in history.",
+        "ar": "يحل هذا محل سجل أسبق؛ والسجل الأسبق محفوظ في التاريخ.",
+    },
+    "UI_T2E_CONFIRM_HEADING": {"en": "Confirm what will be recorded",
+                               "ar": "أكّد ما سيُسجَّل"},
+    "UI_T2E_CONFIRM": {"en": "Confirm", "ar": "تأكيد"},
+    "UI_T2E_DISCARD": {"en": "Discard", "ar": "تجاهل"},
+    "UI_T2E_NONE_RECORDED": {
+        "en": "Nothing recorded for this answer.",
+        "ar": "لا يوجد شيء مسجّل لهذه الإجابة.",
+    },
+    # --- outcomes. Rejected input is NOT kept: each message names the field
+    #     and asks for re-entry, and never echoes what was typed.
+    "UI_T2E_ACK_SAVED": {"en": "Recorded.", "ar": "تم التسجيل."},
+    "UI_T2E_ACK_WITHDRAWN": {
+        "en": "Withdrawn. The earlier record is kept in your project history.",
+        "ar": "تم السحب. والسجل الأسبق محفوظ في تاريخ مشروعك.",
+    },
+    "UI_T2E_ACK_DISCARDED": {"en": "Discarded. Nothing was recorded.",
+                             "ar": "تم التجاهل. لم يُسجَّل أي شيء."},
+    "UI_T2E_ERR_NOT_SAVED": {
+        "en": "That could not be recorded just now. Nothing was changed.",
+        "ar": "تعذّر تسجيل ذلك الآن. لم يتغير أي شيء.",
+    },
+    "UI_T2E_ERR_CONFLICT": {
+        "en": ("What is recorded for this answer changed while you were "
+               "confirming, so nothing was recorded. Review it and enter it "
+               "again."),
+        "ar": ("تغيّر ما هو مسجّل لهذه الإجابة أثناء تأكيدك، لذلك لم يُسجَّل شيء. "
+               "راجعه وأدخله من جديد."),
+    },
+    "UI_T2E_ERR_OUTCOME_UNKNOWN": {
+        "en": ("We could not confirm whether that was recorded. Reload this "
+               "page and check before entering it again."),
+        "ar": ("لم نتمكن من تأكيد ما إذا كان ذلك قد سُجِّل. أعد تحميل هذه الصفحة "
+               "وتحقق قبل إدخاله من جديد."),
+    },
+    "UI_T2E_ERR_SAVED_NOT_SHOWN": {
+        "en": ("That was recorded, but it cannot be shown right now. Reload "
+               "this page."),
+        "ar": "سُجِّل ذلك، لكن يتعذّر عرضه الآن. أعد تحميل هذه الصفحة.",
+    },
+    "UI_T2E_ERR_SOURCE": {
+        "en": ("Enter who you say reviewed or supports it, as short plain "
+               "text. Nothing was saved — please enter it again."),
+        "ar": ("أدخل من تقول إنه راجعها أو يدعمها، كنص قصير. لم يُحفظ شيء — "
+               "يُرجى إدخاله من جديد."),
+    },
+    "UI_T2E_ERR_DATE": {
+        "en": ("Enter when it happened as a real date in the form YYYY-MM-DD. "
+               "Nothing was saved — please enter it again."),
+        "ar": ("أدخل تاريخ حدوثه كتاريخ حقيقي بصيغة سنة-شهر-يوم. لم يُحفظ شيء "
+               "— يُرجى إدخاله من جديد."),
+    },
+    "UI_T2E_ERR_SCOPE": {
+        "en": ("Enter what it covered, as short plain text. Nothing was saved "
+               "— please enter it again."),
+        "ar": ("أدخل ما الذي غطّاه، كنص قصير. لم يُحفظ شيء — يُرجى إدخاله من "
+               "جديد."),
+    },
+    "UI_T2E_ERR_LIMITATION": {
+        "en": ("Enter what it did NOT cover, as short plain text. This is "
+               "required. Nothing was saved — please enter it again."),
+        "ar": ("أدخل ما الذي لم يغطّه، كنص قصير. وهذا مطلوب. لم يُحفظ شيء — "
+               "يُرجى إدخاله من جديد."),
+    },
     "UI_T1D_EVIDENCE_PROGRESSION": {
         "en": ("This version records evidence status conservatively. The guided journey "
                "here does not move your statements into the specialist-reviewed, "

@@ -364,6 +364,42 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   {% endfor %}
   {%- endif %}
   {#- T2A-BLOCK-END #}
+  {#- T2E-BLOCK-BEGIN — T2-E Option B. The two sentinels delimit this block
+     exactly, so the zero-row equivalence proof can reconstruct the BASE source
+     by removing the text between them. Every scaffolding tag self-erases, so a
+     project with no recorded reference emits nothing at all and the rendered
+     report is byte-identical to the base (HTML and PDF source alike).
+
+     Presentation-only render of the `evidence_references` variable, derived on
+     demand and passed alongside the canonical package (the W2-A
+     `decision_capture` precedent) — the assembler and the canonical package are
+     untouched. Every row is labelled as recorded by the inventor and NOT
+     verified, states what was not covered, and claims no certification,
+     completed testing, independent verification or specialist review. Every
+     label resolves through UI_T2E_* bilingual keys; inventor text renders
+     verbatim (escaped, dir=auto). No form, no token, no internal identifier,
+     no raw internal status word. -#}
+  {%- if evidence_references %}
+  <h3 id="t2e-evidence-references">{{ t('UI_T2E_HEADING') }}</h3>
+  <p class="group-lede" style="margin-top:0">{{ t('UI_T2E_INTRO') }}</p>
+  <p class="group-lede" style="margin-top:0">{{ t('UI_T2E_NOT_CERTIFICATION') }}</p>
+  {% for ref in evidence_references %}
+  <div class="field-label t2e-statement" dir="auto">{{ ref.statement }}</div>
+  {% if ref.withdrawn %}
+  <div class="field-value t2e-withdrawn"><strong>{{ t('UI_T2E_WITHDRAWN') }}</strong></div>
+  {% else %}
+  <div class="field-value t2e-source">{{ t('UI_T2E_SOURCE_LABEL') }} <bdi class="t2e-source-value" dir="auto">{{ ref.source_identity }}</bdi></div>
+  <div class="field-value t2e-date">{{ t('UI_T2E_DATE_LABEL') }} <bdi class="t2e-date-value" dir="auto">{{ ref.occurred_on }}</bdi></div>
+  <div class="field-value t2e-scope">{{ t('UI_T2E_SCOPE_LABEL') }} <bdi class="t2e-scope-value" dir="auto">{{ ref.scope_text }}</bdi></div>
+  <div class="field-value t2e-limitation">{{ t('UI_T2E_LIMITATION_LABEL') }} <bdi class="t2e-limitation-value" dir="auto">{{ ref.limitation_text }}</bdi></div>
+  <div class="ss-meta t2e-status">{{ t('UI_T2E_STATUS_UNVERIFIED') }}</div>
+  {% endif %}
+  {% if ref.replaced_count %}
+  <div class="field-value t2e-replaced" style="color:#667">{{ t('UI_T2E_REPLACES') }}</div>
+  {% endif %}
+  {% endfor %}
+  {%- endif %}
+  {#- T2E-BLOCK-END #}
   <p class="report-return"><a href="#report-contents">{{ t('UI_REPORT_BACK_CONTENTS') }}</a></p>
 </section>
 

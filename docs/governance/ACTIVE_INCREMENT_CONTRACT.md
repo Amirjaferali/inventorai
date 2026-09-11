@@ -23,6 +23,137 @@ Git/GitHub own transient candidate, PR and merge identity. No acceptance/merge t
 self-SHA or lifecycle-label change creates a synchronization candidate. When no mandate
 exists, state ACTIVE CONTRACT: NONE; historical declarations never fill the gap.
 
+<a id="current-authority--t2e-t2f-evidence-references-and-ordering"></a>
+## Current authority — T2-E Option B + T2-F (one combined bounded candidate)
+
+**ACTIVE CONTRACT: T2-F SEMANTIC QUALITY-ORDERING REPAIR + T2-E OPTION B
+OWNER-RECORDED UNVERIFIED EVIDENCE REFERENCES — ONE COMBINED BOUNDED
+IMPLEMENTATION CANDIDATE (merge NOT authorized).**
+
+**Owner source:** current-chat "OWNER AUTHORIZATION — IMPLEMENTATION OF T2-E + T2-F
+OPTION B", issued after the read-only design was corrected twice (the citation/evidence
+separation and the three implementation blockers: executable DDL, attach-token
+lifecycle, rejected-field retention). It takes effect on receipt (declaration rule
+above) and supersedes the T1-D + T2-B′ declaration, now preserved below as historical
+evidence. **`OD-PDVG-08a` and `OD-PDVG-08b` are EXERCISED for this bounded scope ONLY.**
+This activates no wider roadmap: WS11, `T2-D`, `T2-G`, semantic adaptive questioning,
+live AI, human research, deployment, release and paid activation all keep their
+existing status, owner and return conditions.
+
+**Starting context:** authoritative branch `feature/atomic-json-session-persistence`
+at `0f164324c0860c5b464378d0f8e136bc8a5f01e6` (tree
+`26807622008a449c69b1726e54897dbe494c1de1`, the verified PR #639 merge result), clean
+working tree, implementation branch descended directly from that exact tip.
+
+**T2-F — one canonical semantic ordering owner.** PDVG-01 §4.c recorded a verified live
+defect: Python orders the committed constants `ASSERTED < DEMONSTRATED < REASONED`, so
+`'DEMONSTRATED' >= 'REASONED'` is False and every raw ordering comparison on the quality
+axis encoded the WRONG ladder. The new leaf `engine/evidence_order.py` defines
+`ASSERTED < REASONED < DEMONSTRATED` once and owns every comparison; all five raw
+comparisons in `engine/progression_loop.py` (two on the `known_mechanism` / problem
+establishment path, one on the maturity 0→1 gate, two on the level-0 problem path) route
+through it. Serialized strings are unchanged everywhere they are stored, exported or
+rendered; ranks are ordinal only and are never serialized. Unknown quality FAILS LOUDLY
+at the progression authority (it must never promote on a value it cannot interpret);
+the presentation boundary keeps its documented fail-closed behaviour; legacy `None`
+quality keeps its current weakest-tier behaviour. **`engine/deliverable_assembler.py` is
+NOT modified**: its fail-closed presentation map stays byte-identical and a test pins it
+VALUE-EQUIVALENT to the canonical ladder, which prevents drift without editing a
+protected presentation file. The existing latent-hazard assertions in
+`tests/test_wave1_rvr3_structured_substance.py` are preserved byte-identical and still
+hold; positive semantic-order coverage is ADDED, never substituted. The repair makes the
+ladder SAFE to extend; it does not extend it — `assess_response` still cannot produce
+`DEMONSTRATED` and no writer for it exists.
+
+**T2-E Option B — owner-recorded, explicitly UNVERIFIED evidence references.** One
+append-only record in which the owner states, about ONE exact active answered assertion:
+who they SAY reviewed or supports it, when, what that covered, and — REQUIRED — what it
+did NOT cover. It is a CLAIM the owner recorded; InventorAI has verified none of it, and
+every surface says so. `claim_status` is a FROZEN SINGLE VALUE (`UNVALIDATED`), so the
+writer has no second value to write and this can never become a competing ladder.
+
+*Not evidence, and not a promotion.* A named source is attribution, not proof that the
+material exists, is authentic, was inspected, or supports the assertion. **No ladder
+value becomes reachable**: `EXTERNAL_EVIDENCE` is never written (owner-typed attribution
+is testimonial, not documentary — the distinction `test_increment_2_truthful_state.py`
+already pins), the anchor keeps `OWNER_STATED` / `UNVALIDATED`, quality is untouched, and
+`derive_readiness().overall_verified()` remains the honest constant `False`.
+`SPECIALIST_REVIEWED`, `EMPIRICALLY_DEMONSTRATED`, `INDEPENDENTLY_VERIFIED`,
+`EXPERT_SUPPLIED`, `SYSTEM_INFERRED` and `DEMONSTRATED` all remain unreachable, each with
+its recorded return condition (a qualifying authority: a verified reviewer identity bound
+to the project, or a durable executed-evidence artifact; independence additionally for
+`INDEPENDENTLY_VERIFIED`, which no owner or system action may ever award).
+
+*Not an `answered` record.* `engine/session_reconstruction.py` replays every active
+answered record through `progression_loop.run_iteration`, so storing reference text there
+would replay it as an inventor answer. It is therefore a separate durable row type on a
+new additive `evidence_references` table, modelled on the merged T2-A precedent, with FK
+binding to the exact anchor record and to the superseded row.
+
+*Durable shape.* The repository's SQLite convention: `CREATE TABLE IF NOT EXISTS`
+followed by standalone `CREATE UNIQUE INDEX ... WHERE ...` statements for the two
+CONDITIONAL rules — one active root per anchor, one successor per reference (SQLite
+rejects the inline `UNIQUE (...) WHERE ...` form outright; a test pins that fact).
+Migration is additive and idempotent on fresh and populated databases and touches no
+existing table, column or row. There is NO update path: a change is a superseding row and
+a withdrawal is a superseding row; every earlier row is retained verbatim.
+
+*Attach lifecycle.* A dedicated two-step propose/confirm flow. The ANSWER TOKEN IS NEVER
+USED: `_valid_answer_token` is stateless, so a consumed token still verifies forever and
+binds nothing about an anchor or a chain head. A dedicated session-bound proposal nonce
+is minted instead, and the confirmation token binds session, project, verified owner,
+exact anchor record, CURRENT chain head, every material field, the nonce, the issue time
+and the expiry in one material digest — any mutation invalidates it. The proposal is
+consumed BEFORE any durable call, so one token can never authorise two writes; a
+cross-session confirm is refused BEFORE the nonce is spent, leaving the staging session's
+proposal intact. The chain head is re-validated INSIDE the serialized write transaction,
+so a stale head is refused there as well as by the token. Duplicate and uncertain
+outcomes resolve by reload-and-compare on the stable `event_key` through the merged T2-A
+outcome vocabulary (`INSERTED` / `EXACT_REPLAY` / `CONFLICT` / `REJECTED` /
+`STORAGE_FAILURE` / `COMMIT_UNKNOWN`); a success is never invented.
+
+*Rejected input.* Bounded before staging (the global free-text guard, then per-field
+caps, empty and C0/C1 control rejection). A rejected submission WRITES NOTHING AND
+RETAINS NOTHING SERVER-SIDE; the owner receives an explicit bilingual message naming the
+invalid field and asking for re-entry, the submitted value is never echoed, and no
+surface claims a draft is kept. Notices live in their own two-slot namespace and never
+disturb the answer, correction or quantity namespaces.
+
+**Containment (proof obligations P-1 … P-12, each an individually failing assertion).**
+An evidence reference never enters answered replay, progression, maturity, gap closure,
+scoring, readiness, next-question selection, `/correct` targeting, or any export, API or
+adapter surface; with zero rows the deliverable renders byte-identically to the base in
+HTML and PDF source alike; no deferred ladder value acquires a writer; and live, cold
+read-only and resumed surfaces agree, in English and Arabic.
+
+**Exact file boundary:** production `engine/evidence_order.py` (new),
+`engine/evidence_reference.py` (new), `engine/progression_loop.py`,
+`engine/record_store.py`, `web/app.py`, `web/ui_text.py`,
+`web/templates/session.html`, `web/templates/deliverable.html`; tests
+`tests/test_t2f_semantic_quality_ordering.py` (new),
+`tests/test_t2e_evidence_reference.py` (new); and this file only. No second ledger,
+confidence model, readiness model or state machine is created, and no schema migration
+is performed. `engine/deliverable_assembler.py`, `engine/idea_state.py`,
+`engine/record_contract.py`, `engine/session_reconstruction.py`,
+`engine/derived_readiness.py`, `engine/scoring.py`,
+`engine/question_aware_evaluation.py`, `engine/stage3_evaluator.py`,
+`engine/read_export_service.py`, `engine/export_adapter.py`,
+`engine/requirement_quantity.py`, `engine/safety_signal.py`,
+`engine/validation_plan.py`, `engine/path_n_questions.py`,
+`engine/intent_serving.py`, `engine/question_intent_registry.py`,
+`engine/summary.py`, `web/api_v1.py`, `tests/test_p7_i2_public_api.py`,
+`tests/test_wave1_rvr3_structured_substance.py`,
+`tests/test_increment_2_truthful_state.py`, both WS10 registry JSON records and the
+canonical question artifacts all remain byte-identical.
+
+**Delivery included / not included:** one implementation branch from the verified tip,
+the focused/affected/smoke/full/JUnit/DDL evidence, normal commits, a normal push and one
+PR targeting `feature/atomic-json-session-persistence`. NOT included: merge, deployment,
+release, force-push, rebase, branch deletion, modification of the authoritative branch,
+WS11 activation, any later increment, and making any validation or quality value newly
+reachable. Independent review of the frozen candidate is performed by a separate
+non-authoring session.
+
 <a id="current-authority--bounded-source-of-truth-documentation-sync-only"></a>
 <a id="current-authority--t1d-t2b-question-explainability-and-disclosure"></a>
 ## Current authority — T1-D + residual T2-B′ (one combined bounded candidate)

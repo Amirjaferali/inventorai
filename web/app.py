@@ -101,6 +101,26 @@ from engine.requirement_quantity import (
     QUANTITY_STORAGE_FAILURE as _QUANTITY_STORAGE_FAILURE,
     QUANTITY_COMMIT_UNKNOWN as _QUANTITY_COMMIT_UNKNOWN,
 )
+# T2-E Option B — owner-recorded, explicitly UNVERIFIED evidence references.
+from engine.evidence_reference import (
+    EvidenceReferenceError as _EvidenceReferenceError,
+    EvidenceReferenceHistoryError as _EvidenceReferenceHistoryError,
+    make_evidence_reference as _make_evidence_reference,
+    normalize_reference_text as _normalize_reference_text,
+    normalize_occurred_on as _normalize_occurred_on,
+    active_reference_for_anchor as _active_reference_for_anchor,
+    evidence_references_meta as _evidence_references_meta_rows,
+    REFERENCE_INSERTED as _EVREF_INSERTED,
+    REFERENCE_EXACT_REPLAY as _EVREF_EXACT_REPLAY,
+    REFERENCE_CONFLICT as _EVREF_CONFLICT,
+    REFERENCE_REJECTED as _EVREF_REJECTED,
+    REFERENCE_STORAGE_FAILURE as _EVREF_STORAGE_FAILURE,
+    REFERENCE_COMMIT_UNKNOWN as _EVREF_COMMIT_UNKNOWN,
+)
+from engine.record_store import (
+    ReferenceChainConflict as _ReferenceChainConflict,
+    ReferenceCapExceeded as _ReferenceCapExceeded,
+)
 # P10-D3a (established contract, PR #510): the canonical internal read/export
 # seam (P7-I1), consumed UNMODIFIED by the browser self-service export route.
 from engine import read_export_service as _read_export
@@ -1172,6 +1192,242 @@ def _quantity_session_binding():
         (_session_csrf() or "").encode("utf-8")).hexdigest()[:16]
 
 
+# =============================================================================
+# T2-E Option B — owner-recorded, explicitly UNVERIFIED evidence references
+# =============================================================================
+# One append-only claim, attached AFTER the fact to ONE exact active answered
+# assertion: who the owner says reviewed or supports it, when, what that
+# covered, and what it did NOT cover. InventorAI has verified none of it, and
+# the record says so — `claim_status` is a frozen single value, so this writer
+# has no second value to write and can never become a validation ladder.
+#
+# It writes NO ladder value: provenance stays whatever the owner action made it
+# (never EXTERNAL_EVIDENCE), validation stays UNVALIDATED, quality is untouched.
+# It is NOT an `answered` record: answered records are replayed as inventor
+# answers by `engine.session_reconstruction`, and a reference must never be.
+#
+# TOKEN LIFECYCLE (deliberately NOT the answer token). `_valid_answer_token` is
+# STATELESS — it verifies only an HMAC over `sid`, so a "consumed" answer token
+# still verifies forever and binds nothing about an anchor or a chain head. It
+# therefore cannot protect an attach. This flow uses its OWN staged proposal
+# nonce, following the merged T2-A confirm shape: the material digest binds
+# session, project, verified owner, exact anchor record, CURRENT chain head,
+# every material field, the nonce, the issue time and the expiry, so any
+# mutation of any of them invalidates the token; the proposal is consumed
+# BEFORE any durable call, so one token can never authorise two writes.
+_EVREF_PROPOSAL_KEY = "evidence_reference_proposal"
+EVREF_CONFIRMATION_TTL_SECONDS = 900
+_EVREF_CONFIRM_NONCE_BYTES = 24
+_EVREF_CONFIRM_FIELDS = frozenset(
+    {"csrf_token", "confirmation_token", "reference_action"})
+_EVREF_PROPOSE_FIELDS = frozenset(
+    {"csrf_token", "anchor_record_id", "source_identity", "occurred_on",
+     "scope_text", "limitation_text", "reference_intent"})
+EVREF_ACTION_CONFIRM = "confirm"
+EVREF_ACTION_DISCARD = "discard"
+EVREF_INTENT_RECORD = "record"
+EVREF_INTENT_WITHDRAW = "withdraw"
+
+# Outcome notices live in their OWN two-slot namespace (the T2-A isolation
+# precedent): they never read, write or clear `_interaction_ack`,
+# `_answer_error`, `_quantity_ack` or `_quantity_error`, so an evidence-reference
+# outcome can never delete a truthful answer, correction or quantity notice.
+EVREF_ACK_SLOT = "_evref_ack"
+EVREF_ERROR_SLOT = "_evref_error"
+EVREF_SAVED_ACK = "EVREF_SAVED"
+EVREF_WITHDRAWN_ACK = "EVREF_WITHDRAWN"
+EVREF_DISCARDED_ACK = "EVREF_DISCARDED"
+EVREF_NOT_SAVED_MESSAGE = "EVREF_NOT_SAVED"
+EVREF_CONFLICT_MESSAGE = "EVREF_CONFLICT"
+EVREF_OUTCOME_UNKNOWN_MESSAGE = "EVREF_OUTCOME_UNKNOWN"
+EVREF_SAVED_NOT_SHOWN_MESSAGE = "EVREF_SAVED_NOT_SHOWN"
+# Field-naming rejection messages. REJECTED INPUT IS NEVER RETAINED SERVER-SIDE:
+# nothing is written and nothing is stashed, so the message must say which field
+# to re-enter. It never echoes the submitted value.
+_EVREF_FIELD_MESSAGE = {
+    "source_identity": "EVREF_INVALID_SOURCE",
+    "occurred_on": "EVREF_INVALID_DATE",
+    "scope_text": "EVREF_INVALID_SCOPE",
+    "limitation_text": "EVREF_INVALID_LIMITATION",
+}
+
+
+# Canonical outcome token -> bilingual display key. Storage stays a canonical
+# English token exactly like the answer/correction/quantity namespaces; only the
+# DISPLAY localizes, so the stored notice never depends on the reader's language.
+_EVREF_DISPLAY_KEY = {
+    EVREF_SAVED_ACK: "UI_T2E_ACK_SAVED",
+    EVREF_WITHDRAWN_ACK: "UI_T2E_ACK_WITHDRAWN",
+    EVREF_DISCARDED_ACK: "UI_T2E_ACK_DISCARDED",
+    EVREF_NOT_SAVED_MESSAGE: "UI_T2E_ERR_NOT_SAVED",
+    EVREF_CONFLICT_MESSAGE: "UI_T2E_ERR_CONFLICT",
+    EVREF_OUTCOME_UNKNOWN_MESSAGE: "UI_T2E_ERR_OUTCOME_UNKNOWN",
+    EVREF_SAVED_NOT_SHOWN_MESSAGE: "UI_T2E_ERR_SAVED_NOT_SHOWN",
+    "EVREF_INVALID_SOURCE": "UI_T2E_ERR_SOURCE",
+    "EVREF_INVALID_DATE": "UI_T2E_ERR_DATE",
+    "EVREF_INVALID_SCOPE": "UI_T2E_ERR_SCOPE",
+    "EVREF_INVALID_LIMITATION": "UI_T2E_ERR_LIMITATION",
+}
+
+
+def _evref_notice_text(token, lang):
+    """The bilingual text for a stored evidence-reference notice token, or
+    None. An unrecognised token renders NOTHING rather than a raw token."""
+    key = _EVREF_DISPLAY_KEY.get(token)
+    return None if key is None else ui_text.text(key, lang)
+
+
+def _publish_evref_notice(entry, ack=None, error=None):
+    """Publish exactly ONE current evidence-reference notice, inside the
+    evidence-reference namespace only. Both slots are cleared first, so a
+    success acknowledgement never coexists with a stale failure and vice
+    versa. The answer, correction and quantity namespaces are untouched."""
+    entry.pop(EVREF_ACK_SLOT, None)
+    entry.pop(EVREF_ERROR_SLOT, None)
+    if ack is not None:
+        entry[EVREF_ACK_SLOT] = ack
+    if error is not None:
+        entry[EVREF_ERROR_SLOT] = error
+
+
+def _evref_material_digest(sid, owner_account_id, session_binding, proposal):
+    """SHA-256 over every material fact of ONE staged attach. Binds session,
+    project, verified owner, exact anchor record, CURRENT chain head, all four
+    owner fields, the withdraw flag, the nonce, the issue time and the expiry,
+    so ANY mutation of ANY of them changes the digest and invalidates the
+    token. ``session_binding`` is the binding RECORDED WHEN THE PROPOSAL WAS
+    STAGED, never the caller's current one."""
+    msg = _canonical_message(
+        "t2e-evref-material-v1", sid, owner_account_id, session_binding,
+        proposal["anchor_record_id"], proposal["supersedes_reference_id"] or "",
+        proposal["source_identity"], proposal["occurred_on"],
+        proposal["scope_text"], proposal["limitation_text"],
+        "1" if proposal["withdrawn"] else "0",
+        proposal["nonce"], str(proposal["issued_at"]),
+        str(proposal["expires_at"]))
+    return _p2a_hashlib.sha256(msg).hexdigest()
+
+
+def _evref_confirmation_token(sid, material_digest, nonce):
+    """``nonce + "." + HMAC-SHA256(secret, canonical("t2e-evref-confirm-v1",
+    sid, material_digest))[:32]``."""
+    msg = _canonical_message("t2e-evref-confirm-v1", sid, material_digest)
+    return nonce + _ANSWER_TOKEN_SEP + _p2a_hmac.new(
+        _answer_secret(), msg, _p2a_hashlib.sha256).hexdigest()[:_ANSWER_HMAC_HEX_LEN]
+
+
+def _evref_event_key(sid, nonce, material_digest):
+    """``HMAC-SHA256(secret, canonical("t2e-evref-event-v1", sid, nonce,
+    material_digest))[:32]`` — the durable exact-replay identity of ONE attach
+    event (UNIQUE per project in the store). The same staged event reproduces
+    the same key and can never write twice."""
+    msg = _canonical_message("t2e-evref-event-v1", sid, nonce, material_digest)
+    return _p2a_hmac.new(_answer_secret(), msg,
+                         _p2a_hashlib.sha256).hexdigest()[:_ANSWER_HMAC_HEX_LEN]
+
+
+def _evref_token_for(sid, account_id, proposal):
+    """Token + event key for a staged proposal, under the PROPOSE-TIME session
+    binding stored in the proposal and the owner (recomputed, never trusted
+    from the request). A DIFFERENT browser session — including another session
+    of the same account — can neither be handed a valid token for a proposal it
+    did not stage nor mint one for itself."""
+    digest = _evref_material_digest(
+        sid, account_id, proposal.get("session_binding"), proposal)
+    return (_evref_confirmation_token(sid, digest, proposal["nonce"]),
+            _evref_event_key(sid, proposal["nonce"], digest))
+
+
+def _evref_session_matches(proposal):
+    """True iff the CURRENT browser session staged ``proposal``."""
+    stored = proposal.get("session_binding")
+    if not isinstance(stored, str) or not stored:
+        return False
+    return _p2a_hmac.compare_digest(stored, _quantity_session_binding())
+
+
+def _staged_evref_proposal(entry):
+    """The current staged attach proposal, or None when absent or EXPIRED (an
+    expired proposal is dropped HERE, so it can never be confirmed)."""
+    proposal = entry.get(_EVREF_PROPOSAL_KEY)
+    if not isinstance(proposal, dict):
+        return None
+    if _quantity_clock() >= int(proposal.get("expires_at", 0)):
+        entry.pop(_EVREF_PROPOSAL_KEY, None)
+        return None
+    return proposal
+
+
+def _resolve_evref_write(sid, reference):
+    """Bounded resolution of an UNDETERMINED durable write through the stable
+    ``(project, event_key)``. EXACT_REPLAY when the exact canonical event is
+    PROVEN present, STORAGE_FAILURE when its absence is PROVEN, COMMIT_UNKNOWN
+    when nothing could be established. Never guesses; reads only this project."""
+    try:
+        stored = _get_store().evidence_reference_for_event_key(
+            sid, reference.event_key)
+    except Exception:
+        return _EVREF_COMMIT_UNKNOWN
+    if stored is None:
+        return _EVREF_STORAGE_FAILURE
+    try:
+        if _get_store().is_same_reference_event(stored, reference):
+            return _EVREF_EXACT_REPLAY
+    except Exception:
+        return _EVREF_COMMIT_UNKNOWN
+    return _EVREF_COMMIT_UNKNOWN
+
+
+def _evref_eligible_anchors(state):
+    """Every currently ACTIVE answered assertion of this project, in ledger
+    order — the anchors an owner may attach a reference to. Derived read-only
+    from the live ledger; nothing is stored or inferred."""
+    out = []
+    for record in getattr(state, "assertions", []) or []:
+        if record.disposition != ACTION_ANSWERED:
+            continue
+        if getattr(record, "superseded_by", None) is not None:
+            continue
+        out.append(record)
+    return tuple(out)
+
+
+def _evidence_references_meta(sid):
+    """Read-only presentation carrier: the CURRENT head per anchor. Returns
+    ``()`` when there is no row, and ``None`` when a POPULATED history is
+    corrupt or the store is unavailable, so the caller fails closed rather than
+    rendering partial truth. Derived only; nothing is persisted and nothing
+    here feeds any decision."""
+    try:
+        history = _get_store().load_evidence_references(sid)
+    except Exception:
+        return None
+    try:
+        return _evidence_references_meta_rows(history)
+    except Exception:
+        return None
+
+
+def _finish_evref_write(sid, entry, outcome, withdrawing=False):
+    """Publish the TRUTHFUL outcome of one attach. Page state and message never
+    contradict each other: a saved event is confirmed, an established non-write
+    says nothing was saved, and an undetermined outcome claims neither."""
+    if outcome in (_EVREF_INSERTED, _EVREF_EXACT_REPLAY):
+        if _evidence_references_meta(sid) is None:
+            # RELOAD_FAILED: persistence succeeded, re-reading it did not.
+            _publish_evref_notice(entry, error=EVREF_SAVED_NOT_SHOWN_MESSAGE)
+        else:
+            _publish_evref_notice(
+                entry, ack=EVREF_WITHDRAWN_ACK if withdrawing else EVREF_SAVED_ACK)
+    elif outcome == _EVREF_CONFLICT:
+        _publish_evref_notice(entry, error=EVREF_CONFLICT_MESSAGE)
+    elif outcome == _EVREF_COMMIT_UNKNOWN:
+        _publish_evref_notice(entry, error=EVREF_OUTCOME_UNKNOWN_MESSAGE)
+    else:                                   # REJECTED / STORAGE_FAILURE
+        _publish_evref_notice(entry, error=EVREF_NOT_SAVED_MESSAGE)
+    return redirect(url_for("show_session", sid=sid))
+
+
 def _quantity_material_digest(sid, owner_account_id, session_binding, proposal):
     """``SHA256(canonical("t2a-quantity-material-v1", sid, owner_account_id,
     session_binding, anchor_record_id, requirement_id, quantity_kind,
@@ -1252,6 +1508,105 @@ def _quantity_chain_view(chain):
         "replaced": [{"kind": r.quantity_kind, "value_text": r.value_text}
                      for r in chain.replaced],
     }
+
+
+def _evref_deliverable_view(sid, state):
+    """Read-only deliverable carrier: the CURRENT recorded reference per anchor,
+    each with the anchor's own answer text, or ``()``.
+
+    Derived on demand and passed as its OWN template variable — exactly like
+    the W2-A `decision_capture` precedent — so `engine.deliverable_assembler`
+    stays byte-identical and the canonical deliverable package is untouched:
+    nothing here enters `_session_meta`, an export, the API, the adapter or
+    reconstruction. Fails CLOSED to `()` on a corrupt history or an unavailable
+    store, so the report never shows partial truth."""
+    rows = _evidence_references_meta(sid)
+    if not rows:
+        return ()
+    statements = {r.record_id: r.content
+                  for r in _evref_eligible_anchors(state)}
+    out = []
+    for row in rows:
+        statement = statements.get(row["anchor_record_id"])
+        if statement is None:
+            # The anchor is no longer an active answered assertion (e.g. it was
+            # corrected). The reference stays in history but is not presented
+            # against an answer that no longer stands.
+            continue
+        entry = dict(row)
+        entry["statement"] = statement
+        out.append(entry)
+    return tuple(out)
+
+
+def _evref_step_context(entry, state, sid):
+    """Read-only render context for the session evidence-reference block, or
+    None.
+
+    Lists every ACTIVE answered anchor with its CURRENT recorded reference (if
+    any) and — when a proposal is staged for THIS browser session — the
+    confirmation block with its token. The propose form is offered only when
+    the caller may write (verified active durable owner) AND the session is
+    live. Mutates nothing except dropping an expired or stale-anchor proposal.
+
+    Nothing here decides anything: the carrier is presentation-only, is never
+    persisted, never reaches the canonical package, an export, the API or
+    reconstruction, and feeds no progression, readiness, scoring or
+    question-selection input."""
+    anchors = _evref_eligible_anchors(state)
+    if not anchors:
+        return None
+    can_write = (_quantity_write_authorized(sid)
+                 and getattr(state, "domain", None) is not None)
+    try:
+        history = _get_store().load_evidence_references(sid)
+    except Exception:
+        # A POPULATED corrupt history or an unavailable store fails CLOSED: the
+        # block is suppressed rather than rendering partial truth.
+        return None
+    items = []
+    for record in anchors:
+        try:
+            head = _active_reference_for_anchor(history, record.record_id)
+        except Exception:
+            return None
+        items.append({
+            "record_id": record.record_id,
+            "statement": record.content,
+            "current": None if head is None else {
+                "source_identity": head.source_identity,
+                "occurred_on": head.occurred_on,
+                "scope_text": head.scope_text,
+                "limitation_text": head.limitation_text,
+                "withdrawn": bool(head.withdrawn),
+            },
+        })
+    proposal = None
+    staged = _staged_evref_proposal(entry) if can_write else None
+    if staged is not None and not _evref_session_matches(staged):
+        staged = None                  # not this browser session's proposal
+    if staged is not None:
+        statement = next((r.content for r in anchors
+                          if r.record_id == staged["anchor_record_id"]), None)
+        if statement is None:
+            entry.pop(_EVREF_PROPOSAL_KEY, None)          # anchor went stale
+        else:
+            token, _ = _evref_token_for(
+                sid, (_quantity_writer_account(sid) or {}).get("account_id", ""),
+                staged)
+            proposal = {
+                "statement": statement,
+                "source_identity": staged["source_identity"],
+                "occurred_on": staged["occurred_on"],
+                "scope_text": staged["scope_text"],
+                "limitation_text": staged["limitation_text"],
+                "withdrawn": bool(staged["withdrawn"]),
+                "replaces": staged["supersedes_reference_id"] is not None,
+                "token": token,
+            }
+    if not items and proposal is None:
+        return None
+    return {"items": items, "can_write": can_write, "proposal": proposal}
 
 
 def _quantity_step_context(entry, state, sid):
@@ -3607,6 +3962,11 @@ def show_session(sid):
         # quantities, write eligibility). Canonical tokens only; the template
         # resolves every display label through t(). None when nothing applies.
         quantity_step=_quantity_step_context(entry, state, sid),
+        evref_step=_evref_step_context(entry, state, sid),
+        evref_ack=_evref_notice_text(
+            _render_notice(entry, EVREF_ACK_SLOT, None), _current_ui_lang()),
+        evref_error=_evref_notice_text(
+            _render_notice(entry, EVREF_ERROR_SLOT, None), _current_ui_lang()),
         # T2-B' (OD-PDVG-12): the approved "Why this question?" line for the
         # question actually rendered, or None (fail closed). Display copy only.
         question_explanation=question_explanation,
@@ -3815,6 +4175,10 @@ def show_deliverable(sid):
         reconstructed_deliverable=reconstructed_deliverable,
         # T2-A: statements for the canonical quantity rows (presentation only).
         t2a_statements=_quantity_statements(package, state),
+        # T2-E Option B: owner-recorded, explicitly UNVERIFIED evidence
+        # references (derived on demand; NOT part of the canonical
+        # deliverable package — the assembler is deliberately untouched).
+        evidence_references=_evref_deliverable_view(sid, state),
         # W2-A / RVR-4 (contract §14): read-only composed decision state on the
         # deliverable surface (derived on demand; not part of the canonical
         # deliverable package — the assembler is deliberately untouched).
@@ -3960,6 +4324,7 @@ def download_deliverable_pdf(sid):
             eligible=eligible,
             reconstructed_deliverable=reconstructed_deliverable,
             t2a_statements=_quantity_statements(package, state),
+            evidence_references=_evref_deliverable_view(sid, state),
             decision_capture=_decision_capture_view_safe(state),
             snapshot_kept_ack=None,
         )
@@ -4390,6 +4755,232 @@ def confirm_requirement_quantity(sid):
                        _QUANTITY_STORAGE_FAILURE, _QUANTITY_COMMIT_UNKNOWN):
         outcome = _QUANTITY_COMMIT_UNKNOWN          # never invent a success
     return _finish_quantity_write(sid, entry, state, outcome)
+
+
+@app.route("/session/<sid>/evidence-reference/propose", methods=["POST"])
+def propose_evidence_reference(sid):
+    """T2-E Option B — stage ONE bounded evidence-reference attach for an
+    active answered assertion of an OWNED project.
+
+    Performs NO durable write. Global CSRF runs before this view; then
+    `_project_authorized`, the verified-active-durable-owner predicate, the
+    exact active anchor, and the bounded four-field owner-text policy are all
+    checked; the supersession target is derived SERVER-SIDE from the validated
+    durable history (never from the request); the proposal is staged in this
+    session entry and a confirmation token is minted for the confirm step.
+
+    REJECTED INPUT IS NEVER WRITTEN AND NEVER RETAINED SERVER-SIDE. A field
+    that fails the policy produces an explicit bilingual message naming THAT
+    field and asking for re-entry; the submitted value is never echoed back,
+    never stashed, and never persisted. Nothing here claims a draft is kept.
+    """
+    if not _project_authorized(sid):
+        return _deny_project()
+    entry = SESSION_STORE.get(sid)
+    if not entry:
+        return redirect(url_for("index"))
+    state = entry["state"]
+    account = _quantity_writer_account(sid)
+    if account is None:
+        return _deny_project()
+    if set(request.form.keys()) - _EVREF_PROPOSE_FIELDS or \
+            any(len(request.form.getlist(k)) != 1 for k in request.form.keys()):
+        _publish_evref_notice(entry, error=EVREF_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    intent = (request.form.get("reference_intent") or EVREF_INTENT_RECORD).strip()
+    if intent not in (EVREF_INTENT_RECORD, EVREF_INTENT_WITHDRAW):
+        _publish_evref_notice(entry, error=EVREF_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    anchor_id = (request.form.get("anchor_record_id") or "").strip()
+    if not anchor_id or not any(
+            r.record_id == anchor_id for r in _evref_eligible_anchors(state)):
+        _publish_evref_notice(entry, error=EVREF_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    # Bound every text field BEFORE staging. The global free-text guard runs
+    # first (length ceiling and embedded NUL, never echoing the value), then the
+    # tighter per-field policy (empty, C0/C1 controls, per-field cap).
+    fields = {}
+    for name in ("source_identity", "occurred_on", "scope_text", "limitation_text"):
+        raw = request.form.get(name) or ""
+        if _free_text_error(raw, _current_ui_lang()) is not None:
+            _publish_evref_notice(entry, error=_EVREF_FIELD_MESSAGE[name])
+            return redirect(url_for("show_session", sid=sid))
+        fields[name] = raw
+    try:
+        source_identity = _normalize_reference_text(
+            fields["source_identity"], "source_identity")
+    except _EvidenceReferenceError:
+        _publish_evref_notice(entry, error=_EVREF_FIELD_MESSAGE["source_identity"])
+        return redirect(url_for("show_session", sid=sid))
+    try:
+        occurred_on = _normalize_occurred_on(fields["occurred_on"])
+    except _EvidenceReferenceError:
+        _publish_evref_notice(entry, error=_EVREF_FIELD_MESSAGE["occurred_on"])
+        return redirect(url_for("show_session", sid=sid))
+    try:
+        scope_text = _normalize_reference_text(fields["scope_text"], "scope_text")
+    except _EvidenceReferenceError:
+        _publish_evref_notice(entry, error=_EVREF_FIELD_MESSAGE["scope_text"])
+        return redirect(url_for("show_session", sid=sid))
+    try:
+        # REQUIRED: a reference that does not say what it did NOT cover cannot
+        # be recorded at all.
+        limitation_text = _normalize_reference_text(
+            fields["limitation_text"], "limitation_text")
+    except _EvidenceReferenceError:
+        _publish_evref_notice(entry, error=_EVREF_FIELD_MESSAGE["limitation_text"])
+        return redirect(url_for("show_session", sid=sid))
+    try:
+        history = _get_store().load_evidence_references(sid)
+        head = _active_reference_for_anchor(history, anchor_id)
+    except Exception:
+        _publish_evref_notice(entry, error=EVREF_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    withdrawing = intent == EVREF_INTENT_WITHDRAW
+    if withdrawing and (head is None or head.withdrawn):
+        # Nothing active to withdraw: an established refusal, never a silent no-op.
+        _publish_evref_notice(entry, error=EVREF_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    if (not withdrawing and head is not None and not head.withdrawn
+            and head.source_identity == source_identity
+            and head.occurred_on == occurred_on
+            and head.scope_text == scope_text
+            and head.limitation_text == limitation_text):
+        # Identical to the current head: nothing to record.
+        entry.pop(_EVREF_PROPOSAL_KEY, None)
+        _publish_evref_notice(entry, ack=EVREF_SAVED_ACK)
+        return redirect(url_for("show_session", sid=sid))
+    now = _quantity_clock()
+    entry[_EVREF_PROPOSAL_KEY] = {
+        "nonce": secrets.token_urlsafe(_EVREF_CONFIRM_NONCE_BYTES),
+        "issued_at": now,
+        "expires_at": now + EVREF_CONFIRMATION_TTL_SECONDS,
+        "account_id": account["account_id"],
+        # The propose-time session binding. Token construction uses THIS value
+        # and confirm compares the current binding against it, so a proposal
+        # staged in one browser session can never be confirmed — or even handed
+        # a usable token — from another session.
+        "session_binding": _quantity_session_binding(),
+        "anchor_record_id": anchor_id,
+        # The CURRENT chain head, resolved server-side and bound into the
+        # digest: a head that moves between stage and confirm invalidates the
+        # token, and the store re-validates the head inside its transaction.
+        "supersedes_reference_id": head.reference_id if head is not None else None,
+        "source_identity": source_identity,
+        "occurred_on": occurred_on,
+        "scope_text": scope_text,
+        "limitation_text": limitation_text,
+        "withdrawn": withdrawing,
+        # recording facts, generated ONCE for this event; never identity
+        "recorded_iteration": int(getattr(state, "iteration", 0) or 0),
+        "recorded_at": _quantity_recorded_at(),
+    }
+    return redirect(url_for("show_session", sid=sid) + "#t2e-confirm")
+
+
+@app.route("/session/<sid>/evidence-reference/confirm", methods=["POST"])
+def confirm_evidence_reference(sid):
+    """T2-E Option B — confirm (or discard) the staged attach: the ONE durable
+    evidence-reference write.
+
+    Accepts ONLY ``csrf_token``, ``confirmation_token`` and
+    ``reference_action``; every material field is resolved from the staged
+    server-side proposal, NEVER from the request. Repeats authorization and
+    ownership; refuses a missing, malformed, expired, tampered, cross-session,
+    cross-project or cross-owner token; CONSUMES the nonce once (the staged
+    proposal is popped before any durable call, so one token can never
+    authorise two durable writes, whatever the request content); then appends
+    inside the store's serialized transaction, which re-validates the history,
+    the anchor, the cap and the chain head — a stale head between propose and
+    confirm is refused THERE as well as by the token. Exact-replay idempotency
+    and uncertain outcomes are both resolved through the durable ``event_key``
+    by reload-and-compare. Persist-before-acknowledge throughout.
+
+    The answer token is NEVER read here: it is stateless, so a consumed one
+    still verifies and binds nothing about an anchor or a chain head."""
+    if not _project_authorized(sid):
+        return _deny_project()
+    entry = SESSION_STORE.get(sid)
+    if not entry:
+        return redirect(url_for("index"))
+    account = _quantity_writer_account(sid)
+    if account is None:
+        return _deny_project()
+    if set(request.form.keys()) - _EVREF_CONFIRM_FIELDS or \
+            any(len(request.form.getlist(k)) != 1 for k in request.form.keys()):
+        # Altered request content: refuse BEFORE touching the staged proposal.
+        _publish_evref_notice(entry, error=EVREF_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    action = request.form.get("reference_action", "")
+    token = request.form.get("confirmation_token", "")
+    peeked = _staged_evref_proposal(entry)
+    # A proposal staged in ANOTHER browser session — including another session
+    # of the SAME account — is refused HERE, before the nonce is consumed and
+    # before any durable call. The staging session keeps its proposal; this
+    # session spends nothing and writes nothing.
+    if peeked is not None and not _evref_session_matches(peeked):
+        _publish_evref_notice(entry, error=EVREF_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    # Consume ONCE: whatever happens next, this proposal/nonce is spent.
+    staged = peeked
+    entry.pop(_EVREF_PROPOSAL_KEY, None)
+    if action == EVREF_ACTION_DISCARD:
+        _publish_evref_notice(entry, ack=EVREF_DISCARDED_ACK)
+        return redirect(url_for("show_session", sid=sid))
+    if action != EVREF_ACTION_CONFIRM or staged is None:
+        _publish_evref_notice(entry, error=EVREF_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    expected_token, event_key = _evref_token_for(sid, account["account_id"], staged)
+    if (staged["account_id"] != account["account_id"]
+            or not token or not _p2a_hmac.compare_digest(token, expected_token)):
+        _publish_evref_notice(entry, error=EVREF_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    state = entry["state"]
+    # Stale anchor between propose and confirm (e.g. the answer was withdrawn
+    # through a correction meanwhile): refuse; nothing is written.
+    if not any(r.record_id == staged["anchor_record_id"]
+               for r in _evref_eligible_anchors(state)):
+        _publish_evref_notice(entry, error=EVREF_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    try:
+        reference = _make_evidence_reference(
+            reference_id=_get_store().new_reference_id(), reference_seq=0,
+            anchor_record_id=staged["anchor_record_id"],
+            source_identity=staged["source_identity"],
+            occurred_on=staged["occurred_on"],
+            scope_text=staged["scope_text"],
+            limitation_text=staged["limitation_text"],
+            withdrawn=bool(staged["withdrawn"]),
+            supersedes_reference_id=staged["supersedes_reference_id"],
+            event_key=event_key,
+            recorded_iteration=staged["recorded_iteration"],
+            recorded_at=staged["recorded_at"])
+    except (_EvidenceReferenceError, Exception):
+        _publish_evref_notice(entry, error=EVREF_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    # The durable write reports what is KNOWN, never a broad "nothing changed".
+    # An ESTABLISHED refusal (decided before any row was written) is a conflict
+    # or a rejection; anything else is resolved through the stable event key
+    # before a single word is said about the durable outcome.
+    try:
+        outcome = _get_store().append_evidence_reference(sid, reference)
+    except _ReferenceChainConflict:
+        outcome = _EVREF_CONFLICT
+    except (_ReferenceCapExceeded, _ProjectNotFound,
+            _EvidenceReferenceHistoryError, _EvidenceReferenceError):
+        # Each of these is raised ONLY by a check that runs before the INSERT,
+        # so the absence of a durable row is established, not assumed. A bare
+        # StoreError is deliberately NOT in this tuple: exception class
+        # inheritance is never proof that no write occurred.
+        outcome = _EVREF_REJECTED
+    except Exception:
+        outcome = _resolve_evref_write(sid, reference)
+    if outcome not in (_EVREF_INSERTED, _EVREF_EXACT_REPLAY, _EVREF_CONFLICT,
+                       _EVREF_REJECTED, _EVREF_STORAGE_FAILURE,
+                       _EVREF_COMMIT_UNKNOWN):
+        outcome = _EVREF_COMMIT_UNKNOWN          # never invent a success
+    return _finish_evref_write(
+        sid, entry, outcome, withdrawing=bool(staged["withdrawn"]))
 
 
 @app.route("/session/<sid>/accept-risk", methods=["POST"])

@@ -85,6 +85,10 @@ body{overflow-wrap:anywhere}
    exactly one of the two is ever set. #}
 {% if quantity_ack %}<p class="journey-feedback t2a-notice t2a-notice-ack" role="status">{{ quantity_ack }}</p>{% endif %}
 {% if quantity_error %}<p class="answer-error t2a-notice t2a-notice-error" role="alert" style="color:#9e2722;border:1px solid #daaaa7;padding:12px;line-height:1.5">{{ quantity_error }}</p>{% endif %}
+{# T2-E notices live in their OWN namespace: they never replace an answer,
+   correction or quantity notice, and both can render together. #}
+{% if evref_ack %}<p class="journey-feedback t2e-notice t2e-notice-ack" role="status">{{ evref_ack }}</p>{% endif %}
+{% if evref_error %}<p class="answer-error t2e-notice t2e-notice-error" role="alert" style="color:#9e2722;border:1px solid #daaaa7;padding:12px;line-height:1.5">{{ evref_error }}</p>{% endif %}
 <section class="project-orientation" aria-labelledby="project-orientation-title">
   <h2 id="project-orientation-title">{{ t('UI_A1_ORIGINAL_IDEA') }}</h2>
   <p class="idea-excerpt" dir="auto">{{ project_identification.idea or t('UI_A1_UNTITLED') }}</p>
@@ -737,6 +741,87 @@ body{overflow-wrap:anywhere}
   {% endfor %}
 </details>
 {% endif %}
+
+{#- T2E-BLOCK-BEGIN — T2-E Option B. The two sentinels delimit this block
+    exactly, so the zero-row equivalence proof can reconstruct the BASE source
+    by removing the text between them. Every scaffolding tag self-erases, so a
+    project with no eligible anchor emits nothing at all.
+
+    What this renders: the inventor's OWN recorded claim about who they say
+    reviewed or supports one exact answer, when, what it covered and what it
+    did NOT cover — labelled on every row as recorded-but-unverified. It is not
+    evidence, not validation, not certification, and it changes no evidence
+    state. Every label resolves through UI_T2E_* bilingual keys; inventor text
+    renders verbatim (escaped, dir=auto). No internal identifier, raw machine
+    token, reference id, event key or store detail is ever exposed. -#}
+{% if evref_step %}
+<details id="t2e-evidence-references" class="evidence-references"{% if evref_step.proposal %} open{% endif %} style="margin-top:14px;border:1px solid #d6cfe0;border-radius:4px;background:#f8f6fb;padding:10px 14px">
+  <summary style="cursor:pointer;font-size:13px;color:#5a2c8c;font-weight:bold">{{ t('UI_T2E_HEADING') }}</summary>
+  <p style="font-size:13px;color:#555;margin:10px 0 8px 0">{{ t('UI_T2E_INTRO') }}</p>
+  <p style="font-size:12px;color:#6b5a7a;margin:0 0 10px 0">{{ t('UI_T2E_NOT_CERTIFICATION') }}</p>
+  {% if evref_step.proposal %}
+  {% set prop = evref_step.proposal %}
+  <div id="t2e-confirm" class="t2e-confirm" style="border:1px solid #c9b8d6;border-radius:4px;background:#fdfbff;padding:10px 12px;margin-bottom:12px">
+    <div style="font-size:13px;font-weight:bold;color:#5a2c8c">{{ t('UI_T2E_CONFIRM_HEADING') }}</div>
+    <div class="t2e-confirm-anchor" style="font-size:13px;color:#444;margin-top:6px">{{ t('UI_T2E_ANCHOR_LABEL') }} <bdi dir="auto">{{ prop.statement }}</bdi></div>
+    {% if prop.withdrawn %}
+    <div class="t2e-confirm-withdraw" style="font-size:13px;color:#8a5a2c;margin-top:6px"><strong>{{ t('UI_T2E_WITHDRAW') }}</strong></div>
+    {% else %}
+    <div class="t2e-confirm-source" style="font-size:13px;color:#444;margin-top:6px">{{ t('UI_T2E_SOURCE_LABEL') }} <bdi dir="auto">{{ prop.source_identity }}</bdi></div>
+    <div class="t2e-confirm-date" style="font-size:13px;color:#444">{{ t('UI_T2E_DATE_LABEL') }} <bdi dir="auto">{{ prop.occurred_on }}</bdi></div>
+    <div class="t2e-confirm-scope" style="font-size:13px;color:#444">{{ t('UI_T2E_SCOPE_LABEL') }} <bdi dir="auto">{{ prop.scope_text }}</bdi></div>
+    <div class="t2e-confirm-limitation" style="font-size:13px;color:#444">{{ t('UI_T2E_LIMITATION_LABEL') }} <bdi dir="auto">{{ prop.limitation_text }}</bdi></div>
+    {% endif %}
+    {% if prop.replaces %}<div class="t2e-confirm-replaces" style="font-size:12px;color:#666;margin-top:6px">{{ t('UI_T2E_REPLACES') }}</div>{% endif %}
+    <div style="font-size:12px;color:#6b5a7a;margin-top:6px">{{ t('UI_T2E_STATUS_UNVERIFIED') }}</div>
+    <form method="POST" action="/session/{{ sid }}/evidence-reference/confirm" class="t2e-confirm-form" style="margin-top:8px">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <input type="hidden" name="confirmation_token" value="{{ prop.token }}">
+      <button type="submit" name="reference_action" value="confirm">{{ t('UI_T2E_CONFIRM') }}</button>
+      <button type="submit" name="reference_action" value="discard">{{ t('UI_T2E_DISCARD') }}</button>
+    </form>
+  </div>
+  {% endif %}
+  {% for item in evref_step['items'] %}
+  <div class="t2e-item" style="border-top:1px solid #e3dcec;padding-top:8px;margin-top:8px">
+    <div class="t2e-anchor" style="font-size:13px;color:#444">{{ t('UI_T2E_ANCHOR_LABEL') }} <bdi dir="auto">{{ item.statement }}</bdi></div>
+    {% if item.current and not item.current.withdrawn %}
+    <div class="t2e-current" style="font-size:13px;color:#333;margin-top:4px">
+      <div>{{ t('UI_T2E_SOURCE_LABEL') }} <bdi class="t2e-source" dir="auto">{{ item.current.source_identity }}</bdi></div>
+      <div>{{ t('UI_T2E_DATE_LABEL') }} <bdi class="t2e-date" dir="auto">{{ item.current.occurred_on }}</bdi></div>
+      <div>{{ t('UI_T2E_SCOPE_LABEL') }} <bdi class="t2e-scope" dir="auto">{{ item.current.scope_text }}</bdi></div>
+      <div>{{ t('UI_T2E_LIMITATION_LABEL') }} <bdi class="t2e-limitation" dir="auto">{{ item.current.limitation_text }}</bdi></div>
+      <div class="t2e-status" style="font-size:12px;color:#6b5a7a;margin-top:4px">{{ t('UI_T2E_STATUS_UNVERIFIED') }}</div>
+    </div>
+    {% elif item.current and item.current.withdrawn %}
+    <div class="t2e-withdrawn" style="font-size:13px;color:#8a5a2c;margin-top:4px">{{ t('UI_T2E_WITHDRAWN') }}</div>
+    {% else %}
+    <div class="t2e-none" style="font-size:12px;color:#888;margin-top:4px">{{ t('UI_T2E_NONE_RECORDED') }}</div>
+    {% endif %}
+    {% if evref_step.can_write %}
+    <form method="POST" action="/session/{{ sid }}/evidence-reference/propose" class="t2e-propose-form" style="margin-top:6px">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <input type="hidden" name="anchor_record_id" value="{{ item.record_id }}">
+      <label style="font-size:12px;color:#555;display:block;margin-top:4px">{{ t('UI_T2E_SOURCE_LABEL') }}
+        <input type="text" name="source_identity" maxlength="200" dir="auto" style="width:100%"></label>
+      <label style="font-size:12px;color:#555;display:block">{{ t('UI_T2E_DATE_LABEL') }}
+        <input type="text" name="occurred_on" maxlength="10" inputmode="numeric" dir="ltr"></label>
+      <label style="font-size:12px;color:#555;display:block">{{ t('UI_T2E_SCOPE_LABEL') }}
+        <input type="text" name="scope_text" maxlength="600" dir="auto" style="width:100%"></label>
+      <label style="font-size:12px;color:#555;display:block">{{ t('UI_T2E_LIMITATION_LABEL') }}
+        <input type="text" name="limitation_text" maxlength="600" dir="auto" style="width:100%"></label>
+      <div style="font-size:11px;color:#8a97a3;margin:2px 0 6px 0">{{ t('UI_T2E_LIMITATION_HINT') }}</div>
+      <button type="submit" name="reference_intent" value="record">{{ t('UI_T2E_SUBMIT') }}</button>
+      {% if item.current and not item.current.withdrawn %}
+      <button type="submit" name="reference_intent" value="withdraw">{{ t('UI_T2E_WITHDRAW') }}</button>
+      {% endif %}
+    </form>
+    {% endif %}
+  </div>
+  {% endfor %}
+</details>
+{% endif %}
+{#- T2E-BLOCK-END -#}
 
 {# W2-A / RVR-4 (authoritative contract §14): bounded decision capture inside
    the EXISTING journey. The composed state is derived on demand from the

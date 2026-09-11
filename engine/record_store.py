@@ -41,6 +41,15 @@ from engine.requirement_quantity import (
     MAX_REQUIREMENT_QUANTITIES_PER_PROJECT,
     QUANTITY_INSERTED, QUANTITY_EXACT_REPLAY, QUANTITY_EVENT_IDENTITY_FIELDS,
 )
+# T2-E Option B: the owner-recorded, explicitly UNVERIFIED evidence reference.
+# A separate durable row type, deliberately NOT an assertion record: assertion
+# records are replayed as inventor answers by `engine.session_reconstruction`,
+# and a reference must never be.
+from engine.evidence_reference import (
+    EvidenceReference, validate_reference_history, validate_new_reference,
+    active_reference_for_anchor, REFERENCE_INSERTED, REFERENCE_EXACT_REPLAY,
+    REFERENCE_EVENT_IDENTITY_FIELDS, MAX_EVIDENCE_REFERENCES_PER_PROJECT,
+)
 
 
 class StoreError(Exception):
@@ -49,6 +58,18 @@ class StoreError(Exception):
 
 class ProjectNotFound(StoreError):
     """Raised when a project id is not present in the store."""
+
+
+class ReferenceChainConflict(StoreError):
+    """T2-E: the ONE-ACTIVE-CHAIN rule was violated — a root was proposed for
+    an anchor that already has an active reference, a supersession named a row
+    that is not this anchor's current head (a STALE HEAD between stage and
+    confirm), or the stable event key already names a DIFFERENT event. An
+    established refusal, decided before any row is written."""
+
+
+class ReferenceCapExceeded(StoreError):
+    """T2-E: the per-project evidence-reference cap was reached."""
 
 
 class QuantityChainConflict(StoreError):
@@ -96,6 +117,11 @@ class RecordStore(Protocol):
     def append_requirement_quantity(self, project_id: str, quantity) -> str: ...
     def load_requirement_quantities(self, project_id: str) -> tuple: ...
     def requirement_quantity_for_event_key(self, project_id: str, event_key: str): ...
+    # T2-E Option B (additive; see the evidence_references table note below).
+    def new_reference_id(self) -> str: ...
+    def append_evidence_reference(self, project_id: str, reference) -> str: ...
+    def load_evidence_references(self, project_id: str) -> tuple: ...
+    def evidence_reference_for_event_key(self, project_id: str, event_key: str): ...
 
 
 _SCHEMA = (
@@ -218,6 +244,57 @@ _QUANTITY_SCHEMA = (
     "ON requirement_quantities (project_id, anchor_record_id)",
 )
 
+# T2-E Option B — the owner-recorded, explicitly UNVERIFIED evidence reference.
+# Additive and idempotent on a fresh database AND on an existing populated
+# pre-T2E database; touches no existing table, column or row. Rollback is
+# disable-and-ignore (stop reading the table), never a destructive drop.
+#
+# SQLite does NOT accept an inline `UNIQUE (...) WHERE ...` table constraint
+# (verified: "near \"WHERE\": syntax error"), so each CONDITIONAL uniqueness
+# rule is expressed as a standalone partial `CREATE UNIQUE INDEX ... WHERE ...`
+# exactly as the merged T2-A and P4-1b-2a indexes already do:
+#   * evidence_references_chain_root_uq  — ONE active root per anchor;
+#   * evidence_references_supersedes_uq  — ONE successor per reference.
+_REFERENCE_TABLE = "evidence_references"
+_REFERENCE_SCHEMA = (
+    """
+    CREATE TABLE IF NOT EXISTS evidence_references (
+        project_id              TEXT    NOT NULL,
+        reference_seq           INTEGER NOT NULL,
+        reference_id            TEXT    NOT NULL,
+        anchor_record_id        TEXT    NOT NULL,
+        source_identity         TEXT    NOT NULL,
+        occurred_on             TEXT    NOT NULL,
+        scope_text              TEXT    NOT NULL,
+        limitation_text         TEXT    NOT NULL,
+        claim_status            TEXT    NOT NULL,
+        withdrawn               INTEGER NOT NULL DEFAULT 0,
+        supersedes_reference_id TEXT,
+        event_key               TEXT    NOT NULL,
+        recorded_iteration      INTEGER NOT NULL,
+        recorded_at             TEXT    NOT NULL,
+        PRIMARY KEY (project_id, reference_id),
+        FOREIGN KEY (project_id) REFERENCES projects(project_id),
+        FOREIGN KEY (project_id, anchor_record_id)
+            REFERENCES records(project_id, record_id),
+        FOREIGN KEY (project_id, supersedes_reference_id)
+            REFERENCES evidence_references(project_id, reference_id)
+    )
+    """,
+    "CREATE UNIQUE INDEX IF NOT EXISTS evidence_references_event_key_uq "
+    "ON evidence_references (project_id, event_key)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS evidence_references_seq_uq "
+    "ON evidence_references (project_id, reference_seq)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS evidence_references_supersedes_uq "
+    "ON evidence_references (project_id, supersedes_reference_id) "
+    "WHERE supersedes_reference_id IS NOT NULL",
+    "CREATE UNIQUE INDEX IF NOT EXISTS evidence_references_chain_root_uq "
+    "ON evidence_references (project_id, anchor_record_id) "
+    "WHERE supersedes_reference_id IS NULL",
+    "CREATE INDEX IF NOT EXISTS evidence_references_anchor_idx "
+    "ON evidence_references (project_id, anchor_record_id)",
+)
+
 
 class SqliteRecordStore:
     """Reference/MVP durable adapter over Python stdlib `sqlite3`.
@@ -254,6 +331,7 @@ class SqliteRecordStore:
             self._migrate_reconstruction_inputs(self._conn)
             self._migrate_owner(self._conn)
             self._migrate_requirement_quantities(self._conn)
+            self._migrate_evidence_references(self._conn)
 
     # --- write transaction (serialized; BEGIN IMMEDIATE) --------------------
     @contextmanager
@@ -325,6 +403,17 @@ class SqliteRecordStore:
         if _OWNER_COLUMN not in cols:
             conn.execute("ALTER TABLE projects ADD COLUMN owner_account_id TEXT")
         conn.execute(_OWNER_INDEX)
+
+    def _migrate_evidence_references(self, conn) -> None:
+        """T2-E forward migration against the LIVE schema: additively create the
+        ``evidence_references`` table and its indexes, including the two PARTIAL
+        unique indexes that carry the conditional uniqueness rules (one active
+        root per anchor; one successor per reference). Idempotent (``IF NOT
+        EXISTS``) on a fresh database and on an existing populated pre-T2E
+        database; touches no existing table, column or row. Rollback is
+        disable-and-ignore (stop reading the table), never a destructive drop."""
+        for stmt in _REFERENCE_SCHEMA:
+            conn.execute(stmt)
 
     def _migrate_requirement_quantities(self, conn) -> None:
         """T2-A forward migration against the LIVE schema: additively create the
@@ -728,6 +817,185 @@ class SqliteRecordStore:
             "SELECT " + self._QUANTITY_COLUMNS + " FROM requirement_quantities "
             "WHERE project_id = ? AND event_key = ?", (project_id, event_key)).fetchone()
         return None if row is None else self._quantity_row_dict(row)
+
+    # --- T2-E Option B: owner-recorded, explicitly UNVERIFIED evidence references
+    _REFERENCE_COLUMNS = (
+        "reference_seq, reference_id, anchor_record_id, source_identity, "
+        "occurred_on, scope_text, limitation_text, claim_status, withdrawn, "
+        "supersedes_reference_id, event_key, recorded_iteration, recorded_at")
+
+    @staticmethod
+    def _reference_row_dict(row):
+        return {
+            "reference_seq": row[0], "reference_id": row[1],
+            "anchor_record_id": row[2], "source_identity": row[3],
+            "occurred_on": row[4], "scope_text": row[5],
+            "limitation_text": row[6], "claim_status": row[7],
+            "withdrawn": bool(row[8]), "supersedes_reference_id": row[9],
+            "event_key": row[10], "recorded_iteration": row[11],
+            "recorded_at": row[12],
+        }
+
+    def _reference_rows(self, project_id: str):
+        return [self._reference_row_dict(row) for row in self._conn.execute(
+            "SELECT " + self._REFERENCE_COLUMNS + " FROM evidence_references "
+            "WHERE project_id = ? ORDER BY reference_seq ASC",
+            (project_id,)).fetchall()]
+
+    def new_reference_id(self) -> str:
+        """A durability-safe, collision-safe identifier for a NEW reference."""
+        return "evref-" + uuid.uuid4().hex
+
+    def is_same_reference_event(self, stored, reference) -> bool:
+        """True iff a STORED row is the exact canonical event of ``reference``
+        (canonical identity fields only; the recording facts — seq, iteration,
+        timestamp, generated id — are never part of event identity)."""
+        if stored is None or not isinstance(reference, EvidenceReference):
+            return False
+        return all(stored[name] == getattr(reference, name)
+                   for name in REFERENCE_EVENT_IDENTITY_FIELDS)
+
+    def evidence_reference_for_event_key(self, project_id: str, event_key: str):
+        """The stored reference row (dict) carrying ``event_key`` under
+        ``project_id``, or ``None``. This is the runtime's confirm-by-reload
+        seam: after a duplicate-key ``IntegrityError``, or after an uncertain
+        commit, the durable truth for the stable key is read back and compared
+        before any outcome is reported. Project-scoped; reads nothing across
+        projects."""
+        if event_key is None:
+            return None
+        row = self._conn.execute(
+            "SELECT " + self._REFERENCE_COLUMNS + " FROM evidence_references "
+            "WHERE project_id = ? AND event_key = ?",
+            (project_id, event_key)).fetchone()
+        return None if row is None else self._reference_row_dict(row)
+
+    def append_evidence_reference(self, project_id: str, reference) -> str:
+        """Atomically append ONE evidence reference and return the TRUTHFUL
+        durable outcome token.
+
+        ``REFERENCE_EXACT_REPLAY`` when this project already holds the exact
+        canonical event under the same stable ``event_key`` (resolved FIRST, so
+        a replay is never mis-reported as a new-write conflict);
+        ``REFERENCE_INSERTED`` when this call committed the row.
+
+        ONE serialized transaction (``BEGIN IMMEDIATE``); commit on success,
+        FULL rollback on any failure — nothing partial survives. INSIDE the
+        transaction, against the durable truth:
+          * the project must exist (``ProjectNotFound``);
+          * the stable ``(project_id, event_key)`` is resolved first — the same
+            canonical event is an idempotent replay, a DIFFERENT event under the
+            same key is a ``ReferenceChainConflict``, never a silent success;
+          * the project's EXISTING history is loaded and structurally validated
+            (``EvidenceReferenceHistoryError`` on corruption — a write is never
+            possible on top of a corrupt history);
+          * the anchor must resolve to a currently ACTIVE answered assertion of
+            THIS project through the canonical merged anchor classifier;
+          * the per-project cap holds (``ReferenceCapExceeded``);
+          * the ONE-ACTIVE-CHAIN rule holds (``ReferenceChainConflict``): with
+            ``supersedes_reference_id`` set, that row must be this anchor's
+            CURRENT head — so a STALE HEAD between stage and confirm is refused
+            HERE, inside the transaction, not only at the token; without it,
+            the anchor must have no reference yet;
+          * the proposed row is validated TOGETHER with the existing history
+            exactly as the durable history will read after the insert, so a
+            direct store caller cannot commit an invalid canonical row;
+          * ``reference_seq`` is assigned here (next in sequence); the caller's
+            value is ignored; ``recorded_iteration`` / ``recorded_at`` persist
+            as given and are never part of identity;
+          * SQLite enforces the composite foreign keys (anchor record of THIS
+            project; superseded row of THIS project), the UNIQUE event key, and
+            the two PARTIAL unique indexes carrying the conditional rules.
+
+        There is NO update path on this table: a change is a superseding row and
+        a withdrawal is a superseding row. Nothing here repairs, deletes,
+        rewrites or reinterprets an existing durable row, and no stored text is
+        re-normalized or logged."""
+        if not isinstance(reference, EvidenceReference):
+            raise StoreError("reference must be an EvidenceReference")
+        with self._write():
+            row = self._conn.execute(
+                "SELECT COUNT(*) FROM projects WHERE project_id = ?", (project_id,)
+            ).fetchone()
+            if not row or row[0] == 0:
+                raise ProjectNotFound(project_id)
+            stored = self.evidence_reference_for_event_key(
+                project_id, reference.event_key)
+            if stored is not None:
+                if self.is_same_reference_event(stored, reference):
+                    return REFERENCE_EXACT_REPLAY
+                raise ReferenceChainConflict(
+                    "event key already names a different event")
+            history = validate_reference_history(
+                [self._reference_from_row(r) for r in self._reference_rows(project_id)])
+            if len(history) >= MAX_EVIDENCE_REFERENCES_PER_PROJECT:
+                raise ReferenceCapExceeded(
+                    "evidence-reference cap reached for this project")
+            if classify_ledger_anchor(
+                    self._ledger_records(project_id),
+                    reference.anchor_record_id) != ANCHOR_ACTIVE:
+                raise ReferenceChainConflict(
+                    "anchor is not an active answered assertion of this project")
+            head = active_reference_for_anchor(
+                history, reference.anchor_record_id)
+            if reference.supersedes_reference_id is None:
+                if head is not None:
+                    raise ReferenceChainConflict(
+                        "anchor already has an active evidence reference")
+            elif head is None or head.reference_id != reference.supersedes_reference_id:
+                raise ReferenceChainConflict(
+                    "superseded reference is not this anchor's current head")
+            validate_new_reference(history, reference)
+            seq = self._conn.execute(
+                "SELECT COALESCE(MAX(reference_seq), -1) + 1 FROM "
+                "evidence_references WHERE project_id = ?", (project_id,)
+            ).fetchone()[0]
+            self._conn.execute(
+                "INSERT INTO evidence_references (project_id, "
+                + self._REFERENCE_COLUMNS + ") "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (project_id, seq, reference.reference_id,
+                 reference.anchor_record_id, reference.source_identity,
+                 reference.occurred_on, reference.scope_text,
+                 reference.limitation_text, reference.claim_status,
+                 1 if reference.withdrawn else 0,
+                 reference.supersedes_reference_id, reference.event_key,
+                 reference.recorded_iteration, reference.recorded_at))
+        return REFERENCE_INSERTED
+
+    @staticmethod
+    def _reference_from_row(row):
+        return EvidenceReference(
+            reference_id=row["reference_id"],
+            reference_seq=row["reference_seq"],
+            anchor_record_id=row["anchor_record_id"],
+            source_identity=row["source_identity"],
+            occurred_on=row["occurred_on"],
+            scope_text=row["scope_text"],
+            limitation_text=row["limitation_text"],
+            claim_status=row["claim_status"],
+            withdrawn=bool(row["withdrawn"]),
+            supersedes_reference_id=row["supersedes_reference_id"],
+            event_key=row["event_key"],
+            recorded_iteration=row["recorded_iteration"],
+            recorded_at=row["recorded_at"])
+
+    def load_evidence_references(self, project_id: str) -> tuple:
+        """Load and VALIDATE one project's evidence-reference history in stored
+        ``reference_seq`` order; return the immutable validated tuple.
+
+        Zero rows (including an unknown project — the same non-disclosing empty
+        result ``load_accepted_answer_evidence`` gives) return ``()``.
+        Structural corruption raises ``engine.evidence_reference
+        .EvidenceReferenceHistoryError`` with NO partial history (fail closed,
+        never silently repaired); storage failure propagates as the SQL error.
+
+        Read-only; project-scoped; logs nothing."""
+        rows = self._reference_rows(project_id)
+        if not rows:
+            return ()
+        return validate_reference_history(
+            [self._reference_from_row(r) for r in rows])
 
     def project_ids(self) -> List[str]:
         return [row[0] for row in
