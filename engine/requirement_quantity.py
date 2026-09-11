@@ -79,6 +79,45 @@ MAX_VALUE_TEXT_CHARS = 120
 QUANTITY_VALIDATION_STATUS = "UNVALIDATED"
 QUANTITY_PROVENANCE = "OWNER_STATED"
 
+# --- Durable write outcomes (the truthful outcome vocabulary) --------------------
+# A quantity write reports WHAT IS KNOWN about the durable outcome. It never
+# reports a definite non-write it has not established, and never reports a
+# success it has not established. INSERTED and EXACT_REPLAY mean the exact
+# canonical event is durably present. CONFLICT and REJECTED are established
+# refusals decided BEFORE any row was written. STORAGE_FAILURE means the write
+# was attempted and the durable absence of the event was afterwards PROVEN
+# through the stable (project, event_key). COMMIT_UNKNOWN means the durable
+# outcome could not be determined at all — the only honest answer left.
+QUANTITY_INSERTED = "INSERTED"
+QUANTITY_EXACT_REPLAY = "EXACT_REPLAY"
+QUANTITY_CONFLICT = "CONFLICT"
+QUANTITY_REJECTED = "REJECTED"
+QUANTITY_STORAGE_FAILURE = "STORAGE_FAILURE"
+QUANTITY_COMMIT_UNKNOWN = "COMMIT_UNKNOWN"
+QUANTITY_WRITE_OUTCOMES = (
+    QUANTITY_INSERTED, QUANTITY_EXACT_REPLAY, QUANTITY_CONFLICT,
+    QUANTITY_REJECTED, QUANTITY_STORAGE_FAILURE, QUANTITY_COMMIT_UNKNOWN,
+)
+# The canonical identity fields an exact replay must match EXACTLY before a
+# stored row may be reported as "the same event".
+QUANTITY_EVENT_IDENTITY_FIELDS = (
+    "anchor_record_id", "requirement_id", "quantity_kind", "value_text",
+    "supersedes_quantity_id",
+)
+
+# --- Anchor resolution states (never conflated) ---------------------------------
+# ACTIVE    : a valid, currently answered assertion anchor.
+# WITHDRAWN : a valid, previously answered assertion anchor that was GENUINELY
+#             superseded/withdrawn through the governed correction path. ONLY
+#             this state may be presented as withdrawn history.
+# INVALID   : missing, never a valid answered assertion anchor, or an anchor
+#             whose assertion/requirement relationship is inconsistent. Every
+#             outward surface fails CLOSED on it; it is NEVER presented as
+#             legitimate withdrawn history and is never silently repaired.
+ANCHOR_ACTIVE = "active"
+ANCHOR_WITHDRAWN = "withdrawn"
+ANCHOR_INVALID = "invalid"
+
 _KIND_SET = frozenset(QUANTITY_KINDS)
 _QUANTITY_ID_RE = re.compile(r"^qty-[0-9a-f]{32}$")
 _ANCHOR_ID_RE = re.compile(r"^rec_[1-9][0-9]*$")
@@ -172,8 +211,91 @@ def is_recorded_at(text):
     return parsed.tzinfo is not None and parsed.utcoffset().total_seconds() == 0
 
 
+# --- Anchor resolution against the durable ledger assertions ---------------------
+def answered_anchor_index(records):
+    """``{record_id: record}`` over the ledger records that ARE valid answered
+    assertion anchors: a well-formed ``rec_N`` id, the accepted ``answered``
+    disposition and non-empty content. A record of any other disposition, an
+    empty-content record and a malformed id are absent — they were never a
+    valid answered assertion anchor. Pure; never mutates its input."""
+    index = {}
+    for record in records or ():
+        record_id = getattr(record, "record_id", None)
+        if not isinstance(record_id, str) or not _ANCHOR_ID_RE.match(record_id):
+            continue
+        if getattr(record, "disposition", None) != DISPOSITION_ANSWERED:
+            continue
+        if not (getattr(record, "content", "") or "").strip():
+            continue
+        index[record_id] = record
+    return index
+
+
+def classify_ledger_anchor(records, anchor_record_id, index=None):
+    """Resolve ``anchor_record_id`` against the project's DURABLE ledger
+    assertions and return ``ANCHOR_ACTIVE`` / ``ANCHOR_WITHDRAWN`` /
+    ``ANCHOR_INVALID``.
+
+    ``ANCHOR_WITHDRAWN`` is returned ONLY for a record that really is a valid
+    answered assertion anchor AND carries a genuine supersession edge
+    (``superseded_by``). A missing record, a record that was never a valid
+    answered assertion anchor and a malformed anchor id are all
+    ``ANCHOR_INVALID`` — never withdrawn."""
+    resolved = answered_anchor_index(records) if index is None else index
+    record = resolved.get(anchor_record_id)
+    if record is None:
+        return ANCHOR_INVALID
+    if getattr(record, "superseded_by", None) is not None:
+        return ANCHOR_WITHDRAWN
+    return ANCHOR_ACTIVE
+
+
+def classify_state_anchor(state, anchor_record_id, eligible=None, index=None):
+    """Resolve ``anchor_record_id`` against a live/replayed ``state``.
+
+    ACTIVE only when the requirement landscape currently derives the anchor as
+    an eligible ``assertion`` requirement. Otherwise the durable ledger decides:
+    a genuinely superseded answered anchor is WITHDRAWN; anything else —
+    missing, never a valid answered assertion anchor, or an anchor the ledger
+    still calls active while the landscape derives no requirement for it (an
+    INCONSISTENT assertion/requirement relationship) — is INVALID."""
+    if eligible is None:
+        eligible = {record.record_id for _req, record in eligible_anchors(state)}
+    if anchor_record_id in eligible:
+        return ANCHOR_ACTIVE
+    ledger = classify_ledger_anchor(
+        getattr(state, "assertions", []) or [], anchor_record_id, index=index)
+    return ANCHOR_WITHDRAWN if ledger == ANCHOR_WITHDRAWN else ANCHOR_INVALID
+
+
+def resolved_anchor_states(state):
+    """``{anchor_record_id: resolution}`` for every anchor named by the history
+    attached to ``state``. Computed once per render/package pass."""
+    history = tuple(getattr(state, "requirement_quantities", None) or ())
+    if not history:
+        return {}
+    eligible = {record.record_id for _req, record in eligible_anchors(state)}
+    index = answered_anchor_index(getattr(state, "assertions", []) or [])
+    return {row.anchor_record_id: classify_state_anchor(
+        state, row.anchor_record_id, eligible=eligible, index=index)
+        for row in history}
+
+
+def _require_resolvable_anchors(resolutions):
+    """Fail CLOSED on any anchor that does not resolve to a valid answered
+    assertion record. Never repairs, deletes or reinterprets the durable row."""
+    if any(value == ANCHOR_INVALID for value in resolutions.values()):
+        raise QuantityHistoryError(
+            "quantity anchor does not resolve to a valid answered record")
+
+
+def canonical_row_dict(record):
+    """The canonical row of ``record`` as a plain JSON-safe dict."""
+    return {name: getattr(record, name) for name in CANONICAL_ROW_FIELDS}
+
+
 # --- History validation (fail closed) -------------------------------------------
-def validate_quantity_history(rows):
+def validate_quantity_history(rows, assertions=None):
     """Validate a project's durable quantity rows (in stored ``quantity_seq``
     order) and return the immutable validated history as a tuple of
     ``RequirementQuantity``.
@@ -197,7 +319,19 @@ def validate_quantity_history(rows):
         one anchor;
       * more rows than ``MAX_REQUIREMENT_QUANTITIES_PER_PROJECT``.
 
+    ``assertions`` — when given — is the project's DURABLE ledger assertion
+    records. Every row is then additionally validated AGAINST THE LEDGER, not
+    only against the other quantity rows: the anchor must resolve to a record
+    of THIS project that really is a valid answered assertion anchor (active or
+    genuinely withdrawn), and the requirement identity must be the canonical
+    ``req:assertion:<anchor>`` of that same record. An anchor that is missing,
+    was never a valid answered assertion, or whose requirement relationship is
+    inconsistent raises — it is never silently accepted and never presented as
+    withdrawn history. Passing ``None`` (the default) keeps the pure
+    row-against-row validation for callers that hold no ledger.
+
     Never mutates its input."""
+    anchor_index = None if assertions is None else answered_anchor_index(assertions)
     validated = []
     by_id = {}
     superseded = set()
@@ -232,6 +366,10 @@ def validate_quantity_history(rows):
             raise QuantityHistoryError("malformed anchor record id")
         if record.requirement_id != "req:assertion:" + record.anchor_record_id:
             raise QuantityHistoryError("requirement id does not match its anchor")
+        if anchor_index is not None and classify_ledger_anchor(
+                None, record.anchor_record_id, index=anchor_index) == ANCHOR_INVALID:
+            raise QuantityHistoryError(
+                "anchor is not a valid answered assertion record of this project")
         if record.quantity_kind not in _KIND_SET:
             raise QuantityHistoryError("unknown quantity kind")
         if not is_stored_value_text(record.value_text):
@@ -275,6 +413,27 @@ def validate_quantity_history(rows):
                 raise QuantityHistoryError("more than one active quantity for one anchor")
             active_anchors.add(record.anchor_record_id)
     return tuple(validated)
+
+
+def validate_new_quantity(existing_rows, candidate, assertions=None):
+    """Validate a PROPOSED canonical quantity row TOGETHER with the project's
+    existing durable history, exactly as the durable history will read after
+    the insert, and return the validated combined history.
+
+    ``existing_rows`` is the stored row mapping sequence (``quantity_seq``
+    order); ``candidate`` is the ``RequirementQuantity`` about to be inserted
+    with its final assigned ``quantity_seq``. Because the combined sequence
+    goes through the SAME ``validate_quantity_history``, a direct store caller
+    cannot commit an invalid kind, a malformed generated quantity id or event
+    key, an inconsistent requirement identity, an anchor that is not a valid
+    answered assertion record of this project, a duplicate event key, a second
+    chain root, a cross-anchor or already-consumed supersession edge, a
+    non-canonical validation status/provenance or any other invalid canonical
+    row. Raises ``QuantityHistoryError``; writes nothing."""
+    if not isinstance(candidate, RequirementQuantity):
+        raise QuantityHistoryError("quantity row is missing a field")
+    return validate_quantity_history(
+        list(existing_rows) + [canonical_row_dict(candidate)], assertions=assertions)
 
 
 def superseded_ids(history):
@@ -330,6 +489,8 @@ def quantity_chains(state) -> Tuple[QuantityChain, ...]:
             per_anchor[row.anchor_record_id] = []
             order.append(row.anchor_record_id)
         per_anchor[row.anchor_record_id].append(row)
+    resolutions = resolved_anchor_states(state)
+    _require_resolvable_anchors(resolutions)
     eligible = [record.record_id for _req, record in eligible_anchors(state)]
     ordered = [a for a in eligible if a in per_anchor] + \
         [a for a in order if a not in eligible]
@@ -343,7 +504,7 @@ def quantity_chains(state) -> Tuple[QuantityChain, ...]:
             anchor_record_id=anchor, requirement_id=active[0].requirement_id,
             active=active[0],
             replaced=tuple(r for r in rows if r.quantity_id in replaced_ids),
-            anchor_active=anchor in eligible))
+            anchor_active=resolutions[anchor] == ANCHOR_ACTIVE))
     return tuple(chains)
 
 
@@ -367,12 +528,13 @@ def requirement_quantities_meta(state):
     if not history:
         return None
     replaced = superseded_ids(history)
-    eligible = {record.record_id for _req, record in eligible_anchors(state)}
+    resolutions = resolved_anchor_states(state)
+    _require_resolvable_anchors(resolutions)
     rows = []
     for record in sorted(history, key=lambda r: r.quantity_seq):
-        row = {name: getattr(record, name) for name in CANONICAL_ROW_FIELDS}
+        row = canonical_row_dict(record)
         row["active"] = record.quantity_id not in replaced
-        row["anchor_active"] = record.anchor_record_id in eligible
+        row["anchor_active"] = resolutions[record.anchor_record_id] == ANCHOR_ACTIVE
         rows.append(row)
     return {"total": len(rows), "rows": rows}
 

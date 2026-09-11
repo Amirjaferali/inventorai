@@ -18,6 +18,7 @@ assembler stays frozen.
 Real on-disk SQLite only (pytest tmp_path); the real stores; no mocks of the
 seams under test. Fail-closed assertions are never weakened.
 """
+import dataclasses
 import json
 import os
 import sqlite3
@@ -37,14 +38,17 @@ from engine.record_store import (
     QuantityChainConflict, QuantityCapExceeded,
 )
 from engine.requirement_quantity import (
-    CANONICAL_ROW_FIELDS, MAX_REQUIREMENT_QUANTITIES_PER_PROJECT,
-    MAX_VALUE_TEXT_CHARS, QUANTITY_KINDS, QUANTITY_PROVENANCE,
+    ANCHOR_ACTIVE, ANCHOR_INVALID, ANCHOR_WITHDRAWN, CANONICAL_ROW_FIELDS,
+    MAX_REQUIREMENT_QUANTITIES_PER_PROJECT,
+    MAX_VALUE_TEXT_CHARS, QUANTITY_EXACT_REPLAY, QUANTITY_INSERTED,
+    QUANTITY_KINDS, QUANTITY_PROVENANCE,
     QUANTITY_VALIDATION_STATUS, REQUIREMENT_QUANTITIES_META_KEY,
     QuantityHistoryError, QuantityValueError, RequirementQuantity,
-    active_quantities, eligible_anchors, is_recorded_at, is_stored_value_text,
+    active_quantities, answered_anchor_index, classify_ledger_anchor,
+    classify_state_anchor, eligible_anchors, is_recorded_at, is_stored_value_text,
     normalize_value_text, quantity_chains, requirement_quantities_meta,
-    requirement_statement, superseded_ids, validate_quantity_history,
-    validate_quantity_kind,
+    requirement_statement, superseded_ids, validate_new_quantity,
+    validate_quantity_history, validate_quantity_kind,
 )
 
 PROBLEM = ("The problem is that cyclists have no reliable brake light because "
@@ -105,6 +109,28 @@ def _project(store, pid, answers=(PROBLEM,)):
                                  gap_context="MECHANISM_COMPLETENESS", iteration=1)
     store.create_project(ProjectRecordContract.from_state(state), project_id=pid)
     return state
+
+
+def _project_with_a_non_answer(store, pid):
+    """A project whose ledger holds an ANSWERED rec_1 and a rec_2 that was
+    never a valid answered assertion anchor (unknown disposition). Both records
+    exist, so pointing a quantity at rec_2 satisfies every FOREIGN KEY while
+    still being an invalid anchor."""
+    state = IdeaState(idea_id="idea-" + pid)
+    state.record_interaction(DISPOSITION_ANSWERED, PROBLEM,
+                             gap_context="MECHANISM_COMPLETENESS", iteration=1)
+    state.record_interaction(DISPOSITION_UNKNOWN, "",
+                             gap_context="PHYSICAL_FEASIBILITY", iteration=1)
+    store.create_project(ProjectRecordContract.from_state(state), project_id=pid)
+    return state
+
+
+def _point_anchor_at(store, project_id, anchor):
+    """Repoint a stored quantity row's anchor (durable corruption injection)."""
+    store._conn.execute(
+        "UPDATE requirement_quantities SET anchor_record_id = ?, requirement_id = ? "
+        "WHERE project_id = ?", (anchor, "req:assertion:" + anchor, project_id))
+    store._conn.commit()
 
 
 def _raw_insert(store, project_id, seq, qid, anchor, supersedes, event_key, kind=KIND):
@@ -292,25 +318,103 @@ def test_eligible_anchors_are_active_non_empty_answered_landscape_records():
 
 
 def test_chains_expose_active_replaced_and_withdrawn_anchor_deterministically():
+    """A VALID current chain and a GENUINELY withdrawn chain, and nothing else.
+    Only an anchor the ledger really superseded may present as withdrawn."""
     state = _state_with_answers()
     state.requirement_quantities = list(validate_quantity_history([
         _row(1, anchor="rec_2", text="3 A"),
         _row(2, anchor="rec_1", text="5 V"),
         _row(3, anchor="rec_1", text="6 V", supersedes=_qid(2)),
-        _row(4, anchor="rec_9", text="1 kg"),          # anchor never existed
     ]))
     chains = quantity_chains(state)
     assert [(c.anchor_record_id, c.active.value_text, [r.value_text for r in c.replaced],
              c.anchor_active) for c in chains] == [
-        ("rec_1", "6 V", ["5 V"], True), ("rec_2", "3 A", [], True), ("rec_9", "1 kg", [], False)]
+        ("rec_1", "6 V", ["5 V"], True), ("rec_2", "3 A", [], True)]
+    # A GENUINE withdrawal through the governed correction path: rec_2 keeps its
+    # rows and becomes a withdrawn-anchor chain; rec_1 stays current.
     state.record_interaction(DISPOSITION_ANSWERED, "corrected", iteration=4,
                              gap_context="MECHANISM_COMPLETENESS", supersedes=["rec_2"])
     chains = quantity_chains(state)
     assert [(c.anchor_record_id, c.anchor_active) for c in chains] == [
-        ("rec_1", True), ("rec_2", False), ("rec_9", False)]
-    assert quantity_chains(state) == chains
+        ("rec_1", True), ("rec_2", False)]
+    assert quantity_chains(state) == chains                      # deterministic
     assert quantity_chains(IdeaState(idea_id="empty")) == ()
-    assert len(state.requirement_quantities) == 4
+    assert len(state.requirement_quantities) == 3                # nothing deleted
+
+
+@pytest.mark.parametrize("label, anchor, mutate", [
+    # An anchor that never existed in the ledger at all.
+    ("nonexistent", "rec_9", None),
+    # An existing record that was NEVER a valid answered assertion anchor
+    # (recorded with a non-answered disposition).
+    ("never-answered", "rec_3", None),
+    # An existing answered record with empty content — never a valid anchor.
+    ("empty-answer", "rec_4", None),
+])
+def test_unresolvable_anchors_never_render_as_withdrawn_history(label, anchor, mutate):
+    """CR-1: a missing, never-answered or otherwise invalid anchor FAILS CLOSED
+    on every derived surface. It is never presented as legitimate withdrawn
+    history, and the durable row is neither repaired nor deleted."""
+    state = _state_with_answers()
+    rows = [_row(1, anchor="rec_1", text="5 V"), _row(2, anchor=anchor, text="1 kg")]
+    state.requirement_quantities = list(validate_quantity_history(rows))
+    assert classify_state_anchor(state, anchor) == ANCHOR_INVALID
+    with pytest.raises(QuantityHistoryError):
+        quantity_chains(state)
+    with pytest.raises(QuantityHistoryError):
+        requirement_quantities_meta(state)
+    assert len(state.requirement_quantities) == 2                # untouched
+
+
+def test_inconsistent_requirement_anchor_relationship_fails_closed():
+    """CR-1: a requirement identity that is not the canonical
+    ``req:assertion:<anchor>`` of the row's own anchor is rejected, and an
+    anchor the ledger still calls active while the landscape derives no
+    requirement for it is INVALID (inconsistent), never withdrawn."""
+    with pytest.raises(QuantityHistoryError):
+        validate_quantity_history([_row(1, anchor="rec_1",
+                                        requirement_id="req:assertion:rec_2")])
+    state = _state_with_answers()
+    state.mark_contradiction("rec_1", "rec_2")     # landscape derives no assertion
+    assert eligible_anchors(state) == ()
+    assert classify_ledger_anchor(state.assertions, "rec_1") == ANCHOR_ACTIVE
+    assert classify_state_anchor(state, "rec_1") == ANCHOR_INVALID
+    state.requirement_quantities = list(validate_quantity_history([_row(1, anchor="rec_1")]))
+    with pytest.raises(QuantityHistoryError):
+        quantity_chains(state)
+
+
+def test_genuinely_superseded_anchor_is_the_only_withdrawn_presentation():
+    """CR-1: exactly one anchor state may present as withdrawn."""
+    state = _state_with_answers()
+    assert classify_state_anchor(state, "rec_2") == ANCHOR_ACTIVE
+    state.record_interaction(DISPOSITION_ANSWERED, "corrected mechanism text",
+                             gap_context="MECHANISM_COMPLETENESS", iteration=4,
+                             supersedes=["rec_2"])
+    assert classify_state_anchor(state, "rec_2") == ANCHOR_WITHDRAWN
+    assert classify_ledger_anchor(state.assertions, "rec_2") == ANCHOR_WITHDRAWN
+    assert classify_ledger_anchor(state.assertions, "rec_99") == ANCHOR_INVALID
+    assert set(answered_anchor_index(state.assertions)) == {"rec_1", "rec_2", "rec_5"}
+    state.requirement_quantities = list(validate_quantity_history([_row(1, anchor="rec_2")]))
+    (chain,) = quantity_chains(state)
+    assert (chain.anchor_record_id, chain.anchor_active) == ("rec_2", False)
+    meta = requirement_quantities_meta(state)
+    assert [(r["anchor_record_id"], r["anchor_active"]) for r in meta["rows"]] == [("rec_2", False)]
+
+
+def test_history_is_validated_against_the_durable_ledger_assertions():
+    """CR-1: quantity history is validated against the project's LEDGER
+    assertions, not only against the other quantity rows."""
+    state = _state_with_answers()
+    rows = [_row(1, anchor="rec_1"), _row(2, anchor="rec_9", text="1 kg")]
+    assert len(validate_quantity_history(rows)) == 2            # rows alone: valid
+    with pytest.raises(QuantityHistoryError):                   # against the ledger: not
+        validate_quantity_history(rows, assertions=state.assertions)
+    assert len(validate_quantity_history([_row(1, anchor="rec_1")],
+                                         assertions=state.assertions)) == 1
+    for bad in ("rec_3", "rec_4"):        # unknown disposition / empty content
+        with pytest.raises(QuantityHistoryError):
+            validate_quantity_history([_row(1, anchor=bad)], assertions=state.assertions)
 
 
 def test_package_rows_are_canonical_ordered_by_seq_and_absent_at_zero():
@@ -525,17 +629,116 @@ def test_one_active_chain_and_stale_head_are_enforced_inside_the_transaction(sto
 
 
 def test_unique_event_key_is_the_durable_exact_replay_backstop(store):
+    """CR-4: the stable event key is resolved BEFORE chain position. The exact
+    same canonical event replays idempotently; a DIFFERENT event reusing the
+    key is a conflict/rejection that writes nothing."""
     _project(store, "P1", answers=(PROBLEM, MECHANISM))
-    store.append_requirement_quantity("P1", _quantity(store, event_key="a" * 32))
-    with pytest.raises(sqlite3.IntegrityError):
+    first = _quantity(store, event_key="a" * 32)
+    assert store.append_requirement_quantity("P1", first) == QUANTITY_INSERTED
+    # The identical canonical event again: recognised as the SAME event, not
+    # classified as a second chain root for an anchor that already has one.
+    replay = _quantity(store, event_key="a" * 32)
+    assert store.append_requirement_quantity("P1", replay) == QUANTITY_EXACT_REPLAY
+    # A DIFFERENT event under the same key stays a conflict; nothing is written.
+    with pytest.raises(QuantityChainConflict):
         store.append_requirement_quantity(
             "P1", _quantity(store, anchor="rec_2", event_key="a" * 32))
-    assert len(store.load_requirement_quantities("P1")) == 1
+    rows = store.load_requirement_quantities("P1")
+    assert len(rows) == 1 and rows[0].quantity_id == first.quantity_id
     _project(store, "P2")
-    store.append_requirement_quantity("P2", _quantity(store, event_key="a" * 32))
+    assert store.append_requirement_quantity(
+        "P2", _quantity(store, event_key="a" * 32)) == QUANTITY_INSERTED
     assert len(store.load_requirement_quantities("P2")) == 1
     store._conn.execute("BEGIN IMMEDIATE")
     store._conn.execute("ROLLBACK")
+
+
+def test_direct_store_caller_cannot_commit_an_invalid_canonical_row(store):
+    """CR-1: the PROPOSED row is validated together with the existing history
+    INSIDE the write transaction, so no direct caller can commit an invalid
+    kind, a malformed generated identity, an inconsistent requirement identity
+    or an invalid anchor relationship."""
+    _project(store, "P1", answers=(PROBLEM, MECHANISM))
+    invalid = {
+        "invalid kind": _quantity(store, kind="bogus_kind"),
+        "malformed quantity id": dataclasses.replace(
+            _quantity(store), quantity_id="not-a-quantity-id"),
+        "malformed event key": _quantity(store, event_key="ZZZ"),
+        "inconsistent requirement id": _quantity(
+            store, requirement_id="req:assertion:rec_2"),
+        "nonexistent anchor": _quantity(store, anchor="rec_9"),
+        "malformed anchor id": _quantity(store, anchor="record-one"),
+        "unstored value text": _quantity(store, text="  5 V  "),
+        "malformed recorded_at": _quantity(store, at="not-a-timestamp"),
+    }
+    for label, candidate in invalid.items():
+        with pytest.raises((QuantityHistoryError, StoreError, sqlite3.IntegrityError)), \
+                pytest.MonkeyPatch.context():
+            store.append_requirement_quantity("P1", candidate)
+        assert store.load_requirement_quantities("P1") == (), label
+        assert store._conn.execute(
+            "SELECT COUNT(*) FROM requirement_quantities").fetchone()[0] == 0, label
+    # A supersession edge naming ANOTHER anchor's row is refused as well.
+    assert store.append_requirement_quantity("P1", _quantity(store)) == QUANTITY_INSERTED
+    head = store.load_requirement_quantities("P1")[0]
+    with pytest.raises((QuantityChainConflict, QuantityHistoryError)):
+        store.append_requirement_quantity(
+            "P1", _quantity(store, anchor="rec_2", supersedes=head.quantity_id))
+    assert len(store.load_requirement_quantities("P1")) == 1
+
+
+def test_anchor_that_is_not_a_valid_answered_record_fails_closed_on_load(store):
+    """CR-1: a durable row whose anchor does not resolve to a valid answered
+    assertion record of THIS project is corruption. It fails closed on load and
+    blocks further writes; it is never silently repaired, deleted or served."""
+    _project_with_a_non_answer(store, "P1")
+    assert store.append_requirement_quantity("P1", _quantity(store)) == QUANTITY_INSERTED
+    _point_anchor_at(store, "P1", "rec_2")      # exists, but never an answered anchor
+    with pytest.raises(QuantityHistoryError):
+        store.load_requirement_quantities("P1")
+    with pytest.raises(QuantityHistoryError):
+        store.append_requirement_quantity("P1", _quantity(store))
+    assert store._conn.execute(
+        "SELECT COUNT(*) FROM requirement_quantities").fetchone()[0] == 1   # retained
+    # Relational integrity is intact — this corruption is SEMANTIC, which is
+    # exactly why a foreign key alone cannot catch it and the ledger check must.
+    assert store._conn.execute("PRAGMA foreign_key_check").fetchall() == []
+
+
+def test_unrelated_project_is_isolated_from_another_projects_corruption(store):
+    """CR-1: corruption and anchor resolution are strictly project-scoped."""
+    _project_with_a_non_answer(store, "P1")
+    _project(store, "P2", answers=(PROBLEM, MECHANISM))
+    assert store.append_requirement_quantity("P1", _quantity(store)) == QUANTITY_INSERTED
+    assert store.append_requirement_quantity("P2", _quantity(store, text="9 A")) == QUANTITY_INSERTED
+    _point_anchor_at(store, "P1", "rec_2")
+    with pytest.raises(QuantityHistoryError):
+        store.load_requirement_quantities("P1")
+    assert [r.value_text for r in store.load_requirement_quantities("P2")] == ["9 A"]
+    assert store.append_requirement_quantity(
+        "P2", _quantity(store, anchor="rec_2", text="4 V")) == QUANTITY_INSERTED
+    assert [r.value_text for r in store.load_requirement_quantities("P2")] == ["9 A", "4 V"]
+    assert store._conn.execute("PRAGMA foreign_key_check").fetchall() == []
+
+
+def test_pragma_foreign_key_check_stays_empty_across_the_whole_lifecycle(store):
+    """CR-1: relational integrity holds after every accepted and refused
+    operation — inserts, a correction chain, refusals and a second project."""
+    _project(store, "P1", answers=(PROBLEM, MECHANISM))
+    _project(store, "P2", answers=(PROBLEM,))
+    store.append_requirement_quantity("P1", _quantity(store))
+    head = store.load_requirement_quantities("P1")[0]
+    store.append_requirement_quantity(
+        "P1", _quantity(store, text="6 V", supersedes=head.quantity_id))
+    store.append_requirement_quantity("P1", _quantity(store, anchor="rec_2", text="3 A"))
+    store.append_requirement_quantity("P2", _quantity(store, text="1 A"))
+    for bad in (_quantity(store, anchor="rec_9"), _quantity(store, kind="bogus"),
+                _quantity(store, text="   ")):
+        with pytest.raises((QuantityHistoryError, StoreError, QuantityValueError)):
+            store.append_requirement_quantity("P1", bad)
+    assert store._conn.execute("PRAGMA foreign_key_check").fetchall() == []
+    assert len(store.load_requirement_quantities("P1")) == 3
+    assert len(store.load_requirement_quantities("P2")) == 1
 
 
 def test_unknown_project_and_wrong_type_write_nothing(store):

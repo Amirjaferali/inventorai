@@ -123,6 +123,19 @@ _MESSAGE_KEYS = {
         "UI_T2A_ERR_NOT_SAVED",
     ("Choose what kind of value this is and enter it as short plain text for "
      "the selected item. Nothing was changed."): "UI_T2A_ERR_INVALID",
+    # The three truthful outcome messages. They are DISTINCT because the three
+    # durable outcomes are distinct: an established refusal that wrote nothing,
+    # an outcome that could not be determined at all (which asserts neither a
+    # write nor a rollback), and a quantity that IS saved but could not be
+    # reattached for display. None of them is the answer-correction wording.
+    ("The recorded values for this item changed while you were confirming, so "
+     "that quantity was not saved. Nothing was changed. Review the values shown "
+     "here and enter it again if you still want it."): "UI_T2A_ERR_CONFLICT",
+    ("We could not confirm whether that quantity was saved. Reload this page to "
+     "see the values your project currently holds before entering it again."):
+        "UI_T2A_ERR_UNKNOWN",
+    ("Your quantity was saved to your project, but it could not be shown here "
+     "just now. Reload this page shortly to see it."): "UI_T2A_ERR_SAVED_NOT_SHOWN",
 }
 
 
@@ -1698,6 +1711,26 @@ UI_STRINGS = {
         "en": ("Choose what kind of value this is and enter it as short plain text for "
                "the selected item. Nothing was changed."),
         "ar": "اختر نوع القيمة وأدخلها كنص قصير للعنصر المحدد. لم يتغير أي شيء.",
+    },
+    "UI_T2A_ERR_CONFLICT": {
+        "en": ("The recorded values for this item changed while you were confirming, so "
+               "that quantity was not saved. Nothing was changed. Review the values shown "
+               "here and enter it again if you still want it."),
+        "ar": ("تغيرت القيم المسجّلة لهذا العنصر أثناء تأكيدك، لذلك لم تُحفظ هذه الكمية. "
+               "لم يتغير أي شيء. راجع القيم المعروضة هنا وأدخلها مرة أخرى إذا كنت "
+               "لا تزال تريدها."),
+    },
+    "UI_T2A_ERR_UNKNOWN": {
+        "en": ("We could not confirm whether that quantity was saved. Reload this page to "
+               "see the values your project currently holds before entering it again."),
+        "ar": ("تعذر علينا تأكيد ما إذا كانت هذه الكمية قد حُفظت. أعد تحميل هذه الصفحة "
+               "لرؤية القيم التي يحتفظ بها مشروعك حاليًا قبل إدخالها مرة أخرى."),
+    },
+    "UI_T2A_ERR_SAVED_NOT_SHOWN": {
+        "en": ("Your quantity was saved to your project, but it could not be shown here "
+               "just now. Reload this page shortly to see it."),
+        "ar": ("حُفظت الكمية في مشروعك، لكن تعذر عرضها هنا الآن. أعد تحميل هذه الصفحة "
+               "بعد قليل لرؤيتها."),
     },
     # Kind tokens (engine QUANTITY_KINDS, accepted design delta §6) -> display,
     # keyed ``UI_T2A_KIND_<TOKEN>`` (token upper-cased); one entry per token.

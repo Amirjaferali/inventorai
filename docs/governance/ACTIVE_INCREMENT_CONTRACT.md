@@ -126,6 +126,64 @@ claim is kept and strengthened); and this file only. `engine/deliverable_assembl
 `tests/test_p7_i2_public_api.py` remain byte-identical to the base. No new
 governance, review, evidence, plan or handover document is created.
 
+**Consolidated bounded repair (Lead adjudication `FAIL — ONE CONSOLIDATED BOUNDED
+REPAIR REQUIRED`, instruction `T2A-PR638-CONSOLIDATED-REPAIR-01` v1.0).** The two
+adjudicated violations — an invalid anchor/history state presentable as legitimate
+withdrawn history, and an uncertain or completed write reportable as a definite
+non-write — are closed as follows, inside the same 13-path boundary:
+
+* **Anchor, assertion and incoming-row integrity (CR-1).** Quantity history is
+  validated against the project's DURABLE LEDGER ASSERTIONS as well as against the
+  other quantity rows. An anchor resolves to exactly one of three states —
+  `ANCHOR_ACTIVE` (a valid, currently answered assertion anchor), `ANCHOR_WITHDRAWN`
+  (a valid, previously answered anchor GENUINELY superseded through the governed
+  correction path) or `ANCHOR_INVALID` (missing, never a valid answered assertion
+  anchor, or an inconsistent assertion/requirement relationship). ONLY
+  `ANCHOR_WITHDRAWN` may present as withdrawn history; `ANCHOR_INVALID` fails closed
+  through the established generic recovery behaviour at the single attachment seam
+  every surface shares. The PROPOSED canonical row is validated TOGETHER with the
+  existing history inside the same write transaction (`validate_new_quantity`), so a
+  direct store caller cannot commit an invalid kind, a malformed generated identity,
+  an inconsistent requirement identity, an invalid anchor relationship or any other
+  invalid canonical row. Valid chains and genuine withdrawn-anchor presentation are
+  preserved; no corrupt durable row is repaired, deleted or reinterpreted.
+* **Truthful write outcomes (CR-2).** The durable write reports one of
+  `INSERTED`, `EXACT_REPLAY`, `CONFLICT`, `REJECTED`, `STORAGE_FAILURE` or
+  `COMMIT_UNKNOWN`, plus the web-layer `RELOAD_FAILED`. Exceptions are no longer
+  broadly translated into "Nothing was changed": an established refusal decided
+  before any row was written says so, and any undetermined outcome is first resolved
+  through the stable `(project_id, event_key)`. A proven durable presence is reported
+  as saved/idempotent; a proven durable absence is reported as an unchanged project;
+  an outcome that cannot be determined asserts neither a write nor a rollback.
+  Transaction safety and unique-event protection are unchanged, and no message
+  exposes SQL text, a path, a token, an identifier, a raw value or exception detail.
+* **Propose-time session binding (CR-3).** The session binding is RECORDED in the
+  staged proposal at propose time; token construction uses that stored binding; and
+  confirm compares the current binding against it BEFORE nonce consumption or any
+  durable call. A different browser session of the SAME account is neither offered a
+  usable token nor able to spend another session's proposal. Owner, project, CSRF,
+  expiry, nonce and content binding are unchanged.
+* **Exact replay classification (CR-4).** The stable event key is resolved BEFORE the
+  row's chain position is classified, so a replayed recorded event is `EXACT_REPLAY`
+  rather than a new-write conflict; `EXACT_REPLAY` is returned only when the stored
+  canonical row matches the intended event exactly, and a mismatched reuse of the key
+  remains a conflict.
+* **Literal zero-quantity equivalence (CR-5).** The report addition is delimited by
+  two sentinels and every scaffolding tag self-erases, so with zero quantity rows the
+  candidate's HTML and PDF source are BYTE-IDENTICAL to the base source (the report
+  template with the addition textually removed), apart from the already permitted
+  volatile `generated_at`. No package key, no JSON member, no quantity block and no
+  PDF-source difference.
+* **Test portability (CR-6).** No test depends on `git`, a subprocess or the presence
+  of a `.git` directory; the no-scope-leak guarantee is proved by repository-
+  independent source inspection plus a live proof that a project which really holds
+  quantities exposes none of them through the canonical read/export seam, the export
+  adapter, the browser export or the public API surface.
+* **Quantity-specific recovery wording (CR-7).** A post-commit reload failure uses its
+  own truthful English and Arabic wording instead of the reused answer-correction
+  message; escaping, localization boundaries and non-disclosure are unchanged, and no
+  new messaging framework is introduced.
+
 **Evidence (delta §12):** the literal Set B (5), owners (20) and Set C (140) lists,
 focused = Set B ∪ owners (25) and affected = Set B ∪ Set C (145), base
 `tests/test_*.py` = 185 at the base SHA and 187 at the candidate head, the two new

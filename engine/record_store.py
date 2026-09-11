@@ -26,6 +26,7 @@ Provider-free and network-free. Introduces no new runtime dependency (stdlib
 `sqlite3`). Capability/project identifiers are unpredictable lookup capabilities,
 NOT authentication, ownership, or authorization.
 """
+import dataclasses
 import json
 import sqlite3
 import uuid
@@ -35,8 +36,9 @@ from typing import List, Protocol, runtime_checkable
 from engine.record_contract import ProjectRecordContract, assertion_to_dict
 from engine.idea_state import DISPOSITION_ANSWERED
 from engine.requirement_quantity import (
-    RequirementQuantity, validate_quantity_history, active_quantities,
-    MAX_REQUIREMENT_QUANTITIES_PER_PROJECT,
+    RequirementQuantity, validate_quantity_history, validate_new_quantity,
+    active_quantities, MAX_REQUIREMENT_QUANTITIES_PER_PROJECT,
+    QUANTITY_INSERTED, QUANTITY_EXACT_REPLAY, QUANTITY_EVENT_IDENTITY_FIELDS,
 )
 
 
@@ -81,7 +83,7 @@ class RecordStore(Protocol):
     def close(self) -> None: ...
     # T2-A Quantified Requirements Slice 1 (additive; see the table note below).
     def new_quantity_id(self) -> str: ...
-    def append_requirement_quantity(self, project_id: str, quantity) -> None: ...
+    def append_requirement_quantity(self, project_id: str, quantity) -> str: ...
     def load_requirement_quantities(self, project_id: str) -> tuple: ...
     def requirement_quantity_for_event_key(self, project_id: str, event_key: str): ...
 
@@ -559,16 +561,45 @@ class SqliteRecordStore:
             "SELECT " + self._QUANTITY_COLUMNS + " FROM requirement_quantities "
             "WHERE project_id = ? ORDER BY quantity_seq ASC", (project_id,)).fetchall()]
 
-    def append_requirement_quantity(self, project_id: str, quantity) -> None:
-        """Atomically append ONE requirement-quantity row for ``project_id``.
+    def _answered_ledger_records(self, project_id: str):
+        """This project's DURABLE answered ledger records (the anchor truth a
+        quantity row must resolve against). Project-scoped; read-only; an
+        unknown project yields the empty tuple, exactly like
+        ``load_accepted_answer_evidence``."""
+        return self.load_accepted_answer_evidence(project_id)
+
+    def is_same_quantity_event(self, stored, quantity) -> bool:
+        """True iff a STORED row is the exact canonical event of ``quantity``
+        (canonical identity fields only; the recording facts are never part of
+        event identity)."""
+        if stored is None or not isinstance(quantity, RequirementQuantity):
+            return False
+        return all(stored[name] == getattr(quantity, name)
+                   for name in QUANTITY_EVENT_IDENTITY_FIELDS)
+
+    def append_requirement_quantity(self, project_id: str, quantity) -> str:
+        """Atomically append ONE requirement-quantity row for ``project_id`` and
+        return the TRUTHFUL durable outcome token.
+
+        Returns ``QUANTITY_EXACT_REPLAY`` when this project already holds the
+        exact canonical event under the same stable ``event_key`` (resolved
+        FIRST, before any chain-position classification, so a replay of a
+        recorded event is never mis-reported as a new-write conflict), and
+        ``QUANTITY_INSERTED`` when this call committed the row.
 
         ONE serialized transaction (``BEGIN IMMEDIATE``); commit on success,
         FULL rollback on any failure — nothing partial survives. INSIDE the
         transaction, against the durable truth:
           * the project must exist (``ProjectNotFound``);
-          * the project's EXISTING history is loaded and validated
-            (``QuantityHistoryError`` on corruption — a write is never
-            possible on top of a corrupt history);
+          * the stable ``(project_id, event_key)`` is resolved first: an
+            existing row that is the exact same canonical event is an
+            idempotent replay; an existing row under the same key that is a
+            DIFFERENT event is a conflict, never a silent success;
+          * the project's EXISTING history is loaded and validated against the
+            project's durable ledger assertions (``QuantityHistoryError`` on
+            corruption — a write is never possible on top of a corrupt
+            history, and an anchor that is not a valid answered assertion
+            record of THIS project is corruption);
           * the per-project cap holds (``QuantityCapExceeded`` at
             MAX_REQUIREMENT_QUANTITIES_PER_PROJECT rows);
           * the ONE-ACTIVE-CHAIN rule holds (``QuantityChainConflict``): with
@@ -576,16 +607,21 @@ class SqliteRecordStore:
             CURRENT active head; without it, the anchor must have no active
             row — so a stale quantity head between propose and confirm is
             refused here;
+          * the PROPOSED canonical row is validated TOGETHER with the existing
+            history, exactly as the durable history will read after the insert
+            (``validate_new_quantity``), so a direct store caller cannot commit
+            an invalid kind, a malformed generated identity, an inconsistent
+            requirement identity, an invalid anchor relationship or any other
+            invalid canonical row;
           * the row's ``quantity_seq`` is assigned here (next in sequence);
             the caller's value is ignored; ``recorded_iteration`` and
             ``recorded_at`` are persisted as given (generated once per event
             by the caller; never part of identity);
           * SQLite enforces the composite foreign keys (anchor record of THIS
-            project; supersedes row of THIS project) and the UNIQUE event key
-            (a duplicate raises ``sqlite3.IntegrityError`` — the caller
-            confirms-by-reload, never auto-classifies).
+            project; supersedes row of THIS project) and the UNIQUE event key.
         The stored ``value_text`` is the caller's already-normalized text;
-        this method never re-interprets, logs or rewrites it."""
+        this method never re-interprets, logs or rewrites it. Nothing here
+        repairs, deletes or reinterprets an existing durable row."""
         if not isinstance(quantity, RequirementQuantity):
             raise StoreError("quantity must be a RequirementQuantity")
         with self._write():
@@ -594,7 +630,18 @@ class SqliteRecordStore:
             ).fetchone()
             if not row or row[0] == 0:
                 raise ProjectNotFound(project_id)
-            history = validate_quantity_history(self._quantity_rows(project_id))
+            # CR-4: resolve the stable event key BEFORE classifying chain
+            # position. A recorded event replayed exactly is idempotent, not a
+            # new-write conflict; a different event under the same key is a
+            # conflict and is never treated as a success.
+            stored = self.requirement_quantity_for_event_key(project_id, quantity.event_key)
+            if stored is not None:
+                if self.is_same_quantity_event(stored, quantity):
+                    return QUANTITY_EXACT_REPLAY
+                raise QuantityChainConflict("event key already names a different event")
+            existing_rows = self._quantity_rows(project_id)
+            assertions = self._answered_ledger_records(project_id)
+            history = validate_quantity_history(existing_rows, assertions=assertions)
             if len(history) >= MAX_REQUIREMENT_QUANTITIES_PER_PROJECT:
                 raise QuantityCapExceeded("per-project quantity cap reached")
             head = active_quantities(history).get(quantity.anchor_record_id)
@@ -607,6 +654,9 @@ class SqliteRecordStore:
                 if head.requirement_id != quantity.requirement_id:
                     raise QuantityChainConflict("requirement id changes within a chain")
             seq = (history[-1].quantity_seq + 1) if history else 0
+            validate_new_quantity(
+                existing_rows, dataclasses.replace(quantity, quantity_seq=seq),
+                assertions=assertions)
             self._conn.execute(
                 "INSERT INTO requirement_quantities (project_id, " + self._QUANTITY_COLUMNS + ") "
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
@@ -614,6 +664,7 @@ class SqliteRecordStore:
                  quantity.requirement_id, quantity.quantity_kind, quantity.value_text,
                  quantity.supersedes_quantity_id, quantity.event_key,
                  quantity.recorded_iteration, quantity.recorded_at))
+        return QUANTITY_INSERTED
 
     def load_requirement_quantities(self, project_id: str) -> tuple:
         """Load and VALIDATE one project's requirement-quantity history in
@@ -624,8 +675,17 @@ class SqliteRecordStore:
         Structural corruption raises ``engine.requirement_quantity
         .QuantityHistoryError`` with NO partial history (fail closed, never
         silently repaired); storage failure propagates as the SQL error.
+        Every row is validated against the project's DURABLE ledger assertions
+        as well as against the other quantity rows, so an anchor that does not
+        resolve to a valid answered assertion record of this project is
+        corruption and fails closed here.
+
         Read-only; project-scoped; logs nothing."""
-        return validate_quantity_history(self._quantity_rows(project_id))
+        rows = self._quantity_rows(project_id)
+        if not rows:
+            return ()
+        return validate_quantity_history(
+            rows, assertions=self._answered_ledger_records(project_id))
 
     def requirement_quantity_for_event_key(self, project_id: str, event_key: str):
         """Return the stored quantity row (dict) carrying ``event_key`` under

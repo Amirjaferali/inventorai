@@ -25,6 +25,7 @@ to inject storage failures, to drive the clock, or to capture the exact
 document handed to the renderer.
 """
 from tests.csrf_client import csrf_client
+import contextlib
 import copy
 import json
 import os
@@ -32,6 +33,7 @@ import pickle
 import re
 import sqlite3
 
+import jinja2
 import pytest
 
 import web.app as webapp
@@ -233,6 +235,44 @@ def _package(sid):
         return webapp._deliverable_context(sid)[1]
 
 
+T2A_BLOCK_BEGIN = "  {#- T2A-BLOCK-BEGIN"
+T2A_BLOCK_END = "T2A-BLOCK-END #}\n"
+_TEMPLATES = os.path.join(os.path.dirname(__file__), "..", "web", "templates")
+
+
+def _template_source(name):
+    with open(os.path.join(_TEMPLATES, name), encoding="utf-8") as fh:
+        return fh.read()
+
+
+def base_deliverable_source():
+    """The report template with the T2-A addition textually REMOVED — the base
+    source this slice must stay byte-equivalent to when no quantity exists.
+    Reconstructed from the two sentinels in the template itself, so it needs no
+    fixture file, no VCS checkout and no `.git` directory."""
+    text = _template_source("deliverable.html")
+    start = text.index(T2A_BLOCK_BEGIN)
+    end = text.index(T2A_BLOCK_END, start) + len(T2A_BLOCK_END)
+    stripped = text[:start] + text[end:]
+    assert "t2a" not in stripped.lower(), "the base source still carries T2-A text"
+    return stripped
+
+
+@contextlib.contextmanager
+def _base_deliverable_template():
+    """Serve the BASE report source for `deliverable.html` while keeping the
+    real route, the real context and every other template unchanged."""
+    original = app.jinja_env.loader
+    app.jinja_env.loader = jinja2.ChoiceLoader(
+        [jinja2.DictLoader({"deliverable.html": base_deliverable_source()}), original])
+    app.jinja_env.cache.clear()
+    try:
+        yield
+    finally:
+        app.jinja_env.loader = original
+        app.jinja_env.cache.clear()
+
+
 # ==========================================================================
 # 1. Routes, CSRF integrity, no durable write on propose
 # ==========================================================================
@@ -265,9 +305,10 @@ def test_propose_stages_one_bounded_proposal_and_performs_no_durable_write(db_pa
     assert r.status_code == 302 and r.headers["Location"].endswith("#t2a-confirm")
     assert _rows(db_path, sid) == [] and _snapshot(sid, db_path)[1] == db_before
     staged = SESSION_STORE[sid]["quantity_proposal"]
-    assert set(staged) == {"nonce", "issued_at", "expires_at", "account_id", "anchor_record_id",
-                           "requirement_id", "quantity_kind", "value_text",
+    assert set(staged) == {"nonce", "issued_at", "expires_at", "account_id", "session_binding",
+                           "anchor_record_id", "requirement_id", "quantity_kind", "value_text",
                            "supersedes_quantity_id", "recorded_iteration", "recorded_at"}
+    assert re.fullmatch(r"[0-9a-f]{16}", staged["session_binding"])
     assert staged["anchor_record_id"] == "rec_1"
     assert staged["requirement_id"] == "req:assertion:rec_1"
     assert staged["quantity_kind"] == KIND and staged["value_text"] == "12.5   V"
@@ -370,6 +411,10 @@ def test_discard_consumes_the_proposal_and_saves_nothing(db_path):
 
 
 def test_exact_replay_of_the_same_event_is_idempotent_through_the_event_key(db_path, monkeypatch):
+    """CR-4: the stable event key is resolved BEFORE chain position, so an
+    exact replay is EXACT_REPLAY — not a new-write conflict. The proof consumes
+    the original success notice first, so it can never pass on stale flash
+    state, and it asserts that exactly ONE durable row remains."""
     c, _aid = _client_for("t2a-event@example.com")
     sid = _start(c)
     assert _propose(c, sid, "rec_1", "7 V").status_code == 302
@@ -377,21 +422,31 @@ def test_exact_replay_of_the_same_event_is_idempotent_through_the_event_key(db_p
     token = _ctoken(_page(c, sid))
     assert _confirm(c, sid, token).status_code == 302
     rows = _rows(db_path, sid)
+    assert len(rows) == 1
+    # CONSUME the original success notice: render once and clear both slots, so
+    # the assertion below can only observe a notice the REPLAY itself produced.
+    assert webapp.QUANTITY_SAVED_ACK in _page(c, sid)
+    SESSION_STORE[sid].pop("_interaction_ack", None)
+    SESSION_STORE[sid].pop("_answer_error", None)
+    assert webapp.QUANTITY_SAVED_ACK not in _page(c, sid)
     store = _store()
     real_append = store.append_requirement_quantity
     calls = []
 
     def tracking(pid, q):
-        calls.append(q.event_key)
-        return real_append(pid, q)
+        outcome = real_append(pid, q)
+        calls.append((q.event_key, outcome))
+        return outcome
     monkeypatch.setattr(store, "append_requirement_quantity", tracking)
-    # the SAME staged event presented again (same nonce, same material) hits
-    # the UNIQUE event key and confirm-by-reload recognises the same event
+    # the SAME staged event presented again (same nonce, same material) resolves
+    # to the stored event under the UNIQUE event key
     SESSION_STORE[sid]["quantity_proposal"] = dict(staged)
     assert _confirm(c, sid, token).status_code == 302
-    assert calls == [rows[0][7]]
+    assert calls == [(rows[0][7], "EXACT_REPLAY")]
+    assert SESSION_STORE[sid].get("_answer_error") is None
+    assert SESSION_STORE[sid].get("_interaction_ack") == webapp.QUANTITY_SAVED_ACK
     assert webapp.QUANTITY_SAVED_ACK in _page(c, sid)
-    assert _rows(db_path, sid) == rows
+    assert _rows(db_path, sid) == rows and len(_rows(db_path, sid)) == 1
 
 
 # ==========================================================================
@@ -450,7 +505,11 @@ def test_session_binding_change_is_rejected(db_path):
                                     "csrf_token": "rotated-session-token-value"})
     assert r.status_code == 302 and r.headers["Location"] == SESSION % sid
     assert webapp.QUANTITY_NOT_SAVED_MESSAGE in _page(c, sid)
-    assert _rows(db_path, sid) == [] and "quantity_proposal" not in SESSION_STORE[sid]
+    assert _rows(db_path, sid) == []
+    # CR-3: refused BEFORE nonce consumption — a rotated/foreign session never
+    # spends the staging session's proposal, and never gets a usable token.
+    assert SESSION_STORE[sid]["quantity_proposal"]["value_text"] == "7 V"
+    assert _ctoken(_page(c, sid)) is None
 
 
 def test_owner_change_is_rejected(db_path):
@@ -693,7 +752,9 @@ def test_stale_quantity_head_between_propose_and_confirm_is_refused_in_the_trans
     assert _record(c, sid, "rec_1", "7 V").status_code == 302
     entry["quantity_proposal"] = stale
     assert _confirm(c, sid, stale_token).status_code == 302
-    assert webapp.QUANTITY_NOT_SAVED_MESSAGE in _page(c, sid)
+    # An established refusal decided before any row was written: it may say
+    # that nothing changed, and it says WHY rather than only "not saved".
+    assert webapp.QUANTITY_CONFLICT_MESSAGE in _page(c, sid)
     assert [x[5] for x in _rows(db_path, sid)] == ["5 V", "7 V"]
     assert _values(_page(c, sid)) == ["7 V"]
 
@@ -856,25 +917,38 @@ def test_arabic_and_english_chrome_parity_with_never_localized_value_text(db_pat
 
 
 def test_zero_rows_leave_package_html_and_pdf_source_byte_identical(db_path, monkeypatch):
+    """CR-5: with zero quantity rows the candidate's HTML and PDF source are
+    byte-identical to the BASE source — the report template with the T2-A
+    addition textually removed — not to the candidate with its helpers turned
+    off. The only permitted volatile field, ``generated_at``, is pinned."""
     c, _aid = _client_for("t2a-zero@example.com")
     sid = _start(c)
     monkeypatch.setattr(_assembler, "_now_iso", lambda: "2026-01-01T00:00:00+00:00")
     seen = _capture_pdf_source(monkeypatch)
-    real_html = c.get(DELIVERABLE % sid).get_data()
+    candidate_html = c.get(DELIVERABLE % sid).get_data()
     assert c.post(PDF % sid, data={}).status_code == 200
-    real_source = seen["source"]
-    real_package = _package(sid)
-    monkeypatch.setattr(webapp, "_attach_quantity_history", lambda sid, state: True)
-    monkeypatch.setattr(webapp, "_requirement_quantities_meta", lambda state: None)
-    SESSION_STORE[sid]["state"].requirement_quantities = []
-    base_html = c.get(DELIVERABLE % sid).get_data()
-    assert c.post(PDF % sid, data={}).status_code == 200
-    assert real_html == base_html and real_source == seen["source"]
-    assert "requirement_quantities" not in real_package["_session_meta"]
-    assert json.dumps(real_package, sort_keys=True) == json.dumps(
+    candidate_source = seen["source"]
+    candidate_package = _package(sid)
+    # Render the SAME route, the SAME context and the SAME data through the base
+    # report source: only the template text differs, and it differs by exactly
+    # the T2-A addition between the two sentinels.
+    with _base_deliverable_template():
+        base_html = c.get(DELIVERABLE % sid).get_data()
+        assert c.post(PDF % sid, data={}).status_code == 200
+        base_source = seen["source"]
+    assert candidate_html == base_html
+    assert candidate_source == base_source
+    assert "requirement_quantities" not in candidate_package["_session_meta"]
+    assert json.dumps(candidate_package, sort_keys=True) == json.dumps(
         _assembler.assemble_deliverable(SESSION_STORE[sid]["state"]), sort_keys=True)
-    assert "t2a-requirement-quantities" not in real_html.decode("utf-8")
-    assert "t2a-requirement-quantities" not in real_source
+    assert "t2a-requirement-quantities" not in candidate_html.decode("utf-8")
+    assert "t2a-requirement-quantities" not in candidate_source
+    # The same base source DOES differ once a quantity exists — proving the
+    # comparison above is a real equivalence, not a vacuous one.
+    assert _record(c, sid, _anchors(c, sid)[0], "5 V").status_code == 302
+    with_rows = c.get(DELIVERABLE % sid).get_data()
+    with _base_deliverable_template():
+        assert c.get(DELIVERABLE % sid).get_data() != with_rows
 
 
 # ==========================================================================
@@ -1185,6 +1259,276 @@ def test_post_commit_reattachment_failure_keeps_live_state_and_tells_the_truth(d
 
 
 # ==========================================================================
+# 10b. CR-1 — anchor integrity: an unresolvable anchor is never withdrawn history
+# ==========================================================================
+def _repoint_anchor(db_path, sid, anchor):
+    """Durable corruption injection: repoint the stored anchor. A plain
+    connection has foreign keys OFF, which is exactly how a real corrupted or
+    partially restored database can carry a row no constraint would accept."""
+    conn = sqlite3.connect(db_path)
+    try:
+        conn.execute("UPDATE requirement_quantities SET anchor_record_id = ?, "
+                     "requirement_id = ? WHERE project_id = ?",
+                     (anchor, "req:assertion:" + anchor, sid))
+        conn.commit()
+    finally:
+        conn.close()
+
+
+def test_unresolvable_anchor_never_renders_as_withdrawn_history(db_path):
+    """CR-1: a quantity whose anchor does not resolve to a valid answered
+    assertion record must FAIL CLOSED through the established generic recovery
+    behaviour on every affected surface — never appear as a legitimate
+    withdrawn-answer value, which is how a real withdrawal is presented."""
+    c, _aid = _client_for("t2a-anchor-invalid@example.com")
+    sid = _start(c)
+    assert _record(c, sid, "rec_1", "5 V").status_code == 302
+    _repoint_anchor(db_path, sid, "rec_99")
+    corrupted = _rows(db_path, sid)
+    SESSION_STORE.clear()
+    with pytest.raises(QuantityHistoryError):
+        _store().load_requirement_quantities(sid)
+    for verb, path in (("get", SESSION % sid), ("get", DELIVERABLE % sid), ("post", PDF % sid)):
+        r = getattr(c, verb)(path, data={})
+        assert r.status_code == 302 and r.headers["Location"].endswith("/"), (verb, path)
+        text = r.get_data(as_text=True)
+        assert "5 V" not in text and "rec_99" not in text and "qty-" not in text
+        assert "withdrawn" not in text.lower() and "sqlite" not in text.lower()
+    assert _rows(db_path, sid) == corrupted       # retained, never repaired or deleted
+    # A GENUINE withdrawal, by contrast, still presents as withdrawn history.
+    _repoint_anchor(db_path, sid, "rec_2")
+    repointed = _rows(db_path, sid)
+    SESSION_STORE.clear()
+    assert _values(_page(c, sid)) == ["5 V"]
+    token = webapp._issue_answer_token(sid)
+    assert c.post(CORRECT % sid, data={"supersedes_record_id": "rec_2",
+                                       "response": MECH_CORRECTED,
+                                       "answer_token": token}).status_code == 302
+    assert _withdrawn(_page(c, sid)) == ["5 V"]
+    assert _rows(db_path, sid) == repointed
+
+
+def test_an_unresolvable_anchor_never_leaks_across_projects(db_path):
+    """CR-1: anchor resolution is project-scoped — another owner's project is
+    untouched by a corrupt anchor and keeps working normally."""
+    ca, _a = _client_for("t2a-anchor-iso-a@example.com")
+    cb, _b = _client_for("t2a-anchor-iso-b@example.com")
+    sid_a, sid_b = _start(ca), _start(cb)
+    assert _record(ca, sid_a, "rec_1", "5 V").status_code == 302
+    assert _record(cb, sid_b, "rec_1", "9 A").status_code == 302
+    _repoint_anchor(db_path, sid_a, "rec_99")
+    SESSION_STORE.pop(sid_a, None)
+    assert ca.get(SESSION % sid_a).status_code == 302          # A fails closed
+    assert _values(_page(cb, sid_b)) == ["9 A"]                # B is unaffected
+    assert _record(cb, sid_b, "rec_2", "4 V", KIND2).status_code == 302
+    assert sorted(_values(_page(cb, sid_b))) == ["4 V", "9 A"]
+    assert len(_rows(db_path, sid_b)) == 2 and len(_rows(db_path, sid_a)) == 1
+
+
+# ==========================================================================
+# 10c. CR-3 — propose-time session binding
+# ==========================================================================
+def test_a_second_session_of_the_same_owner_cannot_obtain_or_use_a_token(db_path):
+    """CR-3: the binding is recorded at PROPOSE time and the token is built
+    from it, so a different browser session of the SAME account is neither
+    handed a valid token nor able to spend the staged proposal. Zero durable
+    writes, and the staging session's proposal survives intact."""
+    first, _aid = _client_for("t2a-second-session@example.com")
+    sid = _start(first)
+    assert _propose(first, sid, "rec_1", "7 V").status_code == 302
+    staged = dict(SESSION_STORE[sid]["quantity_proposal"])
+    good_token = _ctoken(_page(first, sid))
+    assert good_token
+    second = _new_client()                       # same account, new browser session
+    second.post("/login", data={"email": "t2a-second-session@example.com", "password": PW})
+    body = _page(second, sid)
+    # No confirmation block, and therefore no token, is offered to session B.
+    assert _ctoken(body) is None and 'id="t2a-confirm"' not in body
+    # Even handed session A's token, session B cannot confirm and consumes nothing.
+    assert _confirm(second, sid, good_token).status_code == 302
+    assert SESSION_STORE[sid].get("_answer_error") == webapp.QUANTITY_NOT_SAVED_MESSAGE
+    assert _rows(db_path, sid) == []
+    assert SESSION_STORE[sid]["quantity_proposal"] == staged
+    # The staging session still completes normally — nothing was spent.
+    assert _confirm(first, sid, good_token).status_code == 302
+    assert [r[5] for r in _rows(db_path, sid)] == ["7 V"]
+    assert SESSION_STORE[sid].get("_interaction_ack") == webapp.QUANTITY_SAVED_ACK
+
+
+# ==========================================================================
+# 10d. CR-2 — truthful durable write outcomes (fault injection)
+# ==========================================================================
+def _staged_confirm(client, sid, value="7 V", anchor="rec_1"):
+    assert _propose(client, sid, anchor, value).status_code == 302
+    token = _ctoken(_page(client, sid))
+    assert token
+    return token
+
+
+def test_failure_before_commit_reports_an_established_non_write(db_path, monkeypatch):
+    """The write never reached the database: the durable absence is PROVEN, so
+    saying that nothing was changed is truthful."""
+    c, _aid = _client_for("t2a-precommit@example.com")
+    sid = _start(c)
+    token = _staged_confirm(c, sid)
+    store = _store()
+    monkeypatch.setattr(store, "append_requirement_quantity",
+                        lambda pid, q: (_ for _ in ()).throw(
+                            sqlite3.OperationalError("database is locked")))
+    assert _confirm(c, sid, token).status_code == 302
+    assert SESSION_STORE[sid].get("_answer_error") == webapp.QUANTITY_NOT_SAVED_MESSAGE
+    assert _rows(db_path, sid) == []
+    monkeypatch.undo()
+    assert _values(_page(c, sid)) == []
+
+
+def test_a_durable_append_followed_by_an_exception_is_reported_as_saved(db_path, monkeypatch):
+    """CR-2: a COMPLETED write must never be reported as a non-write. The
+    outcome is resolved through the stable event key before anything is said."""
+    c, _aid = _client_for("t2a-postcommit@example.com")
+    sid = _start(c)
+    token = _staged_confirm(c, sid)
+    store = _store()
+    real = store.append_requirement_quantity
+
+    def append_then_fail(pid, q):
+        real(pid, q)                                   # the row IS committed
+        raise sqlite3.OperationalError("connection lost after commit")
+    monkeypatch.setattr(store, "append_requirement_quantity", append_then_fail)
+    assert _confirm(c, sid, token).status_code == 302
+    assert [r[5] for r in _rows(db_path, sid)] == ["7 V"]
+    assert SESSION_STORE[sid].get("_answer_error") is None
+    assert SESSION_STORE[sid].get("_interaction_ack") == webapp.QUANTITY_SAVED_ACK
+    monkeypatch.undo()
+    body = _page(c, sid)
+    assert _values(body) == ["7 V"]
+    assert webapp.QUANTITY_NOT_SAVED_MESSAGE not in body
+
+
+def test_a_genuinely_unknown_commit_outcome_reports_uncertainty(db_path, monkeypatch):
+    """CR-2: when the durable outcome cannot be determined at all, the message
+    asserts NEITHER a rollback nor a non-write — it says only what is known."""
+    c, _aid = _client_for("t2a-unknown@example.com")
+    sid = _start(c)
+    token = _staged_confirm(c, sid)
+    store = _store()
+    real = store.append_requirement_quantity
+
+    real_lookup = store.requirement_quantity_for_event_key
+    committed = {"done": False}
+
+    def append_then_fail(pid, q):
+        real(pid, q)                                   # the row IS committed
+        committed["done"] = True
+        raise sqlite3.OperationalError("disk I/O error")
+
+    def unreadable(pid, key):
+        if committed["done"]:                          # the RESOLUTION attempt
+            raise sqlite3.OperationalError("disk I/O error")
+        return real_lookup(pid, key)
+    monkeypatch.setattr(store, "append_requirement_quantity", append_then_fail)
+    monkeypatch.setattr(store, "requirement_quantity_for_event_key", unreadable)
+    assert _confirm(c, sid, token).status_code == 302
+    message = SESSION_STORE[sid].get("_answer_error")
+    assert message == webapp.QUANTITY_OUTCOME_UNKNOWN_MESSAGE
+    assert "Nothing was changed" not in message and "not saved" not in message
+    assert [r[5] for r in _rows(db_path, sid)] == ["7 V"]       # it WAS committed
+    monkeypatch.undo()
+    assert _values(_page(c, sid)) == ["7 V"]
+
+
+def test_stable_event_key_resolution_proves_absence_before_claiming_one(db_path, monkeypatch):
+    """CR-2: resolution through the stable project/event key distinguishes a
+    proven absence from an undetermined outcome, and reads only this project."""
+    c, _aid = _client_for("t2a-resolve@example.com")
+    sid = _start(c)
+    token = _staged_confirm(c, sid)
+    store = _store()
+    seen = []
+    real_lookup = store.requirement_quantity_for_event_key
+
+    def watching(pid, key):
+        seen.append(pid)
+        return real_lookup(pid, key)
+    monkeypatch.setattr(store, "requirement_quantity_for_event_key", watching)
+    monkeypatch.setattr(store, "append_requirement_quantity",
+                        lambda pid, q: (_ for _ in ()).throw(RuntimeError("opaque")))
+    assert _confirm(c, sid, token).status_code == 302
+    # The resolution ran, read only this project, proved absence, and the
+    # message reports the proven non-write rather than an unknown outcome.
+    assert seen == [sid]
+    assert SESSION_STORE[sid].get("_answer_error") == webapp.QUANTITY_NOT_SAVED_MESSAGE
+    assert _rows(db_path, sid) == []
+
+
+def test_commit_then_reload_failure_says_saved_but_not_shown(db_path, monkeypatch):
+    """CR-7: persistence succeeded and reattachment failed. The wording is
+    quantity-specific and truthful — never the answer-correction message."""
+    c, _aid = _client_for("t2a-reload@example.com")
+    sid = _start(c)
+    token = _staged_confirm(c, sid)
+    store = _store()
+    def gone(pid):                             # armed for the post-commit reload
+        raise sqlite3.OperationalError("gone after commit")
+    monkeypatch.setattr(store, "load_requirement_quantities", gone)
+    assert _confirm(c, sid, token).status_code == 302
+    message = SESSION_STORE[sid].get("_answer_error")
+    assert message == webapp.QUANTITY_SAVED_NOT_SHOWN_MESSAGE
+    assert message != webapp.CORRECTION_SAVED_NOT_YET_APPLIED_MESSAGE
+    assert message != webapp.QUANTITY_NOT_SAVED_MESSAGE
+    assert "saved" in message and "Nothing was changed" not in message
+    assert [r[5] for r in _rows(db_path, sid)] == ["7 V"]       # durably saved
+    assert ui_text.localize_message(message, "ar") != message   # Arabic exists
+    assert ui_text.localize_message(message, "en") == message
+    monkeypatch.undo()
+    SESSION_STORE.clear()
+    assert _values(_page(c, sid)) == ["7 V"]                    # visible next load
+
+
+@pytest.mark.parametrize("message_attr", [
+    "QUANTITY_NOT_SAVED_MESSAGE", "QUANTITY_INVALID_MESSAGE",
+    "QUANTITY_CONFLICT_MESSAGE", "QUANTITY_OUTCOME_UNKNOWN_MESSAGE",
+    "QUANTITY_SAVED_NOT_SHOWN_MESSAGE",
+])
+def test_every_outcome_message_is_bilingual_and_non_disclosing(message_attr):
+    """CR-2 / CR-7: every outcome message exists in English and Arabic and
+    never exposes SQL text, a path, a token, an identifier or a raw value."""
+    message = getattr(webapp, message_attr)
+    assert ui_text.localize_message(message, "en") == message
+    arabic = ui_text.localize_message(message, "ar")
+    assert arabic != message and arabic.strip()
+    for forbidden in ("SELECT", "INSERT", "sqlite", "Traceback", "/", "qty-", "rec_",
+                      "event_key", "Exception", "None"):
+        assert forbidden not in message, (message_attr, forbidden)
+
+
+def test_page_state_and_outcome_message_never_contradict_each_other(db_path, monkeypatch):
+    """CR-2: whatever is shown and whatever is said must agree. A saved value is
+    never accompanied by a non-write claim, and a proven non-write never shows a
+    value the project does not hold."""
+    c, _aid = _client_for("t2a-consistent@example.com")
+    sid = _start(c)
+    # 1. saved -> the value is shown and nothing claims a non-write
+    assert _record(c, sid, "rec_1", "5 V").status_code == 302
+    body = _page(c, sid)
+    assert _values(body) == ["5 V"]
+    assert webapp.QUANTITY_NOT_SAVED_MESSAGE not in body
+    assert webapp.QUANTITY_OUTCOME_UNKNOWN_MESSAGE not in body
+    # 2. proven non-write -> the page still shows only what the project holds
+    token = _staged_confirm(c, sid, "6 V")
+    store = _store()
+    monkeypatch.setattr(store, "append_requirement_quantity",
+                        lambda pid, q: (_ for _ in ()).throw(
+                            sqlite3.OperationalError("database is locked")))
+    assert _confirm(c, sid, token).status_code == 302
+    monkeypatch.undo()
+    body = _page(c, sid)
+    assert webapp.QUANTITY_NOT_SAVED_MESSAGE in body
+    assert _values(body) == ["5 V"] and "6 V" not in body
+    assert [r[5] for r in _rows(db_path, sid)] == ["5 V"]
+
+
+# ==========================================================================
 # 11. Boundary: routes, no API / export / adapter change
 # ==========================================================================
 def test_route_inventory_and_untouched_api_export_adapter_surfaces():
@@ -1193,15 +1537,41 @@ def test_route_inventory_and_untouched_api_export_adapter_surfaces():
     assert rules == {"/session/<sid>/quantity/propose": {"POST"},
                      "/session/<sid>/quantity/confirm": {"POST"}}
     assert not webapp._quantity_write_authorized("no-such-project")
-    import subprocess
+    # CR-6: repository-independent source inspection — no `git`, no subprocess
+    # and no `.git` directory, so this proof holds in a plain source archive as
+    # well as in a checkout.
     root = os.path.join(os.path.dirname(__file__), "..")
     for path in ("engine/read_export_service.py", "engine/export_adapter.py", "web/api_v1.py",
                  "tests/test_p7_i2_public_api.py", "engine/deliverable_assembler.py"):
         text = open(os.path.join(root, path), encoding="utf-8").read()
         assert "requirement_quantit" not in text and "quantity_kind" not in text, path
-    out = subprocess.run(["git", "diff", "--name-only",
-                          "9f883956bc54dd960ec33a502259e353e6db20f3", "--",
-                          "engine/read_export_service.py", "engine/export_adapter.py",
-                          "web/api_v1.py", "tests/test_p7_i2_public_api.py"],
-                         capture_output=True, text=True, cwd=root)
-    assert out.returncode == 0 and out.stdout.strip() == ""
+        assert "t2a" not in text.lower() and "quantity" not in text.lower(), path
+
+
+def test_recorded_quantities_never_reach_the_api_export_or_adapter_surfaces(db_path):
+    """CR-6: the changed-surface guarantee proved on LIVE data rather than on a
+    diff — a project that really holds quantities exposes none of them through
+    the canonical read/export seam, the export adapter or the public API."""
+    from engine import export_adapter as _adapter
+    from engine import read_export_service as _read_export
+    c, aid = _client_for("t2a-surface@example.com")
+    sid = _start(c)
+    assert _record(c, sid, "rec_1", "12.5 V").status_code == 302
+    assert _values(_page(c, sid)) == ["12.5 V"]                 # really recorded
+    assert [r[5] for r in _rows(db_path, sid)] == ["12.5 V"]
+    state = SESSION_STORE[sid]["state"]
+    assert state.requirement_quantities                          # carrier populated
+    store = _store()
+    read = _read_export.get_authorized_project_read(store, sid, aid)
+    export = _read_export.produce_project_export(store, sid, aid)
+    adapted = _adapter.ReferenceExportAdapter().transform(export)
+    payloads = [json.dumps(x, sort_keys=True, default=str)
+                for x in (read, export, adapted,
+                          _assembler.assemble_deliverable(state))]
+    browser = c.get("/account/projects/%s/export" % sid)
+    assert browser.status_code == 200, browser.status_code
+    payloads.append(browser.get_data(as_text=True))
+    for payload in payloads:
+        assert "12.5 V" not in payload
+        assert "requirement_quantit" not in payload
+        assert "quantity_kind" not in payload
