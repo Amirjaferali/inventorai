@@ -231,26 +231,94 @@ def answered_anchor_index(records):
     return index
 
 
-def classify_ledger_anchor(records, anchor_record_id, index=None):
+def supersession_relations(records):
+    """``({prior_record_id: successor_record_id}, {record_id: record})`` built
+    from the DURABLE FORWARD edge only.
+
+    The durable store is INSERT-only, so a governed correction carries the
+    relationship FORWARD on the NEW record (``successor.supersedes`` names the
+    prior record); the prior row's persisted ``superseded_by`` is filled in by
+    load-time reconciliation and may also be a stale or corrupt persisted
+    value. The forward map is therefore built from ``supersedes`` alone and is
+    never derived from ``superseded_by``, so a one-sided persisted reference
+    cannot manufacture its own evidence. A prior record named by two different
+    successors yields no forward edge at all (the inverse edge must be
+    single-valued), which resolves to ANCHOR_INVALID below."""
+    forward, by_id, ambiguous = {}, {}, set()
+    for record in records or ():
+        record_id = getattr(record, "record_id", None)
+        if isinstance(record_id, str):
+            by_id[record_id] = record
+        for prior_id in (getattr(record, "supersedes", None) or ()):
+            if prior_id in forward and forward[prior_id] != record_id:
+                ambiguous.add(prior_id)
+            forward[prior_id] = record_id
+    for prior_id in ambiguous:
+        forward.pop(prior_id, None)
+    return forward, by_id
+
+
+def _supersession_is_cyclic(forward, anchor_record_id, limit):
+    """True iff following the forward edges from ``anchor_record_id`` returns
+    to it (a self- or longer supersession cycle). Bounded by ``limit``."""
+    seen, node = set(), forward.get(anchor_record_id)
+    while node is not None and len(seen) <= limit:
+        if node == anchor_record_id:
+            return True
+        if node in seen:
+            return False
+        seen.add(node)
+        node = forward.get(node)
+    return False
+
+
+def classify_ledger_anchor(records, anchor_record_id, index=None, relations=None):
     """Resolve ``anchor_record_id`` against the project's DURABLE ledger
     assertions and return ``ANCHOR_ACTIVE`` / ``ANCHOR_WITHDRAWN`` /
     ``ANCHOR_INVALID``.
 
-    ``ANCHOR_WITHDRAWN`` is returned ONLY for a record that really is a valid
-    answered assertion anchor AND carries a genuine supersession edge
-    (``superseded_by``). A missing record, a record that was never a valid
-    answered assertion anchor and a malformed anchor id are all
-    ``ANCHOR_INVALID`` — never withdrawn."""
+    ``ANCHOR_WITHDRAWN`` is returned ONLY when the record really is a valid
+    answered assertion anchor AND the COMPLETE reciprocal governed correction
+    relationship is proven from the durable records:
+
+      * the old answered record identifies the alleged successor
+        (``superseded_by``);
+      * that successor exists among this project's records;
+      * the successor's durable forward relation identifies the old record
+        (``successor.supersedes`` contains it), single-valued;
+      * the relationship is neither self-referential nor cyclic.
+
+    A non-null ``superseded_by`` is NEVER sufficient on its own. A missing
+    record, a record that was never a valid answered assertion anchor, a
+    malformed anchor id, and a one-sided, mis-targeted, cross-project, absent,
+    ambiguous or cyclic supersession are all ``ANCHOR_INVALID`` — never
+    withdrawn."""
     resolved = answered_anchor_index(records) if index is None else index
     record = resolved.get(anchor_record_id)
     if record is None:
         return ANCHOR_INVALID
-    if getattr(record, "superseded_by", None) is not None:
-        return ANCHOR_WITHDRAWN
-    return ANCHOR_ACTIVE
+    forward, by_id = (supersession_relations(records) if relations is None else relations)
+    declared = getattr(record, "superseded_by", None)
+    successor_id = forward.get(anchor_record_id)
+    if declared is None and successor_id is None:
+        return ANCHOR_ACTIVE
+    # One or both sides claim a supersession: it must be complete and reciprocal.
+    if declared is None or successor_id is None or declared != successor_id:
+        return ANCHOR_INVALID
+    if successor_id == anchor_record_id:
+        return ANCHOR_INVALID
+    successor = by_id.get(successor_id)
+    if successor is None:
+        return ANCHOR_INVALID
+    if anchor_record_id not in (getattr(successor, "supersedes", None) or ()):
+        return ANCHOR_INVALID
+    if _supersession_is_cyclic(forward, anchor_record_id, len(by_id)):
+        return ANCHOR_INVALID
+    return ANCHOR_WITHDRAWN
 
 
-def classify_state_anchor(state, anchor_record_id, eligible=None, index=None):
+def classify_state_anchor(state, anchor_record_id, eligible=None, index=None,
+                          relations=None):
     """Resolve ``anchor_record_id`` against a live/replayed ``state``.
 
     ACTIVE only when the requirement landscape currently derives the anchor as
@@ -263,8 +331,9 @@ def classify_state_anchor(state, anchor_record_id, eligible=None, index=None):
         eligible = {record.record_id for _req, record in eligible_anchors(state)}
     if anchor_record_id in eligible:
         return ANCHOR_ACTIVE
-    ledger = classify_ledger_anchor(
-        getattr(state, "assertions", []) or [], anchor_record_id, index=index)
+    records = getattr(state, "assertions", []) or []
+    ledger = classify_ledger_anchor(records, anchor_record_id, index=index,
+                                    relations=relations)
     return ANCHOR_WITHDRAWN if ledger == ANCHOR_WITHDRAWN else ANCHOR_INVALID
 
 
@@ -275,9 +344,11 @@ def resolved_anchor_states(state):
     if not history:
         return {}
     eligible = {record.record_id for _req, record in eligible_anchors(state)}
-    index = answered_anchor_index(getattr(state, "assertions", []) or [])
+    records = getattr(state, "assertions", []) or []
+    index = answered_anchor_index(records)
+    relations = supersession_relations(records)
     return {row.anchor_record_id: classify_state_anchor(
-        state, row.anchor_record_id, eligible=eligible, index=index)
+        state, row.anchor_record_id, eligible=eligible, index=index, relations=relations)
         for row in history}
 
 
@@ -332,6 +403,7 @@ def validate_quantity_history(rows, assertions=None):
 
     Never mutates its input."""
     anchor_index = None if assertions is None else answered_anchor_index(assertions)
+    anchor_relations = None if assertions is None else supersession_relations(assertions)
     validated = []
     by_id = {}
     superseded = set()
@@ -367,7 +439,8 @@ def validate_quantity_history(rows, assertions=None):
         if record.requirement_id != "req:assertion:" + record.anchor_record_id:
             raise QuantityHistoryError("requirement id does not match its anchor")
         if anchor_index is not None and classify_ledger_anchor(
-                None, record.anchor_record_id, index=anchor_index) == ANCHOR_INVALID:
+                None, record.anchor_record_id, index=anchor_index,
+                relations=anchor_relations) == ANCHOR_INVALID:
             raise QuantityHistoryError(
                 "anchor is not a valid answered assertion record of this project")
         if record.quantity_kind not in _KIND_SET:

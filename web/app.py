@@ -76,6 +76,7 @@ from engine.record_store import (
     SqliteRecordStore, StoreError, ProjectNotFound as _ProjectNotFound,
     QuantityChainConflict as _QuantityChainConflict,
     QuantityCapExceeded as _QuantityCapExceeded,
+    QuantityAnchorIneligible as _QuantityAnchorIneligible,
 )
 from engine.record_contract import ProjectRecordContract
 # T2-A Quantified Requirements Slice 1 (Owner-authorized bounded candidate): the
@@ -1096,6 +1097,35 @@ def _resolve_quantity_write(sid, quantity):
     return _QUANTITY_COMMIT_UNKNOWN
 
 
+# Every notice this slice can publish. Publishing one of them CLEARS any other
+# of them that is still pending on the same entry, so a stale quantity outcome
+# from one browser session can never be shown beside a newer, contradictory one.
+# Messages that belong to other flows (answers, corrections) are never touched.
+def _quantity_notices():
+    return (QUANTITY_SAVED_ACK, QUANTITY_DISCARDED_ACK, QUANTITY_NOT_SAVED_MESSAGE,
+            QUANTITY_INVALID_MESSAGE, QUANTITY_CONFLICT_MESSAGE,
+            QUANTITY_OUTCOME_UNKNOWN_MESSAGE, QUANTITY_SAVED_NOT_SHOWN_MESSAGE)
+
+
+def _publish_quantity_notice(entry, ack=None, error=None):
+    """Publish exactly ONE current quantity notice on ``entry``.
+
+    Any pending quantity notice in either slot is removed first, so a success
+    acknowledgement never coexists with a stale "nothing was changed" (or
+    conflict / unknown-outcome) message and a newly established failure never
+    coexists with a stale success acknowledgement — in every language, because
+    the stored English constant is what the localizers render. Notices owned by
+    other flows are left exactly as they are."""
+    quantity_notices = _quantity_notices()
+    for slot in ("_interaction_ack", "_answer_error"):
+        if entry.get(slot) in quantity_notices:
+            entry.pop(slot, None)
+    if ack is not None:
+        entry["_interaction_ack"] = ack
+    if error is not None:
+        entry["_answer_error"] = error
+
+
 def _finish_quantity_write(sid, entry, state, outcome):
     """Publish the TRUTHFUL outcome of one quantity write. Page state and
     message never contradict each other: a saved event reattaches the durable
@@ -1104,18 +1134,18 @@ def _finish_quantity_write(sid, entry, state, outcome):
     neither a write nor a rollback."""
     if outcome in (_QUANTITY_INSERTED, _QUANTITY_EXACT_REPLAY):
         if _attach_quantity_history(sid, state):
-            entry["_interaction_ack"] = QUANTITY_SAVED_ACK
+            _publish_quantity_notice(entry, ack=QUANTITY_SAVED_ACK)
         else:
             # RELOAD_FAILED: persistence succeeded, reattachment did not.
-            entry["_answer_error"] = QUANTITY_SAVED_NOT_SHOWN_MESSAGE
+            _publish_quantity_notice(entry, error=QUANTITY_SAVED_NOT_SHOWN_MESSAGE)
     elif outcome == _QUANTITY_CONFLICT:
         _attach_quantity_history(sid, state)
-        entry["_answer_error"] = QUANTITY_CONFLICT_MESSAGE
+        _publish_quantity_notice(entry, error=QUANTITY_CONFLICT_MESSAGE)
     elif outcome == _QUANTITY_COMMIT_UNKNOWN:
         _attach_quantity_history(sid, state)
-        entry["_answer_error"] = QUANTITY_OUTCOME_UNKNOWN_MESSAGE
+        _publish_quantity_notice(entry, error=QUANTITY_OUTCOME_UNKNOWN_MESSAGE)
     else:                                  # REJECTED / STORAGE_FAILURE
-        entry["_answer_error"] = QUANTITY_NOT_SAVED_MESSAGE
+        _publish_quantity_notice(entry, error=QUANTITY_NOT_SAVED_MESSAGE)
     return redirect(url_for("show_session", sid=sid))
 
 
@@ -4090,31 +4120,31 @@ def propose_requirement_quantity(sid):
     if account is None:
         return _deny_project()
     if getattr(state, "domain", None) is None:
-        entry["_answer_error"] = QUANTITY_NOT_SAVED_MESSAGE
+        _publish_quantity_notice(entry, error=QUANTITY_NOT_SAVED_MESSAGE)
         return redirect(url_for("show_session", sid=sid))
     anchor_id = (request.form.get("anchor_record_id") or "").strip()
     try:
         kind = _validate_quantity_kind((request.form.get("quantity_kind") or "").strip())
         value_text = _normalize_value_text(request.form.get("value_text") or "")
     except QuantityValueError:
-        entry["_answer_error"] = QUANTITY_INVALID_MESSAGE
+        _publish_quantity_notice(entry, error=QUANTITY_INVALID_MESSAGE)
         return redirect(url_for("show_session", sid=sid))
     requirement_id = next(
         (req.requirement_id for req, record in _quantity_eligible_anchors(state)
          if anchor_id and record.record_id == anchor_id), None)
     if requirement_id is None:
-        entry["_answer_error"] = QUANTITY_NOT_SAVED_MESSAGE
+        _publish_quantity_notice(entry, error=QUANTITY_NOT_SAVED_MESSAGE)
         return redirect(url_for("show_session", sid=sid))
     try:
         history = _get_store().load_requirement_quantities(sid)
     except Exception:
-        entry["_answer_error"] = QUANTITY_NOT_SAVED_MESSAGE
+        _publish_quantity_notice(entry, error=QUANTITY_NOT_SAVED_MESSAGE)
         return redirect(url_for("show_session", sid=sid))
     head = _active_quantities(history).get(anchor_id)
     if head is not None and head.quantity_kind == kind and head.value_text == value_text:
         # Identical to the current active quantity: nothing to propose.
         entry.pop(_QUANTITY_PROPOSAL_KEY, None)
-        entry["_interaction_ack"] = QUANTITY_SAVED_ACK
+        _publish_quantity_notice(entry, ack=QUANTITY_SAVED_ACK)
         return redirect(url_for("show_session", sid=sid))
     supersedes = head.quantity_id if head is not None else None
     now = _quantity_clock()
@@ -4170,7 +4200,7 @@ def confirm_requirement_quantity(sid):
     if set(request.form.keys()) - _QUANTITY_CONFIRM_FIELDS or \
             any(len(request.form.getlist(k)) != 1 for k in request.form.keys()):
         # Altered request content: refuse before touching the staged proposal.
-        entry["_answer_error"] = QUANTITY_NOT_SAVED_MESSAGE
+        _publish_quantity_notice(entry, error=QUANTITY_NOT_SAVED_MESSAGE)
         return redirect(url_for("show_session", sid=sid))
     action = request.form.get("quantity_action", "")
     token = request.form.get("confirmation_token", "")
@@ -4180,16 +4210,16 @@ def confirm_requirement_quantity(sid):
     # consumed and before any durable call. The staging session keeps its
     # proposal; this session spends nothing and writes nothing.
     if peeked is not None and not _quantity_session_matches(peeked):
-        entry["_answer_error"] = QUANTITY_NOT_SAVED_MESSAGE
+        _publish_quantity_notice(entry, error=QUANTITY_NOT_SAVED_MESSAGE)
         return redirect(url_for("show_session", sid=sid))
     # Consume ONCE: whatever happens next, this proposal/nonce is spent.
     staged = peeked
     entry.pop(_QUANTITY_PROPOSAL_KEY, None)
     if action == QUANTITY_ACTION_DISCARD:
-        entry["_interaction_ack"] = QUANTITY_DISCARDED_ACK
+        _publish_quantity_notice(entry, ack=QUANTITY_DISCARDED_ACK)
         return redirect(url_for("show_session", sid=sid))
     if action != QUANTITY_ACTION_CONFIRM or staged is None:
-        entry["_answer_error"] = QUANTITY_NOT_SAVED_MESSAGE
+        _publish_quantity_notice(entry, error=QUANTITY_NOT_SAVED_MESSAGE)
         return redirect(url_for("show_session", sid=sid))
     # §7 verification: the token must equal the one minted for THIS staged
     # proposal under the CURRENT session binding and CURRENT owner; a nonce
@@ -4198,17 +4228,17 @@ def confirm_requirement_quantity(sid):
     expected_token, event_key = _quantity_token_for(sid, account["account_id"], staged)
     if (staged["account_id"] != account["account_id"]
             or not token or not _p2a_hmac.compare_digest(token, expected_token)):
-        entry["_answer_error"] = QUANTITY_NOT_SAVED_MESSAGE
+        _publish_quantity_notice(entry, error=QUANTITY_NOT_SAVED_MESSAGE)
         return redirect(url_for("show_session", sid=sid))
     if getattr(state, "domain", None) is None:
-        entry["_answer_error"] = QUANTITY_NOT_SAVED_MESSAGE
+        _publish_quantity_notice(entry, error=QUANTITY_NOT_SAVED_MESSAGE)
         return redirect(url_for("show_session", sid=sid))
     # Stale anchor between propose and confirm (e.g. the answer was withdrawn
     # through a correction meanwhile): refuse; nothing is written.
     if not any(record.record_id == staged["anchor_record_id"]
                and req.requirement_id == staged["requirement_id"]
                for req, record in _quantity_eligible_anchors(state)):
-        entry["_answer_error"] = QUANTITY_NOT_SAVED_MESSAGE
+        _publish_quantity_notice(entry, error=QUANTITY_NOT_SAVED_MESSAGE)
         return redirect(url_for("show_session", sid=sid))
     new_quantity = RequirementQuantity(
         quantity_id=_get_store().new_quantity_id(), quantity_seq=-1,
@@ -4227,8 +4257,12 @@ def confirm_requirement_quantity(sid):
         outcome = _get_store().append_requirement_quantity(sid, new_quantity)
     except _QuantityChainConflict:
         outcome = _QUANTITY_CONFLICT
-    except (_QuantityCapExceeded, _ProjectNotFound, QuantityHistoryError,
-            QuantityValueError, StoreError):
+    except (_QuantityCapExceeded, _QuantityAnchorIneligible, _ProjectNotFound,
+            QuantityHistoryError, QuantityValueError):
+        # Each of these is raised ONLY by a check that runs before the INSERT,
+        # so the absence of a durable row is established, not assumed. A bare
+        # StoreError is deliberately NOT in this tuple: exception class
+        # inheritance is never proof that no write occurred (R4).
         outcome = _QUANTITY_REJECTED
     except Exception:
         outcome = _resolve_quantity_write(sid, new_quantity)

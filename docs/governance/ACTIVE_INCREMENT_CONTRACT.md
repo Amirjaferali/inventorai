@@ -184,6 +184,51 @@ non-write — are closed as follows, inside the same 13-path boundary:
   message; escaping, localization boundaries and non-disclosure are unchanged, and no
   new messaging framework is introduced.
 
+**Second narrow bounded repair (Lead differential adjudication `C — FAIL —
+BOUNDED REPAIR REQUIRED`, instruction `T2A-PR638-R1-R4-NARROW-REPAIR-02` v1.0).**
+Four independently reproduced P2 defects are closed, inside the same 13-path
+boundary. CR-3 … CR-7 are unchanged and were not reopened.
+
+* **R1 — durable anchor eligibility at write time.** Every NEW quantity event —
+  a chain root and a chain successor alike — must name an anchor the DURABLE
+  ledger holds as currently eligible, checked inside the same serialized append
+  transaction (`QuantityAnchorIneligible`). A retained live session that still
+  offers an anchor a governed correction has since withdrawn, and a
+  proposal-time eligibility result that has been overtaken, are both overruled:
+  durable truth controls and nothing is written. An exact existing event is
+  resolved FIRST, so a replay of an event recorded before the withdrawal stays
+  idempotent, and rows validly recorded before their anchor was withdrawn keep
+  their validity, their history and their withdrawn-anchor presentation.
+* **R2 — one current quantity notice.** Publishing any quantity outcome first
+  clears any other pending quantity notice on the same session entry, so a
+  success acknowledgement can never be shown beside a stale "nothing was
+  changed", conflict or unknown-outcome message, and a newly established
+  failure can never be shown beside a stale success acknowledgement — in
+  English or in Arabic. Notices owned by other flows (answers, corrections) are
+  never touched, and no new messaging framework is introduced.
+* **R3 — reciprocal supersession is required for withdrawn status.** A non-null
+  `superseded_by` is no longer sufficient. `ANCHOR_WITHDRAWN` requires the
+  COMPLETE reciprocal governed relationship proven from the durable records:
+  the old answered record identifies the alleged successor, that successor
+  exists in this project, the successor's durable FORWARD `supersedes` relation
+  identifies the old record and is single-valued, and the relationship is
+  neither self-referential nor cyclic. The forward map is built from
+  `supersedes` alone, never from `superseded_by`, so load-time reconciliation
+  cannot manufacture evidence that hides a one-sided persisted reference. A
+  missing, malformed, mis-targeted, one-sided, ambiguous or cyclic relationship
+  is `ANCHOR_INVALID` and fails closed on session, cold reconstruction, HTML and
+  PDF input, with the durable rows retained and never repaired or erased.
+  Genuine withdrawal behaviour is unchanged.
+* **R4 — no exception class is proof of a non-write.** Only exceptions raised by
+  checks that run BEFORE the INSERT are treated as established refusals
+  (`QuantityChainConflict`, `QuantityCapExceeded`, `QuantityAnchorIneligible`,
+  `ProjectNotFound`, `QuantityHistoryError`, `QuantityValueError`). A generic
+  `StoreError` is no longer among them: it passes through the same stable
+  `(project_id, event_key)` resolution as any other unproven outcome, so a
+  committed write is reported truthfully, a proven absence is reported as an
+  established non-write, and an indeterminate outcome reports `COMMIT_UNKNOWN`.
+  Messages remain generic and non-disclosing.
+
 **Evidence (delta §12):** the literal Set B (5), owners (20) and Set C (140) lists,
 focused = Set B ∪ owners (25) and affected = Set B ∪ Set C (145), base
 `tests/test_*.py` = 185 at the base SHA and 187 at the candidate head, the two new

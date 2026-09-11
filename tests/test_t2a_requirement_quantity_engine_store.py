@@ -35,7 +35,7 @@ from engine.idea_state import (
 from engine.record_contract import ProjectRecordContract
 from engine.record_store import (
     SqliteRecordStore, RecordStore, StoreError, ProjectNotFound,
-    QuantityChainConflict, QuantityCapExceeded,
+    QuantityChainConflict, QuantityCapExceeded, QuantityAnchorIneligible,
 )
 from engine.requirement_quantity import (
     ANCHOR_ACTIVE, ANCHOR_INVALID, ANCHOR_WITHDRAWN, CANONICAL_ROW_FIELDS,
@@ -47,8 +47,8 @@ from engine.requirement_quantity import (
     active_quantities, answered_anchor_index, classify_ledger_anchor,
     classify_state_anchor, eligible_anchors, is_recorded_at, is_stored_value_text,
     normalize_value_text, quantity_chains, requirement_quantities_meta,
-    requirement_statement, superseded_ids, validate_new_quantity,
-    validate_quantity_history, validate_quantity_kind,
+    requirement_statement, supersession_relations, superseded_ids,
+    validate_new_quantity, validate_quantity_history, validate_quantity_kind,
 )
 
 PROBLEM = ("The problem is that cyclists have no reliable brake light because "
@@ -382,6 +382,133 @@ def test_inconsistent_requirement_anchor_relationship_fails_closed():
     state.requirement_quantities = list(validate_quantity_history([_row(1, anchor="rec_1")]))
     with pytest.raises(QuantityHistoryError):
         quantity_chains(state)
+
+
+# --------------------------------------------------------------------------
+# R3 — a supersession is withdrawn history ONLY when it is fully reciprocal
+# --------------------------------------------------------------------------
+def _corrected_state():
+    """A state whose rec_2 was genuinely superseded through the governed
+    correction path (rec_5.supersedes == ["rec_2"] and rec_2.superseded_by ==
+    "rec_5" — both durable sides present)."""
+    state = _state_with_answers()
+    state.record_interaction(DISPOSITION_ANSWERED, "corrected mechanism text",
+                             gap_context="MECHANISM_COMPLETENESS", iteration=4,
+                             supersedes=["rec_2"])
+    return state
+
+
+def _record_of(state, record_id):
+    return next(r for r in state.assertions if r.record_id == record_id)
+
+
+def test_supersession_relations_are_built_from_the_forward_edge_only():
+    """The durable forward edge (`successor.supersedes`) is the governed truth;
+    `superseded_by` is load-derived and can be stale or one-sided, so it never
+    manufactures its own evidence."""
+    state = _corrected_state()
+    forward, by_id = supersession_relations(state.assertions)
+    assert forward == {"rec_2": "rec_5"}
+    assert set(by_id) == {"rec_1", "rec_2", "rec_3", "rec_4", "rec_5"}
+    # A record that only CLAIMS to be superseded contributes no forward edge.
+    _record_of(state, "rec_1").superseded_by = "rec_5"
+    forward, _ = supersession_relations(state.assertions)
+    assert forward == {"rec_2": "rec_5"}
+    # Two different successors naming one prior record leave no usable edge.
+    state.record_interaction(DISPOSITION_ANSWERED, "second corrected text",
+                             gap_context="MECHANISM_COMPLETENESS", iteration=5)
+    _record_of(state, "rec_6").supersedes = ["rec_2"]
+    forward, _ = supersession_relations(state.assertions)
+    assert "rec_2" not in forward
+    assert classify_ledger_anchor(state.assertions, "rec_2") == ANCHOR_INVALID
+
+
+@pytest.mark.parametrize("label, corrupt", [
+    # One-sided: the old record points forward, nothing points back.
+    ("one-sided superseded_by",
+     lambda st: setattr(_record_of(st, "rec_2"), "superseded_by", "rec_1")),
+    # Reciprocal reference to the WRONG old record.
+    ("reciprocal to the wrong record",
+     lambda st: setattr(_record_of(st, "rec_2"), "superseded_by", "rec_1")),
+    # The alleged successor does not exist at all.
+    ("missing successor",
+     lambda st: setattr(_record_of(st, "rec_2"), "superseded_by", "rec_404")),
+    # Self-supersession.
+    ("self supersession",
+     lambda st: setattr(_record_of(st, "rec_2"), "superseded_by", "rec_2")),
+])
+def test_one_sided_or_inconsistent_supersession_is_invalid_not_withdrawn(label, corrupt):
+    """R3: a non-null `superseded_by` is never sufficient on its own."""
+    state = _state_with_answers()
+    corrupt(state)
+    assert classify_ledger_anchor(state.assertions, "rec_2") == ANCHOR_INVALID, label
+    assert classify_state_anchor(state, "rec_2") == ANCHOR_INVALID, label
+    state.requirement_quantities = list(validate_quantity_history([_row(1, anchor="rec_2")]))
+    with pytest.raises(QuantityHistoryError):
+        quantity_chains(state)
+    with pytest.raises(QuantityHistoryError):
+        requirement_quantities_meta(state)
+    assert len(state.requirement_quantities) == 1          # retained, not erased
+
+
+def test_a_cyclic_supersession_relationship_is_invalid_not_withdrawn():
+    """R3: a cycle is never a genuine correction, on either side."""
+    state = _corrected_state()
+    assert classify_ledger_anchor(state.assertions, "rec_2") == ANCHOR_WITHDRAWN
+    _record_of(state, "rec_5").supersedes = ["rec_2"]
+    _record_of(state, "rec_2").supersedes = ["rec_5"]
+    _record_of(state, "rec_5").superseded_by = "rec_2"
+    assert classify_ledger_anchor(state.assertions, "rec_2") == ANCHOR_INVALID
+    assert classify_ledger_anchor(state.assertions, "rec_5") == ANCHOR_INVALID
+
+
+def test_valid_reciprocal_correction_remains_withdrawn_history_control():
+    """R3 passing control: genuine withdrawal behaviour is preserved exactly."""
+    state = _corrected_state()
+    assert classify_ledger_anchor(state.assertions, "rec_2") == ANCHOR_WITHDRAWN
+    assert classify_state_anchor(state, "rec_2") == ANCHOR_WITHDRAWN
+    assert classify_state_anchor(state, "rec_1") == ANCHOR_ACTIVE
+    state.requirement_quantities = list(validate_quantity_history([_row(1, anchor="rec_2")]))
+    (chain,) = quantity_chains(state)
+    assert (chain.anchor_record_id, chain.anchor_active) == ("rec_2", False)
+    assert requirement_quantities_meta(state)["rows"][0]["anchor_active"] is False
+
+
+# --------------------------------------------------------------------------
+# R1 — a new event requires a CURRENTLY eligible durable anchor
+# --------------------------------------------------------------------------
+def test_a_new_event_against_a_withdrawn_anchor_is_refused_inside_the_transaction(store):
+    """R1: durable truth controls. A new insertion or chain successor whose
+    anchor the ledger no longer holds as eligible writes nothing, while an
+    exact replay of an event recorded before the withdrawal stays idempotent
+    and the historical row is untouched."""
+    state = _project(store, "P1", answers=(PROBLEM, MECHANISM))
+    first = _quantity(store, anchor="rec_2", event_key="b" * 32)
+    assert store.append_requirement_quantity("P1", first) == QUANTITY_INSERTED
+    # A genuine governed correction withdraws rec_2 durably.
+    state.record_interaction(DISPOSITION_ANSWERED, "corrected mechanism text",
+                             gap_context="MECHANISM_COMPLETENESS", iteration=2,
+                             supersedes=["rec_2"])
+    store.append_record("P1", _record_of(state, "rec_3"))
+    assert classify_ledger_anchor(store._ledger_records("P1"), "rec_2") == ANCHOR_WITHDRAWN
+    # A brand-new root event against the withdrawn anchor: refused.
+    with pytest.raises(QuantityAnchorIneligible):
+        store.append_requirement_quantity("P1", _quantity(store, anchor="rec_2", text="9 V"))
+    # A chain SUCCESSOR against the withdrawn anchor: also refused.
+    with pytest.raises(QuantityAnchorIneligible):
+        store.append_requirement_quantity("P1", _quantity(
+            store, anchor="rec_2", text="9 V", supersedes=first.quantity_id))
+    rows = store.load_requirement_quantities("P1")
+    assert [r.value_text for r in rows] == ["5 V"]          # history preserved
+    assert rows[0].quantity_id == first.quantity_id
+    # The exact event recorded BEFORE the withdrawal still replays idempotently.
+    assert store.append_requirement_quantity(
+        "P1", _quantity(store, anchor="rec_2", event_key="b" * 32)) == QUANTITY_EXACT_REPLAY
+    assert len(store.load_requirement_quantities("P1")) == 1
+    # An anchor that is still active accepts a new event normally.
+    assert store.append_requirement_quantity(
+        "P1", _quantity(store, anchor="rec_1", text="4 V")) == QUANTITY_INSERTED
+    assert store._conn.execute("PRAGMA foreign_key_check").fetchall() == []
 
 
 def test_genuinely_superseded_anchor_is_the_only_withdrawn_presentation():

@@ -37,7 +37,8 @@ from engine.record_contract import ProjectRecordContract, assertion_to_dict
 from engine.idea_state import DISPOSITION_ANSWERED
 from engine.requirement_quantity import (
     RequirementQuantity, validate_quantity_history, validate_new_quantity,
-    active_quantities, MAX_REQUIREMENT_QUANTITIES_PER_PROJECT,
+    active_quantities, classify_ledger_anchor, ANCHOR_ACTIVE,
+    MAX_REQUIREMENT_QUANTITIES_PER_PROJECT,
     QUANTITY_INSERTED, QUANTITY_EXACT_REPLAY, QUANTITY_EVENT_IDENTITY_FIELDS,
 )
 
@@ -56,6 +57,15 @@ class QuantityChainConflict(StoreError):
     active row for an anchor, a supersession of a row that is absent, of
     another anchor, or already superseded — i.e. a stale quantity head).
     Nothing is written."""
+
+
+class QuantityAnchorIneligible(StoreError):
+    """T2-A: a NEW requirement-quantity event names an anchor that the DURABLE
+    ledger does not currently hold as an eligible answered assertion anchor —
+    it is withdrawn, invalid or inconsistent right now, whatever a retained
+    live session still believes. Raised inside the write transaction; nothing
+    is written. An exact replay of an already recorded event is resolved
+    BEFORE this check and stays idempotent."""
 
 
 class QuantityCapExceeded(StoreError):
@@ -561,12 +571,20 @@ class SqliteRecordStore:
             "SELECT " + self._QUANTITY_COLUMNS + " FROM requirement_quantities "
             "WHERE project_id = ? ORDER BY quantity_seq ASC", (project_id,)).fetchall()]
 
-    def _answered_ledger_records(self, project_id: str):
-        """This project's DURABLE answered ledger records (the anchor truth a
-        quantity row must resolve against). Project-scoped; read-only; an
+    def _ledger_records(self, project_id: str):
+        """This project's COMPLETE durable ledger records — the anchor truth a
+        quantity row must resolve against.
+
+        ALL records are returned, not only the answered ones, because proving a
+        genuine supersession needs the successor record that carries the
+        durable forward ``supersedes`` edge, and that successor is not
+        necessarily an answered record. Project-scoped and read-only; an
         unknown project yields the empty tuple, exactly like
         ``load_accepted_answer_evidence``."""
-        return self.load_accepted_answer_evidence(project_id)
+        try:
+            return tuple(self.load_contract(project_id).assertions)
+        except ProjectNotFound:
+            return ()
 
     def is_same_quantity_event(self, stored, quantity) -> bool:
         """True iff a STORED row is the exact canonical event of ``quantity``
@@ -640,7 +658,18 @@ class SqliteRecordStore:
                     return QUANTITY_EXACT_REPLAY
                 raise QuantityChainConflict("event key already names a different event")
             existing_rows = self._quantity_rows(project_id)
-            assertions = self._answered_ledger_records(project_id)
+            assertions = self._ledger_records(project_id)
+            # R1: a NEW event must name an anchor the DURABLE ledger holds as
+            # currently eligible, inside this same serialized transaction. A
+            # retained live session that still offers a withdrawn anchor, and a
+            # proposal-time eligibility result that has since been overtaken by
+            # a governed correction, are both overruled here: durable truth
+            # controls and nothing is written. Historical rows recorded while
+            # their anchor was still active keep their validity below.
+            if classify_ledger_anchor(
+                    assertions, quantity.anchor_record_id) != ANCHOR_ACTIVE:
+                raise QuantityAnchorIneligible(
+                    "anchor is not currently an eligible answered assertion")
             history = validate_quantity_history(existing_rows, assertions=assertions)
             if len(history) >= MAX_REQUIREMENT_QUANTITIES_PER_PROJECT:
                 raise QuantityCapExceeded("per-project quantity cap reached")
@@ -685,7 +714,7 @@ class SqliteRecordStore:
         if not rows:
             return ()
         return validate_quantity_history(
-            rows, assertions=self._answered_ledger_records(project_id))
+            rows, assertions=self._ledger_records(project_id))
 
     def requirement_quantity_for_event_key(self, project_id: str, event_key: str):
         """Return the stored quantity row (dict) carrying ``event_key`` under

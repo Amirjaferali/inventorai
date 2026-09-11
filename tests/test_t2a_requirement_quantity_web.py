@@ -41,8 +41,10 @@ from web.app import app, SESSION_STORE
 from web import ui_text
 from engine import account_credentials as _acct
 from engine import deliverable_assembler as _assembler
+from engine.record_store import StoreError
 from engine.requirement_quantity import (
-    CANONICAL_ROW_FIELDS, QUANTITY_KINDS, QuantityHistoryError,
+    ANCHOR_ACTIVE, ANCHOR_WITHDRAWN, CANONICAL_ROW_FIELDS, QUANTITY_KINDS,
+    QuantityHistoryError, classify_ledger_anchor,
     MAX_REQUIREMENT_QUANTITIES_PER_PROJECT, MAX_VALUE_TEXT_CHARS,
 )
 
@@ -1526,6 +1528,329 @@ def test_page_state_and_outcome_message_never_contradict_each_other(db_path, mon
     assert webapp.QUANTITY_NOT_SAVED_MESSAGE in body
     assert _values(body) == ["5 V"] and "6 V" not in body
     assert [r[5] for r in _rows(db_path, sid)] == ["5 V"]
+
+
+# ==========================================================================
+# 10e. R1 — a withdrawn anchor is not writable, whatever live state believes
+# ==========================================================================
+def test_a_withdrawn_anchor_is_not_writable_after_a_reload_failure(db_path, monkeypatch):
+    """R1: a governed correction durably withdraws the anchor while the quantity
+    reattachment fails, so the retained live session still offers it. Durable
+    truth controls: nothing new is written, the historical quantity survives,
+    live and cold presentation agree once storage recovers, and the exact event
+    recorded before the withdrawal still replays idempotently."""
+    c, _aid = _client_for("t2a-r1-withdrawn@example.com")
+    sid = _start(c)
+    assert _record(c, sid, "rec_2", "5 V").status_code == 302
+    before = _rows(db_path, sid)
+    assert len(before) == 1
+    store = _store()
+    real_load = store.load_requirement_quantities
+    calls = {"n": 0}
+
+    def flaky(pid):
+        calls["n"] += 1
+        if calls["n"] >= 2:            # the POST-COMMIT reattachment only
+            raise sqlite3.OperationalError("gone after commit")
+        return real_load(pid)
+    monkeypatch.setattr(store, "load_requirement_quantities", flaky)
+    token = webapp._issue_answer_token(sid)
+    r = c.post(CORRECT % sid, data={"supersedes_record_id": "rec_2",
+                                    "response": MECH_CORRECTED, "answer_token": token})
+    assert r.status_code == 302
+    assert SESSION_STORE[sid].get("_answer_error") == webapp.CORRECTION_SAVED_NOT_YET_APPLIED_MESSAGE
+    monkeypatch.undo()
+    # The durable ledger has withdrawn rec_2; the retained live state has not.
+    assert "rec_2" in [rec.record_id for _req, rec in
+                       webapp._quantity_eligible_anchors(SESSION_STORE[sid]["state"])]
+    assert classify_ledger_anchor(
+        _store()._ledger_records(sid), "rec_2") == ANCHOR_WITHDRAWN
+    # A normal propose/confirm against it writes NOTHING.
+    assert _record(c, sid, "rec_2", "9 V").status_code == 302
+    assert _rows(db_path, sid) == before
+    assert SESSION_STORE[sid].get("_interaction_ack") != webapp.QUANTITY_SAVED_ACK
+    assert SESSION_STORE[sid].get("_answer_error") == webapp.QUANTITY_NOT_SAVED_MESSAGE
+    # An exact replay of the event recorded BEFORE the withdrawal is idempotent.
+    stored = _store().requirement_quantity_for_event_key(sid, before[0][7])
+    replay = webapp.RequirementQuantity(
+        quantity_id=_store().new_quantity_id(), quantity_seq=-1,
+        anchor_record_id=stored["anchor_record_id"], requirement_id=stored["requirement_id"],
+        quantity_kind=stored["quantity_kind"], value_text=stored["value_text"],
+        supersedes_quantity_id=stored["supersedes_quantity_id"], event_key=stored["event_key"],
+        recorded_iteration=stored["recorded_iteration"], recorded_at=stored["recorded_at"])
+    assert _store().append_requirement_quantity(sid, replay) == "EXACT_REPLAY"
+    assert _rows(db_path, sid) == before
+    # Until the stale entry is replaced the live view still shows rec_2 as
+    # current — R1 does not claim to refresh a retained session, only that a
+    # write can never land against durable truth.
+    stale = _page(c, sid)
+    assert _values(stale) == ["5 V"] and "9 V" not in stale
+    # After recovery (the session reloads from the durable truth) the live and
+    # cold presentations agree: the value is withdrawn history, not current.
+    SESSION_STORE.clear()
+    recovered = _page(c, sid)
+    SESSION_STORE.clear()
+    cold = _page(c, sid)
+    assert _withdrawn(recovered) == _withdrawn(cold) == ["5 V"]
+    assert _values(recovered) == _values(cold) == []
+    assert "9 V" not in recovered and "9 V" not in cold
+
+
+# ==========================================================================
+# 10f. R2 — one current quantity notice; never a contradictory pair
+# ==========================================================================
+def test_a_successful_save_clears_a_stale_non_write_notice(db_path):
+    """R2, without any storage fault injection: session B is correctly refused
+    and stores a non-write notice; session A then succeeds. The page must show
+    the saved value and the success only — in English and in Arabic."""
+    first, _aid = _client_for("t2a-r2-stale@example.com")
+    sid = _start(first)
+    assert _propose(first, sid, "rec_1", "7 V").status_code == 302
+    good = _ctoken(_page(first, sid))
+    assert good
+    second = _new_client()
+    second.post("/login", data={"email": "t2a-r2-stale@example.com", "password": PW})
+    assert _confirm(second, sid, good).status_code == 302            # correctly refused
+    assert SESSION_STORE[sid].get("_answer_error") == webapp.QUANTITY_NOT_SAVED_MESSAGE
+    assert _rows(db_path, sid) == []
+    assert _confirm(first, sid, good).status_code == 302             # succeeds
+    entry = SESSION_STORE[sid]
+    assert entry.get("_interaction_ack") == webapp.QUANTITY_SAVED_ACK
+    assert entry.get("_answer_error") is None
+    body = _page(first, sid)
+    assert _values(body) == ["7 V"] and [r[5] for r in _rows(db_path, sid)] == ["7 V"]
+    assert webapp.QUANTITY_SAVED_ACK in body
+    for stale in (webapp.QUANTITY_NOT_SAVED_MESSAGE, webapp.QUANTITY_CONFLICT_MESSAGE,
+                  webapp.QUANTITY_OUTCOME_UNKNOWN_MESSAGE,
+                  webapp.QUANTITY_SAVED_NOT_SHOWN_MESSAGE):
+        assert stale not in body
+    # The same substantive result in Arabic.
+    assert first.post("/ui-language", data={"lang": "ar"}).status_code in (302, 303)
+    assert _propose(first, sid, "rec_2", "3 A", KIND2).status_code == 302
+    ar_token = _ctoken(_page(first, sid))
+    third = _new_client()
+    third.post("/login", data={"email": "t2a-r2-stale@example.com", "password": PW})
+    assert _confirm(third, sid, ar_token).status_code == 302          # refused
+    assert _confirm(first, sid, ar_token).status_code == 302          # succeeds
+    ar = _page(first, sid)
+    assert ui_text.localize_deep(webapp.QUANTITY_SAVED_ACK, "ar") in ar
+    assert ui_text.localize_message(webapp.QUANTITY_NOT_SAVED_MESSAGE, "ar") not in ar
+    assert webapp.QUANTITY_NOT_SAVED_MESSAGE not in ar
+    assert sorted(_values(ar)) == ["3 A", "7 V"]
+
+
+def test_a_new_failure_clears_a_stale_success_acknowledgement(db_path, monkeypatch):
+    """R2, inverse direction: a newly established failure must not be shown
+    beside a stale quantity success acknowledgement."""
+    c, _aid = _client_for("t2a-r2-inverse@example.com")
+    sid = _start(c)
+    assert _record(c, sid, "rec_1", "5 V").status_code == 302
+    assert SESSION_STORE[sid].get("_interaction_ack") == webapp.QUANTITY_SAVED_ACK
+    assert _propose(c, sid, "rec_1", "6 V").status_code == 302
+    token = _ctoken(_page(c, sid))
+    SESSION_STORE[sid]["_interaction_ack"] = webapp.QUANTITY_SAVED_ACK   # stale, unconsumed
+    store = _store()
+    monkeypatch.setattr(store, "append_requirement_quantity",
+                        lambda pid, q: (_ for _ in ()).throw(
+                            sqlite3.OperationalError("database is locked")))
+    assert _confirm(c, sid, token).status_code == 302
+    monkeypatch.undo()
+    entry = SESSION_STORE[sid]
+    assert entry.get("_answer_error") == webapp.QUANTITY_NOT_SAVED_MESSAGE
+    assert entry.get("_interaction_ack") is None
+    body = _page(c, sid)
+    assert webapp.QUANTITY_SAVED_ACK not in body
+    assert webapp.QUANTITY_NOT_SAVED_MESSAGE in body
+    assert _values(body) == ["5 V"] and "6 V" not in body
+
+
+def test_an_unrelated_answer_notice_is_never_erased_by_a_quantity_outcome(db_path):
+    """R2 boundary: only quantity notices are replaced."""
+    c, _aid = _client_for("t2a-r2-unrelated@example.com")
+    sid = _start(c)
+    assert _propose(c, sid, "rec_1", "5 V").status_code == 302
+    token = _ctoken(_page(c, sid))
+    # An unrelated correction notice is pending when the quantity outcome lands.
+    SESSION_STORE[sid]["_answer_error"] = webapp.CORRECTION_NOT_APPLIED_MESSAGE
+    assert _confirm(c, sid, token).status_code == 302
+    entry = SESSION_STORE[sid]
+    assert entry.get("_answer_error") == webapp.CORRECTION_NOT_APPLIED_MESSAGE
+    assert entry.get("_interaction_ack") == webapp.QUANTITY_SAVED_ACK
+    assert [r[5] for r in _rows(db_path, sid)] == ["5 V"]
+
+
+# ==========================================================================
+# 10g. R3 — one-sided supersession never renders as withdrawn history
+# ==========================================================================
+def _rewrite_record(db_path, sid, record_id, **fields):
+    """Durable semantic corruption: rewrite one persisted ledger payload while
+    leaving every foreign key intact."""
+    conn = sqlite3.connect(db_path)
+    try:
+        row = conn.execute("SELECT payload FROM records WHERE project_id=? AND record_id=?",
+                           (sid, record_id)).fetchone()
+        payload = json.loads(row[0])
+        payload.update(fields)
+        conn.execute("UPDATE records SET payload=? WHERE project_id=? AND record_id=?",
+                     (json.dumps(payload), sid, record_id))
+        conn.commit()
+        assert conn.execute("PRAGMA foreign_key_check").fetchall() == []
+    finally:
+        conn.close()
+
+
+@pytest.mark.parametrize("label, target", [
+    ("one-sided reference to an existing record", "rec_1"),
+    ("reference to a record that does not exist", "rec_404"),
+    ("self reference", "rec_2"),
+])
+def test_a_one_sided_supersession_fails_closed_on_every_surface(db_path, label, target):
+    """R3: `superseded_by` alone never earns withdrawn status. Relational
+    integrity stays intact, so only the semantic check can catch this."""
+    c, _aid = _client_for("t2a-r3-%s@example.com" % target)
+    sid = _start(c)
+    assert _record(c, sid, "rec_2", "5 V").status_code == 302
+    before = _rows(db_path, sid)
+    _rewrite_record(db_path, sid, "rec_2", superseded_by=target)
+    SESSION_STORE.clear()
+    for verb, path in (("get", SESSION % sid), ("get", DELIVERABLE % sid), ("post", PDF % sid)):
+        r = getattr(c, verb)(path, data={})
+        assert r.status_code == 302 and r.headers["Location"].endswith("/"), (label, verb, path)
+        text = r.get_data(as_text=True)
+        assert "5 V" not in text and target not in text and "qty-" not in text
+        assert "withdrawn" not in text.lower()
+        assert ui_text.text("UI_T2A_WITHDRAWN_ANCHOR", "en") not in text
+        assert ui_text.text("UI_T2A_WITHDRAWN_ANCHOR", "ar") not in text
+    assert _rows(db_path, sid) == before             # retained, never repaired
+    conn = sqlite3.connect(db_path)
+    try:
+        assert conn.execute("PRAGMA foreign_key_check").fetchall() == []
+    finally:
+        conn.close()
+
+
+def test_a_genuine_reciprocal_correction_still_renders_as_withdrawn_history(db_path):
+    """R3 passing control, end to end through the real correction flow."""
+    c, _aid = _client_for("t2a-r3-control@example.com")
+    sid = _start(c)
+    assert _record(c, sid, "rec_2", "5 V").status_code == 302
+    token = webapp._issue_answer_token(sid)
+    assert c.post(CORRECT % sid, data={"supersedes_record_id": "rec_2",
+                                       "response": MECH_CORRECTED,
+                                       "answer_token": token}).status_code == 302
+    SESSION_STORE.clear()
+    body = _page(c, sid)
+    assert _withdrawn(body) == ["5 V"] and ui_text.text("UI_T2A_WITHDRAWN_ANCHOR", "en") in body
+    html = c.get(DELIVERABLE % sid).get_data(as_text=True)
+    assert "5 V" in html and ui_text.text("UI_T2A_WITHDRAWN_ANCHOR", "en") in html
+    assert c.post("/ui-language", data={"lang": "ar"}).status_code in (302, 303)
+    ar = _page(c, sid)
+    assert ui_text.text("UI_T2A_WITHDRAWN_ANCHOR", "ar") in ar and _withdrawn(ar) == ["5 V"]
+
+
+# ==========================================================================
+# 10h. R4 — a generic StoreError never proves a non-write
+# ==========================================================================
+def test_a_generic_store_error_before_any_write_reports_the_proven_non_write(db_path, monkeypatch):
+    c, _aid = _client_for("t2a-r4-pre@example.com")
+    sid = _start(c)
+    token = _staged_confirm(c, sid)
+    monkeypatch.setattr(_store(), "append_requirement_quantity",
+                        lambda pid, q: (_ for _ in ()).throw(StoreError("opaque")))
+    assert _confirm(c, sid, token).status_code == 302
+    assert SESSION_STORE[sid].get("_answer_error") == webapp.QUANTITY_NOT_SAVED_MESSAGE
+    assert _rows(db_path, sid) == []
+
+
+def test_a_committed_append_followed_by_a_generic_store_error_reports_saved(db_path, monkeypatch):
+    """R4: exception class inheritance is never proof that no write occurred."""
+    c, _aid = _client_for("t2a-r4-post@example.com")
+    sid = _start(c)
+    token = _staged_confirm(c, sid)
+    store = _store()
+    real = store.append_requirement_quantity
+
+    def append_then_generic(pid, q):
+        real(pid, q)                                   # the row IS committed
+        raise StoreError("opaque store failure")
+    monkeypatch.setattr(store, "append_requirement_quantity", append_then_generic)
+    assert _confirm(c, sid, token).status_code == 302
+    assert [r[5] for r in _rows(db_path, sid)] == ["7 V"]
+    assert SESSION_STORE[sid].get("_answer_error") is None
+    assert SESSION_STORE[sid].get("_interaction_ack") == webapp.QUANTITY_SAVED_ACK
+    monkeypatch.undo()
+    body = _page(c, sid)
+    assert _values(body) == ["7 V"]
+    assert webapp.QUANTITY_NOT_SAVED_MESSAGE not in body
+
+
+def test_a_generic_store_error_with_an_unreadable_lookup_reports_unknown(db_path, monkeypatch):
+    c, _aid = _client_for("t2a-r4-unknown@example.com")
+    sid = _start(c)
+    token = _staged_confirm(c, sid)
+    store = _store()
+    real = store.append_requirement_quantity
+    real_lookup = store.requirement_quantity_for_event_key
+    committed = {"done": False}
+
+    def append_then_generic(pid, q):
+        real(pid, q)
+        committed["done"] = True
+        raise StoreError("opaque store failure")
+
+    def unreadable(pid, key):
+        if committed["done"]:
+            raise sqlite3.OperationalError("disk I/O error")
+        return real_lookup(pid, key)
+    monkeypatch.setattr(store, "append_requirement_quantity", append_then_generic)
+    monkeypatch.setattr(store, "requirement_quantity_for_event_key", unreadable)
+    assert _confirm(c, sid, token).status_code == 302
+    message = SESSION_STORE[sid].get("_answer_error")
+    assert message == webapp.QUANTITY_OUTCOME_UNKNOWN_MESSAGE
+    assert "Nothing was changed" not in message
+    assert [r[5] for r in _rows(db_path, sid)] == ["7 V"]
+
+
+def test_a_mismatched_event_under_the_same_key_is_never_reported_as_saved(db_path, monkeypatch):
+    """R4: the stored row must BE the intended event before success is claimed."""
+    c, _aid = _client_for("t2a-r4-mismatch@example.com")
+    sid = _start(c)
+    token = _staged_confirm(c, sid)
+    store = _store()
+    monkeypatch.setattr(store, "append_requirement_quantity",
+                        lambda pid, q: (_ for _ in ()).throw(StoreError("opaque")))
+    monkeypatch.setattr(store, "requirement_quantity_for_event_key",
+                        lambda pid, key: {"anchor_record_id": "rec_9",
+                                          "requirement_id": "req:assertion:rec_9",
+                                          "quantity_kind": KIND2, "value_text": "999 V",
+                                          "supersedes_quantity_id": None})
+    assert _confirm(c, sid, token).status_code == 302
+    assert SESSION_STORE[sid].get("_answer_error") == webapp.QUANTITY_OUTCOME_UNKNOWN_MESSAGE
+    assert SESSION_STORE[sid].get("_interaction_ack") is None
+    monkeypatch.undo()
+    assert _rows(db_path, sid) == []
+
+
+def test_no_page_shows_a_persisted_value_with_a_definite_non_write_message(db_path, monkeypatch):
+    """R4 / R2 together: a value that is durably present is never accompanied
+    by a message asserting that nothing was changed."""
+    c, _aid = _client_for("t2a-r4-consistent@example.com")
+    sid = _start(c)
+    token = _staged_confirm(c, sid, "7 V")
+    store = _store()
+    real = store.append_requirement_quantity
+
+    def append_then_generic(pid, q):
+        real(pid, q)
+        raise StoreError("opaque store failure")
+    monkeypatch.setattr(store, "append_requirement_quantity", append_then_generic)
+    assert _confirm(c, sid, token).status_code == 302
+    monkeypatch.undo()
+    body = _page(c, sid)
+    assert _values(body) == ["7 V"] and [r[5] for r in _rows(db_path, sid)] == ["7 V"]
+    for denial in (webapp.QUANTITY_NOT_SAVED_MESSAGE, webapp.QUANTITY_CONFLICT_MESSAGE):
+        assert denial not in body
+        assert ui_text.localize_message(denial, "ar") not in body
 
 
 # ==========================================================================
