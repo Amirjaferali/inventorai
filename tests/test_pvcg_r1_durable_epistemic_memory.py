@@ -435,9 +435,23 @@ def test_durable_store_holds_exactly_one_ledger_and_no_parallel_table(db_path,
         tables = sorted(row[0] for row in conn.execute(
             "SELECT name FROM sqlite_master WHERE type='table' "
             "AND name NOT LIKE 'sqlite_%'"))
+        # T2-A Quantified Requirements Slice 1 added the additive, project-
+        # scoped `requirement_quantities` history table. It is NOT a parallel
+        # ledger: it carries no disposition and no record payload — the
+        # `records` table remains the ONE durable ledger of owner actions.
+        ledger_like = sorted(
+            name for (name,) in conn.execute(
+                "SELECT name FROM sqlite_master WHERE type='table' "
+                "AND name NOT LIKE 'sqlite_%'")
+            if {"payload", "disposition"} & {
+                col[1] for col in conn.execute("PRAGMA table_info(%s)" % name)})
+        quantity_cols = [col[1] for col in
+                         conn.execute("PRAGMA table_info(requirement_quantities)")]
     finally:
         conn.close()
-    assert tables == ["projects", "records"], tables
+    assert tables == ["projects", "records", "requirement_quantities"], tables
+    assert ledger_like == ["records"], ledger_like
+    assert "payload" not in quantity_cols and "disposition" not in quantity_cols
 
 
 # --------------------------------------------------------------------------

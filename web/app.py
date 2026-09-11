@@ -72,8 +72,35 @@ from engine.deliverable_assembler import assemble_deliverable
 # append, Keep/Refine durability, transcript/last_result persistence, or replay
 # is introduced here (those are P4-1b-2 / P4-2).
 import sqlite3
-from engine.record_store import SqliteRecordStore, StoreError
+from engine.record_store import (
+    SqliteRecordStore, StoreError, ProjectNotFound as _ProjectNotFound,
+    QuantityChainConflict as _QuantityChainConflict,
+    QuantityCapExceeded as _QuantityCapExceeded,
+    QuantityAnchorIneligible as _QuantityAnchorIneligible,
+)
 from engine.record_contract import ProjectRecordContract
+# T2-A Quantified Requirements Slice 1 (Owner-authorized bounded candidate): the
+# pure vocabulary / canonical-value / eligibility owner. The web layer performs
+# glue only: authorization, token binding, idempotency, persist-before-
+# acknowledge, and fail-closed attachment of the validated history.
+from engine.requirement_quantity import (
+    RequirementQuantity, QuantityValueError, QuantityHistoryError, QUANTITY_KINDS,
+    validate_quantity_kind as _validate_quantity_kind,
+    normalize_value_text as _normalize_value_text,
+    eligible_anchors as _quantity_eligible_anchors,
+    active_quantities as _active_quantities,
+    quantity_chains as _quantity_chains,
+    requirement_quantities_meta as _requirement_quantities_meta,
+    requirement_statement as _quantity_requirement_statement,
+    REQUIREMENT_QUANTITIES_META_KEY as _REQUIREMENT_QUANTITIES_META_KEY,
+    QUANTITY_EVENT_IDENTITY_FIELDS as _QUANTITY_EVENT_IDENTITY_FIELDS,
+    QUANTITY_INSERTED as _QUANTITY_INSERTED,
+    QUANTITY_EXACT_REPLAY as _QUANTITY_EXACT_REPLAY,
+    QUANTITY_CONFLICT as _QUANTITY_CONFLICT,
+    QUANTITY_REJECTED as _QUANTITY_REJECTED,
+    QUANTITY_STORAGE_FAILURE as _QUANTITY_STORAGE_FAILURE,
+    QUANTITY_COMMIT_UNKNOWN as _QUANTITY_COMMIT_UNKNOWN,
+)
 # P10-D3a (established contract, PR #510): the canonical internal read/export
 # seam (P7-I1), consumed UNMODIFIED by the browser self-service export route.
 from engine import read_export_service as _read_export
@@ -791,6 +818,10 @@ def _cold_load_entry(sid):
         restored_domain = (inputs or {}).get("confirmed_domain")
         if restored_domain:
             state.domain_signal = restored_domain
+        # T2-A: attach the validated requirement-quantity history. A populated
+        # corrupt or unavailable history fails the WHOLE cold load closed
+        # (generic unavailable behaviour) — never a partial/unquantified view.
+        state.requirement_quantities = list(_get_store().load_requirement_quantities(sid))
     except Exception:
         # Fail closed. Storage/contract errors are translated to the generic
         # unavailable behaviour at this web boundary; no user content is logged.
@@ -913,6 +944,372 @@ KEEP_SNAPSHOT_ACK = (
     "Current working snapshot selected for this temporary session. "
     "It has not been permanently saved or approved."
 )
+
+# --- T2-A Quantified Requirements Slice 1 (Owner-authorized bounded candidate) --
+# Canonical English constants; Arabic through the ui_text presentation maps
+# (the acks render via `localize_deep`, the errors via `localize_message`, so
+# both registries carry them — the PVCG-R4 §13 lesson). Truthful and generic:
+# an error never names an identifier, value, path, SQL detail or exception
+# text; the ack says recorded, never verified.
+QUANTITY_SAVED_ACK = (
+    "Your quantity was recorded and saved to your project. It is kept as "
+    "stated and has not been checked or verified.")
+QUANTITY_DISCARDED_ACK = (
+    "The proposed quantity was discarded. Nothing was saved.")
+QUANTITY_NOT_SAVED_MESSAGE = (
+    "That quantity could not be saved just now. Nothing was changed.")
+QUANTITY_INVALID_MESSAGE = (
+    "Choose what kind of value this is and enter it as short plain text for "
+    "the selected item. Nothing was changed.")
+# The recorded values moved between propose and confirm (the anchor's chain
+# head changed, or the event key already names a different event). This is an
+# ESTABLISHED refusal decided before any row was written, so it may truthfully
+# say that nothing was changed.
+QUANTITY_CONFLICT_MESSAGE = (
+    "The recorded values for this item changed while you were confirming, so "
+    "that quantity was not saved. Nothing was changed. Review the values shown "
+    "here and enter it again if you still want it.")
+# The durable outcome of the write could NOT be determined, even after bounded
+# resolution through the stable project/event key. This message asserts neither
+# a rollback nor a non-write — it says only what is known.
+QUANTITY_OUTCOME_UNKNOWN_MESSAGE = (
+    "We could not confirm whether that quantity was saved. Reload this page to "
+    "see the values your project currently holds before entering it again.")
+# The quantity IS durably saved; only reattaching it for display failed. A
+# quantity-specific wording: never the answer-correction message, which is
+# about a correction that has not been applied to the session yet.
+QUANTITY_SAVED_NOT_SHOWN_MESSAGE = (
+    "Your quantity was saved to your project, but it could not be shown here "
+    "just now. Reload this page shortly to see it.")
+
+# The two-stage flow: PROPOSE stages ONE bounded proposal in the current
+# session entry and mints a confirmation token; CONFIRM resolves every material
+# field from that staged state, validates the token (session-, project-,
+# owner-, content- and expiry-bound), consumes the nonce ONCE and only then
+# performs the single durable append. The confirm form carries exactly these
+# three fields; anything else is rejected before any state change.
+_QUANTITY_CONFIRM_FIELDS = frozenset({"csrf_token", "confirmation_token", "quantity_action"})
+QUANTITY_ACTION_CONFIRM = "confirm"
+QUANTITY_ACTION_DISCARD = "discard"
+# The staged proposal / confirmation token lifetime (accepted design delta
+# §7). A token is expired when ``clock >= expires_at``; an expired proposal is
+# refused at confirm and dropped at the next render.
+QUANTITY_CONFIRMATION_TTL_SECONDS = 900
+_QUANTITY_PROPOSAL_KEY = "quantity_proposal"
+_QUANTITY_CONFIRM_NONCE_BYTES = 24
+
+
+def _quantity_clock():
+    """Seconds since the epoch (int). Isolated so tests can drive expiry."""
+    import time as _time
+    return int(_time.time())
+
+
+def _quantity_recorded_at():
+    """UTC ISO-8601 timestamp for the recording fact, generated once per
+    event at proposal time. Never part of event identity."""
+    from datetime import datetime as _dt, timezone as _tz
+    return _dt.now(_tz.utc).replace(microsecond=0).isoformat()
+
+
+def _quantity_write_authorized(sid):
+    """True ONLY when the current caller is the authenticated, ACTIVE,
+    EMAIL-VERIFIED account that is the DURABLE owner of ``sid``. Stricter
+    than `_project_authorized` (which preserves NULL-owner capability access):
+    a NULL-owner, anonymous, unverified, inactive or non-owner caller can
+    never write a quantity. Derived only from the validated server session and
+    the durable owner column; fails closed on any error."""
+    return _quantity_writer_account(sid) is not None
+
+
+def _quantity_writer_account(sid):
+    """The verified, active, durable-owner account dict for ``sid``, or None."""
+    try:
+        account = _current_account()
+        if account is None:
+            return None
+        if account.get("status") != "active" or not account.get("email_verified"):
+            return None
+        exists, owner = _get_store().load_owner(sid)
+    except Exception:
+        return None
+    if exists and owner is not None and owner == account["account_id"]:
+        return account
+    return None
+
+
+def _attach_quantity_history(sid, state):
+    """Load + validate the durable requirement-quantity history of ``sid`` and
+    attach it to ``state`` (the in-memory carrier the templates and the
+    deliverable seam read). Returns False — and leaves ``state`` UNTOUCHED — on
+    a populated corrupt history or any storage failure, so every outward
+    surface can fail closed generically. Zero rows attach as an empty list.
+
+    The durable rows are validated against the project's ledger assertions by
+    the store; HERE the attached history is additionally resolved against THIS
+    state, so an anchor that is missing, was never a valid answered assertion
+    anchor, or whose assertion/requirement relationship is inconsistent fails
+    closed at the ONE attachment seam every surface shares. Only a genuinely
+    superseded answered anchor survives as withdrawn history. Nothing is
+    repaired, deleted or reinterpreted."""
+    previous = list(getattr(state, "requirement_quantities", None) or ())
+    try:
+        history = _get_store().load_requirement_quantities(sid)
+    except Exception:
+        return False
+    state.requirement_quantities = list(history)
+    try:
+        _quantity_chains(state)          # raises on an unresolvable anchor
+    except Exception:
+        state.requirement_quantities = previous
+        return False
+    return True
+
+
+def _same_quantity_event(stored, quantity):
+    """True iff a STORED row is the exact canonical event of ``quantity``
+    (canonical identity fields only — the recording facts are never part of
+    event identity). Pure; never touches the store."""
+    if not stored:
+        return False
+    return all(stored.get(name) == getattr(quantity, name)
+               for name in _QUANTITY_EVENT_IDENTITY_FIELDS)
+
+
+def _resolve_quantity_write(sid, quantity):
+    """Bounded resolution of an UNDETERMINED durable write outcome through the
+    stable ``(project, event_key)``.
+
+    Returns ``EXACT_REPLAY`` when the exact canonical event is PROVEN durably
+    present, ``STORAGE_FAILURE`` when its durable absence is PROVEN (the read
+    succeeded and the unique event key holds no row, so the insert never
+    committed), and ``COMMIT_UNKNOWN`` when nothing could be established. It
+    never guesses, never asserts a rollback it did not prove, and reads only
+    this project."""
+    try:
+        stored = _get_store().requirement_quantity_for_event_key(sid, quantity.event_key)
+    except Exception:
+        return _QUANTITY_COMMIT_UNKNOWN
+    if stored is None:
+        return _QUANTITY_STORAGE_FAILURE
+    if _same_quantity_event(stored, quantity):
+        return _QUANTITY_EXACT_REPLAY
+    return _QUANTITY_COMMIT_UNKNOWN
+
+
+# --- Quantity notice ISOLATION (R2) -------------------------------------------
+# Quantity outcomes have their OWN pair of ephemeral session slots. They never
+# read, write, clear or reinterpret the shared `_interaction_ack` /
+# `_answer_error` slots that the answer and correction flows own, so a quantity
+# outcome can never delete a truthful correction warning or acknowledgement, and
+# an answer/correction outcome can never be mistaken for a quantity one. Within
+# the quantity namespace exactly ONE current outcome survives: publishing a
+# success clears a pending quantity failure and publishing a failure clears a
+# pending quantity success, so no contradictory quantity pair can coexist.
+#
+# These are transient per-session UI state, popped once by the render exactly
+# like the shared slots. They are never persisted, never reach the canonical
+# package, an export, the HTML deliverable or the PDF, and are never rebuilt by
+# reconstruction. This is a two-slot namespace, not a notification queue,
+# message bus or application-wide messaging framework.
+QUANTITY_ACK_SLOT = "_quantity_ack"
+QUANTITY_ERROR_SLOT = "_quantity_error"
+
+
+def _quantity_notices():
+    return (QUANTITY_SAVED_ACK, QUANTITY_DISCARDED_ACK, QUANTITY_NOT_SAVED_MESSAGE,
+            QUANTITY_INVALID_MESSAGE, QUANTITY_CONFLICT_MESSAGE,
+            QUANTITY_OUTCOME_UNKNOWN_MESSAGE, QUANTITY_SAVED_NOT_SHOWN_MESSAGE)
+
+
+def _publish_quantity_notice(entry, ack=None, error=None):
+    """Publish exactly ONE current quantity notice, inside the quantity
+    namespace only.
+
+    Both quantity slots are cleared first, so a success acknowledgement never
+    coexists with a stale "nothing was changed" (or conflict / unknown-outcome)
+    message and a newly established failure never coexists with a stale success
+    acknowledgement — in every language, because the stored English constant is
+    what the localizers render. `_interaction_ack` and `_answer_error` are NOT
+    touched: an unrelated answer or correction notice survives a quantity
+    outcome untouched, and both render together when both are true."""
+    entry.pop(QUANTITY_ACK_SLOT, None)
+    entry.pop(QUANTITY_ERROR_SLOT, None)
+    if ack is not None:
+        entry[QUANTITY_ACK_SLOT] = ack
+    if error is not None:
+        entry[QUANTITY_ERROR_SLOT] = error
+
+
+def _finish_quantity_write(sid, entry, state, outcome):
+    """Publish the TRUTHFUL outcome of one quantity write. Page state and
+    message never contradict each other: a saved event reattaches the durable
+    truth; an established non-write leaves the carrier alone and says nothing
+    changed; an undetermined outcome refreshes what can be read and claims
+    neither a write nor a rollback."""
+    if outcome in (_QUANTITY_INSERTED, _QUANTITY_EXACT_REPLAY):
+        if _attach_quantity_history(sid, state):
+            _publish_quantity_notice(entry, ack=QUANTITY_SAVED_ACK)
+        else:
+            # RELOAD_FAILED: persistence succeeded, reattachment did not.
+            _publish_quantity_notice(entry, error=QUANTITY_SAVED_NOT_SHOWN_MESSAGE)
+    elif outcome == _QUANTITY_CONFLICT:
+        _attach_quantity_history(sid, state)
+        _publish_quantity_notice(entry, error=QUANTITY_CONFLICT_MESSAGE)
+    elif outcome == _QUANTITY_COMMIT_UNKNOWN:
+        _attach_quantity_history(sid, state)
+        _publish_quantity_notice(entry, error=QUANTITY_OUTCOME_UNKNOWN_MESSAGE)
+    else:                                  # REJECTED / STORAGE_FAILURE
+        _publish_quantity_notice(entry, error=QUANTITY_NOT_SAVED_MESSAGE)
+    return redirect(url_for("show_session", sid=sid))
+
+
+def _quantity_session_binding():
+    """``SHA256(_session_csrf())[:16]`` — binds a proposal to the browser
+    session whose CSRF token minted it (accepted design delta §7). A rotated
+    or different session cannot confirm it."""
+    return _p2a_hashlib.sha256(
+        (_session_csrf() or "").encode("utf-8")).hexdigest()[:16]
+
+
+def _quantity_material_digest(sid, owner_account_id, session_binding, proposal):
+    """``SHA256(canonical("t2a-quantity-material-v1", sid, owner_account_id,
+    session_binding, anchor_record_id, requirement_id, quantity_kind,
+    value_text, supersedes_quantity_id or "", nonce, issued_at, expires_at))``
+    — every material field of the staged proposal, the session binding and
+    the owner, so any mutation changes the digest. ``session_binding`` is the
+    binding RECORDED WHEN THE PROPOSAL WAS STAGED, never the caller's current
+    one."""
+    msg = _canonical_message(
+        "t2a-quantity-material-v1", sid, owner_account_id, session_binding,
+        proposal["anchor_record_id"], proposal["requirement_id"],
+        proposal["quantity_kind"], proposal["value_text"],
+        proposal["supersedes_quantity_id"] or "", proposal["nonce"],
+        str(proposal["issued_at"]), str(proposal["expires_at"]))
+    return _p2a_hashlib.sha256(msg).hexdigest()
+
+
+def _quantity_confirmation_token(sid, material_digest, nonce):
+    """``nonce + "." + HMAC-SHA256(secret, canonical("t2a-quantity-confirm-v1",
+    sid, material_digest))[:32]`` (accepted design delta §7)."""
+    msg = _canonical_message("t2a-quantity-confirm-v1", sid, material_digest)
+    return nonce + _ANSWER_TOKEN_SEP + _p2a_hmac.new(
+        _answer_secret(), msg, _p2a_hashlib.sha256).hexdigest()[:_ANSWER_HMAC_HEX_LEN]
+
+
+def _quantity_event_key(sid, nonce, material_digest):
+    """``HMAC-SHA256(secret, canonical("t2a-quantity-event-v1", sid, nonce,
+    material_digest))[:32]`` — the durable exact-replay identity of ONE
+    quantity event (UNIQUE per project in the store). The same staged event
+    reproduces the same key and can never write twice."""
+    msg = _canonical_message("t2a-quantity-event-v1", sid, nonce, material_digest)
+    return _p2a_hmac.new(_answer_secret(), msg,
+                         _p2a_hashlib.sha256).hexdigest()[:_ANSWER_HMAC_HEX_LEN]
+
+
+def _quantity_token_for(sid, account_id, proposal):
+    """Token + event key for a staged proposal under the PROPOSE-TIME session
+    binding stored in the proposal and the owner (recomputed, never trusted
+    from the request).
+
+    The binding comes from the proposal, not from the caller's current
+    session, so a DIFFERENT browser session — including another session of the
+    same account — can neither be handed a fresh valid token for a proposal it
+    did not stage nor mint one for itself: the token it would need is the one
+    bound to the staging session, and `_quantity_session_matches` refuses the
+    confirm before the nonce is consumed."""
+    digest = _quantity_material_digest(
+        sid, account_id, proposal.get("session_binding"), proposal)
+    return (_quantity_confirmation_token(sid, digest, proposal["nonce"]),
+            _quantity_event_key(sid, proposal["nonce"], digest))
+
+
+def _quantity_session_matches(proposal):
+    """True iff the CURRENT browser session is the session that staged
+    ``proposal``. Compared with a constant-time digest comparison."""
+    stored = proposal.get("session_binding")
+    if not isinstance(stored, str) or not stored:
+        return False
+    return _p2a_hmac.compare_digest(stored, _quantity_session_binding())
+
+
+def _staged_quantity_proposal(entry):
+    """The current staged proposal, or None when absent or expired (an
+    expired proposal is dropped here, so it can never be confirmed)."""
+    proposal = entry.get(_QUANTITY_PROPOSAL_KEY)
+    if not isinstance(proposal, dict):
+        return None
+    if _quantity_clock() >= int(proposal.get("expires_at", 0)):
+        entry.pop(_QUANTITY_PROPOSAL_KEY, None)
+        return None
+    return proposal
+
+
+def _quantity_chain_view(chain):
+    return {
+        "kind": chain.active.quantity_kind,
+        "value_text": chain.active.value_text,
+        "replaced": [{"kind": r.quantity_kind, "value_text": r.value_text}
+                     for r in chain.replaced],
+    }
+
+
+def _quantity_step_context(entry, state, sid):
+    """Read-only render context for the session quantity block, or None.
+
+    Lists every ELIGIBLE requirement anchor with its chain (active value and
+    replaced values), the withdrawn-anchor chains (read-only), and — when a
+    proposal is staged for this session — the confirmation block with its
+    token. The propose form is offered only when the caller may write
+    (verified active durable owner) AND the session is live (``state.domain``
+    set — the same dead-form suppression the correction form applies). None
+    when nothing applies. Mutates nothing except dropping an expired
+    proposal."""
+    anchors = _quantity_eligible_anchors(state)
+    chains = {c.anchor_record_id: c for c in _quantity_chains(state)}
+    can_write = (_quantity_write_authorized(sid)
+                 and getattr(state, "domain", None) is not None)
+    items = []
+    for req, record in anchors:
+        chain = chains.get(record.record_id)
+        items.append({
+            "record_id": record.record_id,
+            "statement": req.statement,
+            "current": None if chain is None else _quantity_chain_view(chain),
+        })
+    withdrawn = []
+    for chain in _quantity_chains(state):
+        if chain.anchor_active:
+            continue
+        withdrawn.append({"statement": _quantity_requirement_statement(state, chain.anchor_record_id),
+                          "current": _quantity_chain_view(chain)})
+    proposal = None
+    staged = _staged_quantity_proposal(entry) if can_write else None
+    if staged is not None and not _quantity_session_matches(staged):
+        staged = None                      # CR-3: not this browser session's proposal
+    if staged is not None:
+        statement = next((req.statement for req, record in anchors
+                          if record.record_id == staged["anchor_record_id"]), None)
+        if statement is None:
+            entry.pop(_QUANTITY_PROPOSAL_KEY, None)      # anchor went stale
+        else:
+            head = chains.get(staged["anchor_record_id"])
+            proposal = {
+                "statement": statement,
+                "kind": staged["quantity_kind"],
+                "value_text": staged["value_text"],
+                "replaces": (None if head is None else
+                             {"kind": head.active.quantity_kind,
+                              "value_text": head.active.value_text}),
+                "confirmation_token": _quantity_token_for(
+                    sid, staged["account_id"], staged)[0],
+            }
+    if not items and not withdrawn:
+        return None
+    if not can_write and not any(i["current"] for i in items) and not withdrawn:
+        return None
+    return {"items": items, "withdrawn": withdrawn, "can_write": can_write,
+            "proposal": proposal, "kinds": list(QUANTITY_KINDS)}
 
 # --- Workstream 4: structured criticality confirmation flow -------------------
 # (docs/governance/STRUCTURED_CRITICALITY_CAPTURE_INCREMENT_CONTRACT.md §7;
@@ -2610,6 +3007,11 @@ def resume_project(sid):
         # Completed project: truthful completion/deliverable surfaces remain;
         # a completed journey never reopens into a writable question flow.
         return redirect(url_for("show_session", sid=sid))
+    # T2-A: the established writable context carries the validated durable
+    # quantity history from the start; a corrupt/unavailable history refuses
+    # establishment (the read-only view then fails closed on its own render).
+    if not _attach_quantity_history(sid, rstate):
+        return redirect(url_for("show_session", sid=sid))
     # Establishment: the replayed canonical IdeaState (domain/path set by the
     # canonical replay from the persisted inputs; ledger restored verbatim)
     # becomes the state of a FRESH transient entry. A fresh answer token is
@@ -2837,6 +3239,12 @@ def show_session(sid):
             return redirect(url_for("index"))
         SESSION_STORE[sid] = entry
     state = entry["state"]
+    # T2-A: refresh the quantity carrier from the DURABLE truth on every render
+    # and fail closed (the same generic unavailable behaviour as a failed cold
+    # load) when a populated history is corrupt or storage is unavailable —
+    # never a page with a partial or silently empty quantity block.
+    if not _attach_quantity_history(sid, state):
+        return redirect(url_for("index"))
     last_result = entry.get("last_result")
     # P10-PC1: surface the merged P4-2 Level-1 deterministic READ-ONLY
     # reconstruction on cold-loaded sessions (the committed cold-load marker is
@@ -3101,6 +3509,10 @@ def show_session(sid):
         # verbatim (localize_deep passes unknown strings through unchanged).
         criticality_step=ui_text.localize_deep(
             _criticality_step_context(entry, state, sid), _current_ui_lang()),
+        # T2-A: read-only quantity block context (eligible anchors, active
+        # quantities, write eligibility). Canonical tokens only; the template
+        # resolves every display label through t(). None when nothing applies.
+        quantity_step=_quantity_step_context(entry, state, sid),
         next_development_step=next_development_step,
         question=question,
         # RVR-7 / M-13: the substantive question element must declare the language
@@ -3153,6 +3565,13 @@ def show_session(sid):
         # repeats on a later plain GET. None on every normal load.
         answer_error=ui_text.localize_message(
             _render_notice(entry, "_answer_error", None), _current_ui_lang()),
+        # R2: the quantity namespace, rendered ALONGSIDE (never instead of) the
+        # answer/correction notices above, and popped once by the same
+        # single-use rule. Exactly one of the two is ever set at a time.
+        quantity_ack=ui_text.localize_deep(
+            _render_notice(entry, QUANTITY_ACK_SLOT, None), _current_ui_lang()),
+        quantity_error=ui_text.localize_message(
+            _render_notice(entry, QUANTITY_ERROR_SLOT, None), _current_ui_lang()),
         # Increment 1B: advisory, derived, read-only responsibility guidance for
         # the current gap. Computed at render time; never stored, never affects
         # gates/scoring/maturity/closure/transcript/IdeaState. None when no gap.
@@ -3252,9 +3671,35 @@ def _deliverable_context(sid):
                 reconstructed_deliverable = True
         except Exception:
             reconstructed_deliverable = False
+    # T2-A: the report is assembled from the DURABLE quantity truth; a populated
+    # corrupt or unavailable history fails BOTH the HTML deliverable and the
+    # PDF closed (the existing generic no-context behaviour) — never a report
+    # that silently omits recorded quantities.
+    if not _attach_quantity_history(sid, state):
+        return None
     package = assemble_deliverable(state)
+    # T2-A: the additive nested package key, composed HERE at the one shared
+    # deliverable seam (consumed by the HTML report AND the PDF) because the
+    # canonical assembler is frozen by the merged G-3 A-20/A-21 pin. Present
+    # ONLY when at least one CURRENT quantified requirement exists: a project
+    # with zero quantities carries no new key, no HTML block and no PDF-source
+    # difference. Top-level canonical sections are untouched.
+    _quantities = _requirement_quantities_meta(state)
+    if _quantities is not None:
+        package["_session_meta"][_REQUIREMENT_QUANTITIES_META_KEY] = _quantities
     eligible = package["_session_meta"]["deliverable_eligible"]
     return entry, package, eligible, reconstructed_deliverable, state
+
+
+def _quantity_statements(package, state):
+    """Presentation-only map ``anchor_record_id -> requirement statement`` for
+    the canonical quantity rows of ``package`` (the canonical row carries no
+    statement). Read-only over the state; empty when the package has no rows."""
+    meta = package["_session_meta"].get(_REQUIREMENT_QUANTITIES_META_KEY)
+    if not meta:
+        return {}
+    return {row["anchor_record_id"]: _quantity_requirement_statement(state, row["anchor_record_id"])
+            for row in meta["rows"]}
 
 
 @app.route("/session/<sid>/deliverable", methods=["GET"])
@@ -3271,6 +3716,8 @@ def show_deliverable(sid):
         package=package,
         eligible=eligible,
         reconstructed_deliverable=reconstructed_deliverable,
+        # T2-A: statements for the canonical quantity rows (presentation only).
+        t2a_statements=_quantity_statements(package, state),
         # W2-A / RVR-4 (contract §14): read-only composed decision state on the
         # deliverable surface (derived on demand; not part of the canonical
         # deliverable package — the assembler is deliberately untouched).
@@ -3415,6 +3862,7 @@ def download_deliverable_pdf(sid):
             package=package,
             eligible=eligible,
             reconstructed_deliverable=reconstructed_deliverable,
+            t2a_statements=_quantity_statements(package, state),
             decision_capture=_decision_capture_view_safe(state),
             snapshot_kept_ack=None,
         )
@@ -3537,6 +3985,20 @@ def correct_answer(sid):
         entry["_answer_error"] = CORRECTION_NOT_APPLIED_MESSAGE
         return redirect(url_for("show_session", sid=sid))
 
+    # T2-A (Owner-mandated correction-flow ordering): BEFORE the durable
+    # correction append, load and validate this project's requirement-quantity
+    # history. Zero rows are valid. A populated corrupt history or an
+    # unavailable store fails CLOSED through the existing generic
+    # correction-not-applied behaviour: nothing is appended, live state is
+    # untouched, and no identifier, value, SQL detail, path or exception text
+    # is exposed. The correction must never commit against a history that
+    # could not be reattached afterwards.
+    try:
+        _get_store().load_requirement_quantities(sid)
+    except Exception:
+        entry["_answer_error"] = CORRECTION_NOT_APPLIED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+
     # §6 C-7 — a SEPARATE durable idempotency identity, derived from the exact
     # correction event, so a refresh/retry/double-submit produces no second
     # durable record, no second supersession edge and no second replay.
@@ -3598,6 +4060,20 @@ def correct_answer(sid):
         entry["_answer_error"] = CORRECTION_SAVED_NOT_YET_APPLIED_MESSAGE
         return redirect(url_for("show_session", sid=sid))
 
+    # T2-A (Owner-mandated ordering): after the successful durable correction
+    # and deterministic reconstruction, REATTACH and re-validate the quantity
+    # history to the replayed state BEFORE it replaces live state. The history
+    # was validated above before the append, so a failure here is a genuine
+    # post-commit failure (e.g. storage became unavailable) — exactly the case
+    # the existing saved-but-not-yet-applied behaviour exists for: the durable
+    # correction stands, live memory is left EXACTLY as it was, and the next
+    # successful load applies it. A quantity whose anchor this correction
+    # withdrew simply attaches to nothing current (the engine's deterministic
+    # inactive-anchor rule); its rows are retained, never deleted.
+    if not _attach_quantity_history(sid, _recon.state):
+        entry["_answer_error"] = CORRECTION_SAVED_NOT_YET_APPLIED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+
     # §8 RP-4 — ATOMIC live-state replacement. The replayed state REPLACES the
     # prior one wholesale; no field of the old state is edited, so no stored gap
     # status is ever moved backward (WPS-001 INV-004 preserved, §8.1/G-3). A
@@ -3640,6 +4116,183 @@ def correct_answer(sid):
         entry["_risk_lapse_notice"] = {
             "action": _lapsed_gaps, "resolved": _resolved_gaps}
     return redirect(url_for("show_session", sid=sid))
+
+
+@app.route("/session/<sid>/quantity/propose", methods=["POST"])
+def propose_requirement_quantity(sid):
+    """T2-A Quantified Requirements Slice 1 — stage ONE bounded quantity
+    proposal for an eligible requirement anchor of an OWNED project.
+
+    Performs NO durable quantity write. Global CSRF runs before this view;
+    then `_project_authorized`, the verified-active-durable-owner predicate,
+    the currently eligible anchor, the closed ``quantity_kind`` vocabulary and
+    the bounded ``value_text`` policy are checked; the active supersession
+    target is derived SERVER-SIDE from the validated durable history; the
+    proposal is staged in the current session entry (replacing any earlier
+    proposal) and a confirmation token is minted for the confirm step. Every
+    rejection is generic and discloses no identifier, value or store detail.
+    """
+    if not _project_authorized(sid):
+        return _deny_project()
+    entry = SESSION_STORE.get(sid)
+    if not entry:
+        return redirect(url_for("index"))
+    state = entry["state"]
+    account = _quantity_writer_account(sid)
+    if account is None:
+        return _deny_project()
+    if getattr(state, "domain", None) is None:
+        _publish_quantity_notice(entry, error=QUANTITY_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    anchor_id = (request.form.get("anchor_record_id") or "").strip()
+    try:
+        kind = _validate_quantity_kind((request.form.get("quantity_kind") or "").strip())
+        value_text = _normalize_value_text(request.form.get("value_text") or "")
+    except QuantityValueError:
+        _publish_quantity_notice(entry, error=QUANTITY_INVALID_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    requirement_id = next(
+        (req.requirement_id for req, record in _quantity_eligible_anchors(state)
+         if anchor_id and record.record_id == anchor_id), None)
+    if requirement_id is None:
+        _publish_quantity_notice(entry, error=QUANTITY_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    try:
+        history = _get_store().load_requirement_quantities(sid)
+    except Exception:
+        _publish_quantity_notice(entry, error=QUANTITY_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    head = _active_quantities(history).get(anchor_id)
+    if head is not None and head.quantity_kind == kind and head.value_text == value_text:
+        # Identical to the current active quantity: nothing to propose.
+        entry.pop(_QUANTITY_PROPOSAL_KEY, None)
+        _publish_quantity_notice(entry, ack=QUANTITY_SAVED_ACK)
+        return redirect(url_for("show_session", sid=sid))
+    supersedes = head.quantity_id if head is not None else None
+    now = _quantity_clock()
+    entry[_QUANTITY_PROPOSAL_KEY] = {
+        "nonce": secrets.token_urlsafe(_QUANTITY_CONFIRM_NONCE_BYTES),
+        "issued_at": now,
+        "expires_at": now + QUANTITY_CONFIRMATION_TTL_SECONDS,
+        "account_id": account["account_id"],
+        # CR-3: the propose-time session binding. Token construction uses THIS
+        # value and confirm compares the current binding against it, so a
+        # proposal staged in one browser session can never be confirmed — or
+        # even be handed a usable token — from another session.
+        "session_binding": _quantity_session_binding(),
+        "anchor_record_id": anchor_id,
+        "requirement_id": requirement_id,
+        "quantity_kind": kind,
+        "value_text": value_text,
+        "supersedes_quantity_id": supersedes,
+        # recording facts, generated ONCE for this event; never identity
+        "recorded_iteration": int(getattr(state, "iteration", 0) or 0),
+        "recorded_at": _quantity_recorded_at(),
+    }
+    return redirect(url_for("show_session", sid=sid) + "#t2a-confirm")
+
+
+@app.route("/session/<sid>/quantity/confirm", methods=["POST"])
+def confirm_requirement_quantity(sid):
+    """T2-A Quantified Requirements Slice 1 — confirm (or discard) the staged
+    proposal: the ONE durable quantity write.
+
+    Accepts ONLY ``csrf_token``, ``confirmation_token`` and
+    ``quantity_action``; every material field is resolved from the staged
+    server-side proposal, never from the request. Repeats authorization and
+    ownership; refuses a missing, malformed, expired, tampered, cross-session,
+    cross-project or cross-owner token; CONSUMES the nonce once (the staged
+    proposal is popped before any durable call, so one token can never
+    authorize two durable writes, whatever the request content); re-validates
+    that the anchor is still eligible; then appends inside the store's
+    serialized transaction, which re-validates the history, the cap and the
+    chain head (a stale head between propose and confirm is refused there).
+    Exact-replay idempotency is preserved through the durable ``event_key``
+    with confirm-by-reload. Persist-before-acknowledge throughout.
+    """
+    if not _project_authorized(sid):
+        return _deny_project()
+    entry = SESSION_STORE.get(sid)
+    if not entry:
+        return redirect(url_for("index"))
+    state = entry["state"]
+    account = _quantity_writer_account(sid)
+    if account is None:
+        return _deny_project()
+    if set(request.form.keys()) - _QUANTITY_CONFIRM_FIELDS or \
+            any(len(request.form.getlist(k)) != 1 for k in request.form.keys()):
+        # Altered request content: refuse before touching the staged proposal.
+        _publish_quantity_notice(entry, error=QUANTITY_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    action = request.form.get("quantity_action", "")
+    token = request.form.get("confirmation_token", "")
+    peeked = _staged_quantity_proposal(entry)
+    # CR-3: a proposal staged in ANOTHER browser session — including another
+    # session of the SAME account — is refused HERE, before the nonce is
+    # consumed and before any durable call. The staging session keeps its
+    # proposal; this session spends nothing and writes nothing.
+    if peeked is not None and not _quantity_session_matches(peeked):
+        _publish_quantity_notice(entry, error=QUANTITY_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    # Consume ONCE: whatever happens next, this proposal/nonce is spent.
+    staged = peeked
+    entry.pop(_QUANTITY_PROPOSAL_KEY, None)
+    if action == QUANTITY_ACTION_DISCARD:
+        _publish_quantity_notice(entry, ack=QUANTITY_DISCARDED_ACK)
+        return redirect(url_for("show_session", sid=sid))
+    if action != QUANTITY_ACTION_CONFIRM or staged is None:
+        _publish_quantity_notice(entry, error=QUANTITY_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    # §7 verification: the token must equal the one minted for THIS staged
+    # proposal under the CURRENT session binding and CURRENT owner; a nonce
+    # replay, a session-binding change, an owner change or any material-field
+    # mutation makes the recomputed token differ.
+    expected_token, event_key = _quantity_token_for(sid, account["account_id"], staged)
+    if (staged["account_id"] != account["account_id"]
+            or not token or not _p2a_hmac.compare_digest(token, expected_token)):
+        _publish_quantity_notice(entry, error=QUANTITY_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    if getattr(state, "domain", None) is None:
+        _publish_quantity_notice(entry, error=QUANTITY_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    # Stale anchor between propose and confirm (e.g. the answer was withdrawn
+    # through a correction meanwhile): refuse; nothing is written.
+    if not any(record.record_id == staged["anchor_record_id"]
+               and req.requirement_id == staged["requirement_id"]
+               for req, record in _quantity_eligible_anchors(state)):
+        _publish_quantity_notice(entry, error=QUANTITY_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    new_quantity = RequirementQuantity(
+        quantity_id=_get_store().new_quantity_id(), quantity_seq=-1,
+        anchor_record_id=staged["anchor_record_id"],
+        requirement_id=staged["requirement_id"],
+        quantity_kind=staged["quantity_kind"], value_text=staged["value_text"],
+        supersedes_quantity_id=staged["supersedes_quantity_id"],
+        event_key=event_key,
+        recorded_iteration=staged["recorded_iteration"],
+        recorded_at=staged["recorded_at"])
+    # The durable write reports what is KNOWN, never a broad "nothing changed".
+    # An ESTABLISHED refusal (decided before any row was written) is a conflict
+    # or a rejection; anything else is resolved through the stable event key
+    # before a single word is said about the durable outcome.
+    try:
+        outcome = _get_store().append_requirement_quantity(sid, new_quantity)
+    except _QuantityChainConflict:
+        outcome = _QUANTITY_CONFLICT
+    except (_QuantityCapExceeded, _QuantityAnchorIneligible, _ProjectNotFound,
+            QuantityHistoryError, QuantityValueError):
+        # Each of these is raised ONLY by a check that runs before the INSERT,
+        # so the absence of a durable row is established, not assumed. A bare
+        # StoreError is deliberately NOT in this tuple: exception class
+        # inheritance is never proof that no write occurred (R4).
+        outcome = _QUANTITY_REJECTED
+    except Exception:
+        outcome = _resolve_quantity_write(sid, new_quantity)
+    if outcome not in (_QUANTITY_INSERTED, _QUANTITY_EXACT_REPLAY,
+                       _QUANTITY_CONFLICT, _QUANTITY_REJECTED,
+                       _QUANTITY_STORAGE_FAILURE, _QUANTITY_COMMIT_UNKNOWN):
+        outcome = _QUANTITY_COMMIT_UNKNOWN          # never invent a success
+    return _finish_quantity_write(sid, entry, state, outcome)
 
 
 @app.route("/session/<sid>/accept-risk", methods=["POST"])

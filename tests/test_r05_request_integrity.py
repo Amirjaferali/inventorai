@@ -24,6 +24,9 @@ MUTATIONS = (
     "/session/<sid>/decision/refine-alternative", "/session/<sid>/decision/withdraw-alternative",
     "/session/<sid>/keep-snapshot", "/session/<sid>/success-criteria", "/session/<sid>",
     "/session/<sid>/deliverable.pdf",
+    # T2-A Quantified Requirements Slice 1: the two-stage quantity flow (propose
+    # stages; confirm writes), both covered by the same evidence matrix below.
+    "/session/<sid>/quantity/propose", "/session/<sid>/quantity/confirm",
     "/decision-workspace", "/decision-workspace/<did>/input",
     "/decision-workspace/<did>/constraint", "/decision-workspace/<did>/gap",
     "/decision-workspace/<did>/evidence", "/decision-workspace/<did>/gap-assessment",

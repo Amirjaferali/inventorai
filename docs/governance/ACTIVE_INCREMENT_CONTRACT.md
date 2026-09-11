@@ -24,9 +24,249 @@ self-SHA or lifecycle-label change creates a synchronization candidate. When no 
 exists, state ACTIVE CONTRACT: NONE; historical declarations never fill the gap.
 
 <a id="current-authority--bounded-source-of-truth-documentation-sync-only"></a>
-## Current authority — post-return declaration
+<a id="current-authority--t2a-quantified-requirements-slice-1"></a>
+## Current authority — T2-A Quantified Requirements Slice 1 (one bounded candidate)
 
-**ACTIVE CONTRACT: NONE**
+**ACTIVE CONTRACT: T2-A QUANTIFIED REQUIREMENTS SLICE 1 — ONE BOUNDED IMPLEMENTATION
+CANDIDATE (candidate prepared under Lead corrective review; merge NOT authorized).**
+
+**Owner source:** current-chat "OWNER / LEAD EXECUTION INSTRUCTION — T2-A — Quantified
+Requirements Slice 1 — ONE BOUNDED IMPLEMENTATION CANDIDATE", received after the
+verified PR #626 post-return state, followed by the current-chat Lead single-pass
+reviews of PR #638 (bounded corrective implementation; final bounded
+specification-closure correction with the attached final design delta
+T2A-WS6-FINAL-CONSOLIDATED-DESIGN-DELTA-03, SHA-256
+`a8126371a7526e20412d6f16cc3ee4252bdb3dc7c8eec4df78a002d55bf6623c`, 567 lines,
+47056 bytes, identity verified before writing). These take effect on receipt
+(declaration rule above) and supersede the post-return "ACTIVE CONTRACT: NONE"
+declaration, now preserved below as historical evidence. This entry describes the
+code that exists after the corrections.
+
+**Starting context:** authoritative branch `feature/atomic-json-session-persistence`
+(GitHub default), verified live tip `9f883956bc54dd960ec33a502259e353e6db20f3`,
+tree `7da689f3601b65240a0a1e326902e92bd609a76d`, clean working tree, working branch
+descended from that exact tip. A base advance reconciles under Lean §10 / AHAEP §5.
+
+**Data contract (delta §6):** the canonical row `RequirementQuantity` carries exactly
+`quantity_id, quantity_seq, anchor_record_id, requirement_id, quantity_kind,
+value_text, supersedes_quantity_id, event_key, recorded_iteration, recorded_at,
+validation_status = "UNVALIDATED", provenance = "OWNER_STATED"`; project scoping is
+enforced by the store and the database `project_id` column. The closed vocabulary is
+`QUANTITY_KINDS = ("target_value", "minimum_value", "maximum_value", "range",
+"count", "other_quantity")`. The `value_text` policy: text only; outer whitespace
+stripped only; empty rejected; C0 and C1 control characters rejected; more than
+`MAX_VALUE_TEXT_CHARS = 120` Unicode code points rejected; nothing parsed,
+converted, collapsed, normalized or reinterpreted — the stored value is exactly the
+submitted value after outer-whitespace stripping; it is never localized, logged or
+placed in an exception. `MAX_REQUIREMENT_QUANTITIES_PER_PROJECT = 200`.
+
+**Database (delta §6):** the additive `requirement_quantities` table with the
+project-scoped primary key `(project_id, quantity_id)`, the foreign keys
+`(project_id) → projects`, `(project_id, anchor_record_id) → records(project_id,
+record_id)` and `(project_id, supersedes_quantity_id) → requirement_quantities
+(project_id, quantity_id)`, and the exact index set `requirement_quantities_event_key_uq`,
+`requirement_quantities_seq_uq`, `requirement_quantities_supersedes_uq` (partial,
+single successor), `requirement_quantities_chain_root_uq` (partial, one chain root
+per anchor) and `requirement_quantities_anchor_idx`. The store validates the existing
+history inside its serialized write transaction before every append (no write on top
+of a corrupt history), enforces the cap there, and enforces the one-active-chain rule
+so a stale quantity head between propose and confirm is refused. Migration is
+`CREATE ... IF NOT EXISTS` on every open, idempotent on a fresh and on an existing
+populated database.
+
+**Two-stage flow and token (delta §7):** `POST /session/<sid>/quantity/propose`
+passes the global CSRF guard, `_project_authorized` and the verified-active-durable-
+owner predicate, validates the currently eligible anchor, the kind and the value
+text, derives the active supersession target server-side, stages ONE bounded
+proposal (with `recorded_iteration` and `recorded_at` generated once) in the
+current session entry and performs no durable write. `POST /session/<sid>/quantity/
+confirm` repeats authorization and ownership, accepts only `csrf_token`,
+`confirmation_token` and `quantity_action`, resolves every material field from the
+staged proposal, consumes the nonce once before any durable call, re-validates the
+anchor and performs the single durable append. Token construction:
+`session_binding = SHA256(_session_csrf())[:16]`; `material_digest = SHA256(canonical(
+"t2a-quantity-material-v1", sid, owner_account_id, session_binding, anchor_record_id,
+requirement_id, quantity_kind, value_text, supersedes_quantity_id or "", nonce,
+issued_at, expires_at))`; `confirmation_token = nonce + "." + HMAC-SHA256(secret,
+canonical("t2a-quantity-confirm-v1", sid, material_digest))[:32]`; `event_key =
+HMAC-SHA256(secret, canonical("t2a-quantity-event-v1", sid, nonce,
+material_digest))[:32]`; `QUANTITY_CONFIRMATION_TTL_SECONDS = 900` (expired when
+`clock >= expires_at`). A nonce replay, expiry, tampering, a session-binding change,
+an owner change, any material-field mutation and cross-session / cross-project /
+cross-owner presentation are refused; exact replay is idempotent through the
+durable unique `event_key` with confirm-by-reload. The correction flow validates the
+quantity history before the durable correction append (generic
+correction-not-applied on failure) and reattaches it after deterministic
+reconstruction before live state is replaced.
+
+**Package and presentation (delta §8):** when rows exist, and only then,
+`_session_meta["requirement_quantities"] = {"total": n, "rows": [...]}` where each
+row is the canonical row plus the derived booleans `active` and `anchor_active`,
+ordered by `quantity_seq`; no label, title, note, translated prose or presentation
+sentence is placed in the package. It is composed at the shared web deliverable seam
+(HTML and PDF) because `engine/deliverable_assembler.py` is frozen by the merged G-3
+A-20/A-21 pin and stays byte-identical; canonical Section 13/14 behaviour is
+unchanged. Zero rows add no package key, no HTML block and no PDF-source
+difference. HTML/PDF resolve every heading, disclaimer, status and label through
+`UI_T2A_*` bilingual keys and show the active value, the replaced prior values, the
+withdrawn-anchor status and the unvalidated / inventor-stated disclaimer; no form,
+token, internal identifier or raw internal status renders; no feasibility,
+attainability, safety, compliance or validation claim is made.
+
+**Exact file boundary (this candidate):** production `engine/requirement_quantity.py`
+(new), `engine/record_store.py`, `engine/idea_state.py`, `web/app.py`,
+`web/ui_text.py`, `web/templates/session.html`, `web/templates/deliverable.html`;
+tests `tests/test_t2a_requirement_quantity_engine_store.py` (new),
+`tests/test_t2a_requirement_quantity_web.py` (new),
+`tests/test_r05_request_integrity.py` (mutation inventory: both routes),
+`tests/test_p5_3_project_ownership_authorization.py` (denial matrices: both routes),
+`tests/test_pvcg_r1_durable_epistemic_memory.py` (table inventory; the one-ledger
+claim is kept and strengthened); and this file only. `engine/deliverable_assembler.py`,
+`engine/read_export_service.py`, `engine/export_adapter.py`, `web/api_v1.py` and
+`tests/test_p7_i2_public_api.py` remain byte-identical to the base. No new
+governance, review, evidence, plan or handover document is created.
+
+**Consolidated bounded repair (Lead adjudication `FAIL — ONE CONSOLIDATED BOUNDED
+REPAIR REQUIRED`, instruction `T2A-PR638-CONSOLIDATED-REPAIR-01` v1.0).** The two
+adjudicated violations — an invalid anchor/history state presentable as legitimate
+withdrawn history, and an uncertain or completed write reportable as a definite
+non-write — are closed as follows, inside the same 13-path boundary:
+
+* **Anchor, assertion and incoming-row integrity (CR-1).** Quantity history is
+  validated against the project's DURABLE LEDGER ASSERTIONS as well as against the
+  other quantity rows. An anchor resolves to exactly one of three states —
+  `ANCHOR_ACTIVE` (a valid, currently answered assertion anchor), `ANCHOR_WITHDRAWN`
+  (a valid, previously answered anchor GENUINELY superseded through the governed
+  correction path) or `ANCHOR_INVALID` (missing, never a valid answered assertion
+  anchor, or an inconsistent assertion/requirement relationship). ONLY
+  `ANCHOR_WITHDRAWN` may present as withdrawn history; `ANCHOR_INVALID` fails closed
+  through the established generic recovery behaviour at the single attachment seam
+  every surface shares. The PROPOSED canonical row is validated TOGETHER with the
+  existing history inside the same write transaction (`validate_new_quantity`), so a
+  direct store caller cannot commit an invalid kind, a malformed generated identity,
+  an inconsistent requirement identity, an invalid anchor relationship or any other
+  invalid canonical row. Valid chains and genuine withdrawn-anchor presentation are
+  preserved; no corrupt durable row is repaired, deleted or reinterpreted.
+* **Truthful write outcomes (CR-2).** The durable write reports one of
+  `INSERTED`, `EXACT_REPLAY`, `CONFLICT`, `REJECTED`, `STORAGE_FAILURE` or
+  `COMMIT_UNKNOWN`, plus the web-layer `RELOAD_FAILED`. Exceptions are no longer
+  broadly translated into "Nothing was changed": an established refusal decided
+  before any row was written says so, and any undetermined outcome is first resolved
+  through the stable `(project_id, event_key)`. A proven durable presence is reported
+  as saved/idempotent; a proven durable absence is reported as an unchanged project;
+  an outcome that cannot be determined asserts neither a write nor a rollback.
+  Transaction safety and unique-event protection are unchanged, and no message
+  exposes SQL text, a path, a token, an identifier, a raw value or exception detail.
+* **Propose-time session binding (CR-3).** The session binding is RECORDED in the
+  staged proposal at propose time; token construction uses that stored binding; and
+  confirm compares the current binding against it BEFORE nonce consumption or any
+  durable call. A different browser session of the SAME account is neither offered a
+  usable token nor able to spend another session's proposal. Owner, project, CSRF,
+  expiry, nonce and content binding are unchanged.
+* **Exact replay classification (CR-4).** The stable event key is resolved BEFORE the
+  row's chain position is classified, so a replayed recorded event is `EXACT_REPLAY`
+  rather than a new-write conflict; `EXACT_REPLAY` is returned only when the stored
+  canonical row matches the intended event exactly, and a mismatched reuse of the key
+  remains a conflict.
+* **Literal zero-quantity equivalence (CR-5).** The report addition is delimited by
+  two sentinels and every scaffolding tag self-erases, so with zero quantity rows the
+  candidate's HTML and PDF source are BYTE-IDENTICAL to the base source (the report
+  template with the addition textually removed), apart from the already permitted
+  volatile `generated_at`. No package key, no JSON member, no quantity block and no
+  PDF-source difference.
+* **Test portability (CR-6).** No test depends on `git`, a subprocess or the presence
+  of a `.git` directory; the no-scope-leak guarantee is proved by repository-
+  independent source inspection plus a live proof that a project which really holds
+  quantities exposes none of them through the canonical read/export seam, the export
+  adapter, the browser export or the public API surface.
+* **Quantity-specific recovery wording (CR-7).** A post-commit reload failure uses its
+  own truthful English and Arabic wording instead of the reused answer-correction
+  message; escaping, localization boundaries and non-disclosure are unchanged, and no
+  new messaging framework is introduced.
+
+**Second narrow bounded repair (Lead differential adjudication `C — FAIL —
+BOUNDED REPAIR REQUIRED`, instruction `T2A-PR638-R1-R4-NARROW-REPAIR-02` v1.0).**
+Four independently reproduced P2 defects are closed, inside the same 13-path
+boundary. CR-3 … CR-7 are unchanged and were not reopened.
+
+* **R1 — durable anchor eligibility at write time.** Every NEW quantity event —
+  a chain root and a chain successor alike — must name an anchor the DURABLE
+  ledger holds as currently eligible, checked inside the same serialized append
+  transaction (`QuantityAnchorIneligible`). A retained live session that still
+  offers an anchor a governed correction has since withdrawn, and a
+  proposal-time eligibility result that has been overtaken, are both overruled:
+  durable truth controls and nothing is written. An exact existing event is
+  resolved FIRST, so a replay of an event recorded before the withdrawal stays
+  idempotent, and rows validly recorded before their anchor was withdrawn keep
+  their validity, their history and their withdrawn-anchor presentation.
+* **R2 — one current quantity notice, in an ISOLATED namespace.** Quantity
+  outcomes own two dedicated ephemeral session slots (`_quantity_ack` and
+  `_quantity_error`). Publishing a quantity outcome clears both of them and
+  writes exactly one, so a success acknowledgement can never be shown beside a
+  stale "nothing was changed", conflict or unknown-outcome message, and a newly
+  established failure can never be shown beside a stale success acknowledgement
+  — in English or in Arabic. The shared `_interaction_ack` and `_answer_error`
+  slots that the answer and correction flows own are never read, written,
+  cleared or reinterpreted by a quantity outcome, so a truthful correction
+  recovery warning or acknowledgement survives a quantity refusal or success
+  untouched; the session renders both namespaces, in the deterministic order
+  answer/correction first and quantity outcome second, and each is popped once
+  by the same single-use rule. These slots are transient per-session UI state:
+  they are never persisted, never enter the canonical package, an export, the
+  HTML deliverable or the PDF, and reconstruction never converts one into
+  durable data. This is a two-slot namespace, not a notification queue, event
+  bus, schema change or application-wide messaging framework.
+* **R3 — reciprocal supersession is required for withdrawn status.** A non-null
+  `superseded_by` is no longer sufficient. `ANCHOR_WITHDRAWN` requires the
+  COMPLETE reciprocal governed relationship proven from the durable records:
+  the old answered record identifies the alleged successor, that successor
+  exists in this project, the successor's durable FORWARD `supersedes` relation
+  identifies the old record and is single-valued, and the relationship is
+  neither self-referential nor cyclic. The forward map is built from
+  `supersedes` alone, never from `superseded_by`, so load-time reconciliation
+  cannot manufacture evidence that hides a one-sided persisted reference. A
+  missing, malformed, mis-targeted, one-sided, ambiguous or cyclic relationship
+  is `ANCHOR_INVALID` and fails closed on session, cold reconstruction, HTML and
+  PDF input, with the durable rows retained and never repaired or erased.
+  Genuine withdrawal behaviour is unchanged.
+* **R4 — no exception class is proof of a non-write.** Only exceptions raised by
+  checks that run BEFORE the INSERT are treated as established refusals
+  (`QuantityChainConflict`, `QuantityCapExceeded`, `QuantityAnchorIneligible`,
+  `ProjectNotFound`, `QuantityHistoryError`, `QuantityValueError`). A generic
+  `StoreError` is no longer among them: it passes through the same stable
+  `(project_id, event_key)` resolution as any other unproven outcome, so a
+  committed write is reported truthfully, a proven absence is reported as an
+  established non-write, and an indeterminate outcome reports `COMMIT_UNKNOWN`.
+  Messages remain generic and non-disclosing.
+
+**Evidence (delta §12):** the literal Set B (5), owners (20) and Set C (140) lists,
+focused = Set B ∪ owners (25) and affected = Set B ∪ Set C (145), base
+`tests/test_*.py` = 185 at the base SHA and 187 at the candidate head, the two new
+tests identified by explicit membership (absent at base, tracked at head), the
+universal guardrail smoke, the full regression and the CI-equivalent JUnit audit are
+run against the committed candidate; exact results are reported in the execution
+report and the PR description.
+
+**Delivery included / not included:** one working branch from the verified tip, the
+required tests and evidence checks, the frozen commit plus the consolidated corrective
+commits, normal pushes, one PR (#638) targeting `feature/atomic-json-session-persistence`.
+Not included: merge, deployment, release, default-branch change, modifying `main`,
+deleting/rebasing branches, force-push, weakening/skipping/xfailing/deleting an
+existing test, any API, structured or browser export, reference adapter,
+schema-version bump, compatibility shim, or expanding Slice 1. Machine-readable
+quantity export is DEFERRED — NOT CANCELLED (delta §9; return trigger: a separate
+Owner-authorized export/privacy increment). Independent review of the immutable
+candidate is performed by a separate non-authoring session and begins only on Lead
+instruction. Completing this candidate authorizes no successor slice, phase or
+capability. All existing gates, deferred obligations, unresolved issues and
+non-blocking observations keep their status, owner and return conditions.
+
+## Historical authority — post-return declaration (superseded by T2-A Slice 1)
+
+The following declaration is preserved as historical evidence of the state between
+the PR #626 merge and the T2-A Slice-1 instruction above.
+
+**ACTIVE CONTRACT: NONE** *(historical; superseded above)*
 
 PR #626 documentation sync: **COMPLETED / MERGED / POST-MERGE VERIFIED**.
 No current product implementation or documentation-sync mandate exists.

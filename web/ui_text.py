@@ -115,6 +115,27 @@ _MESSAGE_KEYS = {
     # pattern as every other server message (storage stays English).
     ("That decision entry could not be saved just now. "
      "Nothing was changed."): "UI_W2A_ERR_001",
+    # T2-A Quantified Requirements Slice 1 (web/app.py): the two rejection
+    # messages render through the `_answer_error` slot (localize_message), so
+    # they are registered here; the ack renders through `_interaction_ack`
+    # (localize_deep) and is registered in `_DEEP_AR` below.
+    ("That quantity could not be saved just now. Nothing was changed."):
+        "UI_T2A_ERR_NOT_SAVED",
+    ("Choose what kind of value this is and enter it as short plain text for "
+     "the selected item. Nothing was changed."): "UI_T2A_ERR_INVALID",
+    # The three truthful outcome messages. They are DISTINCT because the three
+    # durable outcomes are distinct: an established refusal that wrote nothing,
+    # an outcome that could not be determined at all (which asserts neither a
+    # write nor a rollback), and a quantity that IS saved but could not be
+    # reattached for display. None of them is the answer-correction wording.
+    ("The recorded values for this item changed while you were confirming, so "
+     "that quantity was not saved. Nothing was changed. Review the values shown "
+     "here and enter it again if you still want it."): "UI_T2A_ERR_CONFLICT",
+    ("We could not confirm whether that quantity was saved. Reload this page to "
+     "see the values your project currently holds before entering it again."):
+        "UI_T2A_ERR_UNKNOWN",
+    ("Your quantity was saved to your project, but it could not be shown here "
+     "just now. Reload this page shortly to see it."): "UI_T2A_ERR_SAVED_NOT_SHOWN",
 }
 
 
@@ -1608,6 +1629,117 @@ UI_STRINGS = {
         "en": "We could not generate the PDF. Nothing was saved. Please try again.",
         "ar": "تعذر إنشاء ملف PDF. لم يتم حفظ أي شيء. يُرجى المحاولة مرة أخرى.",
     },
+
+    # --- T2-A Quantified Requirements Slice 1: presentation chrome ONLY. The
+    # stored values are canonical tokens (the closed ``quantity_kind`` and the
+    # exact ``value_text``) owned by engine/requirement_quantity.py; these
+    # entries are the localized DISPLAY of the kind tokens (``UI_T2A_KIND_<TOKEN>``),
+    # the statuses and the block's plain-language framing. Inventor value text
+    # is NEVER localized and never passes through localize_deep. Optional and
+    # progressive: the block is collapsed by default and the journey completes
+    # without entering a single value. The wording claims recording only —
+    # never validation, attainability, feasibility, safety or compliance.
+    "UI_T2A_HEADING": {"en": "Add a value to a requirement (optional)",
+                       "ar": "أضف قيمة إلى متطلب (اختياري)"},
+    "UI_T2A_EXPLAIN": {
+        "en": ("If you already know a value for one of your recorded requirements — "
+               "a target, a minimum, a maximum, a range or a count — you can record "
+               "it here in your own words, with its unit. This is optional. What you "
+               "enter is kept as stated and is not checked, validated, or assessed for "
+               "feasibility, attainability, safety, or compliance. Recording a new value "
+               "for the same item replaces the earlier one and keeps it in your project "
+               "history. You will be asked to confirm before anything is saved."),
+        "ar": ("إذا كنت تعرف بالفعل قيمة لأحد المتطلبات المسجّلة — هدفًا أو حدًا أدنى أو "
+               "حدًا أقصى أو نطاقًا أو عددًا — يمكنك تسجيلها هنا بكلماتك مع وحدتها. "
+               "هذا اختياري. ما تدخله يُحفظ كما ذكرته ولا يُفحص ولا يُتحقق منه ولا يُقيَّم "
+               "من حيث الجدوى أو إمكانية التحقيق أو السلامة أو الامتثال. تسجيل قيمة "
+               "جديدة للعنصر نفسه يحل محل القيمة السابقة مع الاحتفاظ بها في سجل مشروعك. "
+               "سيُطلب منك التأكيد قبل حفظ أي شيء."),
+    },
+    "UI_T2A_CURRENT": {"en": "Recorded value:", "ar": "القيمة المسجّلة:"},
+    "UI_T2A_NONE": {"en": "No value recorded for this item.",
+                    "ar": "لا توجد قيمة مسجّلة لهذا العنصر."},
+    "UI_T2A_KIND_LABEL": {"en": "Kind of value", "ar": "نوع القيمة"},
+    "UI_T2A_VALUE_LABEL": {"en": "Value, in your own words", "ar": "القيمة بكلماتك"},
+    "UI_T2A_VALUE_HINT": {
+        "en": "Short plain text with the unit, for example 12 V or 0.5 mm. Up to 120 characters, on one line.",
+        "ar": "نص قصير مع الوحدة، مثل 12 V أو 0.5 mm. حتى 120 حرفًا في سطر واحد.",
+    },
+    "UI_T2A_BUTTON": {"en": "Review this value", "ar": "راجع هذه القيمة"},
+    "UI_T2A_REPLACE_BUTTON": {"en": "Review a replacement value",
+                              "ar": "راجع قيمة بديلة"},
+    "UI_T2A_CONFIRM_HEADING": {"en": "Confirm this value before it is saved",
+                               "ar": "أكّد هذه القيمة قبل حفظها"},
+    "UI_T2A_CONFIRM_EXPLAIN": {
+        "en": ("Nothing has been saved yet. Confirm to record this value as stated, "
+               "or discard it. It will not be checked or verified."),
+        "ar": ("لم يُحفظ أي شيء بعد. أكّد لتسجيل هذه القيمة كما ذكرتها، أو تجاهلها. "
+               "لن تُفحص ولن يُتحقق منها."),
+    },
+    "UI_T2A_CONFIRM_REPLACES": {"en": "This will replace the recorded value:",
+                                "ar": "سيحل هذا محل القيمة المسجّلة:"},
+    "UI_T2A_CONFIRM_BUTTON": {"en": "Confirm and save", "ar": "أكّد واحفظ"},
+    "UI_T2A_DISCARD_BUTTON": {"en": "Discard", "ar": "تجاهل"},
+    "UI_T2A_STATUS_UNVALIDATED": {"en": "Inventor-stated, not validated",
+                                  "ar": "بحسب إفادة المخترع، غير مُتحقَّق منه"},
+    "UI_T2A_REPLACED": {"en": "Replaced values:", "ar": "القيم المستبدَلة:"},
+    "UI_T2A_WITHDRAWN_ANCHOR": {"en": "Value attached to a withdrawn answer",
+                                "ar": "قيمة مرتبطة بإجابة مسحوبة"},
+    "UI_T2A_WITHDRAWN_NOTE": {
+        "en": ("The answer this value was attached to has been withdrawn. The value is "
+               "kept in your project history and is no longer current."),
+        "ar": ("سُحبت الإجابة التي كانت هذه القيمة مرتبطة بها. تُحفظ القيمة في سجل "
+               "مشروعك ولم تعد حالية."),
+    },
+    "UI_T2A_DELIV_HEADING": {"en": "Quantities you recorded",
+                             "ar": "الكميات التي سجّلتها"},
+    "UI_T2A_DISCLAIMER": {
+        "en": ("These values were entered by the inventor for the listed requirements. "
+               "They are recorded as stated and have not been checked, validated, or "
+               "assessed for feasibility, attainability, safety, or compliance."),
+        "ar": ("أدخل المخترع هذه القيم للمتطلبات المدرجة. وهي مسجّلة كما ذُكرت ولم "
+               "تُفحص ولم يُتحقق منها ولم تُقيَّم من حيث الجدوى أو إمكانية التحقيق أو "
+               "السلامة أو الامتثال."),
+    },
+    "UI_T2A_PROVENANCE": {"en": "Recorded by the inventor (not yet verified)",
+                          "ar": "سجّله المخترع (لم يُتحقق منه بعد)"},
+    "UI_T2A_ERR_NOT_SAVED": {
+        "en": "That quantity could not be saved just now. Nothing was changed.",
+        "ar": "تعذر حفظ هذه الكمية الآن. لم يتغير أي شيء.",
+    },
+    "UI_T2A_ERR_INVALID": {
+        "en": ("Choose what kind of value this is and enter it as short plain text for "
+               "the selected item. Nothing was changed."),
+        "ar": "اختر نوع القيمة وأدخلها كنص قصير للعنصر المحدد. لم يتغير أي شيء.",
+    },
+    "UI_T2A_ERR_CONFLICT": {
+        "en": ("The recorded values for this item changed while you were confirming, so "
+               "that quantity was not saved. Nothing was changed. Review the values shown "
+               "here and enter it again if you still want it."),
+        "ar": ("تغيرت القيم المسجّلة لهذا العنصر أثناء تأكيدك، لذلك لم تُحفظ هذه الكمية. "
+               "لم يتغير أي شيء. راجع القيم المعروضة هنا وأدخلها مرة أخرى إذا كنت "
+               "لا تزال تريدها."),
+    },
+    "UI_T2A_ERR_UNKNOWN": {
+        "en": ("We could not confirm whether that quantity was saved. Reload this page to "
+               "see the values your project currently holds before entering it again."),
+        "ar": ("تعذر علينا تأكيد ما إذا كانت هذه الكمية قد حُفظت. أعد تحميل هذه الصفحة "
+               "لرؤية القيم التي يحتفظ بها مشروعك حاليًا قبل إدخالها مرة أخرى."),
+    },
+    "UI_T2A_ERR_SAVED_NOT_SHOWN": {
+        "en": ("Your quantity was saved to your project, but it could not be shown here "
+               "just now. Reload this page shortly to see it."),
+        "ar": ("حُفظت الكمية في مشروعك، لكن تعذر عرضها هنا الآن. أعد تحميل هذه الصفحة "
+               "بعد قليل لرؤيتها."),
+    },
+    # Kind tokens (engine QUANTITY_KINDS, accepted design delta §6) -> display,
+    # keyed ``UI_T2A_KIND_<TOKEN>`` (token upper-cased); one entry per token.
+    "UI_T2A_KIND_TARGET_VALUE": {"en": "Target value", "ar": "قيمة مستهدفة"},
+    "UI_T2A_KIND_MINIMUM_VALUE": {"en": "Minimum value", "ar": "حد أدنى"},
+    "UI_T2A_KIND_MAXIMUM_VALUE": {"en": "Maximum value", "ar": "حد أقصى"},
+    "UI_T2A_KIND_RANGE": {"en": "Range", "ar": "نطاق"},
+    "UI_T2A_KIND_COUNT": {"en": "Count", "ar": "عدد"},
+    "UI_T2A_KIND_OTHER_QUANTITY": {"en": "Other quantity", "ar": "كمية أخرى"},
 }
 
 
@@ -1778,6 +1910,15 @@ _DEEP_AR = {
      "Everything shown has been recomputed from your remaining answers."):
         ("تم سحب إجابتك السابقة مع الاحتفاظ بها في سجل المشروع. "
          "وأُعيد حساب كل ما يظهر هنا من إجاباتك المتبقية."),
+
+    # --- T2-A quantity acknowledgement (web/app.py record_requirement_quantity):
+    # rendered through `_interaction_ack` -> localize_deep, so it lives HERE.
+    ("Your quantity was recorded and saved to your project. It is kept as "
+     "stated and has not been checked or verified."):
+        ("تم تسجيل الكمية وحفظها في مشروعك. وهي محفوظة كما ذكرتها ولم تُفحص "
+         "ولم يُتحقق منها."),
+    "The proposed quantity was discarded. Nothing was saved.":
+        "تم تجاهل الكمية المقترحة. لم يُحفظ أي شيء.",
 
     # --- 4.12 non-answer acknowledgements (web/app.py _NON_ANSWER_ACK) ---
     "Recorded that you do not know this yet. It is kept as an open unknown and does not resolve the question.": "تم تسجيل أنك لا تعرف هذا بعد. يُحفظ كأمر غير معروف مفتوح ولا يحلّ السؤال.",
