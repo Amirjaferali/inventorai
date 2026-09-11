@@ -199,13 +199,23 @@ boundary. CR-3 … CR-7 are unchanged and were not reopened.
   resolved FIRST, so a replay of an event recorded before the withdrawal stays
   idempotent, and rows validly recorded before their anchor was withdrawn keep
   their validity, their history and their withdrawn-anchor presentation.
-* **R2 — one current quantity notice.** Publishing any quantity outcome first
-  clears any other pending quantity notice on the same session entry, so a
-  success acknowledgement can never be shown beside a stale "nothing was
-  changed", conflict or unknown-outcome message, and a newly established
-  failure can never be shown beside a stale success acknowledgement — in
-  English or in Arabic. Notices owned by other flows (answers, corrections) are
-  never touched, and no new messaging framework is introduced.
+* **R2 — one current quantity notice, in an ISOLATED namespace.** Quantity
+  outcomes own two dedicated ephemeral session slots (`_quantity_ack` and
+  `_quantity_error`). Publishing a quantity outcome clears both of them and
+  writes exactly one, so a success acknowledgement can never be shown beside a
+  stale "nothing was changed", conflict or unknown-outcome message, and a newly
+  established failure can never be shown beside a stale success acknowledgement
+  — in English or in Arabic. The shared `_interaction_ack` and `_answer_error`
+  slots that the answer and correction flows own are never read, written,
+  cleared or reinterpreted by a quantity outcome, so a truthful correction
+  recovery warning or acknowledgement survives a quantity refusal or success
+  untouched; the session renders both namespaces, in the deterministic order
+  answer/correction first and quantity outcome second, and each is popped once
+  by the same single-use rule. These slots are transient per-session UI state:
+  they are never persisted, never enter the canonical package, an export, the
+  HTML deliverable or the PDF, and reconstruction never converts one into
+  durable data. This is a two-slot namespace, not a notification queue, event
+  bus, schema change or application-wide messaging framework.
 * **R3 — reciprocal supersession is required for withdrawn status.** A non-null
   `superseded_by` is no longer sufficient. `ANCHOR_WITHDRAWN` requires the
   COMPLETE reciprocal governed relationship proven from the durable records:

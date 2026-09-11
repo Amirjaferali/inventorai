@@ -428,8 +428,8 @@ def test_exact_replay_of_the_same_event_is_idempotent_through_the_event_key(db_p
     # CONSUME the original success notice: render once and clear both slots, so
     # the assertion below can only observe a notice the REPLAY itself produced.
     assert webapp.QUANTITY_SAVED_ACK in _page(c, sid)
-    SESSION_STORE[sid].pop("_interaction_ack", None)
-    SESSION_STORE[sid].pop("_answer_error", None)
+    SESSION_STORE[sid].pop(webapp.QUANTITY_ACK_SLOT, None)
+    SESSION_STORE[sid].pop(webapp.QUANTITY_ERROR_SLOT, None)
     assert webapp.QUANTITY_SAVED_ACK not in _page(c, sid)
     store = _store()
     real_append = store.append_requirement_quantity
@@ -445,8 +445,8 @@ def test_exact_replay_of_the_same_event_is_idempotent_through_the_event_key(db_p
     SESSION_STORE[sid]["quantity_proposal"] = dict(staged)
     assert _confirm(c, sid, token).status_code == 302
     assert calls == [(rows[0][7], "EXACT_REPLAY")]
-    assert SESSION_STORE[sid].get("_answer_error") is None
-    assert SESSION_STORE[sid].get("_interaction_ack") == webapp.QUANTITY_SAVED_ACK
+    assert SESSION_STORE[sid].get(webapp.QUANTITY_ERROR_SLOT) is None
+    assert SESSION_STORE[sid].get(webapp.QUANTITY_ACK_SLOT) == webapp.QUANTITY_SAVED_ACK
     assert webapp.QUANTITY_SAVED_ACK in _page(c, sid)
     assert _rows(db_path, sid) == rows and len(_rows(db_path, sid)) == 1
 
@@ -571,7 +571,7 @@ def test_cross_session_cross_project_and_cross_owner_tokens_are_refused(db_path)
     ca2 = _new_client()
     ca2.post("/login", data={"email": "t2a-x-a@example.com", "password": PW})
     assert _confirm(ca2, sid_a, tok_a).status_code == 302
-    assert SESSION_STORE[sid_a].get("_answer_error") == webapp.QUANTITY_NOT_SAVED_MESSAGE
+    assert SESSION_STORE[sid_a].get(webapp.QUANTITY_ERROR_SLOT) == webapp.QUANTITY_NOT_SAVED_MESSAGE
     assert _rows(db_path, sid_a) == []
     assert _propose(cb, sid_b, "rec_1", "9 A", KIND2).status_code == 302
     assert _confirm(cb, sid_b, tok_a).status_code == 302
@@ -1030,7 +1030,7 @@ def test_corrupt_populated_history_fails_closed_on_every_surface(db_path, monkey
         assert "qty-" not in text and "bogus" not in text and "sqlite" not in text.lower()
     assert [q.value_text for q in SESSION_STORE[sid]["state"].requirement_quantities] == ["5 V"]
     assert _confirm(c, sid, token).status_code == 302
-    assert SESSION_STORE[sid].get("_answer_error") == webapp.QUANTITY_NOT_SAVED_MESSAGE
+    assert SESSION_STORE[sid].get(webapp.QUANTITY_ERROR_SLOT) == webapp.QUANTITY_NOT_SAVED_MESSAGE
     assert _rows(db_path, sid) == before_rows
     r = c.post(PROPOSE % sid, data={"anchor_record_id": "rec_1", "quantity_kind": KIND,
                                     "value_text": "7 V"})
@@ -1056,10 +1056,10 @@ def test_storage_unavailability_fails_closed_without_partial_state(db_path, monk
     monkeypatch.setattr(store, "append_requirement_quantity",
                         lambda *a, **k: (_ for _ in ()).throw(sqlite3.OperationalError("db gone")))
     assert _confirm(c, sid, token).status_code == 302
-    assert SESSION_STORE[sid].get("_answer_error") == webapp.QUANTITY_NOT_SAVED_MESSAGE
+    assert SESSION_STORE[sid].get(webapp.QUANTITY_ERROR_SLOT) == webapp.QUANTITY_NOT_SAVED_MESSAGE
     assert [x[5] for x in _rows(db_path, sid)] == ["5 V"]
     assert _propose(c, sid, "rec_1", "7 V").status_code == 302
-    assert SESSION_STORE[sid].get("_answer_error") == webapp.QUANTITY_NOT_SAVED_MESSAGE
+    assert SESSION_STORE[sid].get(webapp.QUANTITY_ERROR_SLOT) == webapp.QUANTITY_NOT_SAVED_MESSAGE
 
 
 def test_durable_append_failure_publishes_nothing_persist_before_acknowledge(db_path, monkeypatch):
@@ -1348,13 +1348,13 @@ def test_a_second_session_of_the_same_owner_cannot_obtain_or_use_a_token(db_path
     assert _ctoken(body) is None and 'id="t2a-confirm"' not in body
     # Even handed session A's token, session B cannot confirm and consumes nothing.
     assert _confirm(second, sid, good_token).status_code == 302
-    assert SESSION_STORE[sid].get("_answer_error") == webapp.QUANTITY_NOT_SAVED_MESSAGE
+    assert SESSION_STORE[sid].get(webapp.QUANTITY_ERROR_SLOT) == webapp.QUANTITY_NOT_SAVED_MESSAGE
     assert _rows(db_path, sid) == []
     assert SESSION_STORE[sid]["quantity_proposal"] == staged
     # The staging session still completes normally — nothing was spent.
     assert _confirm(first, sid, good_token).status_code == 302
     assert [r[5] for r in _rows(db_path, sid)] == ["7 V"]
-    assert SESSION_STORE[sid].get("_interaction_ack") == webapp.QUANTITY_SAVED_ACK
+    assert SESSION_STORE[sid].get(webapp.QUANTITY_ACK_SLOT) == webapp.QUANTITY_SAVED_ACK
 
 
 # ==========================================================================
@@ -1378,7 +1378,7 @@ def test_failure_before_commit_reports_an_established_non_write(db_path, monkeyp
                         lambda pid, q: (_ for _ in ()).throw(
                             sqlite3.OperationalError("database is locked")))
     assert _confirm(c, sid, token).status_code == 302
-    assert SESSION_STORE[sid].get("_answer_error") == webapp.QUANTITY_NOT_SAVED_MESSAGE
+    assert SESSION_STORE[sid].get(webapp.QUANTITY_ERROR_SLOT) == webapp.QUANTITY_NOT_SAVED_MESSAGE
     assert _rows(db_path, sid) == []
     monkeypatch.undo()
     assert _values(_page(c, sid)) == []
@@ -1400,7 +1400,7 @@ def test_a_durable_append_followed_by_an_exception_is_reported_as_saved(db_path,
     assert _confirm(c, sid, token).status_code == 302
     assert [r[5] for r in _rows(db_path, sid)] == ["7 V"]
     assert SESSION_STORE[sid].get("_answer_error") is None
-    assert SESSION_STORE[sid].get("_interaction_ack") == webapp.QUANTITY_SAVED_ACK
+    assert SESSION_STORE[sid].get(webapp.QUANTITY_ACK_SLOT) == webapp.QUANTITY_SAVED_ACK
     monkeypatch.undo()
     body = _page(c, sid)
     assert _values(body) == ["7 V"]
@@ -1431,7 +1431,7 @@ def test_a_genuinely_unknown_commit_outcome_reports_uncertainty(db_path, monkeyp
     monkeypatch.setattr(store, "append_requirement_quantity", append_then_fail)
     monkeypatch.setattr(store, "requirement_quantity_for_event_key", unreadable)
     assert _confirm(c, sid, token).status_code == 302
-    message = SESSION_STORE[sid].get("_answer_error")
+    message = SESSION_STORE[sid].get(webapp.QUANTITY_ERROR_SLOT)
     assert message == webapp.QUANTITY_OUTCOME_UNKNOWN_MESSAGE
     assert "Nothing was changed" not in message and "not saved" not in message
     assert [r[5] for r in _rows(db_path, sid)] == ["7 V"]       # it WAS committed
@@ -1459,7 +1459,7 @@ def test_stable_event_key_resolution_proves_absence_before_claiming_one(db_path,
     # The resolution ran, read only this project, proved absence, and the
     # message reports the proven non-write rather than an unknown outcome.
     assert seen == [sid]
-    assert SESSION_STORE[sid].get("_answer_error") == webapp.QUANTITY_NOT_SAVED_MESSAGE
+    assert SESSION_STORE[sid].get(webapp.QUANTITY_ERROR_SLOT) == webapp.QUANTITY_NOT_SAVED_MESSAGE
     assert _rows(db_path, sid) == []
 
 
@@ -1474,7 +1474,7 @@ def test_commit_then_reload_failure_says_saved_but_not_shown(db_path, monkeypatc
         raise sqlite3.OperationalError("gone after commit")
     monkeypatch.setattr(store, "load_requirement_quantities", gone)
     assert _confirm(c, sid, token).status_code == 302
-    message = SESSION_STORE[sid].get("_answer_error")
+    message = SESSION_STORE[sid].get(webapp.QUANTITY_ERROR_SLOT)
     assert message == webapp.QUANTITY_SAVED_NOT_SHOWN_MESSAGE
     assert message != webapp.CORRECTION_SAVED_NOT_YET_APPLIED_MESSAGE
     assert message != webapp.QUANTITY_NOT_SAVED_MESSAGE
@@ -1568,8 +1568,8 @@ def test_a_withdrawn_anchor_is_not_writable_after_a_reload_failure(db_path, monk
     # A normal propose/confirm against it writes NOTHING.
     assert _record(c, sid, "rec_2", "9 V").status_code == 302
     assert _rows(db_path, sid) == before
-    assert SESSION_STORE[sid].get("_interaction_ack") != webapp.QUANTITY_SAVED_ACK
-    assert SESSION_STORE[sid].get("_answer_error") == webapp.QUANTITY_NOT_SAVED_MESSAGE
+    assert SESSION_STORE[sid].get(webapp.QUANTITY_ACK_SLOT) != webapp.QUANTITY_SAVED_ACK
+    assert SESSION_STORE[sid].get(webapp.QUANTITY_ERROR_SLOT) == webapp.QUANTITY_NOT_SAVED_MESSAGE
     # An exact replay of the event recorded BEFORE the withdrawal is idempotent.
     stored = _store().requirement_quantity_for_event_key(sid, before[0][7])
     replay = webapp.RequirementQuantity(
@@ -1611,12 +1611,12 @@ def test_a_successful_save_clears_a_stale_non_write_notice(db_path):
     second = _new_client()
     second.post("/login", data={"email": "t2a-r2-stale@example.com", "password": PW})
     assert _confirm(second, sid, good).status_code == 302            # correctly refused
-    assert SESSION_STORE[sid].get("_answer_error") == webapp.QUANTITY_NOT_SAVED_MESSAGE
+    assert SESSION_STORE[sid].get(webapp.QUANTITY_ERROR_SLOT) == webapp.QUANTITY_NOT_SAVED_MESSAGE
     assert _rows(db_path, sid) == []
     assert _confirm(first, sid, good).status_code == 302             # succeeds
     entry = SESSION_STORE[sid]
-    assert entry.get("_interaction_ack") == webapp.QUANTITY_SAVED_ACK
-    assert entry.get("_answer_error") is None
+    assert entry.get(webapp.QUANTITY_ACK_SLOT) == webapp.QUANTITY_SAVED_ACK
+    assert entry.get(webapp.QUANTITY_ERROR_SLOT) is None
     body = _page(first, sid)
     assert _values(body) == ["7 V"] and [r[5] for r in _rows(db_path, sid)] == ["7 V"]
     assert webapp.QUANTITY_SAVED_ACK in body
@@ -1645,10 +1645,10 @@ def test_a_new_failure_clears_a_stale_success_acknowledgement(db_path, monkeypat
     c, _aid = _client_for("t2a-r2-inverse@example.com")
     sid = _start(c)
     assert _record(c, sid, "rec_1", "5 V").status_code == 302
-    assert SESSION_STORE[sid].get("_interaction_ack") == webapp.QUANTITY_SAVED_ACK
+    assert SESSION_STORE[sid].get(webapp.QUANTITY_ACK_SLOT) == webapp.QUANTITY_SAVED_ACK
     assert _propose(c, sid, "rec_1", "6 V").status_code == 302
     token = _ctoken(_page(c, sid))
-    SESSION_STORE[sid]["_interaction_ack"] = webapp.QUANTITY_SAVED_ACK   # stale, unconsumed
+    SESSION_STORE[sid][webapp.QUANTITY_ACK_SLOT] = webapp.QUANTITY_SAVED_ACK   # stale, unconsumed
     store = _store()
     monkeypatch.setattr(store, "append_requirement_quantity",
                         lambda pid, q: (_ for _ in ()).throw(
@@ -1656,8 +1656,8 @@ def test_a_new_failure_clears_a_stale_success_acknowledgement(db_path, monkeypat
     assert _confirm(c, sid, token).status_code == 302
     monkeypatch.undo()
     entry = SESSION_STORE[sid]
-    assert entry.get("_answer_error") == webapp.QUANTITY_NOT_SAVED_MESSAGE
-    assert entry.get("_interaction_ack") is None
+    assert entry.get(webapp.QUANTITY_ERROR_SLOT) == webapp.QUANTITY_NOT_SAVED_MESSAGE
+    assert entry.get(webapp.QUANTITY_ACK_SLOT) is None
     body = _page(c, sid)
     assert webapp.QUANTITY_SAVED_ACK not in body
     assert webapp.QUANTITY_NOT_SAVED_MESSAGE in body
@@ -1675,7 +1675,7 @@ def test_an_unrelated_answer_notice_is_never_erased_by_a_quantity_outcome(db_pat
     assert _confirm(c, sid, token).status_code == 302
     entry = SESSION_STORE[sid]
     assert entry.get("_answer_error") == webapp.CORRECTION_NOT_APPLIED_MESSAGE
-    assert entry.get("_interaction_ack") == webapp.QUANTITY_SAVED_ACK
+    assert entry.get(webapp.QUANTITY_ACK_SLOT) == webapp.QUANTITY_SAVED_ACK
     assert [r[5] for r in _rows(db_path, sid)] == ["5 V"]
 
 
@@ -1758,7 +1758,7 @@ def test_a_generic_store_error_before_any_write_reports_the_proven_non_write(db_
     monkeypatch.setattr(_store(), "append_requirement_quantity",
                         lambda pid, q: (_ for _ in ()).throw(StoreError("opaque")))
     assert _confirm(c, sid, token).status_code == 302
-    assert SESSION_STORE[sid].get("_answer_error") == webapp.QUANTITY_NOT_SAVED_MESSAGE
+    assert SESSION_STORE[sid].get(webapp.QUANTITY_ERROR_SLOT) == webapp.QUANTITY_NOT_SAVED_MESSAGE
     assert _rows(db_path, sid) == []
 
 
@@ -1776,8 +1776,8 @@ def test_a_committed_append_followed_by_a_generic_store_error_reports_saved(db_p
     monkeypatch.setattr(store, "append_requirement_quantity", append_then_generic)
     assert _confirm(c, sid, token).status_code == 302
     assert [r[5] for r in _rows(db_path, sid)] == ["7 V"]
-    assert SESSION_STORE[sid].get("_answer_error") is None
-    assert SESSION_STORE[sid].get("_interaction_ack") == webapp.QUANTITY_SAVED_ACK
+    assert SESSION_STORE[sid].get(webapp.QUANTITY_ERROR_SLOT) is None
+    assert SESSION_STORE[sid].get(webapp.QUANTITY_ACK_SLOT) == webapp.QUANTITY_SAVED_ACK
     monkeypatch.undo()
     body = _page(c, sid)
     assert _values(body) == ["7 V"]
@@ -1805,7 +1805,7 @@ def test_a_generic_store_error_with_an_unreadable_lookup_reports_unknown(db_path
     monkeypatch.setattr(store, "append_requirement_quantity", append_then_generic)
     monkeypatch.setattr(store, "requirement_quantity_for_event_key", unreadable)
     assert _confirm(c, sid, token).status_code == 302
-    message = SESSION_STORE[sid].get("_answer_error")
+    message = SESSION_STORE[sid].get(webapp.QUANTITY_ERROR_SLOT)
     assert message == webapp.QUANTITY_OUTCOME_UNKNOWN_MESSAGE
     assert "Nothing was changed" not in message
     assert [r[5] for r in _rows(db_path, sid)] == ["7 V"]
@@ -1825,8 +1825,8 @@ def test_a_mismatched_event_under_the_same_key_is_never_reported_as_saved(db_pat
                                           "quantity_kind": KIND2, "value_text": "999 V",
                                           "supersedes_quantity_id": None})
     assert _confirm(c, sid, token).status_code == 302
-    assert SESSION_STORE[sid].get("_answer_error") == webapp.QUANTITY_OUTCOME_UNKNOWN_MESSAGE
-    assert SESSION_STORE[sid].get("_interaction_ack") is None
+    assert SESSION_STORE[sid].get(webapp.QUANTITY_ERROR_SLOT) == webapp.QUANTITY_OUTCOME_UNKNOWN_MESSAGE
+    assert SESSION_STORE[sid].get(webapp.QUANTITY_ACK_SLOT) is None
     monkeypatch.undo()
     assert _rows(db_path, sid) == []
 
@@ -1851,6 +1851,309 @@ def test_no_page_shows_a_persisted_value_with_a_definite_non_write_message(db_pa
     for denial in (webapp.QUANTITY_NOT_SAVED_MESSAGE, webapp.QUANTITY_CONFLICT_MESSAGE):
         assert denial not in body
         assert ui_text.localize_message(denial, "ar") not in body
+
+
+# ==========================================================================
+# 10i. R2 — quantity notices are ISOLATED from answer/correction notices
+# ==========================================================================
+def _q_ack(sid):
+    return SESSION_STORE[sid].get(webapp.QUANTITY_ACK_SLOT)
+
+
+def _q_err(sid):
+    return SESSION_STORE[sid].get(webapp.QUANTITY_ERROR_SLOT)
+
+
+def _shared(sid):
+    entry = SESSION_STORE[sid]
+    return entry.get("_interaction_ack"), entry.get("_answer_error")
+
+
+def _both_render(body, shared_message, quantity_message, lang="en"):
+    """Both notices must appear, in the deterministic order: the existing
+    answer/correction notice first, then the quantity-specific outcome."""
+    rendered_shared = (ui_text.localize_message(shared_message, lang)
+                       if lang != "en" else shared_message)
+    rendered_quantity = (ui_text.localize_message(quantity_message, lang)
+                         if lang != "en" else quantity_message)
+    assert rendered_shared in body, ("missing answer/correction notice", lang)
+    assert rendered_quantity in body, ("missing quantity notice", lang)
+    assert body.index(rendered_shared) < body.index(rendered_quantity), "order"
+
+
+def _stale_correction_warning(c, sid, monkeypatch, supersedes="rec_2"):
+    """Drive a real correction whose POST-COMMIT quantity reattachment fails, so
+    the truthful saved-but-not-applied warning is published and the live display
+    stays stale. Returns with the patch already undone."""
+    store = _store()
+    real_load = store.load_requirement_quantities
+    calls = {"n": 0}
+
+    def flaky(pid):
+        calls["n"] += 1
+        if calls["n"] >= 2:
+            raise sqlite3.OperationalError("gone after commit")
+        return real_load(pid)
+    monkeypatch.setattr(store, "load_requirement_quantities", flaky)
+    token = webapp._issue_answer_token(sid)
+    assert c.post(CORRECT % sid, data={"supersedes_record_id": supersedes,
+                                       "response": MECH_CORRECTED,
+                                       "answer_token": token}).status_code == 302
+    monkeypatch.undo()
+    assert SESSION_STORE[sid].get("_answer_error") == \
+        webapp.CORRECTION_SAVED_NOT_YET_APPLIED_MESSAGE
+
+
+@pytest.mark.parametrize("lang", ["en", "ar"])
+def test_r2_A_correction_warning_survives_a_quantity_refusal(db_path, monkeypatch, lang):
+    """A. The exact blocking sequence: the correction-recovery warning explains
+    the stale display, and the quantity refusal must not delete it."""
+    c, _aid = _client_for("t2a-r2a-%s@example.com" % lang)
+    sid = _start(c)
+    assert _record(c, sid, "rec_2", "5 V").status_code == 302
+    before = _rows(db_path, sid)
+    if lang == "ar":
+        assert c.post("/ui-language", data={"lang": "ar"}).status_code in (302, 303)
+    # Session A stages a replacement for rec_2 and keeps its token.
+    assert _propose(c, sid, "rec_2", "6 V").status_code == 302
+    token = _ctoken(_page(c, sid))
+    assert token
+    # A same-owner session durably corrects rec_2; the reattachment fails.
+    _stale_correction_warning(c, sid, monkeypatch)
+    # Session A confirms: the durable guard refuses the now-invalid proposal.
+    assert _confirm(c, sid, token).status_code == 302
+    assert _q_err(sid) == webapp.QUANTITY_NOT_SAVED_MESSAGE
+    assert _q_ack(sid) is None
+    # The unrelated correction warning is STILL pending, untouched.
+    assert SESSION_STORE[sid].get("_answer_error") == \
+        webapp.CORRECTION_SAVED_NOT_YET_APPLIED_MESSAGE
+    body = _page(c, sid)
+    _both_render(body, webapp.CORRECTION_SAVED_NOT_YET_APPLIED_MESSAGE,
+                 webapp.QUANTITY_NOT_SAVED_MESSAGE, lang)
+    # The stale display is still accompanied by its explanation, and no
+    # contradictory quantity success appears.
+    assert _values(body) == ["5 V"] and "6 V" not in body
+    quantity_ack = (ui_text.localize_deep(webapp.QUANTITY_SAVED_ACK, lang)
+                    if lang != "en" else webapp.QUANTITY_SAVED_ACK)
+    assert quantity_ack not in body
+    assert _rows(db_path, sid) == before                 # no new durable row
+
+
+@pytest.mark.parametrize("lang", ["en", "ar"])
+def test_r2_B_correction_warning_survives_a_quantity_success(db_path, monkeypatch, lang):
+    """B. Both outcomes are truthful and distinct; neither overwrites the other."""
+    c, _aid = _client_for("t2a-r2b-%s@example.com" % lang)
+    sid = _start(c)
+    assert _record(c, sid, "rec_2", "5 V").status_code == 302
+    if lang == "ar":
+        assert c.post("/ui-language", data={"lang": "ar"}).status_code in (302, 303)
+    # Stage against the anchor the correction will NOT touch, so it stays valid.
+    assert _propose(c, sid, "rec_1", "12 A", KIND2).status_code == 302
+    token = _ctoken(_page(c, sid))
+    _stale_correction_warning(c, sid, monkeypatch)
+    assert _confirm(c, sid, token).status_code == 302
+    assert _q_ack(sid) == webapp.QUANTITY_SAVED_ACK and _q_err(sid) is None
+    assert SESSION_STORE[sid].get("_answer_error") == \
+        webapp.CORRECTION_SAVED_NOT_YET_APPLIED_MESSAGE
+    body = _page(c, sid)
+    rendered_warning = (ui_text.localize_message(
+        webapp.CORRECTION_SAVED_NOT_YET_APPLIED_MESSAGE, lang)
+        if lang != "en" else webapp.CORRECTION_SAVED_NOT_YET_APPLIED_MESSAGE)
+    rendered_ack = (ui_text.localize_deep(webapp.QUANTITY_SAVED_ACK, lang)
+                    if lang != "en" else webapp.QUANTITY_SAVED_ACK)
+    assert rendered_warning in body and rendered_ack in body
+    assert body.index(rendered_warning) < body.index(rendered_ack)
+    assert sorted(r[5] for r in _rows(db_path, sid)) == ["12 A", "5 V"]
+
+
+@pytest.mark.parametrize("lang", ["en", "ar"])
+def test_r2_C_correction_acknowledgement_survives_a_quantity_failure(db_path, lang):
+    """C. A successful correction's acknowledgement is preserved."""
+    c, _aid = _client_for("t2a-r2c-%s@example.com" % lang)
+    sid = _start(c)
+    assert _record(c, sid, "rec_2", "5 V").status_code == 302
+    if lang == "ar":
+        assert c.post("/ui-language", data={"lang": "ar"}).status_code in (302, 303)
+    assert _propose(c, sid, "rec_2", "6 V").status_code == 302
+    token = _ctoken(_page(c, sid))
+    before = _rows(db_path, sid)
+    answer_token = webapp._issue_answer_token(sid)
+    assert c.post(CORRECT % sid, data={"supersedes_record_id": "rec_2",
+                                       "response": MECH_CORRECTED,
+                                       "answer_token": answer_token}).status_code == 302
+    assert SESSION_STORE[sid].get("_interaction_ack") == webapp.CORRECTION_APPLIED_ACK
+    assert _confirm(c, sid, token).status_code == 302          # anchor now stale
+    assert _q_err(sid) == webapp.QUANTITY_NOT_SAVED_MESSAGE and _q_ack(sid) is None
+    assert SESSION_STORE[sid].get("_interaction_ack") == webapp.CORRECTION_APPLIED_ACK
+    body = _page(c, sid)
+    rendered_ack = (ui_text.localize_deep(webapp.CORRECTION_APPLIED_ACK, lang)
+                    if lang != "en" else webapp.CORRECTION_APPLIED_ACK)
+    rendered_err = (ui_text.localize_message(webapp.QUANTITY_NOT_SAVED_MESSAGE, lang)
+                    if lang != "en" else webapp.QUANTITY_NOT_SAVED_MESSAGE)
+    assert rendered_ack in body and rendered_err in body
+    assert body.index(rendered_ack) < body.index(rendered_err)
+    assert _rows(db_path, sid) == before
+
+
+@pytest.mark.parametrize("lang", ["en", "ar"])
+def test_r2_D_correction_acknowledgement_and_quantity_success_both_render(db_path, lang):
+    """D. Two truthful acknowledgements; neither erases the other."""
+    c, _aid = _client_for("t2a-r2d-%s@example.com" % lang)
+    sid = _start(c)
+    if lang == "ar":
+        assert c.post("/ui-language", data={"lang": "ar"}).status_code in (302, 303)
+    assert _propose(c, sid, "rec_1", "9 V").status_code == 302
+    token = _ctoken(_page(c, sid))
+    answer_token = webapp._issue_answer_token(sid)
+    assert c.post(CORRECT % sid, data={"supersedes_record_id": "rec_2",
+                                       "response": MECH_CORRECTED,
+                                       "answer_token": answer_token}).status_code == 302
+    assert SESSION_STORE[sid].get("_interaction_ack") == webapp.CORRECTION_APPLIED_ACK
+    assert _confirm(c, sid, token).status_code == 302
+    assert _q_ack(sid) == webapp.QUANTITY_SAVED_ACK
+    assert SESSION_STORE[sid].get("_interaction_ack") == webapp.CORRECTION_APPLIED_ACK
+    body = _page(c, sid)
+    rendered_corr = (ui_text.localize_deep(webapp.CORRECTION_APPLIED_ACK, lang)
+                     if lang != "en" else webapp.CORRECTION_APPLIED_ACK)
+    rendered_q = (ui_text.localize_deep(webapp.QUANTITY_SAVED_ACK, lang)
+                  if lang != "en" else webapp.QUANTITY_SAVED_ACK)
+    assert rendered_corr in body and rendered_q in body
+    assert body.index(rendered_corr) < body.index(rendered_q)
+    assert [r[5] for r in _rows(db_path, sid)] == ["9 V"]
+
+
+def test_r2_E_quantity_notices_replace_only_each_other(db_path, monkeypatch):
+    """E. Inside the quantity namespace exactly one outcome survives, and the
+    answer/correction slots stay byte-equal throughout."""
+    c, _aid = _client_for("t2a-r2e@example.com")
+    sid = _start(c)
+    store = _store()
+
+    def _seed_shared():
+        """Re-arm two unrelated answer/correction notices immediately before the
+        quantity action (a render consumes them, so they are seeded each time)."""
+        SESSION_STORE[sid]["_answer_error"] = webapp.CORRECTION_NOT_APPLIED_MESSAGE
+        SESSION_STORE[sid]["_interaction_ack"] = webapp.CORRECTION_APPLIED_ACK
+        return _shared(sid)
+
+    def _fail_the_append():
+        monkeypatch.setattr(store, "append_requirement_quantity",
+                            lambda pid, q: (_ for _ in ()).throw(
+                                sqlite3.OperationalError("database is locked")))
+
+    # failure first
+    token = _staged_confirm(c, sid, "7 V")
+    shared_before = _seed_shared()
+    _fail_the_append()
+    assert _confirm(c, sid, token).status_code == 302
+    monkeypatch.undo()
+    assert _q_err(sid) == webapp.QUANTITY_NOT_SAVED_MESSAGE and _q_ack(sid) is None
+    assert _shared(sid) == shared_before                      # byte-equal
+    # a success replaces the quantity failure ONLY
+    token = _staged_confirm(c, sid, "7 V")
+    shared_before = _seed_shared()
+    SESSION_STORE[sid][webapp.QUANTITY_ERROR_SLOT] = webapp.QUANTITY_NOT_SAVED_MESSAGE
+    assert _confirm(c, sid, token).status_code == 302
+    assert _q_ack(sid) == webapp.QUANTITY_SAVED_ACK and _q_err(sid) is None
+    assert _shared(sid) == shared_before
+    # a failure replaces the quantity success ONLY
+    token = _staged_confirm(c, sid, "8 V")
+    shared_before = _seed_shared()
+    SESSION_STORE[sid][webapp.QUANTITY_ACK_SLOT] = webapp.QUANTITY_SAVED_ACK
+    _fail_the_append()
+    assert _confirm(c, sid, token).status_code == 302
+    monkeypatch.undo()
+    assert _q_err(sid) == webapp.QUANTITY_NOT_SAVED_MESSAGE and _q_ack(sid) is None
+    assert _shared(sid) == shared_before                      # byte-equal
+    body = _page(c, sid)
+    assert body.count(webapp.QUANTITY_NOT_SAVED_MESSAGE) == 1
+    assert webapp.QUANTITY_SAVED_ACK not in body              # exactly one outcome
+
+
+def test_r2_F_an_answer_action_after_a_quantity_outcome_stays_consistent(db_path):
+    """F. The reverse interaction: an answer/correction action following a
+    quantity outcome neither creates a contradictory quantity result nor
+    corrupts durable state. Existing answer/correction semantics are unchanged."""
+    c, _aid = _client_for("t2a-r2f@example.com")
+    sid = _start(c)
+    assert _record(c, sid, "rec_2", "5 V").status_code == 302
+    assert _q_ack(sid) == webapp.QUANTITY_SAVED_ACK
+    ledger_before = [x[1] for x in _ledger_rows(db_path, sid)]
+    answer_token = webapp._issue_answer_token(sid)
+    assert c.post(CORRECT % sid, data={"supersedes_record_id": "rec_2",
+                                       "response": MECH_CORRECTED,
+                                       "answer_token": answer_token}).status_code == 302
+    # The correction publishes into its OWN slot; the quantity slot is untouched.
+    assert SESSION_STORE[sid].get("_interaction_ack") == webapp.CORRECTION_APPLIED_ACK
+    assert _q_ack(sid) == webapp.QUANTITY_SAVED_ACK and _q_err(sid) is None
+    assert [x[1] for x in _ledger_rows(db_path, sid)] == ledger_before + ["rec_3"]
+    assert [r[5] for r in _rows(db_path, sid)] == ["5 V"]      # unchanged
+    body = _page(c, sid)
+    assert webapp.CORRECTION_APPLIED_ACK in body and webapp.QUANTITY_SAVED_ACK in body
+    assert webapp.QUANTITY_NOT_SAVED_MESSAGE not in body
+    # The quantity is now withdrawn history, consistently with the correction.
+    assert _withdrawn(body) == ["5 V"] and _values(body) == []
+
+
+def test_r2_G_collision_notices_are_escaped_localized_and_non_disclosing(db_path, monkeypatch):
+    """G. Across every collision combination: the same substantive outcome in
+    both languages, escaping intact, and no key, identifier, SQL, exception,
+    token, path or inventor value leaking through the notice mechanism."""
+    c, _aid = _client_for("t2a-r2g@example.com")
+    sid = _start(c)
+    assert _record(c, sid, "rec_2", HTML_ANSWER[:40], KIND2).status_code == 302
+    assert _propose(c, sid, "rec_2", "6 V").status_code == 302
+    token = _ctoken(_page(c, sid))
+    _stale_correction_warning(c, sid, monkeypatch)
+    assert _confirm(c, sid, token).status_code == 302
+    en = _page(c, sid)
+    # Re-arm the identical collision and read it in Arabic.
+    assert _propose(c, sid, "rec_2", "6 V").status_code == 302
+    assert _q_err(sid) is None
+    SESSION_STORE[sid]["_answer_error"] = webapp.CORRECTION_SAVED_NOT_YET_APPLIED_MESSAGE
+    SESSION_STORE[sid][webapp.QUANTITY_ERROR_SLOT] = webapp.QUANTITY_NOT_SAVED_MESSAGE
+    assert c.post("/ui-language", data={"lang": "ar"}).status_code in (302, 303)
+    ar = _page(c, sid)
+    for body, lang in ((en, "en"), (ar, "ar")):
+        _both_render(body, webapp.CORRECTION_SAVED_NOT_YET_APPLIED_MESSAGE,
+                     webapp.QUANTITY_NOT_SAVED_MESSAGE, lang)
+    # The Arabic page carries the Arabic wording, not the English constants.
+    assert webapp.QUANTITY_NOT_SAVED_MESSAGE not in ar
+    assert webapp.CORRECTION_SAVED_NOT_YET_APPLIED_MESSAGE not in ar
+    # Escaping and non-disclosure on both renderings.
+    for body in (en, ar):
+        assert "<b>board</b>" not in body and "&lt;b&gt;board&lt;/b&gt;" in body
+        for leak in ("UI_T2A_", "QUANTITY_", "_quantity_error", "_quantity_ack",
+                     "qty-", "event_key", "SELECT ", "INSERT ", "sqlite",
+                     "Traceback", "OperationalError", "confirmation_token=",
+                     "/tmp/", ".sqlite"):
+            assert leak not in body, leak
+
+
+def test_r2_quantity_notices_never_reach_persistence_export_or_the_deliverable(db_path, monkeypatch):
+    """Pre-freeze check: a quantity notice is ephemeral UI state only."""
+    c, aid = _client_for("t2a-r2-ephemeral@example.com")
+    sid = _start(c)
+    assert _record(c, sid, "rec_1", "5 V").status_code == 302
+    SESSION_STORE[sid][webapp.QUANTITY_ERROR_SLOT] = webapp.QUANTITY_NOT_SAVED_MESSAGE
+    SESSION_STORE[sid][webapp.QUANTITY_ACK_SLOT] = webapp.QUANTITY_SAVED_ACK
+    package = _package(sid)
+    html = c.get(DELIVERABLE % sid).get_data(as_text=True)
+    seen = _capture_pdf_source(monkeypatch)
+    assert c.post(PDF % sid, data={}).status_code == 200
+    from engine import read_export_service as _read_export
+    export = json.dumps(_read_export.produce_project_export(_store(), sid, aid),
+                        sort_keys=True, default=str)
+    ledger = json.dumps(_ledger_rows(db_path, sid), default=str)
+    for payload in (json.dumps(package, sort_keys=True, default=str), html,
+                    seen["source"], export, ledger):
+        for notice in (webapp.QUANTITY_NOT_SAVED_MESSAGE, webapp.QUANTITY_SAVED_ACK,
+                       webapp.QUANTITY_ACK_SLOT, webapp.QUANTITY_ERROR_SLOT):
+            assert notice not in payload
+    # Reconstruction never converts an ephemeral notice into durable data.
+    SESSION_STORE.clear()
+    assert _values(_page(c, sid)) == ["5 V"]
+    assert _q_ack(sid) is None and _q_err(sid) is None
 
 
 # ==========================================================================

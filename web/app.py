@@ -1097,10 +1097,25 @@ def _resolve_quantity_write(sid, quantity):
     return _QUANTITY_COMMIT_UNKNOWN
 
 
-# Every notice this slice can publish. Publishing one of them CLEARS any other
-# of them that is still pending on the same entry, so a stale quantity outcome
-# from one browser session can never be shown beside a newer, contradictory one.
-# Messages that belong to other flows (answers, corrections) are never touched.
+# --- Quantity notice ISOLATION (R2) -------------------------------------------
+# Quantity outcomes have their OWN pair of ephemeral session slots. They never
+# read, write, clear or reinterpret the shared `_interaction_ack` /
+# `_answer_error` slots that the answer and correction flows own, so a quantity
+# outcome can never delete a truthful correction warning or acknowledgement, and
+# an answer/correction outcome can never be mistaken for a quantity one. Within
+# the quantity namespace exactly ONE current outcome survives: publishing a
+# success clears a pending quantity failure and publishing a failure clears a
+# pending quantity success, so no contradictory quantity pair can coexist.
+#
+# These are transient per-session UI state, popped once by the render exactly
+# like the shared slots. They are never persisted, never reach the canonical
+# package, an export, the HTML deliverable or the PDF, and are never rebuilt by
+# reconstruction. This is a two-slot namespace, not a notification queue,
+# message bus or application-wide messaging framework.
+QUANTITY_ACK_SLOT = "_quantity_ack"
+QUANTITY_ERROR_SLOT = "_quantity_error"
+
+
 def _quantity_notices():
     return (QUANTITY_SAVED_ACK, QUANTITY_DISCARDED_ACK, QUANTITY_NOT_SAVED_MESSAGE,
             QUANTITY_INVALID_MESSAGE, QUANTITY_CONFLICT_MESSAGE,
@@ -1108,22 +1123,22 @@ def _quantity_notices():
 
 
 def _publish_quantity_notice(entry, ack=None, error=None):
-    """Publish exactly ONE current quantity notice on ``entry``.
+    """Publish exactly ONE current quantity notice, inside the quantity
+    namespace only.
 
-    Any pending quantity notice in either slot is removed first, so a success
-    acknowledgement never coexists with a stale "nothing was changed" (or
-    conflict / unknown-outcome) message and a newly established failure never
-    coexists with a stale success acknowledgement — in every language, because
-    the stored English constant is what the localizers render. Notices owned by
-    other flows are left exactly as they are."""
-    quantity_notices = _quantity_notices()
-    for slot in ("_interaction_ack", "_answer_error"):
-        if entry.get(slot) in quantity_notices:
-            entry.pop(slot, None)
+    Both quantity slots are cleared first, so a success acknowledgement never
+    coexists with a stale "nothing was changed" (or conflict / unknown-outcome)
+    message and a newly established failure never coexists with a stale success
+    acknowledgement — in every language, because the stored English constant is
+    what the localizers render. `_interaction_ack` and `_answer_error` are NOT
+    touched: an unrelated answer or correction notice survives a quantity
+    outcome untouched, and both render together when both are true."""
+    entry.pop(QUANTITY_ACK_SLOT, None)
+    entry.pop(QUANTITY_ERROR_SLOT, None)
     if ack is not None:
-        entry["_interaction_ack"] = ack
+        entry[QUANTITY_ACK_SLOT] = ack
     if error is not None:
-        entry["_answer_error"] = error
+        entry[QUANTITY_ERROR_SLOT] = error
 
 
 def _finish_quantity_write(sid, entry, state, outcome):
@@ -3550,6 +3565,13 @@ def show_session(sid):
         # repeats on a later plain GET. None on every normal load.
         answer_error=ui_text.localize_message(
             _render_notice(entry, "_answer_error", None), _current_ui_lang()),
+        # R2: the quantity namespace, rendered ALONGSIDE (never instead of) the
+        # answer/correction notices above, and popped once by the same
+        # single-use rule. Exactly one of the two is ever set at a time.
+        quantity_ack=ui_text.localize_deep(
+            _render_notice(entry, QUANTITY_ACK_SLOT, None), _current_ui_lang()),
+        quantity_error=ui_text.localize_message(
+            _render_notice(entry, QUANTITY_ERROR_SLOT, None), _current_ui_lang()),
         # Increment 1B: advisory, derived, read-only responsibility guidance for
         # the current gap. Computed at render time; never stored, never affects
         # gates/scoring/maturity/closure/transcript/IdeaState. None when no gap.

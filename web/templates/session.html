@@ -79,6 +79,12 @@ body{overflow-wrap:anywhere}
 {% elif seed_accepted %}<p id="journey-saved" class="journey-feedback" role="status">{{ t('UI_A1_PROJECT_SAVED') }}</p>{% endif %}
 {% if interaction_ack %}<p class="journey-feedback" role="status">{{ interaction_ack }}</p>{% endif %}
 {% if answer_error %}<p id="answer-error" role="alert" class="answer-error" style="color:#9e2722;border:1px solid #daaaa7;padding:12px;line-height:1.5">{{ answer_error }}</p>{% endif %}
+{# T2-A R2: the quantity outcome renders in its OWN namespace, AFTER any
+   answer/correction notice above, so both appear when both are true and
+   neither erases the other. Escaped and dir-neutral like the notices above;
+   exactly one of the two is ever set. #}
+{% if quantity_ack %}<p class="journey-feedback t2a-notice t2a-notice-ack" role="status">{{ quantity_ack }}</p>{% endif %}
+{% if quantity_error %}<p class="answer-error t2a-notice t2a-notice-error" role="alert" style="color:#9e2722;border:1px solid #daaaa7;padding:12px;line-height:1.5">{{ quantity_error }}</p>{% endif %}
 <section class="project-orientation" aria-labelledby="project-orientation-title">
   <h2 id="project-orientation-title">{{ t('UI_A1_ORIGINAL_IDEA') }}</h2>
   <p class="idea-excerpt" dir="auto">{{ project_identification.idea or t('UI_A1_UNTITLED') }}</p>
