@@ -160,11 +160,15 @@ _OWNER_INDEX = (
 # (composite FOREIGN KEY to ``records``) and, on a correction, the quantity row
 # it supersedes (composite self-referential FOREIGN KEY; forward edge only —
 # prior rows are never rewritten). Every row carries the unique ``event_key``
-# (the durable exact-replay identity). Relational integrity is enforced by
-# SQLite (``PRAGMA foreign_keys = ON`` on every connection); the ONE-successor
-# rule has a partial UNIQUE backstop. The migration is ``CREATE ... IF NOT
-# EXISTS`` — idempotent on a fresh and on an existing populated database, no
-# column drop, no rewrite of any existing row; rollback is disable-and-ignore.
+# (the durable exact-replay identity) and the recording facts
+# ``recorded_iteration`` / ``recorded_at`` (never part of identity). Relational
+# integrity is enforced by SQLite (``PRAGMA foreign_keys = ON`` on every
+# connection); the partial UNIQUE ``chain_root_uq`` allows exactly one chain
+# root per anchor and ``supersedes_uq`` forbids forks, so a rooted, fork-free
+# chain has exactly one active row per anchor at the database layer. The
+# migration is ``CREATE ... IF NOT EXISTS`` — idempotent on a fresh and on an
+# existing populated database, no column drop, no rewrite of any existing row;
+# rollback is disable-and-ignore.
 _QUANTITY_TABLE = "requirement_quantities"
 _QUANTITY_SCHEMA = (
     """
@@ -178,9 +182,9 @@ _QUANTITY_SCHEMA = (
         value_text             TEXT NOT NULL,
         supersedes_quantity_id TEXT,
         event_key              TEXT NOT NULL,
+        recorded_iteration     INTEGER NOT NULL,
+        recorded_at            TEXT NOT NULL,
         PRIMARY KEY (project_id, quantity_id),
-        UNIQUE (project_id, quantity_seq),
-        UNIQUE (project_id, event_key),
         FOREIGN KEY (project_id) REFERENCES projects(project_id),
         FOREIGN KEY (project_id, anchor_record_id)
             REFERENCES records(project_id, record_id),
@@ -188,9 +192,18 @@ _QUANTITY_SCHEMA = (
             REFERENCES requirement_quantities(project_id, quantity_id)
     )
     """,
+    "CREATE UNIQUE INDEX IF NOT EXISTS requirement_quantities_event_key_uq "
+    "ON requirement_quantities (project_id, event_key)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS requirement_quantities_seq_uq "
+    "ON requirement_quantities (project_id, quantity_seq)",
     "CREATE UNIQUE INDEX IF NOT EXISTS requirement_quantities_supersedes_uq "
     "ON requirement_quantities (project_id, supersedes_quantity_id) "
     "WHERE supersedes_quantity_id IS NOT NULL",
+    "CREATE UNIQUE INDEX IF NOT EXISTS requirement_quantities_chain_root_uq "
+    "ON requirement_quantities (project_id, anchor_record_id) "
+    "WHERE supersedes_quantity_id IS NULL",
+    "CREATE INDEX IF NOT EXISTS requirement_quantities_anchor_idx "
+    "ON requirement_quantities (project_id, anchor_record_id)",
 )
 
 
@@ -521,18 +534,20 @@ class SqliteRecordStore:
         )
 
     # --- T2-A requirement-quantity history (project-scoped; INSERT-only) ------
-    _QUANTITY_COLUMNS = ("project_id, quantity_seq, quantity_id, anchor_record_id, "
+    _QUANTITY_COLUMNS = ("quantity_seq, quantity_id, anchor_record_id, "
                          "requirement_id, quantity_kind, value_text, "
-                         "supersedes_quantity_id, event_key")
+                         "supersedes_quantity_id, event_key, recorded_iteration, "
+                         "recorded_at")
 
     @staticmethod
     def _quantity_row_dict(row):
-        (project_id, seq, qid, anchor, requirement_id, kind, value_text,
-         supersedes, event_key) = row
-        return {"project_id": project_id, "quantity_seq": seq, "quantity_id": qid,
-                "anchor_record_id": anchor, "requirement_id": requirement_id,
-                "quantity_kind": kind, "value_text": value_text,
-                "supersedes_quantity_id": supersedes, "event_key": event_key}
+        (seq, qid, anchor, requirement_id, kind, value_text, supersedes, event_key,
+         recorded_iteration, recorded_at) = row
+        return {"quantity_seq": seq, "quantity_id": qid, "anchor_record_id": anchor,
+                "requirement_id": requirement_id, "quantity_kind": kind,
+                "value_text": value_text, "supersedes_quantity_id": supersedes,
+                "event_key": event_key, "recorded_iteration": recorded_iteration,
+                "recorded_at": recorded_at}
 
     def new_quantity_id(self) -> str:
         """A durability-safe, collision-safe identifier for a NEW quantity row
@@ -562,7 +577,9 @@ class SqliteRecordStore:
             row — so a stale quantity head between propose and confirm is
             refused here;
           * the row's ``quantity_seq`` is assigned here (next in sequence);
-            the caller's value is ignored;
+            the caller's value is ignored; ``recorded_iteration`` and
+            ``recorded_at`` are persisted as given (generated once per event
+            by the caller; never part of identity);
           * SQLite enforces the composite foreign keys (anchor record of THIS
             project; supersedes row of THIS project) and the UNIQUE event key
             (a duplicate raises ``sqlite3.IntegrityError`` — the caller
@@ -571,15 +588,13 @@ class SqliteRecordStore:
         this method never re-interprets, logs or rewrites it."""
         if not isinstance(quantity, RequirementQuantity):
             raise StoreError("quantity must be a RequirementQuantity")
-        if quantity.project_id != project_id:
-            raise StoreError("quantity project mismatch")
         with self._write():
             row = self._conn.execute(
                 "SELECT COUNT(*) FROM projects WHERE project_id = ?", (project_id,)
             ).fetchone()
             if not row or row[0] == 0:
                 raise ProjectNotFound(project_id)
-            history = validate_quantity_history(self._quantity_rows(project_id), project_id)
+            history = validate_quantity_history(self._quantity_rows(project_id))
             if len(history) >= MAX_REQUIREMENT_QUANTITIES_PER_PROJECT:
                 raise QuantityCapExceeded("per-project quantity cap reached")
             head = active_quantities(history).get(quantity.anchor_record_id)
@@ -593,11 +608,12 @@ class SqliteRecordStore:
                     raise QuantityChainConflict("requirement id changes within a chain")
             seq = (history[-1].quantity_seq + 1) if history else 0
             self._conn.execute(
-                "INSERT INTO requirement_quantities (" + self._QUANTITY_COLUMNS + ") "
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                "INSERT INTO requirement_quantities (project_id, " + self._QUANTITY_COLUMNS + ") "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (project_id, seq, quantity.quantity_id, quantity.anchor_record_id,
                  quantity.requirement_id, quantity.quantity_kind, quantity.value_text,
-                 quantity.supersedes_quantity_id, quantity.event_key))
+                 quantity.supersedes_quantity_id, quantity.event_key,
+                 quantity.recorded_iteration, quantity.recorded_at))
 
     def load_requirement_quantities(self, project_id: str) -> tuple:
         """Load and VALIDATE one project's requirement-quantity history in
@@ -609,7 +625,7 @@ class SqliteRecordStore:
         .QuantityHistoryError`` with NO partial history (fail closed, never
         silently repaired); storage failure propagates as the SQL error.
         Read-only; project-scoped; logs nothing."""
-        return validate_quantity_history(self._quantity_rows(project_id), project_id)
+        return validate_quantity_history(self._quantity_rows(project_id))
 
     def requirement_quantity_for_event_key(self, project_id: str, event_key: str):
         """Return the stored quantity row (dict) carrying ``event_key`` under

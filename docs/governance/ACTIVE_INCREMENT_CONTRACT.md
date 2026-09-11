@@ -32,74 +32,86 @@ CANDIDATE (candidate prepared under Lead corrective review; merge NOT authorized
 
 **Owner source:** current-chat "OWNER / LEAD EXECUTION INSTRUCTION — T2-A — Quantified
 Requirements Slice 1 — ONE BOUNDED IMPLEMENTATION CANDIDATE", received after the
-verified PR #626 post-return state, followed by the current-chat "LEAD SINGLE-PASS
-REVIEW — PR #638 — BOUNDED CORRECTIVE IMPLEMENTATION REQUIRED". Both take effect on
-receipt (declaration rule above) and supersede the post-return "ACTIVE CONTRACT:
-NONE" declaration, now preserved below as historical evidence. The Owner accepted
-the architecture and the reduced Slice-1 boundary of the final T2-A design delta
-with two mandatory corrections (a lifecycle-valid evidence runner; the
-correction-flow ordering); the Lead review then required one consolidated
-corrective commit restoring the accepted two-stage flow, data contract, relational
-integrity and output semantics. This entry describes the code that exists after
-that correction.
+verified PR #626 post-return state, followed by the current-chat Lead single-pass
+reviews of PR #638 (bounded corrective implementation; final bounded
+specification-closure correction with the attached final design delta
+T2A-WS6-FINAL-CONSOLIDATED-DESIGN-DELTA-03, SHA-256
+`a8126371a7526e20412d6f16cc3ee4252bdb3dc7c8eec4df78a002d55bf6623c`, 567 lines,
+47056 bytes, identity verified before writing). These take effect on receipt
+(declaration rule above) and supersede the post-return "ACTIVE CONTRACT: NONE"
+declaration, now preserved below as historical evidence. This entry describes the
+code that exists after the corrections.
 
 **Starting context:** authoritative branch `feature/atomic-json-session-persistence`
 (GitHub default), verified live tip `9f883956bc54dd960ec33a502259e353e6db20f3`,
 tree `7da689f3601b65240a0a1e326902e92bd609a76d`, clean working tree, working branch
 descended from that exact tip. A base advance reconciles under Lean §10 / AHAEP §5.
 
-**Implemented flow (two security-sensitive POST routes):**
-`POST /session/<sid>/quantity/propose` passes the global CSRF guard,
-`_project_authorized` and the verified-active-durable-owner predicate, validates the
-currently eligible anchor (an active accepted `answered` ledger record the Requirement
-Landscape derives as an `assertion` requirement), the closed `quantity_kind`
-vocabulary and the bounded `value_text` policy, derives the active supersession target
-server-side from the validated durable history, stages ONE bounded proposal in the
-current session entry, mints the confirmation token and performs no durable write.
-`POST /session/<sid>/quantity/confirm` repeats the authorization and ownership checks,
-accepts only `csrf_token`, `confirmation_token` and `quantity_action`, resolves every
-material field from the staged proposal, refuses a missing, malformed, expired,
-tampered, cross-session, cross-project or cross-owner token (HMAC over session,
-owner, nonce, expiry and every material field), consumes the nonce once before any
-durable call so one token can never authorize two durable writes, re-validates the
-anchor, then performs the single durable append. Exact-replay idempotency is the
-durable unique `event_key` with confirm-by-reload.
+**Data contract (delta §6):** the canonical row `RequirementQuantity` carries exactly
+`quantity_id, quantity_seq, anchor_record_id, requirement_id, quantity_kind,
+value_text, supersedes_quantity_id, event_key, recorded_iteration, recorded_at,
+validation_status = "UNVALIDATED", provenance = "OWNER_STATED"`; project scoping is
+enforced by the store and the database `project_id` column. The closed vocabulary is
+`QUANTITY_KINDS = ("target_value", "minimum_value", "maximum_value", "range",
+"count", "other_quantity")`. The `value_text` policy: text only; outer whitespace
+stripped only; empty rejected; C0 and C1 control characters rejected; more than
+`MAX_VALUE_TEXT_CHARS = 120` Unicode code points rejected; nothing parsed,
+converted, collapsed, normalized or reinterpreted — the stored value is exactly the
+submitted value after outer-whitespace stripping; it is never localized, logged or
+placed in an exception. `MAX_REQUIREMENT_QUANTITIES_PER_PROJECT = 200`.
 
-**Data contract and relational integrity:** `RequirementQuantity` carries exactly
-`project_id, quantity_seq, quantity_id, anchor_record_id, requirement_id,
-quantity_kind, value_text, supersedes_quantity_id, event_key`. The additive
-`requirement_quantities` table has a project-scoped primary key, unique
-`(project_id, quantity_seq)` and `(project_id, event_key)`, a partial unique
-single-successor index, and the foreign keys `(project_id) → projects`,
-`(project_id, anchor_record_id) → records(project_id, record_id)` and
-`(project_id, supersedes_quantity_id) → requirement_quantities(project_id, quantity_id)`.
-The store validates the existing history INSIDE its serialized write transaction
-before appending (no write on top of a corrupt history), enforces
-`MAX_REQUIREMENT_QUANTITIES_PER_PROJECT = 200` there, and enforces the one-active-chain
-rule so a stale quantity head between propose and confirm is refused. Canonical
-stored values are presentation-neutral; inventor value text is never localized,
-logged or placed in an exception. The correction flow validates the quantity history
-before the durable correction append (generic correction-not-applied on failure) and
-reattaches it after deterministic reconstruction before live state is replaced.
+**Database (delta §6):** the additive `requirement_quantities` table with the
+project-scoped primary key `(project_id, quantity_id)`, the foreign keys
+`(project_id) → projects`, `(project_id, anchor_record_id) → records(project_id,
+record_id)` and `(project_id, supersedes_quantity_id) → requirement_quantities
+(project_id, quantity_id)`, and the exact index set `requirement_quantities_event_key_uq`,
+`requirement_quantities_seq_uq`, `requirement_quantities_supersedes_uq` (partial,
+single successor), `requirement_quantities_chain_root_uq` (partial, one chain root
+per anchor) and `requirement_quantities_anchor_idx`. The store validates the existing
+history inside its serialized write transaction before every append (no write on top
+of a corrupt history), enforces the cap there, and enforces the one-active-chain rule
+so a stale quantity head between propose and confirm is refused. Migration is
+`CREATE ... IF NOT EXISTS` on every open, idempotent on a fresh and on an existing
+populated database.
 
-**Output semantics:** the additive nested package key
-`_session_meta["requirement_quantities"]` carries, per chain, the current value, the
-replaced prior values and whether the answer anchor is still active; it is composed at
-the shared web deliverable seam (consumed by the HTML report and the PDF) because
-`engine/deliverable_assembler.py` is frozen by the merged G-3 A-20/A-21 pin and stays
-byte-identical; canonical Section 13/14 behaviour is unchanged. Zero rows add no
-package key, no HTML block and no PDF-source difference. Presentation shows the
-current value as inventor-recorded and unvalidated, replaced values under the
-localized "replaced" label, identifies a chain whose anchor was withdrawn, makes no
-feasibility, attainability, safety, compliance or validation claim, and contains no
-form, token, internal identifier or raw internal status in the report.
+**Two-stage flow and token (delta §7):** `POST /session/<sid>/quantity/propose`
+passes the global CSRF guard, `_project_authorized` and the verified-active-durable-
+owner predicate, validates the currently eligible anchor, the kind and the value
+text, derives the active supersession target server-side, stages ONE bounded
+proposal (with `recorded_iteration` and `recorded_at` generated once) in the
+current session entry and performs no durable write. `POST /session/<sid>/quantity/
+confirm` repeats authorization and ownership, accepts only `csrf_token`,
+`confirmation_token` and `quantity_action`, resolves every material field from the
+staged proposal, consumes the nonce once before any durable call, re-validates the
+anchor and performs the single durable append. Token construction:
+`session_binding = SHA256(_session_csrf())[:16]`; `material_digest = SHA256(canonical(
+"t2a-quantity-material-v1", sid, owner_account_id, session_binding, anchor_record_id,
+requirement_id, quantity_kind, value_text, supersedes_quantity_id or "", nonce,
+issued_at, expires_at))`; `confirmation_token = nonce + "." + HMAC-SHA256(secret,
+canonical("t2a-quantity-confirm-v1", sid, material_digest))[:32]`; `event_key =
+HMAC-SHA256(secret, canonical("t2a-quantity-event-v1", sid, nonce,
+material_digest))[:32]`; `QUANTITY_CONFIRMATION_TTL_SECONDS = 900` (expired when
+`clock >= expires_at`). A nonce replay, expiry, tampering, a session-binding change,
+an owner change, any material-field mutation and cross-session / cross-project /
+cross-owner presentation are refused; exact replay is idempotent through the
+durable unique `event_key` with confirm-by-reload. The correction flow validates the
+quantity history before the durable correction append (generic
+correction-not-applied on failure) and reattaches it after deterministic
+reconstruction before live state is replaced.
 
-**Disclosed provisional items (pending the exact wording of the accepted design
-delta, not available in the repository):** the closed `quantity_kind` token list, the
-bounded `value_text` limit and the confirmation-token lifetime are isolated in one
-marked block each (`engine/requirement_quantity.py`, `web/app.py`) and are swapped
-without structural change once supplied; the literal 25-path focused and 145-path
-affected evidence sets are likewise not reconstructible from the repository.
+**Package and presentation (delta §8):** when rows exist, and only then,
+`_session_meta["requirement_quantities"] = {"total": n, "rows": [...]}` where each
+row is the canonical row plus the derived booleans `active` and `anchor_active`,
+ordered by `quantity_seq`; no label, title, note, translated prose or presentation
+sentence is placed in the package. It is composed at the shared web deliverable seam
+(HTML and PDF) because `engine/deliverable_assembler.py` is frozen by the merged G-3
+A-20/A-21 pin and stays byte-identical; canonical Section 13/14 behaviour is
+unchanged. Zero rows add no package key, no HTML block and no PDF-source
+difference. HTML/PDF resolve every heading, disclaimer, status and label through
+`UI_T2A_*` bilingual keys and show the active value, the replaced prior values, the
+withdrawn-anchor status and the unvalidated / inventor-stated disclaimer; no form,
+token, internal identifier or raw internal status renders; no feasibility,
+attainability, safety, compliance or validation claim is made.
 
 **Exact file boundary (this candidate):** production `engine/requirement_quantity.py`
 (new), `engine/record_store.py`, `engine/idea_state.py`, `web/app.py`,
@@ -107,23 +119,33 @@ affected evidence sets are likewise not reconstructible from the repository.
 tests `tests/test_t2a_requirement_quantity_engine_store.py` (new),
 `tests/test_t2a_requirement_quantity_web.py` (new),
 `tests/test_r05_request_integrity.py` (mutation inventory: both routes),
-`tests/test_p5_3_project_ownership_authorization.py` (denial matrix: both routes),
+`tests/test_p5_3_project_ownership_authorization.py` (denial matrices: both routes),
 `tests/test_pvcg_r1_durable_epistemic_memory.py` (table inventory; the one-ledger
 claim is kept and strengthened); and this file only. `engine/deliverable_assembler.py`,
 `engine/read_export_service.py`, `engine/export_adapter.py`, `web/api_v1.py` and
 `tests/test_p7_i2_public_api.py` remain byte-identical to the base. No new
 governance, review, evidence, plan or handover document is created.
 
+**Evidence (delta §12):** the literal Set B (5), owners (20) and Set C (140) lists,
+focused = Set B ∪ owners (25) and affected = Set B ∪ Set C (145), base
+`tests/test_*.py` = 185 at the base SHA and 187 at the candidate head, the two new
+tests identified by explicit membership (absent at base, tracked at head), the
+universal guardrail smoke, the full regression and the CI-equivalent JUnit audit are
+run against the committed candidate; exact results are reported in the execution
+report and the PR description.
+
 **Delivery included / not included:** one working branch from the verified tip, the
-required tests and evidence checks, one frozen commit plus one consolidated corrective
-commit, normal pushes, one PR (#638) targeting `feature/atomic-json-session-persistence`.
+required tests and evidence checks, the frozen commit plus the consolidated corrective
+commits, normal pushes, one PR (#638) targeting `feature/atomic-json-session-persistence`.
 Not included: merge, deployment, release, default-branch change, modifying `main`,
 deleting/rebasing branches, force-push, weakening/skipping/xfailing/deleting an
 existing test, any API, structured or browser export, reference adapter,
-schema-version bump, compatibility shim, or expanding Slice 1. Independent review of
-the immutable candidate is performed by a separate non-authoring session and begins
-only on Lead instruction. Completing this candidate authorizes no successor slice,
-phase or capability. All existing gates, deferred obligations, unresolved issues and
+schema-version bump, compatibility shim, or expanding Slice 1. Machine-readable
+quantity export is DEFERRED — NOT CANCELLED (delta §9; return trigger: a separate
+Owner-authorized export/privacy increment). Independent review of the immutable
+candidate is performed by a separate non-authoring session and begins only on Lead
+instruction. Completing this candidate authorizes no successor slice, phase or
+capability. All existing gates, deferred obligations, unresolved issues and
 non-blocking observations keep their status, owner and return conditions.
 
 ## Historical authority — post-return declaration (superseded by T2-A Slice 1)

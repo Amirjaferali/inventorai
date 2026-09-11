@@ -86,6 +86,7 @@ from engine.requirement_quantity import (
     active_quantities as _active_quantities,
     quantity_chains as _quantity_chains,
     requirement_quantities_meta as _requirement_quantities_meta,
+    requirement_statement as _quantity_requirement_statement,
     REQUIREMENT_QUANTITIES_META_KEY as _REQUIREMENT_QUANTITIES_META_KEY,
 )
 # P10-D3a (established contract, PR #510): the canonical internal read/export
@@ -958,10 +959,10 @@ QUANTITY_INVALID_MESSAGE = (
 _QUANTITY_CONFIRM_FIELDS = frozenset({"csrf_token", "confirmation_token", "quantity_action"})
 QUANTITY_ACTION_CONFIRM = "confirm"
 QUANTITY_ACTION_DISCARD = "discard"
-# PROVISIONAL (pending the accepted design delta's exact figure): the staged
-# proposal / confirmation token lifetime. Expired tokens are refused and the
-# proposal is dropped at the next render.
-QUANTITY_CONFIRMATION_TTL_SECONDS = 600
+# The staged proposal / confirmation token lifetime (accepted design delta
+# §7). A token is expired when ``clock >= expires_at``; an expired proposal is
+# refused at confirm and dropped at the next render.
+QUANTITY_CONFIRMATION_TTL_SECONDS = 900
 _QUANTITY_PROPOSAL_KEY = "quantity_proposal"
 _QUANTITY_CONFIRM_NONCE_BYTES = 24
 
@@ -970,6 +971,13 @@ def _quantity_clock():
     """Seconds since the epoch (int). Isolated so tests can drive expiry."""
     import time as _time
     return int(_time.time())
+
+
+def _quantity_recorded_at():
+    """UTC ISO-8601 timestamp for the recording fact, generated once per
+    event at proposal time. Never part of event identity."""
+    from datetime import datetime as _dt, timezone as _tz
+    return _dt.now(_tz.utc).replace(microsecond=0).isoformat()
 
 
 def _quantity_write_authorized(sid):
@@ -1012,38 +1020,53 @@ def _attach_quantity_history(sid, state):
     return True
 
 
-def _quantity_event_key(sid, anchor_record_id, requirement_id, quantity_kind,
-                        value_text, supersedes_quantity_id):
-    """The durable exact-replay identity (``event_key``) of ONE quantity event
-    — the same HMAC construction and >= 128-bit truncation as the answered /
-    interaction keys, with its own domain-separator label. An exact replay of
-    the same event (same anchor, kind, text and chain position) reproduces the
-    same key and can never write twice (UNIQUE in the store); a different
-    value, kind or chain position yields a different key."""
-    msg = _canonical_message("t2a-quantity-event", sid, anchor_record_id,
-                             requirement_id, quantity_kind, value_text,
-                             supersedes_quantity_id or "")
-    return _p2a_hmac.new(_answer_secret(), msg,
-                         _p2a_hashlib.sha256).hexdigest()[:_ANSWER_HMAC_HEX_LEN]
+def _quantity_session_binding():
+    """``SHA256(_session_csrf())[:16]`` — binds a proposal to the browser
+    session whose CSRF token minted it (accepted design delta §7). A rotated
+    or different session cannot confirm it."""
+    return _p2a_hashlib.sha256(
+        (_session_csrf() or "").encode("utf-8")).hexdigest()[:16]
 
 
-def _quantity_confirmation_sig(sid, proposal):
-    """Signature binding a confirmation token to THIS project, THIS owner,
-    THIS nonce, THIS expiry and EVERY material field of the staged proposal.
-    A token minted for another session, project, owner or content, or a
-    tampered token, cannot verify."""
+def _quantity_material_digest(sid, owner_account_id, session_binding, proposal):
+    """``SHA256(canonical("t2a-quantity-material-v1", sid, owner_account_id,
+    session_binding, anchor_record_id, requirement_id, quantity_kind,
+    value_text, supersedes_quantity_id or "", nonce, issued_at, expires_at))``
+    — every material field of the staged proposal, the session binding and
+    the owner, so any mutation changes the digest."""
     msg = _canonical_message(
-        "t2a-quantity-confirm", sid, proposal["account_id"], proposal["nonce"],
-        str(proposal["expires_at"]), proposal["anchor_record_id"],
-        proposal["requirement_id"], proposal["quantity_kind"],
-        proposal["value_text"], proposal["supersedes_quantity_id"] or "",
-        proposal["event_key"])
+        "t2a-quantity-material-v1", sid, owner_account_id, session_binding,
+        proposal["anchor_record_id"], proposal["requirement_id"],
+        proposal["quantity_kind"], proposal["value_text"],
+        proposal["supersedes_quantity_id"] or "", proposal["nonce"],
+        str(proposal["issued_at"]), str(proposal["expires_at"]))
+    return _p2a_hashlib.sha256(msg).hexdigest()
+
+
+def _quantity_confirmation_token(sid, material_digest, nonce):
+    """``nonce + "." + HMAC-SHA256(secret, canonical("t2a-quantity-confirm-v1",
+    sid, material_digest))[:32]`` (accepted design delta §7)."""
+    msg = _canonical_message("t2a-quantity-confirm-v1", sid, material_digest)
+    return nonce + _ANSWER_TOKEN_SEP + _p2a_hmac.new(
+        _answer_secret(), msg, _p2a_hashlib.sha256).hexdigest()[:_ANSWER_HMAC_HEX_LEN]
+
+
+def _quantity_event_key(sid, nonce, material_digest):
+    """``HMAC-SHA256(secret, canonical("t2a-quantity-event-v1", sid, nonce,
+    material_digest))[:32]`` — the durable exact-replay identity of ONE
+    quantity event (UNIQUE per project in the store). The same staged event
+    reproduces the same key and can never write twice."""
+    msg = _canonical_message("t2a-quantity-event-v1", sid, nonce, material_digest)
     return _p2a_hmac.new(_answer_secret(), msg,
                          _p2a_hashlib.sha256).hexdigest()[:_ANSWER_HMAC_HEX_LEN]
 
 
-def _quantity_confirmation_token(sid, proposal):
-    return proposal["nonce"] + _ANSWER_TOKEN_SEP + _quantity_confirmation_sig(sid, proposal)
+def _quantity_token_for(sid, account_id, proposal):
+    """Token + event key for a staged proposal under the CURRENT session
+    binding and owner (recomputed, never trusted from the request)."""
+    digest = _quantity_material_digest(sid, account_id, _quantity_session_binding(), proposal)
+    return (_quantity_confirmation_token(sid, digest, proposal["nonce"]),
+            _quantity_event_key(sid, proposal["nonce"], digest))
 
 
 def _staged_quantity_proposal(entry):
@@ -1094,9 +1117,7 @@ def _quantity_step_context(entry, state, sid):
     for chain in _quantity_chains(state):
         if chain.anchor_active:
             continue
-        statement = next((getattr(r, "content", "") or "" for r in state.assertions
-                          if r.record_id == chain.anchor_record_id), "")
-        withdrawn.append({"statement": statement.strip(),
+        withdrawn.append({"statement": _quantity_requirement_statement(state, chain.anchor_record_id),
                           "current": _quantity_chain_view(chain)})
     proposal = None
     staged = _staged_quantity_proposal(entry) if can_write else None
@@ -1114,7 +1135,8 @@ def _quantity_step_context(entry, state, sid):
                 "replaces": (None if head is None else
                              {"kind": head.active.quantity_kind,
                               "value_text": head.active.value_text}),
-                "confirmation_token": _quantity_confirmation_token(sid, staged),
+                "confirmation_token": _quantity_token_for(
+                    sid, staged["account_id"], staged)[0],
             }
     if not items and not withdrawn:
         return None
@@ -3496,6 +3518,17 @@ def _deliverable_context(sid):
     return entry, package, eligible, reconstructed_deliverable, state
 
 
+def _quantity_statements(package, state):
+    """Presentation-only map ``anchor_record_id -> requirement statement`` for
+    the canonical quantity rows of ``package`` (the canonical row carries no
+    statement). Read-only over the state; empty when the package has no rows."""
+    meta = package["_session_meta"].get(_REQUIREMENT_QUANTITIES_META_KEY)
+    if not meta:
+        return {}
+    return {row["anchor_record_id"]: _quantity_requirement_statement(state, row["anchor_record_id"])
+            for row in meta["rows"]}
+
+
 @app.route("/session/<sid>/deliverable", methods=["GET"])
 def show_deliverable(sid):
     if not _project_authorized(sid):
@@ -3510,6 +3543,8 @@ def show_deliverable(sid):
         package=package,
         eligible=eligible,
         reconstructed_deliverable=reconstructed_deliverable,
+        # T2-A: statements for the canonical quantity rows (presentation only).
+        t2a_statements=_quantity_statements(package, state),
         # W2-A / RVR-4 (contract §14): read-only composed decision state on the
         # deliverable surface (derived on demand; not part of the canonical
         # deliverable package — the assembler is deliberately untouched).
@@ -3654,6 +3689,7 @@ def download_deliverable_pdf(sid):
             package=package,
             eligible=eligible,
             reconstructed_deliverable=reconstructed_deliverable,
+            t2a_statements=_quantity_statements(package, state),
             decision_capture=_decision_capture_view_safe(state),
             snapshot_kept_ack=None,
         )
@@ -3971,8 +4007,9 @@ def propose_requirement_quantity(sid):
         "quantity_kind": kind,
         "value_text": value_text,
         "supersedes_quantity_id": supersedes,
-        "event_key": _quantity_event_key(sid, anchor_id, requirement_id, kind,
-                                         value_text, supersedes),
+        # recording facts, generated ONCE for this event; never identity
+        "recorded_iteration": int(getattr(state, "iteration", 0) or 0),
+        "recorded_at": _quantity_recorded_at(),
     }
     return redirect(url_for("show_session", sid=sid) + "#t2a-confirm")
 
@@ -4020,11 +4057,13 @@ def confirm_requirement_quantity(sid):
     if action != QUANTITY_ACTION_CONFIRM or staged is None:
         entry["_answer_error"] = QUANTITY_NOT_SAVED_MESSAGE
         return redirect(url_for("show_session", sid=sid))
-    nonce, sep, sig = token.partition(_ANSWER_TOKEN_SEP)
-    if (not sep or not nonce or not sig
-            or not _p2a_hmac.compare_digest(nonce, staged["nonce"])
-            or staged["account_id"] != account["account_id"]
-            or not _p2a_hmac.compare_digest(sig, _quantity_confirmation_sig(sid, staged))):
+    # §7 verification: the token must equal the one minted for THIS staged
+    # proposal under the CURRENT session binding and CURRENT owner; a nonce
+    # replay, a session-binding change, an owner change or any material-field
+    # mutation makes the recomputed token differ.
+    expected_token, event_key = _quantity_token_for(sid, account["account_id"], staged)
+    if (staged["account_id"] != account["account_id"]
+            or not token or not _p2a_hmac.compare_digest(token, expected_token)):
         entry["_answer_error"] = QUANTITY_NOT_SAVED_MESSAGE
         return redirect(url_for("show_session", sid=sid))
     if getattr(state, "domain", None) is None:
@@ -4038,12 +4077,14 @@ def confirm_requirement_quantity(sid):
         entry["_answer_error"] = QUANTITY_NOT_SAVED_MESSAGE
         return redirect(url_for("show_session", sid=sid))
     new_quantity = RequirementQuantity(
-        project_id=sid, quantity_seq=-1, quantity_id=_get_store().new_quantity_id(),
+        quantity_id=_get_store().new_quantity_id(), quantity_seq=-1,
         anchor_record_id=staged["anchor_record_id"],
         requirement_id=staged["requirement_id"],
         quantity_kind=staged["quantity_kind"], value_text=staged["value_text"],
         supersedes_quantity_id=staged["supersedes_quantity_id"],
-        event_key=staged["event_key"])
+        event_key=event_key,
+        recorded_iteration=staged["recorded_iteration"],
+        recorded_at=staged["recorded_at"])
     try:
         _get_store().append_requirement_quantity(sid, new_quantity)
     except sqlite3.IntegrityError:
@@ -4051,7 +4092,7 @@ def confirm_requirement_quantity(sid):
         # event key and confirm the SAME event before treating an exact replay
         # as an idempotent no-op; anything else fails closed.
         try:
-            stored = _get_store().requirement_quantity_for_event_key(sid, staged["event_key"])
+            stored = _get_store().requirement_quantity_for_event_key(sid, event_key)
         except Exception:
             stored = None
         same = stored is not None and all(

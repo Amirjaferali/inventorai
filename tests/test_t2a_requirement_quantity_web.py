@@ -5,15 +5,18 @@ Purpose: behaviour tests for the two security-sensitive POST routes
 (`/session/<sid>/quantity/propose` and `/session/<sid>/quantity/confirm`):
 propose performs no durable write; the confirm form carries only
 csrf_token, confirmation_token and quantity_action; exact confirmation
-succeeds once; replay, altered content, expiry, tampering, cross-session,
-cross-project and cross-owner tokens cannot write; anonymous, NULL-owner,
-unverified, inactive and non-owner denial; stale anchor and stale quantity
-head between propose and confirm; corrupt history detected inside the
-transaction; correction/supersession history; replaced-value and
-withdrawn-anchor rendering on the session page, the HTML deliverable and the
-PDF source; Arabic/English chrome parity with never-localized value text;
-zero-row package / HTML / PDF-source equivalence; the Owner-mandated
-correction-flow ordering; and no API / export / adapter change.
+succeeds once; nonce replay, altered action/content, expiry (899 accepted,
+900 expired), tampering, session-binding change, owner change, every
+material-field mutation, cross-session, cross-project and cross-owner tokens
+cannot write; anonymous, NULL-owner, unverified, inactive and non-owner
+denial; stale anchor and stale quantity head between propose and confirm;
+corrupt history detected inside the transaction; the per-project cap through
+the web flow; correction/supersession history; the canonical package shape;
+replaced-value and withdrawn-anchor rendering on the session page, the HTML
+deliverable and the PDF source; Arabic/English chrome parity with
+never-localized value text; zero-row package / HTML / PDF-source
+equivalence; the Owner-mandated correction-flow ordering; and no API /
+export / adapter change.
 
 Real Flask application, real on-disk SQLite (autouse conftest isolation),
 real account + record stores, real signed sessions, real WeasyPrint for the
@@ -37,7 +40,8 @@ from web import ui_text
 from engine import account_credentials as _acct
 from engine import deliverable_assembler as _assembler
 from engine.requirement_quantity import (
-    QUANTITY_KINDS, QuantityHistoryError, MAX_REQUIREMENT_QUANTITIES_PER_PROJECT,
+    CANONICAL_ROW_FIELDS, QUANTITY_KINDS, QuantityHistoryError,
+    MAX_REQUIREMENT_QUANTITIES_PER_PROJECT, MAX_VALUE_TEXT_CHARS,
 )
 
 PW = "correct horse battery staple"
@@ -58,8 +62,8 @@ MECH_CORRECTED = (
     "which causes the microcontroller to switch the LED through a transistor.")
 HTML_ANSWER = ("The sensor <b>board</b> is rated because the &amp; supply "
                "current limit trips the switch through the microcontroller.")
-KIND = QUANTITY_KINDS[0]
-KIND2 = QUANTITY_KINDS[1]
+KIND = "target_value"
+KIND2 = "maximum_value"
 
 PROPOSE = "/session/%s/quantity/propose"
 CONFIRM = "/session/%s/quantity/confirm"
@@ -67,6 +71,8 @@ SESSION = "/session/%s"
 DELIVERABLE = "/session/%s/deliverable"
 PDF = "/session/%s/deliverable.pdf"
 CORRECT = "/session/%s/correct"
+MATERIAL_FIELDS = ("anchor_record_id", "requirement_id", "quantity_kind", "value_text",
+                   "supersedes_quantity_id", "nonce", "issued_at", "expires_at")
 
 
 # --------------------------------------------------------------------------
@@ -163,8 +169,9 @@ def _rows(db_path, sid):
     try:
         return conn.execute(
             "SELECT quantity_seq, quantity_id, anchor_record_id, requirement_id, quantity_kind, "
-            "value_text, supersedes_quantity_id, event_key FROM requirement_quantities "
-            "WHERE project_id = ? ORDER BY quantity_seq", (sid,)).fetchall()
+            "value_text, supersedes_quantity_id, event_key, recorded_iteration, recorded_at "
+            "FROM requirement_quantities WHERE project_id = ? ORDER BY quantity_seq", (sid,)
+        ).fetchall()
     finally:
         conn.close()
 
@@ -221,6 +228,11 @@ def _snapshot(sid, db_path):
     return state, database
 
 
+def _package(sid):
+    with app.test_request_context():
+        return webapp._deliverable_context(sid)[1]
+
+
 # ==========================================================================
 # 1. Routes, CSRF integrity, no durable write on propose
 # ==========================================================================
@@ -230,7 +242,7 @@ def test_both_routes_are_post_only_and_csrf_guarded_before_any_state(db_path):
     for path in (PROPOSE % sid, CONFIRM % sid):
         assert c.get(path).status_code == 405
     before = _snapshot(sid, db_path)
-    raw = app.test_client()                      # no CSRF evidence at all
+    raw = app.test_client()
     with raw.session_transaction() as s, c.session_transaction() as mine:
         s.update(copy.deepcopy(dict(mine)))
     r = raw.post(PROPOSE % sid, data={"anchor_record_id": "rec_1", "quantity_kind": KIND,
@@ -242,22 +254,31 @@ def test_both_routes_are_post_only_and_csrf_guarded_before_any_state(db_path):
     assert "quantity_proposal" not in SESSION_STORE[sid]
 
 
-def test_propose_stages_one_bounded_proposal_and_performs_no_durable_write(db_path):
+def test_propose_stages_one_bounded_proposal_and_performs_no_durable_write(db_path, monkeypatch):
     c, _aid = _client_for("t2a-propose@example.com")
     sid = _start(c)
+    base = 1_700_000_000
+    monkeypatch.setattr(webapp, "_quantity_clock", lambda: base)
+    monkeypatch.setattr(webapp, "_quantity_recorded_at", lambda: "2026-09-11T12:00:00+00:00")
     db_before = _snapshot(sid, db_path)[1]
     r = _propose(c, sid, "rec_1", "  12.5   V ", KIND)
     assert r.status_code == 302 and r.headers["Location"].endswith("#t2a-confirm")
     assert _rows(db_path, sid) == [] and _snapshot(sid, db_path)[1] == db_before
     staged = SESSION_STORE[sid]["quantity_proposal"]
+    assert set(staged) == {"nonce", "issued_at", "expires_at", "account_id", "anchor_record_id",
+                           "requirement_id", "quantity_kind", "value_text",
+                           "supersedes_quantity_id", "recorded_iteration", "recorded_at"}
     assert staged["anchor_record_id"] == "rec_1"
     assert staged["requirement_id"] == "req:assertion:rec_1"
-    assert staged["quantity_kind"] == KIND and staged["value_text"] == "12.5 V"
-    assert staged["supersedes_quantity_id"] is None and len(staged["event_key"]) == 32
+    assert staged["quantity_kind"] == KIND and staged["value_text"] == "12.5   V"
+    assert staged["supersedes_quantity_id"] is None and staged["account_id"] == _aid
+    assert staged["issued_at"] == base
+    assert staged["expires_at"] == base + webapp.QUANTITY_CONFIRMATION_TTL_SECONDS
+    assert staged["recorded_iteration"] == SESSION_STORE[sid]["state"].iteration
+    assert staged["recorded_at"] == "2026-09-11T12:00:00+00:00"
     body = _page(c, sid)
     assert 'id="t2a-confirm"' in body and _ctoken(body)
-    assert '<bdi class="t2a-proposed" dir="auto">12.5 V</bdi>' in body
-    # a second proposal replaces the first (one bounded proposal per session)
+    assert '<bdi class="t2a-proposed" dir="auto">12.5   V</bdi>' in body
     assert _propose(c, sid, "rec_2", "3 A", KIND2).status_code == 302
     assert SESSION_STORE[sid]["quantity_proposal"]["anchor_record_id"] == "rec_2"
     assert _rows(db_path, sid) == []
@@ -277,22 +298,34 @@ def test_confirm_form_carries_only_the_three_fields_and_no_material_data(db_path
 
 
 # ==========================================================================
-# 2. Exact confirmation once; replay; altered content; discard
+# 2. Exact confirmation once; replay; altered content; discard; exact replay
 # ==========================================================================
-def test_exact_confirmation_succeeds_once_and_replay_cannot_write_twice(db_path):
-    c, _aid = _client_for("t2a-once@example.com")
+def test_exact_confirmation_succeeds_once_and_nonce_replay_cannot_write_twice(db_path):
+    c, aid = _client_for("t2a-once@example.com")
     sid = _start(c)
     assert _propose(c, sid, "rec_1", "7 V").status_code == 302
+    staged = dict(SESSION_STORE[sid]["quantity_proposal"])
     token = _ctoken(_page(c, sid))
+    with c.session_transaction() as s:
+        csrf = s["auth"]["csrf"]
+    # the rendered token is exactly the §7 construction under the live binding
+    with app.test_request_context():
+        from flask import session as flask_session
+        flask_session["auth"] = {"csrf": csrf}
+        digest = webapp._quantity_material_digest(sid, aid, webapp._quantity_session_binding(), staged)
+        expected = webapp._quantity_confirmation_token(sid, digest, staged["nonce"])
+        expected_event_key = webapp._quantity_event_key(sid, staged["nonce"], digest)
+    assert token == expected and len(token.split(".")[1]) == 32
     r = _confirm(c, sid, token)
     assert r.status_code == 302 and r.headers["Location"] == SESSION % sid
     body = _page(c, sid)
     assert webapp.QUANTITY_SAVED_ACK in body and _values(body) == ["7 V"]
     rows = _rows(db_path, sid)
-    assert [(x[2], x[3], x[4], x[5], x[6]) for x in rows] == [
-        ("rec_1", "req:assertion:rec_1", KIND, "7 V", None)]
+    assert [(x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9]) for x in rows] == [
+        ("rec_1", "req:assertion:rec_1", KIND, "7 V", None, expected_event_key,
+         staged["recorded_iteration"], staged["recorded_at"])]
     assert "quantity_proposal" not in SESSION_STORE[sid]
-    for _ in range(3):                                   # replay of the spent token
+    for _ in range(3):
         assert _confirm(c, sid, token).status_code == 302
         body = _page(c, sid)
         assert webapp.QUANTITY_NOT_SAVED_MESSAGE in body and webapp.QUANTITY_SAVED_ACK not in body
@@ -305,18 +338,15 @@ def test_same_token_with_altered_action_or_content_cannot_write(db_path):
     sid = _start(c)
     assert _propose(c, sid, "rec_1", "7 V").status_code == 302
     token = _ctoken(_page(c, sid))
-    # altered content (extra material fields) is refused outright
     for extra in ({"value_text": "999 V"}, {"anchor_record_id": "rec_2"},
                   {"quantity_kind": KIND2}, {"answer_token": "x"}):
         assert _confirm(c, sid, token, **extra).status_code == 302
         assert webapp.QUANTITY_NOT_SAVED_MESSAGE in _page(c, sid)
         assert _rows(db_path, sid) == []
-    # an unknown action consumes the token and writes nothing
     assert _confirm(c, sid, token, action="apply").status_code == 302
     assert _rows(db_path, sid) == [] and "quantity_proposal" not in SESSION_STORE[sid]
-    assert _confirm(c, sid, token).status_code == 302   # spent
+    assert _confirm(c, sid, token).status_code == 302
     assert _rows(db_path, sid) == []
-    # a duplicated field is refused too
     from werkzeug.datastructures import MultiDict
     assert _propose(c, sid, "rec_1", "7 V").status_code == 302
     token = _ctoken(_page(c, sid))
@@ -335,17 +365,18 @@ def test_discard_consumes_the_proposal_and_saves_nothing(db_path):
     body = _page(c, sid)
     assert webapp.QUANTITY_DISCARDED_ACK in body and 'id="t2a-confirm"' not in body
     assert _rows(db_path, sid) == []
-    assert _confirm(c, sid, token).status_code == 302   # cannot confirm afterwards
+    assert _confirm(c, sid, token).status_code == 302
     assert _rows(db_path, sid) == []
 
 
 def test_exact_replay_of_the_same_event_is_idempotent_through_the_event_key(db_path, monkeypatch):
     c, _aid = _client_for("t2a-event@example.com")
     sid = _start(c)
-    assert _record(c, sid, "rec_1", "7 V").status_code == 302
+    assert _propose(c, sid, "rec_1", "7 V").status_code == 302
+    staged = dict(SESSION_STORE[sid]["quantity_proposal"])
+    token = _ctoken(_page(c, sid))
+    assert _confirm(c, sid, token).status_code == 302
     rows = _rows(db_path, sid)
-    # simulate a repeated durable attempt of the identical event: the UNIQUE
-    # event key raises and confirm-by-reload recognises the same event
     store = _store()
     real_append = store.append_requirement_quantity
     calls = []
@@ -354,43 +385,36 @@ def test_exact_replay_of_the_same_event_is_idempotent_through_the_event_key(db_p
         calls.append(q.event_key)
         return real_append(pid, q)
     monkeypatch.setattr(store, "append_requirement_quantity", tracking)
-    entry = SESSION_STORE[sid]
-    entry["quantity_proposal"] = {
-        "nonce": "n", "issued_at": webapp._quantity_clock(),
-        "expires_at": webapp._quantity_clock() + 60, "account_id": _aid,
-        "anchor_record_id": "rec_1", "requirement_id": "req:assertion:rec_1",
-        "quantity_kind": KIND, "value_text": "7 V", "supersedes_quantity_id": None,
-        "event_key": rows[0][7]}
-    token = webapp._quantity_confirmation_token(sid, entry["quantity_proposal"])
+    # the SAME staged event presented again (same nonce, same material) hits
+    # the UNIQUE event key and confirm-by-reload recognises the same event
+    SESSION_STORE[sid]["quantity_proposal"] = dict(staged)
     assert _confirm(c, sid, token).status_code == 302
     assert calls == [rows[0][7]]
-    assert webapp.QUANTITY_SAVED_ACK in _page(c, sid)       # idempotent no-op
+    assert webapp.QUANTITY_SAVED_ACK in _page(c, sid)
     assert _rows(db_path, sid) == rows
 
 
 # ==========================================================================
-# 3. Token binding: expiry, tampering, cross-session/project/owner
+# 3. Token binding: expiry, tampering, session binding, owner, material fields
 # ==========================================================================
-def test_expired_token_is_refused_and_the_proposal_dropped(db_path, monkeypatch):
+def test_token_expiry_899_accepted_900_expired(db_path, monkeypatch):
     c, _aid = _client_for("t2a-expiry@example.com")
     sid = _start(c)
-    base = webapp._quantity_clock()
+    base = 1_700_000_000
     monkeypatch.setattr(webapp, "_quantity_clock", lambda: base)
+    assert webapp.QUANTITY_CONFIRMATION_TTL_SECONDS == 900
     assert _propose(c, sid, "rec_1", "7 V").status_code == 302
     token = _ctoken(_page(c, sid))
-    assert token
-    monkeypatch.setattr(webapp, "_quantity_clock",
-                        lambda: base + webapp.QUANTITY_CONFIRMATION_TTL_SECONDS)
+    monkeypatch.setattr(webapp, "_quantity_clock", lambda: base + 900)
     assert 'id="t2a-confirm"' not in _page(c, sid)           # dropped at render
     assert _confirm(c, sid, token).status_code == 302
     assert webapp.QUANTITY_NOT_SAVED_MESSAGE in _page(c, sid)
     assert _rows(db_path, sid) == []
-    # a fresh proposal confirmed just BEFORE expiry still works
     monkeypatch.setattr(webapp, "_quantity_clock", lambda: base)
     assert _propose(c, sid, "rec_1", "7 V").status_code == 302
     token = _ctoken(_page(c, sid))
-    monkeypatch.setattr(webapp, "_quantity_clock",
-                        lambda: base + webapp.QUANTITY_CONFIRMATION_TTL_SECONDS - 1)
+    monkeypatch.setattr(webapp, "_quantity_clock", lambda: base + 899)
+    assert 'id="t2a-confirm"' in _page(c, sid)
     assert _confirm(c, sid, token).status_code == 302
     assert _values(_page(c, sid)) == ["7 V"]
 
@@ -411,8 +435,57 @@ def test_tampered_or_missing_token_is_refused_generically(db_path, mutate):
         pytest.skip("mutation produced the same token")
     assert _confirm(c, sid, bad).status_code == 302
     body = _page(c, sid)
-    assert webapp.QUANTITY_NOT_SAVED_MESSAGE in body
-    assert token not in body                                  # consumed, never re-shown
+    assert webapp.QUANTITY_NOT_SAVED_MESSAGE in body and token not in body
+    assert _rows(db_path, sid) == []
+
+
+def test_session_binding_change_is_rejected(db_path):
+    c, _aid = _client_for("t2a-binding@example.com")
+    sid = _start(c)
+    assert _propose(c, sid, "rec_1", "7 V").status_code == 302
+    token = _ctoken(_page(c, sid))
+    with c.session_transaction() as s:
+        s["auth"]["csrf"] = "rotated-session-token-value"
+    r = c.post(CONFIRM % sid, data={"confirmation_token": token, "quantity_action": "confirm",
+                                    "csrf_token": "rotated-session-token-value"})
+    assert r.status_code == 302 and r.headers["Location"] == SESSION % sid
+    assert webapp.QUANTITY_NOT_SAVED_MESSAGE in _page(c, sid)
+    assert _rows(db_path, sid) == [] and "quantity_proposal" not in SESSION_STORE[sid]
+
+
+def test_owner_change_is_rejected(db_path):
+    c, aid = _client_for("t2a-ownerchange@example.com")
+    sid = _start(c)
+    other, aid_b = _client_for("t2a-ownerchange-b@example.com")
+    assert _propose(c, sid, "rec_1", "7 V").status_code == 302
+    token = _ctoken(_page(c, sid))
+    # the staged owner is forged to another account: the live owner no longer matches
+    SESSION_STORE[sid]["quantity_proposal"]["account_id"] = aid_b
+    assert _confirm(c, sid, token).status_code == 302
+    assert webapp.QUANTITY_NOT_SAVED_MESSAGE in _page(c, sid)
+    assert _rows(db_path, sid) == []
+    # the other account presenting the owner's valid token is denied generically
+    assert _propose(c, sid, "rec_1", "7 V").status_code == 302
+    token = _ctoken(_page(c, sid))
+    r = _confirm(other, sid, token)
+    assert r.status_code == 302 and r.headers["Location"].endswith("/")
+    assert _rows(db_path, sid) == []
+
+
+@pytest.mark.parametrize("field", MATERIAL_FIELDS)
+def test_every_material_field_mutation_is_rejected(db_path, field):
+    c, _aid = _client_for("t2a-material@example.com")
+    sid = _start(c)
+    assert _propose(c, sid, "rec_1", "7 V").status_code == 302
+    token = _ctoken(_page(c, sid))
+    staged = SESSION_STORE[sid]["quantity_proposal"]
+    mutated = {"anchor_record_id": "rec_2", "requirement_id": "req:assertion:rec_2",
+               "quantity_kind": KIND2, "value_text": "8 V", "supersedes_quantity_id": "qty-x",
+               "nonce": staged["nonce"] + "x", "issued_at": staged["issued_at"] - 1,
+               "expires_at": staged["expires_at"] + 1}[field]
+    staged[field] = mutated
+    assert _confirm(c, sid, token).status_code == 302
+    assert webapp.QUANTITY_NOT_SAVED_MESSAGE in _page(c, sid)
     assert _rows(db_path, sid) == []
 
 
@@ -422,31 +495,26 @@ def test_cross_session_cross_project_and_cross_owner_tokens_are_refused(db_path)
     sid_a2 = _start(ca)
     cb, aid_b = _client_for("t2a-x-b@example.com")
     sid_b = _start(cb)
-    # token minted for project A2 is not accepted on project A (cross-project)
-    assert _propose(ca, sid_a2, "rec_1", "7 V").status_code == 302
+    assert _propose(ca, sid_a2, "rec_1", "7 V").status_code == 302     # cross-project
     tok_a2 = _ctoken(_page(ca, sid_a2))
     assert _propose(ca, sid_a, "rec_1", "7 V").status_code == 302
     assert _confirm(ca, sid_a, tok_a2).status_code == 302
     assert _rows(db_path, sid_a) == [] and _rows(db_path, sid_a2) == []
-    # cross-owner: B presents A's valid token on A's project → generic denial
-    assert _propose(ca, sid_a, "rec_1", "7 V").status_code == 302
+    assert _propose(ca, sid_a, "rec_1", "7 V").status_code == 302     # cross-owner
     tok_a = _ctoken(_page(ca, sid_a))
     r = _confirm(cb, sid_a, tok_a)
     assert r.status_code == 302 and r.headers["Location"].endswith("/")
     assert _rows(db_path, sid_a) == []
-    # cross-session: a different browser of the SAME owner (no staged
-    # proposal in that entry? the entry is per project, so simulate by
-    # re-staging under B's own project and presenting A's token there)
+    # cross-session: the SAME owner in a SECOND browser session cannot confirm
+    # a proposal staged under the first session's binding
+    ca2 = _new_client()
+    ca2.post("/login", data={"email": "t2a-x-a@example.com", "password": PW})
+    assert _confirm(ca2, sid_a, tok_a).status_code == 302
+    assert SESSION_STORE[sid_a].get("_answer_error") == webapp.QUANTITY_NOT_SAVED_MESSAGE
+    assert _rows(db_path, sid_a) == []
     assert _propose(cb, sid_b, "rec_1", "9 A", KIND2).status_code == 302
     assert _confirm(cb, sid_b, tok_a).status_code == 302
     assert _rows(db_path, sid_b) == []
-    # a token staged under A but whose staged owner is forged to B fails the
-    # owner binding even when presented by B
-    SESSION_STORE[sid_a]["quantity_proposal"]["account_id"] = aid_b
-    forged = webapp._quantity_confirmation_token(sid_a, SESSION_STORE[sid_a]["quantity_proposal"])
-    r = _confirm(cb, sid_a, forged)
-    assert r.status_code == 302 and r.headers["Location"].endswith("/")
-    assert _rows(db_path, sid_a) == []
 
 
 # ==========================================================================
@@ -469,10 +537,8 @@ def test_write_authorization_matrix_on_both_routes(db_path):
     missing = other.post(PROPOSE % "no-such-project", data={})
     assert (missing.status_code, missing.headers["Location"]) == (302, r.headers["Location"])
     assert _rows(db_path, sid) == []
-    # the owner's exact confirmation is accepted
     assert _confirm(owner, sid, token).status_code == 302
     assert [x[5] for x in _rows(db_path, sid)] == ["7 V"]
-    # disabled owner: both routes denied generically, nothing written
     assert _propose(owner, sid, "rec_1", "8 V").status_code == 302
     token = _ctoken(_page(owner, sid))
     webapp._get_account_store().set_status(aid, "disabled", "2026-01-01T00:00:00.000000Z")
@@ -509,11 +575,12 @@ def test_null_owner_anonymous_and_unverified_projects_can_never_be_quantified(db
 
 
 # ==========================================================================
-# 5. Validation, canonical storage, eligibility, staleness
+# 5. Validation, exact storage, eligibility, staleness
 # ==========================================================================
 @pytest.mark.parametrize("field,value", [
-    ("value_text", ""), ("value_text", "   "), ("value_text", "x" * 81),
-    ("value_text", "5\nV"), ("quantity_kind", "bogus"), ("quantity_kind", ""),
+    ("value_text", ""), ("value_text", "   "), ("value_text", "a" * 121),
+    ("value_text", "5\tV"), ("value_text", "5\nV"), ("value_text", "5\x7fV"),
+    ("quantity_kind", "bogus"), ("quantity_kind", ""), ("quantity_kind", "tolerance"),
     ("quantity_kind", KIND.upper()),
 ])
 def test_invalid_input_is_rejected_generically_without_echo_or_staging(db_path, field, value):
@@ -531,24 +598,44 @@ def test_invalid_input_is_rejected_generically_without_echo_or_staging(db_path, 
     assert _rows(db_path, sid) == []
 
 
-def test_value_text_is_stored_normalized_never_interpreted_or_localized(db_path):
-    c, _aid = _client_for("t2a-canon@example.com")
+def test_value_text_is_stored_exactly_never_parsed_normalized_or_localized(db_path):
+    c, _aid = _client_for("t2a-exact@example.com")
     sid = _start(c)
-    assert _record(c, sid, "rec_1", "  0.5   mm ± 0.1 ", KIND2).status_code == 302
+    raw = "  0.5   mm ± 0.1  "
+    assert _record(c, sid, "rec_1", raw, KIND2).status_code == 302
     rows = _rows(db_path, sid)
-    assert [(x[4], x[5]) for x in rows] == [(KIND2, "0.5 mm ± 0.1")]
+    assert [(x[4], x[5]) for x in rows] == [(KIND2, "0.5   mm ± 0.1")]   # internal spaces kept
     body = _page(c, sid)
-    assert _values(body) == ["0.5 mm ± 0.1"]
+    assert _values(body) == ["0.5   mm ± 0.1"] and 'maxlength="120"' in body
     assert c.post("/ui-language", data={"lang": "ar"}).status_code in (302, 303)
     body = _page(c, sid)
-    assert _values(body) == ["0.5 mm ± 0.1"]                # never localized
-    assert ui_text.text("UI_T2A_KIND_" + KIND2, "ar") in body
-    with app.test_request_context():
-        package = webapp._deliverable_context(sid)[1]
-    assert package["_session_meta"]["requirement_quantities"]["items"][0] == {
-        "statement": PROBLEM_ANSWER, "status": "current", "anchor_active": True,
-        "kind": KIND2, "value_text": "0.5 mm ± 0.1",
-        "provenance": "Recorded by the inventor (not yet verified)", "replaced": []}
+    assert _values(body) == ["0.5   mm ± 0.1"]
+    assert ui_text.text("UI_T2A_KIND_MAXIMUM_VALUE", "ar") in body
+    exactly_120 = "1" * MAX_VALUE_TEXT_CHARS
+    assert _record(c, sid, "rec_2", " " + exactly_120 + " ").status_code == 302
+    assert [x[5] for x in _rows(db_path, sid)][-1] == exactly_120
+    assert _propose(c, sid, "rec_2", "1" * 121).status_code == 302
+    assert ui_text.localize_message(webapp.QUANTITY_INVALID_MESSAGE, "ar") in _page(c, sid)
+
+
+def test_package_rows_are_canonical_with_no_labels_or_prose(db_path):
+    c, _aid = _client_for("t2a-package@example.com")
+    sid = _start(c)
+    assert _record(c, sid, "rec_1", "5 V").status_code == 302
+    assert _record(c, sid, "rec_1", "6 V", KIND2).status_code == 302
+    meta = _package(sid)["_session_meta"]["requirement_quantities"]
+    assert set(meta) == {"total", "rows"} and meta["total"] == 2
+    assert [set(r) for r in meta["rows"]] == [set(CANONICAL_ROW_FIELDS) | {"active", "anchor_active"}] * 2
+    assert [(r["quantity_seq"], r["quantity_kind"], r["value_text"], r["active"], r["anchor_active"],
+             r["validation_status"], r["provenance"]) for r in meta["rows"]] == [
+        (0, KIND, "5 V", False, True, "UNVALIDATED", "OWNER_STATED"),
+        (1, KIND2, "6 V", True, True, "UNVALIDATED", "OWNER_STATED")]
+    assert meta["rows"][1]["supersedes_quantity_id"] == meta["rows"][0]["quantity_id"]
+    blob = json.dumps(meta)
+    for forbidden in ("title", "note", "label", "statement", "Recorded by", "Target value",
+                      "replaced", "withdrawn", PROBLEM_ANSWER[:20]):
+        assert forbidden not in blob
+    assert json.loads(blob) == meta
 
 
 @pytest.mark.parametrize("anchor", ["", "rec_99", "rec_0", "qty-x", "MECHANISM_COMPLETENESS",
@@ -589,23 +676,22 @@ def test_stale_anchor_between_propose_and_confirm_is_refused(db_path):
     assert c.post(CORRECT % sid, data={"supersedes_record_id": "rec_2",
                                        "response": MECH_CORRECTED,
                                        "answer_token": _token(c, sid)}).status_code == 302
-    assert 'id="t2a-confirm"' not in _page(c, sid)           # dropped at render
+    assert 'id="t2a-confirm"' not in _page(c, sid)
     assert _confirm(c, sid, token).status_code == 302
     assert webapp.QUANTITY_NOT_SAVED_MESSAGE in _page(c, sid)
     assert _rows(db_path, sid) == []
 
 
 def test_stale_quantity_head_between_propose_and_confirm_is_refused_in_the_transaction(db_path):
-    c, _aid = _client_for("t2a-stale-head@example.com")
+    c, aid = _client_for("t2a-stale-head@example.com")
     sid = _start(c)
     assert _record(c, sid, "rec_1", "5 V").status_code == 302
-    # proposal A (supersedes the 5 V head) is staged, then the head moves on
     assert _propose(c, sid, "rec_1", "6 V").status_code == 302
     entry = SESSION_STORE[sid]
     stale = dict(entry["quantity_proposal"])
-    stale_token = webapp._quantity_confirmation_token(sid, stale)
-    assert _record(c, sid, "rec_1", "7 V").status_code == 302     # head is now 7 V
-    entry["quantity_proposal"] = stale                             # re-present A
+    stale_token = _ctoken(_page(c, sid))
+    assert _record(c, sid, "rec_1", "7 V").status_code == 302
+    entry["quantity_proposal"] = stale
     assert _confirm(c, sid, stale_token).status_code == 302
     assert webapp.QUANTITY_NOT_SAVED_MESSAGE in _page(c, sid)
     assert [x[5] for x in _rows(db_path, sid)] == ["5 V", "7 V"]
@@ -616,7 +702,7 @@ def test_identical_value_to_the_active_head_stages_nothing(db_path):
     c, _aid = _client_for("t2a-same@example.com")
     sid = _start(c)
     assert _record(c, sid, "rec_1", "7 V").status_code == 302
-    assert _propose(c, sid, "rec_1", " 7  V ").status_code == 302
+    assert _propose(c, sid, "rec_1", " 7 V ").status_code == 302
     body = _page(c, sid)
     assert webapp.QUANTITY_SAVED_ACK in body and 'id="t2a-confirm"' not in body
     assert len(_rows(db_path, sid)) == 1
@@ -634,10 +720,10 @@ def test_replacement_builds_a_forward_edge_chain_with_one_active_head(db_path):
     rows = _rows(db_path, sid)
     assert [(x[0], x[5], x[6]) for x in rows] == [
         (0, "7 V", None), (1, "8 V", rows[0][1]), (2, "9 V", rows[1][1])]
-    assert len({x[7] for x in rows}) == 3                    # distinct event keys
+    assert len({x[7] for x in rows}) == 3
     body = _page(c, sid)
     assert _values(body) == ["9 V"] and _replaced(body) == ["7 V", "8 V"]
-    assert ui_text.text("UI_T2A_REPLACED_LABEL", "en") in body
+    assert ui_text.text("UI_T2A_REPLACED", "en") in body
     html = c.get(DELIVERABLE % sid).get_data(as_text=True)
     assert _values(html) == ["9 V"] and _replaced(html) == ["7 V", "8 V"]
 
@@ -647,7 +733,7 @@ def test_another_projects_anchor_and_history_are_isolated(db_path):
     sid_a = _start(ca)
     cb, _b = _client_for("t2a-iso-b@example.com")
     sid_b = _start(cb, answers=(PROBLEM_ANSWER,))
-    assert _propose(cb, sid_b, "rec_2").status_code == 302   # A's rec_2 is not B's anchor
+    assert _propose(cb, sid_b, "rec_2").status_code == 302
     assert webapp.QUANTITY_NOT_SAVED_MESSAGE in _page(cb, sid_b)
     assert _record(ca, sid_a, "rec_2", "5 V").status_code == 302
     assert _record(cb, sid_b, "rec_1", "9 A", KIND2).status_code == 302
@@ -674,14 +760,15 @@ def test_session_block_is_optional_collapsed_and_lists_eligible_anchors(db_path)
     assert 'data-t2a-anchor="rec_1"' in body and PROBLEM_ANSWER in body
     assert ui_text.text("UI_T2A_NONE", "en") in body
     for kind in QUANTITY_KINDS:
-        assert 'value="%s"' % kind in body and ui_text.text("UI_T2A_KIND_" + kind, "en") in body
-        assert ui_text.text("UI_T2A_KIND_" + kind, "ar") != "UI_T2A_KIND_" + kind
+        key = "UI_T2A_KIND_" + kind.upper()
+        assert 'value="%s"' % kind in body and ui_text.text(key, "en") in body
+        assert ui_text.text(key, "ar") != key and ui_text.text(key, "en") != key
     assert 'id="answer-form"' in body and "/correct" in body
     assert len(set(re.findall(r'name="csrf_token" value="([^"]+)"', body))) == 1
+    block = body.split('<details id="t2a-quantities"', 1)[1].split("</details>", 1)[0]
     for word in ("feasib", "attainab", "validated", "verified", "safe", "compliant"):
-        block = body.split('<details id="t2a-quantities"', 1)[1].split("</details>", 1)[0]
         if word in block.lower():
-            assert "not" in block.lower()                # only ever negated
+            assert "not" in block.lower()
 
 
 def test_user_statement_and_value_text_are_escaped_inside_the_quantity_block(db_path):
@@ -692,6 +779,8 @@ def test_user_statement_and_value_text_are_escaped_inside_the_quantity_block(db_
     block = body.split('<details id="t2a-quantities"', 1)[1].split("</details>", 1)[0]
     assert "<b>board</b>" not in block and "&lt;b&gt;board&lt;/b&gt;" in block
     assert "<b>5</b>" not in block and "&lt;b&gt;5&lt;/b&gt; V" in block
+    html = c.get(DELIVERABLE % sid).get_data(as_text=True)
+    assert "<b>5</b>" not in html and "&lt;b&gt;5&lt;/b&gt; V" in html
 
 
 def test_html_deliverable_and_pdf_present_current_replaced_and_withdrawn_read_only(
@@ -700,20 +789,22 @@ def test_html_deliverable_and_pdf_present_current_replaced_and_withdrawn_read_on
     sid = _start(c)
     assert _record(c, sid, "rec_1", "12.5 V").status_code == 302
     assert _record(c, sid, "rec_1", "14 V").status_code == 302
-    assert _record(c, sid, "rec_2", "3 to 5 A", KIND2).status_code == 302
+    assert _record(c, sid, "rec_2", "3 to 5 A", "range").status_code == 302
     assert c.post(CORRECT % sid, data={"supersedes_record_id": "rec_2",
                                        "response": MECH_CORRECTED,
                                        "answer_token": _token(c, sid)}).status_code == 302
     html = c.get(DELIVERABLE % sid).get_data(as_text=True)
     assert 'id="t2a-requirement-quantities"' in html
-    assert ui_text.text("UI_T2A_DELIV_HEADING", "en") in html
-    assert "not been checked, validated, or assessed" in html
+    for key in ("UI_T2A_DELIV_HEADING", "UI_T2A_DISCLAIMER", "UI_T2A_STATUS_UNVALIDATED",
+                "UI_T2A_REPLACED", "UI_T2A_WITHDRAWN_ANCHOR", "UI_T2A_WITHDRAWN_NOTE",
+                "UI_T2A_KIND_TARGET_VALUE", "UI_T2A_KIND_RANGE"):
+        assert ui_text.text(key, "en") in html, key
+    assert PROBLEM_ANSWER in html and MECH_STRONG in html      # statements (withdrawn one retained)
     assert _values(html) == ["14 V"] and _replaced(html) == ["12.5 V"]
     assert _withdrawn(html) == ["3 to 5 A"]
-    assert ui_text.text("UI_T2A_WITHDRAWN_LABEL", "en") in html
-    assert ui_text.text("UI_T2A_WITHDRAWN_NOTE", "en") in html
-    assert "Recorded by the inventor (not yet verified)" in html
-    assert "qty-" not in html and "anchor_withdrawn" not in html and "req:assertion" not in html
+    for forbidden in ("qty-", "anchor_withdrawn", "req:assertion", "UNVALIDATED", "OWNER_STATED",
+                      "event_key", "recorded_at"):
+        assert forbidden not in html, forbidden
     seen = _capture_pdf_source(monkeypatch)
     r = c.post(PDF % sid, data={})
     assert r.status_code == 200 and r.headers["Content-Type"] == "application/pdf"
@@ -724,9 +815,10 @@ def test_html_deliverable_and_pdf_present_current_replaced_and_withdrawn_read_on
     assert "quantity/" not in source and "<form" not in source
     assert "confirmation_token" not in source and "csrf_token" not in source
     assert "qty-" not in source and seen["pdf"][:5] == b"%PDF-"
-    with app.test_request_context():
-        meta = webapp._deliverable_context(sid)[1]["_session_meta"]["requirement_quantities"]
-    assert meta["total"] == 2 and meta["active_total"] == 1 and meta["withdrawn_total"] == 1
+    meta = _package(sid)["_session_meta"]["requirement_quantities"]
+    assert meta["total"] == 3
+    assert [(r["active"], r["anchor_active"]) for r in meta["rows"]] == [
+        (False, True), (True, True), (True, False)]
 
 
 def test_arabic_and_english_chrome_parity_with_never_localized_value_text(db_path):
@@ -737,9 +829,9 @@ def test_arabic_and_english_chrome_parity_with_never_localized_value_text(db_pat
     assert c.post("/ui-language", data={"lang": "ar"}).status_code in (302, 303)
     ar = _page(c, sid)
     for key in ("UI_T2A_HEADING", "UI_T2A_EXPLAIN", "UI_T2A_CURRENT", "UI_T2A_KIND_LABEL",
-                "UI_T2A_VALUE_LABEL", "UI_T2A_REPLACE_BUTTON", "UI_T2A_DELIV_PROVENANCE",
-                "UI_T2A_KIND_" + KIND2):
-        assert ui_text.text(key, "en") in en and ui_text.text(key, "ar") in ar
+                "UI_T2A_VALUE_LABEL", "UI_T2A_REPLACE_BUTTON", "UI_T2A_STATUS_UNVALIDATED",
+                "UI_T2A_KIND_MAXIMUM_VALUE"):
+        assert ui_text.text(key, "en") in en and ui_text.text(key, "ar") in ar, key
         assert ui_text.text(key, "ar") != ui_text.text(key, "en")
     assert _values(en) == _values(ar) == ["3.75 kg"]
     assert [x[5] for x in _rows(db_path, sid)] == ["3.75 kg"]
@@ -752,9 +844,10 @@ def test_arabic_and_english_chrome_parity_with_never_localized_value_text(db_pat
     ar = _page(c, sid)
     assert ui_text.localize_deep(webapp.QUANTITY_SAVED_ACK, "ar") in ar
     assert webapp.QUANTITY_SAVED_ACK not in ar
-    assert ui_text.text("UI_T2A_REPLACED_LABEL", "ar") in ar and _replaced(ar) == ["3.75 kg"]
+    assert ui_text.text("UI_T2A_REPLACED", "ar") in ar and _replaced(ar) == ["3.75 kg"]
     html = c.get(DELIVERABLE % sid).get_data(as_text=True)
     assert ui_text.text("UI_T2A_DELIV_HEADING", "ar") in html and "4 kg" in html
+    assert ui_text.text("UI_T2A_DISCLAIMER", "ar") in html
     assert _propose(c, sid, "rec_1", "").status_code == 302
     ar = _page(c, sid)
     assert ui_text.localize_message(webapp.QUANTITY_INVALID_MESSAGE, "ar") in ar
@@ -770,8 +863,7 @@ def test_zero_rows_leave_package_html_and_pdf_source_byte_identical(db_path, mon
     real_html = c.get(DELIVERABLE % sid).get_data()
     assert c.post(PDF % sid, data={}).status_code == 200
     real_source = seen["source"]
-    with app.test_request_context():
-        real_package = webapp._deliverable_context(sid)[1]
+    real_package = _package(sid)
     monkeypatch.setattr(webapp, "_attach_quantity_history", lambda sid, state: True)
     monkeypatch.setattr(webapp, "_requirement_quantities_meta", lambda state: None)
     SESSION_STORE[sid]["state"].requirement_quantities = []
@@ -791,8 +883,8 @@ def test_zero_rows_leave_package_html_and_pdf_source_byte_identical(db_path, mon
 def test_cold_load_restores_history_on_every_surface_and_refuses_cold_writes(db_path, monkeypatch):
     c, _aid = _client_for("t2a-cold@example.com")
     sid = _start(c)
-    assert _record(c, sid, "rec_1", "42 pieces").status_code == 302
-    assert _record(c, sid, "rec_1", "43 pieces").status_code == 302
+    assert _record(c, sid, "rec_1", "42 pieces", "count").status_code == 302
+    assert _record(c, sid, "rec_1", "43 pieces", "count").status_code == 302
     SESSION_STORE.clear()
     body = _page(c, sid)
     assert 'id="reconstructed-review"' in body
@@ -803,13 +895,13 @@ def test_cold_load_restores_history_on_every_surface_and_refuses_cold_writes(db_
     seen = _capture_pdf_source(monkeypatch)
     assert c.post(PDF % sid, data={}).status_code == 200
     assert _values(seen["source"]) == ["43 pieces"]
-    assert _propose(c, sid, "rec_1", "44 pieces").status_code == 302
+    assert _propose(c, sid, "rec_1", "44 pieces", "count").status_code == 302
     assert webapp.QUANTITY_NOT_SAVED_MESSAGE in _page(c, sid)
     assert [x[5] for x in _rows(db_path, sid)] == ["42 pieces", "43 pieces"]
     assert c.post("/session/%s/resume" % sid, data={}).status_code == 302
     assert [q.value_text for q in SESSION_STORE[sid]["state"].requirement_quantities] == [
         "42 pieces", "43 pieces"]
-    assert _record(c, sid, "rec_1", "44 pieces").status_code == 302
+    assert _record(c, sid, "rec_1", "44 pieces", "count").status_code == 302
     assert _values(_page(c, sid)) == ["44 pieces"]
 
 
@@ -834,6 +926,10 @@ def test_existing_populated_pre_t2a_database_is_migrated_by_the_application(db_p
         assert conn.execute("PRAGMA foreign_key_check").fetchall() == []
         fks = conn.execute("PRAGMA foreign_key_list(requirement_quantities)").fetchall()
         assert {fk[2] for fk in fks} == {"projects", "records", "requirement_quantities"}
+        idx = {r[1] for r in conn.execute("PRAGMA index_list(requirement_quantities)")}
+        assert {"requirement_quantities_chain_root_uq", "requirement_quantities_anchor_idx",
+                "requirement_quantities_event_key_uq", "requirement_quantities_seq_uq",
+                "requirement_quantities_supersedes_uq"} <= idx
     finally:
         conn.close()
 
@@ -857,11 +953,9 @@ def test_corrupt_populated_history_fails_closed_on_every_surface(db_path, monkey
         text = r.get_data(as_text=True)
         assert "qty-" not in text and "bogus" not in text and "sqlite" not in text.lower()
     assert [q.value_text for q in SESSION_STORE[sid]["state"].requirement_quantities] == ["5 V"]
-    # confirm on the corrupt history: refused INSIDE the store transaction
     assert _confirm(c, sid, token).status_code == 302
     assert SESSION_STORE[sid].get("_answer_error") == webapp.QUANTITY_NOT_SAVED_MESSAGE
     assert _rows(db_path, sid) == before_rows
-    # propose on the corrupt history: refused, nothing staged
     r = c.post(PROPOSE % sid, data={"anchor_record_id": "rec_1", "quantity_kind": KIND,
                                     "value_text": "7 V"})
     assert r.status_code == 302 and "quantity_proposal" not in SESSION_STORE[sid]
@@ -914,19 +1008,19 @@ def test_project_cap_is_enforced_through_the_web_flow_at_200(db_path):
     c, _aid = _client_for("t2a-cap@example.com")
     sid = _start(c)
     store = _store()
-    # fill to 199 durable rows directly through the canonical store seam
     from engine.requirement_quantity import RequirementQuantity
     head = None
     for i in range(MAX_REQUIREMENT_QUANTITIES_PER_PROJECT - 1):
-        q = RequirementQuantity(sid, -1, store.new_quantity_id(), "rec_1",
-                                "req:assertion:rec_1", KIND, "v %d" % i, head, "%032x" % i)
+        q = RequirementQuantity(store.new_quantity_id(), -1, "rec_1", "req:assertion:rec_1",
+                                KIND, "v %d" % i, head, "%032x" % i, 1,
+                                "2026-09-11T12:00:00+00:00")
         store.append_requirement_quantity(sid, q)
         head = q.quantity_id
     assert len(_rows(db_path, sid)) == 199
-    assert _record(c, sid, "rec_1", "row 200").status_code == 302     # 200th succeeds
+    assert _record(c, sid, "rec_1", "row 200").status_code == 302
     assert webapp.QUANTITY_SAVED_ACK in _page(c, sid)
     assert len(_rows(db_path, sid)) == 200
-    assert _record(c, sid, "rec_1", "row 201").status_code == 302     # 201st refused
+    assert _record(c, sid, "rec_1", "row 201").status_code == 302
     assert webapp.QUANTITY_NOT_SAVED_MESSAGE in _page(c, sid)
     assert len(_rows(db_path, sid)) == 200 and _values(_page(c, sid)) == ["row 200"]
 
@@ -1019,9 +1113,9 @@ def test_superseded_anchor_becomes_inactive_deterministically(db_path):
     assert _anchors(c, sid) == ["rec_1", "rec_3"]
     assert _values(body) == ["5 V"] and _withdrawn(body) == ["7 A"]
     assert ui_text.text("UI_T2A_WITHDRAWN_NOTE", "en") in body
-    with app.test_request_context():
-        meta = webapp._deliverable_context(sid)[1]["_session_meta"]["requirement_quantities"]
-    assert [(i["value_text"], i["anchor_active"]) for i in meta["items"]] == [("5 V", True), ("7 A", False)]
+    meta = _package(sid)["_session_meta"]["requirement_quantities"]
+    assert [(i["value_text"], i["active"], i["anchor_active"]) for i in meta["rows"]] == [
+        ("5 V", True, True), ("7 A", True, False)]
     assert [(x[2], x[5]) for x in _rows(db_path, sid)] == [("rec_1", "5 V"), ("rec_2", "7 A")]
     from engine.session_reconstruction import reconstruct_readonly_state
     from engine.requirement_quantity import quantity_chains

@@ -1,17 +1,19 @@
 """T2-A Quantified Requirements Slice 1 — engine + durable-store proof.
 
 File: tests/test_t2a_requirement_quantity_engine_store.py
-Purpose: behaviour tests for the frozen Slice-1 data contract
-(`engine/requirement_quantity.py`: nine-field `RequirementQuantity`, closed
-`quantity_kind` vocabulary, bounded `value_text` policy, fail-closed history
-validation, per-anchor chain derivation with replaced / withdrawn semantics,
-the presentation-row builder), the additive `IdeaState` carrier, and the
-additive `requirement_quantities` durable history in `engine/record_store.py`
-(migration on a fresh AND an existing populated pre-T2A database, INSERT-only
-append with history validation INSIDE the write transaction, the per-project
-cap at 199/200/201, one-active-chain / stale-head enforcement, composite
-foreign keys, unique event key, project isolation, fail-closed load,
-backup/restore parity). The canonical deliverable assembler stays frozen.
+Purpose: behaviour tests for the accepted Slice-1 data contract
+(`engine/requirement_quantity.py`: the canonical `RequirementQuantity` row,
+the closed six-token `quantity_kind` vocabulary, the exact `value_text`
+policy, fail-closed history validation, per-anchor chain derivation with
+replaced / withdrawn semantics, the canonical package rows), the additive
+`IdeaState` carrier, and the additive `requirement_quantities` durable
+history in `engine/record_store.py` (migration on a fresh AND an existing
+populated pre-T2A database, INSERT-only append with history validation
+INSIDE the write transaction, the per-project cap at 199/200/201,
+one-active-chain / stale-head enforcement, the exact index set with direct
+SQLite proofs, composite foreign keys, unique event key, project isolation,
+fail-closed load, backup/restore parity). The canonical deliverable
+assembler stays frozen.
 
 Real on-disk SQLite only (pytest tmp_path); the real stores; no mocks of the
 seams under test. Fail-closed assertions are never weakened.
@@ -19,6 +21,7 @@ seams under test. Fail-closed assertions are never weakened.
 import json
 import os
 import sqlite3
+import uuid
 from dataclasses import FrozenInstanceError
 
 import pytest
@@ -34,12 +37,14 @@ from engine.record_store import (
     QuantityChainConflict, QuantityCapExceeded,
 )
 from engine.requirement_quantity import (
-    MAX_REQUIREMENT_QUANTITIES_PER_PROJECT, MAX_VALUE_TEXT_CHARS,
-    QUANTITY_KINDS, REQUIREMENT_QUANTITIES_META_KEY, QuantityHistoryError,
-    QuantityValueError, RequirementQuantity, active_quantities,
-    eligible_anchors, is_stored_value_text, normalize_value_text,
-    quantity_chains, requirement_quantities_meta, superseded_ids,
-    validate_quantity_history, validate_quantity_kind,
+    CANONICAL_ROW_FIELDS, MAX_REQUIREMENT_QUANTITIES_PER_PROJECT,
+    MAX_VALUE_TEXT_CHARS, QUANTITY_KINDS, QUANTITY_PROVENANCE,
+    QUANTITY_VALIDATION_STATUS, REQUIREMENT_QUANTITIES_META_KEY,
+    QuantityHistoryError, QuantityValueError, RequirementQuantity,
+    active_quantities, eligible_anchors, is_recorded_at, is_stored_value_text,
+    normalize_value_text, quantity_chains, requirement_quantities_meta,
+    requirement_statement, superseded_ids, validate_quantity_history,
+    validate_quantity_kind,
 )
 
 PROBLEM = ("The problem is that cyclists have no reliable brake light because "
@@ -48,8 +53,9 @@ PROBLEM = ("The problem is that cyclists have no reliable brake light because "
 MECHANISM = ("The mechanism works because the accelerometer outputs a voltage "
              "proportional to deceleration and the microcontroller drives the "
              "LED through a transistor.")
-KIND = QUANTITY_KINDS[0]
-KIND2 = QUANTITY_KINDS[1]
+KIND = "target_value"
+KIND2 = "maximum_value"
+AT = "2026-09-11T12:00:00+00:00"
 
 
 def _qid(n):
@@ -61,22 +67,26 @@ def _ek(n):
 
 
 def _row(n, anchor="rec_1", kind=KIND, text="5 V", supersedes=None, seq=None,
-         project_id="P1", requirement_id=None, event_key=None):
-    return {"project_id": project_id, "quantity_seq": n if seq is None else seq,
-            "quantity_id": _qid(n), "anchor_record_id": anchor,
-            "requirement_id": requirement_id or ("req:assertion:" + anchor),
-            "quantity_kind": kind, "value_text": text,
-            "supersedes_quantity_id": supersedes, "event_key": event_key or _ek(n)}
+         requirement_id=None, event_key=None, iteration=1, at=AT, **extra):
+    row = {"quantity_seq": n if seq is None else seq, "quantity_id": _qid(n),
+           "anchor_record_id": anchor,
+           "requirement_id": ("req:assertion:" + anchor) if requirement_id is None else requirement_id,
+           "quantity_kind": kind, "value_text": text,
+           "supersedes_quantity_id": supersedes, "event_key": event_key or _ek(n),
+           "recorded_iteration": iteration, "recorded_at": at}
+    row.update(extra)
+    return row
 
 
-def _quantity(store, project_id, anchor="rec_1", kind=KIND, text="5 V",
-              supersedes=None, event_key=None, requirement_id=None):
-    import uuid
+def _quantity(store, anchor="rec_1", kind=KIND, text="5 V", supersedes=None,
+              event_key=None, requirement_id=None, iteration=1, at=AT):
     return RequirementQuantity(
-        project_id=project_id, quantity_seq=-1, quantity_id=store.new_quantity_id(),
-        anchor_record_id=anchor, requirement_id=requirement_id or ("req:assertion:" + anchor),
+        quantity_id=store.new_quantity_id(), quantity_seq=-1,
+        anchor_record_id=anchor,
+        requirement_id=("req:assertion:" + anchor) if requirement_id is None else requirement_id,
         quantity_kind=kind, value_text=text, supersedes_quantity_id=supersedes,
-        event_key=event_key or uuid.uuid4().hex)
+        event_key=event_key or uuid.uuid4().hex, recorded_iteration=iteration,
+        recorded_at=at)
 
 
 @pytest.fixture
@@ -97,55 +107,83 @@ def _project(store, pid, answers=(PROBLEM,)):
     return state
 
 
+def _raw_insert(store, project_id, seq, qid, anchor, supersedes, event_key, kind=KIND):
+    store._conn.execute(
+        "INSERT INTO requirement_quantities VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        (project_id, seq, qid, anchor, "req:assertion:" + anchor, kind, "9 V",
+         supersedes, event_key, 1, AT))
+
+
 # ==========================================================================
 # 1. Data contract, kind vocabulary, value_text policy
 # ==========================================================================
-def test_frozen_contract_has_exactly_the_nine_fields_and_is_immutable():
-    fields = tuple(RequirementQuantity.__dataclass_fields__)
-    assert fields == ("project_id", "quantity_seq", "quantity_id", "anchor_record_id",
-                      "requirement_id", "quantity_kind", "value_text",
-                      "supersedes_quantity_id", "event_key")
-    q = RequirementQuantity("P1", 0, _qid(1), "rec_1", "req:assertion:rec_1", KIND,
-                            "5 V", None, _ek(1))
+def test_canonical_row_has_exactly_the_accepted_fields_and_fixed_values():
+    assert CANONICAL_ROW_FIELDS == (
+        "quantity_id", "quantity_seq", "anchor_record_id", "requirement_id",
+        "quantity_kind", "value_text", "supersedes_quantity_id", "event_key",
+        "recorded_iteration", "recorded_at", "validation_status", "provenance")
+    q = RequirementQuantity(_qid(1), 0, "rec_1", "req:assertion:rec_1", KIND, "5 V",
+                            None, _ek(1), 3, AT)
+    assert q.validation_status == QUANTITY_VALIDATION_STATUS == "UNVALIDATED"
+    assert q.provenance == QUANTITY_PROVENANCE == "OWNER_STATED"
+    assert "project_id" not in CANONICAL_ROW_FIELDS      # store/database scoping only
     with pytest.raises(FrozenInstanceError):
         q.value_text = "6 V"
 
 
-def test_kind_vocabulary_is_closed_and_ascii():
-    assert len(set(QUANTITY_KINDS)) == len(QUANTITY_KINDS) >= 2
+def test_kind_vocabulary_is_the_frozen_six_token_set():
+    assert QUANTITY_KINDS == ("target_value", "minimum_value", "maximum_value",
+                              "range", "count", "other_quantity")
     for kind in QUANTITY_KINDS:
         assert validate_quantity_kind(kind) == kind
-        assert kind.isascii() and kind.replace("_", "").isalnum()
-    for bad in ("", None, "TARGET", "about", KIND + " ", "unit", 5):
+    for bad in ("", None, "TARGET_VALUE", "target", "tolerance", "unit", KIND + " ", 5):
         with pytest.raises(QuantityValueError):
             validate_quantity_kind(bad)
 
 
 @pytest.mark.parametrize("raw,expected", [
-    ("5 V", "5 V"), ("  12.5   V ", "12.5 V"), ("0.5 mm ± 0.1", "0.5 mm ± 0.1"),
-    ("3\tto\t5 A", "3 to 5 A"), ("٢٥٠ نيوتن", "٢٥٠ نيوتن"), ("x" * MAX_VALUE_TEXT_CHARS,
-                                                             "x" * MAX_VALUE_TEXT_CHARS),
+    ("5 V", "5 V"),
+    ("  12.5   V ", "12.5   V"),                       # internal spaces preserved exactly
+    ("0.5 mm ± 0.1", "0.5 mm ± 0.1"),
+    ("٢٥٠ نيوتن", "٢٥٠ نيوتن"),
+    ("a" * MAX_VALUE_TEXT_CHARS, "a" * MAX_VALUE_TEXT_CHARS),      # 120 accepted
+    ("  " + "b" * MAX_VALUE_TEXT_CHARS + "\n", "b" * MAX_VALUE_TEXT_CHARS),
+    ("١" * MAX_VALUE_TEXT_CHARS, "١" * MAX_VALUE_TEXT_CHARS),     # code points, not bytes
+    ("5 V", "5 V"),                          # no extra Unicode exclusion
+    ("1,000  volts", "1,000  volts"),                  # no parsing or conversion
+    ("00012", "00012"),                                # no numeric normalization
 ])
-def test_value_text_is_normalized_never_interpreted_and_idempotent(raw, expected):
+def test_value_text_policy_strips_outer_whitespace_only(raw, expected):
     assert normalize_value_text(raw) == expected
     assert normalize_value_text(expected) == expected
     assert is_stored_value_text(expected)
 
 
 @pytest.mark.parametrize("raw", [
-    "", "   ", "\t", "x" * (MAX_VALUE_TEXT_CHARS + 1), "5\nV", "5\x00V", "5\x7fV",
-    None, 5, "a b",
+    "", "   ", "\t", "\n", None, 5, b"5 V",
+    "a" * (MAX_VALUE_TEXT_CHARS + 1),                  # 121 rejected
+    "5\tV", "5\nV", "5\rV", "5\x00V", "5\x1fV",        # C0 controls (tab included)
+    "5\x7fV", "5\x85V", "5\x9fV",                      # C1 controls
 ])
 def test_value_text_policy_rejects_empty_long_and_control_input(raw):
     with pytest.raises(QuantityValueError):
         normalize_value_text(raw)
     assert not is_stored_value_text(raw)
+    assert MAX_VALUE_TEXT_CHARS == 120
 
 
 def test_value_text_error_never_carries_the_text():
     with pytest.raises(QuantityValueError) as info:
-        normalize_value_text("secret-value-123\n")
+        normalize_value_text("secret-value-123\tx")
     assert "secret-value-123" not in str(info.value)
+
+
+def test_recorded_at_must_be_utc_iso8601():
+    assert is_recorded_at("2026-09-11T12:00:00+00:00")
+    assert is_recorded_at("2026-09-11T12:00:00Z")
+    for bad in ("", None, "2026-09-11", "2026-09-11T12:00:00", "2026-09-11T12:00:00+02:00",
+                "yesterday", 5):
+        assert not is_recorded_at(bad)
 
 
 # ==========================================================================
@@ -153,53 +191,64 @@ def test_value_text_error_never_carries_the_text():
 # ==========================================================================
 def test_zero_rows_are_a_valid_empty_history():
     assert validate_quantity_history([]) == ()
-    assert validate_quantity_history(iter(()), "P1") == ()
+    assert validate_quantity_history(iter(())) == ()
     assert active_quantities(()) == {} and superseded_ids(()) == set()
 
 
-def test_valid_chain_derives_active_and_superseded_rows():
+def test_valid_chain_derives_active_and_superseded_rows_with_fixed_values():
     rows = [_row(1), _row(2, text="6 V", supersedes=_qid(1)),
             _row(3, anchor="rec_2", kind=KIND2, text="0.5 mm"),
             _row(4, text="7 V", supersedes=_qid(2))]
-    history = validate_quantity_history(rows, "P1")
+    history = validate_quantity_history(rows)
     assert [q.quantity_id for q in history] == [_qid(1), _qid(2), _qid(3), _qid(4)]
+    assert all(q.validation_status == "UNVALIDATED" and q.provenance == "OWNER_STATED"
+               for q in history)
     assert superseded_ids(history) == {_qid(1), _qid(2)}
     active = active_quantities(history)
     assert set(active) == {"rec_1", "rec_2"}
     assert active["rec_1"].value_text == "7 V" and active["rec_2"].quantity_kind == KIND2
     assert rows[0] == _row(1)                        # input untouched
+    # explicit canonical fixed values are accepted; non-canonical ones are not
+    assert validate_quantity_history([_row(1, validation_status="UNVALIDATED",
+                                           provenance="OWNER_STATED")])
 
 
-@pytest.mark.parametrize("label,rows,pid", [
-    ("other project", [_row(1, project_id="P2")], "P1"),
-    ("missing field", [{"quantity_id": _qid(1)}], None),
-    ("non-mapping", ["nope"], None),
-    ("seq not ascending", [_row(1, seq=5), _row(2, seq=5, anchor="rec_2")], None),
-    ("seq negative", [_row(1, seq=-1)], None),
-    ("seq bool", [_row(1, seq=True)], None),
-    ("malformed id", [_row(1) | {"quantity_id": "qty-short"}], None),
-    ("duplicate id", [_row(1), _row(2, anchor="rec_2") | {"quantity_id": _qid(1)}], None),
-    ("malformed anchor", [_row(1, anchor="rec_0")], None),
-    ("malformed anchor text", [_row(1, anchor="rec-abc")], None),
-    ("empty requirement id", [_row(1, requirement_id="  ")], None),
-    ("unknown kind", [_row(1, kind="about")], None),
-    ("value not normalized", [_row(1, text=" 5 V")], None),
-    ("value empty", [_row(1, text="")], None),
-    ("value control", [_row(1, text="5\nV")], None),
-    ("malformed event key", [_row(1, event_key="zz")], None),
-    ("duplicate event key", [_row(1), _row(2, anchor="rec_2", event_key=_ek(1))], None),
-    ("unknown supersedes", [_row(1, supersedes=_qid(9))], None),
-    ("later supersedes", [_row(1, supersedes=_qid(2)), _row(2)], None),
-    ("self supersedes", [_row(1, supersedes=_qid(1))], None),
-    ("cross-anchor supersedes", [_row(1), _row(2, anchor="rec_2", supersedes=_qid(1))], None),
-    ("requirement id changes", [_row(1), _row(2, supersedes=_qid(1), requirement_id="req:x")], None),
-    ("double supersession", [_row(1), _row(2, supersedes=_qid(1)), _row(3, supersedes=_qid(1))], None),
-    ("two active per anchor", [_row(1), _row(2, text="6 V")], None),
-    ("over cap", [_row(i, anchor="rec_%d" % i) for i in range(1, MAX_REQUIREMENT_QUANTITIES_PER_PROJECT + 2)], None),
+@pytest.mark.parametrize("label,rows", [
+    ("missing field", [{"quantity_id": _qid(1)}]),
+    ("non-mapping", ["nope"]),
+    ("seq not ascending", [_row(1, seq=5), _row(2, seq=5, anchor="rec_2")]),
+    ("seq negative", [_row(1, seq=-1)]),
+    ("seq bool", [_row(1, seq=True)]),
+    ("malformed id", [_row(1) | {"quantity_id": "qty-short"}]),
+    ("duplicate id", [_row(1), _row(2, anchor="rec_2") | {"quantity_id": _qid(1)}]),
+    ("malformed anchor", [_row(1, anchor="rec_0")]),
+    ("malformed anchor text", [_row(1, anchor="rec-abc")]),
+    ("requirement id mismatch", [_row(1, requirement_id="req:assertion:rec_2")]),
+    ("empty requirement id", [_row(1, requirement_id="")]),
+    ("unknown kind", [_row(1, kind="tolerance")]),
+    ("value not stored form", [_row(1, text=" 5 V")]),
+    ("value empty", [_row(1, text="")]),
+    ("value control", [_row(1, text="5\tV")]),
+    ("value too long", [_row(1, text="a" * 121)]),
+    ("malformed event key", [_row(1, event_key="zz")]),
+    ("duplicate event key", [_row(1), _row(2, anchor="rec_2", event_key=_ek(1))]),
+    ("negative iteration", [_row(1, iteration=-1)]),
+    ("bool iteration", [_row(1, iteration=True)]),
+    ("malformed recorded_at", [_row(1, at="yesterday")]),
+    ("non-utc recorded_at", [_row(1, at="2026-09-11T12:00:00+02:00")]),
+    ("non-canonical validation status", [_row(1, validation_status="VERIFIED")]),
+    ("non-canonical provenance", [_row(1, provenance="SYSTEM_INFERRED")]),
+    ("unknown supersedes", [_row(1, supersedes=_qid(9))]),
+    ("later supersedes", [_row(1, supersedes=_qid(2)), _row(2)]),
+    ("self supersedes", [_row(1, supersedes=_qid(1))]),
+    ("cross-anchor supersedes", [_row(1), _row(2, anchor="rec_2", supersedes=_qid(1))]),
+    ("double supersession", [_row(1), _row(2, supersedes=_qid(1)), _row(3, supersedes=_qid(1))]),
+    ("second root for one anchor", [_row(1), _row(2, text="6 V")]),
+    ("over cap", [_row(i, anchor="rec_%d" % i) for i in range(1, MAX_REQUIREMENT_QUANTITIES_PER_PROJECT + 2)]),
 ])
-def test_every_structural_corruption_raises_with_nothing_returned(label, rows, pid):
+def test_every_structural_corruption_raises_with_nothing_returned(label, rows):
     with pytest.raises(QuantityHistoryError):
-        validate_quantity_history(rows, pid)
+        validate_quantity_history(rows)
 
 
 def test_corruption_message_names_structure_only_never_content():
@@ -210,7 +259,7 @@ def test_corruption_message_names_structure_only_never_content():
 
 
 # ==========================================================================
-# 3. Eligible anchors, chain derivation, presentation rows
+# 3. Eligible anchors, chain derivation, canonical package rows
 # ==========================================================================
 def _state_with_answers():
     state = IdeaState(idea_id="idea-x")
@@ -235,6 +284,9 @@ def test_eligible_anchors_are_active_non_empty_answered_landscape_records():
                              gap_context="MECHANISM_COMPLETENESS", iteration=4,
                              supersedes=["rec_2"])
     assert [rec.record_id for _req, rec in eligible_anchors(state)] == ["rec_1", "rec_5"]
+    assert requirement_statement(state, "rec_2") == MECHANISM      # retained text
+    assert requirement_statement(state, "rec_1") == PROBLEM
+    assert requirement_statement(state, "rec_99") == ""
     state.mark_contradiction("rec_1", "rec_5")
     assert eligible_anchors(state) == ()
 
@@ -251,40 +303,40 @@ def test_chains_expose_active_replaced_and_withdrawn_anchor_deterministically():
     assert [(c.anchor_record_id, c.active.value_text, [r.value_text for r in c.replaced],
              c.anchor_active) for c in chains] == [
         ("rec_1", "6 V", ["5 V"], True), ("rec_2", "3 A", [], True), ("rec_9", "1 kg", [], False)]
-    # withdrawing rec_2 makes its chain a withdrawn-anchor chain, rows retained
     state.record_interaction(DISPOSITION_ANSWERED, "corrected", iteration=4,
                              gap_context="MECHANISM_COMPLETENESS", supersedes=["rec_2"])
     chains = quantity_chains(state)
     assert [(c.anchor_record_id, c.anchor_active) for c in chains] == [
         ("rec_1", True), ("rec_2", False), ("rec_9", False)]
-    assert quantity_chains(state) == chains          # deterministic
+    assert quantity_chains(state) == chains
     assert quantity_chains(IdeaState(idea_id="empty")) == ()
-    assert len(state.requirement_quantities) == 4    # nothing deleted
+    assert len(state.requirement_quantities) == 4
 
 
-def test_meta_is_none_at_zero_rows_and_carries_replaced_and_withdrawn_otherwise():
+def test_package_rows_are_canonical_ordered_by_seq_and_absent_at_zero():
     state = _state_with_answers()
     assert requirement_quantities_meta(state) is None
     state.requirement_quantities = list(validate_quantity_history([
         _row(1, anchor="rec_1", text="5 V"),
-        _row(2, anchor="rec_1", kind=KIND2, text="6 V", supersedes=_qid(1)),
-        _row(3, anchor="rec_2", text="3 A"),
+        _row(2, anchor="rec_2", text="3 A"),
+        _row(3, anchor="rec_1", kind=KIND2, text="6 V", supersedes=_qid(1), iteration=4),
     ]))
     state.record_interaction(DISPOSITION_ANSWERED, "corrected", iteration=4,
                              gap_context="MECHANISM_COMPLETENESS", supersedes=["rec_2"])
     meta = requirement_quantities_meta(state)
-    assert meta["total"] == 2 and meta["active_total"] == 1 and meta["withdrawn_total"] == 1
-    assert meta["items"] == [
-        {"statement": PROBLEM, "status": "current", "anchor_active": True, "kind": KIND2,
-         "value_text": "6 V", "provenance": "Recorded by the inventor (not yet verified)",
-         "replaced": [{"kind": KIND, "value_text": "5 V"}]},
-        {"statement": MECHANISM, "status": "anchor_withdrawn", "anchor_active": False,
-         "kind": KIND, "value_text": "3 A",
-         "provenance": "Recorded by the inventor (not yet verified)", "replaced": []},
-    ]
+    assert set(meta) == {"total", "rows"} and meta["total"] == 3
+    assert [set(r) for r in meta["rows"]] == [set(CANONICAL_ROW_FIELDS) | {"active", "anchor_active"}] * 3
+    assert [(r["quantity_seq"], r["active"], r["anchor_active"]) for r in meta["rows"]] == [
+        (1, False, True), (2, True, False), (3, True, True)]
+    assert meta["rows"][2] == {
+        "quantity_id": _qid(3), "quantity_seq": 3, "anchor_record_id": "rec_1",
+        "requirement_id": "req:assertion:rec_1", "quantity_kind": KIND2, "value_text": "6 V",
+        "supersedes_quantity_id": _qid(1), "event_key": _ek(3), "recorded_iteration": 4,
+        "recorded_at": AT, "validation_status": "UNVALIDATED", "provenance": "OWNER_STATED",
+        "active": True, "anchor_active": True}
     blob = json.dumps(meta)
-    assert "qty-" not in blob and "rec_" not in blob and "req:" not in blob
-    assert "not been checked, validated, or assessed" in meta["note"]
+    for forbidden in ("title", "note", "label", "statement", "Recorded by", "replaced"):
+        assert forbidden not in blob
     assert REQUIREMENT_QUANTITIES_META_KEY == "requirement_quantities"
 
 
@@ -308,9 +360,9 @@ def test_canonical_assembler_is_frozen_and_emits_no_quantity_key():
 
 
 # ==========================================================================
-# 4. Durable store — schema, migration, append, cap, chain rule, isolation
+# 4. Durable store — schema, index set, migration, append, cap, chain rule
 # ==========================================================================
-def test_fresh_database_creates_additive_table_keys_and_composite_foreign_keys(store):
+def test_fresh_database_creates_the_exact_table_index_set_and_composite_foreign_keys(store):
     conn = store._conn
     tables = sorted(r[0] for r in conn.execute(
         "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'"))
@@ -318,30 +370,60 @@ def test_fresh_database_creates_additive_table_keys_and_composite_foreign_keys(s
     cols = [r[1] for r in conn.execute("PRAGMA table_info(requirement_quantities)")]
     assert cols == ["project_id", "quantity_seq", "quantity_id", "anchor_record_id",
                     "requirement_id", "quantity_kind", "value_text",
-                    "supersedes_quantity_id", "event_key"]
-    fks = sorted((fk[0], fk[2], fk[3], fk[4]) for fk in
-                 conn.execute("PRAGMA foreign_key_list(requirement_quantities)"))
+                    "supersedes_quantity_id", "event_key", "recorded_iteration",
+                    "recorded_at"]
     by_id = {}
-    for fk_id, table, frm, to in fks:
-        by_id.setdefault((fk_id, table), []).append((frm, to))
+    for fk in conn.execute("PRAGMA foreign_key_list(requirement_quantities)"):
+        by_id.setdefault((fk[0], fk[2]), []).append((fk[3], fk[4]))
     assert sorted(sorted(v) for v in by_id.values()) == sorted(sorted(v) for v in [
         [("project_id", "project_id")],
         [("project_id", "project_id"), ("anchor_record_id", "record_id")],
         [("project_id", "project_id"), ("supersedes_quantity_id", "quantity_id")],
     ])
     assert {t for (_i, t) in by_id} == {"projects", "records", "requirement_quantities"}
-    indexes = {r[1] for r in conn.execute("PRAGMA index_list(requirement_quantities)")}
-    assert "requirement_quantities_supersedes_uq" in indexes
-    uniques = [tuple(c[2] for c in conn.execute("PRAGMA index_info(%s)" % name))
-               for name, unique in ((r[1], r[2]) for r in
-                                    conn.execute("PRAGMA index_list(requirement_quantities)"))
-               if unique]
-    assert ("project_id", "quantity_seq") in uniques
-    assert ("project_id", "event_key") in uniques
-    assert ("project_id", "quantity_id") in uniques
+    indexes = {r[1]: bool(r[2]) for r in conn.execute("PRAGMA index_list(requirement_quantities)")}
+    assert indexes == {
+        "sqlite_autoindex_requirement_quantities_1": True,      # PK (project_id, quantity_id)
+        "requirement_quantities_event_key_uq": True,
+        "requirement_quantities_seq_uq": True,
+        "requirement_quantities_supersedes_uq": True,
+        "requirement_quantities_chain_root_uq": True,
+        "requirement_quantities_anchor_idx": False,
+    }
+    sql = {r[0]: r[1] for r in conn.execute(
+        "SELECT name, sql FROM sqlite_master WHERE tbl_name = 'requirement_quantities' "
+        "AND type = 'index' AND sql IS NOT NULL")}
+    assert "WHERE supersedes_quantity_id IS NULL" in sql["requirement_quantities_chain_root_uq"]
+    assert "WHERE supersedes_quantity_id IS NOT NULL" in sql["requirement_quantities_supersedes_uq"]
     assert conn.execute("PRAGMA foreign_keys").fetchone()[0] == 1
     assert conn.execute("PRAGMA foreign_key_check").fetchall() == []
     assert isinstance(store, RecordStore)
+
+
+def test_direct_sqlite_proofs_of_the_relational_constraints(store):
+    _project(store, "P1")
+    _project(store, "P2")
+    conn = store._conn
+    _raw_insert(store, "P1", 0, _qid(1), "rec_1", None, "a" * 32)
+    with pytest.raises(sqlite3.IntegrityError):         # a second root for one anchor
+        _raw_insert(store, "P1", 1, _qid(2), "rec_1", None, "b" * 32)
+    _raw_insert(store, "P1", 1, _qid(2), "rec_1", _qid(1), "b" * 32)
+    with pytest.raises(sqlite3.IntegrityError):         # a second successor for one quantity
+        _raw_insert(store, "P1", 2, _qid(3), "rec_1", _qid(1), "c" * 32)
+    with pytest.raises(sqlite3.IntegrityError):         # cross-project anchor (rec_1 of P1 only)
+        _raw_insert(store, "P1", 2, _qid(3), "rec_9", None, "c" * 32)
+    with pytest.raises(sqlite3.IntegrityError):         # cross-project supersession
+        _raw_insert(store, "P2", 0, _qid(4), "rec_1", _qid(1), "d" * 32)
+    with pytest.raises(sqlite3.IntegrityError):         # orphan project
+        _raw_insert(store, "NOPE", 0, _qid(5), "rec_1", None, "e" * 32)
+    with pytest.raises(sqlite3.IntegrityError):         # duplicate event key (project-scoped)
+        _raw_insert(store, "P1", 2, _qid(6), "rec_1", _qid(2), "a" * 32)
+    with pytest.raises(sqlite3.IntegrityError):         # duplicate sequence
+        _raw_insert(store, "P1", 1, _qid(7), "rec_1", _qid(2), "f" * 32)
+    assert conn.execute("PRAGMA foreign_key_check").fetchall() == []
+    assert [q.value_text for q in store.load_requirement_quantities("P1")] == ["9 V", "9 V"]
+    assert len(active_quantities(store.load_requirement_quantities("P1"))) == 1
+    assert store.load_requirement_quantities("P2") == ()
 
 
 def test_existing_populated_pre_t2a_database_migrates_additively_and_idempotently(tmp_path):
@@ -368,15 +450,17 @@ def test_existing_populated_pre_t2a_database_migrates_additively_and_idempotentl
     before = (conn.execute("SELECT * FROM projects").fetchall(),
               conn.execute("SELECT * FROM records").fetchall())
     conn.close()
-    s = SqliteRecordStore(path)                    # migration on open
+    s = SqliteRecordStore(path)
     try:
         assert s.load_requirement_quantities("legacy") == ()
         assert s.load_owner("legacy") == (True, "acct_1")
-        s.append_requirement_quantity("legacy", _quantity(s, "legacy"))
+        s.append_requirement_quantity("legacy", _quantity(s))
         assert s._conn.execute("PRAGMA foreign_key_check").fetchall() == []
+        idx = {r[1] for r in s._conn.execute("PRAGMA index_list(requirement_quantities)")}
+        assert {"requirement_quantities_chain_root_uq", "requirement_quantities_anchor_idx"} <= idx
     finally:
         s.close()
-    s2 = SqliteRecordStore(path)                   # idempotent re-open
+    s2 = SqliteRecordStore(path)
     try:
         assert [x.value_text for x in s2.load_requirement_quantities("legacy")] == ["5 V"]
         assert (s2._conn.execute("SELECT * FROM projects").fetchall(),
@@ -389,26 +473,27 @@ def test_append_and_load_round_trip_survives_close_and_reopen(tmp_path):
     path = str(tmp_path / "durable.sqlite")
     s = SqliteRecordStore(path)
     _project(s, "P1")
-    q1 = _quantity(s, "P1", text="5 V", event_key="a" * 32)
+    q1 = _quantity(s, text="5 V", event_key="a" * 32, iteration=2)
     s.append_requirement_quantity("P1", q1)
-    q2 = _quantity(s, "P1", kind=KIND2, text="6.5 V", supersedes=q1.quantity_id,
-                   event_key="b" * 32)
+    q2 = _quantity(s, kind=KIND2, text="6.5   V", supersedes=q1.quantity_id,
+                   event_key="b" * 32, iteration=3, at="2026-09-11T13:00:00+00:00")
     s.append_requirement_quantity("P1", q2)
     s.close()
     s = SqliteRecordStore(path)
     try:
         history = s.load_requirement_quantities("P1")
-        assert [(q.project_id, q.quantity_seq, q.quantity_id, q.anchor_record_id,
-                 q.requirement_id, q.quantity_kind, q.value_text,
-                 q.supersedes_quantity_id, q.event_key) for q in history] == [
-            ("P1", 0, q1.quantity_id, "rec_1", "req:assertion:rec_1", KIND, "5 V", None, "a" * 32),
-            ("P1", 1, q2.quantity_id, "rec_1", "req:assertion:rec_1", KIND2, "6.5 V",
-             q1.quantity_id, "b" * 32)]
+        assert history == (
+            RequirementQuantity(q1.quantity_id, 0, "rec_1", "req:assertion:rec_1", KIND, "5 V",
+                                None, "a" * 32, 2, AT),
+            RequirementQuantity(q2.quantity_id, 1, "rec_1", "req:assertion:rec_1", KIND2,
+                                "6.5   V", q1.quantity_id, "b" * 32, 3,
+                                "2026-09-11T13:00:00+00:00"))
         assert s.requirement_quantity_for_event_key("P1", "b" * 32) == {
-            "project_id": "P1", "quantity_seq": 1, "quantity_id": q2.quantity_id,
-            "anchor_record_id": "rec_1", "requirement_id": "req:assertion:rec_1",
-            "quantity_kind": KIND2, "value_text": "6.5 V",
-            "supersedes_quantity_id": q1.quantity_id, "event_key": "b" * 32}
+            "quantity_seq": 1, "quantity_id": q2.quantity_id, "anchor_record_id": "rec_1",
+            "requirement_id": "req:assertion:rec_1", "quantity_kind": KIND2,
+            "value_text": "6.5   V", "supersedes_quantity_id": q1.quantity_id,
+            "event_key": "b" * 32, "recorded_iteration": 3,
+            "recorded_at": "2026-09-11T13:00:00+00:00"}
         assert s.requirement_quantity_for_event_key("P1", "nope") is None
         assert s.requirement_quantity_for_event_key("P1", None) is None
         assert s.requirement_quantity_for_event_key("P2", "b" * 32) is None
@@ -418,82 +503,47 @@ def test_append_and_load_round_trip_survives_close_and_reopen(tmp_path):
 
 def test_one_active_chain_and_stale_head_are_enforced_inside_the_transaction(store):
     _project(store, "P1")
-    q1 = _quantity(store, "P1")
+    q1 = _quantity(store)
     store.append_requirement_quantity("P1", q1)
     with pytest.raises(QuantityChainConflict):          # second active row
-        store.append_requirement_quantity("P1", _quantity(store, "P1", text="6 V"))
-    q2 = _quantity(store, "P1", text="6 V", supersedes=q1.quantity_id)
+        store.append_requirement_quantity("P1", _quantity(store, text="6 V"))
+    q2 = _quantity(store, text="6 V", supersedes=q1.quantity_id)
     store.append_requirement_quantity("P1", q2)
     with pytest.raises(QuantityChainConflict):          # stale head (q1 already replaced)
         store.append_requirement_quantity(
-            "P1", _quantity(store, "P1", text="7 V", supersedes=q1.quantity_id))
+            "P1", _quantity(store, text="7 V", supersedes=q1.quantity_id))
     with pytest.raises(QuantityChainConflict):          # unknown target
         store.append_requirement_quantity(
-            "P1", _quantity(store, "P1", text="7 V", supersedes=_qid(99)))
+            "P1", _quantity(store, text="7 V", supersedes=_qid(99)))
     with pytest.raises(QuantityChainConflict):          # requirement id drift in a chain
         store.append_requirement_quantity(
-            "P1", _quantity(store, "P1", text="7 V", supersedes=q2.quantity_id,
+            "P1", _quantity(store, text="7 V", supersedes=q2.quantity_id,
                             requirement_id="req:other"))
     assert issubclass(QuantityChainConflict, StoreError)
     history = store.load_requirement_quantities("P1")
     assert len(history) == 2 and active_quantities(history)["rec_1"].quantity_id == q2.quantity_id
 
 
-def test_composite_foreign_keys_refuse_foreign_anchor_and_foreign_supersession(store):
-    _project(store, "P1")
-    _project(store, "P2")
-    qa = _quantity(store, "P1")
-    store.append_requirement_quantity("P1", qa)
-    with pytest.raises(sqlite3.IntegrityError):         # rec_9 is not a record of P1
-        store.append_requirement_quantity("P1", _quantity(store, "P1", anchor="rec_9"))
-    # P2 cannot name P1's row: the store's chain check refuses it first; the
-    # composite FK is the database-level backstop, proven by a direct insert
-    with pytest.raises(QuantityChainConflict):
-        store.append_requirement_quantity(
-            "P2", _quantity(store, "P2", text="9 V", supersedes=qa.quantity_id))
-    with pytest.raises(sqlite3.IntegrityError):
-        store._conn.execute(
-            "INSERT INTO requirement_quantities VALUES ('P2', 0, ?, 'rec_1', 'req', ?, "
-            "'9 V', ?, ?)", (_qid(5), KIND, qa.quantity_id, "c" * 32))
-    with pytest.raises(sqlite3.IntegrityError):         # orphan project
-        store._conn.execute(
-            "INSERT INTO requirement_quantities VALUES ('NOPE', 0, ?, 'rec_1', 'req', ?, "
-            "'9 V', NULL, ?)", (_qid(6), KIND, "d" * 32))
-    with pytest.raises(sqlite3.IntegrityError):         # single successor backstop
-        store._conn.execute(
-            "INSERT INTO requirement_quantities VALUES ('P1', 7, ?, 'rec_1', 'req', ?, "
-            "'9 V', ?, ?)", (_qid(7), KIND, qa.quantity_id, "e" * 32))
-        store._conn.execute(
-            "INSERT INTO requirement_quantities VALUES ('P1', 8, ?, 'rec_1', 'req', ?, "
-            "'9 V', ?, ?)", (_qid(8), KIND, qa.quantity_id, "f" * 32))
-    store._conn.execute("DELETE FROM requirement_quantities WHERE quantity_seq >= 7")
-    assert store._conn.execute("PRAGMA foreign_key_check").fetchall() == []
-    assert [q.value_text for q in store.load_requirement_quantities("P1")] == ["5 V"]
-    assert store.load_requirement_quantities("P2") == ()
-
-
 def test_unique_event_key_is_the_durable_exact_replay_backstop(store):
     _project(store, "P1", answers=(PROBLEM, MECHANISM))
-    store.append_requirement_quantity("P1", _quantity(store, "P1", event_key="a" * 32))
+    store.append_requirement_quantity("P1", _quantity(store, event_key="a" * 32))
     with pytest.raises(sqlite3.IntegrityError):
         store.append_requirement_quantity(
-            "P1", _quantity(store, "P1", anchor="rec_2", event_key="a" * 32))
+            "P1", _quantity(store, anchor="rec_2", event_key="a" * 32))
     assert len(store.load_requirement_quantities("P1")) == 1
     _project(store, "P2")
-    store.append_requirement_quantity("P2", _quantity(store, "P2", event_key="a" * 32))
-    assert len(store.load_requirement_quantities("P2")) == 1     # project-scoped
-    store._conn.execute("BEGIN IMMEDIATE")                        # no lock held after rollback
+    store.append_requirement_quantity("P2", _quantity(store, event_key="a" * 32))
+    assert len(store.load_requirement_quantities("P2")) == 1
+    store._conn.execute("BEGIN IMMEDIATE")
     store._conn.execute("ROLLBACK")
 
 
-def test_unknown_project_wrong_type_and_project_mismatch_write_nothing(store):
+def test_unknown_project_and_wrong_type_write_nothing(store):
     with pytest.raises(ProjectNotFound):
-        store.append_requirement_quantity("missing", _quantity(store, "missing"))
+        store.append_requirement_quantity("missing", _quantity(store))
     _project(store, "P1")
     with pytest.raises(StoreError):
         store.append_requirement_quantity("P1", {"not": "a quantity"})
-    with pytest.raises(StoreError):
-        store.append_requirement_quantity("P1", _quantity(store, "P2"))
     assert store._conn.execute("SELECT COUNT(*) FROM requirement_quantities").fetchone()[0] == 0
     assert store.load_requirement_quantities("missing") == ()
 
@@ -505,7 +555,7 @@ def test_per_project_cap_at_199_200_and_201_attempts(store, attempts, expect_las
     ok = 0
     failed = 0
     for _ in range(attempts):
-        q = _quantity(store, "P1", text="v %d" % ok, supersedes=head)
+        q = _quantity(store, text="v %d" % ok, supersedes=head)
         try:
             store.append_requirement_quantity("P1", q)
             head = q.quantity_id
@@ -517,17 +567,15 @@ def test_per_project_cap_at_199_200_and_201_attempts(store, attempts, expect_las
     history = store.load_requirement_quantities("P1")
     assert len(history) == ok and len(active_quantities(history)) == 1
     assert issubclass(QuantityCapExceeded, StoreError)
-    # another project is unaffected by P1's cap
     _project(store, "P2")
-    store.append_requirement_quantity("P2", _quantity(store, "P2"))
+    store.append_requirement_quantity("P2", _quantity(store))
 
 
 def test_project_isolation_across_projects(store):
     _project(store, "A")
     _project(store, "B")
-    qa = _quantity(store, "A", event_key="a" * 32)
-    store.append_requirement_quantity("A", qa)
-    store.append_requirement_quantity("B", _quantity(store, "B", kind=KIND2, text="9 A",
+    store.append_requirement_quantity("A", _quantity(store, event_key="a" * 32))
+    store.append_requirement_quantity("B", _quantity(store, kind=KIND2, text="9 A",
                                                      event_key="a" * 32))
     assert [q.value_text for q in store.load_requirement_quantities("A")] == ["5 V"]
     assert [q.value_text for q in store.load_requirement_quantities("B")] == ["9 A"]
@@ -537,21 +585,21 @@ def test_project_isolation_across_projects(store):
 
 @pytest.mark.parametrize("sql", [
     "UPDATE requirement_quantities SET value_text = ' 5 V'",
-    "UPDATE requirement_quantities SET quantity_kind = 'about'",
-    "UPDATE requirement_quantities SET requirement_id = ''",
+    "UPDATE requirement_quantities SET quantity_kind = 'tolerance'",
+    "UPDATE requirement_quantities SET requirement_id = 'req:assertion:rec_2'",
     "UPDATE requirement_quantities SET event_key = 'zz' WHERE quantity_seq = 0",
     "UPDATE requirement_quantities SET quantity_seq = 5 WHERE quantity_seq = 0",
-    "UPDATE requirement_quantities SET supersedes_quantity_id = NULL WHERE quantity_seq = 1",
-    "UPDATE requirement_quantities SET requirement_id = 'req:x' WHERE quantity_seq = 1",
+    "UPDATE requirement_quantities SET recorded_at = 'x' WHERE quantity_seq = 1",
+    "UPDATE requirement_quantities SET recorded_iteration = -1 WHERE quantity_seq = 1",
 ])
 def test_tampered_history_fails_closed_on_load_and_blocks_writes_inside_the_transaction(store, sql):
     _project(store, "P1")
-    q1 = _quantity(store, "P1")
+    q1 = _quantity(store)
     store.append_requirement_quantity("P1", q1)
-    q2 = _quantity(store, "P1", text="6 V", supersedes=q1.quantity_id)
+    q2 = _quantity(store, text="6 V", supersedes=q1.quantity_id)
     store.append_requirement_quantity("P1", q2)
     _project(store, "P2")
-    store.append_requirement_quantity("P2", _quantity(store, "P2", text="1 mm"))
+    store.append_requirement_quantity("P2", _quantity(store, text="1 mm"))
     with store._write():
         store._conn.execute("PRAGMA foreign_keys = OFF")
         store._conn.execute(sql + (" AND project_id = 'P1'" if "WHERE" in sql
@@ -559,10 +607,9 @@ def test_tampered_history_fails_closed_on_load_and_blocks_writes_inside_the_tran
         store._conn.execute("PRAGMA foreign_keys = ON")
     with pytest.raises(QuantityHistoryError):
         store.load_requirement_quantities("P1")
-    # a write on top of the corrupt history is refused INSIDE the transaction
     with pytest.raises(QuantityHistoryError):
         store.append_requirement_quantity(
-            "P1", _quantity(store, "P1", text="7 V", supersedes=q2.quantity_id))
+            "P1", _quantity(store, text="7 V", supersedes=q2.quantity_id))
     assert store._conn.execute(
         "SELECT COUNT(*) FROM requirement_quantities WHERE project_id = 'P1'").fetchone()[0] == 2
     assert [q.value_text for q in store.load_requirement_quantities("P2")] == ["1 mm"]
@@ -572,7 +619,7 @@ def test_tampered_history_fails_closed_on_load_and_blocks_writes_inside_the_tran
 
 def test_storage_unavailability_propagates_instead_of_returning_empty(store):
     _project(store, "P1")
-    store.append_requirement_quantity("P1", _quantity(store, "P1"))
+    store.append_requirement_quantity("P1", _quantity(store))
     store.close()
     with pytest.raises(sqlite3.ProgrammingError):
         store.load_requirement_quantities("P1")
@@ -582,13 +629,14 @@ def test_storage_unavailability_propagates_instead_of_returning_empty(store):
 # ==========================================================================
 # 5. Backup / restore parity includes the additive history
 # ==========================================================================
-def test_backup_restore_parity_carries_the_quantity_history(tmp_path):
+def test_backup_restore_parity_carries_the_complete_quantity_rows(tmp_path):
     source = str(tmp_path / "live.sqlite")
     s = SqliteRecordStore(source)
     _project(s, "P1")
-    q1 = _quantity(s, "P1")
+    q1 = _quantity(s)
     s.append_requirement_quantity("P1", q1)
-    s.append_requirement_quantity("P1", _quantity(s, "P1", text="7 V", supersedes=q1.quantity_id))
+    s.append_requirement_quantity("P1", _quantity(s, text="7 V", supersedes=q1.quantity_id,
+                                                  iteration=4))
     s.close()
     backup = str(tmp_path / "backup.sqlite")
     target = str(tmp_path / "restored.sqlite")
@@ -600,9 +648,11 @@ def test_backup_restore_parity_carries_the_quantity_history(tmp_path):
     assert parity["mismatches"] == [] and parity["tables_compared"] >= 3
     restored = SqliteRecordStore(target)
     try:
-        assert [(q.value_text, q.supersedes_quantity_id)
+        assert restored.load_requirement_quantities("P1") == \
+            SqliteRecordStore(source).load_requirement_quantities("P1")
+        assert [(q.value_text, q.supersedes_quantity_id, q.recorded_iteration, q.recorded_at)
                 for q in restored.load_requirement_quantities("P1")] == [
-            ("5 V", None), ("7 V", q1.quantity_id)]
+            ("5 V", None, 1, AT), ("7 V", q1.quantity_id, 4, AT)]
         assert restored._conn.execute("PRAGMA foreign_key_check").fetchall() == []
     finally:
         restored.close()

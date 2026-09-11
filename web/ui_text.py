@@ -1619,25 +1619,25 @@ UI_STRINGS = {
 
     # --- T2-A Quantified Requirements Slice 1: presentation chrome ONLY. The
     # stored values are canonical tokens (the closed ``quantity_kind`` and the
-    # presentation-neutral ``value_text``) owned by engine/requirement_quantity.py;
-    # these entries are the localized DISPLAY of the kind tokens and of the
-    # block's plain-language framing. Inventor value text is NEVER localized.
-    # Optional and progressive: the block is collapsed by default and the
-    # journey completes without entering a single value. The wording claims
-    # recording only — never validation, attainability, feasibility, safety
-    # or compliance.
+    # exact ``value_text``) owned by engine/requirement_quantity.py; these
+    # entries are the localized DISPLAY of the kind tokens (``UI_T2A_KIND_<TOKEN>``),
+    # the statuses and the block's plain-language framing. Inventor value text
+    # is NEVER localized and never passes through localize_deep. Optional and
+    # progressive: the block is collapsed by default and the journey completes
+    # without entering a single value. The wording claims recording only —
+    # never validation, attainability, feasibility, safety or compliance.
     "UI_T2A_HEADING": {"en": "Add a value to a requirement (optional)",
                        "ar": "أضف قيمة إلى متطلب (اختياري)"},
     "UI_T2A_EXPLAIN": {
         "en": ("If you already know a value for one of your recorded requirements — "
-               "a target, a minimum, a maximum, a range or a tolerance — you can record "
+               "a target, a minimum, a maximum, a range or a count — you can record "
                "it here in your own words, with its unit. This is optional. What you "
                "enter is kept as stated and is not checked, validated, or assessed for "
                "feasibility, attainability, safety, or compliance. Recording a new value "
                "for the same item replaces the earlier one and keeps it in your project "
                "history. You will be asked to confirm before anything is saved."),
         "ar": ("إذا كنت تعرف بالفعل قيمة لأحد المتطلبات المسجّلة — هدفًا أو حدًا أدنى أو "
-               "حدًا أقصى أو نطاقًا أو سماحية — يمكنك تسجيلها هنا بكلماتك مع وحدتها. "
+               "حدًا أقصى أو نطاقًا أو عددًا — يمكنك تسجيلها هنا بكلماتك مع وحدتها. "
                "هذا اختياري. ما تدخله يُحفظ كما ذكرته ولا يُفحص ولا يُتحقق منه ولا يُقيَّم "
                "من حيث الجدوى أو إمكانية التحقيق أو السلامة أو الامتثال. تسجيل قيمة "
                "جديدة للعنصر نفسه يحل محل القيمة السابقة مع الاحتفاظ بها في سجل مشروعك. "
@@ -1649,8 +1649,8 @@ UI_STRINGS = {
     "UI_T2A_KIND_LABEL": {"en": "Kind of value", "ar": "نوع القيمة"},
     "UI_T2A_VALUE_LABEL": {"en": "Value, in your own words", "ar": "القيمة بكلماتك"},
     "UI_T2A_VALUE_HINT": {
-        "en": "Short plain text with the unit, for example 12 V or 0.5 mm. Up to 80 characters.",
-        "ar": "نص قصير مع الوحدة، مثل 12 V أو 0.5 mm. حتى 80 حرفًا.",
+        "en": "Short plain text with the unit, for example 12 V or 0.5 mm. Up to 120 characters, on one line.",
+        "ar": "نص قصير مع الوحدة، مثل 12 V أو 0.5 mm. حتى 120 حرفًا في سطر واحد.",
     },
     "UI_T2A_BUTTON": {"en": "Review this value", "ar": "راجع هذه القيمة"},
     "UI_T2A_REPLACE_BUTTON": {"en": "Review a replacement value",
@@ -1667,9 +1667,11 @@ UI_STRINGS = {
                                 "ar": "سيحل هذا محل القيمة المسجّلة:"},
     "UI_T2A_CONFIRM_BUTTON": {"en": "Confirm and save", "ar": "أكّد واحفظ"},
     "UI_T2A_DISCARD_BUTTON": {"en": "Discard", "ar": "تجاهل"},
-    "UI_T2A_REPLACED_LABEL": {"en": "Replaced values:", "ar": "القيم المستبدَلة:"},
-    "UI_T2A_WITHDRAWN_LABEL": {"en": "Value attached to a withdrawn answer",
-                               "ar": "قيمة مرتبطة بإجابة مسحوبة"},
+    "UI_T2A_STATUS_UNVALIDATED": {"en": "Inventor-stated, not validated",
+                                  "ar": "بحسب إفادة المخترع، غير مُتحقَّق منه"},
+    "UI_T2A_REPLACED": {"en": "Replaced values:", "ar": "القيم المستبدَلة:"},
+    "UI_T2A_WITHDRAWN_ANCHOR": {"en": "Value attached to a withdrawn answer",
+                                "ar": "قيمة مرتبطة بإجابة مسحوبة"},
     "UI_T2A_WITHDRAWN_NOTE": {
         "en": ("The answer this value was attached to has been withdrawn. The value is "
                "kept in your project history and is no longer current."),
@@ -1678,7 +1680,7 @@ UI_STRINGS = {
     },
     "UI_T2A_DELIV_HEADING": {"en": "Quantities you recorded",
                              "ar": "الكميات التي سجّلتها"},
-    "UI_T2A_DELIV_NOTE": {
+    "UI_T2A_DISCLAIMER": {
         "en": ("These values were entered by the inventor for the listed requirements. "
                "They are recorded as stated and have not been checked, validated, or "
                "assessed for feasibility, attainability, safety, or compliance."),
@@ -1686,8 +1688,8 @@ UI_STRINGS = {
                "تُفحص ولم يُتحقق منها ولم تُقيَّم من حيث الجدوى أو إمكانية التحقيق أو "
                "السلامة أو الامتثال."),
     },
-    "UI_T2A_DELIV_PROVENANCE": {"en": "Recorded by the inventor (not yet verified)",
-                                "ar": "سجّله المخترع (لم يُتحقق منه بعد)"},
+    "UI_T2A_PROVENANCE": {"en": "Recorded by the inventor (not yet verified)",
+                          "ar": "سجّله المخترع (لم يُتحقق منه بعد)"},
     "UI_T2A_ERR_NOT_SAVED": {
         "en": "That quantity could not be saved just now. Nothing was changed.",
         "ar": "تعذر حفظ هذه الكمية الآن. لم يتغير أي شيء.",
@@ -1697,13 +1699,14 @@ UI_STRINGS = {
                "the selected item. Nothing was changed."),
         "ar": "اختر نوع القيمة وأدخلها كنص قصير للعنصر المحدد. لم يتغير أي شيء.",
     },
-    # Kind tokens (engine QUANTITY_KINDS) -> display. PROVISIONAL vocabulary
-    # pending the accepted design delta; one entry per token.
-    "UI_T2A_KIND_target": {"en": "Target value", "ar": "قيمة مستهدفة"},
-    "UI_T2A_KIND_minimum": {"en": "Minimum", "ar": "حد أدنى"},
-    "UI_T2A_KIND_maximum": {"en": "Maximum", "ar": "حد أقصى"},
-    "UI_T2A_KIND_range": {"en": "Range", "ar": "نطاق"},
-    "UI_T2A_KIND_tolerance": {"en": "Tolerance", "ar": "سماحية"},
+    # Kind tokens (engine QUANTITY_KINDS, accepted design delta §6) -> display,
+    # keyed ``UI_T2A_KIND_<TOKEN>`` (token upper-cased); one entry per token.
+    "UI_T2A_KIND_TARGET_VALUE": {"en": "Target value", "ar": "قيمة مستهدفة"},
+    "UI_T2A_KIND_MINIMUM_VALUE": {"en": "Minimum value", "ar": "حد أدنى"},
+    "UI_T2A_KIND_MAXIMUM_VALUE": {"en": "Maximum value", "ar": "حد أقصى"},
+    "UI_T2A_KIND_RANGE": {"en": "Range", "ar": "نطاق"},
+    "UI_T2A_KIND_COUNT": {"en": "Count", "ar": "عدد"},
+    "UI_T2A_KIND_OTHER_QUANTITY": {"en": "Other quantity", "ar": "كمية أخرى"},
 }
 
 

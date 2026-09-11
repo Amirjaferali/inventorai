@@ -653,9 +653,9 @@ body{overflow-wrap:anywhere}
   <div id="t2a-confirm" class="t2a-confirm" style="border:1px solid #c9d6a8;border-radius:4px;background:#fbfdf4;padding:10px 12px;margin-bottom:12px">
     <p style="margin:0 0 6px 0;font-size:13px;font-weight:bold;color:#4a5a1f">{{ t('UI_T2A_CONFIRM_HEADING') }}</p>
     <p class="t2a-statement" dir="auto" style="margin:4px 0;font-size:13px">{{ prop.statement }}</p>
-    <p style="margin:4px 0;font-size:13px"><strong>{{ t('UI_T2A_KIND_' ~ prop.kind) }}:</strong> <bdi class="t2a-proposed" dir="auto">{{ prop.value_text }}</bdi></p>
+    <p style="margin:4px 0;font-size:13px"><strong>{{ t('UI_T2A_KIND_' ~ prop.kind|upper) }}:</strong> <bdi class="t2a-proposed" dir="auto">{{ prop.value_text }}</bdi></p>
     {% if prop.replaces %}
-    <p style="margin:4px 0;font-size:12px;color:#666">{{ t('UI_T2A_CONFIRM_REPLACES') }} {{ t('UI_T2A_KIND_' ~ prop.replaces.kind) }} <bdi dir="auto">{{ prop.replaces.value_text }}</bdi></p>
+    <p style="margin:4px 0;font-size:12px;color:#666">{{ t('UI_T2A_CONFIRM_REPLACES') }} {{ t('UI_T2A_KIND_' ~ prop.replaces.kind|upper) }} <bdi dir="auto">{{ prop.replaces.value_text }}</bdi></p>
     {% endif %}
     <p style="margin:6px 0;font-size:12px;color:#666">{{ t('UI_T2A_CONFIRM_EXPLAIN') }}</p>
     <form method="POST" action="/session/{{ sid }}/quantity/confirm" class="t2a-confirm-form">
@@ -670,10 +670,10 @@ body{overflow-wrap:anywhere}
   <div class="t2a-item" data-t2a-anchor="{{ item.record_id }}" style="border:1px solid #dbe8df;border-radius:4px;background:#ffffff;padding:8px 12px;margin-bottom:10px">
     <p class="t2a-statement" dir="auto" style="margin:4px 0;font-size:13px">{{ item.statement }}</p>
     {% if item.current %}
-    <p class="t2a-current" style="margin:4px 0;font-size:13px;color:#2c5a42"><strong>{{ t('UI_T2A_CURRENT') }}</strong> {{ t('UI_T2A_KIND_' ~ item.current.kind) }} <bdi class="t2a-value" dir="auto">{{ item.current.value_text }}</bdi> <span style="font-size:12px;color:#666">— {{ t('UI_T2A_DELIV_PROVENANCE') }}</span></p>
+    <p class="t2a-current" style="margin:4px 0;font-size:13px;color:#2c5a42"><strong>{{ t('UI_T2A_CURRENT') }}</strong> {{ t('UI_T2A_KIND_' ~ item.current.kind|upper) }} <bdi class="t2a-value" dir="auto">{{ item.current.value_text }}</bdi> <span style="font-size:12px;color:#666">— {{ t('UI_T2A_STATUS_UNVALIDATED') }}</span></p>
     {% if item.current.replaced %}
-    <p class="t2a-replaced" style="margin:2px 0;font-size:12px;color:#777"><strong>{{ t('UI_T2A_REPLACED_LABEL') }}</strong>
-      {% for r in item.current.replaced %}{{ t('UI_T2A_KIND_' ~ r.kind) }} <bdi class="t2a-replaced-value" dir="auto">{{ r.value_text }}</bdi>{% if not loop.last %}; {% endif %}{% endfor %}</p>
+    <p class="t2a-replaced" style="margin:2px 0;font-size:12px;color:#777"><strong>{{ t('UI_T2A_REPLACED') }}</strong>
+      {% for r in item.current.replaced %}{{ t('UI_T2A_KIND_' ~ r.kind|upper) }} <bdi class="t2a-replaced-value" dir="auto">{{ r.value_text }}</bdi>{% if not loop.last %}; {% endif %}{% endfor %}</p>
     {% endif %}
     {% else %}
     <p class="t2a-none" style="margin:4px 0;font-size:12px;color:#777">{{ t('UI_T2A_NONE') }}</p>
@@ -684,11 +684,11 @@ body{overflow-wrap:anywhere}
       <input type="hidden" name="anchor_record_id" value="{{ item.record_id }}">
       <label style="display:block;font-size:12px;color:#888;margin-bottom:4px">{{ t('UI_T2A_KIND_LABEL') }}
         <select name="quantity_kind" style="max-width:100%">
-          {% for k in quantity_step.kinds %}<option value="{{ k }}"{% if item.current and item.current.kind == k %} selected{% endif %}>{{ t('UI_T2A_KIND_' ~ k) }}</option>{% endfor %}
+          {% for k in quantity_step.kinds %}<option value="{{ k }}"{% if item.current and item.current.kind == k %} selected{% endif %}>{{ t('UI_T2A_KIND_' ~ k|upper) }}</option>{% endfor %}
         </select>
       </label>
       <label style="display:block;font-size:12px;color:#888;margin-bottom:4px">{{ t('UI_T2A_VALUE_LABEL') }}
-        <input type="text" name="value_text" dir="auto" maxlength="80" required style="max-width:260px">
+        <input type="text" name="value_text" dir="auto" maxlength="120" required style="max-width:260px">
       </label>
       <span style="display:block;font-size:11px;color:#888;margin-bottom:4px">{{ t('UI_T2A_VALUE_HINT') }}</span>
       <button type="submit" style="margin-top:4px">{{ t('UI_T2A_REPLACE_BUTTON') if item.current else t('UI_T2A_BUTTON') }}</button>
@@ -698,12 +698,12 @@ body{overflow-wrap:anywhere}
   {% endfor %}
   {% for w in quantity_step.withdrawn %}
   <div class="t2a-item t2a-withdrawn" style="border:1px dashed #d9c9a8;border-radius:4px;background:#fdfaf3;padding:8px 12px;margin-bottom:10px">
-    <p style="margin:0 0 4px 0;font-size:12px;font-weight:bold;color:#8a6d3b">{{ t('UI_T2A_WITHDRAWN_LABEL') }}</p>
+    <p style="margin:0 0 4px 0;font-size:12px;font-weight:bold;color:#8a6d3b">{{ t('UI_T2A_WITHDRAWN_ANCHOR') }}</p>
     <p class="t2a-statement" dir="auto" style="margin:4px 0;font-size:13px;color:#666">{{ w.statement }}</p>
-    <p style="margin:4px 0;font-size:13px;color:#666">{{ t('UI_T2A_KIND_' ~ w.current.kind) }} <bdi class="t2a-withdrawn-value" dir="auto">{{ w.current.value_text }}</bdi></p>
+    <p style="margin:4px 0;font-size:13px;color:#666">{{ t('UI_T2A_KIND_' ~ w.current.kind|upper) }} <bdi class="t2a-withdrawn-value" dir="auto">{{ w.current.value_text }}</bdi></p>
     {% if w.current.replaced %}
-    <p class="t2a-replaced" style="margin:2px 0;font-size:12px;color:#777"><strong>{{ t('UI_T2A_REPLACED_LABEL') }}</strong>
-      {% for r in w.current.replaced %}{{ t('UI_T2A_KIND_' ~ r.kind) }} <bdi class="t2a-replaced-value" dir="auto">{{ r.value_text }}</bdi>{% if not loop.last %}; {% endif %}{% endfor %}</p>
+    <p class="t2a-replaced" style="margin:2px 0;font-size:12px;color:#777"><strong>{{ t('UI_T2A_REPLACED') }}</strong>
+      {% for r in w.current.replaced %}{{ t('UI_T2A_KIND_' ~ r.kind|upper) }} <bdi class="t2a-replaced-value" dir="auto">{{ r.value_text }}</bdi>{% if not loop.last %}; {% endif %}{% endfor %}</p>
     {% endif %}
     <p style="margin:4px 0;font-size:12px;color:#8a6d3b">{{ t('UI_T2A_WITHDRAWN_NOTE') }}</p>
   </div>

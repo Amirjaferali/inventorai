@@ -4,10 +4,10 @@ File path: ``engine/requirement_quantity.py``
 Purpose: the ONE pure, deterministic owner of the requirement-quantity data
 contract, the closed ``quantity_kind`` vocabulary, the bounded ``value_text``
 policy, the fail-closed history validation, the per-anchor chain derivation
-(active row / replaced prior values / withdrawn anchor) and the presentation
-rows for the deliverable. Consumed by the durable store (validation INSIDE the
-write transaction and on load), the web layer (propose / confirm glue and the
-shared deliverable seam) and the tests.
+(active row / replaced prior values / withdrawn anchor) and the canonical
+package rows for the deliverable. Consumed by the durable store (validation
+INSIDE the write transaction and on load), the web layer (propose / confirm
+glue and the shared deliverable seam) and the tests.
 
 Product boundary (Owner-fixed reduced Slice 1):
   * one ACTIVE quantity chain per eligible requirement anchor — an anchor is
@@ -19,9 +19,10 @@ Product boundary (Owner-fixed reduced Slice 1):
   * correction/supersession WITHIN a chain reuses the ledger's forward-edge
     idiom (the NEW row names the row it supersedes; prior rows are never
     rewritten);
-  * ``value_text`` is inventor text kept presentation-neutral: it is stored
-    as normalized, never localized, never logged, never placed in an
-    exception; ``quantity_kind`` is a closed token localized only at display;
+  * ``value_text`` is the inventor's text kept exactly (outer whitespace
+    stripped only): never parsed, converted, normalized, localized, logged or
+    placed in an exception; ``quantity_kind`` is a closed token localized only
+    at display;
   * validation here is STRUCTURAL only. Nothing in Slice 1 claims feasibility,
     attainability, validation, safety, compliance or specialist review.
 
@@ -29,6 +30,7 @@ Provider-free, network-free, standard library only. Never mutates its inputs.
 """
 import re
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Dict, Optional, Tuple
 
 from engine.idea_state import DISPOSITION_ANSWERED
@@ -48,58 +50,67 @@ class QuantityValueError(ValueError):
     """A proposed quantity kind / value text is not acceptable."""
 
 
-# --- Frozen Slice-1 limits ---------------------------------------------------------
+# --- Frozen Slice-1 limits and vocabulary (accepted design delta §6) ------------
 # Hard per-project cap on durable quantity rows (ALL rows, active and replaced).
 # Enforced by the store INSIDE its serialized write transaction.
 MAX_REQUIREMENT_QUANTITIES_PER_PROJECT = 200
 
-# ==============================================================================
-# PROVISIONAL BLOCK — pending the exact wording of the accepted final design
-# delta (closed ``quantity_kind`` vocabulary and bounded ``value_text`` policy).
-# The structure around this block (contract, store, routes, presentation,
-# tests) does not depend on the specific tokens; only this block is swapped
-# when the accepted values are supplied. Tokens are ASCII identifiers so each
-# can key a localization catalogue entry (``UI_T2A_KIND_<token>``).
-# ==============================================================================
+# The closed ``quantity_kind`` vocabulary (six tokens). Each token keys one
+# bilingual display entry (``UI_T2A_KIND_<TOKEN>``); no other kind is accepted
+# or stored.
 QUANTITY_KINDS = (
-    "target",       # the value the inventor aims for
-    "minimum",      # a lower limit
-    "maximum",      # an upper limit
-    "range",        # an interval (both limits in the text)
-    "tolerance",    # an allowed deviation
+    "target_value",
+    "minimum_value",
+    "maximum_value",
+    "range",
+    "count",
+    "other_quantity",
 )
-# Bounded, presentation-neutral value text: 1..MAX chars after normalization
-# (surrounding whitespace stripped, internal runs of spaces/tabs collapsed to
-# one space); no line breaks and no other control characters. Not parsed, not
-# localized, not interpreted — kept exactly as the inventor stated it.
-MAX_VALUE_TEXT_CHARS = 80
-# ==============================================================================
+
+# The ``value_text`` policy: text only; outer whitespace stripped only; empty
+# result rejected; C0 and C1 control characters rejected; more than
+# MAX_VALUE_TEXT_CHARS Unicode code points rejected; nothing parsed, converted,
+# collapsed, normalized or reinterpreted. The stored value is exactly the
+# submitted value after outer-whitespace stripping.
+MAX_VALUE_TEXT_CHARS = 120
+
+# Fixed canonical row values (part of the canonical row contract, never
+# localized prose).
+QUANTITY_VALIDATION_STATUS = "UNVALIDATED"
+QUANTITY_PROVENANCE = "OWNER_STATED"
 
 _KIND_SET = frozenset(QUANTITY_KINDS)
 _QUANTITY_ID_RE = re.compile(r"^qty-[0-9a-f]{32}$")
 _ANCHOR_ID_RE = re.compile(r"^rec_[1-9][0-9]*$")
 _EVENT_KEY_RE = re.compile(r"^[0-9a-f]{32}$")
-_WS_RUN_RE = re.compile(r"\s+")
-# Every C0/C1 control except TAB (a tab is whitespace and collapses to one
-# space); the Unicode line/paragraph separators, NBSP and zero-width space
-# are rejected too.
-_CONTROL_RE = re.compile("[\\x00-\\x08\\x0a-\\x1f\\x7f-\\x9f\\u00a0\\u200b\\u2028\\u2029]")
+# C0 controls (U+0000–U+001F, tab and line breaks included) and C1 controls
+# (U+007F–U+009F). Nothing else is excluded by the policy.
+_CONTROL_RE = re.compile("[\\x00-\\x1f\\x7f-\\x9f]")
 
 
 @dataclass(frozen=True)
 class RequirementQuantity:
-    """One durable requirement-quantity row — EXACTLY the frozen Slice-1
-    data contract. Frozen; never mutated in place; the inverse edge and every
-    chain view are DERIVED (``quantity_chains``), never stored."""
-    project_id: str
-    quantity_seq: int
-    quantity_id: str
-    anchor_record_id: str
-    requirement_id: str
-    quantity_kind: str
-    value_text: str
+    """One requirement-quantity row — EXACTLY the accepted canonical row.
+    Frozen; never mutated in place; the inverse edge and every chain view are
+    DERIVED (``quantity_chains``), never stored. Project scoping is enforced by
+    the store and the database ``project_id`` column, not by this row.
+    ``recorded_iteration`` / ``recorded_at`` are recording facts generated once
+    per event and are never part of event identity."""
+    quantity_id: str                     # "qty-" + uuid4().hex, generated once
+    quantity_seq: int                    # per-project 0-based, generated once
+    anchor_record_id: str                # rec_N of the anchoring answered record
+    requirement_id: str                  # "req:assertion:" + anchor_record_id
+    quantity_kind: str                   # vocabulary token
+    value_text: str                      # exact post-policy value
     supersedes_quantity_id: Optional[str]
     event_key: str
+    recorded_iteration: int
+    recorded_at: str                     # UTC ISO-8601, never part of identity
+    validation_status: str = QUANTITY_VALIDATION_STATUS
+    provenance: str = QUANTITY_PROVENANCE
+
+
+CANONICAL_ROW_FIELDS = tuple(RequirementQuantity.__dataclass_fields__)
 
 
 @dataclass(frozen=True)
@@ -122,23 +133,26 @@ def validate_quantity_kind(kind):
 
 
 def normalize_value_text(text):
-    """Apply the bounded value_text policy and return the stored form, or
-    raise ``QuantityValueError``. Deterministic and idempotent. The text is
-    never interpreted, localized, logged or placed in the exception."""
+    """Apply the accepted value_text policy and return the stored form, or
+    raise ``QuantityValueError``. Text only; outer whitespace stripped only;
+    empty rejected; C0/C1 controls rejected; more than MAX_VALUE_TEXT_CHARS
+    code points rejected. Deterministic and idempotent. The text is never
+    parsed, converted, normalized, localized, logged or placed in the
+    exception."""
     if not isinstance(text, str):
         raise QuantityValueError("value text must be text")
-    if _CONTROL_RE.search(text):
-        raise QuantityValueError("value text contains control characters")
-    normalized = _WS_RUN_RE.sub(" ", text).strip()
-    if not normalized:
+    stripped = text.strip()
+    if not stripped:
         raise QuantityValueError("value text is empty")
-    if len(normalized) > MAX_VALUE_TEXT_CHARS:
+    if _CONTROL_RE.search(stripped):
+        raise QuantityValueError("value text contains control characters")
+    if len(stripped) > MAX_VALUE_TEXT_CHARS:
         raise QuantityValueError("value text is too long")
-    return normalized
+    return stripped
 
 
 def is_stored_value_text(text):
-    """True iff ``text`` is EXACTLY a stored (normalized) value text."""
+    """True iff ``text`` is EXACTLY a stored (post-policy) value text."""
     if not isinstance(text, str):
         return False
     try:
@@ -147,61 +161,77 @@ def is_stored_value_text(text):
         return False
 
 
+def is_recorded_at(text):
+    """True iff ``text`` is a UTC ISO-8601 timestamp (offset +00:00 / Z)."""
+    if not isinstance(text, str) or not text:
+        return False
+    try:
+        parsed = datetime.fromisoformat(text.replace("Z", "+00:00"))
+    except ValueError:
+        return False
+    return parsed.tzinfo is not None and parsed.utcoffset().total_seconds() == 0
+
+
 # --- History validation (fail closed) -------------------------------------------
-def validate_quantity_history(rows, project_id=None):
+def validate_quantity_history(rows):
     """Validate a project's durable quantity rows (in stored ``quantity_seq``
     order) and return the immutable validated history as a tuple of
     ``RequirementQuantity``.
 
-    ``rows`` is an iterable of mappings carrying the nine contract fields.
+    ``rows`` is an iterable of mappings carrying the persisted contract
+    fields (``validation_status`` / ``provenance`` may be absent — they are
+    the fixed canonical values — or present with exactly those values).
     ZERO rows are VALID (the empty tuple). Any structural defect raises
     ``QuantityHistoryError`` with NOTHING returned (no partial history):
 
-      * a row of another project (when ``project_id`` is given); a
-        non-ascending or duplicate sequence; a malformed / duplicate
-        quantity id, event key or anchor id; an empty requirement id;
-      * an unknown kind; a value text that is not in stored form;
+      * a non-ascending or duplicate sequence; a malformed / duplicate
+        quantity id, event key or anchor id; a requirement id that is not
+        ``req:assertion:<anchor>``;
+      * an unknown kind; a value text that is not in stored form; a
+        negative or non-integer recorded iteration; a recorded_at that is
+        not a UTC ISO-8601 timestamp; a non-canonical validation status or
+        provenance;
       * a forward edge to an unknown or LATER row, to a row of a DIFFERENT
         anchor, or to a row already superseded (one chain, one successor);
-        a row that changes the requirement id of its chain;
-      * more than one ACTIVE row for the same anchor;
+      * a second chain root for one anchor, or more than one ACTIVE row for
+        one anchor;
       * more rows than ``MAX_REQUIREMENT_QUANTITIES_PER_PROJECT``.
 
     Never mutates its input."""
     validated = []
     by_id = {}
     superseded = set()
+    roots = set()
     event_keys = set()
     last_seq = None
     for row in rows:
         try:
             record = RequirementQuantity(
-                project_id=row["project_id"], quantity_seq=row["quantity_seq"],
-                quantity_id=row["quantity_id"],
+                quantity_id=row["quantity_id"], quantity_seq=row["quantity_seq"],
                 anchor_record_id=row["anchor_record_id"],
                 requirement_id=row["requirement_id"],
                 quantity_kind=row["quantity_kind"], value_text=row["value_text"],
                 supersedes_quantity_id=row["supersedes_quantity_id"],
-                event_key=row["event_key"])
-        except (KeyError, TypeError) as exc:
+                event_key=row["event_key"],
+                recorded_iteration=row["recorded_iteration"],
+                recorded_at=row["recorded_at"],
+                validation_status=row.get("validation_status", QUANTITY_VALIDATION_STATUS),
+                provenance=row.get("provenance", QUANTITY_PROVENANCE))
+        except (KeyError, TypeError, AttributeError) as exc:
             raise QuantityHistoryError("quantity row is missing a field") from exc
-        if project_id is not None and record.project_id != project_id:
-            raise QuantityHistoryError("row belongs to another project")
-        if not isinstance(record.project_id, str) or not record.project_id:
-            raise QuantityHistoryError("malformed project id")
-        if (not isinstance(record.quantity_seq, int) or isinstance(record.quantity_seq, bool)
-                or record.quantity_seq < 0
-                or (last_seq is not None and record.quantity_seq <= last_seq)):
+        seq = record.quantity_seq
+        if (not isinstance(seq, int) or isinstance(seq, bool) or seq < 0
+                or (last_seq is not None and seq <= last_seq)):
             raise QuantityHistoryError("sequence is not strictly ascending")
-        last_seq = record.quantity_seq
+        last_seq = seq
         if not isinstance(record.quantity_id, str) or not _QUANTITY_ID_RE.match(record.quantity_id):
             raise QuantityHistoryError("malformed quantity id")
         if record.quantity_id in by_id:
             raise QuantityHistoryError("duplicate quantity id")
         if not isinstance(record.anchor_record_id, str) or not _ANCHOR_ID_RE.match(record.anchor_record_id):
             raise QuantityHistoryError("malformed anchor record id")
-        if not isinstance(record.requirement_id, str) or not record.requirement_id.strip():
-            raise QuantityHistoryError("missing requirement id")
+        if record.requirement_id != "req:assertion:" + record.anchor_record_id:
+            raise QuantityHistoryError("requirement id does not match its anchor")
         if record.quantity_kind not in _KIND_SET:
             raise QuantityHistoryError("unknown quantity kind")
         if not is_stored_value_text(record.value_text):
@@ -211,15 +241,26 @@ def validate_quantity_history(rows, project_id=None):
         if record.event_key in event_keys:
             raise QuantityHistoryError("duplicate event key")
         event_keys.add(record.event_key)
+        it = record.recorded_iteration
+        if not isinstance(it, int) or isinstance(it, bool) or it < 0:
+            raise QuantityHistoryError("malformed recorded iteration")
+        if not is_recorded_at(record.recorded_at):
+            raise QuantityHistoryError("malformed recorded_at timestamp")
+        if record.validation_status != QUANTITY_VALIDATION_STATUS:
+            raise QuantityHistoryError("non-canonical validation status")
+        if record.provenance != QUANTITY_PROVENANCE:
+            raise QuantityHistoryError("non-canonical provenance")
         target = record.supersedes_quantity_id
-        if target is not None:
+        if target is None:
+            if record.anchor_record_id in roots:
+                raise QuantityHistoryError("second chain root for one anchor")
+            roots.add(record.anchor_record_id)
+        else:
             if not isinstance(target, str) or target not in by_id:
                 raise QuantityHistoryError("supersession edge to an unknown or later row")
             prior = by_id[target]
             if prior.anchor_record_id != record.anchor_record_id:
                 raise QuantityHistoryError("cross-anchor supersession")
-            if prior.requirement_id != record.requirement_id:
-                raise QuantityHistoryError("requirement id changes within a chain")
             if target in superseded:
                 raise QuantityHistoryError("row superseded more than once")
             superseded.add(target)
@@ -306,64 +347,44 @@ def quantity_chains(state) -> Tuple[QuantityChain, ...]:
     return tuple(chains)
 
 
-# --- Presentation rows for the deliverable (additive; nested; absent at zero) ----
+# --- Canonical package rows (additive; nested; absent at zero) -----------------
 # The canonical deliverable assembler (`engine/deliverable_assembler.py`) is
 # FROZEN by the merged G-3 A-20/A-21 pin, so the additive nested key
 # ``_session_meta["requirement_quantities"]`` is composed at the shared web
 # deliverable seam from this pure builder, which returns None whenever no
-# quantity row exists (zero rows add NO package key).
+# quantity row exists (zero rows add NO package key). The shape is
+# ``{"total": n, "rows": [...]}``: each row is the canonical row plus the two
+# derived canonical booleans ``active`` and ``anchor_active``, ordered by
+# ``quantity_seq``. No label, title, note, translated prose or presentation
+# sentence is ever placed in the package.
 REQUIREMENT_QUANTITIES_META_KEY = "requirement_quantities"
-REQUIREMENT_QUANTITIES_TITLE = "Quantities you recorded"
-REQUIREMENT_QUANTITIES_NOTE = (
-    "These values were entered by the inventor for the listed requirements. "
-    "They are recorded as stated and have not been checked, validated, or "
-    "assessed for feasibility, attainability, safety, or compliance.")
-QUANTITY_PROVENANCE_PUBLIC = "Recorded by the inventor (not yet verified)"
-QUANTITY_STATUS_CURRENT = "current"
-QUANTITY_STATUS_WITHDRAWN_ANCHOR = "anchor_withdrawn"
-
-
-def _statement_for(state, chain):
-    """The requirement statement for a chain: the current landscape statement
-    while the anchor is active; otherwise the retained withdrawn answer text
-    (never an identifier)."""
-    for req, record in eligible_anchors(state):
-        if record.record_id == chain.anchor_record_id:
-            return req.statement
-    for record in getattr(state, "assertions", []) or []:
-        if record.record_id == chain.anchor_record_id:
-            return (getattr(record, "content", "") or "").strip()
-    return ""
 
 
 def requirement_quantities_meta(state):
-    """Presentation-ready rows for every quantity chain of ``state`` (JSON-
-    safe dict), or ``None`` when no row exists. Each row carries the current
-    value (kind token + value text), the replaced prior values (oldest first)
-    and whether the answer anchor is still active. Canonical tokens only —
-    display labels are resolved by the template; no internal identifier and
-    no raw internal status word beyond the two fixed status tokens."""
-    chains = quantity_chains(state)
-    if not chains:
+    """Canonical package rows for every quantity row of ``state`` (JSON-safe
+    dict ``{"total", "rows"}``), or ``None`` when no row exists."""
+    history = tuple(getattr(state, "requirement_quantities", None) or ())
+    if not history:
         return None
-    items = []
-    for chain in chains:
-        items.append({
-            "statement": _statement_for(state, chain),
-            "status": (QUANTITY_STATUS_CURRENT if chain.anchor_active
-                       else QUANTITY_STATUS_WITHDRAWN_ANCHOR),
-            "anchor_active": chain.anchor_active,
-            "kind": chain.active.quantity_kind,
-            "value_text": chain.active.value_text,
-            "provenance": QUANTITY_PROVENANCE_PUBLIC,
-            "replaced": [{"kind": r.quantity_kind, "value_text": r.value_text}
-                         for r in chain.replaced],
-        })
-    return {
-        "title": REQUIREMENT_QUANTITIES_TITLE,
-        "note": REQUIREMENT_QUANTITIES_NOTE,
-        "total": len(items),
-        "active_total": sum(1 for i in items if i["anchor_active"]),
-        "withdrawn_total": sum(1 for i in items if not i["anchor_active"]),
-        "items": items,
-    }
+    replaced = superseded_ids(history)
+    eligible = {record.record_id for _req, record in eligible_anchors(state)}
+    rows = []
+    for record in sorted(history, key=lambda r: r.quantity_seq):
+        row = {name: getattr(record, name) for name in CANONICAL_ROW_FIELDS}
+        row["active"] = record.quantity_id not in replaced
+        row["anchor_active"] = record.anchor_record_id in eligible
+        rows.append(row)
+    return {"total": len(rows), "rows": rows}
+
+
+def requirement_statement(state, anchor_record_id):
+    """The requirement statement for an anchor: the current landscape
+    statement while the anchor is active; otherwise the retained withdrawn
+    answer text (never an identifier). Presentation helper for templates."""
+    for req, record in eligible_anchors(state):
+        if record.record_id == anchor_record_id:
+            return req.statement
+    for record in getattr(state, "assertions", []) or []:
+        if record.record_id == anchor_record_id:
+            return (getattr(record, "content", "") or "").strip()
+    return ""

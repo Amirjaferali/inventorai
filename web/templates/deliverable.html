@@ -316,29 +316,34 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   <div class="field-value" style="white-space:pre-line;margin-top:8px">{{ rsl13.section_13_note }}</div>
   {% endif %}
   {# T2-A Quantified Requirements Slice 1: presentation-only render of the
-     additive _session_meta.requirement_quantities rows, present ONLY when at
-     least one quantity row exists — a project with zero rows renders this
-     section byte-identically to before (no block, no heading, in HTML and in
-     the PDF source alike). Each row: the current value (inventor-recorded,
-     unvalidated), the replaced prior values under the localized "replaced"
-     presentation, and the withdrawn-anchor identification. Canonical tokens
-     resolve to display labels through t(); inventor text renders verbatim.
-     Read-only: no form, no token, no internal identifier, no raw status. #}
+     additive canonical _session_meta.requirement_quantities rows ({"total",
+     "rows"}; rows ordered by quantity_seq, each the canonical row plus the
+     derived booleans `active` / `anchor_active`). Present ONLY when at least
+     one row exists — a project with zero rows renders this section
+     byte-identically to before (no block, no heading, in HTML and in the PDF
+     source alike). Every heading, status and label resolves through
+     UI_T2A_* bilingual keys; inventor value text renders verbatim (escaped,
+     dir=auto). Per active row: the current value, the unvalidated /
+     inventor-stated status, and the replaced prior values of the same
+     anchor; rows whose anchor was withdrawn render under the withdrawn-anchor
+     status. Read-only: no form, no token, no internal identifier, no raw
+     internal status word. #}
   {% set qr = package["_session_meta"].get("requirement_quantities") %}
-  {% if qr and qr['items'] %}
+  {% if qr and qr.rows %}
   <h3 id="t2a-requirement-quantities">{{ t('UI_T2A_DELIV_HEADING') }}</h3>
-  <p class="group-lede" style="margin-top:0">{{ t('UI_T2A_DELIV_NOTE') }}</p>
-  {% for q in qr['items'] %}
-  <div class="field-label t2a-statement" dir="auto">{{ q.statement }}</div>
+  <p class="group-lede" style="margin-top:0">{{ t('UI_T2A_DISCLAIMER') }}</p>
+  {% for q in qr.rows if q.active %}
+  <div class="field-label t2a-statement" dir="auto">{{ t2a_statements[q.anchor_record_id] }}</div>
   {% if q.anchor_active %}
-  <div class="field-value t2a-quantity">{{ t('UI_T2A_CURRENT') }} {{ t('UI_T2A_KIND_' ~ q.kind) }} <bdi class="t2a-value" dir="auto">{{ q.value_text }}</bdi> &nbsp;&middot;&nbsp; {{ t('UI_T2A_DELIV_PROVENANCE') }}</div>
+  <div class="field-value t2a-quantity">{{ t('UI_T2A_CURRENT') }} {{ t('UI_T2A_KIND_' ~ q.quantity_kind|upper) }} <bdi class="t2a-value" dir="auto">{{ q.value_text }}</bdi> &nbsp;&middot;&nbsp; {{ t('UI_T2A_STATUS_UNVALIDATED') }}</div>
   {% else %}
-  <div class="field-value t2a-withdrawn"><strong>{{ t('UI_T2A_WITHDRAWN_LABEL') }}</strong> {{ t('UI_T2A_KIND_' ~ q.kind) }} <bdi class="t2a-withdrawn-value" dir="auto">{{ q.value_text }}</bdi></div>
+  <div class="field-value t2a-withdrawn"><strong>{{ t('UI_T2A_WITHDRAWN_ANCHOR') }}</strong> {{ t('UI_T2A_KIND_' ~ q.quantity_kind|upper) }} <bdi class="t2a-withdrawn-value" dir="auto">{{ q.value_text }}</bdi></div>
   <div class="ss-meta">{{ t('UI_T2A_WITHDRAWN_NOTE') }}</div>
   {% endif %}
-  {% if q.replaced %}
-  <div class="field-value t2a-replaced" style="color:#667"><strong>{{ t('UI_T2A_REPLACED_LABEL') }}</strong>
-    {% for r in q.replaced %}{{ t('UI_T2A_KIND_' ~ r.kind) }} <bdi class="t2a-replaced-value" dir="auto">{{ r.value_text }}</bdi>{% if not loop.last %}; {% endif %}{% endfor %}</div>
+  {% set replaced = qr.rows | selectattr('anchor_record_id', 'equalto', q.anchor_record_id) | rejectattr('active') | list %}
+  {% if replaced %}
+  <div class="field-value t2a-replaced" style="color:#667"><strong>{{ t('UI_T2A_REPLACED') }}</strong>
+    {% for r in replaced %}{{ t('UI_T2A_KIND_' ~ r.quantity_kind|upper) }} <bdi class="t2a-replaced-value" dir="auto">{{ r.value_text }}</bdi>{% if not loop.last %}; {% endif %}{% endfor %}</div>
   {% endif %}
   {% endfor %}
   {% endif %}
