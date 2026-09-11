@@ -355,6 +355,18 @@ class IdeaState:
     # engine/subsystem_model.py.
     subsystems : list = field(default_factory=list)
 
+    # T2-A Quantified Requirements Slice 1: the in-memory CARRIER of the
+    # project's validated durable requirement-quantity history (a list of
+    # frozen ``engine.requirement_quantity.RequirementQuantity`` rows in
+    # stored order). It is attached from the durable store by the web layer
+    # (cold-load, render, resume, correction reconstruction) and consumed
+    # READ-ONLY by the deliverable assembler. Empty by default, so every
+    # pre-T2A state, fixture and replay is byte-identical. It is NOT
+    # Evidence, NOT a gap, NOT a ledger record and has NO effect on maturity,
+    # scoring, lifecycle, transitions, the transcript, or replay; it is never
+    # serialized into the P4-0 record contract.
+    requirement_quantities : list = field(default_factory=list)
+
     def get_open_gaps(self):
         return [g for g in self.gaps if g.status in (OPEN, PARTIAL)]
 

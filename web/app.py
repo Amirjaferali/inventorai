@@ -74,6 +74,20 @@ from engine.deliverable_assembler import assemble_deliverable
 import sqlite3
 from engine.record_store import SqliteRecordStore, StoreError
 from engine.record_contract import ProjectRecordContract
+# T2-A Quantified Requirements Slice 1 (Owner-authorized bounded candidate): the
+# pure vocabulary / canonical-value / eligibility owner. The web layer performs
+# glue only: authorization, token binding, idempotency, persist-before-
+# acknowledge, and fail-closed attachment of the validated history.
+from engine.requirement_quantity import (
+    RequirementQuantity, QuantityValueError, QUANTITY_BOUNDS, QUANTITY_UNITS,
+    canonical_value as _canonical_quantity_value,
+    validate_bound as _validate_quantity_bound,
+    validate_unit as _validate_quantity_unit,
+    eligible_anchors as _quantity_eligible_anchors,
+    active_quantities as _active_quantities,
+    quantified_requirements_meta as _quantified_requirements_meta,
+    QUANTIFIED_REQUIREMENTS_META_KEY as _QUANTIFIED_META_KEY,
+)
 # P10-D3a (established contract, PR #510): the canonical internal read/export
 # seam (P7-I1), consumed UNMODIFIED by the browser self-service export route.
 from engine import read_export_service as _read_export
@@ -791,6 +805,10 @@ def _cold_load_entry(sid):
         restored_domain = (inputs or {}).get("confirmed_domain")
         if restored_domain:
             state.domain_signal = restored_domain
+        # T2-A: attach the validated requirement-quantity history. A populated
+        # corrupt or unavailable history fails the WHOLE cold load closed
+        # (generic unavailable behaviour) — never a partial/unquantified view.
+        state.requirement_quantities = list(_get_store().load_requirement_quantities(sid))
     except Exception:
         # Fail closed. Storage/contract errors are translated to the generic
         # unavailable behaviour at this web boundary; no user content is logged.
@@ -913,6 +931,98 @@ KEEP_SNAPSHOT_ACK = (
     "Current working snapshot selected for this temporary session. "
     "It has not been permanently saved or approved."
 )
+
+# --- T2-A Quantified Requirements Slice 1 (Owner-authorized bounded candidate) --
+# Canonical English constants; Arabic through the ui_text presentation maps
+# (the ack renders via `localize_deep`, the errors via `localize_message`, so
+# both registries carry them — the PVCG-R4 §13 lesson). Truthful and generic:
+# an error never names an identifier, value, path, SQL detail or exception
+# text; the ack says recorded, never verified.
+QUANTITY_SAVED_ACK = (
+    "Your quantity was recorded and saved to your project. It is kept as "
+    "stated and has not been checked or verified.")
+QUANTITY_NOT_SAVED_MESSAGE = (
+    "That quantity could not be saved just now. Nothing was changed.")
+QUANTITY_INVALID_MESSAGE = (
+    "Enter a plain number and choose a bound and a unit for the selected "
+    "item. Nothing was changed.")
+
+
+def _quantity_write_authorized(sid):
+    """True ONLY when the current caller is the authenticated, ACTIVE,
+    EMAIL-VERIFIED account that is the DURABLE owner of ``sid``. Stricter
+    than `_project_authorized` (which preserves NULL-owner capability access):
+    a NULL-owner, anonymous, unverified, inactive or non-owner caller can
+    never write a quantity. Derived only from the validated server session and
+    the durable owner column; fails closed on any error."""
+    try:
+        account = _current_account()
+        if account is None:
+            return False
+        if account.get("status") != "active" or not account.get("email_verified"):
+            return False
+        exists, owner = _get_store().load_owner(sid)
+    except Exception:
+        return False
+    return bool(exists and owner is not None and owner == account["account_id"])
+
+
+def _attach_quantity_history(sid, state):
+    """Load + validate the durable requirement-quantity history of ``sid`` and
+    attach it to ``state`` (the in-memory carrier the templates and the
+    assembler read). Returns False — and leaves ``state`` UNTOUCHED — on a
+    populated corrupt history or any storage failure, so every outward
+    surface can fail closed generically. Zero rows attach as an empty list."""
+    try:
+        history = _get_store().load_requirement_quantities(sid)
+    except Exception:
+        return False
+    state.requirement_quantities = list(history)
+    return True
+
+
+def _quantity_idempotency_key(sid, anchor_record_id, bound, value, unit, supersedes):
+    """The SEPARATE durable idempotency identity of ONE quantity event — the
+    same HMAC construction and truncation as the answered/interaction keys,
+    with its own domain-separator label. A refresh / double-submit reproduces
+    every field (the supersession target included) and is recognised as the
+    same event; a genuinely different value, bound, unit or chain position
+    yields a different key."""
+    msg = _canonical_message("t2a-requirement-quantity", sid, anchor_record_id,
+                             bound, value, unit, supersedes or "")
+    return _p2a_hmac.new(_answer_secret(), msg,
+                         _p2a_hashlib.sha256).hexdigest()[:_ANSWER_HMAC_HEX_LEN]
+
+
+def _quantity_step_context(state, sid):
+    """Read-only render context for the session quantity block, or None.
+
+    Lists every ELIGIBLE requirement anchor (the engine rule) with its ACTIVE
+    quantity, if any. The write form is offered only when the caller may
+    write (verified active durable owner) AND the session is live
+    (``state.domain`` set — the same dead-form suppression the correction
+    form applies). None when there is nothing to show: no eligible anchor,
+    or no write eligibility and no recorded quantity. Mutates nothing."""
+    anchors = _quantity_eligible_anchors(state)
+    if not anchors:
+        return None
+    active = _active_quantities(getattr(state, "requirement_quantities", None) or ())
+    can_write = (_quantity_write_authorized(sid)
+                 and getattr(state, "domain", None) is not None)
+    items = []
+    for req, record in anchors:
+        current = active.get(record.record_id)
+        items.append({
+            "record_id": record.record_id,
+            "statement": req.statement,
+            "current": None if current is None else {
+                "bound": current.bound, "value": current.value,
+                "unit": current.unit},
+        })
+    if not can_write and not any(item["current"] for item in items):
+        return None
+    return {"items": items, "can_write": can_write,
+            "bounds": list(QUANTITY_BOUNDS), "units": list(QUANTITY_UNITS)}
 
 # --- Workstream 4: structured criticality confirmation flow -------------------
 # (docs/governance/STRUCTURED_CRITICALITY_CAPTURE_INCREMENT_CONTRACT.md §7;
@@ -2610,6 +2720,11 @@ def resume_project(sid):
         # Completed project: truthful completion/deliverable surfaces remain;
         # a completed journey never reopens into a writable question flow.
         return redirect(url_for("show_session", sid=sid))
+    # T2-A: the established writable context carries the validated durable
+    # quantity history from the start; a corrupt/unavailable history refuses
+    # establishment (the read-only view then fails closed on its own render).
+    if not _attach_quantity_history(sid, rstate):
+        return redirect(url_for("show_session", sid=sid))
     # Establishment: the replayed canonical IdeaState (domain/path set by the
     # canonical replay from the persisted inputs; ledger restored verbatim)
     # becomes the state of a FRESH transient entry. A fresh answer token is
@@ -2837,6 +2952,12 @@ def show_session(sid):
             return redirect(url_for("index"))
         SESSION_STORE[sid] = entry
     state = entry["state"]
+    # T2-A: refresh the quantity carrier from the DURABLE truth on every render
+    # and fail closed (the same generic unavailable behaviour as a failed cold
+    # load) when a populated history is corrupt or storage is unavailable —
+    # never a page with a partial or silently empty quantity block.
+    if not _attach_quantity_history(sid, state):
+        return redirect(url_for("index"))
     last_result = entry.get("last_result")
     # P10-PC1: surface the merged P4-2 Level-1 deterministic READ-ONLY
     # reconstruction on cold-loaded sessions (the committed cold-load marker is
@@ -3101,6 +3222,10 @@ def show_session(sid):
         # verbatim (localize_deep passes unknown strings through unchanged).
         criticality_step=ui_text.localize_deep(
             _criticality_step_context(entry, state, sid), _current_ui_lang()),
+        # T2-A: read-only quantity block context (eligible anchors, active
+        # quantities, write eligibility). Canonical tokens only; the template
+        # resolves every display label through t(). None when nothing applies.
+        quantity_step=_quantity_step_context(state, sid),
         next_development_step=next_development_step,
         question=question,
         # RVR-7 / M-13: the substantive question element must declare the language
@@ -3252,7 +3377,22 @@ def _deliverable_context(sid):
                 reconstructed_deliverable = True
         except Exception:
             reconstructed_deliverable = False
+    # T2-A: the report is assembled from the DURABLE quantity truth; a populated
+    # corrupt or unavailable history fails BOTH the HTML deliverable and the
+    # PDF closed (the existing generic no-context behaviour) — never a report
+    # that silently omits recorded quantities.
+    if not _attach_quantity_history(sid, state):
+        return None
     package = assemble_deliverable(state)
+    # T2-A: the additive nested package key, composed HERE at the one shared
+    # deliverable seam (consumed by the HTML report AND the PDF) because the
+    # canonical assembler is frozen by the merged G-3 A-20/A-21 pin. Present
+    # ONLY when at least one CURRENT quantified requirement exists: a project
+    # with zero quantities carries no new key, no HTML block and no PDF-source
+    # difference. Top-level canonical sections are untouched.
+    _quantified = _quantified_requirements_meta(state)
+    if _quantified is not None:
+        package["_session_meta"][_QUANTIFIED_META_KEY] = _quantified
     eligible = package["_session_meta"]["deliverable_eligible"]
     return entry, package, eligible, reconstructed_deliverable, state
 
@@ -3537,6 +3677,20 @@ def correct_answer(sid):
         entry["_answer_error"] = CORRECTION_NOT_APPLIED_MESSAGE
         return redirect(url_for("show_session", sid=sid))
 
+    # T2-A (Owner-mandated correction-flow ordering): BEFORE the durable
+    # correction append, load and validate this project's requirement-quantity
+    # history. Zero rows are valid. A populated corrupt history or an
+    # unavailable store fails CLOSED through the existing generic
+    # correction-not-applied behaviour: nothing is appended, live state is
+    # untouched, and no identifier, value, SQL detail, path or exception text
+    # is exposed. The correction must never commit against a history that
+    # could not be reattached afterwards.
+    try:
+        _get_store().load_requirement_quantities(sid)
+    except Exception:
+        entry["_answer_error"] = CORRECTION_NOT_APPLIED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+
     # §6 C-7 — a SEPARATE durable idempotency identity, derived from the exact
     # correction event, so a refresh/retry/double-submit produces no second
     # durable record, no second supersession edge and no second replay.
@@ -3598,6 +3752,20 @@ def correct_answer(sid):
         entry["_answer_error"] = CORRECTION_SAVED_NOT_YET_APPLIED_MESSAGE
         return redirect(url_for("show_session", sid=sid))
 
+    # T2-A (Owner-mandated ordering): after the successful durable correction
+    # and deterministic reconstruction, REATTACH and re-validate the quantity
+    # history to the replayed state BEFORE it replaces live state. The history
+    # was validated above before the append, so a failure here is a genuine
+    # post-commit failure (e.g. storage became unavailable) — exactly the case
+    # the existing saved-but-not-yet-applied behaviour exists for: the durable
+    # correction stands, live memory is left EXACTLY as it was, and the next
+    # successful load applies it. A quantity whose anchor this correction
+    # withdrew simply attaches to nothing current (the engine's deterministic
+    # inactive-anchor rule); its rows are retained, never deleted.
+    if not _attach_quantity_history(sid, _recon.state):
+        entry["_answer_error"] = CORRECTION_SAVED_NOT_YET_APPLIED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+
     # §8 RP-4 — ATOMIC live-state replacement. The replayed state REPLACES the
     # prior one wholesale; no field of the old state is edited, so no stored gap
     # status is ever moved backward (WPS-001 INV-004 preserved, §8.1/G-3). A
@@ -3639,6 +3807,118 @@ def correct_answer(sid):
     if _lapsed_gaps or _resolved_gaps:
         entry["_risk_lapse_notice"] = {
             "action": _lapsed_gaps, "resolved": _resolved_gaps}
+    return redirect(url_for("show_session", sid=sid))
+
+
+@app.route("/session/<sid>/requirement-quantity", methods=["POST"])
+def record_requirement_quantity(sid):
+    """T2-A Quantified Requirements Slice 1 — record (or correct) the ONE active
+    quantity of an eligible requirement anchor of an OWNED project.
+
+    Owner-fixed boundary: owned, verified, active projects only (no NULL-owner,
+    anonymous, unverified, inactive or non-owner write); CSRF (the global
+    request-integrity guard runs BEFORE this view); the same sid-signed
+    server-issued answer token as every state-changing session POST (missing /
+    malformed / forged / cross-session / cross-project tokens fail closed);
+    replay resistance and idempotency through a SEPARATE durable idempotency
+    identity under a partial UNIQUE index with confirm-by-reload; project
+    isolation (the store enforces the chain rule inside the project's own
+    write transaction). Persist-before-acknowledge: live memory changes only
+    after the durable append commits. Canonical stored values only; every
+    rejection is generic and discloses no identifier, value or store detail.
+    Never touches the ledger, progression, scoring, replay or the transcript.
+    """
+    if not _project_authorized(sid):
+        return _deny_project()
+    entry = SESSION_STORE.get(sid)
+    if not entry:
+        return redirect(url_for("index"))
+    state = entry["state"]
+    if not _quantity_write_authorized(sid):
+        # One generic, non-enumerating denial for every write-ineligible caller
+        # (anonymous, NULL-owner project, unverified, inactive, non-owner).
+        return _deny_project()
+    if not _valid_answer_token(sid, request.form.get("answer_token", "")):
+        entry["_answer_error"] = QUANTITY_NOT_SAVED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    if getattr(state, "domain", None) is None:
+        # Cold-loaded non-resumable view: the form is suppressed there and the
+        # route enforces the same policy (no write outside a live session).
+        entry["_answer_error"] = QUANTITY_NOT_SAVED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    anchor_id = (request.form.get("anchor_record_id") or "").strip()
+    try:
+        bound = _validate_quantity_bound((request.form.get("bound") or "").strip())
+        unit = _validate_quantity_unit((request.form.get("unit") or "").strip())
+        value = _canonical_quantity_value(request.form.get("value") or "")
+    except QuantityValueError:
+        entry["_answer_error"] = QUANTITY_INVALID_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    # The anchor must be an ELIGIBLE requirement anchor of THIS project's
+    # current state (an active accepted answer the landscape derives) — a
+    # foreign, withdrawn, unknown or non-answer record id fails generically.
+    if not anchor_id or not any(
+            record.record_id == anchor_id
+            for _req, record in _quantity_eligible_anchors(state)):
+        entry["_answer_error"] = QUANTITY_NOT_SAVED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    # Load + validate the DURABLE history first: a populated corrupt history or
+    # an unavailable store fails closed with nothing written. The active row
+    # for this anchor (if any) is the ONE row the new row supersedes — the
+    # one-active-chain rule, re-enforced by the store inside its transaction.
+    try:
+        history = _get_store().load_requirement_quantities(sid)
+    except Exception:
+        entry["_answer_error"] = QUANTITY_NOT_SAVED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    prior = _active_quantities(history).get(anchor_id)
+    supersedes = prior.quantity_id if prior is not None else None
+    if (prior is not None and prior.bound == bound and prior.value == value
+            and prior.unit == unit):
+        # Identical to the current active quantity: nothing to change, no
+        # second row, no second chain link. Truthful ack (it IS recorded).
+        entry.pop("answer_token", None)
+        entry["_interaction_ack"] = QUANTITY_SAVED_ACK
+        return redirect(url_for("show_session", sid=sid))
+    new_quantity = RequirementQuantity(
+        quantity_id=_get_store().new_quantity_id(), anchor_record_id=anchor_id,
+        bound=bound, value=value, unit=unit, supersedes=supersedes)
+    idem_key = _quantity_idempotency_key(sid, anchor_id, bound, value, unit, supersedes)
+    try:
+        _get_store().append_requirement_quantity(
+            sid, new_quantity, idempotency_key=idem_key)
+    except sqlite3.IntegrityError:
+        # Never auto-classify an IntegrityError as a duplicate: reload and
+        # confirm the SAME event under the SAME idempotency identity before
+        # treating a retry / double-submit as an idempotent no-op.
+        try:
+            stored = _get_store().requirement_quantity_for_idempotency_key(sid, idem_key)
+        except Exception:
+            stored = None
+        if (stored is not None and stored["anchor_record_id"] == anchor_id
+                and stored["bound"] == bound and stored["value"] == value
+                and stored["unit"] == unit and stored["supersedes"] == supersedes):
+            if _attach_quantity_history(sid, state):
+                entry.pop("answer_token", None)
+                entry["_interaction_ack"] = QUANTITY_SAVED_ACK
+                return redirect(url_for("show_session", sid=sid))
+        entry["_answer_error"] = QUANTITY_NOT_SAVED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    except StoreError:
+        # Chain conflict / absent project / durable unavailability: nothing
+        # changed, nothing claimed (QuantityChainConflict is a StoreError).
+        entry["_answer_error"] = QUANTITY_NOT_SAVED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    # Durable success — publish from the DURABLE truth (one bounded re-load so
+    # the live carrier is exactly what the store validated), consume the token
+    # (the next render issues a fresh one), and acknowledge truthfully.
+    if not _attach_quantity_history(sid, state):
+        # Committed, but the live view could not be refreshed: say so without
+        # claiming rollback; the next successful render applies it.
+        entry["_answer_error"] = CORRECTION_SAVED_NOT_YET_APPLIED_MESSAGE
+        return redirect(url_for("show_session", sid=sid))
+    entry.pop("answer_token", None)
+    entry["_interaction_ack"] = QUANTITY_SAVED_ACK
     return redirect(url_for("show_session", sid=sid))
 
 

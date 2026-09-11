@@ -24,6 +24,9 @@ MUTATIONS = (
     "/session/<sid>/decision/refine-alternative", "/session/<sid>/decision/withdraw-alternative",
     "/session/<sid>/keep-snapshot", "/session/<sid>/success-criteria", "/session/<sid>",
     "/session/<sid>/deliverable.pdf",
+    # T2-A Quantified Requirements Slice 1: one new state-changing session
+    # route, covered by the same missing/invalid-evidence matrix below.
+    "/session/<sid>/requirement-quantity",
     "/decision-workspace", "/decision-workspace/<did>/input",
     "/decision-workspace/<did>/constraint", "/decision-workspace/<did>/gap",
     "/decision-workspace/<did>/evidence", "/decision-workspace/<did>/gap-assessment",

@@ -24,9 +24,102 @@ self-SHA or lifecycle-label change creates a synchronization candidate. When no 
 exists, state ACTIVE CONTRACT: NONE; historical declarations never fill the gap.
 
 <a id="current-authority--bounded-source-of-truth-documentation-sync-only"></a>
-## Current authority — post-return declaration
+<a id="current-authority--t2a-quantified-requirements-slice-1"></a>
+## Current authority — T2-A Quantified Requirements Slice 1 (one bounded candidate)
 
-**ACTIVE CONTRACT: NONE**
+**ACTIVE CONTRACT: T2-A QUANTIFIED REQUIREMENTS SLICE 1 — ONE BOUNDED IMPLEMENTATION
+CANDIDATE (candidate prepared; merge NOT authorized).**
+
+**Owner source:** current-chat "OWNER / LEAD EXECUTION INSTRUCTION — T2-A — Quantified
+Requirements Slice 1 — ONE BOUNDED IMPLEMENTATION CANDIDATE", received after the
+verified PR #626 post-return state. It takes effect on receipt (declaration rule
+above) and supersedes the post-return "ACTIVE CONTRACT: NONE" declaration, now
+preserved below as historical evidence. The Owner accepted the architecture and the
+reduced Slice-1 boundary of the final T2-A design delta, subject to two mandatory
+corrections applied directly in this candidate: (a) the lifecycle-valid evidence
+runner (base manifest from `git ls-tree` at the base SHA; new tests identified by
+the explicit two-path list, never by current file existence; base = 185 and
+frozen candidate = 187 tracked `tests/test_*.py`; Set B / focused / affected lists
+validated by exact membership, unique count, duplicate count and candidate-path
+existence; JUnit skip/xfail audit in exact parity with `.github/workflows/ci.yml`);
+and (b) the correction-flow ordering (a populated corrupt or unavailable
+requirement-quantity history is validated BEFORE `correct_answer` appends
+durably and fails closed through the existing generic correction-not-applied
+behaviour; the history is reattached and re-validated AFTER the deterministic
+reconstruction and BEFORE live state is replaced; the saved-but-not-yet-applied
+behaviour is reserved for a genuine post-commit failure).
+
+**Starting context:** authoritative branch `feature/atomic-json-session-persistence`
+(GitHub default), verified live tip `9f883956bc54dd960ec33a502259e353e6db20f3`,
+tree `7da689f3601b65240a0a1e326902e92bd609a76d`, clean working tree, working branch
+descended from that exact tip. This recorded SHA is starting evidence, not a
+perpetual tip expectation; a base advance reconciles under Lean §10 / AHAEP §5.
+
+**Fixed product boundary (reduced Slice 1):** one active quantity chain per
+eligible requirement anchor (an active accepted `answered` ledger record the
+Requirement Landscape derives as an `assertion` requirement); owned, verified,
+active projects only — no NULL-owner, anonymous, unverified, inactive or non-owner
+write; durable SQLite history (additive `requirement_quantities` table) with
+correction/supersession by forward edge, INSERT-only, prior rows never rewritten;
+CSRF, confirmation-token (sid-signed answer token) binding, replay resistance,
+idempotency (separate durable key under a partial UNIQUE index, confirm-by-reload)
+and project isolation; canonical stored values (decimal text / bound token / unit
+code) separated from localized presentation (`web/ui_text.py`); authorized
+session, HTML deliverable and PDF presentation only; zero quantities add no package
+key, no HTML block and no PDF-source difference; a corrupted populated history fails
+closed at every affected outward surface (session, deliverable, PDF, quantity write,
+correction). A superseded anchor makes its chain inactive deterministically; its
+rows are retained. No API, structured export, browser self-service export,
+reference adapter, schema-version bump, compatibility shim, or feasibility /
+validation / safety / compliance / specialist-validation claim.
+
+**Exact file boundary (this candidate):** production `engine/requirement_quantity.py`
+(new), `engine/record_store.py`, `engine/idea_state.py`, `web/app.py`,
+`web/ui_text.py`, `web/templates/session.html`, `web/templates/deliverable.html`
+(`engine/deliverable_assembler.py` was allowed but is deliberately NOT modified:
+the merged G-3 A-20/A-21 pin in `tests/test_g3_decision_value.py` freezes it
+byte-for-byte, so the additive nested `_session_meta.quantified_requirements`
+key is composed at the shared web deliverable seam from the pure engine builder,
+following the existing W2-A decision-capture precedent — a disclosed design
+deviation inside the allowed file set, not a scope expansion); tests
+`tests/test_t2a_requirement_quantity_engine_store.py` (new),
+`tests/test_t2a_requirement_quantity_web.py` (new),
+`tests/test_r05_request_integrity.py` (mutation inventory),
+`tests/test_p5_3_project_ownership_authorization.py` (denial matrix),
+`tests/test_pvcg_r1_durable_epistemic_memory.py` (table inventory; the one-ledger
+claim is kept and strengthened); and this file only. `engine/read_export_service.py`,
+`engine/export_adapter.py`, `web/api_v1.py` and `tests/test_p7_i2_public_api.py`
+remain byte-identical to the base. No new governance, review, evidence, plan or
+handover document is created.
+
+**Delivery included:** one working branch from the verified tip, the required
+tests and evidence checks (focused, affected, universal guardrail smoke, complete
+regression, CI-equivalent JUnit skip/xfail audit, migration on a fresh and an
+existing populated database, `PRAGMA foreign_key_check`, backup/restore parity,
+CSRF / IDOR / ownership / token-tamper / replay / cross-session / cross-project
+adversarial tests, corruption tests for every affected surface, zero-quantity
+package/HTML/PDF byte-equivalence), one frozen commit, one push, one PR targeting
+`feature/atomic-json-session-persistence`. **Not included:** merge, deployment,
+release, default-branch change, modifying `main`, deleting/rebasing branches,
+force-push, weakening/skipping/xfailing/deleting an existing test, or expanding
+Slice 1. Independent review of the immutable candidate is performed by a separate
+non-authoring session. Stop conditions: a preflight mismatch, a required change
+outside the allowed files, drift of a byte-identical file, a test failure that
+would require weakening a test, or any scope expansion — each stops the work with
+no scope-expanding repair and a report of the exact blocker.
+
+**Candidate state:** implemented, verified locally as recorded in the execution
+report, frozen and pushed as one candidate for independent non-authoring review.
+All existing gates, deferred obligations, unresolved issues and non-blocking
+observations keep their status, owner and return conditions. Completing this
+candidate authorizes no successor slice, phase or capability.
+
+## Historical authority — post-return declaration (superseded by T2-A Slice 1)
+
+The following declaration is preserved as historical evidence of the state between
+the PR #626 merge and the T2-A Slice-1 instruction above.
+
+**ACTIVE CONTRACT: NONE** *(historical; superseded above)*
 
 PR #626 documentation sync: **COMPLETED / MERGED / POST-MERGE VERIFIED**.
 No current product implementation or documentation-sync mandate exists.

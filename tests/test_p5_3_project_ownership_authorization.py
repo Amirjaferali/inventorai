@@ -147,7 +147,9 @@ def test_non_owner_denied_on_real_owned_project(db_path):
                        ("post", "/session/" + sid),
                        ("post", "/session/" + sid + "/keep-snapshot"),
                        ("post", "/session/" + sid + "/deliverable.pdf"),
-                       ("post", "/session/" + sid + "/success-criteria")]:
+                       ("post", "/session/" + sid + "/success-criteria"),
+                       # T2-A: the quantity write is owner-only as well.
+                       ("post", "/session/" + sid + "/requirement-quantity")]:
         r = getattr(cb, verb)(path, data={})
         assert r.status_code == 302 and r.headers["Location"].endswith("/"), (verb, path, r.status_code)
 
@@ -160,7 +162,8 @@ def test_anonymous_denied_on_owned_project_all_verbs(db_path):
                        ("get", "/session/" + sid + "/deliverable"),
                        ("post", "/session/" + sid),
                        ("post", "/session/" + sid + "/keep-snapshot"),
-                       ("post", "/session/" + sid + "/deliverable.pdf")]:
+                       ("post", "/session/" + sid + "/deliverable.pdf"),
+                       ("post", "/session/" + sid + "/requirement-quantity")]:
         r = getattr(anon, verb)(path, data={})
         assert r.status_code == 302 and r.headers["Location"].endswith("/")
 
@@ -195,6 +198,11 @@ def test_legacy_null_owner_capability_preserved(db_path):
     # a different signed-in account can still open a NULL-owner (legacy) project
     cb = _client_for("legacy-viewer@example.com")
     assert cb.get("/session/" + sid).status_code == 200
+    # T2-A: capability access never becomes WRITE eligibility for a quantity —
+    # a NULL-owner project is denied the owner-only write, anonymous or not.
+    for client in (anon, cb):
+        r = client.post("/session/" + sid + "/requirement-quantity", data={})
+        assert r.status_code == 302 and r.headers["Location"].endswith("/")
 
 
 # ===========================================================================

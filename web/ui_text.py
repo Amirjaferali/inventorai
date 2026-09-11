@@ -115,6 +115,14 @@ _MESSAGE_KEYS = {
     # pattern as every other server message (storage stays English).
     ("That decision entry could not be saved just now. "
      "Nothing was changed."): "UI_W2A_ERR_001",
+    # T2-A Quantified Requirements Slice 1 (web/app.py): the two rejection
+    # messages render through the `_answer_error` slot (localize_message), so
+    # they are registered here; the ack renders through `_interaction_ack`
+    # (localize_deep) and is registered in `_DEEP_AR` below.
+    ("That quantity could not be saved just now. Nothing was changed."):
+        "UI_T2A_ERR_NOT_SAVED",
+    ("Enter a plain number and choose a bound and a unit for the selected "
+     "item. Nothing was changed."): "UI_T2A_ERR_INVALID",
 }
 
 
@@ -1608,6 +1616,86 @@ UI_STRINGS = {
         "en": "We could not generate the PDF. Nothing was saved. Please try again.",
         "ar": "تعذر إنشاء ملف PDF. لم يتم حفظ أي شيء. يُرجى المحاولة مرة أخرى.",
     },
+
+    # --- T2-A Quantified Requirements Slice 1: presentation chrome ONLY. The
+    # stored values are canonical tokens (decimal text / bound token / unit
+    # code) owned by engine/requirement_quantity.py; these entries are the
+    # localized DISPLAY of those tokens and of the block's plain-language
+    # framing. Optional and progressive: the block is collapsed by default and
+    # the journey completes without entering a single number. The wording
+    # claims recording only — never validation, feasibility, safety or
+    # compliance.
+    "UI_T2A_HEADING": {"en": "Add a number to a requirement (optional)",
+                       "ar": "أضف رقمًا إلى متطلب (اختياري)"},
+    "UI_T2A_EXPLAIN": {
+        "en": ("If you already know a value for one of your recorded requirements — "
+               "a size, a time, a voltage, a count — you can record it here. This is "
+               "optional. What you enter is kept as stated and is not checked, "
+               "validated, or assessed for feasibility, safety, or compliance. "
+               "Recording a new value for the same item replaces the earlier one "
+               "and keeps it in your project history."),
+        "ar": ("إذا كنت تعرف بالفعل قيمة لأحد المتطلبات المسجّلة — حجمًا أو زمنًا أو "
+               "جهدًا أو عددًا — يمكنك تسجيلها هنا. هذا اختياري. ما تدخله يُحفظ كما "
+               "ذكرته ولا يُفحص ولا يُتحقق منه ولا يُقيَّم من حيث الجدوى أو السلامة أو "
+               "الامتثال. تسجيل قيمة جديدة للعنصر نفسه يحل محل القيمة السابقة مع "
+               "الاحتفاظ بها في سجل مشروعك."),
+    },
+    "UI_T2A_CURRENT": {"en": "Recorded value:", "ar": "القيمة المسجّلة:"},
+    "UI_T2A_NONE": {"en": "No value recorded for this item.",
+                    "ar": "لا توجد قيمة مسجّلة لهذا العنصر."},
+    "UI_T2A_BOUND_LABEL": {"en": "This value is a", "ar": "هذه القيمة هي"},
+    "UI_T2A_VALUE_LABEL": {"en": "Number", "ar": "الرقم"},
+    "UI_T2A_UNIT_LABEL": {"en": "Unit", "ar": "الوحدة"},
+    "UI_T2A_BUTTON": {"en": "Record this value", "ar": "سجّل هذه القيمة"},
+    "UI_T2A_REPLACE_BUTTON": {"en": "Replace the recorded value",
+                              "ar": "استبدل القيمة المسجّلة"},
+    "UI_T2A_VALUE_HINT": {
+        "en": "Plain digits, for example 12 or 0.5. No letters, units, or thousands separators.",
+        "ar": "أرقام إنجليزية فقط، مثل 12 أو 0.5. بلا حروف أو وحدات أو فواصل آلاف.",
+    },
+    "UI_T2A_DELIV_HEADING": {"en": "Quantities you recorded",
+                             "ar": "الكميات التي سجّلتها"},
+    "UI_T2A_DELIV_NOTE": {
+        "en": ("These values were entered by the inventor for the listed requirements. "
+               "They are recorded as stated and have not been checked, validated, or "
+               "assessed for feasibility, safety, or compliance."),
+        "ar": ("أدخل المخترع هذه القيم للمتطلبات المدرجة. وهي مسجّلة كما ذُكرت ولم "
+               "تُفحص ولم يُتحقق منها ولم تُقيَّم من حيث الجدوى أو السلامة أو الامتثال."),
+    },
+    "UI_T2A_DELIV_PROVENANCE": {"en": "Recorded by the inventor (not yet verified)",
+                                "ar": "سجّله المخترع (لم يُتحقق منه بعد)"},
+    "UI_T2A_ERR_NOT_SAVED": {
+        "en": "That quantity could not be saved just now. Nothing was changed.",
+        "ar": "تعذر حفظ هذه الكمية الآن. لم يتغير أي شيء.",
+    },
+    "UI_T2A_ERR_INVALID": {
+        "en": ("Enter a plain number and choose a bound and a unit for the selected "
+               "item. Nothing was changed."),
+        "ar": "أدخل رقمًا بسيطًا واختر نوع الحد والوحدة للعنصر المحدد. لم يتغير أي شيء.",
+    },
+    # Bound tokens (engine QUANTITY_BOUNDS) -> display.
+    "UI_T2A_BOUND_target": {"en": "target value", "ar": "قيمة مستهدفة"},
+    "UI_T2A_BOUND_minimum": {"en": "minimum", "ar": "حد أدنى"},
+    "UI_T2A_BOUND_maximum": {"en": "maximum", "ar": "حد أقصى"},
+    # Unit codes (engine QUANTITY_UNITS) -> display.
+    "UI_T2A_UNIT_mm": {"en": "millimetres (mm)", "ar": "مليمتر (mm)"},
+    "UI_T2A_UNIT_cm": {"en": "centimetres (cm)", "ar": "سنتيمتر (cm)"},
+    "UI_T2A_UNIT_m": {"en": "metres (m)", "ar": "متر (m)"},
+    "UI_T2A_UNIT_g": {"en": "grams (g)", "ar": "غرام (g)"},
+    "UI_T2A_UNIT_kg": {"en": "kilograms (kg)", "ar": "كيلوغرام (kg)"},
+    "UI_T2A_UNIT_s": {"en": "seconds (s)", "ar": "ثانية (s)"},
+    "UI_T2A_UNIT_min": {"en": "minutes (min)", "ar": "دقيقة (min)"},
+    "UI_T2A_UNIT_h": {"en": "hours (h)", "ar": "ساعة (h)"},
+    "UI_T2A_UNIT_V": {"en": "volts (V)", "ar": "فولت (V)"},
+    "UI_T2A_UNIT_A": {"en": "amperes (A)", "ar": "أمبير (A)"},
+    "UI_T2A_UNIT_W": {"en": "watts (W)", "ar": "واط (W)"},
+    "UI_T2A_UNIT_Wh": {"en": "watt-hours (Wh)", "ar": "واط·ساعة (Wh)"},
+    "UI_T2A_UNIT_mAh": {"en": "milliampere-hours (mAh)", "ar": "مللي أمبير·ساعة (mAh)"},
+    "UI_T2A_UNIT_Hz": {"en": "hertz (Hz)", "ar": "هرتز (Hz)"},
+    "UI_T2A_UNIT_ohm": {"en": "ohms (Ω)", "ar": "أوم (Ω)"},
+    "UI_T2A_UNIT_degC": {"en": "degrees Celsius (°C)", "ar": "درجة مئوية (°C)"},
+    "UI_T2A_UNIT_percent": {"en": "percent (%)", "ar": "بالمئة (%)"},
+    "UI_T2A_UNIT_count": {"en": "count (pieces)", "ar": "عدد (قطع)"},
 }
 
 
@@ -1778,6 +1866,13 @@ _DEEP_AR = {
      "Everything shown has been recomputed from your remaining answers."):
         ("تم سحب إجابتك السابقة مع الاحتفاظ بها في سجل المشروع. "
          "وأُعيد حساب كل ما يظهر هنا من إجاباتك المتبقية."),
+
+    # --- T2-A quantity acknowledgement (web/app.py record_requirement_quantity):
+    # rendered through `_interaction_ack` -> localize_deep, so it lives HERE.
+    ("Your quantity was recorded and saved to your project. It is kept as "
+     "stated and has not been checked or verified."):
+        ("تم تسجيل الكمية وحفظها في مشروعك. وهي محفوظة كما ذكرتها ولم تُفحص "
+         "ولم يُتحقق منها."),
 
     # --- 4.12 non-answer acknowledgements (web/app.py _NON_ANSWER_ACK) ---
     "Recorded that you do not know this yet. It is kept as an open unknown and does not resolve the question.": "تم تسجيل أنك لا تعرف هذا بعد. يُحفظ كأمر غير معروف مفتوح ولا يحلّ السؤال.",

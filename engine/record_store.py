@@ -34,6 +34,9 @@ from typing import List, Protocol, runtime_checkable
 
 from engine.record_contract import ProjectRecordContract, assertion_to_dict
 from engine.idea_state import DISPOSITION_ANSWERED
+from engine.requirement_quantity import (
+    RequirementQuantity, validate_quantity_history,
+)
 
 
 class StoreError(Exception):
@@ -42,6 +45,12 @@ class StoreError(Exception):
 
 class ProjectNotFound(StoreError):
     """Raised when a project id is not present in the store."""
+
+
+class QuantityChainConflict(StoreError):
+    """T2-A: a requirement-quantity append would violate the ONE-ACTIVE-CHAIN
+    rule (a second active row for an anchor, a supersession of a row that is
+    absent, of another anchor, or already superseded). Nothing is written."""
 
 
 @runtime_checkable
@@ -61,6 +70,11 @@ class RecordStore(Protocol):
     def new_record_id(self) -> str: ...
     def ping(self) -> None: ...
     def close(self) -> None: ...
+    # T2-A Quantified Requirements Slice 1 (additive; see the table note below).
+    def new_quantity_id(self) -> str: ...
+    def append_requirement_quantity(self, project_id: str, quantity, idempotency_key: str = ...) -> None: ...
+    def load_requirement_quantities(self, project_id: str) -> tuple: ...
+    def requirement_quantity_for_idempotency_key(self, project_id: str, idempotency_key: str): ...
 
 
 _SCHEMA = (
@@ -129,6 +143,47 @@ _OWNER_INDEX = (
     "ON projects (owner_account_id)"
 )
 
+# T2-A Quantified Requirements Slice 1 (Owner-authorized bounded candidate): the
+# ADDITIVE durable requirement-quantity history. It is a SEPARATE, project-scoped,
+# INSERT-only history table — NOT a second ledger: it carries no disposition, no
+# payload and no ``rec_N``; each row names the accepted answered ledger record it
+# quantifies (``anchor_record_id``) and, on a correction, the quantity row it
+# supersedes (forward edge only; prior rows are never rewritten). Canonical STORED
+# values only (decimal text / bound token / unit code); presentation is the web
+# layer's. The migration is ``CREATE ... IF NOT EXISTS`` — idempotent on a fresh
+# and on an existing populated database, no column drop, no rewrite of any
+# existing row; rollback is disable-and-ignore. The hard FOREIGN KEY to
+# ``projects`` is enforced (``PRAGMA foreign_keys = ON`` on every connection).
+# The partial UNIQUE index on ``idempotency_key`` is the durable duplicate
+# backstop (same idiom as ``records``); the partial UNIQUE index on
+# ``supersedes_quantity_id`` is the database-level "one successor" backstop.
+_QUANTITY_TABLE = "requirement_quantities"
+_QUANTITY_SCHEMA = (
+    """
+    CREATE TABLE IF NOT EXISTS requirement_quantities (
+        project_id             TEXT NOT NULL,
+        seq                    INTEGER NOT NULL,
+        quantity_id            TEXT NOT NULL,
+        anchor_record_id       TEXT NOT NULL,
+        bound                  TEXT NOT NULL,
+        value_canonical        TEXT NOT NULL,
+        unit                   TEXT NOT NULL,
+        supersedes_quantity_id TEXT,
+        idempotency_key        TEXT,
+        PRIMARY KEY (project_id, quantity_id),
+        FOREIGN KEY (project_id) REFERENCES projects(project_id)
+    )
+    """,
+    "CREATE UNIQUE INDEX IF NOT EXISTS requirement_quantities_seq_uq "
+    "ON requirement_quantities (project_id, seq)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS requirement_quantities_idempotency_key_uq "
+    "ON requirement_quantities (project_id, idempotency_key) "
+    "WHERE idempotency_key IS NOT NULL",
+    "CREATE UNIQUE INDEX IF NOT EXISTS requirement_quantities_supersedes_uq "
+    "ON requirement_quantities (project_id, supersedes_quantity_id) "
+    "WHERE supersedes_quantity_id IS NOT NULL",
+)
+
 
 class SqliteRecordStore:
     """Reference/MVP durable adapter over Python stdlib `sqlite3`.
@@ -164,6 +219,7 @@ class SqliteRecordStore:
             self._migrate_idempotency(self._conn)
             self._migrate_reconstruction_inputs(self._conn)
             self._migrate_owner(self._conn)
+            self._migrate_requirement_quantities(self._conn)
 
     # --- write transaction (serialized; BEGIN IMMEDIATE) --------------------
     @contextmanager
@@ -235,6 +291,15 @@ class SqliteRecordStore:
         if _OWNER_COLUMN not in cols:
             conn.execute("ALTER TABLE projects ADD COLUMN owner_account_id TEXT")
         conn.execute(_OWNER_INDEX)
+
+    def _migrate_requirement_quantities(self, conn) -> None:
+        """T2-A forward migration against the LIVE schema: additively create the
+        ``requirement_quantities`` table and its indexes. Idempotent (``IF NOT
+        EXISTS``) on a fresh database and on an existing populated pre-T2A
+        database; touches no existing table, column or row. Rollback is
+        disable-and-ignore (stop reading the table), never a destructive drop."""
+        for stmt in _QUANTITY_SCHEMA:
+            conn.execute(stmt)
 
     # --- identifiers --------------------------------------------------------
     def new_record_id(self) -> str:
@@ -445,6 +510,113 @@ class SqliteRecordStore:
             record for record in contract.assertions
             if record.disposition == DISPOSITION_ANSWERED
         )
+
+    # --- T2-A requirement-quantity history (project-scoped; INSERT-only) ------
+    def new_quantity_id(self) -> str:
+        """A durability-safe, collision-safe identifier for a NEW quantity row
+        (``qty-`` + 32 hex). Distinct from ``rec_N`` and ``rec-<hex>``."""
+        return "qty-" + uuid.uuid4().hex
+
+    def append_requirement_quantity(self, project_id: str, quantity,
+                                    idempotency_key: str = None) -> None:
+        """Atomically append ONE requirement-quantity row for ``project_id``.
+
+        One transaction; commit on success, FULL rollback on any failure
+        (nothing partial survives). Enforces, inside the write lock, the
+        ONE-ACTIVE-CHAIN rule against the durable truth:
+          * the project must exist (``ProjectNotFound``);
+          * when ``quantity.supersedes`` is set, that row must exist for THIS
+            project, quantify the SAME anchor and not be superseded already;
+          * when it is not set, no active row may exist for the anchor;
+        a violation raises ``QuantityChainConflict`` with nothing written.
+        ``idempotency_key`` (same idiom as ``append_record``) is stored under
+        the partial UNIQUE index, so a duplicate raises ``sqlite3.IntegrityError``
+        and rolls back — the caller confirms-by-reload, never auto-classifies.
+        The stored value is the canonical text the caller already
+        canonicalized; this method never re-interprets or rewrites it."""
+        if not isinstance(quantity, RequirementQuantity):
+            raise StoreError("quantity must be a RequirementQuantity")
+        with self._write():
+            row = self._conn.execute(
+                "SELECT COUNT(*) FROM projects WHERE project_id = ?", (project_id,)
+            ).fetchone()
+            if not row or row[0] == 0:
+                raise ProjectNotFound(project_id)
+            if quantity.supersedes is not None:
+                prior = self._conn.execute(
+                    "SELECT anchor_record_id FROM requirement_quantities "
+                    "WHERE project_id = ? AND quantity_id = ?",
+                    (project_id, quantity.supersedes)).fetchone()
+                if prior is None or prior[0] != quantity.anchor_record_id:
+                    raise QuantityChainConflict("supersession target unavailable")
+                taken = self._conn.execute(
+                    "SELECT COUNT(*) FROM requirement_quantities "
+                    "WHERE project_id = ? AND supersedes_quantity_id = ?",
+                    (project_id, quantity.supersedes)).fetchone()[0]
+                if taken:
+                    raise QuantityChainConflict("target already superseded")
+            else:
+                active = self._conn.execute(
+                    "SELECT COUNT(*) FROM requirement_quantities q "
+                    "WHERE q.project_id = ? AND q.anchor_record_id = ? "
+                    "AND NOT EXISTS (SELECT 1 FROM requirement_quantities s "
+                    "                WHERE s.project_id = q.project_id "
+                    "                AND s.supersedes_quantity_id = q.quantity_id)",
+                    (project_id, quantity.anchor_record_id)).fetchone()[0]
+                if active:
+                    raise QuantityChainConflict("anchor already has an active quantity")
+            seq = self._conn.execute(
+                "SELECT COALESCE(MAX(seq), -1) + 1 FROM requirement_quantities "
+                "WHERE project_id = ?", (project_id,)).fetchone()[0]
+            self._conn.execute(
+                "INSERT INTO requirement_quantities "
+                "(project_id, seq, quantity_id, anchor_record_id, bound, "
+                " value_canonical, unit, supersedes_quantity_id, idempotency_key) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (project_id, seq, quantity.quantity_id, quantity.anchor_record_id,
+                 quantity.bound, quantity.value, quantity.unit,
+                 quantity.supersedes, idempotency_key))
+
+    def _quantity_rows(self, project_id: str):
+        return [
+            {"quantity_id": qid, "anchor_record_id": anchor, "bound": bound,
+             "value": value, "unit": unit, "supersedes": supersedes}
+            for (qid, anchor, bound, value, unit, supersedes) in self._conn.execute(
+                "SELECT quantity_id, anchor_record_id, bound, value_canonical, "
+                "unit, supersedes_quantity_id FROM requirement_quantities "
+                "WHERE project_id = ? ORDER BY seq ASC", (project_id,)).fetchall()]
+
+    def load_requirement_quantities(self, project_id: str) -> tuple:
+        """Load and VALIDATE one project's requirement-quantity history in
+        stored ``seq`` order; return the immutable validated tuple.
+
+        Zero rows (including an unknown project — the same non-disclosing
+        empty result ``load_accepted_answer_evidence`` gives) return ``()``.
+        Structural corruption raises ``engine.requirement_quantity
+        .QuantityHistoryError`` with NO partial history (fail closed, never
+        silently repaired); storage failure propagates as the SQL error.
+        Read-only; project-scoped; logs nothing."""
+        return validate_quantity_history(self._quantity_rows(project_id))
+
+    def requirement_quantity_for_idempotency_key(self, project_id: str,
+                                                 idempotency_key: str):
+        """Return the stored quantity row (dict) carrying ``idempotency_key``
+        under ``project_id``, or ``None``. Used by the runtime's
+        confirm-by-reload check after a duplicate-key ``IntegrityError`` — a
+        retry is treated as an idempotent no-op ONLY when the stored content
+        matches. Project-scoped; reads nothing across projects."""
+        if idempotency_key is None:
+            return None
+        row = self._conn.execute(
+            "SELECT quantity_id, anchor_record_id, bound, value_canonical, unit, "
+            "supersedes_quantity_id FROM requirement_quantities "
+            "WHERE project_id = ? AND idempotency_key = ?",
+            (project_id, idempotency_key)).fetchone()
+        if row is None:
+            return None
+        qid, anchor, bound, value, unit, supersedes = row
+        return {"quantity_id": qid, "anchor_record_id": anchor, "bound": bound,
+                "value": value, "unit": unit, "supersedes": supersedes}
 
     def project_ids(self) -> List[str]:
         return [row[0] for row in
