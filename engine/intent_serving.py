@@ -362,6 +362,27 @@ def w2c_served_question(state, gap_type):
     return serving
 
 
+def committed_question_exists(domain, question_id):
+    """True iff ``question_id`` is a record of THIS domain's committed, fully
+    validated WS10 question-intent registry.
+
+    Read-only presentation support (T2-B'): it lets the render edge confirm
+    that an identity it already resolved from canonical state is backed by a
+    committed registry record before any explanation is displayed, without
+    duplicating the registry, exposing a record, or loading it a second time.
+    It changes no serving decision and returns False on ANY failure — an
+    unknown domain, a registry that does not validate, or an unknown id — so
+    the caller fails closed to no explanation."""
+    try:
+        registry = _load_registry(domain)
+        if registry is None:
+            return False
+        registry.get(question_id)
+        return True
+    except Exception:
+        return False
+
+
 def supplemental_relevance(state, gap_type, response):
     """W1-N3 bounded attempt (contract §E/§F.6): question-id-scoped
     supplemental relevance for the CANONICAL index-law variant of the served

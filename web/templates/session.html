@@ -329,8 +329,22 @@ body{overflow-wrap:anywhere}
    English fallback. Non-question chrome continues to follow the UI language
    under the unchanged part of D-P6-18. #}
 <p class="question" lang="{{ question_lang }}" dir="{{ question_dir }}">{{ question }}</p>
+{# T2-B' (OD-PDVG-12): one short, fixed explanation of why THIS question is
+   asked, selected by the exact committed identity the render edge resolved and
+   rendered adjacent to the question itself. Absent whenever no eligible
+   committed identity resolves — the question and journey are unchanged either
+   way. Chrome follows the UI language (D-P6-18); the text is escaped, carries
+   no identifier or internal vocabulary, and claims nothing about the answer. #}
+{% if question and question_explanation %}
+<p class="question-explanation" style="font-size:12px;color:#5a6b7a;margin:-6px 0 10px 0"><strong style="font-weight:600">{{ t('UI_T1D_WHY_HEADING') }}</strong> {{ question_explanation }}</p>
+{% endif %}
 {% if question %}
 <p class="answer-hint" style="font-size:12px;color:#888;margin:-6px 0 14px 0">{{ t('UI_B_SESSION_025') }}</p>
+{# T1-D (OD-PDVG-13): truthful disclosure of how questions are chosen in THIS
+   version — a fixed governed set, deterministic state-aware selection, and no
+   semantic follow-up generated from the meaning of a free-text answer. One
+   compact line beside the question experience it describes. #}
+<p class="version-disclosure version-disclosure-questions" style="font-size:11px;color:#8a97a3;margin:-8px 0 14px 0">{{ t('UI_T1D_QUESTION_SET') }}</p>
 {% endif %}
 
 <form id="answer-form" method="POST" action="/session/{{ sid }}">

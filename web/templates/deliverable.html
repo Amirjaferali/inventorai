@@ -97,6 +97,16 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   <div>
     <div class="field-label">{{ t('UI_B_DELIV_010A') }} <span style="font-weight:normal">{{ t('UI_B_DELIV_010B') }}</span></div>
     <div class="field-value">{{ t('UI_B_DELIV_011') if package["_session_meta"].get("derived_verified_ready", False) else t('UI_B_DELIV_012') }}</div>
+    {#- T1D-DISCLOSURE-BEGIN — OD-PDVG-13. Truthful statement of what THIS
+        version does with evidence status, placed beside the readiness and
+        validation presentation it qualifies. It changes no label, status value
+        or readiness computation, and it is presentation-only: it never enters
+        the canonical package, an export, the API or the adapter. It flows
+        through this one shared seam, so the HTML report and the PDF carry it
+        identically. The two sentinels delimit it exactly, so the T2-A zero-row
+        equivalence proof can reconstruct the pre-disclosure source. -#}
+    <div class="field-label version-disclosure version-disclosure-evidence" style="font-weight:normal;color:#667;margin-top:6px;line-height:1.45">{{ t('UI_T1D_EVIDENCE_PROGRESSION') }}</div>
+    {#- T1D-DISCLOSURE-END -#}
     {# RVR-5 (Wave-1): truthful withdrawn-history visibility - the aggregate
        the assembler already carries (PVCG-R4-C S15), now rendered. #}
     {% set _wsr = package["_session_meta"].get("withdrawn_source_records") %}

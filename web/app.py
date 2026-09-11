@@ -3130,6 +3130,45 @@ def _rvr7_identity(domain, gap_type, iterations_open, path,
     return None, None
 
 
+_PATHN_IDENTITY_PREFIX = "PATHN:"
+
+
+def _question_explanation(identity, domain):
+    """T2-B' — the approved bilingual "Why this question?" line for the question
+    ACTUALLY rendered, or None.
+
+    ``identity`` is the RVR-7 served-question identity: the SAME carrier the
+    render edge already derived from canonical, language-free state, after
+    W2-B override precedence and W2-C intent-aware serving have both settled.
+    Nothing here inspects displayed text, so no reverse text lookup can occur,
+    and a gap label alone can never select a line.
+
+    Eligible ONLY when that identity names a committed Path-N record
+    (``PATHN:<question_id>``) AND this domain's committed WS10 registry
+    validates and contains that exact record AND approved display copy exists
+    for it. Every other identity — the governed stall-reframe and exhausted-exit
+    prompts, an intake or special prompt, a ``GENERIC:`` positional fallthrough,
+    an absent identity, an unsupported domain, a registry that does not
+    validate — yields None and the page renders no explanation, leaving the
+    canonical question and the journey exactly as they were.
+
+    Pure, deterministic, presentation-only: it returns display copy, touches no
+    canonical state, persists nothing, and never interpolates user content."""
+    try:
+        if not isinstance(identity, str) or not identity.startswith(_PATHN_IDENTITY_PREFIX):
+            return None
+        question_id = identity[len(_PATHN_IDENTITY_PREFIX):]
+        key = ui_text.QUESTION_EXPLANATION_KEYS.get(question_id)
+        if key is None:
+            return None
+        from engine.intent_serving import committed_question_exists
+        if not committed_question_exists(domain, question_id):
+            return None
+        return ui_text.text(key, _current_ui_lang())
+    except Exception:
+        return None
+
+
 def _rvr7_verify_english(identity, served, english):
     """True when the identity's committed ENGLISH text equals what the engine
     decided. Forward verification (identity -> text), never the reverse."""
@@ -3437,6 +3476,7 @@ def show_session(sid):
     # display variant. English sessions are byte-identical: `_rvr7_display`
     # returns `question` unchanged whenever Arabic is not selected.
     question_lang, question_dir = "en", "ltr"
+    question_explanation = None
     if question is not None:
         if gap_type:
             _rvr7_id, _rvr7_served = _rvr7_identity(
@@ -3449,6 +3489,11 @@ def show_session(sid):
                                  _current_ui_lang())
         question_lang, question_dir = _rvr7_question_direction(
             question, _current_ui_lang())
+        # T2-B': the explanation is selected from the SAME resolved identity the
+        # render edge just used, never from the rendered text. None whenever the
+        # identity is not an eligible committed record — the journey is unchanged.
+        question_explanation = _question_explanation(
+            _rvr7_id, getattr(state, "domain", None))
     # Increment 3 (R-5): compute the one prioritized next development step from the
     # ALREADY-LOADED in-memory IdeaState via the shared pure derivation, and pass
     # it to the presentation-only session callout. Read-only: no route/method
@@ -3513,6 +3558,9 @@ def show_session(sid):
         # quantities, write eligibility). Canonical tokens only; the template
         # resolves every display label through t(). None when nothing applies.
         quantity_step=_quantity_step_context(entry, state, sid),
+        # T2-B' (OD-PDVG-12): the approved "Why this question?" line for the
+        # question actually rendered, or None (fail closed). Display copy only.
+        question_explanation=question_explanation,
         next_development_step=next_development_step,
         question=question,
         # RVR-7 / M-13: the substantive question element must declare the language
