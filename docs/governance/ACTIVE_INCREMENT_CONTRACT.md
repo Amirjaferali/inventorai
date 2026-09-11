@@ -24,11 +24,124 @@ self-SHA or lifecycle-label change creates a synchronization candidate. When no 
 exists, state ACTIVE CONTRACT: NONE; historical declarations never fill the gap.
 
 <a id="current-authority--bounded-source-of-truth-documentation-sync-only"></a>
-<a id="current-authority--t2a-quantified-requirements-slice-1"></a>
-## Current authority — T2-A Quantified Requirements Slice 1 (one bounded candidate)
+<a id="current-authority--t1d-t2b-question-explainability-and-disclosure"></a>
+## Current authority — T1-D + residual T2-B′ (one combined bounded candidate)
+
+**ACTIVE CONTRACT: T1-D TRUTHFUL VERSION DISCLOSURE + RESIDUAL T2-B′ QUESTION
+EXPLAINABILITY — ONE COMBINED BOUNDED IMPLEMENTATION CANDIDATE (merge NOT
+authorized).**
+
+**Owner source:** current-chat "OWNER DECISION AND BOUNDED IMPLEMENTATION
+AUTHORIZATION — COMBINED T1-D + RESIDUAL T2-B′ PHASE-3 UX INCREMENT", issued after the
+read-only Current Capability & Overlap Check against the authoritative tip. It takes
+effect on receipt (declaration rule above) and supersedes the T2-A declaration, now
+preserved below as historical evidence. **`OD-PDVG-12`: EXERCISED** and
+**`OD-PDVG-13`: EXERCISED**, for this bounded combined scope ONLY. This activates no
+wider Phase-3 roadmap and no other item: `T2-E`, `T2-F`, `T2-D`, `T2-G`, WS11, WS14,
+semantic adaptive questioning, live AI, human research, deployment, release and paid
+activation all keep their existing status, owner and return conditions.
+
+**Starting context:** authoritative branch `feature/atomic-json-session-persistence`
+at `99b827e123fd760136c89f290cdba32f39516972` (tree
+`dd6f258092f37c4854e30bcaa7c1a1fff6329c06`, the verified PR #638 merge result), clean
+working tree, implementation branch descended directly from that exact tip.
+
+**T2-B′ — "Why this question?" (residual display only).** The WS10 loader
+(`engine/question_intent_registry.py`), the committed Electronics/Electrical and
+Mechanical registry records, the W2-C intent-serving integration, the canonical
+question banks and gap-selection/serving precedence are REUSED UNCHANGED — none is
+rebuilt and no second intent registry is created. The line is selected by the EXACT
+served-question identity the RVR-7 render edge already derives from canonical,
+language-free state AFTER W2-B override precedence and W2-C serving have settled
+(`PATHN:<question_id>`); no text reverse lookup exists and a gap label alone can never
+select a line. It renders only when that identity names a committed Path-N record, the
+domain's committed registry validates and contains it, and approved display copy
+exists; otherwise NO line renders and the canonical question and journey continue
+unchanged. The registry's internal English (`primary_intent`, `answer_objective`,
+`completion_condition`) is NEVER rendered: the displayed copy is a bounded, fixed,
+presentation-only EN/AR projection keyed by committed identity
+(`web/ui_text.QUESTION_EXPLANATION_KEYS`, 21 entries), traceable to the semantics of
+the record carrying that identity. No runtime translation, model call, network call,
+generated explanation or user-content interpolation occurs; no identifier, gap token,
+registry path, reason code, marker, completion condition, scoring or progression rule
+is exposed; nothing claims an answer is correct, sufficient, verified, complete or
+accepted.
+
+**T1-D — two truthful disclosures.** (a) On the live session surface beside the
+current-question experience: the questions come from a fixed, reviewed set; this
+version chooses which one to show from what the project already records, using fixed
+rules; it does not read the meaning of free-text answers to create new follow-up
+questions — the existing deterministic state-aware selection and W2-B/W2-C serving are
+described truthfully and preserved, and the misleading "never adapts" claim is not
+made. (b) On the deliverable beside the existing readiness/validation presentation,
+flowing through the one shared HTML/PDF seam: this version records evidence status
+conservatively; the guided journey does not move statements into the
+specialist-reviewed, empirically demonstrated or independently verified states; those
+labels are not certification, completed validation or proof. Neither says the product
+does nothing, that validation is impossible in principle, or that higher evidence
+states are permanently unavailable.
+
+**Containment.** Presentation-only throughout. No canonical state, question selection,
+W2-B/W2-C precedence, gap progression, scoring, readiness, evidence status, validation
+label, status value or persisted datum changes. The new display data never enters the
+ledger, session reconstruction data, the canonical package, `_session_meta`, an export,
+the API, the reference adapter, backup semantics or PDF metadata. The live writable,
+cold read-only reconstructed-review and resumed writable surfaces all render the SAME
+explanation for the same canonical project, governed identity and UI language, in
+English and in Arabic.
+
+**Bounded cold-read parity correction (independent review result `C — FAIL`,
+Owner-authorized final narrow repair on top of `7c15a28d…`).** The accepted candidate
+showed the governed next question on the cold read-only reconstructed-review surface
+without its matching explanation. The corrected surface resolves it FORWARD from the
+already available Level-1 reconstructed canonical `_session.state` — reconstructed
+domain, selected reconstructed gap, that gap's current iteration, reconstructed path —
+through the same RVR-7 identity path, under the same W2-B/W2-C/RVR-7 rules, and
+verifies the resolved identity's own committed English against `_recon.next_question`
+(which remains the unmodified canonical English reconstruction evidence) BEFORE the
+existing explanation projection is consulted. Only the resulting display string is
+carried, as the presentation-only `reconstructed_review["next_question_explanation"]`,
+and it renders beside `next_question_display` under the existing localized "Why this
+question?" heading and existing session presentation style. No reverse text matching,
+no identity inferred from a gap label, no copy of `_session.state` into `SESSION_STORE`,
+no mutation of reconstructed canonical state, no persistence of the explanation, no
+change to `_recon.next_question` and no weakening of fail-closed behaviour: a missing,
+special, generic, intake, stall-reframe, exhausted, unknown, unsupported or mismatched
+identity, and a completed project with no eligible committed Path-N next question, all
+render no explanation. The cold page is NOT made writable and the explicit POST resume
+requirement is unchanged. Explanation copy, T1-D disclosure copy, the 21 identity
+mappings, question selection, W2-B/W2-C behaviour, progression, scoring, readiness and
+T2-A behaviour are all unchanged; the correction is purely additive in `web/app.py`,
+so `_rvr7_reconstructed_display` and every other existing RVR-7 helper stay
+byte-identical and the structural guardrail pinning the banner's forward derivation
+inside that function is untouched. Corrective boundary: `web/app.py`,
+`web/templates/session.html`, `tests/test_t1d_t2b_question_explainability_and_disclosure.py`
+and this file only.
+
+**Exact file boundary:** production `engine/intent_serving.py` (one read-only
+registry-confirmation accessor), `web/app.py`, `web/ui_text.py`,
+`web/templates/session.html`, `web/templates/deliverable.html`; tests
+`tests/test_t1d_t2b_question_explainability_and_disclosure.py` (new); and this file
+only. No new helper module, governance document, gate, checklist, framework, state
+machine, registry, persistence store, API contract or export contract is created.
+`engine/deliverable_assembler.py`, `engine/read_export_service.py`,
+`engine/export_adapter.py`, `web/api_v1.py`, `tests/test_p7_i2_public_api.py`, the
+committed WS10 registry JSON records, the canonical question artifacts and the
+progression/scoring/readiness/record-store/quantity engines all remain byte-identical.
+
+**Delivery included / not included:** one implementation branch from the verified tip,
+the focused/affected/smoke/full/JUnit evidence, normal commits, a normal push and one
+PR targeting `feature/atomic-json-session-persistence`. NOT included: merge,
+deployment, release, force-push, rebase, branch deletion, modification of the
+authoritative branch, reopening T2-A or any completed work, and implementation of
+T2-E, T2-F, T2-D, T2-G, semantic adaptive questioning, evidence writers, validation
+progression, feedback capture or human-evidence work. Independent review of the frozen
+candidate is performed by a separate non-authoring session.
+
+## Historical authority — T2-A Quantified Requirements Slice 1 (superseded above)
 
 **ACTIVE CONTRACT: T2-A QUANTIFIED REQUIREMENTS SLICE 1 — ONE BOUNDED IMPLEMENTATION
-CANDIDATE (candidate prepared under Lead corrective review; merge NOT authorized).**
+CANDIDATE** *(historical; merged via PR #638 and superseded above).*
 
 **Owner source:** current-chat "OWNER / LEAD EXECUTION INSTRUCTION — T2-A — Quantified
 Requirements Slice 1 — ONE BOUNDED IMPLEMENTATION CANDIDATE", received after the

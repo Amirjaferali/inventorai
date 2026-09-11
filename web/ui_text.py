@@ -1740,6 +1740,182 @@ UI_STRINGS = {
     "UI_T2A_KIND_RANGE": {"en": "Range", "ar": "نطاق"},
     "UI_T2A_KIND_COUNT": {"en": "Count", "ar": "عدد"},
     "UI_T2A_KIND_OTHER_QUANTITY": {"en": "Other quantity", "ar": "كمية أخرى"},
+
+    # --- T1-D / T2-B' (OD-PDVG-12 + OD-PDVG-13, exercised for this bounded
+    # increment only): presentation chrome ONLY.
+    #
+    # T2-B' — "Why this question?". ONE short, fixed, bilingual line per
+    # COMMITTED question identity. This is approved DISPLAY COPY authored for
+    # users; it is NOT the WS10 registry's internal English, which is never
+    # rendered. Each line is traceable to the semantics of the registry record
+    # carrying the same question_id (its primary intent / answer objective),
+    # restated in plain language. No identifier, gap token, registry path,
+    # reason code, marker, completion condition, scoring or progression rule
+    # appears in any of them, and none claims an answer is correct, sufficient,
+    # verified, complete or accepted. Selection is by exact committed identity
+    # (see QUESTION_EXPLANATION_KEYS below); nothing here is generated,
+    # translated at runtime, or interpolated with user content.
+    "UI_T1D_WHY_HEADING": {"en": "Why this question?", "ar": "لماذا هذا السؤال؟"},
+
+    # electronics_electrical
+    "UI_T2B_WHY_N_MC_1": {
+        "en": ("So your report can describe how the idea notices the problem and "
+               "what it does in response."),
+        "ar": ("لكي يصف تقريرك كيف تلاحظ الفكرة المشكلة وماذا تفعل استجابةً لها."),
+    },
+    "UI_T2B_WHY_N_MC_2": {
+        "en": "So the parts of the idea, and what each part does, are recorded together.",
+        "ar": "لكي تُسجَّل أجزاء الفكرة ودور كل جزء منها معًا.",
+    },
+    "UI_T2B_WHY_N_MC_3": {
+        "en": ("So the steps from the problem starting to the response happening are "
+               "recorded in order."),
+        "ar": "لكي تُسجَّل الخطوات من بدء المشكلة حتى حدوث الاستجابة بالترتيب.",
+    },
+    "UI_T2B_WHY_N_MC_4": {
+        "en": "So the part you are least sure about is recorded as open, not assumed.",
+        "ar": "لكي يُسجَّل الجزء الأقل يقينًا لديك بوصفه مفتوحًا، لا مفترضًا.",
+    },
+    "UI_T2B_WHY_N_PF_1": {
+        "en": ("So the conditions the idea depends on to work safely in the real world "
+               "are written down."),
+        "ar": "لكي تُدوَّن الظروف التي تعتمد عليها الفكرة لتعمل بأمان في الواقع.",
+    },
+    "UI_T2B_WHY_N_PF_2": {
+        "en": "So what the idea needs in order to keep working over time is recorded.",
+        "ar": "لكي يُسجَّل ما تحتاجه الفكرة كي تستمر في العمل مع مرور الوقت.",
+    },
+    "UI_T2B_WHY_N_PF_3": {
+        "en": ("So real-world conditions that could disturb the idea are recorded "
+               "instead of assumed away."),
+        "ar": "لكي تُسجَّل ظروف الواقع التي قد تُربك الفكرة بدل تجاهلها بالافتراض.",
+    },
+    "UI_T2B_WHY_N_PF_4": {
+        "en": "So the check most worth doing first is recorded as a next step.",
+        "ar": "لكي يُسجَّل الفحص الأجدر بالبدء به بوصفه خطوة تالية.",
+    },
+    "UI_T2B_WHY_N_BA_1": {
+        "en": "So the situations the idea is meant to handle are stated, not left open.",
+        "ar": "لكي تُذكر المواقف التي يُفترض أن تتعامل معها الفكرة، لا أن تُترك مفتوحة.",
+    },
+    "UI_T2B_WHY_N_BA_2": {
+        "en": "So what the idea is responsible for is separated from what it is not.",
+        "ar": "لكي يُفصل ما تتحمله الفكرة من مسؤولية عمّا لا تتحمله.",
+    },
+    "UI_T2B_WHY_N_BA_3": {
+        "en": ("So the difference between when the idea should act and when it should "
+               "stay quiet is recorded."),
+        "ar": "لكي يُسجَّل الفرق بين الحالة التي تتصرف فيها الفكرة والحالة التي تبقى فيها صامتة.",
+    },
+
+    # mechanical
+    "UI_T2B_WHY_MECHANICAL_MECHANISM_COMPLETENESS_Q1": {
+        "en": "So the physical steps the mechanism takes to do its job are recorded in order.",
+        "ar": "لكي تُسجَّل الخطوات المادية التي تؤديها الآلية لإنجاز وظيفتها بالترتيب.",
+    },
+    "UI_T2B_WHY_MECHANICAL_MECHANISM_COMPLETENESS_Q2": {
+        "en": "So the parts that move, connect, or carry force through the idea are recorded.",
+        "ar": "لكي تُسجَّل الأجزاء التي تتحرك أو تتصل أو تنقل القوة داخل الفكرة.",
+    },
+    "UI_T2B_WHY_MECHANICAL_MECHANISM_COMPLETENESS_Q3": {
+        "en": "So each mechanical part, and what it contributes, are recorded together.",
+        "ar": "لكي يُسجَّل كل جزء ميكانيكي وما يسهم به معًا.",
+    },
+    "UI_T2B_WHY_MECHANICAL_MECHANISM_COMPLETENESS_Q4": {
+        "en": "So the physical detail a builder would still need is recorded as open.",
+        "ar": "لكي تُسجَّل التفصيلة المادية التي سيظل يحتاجها من يبني الفكرة بوصفها مفتوحة.",
+    },
+    "UI_T2B_WHY_MECHANICAL_PHYSICAL_FEASIBILITY_Q1": {
+        "en": "So the physical principle the idea relies on is stated rather than assumed.",
+        "ar": "لكي يُذكر المبدأ الفيزيائي الذي تعتمد عليه الفكرة بدل افتراضه.",
+    },
+    "UI_T2B_WHY_MECHANICAL_PHYSICAL_FEASIBILITY_Q2": {
+        "en": "So the material and force limits the idea works within are recorded.",
+        "ar": "لكي تُسجَّل حدود المواد والقوى التي تعمل الفكرة ضمنها.",
+    },
+    "UI_T2B_WHY_MECHANICAL_BOUNDARY_AMBIGUITY_Q1": {
+        "en": "So what the idea does not do is stated, not left open.",
+        "ar": "لكي يُذكر ما لا تفعله الفكرة، لا أن يُترك مفتوحًا.",
+    },
+    "UI_T2B_WHY_MECHANICAL_BOUNDARY_AMBIGUITY_Q2": {
+        "en": "So at least one clear limit of the idea is recorded.",
+        "ar": "لكي يُسجَّل حدٌّ واضح واحد للفكرة على الأقل.",
+    },
+    "UI_T2B_WHY_MECHANICAL_BOUNDARY_AMBIGUITY_Q3": {
+        "en": "So an existing approach close to yours is recorded for comparison.",
+        "ar": "لكي يُسجَّل أسلوب قائم قريب من أسلوبك لأجل المقارنة.",
+    },
+    "UI_T2B_WHY_MECHANICAL_BOUNDARY_AMBIGUITY_Q4": {
+        "en": "So the concrete physical difference from that approach is recorded.",
+        "ar": "لكي يُسجَّل الفرق المادي الملموس عن ذلك الأسلوب.",
+    },
+
+    # T1-D — two truthful limitation disclosures. Each states what this version
+    # does and does not do, in the established style of UI_B_SESSION_026
+    # ("...are not currently provided"). Neither says the product does nothing,
+    # that validation is impossible in principle, or that higher evidence states
+    # are permanently unavailable; neither changes any label, status value,
+    # readiness computation or selection behaviour.
+    "UI_T1D_QUESTION_SET": {
+        "en": ("These questions come from a fixed, reviewed set. This version chooses "
+               "which one to show from what your project already records, using fixed "
+               "rules — it does not read the meaning of your answers to create new "
+               "follow-up questions."),
+        "ar": ("تأتي هذه الأسئلة من مجموعة ثابتة ومراجَعة. ويختار هذا الإصدار أيها "
+               "يعرض بناءً على ما سجّله مشروعك فعلًا، وفق قواعد ثابتة — وهو لا يقرأ "
+               "معنى إجاباتك لينشئ أسئلة متابعة جديدة."),
+    },
+    "UI_T1D_EVIDENCE_PROGRESSION": {
+        "en": ("This version records evidence status conservatively. The guided journey "
+               "here does not move your statements into the specialist-reviewed, "
+               "empirically demonstrated, or independently verified states, so those "
+               "labels should not be read as certification, completed validation, or "
+               "proof."),
+        "ar": ("يسجّل هذا الإصدار حالة الأدلة بتحفّظ. والرحلة الموجَّهة هنا لا تنقل "
+               "إفاداتك إلى حالات «مراجَع من مختص» أو «مُثبَت تجريبيًا» أو «مُتحقَّق "
+               "منه باستقلال»، لذا لا ينبغي قراءة تلك التسميات على أنها اعتماد أو "
+               "تحقق مكتمل أو إثبات."),
+    },
+}
+
+
+# T2-B' — the ONE projection from a committed question identity to its approved
+# display copy. Presentation-only: it stores no content of its own, is never
+# persisted, and is consulted only after the identity has been resolved from
+# canonical state and confirmed against the committed WS10 registry. A question
+# identity that is absent here renders NO explanation (fail closed).
+QUESTION_EXPLANATION_KEYS = {
+    "N-MC-1": "UI_T2B_WHY_N_MC_1",
+    "N-MC-2": "UI_T2B_WHY_N_MC_2",
+    "N-MC-3": "UI_T2B_WHY_N_MC_3",
+    "N-MC-4": "UI_T2B_WHY_N_MC_4",
+    "N-PF-1": "UI_T2B_WHY_N_PF_1",
+    "N-PF-2": "UI_T2B_WHY_N_PF_2",
+    "N-PF-3": "UI_T2B_WHY_N_PF_3",
+    "N-PF-4": "UI_T2B_WHY_N_PF_4",
+    "N-BA-1": "UI_T2B_WHY_N_BA_1",
+    "N-BA-2": "UI_T2B_WHY_N_BA_2",
+    "N-BA-3": "UI_T2B_WHY_N_BA_3",
+    "mechanical:MECHANISM_COMPLETENESS:Q1":
+        "UI_T2B_WHY_MECHANICAL_MECHANISM_COMPLETENESS_Q1",
+    "mechanical:MECHANISM_COMPLETENESS:Q2":
+        "UI_T2B_WHY_MECHANICAL_MECHANISM_COMPLETENESS_Q2",
+    "mechanical:MECHANISM_COMPLETENESS:Q3":
+        "UI_T2B_WHY_MECHANICAL_MECHANISM_COMPLETENESS_Q3",
+    "mechanical:MECHANISM_COMPLETENESS:Q4":
+        "UI_T2B_WHY_MECHANICAL_MECHANISM_COMPLETENESS_Q4",
+    "mechanical:PHYSICAL_FEASIBILITY:Q1":
+        "UI_T2B_WHY_MECHANICAL_PHYSICAL_FEASIBILITY_Q1",
+    "mechanical:PHYSICAL_FEASIBILITY:Q2":
+        "UI_T2B_WHY_MECHANICAL_PHYSICAL_FEASIBILITY_Q2",
+    "mechanical:BOUNDARY_AMBIGUITY:Q1":
+        "UI_T2B_WHY_MECHANICAL_BOUNDARY_AMBIGUITY_Q1",
+    "mechanical:BOUNDARY_AMBIGUITY:Q2":
+        "UI_T2B_WHY_MECHANICAL_BOUNDARY_AMBIGUITY_Q2",
+    "mechanical:BOUNDARY_AMBIGUITY:Q3":
+        "UI_T2B_WHY_MECHANICAL_BOUNDARY_AMBIGUITY_Q3",
+    "mechanical:BOUNDARY_AMBIGUITY:Q4":
+        "UI_T2B_WHY_MECHANICAL_BOUNDARY_AMBIGUITY_Q4",
 }
 
 
