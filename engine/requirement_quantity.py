@@ -1,36 +1,35 @@
-"""T2-A — Quantified Requirements, Slice 1 (bounded).
+"""T2-A — Quantified Requirements, Slice 1 (bounded; frozen Slice-1 data contract).
 
 File path: ``engine/requirement_quantity.py``
-Purpose: the ONE pure, deterministic owner of the requirement-quantity
-vocabulary, the canonical stored value form, the fail-closed history
-validation, and the read-only derivation of the CURRENTLY ACTIVE quantified
-requirements for an ``IdeaState``. Consumed by the durable store (validation
-on load), the deliverable assembler (presentation-ready rows) and the web
-layer (eligible anchors / active chain lookup).
+Purpose: the ONE pure, deterministic owner of the requirement-quantity data
+contract, the closed ``quantity_kind`` vocabulary, the bounded ``value_text``
+policy, the fail-closed history validation, the per-anchor chain derivation
+(active row / replaced prior values / withdrawn anchor) and the presentation
+rows for the deliverable. Consumed by the durable store (validation INSIDE the
+write transaction and on load), the web layer (propose / confirm glue and the
+shared deliverable seam) and the tests.
 
 Product boundary (Owner-fixed reduced Slice 1):
   * one ACTIVE quantity chain per eligible requirement anchor — an anchor is
-    the ``rec_N`` id of an ACTIVE accepted ``answered`` record that the
+    the ``rec_N`` id of an ACTIVE accepted ``answered`` ledger record that the
     Requirement Landscape currently derives as an ``assertion`` requirement;
   * a superseded anchor (an answer withdrawn through the governed correction
-    path) makes its chain INACTIVE deterministically — the rows are retained
-    durably and are never deleted, they simply attach to nothing current;
-  * correction/supersession WITHIN a chain reuses the same forward-edge idiom
-    as the ledger (the NEW row names the row it supersedes; prior rows are
-    never rewritten);
-  * canonical STORED values (decimal text, bound token, unit code) are kept
-    separate from localized PRESENTATION (the ``web.ui_text`` catalogue owns
-    every display label);
-  * validation here is STRUCTURAL only. Nothing in this module (or anywhere in
-    Slice 1) claims feasibility, validation, safety, compliance or specialist
-    review of a recorded quantity.
+    path) makes its chain INACTIVE deterministically; rows are retained
+    durably and are surfaced as a withdrawn-anchor chain, never deleted;
+  * correction/supersession WITHIN a chain reuses the ledger's forward-edge
+    idiom (the NEW row names the row it supersedes; prior rows are never
+    rewritten);
+  * ``value_text`` is inventor text kept presentation-neutral: it is stored
+    as normalized, never localized, never logged, never placed in an
+    exception; ``quantity_kind`` is a closed token localized only at display;
+  * validation here is STRUCTURAL only. Nothing in Slice 1 claims feasibility,
+    attainability, validation, safety, compliance or specialist review.
 
 Provider-free, network-free, standard library only. Never mutates its inputs.
 """
 import re
-from dataclasses import dataclass, replace
-from decimal import Decimal, InvalidOperation
-from typing import Optional, Tuple
+from dataclasses import dataclass
+from typing import Dict, Optional, Tuple
 
 from engine.idea_state import DISPOSITION_ANSWERED
 from engine.requirement_landscape import derive_requirement_landscape
@@ -38,222 +37,223 @@ from engine.requirement_landscape import derive_requirement_landscape
 
 class QuantityHistoryError(ValueError):
     """A durably stored requirement-quantity history is structurally invalid
-    (corruption). Raised by ``validate_quantity_history`` and propagated by
-    the store's load; every outward consumer fails CLOSED on it (no partial
-    history is ever served). The message names structural facts only —
-    never a value, identifier, path, SQL detail or user content."""
+    (corruption). Raised by ``validate_quantity_history`` — inside the store's
+    write transaction before any append, and on every load — and every
+    outward consumer fails CLOSED on it (no partial history is ever served).
+    The message names structural facts only: never a value, identifier, path,
+    SQL detail or user content."""
 
 
 class QuantityValueError(ValueError):
-    """A submitted quantity value / bound / unit is not acceptable."""
+    """A proposed quantity kind / value text is not acceptable."""
 
 
-# --- Frozen canonical vocabularies (stored tokens; display lives in ui_text) ----
-QUANTITY_BOUND_TARGET = "target"
-QUANTITY_BOUND_MINIMUM = "minimum"
-QUANTITY_BOUND_MAXIMUM = "maximum"
-QUANTITY_BOUNDS = (
-    QUANTITY_BOUND_TARGET, QUANTITY_BOUND_MINIMUM, QUANTITY_BOUND_MAXIMUM,
+# --- Frozen Slice-1 limits ---------------------------------------------------------
+# Hard per-project cap on durable quantity rows (ALL rows, active and replaced).
+# Enforced by the store INSIDE its serialized write transaction.
+MAX_REQUIREMENT_QUANTITIES_PER_PROJECT = 200
+
+# ==============================================================================
+# PROVISIONAL BLOCK — pending the exact wording of the accepted final design
+# delta (closed ``quantity_kind`` vocabulary and bounded ``value_text`` policy).
+# The structure around this block (contract, store, routes, presentation,
+# tests) does not depend on the specific tokens; only this block is swapped
+# when the accepted values are supplied. Tokens are ASCII identifiers so each
+# can key a localization catalogue entry (``UI_T2A_KIND_<token>``).
+# ==============================================================================
+QUANTITY_KINDS = (
+    "target",       # the value the inventor aims for
+    "minimum",      # a lower limit
+    "maximum",      # an upper limit
+    "range",        # an interval (both limits in the text)
+    "tolerance",    # an allowed deviation
 )
+# Bounded, presentation-neutral value text: 1..MAX chars after normalization
+# (surrounding whitespace stripped, internal runs of spaces/tabs collapsed to
+# one space); no line breaks and no other control characters. Not parsed, not
+# localized, not interpreted — kept exactly as the inventor stated it.
+MAX_VALUE_TEXT_CHARS = 80
+# ==============================================================================
 
-# Closed unit vocabulary. Codes are ASCII identifiers so they can key a
-# localization catalogue entry (``UI_T2A_UNIT_<code>``). No free-text unit is
-# ever accepted or stored.
-QUANTITY_UNITS = (
-    "mm", "cm", "m",
-    "g", "kg",
-    "s", "min", "h",
-    "V", "A", "W", "Wh", "mAh", "Hz", "ohm",
-    "degC",
-    "percent",
-    "count",
-)
-
-_BOUND_SET = frozenset(QUANTITY_BOUNDS)
-_UNIT_SET = frozenset(QUANTITY_UNITS)
-
-# Bounded numeric grammar: optional sign, up to 12 integer digits, up to 6
-# fraction digits, ASCII digits only, no exponent, no thousands separator.
-_INPUT_VALUE_RE = re.compile(r"^-?[0-9]{1,12}(\.[0-9]{1,6})?$")
-_CANONICAL_VALUE_RE = re.compile(r"^-?(0|[1-9][0-9]{0,11})(\.[0-9]{0,5}[1-9])?$")
+_KIND_SET = frozenset(QUANTITY_KINDS)
 _QUANTITY_ID_RE = re.compile(r"^qty-[0-9a-f]{32}$")
 _ANCHOR_ID_RE = re.compile(r"^rec_[1-9][0-9]*$")
-MAX_VALUE_INPUT_CHARS = 32
+_EVENT_KEY_RE = re.compile(r"^[0-9a-f]{32}$")
+_WS_RUN_RE = re.compile(r"\s+")
+# Every C0/C1 control except TAB (a tab is whitespace and collapses to one
+# space); the Unicode line/paragraph separators, NBSP and zero-width space
+# are rejected too.
+_CONTROL_RE = re.compile("[\\x00-\\x08\\x0a-\\x1f\\x7f-\\x9f\\u00a0\\u200b\\u2028\\u2029]")
 
 
 @dataclass(frozen=True)
 class RequirementQuantity:
-    """One durable requirement-quantity row (frozen; never mutated in place).
-
-    ``supersedes`` is the forward edge carried by the NEW row (the row it
-    corrects); ``superseded_by`` is the inverse edge, re-derived on load from
-    the forward edges exactly like ``record_contract.reconcile_supersession_edges``
-    — it is never stored."""
+    """One durable requirement-quantity row — EXACTLY the frozen Slice-1
+    data contract. Frozen; never mutated in place; the inverse edge and every
+    chain view are DERIVED (``quantity_chains``), never stored."""
+    project_id: str
+    quantity_seq: int
     quantity_id: str
     anchor_record_id: str
-    bound: str
-    value: str            # canonical decimal text (see canonical_value)
-    unit: str             # one of QUANTITY_UNITS
-    supersedes: Optional[str] = None
-    superseded_by: Optional[str] = None
+    requirement_id: str
+    quantity_kind: str
+    value_text: str
+    supersedes_quantity_id: Optional[str]
+    event_key: str
 
 
 @dataclass(frozen=True)
-class QuantifiedRequirement:
-    """Read-only derivation row: a CURRENT requirement (statement + anchor)
-    together with its ACTIVE quantity. Presentation-ready, JSON-safe."""
+class QuantityChain:
+    """Derived per-anchor chain view: the ACTIVE row, the replaced prior rows
+    (oldest first) and whether the answer anchor is still active."""
     anchor_record_id: str
-    statement: str
-    quantity: RequirementQuantity
+    requirement_id: str
+    active: RequirementQuantity
+    replaced: Tuple[RequirementQuantity, ...]
+    anchor_active: bool
 
 
-# --- Canonical value ------------------------------------------------------------
-def canonical_value(text):
-    """Canonicalize a submitted numeric string, or raise ``QuantityValueError``.
+# --- Kind / value policy ---------------------------------------------------------
+def validate_quantity_kind(kind):
+    """Return ``kind`` iff it is a closed-vocabulary token; else raise."""
+    if kind not in _KIND_SET:
+        raise QuantityValueError("unknown quantity kind")
+    return kind
 
-    Accepts the bounded ASCII grammar only (see ``_INPUT_VALUE_RE``) and
-    returns the ONE canonical decimal text: no exponent, no leading zeros,
-    no trailing fraction zeros, no negative zero, no whitespace. Deterministic
-    and idempotent: ``canonical_value(canonical_value(x)) == canonical_value(x)``."""
+
+def normalize_value_text(text):
+    """Apply the bounded value_text policy and return the stored form, or
+    raise ``QuantityValueError``. Deterministic and idempotent. The text is
+    never interpreted, localized, logged or placed in the exception."""
     if not isinstance(text, str):
-        raise QuantityValueError("value must be text")
-    stripped = text.strip()
-    if not stripped or len(stripped) > MAX_VALUE_INPUT_CHARS:
-        raise QuantityValueError("value is empty or too long")
-    if not _INPUT_VALUE_RE.match(stripped):
-        raise QuantityValueError("value is not a plain decimal number")
-    try:
-        number = Decimal(stripped)
-    except InvalidOperation as exc:      # unreachable after the regex; defensive
-        raise QuantityValueError("value is not a plain decimal number") from exc
-    if number == 0:
-        return "0"
-    normalized = number.normalize()
-    out = format(normalized, "f")
-    # ``normalize`` can produce an exponent form for e.g. 1000 -> 1E+3;
-    # ``format(..., "f")`` expands it back to plain digits.
-    if not _CANONICAL_VALUE_RE.match(out):     # defensive: never store a non-canonical
-        raise QuantityValueError("value could not be canonicalized")
-    return out
+        raise QuantityValueError("value text must be text")
+    if _CONTROL_RE.search(text):
+        raise QuantityValueError("value text contains control characters")
+    normalized = _WS_RUN_RE.sub(" ", text).strip()
+    if not normalized:
+        raise QuantityValueError("value text is empty")
+    if len(normalized) > MAX_VALUE_TEXT_CHARS:
+        raise QuantityValueError("value text is too long")
+    return normalized
 
 
-def is_canonical_value(text):
-    """True iff ``text`` is EXACTLY a canonical stored value."""
-    if not isinstance(text, str) or not _CANONICAL_VALUE_RE.match(text):
+def is_stored_value_text(text):
+    """True iff ``text`` is EXACTLY a stored (normalized) value text."""
+    if not isinstance(text, str):
         return False
     try:
-        return canonical_value(text) == text
+        return normalize_value_text(text) == text
     except QuantityValueError:
         return False
 
 
-def validate_bound(bound):
-    if bound not in _BOUND_SET:
-        raise QuantityValueError("unknown bound")
-    return bound
+# --- History validation (fail closed) -------------------------------------------
+def validate_quantity_history(rows, project_id=None):
+    """Validate a project's durable quantity rows (in stored ``quantity_seq``
+    order) and return the immutable validated history as a tuple of
+    ``RequirementQuantity``.
 
-
-def validate_unit(unit):
-    if unit not in _UNIT_SET:
-        raise QuantityValueError("unknown unit")
-    return unit
-
-
-# --- History validation (fail closed) ------------------------------------------
-def validate_quantity_history(rows):
-    """Validate a project's durable quantity rows (in stored ``seq`` order) and
-    return the immutable validated history as a tuple of
-    ``RequirementQuantity`` with inverse edges derived.
-
-    ``rows`` is an iterable of mappings with the keys ``quantity_id``,
-    ``anchor_record_id``, ``bound``, ``value``, ``unit`` and ``supersedes``.
+    ``rows`` is an iterable of mappings carrying the nine contract fields.
     ZERO rows are VALID (the empty tuple). Any structural defect raises
     ``QuantityHistoryError`` with NOTHING returned (no partial history):
 
-      * malformed / duplicate quantity id; malformed anchor id;
-      * unknown bound or unit; a non-canonical stored value;
+      * a row of another project (when ``project_id`` is given); a
+        non-ascending or duplicate sequence; a malformed / duplicate
+        quantity id, event key or anchor id; an empty requirement id;
+      * an unknown kind; a value text that is not in stored form;
       * a forward edge to an unknown or LATER row, to a row of a DIFFERENT
-        anchor, or to a row that is already superseded (one chain, one
-        successor);
-      * more than one ACTIVE row for the same anchor.
+        anchor, or to a row already superseded (one chain, one successor);
+        a row that changes the requirement id of its chain;
+      * more than one ACTIVE row for the same anchor;
+      * more rows than ``MAX_REQUIREMENT_QUANTITIES_PER_PROJECT``.
 
-    Never mutates its input; derives (never stores) ``superseded_by``."""
+    Never mutates its input."""
     validated = []
     by_id = {}
-    superseded_by = {}
+    superseded = set()
+    event_keys = set()
+    last_seq = None
     for row in rows:
         try:
-            qid = row["quantity_id"]
-            anchor = row["anchor_record_id"]
-            bound = row["bound"]
-            value = row["value"]
-            unit = row["unit"]
-            supersedes = row["supersedes"]
+            record = RequirementQuantity(
+                project_id=row["project_id"], quantity_seq=row["quantity_seq"],
+                quantity_id=row["quantity_id"],
+                anchor_record_id=row["anchor_record_id"],
+                requirement_id=row["requirement_id"],
+                quantity_kind=row["quantity_kind"], value_text=row["value_text"],
+                supersedes_quantity_id=row["supersedes_quantity_id"],
+                event_key=row["event_key"])
         except (KeyError, TypeError) as exc:
             raise QuantityHistoryError("quantity row is missing a field") from exc
-        if not isinstance(qid, str) or not _QUANTITY_ID_RE.match(qid):
+        if project_id is not None and record.project_id != project_id:
+            raise QuantityHistoryError("row belongs to another project")
+        if not isinstance(record.project_id, str) or not record.project_id:
+            raise QuantityHistoryError("malformed project id")
+        if (not isinstance(record.quantity_seq, int) or isinstance(record.quantity_seq, bool)
+                or record.quantity_seq < 0
+                or (last_seq is not None and record.quantity_seq <= last_seq)):
+            raise QuantityHistoryError("sequence is not strictly ascending")
+        last_seq = record.quantity_seq
+        if not isinstance(record.quantity_id, str) or not _QUANTITY_ID_RE.match(record.quantity_id):
             raise QuantityHistoryError("malformed quantity id")
-        if qid in by_id:
+        if record.quantity_id in by_id:
             raise QuantityHistoryError("duplicate quantity id")
-        if not isinstance(anchor, str) or not _ANCHOR_ID_RE.match(anchor):
+        if not isinstance(record.anchor_record_id, str) or not _ANCHOR_ID_RE.match(record.anchor_record_id):
             raise QuantityHistoryError("malformed anchor record id")
-        if bound not in _BOUND_SET:
-            raise QuantityHistoryError("unknown bound token")
-        if unit not in _UNIT_SET:
-            raise QuantityHistoryError("unknown unit code")
-        if not is_canonical_value(value):
-            raise QuantityHistoryError("stored value is not canonical")
-        if supersedes is not None:
-            if not isinstance(supersedes, str) or supersedes not in by_id:
-                raise QuantityHistoryError(
-                    "supersession edge to an unknown or later row")
-            if supersedes == qid:
-                raise QuantityHistoryError("a row cannot supersede itself")
-            prior = by_id[supersedes]
-            if prior.anchor_record_id != anchor:
+        if not isinstance(record.requirement_id, str) or not record.requirement_id.strip():
+            raise QuantityHistoryError("missing requirement id")
+        if record.quantity_kind not in _KIND_SET:
+            raise QuantityHistoryError("unknown quantity kind")
+        if not is_stored_value_text(record.value_text):
+            raise QuantityHistoryError("value text is not in stored form")
+        if not isinstance(record.event_key, str) or not _EVENT_KEY_RE.match(record.event_key):
+            raise QuantityHistoryError("malformed event key")
+        if record.event_key in event_keys:
+            raise QuantityHistoryError("duplicate event key")
+        event_keys.add(record.event_key)
+        target = record.supersedes_quantity_id
+        if target is not None:
+            if not isinstance(target, str) or target not in by_id:
+                raise QuantityHistoryError("supersession edge to an unknown or later row")
+            prior = by_id[target]
+            if prior.anchor_record_id != record.anchor_record_id:
                 raise QuantityHistoryError("cross-anchor supersession")
-            if supersedes in superseded_by:
+            if prior.requirement_id != record.requirement_id:
+                raise QuantityHistoryError("requirement id changes within a chain")
+            if target in superseded:
                 raise QuantityHistoryError("row superseded more than once")
-            superseded_by[supersedes] = qid
-        record = RequirementQuantity(
-            quantity_id=qid, anchor_record_id=anchor, bound=bound,
-            value=value, unit=unit, supersedes=supersedes)
-        by_id[qid] = record
+            superseded.add(target)
+        by_id[record.quantity_id] = record
         validated.append(record)
-    # Derive inverse edges (never stored) and enforce one ACTIVE row per anchor.
+        if len(validated) > MAX_REQUIREMENT_QUANTITIES_PER_PROJECT:
+            raise QuantityHistoryError("history exceeds the per-project cap")
     active_anchors = set()
-    out = []
     for record in validated:
-        successor = superseded_by.get(record.quantity_id)
-        if successor is None:
+        if record.quantity_id not in superseded:
             if record.anchor_record_id in active_anchors:
-                raise QuantityHistoryError(
-                    "more than one active quantity for one anchor")
+                raise QuantityHistoryError("more than one active quantity for one anchor")
             active_anchors.add(record.anchor_record_id)
-        out.append(replace(record, superseded_by=successor))
-    return tuple(out)
+    return tuple(validated)
 
 
-def active_quantities(history):
-    """``{anchor_record_id: RequirementQuantity}`` for the ACTIVE rows (those
-    with no successor) of an already-validated history. Deterministic."""
-    result = {}
-    for record in history:
-        if record.superseded_by is None:
-            result[record.anchor_record_id] = record
-    return result
+def superseded_ids(history):
+    """The set of quantity ids that a later row supersedes (derived)."""
+    return {r.supersedes_quantity_id for r in history
+            if r.supersedes_quantity_id is not None}
 
 
-# --- Anchor eligibility and read-only derivation -------------------------------
+def active_quantities(history) -> Dict[str, RequirementQuantity]:
+    """``{anchor_record_id: active row}`` for an already-validated history."""
+    replaced = superseded_ids(history)
+    return {r.anchor_record_id: r for r in history if r.quantity_id not in replaced}
+
+
+# --- Anchor eligibility and chain derivation --------------------------------------
 def eligible_anchors(state):
-    """Return the tuple of ``(requirement, record)`` pairs for every eligible
-    requirement anchor of ``state``, in the landscape's stable order.
-
-    Eligible == the Requirement Landscape currently derives an ``assertion``
+    """Tuple of ``(requirement, record)`` for every ELIGIBLE requirement
+    anchor of ``state`` in the landscape's stable order: an ``assertion``
     requirement whose primary anchor is an ACTIVE (not superseded) accepted
-    ``answered`` ledger record with non-empty content. A withdrawn answer is
-    never eligible, so a chain attached to it becomes inactive the moment
-    the correction is durable. Pure and read-only."""
+    ``answered`` ledger record with non-empty content. Pure and read-only."""
     by_id = {r.record_id: r for r in getattr(state, "assertions", []) or []}
     out = []
     for req in derive_requirement_landscape(state).requirements:
@@ -273,68 +273,97 @@ def eligible_anchors(state):
     return tuple(out)
 
 
-# --- Presentation rows for the deliverable (additive; nested; None at zero) -----
-# The canonical deliverable assembler (`engine/deliverable_assembler.py`) is
-# FROZEN by the merged G-3 A-20/A-21 pin (tests/test_g3_decision_value.py), so
-# this candidate does not modify it. The additive nested key is composed at the
-# web deliverable seam instead — the same precedent the W2-A decision-capture
-# view already follows on that surface — from this pure builder. It returns
-# None whenever no CURRENT quantified requirement exists, so a project with
-# zero quantities adds NO package key.
-QUANTIFIED_REQUIREMENTS_META_KEY = "quantified_requirements"
-QUANTIFIED_REQUIREMENTS_TITLE = "Quantities you recorded"
-QUANTIFIED_REQUIREMENTS_NOTE = (
-    "These values were entered by the inventor for the listed requirements. "
-    "They are recorded as stated and have not been checked, validated, or "
-    "assessed for feasibility, safety, or compliance.")
-QUANTITY_PROVENANCE_PUBLIC = "Recorded by the inventor (not yet verified)"
-
-
-def quantified_requirements_meta(state):
-    """Presentation-ready rows for the CURRENT quantified requirements of
-    ``state`` (JSON-safe dict), or ``None`` when there are none — the caller
-    then adds no key. Canonical STORED tokens only (bound token / decimal text
-    / unit code); localized display labels are resolved by the template
-    through the ui_text catalogue. No internal identifier is exported and no
-    feasibility / validation / safety / compliance claim is made."""
-    rows = derive_quantified_requirements(state)
-    if not rows:
-        return None
-    return {
-        "title": QUANTIFIED_REQUIREMENTS_TITLE,
-        "note": QUANTIFIED_REQUIREMENTS_NOTE,
-        "total": len(rows),
-        "items": [
-            {
-                "statement": row.statement,
-                "bound": row.quantity.bound,
-                "value": row.quantity.value,
-                "unit": row.quantity.unit,
-                "provenance": QUANTITY_PROVENANCE_PUBLIC,
-            }
-            for row in rows
-        ],
-    }
-
-
-def derive_quantified_requirements(state) -> Tuple[QuantifiedRequirement, ...]:
-    """The CURRENT quantified requirements of ``state``: every eligible anchor
-    that has an ACTIVE quantity in ``state.requirement_quantities`` (an
-    already-validated history attached by the web/store layer; absent or
-    empty means no quantities). Rows whose anchor is no longer eligible are
-    deliberately omitted — that is the deterministic "superseded anchor is
-    inactive" rule. Pure, read-only, stable order (landscape order)."""
-    history = getattr(state, "requirement_quantities", None) or ()
+def quantity_chains(state) -> Tuple[QuantityChain, ...]:
+    """Derive one ``QuantityChain`` per anchor from the validated history
+    attached at ``state.requirement_quantities`` (absent or empty means no
+    chains). Order: chains whose anchor is still eligible first, in landscape
+    order; then withdrawn-anchor chains in first-seen stored order. Pure."""
+    history = tuple(getattr(state, "requirement_quantities", None) or ())
     if not history:
         return ()
-    active = active_quantities(history)
-    rows = []
-    for req, record in eligible_anchors(state):
-        quantity = active.get(record.record_id)
-        if quantity is None:
+    replaced_ids = superseded_ids(history)
+    per_anchor = {}
+    order = []
+    for row in history:
+        if row.anchor_record_id not in per_anchor:
+            per_anchor[row.anchor_record_id] = []
+            order.append(row.anchor_record_id)
+        per_anchor[row.anchor_record_id].append(row)
+    eligible = [record.record_id for _req, record in eligible_anchors(state)]
+    ordered = [a for a in eligible if a in per_anchor] + \
+        [a for a in order if a not in eligible]
+    chains = []
+    for anchor in ordered:
+        rows = per_anchor[anchor]
+        active = [r for r in rows if r.quantity_id not in replaced_ids]
+        if len(active) != 1:      # unreachable for a validated history; defensive
             continue
-        rows.append(QuantifiedRequirement(
-            anchor_record_id=record.record_id,
-            statement=req.statement,
-            quantity=quantity))
-    return tuple(rows)
+        chains.append(QuantityChain(
+            anchor_record_id=anchor, requirement_id=active[0].requirement_id,
+            active=active[0],
+            replaced=tuple(r for r in rows if r.quantity_id in replaced_ids),
+            anchor_active=anchor in eligible))
+    return tuple(chains)
+
+
+# --- Presentation rows for the deliverable (additive; nested; absent at zero) ----
+# The canonical deliverable assembler (`engine/deliverable_assembler.py`) is
+# FROZEN by the merged G-3 A-20/A-21 pin, so the additive nested key
+# ``_session_meta["requirement_quantities"]`` is composed at the shared web
+# deliverable seam from this pure builder, which returns None whenever no
+# quantity row exists (zero rows add NO package key).
+REQUIREMENT_QUANTITIES_META_KEY = "requirement_quantities"
+REQUIREMENT_QUANTITIES_TITLE = "Quantities you recorded"
+REQUIREMENT_QUANTITIES_NOTE = (
+    "These values were entered by the inventor for the listed requirements. "
+    "They are recorded as stated and have not been checked, validated, or "
+    "assessed for feasibility, attainability, safety, or compliance.")
+QUANTITY_PROVENANCE_PUBLIC = "Recorded by the inventor (not yet verified)"
+QUANTITY_STATUS_CURRENT = "current"
+QUANTITY_STATUS_WITHDRAWN_ANCHOR = "anchor_withdrawn"
+
+
+def _statement_for(state, chain):
+    """The requirement statement for a chain: the current landscape statement
+    while the anchor is active; otherwise the retained withdrawn answer text
+    (never an identifier)."""
+    for req, record in eligible_anchors(state):
+        if record.record_id == chain.anchor_record_id:
+            return req.statement
+    for record in getattr(state, "assertions", []) or []:
+        if record.record_id == chain.anchor_record_id:
+            return (getattr(record, "content", "") or "").strip()
+    return ""
+
+
+def requirement_quantities_meta(state):
+    """Presentation-ready rows for every quantity chain of ``state`` (JSON-
+    safe dict), or ``None`` when no row exists. Each row carries the current
+    value (kind token + value text), the replaced prior values (oldest first)
+    and whether the answer anchor is still active. Canonical tokens only —
+    display labels are resolved by the template; no internal identifier and
+    no raw internal status word beyond the two fixed status tokens."""
+    chains = quantity_chains(state)
+    if not chains:
+        return None
+    items = []
+    for chain in chains:
+        items.append({
+            "statement": _statement_for(state, chain),
+            "status": (QUANTITY_STATUS_CURRENT if chain.anchor_active
+                       else QUANTITY_STATUS_WITHDRAWN_ANCHOR),
+            "anchor_active": chain.anchor_active,
+            "kind": chain.active.quantity_kind,
+            "value_text": chain.active.value_text,
+            "provenance": QUANTITY_PROVENANCE_PUBLIC,
+            "replaced": [{"kind": r.quantity_kind, "value_text": r.value_text}
+                         for r in chain.replaced],
+        })
+    return {
+        "title": REQUIREMENT_QUANTITIES_TITLE,
+        "note": REQUIREMENT_QUANTITIES_NOTE,
+        "total": len(items),
+        "active_total": sum(1 for i in items if i["anchor_active"]),
+        "withdrawn_total": sum(1 for i in items if not i["anchor_active"]),
+        "items": items,
+    }

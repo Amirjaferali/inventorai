@@ -316,19 +316,30 @@ td,th{padding:6px 8px;border-bottom:1px solid #e2e6ea;text-align:left}
   <div class="field-value" style="white-space:pre-line;margin-top:8px">{{ rsl13.section_13_note }}</div>
   {% endif %}
   {# T2-A Quantified Requirements Slice 1: presentation-only render of the
-     additive _session_meta.quantified_requirements rows, present ONLY when at
-     least one current quantified requirement exists — a project with zero
-     quantities renders this section byte-identically to before (no block, no
-     heading, in HTML and in the PDF source alike). Canonical tokens resolve to
-     display labels through t(); statements render verbatim. Read-only; no
-     form, no route, no claim beyond "recorded by the inventor". #}
-  {% set qr = package["_session_meta"].get("quantified_requirements") %}
+     additive _session_meta.requirement_quantities rows, present ONLY when at
+     least one quantity row exists — a project with zero rows renders this
+     section byte-identically to before (no block, no heading, in HTML and in
+     the PDF source alike). Each row: the current value (inventor-recorded,
+     unvalidated), the replaced prior values under the localized "replaced"
+     presentation, and the withdrawn-anchor identification. Canonical tokens
+     resolve to display labels through t(); inventor text renders verbatim.
+     Read-only: no form, no token, no internal identifier, no raw status. #}
+  {% set qr = package["_session_meta"].get("requirement_quantities") %}
   {% if qr and qr['items'] %}
-  <h3 id="t2a-quantified-requirements">{{ t('UI_T2A_DELIV_HEADING') }}</h3>
+  <h3 id="t2a-requirement-quantities">{{ t('UI_T2A_DELIV_HEADING') }}</h3>
   <p class="group-lede" style="margin-top:0">{{ t('UI_T2A_DELIV_NOTE') }}</p>
   {% for q in qr['items'] %}
   <div class="field-label t2a-statement" dir="auto">{{ q.statement }}</div>
-  <div class="field-value t2a-quantity">{{ t('UI_T2A_BOUND_' ~ q.bound) }} <bdi class="t2a-value">{{ q.value }}</bdi> {{ t('UI_T2A_UNIT_' ~ q.unit) }} &nbsp;&middot;&nbsp; {{ t('UI_T2A_DELIV_PROVENANCE') }}</div>
+  {% if q.anchor_active %}
+  <div class="field-value t2a-quantity">{{ t('UI_T2A_CURRENT') }} {{ t('UI_T2A_KIND_' ~ q.kind) }} <bdi class="t2a-value" dir="auto">{{ q.value_text }}</bdi> &nbsp;&middot;&nbsp; {{ t('UI_T2A_DELIV_PROVENANCE') }}</div>
+  {% else %}
+  <div class="field-value t2a-withdrawn"><strong>{{ t('UI_T2A_WITHDRAWN_LABEL') }}</strong> {{ t('UI_T2A_KIND_' ~ q.kind) }} <bdi class="t2a-withdrawn-value" dir="auto">{{ q.value_text }}</bdi></div>
+  <div class="ss-meta">{{ t('UI_T2A_WITHDRAWN_NOTE') }}</div>
+  {% endif %}
+  {% if q.replaced %}
+  <div class="field-value t2a-replaced" style="color:#667"><strong>{{ t('UI_T2A_REPLACED_LABEL') }}</strong>
+    {% for r in q.replaced %}{{ t('UI_T2A_KIND_' ~ r.kind) }} <bdi class="t2a-replaced-value" dir="auto">{{ r.value_text }}</bdi>{% if not loop.last %}; {% endif %}{% endfor %}</div>
+  {% endif %}
   {% endfor %}
   {% endif %}
   <p class="report-return"><a href="#report-contents">{{ t('UI_REPORT_BACK_CONTENTS') }}</a></p>
