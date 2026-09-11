@@ -240,6 +240,13 @@ body{overflow-wrap:anywhere}
     <p class="question" style="margin:6px 0 0 0"
      lang="{{ reconstructed_review.next_question_lang }}"
      dir="{{ reconstructed_review.next_question_dir }}">{{ reconstructed_review.next_question_display }}</p>
+    {# T2-B' cold parity: the SAME approved explanation the live and resumed
+       surfaces show for this governed identity, resolved forward from the
+       reconstructed canonical state and verified against the canonical English
+       above. Absent whenever nothing eligible resolves. #}
+    {% if reconstructed_review.next_question_explanation %}
+    <p class="question-explanation" style="font-size:12px;color:#5a6b7a;margin:6px 0 0 0"><strong style="font-weight:600">{{ t('UI_T1D_WHY_HEADING') }}</strong> {{ reconstructed_review.next_question_explanation }}</p>
+    {% endif %}
   </div>
   {% endif %}
   <div style="font-size:13px;margin-top:8px">{{ t('UI_B_SESSION_045') }} <span id="recon-answer-count">{{ reconstructed_review.answers_count }}</span></div>

@@ -85,10 +85,38 @@ states are permanently unavailable.
 W2-B/W2-C precedence, gap progression, scoring, readiness, evidence status, validation
 label, status value or persisted datum changes. The new display data never enters the
 ledger, session reconstruction data, the canonical package, `_session_meta`, an export,
-the API, the reference adapter, backup semantics or PDF metadata. Live and resumed
-(reconstructed) sessions render the same explanation for the same canonical state and
-UI language; the cold read-only view, which carries no reconstructed domain by
-pre-existing design, fails closed to no explanation with its question unchanged.
+the API, the reference adapter, backup semantics or PDF metadata. The live writable,
+cold read-only reconstructed-review and resumed writable surfaces all render the SAME
+explanation for the same canonical project, governed identity and UI language, in
+English and in Arabic.
+
+**Bounded cold-read parity correction (independent review result `C — FAIL`,
+Owner-authorized final narrow repair on top of `7c15a28d…`).** The accepted candidate
+showed the governed next question on the cold read-only reconstructed-review surface
+without its matching explanation. The corrected surface resolves it FORWARD from the
+already available Level-1 reconstructed canonical `_session.state` — reconstructed
+domain, selected reconstructed gap, that gap's current iteration, reconstructed path —
+through the same RVR-7 identity path, under the same W2-B/W2-C/RVR-7 rules, and
+verifies the resolved identity's own committed English against `_recon.next_question`
+(which remains the unmodified canonical English reconstruction evidence) BEFORE the
+existing explanation projection is consulted. Only the resulting display string is
+carried, as the presentation-only `reconstructed_review["next_question_explanation"]`,
+and it renders beside `next_question_display` under the existing localized "Why this
+question?" heading and existing session presentation style. No reverse text matching,
+no identity inferred from a gap label, no copy of `_session.state` into `SESSION_STORE`,
+no mutation of reconstructed canonical state, no persistence of the explanation, no
+change to `_recon.next_question` and no weakening of fail-closed behaviour: a missing,
+special, generic, intake, stall-reframe, exhausted, unknown, unsupported or mismatched
+identity, and a completed project with no eligible committed Path-N next question, all
+render no explanation. The cold page is NOT made writable and the explicit POST resume
+requirement is unchanged. Explanation copy, T1-D disclosure copy, the 21 identity
+mappings, question selection, W2-B/W2-C behaviour, progression, scoring, readiness and
+T2-A behaviour are all unchanged; the correction is purely additive in `web/app.py`,
+so `_rvr7_reconstructed_display` and every other existing RVR-7 helper stay
+byte-identical and the structural guardrail pinning the banner's forward derivation
+inside that function is untouched. Corrective boundary: `web/app.py`,
+`web/templates/session.html`, `tests/test_t1d_t2b_question_explainability_and_disclosure.py`
+and this file only.
 
 **Exact file boundary:** production `engine/intent_serving.py` (one read-only
 registry-confirmation accessor), `web/app.py`, `web/ui_text.py`,

@@ -3241,6 +3241,47 @@ def _rvr7_reconstructed_display(recon_state, english, maturity_level, lang):
         return english, "en", "ltr"
 
 
+def _rvr7_reconstructed_explanation(recon_state, english, maturity_level):
+    """T2-B' on the COLD read-only reconstructed-review surface, or None.
+
+    The cold surface shows the governed next question, so it must show the same
+    approved "Why this question?" line the live and resumed surfaces show for
+    that same governed identity — never a different one, and never one it cannot
+    prove belongs to the question on the page.
+
+    Resolution is forward and verified: the identity comes from the reconstructed
+    canonical state through the existing RVR-7 path, its committed ENGLISH text
+    is compared against ``_recon.next_question`` — the canonical English
+    reconstruction evidence, which is NOT modified — and only a match reaches the
+    existing explanation projection. A missing, special, generic, intake,
+    stall-reframe, exhausted, unknown, unsupported or mismatched identity yields
+    None and the page renders no explanation, exactly as before.
+
+    Presentation-only: the reconstructed state is read, never mutated, never
+    persisted and never placed in ``SESSION_STORE``; nothing here makes the page
+    writable or touches the explicit POST resume requirement."""
+    try:
+        if not isinstance(english, str) or recon_state is None:
+            return None
+        gap_type = select_next_gap(recon_state)
+        if gap_type:
+            gap = recon_state.get_gap(gap_type)
+            identity, served = _rvr7_identity(
+                getattr(recon_state, "domain", None), gap_type,
+                gap.iterations_open if gap else 0,
+                getattr(recon_state, "path", None))
+        elif maturity_level == 2:
+            identity, served = ui_text.RVR7_CLOSING_Q, None
+        else:
+            identity, served = None, None
+        if not _rvr7_verify_english(identity, served, english):
+            return None
+        return _question_explanation(
+            identity, getattr(recon_state, "domain", None))
+    except Exception:
+        return None
+
+
 def _rvr7_question_direction(text, lang):
     """The writing direction the QUESTION ELEMENT must declare (M-13).
 
@@ -3333,6 +3374,14 @@ def show_session(sid):
                     "next_question_display": _recon_display[0],
                     "next_question_lang": _recon_display[1],
                     "next_question_dir": _recon_display[2],
+                    # T2-B' cold parity: presentation-only display string for
+                    # the SAME governed identity, verified forward against the
+                    # canonical English above. None whenever nothing eligible
+                    # resolves.
+                    "next_question_explanation": (
+                        _rvr7_reconstructed_explanation(
+                            _session.state, _recon.next_question,
+                            _recon.maturity_level)),
                     "answers_count": len(_recon.accepted_answer_evidence),
                     # P10-PC3: writable-resume eligibility for the explicit
                     # establishment button (display precheck only; the POST

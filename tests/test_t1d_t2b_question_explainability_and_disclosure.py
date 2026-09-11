@@ -232,6 +232,27 @@ def test_no_text_based_reverse_lookup_is_introduced():
     # and the projection itself maps identity -> display key, nothing else
     assert all(isinstance(k, str) and isinstance(v, str)
                for k, v in ui_text.QUESTION_EXPLANATION_KEYS.items())
+    # (7) the COLD resolver is forward-only too: it derives the identity from the
+    # reconstructed canonical state and compares the identity's OWN committed
+    # English to the canonical evidence. It never searches the rendered page and
+    # never maps text back to an id.
+    cold_src = inspect.getsource(appmod._rvr7_reconstructed_explanation)
+    body = cold_src.split('"""')[2]
+    for forbidden in ("rendered", "_page", "response", ".text ==", "== english",
+                      "english ==", "find(", "search(", "match(", "index(",
+                      "startswith(english", "in english"):
+        assert forbidden not in body, forbidden
+    # it derives the identity from canonical, language-free reconstructed state
+    assert "select_next_gap(recon_state)" in body and "iterations_open" in body
+    # reaches the copy ONLY through the shared projection, and only AFTER the
+    # forward English verification
+    assert "_rvr7_verify_english" in body and "_question_explanation" in body
+    assert body.index("_rvr7_verify_english") < body.index(
+        "return _question_explanation")
+    # and the existing banner resolver keeps its own inline derivation, so the
+    # RVR-7 structural guardrail on it is untouched
+    banner = inspect.getsource(appmod._rvr7_reconstructed_display)
+    assert "select_next_gap(recon_state)" in banner and "iterations_open" in banner
 
 
 @pytest.mark.parametrize("identity", [
@@ -346,27 +367,273 @@ def test_live_and_reconstructed_sessions_render_the_same_explanation(client):
     assert _explanation(_page(c, sid, lang="ar")) == _explanation(live_ar)
 
 
-def test_a_cold_read_only_view_fails_closed_without_changing_the_question(client):
-    """(5)(9) The cold read-only view carries no reconstructed domain (existing
-    behaviour, unchanged by this increment), so the identity cannot be confirmed
-    against a committed registry and NO explanation is shown — never a wrong
-    one. The served question and the journey are untouched."""
-    c, appmod = client
+# ==========================================================================
+# 3b. COLD READ-ONLY PARITY (corrective increment)
+#
+#     The cold read-only reconstructed-review surface displays the governed next
+#     question, so it MUST display that question's own approved explanation —
+#     the same one the live and resumed surfaces display for the same identity.
+#     Resolution is forward (reconstructed canonical state -> RVR-7 identity ->
+#     committed record) and is verified against `next_question`, the canonical
+#     English reconstruction evidence, before any copy is selected.
+# ==========================================================================
+CASCADE = (
+    "The spring latch rotates into a slot in the hinge plate and the rib "
+    "transfers the load to the frame rail.",
+    "The torsion spring pushes the latch pawl against the detent so the ramp "
+    "stays locked while weight is applied.",
+)
+
+
+def _cascade(c):
+    """A project whose LAST replayed iteration opened a new gap, so the
+    reconstruction carries a governed `next_question` and the cold surface
+    actually displays one."""
     sid = _start(c)
-    _answer(c, sid, NEUTRAL)
-    live = _page(c, sid)
+    for a in CASCADE:
+        _answer(c, sid, a)
+    return sid
+
+
+def _recon(appmod, sid):
+    from engine.session_reconstruction import reconstruct_readonly_state
+    return reconstruct_readonly_state(appmod._get_store(), sid)
+
+
+def _recon_identity(appmod, session):
+    """The identity the reconstructed canonical state names FORWARD — derived in
+    the test from the same canonical, language-free inputs production uses, so
+    the assertion is independent of how production spells the derivation."""
+    state, review = session.state, session.review
+    gap_type = select_next_gap(state)
+    if gap_type:
+        gap = state.get_gap(gap_type)
+        return appmod._rvr7_identity(
+            getattr(state, "domain", None), gap_type,
+            gap.iterations_open if gap else 0, getattr(state, "path", None))
+    if review.maturity_level == 2:
+        return ui_text.RVR7_CLOSING_Q, None
+    return None, None
+
+
+def _cold(c, appmod, sid, lang=None):
+    appmod.SESSION_STORE.clear()
+    return _page(c, sid, lang)
+
+
+def test_cold_read_only_english_explanation_equals_the_live_one(client):
+    """(1) English parity: same canonical project, same governed identity, same
+    approved line on the live writable view and on the cold read-only view."""
+    c, appmod = client
+    sid = _cascade(c)
+    live = _explanation(_page(c, sid))
+    assert live is not None
+    cold = _explanation(_cold(c, appmod, sid))
+    assert cold == live
+    assert getattr(_state(appmod, sid), "domain", None) is None   # still a cold entry
+
+
+def test_cold_read_only_arabic_explanation_equals_the_live_one(client):
+    """(2) Arabic parity, with no runtime translation: the committed Arabic
+    sibling of the SAME identity, on both surfaces."""
+    c, appmod = client
+    sid = _cascade(c)
+    live_ar = _explanation(_page(c, sid, lang="ar"))
+    assert live_ar is not None and any("\u0600" <= ch <= "\u06ff" for ch in live_ar)
+    assert _explanation(_cold(c, appmod, sid, lang="ar")) == live_ar
+
+
+def test_live_cold_and_resumed_views_all_agree_in_both_languages(client):
+    """(3) Three-way parity. Resume stays an EXPLICIT POST; the cold view is
+    never made writable to achieve it."""
+    c, appmod = client
+    sid = _cascade(c)
+    live, live_ar = _explanation(_page(c, sid)), _explanation(_page(c, sid, lang="ar"))
+    appmod.SESSION_STORE.clear()
+    cold_raw = _raw(c, sid)
+    cold, cold_ar = _explanation(_html.unescape(cold_raw)), _explanation(_page(c, sid, lang="ar"))
+    assert 'name="answer_token"' not in cold_raw          # cold stays read-only
+    appmod.SESSION_STORE.clear()
+    assert c.get(f"/session/{sid}").status_code == 200    # GET alone never resumes
+    assert getattr(_state(appmod, sid), "domain", None) is None
+    assert c.post(f"/session/{sid}/resume", data={}).status_code == 302
+    res, res_ar = _explanation(_page(c, sid)), _explanation(_page(c, sid, lang="ar"))
+    assert live is not None and live == cold == res
+    assert live_ar is not None and live_ar == cold_ar == res_ar
+    assert live != live_ar
+
+
+def test_the_cold_explanation_belongs_to_the_reconstructed_identity(client):
+    """(4) The line shown is the one committed for the EXACT identity the
+    reconstructed canonical state names forward — not merely a plausible one."""
+    c, appmod = client
+    sid = _cascade(c)
     appmod.SESSION_STORE.clear()
     cold = _page(c, sid)
-    assert getattr(_state(appmod, sid), "domain", None) is None   # pre-existing
+    session = _recon(appmod, sid)
+    identity, served = _recon_identity(appmod, session)
+    assert identity == "PATHN:" + served.question_id
+    assert served.text == session.review.next_question          # forward verification
+    expected = _copy(ui_text.QUESTION_EXPLANATION_KEYS[served.question_id])
+    assert _explanation(cold) == f"{_copy('UI_T1D_WHY_HEADING')} {expected}"
+    # and no OTHER approved line is anywhere on the page
+    for qid, key in ui_text.QUESTION_EXPLANATION_KEYS.items():
+        if qid != served.question_id:
+            assert _copy(key) not in cold, qid
+
+
+def test_a_mismatched_reconstructed_canonical_question_yields_no_explanation(client):
+    """(5) If the identity's committed English does not equal the canonical
+    English reconstruction evidence, nothing is rendered — the surface never
+    shows an explanation it cannot prove belongs to the question on the page."""
+    import dataclasses
+    c, appmod = client
+    sid = _cascade(c)
+    session = _recon(appmod, sid)
+    state, review = session.state, session.review
+    # (a) direct: a different committed question's English in the evidence slot
+    other = get_served_question("MECHANISM_COMPLETENESS", 0, domain="mechanical")
+    assert other.text != review.next_question
+    assert appmod._rvr7_reconstructed_explanation(
+        state, other.text, review.maturity_level) is None
+    assert appmod._rvr7_reconstructed_explanation(
+        state, review.next_question + " ", review.maturity_level) is None
+    assert appmod._rvr7_reconstructed_explanation(
+        state, None, review.maturity_level) is None
+    assert appmod._rvr7_reconstructed_explanation(
+        None, review.next_question, review.maturity_level) is None
+    # (b) through the page
+    real = appmod.reconstruct_readonly_state
+
+    def _mismatched(store, pid):
+        s = real(store, pid)
+        return dataclasses.replace(
+            s, review=dataclasses.replace(s.review, next_question=other.text))
+
+    appmod.SESSION_STORE.clear()
+    appmod.reconstruct_readonly_state = _mismatched
+    try:
+        cold = _page(c, sid)
+    finally:
+        appmod.reconstruct_readonly_state = real
     assert _explanation(cold) is None
-    # not one of the approved lines leaks onto the cold view
     for key in ui_text.QUESTION_EXPLANATION_KEYS.values():
         assert _copy(key) not in cold, key
-    # and the cold view still renders its own question exactly as before
-    cold_question = re.search(r'<p class="question"[^>]*>(.*?)</p>', cold, re.S)
-    if cold_question is not None:
-        assert cold_question.group(1).strip()
-    assert _explanation(live) is not None                          # live is unaffected
+
+
+def test_the_cold_surface_stays_fail_closed_on_every_ineligible_path(client):
+    """(6) No governed next question, a special/stall/exhausted/generic/intake
+    identity, an unsupported domain, and a completed project all render nothing
+    — exactly as before this correction."""
+    import dataclasses
+    c, appmod = client
+    # (a) a reconstruction with NO governed next question renders no question
+    #     block at all, and therefore no explanation
+    sid = _start(c)
+    _answer(c, sid, NEUTRAL)
+    session = _recon(appmod, sid)
+    assert session.review.next_question is None
+    appmod.SESSION_STORE.clear()
+    cold = _page(c, sid)
+    assert _explanation(cold) is None
+    for key in ui_text.QUESTION_EXPLANATION_KEYS.values():
+        assert _copy(key) not in cold, key
+    # the cold surface still renders everything it rendered before
+    assert 'id="reconstructed-review"' in cold
+
+    # (b) every non-Path-N identity the reconstructed path can name
+    sid2 = _cascade(c)
+    s2 = _recon(appmod, sid2)
+    for special in (ui_text.RVR7_STALL_REFRAME, ui_text.RVR7_EXHAUSTED_EXIT_PROMPT,
+                    ui_text.RVR7_CLOSING_Q, "GENERIC:MECHANISM_COMPLETENESS:0",
+                    "INTAKE", "PATHN:nope:NOPE:Q9", "", None, 17):
+        assert appmod._question_explanation(special, "mechanical") is None, special
+
+    # (c) a completed project (maturity 2, no open gap) names the governed
+    #     closing ask, which is not a committed Path-N record
+    state = s2.state
+    state.gaps = []
+    state.maturity_level = 2
+    assert not select_next_gap(state)
+    assert appmod._rvr7_reconstructed_explanation(
+        state, s2.review.next_question, 2) is None
+    assert appmod._rvr7_reconstructed_explanation(
+        state, "Your mechanism is taking shape.", 2) is None
+
+    # (d) an unsupported domain never resolves, whatever the identity says
+    real_domain = s2.state.domain
+    s2.state.domain = "aerospace_propulsion"
+    try:
+        assert appmod._rvr7_reconstructed_explanation(
+            s2.state, s2.review.next_question, s2.review.maturity_level) is None
+    finally:
+        s2.state.domain = real_domain
+
+
+def test_the_cold_repair_never_writes_reconstructed_state_or_reopens_the_session(client):
+    """(8)(9) The reconstructed state stays render-only: SESSION_STORE keeps the
+    non-resumable cold entry, the canonical evidence is unchanged, and the page
+    offers no way to answer until the explicit POST resume."""
+    c, appmod = client
+    sid = _cascade(c)
+    before = _recon(appmod, sid)
+    appmod.SESSION_STORE.clear()
+    raw = _raw(c, sid)
+    assert _explanation(_html.unescape(raw)) is not None
+    entry = appmod.SESSION_STORE[sid]
+    stored = entry["state"]
+    assert getattr(stored, "domain", None) is None          # still the cold entry
+    assert stored is not before.state                        # never the reconstructed one
+    assert 'name="answer_token"' not in raw                  # not writable
+    after = _recon(appmod, sid)
+    assert after.review.next_question == before.review.next_question
+    assert after.review.open_gaps == before.review.open_gaps
+    assert after.review.maturity_level == before.review.maturity_level
+    assert getattr(after.state, "domain", None) == getattr(before.state, "domain", None)
+    # answering is still refused before the explicit resume
+    assert c.post(f"/session/{sid}", data={
+        "response": "x", "answer_token": "forged", "action": "answered"}
+    ).status_code in (302, 400, 403)
+
+
+def test_the_cold_banner_language_and_direction_behaviour_is_unchanged(client):
+    """(11) The correction adds a line beside the banner question; it does not
+    touch RVR-7 banner resolution, its lang/dir contract, or gap selection."""
+    c, appmod = client
+    sid = _cascade(c)
+    session = _recon(appmod, sid)
+    identity, served = _recon_identity(appmod, session)
+    # the display helper still resolves exactly what it resolved before
+    en = appmod._rvr7_reconstructed_display(
+        session.state, session.review.next_question,
+        session.review.maturity_level, "en")
+    assert en == (session.review.next_question, "en", "ltr")
+    with appmod.app.test_request_context("/"):
+        ar = appmod._rvr7_reconstructed_display(
+            session.state, session.review.next_question,
+            session.review.maturity_level, "ar")
+    assert ar[0] == served.text_ar and ar[1:] == ("ar", "rtl")
+    appmod.SESSION_STORE.clear()
+    cold_ar = _raw(c, sid, lang="ar")
+    assert 'lang="ar"' in cold_ar and 'dir="rtl"' in cold_ar
+    assert select_next_gap(session.state) == "PHYSICAL_FEASIBILITY"
+
+
+def test_the_approved_copy_and_disclosures_are_byte_identical(client):
+    """(12) The correction changes no explanation copy, no T1-D disclosure copy
+    and no identity mapping. Pinned over the exact 21 EN/AR pairs plus the three
+    T1-D strings as they were accepted."""
+    import hashlib
+    parts = []
+    for qid, key in sorted(ui_text.QUESTION_EXPLANATION_KEYS.items()):
+        parts += [qid, key, _copy(key, "en"), _copy(key, "ar")]
+    for key in ("UI_T1D_WHY_HEADING", "UI_T1D_QUESTION_SET",
+                "UI_T1D_EVIDENCE_PROGRESSION"):
+        parts += [key, _copy(key, "en"), _copy(key, "ar")]
+    assert len(ui_text.QUESTION_EXPLANATION_KEYS) == 21
+    assert sorted(ui_text.QUESTION_EXPLANATION_KEYS) == sorted(_registry_ids())
+    assert hashlib.sha256("\x1f".join(parts).encode("utf-8")).hexdigest() == (
+        "49f2376529d9d6abed58f291dcf32ee6a2dbbe57d47af5e6bb7fd74fcb945e49")
 
 
 # ==========================================================================
@@ -538,6 +805,31 @@ def test_the_new_presentation_data_never_enters_state_or_any_contract(client):
             raw = fh.read()
         assert _copy("UI_T1D_EVIDENCE_PROGRESSION").encode() not in raw
         assert b"question_explanation" not in raw
+
+    # (10) the COLD surface, which now renders an explanation, persists nothing
+    # either: no canonical state, contract, backup, scoring, readiness or
+    # progression field carries the presentation string or its carrier name.
+    sid2 = _cascade(c)
+    expl = _explanation(_cold(c, appmod, sid2))
+    assert expl is not None
+    cold_state = _state(appmod, sid2)
+    assert not hasattr(cold_state, "question_explanation")
+    assert "next_question_explanation" not in set(appmod.SESSION_STORE[sid2])
+    session = _recon(appmod, sid2)
+    assert not hasattr(session.review, "next_question_explanation")
+    assert not hasattr(session.state, "next_question_explanation")
+    approved = _copy(ui_text.QUESTION_EXPLANATION_KEYS[
+        _recon_identity(appmod, session)[1].question_id])
+    contract = appmod._get_store().load_contract(sid2)
+    blob2 = json.dumps(contract, sort_keys=True, default=str) if isinstance(
+        contract, dict) else repr(contract)
+    for token in (approved, "next_question_explanation", "UI_T2B_", "UI_T1D_"):
+        assert token not in blob2, token
+    if os.path.exists(db):
+        with open(db, "rb") as fh:
+            raw2 = fh.read()
+        assert approved.encode() not in raw2
+        assert b"next_question_explanation" not in raw2
 
 
 def test_export_api_and_adapter_surfaces_are_unaffected(client):
