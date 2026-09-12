@@ -607,3 +607,154 @@ def test_a_feedback_or_stance_failure_never_breaks_the_journey(client, monkeypat
     got = _snapshot(appmod, sid)
     assert got["records"] == 1
     assert got["status"] == "PARTIAL"          # fail-closed to today's reading
+
+
+# ==========================================================================
+# 6. F-1 / F-2 carrier repair through the real routes
+#    PR642-T2G-CARRIER-REPAIR-01
+# ==========================================================================
+MARKER_ONLY_EN = "Force path force path force path."
+MARKER_ONLY_EN2 = "Hinge line hinge line hinge line."
+MARKER_ONLY_AR = "مسار القوة مسار القوة مسار القوة."
+MARKER_ONLY_EE = "Main parts main parts main parts."
+REAL_AFTER_MARKERS_EN = ("Force path force path: the deck panel presses down "
+                         "into the hinge line and the frame rail carries it "
+                         "into the chassis.")
+REAL_AFTER_MARKERS_AR = ("مسار القوة ينتقل من لوح السطح إلى خط المفصلة ثم إلى "
+                         "قضيب الإطار ويحمله الهيكل.")
+
+
+@pytest.mark.parametrize("tail", [MARKER_ONLY_EN, MARKER_ONLY_EN2])
+def test_repeated_markers_do_not_buy_progress_through_the_route(client, tail):
+    """F-2 at route level: the unknown is recognised, the tail is only markers,
+    so nothing may advance. Full identity, state and notice asserted together."""
+    c, appmod, _db = client
+    _login(c, appmod)
+    sid = _start(c)
+    _answer(c, sid, F2_UNKNOWN + " " + tail)
+    got = _snapshot(appmod, sid)
+    assert got["identity"] == Q2
+    assert got["status"] == "OPEN"
+    assert got["known_mechanism"] is None
+    assert got["known_problem"] is None
+    assert got["coverage"] == []
+    assert got["unknowns"] == 1
+    assert got["records"] == 1
+    assert UNKNOWN_NOTICE in _page(c, sid)
+
+
+def test_repeated_arabic_markers_do_not_buy_progress(client):
+    c, appmod, _db = client
+    _login(c, appmod)
+    sid = _start(c)
+    _answer(c, sid, G2_UNKNOWN + " " + MARKER_ONLY_AR)
+    got = _snapshot(appmod, sid)
+    assert got["identity"] == Q2 and got["status"] == "OPEN"
+    assert got["known_mechanism"] is None and got["coverage"] == []
+    assert "تم حفظ قولك إن هذا غير معروف بعد مع مشروعك" in _page(c, sid, "ar")
+
+
+def test_repeated_markers_do_not_buy_progress_in_electronics(client):
+    c, appmod, _db = client
+    _login(c, appmod)
+    sid = _start(c, EE_SEED, "electronics_electrical")
+    _answer(c, sid, H2_UNKNOWN + " " + MARKER_ONLY_EE)
+    got = _snapshot(appmod, sid)
+    assert got["identity"] == EE2 and got["status"] == "OPEN"
+    assert got["known_mechanism"] is None and got["coverage"] == []
+    assert UNKNOWN_NOTICE in _page(c, sid)
+
+
+@pytest.mark.parametrize("tail,lang", [(REAL_AFTER_MARKERS_EN, "en"),
+                                       (REAL_AFTER_MARKERS_AR, "ar")])
+def test_a_genuine_explanation_after_markers_still_progresses(client, tail, lang):
+    """The positive control: repeated markers followed by a real explanation
+    must still be recognised, in both languages."""
+    c, appmod, _db = client
+    _login(c, appmod)
+    sid = _start(c)
+    unknown = F2_UNKNOWN if lang == "en" else G2_UNKNOWN
+    _answer(c, sid, unknown + " " + tail)
+    got = _snapshot(appmod, sid)
+    assert got["identity"] == Q3
+    assert got["status"] == "PARTIAL"
+    assert got["known_mechanism"] == "REASONED"
+    assert got["coverage"] == ["mechanical:MECHANISM_COMPLETENESS:Q2"]
+    assert UNKNOWN_NOTICE not in _page(c, sid)
+
+
+def test_both_coverage_consumers_agree_after_the_repair(client):
+    """`compute_intent_coverage` and the serving law read the SAME helper."""
+    from engine.intent_serving import compute_intent_coverage, w2c_served_question
+    c, appmod, _db = client
+    _login(c, appmod)
+    sid = _start(c)
+    _answer(c, sid, F2_UNKNOWN + " " + MARKER_ONLY_EN)
+    state = _state(appmod, sid)
+    assert compute_intent_coverage(state, MC) == frozenset()
+    assert w2c_served_question(state, MC) is None      # canonical serving stands
+    assert _snapshot(appmod, sid)["identity"] == Q2
+    # and the positive control moves BOTH consumers together
+    sid2 = _start(c)
+    _answer(c, sid2, F2_UNKNOWN + " " + REAL_AFTER_MARKERS_EN)
+    state2 = _state(appmod, sid2)
+    assert compute_intent_coverage(state2, MC) == frozenset(
+        {"mechanical:MECHANISM_COMPLETENESS:Q2"})
+    assert _snapshot(appmod, sid2)["identity"] == Q3
+
+
+def test_the_marker_only_record_replays_and_resumes_identically(client):
+    c, appmod, _db = client
+    _login(c, appmod)
+    sid = _start(c)
+    _answer(c, sid, F2_UNKNOWN + " " + MARKER_ONLY_EN)
+    live = _snapshot(appmod, sid)
+    appmod.SESSION_STORE.clear()
+    session = reconstruct_readonly_state(appmod._get_store(), sid)
+    assert session.review.level == 1
+    assert session.state.known_mechanism is None
+    assert appmod._resolve_question_context(session.state, None).identity == Q2
+    _raw(c, sid)
+    assert c.post(f"/session/{sid}/resume", data={}).status_code == 302
+    assert _snapshot(appmod, sid) == live
+
+
+def test_a_legacy_project_is_unchanged_by_the_carrier_repair(client):
+    """The same marker-only answer on a legacy project keeps the pre-T2-G
+    reading — the repair is inside the versioned rule, not outside it."""
+    c, appmod, _db = client
+    _login(c, appmod)
+    sid = _legacy_start(c, appmod)
+    _answer(c, sid, F2_UNKNOWN + " " + MARKER_ONLY_EN)
+    got = _snapshot(appmod, sid)
+    assert got["version"] == RECONSTRUCTION_VERSION
+    assert got["identity"] == Q3
+    assert got["status"] == "PARTIAL"
+    assert got["known_mechanism"] == "REASONED"
+    assert UNKNOWN_NOTICE not in _page(c, sid)
+
+
+def test_an_answer_at_the_accepted_limit_renders_without_a_cost_collapse(client):
+    """F-1 at route level. The accepted MAX_FREE_TEXT_CHARS limit is NOT
+    reduced; repeated live and resumed renders simply stay fast. The bound is
+    deliberately loose — it excludes the minutes-long path, it is not a
+    performance target."""
+    import time
+    from web.app import MAX_FREE_TEXT_CHARS
+    c, appmod, _db = client
+    _login(c, appmod)
+    sid = _start(c)
+    body = (("alpha " * 3300) + "load path runs into the hinge line.")[:MAX_FREE_TEXT_CHARS - 1]
+    assert len(body) < MAX_FREE_TEXT_CHARS
+    _answer(c, sid, body)
+    for _ in range(3):
+        start = time.perf_counter()
+        _raw(c, sid)
+        assert time.perf_counter() - start < 5.0
+    appmod.SESSION_STORE.clear()
+    _raw(c, sid)
+    assert c.post(f"/session/{sid}/resume", data={}).status_code == 302
+    for _ in range(2):
+        start = time.perf_counter()
+        _raw(c, sid)
+        assert time.perf_counter() - start < 5.0

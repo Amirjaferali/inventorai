@@ -404,6 +404,72 @@ when the remaining T2-G work is selected and before any full-capability or
 paid-activation claim. The four T2-D deferred observations, all six PR #640
 findings and satellite scheduling keep their existing triggers.
 
+**Bounded carrier repair (`PR642-T2G-CARRIER-REPAIR-01` v1.0).** The independent
+review `PR642-T2G-INDEPENDENT-REVIEW-01` returned `C — FAIL` on two blocking
+findings, both inside `_carries_context` in `engine/answer_stance.py`, and
+supported the versioning, legacy-continuity, supersession, replay/resume and
+metadata conclusions within their reported boundaries. Those are carried forward
+unchanged; nothing in them was restarted and Stage 6 stays closed. Repaired
+together on the existing branch and PR:
+
+1. *F-1 — carrier cost.* The token-window enumeration joined every window from
+   every start until a marker matched, which is cubic in sentence length: one
+   call took 4.0 s at 1,000 words, 31.2 s at 2,000, and did not finish in 60 s
+   at the accepted `MAX_FREE_TEXT_CHARS` limit, while every live or resumed
+   render of that project re-ran it per marker-bearing active record. Under the
+   governed one-worker posture that is a service-wide availability defect. The
+   helper now scans each of the fixed committed markers once with `str.find`,
+   so work is linear in sentence length for that fixed set. The accepted
+   20,000-character limit is NOT reduced, no answer or history is truncated, no
+   timeout is raised, no worker topology changed, no persistent cache added and
+   no active record skipped.
+2. *F-2 — marker-only carriers.* Only the shortest single matching window was
+   discounted, so a repeated marker counted as surplus context and defeated the
+   eligibility veto. Now EVERY occurrence of that variant's own markers is
+   discounted, repetitions and combinations included, with overlapping and
+   touching occurrences merged and counted once; a word is surplus only when it
+   lies wholly outside the merged spans. Marker-only repetition can therefore
+   never become explanatory context.
+
+The canonical W2-C marker table is READ for the specific question through a
+lazy, function-scope import — no duplicate vocabulary, no broadened matching,
+and matching itself stays the caller's injected predicate, consulted exactly
+once per sentence. Retained unchanged: the surplus threshold, the existing
+unknown detector and its declared bounds, the bounded sentence handling, the
+uncertainty-question exemptions for `N-MC-4` and
+`mechanical:MECHANISM_COMPLETENESS:Q4`, the version/domain/gap boundaries, and
+the caller interface. Supported affirmative, physical-negative and two-sentence
+mixed examples in both languages are unaffected. General paraphrase and clause
+interpretation are NOT solved here. When a variant's canonical markers cannot be
+read the sentence is not a carrier — the safe direction leaves the question owed
+an answer rather than granting progress on evidence that cannot be sized.
+
+*Qualified overclaims, at this authorized touch.* Mixed-answer preservation is
+bounded by the module's own sentence handling: a single sentence that both
+declares an unknown and explains something is treated as cued throughout. A
+genuine but very terse explanation, four words or fewer beyond the markers, is
+missed. Exception fallback is NOT universally identical to baseline — a
+veto-only failure and a coverage-only failure each leave a different mixed
+reading, both journey-safe and exception-only. No general understanding is
+claimed, and not every irrelevant marker-bearing sentence is rejected.
+
+*Repair-only file boundary:* `engine/answer_stance.py`,
+`tests/test_t2g_answer_stance.py`, `tests/test_t2g_versioned_journey.py` and
+this file. No version, schema, selector, route, worker-configuration,
+dependency, shared-matcher, relevance or question-registry change.
+
+*Preserved limitations.* The review's `N-1` through `N-6` are carried forward as
+classified there, NOT as additional repair requirements: single-sentence mixed
+answers vetoed (`N-1`), terse genuine explanations missed (`N-2`), non-identical
+exception fallback (`N-3`), the cold-page disclosure flag (`N-4`), the legacy ILT
+start routes (`N-5`) and the inert-registry veto path (`N-6`). `N-6` had no
+explicit review trigger: carry it forward for an actual supported-operation
+registry-load failure, or a change to variant declaration or registry-failure
+handling — this authorizes no repair of it. `R1`, `R2`, `R3`, deferred legacy
+migration and the existing T2-A random-skip test debt keep their return
+triggers, as do the four T2-D observations, the six PR #640 findings and
+satellite timing.
+
 <a id="current-authority--t2e-t2f-evidence-references-and-ordering"></a>
 ## Current authority — T2-E Option B + T2-F (one combined bounded candidate)
 

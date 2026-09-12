@@ -29,6 +29,12 @@ Bounds, stated rather than hidden
     and never, on its own, defeats the eligibility veto.
   * Physical negation is not ignorance. "The latch does NOT carry the load;
     the load path runs around it" stays a supported explanation.
+  * A mixed answer keeps its supported clause only when that clause is a
+    SEPARATE sentence by this module's own bounded sentence handling. A single
+    sentence that both declares an unknown and explains something is treated as
+    cued throughout, and a genuine explanation shorter than the surplus floor
+    is missed. Both are under-progress, and both are disclosed rather than
+    presented as solved.
 
 Version gating
 --------------
@@ -71,13 +77,18 @@ _SENTENCE_BOUNDARY_RE = re.compile(r"[.!?;؛؟]+|[\r\n]+")
 _WORD_RE = re.compile(r"[^\W\d_]+", re.UNICODE)
 
 # A qualifying carrier must say something ABOUT the requested information, not
-# merely echo a committed noun from it: the carrying sentence needs at least
-# this many words BEYOND the matched marker's own words. Language-neutral by
-# construction (a token count, not a character count or an English pattern),
-# and deliberately small — it excludes "Hinge line." and "Spring latch.", not a
-# terse real explanation. It follows the existing floors in this codebase
+# merely echo committed nouns from it: the carrying sentence needs at least this
+# many words that are NOT part of any occurrence of that variant's own markers.
+# Language-neutral by construction (a token count, not a character count or an
+# English pattern). It follows the existing floors in this codebase
 # (`_MIN_ACKNOWLEDGED_UNKNOWN_LENGTH`, `MIN_REASONED_RESPONSE_LENGTH`,
 # `_MIN_STRUCTURED_WORDS`) rather than introducing a new kind of threshold.
+#
+# Two things it does NOT do, stated rather than implied: a genuine but very
+# terse explanation of four words or fewer beyond the markers is missed, and an
+# irrelevant sentence that merely happens to contain a marker plus ordinary
+# prose still counts. Neither is solved here — general paraphrase and clause
+# interpretation are out of this slice's scope.
 _MIN_CARRIER_CONTEXT_WORDS = 4
 
 
@@ -109,27 +120,78 @@ def declares_ignorance(sentence):
     return detect_registered_unknown(sentence) is not None
 
 
-def _carries_context(sentence, question_id, matches_intent):
-    """True when the sentence says something BEYOND the matched marker itself.
+def _committed_markers(question_id):
+    """This variant's OWN committed marker surfaces, read from the canonical
+    W2-C table. Lazy so the import graph stays acyclic in both orders; the
+    table is never copied, extended or reinterpreted here, and matching
+    semantics stay exactly the caller's."""
+    from engine.intent_serving import _INTENT_MARKERS
+    return _INTENT_MARKERS.get(question_id)
 
-    The marker's own words are discounted wherever in the sentence they sit, so
-    a bare component name or a repeated committed noun is never a carrier.
-    Purely a token count against the SHORTEST matching window: no English-only
-    pattern, so English and Arabic are treated alike. When tokenisation cannot
-    reproduce the marker (an apostrophe inside a committed phrase, say), the
-    conservative whole-sentence floor applies instead of rejecting outright."""
-    words = _WORD_RE.findall(sentence)
-    shortest = None
-    for start in range(len(words)):
-        for end in range(start + 1, len(words) + 1):
-            if matches_intent(" ".join(words[start:end]), question_id):
-                span = end - start
-                if shortest is None or span < shortest:
-                    shortest = span
-                break                      # shortest window from this start
-    if shortest is None:
-        return len(words) >= _MIN_CARRIER_CONTEXT_WORDS + 2
-    return len(words) - shortest >= _MIN_CARRIER_CONTEXT_WORDS
+
+def _marker_spans(sentence, question_id):
+    """Every character span of ``sentence`` occupied by an occurrence of this
+    variant's committed markers, merged so overlapping and adjacent occurrences
+    are counted ONCE.
+
+    Cost is linear in the sentence length for the fixed committed marker set:
+    each marker is scanned once with ``str.find``, and the marker set per
+    question is fixed and small. No window enumeration and no repeated joins."""
+    entry = _committed_markers(question_id)
+    if entry is None:
+        return ()
+    english, arabic = entry
+    lowered = sentence.lower()
+    found = []
+    for surfaces, haystack in ((english, lowered), (arabic, sentence)):
+        for surface in surfaces:
+            if not surface:
+                continue
+            start = haystack.find(surface)
+            while start != -1:
+                found.append((start, start + len(surface)))
+                start = haystack.find(surface, start + 1)
+    if not found:
+        return ()
+    found.sort()
+    merged = [found[0]]
+    for start, end in found[1:]:
+        last_start, last_end = merged[-1]
+        if start <= last_end:                       # overlapping or touching
+            merged[-1] = (last_start, max(last_end, end))
+        else:
+            merged.append((start, end))
+    return tuple(merged)
+
+
+def _carries_context(sentence, question_id, matches_intent):
+    """True when the sentence says something BEYOND this variant's markers.
+
+    EVERY occurrence of every one of that variant's markers is discounted —
+    repetitions and combinations included, and overlapping occurrences counted
+    once — so a bare component name never becomes explanatory context merely by
+    being repeated. A word counts as surplus only when it lies wholly outside
+    the merged marker spans.
+
+    Linear in the sentence length for the fixed committed marker set. The
+    caller has already decided that the sentence matches; this only sizes what
+    else the sentence says, and never widens or narrows the match itself."""
+    spans = _marker_spans(sentence, question_id)
+    if not spans:
+        # The caller matched but this variant's canonical markers are not
+        # readable here (an unknown id, or a table that cannot be loaded). Not
+        # a carrier: the safe direction is to leave the question owed an
+        # answer, never to grant progress on evidence we cannot size.
+        return False
+    surplus = 0
+    for word in _WORD_RE.finditer(sentence):
+        start, end = word.span()
+        if not any(span_start <= start and end <= span_end
+                   for span_start, span_end in spans):
+            surplus += 1
+            if surplus >= _MIN_CARRIER_CONTEXT_WORDS:
+                return True
+    return False
 
 
 def qualifying_carrier(text, question_id, matches_intent):
