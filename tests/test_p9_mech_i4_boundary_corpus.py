@@ -146,9 +146,19 @@ _DOMAINS = os.path.join(_REPO, "domains")
 # section, and replay semantics are byte-unchanged within their bodies.
 #   pre-W2-C     progression_loop.py =
 #       3b531cc8e5126b956ba9ce6ba103dafb83677f8077992a166e3e7f8d26ff2a08
+# T2-F / OD-PDVG-08b reconciliation (disclosed; mechanical digest re-freeze
+# ONLY — the Owner authorization "IMPLEMENTATION OF T2-E + T2-F OPTION B"
+# mandates routing the five raw quality-ordering comparisons through the new
+# canonical owner engine/evidence_order.py). PURELY ADDITIVE: one import plus
+# the five comparisons rewritten as quality_at_least()/quality_stronger()
+# calls with identical meaning for every value assess_response can produce.
+# select_next_gap, assess_response, the question selectors, the serving
+# policy and replay semantics are byte-unchanged within their bodies.
+#   pre-T2-F     progression_loop.py =
+#       a7e8bd62b9ab76aaba5889ce52b5f32ee646b2817ba1c790ed7a231d259fa41f
 _FROZEN_ENGINE_SHA256 = {
     "engine/domain_rules.py": "0e47326ad92a6e5b0a63eb06db9e3ad96ae72c9aaf64471dd21621265b1db1ab",
-    "engine/progression_loop.py": "a7e8bd62b9ab76aaba5889ce52b5f32ee646b2817ba1c790ed7a231d259fa41f",
+    "engine/progression_loop.py": "a2eac1f5827c61a8451dbde19c4e5b28f2b298d1d2be1cc3136e664ed3c1cb17",
 }
 # The mechanical pack hash IS this corpus's inventory validity anchor.
 # P9-MECH-SF reconciliation (contract §4 item 10, disclosed): re-frozen after

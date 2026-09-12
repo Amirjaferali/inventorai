@@ -447,11 +447,20 @@ def test_durable_store_holds_exactly_one_ledger_and_no_parallel_table(db_path,
                 col[1] for col in conn.execute("PRAGMA table_info(%s)" % name)})
         quantity_cols = [col[1] for col in
                          conn.execute("PRAGMA table_info(requirement_quantities)")]
+        # T2-E Option B added the additive, project-scoped `evidence_references`
+        # history table. Like `requirement_quantities` it is NOT a parallel
+        # ledger: it carries no disposition and no record payload, and it is
+        # never replayed — the `records` table remains the ONE durable ledger of
+        # owner actions. The semantic assertion below is what enforces that.
+        reference_cols = [col[1] for col in
+                          conn.execute("PRAGMA table_info(evidence_references)")]
     finally:
         conn.close()
-    assert tables == ["projects", "records", "requirement_quantities"], tables
+    assert tables == ["evidence_references", "projects", "records",
+                      "requirement_quantities"], tables
     assert ledger_like == ["records"], ledger_like
     assert "payload" not in quantity_cols and "disposition" not in quantity_cols
+    assert "payload" not in reference_cols and "disposition" not in reference_cols
 
 
 # --------------------------------------------------------------------------

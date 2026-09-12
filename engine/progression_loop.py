@@ -35,6 +35,11 @@ from engine.idea_state import (
     ASSERTED, REASONED, DEMONSTRATED, OWNER_STATED,
     PROGRESSING, STALLED, REGRESSING
 )
+# T2-F (OD-PDVG-08b): the ONE canonical semantic ordering of the quality
+# axis. Python orders the committed constants ASSERTED < DEMONSTRATED <
+# REASONED, so every raw >= / > on this axis encodes the WRONG ladder. This
+# module is the single ordering owner; the serialized strings are unchanged.
+from engine.evidence_order import quality_at_least, quality_stronger
 
 
 # --- Gap priority order (per MVP_SCOPE_FREEZE) ---
@@ -889,11 +894,13 @@ def integrate_response(
 
     # Update known elements
     if relevant and gap_type == MECHANISM_COMPLETENESS:
-        if state.known_mechanism is None or quality >= state.known_mechanism.quality:
+        if state.known_mechanism is None or quality_at_least(
+                quality, state.known_mechanism.quality):
             state.known_mechanism = evidence
 
     # أي evidence في المراحل المبكرة تُثبت المشكلة ضمنياً
-    if relevant and state.known_problem is None and quality >= REASONED:  # RISK-002
+    if relevant and state.known_problem is None and quality_at_least(
+            quality, REASONED):  # RISK-002
         state.known_problem = evidence
 
     # Update gap status
@@ -1078,7 +1085,8 @@ def evaluate_transition(state: IdeaState) -> tuple[bool, str]:
 
     if level == 0:
         # 0 → 1: problem established with beneficiary signal
-        if state.known_problem and state.known_problem.quality >= REASONED:
+        if state.known_problem and quality_at_least(
+                state.known_problem.quality, REASONED):
             mech_gap = state.get_gap(MECHANISM_COMPLETENESS)
             if mech_gap and mech_gap.status == OPEN and mech_gap.iterations_open == 0:
                 return False, "MECHANISM_COMPLETENESS must be attempted first"
@@ -1169,7 +1177,9 @@ def run_iteration(state: IdeaState, response: str) -> dict:
             iteration=state.iteration,
             provenance=OWNER_STATED,   # Wave-1 RVR-3 / MG-5
         )
-        if quality >= REASONED and (state.known_problem is None or quality > state.known_problem.quality):  # RISK-002
+        if quality_at_least(quality, REASONED) and (
+                state.known_problem is None
+                or quality_stronger(quality, state.known_problem.quality)):  # RISK-002
             state.known_problem = evidence
             if state.idea_summary is None:  # R-007: capture once
                 state.idea_summary = _trim_idea_summary(response)
