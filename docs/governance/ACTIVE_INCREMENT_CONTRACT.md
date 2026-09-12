@@ -245,6 +245,59 @@ and no new route, table, schema change, dependency, selector, state machine or
 standalone document was introduced. All six PR #640 findings keep their existing
 dispositions and triggers; this repair changes T2-D notices only.
 
+**Three-boundary continuation repair (`PR641-T2D-BOUNDARY-REPAIR-02` v1.0).** A
+continuation of the record above under the same T2-D mandate and the same
+candidate branch and PR — not a replacement contract and not a separate
+documentation lifecycle. The differential re-review
+`PR641-T2D-DIFF-REVIEW-01` confirmed the three repairs above and found three
+remaining boundary deviations, repaired here within
+`web/app.py`, `tests/test_t2d_question_feedback.py` and this file. No store,
+value object, shared selector, S4 test, template, UI-catalogue, route, schema,
+dependency, subsystem or capability change accompanies them.
+
+1. *M-1 — a malformed MAC is refused, never raised.* `_read_feedback_token`
+   requires the MAC segment to match the exact format `_feedback_token_mac`
+   generates — lowercase ASCII hex of exactly `_ANSWER_HMAC_HEX_LEN` characters,
+   checked with a FULL match — before the constant-time comparison. A non-ASCII
+   segment previously reached `hmac.compare_digest`, which raises, so a
+   deployment answered HTTP 500 instead of the ordinary refusal. Nothing is
+   stripped, normalised or discarded; every valid-shaped MAC still goes through
+   the unchanged `compare_digest`; the token format, payload, size cap, session
+   binding and TTL are untouched. No row was written before and none is now.
+2. *M-2 — the cold block requires the banner's actual question.*
+   `_cold_feedback_context` now requires the reconstructed banner's canonical
+   `next_question` to be a nonempty string EQUAL to the shared resolver's
+   canonical ask, compared on canonical English and never on translated display
+   text. No displayed question, an empty one or a different one suppresses the
+   readback, so the surface can no longer announce "your saved choice for this
+   question" beside nothing. The existing forward-identity and context checks,
+   the positive EN/AR readback, the absence of any cold token or form and the
+   explicit-resume requirement are all preserved; no reconstruction is added.
+3. *M-3 — a failed prior-event lookup is UNKNOWN, not "not saved".* Only the
+   exception branch around the INITIAL `question_feedback_for_event_key` lookup
+   in `submit_question_feedback` changes, from the not-saved notice to the
+   existing unknown notice: that exception establishes nothing about whether a
+   previous request was recorded. Every other established refusal and the
+   post-write outcome resolver keep their existing meanings.
+
+*Corrected RED classification (superseding the earlier summary of the same
+run):* the twelve tests failing on `2235d595…` comprised **ten behavioural
+failures and two API-signature incompatibilities** —
+`test_the_revision_check_is_a_project_ledger_comparison` (unexpected keyword
+`expected_revision`) and
+`test_a_reconstructed_domain_never_makes_the_cold_carrier_writable` (unexpected
+keyword `read_only`). Those two are not defect evidence and are not reclassified
+as such; no historical commit is rewritten.
+
+*Deferred and unchanged:* the caller-conditional store-guarantee wording, the
+future identity-length limit, the render-carrier serialization boundary and the
+source-only MAC observations in other routes keep their recorded return
+triggers and are NOT repaired here. All six PR #640 findings keep their existing
+dispositions and triggers. Satellite work and Stage 7 remain outside this
+mandate, and merge, deployment, release, tags, branch deletion, authoritative-
+branch modification, later capabilities and human-data collection remain
+unauthorized.
+
 <a id="current-authority--t2e-t2f-evidence-references-and-ordering"></a>
 ## Current authority — T2-E Option B + T2-F (one combined bounded candidate)
 

@@ -3817,6 +3817,12 @@ _FEEDBACK_TOKEN_VERSION = "t2dfb1"      # token FORMAT version, versioned apart
 _FEEDBACK_TOKEN_MAX_CHARS = 512
 _FEEDBACK_TOKEN_FIELDS = ("v", "cv", "ctx", "idn", "gap", "io", "it", "rev",
                           "head", "n", "iat", "exp")
+# M-1: the EXACT shape `_feedback_token_mac` generates — lowercase ASCII hex of
+# exactly `_ANSWER_HMAC_HEX_LEN` characters. Verified with a FULL match before
+# the constant-time comparison, because `hmac.compare_digest` raises on a
+# non-ASCII str and an unhandled exception there would surface as a 500 instead
+# of the ordinary invalid-token refusal.
+_FEEDBACK_MAC_RE = re.compile("[0-9a-f]{%d}" % _ANSWER_HMAC_HEX_LEN)
 
 
 def _feedback_token_payload(context, head_id, nonce, issued_at, expires_at):
@@ -3870,6 +3876,12 @@ def _read_feedback_token(sid, account_id, token):
         return None
     encoded, sep, mac = token.partition(_ANSWER_TOKEN_SEP)
     if not sep or not encoded or not mac:
+        return None
+    # A MAC segment that does not match the generated format EXACTLY is simply
+    # an invalid token, refused through this same path. Nothing is stripped,
+    # normalised or discarded, and every valid-shaped MAC still goes through
+    # the unchanged constant-time comparison below.
+    if _FEEDBACK_MAC_RE.fullmatch(mac) is None:
         return None
     if not _p2a_hmac.compare_digest(
             mac, _feedback_token_mac(sid, account_id, encoded)):
@@ -3982,8 +3994,21 @@ def _cold_feedback_context(entry, sid, reconstructed_review):
     snapshot = reconstructed_review.get("_t2d_state")
     if snapshot is None:
         return None
+    # M-2: this surface says "your saved choice for THIS question", so the
+    # banner must actually be displaying one. The canonical ENGLISH ask the
+    # banner carries must be a nonempty string EQUAL to the resolver's
+    # canonical ask; the translated display string is never compared. No
+    # displayed question, or a different one, suppresses the block entirely
+    # rather than presenting a saved choice beside nothing or beside the wrong
+    # ask. The existing forward-identity and context checks below still apply.
+    banner_question = reconstructed_review.get("next_question")
+    if not isinstance(banner_question, str) or not banner_question.strip():
+        return None
     try:
         qctx = _resolve_question_context(snapshot, None)
+        if not isinstance(qctx.question, str) \
+                or qctx.question != banner_question:
+            return None
         view = _feedback_render_context(entry, snapshot, sid, qctx,
                                         read_only=True)
     except Exception:
@@ -5499,7 +5524,13 @@ def submit_question_feedback(sid):
     try:
         stored = _get_store().question_feedback_for_event_key(sid, event_key)
     except Exception:
-        _publish_feedback_notice(entry, error=FEEDBACK_NOT_SAVED_MESSAGE)
+        # M-3: this lookup FAILING establishes nothing about whether a previous
+        # request was saved — a matching row may well exist and be unreadable
+        # right now. Claiming "nothing was saved" here would be untrue, so the
+        # honest UNKNOWN notice is published instead. Only this branch changes:
+        # every other refusal, and the post-write outcome resolver, keep their
+        # existing meanings.
+        _publish_feedback_notice(entry, error=FEEDBACK_UNKNOWN_MESSAGE)
         return redirect(url_for("show_session", sid=sid))
     if stored is not None:
         if (stored["context_key"] == signed["ctx"]

@@ -1073,3 +1073,253 @@ def test_no_ladder_writer_or_learning_path_is_introduced():
                       "score", "quota", "openai", "anthropic", "requests",
                       "urllib", "socket"):
         assert forbidden not in body, forbidden
+
+
+# ==========================================================================
+# 9. The three boundary repairs — PR641-T2D-BOUNDARY-REPAIR-02
+#
+# Each case below is labelled DIRECTLY REACHED (driven through the real
+# route/page exactly as a browser drives it) or SYNTHETIC BOUNDARY (the helper
+# is called with a constructed input to pin a branch that the seeded fixtures
+# cannot reach). Nothing here fills, defaults or repairs a choice.
+# ==========================================================================
+def _notice(body, kind):
+    """The text of the ONE rendered feedback notice element, or None. Asserted
+    from the specific element, so prose appearing elsewhere is not proof."""
+    found = re.search(r'class="[^"]*t2d-notice-%s[^"]*"[^>]*>([^<]+)<' % kind,
+                      _html.unescape(body))
+    return None if found is None else found.group(1).strip()
+
+
+# --------------------------------------------------------------------------
+# M-1 — a malformed MAC is refused, never raised
+# --------------------------------------------------------------------------
+def test_the_generated_mac_has_the_shape_the_reader_requires(client):
+    """The guard must describe what `_feedback_token_mac` actually produces."""
+    _c, appmod = client
+    with appmod.app.test_request_context("/"):
+        mac = appmod._feedback_token_mac("sid", "acct", "encoded")
+    assert appmod._FEEDBACK_MAC_RE.fullmatch(mac) is not None
+    assert len(mac) == appmod._ANSWER_HMAC_HEX_LEN
+
+
+def test_a_non_ascii_mac_is_refused_without_an_exception(client):
+    """DIRECTLY REACHED, with TESTING disabled so the deployed behaviour — not
+    the test client's re-raise — is what is measured. On the reviewed head
+    `hmac.compare_digest` raised `TypeError` and the deployment answered 500."""
+    c, appmod = client
+    sid = _project(c, appmod)
+    form = _fb_form(c, sid)
+    assert form is not None
+    encoded, sep, mac = _html.unescape(form["fields"]["context_token"]).partition(".")
+    assert sep and re.fullmatch(r"[0-9a-f]{32}", mac)     # the real shape
+    appmod.app.config["TESTING"] = False                  # deployment posture
+    try:
+        response = _submit(c, sid, form, "HELPFUL",
+                           extra={"context_token": encoded + "." + "é" * len(mac)})
+    finally:
+        appmod.app.config["TESTING"] = True               # restored
+    assert response.status_code == 302                    # a controlled refusal
+    assert _history(appmod, sid) == ()                    # and no row
+    assert _notice(_raw(c, sid), "error") is not None     # the invalid-token path
+    # the SAME session still saves normally through a valid token
+    fresh = _fb_form(c, sid)
+    assert _submit(c, sid, fresh, "HELPFUL").status_code == 302
+    assert len(_history(appmod, sid)) == 1
+
+
+@pytest.mark.parametrize("mac", [
+    "é" * 32,                       # non-ASCII, right length
+    "ABCDEF0123456789" * 2,         # uppercase — not the generated alphabet
+    "0123456789abcdef" * 3,         # right alphabet, wrong length
+    "0123456789abcde",              # short
+    "0123456789abcdef0123456789abcde ",   # trailing space
+    "0123456789abcdef0123456789abcd\n",   # trailing newline
+])
+def test_wrong_shaped_macs_are_invalid_tokens(client, mac):
+    """SYNTHETIC BOUNDARY: the reader refuses every MAC that is not exactly what
+    it generates, and refuses it through the ordinary invalid-token return."""
+    _c, appmod = client
+    encoded = appmod._p2a_b64.urlsafe_b64encode(b"{}").decode("ascii").rstrip("=")
+    # inside a request context, so removing the shape check would reach the real
+    # comparison and fail on the DEFECT rather than on a missing context
+    with appmod.app.test_request_context("/"):
+        assert appmod._read_feedback_token("sid", "acct",
+                                           encoded + "." + mac) is None
+
+
+def test_signature_verification_is_not_weakened_for_valid_shaped_macs(client):
+    """A correctly shaped but WRONG MAC is still rejected by the unchanged
+    constant-time comparison, and the shape check is not a substitute for it."""
+    import inspect
+    _c, appmod = client
+    reader = inspect.getsource(appmod._read_feedback_token)
+    assert "compare_digest" in reader                     # still verified
+    assert "fullmatch" in reader
+    assert reader.index("fullmatch") < reader.index("compare_digest")
+    with appmod.app.test_request_context("/"):
+        assert appmod._read_feedback_token("sid", "acct",
+                                           "abc." + "0" * 32) is None
+
+
+# --------------------------------------------------------------------------
+# M-2 — the cold block requires the banner's actual question
+# --------------------------------------------------------------------------
+def test_cold_readback_is_suppressed_when_the_banner_shows_no_question(client):
+    """DIRECTLY REACHED: after one accepted answer the cold banner's canonical
+    `next_question` is None, so no question is displayed. On the reviewed head
+    the cold surface still announced "Your saved choice for this question",
+    beside nothing."""
+    c, appmod = client
+    sid = _project(c, appmod)
+    _answer(c, sid)
+    _choose(c, sid, "HELPFUL")                          # a genuine saved choice
+    assert len(_history(appmod, sid)) == 1
+    appmod.SESSION_STORE.clear()
+    raw = _raw(c, sid)
+    assert 'id="reconstructed-review"' in raw           # the banner IS rendered
+    from engine.session_reconstruction import reconstruct_readonly_state
+    assert reconstruct_readonly_state(appmod._get_store(), sid).review.next_question is None
+    page = _html.unescape(raw)
+    assert "Your saved choice for this question" not in page
+    assert _cold_selected(page) is None
+    assert len(_history(appmod, sid)) == 1              # history untouched
+
+
+def test_cold_readback_is_suppressed_when_the_banner_question_differs(client):
+    """SYNTHETIC BOUNDARY: the banner's canonical ask is replaced with a
+    different one, which the seeded reconstruction never produces on its own.
+    A saved choice must not be associated with an ask that is not displayed."""
+    c, appmod = client
+    sid = _project(c, appmod)
+    _choose(c, sid, "UNCLEAR")
+    appmod.SESSION_STORE.clear()
+    _page(c, sid)                                       # cold load
+    entry = appmod.SESSION_STORE[sid]
+    from engine.session_reconstruction import reconstruct_readonly_state
+    session = reconstruct_readonly_state(appmod._get_store(), sid)
+    banner = {"next_question": session.review.next_question,
+              "_t2d_state": session.state}
+    # the reproducible case still associates
+    assert appmod._cold_feedback_context(entry, sid, banner)["selected"] == "UNCLEAR"
+    for wrong in ("a completely different ask", "", "   ", None, 12,
+                  session.review.next_question + " "):
+        assert appmod._cold_feedback_context(
+            entry, sid, dict(banner, next_question=wrong)) is None
+    assert appmod._cold_feedback_context(
+        entry, sid, {"_t2d_state": session.state}) is None       # key absent
+
+
+def test_the_cold_comparison_uses_canonical_english_not_display_text(client):
+    """The Arabic page still associates the choice, because the comparison is
+    made on the canonical English ask the banner carries — never on the
+    translated string the reader sees."""
+    c, appmod = client
+    sid = _project(c, appmod)
+    _choose(c, sid, "UNCLEAR")
+    appmod.SESSION_STORE.clear()
+    arabic = _raw(c, sid, "ar")
+    assert _cold_selected(_html.unescape(arabic)) == "غير واضح"
+    from engine.session_reconstruction import reconstruct_readonly_state
+    review = reconstruct_readonly_state(appmod._get_store(), sid).review
+    assert review.next_question                        # canonical English
+    assert review.next_question in _html.unescape(_raw(c, sid))
+    import inspect
+    helper = inspect.getsource(appmod._cold_feedback_context)
+    assert "next_question_display" not in helper       # never the display text
+    assert "_current_ui_lang" not in helper
+
+
+@pytest.mark.parametrize("lang,expected", [("en", "Unclear"), ("ar", "غير واضح")])
+def test_a_matching_banner_question_still_reads_back(client, lang, expected):
+    """DIRECTLY REACHED: the reproducible case is preserved end to end — exactly
+    ONE correctly associated saved choice beside the question the banner is
+    actually displaying, with no token, no form and no writable rehydration."""
+    c, appmod = client
+    sid = _project(c, appmod)
+    key = _ctx(appmod, sid)["key"]
+    _choose(c, sid, "UNCLEAR")
+    appmod.SESSION_STORE.clear()
+    raw = _raw(c, sid, lang)
+    page = _html.unescape(raw)
+    assert _cold_selected(page) == expected
+    assert page.count('class="t2d-cold-selected"') == 1
+    from engine.session_reconstruction import reconstruct_readonly_state
+    session = reconstruct_readonly_state(appmod._get_store(), sid)
+    assert session.review.next_question == appmod._resolve_question_context(
+        session.state, None).question                  # the association proven
+    assert "question-feedback" not in raw              # no form, no token
+    assert getattr(appmod.SESSION_STORE[sid]["state"], "domain", None) is None
+    assert _history(appmod, sid)[0].context_key == key
+    assert len(_history(appmod, sid)) == 1
+
+
+# --------------------------------------------------------------------------
+# M-3 — an unreadable prior-event lookup is UNKNOWN, not "not saved"
+# --------------------------------------------------------------------------
+def test_a_failed_prior_event_lookup_reports_unknown_not_unsaved(client):
+    """DIRECTLY REACHED: the retried form WAS recorded, and the lookup that
+    would prove it is unavailable. The reviewed head answered "That could not be
+    saved just now", which is untrue. Asserted on the rendered notices."""
+    c, appmod = client
+    sid = _project(c, appmod)
+    form = _fb_form(c, sid)
+    assert _submit(c, sid, form, "HELPFUL").status_code == 302
+    before = _history(appmod, sid)
+    assert len(before) == 1
+    _raw(c, sid)                                        # consume the save notice
+    store = appmod._get_store()
+    real = store.question_feedback_for_event_key
+
+    def unavailable(*args, **kwargs):
+        raise RuntimeError("event lookup unavailable")
+
+    store.question_feedback_for_event_key = unavailable
+    try:
+        assert _submit(c, sid, form, "HELPFUL").status_code == 302
+        page = _raw(c, sid)
+    finally:
+        store.question_feedback_for_event_key = real
+    assert _notice(page, "error") == (
+        "We could not confirm whether that was saved. Reload this page and "
+        "check before choosing again.")
+    assert "could not be saved just now" not in _html.unescape(page)
+    assert _history(appmod, sid) == before              # no new write
+    # with the lookup restored, the SAME retry is recognised as recorded earlier
+    assert _submit(c, sid, form, "HELPFUL").status_code == 302
+    assert _notice(_raw(c, sid), "ack") == (
+        "That request was already recorded earlier, so nothing was added. Your "
+        "current saved choice is shown above.")
+    assert _history(appmod, sid) == before
+
+
+def test_only_the_initial_lookup_branch_became_unknown(client):
+    """Every OTHER established refusal still says plainly that nothing was
+    saved, and the post-write outcome resolver is unchanged."""
+    c, appmod = client
+    sid = _project(c, appmod)
+    form = _fb_form(c, sid)
+    # an unreadable HISTORY (a check that runs before any INSERT) is unchanged
+    store = appmod._get_store()
+    real = store.load_question_feedback
+    store.load_question_feedback = lambda *a, **k: (_ for _ in ()).throw(
+        RuntimeError("history unavailable"))
+    try:
+        _submit(c, sid, form, "HELPFUL")
+        page = _raw(c, sid)
+    finally:
+        store.load_question_feedback = real
+    assert _notice(page, "error") == (
+        "That could not be saved just now. Nothing was changed.")
+    assert _history(appmod, sid) == ()
+    # and an invalid choice is still an established, plainly-stated refusal
+    fresh = _fb_form(c, sid)
+    _submit(c, sid, fresh, "NOT_A_CHOICE")
+    assert _notice(_raw(c, sid), "error") == (
+        "That could not be saved just now. Nothing was changed.")
+    assert _history(appmod, sid) == ()
+    # the resolver that decides an UNDETERMINED write is untouched
+    import inspect
+    resolver = inspect.getsource(appmod._resolve_feedback_write)
+    assert "_FEEDBACK_COMMIT_UNKNOWN" in resolver
+    assert "_FEEDBACK_STORAGE_FAILURE" in resolver
