@@ -89,6 +89,10 @@ body{overflow-wrap:anywhere}
    correction or quantity notice, and both can render together. #}
 {% if evref_ack %}<p class="journey-feedback t2e-notice t2e-notice-ack" role="status">{{ evref_ack }}</p>{% endif %}
 {% if evref_error %}<p class="answer-error t2e-notice t2e-notice-error" role="alert" style="color:#9e2722;border:1px solid #daaaa7;padding:12px;line-height:1.5">{{ evref_error }}</p>{% endif %}
+{# T2-D notices: their own namespace, never replacing an answer, correction,
+   quantity or evidence-reference notice. #}
+{% if feedback_ack %}<p class="journey-feedback t2d-notice t2d-notice-ack" role="status">{{ feedback_ack }}</p>{% endif %}
+{% if feedback_error %}<p class="answer-error t2d-notice t2d-notice-error" role="alert" style="color:#9e2722;border:1px solid #daaaa7;padding:12px;line-height:1.5">{{ feedback_error }}</p>{% endif %}
 <section class="project-orientation" aria-labelledby="project-orientation-title">
   <h2 id="project-orientation-title">{{ t('UI_A1_ORIGINAL_IDEA') }}</h2>
   <p class="idea-excerpt" dir="auto">{{ project_identification.idea or t('UI_A1_UNTITLED') }}</p>
@@ -253,6 +257,15 @@ body{overflow-wrap:anywhere}
     {% endif %}
   </div>
   {% endif %}
+  {#- T2D-COLD-BEGIN — read-only feedback readback beside the cold banner's own
+     question. Built from the snapshot that banner already computed and proven
+     to belong to THAT question; no token, no form, no writable rehydration. -#}
+  {% if cold_question_feedback and cold_question_feedback.selected %}
+  <div class="t2d-cold" style="font-size:13px;margin-top:8px">{{ t('UI_T2D_COLD_SELECTED') }} <strong class="t2d-cold-selected">{{ t('UI_T2D_CHOICE_' ~ cold_question_feedback.selected) }}</strong>
+    <div style="font-size:12px;color:#777">{{ t('UI_T2D_COLD_NOTE') }}</div>
+  </div>
+  {% endif %}
+  {#- T2D-COLD-END -#}
   <div style="font-size:13px;margin-top:8px">{{ t('UI_B_SESSION_045') }} <span id="recon-answer-count">{{ reconstructed_review.answers_count }}</span></div>
   <div style="font-size:12px;color:#666;margin-top:8px">{{ t('UI_B_SESSION_046') }}</div>
   {# P10-PC3: explicit writable-resume establishment (POST; never automatic  #}
@@ -356,6 +369,35 @@ body{overflow-wrap:anywhere}
    semantic follow-up generated from the meaning of a free-text answer. One
    compact line beside the question experience it describes. #}
 <p class="version-disclosure version-disclosure-questions" style="font-size:11px;color:#8a97a3;margin:-8px 0 14px 0">{{ t('UI_T1D_QUESTION_SET') }}</p>
+{#- T2D-BLOCK-BEGIN — T2-D optional contextual feedback. The two sentinels
+    delimit the block exactly. Its OWN unnested form submits only csrf_token,
+    context_token and choice; no default is selected, there is no free text and
+    nothing here is required to continue. The copy says the choice is saved to
+    THIS PROJECT and nothing more. A saved choice is shown only from verified
+    durable readback; a cold read-only session sees the saved choice but no
+    control. Every label resolves through UI_T2D_* bilingual keys and no
+    internal identifier, token or raw choice value is ever displayed. -#}
+{% if question_feedback %}
+<div class="t2d-feedback" style="margin:-6px 0 14px 0;padding:8px 10px;border:1px solid #e0dcea;border-radius:4px;background:#fbfaff">
+  <div class="t2d-prompt" style="font-size:12px;color:#555">{{ t('UI_T2D_PROMPT') }}</div>
+  {% if question_feedback.selected %}
+  <div class="t2d-selected" style="font-size:12px;color:#333;margin-top:4px">{{ t('UI_T2D_SELECTED') }} <strong>{{ t('UI_T2D_CHOICE_' ~ question_feedback.selected) }}</strong>{% if question_feedback.can_write %} <span style="color:#777">{{ t('UI_T2D_CHANGE') }}</span>{% endif %}</div>
+  {% else %}
+  <div class="t2d-none" style="font-size:12px;color:#888;margin-top:4px">{{ t('UI_T2D_NONE_CHOSEN') }}</div>
+  {% endif %}
+  {% if question_feedback.can_write and question_feedback.token %}
+  <form method="POST" action="/session/{{ sid }}/question-feedback" class="t2d-form" style="margin-top:6px">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <input type="hidden" name="context_token" value="{{ question_feedback.token }}">
+    {% for c in question_feedback.choices %}
+    <button type="submit" name="choice" value="{{ c }}" class="t2d-choice t2d-choice-{{ c|lower }}"{% if question_feedback.selected == c %} aria-pressed="true"{% endif %}>{{ t('UI_T2D_CHOICE_' ~ c) }}</button>
+    {% endfor %}
+  </form>
+  {% endif %}
+  <div class="t2d-note" style="font-size:11px;color:#8a97a3;margin-top:6px">{{ t('UI_T2D_NOTE') }}</div>
+</div>
+{% endif %}
+{#- T2D-BLOCK-END -#}
 {% endif %}
 
 <form id="answer-form" method="POST" action="/session/{{ sid }}">

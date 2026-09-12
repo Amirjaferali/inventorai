@@ -6,6 +6,7 @@ SESSION_STORE: in-memory, non-production, temporary.
 import json
 import os
 import re
+import base64 as _p2a_b64
 import secrets
 import tempfile
 import uuid
@@ -120,6 +121,32 @@ from engine.evidence_reference import (
 from engine.record_store import (
     ReferenceChainConflict as _ReferenceChainConflict,
     ReferenceCapExceeded as _ReferenceCapExceeded,
+)
+# T2-D — OPTIONAL contextual feedback on the question actually displayed.
+from engine.question_feedback import (
+    QuestionFeedbackError as _QuestionFeedbackError,
+    QuestionFeedbackHistoryError as _QuestionFeedbackHistoryError,
+    make_question_feedback as _make_question_feedback,
+    validate_choice as _validate_feedback_choice,
+    ledger_revision as _ledger_revision,
+    context_key as _feedback_context_key,
+    active_feedback_for_context as _active_feedback_for_context,
+    FEEDBACK_CHOICES as _FEEDBACK_CHOICES,
+    CONTEXT_VERSION as _FEEDBACK_CONTEXT_VERSION,
+    NO_GAP_SENTINEL as _FEEDBACK_NO_GAP,
+    NO_ITERATIONS_SENTINEL as _FEEDBACK_NO_ITERATIONS,
+    FEEDBACK_INSERTED as _FEEDBACK_INSERTED,
+    FEEDBACK_EXACT_REPLAY as _FEEDBACK_EXACT_REPLAY,
+    FEEDBACK_ALREADY_CURRENT as _FEEDBACK_ALREADY_CURRENT,
+    FEEDBACK_CONFLICT as _FEEDBACK_CONFLICT,
+    FEEDBACK_REJECTED as _FEEDBACK_REJECTED,
+    FEEDBACK_STORAGE_FAILURE as _FEEDBACK_STORAGE_FAILURE,
+    FEEDBACK_COMMIT_UNKNOWN as _FEEDBACK_COMMIT_UNKNOWN,
+    is_same_event_material as _same_feedback_event,
+)
+from engine.record_store import (
+    FeedbackChainConflict as _FeedbackChainConflict,
+    FeedbackCapReached as _FeedbackCapReached,
 )
 # P10-D3a (established contract, PR #510): the canonical internal read/export
 # seam (P7-I1), consumed UNMODIFIED by the browser self-service export route.
@@ -3658,101 +3685,397 @@ def _render_notice(entry, key, default=None):
     return entry.get(key, default) if request.method == "HEAD" else entry.pop(key, default)
 
 
-@app.route("/session/<sid>", methods=["GET"])
-def show_session(sid):
-    if not _project_authorized(sid):
-        return _deny_project()
-    entry = SESSION_STORE.get(sid)
-    if not entry:
-        # P4-1b-1 durable cold-load: after memory loss, rebuild the minimum
-        # runtime entry from the durable project envelope keyed by sid. On any
-        # missing/malformed/unavailable durable state this returns None and we
-        # fall through to the existing generic unavailable behaviour (no
-        # disclosure of whether the project ever existed).
-        entry = _cold_load_entry(sid)
-        if not entry:
-            return redirect(url_for("index"))
-        SESSION_STORE[sid] = entry
-    state = entry["state"]
-    # T2-A: refresh the quantity carrier from the DURABLE truth on every render
-    # and fail closed (the same generic unavailable behaviour as a failed cold
-    # load) when a populated history is corrupt or storage is unavailable —
-    # never a page with a partial or silently empty quantity block.
-    if not _attach_quantity_history(sid, state):
-        return redirect(url_for("index"))
-    last_result = entry.get("last_result")
-    # P10-PC1: surface the merged P4-2 Level-1 deterministic READ-ONLY
-    # reconstruction on cold-loaded sessions (the committed cold-load marker is
-    # `state.domain is None`; live /start sessions always carry a domain).
-    # Display-only: `state.domain` is NOT restored, the P4-1b-2a non-resume
-    # guard is untouched, and any reconstruction failure (Level-0 fallback,
-    # ContractError, replay-limit, store unavailability) fails closed to the
-    # prior cold-load page — never a 500, never a false reconstruction claim.
-    reconstructed_review = None
-    if getattr(state, "domain", None) is None:
-        try:
-            # PERF-01: ONE canonical reconstruction pass serves BOTH the review
-            # fields and the banner's display identity. `reconstruct_readonly_state`
-            # is the EXISTING Level-1 accessor and `reconstruct_review_state` is
-            # exactly its `.review` element (`_reconstruct(...)[0]`), so this page
-            # reads the same snapshot it always did — the second full replay it
-            # used to run for `.state` alone is removed. No schema change, no new
-            # subsystem, and `RECONSTRUCTION_VERSION` is untouched.
-            _session = reconstruct_readonly_state(_get_store(), sid)
-            _recon = _session.review
-            # RVR-7 (PR #588): the banner's display identity is named FORWARD from
-            # the reconstructed canonical state — served gap, variant index, domain
-            # — so the Arabic banner never reverse-looks-up an id from the
-            # reconstructed English text. `.state` is RENDER-ONLY here: it is never
-            # placed into SESSION_STORE (the minimal cold entry above stays the
-            # non-resumable one, `state.domain is None`), never mutated and never
-            # persisted. A Level-1 wrapper WITHOUT a state is not a valid
-            # reconstruction: the claim is suppressed rather than rendered from a
-            # missing state, and every other failure (Level-0 fallback,
-            # ContractError, replay-limit, store unavailability) still falls
-            # closed to the prior cold-load page through the except below.
-            if (_recon.level == 1 and _recon.reconstructed
-                    and _session.state is not None):
-                # `_rvr7_reconstructed_display` keeps its own internal
-                # exception/mismatch fallback to canonical English.
-                _recon_display = _rvr7_reconstructed_display(
-                    _session.state, _recon.next_question,
-                    _recon.maturity_level, _current_ui_lang())
-                reconstructed_review = {
-                    "domain": getattr(state, "domain_signal", None),
-                    "maturity_level": _recon.maturity_level,
-                    "current_stage": _recon.current_stage,
-                    "open_gaps": list(_recon.open_gaps),
-                    # Canonical English reconstruction evidence — UNCHANGED.
-                    "next_question": _recon.next_question,
-                    # Display-only resolution of the SAME ask (RVR-7).
-                    "next_question_display": _recon_display[0],
-                    "next_question_lang": _recon_display[1],
-                    "next_question_dir": _recon_display[2],
-                    # T2-B' cold parity: presentation-only display string for
-                    # the SAME governed identity, verified forward against the
-                    # canonical English above. None whenever nothing eligible
-                    # resolves.
-                    "next_question_explanation": (
-                        _rvr7_reconstructed_explanation(
-                            _session.state, _recon.next_question,
-                            _recon.maturity_level)),
-                    "answers_count": len(_recon.accepted_answer_evidence),
-                    # P10-PC3: writable-resume eligibility for the explicit
-                    # establishment button (display precheck only; the POST
-                    # route re-validates from scratch). Completed projects
-                    # (maturity >= 2, no open gaps) never reopen. Fields come
-                    # from the Level-1 review snapshot; the display domain is
-                    # the persisted confirmed identity on domain_signal.
-                    "resume_eligible": bool(
-                        (_recon.maturity_level < 2 or _recon.open_gaps)
-                        and domain_activation.is_activated(
-                            getattr(state, "domain_signal", None))),
-                }
-        except Exception:
-            reconstructed_review = None
-    INTAKE_QUESTION = "Describe your invention in more detail — what specific problem does it solve, and how does it solve it?"
+# =============================================================================
+# T2-D — OPTIONAL contextual feedback on the question actually displayed
+# =============================================================================
+# One closed-vocabulary choice about ONE exact displayed question, saved to the
+# owner's own project. It is not an answer, evidence, replay input, promotion,
+# scoring signal, quota event or selector; nothing reads it to decide anything,
+# and the journey is completely unaffected if it is never used.
+#
+# CONTEXT, NOT TEXT. A submission is bound to the canonical, language-free
+# context the shared resolver produced — identity, gap, iterations_open,
+# iteration and the DURABLE ledger revision — never to question text and never
+# by reverse-matching a translation. Because language is absent from the
+# context, switching EN/AR mid-question keeps the same feedback.
+#
+# SINGLE STEP. One POST route and one unnested form: csrf_token, context_token,
+# choice. There is no second confirmation page and no server-side staging
+# subsystem; the signed token carries everything the write needs.
+_FEEDBACK_FIELDS = frozenset({"csrf_token", "context_token", "choice"})
+FEEDBACK_TOKEN_TTL_SECONDS = 900
+_FEEDBACK_NONCE_BYTES = 24
 
+# Its own two-slot notice namespace: it never reads, writes or clears the
+# answer, correction, quantity or evidence-reference slots.
+FEEDBACK_ACK_SLOT = "_qfb_ack"
+FEEDBACK_ERROR_SLOT = "_qfb_error"
+FEEDBACK_SAVED_ACK = "QFB_SAVED"
+FEEDBACK_UNCHANGED_ACK = "QFB_UNCHANGED"
+FEEDBACK_REPLAY_ACK = "QFB_REPLAY"
+FEEDBACK_NOT_SAVED_MESSAGE = "QFB_NOT_SAVED"
+FEEDBACK_MOVED_ON_MESSAGE = "QFB_MOVED_ON"
+FEEDBACK_UNKNOWN_MESSAGE = "QFB_OUTCOME_UNKNOWN"
+FEEDBACK_SAVED_NOT_SHOWN_MESSAGE = "QFB_SAVED_NOT_SHOWN"
+FEEDBACK_CAP_MESSAGE = "QFB_CAP_REACHED"
+_FEEDBACK_DISPLAY_KEY = {
+    FEEDBACK_SAVED_ACK: "UI_T2D_ACK_SAVED",
+    FEEDBACK_UNCHANGED_ACK: "UI_T2D_ACK_UNCHANGED",
+    FEEDBACK_REPLAY_ACK: "UI_T2D_ACK_REPLAY",
+    FEEDBACK_NOT_SAVED_MESSAGE: "UI_T2D_ERR_NOT_SAVED",
+    FEEDBACK_MOVED_ON_MESSAGE: "UI_T2D_ERR_MOVED_ON",
+    FEEDBACK_UNKNOWN_MESSAGE: "UI_T2D_ERR_UNKNOWN",
+    FEEDBACK_SAVED_NOT_SHOWN_MESSAGE: "UI_T2D_ERR_SAVED_NOT_SHOWN",
+    FEEDBACK_CAP_MESSAGE: "UI_T2D_ERR_CAP",
+}
+
+
+def _feedback_notice_text(token, lang):
+    """Bilingual text for a stored notice token, or None. An unrecognised token
+    renders NOTHING rather than a raw token."""
+    key = _FEEDBACK_DISPLAY_KEY.get(token)
+    return None if key is None else ui_text.text(key, lang)
+
+
+def _publish_feedback_notice(entry, ack=None, error=None):
+    """Publish exactly ONE current feedback notice, inside the feedback
+    namespace only. The answer, correction, quantity and evidence-reference
+    namespaces are never touched."""
+    entry.pop(FEEDBACK_ACK_SLOT, None)
+    entry.pop(FEEDBACK_ERROR_SLOT, None)
+    if ack is not None:
+        entry[FEEDBACK_ACK_SLOT] = ack
+    if error is not None:
+        entry[FEEDBACK_ERROR_SLOT] = error
+
+
+def _feedback_ledger_revision(sid, state):
+    """The DURABLE ledger revision for this project, or None when the runtime
+    snapshot is NOT consistent with it.
+
+    A fresh durable revision must never be attached to stale cached state, so
+    every durable record id must also be present in the runtime ledger. If the
+    live session is behind the durable truth (or the store cannot be read), the
+    caller renders no control rather than binding a context it cannot honour."""
+    try:
+        durable = _get_store().ledger_record_ids(sid)
+    except Exception:
+        return None
+    runtime = {getattr(r, "record_id", None)
+               for r in getattr(state, "assertions", []) or []}
+    if any(rid not in runtime for rid in durable):
+        return None
+    return _ledger_revision(durable)
+
+
+def _feedback_context(sid, state, qctx):
+    """The canonical, language-free context of the CURRENTLY displayed question,
+    or None when no eligible question owns the slot.
+
+    Eligibility is forward-verified: the identity must come from the shared
+    resolver AND its committed English text must equal the canonical English ask
+    the resolver decided on. An absent, unknown or mismatched question gets no
+    control — a non-None identity alone is deliberately not sufficient."""
+    if qctx is None or qctx.identity is None or not isinstance(qctx.question, str):
+        return None
+    if not _rvr7_verify_english(qctx.identity, qctx.served, qctx.question):
+        return None
+    revision = _feedback_ledger_revision(sid, state)
+    if revision is None:
+        return None
+    gap = qctx.gap_type or _FEEDBACK_NO_GAP
+    iterations = (qctx.iterations_open if qctx.gap_type
+                  else _FEEDBACK_NO_ITERATIONS)
+    iteration = int(getattr(state, "iteration", 0) or 0)
+    return {
+        "version": _FEEDBACK_CONTEXT_VERSION,
+        "identity": qctx.identity,
+        "gap_type": gap,
+        "iterations_open": iterations,
+        "iteration": iteration,
+        "revision": revision,
+        "key": _feedback_context_key(sid, qctx.identity, gap, iterations,
+                                     iteration, revision),
+    }
+
+
+# --- the signed, self-contained context token --------------------------------
+# The token carries its OWN original context, expected feedback-head id, render
+# nonce, issue time and expiry, so nothing shared or mutable can invalidate an
+# outstanding form: a later GET, HEAD, language render, or another render by the
+# same owner in another browser leaves an unexpired form valid while its
+# substantive context and expected head are unchanged.
+#
+# The payload is bounded, fixed-field and NOT confidential: it holds no
+# credential and no raw session secret. The MAC binds the project, the verified
+# owner and the actual browser session in addition to the payload, so a token is
+# unusable in another project, by another account, or from another browser.
+# There is no per-nonce cache, no staging subsystem, and no path that trusts an
+# unsigned legacy value.
+_FEEDBACK_TOKEN_VERSION = "t2dfb1"      # token FORMAT version, versioned apart
+                                        # from the canonical context version
+_FEEDBACK_TOKEN_MAX_CHARS = 512
+_FEEDBACK_TOKEN_FIELDS = ("v", "cv", "ctx", "idn", "gap", "io", "it", "rev",
+                          "head", "n", "iat", "exp")
+# M-1: the EXACT shape `_feedback_token_mac` generates — lowercase ASCII hex of
+# exactly `_ANSWER_HMAC_HEX_LEN` characters. Verified with a FULL match before
+# the constant-time comparison, because `hmac.compare_digest` raises on a
+# non-ASCII str and an unhandled exception there would surface as a 500 instead
+# of the ordinary invalid-token refusal.
+_FEEDBACK_MAC_RE = re.compile("[0-9a-f]{%d}" % _ANSWER_HMAC_HEX_LEN)
+
+
+def _feedback_token_payload(context, head_id, nonce, issued_at, expires_at):
+    """The bounded, fixed-field payload — canonical order, no credentials."""
+    return {
+        "v": _FEEDBACK_TOKEN_VERSION,
+        "cv": int(context["version"]),
+        "ctx": str(context["key"]),
+        "idn": str(context["identity"]),
+        "gap": str(context["gap_type"]),
+        "io": int(context["iterations_open"]),
+        "it": int(context["iteration"]),
+        "rev": str(context["revision"]),
+        "head": head_id or "",
+        "n": str(nonce),
+        "iat": int(issued_at),
+        "exp": int(expires_at),
+    }
+
+
+def _feedback_token_mac(sid, account_id, encoded):
+    """HMAC over the encoded payload, additionally binding the project, the
+    verified owner and the actual browser session."""
+    msg = _canonical_message("t2d-feedback-token-v1", sid, account_id or "",
+                             _quantity_session_binding(), encoded)
+    return _p2a_hmac.new(_answer_secret(), msg,
+                         _p2a_hashlib.sha256).hexdigest()[:_ANSWER_HMAC_HEX_LEN]
+
+
+def _feedback_token(sid, account_id, context, head_id, nonce, issued_at,
+                    expires_at):
+    """``<base64url(payload)>.<mac>`` — self-contained and signed."""
+    payload = _feedback_token_payload(context, head_id, nonce, issued_at,
+                                      expires_at)
+    raw = json.dumps(payload, sort_keys=True, separators=(",", ":"),
+                     ensure_ascii=True).encode("utf-8")
+    encoded = _p2a_b64.urlsafe_b64encode(raw).decode("ascii").rstrip("=")
+    return encoded + _ANSWER_TOKEN_SEP + _feedback_token_mac(
+        sid, account_id, encoded)
+
+
+def _read_feedback_token(sid, account_id, token):
+    """Verify and decode a submitted token, or return None.
+
+    Rejects — with no write and no side effect — a malformed, oversized,
+    tampered, wrongly-signed, unsupported-version, wrong-typed or EXPIRED
+    token, and one minted for another project, owner or browser session. The
+    original 900-second lifetime is enforced from the token's own ``iat``."""
+    if not isinstance(token, str) or not token or \
+            len(token) > _FEEDBACK_TOKEN_MAX_CHARS:
+        return None
+    encoded, sep, mac = token.partition(_ANSWER_TOKEN_SEP)
+    if not sep or not encoded or not mac:
+        return None
+    # A MAC segment that does not match the generated format EXACTLY is simply
+    # an invalid token, refused through this same path. Nothing is stripped,
+    # normalised or discarded, and every valid-shaped MAC still goes through
+    # the unchanged constant-time comparison below.
+    if _FEEDBACK_MAC_RE.fullmatch(mac) is None:
+        return None
+    if not _p2a_hmac.compare_digest(
+            mac, _feedback_token_mac(sid, account_id, encoded)):
+        return None
+    try:
+        padding = "=" * (-len(encoded) % 4)
+        payload = json.loads(
+            _p2a_b64.urlsafe_b64decode(encoded + padding).decode("utf-8"))
+    except Exception:
+        return None
+    if not isinstance(payload, dict) or set(payload) != set(_FEEDBACK_TOKEN_FIELDS):
+        return None
+    if payload.get("v") != _FEEDBACK_TOKEN_VERSION:
+        return None
+    for field in ("cv", "io", "it", "iat", "exp"):
+        value = payload.get(field)
+        if not isinstance(value, int) or isinstance(value, bool):
+            return None
+    for field in ("ctx", "idn", "gap", "rev", "n", "head"):
+        if not isinstance(payload.get(field), str):
+            return None
+    if payload["cv"] != _FEEDBACK_CONTEXT_VERSION or not payload["ctx"] \
+            or not payload["n"]:
+        return None
+    if payload["exp"] - payload["iat"] != FEEDBACK_TOKEN_TTL_SECONDS:
+        return None
+    if _quantity_clock() >= payload["exp"]:
+        return None                                   # authentic expiry
+    return payload
+
+
+def _feedback_event_key(sid, nonce, context_key, head_id):
+    """The durable exact-replay identity of ONE submission, derived from the
+    ORIGINAL SIGNED submission identity — the render nonce, the context the
+    form was rendered for and the head expected THEN. It is derived neither
+    from the latest render time, nor from the current feedback head, nor from
+    the submitted choice, so a legitimate retry is recognised even after the
+    context has since advanced, while A -> B -> A stays three distinct
+    events."""
+    msg = _canonical_message("t2d-feedback-event-v1", sid, nonce, context_key,
+                             head_id or "")
+    return _p2a_hmac.new(_answer_secret(), msg,
+                         _p2a_hashlib.sha256).hexdigest()[:_ANSWER_HMAC_HEX_LEN]
+
+
+def _feedback_render_context(entry, state, sid, qctx, read_only=False):
+    """Read-only render context for the feedback control, or None.
+
+    ``read_only=True`` is the COLD reconstructed-review surface: it renders a
+    previously saved choice beside the question that cold banner actually
+    shows, mints NO token and renders NO form. A reconstructed snapshot can
+    carry a populated domain, so writability is decided by this EXPLICIT
+    restriction — never by the snapshot — and the cold path therefore can never
+    become writable or rehydrate a writable session.
+
+    Ownership is rechecked here on every read as well as on every write. A
+    selected choice is shown ONLY from verified durable readback: an empty
+    history renders "nothing chosen", while an unreadable or corrupt POPULATED
+    history suppresses the block entirely rather than implying nothing was
+    saved. A feedback failure never disables answering or the journey."""
+    context = _feedback_context(sid, state, qctx)
+    if context is None:
+        return None
+    if not _quantity_write_authorized(sid):
+        return None
+    try:
+        history = _get_store().load_question_feedback(sid)
+        head = _active_feedback_for_context(history, context["key"])
+    except Exception:
+        return None                       # unreadable/corrupt: show nothing
+    can_write = (not read_only
+                 and getattr(state, "domain", None) is not None)
+    token = None
+    if can_write:
+        account = _quantity_writer_account(sid)
+        if account is None:
+            can_write = False
+        else:
+            issued_at = _quantity_clock()
+            token = _feedback_token(
+                sid, account["account_id"], context,
+                None if head is None else head.feedback_id,
+                secrets.token_urlsafe(_FEEDBACK_NONCE_BYTES), issued_at,
+                issued_at + FEEDBACK_TOKEN_TTL_SECONDS)
+    return {
+        "choices": list(_FEEDBACK_CHOICES),
+        "selected": None if head is None else head.choice,
+        "can_write": can_write,
+        "token": token,
+        "read_only": bool(read_only),
+    }
+
+
+def _cold_feedback_context(entry, sid, reconstructed_review):
+    """Feedback readback for the COLD reconstructed-review surface, or None.
+
+    Uses the Level-1 snapshot the cold banner ALREADY computed — no second
+    reconstruction, and `engine/session_reconstruction.py` is untouched. The
+    context is resolved through the same shared resolver and the same forward
+    identity verification, so the saved choice is proven to belong to the
+    question that cold banner is actually displaying; question selection is
+    unchanged and no second selector exists.
+
+    Always read-only: `read_only=True` is passed explicitly, so a reconstructed
+    snapshot carrying a populated domain can never make this carrier writable.
+    Returns None — and the surface simply shows nothing — when the context
+    cannot be proven or the history cannot be read."""
+    if not reconstructed_review:
+        return None
+    snapshot = reconstructed_review.get("_t2d_state")
+    if snapshot is None:
+        return None
+    # M-2: this surface says "your saved choice for THIS question", so the
+    # banner must actually be displaying one. The canonical ENGLISH ask the
+    # banner carries must be a nonempty string EQUAL to the resolver's
+    # canonical ask; the translated display string is never compared. No
+    # displayed question, or a different one, suppresses the block entirely
+    # rather than presenting a saved choice beside nothing or beside the wrong
+    # ask. The existing forward-identity and context checks below still apply.
+    banner_question = reconstructed_review.get("next_question")
+    if not isinstance(banner_question, str) or not banner_question.strip():
+        return None
+    try:
+        qctx = _resolve_question_context(snapshot, None)
+        if not isinstance(qctx.question, str) \
+                or qctx.question != banner_question:
+            return None
+        view = _feedback_render_context(entry, snapshot, sid, qctx,
+                                        read_only=True)
+    except Exception:
+        return None
+    if view is None or view.get("selected") is None:
+        return None                    # nothing saved for THIS exact question
+    return view
+
+
+def _resolve_feedback_write(sid, feedback):
+    """Bounded resolution of an UNDETERMINED durable write through the stable
+    ``(project, event_key)``. EXACT_REPLAY when the event is PROVEN present,
+    STORAGE_FAILURE only when its absence is PROVEN, COMMIT_UNKNOWN otherwise —
+    a saved-but-unreadable write is never reported as a failed save."""
+    try:
+        stored = _get_store().question_feedback_for_event_key(
+            sid, feedback.event_key)
+    except Exception:
+        return _FEEDBACK_COMMIT_UNKNOWN
+    if stored is None:
+        return _FEEDBACK_STORAGE_FAILURE
+    return (_FEEDBACK_EXACT_REPLAY if _same_feedback_event(stored, feedback)
+            else _FEEDBACK_COMMIT_UNKNOWN)
+
+
+# The intake ask, unchanged in value. Module-level because the shared
+# question resolver below and the session page both need it.
+INTAKE_QUESTION = "Describe your invention in more detail — what specific problem does it solve, and how does it solve it?"
+
+
+class _QuestionContext:
+    """The ONE read-only result of question selection for a live session.
+
+    GET renders from it and the feedback route re-derives it, so the two can
+    never drift into separately implemented selectors. Display language is
+    deliberately absent: the canonical English decision and the RVR-7 identity
+    are language-free, so switching language never changes what a piece of
+    feedback is about."""
+
+    __slots__ = ("gap_type", "iterations_open", "question", "identity",
+                 "served", "w2b_cues", "w2b_risk_note", "w2b_primary_action")
+
+    def __init__(self, gap_type, iterations_open, question, identity, served,
+                 w2b_cues, w2b_risk_note, w2b_primary_action):
+        self.gap_type = gap_type
+        self.iterations_open = iterations_open
+        self.question = question            # the FINAL canonical ENGLISH ask
+        self.identity = identity            # its RVR-7 identity, or None
+        self.served = served                # the committed record, when any
+        self.w2b_cues = w2b_cues
+        self.w2b_risk_note = w2b_risk_note
+        self.w2b_primary_action = w2b_primary_action
+
+
+def _resolve_question_context(state, last_result):
+    """Resolve the displayed question EXACTLY as the session page does.
+
+    A bounded extraction of the existing selection block, unchanged in
+    behaviour: the W2-B question-slot override precedence first, then W2-C
+    intent-aware serving, then the existing Path-N / stall / exhausted /
+    generic fallbacks, with the same fail-closed handling. It mutates nothing,
+    persists nothing and resolves no display language.
+
+    Returning the identity alongside the decision is what lets the feedback
+    route bind to the question that was actually displayed WITHOUT
+    reverse-matching translated text."""
+    iterations_open = 0
     gap_type = select_next_gap(state)
     question = None
     # RVR-7: identity of a substantive ask served OUTSIDE the gap slot (the
@@ -3863,6 +4186,130 @@ def show_session(sid):
         # no served question, but accepted risks exist: the governed
         # not-re-asked transparency note still applies
         w2b_risk_note = True
+
+    if question is not None:
+        if gap_type:
+            identity, served = _rvr7_identity(
+                getattr(state, "domain", None), gap_type, iterations_open,
+                state.path, override_source=_rvr7_override_source,
+                w2c=_rvr7_w2c)
+        else:
+            identity, served = _rvr7_forced_identity, None
+    else:
+        identity, served = None, None
+    return _QuestionContext(
+        gap_type=gap_type, iterations_open=iterations_open, question=question,
+        identity=identity, served=served, w2b_cues=tuple(w2b_cues),
+        w2b_risk_note=w2b_risk_note, w2b_primary_action=w2b_primary_action)
+
+
+@app.route("/session/<sid>", methods=["GET"])
+def show_session(sid):
+    if not _project_authorized(sid):
+        return _deny_project()
+    entry = SESSION_STORE.get(sid)
+    if not entry:
+        # P4-1b-1 durable cold-load: after memory loss, rebuild the minimum
+        # runtime entry from the durable project envelope keyed by sid. On any
+        # missing/malformed/unavailable durable state this returns None and we
+        # fall through to the existing generic unavailable behaviour (no
+        # disclosure of whether the project ever existed).
+        entry = _cold_load_entry(sid)
+        if not entry:
+            return redirect(url_for("index"))
+        SESSION_STORE[sid] = entry
+    state = entry["state"]
+    # T2-A: refresh the quantity carrier from the DURABLE truth on every render
+    # and fail closed (the same generic unavailable behaviour as a failed cold
+    # load) when a populated history is corrupt or storage is unavailable —
+    # never a page with a partial or silently empty quantity block.
+    if not _attach_quantity_history(sid, state):
+        return redirect(url_for("index"))
+    last_result = entry.get("last_result")
+    # P10-PC1: surface the merged P4-2 Level-1 deterministic READ-ONLY
+    # reconstruction on cold-loaded sessions (the committed cold-load marker is
+    # `state.domain is None`; live /start sessions always carry a domain).
+    # Display-only: `state.domain` is NOT restored, the P4-1b-2a non-resume
+    # guard is untouched, and any reconstruction failure (Level-0 fallback,
+    # ContractError, replay-limit, store unavailability) fails closed to the
+    # prior cold-load page — never a 500, never a false reconstruction claim.
+    reconstructed_review = None
+    if getattr(state, "domain", None) is None:
+        try:
+            # PERF-01: ONE canonical reconstruction pass serves BOTH the review
+            # fields and the banner's display identity. `reconstruct_readonly_state`
+            # is the EXISTING Level-1 accessor and `reconstruct_review_state` is
+            # exactly its `.review` element (`_reconstruct(...)[0]`), so this page
+            # reads the same snapshot it always did — the second full replay it
+            # used to run for `.state` alone is removed. No schema change, no new
+            # subsystem, and `RECONSTRUCTION_VERSION` is untouched.
+            _session = reconstruct_readonly_state(_get_store(), sid)
+            _recon = _session.review
+            # RVR-7 (PR #588): the banner's display identity is named FORWARD from
+            # the reconstructed canonical state — served gap, variant index, domain
+            # — so the Arabic banner never reverse-looks-up an id from the
+            # reconstructed English text. `.state` is RENDER-ONLY here: it is never
+            # placed into SESSION_STORE (the minimal cold entry above stays the
+            # non-resumable one, `state.domain is None`), never mutated and never
+            # persisted. A Level-1 wrapper WITHOUT a state is not a valid
+            # reconstruction: the claim is suppressed rather than rendered from a
+            # missing state, and every other failure (Level-0 fallback,
+            # ContractError, replay-limit, store unavailability) still falls
+            # closed to the prior cold-load page through the except below.
+            if (_recon.level == 1 and _recon.reconstructed
+                    and _session.state is not None):
+                # `_rvr7_reconstructed_display` keeps its own internal
+                # exception/mismatch fallback to canonical English.
+                _recon_display = _rvr7_reconstructed_display(
+                    _session.state, _recon.next_question,
+                    _recon.maturity_level, _current_ui_lang())
+                reconstructed_review = {
+                    "domain": getattr(state, "domain_signal", None),
+                    "maturity_level": _recon.maturity_level,
+                    "current_stage": _recon.current_stage,
+                    "open_gaps": list(_recon.open_gaps),
+                    # Canonical English reconstruction evidence — UNCHANGED.
+                    "next_question": _recon.next_question,
+                    # Display-only resolution of the SAME ask (RVR-7).
+                    "next_question_display": _recon_display[0],
+                    "next_question_lang": _recon_display[1],
+                    "next_question_dir": _recon_display[2],
+                    # T2-B' cold parity: presentation-only display string for
+                    # the SAME governed identity, verified forward against the
+                    # canonical English above. None whenever nothing eligible
+                    # resolves.
+                    "next_question_explanation": (
+                        _rvr7_reconstructed_explanation(
+                            _session.state, _recon.next_question,
+                            _recon.maturity_level)),
+                    "answers_count": len(_recon.accepted_answer_evidence),
+                    # T2-D: reuse THIS already-computed snapshot for exact-
+                    # context feedback readback. No second reconstruction is
+                    # run and engine/session_reconstruction.py is untouched.
+                    "_t2d_state": _session.state,
+                    # P10-PC3: writable-resume eligibility for the explicit
+                    # establishment button (display precheck only; the POST
+                    # route re-validates from scratch). Completed projects
+                    # (maturity >= 2, no open gaps) never reopen. Fields come
+                    # from the Level-1 review snapshot; the display domain is
+                    # the persisted confirmed identity on domain_signal.
+                    "resume_eligible": bool(
+                        (_recon.maturity_level < 2 or _recon.open_gaps)
+                        and domain_activation.is_activated(
+                            getattr(state, "domain_signal", None))),
+                }
+        except Exception:
+            reconstructed_review = None
+
+    # T2-D: ONE read-only resolution of the displayed question, shared with the
+    # feedback route so GET and POST can never drift into two selectors.
+    _qctx = _resolve_question_context(state, last_result)
+    gap_type = _qctx.gap_type
+    iterations_open = _qctx.iterations_open
+    question = _qctx.question
+    w2b_cues = list(_qctx.w2b_cues)
+    w2b_risk_note = _qctx.w2b_risk_note
+    w2b_primary_action = _qctx.w2b_primary_action
     open_gaps = state.get_open_gaps()
     closed_gaps = [g for g in state.gaps if g.status == "CLOSED"]
     gap_labels = {g.gap_type: GAP_LABELS.get(g.gap_type, GAP_LABELS["__default__"]) for g in state.gaps}
@@ -3881,14 +4328,8 @@ def show_session(sid):
     # returns `question` unchanged whenever Arabic is not selected.
     question_lang, question_dir = "en", "ltr"
     question_explanation = None
+    _rvr7_id, _rvr7_served = _qctx.identity, _qctx.served
     if question is not None:
-        if gap_type:
-            _rvr7_id, _rvr7_served = _rvr7_identity(
-                getattr(state, "domain", None), gap_type, iterations_open,
-                state.path, override_source=_rvr7_override_source,
-                w2c=_rvr7_w2c)
-        else:
-            _rvr7_id, _rvr7_served = _rvr7_forced_identity, None
         question = _rvr7_display(_rvr7_id, _rvr7_served, question,
                                  _current_ui_lang())
         question_lang, question_dir = _rvr7_question_direction(
@@ -3963,6 +4404,20 @@ def show_session(sid):
         # resolves every display label through t(). None when nothing applies.
         quantity_step=_quantity_step_context(entry, state, sid),
         evref_step=_evref_step_context(entry, state, sid),
+        # T2-D: optional feedback control for the question actually displayed.
+        # Presentation-only; never persisted into canonical state, an export,
+        # the API, the deliverable or reconstruction.
+        question_feedback=_feedback_render_context(entry, state, sid, _qctx),
+        # T2-D cold readback: built from the SAME reconstructed snapshot the
+        # cold review banner already computed, through the SAME shared resolver
+        # and forward identity checks, and explicitly READ-ONLY — it mints no
+        # token, renders no form, and never rehydrates a writable session.
+        cold_question_feedback=_cold_feedback_context(
+            entry, sid, reconstructed_review),
+        feedback_ack=_feedback_notice_text(
+            _render_notice(entry, FEEDBACK_ACK_SLOT, None), _current_ui_lang()),
+        feedback_error=_feedback_notice_text(
+            _render_notice(entry, FEEDBACK_ERROR_SLOT, None), _current_ui_lang()),
         evref_ack=_evref_notice_text(
             _render_notice(entry, EVREF_ACK_SLOT, None), _current_ui_lang()),
         evref_error=_evref_notice_text(
@@ -5007,6 +5462,155 @@ def confirm_evidence_reference(sid):
         outcome = _EVREF_COMMIT_UNKNOWN          # never invent a success
     return _finish_evref_write(
         sid, entry, outcome, withdrawing=bool(staged["withdrawn"]))
+
+
+@app.route("/session/<sid>/question-feedback", methods=["POST"])
+def submit_question_feedback(sid):
+    """T2-D — record ONE optional choice about the question actually displayed.
+
+    Single step: global CSRF runs before this view; then `_project_authorized`,
+    the verified-active-durable-owner predicate, a strict field allowlist, the
+    closed choice vocabulary and the signed context token. The token binds the
+    context, the owner, the browser session, the EXPECTED CURRENT HEAD, a fresh
+    render nonce and the expiry, so a stale tab, a moved head, a changed
+    project, another session or a tampered field all fail closed.
+
+    The context is RE-DERIVED here from live state through the SAME shared
+    resolver the page rendered from, and the durable ledger revision is
+    rechecked inside the store's serialized transaction. A stale context is
+    REFUSED, never silently retargeted onto the current question.
+
+    Writing requires a live, resumed session: a cold read-only session is
+    read-only here exactly as it is everywhere else, and this route never
+    rehydrates SESSION_STORE."""
+    if not _project_authorized(sid):
+        return _deny_project()
+    entry = SESSION_STORE.get(sid)
+    if not entry:
+        return redirect(url_for("index"))
+    account = _quantity_writer_account(sid)
+    if account is None:
+        return _deny_project()
+    if set(request.form.keys()) - _FEEDBACK_FIELDS or \
+            any(len(request.form.getlist(k)) != 1 for k in request.form.keys()):
+        _publish_feedback_notice(entry, error=FEEDBACK_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    state = entry["state"]
+    if getattr(state, "domain", None) is None:
+        # Cold read-only session: never writable through this route.
+        _publish_feedback_notice(entry, error=FEEDBACK_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    try:
+        choice = _validate_feedback_choice(request.form.get("choice", ""))
+    except _QuestionFeedbackError:
+        _publish_feedback_notice(entry, error=FEEDBACK_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    # The signed, self-contained token is the ONLY source of the original
+    # submission identity. Nothing shared or mutable is consulted, so a later
+    # render cannot invalidate an outstanding form.
+    signed = _read_feedback_token(sid, account["account_id"],
+                                  request.form.get("context_token", ""))
+    if signed is None:
+        _publish_feedback_notice(entry, error=FEEDBACK_MOVED_ON_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    original_head = signed["head"] or None
+    event_key = _feedback_event_key(sid, signed["n"], signed["ctx"],
+                                    original_head)
+
+    # Resolve the DURABLE ORIGINAL EVENT first. A legitimate retry of a
+    # submission that was already recorded must not be refused merely because
+    # the head or context has advanced since — that would claim nothing was
+    # saved when something was.
+    try:
+        stored = _get_store().question_feedback_for_event_key(sid, event_key)
+    except Exception:
+        # M-3: this lookup FAILING establishes nothing about whether a previous
+        # request was saved — a matching row may well exist and be unreadable
+        # right now. Claiming "nothing was saved" here would be untrue, so the
+        # honest UNKNOWN notice is published instead. Only this branch changes:
+        # every other refusal, and the post-write outcome resolver, keep their
+        # existing meanings.
+        _publish_feedback_notice(entry, error=FEEDBACK_UNKNOWN_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    if stored is not None:
+        if (stored["context_key"] == signed["ctx"]
+                and stored["choice"] == choice
+                and stored["supersedes_feedback_id"] == original_head):
+            # The exact same event. Acknowledge that it WAS recorded, without
+            # claiming that its choice is still the current one.
+            _publish_feedback_notice(entry, ack=FEEDBACK_REPLAY_ACK)
+        else:
+            # Same event key, different material content: never an overwrite.
+            _publish_feedback_notice(entry, error=FEEDBACK_MOVED_ON_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+
+    # No stored event: this is a NEW write, so the CURRENT rendered context must
+    # still match the one the form was rendered for.
+    context = _feedback_context(sid, state, _resolve_question_context(
+        state, entry.get("last_result")))
+    if context is None or context["key"] != signed["ctx"]:
+        _publish_feedback_notice(entry, error=FEEDBACK_MOVED_ON_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    try:
+        history = _get_store().load_question_feedback(sid)
+        head = _active_feedback_for_context(history, context["key"])
+    except Exception:
+        _publish_feedback_notice(entry, error=FEEDBACK_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    head_id = None if head is None else head.feedback_id
+    if head_id != original_head:
+        # The head moved after this form was rendered: refuse, never retarget.
+        _publish_feedback_notice(entry, error=FEEDBACK_MOVED_ON_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    # A FRESH submission whose choice already equals the VERIFIED current head
+    # changes nothing. ALREADY_CURRENT — never a new row, and never conflated
+    # with the historical replay above.
+    if head is not None and head.choice == choice:
+        _publish_feedback_notice(entry, ack=FEEDBACK_UNCHANGED_ACK)
+        return redirect(url_for("show_session", sid=sid))
+    try:
+        feedback = _make_question_feedback(
+            feedback_id=_get_store().new_feedback_id(), feedback_seq=0,
+            context_version=context["version"], context_key=context["key"],
+            rvr7_identity=context["identity"], gap_type=context["gap_type"],
+            iterations_open=context["iterations_open"],
+            iteration=context["iteration"],
+            ledger_revision=context["revision"], choice=choice,
+            supersedes_feedback_id=head_id, event_key=event_key,
+            recorded_at=_quantity_recorded_at())
+    except Exception:
+        _publish_feedback_notice(entry, error=FEEDBACK_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    # Persist before acknowledging. The store rechecks the durable ledger
+    # revision AND the expected head inside its serialized transaction, so a
+    # record or a head that lands in between refuses the write there too.
+    try:
+        outcome = _get_store().append_question_feedback(
+            sid, feedback, expected_head_id=head_id,
+            expected_revision=context["revision"])
+    except _FeedbackChainConflict:
+        outcome = _FEEDBACK_CONFLICT
+    except _FeedbackCapReached:
+        # An established refusal decided before any INSERT: the canonical
+        # outcome is REJECTED and the cap-specific notice explains it. No
+        # eighth write outcome is introduced.
+        outcome = _FEEDBACK_REJECTED
+        _publish_feedback_notice(entry, error=FEEDBACK_CAP_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    except (_ProjectNotFound, _QuestionFeedbackHistoryError,
+            _QuestionFeedbackError):
+        outcome = _FEEDBACK_REJECTED
+    except Exception:
+        outcome = _resolve_feedback_write(sid, feedback)
+    if outcome in (_FEEDBACK_INSERTED, _FEEDBACK_EXACT_REPLAY):
+        _publish_feedback_notice(entry, ack=FEEDBACK_SAVED_ACK)
+    elif outcome == _FEEDBACK_CONFLICT:
+        _publish_feedback_notice(entry, error=FEEDBACK_MOVED_ON_MESSAGE)
+    elif outcome in (_FEEDBACK_REJECTED, _FEEDBACK_STORAGE_FAILURE):
+        _publish_feedback_notice(entry, error=FEEDBACK_NOT_SAVED_MESSAGE)
+    else:                                        # COMMIT_UNKNOWN
+        _publish_feedback_notice(entry, error=FEEDBACK_UNKNOWN_MESSAGE)
+    return redirect(url_for("show_session", sid=sid))
 
 
 @app.route("/session/<sid>/accept-risk", methods=["POST"])

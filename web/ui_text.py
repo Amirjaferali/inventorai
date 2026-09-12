@@ -1865,6 +1865,85 @@ UI_STRINGS = {
                "يعرض بناءً على ما سجّله مشروعك فعلًا، وفق قواعد ثابتة — وهو لا يقرأ "
                "معنى إجاباتك لينشئ أسئلة متابعة جديدة."),
     },
+    # --- T2-D: optional contextual feedback on the displayed question -------
+    # Copy describes SAVING TO THIS PROJECT and nothing more. It never promises
+    # that a team receives or reviews it, never claims anonymity, never implies
+    # automatic learning, and never describes a retention or erasure policy that
+    # is not implemented.
+    "UI_T2D_PROMPT": {
+        "en": "Was this question useful for your idea? (optional)",
+        "ar": "هل كان هذا السؤال مفيدًا لفكرتك؟ (اختياري)",
+    },
+    "UI_T2D_NOTE": {
+        "en": ("Your choice is saved to this project so you can see it later. "
+               "It does not change the questions you are asked, and you can "
+               "skip it."),
+        "ar": ("يُحفظ اختيارك في هذا المشروع لتراه لاحقًا. وهو لا يغيّر الأسئلة "
+               "التي تُطرح عليك، ويمكنك تخطّيه."),
+    },
+    "UI_T2D_CHOICE_HELPFUL": {"en": "Helpful", "ar": "مفيد"},
+    "UI_T2D_CHOICE_UNCLEAR": {"en": "Unclear", "ar": "غير واضح"},
+    "UI_T2D_CHOICE_NOT_RELEVANT": {
+        "en": "Not relevant to my idea", "ar": "لا يناسب فكرتي",
+    },
+    "UI_T2D_SELECTED": {"en": "Your saved choice:", "ar": "اختيارك المحفوظ:"},
+    "UI_T2D_NONE_CHOSEN": {"en": "No choice saved.", "ar": "لم يُحفظ أي اختيار."},
+    "UI_T2D_CHANGE": {"en": "You can change it.", "ar": "يمكنك تغييره."},
+    "UI_T2D_ACK_SAVED": {"en": "Saved to this project.",
+                         "ar": "حُفظ في هذا المشروع."},
+    # A historical replay acknowledges that the earlier request WAS recorded,
+    # and deliberately does not claim that its choice is the current one — the
+    # current choice is shown separately, only from validated readback.
+    "UI_T2D_ACK_REPLAY": {
+        "en": ("That request was already recorded earlier, so nothing was "
+               "added. Your current saved choice is shown above."),
+        "ar": ("سُجِّل ذلك الطلب سابقًا بالفعل، لذلك لم يُضف شيء. ويظهر اختيارك "
+               "المحفوظ الحالي أعلاه."),
+    },
+    "UI_T2D_COLD_SELECTED": {
+        "en": "Your saved choice for this question:",
+        "ar": "اختيارك المحفوظ لهذا السؤال:",
+    },
+    "UI_T2D_COLD_NOTE": {
+        "en": ("This is a read-only view of your saved project. Resume the "
+               "session to change it."),
+        "ar": ("هذا عرض للقراءة فقط لمشروعك المحفوظ. استأنف الجلسة لتغييره."),
+    },
+    "UI_T2D_ACK_UNCHANGED": {
+        "en": "That is already your saved choice. Nothing changed.",
+        "ar": "هذا هو اختيارك المحفوظ بالفعل. لم يتغير شيء.",
+    },
+    "UI_T2D_ERR_NOT_SAVED": {
+        "en": "That could not be saved just now. Nothing was changed.",
+        "ar": "تعذّر حفظ ذلك الآن. لم يتغير أي شيء.",
+    },
+    "UI_T2D_ERR_MOVED_ON": {
+        # Says only that THIS request changed nothing. It never claims that an
+        # earlier request saved nothing — a genuinely recorded earlier event is
+        # acknowledged by UI_T2D_ACK_REPLAY instead.
+        "en": ("This page has moved on since that choice was shown, so this "
+               "request changed nothing. Reload the page to see your current "
+               "saved choice and choose again."),
+        "ar": ("تغيّرت هذه الصفحة منذ عرض ذلك الاختيار، لذلك لم يغيّر هذا الطلب "
+               "شيئًا. أعد تحميل الصفحة لترى اختيارك المحفوظ الحالي واختر من "
+               "جديد."),
+    },
+    "UI_T2D_ERR_UNKNOWN": {
+        "en": ("We could not confirm whether that was saved. Reload this page "
+               "and check before choosing again."),
+        "ar": ("لم نتمكن من تأكيد ما إذا كان ذلك قد حُفظ. أعد تحميل هذه الصفحة "
+               "وتحقق قبل الاختيار من جديد."),
+    },
+    "UI_T2D_ERR_SAVED_NOT_SHOWN": {
+        "en": "That was saved, but it cannot be shown right now. Reload this page.",
+        "ar": "حُفظ ذلك، لكن يتعذّر عرضه الآن. أعد تحميل هذه الصفحة.",
+    },
+    "UI_T2D_ERR_CAP": {
+        "en": ("This project has reached the limit for saved question feedback. "
+               "Nothing was changed and nothing earlier was removed."),
+        "ar": ("بلغ هذا المشروع الحد الأقصى لملاحظات الأسئلة المحفوظة. لم يتغير "
+               "شيء ولم يُحذف أي شيء سابق."),
+    },
     # --- T2-E Option B: owner-recorded, explicitly UNVERIFIED evidence ------
     # Every line below states, in both languages, that this is something the
     # inventor recorded and that InventorAI has verified none of it. No line

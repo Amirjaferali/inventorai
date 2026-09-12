@@ -223,15 +223,43 @@ def test_s3_lapsed_acceptance_comparison_is_english_on_both_sides():
 
 
 def test_s4_canonical_comparison_operates_on_english_only():
-    """S4 gates W2-C on `question == _canonical_q`. The render edge localises
+    """S4 gates W2-C on `question == _canonical_q`. Language resolution happens
     AFTER that gate, so the comparison stays English-on-English and W2-C
-    reachability is identical in both languages."""
+    reachability is identical in both languages.
+
+    T2-D moved question SELECTION into the one shared read-only resolver
+    `_resolve_question_context`, which the session page and the feedback route
+    both call, so the gate and the localisation no longer share a function
+    body. The invariant is unchanged and is checked here as it always was — by
+    ORDER, not by co-location: the canonical comparison lives in the resolver,
+    the resolver contains no display localisation at all, and `show_session`
+    calls the resolver before it localises. Offsets are never compared across
+    two different sources, nothing is concatenated, and no marker string is
+    planted to satisfy a search."""
     from web import app as webapp
-    source = inspect.getsource(webapp.show_session)
-    gate = source.index("_canonical_q = get_question(")
-    localisation = source.index("question = _rvr7_display(")
-    assert gate < localisation, (
+    resolver = inspect.getsource(webapp._resolve_question_context)
+    page = inspect.getsource(webapp.show_session)
+
+    # 1. the actual canonical English comparison lives in the resolver
+    assert "_canonical_q = get_question(" in resolver
+    assert "question == _canonical_q" in resolver
+
+    # 2. no display/language resolution precedes or enters that comparison:
+    #    the resolver performs none at all
+    for localiser in ("_rvr7_display(", "_current_ui_lang(",
+                      "_rvr7_question_direction(", "ui_text.text("):
+        assert localiser not in resolver, localiser
+
+    # 3. `show_session` really calls the resolver, and does so BEFORE it
+    #    localises — both offsets read from the SAME source
+    call = page.index("_resolve_question_context(state, last_result)")
+    localisation = page.index("question = _rvr7_display(")
+    assert call < localisation, (
         "language resolution must happen AFTER the S4 canonical comparison")
+
+    # 4. the gate is not duplicated: exactly one implementation exists
+    module = inspect.getsource(webapp)
+    assert module.count("_canonical_q = get_question(") == 1
 
 
 def test_w2b_candidate_identities_map_without_text():
