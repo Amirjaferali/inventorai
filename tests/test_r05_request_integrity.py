@@ -31,6 +31,9 @@ MUTATIONS = (
     # confirm writes), both covered by the same evidence matrix below.
     "/session/<sid>/evidence-reference/propose",
     "/session/<sid>/evidence-reference/confirm",
+    # T2-D: the single-step contextual question-feedback write, covered by the
+    # same evidence matrix below.
+    "/session/<sid>/question-feedback",
     "/decision-workspace", "/decision-workspace/<did>/input",
     "/decision-workspace/<did>/constraint", "/decision-workspace/<did>/gap",
     "/decision-workspace/<did>/evidence", "/decision-workspace/<did>/gap-assessment",

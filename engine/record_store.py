@@ -45,6 +45,12 @@ from engine.requirement_quantity import (
 # A separate durable row type, deliberately NOT an assertion record: assertion
 # records are replayed as inventor answers by `engine.session_reconstruction`,
 # and a reference must never be.
+from engine.question_feedback import (
+    QuestionFeedback, validate_feedback_history, active_feedback_for_context,
+    is_same_event_material, FEEDBACK_INSERTED, FEEDBACK_EXACT_REPLAY,
+    FEEDBACK_CHOICES, MAX_FEEDBACK_ROWS_PER_PROJECT,
+    QuestionFeedbackHistoryError, FeedbackCapExceeded,
+)
 from engine.evidence_reference import (
     EvidenceReference, validate_reference_history, validate_new_reference,
     active_reference_for_anchor, REFERENCE_INSERTED, REFERENCE_EXACT_REPLAY,
@@ -58,6 +64,17 @@ class StoreError(Exception):
 
 class ProjectNotFound(StoreError):
     """Raised when a project id is not present in the store."""
+
+
+class FeedbackChainConflict(StoreError):
+    """T2-D: the expected head moved, a root was proposed for a context that
+    already has one, or the stable event key names a DIFFERENT event. An
+    established refusal, decided before any row is written."""
+
+
+class FeedbackCapReached(StoreError):
+    """T2-D: the per-project feedback row cap was reached. Refused clearly;
+    history is never truncated and the journey is never blocked."""
 
 
 class ReferenceChainConflict(StoreError):
@@ -122,6 +139,13 @@ class RecordStore(Protocol):
     def append_evidence_reference(self, project_id: str, reference) -> str: ...
     def load_evidence_references(self, project_id: str) -> tuple: ...
     def evidence_reference_for_event_key(self, project_id: str, event_key: str): ...
+    # T2-D contextual question feedback (additive; see the table note below).
+    def new_feedback_id(self) -> str: ...
+    def append_question_feedback(self, project_id: str, feedback,
+                                 expected_head_id=None) -> str: ...
+    def load_question_feedback(self, project_id: str) -> tuple: ...
+    def question_feedback_for_event_key(self, project_id: str, event_key: str): ...
+    def ledger_record_ids(self, project_id: str) -> tuple: ...
 
 
 _SCHEMA = (
@@ -295,6 +319,65 @@ _REFERENCE_SCHEMA = (
     "ON evidence_references (project_id, anchor_record_id)",
 )
 
+# T2-D — OPTIONAL contextual feedback on the question actually displayed.
+# Additive and idempotent on a fresh database AND on an existing populated
+# pre-T2D database; touches no existing table, column or row. This IS an
+# additive schema migration, not "no schema change". Rollback is
+# disable-and-ignore (stop reading the table), never a destructive drop.
+#
+# There is NO foreign key to `records`: a question in flight has no answered
+# record, and feedback must never be attached to one. The predecessor FK is a
+# SAME-PROJECT, SAME-CONTEXT composite self-reference, so a chain can never
+# cross contexts or projects; its parent key is the matching UNIQUE below.
+# SQLite does not accept an inline `UNIQUE (...) WHERE ...` constraint, so both
+# conditional rules are standalone partial unique indexes.
+_FEEDBACK_TABLE = "question_feedback"
+_FEEDBACK_SCHEMA = (
+    """
+    CREATE TABLE IF NOT EXISTS question_feedback (
+        project_id             TEXT    NOT NULL,
+        feedback_seq           INTEGER NOT NULL,
+        feedback_id            TEXT    NOT NULL,
+        context_version        INTEGER NOT NULL,
+        context_key            TEXT    NOT NULL,
+        rvr7_identity          TEXT    NOT NULL,
+        gap_type               TEXT    NOT NULL,
+        iterations_open        INTEGER NOT NULL,
+        iteration              INTEGER NOT NULL,
+        ledger_revision        TEXT    NOT NULL,
+        choice                 TEXT    NOT NULL,
+        supersedes_feedback_id TEXT,
+        event_key              TEXT    NOT NULL,
+        recorded_at            TEXT    NOT NULL,
+        PRIMARY KEY (project_id, feedback_id),
+        UNIQUE (project_id, context_key, feedback_id),
+        FOREIGN KEY (project_id) REFERENCES projects(project_id),
+        FOREIGN KEY (project_id, context_key, supersedes_feedback_id)
+            REFERENCES question_feedback(project_id, context_key, feedback_id),
+        CHECK (choice IN ('HELPFUL', 'UNCLEAR', 'NOT_RELEVANT')),
+        CHECK (context_version >= 1),
+        CHECK (feedback_seq >= 0),
+        CHECK (iteration >= 0),
+        CHECK (length(context_key) > 0 AND length(event_key) > 0),
+        CHECK (length(ledger_revision) > 0 AND length(rvr7_identity) > 0),
+        CHECK (supersedes_feedback_id IS NULL
+               OR supersedes_feedback_id <> feedback_id)
+    )
+    """,
+    "CREATE UNIQUE INDEX IF NOT EXISTS question_feedback_event_key_uq "
+    "ON question_feedback (project_id, event_key)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS question_feedback_seq_uq "
+    "ON question_feedback (project_id, feedback_seq)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS question_feedback_successor_uq "
+    "ON question_feedback (project_id, supersedes_feedback_id) "
+    "WHERE supersedes_feedback_id IS NOT NULL",
+    "CREATE UNIQUE INDEX IF NOT EXISTS question_feedback_root_uq "
+    "ON question_feedback (project_id, context_key) "
+    "WHERE supersedes_feedback_id IS NULL",
+    "CREATE INDEX IF NOT EXISTS question_feedback_context_idx "
+    "ON question_feedback (project_id, context_key)",
+)
+
 
 class SqliteRecordStore:
     """Reference/MVP durable adapter over Python stdlib `sqlite3`.
@@ -332,6 +415,7 @@ class SqliteRecordStore:
             self._migrate_owner(self._conn)
             self._migrate_requirement_quantities(self._conn)
             self._migrate_evidence_references(self._conn)
+            self._migrate_question_feedback(self._conn)
 
     # --- write transaction (serialized; BEGIN IMMEDIATE) --------------------
     @contextmanager
@@ -403,6 +487,16 @@ class SqliteRecordStore:
         if _OWNER_COLUMN not in cols:
             conn.execute("ALTER TABLE projects ADD COLUMN owner_account_id TEXT")
         conn.execute(_OWNER_INDEX)
+
+    def _migrate_question_feedback(self, conn) -> None:
+        """T2-D forward migration against the LIVE schema: additively create the
+        ``question_feedback`` table and its indexes, including the two PARTIAL
+        unique indexes carrying the conditional rules (one root per context; one
+        successor per row). Idempotent (``IF NOT EXISTS``) on a fresh database
+        and on an existing populated pre-T2D database; touches no existing
+        table, column or row."""
+        for stmt in _FEEDBACK_SCHEMA:
+            conn.execute(stmt)
 
     def _migrate_evidence_references(self, conn) -> None:
         """T2-E forward migration against the LIVE schema: additively create the
@@ -996,6 +1090,158 @@ class SqliteRecordStore:
             return ()
         return validate_reference_history(
             [self._reference_from_row(r) for r in rows])
+
+    # --- T2-D contextual question feedback -----------------------------------
+    _FEEDBACK_COLUMNS = (
+        "feedback_seq, feedback_id, context_version, context_key, "
+        "rvr7_identity, gap_type, iterations_open, iteration, "
+        "ledger_revision, choice, supersedes_feedback_id, event_key, "
+        "recorded_at")
+
+    @staticmethod
+    def _feedback_row_dict(row):
+        return {
+            "feedback_seq": row[0], "feedback_id": row[1],
+            "context_version": row[2], "context_key": row[3],
+            "rvr7_identity": row[4], "gap_type": row[5],
+            "iterations_open": row[6], "iteration": row[7],
+            "ledger_revision": row[8], "choice": row[9],
+            "supersedes_feedback_id": row[10], "event_key": row[11],
+            "recorded_at": row[12],
+        }
+
+    @staticmethod
+    def _feedback_from_row(row):
+        return QuestionFeedback(
+            feedback_id=row["feedback_id"], feedback_seq=row["feedback_seq"],
+            context_version=row["context_version"],
+            context_key=row["context_key"], rvr7_identity=row["rvr7_identity"],
+            gap_type=row["gap_type"], iterations_open=row["iterations_open"],
+            iteration=row["iteration"], ledger_revision=row["ledger_revision"],
+            choice=row["choice"],
+            supersedes_feedback_id=row["supersedes_feedback_id"],
+            event_key=row["event_key"], recorded_at=row["recorded_at"])
+
+    def _feedback_rows(self, project_id: str):
+        return [self._feedback_row_dict(row) for row in self._conn.execute(
+            "SELECT " + self._FEEDBACK_COLUMNS + " FROM question_feedback "
+            "WHERE project_id = ? ORDER BY feedback_seq ASC",
+            (project_id,)).fetchall()]
+
+    def new_feedback_id(self) -> str:
+        """A durability-safe, collision-safe identifier for a NEW row."""
+        return "qfb-" + uuid.uuid4().hex
+
+    def ledger_record_ids(self, project_id: str) -> tuple:
+        """This project's DURABLE ledger record ids in stored append order —
+        answers, corrections and non-answer records alike.
+
+        The input to the derived ledger revision. Read-only and project-scoped;
+        it creates no revision table and changes no ledger schema. An unknown
+        project yields the empty tuple, exactly like
+        ``load_accepted_answer_evidence``."""
+        return tuple(row[0] for row in self._conn.execute(
+            "SELECT record_id FROM records WHERE project_id = ? "
+            "ORDER BY seq ASC", (project_id,)).fetchall())
+
+    def question_feedback_for_event_key(self, project_id: str, event_key: str):
+        """The stored row (dict) carrying ``event_key``, or ``None``. The
+        confirm-by-reload seam for exact-replay and uncertain-commit
+        resolution. Project-scoped; reads nothing across projects."""
+        if event_key is None:
+            return None
+        row = self._conn.execute(
+            "SELECT " + self._FEEDBACK_COLUMNS + " FROM question_feedback "
+            "WHERE project_id = ? AND event_key = ?",
+            (project_id, event_key)).fetchone()
+        return None if row is None else self._feedback_row_dict(row)
+
+    def load_question_feedback(self, project_id: str) -> tuple:
+        """Load and VALIDATE one project's feedback history in stored
+        ``feedback_seq`` order.
+
+        Zero rows (including an unknown project) return ``()`` — an EMPTY
+        history, which is valid and is NOT corruption. A POPULATED corrupt
+        history raises ``QuestionFeedbackHistoryError`` with no partial
+        history; a storage failure propagates as the SQL error, so a caller can
+        tell "nothing recorded" from "cannot be read"."""
+        rows = self._feedback_rows(project_id)
+        if not rows:
+            return ()
+        return validate_feedback_history(
+            [self._feedback_from_row(r) for r in rows])
+
+    def append_question_feedback(self, project_id: str, feedback,
+                                 expected_head_id=None) -> str:
+        """Atomically append ONE feedback row and return the TRUTHFUL outcome.
+
+        ``FEEDBACK_EXACT_REPLAY`` when this project already holds the exact
+        material event under the same stable ``event_key`` (resolved FIRST, so
+        a replay is never mis-reported as a conflict); ``FEEDBACK_INSERTED``
+        when this call committed the row.
+
+        ONE serialized transaction (``BEGIN IMMEDIATE``); commit on success,
+        FULL rollback on any failure. INSIDE the transaction, against durable
+        truth: the project must exist; the stable event key is resolved first
+        (a DIFFERENT event under the same key is ``FeedbackChainConflict``); the
+        existing history is loaded and structurally validated; the per-project
+        cap holds (``FeedbackCapReached``); and the EXPECTED HEAD is rechecked —
+        ``expected_head_id`` must equal this context's CURRENT head id, or
+        ``None`` when the context must still have no row. A head that moved
+        between render and submit is refused HERE, never silently retargeted.
+
+        ``feedback_seq`` is assigned here; the caller's value is ignored.
+        SQLite additionally enforces the composite self-FK (same project AND
+        same context), the UNIQUE event key, the two partial unique indexes and
+        the fixed-choice CHECK. There is NO update path: a changed choice is a
+        successor row, and no stored row is ever rewritten."""
+        if not isinstance(feedback, QuestionFeedback):
+            raise StoreError("feedback must be a QuestionFeedback")
+        if feedback.choice not in FEEDBACK_CHOICES:
+            raise StoreError("feedback carries an unknown choice")
+        with self._write():
+            row = self._conn.execute(
+                "SELECT COUNT(*) FROM projects WHERE project_id = ?", (project_id,)
+            ).fetchone()
+            if not row or row[0] == 0:
+                raise ProjectNotFound(project_id)
+            stored = self.question_feedback_for_event_key(
+                project_id, feedback.event_key)
+            if stored is not None:
+                if is_same_event_material(stored, feedback):
+                    return FEEDBACK_EXACT_REPLAY
+                raise FeedbackChainConflict(
+                    "event key already names a different event")
+            history = validate_feedback_history(
+                [self._feedback_from_row(r)
+                 for r in self._feedback_rows(project_id)])
+            if len(history) >= MAX_FEEDBACK_ROWS_PER_PROJECT:
+                raise FeedbackCapReached(
+                    "feedback row cap reached for this project")
+            head = active_feedback_for_context(history, feedback.context_key)
+            current_head_id = None if head is None else head.feedback_id
+            if expected_head_id != current_head_id:
+                raise FeedbackChainConflict(
+                    "the expected feedback head is not this context's head")
+            if feedback.supersedes_feedback_id != current_head_id:
+                raise FeedbackChainConflict(
+                    "the predecessor is not this context's current head")
+            seq = self._conn.execute(
+                "SELECT COALESCE(MAX(feedback_seq), -1) + 1 FROM "
+                "question_feedback WHERE project_id = ?", (project_id,)
+            ).fetchone()[0]
+            self._conn.execute(
+                "INSERT INTO question_feedback (project_id, "
+                + self._FEEDBACK_COLUMNS + ") "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (project_id, seq, feedback.feedback_id,
+                 feedback.context_version, feedback.context_key,
+                 feedback.rvr7_identity, feedback.gap_type,
+                 feedback.iterations_open, feedback.iteration,
+                 feedback.ledger_revision, feedback.choice,
+                 feedback.supersedes_feedback_id, feedback.event_key,
+                 feedback.recorded_at))
+        return FEEDBACK_INSERTED
 
     def project_ids(self) -> List[str]:
         return [row[0] for row in

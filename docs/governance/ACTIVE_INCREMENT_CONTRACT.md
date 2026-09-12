@@ -23,6 +23,151 @@ Git/GitHub own transient candidate, PR and merge identity. No acceptance/merge t
 self-SHA or lifecycle-label change creates a synchronization candidate. When no mandate
 exists, state ACTIVE CONTRACT: NONE; historical declarations never fill the gap.
 
+<a id="current-authority--t2d-contextual-question-feedback"></a>
+## Current authority — T2-D contextual question feedback (Stage 6)
+
+**ACTIVE CONTRACT: T2-D OPTIONAL CONTEXTUAL FEEDBACK ON THE DISPLAYED QUESTION —
+ONE BOUNDED IMPLEMENTATION CANDIDATE (merge NOT authorized).**
+
+**Owner source:** current-chat `T2D-OWNERSHIP-IMPLEMENT-01` v1.0, with addendum
+`T2D-S4-TEST-DEPENDENCY-01` v1.0. It takes effect on receipt (declaration rule
+above) and supersedes the T2-E/T2-F declaration, now preserved below as historical
+evidence. **Ownership:** the current Lead is accountable owner/steward of this
+bounded capability; Original Claude is its implementation agent; existing display
+and persistence responsibilities stay with their current code owners. No closed
+workstream is reopened or relabelled, and no capability owner is manufactured.
+
+**Starting context:** authoritative branch `feature/atomic-json-session-persistence`
+at `100ceb886ceb8d01b77bcf4b5cc5d47787f0c4a2` (tree
+`7044f68a1c38af9d19fdce5d6ff9c80e8b0a4f8a`, the verified PR #640 merge result),
+clean working tree, implementation branch descended directly from that exact tip.
+
+**Product boundary.** One optional control beside the question actually displayed
+in the main Path-N journey, offering exactly `HELPFUL` / `UNCLEAR` /
+`NOT_RELEVANT` (Helpful · مفيد, Unclear · غير واضح, Not relevant to my idea ·
+لا يناسب فكرتي). No default selection, free text, attachment, survey or automatic
+submission; not using it never impedes the journey. Session-page readback only —
+no deliverable, PDF, API, export, admin dashboard, operational-log emission or
+external delivery. Copy describes saving to THIS PROJECT only and never promises
+team receipt or review, anonymity, automatic learning, or a retention/erasure
+policy.
+
+**Context, not text.** GET and POST share ONE read-only resolver,
+`web/app._resolve_question_context` — a bounded extraction of the existing
+selection block that preserves W2-B override precedence, W2-C intent-aware
+serving and every existing fallback. The identity is verified FORWARD against the
+canonical English ask (never by reverse-matching a translation); a non-None
+identity alone is not sufficient, and an absent, unknown or mismatched question
+gets no control. The bound context is
+`(context_version, project, identity, gap_type, iterations_open, iteration,
+ledger_revision)`, where the revision is DERIVED from the existing durable
+append-only record order — corrections and non-answer records included — with the
+explicit `EMPTY` sentinel for a project with no records. No revision table is
+created, the ledger schema is unchanged, and feedback is never part of that
+revision. A context is bound only when the runtime snapshot is consistent with
+the durable ledger, so a fresh revision is never attached to stale cached state;
+eligible no-gap prompts use explicit gap/counter sentinels. Language is absent
+from the context, so switching EN/AR never changes what a piece of feedback is
+about. The revision is rechecked inside the serialized write transaction and a
+stale context is REFUSED, never silently retargeted.
+
+**Single step.** One route, `POST /session/<sid>/question-feedback`, with its own
+unnested form carrying only `csrf_token`, `context_token`, `choice`. The signed
+token binds the context, the verified owner, the browser-session binding, the
+EXPECTED CURRENT HEAD id (or empty), a fresh render nonce, the issue time and a
+900-second expiry, using the existing secret and canonical-encoding primitives.
+There is no second confirmation page and no staging subsystem. The `event_key` is
+derived from the SIGNED SUBMISSION identity and NOT from the choice, which is
+compared instead — so `A → B → A` is three legitimate recorded choices while a
+genuine resubmission of the same rendered form stays idempotent. Outcomes:
+`INSERTED`, `EXACT_REPLAY`, `ALREADY_CURRENT` (a fresh submission equal to the
+current choice — never mislabelled a replay), `CONFLICT`, `REJECTED`,
+`STORAGE_FAILURE` (only when absence is established) and `COMMIT_UNKNOWN`. A
+delayed retry never restores an old selection, and a historical exact replay is
+never presented as proof that its choice is still current. Persist before
+acknowledging; a saved-but-unreadable write is never reported as a failed save.
+
+**Storage.** One additive `question_feedback` table in the existing record store,
+created with `CREATE TABLE IF NOT EXISTS` plus standalone
+`CREATE UNIQUE INDEX ... WHERE ...` statements. **This is an additive schema
+migration, not "no schema change"** — additive and idempotent on fresh and
+populated databases, with existing tables, columns and rows untouched. There is
+NO foreign key to answered records: the constraints are a project FK, a
+same-project/same-context composite self-FK for the predecessor with its matching
+UNIQUE parent key, a unique event key and sequence per project, one root per
+`(project, context)` and one successor per predecessor as partial indexes, plus
+fixed-choice and field CHECKs. The head is DERIVED — there is no UPDATE-based
+active flag and no UPDATE path at all. Incoming and loaded histories are
+validated (same context, existing earlier predecessor, no self-reference, cycle,
+fork or partially corrupt history) and the expected head is enforced inside the
+existing serialized transaction. New rows are capped at 1,000 per project,
+supersessions included; at the cap a new write is refused clearly without
+truncating history or blocking the journey, and exact replays remain read-only.
+
+**Eligibility, readback and failure isolation.** The authenticated, active,
+email-verified durable-owner predicate is reused and rechecked on every read and
+write; there is no anonymous or cross-owner intake or readback, and unknown or
+repeated form fields are rejected. Cold sessions remain read-only: the existing
+reconstructed state is used only for exact-context readback, the route never
+rehydrates `SESSION_STORE`, and writing still requires the existing explicit
+resume path. On a reproducible unchanged context a saved choice survives restart
+and explicit resume; when a runtime-only context cannot be reproduced nothing is
+shown, so saved feedback is never assigned to another question. An empty history,
+unavailable storage and a corrupt populated history are distinguished; a selected
+choice is shown only from verified durable readback; and a feedback failure never
+disables answering or the journey. Notices live in an isolated bilingual
+namespace that preserves the answer, correction, quantity and evidence-reference
+notices.
+
+**Non-interference.** Feedback is not an answer, evidence, replay input,
+readiness/quality/validation/provenance writer, scoring signal, quota event or
+selector. No learning, AI or provider use, and no WS11, T2-G or later-stage
+activation.
+
+**Exact file boundary (eleven paths).** Production `engine/question_feedback.py`
+(new), `engine/record_store.py`, `web/app.py`, `web/ui_text.py`,
+`web/templates/session.html`; tests `tests/test_t2d_question_feedback.py` (new),
+`tests/test_r05_request_integrity.py`, `tests/test_pvcg_r1_durable_epistemic_memory.py`,
+`tests/test_t2a_requirement_quantity_engine_store.py`,
+`tests/test_rvr7_render_edge_resolution.py`; and this file.
+`web/result_feedback.py` (system-to-user result explanation),
+`web/observability.py`, the progression/reconstruction engines, the
+evidence/quantity engines, the deliverable template, the API and the exports all
+remain unchanged.
+
+**One-path amendment (`T2D-S4-TEST-DEPENDENCY-01`).** The original boundary was
+TEN paths. Sharing one resolver between GET and POST necessarily moves the S4
+canonical English comparison out of `show_session`, which the existing
+`test_s4_canonical_comparison_operates_on_english_only` located by reading that
+function's own source. The Owner added an ELEVENTH path,
+`tests/test_rvr7_render_edge_resolution.py`, restricted to that single test and
+its explanatory docstring. The test keeps its name and its ordering invariant: it
+now establishes that the canonical comparison lives in
+`_resolve_question_context`, that the resolver performs no display localisation
+at all, that `show_session` calls the resolver before `_rvr7_display` (both
+offsets read from the SAME source), and that exactly one implementation of the
+gate exists. Offsets from different sources are never compared, nothing is
+concatenated, and no marker string was planted. Every other test, digest pin and
+guard in that file is unchanged.
+
+**PR #640 boundary-wording clarification (historical, non-authorizing).** The
+PR #640 authorization named ELEVEN allowed paths and its delivered candidate also
+touched SIX disclosed mechanical test paths — three P9-MECH digest re-pins, the
+R-05 route inventory, the PVCG-R1 one-ledger enumeration and the T2-A table
+enumeration — for a total of SEVENTEEN. This records that arithmetic only. The
+historical instruction is preserved as issued and no retroactive authority is
+invented. All six PR #640 non-blocking findings retain their existing
+dispositions and return triggers; this clarification does not close the
+contract-wording finding, which returns at its own trigger.
+
+**Delivery included / not included:** one implementation branch from the verified
+tip, the focused/affected/smoke/full/JUnit evidence, ordinary commits, a normal
+push and one PR targeting `feature/atomic-json-session-persistence`. NOT
+included: merge, deployment, release, tags, force-push, rebase, branch deletion,
+modification of the authoritative branch, Stage 7, WS11, advanced evidence
+writers, human research and real-user data collection. Independent review of the
+completed candidate is performed by a separate non-authoring session.
+
 <a id="current-authority--t2e-t2f-evidence-references-and-ordering"></a>
 ## Current authority — T2-E Option B + T2-F (one combined bounded candidate)
 

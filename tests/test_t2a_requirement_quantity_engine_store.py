@@ -597,10 +597,11 @@ def test_fresh_database_creates_the_exact_table_index_set_and_composite_foreign_
     conn = store._conn
     tables = sorted(r[0] for r in conn.execute(
         "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'"))
-    # T2-E Option B additively created `evidence_references`; every assertion
-    # below about requirement_quantities itself is unchanged.
-    assert tables == ["evidence_references", "projects", "records",
-                      "requirement_quantities"]
+    # T2-E Option B additively created `evidence_references` and T2-D added
+    # `question_feedback`; every assertion below about requirement_quantities
+    # itself is unchanged.
+    assert tables == ["evidence_references", "projects", "question_feedback",
+                      "records", "requirement_quantities"]
     cols = [r[1] for r in conn.execute("PRAGMA table_info(requirement_quantities)")]
     assert cols == ["project_id", "quantity_seq", "quantity_id", "anchor_record_id",
                     "requirement_id", "quantity_kind", "value_text",

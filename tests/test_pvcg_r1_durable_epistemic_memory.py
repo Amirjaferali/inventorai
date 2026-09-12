@@ -454,13 +454,30 @@ def test_durable_store_holds_exactly_one_ledger_and_no_parallel_table(db_path,
         # owner actions. The semantic assertion below is what enforces that.
         reference_cols = [col[1] for col in
                           conn.execute("PRAGMA table_info(evidence_references)")]
+        # T2-D added the additive, project-scoped `question_feedback` history
+        # table. Like the two before it, it is NOT a parallel ledger: it carries
+        # no disposition and no record payload, holds only a closed-vocabulary
+        # choice, and is never replayed — `records` remains the ONE durable
+        # ledger of owner actions. The semantic assertions below enforce that.
+        feedback_cols = [col[1] for col in
+                         conn.execute("PRAGMA table_info(question_feedback)")]
+        feedback_choices = [r[0] for r in conn.execute(
+            "SELECT DISTINCT choice FROM question_feedback")]
     finally:
         conn.close()
-    assert tables == ["evidence_references", "projects", "records",
-                      "requirement_quantities"], tables
+    assert tables == ["evidence_references", "projects", "question_feedback",
+                      "records", "requirement_quantities"], tables
     assert ledger_like == ["records"], ledger_like
     assert "payload" not in quantity_cols and "disposition" not in quantity_cols
     assert "payload" not in reference_cols and "disposition" not in reference_cols
+    assert "payload" not in feedback_cols and "disposition" not in feedback_cols
+    # STRENGTHENED: the additive tables carry no answer/question prose at all,
+    # so none of them can become a second record of what the owner said.
+    for cols in (quantity_cols, reference_cols, feedback_cols):
+        assert "content" not in cols and "answer" not in cols
+        assert "question" not in cols and "question_text" not in cols
+    # and feedback can only ever hold one of the three closed tokens
+    assert set(feedback_choices) <= {"HELPFUL", "UNCLEAR", "NOT_RELEVANT"}
 
 
 # --------------------------------------------------------------------------
