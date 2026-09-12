@@ -4796,40 +4796,9 @@ def propose_evidence_reference(sid):
             r.record_id == anchor_id for r in _evref_eligible_anchors(state)):
         _publish_evref_notice(entry, error=EVREF_NOT_SAVED_MESSAGE)
         return redirect(url_for("show_session", sid=sid))
-    # Bound every text field BEFORE staging. The global free-text guard runs
-    # first (length ceiling and embedded NUL, never echoing the value), then the
-    # tighter per-field policy (empty, C0/C1 controls, per-field cap).
-    fields = {}
-    for name in ("source_identity", "occurred_on", "scope_text", "limitation_text"):
-        raw = request.form.get(name) or ""
-        if _free_text_error(raw, _current_ui_lang()) is not None:
-            _publish_evref_notice(entry, error=_EVREF_FIELD_MESSAGE[name])
-            return redirect(url_for("show_session", sid=sid))
-        fields[name] = raw
-    try:
-        source_identity = _normalize_reference_text(
-            fields["source_identity"], "source_identity")
-    except _EvidenceReferenceError:
-        _publish_evref_notice(entry, error=_EVREF_FIELD_MESSAGE["source_identity"])
-        return redirect(url_for("show_session", sid=sid))
-    try:
-        occurred_on = _normalize_occurred_on(fields["occurred_on"])
-    except _EvidenceReferenceError:
-        _publish_evref_notice(entry, error=_EVREF_FIELD_MESSAGE["occurred_on"])
-        return redirect(url_for("show_session", sid=sid))
-    try:
-        scope_text = _normalize_reference_text(fields["scope_text"], "scope_text")
-    except _EvidenceReferenceError:
-        _publish_evref_notice(entry, error=_EVREF_FIELD_MESSAGE["scope_text"])
-        return redirect(url_for("show_session", sid=sid))
-    try:
-        # REQUIRED: a reference that does not say what it did NOT cover cannot
-        # be recorded at all.
-        limitation_text = _normalize_reference_text(
-            fields["limitation_text"], "limitation_text")
-    except _EvidenceReferenceError:
-        _publish_evref_notice(entry, error=_EVREF_FIELD_MESSAGE["limitation_text"])
-        return redirect(url_for("show_session", sid=sid))
+    # The validated durable history and this anchor's CURRENT head are resolved
+    # server-side BEFORE either path branches: withdrawal needs the head as its
+    # content source, and recording needs it as its supersession target.
     try:
         history = _get_store().load_evidence_references(sid)
         head = _active_reference_for_anchor(history, anchor_id)
@@ -4837,19 +4806,76 @@ def propose_evidence_reference(sid):
         _publish_evref_notice(entry, error=EVREF_NOT_SAVED_MESSAGE)
         return redirect(url_for("show_session", sid=sid))
     withdrawing = intent == EVREF_INTENT_WITHDRAW
-    if withdrawing and (head is None or head.withdrawn):
-        # Nothing active to withdraw: an established refusal, never a silent no-op.
-        _publish_evref_notice(entry, error=EVREF_NOT_SAVED_MESSAGE)
-        return redirect(url_for("show_session", sid=sid))
-    if (not withdrawing and head is not None and not head.withdrawn
-            and head.source_identity == source_identity
-            and head.occurred_on == occurred_on
-            and head.scope_text == scope_text
-            and head.limitation_text == limitation_text):
-        # Identical to the current head: nothing to record.
-        entry.pop(_EVREF_PROPOSAL_KEY, None)
-        _publish_evref_notice(entry, ack=EVREF_SAVED_ACK)
-        return redirect(url_for("show_session", sid=sid))
+
+    if withdrawing:
+        # WITHDRAWAL PATH — taken BEFORE any recording-field validation.
+        #
+        # The rendered withdrawal control is its own form carrying only
+        # csrf_token + anchor_record_id + reference_intent, so there is nothing
+        # to validate here and nothing a user could have typed. Critically, this
+        # path NEVER reads `source_identity`, `occurred_on`, `scope_text` or
+        # `limitation_text` from the request AT ALL: a legacy or hand-built
+        # submission that still carries them (the allowlist below is deliberately
+        # unchanged, so they remain accepted FIELDS for the recording path)
+        # cannot influence what a withdrawal records. The four values are copied
+        # from the current head, so the withdrawal row states exactly what is
+        # being withdrawn.
+        if head is None or head.withdrawn:
+            # Nothing active to withdraw: an established refusal, never a silent
+            # no-op and never a fabricated row.
+            _publish_evref_notice(entry, error=EVREF_NOT_SAVED_MESSAGE)
+            return redirect(url_for("show_session", sid=sid))
+        source_identity = head.source_identity
+        occurred_on = head.occurred_on
+        scope_text = head.scope_text
+        limitation_text = head.limitation_text
+    else:
+        # RECORDING / SUPERSESSION PATH — the four-field policy is unchanged and
+        # no field becomes optional. Bound every text field BEFORE staging: the
+        # global free-text guard first (length ceiling and embedded NUL, never
+        # echoing the value), then the tighter per-field policy (empty, C0/C1
+        # controls, per-field cap).
+        fields = {}
+        for name in ("source_identity", "occurred_on", "scope_text",
+                     "limitation_text"):
+            raw = request.form.get(name) or ""
+            if _free_text_error(raw, _current_ui_lang()) is not None:
+                _publish_evref_notice(entry, error=_EVREF_FIELD_MESSAGE[name])
+                return redirect(url_for("show_session", sid=sid))
+            fields[name] = raw
+        try:
+            source_identity = _normalize_reference_text(
+                fields["source_identity"], "source_identity")
+        except _EvidenceReferenceError:
+            _publish_evref_notice(entry, error=_EVREF_FIELD_MESSAGE["source_identity"])
+            return redirect(url_for("show_session", sid=sid))
+        try:
+            occurred_on = _normalize_occurred_on(fields["occurred_on"])
+        except _EvidenceReferenceError:
+            _publish_evref_notice(entry, error=_EVREF_FIELD_MESSAGE["occurred_on"])
+            return redirect(url_for("show_session", sid=sid))
+        try:
+            scope_text = _normalize_reference_text(fields["scope_text"], "scope_text")
+        except _EvidenceReferenceError:
+            _publish_evref_notice(entry, error=_EVREF_FIELD_MESSAGE["scope_text"])
+            return redirect(url_for("show_session", sid=sid))
+        try:
+            # REQUIRED: a reference that does not say what it did NOT cover
+            # cannot be recorded at all.
+            limitation_text = _normalize_reference_text(
+                fields["limitation_text"], "limitation_text")
+        except _EvidenceReferenceError:
+            _publish_evref_notice(entry, error=_EVREF_FIELD_MESSAGE["limitation_text"])
+            return redirect(url_for("show_session", sid=sid))
+        if (head is not None and not head.withdrawn
+                and head.source_identity == source_identity
+                and head.occurred_on == occurred_on
+                and head.scope_text == scope_text
+                and head.limitation_text == limitation_text):
+            # Identical to the current head: nothing to record.
+            entry.pop(_EVREF_PROPOSAL_KEY, None)
+            _publish_evref_notice(entry, ack=EVREF_SAVED_ACK)
+            return redirect(url_for("show_session", sid=sid))
     now = _quantity_clock()
     entry[_EVREF_PROPOSAL_KEY] = {
         "nonce": secrets.token_urlsafe(_EVREF_CONFIRM_NONCE_BYTES),

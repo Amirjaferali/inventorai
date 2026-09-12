@@ -552,6 +552,228 @@ def test_withdrawing_when_nothing_is_recorded_is_an_established_refusal(client):
 
 
 # ==========================================================================
+# 4b. WITHDRAWAL THROUGH THE FORM FLASK ACTUALLY RENDERS
+#
+#     The original candidate placed the withdraw button INSIDE the recording
+#     form. A browser submits every control in the form it posts, so the real
+#     rendered withdrawal carried the four (empty) owner-text inputs and was
+#     rejected by recording validation; filling them made it "work" but wrote
+#     those unrelated values as the withdrawal row's content. These tests drive
+#     the rendered markup instead of a hand-built payload, so neither failure
+#     can return unnoticed.
+# ==========================================================================
+def _rendered_forms(body):
+    """Every <form> in the page with the controls a BROWSER would submit:
+    its inputs (a text input the user left blank submits as empty) and its
+    buttons. No helper fills anything in."""
+    forms = []
+    for match in re.finditer(r'<form\b[^>]*action="([^"]+)"[^>]*>(.*?)</form>',
+                             body, re.S):
+        action, inner = match.group(1), match.group(2)
+        fields = dict(re.findall(
+            r'<input[^>]*name="([^"]+)"[^>]*value="([^"]*)"', inner))
+        for name in re.findall(r'<input[^>]*name="([^"]+)"', inner):
+            fields.setdefault(name, "")
+        buttons = re.findall(
+            r'<button[^>]*name="([^"]+)"[^>]*value="([^"]*)"', inner)
+        forms.append({"action": action, "fields": fields, "buttons": buttons,
+                      "inner": inner})
+    return forms
+
+
+def _rendered_withdraw_form(c, sid, lang=None):
+    """The form that actually carries the withdraw control, or None."""
+    forms = [f for f in _rendered_forms(_raw(c, sid, lang))
+             if "evidence-reference/propose" in f["action"]
+             and any(v == "withdraw" for _n, v in f["buttons"])]
+    assert len(forms) <= 1, "more than one withdrawal form rendered"
+    return forms[0] if forms else None
+
+
+def _submit_rendered(c, sid, form, extra=None):
+    """POST exactly what a browser would send for that form: its own controls
+    plus the clicked button. csrf_token is omitted because the test client
+    injects it; nothing else is added or filled in."""
+    data = {k: _html.unescape(v) for k, v in form["fields"].items()
+            if k != "csrf_token"}
+    name, value = next((n, v) for n, v in form["buttons"] if v == "withdraw")
+    data[name] = value
+    if extra:
+        data.update(extra)
+    return c.post(f"/session/{sid}" + form["action"].split(sid, 1)[1], data=data)
+
+
+def _two_reference_chain(c, sid, anchor):
+    """A reference, then a supersession differing in ALL FOUR fields, so a
+    withdrawal that copied the wrong row would be visible."""
+    first = dict(source_identity="Dr A. Khan, structural engineer",
+                 occurred_on="2026-03-14",
+                 scope_text="static load case only",
+                 limitation_text="did not cover fatigue or corrosion")
+    second = dict(source_identity="Prof B. Silva, mechanical reviewer",
+                  occurred_on="2026-05-02",
+                  scope_text="dynamic load and hinge cycling",
+                  limitation_text="did not cover material sourcing")
+    for payload in (first, second):
+        _record(c, sid, anchor, **payload)
+    return first, second
+
+
+def test_the_rendered_withdrawal_form_carries_no_owner_text_controls(client):
+    """The structural cause of the defect: the withdraw control must not live
+    in the recording form, and the two forms must not be nested."""
+    c, appmod = client
+    sid, anchor = _project(c, appmod)
+    _record(c, sid, anchor)
+    form = _rendered_withdraw_form(c, sid)
+    assert form is not None
+    assert set(form["fields"]) == {"csrf_token", "anchor_record_id"}
+    assert form["buttons"] == [("reference_intent", "withdraw")]
+    assert "<form" not in form["inner"]                  # never nested
+    recording = [f for f in _rendered_forms(_raw(c, sid))
+                 if "evidence-reference/propose" in f["action"]
+                 and any(v == "record" for _n, v in f["buttons"])]
+    assert len(recording) == 1
+    assert not any(v == "withdraw" for _n, v in recording[0]["buttons"])
+
+
+@pytest.mark.parametrize("lang", ["en", "ar"])
+def test_withdrawal_through_the_rendered_form_supersedes_the_current_head(client, lang):
+    """The full mandated path: render, submit what the browser would submit,
+    confirm, and check every stored value against the CURRENT head."""
+    c, appmod = client
+    sid, anchor = _project(c, appmod)
+    _first, second = _two_reference_chain(c, sid, anchor)
+    before = _history(appmod, sid)
+    assert len(before) == 2
+    head = before[1]
+
+    form = _rendered_withdraw_form(c, sid, lang=lang)
+    assert form is not None
+    _submit_rendered(c, sid, form)
+
+    # a proposal is staged, with NO field-entry error, and NOTHING is written yet
+    staged = appmod.SESSION_STORE[sid].get(appmod._EVREF_PROPOSAL_KEY)
+    assert staged is not None, "the rendered withdrawal was rejected"
+    assert appmod.SESSION_STORE[sid].get(appmod.EVREF_ERROR_SLOT) is None
+    assert _history(appmod, sid) == before          # propose writes no durable row
+
+    _confirm(c, sid)
+    after = _history(appmod, sid)
+    assert len(after) == 3                          # exactly one row appended
+    row = after[2]
+    assert row.withdrawn is True
+    assert row.supersedes_reference_id == head.reference_id     # the HEAD, not the original
+    assert row.supersedes_reference_id != before[0].reference_id
+    # all four stored values come from the current head
+    assert (row.source_identity, row.occurred_on, row.scope_text,
+            row.limitation_text) == (
+        second["source_identity"], second["occurred_on"],
+        second["scope_text"], second["limitation_text"])
+    assert row.claim_status == CLAIM_STATUS_UNVALIDATED
+    # every preceding row is unchanged
+    assert after[:2] == before
+    # and the displayed state is correct in this language
+    page = _page(c, sid, lang=lang)
+    expected = "Withdrawn by the inventor" if lang == "en" else "سحبه المخترع"
+    assert expected in page
+    if lang == "ar":
+        assert any("؀" <= ch <= "ۿ" for ch in page)
+
+
+@pytest.mark.parametrize("extra,label", [
+    ({"source_identity": "", "occurred_on": "", "scope_text": "",
+      "limitation_text": ""}, "empty fields"),
+    ({"source_identity": "UNRELATED-XYZ", "occurred_on": "1999-01-01",
+      "scope_text": "UNRELATED SCOPE", "limitation_text": "UNRELATED LIMIT"},
+     "unrelated fields"),
+])
+def test_submitted_owner_text_can_never_become_the_withdrawal_content(client, extra, label):
+    """A legacy or hand-built submission may still CARRY the four known fields
+    (the allowlist is deliberately unchanged), but the withdrawal path never
+    reads them: neither empty nor unrelated values may replace the
+    server-derived content, and neither may cause a rejection."""
+    c, appmod = client
+    sid, anchor = _project(c, appmod)
+    _first, second = _two_reference_chain(c, sid, anchor)
+    head = _history(appmod, sid)[1]
+    form = _rendered_withdraw_form(c, sid)
+    _submit_rendered(c, sid, form, extra=extra)
+    assert appmod.SESSION_STORE[sid].get(appmod._EVREF_PROPOSAL_KEY) is not None, label
+    _confirm(c, sid)
+    row = _history(appmod, sid)[2]
+    assert row.withdrawn is True
+    assert row.supersedes_reference_id == head.reference_id
+    assert (row.source_identity, row.occurred_on, row.scope_text,
+            row.limitation_text) == (
+        second["source_identity"], second["occurred_on"],
+        second["scope_text"], second["limitation_text"]), label
+    for value in extra.values():
+        if value:
+            assert value not in (row.source_identity, row.occurred_on,
+                                 row.scope_text, row.limitation_text)
+
+
+def test_the_recording_path_still_requires_all_four_fields(client):
+    """The repair must not make any recording field optional — for a first
+    record or for a supersession."""
+    c, appmod = client
+    sid, anchor = _project(c, appmod)
+    for field in ("source_identity", "occurred_on", "scope_text", "limitation_text"):
+        _propose(c, sid, anchor, **{field: "   "})
+        assert appmod.SESSION_STORE[sid].get(appmod._EVREF_PROPOSAL_KEY) is None, field
+        assert _history(appmod, sid) == (), field
+    _record(c, sid, anchor)                                   # first record works
+    for field in ("source_identity", "occurred_on", "scope_text", "limitation_text"):
+        over = {"source_identity": "Someone new"}
+        over[field] = "  "
+        _propose(c, sid, anchor, **over)
+        assert appmod.SESSION_STORE[sid].get(appmod._EVREF_PROPOSAL_KEY) is None, field
+        assert len(_history(appmod, sid)) == 1, field         # supersession too
+
+
+def test_no_withdrawal_form_is_offered_when_there_is_nothing_to_withdraw(client):
+    """Absent and already-withdrawn references offer no control, and a direct
+    submission is still an established refusal."""
+    c, appmod = client
+    sid, anchor = _project(c, appmod)
+    assert _rendered_withdraw_form(c, sid) is None            # nothing recorded
+    _propose(c, sid, anchor, intent="withdraw")
+    assert _history(appmod, sid) == ()
+    _record(c, sid, anchor)
+    form = _rendered_withdraw_form(c, sid)
+    assert form is not None
+    _submit_rendered(c, sid, form)
+    _confirm(c, sid)
+    assert len(_history(appmod, sid)) == 2
+    assert _rendered_withdraw_form(c, sid) is None            # already withdrawn
+    _propose(c, sid, anchor, intent="withdraw")
+    assert len(_history(appmod, sid)) == 2                    # still refused
+
+
+def test_a_head_that_moves_between_propose_and_confirm_is_refused_not_retargeted(client):
+    """A changed head requires refusal, never silent retargeting onto the new
+    head."""
+    c, appmod = client
+    sid, anchor = _project(c, appmod)
+    _record(c, sid, anchor)
+    original_head = _history(appmod, sid)[0]
+    form = _rendered_withdraw_form(c, sid)
+    _submit_rendered(c, sid, form)
+    staged_token = _token(c, sid)
+    # the head moves underneath the staged withdrawal
+    staged = dict(appmod.SESSION_STORE[sid][appmod._EVREF_PROPOSAL_KEY])
+    _record(c, sid, anchor, source_identity="Prof B. Silva, mechanical reviewer")
+    appmod.SESSION_STORE[sid][appmod._EVREF_PROPOSAL_KEY] = staged
+    before = _history(appmod, sid)
+    _confirm(c, sid, token=staged_token)
+    after = _history(appmod, sid)
+    assert after == before, "a stale-head withdrawal was written"
+    assert all(not r.withdrawn for r in after)
+    assert after[0].reference_id == original_head.reference_id
+
+
+# ==========================================================================
 # 5. Rejected input: explicit, bilingual, names the field, NEVER retained
 # ==========================================================================
 @pytest.mark.parametrize("field,phrase", [

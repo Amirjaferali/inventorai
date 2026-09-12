@@ -812,10 +812,20 @@ body{overflow-wrap:anywhere}
         <input type="text" name="limitation_text" maxlength="600" dir="auto" style="width:100%"></label>
       <div style="font-size:11px;color:#8a97a3;margin:2px 0 6px 0">{{ t('UI_T2E_LIMITATION_HINT') }}</div>
       <button type="submit" name="reference_intent" value="record">{{ t('UI_T2E_SUBMIT') }}</button>
-      {% if item.current and not item.current.withdrawn %}
-      <button type="submit" name="reference_intent" value="withdraw">{{ t('UI_T2E_WITHDRAW') }}</button>
-      {% endif %}
     </form>
+    {# Withdrawal is its OWN form, never nested and never sharing the recording
+       controls: a browser submits every control inside the form it posts, so a
+       withdraw button placed in the recording form would carry that form's four
+       (typically empty) owner-text inputs. This form submits exactly
+       csrf_token + anchor_record_id + reference_intent=withdraw, and the route
+       derives the withdrawal content from the current head server-side. #}
+    {% if item.current and not item.current.withdrawn %}
+    <form method="POST" action="/session/{{ sid }}/evidence-reference/propose" class="t2e-withdraw-form" style="margin-top:6px">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <input type="hidden" name="anchor_record_id" value="{{ item.record_id }}">
+      <button type="submit" name="reference_intent" value="withdraw">{{ t('UI_T2E_WITHDRAW') }}</button>
+    </form>
+    {% endif %}
     {% endif %}
   </div>
   {% endfor %}
