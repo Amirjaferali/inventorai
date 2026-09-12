@@ -298,6 +298,112 @@ mandate, and merge, deployment, release, tags, branch deletion, authoritative-
 branch modification, later capabilities and human-data collection remain
 unauthorized.
 
+## Current authority — T2-G partial versioned mechanism slice (Stage 7)
+
+**Owner decision `T2G-VERSIONED-IMPLEMENT-01` v1.0.** Adopting the
+`T2G-BOUNDED-DESIGN-01` v1.1 direction. For `OD-PDVG-10` the Lead is the
+accountable T2-G owner/steward and Original Claude the implementation agent.
+This resolves RESPONSIBILITY, not completion of the capability. No new numbered
+workstream is created and WS11/WS14 are not reopened. Authorized: implementation,
+synthetic tests, ordinary commits/pushes and ONE PR for this partial slice.
+NOT authorized: merge, deployment, release, paid activation, Stage 8 repair,
+RUN-004, satellite work, provider/model integration, real-user collection.
+
+**Product scope.** `MECHANISM_COMPLETENESS` only, in `electronics_electrical`
+and `mechanical`, with paired English/Arabic behaviour. It combines recognised
+explicit-unknown satisfaction eligibility with purpose-aware coverage at the two
+existing W2-C coverage sites. Only existing governed questions are used: no
+question generation, no general language-understanding claim, no feedback
+learning, no evidence promotion.
+
+**1. Explicit version policy — no silent legacy reinterpretation.** The existing
+persisted `engine_contract_version` envelope carries the decision.
+`p4-2-level1-recon-v1` is RETAINED; newly created `/start` projects record
+`p4-2-level1-recon-v1-t2g1`. Both exact versions are supported through the ONE
+existing progression and reconstruction path — `RECONSTRUCTION_VERSION` is not
+replaced, so no valid legacy project is stranded at Level 0. Existing projects
+keep their recorded version and their pre-T2-G eligibility and serving behaviour
+through read-only reconstruction, correction and explicit writable resume; no
+record or envelope is rewritten, mass-replayed or silently migrated. The runtime
+carrier is set from trusted creation metadata BEFORE the seed is interpreted and
+is what `_reconstruction_inputs` persists, so the reading and the stamp cannot
+disagree; it is never a request field, the UI language, a timestamp or an
+arbitrary default. An absent carrier means legacy, so an unversioned runtime or
+test state can never silently enable the new rule. Missing or unsupported
+persisted metadata keeps its existing fail-closed Level-0 result. No version
+table, schema migration, second ledger, historical-state store or duplicated
+engine. **Legacy migration is DEFERRED, not cancelled or implicitly approved,
+and returns after verified versioned delivery.**
+
+**2. Relevance stays separate from satisfaction eligibility.** `addresses_gap`,
+`assess_response`, the quality ladder, `_matches_intent` and
+`supplemental_relevance` keep their exact semantics; `relevant` remains the
+original relevance result and is never reassigned. The veto is expressed
+separately at the existing integration writer. Within the new version and named
+scope, a positively recognised explicit unknown with no supported
+mechanism-bearing explanation supplies no `known_mechanism`, no associated
+`known_problem` side effect and no gap progress. Raw answers, prior valid
+knowledge, exactly-once acknowledged-unknown capture, correction/supersession
+and the existing counters are preserved; no CLOSED gap reopens, no earlier
+knowledge is erased, no validation evidence is created and Stage-3 capture is
+unaffected (`MECHANISM_COMPLETENESS` is not a Stage-3 gap). The outcome has its
+OWN bilingual WARN explanation, never the generic "does not address the
+question" one. `accept_gap_risk` continues to reject `MECHANISM_COMPLETENESS`;
+no route past an unexplained core mechanism is invented.
+
+**3. Bounded, question-specific carrier rule.** The existing registered English
+ignorance markers and the existing Arabic normalising detector are read
+unchanged, and their original consumers are untouched. The existing detector's
+declared bounds — registered phrasings and its minimum length — apply as they
+are: an unregistered or short phrasing is simply NOT recognised, and that limit
+is disclosed rather than dressed up as universal unknown detection. A qualifying
+carrier must relate to that variant's requested information and say something
+beyond the marker itself, so a bare component name, an uncertainty-only marker
+or an unrelated cue-free sentence never covers another question and never
+defeats the veto on its own. Physical negation is not ignorance and supported
+mixed answers keep their supported clause. Sentence handling is local to the new
+module and includes both the English and the Arabic semicolon and question mark;
+the Arabic comma is deliberately not a boundary, and no normalisation changes
+globally. `N-MC-4` and `mechanical:MECHANISM_COMPLETENESS:Q4` retain their
+uncertainty-question coverage when otherwise matched, and that exemption never
+turns identified uncertainty into mechanism knowledge. One helper serves both
+coverage sites. W2-B precedence, canonical gap ownership, out-of-scope behaviour
+and conservative fallback are preserved; `_matches_intent` is never
+monkeypatched, and both module-import orders are clean.
+
+**4. Version-truthful copy.** `UI_T1D_QUESTION_SET` is RETAINED byte-identical
+and remains the accurate disclosure for every legacy project. The new
+`UI_T2G_QUESTION_SET` renders only where the rule applies, through the existing
+localization/render seam — no new explanation subsystem. It states the fixed
+reviewed set, the fixed rules, the bounded recognition of some explicit
+uncertainty expressions, that the coverage is limited, that no new questions are
+generated and that engineering correctness is not verified; it claims no general
+semantic understanding.
+
+**Changed paths.** Production: `engine/answer_stance.py` (new),
+`engine/progression_loop.py`, `engine/intent_serving.py`,
+`engine/session_reconstruction.py`, `web/app.py`, `web/result_feedback.py`,
+`web/ui_text.py`, `web/templates/session.html`. New tests:
+`tests/test_t2g_answer_stance.py`, `tests/test_t2g_versioned_journey.py`.
+Directly affected existing tests, preserving their legacy assertions and adding
+the intentional new-version cases: `tests/test_t1d_t2b_question_explainability_and_disclosure.py`, `tests/test_pvcg_r3i_semantic_stability.py`,
+`tests/test_p4_2_session_reconstruction.py`. Mechanical progression-source
+digest re-pins only: `tests/test_p9_mech_i3_signal_quality.py`,
+`tests/test_p9_mech_i4_boundary_corpus.py`,
+`tests/test_p9_mech_i5_question_sufficiency.py`. No store-schema, question
+content/registry, shared relevance, semantic-registry, T2-D token/storage,
+API/export or operational-logging change, and no separate contract-only PR.
+
+**Status: PARTIAL T2-G.** Against `PDVG-01` §4A this closes the recognised
+explicit-unknown case in the named scope and makes eligibility and serving
+coherent there. It does NOT complete T2-G and supports no paid-activation claim.
+Retained and accounted for: **R1 residual** — unregistered or short phrasings of
+ignorance are not recognised; **R2** — paraphrase under-coverage outside the
+committed markers; **R3** — cross-gap adaptivity untouched. These are revisited
+when the remaining T2-G work is selected and before any full-capability or
+paid-activation claim. The four T2-D deferred observations, all six PR #640
+findings and satellite scheduling keep their existing triggers.
+
 <a id="current-authority--t2e-t2f-evidence-references-and-ordering"></a>
 ## Current authority — T2-E Option B + T2-F (one combined bounded candidate)
 

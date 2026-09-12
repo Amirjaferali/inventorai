@@ -882,6 +882,33 @@ def integrate_response(
             relevant = supplemental_relevance(state, gap_type, response)
         except Exception:
             pass
+    # T2-G (`T2G-VERSIONED-IMPLEMENT-01`) — SATISFACTION ELIGIBILITY, kept
+    # strictly separate from relevance. `relevant` above is, and stays, the
+    # original relevance result; nothing here edits it, and `addresses_gap`,
+    # `assess_response`, the quality ladder, `_matches_intent` and
+    # `supplemental_relevance` all keep their exact meanings.
+    #
+    # Under the T2-G engine-contract version only, and only for
+    # MECHANISM_COMPLETENESS in the two named domains, a POSITIVELY RECOGNISED
+    # explicit unknown that supplies no mechanism-bearing explanation is not
+    # eligible to supply mechanism knowledge or to move the gap. The answer is
+    # still recorded verbatim by the caller, still counted once on the
+    # acknowledged-unknown track below, and is given its OWN truthful WARN
+    # explanation rather than the "does not address the question" one.
+    # Fail-closed: any failure leaves today's behaviour exactly in place.
+    unknown_only = False
+    try:
+        from engine import answer_stance
+        from engine.intent_serving import declared_variant_ids, matches_committed_intent
+        unknown_only = answer_stance.explicit_unknown_without_mechanism(
+            state, gap_type, response,
+            detect_unknown=lambda text: _detect_acknowledged_unknown(
+                text, gap_type, state.iteration),
+            variant_ids=declared_variant_ids(state, gap_type),
+            matches_intent=matches_committed_intent)
+    except Exception:
+        unknown_only = False
+    eligible = relevant and not unknown_only
     evidence = Evidence(
         content=response,
         quality=quality,
@@ -893,13 +920,13 @@ def integrate_response(
     )
 
     # Update known elements
-    if relevant and gap_type == MECHANISM_COMPLETENESS:
+    if eligible and gap_type == MECHANISM_COMPLETENESS:
         if state.known_mechanism is None or quality_at_least(
                 quality, state.known_mechanism.quality):
             state.known_mechanism = evidence
 
     # أي evidence في المراحل المبكرة تُثبت المشكلة ضمنياً
-    if relevant and state.known_problem is None and quality_at_least(
+    if eligible and state.known_problem is None and quality_at_least(
             quality, REASONED):  # RISK-002
         state.known_problem = evidence
 
@@ -936,6 +963,17 @@ def integrate_response(
     if not relevant:
         return "WARN", (f"{gap_type} not addressed — this answer does not "
                         f"respond to the question that was asked")
+
+    # T2-G: the answer DID respond — it said the information is not known. It
+    # is saved and counted; it simply supplies no mechanism, so the gap is left
+    # exactly as it was. Placed after gap creation and after the unconditional
+    # acknowledged-unknown track, neither of which this veto governs, and
+    # before every status transition below, so no gap advances and no CLOSED
+    # gap is ever reopened or weakened.
+    if unknown_only:
+        return "WARN", (f"{gap_type} recorded as an explicit unknown — this "
+                        f"answer states the information is not known yet and "
+                        f"supplies no mechanism explanation")
 
     # PVCG-R4-C §10.4 G-1/G-2/G-4 — CLOSED-gap safety guard.
     #

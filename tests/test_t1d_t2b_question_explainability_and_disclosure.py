@@ -639,12 +639,28 @@ def test_the_approved_copy_and_disclosures_are_byte_identical(client):
 # ==========================================================================
 # 4. T1-D disclosures — truthful, bilingual, correctly placed
 # ==========================================================================
+def _legacy_start(c, appmod, **kwargs):
+    """T2-G: a project created BEFORE the T2-G engine-contract version, exactly
+    as every existing project already is."""
+    from engine import session_reconstruction as _sr
+    original = appmod.CURRENT_ENGINE_CONTRACT_VERSION
+    appmod.CURRENT_ENGINE_CONTRACT_VERSION = _sr.RECONSTRUCTION_VERSION
+    try:
+        return _start(c, **kwargs)
+    finally:
+        appmod.CURRENT_ENGINE_CONTRACT_VERSION = original
+
+
 def test_the_questioning_disclosure_is_truthful_and_bilingual(client):
     """(10) It states the governed fixed set AND the deterministic state-aware
     selection this version really performs; it never claims there is no
-    selection behaviour at all."""
-    c, _appmod = client
-    sid = _start(c)
+    selection behaviour at all.
+
+    T2-G: the ORIGINAL assertions are preserved verbatim for a project recorded
+    under the earlier engine-contract version — that copy is still exactly
+    accurate there — and the intentional new-version case is added beside it."""
+    c, appmod = client
+    sid = _legacy_start(c, appmod)
     en = _copy("UI_T1D_QUESTION_SET")
     assert en in _page(c, sid)
     assert _copy("UI_T1D_QUESTION_SET", "ar") in _page(c, sid, lang="ar")
@@ -654,6 +670,29 @@ def test_the_questioning_disclosure_is_truthful_and_bilingual(client):
     assert "does not read the meaning" in lowered
     for false_claim in ("never adapts", "does not adapt", "always the same",
                         "no selection", "ignores your project"):
+        assert false_claim not in lowered
+
+
+def test_the_t2g_questioning_disclosure_is_truthful_and_bilingual(client):
+    """(10, T2-G) A project recorded under the T2-G version gets the wording
+    that is accurate for IT: the fixed reviewed set, the fixed rules, the
+    BOUNDED uncertainty recognition and its limits, no new questions, and no
+    engineering-correctness check. It claims no general understanding."""
+    c, _appmod = client
+    sid = _start(c)
+    en = _copy("UI_T2G_QUESTION_SET")
+    assert en in _page(c, sid)
+    assert _copy("UI_T2G_QUESTION_SET", "ar") in _page(c, sid, lang="ar")
+    assert _copy("UI_T1D_QUESTION_SET") not in _page(c, sid)
+    lowered = en.lower()
+    assert "fixed" in lowered and "set" in lowered
+    assert "chooses which one to show" in lowered
+    assert "covers only certain phrasings" in lowered
+    assert "no new questions are generated" in lowered
+    assert "engineering-correct is not checked" in lowered
+    for false_claim in ("never adapts", "does not adapt", "always the same",
+                        "no selection", "ignores your project", "understands",
+                        "any language", "verified"):
         assert false_claim not in lowered
 
 
@@ -751,8 +790,16 @@ def test_rtl_lang_escaping_and_hostile_content_are_handled(client):
     assert "<script>alert(1)</script>" not in raw_en
     assert "&lt;script&gt;alert(1)&lt;/script&gt;" in raw_en
     assert 'dir="rtl"' in raw_ar and 'lang="ar"' in raw_ar
-    assert _copy("UI_T1D_QUESTION_SET", "ar") in _html.unescape(raw_ar)
-    assert _copy("UI_T1D_QUESTION_SET") not in _html.unescape(raw_ar)
+    # T2-G: this project is recorded under the new version, so the disclosure
+    # shown is the one accurate for it; the legacy assertion is preserved below
+    # against a project recorded under the earlier version.
+    assert _copy("UI_T2G_QUESTION_SET", "ar") in _html.unescape(raw_ar)
+    assert _copy("UI_T2G_QUESTION_SET") not in _html.unescape(raw_ar)
+    legacy_sid = _legacy_start(c, appmod, domain="electronics_electrical",
+                               seed=ELEC_SEED)
+    legacy_ar = _raw(c, legacy_sid, lang="ar")
+    assert _copy("UI_T1D_QUESTION_SET", "ar") in _html.unescape(legacy_ar)
+    assert _copy("UI_T1D_QUESTION_SET") not in _html.unescape(legacy_ar)
     # the explanation is chrome: it is Arabic on the Arabic page
     explanation_ar = _explanation(_html.unescape(raw_ar))
     if explanation_ar is not None:

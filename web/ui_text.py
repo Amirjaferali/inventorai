@@ -1865,6 +1865,27 @@ UI_STRINGS = {
                "يعرض بناءً على ما سجّله مشروعك فعلًا، وفق قواعد ثابتة — وهو لا يقرأ "
                "معنى إجاباتك لينشئ أسئلة متابعة جديدة."),
     },
+    # T2-G (`T2G-VERSIONED-IMPLEMENT-01`): shown ONLY on projects recorded under
+    # the T2-G engine-contract version, where the bounded rule actually applies.
+    # `UI_T1D_QUESTION_SET` above is RETAINED verbatim and stays the accurate
+    # disclosure for every earlier project. This wording states the fixed set,
+    # the fixed rules, the BOUNDED uncertainty recognition and its limits, that
+    # no new questions are generated, and that engineering correctness is not
+    # verified. It claims no general semantic understanding.
+    "UI_T2G_QUESTION_SET": {
+        "en": ("These questions come from a fixed, reviewed set. This version "
+               "chooses which one to show from what your project already "
+               "records, using fixed rules — including recognising some ways "
+               "of saying you do not know something yet. That recognition "
+               "covers only certain phrasings, so it will miss others. No new "
+               "questions are generated, and whether your idea is "
+               "engineering-correct is not checked."),
+        "ar": ("تأتي هذه الأسئلة من مجموعة ثابتة ومراجَعة. ويختار هذا الإصدار "
+               "أيها يعرض بناءً على ما سجّله مشروعك فعلًا، وفق قواعد ثابتة — "
+               "بما في ذلك تمييز بعض صيغ قولك إنك لا تعرف شيئًا بعد. ولا يشمل "
+               "هذا التمييز إلا صيغًا معيّنة، لذلك ستفوته صيغ أخرى. ولا تُنشأ "
+               "أسئلة جديدة، ولا يُتحقَّق من صحة فكرتك هندسيًا."),
+    },
     # --- T2-D: optional contextual feedback on the displayed question -------
     # Copy describes SAVING TO THIS PROJECT and nothing more. It never promises
     # that a team receives or reviews it, never claims anonymity, never implies
@@ -2239,6 +2260,7 @@ _DEEP_AR = {
     # PVCG-R3-I (R3-C §8.1): the truthful not-addressed disclosure. Both
     # supported UI languages, through the existing localize_deep seam.
     "This answer was not recognized as responding to the question that was asked, so it did not move this point forward. Answering the question directly, in the words the question uses, is what the current demo can recognize.": "لم يتم التعرف على هذه الإجابة كردٍّ على السؤال المطروح، لذلك لم تُحرِّك هذه النقطة إلى الأمام. الإجابة عن السؤال مباشرةً، وبالكلمات التي يستخدمها السؤال، هي ما يستطيع العرض الحالي التعرف عليه.",
+    "Your statement that this is not known yet has been saved with your project. It does not describe how the mechanism works, so this point has not moved forward. You can answer it later, or describe the part you do know.": "تم حفظ قولك إن هذا غير معروف بعد مع مشروعك. وهو لا يصف كيف تعمل الآلية، لذلك لم تتقدّم هذه النقطة. يمكنك الإجابة عنها لاحقًا، أو وصف الجزء الذي تعرفه.",
     "This point cannot move forward yet. Review the result details for the specific reason.": "لا يمكن لهذه النقطة المضي قدمًا بعد. راجِع تفاصيل النتيجة لمعرفة السبب المحدّد.",
 
     # --- 4.9 gap_labels.py GAP_LABELS (heading / guidance / stage_note) ---

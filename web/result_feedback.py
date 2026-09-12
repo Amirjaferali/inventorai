@@ -91,6 +91,18 @@ _WARN_NOT_ADDRESSED = (
     "recognize."
 )
 
+# T2-G (`T2G-VERSIONED-IMPLEMENT-01`): the recognized-explicit-unknown reason
+# gets its OWN message. It must NOT reuse "not addressed" — saying you do not
+# know something IS a response to the question. The wording confirms the
+# statement was saved, says only that no mechanism explanation came with it,
+# and claims nothing about correctness, relevance or external validation.
+_WARN_EXPLICIT_UNKNOWN = (
+    "Your statement that this is not known yet has been saved with your "
+    "project. It does not describe how the mechanism works, so this point "
+    "has not moved forward. You can answer it later, or describe the part "
+    "you do know."
+)
+
 _GENERIC_WARN = (
     "This point cannot move forward yet. Review the result details for the specific reason."
 )
@@ -135,6 +147,10 @@ def get_result_feedback(last_result):
         #   anything else                                        -> conservative fallback
         # Checked BEFORE "partially addressed": the R2 reason is
         # "{gap} not addressed — …", a distinct and more specific category.
+        # Checked BEFORE "not addressed": an explicitly recognized unknown DID
+        # respond to the question, so it must never fall into that category.
+        if "recorded as an explicit unknown" in reason:
+            return _WARN_EXPLICIT_UNKNOWN
         if "not addressed" in reason:
             return _WARN_NOT_ADDRESSED
         if "asserted only" in reason:
