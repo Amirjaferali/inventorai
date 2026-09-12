@@ -407,19 +407,74 @@ def test_a_legacy_history_that_already_advanced_replays_and_resumes_unchanged(cl
     assert _stamp(db, sid) == RECONSTRUCTION_VERSION
 
 
-def test_a_correction_recomputes_under_the_projects_own_version(client):
-    """Superseding the unknown with an explanation is an ordinary correction."""
+def _correct(c, sid, record_id, response):
+    token = _html.unescape(re.search(
+        r'name="answer_token" value="([^"]+)"', _raw(c, sid)).group(1))
+    return c.post(f"/session/{sid}/correct", data={
+        "supersedes_record_id": record_id, "response": response,
+        "answer_token": token})
+
+
+def _active_answers(appmod, sid):
+    contract = appmod._get_store().load_contract(sid)
+    return [r for r in contract.assertions
+            if getattr(r, "superseded_by", None) is None
+            and r.disposition == "answered"]
+
+
+def test_a_real_correction_of_an_unknown_recomputes_under_the_new_version(client):
+    """The GENUINE R4 supersession path, not a follow-up answer: correcting the
+    unknown into an explanation must recompute eligibility from scratch."""
     c, appmod, _db = client
     _login(c, appmod)
     sid = _start(c)
     _answer(c, sid, F2_UNKNOWN)
     assert _snapshot(appmod, sid)["known_mechanism"] is None
-    _answer(c, sid, K_FOLLOW_UP)
-    assert _snapshot(appmod, sid)["known_mechanism"] == "REASONED"
+    record = _active_answers(appmod, sid)[0]
+    assert _correct(c, sid, record.record_id, K_FOLLOW_UP).status_code in (302, 303)
+    got = _snapshot(appmod, sid)
+    assert got["known_mechanism"] == "REASONED"      # the correction supplies it
+    assert got["identity"] == Q3
     appmod.SESSION_STORE.clear()
     session = reconstruct_readonly_state(appmod._get_store(), sid)
+    assert session.review.withdrawn_source_records == 1
     assert session.state.known_mechanism is not None
-    assert session.review.withdrawn_source_records == 0
+    assert appmod._resolve_question_context(session.state, None).identity == Q3
+
+
+def test_a_real_correction_into_an_unknown_withdraws_the_knowledge(client):
+    """The converse: correcting an explanation INTO an explicit unknown must
+    recompute to no mechanism knowledge, through full replay — never by
+    patching the old state in place."""
+    c, appmod, _db = client
+    _login(c, appmod)
+    sid = _start(c)
+    _answer(c, sid, F1_AFFIRM)
+    assert _snapshot(appmod, sid)["known_mechanism"] == "REASONED"
+    record = _active_answers(appmod, sid)[0]
+    assert _correct(c, sid, record.record_id, F2_UNKNOWN).status_code in (302, 303)
+    got = _snapshot(appmod, sid)
+    assert got["known_mechanism"] is None
+    assert got["status"] == "OPEN"
+    assert got["identity"] == Q2
+    assert got["coverage"] == []
+    appmod.SESSION_STORE.clear()
+    session = reconstruct_readonly_state(appmod._get_store(), sid)
+    assert session.state.known_mechanism is None
+    assert session.review.withdrawn_source_records == 1
+
+
+def test_the_same_correction_on_a_legacy_project_keeps_the_baseline(client):
+    c, appmod, _db = client
+    _login(c, appmod)
+    sid = _legacy_start(c, appmod)
+    _answer(c, sid, F1_AFFIRM)
+    record = _active_answers(appmod, sid)[0]
+    assert _correct(c, sid, record.record_id, F2_UNKNOWN).status_code in (302, 303)
+    got = _snapshot(appmod, sid)
+    assert got["known_mechanism"] == "REASONED"      # pre-T2-G reading
+    assert got["status"] == "PARTIAL"
+    assert got["identity"] == Q3
 
 
 # ==========================================================================
