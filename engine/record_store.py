@@ -47,6 +47,7 @@ from engine.requirement_quantity import (
 # and a reference must never be.
 from engine.question_feedback import (
     QuestionFeedback, validate_feedback_history, active_feedback_for_context,
+    ledger_revision as _feedback_ledger_revision,
     is_same_event_material, FEEDBACK_INSERTED, FEEDBACK_EXACT_REPLAY,
     FEEDBACK_CHOICES, MAX_FEEDBACK_ROWS_PER_PROJECT,
     QuestionFeedbackHistoryError, FeedbackCapExceeded,
@@ -142,7 +143,8 @@ class RecordStore(Protocol):
     # T2-D contextual question feedback (additive; see the table note below).
     def new_feedback_id(self) -> str: ...
     def append_question_feedback(self, project_id: str, feedback,
-                                 expected_head_id=None) -> str: ...
+                                 expected_head_id=None,
+                                 expected_revision=None) -> str: ...
     def load_question_feedback(self, project_id: str) -> tuple: ...
     def question_feedback_for_event_key(self, project_id: str, event_key: str): ...
     def ledger_record_ids(self, project_id: str) -> tuple: ...
@@ -1172,7 +1174,8 @@ class SqliteRecordStore:
             [self._feedback_from_row(r) for r in rows])
 
     def append_question_feedback(self, project_id: str, feedback,
-                                 expected_head_id=None) -> str:
+                                 expected_head_id=None,
+                                 expected_revision=None) -> str:
         """Atomically append ONE feedback row and return the TRUTHFUL outcome.
 
         ``FEEDBACK_EXACT_REPLAY`` when this project already holds the exact
@@ -1189,6 +1192,12 @@ class SqliteRecordStore:
         ``expected_head_id`` must equal this context's CURRENT head id, or
         ``None`` when the context must still have no row. A head that moved
         between render and submit is refused HERE, never silently retargeted.
+
+        An ALREADY STORED exact event is resolved FIRST — before the revision,
+        cap and current-head checks — because it is historical no-write
+        evidence, not a new write and not proof that its choice is still
+        current. A genuinely new event must satisfy the durable revision, the
+        cap and the expected head.
 
         ``feedback_seq`` is assigned here; the caller's value is ignored.
         SQLite additionally enforces the composite self-FK (same project AND
@@ -1212,6 +1221,21 @@ class SqliteRecordStore:
                     return FEEDBACK_EXACT_REPLAY
                 raise FeedbackChainConflict(
                     "event key already names a different event")
+            # The DURABLE LEDGER REVISION is compared here, inside the same
+            # serialized transaction, against this project's CURRENT ordered
+            # record ids. A durable record that landed between the route's
+            # validation and this append therefore refuses the write. This is a
+            # PROJECT-LEDGER comparison and is never substituted by the
+            # feedback-head comparison below, which answers a different
+            # question. Only reached for a genuinely new event: an already
+            # stored exact event returned above as historical no-write evidence.
+            if expected_revision is not None:
+                current_revision = _feedback_ledger_revision(
+                    self.ledger_record_ids(project_id))
+                if expected_revision != current_revision:
+                    raise FeedbackChainConflict(
+                        "the durable ledger revision moved since the context "
+                        "was rendered")
             history = validate_feedback_history(
                 [self._feedback_from_row(r)
                  for r in self._feedback_rows(project_id)])

@@ -28,6 +28,7 @@ from engine.question_feedback import (
     ledger_revision, make_question_feedback,
 )
 from engine.idea_state import DISPOSITION_ANSWERED, IdeaState
+from engine.question_feedback import ledger_revision
 from engine.record_contract import ProjectRecordContract
 from engine.record_store import (
     FeedbackCapReached, FeedbackChainConflict, SqliteRecordStore,
@@ -432,13 +433,39 @@ def test_a_cross_project_submission_is_refused(client):
     assert _history(appmod, sid_b) == ()
 
 
-def test_a_token_from_another_browser_session_is_refused(client):
+def test_a_token_from_another_browser_is_refused_at_equal_clocks(client,
+                                                                 monkeypatch):
+    """Two GENUINE independent clients for the SAME owner, with the clock held
+    fixed so the refusal comes from the browser-session binding in the MAC and
+    not from any timing difference."""
     c, appmod = client
-    sid = _project(c, appmod)
-    form = _fb_form(c, sid)
-    appmod.SESSION_STORE[sid]["_qfb_issued_at"] = 1     # binding/issue drift
-    _submit(c, sid, form, "HELPFUL")
+    monkeypatch.setattr(appmod, "_quantity_clock", lambda: 1_700_000_000)
+    account = _login(c, appmod, email="two@example.com")
+    sid = _start(c)
+    other = csrf_client(appmod.app)
+    with other as c2:
+        assert c2.post("/login", data={"email": "two@example.com",
+                                       "password": PW}).status_code == 302
+        stolen = _fb_form(c2, sid)                    # minted in browser 2
+        assert stolen is not None
+    _submit(c, sid, stolen, "HELPFUL")                # replayed in browser 1
     assert _history(appmod, sid) == ()
+
+
+def test_each_browser_can_use_its_own_token_at_equal_clocks(client, monkeypatch):
+    """The converse: a later render by the SAME owner in another browser must
+    not invalidate the first browser's unexpired form."""
+    c, appmod = client
+    monkeypatch.setattr(appmod, "_quantity_clock", lambda: 1_700_000_000)
+    _login(c, appmod, email="both@example.com")
+    sid = _start(c)
+    mine = _fb_form(c, sid)
+    other = csrf_client(appmod.app)
+    with other as c2:
+        c2.post("/login", data={"email": "both@example.com", "password": PW})
+        _fb_form(c2, sid)                              # browser 2 renders
+    _submit(c, sid, mine, "HELPFUL")                   # browser 1 still valid
+    assert [r.choice for r in _history(appmod, sid)] == ["HELPFUL"]
 
 
 @pytest.mark.parametrize("bad", ["", "x", "nonce.deadbeef"])
@@ -450,14 +477,19 @@ def test_a_tampered_or_missing_token_writes_nothing(client, bad):
     assert _history(appmod, sid) == ()
 
 
-def test_an_expired_token_is_refused(client):
+@pytest.mark.parametrize("elapsed,accepted", [(899, True), (900, False)])
+def test_the_token_lifetime_is_exactly_900_seconds(client, monkeypatch, elapsed,
+                                                   accepted):
+    """Authentic expiry by ADVANCING the clock — no stored timestamp is
+    corrupted, because the token now carries its own issue time."""
     c, appmod = client
+    now = {"t": 1_700_000_000}
+    monkeypatch.setattr(appmod, "_quantity_clock", lambda: now["t"])
     sid = _project(c, appmod)
     form = _fb_form(c, sid)
-    appmod.SESSION_STORE[sid]["_qfb_issued_at"] -= (
-        appmod.FEEDBACK_TOKEN_TTL_SECONDS + 1)
+    now["t"] += elapsed
     _submit(c, sid, form, "HELPFUL")
-    assert _history(appmod, sid) == ()
+    assert (len(_history(appmod, sid)) == 1) is accepted
 
 
 @pytest.mark.parametrize("choice", ["", "OTHER", "helpful", "HELPFUL ", None])
@@ -520,16 +552,256 @@ def test_a_cold_read_only_session_is_never_writable_here(client):
     assert getattr(appmod.SESSION_STORE[sid]["state"], "domain", None) is None
 
 
-def test_a_cold_session_never_assigns_feedback_to_another_question(client):
-    """When a runtime-only context cannot be reproduced, nothing is shown —
-    saved feedback is never attached to a different ask."""
+def _cold_selected(body):
+    """The choice the COLD banner actually shows, or None. Asserted from the
+    specific element — a label appearing among the three buttons is NOT
+    readback proof."""
+    found = re.search(r'class="t2d-cold-selected">([^<]+)<', body)
+    return None if found is None else found.group(1).strip()
+
+
+@pytest.mark.parametrize("lang,expected", [("en", "Unclear"), ("ar", "غير واضح")])
+def test_positive_cold_readback_before_resume(client, lang, expected):
+    """F-3 repaired: on a REPRODUCIBLE context the cold read-only surface shows
+    the saved choice beside the question that banner is displaying — with no
+    token, no form, and no writable rehydration."""
+    c, appmod = client
+    sid = _project(c, appmod)
+    _choose(c, sid, "UNCLEAR")
+    appmod.SESSION_STORE.clear()                        # cold, BEFORE resume
+    raw = _raw(c, sid, lang)
+    assert 'id="reconstructed-review"' in raw           # the cold banner
+    assert _cold_selected(_html.unescape(raw)) == expected
+    assert "question-feedback" not in raw               # no form, no token
+    assert _fb_form(c, sid, lang) is None
+    # still read-only: no writable rehydration, resume still required
+    assert getattr(appmod.SESSION_STORE[sid]["state"], "domain", None) is None
+    assert len(_history(appmod, sid)) == 1
+
+
+def test_a_reconstructed_domain_never_makes_the_cold_carrier_writable(client):
+    """The reconstructed snapshot carries a populated domain; writability is
+    decided by the explicit read-only restriction, never by the snapshot."""
     c, appmod = client
     sid = _project(c, appmod)
     _choose(c, sid, "HELPFUL")
     appmod.SESSION_STORE.clear()
+    _page(c, sid)
+    from engine.session_reconstruction import reconstruct_readonly_state
+    snapshot = reconstruct_readonly_state(appmod._get_store(), sid).state
+    assert getattr(snapshot, "domain", None) is not None      # populated
+    qctx = appmod._resolve_question_context(snapshot, None)
+    view = appmod._feedback_render_context(
+        appmod.SESSION_STORE[sid], snapshot, sid, qctx, read_only=True)
+    assert view is not None and view["read_only"] is True
+    assert view["can_write"] is False and view["token"] is None
+
+
+def test_an_unreproducible_context_shows_nothing_rather_than_the_wrong_question(client):
+    """The remaining legitimate limitation, justified separately: when the exact
+    context cannot be proven, nothing is shown — feedback is never attached to a
+    different ask. Here the durable ledger advances after the choice was saved,
+    so the cold context genuinely differs."""
+    c, appmod = client
+    sid = _project(c, appmod)
+    _choose(c, sid, "HELPFUL")
+    _answer(c, sid)                                     # the ledger advances
+    appmod.SESSION_STORE.clear()
     cold = _page(c, sid)
-    assert "Your saved choice:" not in cold
-    assert len(_history(appmod, sid)) == 1              # history is intact
+    assert _cold_selected(cold) is None                 # nothing shown
+    assert len(_history(appmod, sid)) == 1              # history intact
+
+
+# ==========================================================================
+# 6b. The three repaired findings — decisive RED-on-old / GREEN-on-new
+# ==========================================================================
+def test_a_durable_record_landing_before_the_append_refuses_the_write(client):
+    """F-1 repaired: the store compares the submitted ledger revision with this
+    project's CURRENT revision INSIDE the serialized transaction, so a record
+    that lands between route validation and append refuses the write."""
+    c, appmod = client
+    sid = _project(c, appmod)
+    form = _fb_form(c, sid)
+    store = appmod._get_store()
+    real = store.append_question_feedback
+
+    def racing(project_id, feedback, **kwargs):
+        # **kwargs so this drives whatever signature the store actually has:
+        # against an implementation without the transactional revision check the
+        # stale row IS written, which is the RED this test must produce.
+        state = IdeaState(idea_id="race")
+        late = state.record_interaction(DISPOSITION_ANSWERED, content="late",
+                                        gap_context="G", iteration=9)
+        late.record_id = "rec_late"
+        store.append_record(project_id, late, idempotency_key="late")
+        return real(project_id, feedback, **kwargs)
+
+    store.append_question_feedback = racing
+    try:
+        _submit(c, sid, form, "HELPFUL")
+    finally:
+        store.append_question_feedback = real
+    rows = _history(appmod, sid)
+    if rows:                       # diagnose precisely if the guard regresses
+        current = ledger_revision(appmod._get_store().ledger_record_ids(sid))
+        assert rows[0].ledger_revision == current, (
+            "a row was written carrying a STALE ledger revision "
+            "(%s) while the project is at %s"
+            % (rows[0].ledger_revision, current))
+    assert rows == (), "a row was written after the durable ledger advanced"
+
+
+def test_the_revision_check_is_a_project_ledger_comparison(tmp_path):
+    """It compares the PROJECT LEDGER revision, and is never substituted by the
+    feedback-head comparison, which answers a different question."""
+    store = _seed_store(str(tmp_path / "rev.sqlite"))
+    current = ledger_revision(store.ledger_record_ids("p1"))
+    stale = _row(store, "HELPFUL")
+    with pytest.raises(FeedbackChainConflict):
+        store.append_question_feedback("p1", stale, expected_head_id=None,
+                                       expected_revision="a-different-revision")
+    assert store.load_question_feedback("p1") == ()
+    # the same write succeeds under the CURRENT revision and a matching head
+    assert store.append_question_feedback(
+        "p1", stale, expected_head_id=None, expected_revision=current)
+    assert len(store.load_question_feedback("p1")) == 1
+    store.close()
+
+
+def test_a_later_render_does_not_invalidate_an_outstanding_form(client, monkeypatch):
+    """F-2 repaired: the token is self-contained and signed, so a later GET, a
+    language render, or another same-owner browser render leaves an unexpired
+    form valid while its context and expected head are unchanged."""
+    c, appmod = client
+    now = {"t": 1_700_000_000}
+    monkeypatch.setattr(appmod, "_quantity_clock", lambda: now["t"])
+    sid = _project(c, appmod)
+    first = _fb_form(c, sid)
+    now["t"] += 1
+    _fb_form(c, sid)                                    # a later GET
+    now["t"] += 1
+    _raw(c, sid, lang="ar")                             # an EN -> AR render
+    now["t"] += 1
+    _submit(c, sid, first, "HELPFUL")
+    assert [r.choice for r in _history(appmod, sid)] == ["HELPFUL"]
+
+
+def test_the_token_carries_its_own_identity_and_nothing_shared(client):
+    import inspect
+    c, appmod = client
+    sid = _project(c, appmod)
+    form = _fb_form(c, sid)
+    token = _html.unescape(form["fields"]["context_token"])
+    account = appmod._quantity_writer_account(sid)
+    with appmod.app.test_request_context():
+        pass
+    # no shared mutable issue-time remains anywhere
+    source = inspect.getsource(appmod)
+    assert "_qfb_issued_at" not in source
+    assert len(token) <= appmod._FEEDBACK_TOKEN_MAX_CHARS
+    # the payload carries no credential and no raw session secret
+    encoded = token.split(".")[0]
+    import base64
+    raw = base64.urlsafe_b64decode(encoded + "=" * (-len(encoded) % 4))
+    payload = json.loads(raw)
+    assert set(payload) == set(appmod._FEEDBACK_TOKEN_FIELDS)
+    assert payload["exp"] - payload["iat"] == appmod.FEEDBACK_TOKEN_TTL_SECONDS
+    for value in payload.values():
+        assert account["account_id"] not in str(value)
+        assert PW not in str(value)
+
+
+@pytest.mark.parametrize("mangle", [
+    lambda t: t.split(".")[0],                       # no MAC
+    lambda t: t.split(".")[0] + ".deadbeef",         # wrong MAC
+    lambda t: "!!!." + t.split(".")[1],              # undecodable payload
+    lambda t: "x" * 600,                             # oversized
+    lambda t: "",                                    # empty
+])
+def test_malformed_or_tampered_tokens_are_refused(client, mangle):
+    c, appmod = client
+    sid = _project(c, appmod)
+    form = _fb_form(c, sid)
+    token = _html.unescape(form["fields"]["context_token"])
+    _submit(c, sid, form, "HELPFUL", extra={"context_token": mangle(token)})
+    assert _history(appmod, sid) == ()
+
+
+def test_a_same_form_retry_after_a_get_is_a_truthful_replay(client, monkeypatch):
+    """F-2 repaired: the retry is recognised as the ORIGINAL recorded event and
+    acknowledged as such — never reported as though nothing had been saved."""
+    c, appmod = client
+    now = {"t": 1_700_000_000}
+    monkeypatch.setattr(appmod, "_quantity_clock", lambda: now["t"])
+    sid = _project(c, appmod)
+    form = _fb_form(c, sid)
+    _submit(c, sid, form, "HELPFUL")
+    assert len(_history(appmod, sid)) == 1
+    now["t"] += 1
+    _fb_form(c, sid)                                    # a GET in between
+    _submit(c, sid, form, "HELPFUL")                    # the same form retried
+    page = _page(c, sid)
+    assert len(_history(appmod, sid)) == 1              # no second row
+    assert "already recorded earlier" in page           # acknowledged as recorded
+    assert "changed nothing" not in page                # not an untruthful refusal
+
+
+def test_a_replay_never_claims_the_historical_choice_is_current(client, monkeypatch):
+    """The acknowledgement says the request WAS recorded; the CURRENT choice is
+    shown separately and only from validated readback."""
+    c, appmod = client
+    now = {"t": 1_700_000_000}
+    monkeypatch.setattr(appmod, "_quantity_clock", lambda: now["t"])
+    sid = _project(c, appmod)
+    first = _fb_form(c, sid)
+    _submit(c, sid, first, "HELPFUL")
+    _choose(c, sid, "UNCLEAR")                          # the current choice now
+    now["t"] += 1
+    _submit(c, sid, first, "HELPFUL")                   # the delayed retry
+    page = _page(c, sid)
+    assert [r.choice for r in _history(appmod, sid)] == ["HELPFUL", "UNCLEAR"]
+    assert "already recorded earlier" in page
+    selected = re.search(r'<strong>([^<]+)</strong>', page)
+    assert selected and selected.group(1).strip() == "Unclear"
+
+
+def test_same_key_with_different_content_is_a_conflict_not_an_overwrite(client):
+    c, appmod = client
+    sid = _project(c, appmod)
+    form = _fb_form(c, sid)
+    _submit(c, sid, form, "HELPFUL")
+    _submit(c, sid, form, "NOT_RELEVANT")               # same key, other choice
+    assert [r.choice for r in _history(appmod, sid)] == ["HELPFUL"]
+    assert "changed nothing" in _page(c, sid)
+
+
+def test_a_replay_still_works_when_the_project_is_at_the_cap(client, monkeypatch):
+    """An exact replay is read-only, so the cap never turns a recorded event
+    into a false failure."""
+    c, appmod = client
+    sid = _project(c, appmod)
+    form = _fb_form(c, sid)
+    _submit(c, sid, form, "HELPFUL")
+    monkeypatch.setattr("engine.record_store.MAX_FEEDBACK_ROWS_PER_PROJECT", 1)
+    _submit(c, sid, form, "HELPFUL")                    # replay at the cap
+    assert len(_history(appmod, sid)) == 1
+    assert "already recorded earlier" in _page(c, sid)
+
+
+def test_the_cap_refusal_uses_rejected_plus_the_cap_notice(client, monkeypatch):
+    """No eighth write outcome, and no undeclared "CAP" token."""
+    c, appmod = client
+    monkeypatch.setattr("engine.record_store.MAX_FEEDBACK_ROWS_PER_PROJECT", 1)
+    sid = _project(c, appmod)
+    _choose(c, sid, "HELPFUL")
+    _choose(c, sid, "UNCLEAR")                          # would be the 2nd row
+    assert len(_history(appmod, sid)) == 1
+    assert "reached the limit" in _page(c, sid)
+    assert "CAP" not in qfb.FEEDBACK_WRITE_OUTCOMES
+    assert len(qfb.FEEDBACK_WRITE_OUTCOMES) == 7
+    import inspect
+    route = inspect.getsource(appmod.submit_question_feedback)
+    assert 'outcome = "CAP"' not in route
 
 
 # ==========================================================================
@@ -739,7 +1011,6 @@ def test_feedback_changes_nothing_else_at_all(client):
 ])
 def test_no_decision_module_references_feedback(module):
     source = open(os.path.join(_ENGINE, module), encoding="utf-8").read()
-    assert "question_feedback" in source or True
     assert "question_feedback" not in source, module
 
 

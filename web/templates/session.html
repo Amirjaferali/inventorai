@@ -257,6 +257,15 @@ body{overflow-wrap:anywhere}
     {% endif %}
   </div>
   {% endif %}
+  {#- T2D-COLD-BEGIN — read-only feedback readback beside the cold banner's own
+     question. Built from the snapshot that banner already computed and proven
+     to belong to THAT question; no token, no form, no writable rehydration. -#}
+  {% if cold_question_feedback and cold_question_feedback.selected %}
+  <div class="t2d-cold" style="font-size:13px;margin-top:8px">{{ t('UI_T2D_COLD_SELECTED') }} <strong class="t2d-cold-selected">{{ t('UI_T2D_CHOICE_' ~ cold_question_feedback.selected) }}</strong>
+    <div style="font-size:12px;color:#777">{{ t('UI_T2D_COLD_NOTE') }}</div>
+  </div>
+  {% endif %}
+  {#- T2D-COLD-END -#}
   <div style="font-size:13px;margin-top:8px">{{ t('UI_B_SESSION_045') }} <span id="recon-answer-count">{{ reconstructed_review.answers_count }}</span></div>
   <div style="font-size:12px;color:#666;margin-top:8px">{{ t('UI_B_SESSION_046') }}</div>
   {# P10-PC3: explicit writable-resume establishment (POST; never automatic  #}

@@ -168,6 +168,83 @@ modification of the authoritative branch, Stage 7, WS11, advanced evidence
 writers, human research and real-user data collection. Independent review of the
 completed candidate is performed by a separate non-authoring session.
 
+**Consolidated bounded repair (`PR641-T2D-CONSOLIDATED-REPAIR-01` v1.0).** The
+independent review `PR641-T2D-INDEPENDENT-REVIEW-01` confirmed three material
+findings and four same-touch observations, all repaired on the existing branch
+and PR. The already-required behaviours were implemented; none was removed or
+weakened to reconcile the description with the code.
+
+1. *Transactional ledger-revision check.* `append_question_feedback` now compares
+   the submitted revision with the project's CURRENT revision — derived by the
+   canonical `ledger_revision` from this project's ordered durable record ids —
+   INSIDE the existing serialized transaction, before any INSERT. A mismatch
+   refuses the write. This is a PROJECT-LEDGER comparison and is never
+   substituted by the feedback-head comparison. Project existence, event
+   identity, expected-head/predecessor checks, chain validation, append-only
+   history and the 1,000-row cap are preserved, and an already-stored exact
+   event is resolved BEFORE the revision, cap and current-head checks because it
+   is historical no-write evidence rather than a new write. The runtime/durable
+   membership helper is unchanged, as the review found no ordinary reachable
+   bypass there.
+2. *Stable token and truthful replay.* The shared mutable `_qfb_issued_at` is
+   gone. The context token is bounded, self-contained and signed, carrying its
+   ORIGINAL context, expected feedback-head id, render nonce, issue time and
+   expiry in a fixed-field payload holding no credential and no raw session
+   secret; the MAC additionally binds the project, the verified owner and the
+   actual browser session. The token FORMAT is versioned separately from the
+   canonical context version, and the stored context-key meaning is unchanged.
+   Size, fields, types, signature and the original 900-second lifetime are
+   enforced; malformed, tampered, unsupported and expired tokens are refused
+   without writes. No per-nonce cache, staging subsystem or unsigned-legacy
+   compatibility path exists, and the form fields remain exactly `csrf_token`,
+   `context_token`, `choice`. The `event_key` derives from the ORIGINAL signed
+   submission identity — not the latest render time, the current head or the
+   choice — and the durable original event is looked up and compared BEFORE a
+   legitimate retry could be refused for an advanced head or context. Same event
+   and content is `EXACT_REPLAY`; the same key with different content is
+   `CONFLICT` and never an overwrite; with no stored event the current rendered
+   context plus the transactional revision and head checks gate any new write or
+   current-choice acknowledgement. A later GET, HEAD, language render or
+   same-owner browser render no longer invalidates an unexpired form whose
+   substantive context and expected head are unchanged. Fresh-form A→B→A, fresh
+   `ALREADY_CURRENT`, stale-new-submission refusal and prevention of historical
+   overwrite are preserved. Replay wording acknowledges prior recording without
+   claiming the historical choice is current, the actual current choice is shown
+   only from validated readback, and rejection wording no longer claims that an
+   earlier successful request saved nothing. Commit-unknown resolution,
+   proven-absence handling, saved-but-unreadable truthfulness and notice-namespace
+   isolation are unchanged.
+3. *Positive cold readback without cold writes.* The cold surface now reuses the
+   Level-1 snapshot the cold review banner ALREADY computed — no second
+   reconstruction, and `engine/session_reconstruction.py` is untouched. The saved
+   choice is proven to belong to the question that banner is displaying, through
+   the same shared resolver and forward identity checks, with no change to
+   question selection and no second selector. An explicit read-only restriction
+   is passed, so a reconstructed snapshot's populated domain can NEVER make the
+   carrier writable: eligibility is rechecked, the choice renders once beside the
+   matching cold question, no token or form is minted, `SESSION_STORE` is never
+   rehydrated writable and explicit resume is never bypassed. Feedback is
+   suppressed when the context cannot be proven or reading fails, without
+   blocking the journey; the legitimate runtime-only limitation is kept and is
+   separately justified rather than used to excuse a failing implementation.
+
+*Four same-touch corrections:* the vestigial one-iteration issue-time loop is
+removed; cap refusal maps through the existing `REJECTED` outcome plus the
+cap-specific notice, so no eighth write outcome and no undeclared `"CAP"` token
+exists; the timestamp-manipulation "another browser" test is replaced by two
+genuine independent clients at equal clocks (with its converse); and the vacuous
+`or True` assertion is removed while the real non-interference assertion stands.
+Token expiry is now proved by advancing a controlled clock at 899/900 seconds
+rather than by corrupting a stored timestamp.
+
+*Repair-only file boundary:* `engine/record_store.py`, `web/app.py`,
+`web/ui_text.py`, `web/templates/session.html`,
+`tests/test_t2d_question_feedback.py` and this file.
+`engine/question_feedback.py` and the accepted S4 test adaptation are unchanged,
+and no new route, table, schema change, dependency, selector, state machine or
+standalone document was introduced. All six PR #640 findings keep their existing
+dispositions and triggers; this repair changes T2-D notices only.
+
 <a id="current-authority--t2e-t2f-evidence-references-and-ordering"></a>
 ## Current authority — T2-E Option B + T2-F (one combined bounded candidate)
 

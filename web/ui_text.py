@@ -1891,6 +1891,24 @@ UI_STRINGS = {
     "UI_T2D_CHANGE": {"en": "You can change it.", "ar": "يمكنك تغييره."},
     "UI_T2D_ACK_SAVED": {"en": "Saved to this project.",
                          "ar": "حُفظ في هذا المشروع."},
+    # A historical replay acknowledges that the earlier request WAS recorded,
+    # and deliberately does not claim that its choice is the current one — the
+    # current choice is shown separately, only from validated readback.
+    "UI_T2D_ACK_REPLAY": {
+        "en": ("That request was already recorded earlier, so nothing was "
+               "added. Your current saved choice is shown above."),
+        "ar": ("سُجِّل ذلك الطلب سابقًا بالفعل، لذلك لم يُضف شيء. ويظهر اختيارك "
+               "المحفوظ الحالي أعلاه."),
+    },
+    "UI_T2D_COLD_SELECTED": {
+        "en": "Your saved choice for this question:",
+        "ar": "اختيارك المحفوظ لهذا السؤال:",
+    },
+    "UI_T2D_COLD_NOTE": {
+        "en": ("This is a read-only view of your saved project. Resume the "
+               "session to change it."),
+        "ar": ("هذا عرض للقراءة فقط لمشروعك المحفوظ. استأنف الجلسة لتغييره."),
+    },
     "UI_T2D_ACK_UNCHANGED": {
         "en": "That is already your saved choice. Nothing changed.",
         "ar": "هذا هو اختيارك المحفوظ بالفعل. لم يتغير شيء.",
@@ -1900,10 +1918,15 @@ UI_STRINGS = {
         "ar": "تعذّر حفظ ذلك الآن. لم يتغير أي شيء.",
     },
     "UI_T2D_ERR_MOVED_ON": {
-        "en": ("This page has moved on since that choice was shown, so nothing "
-               "was saved. Reload the page and choose again."),
-        "ar": ("تغيّرت هذه الصفحة منذ عرض ذلك الاختيار، لذلك لم يُحفظ شيء. أعد "
-               "تحميل الصفحة واختر من جديد."),
+        # Says only that THIS request changed nothing. It never claims that an
+        # earlier request saved nothing — a genuinely recorded earlier event is
+        # acknowledged by UI_T2D_ACK_REPLAY instead.
+        "en": ("This page has moved on since that choice was shown, so this "
+               "request changed nothing. Reload the page to see your current "
+               "saved choice and choose again."),
+        "ar": ("تغيّرت هذه الصفحة منذ عرض ذلك الاختيار، لذلك لم يغيّر هذا الطلب "
+               "شيئًا. أعد تحميل الصفحة لترى اختيارك المحفوظ الحالي واختر من "
+               "جديد."),
     },
     "UI_T2D_ERR_UNKNOWN": {
         "en": ("We could not confirm whether that was saved. Reload this page "

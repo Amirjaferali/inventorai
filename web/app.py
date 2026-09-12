@@ -6,6 +6,7 @@ SESSION_STORE: in-memory, non-production, temporary.
 import json
 import os
 import re
+import base64 as _p2a_b64
 import secrets
 import tempfile
 import uuid
@@ -3711,6 +3712,7 @@ FEEDBACK_ACK_SLOT = "_qfb_ack"
 FEEDBACK_ERROR_SLOT = "_qfb_error"
 FEEDBACK_SAVED_ACK = "QFB_SAVED"
 FEEDBACK_UNCHANGED_ACK = "QFB_UNCHANGED"
+FEEDBACK_REPLAY_ACK = "QFB_REPLAY"
 FEEDBACK_NOT_SAVED_MESSAGE = "QFB_NOT_SAVED"
 FEEDBACK_MOVED_ON_MESSAGE = "QFB_MOVED_ON"
 FEEDBACK_UNKNOWN_MESSAGE = "QFB_OUTCOME_UNKNOWN"
@@ -3719,6 +3721,7 @@ FEEDBACK_CAP_MESSAGE = "QFB_CAP_REACHED"
 _FEEDBACK_DISPLAY_KEY = {
     FEEDBACK_SAVED_ACK: "UI_T2D_ACK_SAVED",
     FEEDBACK_UNCHANGED_ACK: "UI_T2D_ACK_UNCHANGED",
+    FEEDBACK_REPLAY_ACK: "UI_T2D_ACK_REPLAY",
     FEEDBACK_NOT_SAVED_MESSAGE: "UI_T2D_ERR_NOT_SAVED",
     FEEDBACK_MOVED_ON_MESSAGE: "UI_T2D_ERR_MOVED_ON",
     FEEDBACK_UNKNOWN_MESSAGE: "UI_T2D_ERR_UNKNOWN",
@@ -3796,54 +3799,148 @@ def _feedback_context(sid, state, qctx):
     }
 
 
+# --- the signed, self-contained context token --------------------------------
+# The token carries its OWN original context, expected feedback-head id, render
+# nonce, issue time and expiry, so nothing shared or mutable can invalidate an
+# outstanding form: a later GET, HEAD, language render, or another render by the
+# same owner in another browser leaves an unexpired form valid while its
+# substantive context and expected head are unchanged.
+#
+# The payload is bounded, fixed-field and NOT confidential: it holds no
+# credential and no raw session secret. The MAC binds the project, the verified
+# owner and the actual browser session in addition to the payload, so a token is
+# unusable in another project, by another account, or from another browser.
+# There is no per-nonce cache, no staging subsystem, and no path that trusts an
+# unsigned legacy value.
+_FEEDBACK_TOKEN_VERSION = "t2dfb1"      # token FORMAT version, versioned apart
+                                        # from the canonical context version
+_FEEDBACK_TOKEN_MAX_CHARS = 512
+_FEEDBACK_TOKEN_FIELDS = ("v", "cv", "ctx", "idn", "gap", "io", "it", "rev",
+                          "head", "n", "iat", "exp")
+
+
+def _feedback_token_payload(context, head_id, nonce, issued_at, expires_at):
+    """The bounded, fixed-field payload — canonical order, no credentials."""
+    return {
+        "v": _FEEDBACK_TOKEN_VERSION,
+        "cv": int(context["version"]),
+        "ctx": str(context["key"]),
+        "idn": str(context["identity"]),
+        "gap": str(context["gap_type"]),
+        "io": int(context["iterations_open"]),
+        "it": int(context["iteration"]),
+        "rev": str(context["revision"]),
+        "head": head_id or "",
+        "n": str(nonce),
+        "iat": int(issued_at),
+        "exp": int(expires_at),
+    }
+
+
+def _feedback_token_mac(sid, account_id, encoded):
+    """HMAC over the encoded payload, additionally binding the project, the
+    verified owner and the actual browser session."""
+    msg = _canonical_message("t2d-feedback-token-v1", sid, account_id or "",
+                             _quantity_session_binding(), encoded)
+    return _p2a_hmac.new(_answer_secret(), msg,
+                         _p2a_hashlib.sha256).hexdigest()[:_ANSWER_HMAC_HEX_LEN]
+
+
 def _feedback_token(sid, account_id, context, head_id, nonce, issued_at,
                     expires_at):
-    """``nonce + "." + HMAC(...)`` binding the context, the verified owner, the
-    browser-session binding, the EXPECTED CURRENT HEAD id (or empty), a fresh
-    render nonce, the issue time and the expiry. Any change to any of them
-    invalidates the token."""
-    msg = _canonical_message(
-        "t2d-feedback-v1", sid, account_id or "", _quantity_session_binding(),
-        str(context["version"]), context["identity"], context["gap_type"],
-        str(context["iterations_open"]), str(context["iteration"]),
-        context["revision"], context["key"], head_id or "", nonce,
-        str(issued_at), str(expires_at))
-    return nonce + _ANSWER_TOKEN_SEP + _p2a_hmac.new(
-        _answer_secret(), msg, _p2a_hashlib.sha256).hexdigest()[:_ANSWER_HMAC_HEX_LEN]
+    """``<base64url(payload)>.<mac>`` — self-contained and signed."""
+    payload = _feedback_token_payload(context, head_id, nonce, issued_at,
+                                      expires_at)
+    raw = json.dumps(payload, sort_keys=True, separators=(",", ":"),
+                     ensure_ascii=True).encode("utf-8")
+    encoded = _p2a_b64.urlsafe_b64encode(raw).decode("ascii").rstrip("=")
+    return encoded + _ANSWER_TOKEN_SEP + _feedback_token_mac(
+        sid, account_id, encoded)
+
+
+def _read_feedback_token(sid, account_id, token):
+    """Verify and decode a submitted token, or return None.
+
+    Rejects — with no write and no side effect — a malformed, oversized,
+    tampered, wrongly-signed, unsupported-version, wrong-typed or EXPIRED
+    token, and one minted for another project, owner or browser session. The
+    original 900-second lifetime is enforced from the token's own ``iat``."""
+    if not isinstance(token, str) or not token or \
+            len(token) > _FEEDBACK_TOKEN_MAX_CHARS:
+        return None
+    encoded, sep, mac = token.partition(_ANSWER_TOKEN_SEP)
+    if not sep or not encoded or not mac:
+        return None
+    if not _p2a_hmac.compare_digest(
+            mac, _feedback_token_mac(sid, account_id, encoded)):
+        return None
+    try:
+        padding = "=" * (-len(encoded) % 4)
+        payload = json.loads(
+            _p2a_b64.urlsafe_b64decode(encoded + padding).decode("utf-8"))
+    except Exception:
+        return None
+    if not isinstance(payload, dict) or set(payload) != set(_FEEDBACK_TOKEN_FIELDS):
+        return None
+    if payload.get("v") != _FEEDBACK_TOKEN_VERSION:
+        return None
+    for field in ("cv", "io", "it", "iat", "exp"):
+        value = payload.get(field)
+        if not isinstance(value, int) or isinstance(value, bool):
+            return None
+    for field in ("ctx", "idn", "gap", "rev", "n", "head"):
+        if not isinstance(payload.get(field), str):
+            return None
+    if payload["cv"] != _FEEDBACK_CONTEXT_VERSION or not payload["ctx"] \
+            or not payload["n"]:
+        return None
+    if payload["exp"] - payload["iat"] != FEEDBACK_TOKEN_TTL_SECONDS:
+        return None
+    if _quantity_clock() >= payload["exp"]:
+        return None                                   # authentic expiry
+    return payload
 
 
 def _feedback_event_key(sid, nonce, context_key, head_id):
     """The durable exact-replay identity of ONE submission, derived from the
-    SIGNED SUBMISSION identity — the fresh render nonce included — and NOT from
-    the choice. That is what lets A -> B -> A be three legitimate events while a
-    genuine resubmission of the same rendered form stays idempotent."""
+    ORIGINAL SIGNED submission identity — the render nonce, the context the
+    form was rendered for and the head expected THEN. It is derived neither
+    from the latest render time, nor from the current feedback head, nor from
+    the submitted choice, so a legitimate retry is recognised even after the
+    context has since advanced, while A -> B -> A stays three distinct
+    events."""
     msg = _canonical_message("t2d-feedback-event-v1", sid, nonce, context_key,
                              head_id or "")
     return _p2a_hmac.new(_answer_secret(), msg,
                          _p2a_hashlib.sha256).hexdigest()[:_ANSWER_HMAC_HEX_LEN]
 
 
-def _feedback_render_context(entry, state, sid, qctx):
+def _feedback_render_context(entry, state, sid, qctx, read_only=False):
     """Read-only render context for the feedback control, or None.
 
-    Offered only when an eligible question owns the slot AND the caller may
-    write (verified active durable owner AND a live, resumed session). A cold
-    read-only session shows a previously saved choice when the context is
-    exactly reproducible, but never a control.
+    ``read_only=True`` is the COLD reconstructed-review surface: it renders a
+    previously saved choice beside the question that cold banner actually
+    shows, mints NO token and renders NO form. A reconstructed snapshot can
+    carry a populated domain, so writability is decided by this EXPLICIT
+    restriction — never by the snapshot — and the cold path therefore can never
+    become writable or rehydrate a writable session.
 
-    A selected choice is shown ONLY from verified durable readback. An empty
-    history renders "nothing chosen"; an unreadable or corrupt POPULATED
+    Ownership is rechecked here on every read as well as on every write. A
+    selected choice is shown ONLY from verified durable readback: an empty
+    history renders "nothing chosen", while an unreadable or corrupt POPULATED
     history suppresses the block entirely rather than implying nothing was
-    saved. A feedback failure never disables answering."""
+    saved. A feedback failure never disables answering or the journey."""
     context = _feedback_context(sid, state, qctx)
     if context is None:
+        return None
+    if not _quantity_write_authorized(sid):
         return None
     try:
         history = _get_store().load_question_feedback(sid)
         head = _active_feedback_for_context(history, context["key"])
     except Exception:
         return None                       # unreadable/corrupt: show nothing
-    can_write = (_quantity_write_authorized(sid)
+    can_write = (not read_only
                  and getattr(state, "domain", None) is not None)
     token = None
     if can_write:
@@ -3852,7 +3949,6 @@ def _feedback_render_context(entry, state, sid, qctx):
             can_write = False
         else:
             issued_at = _quantity_clock()
-            entry["_qfb_issued_at"] = issued_at
             token = _feedback_token(
                 sid, account["account_id"], context,
                 None if head is None else head.feedback_id,
@@ -3863,7 +3959,38 @@ def _feedback_render_context(entry, state, sid, qctx):
         "selected": None if head is None else head.choice,
         "can_write": can_write,
         "token": token,
+        "read_only": bool(read_only),
     }
+
+
+def _cold_feedback_context(entry, sid, reconstructed_review):
+    """Feedback readback for the COLD reconstructed-review surface, or None.
+
+    Uses the Level-1 snapshot the cold banner ALREADY computed — no second
+    reconstruction, and `engine/session_reconstruction.py` is untouched. The
+    context is resolved through the same shared resolver and the same forward
+    identity verification, so the saved choice is proven to belong to the
+    question that cold banner is actually displaying; question selection is
+    unchanged and no second selector exists.
+
+    Always read-only: `read_only=True` is passed explicitly, so a reconstructed
+    snapshot carrying a populated domain can never make this carrier writable.
+    Returns None — and the surface simply shows nothing — when the context
+    cannot be proven or the history cannot be read."""
+    if not reconstructed_review:
+        return None
+    snapshot = reconstructed_review.get("_t2d_state")
+    if snapshot is None:
+        return None
+    try:
+        qctx = _resolve_question_context(snapshot, None)
+        view = _feedback_render_context(entry, snapshot, sid, qctx,
+                                        read_only=True)
+    except Exception:
+        return None
+    if view is None or view.get("selected") is None:
+        return None                    # nothing saved for THIS exact question
+    return view
 
 
 def _resolve_feedback_write(sid, feedback):
@@ -4131,6 +4258,10 @@ def show_session(sid):
                             _session.state, _recon.next_question,
                             _recon.maturity_level)),
                     "answers_count": len(_recon.accepted_answer_evidence),
+                    # T2-D: reuse THIS already-computed snapshot for exact-
+                    # context feedback readback. No second reconstruction is
+                    # run and engine/session_reconstruction.py is untouched.
+                    "_t2d_state": _session.state,
                     # P10-PC3: writable-resume eligibility for the explicit
                     # establishment button (display precheck only; the POST
                     # route re-validates from scratch). Completed projects
@@ -4252,6 +4383,12 @@ def show_session(sid):
         # Presentation-only; never persisted into canonical state, an export,
         # the API, the deliverable or reconstruction.
         question_feedback=_feedback_render_context(entry, state, sid, _qctx),
+        # T2-D cold readback: built from the SAME reconstructed snapshot the
+        # cold review banner already computed, through the SAME shared resolver
+        # and forward identity checks, and explicitly READ-ONLY — it mints no
+        # token, renders no form, and never rehydrates a writable session.
+        cold_question_feedback=_cold_feedback_context(
+            entry, sid, reconstructed_review),
         feedback_ack=_feedback_notice_text(
             _render_notice(entry, FEEDBACK_ACK_SLOT, None), _current_ui_lang()),
         feedback_error=_feedback_notice_text(
@@ -5343,14 +5480,44 @@ def submit_question_feedback(sid):
     except _QuestionFeedbackError:
         _publish_feedback_notice(entry, error=FEEDBACK_NOT_SAVED_MESSAGE)
         return redirect(url_for("show_session", sid=sid))
-    token = request.form.get("context_token", "")
-    nonce = token.partition(_ANSWER_TOKEN_SEP)[0]
-    if not nonce:
+    # The signed, self-contained token is the ONLY source of the original
+    # submission identity. Nothing shared or mutable is consulted, so a later
+    # render cannot invalidate an outstanding form.
+    signed = _read_feedback_token(sid, account["account_id"],
+                                  request.form.get("context_token", ""))
+    if signed is None:
+        _publish_feedback_notice(entry, error=FEEDBACK_MOVED_ON_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    original_head = signed["head"] or None
+    event_key = _feedback_event_key(sid, signed["n"], signed["ctx"],
+                                    original_head)
+
+    # Resolve the DURABLE ORIGINAL EVENT first. A legitimate retry of a
+    # submission that was already recorded must not be refused merely because
+    # the head or context has advanced since — that would claim nothing was
+    # saved when something was.
+    try:
+        stored = _get_store().question_feedback_for_event_key(sid, event_key)
+    except Exception:
         _publish_feedback_notice(entry, error=FEEDBACK_NOT_SAVED_MESSAGE)
         return redirect(url_for("show_session", sid=sid))
+    if stored is not None:
+        if (stored["context_key"] == signed["ctx"]
+                and stored["choice"] == choice
+                and stored["supersedes_feedback_id"] == original_head):
+            # The exact same event. Acknowledge that it WAS recorded, without
+            # claiming that its choice is still the current one.
+            _publish_feedback_notice(entry, ack=FEEDBACK_REPLAY_ACK)
+        else:
+            # Same event key, different material content: never an overwrite.
+            _publish_feedback_notice(entry, error=FEEDBACK_MOVED_ON_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+
+    # No stored event: this is a NEW write, so the CURRENT rendered context must
+    # still match the one the form was rendered for.
     context = _feedback_context(sid, state, _resolve_question_context(
         state, entry.get("last_result")))
-    if context is None:
+    if context is None or context["key"] != signed["ctx"]:
         _publish_feedback_notice(entry, error=FEEDBACK_MOVED_ON_MESSAGE)
         return redirect(url_for("show_session", sid=sid))
     try:
@@ -5360,27 +5527,16 @@ def submit_question_feedback(sid):
         _publish_feedback_notice(entry, error=FEEDBACK_NOT_SAVED_MESSAGE)
         return redirect(url_for("show_session", sid=sid))
     head_id = None if head is None else head.feedback_id
-    # The token must be the one minted for THIS context, owner, browser session
-    # and expected head. Any drift — including a head that moved since the form
-    # was rendered — makes the recomputed token differ.
-    issued_at = int(entry.get("_qfb_issued_at", 0) or 0)
-    expected = None
-    for candidate_issued in (issued_at,):
-        expected = _feedback_token(sid, account["account_id"], context, head_id,
-                                   nonce, candidate_issued,
-                                   candidate_issued + FEEDBACK_TOKEN_TTL_SECONDS)
-    if (not expected or not _p2a_hmac.compare_digest(token, expected)
-            or issued_at <= 0
-            or _quantity_clock() >= issued_at + FEEDBACK_TOKEN_TTL_SECONDS):
+    if head_id != original_head:
+        # The head moved after this form was rendered: refuse, never retarget.
         _publish_feedback_notice(entry, error=FEEDBACK_MOVED_ON_MESSAGE)
         return redirect(url_for("show_session", sid=sid))
-    # A FRESH submission whose choice already equals the current head changes
-    # nothing. It is ALREADY_CURRENT — never a new row, and deliberately never
-    # reported as an exact event replay: the two mean different things.
+    # A FRESH submission whose choice already equals the VERIFIED current head
+    # changes nothing. ALREADY_CURRENT — never a new row, and never conflated
+    # with the historical replay above.
     if head is not None and head.choice == choice:
         _publish_feedback_notice(entry, ack=FEEDBACK_UNCHANGED_ACK)
         return redirect(url_for("show_session", sid=sid))
-    event_key = _feedback_event_key(sid, nonce, context["key"], head_id)
     try:
         feedback = _make_question_feedback(
             feedback_id=_get_store().new_feedback_id(), feedback_seq=0,
@@ -5394,16 +5550,22 @@ def submit_question_feedback(sid):
     except Exception:
         _publish_feedback_notice(entry, error=FEEDBACK_NOT_SAVED_MESSAGE)
         return redirect(url_for("show_session", sid=sid))
-    # Persist before acknowledging. An ESTABLISHED refusal (decided before any
-    # row was written) is a conflict or a rejection; anything else is resolved
-    # through the stable event key before any claim is made.
+    # Persist before acknowledging. The store rechecks the durable ledger
+    # revision AND the expected head inside its serialized transaction, so a
+    # record or a head that lands in between refuses the write there too.
     try:
         outcome = _get_store().append_question_feedback(
-            sid, feedback, expected_head_id=head_id)
+            sid, feedback, expected_head_id=head_id,
+            expected_revision=context["revision"])
     except _FeedbackChainConflict:
         outcome = _FEEDBACK_CONFLICT
     except _FeedbackCapReached:
-        outcome = "CAP"
+        # An established refusal decided before any INSERT: the canonical
+        # outcome is REJECTED and the cap-specific notice explains it. No
+        # eighth write outcome is introduced.
+        outcome = _FEEDBACK_REJECTED
+        _publish_feedback_notice(entry, error=FEEDBACK_CAP_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
     except (_ProjectNotFound, _QuestionFeedbackHistoryError,
             _QuestionFeedbackError):
         outcome = _FEEDBACK_REJECTED
@@ -5411,13 +5573,9 @@ def submit_question_feedback(sid):
         outcome = _resolve_feedback_write(sid, feedback)
     if outcome in (_FEEDBACK_INSERTED, _FEEDBACK_EXACT_REPLAY):
         _publish_feedback_notice(entry, ack=FEEDBACK_SAVED_ACK)
-    elif outcome == "CAP":
-        _publish_feedback_notice(entry, error=FEEDBACK_CAP_MESSAGE)
     elif outcome == _FEEDBACK_CONFLICT:
         _publish_feedback_notice(entry, error=FEEDBACK_MOVED_ON_MESSAGE)
-    elif outcome == _FEEDBACK_STORAGE_FAILURE:
-        _publish_feedback_notice(entry, error=FEEDBACK_NOT_SAVED_MESSAGE)
-    elif outcome == _FEEDBACK_REJECTED:
+    elif outcome in (_FEEDBACK_REJECTED, _FEEDBACK_STORAGE_FAILURE):
         _publish_feedback_notice(entry, error=FEEDBACK_NOT_SAVED_MESSAGE)
     else:                                        # COMMIT_UNKNOWN
         _publish_feedback_notice(entry, error=FEEDBACK_UNKNOWN_MESSAGE)
