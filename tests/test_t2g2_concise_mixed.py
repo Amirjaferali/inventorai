@@ -1117,14 +1117,36 @@ DETAIL_AR_DIACRITIZED = "السطح ينقل القوة إلى الإطار لك
 
 
 def test_the_declared_arabic_marks_are_exactly_the_reviewed_range():
+    """`PR643-T2G2-SCOPE-REPAIR-04` adds U+0640 to this same set."""
     assert st._T2G2_ARABIC_MARKS == frozenset(
-        [chr(point) for point in range(0x064B, 0x0653)] + [chr(0x0670)])
-    assert len(st._T2G2_ARABIC_MARKS) == 9
-    for mark in ("\u064b", "\u064e", "\u0650", "\u0651", "\u0652", "\u0670"):
+        [chr(point) for point in range(0x064B, 0x0653)]
+        + [chr(0x0670), chr(0x0640)])
+    assert len(st._T2G2_ARABIC_MARKS) == 10
+    for mark in ("\u064b", "\u064e", "\u0650", "\u0651", "\u0652", "\u0670",
+                 "\u0640"):
         assert mark in st._T2G2_ARABIC_MARKS
     # marks only: no letter, no digit and no punctuation is ever dropped
     for keep in ("ذ", "ل", "ك", "أ", "ا", "و", ".", "،", "9", "a"):
         assert keep not in st._T2G2_ARABIC_MARKS
+    # explicitly OUT of this repair and NOT claimed solved: the maddah and
+    # hamza carriers, which the canonical registry does NOT drop, and ZWNJ.
+    for excluded in ("\u0653", "\u0654", "\u0655", "\u200c", "\u200d"):
+        assert excluded not in st._T2G2_ARABIC_MARKS
+
+
+def test_tatweel_is_included_because_the_canonical_registry_removes_it():
+    """The justification is the registry's own governed treatment, not a
+    judgement of our own about Arabic orthography."""
+    from engine.semantic_registry import _TATWEEL, normalize_ar
+    assert _TATWEEL == "\u0640"
+    assert normalize_ar("ذ" + _TATWEEL + "لك") == "ذلك"      # registry drops it
+    assert _TATWEEL in st._T2G2_ARABIC_MARKS
+    # tatweel fails DIFFERENTLY from a harakat: `_WORD_RE` counts it as a word
+    # character, so the token stays whole but is simply not the anaphor.
+    assert [m.group(0) for m in st._WORD_RE.finditer("ذ" + _TATWEEL + "لك")] == \
+        ["ذ" + _TATWEEL + "لك"]
+    assert ("ذ" + _TATWEEL + "لك") not in st._T2G2_ANAPHORA_AR
+    assert st._t2g2_without_arabic_marks("ذ" + _TATWEEL + "لك") == "ذلك"
 
 
 def test_mark_free_text_is_returned_unchanged_and_the_input_is_never_rewritten():
@@ -1200,3 +1222,69 @@ def test_the_vowelled_reading_survives_replay_restart_and_resume(client):
     assert c.post(f"/session/{sid}/resume", data={}).status_code == 302
     assert _snapshot(appmod, sid) == live
     assert _stamp(db, sid) == ENGINE_CONTRACT_VERSION_T2G2
+
+
+# ==========================================================================
+# 10. `PR643-T2G2-SCOPE-REPAIR-04` — U+0640 tatweel inside the demonstrative.
+#
+# PROVENANCE. The plain/tatweel pair is the case the independent differential
+# review demonstrated on `5506b447`. The controls are implementation-session
+# fixtures.
+# ==========================================================================
+_TATWEEL_CHAR = "\u0640"
+BACKREF_AR_TATWEEL = ("السطح ينقل القوة إلى الإطار لكن لا أعرف إن كان ذ"
+                      + _TATWEEL_CHAR + "لك صحيحًا.")
+
+
+def test_the_tatweel_form_still_registers_its_unknown_but_missed_the_anaphor():
+    """The exact disagreement the review found: the registered unknown is still
+    recognised in the same clause — because the registry drops tatweel — while
+    the anaphor was not, so the two halves of the rule read one clause
+    differently."""
+    from engine.semantic_registry import detect_registered_unknown
+    clause = st._t2g2_clauses(BACKREF_AR_TATWEEL.rstrip("."))[-1]
+    assert detect_registered_unknown(clause) == "لا اعرف"
+    assert st.declares_ignorance(clause) is True
+    assert st._t2g2_has_anaphor(clause) is True          # repaired
+    assert _TATWEEL_CHAR in BACKREF_AR_TATWEEL           # the fixture is real
+
+
+@pytest.mark.parametrize("answer,label", [
+    (BACKREF_AR_PLAIN, "plain"),
+    (BACKREF_AR_TATWEEL, "tatweel"),
+])
+def test_a_tatweel_bearing_arabic_back_reference_supplies_no_mechanism(
+        client, answer, label):
+    """The tatweel form must read exactly like the plain governed form, on both
+    versions, across the full route state."""
+    c, appmod, db = client
+    _login(c, appmod)
+    for version in (ENGINE_CONTRACT_VERSION_T2G1, ENGINE_CONTRACT_VERSION_T2G2):
+        sid = _stamped_start(c, appmod, version)
+        _answer(c, sid, answer)
+        assert _snapshot(appmod, sid) == {
+            "version": version, "identity": Q2, "gap": MC, "status": "OPEN",
+            "known_mechanism": None, "coverage": [], "unknowns": 1,
+            "records": 1}, (label, version)
+        assert _stamp(db, sid) == version
+        # the inventor's own words are stored exactly as written
+        assert _active_answers(appmod, sid)[0].content == answer
+
+
+def test_an_arabic_independent_detail_is_not_blanket_vetoed_by_the_tatweel_fix(
+        client):
+    """Positive control: dropping tatweel for the anaphor lookup must not turn
+    an uncertainty about a separate detail into a backward reference."""
+    c, appmod, _db = client
+    _login(c, appmod)
+    sid = _stamped_start(c, appmod, ENGINE_CONTRACT_VERSION_T2G2)
+    _answer(c, sid, DETAIL_AR)
+    assert _snapshot(appmod, sid) == {
+        "version": ENGINE_CONTRACT_VERSION_T2G2, "identity": Q3, "gap": MC,
+        "status": "PARTIAL", "known_mechanism": "REASONED",
+        "coverage": COV_Q2, "unknowns": 1, "records": 1}
+    # and ordinary tatweel-elongated Arabic is still not an anaphor
+    for elongated in (" لا أعرف مق" + _TATWEEL_CHAR + "اس البرغي",
+                      " مسار الحمل ينتقل إلى الإط" + _TATWEEL_CHAR + "ار"):
+        assert _TATWEEL_CHAR in elongated
+        assert st._t2g2_has_anaphor(elongated) is False

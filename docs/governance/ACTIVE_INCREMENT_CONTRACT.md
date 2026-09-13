@@ -931,6 +931,73 @@ no merge, release, deployment, paid activation, migration, provider activation,
 RUN-004 or human-data activity. Still PARTIAL T2-G with no paid-activation
 claim.
 
+### Same-touch continuation — `PR643-T2G2-SCOPE-REPAIR-04` v1.0 (tatweel)
+
+**Disposition.** The Owner adopts every independently verified PASS result on
+`5506b4476e4b2579c6dc286f65a42bdccf7411be` but **does not adopt** the reviewer's
+classification of the U+0640 tatweel case as a non-blocking unregistered-surface
+residual. One ultra-bounded correction follows. All earlier verdicts stand
+separately and unaltered: reviewer **B** and Lead **C** on `4fb5ecf4`, reviewer
+**C** on `406d893b`, reviewer **C** on `2de82db8`, and the verified PASS evidence
+on `5506b447`. Every previously withdrawn claim stays withdrawn and recorded.
+
+**Classification corrected.** Tatweel is not an unregistered language surface for
+this rule. The canonical Arabic semantic registry **already removes U+0640**
+under its own governed normalisation (`_TATWEEL`, dropped in `normalize_ar`), so
+the registered-unknown detector went on recognising `لا أعرف` in the clause
+while the T2-G-2 anaphor lookup — which strips the nine harakat marks but not
+tatweel — failed to see `ذـلك` as `ذلك`. The two halves of one rule read the
+same clause differently, and the sibling mechanism clause gained level-2 support
+it had not earned. That is the same **false-progress** consequence as the
+vowelled case, not a tolerable residual.
+
+**A different failure mechanism from the vowelled case, worth stating exactly.**
+A harakat is a non-word character to `_WORD_RE`, so `ذَلِكَ` fragmented into
+three tokens. Tatweel is a *modifier letter*: `_WORD_RE` counts it as a word
+character, so `ذـلك` stayed ONE token that simply was not the anaphor. Same
+outcome, different cause.
+
+**The repair.** U+0640 is added to the **same** private T2-G-2 Arabic anaphor
+preparation seam introduced for the nine harakat marks — ten code points now,
+consulted by that lookup only. It is included **solely because the canonical
+registry explicitly removes it**, and nothing further is inferred from that. Not
+done, and pinned by test: the registry normaliser is not imported; no general
+Unicode normalisation; `_WORD_RE` unchanged; level-1 behaviour unchanged; no
+morphology, no reference resolution, no new vocabulary or normalisation
+framework.
+
+**Evidence.** Focused RED/GREEN with tests held constant: **4 failures on
+`5506b447`, 0 on the repaired head, all four behavioural** — no missing-helper
+and no changed-interface failure, because the seam already existed and was
+reused rather than extended. The **plain** parametrisation passes on both heads,
+which isolates the tatweel; the **Arabic independent-detail** control passes on
+both, which shows no blanket veto; ordinary tatweel-elongated Arabic
+(`مقـاس`, `الإطـار`) is still not an anaphor; and the inventor's raw answer is
+asserted stored verbatim, tatweel included.
+
+**Remaining Unicode residuals, accurately bounded and NOT claimed solved.**
+U+0653, U+0654 and U+0655 (maddah and the hamza carriers) stay out of this
+repair deliberately: the canonical registry does **not** drop them, and folding
+them would rewrite letters rather than remove decoration. ZWNJ and other format
+characters likewise stay out. Both keep the existing bounded /
+unregistered-language residual classification and their return trigger, which
+fires on new evidence or on a change to the canonical normalisation — not on a
+general Unicode census, which is not required and was not performed. Their
+failure direction is the harmful one, and that is recorded rather than softened.
+
+**Repair-only file boundary.** `engine/answer_stance.py`,
+`tests/test_t2g2_concise_mixed.py` and this file. No other path. Everything
+independently verified on `5506b447` is preserved unchanged.
+
+**Preserved.** `N-1` and `N-2` open pending bounded acceptance; `R1`, `R2`,
+`R3`, `N-3`–`N-6`, the deferred legacy-migration decision, the T2-A random-skip
+test debt, the PR #642 `merged:false` metadata exception, the four T2-D
+observations, the six PR #640 findings, satellite timing and the deferred MCP
+direction all keep their triggers. No Agent Teams or subagent pilot, no Stage 8,
+no merge, release, deployment, migration, provider activation, RUN-004, paid
+activation or human-data activity. Still PARTIAL T2-G with no paid-activation
+claim.
+
 <a id="current-authority--t2e-t2f-evidence-references-and-ordering"></a>
 ## Current authority — T2-E Option B + T2-F (one combined bounded candidate)
 

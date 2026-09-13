@@ -189,16 +189,34 @@ _T2G2_ANAPHORA_AR = frozenset({
 # consequence was not a missed refusal in the abstract: the veto was skipped and
 # the sibling clause was granted mechanism support it had not earned.
 #
+# `PR643-T2G2-SCOPE-REPAIR-04` adds U+0640 ARABIC TATWEEL to the SAME seam, and
+# for a different mechanism: tatweel is a pure elongation glyph that `_WORD_RE`
+# treats as a WORD character, so `ذـلك` stays ONE token but is not equal to
+# `ذلك` and the anaphor is missed. The registered unknown in the same clause is
+# still recognised, because the canonical Arabic registry already removes
+# tatweel under its own governed normalisation — so the two halves of the rule
+# disagreed and the sibling clause gained level-2 support it had not earned.
+# That is the same false-progress consequence as the vowelled case, not an
+# unregistered-language residual. Tatweel is included here ONLY because the
+# canonical registry explicitly removes it; nothing else is inferred from that.
+#
 # The set is explicit and module-local: U+064B..U+0652 (the harakat, tanwin,
-# sukun and shadda) plus U+0670 (superscript alef). It is consulted by the
-# T2-G-2 Arabic anaphor lookup ONLY. `_WORD_RE` is unchanged and still shared;
-# level-1 surplus counting is unchanged; the registry normaliser is neither
-# imported nor recreated and stays the only owner of registered-surface
-# matching; no general Unicode normalisation, `unicodedata` or `casefold` is
-# used; no morphology or reference resolution is attempted; and the clause text
-# itself is never rewritten for any other purpose.
+# sukun and shadda), U+0670 (superscript alef) and U+0640 (tatweel). It is
+# consulted by the T2-G-2 Arabic anaphor lookup ONLY. `_WORD_RE` is unchanged
+# and still shared; level-1 surplus counting is unchanged; the registry
+# normaliser is neither imported nor recreated and stays the only owner of
+# registered-surface matching; no general Unicode normalisation, `unicodedata`
+# or `casefold` is used; no morphology or reference resolution is attempted;
+# and the clause text itself is never rewritten for any other purpose.
+#
+# Deliberately NOT included, and NOT solved: U+0653/U+0654/U+0655 (the maddah
+# and hamza carriers, which the registry does NOT drop — folding them would
+# rewrite letters) and ZWNJ or any other format character. They keep their
+# existing bounded/unregistered-language residual classification and their
+# return trigger.
 _T2G2_ARABIC_MARKS = frozenset(
-    [chr(point) for point in range(0x064B, 0x0653)] + [chr(0x0670)])
+    [chr(point) for point in range(0x064B, 0x0653)]
+    + [chr(0x0670), chr(0x0640)])
 
 # Particles that belong to a registered uncertainty EXPRESSION rather than
 # naming what is unknown. Established by reading the ACTUAL registered
