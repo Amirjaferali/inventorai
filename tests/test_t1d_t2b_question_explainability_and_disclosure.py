@@ -639,16 +639,30 @@ def test_the_approved_copy_and_disclosures_are_byte_identical(client):
 # ==========================================================================
 # 4. T1-D disclosures — truthful, bilingual, correctly placed
 # ==========================================================================
-def _legacy_start(c, appmod, **kwargs):
-    """T2-G: a project created BEFORE the T2-G engine-contract version, exactly
-    as every existing project already is."""
-    from engine import session_reconstruction as _sr
+def _stamped_start(c, appmod, version, **kwargs):
+    """A project genuinely CREATED under `version`: only the creation constant
+    is changed, so the project runs under exactly that contract. No project
+    history is rewritten."""
     original = appmod.CURRENT_ENGINE_CONTRACT_VERSION
-    appmod.CURRENT_ENGINE_CONTRACT_VERSION = _sr.RECONSTRUCTION_VERSION
+    appmod.CURRENT_ENGINE_CONTRACT_VERSION = version
     try:
         return _start(c, **kwargs)
     finally:
         appmod.CURRENT_ENGINE_CONTRACT_VERSION = original
+
+
+def _legacy_start(c, appmod, **kwargs):
+    """T2-G: a project created BEFORE the T2-G engine-contract version, exactly
+    as every existing project already is."""
+    from engine import session_reconstruction as _sr
+    return _stamped_start(c, appmod, _sr.RECONSTRUCTION_VERSION, **kwargs)
+
+
+def _t2g1_start(c, appmod, **kwargs):
+    """A project created under the T2-G-1 contract, which a fresh /start no
+    longer records."""
+    from engine import session_reconstruction as _sr
+    return _stamped_start(c, appmod, _sr.ENGINE_CONTRACT_VERSION_T2G1, **kwargs)
 
 
 def test_the_questioning_disclosure_is_truthful_and_bilingual(client):
@@ -678,8 +692,8 @@ def test_the_t2g_questioning_disclosure_is_truthful_and_bilingual(client):
     that is accurate for IT: the fixed reviewed set, the fixed rules, the
     BOUNDED uncertainty recognition and its limits, no new questions, and no
     engineering-correctness check. It claims no general understanding."""
-    c, _appmod = client
-    sid = _start(c)
+    c, appmod = client
+    sid = _t2g1_start(c, appmod)
     en = _copy("UI_T2G_QUESTION_SET")
     assert en in _page(c, sid)
     assert _copy("UI_T2G_QUESTION_SET", "ar") in _page(c, sid, lang="ar")
@@ -693,6 +707,31 @@ def test_the_t2g_questioning_disclosure_is_truthful_and_bilingual(client):
     for false_claim in ("never adapts", "does not adapt", "always the same",
                         "no selection", "ignores your project", "understands",
                         "any language", "verified"):
+        assert false_claim not in lowered
+
+
+def test_the_t2g2_questioning_disclosure_is_truthful_and_bilingual(client):
+    """(10, T2-G-2) A project recorded under the newest contract gets the
+    wording accurate for IT: the fixed reviewed set, the fixed rules, the
+    bounded recognition of some concise and mixed explanations and its limits,
+    no new questions, no general understanding, no engineering verification."""
+    c, _appmod = client
+    sid = _start(c)                       # the REAL current /start
+    en = _copy("UI_T2G2_QUESTION_SET")
+    assert en in _page(c, sid)
+    assert _copy("UI_T2G2_QUESTION_SET", "ar") in _page(c, sid, lang="ar")
+    assert _copy("UI_T1D_QUESTION_SET") not in _page(c, sid)
+    assert _copy("UI_T2G_QUESTION_SET") not in _page(c, sid)
+    lowered = en.lower()
+    assert "fixed" in lowered and "set" in lowered
+    assert "chooses which one to show" in lowered
+    assert "covers only certain phrasings" in lowered
+    assert "no new questions are generated" in lowered
+    assert "engineering-correct is not checked" in lowered
+    assert "does not understand your writing in general" in lowered
+    for false_claim in ("never adapts", "does not adapt", "always the same",
+                        "no selection", "ignores your project", "any language",
+                        "verified", "guarantee"):
         assert false_claim not in lowered
 
 
@@ -793,8 +832,13 @@ def test_rtl_lang_escaping_and_hostile_content_are_handled(client):
     # T2-G: this project is recorded under the new version, so the disclosure
     # shown is the one accurate for it; the legacy assertion is preserved below
     # against a project recorded under the earlier version.
-    assert _copy("UI_T2G_QUESTION_SET", "ar") in _html.unescape(raw_ar)
-    assert _copy("UI_T2G_QUESTION_SET") not in _html.unescape(raw_ar)
+    assert _copy("UI_T2G2_QUESTION_SET", "ar") in _html.unescape(raw_ar)
+    assert _copy("UI_T2G2_QUESTION_SET") not in _html.unescape(raw_ar)
+    t2g1_sid = _t2g1_start(c, appmod, domain="electronics_electrical",
+                           seed=ELEC_SEED)
+    t2g1_ar = _raw(c, t2g1_sid, lang="ar")
+    assert _copy("UI_T2G_QUESTION_SET", "ar") in _html.unescape(t2g1_ar)
+    assert _copy("UI_T2G_QUESTION_SET") not in _html.unescape(t2g1_ar)
     legacy_sid = _legacy_start(c, appmod, domain="electronics_electrical",
                                seed=ELEC_SEED)
     legacy_ar = _raw(c, legacy_sid, lang="ar")

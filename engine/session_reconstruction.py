@@ -75,17 +75,27 @@ RECONSTRUCTION_VERSION = "p4-2-level1-recon-v1"
 # mass-replayed. Legacy migration is DEFERRED, not cancelled.
 ENGINE_CONTRACT_VERSION_T2G1 = "p4-2-level1-recon-v1-t2g1"
 
+# T2-G continuation (`T2G-CONCISE-MIXED-IMPLEMENT-02`): the THIRD supported
+# engine-contract version. It is stamped on newly created supported /start
+# projects and is the ONLY version under which the bounded concise/mixed
+# mechanism rule applies. `p4-2-level1-recon-v1` and the T2-G-1 stamp above are
+# retained EXACTLY: every project already in existence keeps the version it
+# recorded and is replayed, corrected, restarted and resumed under precisely
+# its own rules. Legacy migration remains a pending decision across all three.
+ENGINE_CONTRACT_VERSION_T2G2 = "p4-2-level1-recon-v1-t2g2"
+
 # Both exact versions are supported through the ONE existing progression and
 # reconstruction path — the earlier stamp is NOT replaced, so no valid legacy
 # project is stranded at Level 0. Anything else still fails closed.
 SUPPORTED_ENGINE_CONTRACT_VERSIONS = (
     RECONSTRUCTION_VERSION,
     ENGINE_CONTRACT_VERSION_T2G1,
+    ENGINE_CONTRACT_VERSION_T2G2,
 )
 
 # The version a newly created supported project records. Separate name so the
 # "what do we stamp now" decision is never confused with "what do we support".
-CURRENT_ENGINE_CONTRACT_VERSION = ENGINE_CONTRACT_VERSION_T2G1
+CURRENT_ENGINE_CONTRACT_VERSION = ENGINE_CONTRACT_VERSION_T2G2
 
 # Deterministic Path-N support only.
 SUPPORTED_PATH = "N"

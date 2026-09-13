@@ -17,8 +17,8 @@ from engine.intent_serving import compute_intent_coverage
 from engine.progression_loop import accept_gap_risk
 from engine.idea_state import MECHANISM_COMPLETENESS as MC
 from engine.session_reconstruction import (
-    ENGINE_CONTRACT_VERSION_T2G1, RECONSTRUCTION_VERSION,
-    reconstruct_readonly_state)
+    ENGINE_CONTRACT_VERSION_T2G1, ENGINE_CONTRACT_VERSION_T2G2,
+    RECONSTRUCTION_VERSION, reconstruct_readonly_state)
 from tests.csrf_client import csrf_client
 
 PW = "correct horse battery staple"
@@ -165,6 +165,24 @@ def _set_stamp(db, sid, value):
         con.close()
 
 
+def _stamped_start(c, appmod, version, seed=MECH_SEED, domain="mechanical"):
+    """A project genuinely CREATED under `version`: the creation constant is the
+    only thing changed, so the seed and every later answer are interpreted under
+    exactly that version. No project history is ever rewritten."""
+    original = appmod.CURRENT_ENGINE_CONTRACT_VERSION
+    appmod.CURRENT_ENGINE_CONTRACT_VERSION = version
+    try:
+        return _start(c, seed, domain)
+    finally:
+        appmod.CURRENT_ENGINE_CONTRACT_VERSION = original
+
+
+def _t2g1_start(c, appmod, seed=MECH_SEED, domain="mechanical"):
+    """A project created under the T2-G-1 contract, which is no longer what a
+    fresh /start records. Its behaviour must stay exactly as accepted."""
+    return _stamped_start(c, appmod, ENGINE_CONTRACT_VERSION_T2G1, seed, domain)
+
+
 def _legacy_start(c, appmod, seed=MECH_SEED, domain="mechanical"):
     """A project created BEFORE T2-G: it records the earlier stamp, exactly as
     every existing project already does."""
@@ -179,12 +197,24 @@ def _legacy_start(c, appmod, seed=MECH_SEED, domain="mechanical"):
 # ==========================================================================
 # 1. Version policy
 # ==========================================================================
-def test_a_new_project_records_and_runs_under_the_new_version(client):
+def test_a_t2g1_project_records_and_runs_under_its_own_version(client):
+    """The accepted T2-G-1 assertion, preserved on a correctly stamped creation
+    fixture now that a fresh /start records the later contract."""
+    c, appmod, db = client
+    _login(c, appmod)
+    sid = _t2g1_start(c, appmod)
+    assert _stamp(db, sid) == ENGINE_CONTRACT_VERSION_T2G1
+    assert _snapshot(appmod, sid)["version"] == ENGINE_CONTRACT_VERSION_T2G1
+
+
+def test_a_real_current_start_records_the_newest_version(client):
+    """The REAL current /start, with no fixture in the way."""
     c, appmod, db = client
     _login(c, appmod)
     sid = _start(c)
-    assert _stamp(db, sid) == ENGINE_CONTRACT_VERSION_T2G1
-    assert _snapshot(appmod, sid)["version"] == ENGINE_CONTRACT_VERSION_T2G1
+    assert _stamp(db, sid) == ENGINE_CONTRACT_VERSION_T2G2
+    assert _snapshot(appmod, sid)["version"] == ENGINE_CONTRACT_VERSION_T2G2
+    assert appmod.CURRENT_ENGINE_CONTRACT_VERSION == ENGINE_CONTRACT_VERSION_T2G2
 
 
 def test_the_version_is_selected_before_the_seed_is_interpreted(client):
@@ -216,10 +246,10 @@ def test_the_version_cannot_be_switched_by_browser_input(client, forged):
     c, appmod, db = client
     _login(c, appmod)
     sid = _start(c, extra={"engine_contract_version": forged})
-    assert _stamp(db, sid) == ENGINE_CONTRACT_VERSION_T2G1
+    assert _stamp(db, sid) == ENGINE_CONTRACT_VERSION_T2G2
     _answer(c, sid, F2_UNKNOWN, extra={"engine_contract_version": forged})
-    assert _stamp(db, sid) == ENGINE_CONTRACT_VERSION_T2G1
-    assert _snapshot(appmod, sid)["version"] == ENGINE_CONTRACT_VERSION_T2G1
+    assert _stamp(db, sid) == ENGINE_CONTRACT_VERSION_T2G2
+    assert _snapshot(appmod, sid)["version"] == ENGINE_CONTRACT_VERSION_T2G2
 
 
 def test_ordinary_resume_does_not_switch_the_version(client):
@@ -365,17 +395,18 @@ def test_prior_knowledge_is_never_erased_by_a_later_unknown(client):
     assert after["coverage"] == before["coverage"]
 
 
-def test_live_replay_and_resume_agree_on_the_new_version(client):
+@pytest.mark.parametrize("version", [ENGINE_CONTRACT_VERSION_T2G1,
+                                     ENGINE_CONTRACT_VERSION_T2G2])
+def test_live_replay_and_resume_agree_on_the_new_version(client, version):
     c, appmod, _db = client
     _login(c, appmod)
-    sid = _start(c)
+    sid = _stamped_start(c, appmod, version)
     _answer(c, sid, F2_UNKNOWN)
     live = _snapshot(appmod, sid)
     appmod.SESSION_STORE.clear()
     session = reconstruct_readonly_state(appmod._get_store(), sid)
     assert session.review.level == 1
-    assert getattr(session.state, "engine_contract_version", None) == \
-        ENGINE_CONTRACT_VERSION_T2G1
+    assert getattr(session.state, "engine_contract_version", None) == version
     replayed = appmod._resolve_question_context(session.state, None)
     assert replayed.identity == live["identity"]
     assert session.state.known_mechanism is None
@@ -483,7 +514,7 @@ def test_the_same_correction_on_a_legacy_project_keeps_the_baseline(client):
 def test_the_new_disclosure_shows_only_where_the_rule_applies(client):
     c, appmod, _db = client
     _login(c, appmod)
-    new = _start(c)
+    new = _t2g1_start(c, appmod)
     legacy = _legacy_start(c, appmod)
     new_page, legacy_page = _page(c, new), _page(c, legacy)
     assert T2G_DISCLOSURE in new_page and LEGACY_DISCLOSURE not in new_page

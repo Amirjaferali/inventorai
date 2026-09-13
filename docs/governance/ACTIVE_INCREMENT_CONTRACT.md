@@ -527,6 +527,477 @@ the existing T2-A random-skip test debt, the four T2-D observations, the six
 PR #640 findings and satellite timing all keep their return triggers. This
 remains PARTIAL T2-G with no paid-activation claim.
 
+## Current authority — T2-G-2 concise and mixed mechanism explanations (Stage 7)
+
+**Owner decision `T2G-CONCISE-MIXED-IMPLEMENT-02` v1.0**, adopting
+`T2G-CONCISE-MIXED-DESIGN-02`. Existing T2-G ownership continues: the Lead is
+accountable, Original Claude implements. Authorized: implementation, synthetic
+tests, ordinary commits/pushes and ONE PR. This is a **partial T2-G** slice, not
+full-capability acceptance. PR #642 is integrated and administratively closed;
+its recorded `merged:false` metadata exception stands and is not revisited.
+
+**Outcome.** Within `MECHANISM_COMPLETENESS` in `mechanical` and
+`electronics_electrical`, EN/AR paired: recognise a supported mechanism
+explanation when it is CONCISE or shares a sentence with a positively
+recognised unknown, without treating the unknown portion, repeated markers or
+unrelated text as mechanism knowledge. This addresses the selection triggers of
+`N-1` and `N-2`; both stay OPEN until the delivered behaviour is verified.
+
+**1. Version policy — three versions, each read as itself.**
+`p4-2-level1-recon-v1` and `p4-2-level1-recon-v1-t2g1` retain their exact
+behaviour. `p4-2-level1-recon-v1-t2g2` is added through the EXISTING persisted
+envelope and the ONE progression/reconstruction path; only subsequent supported
+`/start` projects record it, and the carrier is set before the seed is
+interpreted. Extending the supported tuple alone would NOT have sufficed: the
+stance activation predicate compared the T2-G-1 stamp exactly, so activation is
+now a **rule LEVEL** (0/1/2) read from the project's own version and wired
+through BOTH the eligibility veto and the coverage site, so the two can never
+read one answer differently. `qualifying_carrier` keeps its signature with
+`rule_level=1` defaulted, so every existing direct caller is unchanged.
+No request-controlled version, silent migration, second engine or store, and no
+schema change. Missing or unsupported metadata keeps its fail-closed Level-0
+result. The disclosed legacy ILT entry-path exception is unchanged. **Legacy
+migration remains a pending decision, now spanning three versions.**
+
+**2. Bounded clause scope (T2-G-2 only).** Sentences are split at exactly four
+standalone contrast tokens — `but`, `however`, `لكن`, `لكنّ` — matched as whole
+tokens. `yet`, `though`, `although`, `أما`, `غير أن` and `إلا أن` are
+deliberately NOT included in this slice, and `and` / `و` are not boundaries: a
+prototype that split them scored worse than the accepted rule. Boundaries are
+located in the same whole-string `sentence.lower()` haystack and mapped back
+through the ACCEPTED coordinate map before the original text is cut, so clauses
+are exact substrings and no case-insensitive matching mode or re-casing is
+introduced. Registered ignorance detection and its bounds are unchanged, and a
+clause that declares ignorance or carries a registered hypothetical cue is never
+admitted as an independent explanation — nothing still inside an unknown or a
+supposition becomes support. Useful physical negation is untouched; no negation
+or uncertainty qualifier is stripped before eligibility. Level 2 is a strict
+UNION on top of level 1, so an unclear case gains no support merely by being
+split, and sentence handling for T2-G-1 and earlier is byte-unchanged.
+
+**3. Concise carriers.** A clause that fails the accepted four-surplus-word test
+can still qualify, but only through a relation pattern: a registered relation
+token — which MAY sit inside a committed marker — with role material on BOTH
+sides of it, plus at least one non-marker content word in the clause. Two
+arbitrary content words do not qualify, an isolated relational verb does not,
+and repeated markers supply neither a relation nor non-marker content, so they
+can never qualify. The `Q4` / `N-MC-4` uncertainty-purpose distinction is
+unchanged: naming what is unknown still supplies no mechanism. The contrast,
+hypothetical, function-word and relation vocabularies are FINITE, declared
+centrally in `engine/answer_stance.py`, scoped to T2-G-2, and enumerated by
+test. No new registry file, broad domain lexicon, global normalisation or
+competing ignorance list. All-occurrence discounting, the original-coordinate
+Unicode mapping and the accepted cost protections are reused; no truncation and
+no changed input limit. General relevance, quality, evidence validation and
+accept-risk policy are untouched — a described relationship is recorded as
+`ASSERTED`, never promoted, because the unchanged assessor still owns quality.
+Any failure inside the new path falls back to the level-1 answer, so a failed
+T2-G-2 interpretation never grants support of its own; older-version failure
+behaviour is unchanged and `N-3` is touched only where this path reaches it.
+
+**4. Copy.** `UI_T1D_QUESTION_SET` and `UI_T2G_QUESTION_SET` are retained
+byte-unchanged. `UI_T2G2_QUESTION_SET` is added and selected from the project's
+own trusted version, including after an explicit resume, through the existing
+session render/localization seam. The existing cold-page read-only boundary is
+untouched and no cold disclosure feature is created.
+
+**Changed paths.** Production: `engine/answer_stance.py`,
+`engine/session_reconstruction.py`, `web/app.py`, `web/ui_text.py`,
+`web/templates/session.html`. New test: `tests/test_t2g2_concise_mixed.py`.
+Consequential existing tests, preserving their genuine legacy and T2-G-1
+assertions on correctly stamped CREATION fixtures rather than rewritten
+histories: `tests/test_t2g_answer_stance.py`,
+`tests/test_t2g_versioned_journey.py`,
+`tests/test_t1d_t2b_question_explainability_and_disclosure.py`, and
+`tests/test_p4_2_session_reconstruction.py` — that fourth file was NOT in the
+authorized list and is disclosed here as a necessary dependency: it pins the
+`/start` stamp directly, so the third version cannot be added without it. The
+version inventory is extended to three and the now-supported T2-G-2 value is
+replaced as a negative fixture by genuinely unsupported stamps, with refusal
+coverage retained. No global fixture change and no unrelated digest re-pin;
+`progression_loop.py`, shared matchers, question content, stores, T2-D
+token/storage, API/export and operational logging are unchanged.
+
+**Status: PARTIAL T2-G.** Achieved: concise explanations and single-sentence
+mixed answers are recognised in both domains and both languages under the new
+contract, with the accepted repetition, Unicode-coordinate and cost properties
+intact. Not achieved and retained with their triggers: `R1` unregistered or
+short ignorance phrasings; **`R2` unrelated marker-bearing padding and
+paraphrase under-coverage — a prototype domain lexicon built from committed
+question texts plus registry substance signals was measured and REJECTED, because
+it also suppressed every genuine concise and mixed answer**; `R3` cross-gap
+adaptivity; `N-1` and `N-2` open pending verification of this delivery; `N-3`
+through `N-6`; the pending legacy-migration decision; the T2-A random-skip test
+debt; the PR #642 metadata exception; the four T2-D observations; the six
+PR #640 findings; and satellite timing. No paid-activation claim.
+
+### Same-touch repair — `PR643-T2G2-SCOPE-REPAIR-01` v1.0 (governing scope)
+
+**Disposition.** The Lead recorded **C — FAIL — BOUNDED REPAIR REQUIRED** and the
+Owner adopted it. The `C` follows from applying the original requirement, which
+was not available to the independent reviewer; the reviewer's own verdict on the
+reviewed head `4fb5ecf4` was **B**, and that verdict and its evidence stand
+unaltered as history. This record does not restate it as a reviewer-issued `C`.
+
+**What was wrong.** Under T2-G-2 only, splitting a sentence at a contrast
+boundary was treated as clearing every scope that governed the material.
+Reproduced on the reviewed head through fully specified supported journeys:
+
+| Answer | T2-G-1 | reviewed T2-G-2 head | repaired T2-G-2 head |
+|---|---|---|---|
+| `The deck transfers force into the rail, but I do not know if that is right.` | `…:Q2` · OPEN · none · cov — · unknown ×1 | **`…:Q3` · PARTIAL · REASONED · cov Q2** · unknown ×1 | `…:Q2` · OPEN · none · cov — · unknown ×1 |
+| `Deck transfers force into rail?` | `…:Q2` · PARTIAL · ASSERTED · cov — | **`…:Q3` · cov Q2** | `…:Q2` · PARTIAL · ASSERTED · cov — |
+
+The second row's PARTIAL/ASSERTED reading is the OLDER quality result for that
+answer; it is preserved exactly. Only the T2-G-2 coverage of `Q2` and the
+consequent advance of the served question were newly admitted, and only those
+are withdrawn.
+
+**The repair.** Before a clause may become NEW T2-G-2 support, the scope that
+actually governs it is established, at four points, each decided by where the
+cue sits relative to this question's committed material — never by the bare
+presence of a pronoun, a reporting word or a quotation mark:
+
+1. **Questioned.** The segment's own ORIGINAL terminator is carried to the new
+   path (`_sentence_records`) instead of being discarded by the split, so a
+   question is refused without ever guessing from a delimiter-less fragment.
+   `sentences()` keeps its exact public output and every existing consumer.
+2. **Back-referencing uncertainty.** A recognised ignorance clause that names
+   NONE of this question's committed markers while carrying an anaphor is
+   doubting what was already said; the clauses BEFORE it lose new-support
+   eligibility. An unknown naming its own separate detail, an unknown that does
+   name committed material, and a clause standing AFTER the anaphor are all
+   unaffected.
+3. **Supposition.** A clause-initial subordinating hypothetical still governs
+   the clauses after it in the same sentence. The modal cues stay clause-local.
+4. **Reported or quoted.** A reporting frame standing before this question's
+   committed material in the same clause, a clause quoted in its entirety, or a
+   whole segment inside one quoted span of the answer. Apostrophes are not
+   quotation marks. A quotation that merely labels a component is untouched.
+
+A failure while establishing scope falls back to the level-1 reading for the
+whole answer. Every refusal reaches the T2-G-2 path only: level 2 remains a
+strict UNION over level 1, so no older or default result is withdrawn. No
+broad lexicon, no example-specific special case, no feature disablement, and
+the quality assessor is not touched.
+
+**Truthful limit, recorded rather than implied.** These four refusals bite only
+where T2-G-2 would otherwise NEWLY admit. An answer long enough to satisfy the
+unchanged level-1 four-surplus-word test is still accepted exactly as before —
+question mark, reporting frame or enclosing quotation notwithstanding. That was
+the behaviour before this slice and it is unchanged by this repair; narrowing it
+would withdraw accepted results and is not authorized here.
+
+**Repair-only file boundary.** `engine/answer_stance.py`,
+`tests/test_t2g2_concise_mixed.py`, `tests/test_t2d_question_feedback.py`
+(the test-local generation-clock pin only) and this file. The reviewed delta to
+`tests/test_p4_2_session_reconstruction.py` is RETAINED unchanged by Owner
+approval; it remains recorded as outside the original ten-path mandate and is
+not portrayed as having been authorized in advance. No further edit to it.
+
+**T2-D generation clock.** `test_feedback_changes_nothing_else_at_all` compared
+a deliverable package stamping `generated_at` from a one-second-granularity
+clock, so two snapshots straddling a second boundary differed in that field
+alone. Observed directly with the assembler clock advanced one second: `package`
+is the only differing snapshot item and `generated_at` the only differing
+package key. Only `engine.deliverable_assembler._now_iso` is pinned, only inside
+that test. The field is still produced, still in the package and still compared
+in full; no production timestamp, security or token clock, shared snapshot
+helper or global fixture is changed, no assertion is weakened and no skip
+allowance is widened. The earlier report stated that this candidate raised the
+failure's hit rate, citing 0 occurrences in 20 base runs against 3 in 26
+candidate runs. **That causal claim is withdrawn**: the counts are raw
+observations from run sets taken under different conditions, no rate comparison
+or significance test was performed, and none is claimed. The mechanism above is
+timing-dependent and observable independently of this change.
+
+**Preserved.** `N-1` and `N-2` remain OPEN pending bounded corrected acceptance;
+`R1`, `R2`, `R3`, `N-3` through `N-6`, the deferred legacy-migration decision,
+the T2-A random-skip test debt, the PR #642 `merged:false` metadata exception,
+the four T2-D observations, the six PR #640 findings, satellite timing and the
+deferred MCP direction all keep their existing triggers. Merge, deployment,
+release, tags, force-push, rebase, branch deletion, authoritative-branch
+modification, Stage 7 completion, WS11, advanced evidence writers and human-data
+collection remain NOT AUTHORIZED and were not performed. Still PARTIAL T2-G with
+no paid-activation claim.
+
+### Same-touch continuation — `PR643-T2G2-SCOPE-REPAIR-02` v1.0
+
+**Disposition.** A second independent differential review of `406d893b` returned
+**C — FAIL — BOUNDED REPAIR REQUIRED**, adopted by the Owner. Three verdicts now
+stand separately and none is rewritten as another: the reviewer's **B** on
+`4fb5ecf4`, the Lead's **C** on `4fb5ecf4`, and this reviewer-issued **C** on
+`406d893b`. Finding 1 stays OPEN until corrected verification; the verified
+Finding 3 and Finding 5 dispositions are retained.
+
+**Correction to the previous record.** The `PR643-T2G2-SCOPE-REPAIR-01` entry
+above claimed that an uncertainty which *does* name this question's committed
+markers "is left alone" — presented as a deliberate guard against over-veto.
+**That claim was wrong and is withdrawn.** Repeating the very mechanism it
+doubts does not make an uncertainty independent, and the exemption let
+`The deck transfers force into the rail, but I do not know if that load path is
+right.` grant support. The exemption is **removed**. The shipped test that
+asserted the exempted case as a positive was carrying the defect and has been
+corrected rather than preserved.
+
+**What was still wrong**, reproduced on `406d893b` through fully specified
+supported journeys reading served identity, gap, knowledge, coverage and unknown
+tracking together. Every row read `…:Q2` · OPEN · none · cov — · unknown ×1
+under T2-G-1 and `…:Q3` · PARTIAL · REASONED · cov `Q2` · unknown ×1 under
+T2-G-2; all now read the T2-G-1 result on both versions.
+
+| Answer | Why it was admitted |
+|---|---|
+| `The deck transfers force into the rail, but I do not know if that load path is right.` | committed-marker exemption |
+| `السطح ينقل القوة إلى الإطار لكن لا أعرف إن كان مسار الحمل هذا صحيحًا.` | same exemption, Arabic named reference |
+| `The deck transfers force into the rail, but I'm not sure.` | object-less uncertainty carried no anaphor |
+| `السطح ينقل القوة إلى الإطار لكن لست متأكدًا.` | same, Arabic |
+
+The Arabic sentences are constructed by the implementing session around the
+`مسار الحمل هذا` fragment the review supplied; they are not presented as
+reviewer-authored fixtures.
+
+**The repair.** A registered ignorance clause now refers BACK when it carries an
+anaphor **or** when it names no subject of its own. The subject test removes the
+registered expression first and reads only what remains, so words belonging to
+the uncertainty expression are never mistaken for a named subject. The English
+side uses `progression_loop`'s own marker tuple; the Arabic side derives the
+expression's extent from the **registry detector's own decision** — the
+leftmost, shortest word-aligned window it still recognises, capped at six words.
+No surface list is copied, no matching rule reimplemented, no competing
+ignorance list and no normalisation introduced in the stance module; the
+accepted T2-G-1 source guard on that module is therefore still satisfied
+unchanged.
+
+**The residual-content approach was validated against the registered forms, not
+assumed.** Two Arabic forms defeat a naive reading and are handled explicitly:
+the surface `لست متاكد` leaves the one-character inflection `ا`, and `لم احدد`
+leaves the particle `بعد`. On the English side, `i do not know` matching first
+leaves `yet` behind in "I do not know yet". Residue tokens shorter than two
+characters, function words, anaphora and a declared 10 EN + 6 AR particle set
+therefore name nothing.
+
+**Reported-frame coordinate correction, same touch.** `_t2g2_is_reported`
+compared a position found in `clause.lower()` against a marker span measured in
+ORIGINAL coordinates. `str.lower()` is not length-preserving, so twenty U+0130
+before the frame pushed the lowered offset past the original marker start and
+the frame stopped governing. The accepted F-3 map now brings both into one
+coordinate system; matching semantics, the raw text and the conservative
+unmappable-case refusal are unchanged. The consequence was reproduced at the
+integrated route level (`…:Q3` · PARTIAL · ASSERTED · cov `Q2` before, `…:Q2` ·
+OPEN · none after), with no-expansion and short-expansion controls unchanged.
+The reviewer's original non-blocking classification stands; including it here
+opens no separate repair lifecycle. The unmatched `İ heard` surface is an
+inherited vocabulary limit and is **not** part of this correction; no Unicode
+census and no lexicon work was undertaken.
+
+**Evidence.** With tests held constant, **32 failures on `406d893b`, 0 on the
+repaired head**: 16 behavioural, 14 missing-helper, 2 changed-interface (the
+`_t2g2_back_reference_index` signature no longer takes a question id, because it
+no longer consults committed markers). Each guard is proved by a matched pair
+differing only in what the uncertainty is about, with a companion test asserting
+every refused fixture is one level 1 already declined.
+
+**Bounded cost, measured at the accepted input limit** on the adversarial worst
+case for a left-to-right probe — one clause, no terminator, no contrast cue, the
+registered surface only at the very end: 0.2199 s Arabic, 0.5561 s English. The
+input limit is unchanged and nothing is truncated, cached or skipped.
+
+**Truthful limits, recorded.** Level 1 is untouched, so an answer long enough to
+satisfy the unchanged four-surplus-word test is still accepted exactly as
+before. Reference resolution is NOT claimed: an uncertainty that carries an
+anaphor while asking about a genuinely separate detail
+("…but I do not know how it fastens") is refused, and an Arabic anaphor written
+with harakat is not recognised as one. Both are bounded under-recognition of the
+refusal, disclosed rather than presented as solved, and neither disables the
+feature.
+
+**Repair-only file boundary.** `engine/answer_stance.py`,
+`tests/test_t2g2_concise_mixed.py` and this file.
+`tests/test_t2d_question_feedback.py` and
+`tests/test_p4_2_session_reconstruction.py` are byte-identical to `406d893b`;
+the clock repair is verified and the retained p4-2 delta needed no further edit
+or approval. Older/default and level-1 behaviour, the quality assessor, the
+`Q4`/`N-MC-4` purpose distinction, version dispatch, schema, stores, shared
+matchers and question content are unchanged.
+
+**Preserved.** `N-1` and `N-2` open pending bounded corrected acceptance; `R1`,
+`R2`, `R3`, `N-3`–`N-6`, the deferred legacy-migration decision, the T2-A
+random-skip test debt, the PR #642 `merged:false` metadata exception, the four
+T2-D observations, the six PR #640 findings, satellite timing and the deferred
+MCP direction all keep their triggers. No merge, release, deployment, paid
+activation, new version, migration, Stage 8, RUN-004, provider or human-data
+activity. Still PARTIAL T2-G with no paid-activation claim.
+
+### Same-touch continuation — `PR643-T2G2-SCOPE-REPAIR-03` v1.0 (harakat)
+
+**Disposition.** A third independent differential review, of `2de82db8`, returned
+**C — FAIL — BOUNDED REPAIR REQUIRED**, adopted by the Owner. Four verdicts now
+stand separately and none is rewritten as another:
+
+| Head | Verdict | Whose |
+|---|---|---|
+| `4fb5ecf4` | **B** | the independent reviewer |
+| `4fb5ecf4` | **C** | the Lead, applying the original requirement |
+| `406d893b` | **C** | the independent differential reviewer |
+| `2de82db8` | **C** | the independent differential reviewer |
+
+Finding 1 stays OPEN until independent corrected verification. Finding 3 and
+Finding 5 remain accepted as previously verified, and the reported-frame
+coordinate repair remains accepted.
+
+**Correction to the previous record.** The `PR643-T2G2-SCOPE-REPAIR-02` entry
+above recorded the harakat-bearing Arabic anaphor as *bounded under-recognition*
+— an unrecognised refusal, disclosed and tolerated. **That characterisation was
+wrong and is withdrawn.** Its reviewed consequence was **false progress**: the
+missed veto let the sibling clause supply mechanism knowledge and advance the
+served question. Under-recognising a refusal in this rule is not a quiet
+shortfall; it is unearned support.
+
+**What was wrong.** `_WORD_RE` treats the Arabic combining marks as non-word
+characters, so the vowelled demonstrative `ذَلِكَ` tokenised as three
+one-letter fragments and the anaphor `ذلك` never formed. Reproduced on
+`2de82db8` through fully specified supported journeys:
+
+| Answer | T2-G-1 | reviewed T2-G-2 | repaired T2-G-2 |
+|---|---|---|---|
+| `…لكن لا أعرف إن كان ذلك صحيحًا.` (plain) | `…:Q2` · OPEN · none · cov — · unknown ×1 | same (already correct) | unchanged |
+| `…لكن لا أعرف إن كان ذَلِكَ صحيحًا.` (vowelled) | `…:Q2` · OPEN · none · cov — · unknown ×1 | **`…:Q3` · PARTIAL · REASONED · cov `Q2`** · unknown ×1 | `…:Q2` · OPEN · none · cov — · unknown ×1 |
+| `…لكن لا أعرف مقاس البرغي.` (independent detail) | `…:Q2` | `…:Q3` · cov `Q2` | unchanged — still progresses |
+
+**The repair.** A module-local, explicitly enumerated set of Arabic combining
+marks — U+064B..U+0652 plus U+0670, nine code points — is dropped from the
+clause **for the T2-G-2 Arabic anaphor lookup only**, and a copy is made only
+when a mark is actually present. Not done, and pinned by test: `_WORD_RE` is
+unchanged and still shared; level-1 surplus counting is unchanged; the registry
+normaliser is neither imported nor recreated and remains the only owner of
+registered-surface matching; no general Unicode normalisation, `unicodedata` or
+`casefold`; no Arabic morphology, no reference resolution, and no new semantic
+vocabulary. The registered-unknown detector stays canonical. Only the T2-G-2
+back-reference eligibility path changed.
+
+**Evidence.** With tests held constant, **4 failures on `2de82db8`, 0 on the
+repaired head**: 2 behavioural (the vowelled route journey, and the anaphor
+lookup on vowelled text) and 2 missing-helper. The plain-form parametrisation
+passed on both heads, which is what makes the pair decisive; the
+independent-detail control passed on both, which is what makes it a control.
+
+**Cost-test premise corrected in the same touch, and a measurement withdrawn.**
+The review established that `test_bounded_cost_of_the_registered_extent_probe`
+as shipped on `2de82db8` did not exercise the probe it named. Reproduced by
+instrumenting the call: its two long bodies carried no contrast boundary, so
+`_t2g2_clause_carrier` returned before the back-reference check and the extent
+probe was entered **0 times**; and truncating `"load path " * 2000` to the input
+limit removed the trailing registered cue outright, leaving a body with no
+unknown in it. **The 0.2199 s / 0.5561 s figures recorded in the previous entry
+are therefore withdrawn: they timed a different path and were mislabelled as the
+extent probe's worst case.** The corrected bodies keep the registered unknown
+after sizing, cross the contrast-clause path, and place the surface at the END
+of the long ignorance clause; all three premises are asserted in the test rather
+than assumed. Measured on the corrected bodies at the accepted input limit:
+**0.0892 s** Arabic and **0.0540 s** English, one probe entry each. Those are
+evidence that this path is currently practical on this machine, **not** a
+performance guarantee and not a universal worst case. The existing 5-second
+safety ceiling is retained; no benchmark framework was built and the input limit
+is unchanged.
+
+**Remaining limitation, stated by consequence.** Reference resolution is still
+not attempted and is not claimed. An uncertainty that carries a recognised
+anaphor while asking about a genuinely separate detail — "…but I do not know how
+it fastens" — is refused, so a real explanation beside it gains no T2-G-2
+support it would otherwise have had. That is lost progress on a true answer, not
+unearned progress on a doubted one, and it is the deliberate direction of error
+for this rule. Arabic anaphora written with marks outside the nine declared code
+points remain unrecognised, and that failure direction is the harmful one:
+it would again permit unearned support.
+
+**Repair-only file boundary.** `engine/answer_stance.py`,
+`tests/test_t2g2_concise_mixed.py` and this file. No fourth path.
+`tests/test_t2d_question_feedback.py` and
+`tests/test_p4_2_session_reconstruction.py` were not touched. Preserved and
+unaltered: named-reference and object-less uncertainty, concise interrogative
+handling, the reported-frame coordinate correction, the `generated_at`
+test-local clock fixture, T2-G-1 and default behaviour, the quality assessor,
+the `Q4`/`N-MC-4` purpose distinction, correction/replay/restart/resume,
+raw-answer preservation, genuine independent-detail uncertainty, physical
+negation and component-label quotation behaviour.
+
+**Preserved.** `N-1` and `N-2` open pending bounded acceptance; `R1`, `R2`,
+`R3`, `N-3`–`N-6`, the deferred legacy-migration decision, the T2-A random-skip
+test debt, the PR #642 `merged:false` metadata exception, the four T2-D
+observations, the six PR #640 findings, satellite timing and the deferred MCP
+direction all keep their triggers. No Agent Teams or subagent pilot, no Stage 8,
+no merge, release, deployment, paid activation, migration, provider activation,
+RUN-004 or human-data activity. Still PARTIAL T2-G with no paid-activation
+claim.
+
+### Same-touch continuation — `PR643-T2G2-SCOPE-REPAIR-04` v1.0 (tatweel)
+
+**Disposition.** The Owner adopts every independently verified PASS result on
+`5506b4476e4b2579c6dc286f65a42bdccf7411be` but **does not adopt** the reviewer's
+classification of the U+0640 tatweel case as a non-blocking unregistered-surface
+residual. One ultra-bounded correction follows. All earlier verdicts stand
+separately and unaltered: reviewer **B** and Lead **C** on `4fb5ecf4`, reviewer
+**C** on `406d893b`, reviewer **C** on `2de82db8`, and the verified PASS evidence
+on `5506b447`. Every previously withdrawn claim stays withdrawn and recorded.
+
+**Classification corrected.** Tatweel is not an unregistered language surface for
+this rule. The canonical Arabic semantic registry **already removes U+0640**
+under its own governed normalisation (`_TATWEEL`, dropped in `normalize_ar`), so
+the registered-unknown detector went on recognising `لا أعرف` in the clause
+while the T2-G-2 anaphor lookup — which strips the nine harakat marks but not
+tatweel — failed to see `ذـلك` as `ذلك`. The two halves of one rule read the
+same clause differently, and the sibling mechanism clause gained level-2 support
+it had not earned. That is the same **false-progress** consequence as the
+vowelled case, not a tolerable residual.
+
+**A different failure mechanism from the vowelled case, worth stating exactly.**
+A harakat is a non-word character to `_WORD_RE`, so `ذَلِكَ` fragmented into
+three tokens. Tatweel is a *modifier letter*: `_WORD_RE` counts it as a word
+character, so `ذـلك` stayed ONE token that simply was not the anaphor. Same
+outcome, different cause.
+
+**The repair.** U+0640 is added to the **same** private T2-G-2 Arabic anaphor
+preparation seam introduced for the nine harakat marks — ten code points now,
+consulted by that lookup only. It is included **solely because the canonical
+registry explicitly removes it**, and nothing further is inferred from that. Not
+done, and pinned by test: the registry normaliser is not imported; no general
+Unicode normalisation; `_WORD_RE` unchanged; level-1 behaviour unchanged; no
+morphology, no reference resolution, no new vocabulary or normalisation
+framework.
+
+**Evidence.** Focused RED/GREEN with tests held constant: **4 failures on
+`5506b447`, 0 on the repaired head, all four behavioural** — no missing-helper
+and no changed-interface failure, because the seam already existed and was
+reused rather than extended. The **plain** parametrisation passes on both heads,
+which isolates the tatweel; the **Arabic independent-detail** control passes on
+both, which shows no blanket veto; ordinary tatweel-elongated Arabic
+(`مقـاس`, `الإطـار`) is still not an anaphor; and the inventor's raw answer is
+asserted stored verbatim, tatweel included.
+
+**Remaining Unicode residuals, accurately bounded and NOT claimed solved.**
+U+0653, U+0654 and U+0655 (maddah and the hamza carriers) stay out of this
+repair deliberately: the canonical registry does **not** drop them, and folding
+them would rewrite letters rather than remove decoration. ZWNJ and other format
+characters likewise stay out. Both keep the existing bounded /
+unregistered-language residual classification and their return trigger, which
+fires on new evidence or on a change to the canonical normalisation — not on a
+general Unicode census, which is not required and was not performed. Their
+failure direction is the harmful one, and that is recorded rather than softened.
+
+**Repair-only file boundary.** `engine/answer_stance.py`,
+`tests/test_t2g2_concise_mixed.py` and this file. No other path. Everything
+independently verified on `5506b447` is preserved unchanged.
+
+**Preserved.** `N-1` and `N-2` open pending bounded acceptance; `R1`, `R2`,
+`R3`, `N-3`–`N-6`, the deferred legacy-migration decision, the T2-A random-skip
+test debt, the PR #642 `merged:false` metadata exception, the four T2-D
+observations, the six PR #640 findings, satellite timing and the deferred MCP
+direction all keep their triggers. No Agent Teams or subagent pilot, no Stage 8,
+no merge, release, deployment, migration, provider activation, RUN-004, paid
+activation or human-data activity. Still PARTIAL T2-G with no paid-activation
+claim.
+
 <a id="current-authority--t2e-t2f-evidence-references-and-ordering"></a>
 ## Current authority — T2-E Option B + T2-F (one combined bounded candidate)
 

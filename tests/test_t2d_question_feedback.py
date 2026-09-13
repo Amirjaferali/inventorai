@@ -986,12 +986,25 @@ def _snapshot(appmod, sid, account_id):
     }
 
 
-def test_feedback_changes_nothing_else_at_all(client):
+def test_feedback_changes_nothing_else_at_all(client, monkeypatch):
+    """`PR643-T2G2-SCOPE-REPAIR-01`: the deliverable assembler stamps
+    `generated_at` from a one-second-granularity clock, so two snapshots taken
+    either side of a second boundary differ in that field alone and this
+    before/after comparison fails for a reason that has nothing to do with
+    feedback. ONLY that assembler clock is pinned, and ONLY inside this test:
+    the field is still produced, still inside the package, and still compared
+    below in full. No production timestamp, security or token clock, shared
+    helper or global fixture is touched, and no assertion is weakened."""
+    import engine.deliverable_assembler as _assembler
+    monkeypatch.setattr(_assembler, "_now_iso", lambda: "2026-01-01T00:00:00Z")
+
     c, appmod = client
     account_id = _login(c, appmod, email="inv@example.com")
     sid = _start(c)
     _answer(c, sid)
     before = _snapshot(appmod, sid, account_id)
+    # the pinned field is genuinely still in the compared payload
+    assert '"generated_at": "2026-01-01T00:00:00Z"' in before["package"]
     for choice in ("HELPFUL", "UNCLEAR", "NOT_RELEVANT"):
         _choose(c, sid, choice)
     after = _snapshot(appmod, sid, account_id)

@@ -179,6 +179,7 @@ from engine.session_reconstruction import (
     RECONSTRUCTION_VERSION,
     CURRENT_ENGINE_CONTRACT_VERSION,
     ENGINE_CONTRACT_VERSION_T2G1,
+    ENGINE_CONTRACT_VERSION_T2G2,
     reconstruct_readonly_state,
 )
 # Increment 3 (R-5): the SAME shared public derivation that feeds the deliverable
@@ -3989,6 +3990,21 @@ def _feedback_render_context(entry, state, sid, qctx, read_only=False):
     }
 
 
+def _questioning_disclosure_key(state):
+    """The UI key of the questioning disclosure that is TRUE for this project.
+
+    Derived only from the project's own persisted engine-contract version, so
+    the page never describes the codebase's newest rule to a project that is
+    not running it. `UI_T1D_QUESTION_SET` and `UI_T2G_QUESTION_SET` are
+    returned byte-unchanged for the versions they already described."""
+    version = getattr(state, "engine_contract_version", None)
+    if version == ENGINE_CONTRACT_VERSION_T2G2:
+        return "UI_T2G2_QUESTION_SET"
+    if version == ENGINE_CONTRACT_VERSION_T2G1:
+        return "UI_T2G_QUESTION_SET"
+    return "UI_T1D_QUESTION_SET"
+
+
 def _cold_feedback_context(entry, sid, reconstructed_review):
     """Feedback readback for the COLD reconstructed-review surface, or None.
 
@@ -4418,13 +4434,14 @@ def show_session(sid):
         # resolves every display label through t(). None when nothing applies.
         quantity_step=_quantity_step_context(entry, state, sid),
         evref_step=_evref_step_context(entry, state, sid),
-        # T2-G: whether THIS project is recorded under the T2-G engine-contract
-        # version, so the questioning disclosure tells the truth for this
-        # project rather than for the codebase. Read from the same runtime
-        # carrier the engine reads; a legacy or unversioned project renders the
-        # retained legacy wording.
-        t2g_questioning=(getattr(state, "engine_contract_version", None)
-                         == ENGINE_CONTRACT_VERSION_T2G1),
+        # T2-G: WHICH questioning disclosure is true for THIS project, read from
+        # the same runtime carrier the engine reads — the project's own
+        # persisted version, including after an explicit resume. A legacy or
+        # unversioned project renders the retained legacy wording, a T2-G-1
+        # project its own, and a T2-G-2 project the concise/mixed one. Both
+        # earlier texts are unchanged, and this adds no cold-page disclosure:
+        # the existing read-only boundary is untouched.
+        t2g_questioning=_questioning_disclosure_key(state),
         # T2-D: optional feedback control for the question actually displayed.
         # Presentation-only; never persisted into canonical state, an export,
         # the API, the deliverable or reconstruction.

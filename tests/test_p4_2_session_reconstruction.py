@@ -228,8 +228,25 @@ def test_start_persists_reconstruction_inputs(client):
     # T2-G (`T2G-VERSIONED-IMPLEMENT-01`): a NEWLY created project records the
     # new engine-contract version. Both versions stay supported through this
     # one reconstruction path, so no valid legacy project is stranded.
-    assert inputs["engine_contract_version"] == SR.ENGINE_CONTRACT_VERSION_T2G1
+    # T2-G-2: a fresh /start now records the newest contract; all three stay
+    # supported through the one reconstruction path.
+    assert inputs["engine_contract_version"] == SR.ENGINE_CONTRACT_VERSION_T2G2
     assert inputs["engine_contract_version"] in SR.SUPPORTED_ENGINE_CONTRACT_VERSIONS
+    assert len(SR.SUPPORTED_ENGINE_CONTRACT_VERSIONS) == 3
+
+
+def test_a_project_created_under_t2g1_keeps_that_stamp(client):
+    """The intermediate contract is still recorded, supported and replayable."""
+    original = webapp.CURRENT_ENGINE_CONTRACT_VERSION
+    webapp.CURRENT_ENGINE_CONTRACT_VERSION = SR.ENGINE_CONTRACT_VERSION_T2G1
+    try:
+        sid = _start(client)
+    finally:
+        webapp.CURRENT_ENGINE_CONTRACT_VERSION = original
+    inputs = _store().load_reconstruction_inputs(sid)
+    assert inputs["engine_contract_version"] == SR.ENGINE_CONTRACT_VERSION_T2G1
+    review = SR.reconstruct_review_state(_store(), sid)
+    assert review.level == 1 and review.reconstructed is True
 
 
 def test_a_project_created_before_t2g_keeps_the_earlier_stamp(client):
