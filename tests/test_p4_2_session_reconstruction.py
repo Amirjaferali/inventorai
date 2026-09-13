@@ -225,7 +225,30 @@ def test_start_persists_reconstruction_inputs(client):
     assert inputs["seed_idea_text"] == IDEA
     assert inputs["confirmed_domain"] == "electronics_electrical"
     assert inputs["path"] == "N"
+    # T2-G (`T2G-VERSIONED-IMPLEMENT-01`): a NEWLY created project records the
+    # new engine-contract version. Both versions stay supported through this
+    # one reconstruction path, so no valid legacy project is stranded.
+    assert inputs["engine_contract_version"] == SR.ENGINE_CONTRACT_VERSION_T2G1
+    assert inputs["engine_contract_version"] in SR.SUPPORTED_ENGINE_CONTRACT_VERSIONS
+
+
+def test_a_project_created_before_t2g_keeps_the_earlier_stamp(client):
+    """The ORIGINAL assertion, preserved: a project created under the earlier
+    version records and keeps exactly that version — never rewritten, never
+    migrated, and still fully reconstructable."""
+    original = webapp.CURRENT_ENGINE_CONTRACT_VERSION
+    webapp.CURRENT_ENGINE_CONTRACT_VERSION = SR.RECONSTRUCTION_VERSION
+    try:
+        sid = _start(client)
+    finally:
+        webapp.CURRENT_ENGINE_CONTRACT_VERSION = original
+    inputs = _store().load_reconstruction_inputs(sid)
     assert inputs["engine_contract_version"] == SR.RECONSTRUCTION_VERSION
+    review = SR.reconstruct_review_state(_store(), sid)
+    assert review.level == 1 and review.reconstructed is True
+    # untouched by any later read
+    assert _store().load_reconstruction_inputs(sid)["engine_contract_version"] == \
+        SR.RECONSTRUCTION_VERSION
 
 
 # ===========================================================================

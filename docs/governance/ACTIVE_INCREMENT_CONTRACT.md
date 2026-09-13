@@ -298,6 +298,235 @@ mandate, and merge, deployment, release, tags, branch deletion, authoritative-
 branch modification, later capabilities and human-data collection remain
 unauthorized.
 
+## Current authority — T2-G partial versioned mechanism slice (Stage 7)
+
+**Owner decision `T2G-VERSIONED-IMPLEMENT-01` v1.0.** Adopting the
+`T2G-BOUNDED-DESIGN-01` v1.1 direction. For `OD-PDVG-10` the Lead is the
+accountable T2-G owner/steward and Original Claude the implementation agent.
+This resolves RESPONSIBILITY, not completion of the capability. No new numbered
+workstream is created and WS11/WS14 are not reopened. Authorized: implementation,
+synthetic tests, ordinary commits/pushes and ONE PR for this partial slice.
+NOT authorized: merge, deployment, release, paid activation, Stage 8 repair,
+RUN-004, satellite work, provider/model integration, real-user collection.
+
+**Product scope.** `MECHANISM_COMPLETENESS` only, in `electronics_electrical`
+and `mechanical`, with paired English/Arabic behaviour. It combines recognised
+explicit-unknown satisfaction eligibility with purpose-aware coverage at the two
+existing W2-C coverage sites. Only existing governed questions are used: no
+question generation, no general language-understanding claim, no feedback
+learning, no evidence promotion.
+
+**1. Explicit version policy — no silent legacy reinterpretation.** The existing
+persisted `engine_contract_version` envelope carries the decision.
+`p4-2-level1-recon-v1` is RETAINED; newly created `/start` projects record
+`p4-2-level1-recon-v1-t2g1`. Both exact versions are supported through the ONE
+existing progression and reconstruction path — `RECONSTRUCTION_VERSION` is not
+replaced, so no valid legacy project is stranded at Level 0. Existing projects
+keep their recorded version and their pre-T2-G eligibility and serving behaviour
+through read-only reconstruction, correction and explicit writable resume; no
+record or envelope is rewritten, mass-replayed or silently migrated. The runtime
+carrier is set from trusted creation metadata BEFORE the seed is interpreted and
+is what `_reconstruction_inputs` persists, so the reading and the stamp cannot
+disagree; it is never a request field, the UI language, a timestamp or an
+arbitrary default. An absent carrier means legacy, so an unversioned runtime or
+test state can never silently enable the new rule. Missing or unsupported
+persisted metadata keeps its existing fail-closed Level-0 result. No version
+table, schema migration, second ledger, historical-state store or duplicated
+engine. **Legacy migration is DEFERRED, not cancelled or implicitly approved,
+and returns after verified versioned delivery.**
+
+**2. Relevance stays separate from satisfaction eligibility.** `addresses_gap`,
+`assess_response`, the quality ladder, `_matches_intent` and
+`supplemental_relevance` keep their exact semantics; `relevant` remains the
+original relevance result and is never reassigned. The veto is expressed
+separately at the existing integration writer. Within the new version and named
+scope, a positively recognised explicit unknown with no supported
+mechanism-bearing explanation supplies no `known_mechanism`, no associated
+`known_problem` side effect and no gap progress. Raw answers, prior valid
+knowledge, exactly-once acknowledged-unknown capture, correction/supersession
+and the existing counters are preserved; no CLOSED gap reopens, no earlier
+knowledge is erased, no validation evidence is created and Stage-3 capture is
+unaffected (`MECHANISM_COMPLETENESS` is not a Stage-3 gap). The outcome has its
+OWN bilingual WARN explanation, never the generic "does not address the
+question" one. `accept_gap_risk` continues to reject `MECHANISM_COMPLETENESS`;
+no route past an unexplained core mechanism is invented.
+
+**3. Bounded, question-specific carrier rule.** The existing registered English
+ignorance markers and the existing Arabic normalising detector are read
+unchanged, and their original consumers are untouched. The existing detector's
+declared bounds — registered phrasings and its minimum length — apply as they
+are: an unregistered or short phrasing is simply NOT recognised, and that limit
+is disclosed rather than dressed up as universal unknown detection. A qualifying
+carrier must relate to that variant's requested information and say something
+beyond the marker itself, so a bare component name, an uncertainty-only marker
+or an unrelated cue-free sentence never covers another question and never
+defeats the veto on its own. Physical negation is not ignorance and supported
+mixed answers keep their supported clause. Sentence handling is local to the new
+module and includes both the English and the Arabic semicolon and question mark;
+the Arabic comma is deliberately not a boundary, and no normalisation changes
+globally. `N-MC-4` and `mechanical:MECHANISM_COMPLETENESS:Q4` retain their
+uncertainty-question coverage when otherwise matched, and that exemption never
+turns identified uncertainty into mechanism knowledge. One helper serves both
+coverage sites. W2-B precedence, canonical gap ownership, out-of-scope behaviour
+and conservative fallback are preserved; `_matches_intent` is never
+monkeypatched, and both module-import orders are clean.
+
+**4. Version-truthful copy.** `UI_T1D_QUESTION_SET` is RETAINED byte-identical
+and remains the accurate disclosure for every legacy project. The new
+`UI_T2G_QUESTION_SET` renders only where the rule applies, through the existing
+localization/render seam — no new explanation subsystem. It states the fixed
+reviewed set, the fixed rules, the bounded recognition of some explicit
+uncertainty expressions, that the coverage is limited, that no new questions are
+generated and that engineering correctness is not verified; it claims no general
+semantic understanding.
+
+**Changed paths.** Production: `engine/answer_stance.py` (new),
+`engine/progression_loop.py`, `engine/intent_serving.py`,
+`engine/session_reconstruction.py`, `web/app.py`, `web/result_feedback.py`,
+`web/ui_text.py`, `web/templates/session.html`. New tests:
+`tests/test_t2g_answer_stance.py`, `tests/test_t2g_versioned_journey.py`.
+Directly affected existing tests, preserving their legacy assertions and adding
+the intentional new-version cases: `tests/test_t1d_t2b_question_explainability_and_disclosure.py`, `tests/test_pvcg_r3i_semantic_stability.py`,
+`tests/test_p4_2_session_reconstruction.py`. Mechanical progression-source
+digest re-pins only: `tests/test_p9_mech_i3_signal_quality.py`,
+`tests/test_p9_mech_i4_boundary_corpus.py`,
+`tests/test_p9_mech_i5_question_sufficiency.py`. No store-schema, question
+content/registry, shared relevance, semantic-registry, T2-D token/storage,
+API/export or operational-logging change, and no separate contract-only PR.
+
+**Status: PARTIAL T2-G.** Against `PDVG-01` §4A this closes the recognised
+explicit-unknown case in the named scope and makes eligibility and serving
+coherent there. It does NOT complete T2-G and supports no paid-activation claim.
+Retained and accounted for: **R1 residual** — unregistered or short phrasings of
+ignorance are not recognised; **R2** — paraphrase under-coverage outside the
+committed markers; **R3** — cross-gap adaptivity untouched. These are revisited
+when the remaining T2-G work is selected and before any full-capability or
+paid-activation claim. The four T2-D deferred observations, all six PR #640
+findings and satellite scheduling keep their existing triggers.
+
+**Bounded carrier repair (`PR642-T2G-CARRIER-REPAIR-01` v1.0).** The independent
+review `PR642-T2G-INDEPENDENT-REVIEW-01` returned `C — FAIL` on two blocking
+findings, both inside `_carries_context` in `engine/answer_stance.py`, and
+supported the versioning, legacy-continuity, supersession, replay/resume and
+metadata conclusions within their reported boundaries. Those are carried forward
+unchanged; nothing in them was restarted and Stage 6 stays closed. Repaired
+together on the existing branch and PR:
+
+1. *F-1 — carrier cost.* The token-window enumeration joined every window from
+   every start until a marker matched, which is cubic in sentence length: one
+   call took 4.0 s at 1,000 words, 31.2 s at 2,000, and did not finish in 60 s
+   at the accepted `MAX_FREE_TEXT_CHARS` limit, while every live or resumed
+   render of that project re-ran it per marker-bearing active record. Under the
+   governed one-worker posture that is a service-wide availability defect. The
+   helper now scans each of the fixed committed markers with `str.find` in a
+   small number of bounded passes. The independently accepted conclusion is the
+   MEASURED availability one — at-limit input handled in milliseconds where it
+   previously did not finish in 60 seconds — not a universal linear-time
+   complexity claim, which is withdrawn as unproven. The accepted
+   20,000-character limit is NOT reduced, no answer or history is truncated, no
+   timeout is raised, no worker topology changed, no persistent cache added and
+   no active record skipped.
+2. *F-2 — marker-only carriers.* Only the shortest single matching window was
+   discounted, so a repeated marker counted as surplus context and defeated the
+   eligibility veto. Now EVERY occurrence of that variant's own markers is
+   discounted, repetitions and combinations included, with overlapping and
+   touching occurrences merged and counted once; a word is surplus only when it
+   lies wholly outside the merged spans. Marker-only repetition can therefore
+   never become explanatory context.
+
+The canonical W2-C marker table is READ for the specific question through a
+lazy, function-scope import — no duplicate vocabulary, no broadened matching,
+and matching itself stays the caller's injected predicate, consulted exactly
+once per sentence. Retained unchanged: the surplus threshold, the existing
+unknown detector and its declared bounds, the bounded sentence handling, the
+uncertainty-question exemptions for `N-MC-4` and
+`mechanical:MECHANISM_COMPLETENESS:Q4`, the version/domain/gap boundaries, and
+the caller interface. Supported affirmative, physical-negative and two-sentence
+mixed examples in both languages are unaffected. General paraphrase and clause
+interpretation are NOT solved here. When a variant's canonical markers cannot be
+read the sentence is not a carrier — the safe direction leaves the question owed
+an answer rather than granting progress on evidence that cannot be sized.
+
+*Qualified overclaims, at this authorized touch.* Mixed-answer preservation is
+bounded by the module's own sentence handling: a single sentence that both
+declares an unknown and explains something is treated as cued throughout. A
+genuine but very terse explanation, four words or fewer beyond the markers, is
+missed. Exception fallback is NOT universally identical to baseline — a
+veto-only failure and a coverage-only failure each leave a different mixed
+reading, both journey-safe and exception-only. No general understanding is
+claimed, and not every irrelevant marker-bearing sentence is rejected.
+
+*Repair-only file boundary:* `engine/answer_stance.py`,
+`tests/test_t2g_answer_stance.py`, `tests/test_t2g_versioned_journey.py` and
+this file. No version, schema, selector, route, worker-configuration,
+dependency, shared-matcher, relevance or question-registry change.
+
+*Corrected count (wording only, no evidence changes).* The 26 failures of the
+carrier-repair tests against `4cee91f6…` are **20 behavioural, 1 structural and
+5 missing-helper** failures. An earlier return said 21 behavioural, which does
+not add to 26; the structural case (`matches_intent` still appearing in the
+sizing function) was double-counted. Only the arithmetic is corrected.
+
+*Threshold precision (wording only, the rule is unchanged).* The surplus floor
+is exact: **three surplus words FAIL and four PASS.** Earlier wording implied
+"four or fewer" are missed, which misstates the boundary by one. The deferred
+`N-2` finding — that a genuine but very terse explanation can be missed —
+stands exactly as classified.
+
+*Preserved limitations.* The review's `N-1` through `N-6` are carried forward as
+classified there, NOT as additional repair requirements: single-sentence mixed
+answers vetoed (`N-1`), terse genuine explanations missed (`N-2`), non-identical
+exception fallback (`N-3`), the cold-page disclosure flag (`N-4`), the legacy ILT
+start routes (`N-5`) and the inert-registry veto path (`N-6`). `N-6` had no
+explicit review trigger: carry it forward for an actual supported-operation
+registry-load failure, or a change to variant declaration or registry-failure
+handling — this authorizes no repair of it. `R1`, `R2`, `R3`, deferred legacy
+migration and the existing T2-A random-skip test debt keep their return
+triggers, as do the four T2-D observations, the six PR #640 findings and
+satellite timing.
+
+**Unicode span-coordinate repair (`PR642-T2G-UNICODE-SPAN-REPAIR-02` v1.0).**
+The differential review `PR642-T2G-CARRIER-DIFF-REVIEW-01` accepted the F-1
+availability conclusion and the original F-2 cases within their reported
+boundaries, and returned one further finding, repaired here alone. No
+performance optimisation, versioning design or Stage 6 work was restarted.
+
+*F-3 — coordinate mismatch.* English surfaces are matched in `sentence.lower()`
+while word spans are measured on the ORIGINAL sentence. `str.lower()` is not
+length-preserving: U+0130 (LATIN CAPITAL LETTER I WITH DOT ABOVE) lowercases to
+TWO code points — the only such character in the full code-point sweep run for
+this repair — so every English match after one sat at a larger index than the
+text it was supposed to name. The spans then failed to cover their markers, the
+discount landed on the wrong words, and the marker-only bypass F-2 had just
+closed reopened through a Unicode side door.
+
+Each English match is now mapped back to its original character span before any
+merging or word counting, through a bounded per-character index map built only
+when lowercasing actually changed the length; where it did not, indices already
+correspond one-to-one and no map is built. The whole-string lowercase
+substring-matching semantics are UNCHANGED — `sentence.lower()` remains the only
+English haystack and the match DECISION is untouched, verified across every
+committed id in both scripts with and without the expansion. U+0130 is not
+deleted, rejected, normalised or re-cased; the stored answer is untouched; no
+`casefold`, ASCII-only lowercasing or `IGNORECASE` substitute is introduced; no
+vocabulary is added and word counting is unchanged. Arabic surfaces are matched
+verbatim against the original text and need no mapping. Overlapping and
+touching spans still merge and count once, and the surplus threshold, unknown
+detection, uncertainty exemptions, version/domain/gap boundaries and accepted
+positive explanations are all preserved. When the map cannot be built exactly
+the sentence is not a carrier, so the question stays owed an answer rather than
+being sized on coordinates that cannot be trusted.
+
+*Repair-only file boundary:* `engine/answer_stance.py` (restricted to
+`_marker_spans` and its new private coordinate mapping),
+`tests/test_t2g_answer_stance.py`, `tests/test_t2g_versioned_journey.py` and
+this file. Every public interface and every other production file is unchanged.
+
+*Preserved.* `N-1` through `N-6`, `R1`, `R2`, `R3`, deferred legacy migration,
+the existing T2-A random-skip test debt, the four T2-D observations, the six
+PR #640 findings and satellite timing all keep their return triggers. This
+remains PARTIAL T2-G with no paid-activation claim.
+
 <a id="current-authority--t2e-t2f-evidence-references-and-ordering"></a>
 ## Current authority — T2-E Option B + T2-F (one combined bounded candidate)
 

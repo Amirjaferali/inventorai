@@ -176,7 +176,7 @@ _APPROVED_SUBSTANCE_SIGNALS = [
 #       a7e8bd62b9ab76aaba5889ce52b5f32ee646b2817ba1c790ed7a231d259fa41f
 _FROZEN_ENGINE_SHA256 = {
     "engine/domain_rules.py": "0e47326ad92a6e5b0a63eb06db9e3ad96ae72c9aaf64471dd21621265b1db1ab",
-    "engine/progression_loop.py": "a2eac1f5827c61a8451dbde19c4e5b28f2b298d1d2be1cc3136e664ed3c1cb17",
+    "engine/progression_loop.py": "f5cc2dcfaaa2dc0c651b33016d06a5bd773c9f7cfd3a69af35e6281daec3307d",
 }
 # Other-pack byte freeze (unchanged lineage from I1/I2). L2SC-01 reconciliation
 # (disclosed; electronics_electrical re-frozen, see I1's own comment).

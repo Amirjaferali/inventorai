@@ -273,6 +273,37 @@ class TestD4DisclosureIsTruthful:
         assert arabic != english, "the R3 disclosure is not localized to Arabic"
         assert localize_deep(english, "en") == english
 
+    def test_the_t2g_explicit_unknown_reason_has_its_own_classification(self):
+        """T2-G (`T2G-VERSIONED-IMPLEMENT-01`): saying you do not know something
+        IS a response, so the recognized-unknown reason must never fall into
+        the "not addressed" category, and must not reach the vague fallback."""
+        reason = ("MECHANISM_COMPLETENESS recorded as an explicit unknown — "
+                  "this answer states the information is not known yet and "
+                  "supplies no mechanism explanation")
+        got = get_result_feedback({"transition": "WARN", "reason": reason})
+        assert got is not None and got != self.FALLBACK
+        not_addressed = get_result_feedback({
+            "transition": "WARN",
+            "reason": "MECHANISM_COMPLETENESS not addressed — this answer does "
+                      "not respond to the question that was asked"})
+        assert got != not_addressed
+        lowered = got.lower()
+        assert "has been saved" in lowered
+        # it never implies the statement was lost, irrelevant or validated
+        for overclaim in ("lost", "irrelevant", "verified", "validated",
+                          "incorrect", "wrong"):
+            assert overclaim not in lowered
+        arabic = localize_deep(got, "ar")
+        assert arabic != got, "the T2-G reason is not localized to Arabic"
+        assert localize_deep(got, "en") == got
+
+    def test_the_t2g_reason_disclosure_promises_no_understanding(self):
+        english = get_result_feedback({
+            "transition": "WARN",
+            "reason": "X recorded as an explicit unknown — y"}).lower()
+        for overclaim in ("understand", "meaning", "translate", "any language"):
+            assert overclaim not in english
+
     def test_disclosure_promises_no_understanding(self):
         english = get_result_feedback({
             "transition": "WARN", "reason": "X not addressed — y"}).lower()

@@ -177,6 +177,8 @@ from engine.email_sender import DevMemoryEmailSender
 # and still public for its other callers.
 from engine.session_reconstruction import (
     RECONSTRUCTION_VERSION,
+    CURRENT_ENGINE_CONTRACT_VERSION,
+    ENGINE_CONTRACT_VERSION_T2G1,
     reconstruct_readonly_state,
 )
 # Increment 3 (R-5): the SAME shared public derivation that feeds the deliverable
@@ -3225,6 +3227,14 @@ def start():
     # P4-1b-1 unified capability: ONE uuid4 is used as both the route `sid` and
     # the durable `project_id` (`idea_id` stays a separate uuid4, set above).
     sid = str(uuid.uuid4())
+    # T2-G (`T2G-VERSIONED-IMPLEMENT-01`): a newly created project selects its
+    # engine-contract version HERE, BEFORE its seed is interpreted, and the SAME
+    # carrier is what `_reconstruction_inputs` persists below — so the runtime
+    # reading and the durable stamp cannot disagree. It is a server constant:
+    # never a request field, never the UI language, never a timestamp. Existing
+    # projects are untouched and keep their own recorded stamp. The named legacy
+    # ILT start routes below set no carrier and therefore stay pre-T2-G.
+    state.engine_contract_version = CURRENT_ENGINE_CONTRACT_VERSION
     initial_result = run_iteration(state, idea_text)
     # P4-1b-1 creation order: durably create the project envelope BEFORE any live
     # session is advertised. Durable creation is the commit point for /start; on
@@ -3267,7 +3277,11 @@ def _reconstruction_inputs(seed_idea, state):
         "seed_idea_text": seed_idea,
         "confirmed_domain": getattr(state, "domain", None),
         "path": getattr(state, "path", None),
-        "engine_contract_version": RECONSTRUCTION_VERSION,
+        # T2-G: derived from the state's OWN carrier, so the persisted stamp is
+        # exactly the version the seed and every later answer were read under.
+        # The legacy stamp stays the fallback for callers that set no carrier.
+        "engine_contract_version": (getattr(state, "engine_contract_version", None)
+                                    or RECONSTRUCTION_VERSION),
     }
 
 def _finalize_started_session(sid, state, initial_result, seed_idea=None):
@@ -4404,6 +4418,13 @@ def show_session(sid):
         # resolves every display label through t(). None when nothing applies.
         quantity_step=_quantity_step_context(entry, state, sid),
         evref_step=_evref_step_context(entry, state, sid),
+        # T2-G: whether THIS project is recorded under the T2-G engine-contract
+        # version, so the questioning disclosure tells the truth for this
+        # project rather than for the codebase. Read from the same runtime
+        # carrier the engine reads; a legacy or unversioned project renders the
+        # retained legacy wording.
+        t2g_questioning=(getattr(state, "engine_contract_version", None)
+                         == ENGINE_CONTRACT_VERSION_T2G1),
         # T2-D: optional feedback control for the question actually displayed.
         # Presentation-only; never persisted into canonical state, an export,
         # the API, the deliverable or reconstruction.

@@ -214,6 +214,50 @@ def _matches_intent(text, question_id):
     return False
 
 
+# --------------------------------------------------------------------------
+# T2-G (`T2G-VERSIONED-IMPLEMENT-01`) read-only seams.
+#
+# `_matches_intent` is UNCHANGED and stays the one committed-marker predicate;
+# `matches_committed_intent` is a public alias so `engine/answer_stance.py`
+# can be handed the matcher instead of importing a private name or
+# reimplementing it. `supplemental_relevance` below keeps calling
+# `_matches_intent` directly and keeps its exact replay-parity scope.
+# --------------------------------------------------------------------------
+def matches_committed_intent(text, question_id):
+    """The unchanged committed-marker predicate, exposed for injection."""
+    return _matches_intent(text, question_id)
+
+
+def declared_variant_ids(state, gap_type):
+    """This domain/gap's committed variant ids in committed order, or ``()``
+    fail-closed when W2-C is inert here (no registry, no artifact, unknown
+    id). Read-only; changes no serving decision."""
+    try:
+        domain = getattr(state, "domain", None)
+        if _load_registry(domain) is None:
+            return ()
+        variants = _gap_variants(domain, gap_type)
+        if not variants:
+            return ()
+        return tuple(variant.question_id for variant in variants)
+    except Exception:
+        return ()
+
+
+def _t2g_covered(state, text, question_id, gap_type):
+    """The ONE purpose-aware coverage helper used at BOTH coverage sites.
+
+    Outside the T2-G version/gap/domain scope it returns exactly today's
+    committed-marker result, so legacy projects, other gaps and other domains
+    are untouched. Fail-closed to today's result on any error."""
+    try:
+        from engine import answer_stance
+        return answer_stance.covers_variant(
+            state, text, question_id, _matches_intent, gap_type=gap_type)
+    except Exception:
+        return _matches_intent(text, question_id)
+
+
 # ---------------------------------------------------------------------------
 # Derived intent-coverage + the bounded serving law.
 # ---------------------------------------------------------------------------
@@ -281,7 +325,8 @@ def compute_intent_coverage(state, gap_type):
     records = _gap_answer_records(state, gap_type)
     covered = frozenset(
         variant.question_id for variant in variants
-        if any(_matches_intent(record.content, variant.question_id)
+        if any(_t2g_covered(state, record.content, variant.question_id,
+                            gap_type)
                for record in records))
     return covered
 
@@ -331,7 +376,8 @@ def _effective(state, gap_type):
     records = _gap_answer_records(state, gap_type)
     covered = {
         variant.question_id for variant in variants
-        if any(_matches_intent(record.content, variant.question_id)
+        if any(_t2g_covered(state, record.content, variant.question_id,
+                            gap_type)
                for record in records)}
     if canonical.question_id not in covered:
         return IntentServing(canonical.question_id, canonical.text,

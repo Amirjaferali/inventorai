@@ -66,6 +66,27 @@ from engine.record_store import ProjectNotFound
 # no silent upgrade/migration). No broad version-history system is introduced.
 RECONSTRUCTION_VERSION = "p4-2-level1-recon-v1"
 
+# T2-G (`T2G-VERSIONED-IMPLEMENT-01`): the SECOND supported engine-contract
+# version. It is stamped on NEWLY created /start projects and is the ONLY
+# version under which the bounded explicit-mechanism-unknown rule applies.
+# Every project already in existence keeps the version it recorded and is
+# therefore replayed, corrected and resumed under EXACTLY its pre-T2-G
+# behaviour: no record is rewritten, no envelope is migrated, nothing is
+# mass-replayed. Legacy migration is DEFERRED, not cancelled.
+ENGINE_CONTRACT_VERSION_T2G1 = "p4-2-level1-recon-v1-t2g1"
+
+# Both exact versions are supported through the ONE existing progression and
+# reconstruction path — the earlier stamp is NOT replaced, so no valid legacy
+# project is stranded at Level 0. Anything else still fails closed.
+SUPPORTED_ENGINE_CONTRACT_VERSIONS = (
+    RECONSTRUCTION_VERSION,
+    ENGINE_CONTRACT_VERSION_T2G1,
+)
+
+# The version a newly created supported project records. Separate name so the
+# "what do we stamp now" decision is never confused with "what do we support".
+CURRENT_ENGINE_CONTRACT_VERSION = ENGINE_CONTRACT_VERSION_T2G1
+
 # Deterministic Path-N support only.
 SUPPORTED_PATH = "N"
 
@@ -246,8 +267,9 @@ def _reconstruct(store, project_id: str):
         # A partially-populated envelope is not sufficient to reconstruct.
         return _level0(None, STATUS_NO_METADATA, evidence), None
 
-    if version != RECONSTRUCTION_VERSION:
+    if version not in SUPPORTED_ENGINE_CONTRACT_VERSIONS:
         # Do not replay under current rules; do not migrate or silently upgrade.
+        # An unsupported or missing stamp keeps its existing fail-closed result.
         return _level0(None, STATUS_VERSION_MISMATCH, evidence), None
 
     if path != SUPPORTED_PATH:
@@ -295,6 +317,12 @@ def _reconstruct(store, project_id: str):
     setattr(state, "domain", domain)     # matches /start's dynamic domain attribute
     state.domain_signal = domain
     state.path = path
+    # T2-G: the runtime version carrier is the project's OWN persisted stamp,
+    # read here from the trusted envelope — never from a request field, the UI
+    # language, a timestamp or a default. It is set BEFORE the seed is
+    # interpreted, so every replayed answer including the seed is read under
+    # exactly the version the project recorded at creation.
+    state.engine_contract_version = version
 
     last_result = progression_loop.run_iteration(state, seed)   # seed first
     # RVR-1 (Wave-1 remediation contract, OD-R1): the replay walks the FULL

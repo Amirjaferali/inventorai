@@ -368,7 +368,12 @@ body{overflow-wrap:anywhere}
    version — a fixed governed set, deterministic state-aware selection, and no
    semantic follow-up generated from the meaning of a free-text answer. One
    compact line beside the question experience it describes. #}
-<p class="version-disclosure version-disclosure-questions" style="font-size:11px;color:#8a97a3;margin:-8px 0 14px 0">{{ t('UI_T1D_QUESTION_SET') }}</p>
+{#- T2G-DISCLOSURE-BEGIN — version-truthful questioning disclosure. A project
+   recorded under the T2-G engine-contract version gets the bounded new-rule
+   wording; every earlier project keeps the accurate legacy wording. One
+   existing render/localization seam, no new explanation subsystem. -#}
+<p class="version-disclosure version-disclosure-questions" style="font-size:11px;color:#8a97a3;margin:-8px 0 14px 0">{{ t('UI_T2G_QUESTION_SET' if t2g_questioning else 'UI_T1D_QUESTION_SET') }}</p>
+{#- T2G-DISCLOSURE-END -#}
 {#- T2D-BLOCK-BEGIN — T2-D optional contextual feedback. The two sentinels
     delimit the block exactly. Its OWN unnested form submits only csrf_token,
     context_token and choice; no default is selected, there is no free text and
