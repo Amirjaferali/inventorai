@@ -829,6 +829,108 @@ MCP direction all keep their triggers. No merge, release, deployment, paid
 activation, new version, migration, Stage 8, RUN-004, provider or human-data
 activity. Still PARTIAL T2-G with no paid-activation claim.
 
+### Same-touch continuation — `PR643-T2G2-SCOPE-REPAIR-03` v1.0 (harakat)
+
+**Disposition.** A third independent differential review, of `2de82db8`, returned
+**C — FAIL — BOUNDED REPAIR REQUIRED**, adopted by the Owner. Four verdicts now
+stand separately and none is rewritten as another:
+
+| Head | Verdict | Whose |
+|---|---|---|
+| `4fb5ecf4` | **B** | the independent reviewer |
+| `4fb5ecf4` | **C** | the Lead, applying the original requirement |
+| `406d893b` | **C** | the independent differential reviewer |
+| `2de82db8` | **C** | the independent differential reviewer |
+
+Finding 1 stays OPEN until independent corrected verification. Finding 3 and
+Finding 5 remain accepted as previously verified, and the reported-frame
+coordinate repair remains accepted.
+
+**Correction to the previous record.** The `PR643-T2G2-SCOPE-REPAIR-02` entry
+above recorded the harakat-bearing Arabic anaphor as *bounded under-recognition*
+— an unrecognised refusal, disclosed and tolerated. **That characterisation was
+wrong and is withdrawn.** Its reviewed consequence was **false progress**: the
+missed veto let the sibling clause supply mechanism knowledge and advance the
+served question. Under-recognising a refusal in this rule is not a quiet
+shortfall; it is unearned support.
+
+**What was wrong.** `_WORD_RE` treats the Arabic combining marks as non-word
+characters, so the vowelled demonstrative `ذَلِكَ` tokenised as three
+one-letter fragments and the anaphor `ذلك` never formed. Reproduced on
+`2de82db8` through fully specified supported journeys:
+
+| Answer | T2-G-1 | reviewed T2-G-2 | repaired T2-G-2 |
+|---|---|---|---|
+| `…لكن لا أعرف إن كان ذلك صحيحًا.` (plain) | `…:Q2` · OPEN · none · cov — · unknown ×1 | same (already correct) | unchanged |
+| `…لكن لا أعرف إن كان ذَلِكَ صحيحًا.` (vowelled) | `…:Q2` · OPEN · none · cov — · unknown ×1 | **`…:Q3` · PARTIAL · REASONED · cov `Q2`** · unknown ×1 | `…:Q2` · OPEN · none · cov — · unknown ×1 |
+| `…لكن لا أعرف مقاس البرغي.` (independent detail) | `…:Q2` | `…:Q3` · cov `Q2` | unchanged — still progresses |
+
+**The repair.** A module-local, explicitly enumerated set of Arabic combining
+marks — U+064B..U+0652 plus U+0670, nine code points — is dropped from the
+clause **for the T2-G-2 Arabic anaphor lookup only**, and a copy is made only
+when a mark is actually present. Not done, and pinned by test: `_WORD_RE` is
+unchanged and still shared; level-1 surplus counting is unchanged; the registry
+normaliser is neither imported nor recreated and remains the only owner of
+registered-surface matching; no general Unicode normalisation, `unicodedata` or
+`casefold`; no Arabic morphology, no reference resolution, and no new semantic
+vocabulary. The registered-unknown detector stays canonical. Only the T2-G-2
+back-reference eligibility path changed.
+
+**Evidence.** With tests held constant, **4 failures on `2de82db8`, 0 on the
+repaired head**: 2 behavioural (the vowelled route journey, and the anaphor
+lookup on vowelled text) and 2 missing-helper. The plain-form parametrisation
+passed on both heads, which is what makes the pair decisive; the
+independent-detail control passed on both, which is what makes it a control.
+
+**Cost-test premise corrected in the same touch, and a measurement withdrawn.**
+The review established that `test_bounded_cost_of_the_registered_extent_probe`
+as shipped on `2de82db8` did not exercise the probe it named. Reproduced by
+instrumenting the call: its two long bodies carried no contrast boundary, so
+`_t2g2_clause_carrier` returned before the back-reference check and the extent
+probe was entered **0 times**; and truncating `"load path " * 2000` to the input
+limit removed the trailing registered cue outright, leaving a body with no
+unknown in it. **The 0.2199 s / 0.5561 s figures recorded in the previous entry
+are therefore withdrawn: they timed a different path and were mislabelled as the
+extent probe's worst case.** The corrected bodies keep the registered unknown
+after sizing, cross the contrast-clause path, and place the surface at the END
+of the long ignorance clause; all three premises are asserted in the test rather
+than assumed. Measured on the corrected bodies at the accepted input limit:
+**0.0892 s** Arabic and **0.0540 s** English, one probe entry each. Those are
+evidence that this path is currently practical on this machine, **not** a
+performance guarantee and not a universal worst case. The existing 5-second
+safety ceiling is retained; no benchmark framework was built and the input limit
+is unchanged.
+
+**Remaining limitation, stated by consequence.** Reference resolution is still
+not attempted and is not claimed. An uncertainty that carries a recognised
+anaphor while asking about a genuinely separate detail — "…but I do not know how
+it fastens" — is refused, so a real explanation beside it gains no T2-G-2
+support it would otherwise have had. That is lost progress on a true answer, not
+unearned progress on a doubted one, and it is the deliberate direction of error
+for this rule. Arabic anaphora written with marks outside the nine declared code
+points remain unrecognised, and that failure direction is the harmful one:
+it would again permit unearned support.
+
+**Repair-only file boundary.** `engine/answer_stance.py`,
+`tests/test_t2g2_concise_mixed.py` and this file. No fourth path.
+`tests/test_t2d_question_feedback.py` and
+`tests/test_p4_2_session_reconstruction.py` were not touched. Preserved and
+unaltered: named-reference and object-less uncertainty, concise interrogative
+handling, the reported-frame coordinate correction, the `generated_at`
+test-local clock fixture, T2-G-1 and default behaviour, the quality assessor,
+the `Q4`/`N-MC-4` purpose distinction, correction/replay/restart/resume,
+raw-answer preservation, genuine independent-detail uncertainty, physical
+negation and component-label quotation behaviour.
+
+**Preserved.** `N-1` and `N-2` open pending bounded acceptance; `R1`, `R2`,
+`R3`, `N-3`–`N-6`, the deferred legacy-migration decision, the T2-A random-skip
+test debt, the PR #642 `merged:false` metadata exception, the four T2-D
+observations, the six PR #640 findings, satellite timing and the deferred MCP
+direction all keep their triggers. No Agent Teams or subagent pilot, no Stage 8,
+no merge, release, deployment, paid activation, migration, provider activation,
+RUN-004 or human-data activity. Still PARTIAL T2-G with no paid-activation
+claim.
+
 <a id="current-authority--t2e-t2f-evidence-references-and-ordering"></a>
 ## Current authority — T2-E Option B + T2-F (one combined bounded candidate)
 

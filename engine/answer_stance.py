@@ -182,6 +182,24 @@ _T2G2_ANAPHORA_AR = frozenset({
     "ذلك", "هذا", "هذه", "تلك", "ذاك", "بذلك", "به", "بها", "كذلك",
 })
 
+# `PR643-T2G2-SCOPE-REPAIR-03`. Arabic combining vowel and gemination marks.
+# They carry no lexical content, and `_WORD_RE` treats them as NON-word
+# characters, so a vowelled demonstrative such as `ذَلِكَ` tokenises as three
+# one-letter fragments and the anaphor `ذلك` never forms. The reviewed
+# consequence was not a missed refusal in the abstract: the veto was skipped and
+# the sibling clause was granted mechanism support it had not earned.
+#
+# The set is explicit and module-local: U+064B..U+0652 (the harakat, tanwin,
+# sukun and shadda) plus U+0670 (superscript alef). It is consulted by the
+# T2-G-2 Arabic anaphor lookup ONLY. `_WORD_RE` is unchanged and still shared;
+# level-1 surplus counting is unchanged; the registry normaliser is neither
+# imported nor recreated and stays the only owner of registered-surface
+# matching; no general Unicode normalisation, `unicodedata` or `casefold` is
+# used; no morphology or reference resolution is attempted; and the clause text
+# itself is never rewritten for any other purpose.
+_T2G2_ARABIC_MARKS = frozenset(
+    [chr(point) for point in range(0x064B, 0x0653)] + [chr(0x0670)])
+
 # Particles that belong to a registered uncertainty EXPRESSION rather than
 # naming what is unknown. Established by reading the ACTUAL registered
 # surfaces, not assumed: the Arabic surface `لم احدد` leaves `بعد` behind, and
@@ -509,12 +527,28 @@ def _t2g2_has_anaphor(clause):
     something already said. On its own this decides NOTHING: it is consulted
     only INSIDE a clause the registered detector already recognised as an
     explicit unknown (`_t2g2_back_reference_index`), so a pronoun anywhere else
-    is never a veto."""
+    is never a veto. The Arabic pass reads the clause with the declared
+    combining marks dropped, so a vowelled demonstrative is still one token."""
     for word in _WORD_RE.finditer(clause):
-        token = word.group(0)
-        if token.lower() in _T2G2_ANAPHORA_EN or token in _T2G2_ANAPHORA_AR:
+        if word.group(0).lower() in _T2G2_ANAPHORA_EN:
+            return True
+    for word in _WORD_RE.finditer(_t2g2_without_arabic_marks(clause)):
+        if word.group(0) in _T2G2_ANAPHORA_AR:
             return True
     return False
+
+
+def _t2g2_without_arabic_marks(clause):
+    """``clause`` with the declared Arabic combining marks dropped, for the
+    Arabic anaphor lookup ONLY.
+
+    A copy is produced only when a mark is actually present, and it is used for
+    nothing else: no span is measured on it, no registered surface is matched
+    against it, and the stored answer is untouched."""
+    if not any(character in _T2G2_ARABIC_MARKS for character in clause):
+        return clause
+    return "".join(character for character in clause
+                   if character not in _T2G2_ARABIC_MARKS)
 
 
 def _t2g2_registered_extent(clause):

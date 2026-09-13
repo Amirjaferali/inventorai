@@ -1049,16 +1049,154 @@ def test_a_scope_failure_still_falls_back_to_the_level_one_answer(monkeypatch):
                                  rule_level=2) is True
 
 
-def test_bounded_cost_of_the_registered_extent_probe():
-    """Adversarial: one clause, no terminator, no contrast cue, the registered
-    surface only at the very end — the worst case for a left-to-right probe."""
+def test_bounded_cost_of_the_registered_extent_probe(monkeypatch):
+    """`PR643-T2G2-SCOPE-REPAIR-03` CORRECTS this test's premise.
+
+    As shipped on `2de82db8` it measured nothing of the kind it claimed. Two
+    faults, both established by the independent review and reproduced here:
+    the two long bodies carried no contrast boundary, so `_t2g2_clause_carrier`
+    returned before the back-reference check and the extent probe was never
+    called; and truncating `"load path " * 2000` to the input limit removed the
+    trailing registered cue outright, leaving a body with no unknown in it at
+    all.
+
+    The corrected bodies keep the registered unknown after truncation, cross the
+    contrast-clause path, and put the surface at the END of the long ignorance
+    clause — the worst case for a left-to-right probe. The premise is ASSERTED,
+    not assumed: the cue must still be present, the sentence must split, and the
+    probe must actually be entered.
+
+    The ceiling stays the existing 5-second safety bound. The measurements are
+    evidence that this path is currently practical on this machine, not a
+    performance guarantee."""
     import time
     from web.app import MAX_FREE_TEXT_CHARS
-    for body in ((("مسار الحمل " * 1800) + "لست متأكدًا"),
-                 (("load path " * 2000) + "I am not sure"),
-                 ((BACKREF_NAMED_EN + " ") * 300),
-                 ((OBJECTLESS_AR + " ") * 300)):
-        body = body[:MAX_FREE_TEXT_CHARS - 1]
+
+    seen = {"calls": 0}
+    real_extent = st._t2g2_registered_extent
+
+    def counting_extent(clause):
+        seen["calls"] += 1
+        return real_extent(clause)
+    monkeypatch.setattr(st, "_t2g2_registered_extent", counting_extent)
+
+    cases = (("القوة تنتقل هنا لكن ", "مسار الحمل ", " لست متأكدا"),
+             ("Force runs here but ", "load path ", " I am not sure"))
+    for prefix, filler, suffix in cases:
+        repeats = ((MAX_FREE_TEXT_CHARS - 1 - len(prefix) - len(suffix))
+                   // len(filler))
+        body = prefix + (filler * repeats) + suffix
+        assert len(body) < MAX_FREE_TEXT_CHARS
+        # premise 1 — the registered unknown survived sizing
+        assert suffix.strip() in body
+        assert st.declares_ignorance(body)
+        # premise 2 — the contrast-clause path is crossed
+        assert len(st._t2g2_clauses(st.sentences(body)[0])) > 1
+        seen["calls"] = 0
         start = time.perf_counter()
         st.qualifying_carrier(body, Q2_ID, MATCH, rule_level=2)
-        assert time.perf_counter() - start < 5.0
+        elapsed = time.perf_counter() - start
+        # premise 3 — the probe was actually entered
+        assert seen["calls"] >= 1
+        assert elapsed < 5.0
+
+
+# ==========================================================================
+# 9. `PR643-T2G2-SCOPE-REPAIR-03` — a vowelled Arabic demonstrative is still
+#    a demonstrative.
+#
+# PROVENANCE. The plain and diacritized Arabic answers below are the pair the
+# independent differential review reproduced on `2de82db8`. Every control in
+# this section is an implementation-session fixture and is not attributed to
+# the reviewer.
+# ==========================================================================
+BACKREF_AR_PLAIN = "السطح ينقل القوة إلى الإطار لكن لا أعرف إن كان ذلك صحيحًا."
+BACKREF_AR_DIACRITIZED = ("السطح ينقل القوة إلى الإطار لكن لا أعرف إن كان "
+                          "ذَلِكَ صحيحًا.")
+DETAIL_AR_DIACRITIZED = "السطح ينقل القوة إلى الإطار لكن لا أعرف مَقاسَ البُرغي."
+
+
+def test_the_declared_arabic_marks_are_exactly_the_reviewed_range():
+    assert st._T2G2_ARABIC_MARKS == frozenset(
+        [chr(point) for point in range(0x064B, 0x0653)] + [chr(0x0670)])
+    assert len(st._T2G2_ARABIC_MARKS) == 9
+    for mark in ("\u064b", "\u064e", "\u0650", "\u0651", "\u0652", "\u0670"):
+        assert mark in st._T2G2_ARABIC_MARKS
+    # marks only: no letter, no digit and no punctuation is ever dropped
+    for keep in ("ذ", "ل", "ك", "أ", "ا", "و", ".", "،", "9", "a"):
+        assert keep not in st._T2G2_ARABIC_MARKS
+
+
+def test_mark_free_text_is_returned_unchanged_and_the_input_is_never_rewritten():
+    plain = "لا أعرف إن كان ذلك صحيحا"
+    assert st._t2g2_without_arabic_marks(plain) is plain
+    vowelled = "ذَلِكَ"
+    before = vowelled
+    assert st._t2g2_without_arabic_marks(vowelled) == "ذلك"
+    assert vowelled == before
+
+
+def test_dropping_marks_does_not_invent_an_anaphor_in_unrelated_arabic():
+    """The positive control: removing the marks must not turn ordinary vowelled
+    Arabic into a backward reference."""
+    for clause in (" لا أعرف مَقاسَ البُرغي", " مسار الحمل يَنتقل إلى الإطار",
+                   " لا أعرف عَزمَ الشد"):
+        assert st._t2g2_has_anaphor(clause) is False
+    # and the vowelled demonstrative IS recognised
+    assert st._t2g2_has_anaphor(" لا أعرف إن كان ذَلِكَ صحيحًا") is True
+
+
+@pytest.mark.parametrize("answer,label", [
+    (BACKREF_AR_PLAIN, "plain backward reference"),
+    (BACKREF_AR_DIACRITIZED, "diacritized backward reference"),
+])
+def test_a_vowelled_arabic_back_reference_supplies_no_mechanism(
+        client, answer, label):
+    """Full route result on BOTH versions, so the no-new-support boundary is
+    explicit rather than inferred from a private helper."""
+    c, appmod, db = client
+    _login(c, appmod)
+    for version in (ENGINE_CONTRACT_VERSION_T2G1, ENGINE_CONTRACT_VERSION_T2G2):
+        sid = _stamped_start(c, appmod, version)
+        _answer(c, sid, answer)
+        assert _snapshot(appmod, sid) == {
+            "version": version, "identity": Q2, "gap": MC, "status": "OPEN",
+            "known_mechanism": None, "coverage": [], "unknowns": 1,
+            "records": 1}, (label, version)
+        assert _stamp(db, sid) == version
+
+
+@pytest.mark.parametrize("answer", [DETAIL_AR, DETAIL_AR_DIACRITIZED])
+def test_a_genuine_independent_detail_still_progresses_vowelled_or_not(
+        client, answer):
+    """The route-level positive control: an Arabic uncertainty about a separate
+    detail keeps its T2-G-2 progress whether or not it carries marks, and is
+    unchanged on T2-G-1."""
+    c, appmod, _db = client
+    _login(c, appmod)
+    plain_side = _stamped_start(c, appmod, ENGINE_CONTRACT_VERSION_T2G1)
+    _answer(c, plain_side, answer)
+    assert _snapshot(appmod, plain_side)["identity"] == Q2
+    sid = _stamped_start(c, appmod, ENGINE_CONTRACT_VERSION_T2G2)
+    _answer(c, sid, answer)
+    assert _snapshot(appmod, sid) == {
+        "version": ENGINE_CONTRACT_VERSION_T2G2, "identity": Q3, "gap": MC,
+        "status": "PARTIAL", "known_mechanism": "REASONED",
+        "coverage": COV_Q2, "unknowns": 1, "records": 1}
+
+
+def test_the_vowelled_reading_survives_replay_restart_and_resume(client):
+    c, appmod, db = client
+    _login(c, appmod)
+    sid = _stamped_start(c, appmod, ENGINE_CONTRACT_VERSION_T2G2)
+    _answer(c, sid, BACKREF_AR_DIACRITIZED)
+    live = _snapshot(appmod, sid)
+    assert _active_answers(appmod, sid)[0].content == BACKREF_AR_DIACRITIZED
+    appmod.SESSION_STORE.clear()
+    session = reconstruct_readonly_state(appmod._get_store(), sid)
+    assert appmod._resolve_question_context(session.state, None).identity == \
+        live["identity"]
+    _raw(c, sid)
+    assert c.post(f"/session/{sid}/resume", data={}).status_code == 302
+    assert _snapshot(appmod, sid) == live
+    assert _stamp(db, sid) == ENGINE_CONTRACT_VERSION_T2G2
