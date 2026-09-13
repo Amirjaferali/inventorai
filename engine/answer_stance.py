@@ -182,6 +182,27 @@ _T2G2_ANAPHORA_AR = frozenset({
     "ذلك", "هذا", "هذه", "تلك", "ذاك", "بذلك", "به", "بها", "كذلك",
 })
 
+# Particles that belong to a registered uncertainty EXPRESSION rather than
+# naming what is unknown. Established by reading the ACTUAL registered
+# surfaces, not assumed: the Arabic surface `لم احدد` leaves `بعد` behind, and
+# `لست متاكد` leaves the one-character inflection `ا`; on the English side the
+# first-matching `i do not know` leaves `yet` behind in "I do not know yet".
+# None of those is a subject, so none of them may make an uncertainty look
+# independent. Words shorter than two characters are discarded for the same
+# reason — they are inflectional remains of the surface itself.
+_T2G2_UNCERTAINTY_PARTICLES_EN = frozenset({
+    "yet", "still", "exactly", "precisely", "really", "quite", "fully",
+    "entirely", "sure", "certain",
+})
+_T2G2_UNCERTAINTY_PARTICLES_AR = frozenset({
+    "بعد", "تماما", "بالضبط", "تحديدا", "حقا", "ابدا",
+})
+
+# Longest word-aligned window the Arabic extent probe will test. The registered
+# surfaces are two to four words ("لا اعرف", "لا يزال غير معروف"); six leaves
+# headroom for inflection without turning a bounded scan into a search.
+_T2G2_EXTENT_MAX_WORDS = 6
+
 # REPORTED-SPEECH frames. A clause is reported only when the frame stands
 # BEFORE this question's committed material in that clause, so it actually
 # governs it — "the sensor reads the pressure" is not hearsay, and a frame in a
@@ -485,8 +506,10 @@ def _t2g2_is_hypothetical(clause):
 
 def _t2g2_has_anaphor(clause):
     """True when the clause contains a whole-token surface that points BACK at
-    something already said. On its own this decides NOTHING — it is one of two
-    conditions in `_t2g2_back_reference_index`."""
+    something already said. On its own this decides NOTHING: it is consulted
+    only INSIDE a clause the registered detector already recognised as an
+    explicit unknown (`_t2g2_back_reference_index`), so a pronoun anywhere else
+    is never a veto."""
     for word in _WORD_RE.finditer(clause):
         token = word.group(0)
         if token.lower() in _T2G2_ANAPHORA_EN or token in _T2G2_ANAPHORA_AR:
@@ -494,30 +517,113 @@ def _t2g2_has_anaphor(clause):
     return False
 
 
-def _t2g2_back_reference_index(clauses, question_id):
+def _t2g2_registered_extent(clause):
+    """The ORIGINAL character span the registered ARABIC unknown occupies, or
+    ``None``.
+
+    The registry matches its surfaces on a normalised form, so the surface text
+    is not a substring of the raw clause and cannot simply be searched for. The
+    extent is therefore derived from the CANONICAL DETECTOR's own decision: the
+    leftmost, shortest word-aligned window the detector still recognises. No
+    surface list is copied, no matching rule is reimplemented and no normaliser
+    is introduced here — the registry stays the only owner of that question.
+
+    Bounded by construction: the registered surfaces are short, so windows are
+    capped at `_T2G2_EXTENT_MAX_WORDS` words, and the scan stops at the first
+    starting word that yields a recognised window."""
+    words = [word.span() for word in _WORD_RE.finditer(clause)]
+    for first in range(len(words)):
+        for last in range(first, min(first + _T2G2_EXTENT_MAX_WORDS, len(words))):
+            start, stop = words[first][0], words[last][1]
+            if detect_registered_unknown(clause[start:stop]) is not None:
+                return start, stop
+    return None
+
+
+def _t2g2_registered_residues(clause):
+    """What is left of the clause once its registered explicit-unknown
+    expression is removed — one residue per script that actually matched.
+
+    English uses `progression_loop`'s own marker tuple against the same
+    lowercase text its detector uses, taking the first marker in registered
+    order. Arabic uses the extent the registry detector itself recognises. Both
+    read the CANONICAL vocabularies; no competing ignorance list is created and
+    neither detector's behaviour is touched."""
+    residues = []
+    lowered = clause.lower()
+    for marker in _english_unknown_markers():
+        position = lowered.find(marker)
+        if position != -1:
+            residues.append(lowered[:position] + " " +
+                            lowered[position + len(marker):])
+            break
+    extent = _t2g2_registered_extent(clause)
+    if extent is not None:
+        residues.append(clause[:extent[0]] + " " + clause[extent[1]:])
+    return residues
+
+
+def _t2g2_names_own_subject(clause):
+    """True when a recognised ignorance clause names WHAT it is ignorant OF.
+
+    The registered expression is removed first, and only what remains is read,
+    so words belonging to the uncertainty expression itself are never mistaken
+    for an independently named subject. A residue made solely of function
+    words, anaphora, uncertainty particles or one-character inflectional
+    remains names nothing: `I'm not sure` and `لست متأكدًا` are about whatever
+    was just said, while `I do not know the bolt torque` and
+    `لا أعرف مقاس البرغي` name their own separate detail. When both scripts
+    matched, BOTH residues must name a subject — the conservative direction,
+    because naming one is what grants the sibling clause new support."""
+    residues = _t2g2_registered_residues(clause)
+    if not residues:
+        return False
+    for residue in residues:
+        named = False
+        for match in _WORD_RE.finditer(residue):
+            token = match.group(0)
+            if len(token) < 2:
+                continue
+            lowered = token.lower()
+            if lowered in _T2G2_STOPWORDS_EN or lowered in _T2G2_ANAPHORA_EN \
+                    or lowered in _T2G2_UNCERTAINTY_PARTICLES_EN:
+                continue
+            if token in _T2G2_STOPWORDS_AR or token in _T2G2_ANAPHORA_AR \
+                    or token in _T2G2_UNCERTAINTY_PARTICLES_AR:
+                continue
+            named = True
+            break
+        if not named:
+            return False
+    return True
+
+
+def _t2g2_back_reference_index(clauses):
     """Index of the first clause whose recognised ignorance refers BACK at what
     was already said, or ``None``.
 
-    Both conditions must hold, so a pronoun alone is never a veto:
+    The clause must first be one the REGISTERED detector recognises as an
+    explicit unknown — that is what keeps a pronoun, on its own, from ever
+    being a veto. Such a clause refers back when EITHER:
 
-      1. the clause carries a REGISTERED explicit unknown (the existing
-         detector, unchanged); and
-      2. it names NONE of this question's committed markers — it supplies no
-         subject matter of its own — while carrying an anaphor.
+      * it carries an anaphor, whatever else it says. `PR643-T2G2-SCOPE-
+        REPAIR-02` REMOVES the earlier exemption for an uncertainty that also
+        named this question's committed markers: "…but I do not know if that
+        load path is right" repeats the very mechanism it doubts, and naming it
+        again does not make the doubt independent; or
+      * it names no subject of its own at all — "…but I'm not sure",
+        "…لكن لست متأكدًا" — where the registered expression IS the whole
+        clause and the thing doubted can only be what was just said.
 
-    "…but I do not know if that is right" satisfies both: the doubt is about
-    the sibling clause, so that clause is not an independent assertion. "I do
-    not know the bolt size but…" satisfies neither — the uncertainty names its
-    own, separate detail — and "…but I do not know if that load path is right"
-    names committed material, so it is left alone too. Only clauses BEFORE the
-    back-reference lose their new-support eligibility; a clause after it is a
-    fresh statement and is judged normally."""
+    "I do not know the bolt size but…" is neither: the uncertainty names its
+    own separate detail. Only clauses BEFORE the back-reference lose their
+    new-support eligibility; a clause after it is a fresh statement, judged
+    normally. Under-recognition is the deliberate direction: an uncertainty
+    whose reference is genuinely ambiguous gains the sibling clause nothing."""
     for index, clause in enumerate(clauses):
         if not declares_ignorance(clause):
             continue
-        if _marker_spans(clause, question_id):
-            continue
-        if _t2g2_has_anaphor(clause):
+        if _t2g2_has_anaphor(clause) or not _t2g2_names_own_subject(clause):
             return index
     return None
 
@@ -529,14 +635,30 @@ def _t2g2_is_reported(clause, spans):
     neighbouring clause, does not reach it."""
     if not spans:
         return False
-    limit = spans[0][0]
+    limit = spans[0][0]                       # ORIGINAL coordinates
     lowered = clause.lower()
+    if len(lowered) == len(clause):
+        origin = None                         # indices already align one-to-one
+    else:
+        origin = _lowered_to_original(clause, lowered)
+        if origin is None:
+            # `PR643-T2G2-SCOPE-REPAIR-02`: the coordinate systems cannot be
+            # reconciled, so whether the frame governs the material is unknown.
+            # Refusing new support is the safe direction, exactly as
+            # `_marker_spans` refuses to size what it cannot map.
+            return True
     for cue in _T2G2_REPORTED_EN:
         position = lowered.find(cue)
-        if 0 <= position < limit:
+        if position < 0:
+            continue
+        # The cue is FOUND in the lowered text but `limit` is an ORIGINAL
+        # offset, and `str.lower()` is not length-preserving (U+0130 expands),
+        # so the two must be brought into one coordinate system before they are
+        # compared. Matching semantics and the raw text are unchanged.
+        if (position if origin is None else origin[position]) < limit:
             return True
     for cue in _T2G2_REPORTED_AR:
-        position = clause.find(cue)
+        position = clause.find(cue)           # already original coordinates
         if 0 <= position < limit:
             return True
     return False
@@ -653,7 +775,7 @@ def _t2g2_clause_carrier(sentence, question_id, matches_intent, terminator="",
     if len(clauses) == 1 and not _t2g2_concise_pattern(clauses[0], question_id):
         # No contrast boundary and no concise pattern: nothing new to add.
         return False
-    back_reference = _t2g2_back_reference_index(clauses, question_id)
+    back_reference = _t2g2_back_reference_index(clauses)
     supposed = False
     for index, clause in enumerate(clauses):
         governed = supposed

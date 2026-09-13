@@ -595,7 +595,12 @@ SCOPE_PAIRS = (
     ("back-reference EN", BACKREF_EN, BACKREF_DETAIL_EN),
     ("back-reference AR", BACKREF_AR,
      "السطح ينقل القوة إلى الإطار لكن لا أعرف مقاس البرغي."),
-    ("back-reference naming committed material", BACKREF_EN, BACKREF_NAMED_EN),
+    # `PR643-T2G2-SCOPE-REPAIR-02` CORRECTS this row. It shipped with
+    # BACKREF_NAMED_EN on the ADMITTED side, which encoded the defect: an
+    # uncertainty that repeats the very mechanism it doubts is not made
+    # independent by naming it. It is now the refused side.
+    ("back-reference naming committed material", BACKREF_NAMED_EN,
+     BACKREF_DETAIL_EN),
     ("back-reference direction", BACKREF_EN, BACKREF_FIRST_EN),
     ("question EN", CONCISE_QUESTION_EN, CONCISE_EN),
     ("question per segment", MIXED_QUESTION_EN, MIXED_EN),
@@ -647,6 +652,9 @@ def test_the_governing_scope_cues_are_finite_and_enumerated():
     assert len(st._T2G2_REPORTED_EN) == 13
     assert len(st._T2G2_REPORTED_AR) == 6
     assert st._T2G2_QUOTE_PAIRS == (('"', '"'), ("“", "”"), ("«", "»"))
+    assert len(st._T2G2_UNCERTAINTY_PARTICLES_EN) == 10
+    assert len(st._T2G2_UNCERTAINTY_PARTICLES_AR) == 6
+    assert st._T2G2_EXTENT_MAX_WORDS == 6
     assert st._T2G2_INTERROGATIVE == ("?", "؟")
     # the subordinating openers are a SUBSET of the accepted hypothetical cues
     for cue in st._T2G2_SUBORDINATING_HYPOTHETICAL:
@@ -801,3 +809,256 @@ def test_a_correction_can_still_turn_a_doubted_explanation_into_a_real_one(clien
     assert after["identity"] == Q3
     assert after["coverage"] == COV_Q2
     assert after["known_mechanism"] == "REASONED"
+
+
+# ==========================================================================
+# 8. `PR643-T2G2-SCOPE-REPAIR-02` — the back-reference exemption is gone, and
+#    object-less uncertainty is recognised.
+#
+# PROVENANCE. The two English route answers and the Arabic fragment
+# `مسار الحمل هذا` are what the independent differential review reported on
+# `406d893b`; the surrounding Arabic sentences, every control and every unit
+# case below were CONSTRUCTED by the implementing session. No fixture here is
+# presented as reviewer-authored beyond that fragment.
+# ==========================================================================
+NAMED_REF_AR = ("السطح ينقل القوة إلى الإطار لكن لا أعرف إن كان مسار الحمل "
+                "هذا صحيحًا.")
+OBJECTLESS_EN = "The deck transfers force into the rail, but I'm not sure."
+OBJECTLESS_EN2 = "The deck transfers force into the rail, but I do not know."
+OBJECTLESS_EN_YET = ("The deck transfers force into the rail, but I am not "
+                     "sure yet.")
+OBJECTLESS_AR = "السطح ينقل القوة إلى الإطار لكن لست متأكدًا."
+OBJECTLESS_AR2 = "السطح ينقل القوة إلى الإطار لكن لم أحدد بعد."
+DETAIL_AR = "السطح ينقل القوة إلى الإطار لكن لا أعرف مقاس البرغي."
+
+SCOPE_PAIRS_02 = (
+    ("named reference EN", BACKREF_NAMED_EN, BACKREF_DETAIL_EN),
+    ("named reference AR", NAMED_REF_AR, DETAIL_AR),
+    ("object-less EN", OBJECTLESS_EN, BACKREF_DETAIL_EN),
+    ("object-less EN bare", OBJECTLESS_EN2, BACKREF_DETAIL_EN),
+    ("object-less EN particle", OBJECTLESS_EN_YET, BACKREF_DETAIL_EN),
+    ("object-less AR", OBJECTLESS_AR, DETAIL_AR),
+    ("object-less AR particle", OBJECTLESS_AR2, DETAIL_AR),
+)
+
+
+@pytest.mark.parametrize("label,refused,admitted", SCOPE_PAIRS_02,
+                         ids=[p[0] for p in SCOPE_PAIRS_02])
+def test_backward_reference_no_longer_exempts_a_named_or_object_less_unknown(
+        label, refused, admitted):
+    """Each pair differs only in what the uncertainty is ABOUT."""
+    assert st.qualifying_carrier(refused, Q2_ID, MATCH, rule_level=2) is False
+    assert st.qualifying_carrier(admitted, Q2_ID, MATCH, rule_level=2) is True
+
+
+@pytest.mark.parametrize("label,refused,admitted", SCOPE_PAIRS_02,
+                         ids=[p[0] for p in SCOPE_PAIRS_02])
+def test_the_new_refusals_are_decided_by_scope_not_by_level_one(
+        label, refused, admitted):
+    """Level 1 already declines every refused fixture, so the pair says
+    something about T2-G-2 — and level 2 stays a union over level 1."""
+    assert st.qualifying_carrier(refused, Q2_ID, MATCH, rule_level=1) is False
+    for text in (refused, admitted):
+        if st.qualifying_carrier(text, Q2_ID, MATCH, rule_level=1):
+            assert st.qualifying_carrier(text, Q2_ID, MATCH, rule_level=2)
+
+
+def test_naming_the_committed_mechanism_no_longer_exempts_the_uncertainty():
+    """The removed exemption, stated directly: the doubted clause repeats this
+    question's own committed marker and is still a back-reference."""
+    clauses = st._t2g2_clauses(BACKREF_NAMED_EN.rstrip("."))
+    doubting = clauses[-1]
+    assert st._marker_spans(doubting, Q2_ID)          # it DOES name the marker
+    assert st._t2g2_back_reference_index(clauses) == len(clauses) - 1
+
+
+# ---- the residual-content approach, validated against registered forms ----
+@pytest.mark.parametrize("clause,names_subject", [
+    (" I do not know the bolt torque.", True),
+    (" I am not sure about the bolt size.", True),
+    (" I do not know if that load path is right.", True),   # anaphor rule's job
+    (" I'm not sure.", False),
+    (" I do not know.", False),
+    (" I have not decided.", False),
+    (" I do not know yet.", False),                          # particle residue
+    (" I am not sure yet.", False),
+    (" لا أعرف مقاس البرغي.", True),
+    (" لست متأكدًا.", False),                                 # one-letter residue
+    (" لم أحدد بعد.", False),                                 # particle residue
+    (" لا أعلم.", False),
+])
+def test_the_residue_test_reads_actual_registered_forms(clause, names_subject):
+    """Validated against the REGISTERED surfaces rather than assumed. Two
+    Arabic forms make the naive residue reading wrong and are handled: the
+    registry surface `لست متاكد` leaves the one-character inflection `ا`, and
+    `لم احدد` leaves the particle `بعد`. Neither is a named subject."""
+    assert st.declares_ignorance(clause)
+    assert st._t2g2_names_own_subject(clause) is names_subject
+
+
+def test_the_arabic_extent_comes_from_the_canonical_detector():
+    """No surface list is copied and no normaliser is introduced here: the
+    extent is the leftmost shortest window the registry detector recognises."""
+    from engine.semantic_registry import detect_registered_unknown
+    clause = " لا أعرف مقاس البرغي."
+    start, stop = st._t2g2_registered_extent(clause)
+    assert clause[start:stop] == "لا أعرف"
+    assert detect_registered_unknown(clause[start:stop]) is not None
+    assert st._t2g2_registered_extent(" the deck transfers force") is None
+    # bounded: windows are capped, never an unbounded search
+    assert st._T2G2_EXTENT_MAX_WORDS == 6
+
+
+def test_a_pronoun_outside_a_registered_unknown_is_never_a_veto():
+    """The anaphor test is consulted only inside a clause the registered
+    detector already recognised."""
+    plain = "The deck holds it, but the load path runs from the deck into the hinge line."
+    assert st._t2g2_back_reference_index(st._t2g2_clauses(plain)) is None
+    assert st.qualifying_carrier(plain, Q2_ID, MATCH, rule_level=2) is True
+
+
+# ---- reported-frame coordinate correction ---------------------------------
+_REPORTED_TAIL = " they say the load path runs from the deck into the hinge line"
+
+
+@pytest.mark.parametrize("expansions", [0, 1, 3, 20])
+def test_a_reported_frame_is_located_in_one_coordinate_system(expansions):
+    """The cue is found in `clause.lower()` while the marker span is measured
+    on the ORIGINAL clause, and `str.lower()` is not length-preserving. Twenty
+    U+0130 before the frame pushed the lowered offset past the original marker
+    start, so the frame stopped governing. The controls with no or short
+    expansion are unchanged."""
+    clause = (DOTTED_I * expansions) + _REPORTED_TAIL
+    assert st._t2g2_is_reported(clause, st._marker_spans(clause, Q2_ID)) is True
+    sentence = "I do not know the bolt size but " + clause + "."
+    assert st.qualifying_carrier(sentence, Q2_ID, MATCH, rule_level=2) is False
+
+
+def test_the_expansion_is_real_and_the_raw_clause_is_untouched():
+    clause = (DOTTED_I * 20) + _REPORTED_TAIL
+    before = clause
+    st._t2g2_is_reported(clause, st._marker_spans(clause, Q2_ID))
+    assert clause == before
+    assert len(clause.lower()) == len(clause) + 20
+    assert clause.lower().find("they say") > st._marker_spans(clause, Q2_ID)[0][0]
+
+
+def test_an_unmappable_reported_clause_refuses_rather_than_guesses(monkeypatch):
+    """Conservative failure handling: when the two coordinate systems cannot be
+    reconciled, the clause is treated as governed rather than guessed at. The
+    spans are taken BEFORE the map is broken, so this exercises the reported
+    check itself and not `_marker_spans`' own refusal."""
+    clause = (DOTTED_I * 20) + _REPORTED_TAIL
+    spans = st._marker_spans(clause, Q2_ID)
+    assert spans
+    monkeypatch.setattr(st, "_lowered_to_original", lambda *_a: None)
+    assert st._t2g2_is_reported(clause, spans) is True
+
+
+# ---- integrated journeys, full state asserted together --------------------
+_SCOPE02_UNCHANGED = {
+    "identity": Q2, "gap": MC, "status": "OPEN", "known_mechanism": None,
+    "coverage": [], "unknowns": 1, "records": 1,
+}
+REPORTED_DOTTED = ("I do not know the bolt size but " + (DOTTED_I * 20) +
+                   _REPORTED_TAIL + ".")
+
+
+@pytest.mark.parametrize("answer", [
+    BACKREF_NAMED_EN, OBJECTLESS_EN, NAMED_REF_AR, OBJECTLESS_AR,
+    REPORTED_DOTTED])
+def test_the_remaining_scope_journeys_read_the_same_on_both_versions(
+        client, answer):
+    """Full served identity, gap state, canonical knowledge, coverage and
+    unknown tracking together — a carrier Boolean proves none of them."""
+    c, appmod, db = client
+    _login(c, appmod)
+    for version in (ENGINE_CONTRACT_VERSION_T2G1, ENGINE_CONTRACT_VERSION_T2G2):
+        sid = _stamped_start(c, appmod, version)
+        _answer(c, sid, answer)
+        assert _snapshot(appmod, sid) == dict(_SCOPE02_UNCHANGED,
+                                              version=version), version
+        assert _stamp(db, sid) == version
+
+
+@pytest.mark.parametrize("answer", [BACKREF_DETAIL_EN, DETAIL_AR])
+def test_independent_detail_uncertainty_still_progresses_on_both_scripts(
+        client, answer):
+    c, appmod, _db = client
+    _login(c, appmod)
+    sid = _stamped_start(c, appmod, ENGINE_CONTRACT_VERSION_T2G2)
+    _answer(c, sid, answer)
+    assert _snapshot(appmod, sid) == {
+        "version": ENGINE_CONTRACT_VERSION_T2G2, "identity": Q3, "gap": MC,
+        "status": "PARTIAL", "known_mechanism": "REASONED",
+        "coverage": COV_Q2, "unknowns": 1, "records": 1}
+
+
+@pytest.mark.parametrize("answer", [BACKREF_NAMED_EN, OBJECTLESS_AR])
+def test_the_new_readings_survive_replay_restart_and_resume(client, answer):
+    c, appmod, db = client
+    _login(c, appmod)
+    sid = _stamped_start(c, appmod, ENGINE_CONTRACT_VERSION_T2G2)
+    _answer(c, sid, answer)
+    live = _snapshot(appmod, sid)
+    appmod.SESSION_STORE.clear()
+    session = reconstruct_readonly_state(appmod._get_store(), sid)
+    assert appmod._resolve_question_context(session.state, None).identity == \
+        live["identity"]
+    _raw(c, sid)
+    assert c.post(f"/session/{sid}/resume", data={}).status_code == 302
+    assert _snapshot(appmod, sid) == live
+    assert _stamp(db, sid) == ENGINE_CONTRACT_VERSION_T2G2
+
+
+def test_the_raw_answer_is_stored_verbatim_and_the_unknown_recorded_once(client):
+    c, appmod, _db = client
+    _login(c, appmod)
+    sid = _stamped_start(c, appmod, ENGINE_CONTRACT_VERSION_T2G2)
+    _answer(c, sid, OBJECTLESS_EN)
+    records = _active_answers(appmod, sid)
+    assert len(records) == 1
+    assert records[0].content == OBJECTLESS_EN
+    assert _snapshot(appmod, sid)["unknowns"] == 1
+
+
+def test_corrections_recompute_in_both_directions_across_the_new_rule(client):
+    c, appmod, _db = client
+    _login(c, appmod)
+    sid = _stamped_start(c, appmod, ENGINE_CONTRACT_VERSION_T2G2)
+    _answer(c, sid, OBJECTLESS_EN)
+    assert _snapshot(appmod, sid)["identity"] == Q2
+    first = _active_answers(appmod, sid)[0].record_id
+    assert _correct(c, sid, first, AFFIRMATIVE_EN).status_code == 302
+    after = _snapshot(appmod, sid)
+    assert (after["identity"], after["coverage"]) == (Q3, COV_Q2)
+    second = _active_answers(appmod, sid)[0].record_id
+    assert _correct(c, sid, second, NAMED_REF_AR).status_code == 302
+    back = _snapshot(appmod, sid)
+    assert (back["identity"], back["coverage"], back["known_mechanism"]) == \
+        (Q2, [], None)
+
+
+def test_a_scope_failure_still_falls_back_to_the_level_one_answer(monkeypatch):
+    def boom(_clauses):
+        raise RuntimeError("scope unreadable")
+    monkeypatch.setattr(st, "_t2g2_back_reference_index", boom)
+    assert st.qualifying_carrier(BACKREF_NAMED_EN, Q2_ID, MATCH,
+                                 rule_level=2) is False
+    assert st.qualifying_carrier(AFFIRMATIVE_EN, Q2_ID, MATCH,
+                                 rule_level=2) is True
+
+
+def test_bounded_cost_of_the_registered_extent_probe():
+    """Adversarial: one clause, no terminator, no contrast cue, the registered
+    surface only at the very end — the worst case for a left-to-right probe."""
+    import time
+    from web.app import MAX_FREE_TEXT_CHARS
+    for body in ((("مسار الحمل " * 1800) + "لست متأكدًا"),
+                 (("load path " * 2000) + "I am not sure"),
+                 ((BACKREF_NAMED_EN + " ") * 300),
+                 ((OBJECTLESS_AR + " ") * 300)):
+        body = body[:MAX_FREE_TEXT_CHARS - 1]
+        start = time.perf_counter()
+        st.qualifying_carrier(body, Q2_ID, MATCH, rule_level=2)
+        assert time.perf_counter() - start < 5.0
