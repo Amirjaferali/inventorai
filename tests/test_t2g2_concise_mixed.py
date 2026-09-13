@@ -535,3 +535,269 @@ def test_bounded_cost_at_the_accepted_input_limit(client):
         start = time.perf_counter()
         st.qualifying_carrier(body, Q2_ID, MATCH, rule_level=2)
         assert time.perf_counter() - start < 5.0
+
+
+# ==========================================================================
+# 7. `PR643-T2G2-SCOPE-REPAIR-01` — a boundary does not clear governing scope.
+#
+# PROVENANCE, stated plainly: every fixture below is a regression NEWLY
+# CONSTRUCTED by the implementing session for this bounded repair. The two
+# route answers restate the Lead's adopted `C` findings, which came from
+# applying the original requirement — not from the independent review, whose
+# verdict on the reviewed head was `B` and stands unaltered.
+#
+# Each guard is proved by a MATCHED PAIR that differs only in the cue, so a
+# refusal is attributable to the scope and not to some other property of the
+# sentence. Every refusal reaches the T2-G-2 path only.
+# ==========================================================================
+BACKREF_EN = ("The deck transfers force into the rail, but I do not know if "
+              "that is right.")
+BACKREF_AR = "السطح ينقل القوة إلى الإطار لكن لا أعرف إن كان ذلك صحيحًا."
+BACKREF_DETAIL_EN = ("The deck transfers force into the rail, but I do not "
+                     "know the bolt torque.")
+BACKREF_NAMED_EN = ("The deck transfers force into the rail, but I do not "
+                    "know if that load path is right.")
+BACKREF_FIRST_EN = ("I do not know if that is right, but deck transfers force "
+                    "into rail.")
+CONCISE_QUESTION_EN = "Deck transfers force into rail?"
+CONCISE_QUESTION_AR = "السطح ينقل القوة إلى الإطار؟"
+QUESTION_THEN_ANSWER = "What is the load path? Deck transfers force into rail."
+ANSWER_THEN_QUESTION = "Deck transfers force into rail. Is that right?"
+MIXED_QUESTION_EN = ("I do not know the bolt size, but does the load path run "
+                     "from the deck into the hinge line?")
+MIXED_QUESTION_AR = ("لا أعرف مقاس البرغي لكن هل مسار الحمل ينتقل من لوح "
+                     "السطح إلى خط المفصلة؟")
+REPORTED_MIXED_EN = ("I do not know the bolt size but they say the load path "
+                     "runs from the deck into the hinge line.")
+REPORTED_MIXED_AR = ("لا أعرف مقاس البرغي لكن يقولون إن مسار الحمل ينتقل من "
+                     "لوح السطح إلى خط المفصلة.")
+READS_EN = ("I do not know the housing, but the sensor reads the load path "
+            "from the deck panel.")
+QUOTED_SEGMENT_EN = '"Deck transfers force into rail."'
+QUOTED_CLAUSE_EN = ('I do not know the bolt size but "the load path runs from '
+                    'the deck into the hinge line".')
+QUOTED_COMPONENT_EN = ('The "deck" transfers force into rail, but I do not '
+                       'know the bolt size.')
+_SUPPOSE_TAIL = "the load path runs from the deck into the hinge line"
+SUPPOSED_EN = ("Suppose the latch fails, but I do not know the bolt size, "
+               "however " + _SUPPOSE_TAIL + ".")
+SUPPOSED_CONTROL_EN = ("The latch fails, but I do not know the bolt size, "
+                       "however " + _SUPPOSE_TAIL + ".")
+SUPPOSED_AFTER_EN = ("I do not know the bolt size, but " + _SUPPOSE_TAIL +
+                     ", however suppose the latch fails.")
+SUPPOSED_AR = ("لو تعطل المزلاج لكن لا أعرف مقاس البرغي لكن مسار الحمل ينتقل "
+               "من لوح السطح إلى خط المفصلة.")
+SUPPOSED_CONTROL_AR = ("المزلاج يتعطل لكن لا أعرف مقاس البرغي لكن مسار الحمل "
+                       "ينتقل من لوح السطح إلى خط المفصلة.")
+
+# (label, refused-under-t2g2, admitted-under-t2g2) — identical but for the cue.
+SCOPE_PAIRS = (
+    ("back-reference EN", BACKREF_EN, BACKREF_DETAIL_EN),
+    ("back-reference AR", BACKREF_AR,
+     "السطح ينقل القوة إلى الإطار لكن لا أعرف مقاس البرغي."),
+    ("back-reference naming committed material", BACKREF_EN, BACKREF_NAMED_EN),
+    ("back-reference direction", BACKREF_EN, BACKREF_FIRST_EN),
+    ("question EN", CONCISE_QUESTION_EN, CONCISE_EN),
+    ("question per segment", MIXED_QUESTION_EN, MIXED_EN),
+    ("question is not sentence-wide", MIXED_QUESTION_EN, ANSWER_THEN_QUESTION),
+    ("question AR across a boundary", MIXED_QUESTION_AR, MIXED_AR),
+    ("reported speech EN", REPORTED_MIXED_EN, MIXED_EN),
+    ("reported speech AR", REPORTED_MIXED_AR, MIXED_AR),
+    ("a relation verb is not a reporting frame", REPORTED_MIXED_EN, READS_EN),
+    ("wholly quoted segment", QUOTED_SEGMENT_EN, CONCISE_EN),
+    ("wholly quoted clause", QUOTED_CLAUSE_EN, MIXED_EN),
+    ("quotation labelling a component", QUOTED_SEGMENT_EN, QUOTED_COMPONENT_EN),
+    ("supposition governs rightward EN", SUPPOSED_EN, SUPPOSED_CONTROL_EN),
+    ("supposition after the carrier EN", SUPPOSED_EN, SUPPOSED_AFTER_EN),
+    ("supposition governs rightward AR", SUPPOSED_AR, SUPPOSED_CONTROL_AR),
+)
+
+
+@pytest.mark.parametrize("label,refused,admitted", SCOPE_PAIRS,
+                         ids=[p[0] for p in SCOPE_PAIRS])
+def test_each_governing_scope_is_decided_against_a_matched_control(
+        label, refused, admitted):
+    """The pair differs only in the cue, so the refusal is the cue's doing."""
+    assert st.qualifying_carrier(refused, Q2_ID, MATCH, rule_level=2) is False
+    assert st.qualifying_carrier(admitted, Q2_ID, MATCH, rule_level=2) is True
+
+
+@pytest.mark.parametrize("label,refused,admitted", SCOPE_PAIRS,
+                         ids=[p[0] for p in SCOPE_PAIRS])
+def test_no_governing_scope_refusal_withdraws_a_level_one_carrier(
+        label, refused, admitted):
+    """Level 2 stays a strict UNION over level 1: every one of these fixtures
+    that level 1 accepts is still accepted at level 2. The refusals reach only
+    what T2-G-2 would NEWLY admit."""
+    for text in (refused, admitted):
+        if st.qualifying_carrier(text, Q2_ID, MATCH, rule_level=1):
+            assert st.qualifying_carrier(text, Q2_ID, MATCH, rule_level=2)
+
+
+def test_the_refused_fixtures_are_decided_by_scope_not_by_level_one():
+    """Guard on the guards: each refused fixture must be one level 1 already
+    declined, otherwise the pair above would prove nothing about T2-G-2."""
+    for _label, refused, _admitted in SCOPE_PAIRS:
+        assert st.qualifying_carrier(refused, Q2_ID, MATCH, rule_level=1) is False
+
+
+def test_the_governing_scope_cues_are_finite_and_enumerated():
+    assert len(st._T2G2_ANAPHORA_EN) == 6
+    assert len(st._T2G2_ANAPHORA_AR) == 9
+    assert len(st._T2G2_REPORTED_EN) == 13
+    assert len(st._T2G2_REPORTED_AR) == 6
+    assert st._T2G2_QUOTE_PAIRS == (('"', '"'), ("“", "”"), ("«", "»"))
+    assert st._T2G2_INTERROGATIVE == ("?", "؟")
+    # the subordinating openers are a SUBSET of the accepted hypothetical cues
+    for cue in st._T2G2_SUBORDINATING_HYPOTHETICAL:
+        assert any(registered.strip() == cue for registered in
+                   st._T2G2_HYPOTHETICAL_EN + st._T2G2_HYPOTHETICAL_AR)
+    # no apostrophe is treated as a quotation mark
+    for pair in st._T2G2_QUOTE_PAIRS:
+        assert "'" not in pair and "’" not in pair
+
+
+@pytest.mark.parametrize("text", [
+    "a. b! c? d; e", "أ؟ ب؛ ج", "لا أعرف مسار الحمل، ولم أحدد شيئا",
+    BACKREF_EN, CONCISE_QUESTION_EN, MIXED_AR, QUESTION_THEN_ANSWER,
+    "", "   ", "one\ntwo\r\nthree", "trailing.", ".leading",
+])
+def test_public_sentences_behaviour_is_unchanged_by_the_record_form(text):
+    """`sentences()` is now derived from `_sentence_records`; its output must
+    stay exactly the previous split, so no existing consumer moves."""
+    import re as _re
+    previous = tuple(part for part in st._SENTENCE_BOUNDARY_RE.split(text)
+                     if part.strip()) if isinstance(text, str) and text else ()
+    assert st.sentences(text) == previous
+    assert isinstance(previous, tuple)
+    del _re
+
+
+def test_the_records_carry_the_original_terminator_and_offset():
+    records = st._sentence_records("Deck transfers force into rail? Yes.")
+    assert [(segment.strip(), terminator) for segment, terminator, _o in records] \
+        == [("Deck transfers force into rail", "?"), ("Yes", ".")]
+    for segment, _terminator, offset in records:
+        assert "Deck transfers force into rail? Yes."[offset:offset + len(segment)] \
+            == segment
+    assert st._sentence_records("no terminator")[0][1] == ""
+
+
+def test_an_unreadable_quotation_scan_falls_back_to_level_one(monkeypatch):
+    """A failure while establishing scope must never grant new support."""
+    def boom(_text):
+        raise RuntimeError("scope unreadable")
+    monkeypatch.setattr(st, "_t2g2_quote_spans", boom)
+    assert st.qualifying_carrier(CONCISE_EN, Q2_ID, MATCH, rule_level=2) is False
+    assert st.qualifying_carrier(AFFIRMATIVE_EN, Q2_ID, MATCH,
+                                 rule_level=2) is True   # level 1 still stands
+
+
+def test_bounded_cost_with_the_new_scope_cues(client):
+    """The four scope decisions add bounded local work only."""
+    import time
+    from web.app import MAX_FREE_TEXT_CHARS
+    for body in ((BACKREF_EN + " ") * 400, (QUOTED_CLAUSE_EN + " ") * 300,
+                 ('"' * 4000) + (CONCISE_EN + " ") * 300,
+                 (SUPPOSED_EN + " ") * 200):
+        body = body[:MAX_FREE_TEXT_CHARS - 1]
+        start = time.perf_counter()
+        st.qualifying_carrier(body, Q2_ID, MATCH, rule_level=2)
+        assert time.perf_counter() - start < 5.0
+
+
+# ---- the two findings, as fully specified supported journeys ---------------
+_SCOPE_ROUTE_UNCHANGED = {
+    "identity": Q2, "gap": MC, "status": "OPEN", "known_mechanism": None,
+    "coverage": [], "unknowns": 1, "records": 1,
+}
+
+
+def test_finding_one_backward_referencing_uncertainty_supplies_no_mechanism(client):
+    """`The deck transfers force into the rail, but I do not know if that is
+    right.` The doubt is about the explanation itself, so T2-G-2 must read it
+    exactly as T2-G-1 does — and still record the unknown once."""
+    c, appmod, db = client
+    _login(c, appmod)
+    seen = {}
+    for version in (ENGINE_CONTRACT_VERSION_T2G1, ENGINE_CONTRACT_VERSION_T2G2):
+        sid = _stamped_start(c, appmod, version)
+        _answer(c, sid, BACKREF_EN)
+        snapshot = _snapshot(appmod, sid)
+        assert snapshot == dict(_SCOPE_ROUTE_UNCHANGED, version=version), version
+        assert _stamp(db, sid) == version
+        assert UNKNOWN_NOTICE in _page(c, sid)
+        seen[version] = snapshot
+    assert seen[ENGINE_CONTRACT_VERSION_T2G1]["identity"] == \
+        seen[ENGINE_CONTRACT_VERSION_T2G2]["identity"] == Q2
+
+
+def test_finding_three_a_concise_question_supplies_no_mechanism(client):
+    """`Deck transfers force into rail?` asks for the mechanism. T2-G-2 must
+    neither cover Q2 nor advance the served question beyond it; the older
+    quality reading of the same answer is untouched."""
+    c, appmod, db = client
+    _login(c, appmod)
+    for version in (ENGINE_CONTRACT_VERSION_T2G1, ENGINE_CONTRACT_VERSION_T2G2):
+        sid = _stamped_start(c, appmod, version)
+        _answer(c, sid, CONCISE_QUESTION_EN)
+        assert _snapshot(appmod, sid) == {
+            "version": version, "identity": Q2, "gap": MC, "status": "PARTIAL",
+            "known_mechanism": "ASSERTED", "coverage": [], "unknowns": 0,
+            "records": 1}, version
+        assert _stamp(db, sid) == version
+
+
+@pytest.mark.parametrize("answer,identity,coverage", [
+    (BACKREF_DETAIL_EN, Q3, COV_Q2),
+    (QUOTED_COMPONENT_EN, Q3, COV_Q2),
+    (ANSWER_THEN_QUESTION, Q3, COV_Q2),
+])
+def test_genuine_explanations_beside_these_cues_still_progress(
+        client, answer, identity, coverage):
+    """Positive route controls: uncertainty about an INDEPENDENT detail, a
+    quotation that merely labels a component, and a question that follows a
+    real assertion all keep their T2-G-2 progress."""
+    c, appmod, _db = client
+    _login(c, appmod)
+    sid = _stamped_start(c, appmod, ENGINE_CONTRACT_VERSION_T2G2)
+    _answer(c, sid, answer)
+    snapshot = _snapshot(appmod, sid)
+    assert snapshot["identity"] == identity
+    assert snapshot["coverage"] == coverage
+    assert snapshot["status"] == "PARTIAL"
+
+
+@pytest.mark.parametrize("answer", [BACKREF_EN, CONCISE_QUESTION_EN])
+def test_the_repaired_readings_survive_replay_restart_and_resume(client, answer):
+    c, appmod, db = client
+    _login(c, appmod)
+    sid = _stamped_start(c, appmod, ENGINE_CONTRACT_VERSION_T2G2)
+    _answer(c, sid, answer)
+    live = _snapshot(appmod, sid)
+    appmod.SESSION_STORE.clear()
+    session = reconstruct_readonly_state(appmod._get_store(), sid)
+    assert getattr(session.state, "engine_contract_version", None) == \
+        ENGINE_CONTRACT_VERSION_T2G2
+    assert appmod._resolve_question_context(session.state, None).identity == \
+        live["identity"]
+    _raw(c, sid)
+    assert c.post(f"/session/{sid}/resume", data={}).status_code == 302
+    assert _snapshot(appmod, sid) == live
+    assert _stamp(db, sid) == ENGINE_CONTRACT_VERSION_T2G2
+
+
+def test_a_correction_can_still_turn_a_doubted_explanation_into_a_real_one(client):
+    """The refusal is a reading of THIS answer, never a lock: correcting the
+    doubted sentence into a plain explanation recomputes to mechanism support."""
+    c, appmod, _db = client
+    _login(c, appmod)
+    sid = _stamped_start(c, appmod, ENGINE_CONTRACT_VERSION_T2G2)
+    _answer(c, sid, BACKREF_EN)
+    assert _snapshot(appmod, sid)["identity"] == Q2
+    record_id = _active_answers(appmod, sid)[0].record_id
+    assert _correct(c, sid, record_id, AFFIRMATIVE_EN).status_code == 302
+    after = _snapshot(appmod, sid)
+    assert after["identity"] == Q3
+    assert after["coverage"] == COV_Q2
+    assert after["known_mechanism"] == "REASONED"

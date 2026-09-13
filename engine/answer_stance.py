@@ -35,6 +35,14 @@ Bounds, stated rather than hidden
     cued throughout, and a genuine explanation shorter than the surplus floor
     is missed. Both are under-progress, and both are disclosed rather than
     presented as solved.
+  * Under T2-G-2 a contrast boundary does NOT clear governing scope. A clause
+    is refused as NEW support when its segment was a question, when a later
+    recognised unknown in the same sentence refers back at it, when a
+    supposition opened earlier still governs it, or when it is reported speech
+    or quoted in its entirety. Each is decided by where the cue sits relative
+    to the mechanism material, so a bare pronoun, reporting word or quotation
+    mark is never on its own a veto. These refusals reach the T2-G-2 path only
+    and can never withdraw a level-1 or pre-T2-G result.
 
 Version gating
 --------------
@@ -153,6 +161,58 @@ _T2G2_RELATIONS_AR = frozenset({
     "يقيس", "تقيس", "يكشف", "تكشف", "يوصل", "توصل", "يسند", "تسند",
 })
 
+# ==========================================================================
+# `PR643-T2G2-SCOPE-REPAIR-01` — GOVERNING SCOPE.
+#
+# Splitting a sentence at a contrast boundary does not, on its own, make what
+# sits on the other side an independent assertion by the inventor. Four kinds
+# of scope survive an allowed boundary, and each is decided by where the cue
+# actually sits relative to the mechanism material — never by the bare presence
+# of a pronoun, a reporting word or a quotation mark. All four are consulted by
+# the T2-G-2 path ONLY: no earlier version, and no level-1 result, can be
+# withdrawn by any of them.
+# ==========================================================================
+
+# ANAPHORA — surfaces that point BACK at something already said instead of
+# naming a subject of their own. Presence alone decides nothing: it matters
+# only inside a recognised ignorance clause that names none of THIS question's
+# committed markers (see `_t2g2_back_reference_index`).
+_T2G2_ANAPHORA_EN = frozenset({"that", "this", "it", "these", "those", "so"})
+_T2G2_ANAPHORA_AR = frozenset({
+    "ذلك", "هذا", "هذه", "تلك", "ذاك", "بذلك", "به", "بها", "كذلك",
+})
+
+# REPORTED-SPEECH frames. A clause is reported only when the frame stands
+# BEFORE this question's committed material in that clause, so it actually
+# governs it — "the sensor reads the pressure" is not hearsay, and a frame in a
+# neighbouring clause never reaches across.
+_T2G2_REPORTED_EN = ("they say", "they said", "he says", "he said", "she says",
+                     "she said", "someone said", "it is said", "i read",
+                     "i heard", "supposedly", "allegedly", "reportedly")
+_T2G2_REPORTED_AR = ("يقولون", "يقول", "قيل", "يقال", "سمعت", "قرأت")
+
+# QUOTATION pairs. Only material quoted IN ITS ENTIRETY is someone else's
+# words; a quoted component name inside a clause the inventor is asserting
+# (the deck NAMED IN QUOTES, transferring force into the rail) is untouched.
+# The ASCII apostrophe and the typographic single quote are deliberately NOT
+# quotation marks here: in English they are apostrophes ("don't", "the latch's
+# pin"), and pairing them would invent quotations that are not there.
+_T2G2_QUOTE_PAIRS = (('"', '"'), ("“", "”"), ("«", "»"))
+_T2G2_CLAUSE_EDGE = " \t\r\n,،.؛;:—-"
+
+# SUBORDINATING hypothetical openers — the subset of the registered
+# hypothetical cues that opens a protasis and therefore still governs what
+# follows it in the same sentence. The modal cues ("would", "might", "maybe",
+# "perhaps", "probably", "ربما", "لعل") stay clause-local, exactly as
+# accepted, because they qualify only their own clause.
+_T2G2_SUBORDINATING_HYPOTHETICAL = ("if", "suppose", "imagine",
+                                    "لو", "إذا", "اذا", "لنفترض")
+
+# INTERROGATIVE terminators. A question is not an assertion; the terminator is
+# read from the ORIGINAL text (see `_sentence_records`) rather than guessed
+# from a fragment whose delimiter was already discarded.
+_T2G2_INTERROGATIVE = ("?", "؟")
+
 
 def _english_unknown_markers():
     """The EXISTING registered English explicit-unknown markers, read from
@@ -161,11 +221,73 @@ def _english_unknown_markers():
     return _ACKNOWLEDGED_UNKNOWN_MARKERS
 
 
-def sentences(text):
-    """The bounded sentence split used by this module only."""
+def _sentence_records(text):
+    """The bounded split, WITH each segment's own original terminator.
+
+    `PR643-T2G2-SCOPE-REPAIR-01`: the T2-G-2 path must be able to tell an
+    assertion from a question, and the terminator that decides it was being
+    thrown away by the split. Each record is ``(segment, terminator)`` where
+    the terminator is the exact boundary text that ended that segment (``""``
+    at the end of the input). The segments are IDENTICAL to what the previous
+    split produced — `sentences` below is defined from these records, so every
+    existing consumer, and the whole level-1 rule, are byte-unchanged."""
     if not isinstance(text, str) or not text:
         return ()
-    return tuple(part for part in _SENTENCE_BOUNDARY_RE.split(text) if part.strip())
+    records = []
+    position = 0
+    for match in _SENTENCE_BOUNDARY_RE.finditer(text):
+        segment = text[position:match.start()]
+        if segment.strip():
+            records.append((segment, match.group(0), position))
+        position = match.end()
+    tail = text[position:]
+    if tail.strip():
+        records.append((tail, "", position))
+    return tuple(records)
+
+
+def sentences(text):
+    """The bounded sentence split used by this module only. Public behaviour
+    is unchanged: exactly the segments `_sentence_records` yields."""
+    return tuple(segment for segment, _terminator, _offset in _sentence_records(text))
+
+
+def _t2g2_quote_spans(text):
+    """Character spans of ``text`` enclosed in a MATCHED quotation pair.
+
+    One left-to-right pass; an unmatched opener ends the scan rather than
+    guessing an extent. Used to tell whether a whole segment is someone else's
+    quoted sentence, which a segment boundary inside the quotation would
+    otherwise hide."""
+    if not isinstance(text, str) or not text:
+        return ()
+    closers = dict(_T2G2_QUOTE_PAIRS)
+    spans = []
+    index = 0
+    while index < len(text):
+        closing = closers.get(text[index])
+        if closing is None:
+            index += 1
+            continue
+        end = text.find(closing, index + 1)
+        if end == -1:
+            break
+        spans.append((index, end + 1))
+        index = end + 1
+    return tuple(spans)
+
+
+def _t2g2_segment_is_quoted(segment, offset, quote_spans):
+    """True when this segment's whole non-space extent lies inside one quoted
+    span of the original answer."""
+    if not quote_spans:
+        return False
+    lead = len(segment) - len(segment.lstrip())
+    trail = len(segment) - len(segment.rstrip())
+    start = offset + lead
+    end = offset + len(segment) - trail
+    return any(span_start <= start and end <= span_end
+               for span_start, span_end in quote_spans)
 
 
 def declares_ignorance(sentence):
@@ -361,6 +483,99 @@ def _t2g2_is_hypothetical(clause):
     return any(cue in clause for cue in _T2G2_HYPOTHETICAL_AR)
 
 
+def _t2g2_has_anaphor(clause):
+    """True when the clause contains a whole-token surface that points BACK at
+    something already said. On its own this decides NOTHING — it is one of two
+    conditions in `_t2g2_back_reference_index`."""
+    for word in _WORD_RE.finditer(clause):
+        token = word.group(0)
+        if token.lower() in _T2G2_ANAPHORA_EN or token in _T2G2_ANAPHORA_AR:
+            return True
+    return False
+
+
+def _t2g2_back_reference_index(clauses, question_id):
+    """Index of the first clause whose recognised ignorance refers BACK at what
+    was already said, or ``None``.
+
+    Both conditions must hold, so a pronoun alone is never a veto:
+
+      1. the clause carries a REGISTERED explicit unknown (the existing
+         detector, unchanged); and
+      2. it names NONE of this question's committed markers — it supplies no
+         subject matter of its own — while carrying an anaphor.
+
+    "…but I do not know if that is right" satisfies both: the doubt is about
+    the sibling clause, so that clause is not an independent assertion. "I do
+    not know the bolt size but…" satisfies neither — the uncertainty names its
+    own, separate detail — and "…but I do not know if that load path is right"
+    names committed material, so it is left alone too. Only clauses BEFORE the
+    back-reference lose their new-support eligibility; a clause after it is a
+    fresh statement and is judged normally."""
+    for index, clause in enumerate(clauses):
+        if not declares_ignorance(clause):
+            continue
+        if _marker_spans(clause, question_id):
+            continue
+        if _t2g2_has_anaphor(clause):
+            return index
+    return None
+
+
+def _t2g2_is_reported(clause, spans):
+    """True when a reported-speech frame actually GOVERNS this clause's
+    mechanism material — the frame stands before this question's first
+    committed marker in the same clause. A reporting word elsewhere, or in a
+    neighbouring clause, does not reach it."""
+    if not spans:
+        return False
+    limit = spans[0][0]
+    lowered = clause.lower()
+    for cue in _T2G2_REPORTED_EN:
+        position = lowered.find(cue)
+        if 0 <= position < limit:
+            return True
+    for cue in _T2G2_REPORTED_AR:
+        position = clause.find(cue)
+        if 0 <= position < limit:
+            return True
+    return False
+
+
+def _t2g2_is_wholly_quoted(clause):
+    """True only when the WHOLE clause is enclosed in one quotation pair —
+    someone else's sentence. A quoted component name inside an otherwise
+    unquoted clause is untouched, so quotation is never a blanket veto."""
+    stripped = clause.strip(_T2G2_CLAUSE_EDGE)
+    if len(stripped) < 2:
+        return False
+    return any(stripped.startswith(opening) and stripped.endswith(closing)
+               for opening, closing in _T2G2_QUOTE_PAIRS)
+
+
+def _t2g2_opens_hypothetical(clause):
+    """True when the clause OPENS a supposition, which therefore still governs
+    the clauses after it in the same sentence. Clause-internal modal cues are
+    not included here: they qualify only their own clause, which
+    `_t2g2_is_hypothetical` already handles."""
+    stripped = clause.strip(_T2G2_CLAUSE_EDGE)
+    lowered = stripped.lower()
+    for cue in _T2G2_SUBORDINATING_HYPOTHETICAL:
+        for candidate in (lowered, stripped):
+            if candidate.startswith(cue) and candidate[len(cue):len(cue) + 1].isspace():
+                return True
+    return False
+
+
+def _t2g2_is_questioned(terminator):
+    """True when the segment the clause came from ended in a question mark, in
+    either script. Read from the ORIGINAL terminator carried by
+    `_sentence_records`, never reconstructed from the fragment."""
+    if not terminator:
+        return False
+    return any(mark in terminator for mark in _T2G2_INTERROGATIVE)
+
+
 def _t2g2_role_items(clause, spans):
     """The role material of a clause as ``(start, end, kind)`` triples: each
     committed-marker occurrence, and each non-stopword word lying wholly
@@ -383,10 +598,9 @@ def _t2g2_concise_pattern(clause, question_id):
     The clause must contain a registered relation token — which may sit inside
     a committed marker — with role material on BOTH sides of it, and at least
     one non-marker content word somewhere in the clause. That is what
-    the clause. That is what separates a short real explanation from a
-    committed noun echoed three times: repeated markers supply no relation and
-    no non-marker content,
-    so they can never satisfy this. Two arbitrary content words do not satisfy
+    separates a short real explanation from a committed noun echoed three
+    times: repeated markers supply no relation and no non-marker content, so
+    they can never satisfy this. Two arbitrary content words do not satisfy
     it either, and neither does a relation with nothing on one side of it."""
     spans = _marker_spans(clause, question_id)
     if not spans:
@@ -409,21 +623,54 @@ def _t2g2_concise_pattern(clause, question_id):
     return False
 
 
-def _t2g2_clause_carrier(sentence, question_id, matches_intent):
+def _t2g2_clause_carrier(sentence, question_id, matches_intent, terminator="",
+                         quoted=False):
     """The T2-G-2 addition: judge each contrast clause of the sentence on its
     own, so an explanation that shares a sentence with a recognised unknown is
     not discarded with it, and a concise clause can qualify through the
-    relation pattern. Ignorance-cued and hypothetical clauses are skipped, so
-    nothing still inside an unknown or a supposition is treated as independent
-    support."""
+    relation pattern.
+
+    A clause becomes NEW support only when nothing still governs it. Crossing a
+    contrast boundary does not clear scope, so `PR643-T2G2-SCOPE-REPAIR-01`
+    establishes the governing scope first, at four points:
+
+      * the whole segment was a QUESTION (its own original terminator) — a
+        question asks for the mechanism, it does not state one;
+      * a recognised ignorance clause later in the sentence refers BACK at this
+        clause, so this clause is what is being doubted;
+      * a subordinating supposition opened EARLIER in the sentence and still
+        governs here;
+      * this clause, or the whole segment it came from, is quoted in its
+        entirety, or the clause is reported speech.
+
+    Ignorance-cued and clause-local hypothetical clauses are skipped as before.
+    Every refusal here removes only NEW T2-G-2 support: the level-1 rule has
+    already run on the whole sentence in `qualifying_carrier` and is never
+    revisited, so no older or default result can be withdrawn."""
+    if quoted or _t2g2_is_questioned(terminator):
+        return False
     clauses = _t2g2_clauses(sentence)
     if len(clauses) == 1 and not _t2g2_concise_pattern(clauses[0], question_id):
         # No contrast boundary and no concise pattern: nothing new to add.
         return False
-    for clause in clauses:
+    back_reference = _t2g2_back_reference_index(clauses, question_id)
+    supposed = False
+    for index, clause in enumerate(clauses):
+        governed = supposed
+        if _t2g2_opens_hypothetical(clause):
+            supposed = True
         if declares_ignorance(clause) or _t2g2_is_hypothetical(clause):
             continue
+        if governed:
+            continue                      # inside a supposition opened earlier
+        if back_reference is not None and index < back_reference:
+            continue                      # this is what the doubt is about
+        if _t2g2_is_wholly_quoted(clause):
+            continue
         if not matches_intent(clause, question_id):
+            continue
+        spans = _marker_spans(clause, question_id)
+        if _t2g2_is_reported(clause, spans):
             continue
         if _carries_context(clause, question_id, matches_intent):
             return True
@@ -450,13 +697,26 @@ def qualifying_carrier(text, question_id, matches_intent, rule_level=1):
     one it already accepts. Any failure inside the new path falls back to the
     level-1 answer, so a failed T2-G-2 interpretation never grants support of
     its own."""
-    for sentence in sentences(text):
+    quote_spans = ()
+    if rule_level >= 2:
+        try:
+            quote_spans = _t2g2_quote_spans(text)
+        except Exception:
+            # The governing scope of this answer cannot be read. Fall back to
+            # the level-1 rule for the whole text rather than grant new support
+            # on evidence we could not size.
+            rule_level = 1
+    for sentence, terminator, offset in _sentence_records(text):
         if not declares_ignorance(sentence) and matches_intent(sentence, question_id) \
                 and _carries_context(sentence, question_id, matches_intent):
             return True
         if rule_level >= 2:
             try:
-                if _t2g2_clause_carrier(sentence, question_id, matches_intent):
+                if _t2g2_clause_carrier(
+                        sentence, question_id, matches_intent,
+                        terminator=terminator,
+                        quoted=_t2g2_segment_is_quoted(sentence, offset,
+                                                       quote_spans)):
                     return True
             except Exception:
                 continue          # conservative: no new support from a failure

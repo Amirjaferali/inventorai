@@ -631,6 +631,96 @@ through `N-6`; the pending legacy-migration decision; the T2-A random-skip test
 debt; the PR #642 metadata exception; the four T2-D observations; the six
 PR #640 findings; and satellite timing. No paid-activation claim.
 
+### Same-touch repair — `PR643-T2G2-SCOPE-REPAIR-01` v1.0 (governing scope)
+
+**Disposition.** The Lead recorded **C — FAIL — BOUNDED REPAIR REQUIRED** and the
+Owner adopted it. The `C` follows from applying the original requirement, which
+was not available to the independent reviewer; the reviewer's own verdict on the
+reviewed head `4fb5ecf4` was **B**, and that verdict and its evidence stand
+unaltered as history. This record does not restate it as a reviewer-issued `C`.
+
+**What was wrong.** Under T2-G-2 only, splitting a sentence at a contrast
+boundary was treated as clearing every scope that governed the material.
+Reproduced on the reviewed head through fully specified supported journeys:
+
+| Answer | T2-G-1 | reviewed T2-G-2 head | repaired T2-G-2 head |
+|---|---|---|---|
+| `The deck transfers force into the rail, but I do not know if that is right.` | `…:Q2` · OPEN · none · cov — · unknown ×1 | **`…:Q3` · PARTIAL · REASONED · cov Q2** · unknown ×1 | `…:Q2` · OPEN · none · cov — · unknown ×1 |
+| `Deck transfers force into rail?` | `…:Q2` · PARTIAL · ASSERTED · cov — | **`…:Q3` · cov Q2** | `…:Q2` · PARTIAL · ASSERTED · cov — |
+
+The second row's PARTIAL/ASSERTED reading is the OLDER quality result for that
+answer; it is preserved exactly. Only the T2-G-2 coverage of `Q2` and the
+consequent advance of the served question were newly admitted, and only those
+are withdrawn.
+
+**The repair.** Before a clause may become NEW T2-G-2 support, the scope that
+actually governs it is established, at four points, each decided by where the
+cue sits relative to this question's committed material — never by the bare
+presence of a pronoun, a reporting word or a quotation mark:
+
+1. **Questioned.** The segment's own ORIGINAL terminator is carried to the new
+   path (`_sentence_records`) instead of being discarded by the split, so a
+   question is refused without ever guessing from a delimiter-less fragment.
+   `sentences()` keeps its exact public output and every existing consumer.
+2. **Back-referencing uncertainty.** A recognised ignorance clause that names
+   NONE of this question's committed markers while carrying an anaphor is
+   doubting what was already said; the clauses BEFORE it lose new-support
+   eligibility. An unknown naming its own separate detail, an unknown that does
+   name committed material, and a clause standing AFTER the anaphor are all
+   unaffected.
+3. **Supposition.** A clause-initial subordinating hypothetical still governs
+   the clauses after it in the same sentence. The modal cues stay clause-local.
+4. **Reported or quoted.** A reporting frame standing before this question's
+   committed material in the same clause, a clause quoted in its entirety, or a
+   whole segment inside one quoted span of the answer. Apostrophes are not
+   quotation marks. A quotation that merely labels a component is untouched.
+
+A failure while establishing scope falls back to the level-1 reading for the
+whole answer. Every refusal reaches the T2-G-2 path only: level 2 remains a
+strict UNION over level 1, so no older or default result is withdrawn. No
+broad lexicon, no example-specific special case, no feature disablement, and
+the quality assessor is not touched.
+
+**Truthful limit, recorded rather than implied.** These four refusals bite only
+where T2-G-2 would otherwise NEWLY admit. An answer long enough to satisfy the
+unchanged level-1 four-surplus-word test is still accepted exactly as before —
+question mark, reporting frame or enclosing quotation notwithstanding. That was
+the behaviour before this slice and it is unchanged by this repair; narrowing it
+would withdraw accepted results and is not authorized here.
+
+**Repair-only file boundary.** `engine/answer_stance.py`,
+`tests/test_t2g2_concise_mixed.py`, `tests/test_t2d_question_feedback.py`
+(the test-local generation-clock pin only) and this file. The reviewed delta to
+`tests/test_p4_2_session_reconstruction.py` is RETAINED unchanged by Owner
+approval; it remains recorded as outside the original ten-path mandate and is
+not portrayed as having been authorized in advance. No further edit to it.
+
+**T2-D generation clock.** `test_feedback_changes_nothing_else_at_all` compared
+a deliverable package stamping `generated_at` from a one-second-granularity
+clock, so two snapshots straddling a second boundary differed in that field
+alone. Observed directly with the assembler clock advanced one second: `package`
+is the only differing snapshot item and `generated_at` the only differing
+package key. Only `engine.deliverable_assembler._now_iso` is pinned, only inside
+that test. The field is still produced, still in the package and still compared
+in full; no production timestamp, security or token clock, shared snapshot
+helper or global fixture is changed, no assertion is weakened and no skip
+allowance is widened. The earlier report stated that this candidate raised the
+failure's hit rate, citing 0 occurrences in 20 base runs against 3 in 26
+candidate runs. **That causal claim is withdrawn**: the counts are raw
+observations from run sets taken under different conditions, no rate comparison
+or significance test was performed, and none is claimed. The mechanism above is
+timing-dependent and observable independently of this change.
+
+**Preserved.** `N-1` and `N-2` remain OPEN pending bounded corrected acceptance;
+`R1`, `R2`, `R3`, `N-3` through `N-6`, the deferred legacy-migration decision,
+the T2-A random-skip test debt, the PR #642 `merged:false` metadata exception,
+the four T2-D observations, the six PR #640 findings, satellite timing and the
+deferred MCP direction all keep their existing triggers. Merge, deployment,
+release, tags, force-push, rebase, branch deletion, authoritative-branch
+modification, Stage 7 completion, WS11, advanced evidence writers and human-data
+collection remain NOT AUTHORIZED and were not performed. Still PARTIAL T2-G with
+no paid-activation claim.
+
 <a id="current-authority--t2e-t2f-evidence-references-and-ordering"></a>
 ## Current authority — T2-E Option B + T2-F (one combined bounded candidate)
 
