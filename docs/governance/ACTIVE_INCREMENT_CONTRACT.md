@@ -527,6 +527,110 @@ the existing T2-A random-skip test debt, the four T2-D observations, the six
 PR #640 findings and satellite timing all keep their return triggers. This
 remains PARTIAL T2-G with no paid-activation claim.
 
+## Current authority — T2-G-2 concise and mixed mechanism explanations (Stage 7)
+
+**Owner decision `T2G-CONCISE-MIXED-IMPLEMENT-02` v1.0**, adopting
+`T2G-CONCISE-MIXED-DESIGN-02`. Existing T2-G ownership continues: the Lead is
+accountable, Original Claude implements. Authorized: implementation, synthetic
+tests, ordinary commits/pushes and ONE PR. This is a **partial T2-G** slice, not
+full-capability acceptance. PR #642 is integrated and administratively closed;
+its recorded `merged:false` metadata exception stands and is not revisited.
+
+**Outcome.** Within `MECHANISM_COMPLETENESS` in `mechanical` and
+`electronics_electrical`, EN/AR paired: recognise a supported mechanism
+explanation when it is CONCISE or shares a sentence with a positively
+recognised unknown, without treating the unknown portion, repeated markers or
+unrelated text as mechanism knowledge. This addresses the selection triggers of
+`N-1` and `N-2`; both stay OPEN until the delivered behaviour is verified.
+
+**1. Version policy — three versions, each read as itself.**
+`p4-2-level1-recon-v1` and `p4-2-level1-recon-v1-t2g1` retain their exact
+behaviour. `p4-2-level1-recon-v1-t2g2` is added through the EXISTING persisted
+envelope and the ONE progression/reconstruction path; only subsequent supported
+`/start` projects record it, and the carrier is set before the seed is
+interpreted. Extending the supported tuple alone would NOT have sufficed: the
+stance activation predicate compared the T2-G-1 stamp exactly, so activation is
+now a **rule LEVEL** (0/1/2) read from the project's own version and wired
+through BOTH the eligibility veto and the coverage site, so the two can never
+read one answer differently. `qualifying_carrier` keeps its signature with
+`rule_level=1` defaulted, so every existing direct caller is unchanged.
+No request-controlled version, silent migration, second engine or store, and no
+schema change. Missing or unsupported metadata keeps its fail-closed Level-0
+result. The disclosed legacy ILT entry-path exception is unchanged. **Legacy
+migration remains a pending decision, now spanning three versions.**
+
+**2. Bounded clause scope (T2-G-2 only).** Sentences are split at exactly four
+standalone contrast tokens — `but`, `however`, `لكن`, `لكنّ` — matched as whole
+tokens. `yet`, `though`, `although`, `أما`, `غير أن` and `إلا أن` are
+deliberately NOT included in this slice, and `and` / `و` are not boundaries: a
+prototype that split them scored worse than the accepted rule. Boundaries are
+located in the same whole-string `sentence.lower()` haystack and mapped back
+through the ACCEPTED coordinate map before the original text is cut, so clauses
+are exact substrings and no case-insensitive matching mode or re-casing is
+introduced. Registered ignorance detection and its bounds are unchanged, and a
+clause that declares ignorance or carries a registered hypothetical cue is never
+admitted as an independent explanation — nothing still inside an unknown or a
+supposition becomes support. Useful physical negation is untouched; no negation
+or uncertainty qualifier is stripped before eligibility. Level 2 is a strict
+UNION on top of level 1, so an unclear case gains no support merely by being
+split, and sentence handling for T2-G-1 and earlier is byte-unchanged.
+
+**3. Concise carriers.** A clause that fails the accepted four-surplus-word test
+can still qualify, but only through a relation pattern: a registered relation
+token — which MAY sit inside a committed marker — with role material on BOTH
+sides of it, plus at least one non-marker content word in the clause. Two
+arbitrary content words do not qualify, an isolated relational verb does not,
+and repeated markers supply neither a relation nor non-marker content, so they
+can never qualify. The `Q4` / `N-MC-4` uncertainty-purpose distinction is
+unchanged: naming what is unknown still supplies no mechanism. The contrast,
+hypothetical, function-word and relation vocabularies are FINITE, declared
+centrally in `engine/answer_stance.py`, scoped to T2-G-2, and enumerated by
+test. No new registry file, broad domain lexicon, global normalisation or
+competing ignorance list. All-occurrence discounting, the original-coordinate
+Unicode mapping and the accepted cost protections are reused; no truncation and
+no changed input limit. General relevance, quality, evidence validation and
+accept-risk policy are untouched — a described relationship is recorded as
+`ASSERTED`, never promoted, because the unchanged assessor still owns quality.
+Any failure inside the new path falls back to the level-1 answer, so a failed
+T2-G-2 interpretation never grants support of its own; older-version failure
+behaviour is unchanged and `N-3` is touched only where this path reaches it.
+
+**4. Copy.** `UI_T1D_QUESTION_SET` and `UI_T2G_QUESTION_SET` are retained
+byte-unchanged. `UI_T2G2_QUESTION_SET` is added and selected from the project's
+own trusted version, including after an explicit resume, through the existing
+session render/localization seam. The existing cold-page read-only boundary is
+untouched and no cold disclosure feature is created.
+
+**Changed paths.** Production: `engine/answer_stance.py`,
+`engine/session_reconstruction.py`, `web/app.py`, `web/ui_text.py`,
+`web/templates/session.html`. New test: `tests/test_t2g2_concise_mixed.py`.
+Consequential existing tests, preserving their genuine legacy and T2-G-1
+assertions on correctly stamped CREATION fixtures rather than rewritten
+histories: `tests/test_t2g_answer_stance.py`,
+`tests/test_t2g_versioned_journey.py`,
+`tests/test_t1d_t2b_question_explainability_and_disclosure.py`, and
+`tests/test_p4_2_session_reconstruction.py` — that fourth file was NOT in the
+authorized list and is disclosed here as a necessary dependency: it pins the
+`/start` stamp directly, so the third version cannot be added without it. The
+version inventory is extended to three and the now-supported T2-G-2 value is
+replaced as a negative fixture by genuinely unsupported stamps, with refusal
+coverage retained. No global fixture change and no unrelated digest re-pin;
+`progression_loop.py`, shared matchers, question content, stores, T2-D
+token/storage, API/export and operational logging are unchanged.
+
+**Status: PARTIAL T2-G.** Achieved: concise explanations and single-sentence
+mixed answers are recognised in both domains and both languages under the new
+contract, with the accepted repetition, Unicode-coordinate and cost properties
+intact. Not achieved and retained with their triggers: `R1` unregistered or
+short ignorance phrasings; **`R2` unrelated marker-bearing padding and
+paraphrase under-coverage — a prototype domain lexicon built from committed
+question texts plus registry substance signals was measured and REJECTED, because
+it also suppressed every genuine concise and mixed answer**; `R3` cross-gap
+adaptivity; `N-1` and `N-2` open pending verification of this delivery; `N-3`
+through `N-6`; the pending legacy-migration decision; the T2-A random-skip test
+debt; the PR #642 metadata exception; the four T2-D observations; the six
+PR #640 findings; and satellite timing. No paid-activation claim.
+
 <a id="current-authority--t2e-t2f-evidence-references-and-ordering"></a>
 ## Current authority — T2-E Option B + T2-F (one combined bounded candidate)
 

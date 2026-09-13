@@ -93,6 +93,67 @@ _WORD_RE = re.compile(r"[^\W\d_]+", re.UNICODE)
 _MIN_CARRIER_CONTEXT_WORDS = 4
 
 
+# ==========================================================================
+# T2-G-2 (`T2G-CONCISE-MIXED-IMPLEMENT-02`) — the FINITE vocabularies for the
+# concise/mixed rule. Declared centrally here and scoped to the T2-G-2 engine
+# contract version ONLY: under every earlier version none of them is consulted
+# and sentence handling is exactly what it was. No new registry file, no broad
+# domain lexicon, no global normalisation, and no competing ignorance list —
+# registered ignorance detection stays the single owner of that question.
+# ==========================================================================
+
+# Standalone CONTRAST boundaries, and only these four. `and` / `و` are
+# deliberately NOT boundaries: a prototype that split them scored worse than
+# the accepted rule, because `و` is a word-initial letter in Arabic. The
+# prefixed Arabic form `ولكن` is not recognised in this slice — a disclosed
+# limit, not an oversight.
+_T2G2_CONTRAST_EN = ("but", "however")
+_T2G2_CONTRAST_AR = ("لكن", "لكنّ")
+
+# HYPOTHETICAL / non-assertive constructions. A clause carrying one of these is
+# never admitted as an independent explanation by the new path, so splitting can
+# not turn a supposition into support.
+_T2G2_HYPOTHETICAL_EN = ("if ", "suppose", "imagine", "hypothetic", "would ",
+                         "might ", "maybe", "perhaps", "probably")
+_T2G2_HYPOTHETICAL_AR = ("لو ", "إذا ", "اذا ", "لنفترض", "ربما", "لعل")
+
+# CLOSED function-word list. Used only to size a NEWLY admitted concise
+# fragment; it never changes matching, relevance or quality.
+_T2G2_STOPWORDS_EN = frozenset({
+    "the", "a", "an", "of", "to", "into", "in", "on", "at", "by", "for",
+    "from", "with", "and", "or", "is", "are", "was", "were", "be", "been",
+    "it", "its", "this", "that", "these", "those", "there", "here", "then",
+    "so", "as", "up", "down", "out", "over", "my", "your", "his", "her",
+    "their", "our", "i", "you", "he", "she", "they", "we", "do", "does",
+    "did", "not", "no", "can", "could", "will", "just", "also", "but",
+    "however", "very", "only", "all", "any", "some", "each", "which", "how",
+})
+_T2G2_STOPWORDS_AR = frozenset({
+    "ال", "من", "إلى", "الى", "في", "على", "عن", "ثم", "و", "أو", "او",
+    "هو", "هي", "هذا", "هذه", "ذلك", "التي", "الذي", "مع", "عند", "لكن",
+    "قد", "كان", "كانت", "لا", "ما", "كل", "أي", "اي", "بين", "حتى",
+})
+
+# RELATION tokens: the component/flow/function verbs a mechanism explanation
+# uses to connect roles. A relation may sit INSIDE a committed marker (for
+# example `transfers force`); repeated markers alone still carry no relation
+# pattern, because a pattern needs role material on BOTH sides of the relation.
+_T2G2_RELATIONS_EN = frozenset({
+    "transfers", "transfer", "carries", "carry", "moves", "move", "presses",
+    "press", "pushes", "push", "pulls", "pull", "rotates", "rotate", "drives",
+    "drive", "connects", "connect", "holds", "hold", "locks", "lock", "sends",
+    "send", "reads", "read", "triggers", "trigger", "converts", "convert",
+    "runs", "run", "flows", "flow", "supports", "support", "guides", "guide",
+    "switches", "switch", "measures", "measure", "detects", "detect",
+})
+_T2G2_RELATIONS_AR = frozenset({
+    "ينقل", "تنقل", "ينتقل", "تنتقل", "يحمل", "تحمل", "يحرك", "تحرك",
+    "يدفع", "تدفع", "يسحب", "تسحب", "يدور", "تدور", "يثبت", "تثبت",
+    "يقفل", "تقفل", "يرسل", "ترسل", "يحول", "تحول", "يقرأ", "تقرأ",
+    "يقيس", "تقيس", "يكشف", "تكشف", "يوصل", "توصل", "يسند", "تسند",
+})
+
+
 def _english_unknown_markers():
     """The EXISTING registered English explicit-unknown markers, read from
     their owner. Lazy so the import graph stays acyclic in both orders."""
@@ -245,37 +306,189 @@ def _carries_context(sentence, question_id, matches_intent):
     return False
 
 
-def qualifying_carrier(text, question_id, matches_intent):
-    """True when some sentence of ``text`` carries THIS question's committed
-    intent markers, WITHOUT declaring ignorance in the same sentence, and says
-    something beyond the marker itself.
+_T2G2_CONTRAST_RE = re.compile(
+    r"\b(?:%s)\b" % "|".join(
+        re.escape(cue) for cue in _T2G2_CONTRAST_EN + _T2G2_CONTRAST_AR))
 
-    ``matches_intent`` is the caller's own committed-marker predicate — this
-    module never imports or reimplements it, and never changes its meaning.
-    Question-specific by construction: a carrier for one variant says nothing
-    about any other variant."""
-    for sentence in sentences(text):
-        if declares_ignorance(sentence):
+
+def _t2g2_clauses(sentence):
+    """Split ONE sentence at standalone contrast boundaries only.
+
+    Exactly the four registered contrast tokens, each matched as a WHOLE token,
+    so no substring inside a word is ever a boundary and no other conjunction
+    is split. A sentence without a contrast boundary comes back unchanged, so
+    this can only ever add clauses to look at.
+
+    Boundaries are located in ``sentence.lower()`` — the same whole-string
+    lowercase haystack the committed matcher uses, so no case-insensitive
+    matching mode and no re-casing of the input is introduced — and then mapped
+    back to ORIGINAL character offsets through the accepted coordinate map
+    before the original text is cut. The returned clauses are therefore exact
+    substrings of the inventor's own words."""
+    lowered = sentence.lower()
+    if len(lowered) == len(sentence):
+        origin = None                     # indices already align one-to-one
+    else:
+        origin = _lowered_to_original(sentence, lowered)
+        if origin is None:
+            return (sentence,)            # coordinates unknown: do not cut
+    cuts = []
+    for match in _T2G2_CONTRAST_RE.finditer(lowered):
+        start, stop = match.span()
+        if origin is None:
+            cuts.append((start, stop))
+        else:
+            cuts.append((origin[start], origin[stop - 1] + 1))
+    if not cuts:
+        return (sentence,)
+    parts = []
+    previous = 0
+    for start, stop in cuts:
+        parts.append(sentence[previous:start])
+        previous = stop
+    parts.append(sentence[previous:])
+    return tuple(part for part in parts if part.strip())
+
+
+def _t2g2_is_hypothetical(clause):
+    """True when the clause is a supposition rather than an assertion. A
+    hypothetical clause is never admitted as an independent explanation, so a
+    split can not turn `I do not know, but it would probably transfer force`
+    into support."""
+    lowered = clause.lower()
+    if any(cue in lowered for cue in _T2G2_HYPOTHETICAL_EN):
+        return True
+    return any(cue in clause for cue in _T2G2_HYPOTHETICAL_AR)
+
+
+def _t2g2_role_items(clause, spans):
+    """The role material of a clause as ``(start, end, kind)`` triples: each
+    committed-marker occurrence, and each non-stopword word lying wholly
+    outside every marker span. Stopwords and digits carry no role."""
+    items = [(start, end, "marker") for start, end in spans]
+    for word in _WORD_RE.finditer(clause):
+        start, end = word.span()
+        if any(s <= start and end <= e for s, e in spans):
             continue
-        if not matches_intent(sentence, question_id):
+        token = word.group(0)
+        if token.lower() in _T2G2_STOPWORDS_EN or token in _T2G2_STOPWORDS_AR:
             continue
-        if _carries_context(sentence, question_id, matches_intent):
+        items.append((start, end, "word"))
+    return items
+
+
+def _t2g2_concise_pattern(clause, question_id):
+    """True when a SHORT clause states a relation between roles.
+
+    The clause must contain a registered relation token — which may sit inside
+    a committed marker — with role material on BOTH sides of it, and at least
+    one non-marker content word somewhere in the clause. That is what
+    the clause. That is what separates a short real explanation from a
+    committed noun echoed three times: repeated markers supply no relation and
+    no non-marker content,
+    so they can never satisfy this. Two arbitrary content words do not satisfy
+    it either, and neither does a relation with nothing on one side of it."""
+    spans = _marker_spans(clause, question_id)
+    if not spans:
+        return False
+    items = _t2g2_role_items(clause, spans)
+    if not any(kind == "word" for _s, _e, kind in items):
+        return False                       # markers alone: no explanation
+    for word in _WORD_RE.finditer(clause):
+        token = word.group(0)
+        if token.lower() not in _T2G2_RELATIONS_EN and token not in _T2G2_RELATIONS_AR:
+            continue
+        start, end = word.span()
+        left = [i for i in items if i[1] <= start]
+        right = [i for i in items if i[0] >= end]
+        if not left or not right:
+            continue                       # a relation with an empty side
+        if len(left) == 1 and len(right) == 1 and left[0] == right[0]:
+            continue                       # the same single role on both sides
+        return True
+    return False
+
+
+def _t2g2_clause_carrier(sentence, question_id, matches_intent):
+    """The T2-G-2 addition: judge each contrast clause of the sentence on its
+    own, so an explanation that shares a sentence with a recognised unknown is
+    not discarded with it, and a concise clause can qualify through the
+    relation pattern. Ignorance-cued and hypothetical clauses are skipped, so
+    nothing still inside an unknown or a supposition is treated as independent
+    support."""
+    clauses = _t2g2_clauses(sentence)
+    if len(clauses) == 1 and not _t2g2_concise_pattern(clauses[0], question_id):
+        # No contrast boundary and no concise pattern: nothing new to add.
+        return False
+    for clause in clauses:
+        if declares_ignorance(clause) or _t2g2_is_hypothetical(clause):
+            continue
+        if not matches_intent(clause, question_id):
+            continue
+        if _carries_context(clause, question_id, matches_intent):
+            return True
+        if _t2g2_concise_pattern(clause, question_id):
             return True
     return False
 
 
-def is_t2g_active(state, gap_type=None, domain=None):
-    """True only for a state whose PERSISTED engine-contract version is the
-    T2-G one, inside the named gap/domain scope. Absent, unknown or legacy
-    version -> False, so an unversioned runtime or test state can never
-    silently enable the new rule."""
-    from engine.session_reconstruction import ENGINE_CONTRACT_VERSION_T2G1
-    if getattr(state, "engine_contract_version", None) != ENGINE_CONTRACT_VERSION_T2G1:
-        return False
+def qualifying_carrier(text, question_id, matches_intent, rule_level=1):
+    """True when ``text`` carries THIS question's committed intent markers,
+    WITHOUT declaring ignorance alongside them, and says something beyond the
+    marker itself.
+
+    ``matches_intent`` is the caller's own committed-marker predicate — this
+    module never imports or reimplements it, and never changes its meaning.
+    Question-specific by construction: a carrier for one variant says nothing
+    about any other variant.
+
+    ``rule_level`` defaults to 1, which is exactly the accepted T2-G-1 rule:
+    whole-sentence scope, four surplus words. Every existing direct caller
+    therefore keeps its behaviour unchanged. Level 2 (the T2-G-2 engine
+    contract) adds the contrast-clause and concise-relation paths as a UNION on
+    top — it can only admit explanations level 1 already misses, never withdraw
+    one it already accepts. Any failure inside the new path falls back to the
+    level-1 answer, so a failed T2-G-2 interpretation never grants support of
+    its own."""
+    for sentence in sentences(text):
+        if not declares_ignorance(sentence) and matches_intent(sentence, question_id) \
+                and _carries_context(sentence, question_id, matches_intent):
+            return True
+        if rule_level >= 2:
+            try:
+                if _t2g2_clause_carrier(sentence, question_id, matches_intent):
+                    return True
+            except Exception:
+                continue          # conservative: no new support from a failure
+    return False
+
+
+def t2g_rule_level(state, gap_type=None, domain=None):
+    """The T-2-G rule level this project runs under: 0, 1 or 2.
+
+    Read from the project's OWN persisted engine-contract version — never from
+    a request field, the UI language, a timestamp or a default. An absent,
+    unknown or pre-T2-G stamp gives 0, so an unversioned runtime or test state
+    can never silently enable any of this. Level 1 is the accepted T2-G-1 rule
+    exactly; level 2 adds the bounded concise/mixed paths for T2-G-2 projects
+    only. Outside the named gap and domains the level is 0 at every version."""
+    from engine.session_reconstruction import (
+        ENGINE_CONTRACT_VERSION_T2G1, ENGINE_CONTRACT_VERSION_T2G2)
+    levels = {ENGINE_CONTRACT_VERSION_T2G1: 1, ENGINE_CONTRACT_VERSION_T2G2: 2}
+    level = levels.get(getattr(state, "engine_contract_version", None), 0)
+    if not level:
+        return 0
     if gap_type is not None and gap_type not in T2G_SCOPED_GAPS:
-        return False
+        return 0
     resolved = domain if domain is not None else getattr(state, "domain", None)
-    return resolved in T2G_SCOPED_DOMAINS
+    return level if resolved in T2G_SCOPED_DOMAINS else 0
+
+
+def is_t2g_active(state, gap_type=None, domain=None):
+    """True when ANY T-2-G rule level applies. Signature and meaning preserved
+    for existing callers; the level itself is read through
+    ``t2g_rule_level``."""
+    return t2g_rule_level(state, gap_type=gap_type, domain=domain) > 0
 
 
 def covers_variant(state, text, question_id, matches_intent, domain=None,
@@ -288,11 +501,12 @@ def covers_variant(state, text, question_id, matches_intent, domain=None,
     otherwise matched, because naming the uncertainty IS its answer."""
     if not matches_intent(text, question_id):
         return False
-    if not is_t2g_active(state, gap_type=gap_type, domain=domain):
+    level = t2g_rule_level(state, gap_type=gap_type, domain=domain)
+    if not level:
         return True
     if question_id in UNCERTAINTY_QUESTION_IDS:
         return True
-    return qualifying_carrier(text, question_id, matches_intent)
+    return qualifying_carrier(text, question_id, matches_intent, rule_level=level)
 
 
 def explicit_unknown_without_mechanism(state, gap_type, response,
@@ -301,7 +515,9 @@ def explicit_unknown_without_mechanism(state, gap_type, response,
     """The SATISFACTION-ELIGIBILITY veto — never a relevance or quality result.
 
     True only when ALL of these hold, each on positive evidence:
-      1. the T2-G version and the named gap/domain scope are active;
+      1. a T2-G rule level applies (the project's own version, and the named
+         gap/domain scope) — and the SAME level governs the carrier test, so
+         eligibility and coverage can never read an answer differently;
       2. the EXISTING acknowledged-unknown detector recognises an explicit
          unknown in this answer, under ITS OWN declared bounds (registered
          phrasings, minimum length) — an unrecognised phrasing is simply not
@@ -312,13 +528,15 @@ def explicit_unknown_without_mechanism(state, gap_type, response,
     The uncertainty-seeking variants are excluded from (3) deliberately:
     identifying a missing detail answers those questions but supplies no
     mechanism, so it must not defeat the veto."""
-    if not is_t2g_active(state, gap_type=gap_type):
+    level = t2g_rule_level(state, gap_type=gap_type)
+    if not level:
         return False
     if detect_unknown(response) is None:
         return False
     for question_id in variant_ids:
         if question_id in UNCERTAINTY_QUESTION_IDS:
             continue
-        if qualifying_carrier(response, question_id, matches_intent):
+        if qualifying_carrier(response, question_id, matches_intent,
+                              rule_level=level):
             return False
     return True

@@ -15,8 +15,8 @@ from engine.intent_serving import matches_committed_intent as MATCH
 from engine.progression_loop import (
     _ACKNOWLEDGED_UNKNOWN_MARKERS, _detect_acknowledged_unknown)
 from engine.session_reconstruction import (
-    ENGINE_CONTRACT_VERSION_T2G1, RECONSTRUCTION_VERSION,
-    SUPPORTED_ENGINE_CONTRACT_VERSIONS)
+    ENGINE_CONTRACT_VERSION_T2G1, ENGINE_CONTRACT_VERSION_T2G2,
+    RECONSTRUCTION_VERSION, SUPPORTED_ENGINE_CONTRACT_VERSIONS)
 
 def _code_only(source):
     """Source with comments and the module docstring removed: a guard must read
@@ -65,15 +65,18 @@ def _veto(state, response, ids=MECH_IDS):
 # ==========================================================================
 # 1. Version gating — the rule can never switch itself on
 # ==========================================================================
-def test_the_two_supported_versions_are_exactly_these():
+def test_the_three_supported_versions_are_exactly_these():
     assert RECONSTRUCTION_VERSION == "p4-2-level1-recon-v1"
     assert ENGINE_CONTRACT_VERSION_T2G1 == "p4-2-level1-recon-v1-t2g1"
+    assert ENGINE_CONTRACT_VERSION_T2G2 == "p4-2-level1-recon-v1-t2g2"
     assert SUPPORTED_ENGINE_CONTRACT_VERSIONS == (
-        RECONSTRUCTION_VERSION, ENGINE_CONTRACT_VERSION_T2G1)
+        RECONSTRUCTION_VERSION, ENGINE_CONTRACT_VERSION_T2G1,
+        ENGINE_CONTRACT_VERSION_T2G2)
 
 
 @pytest.mark.parametrize("version", [None, RECONSTRUCTION_VERSION, "", "anything",
-                                     "p4-2-level1-recon-v1-t2g2"])
+                                     "p4-2-level1-recon-v1-t2g9",
+                                     "p4-2-level1-recon-v2"])
 def test_an_unversioned_or_legacy_state_never_enables_the_rule(version):
     state = _State(version=version)
     assert st.is_t2g_active(state, gap_type=MC) is False

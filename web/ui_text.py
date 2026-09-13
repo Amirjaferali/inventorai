@@ -1886,6 +1886,30 @@ UI_STRINGS = {
                "هذا التمييز إلا صيغًا معيّنة، لذلك ستفوته صيغ أخرى. ولا تُنشأ "
                "أسئلة جديدة، ولا يُتحقَّق من صحة فكرتك هندسيًا."),
     },
+    # T2-G-2 (`T2G-CONCISE-MIXED-IMPLEMENT-02`): shown ONLY on projects recorded
+    # under the T2-G-2 engine-contract version. `UI_T1D_QUESTION_SET` and
+    # `UI_T2G_QUESTION_SET` above are RETAINED byte-unchanged and stay the
+    # accurate disclosures for the projects they already describe. This wording
+    # adds the bounded concise/mixed recognition and its limits; it claims no
+    # general understanding and no engineering verification.
+    "UI_T2G2_QUESTION_SET": {
+        "en": ("These questions come from a fixed, reviewed set. This version "
+               "chooses which one to show from what your project already "
+               "records, using fixed rules — including recognising some ways "
+               "of saying you do not know something yet, and some short "
+               "explanations or ones written in the same sentence as an "
+               "uncertainty. That recognition covers only certain phrasings, "
+               "so it will miss others. No new questions are generated, it "
+               "does not understand your writing in general, and whether your "
+               "idea is engineering-correct is not checked."),
+        "ar": ("تأتي هذه الأسئلة من مجموعة ثابتة ومراجَعة. ويختار هذا الإصدار "
+               "أيها يعرض بناءً على ما سجّله مشروعك فعلًا، وفق قواعد ثابتة — "
+               "بما في ذلك تمييز بعض صيغ قولك إنك لا تعرف شيئًا بعد، وبعض "
+               "الشروح القصيرة أو المكتوبة في الجملة نفسها مع عبارة عدم "
+               "المعرفة. ولا يشمل هذا التمييز إلا صيغًا معيّنة، لذلك ستفوته "
+               "صيغ أخرى. ولا تُنشأ أسئلة جديدة، وهو لا يفهم كتابتك بشكل عام، "
+               "ولا يُتحقَّق من صحة فكرتك هندسيًا."),
+    },
     # --- T2-D: optional contextual feedback on the displayed question -------
     # Copy describes SAVING TO THIS PROJECT and nothing more. It never promises
     # that a team receives or reviews it, never claims anonymity, never implies
