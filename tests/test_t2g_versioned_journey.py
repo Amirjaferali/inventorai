@@ -758,3 +758,121 @@ def test_an_answer_at_the_accepted_limit_renders_without_a_cost_collapse(client)
         start = time.perf_counter()
         _raw(c, sid)
         assert time.perf_counter() - start < 5.0
+
+
+# ==========================================================================
+# 7. F-3 Unicode span coordinates through the real routes
+#    PR642-T2G-UNICODE-SPAN-REPAIR-02
+# ==========================================================================
+DOTTED_I = "İ"
+UNICODE_MARKER_ONLY_EN = DOTTED_I + " Force path force path force path."
+UNICODE_MARKER_ONLY_EN3 = (DOTTED_I * 3) + " Hinge line hinge line hinge line."
+UNICODE_BETWEEN_EN = ("Force path " + DOTTED_I + " force path " + DOTTED_I
+                      + " force path.")
+UNICODE_MARKER_ONLY_AR = DOTTED_I + " مسار القوة مسار القوة مسار القوة."
+UNICODE_MIXED_CONTROL = "مسار القوة " + DOTTED_I + " force path force path."
+UNICODE_MARKER_ONLY_EE = (DOTTED_I * 2) + " Main parts main parts main parts."
+UNICODE_REAL_EXPLANATION = (
+    DOTTED_I + " Force path force path: the deck panel presses down into the "
+    "hinge line and the frame rail carries it into the chassis.")
+
+
+@pytest.mark.parametrize("tail", [UNICODE_MARKER_ONLY_EN, UNICODE_MARKER_ONLY_EN3,
+                                  UNICODE_BETWEEN_EN, UNICODE_MIXED_CONTROL])
+def test_a_unicode_expansion_does_not_buy_progress(client, tail):
+    """F-3 at route level: U+0130 before or between English markers must not
+    reopen the marker-only bypass. Knowledge, gap status, notice and the full
+    served identity asserted together."""
+    c, appmod, _db = client
+    _login(c, appmod)
+    sid = _start(c)
+    _answer(c, sid, F2_UNKNOWN + " " + tail)
+    got = _snapshot(appmod, sid)
+    assert got["identity"] == Q2
+    assert got["status"] == "OPEN"
+    assert got["known_mechanism"] is None
+    assert got["known_problem"] is None
+    assert got["coverage"] == []
+    assert got["unknowns"] == 1
+    assert got["records"] == 1
+    assert UNKNOWN_NOTICE in _page(c, sid)
+
+
+def test_a_unicode_expansion_does_not_buy_progress_in_arabic(client):
+    c, appmod, _db = client
+    _login(c, appmod)
+    sid = _start(c)
+    _answer(c, sid, G2_UNKNOWN + " " + UNICODE_MARKER_ONLY_AR)
+    got = _snapshot(appmod, sid)
+    assert got["identity"] == Q2 and got["status"] == "OPEN"
+    assert got["known_mechanism"] is None and got["coverage"] == []
+    assert "تم حفظ قولك إن هذا غير معروف بعد مع مشروعك" in _page(c, sid, "ar")
+
+
+def test_a_unicode_expansion_does_not_buy_progress_in_electronics(client):
+    c, appmod, _db = client
+    _login(c, appmod)
+    sid = _start(c, EE_SEED, "electronics_electrical")
+    _answer(c, sid, H2_UNKNOWN + " " + UNICODE_MARKER_ONLY_EE)
+    got = _snapshot(appmod, sid)
+    assert got["identity"] == EE2 and got["status"] == "OPEN"
+    assert got["known_mechanism"] is None and got["coverage"] == []
+    assert UNKNOWN_NOTICE in _page(c, sid)
+
+
+def test_a_genuine_explanation_after_a_unicode_expansion_still_progresses(client):
+    """The positive control survives the repair."""
+    c, appmod, _db = client
+    _login(c, appmod)
+    sid = _start(c)
+    _answer(c, sid, F2_UNKNOWN + " " + UNICODE_REAL_EXPLANATION)
+    got = _snapshot(appmod, sid)
+    assert got["identity"] == Q3
+    assert got["status"] == "PARTIAL"
+    assert got["known_mechanism"] == "REASONED"
+    assert got["coverage"] == ["mechanical:MECHANISM_COMPLETENESS:Q2"]
+    assert UNKNOWN_NOTICE not in _page(c, sid)
+
+
+def test_the_unicode_record_replays_and_resumes_identically(client):
+    c, appmod, _db = client
+    _login(c, appmod)
+    sid = _start(c)
+    _answer(c, sid, F2_UNKNOWN + " " + UNICODE_MARKER_ONLY_EN)
+    live = _snapshot(appmod, sid)
+    appmod.SESSION_STORE.clear()
+    session = reconstruct_readonly_state(appmod._get_store(), sid)
+    assert session.review.level == 1
+    assert session.state.known_mechanism is None
+    assert appmod._resolve_question_context(session.state, None).identity == Q2
+    _raw(c, sid)
+    assert c.post(f"/session/{sid}/resume", data={}).status_code == 302
+    assert _snapshot(appmod, sid) == live
+
+
+def test_the_stored_answer_keeps_its_unicode_verbatim(client):
+    """The repair maps coordinates; it never rewrites, filters or re-cases the
+    inventor's own text."""
+    c, appmod, _db = client
+    _login(c, appmod)
+    sid = _start(c)
+    submitted = F2_UNKNOWN + " " + UNICODE_MARKER_ONLY_EN
+    _answer(c, sid, submitted)
+    contract = appmod._get_store().load_contract(sid)
+    stored = [r for r in contract.assertions if r.disposition == "answered"]
+    assert len(stored) == 1
+    assert stored[0].content == submitted
+    assert DOTTED_I in stored[0].content
+
+
+def test_a_legacy_project_is_unchanged_by_the_unicode_repair(client):
+    c, appmod, _db = client
+    _login(c, appmod)
+    sid = _legacy_start(c, appmod)
+    _answer(c, sid, F2_UNKNOWN + " " + UNICODE_MARKER_ONLY_EN)
+    got = _snapshot(appmod, sid)
+    assert got["version"] == RECONSTRUCTION_VERSION
+    assert got["identity"] == Q3
+    assert got["status"] == "PARTIAL"
+    assert got["known_mechanism"] == "REASONED"
+    assert UNKNOWN_NOTICE not in _page(c, sid)

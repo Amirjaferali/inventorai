@@ -79,6 +79,7 @@ _WORD_RE = re.compile(r"[^\W\d_]+", re.UNICODE)
 # A qualifying carrier must say something ABOUT the requested information, not
 # merely echo committed nouns from it: the carrying sentence needs at least this
 # many words that are NOT part of any occurrence of that variant's own markers.
+# Precisely: three surplus words FAIL and four PASS.
 # Language-neutral by construction (a token count, not a character count or an
 # English pattern). It follows the existing floors in this codebase
 # (`_MIN_ACKNOWLEDGED_UNKNOWN_LENGTH`, `MIN_REASONED_RESPONSE_LENGTH`,
@@ -129,27 +130,76 @@ def _committed_markers(question_id):
     return _INTENT_MARKERS.get(question_id)
 
 
-def _marker_spans(sentence, question_id):
-    """Every character span of ``sentence`` occupied by an occurrence of this
-    variant's committed markers, merged so overlapping and adjacent occurrences
-    are counted ONCE.
+def _lowered_to_original(sentence, lowered):
+    """Index map from positions in ``lowered`` back to positions in
+    ``sentence``, or ``None`` when it cannot be built exactly.
 
-    Cost is linear in the sentence length for the fixed committed marker set:
-    each marker is scanned once with ``str.find``, and the marker set per
-    question is fixed and small. No window enumeration and no repeated joins."""
+    ``str.lower()`` is not always length-preserving: lowercasing U+0130 (LATIN
+    CAPITAL LETTER I WITH DOT ABOVE) yields TWO code points, so every English
+    match found after one sits at a larger index in the lowered text than in the
+    original. Word spans are measured on the ORIGINAL sentence, so the two
+    coordinate systems must be reconciled before anything is merged or counted.
+
+    The map is built per character, which is exact here: the lowercase of a
+    single character is never shorter than one character, so when the two
+    strings are the same length every position corresponds one-to-one (the fast
+    path below), and otherwise each character's own expansion gives its origin.
+    A returned index is the ORIGINAL character that produced that lowered
+    position, so a match landing inside an expansion is attributed to the whole
+    original character — the conservative reading.
+
+    The input is never modified, normalised, filtered or re-cased for matching:
+    ``lowered`` stays exactly ``sentence.lower()`` and remains the only haystack
+    the English surfaces are searched in."""
+    origin = []
+    for index, character in enumerate(sentence):
+        origin.extend([index] * len(character.lower()))
+    if len(origin) != len(lowered):
+        # Defensive: some future context-dependent casing whose whole-string
+        # result is not the per-character concatenation in LENGTH. Refuse to
+        # guess coordinates rather than report wrong ones.
+        return None
+    return origin
+
+
+def _marker_spans(sentence, question_id):
+    """Every character span of the ORIGINAL ``sentence`` occupied by an
+    occurrence of this variant's committed markers, merged so overlapping and
+    adjacent occurrences are counted ONCE.
+
+    English surfaces are matched against the whole-string ``sentence.lower()``,
+    exactly as ``_matches_intent`` does — the match DECISION is unchanged — and
+    each match is then mapped back to its original character span. Arabic
+    surfaces are matched verbatim against the original text and need no
+    mapping. Each marker is scanned with ``str.find`` and the marker set per
+    question is fixed and small; the index map is one bounded local pass and is
+    built only when lowercasing actually changed the length. Measured cost is
+    reported in the candidate evidence; no window enumeration, no repeated
+    joins, no truncation and no cache."""
     entry = _committed_markers(question_id)
     if entry is None:
         return ()
     english, arabic = entry
     lowered = sentence.lower()
+    if len(lowered) == len(sentence):
+        origin = None                     # indices already align one-to-one
+    else:
+        origin = _lowered_to_original(sentence, lowered)
+        if origin is None:
+            return ()                     # coordinates unknown: not a carrier
     found = []
-    for surfaces, haystack in ((english, lowered), (arabic, sentence)):
+    for surfaces, haystack, remap in ((english, lowered, True),
+                                      (arabic, sentence, False)):
         for surface in surfaces:
             if not surface:
                 continue
             start = haystack.find(surface)
             while start != -1:
-                found.append((start, start + len(surface)))
+                stop = start + len(surface)
+                if remap and origin is not None:
+                    found.append((origin[start], origin[stop - 1] + 1))
+                else:
+                    found.append((start, stop))
                 start = haystack.find(surface, start + 1)
     if not found:
         return ()
@@ -173,7 +223,8 @@ def _carries_context(sentence, question_id, matches_intent):
     being repeated. A word counts as surplus only when it lies wholly outside
     the merged marker spans.
 
-    Linear in the sentence length for the fixed committed marker set. The
+    Sizing is a small number of bounded passes over the sentence for the fixed
+    committed marker set — measured, not asserted as a complexity class. The
     caller has already decided that the sentence matches; this only sizes what
     else the sentence says, and never widens or narrows the match itself."""
     spans = _marker_spans(sentence, question_id)

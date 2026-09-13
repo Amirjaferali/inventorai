@@ -428,3 +428,143 @@ def test_the_canonical_marker_table_is_read_not_duplicated():
     body = _code_only(inspect.getsource(st))
     for marker in ("force path", "hinge line", "main parts", "مسار القوة"):
         assert marker not in body                  # no second vocabulary
+
+
+# ==========================================================================
+# 8. F-3 Unicode span coordinates — PR642-T2G-UNICODE-SPAN-REPAIR-02
+#
+# English surfaces are matched in `sentence.lower()`; word spans are measured
+# on the ORIGINAL sentence. U+0130 lowercases to TWO code points, so without a
+# coordinate map every English match after one sits at the wrong index and the
+# marker-only bypass returns through a Unicode side door.
+# ==========================================================================
+DOTTED_I = "İ"                       # LATIN CAPITAL LETTER I WITH DOT ABOVE
+
+
+def test_the_expansion_this_repair_exists_for_is_real():
+    assert len(DOTTED_I.lower()) == 2
+    assert len((DOTTED_I + "x").lower()) == 3
+
+
+@pytest.mark.parametrize("sentence", [
+    DOTTED_I + " Force path force path force path.",
+    (DOTTED_I * 3) + " Force path force path force path.",
+    "Force path " + DOTTED_I + " force path " + DOTTED_I + " force path.",
+    "مسار القوة " + DOTTED_I + " force path force path.",
+    DOTTED_I + "stanbul: load path load path.",
+])
+def test_marker_only_stays_marker_only_across_the_expansion(sentence):
+    """F-3: each of these is still nothing but repeated markers."""
+    assert MATCH(sentence, Q2) is True
+    assert st.qualifying_carrier(sentence, Q2, MATCH) is False
+    assert st.covers_variant(_State(), sentence, Q2, MATCH, gap_type=MC) is False
+    assert _veto(_State(), UNKNOWN + " " + sentence) is True
+
+
+@pytest.mark.parametrize("sentence", [
+    "Force path force path force path.",                       # no expansion
+    DOTTED_I + " Force path force path.",                      # leading
+    "Force path " + DOTTED_I + " force path.",                 # between
+    (DOTTED_I * 5) + "load path" + (DOTTED_I * 5),             # both sides
+    "مسار القوة " + DOTTED_I + " force path.",                 # mixed AR/EN
+    "The load path runs into the hinge line and the rail.",    # ordinary
+])
+def test_every_span_is_an_original_text_coordinate(sentence):
+    """A returned span must slice a real marker OUT OF THE ORIGINAL TEXT."""
+    spans = st._marker_spans(sentence, Q2)
+    assert spans, sentence
+    for start, end in spans:
+        assert 0 <= start < end <= len(sentence)
+        assert MATCH(sentence[start:end], Q2), (sentence, (start, end))
+
+
+def test_the_repair_changes_no_match_decision():
+    """Spans exist exactly when the unchanged matcher matches — across every
+    committed id, in both scripts, with and without the expansion."""
+    from engine.intent_serving import _INTENT_MARKERS
+    checked = 0
+    for question_id, (english, arabic) in _INTENT_MARKERS.items():
+        candidates = ["no marker here at all", DOTTED_I, DOTTED_I * 4]
+        for surface in list(english)[:3]:
+            candidates += [surface, surface.upper(), DOTTED_I + " " + surface,
+                           (DOTTED_I * 2) + surface, "x " + surface + " y"]
+        for surface in list(arabic)[:2]:
+            candidates += [surface, DOTTED_I + " " + surface]
+        for text in candidates:
+            assert bool(st._marker_spans(text, question_id)) is MATCH(text, question_id)
+            checked += 1
+    assert checked > 300
+
+
+def test_arabic_matching_is_unaffected_by_the_mapping():
+    arabic_only = "مسار القوة مسار القوة مسار القوة."
+    assert st.qualifying_carrier(arabic_only, Q2, MATCH) is False
+    spans = st._marker_spans(arabic_only, Q2)
+    assert len(spans) == 3
+    for start, end in spans:
+        assert arabic_only[start:end] == "مسار القوة"
+
+
+def test_overlap_merging_still_holds_under_the_expansion():
+    state = _ee_state()
+    overlapping = DOTTED_I + " Would notice the problem."
+    assert MATCH(overlapping, "N-MC-1") is True
+    spans = st._marker_spans(overlapping, "N-MC-1")
+    assert len(spans) == 1                              # merged, counted once
+    start, end = spans[0]
+    assert overlapping[start:end] == "Would notice the problem"
+    assert st.covers_variant(state, overlapping, "N-MC-1", MATCH,
+                             gap_type=MC) is False
+
+
+def test_a_genuine_explanation_still_carries_under_the_expansion():
+    """The positive control must not be suppressed by the repair."""
+    real = (DOTTED_I + " Force path force path: the deck panel presses down "
+            "into the hinge line and the frame rail carries it.")
+    assert st.qualifying_carrier(real, Q2, MATCH) is True
+    assert _veto(_State(), UNKNOWN + " " + real) is False
+
+
+def test_the_surplus_threshold_is_exactly_three_fails_four_passes():
+    """Same-touch precision, wording only: the rule is unchanged."""
+    assert st._MIN_CARRIER_CONTEXT_WORDS == 4
+    assert st._carries_context("the load path aa bb", Q2, MATCH) is False   # 3
+    assert st._carries_context("the load path aa bb cc", Q2, MATCH) is True  # 4
+    # and the same either side of the expansion
+    assert st._carries_context(DOTTED_I + " load path aa bb", Q2, MATCH) is False
+    assert st._carries_context(DOTTED_I + " load path aa bb cc", Q2, MATCH) is True
+
+
+def test_the_input_is_never_rewritten_by_the_mapping():
+    """U+0130 is not deleted, rejected, normalised or re-cased; the answer text
+    itself is untouched and the lowered haystack stays `sentence.lower()`."""
+    import inspect
+    sentence = DOTTED_I + " load path"
+    before = sentence
+    st._marker_spans(sentence, Q2)
+    assert sentence == before
+    source = _code_only(inspect.getsource(st))
+    for forbidden in ("casefold", "unicodedata", "normalize", "encode(",
+                      "IGNORECASE", "ascii"):
+        assert forbidden not in source, forbidden
+    assert "sentence.lower()" in source
+
+
+def test_the_index_map_is_exact_or_refuses():
+    sentence = DOTTED_I + "abc"
+    lowered = sentence.lower()
+    origin = st._lowered_to_original(sentence, lowered)
+    assert origin == [0, 0, 1, 2, 3]                 # the expansion is attributed
+    assert st._lowered_to_original(sentence, "too short") is None
+
+
+def test_the_expansion_path_does_not_undo_the_work_bound():
+    """One small time-limited check that coordinate mapping stays cheap at the
+    accepted input limit. Loose bound, not a performance target."""
+    import time
+    from web.app import MAX_FREE_TEXT_CHARS
+    for body in (((DOTTED_I + "lpha ") * 3330 + "load path")[:MAX_FREE_TEXT_CHARS - 1],
+                 ((DOTTED_I + " load path ") * 999)[:MAX_FREE_TEXT_CHARS - 1]):
+        start = time.perf_counter()
+        st.qualifying_carrier(body, Q2, MATCH)
+        assert time.perf_counter() - start < 5.0

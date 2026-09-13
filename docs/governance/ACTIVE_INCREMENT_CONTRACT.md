@@ -418,8 +418,11 @@ together on the existing branch and PR:
    at the accepted `MAX_FREE_TEXT_CHARS` limit, while every live or resumed
    render of that project re-ran it per marker-bearing active record. Under the
    governed one-worker posture that is a service-wide availability defect. The
-   helper now scans each of the fixed committed markers once with `str.find`,
-   so work is linear in sentence length for that fixed set. The accepted
+   helper now scans each of the fixed committed markers with `str.find` in a
+   small number of bounded passes. The independently accepted conclusion is the
+   MEASURED availability one — at-limit input handled in milliseconds where it
+   previously did not finish in 60 seconds — not a universal linear-time
+   complexity claim, which is withdrawn as unproven. The accepted
    20,000-character limit is NOT reduced, no answer or history is truncated, no
    timeout is raised, no worker topology changed, no persistent cache added and
    no active record skipped.
@@ -458,6 +461,18 @@ claimed, and not every irrelevant marker-bearing sentence is rejected.
 this file. No version, schema, selector, route, worker-configuration,
 dependency, shared-matcher, relevance or question-registry change.
 
+*Corrected count (wording only, no evidence changes).* The 26 failures of the
+carrier-repair tests against `4cee91f6…` are **20 behavioural, 1 structural and
+5 missing-helper** failures. An earlier return said 21 behavioural, which does
+not add to 26; the structural case (`matches_intent` still appearing in the
+sizing function) was double-counted. Only the arithmetic is corrected.
+
+*Threshold precision (wording only, the rule is unchanged).* The surplus floor
+is exact: **three surplus words FAIL and four PASS.** Earlier wording implied
+"four or fewer" are missed, which misstates the boundary by one. The deferred
+`N-2` finding — that a genuine but very terse explanation can be missed —
+stands exactly as classified.
+
 *Preserved limitations.* The review's `N-1` through `N-6` are carried forward as
 classified there, NOT as additional repair requirements: single-sentence mixed
 answers vetoed (`N-1`), terse genuine explanations missed (`N-2`), non-identical
@@ -469,6 +484,48 @@ handling — this authorizes no repair of it. `R1`, `R2`, `R3`, deferred legacy
 migration and the existing T2-A random-skip test debt keep their return
 triggers, as do the four T2-D observations, the six PR #640 findings and
 satellite timing.
+
+**Unicode span-coordinate repair (`PR642-T2G-UNICODE-SPAN-REPAIR-02` v1.0).**
+The differential review `PR642-T2G-CARRIER-DIFF-REVIEW-01` accepted the F-1
+availability conclusion and the original F-2 cases within their reported
+boundaries, and returned one further finding, repaired here alone. No
+performance optimisation, versioning design or Stage 6 work was restarted.
+
+*F-3 — coordinate mismatch.* English surfaces are matched in `sentence.lower()`
+while word spans are measured on the ORIGINAL sentence. `str.lower()` is not
+length-preserving: U+0130 (LATIN CAPITAL LETTER I WITH DOT ABOVE) lowercases to
+TWO code points — the only such character in the full code-point sweep run for
+this repair — so every English match after one sat at a larger index than the
+text it was supposed to name. The spans then failed to cover their markers, the
+discount landed on the wrong words, and the marker-only bypass F-2 had just
+closed reopened through a Unicode side door.
+
+Each English match is now mapped back to its original character span before any
+merging or word counting, through a bounded per-character index map built only
+when lowercasing actually changed the length; where it did not, indices already
+correspond one-to-one and no map is built. The whole-string lowercase
+substring-matching semantics are UNCHANGED — `sentence.lower()` remains the only
+English haystack and the match DECISION is untouched, verified across every
+committed id in both scripts with and without the expansion. U+0130 is not
+deleted, rejected, normalised or re-cased; the stored answer is untouched; no
+`casefold`, ASCII-only lowercasing or `IGNORECASE` substitute is introduced; no
+vocabulary is added and word counting is unchanged. Arabic surfaces are matched
+verbatim against the original text and need no mapping. Overlapping and
+touching spans still merge and count once, and the surplus threshold, unknown
+detection, uncertainty exemptions, version/domain/gap boundaries and accepted
+positive explanations are all preserved. When the map cannot be built exactly
+the sentence is not a carrier, so the question stays owed an answer rather than
+being sized on coordinates that cannot be trusted.
+
+*Repair-only file boundary:* `engine/answer_stance.py` (restricted to
+`_marker_spans` and its new private coordinate mapping),
+`tests/test_t2g_answer_stance.py`, `tests/test_t2g_versioned_journey.py` and
+this file. Every public interface and every other production file is unchanged.
+
+*Preserved.* `N-1` through `N-6`, `R1`, `R2`, `R3`, deferred legacy migration,
+the existing T2-A random-skip test debt, the four T2-D observations, the six
+PR #640 findings and satellite timing all keep their return triggers. This
+remains PARTIAL T2-G with no paid-activation claim.
 
 <a id="current-authority--t2e-t2f-evidence-references-and-ordering"></a>
 ## Current authority — T2-E Option B + T2-F (one combined bounded candidate)
