@@ -908,3 +908,58 @@ def test_the_effective_version_is_resolved_once_from_durable_state_only(client):
     module_source = inspect.getsource(
         inspect.getmodule(reconstruct_readonly_state))
     assert "flask" not in module_source and "request.form" not in module_source
+
+
+# ==========================================================================
+# T3-A extension (T3A-PROJECT-RECORD-IMPLEMENT-01): the adoption ledger is
+# rendered truthfully in the Project Record as rule changes — adopt then
+# return, in ledger order, live and cold, with no consequence claim — and the
+# existing EVA disclosure is neither changed nor duplicated by it.
+# ==========================================================================
+def test_t3a_project_record_lists_adoption_events_truthfully_live_and_cold(client):
+    c, appmod, db = client
+    _login(c, appmod)
+    sid = _legacy_start(c, appmod)
+    _answer(c, sid, F2_UNKNOWN)
+    assert _adopt(c, sid).status_code == 302
+    assert _adopt(c, sid, action="revert").status_code == 302
+    con = sqlite3.connect(db)
+    try:
+        rows = con.execute(
+            "SELECT adoption_id, from_version, to_version FROM engine_version_adoptions "
+            "WHERE project_id=? ORDER BY adoption_seq", (sid,)).fetchall()
+    finally:
+        con.close()
+    assert [(r[1], r[2]) for r in rows] == [
+        (RECONSTRUCTION_VERSION, ENGINE_CONTRACT_VERSION_T2G2),
+        (ENGINE_CONTRACT_VERSION_T2G2, RECONSTRUCTION_VERSION)]
+
+    def record_block(body):
+        start = body.index('id="t3a-project-record"')
+        end = body.rfind("</details>", start, body.index("</main>", start))
+        return body[start:end + len("</details>")]
+
+    def rule_kinds(block):
+        return re.findall(r'data-record-kind="(rules_[a-z]+)" data-adoption-id=', block)
+
+    live = _raw(c, sid)
+    live_block = record_block(live)
+    assert rule_kinds(live_block) == ["rules_adopted", "rules_returned"]
+    for word in FORBIDDEN_WORDS + ("recomputed", "asked again", "owed again"):
+        assert word not in live_block.lower(), word
+    # the EVA disclosure is untouched: after the return the project is back on
+    # its creation rules, so the AFTER line is absent as before and the control
+    # block is offered once; neither lives inside the record
+    assert live.count(EN_AFTER) == 0 and live.count('id="engine-version"') == 1
+    assert "engine-version" not in live_block and EN_AFTER not in live_block
+    assert "Earlier answers were kept exactly as recorded." in live_block
+    appmod.SESSION_STORE.clear()
+    cold = _raw(c, sid)
+    assert rule_kinds(record_block(cold)) == ["rules_adopted", "rules_returned"]
+    assert 'id="engine-version"' not in cold
+    assert _adoption_rows(db, sid) == [
+        (0, RECONSTRUCTION_VERSION, ENGINE_CONTRACT_VERSION_T2G2, None),
+        (1, ENGINE_CONTRACT_VERSION_T2G2, RECONSTRUCTION_VERSION, rows[0][0])]   # unchanged by the cold GET
+    assert _stamp(db, sid) == RECONSTRUCTION_VERSION
+    assert rule_kinds(record_block(_raw(c, sid, lang="ar"))) == ["rules_adopted", "rules_returned"]
+    assert "اعتُمدت قواعد أحدث" in _page(c, sid, lang="ar")

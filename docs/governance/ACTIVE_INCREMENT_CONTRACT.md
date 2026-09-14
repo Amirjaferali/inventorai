@@ -23,6 +23,98 @@ Git/GitHub own transient candidate, PR and merge identity. No acceptance/merge t
 self-SHA or lifecycle-label change creates a synchronization candidate. When no mandate
 exists, state ACTIVE CONTRACT: NONE; historical declarations never fill the gap.
 
+<a id="current-authority--t3a-project-record-input-history-rendering"></a>
+## Current authority — T3-A "Project record": narrowed input-history rendering
+
+**Owner decision `T3A-PROJECT-RECORD-IMPLEMENT-01` v1.0**, adopting the completed
+read-only reconciliation `T3A-WHAT-CHANGED-CURRENT-TIP-RECONCILE-01` at
+`6dfd94e3…` and its recommendation **B — T3-A IS PARTLY DUPLICATED; IMPLEMENT A
+SMALLER BOUNDED SLICE**. The Owner explicitly exercises **OD-PDVG-02 option (b)**
+in ONE NARROWED form only: INPUT-HISTORY / PROJECT-RECORD RENDERING. The
+stale-output / validity / output-diff leg of FPC-02 is NOT authorized
+(D-FPC-MAP-09 stands for it; OD-PDVG-11 / S2 §15.6 preserved). Authorized: ONE
+bounded read-only implementation candidate, synthetic tests, ordinary
+commits/pushes and ONE PR. NOT authorized: merge (a separate exact-head Owner
+authorization after independent differential review), a project-management or
+audit console, new product semantics, a history store, a parallel ledger, a
+revision model, any before/after inference, a schema or store change, an engine
+change, human-data collection, a benchmark, Stage-10 implementation, domain
+activation, MCP, deployment, paid activation.
+
+**Starting context:** authoritative branch `feature/atomic-json-session-persistence`
+at `6dfd94e34867db3b4e89f075b96d561837bbec93` (tree
+`63be2e26…`, the verified PR #644 merge result), clean working tree,
+implementation branch descended directly from that exact tip.
+
+**Purpose.** One collapsed, read-only "Project record / سجل المشروع" block on the
+saved-project page that lets a non-technical inventor see what was recorded, in
+what order, what was later replaced or withdrawn, what superseded what, and
+which rule-adoption events occurred — from durable data only.
+
+**1. Durable owners only.** The restored assertion ledger on `state` (record id,
+disposition, gap context, content, provenance, `supersedes` / `superseded_by`,
+restored seq order), the requirement-quantity history already attached to
+`state`, the evidence-reference table and the `engine_version_adoptions`
+ledger. Nothing is inferred that is not durably represented; a history that
+cannot be read consistently suppresses the whole block (fail closed) rather
+than rendering a partial record.
+
+**2. Rendering.** Ledger entries in restored order, numbered by position (a step
+number, never a time); a closed event vocabulary derived from the dispositions
+and edges only (`web/app.py::T3A_EVENT_KINDS`: answer recorded; answer
+withdrawn and replaced; not known yet; deferred; provisional assumption;
+specialist requested; evidence requested; risk accepted; decision context
+declared; alternative declared / refined / withdrawn; value recorded /
+replaced; reference recorded / replaced / withdrawn; newer rules adopted /
+returned to earlier rules / rules changed); the question area; the verbatim
+text with `dir="auto"` (bounded preview plus the full text); links "replaces /
+replaced by / withdraws / withdrawn at step n" restating the ledger edges
+exactly; the withdrawal reason only where the withdrawal record carries one,
+otherwise "no reason was recorded". Quantity and reference rows render under
+the answer they anchor on, in their own seq order. Adoption rows render as a
+separate "Rule changes" list, each with its direction derived from the
+supported-version order, the last ledger step that provably preceded it (every
+record of an earlier iteration; omitted when none) and its recorded date; the
+existing EVA disclosure and control block are unchanged and not duplicated.
+
+**3. Truthfulness ceiling.** A withdrawn answer is shown verbatim beside its
+replacement with the accepted R4-C M-4 wording (withdrawn by the inventor, kept
+in the project history, no longer used as current support). The block never
+states that a historical entry was invalid, wrong, stale or corrected, never
+claims an evaluation consequence ("evaluation changed", "a question became owed
+again", validity), never shows wall-clock time for ledger entries and never
+implies a cross-kind order the durable model does not record (the order note
+says so). Risk acceptance renders as the recorded act only; applied/lapsed
+outcomes exist only inside a reconstruction and are not claimed.
+
+**4. Read-only.** No route, no form, no control, no write, no persisted field;
+GET remains read-only on live, resumed and cold pages (the cold page adds one
+adoption-ledger read). The correction block, the migration disclosure, the
+deliverable, exports, API and reconstruction are untouched.
+
+**Changed paths.** Production: `web/app.py` (`_project_record_context` and its
+helpers; one template kwarg), `web/templates/session.html` (one block),
+`web/ui_text.py` (`UI_T3A_*`, EN/AR). Tests: `tests/test_t3a_project_record.py`
+(new); bounded extensions to `tests/test_t2g_version_adoption.py` and
+`tests/test_wave1_rvr5_correction_ux.py`. Governance: this file; the T3-A row
+in `DEFERRED_OBLIGATIONS_REGISTER.md` §3 and the correction of the stale T2-F
+row there (Owner instruction §15). NOT touched: the database schema,
+`engine/record_store.py`, `engine/session_reconstruction.py`, progression,
+`answer_stance`, intent serving, the deliverable assembler, exports, API
+semantics, domain activation, question content, feedback semantics,
+engine-version adoption semantics.
+
+**Status: T3-A NARROWED SLICE DELIVERED AS A CANDIDATE; merge not authorized.**
+Remaining outside this slice (not authorized, not started): the fuller FPC-02
+legs (durable output revisions, stale-output invalidation, output difference /
+side-by-side) under D-FPC-MAP-02/09 and OD-PDVG-11; a P4-2 implementation
+contract, required only for those legs; per-event before/after evaluation
+state; wall-clock ordering of ledger entries; feedback-choice history; a
+deliverable or export projection of the record. Preserved unchanged with their
+triggers: `R1`, `R2`, `R3`, G-4-A, `N-1`–`N-6`, the T1-A′ supersession, T1-C′,
+the EN↔AR residual rows, the T2-A paid-activation blocker, the PR #640
+findings, the T2-D observations, PRE-FCORA and FCORA.
+
 <a id="current-authority--t2g-legacy-migration-explicit-confirmed-adoption"></a>
 ## Current authority — T2-G legacy migration: explicit confirmed adoption
 

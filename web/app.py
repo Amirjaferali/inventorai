@@ -58,6 +58,15 @@ from engine.progression_loop import (
 from engine.adaptive_register import compute_register, REGISTER_ELEVATED
 from engine.idea_state import (
     DISPOSITION_RISK_ACCEPTED, MECHANISM_COMPLETENESS as _MECH_GAP,
+    DISPOSITION_ANSWERED as _DISP_ANSWERED,
+    DISPOSITION_UNKNOWN as _DISP_UNKNOWN,
+    DISPOSITION_DEFERRED as _DISP_DEFERRED,
+    DISPOSITION_PROVISIONAL_ASSUMPTION as _DISP_PROVISIONAL,
+    DISPOSITION_SPECIALIST_REQUESTED as _DISP_SPECIALIST,
+    DISPOSITION_EVIDENCE_REQUESTED as _DISP_EVIDENCE,
+    DISPOSITION_DECISION_CONTEXT_DECLARED as _DISP_CONTEXT_DECLARED,
+    DISPOSITION_DECISION_ALTERNATIVE_DECLARED as _DISP_ALT_DECLARED,
+    DISPOSITION_DECISION_ALTERNATIVE_WITHDRAWN as _DISP_ALT_WITHDRAWN,
 )
 from web.gap_labels import (
     GAP_LABELS, get_gap_label, get_maturity_label, SESSION_DISCLOSURE,
@@ -4484,6 +4493,10 @@ def show_session(sid):
         # T2-G legacy migration: the explicit adoption block (writable
         # eligible sessions only; None on cold pages) and its own notices.
         version_adoption=_version_adoption_context(entry, state, sid),
+        # T3-A Project Record: read-only rendering of the existing durable
+        # input history (ledger order, supersession, anchored rows, adoption
+        # events). None only when the history cannot be read consistently.
+        project_record=_project_record_context(state, sid),
         eva_ack=_eva_notice_text(
             _render_notice(entry, EVA_ACK_SLOT, None), _current_ui_lang()),
         eva_error=_eva_notice_text(
@@ -5263,6 +5276,195 @@ def _eva_adopted_rules(sid):
     creation stamp — the truthful cold-page note. Read-only; never writes."""
     position = _eva_durable_position(sid)
     return bool(position and position["effective"] != position["creation"])
+
+
+# --- T3-A "Project record" (T3A-PROJECT-RECORD-IMPLEMENT-01) -----------------
+# OD-PDVG-02 option (b), exercised by the Owner in its NARROWED form only:
+# input-history / project-record RENDERING. ONE read-only, derived,
+# presentation-only projection of what the inventor recorded, in restored
+# ledger order, with the durable supersession edges, the additive per-anchor
+# rows (requirement quantities, evidence references) and the engine-version
+# adoption events. It reads EXISTING durable owners only — the restored
+# assertion ledger on `state`, the quantity history already attached to
+# `state`, the evidence-reference table and the adoption ledger — and it
+# stores nothing, adds no field, replays nothing and derives no before/after
+# evaluation state (no gap status, score, reopened question, readiness or
+# validity claim). Every label is a closed catalogue key resolved by t();
+# inventor text is carried verbatim for dir="auto" rendering. The stale-output
+# / validity / output-diff leg of FPC-02 is NOT part of this view.
+_T3A_EVENT_BY_DISPOSITION = {
+    _DISP_UNKNOWN: "not_known_yet",
+    _DISP_DEFERRED: "deferred",
+    _DISP_PROVISIONAL: "provisional_assumption",
+    _DISP_SPECIALIST: "specialist_requested",
+    _DISP_EVIDENCE: "evidence_requested",
+    DISPOSITION_RISK_ACCEPTED: "risk_accepted",
+    _DISP_CONTEXT_DECLARED: "decision_context_declared",
+    _DISP_ALT_WITHDRAWN: "alternative_withdrawn",
+}
+# The closed event vocabulary the template may name (UI_T3A_EVENT_<KIND>).
+T3A_EVENT_KINDS = frozenset(_T3A_EVENT_BY_DISPOSITION.values()) | frozenset({
+    "answer_recorded", "answer_withdrawn_replaced", "alternative_declared",
+    "alternative_refined", "value_recorded", "value_replaced",
+    "reference_recorded", "reference_replaced", "reference_withdrawn",
+    "rules_adopted", "rules_returned", "rules_changed", "other",
+})
+_T3A_TEXT_PREVIEW_CHARS = 280
+
+
+def _t3a_event_kind(record):
+    """The closed event kind of ONE ledger record, from its durable disposition
+    and supersession edges only. An answered record that a later record
+    superseded was withdrawn and replaced (the only supersession an answered
+    record can carry is the governed correction route); a declared alternative
+    that itself supersedes an earlier record is a refinement (W2-A: refinement
+    IS the single-target supersession edge, never a disposition)."""
+    disposition = getattr(record, "disposition", None)
+    if disposition == _DISP_ANSWERED:
+        return ("answer_withdrawn_replaced"
+                if getattr(record, "superseded_by", None) else "answer_recorded")
+    if disposition == _DISP_ALT_DECLARED:
+        return ("alternative_refined"
+                if getattr(record, "supersedes", None) else "alternative_declared")
+    return _T3A_EVENT_BY_DISPOSITION.get(disposition, "other")
+
+
+def _t3a_rule_change_kind(row, supported=SUPPORTED_ENGINE_CONTRACT_VERSIONS):
+    """Direction of ONE adoption row from its durable version pair and the
+    supported-version order only: a move to a LATER version is an adoption of
+    newer rules, a move to an EARLIER one is a return to earlier rules. The
+    ledger stores no action intent, so nothing else is claimed; a pair outside
+    the supported order is reported as a plain rule change."""
+    try:
+        before = supported.index(row.from_version)
+        after = supported.index(row.to_version)
+    except ValueError:
+        return "rules_changed"
+    if after == before:
+        return "rules_changed"
+    return "rules_adopted" if after > before else "rules_returned"
+
+
+def _t3a_text_preview(text):
+    """A bounded preview for a long verbatim text, or None when the text is
+    short enough to show whole (the full text always stays available)."""
+    if not text or len(text) <= _T3A_TEXT_PREVIEW_CHARS:
+        return None
+    return text[:_T3A_TEXT_PREVIEW_CHARS].rstrip() + "…"
+
+
+def _project_record_context(state, sid):
+    """Read-only render context for the session Project Record block, or None
+    when the durable history cannot be read consistently (fail closed: the
+    block is suppressed rather than rendering a partial record).
+
+    Entries are the ledger records in their restored order (the durable seq
+    order on a cold or resumed page; the append order on a live page), each
+    with an ordinal, its event kind, the question area, the verbatim recorded
+    text, its supersession links and — under the entry it belongs to — the
+    quantity and reference rows anchored on it. Rule changes (adoption rows)
+    are listed separately with the last ledger step that provably preceded
+    them (every record of an earlier iteration), because their position among
+    the records of their own iteration was never recorded. Nothing here is
+    persisted, exported or fed to any decision; GET stays read-only."""
+    assertions = list(getattr(state, "assertions", None) or ())
+    ordinal_of = {}
+    by_id = {}
+    for index, record in enumerate(assertions):
+        record_id = getattr(record, "record_id", None)
+        if not record_id or record_id in by_id:
+            return None                       # not a well-formed ledger
+        ordinal_of[record_id] = index + 1
+        by_id[record_id] = record
+    try:
+        references = list(_get_store().load_evidence_references(sid))
+        adoptions = list(_get_store().load_engine_version_adoptions(sid))
+    except Exception:
+        return None
+    quantities = list(getattr(state, "requirement_quantities", None) or ())
+
+    attached = {}
+    for row in sorted(quantities, key=lambda q: q.quantity_seq):
+        if row.anchor_record_id not in ordinal_of:
+            return None
+        attached.setdefault(row.anchor_record_id, []).append({
+            "kind": ("value_replaced" if row.supersedes_quantity_id
+                     else "value_recorded"),
+            "label_key": "UI_T2A_KIND_" + str(row.quantity_kind).upper(),
+            "text": row.value_text,
+            "detail": None,
+            "replaces_earlier": bool(row.supersedes_quantity_id),
+        })
+    for row in sorted(references, key=lambda r: r.reference_seq):
+        if row.anchor_record_id not in ordinal_of:
+            return None
+        if row.withdrawn:
+            kind = "reference_withdrawn"
+        elif row.supersedes_reference_id:
+            kind = "reference_replaced"
+        else:
+            kind = "reference_recorded"
+        attached.setdefault(row.anchor_record_id, []).append({
+            "kind": kind,
+            "label_key": None,
+            "text": row.source_identity,
+            "detail": row.occurred_on,
+            "replaces_earlier": kind == "reference_replaced",
+        })
+
+    def _link(relation, target_id):
+        return {"relation": relation, "step": ordinal_of.get(target_id),
+                "record_id": target_id}
+
+    entries = []
+    for record in assertions:
+        kind = _t3a_event_kind(record)
+        content = getattr(record, "content", "") or ""
+        text, reason, reason_missing = content, None, False
+        if kind == "alternative_withdrawn":
+            # W2-A: the withdrawal record's content IS the recorded reason;
+            # "" means none was recorded, which is said plainly, never invented.
+            text, reason, reason_missing = None, (content or None), not content
+        links = []
+        for target in (getattr(record, "supersedes", None) or ()):
+            links.append(_link(
+                "withdraws" if kind == "alternative_withdrawn" else "replaces",
+                target))
+        successor_id = getattr(record, "superseded_by", None)
+        if successor_id:
+            successor = by_id.get(successor_id)
+            links.append(_link(
+                "withdrawn_in" if (successor is not None and
+                                   _t3a_event_kind(successor) == "alternative_withdrawn")
+                else "replaced_by", successor_id))
+        entries.append({
+            "ordinal": ordinal_of[record.record_id],
+            "record_id": record.record_id,
+            "kind": kind,
+            "context": getattr(record, "gap_context", None),
+            "provenance": getattr(record, "provenance", None),
+            "text": text,
+            "text_preview": _t3a_text_preview(text),
+            "reason": reason,
+            "reason_missing": reason_missing,
+            "withdrawn_answer": kind == "answer_withdrawn_replaced",
+            "links": links,
+            "attached": attached.get(record.record_id, []),
+        })
+
+    rule_changes = []
+    for row in adoptions:
+        recorded_iteration = int(getattr(row, "recorded_iteration", 0) or 0)
+        preceding = [ordinal_of[r.record_id] for r in assertions
+                     if int(getattr(r, "iteration", 0) or 0) < recorded_iteration]
+        rule_changes.append({
+            "kind": _t3a_rule_change_kind(row),
+            "adoption_id": row.adoption_id,
+            "after_step": max(preceding) if preceding else None,
+            "recorded_at": row.recorded_at,
+        })
+    return {"entries": entries, "rule_changes": rule_changes,
+            "total": len(entries) + len(rule_changes)}
 
 
 def _eva_replace_live_state(entry, state, _recon):
