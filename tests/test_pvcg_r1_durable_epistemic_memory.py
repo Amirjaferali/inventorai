@@ -471,20 +471,39 @@ def test_durable_store_holds_exactly_one_ledger_and_no_parallel_table(db_path,
         # ledger of owner actions. The semantic assertions below enforce that.
         adoption_cols = [col[1] for col in
                          conn.execute("PRAGMA table_info(engine_version_adoptions)")]
+        # The Commercial Evidence Owner added the additive, project-scoped,
+        # append-only `readiness_evidence` table. Like the four before it, it is
+        # NOT a parallel ledger: it carries no disposition and no record
+        # payload, holds owner-recorded COMMERCIAL evidence under a closed topic
+        # vocabulary, and is never replayed as an owner action — `records`
+        # remains the ONE durable ledger of owner actions. It is also not a
+        # second risk store: it owns no risk topic. The semantic assertions
+        # below enforce both.
+        evidence_cols = [col[1] for col in
+                         conn.execute("PRAGMA table_info(readiness_evidence)")]
+        evidence_topics = [r[0] for r in conn.execute(
+            "SELECT DISTINCT topic FROM readiness_evidence")]
     finally:
         conn.close()
     assert tables == ["engine_version_adoptions", "evidence_references", "projects",
-                      "question_feedback", "records", "requirement_quantities"], tables
+                      "question_feedback", "readiness_evidence", "records",
+                      "requirement_quantities"], tables
     assert ledger_like == ["records"], ledger_like
     assert "payload" not in quantity_cols and "disposition" not in quantity_cols
     assert "payload" not in reference_cols and "disposition" not in reference_cols
     assert "payload" not in feedback_cols and "disposition" not in feedback_cols
     assert "payload" not in adoption_cols and "disposition" not in adoption_cols
+    assert "payload" not in evidence_cols and "disposition" not in evidence_cols
     # STRENGTHENED: the additive tables carry no answer/question prose at all,
     # so none of them can become a second record of what the owner said.
-    for cols in (quantity_cols, reference_cols, feedback_cols, adoption_cols):
+    for cols in (quantity_cols, reference_cols, feedback_cols, adoption_cols,
+                 evidence_cols):
         assert "content" not in cols and "answer" not in cols
         assert "question" not in cols and "question_text" not in cols
+    # the commercial evidence table owns no risk topic: commercial risk stays
+    # with the canonical risk owner, so no second risk store can grow here
+    assert not [t for t in evidence_topics if "risk" in t]
+    assert "risk" not in "".join(evidence_cols)
     # and feedback can only ever hold one of the three closed tokens
     assert set(feedback_choices) <= {"HELPFUL", "UNCLEAR", "NOT_RELEVANT"}
 
