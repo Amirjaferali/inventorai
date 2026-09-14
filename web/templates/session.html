@@ -93,6 +93,10 @@ body{overflow-wrap:anywhere}
    quantity or evidence-reference notice. #}
 {% if feedback_ack %}<p class="journey-feedback t2d-notice t2d-notice-ack" role="status">{{ feedback_ack }}</p>{% endif %}
 {% if feedback_error %}<p class="answer-error t2d-notice t2d-notice-error" role="alert" style="color:#9e2722;border:1px solid #daaaa7;padding:12px;line-height:1.5">{{ feedback_error }}</p>{% endif %}
+{# T2-G legacy migration notices: their own namespace, never replacing any
+   other notice. #}
+{% if eva_ack %}<p class="journey-feedback eva-notice eva-notice-ack" role="status">{{ eva_ack }}</p>{% endif %}
+{% if eva_error %}<p class="answer-error eva-notice eva-notice-error" role="alert" style="color:#9e2722;border:1px solid #daaaa7;padding:12px;line-height:1.5">{{ eva_error }}</p>{% endif %}
 <section class="project-orientation" aria-labelledby="project-orientation-title">
   <h2 id="project-orientation-title">{{ t('UI_A1_ORIGINAL_IDEA') }}</h2>
   <p class="idea-excerpt" dir="auto">{{ project_identification.idea or t('UI_A1_UNTITLED') }}</p>
@@ -236,6 +240,12 @@ body{overflow-wrap:anywhere}
 <div id="reconstructed-review" class="gap-guidance" style="background:#f4f8fb;border-color:#b3d1ff">
   <div class="gap-guidance-heading">{{ t('UI_B_SESSION_041') }}</div>
   <div class="gap-guidance-text">{{ t('UI_B_SESSION_042') }}</div>
+  {# T2-G legacy migration: a cold read-only page REFLECTS a durable adoption
+     (the reconstruction replayed under the adopted version) and says so; it
+     offers no control and creates nothing. #}
+  {% if reconstructed_review.adopted_rules %}
+  <p class="version-disclosure version-disclosure-adopted" style="font-size:12px;color:#5a6b7a;margin:8px 0 0 0">{{ t('UI_EVA_COLD_NOTE') }}</p>
+  {% endif %}
   {% if reconstructed_review.open_gaps %}
   <div style="font-size:13px;margin-top:8px"><strong>{{ t('UI_B_SESSION_043') }}</strong>
     <ul style="margin:6px 0 0 0;padding-left:18px;font-size:13px;color:#555">
@@ -711,6 +721,50 @@ body{overflow-wrap:anywhere}
 </details>
 <script defer src="{{ url_for('static', filename='js/correction_preview.js') }}"></script>
 {% endif %}
+
+{#- EVA-BLOCK-BEGIN — T2-G legacy migration: EXPLICIT CONFIRMED engine-version
+    adoption (`T2G-LEGACY-MIGRATION-IMPLEMENT-01`, Owner policy B). Rendered
+    only when the view supplies `version_adoption`, i.e. on a live or
+    explicitly resumed WRITABLE session of an eligible project; cold read-only
+    pages render nothing here. The AFTER-adoption line is always visible once
+    the project runs under adopted rules. The BEFORE copy states, in the UI
+    language, what can change, what is kept and that adoption can be reversed;
+    the form submits only csrf_token, answer_token, a closed version_action
+    and an explicit confirmation — never a version. -#}
+{% if version_adoption %}
+{% if version_adoption.adopted %}
+<p class="version-disclosure version-disclosure-adopted" style="font-size:12px;color:#5a6b7a;margin:14px 0 0 0">{{ t('UI_EVA_AFTER') }}</p>
+{% endif %}
+{% if version_adoption.can_adopt or version_adoption.can_revert %}
+<details class="engine-version" id="engine-version" style="margin-top:14px;border:1px solid #d7dde6;border-radius:4px;background:#f7f9fb;padding:10px 14px">
+  <summary style="cursor:pointer;font-size:13px;color:#2c5a8c;font-weight:bold">{{ t('UI_EVA_HEADING') }}</summary>
+  {% if version_adoption.can_adopt %}
+  <p style="font-size:13px;color:#555;margin:10px 0 6px 0">{{ t('UI_EVA_BEFORE_CREATED') }}</p>
+  <p style="font-size:13px;color:#555;margin:0 0 6px 0">{{ t('UI_EVA_BEFORE_CHANGE') }}</p>
+  <p style="font-size:13px;color:#555;margin:0 0 6px 0">{{ t('UI_EVA_BEFORE_KEEP') }}</p>
+  <p style="font-size:13px;color:#555;margin:0 0 8px 0">{{ t('UI_EVA_BEFORE_REVERSE') }}</p>
+  <form method="POST" action="/session/{{ sid }}/engine-version" id="engine-version-adopt">
+    <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
+    <input type="hidden" name="answer_token" value="{{ answer_token }}">
+    <input type="hidden" name="version_action" value="adopt">
+    <label style="display:block;font-size:13px;color:#333;margin-bottom:8px"><input type="checkbox" name="confirm_adoption" value="yes" required> {{ t('UI_EVA_CONFIRM_LABEL') }}</label>
+    <button type="submit">{{ t('UI_EVA_BUTTON') }}</button>
+  </form>
+  {% endif %}
+  {% if version_adoption.can_revert %}
+  <p style="font-size:13px;color:#555;margin:10px 0 8px 0">{{ t('UI_EVA_REVERT_EXPLAIN') }}</p>
+  <form method="POST" action="/session/{{ sid }}/engine-version" id="engine-version-revert">
+    <input type="hidden" name="csrf_token" value="{{ csrf_for_form() }}">
+    <input type="hidden" name="answer_token" value="{{ answer_token }}">
+    <input type="hidden" name="version_action" value="revert">
+    <label style="display:block;font-size:13px;color:#333;margin-bottom:8px"><input type="checkbox" name="confirm_adoption" value="yes" required> {{ t('UI_EVA_REVERT_CONFIRM_LABEL') }}</label>
+    <button type="submit">{{ t('UI_EVA_REVERT_BUTTON') }}</button>
+  </form>
+  {% endif %}
+</details>
+{% endif %}
+{% endif %}
+{#- EVA-BLOCK-END -#}
 
 {# T2-A Quantified Requirements Slice 1 (Owner-authorized bounded candidate):
    OPTIONAL quantity block for the ELIGIBLE requirement anchors (active

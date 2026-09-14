@@ -122,6 +122,16 @@ from engine.record_store import (
     ReferenceChainConflict as _ReferenceChainConflict,
     ReferenceCapExceeded as _ReferenceCapExceeded,
 )
+# T2-G legacy migration (`T2G-LEGACY-MIGRATION-IMPLEMENT-01`): the append-only
+# engine-version adoption ledger — explicit confirmed adoption only.
+from engine.record_store import (
+    EngineVersionAdoption as _EngineVersionAdoption,
+    AdoptionChainConflict as _AdoptionChainConflict,
+    AdoptionHistoryError as _AdoptionHistoryError,
+    AdoptionCapReached as _AdoptionCapReached,
+    ADOPTION_INSERTED as _ADOPTION_INSERTED,
+    ADOPTION_EXACT_REPLAY as _ADOPTION_EXACT_REPLAY,
+)
 # T2-D — OPTIONAL contextual feedback on the question actually displayed.
 from engine.question_feedback import (
     QuestionFeedbackError as _QuestionFeedbackError,
@@ -180,6 +190,9 @@ from engine.session_reconstruction import (
     CURRENT_ENGINE_CONTRACT_VERSION,
     ENGINE_CONTRACT_VERSION_T2G1,
     ENGINE_CONTRACT_VERSION_T2G2,
+    SUPPORTED_ENGINE_CONTRACT_VERSIONS,
+    SUPPORTED_PATH as _RECON_SUPPORTED_PATH,
+    MAX_ACCEPTED_ANSWER_REPLAY as _RECON_MAX_ANSWER_REPLAY,
     reconstruct_readonly_state,
 )
 # Increment 3 (R-5): the SAME shared public derivation that feeds the deliverable
@@ -3774,13 +3787,20 @@ def _feedback_ledger_revision(sid, state):
     caller renders no control rather than binding a context it cannot honour."""
     try:
         durable = _get_store().ledger_record_ids(sid)
+        # T2-G legacy migration: the revision digest is derived from the ONE
+        # store composition seam — the ledger record ids PLUS a marked entry
+        # per durable adoption row — so a context rendered before an adoption
+        # can never bind a submission after it. The consistency check above
+        # the digest stays a ledger-record comparison (adoptions are not
+        # ledger records and never appear in the runtime ledger).
+        revision_ids = _get_store().feedback_revision_ids(sid)
     except Exception:
         return None
     runtime = {getattr(r, "record_id", None)
                for r in getattr(state, "assertions", []) or []}
     if any(rid not in runtime for rid in durable):
         return None
-    return _ledger_revision(durable)
+    return _ledger_revision(revision_ids)
 
 
 def _feedback_context(sid, state, qctx):
@@ -4327,6 +4347,11 @@ def show_session(sid):
                         (_recon.maturity_level < 2 or _recon.open_gaps)
                         and domain_activation.is_activated(
                             getattr(state, "domain_signal", None))),
+                    # T2-G legacy migration: the cold read-only page may
+                    # REFLECT a durable adoption (the reconstruction above
+                    # already replayed under the effective version) and says
+                    # so truthfully; it never creates or changes one.
+                    "adopted_rules": _eva_adopted_rules(sid),
                 }
         except Exception:
             reconstructed_review = None
@@ -4456,6 +4481,13 @@ def show_session(sid):
             _render_notice(entry, FEEDBACK_ACK_SLOT, None), _current_ui_lang()),
         feedback_error=_feedback_notice_text(
             _render_notice(entry, FEEDBACK_ERROR_SLOT, None), _current_ui_lang()),
+        # T2-G legacy migration: the explicit adoption block (writable
+        # eligible sessions only; None on cold pages) and its own notices.
+        version_adoption=_version_adoption_context(entry, state, sid),
+        eva_ack=_eva_notice_text(
+            _render_notice(entry, EVA_ACK_SLOT, None), _current_ui_lang()),
+        eva_error=_eva_notice_text(
+            _render_notice(entry, EVA_ERROR_SLOT, None), _current_ui_lang()),
         evref_ack=_evref_notice_text(
             _render_notice(entry, EVREF_ACK_SLOT, None), _current_ui_lang()),
         evref_error=_evref_notice_text(
@@ -5070,6 +5102,304 @@ def correct_answer(sid):
     if _lapsed_gaps or _resolved_gaps:
         entry["_risk_lapse_notice"] = {
             "action": _lapsed_gaps, "resolved": _resolved_gaps}
+    return redirect(url_for("show_session", sid=sid))
+
+
+# =============================================================================
+# T2-G legacy migration — EXPLICIT CONFIRMED engine-version adoption
+# (`T2G-LEGACY-MIGRATION-IMPLEMENT-01`, Owner policy B)
+# =============================================================================
+# A pre-T2-G saved project may EXPLICITLY adopt the current verified
+# engine-contract behaviour. The adoption is ONE durable, append-only row
+# (`engine_version_adoptions`) followed by FULL deterministic per-project replay
+# of the complete amended stream through the UNCHANGED canonical reconstruction
+# — exactly the correction route's sequence (PVCG-R4-C §8 RP-1/RP-4) — and
+# atomic live-state replacement. The creation stamp is never updated; the
+# effective version is resolved from durable state in ONE place
+# (`engine.session_reconstruction.effective_engine_contract_version`).
+#
+# Never automatic: GET, open, cold review and reconstruction create no adoption.
+# Never request-controlled: the form carries only a closed action vocabulary
+# (adopt the CURRENT server version, or return to the version the current head
+# adopted FROM); the target is derived server-side from durable state. Reversal
+# is another appended row; nothing is deleted or rewritten. Eligibility mirrors
+# the correction route: a live or explicitly resumed writable session (domain
+# established), at least one active answer, deterministic path N, complete
+# reconstruction inputs, within the replay bound, and a runtime reading that
+# matches the durable truth. Everything else fails closed.
+_EVA_FIELDS = frozenset(
+    {"csrf_token", "answer_token", "version_action", "confirm_adoption"})
+EVA_ACTION_ADOPT = "adopt"
+EVA_ACTION_REVERT = "revert"
+EVA_CONFIRM_VALUE = "yes"
+# The initial bounded populations that may adopt: the pre-T2-G creation stamp
+# and the intermediate T2-G-1 stamp. The current stamp is never adoptable.
+_EVA_ADOPTABLE_VERSIONS = (RECONSTRUCTION_VERSION, ENGINE_CONTRACT_VERSION_T2G1)
+# Its own two-slot notice namespace; the answer, correction, quantity,
+# evidence-reference and feedback slots are never touched.
+EVA_ACK_SLOT = "_eva_ack"
+EVA_ERROR_SLOT = "_eva_error"
+EVA_ADOPTED_ACK = "EVA_ADOPTED"
+EVA_REVERTED_ACK = "EVA_REVERTED"
+EVA_REPLAY_ACK = "EVA_REPLAY"
+EVA_NOT_APPLIED_MESSAGE = "EVA_NOT_APPLIED"
+EVA_SAVED_NOT_SHOWN_MESSAGE = "EVA_SAVED_NOT_SHOWN"
+EVA_UNKNOWN_MESSAGE = "EVA_OUTCOME_UNKNOWN"
+_EVA_DISPLAY_KEY = {
+    EVA_ADOPTED_ACK: "UI_EVA_ACK_ADOPTED",
+    EVA_REVERTED_ACK: "UI_EVA_ACK_REVERTED",
+    EVA_REPLAY_ACK: "UI_EVA_ACK_REPLAY",
+    EVA_NOT_APPLIED_MESSAGE: "UI_EVA_ERR_NOT_APPLIED",
+    EVA_SAVED_NOT_SHOWN_MESSAGE: "UI_EVA_ERR_SAVED_NOT_SHOWN",
+    EVA_UNKNOWN_MESSAGE: "UI_EVA_ERR_UNKNOWN",
+}
+
+
+def _eva_notice_text(token, lang):
+    """Bilingual text for a stored notice token, or None. An unrecognised token
+    renders NOTHING rather than a raw token."""
+    key = _EVA_DISPLAY_KEY.get(token)
+    return None if key is None else ui_text.text(key, lang)
+
+
+def _publish_eva_notice(entry, ack=None, error=None):
+    """Publish exactly ONE current adoption notice, in its own namespace."""
+    entry.pop(EVA_ACK_SLOT, None)
+    entry.pop(EVA_ERROR_SLOT, None)
+    if ack is not None:
+        entry[EVA_ACK_SLOT] = ack
+    if error is not None:
+        entry[EVA_ERROR_SLOT] = error
+
+
+def _eva_durable_position(sid):
+    """The project's DURABLE version position, or None when it cannot be a
+    replayable adoption candidate: ``{"creation", "head", "effective",
+    "count"}``. Read-only. Requires the complete creation envelope, the
+    deterministic path N, a SUPPORTED creation stamp and a structurally valid
+    adoption history; the effective version is the current head's
+    ``to_version`` or, with no adoption, the creation stamp. Any storage
+    failure or corrupt history yields None (fail closed, nothing repaired)."""
+    try:
+        inputs = _get_store().load_reconstruction_inputs(sid)
+        if inputs is None:
+            return None
+        creation = inputs.get("engine_contract_version")
+        if (inputs.get("seed_idea_text") is None
+                or inputs.get("confirmed_domain") is None
+                or inputs.get("path") != _RECON_SUPPORTED_PATH
+                or creation not in SUPPORTED_ENGINE_CONTRACT_VERSIONS):
+            return None
+        history = _get_store().load_engine_version_adoptions(sid)
+    except Exception:
+        return None
+    head = history[-1] if history else None
+    return {
+        "creation": creation,
+        "head": head,
+        "effective": creation if head is None else head.to_version,
+        "count": len(history),
+    }
+
+
+def _eva_eligibility(sid, state):
+    """Whether THIS live/resumed writable session may adopt or revert, or None.
+
+    Mirrors the correction route's eligibility: ``state.domain`` established
+    (a cold read-only view is never eligible), deterministic path N, at least
+    one ACTIVE accepted answer, the full persisted answered stream within the
+    replay bound (the same conservative reading the reconstruction applies),
+    a replayable durable position, and a runtime version carrier equal to the
+    durable effective version — a live reading that disagrees with the durable
+    truth is refused rather than reconciled here. Returns ``{"position",
+    "can_adopt", "can_revert", "adopted"}``."""
+    if getattr(state, "domain", None) is None:
+        return None
+    if getattr(state, "path", None) != _RECON_SUPPORTED_PATH:
+        return None
+    answered = [r for r in getattr(state, "assertions", []) or []
+                if getattr(r, "disposition", None) == ACTION_ANSWERED]
+    if not any(getattr(r, "superseded_by", None) is None for r in answered):
+        return None
+    if len(answered) > _RECON_MAX_ANSWER_REPLAY:
+        return None
+    position = _eva_durable_position(sid)
+    if position is None:
+        return None
+    if position["effective"] != getattr(state, "engine_contract_version", None):
+        return None
+    head = position["head"]
+    return {
+        "position": position,
+        "can_adopt": (position["effective"] in _EVA_ADOPTABLE_VERSIONS
+                      and position["effective"] != CURRENT_ENGINE_CONTRACT_VERSION),
+        "can_revert": (head is not None
+                       and head.from_version in SUPPORTED_ENGINE_CONTRACT_VERSIONS),
+        "adopted": position["effective"] != position["creation"],
+    }
+
+
+def _version_adoption_context(entry, state, sid):
+    """Template context for the adoption block on a WRITABLE session, or None
+    (nothing renders on cold read-only pages or ineligible projects)."""
+    elig = _eva_eligibility(sid, state)
+    if elig is None:
+        return None
+    return {"can_adopt": elig["can_adopt"], "can_revert": elig["can_revert"],
+            "adopted": elig["adopted"]}
+
+
+def _eva_adopted_rules(sid):
+    """True when the durable adoption head has moved this project off its
+    creation stamp — the truthful cold-page note. Read-only; never writes."""
+    position = _eva_durable_position(sid)
+    return bool(position and position["effective"] != position["creation"])
+
+
+def _eva_replace_live_state(entry, state, _recon):
+    """PVCG-R4-C §8 RP-4 — ATOMIC live-state replacement after a FULL replay,
+    with the same correction-lapse transparency the correction route gives
+    (W2-D / W1-N4): the replayed state REPLACES the prior one wholesale, no
+    field of the old state is edited, and any risk acceptance that lapsed
+    against the rebuilt state is reported once per affected gap."""
+    _pre_accepted = {g.gap_type for g in getattr(state, "gaps", [])
+                     if g.status == "ACCEPTED_RISK"}
+    entry["state"] = _recon.state
+    entry["last_result"] = None
+    entry.pop("answer_token", None)
+    _lapsed_gaps, _resolved_gaps, _seen = [], [], set()
+    for _oc in getattr(_recon.review, "risk_acceptance_outcomes", ()):
+        if _oc.applied or _oc.gap_context in _seen:
+            continue
+        _seen.add(_oc.gap_context)
+        if _oc.gap_context not in _pre_accepted:
+            continue
+        _fg = _recon.state.get_gap(_oc.gap_context)
+        _status = _fg.status if _fg is not None else None
+        if _status == "ACCEPTED_RISK":
+            continue
+        (_resolved_gaps if _status == "CLOSED" else _lapsed_gaps).append(
+            _oc.gap_context)
+    if _lapsed_gaps or _resolved_gaps:
+        entry["_risk_lapse_notice"] = {
+            "action": _lapsed_gaps, "resolved": _resolved_gaps}
+
+
+@app.route("/session/<sid>/engine-version", methods=["POST"])
+def adopt_engine_version(sid):
+    """T2-G legacy migration — EXPLICIT CONFIRMED adoption of the current
+    engine-contract version (or an explicit return to the prior one), then
+    FULL deterministic replay and atomic live-state replacement.
+
+    Canonical sequence: ownership -> server-issued answer token (the SAME
+    stateless HMAC the answered and correction paths take; a missing,
+    malformed, forged or cross-session token fails closed before anything
+    else) -> closed request vocabulary and explicit confirmation -> durable
+    eligibility -> ONE append-only adoption row inside the store's serialized
+    transaction (which rechecks the head, the predecessor and the current
+    effective version) -> FULL replay of the whole amended stream through the
+    UNCHANGED canonical reconstruction -> ATOMIC replacement.
+
+    The request never carries a version: `adopt` targets the server's CURRENT
+    version and `revert` targets the version the current head adopted FROM.
+    This route never assigns `gap.status`, `known_mechanism`, `known_problem`,
+    `maturity_level` or `current_stage`; every progression change arrives by
+    replacement with the replayed state (§8 RP-4)."""
+    if not _project_authorized(sid):
+        return _deny_project()
+    entry = SESSION_STORE.get(sid)
+    if not entry:
+        return redirect(url_for("index"))
+    state = entry["state"]
+    if not _valid_answer_token(sid, request.form.get("answer_token", "")):
+        _publish_eva_notice(entry, error=EVA_NOT_APPLIED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    if set(request.form.keys()) - _EVA_FIELDS or \
+            any(len(request.form.getlist(k)) != 1 for k in request.form.keys()):
+        # Altered request content (including any attempt to carry a version
+        # field): refuse before touching durable state.
+        _publish_eva_notice(entry, error=EVA_NOT_APPLIED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    action = request.form.get("version_action", "")
+    if (request.form.get("confirm_adoption", "") != EVA_CONFIRM_VALUE
+            or action not in (EVA_ACTION_ADOPT, EVA_ACTION_REVERT)):
+        _publish_eva_notice(entry, error=EVA_NOT_APPLIED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    elig = _eva_eligibility(sid, state)
+    if elig is None:
+        _publish_eva_notice(entry, error=EVA_NOT_APPLIED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    position = elig["position"]
+    head = position["head"]
+    if action == EVA_ACTION_ADOPT:
+        if not elig["can_adopt"]:
+            _publish_eva_notice(entry, error=EVA_NOT_APPLIED_MESSAGE)
+            return redirect(url_for("show_session", sid=sid))
+        target = CURRENT_ENGINE_CONTRACT_VERSION
+    else:
+        if not elig["can_revert"]:
+            _publish_eva_notice(entry, error=EVA_NOT_APPLIED_MESSAGE)
+            return redirect(url_for("show_session", sid=sid))
+        target = head.from_version
+    from_version = position["effective"]
+    head_id = None if head is None else head.adoption_id
+    # A SEPARATE durable event identity derived from the exact adoption event
+    # (project, action, predecessor head, iteration, version pair), so a
+    # refresh / retry / double-submit of the same event is an idempotent
+    # exact replay and never a second row.
+    event_key = _interaction_idempotency_key(
+        sid, "engine-version:" + action, head_id or "",
+        int(getattr(state, "iteration", 0) or 0), from_version + ">" + target)
+    adoption = _EngineVersionAdoption(
+        adoption_id=_get_store().new_adoption_id(), adoption_seq=-1,
+        from_version=from_version, to_version=target,
+        supersedes_adoption_id=head_id, event_key=event_key,
+        recorded_iteration=int(getattr(state, "iteration", 0) or 0),
+        recorded_at=_quantity_recorded_at())
+    try:
+        outcome = _get_store().append_engine_version_adoption(
+            sid, adoption, expected_head_id=head_id)
+    except (_AdoptionChainConflict, _AdoptionCapReached, _AdoptionHistoryError,
+            _ProjectNotFound):
+        # Each of these is raised ONLY by a check that runs before the INSERT,
+        # so the absence of a durable row is established, not assumed.
+        _publish_eva_notice(entry, error=EVA_NOT_APPLIED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    except Exception:
+        # Undetermined write: resolve through the stable event key before a
+        # single word is said about the durable outcome; never invent a success.
+        try:
+            stored = _get_store().engine_version_adoption_for_event_key(
+                sid, event_key)
+        except Exception:
+            stored = None
+        if stored is None:
+            _publish_eva_notice(entry, error=EVA_UNKNOWN_MESSAGE)
+            return redirect(url_for("show_session", sid=sid))
+        outcome = _ADOPTION_EXACT_REPLAY
+    # FULL deterministic replay of the amended stream through the UNCHANGED
+    # canonical reconstruction, which resolves the effective version ONCE from
+    # durable state (now including the row just committed).
+    try:
+        _recon = reconstruct_readonly_state(_get_store(), sid)
+    except Exception:
+        _recon = None
+    if _recon is None or _recon.review.level != 1 or _recon.state is None \
+            or not _attach_quantity_history(sid, _recon.state):
+        # The durable adoption ALREADY committed, so this must not say
+        # "nothing was changed": the choice of rules is saved, the live view
+        # was not updated, and it is reflected whenever the project can be
+        # rebuilt successfully (the same truthful shape as the correction
+        # route's post-commit replay failure). Live memory is left EXACTLY as
+        # it was — never partially replaced.
+        _publish_eva_notice(entry, error=EVA_SAVED_NOT_SHOWN_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    _eva_replace_live_state(entry, state, _recon)
+    if outcome == _ADOPTION_INSERTED:
+        ack = EVA_ADOPTED_ACK if action == EVA_ACTION_ADOPT else EVA_REVERTED_ACK
+    else:
+        ack = EVA_REPLAY_ACK
+    _publish_eva_notice(entry, ack=ack)
     return redirect(url_for("show_session", sid=sid))
 
 

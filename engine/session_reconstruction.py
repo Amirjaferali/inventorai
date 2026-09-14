@@ -12,7 +12,10 @@ Permitted product claim (exact):
 What it does (and only this):
   * loads ONE project (project-scoped; the `sid` IS the durable `project_id`);
   * requires a persisted seed idea, confirmed domain, path, and an EXACT supported
-    engine/contract version, all captured at project creation;
+    engine/contract version — the creation stamp captured at project creation,
+    or, when the project's OWN durable adoption ledger carries a valid head, the
+    version that head adopted (T2-G legacy migration, explicit confirmed
+    adoption only; the creation stamp itself is never rewritten);
   * loads the project's validated `ProjectRecordContract` ONCE and derives the
     accepted-answer evidence from it in authoritative store `seq` order (the
     same `answered` selection `SqliteRecordStore.load_accepted_answer_evidence`
@@ -63,7 +66,11 @@ from engine.record_store import ProjectNotFound
 # One explicit deterministic reconstruction version. It identifies the supported
 # engine/contract behaviour — NOT an AI model, timestamp, branch, or environment
 # value. Exact match is required; a mismatch fails closed to Level 0 (no replay,
-# no silent upgrade/migration). No broad version-history system is introduced.
+# no silent upgrade). The ONLY way a project ever runs under a version other
+# than its creation stamp is an EXPLICIT, durable, append-only adoption row
+# (T2-G legacy migration, `T2G-LEGACY-MIGRATION-IMPLEMENT-01`) — never a
+# request field, never an automatic switch on open. No broad version-history
+# system is introduced.
 RECONSTRUCTION_VERSION = "p4-2-level1-recon-v1"
 
 # T2-G (`T2G-VERSIONED-IMPLEMENT-01`): the SECOND supported engine-contract
@@ -112,6 +119,29 @@ STATUS_VERSION_MISMATCH = "LEVEL_0_VERSION_MISMATCH"
 STATUS_UNSUPPORTED_PATH = "LEVEL_0_UNSUPPORTED_PATH"
 
 
+def effective_engine_contract_version(store, project_id, creation_stamp):
+    """T2-G legacy migration — the ONE resolution of the version a project
+    runs under, from DURABLE state only.
+
+    ``creation_stamp`` is the immutable ``projects.engine_contract_version``
+    envelope value. When the project's durable adoption ledger holds a valid
+    chain, the CURRENT HEAD's ``to_version`` is the effective version;
+    otherwise the creation stamp is. Returns ``(version, adoption_count,
+    head)``. A structurally corrupt adoption history propagates the store's
+    ``AdoptionHistoryError`` (fail-closed, no partial state). Whether the
+    resulting version is SUPPORTED is decided by the caller exactly as it
+    already is for the creation stamp. Never reads a request, the UI language,
+    a timestamp or a default; never writes."""
+    loader = getattr(store, "load_engine_version_adoptions", None)
+    if loader is None:
+        return creation_stamp, 0, None
+    history = tuple(loader(project_id))
+    if not history:
+        return creation_stamp, 0, None
+    head = history[-1]
+    return head.to_version, len(history), head
+
+
 class ReconstructionReplayLimitError(Exception):
     """Raised when the accepted-answer replay count exceeds
     ``MAX_ACCEPTED_ANSWER_REPLAY``. Fail-closed: no partial review state is
@@ -155,6 +185,13 @@ class ReconstructedReviewState:
     # writer, and the restored ledger are unchanged — this only makes the
     # already-deterministic outcome visible instead of silent.
     risk_acceptance_outcomes: tuple = field(default_factory=tuple)
+    # T2-G legacy migration: the version this Level-1 replay actually ran
+    # under (the creation stamp, or the adopted version when a durable
+    # adoption head exists) and how many adoption rows the project holds.
+    # Additive and defaulted, so every pre-existing construction is
+    # unchanged; render-only, never persisted, never a request input.
+    effective_engine_contract_version: Optional[str] = None
+    adoption_count: int = 0
 
 
 @dataclass(frozen=True)
@@ -278,8 +315,23 @@ def _reconstruct(store, project_id: str):
         return _level0(None, STATUS_NO_METADATA, evidence), None
 
     if version not in SUPPORTED_ENGINE_CONTRACT_VERSIONS:
-        # Do not replay under current rules; do not migrate or silently upgrade.
-        # An unsupported or missing stamp keeps its existing fail-closed result.
+        # Do not replay under current rules; never silently upgrade. An
+        # unsupported or missing creation stamp keeps its existing fail-closed
+        # result, and an adoption can never rescue it: the effective version
+        # below is resolved only AFTER the creation stamp itself is supported.
+        return _level0(None, STATUS_VERSION_MISMATCH, evidence), None
+
+    # T2-G legacy migration: resolve the EFFECTIVE version ONCE, here, from
+    # durable state only — the immutable creation stamp plus the project's
+    # own append-only adoption head. A corrupt adoption history propagates
+    # (fail-closed, no partial state). An adopted version that this code does
+    # not support fails closed exactly like an unsupported creation stamp:
+    # the replay never silently falls back to the creation stamp while an
+    # adoption exists, because that would read the project under a version
+    # its durable record says it no longer runs under.
+    version, adoption_count, _adoption_head = effective_engine_contract_version(
+        store, project_id, version)
+    if version not in SUPPORTED_ENGINE_CONTRACT_VERSIONS:
         return _level0(None, STATUS_VERSION_MISMATCH, evidence), None
 
     if path != SUPPORTED_PATH:
@@ -327,11 +379,12 @@ def _reconstruct(store, project_id: str):
     setattr(state, "domain", domain)     # matches /start's dynamic domain attribute
     state.domain_signal = domain
     state.path = path
-    # T2-G: the runtime version carrier is the project's OWN persisted stamp,
-    # read here from the trusted envelope — never from a request field, the UI
-    # language, a timestamp or a default. It is set BEFORE the seed is
-    # interpreted, so every replayed answer including the seed is read under
-    # exactly the version the project recorded at creation.
+    # T2-G: the runtime version carrier is the project's OWN durable version —
+    # the trusted creation envelope stamp, or the version its own durable
+    # adoption head explicitly adopted (resolved once above) — never a request
+    # field, the UI language, a timestamp or a default. It is set BEFORE the
+    # seed is interpreted, so every replayed answer including the seed is read
+    # under exactly the one version the project's durable record names.
     state.engine_contract_version = version
 
     last_result = progression_loop.run_iteration(state, seed)   # seed first
@@ -425,4 +478,6 @@ def _reconstruct(store, project_id: str):
         next_question=next_question,
         withdrawn_source_records=withdrawn,
         risk_acceptance_outcomes=tuple(_risk_outcomes),
+        effective_engine_contract_version=version,
+        adoption_count=adoption_count,
     ), state
