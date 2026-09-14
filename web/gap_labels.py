@@ -72,7 +72,13 @@ GAP_LABELS = {
 MATURITY_LABELS = {
     0: {
         "label": "Getting started",
-        "meaning": "Share your idea — what it does and the problem it addresses.",
+        # MG-8 (`MG8-BOUNDED-FIX-IMPLEMENT-01`): the previous wording asked the
+        # inventor to share the idea and the problem on the very page that
+        # displays the description they had just typed. It now states what is
+        # true at this level: the description is saved, and the questions are
+        # how it becomes established evidence. No validation is implied.
+        "meaning": ("Your description is saved. Answer the questions to build "
+                    "it into established evidence."),
     },
     1: {
         "label": "Problem established",
@@ -104,7 +110,8 @@ SESSION_DISCLOSURE = (
 MATURITY_LABELS_AR = {
     0: {
         "label": "البدء",
-        "meaning": "شارك فكرتك — ما الذي تفعله والمشكلة التي تعالجها.",
+        "meaning": ("وصفك محفوظ. أجب عن الأسئلة لتحويله إلى دليل "
+                    "مؤكّد."),
     },
     1: {
         "label": "تحديد المشكلة",

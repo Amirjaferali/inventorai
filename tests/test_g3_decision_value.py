@@ -456,6 +456,86 @@ _A20_ASSEMBLER_APPROVED_NEW = (
     'state.\\n\\n"\n')
 
 
+# MG-8 bounded fix (`MG8-BOUNDED-FIX-IMPLEMENT-01`, Owner-authorized §5 pin
+# amendment): the EXHAUSTIVE, ordered table of additional replacements allowed
+# over the A-20/A-21 assembler pin, applied AFTER the A-20 wording replacement
+# above. The guard reconstructs the pinned blob by applying the A-20 line and
+# then every entry here, and still demands byte-equality, so any assembler
+# change outside this table fails exactly as before. This is a bounded
+# amendment for ONE defect, not a newer baseline and not a broad exemption.
+#
+# Previous behaviour (the pinned bytes): the level-0 maturity label claimed the
+# problem SIGNAL was not established; the two level-0 verdict rationales told
+# every inventor to provide a problem statement first; the completeness line
+# said no problem statement was established; and the problem resolver wrapped
+# `idea_summary` as REASONED unconditionally.
+# Why MG-8 requires the change: the capture seam now records a problem
+# statement whatever its assessed quality, so (a) the resolver must carry the
+# TRUE quality or it would promote an ASSERTED statement, and (b) the three
+# wordings above would otherwise tell an inventor who supplied a problem
+# statement that none exists, and instruct them to supply it again.
+# New behaviour: the resolver carries the recorded quality (legacy states,
+# which have none, keep REASONED exactly as before); the level-0 label names
+# the evidence threshold; and the rationale and completeness lines select a
+# recorded-but-not-yet-established sentence ONLY when a statement is actually
+# recorded, leaving the original no-statement sentences in place otherwise.
+# Unrelated sections: every other section builder, verdict value, key set and
+# rationale is byte-identical to the pin, which this guard proves.
+_MG8_ASSEMBLER_SUBSTITUTIONS = (
+    (  # [2]
+        '    0: "Level 0 — Problem signal not yet established",\n',
+        '    0: "Level 0 — Problem evidence not yet established",\n'),
+    (  # [3]
+        '        "Problem not yet established and open gaps recorded."),\n',
+        '        "Problem not yet established and open gaps recorded."),\n'
+        '}\n'
+        '# MG-8: the two level-0 rationales above address an inventor who has supplied\n'
+        '# NOTHING. When a problem statement HAS been recorded but has not reached the\n'
+        '# evidence threshold, those words falsely instruct the inventor to provide what\n'
+        '# they already provided, so the rationale below is used instead. The verdict\n'
+        '# value, the key set and every other rationale are unchanged; only which of the\n'
+        '# two truthful level-0 sentences is shown depends on the recorded state.\n'
+        '_RECOMMENDATION_A_LEVEL0_RECORDED = {\n'
+        '    False: ("BLOCK",\n'
+        '        "A problem statement is recorded but has not yet reached the evidence "\n'
+        '        "level needed to establish the problem. Strengthen it with specifics "\n'
+        '        "before proceeding; it is not established evidence yet."),\n'
+        '    True:  ("BLOCK",\n'
+        '        "A problem statement is recorded but has not yet reached the evidence "\n'
+        '        "level needed to establish the problem, and open gaps remain."),\n'),
+    (  # [4]
+        '        ("REVISE", "Insufficient evidence to recommend proceeding."))\n',
+        '        ("REVISE", "Insufficient evidence to recommend proceeding."))\n'
+        '    # MG-8: at level 0 ONLY, distinguish "a statement is recorded but is not yet\n'
+        '    # established evidence" from "no statement was supplied". Same BLOCK verdict\n'
+        '    # either way; no maturity, gap or eligibility input changes.\n'
+        '    if key[0] == 0 and _resolved_problem(state) is not None:\n'
+        '        verdict, rationale = _RECOMMENDATION_A_LEVEL0_RECORDED[key[1]]\n'),
+    (  # [5]
+        '        # idea_summary is captured only from a REASONED+ problem-establishment\n'
+        '        # response; wrap it for uniform rendering. No quality is fabricated above\n'
+        '        # what the capture path already guarantees.\n'
+        '        return Evidence(content=summary, quality=REASONED, iteration=0)\n',
+        "        # MG-8: the capture seam records the statement's TRUE assessed quality\n"
+        '        # alongside it, so the wrapper carries that quality instead of assuming\n'
+        '        # one. A legacy state has no recorded quality and could only have been\n'
+        '        # captured at REASONED or better, so it keeps exactly its prior tier.\n'
+        '        # Nothing is promoted: an ASSERTED statement renders as ASSERTED.\n'
+        '        return Evidence(\n'
+        '            content=summary,\n'
+        '            quality=getattr(state, "idea_summary_quality", None) or REASONED,\n'
+        '            iteration=0)\n'),
+    (  # [6]
+        '        return "PARTIAL — mechanism or boundaries still required"\n',
+        '        return "PARTIAL — mechanism or boundaries still required"\n'
+        '    # MG-8: an inventor who recorded a problem statement is never told that no\n'
+        '    # problem statement exists; the honest difference is the evidence level.\n'
+        '    if _resolved_problem(state) is not None:\n'
+        '        return ("INCOMPLETE — problem statement recorded but not yet "\n'
+        '                "established as evidence")\n'),
+)
+
+
 def test_a20_a21_dw_lane_and_assembler_untouched():
     import subprocess
     base = "f96c1900a0f5d0831a7654223ae4e008d4df961e"
@@ -483,6 +563,13 @@ def test_a20_a21_dw_lane_and_assembler_untouched():
         "the pinned assembler no longer carries the exact authorized wording line")
     expected = pinned_text.replace(_A20_ASSEMBLER_APPROVED_OLD,
                                    _A20_ASSEMBLER_APPROVED_NEW)
+    # MG-8 bounded amendment: apply the exhaustive authorized table, in order.
+    # Each anchor must still occur exactly once, so a drifting pin fails loudly
+    # instead of silently matching somewhere else.
+    for _old, _new in _MG8_ASSEMBLER_SUBSTITUTIONS:
+        assert expected.count(_old) == 1, (
+            "an authorized MG-8 anchor is missing or no longer unique")
+        expected = expected.replace(_old, _new)
     with open(os.path.join(root, "engine", "deliverable_assembler.py"),
               encoding="utf-8") as fh:
         actual = fh.read()

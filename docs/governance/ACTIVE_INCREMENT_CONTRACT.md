@@ -23,6 +23,112 @@ Git/GitHub own transient candidate, PR and merge identity. No acceptance/merge t
 self-SHA or lifecycle-label change creates a synchronization candidate. When no mandate
 exists, state ACTIVE CONTRACT: NONE; historical declarations never fill the gap.
 
+<a id="current-authority--mg8-seed-problem-statement-capture"></a>
+## Current authority — MG-8: truthful capture of the seed problem statement
+
+**Owner decision `MG8-BOUNDED-FIX-IMPLEMENT-01` v1.0**, adopting the completed
+read-only adjudication `MG8-CURRENT-TIP-ADJUDICATION-01` at `8ac4467a…` and its
+recommendation **A — FIX MG-8**. Authorized: ONE bounded implementation
+candidate, synthetic tests, ordinary commits/pushes and ONE PR. This
+authorization EXPRESSLY GRANTS the Wave-2 §S-13 canonical-evidence semantics
+change and the MINIMUM amendment of the merged G-3 A-20/A-21 assembler byte-pin
+required for it. NOT authorized: merge (a separate exact-head Owner
+authorization after independent differential review), any broader assembler
+refactor, a new problem store, a new evidence or readiness engine, a new scoring
+system, a new route, CAD/PCB behaviour, Readiness-Layer runtime implementation,
+human-data collection, a benchmark, domain activation, MCP, deployment, paid
+activation.
+
+**Starting context:** authoritative branch `feature/atomic-json-session-persistence`
+at `8ac4467a0d34bcbce598e14210d944a38a08c112` (tree `a4fcfa8d…`, the verified
+PR #645 merge result), clean working tree, implementation branch descended
+directly from that exact tip; the MG-8 reproduction re-verified against the
+adjudication before any edit.
+
+**The defect.** A problem statement typed at `/start` is stored verbatim in the
+durable reconstruction envelope, but the level-0 establishment branch gated
+capture on `quality >= REASONED` alone, and representative problem prose
+assesses `ASSERTED` as a rule. The statement therefore never reached the
+problem-statement carrier, so downstream surfaces spoke as though none had been
+supplied: the package reported that no problem statement was established, the
+evidence registry lost its problem slot, the problem-derived functional
+requirement disappeared, the statement never entered the existing safety-signal
+derivation, and the saved-project page asked the inventor to share a problem
+they had just typed.
+
+**1. Authorized semantic change (capture truth, not a maturity shortcut).** At
+the existing level-0 seam the inventor's statement is captured into the existing
+`idea_summary` carrier whatever its assessed quality, together with that TRUE
+quality in the additive in-memory companion `idea_summary_quality`. The durable
+seed is unchanged. `known_problem` keeps its own unchanged REASONED-or-better
+gate, so no evidence is promoted.
+
+**2. Preserved invariants.** The maturity ladder and its thresholds, the gap
+lifecycle, the canonical ordering owner and T2-F ordering behaviour, and sibling
+eligibility (the in-gap relevance conjunct) are all untouched. Capture alone
+never promotes maturity, opens or closes a gap, or alters question ordering.
+The seed is still never a ledger record.
+
+**3. Deliverable problem owner.** `_resolved_problem` remains the SINGLE owner
+of what is displayed as the problem; no second resolver exists. Only its
+fabricated-quality wrapper is corrected: it now carries the recorded quality,
+and a legacy state that has none keeps `REASONED` exactly as before, because
+such a state could only have been captured at that tier.
+
+**4. Byte-pin amendment.** The merged A-20/A-21 guard still reconstructs the
+pinned assembler blob and demands byte-equality; it now applies, after the
+existing A-20 wording line, an EXHAUSTIVE ordered table of five authorized MG-8
+replacements, each anchored so it must occur exactly once. Previous bytes, the
+reason MG-8 requires each change, and the new behaviour are recorded verbatim in
+`tests/test_g3_decision_value.py`. Every other section builder, verdict value,
+key set and rationale is proven byte-identical to the pin.
+
+**5. Wording.** Only statements that falsely instructed an inventor to supply a
+problem statement they had already supplied are corrected, and each new wording
+distinguishes *recorded but not yet established as evidence* from *no statement
+supplied*: the level-0 maturity label now names the evidence threshold; the
+level-0 verdict rationale and the completeness line select a recorded-statement
+sentence ONLY when a statement is actually recorded, leaving the original
+no-statement sentences in place otherwise; and the saved-project level-0 stage
+line (EN/AR) states that the description is saved instead of asking for it. No
+surface claims the statement is validated: it renders at its true quality and
+`UNVALIDATED`.
+
+**6. Consequences through existing owners.** The captured statement now
+participates in the EXISTING safety-signal derivation (which already reads the
+problem carrier) with no change to that subsystem and no second scanner, and the
+EXISTING requirement derivation again produces the problem-derived functional
+requirement. No new requirement semantics.
+
+**7. Reconstruction.** No schema change, no new durable field, no migration, no
+reconstruction-version bump: replay through the unchanged canonical path
+re-derives the same carrier and quality, proven live and cold.
+
+**Changed paths.** Production: `engine/idea_state.py` (one additive defaulted
+in-memory field), `engine/progression_loop.py` (level-0 capture), 
+`engine/deliverable_assembler.py` (resolver quality + three level-0 wordings),
+`web/gap_labels.py` (level-0 stage meaning EN/AR). Tests:
+`tests/test_mg8_seed_problem_capture.py` (new); `tests/test_g3_decision_value.py`
+(pin amendment); `tests/test_w2b_amc_matrix_parity_mg8.py` (the diagnosis pin
+becomes the repair pin, every still-true invariant retained). Governance: this
+file and the MG-8 row in `DEFERRED_OBLIGATIONS_REGISTER.md` §3. NOT touched:
+the database schema, `engine/record_store.py`, `engine/session_reconstruction.py`,
+`engine/safety_signal.py`, `engine/requirement_landscape.py`,
+`engine/validation_plan.py`, `engine/answer_stance.py`, intent serving, exports,
+API semantics, question content, feedback semantics, adoption semantics.
+
+**Status: MG-8 REPAIR DELIVERED AS A CANDIDATE; merge not authorized.**
+Remaining limitations: a captured statement below the evidence threshold still
+does not advance maturity (by design — the evidence gate is deliberately
+untouched); the deliverable still shows the honest absence note for states that
+genuinely carry no statement; and the seed remains absent from the ledger-ordered
+T3-A Project Record by design. Preserved unchanged with their triggers: `R1`,
+`R2`, `R3`, G-4-A, `N-1`–`N-6`, the T1-A′ supersession, T1-C′, the EN↔AR
+residual rows, the T2-A paid-activation blocker, the PR #640 findings, the T2-D
+observations, PRE-FCORA, FCORA, and the Readiness Decision Layer (runtime
+implementation NOT authorized; its repository reconciliation remains eligible
+and not convened).
+
 <a id="current-authority--t3a-project-record-input-history-rendering"></a>
 ## Current authority — T3-A "Project record": narrowed input-history rendering
 
