@@ -46,7 +46,7 @@ redesign; representing a provenance value is not collecting it.
 """
 import re
 from dataclasses import dataclass
-from typing import Optional, Tuple
+from typing import Optional
 
 from engine.idea_state import (
     EXPERT_SUPPLIED,
@@ -316,6 +316,77 @@ def is_same_evidence_event(stored, candidate):
                for f in _IDENTITY_FIELDS)
 
 
+def is_stored_text(text, field, cap):
+    """True iff ``text`` is EXACTLY the stored (post-policy) form for ``field``.
+
+    This is the SAME bounded policy `normalize_text` applies — it is asked, not
+    re-implemented — so the store boundary can reject text that never passed
+    through the sanctioned constructor without creating a second normalization
+    policy."""
+    try:
+        return normalize_text(text, field, cap) == text
+    except CommercialEvidenceError:
+        return False
+
+
+def is_stored_date(text):
+    """True iff ``text`` is EXACTLY the stored form of ``occurred_on``: the
+    ISO-shaped date the owner's existing rule accepts, or the empty string when
+    no date is known. The shape rule is asked, never re-stated."""
+    try:
+        return normalize_optional_date(text) == text
+    except CommercialEvidenceError:
+        return False
+
+
+#: Every bounded text field with its cap, in canonical row order.
+TEXT_FIELD_CAPS = (
+    ("subject_text", MAX_SUBJECT_TEXT_CHARS),
+    ("statement_text", MAX_STATEMENT_TEXT_CHARS),
+    ("source_identity", MAX_SOURCE_IDENTITY_CHARS),
+    ("scope_text", MAX_SCOPE_TEXT_CHARS),
+    ("limitation_text", MAX_LIMITATION_TEXT_CHARS),
+)
+
+
+def validate_evidence_row(row):
+    """Validate ONE canonical row against every owner rule, and return it.
+
+    This is the rule set the sanctioned constructor enforces, expressed so the
+    STORE can enforce it independently: a caller that builds a
+    ``ReadinessEvidence`` directly — bypassing ``make_readiness_evidence`` —
+    is refused at the durable boundary rather than committing a row the
+    loader would later reject. It creates no new policy: the dimension,
+    topic, provenance, claim-status and bounded-text rules are the module's
+    own, asked here a second time.
+
+    Raises ``CommercialEvidenceError``; never mutates or repairs the row."""
+    if not isinstance(row, ReadinessEvidence):
+        raise CommercialEvidenceError("row: must be a ReadinessEvidence")
+    validate_dimension(row.dimension)
+    validate_topic(row.dimension, row.topic)
+    if row.provenance not in PROVENANCE_VALUES:
+        raise CommercialEvidenceError("provenance: unknown provenance")
+    if row.claim_status not in CLAIM_STATUSES:
+        raise CommercialEvidenceError("claim_status: unknown claim status")
+    for field, cap in TEXT_FIELD_CAPS:
+        if not is_stored_text(getattr(row, field), field, cap):
+            raise CommercialEvidenceError("%s: is not a stored value" % field)
+    if not is_stored_date(row.occurred_on):
+        raise CommercialEvidenceError("occurred_on: is not a stored value")
+    if not isinstance(row.event_key, str) or not row.event_key.strip():
+        raise CommercialEvidenceError("event_key: is empty")
+    if not isinstance(row.evidence_id, str) or not row.evidence_id.strip():
+        raise CommercialEvidenceError("evidence_id: is empty")
+    if row.supersedes_evidence_id == row.evidence_id:
+        raise CommercialEvidenceError(
+            "supersedes_evidence_id: a row cannot supersede itself")
+    if row.withdrawn and not row.supersedes_evidence_id:
+        raise CommercialEvidenceError(
+            "withdrawn: a withdrawal must supersede an existing item")
+    return row
+
+
 def validate_evidence_history(rows):
     """Structural validation of ONE project's rows in sequence order.
 
@@ -330,12 +401,14 @@ def validate_evidence_history(rows):
     for row in rows:
         if row.evidence_id in seen:
             raise CommercialEvidenceHistoryError("duplicate evidence id")
-        if row.dimension not in DIMENSIONS:
-            raise CommercialEvidenceHistoryError("unknown dimension")
-        if row.topic not in TOPICS_BY_DIMENSION.get(row.dimension, ()):
-            raise CommercialEvidenceHistoryError("topic outside the vocabulary")
-        if row.claim_status not in CLAIM_STATUSES:
-            raise CommercialEvidenceHistoryError("unknown claim status")
+        # Every stored row must still satisfy the owner's own row rules —
+        # dimension, topic, PROVENANCE, claim status and the bounded text
+        # policy. A history is never "valid enough": a row that could not be
+        # written today must not be readable as canonical history either.
+        try:
+            validate_evidence_row(row)
+        except CommercialEvidenceError as exc:
+            raise CommercialEvidenceHistoryError(str(exc))
         prior = row.supersedes_evidence_id
         if prior is not None:
             if prior == row.evidence_id:
@@ -369,8 +442,7 @@ def validate_new_evidence(existing_rows, candidate):
         raise CommercialEvidenceError("evidence_id: already exists")
     if any(r.event_key == candidate.event_key for r in rows):
         raise CommercialEvidenceError("event_key: already exists")
-    validate_dimension(candidate.dimension)
-    validate_topic(candidate.dimension, candidate.topic)
+    validate_evidence_row(candidate)
     prior_id = candidate.supersedes_evidence_id
     if prior_id is None:
         if candidate.withdrawn:

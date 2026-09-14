@@ -39,7 +39,7 @@ from engine.commercial_evidence import (
     EVIDENCE_EXACT_REPLAY, EVIDENCE_INSERTED, EvidenceCapExceeded,
     MAX_READINESS_EVIDENCE_PER_PROJECT, ReadinessEvidence,
     is_same_evidence_event, validate_evidence_history,
-    validate_new_evidence,
+    validate_evidence_row, validate_new_evidence,
 )
 from engine.requirement_quantity import (
     RequirementQuantity, validate_quantity_history, validate_new_quantity,
@@ -1389,12 +1389,22 @@ class SqliteRecordStore:
             (``CommercialEvidenceHistoryError`` on corruption — a write is never
             possible on top of a corrupt history);
           * the per-project cap holds (``EvidenceCapExceeded``);
-          * the proposed row is validated TOGETHER with the existing history
-            exactly as the durable history will read after the insert, so the
-            dimension must be ACTIVATED, the topic must belong to that
-            dimension's closed vocabulary, a superseded item must exist, belong
-            to the same dimension and not already have a successor, and a
-            withdrawal must supersede something;
+          * the proposed row is validated ON ITS OWN against every owner rule
+            (``validate_evidence_row``) — the ACTIVATED dimension, that
+            dimension's closed topic vocabulary, the CANONICAL provenance
+            vocabulary, the single UNVALIDATED claim status and the owner's
+            bounded text policy (stored form, no control character, within the
+            field cap) — so a row built by hand, bypassing the sanctioned
+            constructor, is rejected here and never reaches durable storage;
+          * the proposed row is validated TOGETHER with the existing history,
+            so a superseded item must exist, belong to the same dimension and
+            not already have a successor, and a withdrawal must supersede
+            something;
+          * the EXACT history that would exist after this insert
+            (``existing history + the row as it will be stored``, carrying the
+            ``evidence_seq`` assigned here) is validated as a whole by the
+            canonical history validator, so nothing is ever committed that the
+            owner could not read back as valid canonical history;
           * ``evidence_seq`` is assigned here (next in sequence); the caller's
             value is ignored; ``recorded_iteration`` / ``recorded_at`` persist
             as given and are never part of identity;
@@ -1426,11 +1436,21 @@ class SqliteRecordStore:
             if len(history) >= MAX_READINESS_EVIDENCE_PER_PROJECT:
                 raise EvidenceCapExceeded(
                     "readiness-evidence cap reached for this project")
+            validate_evidence_row(evidence)
             validate_new_evidence(history, evidence)
             seq = self._conn.execute(
                 "SELECT COALESCE(MAX(evidence_seq), -1) + 1 FROM "
                 "readiness_evidence WHERE project_id = ?", (project_id,)
             ).fetchone()[0]
+            # The LAST word before the write belongs to the canonical history
+            # validator, applied to the exact history this insert would create:
+            # the existing rows plus this row AS IT WILL BE STORED (the seq
+            # assigned just above). A partial candidate check is not enough —
+            # the store never commits a row that would make the project's own
+            # durable history unreadable.
+            validate_evidence_history(
+                tuple(history) + (dataclasses.replace(evidence,
+                                                      evidence_seq=seq),))
             self._conn.execute(
                 "INSERT INTO readiness_evidence (project_id, "
                 + self._EVIDENCE_COLUMNS + ") "

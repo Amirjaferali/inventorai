@@ -17,6 +17,7 @@ no commercial conclusion, readiness status or risk record is produced anywhere
 in this lane; saved-project / cold-reconstruction compatibility; schema
 idempotency on a populated database; and no regression to the sibling stores.
 """
+import dataclasses
 import inspect
 import os
 import re
@@ -504,3 +505,194 @@ def test_canonical_row_is_json_safe_and_complete(tmp_path):
     assert set(row) == set(ReadinessEvidence.__dataclass_fields__)
     import json
     assert json.loads(json.dumps(row))["dimension"] == DIMENSION_COMMERCIAL
+
+
+# ==========================================================================
+# 10. store-boundary hardening: the durable boundary validates independently
+#     of the sanctioned constructor (COMMERCIAL-EVIDENCE-OWNER-REPAIR-01)
+# ==========================================================================
+# `make_readiness_evidence` is the sanctioned way to build a row, but it is NOT
+# the only way: `ReadinessEvidence` is an ordinary frozen dataclass, so any
+# caller can construct one by hand or mutate a valid one with
+# `dataclasses.replace`. Durability is the last line: what the store commits is
+# what every later read must be able to read back as valid canonical history.
+# These tests therefore attack the STORE, with the constructor bypassed, and
+# assert two things every time — the append raises, and NOTHING durable
+# survives (the project still reads back cleanly afterwards).
+def _raw(store, valid, **over):
+    """A row built AROUND the sanctioned constructor: take a valid row and
+    replace fields directly, exactly as a careless or hostile caller would."""
+    return dataclasses.replace(valid, **over)
+
+
+def _append_must_fail(store, pid, row):
+    """Assert the append is refused AND that the project's durable history is
+    untouched and still readable. A rejected write that poisons later reads is
+    not a rejected write."""
+    before = store.load_readiness_evidence(pid)
+    with pytest.raises((CommercialEvidenceError, CommercialEvidenceHistoryError,
+                        StoreError)):
+        store.append_readiness_evidence(pid, row)
+    after = store.load_readiness_evidence(pid)
+    assert after == before
+    assert all(r.evidence_id != row.evidence_id for r in after)
+    return after
+
+
+def test_non_canonical_provenance_is_rejected_at_the_store_boundary(tmp_path):
+    """F-1. The canonical provenance axis is the whole vocabulary; this lane
+    invents no commercial provenance value of its own. A hand-built row
+    carrying `MARKET_VALIDATED` must never reach durable storage."""
+    store = _store(tmp_path)
+    pid = _project(store)
+    valid = _evidence(store, key="ok")
+    assert store.append_readiness_evidence(pid, valid) == EVIDENCE_INSERTED
+    assert "MARKET_VALIDATED" not in PROVENANCE_VALUES
+    bad = _raw(store, valid, evidence_id=store.new_readiness_evidence_id(),
+               event_key="bad-prov", provenance="MARKET_VALIDATED")
+    _append_must_fail(store, pid, bad)
+    # every other non-canonical provenance is refused for the same reason
+    for value in ("", "owner_stated", "INVENTOR_SAID", "VALIDATED", None):
+        _append_must_fail(store, pid, _raw(
+            store, valid, evidence_id=store.new_readiness_evidence_id(),
+            event_key="bad-prov-%r" % (value,), provenance=value))
+
+
+def test_non_canonical_provenance_is_rejected_by_history_validation(tmp_path):
+    """F-1, read side. A history is never "valid enough": a row that could not
+    be WRITTEN today is not readable as canonical history either."""
+    store = _store(tmp_path)
+    pid = _project(store)
+    valid = _evidence(store, key="ok")
+    poisoned = dataclasses.replace(valid, provenance="MARKET_VALIDATED")
+    with pytest.raises(CommercialEvidenceHistoryError):
+        validate_evidence_history([poisoned])
+    with pytest.raises(CommercialEvidenceHistoryError):
+        validate_evidence_history([valid, dataclasses.replace(
+            poisoned, evidence_id="ev-x", event_key="x")])
+
+
+def test_a_stronger_claim_status_cannot_be_durably_inserted(tmp_path):
+    """F-2. Recording is never validating. `UNVALIDATED` is the single value,
+    and the boundary — not only the constructor — enforces it, so no caller can
+    durably record an owner statement as DEMONSTRATED or VERIFIED."""
+    store = _store(tmp_path)
+    pid = _project(store)
+    valid = _evidence(store, key="ok")
+    store.append_readiness_evidence(pid, valid)
+    for status in ("DEMONSTRATED", "EMPIRICALLY_DEMONSTRATED",
+                   "INDEPENDENTLY_VERIFIED", "SPECIALIST_REVIEWED", "", None):
+        _append_must_fail(store, pid, _raw(
+            store, valid, evidence_id=store.new_readiness_evidence_id(),
+            event_key="cs-%r" % (status,), claim_status=status))
+    rows = store.load_readiness_evidence(pid)
+    assert [r.claim_status for r in rows] == [CLAIM_STATUS_UNVALIDATED]
+
+
+def test_control_characters_and_oversized_text_are_rejected_at_the_store(
+        tmp_path):
+    """F-2, text boundary. The store reapplies the owner's EXISTING bounded
+    text policy — there is no second policy here — so an embedded NUL, a
+    control character, an empty or whitespace-only value, an unnormalized value
+    and an over-cap value are all refused at the durable boundary."""
+    store = _store(tmp_path)
+    pid = _project(store)
+    valid = _evidence(store, key="ok")
+    store.append_readiness_evidence(pid, valid)
+    attacks = (
+        ("statement_text", "a NUL\x00inside"),
+        ("statement_text", "a bell\x07inside"),
+        ("subject_text", "line\nbreak"),
+        ("subject_text", ""),
+        ("subject_text", "   "),
+        ("subject_text", " untrimmed "),
+        ("source_identity", "x" * 5000),
+        ("statement_text", "y" * 5000),
+        ("scope_text", "z" * 5000),
+        ("limitation_text", "w" * 5000),
+        ("occurred_on", "not-a-date"),
+        ("occurred_on", 20260101),
+    )
+    for i, (field, value) in enumerate(attacks):
+        _append_must_fail(store, pid, _raw(
+            store, valid, evidence_id=store.new_readiness_evidence_id(),
+            event_key="txt-%d" % i, **{field: value}))
+    # The boundary REAPPLIES the owner's existing policy — it does not invent a
+    # stricter second one. `occurred_on` is an ISO SHAPE check (never a calendar
+    # check), so the store accepts exactly what the sanctioned constructor
+    # accepts, no more and no less. Proven by parity, not by restating the rule.
+    for probe in ("2026-01-01", "", "2026-13-40", "not-a-date", "2026-1-1"):
+        try:
+            expected = make_readiness_evidence(
+                evidence_id="ev-probe", evidence_seq=0,
+                dimension=DIMENSION_COMMERCIAL, topic=COMMERCIAL_TOPICS[0],
+                occurred_on=probe, event_key="probe", recorded_iteration=1,
+                recorded_at="2026-01-01T00:00:00.000000Z", **GOOD).occurred_on
+        except CommercialEvidenceError:
+            expected = None
+        row = _raw(store, valid, evidence_id=store.new_readiness_evidence_id(),
+                   event_key="date-%s" % probe, occurred_on=probe)
+        if expected is None or expected != probe:
+            _append_must_fail(store, pid, row)
+        else:
+            assert store.append_readiness_evidence(
+                pid, row) == EVIDENCE_INSERTED
+
+
+def test_direct_construction_cannot_bypass_any_store_validation(tmp_path):
+    """F-2, whole-row. The boundary validates the FULL candidate and the EXACT
+    history the insert would create, so a hand-built row cannot smuggle an
+    unactivated dimension, an out-of-vocabulary topic, a self-supersession, a
+    withdrawal with nothing to withdraw or an empty identity into the store."""
+    store = _store(tmp_path)
+    pid = _project(store)
+    valid = _evidence(store, key="ok")
+    store.append_readiness_evidence(pid, valid)
+    fresh = store.new_readiness_evidence_id()
+    cases = (
+        dict(dimension=DIMENSION_MANUFACTURING),   # inactive dimension
+        dict(dimension="finance"),                 # unknown dimension
+        dict(topic="market_validated"),            # out of vocabulary
+        dict(topic=""),
+        dict(evidence_id=fresh, supersedes_evidence_id=fresh),  # self
+        dict(withdrawn=True, supersedes_evidence_id=None),      # nothing to
+        dict(supersedes_evidence_id="ev-does-not-exist"),       # unknown prior
+        dict(evidence_id="   "),
+        dict(event_key=""),
+    )
+    for i, over in enumerate(cases):
+        over.setdefault("evidence_id", store.new_readiness_evidence_id())
+        over.setdefault("event_key", "direct-%d" % i)
+        _append_must_fail(store, pid, _raw(store, valid, **over))
+    # one poisoned attempt never breaks a later legitimate read or write
+    assert len(store.load_readiness_evidence(pid)) == 1
+    assert store.append_readiness_evidence(
+        pid, _evidence(store, topic=COMMERCIAL_TOPICS[1], key="still-works")
+    ) == EVIDENCE_INSERTED
+
+
+def test_hardening_leaves_valid_recording_replay_and_withdrawal_intact(
+        tmp_path):
+    """The repair refuses what was always invalid and nothing else: a canonical
+    row still appends, replays idempotently under its own event key, supersedes
+    a prior item and withdraws a chain — with no UPDATE anywhere."""
+    store = _store(tmp_path)
+    pid = _project(store)
+    first = _evidence(store, key="h1")
+    assert store.append_readiness_evidence(pid, first) == EVIDENCE_INSERTED
+    assert store.append_readiness_evidence(pid, first) == EVIDENCE_EXACT_REPLAY
+    stored_first = store.load_readiness_evidence(pid)[0]
+    corrected = _evidence(store, key="h2", supersedes=stored_first.evidence_id,
+                          statement_text="the corrected statement")
+    assert store.append_readiness_evidence(pid, corrected) == EVIDENCE_INSERTED
+    assert [r.evidence_id for r in active_evidence(
+        store.load_readiness_evidence(pid))] == [corrected.evidence_id]
+    withdrawal = _evidence(store, key="h3", withdrawn=True,
+                           supersedes=corrected.evidence_id)
+    assert store.append_readiness_evidence(pid, withdrawal) == EVIDENCE_INSERTED
+    rows = store.load_readiness_evidence(pid)
+    assert len(rows) == 3                      # append-only: nothing replaced
+    assert active_evidence(rows) == ()         # the chain is withdrawn
+    assert len(evidence_chain(rows, stored_first.evidence_id)) == 3
+    assert all(r.claim_status == CLAIM_STATUS_UNVALIDATED for r in rows)
+    assert store.load_readiness_evidence(pid) == rows  # replay is stable
