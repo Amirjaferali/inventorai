@@ -130,8 +130,8 @@ def effective_engine_contract_version(store, project_id, creation_stamp):
     head)``. A structurally corrupt adoption history propagates the store's
     ``AdoptionHistoryError`` (fail-closed, no partial state). Whether the
     resulting version is SUPPORTED is decided by the caller exactly as it
-    already is for the creation stamp. Never reads a request, the UI language,
-    a timestamp or a default; never writes."""
+    already is for the creation stamp. Never reads a request, the UI display
+    setting, a timestamp or a default; never writes."""
     loader = getattr(store, "load_engine_version_adoptions", None)
     if loader is None:
         return creation_stamp, 0, None
