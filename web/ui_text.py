@@ -1958,6 +1958,120 @@ UI_STRINGS = {
         "en": "That is already your saved choice. Nothing changed.",
         "ar": "هذا هو اختيارك المحفوظ بالفعل. لم يتغير شيء.",
     },
+    # --- T2-G legacy migration: explicit confirmed engine-version adoption ---
+    # (`T2G-LEGACY-MIGRATION-IMPLEMENT-01`, Owner policy B). Copy is truthful
+    # and bounded: it never says upgraded, improved, corrected, invalid, stale
+    # or engineering-verified. BEFORE confirmation it states that the project
+    # was created under earlier rules, what adopting the current rules can
+    # change, that nothing is deleted or rewritten, and that adoption can be
+    # reversed. AFTER adoption it states only that the project now runs under
+    # the adopted current rules and that earlier questions and answers were
+    # recorded under the earlier rules.
+    "UI_EVA_HEADING": {
+        "en": "Run this project under the current rules (optional)",
+        "ar": "تشغيل هذا المشروع وفق القواعد الحالية (اختياري)",
+    },
+    "UI_EVA_BEFORE_CREATED": {
+        "en": ("This project was created under an earlier version of the rules "
+               "that choose which question to show and decide when an answer "
+               "counts."),
+        "ar": ("أُنشئ هذا المشروع وفق إصدار أسبق من القواعد التي تختار السؤال "
+               "المعروض وتحدد متى تُحتسب الإجابة."),
+    },
+    "UI_EVA_BEFORE_CHANGE": {
+        "en": ("If you adopt the current rules, everything is recomputed from "
+               "your saved answers under those rules. Mechanism knowledge that "
+               "was previously counted can change, and an earlier question may "
+               "be asked again."),
+        "ar": ("إذا اعتمدت القواعد الحالية، يُعاد حساب كل شيء من إجاباتك "
+               "المحفوظة وفق تلك القواعد. وقد تتغير معرفة الآلية التي احتُسبت "
+               "سابقًا، وقد يُطرح سؤال سابق مرة أخرى."),
+    },
+    "UI_EVA_BEFORE_KEEP": {
+        "en": ("No answer, evidence or recorded history is deleted or "
+               "rewritten. The version this project was created under stays "
+               "recorded."),
+        "ar": ("لا تُحذف أي إجابة أو دليل أو سجل محفوظ ولا يُعاد كتابته. ويبقى "
+               "الإصدار الذي أُنشئ به هذا المشروع مسجّلًا."),
+    },
+    "UI_EVA_BEFORE_REVERSE": {
+        "en": "You can later return this project to the earlier rules.",
+        "ar": "يمكنك لاحقًا إعادة هذا المشروع إلى القواعد السابقة.",
+    },
+    "UI_EVA_CONFIRM_LABEL": {
+        "en": "I understand what can change, and I want this project to run under the current rules.",
+        "ar": "أفهم ما قد يتغير، وأريد تشغيل هذا المشروع وفق القواعد الحالية.",
+    },
+    "UI_EVA_BUTTON": {
+        "en": "Adopt the current rules",
+        "ar": "اعتمد القواعد الحالية",
+    },
+    "UI_EVA_AFTER": {
+        "en": ("This project now runs under the adopted current rules. Its "
+               "earlier questions and answers were originally recorded under "
+               "the earlier rules."),
+        "ar": ("يعمل هذا المشروع الآن وفق القواعد الحالية المعتمدة. وقد سُجّلت "
+               "أسئلته وإجاباته السابقة أصلًا وفق القواعد السابقة."),
+    },
+    "UI_EVA_REVERT_EXPLAIN": {
+        "en": ("Returning to the earlier rules recomputes everything from your "
+               "saved answers under those rules again. Nothing is deleted or "
+               "rewritten; the adoption history stays recorded."),
+        "ar": ("العودة إلى القواعد السابقة تعيد حساب كل شيء من إجاباتك المحفوظة "
+               "وفق تلك القواعد مرة أخرى. لا يُحذف شيء ولا يُعاد كتابته، ويبقى "
+               "سجل الاعتماد محفوظًا."),
+    },
+    "UI_EVA_REVERT_CONFIRM_LABEL": {
+        "en": "I understand what can change, and I want this project to return to the earlier rules.",
+        "ar": "أفهم ما قد يتغير، وأريد إعادة هذا المشروع إلى القواعد السابقة.",
+    },
+    "UI_EVA_REVERT_BUTTON": {
+        "en": "Return to the earlier rules",
+        "ar": "العودة إلى القواعد السابقة",
+    },
+    "UI_EVA_COLD_NOTE": {
+        "en": ("This saved project runs under rules it adopted after it was "
+               "created; its earlier questions and answers were recorded under "
+               "the earlier rules."),
+        "ar": ("يعمل هذا المشروع المحفوظ وفق قواعد اعتمدها بعد إنشائه؛ وقد سُجّلت "
+               "أسئلته وإجاباته السابقة وفق القواعد السابقة."),
+    },
+    "UI_EVA_ACK_ADOPTED": {
+        "en": ("This project now runs under the current rules. Everything "
+               "shown has been recomputed from your saved answers."),
+        "ar": ("يعمل هذا المشروع الآن وفق القواعد الحالية. وقد أُعيد حساب كل ما "
+               "يظهر من إجاباتك المحفوظة."),
+    },
+    "UI_EVA_ACK_REVERTED": {
+        "en": ("This project has returned to the earlier rules. Everything "
+               "shown has been recomputed from your saved answers."),
+        "ar": ("عاد هذا المشروع إلى القواعد السابقة. وقد أُعيد حساب كل ما يظهر "
+               "من إجاباتك المحفوظة."),
+    },
+    "UI_EVA_ACK_REPLAY": {
+        "en": ("That request was already recorded earlier, so nothing was "
+               "added."),
+        "ar": "سُجِّل ذلك الطلب سابقًا بالفعل، لذلك لم يُضف شيء.",
+    },
+    "UI_EVA_ERR_NOT_APPLIED": {
+        "en": ("That change could not be applied just now. Nothing was "
+               "changed."),
+        "ar": "تعذّر تطبيق ذلك التغيير الآن. لم يتغير شيء.",
+    },
+    "UI_EVA_ERR_SAVED_NOT_SHOWN": {
+        "en": ("Your choice of rules was saved, but the page could not be "
+               "updated just now. What you see below has not changed yet. It "
+               "will be reflected whenever this project can be rebuilt "
+               "successfully."),
+        "ar": ("حُفظ اختيارك للقواعد، لكن تعذّر تحديث الصفحة الآن. ما تراه أدناه "
+               "لم يتغير بعد، وسينعكس متى أمكن إعادة بناء هذا المشروع بنجاح."),
+    },
+    "UI_EVA_ERR_UNKNOWN": {
+        "en": ("We could not confirm whether that change was saved. Reload this "
+               "page to see which rules your project currently runs under."),
+        "ar": ("تعذّر التأكد مما إذا كان ذلك التغيير قد حُفظ. أعد تحميل هذه الصفحة "
+               "لترى القواعد التي يعمل بها مشروعك حاليًا."),
+    },
     "UI_T2D_ERR_NOT_SAVED": {
         "en": "That could not be saved just now. Nothing was changed.",
         "ar": "تعذّر حفظ ذلك الآن. لم يتغير أي شيء.",

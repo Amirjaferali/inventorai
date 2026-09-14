@@ -463,17 +463,26 @@ def test_durable_store_holds_exactly_one_ledger_and_no_parallel_table(db_path,
                          conn.execute("PRAGMA table_info(question_feedback)")]
         feedback_choices = [r[0] for r in conn.execute(
             "SELECT DISTINCT choice FROM question_feedback")]
+        # T2-G legacy migration added the additive, project-scoped, append-only
+        # `engine_version_adoptions` history table. Like the three before it,
+        # it is NOT a parallel ledger: it carries no disposition and no record
+        # payload, holds only two version identifiers per row, and is never
+        # replayed as an owner action — `records` remains the ONE durable
+        # ledger of owner actions. The semantic assertions below enforce that.
+        adoption_cols = [col[1] for col in
+                         conn.execute("PRAGMA table_info(engine_version_adoptions)")]
     finally:
         conn.close()
-    assert tables == ["evidence_references", "projects", "question_feedback",
-                      "records", "requirement_quantities"], tables
+    assert tables == ["engine_version_adoptions", "evidence_references", "projects",
+                      "question_feedback", "records", "requirement_quantities"], tables
     assert ledger_like == ["records"], ledger_like
     assert "payload" not in quantity_cols and "disposition" not in quantity_cols
     assert "payload" not in reference_cols and "disposition" not in reference_cols
     assert "payload" not in feedback_cols and "disposition" not in feedback_cols
+    assert "payload" not in adoption_cols and "disposition" not in adoption_cols
     # STRENGTHENED: the additive tables carry no answer/question prose at all,
     # so none of them can become a second record of what the owner said.
-    for cols in (quantity_cols, reference_cols, feedback_cols):
+    for cols in (quantity_cols, reference_cols, feedback_cols, adoption_cols):
         assert "content" not in cols and "answer" not in cols
         assert "question" not in cols and "question_text" not in cols
     # and feedback can only ever hold one of the three closed tokens

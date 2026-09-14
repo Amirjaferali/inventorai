@@ -34,6 +34,9 @@ MUTATIONS = (
     # T2-D: the single-step contextual question-feedback write, covered by the
     # same evidence matrix below.
     "/session/<sid>/question-feedback",
+    # T2-G legacy migration: the single-step EXPLICIT engine-version adoption /
+    # reversal write, covered by the same evidence matrix below.
+    "/session/<sid>/engine-version",
     "/decision-workspace", "/decision-workspace/<did>/input",
     "/decision-workspace/<did>/constraint", "/decision-workspace/<did>/gap",
     "/decision-workspace/<did>/evidence", "/decision-workspace/<did>/gap-assessment",

@@ -113,6 +113,28 @@ class QuantityCapExceeded(StoreError):
     written."""
 
 
+class AdoptionChainConflict(StoreError):
+    """T2-G legacy migration (`T2G-LEGACY-MIGRATION-IMPLEMENT-01`): an
+    engine-version adoption append would violate the ONE-CHAIN rule against
+    the durable truth inside the write transaction — the expected head moved,
+    the predecessor is not the current head, the recorded ``from_version`` is
+    not the project's CURRENT effective version, or the stable event key
+    already names a DIFFERENT event. An established refusal, decided before
+    any row is written."""
+
+
+class AdoptionHistoryError(StoreError):
+    """T2-G legacy migration: the durable adoption history of a project is
+    structurally invalid (no root, a fork, a broken predecessor edge, or a
+    ``from_version`` that does not continue the previous ``to_version``).
+    Fail-closed: nothing is returned and nothing is repaired."""
+
+
+class AdoptionCapReached(StoreError):
+    """T2-G legacy migration: the per-project adoption row cap was reached.
+    Refused clearly inside the transaction; history is never truncated."""
+
+
 @runtime_checkable
 class RecordStore(Protocol):
     """Datastore-neutral durable record-store interface (the abstraction
@@ -148,6 +170,13 @@ class RecordStore(Protocol):
     def load_question_feedback(self, project_id: str) -> tuple: ...
     def question_feedback_for_event_key(self, project_id: str, event_key: str): ...
     def ledger_record_ids(self, project_id: str) -> tuple: ...
+    # T2-G legacy migration (additive; see the engine_version_adoptions note).
+    def new_adoption_id(self) -> str: ...
+    def append_engine_version_adoption(self, project_id: str, adoption,
+                                       expected_head_id=None) -> str: ...
+    def load_engine_version_adoptions(self, project_id: str) -> tuple: ...
+    def engine_version_adoption_for_event_key(self, project_id: str, event_key: str): ...
+    def feedback_revision_ids(self, project_id: str) -> tuple: ...
 
 
 _SCHEMA = (
@@ -380,6 +409,124 @@ _FEEDBACK_SCHEMA = (
     "ON question_feedback (project_id, context_key)",
 )
 
+# T2-G legacy migration (`T2G-LEGACY-MIGRATION-IMPLEMENT-01`, Owner policy B —
+# EXPLICIT CONFIRMED MIGRATION): the ADDITIVE, append-only engine-version
+# ADOPTION ledger. One row states that, from this point on, the project runs
+# under ``to_version`` instead of ``from_version``. The project's ORIGINAL
+# creation stamp (``projects.engine_contract_version``) is NEVER updated: it
+# stays the provenance of every historical reading, and this store still
+# contains no UPDATE statement for project data. The EFFECTIVE version is
+# derived from durable state only — the creation envelope plus the current
+# adoption head — by ``engine.session_reconstruction``, in ONE place, before
+# the seed is replayed. A reversal is simply another appended row back to the
+# prior version; no row is ever deleted or rewritten.
+#
+# ONE CHAIN PER PROJECT: the partial unique ``root_uq`` allows exactly one
+# root row (``supersedes_adoption_id IS NULL``) and ``successor_uq`` allows
+# exactly one successor per row, so the chain is rooted and fork-free at the
+# database layer; the append path additionally requires each row to CONTINUE
+# the previous row (``from_version`` = the current effective version). Additive
+# and idempotent (``IF NOT EXISTS``) on a fresh database AND on an existing
+# populated database; touches no existing table, column or row. Rollback is
+# disable-and-ignore (stop reading the table), never a destructive drop.
+_ADOPTION_TABLE = "engine_version_adoptions"
+_ADOPTION_SCHEMA = (
+    """
+    CREATE TABLE IF NOT EXISTS engine_version_adoptions (
+        project_id             TEXT    NOT NULL,
+        adoption_seq           INTEGER NOT NULL,
+        adoption_id            TEXT    NOT NULL,
+        from_version           TEXT    NOT NULL,
+        to_version             TEXT    NOT NULL,
+        supersedes_adoption_id TEXT,
+        event_key              TEXT    NOT NULL,
+        recorded_iteration     INTEGER NOT NULL,
+        recorded_at            TEXT    NOT NULL,
+        PRIMARY KEY (project_id, adoption_id),
+        FOREIGN KEY (project_id) REFERENCES projects(project_id),
+        FOREIGN KEY (project_id, supersedes_adoption_id)
+            REFERENCES engine_version_adoptions(project_id, adoption_id),
+        CHECK (from_version <> to_version),
+        CHECK (length(from_version) > 0 AND length(to_version) > 0),
+        CHECK (length(event_key) > 0),
+        CHECK (adoption_seq >= 0),
+        CHECK (recorded_iteration >= 0),
+        CHECK (supersedes_adoption_id IS NULL
+               OR supersedes_adoption_id <> adoption_id)
+    )
+    """,
+    "CREATE UNIQUE INDEX IF NOT EXISTS engine_version_adoptions_event_key_uq "
+    "ON engine_version_adoptions (project_id, event_key)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS engine_version_adoptions_seq_uq "
+    "ON engine_version_adoptions (project_id, adoption_seq)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS engine_version_adoptions_successor_uq "
+    "ON engine_version_adoptions (project_id, supersedes_adoption_id) "
+    "WHERE supersedes_adoption_id IS NOT NULL",
+    "CREATE UNIQUE INDEX IF NOT EXISTS engine_version_adoptions_root_uq "
+    "ON engine_version_adoptions (project_id) "
+    "WHERE supersedes_adoption_id IS NULL",
+)
+
+# Outcome vocabulary of an adoption append (mirrors the merged T2-A/T2-D
+# vocabulary: an already-recorded exact event is historical no-write
+# evidence, never a conflict and never a second write).
+ADOPTION_INSERTED = "INSERTED"
+ADOPTION_EXACT_REPLAY = "EXACT_REPLAY"
+# Bounded growth: a project cannot accumulate an unbounded adoption history.
+# Refused clearly at the cap; nothing is truncated and no row is rewritten.
+MAX_ENGINE_VERSION_ADOPTIONS_PER_PROJECT = 50
+# The fields that make two adoption events THE SAME event (exact replay). The
+# recording facts (seq, iteration, timestamp) are never part of identity.
+ADOPTION_EVENT_IDENTITY_FIELDS = (
+    "from_version", "to_version", "supersedes_adoption_id", "event_key")
+
+
+@dataclasses.dataclass(frozen=True)
+class EngineVersionAdoption:
+    """ONE durable engine-version adoption event of a project (canonical row).
+    ``adoption_seq`` is assigned by the store on append; the caller's value is
+    ignored. Immutable; never rewritten once stored."""
+    adoption_id: str
+    adoption_seq: int
+    from_version: str
+    to_version: str
+    supersedes_adoption_id: object   # Optional[str]
+    event_key: str
+    recorded_iteration: int
+    recorded_at: str
+
+
+def validate_adoption_history(rows):
+    """Structural validation of ONE project's adoption rows (seq order).
+
+    Returns the rows unchanged when they form exactly one rooted, fork-free
+    chain in which every row continues the previous one — the first row has no
+    predecessor, every later row names the immediately previous row as its
+    predecessor, and its ``from_version`` equals that row's ``to_version``.
+    An empty history is valid. Anything else raises ``AdoptionHistoryError``
+    with a structural message only (no version text, no user content)."""
+    rows = list(rows)
+    previous = None
+    for index, row in enumerate(rows):
+        if not row.from_version or not row.to_version \
+                or row.from_version == row.to_version:
+            raise AdoptionHistoryError("adoption row carries an invalid version pair")
+        if index == 0:
+            if row.supersedes_adoption_id is not None:
+                raise AdoptionHistoryError("adoption history has no root")
+        else:
+            if row.supersedes_adoption_id != previous.adoption_id:
+                raise AdoptionHistoryError("adoption history is not a single chain")
+            if row.from_version != previous.to_version:
+                raise AdoptionHistoryError("adoption row does not continue its predecessor")
+        previous = row
+    return rows
+
+
+def adoption_history_head(rows):
+    """The current head of a VALIDATED adoption history, or None when empty."""
+    return rows[-1] if rows else None
+
 
 class SqliteRecordStore:
     """Reference/MVP durable adapter over Python stdlib `sqlite3`.
@@ -418,6 +565,7 @@ class SqliteRecordStore:
             self._migrate_requirement_quantities(self._conn)
             self._migrate_evidence_references(self._conn)
             self._migrate_question_feedback(self._conn)
+            self._migrate_engine_version_adoptions(self._conn)
 
     # --- write transaction (serialized; BEGIN IMMEDIATE) --------------------
     @contextmanager
@@ -518,6 +666,18 @@ class SqliteRecordStore:
         database; touches no existing table, column or row. Rollback is
         disable-and-ignore (stop reading the table), never a destructive drop."""
         for stmt in _QUANTITY_SCHEMA:
+            conn.execute(stmt)
+
+    def _migrate_engine_version_adoptions(self, conn) -> None:
+        """T2-G legacy migration forward migration against the LIVE schema:
+        additively create the ``engine_version_adoptions`` table and its
+        indexes, including the two PARTIAL unique indexes carrying the
+        conditional rules (one root per project; one successor per row).
+        Idempotent (``IF NOT EXISTS``) on a fresh database and on an existing
+        populated pre-adoption database; touches no existing table, column or
+        row — in particular it never touches ``projects.engine_contract_version``.
+        Rollback is disable-and-ignore (stop reading the table)."""
+        for stmt in _ADOPTION_SCHEMA:
             conn.execute(stmt)
 
     # --- identifiers --------------------------------------------------------
@@ -1146,6 +1306,131 @@ class SqliteRecordStore:
             "SELECT record_id FROM records WHERE project_id = ? "
             "ORDER BY seq ASC", (project_id,)).fetchall())
 
+    # --- T2-G legacy migration: engine-version adoptions (append-only) ------
+    _ADOPTION_COLUMNS = (
+        "adoption_seq, adoption_id, from_version, to_version, "
+        "supersedes_adoption_id, event_key, recorded_iteration, recorded_at")
+
+    @staticmethod
+    def _adoption_from_row(row):
+        return EngineVersionAdoption(
+            adoption_seq=row[0], adoption_id=row[1], from_version=row[2],
+            to_version=row[3], supersedes_adoption_id=row[4],
+            event_key=row[5], recorded_iteration=row[6], recorded_at=row[7])
+
+    def _adoption_rows(self, project_id: str):
+        return [self._adoption_from_row(row) for row in self._conn.execute(
+            "SELECT " + self._ADOPTION_COLUMNS + " FROM engine_version_adoptions "
+            "WHERE project_id = ? ORDER BY adoption_seq ASC",
+            (project_id,)).fetchall()]
+
+    def new_adoption_id(self) -> str:
+        """A durability-safe, collision-safe identifier for a NEW row."""
+        return "eva-" + uuid.uuid4().hex
+
+    def load_engine_version_adoptions(self, project_id: str) -> tuple:
+        """This project's durable adoption history in ``adoption_seq`` order,
+        structurally validated (``AdoptionHistoryError`` on a corrupt history —
+        fail-closed, nothing repaired). An unknown project or a project with no
+        adoption yields the empty tuple. Read-only; project-scoped."""
+        return tuple(validate_adoption_history(self._adoption_rows(project_id)))
+
+    def engine_version_adoption_for_event_key(self, project_id: str, event_key: str):
+        """The stored adoption carrying ``event_key``, or ``None``. The
+        confirm-by-reload seam for exact-replay resolution."""
+        if event_key is None:
+            return None
+        row = self._conn.execute(
+            "SELECT " + self._ADOPTION_COLUMNS + " FROM engine_version_adoptions "
+            "WHERE project_id = ? AND event_key = ?",
+            (project_id, event_key)).fetchone()
+        return None if row is None else self._adoption_from_row(row)
+
+    def feedback_revision_ids(self, project_id: str) -> tuple:
+        """The ONE composition the T2-D ledger revision is derived from: the
+        durable ledger record ids (``ledger_record_ids``) followed by a marked
+        entry per adoption row, in seq order. An adoption is an amendment of
+        how the durable stream is READ, so — exactly as the T2-D module
+        intends for amended histories — a feedback context rendered before an
+        adoption never matches the context after it. Derived on demand; no
+        revision table; nothing stored."""
+        return self.ledger_record_ids(project_id) + tuple(
+            "eva:" + row.adoption_id for row in self._adoption_rows(project_id))
+
+    def append_engine_version_adoption(self, project_id: str, adoption,
+                                       expected_head_id=None) -> str:
+        """Atomically append ONE adoption row and return the TRUTHFUL outcome.
+
+        ``ADOPTION_EXACT_REPLAY`` when this project already holds the exact
+        material event under the same stable ``event_key`` (resolved FIRST, so
+        a replay is never mis-reported as a conflict); ``ADOPTION_INSERTED``
+        when this call committed the row.
+
+        ONE serialized transaction; commit on success, FULL rollback on any
+        failure. INSIDE the transaction, against durable truth: the project
+        must exist; the stable event key is resolved first (a DIFFERENT event
+        under the same key is ``AdoptionChainConflict``); the existing history
+        is loaded and structurally validated; the cap holds; the EXPECTED HEAD
+        is rechecked (``expected_head_id`` must equal the current head id, or
+        ``None`` when the project must still have no adoption); the
+        predecessor must be that head; and ``from_version`` must equal the
+        project's CURRENT effective version — the head's ``to_version`` when
+        an adoption exists, otherwise the immutable creation stamp — so a row
+        can only ever CONTINUE the durable chain. A stale head between render
+        and submit is refused HERE, never silently retargeted.
+
+        The creation stamp ``projects.engine_contract_version`` is read and
+        never written. There is NO update path: a reversal is a successor row
+        back to the prior version, and no stored row is ever rewritten."""
+        if not isinstance(adoption, EngineVersionAdoption):
+            raise StoreError("adoption must be an EngineVersionAdoption")
+        if not adoption.from_version or not adoption.to_version \
+                or adoption.from_version == adoption.to_version:
+            raise AdoptionChainConflict("adoption carries an invalid version pair")
+        with self._write():
+            row = self._conn.execute(
+                "SELECT engine_contract_version FROM projects WHERE project_id = ?",
+                (project_id,)).fetchone()
+            if row is None:
+                raise ProjectNotFound(project_id)
+            creation_stamp = row[0]
+            stored = self.engine_version_adoption_for_event_key(
+                project_id, adoption.event_key)
+            if stored is not None:
+                if all(getattr(stored, f) == getattr(adoption, f)
+                       for f in ADOPTION_EVENT_IDENTITY_FIELDS):
+                    return ADOPTION_EXACT_REPLAY
+                raise AdoptionChainConflict(
+                    "event key already names a different event")
+            history = validate_adoption_history(self._adoption_rows(project_id))
+            if len(history) >= MAX_ENGINE_VERSION_ADOPTIONS_PER_PROJECT:
+                raise AdoptionCapReached(
+                    "adoption row cap reached for this project")
+            head = adoption_history_head(history)
+            current_head_id = None if head is None else head.adoption_id
+            if expected_head_id != current_head_id:
+                raise AdoptionChainConflict(
+                    "the expected adoption head is not this project's head")
+            if adoption.supersedes_adoption_id != current_head_id:
+                raise AdoptionChainConflict(
+                    "the predecessor is not this project's current head")
+            effective = creation_stamp if head is None else head.to_version
+            if effective is None or adoption.from_version != effective:
+                raise AdoptionChainConflict(
+                    "from_version is not the project's current effective version")
+            seq = self._conn.execute(
+                "SELECT COALESCE(MAX(adoption_seq), -1) + 1 FROM "
+                "engine_version_adoptions WHERE project_id = ?", (project_id,)
+            ).fetchone()[0]
+            self._conn.execute(
+                "INSERT INTO engine_version_adoptions (project_id, "
+                + self._ADOPTION_COLUMNS + ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (project_id, seq, adoption.adoption_id, adoption.from_version,
+                 adoption.to_version, adoption.supersedes_adoption_id,
+                 adoption.event_key, int(adoption.recorded_iteration),
+                 adoption.recorded_at))
+        return ADOPTION_INSERTED
+
     def question_feedback_for_event_key(self, project_id: str, event_key: str):
         """The stored row (dict) carrying ``event_key``, or ``None``. The
         confirm-by-reload seam for exact-replay and uncertain-commit
@@ -1230,8 +1515,11 @@ class SqliteRecordStore:
             # question. Only reached for a genuinely new event: an already
             # stored exact event returned above as historical no-write evidence.
             if expected_revision is not None:
+                # T2-G legacy migration: the revision is derived from the ONE
+                # composition seam (`feedback_revision_ids`), so an adoption
+                # appended between render and submit refuses the write too.
                 current_revision = _feedback_ledger_revision(
-                    self.ledger_record_ids(project_id))
+                    self.feedback_revision_ids(project_id))
                 if expected_revision != current_revision:
                     raise FeedbackChainConflict(
                         "the durable ledger revision moved since the context "

@@ -23,6 +23,127 @@ Git/GitHub own transient candidate, PR and merge identity. No acceptance/merge t
 self-SHA or lifecycle-label change creates a synchronization candidate. When no mandate
 exists, state ACTIVE CONTRACT: NONE; historical declarations never fill the gap.
 
+<a id="current-authority--t2g-legacy-migration-explicit-confirmed-adoption"></a>
+## Current authority — T2-G legacy migration: explicit confirmed adoption
+
+**Owner decision `T2G-LEGACY-MIGRATION-IMPLEMENT-01` v1.0**, adopting the
+completed read-only LEGACY MIGRATION DESIGN at `38827bf9…` and its recommended
+policy **B — EXPLICIT CONFIRMED MIGRATION**. Existing T2-G ownership continues:
+the Lead is accountable, Original Claude implements. Authorized: ONE bounded
+implementation candidate, synthetic tests, ordinary commits/pushes and ONE PR.
+NOT authorized: merge (a separate exact-head Owner authorization after
+independent differential review), automatic migration on open, real-user bulk
+migration, a background migration job, silent database rewrite, human-data
+collection, a new benchmark, RUN-004, Stage-10 implementation, domain
+activation, MCP, deployment, paid activation.
+
+**Starting context:** authoritative branch `feature/atomic-json-session-persistence`
+at `38827bf9ab265823da0094972cd4307bcef94bd4` (tree
+`ec962cbfba7be5de5d98a83334c061c3279d65fe`, the verified PR #643 merge result),
+clean working tree, implementation branch descended directly from that exact tip.
+
+**Purpose.** Let an eligible pre-T2-G saved project EXPLICITLY adopt the current
+verified engine-contract behaviour through full deterministic per-project replay,
+preserving the creation-version provenance and every raw historical answer and
+piece of evidence. Nothing is rewritten, no stale or validity semantics exist,
+and no continuity claim is made beyond what the durable record states.
+
+**1. Eligible populations (initial bounded slice).** Projects whose durable
+creation stamp is `p4-2-level1-recon-v1` or `p4-2-level1-recon-v1-t2g1`, on a
+live or explicitly resumed WRITABLE session (domain established), with at least
+one active answer, deterministic path N, complete reconstruction inputs, the
+full persisted answered stream within the existing replay bound, and a runtime
+version carrier equal to the durable effective version. Never: P0 projects
+lacking reconstruction state; non-N legacy populations (the two `start_ilt002_*`
+routes that set no path); current `…-t2g2` projects; any project whose replay
+inputs cannot be proven complete. Everything else fails closed.
+
+**2. Explicit confirmation only.** One route, `POST /session/<sid>/engine-version`,
+taking exactly `csrf_token`, `answer_token` (the SAME stateless HMAC the answered
+and correction paths take), a closed `version_action` (`adopt` | `revert`) and an
+explicit `confirm_adoption=yes`. The request never carries a version: `adopt`
+targets the server's CURRENT version and `revert` targets the version the current
+head adopted FROM. GET, open, cold review, deliverable and reconstruction create
+no adoption. Unknown or repeated fields are refused before durable state is touched.
+
+**3. Provenance model.** `projects.engine_contract_version` is immutable and is
+never written; the store still contains no UPDATE statement for project data.
+One ADDITIVE append-only table `engine_version_adoptions`
+(`project_id`, `adoption_seq`, `adoption_id`, `from_version`, `to_version`,
+`supersedes_adoption_id`, `event_key`, `recorded_iteration`, `recorded_at`),
+with a unique event key and sequence per project, ONE root and ONE successor per
+row as partial unique indexes, a composite self-FK for the predecessor, and
+CHECKs that a row names two different non-empty versions. The append runs inside
+the store's serialized transaction and rechecks, against durable truth, the
+expected head, the predecessor and that `from_version` equals the project's
+CURRENT effective version (the head's `to_version`, or the creation stamp with no
+adoption). A cap of 50 rows per project is refused clearly, never truncated.
+The EFFECTIVE version is resolved ONCE, in
+`engine.session_reconstruction.effective_engine_contract_version`, before the
+seed is replayed, from the creation envelope plus the current adoption head; an
+adopted version this code does not support fails closed to Level 0 exactly like
+an unsupported creation stamp and never silently falls back while an adoption
+exists; a structurally corrupt history raises and yields no partial state.
+
+**4. Full deterministic re-evaluation.** An adoption or reversal is ONE durable
+append followed by FULL replay of the complete amended stream through the
+UNCHANGED canonical reconstruction and `progression_loop.run_iteration`, then
+ATOMIC live-state replacement with the same correction-lapse transparency the
+correction route gives (PVCG-R4-C §8 RP-1/RP-4; D-AISR-06). No version-stamp
+shortcut, no direct patch of gap state, no rewritten answer, no synthetic
+evidence, no stale flag, no validity semantics. A post-commit replay failure
+leaves live memory EXACTLY as it was and says truthfully that the choice of
+rules was saved but the page could not be updated (the correction route's NB-1
+shape); it never claims that nothing changed.
+
+**5. Reversibility.** A reversal is another appended row back to the version
+the current head adopted FROM, and it is offered only when that `from_version`
+is not the current engine-contract version — so the action always means
+"return to earlier rules", never a disguised re-adoption; after adopt → revert
+no further revert is offered or accepted (`T2G-LEGACY-MIGRATION-REPAIR-01`,
+finding F-1). History is never deleted. With an unchanged durable stream, a
+revert reproduces the prior reading byte-identically (proven on the canonical
+snapshot and the pinned-clock deliverable package).
+
+**6. Disclosure.** Before confirmation (EN/AR, existing `ui_text` seam): created
+under earlier rules; adopting can change previously counted mechanism knowledge
+and an earlier question may be asked again; nothing is deleted or rewritten; it
+can be reversed. After adoption: the project now runs under the adopted current
+rules; earlier questions and answers were recorded under the earlier rules. A
+cold read-only page carries the same after-line and no control. The copy never
+says upgraded, improved, corrected, invalid, stale or engineering verified (a
+test enumerates every `UI_EVA_*` string).
+
+**7. T2-D interplay.** The feedback ledger revision is derived from the ONE store
+composition seam `feedback_revision_ids` (ledger record ids followed by one
+marked entry per adoption row), consumed by both the render context and the
+transactional revision check, so a feedback context rendered before an adoption
+is refused after it.
+
+**Changed paths.** Production: `engine/record_store.py`,
+`engine/session_reconstruction.py`, `web/app.py`, `web/ui_text.py`,
+`web/templates/session.html`. Tests: `tests/test_t2g_version_adoption.py` (new);
+`tests/test_t2a_requirement_quantity_engine_store.py` (the fresh-database exact
+table-set pin, extended exactly as the T2-D and T2-E tables extended it).
+Governance: this file and the legacy-migration row in
+`DEFERRED_OBLIGATIONS_REGISTER.md` §3. NOT touched: `engine/answer_stance.py`,
+progression-loop semantics, intent-serving semantics, deliverable-assembler
+logic, exports, API semantics, committed question content, PR #643 behaviour.
+
+**Status: PARTIAL T2-G — migration path DELIVERED AS A CANDIDATE; merge not
+authorized.** Migration is not evidence that anything else is solved. Preserved
+unchanged with their triggers: PR #643 closure, the Stage 8 decisions, the T1-A′
+supersession, `R1`, `R2`, `R3`, `N-1`–`N-6`, G-4-A, the EN↔AR residual rows, the
+T2-A paid-activation blocker and its random-skip test debt, the PR #642
+metadata exception, the six PR #640 findings, the four T2-D observations,
+satellite timing, the deferred MCP direction, PRE-FCORA and FCORA. Remaining
+limitations of this slice: no per-project what-if preview (a preview would need
+a second version-resolution path); the offer is unreachable for a completed
+project after memory loss because the existing resume gate never reopens it
+(consistent with the correction route); the cold page's questioning-disclosure
+line stays governed by the deferred `N-4`; the two non-N legacy ILT routes keep
+producing non-migratable projects until `N-5` is decided. No paid-activation claim.
+
 <a id="current-authority--t2d-contextual-question-feedback"></a>
 ## Current authority — T2-D contextual question feedback (Stage 6)
 
