@@ -506,6 +506,56 @@ def test_i_append_back_restores_the_prior_reading_byte_identically(client, monke
     assert len(_adoption_rows(db, sid)) == 3
 
 
+def test_f1_a_second_revert_after_adopt_then_revert_is_refused(client):
+    """F-1 (`T2G-LEGACY-MIGRATION-REPAIR-01`): after adopt → revert the head is
+    `t2g2 → v1`; a further `revert` would append `v1 → t2g2` while the
+    confirmation still says "return to the earlier rules". Revert is offered and
+    accepted only when the head's `from_version` is not the current version."""
+    c, appmod, db = client
+    _login(c, appmod)
+    sid = _legacy_start(c, appmod)
+    _answer(c, sid, F2_UNKNOWN)
+    assert _adopt(c, sid).status_code == 302
+    assert 'id="engine-version-revert"' in _raw(c, sid)      # genuine revert offered
+    assert _adopt(c, sid, action="revert").status_code == 302
+    reverted = _snapshot(appmod, sid)
+    rows_after_revert = _adoption_rows(db, sid)
+    assert len(rows_after_revert) == 2
+    assert reverted["version"] == RECONSTRUCTION_VERSION
+    # 1. no revert form/control after the first revert; adopt still offered
+    page = _page(c, sid)
+    assert 'id="engine-version-revert"' not in page
+    assert "Return to the earlier rules" not in page
+    assert 'id="engine-version-adopt"' in page
+    elig = appmod._eva_eligibility(sid, appmod.SESSION_STORE[sid]["state"])
+    assert elig["can_revert"] is False and elig["can_adopt"] is True
+    assert elig["adopted"] is False
+    # 2./3. a direct manual second revert POST is refused and appends nothing
+    assert _adopt(c, sid, action="revert").status_code == 302
+    assert _adoption_rows(db, sid) == rows_after_revert
+    assert "could not be applied just now" in _page(c, sid)
+    # 4. the effective version remains the earlier version, live and durable
+    assert _snapshot(appmod, sid) == reverted
+    appmod.SESSION_STORE.clear()
+    review = reconstruct_review_state(appmod._get_store(), sid)
+    assert review.effective_engine_contract_version == RECONSTRUCTION_VERSION
+    assert review.adoption_count == 2
+    # 5. disclosure stays consistent: creation rules, no "adopted rules" line
+    cold = _page(c, sid)
+    assert EN_COLD not in cold
+    _raw(c, sid)
+    assert c.post(f"/session/{sid}/resume", data={}).status_code == 302
+    page = _page(c, sid)
+    assert EN_AFTER not in page and "does not read the meaning of your answers" in page
+    assert 'id="engine-version-revert"' not in page
+    # 6. adopt remains available and works; then a genuine revert is offered again
+    assert _adopt(c, sid).status_code == 302
+    assert len(_adoption_rows(db, sid)) == 3
+    assert _snapshot(appmod, sid)["version"] == ENGINE_CONTRACT_VERSION_T2G2
+    assert 'id="engine-version-revert"' in _raw(c, sid)
+    assert _stamp(db, sid) == RECONSTRUCTION_VERSION
+
+
 def test_i_a_cold_reconstruction_after_revert_matches_the_pre_adoption_reconstruction(client):
     c, appmod, db = client
     _login(c, appmod)

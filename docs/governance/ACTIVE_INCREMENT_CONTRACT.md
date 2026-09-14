@@ -96,8 +96,12 @@ leaves live memory EXACTLY as it was and says truthfully that the choice of
 rules was saved but the page could not be updated (the correction route's NB-1
 shape); it never claims that nothing changed.
 
-**5. Reversibility.** A reversal is another appended row back to the prior
-supported version. History is never deleted. With an unchanged durable stream, a
+**5. Reversibility.** A reversal is another appended row back to the version
+the current head adopted FROM, and it is offered only when that `from_version`
+is not the current engine-contract version — so the action always means
+"return to earlier rules", never a disguised re-adoption; after adopt → revert
+no further revert is offered or accepted (`T2G-LEGACY-MIGRATION-REPAIR-01`,
+finding F-1). History is never deleted. With an unchanged durable stream, a
 revert reproduces the prior reading byte-identically (proven on the canonical
 snapshot and the pinned-clock deliverable package).
 

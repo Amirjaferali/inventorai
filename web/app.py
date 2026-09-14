@@ -5212,7 +5212,15 @@ def _eva_eligibility(sid, state):
     a replayable durable position, and a runtime version carrier equal to the
     durable effective version — a live reading that disagrees with the durable
     truth is refused rather than reconciled here. Returns ``{"position",
-    "can_adopt", "can_revert", "adopted"}``."""
+    "can_adopt", "can_revert", "adopted"}``.
+
+    F-1 (`T2G-LEGACY-MIGRATION-REPAIR-01`): a revert is offered ONLY when it
+    genuinely returns the project from a later adopted version to an earlier
+    one — the head's ``from_version`` must not be the CURRENT engine-contract
+    version. After adopt → revert the head reads ``current → earlier``, so a
+    further "revert" would silently re-adopt the current version under copy
+    that says "return to the earlier rules"; it is neither offered nor
+    accepted. Re-adoption is only ever the explicit ``adopt`` action."""
     if getattr(state, "domain", None) is None:
         return None
     if getattr(state, "path", None) != _RECON_SUPPORTED_PATH:
@@ -5234,7 +5242,8 @@ def _eva_eligibility(sid, state):
         "can_adopt": (position["effective"] in _EVA_ADOPTABLE_VERSIONS
                       and position["effective"] != CURRENT_ENGINE_CONTRACT_VERSION),
         "can_revert": (head is not None
-                       and head.from_version in SUPPORTED_ENGINE_CONTRACT_VERSIONS),
+                       and head.from_version in SUPPORTED_ENGINE_CONTRACT_VERSIONS
+                       and head.from_version != CURRENT_ENGINE_CONTRACT_VERSION),
         "adopted": position["effective"] != position["creation"],
     }
 
