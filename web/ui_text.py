@@ -2236,6 +2236,180 @@ UI_STRINGS = {
                "منه باستقلال»، لذا لا ينبغي قراءة تلك التسميات على أنها اعتماد أو "
                "تحقق مكتمل أو إثبات."),
     },
+    # T3-A "Project record" (T3A-PROJECT-RECORD-IMPLEMENT-01; OD-PDVG-02(b)
+    # narrowed to input-history rendering). Chrome for the ONE read-only
+    # record of what the inventor recorded, in saved order, with what was
+    # later replaced or withdrawn and any rule change. Truthfulness rules
+    # these strings are bound by: a withdrawal or replacement is the
+    # inventor's own act and is never worded as a judgement that an earlier
+    # entry was wrong; no entry claims an evaluation consequence; a missing
+    # reason is stated plainly; no wall-clock order is implied for ledger
+    # entries. Event labels are keyed UI_T3A_EVENT_<KIND> (kind upper-cased),
+    # one entry per kind of `web/app.py::T3A_EVENT_KINDS`.
+    "UI_T3A_HEADING": {
+        "en": "Project record",
+        "ar": "سجل المشروع",
+    },
+    "UI_T3A_EXPLAIN": {
+        "en": ("Everything you recorded in this project, in the order it was "
+               "saved, including entries you later replaced or withdrew and "
+               "any change of rules. Nothing is erased: a replaced or withdrawn "
+               "entry stays listed as part of your own history, and listing it "
+               "is not a judgement that it was wrong."),
+        "ar": ("كل ما سجّلته في هذا المشروع، بترتيب حفظه، بما في ذلك الإدخالات "
+               "التي استبدلتها أو سحبتها لاحقًا وأي تغيير في القواعد. لا يُمحى "
+               "شيء: يبقى الإدخال المستبدَل أو المسحوب مدرجًا بوصفه جزءًا من "
+               "سجلك أنت، وإدراجه ليس حكمًا بأنه كان خاطئًا."),
+    },
+    "UI_T3A_EMPTY": {
+        "en": "Nothing has been recorded in this project yet.",
+        "ar": "لم يُسجَّل شيء في هذا المشروع بعد.",
+    },
+    "UI_T3A_ORDER_NOTE": {
+        "en": ("Steps are numbered in the order they were saved. Values and "
+               "references are shown with the answer they belong to. Rule "
+               "changes are listed separately with the step they followed, "
+               "because their exact place among the entries of that same "
+               "step was not recorded."),
+        "ar": ("تُرقَّم الخطوات بترتيب حفظها. وتُعرض القيم والمراجع مع الإجابة "
+               "التي تنتمي إليها. وتُدرج تغييرات القواعد على حدة مع الخطوة "
+               "التي تلتها، لأن موضعها الدقيق بين إدخالات تلك الخطوة نفسها "
+               "لم يُسجَّل."),
+    },
+    "UI_T3A_STEP": {
+        "en": "Step",
+        "ar": "الخطوة",
+    },
+    "UI_T3A_SHOW_FULL": {
+        "en": "Show the full text",
+        "ar": "عرض النص الكامل",
+    },
+    "UI_T3A_REPLACES": {
+        "en": "Replaces step",
+        "ar": "يحل محل الخطوة",
+    },
+    "UI_T3A_REPLACED_BY": {
+        "en": "Replaced by step",
+        "ar": "استُبدل بالخطوة",
+    },
+    "UI_T3A_WITHDRAWS": {
+        "en": "Withdraws step",
+        "ar": "يسحب الخطوة",
+    },
+    "UI_T3A_WITHDRAWN_IN": {
+        "en": "Withdrawn at step",
+        "ar": "سُحب في الخطوة",
+    },
+    "UI_T3A_REPLACES_EARLIER": {
+        "en": "replaces an earlier entry on this answer",
+        "ar": "يحل محل إدخال سابق على هذه الإجابة",
+    },
+    "UI_T3A_WITHDRAWN_KEPT": {
+        "en": ("Withdrawn by you and kept in the project history; it is no "
+               "longer used as current support."),
+        "ar": ("سحبتَه بنفسك وبقي محفوظًا في سجل المشروع؛ ولم يعد يُستخدم "
+               "كدعم حالي."),
+    },
+    "UI_T3A_RULES_HEADING": {
+        "en": "Rule changes",
+        "ar": "تغييرات القواعد",
+    },
+    "UI_T3A_AFTER_STEP": {
+        "en": "After step",
+        "ar": "بعد الخطوة",
+    },
+    "UI_T3A_RECORDED_ON": {
+        "en": "Recorded on",
+        "ar": "سُجّل في",
+    },
+    "UI_T3A_ADOPTION_KEPT": {
+        "en": "Earlier answers were kept exactly as recorded.",
+        "ar": "بقيت الإجابات السابقة كما سُجّلت تمامًا.",
+    },
+    "UI_T3A_EVENT_ANSWER_RECORDED": {
+        "en": "Answer recorded",
+        "ar": "إجابة مسجَّلة",
+    },
+    "UI_T3A_EVENT_ANSWER_WITHDRAWN_REPLACED": {
+        "en": "Answer withdrawn and replaced",
+        "ar": "إجابة مسحوبة ومستبدَلة",
+    },
+    "UI_T3A_EVENT_NOT_KNOWN_YET": {
+        "en": "Not known yet",
+        "ar": "غير معروف بعد",
+    },
+    "UI_T3A_EVENT_DEFERRED": {
+        "en": "Deferred",
+        "ar": "مؤجَّل",
+    },
+    "UI_T3A_EVENT_PROVISIONAL_ASSUMPTION": {
+        "en": "Provisional assumption",
+        "ar": "افتراض مؤقت",
+    },
+    "UI_T3A_EVENT_SPECIALIST_REQUESTED": {
+        "en": "Specialist input requested",
+        "ar": "طُلبت مدخلات متخصّص",
+    },
+    "UI_T3A_EVENT_EVIDENCE_REQUESTED": {
+        "en": "Evidence requested",
+        "ar": "طُلب دليل",
+    },
+    "UI_T3A_EVENT_RISK_ACCEPTED": {
+        "en": "Risk accepted",
+        "ar": "مخاطرة مقبولة",
+    },
+    "UI_T3A_EVENT_DECISION_CONTEXT_DECLARED": {
+        "en": "Decision context declared",
+        "ar": "سياق قرار مُعلَن",
+    },
+    "UI_T3A_EVENT_ALTERNATIVE_DECLARED": {
+        "en": "Alternative declared",
+        "ar": "بديل مُعلَن",
+    },
+    "UI_T3A_EVENT_ALTERNATIVE_REFINED": {
+        "en": "Alternative refined",
+        "ar": "بديل مُنقَّح",
+    },
+    "UI_T3A_EVENT_ALTERNATIVE_WITHDRAWN": {
+        "en": "Alternative withdrawn",
+        "ar": "بديل مسحوب",
+    },
+    "UI_T3A_EVENT_VALUE_RECORDED": {
+        "en": "Value recorded",
+        "ar": "قيمة مسجَّلة",
+    },
+    "UI_T3A_EVENT_VALUE_REPLACED": {
+        "en": "Value replaced",
+        "ar": "قيمة مستبدَلة",
+    },
+    "UI_T3A_EVENT_REFERENCE_RECORDED": {
+        "en": "Reference recorded",
+        "ar": "مرجع مسجَّل",
+    },
+    "UI_T3A_EVENT_REFERENCE_REPLACED": {
+        "en": "Reference replaced",
+        "ar": "مرجع مستبدَل",
+    },
+    "UI_T3A_EVENT_REFERENCE_WITHDRAWN": {
+        "en": "Reference withdrawn",
+        "ar": "مرجع مسحوب",
+    },
+    "UI_T3A_EVENT_RULES_ADOPTED": {
+        "en": "Newer rules adopted",
+        "ar": "اعتُمدت قواعد أحدث",
+    },
+    "UI_T3A_EVENT_RULES_RETURNED": {
+        "en": "Returned to earlier rules",
+        "ar": "عودة إلى القواعد السابقة",
+    },
+    "UI_T3A_EVENT_RULES_CHANGED": {
+        "en": "Rules changed",
+        "ar": "تغيّرت القواعد",
+    },
+    "UI_T3A_EVENT_OTHER": {
+        "en": "Entry recorded",
+        "ar": "إدخال مسجَّل",
+    },
 }
 
 

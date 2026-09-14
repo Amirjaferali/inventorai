@@ -1026,4 +1026,74 @@ body{overflow-wrap:anywhere}
 </details>
 {% endif %}
 
+{#- T3A-BLOCK-BEGIN — T3-A "Project record" (T3A-PROJECT-RECORD-IMPLEMENT-01;
+    OD-PDVG-02(b) narrowed to input-history rendering). ONE collapsed, read-only
+    view of the EXISTING durable history: the ledger in restored order with its
+    supersession links, the quantity/reference rows under the answer they
+    belong to, and the rule-adoption events listed separately with the step
+    they provably followed. No form, no route, no write, no before/after or
+    validity claim; the migration disclosure and correction blocks above are
+    unchanged and are not duplicated here. Chrome resolves through t();
+    inventor text renders verbatim with dir="auto". -#}
+{% if project_record %}
+<details id="t3a-project-record" class="project-record" style="margin-top:14px;border:1px solid #d9d9e3;border-radius:4px;background:#f8f8fb;padding:10px 14px">
+  <summary style="cursor:pointer;font-size:13px;color:#3a3a5c;font-weight:bold">{{ t('UI_T3A_HEADING') }}</summary>
+  <p style="font-size:13px;color:#555;margin:10px 0 8px 0">{{ t('UI_T3A_EXPLAIN') }}</p>
+  {% if not project_record.total %}
+  <p class="journey-note project-record-empty">{{ t('UI_T3A_EMPTY') }}</p>
+  {% else %}
+  <p class="journey-note">{{ t('UI_T3A_ORDER_NOTE') }}</p>
+  {% if project_record.entries %}
+  <ol class="project-record-list" style="margin:6px 0 0 0;padding-inline-start:20px;font-size:13px;color:#444">
+    {% for e in project_record.entries %}
+    <li class="project-record-entry" value="{{ e.ordinal }}" data-record-step="{{ e.ordinal }}" data-record-kind="{{ e.kind }}" data-record-id="{{ e.record_id }}"{% if e.provenance %} data-record-provenance="{{ e.provenance }}"{% endif %} style="margin:0 0 8px 0">
+      <p class="journey-note" style="margin:0"><span class="project-record-step">{{ t('UI_T3A_STEP') }} {{ e.ordinal }}</span> · <strong data-record-event>{{ t('UI_T3A_EVENT_' ~ e.kind|upper) }}</strong>{% if e.context %} · <span data-record-context>{{ e.context | gap_display }}</span>{% endif %} · <bdi data-record-reference>{{ e.record_id }}</bdi></p>
+      {% if e.text %}
+      {% if e.text_preview %}
+      <details class="project-record-full">
+        <summary class="project-record-text" data-record-preview dir="auto" style="cursor:pointer">{{ e.text_preview }} <span style="color:#888">{{ t('UI_T3A_SHOW_FULL') }}</span></summary>
+        <p class="project-record-text" data-record-content dir="auto" style="margin:4px 0">{{ e.text }}</p>
+      </details>
+      {% else %}
+      <p class="project-record-text" data-record-content dir="auto" style="margin:2px 0">{{ e.text }}</p>
+      {% endif %}
+      {% endif %}
+      {% if e.reason_missing %}
+      <p class="journey-note" data-record-reason-missing style="margin:2px 0">{{ t('UI_G3_REASON_NOT_RECORDED') }}</p>
+      {% elif e.reason %}
+      <p class="journey-note" style="margin:2px 0">{{ t('UI_G3_REASON_LABEL') }}: <span data-record-reason dir="auto">{{ e.reason }}</span></p>
+      {% endif %}
+      {% if e.withdrawn_answer %}
+      <p class="journey-note" data-record-withdrawn style="margin:2px 0">{{ t('UI_T3A_WITHDRAWN_KEPT') }}</p>
+      {% endif %}
+      {% for link in e.links %}
+      <p class="journey-note project-record-link" data-record-relation="{{ link.relation }}" data-record-target="{{ link.record_id }}" style="margin:2px 0">{% if link.relation == 'replaces' %}{{ t('UI_T3A_REPLACES') }}{% elif link.relation == 'replaced_by' %}{{ t('UI_T3A_REPLACED_BY') }}{% elif link.relation == 'withdraws' %}{{ t('UI_T3A_WITHDRAWS') }}{% else %}{{ t('UI_T3A_WITHDRAWN_IN') }}{% endif %} {% if link.step %}{{ link.step }}{% else %}<bdi>{{ link.record_id }}</bdi>{% endif %}</p>
+      {% endfor %}
+      {% if e.attached %}
+      <ul class="project-record-attached" style="margin:2px 0 0 0;padding-inline-start:18px">
+        {% for a in e.attached %}
+        <li data-record-kind="{{ a.kind }}"><strong>{{ t('UI_T3A_EVENT_' ~ a.kind|upper) }}</strong>: {% if a.label_key %}{{ t(a.label_key) }} {% endif %}<bdi class="project-record-text" data-record-content dir="auto">{{ a.text }}</bdi>{% if a.detail %} · <span dir="auto">{{ a.detail }}</span>{% endif %}{% if a.replaces_earlier %} · <span class="journey-note">{{ t('UI_T3A_REPLACES_EARLIER') }}</span>{% endif %}</li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ol>
+  {% endif %}
+  {% if project_record.rule_changes %}
+  <p style="font-size:13px;color:#555;margin:10px 0 4px 0;font-weight:bold">{{ t('UI_T3A_RULES_HEADING') }}</p>
+  <ul class="project-record-rules" style="margin:0;padding-inline-start:20px;font-size:13px;color:#444">
+    {% for r in project_record.rule_changes %}
+    <li data-record-kind="{{ r.kind }}" data-adoption-id="{{ r.adoption_id }}"{% if r.after_step %} data-after-step="{{ r.after_step }}"{% endif %} style="margin:0 0 6px 0">
+      <strong data-record-event>{{ t('UI_T3A_EVENT_' ~ r.kind|upper) }}</strong>{% if r.after_step %} · {{ t('UI_T3A_AFTER_STEP') }} {{ r.after_step }}{% endif %}{% if r.recorded_at %} · {{ t('UI_T3A_RECORDED_ON') }} <time datetime="{{ r.recorded_at }}">{{ r.recorded_at[:10] }}</time>{% endif %}
+      <p class="journey-note" style="margin:2px 0">{{ t('UI_T3A_ADOPTION_KEPT') }}</p>
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  {% endif %}
+</details>
+{% endif %}
+{#- T3A-BLOCK-END -#}
+
 {% endblock %}

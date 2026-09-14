@@ -239,3 +239,43 @@ def test_preview_owned_isolation_and_cold_resume(client, lang):
     owner.post(f'/session/{sid}/resume', data={})
     resumed = _preview_records(_page(owner, sid))
     assert len(resumed) == 1 and next(iter(resumed.values()))['content'] == secret
+
+
+# T3-A extension (T3A-PROJECT-RECORD-IMPLEMENT-01): after a correction through
+# the unchanged RVR-5 affordance, the Project Record lists the withdrawn answer
+# verbatim beside its replacement with the accepted R4-C M-4 wording — and the
+# correction block itself is unchanged.
+def test_project_record_shows_withdrawn_answer_beside_its_replacement(client):
+    c, appmod = client
+    sid = _start(c)
+    _answer_once(c, sid)
+    page = _page(c, sid)
+    rec_id = re.search(r'<option value="(rec_\d+)">', page).group(1)
+    r = c.post(f"/session/{sid}/correct", data={
+        "supersedes_record_id": rec_id, "response": CORRECTED,
+        "answer_token": _token(page)})
+    assert r.status_code == 302
+    page2 = _page(c, sid)
+    state = appmod.SESSION_STORE[sid]["state"]
+    withdrawn = next(x for x in state.assertions if x.record_id == rec_id)
+    assert withdrawn.superseded_by
+    block = page2[page2.index('id="t3a-project-record"'):]
+    block = block[:block.index("T3A-BLOCK-END")] if "T3A-BLOCK-END" in block else block
+    old = re.search(r'<li class="project-record-entry"[^>]*data-record-id="%s".*?</li>' % rec_id,
+                    block, re.S).group(0)
+    new = re.search(r'<li class="project-record-entry"[^>]*data-record-id="%s".*?</li>'
+                    % withdrawn.superseded_by, block, re.S).group(0)
+    assert 'data-record-kind="answer_withdrawn_replaced"' in old
+    assert html.unescape(re.search(r'data-record-content dir="auto"[^>]*>(.*?)</p>', old, re.S).group(1)) == ANSWER
+    assert "kept in the project history" in old and "no longer used as current support" in old
+    assert f'data-record-target="{withdrawn.superseded_by}"' in old
+    assert 'data-record-kind="answer_recorded"' in new and CORRECTED in html.unescape(new)
+    assert f'data-record-relation="replaces" data-record-target="{rec_id}"' in new
+    # never a judgement about the withdrawn answer in the record's own copy
+    chrome = re.sub(r'data-record-content dir="auto"[^>]*>.*?</p>', "", old + new, flags=re.S).lower()
+    for word in ("invalid", "corrected", "stale", "wrong"):
+        assert word not in chrome, word
+    # the correction affordance itself is unchanged and still offers only the
+    # active answer (the withdrawn one is no longer selectable)
+    assert page2.count('class="correct-answer"') == 1
+    assert re.findall(r'<option value="(rec_\d+)">', page2) == [withdrawn.superseded_by]
