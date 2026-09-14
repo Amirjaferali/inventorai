@@ -62,7 +62,7 @@ _VALIDATION_LABELS = {
     "INDEPENDENTLY_VERIFIED":   "Independently verified",
 }
 _MATURITY_LABELS = {
-    0: "Level 0 — Problem signal not yet established",
+    0: "Level 0 — Problem evidence not yet established",
     1: "Level 1 — Exploratory / Incomplete: problem signal received at minimum "
        "evidence threshold. No engineering claim validated. Not a deliverable gate.",
     2: "Level 2 — Mechanism established: operating principle substantiated.",
@@ -191,6 +191,21 @@ _RECOMMENDATION_A = {
         "Problem not yet established. Provide a clear problem statement first."),
     (0, True):  ("BLOCK",
         "Problem not yet established and open gaps recorded."),
+}
+# MG-8: the two level-0 rationales above address an inventor who has supplied
+# NOTHING. When a problem statement HAS been recorded but has not reached the
+# evidence threshold, those words falsely instruct the inventor to provide what
+# they already provided, so the rationale below is used instead. The verdict
+# value, the key set and every other rationale are unchanged; only which of the
+# two truthful level-0 sentences is shown depends on the recorded state.
+_RECOMMENDATION_A_LEVEL0_RECORDED = {
+    False: ("BLOCK",
+        "A problem statement is recorded but has not yet reached the evidence "
+        "level needed to establish the problem. Strengthen it with specifics "
+        "before proceeding; it is not established evidence yet."),
+    True:  ("BLOCK",
+        "A problem statement is recorded but has not yet reached the evidence "
+        "level needed to establish the problem, and open gaps remain."),
 }
 
 def assemble_deliverable(state: IdeaState) -> dict:
@@ -942,6 +957,11 @@ def _s7(state, open_gaps):
     key = (min(state.maturity_level, 2), len(open_gaps) > 0)
     verdict, rationale = _RECOMMENDATION_A.get(key,
         ("REVISE", "Insufficient evidence to recommend proceeding."))
+    # MG-8: at level 0 ONLY, distinguish "a statement is recorded but is not yet
+    # established evidence" from "no statement was supplied". Same BLOCK verdict
+    # either way; no maturity, gap or eligibility input changes.
+    if key[0] == 0 and _resolved_problem(state) is not None:
+        verdict, rationale = _RECOMMENDATION_A_LEVEL0_RECORDED[key[1]]
     cat_d = [{"item_type": "open_gap", "gap_type": _public_gap(g.gap_type),
               "gap_label": _GAP_LABELS.get(g.gap_type, g.gap_type),
               "action": f"Provide substantive evidence for {_GAP_LABELS.get(g.gap_type, g.gap_type).lower()}",
@@ -1491,10 +1511,15 @@ def _resolved_problem(state):
     """
     summary = (getattr(state, "idea_summary", None) or "").strip()
     if summary:
-        # idea_summary is captured only from a REASONED+ problem-establishment
-        # response; wrap it for uniform rendering. No quality is fabricated above
-        # what the capture path already guarantees.
-        return Evidence(content=summary, quality=REASONED, iteration=0)
+        # MG-8: the capture seam records the statement's TRUE assessed quality
+        # alongside it, so the wrapper carries that quality instead of assuming
+        # one. A legacy state has no recorded quality and could only have been
+        # captured at REASONED or better, so it keeps exactly its prior tier.
+        # Nothing is promoted: an ASSERTED statement renders as ASSERTED.
+        return Evidence(
+            content=summary,
+            quality=getattr(state, "idea_summary_quality", None) or REASONED,
+            iteration=0)
     pmf = state.get_gap(PROBLEM_MECHANISM_FIT)
     if pmf is not None:
         for e in getattr(pmf, "evidence", []):
@@ -1525,6 +1550,11 @@ def _completeness(state):
                 "Technical validation and demonstration remain outstanding.")
     if state.maturity_level >= 1 and has_prob:
         return "PARTIAL — mechanism or boundaries still required"
+    # MG-8: an inventor who recorded a problem statement is never told that no
+    # problem statement exists; the honest difference is the evidence level.
+    if _resolved_problem(state) is not None:
+        return ("INCOMPLETE — problem statement recorded but not yet "
+                "established as evidence")
     return "INCOMPLETE — problem statement not yet established"
 
 def _eligible(state, open_gaps):

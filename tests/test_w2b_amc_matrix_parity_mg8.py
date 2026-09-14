@@ -19,7 +19,7 @@ import html as _html
 import pytest
 
 from engine.idea_state import (
-    IdeaState, Gap, OPEN,
+    ASSERTED, IdeaState, Gap, OPEN,
     MECHANISM_COMPLETENESS, PHYSICAL_FEASIBILITY, BOUNDARY_AMBIGUITY,
     DISPOSITION_ANSWERED,
 )
@@ -211,24 +211,35 @@ def test_reconstruction_reproduces_serving_decision(client):
 # --- MG-8 COMPLETE diagnosis (measurement only) -------------------------------
 
 def test_mg8_pair_below_reasoned_seed(client):
-    """The authoritative phenomenon PAIR through the REAL route: the seed is
-    durably recorded at /start while known_problem (and idea_summary, same
-    level-0 guard) stay unpopulated for a below-REASONED seed; the seed is
-    never a ledger record. Measurement only — no semantics change."""
+    """The same REAL-route journey that measured the MG-8 pair, now pinning the
+    REPAIRED behaviour (`MG8-BOUNDED-FIX-IMPLEMENT-01`, Owner-authorized).
+
+    Unchanged and still asserted: the seed is durably recorded at /start, the
+    seed is NEVER a ledger record, the canonical problem-evidence carrier
+    `known_problem` stays unpopulated for a below-REASONED seed (the evidence
+    gate is untouched), and cold reconstruction reproduces the state
+    deterministically. Changed by the authorized repair: `idea_summary` — the
+    problem-statement carrier, not an evidence carrier — is now captured with
+    the statement's TRUE assessed quality instead of being left empty. The
+    detailed repair proofs live in tests/test_mg8_seed_problem_capture.py."""
     c, appmod = client
     r = c.post("/start", data={"idea": SEED, "domain_confirm": "mechanical"})
     sid = r.headers["Location"].rsplit("/", 1)[-1]
     inputs = appmod._get_store().load_reconstruction_inputs(sid)
-    assert inputs["seed_idea_text"] == SEED            # durable half
+    assert inputs["seed_idea_text"] == SEED            # durable half, unchanged
     state = appmod.SESSION_STORE[sid]["state"]
-    assert state.known_problem is None                 # unpopulated half
-    assert state.idea_summary is None                  # same-guard symptom
+    assert state.known_problem is None                 # evidence gate untouched
+    assert state.maturity_level == 0                   # capture promotes nothing
+    assert state.idea_summary == SEED                  # repaired: captured
+    assert state.idea_summary_quality == ASSERTED      # repaired: TRUE quality
     assert state.assertions == []                      # never a ledger record
-    # cold reconstruction reproduces the pair deterministically
+    # cold reconstruction reproduces the repaired state deterministically
     from engine.session_reconstruction import reconstruct_readonly_state
     recon = reconstruct_readonly_state(appmod._get_store(), sid)
     assert recon.review.level == 1
     assert recon.state.known_problem is None
+    assert recon.state.idea_summary == SEED
+    assert recon.state.idea_summary_quality == ASSERTED
 
 
 def test_mg8_reasoned_control(client):

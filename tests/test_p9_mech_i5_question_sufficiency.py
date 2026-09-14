@@ -157,9 +157,21 @@ _PROV_PATH = os.path.join(_DOMAINS, "domain_provenance.json")
 # policy and replay semantics are byte-unchanged within their bodies.
 #   pre-T2-F     progression_loop.py =
 #       a7e8bd62b9ab76aaba5889ce52b5f32ee646b2817ba1c790ed7a231d259fa41f
+# MG-8 reconciliation (disclosed; mechanical digest re-freeze ONLY — the Owner
+# authorization `MG8-BOUNDED-FIX-IMPLEMENT-01` repairs the defect where a
+# problem statement typed at /start was stored durably yet never captured, so
+# later surfaces spoke as though none had been supplied). PURELY ADDITIVE at the
+# level-0 establishment branch: the inventor's statement is captured into the
+# existing `idea_summary` carrier whatever its assessed quality, together with
+# that TRUE quality. The `known_problem` evidence gate, `select_next_gap`,
+# `assess_response`, `evaluate_transition`, the question selectors, the serving
+# policy, sibling eligibility and replay semantics are byte-unchanged within
+# their bodies; capture alone promotes no maturity and touches no gap.
+#   pre-MG-8     progression_loop.py =
+#       f5cc2dcfaaa2dc0c651b33016d06a5bd773c9f7cfd3a69af35e6281daec3307d
 _FROZEN_ENGINE_SHA256 = {
     "engine/domain_rules.py": "0e47326ad92a6e5b0a63eb06db9e3ad96ae72c9aaf64471dd21621265b1db1ab",
-    "engine/progression_loop.py": "f5cc2dcfaaa2dc0c651b33016d06a5bd773c9f7cfd3a69af35e6281daec3307d",
+    "engine/progression_loop.py": "da2c405d3f7b4995f43141d0b89720f97e94b731345b1ad054c77b821f58ab90",
     # D-GMPR-D3-PN reconciliation #2 (disclosed; DGMPR_D3_PATH_N_DOMAIN_NEUTRAL_
     # SERVICE_CONTRACT.md §5): the seam hash is re-frozen at the remediated
     # domain-neutral seam. domain_rules/progression_loop hashes are UNCHANGED.

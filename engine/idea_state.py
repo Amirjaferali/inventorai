@@ -324,6 +324,14 @@ class IdeaState:
 
     # Idea capture
     idea_summary   : Optional[str]          = None
+    # MG-8 (`MG8-BOUNDED-FIX-IMPLEMENT-01`): the TRUE assessed quality of the
+    # statement captured in `idea_summary`, recorded at the same moment by the
+    # same level-0 seam. Additive, defaulted, in-memory ONLY: it is not a second
+    # problem store, is never persisted (the durable envelope keeps the seed and
+    # the ledger keeps the answers), and is re-derived identically by replay.
+    # None on every legacy state, where `idea_summary` could only have been
+    # captured at REASONED or better.
+    idea_summary_quality : Optional[str]    = None
     path           : str                    = "legacy_undesignated_current_behavior"
 
     # Per-experiment owner-defined success criteria (planning metadata only).

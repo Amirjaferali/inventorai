@@ -1215,12 +1215,26 @@ def run_iteration(state: IdeaState, response: str) -> dict:
             iteration=state.iteration,
             provenance=OWNER_STATED,   # Wave-1 RVR-3 / MG-5
         )
+        # MG-8 (`MG8-BOUNDED-FIX-IMPLEMENT-01`, Owner-authorized S-13 semantics
+        # change): the inventor's own problem statement is CAPTURED here
+        # whatever its assessed quality, together with that TRUE quality. Before
+        # this repair the statement was durably stored in the reconstruction
+        # envelope yet never captured as the problem carrier, so a problem-shaped
+        # seed (which assesses ASSERTED as a rule) left `idea_summary` empty and
+        # later surfaces spoke as though nothing had been supplied.
+        # This is capture truth ONLY. It is NOT a maturity shortcut and NOT an
+        # evidence promotion: `known_problem` keeps its own unchanged
+        # REASONED-or-better gate below, so the 0 -> 1 transition, the gap
+        # lifecycle, the canonical ordering owner and sibling eligibility all
+        # behave exactly as before. Nothing is written to the ledger: the seed
+        # is not an owner interaction and never becomes a record.
+        if state.idea_summary is None:  # R-007: capture once
+            state.idea_summary = _trim_idea_summary(response)
+            state.idea_summary_quality = quality
         if quality_at_least(quality, REASONED) and (
                 state.known_problem is None
                 or quality_stronger(quality, state.known_problem.quality)):  # RISK-002
             state.known_problem = evidence
-            if state.idea_summary is None:  # R-007: capture once
-                state.idea_summary = _trim_idea_summary(response)
 
     if gap_type is None:
         can, reason = evaluate_transition(state)
