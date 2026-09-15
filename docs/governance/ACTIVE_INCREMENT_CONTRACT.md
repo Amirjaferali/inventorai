@@ -23,6 +23,98 @@ Git/GitHub own transient candidate, PR and merge identity. No acceptance/merge t
 self-SHA or lifecycle-label change creates a synchronization candidate. When no mandate
 exists, state ACTIVE CONTRACT: NONE; historical declarations never fill the gap.
 
+<a id="current-authority--commercial-evidence-owner"></a>
+## Current authority — Commercial Evidence Owner (durable ownership only)
+
+**Owner decision `COMMERCIAL-EVIDENCE-OWNER-IMPLEMENT-01` v1.0**, accepting
+`READINESS-OWNER-DISPOSITION-01` (recommendation B) and authorizing ONE bounded
+implementation candidate for the **Commercial Evidence Owner only**. Authorized:
+the durable owner, synthetic tests, ordinary commits/pushes and ONE PR. NOT
+authorized: merge (a separate exact-head Owner authorization after independent
+differential review), Readiness runtime of any kind, readiness labels or
+dispositions in the product, a Manufacturing owner, a readiness engine, a second
+evidence engine, a second risk store, a second decision engine, human or market
+evidence collection, CAD/PCB, MCP, deployment, paid activation.
+
+**Starting context:** authoritative branch `feature/atomic-json-session-persistence`
+at `223ca7629a5c733e4f9239d7f63ad6e8be44d5cf` (tree `30cce412…`, the verified
+PR #646 merge result), clean working tree, implementation branch descended
+directly from that exact tip, no newer authoritative change superseding the
+adopted design.
+
+**Purpose.** Create the durable evidence ownership future Commercial Readiness
+will need, WITHOUT implementing Commercial Readiness: no UI, no status, no
+verdict, no score, no investment advice. This is an evidence owner, not a
+readiness engine.
+
+**1. Storage.** ONE additive, append-only table `readiness_evidence` carrying an
+explicit `dimension`, so Manufacturing may reuse the SAME substrate later without
+a schema redesign. Per-project sequence assigned by the store, generated
+identifier, unique event key, single-target supersession edge, withdrawal
+expressed ONLY as a superseding row, recorded iteration and timestamp,
+provenance, scope and limitations. No UPDATE and no DELETE path exists for this
+table anywhere. Deliberately NO foreign key to `records` and NO anchor column:
+commercial evidence is about the market, not about an answer to a served
+invention question. Many independent roots are legal; one successor per item is
+enforced by a partial unique index. Per-project cap 200, refused clearly.
+
+**2. Commercial dimension only.** `ACTIVE_DIMENSIONS` contains COMMERCIAL alone,
+and `TOPICS_BY_DIMENSION[MANUFACTURING]` is EMPTY, so no manufacturing topic can
+validate and therefore no manufacturing row can be written. There is no
+manufacturing writer, UI, inference or readiness output in this candidate.
+
+**3. Closed topic vocabulary (15).** target_customer · problem_severity ·
+market_alternative · differentiation · price · willingness_to_pay · demand ·
+customer_evidence · market_entry · channel · licensing · revenue_model ·
+cost_revenue_assumption · funding_need · first_sale_viability. Commercial RISK
+is INTENTIONALLY ABSENT and continues to route to the canonical risk owner; a
+risk topic here would be the second risk store §16.F prohibits.
+
+**4. Evidence strength.** The canonical provenance axis is reused unchanged and
+every value is representable, so specialist or external evidence can later be
+REPRESENTED without a schema redesign — representing a provenance value is not
+collecting it, and no collection is authorized. `claim_status` carries ONE value,
+UNVALIDATED, and is not a constructor parameter, so no code path can promote a
+recorded statement. No commercial quality ladder exists.
+
+**5. Write and read owners.** The write owner is the store's atomic
+`append_readiness_evidence` (one serialized transaction; project existence, event
+key resolved first for idempotent replay, cap, and full history validation inside
+it; full rollback on any failure). The read owner is `load_readiness_evidence`
+plus the pure `commercial_evidence_view`, which reports what was recorded and
+nothing more. **No new endpoint was necessary and none was added**: with no UI
+authorized in this increment, a route would be unreachable, so the smallest
+mechanism that makes the owner exist is the store write path itself. The web
+layer is untouched.
+
+**6. Boundaries held.** FDC-001 remains the canonical decision owner and nothing
+here makes an investment, funding or go/no-go call. W2-A design alternatives are
+not market alternatives; `market_alternative` is a separate explicitly commercial
+topic. CAP-18 is not made the universal commercial owner. The decision-workspace
+parallel Risk/Gap/readiness model is untouched and gains no writer. ODS-001 is
+untouched and neither detection file is created.
+
+**Changed paths.** Production: `engine/commercial_evidence.py` (new owning
+module), `engine/record_store.py` (additive schema, migration, protocol surface,
+append and load). Tests: `tests/test_commercial_evidence_owner.py` (new);
+`tests/test_t2a_requirement_quantity_engine_store.py` and
+`tests/test_pvcg_r1_durable_epistemic_memory.py` (the two enumeration pins every
+additive table has extended, extended again the same way). Governance: this file
+and the readiness reconciliation row in `DEFERRED_OBLIGATIONS_REGISTER.md` §3.
+NOT touched: `web/`, the deliverable assembler, reconstruction, progression,
+`engine/decision_workspace.py`, `engine/safety_signal.py`, the risk owner,
+question content, exports, API semantics.
+
+**Status: COMMERCIAL EVIDENCE OWNER DELIVERED AS A CANDIDATE; merge not
+authorized.** Remaining limitations: no user can record commercial evidence yet
+because no UI or endpoint ships; the owner is therefore inert until a separately
+authorized capture surface exists; Manufacturing remains unimplemented; the
+Readiness runtime remains unauthorized and the specific material reason recorded
+at `READINESS-OWNER-DISPOSITION-01` still stands. Preserved unchanged with their
+triggers: `R1`, `R2`, `R3`, G-4-A, `N-1`–`N-6`, the T1-A′ supersession, T1-C′,
+the EN↔AR residual rows, the T2-A paid-activation blocker, the PR #640 findings,
+the T2-D observations, MG-8 (closed), PRE-FCORA and FCORA.
+
 <a id="current-authority--mg8-seed-problem-statement-capture"></a>
 ## Current authority — MG-8: truthful capture of the seed problem statement
 

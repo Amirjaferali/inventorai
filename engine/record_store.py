@@ -35,6 +35,12 @@ from typing import List, Protocol, runtime_checkable
 
 from engine.record_contract import ProjectRecordContract, assertion_to_dict
 from engine.idea_state import DISPOSITION_ANSWERED
+from engine.commercial_evidence import (
+    EVIDENCE_EXACT_REPLAY, EVIDENCE_INSERTED, EvidenceCapExceeded,
+    MAX_READINESS_EVIDENCE_PER_PROJECT, ReadinessEvidence,
+    is_same_evidence_event, validate_evidence_history,
+    validate_evidence_row, validate_new_evidence,
+)
 from engine.requirement_quantity import (
     RequirementQuantity, validate_quantity_history, validate_new_quantity,
     active_quantities, classify_ledger_anchor, ANCHOR_ACTIVE,
@@ -177,6 +183,11 @@ class RecordStore(Protocol):
     def load_engine_version_adoptions(self, project_id: str) -> tuple: ...
     def engine_version_adoption_for_event_key(self, project_id: str, event_key: str): ...
     def feedback_revision_ids(self, project_id: str) -> tuple: ...
+    # Commercial Evidence Owner (additive; see the readiness_evidence note).
+    def new_readiness_evidence_id(self) -> str: ...
+    def append_readiness_evidence(self, project_id: str, evidence) -> str: ...
+    def load_readiness_evidence(self, project_id: str) -> tuple: ...
+    def readiness_evidence_for_event_key(self, project_id: str, event_key: str): ...
 
 
 _SCHEMA = (
@@ -430,6 +441,63 @@ _FEEDBACK_SCHEMA = (
 # populated database; touches no existing table, column or row. Rollback is
 # disable-and-ignore (stop reading the table), never a destructive drop.
 _ADOPTION_TABLE = "engine_version_adoptions"
+# Commercial Evidence Owner (`COMMERCIAL-EVIDENCE-OWNER-IMPLEMENT-01`): ONE
+# additive, append-only readiness-evidence table carrying an explicit
+# `dimension`, so Manufacturing may reuse the SAME substrate later without a
+# schema redesign. Only COMMERCIAL is activated by the owning module's
+# vocabulary; a manufacturing row cannot validate and therefore cannot be
+# written. Additive and idempotent on a fresh database AND on an existing
+# populated database; touches no existing table, column or row. Rollback is
+# disable-and-ignore (stop reading the table), never a destructive drop.
+#
+# There is deliberately NO foreign key to `records`: commercial evidence is
+# about the market, not about an answer to a served invention question, so it
+# has no assertion anchor. The predecessor FK is composite and self-referential,
+# and the partial unique index gives ONE successor per item (no fork), while
+# MANY independent roots stay legal — recording several pieces of demand
+# evidence is normal. There is NO UPDATE path: a change is a superseding row and
+# a withdrawal is a superseding row.
+_READINESS_EVIDENCE_SCHEMA = (
+    """
+    CREATE TABLE IF NOT EXISTS readiness_evidence (
+        project_id             TEXT    NOT NULL,
+        evidence_seq           INTEGER NOT NULL,
+        evidence_id            TEXT    NOT NULL,
+        dimension              TEXT    NOT NULL,
+        topic                  TEXT    NOT NULL,
+        subject_text           TEXT    NOT NULL,
+        statement_text         TEXT    NOT NULL,
+        source_identity        TEXT    NOT NULL,
+        provenance             TEXT    NOT NULL,
+        occurred_on            TEXT    NOT NULL,
+        scope_text             TEXT    NOT NULL,
+        limitation_text        TEXT    NOT NULL,
+        claim_status           TEXT    NOT NULL,
+        withdrawn              INTEGER NOT NULL DEFAULT 0,
+        supersedes_evidence_id TEXT,
+        event_key              TEXT    NOT NULL,
+        recorded_iteration     INTEGER NOT NULL,
+        recorded_at            TEXT    NOT NULL,
+        PRIMARY KEY (project_id, evidence_id),
+        FOREIGN KEY (project_id) REFERENCES projects(project_id),
+        FOREIGN KEY (project_id, supersedes_evidence_id)
+            REFERENCES readiness_evidence(project_id, evidence_id),
+        CHECK (dimension <> ''),
+        CHECK (topic <> ''),
+        CHECK (evidence_id <> supersedes_evidence_id)
+    )
+    """,
+    "CREATE UNIQUE INDEX IF NOT EXISTS readiness_evidence_event_key_uq "
+    "ON readiness_evidence (project_id, event_key)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS readiness_evidence_seq_uq "
+    "ON readiness_evidence (project_id, evidence_seq)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS readiness_evidence_supersedes_uq "
+    "ON readiness_evidence (project_id, supersedes_evidence_id) "
+    "WHERE supersedes_evidence_id IS NOT NULL",
+    "CREATE INDEX IF NOT EXISTS readiness_evidence_dimension_idx "
+    "ON readiness_evidence (project_id, dimension)",
+)
+
 _ADOPTION_SCHEMA = (
     """
     CREATE TABLE IF NOT EXISTS engine_version_adoptions (
@@ -566,6 +634,7 @@ class SqliteRecordStore:
             self._migrate_evidence_references(self._conn)
             self._migrate_question_feedback(self._conn)
             self._migrate_engine_version_adoptions(self._conn)
+            self._migrate_readiness_evidence(self._conn)
 
     # --- write transaction (serialized; BEGIN IMMEDIATE) --------------------
     @contextmanager
@@ -678,6 +747,16 @@ class SqliteRecordStore:
         row — in particular it never touches ``projects.engine_contract_version``.
         Rollback is disable-and-ignore (stop reading the table)."""
         for stmt in _ADOPTION_SCHEMA:
+            conn.execute(stmt)
+
+    def _migrate_readiness_evidence(self, conn) -> None:
+        """Commercial Evidence Owner forward migration against the LIVE schema:
+        additively create the ``readiness_evidence`` table and its indexes,
+        including the PARTIAL unique index carrying the one-successor-per-item
+        rule. Idempotent (``IF NOT EXISTS``) on a fresh database and on an
+        existing populated pre-owner database; touches no existing table, column
+        or row. Rollback is disable-and-ignore (stop reading the table)."""
+        for stmt in _READINESS_EVIDENCE_SCHEMA:
             conn.execute(stmt)
 
     # --- identifiers --------------------------------------------------------
@@ -1252,6 +1331,156 @@ class SqliteRecordStore:
             return ()
         return validate_reference_history(
             [self._reference_from_row(r) for r in rows])
+
+    # --- Commercial Evidence Owner (readiness_evidence) ----------------------
+    _EVIDENCE_COLUMNS = (
+        "evidence_seq, evidence_id, dimension, topic, subject_text, "
+        "statement_text, source_identity, provenance, occurred_on, scope_text, "
+        "limitation_text, claim_status, withdrawn, supersedes_evidence_id, "
+        "event_key, recorded_iteration, recorded_at")
+
+    def _evidence_rows(self, project_id: str):
+        return self._conn.execute(
+            "SELECT " + self._EVIDENCE_COLUMNS + " FROM readiness_evidence "
+            "WHERE project_id = ? ORDER BY evidence_seq ASC", (project_id,)
+        ).fetchall()
+
+    @staticmethod
+    def _evidence_from_row(row):
+        """Positional mapping, in the declared `_EVIDENCE_COLUMNS` order — the
+        same discipline the sibling loaders use on this connection."""
+        return ReadinessEvidence(
+            evidence_seq=row[0], evidence_id=row[1], dimension=row[2],
+            topic=row[3], subject_text=row[4], statement_text=row[5],
+            source_identity=row[6], provenance=row[7], occurred_on=row[8],
+            scope_text=row[9], limitation_text=row[10], claim_status=row[11],
+            withdrawn=bool(row[12]), supersedes_evidence_id=row[13],
+            event_key=row[14], recorded_iteration=row[15], recorded_at=row[16])
+
+    def new_readiness_evidence_id(self) -> str:
+        """A durability-safe, collision-safe readiness-evidence identifier."""
+        return "rev-" + uuid.uuid4().hex
+
+    def readiness_evidence_for_event_key(self, project_id: str, event_key: str):
+        """The stored row under this project's stable event key, or None."""
+        row = self._conn.execute(
+            "SELECT " + self._EVIDENCE_COLUMNS + " FROM readiness_evidence "
+            "WHERE project_id = ? AND event_key = ?", (project_id, event_key)
+        ).fetchone()
+        return None if row is None else self._evidence_from_row(row)
+
+    def append_readiness_evidence(self, project_id: str, evidence) -> str:
+        """Atomically append ONE readiness-evidence item and return the TRUTHFUL
+        durable outcome token.
+
+        ``EVIDENCE_EXACT_REPLAY`` when this project already holds the exact
+        canonical event under the same stable ``event_key`` (resolved FIRST, so
+        a replay is never mis-reported as a conflict); ``EVIDENCE_INSERTED``
+        when this call committed the row.
+
+        ONE serialized transaction (``BEGIN IMMEDIATE``); commit on success,
+        FULL rollback on any failure — nothing partial survives. INSIDE the
+        transaction, against the durable truth:
+          * the project must exist (``ProjectNotFound``);
+          * the stable ``(project_id, event_key)`` is resolved first — the same
+            canonical event is an idempotent replay, a DIFFERENT event under the
+            same key is a ``StoreError``, never a silent success;
+          * the project's EXISTING history is loaded and structurally validated
+            (``CommercialEvidenceHistoryError`` on corruption — a write is never
+            possible on top of a corrupt history);
+          * the per-project cap holds (``EvidenceCapExceeded``);
+          * the proposed row is validated ON ITS OWN against every owner rule
+            (``validate_evidence_row``) — the ACTIVATED dimension, that
+            dimension's closed topic vocabulary, the CANONICAL provenance
+            vocabulary, the single UNVALIDATED claim status and the owner's
+            bounded text policy (stored form, no control character, within the
+            field cap) — so a row built by hand, bypassing the sanctioned
+            constructor, is rejected here and never reaches durable storage;
+          * the proposed row is validated TOGETHER with the existing history,
+            so a superseded item must exist, belong to the same dimension and
+            not already have a successor, and a withdrawal must supersede
+            something;
+          * the EXACT history that would exist after this insert
+            (``existing history + the row as it will be stored``, carrying the
+            ``evidence_seq`` assigned here) is validated as a whole by the
+            canonical history validator, so nothing is ever committed that the
+            owner could not read back as valid canonical history;
+          * ``evidence_seq`` is assigned here (next in sequence); the caller's
+            value is ignored; ``recorded_iteration`` / ``recorded_at`` persist
+            as given and are never part of identity;
+          * SQLite enforces the composite predecessor foreign key, the UNIQUE
+            event key and the PARTIAL unique index carrying the one-successor
+            rule.
+
+        There is NO update path on this table: a change is a superseding row and
+        a withdrawal is a superseding row. Nothing here repairs, deletes,
+        rewrites or reinterprets an existing durable row, no stored text is
+        re-normalized or logged, and nothing here derives a readiness status, a
+        risk record or any commercial conclusion."""
+        if not isinstance(evidence, ReadinessEvidence):
+            raise StoreError("evidence must be a ReadinessEvidence")
+        with self._write():
+            row = self._conn.execute(
+                "SELECT COUNT(*) FROM projects WHERE project_id = ?", (project_id,)
+            ).fetchone()
+            if not row or row[0] == 0:
+                raise ProjectNotFound(project_id)
+            stored = self.readiness_evidence_for_event_key(
+                project_id, evidence.event_key)
+            if stored is not None:
+                if is_same_evidence_event(stored, evidence):
+                    return EVIDENCE_EXACT_REPLAY
+                raise StoreError("event key already names a different event")
+            history = validate_evidence_history(
+                [self._evidence_from_row(r) for r in self._evidence_rows(project_id)])
+            if len(history) >= MAX_READINESS_EVIDENCE_PER_PROJECT:
+                raise EvidenceCapExceeded(
+                    "readiness-evidence cap reached for this project")
+            validate_evidence_row(evidence)
+            validate_new_evidence(history, evidence)
+            seq = self._conn.execute(
+                "SELECT COALESCE(MAX(evidence_seq), -1) + 1 FROM "
+                "readiness_evidence WHERE project_id = ?", (project_id,)
+            ).fetchone()[0]
+            # The LAST word before the write belongs to the canonical history
+            # validator, applied to the exact history this insert would create:
+            # the existing rows plus this row AS IT WILL BE STORED (the seq
+            # assigned just above). A partial candidate check is not enough —
+            # the store never commits a row that would make the project's own
+            # durable history unreadable.
+            validate_evidence_history(
+                tuple(history) + (dataclasses.replace(evidence,
+                                                      evidence_seq=seq),))
+            self._conn.execute(
+                "INSERT INTO readiness_evidence (project_id, "
+                + self._EVIDENCE_COLUMNS + ") "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (project_id, seq, evidence.evidence_id, evidence.dimension,
+                 evidence.topic, evidence.subject_text, evidence.statement_text,
+                 evidence.source_identity, evidence.provenance,
+                 evidence.occurred_on, evidence.scope_text,
+                 evidence.limitation_text, evidence.claim_status,
+                 1 if evidence.withdrawn else 0,
+                 evidence.supersedes_evidence_id, evidence.event_key,
+                 evidence.recorded_iteration, evidence.recorded_at))
+            return EVIDENCE_INSERTED
+
+    def load_readiness_evidence(self, project_id: str) -> tuple:
+        """Load and VALIDATE one project's readiness-evidence history in stored
+        ``evidence_seq`` order; return the immutable validated tuple.
+
+        Zero rows (including an unknown project — the same non-disclosing empty
+        result the sibling loaders give) return ``()``. Structural corruption
+        raises ``engine.commercial_evidence.CommercialEvidenceHistoryError``
+        with NO partial history (fail closed, never silently repaired); storage
+        failure propagates as the SQL error.
+
+        Read-only; project-scoped; logs nothing; derives nothing."""
+        rows = self._evidence_rows(project_id)
+        if not rows:
+            return ()
+        return validate_evidence_history(
+            [self._evidence_from_row(r) for r in rows])
 
     # --- T2-D contextual question feedback -----------------------------------
     _FEEDBACK_COLUMNS = (
