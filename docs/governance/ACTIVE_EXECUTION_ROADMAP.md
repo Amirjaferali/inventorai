@@ -17039,8 +17039,23 @@ independent focused D-3 review each returned `ACCEPT WITH NON-BLOCKING OBSERVATI
 accepted that exact SHA and adopted the §3 ratification as a CURRENT, non-retrospective instrument.
 Post-merge identity verification is recorded independently at two later gates (the RVR-8
 authoritative-base entry in this roadmap and the G-3 contract candidate header), both `[EXEC]` with
-**0 commits after the merge**. By `RVR_8_FORMAL_CLOSURE_RECORD.md` §9's own non-circular terms:
-**`RVR-8 FORMALLY CLOSED: YES / AUTHORITATIVE`**.
+**0 commits after the merge**.
+
+**2a. Closure-recording basis — bounded Owner adjudication, NOT a claim that every §9 condition is
+proven.** `RVR-8 FORMALLY CLOSED: YES / AUTHORITATIVE` is recorded as effective from that
+2026-08-29 accepted-and-merged lifecycle on the basis of the proven review/acceptance record in
+PR #597, the proven publication occurrence, the proven correct merge, the proven post-merge
+verification, and this repository's established `UNKNOWN — not negative` discipline for
+uncommitted authorization instruments — while explicitly preserving
+`publication authorization instrument: NOT PROVEN` and `merge authorization instrument: NOT
+PROVEN`. **This recording does not convert `NOT PROVEN` into `PROVEN`.** §9 provenance map by
+evidence class: conditions 1 (Lead review), 2 (independent D-3 review) and 3 (Owner exact-SHA
+acceptance) are recorded in the PR #597 body; condition 4's publication-authorization INSTRUMENT is
+`NOT PROVEN` although publication occurred through PR #597; for condition 5 the merge-authorization
+INSTRUMENT is `NOT PROVEN` while the merge EVENT is `PROVEN` by Git; condition 6 is `PROVEN` by
+committed later-gate evidence. **Absence of a committed authorization instrument is not proof that
+the authorization did not exist**; nothing uncommitted is upgraded to `PROVEN`, no instrument is
+fabricated, no SHA is re-accepted and no authority is backdated.
 
 **3. Publication-authorization provenance — recorded, not fabricated.** Publication occurred through
 PR #597. A separate publication-authorization **instrument** is `NOT PROVEN` in committed repository
@@ -17066,11 +17081,28 @@ ownership still `UNRESOLVED — REPOSITORY RECONCILIATION REQUIRED`, row not clo
 recorded as **OPENED**; the `_s6` / `RISK-*` projection mapping is **not** adjudicated, no mapping
 or owner is created, and its `CONDITIONAL` level is unchanged.
 
-**6. FCORA position — recorded, verdict untouched.** The ODR §D-2 positional predicate "after RVR-8"
-is satisfied by this accepted-and-merged closure lifecycle. **The FCORA execution result is
-unchanged: `C — FCORA FAIL — MATERIAL RELEASE-BLOCKING RECONCILIATION DEFECT`.** FCORA is not
-re-run, no failed counter is cleared, and nothing here claims FCORA passed: its two silent-
-disappearance candidates and its unresolved Owner-decision items stand on their own footing.
+**6. FCORA position, and the provenance of the FCORA result.** The ODR §D-2 positional predicate
+"after RVR-8" is satisfied by this accepted-and-merged closure lifecycle.
+
+**`OWNER-ATTESTED FCORA EXECUTION RESULT: C — FCORA FAIL — MATERIAL RELEASE-BLOCKING
+RECONCILIATION DEFECT`** · **`REPOSITORY ARTIFACT FOR THAT EXECUTION: NOT COMMITTED / NOT
+CLAIMED`** · **`PR #656 FCORA EXECUTION: NONE`**. FCORA was executed once in the current Owner
+lifecycle under `FCORA-EXECUTION-01`, execution mode READ-ONLY, at authoritative execution HEAD
+`d3f56660c337a6ddc13e44371a12250ce705d590`. No committed repository artifact is claimed to contain
+that execution report, and this synchronization fabricates no repository citation for it: the
+result is carried as an Owner-attested execution input for this lifecycle, not as a
+repository-contained fact. `FCORA NOT RE-RUN` means only that this synchronization did not execute
+FCORA again; it does NOT mean `FCORA NOT STARTED`, which ceased to be true when FCORA executed.
+
+**Attested counters, carried as input only and not as independently committed repository facts**
+(from `FCORA-EXECUTION-01`): `UNACCOUNTED DOCUMENTED MATERIAL OBLIGATIONS = 0` ·
+`UNACCOUNTED IMPLEMENTED MATERIAL CAPABILITIES = 0` · **`SILENT DISAPPEARANCE CANDIDATES = 2`** ·
+`DUPLICATE CANONICAL OWNERS = 0` · `UNEXPLAINED MATERIAL DOC↔IMPLEMENTATION CONTRADICTIONS = 0` ·
+`MATERIAL CURRENT-STATE AUTHORITY CONTRADICTIONS = 0` · `MATERIAL ITEMS WITHOUT CURRENT
+DISPOSITION = 0`. The two silent-disappearance candidates were (1) the HICR bounded-supplement
+referent and (2) the unrecovered exact historical Master Checklist artifact. **No counter is
+cleared by this synchronization, nothing here claims FCORA passed, and release is not
+authorized.**
 
 **7. Scope.** Governance-only; zero executable delta. No `engine/`, `web/`, `tests/`, schema,
 migration, route, CI or configuration change; no Readiness runtime, human-evidence or

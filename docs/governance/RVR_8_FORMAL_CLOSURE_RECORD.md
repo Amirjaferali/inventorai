@@ -9,15 +9,43 @@ base `1f3d9d14b3b645df9595889861140910d63b918c`) was Lead-reviewed and independe
 (`ACCEPT WITH NON-BLOCKING OBSERVATIONS` each), Owner-accepted at that exact SHA, and merged on
 2026-08-29 as **PR #597** via CREATE A MERGE COMMIT `39a966995d83ce72ba64a263c048d803f6d95061`
 (second parent = the accepted candidate; merge tree identical; EMPTY candidate→merge diff), with
-post-merge identity verification recorded independently at two later gates `[EXEC]`. By §9's own
-non-circular terms, closure took effect on that merge; it was simply never synchronized onto the
-current-facing surfaces until now. Nothing is re-accepted and no SHA is accepted afresh.
+post-merge identity verification recorded independently at two later gates `[EXEC]`. That lifecycle
+was never synchronized onto the current-facing surfaces until now. Nothing is re-accepted and no
+SHA is accepted afresh.
+
+**Closure-recording basis — a bounded Owner adjudication, NOT a claim that every §9 condition is
+proven.** Closure is recorded as effective from the 2026-08-29 accepted-and-merged lifecycle on the
+basis of the proven review/acceptance record in PR #597, the proven publication occurrence, the
+proven correct merge, the proven post-merge verification, and this repository's established
+`UNKNOWN — not negative` discipline for uncommitted authorization instruments — while explicitly
+preserving `publication authorization instrument: NOT PROVEN` and `merge authorization instrument:
+NOT PROVEN`. **This recording does not convert `NOT PROVEN` into `PROVEN`.**
+
+**§9 provenance map, by evidence class.** Condition 1 (Lead review), condition 2 (independent D-3
+review) and condition 3 (Owner exact-SHA acceptance) are recorded in the PR #597 body. Condition 4
+— the separate publication-authorization INSTRUMENT — is `NOT PROVEN` in committed repository
+evidence, although publication itself occurred through PR #597. For condition 5 the separate
+merge-authorization INSTRUMENT is likewise `NOT PROVEN`, while the correct merge EVENT is `PROVEN`
+by Git. Condition 6 (post-merge verification) is `PROVEN` by committed later-gate evidence.
+**Absence of a committed authorization instrument is not proof that the authorization did not
+exist**; no uncommitted historical authority is upgraded to `PROVEN` and no instrument is invented.
 
 **Closure is in the §4 form ONLY:** `RVR-8 = COMPLETED VERIFICATION — VALID EVIDENCE RETURNED —
 NEGATIVE / MIXED PRODUCT RESULT`. **`RVR-8 PASS` IS NOT ASSERTED** and is not a state this record
 defines. Unchanged and not closed by this: `T1-A′: OPEN` · `PRODUCT RELEASE-VALUE PASS: NO` ·
 `THIRD S2 RUN / RUN-004: NOT AUTHORIZED` · `SERIOUS RELEASE: NOT AUTHORIZED` ·
-`DEPLOYMENT: NOT AUTHORIZED` · `FCORA VERDICT: C` (unchanged; not re-run).
+`DEPLOYMENT: NOT AUTHORIZED`.
+
+**FCORA execution provenance — `OWNER-ATTESTED FCORA EXECUTION RESULT`, `NOT A REPOSITORY
+CITATION`.** FCORA was executed once in the current Owner lifecycle under `FCORA-EXECUTION-01`,
+READ-ONLY, at authoritative execution HEAD `d3f56660c337a6ddc13e44371a12250ce705d590`, returning
+`C — FCORA FAIL — MATERIAL RELEASE-BLOCKING RECONCILIATION DEFECT`.
+**`REPOSITORY ARTIFACT FOR THAT EXECUTION: NOT COMMITTED / NOT CLAIMED`** — no committed
+repository artifact is claimed to contain that report and this synchronization fabricates no
+repository citation for it; the result is carried as an Owner-attested execution input.
+**`PR #656 FCORA EXECUTION: NONE`.** `FCORA NOT RE-RUN` means only that this synchronization did
+not execute FCORA again; it does NOT mean `FCORA NOT STARTED`, which ceased to be true when FCORA
+executed. No counter is cleared here, FCORA did not pass, and release is not authorized.
 
 **Publication-authorization provenance, not fabricated.** Publication occurred through PR #597. A
 separate publication-authorization **instrument** is `NOT PROVEN` in committed repository evidence;
