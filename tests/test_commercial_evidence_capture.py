@@ -372,16 +372,28 @@ def test_every_topic_has_both_languages():
 
 
 def test_no_readiness_vocabulary_appears_on_the_page(owner):
-    """M. This lane computes no Readiness disposition, so none is rendered."""
+    """M, AMENDED at `READINESS-SNAPSHOT-RUNTIME-01`.
+
+    This lane still computes no Readiness disposition — that has not changed.
+    What changed is the page it shares: the Owner has since authorized the
+    Readiness Snapshot, which renders exactly ONE canonical disposition,
+    `INSUFFICIENT_EVIDENCE`. So the assertion narrows from "no canonical token
+    at all" to what still holds and matters more: no POSITIVE disposition
+    anywhere, and nothing from THIS block naming a Readiness state."""
     c, _aid, sid = owner
     _record(c, sid)
     for lang in ("en", "ar"):
         c.post("/ui-language", data={"lang": lang})
         body = _page(c, sid)
-        for token in ("PASS_WITH_CONDITIONS", "INSUFFICIENT_EVIDENCE",
-                      "PASS_WITH", "HOLD", "Commercial Readiness",
-                      "readiness score", "Readiness score"):
+        for token in ("PASS_WITH_CONDITIONS", "PASS_WITH", "HOLD",
+                      "Commercial Readiness", "readiness score",
+                      "Readiness score"):
             assert token not in body, (lang, token)
+        # The one canonical token on the page belongs to the snapshot block,
+        # never to this one.
+        cev = re.search(r'id="cev-commercial-evidence".*?</details>',
+                        body, re.S).group(0)
+        assert "INSUFFICIENT_EVIDENCE" not in cev, lang
 
 
 def test_no_marketability_or_profitability_claim_appears(owner):

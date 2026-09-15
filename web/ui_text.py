@@ -2246,6 +2246,101 @@ UI_STRINGS = {
     # reason is stated plainly; no wall-clock order is implied for ledger
     # entries. Event labels are keyed UI_T3A_EVENT_<KIND> (kind upper-cased),
     # one entry per kind of `web/app.py::T3A_EVENT_KINDS`.
+    # Readiness Snapshot (READINESS-SNAPSHOT-RUNTIME-01) — the first runtime
+    # presentation of Readiness. Every string below is about the state of the
+    # EVIDENCE, never about the idea. The hardest thing this copy has to do is
+    # stop a reader converting an absence into a negative: "no Commercial
+    # evidence recorded" must not read as "no market", "not assessed" must not
+    # read as "hard to manufacture", and "not verified" must not read as "does
+    # not work". Each row therefore says what is missing AND says plainly what
+    # that does not mean. Only INSUFFICIENT_EVIDENCE is reachable in this
+    # version, so no wording for a positive state exists here to be reached by
+    # accident.
+    "UI_RS_HEADING": {
+        "en": "Evidence so far",
+        "ar": "الأدلة حتى الآن",
+    },
+    "UI_RS_EXPLAIN": {
+        "en": ("What evidence your project currently holds for each area. This "
+               "is a summary of what has been recorded — it is not a judgement "
+               "about your idea, and it does not tell you whether to continue. "
+               "Your project's own recommendation is shown separately."),
+        "ar": ("ما الأدلة التي يحتويها مشروعك حاليًا في كل مجال. هذا ملخّص لما "
+               "جرى تسجيله — وليس حكمًا على فكرتك، ولا يخبرك إن كنت ستتابع أم "
+               "لا. توصية مشروعك تُعرض على حدة."),
+    },
+    "UI_RS_DISPOSITION_INSUFFICIENT_EVIDENCE": {
+        "en": "Insufficient evidence",
+        "ar": "الأدلة غير كافية",
+    },
+    "UI_RS_DIM_TECHNICAL": {"en": "Technical", "ar": "التقني"},
+    "UI_RS_DIM_COMMERCIAL": {"en": "Commercial", "ar": "التجاري"},
+    "UI_RS_DIM_MANUFACTURING": {"en": "Manufacturing", "ar": "التصنيع"},
+    # --- Technical -----------------------------------------------------------
+    "UI_RS_TECHNICAL_WHY": {
+        "en": ("You have recorded technical reasoning, and it is kept at the "
+               "level it was given: stated, or reasoned. This version of "
+               "InventorAI has no way for anyone — a specialist, a test result, "
+               "or the system itself — to mark technical evidence as checked, "
+               "so no project can reach a verified technical result here."),
+        "ar": ("لقد سجّلت تعليلًا تقنيًا، وهو محفوظ بالمستوى الذي قُدّم به: "
+               "مذكور، أو معلَّل. لا تتيح هذه النسخة من إنفنتوراي لأي جهة — "
+               "أخصائي، أو نتيجة اختبار، أو النظام نفسه — وضع علامة على الأدلة "
+               "التقنية بأنها مُتحقَّق منها، لذلك لا يمكن لأي مشروع بلوغ نتيجة "
+               "تقنية مُتحقَّقة هنا."),
+    },
+    "UI_RS_TECHNICAL_NOT_A_VERDICT": {
+        "en": ("This is a limit of this version, not a finding about your idea. "
+               "It does not mean your idea will not work."),
+        "ar": ("هذا قيد في هذه النسخة، وليس نتيجة بشأن فكرتك. لا يعني أن فكرتك "
+               "لن تنجح."),
+    },
+    "UI_RS_TECHNICAL_COUNTS": {
+        "en": "Recorded entries: %(items)s · Areas covered: %(areas)s",
+        "ar": "الإدخالات المسجَّلة: %(items)s · المجالات المشمولة: %(areas)s",
+    },
+    "UI_RS_TECHNICAL_NONE": {
+        "en": "No technical reasoning has been recorded yet.",
+        "ar": "لم يُسجَّل أي تعليل تقني بعد.",
+    },
+    # --- Commercial ----------------------------------------------------------
+    "UI_RS_COMMERCIAL_NOTHING": {
+        "en": "No Commercial evidence has been recorded yet.",
+        "ar": "لم تُسجَّل أي أدلة تجارية بعد.",
+    },
+    "UI_RS_COMMERCIAL_NOTHING_NOT_A_VERDICT": {
+        "en": ("Nothing has been recorded here yet, which says nothing about "
+               "your market. It is a blank page, not a finding."),
+        "ar": ("لم يُسجَّل شيء هنا بعد، وهذا لا يقول شيئًا عن سوقك. إنها صفحة "
+               "فارغة، وليست نتيجة."),
+    },
+    "UI_RS_COMMERCIAL_RECORDED": {
+        "en": ("Commercial evidence has been recorded, but it has not yet been "
+               "independently checked."),
+        "ar": ("سُجِّلت أدلة تجارية، لكنها لم تخضع بعد لفحص مستقل."),
+    },
+    "UI_RS_COMMERCIAL_COUNTS": {
+        "en": "Recorded items: %(items)s · Topics covered: %(topics)s",
+        "ar": "العناصر المسجَّلة: %(items)s · المواضيع المشمولة: %(topics)s",
+    },
+    "UI_RS_COMMERCIAL_ALL_UNCHECKED": {
+        "en": "Every item is your own statement, recorded as you gave it.",
+        "ar": "كل عنصر هو قولك أنت، مسجَّل كما قدّمته.",
+    },
+    "UI_RS_COMMERCIAL_TOPICS_LABEL": {
+        "en": "Topics recorded", "ar": "المواضيع المسجَّلة"},
+    # --- Manufacturing -------------------------------------------------------
+    "UI_RS_MANUFACTURING_NOT_ASSESSED": {
+        "en": "Not assessed in this version",
+        "ar": "لم يُقيَّم في هذه النسخة",
+    },
+    "UI_RS_MANUFACTURING_NOT_A_VERDICT": {
+        "en": ("This version does not look at manufacturing at all, so there is "
+               "nothing to report either way. It does not mean your idea would "
+               "be difficult to make."),
+        "ar": ("لا تنظر هذه النسخة في التصنيع إطلاقًا، فليس هناك ما يُقال في أي "
+               "اتجاه. لا يعني ذلك أن صنع فكرتك سيكون صعبًا."),
+    },
     # Commercial Evidence Capture (COMMERCIAL-EVIDENCE-CAPTURE-IMPLEMENT-01).
     # The wording carries the whole product boundary: this block shows what the
     # inventor RECORDED about their market, never what is true about it. No

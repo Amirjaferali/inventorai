@@ -398,7 +398,20 @@ def test_the_only_insufficient_evidence_identifier_is_the_domain_reason_code():
                     open(os.path.join(dirpath, name), encoding="utf-8").read())
                 if "INSUFFICIENT_EVIDENCE" in body:
                     users.append(name)
-    assert users == ["domain_rules.py"], users
+    # AMENDED at `READINESS-SNAPSHOT-RUNTIME-01`: the Owner has since
+    # authorized the Readiness Snapshot, so the canonical identifier now also
+    # appears in its pure composition seam and the web context that renders it.
+    # Those two are the AUTHORIZED users; `domain_rules.py` remains the
+    # unrelated pre-existing one. Any OTHER file acquiring the identifier is
+    # still a finding, which is what this test now catches.
+    # `readiness_snapshot.py` is the pure composition seam that emits it;
+    # `ui_text.py` carries its bilingual display key. `web/app.py` is NOT in
+    # this list: it imports the seam and never names the identifier itself.
+    assert sorted(users) == sorted(
+        ["domain_rules.py", "readiness_snapshot.py", "ui_text.py"]), users
+    # And the positive half of the vocabulary is still nowhere at all.
+    from engine import readiness_snapshot
+    assert readiness_snapshot.EMITTABLE_DISPOSITIONS == ("INSUFFICIENT_EVIDENCE",)
 
 
 def test_this_slice_added_no_readiness_engine_and_no_second_owner():
