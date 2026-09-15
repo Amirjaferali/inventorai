@@ -34,7 +34,19 @@ active set. Contradiction edges still block only while BOTH endpoints are active
 from engine.idea_state import (
     UNVALIDATED,
     DISPOSITION_PROVISIONAL_ASSUMPTION,
+    STAGE_2_GAP_TYPES,
+    STAGE_3_GAP_TYPES,
 )
+
+# The gap contexts that are legitimate inputs to TECHNICAL derived readiness:
+# the six canonical gap types, taken from their existing definitions rather than
+# re-listed here. A record filed under anything else — a decision action, whose
+# `gap_context` is None, or any future non-gap context — is a real record in a
+# real lane, but it is not evidence ABOUT a technical gap, so it neither
+# establishes nor withholds technical readiness. This is a scoping rule, not a
+# new readiness calculation and not a broader definition of verified evidence:
+# what counts as verified inside a gap context is unchanged below.
+READINESS_GAP_CONTEXTS = frozenset(STAGE_2_GAP_TYPES | STAGE_3_GAP_TYPES)
 
 
 class DerivedReadiness:
@@ -47,6 +59,13 @@ class DerivedReadiness:
         for r in getattr(state, "assertions", []):
             by_context.setdefault(r.gap_context, []).append(r)
         self._by_context = by_context
+        # The readiness-relevant subset, resolved once. Both the aggregate and
+        # `unverified_contexts` read THIS, so a non-gap context can neither
+        # inflate readiness (by being the only context present and verifying)
+        # nor veto it (by being unverifiable and dragging the aggregate down).
+        self._readiness_contexts = {
+            c: recs for c, recs in by_context.items()
+            if c in READINESS_GAP_CONTEXTS}
 
     @staticmethod
     def _is_active(record):
@@ -74,7 +93,13 @@ class DerivedReadiness:
         """True only if every ACTIVE interaction for this context is validated and
         none is provisional, pending, or in an active unresolved contradiction.
         With no active records, readiness is not verified (nothing to stand on).
-        Stored CLOSED / maturity are intentionally NOT inputs here."""
+        Stored CLOSED / maturity are intentionally NOT inputs here.
+
+        A context that is not one of the six canonical gap types is never
+        "verified readiness": there is no technical gap for it to be readiness
+        ABOUT. It fails closed here rather than being silently treated as a gap."""
+        if gap_type not in READINESS_GAP_CONTEXTS:
+            return False
         recs = self._active(gap_type)
         if not recs:
             return False
@@ -89,14 +114,26 @@ class DerivedReadiness:
         return True
 
     def unverified_contexts(self):
-        """Gap contexts that have records but are not verified."""
-        return [c for c in self._by_context if not self.is_verified(c)]
+        """Canonical GAP contexts that have records but are not verified. Scoped
+        to the readiness contexts for the same reason the aggregate is: a
+        decision-action context is not an unverified technical gap."""
+        return [c for c in self._readiness_contexts if not self.is_verified(c)]
 
     def overall_verified(self):
-        """True only if at least one gap context has records and every gap
-        context with records is verified. Absent any records, there is no basis
-        to claim verified readiness, so this is False."""
-        contexts = list(self._by_context)
+        """True only if at least one CANONICAL GAP context has records and every
+        such context is verified. Absent any gap-context records, there is no
+        basis to claim verified readiness, so this is False.
+
+        Both halves are scoped to the canonical gap contexts, which fixes the two
+        recorded ways a decision-action record distorted this flag:
+          * INFLATION — a project whose only records were decision actions (all
+            filed under `gap_context=None`) formed a single `None` "context"; if
+            it verified, this returned True on zero gap evidence. Such a project
+            now has no readiness context at all and returns False.
+          * VETO — a single decision action added an unverifiable `None` context
+            that forced this to False even when every real gap context verified.
+        Neither half changes what "verified" MEANS inside a gap context."""
+        contexts = list(self._readiness_contexts)
         if not contexts:
             return False
         return all(self.is_verified(c) for c in contexts)
