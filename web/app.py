@@ -93,6 +93,13 @@ from engine.record_contract import ProjectRecordContract
 # pure vocabulary / canonical-value / eligibility owner. The web layer performs
 # glue only: authorization, token binding, idempotency, persist-before-
 # acknowledge, and fail-closed attachment of the validated history.
+# Readiness Snapshot (READINESS-SNAPSHOT-RUNTIME-01): the PURE composition seam
+# over the two existing authoritative owners. It persists nothing and can emit
+# no disposition other than INSUFFICIENT_EVIDENCE.
+from engine.readiness_snapshot import (
+    EMITTABLE_DISPOSITIONS as _RS_EMITTABLE,
+    readiness_snapshot as _readiness_snapshot,
+)
 # Commercial Evidence Capture (COMMERCIAL-EVIDENCE-CAPTURE-IMPLEMENT-01): the
 # AUTHORITATIVE Commercial Evidence Owner merged in PR #647. This web slice is a
 # writer and a reader FOR that owner; it re-implements none of its validation,
@@ -4518,6 +4525,9 @@ def show_session(sid):
         # Commercial Evidence Capture: the items already recorded for this
         # project, read STRICTLY from the authoritative owner. None only when
         # the durable history cannot be read consistently.
+        # Readiness Snapshot: evidence sufficiency per dimension, composed
+        # read-only from the existing owners. None when a source cannot be read.
+        readiness_snapshot=_readiness_snapshot_context(sid, state),
         commercial_evidence=_commercial_evidence_context(
             sid, _quantity_writer_account(sid) is not None
             and getattr(state, "domain", None) is not None),
@@ -6336,6 +6346,26 @@ def _commercial_evidence_context(sid, writable):
         "choices": list(_COMMERCIAL_TOPICS),
         "writable": bool(writable),
     }
+
+
+def _readiness_snapshot_context(sid, state):
+    """Read-only render context for the Readiness Snapshot, or None when a
+    source cannot be read consistently (fail closed: the block is suppressed
+    rather than shown with a dimension missing or stale).
+
+    Composition only. The Technical row comes from the existing derived-readiness
+    owner and the ledger it already reads; the Commercial row comes STRICTLY from
+    the authoritative Commercial Evidence Owner; Manufacturing is the fixed
+    inactive state. Nothing is persisted, nothing is cached, and this runs on GET
+    without mutating anything."""
+    try:
+        rows = _get_store().load_readiness_evidence(sid)
+    except Exception:
+        return None
+    try:
+        return _readiness_snapshot(state, rows)
+    except Exception:
+        return None
 
 
 @app.route("/session/<sid>/commercial-evidence", methods=["POST"])
