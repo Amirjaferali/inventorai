@@ -281,39 +281,55 @@ def test_another_account_cannot_see_this_projects_snapshot(owner):
 # ==========================================================================
 # 4. Manufacturing (H, I)
 # ==========================================================================
-def test_manufacturing_is_shown_as_not_assessed(owner):
-    """H. Option A: a truthful row, not an omission."""
+def test_manufacturing_is_an_evidence_sufficiency_row(owner):
+    """H, AMENDED at `MANUFACTURING-READINESS-SNAPSHOT-01`.
+
+    This pinned "Not assessed in this version", which was the truth while
+    Manufacturing had no evidence owner: saying "insufficient evidence" would
+    have implied an assessment nobody had made. It has an owner now, so its
+    evidence sufficiency is reportable exactly as Commercial's is, and the row
+    carries a disposition. What the row MEANS is unchanged — evidence
+    sufficiency, never manufacturability — and that is pinned below."""
     c, sid = owner
     row = _row(_page(c, sid), "manufacturing")
     assert row
-    assert 'data-rs-state="not_assessed"' in row
-    assert _shown("UI_RS_MANUFACTURING_NOT_ASSESSED") in row
-    assert _shown("UI_RS_MANUFACTURING_NOT_A_VERDICT") in row
+    assert 'data-rs-disposition="INSUFFICIENT_EVIDENCE"' in row
+    assert "data-rs-state" not in row
+    assert _shown("UI_RS_MANUFACTURING_NOTHING") in row
+    assert _shown("UI_RS_MANUFACTURING_NOTHING_NOT_A_VERDICT") in row
 
 
-def test_manufacturing_receives_no_canonical_disposition(owner):
-    """I. Not even INSUFFICIENT_EVIDENCE — that would imply somebody looked."""
-    assert rs.manufacturing_row()["disposition"] is None
+def test_manufacturing_receives_no_positive_disposition(owner):
+    """I, AMENDED. `INSUFFICIENT_EVIDENCE` is now permitted for Manufacturing;
+    the positive states never were and still are not. The dimension also still
+    implies nothing about how hard the thing is to make."""
+    assert rs.manufacturing_row(())["disposition"] == "INSUFFICIENT_EVIDENCE"
+    assert rs.EMITTABLE_DISPOSITIONS == ("INSUFFICIENT_EVIDENCE",)
     c, sid = owner
     row = _row(_page(c, sid), "manufacturing")
-    assert "data-rs-disposition" not in row
-    assert "INSUFFICIENT_EVIDENCE" not in row
+    for token in POSITIVE:
+        assert token not in row, token
     lowered = row.lower()
     for implication in ("difficult to manufacture", "hard to make",
                         "manufacturing problem", "cannot be made", "failure"):
         assert implication not in lowered, implication
 
 
-def test_manufacturing_state_is_never_inferred_from_other_evidence(owner):
-    """The inactive state is fixed: no materials, cost or requirement text can
-    move it."""
+def test_manufacturing_is_never_inferred_from_another_dimension(owner):
+    """AMENDED. The row now reports Manufacturing evidence, so the thing to pin
+    is no longer "the state is fixed" but "the state comes from Manufacturing
+    evidence ALONE". Commercial evidence about cost and materials must move the
+    Manufacturing row not at all."""
     c, sid = owner
     _record(c, sid, topic="cost_revenue_assumption",
-            statement_text="Aluminium extrusion and injection-moulded ABS, about 40 per unit in tooling.")
-    assert rs.manufacturing_row() == {
-        "dimension": "manufacturing", "disposition": None,
-        "state": rs.STATE_NOT_ASSESSED}
-    assert "data-rs-disposition" not in _row(_page(c, sid), "manufacturing")
+            statement_text="Aluminium extrusion and ABS tooling, about 40 a unit.")
+    rows = webapp._get_store().load_readiness_evidence(sid)
+    mfg = rs.manufacturing_row(rows)
+    assert mfg["recorded_items"] == 0
+    assert mfg["topics"] == ()
+    assert mfg["reason"] == rs.REASON_NOTHING_RECORDED
+    assert _shown("UI_RS_MANUFACTURING_NOTHING") in _row(
+        _page(c, sid), "manufacturing")
 
 
 # ==========================================================================
@@ -328,7 +344,7 @@ def test_no_positive_readiness_disposition_is_rendered(owner):
         snapshot = re.search(r'id="rs-readiness-snapshot".*?</details>', body, re.S).group(0)
         for token in POSITIVE:
             assert token not in snapshot, (lang, token)
-        assert snapshot.count('data-rs-disposition="INSUFFICIENT_EVIDENCE"') == 2
+        assert snapshot.count('data-rs-disposition="INSUFFICIENT_EVIDENCE"') == 3
 
 
 # ==========================================================================
@@ -424,7 +440,7 @@ def test_arabic_rendering(owner):
     body = _page(c, sid)
     for key in ("UI_RS_HEADING", "UI_RS_EXPLAIN", "UI_RS_DIM_TECHNICAL",
                 "UI_RS_DIM_MANUFACTURING", "UI_RS_TECHNICAL_WHY",
-                "UI_RS_COMMERCIAL_RECORDED", "UI_RS_MANUFACTURING_NOT_ASSESSED",
+                "UI_RS_COMMERCIAL_RECORDED", "UI_RS_MANUFACTURING_NOTHING",
                 "UI_RS_DISPOSITION_INSUFFICIENT_EVIDENCE"):
         assert _shown(key, "ar") in body, key
     assert _shown("UI_RS_HEADING", "en") not in body
