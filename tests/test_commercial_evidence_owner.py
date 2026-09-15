@@ -464,17 +464,49 @@ def test_saved_project_reconstruction_is_unaffected(tmp_path):
 # ==========================================================================
 # 9. boundaries this increment must not cross
 # ==========================================================================
-def test_no_web_surface_consumes_the_owner_in_this_increment():
+def test_the_web_surface_consumes_the_owner_only_through_the_capture_slice():
+    """AMENDED at `COMMERCIAL-EVIDENCE-CAPTURE-IMPLEMENT-01`.
+
+    When this file was written the owner had NO web surface at all, and this
+    test pinned that absence "in this increment". The Owner has since authorized
+    exactly one user-facing slice, so pinning zero would now pin a fiction. What
+    the amended test pins is the boundary that still holds: the web layer
+    reaches the owner through ONE route and ONE session block, and through
+    nothing else. A second Commercial surface, a Manufacturing writer or a
+    readiness runtime appearing anywhere in `web/` still fails here."""
     web = open(os.path.join(_ROOT, "web", "app.py"), encoding="utf-8").read()
-    assert "readiness_evidence" not in web
-    assert "commercial_evidence" not in web
-    for name in os.listdir(os.path.join(_ROOT, "web", "templates")):
+    # Exactly one route, POST-only, and one read-context builder.
+    assert web.count('@app.route("/session/<sid>/commercial-evidence"') == 1
+    assert 'methods=["POST"]' in web[web.index("/session/<sid>/commercial-evidence"):
+                                     web.index("/session/<sid>/commercial-evidence") + 200]
+    assert web.count("def record_commercial_evidence(") == 1
+    assert web.count("def _commercial_evidence_context(") == 1
+    # The write and read go to the owner's own API — no second store, no
+    # direct SQL, no shadow model in the web layer.
+    assert web.count("append_readiness_evidence(") == 1
+    residual = web
+    for sanctioned in ("append_readiness_evidence", "load_readiness_evidence",
+                       "new_readiness_evidence_id", "make_readiness_evidence",
+                       "readiness_evidence_for_event_key"):
+        residual = residual.replace(sanctioned, "")
+    assert "readiness_evidence" not in residual, (
+        "the web layer names the durable table outside the owner's own API")
+    # Commercial-only, and no readiness disposition anywhere in the web layer.
+    assert "DIMENSION_MANUFACTURING" not in web
+    for token in ("PASS_WITH_CONDITIONS", "commercial_readiness",
+                  "readiness_score"):
+        assert token not in web, token
+    # Exactly one template block, on the existing saved-project page.
+    surfaced = []
+    for name in sorted(os.listdir(os.path.join(_ROOT, "web", "templates"))):
         if not name.endswith(".html"):
             continue
         body = open(os.path.join(_ROOT, "web", "templates", name),
                     encoding="utf-8").read()
         assert "readiness_evidence" not in body, name
-        assert "commercial_evidence" not in body, name
+        if "commercial_evidence" in body:
+            surfaced.append(name)
+    assert surfaced == ["session.html"], surfaced
 
 
 def test_the_owner_touches_no_decision_workspace_or_ods_surface():

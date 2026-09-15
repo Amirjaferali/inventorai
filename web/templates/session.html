@@ -1035,6 +1035,66 @@ body{overflow-wrap:anywhere}
     validity claim; the migration disclosure and correction blocks above are
     unchanged and are not duplicated here. Chrome resolves through t();
     inventor text renders verbatim with dir="auto". -#}
+{#- CEV-BLOCK-BEGIN — Commercial Evidence Capture
+    (COMMERCIAL-EVIDENCE-CAPTURE-IMPLEMENT-01). Read: the items already recorded
+    for this project, straight from the authoritative Commercial Evidence Owner.
+    Write: one POST form that records one more. Nothing here computes or renders
+    a Commercial Readiness disposition, a score, or any claim about whether the
+    idea is marketable — the block reports what the inventor recorded and stops.
+    Provenance and standing are shown as explanatory metadata, never as controls:
+    there is no selector for either, because neither has a second value to pick. -#}
+{% if commercial_evidence %}
+<details id="cev-commercial-evidence" class="commercial-evidence" style="margin-top:14px;border:1px solid #d9d9e3;border-radius:4px;background:#f8f8fb;padding:10px 14px">
+  <summary style="cursor:pointer;font-size:13px;color:#3a3a5c;font-weight:bold">{{ t('UI_CEV_HEADING') }}</summary>
+  <p style="font-size:13px;color:#555;margin:10px 0 8px 0">{{ t('UI_CEV_EXPLAIN') }}</p>
+  {% if cev_ack %}<p id="cev-ack" class="journey-feedback" role="status" dir="auto">{{ cev_ack }}</p>{% endif %}
+  {% if cev_error %}<p id="cev-error" class="journey-note" role="alert" dir="auto">{{ cev_error }}</p>{% endif %}
+  {% if not commercial_evidence.total %}
+  <p class="journey-note commercial-evidence-empty" data-cev-empty>{{ t('UI_CEV_EMPTY') }}</p>
+  {% else %}
+  <ul class="commercial-evidence-list" style="margin:6px 0 0 0;padding-inline-start:20px;font-size:13px;color:#444">
+    {% for item in commercial_evidence.entries %}
+    <li class="commercial-evidence-item" data-cev-item data-cev-topic="{{ item.topic }}" data-cev-provenance="{{ item.provenance }}" data-cev-claim-status="{{ item.claim_status }}" style="margin:0 0 10px 0">
+      <p class="journey-note" style="margin:0"><strong data-cev-topic-label>{{ t('UI_CEV_TOPIC_' ~ item.topic|upper) }}</strong> · <bdi data-cev-subject dir="auto">{{ item.subject_text }}</bdi></p>
+      <p class="commercial-evidence-statement" data-cev-statement dir="auto" style="margin:2px 0">{{ item.statement_text }}</p>
+      <p class="journey-note" style="margin:2px 0">{{ t('UI_CEV_META_SOURCE') }}: <bdi data-cev-source dir="auto">{{ item.source_identity }}</bdi>{% if item.occurred_on %} · {{ t('UI_CEV_META_DATE') }}: <bdi data-cev-date>{{ item.occurred_on }}</bdi>{% endif %}</p>
+      <p class="journey-note" style="margin:2px 0">{{ t('UI_CEV_META_SCOPE') }}: <bdi data-cev-scope dir="auto">{{ item.scope_text }}</bdi></p>
+      <p class="journey-note" style="margin:2px 0">{{ t('UI_CEV_META_LIMITATION') }}: <bdi data-cev-limitation dir="auto">{{ item.limitation_text }}</bdi></p>
+      <p class="journey-note" style="margin:2px 0;color:#777">{{ t('UI_CEV_META_ORIGIN') }}: <span data-cev-origin>{{ t('UI_CEV_META_ORIGIN_VALUE') }}</span> · {{ t('UI_CEV_META_STANDING') }}: <span data-cev-standing>{{ t('UI_CEV_META_STANDING_VALUE') }}</span></p>
+    </li>
+    {% endfor %}
+  </ul>
+  <p class="journey-note" style="margin-top:6px;color:#777">{{ t('UI_CEV_META_NOTE') }}</p>
+  {% endif %}
+  {% if commercial_evidence.writable %}
+  <h3 style="font-size:13px;margin:12px 0 4px 0">{{ t('UI_CEV_ADD_HEADING') }}</h3>
+  <form method="POST" action="/session/{{ sid }}/commercial-evidence" class="cev-form" id="cev-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <p style="margin:4px 0"><label for="cev-topic">{{ t('UI_CEV_FIELD_TOPIC') }}</label>
+      <select name="topic" id="cev-topic" required>
+        {% for topic in commercial_evidence.choices %}
+        <option value="{{ topic }}">{{ t('UI_CEV_TOPIC_' ~ topic|upper) }}</option>
+        {% endfor %}
+      </select></p>
+    <p style="margin:4px 0"><label for="cev-subject">{{ t('UI_CEV_FIELD_SUBJECT') }}</label><br>
+      <input type="text" name="subject_text" id="cev-subject" dir="auto" size="48" required></p>
+    <p style="margin:4px 0"><label for="cev-statement">{{ t('UI_CEV_FIELD_STATEMENT') }}</label><br>
+      <textarea name="statement_text" id="cev-statement" dir="auto" rows="3" cols="48" required></textarea></p>
+    <p style="margin:4px 0"><label for="cev-source">{{ t('UI_CEV_FIELD_SOURCE') }}</label><br>
+      <input type="text" name="source_identity" id="cev-source" dir="auto" size="48" required></p>
+    <p style="margin:4px 0"><label for="cev-date">{{ t('UI_CEV_FIELD_DATE') }}</label><br>
+      <input type="text" name="occurred_on" id="cev-date" dir="ltr" size="16"></p>
+    <p style="margin:4px 0"><label for="cev-scope">{{ t('UI_CEV_FIELD_SCOPE') }}</label><br>
+      <input type="text" name="scope_text" id="cev-scope" dir="auto" size="48" required></p>
+    <p style="margin:4px 0"><label for="cev-limitation">{{ t('UI_CEV_FIELD_LIMITATION') }}</label><br>
+      <input type="text" name="limitation_text" id="cev-limitation" dir="auto" size="48" required></p>
+    <p class="journey-note" style="margin:2px 0">{{ t('UI_CEV_LIMITATION_NOTE') }}</p>
+    <button type="submit" id="cev-submit">{{ t('UI_CEV_SUBMIT') }}</button>
+  </form>
+  {% endif %}
+</details>
+{% endif %}
+{#- CEV-BLOCK-END -#}
 {% if project_record %}
 <details id="t3a-project-record" class="project-record" style="margin-top:14px;border:1px solid #d9d9e3;border-radius:4px;background:#f8f8fb;padding:10px 14px">
   <summary style="cursor:pointer;font-size:13px;color:#3a3a5c;font-weight:bold">{{ t('UI_T3A_HEADING') }}</summary>
