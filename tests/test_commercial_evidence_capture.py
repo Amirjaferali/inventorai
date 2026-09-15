@@ -478,15 +478,27 @@ def test_no_readiness_conclusion_is_computed_anywhere_in_this_lane():
         assert banned not in route, banned
 
 
-def test_manufacturing_remains_inactive_and_unreachable_from_this_slice(owner):
+def test_manufacturing_is_unreachable_from_the_COMMERCIAL_capture_route(owner):
+    """AMENDED at `MANUFACTURING-EVIDENCE-OWNER-IMPLEMENT-01`.
+
+    Manufacturing is now an activated evidence dimension with its own route, so
+    "inactive" is no longer the truth to pin. What still holds is the boundary
+    THIS route owns: the Commercial route writes Commercial rows and nothing
+    else. A submission naming a dimension is refused whole, and no Manufacturing
+    row can be created through this path."""
     from engine.commercial_evidence import (
         ACTIVE_DIMENSIONS, DIMENSION_MANUFACTURING, TOPICS_BY_DIMENSION)
-    assert ACTIVE_DIMENSIONS == (DIMENSION_COMMERCIAL,)
-    assert TOPICS_BY_DIMENSION[DIMENSION_MANUFACTURING] == ()
+    assert DIMENSION_MANUFACTURING in ACTIVE_DIMENSIONS
+    assert TOPICS_BY_DIMENSION[DIMENSION_MANUFACTURING] != ()
     c, _aid, sid = owner
     assert _record(c, sid, dimension=DIMENSION_MANUFACTURING).status_code == 302
+    assert _rows(sid) == (), "a dimension field was honoured by the route"
+    # A Manufacturing topic is not valid on the Commercial route either.
+    assert _record(c, sid, topic="material").status_code == 302
     assert _rows(sid) == ()
-    assert "MANUFACTURING" not in _page(c, sid)
+    # And a genuine Commercial write still lands as COMMERCIAL.
+    _record(c, sid)
+    assert [r.dimension for r in _rows(sid)] == [DIMENSION_COMMERCIAL]
 
 
 def test_the_commercial_owner_remains_the_sole_durable_store(owner):

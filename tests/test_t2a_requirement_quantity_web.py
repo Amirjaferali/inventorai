@@ -641,7 +641,15 @@ def test_null_owner_anonymous_and_unverified_projects_can_never_be_quantified(db
 @pytest.mark.parametrize("field,value", [
     ("value_text", ""), ("value_text", "   "), ("value_text", "a" * 121),
     ("value_text", "5\tV"), ("value_text", "5\nV"), ("value_text", "5\x7fV"),
-    ("quantity_kind", "bogus"), ("quantity_kind", ""), ("quantity_kind", "tolerance"),
+    # "nominal_value" is the plausible-but-invalid kind probe. It was
+    # "tolerance" until `MANUFACTURING-EVIDENCE-OWNER-IMPLEMENT-01` made that a
+    # legitimate Manufacturing TOPIC, whose static <option value="tolerance">
+    # then appeared in the page and read as an echo of the rejected input. The
+    # no-echo assertion below is unchanged and undiminished: only the probe
+    # moved, to a string that is still an invalid quantity kind and collides
+    # with no legitimate token anywhere in the application.
+    ("quantity_kind", "bogus"), ("quantity_kind", ""),
+    ("quantity_kind", "nominal_value"),
     ("quantity_kind", KIND.upper()),
 ])
 def test_invalid_input_is_rejected_generically_without_echo_or_staging(db_path, field, value):

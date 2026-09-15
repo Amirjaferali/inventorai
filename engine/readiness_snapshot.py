@@ -41,9 +41,8 @@ impossibility. The wording each row carries is chosen so a reader cannot take
 the opposite meaning.
 """
 from engine.commercial_evidence import (
+    ACTIVE_DIMENSIONS,
     CLAIM_STATUS_UNVALIDATED,
-    DIMENSION_COMMERCIAL,
-    DIMENSION_MANUFACTURING,
     commercial_evidence_view,
 )
 from engine.derived_readiness import READINESS_GAP_CONTEXTS, derive_readiness
@@ -148,6 +147,11 @@ def readiness_snapshot(state, commercial_rows):
                  commercial_row(commercial_rows),
                  manufacturing_row()),
         "dimensions": (ROW_TECHNICAL, ROW_COMMERCIAL, ROW_MANUFACTURING),
-        "active_dimensions": (DIMENSION_COMMERCIAL,),
-        "inactive_dimensions": (DIMENSION_MANUFACTURING,),
+        # Which dimensions accept EVIDENCE, composed from the canonical owner
+        # rather than restated, so this can never drift from the truth again.
+        # Named `evidence_*` deliberately: Manufacturing accepting evidence says
+        # NOTHING about Manufacturing readiness, which remains unassessed and
+        # undispositioned. Reading this as a readiness state would be exactly
+        # the confusion the Manufacturing row is worded to prevent.
+        "evidence_dimensions_active": tuple(ACTIVE_DIMENSIONS),
     }

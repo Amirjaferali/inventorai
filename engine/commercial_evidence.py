@@ -22,9 +22,13 @@ EVIDENCE OWNER ONLY. It is emphatically NOT:
 Storage shape (Owner instruction §2): ONE shared append-only readiness-evidence
 table carrying an explicit `dimension`, so Manufacturing may reuse the same
 substrate later WITHOUT a schema redesign. Only the COMMERCIAL dimension is
-ACTIVATED here: `TOPICS_BY_DIMENSION[DIMENSION_MANUFACTURING]` is deliberately
-EMPTY, so no manufacturing row can ever validate and therefore no manufacturing
-writer exists until a separate Owner authorization supplies that vocabulary.
+ACTIVATED at the time this module was written: `TOPICS_BY_DIMENSION` gave
+Manufacturing an EMPTY vocabulary, so no manufacturing row could validate.
+`MANUFACTURING-EVIDENCE-OWNER-IMPLEMENT-01` has since supplied that vocabulary
+and activated the dimension, so BOTH are now live evidence dimensions on this
+one table. Activation is of EVIDENCE OWNERSHIP only: Manufacturing Readiness
+evaluation remains unauthorized, and the Readiness Snapshot still gives
+Manufacturing no disposition of any kind.
 
 Append-only discipline, mirroring the merged T2-E precedent exactly: per-project
 sequence assigned by the store, generated identifier, unique event key, a
@@ -78,7 +82,7 @@ class EvidenceCapExceeded(CommercialEvidenceError):
 DIMENSION_COMMERCIAL = "COMMERCIAL"
 DIMENSION_MANUFACTURING = "MANUFACTURING"
 DIMENSIONS = (DIMENSION_COMMERCIAL, DIMENSION_MANUFACTURING)
-ACTIVE_DIMENSIONS = (DIMENSION_COMMERCIAL,)
+ACTIVE_DIMENSIONS = (DIMENSION_COMMERCIAL, DIMENSION_MANUFACTURING)
 
 # --- Commercial topic vocabulary (closed; Owner instruction §4) --------------
 # Commercial RISK is INTENTIONALLY ABSENT: it routes to the canonical risk
@@ -118,11 +122,55 @@ COMMERCIAL_TOPICS = (
     TOPIC_FIRST_SALE_VIABILITY,
 )
 
-# Manufacturing is REPRESENTABLE but NOT ACTIVATED: an empty vocabulary means no
-# manufacturing topic can validate, so no manufacturing row can be written.
+# --- Manufacturing topics (MANUFACTURING-EVIDENCE-OWNER-IMPLEMENT-01) --------
+# The closed Manufacturing vocabulary. Reconciled at authorization against the
+# nearest recorded design — the standing Owner product direction in the Deferred
+# Obligations Register, which names in prose "materials, components,
+# specifications, safety, cost, supplier, tooling or production" evidence. No
+# EXACT prior taxonomy existed anywhere in the repository, so these tokens define
+# it rather than rename one.
+#
+# SAFETY is deliberately absent although the prose direction names it: a
+# manufacturing safety concern belongs to the EXISTING safety seam, exactly as
+# commercial RISK belongs to the canonical risk owner rather than to a topic
+# here. Neither dimension grows a second safety or risk owner by way of a topic
+# list. `manufacturing_risk` is likewise not a topic, for the same reason.
+#
+# These describe WHAT THE INVENTOR RECORDED about making the thing. None of them
+# asserts that it can be made, made affordably, or made at all.
+TOPIC_PROTOTYPE_MATURITY = "prototype_maturity"
+TOPIC_MATERIAL = "material"
+TOPIC_COMPONENT = "component"
+TOPIC_SPECIFICATION = "specification"
+TOPIC_TOLERANCE = "tolerance"
+TOPIC_PROCESS = "process"
+TOPIC_TOOLING = "tooling"
+TOPIC_SUPPLIER = "supplier"
+TOPIC_COST = "cost"
+TOPIC_MANUFACTURABILITY = "manufacturability"
+
+MANUFACTURING_TOPICS = (
+    TOPIC_PROTOTYPE_MATURITY,
+    TOPIC_MATERIAL,
+    TOPIC_COMPONENT,
+    TOPIC_SPECIFICATION,
+    TOPIC_TOLERANCE,
+    TOPIC_PROCESS,
+    TOPIC_TOOLING,
+    TOPIC_SUPPLIER,
+    TOPIC_COST,
+    TOPIC_MANUFACTURABILITY,
+)
+
+# Manufacturing is now ACTIVATED as an EVIDENCE dimension: a manufacturing topic
+# validates, so a manufacturing row can be written and read. That is ownership of
+# evidence and nothing more — it authorizes no Manufacturing Readiness
+# evaluation, and the Readiness Snapshot still gives Manufacturing no
+# disposition. Recording what you know about making something is not an
+# assessment of whether it can be made.
 TOPICS_BY_DIMENSION = {
     DIMENSION_COMMERCIAL: COMMERCIAL_TOPICS,
-    DIMENSION_MANUFACTURING: (),
+    DIMENSION_MANUFACTURING: MANUFACTURING_TOPICS,
 }
 
 # --- Evidence strength ------------------------------------------------------
@@ -497,19 +545,40 @@ def evidence_chain(rows, evidence_id):
     return tuple(chain)
 
 
-def commercial_evidence_view(rows):
-    """The minimum READ projection for one project's Commercial evidence.
+def evidence_view(rows, dimension):
+    """The minimum READ projection for ONE dimension of one project's evidence.
 
     Returns ``{"total", "active", "topics"}`` where ``active`` is the canonical
-    rows of the current items in append order and ``topics`` is the sorted set
-    of topics those items cover. It reports WHAT WAS RECORDED and nothing more:
-    no readiness status, no disposition token, no score, no percentage, no
-    sufficiency judgement, and no claim that any recorded statement is
-    validated. An empty project yields ``total`` 0 with an empty active tuple —
-    the truthful absence, stated by the caller in the caller's own words."""
-    active = active_evidence(rows, DIMENSION_COMMERCIAL)
+    rows of that dimension's current items in append order and ``topics`` is the
+    sorted set of topics those items cover. It reports WHAT WAS RECORDED and
+    nothing more: no readiness status, no disposition token, no score, no
+    percentage, no sufficiency judgement, and no claim that any recorded
+    statement is validated. An empty project yields ``total`` 0 with an empty
+    active tuple — the truthful absence, stated by the caller in the caller's own
+    words.
+
+    Scoped by dimension, so a Commercial view can never show a Manufacturing row
+    and vice versa: the isolation is a property of this projection rather than a
+    convention the callers are trusted to keep."""
+    active = active_evidence(rows, dimension)
     return {
         "total": len(active),
         "active": tuple(canonical_evidence_dict(r) for r in active),
         "topics": tuple(sorted({r.topic for r in active})),
     }
+
+
+def commercial_evidence_view(rows):
+    """The Commercial projection. Unchanged behaviour: the shared `evidence_view`
+    is the same code this function always ran, now named once and reused."""
+    return evidence_view(rows, DIMENSION_COMMERCIAL)
+
+
+def manufacturing_evidence_view(rows):
+    """The Manufacturing projection — the same projection, other dimension.
+
+    It carries no Manufacturing Readiness meaning whatsoever. A project with ten
+    recorded manufacturing items and one with none are both simply projects with
+    recorded evidence counts; neither is closer to being manufacturable, because
+    nothing here judges that."""
+    return evidence_view(rows, DIMENSION_MANUFACTURING)

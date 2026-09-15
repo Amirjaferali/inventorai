@@ -241,12 +241,18 @@ def test_an_unknown_or_unactivated_dimension_is_refused(tmp_path):
     pid = _project(store)
     with pytest.raises(CommercialEvidenceError):
         _evidence(store, dimension="MARKETING")
-    # Manufacturing is REPRESENTABLE but NOT ACTIVATED, and owns no topic
+    # AMENDED at `MANUFACTURING-EVIDENCE-OWNER-IMPLEMENT-01`: Manufacturing is
+    # now an ACTIVATED evidence dimension with its own closed vocabulary. What
+    # still holds — and is the point of this test — is that a dimension outside
+    # ACTIVE_DIMENSIONS is refused, and that a topic from one dimension is never
+    # valid in the other.
     assert DIMENSION_MANUFACTURING in DIMENSIONS
-    assert DIMENSION_MANUFACTURING not in ACTIVE_DIMENSIONS
-    assert TOPICS_BY_DIMENSION[DIMENSION_MANUFACTURING] == ()
-    with pytest.raises(CommercialEvidenceError):
-        _evidence(store, dimension=DIMENSION_MANUFACTURING, topic="material")
+    assert DIMENSION_MANUFACTURING in ACTIVE_DIMENSIONS
+    assert TOPICS_BY_DIMENSION[DIMENSION_MANUFACTURING] != ()
+    with pytest.raises(CommercialEvidenceError):      # commercial topic, mfg row
+        _evidence(store, dimension=DIMENSION_MANUFACTURING, topic="price")
+    with pytest.raises(CommercialEvidenceError):      # mfg topic, commercial row
+        _evidence(store, dimension=DIMENSION_COMMERCIAL, topic="material")
     assert store.load_readiness_evidence(pid) == ()
 
 
@@ -464,39 +470,47 @@ def test_saved_project_reconstruction_is_unaffected(tmp_path):
 # ==========================================================================
 # 9. boundaries this increment must not cross
 # ==========================================================================
-def test_the_web_surface_consumes_the_owner_only_through_the_capture_slice():
-    """AMENDED at `COMMERCIAL-EVIDENCE-CAPTURE-IMPLEMENT-01`.
+def test_the_web_surface_consumes_the_owner_only_through_the_capture_slices():
+    """AMENDED at `MANUFACTURING-EVIDENCE-OWNER-IMPLEMENT-01`.
 
-    When this file was written the owner had NO web surface at all, and this
-    test pinned that absence "in this increment". The Owner has since authorized
-    exactly one user-facing slice, so pinning zero would now pin a fiction. What
-    the amended test pins is the boundary that still holds: the web layer
-    reaches the owner through ONE route and ONE session block, and through
-    nothing else. A second Commercial surface, a Manufacturing writer or a
-    readiness runtime appearing anywhere in `web/` still fails here."""
+    Twice amended, and each time the pinned number moved for an authorized
+    reason: zero surfaces when the owner had none, one when Commercial capture
+    was authorized, two now that Manufacturing is a second live dimension. The
+    boundary itself has never moved — the web layer reaches this owner through
+    an enumerated set of POST-only routes and session-page blocks, through the
+    owner's own API, and through nothing else. A third surface, a direct SQL
+    path, or a readiness disposition appearing in the web layer still fails
+    here."""
     web = open(os.path.join(_ROOT, "web", "app.py"), encoding="utf-8").read()
-    # Exactly one route, POST-only, and one read-context builder.
-    assert web.count('@app.route("/session/<sid>/commercial-evidence"') == 1
-    assert 'methods=["POST"]' in web[web.index("/session/<sid>/commercial-evidence"):
-                                     web.index("/session/<sid>/commercial-evidence") + 200]
-    assert web.count("def record_commercial_evidence(") == 1
-    assert web.count("def _commercial_evidence_context(") == 1
-    # The write and read go to the owner's own API — no second store, no
-    # direct SQL, no shadow model in the web layer.
-    assert web.count("append_readiness_evidence(") == 1
-    residual = web
+    routes = {
+        "/session/<sid>/commercial-evidence": "record_commercial_evidence",
+        "/session/<sid>/manufacturing-evidence": "record_manufacturing_evidence",
+    }
+    for rule, view in routes.items():
+        assert web.count('@app.route("%s"' % rule) == 1, rule
+        head = web[web.index(rule):web.index(rule) + 200]
+        assert 'methods=["POST"]' in head, rule
+        assert web.count("def %s(" % view) == 1, view
+    # One read-context builder per dimension, and no third one.
+    for builder in ("_commercial_evidence_context", "_manufacturing_evidence_context"):
+        assert web.count("def %s(" % builder) == 1, builder
+    # Writes go through the owner's API — one call per route, no direct SQL.
+    assert web.count("append_readiness_evidence(") == len(routes)
+    # Scan CODE, not prose: the route comments explain the shared substrate by
+    # name, which is documentation of the boundary rather than a breach of it.
+    residual = _code_only(os.path.join(_ROOT, "web", "app.py"))
     for sanctioned in ("append_readiness_evidence", "load_readiness_evidence",
                        "new_readiness_evidence_id", "make_readiness_evidence",
                        "readiness_evidence_for_event_key"):
         residual = residual.replace(sanctioned, "")
     assert "readiness_evidence" not in residual, (
         "the web layer names the durable table outside the owner's own API")
-    # Commercial-only, and no readiness disposition anywhere in the web layer.
-    assert "DIMENSION_MANUFACTURING" not in web
+    # No readiness DISPOSITION is produced in the web layer by either lane.
+    code = _code_only(os.path.join(_ROOT, "web", "app.py"))
     for token in ("PASS_WITH_CONDITIONS", "commercial_readiness",
-                  "readiness_score"):
-        assert token not in web, token
-    # Exactly one template block, on the existing saved-project page.
+                  "manufacturing_readiness", "readiness_score"):
+        assert token not in code, token
+    # Both blocks live on the existing saved-project page, and only there.
     surfaced = []
     for name in sorted(os.listdir(os.path.join(_ROOT, "web", "templates"))):
         if not name.endswith(".html"):
@@ -504,7 +518,7 @@ def test_the_web_surface_consumes_the_owner_only_through_the_capture_slice():
         body = open(os.path.join(_ROOT, "web", "templates", name),
                     encoding="utf-8").read()
         assert "readiness_evidence" not in body, name
-        if "commercial_evidence" in body:
+        if "commercial_evidence" in body or "manufacturing_evidence" in body:
             surfaced.append(name)
     assert surfaced == ["session.html"], surfaced
 
