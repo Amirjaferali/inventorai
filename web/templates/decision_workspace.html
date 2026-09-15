@@ -26,11 +26,29 @@ td,th{padding:5px 8px;border-bottom:1px solid #e2e6ea;text-align:left;font-size:
 <p><strong>{{ view.decision_question }}</strong></p>
 <p class="note">Decision id: {{ view.decision_id }} &nbsp;·&nbsp; revision: {{ view.revision }}</p>
 
-<h2>Readiness</h2>
+{#- Presentation-only wording for this lane's own stored status tokens. The
+    engine keeps its tokens byte-identical (engine/decision_workspace.py is
+    unchanged and byte-pinned); this map only decides how they READ. The
+    heading no longer says "Readiness": this is the comparison state of one
+    decision workspace, not the product's canonical Readiness assessment, and
+    the two must not look like the same thing. The wording is descriptive and
+    deliberately shares no term with either canonical vocabulary — not
+    PASS / PASS_WITH_CONDITIONS / HOLD / INSUFFICIENT_EVIDENCE, and not
+    PROCEED / PROCEED WITH CAUTION / REVISE / BLOCK. -#}
+{% set dw_state_wording = {
+     "insufficient_information": "Not enough comparison input yet",
+     "blocked_by_evidence_gap": "Comparison blocked by an open gap",
+     "comparison_in_progress": "Comparison in progress",
+     "decision_ready_for_owner_review": "Comparison complete — awaiting your review",
+   } %}
+<h2>Comparison state</h2>
 <p>
-  <span class="status">{{ view.readiness_status }}</span>
+  <span class="status">{{ dw_state_wording.get(view.readiness_status, view.readiness_status) }}</span>
   {% if view.review_required_label %}<span class="review">{{ view.review_required_label }}</span>{% endif %}
 </p>
+<p class="note">This is the comparison state of this decision workspace only. It
+  is not the product's Readiness assessment of your idea, and it says nothing
+  about whether the idea is technically or commercially ready.</p>
 {% if view.blocking_reasons %}
 <ul>
   {% for b in view.blocking_reasons %}
@@ -317,7 +335,7 @@ td,th{padding:5px 8px;border-bottom:1px solid #e2e6ea;text-align:left;font-size:
   <li>changed: {{ view.change_impact_summary.changed_item }}</li>
   <li>affected candidates: {{ view.change_impact_summary.affected_candidates|join(", ") or "—" }}</li>
   <li>affected gaps/blockers: {{ view.change_impact_summary.affected_gaps_or_blockers|join(", ") or "—" }}</li>
-  <li>readiness: {{ view.change_impact_summary.prior_readiness }} → {{ view.change_impact_summary.new_readiness }}</li>
+  <li>comparison state: {{ dw_state_wording.get(view.change_impact_summary.prior_readiness, view.change_impact_summary.prior_readiness) }} → {{ dw_state_wording.get(view.change_impact_summary.new_readiness, view.change_impact_summary.new_readiness) }}</li>
 </ul>
 {% else %}
 <p class="note">No changes recorded yet.</p>

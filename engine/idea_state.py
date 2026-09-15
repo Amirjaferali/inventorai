@@ -178,6 +178,13 @@ VALIDATED_STATUSES = frozenset({
     SPECIALIST_REVIEWED, EMPIRICALLY_DEMONSTRATED, INDEPENDENTLY_VERIFIED,
 })
 
+# The CLOSED validation vocabulary: the four values declared above, named once
+# so a boundary can check membership instead of re-listing them. This is NOT a
+# new vocabulary and NOT a new axis — it is the existing four constants, and it
+# grants nothing: which of them any writer may award is decided entirely
+# elsewhere, and today no live path writes anything but UNVALIDATED.
+VALIDATION_STATUSES = frozenset({UNVALIDATED}) | VALIDATED_STATUSES
+
 
 @dataclass
 class Evidence:

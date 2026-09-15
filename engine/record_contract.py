@@ -32,7 +32,7 @@ import json
 from dataclasses import dataclass, field
 
 from engine.idea_state import (
-    AssertionRecord, IdeaState,
+    AssertionRecord, IdeaState, VALIDATION_STATUSES,
     DECISION_ACTION_DISPOSITIONS, LEGACY_INTERACTION_DISPOSITIONS,
     DISPOSITION_DECISION_CONTEXT_DECLARED,
     DISPOSITION_DECISION_ALTERNATIVE_DECLARED,
@@ -54,6 +54,12 @@ class UnknownVersionError(ContractError):
 class UnknownFieldError(ContractError):
     """Raised when serialized data omits a required field or carries an
     unknown field (prevents silent field loss in either direction)."""
+
+
+class InvalidValidationStatusError(ContractError):
+    """A restored record carries a ``validation_status`` outside the canonical
+    validation vocabulary. A ``ContractError``/``ValueError`` like every other
+    restore failure, so existing fail-closed callers already handle it."""
 
 
 class InvalidReferenceError(ContractError):
@@ -155,7 +161,18 @@ def reconcile_supersession_edges(assertions):
 
 def assertion_from_dict(data):
     """Reconstruct one AssertionRecord, rejecting unknown or missing fields so
-    nothing is silently dropped. Values are restored verbatim."""
+    nothing is silently dropped, and rejecting a ``validation_status`` outside
+    the canonical validation vocabulary. Every other value is restored verbatim.
+
+    The validation axis is checked here because this is the boundary where a
+    stored payload becomes a live record: `derive_readiness` reads that axis and
+    the deliverable publishes what it concludes, so a value no writer could have
+    produced must not enter the system by way of the restore path. The check
+    grants nothing — membership in the closed vocabulary is not permission to
+    write a value, and today no live path writes anything but ``UNVALIDATED``.
+    An unknown or fabricated value is REJECTED, never coerced, defaulted or
+    downgraded to ``UNVALIDATED``: silently rewriting stored history would be a
+    different and worse untruth than refusing to load it."""
     if not isinstance(data, dict):
         raise UnknownFieldError("assertion record must be a dict")
     keys = set(data)
@@ -175,6 +192,17 @@ def assertion_from_dict(data):
     if missing:
         raise UnknownFieldError(
             "missing required assertion field(s): %s" % sorted(missing))
+    # The offending value is deliberately NOT echoed: it arrives from a stored
+    # payload, so it is unbounded caller-controlled text, and the field name
+    # alone is enough to diagnose the failure.
+    # `isinstance` first: a stored payload can hold any JSON value, and an
+    # unhashable one (a list, a dict) would raise TypeError out of a set
+    # membership test — an uncaught crash rather than the bounded refusal every
+    # caller of this boundary already handles. Fail closed on TYPE, then value.
+    status = data["validation_status"]
+    if not isinstance(status, str) or status not in VALIDATION_STATUSES:
+        raise InvalidValidationStatusError(
+            "validation_status is outside the canonical validation vocabulary")
     return AssertionRecord(
         record_id=data["record_id"],
         disposition=data["disposition"],
