@@ -2246,6 +2246,139 @@ UI_STRINGS = {
     # reason is stated plainly; no wall-clock order is implied for ledger
     # entries. Event labels are keyed UI_T3A_EVENT_<KIND> (kind upper-cased),
     # one entry per kind of `web/app.py::T3A_EVENT_KINDS`.
+    # Manufacturing Evidence Capture (MANUFACTURING-EVIDENCE-OWNER-IMPLEMENT-01).
+    # The wording carries the same boundary as the Commercial block, against a
+    # sharper temptation: a list of materials, processes and tooling reads like
+    # a production plan. It is not one. Nothing here says manufacturable,
+    # prototype-ready, production-ready, cheap to make, tooling-ready,
+    # supplier-ready, scalable or BOM-complete, and no string judges whether the
+    # recorded evidence is enough — this lane produces no Manufacturing
+    # Readiness conclusion and has no opinion to offer.
+    # Topic labels are keyed UI_MEV_TOPIC_<TOPIC> (topic upper-cased), one per
+    # member of `engine.commercial_evidence.MANUFACTURING_TOPICS`.
+    "UI_MEV_HEADING": {
+        "en": "Manufacturing evidence you recorded",
+        "ar": "أدلة التصنيع التي سجّلتها",
+    },
+    "UI_MEV_EXPLAIN": {
+        "en": ("What you know, or believe, about making this idea — what it "
+               "would be made from, how, and with what. This evidence is "
+               "recorded from your project information and has not been "
+               "independently checked. It is not a plan for making the thing, "
+               "and it does not say the thing can be made."),
+        "ar": ("ما تعرفه، أو تعتقده، عن صنع هذه الفكرة — مما ستُصنع، وكيف، "
+               "وبأي وسائل. هذه الأدلة مسجَّلة من معلومات مشروعك ولم يجرِ "
+               "التحقق منها بشكل مستقل. ليست خطة للتصنيع، ولا تقول إن الشيء "
+               "يمكن صنعه."),
+    },
+    "UI_MEV_EMPTY": {
+        "en": ("No Manufacturing evidence has been recorded yet. That is simply "
+               "a blank page, not a finding about how hard this would be to "
+               "make."),
+        "ar": ("لم تُسجَّل أي أدلة تصنيع بعد. هذه مجرد صفحة فارغة، وليست نتيجةً "
+               "بشأن مدى صعوبة صنع هذا."),
+    },
+    "UI_MEV_ADD_HEADING": {
+        "en": "Record one more item", "ar": "سجّل عنصرًا آخر"},
+    "UI_MEV_FIELD_TOPIC": {"en": "Topic", "ar": "الموضوع"},
+    "UI_MEV_FIELD_SUBJECT": {
+        "en": "What this concerns", "ar": "ما يتعلق به هذا"},
+    "UI_MEV_FIELD_STATEMENT": {
+        "en": "What you know or believe", "ar": "ما تعرفه أو تعتقده"},
+    "UI_MEV_FIELD_SOURCE": {
+        "en": "Where this came from", "ar": "من أين جاء هذا"},
+    "UI_MEV_FIELD_DATE": {
+        "en": "Date, if you know it (YYYY-MM-DD)",
+        "ar": "التاريخ، إن كنت تعرفه (YYYY-MM-DD)"},
+    "UI_MEV_FIELD_SCOPE": {"en": "What it covers", "ar": "ما الذي يغطّيه"},
+    "UI_MEV_FIELD_LIMITATION": {
+        "en": "What it does NOT cover", "ar": "ما الذي لا يغطّيه"},
+    "UI_MEV_LIMITATION_NOTE": {
+        "en": ("Saying what your evidence does not cover is required. With "
+               "manufacturing it matters most: a figure that held for one "
+               "supplier, one quantity or one process is not a figure for all "
+               "of them."),
+        "ar": ("ذِكر ما لا تغطّيه أدلتك مطلوب. وفي التصنيع هو الأهم: رقم صحَّ "
+               "مع مورّد واحد، أو كمية واحدة، أو عملية واحدة ليس رقمًا لها "
+               "جميعًا."),
+    },
+    "UI_MEV_SUBMIT": {"en": "Record this", "ar": "سجّل هذا"},
+    "UI_MEV_META_SOURCE": {"en": "Source", "ar": "المصدر"},
+    "UI_MEV_META_DATE": {"en": "Date", "ar": "التاريخ"},
+    "UI_MEV_META_SCOPE": {"en": "Covers", "ar": "يغطّي"},
+    "UI_MEV_META_LIMITATION": {"en": "Does not cover", "ar": "لا يغطّي"},
+    "UI_MEV_META_ORIGIN": {"en": "Recorded by", "ar": "سجّله"},
+    "UI_MEV_META_ORIGIN_VALUE": {
+        "en": "you, from your own knowledge", "ar": "أنت، من معرفتك الخاصة"},
+    "UI_MEV_META_STANDING": {"en": "Standing", "ar": "الحالة"},
+    "UI_MEV_META_STANDING_VALUE": {
+        "en": "recorded, not checked by anyone",
+        "ar": "مسجَّل، ولم يتحقق منه أحد"},
+    "UI_MEV_META_NOTE": {
+        "en": ("These two lines describe where each item came from and how far "
+               "it has been checked. They are not settings and you cannot "
+               "change them: everything you record here is your own statement, "
+               "and this version of InventorAI verifies none of it."),
+        "ar": ("يصف هذان السطران من أين جاء كل عنصر وإلى أي مدى جرى التحقق "
+               "منه. ليسا إعدادات ولا يمكنك تغييرهما: كل ما تسجّله هنا هو "
+               "قولك أنت، وهذه النسخة من إنفنتوراي لا تتحقق من أي منه."),
+    },
+    "UI_MEV_NOT_A_CONCLUSION": {
+        "en": ("Recording this does not assess whether your idea can be made. "
+               "This version does not evaluate manufacturing at all."),
+        "ar": ("تسجيل هذا لا يقيّم ما إذا كان يمكن صنع فكرتك. هذه النسخة لا "
+               "تقيّم التصنيع إطلاقًا."),
+    },
+    "UI_MEV_NOTICE_SAVED": {
+        "en": "Recorded and saved to your project.",
+        "ar": "سُجِّل وحُفِظ في مشروعك."},
+    "UI_MEV_NOTICE_REPLAY": {
+        "en": ("That item was already recorded earlier, so nothing was added a "
+               "second time."),
+        "ar": "سُجِّل ذلك العنصر سابقًا، فلم يُضَف مرة ثانية."},
+    "UI_MEV_NOTICE_NOT_SAVED": {
+        "en": "That item was not recorded. Nothing was changed.",
+        "ar": "لم يُسجَّل ذلك العنصر. لم يتغير شيء."},
+    "UI_MEV_NOTICE_TEXT_REJECTED": {
+        "en": ("That text is too long, empty, or contains an invalid "
+               "character. Nothing was saved - please correct it and try "
+               "again."),
+        "ar": ("ذلك النص طويل جدًا، أو فارغ، أو يحتوي على رمز غير صالح. لم "
+               "يُحفظ شيء — يُرجى تصحيحه والمحاولة من جديد."),
+    },
+    "UI_MEV_NOTICE_UNKNOWN": {
+        "en": ("We could not confirm whether that item was recorded. Reload "
+               "this page to see the current list before trying again."),
+        "ar": ("تعذّر علينا تأكيد ما إذا كان ذلك العنصر قد سُجِّل. أعد تحميل "
+               "هذه الصفحة لرؤية القائمة الحالية قبل المحاولة مجددًا."),
+    },
+    "UI_MEV_NOTICE_CAP": {
+        "en": ("This project already holds as many evidence items as it can. "
+               "Nothing was saved."),
+        "ar": ("يحتوي هذا المشروع بالفعل على أقصى عدد ممكن من عناصر الأدلة. لم "
+               "يُحفظ شيء."),
+    },
+    "UI_MEV_TOPIC_PROTOTYPE_MATURITY": {
+        "en": "How far the prototype has got", "ar": "إلى أين وصل النموذج الأولي"},
+    "UI_MEV_TOPIC_MATERIAL": {
+        "en": "What it would be made from", "ar": "مما ستُصنع"},
+    "UI_MEV_TOPIC_COMPONENT": {
+        "en": "A part it would need", "ar": "جزء ستحتاجه"},
+    "UI_MEV_TOPIC_SPECIFICATION": {
+        "en": "A figure it has to meet", "ar": "رقم يجب أن تحققه"},
+    "UI_MEV_TOPIC_TOLERANCE": {
+        "en": "How exact something must be", "ar": "مدى الدقة المطلوبة"},
+    "UI_MEV_TOPIC_PROCESS": {
+        "en": "How it would be made", "ar": "كيف ستُصنع"},
+    "UI_MEV_TOPIC_TOOLING": {
+        "en": "Tools or moulds it would need", "ar": "أدوات أو قوالب ستحتاجها"},
+    "UI_MEV_TOPIC_SUPPLIER": {
+        "en": "Who could supply or make it", "ar": "من يمكنه التوريد أو التصنيع"},
+    "UI_MEV_TOPIC_COST": {
+        "en": "What making it would cost", "ar": "كم سيكلّف صنعها"},
+    "UI_MEV_TOPIC_MANUFACTURABILITY": {
+        "en": "Something that makes it harder or easier to make",
+        "ar": "ما يجعل صنعها أصعب أو أسهل"},
     # Readiness Snapshot (READINESS-SNAPSHOT-RUNTIME-01) — the first runtime
     # presentation of Readiness. Every string below is about the state of the
     # EVIDENCE, never about the idea. The hardest thing this copy has to do is

@@ -106,6 +106,12 @@ from engine.readiness_snapshot import (
 # owns no evidence itself, and derives no commercial conclusion.
 from engine.commercial_evidence import (
     COMMERCIAL_TOPICS as _COMMERCIAL_TOPICS,
+    MANUFACTURING_TOPICS as _MANUFACTURING_TOPICS,
+    DIMENSION_MANUFACTURING as _DIMENSION_MANUFACTURING,
+    manufacturing_evidence_view as _manufacturing_evidence_view,
+    normalize_text as _cev_normalize_text,
+    normalize_optional_date as _cev_normalize_date,
+    TEXT_FIELD_CAPS as _CEV_TEXT_FIELD_CAPS,
     DEFAULT_PROVENANCE as _CEV_PROVENANCE,
     DIMENSION_COMMERCIAL as _DIMENSION_COMMERCIAL,
     CLAIM_STATUS_UNVALIDATED as _CEV_CLAIM_STATUS,
@@ -4528,6 +4534,16 @@ def show_session(sid):
         # Readiness Snapshot: evidence sufficiency per dimension, composed
         # read-only from the existing owners. None when a source cannot be read.
         readiness_snapshot=_readiness_snapshot_context(sid, state),
+        # Manufacturing evidence: the second live dimension, read from the same
+        # authoritative owner, scoped so the two blocks never show each other's
+        # rows.
+        manufacturing_evidence=_manufacturing_evidence_context(
+            sid, _quantity_writer_account(sid) is not None
+            and getattr(state, "domain", None) is not None),
+        mfg_ack=_mfg_notice_text(
+            _render_notice(entry, MFG_ACK_SLOT, None), _current_ui_lang()),
+        mfg_error=_mfg_notice_text(
+            _render_notice(entry, MFG_ERROR_SLOT, None), _current_ui_lang()),
         commercial_evidence=_commercial_evidence_context(
             sid, _quantity_writer_account(sid) is not None
             and getattr(state, "domain", None) is not None),
@@ -6366,6 +6382,227 @@ def _readiness_snapshot_context(sid, state):
         return _readiness_snapshot(state, rows)
     except Exception:
         return None
+
+
+# =============================================================================
+# Manufacturing Evidence Capture — what the inventor knows about MAKING the thing
+# =============================================================================
+# MANUFACTURING-EVIDENCE-OWNER-IMPLEMENT-01. The second live evidence dimension
+# on the SAME shared `readiness_evidence` substrate, the same durable row model,
+# the same store semantics. No second table, no second ledger, no fork of the
+# evidence rules.
+#
+# Evidence ownership ONLY. Recording that a part could be injection-moulded is
+# not a finding that it can be manufactured, affordably or at all — and this
+# lane computes no Manufacturing Readiness disposition. The Readiness Snapshot
+# still shows Manufacturing as not assessed, and activating evidence capture
+# changes that not at all.
+MFG_ACK_SLOT = "_mfg_ack"
+MFG_ERROR_SLOT = "_mfg_error"
+
+MFG_SAVED_ACK = "MFG_SAVED"
+MFG_REPLAY_ACK = "MFG_REPLAY"
+MFG_NOT_SAVED_MESSAGE = "MFG_NOT_SAVED"
+MFG_TEXT_REJECTED_MESSAGE = "MFG_TEXT_REJECTED"
+MFG_UNKNOWN_MESSAGE = "MFG_OUTCOME_UNKNOWN"
+MFG_CAP_MESSAGE = "MFG_CAP_REACHED"
+
+_MFG_DISPLAY_KEY = {
+    MFG_SAVED_ACK: "UI_MEV_NOTICE_SAVED",
+    MFG_REPLAY_ACK: "UI_MEV_NOTICE_REPLAY",
+    MFG_NOT_SAVED_MESSAGE: "UI_MEV_NOTICE_NOT_SAVED",
+    MFG_TEXT_REJECTED_MESSAGE: "UI_MEV_NOTICE_TEXT_REJECTED",
+    MFG_UNKNOWN_MESSAGE: "UI_MEV_NOTICE_UNKNOWN",
+    MFG_CAP_MESSAGE: "UI_MEV_NOTICE_CAP",
+}
+
+# The same strict allowlist discipline as the Commercial route: `dimension`,
+# `provenance` and `claim_status` are absent by construction, and a submission
+# carrying one is refused WHOLE rather than having it quietly dropped.
+_MFG_FIELDS = frozenset({
+    "csrf_token", "topic", "subject_text", "statement_text", "source_identity",
+    "occurred_on", "scope_text", "limitation_text",
+})
+_MFG_TEXT_FIELDS = ("subject_text", "statement_text", "source_identity",
+                    "occurred_on", "scope_text", "limitation_text")
+
+
+def _mfg_notice_text(token, lang):
+    """Bilingual text for a stored notice token, or None."""
+    key = _MFG_DISPLAY_KEY.get(token)
+    return None if key is None else ui_text.text(key, lang)
+
+
+def _publish_mfg_notice(entry, ack=None, error=None):
+    """Publish exactly ONE current Manufacturing notice, in this namespace only."""
+    entry.pop(MFG_ACK_SLOT, None)
+    entry.pop(MFG_ERROR_SLOT, None)
+    if ack is not None:
+        entry[MFG_ACK_SLOT] = ack
+    if error is not None:
+        entry[MFG_ERROR_SLOT] = error
+
+
+def _mfg_stored_fields(fields):
+    """The submitted text as the owner will actually STORE it, or None when the
+    owner's own policy rejects any of it.
+
+    This normalizes through the owner's `normalize_text` / `normalize_optional_date`
+    rather than reimplementing them, so the caller learns the post-policy values
+    without creating a second text policy."""
+    caps = dict(_CEV_TEXT_FIELD_CAPS)
+    stored = {}
+    try:
+        for name in _MFG_TEXT_FIELDS:
+            if name == "occurred_on":
+                stored[name] = _cev_normalize_date(fields[name])
+            else:
+                stored[name] = _cev_normalize_text(fields[name], name, caps[name])
+    except _CommercialEvidenceError:
+        return None
+    return stored
+
+
+def _mfg_event_key(sid, topic, stored):
+    """The durable exact-replay identity of ONE recorded Manufacturing item.
+
+    Derived from the CANONICAL STORED values rather than the raw form input, so
+    two submissions that normalize to the same durable row resolve to the same
+    key: "Aluminium", " Aluminium " and "Aluminium   " are one event, not three
+    near-identical rows the inventor never meant to create. That is the
+    difference from the Commercial key, which hashes the raw input and therefore
+    treats whitespace variants as distinct events; Commercial is deliberately
+    left unchanged here (a shared-helper refactor would touch a merged,
+    independently reviewed write path for no behaviour this slice needs), and
+    the asymmetry is recorded as a natural-touch follow-up.
+
+    Same length-prefixed canonical encoding and HMAC construction as every other
+    event key in this application, under its own domain-separator label."""
+    msg = _canonical_message(
+        "manufacturing-evidence-event-v1", sid, topic,
+        *[stored[name] for name in _MFG_TEXT_FIELDS])
+    return _p2a_hmac.new(_answer_secret(), msg,
+                         _p2a_hashlib.sha256).hexdigest()[:_ANSWER_HMAC_HEX_LEN]
+
+
+def _manufacturing_evidence_context(sid, writable):
+    """Read-only render context for the Manufacturing evidence block, or None
+    when the durable history cannot be read consistently (fail closed).
+
+    Read STRICTLY from the authoritative shared owner, scoped by dimension, so a
+    Commercial row can never appear here and a Manufacturing row can never
+    appear in the Commercial block."""
+    try:
+        rows = _get_store().load_readiness_evidence(sid)
+    except Exception:
+        return None
+    try:
+        view = _manufacturing_evidence_view(rows)
+    except Exception:
+        return None
+    return {
+        "entries": list(view["active"]),
+        "total": view["total"],
+        "topics": list(view["topics"]),
+        "choices": list(_MANUFACTURING_TOPICS),
+        "writable": bool(writable),
+    }
+
+
+@app.route("/session/<sid>/manufacturing-evidence", methods=["POST"])
+def record_manufacturing_evidence(sid):
+    """Record ONE Manufacturing evidence item on the owner's own project.
+
+    POST only; the session page's GET never writes. Global CSRF runs before this
+    view; then the same ownership predicate every other writing route on this
+    page uses, a strict field allowlist, the owner's own text policy, and the
+    closed Manufacturing vocabulary. A cold read-only session is read-only here.
+
+    The event key is computed from the values as they will be STORED, so a
+    whitespace-variant resubmission is recognised as the replay it is. Persist
+    before acknowledging."""
+    if not _project_authorized(sid):
+        return _deny_project()
+    entry = SESSION_STORE.get(sid)
+    if not entry:
+        return redirect(url_for("index"))
+    if _quantity_writer_account(sid) is None:
+        return _deny_project()
+    lang = _current_ui_lang()
+    if set(request.form.keys()) - _MFG_FIELDS or \
+            any(len(request.form.getlist(k)) != 1 for k in request.form.keys()):
+        _publish_mfg_notice(entry, error=MFG_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    state = entry["state"]
+    if getattr(state, "domain", None) is None:
+        _publish_mfg_notice(entry, error=MFG_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    topic = request.form.get("topic", "")
+    if topic not in _MANUFACTURING_TOPICS:
+        _publish_mfg_notice(entry, error=MFG_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    fields = {name: request.form.get(name, "") for name in _MFG_TEXT_FIELDS}
+    for value in fields.values():
+        if _free_text_error(value, lang) is not None:
+            _publish_mfg_notice(entry, error=MFG_TEXT_REJECTED_MESSAGE)
+            return redirect(url_for("show_session", sid=sid))
+    # Normalize FIRST: the event identity must describe the durable row, not the
+    # keystrokes that produced it.
+    stored = _mfg_stored_fields(fields)
+    if stored is None:
+        _publish_mfg_notice(entry, error=MFG_TEXT_REJECTED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    event_key = _mfg_event_key(sid, topic, stored)
+    try:
+        evidence = _make_readiness_evidence(
+            evidence_id=_get_store().new_readiness_evidence_id(),
+            evidence_seq=0,
+            dimension=_DIMENSION_MANUFACTURING,
+            topic=topic,
+            subject_text=stored["subject_text"],
+            statement_text=stored["statement_text"],
+            source_identity=stored["source_identity"],
+            occurred_on=stored["occurred_on"],
+            scope_text=stored["scope_text"],
+            limitation_text=stored["limitation_text"],
+            provenance=_CEV_PROVENANCE,
+            event_key=event_key,
+            recorded_iteration=int(getattr(state, "iteration", 0) or 0),
+            recorded_at=_quantity_recorded_at())
+    except _CommercialEvidenceError:
+        _publish_mfg_notice(entry, error=MFG_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    except Exception:
+        _publish_mfg_notice(entry, error=MFG_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    try:
+        prior = _get_store().readiness_evidence_for_event_key(sid, event_key)
+    except Exception:
+        _publish_mfg_notice(entry, error=MFG_UNKNOWN_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    if prior is not None:
+        if _is_same_evidence_event(prior, evidence):
+            _publish_mfg_notice(entry, ack=MFG_REPLAY_ACK)
+        else:
+            _publish_mfg_notice(entry, error=MFG_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    try:
+        outcome = _get_store().append_readiness_evidence(sid, evidence)
+    except _CevCapExceeded:
+        _publish_mfg_notice(entry, error=MFG_CAP_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    except (_ProjectNotFound, _CommercialEvidenceHistoryError,
+            _CommercialEvidenceError, StoreError):
+        _publish_mfg_notice(entry, error=MFG_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    except Exception:
+        _publish_mfg_notice(entry, error=MFG_UNKNOWN_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    if outcome in (_CEV_INSERTED, _CEV_EXACT_REPLAY):
+        _publish_mfg_notice(entry, ack=MFG_SAVED_ACK)
+    else:
+        _publish_mfg_notice(entry, error=MFG_NOT_SAVED_MESSAGE)
+    return redirect(url_for("show_session", sid=sid))
 
 
 @app.route("/session/<sid>/commercial-evidence", methods=["POST"])

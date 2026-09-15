@@ -1083,6 +1083,67 @@ body{overflow-wrap:anywhere}
 </details>
 {% endif %}
 {#- RS-BLOCK-END -#}
+{#- MEV-BLOCK-BEGIN — Manufacturing Evidence Capture
+    (MANUFACTURING-EVIDENCE-OWNER-IMPLEMENT-01). Read: the items already recorded
+    for this project, straight from the authoritative Commercial Evidence Owner.
+    Write: one POST form that records one more. Nothing here computes or renders
+    a Commercial Readiness disposition, a score, or any claim about whether the
+    idea is marketable — the block reports what the inventor recorded and stops.
+    Provenance and standing are shown as explanatory metadata, never as controls:
+    there is no selector for either, because neither has a second value to pick. -#}
+{% if manufacturing_evidence %}
+<details id="mev-manufacturing-evidence" class="manufacturing-evidence" style="margin-top:14px;border:1px solid #d9d9e3;border-radius:4px;background:#f8f8fb;padding:10px 14px">
+  <summary style="cursor:pointer;font-size:13px;color:#3a3a5c;font-weight:bold">{{ t('UI_MEV_HEADING') }}</summary>
+  <p style="font-size:13px;color:#555;margin:10px 0 8px 0">{{ t('UI_MEV_EXPLAIN') }}</p>
+  {% if mfg_ack %}<p id="mev-ack" class="journey-feedback" role="status" dir="auto">{{ mfg_ack }}</p>{% endif %}
+  {% if mfg_error %}<p id="mev-error" class="journey-note" role="alert" dir="auto">{{ mfg_error }}</p>{% endif %}
+  {% if not manufacturing_evidence.total %}
+  <p class="journey-note manufacturing-evidence-empty" data-mev-empty>{{ t('UI_MEV_EMPTY') }}</p>
+  {% else %}
+  <ul class="manufacturing-evidence-list" style="margin:6px 0 0 0;padding-inline-start:20px;font-size:13px;color:#444">
+    {% for item in manufacturing_evidence.entries %}
+    <li class="manufacturing-evidence-item" data-mev-item data-mev-topic="{{ item.topic }}" data-mev-provenance="{{ item.provenance }}" data-mev-claim-status="{{ item.claim_status }}" style="margin:0 0 10px 0">
+      <p class="journey-note" style="margin:0"><strong data-mev-topic-label>{{ t('UI_MEV_TOPIC_' ~ item.topic|upper) }}</strong> · <bdi data-mev-subject dir="auto">{{ item.subject_text }}</bdi></p>
+      <p class="manufacturing-evidence-statement" data-mev-statement dir="auto" style="margin:2px 0">{{ item.statement_text }}</p>
+      <p class="journey-note" style="margin:2px 0">{{ t('UI_MEV_META_SOURCE') }}: <bdi data-mev-source dir="auto">{{ item.source_identity }}</bdi>{% if item.occurred_on %} · {{ t('UI_MEV_META_DATE') }}: <bdi data-mev-date>{{ item.occurred_on }}</bdi>{% endif %}</p>
+      <p class="journey-note" style="margin:2px 0">{{ t('UI_MEV_META_SCOPE') }}: <bdi data-mev-scope dir="auto">{{ item.scope_text }}</bdi></p>
+      <p class="journey-note" style="margin:2px 0">{{ t('UI_MEV_META_LIMITATION') }}: <bdi data-mev-limitation dir="auto">{{ item.limitation_text }}</bdi></p>
+      <p class="journey-note" style="margin:2px 0;color:#777">{{ t('UI_MEV_META_ORIGIN') }}: <span data-mev-origin>{{ t('UI_MEV_META_ORIGIN_VALUE') }}</span> · {{ t('UI_MEV_META_STANDING') }}: <span data-mev-standing>{{ t('UI_MEV_META_STANDING_VALUE') }}</span></p>
+    </li>
+    {% endfor %}
+  </ul>
+  <p class="journey-note" style="margin-top:6px;color:#777">{{ t('UI_MEV_META_NOTE') }}</p>
+  {% endif %}
+  <p class="journey-note" data-mev-not-a-conclusion style="margin:6px 0;color:#777">{{ t('UI_MEV_NOT_A_CONCLUSION') }}</p>
+  {% if manufacturing_evidence.writable %}
+  <h3 style="font-size:13px;margin:12px 0 4px 0">{{ t('UI_MEV_ADD_HEADING') }}</h3>
+  <form method="POST" action="/session/{{ sid }}/manufacturing-evidence" class="mev-form" id="mev-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <p style="margin:4px 0"><label for="mev-topic">{{ t('UI_MEV_FIELD_TOPIC') }}</label>
+      <select name="topic" id="mev-topic" required>
+        {% for topic in manufacturing_evidence.choices %}
+        <option value="{{ topic }}">{{ t('UI_MEV_TOPIC_' ~ topic|upper) }}</option>
+        {% endfor %}
+      </select></p>
+    <p style="margin:4px 0"><label for="mev-subject">{{ t('UI_MEV_FIELD_SUBJECT') }}</label><br>
+      <input type="text" name="subject_text" id="mev-subject" dir="auto" size="48" required></p>
+    <p style="margin:4px 0"><label for="mev-statement">{{ t('UI_MEV_FIELD_STATEMENT') }}</label><br>
+      <textarea name="statement_text" id="mev-statement" dir="auto" rows="3" cols="48" required></textarea></p>
+    <p style="margin:4px 0"><label for="mev-source">{{ t('UI_MEV_FIELD_SOURCE') }}</label><br>
+      <input type="text" name="source_identity" id="mev-source" dir="auto" size="48" required></p>
+    <p style="margin:4px 0"><label for="mev-date">{{ t('UI_MEV_FIELD_DATE') }}</label><br>
+      <input type="text" name="occurred_on" id="mev-date" dir="ltr" size="16"></p>
+    <p style="margin:4px 0"><label for="mev-scope">{{ t('UI_MEV_FIELD_SCOPE') }}</label><br>
+      <input type="text" name="scope_text" id="mev-scope" dir="auto" size="48" required></p>
+    <p style="margin:4px 0"><label for="mev-limitation">{{ t('UI_MEV_FIELD_LIMITATION') }}</label><br>
+      <input type="text" name="limitation_text" id="mev-limitation" dir="auto" size="48" required></p>
+    <p class="journey-note" style="margin:2px 0">{{ t('UI_MEV_LIMITATION_NOTE') }}</p>
+    <button type="submit" id="mev-submit">{{ t('UI_MEV_SUBMIT') }}</button>
+  </form>
+  {% endif %}
+</details>
+{% endif %}
+{#- MEV-BLOCK-END -#}
 {#- CEV-BLOCK-BEGIN — Commercial Evidence Capture
     (COMMERCIAL-EVIDENCE-CAPTURE-IMPLEMENT-01). Read: the items already recorded
     for this project, straight from the authoritative Commercial Evidence Owner.
