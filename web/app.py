@@ -97,7 +97,6 @@ from engine.record_contract import ProjectRecordContract
 # over the two existing authoritative owners. It persists nothing and can emit
 # no disposition other than INSUFFICIENT_EVIDENCE.
 from engine.readiness_snapshot import (
-    EMITTABLE_DISPOSITIONS as _RS_EMITTABLE,
     readiness_snapshot as _readiness_snapshot,
 )
 # Commercial Evidence Capture (COMMERCIAL-EVIDENCE-CAPTURE-IMPLEMENT-01): the

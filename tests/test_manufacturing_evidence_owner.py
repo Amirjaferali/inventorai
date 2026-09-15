@@ -434,8 +434,11 @@ def test_user_text_is_html_escaped(owner):
 # ==========================================================================
 def test_manufacturing_readiness_disposition_is_still_unreachable():
     """R, T. Activating evidence did not activate assessment."""
-    assert rs.manufacturing_row()["disposition"] is None
-    assert rs.manufacturing_row()["state"] == rs.STATE_NOT_ASSESSED
+    # AMENDED at `MANUFACTURING-READINESS-SNAPSHOT-01`: Manufacturing now
+    # reports evidence sufficiency, so it carries `INSUFFICIENT_EVIDENCE`.
+    # What remains unreachable — and is the point of this test — is any
+    # POSITIVE Manufacturing readiness state.
+    assert rs.manufacturing_row(())["disposition"] == "INSUFFICIENT_EVIDENCE"
     assert rs.EMITTABLE_DISPOSITIONS == ("INSUFFICIENT_EVIDENCE",)
     import inspect
     code = re.sub(r'(?s)"{3}.*?"{3}', "", inspect.getsource(rs))
@@ -444,9 +447,10 @@ def test_manufacturing_readiness_disposition_is_still_unreachable():
         assert token not in code, token
 
 
-def test_the_snapshot_manufacturing_row_stays_non_dispositioned_with_evidence(owner):
-    """S. The load-bearing test of this whole slice: recording ten Manufacturing
-    items across every topic must not give Manufacturing a disposition."""
+def test_ten_recorded_items_still_reach_no_positive_disposition(owner):
+    """S, AMENDED. Recording ten Manufacturing items across every topic must not
+    move Manufacturing toward a POSITIVE readiness state. It now reports that
+    its evidence is insufficient, which is a statement about the evidence."""
     c, _aid, sid = owner
     for topic in MANUFACTURING_TOPICS:
         _record(c, sid, topic=topic,
@@ -456,12 +460,14 @@ def test_the_snapshot_manufacturing_row_stays_non_dispositioned_with_evidence(ow
     snapshot = _block(body, "rs")
     mfg_row = re.search(r'data-rs-dimension="manufacturing".*?</li>',
                         snapshot, re.S).group(0)
-    assert "data-rs-disposition" not in mfg_row
-    assert 'data-rs-state="not_assessed"' in mfg_row
-    assert "INSUFFICIENT_EVIDENCE" not in mfg_row
-    assert _shown("UI_RS_MANUFACTURING_NOT_ASSESSED") in mfg_row
-    # and the snapshot still carries exactly the two dispositioned rows
-    assert snapshot.count('data-rs-disposition="INSUFFICIENT_EVIDENCE"') == 2
+    # AMENDED: ten recorded items now produce an evidence-sufficiency reading
+    # rather than silence — and still no positive state, which is what "volume
+    # is not sufficiency" means here.
+    assert 'data-rs-disposition="INSUFFICIENT_EVIDENCE"' in mfg_row
+    assert "Recorded items: 10" in mfg_row
+    for token in ("PASS_WITH_CONDITIONS", "PASS", "HOLD"):
+        assert token not in mfg_row, token
+    assert snapshot.count('data-rs-disposition="INSUFFICIENT_EVIDENCE"') == 3
 
 
 def test_the_snapshot_reports_evidence_activation_without_implying_readiness():

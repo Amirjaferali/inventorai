@@ -1035,23 +1035,27 @@ body{overflow-wrap:anywhere}
     validity claim; the migration disclosure and correction blocks above are
     unchanged and are not duplicated here. Chrome resolves through t();
     inventor text renders verbatim with dir="auto". -#}
-{#- RS-BLOCK-BEGIN — Readiness Snapshot (READINESS-SNAPSHOT-RUNTIME-01).
-    Read-only. Three rows composed from the existing owners; no POST, no
-    persistence, no score. Only INSUFFICIENT_EVIDENCE is reachable, and
-    Manufacturing carries no disposition at all — saying "insufficient
-    evidence" there would imply somebody looked. Every row states what is
-    missing AND what that does not mean, because the whole risk of this block
-    is a reader turning an absence into a negative finding. -#}
+{#- RS-BLOCK-BEGIN — Readiness Snapshot (READINESS-SNAPSHOT-RUNTIME-01 extends
+    READINESS-SNAPSHOT-RUNTIME-01). Read-only. Three rows composed from the
+    existing owners; no POST, no persistence, no score, and deliberately NO
+    aggregate — three independent statements, never combined into one. Only
+    INSUFFICIENT_EVIDENCE is reachable for any dimension. Every row states what
+    is missing AND what that does not mean, because the whole risk of this block
+    is a reader turning an absence into a negative finding about their idea. -#}
 {% if readiness_snapshot %}
 <details id="rs-readiness-snapshot" class="readiness-snapshot" style="margin-top:14px;border:1px solid #d9d9e3;border-radius:4px;background:#f8f8fb;padding:10px 14px">
   <summary style="cursor:pointer;font-size:13px;color:#3a3a5c;font-weight:bold">{{ t('UI_RS_HEADING') }}</summary>
   <p style="font-size:13px;color:#555;margin:10px 0 8px 0">{{ t('UI_RS_EXPLAIN') }}</p>
   <ul class="readiness-snapshot-rows" style="margin:6px 0 0 0;padding-inline-start:0;list-style:none;font-size:13px;color:#444">
     {% for row in readiness_snapshot.rows %}
-    <li class="readiness-snapshot-row" data-rs-row data-rs-dimension="{{ row.dimension }}"{% if row.disposition %} data-rs-disposition="{{ row.disposition }}"{% else %} data-rs-state="{{ row.state }}"{% endif %} style="margin:0 0 12px 0;padding-inline-start:10px;border-inline-start:3px solid #d9d9e3">
-      <p style="margin:0"><strong data-rs-dimension-label>{{ t('UI_RS_DIM_' ~ row.dimension|upper) }}</strong> ·
-        {% if row.disposition %}<span data-rs-disposition-label>{{ t('UI_RS_DISPOSITION_' ~ row.disposition) }}</span>
-        {% else %}<span data-rs-state-label>{{ t('UI_RS_MANUFACTURING_NOT_ASSESSED') }}</span>{% endif %}</p>
+    {#- Every row now carries a disposition: Manufacturing gained an evidence
+        owner, so its sufficiency is reportable like the others. The former
+        dispositionless "not assessed" branch is gone rather than left
+        unreachable — dead markup outlives the reason it existed. -#}
+    {% set d = row.dimension|upper %}
+    <li class="readiness-snapshot-row" data-rs-row data-rs-dimension="{{ row.dimension }}" data-rs-disposition="{{ row.disposition }}" style="margin:0 0 12px 0;padding-inline-start:10px;border-inline-start:3px solid #d9d9e3">
+      <p style="margin:0"><strong data-rs-dimension-label>{{ t('UI_RS_DIM_' ~ d) }}</strong> ·
+        <span data-rs-disposition-label>{{ t('UI_RS_DISPOSITION_' ~ row.disposition) }}</span></p>
       {% if row.dimension == 'technical' %}
       {% if row.recorded_items %}
       <p class="journey-note" data-rs-why style="margin:2px 0">{{ t('UI_RS_TECHNICAL_WHY') }}</p>
@@ -1060,35 +1064,42 @@ body{overflow-wrap:anywhere}
       <p class="journey-note" data-rs-none style="margin:2px 0">{{ t('UI_RS_TECHNICAL_NONE') }}</p>
       {% endif %}
       <p class="journey-note" data-rs-not-a-verdict style="margin:2px 0;color:#777">{{ t('UI_RS_TECHNICAL_NOT_A_VERDICT') }}</p>
-      {% elif row.dimension == 'commercial' %}
+      {% else %}
+      {#- ONE branch for both evidence dimensions. The wording keys and the topic
+          label namespace are selected by dimension, so Commercial and
+          Manufacturing cannot drift apart in structure while each still speaks
+          about its own evidence in its own words. -#}
+      {% set topic_ns = 'UI_CEV_TOPIC_' if row.dimension == 'commercial' else 'UI_MEV_TOPIC_' %}
       {% if row.recorded_items %}
-      <p class="journey-note" data-rs-why style="margin:2px 0">{{ t('UI_RS_COMMERCIAL_RECORDED') }}</p>
-      <p class="journey-note" data-rs-counts style="margin:2px 0">{{ t('UI_RS_COMMERCIAL_COUNTS') % {'items': row.recorded_items, 'topics': row.topics_covered} }}</p>
+      <p class="journey-note" data-rs-why style="margin:2px 0">{{ t('UI_RS_' ~ d ~ '_RECORDED') }}</p>
+      <p class="journey-note" data-rs-counts style="margin:2px 0">{{ t('UI_RS_' ~ d ~ '_COUNTS') % {'items': row.recorded_items, 'topics': row.topics_covered} }}</p>
       {% if row.topics %}
-      <p class="journey-note" data-rs-topics style="margin:2px 0">{{ t('UI_RS_COMMERCIAL_TOPICS_LABEL') }}: {% for topic in row.topics %}{{ t('UI_CEV_TOPIC_' ~ topic|upper) }}{% if not loop.last %} · {% endif %}{% endfor %}</p>
+      <p class="journey-note" data-rs-topics style="margin:2px 0">{{ t('UI_RS_' ~ d ~ '_TOPICS_LABEL') }}: {% for topic in row.topics %}{{ t(topic_ns ~ topic|upper) }}{% if not loop.last %} · {% endif %}{% endfor %}</p>
       {% endif %}
       {% if row.all_unvalidated %}
-      <p class="journey-note" data-rs-unchecked style="margin:2px 0;color:#777">{{ t('UI_RS_COMMERCIAL_ALL_UNCHECKED') }}</p>
+      <p class="journey-note" data-rs-unchecked style="margin:2px 0;color:#777">{{ t('UI_RS_' ~ d ~ '_ALL_UNCHECKED') }}</p>
       {% endif %}
       {% else %}
-      <p class="journey-note" data-rs-none style="margin:2px 0">{{ t('UI_RS_COMMERCIAL_NOTHING') }}</p>
-      <p class="journey-note" data-rs-not-a-verdict style="margin:2px 0;color:#777">{{ t('UI_RS_COMMERCIAL_NOTHING_NOT_A_VERDICT') }}</p>
+      <p class="journey-note" data-rs-none style="margin:2px 0">{{ t('UI_RS_' ~ d ~ '_NOTHING') }}</p>
+      <p class="journey-note" data-rs-not-a-verdict style="margin:2px 0;color:#777">{{ t('UI_RS_' ~ d ~ '_NOTHING_NOT_A_VERDICT') }}</p>
       {% endif %}
-      {% else %}
-      <p class="journey-note" data-rs-not-a-verdict style="margin:2px 0;color:#777">{{ t('UI_RS_MANUFACTURING_NOT_A_VERDICT') }}</p>
       {% endif %}
+      <p class="journey-note" data-rs-not-a-conclusion style="margin:2px 0;color:#777">{{ t('UI_RS_' ~ d ~ '_NOT_A_CONCLUSION') }}</p>
     </li>
     {% endfor %}
   </ul>
+  <p class="journey-note" data-rs-no-overall style="margin-top:8px;color:#777">{{ t('UI_RS_NO_OVERALL') }}</p>
 </details>
 {% endif %}
 {#- RS-BLOCK-END -#}
 {#- MEV-BLOCK-BEGIN — Manufacturing Evidence Capture
     (MANUFACTURING-EVIDENCE-OWNER-IMPLEMENT-01). Read: the items already recorded
-    for this project, straight from the authoritative Commercial Evidence Owner.
+    for this project, straight from the authoritative Manufacturing Evidence Owner.
     Write: one POST form that records one more. Nothing here computes or renders
-    a Commercial Readiness disposition, a score, or any claim about whether the
-    idea is marketable — the block reports what the inventor recorded and stops.
+    a Manufacturing Readiness disposition, a score, or any claim about whether
+    the idea can be made — the block reports what the inventor recorded and
+    stops. (Its evidence SUFFICIENCY is a different statement, reported by the
+    Readiness Snapshot in its own block.)
     Provenance and standing are shown as explanatory metadata, never as controls:
     there is no selector for either, because neither has a second value to pick. -#}
 {% if manufacturing_evidence %}
@@ -1146,10 +1157,12 @@ body{overflow-wrap:anywhere}
 {#- MEV-BLOCK-END -#}
 {#- CEV-BLOCK-BEGIN — Commercial Evidence Capture
     (COMMERCIAL-EVIDENCE-CAPTURE-IMPLEMENT-01). Read: the items already recorded
-    for this project, straight from the authoritative Commercial Evidence Owner.
+    for this project, straight from the authoritative Manufacturing Evidence Owner.
     Write: one POST form that records one more. Nothing here computes or renders
-    a Commercial Readiness disposition, a score, or any claim about whether the
-    idea is marketable — the block reports what the inventor recorded and stops.
+    a Manufacturing Readiness disposition, a score, or any claim about whether
+    the idea can be made — the block reports what the inventor recorded and
+    stops. (Its evidence SUFFICIENCY is a different statement, reported by the
+    Readiness Snapshot in its own block.)
     Provenance and standing are shown as explanatory metadata, never as controls:
     there is no selector for either, because neither has a second value to pick. -#}
 {% if commercial_evidence %}

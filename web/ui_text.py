@@ -2406,6 +2406,15 @@ UI_STRINGS = {
         "en": "Insufficient evidence",
         "ar": "الأدلة غير كافية",
     },
+    "UI_RS_NO_OVERALL": {
+        "en": ("These three are reported separately and are not added up. There "
+               "is no overall readiness result, because none of the three is a "
+               "score and combining them would invent a judgement none of them "
+               "makes."),
+        "ar": ("تُعرض هذه الثلاثة بشكل منفصل ولا تُجمع. لا توجد نتيجة جاهزية "
+               "إجمالية، لأن أيًا منها ليس درجة، وجمعها سيخترع حكمًا لا يصدر "
+               "عن أي منها."),
+    },
     "UI_RS_DIM_TECHNICAL": {"en": "Technical", "ar": "التقني"},
     "UI_RS_DIM_COMMERCIAL": {"en": "Commercial", "ar": "التجاري"},
     "UI_RS_DIM_MANUFACTURING": {"en": "Manufacturing", "ar": "التصنيع"},
@@ -2431,6 +2440,11 @@ UI_STRINGS = {
     "UI_RS_TECHNICAL_COUNTS": {
         "en": "Recorded entries: %(items)s · Areas covered: %(areas)s",
         "ar": "الإدخالات المسجَّلة: %(items)s · المجالات المشمولة: %(areas)s",
+    },
+    "UI_RS_TECHNICAL_NOT_A_CONCLUSION": {
+        "en": ("This counts what you recorded. It is not a view on whether your "
+               "idea works."),
+        "ar": "هذا يحصي ما سجّلته. وليس رأيًا في ما إذا كانت فكرتك تعمل.",
     },
     "UI_RS_TECHNICAL_NONE": {
         "en": "No technical reasoning has been recorded yet.",
@@ -2462,18 +2476,53 @@ UI_STRINGS = {
     },
     "UI_RS_COMMERCIAL_TOPICS_LABEL": {
         "en": "Topics recorded", "ar": "المواضيع المسجَّلة"},
+    "UI_RS_COMMERCIAL_NOT_A_CONCLUSION": {
+        "en": ("This counts what you recorded. It is not a view on your market, "
+               "your pricing, or whether anyone will buy."),
+        "ar": ("هذا يحصي ما سجّلته. وليس رأيًا في سوقك، ولا في تسعيرك، ولا في "
+               "ما إذا كان أحد سيشتري."),
+    },
+    # --- Manufacturing (MANUFACTURING-READINESS-SNAPSHOT-01) -----------------
+    # Manufacturing joins as an EVIDENCE-SUFFICIENCY dimension. The row now
+    # reports a disposition where it previously reported "not assessed", and the
+    # entire risk of that change is a reader hearing "insufficient evidence
+    # about manufacturing" as "this would be hard to manufacture". Every string
+    # below is written against that reading.
+    "UI_RS_MANUFACTURING_NOTHING": {
+        "en": "No Manufacturing evidence has been recorded yet.",
+        "ar": "لم تُسجَّل أي أدلة تصنيع بعد.",
+    },
+    "UI_RS_MANUFACTURING_NOTHING_NOT_A_VERDICT": {
+        "en": ("Nothing has been recorded here yet, which says nothing about "
+               "how hard this would be to make. It is a blank page, not a "
+               "finding."),
+        "ar": ("لم يُسجَّل شيء هنا بعد، وهذا لا يقول شيئًا عن مدى صعوبة صنع "
+               "هذا. إنها صفحة فارغة، وليست نتيجة."),
+    },
+    "UI_RS_MANUFACTURING_RECORDED": {
+        "en": ("Manufacturing evidence has been recorded, but it has not yet "
+               "been independently checked."),
+        "ar": "سُجِّلت أدلة تصنيع، لكنها لم تخضع بعد لفحص مستقل.",
+    },
+    "UI_RS_MANUFACTURING_COUNTS": {
+        "en": "Recorded items: %(items)s · Topics covered: %(topics)s",
+        "ar": "العناصر المسجَّلة: %(items)s · المواضيع المشمولة: %(topics)s",
+    },
+    "UI_RS_MANUFACTURING_ALL_UNCHECKED": {
+        "en": "Every item is your own statement, recorded as you gave it.",
+        "ar": "كل عنصر هو قولك أنت، مسجَّل كما قدّمته.",
+    },
+    "UI_RS_MANUFACTURING_TOPICS_LABEL": {
+        "en": "Topics recorded", "ar": "المواضيع المسجَّلة"},
+    "UI_RS_MANUFACTURING_NOT_A_CONCLUSION": {
+        "en": ("This counts what you recorded. It is not a view on whether your "
+               "idea can be made, how easily, or at what cost — this version "
+               "does not judge that at all."),
+        "ar": ("هذا يحصي ما سجّلته. وليس رأيًا في ما إذا كان يمكن صنع فكرتك، "
+               "ولا في مدى سهولة ذلك، ولا في تكلفته — هذه النسخة لا تحكم في "
+               "ذلك إطلاقًا."),
+    },
     # --- Manufacturing -------------------------------------------------------
-    "UI_RS_MANUFACTURING_NOT_ASSESSED": {
-        "en": "Not assessed in this version",
-        "ar": "لم يُقيَّم في هذه النسخة",
-    },
-    "UI_RS_MANUFACTURING_NOT_A_VERDICT": {
-        "en": ("This version does not look at manufacturing at all, so there is "
-               "nothing to report either way. It does not mean your idea would "
-               "be difficult to make."),
-        "ar": ("لا تنظر هذه النسخة في التصنيع إطلاقًا، فليس هناك ما يُقال في أي "
-               "اتجاه. لا يعني ذلك أن صنع فكرتك سيكون صعبًا."),
-    },
     # Commercial Evidence Capture (COMMERCIAL-EVIDENCE-CAPTURE-IMPLEMENT-01).
     # The wording carries the whole product boundary: this block shows what the
     # inventor RECORDED about their market, never what is true about it. No

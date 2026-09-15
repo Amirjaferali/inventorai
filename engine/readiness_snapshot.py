@@ -44,6 +44,7 @@ from engine.commercial_evidence import (
     ACTIVE_DIMENSIONS,
     CLAIM_STATUS_UNVALIDATED,
     commercial_evidence_view,
+    manufacturing_evidence_view,
 )
 from engine.derived_readiness import READINESS_GAP_CONTEXTS, derive_readiness
 from engine.idea_state import UNVALIDATED, VALIDATED_STATUSES
@@ -66,9 +67,12 @@ ROW_MANUFACTURING = "manufacturing"
 # EVIDENCE; none of them is a judgement about the idea.
 REASON_NO_UPPER_TIER_WRITER = "no_upper_tier_writer"     # technical
 REASON_NOTHING_RECORDED = "nothing_recorded"             # commercial, zero rows
-REASON_RECORDED_BUT_UNCHECKED = "recorded_but_unchecked"  # commercial, >0 rows
-#: Manufacturing carries no disposition, so it carries a state instead.
-STATE_NOT_ASSESSED = "not_assessed"
+REASON_RECORDED_BUT_UNCHECKED = "recorded_but_unchecked"  # evidence, >0 rows
+# `STATE_NOT_ASSESSED` retired at `MANUFACTURING-READINESS-SNAPSHOT-01`.
+# Manufacturing had no evidence owner then, so "nobody has looked" was the only
+# truthful thing to say. It has one now, so its evidence sufficiency can be
+# reported exactly as Commercial's is — and a constant asserting nobody has
+# looked would be the stale half of a true statement.
 
 
 def technical_row(state):
@@ -101,18 +105,21 @@ def technical_row(state):
     }
 
 
-def commercial_row(rows):
-    """Compose the Commercial row from the AUTHORITATIVE Commercial Evidence
-    Owner's own view and nothing else. Pure.
+def _evidence_row(dimension, view):
+    """Compose ONE evidence-sufficiency row from a dimension's OWN canonical
+    view. Pure, and identical for every dimension by construction.
 
-    ``rows`` is the project's durable evidence history as the store returns it.
-    The counts are of what the inventor recorded; the row never reads a verdict,
-    a decision workspace, a requirement landscape or free text elsewhere, and it
-    interprets none of what it counts."""
-    view = commercial_evidence_view(rows)
+    The disposition is a constant, not a computation: no count, no ratio and no
+    comparison below can produce anything but `INSUFFICIENT_EVIDENCE`, because
+    every item any owner can currently hold is the inventor's own UNVALIDATED
+    statement and no authorized path promotes one. The counts report WHAT WAS
+    RECORDED; none is a threshold, and none is interpreted. Two dimensions
+    reporting the same disposition does not make them comparable — it means
+    neither has validated evidence, which is a statement about this version
+    rather than about either subject."""
     statuses = {r["claim_status"] for r in view["active"]}
     return {
-        "dimension": ROW_COMMERCIAL,
+        "dimension": dimension,
         "disposition": DISPOSITION_INSUFFICIENT_EVIDENCE,
         "reason": (REASON_NOTHING_RECORDED if not view["total"]
                    else REASON_RECORDED_BUT_UNCHECKED),
@@ -125,27 +132,57 @@ def commercial_row(rows):
     }
 
 
-def manufacturing_row():
-    """Compose the Manufacturing row. It carries NO disposition — not even
-    `INSUFFICIENT_EVIDENCE`, which would imply an assessment found the evidence
-    wanting. Nothing has been assessed, and the row says exactly that."""
-    return {
-        "dimension": ROW_MANUFACTURING,
-        "disposition": None,
-        "state": STATE_NOT_ASSESSED,
-    }
+def commercial_row(rows):
+    """Compose the Commercial row from the AUTHORITATIVE Commercial Evidence
+    Owner's own view and nothing else. Pure.
+
+    ``rows`` is the project's durable evidence history as the store returns it.
+    The counts are of what the inventor recorded; the row never reads a verdict,
+    a decision workspace, a requirement landscape or free text elsewhere, and it
+    interprets none of what it counts."""
+    return _evidence_row(ROW_COMMERCIAL, commercial_evidence_view(rows))
 
 
-def readiness_snapshot(state, commercial_rows):
+def manufacturing_row(rows):
+    """Compose the Manufacturing row from the AUTHORITATIVE Manufacturing
+    Evidence Owner's own view and nothing else. Pure.
+
+    This row previously carried NO disposition, because Manufacturing had no
+    evidence owner and saying "insufficient evidence" would have implied an
+    assessment nobody had made. It has an owner now, so the honest thing to
+    report is the same thing Commercial reports: what was recorded, and that
+    none of it has been checked.
+
+    What has NOT changed is what the row means. It is evidence sufficiency, not
+    manufacturability: it says nothing about whether the thing can be made, made
+    affordably, or made at all, and no count of materials, processes or tooling
+    moves it toward saying so. The dimension reads NOTHING from the Technical
+    ledger, Commercial evidence, requirements, the verdict, the decision
+    workspace, or cost text recorded anywhere else."""
+    return _evidence_row(ROW_MANUFACTURING, manufacturing_evidence_view(rows))
+
+
+def readiness_snapshot(state, evidence_rows):
     """The whole snapshot: three rows in presentation order. Pure.
 
-    Composes the two existing authoritative owners plus the fixed Manufacturing
-    inactive state. Creates no record, writes nothing, and can emit no
-    disposition other than `INSUFFICIENT_EVIDENCE`."""
+    Composes the existing authoritative owners and nothing else. Creates no
+    record, writes nothing, and can emit no disposition other than
+    `INSUFFICIENT_EVIDENCE`.
+
+    ``evidence_rows`` is the project's WHOLE durable evidence history; each row
+    scopes it to its own dimension through that dimension's canonical view, so
+    a Commercial item can never reach the Manufacturing count or the reverse.
+
+    There is deliberately NO aggregate. No overall disposition, no weakest link,
+    no percentage, no traffic light, no weighted anything: three independent
+    statements about three independent bodies of evidence. Combining them would
+    invent a judgement none of the owners made, and the fact that all three
+    currently read the same is a fact about this version's validation paths
+    rather than a finding that the three are equally far along."""
     return {
         "rows": (technical_row(state),
-                 commercial_row(commercial_rows),
-                 manufacturing_row()),
+                 commercial_row(evidence_rows),
+                 manufacturing_row(evidence_rows)),
         "dimensions": (ROW_TECHNICAL, ROW_COMMERCIAL, ROW_MANUFACTURING),
         # Which dimensions accept EVIDENCE, composed from the canonical owner
         # rather than restated, so this can never drift from the truth again.
