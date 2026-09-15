@@ -23,8 +23,97 @@ Git/GitHub own transient candidate, PR and merge identity. No acceptance/merge t
 self-SHA or lifecycle-label change creates a synchronization candidate. When no mandate
 exists, state ACTIVE CONTRACT: NONE; historical declarations never fill the gap.
 
+<a id="current-authority--post-652-declaration"></a>
+## Current authority — post-PR-652 declaration
+
+**ACTIVE CONTRACT: NONE.** No NEW implementation mandate is currently active. This
+is the "no mandate" state for FUTURE work only; it does NOT mean the merged
+Readiness, Commercial-evidence or Manufacturing-evidence capabilities lacked
+authority. Each was separately Owner-authorized, delivered as a bounded candidate,
+given its own exact-head merge authorization, merged and post-merge verified. Any
+further product, readiness, governance or automation work requires a new explicit
+Owner authorization.
+
+**Position.** Authoritative branch `feature/atomic-json-session-persistence`;
+`main` is outside execution authority. Verify the live tip from Git each session
+rather than treating a recorded SHA as a permanent pin. The authoritative
+implementation now includes PRs #647–#652:
+
+| PR | Merge | Owner decision | Subject |
+|---|---|---|---|
+| #647 | `0be32d6fd9469d58adaf0595564febb4d3de3a42` | `COMMERCIAL-EVIDENCE-OWNER-REPAIR-01` | Commercial Evidence Owner — bounded F-1/F-2 repair |
+| #648 | `ac614ece506225f858e5ea4424af13d2e7e2d952` | `READINESS-TRUTH-HARDENING-IMPLEMENT-01` | validation-axis truth hardening; decision-workspace presentation reframe |
+| #649 | `4a7738cf8c75423407b4c1b24ae22c6d24e49995` | `COMMERCIAL-EVIDENCE-CAPTURE-IMPLEMENT-01` | Commercial Evidence Capture — first user-facing evidence writer |
+| #650 | `e1e4e72dae621e724c2653a864a7a1d5bd464be5` | `READINESS-SNAPSHOT-RUNTIME-01` | first canonical Readiness Snapshot (read-only) |
+| #651 | `fb0e0638c436eee2af71451f513ee72cf47197be` | `MANUFACTURING-EVIDENCE-OWNER-IMPLEMENT-01` | Manufacturing Evidence Owner + Manufacturing Evidence Capture |
+| #652 | `7a435517ccef9c13a4045e3303a7fc212679e0d6` | `MANUFACTURING-READINESS-SNAPSHOT-01` | Manufacturing joins the Readiness Snapshot as an evidence-sufficiency dimension |
+
+All six are **COMPLETED**: merged, merge trees identical to their reviewed
+candidates, candidate→merge diffs empty, ordered parents, post-merge verified. The
+durable Commercial Evidence Owner declared in the historical entry below is part of
+that authoritative state; the same owner module and the same single
+`readiness_evidence` substrate now carry the Manufacturing dimension.
+
+**Current readiness truth — AUTHORITATIVE for this version.** The Readiness
+Snapshot is authoritative and read-only over three dimensions:
+
+- Technical — `INSUFFICIENT_EVIDENCE` only.
+- Commercial — `INSUFFICIENT_EVIDENCE` only.
+- Manufacturing — `INSUFFICIENT_EVIDENCE` only.
+
+It is evidence-sufficiency presentation ONLY. It is NOT a product verdict, NOT an
+overall readiness verdict, NOT a score, NOT a percentage, NOT a composite and NOT a
+weakest-link result. FDC-001 remains the sole product-decision owner and its
+vocabulary (PROCEED / PROCEED WITH CAUTION / REVISE / BLOCK) does not intersect the
+readiness vocabulary. Manufacturing carries no manufacturability conclusion.
+
+**Still RESERVED — authorized by none of the above.** `PASS`,
+`PASS_WITH_CONDITIONS` and `HOLD` remain unavailable and unauthorized in the
+current version, as do a qualifying-authority writer, any validation-promotion
+workflow, a specialist award path, external-evidence promotion, human-evidence
+promotion, automatic readiness advancement, overall or composite readiness, a
+manufacturability or feasibility conclusion, a second evidence engine, a second
+risk store, a second decision engine, CAD/PCB/BOM, supplier APIs, external data,
+human or market evidence collection, MCP, deployment and paid activation. The
+bounded evidence-sufficiency runtime already exercised is NOT authority for any of
+them: the recorded material reason that the evidence ladder's upper tiers are
+unreachable today still stands, and `INDEPENDENTLY_VERIFIED` remains a value which
+no owner or system action may ever award.
+
+**Gates preserved.** PRE-FCORA has run at this tip under
+`PRE-FCORA-SYSTEMATIC-RECONCILIATION-01` and returned **C — NOT READY**, with
+`UNEXPLAINED MATERIAL DIFFERENCES = 0`, `SILENT DISAPPEARANCE CANDIDATES = 0` and
+exactly ONE unaccounted material obligation: governance-authority drift across this
+file, `DEFERRED_OBLIGATIONS_REGISTER.md` and `CURRENT_PROJECT_STATE.md`. This
+declaration is the bounded governance-only repair of that one defect under
+`PRE-FCORA-AUTHORITY-SYNC-01`; it changes no product behaviour and creates no
+product authority. **FCORA is NOT authorized and NOT started**, and this sync does
+not authorize it. Unchanged with their owners, triggers and return conditions: the
+A2 claim-eligibility human-review evidence gate (mandatory before implementation
+authorization; CEHR deferred, not cancelled; Route-B conditions intact; A2 follows
+only after a new Owner decision), the new-human-experiment deferral,
+`HUMAN-STUDY EXECUTION: NOT AUTHORIZED`, `EVIDENCE COLLECTION: NOT AUTHORIZED`,
+T1-A′ and its supersession, T1-C′, HICR, RUN-004, G-4-A, G-4-B, M-1, F-03, F-04,
+the EN↔AR residual rows, the `_s6` / `RISK-*` canonical risk projection row, the
+decision-workspace lane disposition, the FDC-001 byte-pin, the T2-A
+paid-activation blocker, MG-8 (closed) and the positive-Readiness
+validation/promotion gates.
+
 <a id="current-authority--commercial-evidence-owner"></a>
-## Current authority — Commercial Evidence Owner (durable ownership only)
+<a id="historical-authority--commercial-evidence-owner"></a>
+## Historical authority — Commercial Evidence Owner (COMPLETED; superseded above)
+
+The declaration below is preserved as historical evidence of the mandate in force
+between the PR #646 merge and the later Owner decisions listed above. It was true at
+its recorded moment and remains the durable design record for the evidence owner. It
+is NOT the current authority, and three of its statements have since been superseded
+by explicit Owner decisions: a Readiness runtime, readiness dispositions in the
+product and a Manufacturing owner were each separately authorized, implemented,
+merged and post-merge verified (PRs #650, #650 and #651). Read its "NOT authorized"
+list, its empty `TOPICS_BY_DIMENSION[MANUFACTURING]`, its "Manufacturing remains
+unimplemented" and its "Readiness runtime remains unauthorized" as truth-at-the-time
+only. The still-reserved list in the current declaration above governs what remains
+unauthorized today.
 
 **Owner decision `COMMERCIAL-EVIDENCE-OWNER-IMPLEMENT-01` v1.0**, accepting
 `READINESS-OWNER-DISPOSITION-01` (recommendation B) and authorizing ONE bounded
