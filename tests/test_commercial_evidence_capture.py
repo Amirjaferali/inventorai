@@ -425,6 +425,36 @@ def test_user_text_is_html_escaped(owner):
 # ==========================================================================
 # 6. boundaries this slice must not cross
 # ==========================================================================
+def test_this_blocks_copy_never_borrows_a_settled_status_word():
+    """`test_g3_decision_value.py::test_a22` bans a short list of tokens
+    anywhere on the session page, so a withdrawn decision alternative can never
+    read as an approved, certified or validated one. This block shares that page
+    and must not reintroduce one of those words through its own copy — including
+    inside an explicit negation, which is how it happened once already."""
+    banned = ("eliminated", "Eliminated", "ELIMINATED", "technically_selected",
+              "approved", "validated", "certified", "production_ready")
+    offenders = []
+    for key, entry in ui_text.UI_STRINGS.items():
+        if not key.startswith("UI_CEV_"):
+            continue
+        for lang in ("en", "ar"):
+            for token in banned:
+                if token in entry.get(lang, ""):
+                    offenders.append("%s[%s]: %s" % (key, lang, token))
+    assert not offenders, offenders
+
+
+def test_the_write_route_is_in_the_r05_unsafe_route_inventory():
+    """A new state-changing route must be enumerated in the R-05 security
+    inventory, which is what subjects it to the CSRF/auth integrity matrix.
+    Pinned here too so the coupling is visible from this slice's own suite."""
+    from tests.test_r05_request_integrity import MUTATIONS
+    assert "/session/<sid>/commercial-evidence" in MUTATIONS
+    registered = {rule.rule for rule in app.url_map.iter_rules()
+                  if rule.methods - {"GET", "HEAD", "OPTIONS"}}
+    assert registered <= set(MUTATIONS)
+
+
 def test_no_readiness_conclusion_is_computed_anywhere_in_this_lane():
     source = open(os.path.join(os.path.dirname(__file__), "..", "web", "app.py"),
                   encoding="utf-8").read()

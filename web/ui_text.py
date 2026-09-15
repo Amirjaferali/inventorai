@@ -2259,11 +2259,18 @@ UI_STRINGS = {
         "ar": "الأدلة التجارية التي سجّلتها",
     },
     "UI_CEV_EXPLAIN": {
+        # The Owner's §5 example wording used "has not been independently
+        # validated". The plainer "checked" is used instead for one concrete
+        # reason: `test_g3_decision_value.py::test_a22` bans the bare token
+        # `validated` anywhere on this page, so that a withdrawn decision
+        # alternative can never read as a validated one. That guard is worth
+        # more than the word, and weakening it to fit this copy would trade a
+        # real product-truth protection for a synonym.
         "en": ("What you know, or believe, about the market for this idea — "
                "who it is for, what it would replace, what it might cost. "
                "This evidence is recorded from your project information and "
-               "has not been independently validated. InventorAI has not "
-               "checked any of it, and recording it does not make it true."),
+               "has not been independently checked. InventorAI has verified "
+               "none of it, and recording it does not make it true."),
         "ar": ("ما تعرفه، أو تعتقده، عن السوق لهذه الفكرة — لمن هي، وما الذي "
                "ستحلّ محلّه، وكم قد تُكلّف. هذه الأدلة مسجَّلة من معلومات "
                "مشروعك ولم يجرِ التحقق منها بشكل مستقل. لم يتحقق إنفنتوراي من "
