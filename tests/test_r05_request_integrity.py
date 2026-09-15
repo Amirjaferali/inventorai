@@ -37,6 +37,9 @@ MUTATIONS = (
     # T2-G legacy migration: the single-step EXPLICIT engine-version adoption /
     # reversal write, covered by the same evidence matrix below.
     "/session/<sid>/engine-version",
+    # Commercial Evidence Capture: the single-step Commercial evidence write,
+    # covered by the same evidence matrix below.
+    "/session/<sid>/commercial-evidence",
     "/decision-workspace", "/decision-workspace/<did>/input",
     "/decision-workspace/<did>/constraint", "/decision-workspace/<did>/gap",
     "/decision-workspace/<did>/evidence", "/decision-workspace/<did>/gap-assessment",

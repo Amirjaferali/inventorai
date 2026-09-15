@@ -93,6 +93,24 @@ from engine.record_contract import ProjectRecordContract
 # pure vocabulary / canonical-value / eligibility owner. The web layer performs
 # glue only: authorization, token binding, idempotency, persist-before-
 # acknowledge, and fail-closed attachment of the validated history.
+# Commercial Evidence Capture (COMMERCIAL-EVIDENCE-CAPTURE-IMPLEMENT-01): the
+# AUTHORITATIVE Commercial Evidence Owner merged in PR #647. This web slice is a
+# writer and a reader FOR that owner; it re-implements none of its validation,
+# owns no evidence itself, and derives no commercial conclusion.
+from engine.commercial_evidence import (
+    COMMERCIAL_TOPICS as _COMMERCIAL_TOPICS,
+    DEFAULT_PROVENANCE as _CEV_PROVENANCE,
+    DIMENSION_COMMERCIAL as _DIMENSION_COMMERCIAL,
+    CLAIM_STATUS_UNVALIDATED as _CEV_CLAIM_STATUS,
+    EVIDENCE_INSERTED as _CEV_INSERTED,
+    EVIDENCE_EXACT_REPLAY as _CEV_EXACT_REPLAY,
+    CommercialEvidenceError as _CommercialEvidenceError,
+    CommercialEvidenceHistoryError as _CommercialEvidenceHistoryError,
+    EvidenceCapExceeded as _CevCapExceeded,
+    commercial_evidence_view as _commercial_evidence_view,
+    is_same_evidence_event as _is_same_evidence_event,
+    make_readiness_evidence as _make_readiness_evidence,
+)
 from engine.requirement_quantity import (
     RequirementQuantity, QuantityValueError, QuantityHistoryError, QUANTITY_KINDS,
     validate_quantity_kind as _validate_quantity_kind,
@@ -4497,6 +4515,16 @@ def show_session(sid):
         # input history (ledger order, supersession, anchored rows, adoption
         # events). None only when the history cannot be read consistently.
         project_record=_project_record_context(state, sid),
+        # Commercial Evidence Capture: the items already recorded for this
+        # project, read STRICTLY from the authoritative owner. None only when
+        # the durable history cannot be read consistently.
+        commercial_evidence=_commercial_evidence_context(
+            sid, _quantity_writer_account(sid) is not None
+            and getattr(state, "domain", None) is not None),
+        cev_ack=_cev_notice_text(
+            _render_notice(entry, CEV_ACK_SLOT, None), _current_ui_lang()),
+        cev_error=_cev_notice_text(
+            _render_notice(entry, CEV_ERROR_SLOT, None), _current_ui_lang()),
         eva_ack=_eva_notice_text(
             _render_notice(entry, EVA_ACK_SLOT, None), _current_ui_lang()),
         eva_error=_eva_notice_text(
@@ -6189,6 +6217,233 @@ def submit_question_feedback(sid):
         _publish_feedback_notice(entry, error=FEEDBACK_NOT_SAVED_MESSAGE)
     else:                                        # COMMIT_UNKNOWN
         _publish_feedback_notice(entry, error=FEEDBACK_UNKNOWN_MESSAGE)
+    return redirect(url_for("show_session", sid=sid))
+
+
+# =============================================================================
+# Commercial Evidence Capture — the owner records what THEY know about the market
+# =============================================================================
+# COMMERCIAL-EVIDENCE-CAPTURE-IMPLEMENT-01. One bounded slice on the existing
+# saved-project page: view the Commercial evidence already recorded for this
+# project, and add one more item.
+#
+# What this is NOT, enforced here rather than promised: it computes no Commercial
+# Readiness disposition, no score and no marketability conclusion; it collects
+# nothing external and asks the user for nothing but their own project knowledge;
+# and it exposes no control over provenance or claim status. Every item is
+# recorded as OWNER_STATED / UNVALIDATED because that is what it truthfully is —
+# the inventor's own statement, which InventorAI has not checked. Recording is
+# never validating, and the interface says so in both languages.
+#
+# The durable truth boundary stays where it already is. This route validates only
+# what a WEB form must (the field allowlist, the bounded text guard, the closed
+# topic vocabulary) and then hands the row to the authoritative owner, which
+# re-validates everything independently and would refuse a malformed row even if
+# this route were bypassed entirely.
+CEV_ACK_SLOT = "_cev_ack"
+CEV_ERROR_SLOT = "_cev_error"
+
+# Notices are stored as TOKENS and rendered bilingually at display time, so a
+# notice raised in one language is never shown in the other.
+CEV_SAVED_ACK = "CEV_SAVED"
+CEV_REPLAY_ACK = "CEV_REPLAY"
+CEV_NOT_SAVED_MESSAGE = "CEV_NOT_SAVED"
+CEV_TEXT_REJECTED_MESSAGE = "CEV_TEXT_REJECTED"
+CEV_UNKNOWN_MESSAGE = "CEV_OUTCOME_UNKNOWN"
+CEV_CAP_MESSAGE = "CEV_CAP_REACHED"
+
+_CEV_DISPLAY_KEY = {
+    CEV_SAVED_ACK: "UI_CEV_NOTICE_SAVED",
+    CEV_REPLAY_ACK: "UI_CEV_NOTICE_REPLAY",
+    CEV_NOT_SAVED_MESSAGE: "UI_CEV_NOTICE_NOT_SAVED",
+    CEV_TEXT_REJECTED_MESSAGE: "UI_CEV_NOTICE_TEXT_REJECTED",
+    CEV_UNKNOWN_MESSAGE: "UI_CEV_NOTICE_UNKNOWN",
+    CEV_CAP_MESSAGE: "UI_CEV_NOTICE_CAP",
+}
+
+
+def _cev_notice_text(token, lang):
+    """Bilingual text for a stored notice token, or None. An unrecognised token
+    renders NOTHING rather than a raw token."""
+    key = _CEV_DISPLAY_KEY.get(token)
+    return None if key is None else ui_text.text(key, lang)
+
+# The exact form fields this route accepts. Absent by construction: provenance,
+# claim_status, validation status, readiness status, dimension. A submission
+# carrying any of them is refused whole, so a forged value is never merely
+# ignored — the write does not happen.
+_CEV_FIELDS = frozenset({
+    "csrf_token", "topic", "subject_text", "statement_text", "source_identity",
+    "occurred_on", "scope_text", "limitation_text",
+})
+_CEV_TEXT_FIELDS = ("subject_text", "statement_text", "source_identity",
+                    "occurred_on", "scope_text", "limitation_text")
+
+
+def _publish_cev_notice(entry, ack=None, error=None):
+    """Publish exactly ONE current Commercial-evidence notice, inside this
+    namespace only. The answer, correction, quantity, reference and feedback
+    namespaces are never touched."""
+    entry.pop(CEV_ACK_SLOT, None)
+    entry.pop(CEV_ERROR_SLOT, None)
+    if ack is not None:
+        entry[CEV_ACK_SLOT] = ack
+    if error is not None:
+        entry[CEV_ERROR_SLOT] = error
+
+
+def _cev_event_key(sid, topic, fields):
+    """The durable exact-replay identity of ONE recorded item, derived from the
+    project and the CONTENT the owner submitted.
+
+    Content-derived on purpose: a refresh, a double-submit or a retried POST
+    reproduces every field exactly and resolves to the SAME key, so the store
+    recognises it as its own replay instead of appending a second identical
+    item. A genuinely different item differs in at least one field and gets its
+    own key. Built with the same length-prefixed canonical encoding and the same
+    HMAC construction as the existing answered / interaction / feedback keys,
+    under its own domain-separator label."""
+    msg = _canonical_message(
+        "commercial-evidence-event-v1", sid, topic,
+        *[fields[name] for name in _CEV_TEXT_FIELDS])
+    return _p2a_hmac.new(_answer_secret(), msg,
+                         _p2a_hashlib.sha256).hexdigest()[:_ANSWER_HMAC_HEX_LEN]
+
+
+def _commercial_evidence_context(sid, writable):
+    """Read-only render context for the Commercial evidence block, or None when
+    the durable history cannot be read consistently (fail closed: the block is
+    suppressed rather than rendering a partial or stale record).
+
+    Read STRICTLY from the authoritative owner — there is no shadow list, no
+    cache and no second model. ``total`` 0 with an empty ``items`` is the
+    truthful empty state, which the template states as an absence and never as a
+    negative finding: no evidence recorded is not evidence of no market."""
+    try:
+        rows = _get_store().load_readiness_evidence(sid)
+    except Exception:
+        return None
+    try:
+        view = _commercial_evidence_view(rows)
+    except Exception:
+        return None
+    return {
+        # `entries`, not `items`: Jinja resolves `.items` on a mapping to the
+        # dict METHOD, so a key of that name silently renders nothing.
+        "entries": list(view["active"]),
+        "total": view["total"],
+        "topics": list(view["topics"]),
+        "choices": list(_COMMERCIAL_TOPICS),
+        "writable": bool(writable),
+    }
+
+
+@app.route("/session/<sid>/commercial-evidence", methods=["POST"])
+def record_commercial_evidence(sid):
+    """Record ONE Commercial evidence item on the owner's own project.
+
+    POST only — there is no state-changing GET, and the session page's GET never
+    writes. Global CSRF runs before this view; then the SAME ownership predicate
+    every other writing route on this page uses, a strict field allowlist, the
+    existing bounded free-text guard, and the closed Commercial topic
+    vocabulary. A cold read-only session is read-only here exactly as it is
+    everywhere else.
+
+    The stable event key is resolved against the durable store FIRST, so a
+    refresh or a retried submission is acknowledged as the replay it is rather
+    than appended a second time or reported as a failure. Persist before
+    acknowledging: nothing is claimed saved that the store did not commit."""
+    if not _project_authorized(sid):
+        return _deny_project()
+    entry = SESSION_STORE.get(sid)
+    if not entry:
+        return redirect(url_for("index"))
+    if _quantity_writer_account(sid) is None:
+        return _deny_project()
+    lang = _current_ui_lang()
+    # A submission carrying an unexpected field — provenance or claim_status,
+    # say — is refused WHOLE. Silently dropping the extra field would let a
+    # forged value look accepted.
+    if set(request.form.keys()) - _CEV_FIELDS or \
+            any(len(request.form.getlist(k)) != 1 for k in request.form.keys()):
+        _publish_cev_notice(entry, error=CEV_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    state = entry["state"]
+    if getattr(state, "domain", None) is None:
+        _publish_cev_notice(entry, error=CEV_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    topic = request.form.get("topic", "")
+    if topic not in _COMMERCIAL_TOPICS:
+        _publish_cev_notice(entry, error=CEV_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    fields = {name: request.form.get(name, "") for name in _CEV_TEXT_FIELDS}
+    # The EXISTING bounded free-text guard, reused rather than reinvented: an
+    # over-limit value or an embedded NUL is rejected, never truncated. The
+    # owner module then applies its own text policy at the durable boundary.
+    for value in fields.values():
+        if _free_text_error(value, lang) is not None:
+            _publish_cev_notice(entry, error=CEV_TEXT_REJECTED_MESSAGE)
+            return redirect(url_for("show_session", sid=sid))
+    event_key = _cev_event_key(sid, topic, fields)
+    try:
+        evidence = _make_readiness_evidence(
+            evidence_id=_get_store().new_readiness_evidence_id(),
+            evidence_seq=0,                       # the store assigns the real one
+            dimension=_DIMENSION_COMMERCIAL,
+            topic=topic,
+            subject_text=fields["subject_text"],
+            statement_text=fields["statement_text"],
+            source_identity=fields["source_identity"],
+            occurred_on=fields["occurred_on"],
+            scope_text=fields["scope_text"],
+            limitation_text=fields["limitation_text"],
+            # provenance is FIXED and claim_status is not a parameter at all:
+            # this route cannot promote either, and neither is a form field.
+            provenance=_CEV_PROVENANCE,
+            event_key=event_key,
+            recorded_iteration=int(getattr(state, "iteration", 0) or 0),
+            recorded_at=_quantity_recorded_at())
+    except _CommercialEvidenceError:
+        _publish_cev_notice(entry, error=CEV_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    except Exception:
+        # Minting the id reaches the store. Nothing has been written at this
+        # point, so "not saved" is the truthful notice — and a bounded notice,
+        # never an unhandled 500.
+        _publish_cev_notice(entry, error=CEV_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    # Resolve the durable original FIRST: a retry of something already recorded
+    # must be acknowledged as recorded, never reported as "nothing was saved".
+    try:
+        stored = _get_store().readiness_evidence_for_event_key(sid, event_key)
+    except Exception:
+        # This lookup failing establishes nothing about whether an earlier
+        # request was saved, so the honest UNKNOWN notice is published.
+        _publish_cev_notice(entry, error=CEV_UNKNOWN_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    if stored is not None:
+        if _is_same_evidence_event(stored, evidence):
+            _publish_cev_notice(entry, ack=CEV_REPLAY_ACK)
+        else:
+            _publish_cev_notice(entry, error=CEV_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    try:
+        outcome = _get_store().append_readiness_evidence(sid, evidence)
+    except _CevCapExceeded:
+        _publish_cev_notice(entry, error=CEV_CAP_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    except (_ProjectNotFound, _CommercialEvidenceHistoryError,
+            _CommercialEvidenceError, StoreError):
+        _publish_cev_notice(entry, error=CEV_NOT_SAVED_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    except Exception:
+        # The commit outcome is genuinely unknown. Say so rather than guess.
+        _publish_cev_notice(entry, error=CEV_UNKNOWN_MESSAGE)
+        return redirect(url_for("show_session", sid=sid))
+    if outcome in (_CEV_INSERTED, _CEV_EXACT_REPLAY):
+        _publish_cev_notice(entry, ack=CEV_SAVED_ACK)
+    else:
+        _publish_cev_notice(entry, error=CEV_NOT_SAVED_MESSAGE)
     return redirect(url_for("show_session", sid=sid))
 
 

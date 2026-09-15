@@ -2246,6 +2246,147 @@ UI_STRINGS = {
     # reason is stated plainly; no wall-clock order is implied for ledger
     # entries. Event labels are keyed UI_T3A_EVENT_<KIND> (kind upper-cased),
     # one entry per kind of `web/app.py::T3A_EVENT_KINDS`.
+    # Commercial Evidence Capture (COMMERCIAL-EVIDENCE-CAPTURE-IMPLEMENT-01).
+    # The wording carries the whole product boundary: this block shows what the
+    # inventor RECORDED about their market, never what is true about it. No
+    # string here says validated, proven, strong, attractive, marketable or
+    # ready, and no string judges how much evidence is enough — because this
+    # lane computes no Commercial Readiness and has no opinion to offer.
+    # Topic labels are keyed UI_CEV_TOPIC_<TOPIC> (topic upper-cased), one per
+    # member of `engine.commercial_evidence.COMMERCIAL_TOPICS`.
+    "UI_CEV_HEADING": {
+        "en": "Commercial evidence you recorded",
+        "ar": "الأدلة التجارية التي سجّلتها",
+    },
+    "UI_CEV_EXPLAIN": {
+        # The Owner's §5 example wording used "has not been independently
+        # validated". The plainer "checked" is used instead for one concrete
+        # reason: `test_g3_decision_value.py::test_a22` bans the bare token
+        # `validated` anywhere on this page, so that a withdrawn decision
+        # alternative can never read as a validated one. That guard is worth
+        # more than the word, and weakening it to fit this copy would trade a
+        # real product-truth protection for a synonym.
+        "en": ("What you know, or believe, about the market for this idea — "
+               "who it is for, what it would replace, what it might cost. "
+               "This evidence is recorded from your project information and "
+               "has not been independently checked. InventorAI has verified "
+               "none of it, and recording it does not make it true."),
+        "ar": ("ما تعرفه، أو تعتقده، عن السوق لهذه الفكرة — لمن هي، وما الذي "
+               "ستحلّ محلّه، وكم قد تُكلّف. هذه الأدلة مسجَّلة من معلومات "
+               "مشروعك ولم يجرِ التحقق منها بشكل مستقل. لم يتحقق إنفنتوراي من "
+               "أي منها، وتسجيلها لا يجعلها صحيحة."),
+    },
+    "UI_CEV_EMPTY": {
+        "en": ("No Commercial evidence has been recorded yet. That is simply "
+               "a blank page, not a finding about your market."),
+        "ar": ("لم تُسجَّل أي أدلة تجارية بعد. هذه مجرد صفحة فارغة، وليست "
+               "نتيجةً بشأن سوقك."),
+    },
+    "UI_CEV_ADD_HEADING": {
+        "en": "Record one more item",
+        "ar": "سجّل عنصرًا آخر",
+    },
+    "UI_CEV_FIELD_TOPIC": {"en": "Topic", "ar": "الموضوع"},
+    "UI_CEV_FIELD_SUBJECT": {
+        "en": "What this concerns", "ar": "ما يتعلق به هذا"},
+    "UI_CEV_FIELD_STATEMENT": {
+        "en": "What you know or believe", "ar": "ما تعرفه أو تعتقده"},
+    "UI_CEV_FIELD_SOURCE": {
+        "en": "Where this came from", "ar": "من أين جاء هذا"},
+    "UI_CEV_FIELD_DATE": {
+        "en": "Date, if you know it (YYYY-MM-DD)",
+        "ar": "التاريخ، إن كنت تعرفه (YYYY-MM-DD)"},
+    "UI_CEV_FIELD_SCOPE": {
+        "en": "What it covers", "ar": "ما الذي يغطّيه"},
+    "UI_CEV_FIELD_LIMITATION": {
+        "en": "What it does NOT cover", "ar": "ما الذي لا يغطّيه"},
+    "UI_CEV_LIMITATION_NOTE": {
+        "en": ("Saying what your evidence does not cover is required, and it "
+               "is the most useful part: it is what stops you, later, from "
+               "trusting it further than it goes."),
+        "ar": ("ذِكر ما لا تغطّيه أدلتك مطلوب، وهو الجزء الأنفع: فهو ما يمنعك "
+               "لاحقًا من الوثوق بها أبعد مما تصل إليه."),
+    },
+    "UI_CEV_SUBMIT": {"en": "Record this", "ar": "سجّل هذا"},
+    "UI_CEV_META_SOURCE": {"en": "Source", "ar": "المصدر"},
+    "UI_CEV_META_DATE": {"en": "Date", "ar": "التاريخ"},
+    "UI_CEV_META_SCOPE": {"en": "Covers", "ar": "يغطّي"},
+    "UI_CEV_META_LIMITATION": {"en": "Does not cover", "ar": "لا يغطّي"},
+    "UI_CEV_META_ORIGIN": {"en": "Recorded by", "ar": "سجّله"},
+    "UI_CEV_META_ORIGIN_VALUE": {
+        "en": "you, from your own knowledge",
+        "ar": "أنت، من معرفتك الخاصة"},
+    "UI_CEV_META_STANDING": {"en": "Standing", "ar": "الحالة"},
+    "UI_CEV_META_STANDING_VALUE": {
+        "en": "recorded, not checked by anyone",
+        "ar": "مسجَّل، ولم يتحقق منه أحد"},
+    "UI_CEV_META_NOTE": {
+        "en": ("These two lines describe where each item came from and how far "
+               "it has been checked. They are not settings and you cannot "
+               "change them: everything you record here is your own statement, "
+               "and this version of InventorAI verifies none of it."),
+        "ar": ("يصف هذان السطران من أين جاء كل عنصر وإلى أي مدى جرى التحقق "
+               "منه. ليسا إعدادات ولا يمكنك تغييرهما: كل ما تسجّله هنا هو "
+               "قولك أنت، وهذه النسخة من إنفنتوراي لا تتحقق من أي منه."),
+    },
+    "UI_CEV_NOTICE_SAVED": {
+        "en": "Recorded and saved to your project.",
+        "ar": "سُجِّل وحُفِظ في مشروعك.",
+    },
+    "UI_CEV_NOTICE_REPLAY": {
+        "en": ("That item was already recorded earlier, so nothing was added "
+               "a second time."),
+        "ar": "سُجِّل ذلك العنصر سابقًا، فلم يُضَف مرة ثانية.",
+    },
+    "UI_CEV_NOTICE_NOT_SAVED": {
+        "en": "That item was not recorded. Nothing was changed.",
+        "ar": "لم يُسجَّل ذلك العنصر. لم يتغير شيء.",
+    },
+    "UI_CEV_NOTICE_TEXT_REJECTED": {
+        "en": ("That text is too long or contains an invalid character. "
+               "Nothing was saved - please shorten or clean it and try again."),
+        "ar": ("ذلك النص أطول من اللازم أو يحتوي على رمز غير صالح. لم يُحفظ "
+               "شيء — يُرجى تقصيره أو تنظيفه والمحاولة من جديد."),
+    },
+    "UI_CEV_NOTICE_UNKNOWN": {
+        "en": ("We could not confirm whether that item was recorded. Reload "
+               "this page to see the current list before trying again."),
+        "ar": ("تعذّر علينا تأكيد ما إذا كان ذلك العنصر قد سُجِّل. أعد تحميل "
+               "هذه الصفحة لرؤية القائمة الحالية قبل المحاولة مجددًا."),
+    },
+    "UI_CEV_NOTICE_CAP": {
+        "en": ("This project already holds as many Commercial evidence items "
+               "as it can. Nothing was saved."),
+        "ar": ("يحتوي هذا المشروع بالفعل على أقصى عدد ممكن من عناصر الأدلة "
+               "التجارية. لم يُحفظ شيء."),
+    },
+    "UI_CEV_TOPIC_TARGET_CUSTOMER": {
+        "en": "Who it is for", "ar": "لمن هي"},
+    "UI_CEV_TOPIC_PROBLEM_SEVERITY": {
+        "en": "How badly the problem is felt", "ar": "مدى حدّة المشكلة"},
+    "UI_CEV_TOPIC_MARKET_ALTERNATIVE": {
+        "en": "What people use instead today", "ar": "ما يستخدمه الناس بدلًا منها اليوم"},
+    "UI_CEV_TOPIC_DIFFERENTIATION": {
+        "en": "How this differs", "ar": "بماذا تختلف هذه"},
+    "UI_CEV_TOPIC_PRICE": {"en": "Price", "ar": "السعر"},
+    "UI_CEV_TOPIC_WILLINGNESS_TO_PAY": {
+        "en": "What someone would pay", "ar": "ما قد يدفعه شخص ما"},
+    "UI_CEV_TOPIC_DEMAND": {"en": "Who wants it", "ar": "من يريدها"},
+    "UI_CEV_TOPIC_CUSTOMER_EVIDENCE": {
+        "en": "What a customer told you", "ar": "ما أخبرك به عميل"},
+    "UI_CEV_TOPIC_MARKET_ENTRY": {
+        "en": "How it would reach the market", "ar": "كيف ستصل إلى السوق"},
+    "UI_CEV_TOPIC_CHANNEL": {"en": "Who would sell it", "ar": "من سيبيعها"},
+    "UI_CEV_TOPIC_LICENSING": {"en": "Licensing", "ar": "الترخيص"},
+    "UI_CEV_TOPIC_REVENUE_MODEL": {
+        "en": "How it would earn", "ar": "كيف ستحقق دخلًا"},
+    "UI_CEV_TOPIC_COST_REVENUE_ASSUMPTION": {
+        "en": "A cost or revenue you are assuming",
+        "ar": "تكلفة أو إيراد تفترضه"},
+    "UI_CEV_TOPIC_FUNDING_NEED": {
+        "en": "Money it would need", "ar": "المال الذي ستحتاجه"},
+    "UI_CEV_TOPIC_FIRST_SALE_VIABILITY": {
+        "en": "What a first sale would take", "ar": "ما يتطلبه أول بيع"},
     "UI_T3A_HEADING": {
         "en": "Project record",
         "ar": "سجل المشروع",
