@@ -23,15 +23,52 @@ override this current entry or impose another reading/approval/synchronization s
   [roadmap closure entry](ACTIVE_EXECUTION_ROADMAP.md#pr-625-verified-product-closure-and-recent-increments)
   for exact merge evidence and PRs #620–#625. Verify the live tip rather than
   treating this recorded baseline as a permanent pin.
-- **ACTIVE CONTRACT: NONE**, as declared in
-  [the post-return contract entry](ACTIVE_INCREMENT_CONTRACT.md#current-authority--post-return-declaration).
-  No current product implementation or documentation-sync mandate exists. A1, the
-  saved-project filter, PR #625 and the PR #626 documentation sync are completed work.
 - **PR #626 documentation sync: COMPLETED / MERGED / POST-MERGE VERIFIED.**
   Verified authoritative tip/closure baseline:
   `16890c8a121ba9bf4aea960ed046ab5e9e34cc5f`; merge tree:
   `d9b3b6cf522be46a03bf896788fa2fd633a54c24`. See
   [the roadmap closure entry](ACTIVE_EXECUTION_ROADMAP.md#pr-626-documentation-sync-completed-and-post-return-authority).
+- **Authoritative implementation now includes PRs #647–#652**, each separately
+  Owner-authorized, delivered as a bounded candidate, given its own exact-head merge
+  authorization, merged and post-merge verified: #647 `0be32d6f…` Commercial Evidence
+  Owner (bounded repair); #648 `ac614ece…` readiness truth hardening and the
+  decision-workspace presentation reframe; #649 `4a7738cf…` Commercial Evidence
+  Capture; #650 `e1e4e72d…` first canonical Readiness Snapshot; #651 `fb0e0638…`
+  Manufacturing Evidence Owner and Manufacturing Evidence Capture; #652 `7a435517…`
+  Manufacturing joining the snapshot as an evidence-sufficiency dimension. The
+  Commercial evidence owner/capture, the Manufacturing evidence owner/capture and the
+  three-dimension Readiness Snapshot are therefore **AUTHORITATIVE**, on ONE shared
+  `readiness_evidence` substrate. Verify the live tip from Git rather than treating a
+  recorded SHA as a permanent pin.
+- **Current Readiness ceiling: `INSUFFICIENT_EVIDENCE` only**, in every dimension
+  (Technical, Commercial, Manufacturing). The Readiness Snapshot is read-only
+  evidence-sufficiency presentation: **no** product verdict, **no** overall or
+  composite result, **no** score, **no** percentage, **no** weakest-link verdict and
+  **no** manufacturability conclusion. FDC-001 remains the sole product-decision owner.
+- **No positive readiness promotion path is authorized.** `PASS`,
+  `PASS_WITH_CONDITIONS` and `HOLD` remain unavailable in the current version, as do a
+  qualifying-authority writer, any validation-promotion or specialist award path,
+  external-evidence promotion, human-evidence promotion, automatic readiness
+  advancement and overall/composite readiness. Human and market evidence collection
+  remain **NOT AUTHORIZED**.
+- **PRE-FCORA has run** at the PR #652 tip under
+  `PRE-FCORA-SYSTEMATIC-RECONCILIATION-01` and returned **C — NOT READY**, with
+  `UNEXPLAINED MATERIAL DIFFERENCES = 0`, `SILENT DISAPPEARANCE CANDIDATES = 0` and
+  exactly ONE unaccounted material obligation: governance-authority drift in this file,
+  ACTIVE_INCREMENT_CONTRACT.md and DEFERRED_OBLIGATIONS_REGISTER.md. No product-code,
+  runtime, schema, security, evidence-integrity or architecture defect was found. The
+  bounded governance-only sync `PRE-FCORA-AUTHORITY-SYNC-01` exists to repair that one
+  defect and changes no product behaviour. **FCORA has NOT started and is not
+  authorized by this sync.**
+- **ACTIVE CONTRACT: NONE**, as declared in
+  [the current contract entry](ACTIVE_INCREMENT_CONTRACT.md#current-authority--post-652-declaration).
+  This means **no NEW implementation mandate is currently active**; it does NOT mean the
+  merged Readiness, Commercial-evidence or Manufacturing-evidence capabilities lacked
+  authority. A1, the saved-project filter, PR #625, the PR #626 documentation sync and
+  PRs #647–#652 are completed work.
+- **Reading later sections:** fence lists recorded at earlier gates elsewhere in this
+  file (for example `READINESS IMPLEMENTATION: NOT AUTHORIZED`) are truth at their
+  recorded moment; this current entry governs the present authorization state.
 - **Operating automation: PLANNED — NOT ACTIVE.** Any future product, governance
   or automation work requires a new explicit Owner authorization.
 - Astra remains the designated Lead; that designation alone grants no mutation
@@ -66,8 +103,12 @@ The Owner's existing dispositions remain unchanged: T1-A′ **OPEN / FRB** (trig
 fired; closure evidence not met); HICR **partially reconciled**, with readiness-input
 dependencies applicable; G-4-A **CURRENT — NOT FIXED / OPEN / FRB**, with
 **PROVISIONAL NO-GO — IMPLEMENTATION HOLD** and the symbolic-feasibility lane closed
-without technical or gate closure. PRE-FCORA is **required but unauthorized**;
-FCORA is later and unauthorized. No recovery, evaluator-drift inspection, external
+without technical or gate closure. PRE-FCORA was later separately Owner-authorized
+and has been **EXECUTED** at the PR #652 tip (verdict C — NOT READY; see the current
+entry above); its §D-2 ownership and mandatory trigger are unmoved and no gate it
+guards is satisfied by that review or by the `PRE-FCORA-AUTHORITY-SYNC-01` authority
+sync recorded in the current entry. FCORA is later, **NOT AUTHORIZED and NOT
+STARTED**. No recovery, evaluator-drift inspection, external
 linkage, feasibility evaluation or gate execution is activated by this sync.
 
 The bounded recovery lane remains closed in the decision-use record with **BLOCKED**
