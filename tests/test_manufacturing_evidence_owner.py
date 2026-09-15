@@ -571,6 +571,29 @@ def test_topic_labels_are_used_not_raw_tokens(owner):
         assert ">%s<" % topic not in mev, topic
 
 
+def test_no_topic_token_collides_with_another_closed_vocabulary():
+    """Adding a topic puts its raw token into the page as a static
+    `<option value>`. A security test elsewhere asserts that a REJECTED input is
+    not echoed back, and it does that by looking for the rejected string in the
+    page — so a topic token that happens to equal some other vocabulary's probe
+    value reads as an echo that never happened. `tolerance` did exactly that to
+    the T2-A quantity suite. Checked here, at the source, so the next topic
+    added is caught by its own suite rather than by an unrelated one."""
+    from engine.requirement_quantity import QUANTITY_KINDS
+    from engine.idea_state import (
+        ASSERTED, DEMONSTRATED, REASONED, VALIDATION_STATUSES)
+    from engine import decision_workspace as dw
+    other_vocabularies = (
+        set(QUANTITY_KINDS)
+        | {ASSERTED, REASONED, DEMONSTRATED}
+        | set(VALIDATION_STATUSES)
+        | {dw.INSUFFICIENT_INFORMATION, dw.BLOCKED_BY_EVIDENCE_GAP,
+           dw.COMPARISON_IN_PROGRESS, dw.DECISION_READY_FOR_OWNER_REVIEW}
+        | set(COMMERCIAL_TOPICS))
+    clashes = set(MANUFACTURING_TOPICS) & other_vocabularies
+    assert not clashes, clashes
+
+
 def test_the_route_is_in_the_r05_inventory():
     from tests.test_r05_request_integrity import MUTATIONS
     assert "/session/<sid>/manufacturing-evidence" in MUTATIONS
