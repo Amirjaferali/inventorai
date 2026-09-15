@@ -1,4 +1,33 @@
-# RVR-8 — FORMAL CLOSURE RECORD (CANDIDATE)
+# RVR-8 — FORMAL CLOSURE RECORD
+
+**CURRENT STATUS: `RVR-8 FORMALLY CLOSED: YES / AUTHORITATIVE`.** Recorded at
+`POST-RVR8-CLOSURE-SYNC-01` (governance-only synchronization, base
+`d3f56660c337a6ddc13e44371a12250ce705d590`), which records already-performed facts at their
+actual moment and creates no new historical authority. This exact record's candidate
+`e50723e3c9f715dc55cc42d01eca8bec5b141e5a` (tree `e68c2e942c6f23930b66063ca906a9b67bd62f72`,
+base `1f3d9d14b3b645df9595889861140910d63b918c`) was Lead-reviewed and independently reviewed
+(`ACCEPT WITH NON-BLOCKING OBSERVATIONS` each), Owner-accepted at that exact SHA, and merged on
+2026-08-29 as **PR #597** via CREATE A MERGE COMMIT `39a966995d83ce72ba64a263c048d803f6d95061`
+(second parent = the accepted candidate; merge tree identical; EMPTY candidate→merge diff), with
+post-merge identity verification recorded independently at two later gates `[EXEC]`. By §9's own
+non-circular terms, closure took effect on that merge; it was simply never synchronized onto the
+current-facing surfaces until now. Nothing is re-accepted and no SHA is accepted afresh.
+
+**Closure is in the §4 form ONLY:** `RVR-8 = COMPLETED VERIFICATION — VALID EVIDENCE RETURNED —
+NEGATIVE / MIXED PRODUCT RESULT`. **`RVR-8 PASS` IS NOT ASSERTED** and is not a state this record
+defines. Unchanged and not closed by this: `T1-A′: OPEN` · `PRODUCT RELEASE-VALUE PASS: NO` ·
+`THIRD S2 RUN / RUN-004: NOT AUTHORIZED` · `SERIOUS RELEASE: NOT AUTHORIZED` ·
+`DEPLOYMENT: NOT AUTHORIZED` · `FCORA VERDICT: C` (unchanged; not re-run).
+
+**Publication-authorization provenance, not fabricated.** Publication occurred through PR #597. A
+separate publication-authorization **instrument** is `NOT PROVEN` in committed repository evidence;
+this is recorded as an absence of proof, **not** as a finding that no authorization existed, and the
+historical uncommitted/session authority remains `NOT ADJUDICATED BY REPOSITORY EVIDENCE` under the
+same discipline this repository already applies to the RVR-8 run authorization.
+
+**Everything below is preserved verbatim as the candidate-era record.** Its statements scoped to the
+candidate's freeze — including `OWNER EXACT CLOSURE-SHA ACCEPTED: NO` in §9 — were true at that
+moment and are not rewritten; this header, not the frozen text, states the current status.
 
 **STATUS AT CREATION: `CLOSURE CANDIDATE — NOT AUTHORITATIVE`.** Created on authoritative base
 `1f3d9d14b3b645df9595889861140910d63b918c` (PR #596 — the C / Integrated Readiness Direction merge;

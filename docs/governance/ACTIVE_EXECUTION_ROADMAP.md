@@ -17015,6 +17015,68 @@ own separate Owner authorization.
 
 ---
 
+## POST-RVR-8-FORMAL-CLOSURE GOVERNANCE SYNCHRONIZATION — RVR-8 FORMALLY CLOSED: YES (PR #597) (governance-only synchronization candidate; append-only entry)
+
+**Append-only synchronization entry.** The entry above is the RVR-8 Formal Closure **gate**
+candidate, written before its own merge; it therefore still concludes `OWNER EXACT CLOSURE-SHA
+ACCEPTED: NO`. **That wording was authority-at-its-time and is now SUPERSEDED by PR #597** — it is
+preserved, not rewritten as though it had been false when written. This gate records
+already-authoritative Git truth; it decides nothing new, re-accepts nothing and authorizes nothing.
+Recorded at `POST-RVR8-CLOSURE-SYNC-01`, base `d3f56660c337a6ddc13e44371a12250ce705d590`.
+
+**1. Why this entry exists.** The RVR-8 closure lifecycle was performed and merged on 2026-08-29 and
+its closed state was never synchronized onto the current-facing surfaces, so the register, this
+roadmap and the closure record continued to present RVR-8 as open. The read-only reconstruction
+`RVR8-CLOSURE-RECOVERY-01` established the lineage; this gate removes exactly that recording gap.
+
+**2. PR #597 — RVR-8 FORMAL CLOSURE: AUTHORITATIVE.** Merge
+`39a966995d83ce72ba64a263c048d803f6d95061`; **2 parents**; first parent
+`1f3d9d14b3b645df9595889861140910d63b918c` (the authoritative base and the evaluated RC); second
+parent `e50723e3c9f715dc55cc42d01eca8bec5b141e5a` — the exact Owner-accepted Formal Closure
+candidate; merge tree `e68c2e942c6f23930b66063ca906a9b67bd62f72`, identical to the accepted
+candidate tree; **EMPTY candidate→merge diff**; merged via CREATE A MERGE COMMIT. Lead review and
+independent focused D-3 review each returned `ACCEPT WITH NON-BLOCKING OBSERVATIONS`; the Owner
+accepted that exact SHA and adopted the §3 ratification as a CURRENT, non-retrospective instrument.
+Post-merge identity verification is recorded independently at two later gates (the RVR-8
+authoritative-base entry in this roadmap and the G-3 contract candidate header), both `[EXEC]` with
+**0 commits after the merge**. By `RVR_8_FORMAL_CLOSURE_RECORD.md` §9's own non-circular terms:
+**`RVR-8 FORMALLY CLOSED: YES / AUTHORITATIVE`**.
+
+**3. Publication-authorization provenance — recorded, not fabricated.** Publication occurred through
+PR #597. A separate publication-authorization **instrument** is `NOT PROVEN` in committed repository
+evidence. That is recorded as an absence of proof and **not** as a finding that no authorization
+existed; the historical uncommitted/session authority remains `NOT ADJUDICATED BY REPOSITORY
+EVIDENCE`, the same discipline already applied to the RVR-8 run authorization. No instrument is
+invented and no authority is backdated.
+
+**4. Closure form — exact, and the distinguishing RVR-8 truth.**
+`RVR-8 = COMPLETED VERIFICATION — VALID EVIDENCE RETURNED — NEGATIVE / MIXED PRODUCT RESULT`.
+**`RVR-8 PASS` IS NOT ASSERTED.** Unlike RVR-7, this closure closes a *verification*, not a product
+outcome: `RVR-8 VERIFICATION COMPLETED: YES` · **`PRODUCT RELEASE-VALUE PASS: NO`** · `T1-A′: OPEN`
+(its trigger fired, its closure evidence did not) · `THIRD S2 RUN / RUN-004: NOT AUTHORIZED` ·
+`SERIOUS RELEASE: NOT AUTHORIZED` · `DEPLOYMENT: NOT AUTHORIZED`.
+
+**5. What closure carries — recorded, not adjudicated.** The Deferred Obligations Register's RVR-8
+row closes on its own registered criterion (executed evidence + exact accepted candidate + PR #597
+merge + post-merge verification). Row 174's second return limb is satisfied by its own wording
+("if and when the RVR-8 formal-closure candidate is Owner-accepted and merged"), so
+**`ROW 174 RECONCILIATION: ELIGIBLE`** as of 2026-08-29 — eligible only: not convened, not started,
+ownership still `UNRESOLVED — REPOSITORY RECONCILIATION REQUIRED`, row not closed, latest-safe gate
+`BEFORE FCORA CONVENES` unmoved, `FRB` unchanged. Row 186's post-RVR-8 / pre-FCORA window is
+recorded as **OPENED**; the `_s6` / `RISK-*` projection mapping is **not** adjudicated, no mapping
+or owner is created, and its `CONDITIONAL` level is unchanged.
+
+**6. FCORA position — recorded, verdict untouched.** The ODR §D-2 positional predicate "after RVR-8"
+is satisfied by this accepted-and-merged closure lifecycle. **The FCORA execution result is
+unchanged: `C — FCORA FAIL — MATERIAL RELEASE-BLOCKING RECONCILIATION DEFECT`.** FCORA is not
+re-run, no failed counter is cleared, and nothing here claims FCORA passed: its two silent-
+disappearance candidates and its unresolved Owner-decision items stand on their own footing.
+
+**7. Scope.** Governance-only; zero executable delta. No `engine/`, `web/`, `tests/`, schema,
+migration, route, CI or configuration change; no Readiness runtime, human-evidence or
+external-evidence work; no product architecture change. `RELEASE NOT AUTHORIZED`.
+
+
 ## G-3 — BOUNDED DECISION-VALUE REPAIR — CONTRACT FREEZE (governance-only contract candidate; provenance-only entry)
 
 **Provenance-only by design.** Lean §11 requires one record per governed gate. This entry carries

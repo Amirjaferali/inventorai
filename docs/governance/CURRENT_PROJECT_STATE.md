@@ -69,6 +69,22 @@ override this current entry or impose another reading/approval/synchronization s
 - **Reading later sections:** fence lists recorded at earlier gates elsewhere in this
   file (for example `READINESS IMPLEMENTATION: NOT AUTHORIZED`) are truth at their
   recorded moment; this current entry governs the present authorization state.
+- **RVR-8: `FORMALLY CLOSED: YES / AUTHORITATIVE` (PR #597).** Recorded at
+  `POST-RVR8-CLOSURE-SYNC-01`; the closure lifecycle itself was performed and merged on
+  2026-08-29 (exact accepted candidate `e50723e3…`, merge `39a96699…`, identical trees, empty
+  candidate→merge diff, post-merge verification recorded at two later gates) and was simply never
+  synchronized onto the current-facing surfaces until now. Nothing is re-accepted and no authority
+  is backdated. **Closure form, exact:** `RVR-8 = COMPLETED VERIFICATION — VALID EVIDENCE RETURNED
+  — NEGATIVE / MIXED PRODUCT RESULT`; **`RVR-8 PASS` is NOT ASSERTED**. A separate
+  publication-authorization instrument remains `NOT PROVEN` in committed evidence — an absence of
+  proof, not a finding that none existed.
+- **What RVR-8 closure does NOT change:** `RVR-8 VERIFICATION COMPLETED: YES` ·
+  **`PRODUCT RELEASE-VALUE PASS: NO`** · `T1-A′: OPEN` · `THIRD S2 RUN / RUN-004: NOT AUTHORIZED` ·
+  `SERIOUS RELEASE: NOT AUTHORIZED` · `DEPLOYMENT: NOT AUTHORIZED`. Row 174's reconciliation is
+  recorded **ELIGIBLE** (not convened, not adjudicated, gate and `FRB` unmoved); row 186's
+  post-RVR-8 / pre-FCORA window is recorded **OPENED** (mapping not adjudicated). **The FCORA
+  execution result is unchanged: `C — FCORA FAIL — MATERIAL RELEASE-BLOCKING RECONCILIATION
+  DEFECT`** — not re-run, no counter cleared.
 - **Operating automation: PLANNED — NOT ACTIVE.** Any future product, governance
   or automation work requires a new explicit Owner authorization.
 - Astra remains the designated Lead; that designation alone grants no mutation
