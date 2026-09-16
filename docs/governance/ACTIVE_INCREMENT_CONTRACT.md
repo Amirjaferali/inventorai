@@ -87,8 +87,20 @@ exactly ONE unaccounted material obligation: governance-authority drift across t
 file, `DEFERRED_OBLIGATIONS_REGISTER.md` and `CURRENT_PROJECT_STATE.md`. This
 declaration is the bounded governance-only repair of that one defect under
 `PRE-FCORA-AUTHORITY-SYNC-01`; it changes no product behaviour and creates no
-product authority. **FCORA is NOT authorized and NOT started**, and this sync does
-not authorize it. Unchanged with their owners, triggers and return conditions: the
+product authority. **That sync did not authorize FCORA, and at its gate FCORA had not
+started** — `PRE-FCORA-AUTHORITY-SYNC-01` conferred no FCORA authorization then and
+confers none now. The "not started" half of that statement was authority-at-that-gate and
+is preserved, not rewritten: it is **superseded** by the later Owner-lifecycle execution.
+**FCORA subsequently executed once**, under `FCORA-EXECUTION-01`, execution mode READ-ONLY,
+at authoritative execution HEAD `d3f56660c337a6ddc13e44371a12250ce705d590`, returning
+**`OWNER-ATTESTED FCORA EXECUTION RESULT: C — FCORA FAIL — MATERIAL RELEASE-BLOCKING
+RECONCILIATION DEFECT`** · **`NOT A REPOSITORY CITATION`** ·
+**`REPOSITORY ARTIFACT FOR THAT EXECUTION: NOT COMMITTED / NOT CLAIMED`**. No committed
+repository artifact is claimed to contain that execution report and none is fabricated for
+it; the result is carried as an Owner-attested execution input. **PR #656 did NOT rerun
+FCORA** (`PR #656 FCORA EXECUTION: NONE`); it recorded the already-performed RVR-8 formal
+closure. **FCORA did not pass, no counter is cleared, and release is NOT authorized.**
+Unchanged with their owners, triggers and return conditions: the
 A2 claim-eligibility human-review evidence gate (mandatory before implementation
 authorization; CEHR deferred, not cancelled; Route-B conditions intact; A2 follows
 only after a new Owner decision), the new-human-experiment deferral,

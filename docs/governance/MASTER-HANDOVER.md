@@ -54,10 +54,28 @@ rather than restating them here.
 
 **PRE-FCORA / FCORA.** PRE-FCORA was **EXECUTED** previously and returned
 **C — NOT READY**, solely because of governance-authority drift. **PR #653** repaired
-the three primary authority surfaces; **this MASTER-HANDOVER sync** addresses the
-remaining successor-facing drift. The differential PRE-FCORA recheck has **NOT** been
-performed, and nothing here may be read as that recheck having passed. **FCORA: NOT
-AUTHORIZED. NOT STARTED.**
+the three primary authority surfaces; **the MASTER-HANDOVER sync** addressed the
+remaining successor-facing drift.
+
+The two statements that followed here — that the differential PRE-FCORA recheck had not
+been performed, and `FCORA: NOT AUTHORIZED. NOT STARTED.` — were **authority-at-that
+gate** and are preserved as such, not rewritten: that sync did not authorize FCORA, and
+at its gate neither the recheck nor FCORA had run. Both are **superseded** as current
+state, and only as to their "not performed" / "not started" meaning, by what followed in
+the Owner lifecycle. No earlier sync authorized either, then or now.
+
+**Current position.** The differential PRE-FCORA recheck was performed under
+`PRE-FCORA-DIFFERENTIAL-RECHECK-01` and returned **B — READY WITH NON-BLOCKING DEFERRED
+ITEMS** with all three counters at `0`. **FCORA subsequently executed once**, under
+`FCORA-EXECUTION-01`, execution mode READ-ONLY, at authoritative execution HEAD
+`d3f56660c337a6ddc13e44371a12250ce705d590`, returning **`OWNER-ATTESTED FCORA EXECUTION
+RESULT: C — FCORA FAIL — MATERIAL RELEASE-BLOCKING RECONCILIATION DEFECT`** ·
+**`NOT A REPOSITORY CITATION`** · **`REPOSITORY ARTIFACT FOR THAT EXECUTION: NOT
+COMMITTED / NOT CLAIMED`**. No committed repository artifact is claimed to contain either
+report and none is fabricated; both are carried as Owner-attested execution inputs.
+**PR #656 did NOT rerun FCORA** (`PR #656 FCORA EXECUTION: NONE`) — it recorded the
+already-performed RVR-8 formal closure. **FCORA did not pass, no counter is cleared, and
+`RELEASE NOT AUTHORIZED`.**
 
 **Routing.** Use CLAUDE.md's single boot sequence, the concise
 [CURRENT_PROJECT_STATE.md](CURRENT_PROJECT_STATE.md) current entry and the active
