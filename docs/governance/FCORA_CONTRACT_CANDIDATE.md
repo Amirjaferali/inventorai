@@ -1,5 +1,5 @@
 # FCORA — Full Capability & Obligation Reconciliation Audit
-# Bounded execution contract — CANDIDATE
+# Bounded execution contract — AUTHORITATIVE (merged at PR #655)
 
 **Instruction of record:** `FCORA-CONTRACT-FREEZE-01` v1.0 (Owner), as corrected by
 `FCORA-CONTRACT-CORRECTION-01` v1.0 (Owner) — one bounded round closing the
@@ -9,7 +9,40 @@ PRE-FCORA eligibility provenance stated as an Owner-attested input (status block
 **Base:** `fafc94e151a4a6f06f8445dde1373bbac0212200` — the verified PR #654 merge
 result on `feature/atomic-json-session-persistence`.
 
-**Status of this document.**
+## CURRENT STATUS — LIFECYCLE STATUS (governs; recorded at `FCORA-CONTRACT-CURRENT-STATUS-SYNC-01`)
+
+`FCORA CONTRACT: AUTHORITATIVE / MERGED` · `FCORA EXECUTION AUTHORIZATION: YES — via the
+separate Owner authorization FCORA-EXECUTION-01` · `FCORA EXECUTION: COMPLETED ONCE` ·
+`EXECUTION MODE: READ-ONLY` · `FCORA RE-RUN: NO` · `RELEASE: NOT AUTHORIZED`.
+
+**Contract.** The accepted contract candidate
+`0fd7dbce9a5c57e5c3db25def79718fe13241102` was merged as **PR #655** at
+`d3f56660c337a6ddc13e44371a12250ce705d590`, which made this contract authoritative.
+
+**Execution.** FCORA then executed **once**, READ-ONLY, at authoritative execution HEAD
+`d3f56660c337a6ddc13e44371a12250ce705d590`, returning
+**`OWNER-ATTESTED FCORA EXECUTION RESULT: C — FCORA FAIL — MATERIAL RELEASE-BLOCKING
+RECONCILIATION DEFECT`** · **`NOT A REPOSITORY CITATION`** ·
+**`REPOSITORY ARTIFACT FOR THAT EXECUTION: NOT COMMITTED / NOT CLAIMED`**. No committed
+repository artifact is claimed to contain that execution report, none is fabricated for
+it, and **this synchronization does not itself prove the audit result** — it records the
+Owner-attested outcome. **No PR executed FCORA:** PR #655 merged the contract, PR #656
+recorded the RVR-8 formal closure, PR #657 synchronized two current surfaces, and
+`FCORA EXECUTION: NONE` holds for each of them.
+
+**Fences unchanged by this status record.** `FCORA: DID NOT PASS`; the FCORA counters are
+unchanged, including `SILENT DISAPPEARANCE CANDIDATES = 2`; `RVR-8 FORMALLY CLOSED: YES /
+AUTHORITATIVE` in the form `COMPLETED VERIFICATION — VALID EVIDENCE RETURNED — NEGATIVE /
+MIXED PRODUCT RESULT` with `RVR-8 PASS: NOT ASSERTED`; `PRODUCT RELEASE-VALUE PASS: NO`;
+`T1-A′: OPEN`; row 174 `OPEN / ELIGIBLE ONLY`; row 186 `OPEN / WINDOW OPENED ONLY`;
+`THIRD S2 RUN: NOT AUTHORIZED`; `SERIOUS RELEASE: NOT AUTHORIZED`;
+`DEPLOYMENT: NOT AUTHORIZED`; `RELEASE: NOT AUTHORIZED`.
+
+**Status of this document — candidate-era, preserved as authority-at-that-time.** The
+block below was true when this contract was created and frozen. It is preserved, not
+rewritten as though it had been false; the CURRENT STATUS above governs, and supersedes
+it only as to the candidate/not-authorized/not-started meaning.
+
 `FCORA CONTRACT: CANDIDATE — NOT AUTHORITATIVE UNTIL OWNER-ACCEPTED AND MERGED` ·
 `FCORA EXECUTION AUTHORIZED: NO` · `FCORA STARTED: NO` ·
 `FCORA POSITIONALLY ELIGIBLE: YES`. This file defines and freezes the audit; it does
@@ -414,6 +447,18 @@ executed under this project's own history.
 FCORA does not authorize itself: execution requires an authoritative merged FCORA
 contract **and** a separate Owner FCORA EXECUTION authorization.
 
+**Lifecycle-status clarification (status only; the rule above is unchanged and governs
+every future FCORA execution).** For the one completed lifecycle, both prerequisites were
+satisfied **in sequence and neither was waived**: (1) **PR #655** merged the accepted
+candidate `0fd7dbce…` at `d3f56660…`, satisfying the authoritative-merged-contract
+prerequisite; (2) **after** that merge, the separate Owner authorization
+`FCORA-EXECUTION-01` satisfied the separate-Owner-execution-authorization prerequisite;
+(3) the audit then executed READ-ONLY at `d3f56660…`. The order was
+`MERGED AUTHORITATIVE CONTRACT → SEPARATE OWNER EXECUTION AUTHORIZATION → READ-ONLY FCORA
+EXECUTION`. This is **not a waiver**, it amends no rule, it creates no retroactive
+authority, and it fabricates no missing historical instrument. Any further FCORA
+execution needs both prerequisites again.
+
 ## 15. Required FCORA outputs
 
 FCORA execution returns **one consolidated report** containing:
@@ -476,6 +521,17 @@ activation; public launch; MCP; CAD/PCB/BOM; supplier APIs; or any CAP activatio
 `FCORA EXECUTION AUTHORIZED: NO` · `FCORA STARTED: NO` ·
 `SERIOUS RELEASE AUTHORIZED: NO` · `READINESS PROMOTION AUTHORIZED: NO` ·
 `HUMAN-STUDY EXECUTION: NOT AUTHORIZED` · `EVIDENCE COLLECTION: NOT AUTHORIZED`.
+
+**Status note on the first two tokens only.** `FCORA EXECUTION AUTHORIZED: NO` and
+`FCORA STARTED: NO` were true of this document at its freeze — this document authorized
+nothing then and authorizes nothing now — and are preserved as authority-at-that-time.
+As **current lifecycle status** they are superseded by the CURRENT STATUS block at the
+head of this file: the separate Owner authorization `FCORA-EXECUTION-01` was given after
+PR #655, and FCORA executed once, READ-ONLY, returning the Owner-attested verdict
+`C — FCORA FAIL`. The remaining tokens on that line, and every other prohibition in this
+section, are **unchanged and current**: `SERIOUS RELEASE AUTHORIZED: NO` ·
+`READINESS PROMOTION AUTHORIZED: NO` · `HUMAN-STUDY EXECUTION: NOT AUTHORIZED` ·
+`EVIDENCE COLLECTION: NOT AUTHORIZED` · `RELEASE: NOT AUTHORIZED`.
 
 Completing this contract's own lifecycle authorizes no successor phase or capability.
 Merging it makes the **procedure** authoritative, not the audit.
