@@ -1,8 +1,31 @@
 # SERIOUS-RELEASE-PRE-RELEASE-TRANCHE-01, Slice A — build-context exclusions.
 #
-# Purpose: keep the build context to what the running image actually needs, and
-# make it impossible for a local secret, a local database or build noise to be
-# copied into the image by the `COPY . .` step.
+# Purpose: keep local secrets, local databases and build noise out of the image
+# layers produced by `COPY . .`.
+#
+# M1 REPAIR (bounded): an earlier version of this file excluded `docs/` wholesale.
+# That was wrong. Runtime code reads committed JSON artifacts from
+# `docs/governance/path_n_content_config/` — `engine/path_n_questions.py` (via
+# `Path(__file__).resolve().parent.parent / "docs" / "governance" /
+# "path_n_content_config"`) and `engine/intent_serving.py` (via the relative
+# `docs/governance/path_n_content_config` prefix). Excluding `docs/` would have
+# shipped an image whose guided journey fails for BOTH activated domains while
+# `/health` still answered 200.
+#
+# The exclusion is REMOVED rather than paired with a `!` re-include. Re-including
+# a subtree beneath an excluded ancestor is exactly the subtlety that produced
+# M1, it is the one rule whose behaviour this repository cannot currently verify
+# (no Docker daemon is available here to run a real `docker build`), and getting
+# it wrong reintroduces the same silent failure. An exclusion-only file has no
+# such failure mode: nothing under `docs/` can be dropped by accident.
+# Cost, stated rather than hidden: the image carries the repository's ~14 MB of
+# documentation. That is size, not correctness, and it can be narrowed later —
+# but only once a real `docker build` can prove the narrowing.
+#
+# Pattern note: Docker matches each pattern against the WHOLE relative path, and
+# `*` does not cross `/`. A bare `*.pyc` therefore excludes only a top-level
+# `.pyc`, not `engine/__pycache__/x.pyc`. Every pattern below that is meant to
+# apply at any depth is written `**/…` so it does what its comment says.
 #
 # This file affects the Docker build context only. It changes no application
 # behavior and excludes nothing the running service reads.
@@ -10,17 +33,18 @@
 # Version-control and build noise.
 .git
 .gitignore
-__pycache__/
-*.pyc
-*.bak
-.pytest_cache/
+**/__pycache__/
+**/*.pyc
+**/*.bak
+**/.pytest_cache/
 
 # Local environment and any local database: never in an image layer.
-.env
-*.sqlite
-*.db
+**/.env
+**/*.sqlite
+**/*.db
 
-# Test, benchmark, research and governance material: not read at run time.
+# Test, benchmark and research material: not read at run time.
+# `docs/` is deliberately NOT excluded (see the M1 repair note above).
 # `scripts/` is deliberately NOT excluded — the backup/restore operator CLI
 # (`scripts/inventorai_backup.py`, Slice E) must be runnable inside the running
 # container, which is where the persistent disk is mounted.
@@ -28,7 +52,6 @@ tests/
 benchmark/
 benchmarks/
 research/
-docs/
 
 # Local developer tooling.
 verify_baseline.sh

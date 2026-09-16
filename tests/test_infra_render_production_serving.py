@@ -465,13 +465,16 @@ def test_dockerfile_adds_no_out_of_scope_dependency_family():
 
 
 def test_dockerignore_excludes_local_secrets_and_databases():
-    """`COPY . .` must not be able to carry a local `.env` or a local database
-    into an image layer."""
+    """`COPY . .` must not be able to carry a local `.env`, a local database or
+    the git directory into an image layer.
+
+    Asserted behaviourally through the build-context matcher below rather than by
+    matching literal pattern spellings: the property is what must hold, and the
+    spelling legitimately changed in the M1 repair (`.env` -> `**/.env`) so that
+    it also covers nested occurrences."""
     assert os.path.isfile(DOCKERIGNORE)
-    entries = [ln.strip() for ln in _read(DOCKERIGNORE).splitlines()
-               if ln.strip() and not ln.strip().startswith("#")]
-    for required in (".env", "*.sqlite", ".git"):
-        assert required in entries, required
+    for rel in (".env", "local.sqlite", ".git/config"):
+        assert _excluded_from_build_context(rel), rel
 
 
 def test_dockerignore_keeps_the_backup_operator_cli_in_the_image():
@@ -480,3 +483,152 @@ def test_dockerignore_keeps_the_backup_operator_cli_in_the_image():
     entries = [ln.strip() for ln in _read(DOCKERIGNORE).splitlines()
                if ln.strip() and not ln.strip().startswith("#")]
     assert "scripts/" not in entries and "scripts" not in entries
+
+
+# --- M1 repair: runtime artifacts must survive the Docker build context -------
+# An earlier `.dockerignore` excluded `docs/` wholesale while runtime code reads
+# committed JSON from `docs/governance/path_n_content_config/`. The image would
+# have started, answered `/health` with 200, and failed the guided journey for
+# both activated domains. These assertions observe the EFFECTIVE BUILD CONTEXT,
+# not just the repository tree, so re-adding a broad `docs` exclusion fails here.
+
+# The runtime-required artifacts, at the exact repository-relative paths the two
+# loaders resolve. Moving a file is as breaking as excluding it, so the paths are
+# asserted rather than discovered.
+PATH_N_CONFIG_DIR = "docs/governance/path_n_content_config"
+RUNTIME_REQUIRED_CONTEXT_FILES = (
+    PATH_N_CONFIG_DIR + "/electronics_electrical_path_n_questions.json",
+    PATH_N_CONFIG_DIR + "/electronics_electrical_question_intent_registry.json",
+    PATH_N_CONFIG_DIR + "/mechanical_path_n_questions.json",
+    PATH_N_CONFIG_DIR + "/mechanical_question_intent_registry.json",
+)
+
+
+def _dockerignore_patterns():
+    """The operative patterns, in file order (order matters: last match wins)."""
+    return [ln.strip() for ln in _read(DOCKERIGNORE).splitlines()
+            if ln.strip() and not ln.strip().startswith("#")]
+
+
+def _pattern_to_regex(pattern):
+    """Translate one Docker ignore pattern to a regex over a relative path.
+
+    Docker matches a pattern against the WHOLE relative path and `*` does not
+    cross `/`; `**` does. Returns None for any form this translator does not
+    model, which callers treat CONSERVATIVELY (as if it matched) so an
+    unmodelled pattern can never produce a false "included" verdict.
+    """
+    pattern = pattern.rstrip("/")
+    if not pattern or pattern.startswith("/"):
+        return None
+    out, i = [], 0
+    while i < len(pattern):
+        char = pattern[i]
+        if char == "*":
+            if pattern[i:i + 2] == "**":
+                out.append("(?:.*)")
+                i += 2
+                if pattern[i:i + 1] == "/":      # `**/` may match zero segments
+                    out[-1] = "(?:.*/)?"
+                    i += 1
+                continue
+            out.append("[^/]*")
+        elif char == "?":
+            out.append("[^/]")
+        elif char in ".^$+{}[]|()\\":
+            out.append(re.escape(char))
+        else:
+            out.append(char)
+        i += 1
+    return re.compile("^" + "".join(out) + "$")
+
+
+def _excluded_from_build_context(rel_path):
+    """Whether Docker would drop `rel_path` from the build context.
+
+    Applies Docker's documented rules: every pattern is tested against the path
+    AND against each of its ancestor directories (an excluded directory takes its
+    contents with it), and the LAST matching pattern decides — a `!` pattern
+    re-includes. Deliberately conservative: an unmodelled pattern counts as a
+    match, so a "not excluded" result is a sound proof, never an optimistic one.
+    """
+    candidates = [rel_path]
+    parts = rel_path.split("/")
+    for index in range(1, len(parts)):
+        candidates.append("/".join(parts[:index]))
+    excluded = False
+    for pattern in _dockerignore_patterns():
+        negated = pattern.startswith("!")
+        regex = _pattern_to_regex(pattern[1:] if negated else pattern)
+        if regex is None:                         # unmodelled → assume it matches
+            excluded = not negated
+            continue
+        if any(regex.match(candidate) for candidate in candidates):
+            excluded = not negated
+    return excluded
+
+
+def test_dockerignore_uses_only_modelled_pattern_forms():
+    """Guard on the guard: if a future pattern uses a form the matcher above does
+    not model, this fails loudly instead of the build-context proof silently
+    weakening."""
+    for pattern in _dockerignore_patterns():
+        body = pattern[1:] if pattern.startswith("!") else pattern
+        assert _pattern_to_regex(body) is not None, pattern
+
+
+def test_runtime_required_artifacts_exist_at_their_declared_paths():
+    for rel in RUNTIME_REQUIRED_CONTEXT_FILES:
+        assert os.path.isfile(os.path.join(ROOT, rel)), rel
+
+
+def test_runtime_loaders_still_point_at_those_paths():
+    """Paths must stay where the loaders look; a move is as breaking as an
+    exclusion, and would otherwise slip past a context-only assertion."""
+    assert PATH_N_CONFIG_DIR in _read(os.path.join(ROOT, "engine",
+                                                   "intent_serving.py"))
+    questions = _read(os.path.join(ROOT, "engine", "path_n_questions.py"))
+    for segment in ('"docs"', '"governance"', '"path_n_content_config"'):
+        assert segment in questions, segment
+
+
+def test_runtime_required_artifacts_survive_the_build_context():
+    """The M1 assertion: each artifact is present in the EFFECTIVE context."""
+    for rel in RUNTIME_REQUIRED_CONTEXT_FILES:
+        assert not _excluded_from_build_context(rel), rel
+
+
+def test_a_broad_docs_exclusion_would_be_caught():
+    """Proves the assertion above has teeth: with `docs` excluded, the same
+    matcher must report the artifacts as dropped."""
+    patterns = _dockerignore_patterns()
+    assert "docs" not in patterns and "docs/" not in patterns
+    original = _dockerignore_patterns
+
+    def _with_docs_excluded():
+        return patterns + ["docs"]
+
+    globals()["_dockerignore_patterns"] = _with_docs_excluded
+    try:
+        for rel in RUNTIME_REQUIRED_CONTEXT_FILES:
+            assert _excluded_from_build_context(rel), rel
+    finally:
+        globals()["_dockerignore_patterns"] = original
+
+
+def test_the_application_packages_survive_the_build_context():
+    """The rest of what the running service needs, asserted the same way."""
+    for rel in ("web/app.py", "web/templates/pdf_base.html", "gunicorn.conf.py",
+                "requirements.txt", "engine/path_n_questions.py",
+                "engine/intent_serving.py", "domains/electronics_electrical/domain.json",
+                "scripts/inventorai_backup.py"):
+        assert not _excluded_from_build_context(rel), rel
+
+
+def test_local_secrets_and_databases_are_dropped_at_any_depth():
+    """The §4 nested-pattern correction, asserted behaviourally rather than by
+    reading the patterns: a nested `.env`, database or cache must not ship."""
+    for rel in (".env", "web/.env", "data/local.sqlite", "a/b/c.db",
+                "engine/__pycache__/app.pyc", "tests/__pycache__/x.pyc",
+                ".pytest_cache/CACHEDIR.TAG", "engine/x.bak"):
+        assert _excluded_from_build_context(rel), rel
