@@ -58,8 +58,13 @@ override this current entry or impose another reading/approval/synchronization s
   ACTIVE_INCREMENT_CONTRACT.md and DEFERRED_OBLIGATIONS_REGISTER.md. No product-code,
   runtime, schema, security, evidence-integrity or architecture defect was found. The
   bounded governance-only sync `PRE-FCORA-AUTHORITY-SYNC-01` exists to repair that one
-  defect and changes no product behaviour. **FCORA has NOT started and is not
-  authorized by this sync.**
+  defect and changes no product behaviour. **That sync did not authorize FCORA, and at
+  that gate FCORA had not started** — `PRE-FCORA-AUTHORITY-SYNC-01` conferred no FCORA
+  authorization then and confers none now. The "has not started" half of that statement was
+  authority-at-that-gate and is preserved, not rewritten: it is **superseded** by the later
+  Owner-lifecycle FCORA execution under `FCORA-EXECUTION-01`, recorded in the
+  Owner-attested bullet below. The supersession reaches only the "not started"
+  current-state meaning; nothing else in this bullet changes.
 - **ACTIVE CONTRACT: NONE**, as declared in
   [the current contract entry](ACTIVE_INCREMENT_CONTRACT.md#current-authority--post-652-declaration).
   This means **no NEW implementation mandate is currently active**; it does NOT mean the
