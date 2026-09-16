@@ -208,6 +208,34 @@ preserved as their own recorded truth and are not rewritten).
   YET ESTABLISHED`**. **`DIFFERENTIAL FCORA RECHECK: NOW REQUIRED`** — no counter is
   cleared by this recording, FCORA is not re-run here, and **release is NOT
   authorized**.
+- **DIFFERENTIAL FCORA RECHECK COMPLETE — the reconciliation defect is CLEARED and
+  register row 174 is CLOSED** (`FCORA-DIFFERENTIAL-RECHECK-01`, read-only, at authoritative
+  HEAD `7c59c3147314c7c4bea8d7abae095d7774201143`, tree
+  `5afd932e9e1605f776635839b92dcba8126a4090`; recorded by `ROW-174-MINIMAL-CLOSURE-01`).
+  The bullets above were true when written and are preserved, not rewritten; this bullet
+  states the current result and supersedes only their pending-recheck wording. Established:
+  **`SILENT DISAPPEARANCE CANDIDATES — CURRENT RECHECKED COUNT: 0`** ·
+  **`UNACCOUNTED / ORPHAN: 0`** · **`AFFECTED INVARIANTS: PASS`** ·
+  `DIFFERENTIAL FCORA VERDICT: B — DIFFERENTIAL RECHECK PASS WITH NON-BLOCKING DEFERRED
+  ITEMS` · `FULL FCORA RERUN REQUIRED: NO` · `BLOCKING FINDINGS: NONE` ·
+  `MATERIAL FINDINGS: NONE` · `REPOSITORY MUTATION DURING THE RECHECK: NO`. Register
+  **row 174** is therefore **`CLOSED / SATISFIED`**, its **`FRB` is DISCHARGED**, and its
+  sole remaining dependency `UNACCOUNTED / ORPHAN = 0` is **`SATISFIED`**.
+- **HISTORICAL vs CURRENT — the historical execution result is still NOT rewritten.** The
+  **historical** FCORA execution result at execution HEAD
+  `d3f56660c337a6ddc13e44371a12250ce705d590` remains
+  `C — FCORA FAIL — MATERIAL RELEASE-BLOCKING RECONCILIATION DEFECT` with its historically
+  recorded **`SILENT DISAPPEARANCE CANDIDATES = 2`**; it was **NOT rerun** and is **not**
+  restated as a pass. The **current differential recheck result** is a separate, later
+  result that clears that execution's reconciliation defect. Unchanged and NOT authorized
+  by this clearance: positive Readiness promotion (`POSITIVE READINESS PROMOTION:
+  POST-RELEASE`), `HICR PHASE 2: NOT AUTHORIZED`, `CAP ACTIVATION: NONE`, new human
+  activity, product implementation, a full FCORA rerun, row 186 (`CLOSED / SATISFIED`),
+  `T1-A′` (`OPEN`; never passed, never closed), the unrecovered exact historical Master
+  Checklist artifact (`NOT RECOVERED`; reconstructed view remains derived navigation only,
+  not SSOT and not execution authority), and `SERIOUS RELEASE` / `DEPLOYMENT` /
+  `PRODUCTION` / `RELEASE`: **NOT AUTHORIZED**. Reconciliation clearance is expressly not
+  release approval.
 
 ## Material authority routing (pointer-only)
 
