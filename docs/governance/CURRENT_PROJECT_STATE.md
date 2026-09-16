@@ -58,8 +58,13 @@ override this current entry or impose another reading/approval/synchronization s
   ACTIVE_INCREMENT_CONTRACT.md and DEFERRED_OBLIGATIONS_REGISTER.md. No product-code,
   runtime, schema, security, evidence-integrity or architecture defect was found. The
   bounded governance-only sync `PRE-FCORA-AUTHORITY-SYNC-01` exists to repair that one
-  defect and changes no product behaviour. **FCORA has NOT started and is not
-  authorized by this sync.**
+  defect and changes no product behaviour. **That sync did not authorize FCORA, and at
+  that gate FCORA had not started** — `PRE-FCORA-AUTHORITY-SYNC-01` conferred no FCORA
+  authorization then and confers none now. The "has not started" half of that statement was
+  authority-at-that-gate and is preserved, not rewritten: it is **superseded** by the later
+  Owner-lifecycle FCORA execution under `FCORA-EXECUTION-01`, recorded in the
+  Owner-attested bullet below. The supersession reaches only the "not started"
+  current-state meaning; nothing else in this bullet changes.
 - **ACTIVE CONTRACT: NONE**, as declared in
   [the current contract entry](ACTIVE_INCREMENT_CONTRACT.md#current-authority--post-652-declaration).
   This means **no NEW implementation mandate is currently active**; it does NOT mean the
@@ -69,6 +74,30 @@ override this current entry or impose another reading/approval/synchronization s
 - **Reading later sections:** fence lists recorded at earlier gates elsewhere in this
   file (for example `READINESS IMPLEMENTATION: NOT AUTHORIZED`) are truth at their
   recorded moment; this current entry governs the present authorization state.
+- **`RVR-8 FORMALLY CLOSED: YES / AUTHORITATIVE`** (PR #597). Recorded at
+  `POST-RVR8-CLOSURE-SYNC-01`; the closure lifecycle itself was performed and merged on
+  2026-08-29 (exact accepted candidate `e50723e3…`, merge `39a96699…`, identical trees, empty
+  candidate→merge diff, post-merge verification recorded at two later gates) and was simply never
+  synchronized onto the current-facing surfaces until now. Nothing is re-accepted and no authority
+  is backdated. **Closure form, exact:** `RVR-8 = COMPLETED VERIFICATION — VALID EVIDENCE RETURNED
+  — NEGATIVE / MIXED PRODUCT RESULT`; **`RVR-8 PASS` is NOT ASSERTED**. A separate
+  publication-authorization instrument remains `NOT PROVEN` in committed evidence — an absence of
+  proof, not a finding that none existed.
+- **What RVR-8 closure does NOT change:** `RVR-8 VERIFICATION COMPLETED: YES` ·
+  **`PRODUCT RELEASE-VALUE PASS: NO`** · `T1-A′: OPEN` · `THIRD S2 RUN / RUN-004: NOT AUTHORIZED` ·
+  `SERIOUS RELEASE: NOT AUTHORIZED` · `DEPLOYMENT: NOT AUTHORIZED`. Row 174's reconciliation is
+  recorded **ELIGIBLE** (not convened, not adjudicated, gate and `FRB` unmoved); row 186's
+  post-RVR-8 / pre-FCORA window is recorded **OPENED** (mapping not adjudicated).
+- **`OWNER-ATTESTED FCORA EXECUTION RESULT: C — FCORA FAIL — MATERIAL RELEASE-BLOCKING
+  RECONCILIATION DEFECT`** · **`REPOSITORY ARTIFACT FOR THAT EXECUTION: NOT COMMITTED / NOT
+  CLAIMED`**. FCORA was executed once in the current Owner lifecycle under `FCORA-EXECUTION-01`,
+  READ-ONLY, at authoritative execution HEAD `d3f56660c337a6ddc13e44371a12250ce705d590`. No
+  committed repository artifact is claimed to contain that execution report and no repository
+  citation is fabricated for it; the result is carried as an Owner-attested execution input, not as
+  a repository-contained fact, and **`PR #656 FCORA EXECUTION: NONE`**. `FCORA NOT RE-RUN` means
+  only that the RVR-8 closure synchronization did not execute FCORA again — it does **not** mean
+  `FCORA NOT STARTED`, which ceased to be true when FCORA executed. No counter is cleared, FCORA did not pass, and **release is not authorized**.
+  The RVR-8 closure also makes the ODR §D-2 positional predicate "after RVR-8" satisfied.
 - **Operating automation: PLANNED — NOT ACTIVE.** Any future product, governance
   or automation work requires a new explicit Owner authorization.
 - Astra remains the designated Lead; that designation alone grants no mutation
