@@ -309,3 +309,65 @@ def test_redb2b_b_isolated_clean_start():
     assert len(SESSION_STORE) == 0, "SESSION_STORE must be clean between tests"
     assert getattr(webapp, "_STORE", "missing") is None, (
         "the app-scoped store must be reset between tests")
+
+
+# --- SERIOUS-RELEASE-PRE-RELEASE-TRANCHE-01 Slice B: production DB-path pin ---
+# `_resolve_db_path` already fails closed in production when INVENTORAI_DB_PATH
+# is absent, but nothing pinned that behaviour, while the parallel
+# `_resolve_secret_key` hard-fail IS pinned (test_security_containment_r6_r16).
+# The fixed production topology puts the canonical SQLite database exclusively on
+# an attached persistent disk, so a silent fallback to container-local ephemeral
+# storage would present a database that looks durable and is destroyed on the
+# next redeploy. These tests close that gap in the module that already owns
+# `_resolve_db_path`; no second configuration test file is introduced.
+
+
+def test_production_requires_an_explicit_database_path(monkeypatch):
+    """No silent fallback: production with no INVENTORAI_DB_PATH must raise."""
+    monkeypatch.setenv("INVENTORAI_ENV", "production")
+    monkeypatch.delenv("INVENTORAI_DB_PATH", raising=False)
+    with pytest.raises(RuntimeError):
+        webapp._resolve_db_path()
+
+
+def test_production_rejects_a_blank_database_path(monkeypatch):
+    """A whitespace-only value is not a path; it must fail exactly like absence
+    rather than resolving to the development temporary location."""
+    monkeypatch.setenv("INVENTORAI_ENV", "production")
+    monkeypatch.setenv("INVENTORAI_DB_PATH", "   ")
+    with pytest.raises(RuntimeError):
+        webapp._resolve_db_path()
+
+
+def test_production_uses_the_supplied_path_exactly(monkeypatch, tmp_path):
+    """The configured path is used verbatim — the mount point is supplied by the
+    platform and is never rewritten, prefixed or guessed by the application."""
+    target = str(tmp_path / "persistent" / "inventorai.sqlite")
+    monkeypatch.setenv("INVENTORAI_ENV", "production")
+    monkeypatch.setenv("INVENTORAI_DB_PATH", target)
+    assert webapp._resolve_db_path() == target
+
+
+def test_production_never_falls_back_to_the_development_temporary_location(
+        monkeypatch, tmp_path):
+    """The development fallback lives under the system temporary directory. In
+    production that location must be unreachable through this resolver: either an
+    explicit path is configured, or the call fails."""
+    monkeypatch.setenv("INVENTORAI_ENV", "production")
+    monkeypatch.delenv("INVENTORAI_DB_PATH", raising=False)
+    with pytest.raises(RuntimeError):
+        webapp._resolve_db_path()
+    explicit = str(tmp_path / "disk" / "inventorai.sqlite")
+    monkeypatch.setenv("INVENTORAI_DB_PATH", explicit)
+    resolved = webapp._resolve_db_path()
+    assert "inventorai_dev" not in resolved
+    assert resolved == explicit
+
+
+def test_application_source_hard_codes_no_platform_mount_path():
+    """The mount path is provisioning configuration, not application code. A
+    literal mount in the source would silently break the day the platform mounts
+    the disk somewhere else."""
+    source = open(os.path.join(os.path.dirname(os.path.dirname(
+        os.path.abspath(__file__))), "web", "app.py"), encoding="utf-8").read()
+    assert "/var/data" not in source

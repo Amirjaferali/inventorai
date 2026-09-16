@@ -32,6 +32,11 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CONF = os.path.join(ROOT, "gunicorn.conf.py")
 REQUIREMENTS = os.path.join(ROOT, "requirements.txt")
 PYTHON_VERSION_FILE = os.path.join(ROOT, ".python-version")
+# SERIOUS-RELEASE-PRE-RELEASE-TRANCHE-01 Slice A: the container image is part of
+# the SAME production serving posture this module already owns, so it is pinned
+# here rather than in a second test family.
+DOCKERFILE = os.path.join(ROOT, "Dockerfile")
+DOCKERIGNORE = os.path.join(ROOT, ".dockerignore")
 
 # The AUTHORITATIVE forbidden configuration terms. Membership is unchanged from
 # the original guard; it is lifted to module scope only so the operative-string
@@ -345,3 +350,133 @@ def test_production_config_does_not_enable_debug_or_reload():
     assert getattr(conf, "spew", False) is False
     for value in _conf_code_strings():
         assert "debug" not in value.lower(), value
+
+
+# --- SERIOUS-RELEASE-PRE-RELEASE-TRANCHE-01 Slice A: container image ----------
+# The Owner-fixed production topology is a Docker runtime on a managed container
+# platform, one instance, with the canonical SQLite database on an attached
+# persistent disk (OD-INFRA-1 / OD-INFRA-2). These assertions pin the image's
+# governed properties. They are deliberately STATIC: the repository CI does not
+# build container images, so an assertion that required a running Docker daemon
+# would be a skip in every environment, which is not evidence.
+
+
+def _dockerfile_lines():
+    """Operative Dockerfile lines — comments and blank lines removed."""
+    return [ln.strip() for ln in _read(DOCKERFILE).splitlines()
+            if ln.strip() and not ln.strip().startswith("#")]
+
+
+def _dockerfile_operative_text():
+    return "\n".join(_dockerfile_lines())
+
+
+def test_dockerfile_exists_and_declares_one_base_image():
+    assert os.path.isfile(DOCKERFILE)
+    froms = [ln for ln in _dockerfile_lines() if ln.upper().startswith("FROM ")]
+    assert len(froms) == 1, froms
+
+
+def test_dockerfile_python_tracks_the_repository_pin():
+    """The base image must carry the interpreter `.python-version` pins, so the
+    built image and the tested runtime can never drift apart silently."""
+    pinned = _read(PYTHON_VERSION_FILE).strip()
+    major_minor = ".".join(pinned.split(".")[:2])
+    base = next(ln for ln in _dockerfile_lines() if ln.upper().startswith("FROM "))
+    assert ("python:" + major_minor) in base, (base, pinned)
+
+
+def test_dockerfile_installs_the_pinned_python_dependencies():
+    text = _dockerfile_operative_text()
+    assert "requirements.txt" in text
+    assert re.search(r"pip install[^\n]*-r requirements\.txt", text), text
+
+
+def test_dockerfile_installs_the_weasyprint_os_stack_and_an_arabic_font():
+    """Direct Output PDF must remain supported (Owner decision). These are the
+    OS packages `requirements.txt` records as "OS packages, not pip packages",
+    plus the ONE font family `web/templates/pdf_base.html` selects for both the
+    Latin and the Arabic deliverable."""
+    text = _dockerfile_operative_text()
+    for package in ("libpango-1.0-0", "libpangoft2-1.0-0", "libharfbuzz0b",
+                    "libfontconfig1", "fonts-dejavu-core"):
+        assert package in text, package
+
+
+def test_dockerfile_font_family_matches_the_pdf_template():
+    """The installed font package must actually provide the family the PDF
+    template asks for; otherwise Arabic would silently render as tofu."""
+    template = _read(os.path.join(ROOT, "web", "templates", "pdf_base.html"))
+    assert "DejaVu Sans" in template
+    assert "fonts-dejavu-core" in _dockerfile_operative_text()
+
+
+def test_dockerfile_start_command_is_the_governed_gunicorn_entry_point():
+    text = _dockerfile_operative_text()
+    assert "gunicorn" in text and "-c" in text
+    assert "gunicorn.conf.py" in text
+    assert "web.app:app" in text
+
+
+def test_dockerfile_does_not_invoke_the_flask_development_server():
+    text = _dockerfile_operative_text().lower()
+    for forbidden in ("flask run", "app.run", "python web/app.py",
+                      "python -m flask"):
+        assert forbidden not in text, forbidden
+
+
+def test_dockerfile_does_not_restate_or_weaken_the_serving_invariants():
+    """Exactly ONE place may set workers/threads/preload: `gunicorn.conf.py`.
+    A `--workers`/`--threads`/`--preload` flag in the image would create a second
+    source of truth that could silently override the single-writer posture."""
+    text = _dockerfile_operative_text().lower()
+    for forbidden in ("--workers", "--threads", "--preload", "-w ", "--reload"):
+        assert forbidden not in text, forbidden
+
+
+def test_dockerfile_embeds_no_configuration_or_credential_value():
+    """The image carries no environment-specific value: no secret, no database
+    path, no mount path. Those come from the platform at run time."""
+    text = _dockerfile_operative_text()
+    lowered = text.lower()
+    for forbidden in _FORBIDDEN_CONFIG_TERMS:
+        assert forbidden not in lowered, forbidden
+    for name in ("INVENTORAI_SECRET_KEY", "INVENTORAI_DB_PATH", "INVENTORAI_ENV"):
+        assert name not in text, name
+    assert not re.search(r"[A-Fa-f0-9]{32,}", text), "credential-shaped literal"
+
+
+def test_dockerfile_declares_no_volume_that_could_host_an_ephemeral_database():
+    """A `VOLUME` declaration would invite a container-local database directory
+    that looks durable and is not. The durable path is the platform's disk."""
+    assert not any(ln.upper().startswith("VOLUME") for ln in _dockerfile_lines())
+
+
+def test_dockerfile_creates_no_database_in_the_image():
+    text = _dockerfile_operative_text().lower()
+    for forbidden in ("sqlite3 ", ".sqlite", ".db"):
+        assert forbidden not in text, forbidden
+
+
+def test_dockerfile_adds_no_out_of_scope_dependency_family():
+    lowered = _dockerfile_operative_text().lower()
+    for token in _FORBIDDEN_DEPENDENCY_TOKENS:
+        assert token not in lowered, token
+
+
+def test_dockerignore_excludes_local_secrets_and_databases():
+    """`COPY . .` must not be able to carry a local `.env` or a local database
+    into an image layer."""
+    assert os.path.isfile(DOCKERIGNORE)
+    entries = [ln.strip() for ln in _read(DOCKERIGNORE).splitlines()
+               if ln.strip() and not ln.strip().startswith("#")]
+    for required in (".env", "*.sqlite", ".git"):
+        assert required in entries, required
+
+
+def test_dockerignore_keeps_the_backup_operator_cli_in_the_image():
+    """The backup/restore CLI must be runnable inside the running container,
+    which is where the persistent disk is mounted."""
+    entries = [ln.strip() for ln in _read(DOCKERIGNORE).splitlines()
+               if ln.strip() and not ln.strip().startswith("#")]
+    assert "scripts/" not in entries and "scripts" not in entries

@@ -92,6 +92,18 @@ provider-tranche evidence and assessed at items 35–37.
 
 ## 4. Render provisioning specification (Owner-configured; nothing created here)
 
+**RUNTIME CORRECTION — `SERIOUS-RELEASE-PRE-RELEASE-TRANCHE-01` (recording only;
+provisions nothing and authorizes no deployment).** Items 4 and 6 below are
+corrected from a native Python runtime to the **Docker runtime** fixed by the
+Owner's hosting decision. Reason, recorded rather than asserted: Direct Output
+PDF requires the OS-level Pango / HarfBuzz / Fontconfig stack and an
+Arabic-capable font, which `requirements.txt` records as "OS packages, not pip
+packages" — a native Python runtime cannot install them, so the earlier
+specification would have shipped a service whose PDF endpoint could not work.
+Every other row, classification and acceptance condition in this section and in
+§§5–13 is UNCHANGED, including the §5 blocking SQLite-persistence checks. The
+superseded wording is preserved inline rather than deleted.
+
 **Provider-fact verification status (§5 discipline).** Official Render documentation is
 **NOT reachable from the authoring environment** — the session egress proxy blocks
 `render.com`, and a direct fetch was attempted and refused at authoring time. Therefore
@@ -105,10 +117,10 @@ observed and recorded). Indirect/secondary knowledge is NOT promoted to verified
 | 1 | Service type | one Web Service, single instance | OWNER CONFIGURATION REQUIRED |
 | 2 | Repository / branch | `Amirjaferali/inventorai`, branch `feature/atomic-json-session-persistence` (the authoritative governing branch; `main` is STALE/UNRECONCILED per OD-Q) | OWNER CONFIGURATION REQUIRED |
 | 3 | Region | Frankfurt | OWNER CONFIGURATION REQUIRED (region immutability after creation: TO BE CONFIRMED DURING PROVISIONING) |
-| 4 | Runtime | native Python | OWNER CONFIGURATION REQUIRED |
-| 5 | Python version | `3.11` via the repository `.python-version` file | REPOSITORY/RUNTIME verified; platform acceptance of the major.minor form: TO BE CONFIRMED DURING PROVISIONING |
-| 6 | Build command | `pip install -r requirements.txt` | OWNER CONFIGURATION REQUIRED |
-| 7 | Start command | `gunicorn -c gunicorn.conf.py web.app:app` | REPOSITORY/RUNTIME verified (command); entry into the dashboard: OWNER CONFIGURATION REQUIRED |
+| 4 | Runtime | **Docker** (repository `Dockerfile`). *Superseded — was: `native Python`, which was true when written and is preserved here as that gate's recorded assumption.* | OWNER CONFIGURATION REQUIRED |
+| 5 | Python version | `3.11` via the repository `.python-version` file, carried by the `Dockerfile` base image and test-pinned to agree with it | REPOSITORY/RUNTIME verified; platform acceptance: TO BE CONFIRMED DURING PROVISIONING |
+| 6 | Build command | **the image build defined by the repository `Dockerfile`** (which itself runs `pip install -r requirements.txt` on the pinned set). *Superseded — was: `pip install -r requirements.txt` as a native build command.* | OWNER CONFIGURATION REQUIRED |
+| 7 | Start command | `gunicorn -c gunicorn.conf.py web.app:app` — unchanged, and now carried as the image's default command | REPOSITORY/RUNTIME verified (command); entry into the dashboard: OWNER CONFIGURATION REQUIRED |
 | 8 | Health-check path | `/health` | REPOSITORY/RUNTIME verified |
 | 9 | Persistent disk | attach one disk | OWNER CONFIGURATION REQUIRED (minimum/maximum size, resize semantics: TO BE CONFIRMED DURING PROVISIONING) |
 | 10 | Disk mount path | `/var/data` (architecture target) | OWNER CONFIGURATION REQUIRED; final path CONFIRMED AT PROVISIONING and recorded |

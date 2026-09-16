@@ -1,0 +1,35 @@
+# SERIOUS-RELEASE-PRE-RELEASE-TRANCHE-01, Slice A — build-context exclusions.
+#
+# Purpose: keep the build context to what the running image actually needs, and
+# make it impossible for a local secret, a local database or build noise to be
+# copied into the image by the `COPY . .` step.
+#
+# This file affects the Docker build context only. It changes no application
+# behavior and excludes nothing the running service reads.
+
+# Version-control and build noise.
+.git
+.gitignore
+__pycache__/
+*.pyc
+*.bak
+.pytest_cache/
+
+# Local environment and any local database: never in an image layer.
+.env
+*.sqlite
+*.db
+
+# Test, benchmark, research and governance material: not read at run time.
+# `scripts/` is deliberately NOT excluded — the backup/restore operator CLI
+# (`scripts/inventorai_backup.py`, Slice E) must be runnable inside the running
+# container, which is where the persistent disk is mounted.
+tests/
+benchmark/
+benchmarks/
+research/
+docs/
+
+# Local developer tooling.
+verify_baseline.sh
+replay_debug.txt
