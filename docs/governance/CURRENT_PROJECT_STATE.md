@@ -166,6 +166,49 @@ historical artifact/file/SHA remains unrecovered. The HICR bounded-supplement
 referent is an unresolved continuity candidate, not a proven lost material obligation.
 Resolve it at the affected return gate, not through an automatic unrelated-work STOP.
 
+**OWNER DISPOSITIONS of the two FCORA silent-disappearance candidates**
+(`FCORA-SILENT-DISAPPEARANCE-DISPOSITION-01`, on the read-only adjudication
+`FCORA-SILENT-DISAPPEARANCE-ADJUDICATION-01`; recording only — the sentences above are
+preserved as their own recorded truth and are not rewritten).
+
+- **HICR bounded-supplement referent —
+  `OWNER-DISPOSITIONED AS RESOLVED / NON-MATERIAL`.** Classified a
+  **`POINTER-LEVEL CONTINUITY REFERENT`**, and expressly **not** a missing repository
+  artifact, **not** a confirmed silently-disappeared artifact, **not** a confirmed
+  material readiness obligation and **not** a new implementation obligation. Accepted
+  basis: HICR is pointer/reconciliation rather than an artifact-owning registry (Lean
+  §9.3); no HICR / Material Continuity Watchlist artifact is proven ever to have been
+  committed here; no add/delete history establishes a repository disappearance;
+  `CONFIRMED MATERIAL READINESS OBLIGATION: NOT PROVEN`; the continuity substance is
+  preserved by existing authoritative owners and pointers; and the readiness-input
+  dependency represented by register row 174 has now been adjudicated with its
+  ownership and sequencing questions resolved. **No HICR artifact is created, no
+  historical referent is invented, and `HICR PHASE 2: NOT AUTHORIZED` is unchanged.**
+- **Exact historical Master Checklist artifact —
+  `OWNER-DISPOSITIONED AS RESOLVED — EXACT ARTIFACT UNRECOVERED BUT MATERIAL
+  OBLIGATIONS FULLY ACCOUNTED FOR`.** The recovery limitation is **not** erased:
+  **`EXACT HISTORICAL ARTIFACT: NOT RECOVERED`** · **`EXACT FILE / SHA: UNKNOWN`** ·
+  **`MATERIAL COVERAGE: ACCOUNTED FOR`**. No recovery is claimed, no replacement
+  historical artifact is created or synthesized, and the reconstructed 54-item view is
+  **not** relabelled as the historical artifact. Accepted basis: the exact artifact is
+  not proven ever to have been committed to this repository and no add/delete history
+  proves a repository loss; the Master Checklist is derived navigation, not SSOT or
+  execution authority; the authoritative obligation and capability owners were audited
+  directly, supporting `UNACCOUNTED DOCUMENTED MATERIAL OBLIGATIONS = 0`,
+  `UNACCOUNTED IMPLEMENTED MATERIAL CAPABILITIES = 0`,
+  `MATERIAL ITEMS WITHOUT CURRENT DISPOSITION = 0` and
+  `DUPLICATE CANONICAL OWNERS = 0`; and the unknown historical denominator is therefore
+  accepted as a **`NON-MATERIAL PROVENANCE LIMITATION`**, not a release-blocking orphan.
+- **Counter truth — the historical execution result is NOT rewritten.** The
+  Owner-attested FCORA execution remains historically
+  `C — FCORA FAIL — MATERIAL RELEASE-BLOCKING RECONCILIATION DEFECT` and historically
+  recorded **`SILENT DISAPPEARANCE CANDIDATES = 2`**. Current state:
+  **`BOTH SILENT-DISAPPEARANCE CANDIDATES: OWNER-DISPOSITIONED / READY FOR DIFFERENTIAL
+  RECHECK`** · **`PROPOSED CURRENT COUNT: 0`** · **`AUTHORITATIVE RECHECKED COUNT: NOT
+  YET ESTABLISHED`**. **`DIFFERENTIAL FCORA RECHECK: NOW REQUIRED`** — no counter is
+  cleared by this recording, FCORA is not re-run here, and **release is NOT
+  authorized**.
+
 ## Material authority routing (pointer-only)
 
 | Question | Existing owner |
