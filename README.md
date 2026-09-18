@@ -147,7 +147,10 @@ dependency. All four variables below are required together:
 
 `INVENTORAI_PUBLIC_BASE_URL` is a required part of the email configuration
 because a verification message whose link is relative is not a usable message.
-It must be an absolute `https://` origin; a trailing slash is normalized away.
+It must be an absolute `https://` **origin** — scheme, host and optional port,
+nothing more. A trailing slash is normalized away; a path prefix
+(`https://host/app`) is rejected, because the application is served at the root
+and such a value would silently generate links that 404 for every user.
 It is never derived from a request: no request host and no proxy-supplied
 forwarded header can influence an emailed link, because a caller-controlled host
 would let an attacker mint a verification link pointing at their own origin.

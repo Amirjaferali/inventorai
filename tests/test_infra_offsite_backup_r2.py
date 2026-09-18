@@ -623,3 +623,13 @@ def test_backup_error_and_upload_error_use_distinct_exit_codes():
     assert cli._EXIT_UPLOAD_ERROR == 4
     assert issubclass(BackupError, Exception)
     assert not issubclass(R2UploadError, BackupError)
+
+
+def test_the_default_upload_transport_refuses_a_non_https_url_itself():
+    """`put_object` validates the endpoint before delegating, so this guard
+    inside the real transport would otherwise never run. The function that
+    actually opens a socket refuses a plaintext URL on its own."""
+    from engine.r2_object_upload import _https_put
+    with pytest.raises(R2UploadError) as raised:
+        _https_put("http://x.example/b/k", {}, __file__, 10, 1.0)
+    assert raised.value.reason_code == "insecure_endpoint"

@@ -414,11 +414,21 @@ def test_selection_never_raises_on_any_configuration_shape(monkeypatch,
     ("https://app.example.test/", "https://app.example.test"),
     ("https://app.example.test///", "https://app.example.test"),
     ("  https://app.example.test  ", "https://app.example.test"),
-    ("https://app.example.test/base/", "https://app.example.test/base"),
     ("https://app.example.test:8443", "https://app.example.test:8443"),
 ])
 def test_public_base_url_normalizes_trailing_slash_safely(value, expected):
     assert webapp._normalize_public_base_url(value) == expected
+
+
+@pytest.mark.parametrize("value", [
+    "https://app.example.test/base", "https://app.example.test/base/",
+    "https://app.example.test/verify", "https://app.example.test/a/b",
+])
+def test_public_base_url_rejects_a_path_prefix(value):
+    """A path prefix is well-formed but unusable: the application is served at
+    the root, so `https://host/app` would generate `https://host/app/verify/...`
+    and every emailed link would 404. Fail closed instead of shipping that."""
+    assert webapp._normalize_public_base_url(value) is None
 
 
 @pytest.mark.parametrize("value", [
@@ -851,3 +861,25 @@ def test_tokens_remain_hash_only_at_rest(client, monkeypatch):
     flat = " ".join(str(value) for row in rows for value in row)
     assert raw not in flat
     assert "hash-only@example.com" not in flat
+
+
+def test_the_email_module_has_no_logging_seam_at_all():
+    """Source-level companion to the caplog tests: the production adapter cannot
+    log, because the module imports no logging machinery. Nothing a future log
+    configuration does can expose a key, a recipient or a token from here."""
+    source = open(os.path.join(ROOT, "engine", "email_sender.py"),
+                  encoding="utf-8").read()
+    for forbidden in ("import logging", "logging.", "getLogger", "print(",
+                      "warnings.warn"):
+        assert forbidden not in source, forbidden
+
+
+def test_the_default_transport_refuses_a_non_https_url_itself():
+    """The adapter checks the endpoint at construction, so this guard inside the
+    real transport would otherwise never be exercised. Belt and braces: the
+    function that actually opens a socket refuses a plaintext URL on its own."""
+    from engine.email_sender import _https_json_post
+    with pytest.raises(ValueError):
+        _https_json_post("http://api.resend.com/emails", {}, {"a": 1}, 1.0)
+    with pytest.raises(ValueError):
+        _https_json_post("api.resend.com", {}, {"a": 1}, 1.0)

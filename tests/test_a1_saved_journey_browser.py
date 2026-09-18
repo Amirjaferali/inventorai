@@ -122,7 +122,10 @@ def test_owned_project_card_keyboard_reopen_and_honest_export(server, page, lang
     page.locator('main button[type="submit"]').click()
     page.wait_for_load_state()
     # Synthetic account only, development memory sink; no human/email provider.
-    token = webapp._EMAIL_SENDER.last_for(email)['body'].rsplit(' ', 1)[-1]
+    # Marker is the path prefix: registration mails the same verification LINK
+    # as the resend path (OD-INFRA-6), so the body ends '.../verify/<raw>'.
+    # Extraction only; the journey asserted below is unchanged.
+    token = webapp._EMAIL_SENDER.last_for(email)['body'].rsplit('/verify/', 1)[-1]
     page.goto(server + '/verify/' + token)
     page.locator('main button[type="submit"]').click()
     page.wait_for_load_state()

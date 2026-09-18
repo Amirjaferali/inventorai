@@ -535,9 +535,13 @@ def _normalize_public_base_url(value):
     every trailing slash removed) or ``None`` when the value is absent or in any
     way malformed. Fail closed: an unusable value yields ``None``, never a guess.
 
-    Accepted ONLY: an absolute `https://` URL with a host. Rejected: any other
-    scheme (including `http`), a missing host, embedded credentials, a query
-    string, a fragment, and whitespace inside the value.
+    Accepted ONLY: an absolute `https://` ORIGIN with a host — scheme, host and
+    optional port, nothing more. Rejected: any other scheme (including `http`),
+    a missing host, embedded credentials, a query string, a fragment, whitespace
+    or control characters, and a path prefix. A path is rejected rather than
+    kept because this application is served at the root and supports no URL
+    prefix: a value like `https://host/app` would silently generate
+    `https://host/app/verify/<token>`, which is a 404 for every user.
 
     This value is NEVER derived from a request. Not `request.host`, not
     `request.url_root`, and not any proxy-supplied forwarded host/proto header
@@ -577,10 +581,10 @@ def _normalize_public_base_url(value):
         parts.port                        # validates a present port
     except ValueError:
         return None
-    path = parts.path.rstrip("/")
-    if path and not path.startswith("/"):
+    # Trailing slashes normalize away; anything else in the path is refused.
+    if parts.path.rstrip("/"):
         return None
-    return _urlunsplit(("https", parts.netloc, path, "", ""))
+    return _urlunsplit(("https", parts.netloc, "", "", ""))
 
 
 def _resolve_public_base_url():
