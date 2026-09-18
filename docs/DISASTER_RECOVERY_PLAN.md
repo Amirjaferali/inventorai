@@ -56,11 +56,21 @@ Capability (implemented, P10-BR1): `engine/backup_service.py`
   overwrite of an existing database).
 - database_parity_report(a, b): full schema-object + per-table row-count
   parity (names/counts only, never contents).
+Operator entry point (SERIOUS-RELEASE-PRE-RELEASE-TRANCHE-01): the steps below
+are runnable through `scripts/inventorai_backup.py`, a thin CLI over this same
+service — no second backup engine, no provider API:
+  python scripts/inventorai_backup.py validate <database>
+  python scripts/inventorai_backup.py backup  <source> <backup>
+  python scripts/inventorai_backup.py restore <backup> <new-target>
+  python scripts/inventorai_backup.py parity  <first> <second>
 Procedure:
-1. Validate the most recent backup (validate_sqlite_database).
-2. Restore to a NEW target path — never onto the live file blindly.
-3. Verify: database_parity_report + open via the normal repository stores.
+1. Validate the most recent backup (validate_sqlite_database / `validate`).
+2. Restore to a NEW target path — never onto the live file blindly (`restore`;
+   an existing target is refused unless `--overwrite` is typed explicitly).
+3. Verify: database_parity_report + open via the normal repository stores
+   (`parity`).
 4. Point INVENTORAI_DB_PATH at the restored file only after verification.
+   The CLI never performs this step: it stays a deliberate human action.
 Verified by: automated suite `tests/test_p10_br1_backup_restore.py` and the
 evidenced local restore drill
 `docs/governance/evidence/phase10_p10_br1/P10_BR1_RESTORE_DRILL_EVIDENCE.md`.

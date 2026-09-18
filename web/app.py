@@ -215,7 +215,7 @@ from engine.account_store import (
 )
 from engine import account_credentials as _acct
 from engine import auth_session as _auth
-from engine.email_sender import DevMemoryEmailSender
+from engine.email_sender import DevMemoryEmailSender, UnconfiguredEmailSender
 # P4-2 Level-1: the exact supported reconstruction/engine-contract version stamp
 # persisted at project creation (read-only reconstruction lives entirely in the
 # engine; web only persists these additive envelope inputs).
@@ -521,7 +521,57 @@ _ACCOUNT_STORE = None
 # Development-only email sink (in-memory). A production provider adapter is a
 # separate, later concern; the raw verification token appears ONLY in a sink
 # message body and never in the application logs.
-_EMAIL_SENDER = DevMemoryEmailSender()
+def _resolve_email_sender():
+    """Select the email sender for this runtime.
+
+    Development and test keep the existing in-memory sink, so the repository-wide
+    seam (`webapp._EMAIL_SENDER` with `.sent` / `.last_for()` / `.clear()`) is
+    unchanged.
+
+    Production NEVER receives that sink. Until a transactional-email provider is
+    selected and configured, production gets `UnconfiguredEmailSender`, which
+    refuses every send. That is deliberate: an in-memory sink in production would
+    accept every message and deliver nothing, so the application would tell users
+    that verification instructions had been sent when nothing could send them.
+
+    Selection happens at import time and startup is NEVER blocked by it — the
+    application boots without email configuration, and only the email-dependent
+    account actions fail, at their point of use.
+    """
+    if _is_production():
+        return UnconfiguredEmailSender()
+    return DevMemoryEmailSender()
+
+
+_EMAIL_SENDER = _resolve_email_sender()
+
+
+def _email_delivery_available():
+    """Whether the selected sender can deliver at all. A configured provider may
+    still fail per-message; that is a different, bounded failure."""
+    return bool(getattr(_EMAIL_SENDER, "can_deliver", False))
+
+
+def _email_unavailable_response():
+    """One bounded, localized, non-disclosing refusal for an account action that
+    cannot proceed without email delivery.
+
+    It is IDENTICAL for every submitted address, so it reveals nothing about
+    whether an account exists — the existing non-enumeration property is
+    preserved, not weakened. It also never states WHY delivery is unavailable,
+    so no internal configuration state reaches an anonymous caller. 503 is the
+    truthful status: the capability is absent, the request was not performed,
+    and nothing was mutated before this returns.
+    """
+    response = app.response_class(
+        response=ui_text.localize_message(SERVICE_UNAVAILABLE_MESSAGE,
+                                          _current_ui_lang()),
+        status=503,
+        mimetype="text/plain",
+    )
+    response.headers["Content-Type"] = "text/plain; charset=utf-8"
+    response.headers["Cache-Control"] = "private, no-store"
+    return response
 
 _VERIFICATION_TTL_SECONDS = 24 * 60 * 60          # contract §8: 24 hours
 # Foundational bounded rate limit for registration (contract §10): a small
@@ -2541,6 +2591,13 @@ def register_submit():
     Never signs the user in, never creates a project. Format/length/mismatch
     errors ARE shown (they concern the input, not account existence); account
     existence / disabled / deleted states are never revealed."""
+    # Fail closed at point of use: registration is only meaningful if the
+    # verification email can actually be delivered. Refusing HERE — before any
+    # rate-limit write, any account row and any token — means nothing is mutated
+    # and no user is told that instructions were sent when nothing could send
+    # them. The refusal is identical for every address, so it enumerates nothing.
+    if not _email_delivery_available():
+        return _email_unavailable_response()
     email_raw = request.form.get("email", "")
     password = request.form.get("password", "")
     password_confirm = request.form.get("password_confirm", "")
@@ -2957,6 +3014,11 @@ def resend_verification():
         return redirect(url_for("login_form"))
     if not _csrf_valid():
         return _csrf_reject()
+    # Fail closed at point of use: a resend that cannot be delivered must not be
+    # reported as sent. Refused before any rate-limit write or token issue, so
+    # nothing is consumed and no token is minted that could never arrive.
+    if not _email_delivery_available():
+        return _email_unavailable_response()
     now = _utc_now()
     _cleanup_rate_limits(now)
     allowed = _rate_ok(_acct.email_digest(account["email_normalized"]), "resend",
@@ -3003,6 +3065,12 @@ def recover_submit():
     """Request a password reset. ALWAYS returns the same generic response (no
     enumeration of existence / status / verification). Hardened rate limit; a
     1-hour hash-only reset token is issued only for an active account."""
+    # Fail closed at point of use: recovery is delivered ONLY by email, so with
+    # no capable sender the request cannot be honoured. Refused before any
+    # rate-limit write and before any reset token exists. The refusal is
+    # identical for every address, preserving the non-enumeration property.
+    if not _email_delivery_available():
+        return _email_unavailable_response()
     email_normalized = _acct.normalize_email(request.form.get("email", ""))
     now = _utc_now()
     _cleanup_rate_limits(now)

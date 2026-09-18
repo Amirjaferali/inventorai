@@ -398,3 +398,129 @@ def test_results_expose_no_data_contents(db_path, tmp_path):
     assert "br1-alpha@example.com" not in blob
     assert "raw-br1-token" not in blob
     assert PW not in blob and IDEA[:20] not in blob
+
+
+# --- SERIOUS-RELEASE-PRE-RELEASE-TRANCHE-01 Slice E: operator CLI -------------
+# The service above is unchanged; these tests pin the thin operator entry point
+# added so a production operator can actually run it. The CLI is exercised
+# through `main(argv)` in-process — no subprocess, no shell quoting — so the
+# assertions observe the real exit codes and the real stdout an operator sees.
+
+import importlib.util as _importlib_util  # noqa: E402
+import json as _json                      # noqa: E402
+
+_CLI_PATH = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    "scripts", "inventorai_backup.py")
+
+
+def _load_cli():
+    spec = _importlib_util.spec_from_file_location("_inventorai_backup_cli",
+                                                   _CLI_PATH)
+    module = _importlib_util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def _run_cli(argv, capsys):
+    code = _load_cli().main(argv)
+    captured = capsys.readouterr()
+    return code, captured.out, captured.err
+
+
+def test_cli_exists_at_the_authorized_path():
+    assert os.path.isfile(_CLI_PATH)
+
+
+def test_cli_creates_no_second_backup_engine():
+    """Every operation must delegate to the existing service. The wrapper must
+    contain no SQLite access and no copy logic of its own."""
+    source = open(_CLI_PATH, encoding="utf-8").read()
+    assert "from engine.backup_service import" in source
+    assert "import sqlite3" not in source
+    assert "shutil" not in source
+    for provider_term in ("render", "requests", "urllib.request", "boto3"):
+        assert provider_term not in source.lower(), provider_term
+
+
+def test_cli_validate_reports_ok_for_a_real_database(db_path, capsys):
+    _populate_source()
+    code, out, _ = _run_cli(["validate", db_path], capsys)
+    assert code == 0
+    assert "operation: validate" in out
+    assert _json.loads(out[out.index("{"):])["quick_check"] == "ok"
+
+
+def test_cli_validate_fails_closed_on_a_missing_database(tmp_path, capsys):
+    code, _, err = _run_cli(
+        ["validate", str(tmp_path / "absent.sqlite")], capsys)
+    assert code == 3
+    assert "BACKUP ERROR" in err
+
+
+def test_cli_backup_then_restore_then_parity_roundtrip(db_path, tmp_path, capsys):
+    _populate_source()
+    backup = str(tmp_path / "cli-backup.sqlite")
+    target = str(tmp_path / "cli-restored.sqlite")
+
+    assert _run_cli(["backup", db_path, backup], capsys)[0] == 0
+    assert os.path.isfile(backup)
+    assert _run_cli(["validate", backup], capsys)[0] == 0
+    assert _run_cli(["restore", backup, target], capsys)[0] == 0
+    assert os.path.isfile(target)
+
+    code, out, _ = _run_cli(["parity", db_path, target], capsys)
+    assert code == 0
+    report = _json.loads(out[out.index("{"):])
+    assert report["schema_equal"] is True
+    assert report["row_counts_equal"] is True
+
+
+def test_cli_never_silently_overwrites_an_existing_destination(
+        db_path, tmp_path, capsys):
+    """The safety property that matters most: a second backup to the same path,
+    or a restore onto an existing file, must fail rather than destroy it."""
+    _populate_source()
+    backup = str(tmp_path / "guarded.sqlite")
+    assert _run_cli(["backup", db_path, backup], capsys)[0] == 0
+    before = open(backup, "rb").read()
+
+    code, _, err = _run_cli(["backup", db_path, backup], capsys)
+    assert code == 3 and "BACKUP ERROR" in err
+    assert open(backup, "rb").read() == before, "destination was modified"
+
+    target = str(tmp_path / "restore-target.sqlite")
+    assert _run_cli(["restore", backup, target], capsys)[0] == 0
+    existing = open(target, "rb").read()
+    code, _, err = _run_cli(["restore", backup, target], capsys)
+    assert code == 3 and "BACKUP ERROR" in err
+    assert open(target, "rb").read() == existing, "target was modified"
+
+
+def test_cli_overwrite_is_explicit_and_opt_in(db_path, tmp_path, capsys):
+    _populate_source()
+    backup = str(tmp_path / "explicit.sqlite")
+    assert _run_cli(["backup", db_path, backup], capsys)[0] == 0
+    assert _run_cli(["backup", db_path, backup, "--overwrite"], capsys)[0] == 0
+
+
+def test_cli_leaves_the_source_database_unchanged(db_path, tmp_path, capsys):
+    """A backup must never modify the live database it reads."""
+    _populate_source()
+    before = open(db_path, "rb").read()
+    assert _run_cli(["backup", db_path, str(tmp_path / "ro.sqlite")],
+                    capsys)[0] == 0
+    assert open(db_path, "rb").read() == before
+
+
+def test_cli_output_exposes_no_stored_data_contents(db_path, tmp_path, capsys):
+    """Same data-minimization property the service reports carry, asserted on
+    what the operator actually sees on stdout."""
+    _populate_source()
+    backup = str(tmp_path / "quiet.sqlite")
+    blob = _run_cli(["backup", db_path, backup], capsys)[1]
+    blob += _run_cli(["validate", backup], capsys)[1]
+    blob += _run_cli(["parity", db_path, backup], capsys)[1]
+    assert "br1-alpha@example.com" not in blob
+    assert "raw-br1-token" not in blob
+    assert PW not in blob and IDEA[:20] not in blob
