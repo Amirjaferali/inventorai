@@ -12,8 +12,9 @@ WHAT THIS IS NOT — the boundary that makes the architecture safe:
   * NOT a datastore, cache or runtime persistence layer. Nothing in `web/` or
     the request path imports it. The canonical database remains the single
     SQLite file at ``INVENTORAI_DB_PATH``.
-  * NOT a retention or lifecycle manager. It can PUT. It cannot list, overwrite
-    deliberately, expire or DELETE — there is no delete code path in this file,
+  * NOT a retention or lifecycle manager. It can PUT, and only as a CREATE: an
+    existing key is refused by the provider (412), never replaced. It cannot
+    list, expire or DELETE — there is no delete code path in this file,
     because retention policy is unresolved in the privacy/legal lane and an
     invented expiry would be a policy decision this module has no right to make.
   * NOT a general S3 client. One operation (single-shot PUT), one signature
@@ -41,6 +42,7 @@ import datetime
 import hashlib
 import hmac
 import os
+import re
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -141,6 +143,74 @@ def authorization_header(access_key_id, secret_access_key, region, service,
     return authorization, signed, signature
 
 
+# --- trusted-origin / account-id validation (authority-confusion defence) ----
+
+# The documented Cloudflare account-identifier shape: lowercase alphanumerics
+# only. Everything that could alter the real URL authority, path or fragment is
+# therefore rejected by construction - `#`, `@`, `\`, `/`, `:`, `?`, `%`, `.`,
+# whitespace, tabs, newlines and every other control character - because none of
+# them is in the class. A length bound keeps a pathological value out too.
+_ACCOUNT_ID_PATTERN = re.compile(r"\A[a-z0-9]{8,64}\Z")
+
+# A conservative DNS host: ASCII labels of letters/digits/hyphen. No unicode, no
+# percent-encoding, no punycode games - a host that is not a stable trusted
+# origin is refused rather than normalized into one.
+_HOST_PATTERN = re.compile(r"\A[a-z0-9]([a-z0-9-]*[a-z0-9])?"
+                           r"(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+\Z")
+
+R2_HOST_SUFFIX = ".r2.cloudflarestorage.com"
+
+# Sequences that exist only to confuse an authority/path parse.
+_AUTHORITY_CONFUSION = ("\\", "%2f", "%2F", "%5c", "%5C", "%00", "%23", "%40")
+
+
+def _validated_account_id(account_id):
+    identifier = account_id if isinstance(account_id, str) else ""
+    identifier = identifier.strip()
+    if not _ACCOUNT_ID_PATTERN.match(identifier):
+        raise R2UploadError("invalid_account_id")
+    return identifier
+
+
+def trusted_origin(origin, expected_host=None):
+    """Return the normalized trusted origin, or raise.
+
+    Applied to the endpoint that is ACTUALLY used, after construction, so the
+    request cannot be signed for one target and sent to another. Requires:
+    https, a valid ASCII host under the R2 domain, no userinfo, no query, no
+    fragment, and no path beyond an empty root.
+    """
+    if not isinstance(origin, str) or not origin.strip():
+        raise R2UploadError("insecure_endpoint")
+    candidate = origin.strip()
+    if any(ch.isspace() or ord(ch) < 0x20 or ord(ch) == 0x7F for ch in candidate):
+        raise R2UploadError("insecure_endpoint")
+    if any(token in candidate for token in _AUTHORITY_CONFUSION):
+        raise R2UploadError("insecure_endpoint")
+    try:
+        parts = urllib.parse.urlsplit(candidate)
+    except ValueError:
+        raise R2UploadError("insecure_endpoint") from None
+    if parts.scheme != "https":
+        raise R2UploadError("insecure_endpoint")
+    if parts.username or parts.password or parts.query or parts.fragment:
+        raise R2UploadError("insecure_endpoint")
+    if parts.path.strip("/"):
+        raise R2UploadError("insecure_endpoint")
+    try:
+        host = parts.hostname
+        port = parts.port
+    except ValueError:
+        raise R2UploadError("insecure_endpoint") from None
+    if not host or not _HOST_PATTERN.match(host):
+        raise R2UploadError("insecure_endpoint")
+    if not host.endswith(R2_HOST_SUFFIX):
+        raise R2UploadError("untrusted_endpoint_host")
+    if expected_host is not None and host != expected_host:
+        raise R2UploadError("untrusted_endpoint_host")
+    return "https://%s%s" % (host, "" if port is None else ":%d" % port)
+
+
 # --- object key / path canonicalization --------------------------------------
 
 def canonical_object_uri(bucket, object_key):
@@ -158,12 +228,16 @@ def canonical_object_uri(bucket, object_key):
                        urllib.parse.quote(key, safe="/"))
 
 
+def account_host(account_id):
+    """The one host this account's uploads may ever be sent to."""
+    return _validated_account_id(account_id) + R2_HOST_SUFFIX
+
+
 def account_endpoint(account_id):
-    """The R2 S3-compatible origin for one account. Always HTTPS."""
-    identifier = (account_id or "").strip()
-    if not identifier or any(ch in identifier for ch in "/:? "):
-        raise R2UploadError("invalid_account_id")
-    return "https://%s.r2.cloudflarestorage.com" % identifier
+    """The R2 S3-compatible origin for one account. Always HTTPS, and re-parsed
+    through `trusted_origin` so the value handed to the signer and the value put
+    on the wire are the same validated origin."""
+    return trusted_origin("https://" + account_host(account_id))
 
 
 # --- the one operation -------------------------------------------------------
@@ -175,6 +249,43 @@ def _file_digest(path):
         for chunk in iter(lambda: handle.read(_HASH_CHUNK_BYTES), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+class _NoRedirectHandler(urllib.request.HTTPRedirectHandler):
+    """Refuse EVERY redirect, same-origin included.
+
+    Same defence as in `engine/email_sender.py`, and deliberately duplicated
+    rather than shared so the two domains stay independent. urllib's default
+    handler follows redirects AND copies request headers to the new target, so a
+    3xx would transmit the SigV4 ``Authorization`` header - and the object
+    bytes - to whatever origin the redirect named. Returning ``None`` makes the
+    3xx surface as an ``HTTPError`` instead, which is a non-2xx and therefore a
+    failure.
+    """
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+
+def _build_https_only_opener():
+    """An opener that can ONLY perform direct HTTPS requests: no `HTTPHandler`,
+    so there is no downgrade path to plaintext even for an unvalidated URL, and
+    no file/ftp/data handlers."""
+    opener = urllib.request.OpenerDirector()
+    for handler in (urllib.request.ProxyHandler(),
+                    urllib.request.HTTPSHandler(),
+                    # Turns any scheme this opener cannot serve into a clean
+                    # URLError instead of an AttributeError from deep inside
+                    # urllib's response processing.
+                    urllib.request.UnknownHandler(),
+                    _NoRedirectHandler(),
+                    urllib.request.HTTPDefaultErrorHandler(),
+                    urllib.request.HTTPErrorProcessor()):
+        opener.add_handler(handler)
+    return opener
+
+
+_OPENER = _build_https_only_opener()
 
 
 def _https_put(url, headers, path, size, timeout_seconds):
@@ -192,10 +303,11 @@ def _https_put(url, headers, path, size, timeout_seconds):
                                          method="PUT")
         request.add_unredirected_header("Content-Length", str(size))
         try:
-            with urllib.request.urlopen(request,
-                                        timeout=timeout_seconds) as response:
+            with _OPENER.open(request, timeout=timeout_seconds) as response:
                 return response.getcode(), response.read(8192)
         except urllib.error.HTTPError as error:
+            # A rejection - including a REFUSED redirect, which arrives as its
+            # own 3xx - is a provider answer. Keep the status for the caller.
             return error.code, error.read(8192) or b""
 
 
@@ -225,19 +337,28 @@ def put_object(source_path, bucket, object_key, account_id, access_key_id,
     if size > MAX_OBJECT_BYTES:
         raise R2UploadError("source_too_large_for_single_put")
 
-    origin = (endpoint or account_endpoint(account_id)).rstrip("/")
-    if not origin.startswith("https://"):
-        raise R2UploadError("insecure_endpoint")
+    # The endpoint is validated to a trusted origin AFTER construction, and the
+    # SAME validated value is both signed and sent - never one target signed and
+    # another dialled. `endpoint` exists as a test seam and is held to exactly
+    # the same bar, so no configuration value can redirect an upload.
+    expected = account_host(account_id)
+    origin = trusted_origin(endpoint or ("https://" + expected),
+                            expected_host=None if endpoint else expected)
     host = urllib.parse.urlsplit(origin).netloc
-    if not host:
-        raise R2UploadError("insecure_endpoint")
 
     uri = canonical_object_uri(bucket, object_key)
     payload_hash = _file_digest(source_path)
     moment = now or datetime.datetime.now(datetime.timezone.utc)
     amz_date = moment.strftime("%Y%m%dT%H%M%SZ")
 
+    # CREATE-ONLY (B-4). `If-None-Match: *` makes the PUT conditional: the
+    # provider stores the object only if that key does not already exist, and
+    # answers 412 otherwise. It is included in the SIGNED headers so it cannot
+    # be stripped in transit without invalidating the signature - an unsigned
+    # conditional header would be removable, which would silently restore
+    # overwrite behaviour. There is still no delete, list or lifecycle path.
     signed_headers = {"host": host,
+                      "if-none-match": "*",
                       "x-amz-content-sha256": payload_hash,
                       "x-amz-date": amz_date}
     authorization, _signed, _signature = authorization_header(
@@ -264,8 +385,12 @@ def put_object(source_path, bucket, object_key, account_id, access_key_id,
         code = int(status)
     except (TypeError, ValueError):
         raise R2UploadError("provider_response_invalid") from None
+    if code == 412:
+        # The key already exists. Fail closed: an existing backup object is
+        # never replaced, and this is NOT reported as a stored backup.
+        raise R2UploadError("object_already_exists", "status 412")
     if not 200 <= code < 300:
         raise R2UploadError("provider_rejected", "status %d" % code)
 
     return {"object": uri, "bytes": size, "sha256": payload_hash,
-            "provider_status": code, "accepted": True}
+            "provider_status": code, "accepted": True, "create_only": True}

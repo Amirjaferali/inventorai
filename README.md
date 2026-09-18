@@ -166,9 +166,28 @@ unaffected.
 request proceeds and the account is still created — a provider outage must not
 cost a user their registration. The anonymous surfaces then say only that an
 attempt was made, never that a message was delivered, and their response stays
-byte-identical for every address so it reveals nothing about whether an account
-exists. The signed-in resend surface reports the outcome truthfully, because the
-caller's own identity is already known there.
+byte-identical for every address. The signed-in resend surface reports the
+outcome truthfully, because the caller's own identity is already known there.
+
+**Known limitation — response TIMING is not yet constant.** The byte-identical
+response above hides account existence from the response *content*, but not from
+how long the request takes: the provider is contacted only on the branch where a
+message is actually due, so a request for an address that exists takes about one
+provider round trip longer than one for an address that does not. Measured with
+a 200 ms simulated provider: `/recover` answers in ~205 ms for a known active
+address and ~2 ms for an unknown one. Treat the anonymous surfaces as protecting
+account existence against response *inspection*, not against *timing analysis*.
+
+Closing it is an architectural decision, not a small fix, and is open rather than
+silently accepted. Padding every anonymous response to a fixed deadline is the
+only purely synchronous option, and it is self-defeating here: `gunicorn.conf.py`
+pins `workers = 1` and `threads = 1`, so a deadline long enough to mask a
+provider round trip (let alone a timeout) would hold the single request thread
+for that whole period on an unauthenticated route — trading an information leak
+for an availability one. The alternatives (moving delivery off the request path,
+or contacting the provider on every branch) need their own decision: the first
+introduces asynchronous delivery, and the second would send mail to addresses
+that have no account.
 
 ### Backup and restore
 

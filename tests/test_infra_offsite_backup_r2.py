@@ -30,7 +30,11 @@ import sqlite3
 
 import pytest
 
-from engine.backup_service import BackupError, backup_database
+from engine.backup_service import (
+    BackupError,
+    backup_database,
+    validate_sqlite_database,
+)
 from engine.r2_object_upload import (
     MAX_OBJECT_BYTES,
     R2_REGION,
@@ -316,9 +320,13 @@ def test_request_is_signed_with_an_authorization_header(backup_artifact):
     headers = transport.calls[0]["headers"]
     assert headers["Authorization"].startswith("AWS4-HMAC-SHA256 Credential=")
     assert "/auto/s3/aws4_request" in headers["Authorization"]
-    assert "SignedHeaders=host;x-amz-content-sha256;x-amz-date" in (
+    # `if-none-match` is part of the SIGNED set (create-only, B-4): an unsigned
+    # conditional header could be stripped in transit, silently restoring
+    # overwrite behaviour.
+    assert "SignedHeaders=host;if-none-match;x-amz-content-sha256;x-amz-date" in (
         headers["Authorization"])
     assert "x-amz-date" in headers
+    assert headers["if-none-match"] == "*"
 
 
 def test_a_fixed_moment_produces_a_deterministic_signature(backup_artifact):
@@ -401,6 +409,18 @@ def _operative(path):
     return strings, identifiers
 
 
+def _imported_modules(path):
+    """Module names actually imported by executable code."""
+    tree = ast.parse(io.open(path, encoding="utf-8").read())
+    names = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            names.update(alias.name.split(".")[0] for alias in node.names)
+        elif isinstance(node, ast.ImportFrom) and node.module:
+            names.add(node.module.split(".")[0])
+    return names
+
+
 def test_no_remote_delete_expiry_or_retention_path_exists():
     """Retention is unresolved in the privacy/legal lane. There is therefore no
     EXECUTABLE code able to remove or expire a remote object, in either new
@@ -442,14 +462,16 @@ def test_the_only_http_method_the_uploader_can_issue_is_put():
 
 
 def test_the_temporary_workspace_cleanup_is_local_only():
-    """The CLI does remove its own temporary directory — a LOCAL artifact. That
-    is the only removal anywhere, and it is asserted explicitly here so the
-    operative guard above stays absolute about REMOTE objects."""
+    """The CLI removes its own temporary directories — LOCAL artifacts, one per
+    command, both staged under `tempfile.mkdtemp`. Those are the only removals
+    anywhere, asserted explicitly so the operative guard above stays absolute
+    about REMOTE objects."""
     source = io.open(CLI_PATH, encoding="utf-8").read()
-    assert source.count("shutil.rmtree") == 1
-    assert "workspace" in source
-    strings, _ = _operative(UPLOADER_SOURCE)
+    assert source.count("shutil.rmtree(workspace") == 2      # daily + upload
+    assert source.count("tempfile.mkdtemp") == 2
+    strings, identifiers = _operative(UPLOADER_SOURCE)
     assert not any("rmtree" in value for value in strings)
+    assert not any("rmtree" in name for name in identifiers)
 
 
 def test_the_web_application_never_imports_the_uploader():
@@ -600,10 +622,19 @@ def test_missing_configuration_exits_non_zero_without_touching_the_database(
 
 
 def test_the_cli_is_not_a_second_backup_engine():
+    """Operative-code check: the CLI imports no SQLite module and issues no SQL
+    or copy of its own — it can only delegate. Asserted against executable code,
+    not raw text, because the module docstring legitimately DISCUSSES `PRAGMA`
+    and WAL when explaining why raw-file upload was removed."""
+    assert "sqlite3" not in _imported_modules(CLI_PATH)
+    strings, identifiers = _operative(CLI_PATH)
+    for value in strings:
+        upper = value.upper()
+        for forbidden in ("PRAGMA", "SQLITE_MASTER", "SELECT ", "CREATE TABLE"):
+            assert forbidden not in upper, value
+    for name in identifiers:
+        assert name not in ("copyfile", "copy", "copy2", "connect"), name
     source = io.open(CLI_PATH, encoding="utf-8").read()
-    for forbidden in ("import sqlite3", "sqlite3.connect", "shutil.copy",
-                      "PRAGMA", "sqlite_master"):
-        assert forbidden not in source, forbidden
     assert "from engine.backup_service import" in source
     assert "backup_database" in source
 
@@ -633,3 +664,280 @@ def test_the_default_upload_transport_refuses_a_non_https_url_itself():
     with pytest.raises(R2UploadError) as raised:
         _https_put("http://x.example/b/k", {}, __file__, 10, 1.0)
     assert raised.value.reason_code == "insecure_endpoint"
+
+
+# =============================================================================
+# CORRECTIVE PASS (independent-review defect set B-1, B-3, B-4, B-5).
+# =============================================================================
+
+from engine.r2_object_upload import (  # noqa: E402
+    R2_HOST_SUFFIX,
+    _NoRedirectHandler,
+    _build_https_only_opener,
+    account_host,
+    trusted_origin,
+)
+
+
+# --- B-3: a live WAL database's main file is never shipped -------------------
+
+@pytest.fixture
+def wal_database(tmp_path):
+    """A live database in WAL mode with rows committed into the -wal sidecar."""
+    path = str(tmp_path / "wal-live.sqlite")
+    conn = sqlite3.connect(path)
+    conn.execute("PRAGMA journal_mode=WAL")
+    conn.execute("CREATE TABLE accounts (id TEXT)")
+    conn.execute("INSERT INTO accounts VALUES ('before-wal')")
+    conn.commit()
+    conn.execute("INSERT INTO accounts VALUES ('committed-into-wal-1')")
+    conn.execute("INSERT INTO accounts VALUES ('committed-into-wal-2')")
+    conn.commit()
+    yield path, conn
+    conn.close()
+
+
+def test_the_raw_main_file_of_a_wal_database_is_a_false_backup(wal_database,
+                                                               tmp_path):
+    """The defect's premise, reproduced rather than asserted: copying the main
+    file alone passes `quick_check` and yet loses the data entirely."""
+    live, conn = wal_database
+    assert [r[0] for r in conn.execute("SELECT id FROM accounts")] == [
+        "before-wal", "committed-into-wal-1", "committed-into-wal-2"]
+    assert os.path.exists(live + "-wal")
+
+    raw = str(tmp_path / "raw-main-only.sqlite")
+    with open(live, "rb") as source, open(raw, "wb") as target:
+        target.write(source.read())
+    # It VALIDATES - which is exactly why validation was not a sufficient guard.
+    assert validate_sqlite_database(raw)["quick_check"] == "ok"
+    with sqlite3.connect(raw) as shipped:
+        with pytest.raises(sqlite3.DatabaseError):
+            shipped.execute("SELECT id FROM accounts").fetchall()
+
+
+def test_wal_committed_rows_are_never_shipped_as_a_raw_main_file(wal_database):
+    """B-3. Both operator commands now run the backup engine first, so what
+    reaches the provider is a consistent artifact containing the WAL-committed
+    rows - never the raw main file that passes validation while holding none."""
+    live, _conn = wal_database
+    for argv in (["daily", live], ["upload", live]):
+        transport = _RecordingTransport()
+        assert cli.main(argv, environ=dict(SETTINGS),
+                        transport=transport) == 0, argv
+        body = transport.calls[0]["body"]
+        assert body.startswith(b"SQLite format 3\x00")
+        restored = live + ".shipped"
+        with open(restored, "wb") as handle:
+            handle.write(body)
+        with sqlite3.connect(restored) as check:
+            rows = [r[0] for r in check.execute("SELECT id FROM accounts")]
+        os.remove(restored)
+        assert rows == ["before-wal", "committed-into-wal-1",
+                        "committed-into-wal-2"], (argv, rows)
+
+
+def test_no_operator_command_uploads_its_input_file_directly(wal_database):
+    """B-3, structurally: the bytes the provider receives are never the bytes of
+    the operator-supplied path, because a staged artifact is uploaded instead."""
+    live, _conn = wal_database
+    with open(live, "rb") as handle:
+        raw_bytes = handle.read()
+    for argv in (["daily", live], ["upload", live]):
+        transport = _RecordingTransport()
+        cli.main(argv, environ=dict(SETTINGS), transport=transport)
+        call = transport.calls[0]
+        assert call["path"] != live, argv
+        assert call["body"] != raw_bytes, argv
+
+
+def test_upload_still_refuses_a_corrupt_source(tmp_path):
+    corrupt = tmp_path / "corrupt.sqlite"
+    corrupt.write_bytes(b"not a sqlite database at all")
+    transport = _RecordingTransport()
+    assert cli.main(["upload", str(corrupt)], environ=dict(SETTINGS),
+                    transport=transport) == 3
+    assert transport.calls == []
+
+
+# --- B-4: create-only object writes ----------------------------------------
+
+def test_the_conditional_create_header_is_sent_and_signed(backup_artifact):
+    transport = _RecordingTransport()
+    report = _upload(backup_artifact, transport)
+    headers = transport.calls[0]["headers"]
+    assert headers["if-none-match"] == "*"
+    assert "if-none-match" in headers["Authorization"]
+    assert report["create_only"] is True
+
+
+def test_a_412_precondition_failure_is_a_collision_not_a_success(
+        backup_artifact):
+    """B-4. The provider refuses to replace an existing key; that is never
+    reported as a stored backup."""
+    with pytest.raises(R2UploadError) as raised:
+        _upload(backup_artifact, _RecordingTransport(status=412))
+    assert raised.value.reason_code == "object_already_exists"
+
+
+def test_first_upload_succeeds_and_a_duplicate_key_fails(backup_artifact):
+    """The create-only contract as an operator sees it, with a transport that
+    models a provider enforcing `If-None-Match: *`."""
+
+    class _CreateOnlyProvider:
+        def __init__(self):
+            self.stored = {}
+            self.calls = []
+
+        def __call__(self, url, headers, path, size, timeout_seconds):
+            self.calls.append(url)
+            if headers.get("if-none-match") != "*":       # unconditional PUT
+                self.stored[url] = size                   # would overwrite
+                return 200, b""
+            if url in self.stored:
+                return 412, b"<Error><Code>PreconditionFailed</Code></Error>"
+            self.stored[url] = size
+            return 200, b""
+
+    provider = _CreateOnlyProvider()
+    first = _upload(backup_artifact, provider, object_key="daily/same-key.sqlite")
+    assert first["accepted"] is True
+    with pytest.raises(R2UploadError) as raised:
+        _upload(backup_artifact, provider, object_key="daily/same-key.sqlite")
+    assert raised.value.reason_code == "object_already_exists"
+    assert len(provider.stored) == 1                      # nothing replaced
+
+
+def test_create_only_adds_no_delete_list_or_lifecycle_path():
+    """B-4 must not have smuggled in remote management. The operative guards
+    above still hold after the change."""
+    strings, identifiers = _operative(UPLOADER_SOURCE)
+    for value in strings:
+        assert "delete" not in value.lower(), value
+    for name in identifiers:
+        assert "delete" not in name.lower(), name
+
+
+# --- B-5: endpoint / account-id authority confusion -------------------------
+
+@pytest.mark.parametrize("account", [
+    "collector.invalid#", "@host", "a\\b", "a/b", "a:b", "a?b", "a b",
+    "a\tb", "a\nb", "a\rb", "a%2fb", "a%5cb", "a#b", "ab", "A1B2C3D4",
+    "x" * 65, "", "   ", None, 7, "acc.ount", "acc_ount", "acc-ount",
+])
+def test_account_id_rejects_every_authority_confusing_shape(account):
+    with pytest.raises(R2UploadError) as raised:
+        account_endpoint(account)
+    assert raised.value.reason_code == "invalid_account_id"
+
+
+def test_a_valid_account_id_yields_exactly_one_trusted_host():
+    account = "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6"
+    assert account_host(account) == account + R2_HOST_SUFFIX
+    assert account_endpoint(account) == "https://" + account + R2_HOST_SUFFIX
+
+
+@pytest.mark.parametrize("origin,reason", [
+    ("http://acct.r2.cloudflarestorage.com", "insecure_endpoint"),
+    ("acct.r2.cloudflarestorage.com", "insecure_endpoint"),
+    ("https://", "insecure_endpoint"),
+    ("https://u:p@acct.r2.cloudflarestorage.com", "insecure_endpoint"),
+    ("https://acct.r2.cloudflarestorage.com?x=1", "insecure_endpoint"),
+    ("https://acct.r2.cloudflarestorage.com#f", "insecure_endpoint"),
+    ("https://acct.r2.cloudflarestorage.com/bucket", "insecure_endpoint"),
+    ("https://acct.r2.cloudflarestorage.com\\@evil.example", "insecure_endpoint"),
+    ("https://acct%2f@evil.example", "insecure_endpoint"),
+    ("https://acct%5c.evil.example", "insecure_endpoint"),
+    ("https://acct%23.evil.example", "insecure_endpoint"),
+    ("https://acct%40evil.example", "insecure_endpoint"),
+    ("https://acct.r2.cloudflare\tstorage.com", "insecure_endpoint"),
+    ("https://acct.r2.cloudflare\nstorage.com", "insecure_endpoint"),
+    ("https://acct.r2.cloudflare storage.com", "insecure_endpoint"),
+    ("https://evil.example", "untrusted_endpoint_host"),
+    ("https://r2.cloudflarestorage.com.evil.example", "untrusted_endpoint_host"),
+])
+def test_trusted_origin_rejects_authority_confusion(origin, reason):
+    with pytest.raises(R2UploadError) as raised:
+        trusted_origin(origin)
+    assert raised.value.reason_code == reason, origin
+
+
+def test_trusted_origin_accepts_only_a_bare_r2_origin():
+    good = "https://acct.r2.cloudflarestorage.com"
+    assert trusted_origin(good) == good
+    assert trusted_origin(good + "/") == good
+    assert trusted_origin(good + "///") == good
+
+
+def test_the_endpoint_seam_is_held_to_the_same_trusted_shape(backup_artifact):
+    """The `endpoint=` test seam cannot be used - or configured - to redirect an
+    upload to an untrusted origin."""
+    transport = _RecordingTransport()
+    with pytest.raises(R2UploadError) as raised:
+        _upload(backup_artifact, transport, endpoint="https://evil.example")
+    assert raised.value.reason_code == "untrusted_endpoint_host"
+    assert transport.calls == []
+
+
+def test_the_signed_host_is_the_host_actually_dialled(backup_artifact):
+    """B-5's core requirement: never sign one target and send another."""
+    transport = _RecordingTransport()
+    _upload(backup_artifact, transport)
+    call = transport.calls[0]
+    dialled = call["url"].split("/")[2]
+    assert call["headers"]["host"] == dialled
+    assert dialled == account_host(ACCOUNT_ID)
+    assert call["url"].startswith("https://" + dialled + "/")
+
+
+def test_the_operator_cli_passes_no_endpoint_override(live_database):
+    """Production config has no way to set the endpoint: the CLI never passes
+    one, so the account-derived trusted origin is the only possibility."""
+    # Operative code only: the docstring legitimately explains that the account
+    # id "forms the endpoint".
+    _strings, identifiers = _operative(CLI_PATH)
+    assert "endpoint" not in identifiers
+    transport = _RecordingTransport()
+    cli.main(["daily", live_database], environ=dict(SETTINGS),
+             transport=transport)
+    assert transport.calls[0]["url"].startswith(
+        "https://" + account_host(ACCOUNT_ID) + "/")
+
+
+# --- B-1 for the upload transport ------------------------------------------
+
+def test_the_upload_opener_refuses_redirects_and_plaintext():
+    """B-1 applies to the upload too: a redirect would carry the SigV4
+    Authorization header, and the object bytes, to another origin."""
+    import urllib.error
+    opener = _build_https_only_opener()
+    kinds = [type(handler).__name__ for handler in opener.handlers]
+    assert kinds.count("_NoRedirectHandler") == 1
+    assert sum("Redirect" in kind for kind in kinds) == 1
+    for absent in ("HTTPHandler", "FileHandler", "FTPHandler", "DataHandler"):
+        assert absent not in kinds, absent
+    assert _NoRedirectHandler().redirect_request(
+        None, None, 302, "Found", {}, "https://evil.example") is None
+    with pytest.raises(urllib.error.URLError):
+        opener.open("http://127.0.0.1:1/x", timeout=5)
+
+
+@pytest.mark.parametrize("status", [301, 302, 303, 307, 308])
+def test_a_redirect_status_is_never_a_stored_backup(backup_artifact, status):
+    with pytest.raises(R2UploadError) as raised:
+        _upload(backup_artifact, _RecordingTransport(status=status))
+    assert raised.value.reason_code == "provider_rejected"
+
+
+def test_sigv4_primitives_are_unchanged_by_this_corrective_pass():
+    """Guard against a regression in the one thing already independently
+    validated: the published AWS example signature must still reproduce."""
+    empty = hashlib.sha256(b"").hexdigest()
+    _authorization, _signed, signature = authorization_header(
+        "AKIAIOSFODNN7EXAMPLE", "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+        "us-east-1", "s3", "20130524T000000Z", "GET", "/test.txt", "",
+        {"Host": "examplebucket.s3.amazonaws.com", "Range": "bytes=0-9",
+         "x-amz-content-sha256": empty, "x-amz-date": "20130524T000000Z"},
+        empty)
+    assert signature == (
+        "f0e8bdb87c964420e857bd35b5d6ed310bd44f0170aba48dd91039c6036bdb41")

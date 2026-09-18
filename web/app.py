@@ -528,6 +528,11 @@ _ACCOUNT_STORE = None
 # Development-only email sink (in-memory). A production provider adapter is a
 # separate, later concern; the raw verification token appears ONLY in a sink
 # message body and never in the application logs.
+# N-1: the accepted host shape for the public base URL (see below).
+_PUBLIC_HOST_PATTERN = re.compile(r"\A[a-z0-9]([a-z0-9-]*[a-z0-9])?"
+                                 r"(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+\Z")
+
+
 def _normalize_public_base_url(value):
     """THE one configuration owner for the application's public base URL.
 
@@ -563,6 +568,16 @@ def _normalize_public_base_url(value):
     if any(ch.isspace() or ord(ch) < 0x20 or ord(ch) == 0x7F
            for ch in candidate):
         return None
+    # N-1: sequences whose only purpose is to confuse an authority/path parse.
+    # A backslash is treated as a path separator by browsers but not by
+    # `urlsplit`, so `https://good.example\@evil.example` can parse one way here
+    # and resolve another way in a mail client. A percent-encoded slash or
+    # backslash in the authority plays the same trick, and `%23`/`%40` smuggle a
+    # fragment or userinfo past the checks below.
+    lowered = candidate.lower()
+    if "\\" in candidate or any(token in lowered for token in
+                                ("%2f", "%5c", "%23", "%40", "%00")):
+        return None
     try:
         parts = _urlsplit(candidate)
     except ValueError:
@@ -580,6 +595,12 @@ def _normalize_public_base_url(value):
     try:
         parts.port                        # validates a present port
     except ValueError:
+        return None
+    # A conservative ASCII DNS host: labels of letters/digits/hyphen, at least
+    # two of them. Unicode/IDN forms are refused rather than normalized, because
+    # a host that needs normalizing to become an origin is not a STABLE trusted
+    # origin - the whole point of this value.
+    if not _PUBLIC_HOST_PATTERN.match(host):
         return None
     # Trailing slashes normalize away; anything else in the path is refused.
     if parts.path.rstrip("/"):

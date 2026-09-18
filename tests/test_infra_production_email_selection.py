@@ -883,3 +883,274 @@ def test_the_default_transport_refuses_a_non_https_url_itself():
         _https_json_post("http://api.resend.com/emails", {}, {"a": 1}, 1.0)
     with pytest.raises(ValueError):
         _https_json_post("api.resend.com", {}, {"a": 1}, 1.0)
+
+
+# =============================================================================
+# CORRECTIVE PASS (independent-review defect set B-1, N-1, N-2).
+#
+# The redirect tests below run a REAL local HTTP server and drive the REAL
+# default transport, because the defect lived in urllib's default redirect
+# behaviour and a fake transport cannot reproduce it. No external network is
+# touched: the server is 127.0.0.1 on an ephemeral port.
+# =============================================================================
+import http.server
+import socket
+import threading
+
+from engine.email_sender import (
+    _NoRedirectHandler,
+    _build_https_only_opener,
+    _https_json_post,
+)
+
+
+class _RedirectingProvider:
+    """A local origin that answers the first request with a redirect and records
+    every request it sees, including the headers."""
+
+    def __init__(self, status, location_builder, final_body=b'{"id": "attacker"}'):
+        self.status = status
+        self.location_builder = location_builder
+        self.final_body = final_body
+        self.requests = []
+        probe = socket.socket()
+        probe.bind(("127.0.0.1", 0))
+        self.port = probe.getsockname()[1]
+        probe.close()
+        recorder = self
+
+        class Handler(http.server.BaseHTTPRequestHandler):
+            def _record(self):
+                recorder.requests.append(
+                    {"method": self.command, "path": self.path,
+                     "authorization": self.headers.get("Authorization")})
+
+            def _answer(self):
+                length = int(self.headers.get("Content-Length") or 0)
+                if length:
+                    self.rfile.read(length)
+                self._record()
+                if self.path == "/emails":
+                    self.send_response(recorder.status)
+                    self.send_header("Location",
+                                     recorder.location_builder(recorder.port))
+                    self.end_headers()
+                    return
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Content-Length", str(len(recorder.final_body)))
+                self.end_headers()
+                self.wfile.write(recorder.final_body)
+
+            do_POST = _answer
+            do_GET = _answer
+            do_PUT = _answer
+
+            def log_message(self, *args):
+                pass
+
+        self._server = http.server.HTTPServer(("127.0.0.1", self.port), Handler)
+
+    def __enter__(self):
+        threading.Thread(target=self._server.serve_forever, daemon=True).start()
+        return self
+
+    def __exit__(self, *exc):
+        self._server.shutdown()
+        self._server.server_close()
+        return False
+
+    @property
+    def url(self):
+        return "http://127.0.0.1:%d/emails" % self.port
+
+
+def _post_through_the_real_redirect_policy(url):
+    """Drive the REAL `_NoRedirectHandler` against a real local server.
+
+    The production opener has no HTTP handler at all, so it cannot reach a local
+    plaintext test server - that is a separate, stronger property, asserted on
+    its own below. To exercise the REDIRECT POLICY against genuine 3xx responses
+    from a real socket, this opener adds `HTTPHandler` (and disables proxies, so
+    the loopback request is direct) while using the SAME production redirect
+    handler. The handler under test is the shipped one, not a copy.
+    """
+    import urllib.request
+    opener = urllib.request.OpenerDirector()
+    for handler in (urllib.request.ProxyHandler({}),
+                    urllib.request.HTTPHandler(),
+                    urllib.request.HTTPSHandler(),
+                    urllib.request.UnknownHandler(),
+                    _NoRedirectHandler(),
+                    urllib.request.HTTPDefaultErrorHandler(),
+                    urllib.request.HTTPErrorProcessor()):
+        opener.add_handler(handler)
+    request = urllib.request.Request(
+        url, data=b'{"a": 1}',
+        headers={"Authorization": "Bearer " + PROVIDER_KEY,
+                 "Content-Type": "application/json"},
+        method="POST")
+    return opener.open(request, timeout=10)
+
+
+@pytest.mark.parametrize("status", [301, 302, 303, 307, 308])
+def test_no_redirect_status_is_ever_followed(status):
+    """B-1. Every redirect class is refused. Before the repair, urllib followed
+    these AND copied the Authorization header to the new target, then accepted
+    that target's body as proof of delivery."""
+    import urllib.error
+    with _RedirectingProvider(
+            status, lambda port: "http://127.0.0.1:%d/stolen" % port) as provider:
+        with pytest.raises(urllib.error.HTTPError) as raised:
+            _post_through_the_real_redirect_policy(provider.url)
+        assert raised.value.code == status
+        assert len(provider.requests) == 1, provider.requests
+        assert provider.requests[0]["path"] == "/emails"
+
+
+def test_authorization_header_never_reaches_a_redirect_target():
+    """B-1, stated as the leak it was: the bearer key must not be transmitted to
+    any origin other than the one the request was addressed to."""
+    import urllib.error
+    with _RedirectingProvider(
+            302, lambda port: "http://127.0.0.1:%d/stolen" % port) as provider:
+        with pytest.raises(urllib.error.HTTPError):
+            _post_through_the_real_redirect_policy(provider.url)
+    forwarded = [r for r in provider.requests if r["path"] == "/stolen"]
+    assert forwarded == [], "the provider key reached a redirect target"
+    assert len(provider.requests) == 1
+    assert provider.requests[0]["authorization"] == "Bearer " + PROVIDER_KEY
+
+
+def test_https_to_http_downgrade_redirect_is_refused():
+    """B-1. A redirect naming a plaintext origin is refused like any other."""
+    import urllib.error
+    with _RedirectingProvider(
+            302, lambda port: "http://127.0.0.1:%d/downgrade" % port) as provider:
+        with pytest.raises(urllib.error.HTTPError) as raised:
+            _post_through_the_real_redirect_policy(provider.url)
+        assert raised.value.code == 302
+    assert [r["path"] for r in provider.requests] == ["/emails"]
+
+
+def test_cross_host_redirect_is_refused():
+    """B-1. A different host, even over HTTPS, is a different origin."""
+    import urllib.error
+    with _RedirectingProvider(
+            307, lambda port: "https://evil.example/emails") as provider:
+        with pytest.raises(urllib.error.HTTPError) as raised:
+            _post_through_the_real_redirect_policy(provider.url)
+        assert raised.value.code == 307
+    assert len(provider.requests) == 1
+
+
+def test_same_origin_redirect_is_also_refused():
+    """B-1. No redirect is accepted AT ALL - same-origin included - so there is
+    no case left where the response body comes from an unintended path."""
+    import urllib.error
+    with _RedirectingProvider(
+            302, lambda port: "http://127.0.0.1:%d/emails-v2" % port) as provider:
+        with pytest.raises(urllib.error.HTTPError) as raised:
+            _post_through_the_real_redirect_policy(provider.url)
+        assert raised.value.code == 302
+    assert [r["path"] for r in provider.requests] == ["/emails"]
+
+
+def test_a_refused_redirect_is_a_delivery_failure_at_the_adapter():
+    """End to end at the adapter: a 3xx is never confirmed acceptance, and the
+    redirect target's body can never become the message id."""
+    for status in (301, 302, 303, 307, 308):
+        transport = _RecordingTransport(status=status,
+                                        document={"id": "attacker-controlled"})
+        with pytest.raises(EmailDeliveryFailed) as raised:
+            _sender(transport).send(to=EMAIL, subject="s", body="b")
+        assert raised.value.reason_code == "provider_rejected", status
+
+
+def test_the_opener_has_no_redirect_or_plaintext_handler():
+    """Structural companion: exactly one redirect handler, ours; and no HTTP,
+    file, ftp or data handler exists, so a downgrade cannot be opened at all
+    rather than merely being string-checked."""
+    opener = _build_https_only_opener()
+    kinds = [type(handler).__name__ for handler in opener.handlers]
+    assert kinds.count("_NoRedirectHandler") == 1
+    assert sum("Redirect" in kind for kind in kinds) == 1
+    for absent in ("HTTPHandler", "FileHandler", "FTPHandler", "DataHandler"):
+        assert absent not in kinds, absent
+    assert "HTTPSHandler" in kinds
+    assert _NoRedirectHandler().redirect_request(
+        None, None, 302, "Found", {}, "https://evil.example") is None
+
+
+def test_the_production_opener_cannot_open_a_plaintext_url_at_all():
+    """The stronger property the test opener above deliberately sets aside: the
+    SHIPPED opener has no HTTP handler, so a downgrade is unopenable rather than
+    merely string-checked, and it fails as a clean URLError."""
+    import urllib.error
+    with pytest.raises(urllib.error.URLError) as raised:
+        _build_https_only_opener().open("http://127.0.0.1:1/x", timeout=5)
+    assert "unknown url type" in str(raised.value.reason)
+    for scheme in ("file:///etc/passwd", "ftp://127.0.0.1/x",
+                   "data:text/plain,x"):
+        with pytest.raises(urllib.error.URLError):
+            _build_https_only_opener().open(scheme, timeout=5)
+
+
+def test_the_real_transport_still_refuses_a_non_https_url_by_contract():
+    with pytest.raises(ValueError):
+        _https_json_post("http://api.resend.com/emails", {}, {"a": 1}, 1.0)
+
+
+# --- N-2: the message id must be a genuine string ----------------------------
+
+@pytest.mark.parametrize("identifier", [
+    True, False, 123, 0, 1.5, [], ["x"], {}, {"a": 1}, None, "", "   ", b"x"])
+def test_a_non_string_message_id_is_not_confirmed_acceptance(identifier):
+    """N-2. `str(value or "")` previously coerced `true`, `123` and `[1]` into
+    truthy text, so a value that is not a message identifier at all satisfied
+    the success bar."""
+    transport = _RecordingTransport(status=200, document={"id": identifier})
+    with pytest.raises(EmailDeliveryFailed) as raised:
+        _sender(transport).send(to=EMAIL, subject="s", body="b")
+    assert raised.value.reason_code == "provider_response_invalid"
+
+
+def test_a_genuine_string_message_id_is_accepted():
+    transport = _RecordingTransport(status=200, document={"id": "  msg-1  "})
+    assert _sender(transport).send(to=EMAIL, subject="s", body="b") is True
+
+
+# --- N-1: public base URL authority confusion --------------------------------
+
+@pytest.mark.parametrize("value", [
+    "https://good.example\\\\@evil.example",      # backslash authority confusion
+    "https://good.example\\\\evil.example",
+    "https://good.example%2f@evil.example",     # encoded slash in the authority
+    "https://good.example%2F.evil.example",
+    "https://good.example%5c.evil.example",     # encoded backslash
+    "https://good.example%5C@evil.example",
+    "https://app.example.test%23fragment",      # smuggled fragment
+    "https://app.example.test%40evil.example",  # smuggled userinfo
+    "https://app.example.test%00",              # smuggled NUL
+    "https://\\u0430pp.example.test",                # cyrillic homoglyph host
+    "https://app_example.test",                 # underscore is not a DNS label
+    "https://-app.example.test",                # leading hyphen
+    "https://app.example.test.",                # trailing dot
+    "https://localhost",                        # single label, no dot
+    "https://[::1]",                            # bracketed literal
+])
+def test_public_base_url_rejects_authority_confusion(value):
+    assert webapp._normalize_public_base_url(value) is None
+
+
+@pytest.mark.parametrize("value", [
+    "https://xn--e1afmkfd.xn--p1ai",            # punycode IS the stable form
+    "https://a-b.example.test",
+    "https://app.example.test:8443",
+])
+def test_public_base_url_accepts_a_stable_ascii_origin(value):
+    """Deliberate accept decisions, recorded so a later reader does not mistake
+    them for oversights. Punycode is the STABLE ASCII form of an
+    internationalized domain - rejecting it would break a legitimate production
+    domain, and it needs no normalization to become an origin."""
+    assert webapp._normalize_public_base_url(value) == value

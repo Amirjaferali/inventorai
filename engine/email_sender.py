@@ -133,12 +133,60 @@ class EmailDeliveryFailed(Exception):
         self.reason_code = reason_code
 
 
+class _NoRedirectHandler(_urllib_request.HTTPRedirectHandler):
+    """Refuse EVERY redirect, same-origin included.
+
+    Returning ``None`` from ``redirect_request`` makes urllib surface the 3xx as
+    an ``HTTPError`` instead of following it, so the caller sees a non-2xx status
+    and treats it as a delivery failure.
+
+    Why this is not optional: urllib's default handler follows redirects AND
+    copies the request headers to the new target, so a 302 from (or in front of)
+    the provider would transmit the ``Authorization`` bearer key to whatever
+    origin the redirect named - including a plaintext ``http://`` one - and
+    would then accept that origin's response body as proof of delivery. Checking
+    only the initial URL does not prevent either half of that.
+    """
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+
+def _build_https_only_opener():
+    """An opener that can ONLY perform direct HTTPS requests.
+
+    `HTTPHandler` is deliberately absent, so an `http://` URL cannot be opened
+    at all rather than merely being rejected by a string check - there is no
+    downgrade path even if a URL reached here unvalidated. `FileHandler`,
+    `FTPHandler` and `DataHandler` are absent for the same reason. The redirect
+    handler above refuses every redirect.
+    """
+    opener = _urllib_request.OpenerDirector()
+    for handler in (_urllib_request.ProxyHandler(),
+                    _urllib_request.HTTPSHandler(),
+                    # Turns any scheme this opener cannot serve into a clean
+                    # URLError instead of an AttributeError from deep inside
+                    # urllib's response processing.
+                    _urllib_request.UnknownHandler(),
+                    _NoRedirectHandler(),
+                    _urllib_request.HTTPDefaultErrorHandler(),
+                    _urllib_request.HTTPErrorProcessor()):
+        opener.add_handler(handler)
+    return opener
+
+
+_OPENER = _build_https_only_opener()
+
+
 def _https_json_post(url, headers, payload, timeout_seconds):
     """POST one JSON document over HTTPS and return ``(status, parsed-or-None)``.
 
     The seam the adapter calls. Tests substitute a deterministic local callable
     for it, so no test ever performs a network request. A provider 4xx/5xx is a
     real answer and is returned with its status; a transport failure raises.
+
+    No redirect is ever followed, and the opener has no HTTP handler at all, so
+    the request boundary itself cannot leave HTTPS.
     """
     if not url.startswith("https://"):
         raise ValueError("refusing a non-HTTPS request")
@@ -146,11 +194,12 @@ def _https_json_post(url, headers, payload, timeout_seconds):
         url, data=_json.dumps(payload).encode("utf-8"), headers=headers,
         method="POST")
     try:
-        with _urllib_request.urlopen(request, timeout=timeout_seconds) as response:
+        with _OPENER.open(request, timeout=timeout_seconds) as response:
             status, raw = response.getcode(), response.read(_MAX_RESPONSE_BYTES)
     except _urllib_error.HTTPError as error:
         # A rejection IS a provider answer: keep its status so the caller can
-        # distinguish "rejected" from "unreachable".
+        # distinguish "rejected" from "unreachable". A refused redirect arrives
+        # here too, as its own 3xx status, and is non-2xx - a delivery failure.
         status, raw = error.code, error.read(_MAX_RESPONSE_BYTES) or b""
     try:
         document = _json.loads(raw.decode("utf-8"))
@@ -234,6 +283,12 @@ class ResendEmailSender(EmailSender):
             raise EmailDeliveryFailed("provider_rejected")
         if not isinstance(document, dict):
             raise EmailDeliveryFailed("provider_response_invalid")
-        if not str(document.get("id") or "").strip():
+        # The id must be a genuine non-empty STRING. The previous
+        # `str(... or "")` coerced `true`, `123`, `[1]` and `{"a": 1}` into
+        # truthy text and accepted them as confirmed acceptance, so a provider
+        # (or anything answering in its place) could satisfy the success bar
+        # with a value that is not a message identifier at all.
+        identifier = document.get("id")
+        if not isinstance(identifier, str) or not identifier.strip():
             raise EmailDeliveryFailed("provider_response_invalid")
         return True

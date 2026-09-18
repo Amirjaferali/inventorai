@@ -29,6 +29,10 @@ What this is NOT:
     interactive input — but no cron job, Render Cron Job or timer is created by
     this repository. Activating the daily schedule is a separate Owner-side
     provider action.
+  * NOT a raw-file uploader. BOTH commands run the backup engine first, so no
+    operator-supplied file is ever PUT as-is. A live WAL database's main file
+    can pass validation while its committed rows sit in the `-wal` sidecar, and
+    shipping that file would store an incomplete artifact as a "backup".
   * NOT a restore path. Restore remains ``scripts/inventorai_backup.py restore``
     against a locally held backup, and repointing ``INVENTORAI_DB_PATH`` stays a
     deliberate human step (DR plan Scenario 7).
@@ -134,19 +138,41 @@ def _upload(settings, path, key, timeout_seconds, transport=None):
 
 
 def _cmd_upload(args, environ=None, transport=None):
-    """Upload an ALREADY EXISTING backup artifact.
+    """Upload a named database or backup file - ALWAYS via the backup engine.
 
-    The artifact is validated by the backup service first: an unreadable or
-    corrupt file must never be shipped off-provider and counted as a backup.
+    B-3 REPAIR. This command previously validated the given file and uploaded
+    THAT FILE AS-IS. Against a live database in WAL mode that is unsafe in a way
+    validation cannot catch: the main file alone can pass ``PRAGMA quick_check``
+    while the committed rows still live in the ``-wal`` sidecar, so the object
+    stored off-provider is an incomplete artifact reported as a successful
+    backup. Reproduced in
+    `tests/test_infra_offsite_backup_r2.py::test_wal_committed_rows_are_never_
+    shipped_as_a_raw_main_file`, where the copied main file validates clean and
+    then cannot even see the table.
+
+    There is therefore NO raw-file upload path left in this tool: the input is
+    treated as a SOURCE, and the existing service produces a consistent artifact
+    from it through the SQLite online-backup API (which reads the WAL). That is
+    correct for a live database and harmless for an existing backup file, which
+    is itself just a valid SQLite database. No second backup engine is
+    introduced, and the source is only ever opened read-only.
     """
     settings = resolve_settings(environ)
-    path = os.path.abspath(os.path.expanduser(args.backup))
-    validate_sqlite_database(path)
-    key = args.key or object_key(settings["INVENTORAI_R2_PREFIX"],
-                                 os.path.basename(path))
-    report = _upload(settings, path, key, args.timeout, transport)
-    _emit("upload", report, backup=path, key=key)
-    return 0
+    source = os.path.abspath(os.path.expanduser(args.source))
+    validate_sqlite_database(source)
+    moment = _utc_now()
+    filename = args.name or ("inventorai-%s.sqlite" % _stamp(moment))
+    workspace = tempfile.mkdtemp(prefix="inventorai-offsite-")
+    try:
+        staged = os.path.join(workspace, filename)
+        backup_report = backup_database(source, staged)
+        key = args.key or object_key(settings["INVENTORAI_R2_PREFIX"], filename)
+        upload_report = _upload(settings, staged, key, args.timeout, transport)
+        _emit("upload", {"backup": backup_report, "upload": upload_report},
+              source=source, key=key)
+        return 0
+    finally:
+        shutil.rmtree(workspace, ignore_errors=True)
 
 
 def _cmd_daily(args, environ=None, transport=None):
@@ -193,8 +219,12 @@ def build_parser():
     daily.set_defaults(func=_cmd_daily)
 
     upload = subparsers.add_parser(
-        "upload", help="validate and upload an existing backup artifact")
-    upload.add_argument("backup", help="path to an existing backup file")
+        "upload",
+        help=("upload a named database/backup file, always through the backup "
+              "engine first (no raw file is ever uploaded)"))
+    upload.add_argument("source", help="path to the database or backup to copy")
+    upload.add_argument("--name", default=None,
+                        help="artifact filename (default: a UTC-stamped name)")
     upload.add_argument("--key", default=None,
                         help="destination object key (default: prefix + filename)")
     upload.add_argument("--timeout", type=float, default=120.0,
